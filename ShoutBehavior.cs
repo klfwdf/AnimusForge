@@ -95,21 +95,6 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		public MyBehavior.SettlementTransferPromptEntry SettlementEntry;
 	}
 
-	private sealed class ShoutTargetingContext
-	{
-		public float RangeMeters;
-
-		public float HalfAngleRadians;
-
-		public int PrimaryAgentIndex = -1;
-
-		public List<int> CandidateAgentIndices = new List<int>();
-
-		public Dictionary<int, float> CandidatePlayerDistancesMeters = new Dictionary<int, float>();
-
-		public List<Agent> PreviewCandidateAgents = new List<Agent>();
-	}
-
 	private struct ShoutPreviewLineSegment
 	{
 		public Vec3 Start;
@@ -1880,7 +1865,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private void BeginShoutProcessing(string reason)
 	{
-		Interlocked.Increment(ref _scenePlayerInputSequence);
+		_scenePlayerShoutRequestOwner.InvalidateCurrent();
 		Interlocked.Increment(ref _sceneShoutProcessingSequence);
 		_isProcessingShout = true;
 		_shoutProcessingStartedAt = GetApplicationTimeSafe();
@@ -26024,7 +26009,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private bool _scenePostprocessWaitBorrowedProcessingFlag;
 	private long _scenePostprocessWaitProcessingSequence;
 	private long _sceneShoutProcessingSequence;
-	private long _scenePlayerInputSequence;
+	private readonly ScenePlayerShoutRequestOwner _scenePlayerShoutRequestOwner = new ScenePlayerShoutRequestOwner();
 
 	private void RegisterScenePostprocessGateTask(Task task)
 	{
@@ -26479,19 +26464,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		await ProcessShoutConfirmedInternal(shoutText, extraFact, forcedPrimaryAgentIndex);
 	}
 
-	private sealed class ScenePlayerShoutRequest
-	{
-		public ShoutBehavior Owner;
-		public Mission Mission;
-		public Agent Player;
-		public long RuntimeGeneration;
-		public int SceneSessionId;
-		public int ConversationEpoch;
-		public long InputSequence;
-		public ShoutTargetingContext TargetingContext;
-		public int Started;
-	}
-
 	// The opaque request is transient, never persisted, and never installed as the UI's mutable context.
 	internal object CaptureScenePlayerShoutRequestForReplay(Agent[] framedTargets, Agent primaryTarget)
 	{
@@ -26508,39 +26480,38 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ScenePlayerShoutRequest request = capturedRequest as ScenePlayerShoutRequest;
 		return IsBannerlordMainThreadForNativeActions()
 			&& IsScenePlayerShoutRequestCurrent(request)
-			&& Volatile.Read(ref request.Started) == 0;
+			&& _scenePlayerShoutRequestOwner.IsUnclaimed(request);
 	}
 
 	private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(IEnumerable<Agent> framedTargets, int primaryAgentIndex)
 	{
 		List<Agent> frozen = (framedTargets ?? Enumerable.Empty<Agent>()).Where(agent => agent != null).Distinct().ToList();
-		return new ScenePlayerShoutRequest
+		ShoutTargetingContext targetingContext = new ShoutTargetingContext
 		{
-			Owner = this,
-			Mission = Mission.Current,
-			Player = Agent.Main,
-			RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
-			SceneSessionId = Volatile.Read(ref _sceneHistorySessionId),
-			ConversationEpoch = Volatile.Read(ref _sceneConversationEpoch),
-			InputSequence = Interlocked.Increment(ref _scenePlayerInputSequence),
-			TargetingContext = new ShoutTargetingContext
-			{
-				PrimaryAgentIndex = primaryAgentIndex,
-				CandidateAgentIndices = frozen.Select(agent => agent.Index).ToList(),
-				PreviewCandidateAgents = frozen
-			}
+			PrimaryAgentIndex = primaryAgentIndex,
+			CandidateAgentIndices = frozen.Select(agent => agent.Index).ToList(),
+			PreviewCandidateAgents = frozen
 		};
+		return _scenePlayerShoutRequestOwner.Capture(
+			this,
+			Mission.Current,
+			Agent.Main,
+			SaveRuntimeGuard.CaptureGeneration(),
+			Volatile.Read(ref _sceneHistorySessionId),
+			Volatile.Read(ref _sceneConversationEpoch),
+			targetingContext);
 	}
 
 	private bool IsScenePlayerShoutRequestCurrent(ScenePlayerShoutRequest request)
 	{
-		return request != null && ReferenceEquals(request.Owner, this)
-			&& request.Mission != null && ReferenceEquals(request.Mission, Mission.Current)
-			&& request.Player != null && ReferenceEquals(request.Player, Agent.Main)
-			&& SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration)
-			&& request.SceneSessionId == Volatile.Read(ref _sceneHistorySessionId)
-			&& request.ConversationEpoch == Volatile.Read(ref _sceneConversationEpoch)
-			&& request.InputSequence == Interlocked.Read(ref _scenePlayerInputSequence);
+		return _scenePlayerShoutRequestOwner.IsCurrent(
+			request,
+			this,
+			Mission.Current,
+			Agent.Main,
+			request != null && SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration),
+			Volatile.Read(ref _sceneHistorySessionId),
+			Volatile.Read(ref _sceneConversationEpoch));
 	}
 
 	internal bool TryReplayCapturedScenePlayerShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
@@ -26549,7 +26520,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ScenePlayerShoutRequest request = capturedRequest as ScenePlayerShoutRequest;
 		if (!IsBannerlordMainThreadForNativeActions() || !IsScenePlayerShoutRequestCurrent(request)
 			|| string.IsNullOrWhiteSpace(shoutText) || runWithObservationScope == null
-			|| Interlocked.CompareExchange(ref request.Started, 1, 0) != 0)
+			|| !_scenePlayerShoutRequestOwner.TryClaim(request))
 		{
 			return false;
 		}
@@ -26573,7 +26544,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<Agent> framedTargets = GetAgentsForShoutTargetingContext(targetingContext);
 		int primaryAgentIndex = forcedPrimaryAgentIndex ?? targetingContext?.PrimaryAgentIndex ?? -1;
 		ScenePlayerShoutRequest request = CaptureScenePlayerShoutRequest(framedTargets, primaryAgentIndex);
-		request.Started = 1;
+		_scenePlayerShoutRequestOwner.MarkStarted(request);
 		await ProcessCapturedScenePlayerShoutAsync(shoutText, extraFact, forcedPrimaryAgentIndex, request, null);
 	}
 
