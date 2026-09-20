@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Runtime;
@@ -80,8 +81,32 @@ internal static class LegacyChannelActionCommitterTests
             && noActionOwner.Calls == 0,
             "Action-free text invoked a gameplay owner.");
 
+        GameInteractionSnapshot boundSnapshot = Snapshot(InteractionChannel.SceneShout);
+        int compatibilityCalls = 0;
+        var compatibilityOwner = new LegacyChannelActionPlanExecutor(
+            boundSnapshot.Identity.Channel,
+            boundSnapshot.Identity.SessionId,
+            boundSnapshot.Identity.SubjectId,
+            (plan, current) =>
+            {
+                compatibilityCalls++;
+                return InteractionStatus.Executed;
+            },
+            allowedTagFamilies: new[] { "ACTION:MOOD" });
+        LegacyChannelActionCommitResult compatibility = new LegacyChannelActionCommitter(
+            new[] { "ACTION:MOOD" }).Commit(
+                "[ACTION:MOOD:happy]",
+                boundSnapshot,
+                compatibilityOwner);
+        Require(compatibility.Execution.Status == InteractionStatus.Executed
+            && compatibility.Execution.ActionsExecuted
+            && compatibilityOwner.AppliedActionCount == 1
+            && compatibilityOwner.EffectState == ActionExecutionEffectState.ConfirmedEffect
+            && compatibilityCalls == 1,
+            "The request-bound compatibility executor did not publish an exact terminal receipt.");
+
         Console.WriteLine(
-            "PASS legacyChannelActionCommitter cases=8 channels=3 canonicalPlan=1 exactBinding=1 disallowed=1 overflow=1 unknown=1 noAction=1");
+            "PASS legacyChannelActionCommitter cases=9 channels=3 canonicalPlan=1 exactBinding=1 compatibilityOwner=1 disallowed=1 overflow=1 unknown=1 noAction=1");
     }
 
     private static GameInteractionSnapshot Snapshot(InteractionChannel channel)
