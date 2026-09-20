@@ -1,5 +1,13 @@
 # AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
 
+## 最新城镇每帧批次调度（2026-09-21 06:42:54）
+
+用户反馈分组版仍超时。223659/223734两条实机已加载MVID a0a0aa8d，提前排除4420/4412项，处理约94%仍25秒、faces=0，最终357网格。rgl现场113批5773ms/112批6185ms；旧每批调度两次主线程且AfterFramesAsync(1)强制至少等两帧。检查点`0457b53`，生产`7baff04e2049825018e8f5de319f2cf81897b8a9`，当前F盘分支，仅Illustrator四份源码。
+
+新增单槽PanoramaBatchPump，由既有应用Tick每帧推进一次原CopyBatch，现场/资源阶段各注册一次；原预算、30m、25秒、分组边界和镜头导出等待保持。批次返回后才通知后台；Reset/Shutdown清理前取消并唤醒。分段诊断scene_snapshot_batches记录workMs/elapsedMs/maxBatchMs等；旧版没有CPU细分，不能把全部帧间隔冒称纯空转。
+
+源码审查、双API Release均0警告/0错误；未跑离线测试/审计脚本或模型。原脚本已部署，8文件哈希一致，SHA256`23AD821D8F0C94BE01924B0A027A7EB08718C4DB45E52784C56D5D5A6978ACB2`，MVID`3b86c026-b6d4-44b7-a3ac-dad20312017c`。06:43核对无游戏相关进程，可启动新版；完整城镇试采、帧率、退出和GPU仍待实机。备份`artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260921-064254`是已知超时版。未推送/改主模组；代码行号、职责、证据与回滚见[调度续修报告](docs/audits/2026-09-21-illustrator-frame-pump.md)。
+
 ## 最新城镇资产分组与边界预筛选（2026-09-21 06:32:42）
 
 用户确认优化前两项。旧版街道两次约25.2秒超时、faces=0；XML279ms/缓存0ms不再是瓶颈，5637计划项首轮只处理1062、755次模板加载、78次提前排除、最终113网格。检查点`101fe5e`，生产`5add4b7bf67f141e9de3d37255cd6f7858d544a2`，F盘当前分支，仅Illustrator两份生产源码。
