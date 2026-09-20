@@ -2,7 +2,7 @@
 
 运行 `python -X utf8 -B tools/CourierCommitOutcomeTests/run.py`，`--original` 对照29448d1b实际旧声明；`--mutate` 可取 `false_no_effect`、`retryable_failure`、`lose_inbound_effect`、`unguarded_diagnostic`。旧红/故障变体应编译成功后以行为失败结束，编译错误不算反例。
 
-实际编译 CourierDeliveryBehavior.CommitDispatch.cs、InteractionCommitResult DTO 和 PendingOperationRegistry，复用 GameLifetimeTests 原19项队列/退役/回执断言，追加15项内联/物理队列检查：部分副作用后异常、空回执、诊断失败、未开始拒绝、真实成功回执、入站缺回执的效果状态保持与原清理次数。
+实际编译 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs`、InteractionCommitResult DTO 和 PendingOperationRegistry，复用 GameLifetimeTests 原19项队列/退役/回执断言，追加15项内联/物理队列检查：部分副作用后异常、空回执、诊断失败、未开始拒绝、真实成功回执、入站缺回执的效果状态保持与原清理次数。
 
 - 开始前拒绝：RejectedByValidation / NoConfirmedEffect。
 - callback已进入但抛异常或未提供回执：NonRetryableFailure / UnknownAfterStart。ErrorCode保持原值，不伪造HistoryWritten/ActionsExecuted为true。

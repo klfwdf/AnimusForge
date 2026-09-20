@@ -5,7 +5,7 @@ spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkAp
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['drop_claim','expire_claimed','skip_retirement']);a=p.parse_args()
 out=HERE/'.generated'/('commit-original' if a.original else 'commit-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
-source=(ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig')
+source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig')
 if a.original:
  old=subprocess.check_output(['git','show','807bc5b9:CourierDeliveryBehavior.cs'],cwd=ROOT).decode('utf-8-sig')
  for sig in ['private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(', 'private InteractionCommitResult InvokeCourierRefactorCommit(', 'private static async Task<InteractionCommitResult> AwaitCourierRefactorCommitAsync(']:source=source.replace(ex.declaration(source,sig),ex.declaration(old,sig),1)

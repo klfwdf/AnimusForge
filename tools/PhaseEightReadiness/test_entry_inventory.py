@@ -18,7 +18,7 @@ EXPANDED_ENTRIES = {
     # Newly inventoried existing Courier boundaries require renewed J10 coverage review.
     "courier-proactive-issue": (
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
-        "CourierDeliveryBehavior.CommitDispatch.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
@@ -67,7 +67,7 @@ class EntryInventoryTests(unittest.TestCase):
     def test_required_candidates_are_present(self) -> None:
         result = entry_inventory.build_inventory(ROOT)
         self.assertIn("RewardSystemBehavior.EconomyPartyReplay.cs", result["economy-reward-debt"])
-        self.assertIn("CourierDeliveryBehavior.InboundCompletion.cs", result["courier-proactive-issue"])
+        self.assertIn("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs", result["courier-proactive-issue"])
         self.assertIn("Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs", result["courier-proactive-issue"])
         self.assertIn("Refactor/Runtime/CourierInboundCompletionReceipt.cs", result["courier-proactive-issue"])
         self.assertIn("PlayerNotorietyBehavior.ConversationOutcomes.cs", result["social-progression-reports"])

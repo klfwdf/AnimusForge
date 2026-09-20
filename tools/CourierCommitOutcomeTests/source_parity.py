@@ -12,4 +12,4 @@ def restore(source):
     assert source==expected,'Unreviewed Courier outcome or surrounding change'
     return old
 if __name__=='__main__':
-    restore((ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig'));print('PASS Courier unconfirmed outcome exact whole-file inverse')
+    restore((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig'));print('PASS Courier unconfirmed outcome exact whole-file inverse')

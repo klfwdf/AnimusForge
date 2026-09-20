@@ -58,7 +58,7 @@ def expected(path):
   moved=[]
   for sig,(before,after) in zip(packet['signatures'],packet['edits']):
    assert e.declaration(s,sig)==before;s=s.replace('\t'+before+'\n\n','',1);moved.append('\t'+after)
-  assert restore_commit((ROOT/'CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig'))==packet['header']+'\n\n'.join(moved)+'\n}\n','Unreviewed Courier commit extraction'
+  assert restore_commit((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig'))==packet['header']+'\n\n'.join(moved)+'\n}\n','Unreviewed Courier commit extraction'
  elif path=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs':
   sig='private async Task<T> RunCourierOwnerPhaseAsync<T>(';before=e.declaration(s,sig);after=before.replace('cancellationToken.ThrowIfCancellationRequested();','long retirementVersion = _pendingOwnerPhases.Version;\n        cancellationToken.ThrowIfCancellationRequested();\n        if (!_pendingOwnerPhases.Accepting) throw new OperationCanceledException("Courier owner retired.");',1)
   after=after.replace('        bool mainThread = false;','''        using (IDisposable registration = _pendingOwnerPhases.Register(retirementVersion, () =>
@@ -99,7 +99,7 @@ def check_dependencies():
  data=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
  for p,h in data['dependencies'].items():
   source=(ROOT/MOVED_DEPENDENCIES.get(p,p)).read_text(encoding='utf-8-sig')
-  if p=='CourierDeliveryBehavior.CommitDispatch.cs':source=restore_commit(source)
+  if p=='src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs':source=restore_commit(source)
   if p in ('tools/GameLifetimeTests/run.py','tools/GameLifetimeTests/run_bindings.py','tools/GameLifetimeTests/run_commit.py','tools/GameLifetimeTests/run_memory.py'):
    for historical,current in RUNNER_PATH_EDITS.items():
     source=source.replace(current,historical)
