@@ -175,6 +175,17 @@ AssertTrue(
         && catalogActions.Actions[1].Tag == "ACTION:DUEL_STAKE_GOLD"
         && catalogActions.Actions[2].Tag == "ACTION:8",
     "finite action catalog did not preserve approved tags while rejecting an unknown family");
+var exactIntegrity = new ActionPlanIntegrityPolicy(64, new[] { "ACTION:DUEL" });
+ActionPlan exactDuelPlan = actionParser.Parse(
+    "[ACTION:DUEL]",
+    new PostprocessContext(Array.Empty<string>(), new[] { "ACTION:DUEL" }, new CapabilitySet(Array.Empty<string>())));
+AssertTrue(exactIntegrity.MatchesAuthorizedPlan(exactDuelPlan), "exact raw ActionPlan failed shared integrity validation");
+string overflowRaw = string.Concat(Enumerable.Repeat("[ACTION:DUEL]", 65));
+ActionPlan truncatedOverflowPlan = actionParser.Parse(
+    overflowRaw,
+    new PostprocessContext(Array.Empty<string>(), new[] { "ACTION:DUEL" }, new CapabilitySet(Array.Empty<string>())));
+AssertTrue(truncatedOverflowPlan.Actions.Count == 64 && !exactIntegrity.MatchesAuthorizedPlan(truncatedOverflowPlan),
+    "over-limit raw tags were silently truncated before the legacy execution callback");
 
 var economyAdapter = new LegacyEconomyRewardDebtAdapter();
 ActionPlan economyActionPlan = actionParser.Parse(

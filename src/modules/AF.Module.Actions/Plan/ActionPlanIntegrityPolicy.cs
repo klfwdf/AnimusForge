@@ -35,6 +35,7 @@ internal sealed class ActionPlanIntegrityPolicy
         if (authorizedPlan == null
             || authorizedPlan.Actions.Count == 0
             || string.IsNullOrWhiteSpace(authorizedPlan.RawPostprocessId)
+            || _parser.ExceedsActionLimit(authorizedPlan.RawPostprocessId)
             || _parser.HasDisallowedProtocolTag(authorizedPlan.RawPostprocessId, _rawContext))
         {
             return false;
