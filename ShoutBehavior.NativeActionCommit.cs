@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
@@ -55,7 +56,35 @@ public partial class ShoutBehavior
         InteractionEnvelope envelope;
         try
         {
-            envelope = LegacyInteractionSnapshotAdapters.CaptureNativeConversation(playerText ?? string.Empty);
+            int targetAgentIndex = npc?.AgentIndex ?? -1;
+            string subjectId = ResolveDetachedInteractionSubjectId(
+                targetHero,
+                targetCharacter,
+                targetAgentIndex,
+                npc);
+            var candidates = new List<InteractionCandidate>();
+            if (targetAgentIndex >= 0)
+            {
+                candidates.Add(new InteractionCandidate(
+                    subjectId,
+                    targetHero?.Name?.ToString()
+                        ?? targetCharacter?.Name?.ToString()
+                        ?? npc?.Name
+                        ?? string.Empty,
+                    targetAgentIndex,
+                    true));
+            }
+            envelope = LegacyInteractionSnapshotAdapters.CaptureActionCommit(
+                InteractionChannel.NativeConversation,
+                "native-action:" + expectedConversationToken.ToString(CultureInfo.InvariantCulture),
+                subjectId,
+                playerText ?? string.Empty,
+                candidates,
+                new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["native_conversation_token"] = expectedConversationToken.ToString(CultureInfo.InvariantCulture),
+                    ["target_agent_index"] = targetAgentIndex.ToString(CultureInfo.InvariantCulture)
+                });
         }
         catch (Exception ex)
         {

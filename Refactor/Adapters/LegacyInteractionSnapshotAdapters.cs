@@ -565,6 +565,31 @@ public static class LegacyInteractionSnapshotAdapters
         return new InteractionEnvelope(snapshot, CopyHistory(history), promptSections, postprocessPromptSections);
     }
 
+    /// <summary>
+    /// Creates the minimal detached identity required by the action-only
+    /// commit boundary. Channel owners must resolve live targets before this
+    /// call; unlike Prompt capture, this path deliberately does not reread or
+    /// allocate conversation history.
+    /// </summary>
+    internal static InteractionEnvelope CaptureActionCommit(
+        InteractionChannel channel,
+        string sessionId,
+        string subjectId,
+        string playerText,
+        IEnumerable<InteractionCandidate> candidates = null,
+        IDictionary<string, string> detachedFacts = null)
+    {
+        return CreateEnvelope(
+            channel,
+            subjectId,
+            playerText,
+            CurrentLocationId(),
+            Array.Empty<ConversationMessage>(),
+            candidates,
+            detachedFacts,
+            sessionId);
+    }
+
     private static IReadOnlyList<PromptMessage> CopyHistory(IEnumerable<ConversationMessage> history)
     {
         List<PromptMessage> result = new List<PromptMessage>();
