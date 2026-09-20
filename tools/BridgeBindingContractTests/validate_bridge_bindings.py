@@ -28,7 +28,7 @@ EXPECTED_WIRED = {
     "conversation-gateway": ("Refactor/Adapters/LegacyConfiguredChatGateway.cs", "GenerateExchangeAsync"),
     "conversation-action": ("src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs", "Commit"),
     "action-memory": ("src/modules/AF.Module.Conversation/Internal/InteractionResultCommitter.cs", "Commit"),
-    "action-economy": ("Refactor/Adapters/LegacyNativeActionPlanExecutor.cs", "ValidateAndExecuteCore"),
+    "action-economy": ("src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs", "ValidateAndExecuteCore"),
     "conversation-siege": ("AfGcczShoutBridge.cs", "IsActive"),
     "conversation-courier": ("CourierDeliveryBehavior.cs", "IsCourierBridgeEnabled"),
     "memory-social-reports": ("PlayerNotorietyBehavior.ConversationOutcomes.cs", "IsSocialReportsBridgeEnabled"),

@@ -13,9 +13,10 @@
     <Compile Include="..\..\Refactor\Contracts\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Plan\ActionPlanIntegrityPolicy.cs" Link="Adapters\ActionPlanIntegrityPolicy.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtAdapter.cs" Link="Adapters\LegacyEconomyRewardDebtAdapter.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" Link="Adapters\LegacyEconomyRewardDebtMainThreadPort.cs" />
-    <Compile Include="..\..\Refactor\Adapters\LegacyNativeActionPlanExecutor.cs" Link="Adapters\LegacyNativeActionPlanExecutor.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Execute\LegacyNativeActionPlanExecutor.cs" Link="Adapters\LegacyNativeActionPlanExecutor.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Conversation\Internal\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
     <Compile Include="..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Conversation\Internal\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
