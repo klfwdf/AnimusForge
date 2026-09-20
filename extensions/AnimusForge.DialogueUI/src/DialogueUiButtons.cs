@@ -1,14 +1,15 @@
 using System;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
+using TaleWorlds.Library;
 using TaleWorlds.TwoDimension;
 
 namespace AnimusForge.DialogueUI
 {
     internal static class DialogueUiButtons
     {
-        // Each button receives its own cloned brush; no modification of shared native brushes.
-        internal static void Style(ButtonWidget button)
+        // Each button receives its own cloned brush with our ornate medieval parchment button sprites.
+        internal static void Style(ButtonWidget button, int fontSize = 18)
         {
             if (button == null) return;
             try
@@ -18,7 +19,7 @@ namespace AnimusForge.DialogueUI
                     ?? button.Context.GetBrush("ButtonBrush2")?.Clone();
                 if (brush != null)
                 {
-                    brush.Name = "AFDialogue.RoundButton";
+                    brush.Name = "AFDialogue.ButtonBrush";
                     brush.TransitionDuration = 0.08f;
                     SetStateSprite(brush, "Default", "afdui_button_normal", 1f);
                     SetStateSprite(brush, "Hovered", "afdui_button_hover", 1f);
@@ -27,10 +28,21 @@ namespace AnimusForge.DialogueUI
                     SetStateSprite(brush, "Disabled", "afdui_button_normal", 0.45f);
                     button.Brush = brush;
                 }
+                foreach (Widget child in button.Children)
+                {
+                    if (child is TextWidget text && text.Brush != null)
+                    {
+                        text.Brush = text.Brush.Clone();
+                        text.Brush.FontColor = Color.FromUint(0xFF382919);
+                        text.Brush.FontSize = fontSize;
+                        text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
+                        text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                DialogueUiRuntime.Log("Failed to style round button: " + ex.Message);
+                DialogueUiRuntime.Log("Failed to style button: " + ex.Message);
             }
             button.DoNotPassEventsToChildren = true;
             button.UpdateChildrenStates = true;
