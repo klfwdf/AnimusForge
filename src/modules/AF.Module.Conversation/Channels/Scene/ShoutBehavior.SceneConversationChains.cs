@@ -333,7 +333,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					["resultLen"] = (output ?? "").Length
 				});
 				Logger.Metric("api.shout_passive", ok, swApi.Elapsed.TotalMilliseconds);
-				
+
 				if (!ok)
 				{
 					_mainThreadActions.Enqueue(delegate
@@ -342,7 +342,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					});
 					return "（没说话）";
 				}
-				
+
 				return output;
 			}
 		}
