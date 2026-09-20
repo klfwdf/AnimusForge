@@ -1,6 +1,6 @@
 # 当前范围：J08 LLM 离线责任包完成（2026-09-21）
 
-源码包 5dc17947 / 4776b691 / 1e1fdfad，320 锚点图绑定最终产品提交。非流与 SSE attempt/lifetime 已由 AF.Module.Llm 唯一 owner 承担，Primary/Configured 使用真实消费者；ModelCatalog/TTS transport 已归模块目录。策略 retry、UI/Prompt、领域 profile 和游戏音频生命周期保持原 owner。
+源码包 5dc17947 / 4776b691 / 1e1fdfad / 5a2df9d6，322 锚点图绑定最终产品提交。非流与 SSE attempt/lifetime 已由 AF.Module.Llm 唯一 owner 承担，Primary/Configured/Policy/WorldDiplomacy 使用真实消费者；ModelCatalog/TTS transport 已归模块目录。策略 retry、UI/Prompt、领域 profile 和游戏音频生命周期保持原 owner。
 
 状态 J08_OFFLINE_VERIFIED；真实 provider、游戏/旧档/音频/性能仍未验。详细实现、两项缺陷、证据、保留项和回滚见当前主台账 j08-offline-closeout-20260921。下一阶段 J09，自动化暂停。
 

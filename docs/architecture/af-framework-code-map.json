@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "1e1fdfad38d670cc93228618e283cc3fd0eff176",
+  "sourceRevision": "5a2df9d64485cea03f4a069afda55c2f348968bc",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -3417,35 +3417,35 @@
     {
       "id": "llm.http.nonstream",
       "path": "src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs",
-      "start": 29,
-      "end": 51,
+      "start": 44,
+      "end": 66,
       "symbol": "internal static async Task<LlmNonStreamingResponse> SendAsync(",
       "match": "exact",
       "status": "wired-offline-verified",
-      "note": "唯一非流 HTTP attempt/auth/read/dispose，Primary 与 Configured 共用",
-      "fileSha256": "2a4aeb4876305d2e7217e15f6fbd6b069ab000b61f31e2b1f1f0cf5ca228ff90"
+      "note": "唯一非流 HTTP attempt/auth/read/dispose，Primary、Configured、Policy、WorldDiplomacy 共用",
+      "fileSha256": "de0b8629df87f57280be78ec76446cecad42af79ac27dd8a8b836710558f9a46"
     },
     {
       "id": "llm.http.timeout",
       "path": "src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs",
-      "start": 55,
-      "end": 60,
+      "start": 72,
+      "end": 77,
       "symbol": "internal static CancellationTokenSource CreateTimeout(int timeoutMilliseconds, CancellationToken callerToken)",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "保持 Configured linked timeout 所有权；调用方 source 不被释放",
-      "fileSha256": "2a4aeb4876305d2e7217e15f6fbd6b069ab000b61f31e2b1f1f0cf5ca228ff90"
+      "fileSha256": "de0b8629df87f57280be78ec76446cecad42af79ac27dd8a8b836710558f9a46"
     },
     {
       "id": "llm.http.retry-after",
       "path": "src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs",
-      "start": 62,
-      "end": 78,
+      "start": 79,
+      "end": 95,
       "symbol": "internal static int? GetRetryAfterSeconds(HttpResponseMessage response)",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "共用 best-effort Retry-After 元数据提取，含 streaming 错误路径",
-      "fileSha256": "2a4aeb4876305d2e7217e15f6fbd6b069ab000b61f31e2b1f1f0cf5ca228ff90"
+      "fileSha256": "de0b8629df87f57280be78ec76446cecad42af79ac27dd8a8b836710558f9a46"
     },
     {
       "id": "llm.primary.nonstream",
@@ -3523,6 +3523,28 @@
       "status": "wired-offline-verified",
       "note": "TTS network/bytes owner，voice/game playback仍归 TtsEngine",
       "fileSha256": "aa94a683f7bdc923a6703c8a6bc8a7d79ac313aca2577c8aaa2c1bec2c91cdcc"
+    },
+    {
+      "id": "llm.policy.nonstream",
+      "path": "PolicySystem/Npc/PolicyLlmClient.cs",
+      "start": 823,
+      "end": 823,
+      "symbol": "private static async Task<LlmNonStreamingResponse> SendNpcPolicyRequestWithHardTimeoutAsync(",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "政策领域保留 hard-wall/兼容降级/重试；单次 POST、认证、读取和资源释放归共享 transport",
+      "fileSha256": "33585c8ee0bb8ca239dcb29ddab9c1c48eab8518ff523f67934af55c0e2a4f0e"
+    },
+    {
+      "id": "llm.world.nonstream",
+      "path": "WorldDiplomacyLlmClient.cs",
+      "start": 198,
+      "end": 198,
+      "symbol": "private static async Task<WorldDiplomacyHttpExchange> SendAndReadAsync(",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "世界外交保留 thinking fallback/重试/解析；单次 POST、认证、读取和资源释放归共享 transport",
+      "fileSha256": "7d3276e318276386323a0cb8e0b5d765de449d460825aef01bfb5826af969ee6"
     }
   ]
 }

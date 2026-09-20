@@ -1,24 +1,25 @@
 <a id="j08-offline-closeout-20260921"></a>
 # 当前接续：J08 离线责任包闭合，自动化保持暂停（2026-09-21）
 
-**状态：J07_OFFLINE_VERIFIED、J08_OFFLINE_VERIFIED；J09 尚未实施。** 用户要求暂停自动化并在当前线程完成 J08；af-7-8 已确认 PAUSED。J08 产品提交：非流 5dc17947、流式 4776b691、ModelCatalog/TTS 归位 1e1fdfad。本节取代下方 J08_IN_PROGRESS 和自动化 ACTIVE 的说明。
+**状态：J07_OFFLINE_VERIFIED、J08_OFFLINE_VERIFIED；J09 已完成实施计划但尚未开工。** 用户要求暂停自动化并在当前线程完成 J08；`af-7-8` 已确认 PAUSED。J08 产品提交：非流 `5dc17947`、流式 `4776b691`、ModelCatalog/TTS 归位 `1e1fdfad`、Policy/World transport 收敛 `5a2df9d6`。原 `eb4b0bee` 在整体 transport 扫描前过早写成完成，本节以实际修复和最终验证纠正该结论。
 
 ## 已落地责任
 
-| 责任 | 当前源码（完整一基坐标以 320 锚点图为准） | 完成与保留边界 |
+| 责任 | 当前源码（完整一基坐标以 322 锚点图为准） | 完成与保留边界 |
 | --- | --- | --- |
-| 非流 attempt/lifetime | src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs | Primary 与 Configured 共用认证、send/body/dispose、timeout/Retry-After；thinking、空回复、用户重试和中文错误由原 policy/adapter 显式发起 |
+| 非流 attempt/lifetime | src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs | Primary、Configured、Policy、WorldDiplomacy 共用认证、send/body/dispose 与 detached status/reason/header/Retry-After；一次调用只做一次 attempt，不隐藏领域重试 |
 | Primary 非流 adapter | ShoutNetwork.CallApiWithMessages | 设置/model/UI/token 诊断留宿主，不搬 220 行造壳；修复成功 response 未释放 |
 | SSE attempt/lifetime | src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs | 唯一 SSE send/read owner，处理 data/DONE、content/reasoning、raw 上限、取消/stale 与资源释放，不隐藏 retry |
 | Primary/Configured stream | ShoutNetwork.CallApiWithMessagesStream、LegacyConfiguredChatGateway stream branch | 两个真实消费者共用 owner，保留可见过滤、thinking fallback、typed status/metadata；已显示部分正文后禁止再次 stream/非流 fallback |
 | 模型目录 | src/modules/AF.Module.Llm/ModelCatalog/LegacyModelCatalogGateway.cs | 100% rename，namespace/ABI/实现不变；解析/排序/UI/stale 仍归 Onboarding/MCM |
 | TTS transport | src/modules/AF.Module.Llm/Tts/LegacyVolcTtsGateway.cs | 100% rename，ITtsGateway/payload/header/audio/error 不变；voice、Hero/Agent/Mission、播放停止仍归 TtsEngine |
-| Policy/WorldDiplomacy | Refactor/Adapters 下两个领域 Gateway | 已是 ILlmGateway typed adapter；领域 profile/route/retry/Prompt 留领域 client，不为目录统一强搬业务 |
+| Policy/WorldDiplomacy | `PolicySystem/Npc/PolicyLlmClient.cs`、`WorldDiplomacyLlmClient.cs` 及两个 typed Gateway | 实际 POST/read/dispose 改接共享 transport；Policy hard-wall/兼容降级与 World thinking fallback/route/retry/Prompt/结果解析仍归领域 owner |
 | Configured compatibility | Refactor/Adapters/LegacyConfiguredChatGateway.cs | 仍有真实调用和 manifest 责任；底层 transport 已模块化，保留路径不是第二条发送链 |
 
 **真实缺陷修复：**
 1. 旧 Primary 非流成功/错误 response lifetime 不完整；TrackedContent 复现后由共享 owner 全终态释放。
 2. 旧 Primary stream 已调用 onChunk 后遇读取异常仍进入第二次 stream attempt，并先尝试非流 fallback；实际 Debug DLL 回放得到“部分部分”。现在已有可见内容时立即退出 attempt loop，直接完成部分正文，不再次请求。
+3. 整体复核发现 Policy/WorldDiplomacy 仍各自持有 live `HttpResponseMessage` 和重复请求/read/dispose；`5a2df9d6` 改为共享 attempt owner，并让 response status/reason/header/body 在释放前脱离。Policy 超时后的迟到任务仍由观察者收尾，不再让调用方提前释放尚在发送中的 request。
 
 ## 验证和限定
 
@@ -26,19 +27,20 @@
 - 流式 owner 17 检查、5 项可编译变异；Unicode/reasoning、坏 chunk、raw 上限、429、header/line 拒收、observer、部分异常、取消与资源释放通过。
 - 实际 Debug DLL Primary replay：非流/stream、两类 thinking fallback、Unicode、增量/最终不重复、部分不重放、credential、两类取消通过；Configured 和 ModelCatalog replay 通过。
 - J01 协议 13、LegacyShoutGatewayResult 40、NativeMainReply 179/19 场景通过。source projection 只投影已由新 suite/实际 DLL 覆盖的两个 Primary consumer 差异。
-- ModelCatalog rename 后 replay PASS。Policy、WorldDiplomacy、TTS 产品实现未改；TTS/Policy/World 当前 Stage replay NOT-RUN，因为工作树没有 single_module_stage 且用户未授权 Stage。TTS 是 Git 100% rename并由双构建覆盖，复用未变实现的历史回放证据。
-- 最终 Debug/Release × 1.3/1.4/Bootstrap 六构建 0 warning/0 error；四实现 DLL 1060 metadata/API、存档 142/168/13/44、Phase8 inventory、320 锚点双模式通过。
+- ModelCatalog rename 后 replay PASS。最终 Debug 1.4 artifact 通过 Policy/WorldDiplomacy 实际 Gateway loopback 回放：caller cancellation、retry backoff cancellation、hard timeout、credential boundary 均 PASS；使用 `.tmp/j08-domain-replay` 的本地 runner 和显式依赖，不创建 Stage、不访问 provider。TTS 为 100% rename并由双构建与历史回放覆盖；真实音频仍 NOT-RUN。
+- 最终 Debug/Release × 1.3/1.4/Bootstrap 六构建 0 warning/0 error；四实现 DLL 1060 metadata/API、Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened、Phase8 inventory、322 锚点双模式通过。
+- `PersistenceIdentityAudit.py` 的默认扫描会因本工作树位于祖先 `.tmp` 而排除全部源码，不能把其原始 FAIL 当产品回归或 PASS；临时按仓库相对路径纠正扫描后只报告已登记的 WarStats 47 key / 1 behavior 相对旧 `d4cb1467` baseline 增量。本轮未修改任何存档键，J16 应修正该工具的路径判断。
 - 本地日志在 .tmp/j08-nonstream-20260921、.tmp/j08-stream-20260921、.tmp/j08-final-20260921。真实 provider、Campaign/Mission、旧档、音频播放、网络背压和帧成本仍 NOT-RUN。
 
 ## 清理、性能、回滚
 
-已删除两套重复 HTTP request/read/dispose 与 Configured 旧 SSE reader；保留真实 policy/adapter/manifest 责任。未新增队列、扫描或隐含 retry；每 attempt 只分配请求/响应与有限 raw sample并复用 HttpClient。真实网络吞吐未量测。
+已删除 Primary、Configured、Policy、WorldDiplomacy 的重复 HTTP request/read/dispose 与 Configured 旧 SSE reader；TTS/ModelCatalog 因协议不同保留独立 owner。未新增队列、扫描或隐含 retry；每 attempt 只分配请求/响应与有限 raw sample并复用 HttpClient。真实网络吞吐未量测。
 
-回滚按包 focused revert：1e1fdfad（纯归位）、4776b691（stream）、5dc17947（non-stream）；检查点 0d20f95d、c4440252、36de0b4。没有 push、部署、Stage、打包、游戏/存档或其他工作树修改。
+回滚按包 focused revert：`5a2df9d6`（Policy/World 收敛）、`1e1fdfad`（纯归位）、`4776b691`（stream）、`5dc17947`（non-stream）；本轮检查点 `6240ff6`。没有 push、部署、Stage、打包、游戏/存档或其他工作树修改。
 
 ## 下一步
 
-下一阶段 J09：Tags → ActionPlan/Execute/Receipts → 三渠道接线。自动化保持 PAUSED；用户明确恢复或要求手动继续后开工。不要因 J08 主类仍大或可追加测试重开本包；只有新运行证据或相关失败才定向回归。
+下一阶段按 [`docs/plans/j09-actions-facts-plan.md`](plans/j09-actions-facts-plan.md) 执行：G0 标签/owner 矩阵 → Tags → Plan/typed ports → Receipts → Native/Scene/Courier 接线 → 清理/整包验收。自动化保持 PAUSED；不要因 J08 主类仍大或还能追加相似测试重开本包，只有新的具体运行证据或相关失败才定向回归。
 
 ## 以下为历史回执，当前状态以上方为准
 
