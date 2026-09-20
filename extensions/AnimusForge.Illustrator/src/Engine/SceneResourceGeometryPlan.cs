@@ -27,6 +27,7 @@ namespace AnimusForge.Illustrator.Engine
         private static SceneResourceGeometryPlan _cachedPlan;
         private readonly long _fileLength;
         private readonly DateTime _fileWriteTimeUtc;
+        private readonly HashSet<string> _repeatedAssets = new HashSet<string>(StringComparer.Ordinal);
 
         internal sealed class Entry
         {
@@ -37,6 +38,7 @@ namespace AnimusForge.Illustrator.Engine
             internal string MeshName { get; }
             internal MatrixFrame WorldFrame { get; }
             internal uint LevelMask { get; }
+            internal string AssetKey { get; }
 
             internal Entry(string sourceId, string parentSourceId, string sourceName,
                 string prefabName, string meshName, MatrixFrame worldFrame, uint levelMask)
@@ -48,6 +50,7 @@ namespace AnimusForge.Illustrator.Engine
                 MeshName = meshName;
                 WorldFrame = worldFrame;
                 LevelMask = levelMask;
+                AssetKey = string.IsNullOrEmpty(prefabName) ? "mesh:" + meshName : "prefab:" + prefabName;
             }
         }
 
@@ -55,6 +58,7 @@ namespace AnimusForge.Illustrator.Engine
         internal uint ActiveMask { get; }
         internal uint ImplicitBaseMask { get; }
         internal IReadOnlyList<Entry> Entries { get; }
+        internal int AssetGroups { get; }
         internal int InspectedNodes { get; }
         internal int XmlElementCount { get; }
         internal int PeakSubtreeElements { get; }
@@ -64,14 +68,39 @@ namespace AnimusForge.Illustrator.Engine
         internal IReadOnlyDictionary<string, int> UnsupportedReasons { get; }
         internal IReadOnlyList<string> UnsupportedSamples { get; }
 
-        private SceneResourceGeometryPlan(string path, long length, DateTime writeTime, uint activeMask, Reader reader)
+        private SceneResourceGeometryPlan(string path, long length, DateTime writeTime, uint activeMask, Reader reader, CancellationToken token)
         {
             ResolvedSceneFile = path;
             _fileLength = length;
             _fileWriteTimeUtc = writeTime;
             ActiveMask = activeMask;
             ImplicitBaseMask = reader.BaseMask;
-            Entries = new ReadOnlyCollection<Entry>(reader.Entries.ToArray());
+            // Worker-side stable grouping: one canonical bounds probe per asset, without
+            // keeping every asset or native template resident. SourceIds remain XML IDs.
+            var groups = new List<List<Entry>>();
+            var byAsset = new Dictionary<string, List<Entry>>(StringComparer.Ordinal);
+            foreach (var entry in reader.Entries)
+            {
+                token.ThrowIfCancellationRequested();
+                if (!byAsset.TryGetValue(entry.AssetKey, out var group))
+                {
+                    group = new List<Entry>();
+                    byAsset.Add(entry.AssetKey, group);
+                    groups.Add(group);
+                }
+                group.Add(entry);
+            }
+            var ordered = new Entry[reader.Entries.Count];
+            int offset = 0;
+            foreach (var group in groups)
+            {
+                token.ThrowIfCancellationRequested();
+                if (group.Count > 1) _repeatedAssets.Add(group[0].AssetKey);
+                group.CopyTo(ordered, offset);
+                offset += group.Count;
+            }
+            Entries = new ReadOnlyCollection<Entry>(ordered);
+            AssetGroups = groups.Count;
             InspectedNodes = reader.EntityCount;
             XmlElementCount = reader.ElementCount;
             PeakSubtreeElements = reader.PeakSubtreeElements;
@@ -81,6 +110,8 @@ namespace AnimusForge.Illustrator.Engine
             UnsupportedReasons = new ReadOnlyDictionary<string, int>(new Dictionary<string, int>(reader.Reasons));
             UnsupportedSamples = new ReadOnlyCollection<string>(reader.Samples.ToArray());
         }
+
+        internal bool HasRepeatedAsset(string assetKey) => _repeatedAssets.Contains(assetKey);
 
         internal static SceneResourceGeometryPlan Load(string resolvedSceneFile, uint activeMask, CancellationToken token)
         {
@@ -116,7 +147,7 @@ namespace AnimusForge.Illustrator.Engine
                 var after = new FileInfo(path);
                 if (!after.Exists || after.Length != length || after.LastWriteTimeUtc != writeTime)
                     throw new InvalidDataException("场景资源在读取期间发生了变化，请重新采集。");
-                var plan = new SceneResourceGeometryPlan(path, length, writeTime, activeMask, reader);
+                var plan = new SceneResourceGeometryPlan(path, length, writeTime, activeMask, reader, token);
                 lock (CacheLock)
                 {
                     token.ThrowIfCancellationRequested();
