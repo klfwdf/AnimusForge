@@ -1,3 +1,15 @@
+<a id="j07-plan-ready-20260919"></a>
+
+## J07 计划就绪：PLAN_READY / NOT_STARTED（2026-09-19）
+
+详细实施计划与注意事项清单见 **[docs/plans/j07-conversation-native-plan.md](plans/j07-conversation-native-plan.md)**，本节只记锚点：
+
+- **与前几包的性质差别**：J04–J06 搬纯算法（可逐字节对照），J07 搬会话生命周期（时序不变量）。验收重心从"文本一致"转为"边界断言 + 变异拒收"。
+- **实测盘点**：`Refactor/Runtime|Contracts` 里 9 个生命周期 owner 已无 TaleWorlds 依赖，J07a 是纯 `git mv` 归位；真正要拆的是 `ShoutBehavior.cs:20081-20564` 的 484 行 `SubmitNativeConversationTextInternalAsync`（9 次主线程往返、1 次 `Task.Run` fork/join、4 次 `IsStale`、5 处回滚）和 `ApplyNativeConversationGameActions*`（82+53 行）。五个 `ShoutBehavior.Native*.cs` partial 合计 693 行边界已清晰。
+- **切片**：J07a Internal 归位（纯 rename，单独提交）→ J07b Native 阶段序列 owner（`NativeConversationTicket`/`AdmissionPolicy`/`StageSequencer`/`RollbackPolicy` 四个纯 owner，宿主方法体降到 ≤120 行）→ J07c 主动开场/关窗/失败文案固化。
+- **硬门槛**：不新增任何 SyncData key（`ShoutBehavior.SyncData:10851` 仍只有 `_sceneHeroRevisitDays_v1`）；`AfDialogueClient` 与 `ModuleNativeSubmission` 对外签名不变；Scene/Courier 会话链归 J10 不在本包；Native 十组既有 runner + 新增四套契约全绿；原脚本等价六项构建。
+- **15 条时序不变量**（票据只释放自己、capture 开始即必须接受、pending opening 在 busy 拒绝之后消费、`ConversationEnded` 才递增 epoch、已领取的主线程操作不可强制取消、提交只在主线程且异常即终态 unknown、仅 commit 前可 fallback、completion 校验捕获上下文而非当前槽……）已逐条落在计划文件第 5 节，附源码注释出处。
+
 <a id="j06-differential-green-20260919"></a>
 
 ## J06 接续：远端红测已修复，最终请求差分全绿；仍 VERIFY / NOT_ACCEPTED（2026-09-19）
