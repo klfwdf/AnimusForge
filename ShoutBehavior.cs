@@ -19573,10 +19573,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			catch (Exception ex) { return Task.FromException<NativeConversationGameActionResult>(ex); }
 		}
 		var tcs = new TaskCompletionSource<NativeConversationGameActionResult>(TaskCreationOptions.RunContinuationsAsynchronously);
-		int dispatchState = 0; // queued=0, claimed=1, cancelled before claim=2.
+		var dispatchClaim = new NativeConversationDispatchClaim();
 		IDisposable registration = _pendingMainThreadFunctions.Register(retirementVersion, () =>
 		{
-			if (Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+			if (dispatchClaim.TryExpireBeforeStart())
 				tcs.TrySetResult(new NativeConversationGameActionResult { ResponseDiscarded = true });
 		});
 		if (registration == null) return tcs.Task;
@@ -19584,7 +19584,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			_mainThreadActions.Enqueue(() =>
 			{
-				if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)
+				if (!dispatchClaim.TryStart())
 					return;
 				try { tcs.TrySetResult(dispatch()); }
 				catch (Exception ex) { tcs.TrySetException(ex); }
@@ -19594,7 +19594,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			// If a queue published before throwing, cancel its unclaimed callback. If already
 			// claimed, only that callback may settle the Task; do not overwrite its real result.
-			if (Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+			if (dispatchClaim.TryExpireBeforeStart())
 				tcs.TrySetException(new NativeConversationActionDispatchException(false, ex));
 			ObserveNativeActionDispatch("queue_exception", targetLog, targetAgentIndex, error: ex);
 			return AnimusForge.Refactor.Runtime.PendingOperationRegistry.AwaitRelease(tcs.Task, registration);
@@ -19612,7 +19612,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs, timeout.Token)).ConfigureAwait(false);
 					// Only a callback that has never claimed execution can expire. Once claimed,
 					// await its real outcome: a timer cannot roll back or safely repeat game actions.
-					if (winner != tcs.Task && Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+					if (winner != tcs.Task && dispatchClaim.TryExpireBeforeStart())
 					{
 						var cause = new TimeoutException("native.action_queue_not_consumed");
 						tcs.TrySetException(new NativeConversationActionDispatchException(false, cause, queueTimedOut: true));
