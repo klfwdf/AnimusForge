@@ -14,6 +14,7 @@
     <Compile Include="..\..\Refactor\Contracts\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
     <Compile Include="..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\ActionExecutionCommitter.cs" Link="Runtime\ActionExecutionCommitter.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Memory\Recovery\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
     <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />

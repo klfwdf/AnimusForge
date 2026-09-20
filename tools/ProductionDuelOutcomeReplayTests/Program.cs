@@ -439,8 +439,10 @@ internal static class Program
             projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"));
         string committer = File.ReadAllText(Path.Combine(
             projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"));
+        string actionCommitter = File.ReadAllText(Path.Combine(
+            projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "ActionExecutionCommitter.cs"));
         string executor = File.ReadAllText(Path.Combine(
-            projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs"));
+            projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs"));
         string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
         string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"));
         string shout = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
@@ -455,7 +457,7 @@ internal static class Program
         Require(contracts.Contains("internal interface IRequestBoundActionPlanExecutor", StringComparison.Ordinal)
                 && committer.Contains("BuildCanonicalRequestId(envelope)", StringComparison.Ordinal)
                 && committer.Contains("BuildCanonicalActionPlanFingerprint(result.ActionPlan)", StringComparison.Ordinal)
-                && committer.Contains("requestBound.ValidateAndExecute(", StringComparison.Ordinal),
+                && actionCommitter.Contains("requestBound.ValidateAndExecute(", StringComparison.Ordinal),
             "Commit reservation does not hand its canonical request/action identity to the internal executor seam.");
 
         string executeCore = ExtractMethod(executor, "private InteractionStatus ValidateAndExecuteCore(");
@@ -754,7 +756,8 @@ internal static class Program
             Path.Combine(projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"),
             Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"),
-            Path.Combine(projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs")
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "ActionExecutionCommitter.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs")
         };
         DateTimeOffset markerTime = marker.CreatedUtc.ToUniversalTime();
         foreach (string source in relevantSources)
