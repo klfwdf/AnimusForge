@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
-parser.add_argument("--mutate", choices=["drop-hero-main", "drop-hero-post", "drop-capture-fallback"])
+parser.add_argument("--mutate", choices=["drop-hero-main", "drop-hero-post", "drop-capture-fallback", "skip-worker-raw"])
 parser.add_argument("--emit-json", action="store_true")
 args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
@@ -145,6 +145,10 @@ for name in ("old", "current"):
         needle = "if (capture == null) detachedMatches = null;"
         assert methods.count(needle) == 1
         methods = methods.replace(needle, "if (capture == null) return new WorldEntityPromptContext();", 1)
+    if name == "current" and args.mutate == "skip-worker-raw":
+        needle = 'if (!string.IsNullOrWhiteSpace(latestInput) && CanContinueWorldEntityMatch("ruler_title_raw", budget))'
+        assert methods.count(needle) == 1, "worker raw branch anchor drift"
+        methods = methods.replace(needle, "if (false)", 1)
     detached = extract.declaration(source, "internal sealed class DetachedEntityCandidate\n") if name == "current" else ""
     detached_classes = "\n".join(extract.declaration(source, marker) for marker in (
         "internal sealed class DetachedEntityCandidates\n", "internal sealed class EntityCapture\n", "internal sealed class DetachedEntityMatches\n", "private sealed class RawRulerTitleMatchResult\n"
@@ -164,7 +168,11 @@ for name in ("old", "current"):
         print(name, result.stdout, result.stderr, sep="\n")
         raise SystemExit(result.returncode)
     outputs[name] = {line.split("=", 1)[0]: base64.b64decode(line.split("=", 1)[1], validate=True) for line in result.stdout.splitlines() if line.startswith("RESULT_")}
-assert outputs["old"] == outputs["current"] and set(outputs["old"]) == {"RESULT_direct_main", "RESULT_direct_post", "RESULT_direct_meta", "RESULT_title_main", "RESULT_title_post", "RESULT_title_meta"}, "entity Hero facts differ"
-print("PASS production Hero direct/title capture, matching, fallback and full entity context old/current byte parity")
+cases = ("direct", "title", "raw_only", "raw_qualified", "raw_ambiguous", "raw_long_title", "raw_distinct_titles", "raw_overrides_mentions")
+expected = {f"RESULT_{case}_{field}" for case in cases for field in ("main", "post", "meta")}
+assert set(outputs["old"]) == set(outputs["current"]) == expected, "entity differential scenarios missing"
+for key in sorted(expected):
+    assert outputs["old"][key] == outputs["current"][key], "entity Hero facts differ: " + key
+print("PASS production Hero capture/worker/fallback full text old/current byte parity: scenarios=8, fields=24, including raw-only/qualified/ambiguous/shadowed/override")
 if args.emit_json:
     print("EXPORT_JSON=" + json.dumps({side: {key: base64.b64encode(value).decode("ascii") for key, value in rows.items()} for side, rows in outputs.items()}, sort_keys=True))
