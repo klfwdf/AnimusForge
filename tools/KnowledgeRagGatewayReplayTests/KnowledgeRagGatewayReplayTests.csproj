@@ -17,4 +17,7 @@
   <ItemGroup>
     <Compile Include="..\..\src\modules\AF.Module.Llm\Transport\LlmNonStreamingTransport.cs" Link="Transport\LlmNonStreamingTransport.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\modules\AF.Module.Llm\Streaming\LlmStreamingTransport.cs" Link="Streaming\LlmStreamingTransport.cs" />
+  </ItemGroup>
 </Project>

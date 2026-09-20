@@ -1,0 +1,90 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+namespace AnimusForge;
+static class Check { internal static int Count; internal static void That(bool ok,string name){Count++;if(!ok)throw new Exception("ASSERT "+name);} }
+sealed class TrackedContent : StringContent
+{
+    internal bool Disposed; internal TrackedContent(string text,string media="text/event-stream"):base(text,Encoding.UTF8,media){}
+    protected override void Dispose(bool disposing){Disposed=true;base.Dispose(disposing);}
+}
+sealed class ThrowOnReadContent : HttpContent
+{
+    internal bool Disposed; protected override bool TryComputeLength(out long length){length=-1;return false;}
+    protected override Task SerializeToStreamAsync(Stream stream,TransportContext context)=>throw new Exception("body must not be read");
+    protected override Task<Stream> CreateContentReadStreamAsync()=>throw new Exception("body must not be read");
+    protected override void Dispose(bool disposing){Disposed=true;base.Dispose(disposing);}
+}
+sealed class FaultingContent : HttpContent
+{
+    readonly byte[] prefix;internal bool Disposed;internal FaultingContent(string text){prefix=Encoding.UTF8.GetBytes(text);Headers.ContentType=new MediaTypeHeaderValue("text/event-stream");}
+    protected override bool TryComputeLength(out long length){length=-1;return false;}
+    protected override Task SerializeToStreamAsync(Stream stream,TransportContext context)=>throw new NotSupportedException();
+    protected override Task<Stream> CreateContentReadStreamAsync()=>Task.FromResult<Stream>(new FaultStream(prefix));
+    protected override void Dispose(bool disposing){Disposed=true;base.Dispose(disposing);}
+}
+sealed class FaultStream : MemoryStream
+{
+    bool failed;internal FaultStream(byte[] bytes):base(bytes){}
+    public override int Read(byte[] buffer,int offset,int count){int n=base.Read(buffer,offset,count);if(n>0)return n;if(!failed){failed=true;throw new IOException("fixture read failure");}return 0;}
+    public override async Task<int> ReadAsync(byte[] buffer,int offset,int count,CancellationToken token){await Task.Yield();return Read(buffer,offset,count);}
+}
+static class Program
+{
+    static async Task Main()
+    {
+        string requestBody=null;bool close=false;TrackedContent successContent=new(
+            "event: ignored\n\n"+
+            "data: {\"choices\":[{\"delta\":{\"reasoning_content\":\"理由\"}}]}\n\n"+
+            "data: {\"choices\":[{\"delta\":{\"content\":\"🙂\"}}]}\n\n"+
+            "data: {\"choices\":[{\"delta\":{\"content\":\"完成\"}}]}\n\n"+
+            "data: [DONE]\n\n");
+        List<string> deltas=new();List<int> reads=new();
+        LlmStreamingResponse success=await LlmStreamingTransport.SendAsync(
+            "https://fixture.invalid/v1/chat/completions","secret","{\"stream\":true}",
+            async (request,token)=>{requestBody=await request.Content.ReadAsStringAsync();close=request.Headers.ConnectionClose==true;Check.That(request.Headers.Authorization?.Parameter=="secret","auth-at-send");return new HttpResponseMessage(HttpStatusCode.OK){Content=successContent};},
+            default,onReadStarted:reads.Add,acceptLine:(n,line)=>true,onDelta:d=>{if(!string.IsNullOrEmpty(d.Content))deltas.Add(d.Content);},connectionClose:true);
+        Check.That(success.Content=="🙂完成"&&success.Reasoning=="理由","unicode-and-reasoning");
+        Check.That(string.Concat(deltas)==success.Content,"delta-no-duplicate");
+        Check.That(success.RawStreamSample.Contains("[DONE]")==false&&success.RawStreamSample.Length<=12000,"bounded-raw-no-terminal");
+        Check.That(reads.Count>=4&&requestBody.Contains("stream")&&close,"request-and-read-order");
+        Check.That(successContent.Disposed,"success-response-disposed");
+
+        TrackedContent malformed=new("data: {broken\n\ndata: {\"choices\":[{\"delta\":{\"content\":\"仍可用\"}}]}\n\ndata: [DONE]\n\n");
+        int parseErrors=0;LlmStreamingResponse parsed=await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=malformed}),default,onParseError:(_,__)=>parseErrors++);
+        Check.That(parsed.ParseFailure&&parsed.Content=="仍可用"&&parseErrors==1,"parse-failure-isolated");Check.That(malformed.Disposed,"parse-response-disposed");
+
+        TrackedContent limited=new(string.Join("\n",System.Linq.Enumerable.Repeat("data: {\"choices\":[{\"delta\":{\"content\":\"abcdefghij\"}}]}",8))+"\ndata: [DONE]\n");
+        LlmStreamingResponse bounded=await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=limited}),default,rawSampleMaxChars:32);
+        Check.That(bounded.RawStreamSample.Length<=32&&bounded.Content.Length==80,"raw-bound-does-not-truncate-content");
+
+        TrackedContent rateContent=new("limited","application/json");var rateResponse=new HttpResponseMessage((HttpStatusCode)429){Content=rateContent};rateResponse.Headers.RetryAfter=new RetryConditionHeaderValue(TimeSpan.FromSeconds(9));
+        LlmStreamingResponse rate=await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(rateResponse),default);
+        Check.That(rate.StatusCode==(HttpStatusCode)429&&rate.ErrorBody=="limited"&&rate.RetryAfterSeconds==9,"http-metadata");Check.That(rateContent.Disposed,"error-response-disposed");
+
+        ThrowOnReadContent rejectedContent=new();int acceptedLines=0;
+        LlmStreamingResponse rejected=await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=rejectedContent}),default,acceptResponse:_=>false,onDelta:_=>acceptedLines++);
+        Check.That(rejected.Discarded&&acceptedLines==0&&rejectedContent.Disposed,"header-rejection-before-body");
+
+        TrackedContent lineContent=new("data: {\"choices\":[{\"delta\":{\"content\":\"禁止发布\"}}]}\n\ndata: [DONE]\n\n");
+        LlmStreamingResponse lineRejected=await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=lineContent}),default,acceptLine:(_,__)=>false,onDelta:_=>acceptedLines++);
+        Check.That(lineRejected.Discarded&&acceptedLines==0&&lineContent.Disposed,"line-rejection-before-delta");
+
+        TrackedContent observerContent=new("data: {\"choices\":[{\"delta\":{\"content\":\"观察不权威\"}}]}\n\ndata: [DONE]\n\n");
+        LlmStreamingResponse observer=await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=observerContent}),default,onDelta:_=>throw new Exception("observer"));
+        Check.That(observer.Content=="观察不权威"&&observerContent.Disposed,"observer-failure-isolated");
+
+        FaultingContent faultContent=new("data: {\"choices\":[{\"delta\":{\"content\":\"部分\"}}]}\n\n");Exception fault=null;try{await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=faultContent}),default);}catch(Exception e){fault=e;}
+        Check.That(fault is IOException&&fault.Data[LlmStreamingTransport.PartialRawDataKey]?.ToString().Contains("部分")==true,"partial-raw-on-original-exception");Check.That(faultContent.Disposed,"fault-response-disposed");
+
+        using CancellationTokenSource cancel=new();cancel.Cancel();TrackedContent cancelContent=new("data: [DONE]\n\n");bool cancelled=false;try{await LlmStreamingTransport.SendAsync("https://fixture.invalid","secret","{}",(_,__)=>Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK){Content=cancelContent}),cancel.Token,throwOnCancellationBeforeRead:true);}catch(OperationCanceledException){cancelled=true;}
+        Check.That(cancelled&&cancelContent.Disposed,"caller-cancellation-and-dispose");
+        Console.WriteLine("PASS StreamingTransport checks="+Check.Count+" actualOwner=true deterministicHttp=true provider=FAKE game=NOT_RUN");
+    }
+}
