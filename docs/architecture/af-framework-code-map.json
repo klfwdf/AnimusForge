@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "5dc1794726fa18d1fe2a04abc97d165dd321d368",
+  "sourceRevision": "1e1fdfad38d670cc93228618e283cc3fd0eff176",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -1751,7 +1751,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "原宿主保留真实非流式 SendAsync/DEBUG override；不是 policy owner",
-      "fileSha256": "3b3ef9f1ad2d51aefa79f8cedd979b0c36ca08c80fe6cda302fe36892519e3aa"
+      "fileSha256": "90fd2353be05d81d26d28053005c15ebf8d96103480fbaf1dd194bb9361a912c"
     },
     {
       "id": "llm.host.send-stream",
@@ -1762,7 +1762,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "原宿主保留真实流式 SendAsync/DEBUG override；不是 policy owner",
-      "fileSha256": "3b3ef9f1ad2d51aefa79f8cedd979b0c36ca08c80fe6cda302fe36892519e3aa"
+      "fileSha256": "90fd2353be05d81d26d28053005c15ebf8d96103480fbaf1dd194bb9361a912c"
     },
     {
       "id": "llm.host.normalized-tail-log",
@@ -1773,7 +1773,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "旧宿主日志与消息尾部统计，调用新 policy；不视作全类提取",
-      "fileSha256": "3b3ef9f1ad2d51aefa79f8cedd979b0c36ca08c80fe6cda302fe36892519e3aa"
+      "fileSha256": "90fd2353be05d81d26d28053005c15ebf8d96103480fbaf1dd194bb9361a912c"
     },
     {
       "id": "llm.host.call-nonstream",
@@ -1784,18 +1784,18 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "原宿主普通请求/重试/取消/配置/统计保留，13 调用中的非流分支已接新 policy",
-      "fileSha256": "3b3ef9f1ad2d51aefa79f8cedd979b0c36ca08c80fe6cda302fe36892519e3aa"
+      "fileSha256": "90fd2353be05d81d26d28053005c15ebf8d96103480fbaf1dd194bb9361a912c"
     },
     {
       "id": "llm.host.call-stream",
       "path": "ShoutNetwork.cs",
       "start": 886,
-      "end": 1345,
+      "end": 1305,
       "symbol": "public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)",
       "match": "exact",
       "status": "mixed-host",
       "note": "原宿主 SSE/回调/重试/取消/姓名过滤保留，非三渠道完成",
-      "fileSha256": "3b3ef9f1ad2d51aefa79f8cedd979b0c36ca08c80fe6cda302fe36892519e3aa"
+      "fileSha256": "90fd2353be05d81d26d28053005c15ebf8d96103480fbaf1dd194bb9361a912c"
     },
     {
       "id": "framework.directory.lifecycle.owner",
@@ -3456,18 +3456,73 @@
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "真实主对话 consumer 已用统一 HTTP owner；重试/UI/诊断编排仍保留，未标整个类迁完",
-      "fileSha256": "3b3ef9f1ad2d51aefa79f8cedd979b0c36ca08c80fe6cda302fe36892519e3aa"
+      "fileSha256": "90fd2353be05d81d26d28053005c15ebf8d96103480fbaf1dd194bb9361a912c"
     },
     {
       "id": "llm.configured.nonstream",
       "path": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
-      "start": 647,
-      "end": 665,
+      "start": 569,
+      "end": 587,
       "symbol": "private static LlmGenerateResult CreateHttpFailureResult(int statusCode, int? retryAfterSeconds)",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "非流/流的 HTTP 失败分类共用；公开 Gateway ABI 不变",
-      "fileSha256": "ab4030d60b1ef02483b4c91425e4c1d70fbe2181ba3af62569430c83a30dd5dc"
+      "fileSha256": "278075eaf29aa47a11e3642fe6d6aa405166784c9f0d4470655175111b0664a3"
+    },
+    {
+      "id": "llm.http.streaming",
+      "path": "src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs",
+      "start": 40,
+      "end": 149,
+      "symbol": "internal static async Task<LlmStreamingResponse> SendAsync(",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "单 attempt SSE/auth/read/resource owner；retry/visible policy留调用者",
+      "fileSha256": "10c3d97634525d5b945afea925088d7f07cb1cda6335709b5ed211659af44b28"
+    },
+    {
+      "id": "llm.primary.streaming",
+      "path": "ShoutNetwork.cs",
+      "start": 886,
+      "end": 1303,
+      "symbol": "public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "Primary 实际消费者；thinking/empty/UI/partial policy adapter，已发布部分禁止重放",
+      "fileSha256": "90fd2353be05d81d26d28053005c15ebf8d96103480fbaf1dd194bb9361a912c"
+    },
+    {
+      "id": "llm.configured.streaming",
+      "path": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+      "start": 523,
+      "end": 523,
+      "symbol": "LlmStreamingResponse streamResult = await LlmStreamingTransport.SendAsync(",
+      "match": "contains",
+      "status": "wired-offline-verified",
+      "note": "Configured 实际 consumer，共享 SSE owner，typed status/metadata保留",
+      "fileSha256": "278075eaf29aa47a11e3642fe6d6aa405166784c9f0d4470655175111b0664a3"
+    },
+    {
+      "id": "llm.model.catalog",
+      "path": "src/modules/AF.Module.Llm/ModelCatalog/LegacyModelCatalogGateway.cs",
+      "start": 141,
+      "end": 264,
+      "symbol": "public sealed class LegacyModelCatalogGateway",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "GET models 传输 owner，解析/排序/UI/stale留调用者",
+      "fileSha256": "b50015acbf2f01a029b06d004bedc99cd0a46b3efe9918281970d54069bf9c34"
+    },
+    {
+      "id": "llm.tts.gateway",
+      "path": "src/modules/AF.Module.Llm/Tts/LegacyVolcTtsGateway.cs",
+      "start": 16,
+      "end": 107,
+      "symbol": "public sealed class LegacyVolcTtsGateway : ITtsGateway",
+      "match": "exact",
+      "status": "wired-offline-verified",
+      "note": "TTS network/bytes owner，voice/game playback仍归 TtsEngine",
+      "fileSha256": "aa94a683f7bdc923a6703c8a6bc8a7d79ac313aca2577c8aaa2c1bec2c91cdcc"
     }
   ]
 }
