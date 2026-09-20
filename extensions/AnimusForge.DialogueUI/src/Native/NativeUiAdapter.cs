@@ -224,7 +224,7 @@ public static class NativeUiAdapter
         private readonly long _initializeAfterTick;
         private readonly List<Widget> _buttons = new();
         private readonly Widget _paintSlot;
-        private readonly Widget _paint;
+        private Widget _paint;
         internal OverlayLayout(Widget root, AnimusForgeNativeConversationOverlayVM original)
         {
             Root = root; Original = original; Mission = Mission.Current;
@@ -237,22 +237,36 @@ public static class NativeUiAdapter
                 if (button != null)
                 {
                     _buttons.Add(button);
-                    if ((id == "AFDialogueHistory" || id == "AFDialogueGift" || id == "AFDialogueMore") && button is ButtonWidget round)
+                    try
                     {
-                        DialogueUiButtons.Style(round);
-                        StyleRoundLabel(round);
+                        if ((id == "AFDialogueHistory" || id == "AFDialogueGift" || id == "AFDialogueMore") && button is ButtonWidget round)
+                        {
+                            DialogueUiButtons.Style(round);
+                            StyleRoundLabel(round);
+                        }
+                        if (id == "AFDialogueSubmit" && button is ButtonWidget submit) StyleSubmitSeal(submit);
                     }
-                    if (id == "AFDialogueSubmit" && button is ButtonWidget submit) StyleSubmitSeal(submit);
+                    catch (Exception ex)
+                    {
+                        DialogueUiRuntime.Log($"Failed styling button '{id}': {ex.Message}");
+                    }
                 }
             }
             // Illustrator's existing command is retained; never call an alternative generation path.
-            Widget paint = root.FindChild("AnimusForgeConversationIllustrateButton", true);
-            Widget slot = root.FindChild("AFDialoguePaintSlot", true);
-            _paint = paint; _paintSlot = slot;
-            if (slot != null) slot.IsVisible = paint != null && paint.IsVisible;
-            if (paint != null && slot != null)
+            _paintSlot = root.FindChild("AFDialoguePaintSlot", true);
+            TryAdoptIllustratorButton();
+        }
+
+        private void TryAdoptIllustratorButton()
+        {
+            if (_paint != null || _paintSlot == null) return;
+            Widget paint = Root.FindChild("AnimusForgeConversationIllustrateButton", true);
+            if (paint == null) return;
+            _paint = paint;
+            _paintSlot.IsVisible = paint.IsVisible;
+            try
             {
-                paint.ParentWidget = slot;
+                paint.ParentWidget = _paintSlot;
                 ResetBox(paint);
                 paint.WidthSizePolicy = SizePolicy.Fixed; paint.SuggestedWidth = 64;
                 paint.HeightSizePolicy = SizePolicy.Fixed; paint.SuggestedHeight = 64;
@@ -271,9 +285,14 @@ public static class NativeUiAdapter
                         text.WidthSizePolicy = SizePolicy.StretchToParent;
                         text.HeightSizePolicy = SizePolicy.StretchToParent;
                     }
-                _buttons.Add(paint);
+                if (!_buttons.Contains(paint)) _buttons.Add(paint);
+            }
+            catch (Exception ex)
+            {
+                DialogueUiRuntime.Log("Failed to adapt Illustrator button: " + ex.Message);
             }
         }
+
         private static void StyleRoundLabel(ButtonWidget button)
         {
             foreach (Widget child in Descendants(button))
@@ -285,22 +304,53 @@ public static class NativeUiAdapter
         }
         private static void StyleSubmitSeal(ButtonWidget button)
         {
-            var seal = DialogueUiSprites.Get("afdui_wax_seal");
-            var brush = new Brush { Name = "AFDialogue.SubmitSeal", Sprite = seal, TransitionDuration = 0.08f };
-            foreach (string state in new[] { "Hovered", "Pressed", "Selected", "Disabled" })
+            if (button == null) return;
+            try
             {
-                var style = new Style(brush.Layers);
-                style.FillFrom(brush.DefaultStyle);
-                style.Name = state;
-                style.DefaultLayer.Sprite = seal;
-                style.DefaultLayer.AlphaFactor = state == "Disabled" ? 0.40f : state == "Pressed" ? 0.78f : 1f;
-                brush.AddStyle(style);
+                var seal = DialogueUiSprites.Get("afdui_wax_seal");
+                if (seal != null)
+                {
+                    Brush brush = button.Brush?.Clone()
+                        ?? button.Context.GetBrush("Popup.Done.Button.NineGrid")?.Clone()
+                        ?? button.Context.GetBrush("ButtonBrush2")?.Clone();
+                    if (brush != null)
+                    {
+                        brush.Name = "AFDialogue.SubmitSeal";
+                        brush.TransitionDuration = 0.08f;
+                        SetBrushStateSprite(brush, "Default", seal, 1f);
+                        SetBrushStateSprite(brush, "Hovered", seal, 1f);
+                        SetBrushStateSprite(brush, "Pressed", seal, 0.78f);
+                        SetBrushStateSprite(brush, "Selected", seal, 1f);
+                        SetBrushStateSprite(brush, "Disabled", seal, 0.40f);
+                        button.Brush = brush;
+                    }
+                }
             }
-            button.Brush = brush;
+            catch (Exception ex)
+            {
+                DialogueUiRuntime.Log("Failed to style submit seal: " + ex.Message);
+            }
             button.DoNotPassEventsToChildren = true;
             button.UpdateChildrenStates = true;
             StyleRoundLabel(button);
         }
+
+        private static void SetBrushStateSprite(Brush brush, string stateName, Sprite sprite, float alpha)
+        {
+            if (brush == null || sprite == null) return;
+            Style style = brush.GetStyle(stateName);
+            if (style?.DefaultLayer != null)
+            {
+                style.DefaultLayer.Sprite = sprite;
+                style.DefaultLayer.AlphaFactor = alpha;
+            }
+            else if (stateName == "Default" && brush.DefaultStyleLayer != null)
+            {
+                brush.DefaultStyleLayer.Sprite = sprite;
+                brush.DefaultStyleLayer.AlphaFactor = alpha;
+            }
+        }
+
         internal void Tick()
         {
             if (!_state.DefaultAiHandled && _uiTick >= _initializeAfterTick && ReferenceEquals(_overlay, this) &&
@@ -311,6 +361,7 @@ public static class NativeUiAdapter
                 _state.DefaultAiHandled = true;
                 if (!Original.IsCustomAnswerVisible) Original.SwitchTalk();
             }
+            if (_paint == null) TryAdoptIllustratorButton();
             if (_paintSlot != null) _paintSlot.IsVisible = _paint != null && _paint.IsVisible;
         }
         internal bool HitTest()
@@ -338,14 +389,15 @@ public static class NativeUiAdapter
         private readonly HashSet<Widget> _captured = new();
         private readonly HashSet<Widget> _pendingOptions = new();
         private readonly ListPanel _answers;
+        private readonly bool _captureOnly;
         private Widget _panel;
         private ImageIdentifierWidget _portrait;
         private CharacterObject _character;
         private Agent _speakerAgent;
         private CharacterImageIdentifierVM _portraitVm;
         private bool _disposed;
-        private NativeLayout(Widget root, MissionConversationVM source, ListPanel answers)
-        { Root = root; Source = source; Mission = Mission.Current; _answers = answers; }
+        private NativeLayout(Widget root, MissionConversationVM source, ListPanel answers, bool captureOnly = false)
+        { Root = root; Source = source; Mission = Mission.Current; _answers = answers; _captureOnly = captureOnly; }
 
         internal static NativeLayout TryCreate(Widget root, MissionConversationVM source)
         {
@@ -361,9 +413,14 @@ public static class NativeUiAdapter
             Widget next = root.FindChild("ContinueButton", true);
             if (root is not ConversationScreenButtonWidget || answers == null || dialogue == null || options == null || name == null || next == null)
             { DialogueUiRuntime.Log("SPConversation controls unavailable; original layout retained."); return null; }
-            var layout = new NativeLayout(root, source, answers);
-            try { layout.Build(dialogue, options, name, next); return layout; }
-            catch { layout.Dispose(); throw; }
+            // Keep the vanilla SPConversation widget tree intact. Its navigation scopes
+            // retain parent/target relationships that the gamepad navigation manager
+            // traverses outside this module. Reparenting those widgets at runtime can
+            // leave a stale scope node behind and crash the next navigation update.
+            // The AI overlay only needs the live MissionConversationVM identity for
+            // ownership/lifecycle checks, so capture it without touching the tree.
+            DialogueUiRuntime.Log("SPConversation captured; vanilla layout retained for navigation safety.");
+            return new NativeLayout(root, source, answers, captureOnly: true);
         }
         private void Remember(Widget widget) { if (widget != null && _captured.Add(widget)) _changes.Add(new WidgetSnapshot(widget)); }
         private void Move(Widget widget, Widget parent)
