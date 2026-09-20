@@ -1,8 +1,8 @@
 # J09 Actions / 事实提交实施计划
 
-> 状态：`IN_PROGRESS`（J09a–J09c 已闭合；J09d 三渠道默认/兼容接线进行中）  
-> 依赖：J07、J08 已完成必要离线验收。  
-> 启动基线：`5a2df9d64485cea03f4a069afda55c2f348968bc`；当前产品提交以 Git/HANDOFF 为准。  
+> 状态：`IN_PROGRESS`（J09a–J09c 已闭合；J09d 三渠道默认/兼容接线进行中）
+> 依赖：J07、J08 已完成必要离线验收。
+> 启动基线：`5a2df9d64485cea03f4a069afda55c2f348968bc`；当前产品提交以 Git/HANDOFF 为准。
 > 本文只授权 J09 的标签、ActionPlan、执行接缝和回执重构；不授权 J10 渠道状态机、J11 制作组玩法、J12/J13 领域玩法、J14 新公开提交能力、部署或默认切换。
 
 ## 0. 当前施工回执（2026-09-21）
@@ -16,7 +16,7 @@
 | J09d default/compat | IN_PROGRESS | 默认 Native/Scene/Courier 的旧直接动作尾仍需按渠道逐一改接，且必须保留 Native completion、Scene relay/speech/GCCZ 相对顺序、Courier 到达时点；不能为追求统一而重复历史/AFEF或偷改 J10 状态机 |
 | J09e | NOT_STARTED | 默认接线完成后再做重复执行路径清理、有效变异、Release/公共 API/存档/代码地图整包验收 |
 
-本轮已通过：ActionProtocol 14 项及 5 个有效变异；InteractionPipeline、Economy、Duel、Courier/Channel 边界相关回归；最新 shared-core 候选 Debug 1.3/1.4/Bootstrap 均 0 warning / 0 error。真实 Campaign/Mission、旧档、live Economy/外交/provider 仍为 `NOT-RUN`。
+本轮已通过：ActionProtocol 14 项及 5 个有效变异；InteractionPipeline、Economy、Duel、CourierCommitOutcome 34/0、ChannelCutover 132/0 + extraction 14/14；最新 shared-core 候选 Debug 1.3/1.4/Bootstrap 均 0 warning / 0 error。真实 Campaign/Mission、旧档、live Economy/外交/provider 仍为 `NOT-RUN`。
 
 ## 1. 目标与完成定义
 
