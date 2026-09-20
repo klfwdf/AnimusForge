@@ -940,6 +940,7 @@ Console.WriteLine("PASS interactionPipeline cases=40 immutableSnapshot=true conf
 
 await DetachedHostCommitBoundaryTests.RunAsync();
 InteractionCommitReceiptTests.Run();
+LegacyChannelActionCommitterTests.Run();
 await AsyncInteractionOwnerTests.RunAsync();
 LegacyAnonymousPromptTests.Run();
 
