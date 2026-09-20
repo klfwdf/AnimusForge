@@ -16,7 +16,8 @@
 | J10a3.2 Scene speech queue lifetime | DONE | `2631f33c`：`SceneSpeechQueueOwner<T>` 唯一持有 FIFO、单 worker lease、clear/reset/空队列退休与无阻塞诊断快照；payload/TTS/历史/动作继续归 host。6 场景与 duplicate-worker/never-retire/reset 3 个有效变异、Scene Queue 37+7 变异、request lifetime、默认 wiring、Debug 双 API/Bootstrap 通过 |
 | J10a4 Scene group/relay/passive/reaction | DONE | `c1f5aa6a`/`cbf7f453`：21 个真实声明（group Prompt、passive、两个 group handler、完整 immediate reaction reservation→completion）原实现迁入 `ShoutBehavior.SceneConversationChains.cs`；生产调用不变。ChannelCutover 132、源码提取 14、ProductionConsumers 正常与 3 个有效变异、Scene parity 71、request lifetime 30、Debug 双 API/Bootstrap 通过 |
 | J10a Scene 整包 | OFFLINE_VERIFIED | live Agent/interaction timeout、TTS/audio、movement、History/Memory/动作副作用保留 host adapter；这是有意的游戏线程边界，不再按主类行数继续拆。LIVE/音频/帧成本仍 NOT-RUN |
-| J10b / J10c | NOT STARTED | Courier 会话 owner 与最终整包验收尚未施工 |
+| J10b1 Courier prompt-run/session | DONE | `bdf58283`：现有 `PromptPreparation`/`PromptSchedule` 100% 原内容归位 `Channels/Courier`，真实 start reservation、source/generation/session/participant 逐跳复核及 owner phases 不变。Prompt 550/76、liveness 59/16、4 个有效变异、BuildPhases、ProductionConsumers、Phase8 inventory、Debug 双 API/Bootstrap 通过 |
+| J10b2 / J10c | IN PROGRESS | transport/pregeneration/arrival/delivery/letter/inbound/retry owner 和最终整包验收尚未完成 |
 
 `TeamModulePortParityTests` 本轮未计通过：运行在进入 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的依赖 hash 漂移阻断；相关文件本轮未修改，未刷新 hash 绕过。LIVE/SAVE/provider/音频/真实帧成本仍 `NOT-RUN`。
 
@@ -70,7 +71,7 @@ J10 只在以下条件全部满足后标记 `J10_OFFLINE_VERIFIED`：
 
 ### J10b：Courier
 
-1. 先归位 prompt-run/session reservation，保留 `ConditionalWeakTable` 所有权和 source-change 语义。
+1. 先归位 prompt-run/session reservation，保留 `ConditionalWeakTable` 所有权和 source-change 语义。**已由 `bdf58283` 完成。**
 2. 分离预生成候选与到达/回复提交；把 transport、arrival、letter/inbound、retry 的 session identity 接到同一 owner。
 3. 删除仅在替代实现已接线且无 ABI/反射/Harmony/存档责任的旧路径；保留项列理由。
 
