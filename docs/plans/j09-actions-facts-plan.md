@@ -60,7 +60,7 @@ J09 要把三渠道共用的动作协议收敛为一条清晰责任链：
 | 唯一提交边界 | `src/modules/AF.Module.Actions/Receipts/{ActionExecutionCommitter,InteractionResultCommitter}.cs` | 动作终态和可见历史/confirmed facts 已分开；owner-started 异常为 unknown 且不可重试 |
 | 幂等票据 | `src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs` | reservation 只能由自己完成；冲突 fingerprint fail closed；终态缓存有界 |
 | Native 接缝 | `ShoutBehavior.CreateNativeConversationActionPlanExecutorForExternal`、`ShoutBehavior.NativeActionDispatch.cs` | 保留主线程、当前目标复核、异常 owner-started 语义 |
-| Scene 接缝 | `ShoutBehavior.ScenePostprocess.cs`、`CreateSceneShoutActionPlanExecutorForExternal` | 保留统一后处理 work item、先正文后动作、直接场景/GCCZ 特例和会话代际；J10 的接力/旁听/距离不在本包改写 |
+| Scene 接缝 | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs`、`CreateSceneShoutActionPlanExecutorForExternal` | 保留统一后处理 work item、先正文后动作、直接场景/GCCZ 特例和会话代际；J10 的接力/旁听/距离不在本包改写 |
 | Courier 接缝 | `CourierDeliveryBehavior.DetachedPostprocess.cs`、`CreateCourierReplyActionPlanExecutorForExternal` | 已使用 detached parser；提交仍必须发生在正确到达/回复阶段，不能提前到预生成；完整运输状态机留 J10 |
 | 领域回执 | `Refactor/Runtime/*OutcomeReceipt.cs` 及 Economy/Duel/Weekly/Notoriety 接口 | J09 只统一终态词汇和通用接缝；带存档/领域生命周期的 receipt 暂留原 owner，后续 J12/J13 再物理归位 |
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "2a1fc124c5cbfb12dee4b298818d160ab72ca7f7",
+  "sourceRevision": "76b5a42958765d24695697bbf9c9e1978be84d6c",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -280,14 +280,25 @@
       "fileSha256": "bc552477b450efac43a96c8d028d395de1861fc4737d31b1b6c15396d08feee3"
     },
     {
+      "id": "scene.audience.scope",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/SceneShoutConversationScope.cs",
+      "start": 161,
+      "end": 161,
+      "symbol": "internal sealed class SceneShoutConversationScope",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "immutable Mission/epoch/audience identity owner consumed by the live Scene group/relay path",
+      "fileSha256": "c6dc27074b9c8886b881e369e276cd078ccffc46e59ebf880114be89b746f64f"
+    },
+    {
       "id": "scene.postprocess",
-      "path": "ShoutBehavior.ScenePostprocess.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
       "start": 26,
       "end": 29,
       "symbol": "private sealed class SceneActionPostprocessWorkItem",
       "match": "exact",
-      "status": "mixed-host",
-      "note": "已有完整后处理；非本次重写 Scene 业务",
+      "status": "wired-j10-candidate",
+      "note": "live Scene postprocess/queue/completion partial relocated under the channel owner path; behavior unchanged",
       "fileSha256": "a74385eedc3e4c4eaa6109ea619405f673227d7ed207d08d3799c266ba24e504"
     },
     {
@@ -3658,7 +3669,7 @@
     },
     {
       "id": "actions.default.scene",
-      "path": "ShoutBehavior.ScenePostprocess.cs",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
       "start": 482,
       "end": 482,
       "symbol": "private bool CommitDeferredSceneActionPlan(",

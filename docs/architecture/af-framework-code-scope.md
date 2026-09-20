@@ -1,6 +1,14 @@
+# 当前 J10 Scene 渠道 owner 归位进行中（2026-09-21）
+
+J10 计划提交 `2c6530f8`；Scene audience scope `03c08ac9`、postprocess/queue/completion partial `76b5a429` 已归位 `src/modules/AF.Module.Conversation/Channels/Scene`，namespace、可见性和产品算法不变，真实 `ShoutBehavior` 消费者仍唯一。新增 scope 契约及 3 个有效变异，Scene parity/queue/request lifetime、默认 action wiring、NativeTurn、GiveAsset、Bridge 和 Debug 双 API+Bootstrap 通过。当前代码地图绑定 `76b5a429`，共 335 锚点。
+
+**尚未完成**：group/relay/passive/reaction 的会话身份、玩家输入去重、pending AFEF 和 speech queue 状态仍有混合责任；Courier 尚未开工；因此状态仍为 `J10_IN_PROGRESS`。真实 Campaign/Mission、旧档、provider、音频和帧成本 `NOT-RUN`。详细回执见[主台账 J10 节](../animusforge-refactoring-and-repository-reorganization-plan.md#j10-scene-owners-20260921)。
+
+## 以下历史范围以上方更新为准
+
 # 当前 J09 Actions / 事实提交范围（2026-09-21）
 
-J09 已完成必要离线验收：共享 owner 位于 `src/modules/AF.Module.Actions/{Tags,Plan,Execute,Receipts}`；默认 Native、Scene、Courier 只通过 action-only compatibility boundary 调回各自 live domain core，历史/AFEF 仍由原渠道或 detached `InteractionResultCommitter` 唯一提交。精确符号和一基行号见同目录 `af-framework-code-map.json` 的 `actions.*` 12 个新增锚点；当前地图共 334 锚点。完整结果、回滚和 NOT-RUN 边界见[主台账 J09 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j09-offline-verified-20260921)。
+J09 已完成必要离线验收：共享 owner 位于 `src/modules/AF.Module.Actions/{Tags,Plan,Execute,Receipts}`；默认 Native、Scene、Courier 只通过 action-only compatibility boundary 调回各自 live domain core，历史/AFEF 仍由原渠道或 detached `InteractionResultCommitter` 唯一提交。精确符号和一基行号见同目录 `af-framework-code-map.json` 的 `actions.*` 新增锚点；完整结果、回滚和 NOT-RUN 边界见[主台账 J09 回执](../animusforge-refactoring-and-repository-reorganization-plan.md#j09-offline-verified-20260921)。
 
 保留边界：`InteractionContracts.cs` 的 Action DTO/port 为稳定契约；Economy/Duel 已有 typed port，其他领域继续走受审 legacy adapter，后续 J12/J13 才按领域归位。Scene group/relay/passive/reaction 与 Courier transport/retry/session 属 J10；Policy/Gathering/GCCZ 玩法不在 J09 搬迁。真实游戏、旧档、live Economy/外交/provider/音频/帧成本仍 `NOT-RUN`。
 
@@ -383,7 +391,7 @@ Courier最终commit调度从大类迁入CourierDeliveryBehavior.CommitDispatch.c
 | `memory.summary.accept` | `MyBehavior.cs:4961-4964` | `if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++;` — 源重验紧接真实Apply；部分/未知错误通知，不盲重放或假报成功 | `mixed-host` |
 | `legacy.history` | `MyBehavior.cs:27835-27838` | `public static string BuildHistoryContextForExternal(` — Scene/Courier 仍调用，共享兼容入口不能盲删 | `retained-live` |
 | `legacy.recall` | `MyBehavior.cs:33841-33844` | `private string BuildCompressedMemoryContextById(` — snapshot 和默认旧调用共用原算法 | `mixed-host` |
-| `scene.postprocess` | `ShoutBehavior.ScenePostprocess.cs:25-28` | `private sealed class SceneActionPostprocessWorkItem` — 已有完整后处理；非本次重写 Scene 业务 | `mixed-host` |
+| `scene.postprocess` | `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs:25-28` | `private sealed class SceneActionPostprocessWorkItem` — 已有完整后处理；J10 将真实队列/完成 owner 归入 Scene 渠道目录，玩法不重写 | `wired-j10-candidate` |
 | `courier.prepare.reply` | `CourierDeliveryBehavior.cs:4674-4677` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(recipient,` — 回信早期准备待线程审查，未迁快照 | `retained-live` |
 | `courier.prepare.inbound` | `CourierDeliveryBehavior.cs:5102-5105` | `string historyText = (MyBehavior.BuildHistoryContextForExternal(sender,` — 来信早期准备待线程审查，未迁快照 | `retained-live` |
 | `memory.summary.capture` | `MyBehavior.MemorySummaryInput.cs:252-255` | `private MemorySummaryInput CaptureMemorySummaryInput(` — 三类唯一初捕获/复制/原Build，raw与effective context分离；首次绑定检查，深记录原子成本仍未收口 | `mixed-host` |
