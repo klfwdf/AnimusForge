@@ -4,6 +4,18 @@
 > 依赖：J07、J08、J09 已完成必要离线验收；启动基线 `d1709717`。
 > 本文只授权 Scene/Courier 渠道会话 owner、生命周期和提交时点的整理；不授权 J11–J14、制作组玩法、公开 API 开放、默认切换、部署或存档迁移。
 
+## 0. 当前施工回执
+
+| 包 | 状态 | 产品提交 / 证据 |
+| --- | --- | --- |
+| G0 / 计划 | DONE | `2c6530f8`：有限责任矩阵、退出门和非目标已冻结，不再按主类行数或相似测试兜圈 |
+| J10a1 Scene audience scope | DONE | `03c08ac9`：`SceneShoutConversationScope` 100% 原内容归位 Scene 渠道；实时 `ShoutBehavior` group/relay 消费不变；5 个正常/失败场景与 epoch、Agent-reference、origin-merge 3 个有效变异通过 |
+| J10a3.1 Scene postprocess/relay completion 归位 | DONE | `76b5a429`：现有唯一 postprocess/queue/completion partial 100% 原内容归位 Scene 渠道；真实消费者、Phase8 manifest、路径型测试同步。Scene parity 71、Queue 37、5+7 个有效变异、request lifetime 30+7、默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过；Debug 1.3/1.4/Bootstrap 各 0 warning/0 error |
+| J10a2 / J10a3 剩余 | IN PROGRESS | group/relay/passive/reaction 会话身份、玩家输入去重、pending AFEF、speech queue 状态仍有部分字段/算法在 `ShoutBehavior.cs`，不能因 partial 已归位宣称 Scene 完成 |
+| J10b / J10c | NOT STARTED | Courier 会话 owner 与最终整包验收尚未施工 |
+
+`TeamModulePortParityTests` 本轮未计通过：运行在进入 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的依赖 hash 漂移阻断；相关文件本轮未修改，未刷新 hash 绕过。LIVE/SAVE/provider/音频/真实帧成本仍 `NOT-RUN`。
+
 ## 1. 完成定义
 
 J10 只在以下条件全部满足后标记 `J10_OFFLINE_VERIFIED`：
