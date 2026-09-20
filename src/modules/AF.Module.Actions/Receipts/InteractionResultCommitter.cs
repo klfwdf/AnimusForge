@@ -233,139 +233,57 @@ public sealed class InteractionResultCommitter
         IInteractionMemory memory, bool appendPlayerInput, string requestId,
         string actionFingerprint, bool hasActions)
     {
-        InteractionStatus actionStatus = InteractionStatus.Succeeded;
+        ActionExecutionCommitResult execution = ActionExecutionCommitResult.NoActions();
         if (hasActions)
         {
-            try
+            execution = ActionExecutionCommitter.Execute(
+                result.ActionPlan,
+                envelope.Snapshot,
+                actionExecutor,
+                requestId,
+                actionFingerprint);
+            if (execution.Status != InteractionStatus.Executed)
             {
-                actionStatus = actionExecutor is IRequestBoundActionPlanExecutor requestBound
-                    ? requestBound.ValidateAndExecute(
-                        result.ActionPlan,
-                        envelope.Snapshot,
-                        requestId,
-                        actionFingerprint)
-                    : actionExecutor.ValidateAndExecute(result.ActionPlan, envelope.Snapshot);
-            }
-            catch
-            {
-                // A throwing owner may already have mutated state. Retain a
-                // terminal unknown receipt rather than treating this as safe
-                // to retry or inventing an action fact.
-                MemoryCommitResult unknownMemory = TryAppendVisibleExchange(
+                string receiptKind = execution.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                    ? "unknown-action"
+                    : execution.ActionsExecuted
+                        ? "partial-action"
+                        : "rejected-action";
+                MemoryCommitResult terminalMemory = TryAppendVisibleExchange(
                     envelope,
                     result,
                     memory,
                     appendPlayerInput,
                     requestId,
-                    Array.Empty<FactRecord>(),
-                    "unknown-action");
-                string unknownError = "action_executor_exception";
-                if (!unknownMemory.HistoryWritten)
+                    execution.ConfirmedFacts,
+                    receiptKind);
+                string terminalError = execution.ErrorCode;
+                if (!terminalMemory.HistoryWritten)
                 {
-                    unknownError += ":" + (string.IsNullOrWhiteSpace(unknownMemory.ErrorCode)
+                    string memoryError = string.IsNullOrWhiteSpace(terminalMemory.ErrorCode)
                         ? "memory_commit_failed"
-                        : unknownMemory.ErrorCode);
+                        : terminalMemory.ErrorCode;
+                    terminalError = execution.ActionsExecuted
+                        || execution.EffectState == ActionExecutionEffectState.UnknownAfterStart
+                            ? terminalError + ":" + memoryError
+                            : memoryError;
                 }
                 return new InteractionCommitResult(
-                    InteractionStatus.NonRetryableFailure,
-                    unknownMemory.HistoryWritten,
-                    false,
-                    unknownError,
-                    ActionExecutionEffectState.UnknownAfterStart,
-                    TryReadDuelDispatchReceipt(actionExecutor));
-            }
-            if (actionStatus != InteractionStatus.Executed)
-            {
-                DetachedDuelDispatchReceipt duelDispatch =
-                    (actionExecutor as IDetachedDuelDispatchExecutionReceipt)
-                        ?.DuelDispatchReceipt
-                        ?.Clone();
-                if (actionExecutor is IActionPlanExecutionOutcomeReceipt partialOutcome)
-                {
-                    ActionExecutionEffectState effectState =
-                        actionExecutor is IActionPlanExecutionEffectReceipt effectReceipt
-                            ? effectReceipt.EffectState
-                            : partialOutcome.AppliedActionCount > 0
-                                ? ActionExecutionEffectState.ConfirmedEffect
-                                : ActionExecutionEffectState.NoConfirmedEffect;
-                    bool terminalOutcome = partialOutcome.AppliedActionCount > 0
-                        || effectState == ActionExecutionEffectState.UnknownAfterStart
-                        || duelDispatch?.State == DetachedDuelDispatchState.Queued
-                        || duelDispatch?.State == DetachedDuelDispatchState.Started
-                        || duelDispatch?.State == DetachedDuelDispatchState.UnknownAfterStart;
-                    if (terminalOutcome)
-                    {
-                        IEnumerable<FactRecord> partialFacts = partialOutcome.AppliedActionCount > 0
-                            ? partialOutcome.ConfirmedFacts ?? Array.Empty<FactRecord>()
-                            : Array.Empty<FactRecord>();
-                        MemoryCommitResult partialMemory = TryAppendVisibleExchange(
-                            envelope,
-                            result,
-                            memory,
-                            appendPlayerInput,
-                            requestId,
-                            partialFacts,
-                            effectState == ActionExecutionEffectState.UnknownAfterStart
-                                ? "unknown-action"
-                                : "partial-action");
-                        string partialError = string.IsNullOrWhiteSpace(partialOutcome.ExecutionErrorCode)
-                            ? !string.IsNullOrWhiteSpace(duelDispatch?.ErrorCode)
-                                ? duelDispatch.ErrorCode
-                                : effectState == ActionExecutionEffectState.UnknownAfterStart
-                                    ? "action_unknown_after_start"
-                                    : "partial_action_execution"
-                            : partialOutcome.ExecutionErrorCode;
-                        if (!partialMemory.HistoryWritten)
-                        {
-                            string memoryError = string.IsNullOrWhiteSpace(partialMemory.ErrorCode)
-                                ? "memory_commit_failed"
-                                : partialMemory.ErrorCode;
-                            partialError += ":" + memoryError;
-                        }
-                        return new InteractionCommitResult(
-                            InteractionStatus.NonRetryableFailure,
-                            partialMemory.HistoryWritten,
-                            partialOutcome.AppliedActionCount > 0,
-                            partialError,
-                            effectState,
-                            duelDispatch);
-                    }
-                }
-                // Do not write confirmed facts when the action was not accepted.
-                MemoryCommitResult rejectedMemory = TryAppendVisibleExchange(
-                    envelope,
-                    result,
-                    memory,
-                    appendPlayerInput,
-                    requestId,
-                    Array.Empty<FactRecord>(),
-                    "rejected-action");
-                string rejectionError = !string.IsNullOrWhiteSpace(duelDispatch?.ErrorCode)
-                    ? duelDispatch.ErrorCode
-                    : "action_not_executed";
-                if (!rejectedMemory.HistoryWritten)
-                {
-                    rejectionError = string.IsNullOrWhiteSpace(rejectedMemory.ErrorCode)
-                        ? "memory_commit_failed"
-                        : rejectedMemory.ErrorCode;
-                }
-                return new InteractionCommitResult(
-                    actionStatus,
-                    rejectedMemory.HistoryWritten,
-                    false,
-                    rejectionError,
-                    ActionExecutionEffectState.NoConfirmedEffect,
-                    duelDispatch);
+                    execution.Status,
+                    terminalMemory.HistoryWritten,
+                    execution.ActionsExecuted,
+                    terminalError,
+                    execution.EffectState,
+                    execution.DuelDispatchReceipt);
             }
         }
 
         try
         {
             IEnumerable<FactRecord> facts = result.ConfirmedFacts ?? Array.Empty<FactRecord>();
-            if (hasActions && actionExecutor is IActionPlanExecutionReceipt executionReceipt
-                && executionReceipt.ConfirmedFacts != null)
+            if (hasActions && execution.ConfirmedFacts != null)
             {
-                facts = facts.Concat(executionReceipt.ConfirmedFacts);
+                facts = facts.Concat(execution.ConfirmedFacts);
             }
             MemoryCommitResult memoryResult = CommitMemory(
                 envelope,
@@ -482,21 +400,6 @@ public sealed class InteractionResultCommitter
         }
         return new MemoryCommitResult(MemoryCommitStatus.Applied);
     }
-
-    private static DetachedDuelDispatchReceipt TryReadDuelDispatchReceipt(
-		IActionPlanExecutor actionExecutor)
-	{
-		try
-		{
-			return (actionExecutor as IDetachedDuelDispatchExecutionReceipt)
-				?.DuelDispatchReceipt
-				?.Clone();
-		}
-		catch
-		{
-			return null;
-		}
-	}
 
     private static int ReadDetachedInt(GameInteractionSnapshot snapshot, string key)
     {
