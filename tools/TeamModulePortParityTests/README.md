@@ -18,7 +18,7 @@ python tools/TeamModulePortParityTests/run.py
 
 ### 1. 原调用点没有改业务
 
-- 对 `MyBehavior.cs`、`ShoutBehavior.cs`、`ShoutBehavior.ScenePostprocess.cs`、`CourierDeliveryBehavior.cs` 四个业务 owner，将批准的 `TeamModuleServices.<port>.<method>` 接收者逆变换为原类名，并移除唯一新增 using。
+- 对 `MyBehavior.cs`、`ShoutBehavior.cs`、`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs`、`CourierDeliveryBehavior.cs` 四个业务 owner，将批准的 `TeamModuleServices.<port>.<method>` 接收者逆变换为原类名，并移除唯一新增 using；Scene 当前路径与历史基线旧路径分别读取。
 - 逆变换后的**整份文件**必须与 `df6ab928` 完全相等；这会抓到意外变动的参数、条件、调用顺序、异常处理、历史、事实与通知逻辑。
 - 首版共 **13 个方法、31 处实际调用点**，不是仅登记目录。
 - `SubModule.cs` 单独检查 load/unload 注入的精确差异及初始化顺序，不将它冒充业务 owner。

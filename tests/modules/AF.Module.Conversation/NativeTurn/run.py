@@ -13,7 +13,7 @@ start=commit.index('                SceneActionPostprocessWorkItem workItem = nu
 # Select the actual prepare/network/complete statements, not a reimplementation.
 end=commit.index('\n\n            }',start)
 slice=commit[start:end]
-prepare_signature=ex.declaration(read('ShoutBehavior.ScenePostprocess.cs'),'private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(').split('\n',1)[0]
+prepare_signature=ex.declaration(read('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'),'private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(').split('\n',1)[0]
 prepare_signature=prepare_signature.replace('private static','private')
 for t in ['Hero','CharacterObject','List<RewardSystemBehavior.DuelStakeOption>','List<PostprocessRuleEntry>','List<SceneSummonPromptTarget>','List<SceneGuidePromptTarget>','List<string>','List<NpcDataPacket>','DetachedPromptSections']:
  prepare_signature=prepare_signature.replace(t+' ', 'object ')

@@ -25,7 +25,7 @@ def ordered(text, *markers):
 def main():
     shout = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
     native = (ROOT / "ShoutBehavior.NativeActionCommit.cs").read_text(encoding="utf-8-sig")
-    scene = (ROOT / "ShoutBehavior.ScenePostprocess.cs").read_text(encoding="utf-8-sig")
+    scene = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs").read_text(encoding="utf-8-sig")
     courier = (ROOT / "CourierDeliveryBehavior.cs").read_text(encoding="utf-8-sig")
     courier_dispatch = (ROOT / "CourierDeliveryBehavior.CommitDispatch.cs").read_text(
         encoding="utf-8-sig")

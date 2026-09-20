@@ -18,7 +18,11 @@ def main():
     parser.add_argument('--output-name',default='queue-current')
     args=parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): parser.error('Invalid output name')
-    source=run.extractor.source('ShoutBehavior.ScenePostprocess.cs',args.source_ref)
+    scene_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
+    if args.source_ref:
+        try: source=run.extractor.source(scene_path,args.source_ref)
+        except (FileNotFoundError,subprocess.CalledProcessError): source=run.extractor.source('ShoutBehavior.ScenePostprocess.cs',args.source_ref)
+    else: source=run.extractor.source(scene_path,None)
     snippets={
       'QUEUE':run.extractor.declaration(source,'private Task<int> QueueDeferredScenePostprocessActions('),
       'WORK':run.extractor.declaration(source,'private sealed class SceneActionPostprocessWorkItem'),
