@@ -1,3 +1,49 @@
+<a id="j07b-mainreply-thread-boundary-20260920"></a>
+# 当前接续：J07b 首个正文接收阶段已抽取，raw 展示线程问题已修复（2026-09-20）
+
+**J07b_IN_PROGRESS，仍不是 J07/J10 DONE。** 本轮检查点 `aeb1b53`；阶段实现 `00574541c7982e85b1565960ee92667aab41b2b7`；线程缺陷复现 `e478f699`；修复源码 `d9e9aae156c208d599f95354d10ba45e142155a0`。只在指定本地施工树实施，无推送/部署/Stage/打包/默认切换/存档操作。自动化继续 ACTIVE，工作窗仍截止 UTC `2026-09-20T17:48:36Z`（北京时间 9 月 21 日 01:48:36）。
+
+## 真实职责与源码坐标
+
+| 责任与一基坐标 | 本轮落地 | 保持 / 未覆盖 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs:13-47` | 从主编排提取正文接收：完整回复归一化、provider await 后代际检查、目标验证、必要的 pending 撤销、空/错误回复终止，真实入口只调用一次 | 仍用原 `CallNativeConversationApiAsync`，没有第二条缩水管线；Ready 仅准许进入下一阶段，不是动作成功/commit 回执 |
+| `NativeConversationMainReplyContracts.cs:8-49`（同目录） | 窄 typed internal 端口、验证结果、阶段状态/结果；默认 NotStarted 不准许下游执行 | 不是 public 子 MOD 契约，不新增存档类型/键或配置面 |
+| `ShoutBehavior.NativeMainReply.cs:11-57` | private adapter 捕获原 admission、history key/sequence；将验证与撤销交回已有游戏线程操作；保留文本清理与失败提示 | 游戏身份不复制到纯 owner；没有按当前槽重新取目标；正常文字、四类错误前缀和提示标题原样保持 |
+| `ShoutBehavior.cs:20302-20307` | 原 36 行接收算法由 6 行真实阶段调用/停止门接替 | `SubmitNativeConversationTextInternalAsync:20081-20534` 当前 **454 行（原 484）**，不是主编排拆完；全文件 **39,639 行、CRLF、无 BOM** |
+| `ShoutBehavior.cs:20311-20349`、`:20536` observer、`:3803` TTS helper | raw 挑衅→自然动作观察→显示清理→提前 TTS 留在已有 `main_reply_action_validation` 回调；移除 worker 上的观察/提前 TTS 调用 | 两个 helper 方法体未改，没有新增排队点；`:20350` postprocess-start 复验仍在其后；统一后处理 `:20474` 仍先于最终动作派发 `:20506` |
+
+## 发现与修复的线程问题（不冒充实机）
+
+旧 Native 入口在 Task.Run 中运行，raw-action 主线程回调返回后的续体直接调用观察器；观察器读取 Mission/Agents。使用**真实旧调用点 + 真实 observer 方法**、拒绝 worker 游戏读取的可控 Mission/Agent 端口，复现一次跨线程读取被 observer 的 best-effort catch 吞掉、观察没有提交。验收用例在修复前确实 FAIL，移入已验证主线程回调后 PASS。
+
+相邻的提前 TTS 调用也位于 worker；现有 TTS helper 包含 Hero/Character/voice/Mission 捕获。第二个复现使用真实调用点 + **明确标注的 TTS 线程亲和 spy**，不是运行真实语音引擎：修复观察器后 tableau 用例仍红，提前 TTS 调回同一游戏线程回调后通过。保留原提前触发条件、先于后处理的顺序和既有标志语义；没有把音频实际播放完成伪装成后端 Task 完成。
+
+**性能边界**：正文阶段每请求增加一个短生命周期 adapter 与有限 async 状态，纯字符串判定，无新扫描/锁/Task.Run。raw 修复不增队列，最多增加本次已接受 Native 回复原有的 Mission-agent 查找及可选提前 voice/TTS capture 到正确主线程；不是每 Tick 轮询。真实 Agent 数量/帧耗时及音频耗时仍 NOT-RUN，不声称免费或 O(1) 扫描。
+
+## 验证与证据范围
+
+- **当前源码正常回归**：Native Admission **44**、Preparation **589**、Pending **111**、ActionDispatch **91**、Completion **184** 全部 PASS；正文阶段 **19 场景/179 检查**在 raw 修复后再次通过；TTS fallback **14** PASS。NativeModuleSubmission **41** + 外部访问 internal 的 CS0122 拒收在正文阶段候选通过，raw 改动没有修改 API host/端口。
+- **正文对照**：执行真实新 stage、真实 private adapter、真实 6 行 consumer stop gate、真实 LlmVisibleReplyNormalizer；对照 `dabee763` 的原 36 行阶段，比较输出、调用顺序、pending 身份、提示、单次 provider 与异常身份。强制 provider yield 后改变 owner/epoch/ticket/target/generation；游戏队列/目标判定和 prefix/leak 清理 helper 是明示替身。`presentation-only` 不凭空给 backend admission 添加 revision 守卫，UI scope 仍按原 owner 另验。
+- **正文 10 项变异**均编译并在指定场景以具名断言拒收：跳代际/目标、漏撤销/归一化/错误处理、错误 pending key/目标端口/失败标题、先空回复后验证、consumer 忽略停止门。初版 skip-generation 因诊断轨迹提前在正常场景失败，已调整变异保留观测调用，确认真正命中 load 场景；没有降低正常断言。
+- **raw 边界 37 项 + 4 项变异**通过：普通/fallback/迟到目标/关闭观察/缺 Mission/缺 Agent/tableau/静默回复/解析器故障。移回 worker、重复观察、去掉目标校验、提前 TTS 移回 worker 均按预期红。旧 `00574541` 的两类线程端口失败保留可重现；真实游戏、真实 TTS/provider 全部 NOT-RUN。
+- **pending 旧回归不失效**：第一失败分支改执行真实新阶段 rejection block + 源码提取的捕获 rollback port；其余四分支、旧 original 模式及所有断言保留。12 项 pending 变异通过；没有恢复旧主编排片段来冒充新阶段行为。
+- **严格来源/格式**：两个新 source-review packet 与之前票据/claim 逆变换组合；旧 full-file/API/lifetime 断言仍保留。正文 5、raw 4、既有 ticket 4 / claim 3 / lifecycle inverse 5 项源证明通过，未知生产差异会被拒收。Native 最终请求 old/current fixture 本轮只重新编译；不声称完整请求差分全集本轮重跑。
+- **环境小修**：TTS fallback runner 原先固定 ROOT.parent 下 SDK，嵌套 worktree 报 WinError 2；仅增加已有约定 `AF_DOTNET` 覆盖，保留原 fallback。随后 14 项通过；不安装 SDK、不改生产引用。
+- **双版本/产物**：沿用原 `.tmp/build-local.ps1` 只传引用参数，生成根先检查边界/重解析点/非产物；最终源码 Debug/Release × 1.3/1.4/Bootstrap 六构建 0 warning / 0 error。实际引用仍 1.3.15.110062 与 1.4.6.115628，SDK 8.0.422；不是别的 1.4 补丁实机证明。最终四个实现 DLL 的 **1060** 项 API/metadata 断言 PASS，public V1/旧 memory 签名及 internal 隔离不变；存档契约 **142 literal keys / 168 typed bindings / 13 chunked / 44 flattened keys** PASS，见本地 `api-delivery.log` / `persistence-delivery.log`，不是 CLR/旧档加载实测。
+- **导航**：298 锚点地图绑定 `d9e9aae1`，recorded / working-tree PASS；Phase8 entry inventory 检查 PASS，不提高准备态证据等级。日志位于本地 `.tmp/j07b-mainreply-20260920/` 和具名套件 `.generated/`，不纳入 Git。
+
+## 下一安全切片与收工边界
+
+1. **继续 J07b**，将已线程归位的 raw/展示阶段抽成实际 typed 阶段，或提取后处理上下文/资格的捕获责任；逐个阶段编译两 API + Native 五组。Prompt 文本仍由原 J04 owner/适配接缝承担，不能把同步后处理 LLM 请求直接塞到主线程而制造卡顿。
+2. 主编排的准备、历史 fork/join、消息装配、后处理资格/直接命令、最终提交与其余回滚决策仍未完成分层。对剩余 worker 的游戏属性读取继续按实际调用链核验；**本次两处修复不等于整个 Native 已线程安全**。完整 NativeStageSequence / Lifecycle / Rollback 包验收、J07c/d 均未闭合。
+3. 当前第一阶段只允许 one provider call、异常传播、原终止顺序；未来调整新增文件时也要独立证明其变化，不能直接刷新旧 addedFiles hash 使历史逆变换失去意义。无需重开已闭合 G1/G2/J07a 或重复搬旧路径。
+4. **J08/J09/J10 尚未完成**，不为了时限跳过所需离线行为或删仍有消费者的旧实现；J14 Scene/Courier 公开提交不在本轮擅自开放。实机/旧档/真实 provider/音频/帧耗时仍 NOT-RUN。
+5. 回滚采用 focused inverse/revert：线程修复 `d9e9aae1` → 接收阶段 `00574541`，保留或单独处理复现测试 `e478f699`；初始检查点 `aeb1b53`。不 hard-reset，不操作其他工作树。
+6. 当前施工树/分支不变；代码和详细台账仅本地。窗口仍在未来，自动化继续；到 J10 必要离线门槛全过、截止或用户停止，再写技术/本地制作组两份最终交接并暂停，不能把本轮输出当暂停。
+
+## 以下为此前准入/claim owner 回执
+
 <a id="j07b-native-ownership-20260920"></a>
 # 当前接续：J07b 准入身份与排队领取已抽取，完整阶段编排仍未完成（2026-09-20）
 

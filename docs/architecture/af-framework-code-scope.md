@@ -1,3 +1,11 @@
+# 当前范围：J07b 正文阶段 / raw 线程边界（2026-09-20）
+
+源码 `d9e9aae1`，298 锚点地图。新增已接线 `NativeConversationMainReplyStage` 与内部 typed 端口；private host 使用原 LLM 与主线程验证/撤销操作，不是第二条 LLM 管线。raw 观察与提前 TTS 保持原先后顺序，移到已有校验回调的游戏线程；helper 本体未改。
+
+主编排 484→454 行，只完成第一个实际阶段，J07 父包及 J08–J10 未验收。游戏/旧档/真实语音/provider 未测；具体代码坐标、旧源码复现、正常/负例与构建分层见[当前台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j07b-mainreply-thread-boundary-20260920)。历史“484 行未动”已由本节更新，不把全大类标为重写完毕。
+
+## 以下为历史范围
+
 # 当前范围：J07b Native 身份/领取 owner 已接线，主编排仍待拆（2026-09-20）
 
 当前源码 `2835d1a5`；294 锚点地图绑定该提交。`NativeConversationAdmissionOwner` 持有唯一票据槽、epoch、revision；`NativeConversationDispatchClaim` 持有 admission/action 排队操作的原子领取与开始前过期。普通/主动开场/Overlay/Native public 提交及 completion/pending 消费同一 owner；外部签名、存档身份、默认路径不变。

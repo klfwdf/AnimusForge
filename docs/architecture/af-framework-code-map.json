@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "2835d1a56ab6e447a31473a802101e8a33efac5d",
+  "sourceRevision": "d9e9aae156c208d599f95354d10ba45e142155a0",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
+      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
     },
     {
       "id": "native.history.dispatch",
@@ -178,7 +178,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "原 admission 验证后捕获 work",
-      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
+      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
     },
     {
       "id": "native.history.accept",
@@ -189,7 +189,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "使用结果前再验原 admission",
-      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
+      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
     },
     {
       "id": "native.dispatch.shared",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91"
+      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
     },
     {
       "id": "memory.acceptance",
@@ -3237,6 +3237,50 @@
       "status": "wired-boundary",
       "note": "完成与关窗仍检查捕获上下文/revision，不依赖已释放的后端票据槽",
       "fileSha256": "48a175fbda1354d76ff08bfa2a420f0266012db8f66f0ec2c96fcad03b9e968e"
+    },
+    {
+      "id": "native.mainreply.port",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyContracts.cs",
+      "start": 8,
+      "end": 11,
+      "symbol": "internal interface INativeConversationMainReplyHost",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "同 DLL 的正文接收阶段端口；不是公开子 MOD API 或另一条传输链",
+      "fileSha256": "1d23da400b38722e12441a1ec3b0d61ab5ab6dd7b0c66eda95379dd74bdc6a9f"
+    },
+    {
+      "id": "native.mainreply.stage",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs",
+      "start": 13,
+      "end": 16,
+      "symbol": "internal static class NativeConversationMainReplyStage",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "正文归一化/代际与目标重验/pending 撤销/空或错误回复终止；真实 Native 入口已接线",
+      "fileSha256": "8098698e093a4fc5d2996745216806a6939b5d7067d1fbe2b9e3678ebe200b21"
+    },
+    {
+      "id": "native.mainreply.host",
+      "path": "ShoutBehavior.NativeMainReply.cs",
+      "start": 11,
+      "end": 14,
+      "symbol": "private sealed class NativeConversationMainReplyHost : INativeConversationMainReplyHost",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "捕获原票据/key/sequence，适配原网络与游戏线程验证；不重解析当前后端槽",
+      "fileSha256": "7a68ffa9340bb501b2bbcd3e330301dbf62f96db2916e2e93b48c74839061231"
+    },
+    {
+      "id": "native.raw.observation",
+      "path": "ShoutBehavior.cs",
+      "start": 20536,
+      "end": 20539,
+      "symbol": "private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)",
+      "match": "exact",
+      "status": "wired-boundary",
+      "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
+      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
     }
   ]
 }
