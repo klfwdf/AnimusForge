@@ -7,6 +7,11 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['leak-response','skip-accept','drop-caller-token','thinking-still-enabled','lose-retry-after']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(f):return (ROOT/f).read_text(encoding='utf-8-sig')
+for consumer in ['PolicySystem/Npc/PolicyLlmClient.cs','WorldDiplomacyLlmClient.cs']:
+ domain=read(consumer)
+ assert domain.count('LlmNonStreamingTransport.SendAsync(')==1, consumer+' must use the one-attempt shared owner exactly once'
+ for duplicate in ['new HttpRequestMessage(HttpMethod.Post','response.Content.ReadAsStringAsync(']:
+  assert duplicate not in domain, consumer+' still owns duplicate chat transport: '+duplicate
 s=read('ShoutNetwork.cs');review=json.loads((HERE/'primary-source-review.json').read_text(encoding='utf-8-sig'))
 current=ex.declaration(s,'public static async Task<string> CallApiWithMessages(');assert hashlib.sha256(current.encode()).hexdigest()==review['currentMethodSha256']
 old=subprocess.check_output(['git','show',review['baseline']+':ShoutNetwork.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n');baseline_method=ex.declaration(old,'public static async Task<string> CallApiWithMessages(')
@@ -16,7 +21,7 @@ for name,body in [('Before',baseline_method),('After',current)]:
  if a.mutate=='thinking-still-enabled' and name=='After':body=body.replace('DuelSettings.RemoveThinkingControls(payload2);',';',1)
  classes.append('static class '+name+' { private const int DefaultPrimaryMaxTokens=DuelSettings.DefaultGeneralApiMaxTokens;'+helpers+body+' private static string ApplyPlayerDynamicNameToMainText(string s)=>s.Replace("PLAYER_PLACEHOLDER","FixturePlayer"); private static void LogNormalizedMessageTail(string a,string b,IEnumerable<object> c) {} private static void LogPrimaryRawResponse(string phase,string body) {} }')
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@PRIMARY@@','\n'.join(classes));out=HERE/'.generated'/(a.mutate or 'current');out.mkdir(parents=True,exist_ok=True);(out/'Program.cs').write_text(code,encoding='utf-8')
-files=['src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs','src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs','src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs','Refactor/Adapters/LegacyConfiguredChatGateway.cs','Refactor/Contracts/FeatureBridgeContracts.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Runtime/FeatureBridgeRuntime.cs']
+files=['src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs','src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs','src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs','src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs','Refactor/Adapters/LegacyConfiguredChatGateway.cs','Refactor/Contracts/FeatureBridgeContracts.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Runtime/FeatureBridgeRuntime.cs']
 for f in files:
  text=read(f)
  if f.endswith('LlmNonStreamingTransport.cs'):
