@@ -22,7 +22,7 @@ class ExtractionTests(unittest.TestCase):
     def test_real_work_item_and_parser(self):
         shout = run.ex.source("ShoutBehavior.cs", None)
         self.assertIn(self.blocks["WORK_ITEM"], shout)
-        self.assertIn("Refactor/Adapters/LegacyActionTagParser.cs", run.LINKS)
+        self.assertIn("src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs", run.LINKS)
         self.assertIn("src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs", run.LINKS)
         self.assertIn("CourierVisibleLetterSanitizer.cs", run.LINKS)
 

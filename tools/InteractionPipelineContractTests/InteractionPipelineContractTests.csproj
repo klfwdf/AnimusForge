@@ -29,8 +29,8 @@
     <Compile Include="..\..\Refactor\Adapters\LegacyDetachedPromptComposer.cs" Link="Adapters\LegacyDetachedPromptComposer.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyDetachedPostprocessPromptComposer.cs" Link="Adapters\LegacyDetachedPostprocessPromptComposer.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyNativePromptParity.cs" Link="Adapters\LegacyNativePromptParity.cs" />
-    <Compile Include="..\..\Refactor\Adapters\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
-    <Compile Include="..\..\Refactor\Adapters\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyChannelInteractionFacade.cs" Link="Adapters\LegacyChannelInteractionFacade.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyNativeConversationFacade.cs" Link="Adapters\LegacyNativeConversationFacade.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyNativeConversationOptInRunner.cs" Link="Adapters\LegacyNativeConversationOptInRunner.cs" />
