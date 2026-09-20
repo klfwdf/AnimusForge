@@ -20,7 +20,7 @@ for key,sig in [('PLAYER_STREAM','private async Task SubmitAsync(string text)'),
  assert 'CaptureNativeConversationPresentationScopeForOverlay()' in method and 'SubmitNativeConversationForOverlayAsync(presentationScope,' in method
 assert 'ValidatePendingSubmissionPresentation();' in ex.declaration(overlay,'private void Tick()')
 if args.mutate=='drop-callback-guard':ui=ui.replace('if (!IsSubmissionPresentationCurrent(generation))','if (false)',1)
-if args.mutate=='drop-revision':partial=partial.replace('_snapshot.PresentationRevision == Interlocked.Read(ref _owner._nativeConversationPresentationRevision)','true',1)
+if args.mutate=='drop-revision':partial=partial.replace('_owner._nativeAdmissionOwner.IsPresentationCurrent(_snapshot.PresentationRevision)','true',1)
 if args.mutate=='use-backend-slot':partial=partial.replace('=> HasCurrentContext() && _owner.IsNativeConversationContextCurrent(_snapshot, out _);','=> _owner.IsNativeConversationAdmissionCurrent(_snapshot, out _);',1)
 if args.mutate=='drop-stamp-retirement':ui=ui.replace('if (_isSubmitting && _submitPresentationScope != null && !_submitPresentationScope.HasCurrentContext())','if (false)',1)
 if args.mutate=='allow-stale-finish':
@@ -37,7 +37,8 @@ for name,text in [('Program.cs',code),('Admission.cs',partial),('Presentation.cs
 (out/'ActionDispatch.cs').write_text((ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tools/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
-spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out)
+spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out);core_fixture.include_admission_owner(out)
+code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0169;CS0414;CS0219</NoWarn></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
