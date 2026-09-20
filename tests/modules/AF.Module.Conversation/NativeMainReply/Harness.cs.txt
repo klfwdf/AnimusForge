@@ -1,0 +1,185 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace AnimusForge;
+internal static class Fixture
+{
+    internal static int MainThread, Generation;
+    internal static ShoutBehavior ActiveOwner;
+    internal static readonly ConcurrentQueue<string> Trace = new ConcurrentQueue<string>();
+    internal static readonly BlockingCollection<Action> Queue = new BlockingCollection<Action>();
+    internal static TaskCompletionSource<bool> ProviderEntered;
+    internal static TaskCompletionSource<string> Reply;
+    internal static List<object> ExpectedMessages;
+    internal static Action<string> ExpectedStream;
+    internal static string Popup;
+    internal static NativeConversationMainReplyStatus LastStatus;
+    internal static int Calls, WrongThread, Rollbacks;
+    internal static bool ThrowValidation, ThrowRollback;
+    internal static readonly Exception Failure = new InvalidOperationException("fixture failure");
+    internal static void Reset()
+    {
+        MainThread=Thread.CurrentThread.ManagedThreadId;Generation=1;
+        while(Trace.TryDequeue(out _)){} while(Queue.TryTake(out _)){}
+        ProviderEntered=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Reply=new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Popup=null;LastStatus=NativeConversationMainReplyStatus.NotStarted;Calls=WrongThread=Rollbacks=0;ThrowValidation=ThrowRollback=false;
+        ExpectedMessages=new List<object>{new {role="user",content="input"}};
+        ExpectedStream=fragment=>Trace.Enqueue("stream:"+fragment);
+    }
+    internal static void Game() { if(Thread.CurrentThread.ManagedThreadId!=MainThread) WrongThread++; }
+    internal static T Finish<T>(Task<T> task)
+    {
+        var watch=Stopwatch.StartNew();
+        while(!task.IsCompleted && watch.ElapsedMilliseconds<5000)
+            if(Queue.TryTake(out var work,20)) work();
+        if(!task.IsCompleted) throw new Exception("FAIL fixture did not settle");
+        return task.GetAwaiter().GetResult();
+    }
+}
+internal static class SaveRuntimeGuard
+{
+    internal static bool IsStale(long generation,string stage){Fixture.Trace.Enqueue("generation:"+stage);return generation!=Fixture.Generation;}
+    internal static string BuildStaleRequestErrorText(){Fixture.Trace.Enqueue("stale-text");return "stale fixture notice";}
+}
+internal static class Logger { internal static void Log(string category,string text){} }
+internal static class FreezeWatchdog { internal static void Mark(string stage,string data,bool immediate=false){} }
+internal static class LlmRetryPrompt
+{
+    internal static void ShowFailurePopup(string title,string text){Fixture.Trace.Enqueue("popup");Fixture.Popup=title+"|"+text;}
+}
+public partial class ShoutBehavior
+{
+    private sealed class NativeConversationAdmission
+    { internal long Generation=1,Epoch=1,Revision=1; internal int AgentIndex=7; }
+    private readonly NativeConversationAdmission _captured = new NativeConversationAdmission();
+    private NativeConversationAdmission _slot;
+    private long _epoch=1,_revision=1;
+    private bool _target=true;
+    private string _reason="fixture.target_unavailable";
+    internal ShoutBehavior(){_slot=_captured;Fixture.ActiveOwner=this;}
+    internal void Change(string kind)
+    {
+        if(kind=="load") Fixture.Generation++;
+        if(kind=="target" || kind=="blank-reason" || kind=="rollback-throw") _target=false;
+        if(kind=="blank-reason") _reason="";
+        if(kind=="owner") Fixture.ActiveOwner=new ShoutBehavior();
+        if(kind=="epoch") _epoch++;
+        if(kind=="presentation-only") _revision++;
+        if(kind=="ticket") _slot=new NativeConversationAdmission();
+        Fixture.ThrowValidation=kind=="validation-throw";
+        Fixture.ThrowRollback=kind=="rollback-throw";
+    }
+    private static async Task<string> CallNativeConversationApiAsync(List<object> messages,Action<string> onStreamText)
+    {
+        if(!ReferenceEquals(messages,Fixture.ExpectedMessages)||!ReferenceEquals(onStreamText,Fixture.ExpectedStream))
+            throw new Exception("FAIL request or stream callback replaced");
+        Interlocked.Increment(ref Fixture.Calls);Fixture.Trace.Enqueue("generate");onStreamText?.Invoke("fragment");
+        Fixture.ProviderEntered.SetResult(true);
+        return await Fixture.Reply.Task.ConfigureAwait(false);
+    }
+    private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string stage,string target,int index,Func<T> work,T fallback)
+    {
+        Fixture.Trace.Enqueue("queue:"+stage+":"+target+":"+index);
+        var completion=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Fixture.Queue.Add(()=>{Fixture.Game();try{completion.TrySetResult(work());}catch(Exception error){completion.TrySetException(error);}});
+        return completion.Task;
+    }
+    private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission,out string reason)
+    {
+        Fixture.Game();Fixture.Trace.Enqueue("validate");reason=_reason;
+        if(Fixture.ThrowValidation) throw Fixture.Failure;
+        return ReferenceEquals(Fixture.ActiveOwner,this) && ReferenceEquals(admission,_slot) && _target
+            && admission.Generation==Fixture.Generation && admission.Epoch==_epoch;
+    }
+    private Task RollbackNativeConversationPendingPlayerHistoryAsync(NativeConversationAdmission admission,string key,long sequence,string reason)
+    {
+        Fixture.Trace.Enqueue("rollback-request:"+key+":"+sequence+":"+reason+":"+ReferenceEquals(admission,_captured));
+        var completion=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Fixture.Queue.Add(()=>{Fixture.Game();Fixture.Rollbacks++;Fixture.Trace.Enqueue("rollback-complete");if(Fixture.ThrowRollback)completion.SetException(Fixture.Failure);else completion.SetResult(true);});
+        return completion.Task;
+    }
+    private static string StripNpcNamePrefixSafely(string text,int maxPrefixLength)
+    {Fixture.Trace.Enqueue("prefix:"+maxPrefixLength);return text.StartsWith("N:")?text.Substring(2):text;}
+    private static string StripLeakedPromptContentForShout(string text)
+    {Fixture.Trace.Enqueue("leak-cleanup");return text.Replace("<leak>","");}
+    internal async Task<string> StartCurrent()
+    {
+        var admission=_captured;long runtimeGeneration=admission.Generation;
+        List<object> messages=Fixture.ExpectedMessages;Action<string> onStreamText=Fixture.ExpectedStream;
+        string npcName="npc",nativeTargetLog="captured-target",nativePendingAfefKey="captured-key";
+        int nativeTargetAgentIndex=7;long nativePendingPlayerHistoryEventSequence=81;var nativeTurnSw=Stopwatch.StartNew();
+@@CURRENT_CONSUMER@@
+        Fixture.Trace.Enqueue("downstream");
+        return postprocessReply;
+    }
+    internal async Task<string> StartOriginal()
+    {
+        var admission=_captured;long runtimeGeneration=admission.Generation;
+        List<object> messages=Fixture.ExpectedMessages;Action<string> onStreamText=Fixture.ExpectedStream;
+        string npcName="npc",nativeTargetLog="captured-target",nativePendingAfefKey="captured-key";
+        int nativeTargetAgentIndex=7;long nativePendingPlayerHistoryEventSequence=81;var nativeTurnSw=Stopwatch.StartNew();
+@@ORIGINAL_STAGE@@
+        Fixture.Trace.Enqueue("downstream");
+        return postprocessReply;
+    }
+}
+internal static class Program
+{
+    private static int _checks;
+    private static void Check(bool good,string name){if(!good)throw new Exception("FAIL "+name);_checks++;Console.WriteLine("PASS "+name);}
+    private sealed class Outcome {internal string Text,Error,Popup;internal string[] Trace;internal int Calls,Rollbacks,WrongThread;internal NativeConversationMainReplyStatus Status;}
+    private static Outcome Run(string scenario,string reply,bool current)
+    {
+        Fixture.Reset();var owner=new ShoutBehavior();var outcome=new Outcome();
+        Task<string> task=current ? Task.Run(()=>owner.StartCurrent()) : Task.Run(()=>owner.StartOriginal());
+        Check(Fixture.ProviderEntered.Task.Wait(5000),"provider-entered:"+scenario);
+        Check(!task.IsCompleted,"forced-yield:"+scenario);
+        owner.Change(scenario);
+        if(scenario=="provider-throw") Fixture.Reply.SetException(Fixture.Failure);else Fixture.Reply.SetResult(reply);
+        try{outcome.Text=Fixture.Finish(task);}catch(Exception error){Check(ReferenceEquals(error,Fixture.Failure),"same-exception:"+scenario);outcome.Error=error.Message;}
+        outcome.Status=Fixture.LastStatus;outcome.Trace=Fixture.Trace.ToArray();outcome.Calls=Fixture.Calls;outcome.Rollbacks=Fixture.Rollbacks;outcome.WrongThread=Fixture.WrongThread;outcome.Popup=Fixture.Popup;
+        return outcome;
+    }
+    private static void Main()
+    {
+        Check(!default(NativeConversationMainReplyResult).CanContinue,"default-result-stops");
+        var cases=new (string Name,string Reply,NativeConversationMainReplyStatus Status)[]{
+            ("healthy"," N:hello<leak> ",NativeConversationMainReplyStatus.Ready),
+            ("unicode-json","{\"response\":\"N:你好🚀<leak>\"}",NativeConversationMainReplyStatus.Ready),
+            ("empty-cleaned","N:<leak>",NativeConversationMainReplyStatus.Ready),
+            ("empty",null,NativeConversationMainReplyStatus.EmptyReply),
+            ("whitespace","  \r\n  ",NativeConversationMainReplyStatus.EmptyReply),
+            ("error","（错误：fixture）",NativeConversationMainReplyStatus.ProviderFailure),
+            ("program-error","（程序错误：fixture）",NativeConversationMainReplyStatus.ProviderFailure),
+            ("api-error","（API请求失败：fixture）",NativeConversationMainReplyStatus.ProviderFailure),
+            ("format-error","（API响应格式错误：fixture）",NativeConversationMainReplyStatus.ProviderFailure),
+            ("target","N:answer",NativeConversationMainReplyStatus.TargetUnavailable),
+            ("blank-reason","N:answer",NativeConversationMainReplyStatus.TargetUnavailable),
+            ("owner","N:answer",NativeConversationMainReplyStatus.TargetUnavailable),
+            ("epoch","N:answer",NativeConversationMainReplyStatus.TargetUnavailable),
+            ("presentation-only","N:answer",NativeConversationMainReplyStatus.Ready),
+            ("ticket","N:answer",NativeConversationMainReplyStatus.TargetUnavailable),
+            ("load","N:answer",NativeConversationMainReplyStatus.StaleGeneration),
+            ("provider-throw","unused",NativeConversationMainReplyStatus.NotStarted),
+            ("validation-throw","N:answer",NativeConversationMainReplyStatus.NotStarted),
+            ("rollback-throw","N:answer",NativeConversationMainReplyStatus.NotStarted)
+        };
+        foreach(var item in cases)
+        {
+            Outcome old=Run(item.Name,item.Reply,false),current=Run(item.Name,item.Reply,true);
+            Check(current.Text==old.Text && current.Error==old.Error,"terminal-parity:"+item.Name);
+            Check(current.Trace.SequenceEqual(old.Trace),"stage-order-parity:"+item.Name);
+            Check(current.Popup==old.Popup && current.Rollbacks==old.Rollbacks,"effect-parity:"+item.Name);
+            Check(current.Calls==1 && current.WrongThread==0,"one-request-owned-thread:"+item.Name);
+            Check(current.Status==item.Status,"typed-status:"+item.Name);
+            if(item.Name=="unicode-json")Check(current.Text=="你好🚀","complete-response-normalization");
+        }
+        Console.WriteLine($"NativeMainReply PASS={_checks} FAIL=0 scenarios={cases.Length} baseline=dabee763 actualStage=true actualAdapter=true actualNormalizer=true gameQueueAndTextHelpers=STUBBED provider=FAKE LIVE=NOT_RUN");
+    }
+}

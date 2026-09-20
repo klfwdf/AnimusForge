@@ -18,7 +18,7 @@ class ClaimSourceTests(unittest.TestCase):
                     inverse.restore_claim(path,s.replace(before,after,1))
     def test_no_parallel_int_claim_and_no_format_normalization(self):
         for path,expiries in [('ShoutBehavior.cs',3),('ShoutBehavior.NativeAdmission.cs',1)]:
-            raw=(ROOT/path).read_bytes();s=raw.decode('utf-8-sig')
+            raw=(ROOT/path).read_bytes();s=inverse.restore_main_reply(path,raw.decode('utf-8-sig').replace('\r\n','\n'))
             self.assertNotIn('dispatchState',s)
             self.assertEqual(s.count('var dispatchClaim = new NativeConversationDispatchClaim();'),1)
             self.assertEqual(s.count('!dispatchClaim.TryStart()'),1)
