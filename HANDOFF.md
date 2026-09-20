@@ -1,3 +1,12 @@
+# 当前接续：已启用 J06→J10 自动接续，开始 G1 原文分支验证（2026-09-20）
+
+- 用户最新授权实施到 J10；复用自动化 `af-7-8`，每 30 分钟接续，工作窗截止 `2026-09-20T17:48:36Z`（北京时间 9 月 21 日 01:48:36）。到 J10 必要离线验收通过或工作窗结束后暂停，交付技术 HANDOFF 与仅本地简明版。
+- 当前任务从 `b9a52c8f` 开始；本轮不会自动推送、部署、操作存档或恢复其他自动化。旧段落“不开始生产重构”仅属于上一轮计划任务，已由本次明确实施授权替代。
+- 当前先补 G1 实体差分的共同原文及 raw-only/限定/歧义/遮蔽反例；J06 仍 VERIFY，J07–J10 尚未实施。不将 test-only 进展计作主体已拆分。
+- 按[修订计划](docs/plans/j07-conversation-native-plan.md)与[主台账自动接续节](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j06-j10-automation-20260920)继续，保护未跟踪 `.dotnet-cli-home/`。
+
+## 以下为历史交接
+
 # 当前接续：Claude 三提交已补推；先补 J06 离线证据，再实施 J07（2026-09-20）
 
 - 已普通快进指定分支 `codex/af-main-refactor-continuation-20260831`：`2946bf3d` → `b9b2215b`；包括测试修复、J06 回执和 J07 初版计划。本地施工分支仍为 `codex/af-modularize-j04-20260918`，不是新的发布目标。

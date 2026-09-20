@@ -1,3 +1,13 @@
+<a id="j06-j10-automation-20260920"></a>
+
+## 2026-09-20 自动接续：G1 ACTIVE，目标 J10 离线验收
+
+- 用户授权本地实施到 J10，并要求自动接续；已更新既有 `af-7-8`（30 分钟，ACTIVE），工作窗 `2026-09-20T11:48:36Z` 至 `2026-09-20T17:48:36Z`。到期或达到 J10 必要离线门槛后暂停并写两份交接；不是承诺六小时内全功能完美。
+- 起点 `b9a52c8f` 与指定远端一致；唯一施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`，本地 `codex/af-modularize-j04-20260918`。只有原未跟踪 `.dotnet-cli-home/`，没有同 owner 的外来 tracked 改动。单代理工作，禁自动 push/部署/Stage/打包/存档/其他工作树写入；Claude 同文件并发或远端分叉时暂停相关写入。
+- 本切片意图：只改 `tests/modules/AF.Module.Knowledge/EntityTextDifferential/{Program.cs,run.py}`，统一 capture/worker/complete 的原文，补原文独立命中、王国限定、同称谓多国、长短称谓遮蔽和 worker 原文分支删除变异。旧侧仍从 `77a3d234` 提取真实方法，新側读取当前源码；保持其他行为断言，保留供共享最终请求 runner 使用的导出字段。
+- 完成条件：正常原/新正文、ID/计数、顺序对照通过；仅新侧删除 raw 分支能编译并在对应具名案例失败，原有 3 项变异仍拒收；共享 12 场景请求回归不破坏。产品源码本轮不动。G2 非 Hero/常驻/可见队伍仍独立未完成，G0 全量基线审查不因 Git 已同步而算通过。
+- 续作及结果补在本节；J07–J10 未开始，详细顺序沿现有 J07 计划和本台账 J08–J10 总计划。代码地图/源码未变时复用绑定证据，记录本次实际 runner，不无限重复全构建。
+
 <a id="j07-plan-review-20260920"></a>
 
 ## 2026-09-20：补推 Claude 三提交，修订 J06→J07 接续计划（PLAN_READY / NOT_STARTED）
