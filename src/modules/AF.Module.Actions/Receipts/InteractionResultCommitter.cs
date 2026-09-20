@@ -15,6 +15,8 @@ namespace AnimusForge.Refactor.Runtime;
 /// </summary>
 public sealed class InteractionResultCommitter
 {
+    private static readonly LegacyChannelActionCommitter ChannelActionCommitter =
+        new LegacyChannelActionCommitter();
     private readonly Func<long> _currentGeneration;
 
     public InteractionResultCommitter(Func<long> currentGeneration = null)
@@ -65,12 +67,10 @@ public sealed class InteractionResultCommitter
         }
         string requestId;
         string fingerprint;
-        string actionFingerprint;
         try
         {
             requestId = BuildCanonicalRequestId(envelope);
             fingerprint = BuildFingerprint(envelope, result, appendPlayerInput);
-            actionFingerprint = BuildCanonicalActionPlanFingerprint(result.ActionPlan);
         }
         catch (Exception)
         {
@@ -112,7 +112,6 @@ public sealed class InteractionResultCommitter
             memory,
             appendPlayerInput,
             requestId,
-            actionFingerprint,
             hasActions);
         if (weeklyPreparation == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted)
         {
@@ -231,17 +230,15 @@ public sealed class InteractionResultCommitter
     private static InteractionCommitResult CommitOnce(
         InteractionEnvelope envelope, InteractionResult result, IActionPlanExecutor actionExecutor,
         IInteractionMemory memory, bool appendPlayerInput, string requestId,
-        string actionFingerprint, bool hasActions)
+        bool hasActions)
     {
         ActionExecutionCommitResult execution = ActionExecutionCommitResult.NoActions();
         if (hasActions)
         {
-            execution = ActionExecutionCommitter.Execute(
+            execution = ChannelActionCommitter.Commit(
                 result.ActionPlan,
                 envelope.Snapshot,
-                actionExecutor,
-                requestId,
-                actionFingerprint);
+                actionExecutor).Execution;
             if (execution.Status != InteractionStatus.Executed)
             {
                 string receiptKind = execution.EffectState == ActionExecutionEffectState.UnknownAfterStart
