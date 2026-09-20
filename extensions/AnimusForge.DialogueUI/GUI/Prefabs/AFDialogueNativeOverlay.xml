@@ -4,12 +4,12 @@
       <Children>
         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="270" VerticalAlignment="Bottom" MarginLeft="40" MarginRight="40" MarginBottom="16" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
           <Children>
-            <!-- Left Column Overlay (width 200, MarginLeft 150) -->
-            <Widget WidthSizePolicy="Fixed" SuggestedWidth="200" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" MarginLeft="150" MarginTop="14" MarginBottom="14" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+            <!-- Left Column Overlay (width 190, MarginLeft 115) -->
+            <Widget WidthSizePolicy="Fixed" SuggestedWidth="190" HeightSizePolicy="StretchToParent" HorizontalAlignment="Left" MarginLeft="115" MarginTop="10" MarginBottom="6" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
-                <Widget Id="AFDialoguePaintSlot" WidthSizePolicy="Fixed" SuggestedWidth="110" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="2" IsVisible="false" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+                <Widget Id="AFDialoguePaintSlot" WidthSizePolicy="Fixed" SuggestedWidth="110" HeightSizePolicy="Fixed" SuggestedHeight="28" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="0" IsVisible="false" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="场景绘图" Brush="Popup.Button.Text" Brush.FontSize="16" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="场景绘图" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" />
                   </Children>
                 </Widget>
               </Children>
@@ -19,18 +19,18 @@
             <Widget WidthSizePolicy="Fixed" SuggestedWidth="580" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" MarginRight="90" MarginTop="6" MarginBottom="12" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
                 <!-- Top Toolbar: History, Gift, More, Switch, Leave -->
-                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Right" MarginRight="10" MarginTop="4" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                <ListPanel Id="AFDialogueToolbar" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="30" HorizontalAlignment="Right" MarginRight="10" MarginTop="4" StackLayout.LayoutMethod="HorizontalLeftToRight">
                   <Children>
-                    <ButtonWidget Id="AFDialogueHistory" WidthSizePolicy="Fixed" SuggestedWidth="90" HeightSizePolicy="Fixed" SuggestedHeight="30" Command.Click="ShowLogView" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                    <ButtonWidget Id="AFDialogueHistory" WidthSizePolicy="Fixed" SuggestedWidth="95" HeightSizePolicy="Fixed" SuggestedHeight="30" Command.Click="ShowLogView" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                       <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@AIChatHistoryButtonText" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                     </ButtonWidget>
-                    <ButtonWidget Id="AFDialogueGift" WidthSizePolicy="Fixed" SuggestedWidth="90" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="6" Command.Click="ShowGiveShowMenu" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                    <ButtonWidget Id="AFDialogueGift" WidthSizePolicy="Fixed" SuggestedWidth="100" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="6" Command.Click="ShowGiveShowMenu" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                       <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@GiveShowButtonText" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                     </ButtonWidget>
-                    <ButtonWidget Id="AFDialogueMore" WidthSizePolicy="Fixed" SuggestedWidth="80" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="6" Command.Click="ToggleMore" IsVisible="@HasMoreActions" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                    <ButtonWidget Id="AFDialogueMore" WidthSizePolicy="Fixed" SuggestedWidth="70" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="6" Command.Click="ToggleMore" IsVisible="@HasMoreActions" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                       <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="更多" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                     </ButtonWidget>
-                    <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="105" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="6" Command.Click="SwitchTalk" IsEnabled="@IsInteractionEnabled" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
+                    <ButtonWidget Id="AFDialogueSwitch" WidthSizePolicy="Fixed" SuggestedWidth="100" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="6" Command.Click="SwitchTalk" IsEnabled="@IsInteractionEnabled" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
                       <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SwitchTitle" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children>
                     </ButtonWidget>
                     <ButtonWidget Id="AFDialogueLeave" WidthSizePolicy="Fixed" SuggestedWidth="65" HeightSizePolicy="Fixed" SuggestedHeight="30" MarginLeft="6" Command.Click="LeaveConversation" IsEnabled="@CanLeave" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true">
@@ -45,7 +45,7 @@
                     <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginLeft="12" MarginRight="12" MarginTop="10" MarginBottom="10">
                       <Children>
                         <ButtonWidget Id="AFDialoguePersona" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" Command.Click="EditPersona" IsVisible="@IsPersonaEditVisible" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@PersonaEditButtonText" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children></ButtonWidget>
-                        <ButtonWidget Id="AFDialogueTagTest" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" Command.Click="OpenTagTest" IsVisible="@IsTagTestVisible" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@TagTestButtonText" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children></ButtonWidget>
+                        <ButtonWidget Id="AFDialogueTagTest" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" MarginTop="6" Command.Click="OpenTagTest" IsVisible="@IsTagTestVisible" Brush="Popup.Done.Button.NineGrid" DoNotPassEventsToChildren="true"><Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@TagTestButtonText" Brush="Popup.Button.Text" Brush.FontSize="15" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" DoNotAcceptEvents="true" /></Children></ButtonWidget>
                       </Children>
                     </ListPanel>
                   </Children>

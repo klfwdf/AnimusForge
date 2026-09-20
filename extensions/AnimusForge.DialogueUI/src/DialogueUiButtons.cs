@@ -33,6 +33,11 @@ namespace AnimusForge.DialogueUI
                         text.Brush.FontSize = fontSize;
                         text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
                         text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
+                        foreach (Style s in text.Brush.Styles)
+                        {
+                            s.FontColor = Color.FromUint(0xFF382919);
+                            if (s.DefaultLayer != null) s.DefaultLayer.Color = Color.FromUint(0xFF382919);
+                        }
                     }
                 }
             }
@@ -68,6 +73,11 @@ namespace AnimusForge.DialogueUI
                         text.Brush.FontSize = fontSize;
                         text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
                         text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center;
+                        foreach (Style s in text.Brush.Styles)
+                        {
+                            s.FontColor = Color.FromUint(0xFFFFF4DB);
+                            if (s.DefaultLayer != null) s.DefaultLayer.Color = Color.FromUint(0xFFFFF4DB);
+                        }
                     }
                 }
             }
@@ -87,30 +97,36 @@ namespace AnimusForge.DialogueUI
 
             foreach (Style style in brush.Styles)
             {
-                // Remove all extra layers to completely prevent vanilla green/metallic layers from showing on hover
+                // CRITICAL: NEVER call style.RemoveLayer(...) because Brush.Layers still holds the layer name.
+                // Doing so causes BrushRenderer.Render to throw NullReferenceException on the missing layer.
+                // Instead, hide extra layers cleanly by setting AlphaFactor = 0, Sprite = null, IsHidden = true.
                 StyleLayer[] layers = style.GetLayers();
                 if (layers != null)
                 {
                     for (int i = 0; i < layers.Length; i++)
                     {
-                        if (layers[i] != style.DefaultLayer && !string.IsNullOrEmpty(layers[i].Name))
+                        if (layers[i] != style.DefaultLayer)
                         {
-                            style.RemoveLayer(layers[i].Name);
+                            layers[i].AlphaFactor = 0f;
+                            layers[i].Sprite = null;
+                            layers[i].IsHidden = true;
                         }
                     }
                 }
                 if (style.DefaultLayer != null)
                 {
+                    style.DefaultLayer.IsHidden = false;
                     style.DefaultLayer.Color = Color.White;
                     style.DefaultLayer.ColorFactor = 1f;
                     style.DefaultLayer.AlphaFactor = 1f;
                     if (style.Name == "Hovered" || style.Name == "Selected")
                     {
-                        style.DefaultLayer.Sprite = hover;
+                        style.DefaultLayer.Sprite = hover ?? normal;
                     }
                     else if (style.Name == "Pressed")
                     {
-                        style.DefaultLayer.Sprite = pressed;
+                        style.DefaultLayer.Sprite = pressed ?? normal;
+                        if (normalSprite == pressedSprite) style.DefaultLayer.AlphaFactor = 0.82f;
                     }
                     else
                     {
