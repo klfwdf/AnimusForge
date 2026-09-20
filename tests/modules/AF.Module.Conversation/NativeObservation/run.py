@@ -5,6 +5,11 @@ ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--baseline',action='store_true');p.add_argument('--mutate',choices=['move-back-to-worker','duplicate-observation','skip-target','tts-back-to-worker']);a=p.parse_args()
 s=(subprocess.check_output(['git','show','00574541:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.baseline else (ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig'))
+# The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source, NEW_SIGNATURE
+if NEW_SIGNATURE in s: s=projected_source(s)
 body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 marker='\t\tstring cleaned = "";' if '\t\tstring cleaned = "";' in body else '\t\tstring nativeMainReplyTargetUnavailableReason = "";'
 start=body.index(marker);end=body.index('\t\tstring nativePostprocessStartTargetUnavailableReason = "";',start);piece=body[start:end]

@@ -14,7 +14,12 @@ import re
 for name in baseline_names:baseline=re.sub(r'\b'+name+r'\b','Baseline'+name,baseline)
 code=code.replace('@@BASELINE_METHODS@@',baseline)
 if a.native:
- shout=read('ShoutBehavior.cs');turn=ex.declaration(shout,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
+ shout=read('ShoutBehavior.cs')
+ import sys
+ sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+ from turn_extraction import projected_source, NEW_SIGNATURE
+ if NEW_SIGNATURE in shout: shout=projected_source(shout)
+ turn=ex.declaration(shout,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
  start=turn.index('\t\tTask<string> persistedHeroHistoryTask = Task.Run(') if a.original else turn.index('\t\tFunc<string> nativeHistoryWork = await')
  end=turn.index('\t\tStopwatch nativePreprocessSw =',start)
  join=turn.index('\t\tstring persistedHeroHistory = ((await persistedHeroHistoryTask)')

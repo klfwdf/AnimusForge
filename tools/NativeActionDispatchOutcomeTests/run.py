@@ -7,6 +7,11 @@ baseline='646dd987' if args.original else '8da4fbd7' if args.timeout_baseline el
 s=subprocess.check_output(['git','show',baseline+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@RESULT@@',ex.declaration(s,'private sealed class NativeConversationGameActionResult')).replace('@@QUEUE@@',ex.declaration(s,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('))
+# The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source, NEW_SIGNATURE
+if NEW_SIGNATURE in s: s=projected_source(s)
 body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 consumer_end='\t\tnativeActionSw.Stop();' if '\t\tnativeActionSw.Stop();' in body else '\t\tnativeTurnSw.Stop();'
 consumer=body[body.index('\t\tif (nativeActionResult?.ResponseDiscarded == true)'):body.index(consumer_end)]

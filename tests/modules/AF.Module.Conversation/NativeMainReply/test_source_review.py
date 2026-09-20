@@ -4,18 +4,22 @@ import importlib.util,subprocess,unittest
 from unittest.mock import patch
 ROOT=Path(__file__).resolve().parents[4]
 spec=importlib.util.spec_from_file_location('inverse',ROOT/'tools/NativeConversationAdmissionTests/owner_extraction.py');inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source
 class MainReplySourceTests(unittest.TestCase):
     def test_full_source_restores_to_previous_candidate(self):
         live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
         old=subprocess.check_output(['git','show','dabee763:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
         self.assertEqual(inverse.restore_main_reply('ShoutBehavior.cs',live),old)
     def test_actual_consumer_calls_stage_once_before_raw_actions(self):
-        live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');edit=inverse.MAIN_REPLY_REVIEW['files']['ShoutBehavior.cs']['edits'][0]
+        live=projected_source((ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig'));edit=inverse.MAIN_REPLY_REVIEW['files']['ShoutBehavior.cs']['edits'][0]
         self.assertEqual(live.count(edit['after']),1);self.assertNotIn(edit['before'],live)
         self.assertLess(live.index('if (!nativeMainReply.CanContinue)'),live.index('string nativeMainReplyTargetUnavailableReason = "";'))
         self.assertNotIn('Task.Run',edit['after'])
     def test_changed_consumer_or_unrelated_code_rejected(self):
         live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
+        live=projected_source(live)
         for changed in [live.replace('if (!nativeMainReply.CanContinue)','if (false)',1),live+'\n// unrelated drift\n']:
             with self.assertRaisesRegex(AssertionError,'Unreviewed J07b source drift'):
                 inverse.restore_main_reply('ShoutBehavior.cs',changed)

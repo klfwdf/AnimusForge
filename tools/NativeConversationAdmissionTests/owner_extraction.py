@@ -28,6 +28,11 @@ def restore_main_reply(path,source):
         assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==digest, 'Unreviewed main-reply dependency: '+file
     return restore_packet(MAIN_REPLY_REVIEW,path,restore_observation(path,source))
 def restore_observation(path,source):
+    if path == "ShoutBehavior.cs":
+        import importlib.util
+        spec=importlib.util.spec_from_file_location("turn_projection",ROOT/"tools/NativeConversationAdmissionTests/turn_extraction.py")
+        turn=importlib.util.module_from_spec(spec);spec.loader.exec_module(turn)
+        source=turn.projected_source(source)
     return restore_packet(OBSERVATION_REVIEW,path,source)
 if __name__=='__main__':
     for path in REVIEW['files']:

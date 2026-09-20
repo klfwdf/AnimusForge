@@ -53,8 +53,9 @@ assert "targetHero, targetCharacter, targetAgentIndex, out partyTransferTroopOpt
 scene_group = method("ShoutBehavior.cs", "private async Task HandleGroupResponsePerHeroIndependent(")
 assert "BeginGuardrailRuntimeScope()" in scene_group and "ctx?.MentionedEntities" in scene_group
 
-native = method("ShoutBehavior.cs", "private async Task<string> SubmitNativeConversationTextInternalAsync(")
-ordered(native, "BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex", "BeginGuardrailRuntimeScope()", "TryRunSceneUnifiedActionPostprocess(")
+native = method("ShoutBehavior.NativeTurnPrompt.cs", "public async Task<NativeConversationTurnStep> BuildPromptAsync()")
+native += method("ShoutBehavior.NativeTurnCommit.cs", "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync()")
+ordered(native, "BuildNativePromptContextScheduledAsync(admission, nativeTargetLog, nativeTargetAgentIndex", "BeginGuardrailRuntimeScope()", "PrepareSceneUnifiedActionPostprocess(", "TryRequestSceneUnifiedActionPostprocess(", "CompleteSceneUnifiedActionPostprocess(")
 assert "SetGuardrailRuntimeTargetAgentIndex(nativeTargetAgentIndex)" in native
 scheduled = method("ShoutBehavior.NativePromptBuild.cs", "private async Task<MyBehavior.ShoutPromptContext> BuildNativePromptContextScheduledAsync(")
 # J06: begin/capture/complete run on the main thread; routing/retrieval use the guarded background slot.
