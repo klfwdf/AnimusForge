@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "d9e9aae156c208d599f95354d10ba45e142155a0",
+  "sourceRevision": "e5c14b8a3cb471a30a07783d7fe3700ac8d9cbe3",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,29 +167,29 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
+      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
     },
     {
       "id": "native.history.dispatch",
-      "path": "ShoutBehavior.cs",
-      "start": 20158,
-      "end": 20161,
+      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "start": 75,
+      "end": 78,
       "symbol": "\"persisted_history_capture\", nativeTargetLog, nativeTargetAgentIndex,",
       "match": "exact",
-      "status": "mixed-host",
+      "status": "guarded-game-adapter",
       "note": "原 admission 验证后捕获 work",
-      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
+      "fileSha256": "3758dfc47c774319eb5bfa867d45646b8a77255eca4582cdcdde97f69029af91"
     },
     {
       "id": "native.history.accept",
-      "path": "ShoutBehavior.cs",
-      "start": 20195,
-      "end": 20198,
-      "symbol": "if (!await RunNativeConversationMainThreadFuncAsync(\"persisted_history_accept\"",
+      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "start": 114,
+      "end": 117,
+      "symbol": "if (!await _owner.RunNativeConversationMainThreadFuncAsync(\"persisted_history_accept\"",
       "match": "contains",
-      "status": "mixed-host",
+      "status": "guarded-game-adapter",
       "note": "使用结果前再验原 admission",
-      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
+      "fileSha256": "3758dfc47c774319eb5bfa867d45646b8a77255eca4582cdcdde97f69029af91"
     },
     {
       "id": "native.dispatch.shared",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
+      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
     },
     {
       "id": "memory.acceptance",
@@ -3274,13 +3274,145 @@
     {
       "id": "native.raw.observation",
       "path": "ShoutBehavior.cs",
-      "start": 20536,
-      "end": 20539,
+      "start": 20087,
+      "end": 20090,
       "symbol": "private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753"
+      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
+    },
+    {
+      "id": "native.turn.entry",
+      "path": "ShoutBehavior.cs",
+      "start": 20081,
+      "end": 20085,
+      "symbol": "private Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
+      "fileSha256": "c61eb0ba863bfa770666c1aae116b0a0b2bb164383febad7e4b5abfa9bb779d5"
+    },
+    {
+      "id": "native.turn.coordinator",
+      "path": "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationTurnCoordinator.cs",
+      "start": 10,
+      "end": 22,
+      "symbol": "internal static async Task<string> RunAsync(INativeConversationTurnHost host)",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "四阶段顺序/停止/异常传播 owner；终态不重试",
+      "fileSha256": "43ea7ea866a0029c05062e3c9f9f30a78a13ec5df2770ac3f43bd9c48f46f553"
+    },
+    {
+      "id": "native.turn.capture",
+      "path": "ShoutBehavior.NativeTurn.cs",
+      "start": 69,
+      "end": 105,
+      "symbol": "private async Task<bool> CaptureOnGameThreadAsync(string phase, Action capture)",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "游戏线程身份检查、ExecutionContext 恢复、捕获异常传播与原 pending 撤销",
+      "fileSha256": "ac657218ac8ece14a7cbca17edd2ddd04e27c943ff712374ffd4026088369ab8"
+    },
+    {
+      "id": "native.turn.prepare",
+      "path": "ShoutBehavior.NativeTurn.cs",
+      "start": 107,
+      "end": 178,
+      "symbol": "public async Task<NativeConversationTurnStep> PrepareAsync()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "主动开场/人物就绪/原 preparation capture",
+      "fileSha256": "ac657218ac8ece14a7cbca17edd2ddd04e27c943ff712374ffd4026088369ab8"
+    },
+    {
+      "id": "native.turn.prompt",
+      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "start": 66,
+      "end": 130,
+      "symbol": "public async Task<NativeConversationTurnStep> BuildPromptAsync()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "历史 fork/join、五步 Prompt、受保护的规则与消息 capture",
+      "fileSha256": "3758dfc47c774319eb5bfa867d45646b8a77255eca4582cdcdde97f69029af91"
+    },
+    {
+      "id": "native.turn.prompt-rules",
+      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "start": 132,
+      "end": 190,
+      "symbol": "private void CapturePromptRules()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "主线程 Prompt 领域资格与目标列表，不复制领域规则",
+      "fileSha256": "3758dfc47c774319eb5bfa867d45646b8a77255eca4582cdcdde97f69029af91"
+    },
+    {
+      "id": "native.turn.prompt-messages",
+      "path": "ShoutBehavior.NativeTurnPrompt.cs",
+      "start": 192,
+      "end": 233,
+      "symbol": "private void CapturePromptMessages()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "主线程共享历史/AFEF 消息装配与显示名捕获",
+      "fileSha256": "3758dfc47c774319eb5bfa867d45646b8a77255eca4582cdcdde97f69029af91"
+    },
+    {
+      "id": "native.turn.presentation",
+      "path": "ShoutBehavior.NativeTurnPresentation.cs",
+      "start": 23,
+      "end": 109,
+      "symbol": "public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "唯一正文 stage、raw/观察/提前 TTS 与显示通知；失败停止",
+      "fileSha256": "f95c358e5e4202ae01acab18ec08c6f69ef43547c2bce2c568f0cea24951fe45"
+    },
+    {
+      "id": "native.turn.commit",
+      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "start": 48,
+      "end": 160,
+      "symbol": "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "共享后处理 prepare/game→request/worker→complete/game，原权威动作/终态",
+      "fileSha256": "486cdd1de84c2f8e814ea208e91b5548ac73bb3eaa1b116046aa50671ed52c90"
+    },
+    {
+      "id": "native.turn.postprocess-rules",
+      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "start": 162,
+      "end": 202,
+      "symbol": "private void CapturePostprocessRules()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "后处理历史与领域资格留在所属线程",
+      "fileSha256": "486cdd1de84c2f8e814ea208e91b5548ac73bb3eaa1b116046aa50671ed52c90"
+    },
+    {
+      "id": "native.turn.postprocess-targets",
+      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "start": 204,
+      "end": 223,
+      "symbol": "private void CapturePostprocessTargets()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "决斗筹码、场景规则、运行期目标 metadata 捕获",
+      "fileSha256": "486cdd1de84c2f8e814ea208e91b5548ac73bb3eaa1b116046aa50671ed52c90"
+    },
+    {
+      "id": "native.turn.direct-scene",
+      "path": "ShoutBehavior.NativeTurnCommit.cs",
+      "start": 225,
+      "end": 233,
+      "symbol": "private void CaptureDirectSceneCommand()",
+      "match": "exact",
+      "status": "offline-verified",
+      "note": "保留 GCCZ 早期命令次序，AF 桥调用在校验后的游戏线程；不改玩法",
+      "fileSha256": "486cdd1de84c2f8e814ea208e91b5548ac73bb3eaa1b116046aa50671ed52c90"
     }
   ]
 }
