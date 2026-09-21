@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs" Link="EconomyPromptProjection.cs" />
-    <Compile Include="../../../../src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs" Link="EconomyTrustPolicy.cs" />
+    <Compile Include=".generated/ProductionDebtRecord.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs" Link="RewardSystemBehavior.DebtNormalizationPolicy.cs" />
   </ItemGroup>
 </Project>

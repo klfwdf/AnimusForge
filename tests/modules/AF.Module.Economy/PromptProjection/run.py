@@ -10,7 +10,8 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
-PRODUCTION = ROOT / "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs"
+PROJECTION = ROOT / "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs"
+TRUST_POLICY = ROOT / "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs"
 
 
 def load_declaration():
@@ -38,6 +39,15 @@ def verify_live_wiring() -> None:
         assert method.index("NormalizeDebtRecord(") < method.index("EconomyPromptProjection.Build"), \
             f"Debt normalization moved behind detached projection: {marker}"
         assert "new EconomyDebtPromptLine(" in method, f"Live debt values were not detached: {marker}"
+    trust_calls = {
+        "private static int ClampTrust(": "EconomyTrustPolicy.Clamp(",
+        "public static int GetTrustLevelIndex(": "EconomyTrustPolicy.GetLevelIndex(",
+        "public static string GetTrustLevelText(": "EconomyTrustPolicy.GetLevelText(",
+        "public static string GetTrustBehaviorText(": "EconomyTrustPolicy.GetBehaviorText(",
+        "public static string GetTrustActionGuideText(": "EconomyTrustPolicy.GetActionGuideText(",
+    }
+    for marker, call in trust_calls.items():
+        assert declaration(reward, marker).count(call) == 1, f"Trust policy wiring drifted: {marker}"
     print("PASS production capture -> detached projection wiring")
 
 
@@ -70,24 +80,36 @@ def main() -> int:
     assert code == 0, "Current economy prompt projection failed"
 
     if not args.skip_mutation:
-        mutant = output / "mutant"
-        mutant.mkdir(exist_ok=True)
-        source = PRODUCTION.read_text(encoding="utf-8-sig")
-        old = "【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除"
-        assert source.count(old) == 1, "Mutation anchor drifted"
-        (mutant / "EconomyPromptProjection.cs").write_text(source.replace(old, "【债务确认】已处理", 1), encoding="utf-8")
-        project = mutant / "Mutant.csproj"
-        project.write_text(
-            '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType>'
-            '<TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems>'
-            '<Nullable>disable</Nullable></PropertyGroup><ItemGroup>'
-            f'<Compile Include="{HERE / "Program.cs"}" Link="Program.cs" />'
-            '<Compile Include="EconomyPromptProjection.cs" /></ItemGroup></Project>', encoding="utf-8")
-        code, log = run(args.dotnet, project, output)
-        (mutant / "run.log").write_text(log, encoding="utf-8")
-        assert code != 0 and "FAIL merchant confirmation" in log and "error CS" not in log, \
-            "Merchant confirmation mutation did not reach the expected runtime assertion\n" + log
-        print("PASS behavioral mutation rejected: merchant_confirmation")
+        projection = PROJECTION.read_text(encoding="utf-8-sig")
+        trust = TRUST_POLICY.read_text(encoding="utf-8-sig")
+        mutations = (
+            ("merchant_confirmation", "projection",
+             "【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除",
+             "【债务确认】已处理", "FAIL merchant confirmation"),
+            ("trust_rounding", "trust", "Math.Floor(normalized * 10.0)",
+             "Math.Ceiling(normalized * 10.0)", "FAIL trust level boundaries"),
+        )
+        for name, target, old, new, failure in mutations:
+            mutant = output / ("mutant-" + name)
+            mutant.mkdir(exist_ok=True)
+            mutated_projection = projection.replace(old, new, 1) if target == "projection" else projection
+            mutated_trust = trust.replace(old, new, 1) if target == "trust" else trust
+            assert (projection if target == "projection" else trust).count(old) == 1, "Mutation anchor drifted: " + name
+            (mutant / "EconomyPromptProjection.cs").write_text(mutated_projection, encoding="utf-8")
+            (mutant / "EconomyTrustPolicy.cs").write_text(mutated_trust, encoding="utf-8")
+            project = mutant / "Mutant.csproj"
+            project.write_text(
+                '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType>'
+                '<TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems>'
+                '<Nullable>disable</Nullable></PropertyGroup><ItemGroup>'
+                f'<Compile Include="{HERE / "Program.cs"}" Link="Program.cs" />'
+                '<Compile Include="EconomyPromptProjection.cs" /><Compile Include="EconomyTrustPolicy.cs" />'
+                '</ItemGroup></Project>', encoding="utf-8")
+            code, log = run(args.dotnet, project, output)
+            (mutant / "run.log").write_text(log, encoding="utf-8")
+            assert code != 0 and failure in log and "error CS" not in log, \
+                name + " mutation did not reach the expected runtime assertion\n" + log
+            print("PASS behavioral mutation rejected: " + name)
     return 0
 
 

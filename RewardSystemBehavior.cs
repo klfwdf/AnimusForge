@@ -776,12 +776,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private const int TrustGainOnQuestSuccess = 5;
 
-	private static readonly string[] TrustLevelTexts = new string[10] { "彻底不信", "极度怀疑", "强烈戒备", "不太信任", "保留态度", "中性观望", "基本信任", "较高信任", "高度信任", "完全信赖" };
-
-	private static readonly string[] TrustAiBehaviorTexts = new string[10] { "彻底不信任玩家，优先回避一切经济接触。", "仍高度怀疑玩家，只愿进行极端保守的交易试探。", "明显戒备，允许有限交易但条件苛刻。", "偏不信任，接受交易但会要求更高风险补偿。", "保留态度，交易可谈但会附加明显溢价。", "中性观望，可做常规交易但仍以安全为先。", "达到基本信任，可在可控风险下提供信用交易。", "较高信任，可提供中大额信用交易。", "高度信任，可提供高额信用交易。", "完全信赖，可提供接近无限额的信用交易。" };
-
-	private static readonly string[] TrustAiActionGuideTexts = new string[10] { "L1：拒绝任何经济往来。禁止买卖、禁止赊账、禁止借款；不输出任何新增交易/欠款标签。", "L2：可进行即时交易，但应明显高于 guidePrice 定价以覆盖风险；禁止赊账/借款。", "L3：可进行即时交易，定价仍偏高；禁止赊账/借款。", "L4：可进行即时交易，定价可在“偏高到合理”之间浮动；禁止赊账/借款。", "L5：可进行即时交易，定价趋于合理但可保留风险溢价；禁止赊账/借款。", "L6：可进行即时交易，定价基本合理；禁止赊账/借款。", "L7：可赊账/借款（小到中额），额度需结合NPC财力与局势评估；默认计息。", "L8：可赊账/借款（中到较大额），额度需结合NPC财力与局势评估；默认计息。", "L9：可赊账/借款（大额），额度需结合NPC财力与局势评估；默认计息。", "L10：可赊账/借款（极高额度），仍需结合NPC财力、性格与风险控制；默认计息。" };
-
 	private Dictionary<string, DebtRecord> _debts = new Dictionary<string, DebtRecord>();
 
 	// New promises are queued until their originating conversation has naturally closed before calling QuestBase.StartQuest.
@@ -3032,26 +3026,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static bool HasDebtContent(DebtRecord rec)
 	{
-		if (rec == null)
-		{
-			return false;
-		}
-		if (rec.OwedGold > 0)
-		{
-			return true;
-		}
-		if (rec.OwedItems == null)
-		{
-			return false;
-		}
-		foreach (KeyValuePair<string, int> owedItem in rec.OwedItems)
-		{
-			if (owedItem.Value > 0)
-			{
-				return true;
-			}
-		}
-		return false;
+		return EconomyDebtNormalizationPolicy.HasContent(rec);
 	}
 
 	private static int NormalizeDueDays(int days)
@@ -3065,19 +3040,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			return 120;
 		}
 		return days;
-	}
-
-	private static float Clamp01(float v)
-	{
-		if (v < 0f)
-		{
-			return 0f;
-		}
-		if (v > 1f)
-		{
-			return 1f;
-		}
-		return v;
 	}
 
 	private static int ComputeWeeklyOverdueTrustPenaltyByDebtValue(int debtValue)
@@ -3177,19 +3139,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			num2 = OverduePenaltyMaxWeeks;
 		}
 		return num2;
-	}
-
-	private static int NormalizeLlmPenaltyValue(int value)
-	{
-		if (value < 0)
-		{
-			return 0;
-		}
-		if (value > 10)
-		{
-			return 10;
-		}
-		return value;
 	}
 
 	private static int NormalizeLlmTrustDeltaValue(int value)
@@ -4738,53 +4687,27 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static int ClampTrust(int value)
 	{
-		if (value < -100)
-		{
-			return -100;
-		}
-		if (value > 100)
-		{
-			return 100;
-		}
-		return value;
-	}
-
-	private static int ToTenLevelIndexByTrust(int trust)
-	{
-		double num = ((double)ClampTrust(trust) + 100.0) / 200.0;
-		int num2 = (int)Math.Floor(num * 10.0) + 1;
-		if (num2 < 1)
-		{
-			num2 = 1;
-		}
-		if (num2 > 10)
-		{
-			num2 = 10;
-		}
-		return num2;
+		return EconomyTrustPolicy.Clamp(value);
 	}
 
 	public static int GetTrustLevelIndex(int trust)
 	{
-		return ToTenLevelIndexByTrust(trust);
+		return EconomyTrustPolicy.GetLevelIndex(trust);
 	}
 
 	public static string GetTrustLevelText(int trust)
 	{
-		int num = ToTenLevelIndexByTrust(trust);
-		return TrustLevelTexts[num - 1];
+		return EconomyTrustPolicy.GetLevelText(trust);
 	}
 
 	public static string GetTrustBehaviorText(int trust)
 	{
-		int num = ToTenLevelIndexByTrust(trust);
-		return TrustAiBehaviorTexts[num - 1];
+		return EconomyTrustPolicy.GetBehaviorText(trust);
 	}
 
 	public static string GetTrustActionGuideText(int trust)
 	{
-		int num = ToTenLevelIndexByTrust(trust);
-		return TrustAiActionGuideTexts[num - 1];
+		return EconomyTrustPolicy.GetActionGuideText(trust);
 	}
 
 	private static string BuildNpcTrustKey(Hero npc)
@@ -8984,178 +8907,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private void NormalizeDebtRecord(DebtRecord rec)
 	{
-		if (rec == null)
-		{
-			return;
-		}
-		float nowCampaignDay = GetNowCampaignDay();
-		if (rec.DebtLines == null)
-		{
-			rec.DebtLines = new List<DebtRecord.DebtLine>();
-		}
-		if (rec.OwedItems == null)
-		{
-			rec.OwedItems = new Dictionary<string, int>();
-		}
-		if (rec.DebtLines.Count == 0)
-		{
-			if (rec.OwedGold > 0)
-			{
-				float num = ((rec.CreatedDay > 0f) ? rec.CreatedDay : nowCampaignDay);
-				float dueDay = ((rec.DueDay > 0f) ? rec.DueDay : (num + 1f));
-				rec.DebtLines.Add(new DebtRecord.DebtLine
-				{
-					DebtId = BuildDebtId(),
-					IsGold = true,
-					ItemId = null,
-					IsDueUnlimited = false,
-					IsItemUnavailableDeclared = false,
-					InitialAmount = rec.OwedGold,
-					RemainingAmount = rec.OwedGold,
-					CreatedDay = num,
-					DueDay = dueDay,
-					BestPreDueCoverage = 0f,
-					OnTimePenaltyTierApplied = 0,
-					OverduePenaltyDaysApplied = 0,
-					LastOverduePenaltyDay = -1,
-					OverdueTrustPenaltyPerDay = 0,
-					OverdueRelationPenaltyPerDay = 0,
-					CompensationUnitPrice = 0,
-					CompensationGoldCredit = 0
-				});
-			}
-			foreach (KeyValuePair<string, int> owedItem in rec.OwedItems)
-			{
-				if (!string.IsNullOrWhiteSpace(owedItem.Key) && owedItem.Value > 0)
-				{
-					float num2 = ((rec.CreatedDay > 0f) ? rec.CreatedDay : nowCampaignDay);
-					float dueDay2 = ((rec.DueDay > 0f) ? rec.DueDay : (num2 + 1f));
-					rec.DebtLines.Add(new DebtRecord.DebtLine
-					{
-						DebtId = BuildDebtId(),
-						IsGold = false,
-						ItemId = owedItem.Key,
-						IsDueUnlimited = false,
-						IsItemUnavailableDeclared = false,
-						InitialAmount = owedItem.Value,
-						RemainingAmount = owedItem.Value,
-						CreatedDay = num2,
-						DueDay = dueDay2,
-						BestPreDueCoverage = 0f,
-						OnTimePenaltyTierApplied = 0,
-						OverduePenaltyDaysApplied = 0,
-						LastOverduePenaltyDay = -1,
-						OverdueTrustPenaltyPerDay = 0,
-						OverdueRelationPenaltyPerDay = 0,
-						CompensationUnitPrice = 0,
-						CompensationGoldCredit = 0
-					});
-				}
-			}
-		}
-		List<DebtRecord.DebtLine> list = new List<DebtRecord.DebtLine>();
-		for (int i = 0; i < rec.DebtLines.Count; i++)
-		{
-			DebtRecord.DebtLine debtLine = rec.DebtLines[i];
-			if (debtLine == null)
-			{
-				continue;
-			}
-			debtLine.RemainingAmount = Math.Max(0, debtLine.RemainingAmount);
-			if (debtLine.RemainingAmount > 0 && (debtLine.IsGold || !string.IsNullOrWhiteSpace(debtLine.ItemId)))
-			{
-				if (string.IsNullOrWhiteSpace(debtLine.DebtId))
-				{
-					debtLine.DebtId = BuildDebtId();
-				}
-				if (debtLine.InitialAmount <= 0)
-				{
-					debtLine.InitialAmount = debtLine.RemainingAmount;
-				}
-				if (debtLine.InitialAmount < debtLine.RemainingAmount)
-				{
-					debtLine.InitialAmount = debtLine.RemainingAmount;
-				}
-				if (debtLine.CreatedDay <= 0f)
-				{
-					debtLine.CreatedDay = nowCampaignDay;
-				}
-				if (debtLine.IsGold)
-				{
-					debtLine.IsItemUnavailableDeclared = false;
-				}
-				if (debtLine.IsDueUnlimited)
-				{
-					debtLine.DueDay = 0f;
-				}
-				else if (debtLine.DueDay <= 0f)
-				{
-					debtLine.DueDay = debtLine.CreatedDay + 1f;
-				}
-				debtLine.BestPreDueCoverage = Clamp01(debtLine.BestPreDueCoverage);
-				debtLine.OnTimePenaltyTierApplied = Math.Max(0, Math.Min(5, debtLine.OnTimePenaltyTierApplied));
-				debtLine.OverduePenaltyDaysApplied = Math.Max(0, Math.Min(OverduePenaltyMaxWeeks, debtLine.OverduePenaltyDaysApplied));
-				if (debtLine.LastOverduePenaltyDay < -1)
-				{
-					debtLine.LastOverduePenaltyDay = -1;
-				}
-				debtLine.OverdueTrustPenaltyPerDay = NormalizeLlmPenaltyValue(debtLine.OverdueTrustPenaltyPerDay);
-				debtLine.OverdueRelationPenaltyPerDay = NormalizeLlmPenaltyValue(debtLine.OverdueRelationPenaltyPerDay);
-				debtLine.CompensationUnitPrice = Math.Max(0, debtLine.CompensationUnitPrice);
-				debtLine.CompensationGoldCredit = Math.Max(0, debtLine.CompensationGoldCredit);
-				debtLine.UnlimitedTrustPenaltyNumeratorCarry = Math.Max(0L, Math.Min(UnlimitedDebtPenaltyReferenceValue - 1L, debtLine.UnlimitedTrustPenaltyNumeratorCarry));
-				debtLine.DebtNote = NormalizeDebtNote(debtLine.DebtNote);
-				list.Add(debtLine);
-			}
-		}
-		rec.DebtLines = list;
-		rec.OwedGold = 0;
-		rec.OwedItems = new Dictionary<string, int>();
-		float num3 = 0f;
-		float num4 = 0f;
-		for (int j = 0; j < rec.DebtLines.Count; j++)
-		{
-			DebtRecord.DebtLine debtLine2 = rec.DebtLines[j];
-			if (debtLine2 == null || debtLine2.RemainingAmount <= 0)
-			{
-				continue;
-			}
-			if (debtLine2.IsGold)
-			{
-				rec.OwedGold += debtLine2.RemainingAmount;
-			}
-			else
-			{
-				string text = debtLine2.ItemId ?? "";
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					continue;
-				}
-				if (rec.OwedItems.TryGetValue(text, out var value))
-				{
-					rec.OwedItems[text] = value + debtLine2.RemainingAmount;
-				}
-				else
-				{
-					rec.OwedItems[text] = debtLine2.RemainingAmount;
-				}
-			}
-			if (num3 <= 0f || debtLine2.CreatedDay < num3)
-			{
-				num3 = debtLine2.CreatedDay;
-			}
-			if (!debtLine2.IsDueUnlimited && debtLine2.DueDay > 0f && (num4 <= 0f || debtLine2.DueDay < num4))
-			{
-				num4 = debtLine2.DueDay;
-			}
-		}
-		rec.CreatedDay = num3;
-		rec.DueDay = num4;
-		if (!HasDebtContent(rec))
-		{
-			rec.CreatedDay = 0f;
-			rec.DueDay = 0f;
-		}
+		EconomyDebtNormalizationPolicy.Normalize(
+			rec,
+			GetNowCampaignDay(),
+			BuildDebtId,
+			OverduePenaltyMaxWeeks,
+			LlmManualPenaltyMax);
 	}
 
 	private static string BuildDebtDueStatusText(float dueDay, bool isDueUnlimited = false)
@@ -9198,16 +8955,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static string NormalizeDebtNote(string note)
 	{
-		string text = (note ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		if (text.Length > 120)
-		{
-			text = text.Substring(0, 120);
-		}
-		return text;
+		return EconomyDebtNormalizationPolicy.NormalizeNote(note);
 	}
 
 	private int EstimateDebtLineRemainingValue(Hero npc, DebtRecord.DebtLine line)

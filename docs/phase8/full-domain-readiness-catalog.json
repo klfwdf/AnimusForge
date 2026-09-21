@@ -440,12 +440,15 @@
         "RewardSystemBehavior.RpItemIntroduction.cs",
         "RewardSystemBehavior.cs",
         "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs",
+        "src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs",
         "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
         "src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs",
         "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs",
         "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
         "src/modules/AF.Module.Economy/Planning/LegacyEconomyRewardDebtAdapter.cs",
-        "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs"
+        "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs",
+        "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
