@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "07feb572e06e932b68dfc58cecd099aea61bb4e9",
+  "sourceRevision": "deb421ae981309d082e4ee3fefcff14677a02d27",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4413,7 +4413,7 @@
       "match": "contains",
       "status": "wired-j12a-in-progress",
       "note": "Hero action routing and partial/unknown batch outcome",
-      "fileSha256": "a9a49fa799eb58bd4f0fda855409e512891fea0cc1dd36b38ca6463c0c270fb8"
+      "fileSha256": "07723c2a3d04dba811ae7ef6f97bd82a4edf06d6cb8f4db28213e4a87092cfec"
     },
     {
       "id": "economy.execution.party",
@@ -4424,7 +4424,7 @@
       "match": "contains",
       "status": "wired-j12a-in-progress",
       "note": "Party action routing and partial/unknown batch outcome",
-      "fileSha256": "525730bf979b130d29b69b42ee494bcb293a7e232e2e28cd3fdd6762c995b30d"
+      "fileSha256": "877488475c52a91f87e0059c5cc0ac730d85f83e9a20bb854f765cdb26b9f758"
     },
     {
       "id": "economy.execution.merchant",
@@ -4435,7 +4435,18 @@
       "match": "contains",
       "status": "wired-j12a-in-progress",
       "note": "Merchant action routing and partial/unknown batch outcome",
-      "fileSha256": "3284f19f57f358e34366b51f67581becd0036afb16bb8b062085e24d98df7c1a"
+      "fileSha256": "9a90314bb7dd6fdd9573dabff687b548e9f20a8fe2d86533d69277a4c8dbcb9d"
+    },
+    {
+      "id": "economy.execution.batch",
+      "path": "src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs",
+      "start": 70,
+      "end": 70,
+      "symbol": "internal static class EconomyReplayBatchCoordinator",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "shared Hero/Party/Merchant batch count, fact retention and partial/unknown terminal owner",
+      "fileSha256": "256320517b819b152b9ab2e18e311420e5449eadde349b3d3fc9b7d44da6544c"
     }
   ]
 }
