@@ -1,8 +1,10 @@
-# 当前范围：J12a Economy 首包已接线（2026-09-21）
+# 当前范围：J12a Economy Trust / Debt 归一已接线（2026-09-21）
 
 产品 `3f2c454e` 将既有 public Economy contract/planner/main-thread port 原样归入 `src/AF.Contracts/Compatibility/Economy` 与 `src/modules/AF.Module.Economy/{Planning,Execution}`，并以 `Projection/EconomyPromptProjection.cs` 承担 Debt/Trust detached 文本投影。`RewardSystemBehavior.cs:5108,5119,18847,18878` 仍在主线程读取/规范化/估值后传 string/int-only 输入；真实 Prompt consumers 不变。
 
-后续 `07feb572` 将 Hero/Party/Merchant 三个完整 replay partial 100% 原样迁入 `Execution/{Hero,Party,Merchant}`，并把 11 个 live asset authorization 方法抽入 `Authorization`；删除零调用旧 resolver。随后 `deb421ae` 建立共享 `EconomyReplayBatchCoordinator`，三个 domain step delegate 保留唯一 live mutation；null/reject/applied、prior fact、partial/unknown 和 unknown 后停止不再由三份循环重复。状态仍 **J12a_IN_PROGRESS**：Reward/Loan capture、债务/信任生命周期与 legacy mixed tags 未闭合。Debug 双 API + Bootstrap、定向契约与 404 锚点地图已过；Release/LIVE/SAVE/真实经济仍 NOT-RUN。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j12a-economy-start-20260921)和[J12计划](../plans/j12-domain-owners-plan.md)。
+后续 `07feb572` 将 Hero/Party/Merchant 三个完整 replay partial 100% 原样迁入 `Execution/{Hero,Party,Merchant}`，并把 11 个 live asset authorization 方法抽入 `Authorization`；删除零调用旧 resolver。`deb421ae` 建立共享 `EconomyReplayBatchCoordinator`，三个 domain step delegate 保留唯一 live mutation；null/reject/applied、prior fact、partial/unknown 和 unknown 后停止不再由三份循环重复。
+
+`54b55aa3` 新增 `Trust/EconomyTrustPolicy.cs` 与 `Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs`：前者承担 clamp、十级映射和 AI 语义文本；后者承担旧账迁移、line clamp、note、aggregate/date 重建和幂等归一。`RewardSystemBehavior` 仅保留 public/兼容 wrapper、game-thread campaign day 与 ID capture；private nested `DebtRecord`、JSON/SyncData/save identity 未迁移或改名。状态仍 **J12a_IN_PROGRESS**：Reward/Loan capture、Debt 创建/结清/到期/Quest、trust state application 与 legacy mixed tags 未闭合。Debug 双 API + Bootstrap、Projection/Trust 15+2、Debt 34+1、Persistence/Profile、Phase8 73 与 406 锚点地图已过；Release/LIVE/SAVE/真实经济仍 NOT-RUN。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j12a-economy-start-20260921)和[J12计划](../plans/j12-domain-owners-plan.md)。
 
 ## 以下为上一阶段 J11 范围
 
