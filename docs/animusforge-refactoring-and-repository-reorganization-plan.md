@@ -3,6 +3,8 @@
 
 **状态：J07/J08/J09/J10_OFFLINE_VERIFIED。** J10 的 Scene/Courier 渠道 owner、生命周期、提交时点与失败语义已完成必要离线验收；不是全项目 J17、实机、旧档或发布完成。下一步先制定 J11 制作组内部模块接缝计划，不在本节迁移 Policy/Gathering/GCCZ 玩法。
 
+J11 已形成有限实施计划 `docs/plans/j11-team-module-seams-plan.md`，状态 `PLANNED / NOT_STARTED`：13 个 internal 方法、31 个生产调用点按 Contracts → Policy/Gathering/Siege thin adapters → 原玩法 owner 分包；本次只写计划，没有开始搬文件或修改玩法。
+
 ## 产品结果
 
 | 责任 | 当前 owner / 生产接线 | 结果与保留边界 |

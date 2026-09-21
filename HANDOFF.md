@@ -8,5 +8,5 @@
 - **制作组边界**：Policy、Gathering、GCCZ 玩法未迁入主体；13 个内部 typed-port 方法、31 个真实调用点、308 行为断言与 3 个变异通过。
 - **未验证**：真实 Campaign/Mission、旧 SAVE、provider、live Economy/外交、子 MOD CLR、TTS/audio、帧/网络性能均 `NOT-RUN`；未 Stage/Deploy/Package、未操作游戏和存档。
 - **详细 HANDOFF**：`docs/handoffs/2026-09-21-j10-scene-courier-offline-closeout.md`。
-- **下一步**：只先完成 J11 的有限计划和责任矩阵，不直接迁玩法、不开放 J14 public Scene/Courier submit、不切默认路径。
+- **下一步**：按 `docs/plans/j11-team-module-seams-plan.md` 审阅并执行 J11 有限责任包；当前仅计划完成、生产尚未开工。不直接迁玩法、不开放 J14 public Scene/Courier submit、不切默认路径。
 - **位置**：施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；本地分支 `codex/af-modularize-j04-20260918`；交付目标 `origin/codex/af-main-refactor-continuation-20260831`；`.dotnet-cli-home/` 保留本地。
