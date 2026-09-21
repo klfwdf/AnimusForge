@@ -46,3 +46,4 @@ integrated_tabs_settings_preview.html
 # Campaign composition test build output (never product source).
 /tools/CampaignCompositionTests/.generated/
 /tools/HostCompositionTests/.generated/
+/tests/modules/AF.Module.Economy/PromptProjection/.generated/
