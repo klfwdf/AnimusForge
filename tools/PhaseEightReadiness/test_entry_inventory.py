@@ -26,6 +26,8 @@ EXPANDED_ENTRIES = {
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",

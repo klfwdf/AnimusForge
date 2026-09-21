@@ -448,7 +448,8 @@ internal static class Program
         string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
         string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"));
         string shout = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
-        string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"));
+        string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"))
+            + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"));
         string receipt = File.ReadAllText(Path.Combine(
             projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"));
         string snapshots = File.ReadAllText(Path.Combine(
@@ -757,6 +758,9 @@ internal static class Program
             Path.Combine(projectRoot, "MyBehavior.cs"),
             Path.Combine(projectRoot, "ShoutBehavior.cs"),
             Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.ReplyWait.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.PromptMessages.cs"),
             Path.Combine(projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"),
             Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"),
