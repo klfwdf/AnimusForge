@@ -1,12 +1,10 @@
-# 当前交接：J11 制作组内部模块接缝离线闭合（2026-09-21）
+# 当前交接：J12 计划已编写，尚未施工（2026-09-21）
 
-- **状态**：J07–J11 均为 `OFFLINE_VERIFIED`；下一阶段 J12 尚未开始。这不是全项目 J17、实机或发布完成。
-- **J11 产品**：`cdbd077a` 将 3 个 internal contracts 归位 `src/AF.Contracts/Internal/TeamModules`，将 Policy/Gathering/Siege 三个无状态 adapter 分拆到 `src/bridges/{Policy,Gathering,Siege}`；旧 `TeamModulePorts.cs` / `TeamModuleAdapters.cs` 已删除。
-- **稳定接缝**：namespace、internal 可见性、13 个方法签名、默认参数、ref/out、返回和异常不变；31 个生产调用点继续经 `TeamModuleServices` 直达原玩法 owner。Policy/Gathering/GCCZ 玩法、MCM、存档、Prompt、Harmony 和默认入口未改。
-- **验证**：Team ports 308 + 3 变异；Policy 1.3/1.4 各 all-modules 1406、history 1115；Campaign composition 42 + 6 变异（含真实入口重复注册拒绝）；Scene 71；Courier/Native 影响面；Bridge/Composition/Phase8；Debug/Release × 1.3/1.4/Bootstrap 六构建 0 warning/0 error；四 DLL API/metadata 1060；Persistence 142/168/13/44。
-- **结构证据**：`docs/architecture/af-team-module-seam-matrix.md` 记录 13 方法、31 调用点、频率、门禁和副作用 owner；394 锚点代码地图绑定产品 `cdbd077a`。
-- **内部/外部分离**：本轮只处理同 DLL internal 接缝；独立子 MOD 的 public Scene/Courier API 仍属 J14，没有提前开放。
-- **未验证**：真实 Campaign/Mission、旧 SAVE、制作组玩法结果、真实 GCCZ 场景、provider、音频和性能均 `NOT-RUN`；未 Stage/Deploy/Package，未操作游戏/存档或 `G:/AFMOD/GCCZ`。
-- **详细 HANDOFF**：`docs/handoffs/2026-09-21-j11-team-module-seams-offline-closeout.md`。
-- **下一步**：先制定 J12 Economy / Diplomacy / WorldMap 的有限计划；不要继续在已闭合的 J11 按行数追加接口或包装层。
-- **位置**：`G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；分支 `codex/af-modularize-j04-20260918`；交付目标 `origin/codex/af-main-refactor-continuation-20260831`；自动化保持暂停，`.dotnet-cli-home/` 仅本地。
+- **状态**：J07–J11 `OFFLINE_VERIFIED`；J12 `PLANNED`，生产实现未开始。不是全项目 J17、实机或发布完成。
+- **已交付基线**：J11 产品 `cdbd077a`；Campaign 真实入口验收修复 `60499d44` 已推送到 `origin/codex/af-main-refactor-continuation-20260831`。上一阶段细节见 [J11 HANDOFF](docs/handoffs/2026-09-21-j11-team-module-seams-offline-closeout.md)。
+- **本轮产物**：[J12 完整计划](docs/plans/j12-domain-owners-plan.md)，包含当前源码位置、有限责任包、稳定接口、保留项、测试与回滚条件；[当前主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j12-planned-20260921) 为唯一进度入口。
+- **计划顺序**：G0 → Economy 捕获/资产执行/债务信任 → Diplomacy 规则/动作/作业 → WorldMap 协议/受理/队列/延迟请求 → 整包验收。
+- **关键边界**：保留现有 public ABI/保存身份；capture 可能有主线程规范化；外交已接 J08 不重做；失败、partial、unknown、STOP 已执行、queued 分开记录。不重写政策/宴会/GCCZ，不提前开放 J14 API。
+- **验证层级**：本轮只核对计划、源码坐标与文档引用；没有运行新的产品测试/构建。真实 Campaign/Mission、旧 SAVE、真实经济/外交/地图结果、provider 和性能仍独立 NOT-RUN。
+- **下一步**：用户确认施工后按计划 G0/J12a 开始；不重开已闭合的 J07–J11，不以整类行数或测试数量代替职责完成。
+- **工作区**：`G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；本地分支 `codex/af-modularize-j04-20260918`。本次计划仅本地提交，未推送；自动化保持暂停，未 Stage/Deploy/Package，未改游戏/存档或其他树；`.dotnet-cli-home/` 与仅供转发文档不入 Git。
