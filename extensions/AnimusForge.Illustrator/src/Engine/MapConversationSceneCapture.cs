@@ -104,7 +104,7 @@ namespace AnimusForge.Illustrator.Engine
         // Read presented pixels only: never access or mutate the tableau's private Scene/Camera,
         // acquire its cached scene, create a second view over it, or hide visible UI.
         private static async Task<ConversationSceneReferenceCapture> CaptureMapConversationSceneReferencesAsync(
-            ConversationSceneCaptureSource source, CancellationToken token)
+            ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null)
         {
             await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
             var watch = Stopwatch.StartNew();
@@ -114,7 +114,9 @@ namespace AnimusForge.Illustrator.Engine
                 var result = await RunOnGameThreadAsync(() =>
                 {
                     source.EnsureCurrent(token);
-                    string image = source.HasMapTableau ? CaptureUnobstructedConversationSceneBase64() : null;
+                    string image = !string.IsNullOrWhiteSpace(preCapturedScene)
+                        ? preCapturedScene
+                        : source.HasMapTableau ? CaptureUnobstructedConversationSceneBase64() : null;
                     source.EnsureCurrent(token);
                     captured = !string.IsNullOrWhiteSpace(image);
                     string note = MapConversationReferenceNote(captured);
