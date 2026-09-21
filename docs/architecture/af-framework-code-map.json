@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "ee1d8c05223523d506ebdeebfcab3f0d0ceee732",
+  "sourceRevision": "cd0d942d7ab8dd1796957bc6427d090fb2cab8e0",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -3963,6 +3963,72 @@
       "status": "wired-j10-candidate",
       "note": "bounded naval-stuck progress detection",
       "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
+    },
+    {
+      "id": "courier.delivery.return",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private void CompleteReturn(CourierSession session, MobileParty courier, Hero recipient)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "return arrival, reply notice, and terminal teardown",
+      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+    },
+    {
+      "id": "courier.delivery.payload",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+      "start": 231,
+      "end": 231,
+      "symbol": "private void ApplyDeliveryPayload(CourierSession session, MobileParty courier, Hero recipient)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "arrival-only payload side effects",
+      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+    },
+    {
+      "id": "courier.delivery.refund",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+      "start": 418,
+      "end": 418,
+      "symbol": "private void ReturnCourierContentsToPlayer(CourierSession session, MobileParty courier)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "undelivered escrow and roster refund",
+      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+    },
+    {
+      "id": "courier.delivery.destroyed",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+      "start": 436,
+      "end": 436,
+      "symbol": "private void OnMobilePartyDestroyed(MobileParty destroyedParty, PartyBase destroyerParty)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "outbound/inbound destroyed-session terminal split",
+      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+    },
+    {
+      "id": "courier.delivery.complete",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+      "start": 526,
+      "end": 526,
+      "symbol": "private void CompleteAndDestroyCourier(CourierSession session, MobileParty courier)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "completed session/index/party teardown",
+      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+    },
+    {
+      "id": "courier.delivery.missing",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+      "start": 558,
+      "end": 558,
+      "symbol": "private void HandleCourierMissing(CourierSession session)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "missing-party terminal cleanup",
+      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
     }
   ]
 }
