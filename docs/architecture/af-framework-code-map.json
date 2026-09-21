@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "cd0d942d7ab8dd1796957bc6427d090fb2cab8e0",
+  "sourceRevision": "b751f97460ed4a54020baf8be9823a252e80cdc0",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4029,6 +4029,105 @@
       "status": "wired-j10-candidate",
       "note": "missing-party terminal cleanup",
       "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+    },
+    {
+      "id": "courier.registry.lookup",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private CourierSession GetSessionById(string sessionId)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "synchronized session lookup",
+      "fileSha256": "b75fb7b01fda9254355490ee4e288f69f1826468ef7c62ec03a8cd2a404ad33f"
+    },
+    {
+      "id": "courier.registry.load",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
+      "start": 169,
+      "end": 169,
+      "symbol": "private void OnGameLoadFinished()",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "loaded-session normalization and runtime-index rebuild",
+      "fileSha256": "b75fb7b01fda9254355490ee4e288f69f1826468ef7c62ec03a8cd2a404ad33f"
+    },
+    {
+      "id": "courier.registry.rebuild",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
+      "start": 197,
+      "end": 197,
+      "symbol": "private void RebuildCourierRuntimeIndexes()",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "copy-on-publish active party index",
+      "fileSha256": "b75fb7b01fda9254355490ee4e288f69f1826468ef7c62ec03a8cd2a404ad33f"
+    },
+    {
+      "id": "courier.registry.restart",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
+      "start": 503,
+      "end": 503,
+      "symbol": "private static void ResetReplyGenerationAfterLoad(CourierSession session, string reason)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "persisted receipt blocks duplicate generation after load",
+      "fileSha256": "b75fb7b01fda9254355490ee4e288f69f1826468ef7c62ec03a8cd2a404ad33f"
+    },
+    {
+      "id": "courier.creation.external",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+      "start": 95,
+      "end": 95,
+      "symbol": "public static void OpenCourierFlowForExternal(Hero recipient)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "public compatibility entry into existing flow",
+      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+    },
+    {
+      "id": "courier.creation.outbound",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+      "start": 549,
+      "end": 549,
+      "symbol": "private void OnLetterConfirmed(string input)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "publish outbound session before generation and processing",
+      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+    },
+    {
+      "id": "courier.creation.npc-initiated",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+      "start": 686,
+      "end": 686,
+      "symbol": "private bool TryCreateNpcInitiatedLetterSession(NpcInitiatedLetterCandidate candidate, NpcInitiatedLetterMotive motive, out string status)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "generated proactive inbound session publication",
+      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+    },
+    {
+      "id": "courier.creation.diplomacy",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+      "start": 770,
+      "end": 770,
+      "symbol": "private bool TryCreateNpcDiplomacyLetterSession(Hero sender, string letterText, string reason, out string status)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "generated diplomacy inbound session publication",
+      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+    },
+    {
+      "id": "courier.creation.prewritten",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+      "start": 864,
+      "end": 864,
+      "symbol": "private bool TryCreateNpcLetterToPlayerSession(Hero sender, string letterText, string reason, out string status)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "prewritten inbound path skips LLM generation",
+      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
     }
   ]
 }
