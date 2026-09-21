@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "f2990b383afb3e5f2f3e9873217d2a230c76cd1e",
+  "sourceRevision": "ee1d8c05223523d506ebdeebfcab3f0d0ceee732",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -3886,6 +3886,83 @@
       "status": "wired-j10-candidate",
       "note": "sanitized letter UI with optional reply entry",
       "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+    },
+    {
+      "id": "courier.route.plan",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private static CourierRoutePlan BuildCourierRoutePlan(MobileParty courier, CampaignVec2 targetPosition, Settlement targetSettlement, MobileParty targetParty, bool preferPort)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "land/naval route decision snapshot",
+      "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
+    },
+    {
+      "id": "courier.route.recipient",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+      "start": 421,
+      "end": 421,
+      "symbol": "private void RouteToRecipient(CourierSession session, MobileParty courier, MobileParty targetParty, Settlement targetSettlement)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "recipient route command and mismatch repair",
+      "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
+    },
+    {
+      "id": "courier.route.sender",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+      "start": 482,
+      "end": 482,
+      "symbol": "private void RouteToSender(CourierSession session, MobileParty courier)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "return route command and progress guard",
+      "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
+    },
+    {
+      "id": "courier.route.threat",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+      "start": 532,
+      "end": 532,
+      "symbol": "private bool TryRouteCourierAwayFromBanditThreat(CourierSession session, MobileParty courier, string routeReason)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "threat diversion before normal route",
+      "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
+    },
+    {
+      "id": "courier.route.safe",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+      "start": 661,
+      "end": 661,
+      "symbol": "private void RouteToSafeSettlement(CourierSession session, MobileParty courier, string reason)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "safe settlement fallback with route identity",
+      "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
+    },
+    {
+      "id": "courier.route.refresh",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+      "start": 1049,
+      "end": 1049,
+      "symbol": "private static bool ShouldRefreshRouteCore(CourierSession session, string routeKey, MobileParty courier, bool monitorProgress, params AiBehavior[] expectedDefaultBehaviors)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "route key/progress/behavior refresh gate",
+      "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
+    },
+    {
+      "id": "courier.route.stuck",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+      "start": 1091,
+      "end": 1091,
+      "symbol": "private static bool IsCourierRouteStuck(CourierSession session, string routeKey, MobileParty courier)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "bounded naval-stuck progress detection",
+      "fileSha256": "8454ae5963b3d5d5574ea879961cf6d46775b0551d8b75ddb3741027aace274b"
     }
   ]
 }
