@@ -63,13 +63,14 @@ namespace AnimusForge.Illustrator.Core
 
     public static class VisualDirectorEngine
     {
+        private static readonly TimeSpan DirectorRequestTimeout = TimeSpan.FromSeconds(240);
         private const string SystemPrompt =
             "你是《骑马与砍杀2：霸主》及其历史、奇幻与自定义文化 MOD 的视觉叙事导演。请把游戏事实和对应参考图转化为一幅已经确定、可直接绘制的画面，自主决定行动、机位与构图。\n" +
             "<game_facts> 是只读事实数据，包含角色身份、所属文化、真实装备、面貌年龄等。你必须严格忠实于这些事实数据，不得随意篡改装备或降格身份；没有数据支持的冠冕、纹章、武器、动物坐骑不得擅自添加。\n" +
             "<director_only_narrative> 供你理解角色的性格、生平背景与气象，不得在正文中直接引用原文，严禁要求在画面中出现文字、字幕或标牌。\n" +
             "【事实与创作边界】：人物数量、种族、外观、装备、事件结果与现场空间关系以明确事实和对应参考图为准。百科允许设计符合人物、时代与文化的非具名艺术布景，不当作真实所在地；会话与周报只描绘已确认的环境和事件，未知建筑、陈设、人物位置和光源保持未知，不按身份或地点名称补造。开放建议和旧画构思不能升级为本次事实。百科不添加武器、盾牌、旗帜或坐骑，所有模式不描绘背盾。\n" +
             "【百科创作空间】：以人物性格、身份、生平与本次主题为灵感，大胆选择场所、环境陈设、叙事瞬间、动作、机位和光影氛围；这些是艺术设计，不是声称发生过的历史事实。可宁静也可富有动势，可亲近也可开阔，取舍由你决定，不把正面站立、空石墙或拱廊当作默认解。结合近期作品寻找不同的情境与视觉组织，不套场所清单或固定镜头轮换；有意义的变化来自构思，不靠改动人物身份装备。\n" +
-            "【描述取舍】：先写清本次关键事实、人物行动及空间关系，再补充入镜的外观识别点、环境材质和受光。环境须有可辨认的内容与纵深，人物段不扩写成装备目录；不设总字数或段落占比，以表达完整为准。精简重复修辞，保留有叙事意义的环境内容；现场未知物件不能为扩写而补造。\n" +
+            "【描述取舍】：先写清本次关键事实、人物行动及空间关系，再补充入镜的外观识别点、环境材质和受光。环境须有可辨认的内容与纵深，人物段不扩写成装备目录；请求中的篇幅仅是可上下浮动的参考，不是硬性限制，以四段完整为准。精简重复修辞，保留有叙事意义的环境内容；现场未知物件不能为扩写而补造。\n" +
             VisualFidelityRules.DirectorQualityFloor + "\n" +
             VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
             "【现场环境还原】：若提供现场截图，先对照各视角建立同一空间关系，再选择画面机位。墙面材质与主色、楼梯所在墙面及走向、门窗和拱洞、层高、桌椅分布以可见现场为准；地点名只用于理解用途，不据酒馆或大厅等名称重新设计建筑。多个环视图是同一拍摄点转向，不是多个房间或额外人物；画风可重绘材质笔触，不能替换建筑布局或给现场添加无依据的纹章旗帜。\n" +
@@ -81,6 +82,20 @@ namespace AnimusForge.Illustrator.Core
             "【空间关系】：用稳定的人物称呼交代关键主体的高低、远近、朝向、遮挡与支撑；区分画面左右和人物自身左右，使这些关系在同一机位下同时成立。已确认的上下或内外分隔须明确落到正文，不能概括成无位置的会面；现场只写有依据且与取景有关的关系。百科布景落实本次设计的空间关系，交代人物所处区域、相连空间和环境延伸，而非只有人物与一面背景墙；设计不冒充真实地点或事件。\n" +
             "【交付前核对】：逐项对照本次关键事实与参考图，确认人物对应、行动、可见外观及关键空间关系已在正文中保留，四段机位、支撑和光照相互一致，行动摘要与正文一致。删去冲突、候选方案、重复修饰和未落实的创作建议；只交付选定画面，不输出检查过程。\n" +
             "只输出正面、具体、生动的场景画面描摹，严禁输出反向解释，不要输出JSON、Markdown或问候。【纯正面表述】：全文只写画面中实际呈现的内容；不希望出现的元素完全不要提及——连否定句、转折句、'并未/不画/严禁'句式都不用，避免生图模型将否定概念误读为画面元素。";
+
+        private const string ConversationSystemPrompt =
+            "你是《骑马与砍杀2：霸主》会话现场插画导演。把当前人物、最近对话、现场事实与对应参考图转化为一幅已经确定、可直接绘制的单一瞬间。\n" +
+            "【输入层级】：<game_facts>是必须保持的人物身份、实际装备、现场状态与空间关系；<director_only_narrative>只帮助理解情绪、关系、生平与专长，不得直接引用或画成文字；<open_art_direction>只提供表现建议，不能覆盖事实。\n" +
+            "【人物与现场边界】：人物数量、对应身份、外观、穿戴、骑乘状态、动作事实及高低内外关系以硬事实和同名参考图为准。装备栏记录不等于必须展示；没有现场证据不新增人物、武器、盾牌、旗帜、坐骑、纹章载体、建筑、陈设或光源，所有人物不背盾。\n" +
+            VisualFidelityRules.DirectorQualityFloor + "\n" +
+            VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
+            "【现场还原】：全景和当前画面属于同一现场，只用于辨认真实建筑布局、门窗楼梯、家具、材质、固有色、人物关系与可见采光。地点名称和内部资源名不是补造依据；全景展开边缘、两极拉伸、观察补光、几何空缺和UI不进入最终画面。选择一个正常透视机位，不重建另一个同名场所。\n" +
+            "【输出】：先输出【画作标题】4至12字、【画作主题】一句简述、【人物行动】与正文一致的手部动作和视线摘要；这些字段不作为画面文字。随后完整输出四段：\n" +
+            "【人物与镜头】从最近对话选择一个能表现双方关系的时刻，逐人确定一个主要行动或注意对象，再写景别、机位、身体朝向、可见手部和视线；只转写入镜且可辨的外观装备。\n" +
+            "【场景空间】只描述选定机位实际可见且有依据的建筑、陈设、材质和纵深，保留门窗楼梯及地面结构关系，不按地点名补造未知区域。\n" +
+            "【光影与色彩】人物与环境共用已知现场光源、时段、色温和明暗层次，写清材质受光、接触投影、遮蔽和环境反光，暗部仍可辨。\n" +
+            "【空间关系】明确双方及其与环境的高低、远近、左右、朝向、遮挡、支撑和接触，所有关系在同一机位下成立。\n" +
+            "【交付前核对】：保留关键事实和最近对话所支持的情绪关系，删除候选方案、重复外观装备目录和检查过程。篇幅参考可上下浮动，以四段完整为先；只输出正面画面描摹，不输出JSON、Markdown、问候、台词、字幕、标牌或UI。";
 
         // Weekly reports have their own event-led director contract. They never receive
         // the portrait/set-design or current-conversation restrictions above.
@@ -94,7 +109,7 @@ namespace AnimusForge.Illustrator.Core
             "【道具与纹章】：人物衣甲和武器以资料及事件为准，装备持有不等于正在使用。所有模式不画背盾；明确持盾动作才允许从属盾牌。纹章样图只用于事件中有依据的载体，不能为展示样图增添旗帜或盾牌，普通金属胸甲不硬印徽记。\n" +
             VisualFidelityRules.DirectorQualityFloor + "\n" +
             VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
-            "【输出】：先输出【画作标题】4至12字作品名、【画作主题】一句简述所选事件、【人物行动】事件中主要参与方正在做什么的简短摘要。三项单独记录，不作为画面文字。随后只输出以下四段正面、具体、可直接绘制的画面描述，不写候选方案或解释，不规定总字数和段落比例：\n" +
+            "【输出】：先输出【画作标题】4至12字作品名、【画作主题】一句简述所选事件、【人物行动】事件中主要参与方正在做什么的简短摘要。三项单独记录，不作为画面文字。随后只输出以下四段正面、具体、可直接绘制的画面描述，不写候选方案或解释；请求中的篇幅仅是可上下浮动的参考，不是硬性限制，以四段完整为准：\n" +
             "【人物与镜头】先交代事件行动和参与方的互动，再选定同一时刻的观察机位、景别与取景范围。按实际入镜情况转写人物识别点，细节服务事件，不罗列衣甲目录。\n" +
             "【场景空间】环境要让事件可辨认，具体组织发生区域、相关构造、地貌或陈设及材质；保留有叙事价值的细节和空间延伸，自主选择组织方式，不套场所或道具清单。\n" +
             "【光影与色彩】以统一光源、材质受光和环境反光塑造事件氛围，主体与环境同属一幅画，暗部保留内容，光照表达不改变已知时段。\n" +
@@ -136,7 +151,7 @@ namespace AnimusForge.Illustrator.Core
 
         public static async Task<IllustrationDirection> CreateDirectionAsync(IllustrationPromptPlan plan, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, IllustrationOptions options, CancellationToken cancellationToken = default)
         {
-            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(120) })
+            using (var client = new HttpClient { Timeout = DirectorRequestTimeout })
                 return await CreateDirectionWithClientAsync(plan, referenceImages, options, client, cancellationToken).ConfigureAwait(false);
         }
 
@@ -545,7 +560,7 @@ namespace AnimusForge.Illustrator.Core
 
         private static async Task<string> CallLlmDirectorAsync(IllustrationPromptPlan plan, IllustrationOptions options, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, CancellationToken cancellationToken)
         {
-            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(120) })
+            using (var client = new HttpClient { Timeout = DirectorRequestTimeout })
             {
                 var reply = await CallLlmDirectorResponseAsync(plan, options, referenceImages, client, cancellationToken).ConfigureAwait(false);
                 return string.IsNullOrWhiteSpace(reply.FailureReason) ? reply.Content : string.Empty;
@@ -609,8 +624,10 @@ namespace AnimusForge.Illustrator.Core
         private static JObject BuildDirectorPayload(IllustrationPromptPlan plan, IllustrationOptions options, System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages, bool textFallback)
         {
             string stylePreference = BuildDirectorStylePreference(options);
+            int approximateTokens = options != null && options.DirectorApproximateTokens > 0 ? options.DirectorApproximateTokens : 2000;
             string requestText = "请依据游戏事实构思一个清晰、有变化且可直接绘制的瞬间。开放构图建议可以取舍，不要把建议改写成不存在的事实。" +
-                (string.IsNullOrWhiteSpace(stylePreference) ? string.Empty : "\n【画风偏好】" + stylePreference) + "\n\n" + plan.BuildDirectorContext();
+                (string.IsNullOrWhiteSpace(stylePreference) ? string.Empty : "\n【画风偏好】" + stylePreference) + "\n\n" + plan.BuildDirectorContext() +
+                "\n【篇幅参考】完整输出以约 " + approximateTokens + " tokens 为参考，可为保证四段完整而上下浮动；这不是硬性限制。优先删除重复修辞和逐件罗列，不要为贴近数值而扩写或省略关键关系。";
             if (textFallback)
                 requestText += "\n【参考可用性】本次仅提供文字，图片输入不可用。未被文字确认的人物外观与真实现场细节保持未知，不声称已经看过参考图；艺术布景和事件艺术再现仍按本模式创作边界设计。";
             if (referenceImages != null)
@@ -676,11 +693,10 @@ namespace AnimusForge.Illustrator.Core
                 ["model"] = options.DirectorModelName,
                 ["messages"] = new JArray
                 {
-                    new JObject { ["role"] = "system", ["content"] = plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : SystemPrompt },
+                    new JObject { ["role"] = "system", ["content"] = plan?.IsWeeklyReport == true ? WeeklyReportSystemPrompt : plan?.IsConversation == true ? ConversationSystemPrompt : SystemPrompt },
                     userMessage
                 },
-                ["temperature"] = 0.85,
-                ["max_tokens"] = options != null && options.DirectorMaxTokens > 0 ? options.DirectorMaxTokens : 1500
+                ["temperature"] = 0.85
             };
 
         }
@@ -690,7 +706,7 @@ namespace AnimusForge.Illustrator.Core
             var reply = new DirectorResponse();
             using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
-                deadline.CancelAfter(TimeSpan.FromSeconds(120));
+                deadline.CancelAfter(DirectorRequestTimeout);
                 string endpoint = ResolveChatEndpoint(options.DirectorApiBaseUrl);
                 GenerationDiagnostics.Current?.RegisterSecret(options.DirectorApiKey);
                 try

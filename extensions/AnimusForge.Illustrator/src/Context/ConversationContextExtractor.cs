@@ -34,7 +34,8 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             sb.AppendLine("【会话台词与历史记录（仅供理解人物情绪、关系演进与现场氛围，严禁在画面中绘制任何台词文字、对话框、气泡框或字幕）】");
-            if (!string.IsNullOrWhiteSpace(DialogueSentence)) sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
+            if (!string.IsNullOrWhiteSpace(DialogueSentence) && (string.IsNullOrWhiteSpace(RecentDialogueHistory) || RecentDialogueHistory.IndexOf(DialogueSentence, StringComparison.Ordinal) < 0))
+                sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
             if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
             return sb.ToString().TrimEnd();
         }
@@ -69,9 +70,8 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             sb.AppendLine(BuildDialogueBlock());
-            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildDirectorOnlyFacts());
-            if (InterlocutorProfile != null) sb.AppendLine(InterlocutorProfile.BuildDirectorOnlyFacts());
-            if (EnvironmentProfile != null) sb.AppendLine(EnvironmentProfile.BuildDirectorOnlyFacts());
+            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildConversationDirectorContext());
+            if (InterlocutorProfile != null) sb.AppendLine(InterlocutorProfile.BuildConversationDirectorContext());
             return sb.ToString().TrimEnd();
         }
 
