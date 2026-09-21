@@ -175,7 +175,11 @@ while (!File.Exists(Path.Combine(repoRoot, "MyBehavior.cs")))
 
 string myBehavior = File.ReadAllText(Path.Combine(repoRoot, "MyBehavior.cs"));
 string shoutBehavior = File.ReadAllText(Path.Combine(repoRoot, "ShoutBehavior.cs"));
-string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.cs"));
+string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Authorization", "RewardSystemBehavior.EconomyAssetAuthorization.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Hero", "RewardSystemBehavior.EconomyReplay.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Party", "RewardSystemBehavior.EconomyPartyReplay.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Merchant", "RewardSystemBehavior.EconomyMerchantReplay.cs"));
 string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"));
 string sceneChains = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.SceneConversationChains.cs"));
 string courier = File.ReadAllText(Path.Combine(repoRoot, "CourierDeliveryBehavior.cs"))

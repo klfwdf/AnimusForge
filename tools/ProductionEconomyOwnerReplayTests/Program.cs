@@ -18,7 +18,10 @@ string stageDirectory = Path.GetFullPath(Path.Combine(
     "bin", "Win64_Shipping_Client"));
 string projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
 string referenceDirectory = Path.Combine(projectRoot, ".tmp", "build_check", "1.4");
-string implementationPath = Path.Combine(stageDirectory, "versions", "1.4", "AnimusForge.dll");
+string implementationOverride = Environment.GetEnvironmentVariable("AF_IMPLEMENTATION_PATH");
+string implementationPath = string.IsNullOrWhiteSpace(implementationOverride)
+    ? Path.Combine(stageDirectory, "versions", "1.4", "AnimusForge.dll")
+    : Path.GetFullPath(implementationOverride);
 AssertTrue(File.Exists(implementationPath), "project-local 1.4 AnimusForge.dll is missing");
 
 AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
@@ -66,10 +69,11 @@ object merchantPort = merchantFactory.Invoke(null, new object[] { null, null, "m
 AssertTrue(merchantPort == null, "merchant economy owner factory created a port without a live Campaign/merchant owner");
 AssertTrue(portType.IsAssignableFrom(merchantFactory.ReturnType), "merchant economy owner factory return type drifted");
 
-string heroSource = File.ReadAllText(Path.Combine(projectRoot, "RewardSystemBehavior.EconomyReplay.cs"));
-string partySource = File.ReadAllText(Path.Combine(projectRoot, "RewardSystemBehavior.EconomyPartyReplay.cs"));
-string merchantSource = File.ReadAllText(Path.Combine(projectRoot, "RewardSystemBehavior.EconomyMerchantReplay.cs"));
+string heroSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs"));
+string partySource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs"));
+string merchantSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs"));
 string ownerSource = File.ReadAllText(Path.Combine(projectRoot, "RewardSystemBehavior.cs"));
+string authorizationSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs"));
 
 AssertOwnerReplayUncertaintyContract(
     heroSource,
@@ -130,6 +134,7 @@ foreach (string replayAwareHelper in new[]
 string heroAssetReplay = ExtractMethod(heroSource, "private bool TryReplayGiveAsset(");
 AssertTrue(heroAssetReplay.Contains("TryResolveAuthorizedHeroRewardItem(", StringComparison.Ordinal)
     && heroAssetReplay.Contains("ResolveAllRewardItemAmount(lookup, authorizedItems)", StringComparison.Ordinal)
+    && authorizationSource.Contains("private bool TryResolveAuthorizedHeroRewardItem(", StringComparison.Ordinal)
     && heroAssetReplay.Contains("forceComplete: !quantity.IsAll", StringComparison.Ordinal)
     && heroAssetReplay.Contains("TransferItemByIdForEconomyReplay(", StringComparison.Ordinal)
     && heroAssetReplay.Contains("GenerateRpAssetToPlayer(", StringComparison.Ordinal)

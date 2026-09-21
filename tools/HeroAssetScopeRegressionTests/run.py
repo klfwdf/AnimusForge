@@ -10,7 +10,7 @@ spec.loader.exec_module(extractor)
 
 def extract(ref=None):
     owner = extractor.source('RewardSystemBehavior.cs', ref)
-    hero = extractor.source('RewardSystemBehavior.EconomyReplay.cs', ref)
+    hero = extractor.source('src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs', ref)
     blocks = {}
     methods = [extractor.declaration(hero, marker) for marker in [
         'private bool TryReplayGiveAsset(', 'private bool TryReplayGiveGold(',
@@ -18,11 +18,12 @@ def extract(ref=None):
         'private bool TryReplayAction(', 'private static EconomyRewardDebtReplayResult ReplayFailure(',
         'private static void LogEconomyReplayFailureSafe(', 'private sealed class EconomyMutationObservation']]
     for path, names in [
-        ('RewardSystemBehavior.EconomyPartyReplay.cs', ['TryReplayPartyAsset','TryReplayPartyGold']),
-        ('RewardSystemBehavior.EconomyMerchantReplay.cs', ['TryReplayMerchantAsset','TryReplayMerchantGold'])]:
+        ('src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs', ['TryReplayPartyAsset','TryReplayPartyGold']),
+        ('src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs', ['TryReplayMerchantAsset','TryReplayMerchantGold'])]:
         text = extractor.source(path, ref)
         methods += [extractor.declaration(text, 'private bool '+name+'(') for name in names]
-    methods += [extractor.declaration(owner, marker) for marker in [
+    authorization = extractor.source('src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs', ref)
+    methods += [extractor.declaration(authorization, marker) for marker in [
         'private static string GetRewardItemTransferKey(',
         'private static bool TryResolveExactAuthorizedRewardItem(',
         'private bool TryResolveAuthorizedHeroRewardItem(',
