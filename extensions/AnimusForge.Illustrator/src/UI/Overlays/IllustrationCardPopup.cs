@@ -891,7 +891,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 !instance._scope.IsCurrent || manager?.IsConversationInProgress != true) return null;
             long epoch = _conversationSessionEpoch;
             var character = manager.OneToOneConversationCharacter;
-            var agent = manager.OneToOneConversationAgent;
             ConversationIllustrationPatch.LogAutoRedraw("request_observed popup=" + instance._instanceId);
             int delivered = 0;
             return (content, targetHero, targetCharacter) =>
@@ -905,8 +904,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         epoch != _conversationSessionEpoch || !instance._scope.IsCurrent ||
                         !ReferenceEquals(Campaign.Current?.ConversationManager, manager) || !manager.IsConversationInProgress ||
                         !ReferenceEquals(manager.OneToOneConversationCharacter, character) ||
-                        !ReferenceEquals(manager.OneToOneConversationAgent, agent) ||
-                        !ReferenceEquals(targetCharacter ?? targetHero?.CharacterObject, character))
+                        !IsSameConversationTarget(manager, character, targetHero, targetCharacter))
                     {
                         ConversationIllustrationPatch.LogAutoRedraw("dropped_stale popup=" + instance._instanceId);
                         return;
@@ -923,6 +921,18 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     AutoRedrawActiveConversation();
                 });
             };
+        }
+
+        private static bool IsSameConversationTarget(TaleWorlds.CampaignSystem.Conversation.ConversationManager manager,
+            CharacterObject capturedCharacter, Hero targetHero, CharacterObject targetCharacter)
+        {
+            if (targetCharacter != null && capturedCharacter != null)
+                return ReferenceEquals(targetCharacter, capturedCharacter);
+            if (targetHero != null)
+            {
+                try { return ReferenceEquals(targetHero, Hero.OneToOneConversationHero); } catch { }
+            }
+            return targetCharacter == null && targetHero == null && capturedCharacter == null;
         }
 
         internal static void ClearConversationSessionCache()
