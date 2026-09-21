@@ -1,3 +1,19 @@
+<a id="j12a-economy-start-20260921"></a>
+# 当前接续：J12a Economy 已开始（2026-09-21）
+
+**状态：J07–J11_OFFLINE_VERIFIED；J12a_IN_PROGRESS。** 计划提交 `9af7e8cf`；首个产品/测试包 `3f2c454e`，生成目录忽略 `9e8e10e8`。本轮没有开始 Diplomacy/WorldMap，没有 push、Stage、Deploy、Package、自动化或游戏/存档操作。
+
+- **兼容边界归位**：`EconomyRewardDebtContracts.cs` 100% 原样迁入 `src/AF.Contracts/Compatibility/Economy/`；planner 和 main-thread port 100% 原样迁入 `src/modules/AF.Module.Economy/{Planning,Execution}`。namespace、public 类型/构造器/接口、enum 数值与实际 consumers 不变，旧三个路径已删除，测试 Compile 路径同步。
+- **真实职责抽取**：新增 `Projection/EconomyPromptProjection.cs`。`RewardSystemBehavior.BuildTrust*` 与两个 Debt Hint 仍在所属线程完成 live trust、账目 normalize、价格/期限捕获，再把 string/int-only `EconomyDebtPromptLine` 交给 detached formatter；没有将 `NormalizeDebtRecord` 或游戏对象搬到 worker，也没有第二 Prompt 拼装链。
+- **证据**：projection 10 checks + 1 个可编译 merchant marker 变异；ProductionReward 11；HeroAssetScope 67；Economy port/executor、Interaction 40/69/39、Duel 16、Weekly material 通过。Debug 1.3/1.4/Bootstrap 均 0 warning/0 error；两份 Debug 实现 DLL 530 API/metadata 断言通过；代码地图 399 锚点绑定 `3f2c454e`。
+- **已知工具项**：`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 读取新契约路径后，在既有非 J12 符号 `TagSceneSessionHistoryLine` 提取处失败；基线 `9af7e8cf` 的 `MyBehavior.cs` 同样没有该符号。未修改 Memory 业务或降低断言，不能计为 PASS；后续按它的真实 owner 单独处理。
+- **下一步**：继续 J12a1 剩余 Reward/Loan capture，再做 J12a2 Hero/Party/Merchant 资产授权与 replay owner。Debt/Trust 生命周期、旧兼容链和完整 Release/存档门禁仍未完成，不能标 J12a 或 J12 DONE。
+- **未验证**：Release、真实 Campaign/Mission、旧 SAVE、live inventory/gold/merchant/debt/trust、AFEF、provider、性能均 `NOT-RUN`。
+
+详细顺序、保留符号和退出门见 [J12 计划](plans/j12-domain-owners-plan.md)；当前代码位置见[范围图](architecture/af-framework-code-scope.md)与 399 锚点代码地图。回滚先文档/地图，再定向 revert `3f2c454e`；不 reset/rebase/强推。
+
+## 以下 J12 计划节为实施依据；当前进度以上方回执为准
+
 <a id="j12-planned-20260921"></a>
 # 当前接续：J12 计划已编写，尚未施工（2026-09-21）
 
