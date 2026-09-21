@@ -12,6 +12,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
     {
         private Widget _panelWidget;
         private Widget _dragHandleWidget;
+        private Widget _fractionPanel;
+        private float _fractionPanelHeight;
         private bool _isDragging;
         private bool _isResizing;
         private TaleWorlds.Library.Vec2 _lastMousePixel;
@@ -58,9 +60,23 @@ namespace AnimusForge.Illustrator.UI.Overlays
             AttachMovable(panel, handle);
         }
 
+        public void AttachTopFraction(Widget panelWidget, float heightFraction)
+        {
+            _fractionPanel = panelWidget;
+            _fractionPanelHeight = MathF.Clamp(heightFraction, 0.1f, 1f);
+        }
+
         protected override void Tick(float dt)
         {
             base.Tick(dt);
+
+            if (_fractionPanel != null && UIContext?.EventManager != null)
+            {
+                float scale = UIContext.CustomScale > 0.001f ? UIContext.CustomScale : 1f;
+                float targetHeight = UIContext.EventManager.PageSize.Y / scale * _fractionPanelHeight;
+                if (targetHeight > 0f && MathF.Abs(_fractionPanel.SuggestedHeight - targetHeight) > 1f)
+                    _fractionPanel.SuggestedHeight = targetHeight;
+            }
 
             if (_panelWidget == null)
             {
