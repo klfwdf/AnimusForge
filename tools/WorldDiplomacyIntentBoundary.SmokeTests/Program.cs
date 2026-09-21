@@ -518,7 +518,8 @@ internal static class Program
 			&& roundPrompt.Contains("end_negotiation", StringComparison.Ordinal)
 			&& roundPrompt.Contains("declare_deadlock", StringComparison.Ordinal),
 			"the third no-action phase must force a concrete result, exit, or declared deadlock");
-		string resultRules = File.ReadAllText(FindRepositoryFile("WorldDiplomacyResultSettlementRules.cs"), Encoding.UTF8);
+		string resultRules = File.ReadAllText(FindRepositoryFile(Path.Combine(
+			"src", "modules", "AF.Module.Diplomacy", "Rules", "WorldDiplomacyResultSettlementRules.cs")), Encoding.UTF8);
 		Test.True(resultRules.Contains("kind != WorldDiplomacyConfirmedResultKind.OfferRejected", StringComparison.Ordinal),
 			"rejecting one proposal must not be a confirmed terminal result for the whole round");
 
