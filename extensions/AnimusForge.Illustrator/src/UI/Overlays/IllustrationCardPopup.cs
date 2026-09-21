@@ -36,6 +36,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private int _generationCount;
         private bool _autoRedrawPending;
         private bool _autoReplyArmed;
+        private bool _autoReplyRequested;
 
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
@@ -245,7 +246,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 else
                 {
-                    popup._autoReplyArmed = autoReplyEnabled;
+                    // The first manual image must succeed before replies can trigger redraws.
+                    popup._autoReplyRequested = autoReplyEnabled;
                     popup.ExecuteConversationGeneration(convContext, preCapturedBase64, emblemSpecs);
                 }
             }
@@ -713,13 +715,19 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
+                    if (_autoReplyRequested) _autoReplyArmed = true;
                     _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? "会晤插画绘制完成");
                 }
                 else
                 {
                     _dataSource.SetReady($"绘制失败: {completion.Result?.ErrorMessage ?? "未能保存图像"}");
                 }
-            }, error => _dataSource.SetReady($"生成异常: {error}"));
+                QueuePendingAutoRedraw();
+            }, error =>
+            {
+                _dataSource.SetReady($"生成异常: {error}");
+                QueuePendingAutoRedraw();
+            });
         }
 
         private bool PublishImage(CachedIllustrationItem item)
@@ -800,7 +808,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         internal static void AutoRedrawActiveConversation()
         {
             var instance = _activeInstance;
-            if (instance == null || instance._closed || !instance._autoReplyArmed ||
+            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true ||
+                instance == null || instance._closed || !instance._autoReplyArmed ||
                 !string.Equals(instance._category, "conversation", StringComparison.Ordinal)) return;
             if (instance._dataSource.IsLoading)
             {
