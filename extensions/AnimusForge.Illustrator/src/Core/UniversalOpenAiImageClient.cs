@@ -532,7 +532,7 @@ namespace AnimusForge.Illustrator.Core
                             content.Add(new JObject
                             {
                                 ["type"] = "text",
-                                ["text"] = "【家族纹章图案样板】：上图仅为家族纹章图案标准样板；仅当画面中自然出现盾牌或纹章罩袍时参照此图案绘制，绝不是人物相貌，也绝不可在普通金属板甲胸甲表面硬印该图案！"
+                                ["text"] = "【家族纹章图案样板】：上图仅为家族纹章图案标准样板；仅当画面中已有明确纹章载体（盾牌、纹章罩袍、背景旗帜或其他已确认的纹章穿戴物）时参照此图案绘制，绝不是人物相貌，也不可凭样图新增载体或在普通金属板甲胸甲表面硬印该图案！"
                             });
                         }
                         else if (isScene)
@@ -559,8 +559,8 @@ namespace AnimusForge.Illustrator.Core
                     // 4. 追加艺术重绘与画风铁律
                     string resolvedStyle = !string.IsNullOrWhiteSpace(customStyleHint) ? customStyleHint.Trim() : (!string.IsNullOrWhiteSpace(style) ? style.Trim() : null);
                     string styleClause = !string.IsNullOrWhiteSpace(resolvedStyle)
-                        ? $"1. 严格遵循指定的画风要求（{resolvedStyle}），从零进行纯正艺术手绘创作，彻底杜绝任何3D建模多边形或游戏截图痕迹！\n"
-                        : "1. 严格呈现高水准艺术画卷质感，细腻刻画光影与材质，彻底杜绝任何3D建模多边形或游戏截图痕迹！\n";
+                        ? $"1. 严格遵循指定的画风要求（{resolvedStyle}），从零完整重绘整幅画面，统一处理人物、环境、材质、光照与透视；不要复制参考图像素、UI或游戏截图痕迹。\n"
+                        : "1. 从零完整重绘整幅画面，统一处理人物、环境、材质、光照与透视；不要复制参考图像素、UI或游戏截图痕迹。\n";
 
                     content.Add(new JObject
                     {
