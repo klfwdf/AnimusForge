@@ -52,6 +52,9 @@ namespace AnimusForge.Illustrator.Engine
             if (float.IsNaN(distance) || float.IsInfinity(distance) || distance > 24f) return;
             string label = string.IsNullOrWhiteSpace(prefab) ? name : prefab;
             if (string.IsNullOrWhiteSpace(label)) return;
+            // Filter only text facts, before the nearest-20 selection. Never use this
+            // naming heuristic to skip native traversal, geometry or resource copies.
+            if (IsScenePlacementMarker(label)) return;
             if (label.Length > 160) label = label.Substring(0, 160);
             if (_nearbyProps.TryGetValue(label, out float previous))
             {
@@ -69,6 +72,21 @@ namespace AnimusForge.Illustrator.Engine
                 _nearbyProps.Remove(farthest);
             }
             _nearbyProps.Add(label, distance);
+        }
+        internal static bool IsScenePlacementMarker(string label)
+        {
+            if (string.IsNullOrWhiteSpace(label)) return false;
+            return label.StartsWith("sp_", StringComparison.OrdinalIgnoreCase) ||
+                label.StartsWith("spawn_", StringComparison.OrdinalIgnoreCase) ||
+                label.StartsWith("chair_sit_position", StringComparison.OrdinalIgnoreCase) ||
+                label.StartsWith("animation_point", StringComparison.OrdinalIgnoreCase) ||
+                label.StartsWith("point_of_interest", StringComparison.OrdinalIgnoreCase) ||
+                label.StartsWith("play_music_point", StringComparison.OrdinalIgnoreCase) ||
+                label.EndsWith("_point", StringComparison.OrdinalIgnoreCase) ||
+                label.Equals("audience", StringComparison.OrdinalIgnoreCase) ||
+                label.Equals("duo", StringComparison.OrdinalIgnoreCase) ||
+                label.Equals("musicians", StringComparison.OrdinalIgnoreCase) ||
+                label.Equals("adam_0", StringComparison.OrdinalIgnoreCase);
         }
         internal string NearbyPropFacts => _nearbyProps.Count == 0 ? string.Empty :
             "\n【现场附近物体标识】玩家24米内可见实体的预制体/名称，按距离选取最多20种；仅为物体识别线索，不代表全部陈设或持握、位置关系，以环境参考图为准：" +
