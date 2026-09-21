@@ -19,6 +19,17 @@ internal static class Program
     {
         Check(EconomyPromptProjection.BuildTrustStatus(0, "中性观望", 6)
             == "综合信任 0（中性观望，6/10）", "trust status");
+        Check(EconomyTrustPolicy.Clamp(-101) == -100 && EconomyTrustPolicy.Clamp(101) == 100,
+            "trust clamp");
+        Check(EconomyTrustPolicy.GetLevelIndex(-100) == 1
+            && EconomyTrustPolicy.GetLevelIndex(-99) == 1
+            && EconomyTrustPolicy.GetLevelIndex(0) == 6
+            && EconomyTrustPolicy.GetLevelIndex(100) == 10, "trust level boundaries");
+        Check(EconomyTrustPolicy.GetLevelText(0) == "中性观望", "trust level text");
+        Check(EconomyTrustPolicy.GetBehaviorText(100).Contains("完全信赖", StringComparison.Ordinal),
+            "trust behavior text");
+        Check(EconomyTrustPolicy.GetActionGuideText(-100).StartsWith("L1：", StringComparison.Ordinal),
+            "trust action guide");
         Check(EconomyPromptProjection.BuildTrustPrompt("谨慎", "要求抵押")
             == "本级语义：谨慎" + Environment.NewLine
                 + "本级信用规则：要求抵押" + Environment.NewLine
