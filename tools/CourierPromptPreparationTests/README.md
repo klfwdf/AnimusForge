@@ -20,9 +20,9 @@
 
 | 文件 / 行号 | 符号 | 责任 |
 | --- | --- | --- |
-| `CourierDeliveryBehavior.cs:4284-4300` | `两个 Start / Begin / Prepare 传递 run` | 同一 session 每次真实 Start 建立新的 runtime-only reservation；旧排队开始与旧错误回调不得改新run。 |
-| `CourierDeliveryBehavior.cs:4378-4505` | `PrepareAndGenerateCourierReplyOffMainThreadAsync` | 回信真实worker沿原准备与后续完整生成路径接线。 |
-| `CourierDeliveryBehavior.cs:4829-4877` | `PrepareAndGenerateInboundLetterOffMainThreadAsync` | 来信真实worker沿原准备与后续完整生成路径接线。 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs:74-106` | `两个 Start / Begin / Prepare 传递 run` | 同一 session 每次真实 Start 建立新的 runtime-only reservation；旧排队开始与旧错误回调不得改新run。 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs:168-295` | `PrepareAndGenerateCourierReplyOffMainThreadAsync` | 回信真实worker沿原准备与后续完整生成路径接线。 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs:619-667` | `PrepareAndGenerateInboundLetterOffMainThreadAsync` | 来信真实worker沿原准备与后续完整生成路径接线。 |
 | `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:26-34` | `BeginCourierPromptRun / IsCourierPromptRunCurrent` | 弱表按实际Start保留当前run身份；无保存字段，无新队列。 |
 | 同文件 `:46-67` | `CompleteCourierPromptSourceChanged` | 仅当前run+同live session/participant源失效时调用原失败owner；回信先封住旧tags，来信用当前fallback。 |
 | 同文件 `:72-111` | `CourierPromptInput` | 冻结请求级路由值；Hero/Character句柄仍由未迁移共享规则builder消费，不冒称纯快照。 |

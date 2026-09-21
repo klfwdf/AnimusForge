@@ -8,7 +8,7 @@ class ExtractionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.blocks = run.extract()
-        cls.courier = run.ex.source("CourierDeliveryBehavior.cs", None)
+        cls.courier = run.ex.courier_source(None)
 
     def test_complete_production_owner_partial(self):
         self.assertEqual(run.ex.source("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs", None), self.blocks["PARTIAL"])

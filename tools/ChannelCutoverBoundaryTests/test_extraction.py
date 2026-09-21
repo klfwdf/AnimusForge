@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import unittest
 
-from run import SCENE_LIFECYCLE_DISPATCHES, declaration, extract, scene_source, source
+from run import SCENE_LIFECYCLE_DISPATCHES, courier_source, declaration, extract, scene_source, source
 
 
 class ExtractionTests(unittest.TestCase):
@@ -33,7 +33,7 @@ class ExtractionTests(unittest.TestCase):
     def test_blocks_are_contiguous_unmodified_production_substrings(self):
         blocks = extract(None)
         scene = scene_source(None)
-        courier = source("CourierDeliveryBehavior.cs", None)
+        courier = courier_source(None)
         self.assertIn(blocks["SCENE_BLOCK"], scene)
         self.assertIn(blocks["COURIER_BLOCK"], courier)
         self.assertTrue(blocks["SCENE_BLOCK"].startswith('string output = "";'))
