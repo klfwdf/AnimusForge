@@ -336,9 +336,9 @@
       ],
       "entryPaths": [
         "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
-        "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs",
         "src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs",
-        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -436,12 +436,16 @@
         "economy-owner"
       ],
       "entryPaths": [
-        "RewardSystemBehavior.EconomyMerchantReplay.cs",
-        "RewardSystemBehavior.EconomyPartyReplay.cs",
-        "RewardSystemBehavior.EconomyReplay.cs",
         "RewardSystemBehavior.PlayerRpCrafting.cs",
         "RewardSystemBehavior.RpItemIntroduction.cs",
-        "RewardSystemBehavior.cs"
+        "RewardSystemBehavior.cs",
+        "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs",
+        "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
+        "src/modules/AF.Module.Economy/Planning/LegacyEconomyRewardDebtAdapter.cs",
+        "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -481,7 +485,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 11,
@@ -723,11 +727,11 @@
         "DuelBehavior.cs",
         "DuelSettings.cs",
         "FourberieDuelCompatibility.cs",
-        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
-        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
         "ShoutBehavior.cs",
-        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -776,32 +780,32 @@
       ],
       "entryPaths": [
         "CompanionProactiveChatBehavior.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
-        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
         "CourierDeliveryBehavior.cs",
         "ProactiveNpcRequestBehavior.cs",
         "Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs",
         "Refactor/Runtime/CourierInboundCompletionReceipt.cs",
         "VanillaIssueOfferBridge.cs",
-        "VanillaIssuePromptBehavior.cs"
+        "VanillaIssuePromptBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -1295,7 +1299,7 @@
       "implementationState": "OPT_IN",
       "entryPaths": [
         "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
-        "RewardSystemBehavior.EconomyReplay.cs"
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs"
       ],
       "requiredCases": [
         "A_ONLY",

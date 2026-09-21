@@ -384,7 +384,7 @@
       "owner": "Action.Economy",
       "entryPaths": [
         "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
-        "RewardSystemBehavior.EconomyReplay.cs"
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs"
       ],
       "symbols": [
         {
@@ -393,7 +393,7 @@
           "kind": "type"
         },
         {
-          "path": "RewardSystemBehavior.EconomyReplay.cs",
+          "path": "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
           "symbol": "TryReplayAction",
           "kind": "method"
         }

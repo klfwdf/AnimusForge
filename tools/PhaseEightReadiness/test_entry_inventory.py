@@ -15,6 +15,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import entry_inventory  # noqa: E402
 
 EXPANDED_ENTRIES = {
+    # J12 Economy moved real owners into the module tree and added a detached
+    # projection; current owner review must be renewed before COMPLETE returns.
+    "economy-reward-debt": (
+        "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
+        "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs",
+    ),
     # Newly inventoried existing Courier boundaries require renewed J10 coverage review.
     "courier-proactive-issue": (
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
@@ -78,7 +87,7 @@ class EntryInventoryTests(unittest.TestCase):
 
     def test_required_candidates_are_present(self) -> None:
         result = entry_inventory.build_inventory(ROOT)
-        self.assertIn("RewardSystemBehavior.EconomyPartyReplay.cs", result["economy-reward-debt"])
+        self.assertIn("src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs", result["economy-reward-debt"])
         self.assertIn("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs", result["courier-proactive-issue"])
         self.assertIn("Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs", result["courier-proactive-issue"])
         self.assertIn("Refactor/Runtime/CourierInboundCompletionReceipt.cs", result["courier-proactive-issue"])
@@ -91,11 +100,11 @@ class EntryInventoryTests(unittest.TestCase):
         self.assertEqual(result, entry_inventory.build_explained_inventory(ROOT))
         economy = next(
             item for item in result["economy-reward-debt"]
-            if item["path"] == "RewardSystemBehavior.EconomyPartyReplay.cs"
+            if item["path"] == "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs"
         )
         self.assertEqual(
             economy["sourceReasons"],
-            ["reviewed-pattern:RewardSystemBehavior*.cs"],
+            ["reviewed-pattern:src/modules/AF.Module.Economy/**/*.cs"],
         )
 
     def test_exclusion_keeps_real_terminal_entries_and_rejects_generated_paths(self) -> None:
