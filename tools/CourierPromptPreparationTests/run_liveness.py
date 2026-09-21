@@ -7,7 +7,7 @@ def load(n,p):
 ex=load('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
 inverse=load('liveness_inverse',HERE/'liveness_review.py')
 def source(path):return inverse.old_source(path) if a.old else (ROOT/path).read_text(encoding='utf-8-sig')
-courier=source('CourierDeliveryBehavior.cs');partial=source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs')
+courier=source('CourierDeliveryBehavior.cs') if a.old else ex.courier_source(None);partial=source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs')
 phase=ex.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
 base=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').split('internal static class Program {')[0]
 message_markers=['private static List<object> BuildCourierReplyMessages(','private static List<object> BuildInboundNpcLetterMessages(',

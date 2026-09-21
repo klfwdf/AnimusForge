@@ -39,7 +39,7 @@ LINKS = [
 ]
 
 def extract():
-    courier = ex.source('CourierDeliveryBehavior.cs', None)
+    courier = ex.courier_source(None)
     shout = ex.source('ShoutBehavior.cs', None)
     return {
         'METHODS': '\n\n'.join(ex.declaration(courier, signature) for signature in SIGNATURES),

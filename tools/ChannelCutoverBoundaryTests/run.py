@@ -21,6 +21,7 @@ SCENE_LIFECYCLE_DISPATCHES = {
     "SCENE_FAILURE_RELEASE_DELEGATE": "scene_relay_failure_release",
 }
 SCENE_CHAINS_PATH = "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs"
+COURIER_GENERATION_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs"
 
 
 def source(path: str, ref: str | None) -> str:
@@ -54,6 +55,25 @@ def scene_source(ref: str | None) -> str:
     return host + "\n" + source(SCENE_CHAINS_PATH, ref)
 
 
+def courier_source(ref: str | None) -> str:
+    """Read the mixed host plus the current Courier generation owner.
+
+    Historical refs before J10b4 keep those methods in the root host, so the
+    fallback must not synthesize a second copy for baseline comparisons.
+    """
+    host = source("CourierDeliveryBehavior.cs", ref)
+    if ref:
+        exists = subprocess.run(
+            ["git", "cat-file", "-e", f"{ref}:{COURIER_GENERATION_PATH}"],
+            cwd=ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if not exists:
+            return host
+    return host + "\n" + source(COURIER_GENERATION_PATH, ref)
+
+
 def declaration(text: str, signature: str, optional: bool = False) -> str:
     """Extract a declaration by brace depth, ignoring strings and comments."""
     start = text.find(signature)
@@ -80,7 +100,7 @@ def extract(ref: str | None) -> dict[str, str]:
     anchor = scene.index('"[MemoryPerf] group_turn_prompt_ready')
     begin = scene.index('string output = "";', anchor)
     end = scene.index("apiSw.Stop();", begin)
-    courier = source("CourierDeliveryBehavior.cs", ref)
+    courier = courier_source(ref)
     method = declaration(courier, "private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(")
     begin_c = method.index("if (IsCourierBridgeEnabled()")
     # The same await also appears inside the fallback lambda; select the last.
