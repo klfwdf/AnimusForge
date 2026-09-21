@@ -1,25 +1,21 @@
 # J10 Scene / Courier 渠道会话拆分实施计划
 
-> 状态：`J10_IN_PROGRESS`（2026-09-21）
+> 状态：`J10_OFFLINE_VERIFIED`（2026-09-21）
 > 依赖：J07、J08、J09 已完成必要离线验收；启动基线 `d1709717`。
 > 本文只授权 Scene/Courier 渠道会话 owner、生命周期和提交时点的整理；不授权 J11–J14、制作组玩法、公开 API 开放、默认切换、部署或存档迁移。
 
-## 0. 当前施工回执
+## 0. 最终施工回执
 
 | 包 | 状态 | 产品提交 / 证据 |
 | --- | --- | --- |
-| G0 / 计划 | DONE | `2c6530f8`：有限责任矩阵、退出门和非目标已冻结，不再按主类行数或相似测试兜圈 |
-| J10a1 Scene audience scope | DONE | `03c08ac9`：`SceneShoutConversationScope` 100% 原内容归位 Scene 渠道；实时 `ShoutBehavior` group/relay 消费不变；5 个正常/失败场景与 epoch、Agent-reference、origin-merge 3 个有效变异通过 |
-| J10a3.1 Scene postprocess/relay completion 归位 | DONE | `76b5a429`：现有唯一 postprocess/queue/completion partial 100% 原内容归位 Scene 渠道；真实消费者、Phase8 manifest、路径型测试同步。Scene parity 71、Queue 37、5+7 个有效变异、request lifetime 30+7、默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过；Debug 1.3/1.4/Bootstrap 各 0 warning/0 error |
-| J10a2.1 Scene 玩家请求身份 | DONE | `64e438c6`：`ScenePlayerShoutRequestOwner` 唯一持有 input sequence、冻结 Mission/player/runtime/session/epoch identity 与一次性 claim；`ShoutTargetingContext`/request 迁出主类。request lifetime 30 + 7 变异、BattleSpeech captured 18 + 2 有效变异、Debug 双 API/Bootstrap 通过；Shout CRLF/无 BOM 保持 |
-| J10a2.2 Scene pending AFEF | DONE | `a4006d5c`：`ScenePendingAfefFactsOwner` 唯一持有每 Agent 的进程内待注入事实、12 条 oldest-first 上限与 one-shot consume；Native pending facts 仍在其原 owner。5 场景与 retain/unbounded/cross-agent 3 个有效变异、request lifetime、默认 wiring、Debug 双 API/Bootstrap 通过 |
-| J10a3.2 Scene speech queue lifetime | DONE | `2631f33c`：`SceneSpeechQueueOwner<T>` 唯一持有 FIFO、单 worker lease、clear/reset/空队列退休与无阻塞诊断快照；payload/TTS/历史/动作继续归 host。6 场景与 duplicate-worker/never-retire/reset 3 个有效变异、Scene Queue 37+7 变异、request lifetime、默认 wiring、Debug 双 API/Bootstrap 通过 |
-| J10a4 Scene group/relay/passive/reaction | DONE | `c1f5aa6a`/`cbf7f453`：21 个真实声明（group Prompt、passive、两个 group handler、完整 immediate reaction reservation→completion）原实现迁入 `ShoutBehavior.SceneConversationChains.cs`；生产调用不变。ChannelCutover 132、源码提取 14、ProductionConsumers 正常与 3 个有效变异、Scene parity 71、request lifetime 30、Debug 双 API/Bootstrap 通过 |
-| J10a Scene 整包 | OFFLINE_VERIFIED | live Agent/interaction timeout、TTS/audio、movement、History/Memory/动作副作用保留 host adapter；这是有意的游戏线程边界，不再按主类行数继续拆。LIVE/音频/帧成本仍 NOT-RUN |
-| J10b1 Courier prompt-run/session | DONE | `bdf58283`：现有 `PromptPreparation`/`PromptSchedule` 100% 原内容归位 `Channels/Courier`，真实 start reservation、source/generation/session/participant 逐跳复核及 owner phases 不变。Prompt 550/76、liveness 59/16、4 个有效变异、BuildPhases、ProductionConsumers、Phase8 inventory、Debug 双 API/Bootstrap 通过 |
-| J10b2 / J10c | IN PROGRESS | transport/pregeneration/arrival/delivery/letter/inbound/retry owner 和最终整包验收尚未完成 |
+| G0 | DONE | `2c6530f8` 冻结有限责任矩阵、退出门与非目标 |
+| J10a Scene | OFFLINE_VERIFIED | `03c08ac9`、`76b5a429`、`64e438c6`、`a4006d5c`、`2631f33c`、`c1f5aa6a`、`cbf7f453`：audience/request/pending/speech/group/relay/passive/reaction 真实 owner 与消费者闭合 |
+| J10b Courier preparation/transport/session | DONE | `bdf58283` 起的 Courier 系列切片：Prompt run、generation、transport、delivery、registry/creation、runtime/proactive/letter inventory 归位；回滚链见主台账历史回执 |
+| J10b Prompt message/fact | DONE | `14283c3f`：22 个声明原样迁移，Prompt 550/76、liveness 59/16、Debug 构建通过 |
+| J10b domain commit/reply wait | DONE | `f6c95ac3`：6+4 个声明原样迁移；到达提交、session eligibility、Economy reservation、history fan-out 和 wait lock owner 唯一 |
+| J10c 整包 | OFFLINE_VERIFIED | `7d70f528` 及最终文档提交：六构建、1060 API、142/168 persistence、Scene/Courier/Native/shared/Bridge/Phase8、有效负例和 392 锚点地图通过 |
 
-`TeamModulePortParityTests` 本轮未计通过：运行在进入 Scene 路径比较前，被既有 `MemorySummaryRunOwnerTests/source-review.json` 对 `fixture_support.py` 的依赖 hash 漂移阻断；相关文件本轮未修改，未刷新 hash 绕过。LIVE/SAVE/provider/音频/真实帧成本仍 `NOT-RUN`。
+详细结果与 NOT-RUN 边界见 `docs/handoffs/2026-09-21-j10-scene-courier-offline-closeout.md`。真实游戏、旧档、provider、音频和性能不因离线闭合而提升；J11–J14 未在本包偷渡。
 
 ## 1. 完成定义
 

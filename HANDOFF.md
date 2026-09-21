@@ -1,47 +1,12 @@
-# 当前交接：J10a Scene 闭合，J10b Courier 主动来信/信件 owner 归位（2026-09-21）
+# 当前交接：J10 Scene / Courier 离线整包闭合，下一步 J11 计划（2026-09-21）
 
-- **状态**：J07–J09、J10a Scene `OFFLINE_VERIFIED`；J10b `IN_PROGRESS`。Courier 的 transport/generation/session/commit/lifetime 已归位；`e541697c` 又把 Engine/Campaign/hourly 调度 6 方法归到 `RuntimeTick`，主动来信增量扫描/候选/外交兼容 21 方法归到 `ProactiveLetters`，信件库存运行时与公开查询 28 方法归到 `LetterInventory`。真实消费者仍调用同一 partial class，SyncData/DTO/key 仍留宿主，没有新增公开 API 或执行路径。
-- **当前结果**：`Channels/Scene` 持真实 group/relay/passive/reaction 编排、request/audience identity、pending AFEF one-shot、FIFO/单 worker lease、共享 postprocess/relay completion；live Agent、interaction timeout、TTS/audio、movement、History/Memory/动作副作用有意保留游戏线程 host adapter。
-- **验证**：ChannelCutover 132 + 提取 14；ProductionConsumers 正常 + 3 有效变异；scope/pending AFEF/speech queue 共 16 正常 + 9 变异；Scene parity 71、Queue 37+7、request lifetime 30、BattleSpeech 18+2、默认 wiring 25；Debug 1.3/1.4/Bootstrap 均 0 warning/0 error。代码地图 342 锚点绑定 `cbf7f453`。
-- **已知验证阻塞**：TeamModule parity 在比较 Scene 前被既有 MemorySummary fixture dependency hash 漂移阻断；本轮未改该依赖、未刷新 hash 绕过，不把它计 PASS。
-- **Courier 证据**：本包 55 方法逐方法精确迁移且主类无重复；Proactive、LetterInventory、ChannelCutover 132+14、liveness 59/16、默认 wiring 25、Phase8 inventory 11 通过。禁用 proactive frame budget 的变异完整 Debug 1.3/1.4/Bootstrap 仍可编译，随后被具名预算断言拒绝；恢复后的最终 Debug 三构建均 0 warning/0 error。信件库存明确保留现有 `discard_guard`，没有擅自恢复自动 retry。
-- **下一步**：J10b10 收拢 Courier Prompt message/fact 与旧 domain commit/wait owner；SyncData/DTO/keys、Harmony/地图适配继续留宿主。完成后做 J10 清理、Release/API/存档整包门禁并决定是否可标 `J10_OFFLINE_VERIFIED`。
-- **边界**：真实 provider、Campaign/Mission、旧 SAVE、live Economy/外交、真实音频和帧/网络性能均 NOT-RUN；未 Stage/Deploy/Package、未操作游戏/存档。
-- **位置**：唯一施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；本地分支 `codex/af-modularize-j04-20260918`；交付目标 `origin/codex/af-main-refactor-continuation-20260831`。`.dotnet-cli-home/` 保留且不纳入 Git。
-
-代码定位（一基行号，后续改动后以符号搜索为准）：
-
-- `src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs:14`
-- `src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs:14`
-- `src/modules/AF.Module.Actions/Plan/ActionPlanIntegrityPolicy.cs:13`
-- `src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs:27`
-- `src/modules/AF.Module.Actions/Execute/LegacyChannelActionCommitter.cs:15`
-- `src/modules/AF.Module.Actions/Execute/LegacyChannelActionPlanExecutor.cs:14`
-- `src/modules/AF.Module.Actions/Receipts/ActionExecutionCommitter.cs:13`
-- `src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs:16`
-- `src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs:13`
-- `ShoutBehavior.NativeActionCommit.cs:20`
-- `src/modules/AF.Module.Conversation/Channels/Scene/SceneShoutConversationScope.cs:161`
-- `src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs:56`
-- `src/modules/AF.Module.Conversation/Channels/Scene/ScenePendingAfefFactsOwner.cs:11`
-- `src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechQueueOwner.cs:10`
-- `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs:95,482`
-- `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs:85,185,770,1568`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs:22,138`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs:16,110,165`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs:19`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs:20,46`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs:36,48,59`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs:24,117`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:26,156`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs:17`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs:41,74,168,508,619,737,811`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs:41,157,188,243,272`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs:41,421,482,532,661,1049,1091`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs:41,231,418,436,526,558`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs:41,169,197,503`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs:95,549,589,686,770,864`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs:118,176`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs:93,134,566`
-- `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs:41,288,453,703`
-- `Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs:574`
+- **状态**：J07、J08、J09、J10 均为 `OFFLINE_VERIFIED`；不是全项目 J17 或实机发布完成。
+- **J10 结果**：Scene 的 audience/request/pending AFEF/speech queue/group/relay/passive/reaction，Courier 的 prompt/generation/transport/session/arrival/letter/retry/domain commit/reply wait 已归 `src/modules/AF.Module.Conversation/Channels/{Scene,Courier}` 的真实 owner；旧根类只保留活动 DTO/SyncData/Harmony/UI/游戏线程适配。
+- **最后产品提交**：`14283c3f`（Courier Prompt message/fact）、`f6c95ac3`（Courier domain commit/reply wait）；验收工具与 392 锚点地图 `7d70f528`。
+- **验证**：Debug/Release × 1.3/1.4/Bootstrap 六构建 0 warning/0 error；四 DLL API/metadata 1060；Persistence 142 keys / 168 bindings / 13 chunked / 44 flattened；Scene、Courier、Native、三渠道、Bridge、Phase8 与有效负例通过。
+- **清理**：Courier 根文件从 J09 的 10,514 行降至 3,477 行，Shout 根文件从 39,190 行降至 37,062 行；这是物理导航结果，完成依据仍是 owner/消费者/时序/测试。无重复 owner、冲突标记或新旧双执行。
+- **制作组边界**：Policy、Gathering、GCCZ 玩法未迁入主体；13 个内部 typed-port 方法、31 个真实调用点、308 行为断言与 3 个变异通过。
+- **未验证**：真实 Campaign/Mission、旧 SAVE、provider、live Economy/外交、子 MOD CLR、TTS/audio、帧/网络性能均 `NOT-RUN`；未 Stage/Deploy/Package、未操作游戏和存档。
+- **详细 HANDOFF**：`docs/handoffs/2026-09-21-j10-scene-courier-offline-closeout.md`。
+- **下一步**：只先完成 J11 的有限计划和责任矩阵，不直接迁玩法、不开放 J14 public Scene/Courier submit、不切默认路径。
+- **位置**：施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；本地分支 `codex/af-modularize-j04-20260918`；交付目标 `origin/codex/af-main-refactor-continuation-20260831`；`.dotnet-cli-home/` 保留本地。

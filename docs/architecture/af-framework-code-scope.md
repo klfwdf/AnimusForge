@@ -1,10 +1,10 @@
-# 当前 J10a Scene 闭合，J10b Courier 进行中（2026-09-21）
+# 当前范围：J10 Scene / Courier 离线整包闭合（2026-09-21）
 
-J10 Scene audience `03c08ac9`、postprocess `76b5a429`、request identity `64e438c6`、pending AFEF `a4006d5c`、speech queue `2631f33c` 已归位；`c1f5aa6a`/`cbf7f453` 将 group Prompt、passive、两个 group handler 与完整 immediate reaction 链的 21 个声明迁入 `ShoutBehavior.SceneConversationChains.cs`。真实消费者/算法不变，无第二管线或新存档。ChannelCutover 132+14、ProductionConsumers 正常+3 变异及既有 Scene/Debug 门禁通过。当前地图绑定 `cbf7f453`，共 342 锚点。
+J10 产品终点为 `f6c95ac3`，验收/地图补丁为 `7d70f528`。Scene 的 audience/request/pending AFEF/speech queue/group/relay/passive/reaction 与 Courier 的 prompt/generation/transport/session/arrival/letter/retry/domain commit/reply wait 已由 `src/modules/AF.Module.Conversation/Channels/{Scene,Courier}` 的稳定 owner 承担，真实消费者仍是同一 production partial class；没有第二管线、新 facade、公有 API、默认开关或存档键。
 
-J10a 状态 `OFFLINE_VERIFIED`。live Agent、interaction timeout、TTS/audio、movement、History/Memory/动作副作用仍在 host adapter，这是游戏线程/渠道副作用边界，不按行数继续拆。J10b 只完成 prompt-run 子包，故 J10 总包仍 `IN_PROGRESS`；真实 Campaign/Mission、旧档、provider、音频和帧成本 `NOT-RUN`。详见[主台账 J10 节](../animusforge-refactoring-and-repository-reorganization-plan.md#j10-scene-owners-20260921)。
+Courier 最后责任位于 `CourierDeliveryBehavior.PromptMessages.cs:41,444`、`CourierDeliveryBehavior.DomainCommit.cs:41,167,215,289`、`CourierDeliveryBehavior.ReplyWait.cs:73,102`。动作只在 `DeliveryApplied` 后提交；request/session/target 重验、one-shot Economy reservation、单次历史/AFEF fan-out 和最后 waiter 释放时间锁保持。Scene group/relay 和 reaction 入口位于 `ShoutBehavior.SceneConversationChains.cs:770,1568`；live Agent、TTS/audio、movement 与游戏对象副作用有意留游戏线程 adapter。
 
-Courier `bdf58283` 已把 `PromptPreparation`/`PromptSchedule` 原内容归位 `src/modules/AF.Module.Conversation/Channels/Courier`：`ConditionalWeakTable` run reservation、source-change failure、四个 owner phase 和逐跳 generation/session/participant/source 复核保持。Prompt 550/76、liveness 59/16、4 变异、BuildPhases/ProductionConsumers/Phase8/Debug 构建通过。transport/arrival/letter/retry 尚未收口，J10b 仍 `IN_PROGRESS`。
+状态 **J10_OFFLINE_VERIFIED**。392 锚点地图 recorded/working-tree 通过；六构建、1060 API/metadata、142/168 存档契约、Scene/Courier/Native/Bridge/Phase8 与有效负例详见[详细 HANDOFF](../handoffs/2026-09-21-j10-scene-courier-offline-closeout.md)。Policy/Gathering/GCCZ 玩法未迁入主体。真实 Campaign/Mission、旧 SAVE、provider、live Economy/外交、子 MOD CLR、音频与性能仍 `NOT-RUN`；未 Stage/Deploy/Package。
 
 ## 以下历史范围以上方更新为准
 
