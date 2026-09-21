@@ -242,6 +242,14 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 Type shoutType = AccessTools.TypeByName("AnimusForge.ShoutBehavior");
                 if (shoutType == null) return;
+                // The native conversation overlay uses this shared presentation entry point;
+                // its callback is the authoritative completed main-reply signal in-game.
+                MethodInfo overlayMethod = AccessTools.Method(shoutType, "SubmitNativeConversationForOverlayAsync");
+                if (overlayMethod != null)
+                {
+                    harmony.Patch(overlayMethod, prefix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(WrapNativeConversationReplyCallbackPrefix)));
+                    _nativeConversationReplyPatchInstalled = true;
+                }
                 MethodInfo textMethod = AccessTools.Method(shoutType, "SubmitNativeConversationTextForExternalAsync",
                     new[] { typeof(string), typeof(Action<string>), typeof(string), typeof(Action<string>), typeof(Action<string, Hero, CharacterObject>) });
                 if (textMethod != null)
@@ -253,36 +261,53 @@ namespace AnimusForge.Illustrator.UI.Patches
                     new[] { typeof(Action<string>), typeof(string), typeof(Action<string>), typeof(Action<string, Hero, CharacterObject>) });
                 if (openingMethod != null)
                 {
-                    harmony.Patch(openingMethod, prefix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(WrapNativeConversationReplyCallbackPrefix)));
-                    _nativeConversationReplyPatchInstalled = true;
+                    harmony.Patch(openingMethod, prefix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(WrapNativeOpeningCallbackPrefix)));
                 }
                 if (_nativeConversationReplyPatchInstalled)
-                    Debug.Print("[Illustrator] Auto conversation redraw hook attached to native conversation main-reply callback.");
+                    LogAutoRedraw("hook_attached overlay=" + (overlayMethod != null) + " external=" + (textMethod != null));
+                else LogAutoRedraw("hook_missing");
             }
             catch (Exception ex)
             {
-                Debug.Print("[Illustrator] Failed to attach native conversation reply hook: " + ex.GetType().Name + ": " + ex.Message);
+                LogAutoRedraw("hook_failed " + ex.GetType().Name + ": " + ex.Message);
             }
         }
 
-        private static void WrapNativeConversationReplyCallbackPrefix(ref Action<string, Hero, CharacterObject> onMainReplyReady)
+        private static void WrapNativeConversationReplyCallbackPrefix(string playerText, ref Action<string, Hero, CharacterObject> onMainReplyReady)
         {
-            Action<string, Hero, CharacterObject> original = onMainReplyReady;
-            onMainReplyReady = (content, targetHero, targetCharacter) =>
+            WrapReplyCallback(playerText, ref onMainReplyReady);
+        }
+
+        private static void WrapNativeOpeningCallbackPrefix(ref Action<string, Hero, CharacterObject> onMainReplyReady)
+        {
+            WrapReplyCallback(null, ref onMainReplyReady);
+        }
+
+        private static void WrapReplyCallback(string playerText, ref Action<string, Hero, CharacterObject> callback)
+        {
+            Action<string, Hero, CharacterObject> observer;
+            try { observer = IllustrationCardPopup.CaptureAutoReplyObserver(playerText); }
+            catch (Exception ex) { LogAutoRedraw("capture_failed " + ex.GetType().Name); return; }
+            if (observer == null) return;
+            Action<string, Hero, CharacterObject> original = callback;
+            callback = (content, targetHero, targetCharacter) =>
             {
-                original?.Invoke(content, targetHero, targetCharacter);
-                if (!string.IsNullOrWhiteSpace(content))
+                try { original?.Invoke(content, targetHero, targetCharacter); }
+                finally
                 {
-                    Debug.Print("[Illustrator] Native conversation main reply received; queueing automatic redraw.");
-                    IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
+                    try { observer(content, targetHero, targetCharacter); }
+                    catch (Exception ex) { LogAutoRedraw("callback_failed " + ex.GetType().Name); }
                 }
             };
         }
 
+        internal static void LogAutoRedraw(string message)
+        {
+            try { global::AnimusForge.Logger.Log("Illustrator", "[AutoRedraw] " + message); } catch { }
+        }
+
         internal static void OnAgentJoinedConversation(IAgent agent)
         {
-            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true)
-                return;
             AttachConversationContinuedHandler();
             _lastAutoRedrawSentence = string.Empty;
         }
@@ -318,7 +343,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             string sentence = string.Empty;
             try { sentence = Campaign.Current?.ConversationManager?.CurrentSentenceText ?? string.Empty; } catch { }
             sentence = sentence.Trim();
-            if (sentence.Length > 0 && string.Equals(sentence, _lastAutoRedrawSentence, StringComparison.Ordinal)) return;
+            if (sentence.Length == 0 || string.Equals(sentence, _lastAutoRedrawSentence, StringComparison.Ordinal)) return;
             _lastAutoRedrawSentence = sentence;
             IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
         }

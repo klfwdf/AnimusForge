@@ -15,6 +15,7 @@ using AnimusForge.Illustrator;
 using AnimusForge.Illustrator.Context;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI.Patches;
 using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.Illustrator.UI.Overlays
@@ -37,6 +38,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _autoRedrawPending;
         private bool _autoReplyArmed;
         private bool _autoReplyRequested;
+        private string _latestAutoPlayerText;
+        private string _latestAutoReplyText;
 
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
@@ -369,7 +372,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
-                if (completion.SavedItem != null && !_autoReplyArmed) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
+                if (completion.SavedItem != null) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
@@ -379,11 +382,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     _dataSource.SetReady($"绘制失败: {completion.Result?.ErrorMessage ?? "未能保存图像"}");
                 }
-                QueuePendingAutoRedraw();
             }, error =>
             {
                 _dataSource.SetReady($"生成异常: {error}");
-                QueuePendingAutoRedraw();
             });
         }
 
@@ -391,7 +392,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (!_autoReplyArmed || !_autoRedrawPending || _closed) return;
             _autoRedrawPending = false;
-            IllustratorRuntime.Post(AutoRedrawActiveConversation);
+            IllustratorRuntime.PostCritical(() =>
+            {
+                if (ReferenceEquals(_activeInstance, this) && !_closed) AutoRedrawActiveConversation();
+            });
         }
 
         private static string GenerateDiversePoseDirective()
@@ -451,9 +455,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
             specs.Add(new EmblemSpec { Code = code, Owner = owner, PlayerSide = sideLabel == "玩家", InterlocutorSide = sideLabel != "玩家" });
         }
 
-        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null)
+        private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false)
         {
-            try { ExecuteConversationGenerationCore(convContext, preCapturedBase64, emblemSpecs); }
+            if (!automatic)
+            {
+                _autoReplyRequested = IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen == true;
+                _autoRedrawPending = false;
+                _latestAutoPlayerText = null;
+                _latestAutoReplyText = null;
+            }
+            try { ExecuteConversationGenerationCore(convContext, preCapturedBase64, emblemSpecs, automatic); }
             catch (Exception ex) { _dataSource.SetReady("生成准备失败：" + ex.Message); }
         }
 
@@ -529,7 +540,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             catch (Exception ex) { Debug.Print("[Illustrator] Scene probe status failed: " + ex.Message); }
         }
 
-        private void ExecuteConversationGenerationCore(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null)
+        private void ExecuteConversationGenerationCore(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false)
         {
             _dataSource.SetLoading("AI画师正在分析现场交谈与肢体姿势...");
 
@@ -575,11 +586,17 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _dataSource.SetReady("未能取得双方完整装备快照，已停止生成；不会用兵种模板或另一套服装替代。");
                 return;
             }
-            var sceneSource = session == null ? ScreenCaptureHelper.GetConversationSceneCaptureSource() : null;
+            var sceneSource = ScreenCaptureHelper.GetConversationSceneCaptureSource();
 
             _scope.Run(async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
+                GenerationDiagnostics.Current?.RecordStage("conversation_generation_trigger", new JObject
+                {
+                    ["automatic"] = automatic,
+                    ["popup"] = _instanceId,
+                    ["sessionEpoch"] = sessionEpoch
+                });
                 GenerationDiagnostics.Current?.RecordStage("conversation_session_cache", new JObject
                 {
                     ["hit"] = session != null,
@@ -715,7 +732,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
-                    if (_autoReplyRequested) _autoReplyArmed = true;
+                    if (_autoReplyRequested && !_autoReplyArmed)
+                    {
+                        _autoReplyArmed = true;
+                        ConversationIllustrationPatch.LogAutoRedraw("armed popup=" + _instanceId);
+                    }
                     _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? "会晤插画绘制完成");
                 }
                 else
@@ -778,6 +799,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
             if (_closed) return;
             _closed = true;
             _autoRedrawPending = false;
+            _latestAutoPlayerText = null;
+            _latestAutoReplyText = null;
             try
             {
                 _scope?.Close();
@@ -807,22 +830,99 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         internal static void AutoRedrawActiveConversation()
         {
+            IllustratorRuntime.AssertMainThread();
             var instance = _activeInstance;
             if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true ||
-                instance == null || instance._closed || !instance._autoReplyArmed ||
+                instance == null || instance._closed ||
                 !string.Equals(instance._category, "conversation", StringComparison.Ordinal)) return;
+            if (!instance._scope.IsCurrent || Campaign.Current?.ConversationManager?.IsConversationInProgress != true) return;
+            if (!instance._autoReplyArmed)
+            {
+                // A reply may arrive while the first manual image is still rendering. Keep one
+                // pending turn so the successful first image immediately catches up.
+                if (instance._autoReplyRequested && instance._dataSource.IsLoading)
+                {
+                    instance._autoRedrawPending = true;
+                    ConversationIllustrationPatch.LogAutoRedraw("queued_first_image popup=" + instance._instanceId);
+                }
+                return;
+            }
             if (instance._dataSource.IsLoading)
             {
                 instance._autoRedrawPending = true;
+                ConversationIllustrationPatch.LogAutoRedraw("queued_busy popup=" + instance._instanceId);
                 return;
             }
 
             ConversationVisualContext context = ConversationContextExtractor.ExtractFromCurrentConversation();
             if (context == null) return;
+            // The main reply is delivered before postprocess commits dialogue history. Use
+            // the captured turn so this request cannot illustrate the previous NPC response.
+            if (!string.IsNullOrWhiteSpace(instance._latestAutoReplyText))
+            {
+                context.DialogueSentence = instance._latestAutoReplyText;
+                var turn = new List<ConversationContextExtractor.NativeDialogueLine>();
+                if (!string.IsNullOrWhiteSpace(instance._latestAutoPlayerText))
+                    turn.Add(new ConversationContextExtractor.NativeDialogueLine { Kind = "player", Text = instance._latestAutoPlayerText });
+                turn.Add(new ConversationContextExtractor.NativeDialogueLine
+                {
+                    Kind = "npc", Text = instance._latestAutoReplyText,
+                    Speaker = context.InterlocutorHero?.Name?.ToString() ?? context.InterlocutorCharacter?.Name?.ToString() ?? "对方"
+                });
+                context.RecentDialogueHistory = ConversationContextExtractor.BuildRecentDialogueHistory(turn, 1);
+            }
             var emblems = new List<EmblemSpec>();
             AddEmblemSpec(emblems, context.InterlocutorHero, "对话对方");
             AddEmblemSpec(emblems, context.MainHero, "玩家");
-            instance.ExecuteConversationGeneration(context, null, emblems);
+            instance._autoRedrawPending = false;
+            ConversationIllustrationPatch.LogAutoRedraw("start popup=" + instance._instanceId);
+            instance.ExecuteConversationGeneration(context, null, emblems, automatic: true);
+        }
+
+        internal static Action<string, Hero, CharacterObject> CaptureAutoReplyObserver(string playerText)
+        {
+            // UI submissions arrive on the game thread. No scene scans or polling: capture
+            // a few owner references once per submitted turn, then validate on reply delivery.
+            if (!IllustratorRuntime.IsMainThread || IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true) return null;
+            var instance = _activeInstance;
+            var manager = Campaign.Current?.ConversationManager;
+            if (instance == null || instance._closed || instance._category != "conversation" ||
+                (!instance._autoReplyArmed && !instance._autoReplyRequested) ||
+                !instance._scope.IsCurrent || manager?.IsConversationInProgress != true) return null;
+            long epoch = _conversationSessionEpoch;
+            var character = manager.OneToOneConversationCharacter;
+            var agent = manager.OneToOneConversationAgent;
+            ConversationIllustrationPatch.LogAutoRedraw("request_observed popup=" + instance._instanceId);
+            int delivered = 0;
+            return (content, targetHero, targetCharacter) =>
+            {
+                if (string.IsNullOrWhiteSpace(content) || System.Threading.Interlocked.Exchange(ref delivered, 1) != 0) return;
+                // A single completion per captured request keeps this queue bounded. Never
+                // substitute the latest popup for the one that authorized this request.
+                IllustratorRuntime.PostCritical(() =>
+                {
+                    if (!ReferenceEquals(_activeInstance, instance) || instance._closed ||
+                        epoch != _conversationSessionEpoch || !instance._scope.IsCurrent ||
+                        !ReferenceEquals(Campaign.Current?.ConversationManager, manager) || !manager.IsConversationInProgress ||
+                        !ReferenceEquals(manager.OneToOneConversationCharacter, character) ||
+                        !ReferenceEquals(manager.OneToOneConversationAgent, agent) ||
+                        !ReferenceEquals(targetCharacter ?? targetHero?.CharacterObject, character))
+                    {
+                        ConversationIllustrationPatch.LogAutoRedraw("dropped_stale popup=" + instance._instanceId);
+                        return;
+                    }
+                    if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true)
+                    {
+                        instance._autoRedrawPending = false;
+                        ConversationIllustrationPatch.LogAutoRedraw("dropped_disabled popup=" + instance._instanceId);
+                        return;
+                    }
+                    instance._latestAutoPlayerText = playerText;
+                    instance._latestAutoReplyText = content;
+                    ConversationIllustrationPatch.LogAutoRedraw("reply_received popup=" + instance._instanceId + " chars=" + content.Length);
+                    AutoRedrawActiveConversation();
+                });
+            };
         }
 
         internal static void ClearConversationSessionCache()
