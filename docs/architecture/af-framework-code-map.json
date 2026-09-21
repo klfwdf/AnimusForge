@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "b751f97460ed4a54020baf8be9823a252e80cdc0",
+  "sourceRevision": "e541697c6208ed4355c705295f8b258f99d85c30",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4128,6 +4128,105 @@
       "status": "wired-j10-candidate",
       "note": "prewritten inbound path skips LLM generation",
       "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+    },
+    {
+      "id": "courier.runtime.tick",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
+      "start": 118,
+      "end": 118,
+      "symbol": "private void OnCampaignTick(float dt)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "throttled scan/receipt/inventory/session tick",
+      "fileSha256": "17bf94fb36bec0ae297e469be560e905cf71f0cce5427db52027f7984852595d"
+    },
+    {
+      "id": "courier.runtime.hourly",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
+      "start": 176,
+      "end": 176,
+      "symbol": "private void OnHourlyTick()",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "proactive scan schedule entry",
+      "fileSha256": "17bf94fb36bec0ae297e469be560e905cf71f0cce5427db52027f7984852595d"
+    },
+    {
+      "id": "courier.proactive.scan",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
+      "start": 93,
+      "end": 93,
+      "symbol": "private void ProcessNpcInitiatedLetterScan()",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "bounded per-frame proactive scan",
+      "fileSha256": "24309fb6d54d5d9d8629b66858fc3cfc1f04c04efbb0d8e277927084365e7b74"
+    },
+    {
+      "id": "courier.proactive.complete",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
+      "start": 134,
+      "end": 134,
+      "symbol": "private void CompleteNpcInitiatedLetterScan(NpcInitiatedLetterScanState scan)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "current-scan selection and session creation",
+      "fileSha256": "24309fb6d54d5d9d8629b66858fc3cfc1f04c04efbb0d8e277927084365e7b74"
+    },
+    {
+      "id": "courier.proactive.diplomacy",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
+      "start": 566,
+      "end": 566,
+      "symbol": "private void TryStartNpcDiplomacyLetterScan()",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "diplomacy-letter compatibility scan",
+      "fileSha256": "24309fb6d54d5d9d8629b66858fc3cfc1f04c04efbb0d8e277927084365e7b74"
+    },
+    {
+      "id": "courier.letter.inventory-owner",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private void EnsureCourierLetterInventoryData()",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "runtime letter inventory owner",
+      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+    },
+    {
+      "id": "courier.letter.retry-guard",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
+      "start": 288,
+      "end": 288,
+      "symbol": "private void ScheduleCourierLetterInventoryRestoreRetries(string reason, int attempts)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "discard guard keeps automatic retry disabled",
+      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+    },
+    {
+      "id": "courier.letter.add",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
+      "start": 453,
+      "end": 453,
+      "symbol": "private static void AddCourierLetterToPlayerInventory(CourierSession session, Hero sender, string senderName, string letterText, bool isReply)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "sanitized generated inventory letter",
+      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+    },
+    {
+      "id": "courier.letter.detail",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
+      "start": 703,
+      "end": 703,
+      "symbol": "public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "public compatibility detail lookup",
+      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
     }
   ]
 }
