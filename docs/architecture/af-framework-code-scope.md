@@ -268,7 +268,7 @@ NativeSubmit现为真实可探测能力，Scene/Courier仍NotSupported且必交�
 
 源码29448d1b，124点地图。[详细HANDOFF](../handoffs/2026-09-15-game-lifetime-closeout-handoff.md)。SubModule真实回调绑定Game身份；AfCampaignRuntimeLifecycle只掌管主体My/Shout/Courier寿命。PendingOperationRegistry是原队列的退役登记，不是第二个调度队列；已claim副作用保留真实结果。My先关闭准入再清理，避免新generation/旧singleton竞态。
 
-Courier 最终 commit 调度当前位于 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs`，入站 completion receipt 位于同目录 `CourierDeliveryBehavior.InboundCompletion.cs`，到达后双向生成/重试/恢复位于 `CourierDeliveryBehavior.GenerationLifecycle.cs`，原责任均未复制。其余混合 live transport/路线/入站来信 UI/session 创建、B1预算、双向服务/外部三渠道SDK仍未完成；不把某个 partial 或目录 Ready 当整项完成。
+Courier 最终 commit 调度当前位于 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs`，入站 completion receipt 位于同目录 `CourierDeliveryBehavior.InboundCompletion.cs`，到达后双向生成/重试/恢复位于 `CourierDeliveryBehavior.GenerationLifecycle.cs`，唯一 session 状态机和入站交付位于 `CourierDeliveryBehavior.SessionTransport.cs`，原责任均未复制。其余 route/progress/threat/naval、session 创建/runtime index、B1预算、双向服务/外部三渠道SDK仍未完成；不把某个 partial 或目录 Ready 当整项完成。
 
 ## 以下为已有范围记录
 
