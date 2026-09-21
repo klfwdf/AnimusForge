@@ -68,6 +68,14 @@ namespace TaleWorlds.CampaignSystem
 }
 namespace AnimusForge
 {
+    // The real SubModule Campaign callback is compiled by this harness. Lifetime behavior has
+    // its own production-linked suite; these no-op hooks isolate composition without rewriting it.
+    internal static class AfCampaignRuntimeLifecycle
+    {
+        internal static void Begin(Game game) { }
+        internal static void CaptureOwners(Game game, CampaignGameStarter starter) { }
+        internal static void End(Game game) { }
+    }
     internal static class Logger
     {
         internal static void LogTrace(string category, string message)

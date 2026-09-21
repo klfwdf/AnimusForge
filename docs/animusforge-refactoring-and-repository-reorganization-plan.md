@@ -20,7 +20,7 @@
 
 - **精确迁移与 ports**：6 个 interface/class declaration 与 J11 前逐声明相等；TeamModulePortParity 13 方法 / 31 call expressions、308 行为断言；资格反转、Siege selected 反转、player/speaker text 交换 3 个可编译行为变异全部拒绝。
 - **Policy 双版本**：Bannerlord 1.3 与 1.4 各自 `policy-all-modules-contract-only` 1406（18 modules）和 `policy-history-only` 1115 通过；未改 MCM retrieval、active instance、save codec、execution/rollback。
-- **Composition / Bridge**：Campaign composition 42 + 5 变异；CompositionMatrix 18 cases / 24 invariants；Bridge 16 bindings（12 wired / 4 declared-only）、23 单测、runtime isolation 12；ModuleFramework public API 119 + 256 concurrent reads。
+- **Composition / Bridge**：Campaign composition 42 + 6 可编译变异（含真实入口重复注册拒绝）；CompositionMatrix 18 cases / 24 invariants；Bridge 16 bindings（12 wired / 4 declared-only）、23 单测、runtime isolation 12；ModuleFramework public API 119 + 256 concurrent reads。
 - **三渠道影响面**：Scene parity 71；J09 default wiring 25；Courier Prompt 550/76、postprocess 39、domain commit 32；Native action 91、completion 184。未复制 Prompt、parser、动作或事实提交。
 - **构建/API/存档**：Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/0 error；四实现 DLL 1060 metadata/API；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened，Identity 5、Chunk replay 8。
 - **结构**：394 锚点代码地图 recorded / working-tree 通过，绑定产品 `cdbd077af3abb4614594eff4b198052a4841e63e`。

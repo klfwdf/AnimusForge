@@ -25,10 +25,10 @@
 | Gathering | `NormalizeNobleGatheringPostprocessTagsForExternal` | 2 | LLM 后处理结果 normalize | Gathering owner；normalize 不执行 |
 | Gathering | `BuildFeastAttendanceContext` | 1 | Prompt extras capture | Gathering owner；资格/文本归原实现 |
 | Gathering | `TryApplyNobleGatheringTagsForExternal` | 5 | Native/Scene/Courier action commit | 原 owner 返回 facts/notifications；调用方唯一提交/展示 |
-| Siege | `BuildPostprocessRules` | 3 | active Scene / Native rule capture | `AfGcczShoutBridge` 先检查 `conversation-siege` 与 active stage |
-| Siege | `BuildPostprocessContext` | 2 | active Scene context capture | 同上；无 active/selected 返回空 |
+| Siege | `BuildPostprocessRules` | 3 | active Scene / Native rule capture | bridge 先检查 `conversation-siege` / selected；领域 owner 检查 active stage。城堡 capture 保留既有 pending proposal 同步/清理副作用 |
+| Siege | `BuildPostprocessContext` | 2 | active Scene context capture | 同上；无 active/selected 返回空，城堡 capture 仍可能同步/清理 pending proposal |
 | Siege | `NormalizePostprocessTags` | 3 | active Scene normalize | 同上；normalize 不执行 |
-| Siege | `TryProcessActionTags` | 3 | Native/Scene action commit | 同上；具体村庄/城镇 GCCZ owner 执行 |
+| Siege | `TryProcessActionTags` | 3 | Native/Scene action commit | bridge disabled 时 fail closed；active 时由村庄/城镇 GCCZ owner 执行，inactive 时保留 SETS 聚民兼容路径及其独立 runtime gate |
 
 合计 **13 个方法 / 31 个生产调用点**。adapter 不新增线程切换；调用线程、Hero/Character/Agent 捕获和提交顺序仍由各真实渠道 owner 负责。
 
@@ -65,7 +65,7 @@
 
 - `TeamModuleServices` 静态初始化三个无状态 adapter；`TeamModuleRegistration` 只把实际绑定能力登记入 InternalModuleDirectory。
 - Directory `Ready` 只表示 adapter 已装配，不替代 Campaign、目标、模块开关或业务资格。
-- Policy/Gathering 异常保持原样越过 adapter；Siege disabled/inactive 由 `AfGcczShoutBridge` fail closed。
+- Policy/Gathering 异常保持原样越过 adapter；Siege bridge disabled 时 fail closed。非 active GCCZ 场景仍保留既有 SETS 聚民兼容路径，由 SETS runtime generation/availability 独立门禁。
 - facts/notifications、AFEF/history 和 UI 通知仍由原渠道/领域 owner 唯一提交；桥层没有第二提交点。
 - 无新增 SyncData key、Saveable type、程序集或 public API；独立子 MOD 仍只通过版本化 public 层。
 - 热路径为静态实例直接接口调用；不扫描程序集/目录、不反射、不轮询、不做文件或网络 I/O。
@@ -73,7 +73,7 @@
 ## 5. 可执行证据
 
 - `TeamModulePortParityTests`：13 方法、31 call expressions；308 行为断言；资格反转、Siege selected 反转、player/speaker text 交换三个变异均被拒绝。
-- `CampaignCompositionTests`：42 正常断言和 5 个行为变异；实际 `ModuleFrameworkRuntime → CampaignComposition`。
+- `CampaignCompositionTests`：42 正常断言和 6 个可编译行为变异；实际 `SubModule.InitializeGameStarter → ModuleFrameworkRuntime → CampaignComposition`，包含真实入口重复注册拒绝。
 - `PolicyEffectModule.ContractTests`：all-modules 1406；history 1115。
 - Bridge bindings 16（12 wired / 4 declared-only）、23 单测；runtime isolation 12；CompositionMatrix 18/24。
 - 上述均为离线证据；真实 Campaign/Mission、旧 SAVE、GCCZ 场景、制作组玩法结果仍需 LIVE/SAVE 验收。

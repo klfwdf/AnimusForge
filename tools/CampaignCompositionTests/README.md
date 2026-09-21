@@ -11,9 +11,9 @@ python -X utf8 -B tools/CampaignCompositionTests/run.py --source-only
 
 - Pinned pre-extraction source: `61d578926329ace61bf6b6ae43e12bf7d89b4696`.
 - The `SubModule` check is scoped to the live Campaign delegate, partial-start cleanup and failure propagation so unrelated lifecycle fixture hashes cannot block composition. The runtime owner still uses an exact inverse; four model helper bodies, model/behavior ordering and bridge binding policy are compared to old source.
-- The executable compiles real composition/runtime/catalog/API source. Only engine types, model implementations, behavior constructors, team services and feature gates are test doubles. The actual old and new engine entry methods are extracted; the old model methods remain in generated test code only.
+- The executable compiles real composition/runtime/catalog/API source and extracts the actual old and current engine entry methods. Campaign lifetime hooks are no-op test doubles here because their production implementation has a separate source-linked suite; the callback itself is not rewritten. Other doubles are limited to engine types, model implementations, behavior constructors, team services and feature gates. The old model methods remain in generated test code only.
 - Checks cover 36 ordered behavior registrations, four models before behaviors, default/last non-AF inner selection, fresh instances per Campaign and repeated callback, null/other starter, constructor/registration failures, and directory states not becoming a new gameplay gate.
-- Five mutations must compile and fail behavioral assertions: missing behavior, reordered models, discarded custom inner, added directory gate, abort on model error. Compilation failure is not a valid mutation result.
+- Six mutations must compile and fail behavioral assertions: duplicate Campaign entry registration, missing behavior, reordered models, discarded custom inner, added directory gate, abort on model error. Compilation failure is not a valid mutation result.
 - Existing V1/API tests independently prove public surface/lifecycle/parallel reads, with `--artifact-root` checking real dual-version DLL metadata. No new public execution capability is declared.
 - **Not live-game validation:** engine constructor side effects, real save loading, Campaign/Mission cleanup and player outcomes remain outside this harness.
 
