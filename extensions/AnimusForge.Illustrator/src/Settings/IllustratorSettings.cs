@@ -417,9 +417,34 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyBool("每次对话自动生成全屏场景插画", HintText = "开启后，新会话首次进入时自动生成一张，之后每次 NPC 回复再自动重绘一张；后续请求复用首次采集的全景、人物参考和稳定硬事实，只更新最近一轮对话与动作。生成期间显示加载遮罩，离开会话或关闭全屏会取消未完成请求。", Order = 4, RequireRestart = false)]
+        [SettingPropertyBool("NPC回复后自动重绘场景插画", HintText = "开启后，玩家先手动生成本次对话的第一张插画；之后每次 NPC 回复自动重绘一张。后续请求复用首次采集的全景、人物参考和稳定硬事实，只更新最近一轮对话与动作。", Order = 4, RequireRestart = false)]
         [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool AutoGenerateConversationIllustrationFullscreen { get; set; } = false;
+
+        private static readonly List<string> _conversationDisplayOptions = new List<string>
+        {
+            "独立面板（默认）",
+            "上半屏覆盖"
+        };
+        private Dropdown<string> _conversationDisplayDropdown;
+
+        [SettingPropertyDropdown("绘图显示效果", Order = 5, RequireRestart = false, HintText = "独立面板：使用右侧场景插画面板；上半屏覆盖：插画覆盖屏幕上方约四分之三，底部保留对话与输入区域。自动重绘沿用此选择。")]
+        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
+        public Dropdown<string> ConversationDisplayDropdown
+        {
+            get
+            {
+                if (_conversationDisplayDropdown == null)
+                    _conversationDisplayDropdown = new Dropdown<string>(_conversationDisplayOptions, 0);
+                return _conversationDisplayDropdown;
+            }
+            set => _conversationDisplayDropdown = value;
+        }
+
+        public bool ConversationIllustrationUsesFullscreen
+        {
+            get => (_conversationDisplayDropdown?.SelectedIndex ?? 0) == 1;
+        }
 
         [SettingPropertyInteger("本地缓存最大保留张数", 20, 1000, "0 张", HintText = "生成的图片在本地持久化缓存的最大数量，避免重复调用消耗额度。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
