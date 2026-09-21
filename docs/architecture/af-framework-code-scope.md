@@ -2,7 +2,7 @@
 
 产品 `3f2c454e` 将既有 public Economy contract/planner/main-thread port 原样归入 `src/AF.Contracts/Compatibility/Economy` 与 `src/modules/AF.Module.Economy/{Planning,Execution}`，并以 `Projection/EconomyPromptProjection.cs` 承担 Debt/Trust detached 文本投影。`RewardSystemBehavior.cs:5108,5119,18847,18878` 仍在主线程读取/规范化/估值后传 string/int-only 输入；真实 Prompt consumers 不变。
 
-状态 **J12a_IN_PROGRESS**：这只闭合 compatibility + Debt/Trust projection，未迁资产三个 replay owner、Reward/Loan capture、债务/信任生命周期或 legacy mixed tags。Debug 双 API + Bootstrap、定向契约与 399 锚点地图已过；Release/LIVE/SAVE/真实经济仍 NOT-RUN。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j12a-economy-start-20260921)和[J12计划](../plans/j12-domain-owners-plan.md)。
+后续 `07feb572` 将 Hero/Party/Merchant 三个完整 replay partial 100% 原样迁入 `Execution/{Hero,Party,Merchant}`，并把 11 个 live asset authorization 方法抽入 `Authorization`；删除零调用旧 resolver。状态仍 **J12a_IN_PROGRESS**：Reward/Loan capture、窄 mutation host、债务/信任生命周期与 legacy mixed tags 未闭合。Debug 双 API + Bootstrap、定向契约与 403 锚点地图已过；Release/LIVE/SAVE/真实经济仍 NOT-RUN。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j12a-economy-start-20260921)和[J12计划](../plans/j12-domain-owners-plan.md)。
 
 ## 以下为上一阶段 J11 范围
 

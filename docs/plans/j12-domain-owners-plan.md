@@ -12,10 +12,12 @@
 | G0 | DONE | fetch 后目标远端未领先；SDK 8.0.422、1.3.15/1.4.6 引用和原构建 wrapper 核对；`ProductionReward` 改为显式 SDK 参数 |
 | J12a1.1 compatibility + projection | DONE | `3f2c454e`（测试输出忽略 `9e8e10e8`）：3 个既有 public boundary 原样归位；Debt/Trust 保持主线程 capture/normalize，detached projection 接真实消费者 |
 | J12a1 剩余 Reward/Loan capture | NOT-STARTED | 不用本次 Debt/Trust formatter 冒充整个 capture/projection 包完成 |
-| J12a2–a4 | NOT-STARTED | 资产三个 replay owner、债务/信任生命周期、兼容链清理待施工 |
+| J12a2.1 replay/authorization owner | DONE | `07feb572`：三个完整 replay partial 100% 原样迁入 Economy，11 个 live authorization 方法原样抽入 Authorization；删除零调用旧 resolver；窄 mutation host 尚未建立 |
+| J12a2 剩余 narrow host | IN-PROGRESS | inventory/gold/settlement 原生变更仍在根 partial；需提取窄 host，不以 partial 归位冒充完整 owner |
+| J12a3–a4 | NOT-STARTED | 债务/信任生命周期、兼容链清理待施工 |
 | J12b/J12c/J12d | NOT-STARTED | 外交、WorldMap 和整包验收未开始 |
 
-首切片证据：Economy prompt projection 10 项 + merchant marker 可编译变异；ProductionReward 11；HeroAssetScope 67；Economy port / executor、Interaction 40/69/39、Duel 16、Weekly material 通过；Debug 1.3/1.4/Bootstrap 0 warning/0 error；Debug 两实现 DLL API/metadata 530。`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 在与 J12 无关的既有 `Missing TagSceneSessionHistoryLine` 提取点失败，基线源码同样无该符号，未把它写成 J12 产品失败或 PASS；最终相关工具范围仍需单独收敛。Release、LIVE、SAVE、真实 Economy 均未运行。
+累计证据：Economy prompt projection 10 项 + merchant marker 可编译变异；ProductionReward 11；HeroAssetScope 67；Economy port / executor、Interaction 40/69/39、Duel 16、Weekly material 通过；Debug 1.3/1.4/Bootstrap 0 warning/0 error；Debug 两实现 DLL API/metadata 530；J12a2.1 另有 GiveAsset stress 80562、HeroAssetScope 4 个可编译变异、Production owner current-DLL replay、Phase8 73 通过。`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 在与 J12 无关的既有 `Missing TagSceneSessionHistoryLine` 提取点失败，基线源码同样无该符号，未把它写成 J12 产品失败或 PASS；最终相关工具范围仍需单独收敛。Release、LIVE、SAVE、真实 Economy 均未运行。
 
 ## 1. 目标、范围与完成含义
 
