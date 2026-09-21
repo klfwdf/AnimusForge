@@ -32,10 +32,10 @@ namespace AnimusForge.Illustrator.Context
             return visible;
         }
 
-        internal static CharacterAppearanceSnapshot FromAgent(Agent agent, Equipment equipment)
+        internal static CharacterAppearanceSnapshot FromAgent(Agent agent, Equipment equipment, BodyProperties? frozenBody = null)
         {
             var character = agent.Character as CharacterObject;
-            return new CharacterAppearanceSnapshot(VisibleEquipment(equipment)?.CalculateEquipmentCode(), agent.BodyPropertiesValue.ToString(),
+            return new CharacterAppearanceSnapshot(VisibleEquipment(equipment)?.CalculateEquipmentCode(), (frozenBody ?? agent.BodyPropertiesValue).ToString(),
                 agent.Origin?.Banner?.BannerCode, agent.ClothingColor1, agent.ClothingColor2, character?.Race ?? 0, character?.IsFemale == true);
         }
 

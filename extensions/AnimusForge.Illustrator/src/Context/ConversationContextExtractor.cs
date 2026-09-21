@@ -28,6 +28,7 @@ namespace AnimusForge.Illustrator.Context
         public bool MainHeroCivilian { get; set; }
         /// <summary>非英雄对话方（劫匪等）在场 Agent 的真实体型/面容序列化——避免用兵种模板重新随机一张脸。</summary>
         public string InterlocutorBodyProperties { get; set; } = string.Empty;
+        internal ConversationNpcAgeSnapshot InterlocutorAgeSnapshot { get; set; }
 
         /// <summary>台词与近三轮对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
         public string BuildDialogueBlock()
@@ -194,9 +195,10 @@ namespace AnimusForge.Illustrator.Context
             else if (partnerChar != null)
             {
                 string source, body;
-                Equipment snapshot = ConversationEquipmentSnapshot.CaptureCharacter(partnerChar, out source, out body, out var appearance);
+                Equipment snapshot = ConversationEquipmentSnapshot.CaptureCharacter(partnerChar, out source, out body, out var appearance, out var ageSnapshot);
                 context.InterlocutorBodyProperties = body ?? string.Empty;
-                int age = HeroVisualExtractor.ResolveAppearanceAge(partnerChar.Age, appearance?.BodyProperties);
+                context.InterlocutorAgeSnapshot = ageSnapshot;
+                int age = ageSnapshot.Age;
 
                 var profile = new HeroVisualProfile
                 {
@@ -207,6 +209,8 @@ namespace AnimusForge.Illustrator.Context
                         (partnerChar.StringId ?? string.Empty) + " " + (partnerChar.Culture?.StringId ?? string.Empty) + " " + (partnerChar.Culture?.Name?.ToString() ?? string.Empty),
                         appearance?.Race ?? partnerChar.Race),
                     Age = age,
+                    AgeSource = age > 0 ? "当前一对一会话NPC实例的游戏年龄参数；外观成熟度、皮肤纹理和须发颜色按本人参考图，不能按年龄数字添加衰老特征。"
+                        : "未取得当前NPC实例的有效年龄；不使用兵种模板或其他同名人物的年龄，外观按本人参考图。",
                     PhysicalFeatures = HeroVisualExtractor.ExtractCharacterPhysicalFeatures(partnerChar, snapshot, age)
                 };
 

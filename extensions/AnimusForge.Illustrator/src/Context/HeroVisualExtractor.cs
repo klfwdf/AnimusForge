@@ -20,6 +20,7 @@ namespace AnimusForge.Illustrator.Context
         public string Gender { get; set; } = string.Empty;
         public string SpeciesDescription { get; set; } = string.Empty;
         public int Age { get; set; }
+        public string AgeSource { get; set; } = string.Empty;
         public string ClanName { get; set; } = string.Empty;
         public string KingdomName { get; set; } = string.Empty;
         public string PrimaryBannerColorHex { get; set; } = string.Empty;
@@ -91,6 +92,7 @@ namespace AnimusForge.Illustrator.Context
             sb.AppendLine($"【人物身份】{HeroName}" + (!string.IsNullOrWhiteSpace(Title) ? $" · {Title}" : "") +
                 $" ({Culture}文化, {Gender}, " + (Age > 0 ? $"约{Age}岁" : "年龄未确认") + (!string.IsNullOrWhiteSpace(SocialStatus) ? $", 身份: {SocialStatus}" : "") + ")");
             if (!string.IsNullOrWhiteSpace(SpeciesDescription)) sb.AppendLine("【真实种族/物种】" + SpeciesDescription);
+            if (!string.IsNullOrWhiteSpace(AgeSource)) sb.AppendLine("【年龄来源与外观】" + AgeSource);
             if (!string.IsNullOrWhiteSpace(ClanName) || !string.IsNullOrWhiteSpace(BannerDescription))
             {
                 string factionPart = !string.IsNullOrWhiteSpace(KingdomName) ? $", 所属王国: {KingdomName}" : "";

@@ -468,6 +468,18 @@ namespace AnimusForge.Illustrator.UI.Overlays
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
                 // 按实际owner分流：Mission用附近30米全景，地图对话只读当前展示画面。
+                var ageEvidence = convContext.InterlocutorAgeSnapshot;
+                if (ageEvidence != null)
+                    GenerationDiagnostics.Current?.RecordStage("conversation_npc_age", new JObject
+                    {
+                        ["characterId"] = partnerId,
+                        ["agentIndex"] = ageEvidence.AgentIndex.HasValue ? new JValue(ageEvidence.AgentIndex.Value) : JValue.CreateNull(),
+                        ["source"] = ageEvidence.Source,
+                        ["rawAge"] = ageEvidence.RawAge.HasValue ? new JValue(ageEvidence.RawAge.Value) : JValue.CreateNull(),
+                        ["promptAge"] = ageEvidence.Age,
+                        ["templateAgeUsed"] = false,
+                        ["portraitBodyProperties"] = convContext.InterlocutorBodyProperties
+                    });
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
