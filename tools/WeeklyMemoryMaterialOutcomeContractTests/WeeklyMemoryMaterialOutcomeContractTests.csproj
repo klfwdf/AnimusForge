@@ -9,7 +9,7 @@
   <ItemGroup>
     <Compile Include="..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
-    <Compile Include="..\..\Refactor\Contracts\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
+    <Compile Include="..\..\src\AF.Contracts\Compatibility\Economy\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
     <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
   </ItemGroup>
 </Project>

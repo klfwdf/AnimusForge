@@ -33,14 +33,14 @@ def extract(ref=None):
         'public static bool IsGoldAssetTokenForExternal(',
         'public static bool IsValidGeneratedRpAssetNameForExternal(']]
     blocks['METHODS'] = '\n\n'.join(methods)
-    contracts = extractor.source('Refactor/Contracts/EconomyRewardDebtContracts.cs', ref)
+    contracts = extractor.source('src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs', ref)
     interaction = extractor.source('Refactor/Contracts/InteractionContracts.cs', ref)
     declarations = [extractor.declaration(contracts, marker) for marker in [
         'public static class EconomyRewardDebtCapabilityIds', 'public enum EconomyRewardDebtActionKind',
         'public sealed class EconomyRewardDebtAction', 'public sealed class EconomyRewardDebtReplayPlan',
         'public enum EconomyRewardDebtReplayStatus', 'public sealed class EconomyRewardDebtReplayResult',
         'public interface IEconomyRewardDebtMainThreadPort']]
-    declarations += [extractor.declaration(extractor.source('Refactor/Adapters/LegacyEconomyRewardDebtMainThreadPort.cs', ref), 'public sealed class LegacyEconomyRewardDebtMainThreadPort')]
+    declarations += [extractor.declaration(extractor.source('src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs', ref), 'public sealed class LegacyEconomyRewardDebtMainThreadPort')]
     declarations += [extractor.declaration(interaction, marker) for marker in [
         'public sealed class FactRecord', 'internal static class ContractGuard']]
     declarations += [extractor.declaration(extractor.source('TransferQuantitySpec.cs', ref), 'internal readonly struct TransferQuantitySpec')]

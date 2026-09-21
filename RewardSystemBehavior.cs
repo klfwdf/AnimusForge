@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
+using AnimusForge.Modules.Economy;
 using Helpers;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -5108,21 +5109,21 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		if (npc == null)
 		{
-			return "综合信任 0（中性观望，6/10）";
+			return EconomyPromptProjection.BuildTrustStatus(0, "中性观望", 6);
 		}
 		int effectiveTrust = GetEffectiveTrust(npc);
-		int trustLevelIndex = GetTrustLevelIndex(effectiveTrust);
-		return $"综合信任 {effectiveTrust}（{GetTrustLevelText(effectiveTrust)}，{trustLevelIndex}/10）";
+		return EconomyPromptProjection.BuildTrustStatus(
+			effectiveTrust,
+			GetTrustLevelText(effectiveTrust),
+			GetTrustLevelIndex(effectiveTrust));
 	}
 
 	public string BuildTrustPromptForAI(Hero npc)
 	{
 		int effectiveTrust = GetEffectiveTrust(npc);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("本级语义：" + GetTrustBehaviorText(effectiveTrust));
-		stringBuilder.AppendLine("本级信用规则：" + GetTrustActionGuideText(effectiveTrust));
-		stringBuilder.AppendLine("价值口径：总价值=第纳尔金额+物品估值（guidePrice * 数量）。");
-		return stringBuilder.ToString().TrimEnd();
+		return EconomyPromptProjection.BuildTrustPrompt(
+			GetTrustBehaviorText(effectiveTrust),
+			GetTrustActionGuideText(effectiveTrust));
 	}
 
 	private static int CompareSettlementTransferEntries(MyBehavior.SettlementTransferPromptEntry x, MyBehavior.SettlementTransferPromptEntry y)
@@ -18851,34 +18852,23 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			return string.Empty;
 		}
 		NormalizeDebtRecord(debtRecord);
-		if (!HasDebtContent(debtRecord))
+		bool hasDebtContent = HasDebtContent(debtRecord);
+		List<EconomyDebtPromptLine> lines = new List<EconomyDebtPromptLine>();
+		if (hasDebtContent && debtRecord.DebtLines != null)
 		{
-			return string.Empty;
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【系统账目提示】玩家对你有以下承诺或欠款（分笔记录）：");
-		if (debtRecord.DebtLines != null)
-		{
-			List<DebtRecord.DebtLine> list = (from x in debtRecord.DebtLines
-				where x != null && x.RemainingAmount > 0
-				orderby x.DueDay, x.CreatedDay
-				select x).ToList();
-			for (int num = 0; num < list.Count; num++)
+			foreach (DebtRecord.DebtLine debtLine in debtRecord.DebtLines
+				.Where(x => x != null && x.RemainingAmount > 0)
+				.OrderBy(x => x.DueDay)
+				.ThenBy(x => x.CreatedDay))
 			{
-				DebtRecord.DebtLine debtLine = list[num];
-				int debtValue = EstimateDebtLineRemainingValue(npc, debtLine);
-				string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
-				string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
-				stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] 玩家的承诺或欠款价值 ")
-					.Append(debtValue)
-					.Append(" 第纳尔，达成期限为：")
-					.Append(deadline)
-					.Append("，备注：")
-					.Append(note)
-					.AppendLine();
+				lines.Add(new EconomyDebtPromptLine(
+					debtLine.DebtId,
+					EstimateDebtLineRemainingValue(npc, debtLine),
+					BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited),
+					debtLine.DebtNote));
 			}
 		}
-		return stringBuilder.ToString().Trim();
+		return EconomyPromptProjection.BuildHeroDebtHint(hasDebtContent, lines);
 	}
 
 	public string BuildSettlementMerchantDebtHintForAI(CharacterObject character, Settlement settlement = null)
@@ -18894,32 +18884,26 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			return "";
 		}
 		NormalizeDebtRecord(settlementMerchantDebtRecord);
-		if (!HasDebtContent(settlementMerchantDebtRecord))
+		bool hasDebtContent = HasDebtContent(settlementMerchantDebtRecord);
+		List<EconomyDebtPromptLine> lines = new List<EconomyDebtPromptLine>();
+		if (hasDebtContent)
 		{
-			return "";
+			foreach (DebtRecord.DebtLine debtLine in settlementMerchantDebtRecord.DebtLines
+				.Where(x => x != null && x.RemainingAmount > 0)
+				.OrderBy(x => x.DueDay)
+				.ThenBy(x => x.CreatedDay))
+			{
+				lines.Add(new EconomyDebtPromptLine(
+					debtLine.DebtId,
+					EstimateDebtLineRemainingValueForSettlement(settlement, debtLine),
+					BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited),
+					debtLine.DebtNote));
+			}
 		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【系统账目提示】玩家对你代表的" + BuildSettlementMerchantDebtLabel(settlement, kind) + "有以下承诺或欠款（分笔记录）：");
-		stringBuilder.AppendLine("【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除");
-		List<DebtRecord.DebtLine> list = (from x in settlementMerchantDebtRecord.DebtLines
-			where x != null && x.RemainingAmount > 0
-			orderby x.DueDay, x.CreatedDay
-			select x).ToList();
-		for (int i = 0; i < list.Count; i++)
-		{
-			DebtRecord.DebtLine debtLine = list[i];
-			int debtValue = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine);
-			string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
-			string note = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
-			stringBuilder.Append("- [债务ID:").Append(debtLine.DebtId).Append("] 玩家的承诺或欠款价值 ")
-				.Append(debtValue)
-				.Append(" 第纳尔，达成期限为：")
-				.Append(deadline)
-				.Append("，备注：")
-				.Append(note)
-				.AppendLine();
-		}
-		return stringBuilder.ToString().Trim();
+		return EconomyPromptProjection.BuildSettlementMerchantDebtHint(
+			BuildSettlementMerchantDebtLabel(settlement, kind),
+			hasDebtContent,
+			lines);
 	}
 
 	public string BuildDebtEditorSummary(Hero npc, int maxLines = 12)
