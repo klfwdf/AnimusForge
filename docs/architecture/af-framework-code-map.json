@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "3f2c454e3ac5640ddb6d0bed01e748dafd5e9e55",
+  "sourceRevision": "07feb572e06e932b68dfc58cecd099aea61bb4e9",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4385,13 +4385,57 @@
     {
       "id": "economy.prompt.capture.hero_debt",
       "path": "RewardSystemBehavior.cs",
-      "start": 18847,
-      "end": 18847,
+      "start": 18811,
+      "end": 18811,
       "symbol": "public string BuildDebtHintForAI(Hero npc)",
       "match": "exact",
       "status": "wired-j12a-in-progress",
       "note": "game-thread debt normalize/value capture before detached projection",
-      "fileSha256": "a6314f24476315dd908e4fc3b0c65e5796e533c4fd97c9557aff565e2e1cb532"
+      "fileSha256": "6b8aa583fb8528819cb09eb7383668f8d27a838e99bfe3e888060715dfb5d2a5"
+    },
+    {
+      "id": "economy.authorization.asset",
+      "path": "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+      "start": 91,
+      "end": 91,
+      "symbol": "private static bool TryResolveExactAuthorizedRewardItem(IEnumerable<RewardItemInfo> authorizedItems, string assetToken, out RewardItemInfo item, out string transferKey)",
+      "match": "contains",
+      "status": "wired-j12a-in-progress",
+      "note": "asset token authorization against current inventory snapshots",
+      "fileSha256": "b51f61aa27fb587e7d8eaa840398c43f84226146d5ee4c33ad1da0a4556515f9"
+    },
+    {
+      "id": "economy.execution.hero",
+      "path": "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
+      "start": 61,
+      "end": 61,
+      "symbol": "private EconomyRewardDebtReplayResult ReplayEconomyRewardDebtPlanOnMainThread(",
+      "match": "contains",
+      "status": "wired-j12a-in-progress",
+      "note": "Hero action routing and partial/unknown batch outcome",
+      "fileSha256": "a9a49fa799eb58bd4f0fda855409e512891fea0cc1dd36b38ca6463c0c270fb8"
+    },
+    {
+      "id": "economy.execution.party",
+      "path": "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
+      "start": 82,
+      "end": 82,
+      "symbol": "private EconomyRewardDebtReplayResult ReplayPartyEconomyPlanOnMainThread(",
+      "match": "contains",
+      "status": "wired-j12a-in-progress",
+      "note": "Party action routing and partial/unknown batch outcome",
+      "fileSha256": "525730bf979b130d29b69b42ee494bcb293a7e232e2e28cd3fdd6762c995b30d"
+    },
+    {
+      "id": "economy.execution.merchant",
+      "path": "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs",
+      "start": 74,
+      "end": 74,
+      "symbol": "private EconomyRewardDebtReplayResult ReplayMerchantEconomyPlanOnMainThread(",
+      "match": "contains",
+      "status": "wired-j12a-in-progress",
+      "note": "Merchant action routing and partial/unknown batch outcome",
+      "fileSha256": "3284f19f57f358e34366b51f67581becd0036afb16bb8b062085e24d98df7c1a"
     }
   ]
 }
