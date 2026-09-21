@@ -1,8 +1,22 @@
 # J11 制作组内部模块接缝实施计划
 
-> 状态：`PLANNED / NOT_STARTED`（2026-09-21）
+> 状态：`J11_OFFLINE_VERIFIED`（2026-09-21）
 > 前置：J07–J10 已完成必要离线验收；J10 推送终点 `98faded3`。
 > 本计划只治理编入 `AnimusForge.dll` 的 Policy / Gathering / Siege 内部 typed 接缝与薄适配，不迁移或重写玩法，不开放独立子 MOD API，不修改默认入口、存档、游戏目录或 `G:/AFMOD/GCCZ`。
+
+## 0. 最终回执
+
+| 包 | 状态 | 产品 / 证据 |
+| --- | --- | --- |
+| J11-G0 | DONE | `docs/architecture/af-team-module-seam-matrix.md`：13 方法、31 调用点、分类/频率/gate/副作用 owner |
+| J11a contracts | DONE | `cdbd077a`：3 个接口分文件归位；签名/namespace/internal 可见性不变 |
+| J11b Policy | DONE | 4 方法 / 8 调用点；Policy 1.3/1.4 各 1406 + 1115 |
+| J11c Gathering | DONE | 5 方法 / 12 调用点；facts/notifications 仍由真实调用方唯一提交 |
+| J11d Siege | DONE | 4 方法 / 11 调用点；FeatureBridge/active-stage/GCCZ owner 不变，未写外部 GCCZ 树 |
+| J11e composition | DONE | Campaign 42+5、Composition 18/24、Bridge 16/23/12、API lifecycle 通过 |
+| J11f cleanup/final | OFFLINE_VERIFIED | 旧 2 文件删除；六构建、1060 API、142/168 persistence、394 map 及三渠道影响面通过 |
+
+详细证据见 `docs/handoffs/2026-09-21-j11-team-module-seams-offline-closeout.md`。J12–J14 未在本包偷渡，LIVE/SAVE 仍独立。
 
 ## 1. 目标架构
 
@@ -42,10 +56,10 @@ AnimusForge.dll
 
 当前真实文件：
 
-- 契约：`Refactor/Modules/TeamModulePorts.cs`
-- 混合 adapter：`Refactor/Modules/TeamModuleAdapters.cs`
+- 启动基线契约：`Refactor/Modules/TeamModulePorts.cs`（已由 J11 删除）
+- 启动基线 adapter：`Refactor/Modules/TeamModuleAdapters.cs`（已由 J11 删除）
 - 装配：`src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs`
-- 能力目录：`src/AF.Foundation.Runtime/ModuleDirectory/*`、`Refactor/Modules/ModuleFrameworkRuntime.cs`
+- 能力目录：`src/AF.Foundation.Runtime/ModuleDirectory/*`、`src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs`
 - 可选跨域门禁：`Refactor/Runtime/FeatureBridgeRuntime.cs`
 
 J10 最终 `TeamModulePortParityTests` 已证明 13 个方法的 31 个调用表达式在 receiver 替换后，与 `df6ab928` 基线的参数、顺序、ref/out 和数量一致；308 项行为断言与 3 个变异通过。它是 J11 的起点，不代表 J11 的物理归位已完成。

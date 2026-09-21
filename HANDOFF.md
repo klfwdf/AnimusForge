@@ -1,12 +1,12 @@
-# 当前交接：J10 Scene / Courier 离线整包闭合，下一步 J11 计划（2026-09-21）
+# 当前交接：J11 制作组内部模块接缝离线闭合（2026-09-21）
 
-- **状态**：J07、J08、J09、J10 均为 `OFFLINE_VERIFIED`；不是全项目 J17 或实机发布完成。
-- **J10 结果**：Scene 的 audience/request/pending AFEF/speech queue/group/relay/passive/reaction，Courier 的 prompt/generation/transport/session/arrival/letter/retry/domain commit/reply wait 已归 `src/modules/AF.Module.Conversation/Channels/{Scene,Courier}` 的真实 owner；旧根类只保留活动 DTO/SyncData/Harmony/UI/游戏线程适配。
-- **最后产品提交**：`14283c3f`（Courier Prompt message/fact）、`f6c95ac3`（Courier domain commit/reply wait）；验收工具与 392 锚点地图 `7d70f528`。
-- **验证**：Debug/Release × 1.3/1.4/Bootstrap 六构建 0 warning/0 error；四 DLL API/metadata 1060；Persistence 142 keys / 168 bindings / 13 chunked / 44 flattened；Scene、Courier、Native、三渠道、Bridge、Phase8 与有效负例通过。
-- **清理**：Courier 根文件从 J09 的 10,514 行降至 3,477 行，Shout 根文件从 39,190 行降至 37,062 行；这是物理导航结果，完成依据仍是 owner/消费者/时序/测试。无重复 owner、冲突标记或新旧双执行。
-- **制作组边界**：Policy、Gathering、GCCZ 玩法未迁入主体；13 个内部 typed-port 方法、31 个真实调用点、308 行为断言与 3 个变异通过。
-- **未验证**：真实 Campaign/Mission、旧 SAVE、provider、live Economy/外交、子 MOD CLR、TTS/audio、帧/网络性能均 `NOT-RUN`；未 Stage/Deploy/Package、未操作游戏和存档。
-- **详细 HANDOFF**：`docs/handoffs/2026-09-21-j10-scene-courier-offline-closeout.md`。
-- **下一步**：按 `docs/plans/j11-team-module-seams-plan.md` 审阅并执行 J11 有限责任包；当前仅计划完成、生产尚未开工。不直接迁玩法、不开放 J14 public Scene/Courier submit、不切默认路径。
-- **位置**：施工树 `G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；本地分支 `codex/af-modularize-j04-20260918`；交付目标 `origin/codex/af-main-refactor-continuation-20260831`；`.dotnet-cli-home/` 保留本地。
+- **状态**：J07–J11 均为 `OFFLINE_VERIFIED`；下一阶段 J12 尚未开始。这不是全项目 J17、实机或发布完成。
+- **J11 产品**：`cdbd077a` 将 3 个 internal contracts 归位 `src/AF.Contracts/Internal/TeamModules`，将 Policy/Gathering/Siege 三个无状态 adapter 分拆到 `src/bridges/{Policy,Gathering,Siege}`；旧 `TeamModulePorts.cs` / `TeamModuleAdapters.cs` 已删除。
+- **稳定接缝**：namespace、internal 可见性、13 个方法签名、默认参数、ref/out、返回和异常不变；31 个生产调用点继续经 `TeamModuleServices` 直达原玩法 owner。Policy/Gathering/GCCZ 玩法、MCM、存档、Prompt、Harmony 和默认入口未改。
+- **验证**：Team ports 308 + 3 变异；Policy 1.3/1.4 各 all-modules 1406、history 1115；Campaign composition 42 + 5 变异；Scene 71；Courier/Native 影响面；Bridge/Composition/Phase8；Debug/Release × 1.3/1.4/Bootstrap 六构建 0 warning/0 error；四 DLL API/metadata 1060；Persistence 142/168/13/44。
+- **结构证据**：`docs/architecture/af-team-module-seam-matrix.md` 记录 13 方法、31 调用点、频率、门禁和副作用 owner；394 锚点代码地图绑定产品 `cdbd077a`。
+- **内部/外部分离**：本轮只处理同 DLL internal 接缝；独立子 MOD 的 public Scene/Courier API 仍属 J14，没有提前开放。
+- **未验证**：真实 Campaign/Mission、旧 SAVE、制作组玩法结果、真实 GCCZ 场景、provider、音频和性能均 `NOT-RUN`；未 Stage/Deploy/Package，未操作游戏/存档或 `G:/AFMOD/GCCZ`。
+- **详细 HANDOFF**：`docs/handoffs/2026-09-21-j11-team-module-seams-offline-closeout.md`。
+- **下一步**：先制定 J12 Economy / Diplomacy / WorldMap 的有限计划；不要继续在已闭合的 J11 按行数追加接口或包装层。
+- **位置**：`G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`；分支 `codex/af-modularize-j04-20260918`；交付目标 `origin/codex/af-main-refactor-continuation-20260831`；自动化保持暂停，`.dotnet-cli-home/` 仅本地。
