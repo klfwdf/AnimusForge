@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "7f2fffba98bbf77e19397f77ac8fb8b489fe1b7d",
+  "sourceRevision": "0ac279fcaa871ad86e3450497fea3dd0062f5ac1",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4535,6 +4535,50 @@
       "status": "wired-j12a-in-progress",
       "note": "Hero/merchant inventory authorization snapshot and prompt display capture owner",
       "fileSha256": "d7629d0b8400d770e3e9f0402fb814e3acdbb2e0c871089f4b80825bd5431cb5"
+    },
+    {
+      "id": "diplomacy.rules.offer-cooldown",
+      "path": "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyOfferCooldownRules.cs",
+      "start": 134,
+      "end": 134,
+      "symbol": "public static class WorldDiplomacyOfferCooldownRules",
+      "match": "exact",
+      "status": "wired-j12b-in-progress",
+      "note": "proposal-domain cooldown decision owner; public DTO/signatures preserved",
+      "fileSha256": "f7b9a650d95fe06a0653c45781202e5cfa4b38d7a39e6c7914714b74ea7dad61"
+    },
+    {
+      "id": "diplomacy.rules.threat-state",
+      "path": "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyThreatStateRules.cs",
+      "start": 22,
+      "end": 22,
+      "symbol": "public static class WorldDiplomacyThreatStateRules",
+      "match": "exact",
+      "status": "wired-j12b-in-progress",
+      "note": "structured warning/ultimatum state decision owner",
+      "fileSha256": "44736d42144d36ea163cdb9b228ad9176ecfa73b3adeaea30868e9d2e6cb5887"
+    },
+    {
+      "id": "diplomacy.rules.result-settlement",
+      "path": "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyResultSettlementRules.cs",
+      "start": 70,
+      "end": 70,
+      "symbol": "public static class WorldDiplomacyResultSettlementRules",
+      "match": "exact",
+      "status": "wired-j12b-in-progress",
+      "note": "round result slot mutation and settlement owner; public DTO shape preserved",
+      "fileSha256": "86b816d1c67e49a7284cb6957e936c44841f1950d208d38410e0b450479cd995"
+    },
+    {
+      "id": "diplomacy.rules.policy-history",
+      "path": "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "internal static class WorldDiplomacyPolicyHistoryRules",
+      "match": "exact",
+      "status": "wired-j12b-in-progress",
+      "note": "policy history collapse and compression-prefix owner",
+      "fileSha256": "8c4a1bfe95a002f5ee5ce6b33912f40db0015af2d2273e77e1ef512d474eef41"
     }
   ]
 }
