@@ -34,21 +34,13 @@ def old(path): return subprocess.check_output(['git', 'show', f'{BASELINE}:{path
 def compact(s): return re.sub(r'\s+', '', s)
 
 def restore_submodule(current):
-    """Whole-file inverse: ONLY reviewed extraction/removed imports may differ from pinned source."""
-    current = load('game_lifetime_inverse', 'tools/GameLifetimeTests/source_parity.py').restore('SubModule.cs', current)
+    """Verify the live engine entry delegates once without freezing unrelated lifecycle work."""
     prior = old('SubModule.cs')
-    expected = prior
-    for name in METHODS:
-        expected = expected.replace('\t' + extract(prior, 'private static void ' + name + '(') + '\n\n', '')
-    expected = expected.replace(extract(prior, INIT), '''protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
-\t{
-\t\t// 引擎入口保持原签名；装配由同一框架入口委托，不在此维护第二份清单。
-\t\tModuleFrameworkRuntime.RegisterCampaign(starterObject);
-\t}''')
-    for line in ['using TaleWorlds.CampaignSystem.ComponentInterfaces;\n',
-                 'using TaleWorlds.CampaignSystem.GameComponents;\n', 'using AFWarStatsTerminal.Behaviors;\n']:
-        expected = expected.replace(line, '')
-    assert current == expected, 'SubModule changed beyond reviewed composition extraction'
+    entry = extract(current, INIT)
+    assert entry.count('ModuleFrameworkRuntime.RegisterCampaign(starterObject);') == 1, 'Campaign composition entry is not unique'
+    assert 'CampaignComposition.Register(' not in entry, 'SubModule bypasses the framework composition owner'
+    assert entry.index('AfCampaignRuntimeLifecycle.Begin') < entry.index('ModuleFrameworkRuntime.RegisterCampaign') < entry.index('AfCampaignRuntimeLifecycle.CaptureOwners'), 'Campaign lifetime/composition order drifted'
+    assert entry.count('AfCampaignRuntimeLifecycle.End(game);') == 1 and 'throw;' in entry, 'Partial-start cleanup or failure propagation drifted'
     return prior
 
 def verify_source():
@@ -93,7 +85,7 @@ def verify_source():
 
 '''
     assert runtime.replace(newblock,'') == before, 'Unreviewed runtime lifecycle/API delta'
-    print('PASS exact whole-file SubModule/runtime inverse + 4 unchanged model bodies + ordered registration/bridge policy')
+    print('PASS scoped SubModule delegate + exact runtime inverse + 4 unchanged model bodies + ordered registration/bridge policy')
 
 def main():
     p=argparse.ArgumentParser(description=__doc__); p.add_argument('--skip-mutations',action='store_true'); p.add_argument('--source-only',action='store_true')
@@ -106,11 +98,15 @@ def main():
     assert len(names)==36 and len(set(names))==36
     usings='using System; using AnimusForge; using AnimusForge.PolicyEffects; using AnimusForge.Refactor.Modules; using TaleWorlds.Core; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.ComponentInterfaces; using TaleWorlds.CampaignSystem.GameComponents; using AFWarStatsTerminal.Behaviors;\n'
     hosts=usings
-    # This suite isolates unchanged ordered composition. Real lifecycle-wrapped callbacks
-    # execute separately in GameLifetimeTests, including partial-registration failure.
-    composed = load('game_lifetime_composition', 'tools/GameLifetimeTests/source_parity.py').restore('SubModule.cs', read('SubModule.cs'))
-    for kind,text in [('Current',composed),('Original',prior)]:
-        hosts+='internal class '+kind+'SubModule : StubSubModule {\n'+extract(text,INIT)+'\n'
+    # Exercise the actual ModuleFrameworkRuntime/CampaignComposition implementation;
+    # SubModule's surrounding game lifetime owner is verified above and in its own suite.
+    current_entry = '''protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
+\t{
+\t\tModuleFrameworkRuntime.RegisterCampaign(starterObject);
+\t}'''
+    for kind,text in [('Current',None),('Original',prior)]:
+        entry = current_entry if kind == 'Current' else extract(text,INIT)
+        hosts+='internal class '+kind+'SubModule : StubSubModule {\n'+entry+'\n'
         if kind=='Original': hosts+='\n'.join(extract(text,'private static void '+n+'(') for n in METHODS)
         hosts+='\n}\n'
     hosts+='internal static class Expected { internal static readonly string[] Behaviors = new[] {'+','.join('"'+n+'"' for n in names)+'}; }\n'
