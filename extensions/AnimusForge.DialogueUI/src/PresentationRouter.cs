@@ -51,6 +51,7 @@ namespace AnimusForge.DialogueUI
             string replacement;
             if (movieName == "ShoutTextInputPopup") replacement = "AFDialogueShout";
             else if (movieName == "AnimusForgeNativeConversationOverlay") replacement = "AFDialogueNativeOverlay";
+            else if (movieName == "SPConversation") replacement = "AFDialogueConversation";
             else return true;
 
             ViewModel wrapper = null;
@@ -60,11 +61,13 @@ namespace AnimusForge.DialogueUI
                 if (!PreparePrefab(widgetFactory, replacement) || !DialogueUiSprites.EnsureLoaded()) return true;
                 bool wrapped = movieName == "ShoutTextInputPopup"
                     ? ShoutUiAdapter.TryWrap(datasource, out wrapper)
-                    : NativeUiAdapter.TryWrap(datasource, out wrapper);
+                    : movieName == "AnimusForgeNativeConversationOverlay"
+                        ? NativeUiAdapter.TryWrap(datasource, out wrapper)
+                        : datasource is TaleWorlds.CampaignSystem.ViewModelCollection.Conversation.MissionConversationVM;
                 if (!wrapped) return true;
                 _loading = true;
                 _constructingMovie = null;
-                loaded = GauntletMovie.Load(context, widgetFactory, replacement, wrapper, true, false);
+                loaded = GauntletMovie.Load(context, widgetFactory, replacement, wrapper ?? datasource, true, false);
                 if (loaded == null || !loaded.IsLoaded || loaded.RootWidget == null)
                     throw new InvalidOperationException("Replacement prefab did not instantiate: " + replacement);
                 OwnedMovies.Add(loaded, datasource);
@@ -154,11 +157,13 @@ namespace AnimusForge.DialogueUI
                     DialogueUiButtons.Style(identifier.Movie.RootWidget.FindChild(id, true) as TaleWorlds.GauntletUI.BaseTypes.ButtonWidget);
                 return;
             }
-            if (movieName != "SPConversation" && movieName != "AnimusForgeNativeConversationOverlay") return;
-            if (movieName == "AnimusForgeNativeConversationOverlay" && !OwnedMovies.ContainsKey(identifier.Movie)) return;
+            bool isNativeConversation = movieName == "SPConversation" || movieName == "AFDialogueConversation";
+            if (!isNativeConversation && movieName != "AnimusForgeNativeConversationOverlay") return;
+            if (!OwnedMovies.ContainsKey(identifier.Movie)) return;
             try
             {
-                if (DialogueUiSprites.EnsureLoaded()) NativeUiAdapter.OnMovieLoaded(movieName, identifier.Movie.RootWidget, identifier.DataSource);
+                if (DialogueUiSprites.EnsureLoaded())
+                    NativeUiAdapter.OnMovieLoaded(isNativeConversation ? "SPConversation" : movieName, identifier.Movie.RootWidget, identifier.DataSource);
             }
             catch (Exception ex) { DialogueUiRuntime.LogOnce("native-load", "Native presentation retained/restored: " + ex.Message); }
         }

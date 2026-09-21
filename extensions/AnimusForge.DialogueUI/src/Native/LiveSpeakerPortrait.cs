@@ -3,7 +3,6 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection;
-using TaleWorlds.Core.ViewModelCollection;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
 
@@ -28,6 +27,7 @@ internal static class LiveSpeakerPortrait
             tableau.IsVisible = true;
             tableau.DoNotAcceptEvents = true;
             tableau.StanceIndex = (int)CharacterViewModel.StanceTypes.EmphasizeFace;
+            tableau.CustomRenderScale = 1.35f;
             tableau.CharStringId = character.StringId ?? string.Empty;
             tableau.BodyProperties = speaker != null
                 ? speaker.BodyPropertiesValue.ToString()
