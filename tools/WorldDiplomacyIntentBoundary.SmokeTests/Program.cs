@@ -3174,13 +3174,13 @@ internal static class Program
 			FindRepositoryFile("PermanentAllianceGuard.cs"),
 			Encoding.UTF8);
 		string diplomacy = File.ReadAllText(
-			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Direct", "DiplomacyBehavior.cs")),
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Direct", "DiplomacyBehavior.Actions.cs")),
 			Encoding.UTF8);
 		string declareWarPatch = File.ReadAllText(
 			FindRepositoryFile("Patch_Meeting_SuppressDeclareWarAction.cs"),
 			Encoding.UTF8);
-		string subModule = File.ReadAllText(
-			FindRepositoryFile("SubModule.cs"),
+		string startupComposition = File.ReadAllText(
+			FindRepositoryFile(Path.Combine("src", "AF.GameAdapter.Bannerlord", "Composition", "StartupPatchComposition.cs")),
 			Encoding.UTF8);
 
 		Test.True(guard.Contains("AllianceCampaignBehavior", StringComparison.Ordinal)
@@ -3267,8 +3267,8 @@ internal static class Program
 		Test.True(CountOccurrences(worldDiplomacySource, "alliance.EndAlliance(") == 1,
 			"WorldDiplomacy must have no unscoped secondary path that can end a permanent alliance");
 
-		Test.True(subModule.Contains("PermanentAllianceGuard.RegisterHarmonyPatches(harmony)", StringComparison.Ordinal)
-			&& subModule.Contains("typeof(Patch_Meeting_SuppressDeclareWarAction)", StringComparison.Ordinal),
+		Test.True(startupComposition.Contains("PermanentAllianceGuard.RegisterHarmonyPatches(harmony)", StringComparison.Ordinal)
+			&& startupComposition.Contains("typeof(Patch_Meeting_SuppressDeclareWarAction)", StringComparison.Ordinal),
 			"the permanent-alliance guard must be registered during the existing Harmony bootstrap");
 	}
 

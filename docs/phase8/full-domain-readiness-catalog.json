@@ -565,17 +565,21 @@
         "world-map-owner"
       ],
       "entryPaths": [
-        "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs",
         "KingdomAnnexationBehavior.cs",
         "NpcTributeVassalageBehavior.cs",
         "VassalageBehavior.cs",
         "WarStats/AfWarStatsBehavior.cs",
-        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
-        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs",
+        "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Direct/DirectDiplomacyWarGuard.cs",
         "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyOfferCooldownRules.cs",
         "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs",
         "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyResultSettlementRules.cs",
-        "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyThreatStateRules.cs"
+        "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyThreatStateRules.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapDelayedRequestCoordinator.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
