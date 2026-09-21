@@ -26,6 +26,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         private const string ButtonId = "AnimusForgeConversationIllustrateButton";
         private static readonly List<WeakReference<ButtonWidget>> InjectedButtons = new List<WeakReference<ButtonWidget>>();
         private static bool _patched;
+        private static bool _shoutResponsePatchInstalled;
         private static bool _autoGenerationQueued;
         private static int _autoGenerationRetries;
         private static TaleWorlds.CampaignSystem.Conversation.ConversationManager _conversationManagerSubscription;
@@ -44,6 +45,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     activeHarmony.Patch(loadMovie, postfix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(LoadMoviePostfix)));
                 }
+                TryPatchHostNpcSpeech(activeHarmony);
             }
             catch (Exception ex)
             {
@@ -236,6 +238,23 @@ namespace AnimusForge.Illustrator.UI.Patches
             IllustrationCardPopup.ShowForConversation(convContext);
         }
 
+        private static void TryPatchHostNpcSpeech(Harmony harmony)
+        {
+            try
+            {
+                Type shoutType = AccessTools.TypeByName("AnimusForge.ShoutBehavior");
+                MethodInfo speechMethod = AccessTools.Method(shoutType, "ShowNpcSpeechOutput");
+                if (speechMethod == null) return;
+                harmony.Patch(speechMethod, postfix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(ShowNpcSpeechOutputPostfix)));
+                _shoutResponsePatchInstalled = true;
+                Debug.Print("[Illustrator] Auto conversation redraw hook attached to ShoutBehavior.ShowNpcSpeechOutput.");
+            }
+            catch (Exception ex)
+            {
+                Debug.Print("[Illustrator] Failed to attach ShoutBehavior response hook: " + ex.GetType().Name);
+            }
+        }
+
         internal static void OnAgentJoinedConversation(IAgent agent)
         {
             if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true || _autoGenerationQueued)
@@ -307,12 +326,20 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void OnConversationContinued()
         {
+            if (_shoutResponsePatchInstalled) return;
             if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true) return;
             string sentence = string.Empty;
             try { sentence = Campaign.Current?.ConversationManager?.CurrentSentenceText ?? string.Empty; } catch { }
             sentence = sentence.Trim();
             if (sentence.Length > 0 && string.Equals(sentence, _lastAutoRedrawSentence, StringComparison.Ordinal)) return;
             _lastAutoRedrawSentence = sentence;
+            IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
+        }
+
+        private static void ShowNpcSpeechOutputPostfix(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content) || IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true)
+                return;
             IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
         }
     }

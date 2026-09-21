@@ -199,6 +199,18 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     catch (Exception ex) { Debug.Print("[Illustrator] Scene probe unavailable: " + ex.Message); }
                 }
                 _activeInstance?.Close();
+                if (autoFullscreen)
+                {
+                    try
+                    {
+                        preCapturedBase64 = ScreenCaptureHelper.CaptureUnobstructedConversationSceneBase64(out string calibrationReason);
+                        Debug.Print("[Illustrator] Auto conversation scene pre-capture: " + (string.IsNullOrWhiteSpace(preCapturedBase64) ? calibrationReason : "captured_before_fullscreen"));
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Print("[Illustrator] Auto conversation scene pre-capture failed: " + ex.GetType().Name);
+                    }
+                }
                 popup = new IllustrationCardPopup(topScreen, autoFullscreen ? "ConversationIllustrationFullscreenOverlay" : "ConversationIllustrationOverlay", "conversation", () =>
                 {
                     string redrawBase64 = null;
@@ -597,7 +609,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 else
                 {
-                    sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
+                    sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token, preCapturedBase64).ConfigureAwait(false);
                     directorRefs.AddRange(sceneCapture.References);
                     string unavailableSceneNote = sceneCapture.References == null || sceneCapture.References.Count == 0
                         ? "\n【环境参考不可用】" + sceneCapture.DirectorNote : string.Empty;

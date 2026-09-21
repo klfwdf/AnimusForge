@@ -47,21 +47,21 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         internal static async Task<ConversationSceneReferenceCapture> CaptureConversationSceneReferencesAsync(
-            ConversationSceneCaptureSource source, CancellationToken token)
+            ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             await source.EnsureCurrentAsync(token).ConfigureAwait(false);
             GenerationDiagnostics.Current?.RecordStage("scene_capture_route", new JObject
             { ["route"] = source.IsMapConversation ? "map-conversation" : "mission-panorama-30m" });
             if (source.IsMapConversation)
-                return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
-            return await CaptureMissionSceneReferencesAsync(source, token).ConfigureAwait(false);
+                return await CaptureMapConversationSceneReferencesAsync(source, token, preCapturedScene).ConfigureAwait(false);
+            return await CaptureMissionSceneReferencesAsync(source, token, preCapturedScene).ConfigureAwait(false);
         }
 
         // Six cubemap directions render one private copy, never Mission.Scene.
         // Presented pixels are an additional lighting/person-position check.
         private static async Task<ConversationSceneReferenceCapture> CaptureMissionSceneReferencesAsync(
-            ConversationSceneCaptureSource source, CancellationToken token)
+            ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null)
         {
             await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
             var watch = Stopwatch.StartNew();
@@ -118,7 +118,10 @@ namespace AnimusForge.Illustrator.Engine
                         ["addedEyeOffsetMeters"] = cameraOriginSource == "player_eye" ? (double?)0 : null,
                         ["selectionRadiusMeters"] = PanoramaCaptureRadius
                     });
-                    string calibration = CaptureUnobstructedConversationSceneBase64(out calibrationReason);
+                    string calibration = string.IsNullOrWhiteSpace(preCapturedScene)
+                        ? CaptureUnobstructedConversationSceneBase64(out calibrationReason)
+                        : preCapturedScene;
+                    if (!string.IsNullOrWhiteSpace(preCapturedScene)) calibrationReason = "pre_captured_before_overlay";
                     return Tuple.Create(mission, PanoramaProjection.BuildCameraFrames(sourceFrame), calibration, cameraOriginSource);
                 }, captureToken).ConfigureAwait(false);
                 if (context == null) throw new InvalidOperationException("无法调度全景采集。");
