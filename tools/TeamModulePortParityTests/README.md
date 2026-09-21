@@ -26,7 +26,7 @@ python tools/TeamModulePortParityTests/run.py
 
 ### 2. 实际 adapter 的委托行为没有变
 
-- 将真实 `TeamModulePorts.cs`、`TeamModuleAdapters.cs`、`TeamModuleServices.cs` 链接进 net8 测试程序。
+- 将 `src/AF.Contracts/Internal/TeamModules` 的三个真实 port、`src/bridges/{Policy,Gathering,Siege}` 的三个真实 adapter 和 `TeamModuleServices.cs` 链接进 net8 测试程序。
 - 游戏类型和原 owner 用只记录参数的 stub 替代，测试不模拟政策判定或攻城处置结果。
 - 验证每次调用只到原 owner 一次；Hero/Character/规则集合引用、各段文本、布尔/索引不串位；`ref` 正文、`out` 原因/事实/通知/handled 原样传回。
 - `handled` 与返回值可以不同；空目标、null 返回、false、默认参数与异常同实例均不得被“兼容兜底”吞掉。

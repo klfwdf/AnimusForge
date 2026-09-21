@@ -11,7 +11,18 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-SOURCES = ["Refactor/Modules/TeamModulePorts.cs", "Refactor/Modules/TeamModuleAdapters.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs"]
+PORT_SOURCES = [
+    "src/AF.Contracts/Internal/TeamModules/IPolicyModulePort.cs",
+    "src/AF.Contracts/Internal/TeamModules/IGatheringModulePort.cs",
+    "src/AF.Contracts/Internal/TeamModules/ISiegeModulePort.cs",
+]
+ADAPTER_SOURCES = [
+    "src/bridges/Policy/PolicyModuleAdapter.cs",
+    "src/bridges/Gathering/GatheringModuleAdapter.cs",
+    "src/bridges/Siege/SiegeModuleAdapter.cs",
+]
+SERVICE_SOURCE = "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs"
+SOURCES = PORT_SOURCES + ADAPTER_SOURCES + [SERVICE_SOURCE]
 MAP = {
     "Policy": ("KingdomAgendaCustomPolicyBehavior", ["IsEligibleTargetForExternal", "BuildRuntimePostprocessRulesForExternal", "TryProcessAcceptedAgendaTag"]),
     "Gathering": ("NobleGatheringBehavior", ["BuildRuntimePostprocessRulesForExternal", "BuildPostprocessContextForExternal", "NormalizeNobleGatheringPostprocessTagsForExternal", "BuildFeastAttendanceContext", "TryApplyNobleGatheringTagsForExternal"]),
@@ -238,16 +249,20 @@ def main():
         (out/"run.log").write_text(log, encoding="utf-8"); return code
     mutation_log = []
     if not args.skip_mutations:
-        adapters = read("Refactor/Modules/TeamModuleAdapters.cs")
         mutations = {
             "invert_eligibility": ("=> KingdomAgendaCustomPolicyBehavior.IsEligibleTargetForExternal", "=> !KingdomAgendaCustomPolicyBehavior.IsEligibleTargetForExternal"),
             "invert_siege_selected": ("=> AfGcczShoutBridge.NormalizePostprocessTags(selected, raw, rules);", "=> AfGcczShoutBridge.NormalizePostprocessTags(!selected, raw, rules);"),
             "swap_siege_context_texts": ("ref text, out actionHandled, replyIsDirectPlayerResponse, playerText, speakerReplyText);", "ref text, out actionHandled, replyIsDirectPlayerResponse, speakerReplyText, playerText);")}
         for name, (old, new) in mutations.items():
-            if adapters.count(old) != 1: raise AssertionError("Mutation anchor drift: " + name)
+            matches = [(path, read(path)) for path in ADAPTER_SOURCES if old in read(path)]
+            if len(matches) != 1 or matches[0][1].count(old) != 1:
+                raise AssertionError("Mutation anchor drift: " + name)
+            adapter_path, adapters = matches[0]
             folder = out/name; folder.mkdir(exist_ok=True)
-            mutated = folder/"Adapters.cs"; mutated.write_text(adapters.replace(old, new), encoding="utf-8")
-            project = util.project(folder, "TeamModulePortParity", [ROOT/SOURCES[0], mutated, ROOT/SOURCES[2], HERE/"OwnerStubs.cs", HERE/"Program.cs"], executable=True)
+            mutated = folder/Path(adapter_path).name
+            mutated.write_text(adapters.replace(old, new), encoding="utf-8")
+            sources = [mutated if path == adapter_path else ROOT/path for path in SOURCES]
+            project = util.project(folder, "TeamModulePortParity", sources + [HERE/"OwnerStubs.cs", HERE/"Program.cs"], executable=True)
             result, text = util.run_dotnet(args.dotnet, ["run", "--project", str(project), "-c", "Release"], out)
             (folder/"run.log").write_text(text, encoding="utf-8")
             if result == 0 or "FAIL " not in text or "error CS" in text:

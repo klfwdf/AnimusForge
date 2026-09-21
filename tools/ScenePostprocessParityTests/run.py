@@ -9,15 +9,23 @@ extractor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extractor)
 BASELINE = 'd40808b3'
 SIGNATURE = 'private static string TryRunSceneUnifiedActionPostprocess('
-TEAM_MODULE_FILES = ('TeamModulePorts.cs', 'TeamModuleAdapters.cs', 'TeamModuleServices.cs')
+TEAM_MODULE_FILES = (
+    'src/AF.Contracts/Internal/TeamModules/IPolicyModulePort.cs',
+    'src/AF.Contracts/Internal/TeamModules/IGatheringModulePort.cs',
+    'src/AF.Contracts/Internal/TeamModules/ISiegeModulePort.cs',
+    'src/bridges/Policy/PolicyModuleAdapter.cs',
+    'src/bridges/Gathering/GatheringModuleAdapter.cs',
+    'src/bridges/Siege/SiegeModuleAdapter.cs',
+    'src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs',
+)
 
 
 def team_module_project_items():
     # Compile production thin adapters unchanged; old and new paths share the same domain stubs.
     from xml.sax.saxutils import escape
     return '<ItemGroup>' + ''.join(
-        '<Compile Include="' + escape(str(ROOT / ('src/AF.GameAdapter.Bannerlord/Composition' if name == 'TeamModuleServices.cs' else 'Refactor/Modules') / name)) + '" Link="' + name + '" />'
-        for name in TEAM_MODULE_FILES) + '<Compile Include="' + escape(str(ROOT / 'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs')) + '" Link="PromptRuntimeTargetBinding.cs" />' + '</ItemGroup>'
+        '<Compile Include="' + escape(str(ROOT / path)) + '" Link="' + Path(path).name + '" />'
+        for path in TEAM_MODULE_FILES) + '<Compile Include="' + escape(str(ROOT / 'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs')) + '" Link="PromptRuntimeTargetBinding.cs" />' + '</ItemGroup>'
 
 
 def stub_helpers(old_source, method):
