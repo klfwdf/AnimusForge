@@ -772,7 +772,7 @@ namespace AnimusForge.Illustrator.Context
                 }
                 else if (element.Item.ItemType == ItemObject.ItemTypeEnum.OneHandedWeapon || element.Item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon)
                 {
-                    profile.WeaponDetails.Add($"近战武器: {modifierStr}{itemName} (配在腰间剑鞘 sheathed at hip)");
+                    profile.WeaponDetails.Add($"近战武器: {modifierStr}{itemName}；仅为装备持有记录，实际是否入画、手持或佩挂由现场事实与人物参考图确认，不按武器类别指定携带方式");
                 }
                 else
                 {
