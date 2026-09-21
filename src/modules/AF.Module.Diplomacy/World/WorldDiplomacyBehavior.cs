@@ -169,14 +169,12 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, WorldDiplomacyRealmRelationProfile> _realmRelationProfileCache = new Dictionary<string, WorldDiplomacyRealmRelationProfile>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, WorldDiplomacyBorderRelation> _kingdomBorderCache = new Dictionary<string, WorldDiplomacyBorderRelation>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<WorldDiplomacyOfferCooldownKey, WorldDiplomacyOfferCooldown> _offerCooldownByKey = new Dictionary<WorldDiplomacyOfferCooldownKey, WorldDiplomacyOfferCooldown>();
+	private readonly WorldDiplomacyRequestLeaseCoordinator _llmRequestLease = new WorldDiplomacyRequestLeaseCoordinator();
 	private int _kingdomBorderCacheDay = -1;
 	private float _kingdomBorderDistanceThreshold = MinimumBorderDistance;
 	private long _realmInstitutionalVoiceRuleVersion = -1L;
 
 	private WorldDiplomacyStorage _storage = new WorldDiplomacyStorage();
-	private bool _llmRequestRunning;
-	private string _activeJobId = "";
-	private long _activeRequestRuntimeGeneration;
 	private bool _disabledStateApplied;
 	private MapNotificationView _registeredMapNotificationView;
 	private long _runtimeGeneration;
@@ -1047,9 +1045,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private void ResetTransientRuntime(string reason)
 	{
 		_runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		_llmRequestRunning = false;
-		_activeJobId = "";
-		_activeRequestRuntimeGeneration = 0L;
+		_llmRequestLease.Reset();
 		_disabledStateApplied = false;
 		while (_completedJobs.TryDequeue(out _))
 		{
@@ -1184,11 +1180,6 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_storage.ForcedWarToggleWasEnabled = false;
 		// An HTTP task may still be in flight. Keep the runtime request flag until its
 		// completion is dequeued, so re-enabling cannot start a second request.
-		if (!_llmRequestRunning)
-		{
-			_activeJobId = "";
-			_activeRequestRuntimeGeneration = 0L;
-		}
 		ScheduleNextNormalRoundAfter(CurrentDay());
 		_nativeDiplomacyDecisionQueueSanitized = false;
 	}
@@ -1420,7 +1411,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 			ScheduleNextNormalRoundAfter(CurrentDay());
 			return;
 		}
-		if (_storage.Jobs.Count > 0 || _llmRequestRunning || !TryConsumeAiDocumentBudget())
+		if (_storage.Jobs.Count > 0 || _llmRequestLease.IsRunning || !TryConsumeAiDocumentBudget())
 		{
 			return;
 		}
@@ -1511,7 +1502,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TryScheduleNormalRound()
 	{
-		if (_storage.ActiveRound != null || _storage.Jobs.Count > 0 || _llmRequestRunning)
+		if (_storage.ActiveRound != null || _storage.Jobs.Count > 0 || _llmRequestLease.IsRunning)
 		{
 			return;
 		}
@@ -2290,7 +2281,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TryStartNextLlmJob()
 	{
-		if (!IsWorldDiplomacyEnabled() || _llmRequestRunning || _storage.Jobs.Count == 0)
+		if (!IsWorldDiplomacyEnabled() || _llmRequestLease.IsRunning || _storage.Jobs.Count == 0)
 		{
 			return;
 		}
@@ -2396,40 +2387,42 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 		JArray requestMessages = BuildLlmMessageArray(job);
 		if (!EnsureRequestFitsInputBudget(job, requestMessages)) return;
 		if (!TryConsumeDiplomacyLlmRequestBudget()) return;
+		long generation = _runtimeGeneration;
+		int requestTimeoutMilliseconds = string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase)
+			? DuelSettings.LlmRequestTimeoutMilliseconds
+			: DefaultApiTimeoutMilliseconds;
+		if (!_llmRequestLease.TryClaim(job.JobId, generation, job.MaxTokens, requestTimeoutMilliseconds, out WorldDiplomacyRequestSnapshot request))
+		{
+			Log("world diplomacy request claim rejected job=" + (job.JobId ?? "") + " generation=" + generation);
+			return;
+		}
 		job.IsRunning = true;
 		job.CacheAffinityKey = ResolveCacheAffinityKey(job);
 		_lastLlmCacheAffinityKey = job.CacheAffinityKey;
 		LogPromptCacheShape(job);
-		_llmRequestRunning = true;
-		_activeJobId = job.JobId;
-		long generation = _runtimeGeneration;
-		_activeRequestRuntimeGeneration = generation;
-		int requestTimeoutMilliseconds = string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase)
-			? DuelSettings.LlmRequestTimeoutMilliseconds
-			: DefaultApiTimeoutMilliseconds;
 		_ = Task.Run(async delegate
 		{
 			LlmJobResult result = new LlmJobResult
 			{
-				JobId = job.JobId,
-				RuntimeGeneration = generation
+				JobId = request.JobId,
+				RuntimeGeneration = request.RuntimeGeneration
 			};
 			try
 			{
 				PromptPackage sharedPrompt = LegacyWorldDiplomacyLlmGateway.BuildPromptPackage(
 					requestMessages,
-					Math.Max(256, job.MaxTokens),
+					request.MaxTokens,
 					"world-diplomacy");
 				TraceContext trace = new TraceContext(
-					"world-diplomacy-" + (job.JobId ?? "request"),
-					generation,
+					"world-diplomacy-" + request.JobId,
+					request.RuntimeGeneration,
 					0,
 					"single-player",
 					"shared");
 				LlmGenerateResult generated = await new LegacyWorldDiplomacyLlmGateway().GenerateAsync(
 					new LlmGenerateRequest(
 						trace,
-						new LlmProviderSnapshot("world-diplomacy", "legacy://world-diplomacy", "world-diplomacy", requestTimeoutMilliseconds, Math.Max(256, job.MaxTokens)),
+						new LlmProviderSnapshot("world-diplomacy", "legacy://world-diplomacy", "world-diplomacy", request.TimeoutMilliseconds, request.MaxTokens),
 						sharedPrompt,
 						InteractionStage.MainReply),
 					CancellationToken.None).ConfigureAwait(false);
@@ -2546,14 +2539,7 @@ public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		while (_completedJobs.TryDequeue(out LlmJobResult result))
 		{
-			bool completesActiveRequest = string.Equals(result?.JobId, _activeJobId, StringComparison.OrdinalIgnoreCase)
-				&& result.RuntimeGeneration == _activeRequestRuntimeGeneration;
-			if (completesActiveRequest)
-			{
-				_llmRequestRunning = false;
-				_activeJobId = "";
-				_activeRequestRuntimeGeneration = 0L;
-			}
+			_llmRequestLease.TryRelease(result?.JobId, result?.RuntimeGeneration ?? 0L);
 			// A completion from a previous save/runtime may share the same persisted
 			// JobId with a rebuilt request. It must not inspect, mutate or remove the
 			// current runtime's job.
