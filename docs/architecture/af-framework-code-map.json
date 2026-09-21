@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "54b55aa3640d0139d214d0f810d44a92c7ab3c68",
+  "sourceRevision": "3d2b636e498d98e5e72ec420a52d2ef9738af956",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4385,13 +4385,13 @@
     {
       "id": "economy.prompt.capture.hero_debt",
       "path": "RewardSystemBehavior.cs",
-      "start": 18559,
-      "end": 18559,
+      "start": 18214,
+      "end": 18214,
       "symbol": "public string BuildDebtHintForAI(Hero npc)",
       "match": "exact",
       "status": "wired-j12a-in-progress",
       "note": "game-thread debt normalize/value capture before detached projection",
-      "fileSha256": "c1da966ebbe779e68ca74c261daae05d52ab20096b97bfc47c3984910953060e"
+      "fileSha256": "c8ea4933134ededf9c633081c477b76b5425b23e4188f1a7f22a77ca090f7fc9"
     },
     {
       "id": "economy.authorization.asset",
@@ -4469,6 +4469,28 @@
       "status": "wired-j12a-in-progress",
       "note": "JSON-backed debt ledger legacy conversion, clamp, aggregate rebuild and note normalization owner",
       "fileSha256": "c7ec6da44c1b63f173a22242a0a4ff78436346ed1642b0af3fc769addb7e235c"
+    },
+    {
+      "id": "economy.debt.schedule-policy",
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtSchedulePolicy.cs",
+      "start": 11,
+      "end": 11,
+      "symbol": "private static class EconomyDebtSchedulePolicy",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "due bounds, reminder cadence and finite/unlimited overdue penalty arithmetic owner",
+      "fileSha256": "b8238a500c10ee08bca7a16434f8dbadf379b9502f782eeb2b995de801bd1fdb"
+    },
+    {
+      "id": "economy.debt.quest-lifecycle",
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtPromiseLifecycle.cs",
+      "start": 43,
+      "end": 43,
+      "symbol": "private void QueueDebtPromiseQuestsForActiveDebts()",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "pending promise identity, load/import reconciliation, deferred creation and completion owner",
+      "fileSha256": "91e3314a9700899360a1d17063c6d9bd53e038dd92a58ecbf57996fb039414b6"
     }
   ]
 }
