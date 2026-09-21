@@ -32,6 +32,14 @@ API1.3与API1.4 Release均0警告/0错误，git diff --check通过。源码核�
 - 1.3 SHA256：6CB84996D603726E7B3BB29AC88FC5BA288DE1029F5C45B246DA795F17463AB8
 - 1.4 SHA256：BF4DAFD06675D71908CDF9660AF7CE709807CE043632DECCFC3AA07F7D55BBEE
 
-本轮未部署，安装仍为2082849d版；人群修复和年龄改动尚未游戏验收。部署后同一女镇民检查conversation_npc_age原始值、实例编号、立绘身体参数与提示词；换同模板NPC检查编号和值随实例变化。现场背景人群及面部保真仍须看成图，不以编译或提示词宣称已保证。
+源码交付时未部署，安装当时为2082849d版；随后部署见下一节。人群修复和年龄改动尚未游戏验收。部署后同一女镇民检查conversation_npc_age原始值、实例编号、立绘身体参数与提示词；换同模板NPC检查编号和值随实例变化。现场背景人群及面部保真仍须看成图，不以编译或提示词宣称已保证。
 
 回滚只反向撤销本轮源码提交，保留6d166f51人群修复；修改前检查点7162d9c，不hard reset。游戏文件没有改变。
+
+## 01:10部署记录（用户随后明确授权）
+
+2026-09-22 01:10使用原tools/deploy_illustrator.ps1 -BannerlordApi auto -Configuration Release，识别v1.4.8，构建0警告/0错误。源码提交1affb9e3，含此前6d166f51人群修复。覆盖独立Modules/AnimusForge_Illustrator，未改主模组。
+
+安装DLL MVID：7efb5b44-3b76-4fe9-9453-6fa4e65b2385；SHA256：A5CFE216A69196424BB95A52E8F73A9B7D004614D9CE31900C72B2ECD7E91D4C，505344字节。DLL/PDB/SubModule及5个Prefab共8项源目标哈希一致。部署前后均无Bannerlord/Launcher相关进程；启动游戏后仍需实机验收，未运行离线测试或调用模型。
+
+部署日志与哈希清单在artifacts/illustrator-npc-age-20260922/deploy.txt、deployed-hashes.json。回滚游戏文件使用artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260922-011036备份；源码回滚git revert 1affb9e3。目标原有.dll.old及历史PNG/JSON保留，均非本次加载DLL。
