@@ -150,7 +150,7 @@ namespace AnimusForge.Illustrator.Core
                     }
                     else
                     {
-                        Log($"[Illustrator] /images/edits 不可用（{edit.ErrorMessage}），参考图仅供导演识图，回退纯文本 /images/generations。");
+                        Log("[Illustrator] /images/edits 不可用，参考图仅供导演识图，回退纯文本 /images/generations；详情见请求诊断。");
                     }
                 }
                 else if (!isChatProtocol && requestedRefImages > 0 && settings.UseExactEndpointUrl)
@@ -199,7 +199,7 @@ namespace AnimusForge.Illustrator.Core
                 else
                 {
                     result.ErrorMessage = errorMessage ?? "未能从服务端响应中提取到有效图像数据";
-                    Log($"[Illustrator] Generation failed: {result.ErrorMessage}");
+                    Log("[Illustrator] Generation failed; details in request diagnostics.");
                 }
             }
             catch (OperationCanceledException)
@@ -209,11 +209,12 @@ namespace AnimusForge.Illustrator.Core
             catch (Exception ex)
             {
                 result.ErrorMessage = "生图通信异常: " + ex.Message;
-                Log($"[Illustrator] Exception during generation: {ex}");
+                Log($"[Illustrator] Exception during generation: {ex.GetType().Name}");
             }
             finally
             {
                 stopwatch.Stop();
+                result.ErrorMessage = SensitiveLogText.Redact(result.ErrorMessage, apiKey);
                 result.ElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
                 GenerationDiagnostics.Current?.RecordImageResult(result);
                 Log($"[Illustrator] Generation completed in {result.ElapsedMilliseconds}ms. Success={result.Success}");
@@ -404,7 +405,7 @@ namespace AnimusForge.Illustrator.Core
                         {
                             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                         }
-                        Log($"[Illustrator] Requesting image edit from {editsUrl} (model={model}, protocol=ImagesEdits, ActualRefImages={sent})...");
+                        Log($"[Illustrator] Requesting image edit from {SensitiveLogText.SafeUrl(editsUrl)} (model={model}, protocol=ImagesEdits, ActualRefImages={sent})...", apiKey);
                         if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, "ImagesEdits").ConfigureAwait(false);
                         using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                         {
@@ -630,7 +631,7 @@ namespace AnimusForge.Illustrator.Core
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                 }
 
-                Log($"[Illustrator] Requesting image generation from {endpointUrl} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...");
+                Log($"[Illustrator] Requesting image generation from {SensitiveLogText.SafeUrl(endpointUrl)} (model={model}, protocol={(isChatProtocol ? "Chat" : "Images")}, refImages={referenceImages?.Count ?? 0}, ActualRefImages={actualRefImages})...", apiKey);
                 if (GenerationDiagnostics.Current != null) await GenerationDiagnostics.Current.RecordImageRequestAsync(request, isChatProtocol ? "Chat" : "Images").ConfigureAwait(false);
 
                 using (var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
@@ -641,7 +642,7 @@ namespace AnimusForge.Illustrator.Core
                         if (!response.IsSuccessStatusCode)
                         {
                             string errorMsg = ExtractErrorMessage(responseText, (int)response.StatusCode);
-                            Log($"[Illustrator] Request failed: {errorMsg}");
+                            Log($"[Illustrator] Request failed: HTTP {(int)response.StatusCode}; details in request diagnostics.");
 
                             bool fallback = false;
                             if (!isChatProtocol && (
@@ -871,7 +872,7 @@ namespace AnimusForge.Illustrator.Core
             catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
-                Log($"[Illustrator] Failed to download generated image from {url}: {ex.Message}");
+                Log($"[Illustrator] Failed to download generated image from {SensitiveLogText.SafeUrl(url)}: {ex.GetType().Name}");
                 return null;
             }
         }
@@ -987,9 +988,9 @@ namespace AnimusForge.Illustrator.Core
             return prompt;
         }
 
-        private static void Log(string message)
+        private static void Log(string message, string secret = null)
         {
-            TaleWorlds.Library.Debug.Print(message);
+            TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact(message, secret));
         }
     }
 }

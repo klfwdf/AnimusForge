@@ -46,7 +46,7 @@ namespace AnimusForge.Illustrator.Core
         {
             Id = DateTime.UtcNow.ToString("yyyyMMddTHHmmss") + "_" + Guid.NewGuid().ToString("N");
             _previous = Ambient.Value;
-            _document = new JObject { ["schema"] = 1, ["id"] = Id, ["campaign"] = CleanText(campaign), ["category"] = CleanText(category),
+            _document = new JObject { ["schema"] = 2, ["id"] = Id, ["campaign"] = CleanText(campaign), ["category"] = CleanText(category),
                 ["startedUtc"] = DateTime.UtcNow, ["outcome"] = "running", ["events"] = _events,
                 ["assemblyVersion"] = typeof(GenerationDiagnostics).Assembly.GetName().Version.ToString(),
                 ["moduleVersionId"] = typeof(GenerationDiagnostics).Assembly.ManifestModule.ModuleVersionId.ToString("D") };
@@ -321,7 +321,7 @@ namespace AnimusForge.Illustrator.Core
         {
             if (_events.Count >= 48) { _document["eventsOmitted"] = true; Flush(); return; }
             data["stage"] = CleanText(stage);
-            data["elapsedMs"] = _clock.ElapsedMilliseconds;
+            data["requestElapsedMs"] = _clock.ElapsedMilliseconds;
             _events.Add(data);
             Flush();
         }
@@ -331,15 +331,13 @@ namespace AnimusForge.Illustrator.Core
             value = value ?? string.Empty;
             lock (_gate)
                 foreach (string secret in _secrets) value = value.Replace(secret, "[redacted]");
-            value = Regex.Replace(value, @"(?i)Bearer\s+[A-Za-z0-9_./+=-]+", "Bearer [redacted]");
-            value = Regex.Replace(value, @"https?://[^\s""<>]+", match => SafeUrl(match.Value));
+            value = SensitiveLogText.Redact(value);
             return value.Length > 65536 ? value.Substring(0, 65536) + " [truncated]" : value;
         }
 
         private static string SafeUrl(string value)
         {
-            if (!Uri.TryCreate(value, UriKind.Absolute, out var uri)) return "[invalid endpoint]";
-            return uri.GetLeftPart(UriPartial.Authority).Replace(uri.UserInfo.Length > 0 ? uri.UserInfo + "@" : "\0", "") + uri.AbsolutePath;
+            return SensitiveLogText.SafeUrl(value);
         }
 
         private void Flush()
@@ -357,7 +355,7 @@ namespace AnimusForge.Illustrator.Core
                 for (int i = 0; i < _events.Count && Encoding.UTF8.GetByteCount(json) > MaxMetadataBytes; i++)
                 {
                     var summary = new JObject { ["omitted"] = "metadata storage budget" };
-                    foreach (string key in new[] { "stage", "elapsedMs", "endpoint", "protocol", "model", "status", "httpStatus", "success" })
+                    foreach (string key in new[] { "stage", "elapsedMs", "requestElapsedMs", "endpoint", "protocol", "model", "status", "httpStatus", "success" })
                     {
                         JToken value = _events[i][key];
                         if (value == null) continue;

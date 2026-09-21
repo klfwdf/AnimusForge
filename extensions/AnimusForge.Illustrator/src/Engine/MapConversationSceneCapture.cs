@@ -70,9 +70,10 @@ namespace AnimusForge.Illustrator.Engine
             internal IReadOnlyList<IllustrationReferenceImage> References { get; }
             internal string DirectorNote { get; }
             internal string StatusText { get; }
+            internal string NearbyPropFacts { get; }
 
-            internal ConversationSceneReferenceCapture(IReadOnlyList<IllustrationReferenceImage> references, string directorNote, string statusText)
-            { References = references; DirectorNote = directorNote; StatusText = statusText; }
+            internal ConversationSceneReferenceCapture(IReadOnlyList<IllustrationReferenceImage> references, string directorNote, string statusText, string nearbyPropFacts = "")
+            { References = references; DirectorNote = directorNote; StatusText = statusText; NearbyPropFacts = nearbyPropFacts; }
         }
 
         internal static ConversationSceneCaptureSource GetConversationSceneCaptureSource()

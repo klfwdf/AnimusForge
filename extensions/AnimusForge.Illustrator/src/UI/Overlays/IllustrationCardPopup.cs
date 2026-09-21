@@ -325,7 +325,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             public string Code = string.Empty;
             public string Owner = string.Empty;
-            public string Side = string.Empty;
+            public bool PlayerSide;
+            public bool InterlocutorSide;
+            public string Side => PlayerSide && InterlocutorSide ? "玩家与对话对方" : PlayerSide ? "玩家" : "对话对方";
         }
 
         private static void AddEmblemSpec(List<EmblemSpec> specs, Hero hero, string sideLabel)
@@ -333,10 +335,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
             if (hero == null) return;
             string code = (hero.Clan?.Banner ?? hero.Clan?.Kingdom?.Banner)?.BannerCode;
             if (string.IsNullOrWhiteSpace(code)) return;
-            if (specs.Exists(s => s.Code == code)) return;
+            var existing = specs.Find(s => s.Code == code);
+            if (existing != null)
+            {
+                existing.PlayerSide |= sideLabel == "玩家";
+                existing.InterlocutorSide |= sideLabel != "玩家";
+                return;
+            }
             string owner = hero.Clan?.Name != null ? hero.Clan.Name.ToString()
                 : (hero.Clan?.Kingdom?.Name != null ? hero.Clan.Kingdom.Name.ToString() : "未知家族");
-            specs.Add(new EmblemSpec { Code = code, Owner = owner, Side = sideLabel });
+            specs.Add(new EmblemSpec { Code = code, Owner = owner, PlayerSide = sideLabel == "玩家", InterlocutorSide = sideLabel != "玩家" });
         }
 
         private void ExecuteConversationGeneration(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null)
@@ -464,7 +472,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
                 directorRefs.AddRange(sceneCapture.References);
-                var scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts, promptPlan.ArtDirection,
+                var scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
                     promptPlan.DirectorOnlyFacts + "\n【本次环境参考覆盖】" + sceneCapture.DirectorNote);
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "，正在整理人物参考..."; });
 
@@ -496,9 +504,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         var r = new IllustrationReferenceImage(b64, $"{spec.Side}一方【{spec.Owner}】的真实纹章标准样图：当画面中属于{spec.Side}的一处已确认纹章载体（如盾牌或背景军旗）真实出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲金属表面硬印纹章！", IllustrationReferenceKind.Emblem);
                         directorRefs.Add(r);
                         // 仅当该方人物确实身穿纹章罩袍或持有明确纹章盾牌时，才加入生图垫图，防止生图模型在普通金属胸甲上硬印纹章！
-                        bool isPlayerSide = spec.Side == "玩家";
-                        var targetProfile = isPlayerSide ? convContext.MainHeroProfile : convContext.InterlocutorProfile;
-                        bool sideHasHeraldic = targetProfile != null && (targetProfile.HasHeraldicArmor || targetProfile.HasHeraldicShield || targetProfile.BannerEquipmentDetails.Count > 0);
+                        var playerProfile = convContext.MainHeroProfile;
+                        var partnerProfile = convContext.InterlocutorProfile;
+                        bool sideHasHeraldic =
+                            (spec.PlayerSide && playerProfile != null && (playerProfile.HasHeraldicArmor || playerProfile.HasHeraldicShield || playerProfile.BannerEquipmentDetails.Count > 0)) ||
+                            (spec.InterlocutorSide && partnerProfile != null && (partnerProfile.HasHeraldicArmor || partnerProfile.HasHeraldicShield || partnerProfile.BannerEquipmentDetails.Count > 0));
                         if (sideHasHeraldic)
                         {
                             genRefs.Add(r);

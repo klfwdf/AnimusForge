@@ -52,15 +52,12 @@ namespace AnimusForge.Illustrator.Engine
             { ["route"] = source.IsMapConversation ? "map-conversation" : "mission-panorama-30m" });
             if (source.IsMapConversation)
                 return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
-            var references = await CaptureMissionSceneReferencesAsync(source, token).ConfigureAwait(false);
-            return new ConversationSceneReferenceCapture(references,
-                "本次依据玩家附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；真实当前画面如有附加，用于校验光照与人物关系。",
-                "任务场景：附近30米全景参考");
+            return await CaptureMissionSceneReferencesAsync(source, token).ConfigureAwait(false);
         }
 
         // Six cubemap directions render one private copy, never Mission.Scene.
         // Presented pixels are an additional lighting/person-position check.
-        private static async Task<IReadOnlyList<IllustrationReferenceImage>> CaptureMissionSceneReferencesAsync(
+        private static async Task<ConversationSceneReferenceCapture> CaptureMissionSceneReferencesAsync(
             ConversationSceneCaptureSource source, CancellationToken token)
         {
             await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
@@ -154,7 +151,9 @@ namespace AnimusForge.Illustrator.Engine
                     ["inspectedNodes"] = snapshot.InspectedNodes, ["copyBatches"] = snapshot.Batches,
                     ["copyTotalMs"] = snapshot.TotalMilliseconds, ["copyMaxBatchMs"] = snapshot.MaxBatchMilliseconds });
                 TaleWorlds.Library.Debug.Print($"[Illustrator] Nearby prefab panorama composed: views=6, coverage=360x180, radius=30m, meshes={snapshot.CopiedRoots}, calibration={references.Count > 1}, sourceMissionViews=0");
-                return references;
+                return new ConversationSceneReferenceCapture(references,
+                    "本次依据玩家附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；真实当前画面如有附加，用于校验光照与人物关系。",
+                    "任务场景：附近30米全景参考", snapshot.NearbyPropFacts);
             }
             catch (OperationCanceledException) when (!token.IsCancellationRequested)
             { throw new TimeoutException("环境全景采集超过时间预算，已停止；没有发送不完整环境图。"); }
