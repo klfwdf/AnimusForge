@@ -1,7 +1,7 @@
 <a id="j10-scene-owners-20260921"></a>
 # 当前接续：J10 Scene 渠道 owner 归位进行中（2026-09-21）
 
-**状态：J07/J08/J09/J10a(Scene)_OFFLINE_VERIFIED；J10b(Courier)_IN_PROGRESS。** Scene 责任见下表；Courier 已把 prompt/session preparation、commit/receipt、generation/session/route transport、delivery lifetime，以及 session registry/creation 归位 `Channels/Courier`（最新产品 `b751f974`）。实际消费者仍是同一 `CourierDeliveryBehavior`，没有新增 facade、存档、公有 API、默认开关或玩法。
+**状态：J07/J08/J09/J10a(Scene)_OFFLINE_VERIFIED；J10b(Courier)_IN_PROGRESS。** Scene 责任见下表；Courier 已把 prompt/session preparation、commit/receipt、generation/session/route transport、delivery lifetime、session registry/creation、runtime tick、主动来信和信件库存归位 `Channels/Courier`（最新产品 `e541697c`）。实际消费者仍是同一 `CourierDeliveryBehavior`，SyncData/DTO/key 与 Harmony/地图适配有意留宿主，没有新增 facade、公有 API、默认开关或玩法。
 
 | 当前责任 | 真实结果 | 未完成 / 边界 |
 | --- | --- | --- |
@@ -18,13 +18,14 @@
 | Courier route transport | `Channels/Courier/RouteTransport` 持 route plan、海陆/港口、威胁/安全点、目标/到达和 progress/stuck；46 方法精确迁移 | session creation/runtime index、return/missing/destroyed lifetime 仍在主类，待 J10b7 |
 | Courier delivery lifetime | `Channels/Courier/DeliveryLifetime` 持 return、payload/refund、reply notice、destroyed/missing 与 session/index/party teardown；12 方法精确迁移 | session creation/runtime index 与 flow/入站 session 建立仍在主类，待 J10b8 |
 | Courier session registry/creation | `Channels/Courier/{SessionRegistry,SessionCreation}` 持 lookup/load reset/copy-on-publish index、公开 flow、出站 UI/payload 和三类入站 session 发布；60 方法精确迁移 | 主动来信扫描/候选、信件库存、Prompt message/fact 与旧 domain commit/wait 仍待 J10b9 |
+| Courier runtime/proactive/letter inventory | `Channels/Courier/{RuntimeTick,ProactiveLetters,LetterInventory}` 持主线程队列/节流调度、增量候选扫描与信件运行时库存；55 方法精确迁移，SyncData key 未移动 | Prompt message/fact 与旧 domain commit/wait 仍待 J10b10；真实帧/库存/SAVE 未测 |
 | postprocess/queue/completion | 真实 `Prepare→Request→Complete`、action-only commit、speech completion 后 relay publish 的 partial 已归位；Scene parity 71、Queue 37，5+7 个变异通过 | speech queue 状态字段及部分 group/relay/passive/reaction 编排仍在主类 |
 | request lifetime | 30 场景与 7 个有效变异保持；BattleSpeech captured 18 场景及 2 个有效变异；默认 wiring 25、NativeTurn 98、GiveAsset 80,562、Bridge 16 通过 | pending AFEF 与四链下游 session owner 仍待继续收拢 |
 | 构建 | 归位后的 Debug Bannerlord 1.3、1.4、Bootstrap 各 0 warning/0 error，无 Stage/Deploy | Release 和 J10 最终 API/存档整包门禁留 J10c |
 
 ChannelCutover 132 行为 + 14 提取、ProductionConsumers 正常与 3 个有效变异、Scene parity 71、request lifetime 30、默认 wiring 25 和 Debug 双 API/Bootstrap 通过。`TeamModulePortParityTests` 仍被既有 MemorySummary dependency hash 漂移前置阻断，未刷新绕过。当前 342 锚点地图绑定 `cbf7f453`；LIVE/SAVE/provider/音频/真实帧成本继续 `NOT-RUN`。
 
-Courier 正常回归外，既有 prompt/postprocess/commit/generation/session/route 变异继续有效；本包将主动来信 `StartInboundLetterGeneration` 移到 `ProcessSession` 后，完整 Debug 双 API/Bootstrap 仍 0 warning/0 error，但具名顺序断言拒绝，证明不是编译错误造红。恢复产品后最终 Debug 三构建通过。既有 whole-file 逆变换及旧 commit runner 阻塞未刷新/削弱来冒充 PASS。375 锚点地图绑定 `b751f974` 并在 recorded/working-tree 两模式通过。下一包 J10b9 处理主动来信扫描/信件库存，再处理 Prompt message/fact 与旧 domain commit/wait。回滚按 `b751f974` → `cd0d942d` → `ee1d8c05` → `f2990b38` → `c9ea2e88` → `1882ea1c` → `5cb7dc6e` → `bdf58283` 定向 revert；Scene 回滚链保持，不 reset/rebase。
+Courier 正常回归外，既有 prompt/postprocess/commit/generation/session/route 变异继续有效；本包禁用 proactive frame budget 后完整 Debug 双 API/Bootstrap 仍 0 warning/0 error，但具名预算断言拒绝，证明不是编译错误造红。恢复产品后最终 Debug 三构建通过。LetterInventory 保留自动 restore retry 的既有 `discard_guard`，没有改存档策略。既有 whole-file 逆变换及旧 commit runner 阻塞未刷新/削弱来冒充 PASS。384 锚点地图绑定 `e541697c` 并在 recorded/working-tree 两模式通过。下一包 J10b10 处理 Prompt message/fact 与旧 domain commit/wait，再进入 J10 最终整包。回滚按 `e541697c` → `b751f974` → `cd0d942d` → `ee1d8c05` → `f2990b38` → `c9ea2e88` → `1882ea1c` → `5cb7dc6e` → `bdf58283` 定向 revert；Scene 回滚链保持，不 reset/rebase。
 
 ## 以下为历史回执，当前状态以上方为准
 
