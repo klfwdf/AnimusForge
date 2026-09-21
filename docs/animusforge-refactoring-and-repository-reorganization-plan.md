@@ -1,3 +1,16 @@
+<a id="j12-planned-20260921"></a>
+# 当前接续：J12 计划已编写，尚未施工（2026-09-21）
+
+**状态：J07–J11_OFFLINE_VERIFIED；J12_PLANNED。** 规划基线 `60499d44`（J11 验收修复已推送），本轮只有文档；生产代码、测试、构建、默认入口和自动化均未改。自动化继续暂停。
+
+实施清单见 [J12 Economy / Diplomacy / WorldMap 计划](plans/j12-domain-owners-plan.md)。顺序为 G0 有限基线 → J12a 捕获/资产执行/债务信任 → J12b 规则/直接外交/世界外交作业 → J12c 协议/受理/队列/延迟请求 → J12d 整包离线验收。
+
+本次依据当前源码纠正原提纲：Economy public ABI 必须保留；债务 capture 可能规范化状态；外交 J08 transport 已接线；外交 Rules 的 DTO mutation 不等于纯只读；WorldMap STOP 后失败、部分效果和排队必须独立表述。不得承诺“任何失败都零副作用”，不得以四 Rules 归位或薄 wrapper 冒充整个领域拆分。
+
+本轮仅完成源码/消费者/测试入口和关键风险的规划核对，不新增产品 PASS、不重复执行六构建。文档 5 个本地链接/锚点、代码围栏与唯一当前入口检查通过；现有代码地图 working-tree 394 锚点通过（仅定位，不是功能验收）。执行首轮按计划核实环境与相关门禁，J12 必要离线验收完成前不得标 DONE；LIVE/SAVE/provider/性能独立 NOT-RUN。本次计划只本地提交，不自动推送/部署/Stage/打包或恢复自动化。
+
+## 以下 J11 为已完成阶段回执；当前下一步以上方 J12 计划为准
+
 <a id="j11-team-seams-20260921"></a>
 # 当前接续：J11 制作组内部模块接缝离线整包闭合（2026-09-21）
 
@@ -819,10 +832,10 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 
 ### J12 Economy / Diplomacy / WorldMap
 
-- **真实入口**：`RewardSystemBehavior.cs`（22.6k + `PlayerRpCrafting` 3.7k）、`DebtPromiseQuest.cs`、`Refactor/Adapters/LegacyEconomyRewardDebt*.cs`、`Refactor/Contracts/EconomyRewardDebtContracts.cs`；`WorldDiplomacyBehavior.cs`（20.5k）+ `WorldDiplomacy*Rules.cs` 四个 + `WorldDiplomacyLlmClient.cs`、`DiplomacyBehavior.cs`、`VassalageBehavior.cs`、`VoteDealBehavior.cs`、`KingdomAnnexationBehavior.cs`、`KingdomStrategicProfileBehavior.cs`；`WorldMapPartyCommandBehavior.cs`（10.0k）、`WorldMap*Patch.cs`。
-- **目标 owner**：`src/modules/AF.Module.{Economy,Diplomacy,WorldMap}`；以权威交易/债务/外交/地图状态为界，领域状态不进通用 Actions；J04 Extras 的 Reward/Loan 段落与 J09 执行端口是唯一接缝。
-- **切片**：J12a Economy（Reward/Debt/Trust 只读投影 + 交易/债务执行端口）→ J12b Diplomacy（四个 Rules 已是纯规则，归位；`WorldDiplomacyLlmClient` 接 J08）→ J12c WorldMap（命令解析/执行端口）。每域先做只读投影再做执行端口。
-- **验收**：`ProductionReward` 11、`HeroAssetScope` 67 保持；各域新增执行端口契约（幂等、失败不改状态）；Harmony 补丁不迁，只核对调用点。
+- **当前细化计划**：[J12 领域 owner 实施计划](plans/j12-domain-owners-plan.md)（`60499d44` 源码基线；计划完成，生产未开始）。该文替代本小节早期笼统施工提纲，具体责任/消费者/保存与公开接口保留项见其第 4–6 节。
+- **顺序**：G0 → J12a Economy → J12b Diplomacy → J12c WorldMap → J12d 整包验收。目标仍为 `src/modules/AF.Module.{Economy,Diplomacy,WorldMap}`，领域状态不进通用 Actions。
+- **已校正边界**：现有 public Economy 契约保 ABI；capture 可能带主线程规范化副作用；WorldDiplomacy client 已接 J08；partial/unknown/STOP 已执行与 queued 不可简化成“失败不改状态”。
+- **验收**：真实入口/owner 和三渠道消费链、相关旧行为回归/有效反例、双版本/Bootstrap/API/存档/地图；LIVE/SAVE 独立。不是只迁目录或只补接口。
 
 ### J13 其他领域
 
