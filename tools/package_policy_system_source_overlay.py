@@ -94,6 +94,7 @@ def build_file_set() -> tuple[set[Path], dict[str, str]]:
         "VoteDealBehavior.MapNotification.cs",
         "VoteDealBehavior.Propose.cs",
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs",
         "WorldDiplomacyLlmClient.cs",
         "OnnxEmbeddingEngine.cs",
         "AnimusForgeTextInputSanitizer.cs",

@@ -1,4 +1,10 @@
-# 当前范围：J12 Economy / Diplomacy / WorldMap 离线闭合（2026-09-21）
+# 当前范围：J12 审查修复后重新开放（2026-09-21）
+
+当前状态为 **J12_REOPENED_PARTIAL**。`a50ab3ad` 已将 Direct 七类动作实算法分到 `DiplomacyBehavior.Actions.cs`，新增 `DirectDiplomacyWarGuard`；`WorldDiplomacyRequestLeaseCoordinator` 拥有请求 identity/冻结参数/释放；`WorldMapDelayedRequestCoordinator` 拥有同伴建队 UI 一次性票据，普通队列回执返回真实接受数。对应生命周期测试 32、完整 Intent 1175、三个修复回放、Debug/Release 双版本与 Bootstrap 六构建、四 DLL API/metadata 1060、Persistence/Identity、Bridge、J09 wiring、Phase8 readiness 与 source inventory 已通过。
+
+仍未归位：WorldDiplomacy 完整 queue/start/completion/commit；WorldMap 协议、受理、队列/事件及 governor 延迟请求。下方 `1c62c2c9` R100 段仅是历史目录归位记录，不再构成 J12 完成证明。J13 在这些责任和 J12d 最终门禁闭合前暂缓。
+
+## 历史目录归位记录（非当前完成结论）
 
 最终产品 `1c62c2c9` 将三个完整真实 owner 原样归位：
 
@@ -8,11 +14,11 @@
 
 三文件均 Git `R100`，根旧路径不存在、无转发 facade、无第二份状态。主动源码读取工具、Policy overlay、Bridge manifest、Persistence catalog 和 Phase8 inventory 均接新位置。类型全名、程序集、Campaign 注册、Harmony、public/internal 签名、JSON/SyncData/Saveable identity 未变。
 
-状态 **J12_OFFLINE_VERIFIED**。六构建、四 DLL 1060 metadata、Persistence 142/168/13/44、Diplomacy 94/295/453/1143、三渠道 25/91/184/71/34/32、Bridge 23、Phase8 73 与 419 锚点通过。大型 World/WorldMap 类仍是 cohesive domain owner；更细内部 partial 分片不是本轮 J12 完成条件。LIVE/SAVE/真实玩法和性能仍 `NOT-RUN`。
+该段旧状态 **J12_OFFLINE_VERIFIED 已撤销**。历史六构建、ABI/存档形状与规则测试仍可作未改范围的参考，但不能替代缺失的 domain owner/lifecycle 回放。LIVE/SAVE/真实玩法和性能仍 `NOT-RUN`。
 
 ## J12b1 Diplomacy Rules 已归位
 
-`0ac279fc` 将 `WorldDiplomacy{OfferCooldown,ThreatState,ResultSettlement,PolicyHistory}Rules.cs` 以 100% rename 归入 `src/modules/AF.Module.Diplomacy/Rules/`。`WorldDiplomacyBehavior` 的真实消费者、public/internal 类型、DTO/JSON、slot mutation 和 J08 transport 均未改变。PolicyHistory 94、ResultSettlement 453、Intent rule-focused 1143 与 Debug 双 API/Bootstrap 通过；完整 Intent runner 的既有 PermanentAlliance 注册断言仍单列失败，不算 J12b1 产品回归或 PASS。
+`0ac279fc` 将 `WorldDiplomacy{OfferCooldown,ThreatState,ResultSettlement,PolicyHistory}Rules.cs` 以 100% rename 归入 `src/modules/AF.Module.Diplomacy/Rules/`。`WorldDiplomacyBehavior` 的真实消费者、public/internal 类型、DTO/JSON、slot mutation 和 J08 transport 均未改变。PolicyHistory 94、ResultSettlement 453、Intent rule-focused 1143 与 Debug 双 API/Bootstrap 通过；当时完整 Intent runner 的 PermanentAlliance 注册断言仍读取旧路径；本轮已改读真实 `StartupPatchComposition`，完整 1175 断言通过。
 
 此处记录 b1 当时的阶段状态：四 Rules 已归位、其余 J12b/J12c 尚待施工；后续完成结果以上方 J12 总结为准。该阶段代码地图为 416 锚点绑定 `0ac279fc`，LIVE/SAVE/真实外交未运行。
 
