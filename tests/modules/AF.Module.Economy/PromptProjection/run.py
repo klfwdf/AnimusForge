@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 PROJECTION = ROOT / "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs"
 TRUST_POLICY = ROOT / "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs"
+TRUST_STATE = ROOT / "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs"
 DEBT_LEDGER = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs"
 
 
@@ -27,7 +28,8 @@ def verify_live_wiring() -> None:
     declaration = load_declaration()
     reward = (ROOT / "RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
     debt_ledger = DEBT_LEDGER.read_text(encoding="utf-8-sig")
-    production = reward + "\n" + debt_ledger
+    trust_state = TRUST_STATE.read_text(encoding="utf-8-sig")
+    production = reward + "\n" + debt_ledger + "\n" + trust_state
     expected = {
         "public string BuildTrustStatusInlineForAI(": ("EconomyPromptProjection.BuildTrustStatus(", 2),
         "public string BuildTrustPromptForAI(": ("EconomyPromptProjection.BuildTrustPrompt(", 1),
@@ -50,7 +52,7 @@ def verify_live_wiring() -> None:
         "public static string GetTrustActionGuideText(": "EconomyTrustPolicy.GetActionGuideText(",
     }
     for marker, call in trust_calls.items():
-        assert declaration(reward, marker).count(call) == 1, f"Trust policy wiring drifted: {marker}"
+        assert declaration(production, marker).count(call) == 1, f"Trust policy wiring drifted: {marker}"
     print("PASS production capture -> detached projection wiring")
 
 
