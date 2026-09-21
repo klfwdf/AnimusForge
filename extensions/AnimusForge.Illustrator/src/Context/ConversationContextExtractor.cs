@@ -30,7 +30,7 @@ namespace AnimusForge.Illustrator.Context
         public string InterlocutorBodyProperties { get; set; } = string.Empty;
         internal ConversationNpcAgeSnapshot InterlocutorAgeSnapshot { get; set; }
 
-        /// <summary>台词与近三轮对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
+        /// <summary>台词与最近一轮对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
         public string BuildDialogueBlock()
         {
             var sb = new StringBuilder();
@@ -251,7 +251,7 @@ namespace AnimusForge.Illustrator.Context
             {
             }
             context.DialogueSentence = CleanText(sentence);
-            context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), maxRounds: 3);
+            context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), maxRounds: 1);
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(settlement);
             context.EnvironmentProfile.UseConversationTimeEvidence();
             try
@@ -406,7 +406,7 @@ namespace AnimusForge.Illustrator.Context
                 (string.IsNullOrWhiteSpace(siegeFacts) ? string.Empty : siegeFacts + "。\n") +
                 $"地点为【{locName}】。";
             context.SceneDirective =
-                "依据最近三轮对话推导能表现双方情绪与关系的瞬间，镜头和姿势由导演设计，保留已确认的骑乘状态与空间关系。" +
+                "依据最近一轮对话推导能表现双方情绪与关系的瞬间，镜头和姿势由导演设计，保留已确认的骑乘状态与空间关系。" +
                 "若实景或现场记录显示双方分处城墙上下，须保留高低差，不能改成平地会面。\n" +
                 $"【动作线索（启发用，不作为硬事实）】{basePose}。";
 

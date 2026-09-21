@@ -417,7 +417,7 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyBool("每次对话自动生成全屏场景插画", HintText = "开启后，每次新会话只自动生成一张场景插画，并在生成完成后覆盖全屏显示；同一会话不会因台词切换重复付费。生成期间显示加载遮罩，离开会话或关闭全屏会取消未完成请求。", Order = 4, RequireRestart = false)]
+        [SettingPropertyBool("每次对话自动生成全屏场景插画", HintText = "开启后，新会话首次进入时自动生成一张，之后每次 NPC 回复再自动重绘一张；后续请求复用首次采集的全景、人物参考和稳定硬事实，只更新最近一轮对话与动作。生成期间显示加载遮罩，离开会话或关闭全屏会取消未完成请求。", Order = 4, RequireRestart = false)]
         [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
         public bool AutoGenerateConversationIllustrationFullscreen { get; set; } = false;
 

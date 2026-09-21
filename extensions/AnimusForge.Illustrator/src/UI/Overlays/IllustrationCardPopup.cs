@@ -33,6 +33,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private string _activeSpriteName;
         private bool _closed;
         private int _generationCount;
+        private bool _autoRedrawPending;
 
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
@@ -359,7 +360,19 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     _dataSource.SetReady($"绘制失败: {completion.Result?.ErrorMessage ?? "未能保存图像"}");
                 }
-            }, error => _dataSource.SetReady($"生成异常: {error}"));
+                QueuePendingAutoRedraw();
+            }, error =>
+            {
+                _dataSource.SetReady($"生成异常: {error}");
+                QueuePendingAutoRedraw();
+            });
+        }
+
+        private void QueuePendingAutoRedraw()
+        {
+            if (!_autoFullscreen || !_autoRedrawPending || _closed) return;
+            _autoRedrawPending = false;
+            IllustratorRuntime.Post(AutoRedrawActiveConversation);
         }
 
         private static string GenerateDiversePoseDirective()
@@ -388,7 +401,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)
         {
             // 构图全权交给导演：只给自由创作授权 + 双人交互事实约束，不再提供预写取景句式。
-            return "【构图自由创作】：镜头景别、机位角度、前景运用与双方瞬间姿态由你依据现场事实与近三轮对话氛围全权自由创作，" +
+            return "【构图自由创作】：镜头景别、机位角度、前景运用与双方瞬间姿态由你依据现场事实与最近一轮对话氛围全权自由创作，" +
                 "不拘泥任何固定构图模板。【双人交互事实】：两人处于面对面真实交谈情境中。";
         }
 
@@ -512,12 +525,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 session = _conversationSession != null && string.Equals(_conversationSession.SessionKey, conversationSessionKey, StringComparison.Ordinal)
                     ? _conversationSession : null;
             }
-            // 台词与近三轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
+            // 台词与最近一轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
             _generationCount++;
             string variation = GenerateConversationSceneVariation(convContext);
             variation += "\n" + IllustrationDirection.ReadEventActionHistory(_scope.CampaignKey, key, _category);
             if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
-            var promptPlan = new IllustrationPromptPlan("最近三轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDirectorOnlyFacts());
+            var promptPlan = new IllustrationPromptPlan("最近一轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDirectorOnlyFacts());
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvScene host='{convContext.EnvironmentProfile?.HostSceneDescription ?? ""}' loc='{convContext.EnvironmentProfile?.SpecificLocation ?? ""}' scene='{convContext.EnvironmentProfile?.RealSceneName ?? ""}'");
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvLight sceneTime={convContext.EnvironmentProfile?.HasSceneTime == true}, time='{convContext.EnvironmentProfile?.TimeOfDay ?? ""}'");
             string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
@@ -739,6 +752,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (_closed) return;
             _closed = true;
+            _autoRedrawPending = false;
             try
             {
                 _scope?.Close();
@@ -764,6 +778,25 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (_activeInstance != null && string.Equals(_activeInstance._category, "conversation", StringComparison.Ordinal))
                 _activeInstance.Close();
+        }
+
+        internal static void AutoRedrawActiveConversation()
+        {
+            var instance = _activeInstance;
+            if (instance == null || instance._closed || !instance._autoFullscreen ||
+                !string.Equals(instance._category, "conversation", StringComparison.Ordinal)) return;
+            if (instance._dataSource.IsLoading)
+            {
+                instance._autoRedrawPending = true;
+                return;
+            }
+
+            ConversationVisualContext context = ConversationContextExtractor.ExtractFromCurrentConversation();
+            if (context == null) return;
+            var emblems = new List<EmblemSpec>();
+            AddEmblemSpec(emblems, context.InterlocutorHero, "对话对方");
+            AddEmblemSpec(emblems, context.MainHero, "玩家");
+            instance.ExecuteConversationGeneration(context, null, emblems);
         }
 
         internal static void ClearConversationSessionCache()
