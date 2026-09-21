@@ -26,7 +26,7 @@ namespace AnimusForge.Illustrator.UI.Patches
         private const string ButtonId = "AnimusForgeConversationIllustrateButton";
         private static readonly List<WeakReference<ButtonWidget>> InjectedButtons = new List<WeakReference<ButtonWidget>>();
         private static bool _patched;
-        private static bool _shoutResponsePatchInstalled;
+        private static bool _nativeConversationReplyPatchInstalled;
         private static TaleWorlds.CampaignSystem.Conversation.ConversationManager _conversationManagerSubscription;
         private static string _lastAutoRedrawSentence = string.Empty;
 
@@ -43,7 +43,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     activeHarmony.Patch(loadMovie, postfix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(LoadMoviePostfix)));
                 }
-                TryPatchHostNpcSpeech(activeHarmony);
+                TryPatchHostNativeConversationReply(activeHarmony);
             }
             catch (Exception ex)
             {
@@ -236,21 +236,47 @@ namespace AnimusForge.Illustrator.UI.Patches
             IllustrationCardPopup.ShowForConversation(convContext);
         }
 
-        private static void TryPatchHostNpcSpeech(Harmony harmony)
+        private static void TryPatchHostNativeConversationReply(Harmony harmony)
         {
             try
             {
                 Type shoutType = AccessTools.TypeByName("AnimusForge.ShoutBehavior");
-                MethodInfo speechMethod = AccessTools.Method(shoutType, "ShowNpcSpeechOutput");
-                if (speechMethod == null) return;
-                harmony.Patch(speechMethod, postfix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(ShowNpcSpeechOutputPostfix)));
-                _shoutResponsePatchInstalled = true;
-                Debug.Print("[Illustrator] Auto conversation redraw hook attached to ShoutBehavior.ShowNpcSpeechOutput.");
+                if (shoutType == null) return;
+                MethodInfo textMethod = AccessTools.Method(shoutType, "SubmitNativeConversationTextForExternalAsync",
+                    new[] { typeof(string), typeof(Action<string>), typeof(string), typeof(Action<string>), typeof(Action<string, Hero, CharacterObject>) });
+                if (textMethod != null)
+                {
+                    harmony.Patch(textMethod, prefix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(WrapNativeConversationReplyCallbackPrefix)));
+                    _nativeConversationReplyPatchInstalled = true;
+                }
+                MethodInfo openingMethod = AccessTools.Method(shoutType, "SubmitNativeConversationNpcInitiatedOpeningForExternalAsync",
+                    new[] { typeof(Action<string>), typeof(string), typeof(Action<string>), typeof(Action<string, Hero, CharacterObject>) });
+                if (openingMethod != null)
+                {
+                    harmony.Patch(openingMethod, prefix: new HarmonyMethod(typeof(ConversationIllustrationPatch), nameof(WrapNativeConversationReplyCallbackPrefix)));
+                    _nativeConversationReplyPatchInstalled = true;
+                }
+                if (_nativeConversationReplyPatchInstalled)
+                    Debug.Print("[Illustrator] Auto conversation redraw hook attached to native conversation main-reply callback.");
             }
             catch (Exception ex)
             {
-                Debug.Print("[Illustrator] Failed to attach ShoutBehavior response hook: " + ex.GetType().Name);
+                Debug.Print("[Illustrator] Failed to attach native conversation reply hook: " + ex.GetType().Name + ": " + ex.Message);
             }
+        }
+
+        private static void WrapNativeConversationReplyCallbackPrefix(ref Action<string, Hero, CharacterObject> onMainReplyReady)
+        {
+            Action<string, Hero, CharacterObject> original = onMainReplyReady;
+            onMainReplyReady = (content, targetHero, targetCharacter) =>
+            {
+                original?.Invoke(content, targetHero, targetCharacter);
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    Debug.Print("[Illustrator] Native conversation main reply received; queueing automatic redraw.");
+                    IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
+                }
+            };
         }
 
         internal static void OnAgentJoinedConversation(IAgent agent)
@@ -287,7 +313,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         private static void OnConversationContinued()
         {
-            if (_shoutResponsePatchInstalled) return;
+            if (_nativeConversationReplyPatchInstalled) return;
             if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true) return;
             string sentence = string.Empty;
             try { sentence = Campaign.Current?.ConversationManager?.CurrentSentenceText ?? string.Empty; } catch { }
@@ -297,11 +323,5 @@ namespace AnimusForge.Illustrator.UI.Patches
             IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
         }
 
-        private static void ShowNpcSpeechOutputPostfix(string content)
-        {
-            if (string.IsNullOrWhiteSpace(content) || IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true)
-                return;
-            IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
-        }
     }
 }
