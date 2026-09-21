@@ -1,4 +1,4 @@
-# 当前范围：J12a Economy Trust / Debt 归一已接线（2026-09-21）
+# 当前范围：J12a Economy 离线闭合（2026-09-21）
 
 产品 `3f2c454e` 将既有 public Economy contract/planner/main-thread port 原样归入 `src/AF.Contracts/Compatibility/Economy` 与 `src/modules/AF.Module.Economy/{Planning,Execution}`，并以 `Projection/EconomyPromptProjection.cs` 承担 Debt/Trust detached 文本投影。`RewardSystemBehavior.cs:5108,5119,18847,18878` 仍在主线程读取/规范化/估值后传 string/int-only 输入；真实 Prompt consumers 不变。
 
@@ -6,7 +6,9 @@
 
 `54b55aa3` 新增 `Trust/EconomyTrustPolicy.cs` 与 `Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs`：前者承担 clamp、十级映射和 AI 语义文本；后者承担旧账迁移、line clamp、note、aggregate/date 重建和幂等归一。`3d2b636e` 再将 due/reminder/finite+unlimited penalty 算法归 `EconomyDebtSchedulePolicy`，并把 pending quest 状态及 10 个 Quest lifecycle 声明逐声明原样迁入 `DebtPromiseLifecycle`。`616ba892` 将嵌套 DTO/schema、运行账本、提示/导入导出、创建/结清共 35 个声明归 `DebtLedger`，真实 `DailyTickEvent` handler 归 `DailyEconomyLifecycle`，未留根转发壳。`_debtStorage` 与事件注册仍留 Campaign host；嵌套类型全名、JSON/SyncData/save identity 未改名。
 
-状态仍 **J12a_IN_PROGRESS**：Reward/Loan capture、trust progressive state application 与 legacy mixed tags 未闭合。Debug 双 API + Bootstrap、Projection/Trust 15+2、Debt 48+2、Quest/ledger/daily exact migration、Persistence/Profile、Phase8 73 与 410 锚点地图已过；Release/LIVE/SAVE/真实经济仍 NOT-RUN。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j12a-economy-start-20260921)和[J12计划](../plans/j12-domain-owners-plan.md)。
+`fa26d430` 将 progressive carry、个人/公共/定居点/商人 state apply 及 battle/quest event 75 个声明原样归 `TrustState`，删除零调用 `ClampLong`。`7f2fffba` 将 Hero/merchant 完整授权候选、可见候选和 Prompt capture 8 个声明原样归 `Projection/InventoryPromptCapture`。mixed `ApplyRewardTags` 因仍有三渠道 5 个真实消费者保留；J09 typed Economy 及 delegated-raw 排除继续保证单次执行，待 J12b/J13 各域接走后再删除。
+
+状态 **J12a_OFFLINE_VERIFIED / J12b_NEXT**。Debug/Release 双 API + Bootstrap、四实现 DLL 1060 metadata、Reward 11、Projection/Trust 15+2、Debt 48+2、HeroAsset 67+5、J09 wiring 25、Persistence/Profile、Phase8 73 与 412 锚点地图已过；LIVE/SAVE/真实经济仍 NOT-RUN。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j12a-economy-start-20260921)和[J12计划](../plans/j12-domain-owners-plan.md)。
 
 ## 以下为上一阶段 J11 范围
 

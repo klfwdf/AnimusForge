@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "616ba892b12dbca308c5c53232a3272dcfdf9079",
+  "sourceRevision": "7f2fffba98bbf77e19397f77ac8fb8b489fe1b7d",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4513,6 +4513,28 @@
       "status": "wired-j12a-in-progress",
       "note": "registered daily Economy maintenance and debt penalty Campaign apply owner",
       "fileSha256": "7c4a8fc0b77805ae8c57e0031f831ba583499fd9439992c70d8e4daba64730df"
+    },
+    {
+      "id": "economy.trust.state",
+      "path": "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs",
+      "start": 88,
+      "end": 88,
+      "symbol": "private int ApplyProgressiveTrustDeltaUnits(Dictionary<string, int> carryStore, string trustKey, int currentTrust, int rawDelta, out int appliedUnits)",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "progressive carry, personal/public/settlement/merchant state apply and task/battle event owner",
+      "fileSha256": "6b9d7e1191de1a1f9e4b4737944834e7e8c6a0aa33eeecd916aacf2af9e0bfdc"
+    },
+    {
+      "id": "economy.reward.prompt-capture",
+      "path": "src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs",
+      "start": 197,
+      "end": 197,
+      "symbol": "public string BuildFilteredInventorySummaryForAI(Hero hero, MentionedWorldEntities mentions, int maxItems = 0, bool includeGuidePrice = true, bool includePrivateBattleEquipment = false)",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "Hero/merchant inventory authorization snapshot and prompt display capture owner",
+      "fileSha256": "d7629d0b8400d770e3e9f0402fb814e3acdbb2e0c871089f4b80825bd5431cb5"
     }
   ]
 }
