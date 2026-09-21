@@ -81,7 +81,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private int _hasPendingFollowSiegeRefresh;
 	private int _hasGovernorExpeditions;
 	private int _hasForeignClanGuests;
-	private bool _isOpeningCreateCompanionPartyScreen;
+	private readonly WorldMapDelayedRequestCoordinator _createCompanionPartyScreenRequests = new WorldMapDelayedRequestCoordinator();
 	private double _nextDetachedPartyPruneDay;
 	private double _nextForeignClanGuestReconcileDay;
 
@@ -1073,7 +1073,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				result.AddedCommandCount = accepted ? expeditionCommands.Count : 0;
 				return accepted;
 			}
-			if (!behavior.TryAppendQueue(targetHero, commands, out string fact, out string message))
+			if (!behavior.TryAppendQueue(targetHero, commands, out string fact, out string message, out int acceptedCommandCount))
 			{
 				if (!string.IsNullOrWhiteSpace(message))
 				{
@@ -1087,7 +1087,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			notifications.Add(message);
 			result.Handled = true;
-			result.AddedCommandCount = commands.Count;
+			result.AddedCommandCount = acceptedCommandCount;
 			return true;
 		}
 		catch (Exception ex)
@@ -1213,10 +1213,11 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private bool TryAppendQueue(Hero hero, List<PartyCommandEntry> commands, out string fact, out string message)
+	private bool TryAppendQueue(Hero hero, List<PartyCommandEntry> commands, out string fact, out string message, out int acceptedCommandCount)
 	{
 		fact = "";
 		message = "";
+		acceptedCommandCount = 0;
 		if (hero == null || hero == Hero.MainHero || string.IsNullOrWhiteSpace(hero.StringId))
 		{
 			message = "大地图命令失败：不能这样指挥玩家本人的部队。";
@@ -1281,6 +1282,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				state.Commands.AddRange(safeCommands);
 			}
 		}
+		acceptedCommandCount = safeCommands.Count;
 		if (startNew)
 		{
 			LeaveArmyIfNeeded(party);
@@ -1847,7 +1849,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				return;
 			}
 		}
-		if (_isOpeningCreateCompanionPartyScreen || !CanOpenCreateCompanionPartyScreenNow(out _))
+		if (_createCompanionPartyScreenRequests.HasActiveRequest || !CanOpenCreateCompanionPartyScreenNow(out _))
 		{
 			return;
 		}
@@ -7663,7 +7665,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			}
 			TransferGovernorTroopsWithVerification(garrison, createdParty, transferPlan, transferRecords);
 			RegisterGovernorExpedition(hero, createdParty, origin, hero.Clan);
-			if (!TryAppendQueue(hero, safeCommands, out string fact, out string queueMessage))
+			if (!TryAppendQueue(hero, safeCommands, out string fact, out string queueMessage, out _))
 			{
 				throw new InvalidOperationException("建队后无法接续命令：" + queueMessage);
 			}
@@ -9372,13 +9374,21 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private bool OpenCreateCompanionPartyScreen(Hero hero, List<PartyCommandEntry> followUpCommands, out string message)
 	{
 		message = "";
+		if (!_createCompanionPartyScreenRequests.TryBegin(out long requestTicket))
+		{
+			message = "当前已有同伴部队创建界面等待完成。";
+			return false;
+		}
 		try
 		{
 			List<PartyCommandEntry> safeFollowUpCommands = SanitizeFollowUpCommands(followUpCommands);
-			_isOpeningCreateCompanionPartyScreen = true;
 			PartyScreenClosedDelegate onClosed = (leftOwnerParty, leftMemberRoster, leftPrisonRoster, rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel) =>
 			{
-				_isOpeningCreateCompanionPartyScreen = false;
+				if (!_createCompanionPartyScreenRequests.TryClaimCompletion(requestTicket))
+				{
+					Log("ignored stale or duplicate create companion party callback hero=" + (hero?.StringId ?? "") + " ticket=" + requestTicket);
+					return;
+				}
 				OnCreateCompanionPartyScreenClosed(hero.StringId, safeFollowUpCommands, leftMemberRoster, leftPrisonRoster, rightOwnerParty, fromCancel);
 			};
 			if (hero.Clan != null)
@@ -9394,7 +9404,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			_isOpeningCreateCompanionPartyScreen = false;
+			_createCompanionPartyScreenRequests.TryCancelOpen(requestTicket);
 			message = "打开原版创建同伴部队界面失败：" + ex.Message;
 			Log("open create companion party screen failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
 			return false;
@@ -9478,7 +9488,7 @@ public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			LogFact(partyHero, GetHeroName(partyHero) + "已经创建同伴部队，并接收了" + movedMembers + "名士兵" + (movedPrisoners > 0 ? ("、" + movedPrisoners + "名俘虏") : "") + "。");
 			if (followUpCommands != null && followUpCommands.Count > 0)
 			{
-				if (TryAppendQueue(partyHero, followUpCommands, out string fact, out string queueMessage))
+				if (TryAppendQueue(partyHero, followUpCommands, out string fact, out string queueMessage, out _))
 				{
 					if (!string.IsNullOrWhiteSpace(fact))
 					{
