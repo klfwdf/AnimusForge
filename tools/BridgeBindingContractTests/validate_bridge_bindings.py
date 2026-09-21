@@ -33,7 +33,7 @@ EXPECTED_WIRED = {
     "conversation-courier": ("CourierDeliveryBehavior.cs", "IsCourierBridgeEnabled"),
     "memory-social-reports": ("PlayerNotorietyBehavior.ConversationOutcomes.cs", "IsSocialReportsBridgeEnabled"),
     "gateway-knowledge-profile": ("Refactor/Adapters/LegacyKnowledgeRagGateway.cs", "GenerateAsync"),
-    "policy-world-diplomacy": ("WorldDiplomacyBehavior.cs", "NotifyExternalDiplomacyResolved"),
+    "policy-world-diplomacy": ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs", "NotifyExternalDiplomacyResolved"),
     "ui-runtime-integration": ("SceneActionsIntegrationBoundary.cs", "InitializeRuntime"),
     "host-runtime": ("CampaignTickDiagnosticsPatch.cs", "EnsurePatched"),
     "scene-duel": ("DuelBehavior.cs", "IsSceneDuelBridgeEnabled"),

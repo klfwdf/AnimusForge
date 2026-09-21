@@ -432,7 +432,7 @@
       "owner": "Policy.WorldDiplomacy",
       "entryPaths": [
         "PolicySystem/Core/CustomPolicyBehavior.cs",
-        "WorldDiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
         "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"
       ],
       "symbols": [
@@ -442,7 +442,7 @@
           "kind": "type"
         },
         {
-          "path": "WorldDiplomacyBehavior.cs",
+          "path": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
           "symbol": "NotifyExternalDiplomacyResolved",
           "kind": "method"
         },
@@ -470,7 +470,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "WorldDiplomacyBehavior.cs",
+        "entryPath": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
         "symbol": "NotifyExternalDiplomacyResolved",
         "frequency": "event",
         "notes": "The existing diplomacy-to-world notification is guarded at the event boundary; policy and native diplomacy remain independent owners."
