@@ -28,6 +28,8 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static bool _patched;
         private static bool _autoGenerationQueued;
         private static int _autoGenerationRetries;
+        private static TaleWorlds.CampaignSystem.Conversation.ConversationManager _conversationManagerSubscription;
+        private static string _lastAutoRedrawSentence = string.Empty;
 
         public static void EnsurePatched(Harmony harmony)
         {
@@ -238,6 +240,8 @@ namespace AnimusForge.Illustrator.UI.Patches
         {
             if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true || _autoGenerationQueued)
                 return;
+            AttachConversationContinuedHandler();
+            _lastAutoRedrawSentence = string.Empty;
             _autoGenerationQueued = true;
             _autoGenerationRetries = 0;
             IllustratorRuntime.Post(TryAutoGenerateConversationIllustration);
@@ -245,8 +249,10 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         internal static void OnConversationEnded(IEnumerable<CharacterObject> characters)
         {
+            DetachConversationContinuedHandler();
             _autoGenerationQueued = false;
             _autoGenerationRetries = 0;
+            _lastAutoRedrawSentence = string.Empty;
             IllustrationCardPopup.ClearConversationSessionCache();
             IllustratorRuntime.Post(IllustrationCardPopup.CloseActiveConversation);
         }
@@ -281,6 +287,33 @@ namespace AnimusForge.Illustrator.UI.Patches
             }
 
             IllustrationCardPopup.ShowForConversation(context, autoFullscreen: true, forceGenerate: true);
+        }
+
+        private static void AttachConversationContinuedHandler()
+        {
+            var manager = Campaign.Current?.ConversationManager;
+            if (manager == null || ReferenceEquals(manager, _conversationManagerSubscription)) return;
+            DetachConversationContinuedHandler();
+            _conversationManagerSubscription = manager;
+            manager.ConversationContinued += OnConversationContinued;
+        }
+
+        private static void DetachConversationContinuedHandler()
+        {
+            if (_conversationManagerSubscription == null) return;
+            _conversationManagerSubscription.ConversationContinued -= OnConversationContinued;
+            _conversationManagerSubscription = null;
+        }
+
+        private static void OnConversationContinued()
+        {
+            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true) return;
+            string sentence = string.Empty;
+            try { sentence = Campaign.Current?.ConversationManager?.CurrentSentenceText ?? string.Empty; } catch { }
+            sentence = sentence.Trim();
+            if (sentence.Length > 0 && string.Equals(sentence, _lastAutoRedrawSentence, StringComparison.Ordinal)) return;
+            _lastAutoRedrawSentence = sentence;
+            IllustratorRuntime.Post(IllustrationCardPopup.AutoRedrawActiveConversation);
         }
     }
 }
