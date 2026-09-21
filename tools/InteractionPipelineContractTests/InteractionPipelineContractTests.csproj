@@ -39,8 +39,8 @@
     <Compile Include="..\..\Refactor\Adapters\LegacyNativeConversationFacade.cs" Link="Adapters\LegacyNativeConversationFacade.cs" />
     <Compile Include="..\..\Refactor\Adapters\LegacyNativeConversationOptInRunner.cs" Link="Adapters\LegacyNativeConversationOptInRunner.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Execute\LegacyNativeActionPlanExecutor.cs" Link="Adapters\LegacyNativeActionPlanExecutor.cs" />
-    <Compile Include="..\..\Refactor\Adapters\LegacyEconomyRewardDebtAdapter.cs" Link="Adapters\LegacyEconomyRewardDebtAdapter.cs" />
-    <Compile Include="..\..\Refactor\Contracts\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Economy\Planning\LegacyEconomyRewardDebtAdapter.cs" Link="Adapters\LegacyEconomyRewardDebtAdapter.cs" />
+    <Compile Include="..\..\src\AF.Contracts\Compatibility\Economy\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\TtsContracts.cs" Link="Contracts\TtsContracts.cs" />
   </ItemGroup>
 </Project>

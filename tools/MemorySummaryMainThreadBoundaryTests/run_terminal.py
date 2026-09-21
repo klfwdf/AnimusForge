@@ -132,7 +132,7 @@ def main():
     if a.admission_only:
         files['Terminal.cs']=replace(files['Terminal.cs'],'  void TryEnqueueMemoryOverviewForMemoryId(string id,string name,List<CompressedMemoryBlock> blocks)=>TerminalEvent("overview-after:"+id);\n','')
     files['RecoveryLedger.cs']=read('src/modules/AF.Module.Memory/Recovery/InteractionMemoryRecoveryLedger.cs')
-    for name in ['Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Contracts/EconomyRewardDebtContracts.cs']:
+    for name in ['Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs']:
         files[Path(name).name]=read(name)
     for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs','MyBehavior.MemorySummaryPlanning.cs']:
         if (ROOT/extra).exists():files[Path(extra).name]=read(extra)
