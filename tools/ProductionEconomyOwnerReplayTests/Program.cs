@@ -72,33 +72,35 @@ AssertTrue(portType.IsAssignableFrom(merchantFactory.ReturnType), "merchant econ
 string heroSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs"));
 string partySource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs"));
 string merchantSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs"));
+string coordinatorSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs"));
 string ownerSource = File.ReadAllText(Path.Combine(projectRoot, "RewardSystemBehavior.cs"));
 string authorizationSource = File.ReadAllText(Path.Combine(projectRoot, "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs"));
 
 AssertOwnerReplayUncertaintyContract(
     heroSource,
     "private EconomyRewardDebtReplayResult ReplayEconomyRewardDebtPlanOnMainThread(",
+    "private EconomyReplayStepOutcome ExecuteHeroEconomyStep(",
     "TryReplayAction(",
     "confirmedFacts.Add(new FactRecord(",
-    "confirmedFacts",
     "economy.unknown_after_start",
     "Hero");
 AssertOwnerReplayUncertaintyContract(
     partySource,
     "private EconomyRewardDebtReplayResult ReplayPartyEconomyPlanOnMainThread(",
+    "private EconomyReplayStepOutcome ExecutePartyEconomyStep(",
     "TryReplayPartyAction(",
     "facts.Add(new FactRecord(",
-    "facts",
     "economy.party_unknown_after_start",
     "Party");
 AssertOwnerReplayUncertaintyContract(
     merchantSource,
     "private EconomyRewardDebtReplayResult ReplayMerchantEconomyPlanOnMainThread(",
+    "private EconomyReplayStepOutcome ExecuteMerchantEconomyStep(",
     "TryReplayMerchantAction(",
     "facts.Add(new FactRecord(",
-    "facts",
     "economy.merchant_unknown_after_start",
     "Merchant");
+AssertBatchCoordinatorContract(coordinatorSource);
 
 string safeLog = ExtractMethod(heroSource, "private static void LogEconomyReplayFailureSafe(");
 string safeLogCatch = ExtractCatchAfter(safeLog, "Logger.Log(");
@@ -169,50 +171,64 @@ AssertTrue(heroItemCore.Contains("mutationObservation", StringComparison.Ordinal
     && settlementCore.Contains("mutationObservation", StringComparison.Ordinal),
     "replay-aware helper core dropped the structured mutation observation");
 
-Console.WriteLine("PASS productionEconomyOwnerReplay factoryFailClosed=1 partyFactoryFailClosed=1 merchantFactoryFailClosed=1 ownerUnknownAfterStart=3 swallowedMutationUnknown=7 replayAwareHelpers=3 propagationChains=4 factFailureIsolated=3 logFailureIsolated=1 productionType=1 noCampaignMutation=1");
+Console.WriteLine("PASS productionEconomyOwnerReplay factoryFailClosed=1 partyFactoryFailClosed=1 merchantFactoryFailClosed=1 batchOwner=1 ownerUnknownAfterStart=3 swallowedMutationUnknown=7 replayAwareHelpers=3 propagationChains=4 factFailureIsolated=3 logFailureIsolated=1 productionType=1 noCampaignMutation=1");
 
 static void AssertOwnerReplayUncertaintyContract(
     string source,
     string replaySignature,
+    string stepSignature,
     string actionCallMarker,
     string factAddMarker,
-    string factsVariable,
     string unknownErrorCode,
     string ownerName)
 {
     string replay = ExtractMethod(source, replaySignature);
-    string actionCatch = ExtractCatchAfter(replay, actionCallMarker);
+    string step = ExtractMethod(source, stepSignature);
+    string actionCatch = ExtractCatchAfter(step, actionCallMarker);
     string factCatch = ExtractCatchAfter(replay, factAddMarker);
-    string unknownReturn = ExtractBlockAfter(replay, "if (unknownAfterStart)");
-    string observedUnknown = ExtractBlockAfter(replay, "if (mutationObservation.UnknownAfterStart)");
+    string observedUnknown = ExtractBlockAfter(step, "if (mutationObservation.UnknownAfterStart)");
 
-    int actionCall = replay.IndexOf(actionCallMarker, StringComparison.Ordinal);
-    int appliedIncrement = replay.IndexOf("appliedCount++;", actionCall, StringComparison.Ordinal);
-    int factAdd = replay.IndexOf(factAddMarker, appliedIncrement, StringComparison.Ordinal);
-    int unknownBranch = replay.IndexOf("if (unknownAfterStart)", factAdd, StringComparison.Ordinal);
-
-    AssertTrue(actionCatch.Contains("unknownAfterStart = true;", StringComparison.Ordinal)
+    AssertTrue(replay.Contains("EconomyReplayBatchCoordinator.Execute(", StringComparison.Ordinal)
+        && replay.Contains("EconomyReplayBatchCoordinator.Complete(", StringComparison.Ordinal)
+        && replay.Contains("foreach (EconomyReplayAppliedFact fact in outcome.Facts)", StringComparison.Ordinal)
+        && replay.Contains(factAddMarker, StringComparison.Ordinal)
+        && replay.Contains(unknownErrorCode, StringComparison.Ordinal),
+        ownerName + " replay must use the shared batch owner and preserve domain terminal codes");
+    AssertTrue(actionCatch.Contains("EconomyReplayStepOutcome.Unknown(", StringComparison.Ordinal)
         && actionCatch.Contains("LogEconomyReplayFailureSafe(", StringComparison.Ordinal)
-        && actionCatch.Contains("break;", StringComparison.Ordinal),
-        ownerName + " action exceptions must become unknown-after-start and stop later actions");
-    AssertTrue(appliedIncrement > actionCall && factAdd > appliedIncrement && unknownBranch > factAdd,
-        ownerName + " must retain the known applied count before optional fact materialization");
-    AssertTrue(unknownReturn.Contains("EconomyRewardDebtReplayStatus.UnknownAfterStart", StringComparison.Ordinal)
-        && unknownReturn.Contains("appliedCount,", StringComparison.Ordinal)
-        && unknownReturn.Contains(factsVariable + ",", StringComparison.Ordinal)
-        && unknownReturn.Contains(unknownErrorCode, StringComparison.Ordinal),
-        ownerName + " unknown result must preserve prior count and confirmed facts");
+        && !actionCatch.Contains("return false", StringComparison.Ordinal),
+        ownerName + " action exceptions must become terminal unknown");
     AssertTrue(factCatch.Contains("LogEconomyReplayFailureSafe(", StringComparison.Ordinal)
-        && !factCatch.Contains("unknownAfterStart = true;", StringComparison.Ordinal)
-        && !factCatch.Contains("break;", StringComparison.Ordinal)
-        && !factCatch.Contains("return ", StringComparison.Ordinal)
-        && replay.Contains("EconomyMutationObservation mutationObservation", StringComparison.Ordinal)
-        && CountOccurrences(replay, "unknownAfterStart = true;") == 2
-        && !replay.Contains("Logger.Log(", StringComparison.Ordinal),
+        && !factCatch.Contains("EconomyReplayStepOutcome.Unknown", StringComparison.Ordinal)
+        && !factCatch.Contains("throw", StringComparison.Ordinal),
         ownerName + " fact/diagnostic failures must not be reported as unknown gameplay effects");
-    AssertTrue(observedUnknown.Contains("unknownAfterStart = true;", StringComparison.Ordinal)
-        && observedUnknown.Contains("break;", StringComparison.Ordinal),
+    AssertTrue(observedUnknown.Contains("EconomyReplayStepOutcome.Unknown(", StringComparison.Ordinal)
+        && observedUnknown.Contains("mutationObservation.ErrorCode", StringComparison.Ordinal),
         ownerName + " swallowed mutation uncertainty must stop later actions");
+    AssertTrue(step.Contains("EconomyReplayStepOutcome.Applied(factText)", StringComparison.Ordinal)
+        && step.Contains("EconomyReplayStepOutcome.Rejected()", StringComparison.Ordinal),
+        ownerName + " step must distinguish applied and rejected outcomes");
+}
+
+static void AssertBatchCoordinatorContract(string source)
+{
+    string execute = ExtractMethod(source, "internal static EconomyReplayBatchOutcome Execute(");
+    string complete = ExtractMethod(source, "internal static EconomyRewardDebtReplayResult Complete(");
+    string unknown = ExtractBlockAfter(execute,
+        "if (step == null || step.State == EconomyReplayStepState.UnknownAfterStart)");
+    AssertTrue(execute.Contains("foreach (EconomyRewardDebtAction action", StringComparison.Ordinal)
+        && execute.Contains("failedCount++;", StringComparison.Ordinal)
+        && execute.Contains("appliedCount++;", StringComparison.Ordinal)
+        && execute.Contains("facts.Add(new EconomyReplayAppliedFact(action, step.FactText))", StringComparison.Ordinal),
+        "batch coordinator must own null/reject/apply counting and fact identity");
+    AssertTrue(unknown.Contains("unknownAfterStart = true;", StringComparison.Ordinal)
+        && unknown.Contains("break;", StringComparison.Ordinal),
+        "batch coordinator must stop after an unknown owner outcome");
+    AssertTrue(complete.Contains("EconomyRewardDebtReplayStatus.UnknownAfterStart", StringComparison.Ordinal)
+        && complete.Contains("outcome.AppliedCount", StringComparison.Ordinal)
+        && complete.Contains("EconomyRewardDebtReplayStatus.PartiallyApplied", StringComparison.Ordinal)
+        && complete.Contains("EconomyRewardDebtReplayStatus.Applied", StringComparison.Ordinal),
+        "batch coordinator must retain applied count and distinguish unknown/partial/applied");
 }
 
 static string ExtractMethod(string source, string signature)
