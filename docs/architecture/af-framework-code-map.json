@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "e541697c6208ed4355c705295f8b258f99d85c30",
+  "sourceRevision": "f6c95ac37b7bdc21392c14627f7e529437465a57",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4227,6 +4227,94 @@
       "status": "wired-j10-candidate",
       "note": "public compatibility detail lookup",
       "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+    },
+    {
+      "id": "courier.prompt.messages.reply",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private static List<object> BuildCourierReplyMessages(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "Courier reply message owner; production request builder consumes the same partial method",
+      "fileSha256": "9bcc5f68aefe3070e71ab38ea4d812961f0a8dcad07f05180f9115cbb03e45ff"
+    },
+    {
+      "id": "courier.prompt.messages.fact",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs",
+      "start": 444,
+      "end": 444,
+      "symbol": "private static string BuildDeliveryFactText(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "delivery fact text remains a pure message/fact formatter",
+      "fileSha256": "9bcc5f68aefe3070e71ab38ea4d812961f0a8dcad07f05180f9115cbb03e45ff"
+    },
+    {
+      "id": "courier.commit.domain",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private void CommitGeneratedReplyActionsAtRecipientCore(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "arrival-only domain effects and single history fan-out after DeliveryApplied",
+      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+    },
+    {
+      "id": "courier.commit.executor",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+      "start": 167,
+      "end": 167,
+      "symbol": "private InteractionStatus ExecuteCourierActionPlanForExternal(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "request-bound detached action executor revalidates Courier session and target",
+      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+    },
+    {
+      "id": "courier.commit.economy-gate",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+      "start": 215,
+      "end": 215,
+      "symbol": "private InteractionStatus GateCourierEconomyActionPlanForExternal(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "typed economy gate and one-shot reservation; domain execution stays with Economy owner",
+      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+    },
+    {
+      "id": "courier.commit.history",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+      "start": 289,
+      "end": 289,
+      "symbol": "private void PersistCourierReplyToHistories(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "single Courier reply history/AFEF/notoriety fan-out after successful arrival commit",
+      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+    },
+    {
+      "id": "courier.wait.pause",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs",
+      "start": 73,
+      "end": 73,
+      "symbol": "private void BeginCourierReplyWaitPause(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "captures previous time mode/lock once before pausing for reply generation",
+      "fileSha256": "27b610502d0598930c705b71794b250cd2d0cdeb594a152df13af7e49cdcc62c"
+    },
+    {
+      "id": "courier.wait.release",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs",
+      "start": 102,
+      "end": 102,
+      "symbol": "private void EndCourierReplyWaitPause(",
+      "match": "contains",
+      "status": "wired-j10-offline-verified",
+      "note": "releases popup/time lock only after no active Courier reply wait remains",
+      "fileSha256": "27b610502d0598930c705b71794b250cd2d0cdeb594a152df13af7e49cdcc62c"
     }
   ]
 }
