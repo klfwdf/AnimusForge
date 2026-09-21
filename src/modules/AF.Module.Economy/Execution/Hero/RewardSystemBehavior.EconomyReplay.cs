@@ -58,7 +58,7 @@ public partial class RewardSystemBehavior
             && string.Equals(subject.StringId ?? string.Empty, subjectId, StringComparison.OrdinalIgnoreCase);
     }
 
-    private EconomyRewardDebtReplayResult ReplayEconomyRewardDebtPlanOnMainThread(
+        private EconomyRewardDebtReplayResult ReplayEconomyRewardDebtPlanOnMainThread(
         EconomyRewardDebtReplayPlan plan,
         GameInteractionSnapshot snapshot)
     {
@@ -69,90 +69,67 @@ public partial class RewardSystemBehavior
             return ReplayFailure("economy.giver_or_receiver_missing");
         }
 
+        EconomyReplayBatchOutcome outcome = EconomyReplayBatchCoordinator.Execute(
+            plan?.Actions,
+            action => ExecuteHeroEconomyStep(action, giver, receiver),
+            (action, exception) => LogEconomyReplayFailureSafe(
+                "[RefactorEconomy] action failed kind=" + action.Kind + " error=" + exception.Message));
         List<FactRecord> confirmedFacts = new List<FactRecord>();
-        int appliedCount = 0;
-        int failedCount = 0;
-        bool unknownAfterStart = false;
-        foreach (EconomyRewardDebtAction action in plan.Actions ?? Array.Empty<EconomyRewardDebtAction>())
+        foreach (EconomyReplayAppliedFact fact in outcome.Facts)
         {
-            if (action == null)
-            {
-                failedCount++;
-                continue;
-            }
-
-            bool applied;
-            string factText;
-            EconomyMutationObservation mutationObservation = new EconomyMutationObservation();
             try
             {
-                applied = TryReplayAction(action, giver, receiver, mutationObservation, out factText);
+                confirmedFacts.Add(new FactRecord(
+                    "economy.reward_debt",
+                    giver.StringId ?? snapshot.Identity.SubjectId,
+                    fact.Text));
             }
             catch (Exception exception)
             {
-                failedCount++;
-                unknownAfterStart = true;
-                LogEconomyReplayFailureSafe("[RefactorEconomy] action failed kind=" + action.Kind + " error=" + exception.Message);
-                break;
-            }
-            if (mutationObservation.UnknownAfterStart)
-            {
-                failedCount++;
-                unknownAfterStart = true;
                 LogEconomyReplayFailureSafe(
-                    "[RefactorEconomy] action outcome unknown kind=" + action.Kind
-                    + " error=" + mutationObservation.ErrorCode);
-                break;
-            }
-            if (!applied)
-            {
-                failedCount++;
-                continue;
-            }
-            appliedCount++;
-            if (!string.IsNullOrWhiteSpace(factText))
-            {
-                try
-                {
-                    confirmedFacts.Add(new FactRecord(
-                        "economy.reward_debt",
-                        giver.StringId ?? snapshot.Identity.SubjectId,
-                        factText));
-                }
-                catch (Exception exception)
-                {
-                    LogEconomyReplayFailureSafe("[RefactorEconomy] confirmed fact failed kind=" + action.Kind + " error=" + exception.Message);
-                }
+                    "[RefactorEconomy] confirmed fact failed kind=" + fact.Action.Kind + " error=" + exception.Message);
             }
         }
-
-        if (unknownAfterStart)
-        {
-            return new EconomyRewardDebtReplayResult(
-                EconomyRewardDebtReplayStatus.UnknownAfterStart,
-                appliedCount,
-                confirmedFacts,
-                "economy.unknown_after_start");
-        }
-        if (appliedCount <= 0)
-        {
-            return new EconomyRewardDebtReplayResult(
-                EconomyRewardDebtReplayStatus.Failed,
-                0,
-                confirmedFacts,
-                failedCount > 0 ? "economy.no_action_applied" : "economy.no_actions");
-        }
-
-        return new EconomyRewardDebtReplayResult(
-            failedCount > 0
-                ? EconomyRewardDebtReplayStatus.PartiallyApplied
-                : EconomyRewardDebtReplayStatus.Applied,
-            appliedCount,
+        return EconomyReplayBatchCoordinator.Complete(
+            outcome,
             confirmedFacts,
-            failedCount > 0 ? "economy.partial_replay" : string.Empty);
+            "economy.unknown_after_start",
+            "economy.no_action_applied",
+            "economy.no_actions",
+            "economy.partial_replay");
     }
 
-    private bool TryReplayAction(
+        private EconomyReplayStepOutcome ExecuteHeroEconomyStep(
+        EconomyRewardDebtAction action,
+        Hero giver,
+        Hero receiver)
+    {
+        EconomyMutationObservation mutationObservation = new EconomyMutationObservation();
+        bool applied;
+        string factText;
+        try
+        {
+            applied = TryReplayAction(action, giver, receiver, mutationObservation, out factText);
+        }
+        catch (Exception exception)
+        {
+            LogEconomyReplayFailureSafe(
+                "[RefactorEconomy] action failed kind=" + action.Kind + " error=" + exception.Message);
+            return EconomyReplayStepOutcome.Unknown();
+        }
+        if (mutationObservation.UnknownAfterStart)
+        {
+            LogEconomyReplayFailureSafe(
+                "[RefactorEconomy] action outcome unknown kind=" + action.Kind
+                + " error=" + mutationObservation.ErrorCode);
+            return EconomyReplayStepOutcome.Unknown();
+        }
+        return applied
+            ? EconomyReplayStepOutcome.Applied(factText)
+            : EconomyReplayStepOutcome.Rejected();
+    }
+
+private bool TryReplayAction(
         EconomyRewardDebtAction action,
         Hero giver,
         Hero receiver,

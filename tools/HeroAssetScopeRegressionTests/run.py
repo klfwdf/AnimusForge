@@ -15,6 +15,7 @@ def extract(ref=None):
     methods = [extractor.declaration(hero, marker) for marker in [
         'private bool TryReplayGiveAsset(', 'private bool TryReplayGiveGold(',
         'private EconomyRewardDebtReplayResult ReplayEconomyRewardDebtPlanOnMainThread(',
+        'private EconomyReplayStepOutcome ExecuteHeroEconomyStep(',
         'private bool TryReplayAction(', 'private static EconomyRewardDebtReplayResult ReplayFailure(',
         'private static void LogEconomyReplayFailureSafe(', 'private sealed class EconomyMutationObservation']]
     for path, names in [
@@ -45,6 +46,11 @@ def extract(ref=None):
     declarations += [extractor.declaration(interaction, marker) for marker in [
         'public sealed class FactRecord', 'internal static class ContractGuard']]
     declarations += [extractor.declaration(extractor.source('TransferQuantitySpec.cs', ref), 'internal readonly struct TransferQuantitySpec')]
+    coordinator = extractor.source('src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs', ref)
+    declarations += [extractor.declaration(coordinator, marker) for marker in [
+        'internal enum EconomyReplayStepState', 'internal sealed class EconomyReplayStepOutcome',
+        'internal sealed class EconomyReplayAppliedFact', 'internal sealed class EconomyReplayBatchOutcome',
+        'internal static class EconomyReplayBatchCoordinator']]
     blocks['CONTRACTS'] = '\n\n'.join(declarations)
     return blocks
 
@@ -52,13 +58,18 @@ def main():
     sys.stdout.reconfigure(encoding='utf-8')
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source-ref')
-    ap.add_argument('--mutate',choices=['force-all','drop-modifier','drop-observation','drop-market-route'])
+    ap.add_argument('--mutate',choices=['force-all','drop-modifier','drop-observation','drop-market-route','continue-unknown'])
     ap.add_argument('--output-name',default='current')
     ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
     args=ap.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): ap.error('Invalid output name')
     blocks=extract(args.source_ref)
-    if args.mutate:
+    if args.mutate == 'continue-unknown':
+        before = 'unknownAfterStart = true;\n                break;'
+        after = 'unknownAfterStart = true;\n                continue;'
+        if before not in blocks['CONTRACTS']: raise ValueError('Mutation anchor missing: '+before)
+        blocks['CONTRACTS'] = blocks['CONTRACTS'].replace(before, after, 1)
+    elif args.mutate:
         body=extractor.declaration(blocks['METHODS'],'private bool TryReplayGiveAsset(')
         mutations={
             'force-all': ('forceComplete: !quantity.IsAll && receiver == Hero.MainHero && giver != Hero.MainHero', 'forceComplete: true'),
