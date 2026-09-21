@@ -179,6 +179,90 @@ public partial class RewardSystemBehavior
             "empty normalization clears aggregates");
         Check(emptied.CreatedDay == 0f && emptied.DueDay == 0f, "empty normalization clears dates");
 
+        Check(EconomyDebtSchedulePolicy.NormalizeDueDays(-1) == 1
+              && EconomyDebtSchedulePolicy.NormalizeDueDays(1) == 1
+              && EconomyDebtSchedulePolicy.NormalizeDueDays(120) == 120
+              && EconomyDebtSchedulePolicy.NormalizeDueDays(121) == 120,
+            "due day bounds");
+        Check(EconomyDebtSchedulePolicy.ComputeWeeklyOverdueTrustPenaltyByDebtValue(0) == 0
+              && EconomyDebtSchedulePolicy.ComputeWeeklyOverdueTrustPenaltyByDebtValue(1) == 1
+              && EconomyDebtSchedulePolicy.ComputeWeeklyOverdueTrustPenaltyByDebtValue(9999) == 1
+              && EconomyDebtSchedulePolicy.ComputeWeeklyOverdueTrustPenaltyByDebtValue(20000) == 2,
+            "weekly trust penalty value scale");
+
+        DebtRecord.DebtLine unlimited = new DebtRecord.DebtLine
+        {
+            IsDueUnlimited = true,
+            RemainingAmount = 1,
+            LastOverduePenaltyDay = 0,
+            UnlimitedTrustPenaltyNumeratorCarry = 0
+        };
+        Check(EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(unlimited, 100000, 10) == 0
+              && unlimited.LastOverduePenaltyDay == 10,
+            "unlimited penalty initializes clock");
+        Check(EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(unlimited, 100000, 10) == 0,
+            "unlimited penalty ignores same day");
+        Check(EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(unlimited, 100000, 11) == 16
+              && unlimited.LastOverduePenaltyDay == 11
+              && unlimited.UnlimitedTrustPenaltyNumeratorCarry == 0,
+            "unlimited penalty daily value scale");
+        unlimited.UnlimitedTrustPenaltyNumeratorCarry = 99999;
+        Check(EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(unlimited, 1, 12) == 1
+              && unlimited.UnlimitedTrustPenaltyNumeratorCarry == 15,
+            "unlimited penalty carry");
+        Check(EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(unlimited, -1, 13) == 0
+              && unlimited.LastOverduePenaltyDay == 13
+              && unlimited.UnlimitedTrustPenaltyNumeratorCarry == 15,
+            "unlimited zero-value clock advance");
+        DebtRecord.DebtLine saturated = new DebtRecord.DebtLine
+        {
+            IsDueUnlimited = true,
+            RemainingAmount = 1,
+            LastOverduePenaltyDay = 1
+        };
+        Check(EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(
+                  saturated, int.MaxValue, int.MaxValue) == int.MaxValue,
+            "unlimited penalty saturates");
+
+        DebtRecord.DebtLine finiteReminder = new DebtRecord.DebtLine
+        {
+            RemainingAmount = 1,
+            IsDueUnlimited = false
+        };
+        DebtRecord.DebtLine unlimitedReminder = new DebtRecord.DebtLine
+        {
+            RemainingAmount = 1,
+            IsDueUnlimited = true,
+            CreatedDay = 10f
+        };
+        Check(!EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(null, 17)
+              && !EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(
+                  new DebtRecord.DebtLine { RemainingAmount = 0 }, 17)
+              && EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(finiteReminder, 1),
+            "scheduled reminder eligibility");
+        Check(!EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(unlimitedReminder, 16)
+              && EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(unlimitedReminder, 17)
+              && !EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(unlimitedReminder, 18)
+              && EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(unlimitedReminder, 24),
+            "scheduled reminder cadence");
+
+        Check(EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyTotal(1, 4) == 0
+              && EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyTotal(1, 5) == 1
+              && EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyTotal(-1, 5) == 0,
+            "weekly relation penalty total");
+        Check(EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyDelta(1, 2, 5) == 1
+              && EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyDelta(2, 1, 5) == 0,
+            "weekly relation penalty delta");
+        Check(EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyTotal(
+                  int.MaxValue, int.MaxValue) == int.MaxValue,
+            "weekly relation penalty saturates");
+        Check(EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(10f, 0f) == 0
+              && EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(10f, 10f) == 0
+              && EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(16.99f, 10f) == 0
+              && EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(17f, 10f) == 1
+              && EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(1000f, 10f) == 12,
+            "overdue elapsed week bounds");
+
         return checks;
     }
 }
