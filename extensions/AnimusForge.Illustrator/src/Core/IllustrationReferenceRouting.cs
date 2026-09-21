@@ -20,10 +20,9 @@ namespace AnimusForge.Illustrator.Core
             if (image != null && !ReferenceEquals(director, image)) image.Add(full);
             if (string.IsNullOrWhiteSpace(portraits.HeadDetail)) return;
             var head = new IllustrationReferenceImage(portraits.HeadDetail,
-                "人物【" + name + "】的头肩细节参考：与该人物全身身份图是同一个人，不是新增人物或另一套服装。" +
-                "辨认可见的须发有无、发际线、分缝、长短与盘束形状、耳颈轮廓及头盔护具；保留装备遮挡，不补造看不见的头发。" +
-                "仅补充身份细节，不要求采用本图取景、姿态或照明。" +
-                (eventReference ? "这是本期候选人物资料，只有导演选中的事件涉及此人且需要他入画时才使用，不强制该人物成为画面主角。" : string.Empty),
+                "人物【" + name + "】头肩细节：与前一张全身图是同一个人，不是新增人物。" +
+                "仅补充可见五官、须发与头部装备，保留装备遮挡；不指定姿态、取景或照明。" +
+                (eventReference ? "仅在所选事件涉及此人时使用。" : string.Empty),
                 eventReference ? IllustrationReferenceKind.EventCharacter : IllustrationReferenceKind.CharacterDetail);
             director.Add(head);
             if (image != null && !ReferenceEquals(director, image)) image.Add(head);

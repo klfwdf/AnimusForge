@@ -472,8 +472,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
                 directorRefs.AddRange(sceneCapture.References);
+                string unavailableSceneNote = sceneCapture.References == null || sceneCapture.References.Count == 0
+                    ? "\n【环境参考不可用】" + sceneCapture.DirectorNote : string.Empty;
                 var scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
-                    promptPlan.DirectorOnlyFacts + "\n【本次环境参考覆盖】" + sceneCapture.DirectorNote);
+                    promptPlan.DirectorOnlyFacts + unavailableSceneNote);
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "，正在整理人物参考..."; });
 
                 // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
@@ -486,14 +488,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     var portraits = await playerStage().ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
                     IllustrationReferenceRouting.AddCharacter(directorRefs, genRefs, portraits, playerName,
-                        $"【玩家: {playerName}】人物身份与全身实际装备参考；与同名头肩图属于同一人。五官须发与穿戴照图保留，人物位置和行动依据现场事实及导演构思，以统一画风重绘，不复制游戏渲染质感。");
+                        $"【玩家：{playerName}】全身身份与实际穿戴；与头肩图为同一人。行动和位置按现场事实及导演正文。");
                 }
                 if (partnerStage != null)
                 {
                     var portraits = await partnerStage().ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
                     IllustrationReferenceRouting.AddCharacter(directorRefs, genRefs, portraits, partnerName,
-                        $"【对话对象: {partnerName}】人物身份与全身实际装备参考；与同名头肩图属于同一人。保留此人的面容、须发和实际穿戴，不与玩家混淆；姿态、视线及受光依导演构思统一重绘。");
+                        $"【对话对象：{partnerName}】全身身份与实际穿戴；与头肩图为同一人，不与玩家混淆。行动和位置按现场事实及导演正文。");
                 }
 
                 foreach (var spec in emblemSpecs ?? new List<EmblemSpec>())
@@ -501,7 +503,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     string b64 = await BannerEmblemComposer.ComposeToBase64Async(spec.Code, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
                     if (!string.IsNullOrWhiteSpace(b64))
                     {
-                        var r = new IllustrationReferenceImage(b64, $"{spec.Side}一方【{spec.Owner}】的真实纹章标准样图：当画面中属于{spec.Side}的一处已确认纹章载体（如盾牌或背景军旗）真实出现时，必须以此一致的形状与配色绘制，严禁编造图腾；没有载体证据时不要添加纹章载体，严禁在普通胸甲金属表面硬印纹章！", IllustrationReferenceKind.Emblem);
+                        var r = new IllustrationReferenceImage(b64, $"【{spec.Side}：{spec.Owner}】真实纹章样图；仅在该方已有纹章载体入画时还原图案配色，不新增旗帜、盾牌或载体。", IllustrationReferenceKind.Emblem);
                         directorRefs.Add(r);
                         // 仅当该方人物确实身穿纹章罩袍或持有明确纹章盾牌时，才加入生图垫图，防止生图模型在普通金属胸甲上硬印纹章！
                         var playerProfile = convContext.MainHeroProfile;

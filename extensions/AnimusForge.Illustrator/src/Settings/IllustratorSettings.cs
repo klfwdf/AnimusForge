@@ -380,9 +380,9 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyInteger("导演提词最大 Token 上限 (Max Tokens)", 600, 2000, "0 Token", HintText = "视觉导演大语言模型生成提示词的最大 Token 上限（建议 1000~1500）。过小会导致长篇画卷描述被截断，过大可能导致部分模型生成冗余或超时。", Order = 6, RequireRestart = false)]
+        [SettingPropertyInteger("导演提词参考篇幅（约 Token）", 600, 4000, "0 Token", HintText = "视觉导演完整输出的软性篇幅参考，不会作为 API 硬上限；模型可为保证四段完整而上下浮动。数值越大，等待时间和费用可能越高。", Order = 6, RequireRestart = false)]
         [SettingPropertyGroup("3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)", GroupOrder = 3)]
-        public int DirectorMaxTokens { get; set; } = 1500;
+        public int DirectorMaxTokens { get; set; } = 2000;
 
         [SettingPropertyBool("周报自动生成纪事插画", HintText = "开启后，每周生成国家周报时，系统将自动分析头条事件并生成一张专属的古典史诗纪事插画。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]

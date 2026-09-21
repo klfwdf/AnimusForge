@@ -61,6 +61,30 @@ namespace AnimusForge.Illustrator.Context
             return sb.ToString().TrimEnd();
         }
 
+        public string BuildConversationDirectorContext()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("【人物背景】" + HeroName);
+            AppendBoundedNarrative(sb, "【人物生平参考】", BackgroundLore, 360);
+            AppendBoundedNarrative(sb, "【性格参考】", TraitsSummary, 180);
+            AppendBoundedNarrative(sb, "【专长参考】", TopSkillsSummary, 180);
+            return sb.ToString().TrimEnd();
+        }
+
+        private static void AppendBoundedNarrative(StringBuilder sb, string label, string value, int maxChars)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return;
+            value = value.Trim();
+            if (value.Length > maxChars)
+            {
+                int boundary = -1;
+                for (int i = maxChars - 1; i >= maxChars * 2 / 3; i--)
+                    if (value[i] == '。' || value[i] == '！' || value[i] == '？' || value[i] == '；') { boundary = i + 1; break; }
+                value = value.Substring(0, boundary > 0 ? boundary : maxChars).TrimEnd() + "…";
+            }
+            sb.AppendLine(label + value);
+        }
+
         public string BuildVisualSummary(bool includeMount = true)
         {
             var sb = new StringBuilder();

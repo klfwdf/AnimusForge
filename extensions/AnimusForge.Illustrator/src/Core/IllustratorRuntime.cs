@@ -33,7 +33,7 @@ namespace AnimusForge.Illustrator.Core
         public string DirectorApiBaseUrl { get; }
         public string DirectorApiKey { get; }
         public string DirectorModelName { get; }
-        public int DirectorMaxTokens { get; }
+        public int DirectorApproximateTokens { get; }
 
         internal IllustrationOptions(IllustratorSettings settings, string directorUrl, string directorKey, string directorModel)
         {
@@ -58,7 +58,7 @@ namespace AnimusForge.Illustrator.Core
             DirectorApiBaseUrl = directorUrl;
             DirectorApiKey = directorKey;
             DirectorModelName = directorModel;
-            DirectorMaxTokens = Math.Max(600, Math.Min(2000, settings.DirectorMaxTokens));
+            DirectorApproximateTokens = Math.Max(600, Math.Min(4000, settings.DirectorMaxTokens));
         }
     }
 
