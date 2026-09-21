@@ -52,7 +52,7 @@
 - `TeamModulePortParityTests`：13 方法、31 个生产 call expressions、308 行为断言；3 个可编译变异全部被具名行为断言拒绝。
 - Policy 1.3：all-modules **1406**（18 modules）、history **1115**。
 - Policy 1.4：all-modules **1406**（18 modules）、history **1115**。
-- `CampaignCompositionTests`：42 assertions；drop behavior、reverse models、discard inner、directory gate、abort model failure 五个变异拒绝。
+- `CampaignCompositionTests`：42 assertions；真实 `InitializeGameStarter` 入口重复注册、drop behavior、reverse models、discard inner、directory gate、abort model failure 六个可编译变异拒绝。
 - `CompositionMatrixContractTests`：18 cases / 24 invariants。
 - `ModuleFrameworkApiTests`：119 public API + 256 concurrent reads；snapshot 36/128；5 个 snapshot 变异与 internal-access 编译拒绝通过。
 - Bridge：16 bindings、23 tests、12 isolation processes。
@@ -76,7 +76,7 @@
 ## 测试维护说明
 
 - `TeamModulePortParityTests` 和 `ScenePostprocessParityTests` 改为链接 3 port + 3 adapter + composition 的真实新路径，不用兼容 Link 保留旧文件。
-- `CampaignCompositionTests` 不再因无关 GameLifetime runner hash 阻断；现在对 live `SubModule.InitializeGameStarter` 的唯一委托、partial-start cleanup 和异常传播做 scoped source 检查，同时保留 runtime exact inverse、42 行为断言与 5 变异。没有刷新旧 hash 或删除运行断言来“做绿”。
+- `CampaignCompositionTests` 不再因无关 GameLifetime runner hash 阻断；现在提取并执行 live `SubModule.InitializeGameStarter`，对唯一委托、partial-start cleanup 和异常传播做 scoped source 检查，同时保留 runtime exact inverse、42 行为断言与 6 个可编译变异。Campaign lifetime hook 在此为 no-op test double，其真实 owner 由独立 source-linked suite 验证；没有用手写入口遮蔽生产回调。
 
 ## 清理结果
 

@@ -13,7 +13,7 @@
 | J11b Policy | DONE | 4 方法 / 8 调用点；Policy 1.3/1.4 各 1406 + 1115 |
 | J11c Gathering | DONE | 5 方法 / 12 调用点；facts/notifications 仍由真实调用方唯一提交 |
 | J11d Siege | DONE | 4 方法 / 11 调用点；FeatureBridge/active-stage/GCCZ owner 不变，未写外部 GCCZ 树 |
-| J11e composition | DONE | Campaign 42+5、Composition 18/24、Bridge 16/23/12、API lifecycle 通过 |
+| J11e composition | DONE | Campaign 42+6、Composition 18/24、Bridge 16/23/12、API lifecycle 通过 |
 | J11f cleanup/final | OFFLINE_VERIFIED | 旧 2 文件删除；六构建、1060 API、142/168 persistence、394 map 及三渠道影响面通过 |
 
 详细证据见 `docs/handoffs/2026-09-21-j11-team-module-seams-offline-closeout.md`。J12–J14 未在本包偷渡，LIVE/SAVE 仍独立。
@@ -91,7 +91,7 @@ J10 最终 `TeamModulePortParityTests` 已证明 13 个方法的 31 个调用表
 ### J11-G0：冻结 owner / consumer / gate 矩阵
 
 - 记录 13 个方法、31 个生产调用点的渠道、线程、输入来源、输出消费者、现有 FeatureBridge gate 和副作用 owner。
-- 区分三类入口：Prompt/rule 查询、normalize、执行/apply；禁止 normalize 顺手执行或查询接口写状态。
+- 区分三类入口：Prompt/rule capture、normalize、执行/apply；禁止 normalize 顺手执行，adapter 不新增状态写入。领域 owner 在 capture 阶段保留既有的 pending proposal 同步/清理副作用，并继续由调用方保证所属主线程。
 - 记录直接 owner 调用：领域内部自用可保留；AF 主体跨域调用必须经过 typed port。不能为了“全局零直连”让领域自己绕远路。
 - 固定无新增 SyncData key、Saveable type、程序集、public ABI、默认开关和玩法变化的基线。
 
@@ -159,7 +159,7 @@ J10 最终 `TeamModulePortParityTests` 已证明 13 个方法的 31 个调用表
 ### J11 最终候选
 
 - Policy：`PolicyEffectModule.ContractTests --policy-all-modules-contract-only`、`--policy-history-only`；不运行真实 provider。
-- Composition：`CampaignCompositionTests` 正常与 5 变异、`CompositionMatrixContractTests`、ModuleFramework/API tests。
+- Composition：`CampaignCompositionTests` 正常与 6 变异（含真实入口重复注册）、`CompositionMatrixContractTests`、ModuleFramework/API tests。
 - Bridge：BridgeBinding 16/23、BridgeFixture 10、BridgeRuntimeIsolation 12、Phase8 inventory/readiness。
 - 三渠道：J09 default wiring、Scene postprocess/queue、Courier prompt/postprocess/domain commit、Native action/completion 的受影响回归。
 - 兼容：Debug/Release × Bannerlord 1.3/1.4 + Bootstrap；四 DLL API/metadata；Persistence/Profile/Chunk/Identity；代码地图 recorded/working-tree。

@@ -37,7 +37,8 @@ def restore_submodule(current):
     """Verify the live engine entry delegates once without freezing unrelated lifecycle work."""
     prior = old('SubModule.cs')
     entry = extract(current, INIT)
-    assert entry.count('ModuleFrameworkRuntime.RegisterCampaign(starterObject);') == 1, 'Campaign composition entry is not unique'
+    calls = re.findall(r'\bModuleFrameworkRuntime\s*\.\s*RegisterCampaign\s*\(', entry)
+    assert len(calls) == 1, 'Campaign composition entry is not unique'
     assert 'CampaignComposition.Register(' not in entry, 'SubModule bypasses the framework composition owner'
     assert entry.index('AfCampaignRuntimeLifecycle.Begin') < entry.index('ModuleFrameworkRuntime.RegisterCampaign') < entry.index('AfCampaignRuntimeLifecycle.CaptureOwners'), 'Campaign lifetime/composition order drifted'
     assert entry.count('AfCampaignRuntimeLifecycle.End(game);') == 1 and 'throw;' in entry, 'Partial-start cleanup or failure propagation drifted'
@@ -94,23 +95,19 @@ def main():
     if args.source_only: return 0
     out=HERE/'.generated/current'; out.mkdir(parents=True,exist_ok=True)
     (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>',encoding='utf-8')
-    prior=old('SubModule.cs'); names=re.findall(r'AddBehavior\(new (\w+)\(\)\)',extract(prior,INIT))
+    prior=old('SubModule.cs'); current_submodule=read('SubModule.cs')
+    names=re.findall(r'AddBehavior\(new (\w+)\(\)\)',extract(prior,INIT))
     assert len(names)==36 and len(set(names))==36
     usings='using System; using AnimusForge; using AnimusForge.PolicyEffects; using AnimusForge.Refactor.Modules; using TaleWorlds.Core; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.ComponentInterfaces; using TaleWorlds.CampaignSystem.GameComponents; using AFWarStatsTerminal.Behaviors;\n'
-    hosts=usings
-    # Exercise the actual ModuleFrameworkRuntime/CampaignComposition implementation;
-    # SubModule's surrounding game lifetime owner is verified above and in its own suite.
-    current_entry = '''protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
-\t{
-\t\tModuleFrameworkRuntime.RegisterCampaign(starterObject);
-\t}'''
-    for kind,text in [('Current',None),('Original',prior)]:
-        entry = current_entry if kind == 'Current' else extract(text,INIT)
-        hosts+='internal class '+kind+'SubModule : StubSubModule {\n'+entry+'\n'
-        if kind=='Original': hosts+='\n'.join(extract(text,'private static void '+n+'(') for n in METHODS)
-        hosts+='\n}\n'
-    hosts+='internal static class Expected { internal static readonly string[] Behaviors = new[] {'+','.join('"'+n+'"' for n in names)+'}; }\n'
-    (out/'Hosts.cs').write_text(hosts,encoding='utf-8')
+    def build_hosts(current_text):
+        hosts=usings
+        for kind,text in [('Current',current_text),('Original',prior)]:
+            hosts+='internal class '+kind+'SubModule : StubSubModule {\n'+extract(text,INIT)+'\n'
+            if kind=='Original': hosts+='\n'.join(extract(text,'private static void '+n+'(') for n in METHODS)
+            hosts+='\n}\n'
+        return hosts+'internal static class Expected { internal static readonly string[] Behaviors = new[] {'+','.join('"'+n+'"' for n in names)+'}; }\n'
+    current_hosts=out/'Hosts.cs'
+    current_hosts.write_text(build_hosts(current_submodule),encoding='utf-8')
     behaviors=''
     for n in names:
         ns='AFWarStatsTerminal.Behaviors' if n=='AfWarStatsBehavior' else 'AnimusForge'
@@ -118,9 +115,11 @@ def main():
     (out/'Behaviors.cs').write_text(behaviors,encoding='utf-8')
     api_stubs=read('tools/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
     (out/'ApiHostStubs.cs').write_text(api_stubs,encoding='utf-8')
-    common=[HERE/'HostStubs.cs',HERE/'Program.cs',out/'Hosts.cs',out/'Behaviors.cs',out/'ApiHostStubs.cs']
+    common=[HERE/'HostStubs.cs',HERE/'Program.cs',current_hosts,out/'Behaviors.cs',out/'ApiHostStubs.cs']
     sources=[ROOT/s for s in SOURCES]
     mutations={
+        'duplicate_campaign_entry': ('SubModule.cs', '\t\t\tModuleFrameworkRuntime.RegisterCampaign(starterObject);',
+            '\t\t\tModuleFrameworkRuntime.RegisterCampaign(starterObject);\n\t\t\tModuleFrameworkRuntime.RegisterCampaign((starterObject));'),
         'drop_behavior': (SOURCES[0], '            campaignGameStarter.AddBehavior(new MyBehavior());',''),
         'reverse_models': (SOURCES[1], '        RegisterCourierFoodConsumptionModel(campaignGameStarter);\n        RegisterCourierMobilePartyAiModel(campaignGameStarter);','        RegisterCourierMobilePartyAiModel(campaignGameStarter);\n        RegisterCourierFoodConsumptionModel(campaignGameStarter);'),
         'discard_inner': (SOURCES[1], 'new CourierFoodConsumptionModel(inner)', 'new CourierFoodConsumptionModel(new DefaultMobilePartyFoodConsumptionModel())'),
@@ -129,13 +128,18 @@ def main():
     mutations['abort_model_failure']=(SOURCES[1], 'catch (Exception ex)\n        {','catch (Exception ex)\n        {\n            throw;')
     results=[]
     for name,mutation in [('current',None)]+([] if args.skip_mutations else list(mutations.items())):
-        folder=out/name; folder.mkdir(exist_ok=True); selected=list(sources)
+        folder=out/name; folder.mkdir(exist_ok=True); selected=list(sources); selected_common=list(common)
         if mutation:
             path,needle,replacement=mutation; text=read(path)
             assert needle in text, 'Mutation anchor drift: '+name
-            mutated=folder/Path(path).name; mutated.write_text(text.replace(needle,replacement,1),encoding='utf-8')
-            selected[sources.index(ROOT/path)]=mutated
-        project=util.project(folder,'CampaignCompositionChecks',selected+common,executable=True)
+            mutated_text=text.replace(needle,replacement,1)
+            if path == 'SubModule.cs':
+                mutated_hosts=folder/'Hosts.cs'; mutated_hosts.write_text(build_hosts(mutated_text),encoding='utf-8')
+                selected_common[selected_common.index(current_hosts)]=mutated_hosts
+            else:
+                mutated=folder/Path(path).name; mutated.write_text(mutated_text,encoding='utf-8')
+                selected[sources.index(ROOT/path)]=mutated
+        project=util.project(folder,'CampaignCompositionChecks',selected+selected_common,executable=True)
         code,log=util.run_dotnet(args.dotnet,['run','--project',str(project),'-c','Release'],out)
         (folder/'run.log').write_text(log,encoding='utf-8')
         if not mutation:
