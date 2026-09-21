@@ -28,6 +28,8 @@ namespace AnimusForge.Illustrator.Context
         public string LightingAndAtmosphere { get; set; } = string.Empty;
         public string ConflictStatus { get; set; } = string.Empty;
         public string SurroundingCharacters { get; set; } = string.Empty;
+        internal bool SurroundingCharactersFromLiveScan { get; set; }
+        // Legacy descriptive field: no location template is emitted as an observed prop.
         public string SurroundingProps { get; set; } = string.Empty;
         public string RealSceneName { get; set; } = string.Empty;
         public string NamedCharacters { get; set; } = string.Empty;
@@ -44,6 +46,8 @@ namespace AnimusForge.Illustrator.Context
             if (!string.IsNullOrWhiteSpace(SettlementName)) sb.AppendLine($"【定居点】{SettlementName} ({SettlementType})");
             if (!string.IsNullOrWhiteSpace(SpecificLocation)) sb.AppendLine($"【当前子场景】{SpecificLocation}");
             if (!string.IsNullOrWhiteSpace(NamedCharacters)) sb.AppendLine($"【附近实际角色】{NamedCharacters}");
+            if (SurroundingCharactersFromLiveScan && !string.IsNullOrWhiteSpace(SurroundingCharacters))
+                sb.AppendLine("【附近人群活动依据】" + SurroundingCharacters);
             if (!string.IsNullOrWhiteSpace(RealProps)) sb.AppendLine($"【附近实际预制件】{RealProps}");
             // 精确日期只用于导演理解；发布日期中的季节仍作为回顾事件的季节参考。
             if (!string.IsNullOrWhiteSpace(Season)) sb.AppendLine("【当前季节】" + Season);
@@ -160,7 +164,7 @@ namespace AnimusForge.Illustrator.Context
                 ResolveSeaAndArmyContext(profile);
 
                 // 6. 场景周边人物群像与标志性陈设道具动态提取
-                ResolveSurroundings(profile, settlement);
+                ResolveSurroundings(profile);
 
                 // 7. 引擎实读：真实场景资源名 + 在场具名人物 + 附近真实预制件道具
                 ProbeLiveScene(profile);
@@ -399,200 +403,78 @@ namespace AnimusForge.Illustrator.Context
             }
         }
 
-        private static void ResolveSurroundings(EnvironmentVisualProfile profile, Settlement settlement)
+        private static void ResolveSurroundings(EnvironmentVisualProfile profile)
         {
-            // 1. 若处于 Mission 场景中，动态统计附近 NPC 角色
+            // Reuse the existing request-time Agent pass. An occupation confirms presence,
+            // not a held prop, activity, clothing or location within the room.
             try
             {
                 var mission = TaleWorlds.MountAndBlade.Mission.Current;
-                if (mission != null)
+                var mainAgent = mission?.MainAgent;
+                if (mainAgent == null || mission.Agents == null) return;
+                Vec3 center = mainAgent.Position;
+                if (float.IsNaN(center.x) || float.IsNaN(center.y) || float.IsNaN(center.z) ||
+                    float.IsInfinity(center.x) || float.IsInfinity(center.y) || float.IsInfinity(center.z)) return;
+                var conversationAgents = Campaign.Current?.ConversationManager?.ConversationAgents;
+                var partner = conversationAgents != null && conversationAgents.Count > 0
+                    ? conversationAgents[0] as TaleWorlds.MountAndBlade.Agent : null;
+                var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+                int total = 0;
+                foreach (var agent in mission.Agents)
                 {
-                    var mainAgent = mission.MainAgent;
-                    Vec3 centerPos = mainAgent != null ? mainAgent.Position : Vec3.Zero;
-                    var agents = mission.Agents;
-
-                    int guardCount = 0;
-                    int nobleCount = 0;
-                    int tavernKeeperCount = 0;
-                    int tavernWenchCount = 0;
-                    int musicianCount = 0;
-                    int gamblerCount = 0;
-                    int mercenaryCount = 0;
-                    int merchantCount = 0;
-                    int villagerCount = 0;
-                    int townsfolkCount = 0;
-
-                    if (agents != null)
-                    {
-                        foreach (var agent in agents)
-                        {
-                            if (agent == null || !agent.IsActive() || agent == mainAgent) continue;
-
-                            if (centerPos != Vec3.Zero && agent.Position.Distance(centerPos) > 25f) continue;
-
-                            var character = agent.Character as CharacterObject;
-                            if (character == null) continue;
-
-                            if (character.Occupation == Occupation.Guard || character.Occupation == Occupation.PrisonGuard || character.Occupation == Occupation.Soldier)
-                            {
-                                guardCount++;
-                            }
-                            else if (character.IsHero || character.Occupation == Occupation.Lord)
-                            {
-                                nobleCount++;
-                            }
-                            else if (character.Occupation == Occupation.Tavernkeeper)
-                            {
-                                tavernKeeperCount++;
-                            }
-                            else if (character.Occupation == Occupation.TavernWench)
-                            {
-                                tavernWenchCount++;
-                            }
-                            else if (character.Occupation == Occupation.Musician)
-                            {
-                                musicianCount++;
-                            }
-                            else if (character.Occupation == Occupation.TavernGameHost)
-                            {
-                                gamblerCount++;
-                            }
-                            else if (character.Occupation == Occupation.Mercenary)
-                            {
-                                mercenaryCount++;
-                            }
-                            else if (character.Occupation == Occupation.Merchant || character.Occupation == Occupation.GoodsTrader || character.Occupation == Occupation.Artisan || character.Occupation == Occupation.Blacksmith || character.Occupation == Occupation.Armorer || character.Occupation == Occupation.Weaponsmith)
-                            {
-                                merchantCount++;
-                            }
-                            else if (character.Occupation == Occupation.Villager)
-                            {
-                                villagerCount++;
-                            }
-                            else if (character.Occupation == Occupation.Townsfolk)
-                            {
-                                townsfolkCount++;
-                            }
-                        }
-                    }
-
-                    var charSb = new StringBuilder();
-                    if (guardCount > 0)
-                    {
-                        charSb.Append($"近处有 {guardCount} 名守卫（具体装备与动作以现场参考为准）；");
-                    }
-                    if (nobleCount > 0)
-                    {
-                        charSb.Append($"席间/近旁有 {nobleCount} 位身着锦缎华服的领地贵族领主与贵妇低声交谈；");
-                    }
-                    if (tavernKeeperCount > 0 || tavernWenchCount > 0)
-                    {
-                        charSb.Append("吧台后酒馆老板正在擦拭陶土酒杯，侍女端着木托盘在席间穿梭添送麦芽酒；");
-                    }
-                    if (musicianCount > 0)
-                    {
-                        charSb.Append("角落处游吟乐师正在低头拨弄鲁特琴弦奏出中世纪民谣；");
-                    }
-                    if (mercenaryCount > 0 || gamblerCount > 0)
-                    {
-                        charSb.Append("旁侧长条木桌旁围坐着数名身佩刀剑的粗犷雇佣兵与掷骰对弈的酒客；");
-                    }
-                    if (merchantCount > 0)
-                    {
-                        charSb.Append("两侧摊位处有市集货郎与工匠在整理货架上的布匹器皿；");
-                    }
-                    if (townsfolkCount > 0 || villagerCount > 0)
-                    {
-                        charSb.Append("周围空地上穿行着提篮挑担的寻常平民与好奇驻足的当地百姓；");
-                    }
-
-                    if (charSb.Length > 0)
-                    {
-                        profile.SurroundingCharacters = charSb.ToString().TrimEnd('；');
-                    }
+                    if (agent == null || !agent.IsActive() || !agent.IsHuman || agent == mainAgent || agent == partner) continue;
+                    float distanceSquared = agent.Position.DistanceSquared(center);
+                    if (float.IsNaN(distanceSquared) || float.IsInfinity(distanceSquared) || distanceSquared > 625f) continue;
+                    var character = agent.Character as CharacterObject;
+                    if (character == null) continue;
+                    string role = DescribeNearbyRole(character);
+                    counts.TryGetValue(role, out int count);
+                    counts[role] = count + 1;
+                    total++;
                 }
+                // Publish only after the whole pass succeeds; missing/failed observation is not zero people.
+                profile.SurroundingCharacters = total == 0
+                    ? "玩家25米内未检测到其他活动角色。"
+                    : "玩家25米内检测到其他活动角色共" + total + "名：" +
+                      string.Join("、", counts.Select(pair => pair.Key + " " + pair.Value + "名")) + "。";
+                profile.SurroundingCharacters += partner != null
+                    ? "已排除玩家与当前对话对象；与附近实际角色名单可能重合，不叠加人数。"
+                    : "已排除玩家；未取得对话对象Agent，统计可能包含对话对象，入画前按身份去重。";
+                profile.SurroundingCharacters += "这是邻近人数与身份证据，不是全部可见人物清单；墙体、楼层和遮挡以现场参考为准，职业不证明具体动作、服装或手持物。";
+                profile.SurroundingCharactersFromLiveScan = true;
             }
             catch (Exception ex)
             {
-                TaleWorlds.Library.Debug.Print($"[Illustrator] Surrounding agents extraction: {ex.Message}");
+                TaleWorlds.Library.Debug.Print("[Illustrator] Surrounding agents extraction: " + ex.GetType().Name);
             }
+            // No location-name fallback: an empty tavern does not imply patrons or furniture.
+            // Actual props are supplied separately by the bounded panorama traversal and images.
+        }
 
-            // 2. 根据所处具体子场景，解析周围标志性环境道具陈设 (SurroundingProps)
-            string loc = (profile.SpecificLocation ?? "").ToLowerInvariant();
-
-            if (loc.Contains("围攻") || loc.Contains("fortress") || loc.Contains("rampart") || loc.Contains("gate"))
+        private static string DescribeNearbyRole(CharacterObject character)
+        {
+            if (character.IsHero) return "英雄";
+            switch (character.Occupation)
             {
-                if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                {
-                    profile.SurroundingCharacters = "城头垛口处有手持长弓强弩的城防守军据险警戒，城下护城河外有敌军骑兵与长矛近卫严阵护卫";
-                }
-                profile.SurroundingProps = "高耸险峻的石砌城堡箭垛、紧闭包铁的千斤沉重城门与绞盘吊桥、城下泥泞深壕、削尖倒插的拒马鹿砦、城头熊熊燃烧的铁皮火把桶、远处黑夜中连绵闪烁的攻城营地篝火";
-            }
-            else if (loc.Contains("tavern") || loc.Contains("酒馆"))
-            {
-                if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                {
-                    profile.SurroundingCharacters = "吧台后酒馆老板正在擦拭陶土酒杯，侍女端着木托盘在席间穿梭，围坐的长桌旁有刀口舔血的雇佣兵在掷骰豪饮，角落游吟乐师弹拨着鲁特琴";
-                }
-                profile.SurroundingProps = "粗糙厚重的原木长桌、溢出白色酒沫的陶制大麦酒杯、墙面上的鹿角兽首与木制装饰、粗铁链吊起的黑色锻铁烛台吊灯、巨型石砌壁炉中熊熊燃烧的噼啪柴火与烤肉铁架";
-            }
-            else if (loc.Contains("lord") || loc.Contains("keep") || loc.Contains("正厅") || loc.Contains("主殿"))
-            {
-                if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                {
-                    profile.SurroundingCharacters = "殿堂侧翼肃立着手持长戟的重甲精锐禁卫，侧方站立着捧着羊皮纸文卷的文书侍从与低声商议的封建封臣";
-                }
-                profile.SurroundingProps = "雕刻有家族徽记的高背领主宝座、垂挂在厚重石壁上的华美织锦丝绒挂毯、长条案几上铺展的羊皮纸地图与银质烛台、地面整张厚实毛皮地毯、熊熊燃烧的巨型暖殿石壁炉";
-            }
-            else if (loc.Contains("prison") || loc.Contains("牢") || loc.Contains("dungeon"))
-            {
-                if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                {
-                    profile.SurroundingCharacters = "铁栏旁站着腰挎沉重钥匙串的披甲狱卒，邻近阴暗囚室里蜷缩着戴有铁枷的囚犯";
-                }
-                profile.SurroundingProps = "锈迹斑斑的粗大精铁栅栏、湿滑滴水的青苔黑石墙壁、散落发霉的枯黄稻草垫、墙壁铁箍里跳跃着橘红火苗与黑烟的松明火把、沉重的铁镣与锁链";
-            }
-            else if (loc.Contains("arena") || loc.Contains("角斗") || loc.Contains("竞技"))
-            {
-                if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                {
-                    profile.SurroundingCharacters = "沙地边缘站着手持练习兵刃的比武战士，四周层叠看台上聚集着喧闹呐喊的市民观众";
-                }
-                profile.SurroundingProps = "飞扬的黄土沙砾角斗场、四周环形层叠的木石看台、插在沙地边缘的木质训练器具、观众席栏杆";
-            }
-            else if (loc.Contains("center") || loc.Contains("市集") || loc.Contains("街道") || loc.Contains("街"))
-            {
-                if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                {
-                    profile.SurroundingCharacters = "沿街货摊遮阳棚下有叫卖布匹香料的货郎，石板路上有手按佩剑巡视的城防守卫，以及提篮穿行的市井平民";
-                }
-                profile.SurroundingProps = "石木结构的民居店铺、各色粗亚麻遮阳帆布棚顶、堆放着陶罐麻袋与木箱的货摊、钉满铁蹄的木车轮与系在拴马桩上的挽马、铁匠铺炉膛里冒出的青烟";
-            }
-            else
-            {
-                bool isInArmyCamp = false;
-                try
-                {
-                    isInArmyCamp = MobileParty.MainParty?.Army != null;
-                }
-                catch { }
-
-                if (isInArmyCamp)
-                {
-                    if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                    {
-                        profile.SurroundingCharacters = "身侧有军团随从与各领主战备护卫，周围是扎营连绵的联合军团驻地";
-                    }
-                    profile.SurroundingProps = "驻扎的行军牛皮帐篷、插在草地上的锋利矛戈与军需物资、余烬微红的野外行军篝火、系在树桩旁的战马与运粮大车";
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(profile.SurroundingCharacters))
-                    {
-                        profile.SurroundingCharacters = "周围是开阔原野与自然风光，双方仅保留现场确认的随行戒备人员，不额外虚构密集仪仗";
-                    }
-                    profile.SurroundingProps = "天然风化岩石与碎石、野生杂木灌木丛、开阔草野泥地与苍茫天际线，纯粹自然旷野地貌 (Natural Wilderness, Wild Rocks, Bushes, Open Earth and Sky)";
-                }
+                case Occupation.Lord: return "领主";
+                case Occupation.Guard:
+                case Occupation.PrisonGuard:
+                case Occupation.Soldier: return "守卫/士兵";
+                case Occupation.Tavernkeeper: return "酒馆店主";
+                case Occupation.TavernWench: return "酒馆侍女";
+                case Occupation.Musician: return "乐师";
+                case Occupation.TavernGameHost: return "赌徒/游戏主持人";
+                case Occupation.Mercenary: return "雇佣兵";
+                case Occupation.RansomBroker: return "赎金经纪人";
+                case Occupation.Merchant:
+                case Occupation.GoodsTrader:
+                case Occupation.Artisan:
+                case Occupation.Blacksmith:
+                case Occupation.Armorer:
+                case Occupation.Weaponsmith: return "商贩/工匠";
+                case Occupation.Villager: return "村民";
+                case Occupation.Townsfolk: return "镇民";
+                default: return "其他在场人物";
             }
         }
 

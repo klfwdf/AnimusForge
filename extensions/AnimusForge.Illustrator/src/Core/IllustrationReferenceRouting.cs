@@ -63,6 +63,7 @@ namespace AnimusForge.Illustrator.Core
                     "同一现场独立静态副本的普通透视环境参考：" +
                     (selected ? "依据导演选择的方向从完整全景重新投影。" : "从完整全景取默认前向，仅补充可见环境资料，最终取景由正文决定。") +
                     "保留可见建筑、家具、门窗与材质的空间关系，按正文统一绘制人物和环境；不把参考取景作为必须复制的画面。" +
+                    "此参考图主动省略了现场所有人物与动态实体，空桌椅或空地不代表现场无人；在场人物及有证据的背景人群按正文绘制，不照搬副本的无人状态。" +
                     "这是中性观察补光，不代表现场光源；光源方向、时段与氛围按正文，人物位置按本次事实。缺失区域不作为开放天空或新增物体的证据。",
                     IllustrationReferenceKind.ScenePerspective));
                 GenerationDiagnostics.Current?.RecordStage("scene_perspective_reference", new JObject
