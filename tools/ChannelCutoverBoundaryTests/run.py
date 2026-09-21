@@ -24,6 +24,7 @@ SCENE_CHAINS_PATH = "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBeha
 COURIER_GENERATION_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs"
 COURIER_SESSION_TRANSPORT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
 COURIER_ROUTE_TRANSPORT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs"
+COURIER_DELIVERY_LIFETIME_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs"
 
 
 def source(path: str, ref: str | None) -> str:
@@ -64,7 +65,8 @@ def courier_source(ref: str | None) -> str:
     fallback must not synthesize a second copy for baseline comparisons.
     """
     combined = source("CourierDeliveryBehavior.cs", ref)
-    for path in (COURIER_GENERATION_PATH, COURIER_SESSION_TRANSPORT_PATH, COURIER_ROUTE_TRANSPORT_PATH):
+    for path in (COURIER_GENERATION_PATH, COURIER_SESSION_TRANSPORT_PATH,
+                 COURIER_ROUTE_TRANSPORT_PATH, COURIER_DELIVERY_LIFETIME_PATH):
         if ref:
             exists = subprocess.run(
                 ["git", "cat-file", "-e", f"{ref}:{path}"],
