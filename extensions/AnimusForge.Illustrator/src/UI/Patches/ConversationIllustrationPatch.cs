@@ -27,8 +27,6 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static readonly List<WeakReference<ButtonWidget>> InjectedButtons = new List<WeakReference<ButtonWidget>>();
         private static bool _patched;
         private static bool _shoutResponsePatchInstalled;
-        private static bool _autoGenerationQueued;
-        private static int _autoGenerationRetries;
         private static TaleWorlds.CampaignSystem.Conversation.ConversationManager _conversationManagerSubscription;
         private static string _lastAutoRedrawSentence = string.Empty;
 
@@ -257,55 +255,18 @@ namespace AnimusForge.Illustrator.UI.Patches
 
         internal static void OnAgentJoinedConversation(IAgent agent)
         {
-            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true || _autoGenerationQueued)
+            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true)
                 return;
             AttachConversationContinuedHandler();
             _lastAutoRedrawSentence = string.Empty;
-            _autoGenerationQueued = true;
-            _autoGenerationRetries = 0;
-            IllustratorRuntime.Post(TryAutoGenerateConversationIllustration);
         }
 
         internal static void OnConversationEnded(IEnumerable<CharacterObject> characters)
         {
             DetachConversationContinuedHandler();
-            _autoGenerationQueued = false;
-            _autoGenerationRetries = 0;
             _lastAutoRedrawSentence = string.Empty;
             IllustrationCardPopup.ClearConversationSessionCache();
             IllustratorRuntime.Post(IllustrationCardPopup.CloseActiveConversation);
-        }
-
-        private static void TryAutoGenerateConversationIllustration()
-        {
-            _autoGenerationQueued = false;
-            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true ||
-                !IllustratorRuntime.IsEnabled("conversation") || IllustrationCardPopup.IsOpen)
-                return;
-
-            ConversationVisualContext context = null;
-            try
-            {
-                if (ScreenCaptureHelper.GetConversationSceneCaptureSource() == null)
-                    throw new InvalidOperationException("conversation scene is not ready");
-                context = ConversationContextExtractor.ExtractFromCurrentConversation();
-            }
-            catch (Exception ex)
-            {
-                Debug.Print("[Illustrator] Auto conversation illustration deferred: " + ex.GetType().Name);
-            }
-
-            if (context == null)
-            {
-                if (_autoGenerationRetries++ < 3)
-                {
-                    _autoGenerationQueued = true;
-                    IllustratorRuntime.Post(TryAutoGenerateConversationIllustration);
-                }
-                return;
-            }
-
-            IllustrationCardPopup.ShowForConversation(context, autoFullscreen: true, forceGenerate: true);
         }
 
         private static void AttachConversationContinuedHandler()

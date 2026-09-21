@@ -11,6 +11,7 @@ using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
 using TaleWorlds.ScreenSystem;
+using AnimusForge.Illustrator;
 using AnimusForge.Illustrator.Context;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
@@ -34,6 +35,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _closed;
         private int _generationCount;
         private bool _autoRedrawPending;
+        private bool _autoReplyArmed;
 
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
@@ -163,10 +165,12 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
         }
 
-        public static void ShowForConversation(ConversationVisualContext convContext, bool autoFullscreen = false, bool forceGenerate = false)
+        public static void ShowForConversation(ConversationVisualContext convContext, bool? autoFullscreen = null, bool forceGenerate = false)
         {
             IllustratorRuntime.AssertMainThread();
             if (convContext == null || !IllustratorRuntime.IsEnabled("conversation")) return;
+            bool autoReplyEnabled = IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen == true;
+            bool useFullscreen = autoFullscreen ?? (IllustratorSettings.Instance?.ConversationIllustrationUsesFullscreen == true);
             string conversationSessionKey = ConversationSessionKey(convContext);
             lock (typeof(IllustrationCardPopup))
             {
@@ -199,7 +203,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     catch (Exception ex) { Debug.Print("[Illustrator] Scene probe unavailable: " + ex.Message); }
                 }
                 _activeInstance?.Close();
-                if (autoFullscreen)
+                if (useFullscreen)
                 {
                     try
                     {
@@ -211,7 +215,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         Debug.Print("[Illustrator] Auto conversation scene pre-capture failed: " + ex.GetType().Name);
                     }
                 }
-                popup = new IllustrationCardPopup(topScreen, autoFullscreen ? "ConversationIllustrationFullscreenOverlay" : "ConversationIllustrationOverlay", "conversation", () =>
+                popup = new IllustrationCardPopup(topScreen, useFullscreen ? "ConversationIllustrationFullscreenOverlay" : "ConversationIllustrationOverlay", "conversation", () =>
                 {
                     string redrawBase64 = null;
                     ConversationVisualContext redrawContext = ConversationContextExtractor.ExtractFromCurrentConversation();
@@ -220,7 +224,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     AddEmblemSpec(redrawEmblems, current.InterlocutorHero, "对话对方");
                     AddEmblemSpec(redrawEmblems, current.MainHero, "玩家");
                     _activeInstance?.ExecuteConversationGeneration(current, redrawBase64, redrawEmblems);
-                }, probeSource == null ? (Action)null : () => popup?.ExecuteIsolatedSceneProbe(probeSource), autoFullscreen);
+                }, probeSource == null ? (Action)null : () => popup?.ExecuteIsolatedSceneProbe(probeSource), useFullscreen);
 
                 string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                     ? convContext.InterlocutorHero.Name.ToString()
@@ -228,19 +232,20 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         ? convContext.InterlocutorCharacter.Name.ToString()
                         : "对方");
 
-                popup._dataSource.TitleText = autoFullscreen ? "【场景插画】" : $"【会晤插画 · 与 {partnerName}】";
+                popup._dataSource.TitleText = useFullscreen ? "【场景插画】" : $"【会晤插画 · 与 {partnerName}】";
                 topScreen.AddLayer(popup._layer);
                 _activeInstance = popup;
 
                 string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
                 string key = $"Conv_{partnerId}";
                 var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "conversation");
-                if (!forceGenerate && cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
+                if (!forceGenerate && !autoReplyEnabled && cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                 {
                     popup._dataSource.SetReady(cached.DisplayStatusText);
                 }
                 else
                 {
+                    popup._autoReplyArmed = autoReplyEnabled;
                     popup.ExecuteConversationGeneration(convContext, preCapturedBase64, emblemSpecs);
                 }
             }
@@ -362,7 +367,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
-                if (completion.SavedItem != null && !_autoFullscreen) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
+                if (completion.SavedItem != null && !_autoReplyArmed) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
@@ -382,7 +387,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private void QueuePendingAutoRedraw()
         {
-            if (!_autoFullscreen || !_autoRedrawPending || _closed) return;
+            if (!_autoReplyArmed || !_autoRedrawPending || _closed) return;
             _autoRedrawPending = false;
             IllustratorRuntime.Post(AutoRedrawActiveConversation);
         }
@@ -704,7 +709,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }, completion =>
             {
                 if (sceneSource != null) sceneSource.EnsureCurrent(System.Threading.CancellationToken.None);
-                if (completion.SavedItem != null && !_autoFullscreen) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
+                if (completion.SavedItem != null && !_autoReplyArmed) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
@@ -795,7 +800,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         internal static void AutoRedrawActiveConversation()
         {
             var instance = _activeInstance;
-            if (instance == null || instance._closed || !instance._autoFullscreen ||
+            if (instance == null || instance._closed || !instance._autoReplyArmed ||
                 !string.Equals(instance._category, "conversation", StringComparison.Ordinal)) return;
             if (instance._dataSource.IsLoading)
             {
