@@ -25,6 +25,8 @@ COURIER_GENERATION_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/C
 COURIER_SESSION_TRANSPORT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
 COURIER_ROUTE_TRANSPORT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs"
 COURIER_DELIVERY_LIFETIME_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs"
+COURIER_SESSION_REGISTRY_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs"
+COURIER_SESSION_CREATION_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs"
 
 
 def source(path: str, ref: str | None) -> str:
@@ -66,7 +68,8 @@ def courier_source(ref: str | None) -> str:
     """
     combined = source("CourierDeliveryBehavior.cs", ref)
     for path in (COURIER_GENERATION_PATH, COURIER_SESSION_TRANSPORT_PATH,
-                 COURIER_ROUTE_TRANSPORT_PATH, COURIER_DELIVERY_LIFETIME_PATH):
+                 COURIER_ROUTE_TRANSPORT_PATH, COURIER_DELIVERY_LIFETIME_PATH,
+                 COURIER_SESSION_REGISTRY_PATH, COURIER_SESSION_CREATION_PATH):
         if ref:
             exists = subprocess.run(
                 ["git", "cat-file", "-e", f"{ref}:{path}"],
