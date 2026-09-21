@@ -212,7 +212,7 @@ namespace AnimusForge.Illustrator.Context
                 {
                     c2Part = $"，副色为 {ResolveColorName(liveryColor2)} (#{(liveryColor2 & 0x00FFFFFF):X6})";
                 }
-                profile.LiveryColorsSummary = $"人物所属阵营服饰主色为【{c1Name}】({c1Hex}){c2Part}；其身着的披风、斗篷、罩袍长袍及盔甲布料内衬鲜明展现此阵营色彩，呈现饱满的历史布料光泽与质感。";
+                profile.LiveryColorsSummary = $"引擎服饰染色通道辅助值为【{c1Name}】({c1Hex}){c2Part}；仅影响支持染色的材质区域，不代表披风、长袍或内衬的实际主色。衣着颜色、纹样及深浅分区以本人参考图为准，不按阵营色整件重染。";
             }
             if (hero.Clan != null)
             {

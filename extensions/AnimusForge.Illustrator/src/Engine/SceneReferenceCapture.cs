@@ -37,7 +37,7 @@ namespace AnimusForge.Illustrator.Engine
         internal static string SceneReferenceLabel() =>
             "当前玩家视角的单张真实现场画面，不是全景或多个方向。保留可见的墙面材质与配色、门窗楼梯和人物高低关系；" +
             "只对已看见的环境作描述，画面外及被遮挡区域保持未知，不按地点名称重造建筑。" +
-            "这张图只作为现场环境与空间关系参考，不用于推断人物的脸、发型、年龄、服装或姿态；人物外观以对应人物参考图为准。" +
+            "用于校验现场采光、可见人物行动与人群远近；人物身份细节仍按对应人物参考，不把界面头像或画廊作品当作现场人物。" +
             "忽略游戏对话UI、字幕、血条与名牌，不将界面内容画入作品。" + ScreenshotMaskReferenceNote;
 
         internal static IReadOnlyList<IllustrationReferenceImage> CreateCapturedSceneReferences(string image)
@@ -74,6 +74,7 @@ namespace AnimusForge.Illustrator.Engine
             var exportedPaths = new List<string>();
             var rawFaces = new List<byte[]>(PanoramaProjection.FaceCount);
             bool composed = false;
+            string calibrationReason = "not_attempted";
             PanoramaFrameStats frameStats = null;
             try
             {
@@ -93,7 +94,7 @@ namespace AnimusForge.Illustrator.Engine
                     string cameraOriginSource = "combat_camera";
                     Vec3 cameraOrigin = sourceFrame.origin;
                     var player = mission.MainAgent;
-                    if (player != null)
+                    if (player != null && player.IsActive())
                     {
                         Vec3 eye = player.GetEyeGlobalPosition();
                         if (!float.IsNaN(eye.x) && !float.IsNaN(eye.y) && !float.IsNaN(eye.z) &&
@@ -112,12 +113,17 @@ namespace AnimusForge.Illustrator.Engine
                         ["source"] = cameraOriginSource,
                         ["origin"] = new JArray(cameraOrigin.x, cameraOrigin.y, cameraOrigin.z),
                         ["combatCameraOrigin"] = new JArray(combatCameraOrigin.x, combatCameraOrigin.y, combatCameraOrigin.z),
-                        ["viewpointOffsetMeters"] = player == null ? 0 : player.Position.Distance(cameraOrigin),
+                        ["playerPosition"] = player == null ? null : new JArray(player.Position.x, player.Position.y, player.Position.z),
+                        ["distanceFromPlayerBaseMeters"] = player == null ? (double?)null : player.Position.Distance(cameraOrigin),
+                        ["addedEyeOffsetMeters"] = cameraOriginSource == "player_eye" ? (double?)0 : null,
                         ["selectionRadiusMeters"] = PanoramaCaptureRadius
                     });
-                    return Tuple.Create(mission, PanoramaProjection.BuildCameraFrames(sourceFrame), CaptureUnobstructedConversationSceneBase64(), cameraOriginSource);
+                    string calibration = CaptureUnobstructedConversationSceneBase64(out calibrationReason);
+                    return Tuple.Create(mission, PanoramaProjection.BuildCameraFrames(sourceFrame), calibration, cameraOriginSource);
                 }, captureToken).ConfigureAwait(false);
                 if (context == null) throw new InvalidOperationException("无法调度全景采集。");
+                GenerationDiagnostics.Current?.RecordStage("scene_calibration", new JObject
+                { ["attempt"] = 1, ["reason"] = calibrationReason, ["available"] = !string.IsNullOrWhiteSpace(context.Item3) });
                 snapshot = await CreatePanoramaSnapshotAsync(context.Item1, captureToken).ConfigureAwait(false);
                 GenerationDiagnostics.Current?.RecordStage("panorama_snapshot_ready", new JObject { ["meshes"] = snapshot.CopiedRoots,
                     ["resourceMeshes"] = snapshot.ResourceCopiedComponents,
@@ -162,15 +168,30 @@ namespace AnimusForge.Illustrator.Engine
                 captureToken.ThrowIfCancellationRequested();
                 byte[] panorama = PanoramaProjection.ComposeWithCancellation(rawFaces, 2048, 1024, captureToken);
                 captureToken.ThrowIfCancellationRequested();
+                string currentScene = context.Item3;
+                if (string.IsNullOrWhiteSpace(currentScene))
+                {
+                    // One bounded retry within the existing deadline, without touching UI/camera.
+                    currentScene = await RunOnGameThreadAsync(() =>
+                    {
+                        source.EnsureCurrent(captureToken);
+                        return CaptureUnobstructedConversationSceneBase64(out calibrationReason);
+                    }, captureToken).ConfigureAwait(false);
+                    GenerationDiagnostics.Current?.RecordStage("scene_calibration", new JObject
+                    { ["attempt"] = 2, ["reason"] = calibrationReason, ["available"] = !string.IsNullOrWhiteSpace(currentScene) });
+                }
+                string calibrationNote = string.IsNullOrWhiteSpace(currentScene)
+                    ? "本次未取得真实当前画面；没有图像依据确认人物现场姿态、可见人群或实际采光，仅使用已有文字事实。不能把本副本的补光或无人状态当作现场。"
+                    : "附加的当前画面用于核对实际采光、人物关系和可见人群。";
                 var references = new List<IllustrationReferenceImage>
                 {
                     new IllustrationReferenceImage(Convert.ToBase64String(panorama),
                         "当前场景独立静态副本的360×180度环境全景：同一点前后左右上下六个90度镜头，经球面映射合成一张展开图，不是六个房间或六张拼贴。" +
                         "中央是采集起始前方，左右边缘在后方相接，顶部为上方、底部为下方；展开边缘与两极的拉伸不是建筑变形。" +
                         "这张图只约束场景环境：用于辨认建筑、家具、门窗楼梯、材质与摆放；不得从全景推断人物的脸、发型、年龄、服装、姿态或人数。人物以对应身份参考图和事实为准。" +
-                        "最终依导演选定机位绘制单幅正常透视作品，不照搬全景展开布局。" + snapshot.Notes, IllustrationReferenceKind.ScenePanorama)
+                        "最终依导演选定机位绘制单幅正常透视作品，不照搬全景展开布局。" + snapshot.Notes + calibrationNote, IllustrationReferenceKind.ScenePanorama)
                 };
-                references.AddRange(CreateCapturedSceneReferences(context.Item3));
+                references.AddRange(CreateCapturedSceneReferences(currentScene));
                 composed = true;
                 GenerationDiagnostics.Current?.RecordStage("panorama_composed", new JObject { ["faces"] = PanoramaProjection.FaceCount,
                     ["layout"] = "equirectangular", ["width"] = 2048, ["height"] = 1024, ["horizontalDegrees"] = 360, ["verticalDegrees"] = 180,
@@ -184,8 +205,9 @@ namespace AnimusForge.Illustrator.Engine
                     ["cameraOriginSource"] = context.Item4 });
                 TaleWorlds.Library.Debug.Print($"[Illustrator] Nearby prefab panorama composed: views=6, coverage=360x180, radius=30m, meshes={snapshot.CopiedRoots}, calibration={references.Count > 1}, sourceMissionViews=0");
                 return new ConversationSceneReferenceCapture(references,
-                    "本次以玩家眼位为零偏移视点，依据玩家附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；全景只约束环境，真实当前画面如有附加，用于校验光照与人物关系。",
-                    "任务场景：附近30米全景参考", snapshot.NearbyPropFacts);
+                    (context.Item4 == "player_eye" ? "本次以玩家眼位为零附加偏移视点。" : "未取得有效玩家眼位，本次保留当前相机位置并已记录回退。") +
+                    "依据附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；全景只约束环境，真实当前画面如有附加，用于校验光照与人物关系。",
+                    "任务场景：附近30米全景参考" + (string.IsNullOrWhiteSpace(currentScene) ? "；当前画面校准缺失" : string.Empty), snapshot.NearbyPropFacts);
             }
             catch (OperationCanceledException) when (!token.IsCancellationRequested)
             { throw new TimeoutException("环境全景采集超过时间预算，已停止；没有发送不完整环境图。"); }

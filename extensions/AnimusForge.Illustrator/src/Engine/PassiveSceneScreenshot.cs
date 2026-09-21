@@ -17,22 +17,28 @@ namespace AnimusForge.Illustrator.Engine
 
         // Called only for an explicit generation, on the game thread. All UI access is read-only.
         internal static string CaptureUnobstructedConversationSceneBase64()
+            => CaptureUnobstructedConversationSceneBase64(out _);
+
+        internal static string CaptureUnobstructedConversationSceneBase64(out string reason)
         {
             IllustratorRuntime.AssertMainThread();
+            reason = "unavailable";
             try
             {
                 IntPtr window = GetForegroundWindow();
-                if (window == IntPtr.Zero) return null;
+                if (window == IntPtr.Zero) { reason = "no_foreground_window"; return null; }
                 GetWindowThreadProcessId(window, out uint processId);
-                if (processId != (uint)Process.GetCurrentProcess().Id || !GetClientRect(window, out RECT client)) return null;
+                if (processId != (uint)Process.GetCurrentProcess().Id) { reason = "game_not_foreground"; return null; }
+                if (!GetClientRect(window, out RECT client)) { reason = "client_rect_unavailable"; return null; }
                 int width = client.Right - client.Left, height = client.Bottom - client.Top;
-                if (width <= 0 || height <= 0) return null;
+                if (width <= 0 || height <= 0) { reason = "empty_client_rect"; return null; }
                 var origin = new POINT();
-                if (!ClientToScreen(window, ref origin)) return null;
+                if (!ClientToScreen(window, ref origin)) { reason = "client_origin_unavailable"; return null; }
 
                 var masks = new List<Rectangle>(3);
                 if (!TryReadIllustratorMasks(masks))
                 {
+                    reason = "overlay_bounds_unavailable_or_modal";
                     TaleWorlds.Library.Debug.Print("[Illustrator] Passive scene skipped: overlay bounds unavailable or modal report visible.");
                     return null;
                 }
@@ -40,21 +46,25 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     using (Graphics graphics = Graphics.FromImage(source))
                         graphics.CopyFromScreen(origin.X, origin.Y, 0, 0, source.Size, CopyPixelOperation.SourceCopy);
-                    if (GetForegroundWindow() != window) return null;
+                    if (GetForegroundWindow() != window) { reason = "foreground_changed"; return null; }
                     using (Bitmap masked = SceneScreenshotMask.Prepare(source, masks, false))
                     {
                         if (masked == null)
                         {
+                            reason = "overlay_covers_most_scene";
                             TaleWorlds.Library.Debug.Print("[Illustrator] Passive scene skipped: overlays obscure most of the scene.");
                             return null;
                         }
                         // Encoding uses the established screenshot colour path; no channel transform.
-                        return ConvertBitmapToBase64(masked, 1024, 90);
+                        string encoded = ConvertBitmapToBase64(masked, 1024, 90);
+                        reason = string.IsNullOrWhiteSpace(encoded) ? "encode_unavailable" : "captured";
+                        return encoded;
                     }
                 }
             }
             catch (Exception ex)
             {
+                reason = "capture_exception_" + ex.GetType().Name;
                 TaleWorlds.Library.Debug.Print("[Illustrator] Passive scene screenshot unavailable: " + ex.Message);
                 return null;
             }
