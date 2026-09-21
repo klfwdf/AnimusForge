@@ -10,6 +10,7 @@ using TaleWorlds.MountAndBlade;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.UI.Gallery;
 using AnimusForge.Illustrator.UI.Patches;
+using AnimusForge.Illustrator.UI.Overlays;
 
 namespace AnimusForge.Illustrator
 {
@@ -57,6 +58,7 @@ namespace AnimusForge.Illustrator
             try
             {
                 _harmony?.UnpatchAll("AnimusForge.Illustrator");
+                IllustrationCardPopup.ClearConversationSessionCache();
                 WeeklyReportPopupIllustrationPatch.CloseOverlay();
                 IllustratorRuntime.Shutdown();
             }
@@ -81,6 +83,8 @@ namespace AnimusForge.Illustrator
         public override void RegisterEvents()
         {
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
+            CampaignEvents.OnAgentJoinedConversationEvent.AddNonSerializedListener(this, ConversationIllustrationPatch.OnAgentJoinedConversation);
+            CampaignEvents.ConversationEnded.AddNonSerializedListener(this, ConversationIllustrationPatch.OnConversationEnded);
         }
 
         public override void SyncData(IDataStore dataStore)
@@ -91,6 +95,7 @@ namespace AnimusForge.Illustrator
         {
             try
             {
+                IllustrationCardPopup.ClearConversationSessionCache();
                 IllustratorRuntime.SetCampaign(Campaign.Current?.UniqueGameId ?? "unknown_campaign");
                 starter.AddGameMenuOption(
                     "camp",

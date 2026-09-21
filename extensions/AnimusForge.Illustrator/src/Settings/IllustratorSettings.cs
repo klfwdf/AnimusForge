@@ -417,6 +417,10 @@ namespace AnimusForge.Illustrator
             }
         }
 
+        [SettingPropertyBool("每次对话自动生成全屏场景插画", HintText = "开启后，每次新会话只自动生成一张场景插画，并在生成完成后覆盖全屏显示；同一会话不会因台词切换重复付费。生成期间显示加载遮罩，离开会话或关闭全屏会取消未完成请求。", Order = 4, RequireRestart = false)]
+        [SettingPropertyGroup("4. 周报与展示场景", GroupOrder = 4)]
+        public bool AutoGenerateConversationIllustrationFullscreen { get; set; } = false;
+
         [SettingPropertyInteger("本地缓存最大保留张数", 20, 1000, "0 张", HintText = "生成的图片在本地持久化缓存的最大数量，避免重复调用消耗额度。", Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("5. 存储与性能", GroupOrder = 5)]
         public int MaxCacheCount { get; set; } = 200;

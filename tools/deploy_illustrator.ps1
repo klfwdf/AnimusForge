@@ -86,6 +86,7 @@ if (-not (Test-Path $builtDll)) {
 
 $expectedPrefabs = @(
     "ConversationIllustrationOverlay.xml",
+    "ConversationIllustrationFullscreenOverlay.xml",
     "EncyclopediaIllustrationOverlay.xml",
     "IllustratorGalleryPopup.xml",
     "IllustratorOffscreenStage.xml",

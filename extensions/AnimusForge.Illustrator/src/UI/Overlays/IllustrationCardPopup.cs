@@ -21,12 +21,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
     public sealed class IllustrationCardPopup
     {
         private static IllustrationCardPopup _activeInstance;
+        private static ConversationIllustrationSessionSnapshot _conversationSession;
+        private static long _conversationSessionEpoch;
         private readonly ScreenBase _screen;
         private readonly MovableGauntletLayer _layer;
         private readonly IllustrationCardVM _dataSource;
         private readonly IllustrationScope _scope;
         private readonly string _category;
         private readonly string _instanceId = Guid.NewGuid().ToString("N").Substring(0, 8);
+        private readonly bool _autoFullscreen;
         private string _activeSpriteName;
         private bool _closed;
         private int _generationCount;
@@ -34,18 +37,76 @@ namespace AnimusForge.Illustrator.UI.Overlays
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
 
-        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action onRegenerate, Action onSceneProbe = null)
+        private sealed class ConversationIllustrationSessionSnapshot
+        {
+            internal string SessionKey;
+            internal string StableHardFacts;
+            internal string NearbyPropFacts;
+            internal IReadOnlyList<IllustrationReferenceImage> SceneReferences;
+            internal IReadOnlyList<IllustrationReferenceImage> CharacterReferences;
+            internal IReadOnlyList<IllustrationReferenceImage> GenerationCharacterReferences;
+            internal IReadOnlyList<IllustrationReferenceImage> EmblemReferences;
+            internal IReadOnlyList<IllustrationReferenceImage> GenerationEmblemReferences;
+        }
+
+        private static string ConversationSessionOwnerKey()
+        {
+            try
+            {
+                var source = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+                if (source != null) return source.SessionOwnerKey;
+            }
+            catch { }
+            return "unavailable:" + (ScreenManager.TopScreen?.GetHashCode() ?? 0);
+        }
+
+        private static string ConversationSessionKey(ConversationVisualContext context, string ownerKey = null)
+        {
+            if (context == null) return string.Empty;
+            string main = context.MainHero?.StringId ?? "player";
+            string partner = context.InterlocutorHero?.StringId ?? context.InterlocutorCharacter?.StringId ?? "NPC";
+            return (ownerKey ?? ConversationSessionOwnerKey()) + "|" + main + "|" + partner;
+        }
+
+        private static string FreezeConversationHardFacts(string hardFacts)
+        {
+            string value = hardFacts ?? string.Empty;
+            int dynamicStart = value.IndexOf("【当前人物空间与动作硬事实】", StringComparison.Ordinal);
+            return (dynamicStart >= 0 ? value.Substring(0, dynamicStart) : value).Trim();
+        }
+
+        private static string ExtractConversationDynamicFacts(string hardFacts)
+        {
+            string value = hardFacts ?? string.Empty;
+            int dynamicStart = value.IndexOf("【当前人物空间与动作硬事实】", StringComparison.Ordinal);
+            return dynamicStart >= 0 ? value.Substring(dynamicStart).Trim() : string.Empty;
+        }
+
+        private static IllustrationPromptPlan BuildConversationSessionPlan(IllustrationPromptPlan current, ConversationIllustrationSessionSnapshot session, string nearbyPropFacts = null)
+        {
+            if (session == null) return current;
+            var hardFacts = new StringBuilder(session.StableHardFacts ?? string.Empty);
+            string dynamicFacts = ExtractConversationDynamicFacts(current?.HardFacts);
+            if (!string.IsNullOrWhiteSpace(dynamicFacts)) hardFacts.AppendLine().Append(dynamicFacts);
+            string props = !string.IsNullOrWhiteSpace(session.NearbyPropFacts) ? session.NearbyPropFacts : nearbyPropFacts;
+            if (!string.IsNullOrWhiteSpace(props)) hardFacts.AppendLine().Append(props.Trim());
+            return new IllustrationPromptPlan(current.Mode, hardFacts.ToString(), current.ArtDirection, current.DirectorOnlyFacts);
+        }
+
+        private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action onRegenerate, Action onSceneProbe = null, bool autoFullscreen = false)
         {
             _screen = screen;
             _category = category;
+            _autoFullscreen = autoFullscreen;
             _dataSource = new IllustrationCardVM(Close, onRegenerate, onSceneProbe);
-            var layer = new MovableGauntletLayer("IllustrationCardOverlay", 4015, false);
+            var layer = new MovableGauntletLayer(autoFullscreen ? "IllustrationFullscreenOverlay" : "IllustrationCardOverlay", autoFullscreen ? 4020 : 4015, false);
             _layer = layer;
             try
             {
             var movieIdentifier = layer.LoadMovie(movieName, _dataSource);
-            layer.AutoAttachMovable(movieIdentifier?.Movie, "CardPanel", "TitleBar");
-            layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
+            if (!autoFullscreen)
+                layer.AutoAttachMovable(movieIdentifier?.Movie, "CardPanel", "TitleBar");
+            layer.InputRestrictions.SetInputRestrictions(true, autoFullscreen ? InputUsageMask.All : InputUsageMask.MouseButtons);
             _layer = layer;
             _scope = new IllustrationScope(screen, category, Close);
 
@@ -99,10 +160,19 @@ namespace AnimusForge.Illustrator.UI.Overlays
             }
         }
 
-        public static void ShowForConversation(ConversationVisualContext convContext)
+        public static void ShowForConversation(ConversationVisualContext convContext, bool autoFullscreen = false, bool forceGenerate = false)
         {
             IllustratorRuntime.AssertMainThread();
             if (convContext == null || !IllustratorRuntime.IsEnabled("conversation")) return;
+            string conversationSessionKey = ConversationSessionKey(convContext);
+            lock (typeof(IllustrationCardPopup))
+            {
+                if (_conversationSession != null && !string.Equals(_conversationSession.SessionKey, conversationSessionKey, StringComparison.Ordinal))
+                {
+                    _conversationSessionEpoch++;
+                    _conversationSession = null;
+                }
+            }
             ScreenBase topScreen = ScreenManager.TopScreen;
             if (topScreen == null) return;
 
@@ -126,7 +196,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     catch (Exception ex) { Debug.Print("[Illustrator] Scene probe unavailable: " + ex.Message); }
                 }
                 _activeInstance?.Close();
-                popup = new IllustrationCardPopup(topScreen, "ConversationIllustrationOverlay", "conversation", () =>
+                popup = new IllustrationCardPopup(topScreen, autoFullscreen ? "ConversationIllustrationFullscreenOverlay" : "ConversationIllustrationOverlay", "conversation", () =>
                 {
                     string redrawBase64 = null;
                     ConversationVisualContext redrawContext = ConversationContextExtractor.ExtractFromCurrentConversation();
@@ -135,7 +205,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     AddEmblemSpec(redrawEmblems, current.InterlocutorHero, "对话对方");
                     AddEmblemSpec(redrawEmblems, current.MainHero, "玩家");
                     _activeInstance?.ExecuteConversationGeneration(current, redrawBase64, redrawEmblems);
-                }, probeSource == null ? (Action)null : () => popup?.ExecuteIsolatedSceneProbe(probeSource));
+                }, probeSource == null ? (Action)null : () => popup?.ExecuteIsolatedSceneProbe(probeSource), autoFullscreen);
 
                 string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                     ? convContext.InterlocutorHero.Name.ToString()
@@ -143,14 +213,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         ? convContext.InterlocutorCharacter.Name.ToString()
                         : "对方");
 
-                popup._dataSource.TitleText = $"【会晤插画 · 与 {partnerName}】";
+                popup._dataSource.TitleText = autoFullscreen ? "【场景插画】" : $"【会晤插画 · 与 {partnerName}】";
                 topScreen.AddLayer(popup._layer);
                 _activeInstance = popup;
 
                 string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
                 string key = $"Conv_{partnerId}";
                 var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "conversation");
-                if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
+                if (!forceGenerate && cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                 {
                     popup._dataSource.SetReady(cached.DisplayStatusText);
                 }
@@ -277,7 +347,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
-                if (completion.SavedItem != null) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
+                if (completion.SavedItem != null && !_autoFullscreen) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
@@ -431,6 +501,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
             string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
             string key = $"Conv_{partnerId}";
+            string conversationSessionKey = ConversationSessionKey(convContext);
+            ConversationIllustrationSessionSnapshot session;
+            long sessionEpoch;
+            lock (typeof(IllustrationCardPopup))
+            {
+                sessionEpoch = _conversationSessionEpoch;
+                session = _conversationSession != null && string.Equals(_conversationSession.SessionKey, conversationSessionKey, StringComparison.Ordinal)
+                    ? _conversationSession : null;
+            }
             // 台词与近三轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
             _generationCount++;
             string variation = GenerateConversationSceneVariation(convContext);
@@ -462,11 +541,18 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _dataSource.SetReady("未能取得双方完整装备快照，已停止生成；不会用兵种模板或另一套服装替代。");
                 return;
             }
-            var sceneSource = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+            var sceneSource = session == null ? ScreenCaptureHelper.GetConversationSceneCaptureSource() : null;
 
             _scope.Run(async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
+                GenerationDiagnostics.Current?.RecordStage("conversation_session_cache", new JObject
+                {
+                    ["hit"] = session != null,
+                    ["sessionKey"] = conversationSessionKey,
+                    ["reusedPanorama"] = session != null && session.SceneReferences != null,
+                    ["reusedCharacterReferences"] = session != null && session.CharacterReferences != null
+                });
                 // 按实际owner分流：Mission用附近30米全景，地图对话只读当前展示画面。
                 var ageEvidence = convContext.InterlocutorAgeSnapshot;
                 if (ageEvidence != null)
@@ -482,64 +568,104 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     });
                 var directorRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
                 var genRefs = new System.Collections.Generic.List<IllustrationReferenceImage>();
-                var sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
-                directorRefs.AddRange(sceneCapture.References);
-                string unavailableSceneNote = sceneCapture.References == null || sceneCapture.References.Count == 0
-                    ? "\n【环境参考不可用】" + sceneCapture.DirectorNote : string.Empty;
-                var scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
-                    promptPlan.DirectorOnlyFacts + unavailableSceneNote);
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "，正在整理人物参考..."; });
-
-                // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
-                Func<Task<CharacterPortraitReferences>> playerStage = player == null ? (Func<Task<CharacterPortraitReferences>>)null : () => ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(player, useCivilian: playerCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: playerEquipmentCode, appearance: convContext.MainHeroProfile.Appearance);
-                Func<Task<CharacterPortraitReferences>> partnerStage = interlocutor != null
-                    ? () => ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(interlocutor, interlocutorCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: partnerEquipmentCode, appearance: convContext.InterlocutorProfile.Appearance)
-                    : convContext.InterlocutorCharacter != null ? (Func<Task<CharacterPortraitReferences>>)(() => ScreenCaptureHelper.ExtractCharacterPortraitReferencesAsync(convContext.InterlocutorCharacter, cancellationToken: token, bodyProperties: convContext.InterlocutorBodyProperties, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: partnerEquipmentCode, appearance: convContext.InterlocutorProfile.Appearance)) : null;
-                if (playerStage != null)
+                ScreenCaptureHelper.ConversationSceneReferenceCapture sceneCapture = null;
+                string sceneStatus = "复用本次会话首次环境与人物参考";
+                IllustrationPromptPlan scenePromptPlan;
+                if (session != null)
                 {
-                    var portraits = await playerStage().ConfigureAwait(false);
-                    if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
-                    IllustrationReferenceRouting.AddCharacter(directorRefs, genRefs, portraits, playerName,
-                        $"【玩家：{playerName}】全身身份与实际穿戴；与头肩图为同一人。行动和位置按现场事实及导演正文。");
+                    directorRefs.AddRange(session.SceneReferences ?? Array.Empty<IllustrationReferenceImage>());
+                    directorRefs.AddRange(session.CharacterReferences ?? Array.Empty<IllustrationReferenceImage>());
+                    directorRefs.AddRange(session.EmblemReferences ?? Array.Empty<IllustrationReferenceImage>());
+                    genRefs.AddRange(session.GenerationCharacterReferences ?? Array.Empty<IllustrationReferenceImage>());
+                    genRefs.AddRange(session.GenerationEmblemReferences ?? Array.Empty<IllustrationReferenceImage>());
+                    scenePromptPlan = BuildConversationSessionPlan(promptPlan, session);
                 }
-                if (partnerStage != null)
+                else
                 {
-                    var portraits = await partnerStage().ConfigureAwait(false);
-                    if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
-                    IllustrationReferenceRouting.AddCharacter(directorRefs, genRefs, portraits, partnerName,
-                        $"【对话对象：{partnerName}】全身身份与实际穿戴；与头肩图为同一人，不与玩家混淆。行动和位置按现场事实及导演正文。");
+                    sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token).ConfigureAwait(false);
+                    directorRefs.AddRange(sceneCapture.References);
+                    string unavailableSceneNote = sceneCapture.References == null || sceneCapture.References.Count == 0
+                        ? "\n【环境参考不可用】" + sceneCapture.DirectorNote : string.Empty;
+                    scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
+                        promptPlan.DirectorOnlyFacts + unavailableSceneNote);
+                    sceneStatus = sceneCapture.StatusText + "，正在整理人物参考...";
                 }
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus; });
 
-                foreach (var spec in emblemSpecs ?? new List<EmblemSpec>())
+                var characterRefs = new List<IllustrationReferenceImage>();
+                var generationCharacterRefs = new List<IllustrationReferenceImage>();
+                var emblemRefs = new List<IllustrationReferenceImage>();
+                var generationEmblemRefs = new List<IllustrationReferenceImage>();
+                if (session == null)
                 {
-                    string b64 = await BannerEmblemComposer.ComposeToBase64Async(spec.Code, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
-                    if (!string.IsNullOrWhiteSpace(b64))
+                    // 离屏舞台提取在 scope 内携带 token：关闭/重绘时旧任务立即取消并拆舞台
+                    Func<Task<CharacterPortraitReferences>> playerStage = player == null ? (Func<Task<CharacterPortraitReferences>>)null : () => ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(player, useCivilian: playerCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: playerEquipmentCode, appearance: convContext.MainHeroProfile.Appearance);
+                    Func<Task<CharacterPortraitReferences>> partnerStage = interlocutor != null
+                        ? () => ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(interlocutor, interlocutorCivilian, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: partnerEquipmentCode, appearance: convContext.InterlocutorProfile.Appearance)
+                        : convContext.InterlocutorCharacter != null ? (Func<Task<CharacterPortraitReferences>>)(() => ScreenCaptureHelper.ExtractCharacterPortraitReferencesAsync(convContext.InterlocutorCharacter, cancellationToken: token, bodyProperties: convContext.InterlocutorBodyProperties, cleanTempFiles: options?.AutoCleanTempFiles == true, equipmentCodeOverride: partnerEquipmentCode, appearance: convContext.InterlocutorProfile.Appearance)) : null;
+                    if (playerStage != null)
                     {
+                        var portraits = await playerStage().ConfigureAwait(false);
+                        if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("玩家完整装备离屏立绘失败，已停止生成。");
+                        IllustrationReferenceRouting.AddCharacter(characterRefs, generationCharacterRefs, portraits, playerName,
+                            $"【玩家：{playerName}】全身身份与实际穿戴；与头肩图为同一人。行动和位置按现场事实及导演正文。");
+                    }
+                    if (partnerStage != null)
+                    {
+                        var portraits = await partnerStage().ConfigureAwait(false);
+                        if (string.IsNullOrWhiteSpace(portraits.FullBody)) throw new InvalidOperationException("对方完整装备离屏立绘失败，已停止生成。");
+                        IllustrationReferenceRouting.AddCharacter(characterRefs, generationCharacterRefs, portraits, partnerName,
+                            $"【对话对象：{partnerName}】全身身份与实际穿戴；与头肩图为同一人，不与玩家混淆。行动和位置按现场事实及导演正文。");
+                    }
+                    directorRefs.AddRange(characterRefs);
+                    genRefs.AddRange(generationCharacterRefs);
+
+                    foreach (var spec in emblemSpecs ?? new List<EmblemSpec>())
+                    {
+                        string b64 = await BannerEmblemComposer.ComposeToBase64Async(spec.Code, cleanTempFiles: options?.AutoCleanTempFiles == true, cancellationToken: token).ConfigureAwait(false);
+                        if (string.IsNullOrWhiteSpace(b64)) continue;
                         var r = new IllustrationReferenceImage(b64, $"【{spec.Side}：{spec.Owner}】真实纹章样图；仅在该方已有纹章载体入画时还原图案配色，不新增旗帜、盾牌或载体。", IllustrationReferenceKind.Emblem);
-                        directorRefs.Add(r);
-                        // 仅当该方人物确实身穿纹章罩袍或持有明确纹章盾牌时，才加入生图垫图，防止生图模型在普通金属胸甲上硬印纹章！
+                        emblemRefs.Add(r);
                         var playerProfile = convContext.MainHeroProfile;
                         var partnerProfile = convContext.InterlocutorProfile;
                         bool sideHasHeraldic =
                             (spec.PlayerSide && playerProfile != null && (playerProfile.HasHeraldicArmor || playerProfile.HasHeraldicShield || playerProfile.BannerEquipmentDetails.Count > 0)) ||
                             (spec.InterlocutorSide && partnerProfile != null && (partnerProfile.HasHeraldicArmor || partnerProfile.HasHeraldicShield || partnerProfile.BannerEquipmentDetails.Count > 0));
-                        if (sideHasHeraldic)
+                        if (sideHasHeraldic) generationEmblemRefs.Add(r);
+                    }
+                    directorRefs.AddRange(emblemRefs);
+                    genRefs.AddRange(generationEmblemRefs);
+
+                    token.ThrowIfCancellationRequested();
+                    lock (typeof(IllustrationCardPopup))
+                    {
+                        if (_conversationSessionEpoch == sessionEpoch && _conversationSession == null)
                         {
-                            genRefs.Add(r);
+                            _conversationSession = new ConversationIllustrationSessionSnapshot
+                            {
+                                SessionKey = conversationSessionKey,
+                                StableHardFacts = FreezeConversationHardFacts(promptPlan.HardFacts),
+                                NearbyPropFacts = sceneCapture?.NearbyPropFacts ?? string.Empty,
+                                SceneReferences = new List<IllustrationReferenceImage>(sceneCapture?.References ?? Array.Empty<IllustrationReferenceImage>()),
+                                CharacterReferences = new List<IllustrationReferenceImage>(characterRefs),
+                                GenerationCharacterReferences = new List<IllustrationReferenceImage>(generationCharacterRefs),
+                                EmblemReferences = new List<IllustrationReferenceImage>(emblemRefs),
+                                GenerationEmblemReferences = new List<IllustrationReferenceImage>(generationEmblemRefs)
+                            };
                         }
                     }
                 }
 
-                await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
+                if (sceneSource != null) await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(scenePromptPlan, directorRefs, options, token).ConfigureAwait(false);
                 string detailedPrompt = direction.Prompt;
                 if (options?.EnableReferenceImageForGeneration != false)
-                    IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture.References, direction, token);
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneCapture.StatusText + "；" + direction.StatusText + "，正在绘制画卷..."; });
+                    IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture?.References ?? session?.SceneReferences, direction, token);
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus + "；" + direction.StatusText + "，正在绘制画卷..."; });
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
-                await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
+                if (sceneSource != null) await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, finalGenRefs, options, token).ConfigureAwait(false);
-                await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
+                if (sceneSource != null) await sceneSource.EnsureCurrentAsync(token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
                 CachedIllustrationItem saved = null;
                 if (result.Success && result.ImageBytes != null)
@@ -550,8 +676,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
-                sceneSource.EnsureCurrent(System.Threading.CancellationToken.None);
-                if (completion.SavedItem != null) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
+                if (sceneSource != null) sceneSource.EnsureCurrent(System.Threading.CancellationToken.None);
+                if (completion.SavedItem != null && !_autoFullscreen) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
@@ -629,6 +755,21 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     _activeInstance = null;
                 }
+            }
+        }
+
+        public static void CloseActiveConversation()
+        {
+            if (_activeInstance != null && string.Equals(_activeInstance._category, "conversation", StringComparison.Ordinal))
+                _activeInstance.Close();
+        }
+
+        internal static void ClearConversationSessionCache()
+        {
+            lock (typeof(IllustrationCardPopup))
+            {
+                _conversationSessionEpoch++;
+                _conversationSession = null;
             }
         }
     }

@@ -1,0 +1,20 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#E0000000" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
+      <Children>
+        <Widget IsVisible="@HasIllustration" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="@SpriteName" ImageFit.Type="Contain" DoNotAcceptEvents="true" />
+        <Widget IsVisible="@IsLoading" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.7" DoNotAcceptEvents="true">
+          <Children>
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="40" MarginRight="40" Brush="Popup.Description.Text" Brush.FontSize="24" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
+          </Children>
+        </Widget>
+        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="24" MarginLeft="80" MarginRight="80" Brush="Popup.Title.Text" Brush.FontSize="24" Brush.TextHorizontalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />
+        <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="44" HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="24" MarginRight="28" Brush="Popup.Done.Button" Command.Click="ExecuteClose" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+          <Children>
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="18" Text="关闭" DoNotAcceptEvents="true" />
+          </Children>
+        </ButtonWidget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

@@ -28,6 +28,9 @@ namespace AnimusForge.Illustrator.Engine
             internal bool HasMapTableau => _tableau != null;
             internal Mission Mission => _mission;
             internal MissionScreen MissionScreen => _screen as MissionScreen;
+            internal string SessionOwnerKey => IsMapConversation
+                ? "map:" + (_mapView?.GetHashCode() ?? 0) + ":" + (_mapMission?.GetHashCode() ?? 0) + ":" + (_tableau?.GetHashCode() ?? 0)
+                : "mission:" + (_mission?.GetHashCode() ?? 0) + ":" + (_mission?.Scene?.GetHashCode() ?? 0);
 
             internal ConversationSceneCaptureSource(MissionScreen screen, Mission mission)
             { _screen = screen; _mission = mission; }
