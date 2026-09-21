@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "3d2b636e498d98e5e72ec420a52d2ef9738af956",
+  "sourceRevision": "616ba892b12dbca308c5c53232a3272dcfdf9079",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4384,14 +4384,14 @@
     },
     {
       "id": "economy.prompt.capture.hero_debt",
-      "path": "RewardSystemBehavior.cs",
-      "start": 18214,
-      "end": 18214,
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs",
+      "start": 537,
+      "end": 537,
       "symbol": "public string BuildDebtHintForAI(Hero npc)",
       "match": "exact",
       "status": "wired-j12a-in-progress",
-      "note": "game-thread debt normalize/value capture before detached projection",
-      "fileSha256": "c8ea4933134ededf9c633081c477b76b5425b23e4188f1a7f22a77ca090f7fc9"
+      "note": "game-thread debt normalize/value capture in Economy ledger before detached projection",
+      "fileSha256": "803ff0f4df8b239e16116343aadd426db1bb5f65d0cff6968cd9afd0c9a82e47"
     },
     {
       "id": "economy.authorization.asset",
@@ -4491,6 +4491,28 @@
       "status": "wired-j12a-in-progress",
       "note": "pending promise identity, load/import reconciliation, deferred creation and completion owner",
       "fileSha256": "91e3314a9700899360a1d17063c6d9bd53e038dd92a58ecbf57996fb039414b6"
+    },
+    {
+      "id": "economy.debt.ledger",
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs",
+      "start": 122,
+      "end": 122,
+      "symbol": "private Dictionary<string, DebtRecord> _debts = new Dictionary<string, DebtRecord>();",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "nested debt schema, runtime ledger, prompt/export/import, create/resolve and compatibility API owner",
+      "fileSha256": "803ff0f4df8b239e16116343aadd426db1bb5f65d0cff6968cd9afd0c9a82e47"
+    },
+    {
+      "id": "economy.debt.daily-lifecycle",
+      "path": "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs",
+      "start": 11,
+      "end": 11,
+      "symbol": "private void OnDailyTick()",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "registered daily Economy maintenance and debt penalty Campaign apply owner",
+      "fileSha256": "7c4a8fc0b77805ae8c57e0031f831ba583499fd9439992c70d8e4daba64730df"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # J12 Economy / Diplomacy / WorldMap 实施计划
 
-> 状态：`J12a_IN_PROGRESS`（2026-09-21）；G0、Economy 边界/投影、资产 replay、Trust 规则、Debt 归一/时间表/Quest owner 已完成，Reward/Loan capture、Debt ledger mutation/daily adapter 与兼容链尚未拆完。
+> 状态：`J12a_IN_PROGRESS`（2026-09-21）；G0、Economy 边界/投影、资产 replay 与 Debt 全生命周期 owner 已归位，Reward/Loan capture、Trust progressive state owner 与兼容链尚未拆完。
 > 规划基线：`60499d44b3b2b97e5f35b32364a8e819ee9b4768`；J11 产品 `cdbd077a`，真实 Campaign 入口验收修复 `60499d44` 已推送。
 > 本轮仅编写计划。下列迁移、抽取、测试与验收是后续实施项，不是已完成结果；不因此授权自动化、推送、Stage、部署、打包或存档操作。
 
@@ -14,11 +14,12 @@
 | J12a1 剩余 Reward/Loan capture | NOT-STARTED | 不用本次 Debt/Trust formatter 冒充整个 capture/projection 包完成 |
 | J12a2 replay/authorization/batch owner | DONE | `07feb572`：三个完整 replay partial 与 11 个 live authorization 方法归位；`deb421ae`：共享 batch owner 统一 null/reject/applied/partial/unknown/fact retention，三个 step delegate 是唯一游戏 mutation host；删除零调用旧 resolver |
 | J12a3.1 Trust 规则 + Debt 归一 | DONE | `54b55aa3`：Trust clamp/十级语义/提示指南归 `EconomyTrustPolicy`；旧账迁移、line clamp、aggregate/date 重建和 note 归一归 `EconomyDebtNormalizationPolicy`；原 nested save schema、SyncData 和 wrapper 保持 |
-| J12a3.2 Debt schedule / Quest | PARTIAL | `3d2b636e`：due/reminder/finite+unlimited penalty arithmetic 归 `EconomyDebtSchedulePolicy`；pending state 与 10 个 Quest lifecycle 声明逐声明原样迁入 Debt owner；创建/约定结清 ledger mutation、daily Campaign apply adapter 仍待拆 |
+| J12a3.2 Debt schedule / Quest / ledger / daily | DONE | `3d2b636e`：due/reminder/finite+unlimited penalty arithmetic 与 pending Quest lifecycle；`616ba892`：nested schema、35 个账本/兼容声明和真实 `DailyTickEvent` handler 逐声明原样归位；SyncData field/registration 保持 host |
+| J12a3.3 Trust progressive state | NOT-STARTED | progressive delta/carry、个人/公共/settlement/merchant state apply 仍在根 owner；不能用十级提示 policy 冒充真实信任生命周期完成 |
 | J12a4 | NOT-STARTED | 兼容链与 mixed tags 清理待施工；不得用归一/schedule/Quest owner 冒充整个 Economy 生命周期完成 |
 | J12b/J12c/J12d | NOT-STARTED | 外交、WorldMap 和整包验收未开始 |
 
-累计证据：Economy prompt/trust projection 15 项 + 2 个可编译变异；Debt normalization/schedule 48 项 + unlimited-due/reminder-cadence 2 个可编译变异；Quest 10 声明与迁前精确相等并受生产双版本编译；ProductionReward 11；HeroAssetScope 67；Economy port / executor、Interaction 40/69/39、Duel 16、Weekly material 通过；Debug 1.3/1.4/Bootstrap 0 warning/0 error；Debug 两实现 DLL API/metadata 530；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened；J12a2.1 另有 GiveAsset stress 80562、HeroAssetScope 5 个可编译变异（含 unknown 后错误继续）、Production owner current-DLL replay、Phase8 73 通过。`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 在与 J12 无关的既有 `Missing TagSceneSessionHistoryLine` 提取点失败，基线源码同样无该符号，未把它写成 J12 产品失败或 PASS；最终相关工具范围仍需单独收敛。Release、LIVE、SAVE、真实 Economy 均未运行。
+累计证据：Economy prompt/trust projection 15 项 + 2 个可编译变异；Debt normalization/schedule 48 项 + unlimited-due/reminder-cadence 2 个可编译变异；Quest 10、ledger/DTO 35、daily 1 个声明与迁前精确相等并受生产双版本编译；ProductionReward 11；HeroAssetScope 67；Economy port / executor、Interaction 40/69/39、Duel 16、Weekly material 通过；Debug 1.3/1.4/Bootstrap 0 warning/0 error；Debug 两实现 DLL API/metadata 530；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened；J12a2.1 另有 GiveAsset stress 80562、HeroAssetScope 5 个可编译变异（含 unknown 后错误继续）、Production owner current-DLL replay、Phase8 73 通过。`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 在与 J12 无关的既有 `Missing TagSceneSessionHistoryLine` 提取点失败，基线源码同样无该符号，未把它写成 J12 产品失败或 PASS；最终相关工具范围仍需单独收敛。Release、LIVE、SAVE、真实 Economy 均未运行。
 
 ## 1. 目标、范围与完成含义
 
