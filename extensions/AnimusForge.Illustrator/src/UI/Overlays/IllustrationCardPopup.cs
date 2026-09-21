@@ -106,7 +106,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
             var movieIdentifier = layer.LoadMovie(movieName, _dataSource);
             if (!autoFullscreen)
                 layer.AutoAttachMovable(movieIdentifier?.Movie, "CardPanel", "TitleBar");
-            layer.InputRestrictions.SetInputRestrictions(true, autoFullscreen ? InputUsageMask.All : InputUsageMask.MouseButtons);
+            else
+                layer.AttachTopFraction(movieIdentifier?.Movie?.RootWidget?.FindChild("TopPanel", includeAllChildren: true), 0.75f);
+            layer.InputRestrictions.SetInputRestrictions(autoFullscreen ? false : true, autoFullscreen ? InputUsageMask.Invalid : InputUsageMask.MouseButtons);
             _layer = layer;
             _scope = new IllustrationScope(screen, category, Close);
 
