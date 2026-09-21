@@ -1,8 +1,21 @@
 # J12 Economy / Diplomacy / WorldMap 实施计划
 
-> 状态：`J12_PLANNED`；计划完成，生产施工未开始（2026-09-21）。
+> 状态：`J12a_IN_PROGRESS`（2026-09-21）；G0 与首个 Economy 边界/投影切片完成，资产 replay 与债务/信任生命周期尚未拆完。
 > 规划基线：`60499d44b3b2b97e5f35b32364a8e819ee9b4768`；J11 产品 `cdbd077a`，真实 Campaign 入口验收修复 `60499d44` 已推送。
 > 本轮仅编写计划。下列迁移、抽取、测试与验收是后续实施项，不是已完成结果；不因此授权自动化、推送、Stage、部署、打包或存档操作。
+
+
+## 0. 当前实施回执
+
+| 包 | 状态 | 当前结果 |
+| --- | --- | --- |
+| G0 | DONE | fetch 后目标远端未领先；SDK 8.0.422、1.3.15/1.4.6 引用和原构建 wrapper 核对；`ProductionReward` 改为显式 SDK 参数 |
+| J12a1.1 compatibility + projection | DONE | `3f2c454e`（测试输出忽略 `9e8e10e8`）：3 个既有 public boundary 原样归位；Debt/Trust 保持主线程 capture/normalize，detached projection 接真实消费者 |
+| J12a1 剩余 Reward/Loan capture | NOT-STARTED | 不用本次 Debt/Trust formatter 冒充整个 capture/projection 包完成 |
+| J12a2–a4 | NOT-STARTED | 资产三个 replay owner、债务/信任生命周期、兼容链清理待施工 |
+| J12b/J12c/J12d | NOT-STARTED | 外交、WorldMap 和整包验收未开始 |
+
+首切片证据：Economy prompt projection 10 项 + merchant marker 可编译变异；ProductionReward 11；HeroAssetScope 67；Economy port / executor、Interaction 40/69/39、Duel 16、Weekly material 通过；Debug 1.3/1.4/Bootstrap 0 warning/0 error；Debug 两实现 DLL API/metadata 530。`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 在与 J12 无关的既有 `Missing TagSceneSessionHistoryLine` 提取点失败，基线源码同样无该符号，未把它写成 J12 产品失败或 PASS；最终相关工具范围仍需单独收敛。Release、LIVE、SAVE、真实 Economy 均未运行。
 
 ## 1. 目标、范围与完成含义
 
@@ -49,7 +62,7 @@ Conversation / Prompt / Actions（J04–J10 的既有链路）
 
 | 责任 | 已核实入口 / 消费者 | 目标与保留边界 |
 | --- | --- | --- |
-| Economy 契约/计划/线程边界 | `Refactor/Contracts/EconomyRewardDebtContracts.cs:13–149`；`LegacyEconomyRewardDebtAdapter.cs:14,49`、`LegacyEconomyRewardDebtMainThreadPort.cs:30`（后两者位于 `Refactor/Adapters/`） | 兼容声明可归 `src/AF.Contracts/Compatibility/Economy`，实现归 Economy；原 public/namespace 不改，复用已有 port 不造第二份 |
+| Economy 契约/计划/线程边界 | `src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs:13–149`；`src/modules/AF.Module.Economy/{Planning,Execution}`（`3f2c454e` 原样迁移） | 原 public/namespace/签名/enum 保持；实际 planner/port 已归 Economy，未造第二份 |
 | Hero/Party/Merchant replay | `RewardSystemBehavior.EconomyReplay.cs:23,61,155`；`RewardSystemBehavior.EconomyPartyReplay.cs:22,82,183`；`RewardSystemBehavior.EconomyMerchantReplay.cs:21,74,177` | Economy 的三个实际目标 owner；游戏资产变更走窄 host，public 工厂和主体 target 绑定保持 |
 | Reward/Debt/Trust capture | `RewardSystemBehavior.cs:4970–5120,18301,18343,18846,18884,19169`；`MyBehavior.cs:30611,30615`；`src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs:84–87` | 主线程规范化/捕获，detached 格式化；PromptExtras 仍唯一拼装，不重复生成规则块 |
 | 资产/债务/信任执行 | `RewardSystemBehavior.cs:19825` 授权；`:8359,21406,21895,22194,22355` mutation；`:8720,8984,19449` debt；`:3267,3385` trust | 领域算法实际移出，不能让新 owner 仅回调整个旧方法；不改 ALL/modifier/market/RP、逾期和信任数值 |

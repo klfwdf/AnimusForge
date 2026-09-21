@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "cdbd077af3abb4614594eff4b198052a4841e63e",
+  "sourceRevision": "3f2c454e3ac5640ddb6d0bed01e748dafd5e9e55",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4337,6 +4337,61 @@
       "status": "wired-j11-offline-verified",
       "note": "Siege thin adapter; active-stage and FeatureBridge gates remain in AfGcczShoutBridge",
       "fileSha256": "be0b1056d9957b424abeacd8ce26497a6f6d7e1ba4086df4bf8462986b70c1d8"
+    },
+    {
+      "id": "economy.contract.compat",
+      "path": "src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs",
+      "start": 13,
+      "end": 13,
+      "symbol": "public static class EconomyRewardDebtCapabilityIds",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "public compatibility contract; namespace/signatures/enum values preserved",
+      "fileSha256": "94359510eeee679d044b89618446a99cd6527665eb611d946dc42110deb201ee"
+    },
+    {
+      "id": "economy.planner.compat",
+      "path": "src/modules/AF.Module.Economy/Planning/LegacyEconomyRewardDebtAdapter.cs",
+      "start": 14,
+      "end": 14,
+      "symbol": "public sealed class LegacyEconomyRewardDebtAdapter : IEconomyRewardDebtReplayPlanner",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "detached economy action projection and capability validation",
+      "fileSha256": "9f2af3ba9fa5bfef9c036a1c7f2d49744b09113adc8ebab99ae84cf719401ec3"
+    },
+    {
+      "id": "economy.execution.main_thread_port",
+      "path": "src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs",
+      "start": 14,
+      "end": 14,
+      "symbol": "public sealed class LegacyEconomyRewardDebtMainThreadPort : IEconomyRewardDebtMainThreadPort",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "main-thread/current-target and partial/unknown receipt boundary",
+      "fileSha256": "f9595ae85866ea5f7e6b6131ffdac216b1302da04e341cbd86788ed164df5037"
+    },
+    {
+      "id": "economy.prompt.projection",
+      "path": "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs",
+      "start": 30,
+      "end": 30,
+      "symbol": "internal static class EconomyPromptProjection",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "detached trust/debt prompt formatter; no game objects",
+      "fileSha256": "f14ec4d3f9bab392971310c0b61f47615dd19106f62e2349a27819b649d10cc1"
+    },
+    {
+      "id": "economy.prompt.capture.hero_debt",
+      "path": "RewardSystemBehavior.cs",
+      "start": 18847,
+      "end": 18847,
+      "symbol": "public string BuildDebtHintForAI(Hero npc)",
+      "match": "exact",
+      "status": "wired-j12a-in-progress",
+      "note": "game-thread debt normalize/value capture before detached projection",
+      "fileSha256": "a6314f24476315dd908e4fc3b0c65e5796e533c4fd97c9557aff565e2e1cb532"
     }
   ]
 }

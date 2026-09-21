@@ -1,3 +1,11 @@
+# 当前范围：J12a Economy 首包已接线（2026-09-21）
+
+产品 `3f2c454e` 将既有 public Economy contract/planner/main-thread port 原样归入 `src/AF.Contracts/Compatibility/Economy` 与 `src/modules/AF.Module.Economy/{Planning,Execution}`，并以 `Projection/EconomyPromptProjection.cs` 承担 Debt/Trust detached 文本投影。`RewardSystemBehavior.cs:5108,5119,18847,18878` 仍在主线程读取/规范化/估值后传 string/int-only 输入；真实 Prompt consumers 不变。
+
+状态 **J12a_IN_PROGRESS**：这只闭合 compatibility + Debt/Trust projection，未迁资产三个 replay owner、Reward/Loan capture、债务/信任生命周期或 legacy mixed tags。Debug 双 API + Bootstrap、定向契约与 399 锚点地图已过；Release/LIVE/SAVE/真实经济仍 NOT-RUN。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j12a-economy-start-20260921)和[J12计划](../plans/j12-domain-owners-plan.md)。
+
+## 以下为上一阶段 J11 范围
+
 # 当前范围：J11 制作组内部模块接缝离线闭合（2026-09-21）
 
 产品 `cdbd077a` 将 Policy/Gathering/Siege 的 3 个 internal contracts / 13 方法归位 `src/AF.Contracts/Internal/TeamModules`，将 3 个无状态 adapter 分拆到 `src/bridges/{Policy,Gathering,Siege}`；`TeamModuleServices` 仍在 GameAdapter composition。31 个生产调用点、参数/ref/out/异常和原领域 owner 不变，旧两个混合文件已删除。
