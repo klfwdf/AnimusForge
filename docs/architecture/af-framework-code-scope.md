@@ -268,7 +268,7 @@ NativeSubmit现为真实可探测能力，Scene/Courier仍NotSupported且必交�
 
 源码29448d1b，124点地图。[详细HANDOFF](../handoffs/2026-09-15-game-lifetime-closeout-handoff.md)。SubModule真实回调绑定Game身份；AfCampaignRuntimeLifecycle只掌管主体My/Shout/Courier寿命。PendingOperationRegistry是原队列的退役登记，不是第二个调度队列；已claim副作用保留真实结果。My先关闭准入再清理，避免新generation/旧singleton竞态。
 
-Courier 最终 commit、入站 receipt、双向 generation、唯一 session 状态机/入站交付分别位于 `Channels/Courier` 的 `CommitDispatch`、`InboundCompletion`、`GenerationLifecycle`、`SessionTransport`；route plan、海陆/港口、威胁/安全点、目标/到达和 progress/stuck 位于 `RouteTransport`，原责任均未复制。其余 session 创建/runtime index、return/missing/destroyed lifetime、B1预算、双向服务/外部三渠道SDK仍未完成；不把某个 partial 或目录 Ready 当整项完成。
+Courier 最终 commit、入站 receipt、双向 generation、唯一 session 状态机/入站交付分别位于 `Channels/Courier` 的 `CommitDispatch`、`InboundCompletion`、`GenerationLifecycle`、`SessionTransport`；route/naval/threat/progress 位于 `RouteTransport`，return/payload/refund/destroyed/missing 位于 `DeliveryLifetime`，原责任均未复制。其余 session creation/runtime index 与 flow/入站 session 建立、B1预算、双向服务/外部三渠道SDK仍未完成；不把某个 partial 或目录 Ready 当整项完成。
 
 ## 以下为已有范围记录
 
