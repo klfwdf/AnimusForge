@@ -24,7 +24,8 @@ internal static class Program
 
     private static int Main()
     {
-        string sourcePath = FindRepositoryFile("WorldDiplomacyBehavior.cs");
+        string sourcePath = FindRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string source = File.ReadAllText(sourcePath, Encoding.UTF8);
         string generatedValidation = ExtractSection(
             source,
@@ -562,7 +563,7 @@ internal static class Program
 			"all natural reputation bands must tick daily while long time skips remain batched instead of scanning every elapsed day");
 		string popup = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopup.cs"), Encoding.UTF8);
 		string popupVm = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopupVM.cs"), Encoding.UTF8);
-		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("WorldDiplomacyBehavior.cs"))!;
+		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("DuelSettings.cs"))!;
 		string popupPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "CourierLetterReplyPopup.xml"), Encoding.UTF8);
 		Test.True(popup.Contains("string impactText = null", StringComparison.Ordinal)
 			&& popupVm.Contains("public string ImpactText", StringComparison.Ordinal)
@@ -3173,7 +3174,7 @@ internal static class Program
 			FindRepositoryFile("PermanentAllianceGuard.cs"),
 			Encoding.UTF8);
 		string diplomacy = File.ReadAllText(
-			FindRepositoryFile("DiplomacyBehavior.cs"),
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Direct", "DiplomacyBehavior.cs")),
 			Encoding.UTF8);
 		string declareWarPatch = File.ReadAllText(
 			FindRepositoryFile("Patch_Meeting_SuppressDeclareWarAction.cs"),

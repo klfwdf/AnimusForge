@@ -297,7 +297,8 @@ internal static class Program
 
     private static void BehaviorIntegrationContract()
     {
-        string source = File.ReadAllText(FindRepositoryFile("WorldDiplomacyBehavior.cs"), Encoding.UTF8);
+        string source = File.ReadAllText(FindRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs")), Encoding.UTF8);
 
         Test.True(source.Contains("private const int ResultSettlementStateSchemaVersion = 1;", StringComparison.Ordinal)
                   && source.Contains("_storage.ResultSettlementStateSchemaVersion = ResultSettlementStateSchemaVersion;", StringComparison.Ordinal)

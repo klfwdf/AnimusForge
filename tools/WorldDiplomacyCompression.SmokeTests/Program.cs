@@ -36,7 +36,8 @@ internal static class Program
     private static int Main()
     {
         string settings = ReadRepositoryFile("DuelSettings.cs");
-        string behavior = ReadRepositoryFile("WorldDiplomacyBehavior.cs");
+        string behavior = ReadRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string client = ReadRepositoryFile("WorldDiplomacyLlmClient.cs");
 
         VerifyDefaultsAndRanges(settings);

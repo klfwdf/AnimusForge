@@ -71,7 +71,7 @@ Check(WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(10, 10, 300, 200), 
 Check(WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(11, 10, 100, 200), "consuming the next delta makes progress");
 
 string root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
-string behavior = File.ReadAllText(Path.Combine(root, "WorldDiplomacyBehavior.cs"));
+string behavior = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
 string context = File.ReadAllText(Path.Combine(root, "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"));
 string export = File.ReadAllText(Path.Combine(root, "PolicySystem/Core/CustomPolicyBehavior.Generation.cs"));
 Check(export.Contains("BuildPolicyRecordEffectSummary(history, includeRemainingDays: false)"), "export must build stable impact BEFORE display truncation");

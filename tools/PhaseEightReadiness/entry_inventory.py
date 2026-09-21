@@ -23,7 +23,11 @@ RULES = {
         "AnimusForgeWeeklyReportMapNotification.cs", "WeeklyReportSchedulePolicy.cs",
         "WeeklyReportTextHelper.cs", "TerminalWeeklyReportBrowserPopupVM.cs",
     ),
-    "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
+    "world-simulation-worldmap": (
+        "WarStats/AfWarStatsBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/**/*.cs",
+        "src/modules/AF.Module.WorldMap/**/*.cs",
+    ),
     "ui-tts-external-integration": (
         "AnimusForgeTerminal*.cs", "Terminal*PopupVM.cs", "DevWeeklyReportPopup*.cs",
         "AnimusForgeApiOnboarding*.cs", "TerminalSettingsRegistry.cs", "DuelSettings.TerminalSave.cs",
