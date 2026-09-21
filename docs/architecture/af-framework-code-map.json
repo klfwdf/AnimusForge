@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "1882ea1c477b02f902bdac321c735aa87b967831",
+  "sourceRevision": "c9ea2e8896a8347b7d113679a921ba0584ad9c1a",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -3765,6 +3765,72 @@
       "status": "wired-j09-candidate",
       "note": "default Courier wrapper; effects remain delivery-time only",
       "fileSha256": "c2d62f51f3dd60631dcbf204722f6b538e8f252f281f76f40fb48b482da6a030"
+    },
+    {
+      "id": "courier.generation.delivery",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private void DeliverToRecipient(CourierSession session, MobileParty courier, Hero recipient)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "arrival owner starts reply only after DeliveryApplied",
+      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+    },
+    {
+      "id": "courier.generation.reply-worker",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+      "start": 168,
+      "end": 168,
+      "symbol": "private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "captured run/source guards and detached worker generation",
+      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+    },
+    {
+      "id": "courier.generation.reply-retry",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+      "start": 508,
+      "end": 508,
+      "symbol": "private bool ShowCourierReplyGenerationRetryPrompt(CourierReplyGenerationRequest request, string error)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "retry UI remains session and captured-request guarded",
+      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+    },
+    {
+      "id": "courier.generation.inbound-worker",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+      "start": 619,
+      "end": 619,
+      "symbol": "private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "inbound pregeneration keeps current run/source identity",
+      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+    },
+    {
+      "id": "courier.generation.inbound-retry",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+      "start": 737,
+      "end": 737,
+      "symbol": "private bool ShowInboundLetterGenerationRetryPrompt(InboundLetterGenerationRequest request, string error, string fallbackLetter)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "stale inbound retry cannot advance a replacement session",
+      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+    },
+    {
+      "id": "courier.generation.session-resume",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+      "start": 811,
+      "end": 811,
+      "symbol": "private void ProcessSessionById(string sessionId, string reason)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "terminal completion resumes only the matching current session",
+      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
     }
   ]
 }
