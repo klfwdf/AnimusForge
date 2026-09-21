@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "0ac279fcaa871ad86e3450497fea3dd0062f5ac1",
+  "sourceRevision": "1c62c2c9eda9d8f6402a3f764311e8340e6790ea",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -4579,6 +4579,39 @@
       "status": "wired-j12b-in-progress",
       "note": "policy history collapse and compression-prefix owner",
       "fileSha256": "8c4a1bfe95a002f5ee5ce6b33912f40db0015af2d2273e77e1ef512d474eef41"
+    },
+    {
+      "id": "diplomacy.direct.owner",
+      "path": "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs",
+      "start": 62,
+      "end": 62,
+      "symbol": "public static void ProcessDiplomacyTagsDispatch(Hero npc, ref string text)",
+      "match": "exact",
+      "status": "wired-j12-offline-candidate",
+      "note": "direct diplomacy qualification, prompt context and seven-action execution owner",
+      "fileSha256": "ffb8063a2229f4295630309c5c5d23657b0168384b5195d6eaa2c0b29f8a5f64"
+    },
+    {
+      "id": "diplomacy.world.owner",
+      "path": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+      "start": 44,
+      "end": 44,
+      "symbol": "public sealed class WorldDiplomacyBehavior : CampaignBehaviorBase",
+      "match": "exact",
+      "status": "wired-j12-offline-candidate",
+      "note": "world diplomacy queue, frozen jobs, in-flight completion, propagation and domain commit owner",
+      "fileSha256": "0e1f752cc225455a3e4252c4f9b1c28f941e63e4d99d4de0c74c54bcd39ba56c"
+    },
+    {
+      "id": "worldmap.runtime.owner",
+      "path": "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs",
+      "start": 25,
+      "end": 25,
+      "symbol": "public sealed class WorldMapPartyCommandBehavior : CampaignBehaviorBase",
+      "match": "exact",
+      "status": "wired-j12-offline-candidate",
+      "note": "WorldMap protocol, admission, queue/event lifecycle and delayed request owner",
+      "fileSha256": "1301be65836368662e42d2c94ffcc74daaf4c29e2a4ae4c0e8bd8b29c4d4d0c8"
     }
   ]
 }

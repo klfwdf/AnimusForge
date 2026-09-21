@@ -1,8 +1,20 @@
-# 当前范围：J12b1 Diplomacy Rules 已归位（2026-09-21）
+# 当前范围：J12 Economy / Diplomacy / WorldMap 离线闭合（2026-09-21）
+
+最终产品 `1c62c2c9` 将三个完整真实 owner 原样归位：
+
+- `src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs`：直接外交资格、Prompt、七类动作和通知接缝；
+- `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs`：job queue、冻结请求、in-flight/completion、传播、结果提交与持久状态；
+- `src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs`：协议、受理、队列/事件、延迟建队/远征和嵌套回执。
+
+三文件均 Git `R100`，根旧路径不存在、无转发 facade、无第二份状态。主动源码读取工具、Policy overlay、Bridge manifest、Persistence catalog 和 Phase8 inventory 均接新位置。类型全名、程序集、Campaign 注册、Harmony、public/internal 签名、JSON/SyncData/Saveable identity 未变。
+
+状态 **J12_OFFLINE_VERIFIED**。六构建、四 DLL 1060 metadata、Persistence 142/168/13/44、Diplomacy 94/295/453/1143、三渠道 25/91/184/71/34/32、Bridge 23、Phase8 73 与 419 锚点通过。大型 World/WorldMap 类仍是 cohesive domain owner；更细内部 partial 分片不是本轮 J12 完成条件。LIVE/SAVE/真实玩法和性能仍 `NOT-RUN`。
+
+## J12b1 Diplomacy Rules 已归位
 
 `0ac279fc` 将 `WorldDiplomacy{OfferCooldown,ThreatState,ResultSettlement,PolicyHistory}Rules.cs` 以 100% rename 归入 `src/modules/AF.Module.Diplomacy/Rules/`。`WorldDiplomacyBehavior` 的真实消费者、public/internal 类型、DTO/JSON、slot mutation 和 J08 transport 均未改变。PolicyHistory 94、ResultSettlement 453、Intent rule-focused 1143 与 Debug 双 API/Bootstrap 通过；完整 Intent runner 的既有 PermanentAlliance 注册断言仍单列失败，不算 J12b1 产品回归或 PASS。
 
-状态 **J12b_IN_PROGRESS**：b1 DONE，b2 direct diplomacy、b3 world diplomacy jobs、b4 接缝/清理未开始；WorldMap/J12d 未开始。当前代码地图 416 锚点绑定 `0ac279fc`。LIVE/SAVE/真实外交仍 NOT-RUN。
+此处记录 b1 当时的阶段状态：四 Rules 已归位、其余 J12b/J12c 尚待施工；后续完成结果以上方 J12 总结为准。该阶段代码地图为 416 锚点绑定 `0ac279fc`，LIVE/SAVE/真实外交未运行。
 
 ## J12a Economy 已闭合范围
 
