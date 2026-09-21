@@ -20,6 +20,20 @@ namespace AnimusForge.DialogueUI
             button.UpdateChildrenStates = true;
         }
 
+        internal static void StyleWaxSeal(ButtonWidget button)
+        {
+            if (button == null) return;
+            var brush = new Brush { Name = "AFDialogue.WaxSeal", TransitionDuration = 0.08f };
+            brush.Sprite = DialogueUiSprites.Get("afdui_wax_seal");
+            AddState(brush, "Hovered", "afdui_wax_seal", 1f);
+            AddState(brush, "Pressed", "afdui_wax_seal", 0.78f);
+            AddState(brush, "Selected", "afdui_wax_seal", 1f);
+            AddState(brush, "Disabled", "afdui_wax_seal", 0.45f);
+            button.Brush = brush;
+            button.DoNotPassEventsToChildren = true;
+            button.UpdateChildrenStates = true;
+        }
+
         private static void AddState(Brush brush, string name, string sprite, float alpha)
         {
             var style = new Style(brush.Layers);
