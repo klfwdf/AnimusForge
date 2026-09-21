@@ -16,7 +16,9 @@ args = parser.parse_args()
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-source = (ROOT / "RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
+root_source = (ROOT / "RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
+capture_source = (ROOT / "src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs").read_text(encoding="utf-8-sig")
+source = root_source + "\n" + capture_source
 methods = "\n\n".join(extract.declaration(source, marker) for marker in (
     "public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions",
     "public string BuildFilteredInventorySummaryForAI(",
