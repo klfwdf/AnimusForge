@@ -452,6 +452,7 @@
         "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
         "src/modules/AF.Module.Economy/Planning/LegacyEconomyRewardDebtAdapter.cs",
         "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs",
+        "src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs",
         "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs",
         "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs"
       ],
