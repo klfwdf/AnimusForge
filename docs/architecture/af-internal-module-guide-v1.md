@@ -8,10 +8,12 @@
 
 - `G:\AFMOD\AF-REFACTOR\Refactor\Modules\TeamModulePorts.cs`：专用方法签名及责任注释。
 - `G:\AFMOD\AF-REFACTOR\Refactor\Modules\TeamModuleAdapters.cs`：唯一转接原业务 owner 的薄实现。
-- `G:\AFMOD\AF-REFACTOR\Refactor\Modules\TeamModuleServices.cs`：类型确定的单例接线。
+- `G:\AFMOD\AF-REFACTOR\src\AF.GameAdapter.Bannerlord\Composition\TeamModuleServices.cs`：类型确定的单例接线。
 - `src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs`：登记、冻结、依赖/版本校验和状态查询。
 - `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs`：目录状态、加载/停止和冻结快照的唯一 owner。
 - `Refactor/Modules/ModuleFrameworkRuntime.cs`：选择制作组目录工厂、转接 Campaign 注册与保留旧查询入口，不再持有目录状态。
+
+J11 的归位/拆桥计划见 [`docs/plans/j11-team-module-seams-plan.md`](../plans/j11-team-module-seams-plan.md)。当前仍以上述真实路径为准；计划文件中的目标路径不是已实现位置。
 
 ## 当前登记范围
 
