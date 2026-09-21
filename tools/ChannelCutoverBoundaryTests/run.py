@@ -22,6 +22,7 @@ SCENE_LIFECYCLE_DISPATCHES = {
 }
 SCENE_CHAINS_PATH = "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs"
 COURIER_GENERATION_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs"
+COURIER_SESSION_TRANSPORT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
 
 
 def source(path: str, ref: str | None) -> str:
@@ -61,17 +62,19 @@ def courier_source(ref: str | None) -> str:
     Historical refs before J10b4 keep those methods in the root host, so the
     fallback must not synthesize a second copy for baseline comparisons.
     """
-    host = source("CourierDeliveryBehavior.cs", ref)
-    if ref:
-        exists = subprocess.run(
-            ["git", "cat-file", "-e", f"{ref}:{COURIER_GENERATION_PATH}"],
-            cwd=ROOT,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        ).returncode == 0
-        if not exists:
-            return host
-    return host + "\n" + source(COURIER_GENERATION_PATH, ref)
+    combined = source("CourierDeliveryBehavior.cs", ref)
+    for path in (COURIER_GENERATION_PATH, COURIER_SESSION_TRANSPORT_PATH):
+        if ref:
+            exists = subprocess.run(
+                ["git", "cat-file", "-e", f"{ref}:{path}"],
+                cwd=ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            ).returncode == 0
+            if not exists:
+                continue
+        combined += "\n" + source(path, ref)
+    return combined
 
 
 def declaration(text: str, signature: str, optional: bool = False) -> str:

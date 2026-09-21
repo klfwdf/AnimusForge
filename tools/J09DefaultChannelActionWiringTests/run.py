@@ -1,5 +1,6 @@
 """Audit the three default channel action tails against the J09 shared boundary."""
 from pathlib import Path
+import argparse
 import importlib.util
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -7,6 +8,9 @@ spec = importlib.util.spec_from_file_location(
     "extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
 extractor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extractor)
+parser = argparse.ArgumentParser()
+parser.add_argument("--mutate", choices=["courier-pre-delivery-commit"])
+args = parser.parse_args()
 
 
 def require(value, message):
@@ -93,11 +97,27 @@ def main():
         courier, "private void CommitGeneratedReplyActionsAtRecipientCore(")
     courier_detached = extractor.declaration(
         courier, "private InteractionStatus ExecuteCourierActionPlanForExternal(")
+    courier_delivery = extractor.declaration(
+        courier, "private void DeliverToRecipient(")
+    if args.mutate == "courier-pre-delivery-commit":
+        call = "\t\tCommitGeneratedReplyAtRecipient(session, recipient);\n"
+        require(courier_delivery.count(call) == 1,
+                "Courier delivery mutation no longer reaches the terminal call")
+        courier_delivery = courier_delivery.replace(call, "", 1).replace(
+            "\t\t\tApplyDeliveryPayload(session, courier, recipient);",
+            "\t\t\tCommitGeneratedReplyAtRecipient(session, recipient);\n"
+            "\t\t\tApplyDeliveryPayload(session, courier, recipient);",
+            1)
     require(courier.count("CommitGeneratedReplyAtRecipient(session, recipient);") == 2,
             "Courier delivery/return state machine lost a default commit call site")
     require("CommitGeneratedReplyAtRecipient(" not in courier_detached
             and "CommitGeneratedReplyActionsAtRecipientCore(" in courier_detached,
             "Detached Courier path must call the domain core, not nest the default wrapper")
+    ordered(courier_delivery,
+            "ApplyDeliveryPayload(session, courier, recipient);",
+            "session.DeliveryApplied = true;",
+            "if (!session.ReplyGenerated)",
+            "CommitGeneratedReplyAtRecipient(session, recipient);")
     ordered(courier_wrapper,
             "!session.DeliveryApplied",
             "actionCommitter.Prepare(raw)",
