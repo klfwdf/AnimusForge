@@ -13,13 +13,7 @@ namespace AnimusForge.DialogueUI
     internal static class DialogueUiSprites
     {
         private static readonly Dictionary<string, RuntimeSprite> Sprites = new Dictionary<string, RuntimeSprite>(StringComparer.Ordinal);
-        private static readonly string[] Names = { 
-            "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", 
-            "afdui_parchment_panel", "afdui_input_panel", 
-            "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", 
-            "afdui_wax_seal", "afdui_arch_frame", "afdui_quill_inkpot",
-            "afdui_portrait_bg", "afdui_name_plate"
-        };
+        private static readonly string[] Names = { "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", "afdui_parchment_panel", "afdui_input_panel", "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", "afdui_wax_seal" };
         private static bool _failed;
 
         internal static void Install(Harmony harmony)
@@ -43,24 +37,15 @@ namespace AnimusForge.DialogueUI
                 {
                     if (!Sprites.TryGetValue(name, out RuntimeSprite sprite))
                     {
-                        string filePath = Path.Combine(DialogueUiRuntime.ModuleRoot, "GUI", "SpriteParts", name + ".png");
-                        if (!File.Exists(filePath)) throw new FileNotFoundException("Sprite file not found: " + filePath);
-
-                        TryReadPngSize(filePath, out int pngWidth, out int pngHeight);
-                        var texture = TryLoadTexture(filePath, name);
+                        byte[] png = File.ReadAllBytes(Path.Combine(DialogueUiRuntime.ModuleRoot, "GUI", "SpriteParts", name + ".png"));
+                        var texture = EngineTextureType.CreateFromMemory(png);
                         if (texture == null) throw new InvalidOperationException("Texture creation returned null: " + name);
-
-                        int width = texture.Width > 0 ? texture.Width : (pngWidth > 0 ? pngWidth : 512);
-                        int height = texture.Height > 0 ? texture.Height : (pngHeight > 0 ? pngHeight : 512);
-
-                        int border = name == "afdui_parchment_panel" ? 32
-                                   : name == "afdui_input_panel" ? 20
-                                   : (name == "afdui_button_normal" || name == "afdui_button_hover" || name == "afdui_button_pressed") ? 20
-                                   : name == "afdui_name_plate" ? 12
-                                   : 0;
-                        var nine = name == "afdui_scroll_body" ? new SpriteNinePatchParameters(10, 10, 24, 24)
-                                 : border == 0 ? SpriteNinePatchParameters.Empty : new SpriteNinePatchParameters(border, border, border, border);
-                        sprite = new RuntimeSprite(name, texture, width, height, nine);
+                        texture.Name = name;
+                        texture.SetTextureAsAlwaysValid();
+                        texture.PreloadTexture(true);
+                        int border = name == "afdui_parchment_panel" ? 40 : name == "afdui_input_panel" ? 16 : 0;
+                        var nine = border == 0 ? SpriteNinePatchParameters.Empty : new SpriteNinePatchParameters(border, border, border, border);
+                        sprite = new RuntimeSprite(name, texture, nine);
                         Sprites.Add(name, sprite);
                     }
                     if (UIResourceManager.SpriteData.Sprites.TryGetValue(name, out Sprite existing) && !ReferenceEquals(existing, sprite))
@@ -77,97 +62,9 @@ namespace AnimusForge.DialogueUI
             }
         }
 
-        private static EngineTextureType TryLoadTexture(string filePath, string name)
-        {
-            try
-            {
-                var texture = EngineTextureType.LoadTextureFromPath(Path.GetFileName(filePath), Path.GetDirectoryName(filePath));
-                if (texture != null)
-                {
-                    texture.Name = name;
-                    texture.SetTextureAsAlwaysValid();
-                    texture.PreloadTexture(true);
-                    return texture;
-                }
-            }
-            catch { }
-
-            try
-            {
-                byte[] png = File.ReadAllBytes(filePath);
-                var texture = EngineTextureType.CreateFromMemory(png);
-                if (texture != null)
-                {
-                    texture.Name = name;
-                    texture.SetTextureAsAlwaysValid();
-                    texture.PreloadTexture(true);
-                    return texture;
-                }
-            }
-            catch { }
-
-            return null;
-        }
-
-        private static bool TryReadPngSize(string filePath, out int width, out int height)
-        {
-            width = 0;
-            height = 0;
-            try
-            {
-                byte[] header = new byte[24];
-                using (FileStream stream = File.OpenRead(filePath))
-                {
-                    if (stream.Read(header, 0, header.Length) != header.Length) return false;
-                }
-                if (header[0] != 0x89 || header[1] != 0x50 || header[2] != 0x4E || header[3] != 0x47) return false;
-                width = ReadBigEndianInt32(header, 16);
-                height = ReadBigEndianInt32(header, 20);
-                return width > 0 && height > 0;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private static int ReadBigEndianInt32(byte[] bytes, int offset)
-        {
-            return (bytes[offset] << 24) | (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3];
-        }
-
         internal static Sprite Get(string name)
         {
             return Sprites.TryGetValue(name, out RuntimeSprite sprite) ? sprite : null;
-        }
-
-        internal static Sprite RegisterDynamicPng(string name, byte[] pngBytes)
-        {
-            if (pngBytes == null || pngBytes.Length == 0 || UIResourceManager.SpriteData == null) return null;
-            try
-            {
-                if (Sprites.TryGetValue(name, out RuntimeSprite existing))
-                {
-                    existing.Dispose();
-                    Sprites.Remove(name);
-                }
-                var texture = EngineTextureType.CreateFromMemory(pngBytes);
-                if (texture == null) return null;
-                texture.Name = name;
-                texture.SetTextureAsAlwaysValid();
-                texture.PreloadTexture(true);
-                int w = texture.Width > 0 ? texture.Width : 512;
-                int h = texture.Height > 0 ? texture.Height : 512;
-                var sprite = new RuntimeSprite(name, texture, w, h, SpriteNinePatchParameters.Empty);
-                Sprites[name] = sprite;
-                UIResourceManager.SpriteData.Sprites[name] = sprite;
-                return sprite;
-            }
-            catch (Exception ex)
-            {
-                DialogueUiRuntime.Log("Failed to register dynamic PNG sprite: " + ex.Message);
-                return null;
-            }
         }
 
         internal static void Shutdown()
@@ -181,33 +78,20 @@ namespace AnimusForge.DialogueUI
             Sprites.Clear();
         }
 
-        private sealed class FallbackEngineTexture : EngineTexture, ITexture
-        {
-            private readonly int _fallbackWidth;
-            private readonly int _fallbackHeight;
-            internal FallbackEngineTexture(EngineTextureType texture, int width, int height) : base(texture)
-            {
-                _fallbackWidth = width;
-                _fallbackHeight = height;
-            }
-            int ITexture.Width => Texture != null && Texture.Width > 0 ? Texture.Width : _fallbackWidth;
-            int ITexture.Height => Texture != null && Texture.Height > 0 ? Texture.Height : _fallbackHeight;
-        }
-
         private sealed class RuntimeSprite : Sprite
         {
             private readonly EngineTextureType _engineTexture;
             private readonly UiTexture _texture;
-            internal RuntimeSprite(string name, EngineTextureType texture, int width, int height, SpriteNinePatchParameters nine)
-                : base(name, width, height, nine)
+            internal RuntimeSprite(string name, EngineTextureType texture, SpriteNinePatchParameters nine)
+                : base(name, texture.Width, texture.Height, nine)
             {
                 _engineTexture = texture;
-                _texture = new UiTexture(new FallbackEngineTexture(texture, width, height));
+                _texture = new UiTexture(new EngineTexture(texture));
             }
             public override UiTexture Texture => _texture;
             public override Vec2 GetMinUvs() => Vec2.Zero;
             public override Vec2 GetMaxUvs() => Vec2.One;
-            internal void Dispose() { _engineTexture?.Release(); }
+            internal void Dispose() { _engineTexture.Release(); }
         }
     }
 }

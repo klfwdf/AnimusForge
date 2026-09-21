@@ -72,7 +72,7 @@
                           <Children>
                             <Widget Id="EditorContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128">
                               <Children>
-                                <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128" HorizontalAlignment="Left" VerticalAlignment="Top" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#382919FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="22" MaxLength="6000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                                <DevMultilineEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MinHeight="128" HorizontalAlignment="Left" VerticalAlignment="Top" Brush="Review.NameInput.Text" Brush.FontSize="12" Brush.FontColor="#F7ECD5FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="22" MaxLength="6000" RealText="@InputText" IsObfuscationEnabled="false" AutoFocus="true" SubmitOnEnter="true" Command.TextEntered="ExecuteSubmit" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
                               </Children>
                             </Widget>
                           </Children>
@@ -94,7 +94,7 @@
               <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="发送" DoNotAcceptEvents="true" /></Children>
             </ButtonWidget>
             <ButtonWidget Id="AFDialogueShoutCancel" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="64" SuggestedHeight="64" HorizontalAlignment="Right" MarginRight="124" MarginTop="180" Brush="Popup.Done.Button" Command.Click="ExecuteCancel" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
-              <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="离开" DoNotAcceptEvents="true" /></Children>
+              <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="19" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="收起" DoNotAcceptEvents="true" /></Children>
             </ButtonWidget>
           </Children>
         </Widget>

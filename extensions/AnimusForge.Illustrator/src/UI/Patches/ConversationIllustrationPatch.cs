@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using TaleWorlds.Core;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.GauntletUI.Data;
@@ -14,6 +15,7 @@ using TaleWorlds.TwoDimension;
 using AnimusForge.Illustrator.Context;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator;
 using AnimusForge.Illustrator.UI.Gallery;
 using AnimusForge.Illustrator.UI.Overlays;
 
@@ -24,6 +26,8 @@ namespace AnimusForge.Illustrator.UI.Patches
         private const string ButtonId = "AnimusForgeConversationIllustrateButton";
         private static readonly List<WeakReference<ButtonWidget>> InjectedButtons = new List<WeakReference<ButtonWidget>>();
         private static bool _patched;
+        private static bool _autoGenerationQueued;
+        private static int _autoGenerationRetries;
 
         public static void EnsurePatched(Harmony harmony)
         {
@@ -228,6 +232,55 @@ namespace AnimusForge.Illustrator.UI.Patches
         {
             ConversationVisualContext convContext = ConversationContextExtractor.ExtractFromCurrentConversation();
             IllustrationCardPopup.ShowForConversation(convContext);
+        }
+
+        internal static void OnAgentJoinedConversation(IAgent agent)
+        {
+            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true || _autoGenerationQueued)
+                return;
+            _autoGenerationQueued = true;
+            _autoGenerationRetries = 0;
+            IllustratorRuntime.Post(TryAutoGenerateConversationIllustration);
+        }
+
+        internal static void OnConversationEnded(IEnumerable<CharacterObject> characters)
+        {
+            _autoGenerationQueued = false;
+            _autoGenerationRetries = 0;
+            IllustrationCardPopup.ClearConversationSessionCache();
+            IllustratorRuntime.Post(IllustrationCardPopup.CloseActiveConversation);
+        }
+
+        private static void TryAutoGenerateConversationIllustration()
+        {
+            _autoGenerationQueued = false;
+            if (IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen != true ||
+                !IllustratorRuntime.IsEnabled("conversation") || IllustrationCardPopup.IsOpen)
+                return;
+
+            ConversationVisualContext context = null;
+            try
+            {
+                if (ScreenCaptureHelper.GetConversationSceneCaptureSource() == null)
+                    throw new InvalidOperationException("conversation scene is not ready");
+                context = ConversationContextExtractor.ExtractFromCurrentConversation();
+            }
+            catch (Exception ex)
+            {
+                Debug.Print("[Illustrator] Auto conversation illustration deferred: " + ex.GetType().Name);
+            }
+
+            if (context == null)
+            {
+                if (_autoGenerationRetries++ < 3)
+                {
+                    _autoGenerationQueued = true;
+                    IllustratorRuntime.Post(TryAutoGenerateConversationIllustration);
+                }
+                return;
+            }
+
+            IllustrationCardPopup.ShowForConversation(context, autoFullscreen: true, forceGenerate: true);
         }
     }
 }

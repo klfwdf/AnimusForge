@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Conversation;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
@@ -24,9 +22,6 @@ public static class NativeUiAdapter
     private static NativeLayout _native;
     private static OverlayLayout _overlay;
     private static bool _installed;
-    private static readonly ConditionalWeakTable<AnimusForgeNativeConversationOverlayVM, OwnerPresentationState> OwnerStates = new();
-    private static long _uiTick;
-    private static ExitRequest _pendingExit;
 
     public static void Install(Harmony harmony)
     {
@@ -52,8 +47,7 @@ public static class NativeUiAdapter
             _native == null || !ReferenceEquals(_native.Mission, Mission.Current) || !Attached(_native.Root)) return false;
         if (!Wrappers.TryGetValue(af, out var presentation))
         {
-            OwnerPresentationState state = OwnerStates.GetValue(af, _ => new OwnerPresentationState());
-            presentation = new NativeOverlayVM(af, () => RequestLeave(af), () => state.DefaultAiHandled = true);
+            presentation = new NativeOverlayVM(af);
             Wrappers.Add(af, presentation);
         }
         wrapper = presentation;
@@ -87,7 +81,6 @@ public static class NativeUiAdapter
 
     public static void Tick()
     {
-        _uiTick++;
         if (_native != null)
         {
             if (!ReferenceEquals(Mission.Current, _native.Mission) || !Attached(_native.Root))
@@ -97,7 +90,6 @@ public static class NativeUiAdapter
         if (_overlay != null && (!ReferenceEquals(Mission.Current, _overlay.Mission) || !Attached(_overlay.Root)))
         { ReleaseOverlay(_overlay.Original); }
         else _overlay?.Tick();
-        ProcessPendingExit();
     }
 
     public static void OnMovieReleased(Widget root)
@@ -117,7 +109,6 @@ public static class NativeUiAdapter
     public static void Shutdown()
     {
         _installed = false;
-        _pendingExit = null;
         _native?.Dispose(); _native = null; _overlay = null;
         foreach (var wrapper in Wrappers.Values) wrapper.OnFinalize();
         Wrappers.Clear();
@@ -125,7 +116,6 @@ public static class NativeUiAdapter
 
     private static void ReleaseOverlay(AnimusForgeNativeConversationOverlayVM original)
     {
-        if (_pendingExit != null && ReferenceEquals(_pendingExit.Original, original)) _pendingExit = null;
         if (_overlay != null && ReferenceEquals(_overlay.Original, original)) _overlay = null;
         if (original != null && Wrappers.TryGetValue(original, out var wrapper))
         { wrapper.OnFinalize(); Wrappers.Remove(original); }
@@ -150,169 +140,89 @@ public static class NativeUiAdapter
         return false;
     }
 
-    private sealed class OwnerPresentationState { internal bool DefaultAiHandled; }
-
-    private sealed class ExitRequest
-    {
-        internal readonly AnimusForgeNativeConversationOverlayVM Original;
-        internal readonly MissionConversationVM NativeSource;
-        internal readonly Mission Mission;
-        internal readonly ConversationManager Manager;
-        internal readonly long AfterTick;
-        internal ExitRequest(OverlayLayout owner)
-        {
-            Original = owner.Original; NativeSource = owner.NativeSource; Mission = owner.Mission;
-            Manager = owner.Manager; AfterTick = _uiTick + 1;
-        }
-    }
-    private static bool IsCurrentNativeOwner(Mission mission, MissionConversationVM source, ConversationManager manager)
-    {
-        var activeSource = source ?? _native?.Source;
-        return _installed && mission != null && ReferenceEquals(Mission.Current, mission) &&
-            _native != null && ReferenceEquals(_native.Mission, mission) && (activeSource == null || ReferenceEquals(_native.Source, activeSource)) &&
-            Attached(_native.Root) && ReferenceEquals(Campaign.Current?.ConversationManager, manager) &&
-            manager != null && manager.IsConversationInProgress;
-    }
-    private static bool RequestLeave(AnimusForgeNativeConversationOverlayVM original)
-    {
-        OverlayLayout owner = _overlay;
-        if (_pendingExit != null || owner == null || !ReferenceEquals(owner.Original, original) ||
-            !Attached(owner.Root) || !IsCurrentNativeOwner(owner.Mission, owner.NativeSource, owner.Manager)) return false;
-        OwnerStates.GetValue(original, _ => new OwnerPresentationState()).DefaultAiHandled = true;
-        _pendingExit = new ExitRequest(owner);
-        return true;
-    }
-    private static void ProcessPendingExit()
-    {
-        ExitRequest request = _pendingExit;
-        if (request == null || _uiTick < request.AfterTick) return;
-        _pendingExit = null;
-        if (_overlay == null || !ReferenceEquals(_overlay.Original, request.Original) || !Attached(_overlay.Root) ||
-            !IsCurrentNativeOwner(request.Mission, request.NativeSource, request.Manager))
-        {
-            if (Wrappers.TryGetValue(request.Original, out var stale)) stale.ClearLeavePending();
-            return;
-        }
-        bool wasBusy = !request.Original.IsInputEnabled;
-        try
-        {
-            // This runs on the NEXT application/UI tick, never inside the widget click handler.
-            // Retire AF's existing presentation generation first so late replies cannot paint it.
-            AnimusForgeNativeConversationOverlay.CloseActive();
-            // Closing an owner can invoke lifecycle callbacks; never end a replacement session.
-            if (!IsCurrentNativeOwner(request.Mission, request.NativeSource, request.Manager)) return;
-            request.Manager.EndConversation();
-            DialogueUiRuntime.Log(wasBusy
-                ? "Left current mission conversation; AF presentation retired, in-flight network work was not cancelled."
-                : "Left current mission conversation through the native EndConversation lifecycle.");
-        }
-        catch (Exception ex)
-        {
-            // Do not retry EndConversation automatically: its one-shot callbacks may already have run.
-            DialogueUiRuntime.Log("Native conversation exit did not complete: " + ex.GetType().Name + ": " + ex.Message);
-            if (Wrappers.TryGetValue(request.Original, out var failed)) failed.ClearLeavePending();
-        }
-    }
-
     private sealed class OverlayLayout
     {
         internal readonly Widget Root;
         internal readonly Mission Mission;
         internal readonly AnimusForgeNativeConversationOverlayVM Original;
-        internal readonly MissionConversationVM NativeSource;
-        internal readonly ConversationManager Manager;
-        private readonly OwnerPresentationState _state;
-        private readonly long _initializeAfterTick;
         private readonly List<Widget> _buttons = new();
         private readonly Widget _paintSlot;
-        private readonly Widget _inputSlot;
-        private readonly Widget _moreMenu;
-        private Widget _paint;
+        private readonly Widget _paint;
         internal OverlayLayout(Widget root, AnimusForgeNativeConversationOverlayVM original)
         {
             Root = root; Original = original; Mission = Mission.Current;
-            NativeSource = _native?.Source; Manager = Campaign.Current?.ConversationManager;
-            _state = OwnerStates.GetValue(original, _ => new OwnerPresentationState());
-            _initializeAfterTick = _uiTick + 1;
-            foreach (string id in new[] { "AFDialogueSwitch", "AFDialogueLeave", "AFDialogueHistory", "AFDialogueGift", "AFDialogueMore", "AFDialoguePersona", "AFDialogueTagTest", "AFDialogueSubmit" })
+            foreach (string id in new[] { "AFDialogueSwitch", "AFDialogueHistory", "AFDialogueGift", "AFDialogueMore", "AFDialoguePersona", "AFDialogueTagTest", "AFDialogueSubmit" })
             {
                 Widget button = root.FindChild(id, true);
                 if (button != null)
                 {
                     _buttons.Add(button);
-                    try
+                    if ((id == "AFDialogueHistory" || id == "AFDialogueGift" || id == "AFDialogueMore") && button is ButtonWidget round)
                     {
-                        if (id == "AFDialogueSubmit" && button is ButtonWidget submit)
-                        {
-                            DialogueUiButtons.StyleWaxSeal(submit, 15);
-                        }
-                        else if (button is ButtonWidget btn)
-                        {
-                            DialogueUiButtons.Style(btn, 15);
-                        }
+                        DialogueUiButtons.Style(round);
+                        StyleRoundLabel(round);
                     }
-                    catch (Exception ex)
-                    {
-                        DialogueUiRuntime.Log($"Failed styling button '{id}': {ex.Message}");
-                    }
+                    if (id == "AFDialogueSubmit" && button is ButtonWidget submit) StyleSubmitSeal(submit);
                 }
             }
-            // Illustrator's existing command is retained; adopted into left column paint slot.
-            _paintSlot = root.FindChild("AFDialoguePaintSlot", true);
-            _inputSlot = root.FindChild("AFDialogueInput", true);
-            _moreMenu = root.FindChild("AFDialogueMoreMenu", true);
-            TryAdoptIllustratorButton();
-        }
-
-        private void TryAdoptIllustratorButton()
-        {
-            if (_paint != null || _paintSlot == null) return;
-            Widget paint = Root.FindChild("AnimusForgeConversationIllustrateButton", true);
-            if (paint == null) return;
-            _paint = paint;
-            _paintSlot.IsVisible = paint.IsVisible;
-            try
+            // Illustrator's existing command is retained; never call an alternative generation path.
+            Widget paint = root.FindChild("AnimusForgeConversationIllustrateButton", true);
+            Widget slot = root.FindChild("AFDialoguePaintSlot", true);
+            _paint = paint; _paintSlot = slot;
+            if (slot != null) slot.IsVisible = paint != null && paint.IsVisible;
+            if (paint != null && slot != null)
             {
-                paint.ParentWidget = _paintSlot;
+                paint.ParentWidget = slot;
                 ResetBox(paint);
-                paint.WidthSizePolicy = SizePolicy.Fixed; paint.SuggestedWidth = 110;
-                paint.HeightSizePolicy = SizePolicy.Fixed; paint.SuggestedHeight = 28;
+                paint.WidthSizePolicy = SizePolicy.Fixed; paint.SuggestedWidth = 64;
+                paint.HeightSizePolicy = SizePolicy.Fixed; paint.SuggestedHeight = 64;
                 paint.HorizontalAlignment = HorizontalAlignment.Center;
-                paint.VerticalAlignment = VerticalAlignment.Bottom;
-                paint.MarginBottom = 0;
                 if (paint is ButtonWidget button)
                 {
-                    DialogueUiButtons.Style(button, 15);
+                    DialogueUiButtons.Style(button);
                     button.DoNotPassEventsToChildren = true;
                 }
                 foreach (Widget item in Descendants(paint))
                     if (item is TextWidget text)
                     {
                         text.Brush = text.Brush?.Clone();
-                        text.Text = "场景绘图";
-                        if (text.Brush != null) { text.Brush.FontSize = 15; text.Brush.FontColor = Color.FromUint(0xFF382919); text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center; }
+                        text.Text = "绘图";
+                        if (text.Brush != null) { text.Brush.FontSize = 18; text.Brush.FontColor = Color.FromUint(0xFFFFF4DB); text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; text.Brush.TextVerticalAlignment = TextVerticalAlignment.Center; }
                         text.WidthSizePolicy = SizePolicy.StretchToParent;
                         text.HeightSizePolicy = SizePolicy.StretchToParent;
                     }
-                if (!_buttons.Contains(paint)) _buttons.Add(paint);
-            }
-            catch (Exception ex)
-            {
-                DialogueUiRuntime.Log("Failed to adapt Illustrator button: " + ex.Message);
+                _buttons.Add(paint);
             }
         }
-
+        private static void StyleRoundLabel(ButtonWidget button)
+        {
+            foreach (Widget child in Descendants(button))
+                if (child is TextWidget text && text.Brush != null)
+                {
+                    text.Brush = text.Brush.Clone();
+                    text.Brush.FontColor = Color.FromUint(0xFFFFF4DB);
+                }
+        }
+        private static void StyleSubmitSeal(ButtonWidget button)
+        {
+            var seal = DialogueUiSprites.Get("afdui_wax_seal");
+            var brush = new Brush { Name = "AFDialogue.SubmitSeal", Sprite = seal, TransitionDuration = 0.08f };
+            foreach (string state in new[] { "Hovered", "Pressed", "Selected", "Disabled" })
+            {
+                var style = new Style(brush.Layers);
+                style.FillFrom(brush.DefaultStyle);
+                style.Name = state;
+                style.DefaultLayer.Sprite = seal;
+                style.DefaultLayer.AlphaFactor = state == "Disabled" ? 0.40f : state == "Pressed" ? 0.78f : 1f;
+                brush.AddStyle(style);
+            }
+            button.Brush = brush;
+            button.DoNotPassEventsToChildren = true;
+            button.UpdateChildrenStates = true;
+            StyleRoundLabel(button);
+        }
         internal void Tick()
         {
-            if (!_state.DefaultAiHandled && _uiTick >= _initializeAfterTick && ReferenceEquals(_overlay, this) &&
-                Attached(Root) && Root.IsRecursivelyVisible() && IsCurrentNativeOwner(Mission, NativeSource, Manager))
-            {
-                // The stamp belongs to AF's owner VM, not this resource/wrapper. Refreshing a movie
-                // cannot overwrite a player's subsequent choice of the original answer list.
-                _state.DefaultAiHandled = true;
-                if (!Original.IsCustomAnswerVisible) Original.SwitchTalk();
-            }
-            if (_paint == null) TryAdoptIllustratorButton();
             if (_paintSlot != null) _paintSlot.IsVisible = _paint != null && _paint.IsVisible;
         }
         internal bool HitTest()
@@ -325,16 +235,6 @@ public static class NativeUiAdapter
                 Widget w = _buttons[i];
                 if (!w.IsEnabled || !w.IsRecursivelyVisible()) continue;
                 var p = w.GlobalPosition; var s = w.Size;
-                if (mouse.x >= p.X && mouse.x <= p.X + s.X && mouse.y >= p.Y && mouse.y <= p.Y + s.Y) return true;
-            }
-            if (_inputSlot != null && _inputSlot.IsRecursivelyVisible())
-            {
-                var p = _inputSlot.GlobalPosition; var s = _inputSlot.Size;
-                if (mouse.x >= p.X && mouse.x <= p.X + s.X && mouse.y >= p.Y && mouse.y <= p.Y + s.Y) return true;
-            }
-            if (_moreMenu != null && _moreMenu.IsRecursivelyVisible())
-            {
-                var p = _moreMenu.GlobalPosition; var s = _moreMenu.Size;
                 if (mouse.x >= p.X && mouse.x <= p.X + s.X && mouse.y >= p.Y && mouse.y <= p.Y + s.Y) return true;
             }
             return false;
@@ -350,23 +250,17 @@ public static class NativeUiAdapter
         private readonly HashSet<Widget> _captured = new();
         private readonly HashSet<Widget> _pendingOptions = new();
         private readonly ListPanel _answers;
-        private readonly bool _captureOnly;
         private Widget _panel;
         private ImageIdentifierWidget _portrait;
         private CharacterObject _character;
         private Agent _speakerAgent;
         private CharacterImageIdentifierVM _portraitVm;
         private bool _disposed;
-        private NativeLayout(Widget root, MissionConversationVM source, ListPanel answers, bool captureOnly = false)
-        { Root = root; Source = source; Mission = Mission.Current; _answers = answers; _captureOnly = captureOnly; }
+        private NativeLayout(Widget root, MissionConversationVM source, ListPanel answers)
+        { Root = root; Source = source; Mission = Mission.Current; _answers = answers; }
 
         internal static NativeLayout TryCreate(Widget root, MissionConversationVM source)
         {
-            if (root.Id == "AFDialogueNativePanel" || root.FindChild("AFDialogueNativePanel", true) != null)
-            {
-                DialogueUiRuntime.LogOnce("native-panel-already-owned", "Existing AFDialogueNativePanel retained; duplicate presentation adapter not installed.");
-                return null;
-            }
             var answers = root.FindChild("AnswerList", true) as ListPanel;
             Widget dialogue = root.FindChild("DialogueContainer", true);
             Widget options = root.FindChild("AnswerListContainer", true);
@@ -374,243 +268,105 @@ public static class NativeUiAdapter
             Widget next = root.FindChild("ContinueButton", true);
             if (root is not ConversationScreenButtonWidget || answers == null || dialogue == null || options == null || name == null || next == null)
             { DialogueUiRuntime.Log("SPConversation controls unavailable; original layout retained."); return null; }
-
-            var layout = new NativeLayout(root, source, answers, captureOnly: false);
-            try
-            {
-                layout.Build(dialogue, options, name, next);
-                return layout;
-            }
-            catch (Exception ex)
-            {
-                DialogueUiRuntime.Log("NativeLayout build failed, falling back to captureOnly: " + ex);
-                layout.Dispose();
-                return new NativeLayout(root, source, answers, captureOnly: true);
-            }
+            var layout = new NativeLayout(root, source, answers);
+            try { layout.Build(dialogue, options, name, next); return layout; }
+            catch { layout.Dispose(); throw; }
         }
         private void Remember(Widget widget) { if (widget != null && _captured.Add(widget)) _changes.Add(new WidgetSnapshot(widget)); }
-        private string _displayedIllustrationKey;
+        private void Move(Widget widget, Widget parent)
+        { Remember(widget); widget.ParentWidget = parent; ResetBox(widget); }
 
         private void Build(Widget dialogue, Widget options, Widget name, Widget next)
         {
             _panel = Box(Root, "AFDialogueNativePanel");
-            _panel.HeightSizePolicy = SizePolicy.Fixed; _panel.SuggestedHeight = 270;
+            _panel.HeightSizePolicy = SizePolicy.Fixed; _panel.SuggestedHeight = 340;
             _panel.VerticalAlignment = VerticalAlignment.Bottom;
-            _panel.MarginLeft = 40; _panel.MarginRight = 40; _panel.MarginBottom = 16;
+            _panel.MarginLeft = 60; _panel.MarginRight = 60; _panel.MarginBottom = 24;
             _panel.SetSiblingIndex(0);
 
-            // Scroll Spindles & Continuous Body:
-            Widget scrollLeft = Box(_panel, "AFDialogueScrollLeft");
-            scrollLeft.WidthSizePolicy = SizePolicy.Fixed; scrollLeft.SuggestedWidth = 90;
-            scrollLeft.HeightSizePolicy = SizePolicy.StretchToParent;
-            scrollLeft.HorizontalAlignment = HorizontalAlignment.Left;
-            scrollLeft.Sprite = DialogueUiSprites.Get("afdui_scroll_left");
-
-            Widget scrollBody = Box(_panel, "AFDialogueScrollBody");
-            scrollBody.WidthSizePolicy = SizePolicy.StretchToParent;
-            scrollBody.HeightSizePolicy = SizePolicy.StretchToParent;
-            scrollBody.MarginLeft = 65; scrollBody.MarginRight = 65;
-            scrollBody.Sprite = DialogueUiSprites.Get("afdui_scroll_body");
-
-            Widget scrollRight = Box(_panel, "AFDialogueScrollRight");
-            scrollRight.WidthSizePolicy = SizePolicy.Fixed; scrollRight.SuggestedWidth = 90;
-            scrollRight.HeightSizePolicy = SizePolicy.StretchToParent;
-            scrollRight.HorizontalAlignment = HorizontalAlignment.Right;
-            scrollRight.Sprite = DialogueUiSprites.Get("afdui_scroll_right");
-
-            // Left Section: Medieval Tapestry Backdrop + Portrait + Gothic Arch Frame + Nameplate
-            Widget archBg = Box(_panel, "AFDialoguePortraitBg");
-            archBg.WidthSizePolicy = SizePolicy.Fixed; archBg.SuggestedWidth = 170;
-            archBg.HeightSizePolicy = SizePolicy.Fixed; archBg.SuggestedHeight = 165;
-            archBg.HorizontalAlignment = HorizontalAlignment.Left; archBg.VerticalAlignment = VerticalAlignment.Top;
-            archBg.MarginLeft = 125; archBg.MarginTop = 20;
-            archBg.Sprite = DialogueUiSprites.Get("afdui_portrait_bg");
+            Widget left = Box(_panel, "AFDialogueIdentity");
+            left.WidthSizePolicy = SizePolicy.Fixed; left.SuggestedWidth = 225;
+            left.MarginLeft = 20; left.MarginTop = 18; left.MarginBottom = 18;
+            left.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
+            Widget center = Box(_panel, "AFDialogueSpeech");
+            center.MarginLeft = 260; center.MarginRight = 625; center.MarginTop = 18; center.MarginBottom = 18;
+            center.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
+            Widget right = Box(_panel, "AFDialogueOptions");
+            right.WidthSizePolicy = SizePolicy.Fixed; right.SuggestedWidth = 590;
+            right.HorizontalAlignment = HorizontalAlignment.Right;
+            right.MarginRight = 20; right.MarginTop = 18; right.MarginBottom = 18;
+            right.Sprite = DialogueUiSprites.Get("afdui_parchment_panel");
+            Widget speechContent = Box(center, "AFDialogueSpeechContent");
+            speechContent.MarginLeft = speechContent.MarginRight = 22;
+            speechContent.MarginTop = 112; speechContent.MarginBottom = 20;
+            Widget optionsContent = Box(right, "AFDialogueOptionsContent");
+            optionsContent.MarginLeft = optionsContent.MarginRight = 22;
+            optionsContent.MarginTop = 64; optionsContent.MarginBottom = 20;
 
             _portrait = new ImageIdentifierWidget(Root.Context)
             {
                 Id = "AFDialoguePortrait", WidthSizePolicy = SizePolicy.Fixed, HeightSizePolicy = SizePolicy.Fixed,
-                SuggestedWidth = 156, SuggestedHeight = 145, HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top, MarginLeft = 132, MarginTop = 32, HideWhenNull = true, DoNotAcceptEvents = true
+                SuggestedWidth = 142, SuggestedHeight = 176, HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Top, MarginTop = 16, HideWhenNull = true, DoNotAcceptEvents = true
             };
-            _panel.AddChild(_portrait);
-
-            Widget arch = Box(_panel, "AFDialogueArchFrame");
-            arch.WidthSizePolicy = SizePolicy.Fixed; arch.SuggestedWidth = 190;
-            arch.HeightSizePolicy = SizePolicy.Fixed; arch.SuggestedHeight = 188;
-            arch.HorizontalAlignment = HorizontalAlignment.Left;
-            arch.VerticalAlignment = VerticalAlignment.Top;
-            arch.MarginLeft = 115; arch.MarginTop = 8;
-            arch.Sprite = DialogueUiSprites.Get("afdui_arch_frame");
-
-            Widget namePlate = Box(_panel, "AFDialogueNamePlate");
-            namePlate.WidthSizePolicy = SizePolicy.Fixed; namePlate.SuggestedWidth = 190;
-            namePlate.HeightSizePolicy = SizePolicy.Fixed; namePlate.SuggestedHeight = 32;
-            namePlate.HorizontalAlignment = HorizontalAlignment.Left; namePlate.VerticalAlignment = VerticalAlignment.Bottom;
-            namePlate.MarginLeft = 115; namePlate.MarginBottom = 40;
-            namePlate.Sprite = DialogueUiSprites.Get("afdui_name_plate");
-
-            // Left column: Character name & banner (positioned in-place without reparenting)
-            Widget nameSync = name.ParentWidget?.ParentWidget;
-            if (nameSync != null)
-            {
-                Remember(nameSync);
-                nameSync.HorizontalAlignment = HorizontalAlignment.Left;
-                nameSync.VerticalAlignment = VerticalAlignment.Bottom;
-                nameSync.MarginLeft = 115;
-                nameSync.MarginRight = 0;
-                nameSync.MarginBottom = 40;
-                nameSync.WidthSizePolicy = SizePolicy.Fixed;
-                nameSync.SuggestedWidth = 190;
-                nameSync.HeightSizePolicy = SizePolicy.Fixed;
-                nameSync.SuggestedHeight = 32;
-                if (nameSync is DimensionSyncWidget dimSync)
-                {
-                    dimSync.DimensionToSync = DimensionSyncWidget.Dimensions.None;
-                }
-            }
-            if (name.ParentWidget != null)
-            {
-                Remember(name.ParentWidget);
-                name.ParentWidget.HorizontalAlignment = HorizontalAlignment.Center;
-                name.ParentWidget.VerticalAlignment = VerticalAlignment.Bottom;
-                name.ParentWidget.MarginBottom = 2;
-            }
-            Remember(name);
-            name.Sprite = null;
-            StyleTree(name, 20, true);
+            left.AddChild(_portrait);
+            Move(name, left); name.HeightSizePolicy = SizePolicy.CoverChildren; name.VerticalAlignment = VerticalAlignment.Bottom;
+            name.MarginBottom = 48; name.Sprite = null;
+            StyleTree(name, 23, true);
             foreach (Widget item in Descendants(name))
             {
                 Remember(item);
-                item.MarginLeft = item.MarginRight = 0;
+                item.MarginLeft = 0; item.MarginRight = 0;
                 item.WidthSizePolicy = SizePolicy.StretchToParent;
-                if (item is TextWidget text)
-                {
-                    text.HeightSizePolicy = SizePolicy.CoverChildren;
-                    if (text.Brush != null) text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center;
-                }
+                if (item is TextWidget text) { text.HeightSizePolicy = SizePolicy.CoverChildren; text.Brush.TextHorizontalAlignment = TextHorizontalAlignment.Center; }
             }
             Widget banner = Root.FindChild("ConversedHeroBanner", true)?.ParentWidget;
             if (banner != null)
             {
-                Remember(banner);
-                banner.WidthSizePolicy = SizePolicy.Fixed; banner.HeightSizePolicy = SizePolicy.Fixed;
-                banner.SuggestedWidth = 26; banner.SuggestedHeight = 26;
-                banner.HorizontalAlignment = HorizontalAlignment.Left; banner.VerticalAlignment = VerticalAlignment.Bottom;
-                banner.MarginLeft = 120;
-                banner.MarginBottom = 44;
+                Move(banner, left); banner.WidthSizePolicy = SizePolicy.Fixed; banner.HeightSizePolicy = SizePolicy.Fixed;
+                banner.SuggestedWidth = 46; banner.SuggestedHeight = 46;
+                banner.HorizontalAlignment = HorizontalAlignment.Center; banner.VerticalAlignment = VerticalAlignment.Bottom;
+                banner.MarginBottom = 4;
             }
 
-            // Center & Right columns: DialogueContainer and AnswerListContainer (in-place without reparenting)
-            Widget bottomPanels = dialogue.ParentWidget;
-            Widget vertical = bottomPanels?.ParentWidget ?? Root.FindChild("VerticalContainer", true);
-            if (vertical != null)
-            {
-                Remember(vertical);
-                vertical.HorizontalAlignment = HorizontalAlignment.Left;
-                vertical.VerticalAlignment = VerticalAlignment.Bottom;
-                vertical.MarginLeft = 320;
-                vertical.MarginRight = 100;
-                vertical.MarginBottom = 18;
-                vertical.HeightSizePolicy = SizePolicy.Fixed;
-                vertical.SuggestedHeight = 237;
-                vertical.WidthSizePolicy = SizePolicy.StretchToParent;
-            }
-            if (bottomPanels != null)
-            {
-                Remember(bottomPanels);
-                bottomPanels.WidthSizePolicy = SizePolicy.StretchToParent;
-                bottomPanels.HeightSizePolicy = SizePolicy.StretchToParent;
-                bottomPanels.MarginBottom = 0;
-            }
-
-            // Center: Dialogue speech
-            Remember(dialogue);
-            dialogue.WidthSizePolicy = SizePolicy.StretchToParent;
-            dialogue.HeightSizePolicy = SizePolicy.StretchToParent;
-            dialogue.MarginRight = 35;
-            dialogue.MarginLeft = dialogue.MarginTop = dialogue.MarginBottom = 0;
-            dialogue.Sprite = null;
-
-            Widget dialogueBox = dialogue.ChildCount > 0 ? dialogue.GetChild(0) : null;
-            if (dialogueBox != null)
-            {
-                Remember(dialogueBox);
-                dialogueBox.WidthSizePolicy = SizePolicy.StretchToParent;
-                dialogueBox.HeightSizePolicy = SizePolicy.StretchToParent;
-                dialogueBox.HorizontalAlignment = HorizontalAlignment.Left;
-                dialogueBox.VerticalAlignment = VerticalAlignment.Top;
-                dialogueBox.SuggestedWidth = 0;
-                dialogueBox.MarginLeft = dialogueBox.MarginRight = dialogueBox.MarginTop = dialogueBox.MarginBottom = 0;
-            }
-
+            Widget speechInner = AddScroll(speechContent, "AFDialogueSpeechScroll");
+            Move(dialogue, speechInner); dialogue.HeightSizePolicy = SizePolicy.CoverChildren;
             foreach (Widget item in Descendants(dialogue))
             {
                 Remember(item);
-                if (item is DimensionSyncWidget dim)
-                {
-                    _changes[_changes.Count - 1].RestoreVisibility = true;
-                    item.IsVisible = false;
-                    dim.DimensionToSync = DimensionSyncWidget.Dimensions.None;
-                    continue;
-                }
-                item.Sprite = null;
-                item.AlphaFactor = 1;
-                item.MinHeight = 0;
+                if (item is DimensionSyncWidget) { _changes[_changes.Count - 1].RestoreVisibility = true; item.IsVisible = false; continue; }
+                item.WidthSizePolicy = SizePolicy.StretchToParent; item.HeightSizePolicy = SizePolicy.CoverChildren;
+                item.HorizontalAlignment = HorizontalAlignment.Left; item.VerticalAlignment = VerticalAlignment.Top;
+                item.MarginLeft = item.MarginRight = 0; item.MarginTop = item.MarginBottom = 0;
+                item.MinHeight = 0; item.AlphaFactor = 1; item.Sprite = null;
             }
-            Widget dialogueSpeechText = dialogue.FindChild("Text", true)
-                ?? (dialogueBox != null && dialogueBox.ChildCount > 0 ? dialogueBox.GetChild(0) : null);
-            if (dialogueSpeechText != null)
-            {
-                Remember(dialogueSpeechText);
-                dialogueSpeechText.WidthSizePolicy = SizePolicy.StretchToParent;
-                dialogueSpeechText.HeightSizePolicy = SizePolicy.CoverChildren;
-                dialogueSpeechText.HorizontalAlignment = HorizontalAlignment.Left;
-                dialogueSpeechText.VerticalAlignment = VerticalAlignment.Top;
-                dialogueSpeechText.MarginTop = 24;
-                dialogueSpeechText.MarginLeft = 20;
-                dialogueSpeechText.MarginRight = 20;
-                dialogueSpeechText.MarginBottom = 16;
-            }
-            StyleTree(dialogue, 24, true);
+            StyleTree(dialogue, 25, true);
 
-            // Right: Options
-            Remember(options);
-            options.WidthSizePolicy = SizePolicy.Fixed;
-            options.SuggestedWidth = 560;
-            options.HeightSizePolicy = SizePolicy.StretchToParent;
-            options.HorizontalAlignment = HorizontalAlignment.Right;
-            options.MarginTop = 38;
-            options.MarginBottom = 10;
-            options.MarginLeft = 12;
-            options.MarginRight = 10;
-            options.Sprite = null;
-
-            Remember(_answers);
-            _answers.VerticalAlignment = VerticalAlignment.Top;
+            Widget optionsInner = AddScroll(optionsContent, "AFDialogueOptionsScroll");
+            Move(options, optionsInner); options.HeightSizePolicy = SizePolicy.CoverChildren;
+            Remember(_answers); _answers.VerticalAlignment = VerticalAlignment.Top;
             _answers.ItemAddEventHandlers.Add(OptionAdded);
             _answers.ItemRemoveEventHandlers.Add(OptionRemoved);
             for (int i = 0; i < _answers.ChildCount; i++) StyleOption(_answers.GetChild(i));
 
-            // ContinueButton
-            Remember(next);
-            Widget nextContent = next.ChildCount > 0 ? next.GetChild(0) : null;
-            if (nextContent != null)
+            Move(next, optionsContent); next.WidthSizePolicy = SizePolicy.StretchToParent; next.HeightSizePolicy = SizePolicy.Fixed;
+            next.SuggestedHeight = 80; next.VerticalAlignment = VerticalAlignment.Center;
+            foreach (Widget item in Descendants(next))
             {
-                Remember(nextContent);
-                nextContent.HorizontalAlignment = HorizontalAlignment.Right;
-                nextContent.VerticalAlignment = VerticalAlignment.Bottom;
-                nextContent.MarginRight = 100;
-                nextContent.MarginBottom = 32;
-                nextContent.WidthSizePolicy = SizePolicy.Fixed;
-                nextContent.SuggestedWidth = 560;
-                nextContent.HeightSizePolicy = SizePolicy.Fixed;
-                nextContent.SuggestedHeight = 50;
-                nextContent.Sprite = null;
+                Remember(item); ResetBox(item);
+                item.WidthSizePolicy = SizePolicy.StretchToParent; item.HeightSizePolicy = SizePolicy.StretchToParent;
+                item.Sprite = null;
             }
-            StyleTree(next, 24, true);
-
+            StyleTree(next, 26, true);
+            Widget persuasion = Root.FindChild("PersuationExtensionListPanel", true);
+            if (persuasion != null)
+            {
+                Move(persuasion, Root); persuasion.WidthSizePolicy = SizePolicy.StretchToParent;
+                persuasion.HeightSizePolicy = SizePolicy.CoverChildren; persuasion.VerticalAlignment = VerticalAlignment.Bottom;
+                persuasion.MarginLeft = 320; persuasion.MarginRight = 680; persuasion.MarginBottom = 372;
+            }
             RefreshPortrait();
-            DialogueUiRuntime.Log("Mission SPConversation restyled in-place as scroll; all navigation scopes and parents retained.");
+            DialogueUiRuntime.Log("Mission SPConversation restyled; original answer, persuasion and continue owners retained.");
         }
         private void OptionAdded(Widget parent, Widget child)
         {
@@ -662,18 +418,7 @@ public static class NativeUiAdapter
                     if (text.Brush != null)
                     {
                         text.Brush.FontSize = fontSize;
-                        if (dark)
-                        {
-                            text.Brush.FontColor = Color.FromUint(0xFF382919);
-                            foreach (var s in text.Brush.Styles)
-                            {
-                                s.FontColor = Color.FromUint(0xFF382919);
-                                if (s.DefaultLayer != null) s.DefaultLayer.Color = Color.FromUint(0xFF382919);
-                                s.TextOutlineColor = new Color(0f, 0f, 0f, 0f);
-                                s.TextOutlineAmount = 0f;
-                                s.TextGlowRadius = 0f;
-                            }
-                        }
+                        if (dark) text.Brush.FontColor = Color.FromUint(0xFF382919);
                     }
                 }
                 else if (item is RichTextWidget rich)
@@ -682,107 +427,20 @@ public static class NativeUiAdapter
                     if (rich.Brush != null)
                     {
                         rich.Brush.FontSize = fontSize;
-                        if (dark)
-                        {
-                            rich.Brush.FontColor = Color.FromUint(0xFF382919);
-                            foreach (var s in rich.Brush.Styles)
-                            {
-                                s.FontColor = Color.FromUint(0xFF382919);
-                                if (s.DefaultLayer != null) s.DefaultLayer.Color = Color.FromUint(0xFF382919);
-                                s.TextOutlineColor = new Color(0f, 0f, 0f, 0f);
-                                s.TextOutlineAmount = 0f;
-                                s.TextGlowRadius = 0f;
-                            }
-                        }
+                        if (dark) rich.Brush.FontColor = Color.FromUint(0xFF382919);
                     }
                 }
             }
         }
-
-        private static byte[] TryGetIllustrationBytes(string characterId)
-        {
-            if (string.IsNullOrEmpty(characterId)) return null;
-            string key = "Conv_" + characterId;
-            string campaignKey = Campaign.Current?.UniqueGameId ?? "default";
-            try
-            {
-                Type cacheType = Type.GetType("AnimusForge.Illustrator.Engine.DiskImageCacheManager, AnimusForge.Illustrator");
-                if (cacheType != null)
-                {
-                    var method = cacheType.GetMethod("LoadImage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null, new[] { typeof(string), typeof(string), typeof(string) }, null);
-                    if (method != null)
-                    {
-                        object item = method.Invoke(null, new object[] { key, campaignKey, "conversation" });
-                        if (item != null)
-                        {
-                            var prop = item.GetType().GetProperty("ImageData");
-                            byte[] data = prop?.GetValue(item) as byte[];
-                            if (data != null && data.Length > 0) return data;
-                        }
-                    }
-                }
-            }
-            catch { }
-            try
-            {
-                string docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string dir = System.IO.Path.Combine(docs, "Mount and Blade II Bannerlord", "AnimusForge", "IllustratorCache");
-                if (System.IO.Directory.Exists(dir))
-                {
-                    var files = System.IO.Directory.GetFiles(dir, key + "_*.png", System.IO.SearchOption.AllDirectories);
-                    if (files.Length > 0)
-                    {
-                        Array.Sort(files, (a, b) => System.IO.File.GetLastWriteTimeUtc(b).CompareTo(System.IO.File.GetLastWriteTimeUtc(a)));
-                        return System.IO.File.ReadAllBytes(files[0]);
-                    }
-                }
-            }
-            catch { }
-            return null;
-        }
-
         internal void RefreshPortrait()
         {
-            if (_portrait == null) return;
             var conversation = Campaign.Current?.ConversationManager;
             Agent speaker = conversation?.SpeakerAgent as Agent;
             CharacterObject character = conversation?.SpeakerAgent?.Character as CharacterObject
                 ?? conversation?.OneToOneConversationCharacter;
-            string characterId = character?.StringId ?? speaker?.Character?.StringId;
-
-            // Check if an AI illustration exists or was just generated
-            byte[] illuBytes = TryGetIllustrationBytes(characterId);
-            if (illuBytes != null && illuBytes.Length > 0)
-            {
-                string spriteName = "AFConvIllu_" + characterId;
-                if (!ReferenceEquals(character, _character) || _displayedIllustrationKey != characterId || _portrait.Sprite == null)
-                {
-                    _character = character;
-                    _speakerAgent = speaker;
-                    _displayedIllustrationKey = characterId;
-                    _portraitVm?.OnFinalize(); _portraitVm = null;
-                    try { _portrait.OnClearTextureProvider(); } catch { }
-                    _portrait.ImageId = string.Empty;
-                    var sprite = DialogueUiSprites.RegisterDynamicPng(spriteName, illuBytes);
-                    if (sprite != null)
-                    {
-                        _portrait.TextureProviderName = string.Empty;
-                        _portrait.Sprite = sprite;
-                        DialogueUiRuntime.Log("AI illustration replaced portrait for " + characterId);
-                        return;
-                    }
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-            if (ReferenceEquals(character, _character) && ReferenceEquals(speaker, _speakerAgent) && _displayedIllustrationKey == null) return;
+            if (ReferenceEquals(character, _character) && ReferenceEquals(speaker, _speakerAgent)) return;
             _character = character;
             _speakerAgent = speaker;
-            _displayedIllustrationKey = null;
-            _portrait.Sprite = null;
             _portraitVm?.OnFinalize(); _portraitVm = null;
             _portrait.ImageId = string.Empty;
             if (character == null) return;
@@ -881,8 +539,6 @@ public static class NativeUiAdapter
         private readonly bool _visible;
         private readonly Sprite _sprite;
         private readonly Brush _brush;
-        private readonly DimensionSyncWidget.Dimensions _dimensionToSync;
-        private readonly bool _isDimSync;
         internal WidgetSnapshot(Widget w)
         {
             _w = w; _parent = w.ParentWidget; _index = _parent?.GetChildIndex(w) ?? 0;
@@ -890,7 +546,6 @@ public static class NativeUiAdapter
             _sw = w.SuggestedWidth; _sh = w.SuggestedHeight; _ml = w.MarginLeft; _mr = w.MarginRight; _mt = w.MarginTop; _mb = w.MarginBottom;
             _x = w.PositionXOffset; _y = w.PositionYOffset; _min = w.MinHeight; _alpha = w.AlphaFactor;
             _sprite = w.Sprite; _visible = w.IsVisible; _brush = (w as BrushWidget)?.Brush;
-            if (w is DimensionSyncWidget dim) { _isDimSync = true; _dimensionToSync = dim.DimensionToSync; }
         }
         internal void Restore()
         {
@@ -901,7 +556,6 @@ public static class NativeUiAdapter
             _w.PositionXOffset = _x; _w.PositionYOffset = _y; _w.MinHeight = _min; _w.AlphaFactor = _alpha; _w.Sprite = _sprite;
             if (RestoreVisibility) _w.IsVisible = _visible;
             if (_w is BrushWidget brush) brush.Brush = _brush;
-            if (_isDimSync && _w is DimensionSyncWidget dim) dim.DimensionToSync = _dimensionToSync;
         }
     }
 }

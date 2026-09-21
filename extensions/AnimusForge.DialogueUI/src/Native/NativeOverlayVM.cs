@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using TaleWorlds.Library;
 
@@ -10,16 +9,10 @@ public sealed class NativeOverlayVM : ViewModel
     public AnimusForgeNativeConversationOverlayVM Original { get; }
     private bool _moreVisible;
     private bool _disposed;
-    private bool _leavePending;
-    private readonly Func<bool> _requestLeave;
-    private readonly Action _manualModeSelection;
 
-    public NativeOverlayVM(AnimusForgeNativeConversationOverlayVM original, Func<bool> requestLeave = null,
-        Action manualModeSelection = null)
+    public NativeOverlayVM(AnimusForgeNativeConversationOverlayVM original)
     {
         Original = original;
-        _requestLeave = requestLeave;
-        _manualModeSelection = manualModeSelection;
         original.PropertyChanged += Changed;
         original.PropertyChangedWithValue += ValueChanged;
         original.PropertyChangedWithBoolValue += BoolChanged;
@@ -27,16 +20,14 @@ public sealed class NativeOverlayVM : ViewModel
         original.PropertyChangedWithFloatValue += FloatChanged;
     }
 
-    [DataSourceProperty] public string InputText { get => Original.InputText; set { if (CanInteract) Original.InputText = value; } }
+    [DataSourceProperty] public string InputText { get => Original.InputText; set { if (!_disposed) Original.InputText = value; } }
     [DataSourceProperty] public string SwitchTitle => Original.SwitchTitle;
     [DataSourceProperty] public string AIChatHistoryButtonText => Original.AIChatHistoryButtonText;
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;
     [DataSourceProperty] public string PersonaEditButtonText => Original.PersonaEditButtonText;
     [DataSourceProperty] public string TagTestButtonText => Original.TagTestButtonText;
     [DataSourceProperty] public bool IsCustomAnswerVisible => Original.IsCustomAnswerVisible;
-    [DataSourceProperty] public bool IsInputEnabled => CanInteract && Original.IsInputEnabled;
-    [DataSourceProperty] public bool IsInteractionEnabled => CanInteract;
-    [DataSourceProperty] public bool CanLeave => CanInteract && _requestLeave != null;
+    [DataSourceProperty] public bool IsInputEnabled => Original.IsInputEnabled;
     [DataSourceProperty] public bool IsPersonaEditVisible => Original.IsPersonaEditVisible;
     [DataSourceProperty] public bool IsTagTestVisible => Original.IsTagTestVisible;
     [DataSourceProperty] public int InputFocusVersion => Original.InputFocusVersion;
@@ -44,35 +35,15 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public bool HasMoreActions => IsPersonaEditVisible || IsTagTestVisible;
     [DataSourceProperty] public bool IsMoreVisible => _moreVisible && HasMoreActions;
 
-    private bool CanInteract => !_disposed && !_leavePending;
-    public void ExecuteSubmit() { if (CanInteract) Original.ExecuteSubmit(); }
-    public void SwitchTalk() { if (!CanInteract) return; _manualModeSelection?.Invoke(); CloseMore(); Original.SwitchTalk(); }
-    public void ShowLogView() { if (!CanInteract) return; CloseMore(); Original.ShowLogView(); }
-    public void ShowGiveShowMenu() { if (!CanInteract) return; CloseMore(); Original.ShowGiveShowMenu(); }
-    public void EditPersona() { if (!CanInteract) return; CloseMore(); Original.EditPersona(); }
-    public void OpenTagTest() { if (!CanInteract) return; CloseMore(); Original.OpenTagTest(); }
-    public void StartTyping() { if (CanInteract) Original.StartTyping(); }
-    public void StopTyping() { if (CanInteract) Original.StopTyping(); }
-    public void ToggleMore() { if (!CanInteract) return; _moreVisible = !_moreVisible; OnPropertyChanged(nameof(IsMoreVisible)); }
-    public void LeaveConversation()
-    {
-        if (!CanLeave || _requestLeave?.Invoke() != true) return;
-        _leavePending = true;
-        CloseMore();
-        NotifyLeaveState();
-    }
-    internal void ClearLeavePending()
-    {
-        if (_disposed || !_leavePending) return;
-        _leavePending = false;
-        NotifyLeaveState();
-    }
-    private void NotifyLeaveState()
-    {
-        OnPropertyChanged(nameof(IsInputEnabled));
-        OnPropertyChanged(nameof(IsInteractionEnabled));
-        OnPropertyChanged(nameof(CanLeave));
-    }
+    public void ExecuteSubmit() { if (!_disposed) Original.ExecuteSubmit(); }
+    public void SwitchTalk() { if (_disposed) return; CloseMore(); Original.SwitchTalk(); }
+    public void ShowLogView() { if (_disposed) return; CloseMore(); Original.ShowLogView(); }
+    public void ShowGiveShowMenu() { if (_disposed) return; CloseMore(); Original.ShowGiveShowMenu(); }
+    public void EditPersona() { if (_disposed) return; CloseMore(); Original.EditPersona(); }
+    public void OpenTagTest() { if (_disposed) return; CloseMore(); Original.OpenTagTest(); }
+    public void StartTyping() { if (!_disposed) Original.StartTyping(); }
+    public void StopTyping() { if (!_disposed) Original.StopTyping(); }
+    public void ToggleMore() { if (_disposed) return; _moreVisible = !_moreVisible; OnPropertyChanged(nameof(IsMoreVisible)); }
     private void CloseMore() { _moreVisible = false; OnPropertyChanged(nameof(IsMoreVisible)); }
     private void Forward(string name)
     {
