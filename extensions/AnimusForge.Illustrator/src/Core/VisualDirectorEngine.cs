@@ -387,8 +387,9 @@ namespace AnimusForge.Illustrator.Core
         internal static bool ViolatesPortraitComposition(string output, IllustrationPromptPlan plan)
         {
             if (plan?.Mode != "人物百科纪事" || string.IsNullOrWhiteSpace(output)) return false;
-            // 只拦截真正违规的夸张动作或大纛举旗，不误杀周围环境道具描述
-            foreach (string token in new[] { "一手举旗", "大纛", "手撑桌", "双手撑桌", "夸张扭身", "扭转躯干", "倚案摆拍" })
+            // Natural supported actions are the director's decision, not keyword violations.
+            // Keep only the portrait-specific unsupported flag check here.
+            foreach (string token in new[] { "一手举旗", "大纛" })
                 if (output.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) return true;
             return false;
         }
@@ -445,7 +446,7 @@ namespace AnimusForge.Illustrator.Core
                         model = "gpt-4o-mini";
                     }
                 }
-                TaleWorlds.Library.Debug.Print($"[VisualDirector] Using custom visual director API ({baseUrl}, model={model}).");
+                TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact($"[VisualDirector] Using custom visual director API ({SensitiveLogText.SafeUrl(baseUrl)}, model={model}).", apiKey));
                 return true;
             }
 
@@ -461,7 +462,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     model = defaultHostModel;
                 }
-                TaleWorlds.Library.Debug.Print($"[VisualDirector] Auto-reused AnimusForge host primary chat API ({baseUrl}, model={model}).");
+                TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact($"[VisualDirector] Auto-reused AnimusForge host primary chat API ({SensitiveLogText.SafeUrl(baseUrl)}, model={model}).", apiKey));
                 return true;
             }
 
@@ -471,7 +472,7 @@ namespace AnimusForge.Illustrator.Core
                 baseUrl = settings.ApiBaseUrl.Trim();
                 apiKey = settings.ApiKey.Trim();
                 model = !string.IsNullOrWhiteSpace(settings.DirectorModelName) ? settings.DirectorModelName.Trim() : "gpt-4o-mini";
-                TaleWorlds.Library.Debug.Print($"[VisualDirector] Fallback-reused image API for director ({baseUrl}, model={model}).");
+                TaleWorlds.Library.Debug.Print(SensitiveLogText.Redact($"[VisualDirector] Fallback-reused image API for director ({SensitiveLogText.SafeUrl(baseUrl)}, model={model}).", apiKey));
                 return true;
             }
 

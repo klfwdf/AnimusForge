@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Illustrator.Core;
@@ -42,6 +43,36 @@ namespace AnimusForge.Illustrator.Engine
         internal double TotalMilliseconds { get; set; }
         internal double MaxBatchMilliseconds { get; set; }
         internal bool TerrainOmitted { get; private set; }
+        // Request-local, bounded text facts. Reuses frames/names already read by InspectOne.
+        private readonly Dictionary<string, float> _nearbyProps = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+        internal void ObserveNearbyProp(string prefab, string name, Vec3 position)
+        {
+            if (!CenterFromPlayer) return;
+            float distance = position.Distance(CaptureCenter);
+            if (float.IsNaN(distance) || float.IsInfinity(distance) || distance > 24f) return;
+            string label = string.IsNullOrWhiteSpace(prefab) ? name : prefab;
+            if (string.IsNullOrWhiteSpace(label)) return;
+            if (label.Length > 160) label = label.Substring(0, 160);
+            if (_nearbyProps.TryGetValue(label, out float previous))
+            {
+                if (distance < previous) _nearbyProps[label] = distance;
+                return;
+            }
+            if (_nearbyProps.Count >= 20)
+            {
+                string farthest = null;
+                float farthestDistance = -1f;
+                foreach (var pair in _nearbyProps)
+                    if (pair.Value > farthestDistance || (pair.Value == farthestDistance && StringComparer.OrdinalIgnoreCase.Compare(pair.Key, farthest) > 0))
+                    { farthest = pair.Key; farthestDistance = pair.Value; }
+                if (distance > farthestDistance || (distance == farthestDistance && StringComparer.OrdinalIgnoreCase.Compare(label, farthest) >= 0)) return;
+                _nearbyProps.Remove(farthest);
+            }
+            _nearbyProps.Add(label, distance);
+        }
+        internal string NearbyPropFacts => _nearbyProps.Count == 0 ? string.Empty :
+            "\n【现场附近物体标识】玩家24米内可见实体的预制体/名称，按距离选取最多20种；仅为物体识别线索，不代表全部陈设或持握、位置关系，以环境参考图为准：" +
+            string.Join("、", _nearbyProps.OrderBy(pair => pair.Value).ThenBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase).Select(pair => pair.Key));
         internal string Notes =>
             (CenterFromPlayer ? "只采集玩家现场位置周围约30米的静态网格。" : "未取得玩家实体，以当前镜头位置为中心采集约30米范围。") +
             "按网格所属实体包围盒与范围相交筛选，跨越边界的大墙或屋顶保留整块；画面外与范围外内容保持未知。" +
@@ -496,6 +527,7 @@ namespace AnimusForge.Illustrator.Engine
                     MatrixFrame observedFrame = entity.GetGlobalFrame();
                     string prefab = entity.GetPrefabName();
                     string entityName = entity.Name;
+                    if (visible) Snapshot.ObserveNearbyProp(prefab, entityName, observedFrame.origin);
                     if (!string.IsNullOrWhiteSpace(prefab)) PanoramaResourceSupplement.RegisterGeometry(ObservedPlacements, "prefab:" + prefab, observedFrame);
                     if (!string.IsNullOrWhiteSpace(entityName)) PanoramaResourceSupplement.RegisterGeometry(ObservedPlacements, "entity:" + entityName, observedFrame);
                 }

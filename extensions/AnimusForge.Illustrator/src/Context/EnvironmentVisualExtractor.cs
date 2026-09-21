@@ -682,8 +682,8 @@ namespace AnimusForge.Illustrator.Context
         }
 
         /// <summary>
-        /// 引擎实读当前 Mission 场景：真实场景资源名、玩家附近具名人物、附近真实物体预制件名。
-        /// 仅主线程、仅在生成插画时一次性扫描（24m 半径），不在热路径运行。
+        /// 引擎实读当前 Mission 场景：真实场景资源名、天气与玩家附近具名人物。
+        /// 仅主线程读取；物体名称延迟到正式采集的分帧遍历，打开缓存不枚举全场实体。
         /// </summary>
         private static void ProbeLiveScene(EnvironmentVisualProfile profile)
         {
@@ -750,57 +750,7 @@ namespace AnimusForge.Illustrator.Context
                     profile.NamedCharacters = string.Join("、", named);
                 }
 
-                // 场景内真实可见物体/预制件（24m 内，按名去重，最多 20 个）
-                var propDistances = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-                try
-                {
-                    var objects = mission.ActiveMissionObjects;
-                    if (objects != null)
-                    {
-                        foreach (var mo in objects)
-                        {
-                            if (mo == null) continue;
-                            try
-                            {
-                                var ge = mo.GameEntity;
-                                if (ge == null || !ge.IsVisibleIncludeParents()) continue;
-                                float distance = hasCenter ? ge.GlobalPosition.Distance(center) : 0f;
-                                if (hasCenter && distance > 24f) continue;
-                                string label = ge.GetPrefabName();
-                                if (string.IsNullOrWhiteSpace(label)) label = ge.Name;
-                                if (string.IsNullOrWhiteSpace(label)) continue;
-                                if (!propDistances.TryGetValue(label, out float oldDistance) || distance < oldDistance) propDistances[label] = distance;
-                            }
-                            catch { }
-                        }
-                    }
-                }
-                catch { }
-                try
-                {
-                    var entities = new List<TaleWorlds.Engine.GameEntity>();
-                    mission.Scene?.GetEntities(ref entities);
-                    foreach (var ge in entities)
-                    {
-                        try
-                        {
-                            if (ge == null || !ge.IsVisibleIncludeParents()) continue;
-                            float distance = hasCenter ? ge.GlobalPosition.Distance(center) : 0f;
-                            if (hasCenter && distance > 24f) continue;
-                            string label = ge.GetPrefabName();
-                            if (string.IsNullOrWhiteSpace(label)) label = ge.Name;
-                            if (string.IsNullOrWhiteSpace(label)) continue;
-                            if (!propDistances.TryGetValue(label, out float oldDistance) || distance < oldDistance) propDistances[label] = distance;
-                        }
-                        catch { } // 单个失效实体不能中断余下实体采样。
-                    }
-                }
-                catch { }
-                if (propDistances.Count > 0)
-                {
-                    profile.RealProps = string.Join("、", propDistances.OrderBy(pair => pair.Value).ThenBy(pair => pair.Key, StringComparer.OrdinalIgnoreCase).Take(20).Select(pair => pair.Key));
-                }
-                TaleWorlds.Library.Debug.Print($"[Illustrator] Live scene probe: nearbyCharacters={named.Count}, uniqueNearbyProps={propDistances.Count}, selectedProps={Math.Min(20, propDistances.Count)}");
+                // Nearby prop names are collected by the generation-only panorama batches.
             }
             catch (Exception ex)
             {
