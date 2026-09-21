@@ -1,12 +1,19 @@
+<a id="j12-offline-verified-20260921"></a>
 <a id="j12b-diplomacy-start-20260921"></a>
 <a id="j12a-economy-start-20260921"></a>
-# 当前接续：J12a 已闭合，J12b Diplomacy 已开始（2026-09-21）
+# 当前接续：J12 Economy / Diplomacy / WorldMap 离线闭合（2026-09-21）
 
-**状态：J07–J12a_OFFLINE_VERIFIED；J12b_IN_PROGRESS（b1 DONE）。** Economy 产品链同上一回执；Diplomacy 四规则归位 `0ac279fc`。尚未开始 J12b2 direct diplomacy、J12c WorldMap；没有 push、Stage、Deploy、Package、自动化或游戏/存档操作。
+**状态：J07–J12_OFFLINE_VERIFIED；下一步 J13。** Economy 产品链、Diplomacy 四规则、Direct/World owner 与 WorldMap runtime owner 均归位；最终产品提交 `1c62c2c9`，代码地图 419 锚点绑定该提交。没有 push、Stage、Deploy、Package、自动化或游戏/存档操作。
 
 - **J12b1 四规则**：`WorldDiplomacy{OfferCooldown,ThreatState,ResultSettlement,PolicyHistory}Rules.cs` 以 Git `R100` 迁入 `src/modules/AF.Module.Diplomacy/Rules/`；namespace、public/internal 可见性、DTO/JSON、输入 mutation 与所有生产消费者不变。三个 smoke csproj 和 Intent 源码文件定位已切真实新路径。
 - **J12b1 证据**：PolicyHistory 94、ResultSettlement 453、Intent rule-focused 1143；Debug 1.3/1.4/Bootstrap 0 warning/error；416 锚点绑定 `0ac279fc`。两个原 net6 runner 在 SDK8 离线环境缺 ref pack，临时 net8 wrapper 保持同一 Program/规则源码；完整 Intent 套件仍在无关 PermanentAlliance 注册断言先失败，未写成全套 PASS。
-- **J12b 下一步**：直接外交 capture/execute → 世界外交 job/in-flight/completion → Vassalage/Annexation 等剩余接缝。J12a 不重开，除非相关回归。
+- **J12b2–b4 实际结果**：`DiplomacyBehavior.cs` 967 行真实 direct owner 与 `WorldDiplomacyBehavior.cs` 20,454 行真实 world owner 均以 Git `R100` 归入 `src/modules/AF.Module.Diplomacy/{Direct,World}`。七类动作、资格/Prompt、job queue、请求冻结、in-flight、completion、传播、Vassalage/Annexation 调用和 Campaign/save 状态全部保持同一类型/实例；根路径不存在 facade 或第二份状态。
+- **J12c 实际结果**：`WorldMapPartyCommandBehavior.cs` 9,993 行真实 owner 以 Git `R100` 归入 `src/modules/AF.Module.WorldMap/Runtime`。协议、STOP/普通/非 Hero/建队/远征受理、queue/event lifecycle、delayed request、嵌套 `WorldMapOrderApplyResult` 与四个 save key 同一 owner 保真；没有复制 J09 parser 或新旧双执行。
+- **J12d 最终证据**：Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；四实现 DLL metadata 1060；Persistence/Profile 142/168/13/44；Bridge 23、Phase8 73；Diplomacy 94/295/453/1143；J09 wiring 25、Native Action 91、Native Completion 184、Scene 71、Courier 34/32；repository source inventory 7。代码地图 recorded/working-tree 419 均通过。
+- **完成边界**：这是 J12 domain ownership 与离线兼容收口，不是 J17 全仓细粒度拆分。World/WorldMap 内部仍是大型 cohesive state owner；未为了行数制造转发壳、复制状态或更改 save identity。更细内部 partial 分片可在后续清理阶段进行，但不能声称是本次实机证据。
+- **已知工具项**：两个原 net6 diplomacy smoke 因本机无 net6 ref pack，使用相同 Program/生产源码的临时 net8 wrapper；完整 Intent runner 的无关 PermanentAlliance 注册断言仍先失败，因此只记录 rule-focused 1143，不伪报完整 Intent PASS。Memory terminal 的既有 `TagSceneSessionHistoryLine` 缺失仍不计 PASS。
+- **未验证**：真实 Campaign/Mission、旧 SAVE round-trip、live Economy/Diplomacy/WorldMap/AFEF、provider、音频与帧/网络性能均 `NOT-RUN`。
+- **下一步**：J13 Social/Weekly/Duel/Encounter/Issue 等领域 owner；不重开 J12，除非出现具体回归或相关源码变化。
 
 ## J12a Economy 已闭合回执
 
