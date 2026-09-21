@@ -1,18 +1,19 @@
 <a id="j12a-economy-start-20260921"></a>
 # 当前接续：J12a Economy 已开始（2026-09-21）
 
-**状态：J07–J11_OFFLINE_VERIFIED；J12a_IN_PROGRESS。** 计划 `9af7e8cf`；compatibility/projection `3f2c454e`；replay/authorization owner `07feb572`；shared batch owner `deb421ae`；Trust/Debt normalization owner `54b55aa3`。本轮没有开始 Diplomacy/WorldMap，没有 push、Stage、Deploy、Package、自动化或游戏/存档操作。
+**状态：J07–J11_OFFLINE_VERIFIED；J12a_IN_PROGRESS。** 计划 `9af7e8cf`；compatibility/projection `3f2c454e`；replay/authorization owner `07feb572`；shared batch owner `deb421ae`；Trust/Debt normalization owner `54b55aa3`；Debt schedule/Quest owner `3d2b636e`。本轮没有开始 Diplomacy/WorldMap，没有 push、Stage、Deploy、Package、自动化或游戏/存档操作。
 
 - **兼容边界归位**：`EconomyRewardDebtContracts.cs` 100% 原样迁入 `src/AF.Contracts/Compatibility/Economy/`；planner 和 main-thread port 100% 原样迁入 `src/modules/AF.Module.Economy/{Planning,Execution}`。namespace、public 类型/构造器/接口、enum 数值与实际 consumers 不变，旧三个路径已删除，测试 Compile 路径同步。
 - **真实职责抽取**：新增 `Projection/EconomyPromptProjection.cs`。`RewardSystemBehavior.BuildTrust*` 与两个 Debt Hint 仍在所属线程完成 live trust、账目 normalize、价格/期限捕获，再把 string/int-only `EconomyDebtPromptLine` 交给 detached formatter；没有将 `NormalizeDebtRecord` 或游戏对象搬到 worker，也没有第二 Prompt 拼装链。
 - **Replay/Authorization/Batch owner**：Hero/Party/Merchant 三个完整 partial 100% 内容迁入 `Execution/{Hero,Party,Merchant}`；11 个 live authorization 声明精确归入 `Authorization`，零消费者 resolver 删除。`EconomyReplayBatchCoordinator` 统一 null/reject/applied 计数、fact retention、partial/unknown 和 unknown 后停止；三个 domain step delegate 是唯一 live mutation host，原生 inventory/gold/settlement 操作有意留其后方。J12a2 `DONE`。
 - **Trust/Debt normalization owner**：`EconomyTrustPolicy` 唯一拥有 clamp、十级映射及三组 AI 语义文本；`EconomyDebtNormalizationPolicy` 唯一拥有旧 aggregate→line 迁移、line clamp、note、aggregate/date 重建和幂等归一。原 `DebtRecord` nested 类型、字段、JSON/SyncData、ID 生成和 game-thread campaign day capture 不变；J12a3 仅此子包完成，到期/提醒/罚则/Quest 协调仍待拆。
-- **证据**：projection/trust 15 + 2 个有效变异；Debt normalization 34 + unlimited-due 有效变异；ProductionReward 11；HeroAssetScope 67 + 5 个可编译变异；GiveAsset stress 80562；Production owner 对当前 Debug 1.4 DLL 回放；Economy port/executor；Phase8 73。Debug 1.3/1.4/Bootstrap 0 warning/0 error；两份 Debug DLL 530 metadata；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened；代码地图 406 锚点绑定 `54b55aa3`。
+- **Debt schedule/Quest owner**：`EconomyDebtSchedulePolicy` 唯一拥有 due day、提醒节奏、finite/unlimited overdue trust/relation 算法；pending quest HashSet 与 ID、load/import reconciliation、deferred creation、deadline sync、agreement completion 共 10 个声明逐声明原样迁入 `DebtPromiseLifecycle`。创建/结清 ledger mutation 和 `OnDailyTick` 的 Campaign effect apply 仍是下一安全包，不把本迁移写成 a3 全部完成。
+- **证据**：projection/trust 15 + 2 个有效变异；Debt normalization/schedule 48 + 2 个有效变异；Quest 10 声明精确迁移；ProductionReward 11；HeroAssetScope 67 + 5 个可编译变异；GiveAsset stress 80562；Production owner 对当前 Debug 1.4 DLL 回放；Economy port/executor；Phase8 73。Debug 1.3/1.4/Bootstrap 0 warning/0 error；两份 Debug DLL 530 metadata；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened；代码地图 408 锚点绑定 `3d2b636e`。
 - **已知工具项**：`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 读取新契约路径后，在既有非 J12 符号 `TagSceneSessionHistoryLine` 提取处失败；基线 `9af7e8cf` 的 `MyBehavior.cs` 同样没有该符号。未修改 Memory 业务或降低断言，不能计为 PASS；后续按它的真实 owner 单独处理。
-- **下一步**：完成 Reward/Loan capture、Debt 创建/结清/到期/Quest 协调，再做 J12a4 旧兼容链。完整 Release/存档门禁仍未完成，不能标 J12a 或 J12 DONE。
+- **下一步**：完成 Reward/Loan capture、Debt ledger 创建/结清与 daily Campaign apply adapter，再做 J12a4 旧兼容链。完整 Release/存档门禁仍未完成，不能标 J12a 或 J12 DONE。
 - **未验证**：Release、真实 Campaign/Mission、旧 SAVE、live inventory/gold/merchant/debt/trust、AFEF、provider、性能均 `NOT-RUN`。
 
-详细顺序、保留符号和退出门见 [J12 计划](plans/j12-domain-owners-plan.md)；当前代码位置见[范围图](architecture/af-framework-code-scope.md)与 406 锚点代码地图。回滚先文档/地图，再按 `54b55aa3` → `deb421ae` → `07feb572` → `3f2c454e` 定向 revert；不 reset/rebase/强推。
+详细顺序、保留符号和退出门见 [J12 计划](plans/j12-domain-owners-plan.md)；当前代码位置见[范围图](architecture/af-framework-code-scope.md)与 408 锚点代码地图。回滚先文档/地图，再按 `3d2b636e` → `54b55aa3` → `deb421ae` → `07feb572` → `3f2c454e` 定向 revert；不 reset/rebase/强推。
 
 ## 以下 J12 计划节为实施依据；当前进度以上方回执为准
 
