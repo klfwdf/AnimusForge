@@ -1,7 +1,14 @@
+<a id="j12b-diplomacy-start-20260921"></a>
 <a id="j12a-economy-start-20260921"></a>
-# 当前接续：J12a Economy 离线闭合，下一步 J12b（2026-09-21）
+# 当前接续：J12a 已闭合，J12b Diplomacy 已开始（2026-09-21）
 
-**状态：J07–J12a_OFFLINE_VERIFIED；J12b_NEXT。** 计划 `9af7e8cf`；compatibility/projection `3f2c454e`；replay/authorization `07feb572`；batch `deb421ae`；Trust/Debt normalization `54b55aa3`；Debt schedule/Quest `3d2b636e`；Debt ledger/daily `616ba892`；Trust state `fa26d430`；Reward capture `7f2fffba`。没有开始 Diplomacy/WorldMap，没有 push、Stage、Deploy、Package、自动化或游戏/存档操作。
+**状态：J07–J12a_OFFLINE_VERIFIED；J12b_IN_PROGRESS（b1 DONE）。** Economy 产品链同上一回执；Diplomacy 四规则归位 `0ac279fc`。尚未开始 J12b2 direct diplomacy、J12c WorldMap；没有 push、Stage、Deploy、Package、自动化或游戏/存档操作。
+
+- **J12b1 四规则**：`WorldDiplomacy{OfferCooldown,ThreatState,ResultSettlement,PolicyHistory}Rules.cs` 以 Git `R100` 迁入 `src/modules/AF.Module.Diplomacy/Rules/`；namespace、public/internal 可见性、DTO/JSON、输入 mutation 与所有生产消费者不变。三个 smoke csproj 和 Intent 源码文件定位已切真实新路径。
+- **J12b1 证据**：PolicyHistory 94、ResultSettlement 453、Intent rule-focused 1143；Debug 1.3/1.4/Bootstrap 0 warning/error；416 锚点绑定 `0ac279fc`。两个原 net6 runner 在 SDK8 离线环境缺 ref pack，临时 net8 wrapper 保持同一 Program/规则源码；完整 Intent 套件仍在无关 PermanentAlliance 注册断言先失败，未写成全套 PASS。
+- **J12b 下一步**：直接外交 capture/execute → 世界外交 job/in-flight/completion → Vassalage/Annexation 等剩余接缝。J12a 不重开，除非相关回归。
+
+## J12a Economy 已闭合回执
 
 - **兼容边界归位**：`EconomyRewardDebtContracts.cs` 100% 原样迁入 `src/AF.Contracts/Compatibility/Economy/`；planner 和 main-thread port 100% 原样迁入 `src/modules/AF.Module.Economy/{Planning,Execution}`。namespace、public 类型/构造器/接口、enum 数值与实际 consumers 不变，旧三个路径已删除，测试 Compile 路径同步。
 - **真实职责抽取**：新增 `Projection/EconomyPromptProjection.cs`。`RewardSystemBehavior.BuildTrust*` 与两个 Debt Hint 仍在所属线程完成 live trust、账目 normalize、价格/期限捕获，再把 string/int-only `EconomyDebtPromptLine` 交给 detached formatter；没有将 `NormalizeDebtRecord` 或游戏对象搬到 worker，也没有第二 Prompt 拼装链。
