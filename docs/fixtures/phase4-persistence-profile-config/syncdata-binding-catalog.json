@@ -1566,7 +1566,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 1330,
+          "line": 1220,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1580,7 +1580,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 4162,
+          "line": 4052,
           "ref": "_directTrustProgressCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1594,7 +1594,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 1615,
+          "line": 1505,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1608,7 +1608,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 1423,
+          "line": 1313,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1622,7 +1622,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3965,
+          "line": 3855,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1636,7 +1636,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 4050,
+          "line": 3940,
           "ref": "_npcTrustStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1650,7 +1650,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 4278,
+          "line": 4168,
           "ref": "_publicTrustProgressCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1664,7 +1664,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 4051,
+          "line": 3941,
           "ref": "_publicTrustStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1678,7 +1678,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 4222,
+          "line": 4112,
           "ref": "_settlementTrustCentiCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1692,7 +1692,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 4223,
+          "line": 4113,
           "ref": "_settlementTrustSharedPublicCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1706,7 +1706,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 4114,
+          "line": 4004,
           "ref": "_tradeTrustValueCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"

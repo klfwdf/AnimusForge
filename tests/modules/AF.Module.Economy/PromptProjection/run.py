@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 PROJECTION = ROOT / "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs"
 TRUST_POLICY = ROOT / "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs"
+DEBT_LEDGER = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs"
 
 
 def load_declaration():
@@ -25,6 +26,8 @@ def load_declaration():
 def verify_live_wiring() -> None:
     declaration = load_declaration()
     reward = (ROOT / "RewardSystemBehavior.cs").read_text(encoding="utf-8-sig")
+    debt_ledger = DEBT_LEDGER.read_text(encoding="utf-8-sig")
+    production = reward + "\n" + debt_ledger
     expected = {
         "public string BuildTrustStatusInlineForAI(": ("EconomyPromptProjection.BuildTrustStatus(", 2),
         "public string BuildTrustPromptForAI(": ("EconomyPromptProjection.BuildTrustPrompt(", 1),
@@ -32,10 +35,10 @@ def verify_live_wiring() -> None:
         "public string BuildSettlementMerchantDebtHintForAI(": ("EconomyPromptProjection.BuildSettlementMerchantDebtHint(", 1),
     }
     for marker, (call, count) in expected.items():
-        method = declaration(reward, marker)
+        method = declaration(production, marker)
         assert method.count(call) == count, f"Production consumer delegation count drifted: {marker}"
     for marker in ("public string BuildDebtHintForAI(", "public string BuildSettlementMerchantDebtHintForAI("):
-        method = declaration(reward, marker)
+        method = declaration(production, marker)
         assert method.index("NormalizeDebtRecord(") < method.index("EconomyPromptProjection.Build"), \
             f"Debt normalization moved behind detached projection: {marker}"
         assert "new EconomyDebtPromptLine(" in method, f"Live debt values were not detached: {marker}"

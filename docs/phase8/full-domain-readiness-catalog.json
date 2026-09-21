@@ -440,6 +440,8 @@
         "RewardSystemBehavior.RpItemIntroduction.cs",
         "RewardSystemBehavior.cs",
         "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs",
         "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs",
         "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtPromiseLifecycle.cs",
         "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtSchedulePolicy.cs",

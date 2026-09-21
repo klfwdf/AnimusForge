@@ -11,6 +11,8 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 REWARD = ROOT / "RewardSystemBehavior.cs"
+LEDGER = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs"
+DAILY_LIFECYCLE = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs"
 POLICY = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs"
 SCHEDULE_POLICY = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtSchedulePolicy.cs"
 QUEST_LIFECYCLE = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtPromiseLifecycle.cs"
@@ -27,10 +29,12 @@ def load_declaration():
 def prepare_generated() -> Path:
     declaration = load_declaration()
     reward = REWARD.read_text(encoding="utf-8-sig")
-    debt_record = declaration(reward, "private class DebtRecord")
-    wrapper = declaration(reward, "private void NormalizeDebtRecord(")
+    ledger = LEDGER.read_text(encoding="utf-8-sig")
+    daily = DAILY_LIFECYCLE.read_text(encoding="utf-8-sig")
+    debt_record = declaration(ledger, "private class DebtRecord")
+    wrapper = declaration(ledger, "private void NormalizeDebtRecord(")
     has_content = declaration(reward, "private static bool HasDebtContent(")
-    note = declaration(reward, "private static string NormalizeDebtNote(")
+    note = declaration(ledger, "private static string NormalizeDebtNote(")
     assert wrapper.count("EconomyDebtNormalizationPolicy.Normalize(") == 1, "Normalize wrapper drifted"
     assert "GetNowCampaignDay()" in wrapper and "BuildDebtId" in wrapper, "Live capture/ID owner drifted"
     assert has_content.count("EconomyDebtNormalizationPolicy.HasContent(") == 1, "Content wrapper drifted"
@@ -43,8 +47,9 @@ def prepare_generated() -> Path:
         "EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyDelta(": 1,
         "EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(": 2,
     }
+    debt_consumers = ledger + daily
     for call, count in schedule_calls.items():
-        assert reward.count(call) == count, "Debt schedule production wiring drifted: " + call
+        assert debt_consumers.count(call) == count, "Debt schedule production wiring drifted: " + call
     removed_schedule_declarations = (
         "private static int NormalizeDueDays(",
         "private static int ComputeWeeklyOverdueTrustPenaltyByDebtValue(",
@@ -56,6 +61,29 @@ def prepare_generated() -> Path:
     )
     for marker in removed_schedule_declarations:
         assert marker not in reward, "Old debt schedule declaration remains in root: " + marker
+
+    ledger_markers = (
+        "public class DebtExportEntry",
+        "public class DebtLineExportEntry",
+        "private class DebtRecord",
+        "private void NormalizeDebtRecord(",
+        "public Dictionary<string, DebtExportEntry> ExportDebtEntries()",
+        "public void ImportDebtEntries(",
+        "public string BuildDebtHintForAI(",
+        "public void SetDebt(",
+        "private DebtRecord.DebtLine SetDebtForNpc(",
+        "private DebtRecord.DebtLine SetDebtForSettlementMerchant(",
+        "public bool ResolveDebtByIdByAgreement(",
+        "public bool ResolveSettlementMerchantDebtByIdByAgreement(",
+    )
+    for marker in ledger_markers:
+        assert ledger.count(marker) == 1, "Debt ledger owner declaration drifted: " + marker
+        assert marker not in reward, "Debt ledger declaration remains in root: " + marker
+    assert ledger.count("private Dictionary<string, DebtRecord> _debts") == 1
+    assert "private Dictionary<string, DebtRecord> _debts" not in reward
+    assert daily.count("private void OnDailyTick()") == 1 and "private void OnDailyTick()" not in reward
+    assert reward.count("DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);") == 1, \
+        "Daily economy lifecycle registration drifted"
 
     quest = QUEST_LIFECYCLE.read_text(encoding="utf-8-sig")
     quest_markers = (
@@ -75,9 +103,12 @@ def prepare_generated() -> Path:
         assert marker not in reward, "Debt quest declaration remains in root: " + marker
     pending_field = "private HashSet<string> _pendingDebtPromiseQuestKeys"
     assert quest.count(pending_field) == 1 and pending_field not in reward, "Debt quest queue state owner drifted"
-    assert reward.count("QueueDebtPromiseQuestsForActiveDebts();") == 2, "Load/import quest reconciliation drifted"
-    assert reward.count("DrainPendingDebtPromiseQuestCreations();") == 1, "Quest drain tick wiring drifted"
-    assert reward.count("CompleteDebtPromiseQuest(") == 2, "Debt resolution quest completion drifted"
+    all_debt_consumers = reward + ledger + daily
+    assert all_debt_consumers.count("QueueDebtPromiseQuestsForActiveDebts();") == 2, \
+        "Load/import quest reconciliation drifted"
+    assert all_debt_consumers.count("DrainPendingDebtPromiseQuestCreations();") == 1, \
+        "Quest drain tick wiring drifted"
+    assert ledger.count("CompleteDebtPromiseQuest(") == 2, "Debt resolution quest completion drifted"
 
     generated = HERE / ".generated"
     generated.mkdir(parents=True, exist_ok=True)
