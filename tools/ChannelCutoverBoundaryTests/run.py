@@ -30,6 +30,7 @@ COURIER_SESSION_CREATION_PATH = "src/modules/AF.Module.Conversation/Channels/Cou
 COURIER_RUNTIME_TICK_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs"
 COURIER_PROACTIVE_LETTERS_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs"
 COURIER_LETTER_INVENTORY_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs"
+COURIER_PROMPT_MESSAGES_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs"
 
 
 def source(path: str, ref: str | None) -> str:
@@ -74,7 +75,7 @@ def courier_source(ref: str | None) -> str:
                  COURIER_ROUTE_TRANSPORT_PATH, COURIER_DELIVERY_LIFETIME_PATH,
                  COURIER_SESSION_REGISTRY_PATH, COURIER_SESSION_CREATION_PATH,
                  COURIER_RUNTIME_TICK_PATH, COURIER_PROACTIVE_LETTERS_PATH,
-                 COURIER_LETTER_INVENTORY_PATH):
+                 COURIER_LETTER_INVENTORY_PATH, COURIER_PROMPT_MESSAGES_PATH):
         if ref:
             exists = subprocess.run(
                 ["git", "cat-file", "-e", f"{ref}:{path}"],

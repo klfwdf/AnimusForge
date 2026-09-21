@@ -16,7 +16,7 @@ message_markers=['private static List<object> BuildCourierReplyMessages(','priva
  'private static bool TryConvertCourierMemoryMessageToChatMessage(','private static bool IsCourierMemorySpeakerRecipient(',
  'private static string BuildCourierMemoryMetadataPrefix(','private static string StripCourierPromptScopeLabel(',
  'private static string StripCourierSpeakerPrefix(']
-message_source=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig')
+message_source=ex.courier_source(None)
 message_builders='\n'.join(ex.declaration(message_source,marker) for marker in message_markers)
 for name in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
  message_builders=message_builders.replace('private static List<object> '+name+'(', 'private static List<object> '+name+'Production(',1)
