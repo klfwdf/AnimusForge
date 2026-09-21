@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "c9ea2e8896a8347b7d113679a921ba0584ad9c1a",
+  "sourceRevision": "f2990b383afb3e5f2f3e9873217d2a230c76cd1e",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -3831,6 +3831,61 @@
       "status": "wired-j10-candidate",
       "note": "terminal completion resumes only the matching current session",
       "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+    },
+    {
+      "id": "courier.transport.session",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
+      "start": 41,
+      "end": 41,
+      "symbol": "private void ProcessSession(CourierSession session)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "single live session state-machine entry",
+      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+    },
+    {
+      "id": "courier.transport.inbound",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
+      "start": 157,
+      "end": 157,
+      "symbol": "private void ProcessInboundToPlayerSession(CourierSession session, MobileParty courier)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "inbound route and busy-delivery gate",
+      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+    },
+    {
+      "id": "courier.transport.inbound-delivery",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
+      "start": 188,
+      "end": 188,
+      "symbol": "private void DeliverInboundLetterToPlayer(CourierSession session, MobileParty courier)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "receipt-ready letter delivery and one-time history/inventory commit",
+      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+    },
+    {
+      "id": "courier.transport.player-busy",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
+      "start": 243,
+      "end": 243,
+      "symbol": "private static bool IsPlayerBusyForInboundLetterDelivery(MobileParty mainParty)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "conversation/combat/siege gate before showing inbound letter",
+      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+    },
+    {
+      "id": "courier.transport.inbound-notice",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
+      "start": 272,
+      "end": 272,
+      "symbol": "private static void ShowInboundCourierLetterNotice(string senderHeroId, string senderName, string letterText, string letterKind)",
+      "match": "exact",
+      "status": "wired-j10-candidate",
+      "note": "sanitized letter UI with optional reply entry",
+      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
     }
   ]
 }
