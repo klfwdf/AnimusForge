@@ -63,7 +63,7 @@ message_markers=[
  'private static string StripCourierPromptScopeLabel(',
  'private static string StripCourierSpeakerPrefix(',
 ]
-current_host=(ROOT/'CourierDeliveryBehavior.cs').read_text(encoding='utf-8-sig').replace('\r\n','\n')
+current_host=ex.courier_source(None).replace('\r\n','\n')
 old_messages=[ex.declaration(old_host,marker) for marker in message_markers]
 new_messages=[ex.declaration(current_host,marker) for marker in message_markers]
 assert old_messages==new_messages, 'Courier final message builders changed since 77a3d234; extract both independently before comparing'
