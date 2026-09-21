@@ -779,8 +779,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private Dictionary<string, DebtRecord> _debts = new Dictionary<string, DebtRecord>();
 
 	// New promises are queued until their originating conversation has naturally closed before calling QuestBase.StartQuest.
-	private HashSet<string> _pendingDebtPromiseQuestKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
 	private Dictionary<string, string> _debtStorage = new Dictionary<string, string>();
 
 	private Dictionary<string, int> _npcTrust = new Dictionary<string, int>();
@@ -3029,118 +3027,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		return EconomyDebtNormalizationPolicy.HasContent(rec);
 	}
 
-	private static int NormalizeDueDays(int days)
-	{
-		if (days < 1)
-		{
-			return 1;
-		}
-		if (days > 120)
-		{
-			return 120;
-		}
-		return days;
-	}
-
-	private static int ComputeWeeklyOverdueTrustPenaltyByDebtValue(int debtValue)
-	{
-		int num = Math.Max(0, debtValue);
-		if (num <= 0)
-		{
-			return 0;
-		}
-		return Math.Max(1, num / OverdueTrustPenaltyPerWeekValueStep);
-	}
-
-	private static int ConsumeUnlimitedDebtTrustPenaltyUnits(DebtRecord.DebtLine line, int debtValue, int campaignDayIndex)
-	{
-		if (line == null || !line.IsDueUnlimited || line.RemainingAmount <= 0)
-		{
-			return 0;
-		}
-		if (line.LastOverduePenaltyDay <= 0)
-		{
-			line.LastOverduePenaltyDay = campaignDayIndex;
-			return 0;
-		}
-		int elapsedDays = campaignDayIndex - line.LastOverduePenaltyDay;
-		if (elapsedDays <= 0)
-		{
-			return 0;
-		}
-		line.LastOverduePenaltyDay = campaignDayIndex;
-		int value = Math.Max(0, debtValue);
-		if (value <= 0)
-		{
-			return 0;
-		}
-		decimal numerator = Math.Max(0L, line.UnlimitedTrustPenaltyNumeratorCarry)
-			+ (decimal)value * UnlimitedDebtPenaltyTrustUnitsPerReferencePerDay * elapsedDays;
-		decimal penaltyUnits = decimal.Floor(numerator / UnlimitedDebtPenaltyReferenceValue);
-		line.UnlimitedTrustPenaltyNumeratorCarry = (long)(numerator % UnlimitedDebtPenaltyReferenceValue);
-		if (penaltyUnits <= 0m)
-		{
-			return 0;
-		}
-		return penaltyUnits >= int.MaxValue ? int.MaxValue : (int)penaltyUnits;
-	}
-
-	private static bool ShouldIncludeDebtLineInScheduledReminder(DebtRecord.DebtLine line, int campaignDayIndex)
-	{
-		if (line == null || line.RemainingAmount <= 0)
-		{
-			return false;
-		}
-		if (!line.IsDueUnlimited)
-		{
-			return true;
-		}
-		int createdDay = Math.Max(0, (int)Math.Floor(line.CreatedDay));
-		int elapsedDays = campaignDayIndex - createdDay;
-		return elapsedDays >= UnlimitedDebtReminderIntervalDays && elapsedDays % UnlimitedDebtReminderIntervalDays == 0;
-	}
-
-	private static int ComputeWeeklyOverdueRelationPenaltyTotal(int weeksApplied, int trustPenaltyPerWeek)
-	{
-		if (weeksApplied <= 0 || trustPenaltyPerWeek <= 0)
-		{
-			return 0;
-		}
-		long num = (long)weeksApplied * (long)trustPenaltyPerWeek;
-		long num2 = num / OverdueRelationPenaltyPerWeekTrustStep;
-		if (num2 > int.MaxValue)
-		{
-			return int.MaxValue;
-		}
-		return Math.Max(0, (int)num2);
-	}
-
-	private static int ComputeWeeklyOverdueRelationPenaltyDelta(int previousWeeksApplied, int currentWeeksApplied, int trustPenaltyPerWeek)
-	{
-		int num = ComputeWeeklyOverdueRelationPenaltyTotal(Math.Max(0, previousWeeksApplied), trustPenaltyPerWeek);
-		int num2 = ComputeWeeklyOverdueRelationPenaltyTotal(Math.Max(0, currentWeeksApplied), trustPenaltyPerWeek);
-		return Math.Max(0, num2 - num);
-	}
-
-	private static int ComputeOverdueElapsedWeeks(float nowCampaignDay, float dueDay)
-	{
-		if (dueDay <= 0f || nowCampaignDay <= dueDay + 0.01f)
-		{
-			return 0;
-		}
-		int num = Math.Max(0, (int)Math.Floor(nowCampaignDay - dueDay));
-		int num2 = num / OverduePenaltyIntervalDays;
-		if (num2 < 0)
-		{
-			num2 = 0;
-		}
-		if (num2 > OverduePenaltyMaxWeeks)
-		{
-			num2 = OverduePenaltyMaxWeeks;
-		}
-		return num2;
-	}
-
 	private static int NormalizeLlmTrustDeltaValue(int value)
 	{
 		if (value < -10)
@@ -4035,237 +3921,6 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 			return string.Empty;
-		}
-	}
-
-	private static string BuildDebtId()
-	{
-		try
-		{
-			return "D" + Guid.NewGuid().ToString("N").Substring(0, 8)
-				.ToUpperInvariant();
-		}
-		catch
-		{
-			return "D" + DateTime.UtcNow.Ticks;
-		}
-	}
-
-	private void QueueDebtPromiseQuest(string ownerKey, string debtId)
-	{
-		string text = (ownerKey ?? "").Trim();
-		string text2 = (debtId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
-		{
-			return;
-		}
-		if (_pendingDebtPromiseQuestKeys == null)
-		{
-			_pendingDebtPromiseQuestKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		}
-		// The separator cannot occur in generated IDs and avoids allocating a request object for each promise.
-		_pendingDebtPromiseQuestKeys.Add(text + "\u001f" + text2);
-	}
-
-	private void QueueDebtPromiseQuestsForActiveDebts()
-	{
-		if (_debts == null || _debts.Count == 0)
-		{
-			return;
-		}
-		// This migration/reconciliation is called only after load or import, never from the daily debt-maintenance loop.
-		foreach (KeyValuePair<string, DebtRecord> debt in _debts)
-		{
-			if (string.IsNullOrWhiteSpace(debt.Key) || debt.Value == null)
-			{
-				continue;
-			}
-			NormalizeDebtRecord(debt.Value);
-			if (debt.Value.DebtLines == null)
-			{
-				continue;
-			}
-			for (int i = 0; i < debt.Value.DebtLines.Count; i++)
-			{
-				DebtRecord.DebtLine debtLine = debt.Value.DebtLines[i];
-				if (debtLine != null && debtLine.RemainingAmount > 0)
-				{
-					QueueDebtPromiseQuest(debt.Key, debtLine.DebtId);
-				}
-			}
-		}
-	}
-
-	private void DrainPendingDebtPromiseQuestCreations()
-	{
-		if (_pendingDebtPromiseQuestKeys == null || _pendingDebtPromiseQuestKeys.Count == 0 || !CanStartDebtPromiseQuest())
-		{
-			return;
-		}
-		// Copy then clear so a task created by this pass can safely enqueue a later promise without being lost.
-		List<string> list = _pendingDebtPromiseQuestKeys.ToList();
-		_pendingDebtPromiseQuestKeys.Clear();
-		for (int i = 0; i < list.Count; i++)
-		{
-			if (!TryParseDebtPromiseQuestKey(list[i], out var ownerKey, out var debtId)
-				|| !TryGetActiveDebtPromiseQuestData(ownerKey, debtId, out var debtorName, out var debtSummary, out var deadlineText, out var debtNote, out var dueDay, out var isDueUnlimited))
-			{
-				// A same-conversation ADP can clear the debt before this deferred task creation runs.
-				continue;
-			}
-			EnsureDebtPromiseQuest(ownerKey, debtId, debtorName, debtSummary, deadlineText, debtNote, dueDay, isDueUnlimited);
-		}
-	}
-
-	private static bool CanStartDebtPromiseQuest()
-	{
-		try
-		{
-			return Campaign.Current != null && Campaign.Current.QuestManager != null && (Campaign.Current.ConversationManager == null || !Campaign.Current.ConversationManager.IsConversationInProgress);
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	private static bool TryParseDebtPromiseQuestKey(string value, out string ownerKey, out string debtId)
-	{
-		ownerKey = "";
-		debtId = "";
-		string text = value ?? "";
-		int num = text.IndexOf('\u001f');
-		if (num <= 0 || num >= text.Length - 1)
-		{
-			return false;
-		}
-		ownerKey = text.Substring(0, num).Trim();
-		debtId = text.Substring(num + 1).Trim();
-		return !string.IsNullOrWhiteSpace(ownerKey) && !string.IsNullOrWhiteSpace(debtId);
-	}
-
-	private bool TryGetActiveDebtPromiseQuestData(string ownerKey, string debtId, out string debtorName, out string debtSummary, out string deadlineText, out string debtNote, out float dueDay, out bool isDueUnlimited)
-	{
-		debtorName = "";
-		debtSummary = "";
-		deadlineText = "";
-		debtNote = "";
-		dueDay = 0f;
-		isDueUnlimited = false;
-		DebtRecord debtRecord = GetDebtRecordByKey(ownerKey);
-		if (debtRecord == null)
-		{
-			return false;
-		}
-		NormalizeDebtRecord(debtRecord);
-		DebtRecord.DebtLine debtLine = debtRecord.DebtLines?.FirstOrDefault((DebtRecord.DebtLine x) => x != null && x.RemainingAmount > 0 && string.Equals(x.DebtId ?? "", debtId, StringComparison.OrdinalIgnoreCase));
-		if (debtLine == null)
-		{
-			return false;
-		}
-		Hero hero = null;
-		try
-		{
-			hero = Hero.Find(ownerKey);
-		}
-		catch
-		{
-			hero = null;
-		}
-		if (hero != null)
-		{
-			debtorName = hero.Name?.ToString() ?? ownerKey;
-		}
-		else if (TryParseSettlementMerchantDebtKey(ownerKey, out var settlementId, out var kind))
-		{
-			Settlement settlement = ResolveSettlementById(settlementId);
-			debtorName = BuildSettlementMerchantDebtLabel(settlement, kind);
-		}
-		else
-		{
-			debtorName = ownerKey;
-		}
-		debtSummary = BuildDebtPromiseSummary(debtLine);
-		deadlineText = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
-		debtNote = string.IsNullOrWhiteSpace(debtLine.DebtNote) ? "无" : debtLine.DebtNote;
-		// Pass raw deadline state so the task can use the native countdown instead of parsing display text.
-		dueDay = debtLine.DueDay;
-		isDueUnlimited = debtLine.IsDueUnlimited;
-		return true;
-	}
-
-	private static string BuildDebtPromiseSummary(DebtRecord.DebtLine debtLine)
-	{
-		if (debtLine == null)
-		{
-			return "未说明";
-		}
-		int num = Math.Max(0, debtLine.RemainingAmount);
-		if (debtLine.IsGold)
-		{
-			return num + " 第纳尔";
-		}
-		ItemObject itemObject = ResolveItemById(debtLine.ItemId);
-		string text = itemObject?.Name?.ToString();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = string.IsNullOrWhiteSpace(debtLine.ItemId) ? "物品" : debtLine.ItemId;
-		}
-		return text + " ×" + num;
-	}
-
-	private void EnsureDebtPromiseQuest(string ownerKey, string debtId, string debtorName, string debtSummary, string deadlineText, string debtNote, float dueDay, bool isDueUnlimited)
-	{
-		try
-		{
-			foreach (QuestBase quest in Campaign.Current.QuestManager.Quests)
-			{
-				DebtPromiseQuest debtPromiseQuest = quest as DebtPromiseQuest;
-				if (debtPromiseQuest != null && debtPromiseQuest.IsOngoing && debtPromiseQuest.Matches(ownerKey, debtId))
-				{
-					// Existing saves receive the exact ledger deadline during one-time load reconciliation.
-					debtPromiseQuest.SynchronizeDeadline(dueDay, isDueUnlimited);
-					return;
-				}
-			}
-			// The task deliberately has no QuestGiver so it cannot reserve a hero's vanilla issue slot or force a map marker.
-			DebtPromiseQuest debtPromiseQuest2 = new DebtPromiseQuest(debtId, ownerKey, debtorName, debtSummary, deadlineText, debtNote, dueDay, isDueUnlimited);
-			debtPromiseQuest2.StartQuest();
-			Logger.Log("Trust", "[DebtPromiseQuest] created debtId=" + debtId + " owner=" + ownerKey);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("Trust", "[WARN] Debt promise quest creation failed debtId=" + debtId + " owner=" + ownerKey + " error=" + ex.Message);
-		}
-	}
-
-	private void CompleteDebtPromiseQuest(string ownerKey, string debtId)
-	{
-		try
-		{
-			if (string.IsNullOrWhiteSpace(ownerKey) || string.IsNullOrWhiteSpace(debtId) || Campaign.Current?.QuestManager == null)
-			{
-				return;
-			}
-			List<DebtPromiseQuest> list = new List<DebtPromiseQuest>();
-			foreach (QuestBase quest in Campaign.Current.QuestManager.Quests)
-			{
-				DebtPromiseQuest debtPromiseQuest = quest as DebtPromiseQuest;
-				if (debtPromiseQuest != null && debtPromiseQuest.IsOngoing && debtPromiseQuest.Matches(ownerKey, debtId))
-				{
-					list.Add(debtPromiseQuest);
-				}
-			}
-			// Complete every duplicate defensively; only one is normally created per debt ID.
-			for (int i = 0; i < list.Count; i++)
-			{
-				list[i].CompleteByAgreement();
-			}
-		}
-		catch (Exception ex)
-		{
-			// Quest UI/save failures must never roll back a debt release that was already applied to the ledger.
-			Logger.Log("Trust", "[WARN] Debt promise quest completion failed debtId=" + debtId + " owner=" + ownerKey + " error=" + ex.Message);
 		}
 	}
 
@@ -8696,7 +8351,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						if (debtLine2.IsDueUnlimited)
 						{
 							int unlimitedDebtValue = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine2);
-							int penaltyUnits = ConsumeUnlimitedDebtTrustPenaltyUnits(debtLine2, unlimitedDebtValue, campaignDayIndex);
+							int penaltyUnits = EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(debtLine2, unlimitedDebtValue, campaignDayIndex);
 							if (penaltyUnits > 0)
 							{
 								int publicDelta = AdjustSettlementMerchantTrustByExactUnits(settlement, kind, -penaltyUnits, "merchant_unlimited_debt_daily_penalty", out var appliedUnits);
@@ -8708,14 +8363,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						{
 							continue;
 						}
-						int num = ComputeOverdueElapsedWeeks(nowCampaignDay, debtLine2.DueDay);
+						int num = EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(nowCampaignDay, debtLine2.DueDay);
 						int num2 = Math.Max(0, debtLine2.OverduePenaltyDaysApplied);
 						if (num > num2 && !(debtLine2.BestPreDueCoverage >= 0.95f))
 						{
 							for (int k = num2 + 1; k <= num; k++)
 							{
 								int num3 = EstimateDebtLineRemainingValueForSettlement(settlement, debtLine2);
-								int num4 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num3);
+								int num4 = EconomyDebtSchedulePolicy.ComputeWeeklyOverdueTrustPenaltyByDebtValue(num3);
 								int num5 = 0;
 								if (num4 > 0)
 								{
@@ -8746,7 +8401,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					if (debtLine.IsDueUnlimited)
 					{
 						int unlimitedDebtValue = EstimateDebtLineRemainingValue(hero, debtLine);
-						int penaltyUnits = ConsumeUnlimitedDebtTrustPenaltyUnits(debtLine, unlimitedDebtValue, campaignDayIndex);
+						int penaltyUnits = EconomyDebtSchedulePolicy.ConsumeUnlimitedDebtTrustPenaltyUnits(debtLine, unlimitedDebtValue, campaignDayIndex);
 						if (penaltyUnits > 0)
 						{
 							int publicDelta = AdjustTrustByExactUnits(hero, -penaltyUnits, "unlimited_debt_daily_penalty", out var appliedUnits);
@@ -8758,20 +8413,20 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					int num = ComputeOverdueElapsedWeeks(nowCampaignDay, debtLine.DueDay);
+					int num = EconomyDebtSchedulePolicy.ComputeOverdueElapsedWeeks(nowCampaignDay, debtLine.DueDay);
 					int num2 = Math.Max(0, debtLine.OverduePenaltyDaysApplied);
 					if (num > num2 && !(debtLine.BestPreDueCoverage >= 0.95f))
 					{
 						for (int k = num2 + 1; k <= num; k++)
 						{
 							int num3 = EstimateDebtLineRemainingValue(hero, debtLine);
-							int num4 = ComputeWeeklyOverdueTrustPenaltyByDebtValue(num3);
+							int num4 = EconomyDebtSchedulePolicy.ComputeWeeklyOverdueTrustPenaltyByDebtValue(num3);
 							int num5 = 0;
 							if (num4 > 0)
 							{
 								num5 = AdjustTrust(hero, -num4, 0, "overdue_weekly_penalty_by_amount", out _);
 							}
-							int num6 = ComputeWeeklyOverdueRelationPenaltyDelta(k - 1, k, num4);
+							int num6 = EconomyDebtSchedulePolicy.ComputeWeeklyOverdueRelationPenaltyDelta(k - 1, k, num4);
 							if (num6 > 0)
 							{
 								AdjustRelationWithPlayer(hero, -num6, "overdue_weekly_penalty_by_amount");
@@ -9040,7 +8695,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => ShouldIncludeDebtLineInScheduledReminder(x, campaignDayIndex))
+		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(x, campaignDayIndex))
 			orderby x.IsDueUnlimited ? 0 : 1, x.DueDay, x.CreatedDay
 			select x).ToList() ?? new List<DebtRecord.DebtLine>();
 		if (list.Count <= 0)
@@ -9090,7 +8745,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => ShouldIncludeDebtLineInScheduledReminder(x, campaignDayIndex))
+		List<DebtRecord.DebtLine> list = (from x in rec.DebtLines?.Where((DebtRecord.DebtLine x) => EconomyDebtSchedulePolicy.ShouldIncludeDebtLineInScheduledReminder(x, campaignDayIndex))
 			orderby x.IsDueUnlimited ? 0 : 1, x.DueDay, x.CreatedDay
 			select x).ToList() ?? new List<DebtRecord.DebtLine>();
 		if (list.Count <= 0)
@@ -19004,7 +18659,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		float nowCampaignDay = GetNowCampaignDay();
 		int campaignDayIndex = GetCampaignDayIndex();
 		bool dueUnlimited = dueDays <= 0;
-		float dueDay = dueUnlimited ? 0f : nowCampaignDay + (float)NormalizeDueDays(dueDays);
+		float dueDay = dueUnlimited ? 0f : nowCampaignDay + (float)EconomyDebtSchedulePolicy.NormalizeDueDays(dueDays);
 		if (!dueUnlimited && dueDay <= 0f)
 		{
 			dueDay = nowCampaignDay + 1f;
@@ -19077,7 +18732,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		float nowCampaignDay = GetNowCampaignDay();
 		int campaignDayIndex = GetCampaignDayIndex();
 		bool dueUnlimited = dueDays <= 0;
-		float dueDay = dueUnlimited ? 0f : nowCampaignDay + (float)NormalizeDueDays(dueDays);
+		float dueDay = dueUnlimited ? 0f : nowCampaignDay + (float)EconomyDebtSchedulePolicy.NormalizeDueDays(dueDays);
 		if (!dueUnlimited && dueDay <= 0f)
 		{
 			dueDay = nowCampaignDay + 1f;

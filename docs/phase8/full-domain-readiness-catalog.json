@@ -441,6 +441,8 @@
         "RewardSystemBehavior.cs",
         "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
         "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtPromiseLifecycle.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtSchedulePolicy.cs",
         "src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs",
         "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
         "src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs",
