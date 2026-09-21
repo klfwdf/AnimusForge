@@ -1,52 +1,52 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "f6c95ac37b7bdc21392c14627f7e529437465a57",
+  "sourceRevision": "cdbd077af3abb4614594eff4b198052a4841e63e",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
     {
       "id": "internal.port.policy",
-      "path": "Refactor/Modules/TeamModulePorts.cs",
+      "path": "src/AF.Contracts/Internal/TeamModules/IPolicyModulePort.cs",
       "start": 7,
       "end": 10,
       "symbol": "internal interface IPolicyModulePort",
       "match": "exact",
-      "status": "wired-boundary",
+      "status": "wired-j11-offline-verified",
       "note": "政策 typed 接缝，业务归原 owner",
-      "fileSha256": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a"
+      "fileSha256": "ff9b19b438c03b9ba2dc2ec2428ff4827bc03487ac5208cf0ee23167d11ab43a"
     },
     {
       "id": "internal.port.gathering",
-      "path": "Refactor/Modules/TeamModulePorts.cs",
-      "start": 17,
-      "end": 20,
+      "path": "src/AF.Contracts/Internal/TeamModules/IGatheringModulePort.cs",
+      "start": 7,
+      "end": 10,
       "symbol": "internal interface IGatheringModulePort",
       "match": "exact",
-      "status": "wired-boundary",
+      "status": "wired-j11-offline-verified",
       "note": "宴会 typed 接缝，不迁移玩法",
-      "fileSha256": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a"
+      "fileSha256": "a2b8f2e75074b01cfbe75e09ecd316fa81a8da9e92f5cde11a749268b70d0ab2"
     },
     {
       "id": "internal.port.siege",
-      "path": "Refactor/Modules/TeamModulePorts.cs",
-      "start": 27,
-      "end": 30,
+      "path": "src/AF.Contracts/Internal/TeamModules/ISiegeModulePort.cs",
+      "start": 7,
+      "end": 10,
       "symbol": "internal interface ISiegeModulePort",
       "match": "exact",
-      "status": "wired-boundary",
+      "status": "wired-j11-offline-verified",
       "note": "GCCZ 接缝，保留原场景门禁",
-      "fileSha256": "9a6fca7a4fd05d947820099993df0bfb68d8b283ea06a9f729a0a4bb1c70ff6a"
+      "fileSha256": "1243e5ec6ad7c9e028e980154a238e978169f01cb079caa4e2f0b6c8d92f6b0f"
     },
     {
       "id": "internal.adapters",
-      "path": "Refactor/Modules/TeamModuleAdapters.cs",
+      "path": "src/bridges/Policy/PolicyModuleAdapter.cs",
       "start": 7,
       "end": 10,
       "symbol": "internal sealed class PolicyModuleAdapter : IPolicyModulePort",
       "match": "exact",
-      "status": "wired-boundary",
-      "note": "同文件三组薄桥原样转接参数/返回/ref/out",
-      "fileSha256": "a06157b46c4e1730f3194c00414ca663b22428f72157f021b276f9a1f1242051"
+      "status": "wired-j11-offline-verified",
+      "note": "Policy thin adapter; exact parameter/ref/out/exception forwarding to the existing owner",
+      "fileSha256": "963387c88de3bc8765a49818523241e736becd75dc76bed207dfb424784e4d27"
     },
     {
       "id": "internal.services",
@@ -4315,6 +4315,28 @@
       "status": "wired-j10-offline-verified",
       "note": "releases popup/time lock only after no active Courier reply wait remains",
       "fileSha256": "27b610502d0598930c705b71794b250cd2d0cdeb594a152df13af7e49cdcc62c"
+    },
+    {
+      "id": "internal.adapter.gathering",
+      "path": "src/bridges/Gathering/GatheringModuleAdapter.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class GatheringModuleAdapter : IGatheringModulePort",
+      "match": "exact",
+      "status": "wired-j11-offline-verified",
+      "note": "Gathering thin adapter; behavior remains in NobleGatheringBehavior",
+      "fileSha256": "4a0616ef1febdcff4e694828ff66f3a447507c1e43198188a7a5dd74b525f819"
+    },
+    {
+      "id": "internal.adapter.siege",
+      "path": "src/bridges/Siege/SiegeModuleAdapter.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class SiegeModuleAdapter : ISiegeModulePort",
+      "match": "exact",
+      "status": "wired-j11-offline-verified",
+      "note": "Siege thin adapter; active-stage and FeatureBridge gates remain in AfGcczShoutBridge",
+      "fileSha256": "be0b1056d9957b424abeacd8ce26497a6f6d7e1ba4086df4bf8462986b70c1d8"
     }
   ]
 }

@@ -86,7 +86,7 @@ Composition可以引用具体实现来组装它们；核心模块不能反过来
 | 当前代码 | 已有职责 | 不能冒称已实现 |
 |---|---|---|
 | `ModuleFrameworkRuntime` | 3组typed adapter装配、目录校验和只读投影 | 完整Campaign/Mission生命周期、实际游戏可接单、任意热卸载 |
-| `TeamModuleServices` | 三个无状态内部adapter实例 | 制作组全部业务迁移或所有调用都已经收口 |
+| `TeamModuleServices` | 三个无状态 internal adapter 实例；J11 已收口 13 方法/31 跨域调用 | 制作组玩法本身迁移、独立 DLL 或 public 子 MOD API |
 | `LegacyInteractionPipelineComposition.Create` | 用现有ports构造真实pipeline/coordinator | 原Prompt/规则/后处理已经完全离开大类；其delegates仍调用原owner |
 | `InteractionRequestCoordinator` | channel/session请求协调及档代保护 | 所有默认渠道、动作与记忆/展示生命周期已经全量统一 |
 | `MemorySummaryDispatcher` | 真正独立的Memory线程队列、待办/预算/异常owner | 全局游戏调度器、深复制已分段、全部Memory模块化完成 |
@@ -195,8 +195,8 @@ Native / Scene / Courier / 已开放API
 | `SubModule.cs:60–63` / `107–113` | 模组加载/卸载调用ModuleFrameworkRuntime |
 | `SubModule.cs:656–668` | InitializeGameStarter登记MyBehavior/Shout/Courier等CampaignBehavior |
 | `SubModule.cs:755–782` | 当前ApplicationTick入口；不能凭新增目录替代全部Tick生命周期 |
-| `Refactor/Modules/ModuleFrameworkRuntime.cs:22–80` | 显式三组adapter目录装配与Stopped状态，不读取Campaign |
-| `Refactor/Modules/TeamModuleServices.cs:5–10` | 三个静态无状态typed桥 |
+| `src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs` | 显式三组 adapter 目录装配与 Stopped 状态，不读取 Campaign |
+| `src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs:5–10` | 三个静态无状态 typed adapter 实例；contracts/adapter 已由 J11 分层 |
 | `Refactor/Adapters/LegacyInteractionPipelineComposition.cs:75–114` | 用原ports组合pipeline/coordinator，原owner仍运行 |
 | `src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs:15–31` | 请求协调器持有in-flight/代际依赖，不是全局模块Host |
 | `MyBehavior.MemorySummaryMainThread.cs:18–44` | 已提取dispatcher的每owner惰性发布与游戏host |

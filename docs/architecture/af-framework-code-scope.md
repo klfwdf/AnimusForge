@@ -1,3 +1,11 @@
+# 当前范围：J11 制作组内部模块接缝离线闭合（2026-09-21）
+
+产品 `cdbd077a` 将 Policy/Gathering/Siege 的 3 个 internal contracts / 13 方法归位 `src/AF.Contracts/Internal/TeamModules`，将 3 个无状态 adapter 分拆到 `src/bridges/{Policy,Gathering,Siege}`；`TeamModuleServices` 仍在 GameAdapter composition。31 个生产调用点、参数/ref/out/异常和原领域 owner 不变，旧两个混合文件已删除。
+
+状态 **J11_OFFLINE_VERIFIED**。Policy 1.3/1.4、Team ports、Campaign/Bridge、三渠道影响面、六构建、API/存档和 394 锚点地图通过。Policy/Gathering/GCCZ 玩法、MCM、Prompt、存档、Harmony、public API 和 `G:/AFMOD/GCCZ` 未改；真实游戏/旧档/玩法结果仍 `NOT-RUN`。详见[接缝矩阵](af-team-module-seam-matrix.md)与[详细 HANDOFF](../handoffs/2026-09-21-j11-team-module-seams-offline-closeout.md)。
+
+## 以下为上一阶段 J10 范围
+
 # 当前范围：J10 Scene / Courier 离线整包闭合（2026-09-21）
 
 J10 产品终点为 `f6c95ac3`，验收/地图补丁为 `7d70f528`。Scene 的 audience/request/pending AFEF/speech queue/group/relay/passive/reaction 与 Courier 的 prompt/generation/transport/session/arrival/letter/retry/domain commit/reply wait 已由 `src/modules/AF.Module.Conversation/Channels/{Scene,Courier}` 的稳定 owner 承担，真实消费者仍是同一 production partial class；没有第二管线、新 facade、公有 API、默认开关或存档键。

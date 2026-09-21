@@ -1,3 +1,38 @@
+<a id="j11-team-seams-20260921"></a>
+# 当前接续：J11 制作组内部模块接缝离线整包闭合（2026-09-21）
+
+**状态：J07/J08/J09/J10/J11_OFFLINE_VERIFIED；J12 尚未开始。** J11 只治理编入 `AnimusForge.dll` 的 Policy / Gathering / Siege internal typed contracts、薄 adapter 和装配证据；没有迁移或重写制作组玩法，也没有开放独立子 MOD API。
+
+## 产品结果
+
+| 责任 | 当前 owner / 路径 | 结果 |
+| --- | --- | --- |
+| Internal contracts | `src/AF.Contracts/Internal/TeamModules/{IPolicy,IGathering,ISiege}ModulePort.cs` | 3 文件 / 13 方法；namespace、internal 可见性、参数、默认值、ref/out 和返回不变；没有状态或实现 |
+| Policy adapter | `src/bridges/Policy/PolicyModuleAdapter.cs` | 4 方法原样转发 `KingdomAgendaCustomPolicyBehavior` / `NpcRulerPolicyBehavior`；8 个生产调用点 |
+| Gathering adapter | `src/bridges/Gathering/GatheringModuleAdapter.cs` | 5 方法原样转发 `NobleGatheringBehavior`；12 个生产调用点；facts/notifications 仍由调用方提交 |
+| Siege adapter | `src/bridges/Siege/SiegeModuleAdapter.cs` | 4 方法原样转发 `AfGcczShoutBridge`；11 个生产调用点；`conversation-siege` 与 active-stage gate 保持原 owner |
+| Composition | `src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs` | 每种 port 一个静态无状态实例；无反射/扫描/每次字典查询/热替换 |
+| 清理 | 原 `Refactor/Modules/TeamModulePorts.cs`、`TeamModuleAdapters.cs` | 替代实现和真实消费者全部接线后删除；无旧声明、Link、复制实现或直连绕过 |
+
+完整 owner/consumer/gate 矩阵见 `docs/architecture/af-team-module-seam-matrix.md`。物理归位不是新 FeatureBridge：InternalModuleDirectory `Ready` 仍只表示 adapter 已装配；实际 Campaign、目标、资格、模块开关和失败语义继续由原领域 owner 决定。
+
+## 最终离线证据
+
+- **精确迁移与 ports**：6 个 interface/class declaration 与 J11 前逐声明相等；TeamModulePortParity 13 方法 / 31 call expressions、308 行为断言；资格反转、Siege selected 反转、player/speaker text 交换 3 个可编译行为变异全部拒绝。
+- **Policy 双版本**：Bannerlord 1.3 与 1.4 各自 `policy-all-modules-contract-only` 1406（18 modules）和 `policy-history-only` 1115 通过；未改 MCM retrieval、active instance、save codec、execution/rollback。
+- **Composition / Bridge**：Campaign composition 42 + 5 变异；CompositionMatrix 18 cases / 24 invariants；Bridge 16 bindings（12 wired / 4 declared-only）、23 单测、runtime isolation 12；ModuleFramework public API 119 + 256 concurrent reads。
+- **三渠道影响面**：Scene parity 71；J09 default wiring 25；Courier Prompt 550/76、postprocess 39、domain commit 32；Native action 91、completion 184。未复制 Prompt、parser、动作或事实提交。
+- **构建/API/存档**：Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/0 error；四实现 DLL 1060 metadata/API；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened，Identity 5、Chunk replay 8。
+- **结构**：394 锚点代码地图 recorded / working-tree 通过，绑定产品 `cdbd077af3abb4614594eff4b198052a4841e63e`。
+
+## 清理、性能和限定
+
+adapter 只有静态实例的一次直接接口调用，不缓存 Hero/Mission/session，不 catch、retry、写历史/AFEF、显示通知、读取文件/网络或扫描程序集。相关新目录无冲突标记、TODO/HACK/TEMP、重复接口/adapter 或无消费者占位方法；AF 主体未发现 13 个领域 owner 方法的直接绕过。`TeamModuleServices` 和 `TeamModuleRegistration` 因仍是活动装配入口保留。
+
+产品提交 `cdbd077a`；最终文档/地图以本节所在提交为准。回滚按文档/地图 → `cdbd077a` 定向 `git revert`，不 reset/rebase/强推。真实 Campaign/Mission、旧 SAVE、制作组玩法结果、真实 GCCZ 场景、provider、音频和性能仍 `NOT-RUN`；无 Stage/Deploy/Package，未写游戏、存档或 `G:/AFMOD/GCCZ`。下一阶段先规划 J12，不重开 J11，除非有新的具体复现或相关源码变更。
+
+## 以下为上一阶段 J10 回执
+
 <a id="j10-scene-owners-20260921"></a>
 # 当前接续：J10 Scene / Courier 离线整包闭合（2026-09-21）
 
