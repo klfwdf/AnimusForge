@@ -6,6 +6,20 @@ using AnimusForge.Illustrator.Core;
 
 namespace AnimusForge.Illustrator.Context
 {
+    // Managed evidence captured once on the game thread; never retain a native Agent in diagnostics.
+    internal sealed class ConversationNpcAgeSnapshot
+    {
+        internal float? RawAge { get; }
+        internal int? AgentIndex { get; }
+        internal string Source { get; }
+        internal int Age => RawAge.HasValue && !float.IsNaN(RawAge.Value) &&
+            !float.IsInfinity(RawAge.Value) && RawAge.Value > 0 && RawAge.Value < int.MaxValue
+                ? (int)RawAge.Value : 0;
+
+        internal ConversationNpcAgeSnapshot(float? age, int? agentIndex, string source)
+        { RawAge = age; AgentIndex = agentIndex; Source = source; }
+    }
+
     internal static class ConversationEquipmentSnapshot
     {
         // Runs once per request on the main thread; inspect only the player and conversation agents.
@@ -38,26 +52,35 @@ namespace AnimusForge.Illustrator.Context
             return fallback == null ? null : new Equipment(fallback);
         }
 
-        internal static Equipment CaptureCharacter(CharacterObject character, out string source, out string bodyProperties, out CharacterAppearanceSnapshot appearance)
+        internal static Equipment CaptureCharacter(CharacterObject character, out string source, out string bodyProperties, out CharacterAppearanceSnapshot appearance,
+            out ConversationNpcAgeSnapshot ageSnapshot)
         {
             IllustratorRuntime.AssertMainThread();
             source = "未找到当前普通NPC的现场装备";
             bodyProperties = null;
             appearance = null;
+            ageSnapshot = new ConversationNpcAgeSnapshot(null, null, "unconfirmed_no_current_agent");
             if (character == null) return null;
-            var participants = Campaign.Current?.ConversationManager?.ConversationAgents;
-            if (participants != null)
-                for (int i = 0; i < participants.Count; i++)
+            // CharacterObject identifies a troop template, not an individual. Only the exact
+            // one-to-one participant may provide this NPC's age, body and equipment.
+            var agent = Campaign.Current?.ConversationManager?.OneToOneConversationAgent as Agent;
+            if (agent != null && agent.IsActive() && ReferenceEquals(agent.Character, character))
+            {
+                var body = agent.BodyPropertiesValue;
+                bodyProperties = body.ToString();
+                ageSnapshot = new ConversationNpcAgeSnapshot(body.Age, agent.Index, "current_conversation_agent_body");
+                if (agent.SpawnEquipment == null)
                 {
-                    var agent = participants[i] as Agent;
-                    if (agent == null || !agent.IsActive() || !ReferenceEquals(agent.Character, character)) continue;
-                    if (agent.SpawnEquipment == null) continue;
-                    bodyProperties = agent.BodyPropertiesValue.ToString();
-                    source = "普通NPC会话Agent完整装备；不使用兵种模板重新随机装备";
-                    var equipment = CopyAgentEquipment(agent);
-                    appearance = CharacterAppearanceSnapshot.FromAgent(agent, equipment);
-                    return equipment;
+                    source = "当前会话NPC实例缺少装备快照";
+                    return null;
                 }
+                source = "当前一对一会话NPC实例完整装备；不使用同兵种其他人物或模板替代";
+                var equipment = CopyAgentEquipment(agent);
+                appearance = CharacterAppearanceSnapshot.FromAgent(agent, equipment, body);
+                return equipment;
+            }
+            // A live mission without an exact participant is not a map-conversation fallback.
+            if (Mission.Current != null) return null;
 
             // 原版大地图会面算法：按部队成员种子精确选定当前屏幕正在展示的装备变体与面容
             var party = TaleWorlds.CampaignSystem.Party.MobileParty.ConversationParty?.Party ?? TaleWorlds.CampaignSystem.Encounters.PlayerEncounter.EncounteredParty;
