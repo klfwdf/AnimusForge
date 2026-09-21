@@ -419,11 +419,12 @@ namespace AnimusForge.Illustrator.Context
                 var partner = conversationAgents != null && conversationAgents.Count > 0
                     ? conversationAgents[0] as TaleWorlds.MountAndBlade.Agent : null;
                 var counts = new Dictionary<string, int>(StringComparer.Ordinal);
-                int total = 0;
+                int total = 0, near = 0, middle = 0, far = 0, differentHeight = 0;
                 foreach (var agent in mission.Agents)
                 {
                     if (agent == null || !agent.IsActive() || !agent.IsHuman || agent == mainAgent || agent == partner) continue;
-                    float distanceSquared = agent.Position.DistanceSquared(center);
+                    Vec3 position = agent.Position;
+                    float distanceSquared = position.DistanceSquared(center);
                     if (float.IsNaN(distanceSquared) || float.IsInfinity(distanceSquared) || distanceSquared > 625f) continue;
                     var character = agent.Character as CharacterObject;
                     if (character == null) continue;
@@ -431,6 +432,11 @@ namespace AnimusForge.Illustrator.Context
                     counts.TryGetValue(role, out int count);
                     counts[role] = count + 1;
                     total++;
+                    // Same request-time pass, no visibility raycasts or extra native scan.
+                    if (distanceSquared <= 9f) near++;
+                    else if (distanceSquared <= 64f) middle++;
+                    else far++;
+                    if (Math.Abs(position.z - center.z) > 2f) differentHeight++;
                 }
                 // Publish only after the whole pass succeeds; missing/failed observation is not zero people.
                 profile.SurroundingCharacters = total == 0
@@ -440,6 +446,8 @@ namespace AnimusForge.Illustrator.Context
                 profile.SurroundingCharacters += partner != null
                     ? "已排除玩家与当前对话对象；与附近实际角色名单可能重合，不叠加人数。"
                     : "已排除玩家；未取得对话对象Agent，统计可能包含对话对象，入画前按身份去重。";
+                if (total > 0)
+                    profile.SurroundingCharacters += $"距玩家的三维距离分布：3米内{near}名、超过3米至8米{middle}名、超过8米至25米{far}名；其中与玩家脚底高度差超过2米的有{differentHeight}名（是上述人数的子集，不能据此确定楼层）。距离不证明可见、同桌或动作；用当前画面核对遮挡，不把已可见近邻一律改成远处人影。";
                 profile.SurroundingCharacters += "这是邻近人数与身份证据，不是全部可见人物清单；墙体、楼层和遮挡以现场参考为准，职业不证明具体动作、服装或手持物。";
                 profile.SurroundingCharactersFromLiveScan = true;
             }

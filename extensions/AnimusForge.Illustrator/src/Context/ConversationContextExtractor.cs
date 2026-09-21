@@ -234,7 +234,7 @@ namespace AnimusForge.Illustrator.Context
                     string c1Name = HeroVisualExtractor.ResolveColorName(color1);
                     string c1Hex = "#" + (color1 & 0x00FFFFFF).ToString("X6");
                     string c2Part = (color2 != 0 && color2 != color1) ? $"，辅以 {HeroVisualExtractor.ResolveColorName(color2)} (#{(color2 & 0x00FFFFFF):X6})" : "";
-                    profile.LiveryColorsSummary = $"所属阵营/兵种布料识别色为【{c1Name}】({c1Hex}){c2Part}；衣甲布料应自然呈现对应色彩，严禁画成全黑或死黑。";
+                    profile.LiveryColorsSummary = $"引擎服饰染色通道辅助值为【{c1Name}】({c1Hex}){c2Part}；仅影响支持染色的材质区域，不代表整件衣服的实际主色。衣着颜色、纹样及深浅分区以本人参考图为准，不按此值整件重染。";
                 }
 
                 HeroVisualExtractor.ApplyEquipmentSnapshot(profile, snapshot, source);
