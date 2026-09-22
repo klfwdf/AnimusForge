@@ -11,6 +11,7 @@ public sealed class NativeOverlayVM : ViewModel
     public AnimusForgeNativeConversationOverlayVM Original { get; }
     private bool _disposed;
     private bool _moreVisible;
+    private string _inputText;
     private string _dialogueText = string.Empty;
     private string _speakerName = string.Empty;
     private readonly string[] _optionText = new string[OptionCount];
@@ -19,6 +20,7 @@ public sealed class NativeOverlayVM : ViewModel
     public NativeOverlayVM(AnimusForgeNativeConversationOverlayVM original)
     {
         Original = original ?? throw new ArgumentNullException(nameof(original));
+        _inputText = original.InputText ?? string.Empty;
         original.PropertyChanged += Changed;
         original.PropertyChangedWithValue += ValueChanged;
         original.PropertyChangedWithBoolValue += BoolChanged;
@@ -26,7 +28,19 @@ public sealed class NativeOverlayVM : ViewModel
         original.PropertyChangedWithFloatValue += FloatChanged;
     }
 
-    [DataSourceProperty] public string InputText { get => Original.InputText; set { if (!_disposed) Original.InputText = value; } }
+    [DataSourceProperty]
+    public string InputText
+    {
+        get => _inputText;
+        set
+        {
+            if (_disposed) return;
+            string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
+            if (text == _inputText) return;
+            _inputText = text;
+            OnPropertyChangedWithValue(text, nameof(InputText));
+        }
+    }
     [DataSourceProperty] public string SwitchTitle => Original.SwitchTitle;
     [DataSourceProperty] public string AIChatHistoryButtonText => Original.AIChatHistoryButtonText;
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;
@@ -39,6 +53,7 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public bool CanLeave => !_disposed;
     [DataSourceProperty] public bool IsPersonaEditVisible => Original.IsPersonaEditVisible;
     [DataSourceProperty] public bool IsTagTestVisible => Original.IsTagTestVisible;
+    [DataSourceProperty] public bool IsIllustrationAvailable => IllustratorBridge.IsAvailable();
     [DataSourceProperty] public int InputFocusVersion => Original.InputFocusVersion;
     [DataSourceProperty] public float AIChatboxOffset => Original.AIChatboxOffset;
     [DataSourceProperty] public bool HasMoreActions => IsPersonaEditVisible || IsTagTestVisible;
@@ -69,7 +84,14 @@ public sealed class NativeOverlayVM : ViewModel
         }
     }
 
-    public void ExecuteSubmit() { if (!_disposed) Original.ExecuteSubmit(); }
+    public void ExecuteSubmit()
+    {
+        if (_disposed) return;
+        string multiline = AnimusForgeTextInputSanitizer.SanitizeMultiline(_inputText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
+        Original.InputText = AnimusForgeTextInputSanitizer.SanitizeSingleLine(multiline, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
+        Original.ExecuteSubmit();
+    }
+    public void ShowIllustration() { if (!_disposed) IllustratorBridge.Invoke(); }
     public void LeaveConversation()
     {
         if (_disposed) return;
@@ -111,6 +133,12 @@ public sealed class NativeOverlayVM : ViewModel
     private void Forward(string name)
     {
         if (_disposed) return;
+        if (name == nameof(InputText))
+        {
+            _inputText = Original.InputText ?? string.Empty;
+            OnPropertyChangedWithValue(_inputText, nameof(InputText));
+            return;
+        }
         OnPropertyChanged(name);
         if (name == nameof(IsCustomAnswerVisible)) OnPropertyChanged(nameof(IsOrdinaryMode));
         if (name == nameof(IsPersonaEditVisible) || name == nameof(IsTagTestVisible))
