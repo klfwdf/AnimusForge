@@ -173,7 +173,6 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             IllustratorRuntime.AssertMainThread();
             if (convContext == null || !IllustratorRuntime.IsEnabled("conversation")) return;
-            bool autoReplyEnabled = IllustratorSettings.Instance?.AutoGenerateConversationIllustrationFullscreen == true;
             bool useFullscreen = autoFullscreen ?? (IllustratorSettings.Instance?.ConversationIllustrationUsesFullscreen == true);
             string conversationSessionKey = ConversationSessionKey(convContext);
             lock (typeof(IllustrationCardPopup))
@@ -243,14 +242,19 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
                 string key = $"Conv_{partnerId}";
                 var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "conversation");
-                if (!forceGenerate && !autoReplyEnabled && cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
+                if (!forceGenerate && cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                 {
                     popup._dataSource.SetReady(cached.DisplayStatusText);
                 }
+                else if (!forceGenerate)
+                {
+                    // Opening the card only prepares the conversation context. The first
+                    // generation must come from the player's explicit Regenerate action;
+                    // enabling automatic redraw must never issue an entry-time request.
+                    popup._dataSource.SetReady("请点击“重新绘制”生成本次对话的第一张场景插画。");
+                }
                 else
                 {
-                    // The first manual image must succeed before replies can trigger redraws.
-                    popup._autoReplyRequested = autoReplyEnabled;
                     popup.ExecuteConversationGeneration(convContext, preCapturedBase64, emblemSpecs);
                 }
             }
