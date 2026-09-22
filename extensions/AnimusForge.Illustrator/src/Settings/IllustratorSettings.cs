@@ -143,22 +143,82 @@ namespace AnimusForge.Illustrator
             }
         }
 
-        [SettingPropertyText("生图分辨率尺寸 (Size)", HintText = "生成的图片分辨率，如 1024x1024、1280x720 (宽屏横幅)、768x1024 等。需服务商模型支持。若为多模态模型(如 Gemini Image)，系统会自动换算为 1:1、16:9、3:4 等画幅比例注入。", Order = 7, RequireRestart = false)]
-        [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
-        public string ImageSize { get; set; } = "1024x1024";
+        // ImageSize remains a public runtime/config compatibility property for the image client.
+        // The MCM text editor was intentionally removed: the preset dropdown below is the only
+        // user-facing source of image dimensions, so unsupported/custom dimensions cannot leak
+        // into a request. The setter still accepts an old persisted value and normalizes it.
+        private string _imageSize = "1024x1024";
+        public string ImageSize
+        {
+            get
+            {
+                if (_sizePresetDropdown != null && _sizePresetDropdown.SelectedIndex >= 0
+                    && _sizePresetDropdown.SelectedIndex < _sizePresetOptions.Count)
+                {
+                    return ExtractSizeToken(_sizePresetOptions[_sizePresetDropdown.SelectedIndex]);
+                }
+
+                return NormalizeImageSize(_imageSize);
+            }
+            set
+            {
+                _imageSize = NormalizeImageSize(value);
+                if (_sizePresetDropdown == null) return;
+
+                int index = FindSizePresetIndex(_imageSize);
+                if (index >= 0) _sizePresetDropdown.SelectedIndex = index;
+            }
+        }
 
         private static readonly List<string> _sizePresetOptions = new List<string>
         {
-            "*手动输入 (上方文本框)*",
             "1024x1024 (1:1 方形)",
             "1280x720 (16:9 宽屏横幅)",
             "720x1280 (9:16 竖幅立绘)",
             "1344x768 (7:4 史诗宽画幅)",
-            "1024x1536 (2:3 竖版海报)"
+            "1024x1536 (2:3 竖版海报)",
+            "2048x2048 (1:1 超高清方形)"
         };
         private Dropdown<string> _sizePresetDropdown;
 
-        [SettingPropertyDropdown("分辨率快捷预设 (Size Preset)", Order = 7, RequireRestart = false, HintText = "快速选择常用分辨率/画幅比例，选中后自动写入上方 Size 文本框。选“手动输入”时以文本框内容为准。")]
+        private static string ExtractSizeToken(string preset)
+        {
+            if (string.IsNullOrWhiteSpace(preset)) return "1024x1024";
+            int separator = preset.IndexOf(' ');
+            return (separator > 0 ? preset.Substring(0, separator) : preset).Trim();
+        }
+
+        private static int FindSizePresetIndex(string size)
+        {
+            string token = NormalizeImageSize(size);
+            for (int i = 0; i < _sizePresetOptions.Count; i++)
+            {
+                if (string.Equals(ExtractSizeToken(_sizePresetOptions[i]), token, StringComparison.OrdinalIgnoreCase))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        private static string NormalizeImageSize(string size)
+        {
+            int index = FindSizePresetIndexWithoutNormalization(size);
+            return index >= 0 ? ExtractSizeToken(_sizePresetOptions[index]) : "1024x1024";
+        }
+
+        private static int FindSizePresetIndexWithoutNormalization(string size)
+        {
+            string token = (size ?? string.Empty).Trim();
+            for (int i = 0; i < _sizePresetOptions.Count; i++)
+            {
+                if (string.Equals(ExtractSizeToken(_sizePresetOptions[i]), token, StringComparison.OrdinalIgnoreCase))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        [SettingPropertyDropdown("生图分辨率 (Size)", Order = 7, RequireRestart = false, HintText = "从预设中选择发送给生图服务的分辨率。仅提供已验证的尺寸；多模态模型会按对应画幅比例处理。")]
         [SettingPropertyGroup("2. 生图 API 配置 (OpenAI 兼容)", GroupOrder = 2)]
         public Dropdown<string> SizePresetDropdown
         {
@@ -166,7 +226,7 @@ namespace AnimusForge.Illustrator
             {
                 if (_sizePresetDropdown == null)
                 {
-                    int idx = _sizePresetOptions.FindIndex(o => o.StartsWith((ImageSize ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
+                    int idx = FindSizePresetIndex(_imageSize);
                     _sizePresetDropdown = new Dropdown<string>(_sizePresetOptions, idx >= 0 ? idx : 0);
                 }
                 return _sizePresetDropdown;
@@ -177,15 +237,19 @@ namespace AnimusForge.Illustrator
                 int idx = value?.SelectedIndex ?? 0;
                 if (idx > 0 && idx < _sizePresetOptions.Count)
                 {
-                    string size = _sizePresetOptions[idx].Split(' ')[0];
+                    string size = ExtractSizeToken(_sizePresetOptions[idx]);
                     if (!string.IsNullOrWhiteSpace(size))
                     {
-                        ImageSize = size;
+                        _imageSize = NormalizeImageSize(size);
                         if (Instance != null && !ReferenceEquals(Instance, this))
                         {
-                            Instance.ImageSize = size;
+                            Instance.ImageSize = _imageSize;
                         }
                     }
+                }
+                else if (idx == 0)
+                {
+                    _imageSize = ExtractSizeToken(_sizePresetOptions[0]);
                 }
             }
         }
