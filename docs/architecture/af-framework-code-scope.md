@@ -1,8 +1,8 @@
-# 当前范围：J12 审查修复后重新开放（2026-09-21）
+# 当前范围：J12 Economy / Diplomacy / WorldMap 离线闭合（2026-09-22）
 
-当前状态为 **J12_REOPENED_PARTIAL**。`a50ab3ad` 已将 Direct 七类动作实算法分到 `DiplomacyBehavior.Actions.cs`，新增 `DirectDiplomacyWarGuard`；`WorldDiplomacyRequestLeaseCoordinator` 拥有请求 identity/冻结参数/释放；`WorldMapDelayedRequestCoordinator` 拥有同伴建队 UI 一次性票据，普通队列回执返回真实接受数。对应生命周期测试 32、完整 Intent 1175、三个修复回放、Debug/Release 双版本与 Bootstrap 六构建、四 DLL API/metadata 1060、Persistence/Identity、Bridge、J09 wiring、Phase8 readiness 与 source inventory 已通过。
+当前状态为 **J12_OFFLINE_VERIFIED**，产品终点 `5c3e7b0e`。`a50ab3ad` 的 Direct/lease/同伴票据修复继续保留；本轮新增 `DiplomacyCrossDomainActionOwner`、`WorldDiplomacyJobRuntimeCoordinator` 与 `WorldDiplomacyBehavior.JobRuntime.cs`，真实 queue/start/request/completion route 已离开世界外交主文件。WorldMap 的协议、受理、queue runtime、Campaign event lifecycle、同伴/总督 delayed request 已由 `Runtime` 目录内的实际 partial owner 承担，保存字段和 TaleWorlds mutation 仍留原 host。
 
-仍未归位：WorldDiplomacy 完整 queue/start/completion/commit；WorldMap 协议、受理、队列/事件及 governor 延迟请求。下方 `1c62c2c9` R100 段仅是历史目录归位记录，不再构成 J12 完成证明。J13 在这些责任和 J12d 最终门禁闭合前暂缓。
+离线门禁：六构建 0 warning/error；J12 lifecycle 68、owner source 3、Intent 1176、Compression 297、PolicyHistory 95、ResultSettlement 453；三渠道影响面、四 DLL API/metadata 1060、Persistence、Bridge、Phase8 73、source inventory 7 与[429 点代码地图](af-framework-code-map.json) recorded/working-tree 通过。下方 `1c62c2c9` 段只保留历史目录归位含义。真实游戏、旧 SAVE、live Economy/Diplomacy/WorldMap、provider、音频和性能仍 `NOT-RUN`。
 
 ## 历史目录归位记录（非当前完成结论）
 

@@ -1,6 +1,6 @@
 # J12 Economy / Diplomacy / WorldMap 实施计划
 
-> 状态：`J12_REOPENED_PARTIAL`（2026-09-21）；审查确认此前把三个完整文件的 R100 目录迁移误写成职责拆分完成。J12a、J12b1 保持已验证；J12b2–b4 与 J12c1–c4 按原退出门继续施工。不是实机、旧档、Stage 或发布完成。
+> 状态：`J12_OFFLINE_VERIFIED`（2026-09-22）。审查后重新开放的 J12b2–b4、J12c1–c4 已由产品 `5c3e7b0e` 完成真实职责拆分与离线门禁；不是实机、旧档、Stage 或发布完成。
 > 规划基线：`60499d44b3b2b97e5f35b32364a8e819ee9b4768`；J11 产品 `cdbd077a`，真实 Campaign 入口验收修复 `60499d44` 已推送。
 > 计划现已进入实施；第 0 节表格与主台账记录实际完成结果，其余章节仍是后续 J12b–J12d 的施工约束。本文件不授权自动化、推送、Stage、部署、打包或存档操作。
 
@@ -18,15 +18,15 @@
 | J12a3.3 Trust progressive state | DONE | `fa26d430`：75 个 progressive carry、个人/公共/settlement/merchant state 与 battle/quest event 声明原样归 Trust owner；删除零调用 `ClampLong` |
 | J12a4 | DONE / RETAINED-COMPAT | Economy typed owner/J09 single execution 已通过；`ApplyRewardTags` 仍有 Native/Scene/Courier 5 个真实 mixed-domain 消费者，保留到 J12b/J13 各域接走，不用删活路径冒充清理 |
 | J12b1 四规则归位 | DONE | `0ac279fc`：OfferCooldown/ThreatState/ResultSettlement/PolicyHistory 四文件 100% rename 至 `AF.Module.Diplomacy/Rules`；消费者与 smoke Compile 路径同步，public/internal/DTO/JSON 不变 |
-| J12b2–b4 | PARTIAL | `a50ab3ad`：七类 Direct 动作实算法迁入 Actions partial，补宣战主权与真实状态回执；新增不可变 WorldDiplomacy request lease/snapshot，worker 不读可变 job。完整 queue/completion/commit owner 和异代生产回放仍待完成 |
-| J12c1–c4 | PARTIAL | `a50ab3ad`：同伴建队关窗请求已有独立票据 owner，旧/重复回调不能释放新请求；普通队列回执返回真实接受数。协议、受理、队列/事件及 governor 延迟请求仍未达到原 c1–c4 退出门 |
-| J12d | REOPENED | 当前修复候选 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error、生命周期 32、三个旧红例修后通过、Intent full 1175、source inventory 7、四 DLL API/metadata 1060、Persistence 142/168/13/44、Identity 5、Bridge 23/12、J09 wiring 25、Phase8 readiness 73；本轮 Release/API/Persistence 已通过；剩余职责落地后仍需重跑三渠道/Phase8/代码地图并复验完整矩阵 |
+| J12b2–b4 | DONE | `a50ab3ad` 修复 Direct/lease；`5c3e7b0e` 再将附庸/吞并跨域算法归 `DiplomacyCrossDomainActionOwner`，并把真实 queue/start/request/completion route 归 `WorldDiplomacyBehavior.JobRuntime` 与纯协调器。worker 只读冻结 request，异代完成按 job/generation 拒绝 |
+| J12c1–c4 | DONE | `5c3e7b0e` 将协议、受理、queue runtime、Campaign event lifecycle、同伴/总督 delayed request 拆到六个真实 partial/coordination owner；原保存字段和游戏 mutator 留 host，票据只领取自己的请求 |
+| J12d | DONE / OFFLINE_VERIFIED | 最终候选六构建 0 warning/error；J12 lifecycle 68、owner source 3、Intent 1176、Compression 297、PolicyHistory 95、ResultSettlement 453；三渠道、API 1060、Persistence Profile/Chunk 与 Identity contract 5、Bridge、Phase8 73、source inventory 7、代码地图 429 recorded/working-tree 均通过 |
 
 J12a 累计证据：Reward capture 8 声明精确迁移、ProductionReward 11；prompt/trust projection 15 + 2 个可编译变异；Trust state/event 75 声明精确迁移并删 1 个零调用 helper；Debt normalization/schedule 48 + 2 个可编译变异；Quest 10、ledger/DTO 35、daily 1 个声明精确迁移；HeroAssetScope 67 + 5 个有效变异；GiveAsset stress 80562；Economy port/executor、J09 三渠道 single execution 25、Production owner current-DLL replay、Phase8 73 通过。Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；四实现 DLL API/metadata 1060；Persistence/Profile 142 literal / 168 typed / 13 chunked / 44 flattened；代码地图 412。`MemorySummaryMainThreadBoundaryTests/run_terminal.py` 的既有非 J12 `Missing TagSceneSessionHistoryLine` 仍不计 PASS。LIVE、真实旧 SAVE、真实 Economy/AFEF/provider/性能均未运行。
 
 J12b1 证据：四文件 Git `R100`；PolicyHistory 94、ResultSettlement 453、Intent rule-focused 1143 通过；Debug 1.3/1.4/Bootstrap 0 warning/error。原两个 net6 smoke 在本机离线缺 net6 ref pack 并尝试 nuget.org，故使用不改断言的临时 net8 wrapper；当时完整 Intent runner 因读取旧 `SubModule` 注册位置失败；`a50ab3ad` 后测试追随真实 `StartupPatchComposition`，完整 1175 断言通过。代码地图 416 锚点绑定 `0ac279fc`；LIVE/SAVE/真实外交均未运行。
 
-旧 `1c62c2c9` 证据只证明 Direct/World/WorldMap 三文件 R100、编译/ABI/存档形状未回归，不能替代本计划 b2–b4/c1–c4 的真实 owner 与生命周期回放。`a50ab3ad` 已修三项运行缺陷并建立 Direct action、WorldDiplomacy request lease、WorldMap delayed request 的首批真实责任；剩余项以上表 PARTIAL 为准。LIVE/SAVE/真实 provider/帧性能仍 NOT-RUN。
+旧 `1c62c2c9` 证据只证明 Direct/World/WorldMap 三文件 R100、编译/ABI/存档形状未回归，不能替代本计划 b2–b4/c1–c4 的真实 owner 与生命周期回放。`a50ab3ad` 建立首批安全边界，`5c3e7b0e` 完成剩余真实职责与门禁。LIVE/SAVE/真实 provider/帧性能仍 NOT-RUN。
 
 ## 1. 目标、范围与完成含义
 
@@ -183,9 +183,9 @@ Conversation / Prompt / Actions（J04–J10 的既有链路）
 | 阶段 | 本次状态 | 后续完成判定 |
 | --- | --- | --- |
 | J11 | OFFLINE_VERIFIED | 已有产品和修复证据，不重开 |
-| J12 计划 | IN-PROGRESS | 本文、主台账与 HANDOFF 已纠正过早 DONE；继续按原退出门施工 |
+| J12 计划 | OFFLINE_VERIFIED | 产品 `5c3e7b0e` 与最终门禁闭合；下一阶段 J13 |
 | G0 / J12a / J12b1 | OFFLINE_VERIFIED | 已有产品与离线证据；相关源码变化才定向重跑 |
-| J12b2–b4 / J12c1–c4 / J12d | PARTIAL / REOPENED | `a50ab3ad` 完成首批修复与 owner；剩余真实职责及整包验收不得用目录迁移代替 |
+| J12b2–b4 / J12c1–c4 / J12d | OFFLINE_VERIFIED | `5c3e7b0e` 完成真实消费者接线、生命周期回放与整包验收；不等于 LIVE/SAVE/发布 |
 | J13–J17 | NOT-STARTED（本轮） | 不在本计划提前宣告完成 |
 
 - 不设“几小时必须全部完美”的硬承诺。已满足责任包退出门就进入下一包，不因还能抽 helper、旧类仍长、无关历史 HOLD 而停留；只因新复现/本包改变导致风险才追加必要门禁。

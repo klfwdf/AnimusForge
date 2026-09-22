@@ -1,3 +1,19 @@
+<a id="j12-final-closeout-20260922"></a>
+## J12 Economy / Diplomacy / WorldMap 最终离线收口（2026-09-22）
+
+**当前状态：J12_OFFLINE_VERIFIED；下一阶段 J13。** 产品提交 `5c3e7b0e2ba73b3d024182f559ae054215bb529e` 完成复审后剩余的 J12b2–b4 与 J12c1–c4，取代下方 `J12_REOPENED_PARTIAL` 状态；历史纠错过程保留作审计。
+
+- **Diplomacy Direct**：`DiplomacyCrossDomainActionOwner.cs:10` 接走附庸/吞并 tag 的解析和执行，`RewardSystemBehavior` 只调用外交 owner；七类 Direct action 与 `DirectDiplomacyWarGuard` 保持原资格、通知和真实状态回执。
+- **WorldDiplomacy runtime**：`WorldDiplomacyJobRuntimeCoordinator.cs:32` 负责 detached 队列选择、route 与 completion generation 判定；`WorldDiplomacyBehavior.JobRuntime.cs:46,220` 持有真实 start/request/completion host。后台任务捕获不可变 request，不闭包读取可变 job；旧 generation 不能污染或释放新请求。
+- **WorldMap**：`WorldMapOrderCoordination.cs:65` 负责 token/STOP/admission route；`WorldMapPartyCommandBehavior.{Protocol,Admission,QueueRuntime,EventLifecycle,DelayedRequests}.cs` 分别接真实消费者；`WorldMapPendingRequestCoordinator.cs:11` 为总督延迟请求提供 owner+ticket one-shot。四个 SyncData key、嵌套保存类型、Campaign 注册和 TaleWorlds mutation 留原 host。
+- **清理/兼容**：旧方法体从主文件删除，没有第二 parser、第二 queue 或双执行；不新增 SyncData key、公有 V1 ABI、默认开关或持久幂等状态。活动兼容入口及 Campaign/Saveable/Harmony/UI/game mutation 因真实消费者与身份要求保留。
+- **最终验证**：Debug/Release × Bannerlord 1.3/1.4 + Bootstrap 六构建 0 warning/error；J12 lifecycle 68、owner source 3、Intent 1176、Compression 297、PolicyHistory 95、ResultSettlement 453；J09 wiring 25、Native 91/184、Scene 71、Courier 34/32/39；四实现 DLL API/metadata 1060；Persistence Profile/Chunk 与 Identity contract 5、Bridge bindings/runtime、Phase8 readiness 73、repository source inventory 7、代码地图 429 recorded/working-tree 全部通过。ResultSettlement 原 net6 runner 因本机无 net6 reference pack，使用相同 Program/生产规则源码的临时 net8 host 完成 453 项。
+- **负向证据**：queue selector 的 `running job` 单变量变异可编译并命中具名断言失败；旧 Direct 主权、虚假战争事实、WorldMap 迟到回调等红例保持通过。
+- **未验证**：直接 Persistence identity audit（需当前 Stage 实现）、Phase8 Stage DLL parity、真实 Campaign/Mission、旧 SAVE round-trip、live Economy/Diplomacy/WorldMap/AFEF、付费 provider、音频和帧性能均 `NOT-RUN`。本轮未 Stage/Deploy/Package，未写游戏目录或存档。
+- **回滚**：先定向 revert 后续文档提交，再 revert `5c3e7b0e`；若还需回退审查修复再 revert `a50ab3ad`。不得 reset/rebase/强推，代码回滚不等于逆转已发生的游戏状态。
+
+详细坐标、命令、保留项与下一步见 [J12 最终 HANDOFF](handoffs/2026-09-22-j12-final-closeout.md) 和 [J12 实施计划](plans/j12-domain-owners-plan.md)。
+
 <a id="j12-review-repair-20260921"></a>
 ## J12 审查修复与重新开放（2026-09-21）
 
