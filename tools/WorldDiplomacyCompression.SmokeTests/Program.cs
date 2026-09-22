@@ -38,6 +38,11 @@ internal static class Program
         string settings = ReadRepositoryFile("DuelSettings.cs");
         string behavior = ReadRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
+        string jobRuntime = ReadRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
+        int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
+        Test.True(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
+        behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
         string client = ReadRepositoryFile("WorldDiplomacyLlmClient.cs");
 
         VerifyDefaultsAndRanges(settings);

@@ -27,6 +27,11 @@ internal static class Program
         string sourcePath = FindRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string source = File.ReadAllText(sourcePath, Encoding.UTF8);
+        string jobRuntimeSource = File.ReadAllText(FindRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs")), Encoding.UTF8);
+        int jobRuntimeInsertion = source.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
+        Test.True(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
+        source = source.Insert(jobRuntimeInsertion, jobRuntimeSource + Environment.NewLine);
         string generatedValidation = ExtractSection(
             source,
             "private bool TryGetGeneratedIntentLegalityViolation(",
@@ -2421,7 +2426,7 @@ internal static class Program
             failedResultStart,
             ordinaryFailureContinue + "continue;".Length - failedResultStart);
         int generateGuard = failedResultBranch.IndexOf(
-            "string.Equals(job.Kind, \"generate\", StringComparison.OrdinalIgnoreCase)",
+            "route == WorldDiplomacyJobRoute.Generate",
             StringComparison.Ordinal);
         int truncationGuard = failedResultBranch.IndexOf("result.IsOutputTruncated", StringComparison.Ordinal);
         int partialContentGuard = failedResultBranch.IndexOf(

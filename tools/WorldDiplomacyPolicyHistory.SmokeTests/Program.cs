@@ -72,6 +72,10 @@ Check(WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(11, 10, 100, 200), 
 
 string root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
 string behavior = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
+string jobRuntime = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
+int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
+Check(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
+behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
 string context = File.ReadAllText(Path.Combine(root, "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"));
 string export = File.ReadAllText(Path.Combine(root, "PolicySystem/Core/CustomPolicyBehavior.Generation.cs"));
 Check(export.Contains("BuildPolicyRecordEffectSummary(history, includeRemainingDays: false)"), "export must build stable impact BEFORE display truncation");

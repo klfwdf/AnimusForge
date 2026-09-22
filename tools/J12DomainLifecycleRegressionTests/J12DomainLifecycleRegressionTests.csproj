@@ -8,7 +8,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Direct\DirectDiplomacyWarGuard.cs" Link="DirectDiplomacyWarGuard.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\World\WorldDiplomacyJobRuntimeCoordinator.cs" Link="WorldDiplomacyJobRuntimeCoordinator.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Diplomacy\World\WorldDiplomacyRequestLeaseCoordinator.cs" Link="WorldDiplomacyRequestLeaseCoordinator.cs" />
     <Compile Include="..\..\src\modules\AF.Module.WorldMap\Runtime\WorldMapDelayedRequestCoordinator.cs" Link="WorldMapDelayedRequestCoordinator.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.WorldMap\Runtime\WorldMapOrderCoordination.cs" Link="WorldMapOrderCoordination.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.WorldMap\Runtime\WorldMapPendingRequestCoordinator.cs" Link="WorldMapPendingRequestCoordinator.cs" />
   </ItemGroup>
 </Project>
