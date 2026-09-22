@@ -1,6 +1,6 @@
 <Prefab>
   <Window>
-    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true">
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
       <Children>
         <Widget Id="TopPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="720" VerticalAlignment="Top" Sprite="BlankWhiteSquare_9" Color="#E0000000" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
           <Children>
@@ -16,6 +16,35 @@
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="18" Text="关闭" DoNotAcceptEvents="true" />
               </Children>
             </ButtonWidget>
+            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="46" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="14" LayoutImp.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
+              <Children>
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerate" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="重新绘制" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="84" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteTogglePrompt" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="提示词" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="74" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteCopyPrompt" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="复制" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="78" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteOpenGallery" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="纪事画廊" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="38" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="15" Text="关闭" DoNotAcceptEvents="true" />
+                  </Children>
+                </ButtonWidget>
+              </Children>
+            </ListPanel>
           </Children>
         </Widget>
       </Children>
