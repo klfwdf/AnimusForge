@@ -117,7 +117,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 layer.AttachTopFraction(movieIdentifier?.Movie?.RootWidget?.FindChild("TopPanel", includeAllChildren: true), 0.75f);
             // The fullscreen root is non-accepting so the lower conversation UI remains
             // usable outside TopPanel, but its child buttons still need mouse dispatch.
-            layer.InputRestrictions.SetInputRestrictions(autoFullscreen ? false : true, InputUsageMask.MouseButtons);
+            layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
             _layer = layer;
             _scope = new IllustrationScope(screen, category, Close);
 
