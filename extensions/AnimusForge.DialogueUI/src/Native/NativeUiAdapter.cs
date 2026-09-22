@@ -217,18 +217,7 @@ public static class NativeUiAdapter
                 if (button != null)
                 {
                     _buttons.Add(button);
-                    if (button is ButtonWidget b)
-                    {
-                        try { DialogueUiButtons.Style(b); }
-                        catch (Exception ex) { DialogueUiRuntime.Log("Button styling skipped for " + id + ": " + ex.GetType().Name); }
-                    }
                 }
-            }
-            var submit = root.FindChild("AFDialogueSubmit", true) as ButtonWidget;
-            if (submit != null)
-            {
-                try { DialogueUiButtons.StyleWaxSeal(submit); }
-                catch (Exception ex) { DialogueUiRuntime.Log("Submit styling skipped: " + ex.GetType().Name); }
             }
         }
 
