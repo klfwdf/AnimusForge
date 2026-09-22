@@ -34,7 +34,7 @@ namespace AnimusForge.Illustrator.Context
         public string BuildDialogueBlock()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("【会话台词与历史记录（仅供理解人物情绪、关系演进与现场氛围，严禁在画面中绘制任何台词文字、对话框、气泡框或字幕）】");
+            sb.AppendLine("【会话台词与历史记录（用于理解情绪、关系、已发生动作与现场氛围；严禁在画面中绘制任何台词文字、对话框、气泡框或字幕）】");
             if (!string.IsNullOrWhiteSpace(DialogueSentence) && (string.IsNullOrWhiteSpace(RecentDialogueHistory) || RecentDialogueHistory.IndexOf(DialogueSentence, StringComparison.Ordinal) < 0))
                 sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
             if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
