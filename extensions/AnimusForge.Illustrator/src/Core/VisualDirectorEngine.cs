@@ -328,7 +328,11 @@ namespace AnimusForge.Illustrator.Core
                         "\n构图方向：" + IllustrationDirection.RemoveActionHistory(plan.ArtDirection) + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
-            return ComposeFinalPrompt(output, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+            // The director is responsible for composition, but its prose can omit a visual
+            // fact. Keep the authoritative game facts beside the derived direction so the
+            // image endpoint does not have to infer age, equipment, emblems or spatial state
+            // from a reference image alone.
+            return ComposeFinalPrompt(output, hardFacts: plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
         }
 
         private static readonly string[] RequiredSectionPatterns = new[]
