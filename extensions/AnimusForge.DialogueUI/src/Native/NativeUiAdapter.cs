@@ -211,7 +211,7 @@ public static class NativeUiAdapter
         {
             Root = root; Original = original; Mission = Mission.Current;
             _vm = Wrappers.TryGetValue(original, out var vm) ? vm : null;
-            foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AFDialogueMore", "AFDialogueSwitch", "AFDialogueLeave", "AFDialogueSubmit", "AFDialoguePersona", "AFDialogueTagTest" })
+            foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave", "AFDialogueSubmit" })
             {
                 var button = root.FindChild(id, true);
                 if (button != null)
