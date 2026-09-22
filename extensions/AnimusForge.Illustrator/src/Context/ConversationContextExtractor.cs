@@ -44,13 +44,16 @@ namespace AnimusForge.Illustrator.Context
         public string BuildHardFacts()
         {
             var sb = new StringBuilder();
-            bool allowMount = EnvironmentProfile == null || !EnvironmentProfile.IsIndoor;
             sb.AppendLine("【玩家主角】");
-            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildVisualSummary(includeMount: allowMount));
+            // Conversation mount presence comes from the live Agent evidence in SceneFacts.
+            // The equipment snapshot may contain an available horse even when the current
+            // tableau/map conversation has no mounted Agent; exposing that slot makes the
+            // image model invent a horse in an otherwise on-foot scene.
+            if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildVisualSummary(includeMount: false));
             sb.AppendLine("【对话对象】");
             if (InterlocutorProfile != null)
             {
-                sb.AppendLine(InterlocutorProfile.BuildVisualSummary(includeMount: allowMount));
+                sb.AppendLine(InterlocutorProfile.BuildVisualSummary(includeMount: false));
             }
             else if (InterlocutorCharacter != null)
             {
