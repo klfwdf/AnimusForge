@@ -124,6 +124,14 @@ namespace AnimusForge.Illustrator.Core
                     result.ErrorMessage = "精确 images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
                     return result;
                 }
+                if (settings.UseExactEndpointUrl && !exactEditsEndpoint && requestedRefImages > 0)
+                {
+                    // /images/generations has no image field. Do not report a successful
+                    // text-only generation as if the caller's identity/scene references were
+                    // honored when an exact URL explicitly selected that endpoint.
+                    result.ErrorMessage = "精确 images/generations 端点不能携带参考图；请改用 /images/edits 或开启对话多模态生图通道。未发送请求。";
+                    return result;
+                }
 
                 bool success = false;
                 byte[] imageBytes = null;
@@ -150,7 +158,11 @@ namespace AnimusForge.Illustrator.Core
                     }
                     else
                     {
-                        Log("[Illustrator] /images/edits 不可用，参考图仅供导演识图，回退纯文本 /images/generations；详情见请求诊断。");
+                        // A generations request cannot carry the references. Stopping here
+                        // avoids a visually valid but identity/scene-invalid image. The user
+                        // can opt into the chat multimodal route when the provider supports it.
+                        errorMessage = "images/edits 不支持当前参考图请求；为避免静默丢失人物/场景参考，已停止生成。请开启“优先对话多模态生图通道”或配置可用的 /images/edits 端点。";
+                        stopAfterEditFailure = true;
                     }
                 }
                 else if (!isChatProtocol && requestedRefImages > 0 && settings.UseExactEndpointUrl)
