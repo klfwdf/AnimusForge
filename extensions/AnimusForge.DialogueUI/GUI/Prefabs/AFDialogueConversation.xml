@@ -42,32 +42,40 @@
             <ListPanel Id="BottomPanelsContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
                 HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="36" DoNotAcceptEvents="true">
               <Children>
-                <Widget Id="DialogueContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="274"
-                    MarginLeft="430" MarginRight="500" DoNotAcceptEvents="true">
+                <!-- Keep the native bottom-panel measurement contract.  The parchment
+                     backdrop is full-width, while this child is the only stable text
+                     region inside its central sheet. -->
+                <Widget Id="DialogueContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                    MarginRight="500" DoNotAcceptEvents="true">
                   <Children>
-                    <ScrollablePanel Id="AFDialogueTextScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        MarginLeft="22" MarginRight="34" MarginTop="18" MarginBottom="18" ClipRect="AFDialogueTextClip"
-                        InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="true" VerticalScrollbar="AFDialogueTextScrollbar" MouseScrollAxis="Vertical">
+                    <Widget Id="AFDialogueTextPanel" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="1120" SuggestedHeight="238" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        DoNotAcceptEvents="true">
                       <Children>
-                        <Widget Id="AFDialogueTextClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                        <ScrollablePanel Id="AFDialogueTextScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            MarginLeft="28" MarginRight="36" MarginTop="22" MarginBottom="22" ClipRect="AFDialogueTextClip"
+                            InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="true" VerticalScrollbar="AFDialogueTextScrollbar" MouseScrollAxis="Vertical">
                           <Children>
-                            <Widget Id="AFDialogueTextContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                            <Widget Id="AFDialogueTextClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                               <Children>
-                                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
-                                    Brush="Conversation.ConversedPartyLine.Text" Command.LinkAlternateClick="ExecuteLink" Command.LinkClick="ExecuteLink"
-                                    Text="@DialogText" />
+                                <Widget Id="AFDialogueTextContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                                  <Children>
+                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
+                                        Brush="Conversation.ConversedPartyLine.Text" Command.LinkAlternateClick="ExecuteLink" Command.LinkClick="ExecuteLink"
+                                        Text="@DialogText" />
+                                  </Children>
+                                </Widget>
                               </Children>
                             </Widget>
                           </Children>
-                        </Widget>
+                        </ScrollablePanel>
+                        <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="7" HeightSizePolicy="StretchToParent"
+                            HorizontalAlignment="Right" MarginRight="14" MarginTop="22" MarginBottom="22" AlignmentAxis="Vertical"
+                            Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100">
+                          <Children><Widget Id="AFDialogueTextHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" Sprite="BlankWhiteSquare_9" Color="#765632FF" /></Children>
+                        </ScrollbarWidget>
                       </Children>
-                    </ScrollablePanel>
-                    <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="7" HeightSizePolicy="StretchToParent"
-                        HorizontalAlignment="Right" MarginRight="12" MarginTop="18" MarginBottom="18" AlignmentAxis="Vertical"
-                        Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100">
-                      <Children><Widget Id="AFDialogueTextHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" Sprite="BlankWhiteSquare_9" Color="#765632FF" /></Children>
-                    </ScrollbarWidget>
-                    <DimensionSyncWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" WidgetToCopyHeightFrom="..\..\AnswerListContainer" DimensionToSync="Vertical" />
+                    </Widget>
                   </Children>
                 </Widget>
                 <NavigationScopeTargeter ScopeID="SPConversationItemsScope" ScopeParent="..\AnswerListContainer"
