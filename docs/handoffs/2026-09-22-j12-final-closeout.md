@@ -1,8 +1,8 @@
 # J12 Economy / Diplomacy / WorldMap 最终离线收口
 
-日期：2026-09-22  
-工作树：`G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`  
-本地分支：`codex/af-modularize-j04-20260918`  
+日期：2026-09-22
+工作树：`G:/AFMOD/AF-REFACTOR/.tmp/modularize-20260918`
+本地分支：`codex/af-modularize-j04-20260918`
 交付比较分支：`origin/codex/af-main-refactor-continuation-20260831`
 
 ## 1. 结论
