@@ -16,138 +16,142 @@
         <ButtonWidget Id="ContinueButton" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsDisabled="true" IsVisible="false" Command.Click="ExecuteContinue">
           <Children>
             <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                MarginRight="270" MarginBottom="34" Brush="Conversation.HeaderText" Brush.FontSize="34" Text="@ContinueText"
+                MarginRight="265" MarginBottom="51" Brush="Conversation.HeaderText" Brush.FontSize="26" Text="@ContinueText"
                 ExtendCursorAreaTop="-20" ExtendCursorAreaBottom="-20" GamepadNavigationIndex="0" />
           </Children>
         </ButtonWidget>
 
-        <!-- Generated artwork is a background only. Text and hit regions are widgets. -->
-        <Widget Id="AFDialogueBackdrop" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="341"
-            HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginLeft="0" MarginRight="0" MarginBottom="0"
-            Sprite="afdui_console_base" DoNotAcceptEvents="true" />
-
-        <!-- Native 3D speaker tableau is inserted here by NativeSession. -->
-        <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="261"
-            HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="115" MarginBottom="10" ClipContents="true" DoNotAcceptEvents="true">
+        <!-- Generated artwork is a background only. Main container follows the current Pen layout: 1440x283 centered, floating 43px above the bottom edge. -->
+        <Widget Id="AFDialogueConsoleFrame" WidthSizePolicy="Fixed" SuggestedWidth="1440" HeightSizePolicy="Fixed" SuggestedHeight="283"
+            HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="43" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
           <Children>
-            <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                SuggestedWidth="204" SuggestedHeight="261" HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />
-          </Children>
-        </Widget>
+            <Widget Id="AFDialogueBackdrop" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                Sprite="afdui_console_base_option_02_walnut_original_ratio" DoNotAcceptEvents="true" />
 
-        <ListPanel Id="VerticalContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-            StackLayout.LayoutMethod="VerticalBottomToTop" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true">
-          <Children>
-            <ListPanel Id="BottomPanelsContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="36" DoNotAcceptEvents="true">
+            <!-- Native 3D speaker tableau is inserted here by NativeSession. -->
+            <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="210"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="124" MarginBottom="28" ClipContents="true" DoNotAcceptEvents="true">
               <Children>
-                <!-- Keep the native bottom-panel measurement contract.  The parchment
-                     backdrop is full-width, while this child is the only stable text
-                     region inside its central sheet. -->
-                <Widget Id="DialogueContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="703" SuggestedHeight="194"
-                    HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="548" MarginBottom="64" DoNotAcceptEvents="true">
+                <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                    SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-119"
+                    StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />
+              </Children>
+            </Widget>
+
+            <ListPanel Id="VerticalContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                StackLayout.LayoutMethod="VerticalBottomToTop" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true">
+              <Children>
+                <ListPanel Id="BottomPanelsContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="20" DoNotAcceptEvents="true">
                   <Children>
-                    <Widget Id="AFDialogueTextPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                        DoNotAcceptEvents="true">
+                    <!-- Central text sheet follows the Pen frame: 650x209 at the widened center panel. -->
+                    <Widget Id="DialogueContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="650" SuggestedHeight="209"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="420" MarginBottom="0" DoNotAcceptEvents="true">
                       <Children>
-                        <ScrollablePanel Id="AFDialogueTextScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            MarginLeft="22" MarginRight="28" MarginTop="17" MarginBottom="17" ClipRect="AFDialogueTextClip"
-                            InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="true" VerticalScrollbar="AFDialogueTextScrollbar" MouseScrollAxis="Vertical">
+                        <Widget Id="AFDialogueTextPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            DoNotAcceptEvents="true">
                           <Children>
-                            <Widget Id="AFDialogueTextClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                            <ScrollablePanel Id="AFDialogueTextScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                MarginLeft="12" MarginRight="15" MarginTop="10" MarginBottom="10" ClipRect="AFDialogueTextClip"
+                                InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="false" VerticalScrollbar="..\AFDialogueTextScrollbar" MouseScrollAxis="Vertical">
                               <Children>
-                                <Widget Id="AFDialogueTextContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                                <Widget Id="AFDialogueTextClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
                                   <Children>
-                                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
-                                        Brush="Conversation.ConversedPartyLine.Text" Command.LinkAlternateClick="ExecuteLink" Command.LinkClick="ExecuteLink"
-                                        Text="@DialogText" />
+                                    <Widget Id="AFDialogueTextContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                                      <Children>
+                                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
+                                            Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="18" Brush.FontColor="#3B281BFF"
+                                            Command.LinkAlternateClick="ExecuteLink" Command.LinkClick="ExecuteLink"
+                                            Text="@DialogText" />
+                                      </Children>
+                                    </Widget>
                                   </Children>
                                 </Widget>
                               </Children>
-                            </Widget>
+                            </ScrollablePanel>
+                            <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent"
+                                HorizontalAlignment="Right" MarginRight="3" MarginTop="10" MarginBottom="10" AlignmentAxis="Vertical"
+                                Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100">
+                              <Children><Widget Id="AFDialogueTextHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" /></Children>
+                            </ScrollbarWidget>
                           </Children>
-                        </ScrollablePanel>
-                        <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="7" HeightSizePolicy="StretchToParent"
-                            HorizontalAlignment="Right" MarginRight="11" MarginTop="17" MarginBottom="17" AlignmentAxis="Vertical"
-                            Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100">
-                          <Children><Widget Id="AFDialogueTextHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" Sprite="BlankWhiteSquare_9" Color="#765632FF" /></Children>
-                        </ScrollbarWidget>
+                        </Widget>
+                      </Children>
+                    </Widget>
+                    <NavigationScopeTargeter ScopeID="SPConversationItemsScope" ScopeParent="..\AnswerListContainer"
+                        ScopeMovements="Vertical" HasCircularMovement="true" IsDefaultNavigationScope="true" />
+                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="305" SuggestedHeight="188"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="21" DoNotAcceptEvents="true">
+                      <Children>
+                        <NavigatableListPanel Id="AnswerList" DataSource="{AnswerList}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                            HorizontalAlignment="Center" VerticalAlignment="Bottom" StackLayout.LayoutMethod="VerticalTopToBottom">
+                          <ItemTemplate><ConversationItem /></ItemTemplate>
+                        </NavigatableListPanel>
                       </Children>
                     </Widget>
                   </Children>
-                </Widget>
-                <NavigationScopeTargeter ScopeID="SPConversationItemsScope" ScopeParent="..\AnswerListContainer"
-                    ScopeMovements="Vertical" HasCircularMovement="true" IsDefaultNavigationScope="true" />
-                <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="206"
-                    HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="57" DoNotAcceptEvents="true">
+                </ListPanel>
+                <ListPanel Id="PersuationExtensionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" DoNotAcceptEvents="true">
                   <Children>
-                    <NavigatableListPanel Id="AnswerList" DataSource="{AnswerList}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                        HorizontalAlignment="Center" VerticalAlignment="Bottom" StackLayout.LayoutMethod="VerticalTopToBottom">
-                      <ItemTemplate><ConversationItem /></ItemTemplate>
-                    </NavigatableListPanel>
-                  </Children>
-                </Widget>
-              </Children>
-            </ListPanel>
-            <ListPanel Id="PersuationExtensionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" DoNotAcceptEvents="true">
-              <Children>
-                <Widget Id="PersuationExtensionParent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                    IsVisible="@IsPersuading" DoNotAcceptEvents="true">
-                  <Children>
-                    <Widget Id="PersuationExtension" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
-                        HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="@IsPersuading" DoNotAcceptEvents="true">
+                    <Widget Id="PersuationExtensionParent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                        IsVisible="@IsPersuading" DoNotAcceptEvents="true">
                       <Children>
-                        <Widget DataSource="{Persuasion}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                        <Widget Id="PersuationExtension" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                            HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="@IsPersuading" DoNotAcceptEvents="true">
                           <Children>
-                            <ListPanel DataSource="{PersuasionProgress}" Id="ProgressClipWidget" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren">
-                              <ItemTemplate>
-                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="22" SuggestedHeight="22" MarginLeft="5" MarginRight="5">
-                                  <Children>
-                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteCircle" Color="#9C7839FF" IsVisible="@IsActive" />
-                                  </Children>
-                                </Widget>
-                              </ItemTemplate>
-                            </ListPanel>
+                            <Widget DataSource="{Persuasion}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                              <Children>
+                                <ListPanel DataSource="{PersuasionProgress}" Id="ProgressClipWidget" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren">
+                                  <ItemTemplate>
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="22" SuggestedHeight="22" MarginLeft="5" MarginRight="5">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="afdui_persuasion_dot" IsVisible="@IsActive" />
+                                      </Children>
+                                    </Widget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
                           </Children>
                         </Widget>
                       </Children>
                     </Widget>
                   </Children>
-                </Widget>
+                </ListPanel>
               </Children>
             </ListPanel>
-          </Children>
-        </ListPanel>
 
-        <Widget Id="AFDialogueSpeakerInfo" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-            SuggestedWidth="313" SuggestedHeight="43" VerticalAlignment="Bottom" HorizontalAlignment="Left" MarginLeft="57" MarginBottom="27">
-          <Children>
-            <Widget Id="CharacterNameContainer" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                VerticalAlignment="Center" Sprite="name_shadow_9">
+            <Widget Id="AFDialogueSpeakerInfo" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                SuggestedWidth="224" SuggestedHeight="32" VerticalAlignment="Bottom" HorizontalAlignment="Left" MarginLeft="100" MarginBottom="31">
               <Children>
-                <ButtonWidget Id="CharacterNameIdParent" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                    Command.AlternateClick="ExecuteConversedHeroLink" Command.Click="ExecuteConversedHeroLink"
-                    Command.HoverBegin="ExecuteHeroTooltip" Command.HoverEnd="ExecuteCloseTooltip" UpdateChildrenStates="true"
-                    IsEnabled="@IsCurrentCharacterValidInEncyclopedia">
+                <Widget Id="CharacterNameContainer" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    VerticalAlignment="Center" Sprite="afdui_nameplate">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" DoNotAcceptEvents="true" HeightSizePolicy="StretchToParent"
-                        MarginLeft="52" MarginRight="8" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center"
-                        Text="@CurrentCharacterNameLbl" HoveredCursorState="RightClickLink" ExtendCursorAreaTop="-20" ExtendCursorAreaBottom="-20" GamepadNavigationIndex="0" />
+                    <ButtonWidget Id="CharacterNameIdParent" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Command.AlternateClick="ExecuteConversedHeroLink" Command.Click="ExecuteConversedHeroLink"
+                        Command.HoverBegin="ExecuteHeroTooltip" Command.HoverEnd="ExecuteCloseTooltip" UpdateChildrenStates="true"
+                        IsEnabled="@IsCurrentCharacterValidInEncyclopedia">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" DoNotAcceptEvents="true" HeightSizePolicy="StretchToParent"
+                            MarginLeft="35" MarginRight="6" Brush="Conversation.HeaderText" Brush.FontSize="17" Brush.FontColor="#D7A343FF"
+                            Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center"
+                            Text="@CurrentCharacterNameLbl" HoveredCursorState="RightClickLink" ExtendCursorAreaTop="-20" ExtendCursorAreaBottom="-20" GamepadNavigationIndex="0" />
+                      </Children>
+                    </ButtonWidget>
                   </Children>
-                </ButtonWidget>
-              </Children>
-            </Widget>
-            <Widget Id="ConversedHeroBannerHost" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="36" SuggestedHeight="36"
-                HorizontalAlignment="Left" PositionXOffset="8" VerticalAlignment="Center" IsVisible="@IsBannerEnabled" DoNotAcceptEvents="true">
-              <Children>
-                <ImageIdentifierWidget Id="ConversedHeroBanner" DoNotAcceptEvents="true" DataSource="{ConversedHeroBanner}"
-                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    MarginLeft="5" MarginRight="6" MarginTop="5" MarginBottom="6" AdditionalArgs="@AdditionalArgs" HideWhenNull="true"
-                    ImageId="@Id" TextureProviderName="@TextureProviderName" />
-                <HintWidget DataSource="{FactionHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                    Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" />
+                </Widget>
+                <Widget Id="ConversedHeroBannerHost" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24"
+                    HorizontalAlignment="Left" PositionXOffset="6" VerticalAlignment="Center" IsVisible="@IsBannerEnabled" DoNotAcceptEvents="true">
+                  <Children>
+                    <ImageIdentifierWidget Id="ConversedHeroBanner" DoNotAcceptEvents="true" DataSource="{ConversedHeroBanner}"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        MarginLeft="4" MarginRight="4" MarginTop="4" MarginBottom="4" AdditionalArgs="@AdditionalArgs" HideWhenNull="true"
+                        ImageId="@Id" TextureProviderName="@TextureProviderName" />
+                    <HintWidget DataSource="{FactionHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" />
+                  </Children>
+                </Widget>
               </Children>
             </Widget>
           </Children>
