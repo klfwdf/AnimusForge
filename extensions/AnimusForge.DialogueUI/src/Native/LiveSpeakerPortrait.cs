@@ -17,23 +17,31 @@ namespace AnimusForge.DialogueUI.Native;
 /// </summary>
 internal static class LiveSpeakerPortrait
 {
-    public static bool Apply(CharacterTableauWidget tableau, Agent speaker, CharacterObject character)
+    public static bool Apply(CharacterTableauWidget tableau, Agent speaker, CharacterObject character, float renderScale = -1f)
     {
         if (tableau == null || character == null)
             return false;
 
         try
         {
+            BodyProperties bodyProperties = speaker != null
+                ? speaker.BodyPropertiesValue
+                : character.HeroObject != null
+                    ? character.HeroObject.BodyProperties
+                    : character.GetBodyProperties(character.Equipment);
             tableau.IsVisible = true;
             tableau.DoNotAcceptEvents = true;
+            // EmphasizeFace is the native head camera stance.  The additional
+            // offset keeps the eyes above the lower wooden mask in our circular
+            // viewport while the render scale below normalizes body-height
+            // variation between NPCs.
             tableau.StanceIndex = (int)CharacterViewModel.StanceTypes.EmphasizeFace;
-            tableau.CustomRenderScale = 1.35f;
+            tableau.PositionYOffset = -134f;
+            tableau.CustomRenderScale = renderScale > 0.01f
+                ? renderScale
+                : GetHeadLockedRenderScale(bodyProperties, character.Race, speaker != null ? speaker.IsFemale : character.IsFemale);
             tableau.CharStringId = character.StringId ?? string.Empty;
-            tableau.BodyProperties = speaker != null
-                ? speaker.BodyPropertiesValue.ToString()
-                : character.HeroObject != null
-                    ? character.HeroObject.BodyProperties.ToString()
-                    : character.GetBodyProperties(character.Equipment).ToString();
+            tableau.BodyProperties = bodyProperties.ToString();
             tableau.IsFemale = speaker != null ? speaker.IsFemale : character.IsFemale;
             tableau.Race = character.Race;
             tableau.EquipmentCode = speaker?.SpawnEquipment != null
@@ -61,6 +69,31 @@ internal static class LiveSpeakerPortrait
             DialogueUiRuntime.Log("Live speaker portrait update failed: " + ex.GetType().Name + ": " + ex.Message);
             return false;
         }
+    }
+
+    internal static float GetHeadLockedRenderScale(BodyProperties bodyProperties, int race, bool isFemale)
+    {
+        const float baseRenderScale = 1.35f;
+        try
+        {
+            // FaceGen's scale key is the same height factor used by the native
+            // tableau.  Applying its reciprocal keeps the head at a stable size
+            // without touching the mission agent or the global camera.
+            float bodyScale = MBBodyProperties.GetScaleFromKey(race, isFemale ? 1 : 0, bodyProperties);
+            if (bodyScale > 0.01f)
+            {
+                float normalized = baseRenderScale / bodyScale;
+                if (normalized < 1.18f) return 1.18f;
+                if (normalized > 1.52f) return 1.52f;
+                return normalized;
+            }
+        }
+        catch
+        {
+            // Some custom races do not expose a FaceGen scale key; keep the
+            // safe native scale for those characters.
+        }
+        return baseRenderScale;
     }
 
     private static string GetCurrentActionName(Agent speaker)

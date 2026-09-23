@@ -37,14 +37,14 @@
                     HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="0"
                     IsVisible="@IsCustomAnswerVisible" DoNotPassEventsToChildren="false">
                   <Children>
-                    <DevMultilineEditableTextWidget MarginLeft="10" MarginRight="10" MarginTop="9" MarginBottom="9"
+                    <DevMultilineEditableTextWidget MarginLeft="3" MarginRight="3" MarginTop="9" MarginBottom="9"
                         WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit"
                         Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" Brush="ConversationItem.Text" Brush.FontSize="16"
                         Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16"
                         RealText="@InputText" AutoFocus="true" SubmitOnEnter="true" UseBlackCaret="true"
                         MaxLength="6000" IsEnabled="@IsInputEnabled" />
                     <TextWidget Id="AFDialogueInputPlaceholder" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        MarginLeft="10" MarginRight="10" MarginTop="9" MarginBottom="9" Text="输入你要说的话……&#10;Enter 发送 · Shift+Enter 换行"
+                        MarginLeft="3" MarginRight="3" MarginTop="9" MarginBottom="9" Text="输入你要说的话……&#10;Enter 发送 · Shift+Enter 换行"
                         Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#6B4A28B8"
                         Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" IsVisible="@IsInputEmpty" DoNotAcceptEvents="true" />
                   </Children>
