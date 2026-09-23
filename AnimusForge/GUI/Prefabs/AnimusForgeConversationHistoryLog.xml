@@ -2,8 +2,14 @@
   <Window>
     <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" SuggestedWidth="1000" MarginLeft="100" MarginRight="10" MarginTop="150" MarginBottom="80">
       <Children>
-        <Widget Parameter.Title="Message log" WidthSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" SuggestedWidth="290" SuggestedHeight="700" MarginTop="30">
+        <Widget Id="HistoryPanel" Parameter.Title="Message log" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" SuggestedWidth="1000" SuggestedHeight="700" MarginTop="30">
           <Children>
+            <ListPanel Id="HistoryHeader" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="70" MarginLeft="40" MarginRight="40" MarginTop="12" LayoutImp.LayoutMethod="VerticalTopToBottom" DoNotAcceptEvents="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32" Brush="Conversation.HeaderText" Brush.FontSize="25" Brush.FontColor="#E2AF54FF" Brush.TextHorizontalAlignment="Left" Text="@TitleText" DoNotAcceptEvents="true" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Brush="Popup.Description.Text" Brush.FontSize="17" Brush.FontColor="#B6A68DFF" Brush.TextHorizontalAlignment="Left" Text="@SubtitleText" DoNotAcceptEvents="true" />
+              </Children>
+            </ListPanel>
             <ButtonWidget DoNotPassEventsToChildren="false" Sprite="Standard.BackButton" HorizontalAlignment="Left" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="67" SuggestedWidth="87" Command.Click="CloseEx" IsEnabled="true">
               <Children>
               </Children>
@@ -13,7 +19,7 @@
                 <TextWidget WidthSizePolicy="CoverChildren" DoNotAcceptEvents="true" HeightSizePolicy="Fixed" SuggestedHeight="30" Brush="Conversation.HeaderText" Brush.TextHorizontalAlignment="Right" Text="关闭" Brush.FontSize="26" />
               </Children>
             </ButtonWidget>
-            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionXOffset="0" PositionYOffset="10" MarginTop="70" LayoutImp.LayoutMethod="VerticalTopToBottom">
+            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" PositionXOffset="0" PositionYOffset="10" MarginTop="88" LayoutImp.LayoutMethod="VerticalTopToBottom">
               <Children>
                 <!-- Paging keeps every record available while bounding the live RichText widget count on large hyperlink-heavy histories. -->
                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginLeft="18" MarginRight="28" MarginBottom="4" LayoutImp.LayoutMethod="HorizontalLeftToRight">

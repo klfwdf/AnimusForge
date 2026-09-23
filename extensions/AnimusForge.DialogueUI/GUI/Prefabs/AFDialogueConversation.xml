@@ -32,9 +32,19 @@
             <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="210"
                 HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="124" MarginBottom="28" ClipContents="true" DoNotAcceptEvents="true">
               <Children>
-                <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                    SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-119"
-                    StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />
+                <!-- Keep the live tableau inside the circular aperture so short and tall NPCs cannot leak through the wooden frame corners. -->
+                <Widget Id="AFDialoguePortraitViewport" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="169"
+                    HorizontalAlignment="Left" VerticalAlignment="Top" CircularClipEnabled="true" CircularClipRadius="79"
+                    CircularClipSmoothingRadius="2" DoNotAcceptEvents="true">
+                  <Children>
+                    <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-134"
+                        StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />
+                  </Children>
+                </Widget>
+                <!-- A narrow wood nameplate sits above the lower frame edge and masks the tableau torso. -->
+                <Widget Id="AFDialoguePortraitBottomMask" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="23"
+                    HorizontalAlignment="Left" VerticalAlignment="Bottom" Sprite="afdui_nameplate" DoNotAcceptEvents="true" />
               </Children>
             </Widget>
 
