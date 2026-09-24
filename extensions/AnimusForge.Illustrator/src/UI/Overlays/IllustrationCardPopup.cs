@@ -41,6 +41,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private bool _autoReplyRequested;
         private string _latestAutoPlayerText;
         private string _latestAutoReplyText;
+        private string _openingSceneBase64;
+        private string _openingSceneSessionKey;
 
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
@@ -146,6 +148,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 });
         }
 
+        internal static string SelectOpeningSceneReference(string image, string capturedSession, string currentSession)
+        {
+            return !string.IsNullOrWhiteSpace(image) && !string.IsNullOrWhiteSpace(capturedSession) &&
+                !capturedSession.StartsWith("unavailable:", StringComparison.Ordinal) &&
+                string.Equals(capturedSession, currentSession, StringComparison.Ordinal) ? image : null;
+        }
+
         public static void ShowForEncyclopedia(Hero hero, Widget tableauWidget)
         {
             IllustratorRuntime.AssertMainThread();
@@ -208,8 +217,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
             IllustrationCardPopup popup = null;
             try
             {
-                // 截取 3D 场景主体区域（剔除底部对话 UI 条带），保留现场人物站位与周围预制件环境
+                // Retain one location-only capture before opening the fullscreen art.
                 string preCapturedBase64 = null;
+                string openingSceneSessionKey = ConversationSessionKey(convContext);
 
                 var interlocutor = convContext.InterlocutorHero;
                 // 会话画面里双方都可能出现纹章载体：对方家族与玩家家族各发一张参考样图（同一代码去重）
@@ -224,12 +234,20 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     try { probeSource = ScreenCaptureHelper.GetConversationSceneCaptureSource(); }
                     catch (Exception ex) { Debug.Print("[Illustrator] Scene probe unavailable: " + ex.Message); }
                 }
-                _activeInstance?.Close();
+                var previousPopup = _activeInstance;
+                if (useFullscreen && previousPopup != null)
+                    preCapturedBase64 = SelectOpeningSceneReference(previousPopup._openingSceneBase64,
+                        previousPopup._openingSceneSessionKey, openingSceneSessionKey);
+                previousPopup?.Close();
                 if (useFullscreen)
                 {
                     try
                     {
-                        preCapturedBase64 = ScreenCaptureHelper.CaptureUnobstructedConversationSceneBase64(out string calibrationReason);
+                        // Removing a previous layer does not immediately repaint desktop
+                        // pixels. Never capture its old painting as the actual environment.
+                        string calibrationReason = "previous_overlay_pending_redraw";
+                        if (previousPopup == null)
+                            preCapturedBase64 = ScreenCaptureHelper.CaptureUnobstructedConversationSceneBase64(out calibrationReason);
                         Debug.Print("[Illustrator] Auto conversation scene pre-capture: " + (string.IsNullOrWhiteSpace(preCapturedBase64) ? calibrationReason : "captured_before_fullscreen"));
                     }
                     catch (Exception ex)
@@ -247,6 +265,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     AddEmblemSpec(redrawEmblems, current.MainHero, "玩家");
                     _activeInstance?.ExecuteConversationGeneration(current, redrawBase64, redrawEmblems);
                 }, probeSource == null ? (Action)null : () => popup?.ExecuteIsolatedSceneProbe(probeSource), useFullscreen);
+                popup._openingSceneBase64 = preCapturedBase64;
+                popup._openingSceneSessionKey = openingSceneSessionKey;
 
                 string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
                     ? convContext.InterlocutorHero.Name.ToString()
@@ -627,6 +647,9 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return;
             }
             var sceneSource = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+            if (string.IsNullOrWhiteSpace(preCapturedBase64))
+                preCapturedBase64 = SelectOpeningSceneReference(_openingSceneBase64, _openingSceneSessionKey,
+                    ConversationSessionKey(convContext, sceneSource.SessionOwnerKey));
             string campaignKey = _scope.CampaignKey;
 
             _scope.Run(async token =>
@@ -853,6 +876,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (_closed) return;
             _closed = true;
+            _openingSceneBase64 = null;
+            _openingSceneSessionKey = null;
             _autoRedrawPending = false;
             _latestAutoPlayerText = null;
             _latestAutoReplyText = null;
