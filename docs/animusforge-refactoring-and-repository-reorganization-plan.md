@@ -1,4 +1,12 @@
 <a id="j13-plan-20260924"></a>
+## J13a 周报全文/短报材料选择切片（2026-09-24）
+
+状态 `J13a_PROMPT_MODE_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `12f9e3d2`。`src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs:9–29` 统一邻近王国 ID 规范化去重、最多三国全文、无邻近结果时按原 group 顺序回退，以及其余王国短报判定。同步预览 `MyBehavior.cs:37146–37169` 与延迟自动准备 `:6266–6293` 两个真实消费者改用同一 owner；后者在 context 中缓存 `HashSet<string>`，不再每次预算回调重复分配。原 live 玩家距离计算、PromptMaterials 具体内容、周报 UI 和存档身份不变。
+
+- 频率/成本：每次周报预览/准备选择一次 O(G) ID 过滤与最多 3 个集合元素；延迟路径每组短报判定为 O(1)，不新增每 tick 全量扫描。原 `SanitizeEventSourceMaterials` 初始化 O(N)、group 内聚合 O(M log M)、具体 PromptMaterials 准备仍按现有每组预算执行；没有实机帧耗时证据，不能报总体预算完成。
+- 验证：获准四目录路径/内容/reparse 复核后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 DLL SHA256 `AD1E082F0DC73ADE5E17AD6D0B87BC1A85916309CAA620FF2A8954B196397E92`，Phase8 校验当前候选来源与新鲜度并通过；`WeeklyMaterialBatchPlannerReplay` 新增空邻近回退、大小写/空白去重、世界与已选王国全文/未选短报断言。入口 11、source inventory 7、444 锚点地图 recorded/working-tree 通过。
+- 未完：a1 的 PromptMaterials 具体构造和自动准备阶段游标仍在 host；a2 请求/完成、a3 回执发布以及 J13b–g 尚未完成。下一动作检查 `MyBehavior.cs:37171–37240,6266–6321` 的 Full/Short PromptMaterials 构造、分批阶段和预算游标，确定可迁移的完整材料责任及反例，再进入 a2。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+
 ## J13a action 材料游标切片（2026-09-24）
 
 状态 `J13a_ACTION_CURSOR_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `8d934447`。`src/modules/AF.Module.Weekly/Materials/WeeklyActionMaterialCursor.cs:6,21` 持有 recent/major action 的 owner/action 下标及当前 Hero 缓存，每次 `Advance` 至多消费一个 owner 边界或一条 action。真实自动周报预览入口 `MyBehavior.cs:6132–6172` 逐次检查日维护预算；`MyBehavior.cs:6195–6228` 保留主线程 Hero 解析及世界/王国材料回调。原 `PendingAutoWeeklyReportBuild` 两套下标/缓存已移除，没有并行游标；瞬态类型不是存档身份，原 Campaign/SyncData 不动。

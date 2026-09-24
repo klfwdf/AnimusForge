@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`12f9e3d2` 将邻近前三王国全文、其余短报及空邻近回退规则统一交给 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs:9,25`；同步预览 `MyBehavior.cs:37146–37169` 与延迟自动准备 `:6266–6293` 共用且延迟路径缓存 ID 集合。双版本六构建及当前候选 Phase8/选择反例通过；PromptMaterials 具体构造和阶段游标仍在 host，a1/J13a 尚未全包完成。444 锚点地图只证明定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `8d934447` 将 recent/major action owner/action 游标与 Hero 缓存归 `src/modules/AF.Module.Weekly/Materials/WeeklyActionMaterialCursor.cs:6,21`；真实 `MyBehavior.cs:6132–6172,6195–6228` 保留日维护预算检查、主线程 Hero 解析和材料分发。每次游标调用只跨一个 owner 边界或消费一条 action；1000 个失效 owner 负例通过。初始 O(N) snapshot、单组聚合和王国分发尚未严格预算化；J13a 全包仍 ACTIVE。442 锚点地图仅为定位，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `f54fbcf6` 将材料聚合的克隆、action 分类/事件键分桶和最终排序交给 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs:6,8`；真实自动预算消费者 `MyBehavior.cs:6301–6321` 与同步预览消费者 `:37220–37227` 经过原 host 薄入口 `:38550–38553` 共用 owner，live 名称/详情渲染留主线程。当前候选双版本六构建、Phase8 和新增分桶回放通过，440 锚点地图只证明定位；组内 O(M log M) 聚合与初始化 O(N) snapshot 尚无严格帧预算证明，J13a 全包仍 ACTIVE。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
