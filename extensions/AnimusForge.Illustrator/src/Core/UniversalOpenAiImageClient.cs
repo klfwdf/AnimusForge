@@ -446,7 +446,7 @@ namespace AnimusForge.Illustrator.Core
                     labels.AppendLine(VisualFidelityRules.ReferenceRepaint);
                     labels.AppendLine().AppendLine(effectivePrompt ?? string.Empty);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
-                    if (!string.IsNullOrWhiteSpace(style)) labels.Append("\n画风要求：").Append(style);
+                    if (string.IsNullOrWhiteSpace(customStyleHint) && !string.IsNullOrWhiteSpace(style)) labels.Append("\n画风要求：").Append(style);
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
                     form.Add(new StringContent("1"), "n");
 
