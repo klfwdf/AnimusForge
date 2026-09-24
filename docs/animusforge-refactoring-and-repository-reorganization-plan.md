@@ -1,4 +1,13 @@
 <a id="j13-plan-20260924"></a>
+## J13a1 首切片离线验证闭合（2026-09-24）
+
+状态 `J13a1_OFFLINE_VERIFIED / J13a_ACTIVE`，仅指按需全文完成队列切片，**不表示整个 Weekly/J13 完成**。用户已明确授权原脚本清理工作区内 `bin/{Debug,Release}/single_module_artifacts` 与 `obj/single_module/{Debug,Release}` 四目录；运行前核实绝对路径、无链接/越界及现存内容。`dd303847` 代码候选由原 `build_single_module.ps1`（无 Stage/Deploy）构建 Debug/Release × Bannerlord 1.3/1.4 + Bootstrap，六构建均 0 warning/error。1.3 来源 `_deps_auto` 为 `v1.3.15.110062`，1.4 来源 `.tmp/build_check/1.4` 为 `v1.4.6.115628`，Harmony/私有运行依赖只读来自已确认游戏安装目录；未改来源校验。
+
+- 当前 Debug DLL SHA256：1.3 `0AA9856AA37634549B8D4CB546CD4EBECF5B644F85BF35E7C3FEAFE900E45797`、1.4 `FEC1F04BB7F5B6BB4E4D025886A735FA44BE4A87E06331891FA377392F6E02F6`、Bootstrap `0E984A78B28B8710394E990C87B58DFC179F9E0850F480EF1059861B7EEDD278`。Release：1.3 `D52BD54F9FF6C9BF030B4837FCDD18A6280655EBDDD8C45323693C865F6E5FDF`、1.4 `0D74FEBB416D57DCFCFF1C3F64744C5CCD9BF5613E3A96298A4D481A518AE8D1`、Bootstrap `8F20B3AEA861D417B4461E48D6FCA2AECDA341DB2CA7B4E359F5C84340AF09C0`。
+- `b240778f` 仅给 Phase8 测试宿主增加显式当前候选 DLL 参数和 build marker/SHA256/源码时间校验，不改变其他 replay 默认 Stage 路径或产品代码。回放使用上述 Debug 1.4 当前 DLL，通过 `WeeklyReportOwnerReplay` 的 worker→主线程、两次限额、旧代/旧 owner、清理等待者、异常及 Phase8 全部既有断言；错误 SHA256 负例按预期拒绝。该回放是离线生产 DLL/fixture，不是实际 Campaign、Gauntlet 或旧档证明。
+- 原 net6 schedule runner 本机无 targeting pack；相同 Program/生产源码显式 net8 编译运行通过，`WeeklyMemoryMaterialOutcomeContractTests`、source inventory、432 坐标地图通过。按需全文 `MyBehavior` 中材料捕获、同代源变化/已发布胜出者重验未迁，仍由原 host 承担；自动/批量生成及实际 frame work 量未覆盖。实机/旧档/provider/音频/帧性能 `NOT-RUN`；未 Stage/部署/打包/推送。
+- 下一动作：J13a1 后进入 J13a 调度与材料切片，先归位现有 schedule/text helper 及显式读取路径，再把补周/叛乱延期决策与瞬态 pending week 状态交 Weekly owner；之后按计划 a2/a3，不为目录迁移报完成。
+
 ## J13a1 按需全文完成队列切片（2026-09-24）
 
 状态 `J13_ACTIVE / J13a_VERIFY`，并非 J13a 或 J13 离线完成。开工检查点 `f3b79d4c`，产品/测试切片 `83cc314b`，测试编译修正 `d12e8d65`。`src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs:8,34,48,70` 拥有按需全文完成的队列、锁、generation/owner 受理、每 tick 最多两次主线程提交、异常传递和清理等待者；真实消费者 `MyBehavior.cs:2120,2222–2225,42738–42751` 保留 Campaign/UI 引擎入口与原反射 replay 方法名，自动/批量生成队列仍在原 host。`MyBehavior.cs:42642–42728` 继续主线程捕获源材料、worker 请求和提交时同代源状态/已发布胜出者重验。未改保存键、默认开关、API route、制作组玩法或原共享 Actions 回执。

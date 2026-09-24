@@ -1,6 +1,6 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
-`d12e8d65` 将按需全文完成队列状态/转换归入 `src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs:8,34,48,70`；`MyBehavior.cs:2120,2222–2225,42738–42751` 的真实 Campaign/UI/引擎入口继续调用 owner，`:42642–42728` 的 live 材料捕获、请求和同代源状态提交重验仍在 host。批量提交及自动调度材料尚未迁移；此为 J13a 首切片而非全包完成。当前 432 锚点地图只作定位，双版本构建/当前候选 replay 待原脚本产物目录清理授权。详细回执见[主台账 J13a1](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+`d12e8d65` 将按需全文完成队列状态/转换归入 `src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs:8,34,48,70`；`MyBehavior.cs:2120,2222–2225,42738–42751` 的真实 Campaign/UI/引擎入口继续调用 owner，`:42642–42728` 的 live 材料捕获、请求和同代源状态提交重验仍在 host。批量提交及自动调度材料尚未迁移；此为 J13a 首切片而非全包完成。当前 432 锚点地图只作定位；Debug/Release 双版本+Bootstrap、当前候选 Phase8 replay 已过，详细回执见[主台账 J13a1](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 ## 以下为 J12 历史范围
 
