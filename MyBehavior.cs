@@ -43131,14 +43131,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			weeklyReportBatchRequestResult.RawResponse = text5;
 			Logger.LogEventPromptExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);
 			weeklyReportBatchRequestResult.AttemptsUsed = i;
+			CaptureWeeklyReportBatchAttemptFailureMetadata(weeklyReportBatchRequestResult, apiCallResult);
 			if (!apiCallResult.Success)
 			{
 				weeklyReportBatchRequestResult.Success = false;
 				weeklyReportBatchRequestResult.FailureReason = BuildWeeklyReportFailureReason(apiCallResult.ErrorMessage, parseFailed: false);
-				weeklyReportBatchRequestResult.IsRateLimit = apiCallResult.IsRateLimit;
-				weeklyReportBatchRequestResult.IsRequestsPerMinuteLimit = apiCallResult.IsRequestsPerMinuteLimit;
-				weeklyReportBatchRequestResult.IsQuotaLimit = apiCallResult.IsQuotaLimit;
-				weeklyReportBatchRequestResult.RetryAfterSeconds = apiCallResult.RetryAfterSeconds;
 				weeklyReportBatchRequestResult.Blocks = new List<WeeklyReportBatchBlockResult>();
 				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
 			}
@@ -43181,6 +43178,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 		}
 		return weeklyReportBatchRequestResult;
+	}
+
+	private static void CaptureWeeklyReportBatchAttemptFailureMetadata(WeeklyReportBatchRequestResult result, ApiCallResult attempt)
+	{
+		if (result == null)
+		{
+			return;
+		}
+		bool failed = attempt != null && !attempt.Success;
+		result.IsRateLimit = failed && attempt.IsRateLimit;
+		result.IsRequestsPerMinuteLimit = failed && attempt.IsRequestsPerMinuteLimit;
+		result.IsQuotaLimit = failed && attempt.IsQuotaLimit;
+		result.RetryAfterSeconds = failed ? attempt.RetryAfterSeconds : null;
 	}
 
 	private async Task<WeeklyReportBatchExecutionResult> ExecuteWeeklyReportBatchAsync(WeeklyReportBatchRequest batch, int batchIndex, int maxAttempts, long runtimeGeneration)
@@ -46316,12 +46326,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (failedGroups.Count > 0)
 		{
 			WeeklyEventMaterialPreviewGroup firstFailedGroup = failedGroups.FirstOrDefault();
-			WeeklyReportRequestResult failedRequest = new WeeklyReportRequestResult
-			{
-				Success = false,
-				FailureReason = context.FailureMessages?.FirstOrDefault() ?? "Batch request failed.",
-				AttemptsUsed = 3
-			};
+			WeeklyReportRequestResult failedRequest = BuildWeeklyReportFailedRequest(context, firstFailedGroup);
 			result.BlockedByFatalFailure = true;
 			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
 			result.RetryContext.RequiresFreshMaterials = context.RequiresFreshMaterials;
@@ -46340,6 +46345,40 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		result.Completed = true;
 		_weeklyReportCommitQueue.Complete(context, result);
+	}
+
+	private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup failedGroup)
+	{
+		string reportId = BuildWeeklyReportGroupReportId(failedGroup);
+		WeeklyReportBatchRequestResult failedBatch = null;
+		WeeklyReportBatchRequestResult fallback = null;
+		foreach (WeeklyReportBatchExecutionResult execution in context?.Executions ?? new List<WeeklyReportBatchExecutionResult>())
+		{
+			WeeklyReportBatchRequestResult candidate = execution?.Result;
+			if (candidate == null || candidate.Success)
+			{
+				continue;
+			}
+			if (candidate.MissingReportIds?.Contains(reportId, StringComparer.OrdinalIgnoreCase) == true)
+			{
+				failedBatch = candidate;
+			}
+			else if (execution.Batch?.Groups?.Any((WeeklyEventMaterialPreviewGroup group) => string.Equals(BuildWeeklyReportGroupReportId(group), reportId, StringComparison.OrdinalIgnoreCase)) == true)
+			{
+				fallback = candidate;
+			}
+		}
+		failedBatch ??= fallback;
+		return new WeeklyReportRequestResult
+		{
+			Success = false,
+			FailureReason = context?.FailureMessages?.FirstOrDefault() ?? "Batch request failed.",
+			AttemptsUsed = failedBatch?.AttemptsUsed ?? 0,
+			IsRateLimit = failedBatch?.IsRateLimit ?? false,
+			IsRequestsPerMinuteLimit = failedBatch?.IsRequestsPerMinuteLimit ?? false,
+			IsQuotaLimit = failedBatch?.IsQuotaLimit ?? false,
+			RetryAfterSeconds = failedBatch?.RetryAfterSeconds
+		};
 	}
 
 	private static string ResolveNearestWeeklyReportKingdomId(IEnumerable<string> kingdomIds)

@@ -55,7 +55,7 @@ internal static class WeeklyReportCommitQueueReplay
         RunRecordStateReplay(af);
         RunBatchApiLaunchReplay(af);
         RunCommitTargetOwnerReplay(af);
-        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery live=NOT_RUN");
+        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery/rpm-metadata/retry-clear live=NOT_RUN");
     }
 
     private static void RunCommitTargetOwnerReplay(Assembly af)
@@ -111,6 +111,55 @@ internal static class WeeklyReportCommitQueueReplay
         hostPending = 0;
         foreach (object _ in (IEnumerable)targets.GetType().GetProperty("PendingMissingTargets", Members).GetValue(targets)) hostPending++;
         Check(hostPending == 0, "later parsed block recovers real finalizer's pending miss");
+
+        resultType.GetField("AttemptsUsed", Members).SetValue(result, 3);
+        resultType.GetField("IsRateLimit", Members).SetValue(result, true);
+        resultType.GetField("IsRequestsPerMinuteLimit", Members).SetValue(result, true);
+        resultType.GetField("RetryAfterSeconds", Members).SetValue(result, (int?)17);
+        Type executionType = behavior.GetNestedType("WeeklyReportBatchExecutionResult", BindingFlags.NonPublic);
+        object execution = Activator.CreateInstance(executionType, true);
+        executionType.GetField("Batch", Members).SetValue(execution, batch);
+        executionType.GetField("Result", Members).SetValue(execution, result);
+        object otherGroup = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(otherGroup, "kingdom");
+        groupType.GetField("KingdomId", Members).SetValue(otherGroup, "k1");
+        object otherBatch = Activator.CreateInstance(batchType, true);
+        ((IList)batchType.GetField("Groups", Members).GetValue(otherBatch)).Add(otherGroup);
+        object otherResult = Activator.CreateInstance(resultType, true);
+        resultType.GetField("MissingReportIds", Members).SetValue(otherResult, new List<string> { "kingdom:k1" });
+        resultType.GetField("IsQuotaLimit", Members).SetValue(otherResult, true);
+        object otherExecution = Activator.CreateInstance(executionType, true);
+        executionType.GetField("Batch", Members).SetValue(otherExecution, otherBatch);
+        executionType.GetField("Result", Members).SetValue(otherExecution, otherResult);
+        IList executions = (IList)contextType.GetField("Executions", Members).GetValue(context);
+        executions.Add(otherExecution);
+        executions.Add(execution);
+        ((List<string>)contextType.GetField("FailureMessages", Members).GetValue(context)).Add("world batch failed");
+        object failedRequest = behavior.GetMethod("BuildWeeklyReportFailedRequest", Members).Invoke(null, new[] { context, world });
+        Type requestType = failedRequest.GetType();
+        Check((int)requestType.GetField("AttemptsUsed", Members).GetValue(failedRequest) == 3
+            && (bool)requestType.GetField("IsRequestsPerMinuteLimit", Members).GetValue(failedRequest)
+            && !(bool)requestType.GetField("IsQuotaLimit", Members).GetValue(failedRequest)
+            && (int?)requestType.GetField("RetryAfterSeconds", Members).GetValue(failedRequest) == 17,
+            "real failed target retains its own batch RPM and Retry-After metadata, not another target's quota classification");
+        object retryContext = behavior.GetMethod("CreateWeeklyReportRetryContext", Members).Invoke(null,
+            new object[] { batchType.GetField("Groups", Members).GetValue(batch), 1, 0, 6, "week", false, true, world, failedRequest, null, null, null });
+        Check((bool)retryContext.GetType().GetField("IsRequestsPerMinuteLimit", Members).GetValue(retryContext),
+            "RPM recovery option receives the matched failed batch classification");
+
+        Type apiType = behavior.GetNestedType("ApiCallResult", BindingFlags.NonPublic);
+        object api = Activator.CreateInstance(apiType, true);
+        apiType.GetField("IsRateLimit", Members).SetValue(api, true);
+        apiType.GetField("IsRequestsPerMinuteLimit", Members).SetValue(api, true);
+        apiType.GetField("RetryAfterSeconds", Members).SetValue(api, (int?)17);
+        MethodInfo captureMetadata = behavior.GetMethod("CaptureWeeklyReportBatchAttemptFailureMetadata", Members);
+        captureMetadata.Invoke(null, new[] { result, api });
+        apiType.GetField("Success", Members).SetValue(api, true);
+        captureMetadata.Invoke(null, new[] { result, api });
+        Check(!(bool)resultType.GetField("IsRateLimit", Members).GetValue(result)
+            && !(bool)resultType.GetField("IsRequestsPerMinuteLimit", Members).GetValue(result)
+            && resultType.GetField("RetryAfterSeconds", Members).GetValue(result) == null,
+            "later HTTP success clears a previous retry's RPM classification");
     }
 
     private static void RunBatchApiLaunchReplay(Assembly af)
