@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 批量自动重试的配置读取线程边界（2026-09-24）
+
+状态 `J13a_A2_RETRY_ATTEMPT_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `4721460f`。`MyBehavior.cs:43022–43047,43071` 的真实批量重试消费者保留首轮同波并发直发；第二、三次 attempt 无论 continuation 落在哪个线程都先进入 `_weeklyBatchApiAttemptQueue`，由 Campaign tick `:17509–17514,45813–45838` 在当前 owner、generation 和主线程验证后调用原 `CallWeeklyReportApiDetailed`，因此 `DuelSettings.GetSettings`、route、max tokens、temperature、thinking 等可变配置仍在每次 attempt 开始时读取，但不在 `Task.Delay` 后的后台线程读取。没有把密钥放入队列 DTO/日志或更改 J08 gateway。读档 `:2552` 清空未启动 attempt 并结算等待者；退役 owner/旧代在排队前拒绝。队列无工作时是 volatile 快路径，每 tick 最多启动一项；密集重试可能积压，尚无帧耗时或真实 provider 数据。
+
+- 验证：四获准目录绝对路径、内容与递归链接检查通过；原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 SHA256 `47452DC940B1E6D4199E6449928088A8303D06BDDDF83D8B934F49F2F0145369` 的 Phase8 显式候选及强制后台排队、清理结算、旧代/退役 owner 网络前拒绝回放通过；入口 11、source inventory 7、V1 119/四 DLL metadata 1060、472 锚点地图 recorded/working-tree 通过。首次回放失败是测试宿主的默认 `TWParallel` driver 将所有线程均报告为主线程；改为显式首轮/重试区分后重新构建与回放通过，未删失败断言。
+- 未完：真实多 wave/Campaign tick/provider 组合、独立 live 材料源状态、部分成功/失败/popup/一次发布和积压成本尚未闭合；a2/J13a/J13 仍 ACTIVE，a3 与 J13b–g 未施工。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送，`.dotnet-cli-home/` 未动。
+
 ## J13a a2 minute wave 主线程发布切片（2026-09-24）
 
 状态 `J13a_A2_WAVE_LAUNCH_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `5ca5e5c3`。真实批量消费者 `MyBehavior.cs:45501–45593` 仍按原 `burstSize` 和 `Task.Delay(60000)` 分波，但每波经 `EnqueueWeeklyWaveLaunchAsync` 排入复用 `WeeklyReportCommitQueueOwner` 的 `_weeklyWaveLaunchQueue`；`OnCampaignTick` `:17487–17492` 的 `ProcessPendingWeeklyWaveLaunches` `:45718–45759` 在主线程发 UI 通知、记录波次并启动该波请求。读档清理 `:2537` 结算未发波次等待者，旧代/换 owner 在发布前拒绝；完成源使用异步 continuation，避免同步回调在 tick 内继续下一波。原完成任务汇总、批次索引、三次重试、API route 和保存/公开身份不变。每 tick 至多启动一波，单波请求启动仍为 O(该波批次数)，没有帧耗时上界。

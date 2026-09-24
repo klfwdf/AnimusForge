@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`4721460f` 在 `MyBehavior.cs:17509–17514,43022–43047,43071,45813–45838` 让批量自动重试的第二/三次 attempt 经 Campaign tick 主线程读取当前 MCM 配置并启动原 J08 gateway；首轮仍同波直发，清理结算、旧 owner/代拒绝。双版本六构建、当前候选 Phase8 的强制后台/清理负例与 472 锚点地图通过；真实 provider、多波次、独立 live 源及部分失败/发布仍待验收，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `5ca5e5c3` 在 `MyBehavior.cs:17487–17492,45501–45593,45694–45759` 让 minute burst 的每波通知与请求初次启动排入 Campaign tick 主线程 FIFO；旧代/读档结算未发波次等待者，保留 60 秒间隔和批次汇总。双版本六构建、当前候选 Phase8/既有队列回放及 469 锚点地图通过；真实多 wave、自动重试配置、独立 live 源及部分失败/发布仍待验收，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `39606755` 在 `MyBehavior.cs:42966–43059,45553` 将原请求 generation 传至每次批量自动重试；发 API 前和回包后拒绝旧代，避免读档后继续外发旧批次。六构建、当前候选 Phase8 无效代令牌负例与 466 锚点地图通过；多 wave/live 源/部分失败和 a2 总体仍待验收，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
