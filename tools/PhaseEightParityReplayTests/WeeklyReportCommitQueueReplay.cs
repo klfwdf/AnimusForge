@@ -62,6 +62,7 @@ internal static class WeeklyReportCommitQueueReplay
         RunWaveLaunchReplay(af);
         RunCommitTargetOwnerReplay(af);
         RunPartialCommitReplay(af);
+        WeeklyReportRecoveryReplay.Run(af);
         RunRetiredQueueAdmissionReplay(af);
         Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/two-wave-pump-source-guard/partial-missing-recovery/rpm-metadata/retry-clear/real-partial-commit/exception-recovery live=NOT_RUN");
     }

@@ -1,4 +1,12 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 恢复组合与实际工作量（2026-09-25）
+
+本轮新增 `tools/PhaseEightParityReplayTests/WeeklyReportRecoveryReplay.cs`，由既有 Phase8 入口消费当前 `02812536` 产品候选（Debug 1.4 SHA256 `B8FB17208EF267D6A1A252CBF525B522B0A03C25783D23847F3E5362AAD195F4`）。真实部分 commit 保留已发布王国胜出者、为世界分组形成失败上下文；真实 `ShowWeeklyReportFailurePopup` 的 InquiryData 回调在显式点击后重采且仅选失败目标，重复旧按钮不替换新上下文。请求停在真实 prompt 队列并取消，随后以 detached 固定响应进入真实 capture/commit 边界；这不是完整网络端到端，也不是 Gauntlet 点击验收。成功 world product revision 只增加一次，重复 completion 不重写/重发。
+
+- 当前候选 Phase8 全部通过（退出码 0）；产品未改，沿用同候选已通过的六构建与 metadata。fixture 修正了初次错误的空 capture 和关闭预算参数，未改产品或删断言。
+- 工作量回放：5 个积压 context，每 context 1 条报告、97 项材料、4096 report 字符、196630 SnapshotText 字符；真实 pump 无丢失清空。已耗尽时间预算时游标不推进；材料逐项克隆。一次 tick 可以处理多个 context，没有固定记录/字符上限。排序初始化 O(M log M)、单项克隆/字符串标准化 O(字符数)、目标查询 O(已有记录数)、最终分组结算 O(目标数) 仍保留，不能由回调数或本机 fixture 耗时推导游戏帧上限。
+- a2 有限离线门：既有自动/按需、强制异步、owner/generation、源修订、正常/部分/异常/清理证据，加本次真实 UI 回调/发布/积压，已满足当前离线组合范围。动态投影在材料/Prompt 主线程捕获；已注册 Kingdom/Clan 结构事件使快照失效。显示名/距离等现场投影与第三方绕过事件的直接写入不保证实时同步，保留捕获时语义；真实 Campaign/provider/60 秒墙钟/UI 渲染/旧档/帧性能 NOT-RUN。J13a a2 `OFFLINE_VERIFIED`（上述限定），a3 开始，J13a/J13 仍 ACTIVE。继续 a3→J13b–g；不更新 HANDOFF、不推送、不部署、不执行 J14。
+
 ## J13a a2 多波协调与入队竞态切片（2026-09-25）
 
 状态 `J13a_A2_WAVE_ADMISSION_SLICES_OFFLINE_VERIFIED / J13a_A2_ACTIVE`。从 `053ad485` 接续；实际工作树为 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main/.wt/diplomacy-latest-20260925`，本地分支 `codex/diplomacy-refactor-20260925` 跟踪原目标远端分支。意图 `5f54b889` / `375a55ae`；生产与测试 `ce8413dd` / `02812536`。用户明确要求不推送、不更新 HANDOFF，二者均保持；没有 Stage、部署、打包、游戏/存档/外仓写入或 J14。
