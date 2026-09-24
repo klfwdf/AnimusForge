@@ -57,8 +57,9 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		"battania"
 	};
 
-	private PlayerNotorietyState _state = new PlayerNotorietyState();
-	private readonly Dictionary<string, ActiveConversationState> _activeConversationStates = new Dictionary<string, ActiveConversationState>(StringComparer.OrdinalIgnoreCase);
+	private readonly NotorietyObservationOwner _observationOwner = new NotorietyObservationOwner();
+	private PlayerNotorietyState _state { get => _observationOwner.State; set => _observationOwner.State = value; }
+	private Dictionary<string, ActiveConversationState> _activeConversationStates => _observationOwner.Active;
 	private readonly HashSet<string> _soldPrisonerDonationSkipKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	private string _currentSettlementStayId = "";
 	private string _currentSettlementStayName = "";
@@ -1628,11 +1629,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private void SetLowProfileModeEnabled(bool enabled)
 	{
 		_state = NormalizeState(_state);
-		if (_state.LowProfileModeEnabled == enabled)
-		{
-			return;
-		}
-		_state.LowProfileModeEnabled = enabled;
+		if (!_observationOwner.SetLowProfile(enabled)) return;
 		AbandonOpenNotorietyConversationOutcomes("low_profile_changed");
 		_activeConversationStates.Clear();
 		LogDebug("low profile mode=" + enabled);
@@ -1910,11 +1907,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return;
 		}
 		bool wasKnown = state.KnowsMajorHistory;
-		state.KnowsMajorHistory = true;
-		if (state.KnownAtDay < 0)
-		{
-			state.KnownAtDay = GetCurrentGameDayIndex();
-		}
+		_observationOwner.MarkKnown(state, GetCurrentGameDayIndex());
 		LogDebug("mark known observer=" + key + " reason=" + (reason ?? "") + " wasKnown=" + wasKnown);
 	}
 
@@ -1935,16 +1928,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			PlayerNpcKnowledgeState state = GetNpcKnowledgeState(key, create: true);
 			int chance = GetEffectiveNotoriety(key, cultureId);
 			bool knows = state?.KnowsMajorHistory == true || RollPercent(chance);
-			active = new ActiveConversationState
-			{
-				HeroId = key,
-				StartDay = GetCurrentGameDayIndex(),
-				StartHour = GetCurrentGameHour(),
-				KnownRollChance = chance,
-				KnowsMajorThisSession = knows,
-				LineCount = 0
-			};
-			_activeConversationStates[key] = active;
+			active = _observationOwner.BeginConversation(key, chance, knows, GetCurrentGameDayIndex(), GetCurrentGameHour());
 			LogDebug("start known roll observer=" + key + " chance=" + chance + " knows=" + knows);
 		}
 		return active;
@@ -1994,11 +1978,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		if (courier)
-		{
-			return state.LastCourierSentDistance >= 0f && state.LastCourierSentDistance <= GetCourierRecentDistanceThreshold();
-		}
-		return state.CompletedConversationSessions >= 1;
+		return _observationOwner.CanKnowRecent(state, courier, courier ? GetCourierRecentDistanceThreshold() : 0f);
 	}
 
 	private int GetEffectiveNotoriety(Hero observer)
@@ -2021,15 +2001,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		string normalizedCultureId = NormalizeCultureId(cultureId);
-		double culture = 0.0;
-		if (!string.IsNullOrWhiteSpace(normalizedCultureId) && _state.CultureNotoriety.TryGetValue(normalizedCultureId, out double value))
-		{
-			culture = value;
-		}
 		PlayerNpcKnowledgeState npcState = GetNpcKnowledgeState(NormalizeObserverKey(observerKey), create: true);
-		double total = culture + _state.WorldNotoriety + GetPlayerClanTierBonus() + (npcState?.PersonalKnownBonus ?? 0);
-		return ClampPercent(total);
+		return _observationOwner.EffectiveNotoriety(cultureId, GetPlayerClanTierBonus(), npcState);
 	}
 
 	private int GetCultureNotoriety(string cultureId)
@@ -2052,31 +2025,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private PlayerNpcKnowledgeState GetNpcKnowledgeState(string observerKey, bool create)
 	{
 		_state = NormalizeState(_state);
-		string key = NormalizeObserverKey(observerKey);
-		if (string.IsNullOrWhiteSpace(key) || key == PlayerHeroId)
-		{
-			return null;
-		}
-		if (!_state.NpcKnowledge.TryGetValue(key, out PlayerNpcKnowledgeState state) || state == null)
-		{
-			if (!create)
-			{
-				return null;
-			}
-			state = new PlayerNpcKnowledgeState
-			{
-				HeroId = key,
-				PersonalKnownBonus = 0,
-				LastCourierSentDistance = -1f
-			};
-			_state.NpcKnowledge[key] = state;
-		}
-		state.HeroId = key;
-		if (state.LastCourierSentDistance < -0.01f)
-		{
-			state.LastCourierSentDistance = -1f;
-		}
-		return state;
+		return _observationOwner.GetKnowledge(observerKey, create);
 	}
 
 	private void NoteConversationLine(string heroId)
@@ -2206,13 +2155,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		state.CompletedConversationSessions++;
-		if (!state.KnowsMajorHistory && active.LineCount > 0)
-		{
-			state.PersonalKnownBonus = ClampPercentDouble(state.PersonalKnownBonus + active.LineCount * PersonalKnownBonusPerLine);
-		}
-		state.LastConversationDay = GetCurrentGameDayIndex();
-		_activeConversationStates.Remove(normalizedHeroId);
+		_observationOwner.FinalizeLegacyConversation(normalizedHeroId, active, state, GetCurrentGameDayIndex());
 		LogDebug("finalize conversation observer=" + normalizedHeroId + " lines=" + active.LineCount + " bonus=" + state.PersonalKnownBonus.ToString("0.##"));
 	}
 
@@ -2256,8 +2199,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return;
 		}
 		_state = NormalizeState(_state);
-		_state.CultureNotoriety.TryGetValue(cultureId, out double current);
-		_state.CultureNotoriety[cultureId] = ClampPercentDouble(current + delta);
+		_observationOwner.AddCulture(cultureId, delta);
 		AddWorldNotoriety(delta / 3.0, reason + "_world_share");
 	}
 
@@ -2267,7 +2209,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		_state.WorldNotoriety = ClampPercentDouble(_state.WorldNotoriety + delta);
+		_observationOwner.AddWorld(delta);
 		LogDebug("world notoriety +" + delta.ToString("0.##") + " reason=" + reason + " now=" + _state.WorldNotoriety.ToString("0.##"));
 	}
 

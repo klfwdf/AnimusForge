@@ -896,6 +896,7 @@
         "RomanceSystemBehavior.cs",
         "SexualConceptionBehavior.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
+        "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs",

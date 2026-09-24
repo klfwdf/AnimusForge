@@ -20,7 +20,7 @@ RULES = {
         "Refactor/Runtime/CourierInboundCompletion*.cs",
     ),
     "social-progression-reports": (
-        "PlayerNotorietyBehavior*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+        "PlayerNotorietyBehavior*.cs", "src/modules/AF.Module.Social/**/*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",
         "AnimusForgeWeeklyReportMapNotification.cs",
         "src/modules/AF.Module.Weekly/**/*.cs", "TerminalWeeklyReportBrowserPopupVM.cs",
     ),
