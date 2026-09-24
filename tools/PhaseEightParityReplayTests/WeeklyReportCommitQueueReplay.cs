@@ -130,13 +130,24 @@ internal static class WeeklyReportCommitQueueReplay
         object unpreparedBatch = Activator.CreateInstance(batchType, true);
         object uninitializedHost = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
         Task rejected = (Task)behavior.GetMethod("GenerateWeeklyReportBatchWithRetriesAsync", Members)
-            .Invoke(uninitializedHost, new[] { unpreparedBatch, (object)3 });
+            .Invoke(uninitializedHost, new[] { unpreparedBatch, (object)3, (object)0L });
         rejected.GetAwaiter().GetResult();
         object rejection = rejected.GetType().GetProperty("Result").GetValue(rejected);
         Check(!(bool)rejection.GetType().GetField("Success", Members).GetValue(rejection)
             && ((string)rejection.GetType().GetField("FailureReason", Members).GetValue(rejection)).Contains("not prepared"),
             "worker refuses unprepared prompt before API or live-state access");
-        Console.WriteLine("PASS WeeklyReportBatchPromptWorkerReplay unprepared-rejected-before-network live=NOT_RUN");
+        batchType.GetField("SystemPrompt", Members).SetValue(unpreparedBatch, "system");
+        batchType.GetField("UserPrompt", Members).SetValue(unpreparedBatch, "user");
+        Type guardType = af.GetType("AnimusForge.SaveRuntimeGuard", true);
+        long staleGeneration = (long)guardType.GetMethod("CaptureGeneration", Members).Invoke(null, null) + 1L;
+        Task stale = (Task)behavior.GetMethod("GenerateWeeklyReportBatchWithRetriesAsync", Members)
+            .Invoke(uninitializedHost, new[] { unpreparedBatch, (object)3, (object)staleGeneration });
+        stale.GetAwaiter().GetResult();
+        object staleResult = stale.GetType().GetProperty("Result").GetValue(stale);
+        Check(!(bool)staleResult.GetType().GetField("Success", Members).GetValue(staleResult)
+            && ((string)staleResult.GetType().GetField("FailureReason", Members).GetValue(staleResult)).Contains("读档失效"),
+            "stale generation refuses next retry before API");
+        Console.WriteLine("PASS WeeklyReportBatchPromptWorkerReplay unprepared/stale-rejected-before-network live=NOT_RUN");
         Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission/full-short-winner/fresh-targets live=NOT_RUN");
     }
 
