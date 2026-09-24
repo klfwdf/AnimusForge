@@ -36,7 +36,7 @@ namespace AnimusForge.DialogueUI
         {
             base.OnApplicationTick(dt);
             if (!DialogueUiRuntime.Enabled) return;
-            try { ShoutUiAdapter.Tick(); NativeUiAdapter.Tick(); }
+            try { ShoutUiAdapter.Tick(); NativeUiAdapter.Tick(dt); }
             catch (Exception ex) { DialogueUiRuntime.LogOnce("tick-error", "Presentation update: " + ex.Message); }
         }
 

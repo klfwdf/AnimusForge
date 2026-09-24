@@ -4,6 +4,7 @@ using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Conversation;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Map.MapConversation;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection;
 using TaleWorlds.Engine.GauntletUI;
@@ -52,7 +53,8 @@ public static class NativeUiAdapter
     public static bool TryWrap(IViewModel original, out ViewModel wrapper)
     {
         wrapper = null;
-        if (!_installed || Mission.Current == null || original is not AnimusForgeNativeConversationOverlayVM af) return false;
+        if (!_installed || (Mission.Current == null && Campaign.Current?.ConversationManager?.IsConversationInProgress != true)
+            || original is not AnimusForgeNativeConversationOverlayVM af) return false;
         if (!Wrappers.TryGetValue(af, out var vm))
         {
             vm = new NativeOverlayVM(af);
@@ -70,34 +72,35 @@ public static class NativeUiAdapter
 
     public static void OnMovieLoaded(string movieName, Widget root, IViewModel datasource)
     {
-        if (!_installed || Mission.Current == null || root == null) return;
+        if (!_installed || root == null) return;
         try
         {
-            if ((movieName == "SPConversation" || movieName == "AFDialogueConversation") && datasource is MissionConversationVM source)
+            var source = datasource is MapConversationVM map ? map.DialogController : datasource as MissionConversationVM;
+            if ((movieName == "SPConversation" || movieName == "AFDialogueConversation" || movieName == "MapConversation") && source != null)
             {
                 if (_native != null && ReferenceEquals(_native.Root, root)) return;
                 _native?.Dispose();
-                _native = new NativeSession(root, source);
+                _native = new NativeSession(root, source, datasource is MapConversationVM);
                 return;
             }
             if (movieName != "AnimusForgeNativeConversationOverlay") return;
             var original = datasource is NativeOverlayVM wrapped ? wrapped.Original : datasource as AnimusForgeNativeConversationOverlayVM;
             if (original == null) return;
             _overlay?.Dispose();
-            _overlay = new OverlayLayout(root, original);
+            _overlay = new OverlayLayout(root, original, _native?.IsMapConversation == true || Mission.Current == null);
         }
         catch (Exception ex) { DialogueUiRuntime.Log("Dialogue overlay setup failed: " + ex.GetType().Name + ": " + ex.Message); }
     }
 
-    public static void Tick()
+    public static void Tick(float dt)
     {
         _tick++;
-        if (_native != null && (!ReferenceEquals(Mission.Current, _native.Mission) || !Attached(_native.Root)))
+        if (_native != null && ((!_native.IsMapConversation && !ReferenceEquals(Mission.Current, _native.Mission)) || !Attached(_native.Root)))
         { _native.Dispose(); _native = null; }
-        _native?.Tick(_tick);
-        _overlay?.Tick(_tick);
-        if (_overlay != null && (!ReferenceEquals(Mission.Current, _overlay.Mission) || !Attached(_overlay.Root)))
+        _native?.Tick(dt);
+        if (_overlay != null && ((!_overlay.IsMapConversation && !ReferenceEquals(Mission.Current, _overlay.Mission)) || !Attached(_overlay.Root)))
         { _overlay.Dispose(); _overlay = null; }
+        _overlay?.Tick(_tick);
     }
 
     public static void OnMovieReleased(Widget root)
@@ -137,7 +140,8 @@ public static class NativeUiAdapter
 
     private static bool MouseHitPrefix(AnimusForgeNativeConversationOverlayVM ____dataSource, ref bool __result)
     {
-        if (_overlay == null || !ReferenceEquals(_overlay.Original, ____dataSource) || !ReferenceEquals(_overlay.Mission, Mission.Current))
+        if (_overlay == null || !ReferenceEquals(_overlay.Original, ____dataSource)
+            || (!_overlay.IsMapConversation && !ReferenceEquals(_overlay.Mission, Mission.Current)))
             return true;
         __result = _overlay.HitTest();
         return false;
@@ -153,7 +157,9 @@ public static class NativeUiAdapter
     {
         try
         {
-            if (!(_overlayDataSourceField.GetValue(__instance) is AnimusForgeNativeConversationOverlayVM ds) || !ds.IsCustomAnswerVisible)
+            if (!DialogueUiRuntime.Enabled || !_installed
+                || !(_overlayDataSourceField.GetValue(__instance) is AnimusForgeNativeConversationOverlayVM ds)
+                || !Wrappers.ContainsKey(ds) || !ds.IsCustomAnswerVisible)
                 return true;
             if (_overlaySubmittingField.GetValue(__instance) is true)
                 return true;
@@ -185,22 +191,18 @@ public static class NativeUiAdapter
         internal readonly Widget Root;
         internal readonly MissionConversationVM Source;
         internal readonly Mission Mission;
+        internal readonly bool IsMapConversation;
         private CharacterTableauWidget _tableau;
-        private CharacterObject _character;
-        private Agent _speaker;
+        private readonly LiveSpeakerPortrait _portrait = new LiveSpeakerPortrait();
         private bool _disposed;
-        private long _lastRefreshTick = -6;
-        private BodyProperties _portraitBodyProperties;
-        private int _portraitRace = -1;
-        private bool _portraitFemale;
-        private float _portraitRenderScale = 1.35f;
-        private bool _hasPortraitScale;
+        private float _refreshElapsed;
 
-        internal NativeSession(Widget root, MissionConversationVM source)
+        internal NativeSession(Widget root, MissionConversationVM source, bool isMapConversation)
         {
             Root = root;
             Source = source;
             Mission = Mission.Current;
+            IsMapConversation = isMapConversation;
             _tableau = root.FindChild("AFDialogueLiveSpeakerPortrait", true) as CharacterTableauWidget;
             if (_tableau != null)
             {
@@ -209,14 +211,17 @@ public static class NativeUiAdapter
             }
         }
 
-        internal void Tick(long tick)
+        internal void Tick(float dt)
         {
-            if (_disposed || _tableau == null || tick - _lastRefreshTick < 6) return;
-            _lastRefreshTick = tick;
-            RefreshSpeaker(force: true);
+            if (_disposed || _tableau == null) return;
+            _refreshElapsed += dt;
+            // Bounded 10 Hz appearance checks, independent of frame rate; no catch-up loop.
+            if (_refreshElapsed < 0.1f) return;
+            _refreshElapsed = 0f;
+            RefreshSpeaker();
         }
 
-        private void RefreshSpeaker(bool force = false)
+        private void RefreshSpeaker()
         {
             var manager = Campaign.Current?.ConversationManager;
             CharacterObject character = manager?.OneToOneConversationCharacter;
@@ -247,36 +252,13 @@ public static class NativeUiAdapter
             if (character == null)
                 character = (speaker?.Character as CharacterObject) ?? manager?.OneToOneConversationCharacter;
 
-            bool speakerChanged = !ReferenceEquals(character, _character) || !ReferenceEquals(speaker, _speaker);
-            if (!force && !speakerChanged) return;
-            _character = character;
-            _speaker = speaker;
             if (_tableau == null) return;
             if (character == null)
             {
                 _tableau.IsVisible = false;
-                _hasPortraitScale = false;
                 return;
             }
-            BodyProperties bodyProperties = speaker != null
-                ? speaker.BodyPropertiesValue
-                : character.HeroObject != null
-                    ? character.HeroObject.BodyProperties
-                    : character.GetBodyProperties(character.Equipment);
-            bool appearanceChanged = speakerChanged
-                || !_hasPortraitScale
-                || bodyProperties != _portraitBodyProperties
-                || character.Race != _portraitRace
-                || (speaker != null ? speaker.IsFemale : character.IsFemale) != _portraitFemale;
-            if (appearanceChanged)
-            {
-                _portraitBodyProperties = bodyProperties;
-                _portraitRace = character.Race;
-                _portraitFemale = speaker != null ? speaker.IsFemale : character.IsFemale;
-                _portraitRenderScale = LiveSpeakerPortrait.GetHeadLockedRenderScale(bodyProperties, _portraitRace, _portraitFemale);
-                _hasPortraitScale = true;
-            }
-            _tableau.IsVisible = LiveSpeakerPortrait.Apply(_tableau, speaker, character, _portraitRenderScale);
+            _tableau.IsVisible = _portrait.Apply(_tableau, speaker, character);
         }
 
         public void Dispose()
@@ -285,7 +267,6 @@ public static class NativeUiAdapter
             _disposed = true;
             if (_tableau != null) _tableau.IsVisible = false;
             _tableau = null;
-            _hasPortraitScale = false;
         }
     }
 
@@ -294,15 +275,15 @@ public static class NativeUiAdapter
         internal readonly Widget Root;
         internal readonly Mission Mission;
         internal readonly AnimusForgeNativeConversationOverlayVM Original;
-        private readonly NativeOverlayVM _vm;
+        internal readonly bool IsMapConversation;
         private readonly List<Widget> _buttons = new();
         private bool _defaultModeApplied;
         private bool _disposed;
 
-        internal OverlayLayout(Widget root, AnimusForgeNativeConversationOverlayVM original)
+        internal OverlayLayout(Widget root, AnimusForgeNativeConversationOverlayVM original, bool isMapConversation)
         {
             Root = root; Original = original; Mission = Mission.Current;
-            _vm = Wrappers.TryGetValue(original, out var vm) ? vm : null;
+            IsMapConversation = isMapConversation;
             _column = root.FindChild("AFDialogueRightColumn", true);
             foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
             {
@@ -319,7 +300,6 @@ public static class NativeUiAdapter
         internal void Tick(long tick)
         {
             if (_disposed) return;
-            _vm?.RefreshConversation();
             if (!_defaultModeApplied && tick > 1)
             {
                 _defaultModeApplied = true;

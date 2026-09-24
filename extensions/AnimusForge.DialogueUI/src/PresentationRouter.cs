@@ -10,6 +10,7 @@ using TaleWorlds.GauntletUI.Data;
 using TaleWorlds.GauntletUI.PrefabSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.CampaignSystem.ViewModelCollection.Map.MapConversation;
 using AnimusForge.DialogueUI.Native;
 using AnimusForge.DialogueUI.Shout;
 
@@ -47,23 +48,30 @@ namespace AnimusForge.DialogueUI
         private static bool LoadPrefix(UIContext context, WidgetFactory widgetFactory, string movieName,
             IViewModel datasource, bool hotReloadEnabled, ref IGauntletMovie __result)
         {
-            if (_loading || !DialogueUiRuntime.Enabled || Mission.Current == null || FailedPresentations.Contains(movieName)) return true;
+            if (_loading || !DialogueUiRuntime.Enabled || FailedPresentations.Contains(movieName)) return true;
+            // MapConversation owns a MapConversationVM and can load without a current mission.
+            // Keep the mission requirement on scene-only movies, not on the map overlay.
+            if (Mission.Current == null && movieName != "MapConversation" && movieName != "AnimusForgeNativeConversationOverlay") return true;
             string replacement;
             if (movieName == "ShoutTextInputPopup") replacement = "AFDialogueShout";
             else if (movieName == "AnimusForgeNativeConversationOverlay") replacement = "AFDialogueNativeOverlay";
             else if (movieName == "SPConversation") replacement = "AFDialogueConversation";
+            else if (movieName == "MapConversation") replacement = "AFDialogueMapConversation";
             else return true;
 
             ViewModel wrapper = null;
             IGauntletMovie loaded = null;
             try
             {
+                if (movieName == "MapConversation" && !PreparePrefab(widgetFactory, "AFDialogueConversation")) return true;
                 if (!PreparePrefab(widgetFactory, replacement) || !DialogueUiSprites.EnsureLoaded()) return true;
                 bool wrapped = movieName == "ShoutTextInputPopup"
                     ? ShoutUiAdapter.TryWrap(datasource, out wrapper)
                     : movieName == "AnimusForgeNativeConversationOverlay"
                         ? NativeUiAdapter.TryWrap(datasource, out wrapper)
-                        : datasource is TaleWorlds.CampaignSystem.ViewModelCollection.Conversation.MissionConversationVM;
+                        : movieName == "MapConversation"
+                            ? datasource is MapConversationVM map && map.DialogController != null
+                            : datasource is TaleWorlds.CampaignSystem.ViewModelCollection.Conversation.MissionConversationVM;
                 if (!wrapped) return true;
                 _loading = true;
                 _constructingMovie = null;
@@ -71,6 +79,7 @@ namespace AnimusForge.DialogueUI
                 if (loaded == null || !loaded.IsLoaded || loaded.RootWidget == null)
                     throw new InvalidOperationException("Replacement prefab did not instantiate: " + replacement);
                 OwnedMovies.Add(loaded, datasource);
+                DialogueUiRuntime.Log("Loaded " + movieName + " -> " + replacement);
                 __result = loaded;
                 return false;
             }
@@ -149,7 +158,7 @@ namespace AnimusForge.DialogueUI
 
         private static void LayerLoadPostfix(GauntletMovieIdentifier identifier)
         {
-            if (!DialogueUiRuntime.Enabled || Mission.Current == null || identifier?.Movie?.RootWidget == null) return;
+            if (!DialogueUiRuntime.Enabled || identifier?.Movie?.RootWidget == null) return;
             string movieName = identifier.MovieName;
             if (movieName == "ShoutTextInputPopup" && OwnedMovies.ContainsKey(identifier.Movie))
             {
@@ -163,14 +172,14 @@ namespace AnimusForge.DialogueUI
                 }
                 return;
             }
-            bool isNativeConversation = movieName == "SPConversation" || movieName == "AFDialogueConversation";
+            bool isNativeConversation = movieName == "SPConversation" || movieName == "AFDialogueConversation" || movieName == "MapConversation";
             if (!isNativeConversation && movieName != "AnimusForgeNativeConversationOverlay") return;
             if (!OwnedMovies.ContainsKey(identifier.Movie)) return;
             try
             {
                 if (DialogueUiSprites.EnsureLoaded())
                 {
-                    NativeUiAdapter.OnMovieLoaded(isNativeConversation ? "SPConversation" : movieName, identifier.Movie.RootWidget, identifier.DataSource);
+                    NativeUiAdapter.OnMovieLoaded(movieName, identifier.Movie.RootWidget, identifier.DataSource);
                     if (movieName == "AnimusForgeNativeConversationOverlay")
                     {
                         foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })

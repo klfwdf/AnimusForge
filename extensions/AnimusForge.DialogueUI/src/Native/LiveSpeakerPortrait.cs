@@ -11,13 +11,24 @@ namespace AnimusForge.DialogueUI.Native;
 /// <summary>
 /// Copies the active conversation agent into the native CharacterTableau renderer.
 /// The renderer owns a private tableau scene (it never changes the mission agent or
-/// the mission camera), while the model, equipment and current action are sampled
-/// from the speaker.  This is deliberately a small typed bridge for the overlay;
+/// the mission camera), while the model and equipment are sampled from the speaker.
+/// Scene combat/upper-body actions must never be replayed as a tableau idle action.
+/// This is deliberately a small typed bridge for the overlay;
 /// it does not search missions or use reflection.
 /// </summary>
-internal static class LiveSpeakerPortrait
+internal sealed class LiveSpeakerPortrait
 {
-    public static bool Apply(CharacterTableauWidget tableau, Agent speaker, CharacterObject character, float renderScale = -1f)
+    private readonly EquipmentElement[] _equipmentSlots = new EquipmentElement[Equipment.EquipmentSlotLength];
+    private bool _hasBody;
+    private bool _hasEquipment;
+    private BodyProperties _body;
+    private int _race;
+    private bool _female;
+    private string _bodyText;
+    private string _equipmentCode;
+    private float _renderScale;
+
+    public bool Apply(CharacterTableauWidget tableau, Agent speaker, CharacterObject character)
     {
         if (tableau == null || character == null)
             return false;
@@ -29,6 +40,30 @@ internal static class LiveSpeakerPortrait
                 : character.HeroObject != null
                     ? character.HeroObject.BodyProperties
                     : character.GetBodyProperties(character.Equipment);
+            bool female = speaker != null ? speaker.IsFemale : character.IsFemale;
+            if (!_hasBody || bodyProperties != _body || character.Race != _race || female != _female)
+            {
+                string bodyText = bodyProperties.ToString();
+                float scale = GetHeadLockedRenderScale(bodyProperties, character.Race, female);
+                _body = bodyProperties;
+                _race = character.Race;
+                _female = female;
+                _bodyText = bodyText;
+                _renderScale = scale;
+                _hasBody = true;
+            }
+            Equipment equipment = speaker?.SpawnEquipment ?? character.Equipment;
+            bool equipmentChanged = !_hasEquipment;
+            // Compare the fixed set of slots, including in-place edits; allocate/encode only on change.
+            if (!equipmentChanged)
+                for (int i = 0; i < _equipmentSlots.Length; i++)
+                    if (!_equipmentSlots[i].IsEqualTo(equipment[i])) { equipmentChanged = true; break; }
+            if (equipmentChanged)
+            {
+                _equipmentCode = equipment.CalculateEquipmentCode();
+                for (int i = 0; i < _equipmentSlots.Length; i++) _equipmentSlots[i] = equipment[i];
+                _hasEquipment = true;
+            }
             tableau.IsVisible = true;
             tableau.DoNotAcceptEvents = true;
             // EmphasizeFace is the native head camera stance.  The additional
@@ -37,36 +72,29 @@ internal static class LiveSpeakerPortrait
             // variation between NPCs.
             tableau.StanceIndex = (int)CharacterViewModel.StanceTypes.EmphasizeFace;
             tableau.PositionYOffset = -134f;
-            tableau.CustomRenderScale = renderScale > 0.01f
-                ? renderScale
-                : GetHeadLockedRenderScale(bodyProperties, character.Race, speaker != null ? speaker.IsFemale : character.IsFemale);
+            tableau.CustomRenderScale = _renderScale;
             tableau.CharStringId = character.StringId ?? string.Empty;
-            tableau.BodyProperties = bodyProperties.ToString();
-            tableau.IsFemale = speaker != null ? speaker.IsFemale : character.IsFemale;
+            tableau.BodyProperties = _bodyText;
+            tableau.IsFemale = female;
             tableau.Race = character.Race;
-            tableau.EquipmentCode = speaker?.SpawnEquipment != null
-                ? speaker.SpawnEquipment.CalculateEquipmentCode()
-                : character.Equipment.CalculateEquipmentCode();
+            tableau.EquipmentCode = _equipmentCode;
             tableau.ArmorColor1 = speaker != null ? speaker.ClothingColor1 : character.Culture?.Color ?? 0;
             tableau.ArmorColor2 = speaker != null ? speaker.ClothingColor2 : character.Culture?.Color2 ?? 0;
-            tableau.BannerCodeText = character.HeroObject?.Clan?.Banner?.Serialize() ?? string.Empty;
+            // BannerCode is the engine's invalidated cache; Serialize would rebuild it every sample.
+            tableau.BannerCodeText = character.HeroObject?.Clan?.Banner?.BannerCode ?? string.Empty;
 
-            // CharacterTableau has no Agent handle.  Feeding the active action into
-            // its idle action makes the private clone use the same animation clip
-            // as the live speaker instead of the stock EmphasizeFace idle.  Action
-            // progress remains renderer-local, so the mission animation is never
-            // disturbed and this remains safe across conversation ticks.
-            string actionName = GetCurrentActionName(speaker);
-            if (!string.IsNullOrEmpty(actionName) && actionName != "act_none")
-                tableau.IdleAction = actionName;
-            else
-                tableau.IdleAction = "act_inventory_idle_start";
+            // A guard's channel-1 weapon/attack animation is an additive scene action, not a
+            // complete portrait stance. Use the native tableau idle with both hands unwielded.
+            tableau.IsEquipmentAnimActive = false;
+            tableau.LeftHandWieldedEquipmentIndex = -1;
+            tableau.RightHandWieldedEquipmentIndex = -1;
+            tableau.IdleAction = "act_inventory_idle_start";
 
             return true;
         }
         catch (Exception ex)
         {
-            DialogueUiRuntime.Log("Live speaker portrait update failed: " + ex.GetType().Name + ": " + ex.Message);
+            DialogueUiRuntime.LogOnce("portrait-update", "Live speaker portrait update failed: " + ex.GetType().Name + ": " + ex.Message);
             return false;
         }
     }
@@ -96,22 +124,4 @@ internal static class LiveSpeakerPortrait
         return baseRenderScale;
     }
 
-    private static string GetCurrentActionName(Agent speaker)
-    {
-        if (speaker == null)
-            return null;
-
-        try
-        {
-            // Channel 1 carries conversation/upper-body overrides in the scene;
-            // prefer it while it has weight, then fall back to the base channel.
-            if (speaker.GetCurrentAction(1) != ActionIndexCache.act_none && speaker.GetActionChannelWeight(1) > 0.001f)
-                return speaker.GetCurrentAction(1).GetName();
-            return speaker.GetCurrentAction(0).GetName();
-        }
-        catch
-        {
-            return null;
-        }
-    }
 }
