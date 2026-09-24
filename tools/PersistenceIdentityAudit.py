@@ -15,7 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BASELINE = "d4cb1467376c6e923f4295dcefc7878c11dbc7c1"
 SYNC = re.compile(r'SyncData\s*(?:<[^>\r\n]+>)?\s*\(\s*"([^"\r\n]+)"\s*,\s*ref\s+([A-Za-z_][A-Za-z0-9_]*)')
 DECL = re.compile(
-    r'(?m)^\s*(?:(?:public|private|protected|internal|static|readonly|volatile|const)\s+)+'
+    r'(?m)^\s*(?:(?:public|private|protected|internal|static|readonly|volatile|const)\s+)*'
+    r'(?!return\b|throw\b|yield\b|new\b)'
     r'([A-Za-z_][A-Za-z0-9_]*(?:\s*<[^\n;=]+>)?(?:\[\])?)\s+'
     r'([A-Za-z_][A-Za-z0-9_]*)\s*(?:=|;)'
 )
