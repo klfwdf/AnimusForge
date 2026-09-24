@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 目标变更后的显式重采恢复切片（2026-09-24）
+
+状态 `J13a_A2_FRESH_RETRY_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `240c10aa`。`MyBehavior.cs:43081–43111,43220–43257,43397,45719–45753,45922` 在目标不完整但已变更时把失败上下文标为需要新素材，不再显示误导性的 API 修复/旧素材重试动作。专用暂停弹窗明确告知“重新采集并生成”可能替换这些失败分组尚未完成的手工编辑，须用户点击才从当前 Campaign 重新构建周界内素材；按稳定 report ID 只选原失败分组，任一分组已不存在则不发送新请求，已完成分组不重跑。另可保存并退出。新请求重新捕获目标状态，不沿用旧请求的准入权；原 API/RPM 失败仍走原弹窗。
+
+- 验证：授权四构建目录的路径/内容/无链接复核后，原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 SHA256 `E7738A4EE42B65C625D3C65D9748A7ADB582BF1CFD0077664B91C0A71834112C` 的 Phase8 当前候选、只重建失败目标/缺目标拒绝反例通过；入口 11、source inventory 7、V1 119/四 DLL metadata 1060、462 锚点地图 recorded/working-tree 通过。UI 文案/回调接线经源码检查，**未**运行 live 弹窗或真实 API 请求；不能把纯选择回放当作完整恢复验收。
+- 成本/剩余：显式按钮触发的 `BuildWeeklyEventMaterialPreviewGroups` 仍是同步 O(王国/素材) 主线程工作，未量化帧耗时；不在引擎 tick 增加轮询。独立 live 源在请求期间变更、minute burst 与部分失败/发布全链路尚待验证，a2/J13a/J13 ACTIVE；a3 及 J13b–g 未施工。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
+
 ## J13a a2 批量完整/短报胜出者切片（2026-09-24）
 
 状态 `J13a_A2_WINNER_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `32a8379c`。`MyBehavior.cs:42469–42488,45598–45703` 的真实 pending commit 在目标状态冲突时，分别以完整报的非空 `Summary` 和短报的非空 `ShortSummary` 判定同周、同 kind/scope 的已有胜出者；把它计为已满足目标，但不写入、不再次发地图通知或发布变更。只有目标变更且尚无相应完成内容才进入失败/重试上下文。完整/短报判定与原按需全文“已发布者胜出”语义对齐，不把任意编辑误当成功；跨 batch 的同 ID 仍只结算一次。
