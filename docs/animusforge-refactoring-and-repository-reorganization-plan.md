@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 批量完整/短报胜出者切片（2026-09-24）
+
+状态 `J13a_A2_WINNER_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `32a8379c`。`MyBehavior.cs:42469–42488,45598–45703` 的真实 pending commit 在目标状态冲突时，分别以完整报的非空 `Summary` 和短报的非空 `ShortSummary` 判定同周、同 kind/scope 的已有胜出者；把它计为已满足目标，但不写入、不再次发地图通知或发布变更。只有目标变更且尚无相应完成内容才进入失败/重试上下文。完整/短报判定与原按需全文“已发布者胜出”语义对齐，不把任意编辑误当成功；跨 batch 的同 ID 仍只结算一次。
+
+- 验证：四个获准构建目录路径/内容/无链接复核后，原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 DLL SHA256 `9650264CA89CEFC48FD5D7FA9C52A66FEAF3AFB8395FCCF402DF76EAC064D6BE` 的 Phase8 显式候选与全文/短报胜出者、错误周界和未完成编辑反例通过；首次回放因 fixture 在测试胜出者前留空 `Summary` 失败，补正 fixture 后通过，非产品编译回归。入口 11、source inventory 7、V1 119/四 DLL metadata 1060、459 锚点地图 recorded/working-tree 通过。纯判定回放与源码接线不等于 live 多请求竞争/通知验收。
+- 剩余：不完整编辑导致的暂停/失败弹窗仍需正确恢复入口；独立 live 素材源变化、minute burst/部分失败/请求协调以及 a3 回执发布未闭合。a2/J13a/J13 仍 ACTIVE；J13b–g 未施工。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
+
 ## J13a a2 失败后手动重试沿用目标状态切片（2026-09-24）
 
 状态 `J13a_A2_RETRY_ADMISSION_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `8b1f703d`。`MyBehavior.cs:42469,43006,43302–43324,45338–45389,45829,46334–46340` 使 pending commit 的失败上下文携带原请求前目标状态到手动重试，而不是在重试开始时对旧素材重新授予覆盖权。重试前在当前主线程 owner/同代检查后比较失败组的原状态与当前状态；任一失败组目标变更就不发送本次重试请求，回执标记记录变更并提示重新收集素材；所有失败组均未变时才沿原手动重试路径。仅失败组参与比较，先前成功组的记录更新不会错误挡住剩余组。
