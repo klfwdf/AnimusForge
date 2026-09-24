@@ -42963,7 +42963,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return weeklyReportRequestResult;
 	}
 
-	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts)
+	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L)
 	{
 		WeeklyReportBatchRequestResult weeklyReportBatchRequestResult = new WeeklyReportBatchRequestResult();
 		if (!IsWeeklyReportBatchPromptPrepared(batch))
@@ -42979,7 +42979,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 		weeklyReportBatchRequestResult.PromptPreview = text3;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
+			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_before_attempt"))
+			{
+				weeklyReportBatchRequestResult.Success = false;
+				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
+				return weeklyReportBatchRequestResult;
+			}
 			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
+			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_attempt"))
+			{
+				weeklyReportBatchRequestResult.Success = false;
+				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
+				return weeklyReportBatchRequestResult;
+			}
 			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "未知错误");
 			weeklyReportBatchRequestResult.RawResponse = text5;
 			Logger.LogEventPromptExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);
@@ -43036,13 +43050,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return weeklyReportBatchRequestResult;
 	}
 
-	private async Task<WeeklyReportBatchExecutionResult> ExecuteWeeklyReportBatchAsync(WeeklyReportBatchRequest batch, int batchIndex, int maxAttempts)
+	private async Task<WeeklyReportBatchExecutionResult> ExecuteWeeklyReportBatchAsync(WeeklyReportBatchRequest batch, int batchIndex, int maxAttempts, long runtimeGeneration)
 	{
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		WeeklyReportBatchRequestResult result;
 		try
 		{
-			result = await GenerateWeeklyReportBatchWithRetriesAsync(batch, maxAttempts);
+			result = await GenerateWeeklyReportBatchWithRetriesAsync(batch, maxAttempts, runtimeGeneration);
 		}
 		catch (Exception ex)
 		{
@@ -45536,7 +45550,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			InformationManager.DisplayMessage(new InformationMessage("周报批次 " + waveIndex + "/" + totalWaves + " 已发出，共 " + wave.Count + " 个请求。"));
 			for (int j = 0; j < wave.Count; j++)
 			{
-				runningTasks.Add(ExecuteWeeklyReportBatchAsync(wave[j], i + j, 3));
+				runningTasks.Add(ExecuteWeeklyReportBatchAsync(wave[j], i + j, 3, runtimeGeneration));
 			}
 			if (i + burstSize < batches.Count)
 			{
