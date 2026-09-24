@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a 自动材料三阶段游标切片（2026-09-24）
+
+状态 `J13a_STAGE_CURSOR_SLICE_OFFLINE_VERIFIED / J13a_A1_VERIFY / J13a_ACTIVE`，产品 `cd37d2f2`。`src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs:5,17` 持有单阶段下标与完成状态，每次预算回调最多取一个组/批次。`MyBehavior.cs:1512–1520,6238–6298` 的聚合、PromptMaterials、Batch Prompt 三个真实消费者共用此 owner，删除原三套下标/完成布尔；宿主保留主线程游戏调用、每日预算检查和例外清理。空组立即完成；null 组只消费一次预算机会，不会一帧空转扫完整表；结束后不能重放。该 cursor 为瞬态，不影响 SyncData、公开类型或保存键。
+
+- 验证：获准四目录复核绝对路径、内容和递归 reparse point 后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 DLL SHA256 `9FE600156D304C3E97B5682AFF1F720A8BFFA8A7DD7713E0A5B039354168349A` 的 Phase8 marker/来源/新鲜度校验及三阶段游标回放通过；Phase8 入口 11、source inventory 7、代码地图 449 锚点 recorded/working-tree 通过。schedule smoke 先因 `dotnet run` 仍选 net6.0 缺 exe 失败；诊断后对同一源码用本地 SDK 显式 `-p:TargetFramework=net8.0` build，再直接执行 net8 DLL 通过。Weekly outcome contract 通过；source-linked V1 119、snapshot 36、5 变异拒绝及 Debug/Release 四实现 DLL metadata 1060 项通过。
+- 成本与剩余：Weekly 触发时 `MyBehavior.cs:6033–6065` 的王国列表、`SanitizeEventSourceMaterials` 和 owner 字典快照仍一次性 O(N)，每组聚合/Prompt 及每批 Prompt 仍原子执行；计划要求登记而非假称常数帧成本。本切片证明游标单步和三个宿主接线，不等于真实 Campaign 的相同材料/日期整体 parity。a1 仍 `VERIFY`，下一步补同步/延迟同输入的材料顺序/全文短报/周界集成回放并审阅初始化快照一致性，门禁过后才进入 a2 请求/完成。a3 和 J13b–g 未完成；实机、旧档、provider、音频、帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+
 ## J13a PromptMaterials 组装切片（2026-09-24）
 
 状态 `J13a_PROMPT_MATERIAL_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `c2d8565b`。`src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs:10,12,35,71` 真正接管全文/短报 PromptMaterials 选择与组装、普通材料克隆、短报大会/开局摘要排除、定居点统计/劫掠归并一次，以及全文劫掠开始/结果按稳定 key 合并。真实消费者 `MyBehavior.cs:6286` 延迟自动周报、`:37168` 同步预览和 `:42356` 独立劫掠材料构造均调用同一 owner；原 host 只保留 live Settlement/Hero 解析和既有专用文字/素材转换 helper，未迁 Campaign/存档/Harmony 身份，也未复制第二个组装循环。
