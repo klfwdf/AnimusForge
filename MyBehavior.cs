@@ -1484,7 +1484,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public HashSet<string> CurrentParsedReportIds;
 
-		public HashSet<string> SettledReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		public WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup> Targets = new WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup>();
 
 		public List<string> FailureMessages = new List<string>();
 
@@ -46015,12 +46015,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 				while (context.BlockIndex < blocks.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 				{
 					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex];
-					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && !context.SettledReportIds.Contains(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
+					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && !context.Targets.IsSettled(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
 					{
 						if (!IsWeeklyReportCommitRecordUnchanged(context, block.ReportId, group))
 						{
 							context.CurrentParsedReportIds.Add(block.ReportId);
-							context.SettledReportIds.Add(block.ReportId);
+							context.Targets.Settle(block.ReportId);
 							if (HasWeeklyReportCommitWinner(context, group))
 							{
 								context.SuccessCount++;
@@ -46051,7 +46051,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 							return false;
 						}
 						context.CurrentParsedReportIds.Add(block.ReportId);
-						context.SettledReportIds.Add(block.ReportId);
+						context.Targets.Settle(block.ReportId);
 						if (context.CurrentBlockRejected)
 						{
 							context.CurrentBlockRejected = false;
@@ -46175,32 +46175,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		HashSet<string> parsedReportIds = context.CurrentParsedReportIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = context.GroupMap ?? BuildWeeklyReportGroupMap(context.Groups);
-		List<WeeklyEventMaterialPreviewGroup> missingGroups = new List<WeeklyEventMaterialPreviewGroup>();
+		string reason = null;
+		bool hasReportedMissing = false;
 		foreach (string reportId in batchResult?.MissingReportIds ?? new List<string>())
 		{
-			if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.SettledReportIds.Contains(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
+			if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
 			{
-				missingGroups.Add(missingGroup);
+				hasReportedMissing = true;
+				reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
+				context.Targets.RecordMissing(reportId, missingGroup, reason);
 			}
 		}
-		if (batchResult != null && !batchResult.Success && missingGroups.Count == 0)
+		if (batchResult != null && !batchResult.Success && !hasReportedMissing)
 		{
 			foreach (WeeklyEventMaterialPreviewGroup group in batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
 			{
 				string reportId = BuildWeeklyReportGroupReportId(group);
-				if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.SettledReportIds.Contains(reportId))
+				if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId))
 				{
-					missingGroups.Add(group);
+					reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
+					context.Targets.RecordMissing(reportId, group, reason);
 				}
 			}
 		}
-		if (missingGroups.Count <= 0)
-		{
-			return;
-		}
-		context.FailureCount += missingGroups.Count;
-		context.FailedGroups.AddRange(missingGroups.Where((WeeklyEventMaterialPreviewGroup x) => x != null));
-		context.FailureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误"));
 	}
 
 	private void FinalizePendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context)
@@ -46208,6 +46205,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (context == null)
 		{
 			return;
+		}
+		foreach (WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup>.PendingMissing missing in context.Targets.PendingMissingTargets)
+		{
+			context.FailureCount++;
+			context.FailedGroups.Add(missing.Group);
+			context.FailureMessages.Add(missing.Reason + " [" + missing.ReportId + "]");
 		}
 		List<WeeklyEventMaterialPreviewGroup> failedGroups = (context.FailedGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).Distinct().ToList();
 		if (context.FailureMessages != null && context.FailureMessages.Count > 0)

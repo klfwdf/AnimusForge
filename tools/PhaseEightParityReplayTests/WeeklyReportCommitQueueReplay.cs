@@ -54,7 +54,63 @@ internal static class WeeklyReportCommitQueueReplay
             "second reset settles new waiter");
         RunRecordStateReplay(af);
         RunBatchApiLaunchReplay(af);
-        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale live=NOT_RUN");
+        RunCommitTargetOwnerReplay(af);
+        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery live=NOT_RUN");
+    }
+
+    private static void RunCommitTargetOwnerReplay(Assembly af)
+    {
+        Type type = af.GetType("AnimusForge.WeeklyReportCommitTargetOwner`1", true).MakeGenericType(typeof(string));
+        object owner = Activator.CreateInstance(type, true);
+        MethodInfo missing = type.GetMethod("RecordMissing", Members);
+        MethodInfo settle = type.GetMethod("Settle", Members);
+        MethodInfo isSettled = type.GetMethod("IsSettled", Members);
+        int PendingCount()
+        {
+            int count = 0;
+            foreach (object _ in (IEnumerable)type.GetProperty("PendingMissingTargets", Members).GetValue(owner)) count++;
+            return count;
+        }
+        Check((bool)missing.Invoke(owner, new object[] { "world:1", "world", "first failure" }), "first partial miss recorded");
+        Check(!(bool)missing.Invoke(owner, new object[] { "WORLD:1", "world", "duplicate" }) && PendingCount() == 1,
+            "duplicate missing ID across batches is not counted twice");
+        Check((bool)settle.Invoke(owner, new object[] { "World:1" }) && PendingCount() == 0,
+            "later parsed success removes prior missing result");
+        Check(!(bool)missing.Invoke(owner, new object[] { "world:1", "world", "late miss" })
+            && (bool)isSettled.Invoke(owner, new object[] { "world:1" }),
+            "late missing result cannot undo settled success");
+        Check((bool)missing.Invoke(owner, new object[] { "kingdom:1", "kingdom", "unrecovered" }) && PendingCount() == 1,
+            "unrecovered target remains pending for final failure");
+
+        Type behavior = af.GetType("AnimusForge.MyBehavior", true);
+        Type groupType = behavior.GetNestedType("WeeklyEventMaterialPreviewGroup", BindingFlags.NonPublic);
+        object world = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(world, "world");
+        Type batchType = behavior.GetNestedType("WeeklyReportBatchRequest", BindingFlags.NonPublic);
+        object batch = Activator.CreateInstance(batchType, true);
+        batchType.GetField("DisplayLabel", Members).SetValue(batch, "world batch");
+        ((IList)batchType.GetField("Groups", Members).GetValue(batch)).Add(world);
+        Type resultType = behavior.GetNestedType("WeeklyReportBatchRequestResult", BindingFlags.NonPublic);
+        object result = Activator.CreateInstance(resultType, true);
+        resultType.GetField("MissingReportIds", Members).SetValue(result, new List<string> { "world", "WORLD" });
+        Type contextType = behavior.GetNestedType("PendingWeeklyReportCommitContext", BindingFlags.NonPublic);
+        object context = Activator.CreateInstance(contextType, true);
+        IDictionary map = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), groupType));
+        map.Add("world", world);
+        contextType.GetField("GroupMap", Members).SetValue(context, map);
+        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        MethodInfo finalizeBatch = behavior.GetMethod("FinalizePendingWeeklyReportCommitBatch", Members);
+        finalizeBatch.Invoke(host, new[] { context, batch, result });
+        finalizeBatch.Invoke(host, new[] { context, batch, result });
+        object targets = contextType.GetField("Targets", Members).GetValue(context);
+        int hostPending = 0;
+        foreach (object _ in (IEnumerable)targets.GetType().GetProperty("PendingMissingTargets", Members).GetValue(targets)) hostPending++;
+        Check(hostPending == 1 && (int)contextType.GetField("FailureCount", Members).GetValue(context) == 0,
+            "real batch finalizer defers and deduplicates repeated missing IDs");
+        targets.GetType().GetMethod("Settle", Members).Invoke(targets, new object[] { "world" });
+        hostPending = 0;
+        foreach (object _ in (IEnumerable)targets.GetType().GetProperty("PendingMissingTargets", Members).GetValue(targets)) hostPending++;
+        Check(hostPending == 0, "later parsed block recovers real finalizer's pending miss");
     }
 
     private static void RunBatchApiLaunchReplay(Assembly af)
