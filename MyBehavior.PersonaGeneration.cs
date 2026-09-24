@@ -107,8 +107,7 @@ public partial class MyBehavior
                 && TryParsePersonaJson(resp, out genP, out genB)).ConfigureAwait(false);
             genP = NormalizeGeneratedPersonaText(genP);
             genB = NormalizeGeneratedPersonaText(genB);
-            if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB)) genP = genB;
-            else if (string.IsNullOrWhiteSpace(genB) && !string.IsNullOrWhiteSpace(genP)) genB = genP;
+            NpcPersonaProfilePolicy.CompleteGeneratedFields(ref genP, ref genB);
             string failure = null;
             bool accepted = await RunMemorySummaryCompletionAsync(generation, () =>
             {
@@ -117,8 +116,8 @@ public partial class MyBehavior
                 if (parsed)
                 {
                     GetNpcPersonaStrings(hero, out string curP, out string curB);
-                    if (overwriteExisting && (!string.Equals(curP, work.OriginalPersonality, StringComparison.Ordinal)
-                        || !string.Equals(curB, work.OriginalBackground, StringComparison.Ordinal)))
+                    if (!NpcPersonaProfilePolicy.TryMerge(overwriteExisting, work.OriginalPersonality, work.OriginalBackground,
+                        curP, curB, genP, genB, out string nextPersonality, out string nextBackground))
                     {
                         retired = true;
                         failure = "生成期间人设已被修改，未覆盖最新的个性与历史背景。请确认后重新生成。";
@@ -126,8 +125,8 @@ public partial class MyBehavior
                     }
                     NpcPersonaProfile current = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
                     NpcPersonaProfile profile = overwriteExisting ? new NpcPersonaProfile { VoiceId = (current.VoiceId ?? "").Trim() } : current;
-                    profile.Personality = (overwriteExisting || string.IsNullOrWhiteSpace(curP)) ? genP : curP.Trim();
-                    profile.Background = (overwriteExisting || string.IsNullOrWhiteSpace(curB)) ? genB : curB.Trim();
+                    profile.Personality = nextPersonality;
+                    profile.Background = nextBackground;
                     SaveNpcPersonaProfile(hero, profile);
                     saved = !string.IsNullOrWhiteSpace(profile.Personality) || !string.IsNullOrWhiteSpace(profile.Background);
                     if (saved && overwriteExisting) Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + work.Id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(profile.VoiceId) + ".");

@@ -2,12 +2,14 @@
   "baseline": "4140bd04",
   "dependencies": {
     "Refactor/Contracts/NpcPersonaReadinessSnapshot.cs": "2e807eacf0f196f84dd2af921021376526770366496cf4f14fd143378162685f",
-    "MyBehavior.PersonaReadiness.cs": "f9747fc3b702f7aba92ae9aecd0335990e13ec4e098e414ad405e2092e53a910",
+    "MyBehavior.PersonaReadiness.cs": "b31733d0c4091fe3b34338ef6d5dfdeb22aa5c50de3c9f4e4790988297c8f1e3",
     "ShoutBehavior.PersonaPreparation.cs": "6d082776e9decb666e4313b6ad541dc4d3e8ac9484912cc68165198cc7fe5ab8",
     "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs": "3b8a6ff955caeaf804613e2909481535f3ae963d35e36e087d1cd505b27e296d",
     "tools/ChannelPersonaPreparationTests/Harness.cs.txt": "8e8d5da0dabfe9a167bea3eff0694abac6c5c7351d6bbd5061ab06061f014506",
     "tools/ChannelPersonaPreparationTests/Extras.cs.txt": "e184c8db1b000b4cb8924abdf6709404500ed727ebe30584dd92130c6889d900",
-    "tools/ChannelPersonaPreparationTests/run.py": "605c79150adfc116341257e859467f7d9b77d47300d3d24ef9a748619cd2c737",
-    "src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs": "c63bd223ddac029ca8c00de6bd7d820a4b392dd1f600eaf3ccfc1fb4321b38e0"
-  }
+    "tools/ChannelPersonaPreparationTests/run.py": "c9b3b4f40697315e2ab0faedfb6c01393514e1f954bb3d8d5fa76d568bdf8da7",
+    "src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs": "c63bd223ddac029ca8c00de6bd7d820a4b392dd1f600eaf3ccfc1fb4321b38e0",
+    "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs": "4a71217237f12fa7de66d4e61d97aa4f3bc59007708dec5fc675d4524432c0d1"
+  },
+  "j13Evidence": "Hero 128 and Channel 169 checks; ignore_edit mutant rejected; j13_source_parity.py exact inverse to 89b38557. Historical whole-owner inverse remains separate."
 }

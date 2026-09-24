@@ -12,3 +12,7 @@
   owner.Complete(third,true);owner.GetState("hero",out active,out cooling);Check(!active&&!cooling,"success clears cooldown");
   var retired=owner.TryBegin("hero",false,out cooling);owner.Complete(retired,false,false);owner.GetState("hero",out active,out cooling);Check(!active&&!cooling,"retirement does not penalize future request");
   owner.GetState(null,out active,out cooling);Check(!active&&!cooling,"null status input");
+  Check(NpcPersonaProfilePolicy.NormalizeGenerated(" \r\nP\rB\n ")=="P\nB","production persona normalization");
+  Check(!NpcPersonaProfilePolicy.NeedsGeneration("", "", "")&&NpcPersonaProfilePolicy.NeedsGeneration("npc", "P", ""),"readiness requires identity and both fields");
+  string completedP="",completedB="background";NpcPersonaProfilePolicy.CompleteGeneratedFields(ref completedP,ref completedB);
+  Check(completedP=="background"&&completedB=="background","single generated field retains legacy fallback");

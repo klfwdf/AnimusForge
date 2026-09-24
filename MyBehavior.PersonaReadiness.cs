@@ -1,5 +1,6 @@
 using System;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 
@@ -21,8 +22,7 @@ public partial class MyBehavior
             return new NpcPersonaReadinessSnapshot(id, name, "", "", false, false, false, false);
         owner.GetNpcPersonaStrings(hero, out string personality, out string background);
         owner.GetNpcPersonaGenerationRuntimeState(hero, out bool active, out bool coolingDown);
-        bool needsGeneration = !string.IsNullOrWhiteSpace(id)
-            && (string.IsNullOrWhiteSpace(personality) || string.IsNullOrWhiteSpace(background));
+        bool needsGeneration = NpcPersonaProfilePolicy.NeedsGeneration(id, personality, background);
         return new NpcPersonaReadinessSnapshot(id, name, personality, background, true, needsGeneration, active, coolingDown);
     }
 }

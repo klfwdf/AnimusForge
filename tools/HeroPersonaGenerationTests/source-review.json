@@ -1,15 +1,17 @@
 {
   "baseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "dependencies": {
-    "MyBehavior.PersonaGeneration.cs": "98e162a04bb7c65b06763b4e8ba3823a54cd204c9750b5d3dec20ebbdd229b5b",
-    "src/modules/AF.Module.Conversation/Internal/NpcPersonaGenerationOwner.cs": "041cf88b5f053be54549080769ea38421c4a537a6733692380e50397950dd4e9",
+    "MyBehavior.PersonaGeneration.cs": "7e5f10315dd86a0137b3615e97b66e37af0f9628aa08c6d6a90bb11427f647eb",
     "tools/HeroPersonaGenerationTests/Harness.cs.txt": "341cd2c2ea3f2e0978702ee505cf969adf1bc28eb2fc8d670858f9e905631411",
-    "tools/HeroPersonaGenerationTests/Reservations.cs.txt": "b73c660c5a82f98cc033a944e543c6e10f0ab86457b159c438e9b0b63fc0ad8a",
-    "tools/HeroPersonaGenerationTests/run.py": "0446b6bb150a4154f628021b08a359dac2ca0ad81986b1ace965c9e6b70475b1"
+    "tools/HeroPersonaGenerationTests/Reservations.cs.txt": "5a8a24175cb0a39907d513e720620ed41c4ca93bd11213724cfd0c4af50c87fc",
+    "tools/HeroPersonaGenerationTests/run.py": "da9e64c8ab0db10690a381f6e6f7ce3b55322e0f39172f0553e4e4ff87945000",
+    "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs": "041cf88b5f053be54549080769ea38421c4a537a6733692380e50397950dd4e9",
+    "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs": "4a71217237f12fa7de66d4e61d97aa4f3bc59007708dec5fc675d4524432c0d1"
   },
   "replacementMethods": {
     "private bool IsNpcPersonaGenerationInFlight(": "818b6b74cb9d82c996880991fe77b66ed4235e1ca0a999e042203ddb333b27d0",
     "private void GetNpcPersonaGenerationRuntimeState(": "be2c42b970e903ac01cb96cd2c4123db32e4e07109e60a1d9680ad3368a140e8",
     "private async Task RunHeroPersonaRerollAsync(": "a8116a342e1b69d8c2cf8ecb55f212cdb6986cec1a122d9c1d2714fee42bc02a"
-  }
+  },
+  "j13Evidence": "Hero 128 and Channel 169 checks; ignore_edit mutant rejected; j13_source_parity.py exact inverse to 89b38557. Historical whole-owner inverse remains separate."
 }

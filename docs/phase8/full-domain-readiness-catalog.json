@@ -962,9 +962,13 @@
         "profile-owner"
       ],
       "entryPaths": [
-        "KnowledgeLibraryBehavior.cs",
         "KingdomStrategicProfileBehavior.cs",
-        "MyBehavior.cs"
+        "KnowledgeLibraryBehavior.cs",
+        "MyBehavior.PersonaGeneration.cs",
+        "MyBehavior.PersonaReadiness.cs",
+        "MyBehavior.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",

@@ -38,6 +38,15 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         && record.GetProperty("BuildFlavor").GetString() == "ANIMUSFORGE_BANNERLORD_API_1_4",
         "candidate build identity mismatch");
     DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
+    foreach (string source in new[] {
+        "MyBehavior.PersonaGeneration.cs", "MyBehavior.PersonaReadiness.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
+        "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityOwner.cs",
+        "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs",
+        "src/modules/AF.Module.Kingdom/Scheduling/KingdomMaintenanceOwner.cs",
+        "src/modules/AF.Module.Kingdom/Scheduling/AutomaticKingdomRebellionOwner.cs" })
+        Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, source)), "candidate predates " + source);
     Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "MyBehavior.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs"))
