@@ -1427,6 +1427,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>> CompletionSource;
 	}
 
+	private sealed class PendingWeeklyBatchApiAttemptContext
+	{
+		public long RuntimeGeneration;
+
+		public string SystemPrompt;
+
+		public string UserPrompt;
+
+		public TaskCompletionSource<Task<ApiCallResult>> CompletionSource;
+	}
+
 	private sealed class PendingWeeklyReportCommitContext
 	{
 		public long RuntimeGeneration;
@@ -1962,6 +1973,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyWaveLaunchContext, List<Task<WeeklyReportBatchExecutionResult>>> _weeklyWaveLaunchQueue =
 		new WeeklyReportCommitQueueOwner<PendingWeeklyWaveLaunchContext, List<Task<WeeklyReportBatchExecutionResult>>>(CompletePendingWeeklyWaveLaunch, () => null);
+
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyBatchApiAttemptContext, Task<ApiCallResult>> _weeklyBatchApiAttemptQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyBatchApiAttemptContext, Task<ApiCallResult>>(CompletePendingWeeklyBatchApiAttempt, () => null);
 
 	private int _kingdomStabilityMaintenanceCursor;
 
@@ -2535,6 +2549,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ResetPendingWeeklyKingdomRebellionMaintenance();
 			_weeklyPromptPreparationQueue.CancelAll();
 			_weeklyWaveLaunchQueue.CancelAll();
+			_weeklyBatchApiAttemptQueue.CancelAll();
 			_weeklyReportCommitQueue.CancelAll();
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
@@ -17489,6 +17504,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyWaveLaunches"))
 				{
 					processedWeeklyReportCommits = ProcessPendingWeeklyWaveLaunches();
+				}
+			}
+			if (!processedWeeklyReportCommits && _weeklyBatchApiAttemptQueue.HasPending)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyBatchApiAttempts"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyBatchApiAttempts();
 				}
 			}
 			if (!processedWeeklyReportCommits && _weeklyReportCommitQueue.HasPending)
@@ -42997,6 +43019,32 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return weeklyReportRequestResult;
 	}
 
+	private async Task<ApiCallResult> CallWeeklyReportBatchApiAttemptAsync(string systemPrompt, string userPrompt, long runtimeGeneration, bool firstAttempt)
+	{
+		if (!ReferenceEquals(Instance, this) || (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_before_api_attempt")))
+		{
+			return new ApiCallResult { ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText() };
+		}
+		if (firstAttempt && TWParallel.IsMainThread())
+		{
+			return await CallWeeklyReportApiDetailed(systemPrompt, userPrompt).ConfigureAwait(false);
+		}
+		TaskCompletionSource<Task<ApiCallResult>> completionSource = new TaskCompletionSource<Task<ApiCallResult>>(TaskCreationOptions.RunContinuationsAsynchronously);
+		_weeklyBatchApiAttemptQueue.Enqueue(new PendingWeeklyBatchApiAttemptContext
+		{
+			RuntimeGeneration = runtimeGeneration,
+			SystemPrompt = systemPrompt,
+			UserPrompt = userPrompt,
+			CompletionSource = completionSource
+		});
+		Task<ApiCallResult> attempt = await completionSource.Task.ConfigureAwait(false);
+		if (attempt == null || !ReferenceEquals(Instance, this) || (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_api_launch")))
+		{
+			return new ApiCallResult { ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText() };
+		}
+		return await attempt.ConfigureAwait(false);
+	}
+
 	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L)
 	{
 		WeeklyReportBatchRequestResult weeklyReportBatchRequestResult = new WeeklyReportBatchRequestResult();
@@ -43020,7 +43068,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
 				return weeklyReportBatchRequestResult;
 			}
-			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
+			ApiCallResult apiCallResult = await CallWeeklyReportBatchApiAttemptAsync(text, text2, runtimeGeneration, i == 1);
 			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_attempt"))
 			{
 				weeklyReportBatchRequestResult.Success = false;
@@ -45753,6 +45801,38 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			_weeklyWaveLaunchQueue.Complete(context, runningTasks);
 			_weeklyWaveLaunchQueue.CompleteProcessed(context);
+		}
+		return true;
+	}
+
+	private static void CompletePendingWeeklyBatchApiAttempt(PendingWeeklyBatchApiAttemptContext context, Task<ApiCallResult> result)
+	{
+		context?.CompletionSource?.TrySetResult(result);
+	}
+
+	private bool ProcessPendingWeeklyBatchApiAttempts()
+	{
+		PendingWeeklyBatchApiAttemptContext context = _weeklyBatchApiAttemptQueue.Peek();
+		if (context == null)
+		{
+			return false;
+		}
+		Task<ApiCallResult> attempt = null;
+		try
+		{
+			if (TWParallel.IsMainThread() && ReferenceEquals(Instance, this) && !SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_batch_api_launch"))
+			{
+				attempt = CallWeeklyReportApiDetailed(context.SystemPrompt, context.UserPrompt);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[ERROR] weekly batch API attempt launch failed: " + ex);
+		}
+		finally
+		{
+			_weeklyBatchApiAttemptQueue.Complete(context, attempt);
+			_weeklyBatchApiAttemptQueue.CompleteProcessed(context);
 		}
 		return true;
 	}

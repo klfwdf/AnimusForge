@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -52,7 +53,61 @@ internal static class WeeklyReportCommitQueueReplay
         Check(newerTask.IsCompletedSuccessfully && newerTask.Result == "canceled" && !Pending(),
             "second reset settles new waiter");
         RunRecordStateReplay(af);
-        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context live=NOT_RUN");
+        RunBatchApiLaunchReplay(af);
+        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale live=NOT_RUN");
+    }
+
+    private static void RunBatchApiLaunchReplay(Assembly af)
+    {
+        Type behavior = af.GetType("AnimusForge.MyBehavior", true);
+        Type contextType = behavior.GetNestedType("PendingWeeklyBatchApiAttemptContext", BindingFlags.NonPublic);
+        Type resultType = behavior.GetNestedType("ApiCallResult", BindingFlags.NonPublic);
+        Type attemptType = typeof(Task<>).MakeGenericType(resultType);
+        Type queueType = af.GetType("AnimusForge.WeeklyReportCommitQueueOwner`2", true).MakeGenericType(contextType, attemptType);
+        Type completeType = typeof(Action<,>).MakeGenericType(contextType, attemptType);
+        Type canceledType = typeof(Func<>).MakeGenericType(attemptType);
+        Delegate complete = Delegate.CreateDelegate(completeType, behavior.GetMethod("CompletePendingWeeklyBatchApiAttempt", Members));
+        Delegate canceled = Expression.Lambda(canceledType, Expression.Constant(null, attemptType)).Compile();
+        object queue = Activator.CreateInstance(queueType, Members, null, new object[] { complete, canceled }, null);
+        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        behavior.GetField("_weeklyBatchApiAttemptQueue", Members).SetValue(host, queue);
+        FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
+        object previousOwner = activeOwner.GetValue(null);
+        Type guard = af.GetType("AnimusForge.SaveRuntimeGuard", true);
+        long generation = (long)guard.GetMethod("CaptureGeneration", Members).Invoke(null, null);
+        MethodInfo launch = behavior.GetMethod("CallWeeklyReportBatchApiAttemptAsync", Members);
+        string staleText = (string)guard.GetMethod("BuildStaleRequestErrorText", Members).Invoke(null, null);
+        activeOwner.SetValue(null, host);
+        try
+        {
+            Task pending = Task.Factory.StartNew(
+                () => (Task)launch.Invoke(host, new object[] { "system", "user", generation, false }),
+                TaskCreationOptions.LongRunning).GetAwaiter().GetResult();
+            Check((bool)queueType.GetProperty("HasPending", Members).GetValue(queue) && !pending.IsCompleted,
+                "background retry waits for campaign tick instead of reading API settings");
+            queueType.GetMethod("CancelAll", Members).Invoke(queue, null);
+            pending.GetAwaiter().GetResult();
+            object canceledResult = pending.GetType().GetProperty("Result").GetValue(pending);
+            Check((string)resultType.GetField("ErrorMessage", Members).GetValue(canceledResult) == staleText
+                && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+                "reset settles queued API attempt without starting a request");
+            Task rejected = (Task)launch.Invoke(host, new object[] { "system", "user", generation + 1L, false });
+            rejected.GetAwaiter().GetResult();
+            object staleResult = rejected.GetType().GetProperty("Result").GetValue(rejected);
+            Check((string)resultType.GetField("ErrorMessage", Members).GetValue(staleResult) == staleText
+                && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+                "stale attempt is refused before queuing or reading settings");
+        }
+        finally
+        {
+            activeOwner.SetValue(null, previousOwner);
+        }
+        Task retired = (Task)launch.Invoke(host, new object[] { "system", "user", generation, false });
+        retired.GetAwaiter().GetResult();
+        object retiredResult = retired.GetType().GetProperty("Result").GetValue(retired);
+        Check((string)resultType.GetField("ErrorMessage", Members).GetValue(retiredResult) == staleText
+            && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+            "retired owner refuses attempt without waiting for its former tick");
     }
 
     private static void RunRecordStateReplay(Assembly af)
