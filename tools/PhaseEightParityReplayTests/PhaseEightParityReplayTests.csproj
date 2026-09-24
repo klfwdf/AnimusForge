@@ -8,6 +8,7 @@
   <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
   <ItemGroup>
     <Compile Include="..\ProductionOptInEntryReplayTests\WeeklyActionOutcomeProductionReplay.cs" Link="WeeklyActionOutcomeProductionReplay.cs" />
+    <Compile Include="..\ProductionOptInEntryReplayTests\NotorietyConversationOutcomeProductionReplay.cs" Link="NotorietyConversationOutcomeProductionReplay.cs" />
   </ItemGroup>
   <PropertyGroup>
     <_ReplayImplementationPath Condition="'$(ReplayCandidateDll)' != ''">$(ReplayCandidateDll)</_ReplayImplementationPath>
