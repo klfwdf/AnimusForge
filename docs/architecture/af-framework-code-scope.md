@@ -1,4 +1,6 @@
-# 当前范围：J13a Weekly 施工中（2026-09-25）
+# 当前范围：J13a 已有限离线收口，J13b 施工（2026-09-25）
+
+`8f960d65` 完成 Weekly 回执/发布 owner；`c637bc82` 补齐真实恢复回调、一次发布与积压工作量回放。a1–a3 有限 OFFLINE_VERIFIED，J13b–g 待推进；真实游戏/旧档/provider/UI 渲染/帧性能 NOT-RUN。完整证据、保留 host 与未运行项见[主台账当前入口](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)和[代码地图](af-framework-code-map.json)。用户要求不更新 HANDOFF、不推送。下文均为历史切片时点。
 
 当前源码 `02812536`：`ce8413dd` 将实际 minute-wave 协调归 `WeeklyReportWaveCoordinator`，`02812536` 以共锁准入修复 Weekly 四种队列的退役/读档后迟到等待者。当前候选六构建及 Phase8 的真实 host 协调/pump、受控跨波/源失效、并发准入/清理和退役准备/commit 回放通过；双版本、存档与公开身份保持。真实 provider/UI/60 秒等待、完整部分提交＋显式重采＋一次发布组合和 commit 积压预算仍未验，a2/J13a/J13 ACTIVE。详细修订、坐标、命令和边界只见[主台账当前入口](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)及[代码地图](af-framework-code-map.json)；下列段落为各自提交时点记录。按本轮用户要求不更新 HANDOFF、不推送。
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "028125367c6b065cb0b9309c5bcd76c9fb24a5f5",
+  "sourceRevision": "8f960d650890228eb4aa0d52f7781d87281eaecf",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5474,13 +5474,90 @@
     {
       "id": "weekly.queue.retired-host-replay",
       "path": "tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs",
-      "start": 211,
-      "end": 211,
+      "start": 212,
+      "end": 212,
       "symbol": "private static void RunRetiredQueueAdmissionReplay(",
       "match": "contains",
       "status": "wired-j13a2-wave-admission-slice-offline-verified",
       "note": "真实宿主的准备和 commit 入口拒绝旧 owner/代，无需后续 tick、不报假成功。",
-      "fileSha256": "2415a44295a71880857e2ea70e6fd5acac26aa7e4c4f804166a80128faeff898"
+      "fileSha256": "01a54086f4374eba63a031ca62a17a85e0b19f48168d0e995899007c204d7144"
+    },
+    {
+      "id": "weekly.recovery.combined",
+      "path": "tools/PhaseEightParityReplayTests/WeeklyReportRecoveryReplay.cs",
+      "start": 13,
+      "end": 13,
+      "symbol": "internal static class WeeklyReportRecoveryReplay",
+      "match": "contains",
+      "status": "wired-j13a-offline-verified",
+      "note": "真实 Inquiry 回调、失败分组重采、生产提交和 publication revision；固定响应边界、非实机。",
+      "fileSha256": "b6877f328d9fa353e844a17901df41174ed8727db0f512170542495dae1be48f"
+    },
+    {
+      "id": "weekly.receipts.ledger",
+      "path": "src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs",
+      "start": 1706,
+      "end": 1706,
+      "symbol": "internal sealed class WeeklyMemoryMaterialOutcomeLedger",
+      "match": "contains",
+      "status": "wired-j13a-offline-verified",
+      "note": "原指纹、序列化与账本身份保留，真实唯一 Actions 消费链。",
+      "fileSha256": "921ea507293b3bb19c9dec23d82dbca096feac55036c2f01b0f5446c00ad2ef6"
+    },
+    {
+      "id": "weekly.receipts.selection",
+      "path": "src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs",
+      "start": 1918,
+      "end": 1918,
+      "symbol": "internal WeeklyMemoryMaterialOutcomeReceipt FirstConfirmed()",
+      "match": "contains",
+      "status": "wired-j13a-offline-verified",
+      "note": "单遍无分配、保持时间与 receipt ID 排序语义。",
+      "fileSha256": "921ea507293b3bb19c9dec23d82dbca096feac55036c2f01b0f5446c00ad2ef6"
+    },
+    {
+      "id": "weekly.publication.lifecycle",
+      "path": "src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs",
+      "start": 10,
+      "end": 10,
+      "symbol": "internal sealed class WeeklyActionOutcomePublicationOwner",
+      "match": "contains",
+      "status": "wired-j13a-offline-verified",
+      "note": "拥有唯一账本、激活、代际、重试及加载状态。",
+      "fileSha256": "3129786186e136d0d137717d99440b039591c36f088d7183a3551efcce78128d"
+    },
+    {
+      "id": "weekly.publication.host",
+      "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "start": 460,
+      "end": 460,
+      "symbol": "private void ProcessOneWeeklyActionOutcomeOnTick()",
+      "match": "contains",
+      "status": "wired-j13a-offline-verified",
+      "note": "主线程读取 owner due receipt 并写原草稿；保留游戏和保存适配。",
+      "fileSha256": "4c441e06982d2fe9872c861f644603ba48965e8540b679bbc6015b349562cb9b"
+    },
+    {
+      "id": "weekly.publication.save",
+      "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "start": 501,
+      "end": 501,
+      "symbol": "private void SyncWeeklyActionOutcomeData(IDataStore dataStore)",
+      "match": "contains",
+      "status": "wired-j13a-offline-verified",
+      "note": "保留原键/字典及 chunk；导入/激活交给 Weekly owner。",
+      "fileSha256": "4c441e06982d2fe9872c861f644603ba48965e8540b679bbc6015b349562cb9b"
+    },
+    {
+      "id": "weekly.publication.write",
+      "path": "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+      "start": 302,
+      "end": 302,
+      "symbol": "private WeeklyMemoryMaterialOutcomeOperationStatus TryPublishWeeklyActionOutcome(",
+      "match": "contains",
+      "status": "wired-j13a-offline-verified",
+      "note": "保留原 DailyMemoryDraft 的 exact trigger/readback/MarkApplied 游戏写入适配。",
+      "fileSha256": "4c441e06982d2fe9872c861f644603ba48965e8540b679bbc6015b349562cb9b"
     }
   ]
 }
