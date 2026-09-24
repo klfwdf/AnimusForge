@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`f54fbcf6` 将材料聚合的克隆、action 分类/事件键分桶和最终排序交给 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs:6,8`；真实自动预算消费者 `MyBehavior.cs:6301–6321` 与同步预览消费者 `:37220–37227` 经过原 host 薄入口 `:38550–38553` 共用 owner，live 名称/详情渲染留主线程。当前候选双版本六构建、Phase8 和新增分桶回放通过，440 锚点地图只证明定位；组内 O(M log M) 聚合与初始化 O(N) snapshot 尚无严格帧预算证明，J13a 全包仍 ACTIVE。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `008a3f84` 将分组排序/批次划分算法归 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs:7,9,35`；`MyBehavior.cs:41620–41624,43621–43625` 保留主线程的真实王国资格和邻近捕获，并转接自动/手动/重试消费者。私有嵌套 DTO/枚举仅放宽为同 DLL `internal`，全名未变。双版本六构建与当前候选 Phase8/批次 replay 通过；预览聚合/游标、请求与回执仍属未迁责任。438 锚点地图用于定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `d1697338` 将自动补周/叛乱延期/恢复决策及瞬态 pending week 归 `src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs:6,12,28`，同步/延迟日维护与载入消费者仍由 `MyBehavior.cs:5790–5851,6051–6085,6392–6437` 调用；持久游标和主线程材料捕获保留原 host。`WeeklyReportSchedulePolicy.cs`、`WeeklyReportTextHelper.cs` 原样归位，Phase8 来源入口同步。调度切片双版本六构建和当前候选 Phase8 回放通过；材料 O(N) snapshot、批量生成、回执发布仍未迁。435 锚点地图只证明定位，详见[主台账 J13a](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
