@@ -1,6 +1,8 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
-`d12e8d65` 将按需全文完成队列状态/转换归入 `src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs:8,34,48,70`；`MyBehavior.cs:2120,2222–2225,42738–42751` 的真实 Campaign/UI/引擎入口继续调用 owner，`:42642–42728` 的 live 材料捕获、请求和同代源状态提交重验仍在 host。批量提交及自动调度材料尚未迁移；此为 J13a 首切片而非全包完成。当前 432 锚点地图只作定位；Debug/Release 双版本+Bootstrap、当前候选 Phase8 replay 已过，详细回执见[主台账 J13a1](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+`d1697338` 将自动补周/叛乱延期/恢复决策及瞬态 pending week 归 `src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs:6,12,28`，同步/延迟日维护与载入消费者仍由 `MyBehavior.cs:5790–5851,6051–6085,6392–6437` 调用；持久游标和主线程材料捕获保留原 host。`WeeklyReportSchedulePolicy.cs`、`WeeklyReportTextHelper.cs` 原样归位，Phase8 来源入口同步。调度切片双版本六构建和当前候选 Phase8 回放通过；材料 O(N) snapshot、批量生成、回执发布仍未迁。435 锚点地图只证明定位，详见[主台账 J13a](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
+`d12e8d65` 将按需全文完成队列状态/转换归入 `src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs:8,34,48,70`；`MyBehavior.cs:2120,2222–2225,42738–42751` 的真实 Campaign/UI/引擎入口继续调用 owner，`:42642–42728` 的 live 材料捕获、请求和同代源状态提交重验仍在 host。批量提交及自动调度材料当时尚未迁移；此为 J13a 首切片而非全包完成。当时 432 锚点地图只作定位；Debug/Release 双版本+Bootstrap、当前候选 Phase8 replay 已过，详细回执见[主台账 J13a1](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 ## 以下为 J12 历史范围
 
