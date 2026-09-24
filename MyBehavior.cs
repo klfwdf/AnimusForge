@@ -1509,21 +1509,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public WeeklyActionMaterialCursor<NpcActionEntry, Hero> MajorActionCursor;
 
-		public int AggregationIndex;
-
-		public bool AggregationComplete;
+		public WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup> AggregationCursor;
 
 		public HashSet<string> FullReportKingdomIds;
 
-		public int PromptMaterialIndex;
-
-		public bool PromptMaterialsComplete;
+		public WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup> PromptMaterialCursor;
 
 		public bool Ordered;
 
-		public int BatchPromptIndex;
-
-		public bool BatchPromptsComplete;
+		public WeeklyMaterialStageCursor<WeeklyReportBatchRequest> BatchPromptCursor;
 
 		public List<Kingdom> Kingdoms = new List<Kingdom>();
 
@@ -6093,12 +6087,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			ProcessPendingWeeklyReportAggregationBudget(context, startTimestamp, budgetMs);
-			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.AggregationComplete)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || context.AggregationCursor?.Complete != true)
 			{
 				return;
 			}
 			ProcessPendingWeeklyReportPromptMaterialsBudget(context, startTimestamp, budgetMs);
-			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.PromptMaterialsComplete)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || context.PromptMaterialCursor?.Complete != true)
 			{
 				return;
 			}
@@ -6112,7 +6106,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			ProcessPendingWeeklyReportBatchPromptsBudget(context, startTimestamp, budgetMs);
-			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.BatchPromptsComplete)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || context.BatchPromptCursor?.Complete != true)
 			{
 				return;
 			}
@@ -6243,29 +6237,24 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ProcessPendingWeeklyReportAggregationBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
 	{
-		if (context == null || context.AggregationComplete)
+		if (context == null || context.AggregationCursor?.Complete == true)
 		{
 			return;
 		}
-		List<WeeklyEventMaterialPreviewGroup> groups = context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>();
-		while (context.AggregationIndex < groups.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (context.AggregationCursor == null)
 		{
-			WeeklyEventMaterialPreviewGroup group = groups[context.AggregationIndex++];
-			if (group != null)
-			{
-				ApplyWeeklyPromptMaterialAggregation(group);
-			}
-			break;
+			context.AggregationCursor = new WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup>(context.Groups);
 		}
-		if (context.AggregationIndex >= groups.Count)
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)
+			&& context.AggregationCursor.TryTake(out WeeklyEventMaterialPreviewGroup group) && group != null)
 		{
-			context.AggregationComplete = true;
+			ApplyWeeklyPromptMaterialAggregation(group);
 		}
 	}
 
 	private void ProcessPendingWeeklyReportPromptMaterialsBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
 	{
-		if (context == null || context.PromptMaterialsComplete)
+		if (context == null || context.PromptMaterialCursor?.Complete == true)
 		{
 			return;
 		}
@@ -6275,26 +6264,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 			context.FullReportKingdomIds = WeeklyMaterialBatchPlanner.SelectFullReportKingdomIds(groups,
 				GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)));
 		}
-		while (context.PromptMaterialIndex < groups.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (context.PromptMaterialCursor == null)
 		{
-			WeeklyEventMaterialPreviewGroup group = groups[context.PromptMaterialIndex++];
-			if (group == null)
-			{
-				continue;
-			}
+			context.PromptMaterialCursor = new WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup>(groups);
+		}
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)
+			&& context.PromptMaterialCursor.TryTake(out WeeklyEventMaterialPreviewGroup group) && group != null)
+		{
 			bool shortOnly = WeeklyMaterialBatchPlanner.IsShortOnly(group, context.FullReportKingdomIds);
 			WeeklyPromptMaterialOwner.Prepare(group, shortOnly);
-			break;
-		}
-		if (context.PromptMaterialIndex >= groups.Count)
-		{
-			context.PromptMaterialsComplete = true;
 		}
 	}
 
 	private void ProcessPendingWeeklyReportBatchPromptsBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
 	{
-		if (context == null || context.BatchPromptsComplete)
+		if (context == null || context.BatchPromptCursor?.Complete == true)
 		{
 			return;
 		}
@@ -6302,15 +6286,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			context.Batches = BuildWeeklyReportBatchRequests((context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList(), context.WeekIndex, context.StartDay, context.EndDay);
 		}
-		while (context.BatchPromptIndex < context.Batches.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (context.BatchPromptCursor == null)
 		{
-			PrepareWeeklyReportBatchPrompt(context.Batches[context.BatchPromptIndex]);
-			context.BatchPromptIndex++;
-			break;
+			context.BatchPromptCursor = new WeeklyMaterialStageCursor<WeeklyReportBatchRequest>(context.Batches);
 		}
-		if (context.BatchPromptIndex >= context.Batches.Count)
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)
+			&& context.BatchPromptCursor.TryTake(out WeeklyReportBatchRequest batch))
 		{
-			context.BatchPromptsComplete = true;
+			PrepareWeeklyReportBatchPrompt(batch);
 		}
 	}
 
