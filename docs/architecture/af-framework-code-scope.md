@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-25）
 
+`683987dd` 使 `MyBehavior.cs:43134,43183–43195,46329,46350–46383` 的活动批次重试与 pending commit 保留每个失败目标自己的 RPM/配额/Retry-After/实际尝试数，原 `:43278–43338` UI 消费该分类；后续 HTTP 成功清除前次 429 标记。六构建、当前候选 Phase8 匹配与重试上下文反例、490 锚点地图通过；live 弹窗、多 wave/一次发布仍未验，a2/J13a/J13 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `dc2dd917` 在 `MyBehavior.cs:3993,4084,4166,4398,7134,7210` 的已注册 Campaign 王国/家族拓扑回调先使 Weekly 修订 owner 全局失效，补足“未产同周素材但当前统治者/归属已变”的投影风险；原回调处理不变。六构建、当前候选 Phase8 空王国事件反例与 487 锚点地图通过。其他 live 投影、真实多波/发布组合仍待验，a2/J13a/J13 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `d4443bcb` 将事件素材、NPC 行动与开局概要的请求期修订快照归 `src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs:6–63`；`MyBehavior.cs:2043,6127,6394,45591,45630–45632,45853,46060,46105,46241` 的真实自动/手动、发波次和 pending commit 消费者接通。六构建、当前候选 Phase8 的源变更写前拒绝回放及 484 锚点地图通过。live Kingdom/统治者投影、多 wave/Campaign tick、部分结果 UI/一次发布仍无完整组合证据；a2/J13a/J13 仍 ACTIVE，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
