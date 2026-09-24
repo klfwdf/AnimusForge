@@ -47,7 +47,9 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs"))
-        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs")),
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitTargetOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs")),
         "candidate predates J13a production source");
     Console.WriteLine("PhaseEight candidate SHA256=" + actualHash);
 }
@@ -285,6 +287,7 @@ WeeklyMaterialStageCursorReplay.Run(af);
 WeeklyMaterialPipelineParityReplay.Run(af);
 WeeklyReportCommitQueueReplay.Run(af);
 WeeklyReportBlockMaterialCursorReplay.Run(af);
+WeeklyReportMaterialRevisionReplay.Run(af);
 
 Type warType = af.GetType("AFWarStatsTerminal.Behaviors.AfWarStatsBehavior", true);
 Type recordType = warType.GetNestedType("WarStatsRecord", BindingFlags.NonPublic);
