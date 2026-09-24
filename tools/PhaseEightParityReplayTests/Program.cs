@@ -280,6 +280,7 @@ WeeklyMaterialAggregationReplay.Run(af);
 WeeklyActionMaterialCursorReplay.Run(af);
 WeeklyPromptMaterialOwnerReplay.Run(af);
 WeeklyMaterialStageCursorReplay.Run(af);
+WeeklyMaterialPipelineParityReplay.Run(af);
 
 Type warType = af.GetType("AFWarStatsTerminal.Behaviors.AfWarStatsBehavior", true);
 Type recordType = warType.GetNestedType("WarStatsRecord", BindingFlags.NonPublic);
