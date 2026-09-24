@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`f812ec1b` 在 `MyBehavior.cs:41439,42966,17453–17462,45502,45649–45713` 使手动/重试多 wave 批次 Prompt 在 Campaign 主线程按预算逐批准备，worker 未准备即拒绝，读档清理结算等待者。六构建、当前候选 Phase8 worker 负例、465 锚点地图通过；live 多 wave/帧耗时及 a2 整体仍未验收，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `240c10aa` 在 `MyBehavior.cs:43081–43111,43220–43257` 将目标变更专用弹窗与显式重采失败分组接通；旧素材不隐式重试，缺任一失败目标不发送新请求，已完成目标不重跑。六构建、当前候选 Phase8 选择反例、462 锚点地图通过；live UI/API 和整包 a2 未验收，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `32a8379c` 在 `MyBehavior.cs:42469–42488,45598–45703` 将迟到批量回包的完整/短报既有胜出者分别识别并计为已满足，不重复写入、通知或发布；未完成编辑仍失败。六构建、当前候选 Phase8 的完整/短报/错误周界反例和 459 锚点地图通过；a2/J13a/J13 仍 ACTIVE。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
