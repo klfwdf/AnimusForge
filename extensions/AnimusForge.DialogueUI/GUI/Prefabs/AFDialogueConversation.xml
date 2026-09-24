@@ -8,7 +8,7 @@
     -->
     <ConversationScreenButtonWidget Id="AFDialogueConversationRoot"
         DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-        AnswerList="VerticalContainer\BottomPanelsContainer\AnswerListContainer\AnswerList"
+        AnswerList="AFDialogueConsoleFrame\VerticalContainer\BottomPanelsContainer\AnswerListContainer\AnswerList"
         ContinueButton="ContinueButton" Command.OnFinalSelection="ExecuteFinalizeSelection"
         IsPersuasionActive="@IsPersuading" FrictionEnabled="false">
       <Children>
@@ -37,6 +37,9 @@
                     HorizontalAlignment="Left" VerticalAlignment="Top" CircularClipEnabled="true" CircularClipRadius="79"
                     CircularClipSmoothingRadius="2" DoNotAcceptEvents="true">
                   <Children>
+                    <!-- Opaque material under the transparent tableau; clipped to the portrait aperture. -->
+                    <Widget Id="AFDialoguePortraitBackground" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Sprite="afdui_portrait_background" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" />
                     <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
                         SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-134"
                         StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />

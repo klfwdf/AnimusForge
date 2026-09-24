@@ -13,7 +13,7 @@ namespace AnimusForge.DialogueUI
     internal static class DialogueUiSprites
     {
         private static readonly Dictionary<string, RuntimeSprite> Sprites = new Dictionary<string, RuntimeSprite>(StringComparer.Ordinal);
-        private static readonly string[] Names = { "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", "afdui_parchment_panel", "afdui_input_panel", "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", "afdui_wax_seal", "afdui_console_base", "afdui_console_base_option_02_walnut_original_ratio", "afdui_tab_normal", "afdui_tab_hover", "afdui_tab_pressed", "afdui_button_plate_normal", "afdui_button_plate_hover", "afdui_button_plate_pressed", "afdui_nameplate", "afdui_scroll_handle", "afdui_persuasion_dot" };
+        private static readonly string[] Names = { "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", "afdui_parchment_panel", "afdui_input_panel", "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", "afdui_wax_seal", "afdui_console_base", "afdui_console_base_option_02_walnut_original_ratio", "afdui_tab_normal", "afdui_tab_hover", "afdui_tab_pressed", "afdui_button_plate_normal", "afdui_button_plate_hover", "afdui_button_plate_pressed", "afdui_nameplate", "afdui_scroll_handle", "afdui_persuasion_dot", "afdui_portrait_background" };
         private static bool _failed;
 
         internal static void Install(Harmony harmony)
