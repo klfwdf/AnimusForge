@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`32a8379c` 在 `MyBehavior.cs:42469–42488,45598–45703` 将迟到批量回包的完整/短报既有胜出者分别识别并计为已满足，不重复写入、通知或发布；未完成编辑仍失败。六构建、当前候选 Phase8 的完整/短报/错误周界反例和 459 锚点地图通过；a2/J13a/J13 仍 ACTIVE。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `8b1f703d` 让 `MyBehavior.cs:42469,43006,43302–43324,45338–45389,45829,46334–46340` 的手动重试沿用初始请求捕获的目标状态；目标在失败后变更则发送前拒绝旧素材，不再通过重新捕获隐式取得覆盖权。六构建、当前候选 Phase8 重试准入反例、458 锚点地图通过。popup 恢复动作与独立 live 源状态尚未闭合；a2/J13a/J13 ACTIVE。详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `d59848d1` 在 `MyBehavior.cs:42429–42464,45326–45397,45558–45742` 将批量周报目标记录的请求前快照与主线程提交前两次重验接入真实 pending commit；期间编辑、已完成胜出者、保存素材改变会拒绝旧回包，跨 batch 重复 ID 不二次结算。六构建与当前候选 Phase8 通过，456 锚点地图仅定位。独立 live 材料源、显式重试的编辑保护和整个 a2 请求/失败生命周期仍未闭合，a2/J13a/J13 ACTIVE；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
