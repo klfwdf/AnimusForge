@@ -92,7 +92,23 @@ internal static class WeeklyReportCommitQueueReplay
         Check(!Allowed(), "missing current state refuses retry");
         current["world"] = captured; expected.Clear();
         Check(!Allowed(), "missing original state refuses retry");
-        Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission live=NOT_RUN");
+        object group = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(group, "world");
+        entryType.GetField("WeekIndex", Members).SetValue(entry, 1);
+        entryType.GetField("EventKind", Members).SetValue(entry, "world");
+        entryType.GetField("Summary", Members).SetValue(entry, "other completed winner");
+        var winner = behavior.GetMethod("IsWeeklyReportCommitWinner", Members);
+        bool Won() => (bool)winner.Invoke(null, new[] { entry, group, (object)1 });
+        Check(Won(), "completed full report wins without old overwrite");
+        entryType.GetField("Summary", Members).SetValue(entry, "");
+        Check(!Won(), "edited but incomplete full report is not a winner");
+        Type mode = behavior.GetNestedType("WeeklyReportOutputMode", BindingFlags.NonPublic);
+        groupType.GetField("OutputMode", Members).SetValue(group, Enum.Parse(mode, "TitleShortTagsOnly"));
+        entryType.GetField("ShortSummary", Members).SetValue(entry, "saved short report");
+        Check(Won(), "completed short report wins without requiring full body");
+        entryType.GetField("WeekIndex", Members).SetValue(entry, 2);
+        Check(!Won(), "wrong week cannot win");
+        Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission/full-short-winner live=NOT_RUN");
     }
 
     private static void Check(bool passed, string name)

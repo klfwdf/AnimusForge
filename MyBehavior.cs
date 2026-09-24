@@ -42466,6 +42466,25 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(captured, BuildWeeklyReportCommitRecordState(FindWeeklyReportRecordById(eventId)), StringComparison.Ordinal);
 	}
 
+	private bool HasWeeklyReportCommitWinner(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup group)
+	{
+		string eventId = BuildWeeklyReportEventId(group.GroupKind, context.WeekIndex, group.KingdomId);
+		return IsWeeklyReportCommitWinner(FindWeeklyReportRecordById(eventId), group, context.WeekIndex);
+	}
+
+	private static bool IsWeeklyReportCommitWinner(EventRecordEntry entry, WeeklyEventMaterialPreviewGroup group, int weekIndex)
+	{
+		if (entry == null || group == null || entry.WeekIndex != weekIndex
+			|| !string.Equals((entry.EventKind ?? "").Trim(), (group.GroupKind ?? "").Trim(), StringComparison.OrdinalIgnoreCase)
+			|| !string.Equals((entry.ScopeKingdomId ?? "").Trim(), (group.KingdomId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		return group.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly
+			? !string.IsNullOrWhiteSpace(entry.ShortSummary)
+			: !string.IsNullOrWhiteSpace(entry.Summary);
+	}
+
 	private static bool AreWeeklyReportCommitRecordStatesCurrent(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, Dictionary<string, string> captured, Dictionary<string, string> current)
 	{
 		return groups != null && captured != null && current != null && groups.Keys.All((string id) => captured.TryGetValue(id, out string original) && current.TryGetValue(id, out string now) && string.Equals(original, now, StringComparison.Ordinal));
@@ -45634,13 +45653,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 						{
 							context.CurrentParsedReportIds.Add(block.ReportId);
 							context.SettledReportIds.Add(block.ReportId);
-							context.FailureCount++;
-							context.FailedGroups.Add(group);
-							context.FailureMessages.Add("周报目标在请求期间已变更，旧回包未覆盖：" + block.ReportId);
+							if (HasWeeklyReportCommitWinner(context, group))
+							{
+								context.SuccessCount++;
+							}
+							else
+							{
+								context.FailureCount++;
+								context.FailedGroups.Add(group);
+								context.FailureMessages.Add("周报目标在请求期间已变更，旧回包未覆盖：" + block.ReportId);
+							}
 							context.BlockIndex++;
 							if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 							{
-							return false;
+								return false;
 							}
 							continue;
 						}
@@ -45660,9 +45686,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 						if (context.CurrentBlockRejected)
 						{
 							context.CurrentBlockRejected = false;
-							context.FailureCount++;
-							context.FailedGroups.Add(group);
-							context.FailureMessages.Add("周报目标在提交期间已变更，旧回包未覆盖：" + block.ReportId);
+							if (HasWeeklyReportCommitWinner(context, group))
+							{
+								context.SuccessCount++;
+							}
+							else
+							{
+								context.FailureCount++;
+								context.FailedGroups.Add(group);
+								context.FailureMessages.Add("周报目标在提交期间已变更，旧回包未覆盖：" + block.ReportId);
+							}
 						}
 						else
 						{
