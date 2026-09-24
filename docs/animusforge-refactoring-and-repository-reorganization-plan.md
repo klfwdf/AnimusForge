@@ -5,6 +5,7 @@
 
 - 频率/成本：分组按每次周报材料准备或手动重试执行，O(G log G) 排序、O(G) 模式划分；不在每 tick 对全量历史重扫。分批预览里每次 `ApplyWeeklyPromptMaterialAggregation`、主线程王国和 action snapshot 的 O(N) 成本仍待后续 a1 切片量化/归属；不能据此声称帧预算完成。
 - 验证：Debug/Release × 1.3 `v1.3.15.110062`、1.4 `v1.4.6.115628` + Bootstrap 原脚本六构建均 0 warning/error，无 Stage/Deploy。当前 Debug 1.4 DLL SHA256 `746E51D79EC3C7F4CBF5DF2114320BA9CCF1BD2281A22007D36078BFCA126655` 的 Phase8 生产 DLL 回放通过；新增 `WeeklyMaterialBatchPlannerReplay` 检验邻近/世界/兜底次序、批次上限、全文/短报分区、原 group 身份和周界。Debug 1.3 `39D997A35F61B43DE29030BB9385D899E06E48982A3DC6B7935453E4703B9E88`；Release 1.3 `CED7ECE20A876D7C3B8ECFEE152573D7E0AE3781E186547F4EBDA5C2F135559B`、1.4 `1FFE55A850053A9B99DEA883AC09A3FD7B572CDC307E349BA2CCA7C23DFECA0C`。Phase8 inventory 11、source inventory 7、438 代码地图 recorded/working-tree 通过，均不替代实机。
+- 四 DLL V1/legacy/内部端口 metadata 1060 项通过；source-linked API 119 项、snapshot 边界 36 项与 5 个负向变异拒绝通过。首次误用系统 SDK 10.0.400，因本机缺 net8.0.30 targeting pack 而在 NuGet 禁用网络时 `NU1100`；改用仓库现有 `local/dotnet/8.0.425/dotnet.exe` 与其 net8.0.31 pack 后原 runner 全部通过，未修改断言/产品目标框架或联网安装。metadata/fixture 不证明 CLR 实际游戏加载。
 - 下一动作：完成预览素材聚合/准备游标与真实预算证据，再进入 a2 生成请求/批量完成与 a3 回执发布；之后才可判定 J13a 退出门。J13b–g 尚未施工。实机、旧档、provider、音频和帧性能 `NOT-RUN`；未 Stage/部署/打包/推送。
 
 ## J13a 调度责任切片（2026-09-24）
