@@ -1,3 +1,7 @@
+# 当前范围：J13d1 离线收口，J13d2 施工
+
+产品 `eb641aaa`：Recruitment 原协调算法及升格 Persona/skills 主线程、单预约、source/target/generation 保护；详细覆盖和未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。不更新 HANDOFF、不推送；以下为历史时点。
+
 # 当前范围：J13d1 名声与恋爱已验证，Recruitment 接续
 
 产品 `e7a16ba7` / `a49642bf`，证据及保留宿主职责见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。以下为历史时点；J13d1/J13 仍 ACTIVE，不更新 HANDOFF、不推送。

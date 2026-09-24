@@ -1,3 +1,14 @@
+## J13d1 Recruitment 与升格人设离线收口，进入 d2（2026-09-25）
+
+状态 `J13d1_OFFLINE_VERIFIED / J13d2_ACTIVE / J13_ACTIVE`；意图 `855dde0e`，产品 `eb641aaa`。d1 的 Notoriety/Romance 证据见紧邻旧段，仍保留所列 host 与未验证范围；本段补齐此前 c/d1 留下的升格生命周期。无推送、HANDOFF 更新、Stage/部署/打包/游戏存档写入/J14。
+
+- `RecruitmentOwner` 实际接走 Hero 入队、non-Hero 普通入队/酒馆池/升格分流、升格事务的原算法和执行顺序；原 Reward 公开/标签入口保留窄包装。该 owner 是同步主线程应用协调，不保存 live 对象，也不是游戏 API 全隔离完成：现有家族/配偶身份、继承/领地、俘虏、原队伍清理、Agent 外观装备/Native token、事实记录仍经原 host helpers 与 TW API 执行。`ApplyRewardTags` 仍有 mixed-domain 消费者，不删除、不重复 Economy 转移。
+- `MyBehavior.PromotedPersonaGeneration.cs` 将原独立升格 profile→fallback→skills 接回 Persona 唯一预约 owner 与现有有预算主线程 dispatcher。游戏对象、配置、prompt 捕获、profile/fallback、技能写入和失败 UI 全在主线程；后台只等待已启动传输。每阶段重验 owner/generation/lease/同一 Hero，profile 对比初始两字段，skills 对比请求前原 18 项技能摘要及人设；期间编辑、读档、换 owner/target、清理、重复请求均拒绝旧写入。lease 覆盖两个请求，普通生成人设不能同时占用同一 Hero；旧完成不能释放新预约。原 prompt、route、失败文案、本地后备、voice 和技能 parser 保持。
+- 验证：既有 Hero harness 加入真实升格实现/dispatcher，269 checks 零失败，三渠道 consumer 169 零失败；网络/parser/技能底层为 fixture，未调用 provider。绕过升格主线程 commit 的 mutant 产生 20 个行为失败。`verify_j13_recruitment.py --revision eb641aaa` 对前驱 `a49642bf` 的完整 Reward host 与三个搬迁算法作精确逆变换、MyBehavior 仅移出三方法、所有原 prompt/route/fallback 字符串保持；不拿 null fixture 证明实机正向招募。当前 DLL public entry 回放缺 Hero/non-Hero、重复空调用、缺 Native 请求、无假事实通过。
+- 当前 Debug1.4 SHA256 `87D9D6AD6472F457CC349BF300E1F33D6AC17D5A547BC6E1C4574D5FF90CD49B` 的 Phase8 全通过；Debug 1.3/1.4+Bootstrap 零警告错误，V1 119/两 DLL metadata 530、入口 11、PersistenceIdentity 142 key/type 对/36 behaviors 无差异。原历史 Persona 全仓 inverse 的先前失配仍保留；c 的精确证据需使用其记录 revision，不能拿现行新增安全逻辑声称与 c 前驱全文相同。Release/四 DLL 留 J13g 最终重建。
+- 成本：入队是事件低频，沿用原 roster/家族遍历；升格每角色两个原请求，新增 O(1) lease/dispatcher，技能源比较固定 18 项，无新增 tick 全量扫描。同步捕获/本地 parse/commit 的实际帧耗时未测。真实家族/继承/俘虏/队伍转移与原版事件顺序、旧档/provider/UI、帧性能仍 NOT-RUN。
+- 下一步 d2 Proactive/Issue：主动资格/冷却/会话/pending consumption，原版 offer/in-progress/turn-in/完成回执及同伴窗口迟到回调；保持 J10 Courier 语义。
+
 ## J13d1 Notoriety/Romance 切片验证，Recruitment 接续（2026-09-25）
 
 状态 `J13d1_ACTIVE / J13_ACTIVE`；已验证产品 `e7a16ba7`（意图 `3252444d`）及 `a49642bf`（意图 `f7392390`）。J13a–c 有限离线完成。未推送/改 HANDOFF/部署/写游戏或存档，继续 Recruitment 与其后各包。
