@@ -1383,6 +1383,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public bool BlockedByFatalFailure;
 
+		public bool BlockedByChangedRecord;
+
 		public WeeklyReportRetryContext RetryContext;
 	}
 
@@ -1533,6 +1535,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private sealed class WeeklyReportRetryContext
 	{
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
+
+		public Dictionary<string, string> CapturedRecordStates;
 
 		public List<string> PopupCandidateKingdomIds = new List<string>();
 
@@ -42462,6 +42466,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(captured, BuildWeeklyReportCommitRecordState(FindWeeklyReportRecordById(eventId)), StringComparison.Ordinal);
 	}
 
+	private static bool AreWeeklyReportCommitRecordStatesCurrent(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, Dictionary<string, string> captured, Dictionary<string, string> current)
+	{
+		return groups != null && captured != null && current != null && groups.Keys.All((string id) => captured.TryGetValue(id, out string original) && current.TryGetValue(id, out string now) && string.Equals(original, now, StringComparison.Ordinal));
+	}
+
 	private Task<bool> QueueWeeklyFullReportCompletionAsync(long runtimeGeneration, Func<bool> apply)
 	{
 		return _weeklyFullReportCompletions.Enqueue(runtimeGeneration, apply);
@@ -42994,7 +43003,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null)
+	private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null, Dictionary<string, string> capturedRecordStates = null)
 	{
 		WeeklyReportRetryContext weeklyReportRetryContext = new WeeklyReportRetryContext
 		{
@@ -43004,6 +43013,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			DisplayLabel = (displayLabel ?? "").Trim(),
 			OpenViewerWhenDone = openViewerWhenDone,
 			IsAutoGeneration = isAutoGeneration,
+			CapturedRecordStates = capturedRecordStates,
 			FailedGroupTitle = BuildWeeklyReportGroupDisplayLabel(failedGroup),
 			FailedReason = (requestResult?.FailureReason ?? "").Trim(),
 			AttemptsUsed = requestResult?.AttemptsUsed ?? 0,
@@ -43294,7 +43304,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		WeeklyReportGenerationResult weeklyReportGenerationResult = null;
 		try
 		{
-			weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(context.Groups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, queueBlockingPopupOnFatalFailure: false, isAutoGeneration: context.IsAutoGeneration, popupCandidateKingdomIdsOverride: context.PopupCandidateKingdomIds);
+			weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(context.Groups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, queueBlockingPopupOnFatalFailure: false, isAutoGeneration: context.IsAutoGeneration, popupCandidateKingdomIdsOverride: context.PopupCandidateKingdomIds, capturedRecordStatesOverride: context.CapturedRecordStates);
 			if (retryVersion != _weeklyReportManualRetryVersion)
 			{
 				return;
@@ -43311,7 +43321,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				_pendingWeeklyReportManualRetryMessage = "周事件补跑仍未成功，请检查 API / 模型配置后再试。";
+				_pendingWeeklyReportManualRetryMessage = weeklyReportGenerationResult?.BlockedByChangedRecord == true
+					? "周报目标已被编辑或由其他请求完成，旧素材不能重试；请重新收集本周素材并生成。"
+					: "周事件补跑仍未成功，请检查 API / 模型配置后再试。";
 				_pendingWeeklyReportManualRetryContext = (weeklyReportGenerationResult?.RetryContext ?? context);
 			}
 		}
@@ -45323,7 +45335,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null)
 	{
 		WeeklyReportGenerationResult generationResult = new WeeklyReportGenerationResult();
 		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this))
@@ -45357,7 +45369,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) && x.OutputMode != WeeklyReportOutputMode.TitleShortTagsOnly).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		}
 		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = BuildWeeklyReportGroupMap(list);
-		Dictionary<string, string> capturedRecordStates = CaptureWeeklyReportCommitRecordStates(groupMap, weekIndex);
+		Dictionary<string, string> currentRecordStates = CaptureWeeklyReportCommitRecordStates(groupMap, weekIndex);
+		if (capturedRecordStatesOverride != null && !AreWeeklyReportCommitRecordStatesCurrent(groupMap, capturedRecordStatesOverride, currentRecordStates))
+		{
+			generationResult.BlockedByFatalFailure = true;
+			generationResult.BlockedByChangedRecord = true;
+			generationResult.FailureCount = groupMap.Count;
+			InformationManager.DisplayMessage(new InformationMessage("周报目标在失败后已变更，旧素材重试已取消；请重新生成本周周报。"));
+			return generationResult;
+		}
+		Dictionary<string, string> capturedRecordStates = capturedRecordStatesOverride ?? currentRecordStates;
 		List<WeeklyReportBatchRequest> batches = (preparedBatches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
 		if (batches.Count == 0)
 		{
@@ -45805,7 +45826,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				AttemptsUsed = 3
 			};
 			result.BlockedByFatalFailure = true;
-			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds);
+			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates);
 			InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation paused: " + context.FailureCount + " weekly report target(s) failed."));
 			if (context.QueueBlockingPopupOnFatalFailure)
 			{
@@ -46310,13 +46331,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		QueueWeeklyReportMapNotice(eventId);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null)
 	{
 		if (runtimeGeneration <= 0L)
 		{
 			runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		}
-		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration);
+		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration, capturedRecordStatesOverride);
 #if false
 		WeeklyReportGenerationResult weeklyReportGenerationResult = new WeeklyReportGenerationResult();
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();

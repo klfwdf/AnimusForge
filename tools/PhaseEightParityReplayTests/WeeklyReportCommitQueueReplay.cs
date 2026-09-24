@@ -78,7 +78,21 @@ internal static class WeeklyReportCommitQueueReplay
         material.GetType().GetField("SnapshotText", Members).SetValue(material, "new source");
         materials.Add(material);
         Check(captured != Read(), "edited saved source materials invalidate old response");
-        Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials live=NOT_RUN");
+        Type groupType = behavior.GetNestedType("WeeklyEventMaterialPreviewGroup", BindingFlags.NonPublic);
+        IDictionary groups = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), groupType));
+        groups.Add("world", null);
+        var admission = behavior.GetMethod("AreWeeklyReportCommitRecordStatesCurrent", Members);
+        var expected = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["world"] = captured };
+        var current = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["world"] = captured };
+        bool Allowed() => (bool)admission.Invoke(null, new object[] { groups, expected, current });
+        Check(Allowed(), "same target state permits explicit retry");
+        current["world"] = Read();
+        Check(!Allowed(), "changed saved source refuses retry before request");
+        current.Clear();
+        Check(!Allowed(), "missing current state refuses retry");
+        current["world"] = captured; expected.Clear();
+        Check(!Allowed(), "missing original state refuses retry");
+        Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission live=NOT_RUN");
     }
 
     private static void Check(bool passed, string name)
