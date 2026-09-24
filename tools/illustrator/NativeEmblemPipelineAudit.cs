@@ -52,6 +52,11 @@ public static class NativeEmblemPipelineAudit
             g.FillRectangle(Brushes.Black,22,20,33,9);
             g.FillRectangle(Brushes.White,80,60,10,22);
         }
+        // Alpha is independent of the native R/B conversion, including pixels
+        // below the content-validation threshold and transparent color payloads.
+        bitmap.SetPixel(7, 3, Color.FromArgb(73, 23, 99, 211));
+        bitmap.SetPixel(8, 3, Color.FromArgb(0, 190, 40, 15));
+        bitmap.SetPixel(9, 3, Color.FromArgb(255, 235, 181, 146));
         if (variant==1) bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
         if (variant==2) bitmap.RotateFlip(RotateFlipType.Rotate270FlipX);
         return bitmap;
@@ -111,6 +116,11 @@ public static class NativeEmblemPipelineAudit
         string first=await Get(cache,"banner-A",128,CancellationToken.None);
         string second=await Get(cache,"banner-A",128,CancellationToken.None);
         Check("cache_hit",first!=null && first==second && calls==1,"Same full banner code and size rendered once");
+        using(var expected=Flag(0))
+        using(var stream=new MemoryStream(Convert.FromBase64String(second)))
+        using(var actual=new Bitmap(stream))
+            Check("cached_reference_preserves_corrected_colors",Difference(expected,actual)==0,
+                "Cache reuses the already corrected reference without a second channel conversion");
         await Get(cache,"banner-B",128,CancellationToken.None);
         await Get(cache,"banner-A",256,CancellationToken.None);
         Check("cache_identity",calls==3,"Different banner or size never aliases");
