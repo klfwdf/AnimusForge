@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`cd37d2f2` 将聚合、PromptMaterials、Batch Prompt 的瞬态下标/完成状态归 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs:5,17`；`MyBehavior.cs:6238–6298` 保留主线程工作和预算门禁。空/null/重入/完成后不重放的单步回放及六构建通过；每组内容处理和一次性 O(N) 快照仍是原子工作。a1 为 `VERIFY`，J13a/J13 未完成；449 锚点地图仅定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `c2d8565b` 将 Full/Short PromptMaterials 组装、短报排除/单次统计与劫掠归并、全文劫掠结果合并归 `src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs:10,12,35,71`；自动 `MyBehavior.cs:6286`、同步 `:37168` 与独立劫掠构造 `:42356` 真实消费者均接通。Settlement/Hero 解析及原专用转换 helper 留主线程 host。六构建、当前候选 Phase8/材料回放通过；阶段游标和初始化快照尚未闭合，a1/J13a 仍 ACTIVE。447 锚点地图仅证明定位，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `12f9e3d2` 将邻近前三王国全文、其余短报及空邻近回退规则统一交给 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs:9,25`；同步预览 `MyBehavior.cs:37146–37169` 与延迟自动准备 `:6266–6293` 共用且延迟路径缓存 ID 集合。双版本六构建及当前候选 Phase8/选择反例通过；PromptMaterials 具体构造和阶段游标仍在 host，a1/J13a 尚未全包完成。444 锚点地图只证明定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
