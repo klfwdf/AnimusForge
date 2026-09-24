@@ -898,6 +898,7 @@
         "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyActionMaterialCursor.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs"
       ],
