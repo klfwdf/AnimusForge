@@ -897,6 +897,7 @@
         "SexualConceptionBehavior.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
         "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
+        "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
         "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs",
@@ -968,6 +969,7 @@
         "KnowledgeLibraryBehavior.cs",
         "MyBehavior.PersonaGeneration.cs",
         "MyBehavior.PersonaReadiness.cs",
+        "MyBehavior.PromotedPersonaGeneration.cs",
         "MyBehavior.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs"
