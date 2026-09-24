@@ -27,6 +27,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private static long _conversationSessionEpoch;
         private readonly ScreenBase _screen;
         private readonly MovableGauntletLayer _layer;
+        private readonly GauntletLayer _backdropLayer;
         private readonly IllustrationCardVM _dataSource;
         private readonly IllustrationScope _scope;
         private readonly string _category;
@@ -113,13 +114,21 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _layer = layer;
             try
             {
+            if (autoFullscreen)
+            {
+                // One passive image layer below the conversation, with controls kept
+                // above it. Resolve the host's order once when opening, never per tick.
+                _backdropLayer = new GauntletLayer("IllustrationFullscreenBackdrop", ResolveFullscreenBackdropOrder(screen), false);
+                _backdropLayer.LoadMovie("ConversationIllustrationFullscreenBackdrop", _dataSource);
+                _backdropLayer.InputRestrictions.ResetInputRestrictions();
+            }
             var movieIdentifier = layer.LoadMovie(movieName, _dataSource);
             if (!autoFullscreen)
                 layer.AutoAttachMovable(movieIdentifier?.Movie, "CardPanel", "TitleBar");
             else
                 layer.AttachTopFraction(movieIdentifier?.Movie?.RootWidget?.FindChild("TopPanel", includeAllChildren: true), 0.75f);
-            // The fullscreen root is non-accepting so the lower conversation UI remains
-            // usable outside TopPanel, but its child buttons still need mouse dispatch.
+            // The transparent controls root never consumes the conversation's input;
+            // only its actual buttons participate in mouse hit testing.
             layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.MouseButtons);
             _layer = layer;
             _scope = new IllustrationScope(screen, category, Close);
@@ -146,6 +155,22 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     if (popup._closed || !popup._scope.IsCurrent || !ReferenceEquals(_activeInstance, popup) || version != popup._cacheLoadVersion) return;
                     completed(cached, error);
                 });
+        }
+
+        private static int ResolveFullscreenBackdropOrder(ScreenBase screen)
+        {
+            int conversationOrder = int.MaxValue;
+            if (screen?.Layers != null)
+                foreach (var layer in screen.Layers)
+                {
+                    if (layer == null || layer.IsFinalized) continue;
+                    string name = layer.Name;
+                    if (name == "MissionConversation" || name == "MapConversation" ||
+                        name == "AnimusForgeNativeConversationOverlay" || name == "ShoutTextInputPopup")
+                        conversationOrder = Math.Min(conversationOrder, layer.InputRestrictions.Order);
+                }
+            // Native mission conversation is order 49 on both supported game APIs.
+            return conversationOrder == int.MaxValue ? 48 : conversationOrder - 1;
         }
 
         internal static string SelectOpeningSceneReference(string image, string capturedSession, string currentSession)
@@ -275,6 +300,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         : "对方");
 
                 popup._dataSource.TitleText = useFullscreen ? "【场景插画】" : $"【会晤插画 · 与 {partnerName}】";
+                if (popup._backdropLayer != null) topScreen.AddLayer(popup._backdropLayer);
                 topScreen.AddLayer(popup._layer);
                 _activeInstance = popup;
 
@@ -884,22 +910,29 @@ namespace AnimusForge.Illustrator.UI.Overlays
             try
             {
                 _scope?.Close();
-                ReleaseActiveSprite();
-                if (_screen != null && _layer != null)
-                {
-                    _screen.RemoveLayer(_layer);
-                }
             }
             catch
             {
             }
             finally
             {
+                // A failure finalizing one movie must not leave the fullscreen
+                // backdrop attached after the conversation or popup is closed.
+                RemoveOwnedLayer(_layer);
+                RemoveOwnedLayer(_backdropLayer);
+                try { ReleaseActiveSprite(); } catch { }
                 if (_activeInstance == this)
                 {
                     _activeInstance = null;
                 }
             }
+        }
+
+        private void RemoveOwnedLayer(ScreenLayer layer)
+        {
+            if (_screen == null || layer == null || layer.IsFinalized) return;
+            try { _screen.RemoveLayer(layer); }
+            catch (Exception ex) { Debug.Print("[Illustrator] Overlay cleanup failed: " + ex.Message); }
         }
 
         public static void CloseActiveConversation()

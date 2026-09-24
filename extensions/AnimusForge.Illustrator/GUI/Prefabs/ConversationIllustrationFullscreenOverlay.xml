@@ -2,9 +2,8 @@
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
       <Children>
-        <Widget Id="TopPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="720" VerticalAlignment="Top" Sprite="BlankWhiteSquare_9" Color="#E0000000" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
+        <Widget Id="TopPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="720" VerticalAlignment="Top" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
           <Children>
-            <Widget IsVisible="@HasIllustration" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="@SpriteName" ImageFit.Type="Contain" DoNotAcceptEvents="true" />
             <Widget IsVisible="@IsLoading" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.7" DoNotAcceptEvents="true">
               <Children>
                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="40" MarginRight="40" Brush="Popup.Description.Text" Brush.FontSize="24" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
@@ -16,7 +15,7 @@
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Button.Text" Brush.FontSize="18" Text="关闭" DoNotAcceptEvents="true" />
               </Children>
             </ButtonWidget>
-            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="46" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="14" LayoutImp.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
+            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="46" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="14" LayoutImp.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
               <Children>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="38" MarginRight="6" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerate" UpdateChildrenStates="true">
                   <Children>
