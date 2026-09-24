@@ -1,10 +1,17 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 失败后手动重试沿用目标状态切片（2026-09-24）
+
+状态 `J13a_A2_RETRY_ADMISSION_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `8b1f703d`。`MyBehavior.cs:42469,43006,43302–43324,45338–45389,45829,46334–46340` 使 pending commit 的失败上下文携带原请求前目标状态到手动重试，而不是在重试开始时对旧素材重新授予覆盖权。重试前在当前主线程 owner/同代检查后比较失败组的原状态与当前状态；任一失败组目标变更就不发送本次重试请求，回执标记记录变更并提示重新收集素材；所有失败组均未变时才沿原手动重试路径。仅失败组参与比较，先前成功组的记录更新不会错误挡住剩余组。
+
+- 验证：四个获准构建目录绝对路径/内容/链接复核后，原脚本 Debug/Release × Bannerlord 1.3/1.4 + Bootstrap 六构建均 0 warning/error；当前 Debug 1.4 SHA256 `231869AC9A7D7854B5066C08D0D350E14EE8B5DD0F6A10ACE02E8DB0CD448F05` 的 Phase8 当前候选及重试同态准入、目标/保存素材变更/缺失状态反例通过；入口 11、source inventory 7、V1 119/四实现 DLL metadata 1060、458 锚点地图 recorded/working-tree 通过。反例是生产纯判定与源码接线，不是 live popup 或 API 重试验收。
+- 剩余：记录变更后旧失败弹窗仍沿原 API 修复/手动重试 UI 流程显示，虽不会再次发旧请求，却尚无合适的“重新采集本周素材”恢复动作；独立 live 源变更、minute burst/部分失败/发布的整体生命周期仍未闭合。a2/J13a/J13 保持 ACTIVE，a3 与 J13b–g 未施工。无实机、旧档、provider、音频或帧性能数据，均 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
+
 ## J13a a2 批量目标记录迟到回包防覆盖切片（2026-09-24）
 
 状态 `J13a_A2_TARGET_GUARD_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `d59848d1`。`MyBehavior.cs:42429–42464,45326–45397,45558–45742` 在请求前由当前主线程 owner 为各目标捕获原事件记录状态（含保存的素材、全文与展示字段），在主线程 pending commit 的 block 接纳和材料游标结束后写入前重验；不同代/非当前 owner 直接结算旧任务。期间编辑或其他请求已写入的胜出者不再被旧结果覆盖、不计成功、不发地图通知；按原失败路径计入部分失败并保留显式重试弹窗。跨 batch 重复 report ID 只结算一次。原 `UpsertWeeklyReportEventRecord` 写入/发布逻辑、存档 DTO 与外部接口身份未改。
 
 - 验证：授权的四个构建目录均复核绝对路径、内容、无 reparse point 后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 DLL SHA256 `FCAB4573DD0A2DE6FC9524BF8A786C93D7AC1C9A35738C46ABFA47FC30FAA066` 的 Phase8 显式候选 marker/新鲜度与记录 absent/编辑/胜出者/保存素材改变回放通过；入口 11、source inventory 7、四实现 DLL metadata 1060/公开 V1 119、456 锚点地图 recorded/working-tree 通过。回放只证明状态序列化反例与源码接线，未在 live Campaign 并发驱动整个 pending commit。
-- 成本/未完：请求前一次 O(R+G) 记录索引捕获并序列化命中目标；每个 block 至少一次当前记录线性查找 O(R) 与按记录字符/素材大小的序列化，延迟材料克隆恢复时再重验。没有帧耗时上界或大积压证据。独立于目标记录的 live 材料源变化尚未被本门禁覆盖；显式重试会重新捕获目标状态，需要继续定义“源已编辑”时的恢复语义。minute burst/请求协调、失败 popup/恢复和 a3 回执发布未闭合，**a2/J13a/J13 仍 ACTIVE**。实机、旧档、provider、音频、性能 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
+- 成本/未完：请求前一次 O(R+G) 记录索引捕获并序列化命中目标；每个 block 至少一次当前记录线性查找 O(R) 与按记录字符/素材大小的序列化，延迟材料克隆恢复时再重验。没有帧耗时上界或大积压证据。独立于目标记录的 live 材料源变化尚未被本门禁覆盖；当时显式重试会重新捕获目标状态，该风险由上方 `8b1f703d` 切片取代，恢复 UI 仍待处理。minute burst/请求协调、失败 popup/恢复和 a3 回执发布未闭合，**a2/J13a/J13 仍 ACTIVE**。实机、旧档、provider、音频、性能 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
 
 ## J13a a2 分块材料提交游标切片（2026-09-24）
 
