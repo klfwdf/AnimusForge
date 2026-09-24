@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 王国拓扑事件源失效切片（2026-09-25）
+
+状态 `J13a_A2_KINGDOM_EVENT_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `dc2dd917`。复核 `MyBehavior.cs:37253–37279,44698–44791` 可见 Weekly 分组/Prompt 会读取当前王国资格、英雄归属和统治者上下文；这些 live 投影发生变化时不一定产出目标周界内的素材，前一切片的逐日版本可能漏判。因此已注册的 `OnClanChangedKingdom`、`OnClanDefected`、`OnRulingClanChanged`、`OnClanLeaderChanged`、`OnKingdomDestroyed`、`OnClanDestroyed` 在 `MyBehavior.cs:3993,4084,4166,4398,7134,7210` 先使同一修订 owner 的全局版本失效，再沿原事件处理；无被跟踪 Lord/无新增同周素材时也会拒绝请求期间捕获的旧投影。事件触发 O(1)，不增加 tick 扫描；可能保守取消与目标王国无关的在途周报，这是刻意的安全侧失效，用户仍可通过已有显式重采恢复。未改变原事件订阅、玩法、存档/公开身份或 API route。
+
+- 验证：四获准目录绝对路径、内容与无链接复核后，原脚本不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 SHA256 `2D1E29B437B67FF955BF2511A3749B3FB8CFC54B46E0723F65FBAA746294C942` 的 Phase8 显式候选、空王国消亡事件不产生日素材仍使快照失效的真实回调回放、V1 119/四 DLL metadata 1060、入口 11/source 7、487 锚点地图 recorded/working-tree 通过。
+- 未完：这只覆盖已注册并接线的王国/家族变化事件，不能证明所有 live 名称、位置/邻近、未注册的第三方直接状态修改；多 wave/Campaign tick、部分失败 UI 与一次发布组合仍未验收。a2/J13a/J13 `ACTIVE`，a3/J13b–g 未施工；实机、旧档、provider、音频、帧性能 `NOT-RUN`，未 Stage/部署/打包/推送，`.dotnet-cli-home/` 未动。下方 `d4443bcb` 的“live Kingdom 尚未覆盖”是该旧切片时点状态，由此处部分补充，不据此宣称整体源状态已闭合。
+
 ## J13a a2 周报源素材修订门禁切片（2026-09-25）
 
 状态 `J13a_A2_SOURCE_REVISION_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `d4443bcb`。`src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs:6–63` 持有非存档的逐日、全局淘汰/合并、开局概要修订；真实写入点包括 `MyBehavior.cs:13687,13707,15504–15529,25587,25846,29626–29646,35570,35666,36131,37033,47186–47187,53084,53138`。自动分阶段、同步自动及手动预览在材料构造前捕获周界，`MyBehavior.cs:6127,6394,45591,45630–45632` 将快照贯穿准备、minute wave、重试与 pending commit；`MyBehavior.cs:45846–45863,46060,46105,46219–46241` 在主线程每波发起前、解析 block 和写入前重验，源变更时旧结果不覆盖，失败组走已有显式重新采集入口。已发波次保留其结果结算；未发波次补失败结果供最终目标结算，避免遗失等待者。原目标胜出者、存档键、公开接口及单一 DLL 身份保留。捕获/重验 O(周天数)，写入标记 O(1)；淘汰/合并采用保守全局失效，无每 tick 全 Hero 扫描。
