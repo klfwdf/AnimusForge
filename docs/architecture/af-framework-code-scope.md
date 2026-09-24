@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`e4a78829` 将批量周报 worker→主线程 commit FIFO、无工作标志、只移除当前队首和读档清理等待者归 `src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs:7,22,32,46,60`；`MyBehavior.cs:1908,2481,17423,45453–45512` 保留 Campaign tick、预算、generation 与记录写入。Debug/Release 双版本六构建、当前候选 Phase8 的旧 context/新队首及清理负例通过。此为 a2 队列切片，不代表请求/分块提交/失败恢复闭合；a2/J13a/J13 仍 ACTIVE。451 锚点地图只作定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `577f7cac` 增加同一 detached 材料在同步与分阶段 owner 链上的全文/短报、顺序、批次及周界组合回放。结合 `cd37d2f2` 的三阶段游标与此前调度/分组/聚合/PromptMaterials 各生产切片、双版本六构建和当前候选 Phase8，J13a **a1 已有限 `OFFLINE_VERIFIED`**；只证明离线同输入及源码接线，不证明 live Kingdom 资格、跨 tick 外部突变或帧耗时。a2/a3 与 J13b–g 仍 ACTIVE，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `cd37d2f2` 将聚合、PromptMaterials、Batch Prompt 的瞬态下标/完成状态归 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs:5,17`；`MyBehavior.cs:6238–6298` 保留主线程工作和预算门禁。空/null/重入/完成后不重放的单步回放及六构建通过；每组内容处理和一次性 O(N) 快照仍是原子工作。a1 为 `VERIFY`，J13a/J13 未完成；449 锚点地图仅定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
