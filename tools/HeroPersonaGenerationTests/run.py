@@ -1,7 +1,7 @@
 from pathlib import Path
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice','false_queued_success']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--dotnet', default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['worker_capture','worker_commit','ignore_edit','stale_lease','release_new','drop_voice','false_queued_success']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 s=subprocess.check_output(['git','show','10defeb4:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -17,16 +17,19 @@ out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
 files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs',ROOT/'src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs']
 if not a.original:
- helper=(ROOT/'MyBehavior.PersonaGeneration.cs').read_text(encoding='utf-8-sig');owner=(ROOT/'src/modules/AF.Module.Conversation/Internal/NpcPersonaGenerationOwner.cs').read_text(encoding='utf-8-sig')
+ helper=(ROOT/'MyBehavior.PersonaGeneration.cs').read_text(encoding='utf-8-sig');owner=(ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs').read_text(encoding='utf-8-sig')
  if a.mutate in ('worker_capture','worker_commit'):
   part='bool captured' if a.mutate=='worker_capture' else 'bool accepted'
   begin=helper.index(part);helper=helper[:begin]+helper[begin:].replace('RunMemorySummaryCompletionAsync(generation, () =>','UnsafeDirect(() =>',1)
- if a.mutate=='ignore_edit':helper=helper.replace('if (overwriteExisting && (!string.Equals(curP','if (false && (!string.Equals(curP',1)
+ policy=(ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs').read_text(encoding='utf-8-sig')
+ if a.mutate=='ignore_edit':policy=policy.replace('if (overwriteExisting && (!string.Equals(currentPersonality','if (false && (!string.Equals(currentPersonality',1)
  if a.mutate=='stale_lease':helper=helper.replace('!_npcPersonaGeneration.IsCurrent(work.Reservation)','false',1)
  if a.mutate=='release_new':owner=owner.replace('|| !ReferenceEquals(current, lease)) return;','|| false) return;',1)
  if a.mutate=='false_queued_success':helper=helper.replace('return overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return "";',1).replace('return accepted ? failure ?? "" : overwriteExisting ? "请求已失效，未保存新的人设。" : "";', 'return accepted ? failure ?? "" : "";',1)
  if a.mutate=='drop_voice':helper=helper.replace('VoiceId = (current.VoiceId ?? "").Trim()','VoiceId = ""',1)
  (out/'Persona.cs').write_text(helper,encoding='utf-8');(out/'Owner.cs').write_text(owner,encoding='utf-8');files += [out/'Persona.cs',out/'Owner.cs']
+if not a.original:
+ (out/'Policy.cs').write_text(policy,encoding='utf-8');files.append(out/'Policy.cs')
 project=util.project(out,'HeroPersonaProof',files,executable=True)
-code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['run','--project',str(project),'-c','Release'],out)
+code,log=util.run_dotnet(a.dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

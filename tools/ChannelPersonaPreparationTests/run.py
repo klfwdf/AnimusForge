@@ -1,7 +1,7 @@
 from pathlib import Path
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--dotnet', default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 def read(p):return (ROOT/p).read_text(encoding='utf-8-sig')
@@ -18,7 +18,7 @@ else:
 code=code.replace('@@EXTRAS@@','' if a.original else read('tools/ChannelPersonaPreparationTests/Extras.cs.txt'))
 code=code.replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')
 out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True);(out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-files=[out/'Program.cs',ROOT/'Refactor/Contracts/NpcPersonaReadinessSnapshot.cs']
+files=[out/'Program.cs',ROOT/'Refactor/Contracts/NpcPersonaReadinessSnapshot.cs',ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs']
 if not a.original:
  for path in ['MyBehavior.PersonaReadiness.cs','ShoutBehavior.PersonaPreparation.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs','src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs']:
   text=read(path).replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')
@@ -38,5 +38,5 @@ if not a.original:
    if a.mutate=='waiter_ignore_scope':text=text.replace('!hasTime() || !await isCurrent().ConfigureAwait(false)','!hasTime()',1)
   dest=out/Path(path).name;dest.write_text(text,encoding='utf-8');files.append(dest)
 project=util.project(out,'ChannelPersona',files,executable=True)
-code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['run','--project',str(project),'-c','Release'],out)
+code,log=util.run_dotnet(a.dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

@@ -18722,11 +18722,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static string NormalizeGeneratedPersonaText(string text)
 	{
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		return (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return NpcPersonaProfilePolicy.NormalizeGenerated(text);
 	}
 
 	private static string NormalizePersonaPromptSourceText(string text, int maxLength = 1200)
