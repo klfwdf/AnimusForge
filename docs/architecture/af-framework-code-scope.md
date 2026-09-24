@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-25）
 
+当前源码 `02812536`：`ce8413dd` 将实际 minute-wave 协调归 `WeeklyReportWaveCoordinator`，`02812536` 以共锁准入修复 Weekly 四种队列的退役/读档后迟到等待者。当前候选六构建及 Phase8 的真实 host 协调/pump、受控跨波/源失效、并发准入/清理和退役准备/commit 回放通过；双版本、存档与公开身份保持。真实 provider/UI/60 秒等待、完整部分提交＋显式重采＋一次发布组合和 commit 积压预算仍未验，a2/J13a/J13 ACTIVE。详细修订、坐标、命令和边界只见[主台账当前入口](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)及[代码地图](af-framework-code-map.json)；下列段落为各自提交时点记录。按本轮用户要求不更新 HANDOFF、不推送。
+
 `c0221d02` 的 `tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs:64–125` 回放真实 `MyBehavior.cs:45839–45903` 两个已排队波次：单次主线程 pump 只启一波，源修订后次波网络前取消。产品未改；当前候选 Phase8 通过，但真实 60 秒延迟、Campaign tick/部分提交/UI/一次发布组合未跑，a2/J13a/J13 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `0a1d6c8d` 通过真实 `MyBehavior.cs:46065` pending commit 验证既有胜出周报与另一 RPM 失败目标并存；`78b87434` 在 `MyBehavior.cs:1503,46209–46303,46341` 的提交异常路径按权威记录筛掉已完成目标、结算等待者并仅为未完成目标提供显式新素材重试，已尝试写入的记录幂等补通知。六构建、当前候选 Phase8 组合/异常反例、492 锚点地图通过；live UI/Campaign tick/一次发布组合及积压成本未验，a2/J13a/J13 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。

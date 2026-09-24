@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "c0221d0284e01a285695319ee483fa87e23396ea",
+  "sourceRevision": "028125367c6b065cb0b9309c5bcd76c9fb24a5f5",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -255,7 +255,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "源重验紧接真实Apply；部分/未知错误通知，不盲重放或假报成功",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "legacy.history",
@@ -266,7 +266,7 @@
       "match": "contains",
       "status": "retained-live",
       "note": "Scene/Courier 仍调用，共享兼容入口不能盲删",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "legacy.recall",
@@ -277,7 +277,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "scene.chain.group-prompt",
@@ -508,7 +508,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "raw数量入场；候选ID扫描仍有同步全扫，不代表全部入口已预算",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.summary.planner",
@@ -519,7 +519,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "分段初筛/extra/cleanup，冻结metadata排序与失败汇总在worker；仅完整接受才计数",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.summary.maintenance",
@@ -530,7 +530,7 @@
       "match": "exact",
       "status": "mixed-host",
       "note": "不在每Tick重复读完整summary来源；past draft检查仍有全扫",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.plan.entry",
@@ -579,57 +579,57 @@
     {
       "id": "memory.editor.text",
       "path": "MyBehavior.cs",
-      "start": 49290,
-      "end": 49290,
+      "start": 49263,
+      "end": 49263,
       "symbol": "private void OpenDevDailyMemoryLineTextEditor(",
       "match": "contains",
       "status": "mixed-host",
       "note": "文本保存/取消真实红绿证据；同代记录引用/指纹也须保持",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.import.single",
       "path": "MyBehavior.cs",
-      "start": 54130,
-      "end": 54130,
+      "start": 54103,
+      "end": 54103,
       "symbol": "private void ImportSingleNpcDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.import.batch",
       "path": "MyBehavior.cs",
-      "start": 56008,
-      "end": 56008,
+      "start": 55981,
+      "end": 55981,
       "symbol": "private void ImportDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "记忆批量导入生命周期，保留overwrite/merge业务",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.import.hero-all",
       "path": "MyBehavior.cs",
-      "start": 54327,
-      "end": 54327,
+      "start": 54300,
+      "end": 54300,
       "symbol": "private void ImportHeroNpcAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.import.all",
       "path": "MyBehavior.cs",
-      "start": 56536,
-      "end": 56536,
+      "start": 56509,
+      "end": 56509,
       "symbol": "private void ImportAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF全量导入窗口门禁；非全部导入业务已运行验收",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.summary.raw-view",
@@ -673,7 +673,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.material.index-owner",
@@ -706,7 +706,7 @@
       "note": "原记录/追加/发布仍归主体 owner，使用独立索引",
       "start": 13660,
       "end": 13660,
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.material.rebuild",
@@ -717,7 +717,7 @@
       "note": "重建后复核来源引用，再发布和绑定",
       "start": 19794,
       "end": 19794,
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.sealing.continue",
@@ -761,7 +761,7 @@
       "note": "真实主/deferred维护共享周期与异常/nested恢复",
       "start": 17585,
       "end": 17585,
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.budget.caller",
@@ -772,7 +772,7 @@
       "note": "实际Campaign入口接入共享维护周期，其他顺序保持",
       "start": 17518,
       "end": 17518,
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.budget.deferred",
@@ -783,7 +783,7 @@
       "note": "复用共享deadline，原子超时后不再开始下一维护域",
       "start": 5948,
       "end": 5948,
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.sealing.queue-tail",
@@ -827,7 +827,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Daily净化体原样提取；同步Sanitize与分片尾部共用，权威DTO仍在主体",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.sort.major-normalize",
@@ -838,7 +838,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Major净化体原样提取；先pending再dedupe/normalize，保留引用和重试字段",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.source-digest.runtime",
@@ -904,7 +904,7 @@
       "end": 26142,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.owner-normalize.line",
@@ -915,7 +915,7 @@
       "end": 26103,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.owner-normalize.trigger-bind",
@@ -926,7 +926,7 @@
       "end": 26092,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "memory.owner-normalize.entry-work",
@@ -1239,13 +1239,13 @@
     {
       "id": "persona.reroll.ui",
       "path": "MyBehavior.cs",
-      "start": 48706,
-      "end": 48706,
+      "start": 48679,
+      "end": 48679,
       "symbol": "private async Task RunHeroPersonaRerollAsync(",
       "match": "contains",
       "status": "wired-partial",
       "note": "原编辑器入口；异步完成UI回主线程，清理/编辑不报假成功",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "persona.readiness",
@@ -2609,7 +2609,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "共享主链：三步（Begin/Routing/Complete）的顺序组合；Scene 八个调用点与静态门面走此路径",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04.host.courier.preprocess",
@@ -2620,7 +2620,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "Courier 前处理入口；命中排序归 PromptRuleIdPolicy.OrderPreprocessHitIds",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04.host.target.apply",
@@ -2719,7 +2719,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "阶段1：游戏线程读取身份/排除/资格/历史上下文",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04.host.capture.sections",
@@ -2730,7 +2730,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "步骤3 内部：Reward/Duel/Army/Weekly/Policy/Lore/Entity 段落按旧序捕获；mentions 优先用步骤2 预取",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04.host.appendices",
@@ -2741,7 +2741,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "阶段5：GCCZ 运行时 prompt 与共享资源追加",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04f.build.begin",
@@ -2752,7 +2752,7 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享构建步骤1（游戏线程）：请求捕获 + 排除列表；渠道调度器直接调用",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04f.build.routing",
@@ -2763,7 +2763,7 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享构建步骤2（任意线程）：话题路由 + 完整 mention 解析；调用方在该线程应用目标绑定",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04f.build.complete",
@@ -2774,7 +2774,7 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享构建步骤3（游戏线程）：段落捕获 + 纯装配 + 追加；调用方跨线程后需重验 owner",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04f.native.schedule",
@@ -2807,7 +2807,7 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "Courier 前处理步骤1（游戏线程）：排除集合/目标绑定/历史上下文",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04f.courier.preprocess.retrieval",
@@ -2818,7 +2818,7 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "Courier 前处理步骤2（任意线程）：语义规则检索",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j04f.retrieval.capture",
@@ -2873,7 +2873,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "游戏线程按需解析各话题运行时正文；BuildExtraRuleInstructions 语义检索仍在此（J06）",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j05.records.action",
@@ -2906,7 +2906,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "游戏线程入口：Hero 解析 + 存储字典；规则归 NpcActionLedger",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j05.host.record.history",
@@ -2917,7 +2917,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "游戏线程入口：按 heroId 追加并截断；规则归 DialogueHistoryLedger",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j05.persist.codec",
@@ -2961,18 +2961,18 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "存档键/chunk helper/字段原地保留；每 owner JSON 循环已归 OwnerJsonStorageCodec",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j05.host.npcfile.name",
       "path": "MyBehavior.cs",
-      "start": 57346,
-      "end": 57346,
+      "start": 57319,
+      "end": 57319,
       "symbol": "private static string ResolveHeroNameForNpcDataFile(",
       "match": "contains",
       "status": "mixed-host",
       "note": "文件名所需 Hero 名解析（唯一留 host 的 Hero 依赖）",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "knowledge.index.owner",
@@ -3120,13 +3120,13 @@
     {
       "id": "knowledge.import.consumer",
       "path": "MyBehavior.cs",
-      "start": 55330,
-      "end": 55330,
+      "start": 55303,
+      "end": 55303,
       "symbol": "KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(importDir)",
       "match": "contains",
       "status": "wired-boundary",
       "note": "MyBehavior 导入门面调用 Knowledge 来源读取",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j06.lore.prepare",
@@ -3192,7 +3192,7 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享知识游戏线程捕获阶段",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j06.prompt.worker",
@@ -3203,7 +3203,7 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享知识后台检索与额外规则例外回退",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "j06.extra.worker",
@@ -3291,7 +3291,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "后台 Lore/实体/额外规则候选；最终 owner 阶段才发布结果",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "native.admission.owner",
@@ -4952,18 +4952,18 @@
       "match": "exact",
       "status": "wired-j13a2-commit-queue-slice",
       "note": "批量周报 worker 完成到主线程 commit 的 FIFO/清理等待者/旧队首隔离 owner",
-      "fileSha256": "35e3c833b9c574cf07ca5f06f54c1ed43094ed27e411b4f86f93f8781f0a485c"
+      "fileSha256": "7a3e0398cfcbc2b13e2b3987bddef901be54329a8b5507fc186244e2889c94c6"
     },
     {
       "id": "weekly.commit.queue.cancel",
       "path": "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs",
-      "start": 60,
-      "end": 60,
+      "start": 74,
+      "end": 74,
       "symbol": "internal void CancelAll()",
       "match": "exact",
       "status": "wired-j13a2-commit-queue-slice",
       "note": "批量周报 worker 完成到主线程 commit 的 FIFO/清理等待者/旧队首隔离 owner",
-      "fileSha256": "35e3c833b9c574cf07ca5f06f54c1ed43094ed27e411b4f86f93f8781f0a485c"
+      "fileSha256": "7a3e0398cfcbc2b13e2b3987bddef901be54329a8b5507fc186244e2889c94c6"
     },
     {
       "id": "weekly.commit.block.material.owner",
@@ -4996,7 +4996,7 @@
       "match": "exact",
       "status": "wired-j13a2-target-guard-slice",
       "note": "批量请求发出前，在主线程按目标记录捕获原状态；一次扫描记录集合",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.target.compare",
@@ -5007,18 +5007,18 @@
       "match": "exact",
       "status": "wired-j13a2-target-guard-slice",
       "note": "批量 commit 比较捕获目标状态，拒绝迟到结果覆盖编辑或已完成胜出者",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.target.write",
       "path": "MyBehavior.cs",
-      "start": 46311,
-      "end": 46311,
+      "start": 46284,
+      "end": 46284,
       "symbol": "private bool ProcessPendingWeeklyReportBlockCommit(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)",
       "match": "exact",
       "status": "wired-j13a2-target-guard-slice",
       "note": "分块材料克隆后、写入前再次比较目标，冲突不发布",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.retry.admission",
@@ -5029,7 +5029,7 @@
       "match": "exact",
       "status": "wired-j13a2-retry-guard-slice",
       "note": "批量手动重试沿用初始目标状态；目标变化时请求发送前拒绝旧素材",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.retry.entry",
@@ -5040,7 +5040,7 @@
       "match": "exact",
       "status": "wired-j13a2-retry-guard-slice",
       "note": "失败上下文携带原目标状态到手动重试入口，不重新授权旧回包",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.winner",
@@ -5051,7 +5051,7 @@
       "match": "exact",
       "status": "wired-j13a2-winner-slice",
       "note": "完整/短报分别确认现有已完成胜出者；迟到批量回包不写入或重复通知",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.retry.fresh.selection",
@@ -5062,7 +5062,7 @@
       "match": "exact",
       "status": "wired-j13a2-fresh-retry-slice",
       "note": "仅选旧失败目标在当前素材中仍存在的完整集合；缺一项不发送新请求",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.retry.fresh.entry",
@@ -5073,7 +5073,7 @@
       "match": "exact",
       "status": "wired-j13a2-fresh-retry-slice",
       "note": "明确点击后主线程重采失败分组并开启新请求；旧捕获状态不再沿用",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.retry.popup",
@@ -5084,7 +5084,7 @@
       "match": "exact",
       "status": "wired-j13a2-fresh-retry-slice",
       "note": "目标变更专用弹窗说明新请求可能替换未完成编辑，避免误导为 API 故障",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.prompt.prepare",
@@ -5095,7 +5095,7 @@
       "match": "exact",
       "status": "wired-j13a2-batch-prompt-pump-slice",
       "note": "主线程准备系统/用户提示、预览与标签；worker 不构造 live Prompt",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.prompt.worker",
@@ -5106,18 +5106,18 @@
       "match": "exact",
       "status": "wired-j13a2-batch-prompt-pump-slice",
       "note": "未准备批次及旧代请求在 API 前拒绝，自动/手动/重试共用",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.prompt.pump",
       "path": "MyBehavior.cs",
-      "start": 45955,
-      "end": 45955,
+      "start": 45928,
+      "end": 45928,
       "symbol": "private bool ProcessPendingWeeklyPromptPreparations()",
       "match": "exact",
       "status": "wired-j13a2-batch-prompt-pump-slice",
       "note": "Campaign tick 在预算内每次推进一个批次，读档清理结算等待者",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.retry.stale",
@@ -5128,7 +5128,7 @@
       "match": "exact",
       "status": "wired-j13a2-stale-retry-slice",
       "note": "每次自动重试发 API 前复核原 generation，读档后旧请求不再外发",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.wave.launch.queue",
@@ -5139,29 +5139,29 @@
       "match": "contains",
       "status": "wired-j13a2-wave-launch-slice-offline-verified",
       "note": "Campaign tick 波次发布 FIFO；换代清理等待者",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.wave.launch.entry",
       "path": "MyBehavior.cs",
-      "start": 45839,
-      "end": 45839,
+      "start": 45812,
+      "end": 45812,
       "symbol": "private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(",
       "match": "contains",
       "status": "wired-j13a2-wave-launch-slice-offline-verified",
       "note": "异步 minute burst 排队；不在后台发送 UI/首轮请求",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.wave.launch.pump",
       "path": "MyBehavior.cs",
-      "start": 45864,
-      "end": 45864,
+      "start": 45837,
+      "end": 45837,
       "symbol": "private bool ProcessPendingWeeklyWaveLaunches()",
       "match": "contains",
       "status": "wired-j13a2-wave-launch-slice-offline-verified",
       "note": "主线程按队首启动整波，异常结算等待者；Phase8 双排队波次与次波源失效反例已回放，未驱动真实 60 秒延迟",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.attempt.queue",
@@ -5172,7 +5172,7 @@
       "match": "contains",
       "status": "wired-j13a2-retry-attempt-slice-offline-verified",
       "note": "批量重试 attempt 的主线程启动队列；换代结算",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.attempt.entry",
@@ -5183,18 +5183,18 @@
       "match": "contains",
       "status": "wired-j13a2-retry-attempt-slice-offline-verified",
       "note": "首轮同波直发，重试回 tick，旧 owner/代拒绝",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.attempt.pump",
       "path": "MyBehavior.cs",
-      "start": 45911,
-      "end": 45911,
+      "start": 45884,
+      "end": 45884,
       "symbol": "private bool ProcessPendingWeeklyBatchApiAttempts()",
       "match": "contains",
       "status": "wired-j13a2-retry-attempt-slice-offline-verified",
       "note": "Campaign tick 读取当前 MCM 配置并启动一次 attempt",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.target.owner",
@@ -5238,18 +5238,18 @@
       "match": "contains",
       "status": "wired-j13a2-partial-target-slice-offline-verified",
       "note": "真实 pending commit 使用同一目标结算实例",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.target.finalize",
       "path": "MyBehavior.cs",
-      "start": 46348,
-      "end": 46348,
+      "start": 46321,
+      "end": 46321,
       "symbol": "private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult)",
       "match": "contains",
       "status": "wired-j13a2-partial-target-slice-offline-verified",
       "note": "批次仅登记暂缺，最终按尚未恢复目标结算",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.source.revision.owner",
@@ -5293,7 +5293,7 @@
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "Campaign 单一 owner，writer 按日/全局/开局修订",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.source.revision.batch",
@@ -5304,29 +5304,29 @@
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "自动/手动/重试将捕获快照贯穿批量生命周期",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.source.revision.wave",
       "path": "MyBehavior.cs",
-      "start": 45864,
-      "end": 45864,
+      "start": 45837,
+      "end": 45837,
       "symbol": "private bool ProcessPendingWeeklyWaveLaunches()",
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "每波主线程发请求前核对源快照",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.source.revision.commit",
       "path": "MyBehavior.cs",
-      "start": 46311,
-      "end": 46311,
+      "start": 46284,
+      "end": 46284,
       "symbol": "private bool ProcessPendingWeeklyReportBlockCommit(",
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "分块材料克隆结束后、写记录前再次核对源快照",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.source.kingdom.clan-move",
@@ -5337,7 +5337,7 @@
       "match": "contains",
       "status": "wired-j13a2-kingdom-event-slice-offline-verified",
       "note": "Clan 换国事件无论是否产生日素材都失效 live 归属投影",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.source.kingdom.ruler",
@@ -5348,7 +5348,7 @@
       "match": "contains",
       "status": "wired-j13a2-kingdom-event-slice-offline-verified",
       "note": "执政家族变化失效当前统治者上下文",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.source.kingdom.destroy",
@@ -5359,7 +5359,7 @@
       "match": "contains",
       "status": "wired-j13a2-kingdom-event-slice-offline-verified",
       "note": "王国消亡事件失效报告资格和 live 王国列表",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.failure.attempt-metadata",
@@ -5370,18 +5370,18 @@
       "match": "contains",
       "status": "wired-j13a2-failure-metadata-slice-offline-verified",
       "note": "每次 attempt 覆盖 RPM/配额/Retry-After，HTTP 成功清除旧限流标记",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.failure.target-metadata",
       "path": "MyBehavior.cs",
-      "start": 46427,
-      "end": 46427,
+      "start": 46400,
+      "end": 46400,
       "symbol": "private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(",
       "match": "contains",
       "status": "wired-j13a2-failure-metadata-slice-offline-verified",
       "note": "pending commit 按失败目标选择其真实批次结果，保留次数和 API 分类",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.batch.failure.popup-consumer",
@@ -5392,18 +5392,18 @@
       "match": "contains",
       "status": "wired-j13a2-failure-metadata-slice-offline-verified",
       "note": "真实失败 UI 根据恢复上下文 RPM 分类显示对应按钮",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.exception.recovery",
       "path": "MyBehavior.cs",
-      "start": 46234,
-      "end": 46234,
+      "start": 46207,
+      "end": 46207,
       "symbol": "private WeeklyReportGenerationResult BuildWeeklyReportCommitExceptionResult(PendingWeeklyReportCommitContext context)",
       "match": "exact",
       "status": "wired-j13a2-exception-recovery-slice-offline-verified",
       "note": "异常后只对未有权威胜出记录的目标构造显式新素材重试上下文；已有胜出目标不再覆盖。",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
     },
     {
       "id": "weekly.commit.attempted-write",
@@ -5414,7 +5414,73 @@
       "match": "exact",
       "status": "wired-j13a2-exception-recovery-slice-offline-verified",
       "note": "仅本次提交生命周期记录已尝试写入的目标，用于异常后幂等通知恢复，不入存档。",
-      "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+    },
+    {
+      "id": "weekly.wave.coordinator",
+      "path": "src/modules/AF.Module.Weekly/Generation/WeeklyReportWaveCoordinator.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "internal static class WeeklyReportWaveCoordinator",
+      "match": "contains",
+      "status": "wired-j13a2-wave-admission-slice-offline-verified",
+      "note": "多波游标、60 秒等待端口、在途汇总和未发结算归 Weekly；时钟/provider 回放不等于实机。",
+      "fileSha256": "b1cac72da3477ae23a40b868b1f761ea5a207ad5b8742f335d193f0695b7d4fe"
+    },
+    {
+      "id": "weekly.wave.host-coordination",
+      "path": "MyBehavior.cs",
+      "start": 45793,
+      "end": 45793,
+      "symbol": "private Task<WeeklyReportBatchExecutionResult[]> CoordinateWeeklyReportWavesAsync(",
+      "match": "contains",
+      "status": "wired-j13a2-wave-admission-slice-offline-verified",
+      "note": "真实 minute-burst 消费者接新 owner，主线程队列与 source/generation 提交门禁保留。",
+      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+    },
+    {
+      "id": "weekly.queue.admission",
+      "path": "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs",
+      "start": 31,
+      "end": 31,
+      "symbol": "internal bool EnqueueIfCurrent(",
+      "match": "contains",
+      "status": "wired-j13a2-wave-admission-slice-offline-verified",
+      "note": "与 reset 共锁校验入队资格，拒绝在锁外结算；四种生产队列使用同一实现。",
+      "fileSha256": "7a3e0398cfcbc2b13e2b3987bddef901be54329a8b5507fc186244e2889c94c6"
+    },
+    {
+      "id": "weekly.wave.coordination-replay",
+      "path": "tools/PhaseEightParityReplayTests/WeeklyReportWaveCoordinationReplay.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal static class WeeklyReportWaveCoordinationReplay",
+      "match": "contains",
+      "status": "wired-j13a2-wave-admission-slice-offline-verified",
+      "note": "共享源码/当前 DLL 回放，覆盖跨波在途、延迟、稳定索引、源拒绝和退役。",
+      "fileSha256": "afd4c01b51242763abf8e6a8a2f895d01a3421f32af7f61ebf7f134977facd31"
+    },
+    {
+      "id": "weekly.queue.admission-replay",
+      "path": "tools/PhaseEightParityReplayTests/WeeklyReportQueueAdmissionReplay.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal static class WeeklyReportQueueAdmissionReplay",
+      "match": "contains",
+      "status": "wired-j13a2-wave-admission-slice-offline-verified",
+      "note": "强制 generation advance/入队/reset 并发，检查等待者结算及新代隔离。",
+      "fileSha256": "356de3271674eec7d8f335e2bfd94a7e7dfc9f3bddc47ddc145753eabb727d70"
+    },
+    {
+      "id": "weekly.queue.retired-host-replay",
+      "path": "tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs",
+      "start": 211,
+      "end": 211,
+      "symbol": "private static void RunRetiredQueueAdmissionReplay(",
+      "match": "contains",
+      "status": "wired-j13a2-wave-admission-slice-offline-verified",
+      "note": "真实宿主的准备和 commit 入口拒绝旧 owner/代，无需后续 tick、不报假成功。",
+      "fileSha256": "2415a44295a71880857e2ea70e6fd5acac26aa7e4c4f804166a80128faeff898"
     }
   ]
 }

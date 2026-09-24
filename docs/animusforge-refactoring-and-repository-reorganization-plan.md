@@ -1,13 +1,25 @@
 <a id="j13-plan-20260924"></a>
-## J13a a2 多波协调责任接续（2026-09-25）
+## J13a a2 多波协调与入队竞态切片（2026-09-25）
 
-状态 `J13a_A2_WAVE_COORDINATION_ACTIVE`。本轮从 `053ad485` 接续，实际工作树由 Git 确认；用户要求不推送、不更新 HANDOFF。仅继续原 J13a a2，不进入 J14，不 Stage/部署/打包或写外部仓库。
+状态 `J13a_A2_WAVE_ADMISSION_SLICES_OFFLINE_VERIFIED / J13a_A2_ACTIVE`。从 `053ad485` 接续；实际工作树为 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main/.wt/diplomacy-latest-20260925`，本地分支 `codex/diplomacy-refactor-20260925` 跟踪原目标远端分支。意图 `5f54b889` / `375a55ae`；生产与测试 `ce8413dd` / `02812536`。用户明确要求不推送、不更新 HANDOFF，二者均保持；没有 Stage、部署、打包、游戏/存档/外仓写入或 J14。
 
-- 范围：将 `MyBehavior.GenerateWeeklyReportsForGroupsMinuteBurstAsync` 中分波、分钟等待、已发任务汇总和未发批次失败补齐移至 Weekly 协调 owner；真实 Campaign 主线程启动队列、源校验、请求重试和最终 commit 仍用既有路径。
-- 保持：原波次/批次索引、每分钟 burst、60 秒间隔、波内并发、跨波在途并发、源失效时保留已发结果并补齐未发失败、读档/换 owner 后不得提交。无新增存档键、公开接口、游戏 API 或网络客户端。
-- 退出门：真实生产消费者接线；受控异步回放覆盖跨波在途、延迟后失效、部分启动拒绝/清理、按序汇总和迟到完成；原脚本双版本/Bootstrap 构建与显式当前候选 Phase8 验证；更新本台账与代码地图。真实 60 秒计时、Campaign/UI/provider 与提交积压成本仍需分别界定，不把 owner 回放当整个 a2 完成。
-- 性能：每次生成 O(批次数) 总协调工作与在途任务存储，每波仅复制该波引用；沿用每 tick 一波启动，不新增 tick 扫描或轮询。原全批次材料/单批启动成本不在本片声称已解决。
-- 开工证据：工作树干净、无 index.lock；既有 WeeklyMemoryMaterialOutcomeContract 通过。构建产物路径与本机依赖仍需核实，遵守原计划的精确清理范围确认。
+### 责任与实际修复
+
+- `ce8413dd`：`src/modules/AF.Module.Weekly/Generation/WeeklyReportWaveCoordinator.cs:9–62` 接走分波游标、60 秒等待、跨波在途汇总和未发批次失败补齐；真实 `MyBehavior.cs:45694,45793–45810` 调用 `CoordinateWeeklyReportWavesAsync`，原启动队列、主线程 `ProcessPendingWeeklyWaveLaunches` 和最终 commit/source 门禁保留。保留波内/跨波并发、批次顺序和拒绝后已发结果；每个异步边界同时复核当前 owner，旧 host 不提交。
+- `02812536`：旧候选真实 `EnqueueWeeklyWaveLaunchAsync` 在 owner 退役后仍入队，且无人 tick 时任务永不结算；`admission-old-red.log` 保留已编译运行后的具名失败，不是构建失败。`WeeklyReportCommitQueueOwner.cs:24–46` 新 `EnqueueIfCurrent` 与 `CancelAll` 共用原锁，锁内仅检查 owner 引用与 generation，拒绝时锁外立即结算。`MyBehavior.cs:43086,45815,45914,45997` 的 retry/preparation/wave/commit 四个真实入口接通，读档 advance→clear 与 worker 迟到入队的两种顺序均不遗留旧等待者；旧 completion 不能移除新代队首。
+- 没有新增保存键、公开 ABI、游戏 API、第二队列或网络客户端；未改原重试次数、源规则、UI 成败含义和一键脚本。协调总工作/存储 O(批次数)，每波仅分配其批次引用列表；入队沿用一次锁并增加 O(1) 校验/一个低频委托，无 tick 新扫描、轮询或跨锁 continuation。单波请求启动、材料构建和单次 commit 的真实成本仍不是常数或帧保证。
+
+### 当前候选证据
+
+- 原脚本 `一键编译覆盖推送/build_single_module.ps1` 无 Stage/Deploy，Debug/Release × 1.3/1.4 + Bootstrap 六项 **0 warning/error**。本轮用户已明确批准当前工作树下 `bin/{Debug,Release}/single_module_artifacts`、`obj/single_module/{Debug,Release}` 四目录的创建/清理/重建；每次清理前核实绝对边界及无 reparse point。1.3 引用 `_deps_auto` 为 `v1.3.15.110062`，1.4 固定引用 `.tmp/build_check/1.4` 为 `v1.4.6.115628`；系统 SDK 8.0.424。游戏安装根仅作读取依赖来源，不作部署目标；1.3 overlay 未覆盖的库仍按原构建 fallback，不能据编译宣称全部 1.3 运行 API 已验。
+- 当前 Debug 1.4 SHA256 `B8FB17208EF267D6A1A252CBF525B522B0A03C25783D23847F3E5362AAD195F4` 的 Phase8 显式候选/marker/新鲜度检查与全回放通过。新共享回放既运行 source-linked owner，也运行当前 DLL：三波重叠、稳定索引、60000ms 延迟端口、迟到结果/换 owner、后续波拒绝及全部未发结算。真实 host 协调→入队→pump 的两波链、同周源变化、队列清理与退役 prompt/commit 拒绝通过。
+- `WeeklyReportQueueAdmissionReplay` 强制 generation advance 与锁内准入并发，验证先入队再清理、清理后迟到、新代可继续和旧 completion 隔离。新增 `tests/modules/AF.Module.Weekly/WaveCoordination/WaveCoordination.csproj` 仅 source-link 相同生产 owner 与相同回放，不复制算法。
+- V1 **119** 与四实现 DLL metadata **1060** 通过；既有 WeeklyMemoryMaterialOutcomeContract、WeeklyReportSchedulePolicy 原 net6 runner、repository source inventory **7** 通过。schedule runner 只有原 NETSDK1138 警告。代码地图绑定 `02812536`，498 个锚点的 recorded/working-tree 两种验证通过；仅两个已改生产文件的既有 hash/位移更新，另增加六个责任/回放锚点。定位验证不冒充玩法验收。
+- 复现入口：`dotnet run --project tests/modules/AF.Module.Weekly/WaveCoordination/WaveCoordination.csproj -c Release`；既有两个 Weekly 工具同名 csproj；`python -B tools/test_repository_source_inventory.py`；`python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet "C:/Program Files/dotnet/dotnet.exe" --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts`；代码地图 verifier 默认与 `--working-tree`。完整构建/Phase8 参数及日志保留在本地 `artifacts/j13-wave-20260925/{run-build.ps1,run-phase8.ps1,admission-build-Debug.log,admission-build-Release.log,phase8-final.log,admission-api-final.log}`，不上传产物或日志。首轮 Phase8 有一次参数传递错误及一次测试局部变量重名编译错误，修正后通过，不计行为红例。
+
+### 未覆盖与下一项
+
+受控延迟端口校验 60000ms，实际协调和 pump 已运行；**没有实际等待 60 秒，也没有游戏 Campaign 事件/provider 成功请求或真实 UI 操作**。原部分提交/RPM/异常恢复测试与新多波测试分别通过，尚未组合成“部分提交＋UI 显式重新采集＋一次发布”完整闭环。下一项先补此组合和每次 commit 的 records/chars/积压工作量，再核对剩余动态源投影与自动/按需模式退出门；a2/J13a/J13 仍 ACTIVE，a3/J13b–g 不提前报完成。实机、旧 SAVE、provider、音频、游戏帧性能均 NOT-RUN。需要撤销时定向 inverse/revert `02812536` 后 `ce8413dd`，保留意图记录，不 reset/rebase。
 
 以下为接续前的历史交接记录。
 
