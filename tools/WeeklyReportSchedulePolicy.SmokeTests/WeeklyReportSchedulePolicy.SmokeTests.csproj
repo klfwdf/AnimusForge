@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\WeeklyReportSchedulePolicy.cs" Link="WeeklyReportSchedulePolicy.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Weekly\Generation\WeeklyFullReportCompletionOwner.cs" Link="WeeklyFullReportCompletionOwner.cs" />
   </ItemGroup>
 </Project>
