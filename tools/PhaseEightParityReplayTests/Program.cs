@@ -47,6 +47,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportWaveCoordinator.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitTargetOwner.cs"))
         && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs")),

@@ -1,0 +1,1 @@
+WeeklyReportWaveCoordinationReplay.Run(typeof(AnimusForge.WeeklyReportWaveCoordinator));
