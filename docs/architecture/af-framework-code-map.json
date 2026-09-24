@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "877ba4a985a175a5d31090086d9f07800a2e7dcb",
+  "sourceRevision": "a49642bf331741a395fd2b4225e683a8566950b0",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -447,13 +447,13 @@
     {
       "id": "memory.summary.rendering",
       "path": "PlayerNotorietyBehavior.cs",
-      "start": 203,
-      "end": 203,
+      "start": 204,
+      "end": 204,
       "symbol": "internal static string CaptureMemorySummaryHistoryRenderingIdentity()",
       "match": "contains",
       "status": "mixed-host",
       "note": "无 observer 公称/实际匿名别名纳入 daily 解析来源身份",
-      "fileSha256": "737ce8143879898b50c5c01037ba5a3426f54ca5b57d10eb618d2b441a4295af"
+      "fileSha256": "36ee582349553fcb6e4d11676ccfc40cc53b85754b5a7a1805dd11a678d4c47c"
     },
     {
       "id": "memory.summary.copy",
@@ -5646,6 +5646,72 @@
       "status": "wired-j13c-offline-verified",
       "note": "真实 readiness/生成消费者共用补齐、标准化与编辑冲突合并；升格独立生命周期保留待 Recruitment。",
       "fileSha256": "4a71217237f12fa7de66d4e61d97aa4f3bc59007708dec5fc675d4524432c0d1"
+    },
+    {
+      "id": "social.notoriety.owner",
+      "path": "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
+      "start": 11,
+      "end": 11,
+      "symbol": "private sealed class NotorietyObservationOwner",
+      "match": "contains",
+      "status": "wired-j13d1-slice-offline-verified",
+      "note": "唯一状态/会话缓存与观察传播决策；嵌套只为保留原私有 DTO 身份。",
+      "fileSha256": "d990c1563357150e7b9ed44c4fc5a743fb0d4aeb9d3d92c0f267ee0e9349ce43"
+    },
+    {
+      "id": "social.notoriety.host",
+      "path": "PlayerNotorietyBehavior.cs",
+      "start": 2122,
+      "end": 2122,
+      "symbol": "private void FinalizeConversationByHeroId(",
+      "match": "contains",
+      "status": "wired-j13d1-slice-offline-verified",
+      "note": "真实 legacy/精确回执结算入口；游戏资格与 normalization/历史/摘要仍在 host。",
+      "fileSha256": "36ee582349553fcb6e4d11676ccfc40cc53b85754b5a7a1805dd11a678d4c47c"
+    },
+    {
+      "id": "social.romance.owner",
+      "path": "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "internal sealed class RomanceRelationshipOwner",
+      "match": "contains",
+      "status": "wired-j13d1-slice-offline-verified",
+      "note": "唯一 love 表、原子一次性上下文、年龄与婚配状态决策。",
+      "fileSha256": "9ce820e30032c385a1757f9ede011b018911587512932a8c76359416ad91e187"
+    },
+    {
+      "id": "social.romance.host",
+      "path": "RomanceSystemBehavior.cs",
+      "start": 746,
+      "end": 746,
+      "symbol": "public void SetPrivateLove(",
+      "match": "contains",
+      "status": "wired-j13d1-slice-offline-verified",
+      "note": "真实消费者保留 trust/关系/通知副作用、婚姻 GameAction 与 wire DTO。",
+      "fileSha256": "dbdd2f5043da40f3e477b63ead0ff7cf86c3adab5a811f1c56073cafd5fa0dda"
+    },
+    {
+      "id": "social.notoriety.replay",
+      "path": "tools/PhaseEightParityReplayTests/NotorietyOwnerReplay.cs",
+      "start": 5,
+      "end": 5,
+      "symbol": "internal static class NotorietyOwnerReplay",
+      "match": "contains",
+      "status": "wired-j13d1-slice-offline-verified",
+      "note": "当前 DLL 真实宿主结算、传播/低调状态与 owner 边界。",
+      "fileSha256": "5a472352ad23c25b1a7b07f060314a352f429e5e58e1327fae701c33e73a7e06"
+    },
+    {
+      "id": "social.romance.replay",
+      "path": "tools/PhaseEightParityReplayTests/RomanceOwnerReplay.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal static class RomanceOwnerReplay",
+      "match": "contains",
+      "status": "wired-j13d1-slice-offline-verified",
+      "note": "当前 DLL 并发一次消费、状态替换、love/年龄/资格规则。",
+      "fileSha256": "095988e0b1bb17585eba7d7272baa775aa0e863c92e11646841501888145181e"
     }
   ]
 }
