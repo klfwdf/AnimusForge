@@ -1,3 +1,14 @@
+## 主体 J13 暂停交付：d1 已有限离线收口，d2 尚未实施（2026-09-25）
+
+用户最新要求暂停开发、推送本次主体重构并更新主体 HANDOFF，明确排除另一外交任务及其 HANDOFF。本次授权覆盖下列历史时点的“不推送、不更新 HANDOFF”；其余无 Stage/部署/打包/游戏或存档写入/J14 的限制不变。状态为 `J13a/J13b/J13c/J13d1_OFFLINE_VERIFIED / J13d2_PAUSED / J13_PAUSED`，不再继续施工。
+
+- 产品仍为 `eb641aaa`，证据提交 `6281ec6f`，停点 `3cf846bb` 仅空意图与随后只读调查，没有 d2 产品/测试改动。下一项仍是下文所列 Proactive/Issue；d2–d4、e、f、g 未完成。最新产品验证、真实消费者/保留 host、源码坐标及回滚依据沿用各切片记录，本次仅更新交接文档，不重跑产品构建。
+- 本地工作树 `.wt/diplomacy-latest-20260925` / 分支 `codex/diplomacy-refactor-20260925` 的 24 个待推送提交，已逐提交核对名称与路径；从 `053ad48502f49c96753ece20be4cc25006fcb3ae` 到 `3cf846bb` 无合并提交、无另一外交任务或其 HANDOFF 增量。目标仅 `origin/codex/af-main-refactor-continuation-20260831`，采用当前 HEAD 的明确 refspec 普通快进推送；不能误推另一个工作树里同名的本地分支。
+- 外交工作树 `.wt/af-continuation` 的 HEAD `6d5e0331687679fe3e9c01aa127cfc7e32bb0480` 不在本次 HEAD 的祖先中，其已提交与未提交改动及 HANDOFF 均原样保留。主 checkout 及其他工作树不参与交付。
+- [主体 HANDOFF](../HANDOFF.md) 为当前简明入口；代码地图 sourceRevision 仍为 `eb641aaa`，522 锚点定位证据不变。最新 Release/四 DLL 综合门禁仍待 J13g，真实游戏/旧档/provider/UI/音频/帧性能 NOT-RUN，旧聚合器失败没有被本次交付豁免。实际推送完成以远端 ref 校验结果为准。
+
+## 以下为历史切片记录，其状态及授权只代表各自时点
+
 ## J13d1 Recruitment 与升格人设离线收口，进入 d2（2026-09-25）
 
 状态 `J13d1_OFFLINE_VERIFIED / J13d2_ACTIVE / J13_ACTIVE`；意图 `855dde0e`，产品 `eb641aaa`。d1 的 Notoriety/Romance 证据见紧邻旧段，仍保留所列 host 与未验证范围；本段补齐此前 c/d1 留下的升格生命周期。无推送、HANDOFF 更新、Stage/部署/打包/游戏存档写入/J14。
