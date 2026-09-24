@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 跨批次部分结果目标结算切片（2026-09-24）
+
+状态 `J13a_A2_PARTIAL_TARGET_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `d6fea0e6`。源码复核发现原 `FinalizePendingWeeklyReportCommitBatch` 会对同一 `MissingReportIds` 重复项及跨批次暂缺立即累加失败，而稍后其他批次解析成功时不会撤销早先失败，导致计数/重试目标失真。`src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitTargetOwner.cs:6–40` 现在拥有本次 commit 的大小写不敏感已结算 ID 与待恢复缺失目标；真实 `MyBehavior.cs:1487,46018–46055,46170–46217` 在每批只按稳定 ID 登记暂缺、后续成功/冲突结算时移除它，最终只对仍未恢复的目标各计一次失败与对应原因。已解析 block 的原目标记录/胜出者门禁、主线程写入、通知和存档/公开身份不变。owner 平均 O(1) 去重/结算，最终 O(尚未恢复目标数)，不增加每 tick 全量来源扫描。
+
+- 验证：四获准构建目录路径、内容与递归链接复核后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 SHA256 `3587CB727BBE95A2B5F3B3CD4289165B41C0204288A6280937B2CC9AB3BAFCF4` 的 Phase8 显式候选通过：重复缺失、跨批次晚成功、成功后迟到缺失、未恢复目标及真实 batch finalizer 去重；V1 119/四 DLL metadata 1060、Phase8 入口 11、source inventory 7、477 锚点地图 recorded/working-tree 通过。入口清单首次因新 owner 未登记而失败，补入原 `social-progression-reports` 分类后重跑通过；未改其 ownerAssignmentState/entryCoverage。
+- 未完：此切片不证明 live 材料源提交重验，也未完整驱动多 wave/Campaign tick/部分结果 UI 与一次发布；a2/J13a/J13 仍 ACTIVE，a3 与 J13b–g 未施工。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送，`.dotnet-cli-home/` 未动。
+
 ## J13a a2 批量自动重试的配置读取线程边界（2026-09-24）
 
 状态 `J13a_A2_RETRY_ATTEMPT_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `4721460f`。`MyBehavior.cs:43022–43047,43071` 的真实批量重试消费者保留首轮同波并发直发；第二、三次 attempt 无论 continuation 落在哪个线程都先进入 `_weeklyBatchApiAttemptQueue`，由 Campaign tick `:17509–17514,45813–45838` 在当前 owner、generation 和主线程验证后调用原 `CallWeeklyReportApiDetailed`，因此 `DuelSettings.GetSettings`、route、max tokens、temperature、thinking 等可变配置仍在每次 attempt 开始时读取，但不在 `Task.Delay` 后的后台线程读取。没有把密钥放入队列 DTO/日志或更改 J08 gateway。读档 `:2552` 清空未启动 attempt 并结算等待者；退役 owner/旧代在排队前拒绝。队列无工作时是 volatile 快路径，每 tick 最多启动一项；密集重试可能积压，尚无帧耗时或真实 provider 数据。
