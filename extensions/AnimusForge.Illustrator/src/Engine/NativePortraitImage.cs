@@ -38,17 +38,18 @@ namespace AnimusForge.Illustrator.Engine
             {
                 // One linear pass per requested portrait on the existing worker path.
                 // Row-based addressing supports padding and either stride direction.
-                var data = result.LockBits(new Rectangle(0, 0, result.Width, result.Height),
+                int pixelWidth = result.Width, pixelHeight = result.Height;
+                var data = result.LockBits(new Rectangle(0, 0, pixelWidth, pixelHeight),
                     ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
                 try
                 {
                     unsafe
                     {
-                        for (int y = 0; y < result.Height; y++)
+                        for (int y = 0; y < pixelHeight; y++)
                         {
                             if ((y & 31) == 0) token.ThrowIfCancellationRequested();
                             byte* row = (byte*)data.Scan0 + y * data.Stride;
-                            for (int x = 0; x < result.Width; x++)
+                            for (int x = 0; x < pixelWidth; x++)
                             {
                                 byte* pixel = row + x * 4;
                                 byte channel = pixel[0];
