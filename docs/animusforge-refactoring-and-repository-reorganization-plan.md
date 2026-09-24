@@ -1,3 +1,17 @@
+<a id="j13-plan-20260924"></a>
+## 当前接续：J13 领域职责计划（2026-09-24）
+
+**当前状态：J07–J12_OFFLINE_VERIFIED；J13_PLANNED，尚未施工。** 本节替代下方历史段落的“当前下一步”指令，不撤销 J12 最终离线结论；历史工作树和本地路径不选择本次施工目录。
+
+- **计划入口**：[J13 可执行计划](plans/j13-domain-owners-plan.md)。顺序：G0 → J13a Weekly → J13b Kingdom → J13c Persona → J13d Social/Issue/WorldEvents/WarStats → J13e Duel/Taunt/Encounter/Settlement/Exercise → J13f UI/Onboarding → J13g 离线收口。近期 Weekly 包细化到调度材料、请求完成、回执发布及有限退出门；后续包开工按真实源码细化。
+- **基线与工作区**：`0624d5025fac98877332ccb1d5221dd4f85f836e`；`E:/AnimusForge-refactor-continuation-20260831`；分支 `codex/af-main-refactor-continuation-20260831`。规划开始时跟踪分支同步，仅 `.dotnet-cli-home/` 未跟踪，保持不动；新对话仍以实际 Git 为准。
+- **证据位置**：计划第 4 节集中记录本次核对的真实入口、行号、符号、消费者和边界；第 5–7 节列实施/验证入口。实施后详细回执仍留本台账，代码定位沿用[代码范围图](architecture/af-framework-code-scope.md)。旧方法数量不作完成标准，不把 R100/partial/转发壳当职责完成。
+- **已发现环境/安全边界**：Weekly schedule runner 为 net6，部分 Persona/Encounter runner 写死旧 SDK 路径；PhaseEight replay 读取 Stage DLL，不能直接复用旧产物。现有一键构建即使无 Stage/Deploy 也会清理产物目录，执行前必须核实并取得精确清理范围确认，不改脚本或绕过引用来源校验。
+- **本轮范围与验证**：只有计划、台账、HANDOFF 文档；15 个本地链接/锚点与代码围栏检查通过，`git diff --check` 通过；代码地图 recorded/working-tree 各 429 锚点通过（只证明定位，不证明玩法），核对无产品源码改动。没有产品测试/构建 PASS。实机、旧档、provider、音频和性能仍 NOT-RUN；未 Stage/Deploy/Package/push，未修改自动化或其他工作树。
+- **下一动作**：新对话使用计划第 1 节启动指令，先完成 G0 和 J13a0 的实际责任清单/最小基线，再做首个 Weekly 生产切片。J13 必要退出门通过前不标 DONE，不提前实施 J14。
+
+以下 J12 及更早记录保留为历史证据；当前接续以上节为准。
+
 <a id="j12-final-closeout-20260922"></a>
 ## J12 Economy / Diplomacy / WorldMap 最终离线收口（2026-09-22）
 
@@ -904,6 +918,7 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 
 ### J13 其他领域
 
+- **当前细化计划**：[J13 领域 owner 实施计划](plans/j13-domain-owners-plan.md)（`0624d502` 规划基线，2026-09-24，尚未施工）。具体责任、首包步骤、后续包退出门和安全/环境条件以该计划及本台账置顶回执为准；下列计数为历史盘点。
 - **真实入口**：WorldEvents/WarStats（`AFWarStatsTerminal` 适配）、`PlayerNotorietyBehavior.cs`（3.9k）、`RomanceSystemBehavior.cs`（3.7k）、`DuelBehavior.cs`（8.6k，13 Harmony）、`SceneTauntBehavior.cs`（10.6k）、`LordEncounterBehavior.cs`（9.4k）、`SettlementEntryTroopSelectionBehavior.cs`、`TroopInspectionBehavior.cs`（12 Harmony）、`MilitaryExerciseBehavior.cs`（17 Harmony）、`ProactiveNpcRequestBehavior.cs`（8.2k）、`MeetingBattleLockMissionBehavior.cs`、`ModOnboardingBehavior.cs`、Weekly 报告（MyBehavior Weekly 簇 352 方法 9.7k）、Kingdom 簇 120/3.2k、UI 簇。
 - **目标 owner**：各领域独立子包 `src/modules/AF.Module.{Social,Duel,Encounter,Settlement,Weekly,Onboarding,...}`；UI 只适配。**Weekly 簇是 MyBehavior 最大残余，单列 J13a 首包**；伤害/敌对/百科/军团目标四个案例文档作为对应包的验收清单。
 - **切片**：J13a Weekly 报告（`MyBehavior` 352 方法 → `AF.Module.Weekly`，`WeeklyMemoryMaterialOutcomeReceipt` 归位）→ J13b Kingdom 簇 → J13c Persona（已有 owner 归位 + 63 方法）→ J13d Social/Notoriety/Romance → J13e Duel/Taunt/Encounter/Settlement/Exercise（按案例文档逐包）→ J13f UI/Overlay/Onboarding 适配层。
