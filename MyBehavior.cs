@@ -1408,6 +1408,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		public long RuntimeGeneration;
 
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
+
 		public string DisplayLabel;
 
 		public int WaveIndex;
@@ -1441,6 +1443,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private sealed class PendingWeeklyReportCommitContext
 	{
 		public long RuntimeGeneration;
+
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
 
 		public int WeekIndex;
 
@@ -1549,6 +1553,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class PendingAutoWeeklyReportBuild
 	{
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
+
 		public int WeekIndex;
 
 		public int StartDay;
@@ -1586,6 +1592,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class WeeklyReportRetryContext
 	{
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
+
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
 
 		public Dictionary<string, string> CapturedRecordStates;
@@ -2031,6 +2039,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private string _eventRecordJsonStorage = "";
 
 	private List<EventSourceMaterialEntry> _eventSourceMaterials = new List<EventSourceMaterialEntry>();
+
+	private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions = new WeeklyReportMaterialRevisionOwner();
 
 	private string _eventSourceMaterialJsonStorage = "";
 
@@ -6114,6 +6124,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		_pendingAutoWeeklyReportBuild = new PendingAutoWeeklyReportBuild
 		{
+			SourceSnapshot = _weeklyReportMaterialRevisions.Capture(Math.Max(0, job.StartDay), Math.Max(job.StartDay, job.EndDay)),
 			WeekIndex = job.WeekIndex,
 			StartDay = Math.Max(0, job.StartDay),
 			EndDay = Math.Max(job.StartDay, job.EndDay),
@@ -6364,7 +6375,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		List<WeeklyEventMaterialPreviewGroup> groups = (context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
 		List<WeeklyReportBatchRequest> batches = (context.Batches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
 		_pendingAutoWeeklyReportBuild = null;
-		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay, batches);
+		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay, batches, context.SourceSnapshot);
 	}
 
 	private void StartAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe)
@@ -6380,10 +6391,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		int startDay = WeeklyReportSchedulePolicy.GetStartDay(weekIndex);
 		int endDay = WeeklyReportSchedulePolicy.GetEndDay(weekIndex);
+		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = _weeklyReportMaterialRevisions.Capture(startDay, endDay);
 		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups(startDay, endDay));
 		_weeklyReportGenerationInProgress = true;
 		_weeklyAutoSchedule.Clear();
-		_ = GenerateAutoWeeklyReportsAsync(list, weekIndex, startDay, endDay);
+		_ = GenerateAutoWeeklyReportsAsync(list, weekIndex, startDay, endDay, sourceSnapshotOverride: sourceSnapshot);
 	}
 
 	private void TryStartDeferredAutoWeeklyReports()
@@ -6415,12 +6427,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, List<WeeklyReportBatchRequest> preparedBatches = null)
+	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, List<WeeklyReportBatchRequest> preparedBatches = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
 	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		try
 		{
-			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches, runtimeGeneration: runtimeGeneration);
+			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches, runtimeGeneration: runtimeGeneration, sourceSnapshotOverride: sourceSnapshotOverride);
 			if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "auto_weekly_report_complete") && weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure)
 			{
 				_lastAutoGeneratedWeeklyReportWeek = Math.Max(_lastAutoGeneratedWeeklyReportWeek, weekIndex);
@@ -13672,6 +13684,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			eventSourceMaterialEntry.ActorKingdomId = (actorKingdomId ?? "").Trim();
 			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
 			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
+			_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
 			return;
 		}
 		EventSourceMaterialEntry newEntry = new EventSourceMaterialEntry
@@ -13691,6 +13704,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			IncludeInKingdom = includeInKingdom
 		};
 		_eventSourceMaterials.Add(newEntry);
+		_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
 		_eventSourceMaterialIndex[indexKey] = newEntry;
 		// Publish the new structural binding only after both authoritative append
 		// and index insertion succeed. A failed insert leaves the old probe stale.
@@ -15485,6 +15499,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				storage[npcActionHeroKey] = value;
 			}
 			bool entriesChanged = NpcActionLedger.RemoveInvalid(value, keepOnlyRecentWindow ? NpcActionLedger.RecentWindowMinimumDay(currentGameDayIndexSafe) : int.MinValue, keepOnlyRecentWindow, e => e.Text, e => e.Day);
+			if (entriesChanged)
+			{
+				_weeklyReportMaterialRevisions.MarkAll();
+			}
 			if (keepOnlyRecentWindow && entriesChanged)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
@@ -15503,7 +15521,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			int order = NpcActionLedger.NextOrder(value, currentGameDayIndexSafe, e => e.Day, e => e.Order);
 			int sequence = ++_npcActionGlobalOrderCounter;
 			NpcActionEntry npcActionEntry = CreateNpcActionEntry(hero, text2, text3, currentGameDayIndexSafe, order, sequence, facts, isMajor);
+			if (maxEntries > 0 && value.Count >= maxEntries)
+			{
+				_weeklyReportMaterialRevisions.MarkAll();
+			}
 			NpcActionLedger.Append(value, npcActionEntry, maxEntries, CompareNpcActionTimeline);
+			_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
 			if (keepOnlyRecentWindow)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
@@ -18425,6 +18448,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			_eventSourceMaterialJsonStorage = "";
 			RebuildEventSourceMaterialIndex();
+			_weeklyReportMaterialRevisions.MarkAll();
+			_weeklyReportMaterialRevisions.MarkOpening();
 			dataStore.SyncData("_lastAutoGeneratedWeeklyReportWeek_v1", ref _lastAutoGeneratedWeeklyReportWeek);
 			_kingdomStabilityValues.Clear();
 			_kingdomStabilityStorage.Clear();
@@ -25559,6 +25584,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (merged.Count > 0)
 		{
 			storage[target] = merged;
+			_weeklyReportMaterialRevisions.MarkAll();
 		}
 		if (keepOnlyRecentWindow)
 		{
@@ -25811,10 +25837,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_npcMajorActionSummaries?.Remove(text);
 		_npcMajorActionSummaryStorage?.Remove(text);
 		_npcMajorActionSummaryQueue?.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-		_npcMajorActions?.Remove(text);
+		bool removedMajorActions = _npcMajorActions?.Remove(text) == true;
 		_npcMajorActionStorage?.Remove(text);
-		_npcRecentActions?.Remove(text);
+		bool removedRecentActions = _npcRecentActions?.Remove(text) == true;
 		_npcRecentActionStorage?.Remove(text);
+		if (removedMajorActions || removedRecentActions)
+		{
+			_weeklyReportMaterialRevisions.MarkAll();
+		}
 		_dirtyMemoryOverviewIds?.Remove(text);
 		_pendingMemoryOverviewCandidateScanIdSet?.Remove(text);
 		if (_pendingMemoryOverviewCandidateScanIds != null && _pendingMemoryOverviewCandidateScanIds.Count > 0)
@@ -29591,7 +29621,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				_npcRecentActions[ownerKey] = entries;
 			}
 			int day = GetCurrentGameDayIndexSafe();
-			NpcActionLedger.RemoveInvalid(entries, NpcActionLedger.RecentWindowMinimumDay(day), true, e => e.Text, e => e.Day);
+			if (NpcActionLedger.RemoveInvalid(entries, NpcActionLedger.RecentWindowMinimumDay(day), true, e => e.Text, e => e.Day))
+			{
+				_weeklyReportMaterialRevisions.MarkAll();
+			}
 			string normalizedKey = NpcActionLedger.NormalizeStableKey(stableKey, cleanText);
 			if (NpcActionLedger.ContainsStableKey(entries, normalizedKey, e => e.StableKey)) return;
 			entries.Add(new NpcActionEntry
@@ -29605,8 +29638,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 				ActionKind = (actionKind ?? "").Trim(),
 				IsMajor = false
 			});
+			_weeklyReportMaterialRevisions.MarkDay(day);
 			entries.Sort(CompareNpcActionTimeline);
-			if (entries.Count > MaxRecentNpcActionEntriesPerHero) entries.RemoveRange(0, entries.Count - MaxRecentNpcActionEntriesPerHero);
+			if (entries.Count > MaxRecentNpcActionEntriesPerHero)
+			{
+				entries.RemoveRange(0, entries.Count - MaxRecentNpcActionEntriesPerHero);
+				_weeklyReportMaterialRevisions.MarkAll();
+			}
 			RefreshNpcRecentActionStableKeyIndexForHero(ownerKey, entries);
 			LogNonHeroMemoryTrace("stage=recent_action_commit memoryId=" + ownerKey + " name=" + (npcName ?? "NPC") + " day=" + day + " key=" + normalizedKey);
 		}
@@ -35529,6 +35567,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		DevTextEditorHelper.ShowLongTextEditor("编辑世界开局概要", "这段文本会作为世界事件系统的初始背景底稿。", "请输入世界开局概要（留空=清空）。", _eventWorldOpeningSummary ?? "", delegate(string input)
 		{
 			_eventWorldOpeningSummary = (input ?? "").Trim();
+			_weeklyReportMaterialRevisions.MarkOpening();
 			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(_eventWorldOpeningSummary) ? "已清空世界开局概要。" : "世界开局概要已更新。"));
 			OpenDevEventEditorMenu();
 		}, delegate
@@ -35624,6 +35663,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		InformationManager.ShowInquiry(new InquiryData("确认清空事件概要", "这会清空世界开局概要，以及所有王国的开局概要。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清空", "取消", delegate
 		{
 			_eventWorldOpeningSummary = "";
+			_weeklyReportMaterialRevisions.MarkOpening();
 			if (_eventKingdomOpeningSummaries == null)
 			{
 				_eventKingdomOpeningSummaries = new Dictionary<string, string>();
@@ -36088,6 +36128,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			_eventKingdomOpeningSummaries[text] = text2;
 		}
+		_weeklyReportMaterialRevisions.MarkOpening();
 	}
 
 	private static Kingdom FindKingdomById(string kingdomId)
@@ -36986,6 +37027,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 					_eventKingdomOpeningSummaries[text] = text2;
 				}
 			}
+		}
+		if (payload.HasWorldSummaryFile || payload.HasKingdomSummariesFile)
+		{
+			_weeklyReportMaterialRevisions.MarkOpening();
 		}
 		if (payload.HasEventRecordsFile)
 		{
@@ -43161,7 +43206,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null, Dictionary<string, string> capturedRecordStates = null)
+	private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null, Dictionary<string, string> capturedRecordStates = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = null)
 	{
 		WeeklyReportRetryContext weeklyReportRetryContext = new WeeklyReportRetryContext
 		{
@@ -43172,6 +43217,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenViewerWhenDone = openViewerWhenDone,
 			IsAutoGeneration = isAutoGeneration,
 			CapturedRecordStates = capturedRecordStates,
+			SourceSnapshot = sourceSnapshot,
 			FailedGroupTitle = BuildWeeklyReportGroupDisplayLabel(failedGroup),
 			FailedReason = (requestResult?.FailureReason ?? "").Trim(),
 			AttemptsUsed = requestResult?.AttemptsUsed ?? 0,
@@ -43510,7 +43556,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		WeeklyReportGenerationResult weeklyReportGenerationResult = null;
 		try
 		{
-			weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(context.Groups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, queueBlockingPopupOnFatalFailure: false, isAutoGeneration: context.IsAutoGeneration, popupCandidateKingdomIdsOverride: context.PopupCandidateKingdomIds, capturedRecordStatesOverride: context.CapturedRecordStates);
+			weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(context.Groups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, queueBlockingPopupOnFatalFailure: false, isAutoGeneration: context.IsAutoGeneration, popupCandidateKingdomIdsOverride: context.PopupCandidateKingdomIds, capturedRecordStatesOverride: context.CapturedRecordStates, sourceSnapshotOverride: context.SourceSnapshot);
 			if (retryVersion != _weeklyReportManualRetryVersion)
 			{
 				return;
@@ -45539,14 +45585,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private async Task GenerateDevWeeklyReportsAsync()
 	{
-		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups());
 		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
 		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
 		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false);
+		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = _weeklyReportMaterialRevisions.Capture(num, currentGameDayIndexSafe);
+		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups(num, currentGameDayIndexSafe));
+		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false, sourceSnapshotOverride: sourceSnapshot);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
 	{
 		WeeklyReportGenerationResult generationResult = new WeeklyReportGenerationResult();
 		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this))
@@ -45580,7 +45627,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) && x.OutputMode != WeeklyReportOutputMode.TitleShortTagsOnly).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		}
 		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = BuildWeeklyReportGroupMap(list);
+		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = sourceSnapshotOverride ?? _weeklyReportMaterialRevisions.Capture(startDay, endDay);
 		Dictionary<string, string> currentRecordStates = CaptureWeeklyReportCommitRecordStates(groupMap, weekIndex);
+		if (!_weeklyReportMaterialRevisions.IsCurrent(sourceSnapshot))
+		{
+			generationResult.FailureCount = groupMap.Count;
+			generationResult.BlockedByFatalFailure = true;
+			generationResult.BlockedByChangedRecord = true;
+			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly source materials changed before dispatch." }, list2, currentRecordStates, sourceSnapshot);
+			generationResult.RetryContext.RequiresFreshMaterials = true;
+			if (queueBlockingPopupOnFatalFailure)
+			{
+				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
+			}
+			return generationResult;
+		}
 		if (capturedRecordStatesOverride != null && !AreWeeklyReportCommitRecordStatesCurrent(groupMap, capturedRecordStatesOverride, currentRecordStates))
 		{
 			generationResult.BlockedByFatalFailure = true;
@@ -45604,7 +45665,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			generationResult.FailureCount = list.Count;
 			generationResult.BlockedByFatalFailure = true;
-			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly batch prompt preparation failed before dispatch." }, list2, capturedRecordStates);
+			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly batch prompt preparation failed before dispatch." }, list2, capturedRecordStates, sourceSnapshot);
 			if (queueBlockingPopupOnFatalFailure)
 			{
 				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
@@ -45625,10 +45686,28 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			List<Task<WeeklyReportBatchExecutionResult>> launched = await EnqueueWeeklyWaveLaunchAsync(wave, i, i / burstSize + 1, totalWaves, list.Count, batches.Count, burstSize, displayLabel, runtimeGeneration);
-			if (launched == null || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_wave_launch"))
+			List<Task<WeeklyReportBatchExecutionResult>> launched = await EnqueueWeeklyWaveLaunchAsync(wave, i, i / burstSize + 1, totalWaves, list.Count, batches.Count, burstSize, displayLabel, runtimeGeneration, sourceSnapshot);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_wave_launch") || !ReferenceEquals(Instance, this))
 			{
 				return generationResult;
+			}
+			if (launched == null)
+			{
+				for (int k = i; k < batches.Count; k++)
+				{
+					WeeklyReportBatchRequest unsent = batches[k];
+					runningTasks.Add(Task.FromResult(new WeeklyReportBatchExecutionResult
+					{
+						BatchIndex = k,
+						Batch = unsent,
+						Result = new WeeklyReportBatchRequestResult
+						{
+							FailureReason = "Weekly batch wave was not launched.",
+							MissingReportIds = BuildWeeklyBatchExpectedReportIds(unsent)
+						}
+					}));
+				}
+				break;
 			}
 			runningTasks.AddRange(launched);
 			if (i + burstSize < batches.Count)
@@ -45645,7 +45724,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return generationResult;
 		}
-		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, capturedRecordStates, completed, runtimeGeneration);
+		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, capturedRecordStates, sourceSnapshot, completed, runtimeGeneration);
 #if false
 		int successCount = 0;
 		int failureCount = 0;
@@ -45739,12 +45818,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 #endif
 	}
 
-	private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave, int firstBatchIndex, int waveIndex, int totalWaves, int totalTargets, int totalBatches, int burstSize, string displayLabel, long runtimeGeneration)
+	private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave, int firstBatchIndex, int waveIndex, int totalWaves, int totalTargets, int totalBatches, int burstSize, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot)
 	{
 		TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>> completionSource = new TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>>(TaskCreationOptions.RunContinuationsAsynchronously);
 		_weeklyWaveLaunchQueue.Enqueue(new PendingWeeklyWaveLaunchContext
 		{
 			RuntimeGeneration = runtimeGeneration,
+			SourceSnapshot = sourceSnapshot,
 			DisplayLabel = displayLabel,
 			WaveIndex = waveIndex,
 			TotalWaves = totalWaves,
@@ -45770,7 +45850,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_wave_launch"))
+		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_wave_launch") || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
 		{
 			_weeklyWaveLaunchQueue.Complete(context, null);
 			_weeklyWaveLaunchQueue.CompleteProcessed(context);
@@ -45902,12 +45982,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, Dictionary<string, string> capturedRecordStates, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration)
+	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, Dictionary<string, string> capturedRecordStates, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration)
 	{
 		TaskCompletionSource<WeeklyReportGenerationResult> completionSource = new TaskCompletionSource<WeeklyReportGenerationResult>();
 		PendingWeeklyReportCommitContext context = new PendingWeeklyReportCommitContext
 		{
 			RuntimeGeneration = runtimeGeneration,
+			SourceSnapshot = sourceSnapshot,
 			WeekIndex = weekIndex,
 			StartDay = startDay,
 			EndDay = endDay,
@@ -45976,6 +46057,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				_weeklyReportCommitQueue.Complete(context, new WeeklyReportGenerationResult());
 				return true;
 			}
+			if (!_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
+			{
+				context.RequiresFreshMaterials = true;
+			}
 			if (context.GroupMap == null)
 			{
 				using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.BuildGroupMap"))
@@ -46017,7 +46102,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex];
 					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && !context.Targets.IsSettled(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
 					{
-						if (!IsWeeklyReportCommitRecordUnchanged(context, block.ReportId, group))
+						if (!IsWeeklyReportCommitRecordUnchanged(context, block.ReportId, group) || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
 						{
 							context.CurrentParsedReportIds.Add(block.ReportId);
 							context.Targets.Settle(block.ReportId);
@@ -46030,7 +46115,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 								context.RequiresFreshMaterials = true;
 								context.FailureCount++;
 								context.FailedGroups.Add(group);
-								context.FailureMessages.Add("周报目标在请求期间已变更，旧回包未覆盖：" + block.ReportId);
+								context.FailureMessages.Add("周报目标或同周源素材在请求期间已变更，旧回包未覆盖：" + block.ReportId);
 							}
 							context.BlockIndex++;
 							if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
@@ -46064,7 +46149,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 								context.RequiresFreshMaterials = true;
 								context.FailureCount++;
 								context.FailedGroups.Add(group);
-								context.FailureMessages.Add("周报目标在提交期间已变更，旧回包未覆盖：" + block.ReportId);
+								context.FailureMessages.Add("周报目标或同周源素材在提交期间已变更，旧回包未覆盖：" + block.ReportId);
 							}
 						}
 						else
@@ -46153,7 +46238,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (!IsWeeklyReportCommitRecordUnchanged(context, pending.ReportId, pending.Group))
+		if (!IsWeeklyReportCommitRecordUnchanged(context, pending.ReportId, pending.Group) || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
 		{
 			context.CurrentBlockRejected = true;
 			context.CurrentBlockCommit = null;
@@ -46232,7 +46317,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				AttemptsUsed = 3
 			};
 			result.BlockedByFatalFailure = true;
-			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates);
+			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
 			result.RetryContext.RequiresFreshMaterials = context.RequiresFreshMaterials;
 			InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation paused: " + context.FailureCount + " weekly report target(s) failed."));
 			if (context.QueueBlockingPopupOnFatalFailure)
@@ -46738,13 +46823,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		QueueWeeklyReportMapNotice(eventId);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
 	{
 		if (runtimeGeneration <= 0L)
 		{
 			runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		}
-		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration, capturedRecordStatesOverride);
+		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration, capturedRecordStatesOverride, sourceSnapshotOverride);
 #if false
 		WeeklyReportGenerationResult weeklyReportGenerationResult = new WeeklyReportGenerationResult();
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
@@ -47098,6 +47183,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_eventRecordJsonStorage = "[]";
 		_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 		_eventSourceMaterialJsonStorage = "[]";
+		_weeklyReportMaterialRevisions.MarkAll();
+		_weeklyReportMaterialRevisions.MarkOpening();
 		_kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		_kingdomStabilityStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_kingdomStabilityRelationAppliedOffsets = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -52994,6 +53081,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					_eventKingdomOpeningSummaries[summary.Key ?? ""] = summary.Value ?? "";
 				}
+				_weeklyReportMaterialRevisions.MarkOpening();
 				_eventRecordEntries = restoredRecords;
 				if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
 				{
@@ -53047,6 +53135,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				_eventKingdomOpeningSummaries[kingdomId] = summary;
 			}
 		}
+		_weeklyReportMaterialRevisions.MarkOpening();
 		if (_eventRecordEntries == null)
 		{
 			_eventRecordEntries = new List<EventRecordEntry>();
