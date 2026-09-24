@@ -1006,9 +1006,9 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 后台读取标准 PNG 并缩放为 JPEG base64，读取后删除临时文件。编码颜色保持不变。
+        /// 后台读取人物原生导出 PNG，在生产者边界校正通道一次，再缩放编码，最后删除自身临时文件。
         /// </summary>
-        private static async Task<string> ReadOffscreenPngBase64(string path, int maxDimension, CancellationToken cancellationToken)
+        private static async Task<string> ReadNativePortraitPngBase64(string path, int maxDimension, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(path)) return null;
             try
@@ -1016,8 +1016,7 @@ namespace AnimusForge.Illustrator.Engine
                 await Task.Delay(20, cancellationToken).ConfigureAwait(false);
                 byte[] pngBytes = File.ReadAllBytes(path);
                 if (pngBytes == null || pngBytes.Length == 0) return null;
-                using (var ms = new MemoryStream(pngBytes))
-                using (var bmp = new Bitmap(ms))
+                using (var bmp = NativePortraitImage.DecodeFinalRenderPng(pngBytes, cancellationToken))
                 {
                     return ConvertBitmapToBase64(bmp, maxDimension);
                 }

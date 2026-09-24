@@ -142,7 +142,7 @@ namespace AnimusForge.Illustrator.Engine
                 characterWidget.CustomRenderScale = 1f;
             }, warmupTicks: 20, maxTicks: 240, timeoutMs: timeoutMs, cancellationToken: token, cleanTempFiles: cleanTempFiles).ConfigureAwait(false);
             // Reuse the existing native-producer colour adapter exactly once for each independent PNG.
-            return await ReadOffscreenPngBase64(path, maxDimension, token).ConfigureAwait(false);
+            return await ReadNativePortraitPngBase64(path, maxDimension, token).ConfigureAwait(false);
         }
     }
 }
