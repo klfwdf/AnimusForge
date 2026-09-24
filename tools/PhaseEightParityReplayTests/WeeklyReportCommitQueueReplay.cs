@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -55,7 +56,113 @@ internal static class WeeklyReportCommitQueueReplay
         RunRecordStateReplay(af);
         RunBatchApiLaunchReplay(af);
         RunCommitTargetOwnerReplay(af);
-        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery/rpm-metadata/retry-clear live=NOT_RUN");
+        RunPartialCommitReplay(af);
+        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery/rpm-metadata/retry-clear/real-partial-commit live=NOT_RUN");
+    }
+
+    private static void RunPartialCommitReplay(Assembly af)
+    {
+        Type behavior = af.GetType("AnimusForge.MyBehavior", true);
+        Type groupType = behavior.GetNestedType("WeeklyEventMaterialPreviewGroup", BindingFlags.NonPublic);
+        object world = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(world, "world");
+        object kingdom = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(kingdom, "kingdom");
+        groupType.GetField("KingdomId", Members).SetValue(kingdom, "k1");
+        Type batchType = behavior.GetNestedType("WeeklyReportBatchRequest", BindingFlags.NonPublic);
+        object worldBatch = Activator.CreateInstance(batchType, true);
+        ((IList)batchType.GetField("Groups", Members).GetValue(worldBatch)).Add(world);
+        object kingdomBatch = Activator.CreateInstance(batchType, true);
+        ((IList)batchType.GetField("Groups", Members).GetValue(kingdomBatch)).Add(kingdom);
+        Type batchResultType = behavior.GetNestedType("WeeklyReportBatchRequestResult", BindingFlags.NonPublic);
+        object worldResult = Activator.CreateInstance(batchResultType, true);
+        batchResultType.GetField("Success", Members).SetValue(worldResult, true);
+        Type blockType = behavior.GetNestedType("WeeklyReportBatchBlockResult", BindingFlags.NonPublic);
+        object worldBlock = Activator.CreateInstance(blockType, true);
+        blockType.GetField("ReportId", Members).SetValue(worldBlock, "world");
+        blockType.GetField("Parsed", Members).SetValue(worldBlock, true);
+        ((IList)batchResultType.GetField("Blocks", Members).GetValue(worldResult)).Add(worldBlock);
+        object kingdomResult = Activator.CreateInstance(batchResultType, true);
+        batchResultType.GetField("MissingReportIds", Members).SetValue(kingdomResult, new List<string> { "kingdom:k1" });
+        batchResultType.GetField("FailureReason", Members).SetValue(kingdomResult, "RPM limited");
+        batchResultType.GetField("AttemptsUsed", Members).SetValue(kingdomResult, 3);
+        batchResultType.GetField("IsRequestsPerMinuteLimit", Members).SetValue(kingdomResult, true);
+        Type executionType = behavior.GetNestedType("WeeklyReportBatchExecutionResult", BindingFlags.NonPublic);
+        object Execution(int index, object batch, object result)
+        {
+            object execution = Activator.CreateInstance(executionType, true);
+            executionType.GetField("BatchIndex", Members).SetValue(execution, index);
+            executionType.GetField("Batch", Members).SetValue(execution, batch);
+            executionType.GetField("Result", Members).SetValue(execution, result);
+            return execution;
+        }
+        Type contextType = behavior.GetNestedType("PendingWeeklyReportCommitContext", BindingFlags.NonPublic);
+        object context = Activator.CreateInstance(contextType, true);
+        contextType.GetField("WeekIndex", Members).SetValue(context, 1);
+        contextType.GetField("StartDay", Members).SetValue(context, 0);
+        contextType.GetField("EndDay", Members).SetValue(context, 6);
+        contextType.GetField("DisplayLabel", Members).SetValue(context, "fixture week");
+        ((IList)contextType.GetField("Groups", Members).GetValue(context)).Add(world);
+        ((IList)contextType.GetField("Groups", Members).GetValue(context)).Add(kingdom);
+        ((IList)contextType.GetField("Executions", Members).GetValue(context)).Add(Execution(0, worldBatch, worldResult));
+        ((IList)contextType.GetField("Executions", Members).GetValue(context)).Add(Execution(1, kingdomBatch, kingdomResult));
+        IDictionary groupMap = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(typeof(string), groupType));
+        groupMap.Add("world", world);
+        groupMap.Add("kingdom:k1", kingdom);
+        contextType.GetField("GroupMap", Members).SetValue(context, groupMap);
+        contextType.GetField("CapturedRecordStates", Members).SetValue(context,
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { ["world"] = null, ["kingdom:k1"] = null });
+        Type generationType = behavior.GetNestedType("WeeklyReportGenerationResult", BindingFlags.NonPublic);
+        Type completionType = typeof(TaskCompletionSource<>).MakeGenericType(generationType);
+        object completion = Activator.CreateInstance(completionType, TaskCreationOptions.RunContinuationsAsynchronously);
+        contextType.GetField("CompletionSource", Members).SetValue(context, completion);
+        Type queueType = af.GetType("AnimusForge.WeeklyReportCommitQueueOwner`2", true).MakeGenericType(contextType, generationType);
+        Type completeType = typeof(Action<,>).MakeGenericType(contextType, generationType);
+        Delegate complete = Delegate.CreateDelegate(completeType, behavior.GetMethod("CompletePendingWeeklyReportCommit", Members));
+        Delegate canceled = Expression.Lambda(typeof(Func<>).MakeGenericType(generationType), Expression.Constant(null, generationType)).Compile();
+        object queue = Activator.CreateInstance(queueType, Members, null, new object[] { complete, canceled }, null);
+        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        behavior.GetField("_weeklyReportCommitQueue", Members).SetValue(host, queue);
+        Type revisionsType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
+        object revisions = Activator.CreateInstance(revisionsType, true);
+        behavior.GetField("_weeklyReportMaterialRevisions", Members).SetValue(host, revisions);
+        contextType.GetField("SourceSnapshot", Members).SetValue(context,
+            revisionsType.GetMethod("Capture", Members).Invoke(revisions, new object[] { 0, 6 }));
+        Type entryType = behavior.GetNestedType("EventRecordEntry", BindingFlags.NonPublic);
+        object existingWorld = Activator.CreateInstance(entryType, true);
+        entryType.GetField("EventId", Members).SetValue(existingWorld, "weekly_report:world:1:");
+        entryType.GetField("EventKind", Members).SetValue(existingWorld, "world");
+        entryType.GetField("WeekIndex", Members).SetValue(existingWorld, 1);
+        entryType.GetField("Summary", Members).SetValue(existingWorld, "already published");
+        IList records = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(entryType));
+        records.Add(existingWorld);
+        behavior.GetField("_eventRecordEntries", Members).SetValue(host, records);
+        FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
+        object previousOwner = activeOwner.GetValue(null);
+        activeOwner.SetValue(null, host);
+        try
+        {
+            bool processed = (bool)behavior.GetMethod("ProcessPendingWeeklyReportCommitContext", Members).Invoke(host,
+                new object[] { context, Stopwatch.GetTimestamp(), 1000.0 });
+            Task task = (Task)completionType.GetProperty("Task", Members).GetValue(completion);
+            Check(processed && task.IsCompletedSuccessfully, "real pending commit settles mixed winner/failure context");
+            object generation = task.GetType().GetProperty("Result", Members).GetValue(task);
+            object retry = generationType.GetField("RetryContext", Members).GetValue(generation);
+            IList failedGroups = (IList)retry?.GetType().GetField("Groups", Members).GetValue(retry);
+            Check((int)generationType.GetField("SuccessCount", Members).GetValue(generation) == 1
+                && (int)generationType.GetField("FailureCount", Members).GetValue(generation) == 1
+                && (bool)generationType.GetField("BlockedByFatalFailure", Members).GetValue(generation)
+                && failedGroups?.Count == 1 && ReferenceEquals(failedGroups[0], kingdom)
+                && (bool)retry.GetType().GetField("IsRequestsPerMinuteLimit", Members).GetValue(retry)
+                && !(bool)retry.GetType().GetField("RequiresFreshMaterials", Members).GetValue(retry)
+                && (string)entryType.GetField("Summary", Members).GetValue(existingWorld) == "already published"
+                && behavior.GetField("_unreadWeeklyReportNoticeEventIds", Members).GetValue(host) == null,
+                "accepted winner remains untouched while only failed kingdom enters RPM recovery without duplicate notice");
+        }
+        finally
+        {
+            activeOwner.SetValue(null, previousOwner);
+        }
     }
 
     private static void RunCommitTargetOwnerReplay(Assembly af)
