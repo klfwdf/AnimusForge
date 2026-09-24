@@ -1,4 +1,15 @@
 <a id="j13-plan-20260924"></a>
+## J13a Weekly 有限离线收口，转入 J13b（2026-09-25）
+
+状态 `J13a_OFFLINE_VERIFIED / J13b_ACTIVE / J13_ACTIVE`，意图 `be50b6c6`、恢复回放 `c637bc82`、a3 产品 `8f960d65`。下列旧段落记录各自当时的 ACTIVE，当前由本段和恢复组合段取代；a1–a3 的必要离线退出门已满足，直接进入 Kingdom，不再围绕 Weekly helper 增加独立切片。不更新 HANDOFF、不推送，仍无 Stage/部署/打包/游戏或存档写入。
+
+- 真实 owner：`src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs` 保持原 namespace、枚举、fingerprint v1、wire/checksum、64 pending/512 terminal 容量和原全部状态迁移；`Publication/WeeklyActionOutcomePublicationOwner.cs` 接走唯一 ledger、确认导入、保存代际、work flag、5 秒 retry deadline 和 due selection。`MyBehavior.WeeklyActionOutcomeReceipts.cs` 原静态 prepare/complete/publish 入口、SaveData 字典键 `_af_weeklyActionOutcomeReceipts_v1`、游戏估值/草稿 exact-trigger/readback 写入仍留主线程适配。没有第二账本或由模型文本推断成功。
+- 性能：原每次刷新/tick `GetEntries()` 对最多 576 条排序并分配列表，改为 O(N) 无分配 FirstConfirmed，保持 CreatedUtcTicks/Ordinal ReceiptId 先后；无工作/未到期为 O(1)，仍每 tick 至多尝试一份材料。加载/导出保持原冷路径排序和容量/原子导入，坏 journal 原文仍由 host 保留，后续保存不覆盖它。
+- 验证：原一键脚本六构建 0 warning/error；当前 Debug 1.4 SHA256 `16DD726D8C7B494A5DBE8156963011FC2BBDE029D4D134D762B8CB8FA10AA980` 的 Phase8（新增原 WeeklyActionOutcomeProductionReplay 直接复用）通过。原材料回执契约 + publication 激活/重试/代际/坏导入/加载/仅一次/稳定排序断言通过；Economy executor、三渠道 InteractionPipeline、DuelDispatch 16、schedule net6、PersistenceChunk、PersistenceIdentity（基线 053ad485，146 keys/36 behaviors）、Migration 10 通过。V1 119 / 四 DLL metadata 1060、入口清单 11/source inventory 7 通过；清单补入此前遗漏的 wave owner 及本次两个文件，不升级历史覆盖状态。
+- 限定：旧 `MemorySummaryMainThreadBoundaryTests/run_terminal.py` 在进入本次业务前因此前移除的 `TagSceneSessionHistoryLine` 提取失败；已随 owner 更新源码路径/harness 字段，但没有删旧断言或冒称该历史聚合器通过。与本次直接相关的 ledger、publication lifecycle、生产接线/trigger sanitizer 与跨域三渠道契约均已通过。本轮未改草稿写入算法。真实 Campaign/Mission、旧 SAVE、provider、UI 渲染、60 秒墙钟与帧性能仍 NOT-RUN。
+- 下一包 J13b：核对稳定度/关系偏移/皇家领地忠诚度与周度叛乱的字段、模型消费者和主线程变更，将规则与批次协调归 Kingdom；不改 J12 外交或制作组规则。
+
+
 ## J13a a2 恢复组合与实际工作量（2026-09-25）
 
 本轮新增 `tools/PhaseEightParityReplayTests/WeeklyReportRecoveryReplay.cs`，由既有 Phase8 入口消费当前 `02812536` 产品候选（Debug 1.4 SHA256 `B8FB17208EF267D6A1A252CBF525B522B0A03C25783D23847F3E5362AAD195F4`）。真实部分 commit 保留已发布王国胜出者、为世界分组形成失败上下文；真实 `ShowWeeklyReportFailurePopup` 的 InquiryData 回调在显式点击后重采且仅选失败目标，重复旧按钮不替换新上下文。请求停在真实 prompt 队列并取消，随后以 detached 固定响应进入真实 capture/commit 边界；这不是完整网络端到端，也不是 Gauntlet 点击验收。成功 world product revision 只增加一次，重复 completion 不重写/重发。
