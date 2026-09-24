@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`d6fea0e6` 将跨批次已结算 ID、暂缺目标和恢复消除归 `src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitTargetOwner.cs:6–40`；真实 `MyBehavior.cs:1487,46018–46055,46170–46217` 只在最终结算仍缺失的目标，避免重复缺失或晚成功导致重复失败。双版本六构建、当前候选 Phase8 的 owner/真实 finalizer 回放、入口清单和 477 锚点地图通过；独立 live 源、完整 UI/发布组合及 a2 整体仍待验收，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `4721460f` 在 `MyBehavior.cs:17509–17514,43022–43047,43071,45813–45838` 让批量自动重试的第二/三次 attempt 经 Campaign tick 主线程读取当前 MCM 配置并启动原 J08 gateway；首轮仍同波直发，清理结算、旧 owner/代拒绝。双版本六构建、当前候选 Phase8 的强制后台/清理负例与 472 锚点地图通过；真实 provider、多波次、独立 live 源及部分失败/发布仍待验收，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `5ca5e5c3` 在 `MyBehavior.cs:17487–17492,45501–45593,45694–45759` 让 minute burst 的每波通知与请求初次启动排入 Campaign tick 主线程 FIFO；旧代/读档结算未发波次等待者，保留 60 秒间隔和批次汇总。双版本六构建、当前候选 Phase8/既有队列回放及 469 锚点地图通过；真实多 wave、自动重试配置、独立 live 源及部分失败/发布仍待验收，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
