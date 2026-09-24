@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 批量自动重试旧代请求拦截切片（2026-09-24）
+
+状态 `J13a_A2_STALE_RETRY_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `39606755`。`MyBehavior.cs:42966–43059,45553` 将请求开始时的 `SaveRuntimeGuard` generation 传入每个批次执行与最多三次自动重试；每次尝试发 API 前、每次回包后均复核原代。读档/换代期间已在途请求的完成仍由原结果链清理，**不会**在延迟结束后向新存档再发送旧批次自动重试。未改原每分钟 wave、1200ms/限流/Retry-After 间隔、API route 或部分结果解析；`#if false` 历史路径不作为活动消费者。
+
+- 验证：四个获准构建目录绝对路径/内容/链接复核后，原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 SHA256 `9A6376610A6CE7223AEEDC8FE509B69606A1FFF69ED54FDDF334BF7627C2D303` 的 Phase8 当前候选与“已准备 Prompt 但 generation 过期时网络前拒绝”反例通过；入口 11、source inventory 7、V1 119/四 DLL metadata 1060、466 锚点地图 recorded/working-tree 通过。fixture 用无效代令牌，不触碰真实存档或 provider；尚未完整回放实际三次延迟和换档事件。
+- 未完：后续 minute wave 的 UI 通知线程与配置快照、独立 live 材料源、部分失败/一次发布以及总体请求 owner 仍需验证和归位，a2/J13a/J13 ACTIVE；a3 与 J13b–g 未施工。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
+
 ## J13a a2 批次 Prompt 主线程分阶段准备切片（2026-09-24）
 
 状态 `J13a_A2_PROMPT_PUMP_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `f812ec1b`。审阅 `MyBehavior.cs:41439,42966,45484` 发现自动周报已有分阶段 Prompt 准备，但手动/显式重试的后续 minute wave 可能在 `Task.Delay` 后于非主线程进入 `GenerateWeeklyReportBatchWithRetriesAsync`，原先 `PrepareWeeklyReportBatchPrompt` 会读取 live Kingdom/统治者及前期周报。现 `MyBehavior.cs:1391–1405,1937–1938,2510,17453–17462,45502,45649–45713` 把所有待发批次放进独立的主线程准备队列，Campaign tick 按原每日预算与 `WeeklyMaterialStageCursor` 逐批准备，旧代/读档清理会结算等待者；全部准备完且同代后才发第一波。worker 对任何未准备的批次在调用 API 前直接拒绝，不再从后台补建 Prompt。已有自动阶段预备的批次保持幂等，只补缺失的预览/显示标签，不改 API route 或 J08 transport。
