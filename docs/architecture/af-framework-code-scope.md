@@ -1,3 +1,9 @@
+# 当前范围：J13a Weekly 施工中（2026-09-24）
+
+`d12e8d65` 将按需全文完成队列状态/转换归入 `src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs:8,34,48,70`；`MyBehavior.cs:2120,2222–2225,42738–42751` 的真实 Campaign/UI/引擎入口继续调用 owner，`:42642–42728` 的 live 材料捕获、请求和同代源状态提交重验仍在 host。批量提交及自动调度材料尚未迁移；此为 J13a 首切片而非全包完成。当前 432 锚点地图只作定位，双版本构建/当前候选 replay 待原脚本产物目录清理授权。详细回执见[主台账 J13a1](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
+## 以下为 J12 历史范围
+
 # 当前范围：J12 Economy / Diplomacy / WorldMap 离线闭合（2026-09-22）
 
 当前状态为 **J12_OFFLINE_VERIFIED**，产品终点 `5c3e7b0e`。`a50ab3ad` 的 Direct/lease/同伴票据修复继续保留；本轮新增 `DiplomacyCrossDomainActionOwner`、`WorldDiplomacyJobRuntimeCoordinator` 与 `WorldDiplomacyBehavior.JobRuntime.cs`，真实 queue/start/request/completion route 已离开世界外交主文件。WorldMap 的协议、受理、queue runtime、Campaign event lifecycle、同伴/总督 delayed request 已由 `Runtime` 目录内的实际 partial owner 承担，保存字段和 TaleWorlds mutation 仍留原 host。

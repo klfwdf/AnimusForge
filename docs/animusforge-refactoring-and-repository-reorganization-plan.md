@@ -1,4 +1,13 @@
 <a id="j13-plan-20260924"></a>
+## J13a1 按需全文完成队列切片（2026-09-24）
+
+状态 `J13_ACTIVE / J13a_VERIFY`，并非 J13a 或 J13 离线完成。开工检查点 `f3b79d4c`，产品/测试切片 `83cc314b`，测试编译修正 `d12e8d65`。`src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs:8,34,48,70` 拥有按需全文完成的队列、锁、generation/owner 受理、每 tick 最多两次主线程提交、异常传递和清理等待者；真实消费者 `MyBehavior.cs:2120,2222–2225,42738–42751` 保留 Campaign/UI 引擎入口与原反射 replay 方法名，自动/批量生成队列仍在原 host。`MyBehavior.cs:42642–42728` 继续主线程捕获源材料、worker 请求和提交时同代源状态/已发布胜出者重验。未改保存键、默认开关、API route、制作组玩法或原共享 Actions 回执。
+
+- 行为/性能：仅迁走完成队列状态与转换，未新增长期轮询/扫描；原每 tick 最多两次 `Apply` 保持，但单次 Apply 的 record/字符工作量尚未量化，不能视为帧预算通过。独立锁不再与批量提交队列共用；两队列原本无统一顺序语义，互不读写对方状态。
+- 验证：`dotnet restore ...WeeklyReportSchedulePolicy.SmokeTests.csproj -p:TargetFramework=net8.0 --ignore-failed-sources` 与相同属性 `dotnet run --no-restore` 通过（原 net6 runner 无本机 targeting pack，此为相同 Program/生产源码的 net8 运行，不等同原 net6）；覆盖 worker 预约、两次限额、清理等待者、旧代/旧 owner、异常。`WeeklyMemoryMaterialOutcomeContractTests` 通过；1.3/1.4 `Compile` 集合均包含新 owner；`test_repository_source_inventory.py` 7 项通过；代码地图 432 锚点 recorded/working-tree 通过（只证明定位）。首次将 worker 测试误写成 `Task.Run` 已解包 bool，`83cc314b` 提交前编译失败 `CS0029`，后续 `d12e8d65` 改为保留内层 Task 并复测通过。
+- **未过门禁**：双版本 Debug/Release + Bootstrap 构建和当前候选 Phase8 replay 均未运行。原构建脚本会递归重建四个已存在产物目录；已核实它们位于工作区、无符号链接/重解析跳转，内容分别为 `bootstrap/versions`、`bootstrap/implementation_1.3/implementation_1.4`。已请求这四个精确目录的清理确认，未获确认前不调用脚本、不以其他构建命令绕过。Stage DLL replay 仍需当前候选的显式来源校验；不能用旧 DLL 凑 PASS。实机/旧档/provider/音频/帧性能仍 `NOT-RUN`。
+- 下一动作：取得精确构建清理授权后运行原脚本的 Debug/Release（无 Stage/Deploy）并运行当前候选 replay；随后继续 a1 自动调度/材料真实职责，不把此队列切片冒称 J13a 全包完成。代码坐标及保留范围见[代码范围图](architecture/af-framework-code-scope.md)。
+
 ## J13a0 开工检查点（2026-09-24）
 
 状态 `J13_ACTIVE / J13a0`，不改变 J07–J12 的离线结论。实际 Git 根 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`、开工 HEAD `8f7445b86794534af83f0ea58b9e176a38dc8e78`；仅 `.dotnet-cli-home/` 未跟踪，保持不动，暂存及已跟踪差异为空。
