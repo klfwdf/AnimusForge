@@ -1500,6 +1500,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public HashSet<string> WeeklyReportNoticeEventIdsQueued = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+		public HashSet<string> AttemptedWriteReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 		public TaskCompletionSource<WeeklyReportGenerationResult> CompletionSource;
 	}
 
@@ -46207,13 +46209,87 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("EventWeeklyReport", "[ERROR] deferred weekly report commit failed: " + ex);
-			_weeklyReportCommitQueue.Complete(context, new WeeklyReportGenerationResult
+			WeeklyReportGenerationResult failure = new WeeklyReportGenerationResult
 			{
 				FailureCount = Math.Max(1, context.FailureCount),
 				BlockedByFatalFailure = true
-			});
+			};
+			try
+			{
+				failure = BuildWeeklyReportCommitExceptionResult(context);
+				if (context.QueueBlockingPopupOnFatalFailure && failure.RetryContext != null)
+				{
+					QueueWeeklyReportFailurePopup(failure.RetryContext, showImmediate: true);
+				}
+			}
+			catch (Exception recoveryException)
+			{
+				Logger.Log("EventWeeklyReport", "[ERROR] weekly report commit recovery failed: " + recoveryException);
+			}
+			_weeklyReportCommitQueue.Complete(context, failure);
 			return true;
 		}
+	}
+
+	private WeeklyReportGenerationResult BuildWeeklyReportCommitExceptionResult(PendingWeeklyReportCommitContext context)
+	{
+		List<WeeklyEventMaterialPreviewGroup> unfinished = new List<WeeklyEventMaterialPreviewGroup>();
+		HashSet<string> seenReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		int completed = 0;
+		foreach (WeeklyEventMaterialPreviewGroup group in context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
+		{
+			string reportId = BuildWeeklyReportGroupReportId(group);
+			if (string.IsNullOrWhiteSpace(reportId) || !seenReportIds.Add(reportId))
+			{
+				continue;
+			}
+			bool hasWinner = false;
+			try
+			{
+				hasWinner = HasWeeklyReportCommitWinner(context, group);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("EventWeeklyReport", "[WARN] weekly report winner check failed during commit recovery: " + ex.Message);
+			}
+			if (hasWinner)
+			{
+				completed++;
+				if (context.AttemptedWriteReportIds?.Contains(reportId) == true)
+				{
+					try
+					{
+						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, ResolveWeeklyReportNoticeNearestKingdomId(context), context.WeeklyReportNoticeEventIdsQueued);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("EventWeeklyReport", "[WARN] weekly report notice recovery failed: " + ex.Message);
+					}
+				}
+			}
+			else
+			{
+				unfinished.Add(group);
+			}
+		}
+		if (seenReportIds.Count == 0)
+		{
+			return new WeeklyReportGenerationResult { BlockedByFatalFailure = true, FailureCount = Math.Max(1, context.FailureCount) };
+		}
+		WeeklyReportGenerationResult result = new WeeklyReportGenerationResult
+		{
+			SuccessCount = completed,
+			FailureCount = unfinished.Count,
+			BlockedByFatalFailure = unfinished.Count > 0,
+			Completed = unfinished.Count == 0
+		};
+		if (unfinished.Count > 0)
+		{
+			WeeklyReportRequestResult failure = new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly commit failed; current materials must be collected again." };
+			result.RetryContext = CreateWeeklyReportRetryContext(unfinished, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, unfinished[0], failure, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
+			result.RetryContext.RequiresFreshMaterials = true;
+		}
+		return result;
 	}
 
 	private static PendingWeeklyReportBlockCommit CreatePendingWeeklyReportBlockCommit(WeeklyEventMaterialPreviewGroup group, WeeklyReportBatchBlockResult block, string promptText)
@@ -46262,6 +46338,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.WriteRecord"))
 		{
+			context.AttemptedWriteReportIds.Add(pending.ReportId);
 			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.MaterialCursor.Cloned, sanitizeAfter: false);
 		}
 		context.CurrentBlockCommit = null;

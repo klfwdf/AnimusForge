@@ -57,7 +57,7 @@ internal static class WeeklyReportCommitQueueReplay
         RunBatchApiLaunchReplay(af);
         RunCommitTargetOwnerReplay(af);
         RunPartialCommitReplay(af);
-        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery/rpm-metadata/retry-clear/real-partial-commit live=NOT_RUN");
+        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery/rpm-metadata/retry-clear/real-partial-commit/exception-recovery live=NOT_RUN");
     }
 
     private static void RunPartialCommitReplay(Assembly af)
@@ -156,8 +156,30 @@ internal static class WeeklyReportCommitQueueReplay
                 && (bool)retry.GetType().GetField("IsRequestsPerMinuteLimit", Members).GetValue(retry)
                 && !(bool)retry.GetType().GetField("RequiresFreshMaterials", Members).GetValue(retry)
                 && (string)entryType.GetField("Summary", Members).GetValue(existingWorld) == "already published"
+                && (int)contextType.GetField("AttemptedWriteReportIds", Members).FieldType.GetProperty("Count", Members)
+                    .GetValue(contextType.GetField("AttemptedWriteReportIds", Members).GetValue(context)) == 0
                 && behavior.GetField("_unreadWeeklyReportNoticeEventIds", Members).GetValue(host) == null,
                 "accepted winner remains untouched while only failed kingdom enters RPM recovery without duplicate notice");
+
+            object brokenContext = Activator.CreateInstance(contextType, true);
+            foreach (string field in new[] { "WeekIndex", "StartDay", "EndDay", "DisplayLabel", "Groups", "Executions", "GroupMap", "CapturedRecordStates", "SourceSnapshot" })
+                contextType.GetField(field, Members).SetValue(brokenContext, contextType.GetField(field, Members).GetValue(context));
+            contextType.GetField("Targets", Members).SetValue(brokenContext, null);
+            object recoveryCompletion = Activator.CreateInstance(completionType, TaskCreationOptions.RunContinuationsAsynchronously);
+            contextType.GetField("CompletionSource", Members).SetValue(brokenContext, recoveryCompletion);
+            bool recovered = (bool)behavior.GetMethod("ProcessPendingWeeklyReportCommitContext", Members).Invoke(host,
+                new object[] { brokenContext, Stopwatch.GetTimestamp(), 1000.0 });
+            Task recoveryTask = (Task)completionType.GetProperty("Task", Members).GetValue(recoveryCompletion);
+            Check(recovered && recoveryTask.IsCompletedSuccessfully, "commit exception still settles its waiter");
+            object recoveryResult = recoveryTask.GetType().GetProperty("Result", Members).GetValue(recoveryTask);
+            object recoveryRetry = generationType.GetField("RetryContext", Members).GetValue(recoveryResult);
+            IList recoveryGroups = (IList)recoveryRetry?.GetType().GetField("Groups", Members).GetValue(recoveryRetry);
+            Check((int)generationType.GetField("SuccessCount", Members).GetValue(recoveryResult) == 1
+                && (int)generationType.GetField("FailureCount", Members).GetValue(recoveryResult) == 1
+                && recoveryGroups?.Count == 1 && ReferenceEquals(recoveryGroups[0], kingdom)
+                && (bool)recoveryRetry.GetType().GetField("RequiresFreshMaterials", Members).GetValue(recoveryRetry)
+                && (string)entryType.GetField("Summary", Members).GetValue(existingWorld) == "already published",
+                "exception recovery excludes the published winner and requires explicit fresh materials for only unfinished targets");
         }
         finally
         {
