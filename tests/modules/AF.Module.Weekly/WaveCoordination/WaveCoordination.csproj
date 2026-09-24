@@ -6,6 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Generation/WeeklyReportWaveCoordinator.cs" Link="WeeklyReportWaveCoordinator.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs" Link="WeeklyReportCommitQueueOwner.cs" />
     <Compile Include="../../../../tools/PhaseEightParityReplayTests/WeeklyReportWaveCoordinationReplay.cs" Link="WeeklyReportWaveCoordinationReplay.cs" />
+    <Compile Include="../../../../tools/PhaseEightParityReplayTests/WeeklyReportQueueAdmissionReplay.cs" Link="WeeklyReportQueueAdmissionReplay.cs" />
   </ItemGroup>
 </Project>

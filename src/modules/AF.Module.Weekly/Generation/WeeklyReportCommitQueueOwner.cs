@@ -22,11 +22,25 @@ internal sealed class WeeklyReportCommitQueueOwner<TContext, TResult> where TCon
 
 	internal void Enqueue(TContext context)
 	{
+		EnqueueIfCurrent(context, null);
+	}
+
+	// Admission and reset use the same lock. A worker arriving after load cleanup
+	// must be settled here, because a retired host may never receive another tick.
+	// The predicate only reads owner/generation; completion runs outside the lock.
+	internal bool EnqueueIfCurrent(TContext context, Func<bool> isCurrent)
+	{
 		lock (_sync)
 		{
-			_pending.Enqueue(context);
-			Volatile.Write(ref _hasPending, 1);
+			if (isCurrent == null || isCurrent())
+			{
+				_pending.Enqueue(context);
+				Volatile.Write(ref _hasPending, 1);
+				return true;
+			}
 		}
+		_complete(context, _newCanceledResult());
+		return false;
 	}
 
 	internal TContext Peek()

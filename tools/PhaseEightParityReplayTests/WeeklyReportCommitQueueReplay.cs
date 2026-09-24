@@ -15,6 +15,7 @@ internal static class WeeklyReportCommitQueueReplay
     internal static void Run(Assembly af)
     {
         WeeklyReportWaveCoordinationReplay.Run(af.GetType("AnimusForge.WeeklyReportWaveCoordinator", true));
+        WeeklyReportQueueAdmissionReplay.Run(af.GetType("AnimusForge.WeeklyReportCommitQueueOwner`2", true));
         Type ownerType = af.GetType("AnimusForge.WeeklyReportCommitQueueOwner`2", true)
             .MakeGenericType(typeof(string), typeof(string));
         var waiters = new Dictionary<string, TaskCompletionSource<string>>();
@@ -61,6 +62,7 @@ internal static class WeeklyReportCommitQueueReplay
         RunWaveLaunchReplay(af);
         RunCommitTargetOwnerReplay(af);
         RunPartialCommitReplay(af);
+        RunRetiredQueueAdmissionReplay(af);
         Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/two-wave-pump-source-guard/partial-missing-recovery/rpm-metadata/retry-clear/real-partial-commit/exception-recovery live=NOT_RUN");
     }
 
@@ -96,12 +98,12 @@ internal static class WeeklyReportCommitQueueReplay
             return (Task)behavior.GetMethod("EnqueueWeeklyWaveLaunchAsync", Members).Invoke(host,
                 new object[] { batches, batchIndex, waveIndex, 2, 2, 2, 1, "fixture week", generation, snapshot });
         }
-        Task first = Enqueue(0, 1), second = Enqueue(1, 2);
         FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
         object previousOwner = activeOwner.GetValue(null);
         activeOwner.SetValue(null, host);
         try
         {
+            Task first = Enqueue(0, 1), second = Enqueue(1, 2);
             Check((bool)behavior.GetMethod("ProcessPendingWeeklyWaveLaunches", Members).Invoke(host, null),
                 "campaign wave pump processes first queued wave");
             Check(first.IsCompletedSuccessfully && !second.IsCompleted
@@ -193,11 +195,59 @@ internal static class WeeklyReportCommitQueueReplay
             {
                 SynchronizationContext.SetSynchronizationContext(previousContext);
             }
+            activeOwner.SetValue(null, previousOwner);
+            Task retiredLaunch = Enqueue(0, 1);
+            Check(retiredLaunch.IsCompletedSuccessfully
+                && retiredLaunch.GetType().GetProperty("Result", Members).GetValue(retiredLaunch) == null
+                && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+                "retired host admission settles immediately without depending on another Campaign tick");
         }
         finally
         {
             activeOwner.SetValue(null, previousOwner);
         }
+    }
+
+    private static void RunRetiredQueueAdmissionReplay(Assembly af)
+    {
+        Type behavior = af.GetType("AnimusForge.MyBehavior", true);
+        Type guard = af.GetType("AnimusForge.SaveRuntimeGuard", true);
+        long generation = (long)guard.GetMethod("CaptureGeneration", Members).Invoke(null, null);
+        FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
+        object previousOwner = activeOwner.GetValue(null);
+        object host = Activator.CreateInstance(behavior);
+        try
+        {
+            foreach (bool retired in new[] { true, false })
+            {
+                activeOwner.SetValue(null, retired ? previousOwner : host);
+                long capturedGeneration = retired ? generation : generation + 1;
+                Task prepare = (Task)behavior.GetMethod("EnqueueWeeklyPromptPreparationAsync", Members)
+                    .Invoke(host, new object[] { null, capturedGeneration });
+                Check(prepare.IsCompletedSuccessfully
+                    && prepare.GetType().GetProperty("Result", Members).GetValue(prepare).ToString() == "Canceled",
+                    "retired/old-generation prompt preparation settles at admission");
+                Task commit = (Task)behavior.GetMethod("EnqueueWeeklyReportCommitAsync", Members)
+                    .Invoke(host, new object[] { null, 1, 0, 6, "retired fixture", false, false, false,
+                        null, null, null, null, null, capturedGeneration });
+                Check(commit.IsCompletedSuccessfully, "retired/old-generation commit settles without tick");
+                object result = commit.GetType().GetProperty("Result", Members).GetValue(commit);
+                Check(!(bool)result.GetType().GetField("Completed", Members).GetValue(result)
+                    && (int)result.GetType().GetField("SuccessCount", Members).GetValue(result) == 0,
+                    "rejected commit does not report success or publish facts");
+                foreach (string field in new[] { "_weeklyPromptPreparationQueue", "_weeklyReportCommitQueue" })
+                {
+                    object queue = behavior.GetField(field, Members).GetValue(host);
+                    Check(!(bool)queue.GetType().GetProperty("HasPending", Members).GetValue(queue),
+                        "rejected admission leaves no pending work: " + field);
+                }
+            }
+        }
+        finally
+        {
+            activeOwner.SetValue(null, previousOwner);
+        }
+        Console.WriteLine("PASS WeeklyRetiredHostAdmissionReplay prompt/commit/owner/generation/no-pump/no-false-success live=NOT_RUN");
     }
 
     private static void RunPartialCommitReplay(Assembly af)
