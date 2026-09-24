@@ -47,6 +47,7 @@ public static class NativeUiAdapter
         harmony.Patch(close, postfix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(OverlayClosed)));
         harmony.Patch(finalize, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(NativeFinalizing)));
         harmony.Patch(restrictions, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(UpdateRestrictionsPrefix)));
+        MapPortraitSource.Install(harmony);
         _installed = true;
     }
 
@@ -80,7 +81,7 @@ public static class NativeUiAdapter
             {
                 if (_native != null && ReferenceEquals(_native.Root, root)) return;
                 _native?.Dispose();
-                _native = new NativeSession(root, source, datasource is MapConversationVM);
+                _native = new NativeSession(root, source, datasource as MapConversationVM);
                 return;
             }
             if (movieName != "AnimusForgeNativeConversationOverlay") return;
@@ -124,6 +125,7 @@ public static class NativeUiAdapter
         _overlay?.Dispose(); _overlay = null;
         foreach (var vm in Wrappers.Values) vm.OnFinalize();
         Wrappers.Clear();
+        MapPortraitSource.Shutdown();
     }
 
     private static void ReleaseOverlay(AnimusForgeNativeConversationOverlayVM original)
@@ -191,18 +193,19 @@ public static class NativeUiAdapter
         internal readonly Widget Root;
         internal readonly MissionConversationVM Source;
         internal readonly Mission Mission;
-        internal readonly bool IsMapConversation;
+        internal bool IsMapConversation => _mapSource != null;
+        private readonly MapConversationVM _mapSource;
         private CharacterTableauWidget _tableau;
         private readonly LiveSpeakerPortrait _portrait = new LiveSpeakerPortrait();
         private bool _disposed;
         private float _refreshElapsed;
 
-        internal NativeSession(Widget root, MissionConversationVM source, bool isMapConversation)
+        internal NativeSession(Widget root, MissionConversationVM source, MapConversationVM mapSource)
         {
             Root = root;
             Source = source;
             Mission = Mission.Current;
-            IsMapConversation = isMapConversation;
+            _mapSource = mapSource;
             _tableau = root.FindChild("AFDialogueLiveSpeakerPortrait", true) as CharacterTableauWidget;
             if (_tableau != null)
             {
@@ -223,6 +226,14 @@ public static class NativeUiAdapter
 
         private void RefreshSpeaker()
         {
+            if (_mapSource != null)
+            {
+                // The map's IAgent is only a character descriptor, not the rendered individual.
+                // Wait for the real tableau appearance; never use troop-default equipment/face.
+                _tableau.IsVisible = MapPortraitSource.TryGet(_mapSource.TableauData, out var appearance)
+                    && _portrait.Apply(_tableau, null, appearance.Character, appearance);
+                return;
+            }
             var manager = Campaign.Current?.ConversationManager;
             CharacterObject character = manager?.OneToOneConversationCharacter;
             Agent speaker = null;

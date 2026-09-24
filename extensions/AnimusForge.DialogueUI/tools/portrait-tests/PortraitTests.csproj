@@ -9,5 +9,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Stubs.cs" />
     <Compile Include="../../src/Native/LiveSpeakerPortrait.cs" Link="LiveSpeakerPortrait.cs" />
+    <Compile Include="../../src/Native/MapPortraitAppearance.cs" Link="MapPortraitAppearance.cs" />
   </ItemGroup>
 </Project>
