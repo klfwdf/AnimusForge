@@ -13,6 +13,9 @@ namespace AnimusForge.Illustrator.Context
         private static readonly Regex Quotes = new Regex("[“\"「『][^”\"」』\\r\\n]*[”\"」』]", RegexOptions.Compiled);
         private static readonly Regex DirectSpeech = new Regex("(?:说道|说|喊道|宣称|声称|写道|表示|said|says|claimed)\\s*[:：]?\\s*[“\"「『][^”\"」』]*[”\"」』]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex Sentences = new Regex(@"[^。！？!?\r\n]+[。！？!?]?", RegexOptions.Compiled);
+        private static readonly Regex SpeechOrWrittenText = new Regex(
+            @"台词|对白|字幕|气泡|标牌|文字|写着|写道|说道|喊道|说出|说着|说：|说:|dialogue|caption|subtitle|speech\s+bubble|\bsays?\b|\bsaid\b|\breads?\b",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly string[] EventTerms = {
             "围城", "围攻", "围困", "攻城", "进攻", "击败", "战败", "战胜", "获胜", "撤退", "逃离", "被俘", "俘虏", "处决", "释放", "获释", "拒绝", "未能", "没有", "取消",
             "占领", "易主", "移交", "归还", "投降", "停战", "和谈", "结盟", "宣战", "签订", "劫掠", "焚烧",
@@ -89,17 +92,40 @@ namespace AnimusForge.Illustrator.Context
             return string.Join("\n", facts);
         }
 
-        public static bool HasNarrativeEcho(string output, string narrative, string hardFacts)
+        public static bool HasNarrativeEcho(string output, string narrative, string hardFacts, bool allowVisualNarration = false)
         {
             if (string.IsNullOrWhiteSpace(output) || string.IsNullOrWhiteSpace(narrative)) return false;
+            if (allowVisualNarration)
+            {
+                // Conversation narration can already describe visible actions. Keep the
+                // stricter biography guard for the separately labelled character context.
+                int background = narrative.IndexOf("【人物背景】", StringComparison.Ordinal);
+                if (background >= 0)
+                {
+                    if (HasNarrativeEcho(output, narrative.Substring(background), hardFacts)) return true;
+                    narrative = narrative.Substring(0, background);
+                }
+            }
+            var quotedOrSpokenOutput = new List<string>();
+            if (allowVisualNarration)
+            {
+                foreach (Match quote in Quotes.Matches(output)) quotedOrSpokenOutput.Add(quote.Value);
+                foreach (string sentence in Parts(output))
+                    if (SpeechOrWrittenText.IsMatch(sentence)) quotedOrSpokenOutput.Add(sentence);
+            }
             var candidates = new List<string>(Parts(narrative));
             foreach (Match quote in Quotes.Matches(narrative)) candidates.Add(quote.Value.Trim('“', '”', '"', '「', '」', '『', '』'));
             foreach (string candidate in candidates)
             {
                 string text = candidate.Trim(' ', '。', '！', '？', '!', '?', '"', '“', '”');
                 if (text.Length < 16) continue; // 提高阈值至16字符（整句引用），避免常规生平/地名/身份描述短语误杀整篇导演扩写。
-                if (output.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0 &&
-                    (hardFacts ?? string.Empty).IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0) return true;
+                if (output.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0 ||
+                    (hardFacts ?? string.Empty).IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) continue;
+                if (!allowVisualNarration) return true;
+                // Reject copied dialogue presented as speech/writing, not an unquoted
+                // visual action that the director retained from the current turn.
+                foreach (string quotedOrSpoken in quotedOrSpokenOutput)
+                    if (quotedOrSpoken.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) return true;
             }
             return false;
         }

@@ -287,8 +287,8 @@ public static class ClientEndpointAudit
                 Check(Property<bool>(chat, "Success") && handler.Requests.Count == 1, "Chat succeeds with reference images");
                 CheckCapturedPrompt(chat, handler.Requests[0], "Chat with references");
                 string chatText = Property<string>(chat, "ResolvedPrompt");
-                Check(chatText.Contains("核心人物官方真实视觉基准图") && chatText.Contains("IDENTITY_LABEL") && chatText.Contains("家族纹章图案样板") && chatText.Contains("现场3D实景采光与地形参考") && chatText.Contains("最终呈现规范/Artistic Redraw"), "Chat cache includes all identity role scene and redraw text");
-                Check(chatText.Contains("DIRECTOR_BODY_SENTINEL") && chatText.Contains("焦点精细、次要区域简练") && !chatText.Contains("视觉焦点集中于人物面部"), "Chat sends director body and compact style without detailed director-only style");
+                Check(chatText.Contains("核心人物官方真实视觉基准图") && chatText.Contains("IDENTITY_LABEL") && chatText.Contains("家族纹章图案样板") && chatText.Contains("当前位置与环境定位参考") && chatText.Contains("最终呈现规范/Artistic Redraw"), "Chat cache includes all identity role scene and redraw text");
+                Check(chatText.Contains("DIRECTOR_BODY_SENTINEL") && chatText.Contains("焦点精细、次要区域笔触简练") && !chatText.Contains("视觉焦点集中于人物面部"), "Chat sends director body and compact style without detailed director-only style");
                 var chatMessage = (Dictionary<string, object>)((object[])ParseJson(handler.Requests[0].Json)["messages"])[0];
                 var chatContent = (object[])chatMessage["content"];
                 Check(chatContent.Cast<Dictionary<string, object>>().Count(p => (string)p["type"] == "image_url") == 3, "Chat actually sends the three image parts omitted from cached text");
@@ -302,20 +302,22 @@ public static class ClientEndpointAudit
                 Check(!Property<bool>(emptyChat, "Success") && handler.Requests.Count == 1, "empty Chat response does not trigger another paid request");
                 CheckCapturedPrompt(emptyChat, handler.Requests[0], "empty Chat response");
 
-                handler.Reset(Unsupported(), NeedsChat(), Success());
-                var fallback = Generate(Options("http://offline.invalid/v1", false, "audit", "classic-oil"), references);
-                Check(Property<bool>(fallback, "Success") && handler.Requests.Count == 3, "automatic Edits to Generations to Chat fallback succeeds");
-                Check(handler.Requests[0].Url.EndsWith("/images/edits") && handler.Requests[1].Url.EndsWith("/images/generations") && handler.Requests[2].Url.EndsWith("/chat/completions"), "automatic fallback uses the intended endpoint sequence");
-                CheckCapturedPrompt(fallback, handler.Requests[2], "successful Chat fallback");
-                Check(Property<string>(fallback, "ResolvedPrompt") != handler.Requests[0].Fields["prompt"] && Property<string>(fallback, "ResolvedPrompt") != RequestText(handler.Requests[1]), "fallback cache does not retain either earlier request prompt");
-                handler.Reset(Unsupported(), NeedsChat(), new Reply(HttpStatusCode.OK, "{}"));
-                var failedFallback = Generate(Options("http://offline.invalid/v1", false, "audit", "classic-oil"), references);
-                Check(!Property<bool>(failedFallback, "Success") && handler.Requests.Count == 3, "failed Chat fallback stops after the existing three protocol attempts");
-                CheckCapturedPrompt(failedFallback, handler.Requests[2], "failed Chat fallback");
-                handler.Reset(NeedsChat());
+                handler.Reset(Unsupported());
+                var unsupportedEdit = Generate(Options("http://offline.invalid/v1", false, "audit", "classic-oil"), references);
+                Check(!Property<bool>(unsupportedEdit, "Success") && handler.Requests.Count == 1 && handler.Requests[0].Url.EndsWith("/images/edits"), "unsupported Edits stops instead of discarding references through a text-only retry");
+                CheckCapturedPrompt(unsupportedEdit, handler.Requests[0], "unsupported Edits");
+                handler.Reset(NeedsChat(), Success());
+                var fallback = Generate(Options("http://offline.invalid/v1", false, "audit", "classic-oil"), null);
+                Check(Property<bool>(fallback, "Success") && handler.Requests.Count == 2, "text-only Generations can fall back to Chat");
+                Check(handler.Requests[0].Url.EndsWith("/images/generations") && handler.Requests[1].Url.EndsWith("/chat/completions"), "text-only fallback uses the intended endpoint sequence");
+                CheckCapturedPrompt(fallback, handler.Requests[1], "successful Chat fallback");
+                handler.Reset(NeedsChat(), new Reply(HttpStatusCode.OK, "{}"));
+                var failedFallback = Generate(Options("http://offline.invalid/v1", false, "audit", "classic-oil"), null);
+                Check(!Property<bool>(failedFallback, "Success") && handler.Requests.Count == 2, "failed text-only Chat fallback stops after two protocol attempts");
+                CheckCapturedPrompt(failedFallback, handler.Requests[1], "failed Chat fallback");
+                handler.Reset();
                 var pinnedGeneration = Generate(Options("http://offline.invalid/v1/images/generations?fixed=1", true, "audit", "classic-oil"), references);
-                Check(!Property<bool>(pinnedGeneration, "Success") && handler.Requests.Count == 1, "exact Generations failure still cannot switch to Chat");
-                CheckCapturedPrompt(pinnedGeneration, handler.Requests[0], "exact Generations failure");
+                Check(!Property<bool>(pinnedGeneration, "Success") && handler.Requests.Count == 0, "exact Generations rejects references locally rather than dropping them");
 
                 CheckStyles(assembly, handler);
             }

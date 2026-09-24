@@ -76,7 +76,7 @@ namespace AnimusForge.Illustrator.Context
             // Map conversation tableaus need not use the campaign clock's lighting.
             TimeOfDay = string.Empty;
             LightingAndAtmosphere = string.Empty;
-            TimeEvidence = "未读取到会话渲染场景时间；战役时钟不作为现场昼夜证据。若提供当前现场截图，以其中可辨认的昼夜与采光为准；否则时段未确认。";
+            TimeEvidence = "未读取到会话渲染场景时间；战役时钟不作为现场昼夜证据。时段仅采用已确认的文字事实，否则时段未确认；现场截图仅用于当前位置与环境定位。";
         }
 
         public string BuildDirectorOnlyFacts()

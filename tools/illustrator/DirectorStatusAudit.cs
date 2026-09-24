@@ -110,6 +110,7 @@ public static class DirectorStatusAudit
         handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
         object result = Generate(handler, Options(), References());
         Check(Property<string>(result, "DirectionStatus") == "complete" && !Property<bool>(result, "UsedLocalFallback"), "completed response has explicit successful status");
+        Check(!Property<bool>(result, "UsedTextOnlyDirector"), "visual director records that it received references");
         Check(Property<string>(result, "Prompt").Contains(Body) && Property<string>(result, "Title") == "灯下裁决", "completed direction keeps full body and separate title");
         Check(Property<string>(result, "FinishReason") == "stop" && Property<int?>(result, "PromptTokens") == 321 && Property<int?>(result, "CompletionTokens") == 123 && Property<int?>(result, "TotalTokens") == 444, "finish reason and provider usage preserved");
         Check(handler.Bodies.Count == 1 && handler.Bodies[0].Contains("image_url") && handler.Bodies[0].Contains("director-audit"), "production payload sends visual references and selected model");
@@ -157,6 +158,7 @@ public static class DirectorStatusAudit
         handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
         result = Generate(handler, Options(), References());
         Check(Property<string>(result, "DirectionStatus") == "vision_unsupported" && Property<bool>(result, "VisionUnsupported") && !Property<bool>(result, "UsedLocalFallback"), "unsupported vision followed by useful text is distinctly labeled");
+        Check(Property<bool>(result, "UsedTextOnlyDirector"), "vision fallback requests real-scene calibration on the image side");
         Check(handler.Bodies.Count == 2 && handler.Bodies[0].Contains("image_url") && !handler.Bodies[1].Contains("image_url") && handler.Bodies[1].Contains("本次仅提供文字"), "single permitted retry removes images and tells director no visual evidence exists");
         Check(Property<string>(result, "StatusText").Contains("不支持识图") && Property<string>(result, "FallbackReason").Length > 0, "text-only degradation has visible status and saved reason");
 
@@ -200,6 +202,7 @@ public static class DirectorStatusAudit
         handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, null));
         result = Generate(handler, options, References());
         Check(handler.Bodies.Count == 1 && !handler.Bodies[0].Contains("image_url") && !Property<bool>(result, "VisionUnsupported"), "intentional text-only setting is distinguished from provider degradation");
+        Check(Property<bool>(result, "UsedTextOnlyDirector") && handler.Bodies[0].Contains("本次仅提供文字"), "intentional text-only director records missing visual evidence for scene routing");
         Console.WriteLine("RESULT: " + checks + " PASS / 0 FAIL");
     }
 }

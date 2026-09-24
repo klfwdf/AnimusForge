@@ -35,9 +35,9 @@ namespace AnimusForge.Illustrator.Engine
             stats.MaxMs = Math.Max(stats.MaxMs, milliseconds);
         }
         internal static string SceneReferenceLabel() =>
-            "当前玩家视角的单张真实现场画面，不是全景或多个方向。保留可见的墙面材质与配色、门窗楼梯和人物高低关系；" +
+            "当前玩家视角的单张真实现场画面，不是全景或多个方向。仅用于判断当前位置与环境定位，保留可见的墙面材质与配色、门窗楼梯和环境高低关系；" +
             "只对已看见的环境作描述，画面外及被遮挡区域保持未知，不按地点名称重造建筑。" +
-            "用于校验现场采光、可见人物行动与人群远近；人物身份细节仍按对应人物参考，不把界面头像或画廊作品当作现场人物。" +
+            "人物行动优先采用最近一轮对话中的已发生叙事，不采用截图里的站姿、手势、朝向或视线；人物身份细节仍按对应人物参考，不把界面头像或画廊作品当作现场人物。" +
             "忽略游戏对话UI、字幕、血条与名牌，不将界面内容画入作品。" + ScreenshotMaskReferenceNote;
 
         internal static IReadOnlyList<IllustrationReferenceImage> CreateCapturedSceneReferences(string image)
@@ -184,8 +184,8 @@ namespace AnimusForge.Illustrator.Engine
                     { ["attempt"] = 2, ["reason"] = calibrationReason, ["available"] = !string.IsNullOrWhiteSpace(currentScene) });
                 }
                 string calibrationNote = string.IsNullOrWhiteSpace(currentScene)
-                    ? "本次未取得真实当前画面；没有图像依据确认人物现场姿态、可见人群或实际采光，仅使用已有文字事实。不能把本副本的补光或无人状态当作现场。"
-                    : "附加的当前画面用于核对实际采光、人物关系和可见人群。";
+                    ? "本次未取得真实当前画面；当前位置依据已有文字事实，不补造未知位置。人物动作优先采用对话中的已发生叙事，不能把本副本的补光或无人状态当作现场。"
+                    : "附加的当前截图仅用于判断当前位置与环境定位，人物动作优先采用对话中的已发生叙事。";
                 var references = new List<IllustrationReferenceImage>
                 {
                     new IllustrationReferenceImage(Convert.ToBase64String(panorama),
@@ -209,7 +209,7 @@ namespace AnimusForge.Illustrator.Engine
                 TaleWorlds.Library.Debug.Print($"[Illustrator] Nearby prefab panorama composed: views=6, coverage=360x180, radius=30m, meshes={snapshot.CopiedRoots}, calibration={references.Count > 1}, sourceMissionViews=0");
                 return new ConversationSceneReferenceCapture(references,
                     (context.Item4 == "player_eye" ? "本次以玩家眼位为零附加偏移视点。" : "未取得有效玩家眼位，本次保留当前相机位置并已记录回退。") +
-                    "依据附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；全景只约束环境，真实当前画面如有附加，用于校验光照与人物关系。",
+                    "依据附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；全景只约束环境，真实当前截图如有附加，仅用于当前位置与环境定位。",
                     "任务场景：附近30米全景参考" + (string.IsNullOrWhiteSpace(currentScene) ? "；当前画面校准缺失" : string.Empty), snapshot.NearbyPropFacts);
             }
             catch (OperationCanceledException) when (!token.IsCancellationRequested)

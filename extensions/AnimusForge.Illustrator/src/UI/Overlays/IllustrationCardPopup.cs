@@ -462,8 +462,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)
         {
             // 构图全权交给导演：只给自由创作授权 + 双人交互事实约束，不再提供预写取景句式。
-            return "【构图自由创作】：镜头景别、机位角度、前景运用与双方瞬间姿态由你依据现场事实与最近一轮对话氛围全权自由创作，" +
-                "不拘泥任何固定构图模板。【双人交互事实】：两人处于面对面真实交谈情境中。";
+            return "【构图自由创作】：先采用最近一轮对话中已发生或正在进行的动作，再设计镜头景别、机位角度与前景运用；" +
+                "双方可随对话动作改变朝向与互动，不预设面对面站立，不拘泥固定构图模板。";
         }
 
         /// <summary>一枚待合成的纹章参考图：旗帜代码 + 归属方标签（画面归因用）。</summary>

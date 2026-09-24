@@ -98,12 +98,37 @@ public static class ReferenceRoutingAudit
                 item.Operand = method.Module.ResolveString(BitConverter.ToInt32(bytes, i));
             if (item.Code.OperandType == OperandType.InlineBrTarget) item.Target = i + size + BitConverter.ToInt32(bytes, i);
             if (item.Code.OperandType == OperandType.ShortInlineBrTarget) item.Target = i + size + (sbyte)bytes[i];
+            if (item.Code.OperandType == OperandType.ShortInlineVar) item.Operand = (int)bytes[i];
+            if (item.Code.OperandType == OperandType.InlineVar) item.Operand = (int)BitConverter.ToUInt16(bytes, i);
             result.Add(item); i += size;
         }
         return result;
     }
     private static bool IsCall(Instruction instruction, string name)
     { return instruction.Operand is MethodBase && ((MethodBase)instruction.Operand).Name == name; }
+    private static int LocalSlot(Instruction instruction, bool store)
+    {
+        string prefix = store ? "stloc" : "ldloc";
+        string name = instruction.Code.Name;
+        if (name == prefix || name == prefix + ".s") return (int)instruction.Operand;
+        int slot;
+        return name.StartsWith(prefix + ".", StringComparison.Ordinal) && int.TryParse(name.Substring(prefix.Length + 1), out slot) ? slot : -1;
+    }
+    private static bool SkipsRenderWhenFalse(List<Instruction> instructions, int gate, int render)
+    {
+        if (gate < 0 || render <= gate) return false;
+        var branch = instructions.Skip(gate + 1).FirstOrDefault(i => i.Code != OpCodes.Nop);
+        if (branch == null || (branch.Code != OpCodes.Brfalse && branch.Code != OpCodes.Brfalse_S)) return false;
+        if (branch.Target > instructions[render].Offset) return true;
+        // Debug stores the short-circuit result in a local before the final branch.
+        int target = instructions.FindIndex(i => i.Offset == branch.Target);
+        if (target < 0) return false;
+        var path = instructions.Skip(target).Where(i => i.Code != OpCodes.Nop).Take(4).ToArray();
+        return path.Length == 4 && path[0].Code == OpCodes.Ldc_I4_0 &&
+            LocalSlot(path[1], true) >= 0 && LocalSlot(path[1], true) == LocalSlot(path[2], false) &&
+            (path[3].Code == OpCodes.Brfalse || path[3].Code == OpCodes.Brfalse_S) &&
+            path[3].Target > instructions[render].Offset;
+    }
     private static List<Instruction> Workflow(Assembly assembly, string owner, string entry)
     {
         return assembly.GetTypes().Where(t => t.FullName.StartsWith(owner + "+") && t.Name.Contains("<" + entry + ">"))
@@ -142,8 +167,7 @@ public static class ReferenceRoutingAudit
             "capture adds a current-view calibration through the existing single-scene helper");
         int gate = encyclopedia.FindIndex(i => IsCall(i, "get_HasHeraldicArmor"));
         int render = encyclopedia.FindIndex(i => IsCall(i, "ComposeToBase64Async"));
-        Check(gate >= 0 && render > gate && encyclopedia.Skip(gate + 1).Take(3)
-            .Any(i => (i.Code == OpCodes.Brfalse || i.Code == OpCodes.Brfalse_S) && i.Target > encyclopedia[render].Offset),
+        Check(SkipsRenderWhenFalse(encyclopedia, gate, render),
             "encyclopedia branches around native emblem rendering before export when no worn carrier exists");
         Check(!report.Any(i => IsCall(i, "get_HasHeraldicArmor")), "encyclopedia-only carrier gate does not remove weekly event emblem references");
 

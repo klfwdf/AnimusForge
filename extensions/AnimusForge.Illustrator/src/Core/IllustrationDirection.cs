@@ -22,6 +22,9 @@ namespace AnimusForge.Illustrator.Core
         public string FinishReason { get; internal set; } = string.Empty;
         public bool UsedLocalFallback { get; internal set; }
         public bool VisionUnsupported { get; internal set; }
+        // True for a successful director call without images, including an intentional
+        // vision-off setting. This is availability metadata, not a provider failure.
+        public bool UsedTextOnlyDirector { get; internal set; }
         public int? PromptTokens { get; internal set; }
         public int? CompletionTokens { get; internal set; }
         public int? TotalTokens { get; internal set; }

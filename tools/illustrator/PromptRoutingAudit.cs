@@ -116,7 +116,7 @@ public static class PromptRoutingAudit
         string namedPrompt = (string)directionType.GetProperty("Prompt").GetValue(named);
         Check((string)directionType.GetProperty("Title").GetValue(named) == "灯下裁决" && (string)directionType.GetProperty("Theme").GetValue(named) == "战前权衡", "director title and theme parsed independently");
         Check(!namedPrompt.Contains("灯下裁决") && !namedPrompt.Contains("战前权衡") && !namedPrompt.Contains("【人物行动】"), "metadata never enters image prompt");
-        Check(namedPrompt.Contains(valid) && !namedPrompt.Contains("FACT_SENTINEL"), "named artwork retains director body without reinjecting raw facts");
+        Check(namedPrompt.Contains(valid) && namedPrompt.Contains("FACT_SENTINEL"), "named artwork retains director body and authoritative visual facts");
         object rejected = Call(director, "ResolveDirection", "【画作标题】错误标题【画作主题】错误主题【人物行动】错误动作正文", metadataPlan, null);
         Check((string)directionType.GetProperty("Title").GetValue(rejected) == "" && !(string.Concat(directionType.GetProperty("ActionSummary").GetValue(rejected))).Contains("错误"), "fallback discards metadata from rejected direction");
         object sanitized = Call(directionType, "SplitMetadata", "【画作标题】<b>作品</b>{bad}【画作主题】主题\n" + valid);
@@ -150,7 +150,7 @@ public static class PromptRoutingAudit
                 Check(result.Contains("双人动态交互") == (mode == modes[2]), mode + " composition routing: " + output.Length);
                 Check(!result.Contains("NARRATIVE_SENTINEL"), mode + " narrative stays with director: " + output.Length);
                 if (output == valid)
-                    Check(!result.Contains("FACT_SENTINEL") && !result.Contains("META_SENTINEL"), mode + " no raw director context in successful output");
+                    Check(result.Contains("FACT_SENTINEL") && !result.Contains("META_SENTINEL"), mode + " successful output keeps visual facts but excludes open suggestions");
                 else
                     Check(result.Contains("FACT_SENTINEL"), mode + " local fallback retains identity facts: " + output.Length);
             }
@@ -217,8 +217,16 @@ public static class PromptRoutingAudit
         Array refs = Array.CreateInstance(reference, 3);
         string[] kinds = { "Character", "Emblem", "Scene" };
         string[] labels = { "登场人物的身份参考图，装备与实际纹章载体上的家族纹章；不作为现场", "仅作徽记样图", "实际场景" };
+        string png;
+        using (var bitmap = new System.Drawing.Bitmap(8, 8))
+        using (var stream = new System.IO.MemoryStream())
+        {
+            bitmap.SetPixel(0, 0, System.Drawing.Color.Red);
+            bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            png = Convert.ToBase64String(stream.ToArray());
+        }
         for (int i = 0; i < refs.Length; i++)
-            refs.SetValue(Activator.CreateInstance(reference, new object[] { "AA==", labels[i], Enum.Parse(kind, kinds[i]) }), i);
+            refs.SetValue(Activator.CreateInstance(reference, new object[] { png, labels[i], Enum.Parse(kind, kinds[i]) }), i);
         Type client = assembly.GetType(core + "UniversalOpenAiImageClient", true);
         FieldInfo httpField = client.GetField("HttpClient", Static);
         var original = (HttpClient)httpField.GetValue(null);
@@ -235,23 +243,11 @@ public static class PromptRoutingAudit
                 Check(body != null && body.Contains("核心人物官方真实视觉基准图"), "weekly character gets identity mandate despite label keywords");
                 string marker = "【家族纹章图案样板】";
                 Check(body.IndexOf(marker, StringComparison.Ordinal) == body.LastIndexOf(marker, StringComparison.Ordinal) && body.Contains(marker), "only emblem gets emblem mandate");
-                Check(body.Contains("现场3D实景采光与地形参考"), "scene gets scene mandate");
+                Check(body.Contains("当前位置与环境定位参考"), "scene gets location-only mandate");
                 Check(body.Contains("人物与镜头") && body.Contains("data:image/"), "director prompt and reference image sent together");
                 Check(!body.Contains("四层纵深") && !body.Contains("生动舒展") && !body.Contains("身着真实战甲"), "transport does not impose pose, layers or armor");
                 Check(body.Contains("整幅重新绘制"), "Chat receives whole-image repaint contract");
                 Check(body.Contains("若文字概括与可见外观冲突，保留参考图外观") && body.Contains("披肩轮廓"), "Chat keeps reference appearance above conflicting director paraphrase");
-
-                // Exercise the real multipart adapter with valid PNG reference files.
-                string png;
-                using (var bitmap = new System.Drawing.Bitmap(8, 8))
-                using (var stream = new System.IO.MemoryStream())
-                {
-                    bitmap.SetPixel(0, 0, System.Drawing.Color.Red);
-                    bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                    png = Convert.ToBase64String(stream.ToArray());
-                }
-                for (int i = 0; i < refs.Length; i++)
-                    refs.SetValue(Activator.CreateInstance(reference, new object[] { png, labels[i], Enum.Parse(kind, kinds[i]) }), i);
 
                 // Isolate actual cache save/load in the audit artifact directory, never a player cache.
                 Type cache = assembly.GetType("AnimusForge.Illustrator.Engine.DiskImageCacheManager", true);

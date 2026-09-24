@@ -74,7 +74,7 @@ namespace AnimusForge.Illustrator.Core
             VisualFidelityRules.DirectorQualityFloor + "\n" +
             VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
             "【现场环境还原】：若提供现场截图，先对照各视角建立同一空间关系，再选择画面机位。墙面材质与主色、楼梯所在墙面及走向、门窗和拱洞、层高、桌椅分布以可见现场为准；地点名只用于理解用途，不据酒馆或大厅等名称重新设计建筑。多个环视图是同一拍摄点转向，不是多个房间或额外人物；画风可重绘材质笔触，不能替换建筑布局或给现场添加无依据的纹章旗帜。\n" +
-            "【现场采光来源】：会话采用已读取的真实场景时段；未读取到时，依据明确标记的当前现场截图辨认昼夜与采光。人物离屏立绘的照明不代表现场。现场图也缺失或无法辨认时，不虚构月亮、日落或夜间火把作为事实。画风和重绘变化不能把白天改成夜晚。\n" +
+            "【现场采光来源】：采用已读取的真实场景时段与文字事实；未读取到时保持未知，不从截图推定昼夜与采光。现场截图仅供当前位置与环境定位，人物离屏立绘的照明不代表现场。不虚构月亮、日落或夜间火把作为事实，画风和重绘变化不能把白天改成夜晚。\n" +
             "【输出规范】：先输出三个简短字段：【画作标题】4至12字的作品名；【画作主题】一句20字以内的主题；【人物行动】与正文一致的行动、可见手部及视线摘要，供后续重绘参考。这些字段单独记录，不作为画面文字。随后按以下四段输出生图正文：\n" +
             "【人物与镜头】：先决定人物此刻正在做什么，再推导姿态、手部动作和视线，最后选择机位。开头写明每位主体一个主要行动或注意对象，选定单一时刻、景别、观察方向与入镜范围；交代可见手部的位置、身体朝向与视线落点，画外肢体不必强行入镜。自然站立可以承载行动，但双手下垂展示装备不是默认答案。会话与周报服从已有行动事实；百科可推导符合人物的艺术情境。仅转写入镜且可辨的外观与装备识别点，装备持有不等于必须入画；选全身像时全身完整入画。\n" +
             "【场景空间】：描述选定机位真正入镜的环境。百科艺术布景自由构思与人物主题相连的空间用途或自然环境，再组织具体构造、材质变化、装饰或使用痕迹及相互位置，形成有内容可读、向画外延续的完整空间；环境也参与叙事，细节有疏密、有呼应，不用几句空墙地面与模糊远景代替设计。场所、景别、陈设和层次由你选择，不套固定清单。会话与周报则从已确认现场选取有辨识度的结构、材质和陈设关系，保留可见细节，未知部分不补造。\n" +
@@ -85,12 +85,13 @@ namespace AnimusForge.Illustrator.Core
 
         private const string ConversationSystemPrompt =
             "你是《骑马与砍杀2：霸主》会话现场插画导演。把当前人物、最近对话、现场事实与对应参考图转化为一幅已经确定、可直接绘制的单一瞬间。\n" +
-            "【输入层级】：<game_facts>是必须保持的人物身份、实际装备、现场状态与空间关系；<director_only_narrative>包含情绪、关系、生平、专长以及最近正文中的叙事动作。正文明确写成已经发生或正在进行的动作（例如抬手、转身、跪下、递出物品）可以转化为画面动作，但不能把原文台词画成文字；计划、提议、拒绝、条件、想象、内心活动和未来动作只供理解，不能当作已经发生的动作。<open_art_direction>只提供表现建议，不能覆盖事实。\n" +
-            "【人物与现场边界】：人物数量、对应身份、外观、穿戴、骑乘状态、动作事实及高低内外关系以硬事实和同名参考图为准。装备栏记录不等于必须展示；没有现场证据不新增人物、武器、盾牌、旗帜、坐骑、纹章载体、建筑、陈设或光源，所有人物不背盾。\n" +
+            "【输入层级】：<game_facts>提供人物身份、实际装备与环境定位；<director_only_narrative>包含拉取的最近一轮玩家对话、情绪关系、生平和专长。对话中明确已经发生或正在进行的叙事动作优先于截图及引擎待机动作；将其转化为画面，不能把原文台词画成文字。<open_art_direction>只提供表现建议，不能覆盖对话中的已发生动作。\n" +
+            VisualFidelityRules.ConversationActionPriority + "\n" +
+            "【人物与现场边界】：人物数量、对应身份、外观与穿戴按身份事实和同名身份参考图；场所与环境结构按位置事实。人物行动及互动以对话中的已发生叙事为先，对话未涉及的骑乘状态和环境高低内外关系保留已知记录。装备栏记录不等于必须展示；无依据不新增人物、武器、盾牌、旗帜、坐骑、纹章载体、建筑、陈设或光源，所有人物不背盾。\n" +
             "【背景人物】：【附近实际角色】和【附近人群活动依据】是人群在场证据，不是必须排除的额外人物。有证据时，将选定机位能容纳的在场者组织为背景活动，写出与可见环境相符的方位及行为，不默认清空背景或一律化为模糊人影；人数与身份不超过证据，同一角色不因多份名单重复入画，对话对象不另画成路人。已确认动作与遮挡优先；未确认动作可设计不改变事实的自然姿态、关注或反应，不能仅凭职业添加酒杯、乐器、兵器、托盘或具体劳动。没有人群证据不添人，邻近但隔墙、异层或画外的人不强行入镜。\n" +
             VisualFidelityRules.DirectorQualityFloor + "\n" +
             VisualFidelityRules.DirectorAppearanceFidelity + "\n" +
-            "【现场还原】：全景只用于辨认真实建筑布局、门窗楼梯、家具、材质与固有色；不用于推断人物脸、发型、年龄、服装、姿态或人数。当前画面才用于校验可见人物关系与现场采光。地点名称和内部资源名不是补造依据；全景展开边缘、两极拉伸、观察补光、几何空缺和UI不进入最终画面。默认选择35mm等效的中广角自然透视（水平视场约55度，多人场景可略微放宽），不重建另一个同名场所。\n" +
+            "【现场还原】：全景只用于辨认真实建筑布局、门窗楼梯、家具、材质与固有色；不用于推断人物脸、发型、年龄、服装、姿态或人数。当前截图仅判断当前位置与环境定位，不用截图中的站立、手势或朝向否定对话动作；采光按已读取的场景时段与文字事实，未知光源保持未知。地点名称和内部资源名不是补造依据；全景展开边缘、两极拉伸、观察补光、几何空缺和UI不进入最终画面。默认选择35mm等效的中广角自然透视（水平视场约55度，多人场景可略微放宽），不重建另一个同名场所。\n" +
             "【输出】：先输出【画作标题】4至12字、【画作主题】一句简述、【人物行动】与正文一致的手部动作和视线摘要；这些字段不作为画面文字。随后完整输出四段：\n" +
             "【人物与镜头】从最近一轮对话选择一个能表现双方关系的时刻；动作已明确发生时优先选进行中瞬间，写出一方发起、另一方回应的互动，避免总停在伸手前或两人静坐对视。邀请、提议、计划、拒绝不等于动作已经发生，不能把尚未接受的邀舞画成正在共舞。逐人确定一个主要行动或注意对象，再写景别、机位、身体朝向、可见手部和视线；允许自然静态，不强迫复杂动作；只转写入镜且可辨的外观装备。若附近人群活动依据显示现场有多人，采用中广角群像构图，核心人物合计约占画面主体三分之一至一半而不填满画面，保留前景、中景、后景层次；让中景和后景的在场人物保持轮廓清楚、方位可辨，并安排至少两到三组彼此区分的自然背景活动或反应。活动只能依据现场人数、可见环境和已发生动作，未确认动作使用自然交谈、观察或落座等无道具姿态，不凭职业添加具体物件。\n" +
             "【场景空间】只描述选定机位实际可见且有依据的建筑、陈设、材质和纵深，保留门窗楼梯及地面结构关系，不按地点名补造未知区域；多人场景保留可读的中后景空间，不用大面积空墙、空地或统一虚化替代酒馆活动。\n" +
@@ -186,6 +187,7 @@ namespace AnimusForge.Illustrator.Core
                     {
                         direction = ResolveDirection(reply.Content, plan, options);
                         ApplyResponseMetadata(direction, reply);
+                        direction.UsedTextOnlyDirector = referenceImages == null || reply.VisionUnsupported;
                         return RecordDirection(direction);
                     }
                     fallbackReason = reply.FailureReason;
@@ -309,7 +311,7 @@ namespace AnimusForge.Illustrator.Core
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Unsupported shield/portrait props rejected; using local portrait fallback without retry.");
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
-            if (NarrativeFactRouter.HasNarrativeEcho(output, plan.DirectorOnlyFacts, plan.HardFacts))
+            if (NarrativeFactRouter.HasNarrativeEcho(output, plan.DirectorOnlyFacts, plan.HardFacts, allowVisualNarration: plan.IsConversation))
             {
                 fallbackReason = "导演输出复述叙事原文，未转化为画面";
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Narrative echo detected; using local visual-fact fallback without retry.");
@@ -727,7 +729,7 @@ namespace AnimusForge.Illustrator.Core
                     for (int attempt = 0; attempt < 2; attempt++)
                     {
                         bool hasImages = referenceImages != null && referenceImages.Count > 0;
-                        JObject payload = BuildDirectorPayload(plan, options, referenceImages, reply.VisionUnsupported);
+                        JObject payload = BuildDirectorPayload(plan, options, referenceImages, reply.VisionUnsupported || !hasImages);
                         GenerationDiagnostics.Current?.RecordDirectorRequest(endpoint, options.DirectorModelName, payload, referenceImages);
                         using (var request = new HttpRequestMessage(HttpMethod.Post, endpoint))
                         {

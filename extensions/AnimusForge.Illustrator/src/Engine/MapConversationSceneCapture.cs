@@ -102,9 +102,9 @@ namespace AnimusForge.Illustrator.Engine
         private static string MapConversationReferenceNote(bool captured) =>
             "本次采用地图对话独立管线，不是已进入的Mission实景。" +
             (captured
-                ? "环境参考只是一张当前地图对话画面的真实截图，显示原生对话Tableau布景的可见部分；不是前后双镜头、30米环境重建、完整战斗地形或全景。保留可见地貌、植被、材质、颜色及空间关系；画外区域没有图像证据。"
+                ? "环境参考只是一张当前地图对话画面的真实截图，仅供当前位置与环境定位，显示原生对话Tableau布景的可见部分；不是前后双镜头、30米环境重建、完整战斗地形或全景。保留可见地貌、植被、材质、颜色及环境空间关系；画外区域没有图像证据。"
                 : "本次未取得可用的当前对话环境截图，没有提供环境参考图；只能依据已给出的环境事实和人物参考设计画面，未知的具体地形、陈设与人物现场位置不能声称已经观测。") +
-            "对话展示人物的屏幕位置和镜头距离不是双方在野外的实际站位，不从单人特写推断双方距离、高低或朝向。";
+            "对话展示人物的屏幕位置和镜头距离不是双方在野外的实际站位，不从单人特写推断双方距离、高低或朝向。人物动作优先采用拉取的最近一轮对话中的已发生叙事，不以截图里的待机姿势覆盖。";
 
         // Read presented pixels only: never access or mutate the tableau's private Scene/Camera,
         // acquire its cached scene, create a second view over it, or hide visible UI.
