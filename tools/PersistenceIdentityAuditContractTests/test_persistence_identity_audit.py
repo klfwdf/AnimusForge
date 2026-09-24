@@ -15,6 +15,14 @@ import PersistenceIdentityAudit as audit  # noqa: E402
 
 
 class PersistenceIdentityAuditTests(unittest.TestCase):
+    def test_local_sync_alias_preserves_type_and_detects_drift(self) -> None:
+        field = 'private Dictionary<string, int> _love = null;\ndata.SyncData("love", ref _love);'
+        local = 'Dictionary<string, int> forSync = _owner.Values;\ndata.SyncData("love", ref forSync);'
+        self.assertEqual(audit.sync_bindings(field), audit.sync_bindings(local))
+        self.assertEqual(audit.sync_bindings(local), {("love", "Dictionary<string, int>")})
+        self.assertNotEqual(audit.sync_bindings(field), audit.sync_bindings(local.replace('int>', 'string>')))
+        self.assertEqual(audit.sync_bindings('return forSync;\ndata.SyncData("love", ref forSync);'), {("love", "UNRESOLVED")})
+
     def test_batch_parser_reads_multiple_blobs_and_missing(self) -> None:
         payload = b"abc"
         data = b"a" * 40 + b" blob 3\n" + payload + b"\n" + b"b" * 40 + b" missing\n"

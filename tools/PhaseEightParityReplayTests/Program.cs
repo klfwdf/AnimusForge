@@ -39,6 +39,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "candidate build identity mismatch");
     DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
     foreach (string source in new[] {
+        "RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
         "MyBehavior.PersonaGeneration.cs", "MyBehavior.PersonaReadiness.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
@@ -73,6 +74,7 @@ Assembly af = Assembly.LoadFrom(dll);
 WeeklyActionOutcomeProductionReplay.Run(af);
 KingdomOwnerReplay.Run(af);
 NotorietyOwnerReplay.Run(af);
+RomanceOwnerReplay.Run(af);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
