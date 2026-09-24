@@ -1,4 +1,6 @@
-# 当前范围：J13a 已有限离线收口，J13b 施工（2026-09-25）
+# 当前范围：J13a/b 已有限离线收口，J13c 施工（2026-09-25）
+
+`89b38557` 迁移 Kingdom 规则、唯一状态、关系对账与周度/自动叛乱协调，双版本 Debug 和真实 DLL 定向回放通过；保留主线程游戏资格/动作和旧保存身份。详情见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。真实游戏/旧档/provider/帧性能 NOT-RUN，不更新 HANDOFF、不推送。以下为历史时点。
 
 `8f960d65` 完成 Weekly 回执/发布 owner；`c637bc82` 补齐真实恢复回调、一次发布与积压工作量回放。a1–a3 有限 OFFLINE_VERIFIED，J13b–g 待推进；真实游戏/旧档/provider/UI 渲染/帧性能 NOT-RUN。完整证据、保留 host 与未运行项见[主台账当前入口](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)和[代码地图](af-framework-code-map.json)。用户要求不更新 HANDOFF、不推送。下文均为历史切片时点。
 
