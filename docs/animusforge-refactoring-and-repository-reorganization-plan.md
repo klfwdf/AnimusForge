@@ -1,3 +1,13 @@
+## J13c Persona 有限离线收口，转入 J13d（2026-09-25）
+
+状态 `J13a/J13b/J13c_OFFLINE_VERIFIED / J13d_ACTIVE / J13_ACTIVE`；意图 `97882c5a`，产品 `877ba4a9`。本段是最新状态；继续所有后续包，不推送、不更新 HANDOFF、不 Stage/部署/打包/写存档/J14。
+
+- 原唯一 `NpcPersonaGenerationOwner` 原样归位 `AF.Module.Persona/Generation`，namespace/预约/冷却/lease 不变；`NpcPersonaProfilePolicy` 实际拥有 readiness、生成文本标准化、缺字段补齐和 reroll 编辑冲突合并。`MyBehavior.PersonaGeneration.cs`、`MyBehavior.PersonaReadiness.cs` 和原标准化入口真实消费。主线程 capture/dispatcher/profile/voice、三渠道 preparation、百科/外部入口、存档键保持。
+- 证据：Hero 128、三渠道 169 检查零失败；ignore_edit 负向变异触发 4 个具名行为失败。`j13_source_parity.py --revision 877ba4a9` 对立即前驱 `89b38557` 的完整 host/helper/readiness 作精确逆变换，证明原预约 owner 和升格/skills/未命名/editor/Reward 调用者未被额外改写；未删除旧逆变换。旧全仓 inverse 分别在此前已有 `MemorySummaryRunOwnerTests/fixture_support.py` 和 `GameLifetimeTests/run_bindings.py` hash 漂移处失败，本次未改这两文件；不冒称旧聚合器 PASS。
+- 原 Debug 1.3/1.4/Bootstrap 三构建零警告错误；当前 Debug1.4 SHA256 `07EEEF4EB22A09B7D1D1E5DF2511E76D9AAC1CF547CA3788BB34B8E0CFCF600C` Phase8 通过，V1 119/两 DLL metadata 530，PersistenceIdentity 146 keys/36 behaviors，inventory 11/source 7 通过。Release/四 DLL 留 J13g 统一最终候选。规则只在准备/请求/提交时运行，O(文本长度)，预约仍单一有界 owner，无 tick 扫描。
+- 保留边界：`GeneratePromotedNonHeroCompanionProfileAsync`/`GeneratePromotedNonHeroCompanionSkillsAsync` 是独立升格 profile→fallback→skills 流程，只有原 generation 检查；await 后 live Hero/profile/UI 访问及中途编辑安全未由普通 Hero fixture 证明。它的现有算法未迁移，明确在接下来的 J13d1 Recruitment 核对并处理，不标该路径线程安全。未命名角色/技能随机/游戏对象写入继续原 host。
+- 真正 provider、Campaign/旧档、百科点击/音频/帧性能 NOT-RUN。下一步 d1 按 Notoriety→Romance→Recruitment 独立闭包，再 d2–d4。
+
 <a id="j13-plan-20260924"></a>
 ## J13b Kingdom 有限离线收口，转入 J13c（2026-09-25）
 

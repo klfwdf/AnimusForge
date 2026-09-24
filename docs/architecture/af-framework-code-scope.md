@@ -1,3 +1,7 @@
+# 当前范围：J13a–c 有限离线收口，J13d 施工（2026-09-25）
+
+`877ba4a9` 将唯一 Persona 预约 owner 归位并接通 readiness/生成合并规则。升格同伴独立线程与编辑生命周期明确留 J13d1 Recruitment；证据与限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。不更新 HANDOFF、不推送；下文为历史时点。
+
 # 当前范围：J13a/b 已有限离线收口，J13c 施工（2026-09-25）
 
 `89b38557` 迁移 Kingdom 规则、唯一状态、关系对账与周度/自动叛乱协调，双版本 Debug 和真实 DLL 定向回放通过；保留主线程游戏资格/动作和旧保存身份。详情见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。真实游戏/旧档/provider/帧性能 NOT-RUN，不更新 HANDOFF、不推送。以下为历史时点。
