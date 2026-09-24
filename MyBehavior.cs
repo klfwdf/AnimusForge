@@ -38549,48 +38549,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ApplyWeeklyPromptMaterialAggregation(WeeklyEventMaterialPreviewGroup group)
 	{
-		if (group?.Materials == null || group.Materials.Count == 0)
-		{
-			return;
-		}
-		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(group.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
-		List<EventMaterialReference> list2 = list.Where((EventMaterialReference x) => !IsWeeklyPromptAggregatableMaterial(x)).ToList();
-		List<EventMaterialReference> list3 = list.Where(IsWeeklyPromptAggregatableMaterial).ToList();
-		if (list3.Count == 0)
-		{
-			group.Materials = list2;
-			return;
-		}
-		Dictionary<string, Dictionary<string, List<EventMaterialReference>>> dictionary = new Dictionary<string, Dictionary<string, List<EventMaterialReference>>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item in list3)
-		{
-			string text = ResolveWeeklyPromptAggregateCategory(item);
-			string text2 = BuildWeeklyPromptAggregateEventKey(item);
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-				dictionary[text] = value;
-			}
-			if (!value.TryGetValue(text2, out var value2))
-			{
-				value2 = new List<EventMaterialReference>();
-				value[text2] = value2;
-			}
-			value2.Add(item);
-		}
-		List<EventMaterialReference> list4 = new List<EventMaterialReference>();
-		foreach (string item2 in GetWeeklyPromptAggregateCategoryOrder())
-		{
-			if (dictionary.TryGetValue(item2, out var value3))
-			{
-				EventMaterialReference eventMaterialReference = BuildWeeklyPromptAggregateCategoryMaterial(group, item2, value3);
-				if (eventMaterialReference != null)
-				{
-					list4.Add(eventMaterialReference);
-				}
-			}
-		}
-		group.Materials = OrderWeeklyPreviewMaterials(list2.Concat(list4).ToList()).ToList();
+		WeeklyMaterialAggregationOwner.Apply(group, BuildWeeklyPromptAggregateCategoryMaterial);
 	}
 
 	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsFromAggregatedBuckets(WeeklyEventMaterialPreviewGroup group, List<EventMaterialReference> source, bool includeRawFallback)
@@ -38742,7 +38701,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return eventMaterialReference;
 	}
 
-	private static EventMaterialReference CloneEventMaterialReference(EventMaterialReference material)
+	internal static EventMaterialReference CloneEventMaterialReference(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -38785,7 +38744,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static bool IsWeeklyPromptAggregatableMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptAggregatableMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -38795,7 +38754,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "npc_recent_action", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "npc_major_action", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static List<string> GetWeeklyPromptAggregateCategoryOrder()
+	internal static List<string> GetWeeklyPromptAggregateCategoryOrder()
 	{
 		return new List<string>
 		{
@@ -38813,7 +38772,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string ResolveWeeklyPromptAggregateCategory(EventMaterialReference material)
+	internal static string ResolveWeeklyPromptAggregateCategory(EventMaterialReference material)
 	{
 		string text = (material?.ActionKind ?? "").Trim().ToLowerInvariant();
 		switch (text)
@@ -38864,7 +38823,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildWeeklyPromptAggregateEventKey(EventMaterialReference material)
+	internal static string BuildWeeklyPromptAggregateEventKey(EventMaterialReference material)
 	{
 		string text3 = BuildWeeklyPromptBattleEventKey(material);
 		if (!string.IsNullOrWhiteSpace(text3))
@@ -45186,7 +45145,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text5) ? "无预览" : text5);
 	}
 
-	private static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials)
+	internal static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials)
 	{
 		return (materials ?? new List<EventMaterialReference>()).OrderBy((EventMaterialReference x) => GetWeeklyPreviewMaterialSortBucket(x)).ThenBy((EventMaterialReference x) => x?.ActionDay ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue).ThenBy((EventMaterialReference x) => x?.ActionOrder ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.Label ?? "", StringComparer.OrdinalIgnoreCase);
 	}

@@ -895,6 +895,7 @@
         "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs"
       ],
