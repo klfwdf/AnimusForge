@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Xml.Linq;
 
 const BindingFlags Members = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -19,7 +20,29 @@ static void Set(object value, string name, object fieldValue)
 static object Call(object value, string name, params object[] args) => value.GetType().GetMethod(name, Members).Invoke(value, args);
 
 string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
-string dll = Path.Combine(repo, "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll");
+if (args.Length != 2) throw new InvalidOperationException("Pass the current candidate DLL path and its expected SHA256 after --.");
+string dll = Path.GetFullPath(args[0]);
+string expectedDll = Path.GetFullPath(Path.Combine(repo, "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll"));
+Check(string.Equals(dll, expectedDll, StringComparison.OrdinalIgnoreCase), "PhaseEight candidate must be the current project-local Debug 1.4 artifact");
+string marker = Path.ChangeExtension(dll, ".build.json");
+Check(File.Exists(dll) && File.Exists(marker), "current candidate DLL/marker missing");
+using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
+{
+    JsonElement record = build.RootElement;
+    string actualHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll)));
+    Check(string.Equals(actualHash, args[1], StringComparison.OrdinalIgnoreCase)
+        && string.Equals(actualHash, record.GetProperty("Sha256").GetString(), StringComparison.OrdinalIgnoreCase),
+        "candidate SHA256 differs from requested build marker");
+    Check(record.GetProperty("Role").GetString() == "Implementation"
+        && record.GetProperty("BannerlordApi").GetString() == "1.4"
+        && record.GetProperty("BuildFlavor").GetString() == "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "candidate build identity mismatch");
+    DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
+    Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "MyBehavior.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs")),
+        "candidate predates J13a production source");
+    Console.WriteLine("PhaseEight candidate SHA256=" + actualHash);
+}
 AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 {
     string candidate = Path.Combine(AppContext.BaseDirectory, new AssemblyName(args.Name).Name + ".dll");
