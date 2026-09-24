@@ -1905,12 +1905,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private HashSet<string> _dailyMemoryDraftSealQueuedMajor;
 
-	private readonly object _pendingWeeklyReportCommitLock = new object();
-
-	private readonly Queue<PendingWeeklyReportCommitContext> _pendingWeeklyReportCommits = new Queue<PendingWeeklyReportCommitContext>();
-
-	// Weekly report commits can be enqueued by async request completions. Keep the no-work path lock-free.
-	private int _hasPendingWeeklyReportCommits;
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult> _weeklyReportCommitQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult>(CompletePendingWeeklyReportCommit, () => new WeeklyReportGenerationResult());
 
 	private int _kingdomStabilityMaintenanceCursor;
 
@@ -2470,7 +2466,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 			CancelWeeklyFullReportCompletions();
 			ResetMemorySummaryMainThreadActions();
 			ResetTailPersistenceTransientState(reason);
-			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
 			_builtInRuleStickyCarry.Clear();
 			_playerDefeatedHeroBattleFactKeys.Clear();
 			_memorySummaryRunOwner.Reset();
@@ -2483,16 +2478,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_weeklyReportGenerationInProgress = false;
 			_weeklyAutoSchedule.Clear();
 			ResetPendingWeeklyKingdomRebellionMaintenance();
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				abandonedWeeklyReportCommits = _pendingWeeklyReportCommits.ToList();
-				_pendingWeeklyReportCommits.Clear();
-				Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
-			}
-			foreach (PendingWeeklyReportCommitContext context in abandonedWeeklyReportCommits)
-			{
-				CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult());
-			}
+			_weeklyReportCommitQueue.CancelAll();
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
 			ResetDailyMemoryDraftSealSliceState();
@@ -17434,7 +17420,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				ProcessOneTailPersistenceRecoveryOnTick();
 				bool processedWeeklyReportCommits = false;
-			if (Volatile.Read(ref _hasPendingWeeklyReportCommits) != 0)
+			if (_weeklyReportCommitQueue.HasPending)
 			{
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
 				{
@@ -45483,17 +45469,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Executions = (executions ?? Enumerable.Empty<WeeklyReportBatchExecutionResult>()).Where((WeeklyReportBatchExecutionResult x) => x != null).OrderBy((WeeklyReportBatchExecutionResult x) => x.BatchIndex).ToList(),
 			CompletionSource = completionSource
 		};
-		lock (_pendingWeeklyReportCommitLock)
-		{
-			_pendingWeeklyReportCommits.Enqueue(context);
-			Volatile.Write(ref _hasPendingWeeklyReportCommits, 1);
-		}
+		_weeklyReportCommitQueue.Enqueue(context);
 		return completionSource.Task;
 	}
 
 	private bool ProcessPendingWeeklyReportCommits()
 	{
-		if (Volatile.Read(ref _hasPendingWeeklyReportCommits) == 0)
+		if (!_weeklyReportCommitQueue.HasPending)
 		{
 			return false;
 		}
@@ -45502,18 +45484,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		long startTimestamp = Stopwatch.GetTimestamp();
 		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
-			PendingWeeklyReportCommitContext context = null;
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				if (_pendingWeeklyReportCommits.Count > 0)
-				{
-					context = _pendingWeeklyReportCommits.Peek();
-				}
-				else
-				{
-					Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
-				}
-			}
+			PendingWeeklyReportCommitContext context = _weeklyReportCommitQueue.Peek();
 			if (context == null)
 			{
 				return hadWork;
@@ -45523,19 +45494,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				if (_pendingWeeklyReportCommits.Count > 0 && ReferenceEquals(_pendingWeeklyReportCommits.Peek(), context))
-				{
-					_pendingWeeklyReportCommits.Dequeue();
-				}
-				if (_pendingWeeklyReportCommits.Count == 0)
-				{
-					Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
-				}
-			}
+			_weeklyReportCommitQueue.CompleteProcessed(context);
 		}
 		return hadWork;
+	}
+
+	private static void CompletePendingWeeklyReportCommit(PendingWeeklyReportCommitContext context, WeeklyReportGenerationResult result)
+	{
+		try
+		{
+			context?.CompletionSource?.TrySetResult(result ?? new WeeklyReportGenerationResult());
+		}
+		catch
+		{
+		}
 	}
 
 	private bool ProcessPendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)
@@ -45548,7 +45520,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			if (context.RuntimeGeneration > 0L && SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_report_commit"))
 			{
-				CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult());
+				_weeklyReportCommitQueue.Complete(context, new WeeklyReportGenerationResult());
 				return true;
 			}
 			if (context.GroupMap == null)
@@ -45640,7 +45612,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("EventWeeklyReport", "[ERROR] deferred weekly report commit failed: " + ex);
-			CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult
+			_weeklyReportCommitQueue.Complete(context, new WeeklyReportGenerationResult
 			{
 				FailureCount = Math.Max(1, context.FailureCount),
 				BlockedByFatalFailure = true
@@ -45768,7 +45740,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				QueueWeeklyReportFailurePopup(result.RetryContext, showImmediate: true);
 			}
-			CompletePendingWeeklyReportCommit(context, result);
+			_weeklyReportCommitQueue.Complete(context, result);
 			return;
 		}
 		InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation completed: success " + context.SuccessCount + ", failed " + context.FailureCount + "."));
@@ -45777,18 +45749,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevEventViewerMenu(0);
 		}
 		result.Completed = true;
-		CompletePendingWeeklyReportCommit(context, result);
-	}
-
-	private static void CompletePendingWeeklyReportCommit(PendingWeeklyReportCommitContext context, WeeklyReportGenerationResult result)
-	{
-		try
-		{
-			context?.CompletionSource?.TrySetResult(result ?? new WeeklyReportGenerationResult());
-		}
-		catch
-		{
-		}
+		_weeklyReportCommitQueue.Complete(context, result);
 	}
 
 	private static string ResolveNearestWeeklyReportKingdomId(IEnumerable<string> kingdomIds)
