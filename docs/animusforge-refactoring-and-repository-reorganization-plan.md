@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 批次 Prompt 主线程分阶段准备切片（2026-09-24）
+
+状态 `J13a_A2_PROMPT_PUMP_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `f812ec1b`。审阅 `MyBehavior.cs:41439,42966,45484` 发现自动周报已有分阶段 Prompt 准备，但手动/显式重试的后续 minute wave 可能在 `Task.Delay` 后于非主线程进入 `GenerateWeeklyReportBatchWithRetriesAsync`，原先 `PrepareWeeklyReportBatchPrompt` 会读取 live Kingdom/统治者及前期周报。现 `MyBehavior.cs:1391–1405,1937–1938,2510,17453–17462,45502,45649–45713` 把所有待发批次放进独立的主线程准备队列，Campaign tick 按原每日预算与 `WeeklyMaterialStageCursor` 逐批准备，旧代/读档清理会结算等待者；全部准备完且同代后才发第一波。worker 对任何未准备的批次在调用 API 前直接拒绝，不再从后台补建 Prompt。已有自动阶段预备的批次保持幂等，只补缺失的预览/显示标签，不改 API route 或 J08 transport。
+
+- 验证：四个授权构建目录复核绝对路径/内容/无链接后，原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 SHA256 `E68FF3F12D19C426E3D6611CC1BD24D2BB977838946A94E3689DBA3C13C30962` 的 Phase8 当前候选及 worker 未准备请求在网络前被拒反例通过；入口 11、source inventory 7、V1 119/四 DLL metadata 1060、465 锚点地图 recorded/working-tree 通过。队列复用已测 FIFO/清理 owner 和单步 cursor，但尚无 live 多 wave/Campaign tick 组合回放，不能冒称整体请求门禁通过。
+- 性能/剩余：每次循环只推进一个 batch，tick 内在 batch 间检查帧预算；单 batch Prompt 构建仍原子 O(该批素材/字符)，首次网络启动可能在队列完成回调所在线程继续执行，暂无实机帧耗时保证。后续 minute wave 的 UI 通知线程、独立 live 源状态、部分失败和发布全链路尚未闭合；a2/J13a/J13 仍 ACTIVE，a3 与 J13b–g 未施工。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
+
 ## J13a a2 目标变更后的显式重采恢复切片（2026-09-24）
 
 状态 `J13a_A2_FRESH_RETRY_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `240c10aa`。`MyBehavior.cs:43081–43111,43220–43257,43397,45719–45753,45922` 在目标不完整但已变更时把失败上下文标为需要新素材，不再显示误导性的 API 修复/旧素材重试动作。专用暂停弹窗明确告知“重新采集并生成”可能替换这些失败分组尚未完成的手工编辑，须用户点击才从当前 Campaign 重新构建周界内素材；按稳定 report ID 只选原失败分组，任一分组已不存在则不发送新请求，已完成分组不重跑。另可保存并退出。新请求重新捕获目标状态，不沿用旧请求的准入权；原 API/RPM 失败仍走原弹窗。
