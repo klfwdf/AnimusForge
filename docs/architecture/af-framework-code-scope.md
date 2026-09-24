@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`d59848d1` 在 `MyBehavior.cs:42429–42464,45326–45397,45558–45742` 将批量周报目标记录的请求前快照与主线程提交前两次重验接入真实 pending commit；期间编辑、已完成胜出者、保存素材改变会拒绝旧回包，跨 batch 重复 ID 不二次结算。六构建与当前候选 Phase8 通过，456 锚点地图仅定位。独立 live 材料源、显式重试的编辑保护和整个 a2 请求/失败生命周期仍未闭合，a2/J13a/J13 ACTIVE；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `bd972386` 将批量周报单个 block 的材料克隆下标/结果归 `src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs:6,20`；`MyBehavior.cs:45620–45662` 在原预算下逐项调用，主线程 Upsert 保留。双版本六构建及当前候选 Phase8/单步克隆回放通过，453 锚点地图仅定位。目标记录/源状态重验尚未证明，a2/J13a/J13 仍 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `e4a78829` 将批量周报 worker→主线程 commit FIFO、无工作标志、只移除当前队首和读档清理等待者归 `src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs:7,22,32,46,60`；`MyBehavior.cs:1908,2481,17423,45453–45512` 保留 Campaign tick、预算、generation 与记录写入。Debug/Release 双版本六构建、当前候选 Phase8 的旧 context/新队首及清理负例通过。此为 a2 队列切片，不代表请求/分块提交/失败恢复闭合；a2/J13a/J13 仍 ACTIVE。451 锚点地图只作定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
