@@ -192,7 +192,10 @@ namespace AnimusForge.Illustrator.Core
             Safe(() => AddEvent("direction", new JObject { ["status"] = CleanText(direction.DirectionStatus), ["message"] = CleanText(direction.StatusText),
                 ["reason"] = CleanText(direction.FallbackReason), ["finishReason"] = CleanText(direction.FinishReason), ["prompt"] = CleanText(direction.Prompt),
                 ["sceneYawDegrees"] = direction.SceneYawDegrees, ["scenePitchDegrees"] = direction.ScenePitchDegrees,
-                ["sceneHorizontalFovDegrees"] = direction.SceneHorizontalFovDegrees }));
+                ["sceneHorizontalFovDegrees"] = direction.SceneHorizontalFovDegrees,
+                ["auxiliarySceneYawDegrees"] = direction.AuxiliarySceneYawDegrees,
+                ["auxiliaryScenePitchDegrees"] = direction.AuxiliaryScenePitchDegrees,
+                ["auxiliarySceneHorizontalFovDegrees"] = direction.AuxiliarySceneHorizontalFovDegrees }));
         }
 
         internal async Task RecordImageRequestAsync(HttpRequestMessage request, string protocol)

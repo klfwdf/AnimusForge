@@ -48,10 +48,11 @@ namespace AnimusForge.Illustrator.Core
             bool sendCurrent = current != null && (current.Kind == IllustrationReferenceKind.MapConversationScene ||
                 direction?.UsedLocalFallback == true || direction?.VisionUnsupported == true || direction?.UsedTextOnlyDirector == true);
             var panorama = scenes?.FirstOrDefault(x => x != null && x.Kind == IllustrationReferenceKind.ScenePanorama && !string.IsNullOrWhiteSpace(x.Base64Image));
+            int sceneReferenceCount = 0;
             if (panorama != null)
             {
                 var watch = Stopwatch.StartNew();
-                bool selected = direction?.UsedLocalFallback == false && direction.SceneYawDegrees.HasValue &&
+                bool selected = direction?.UsedLocalFallback == false && !direction.VisionUnsupported && !direction.UsedTextOnlyDirector && direction.SceneYawDegrees.HasValue &&
                     direction.ScenePitchDegrees.HasValue && direction.SceneHorizontalFovDegrees.HasValue;
                 double yaw = selected ? direction.SceneYawDegrees.Value : 0;
                 double pitch = selected ? direction.ScenePitchDegrees.Value : 0;
@@ -61,23 +62,37 @@ namespace AnimusForge.Illustrator.Core
                 // Internally produced base64 only. Bound allocation before decode.
                 if (panorama.Base64Image.Length > 24 * 1024 * 1024)
                     throw new InvalidOperationException("场景全景超过投影预算，已停止生图。");
-                byte[] perspective = ScenePerspectiveProjection.Project(Convert.FromBase64String(panorama.Base64Image), yaw, pitch, fov, token);
-                image.Insert(0, new IllustrationReferenceImage(Convert.ToBase64String(perspective),
-                    "同一现场独立静态副本的普通透视环境参考：" +
-                    (selected ? "依据导演选择的方向从完整全景重新投影。" : "从完整全景取默认前向，仅补充可见环境资料，最终取景由正文决定。") +
-                    "这是全景中的一个方向，不能把画外的王座、门洞或其他方向的陈设搬进此视角；需扩大取景时依据随附完整全景保留邻接关系。" +
-                    "此参考图主动省略了现场所有人物与动态实体，空桌椅或空地不代表现场无人；在场人物及有证据的背景人群按正文绘制，不照搬副本的无人状态。" +
+                string auxiliarySelection = AuxiliarySelection(direction, selected);
+                bool sendAuxiliary = auxiliarySelection == "director";
+                byte[] panoramaBytes = Convert.FromBase64String(panorama.Base64Image);
+                byte[][] perspectives = sendAuxiliary
+                    ? ScenePerspectiveProjection.ProjectPair(panoramaBytes, yaw, pitch, fov,
+                        direction.AuxiliarySceneYawDegrees.Value, direction.AuxiliaryScenePitchDegrees.Value,
+                        direction.AuxiliarySceneHorizontalFovDegrees.Value, token)
+                    : new[] { ScenePerspectiveProjection.Project(panoramaBytes, yaw, pitch, fov, token) };
+                const string sceneRole =
+                    "此参考图来自同一现场独立静态副本，主动省略了现场所有人物与动态实体，空桌椅或空地不代表现场无人；在场人物及有证据的背景人群按正文绘制，不照搬副本的无人状态。" +
                     "这张图只约束场景环境，不用于推断人物脸部、发型、年龄、服装或姿态；人物外观以对应身份参考图为准。" +
-                    "这是中性观察补光，不代表现场光源；光源方向、时段与氛围按正文，人物位置按本次事实。缺失区域不作为开放天空或新增物体的证据。",
+                    "这是中性观察补光，不代表现场光源；光源方向、时段与氛围按正文，人物位置按本次事实。缺失区域不作为开放天空或新增物体的证据。";
+                image.Insert(sceneReferenceCount++, new IllustrationReferenceImage(Convert.ToBase64String(perspectives[0]),
+                    "普通透视环境主视角：" +
+                    (selected ? "依据导演选择的方向从完整全景重新投影。" : "导演未提供可用的视觉选景，从完整全景取默认前向。") +
+                    "最终画面的方向与可见建筑关系以此图为准，不能把画外的王座、门洞或其他方向的陈设搬进此视角。" + sceneRole,
                     IllustrationReferenceKind.ScenePerspective));
-                // Keep the full spatial evidence: the chosen crop may not contain all
-                // structures described by the director. Both images depict one room.
-                image.Insert(1, panorama);
+                if (sendAuxiliary)
+                    image.Insert(sceneReferenceCount++, new IllustrationReferenceImage(Convert.ToBase64String(perspectives[1]),
+                        "普通透视环境辅助视角：与前一张主图来自同一全景，仅补充相邻结构、重叠地标和材质。" +
+                        "最终构图仍采用主视角，不把辅助图独有的设施移到主背景，不拼接背景或重复绘制共同地标。" + sceneRole,
+                        IllustrationReferenceKind.ScenePerspective));
                 GenerationDiagnostics.Current?.RecordStage("scene_perspective_reference", new JObject
                 {
                     ["selection"] = selected ? "director" : "default_front", ["yawDegrees"] = yaw,
                     ["pitchDegrees"] = pitch, ["horizontalFovDegrees"] = fov, ["width"] = 768, ["height"] = 768,
-                    ["elapsedMs"] = watch.ElapsedMilliseconds, ["panoramaSentToImage"] = true,
+                    ["elapsedMs"] = watch.ElapsedMilliseconds, ["panoramaSentToImage"] = false,
+                    ["auxiliarySelection"] = auxiliarySelection, ["auxiliarySentToImage"] = sendAuxiliary,
+                    ["auxiliaryYawDegrees"] = direction?.AuxiliarySceneYawDegrees,
+                    ["auxiliaryPitchDegrees"] = direction?.AuxiliaryScenePitchDegrees,
+                    ["auxiliaryHorizontalFovDegrees"] = direction?.AuxiliarySceneHorizontalFovDegrees,
                     ["currentScreenshotSentToImage"] = sendCurrent
                 });
             }
@@ -85,7 +100,32 @@ namespace AnimusForge.Illustrator.Core
             // the passive tabletop view. Mission screenshots calibrate the director;
             // local composition and text-only directors need that calibration on the image side too.
             if (sendCurrent)
-                image.Insert(panorama != null ? 2 : 0, current);
+                image.Insert(sceneReferenceCount, current);
+        }
+
+        private static string AuxiliarySelection(IllustrationDirection direction, bool primarySelected)
+        {
+            if (!primarySelected) return "no_visual_primary";
+            if (!direction.AuxiliarySceneYawDegrees.HasValue || !direction.AuxiliaryScenePitchDegrees.HasValue ||
+                !direction.AuxiliarySceneHorizontalFovDegrees.HasValue) return "missing_or_invalid";
+            double yaw = direction.AuxiliarySceneYawDegrees.Value;
+            double pitch = direction.AuxiliaryScenePitchDegrees.Value;
+            double fov = direction.AuxiliarySceneHorizontalFovDegrees.Value;
+            // Negated inclusive comparisons also reject NaN and infinity.
+            if (!(yaw >= -180 && yaw <= 180 && pitch >= -60 && pitch <= 60 && fov >= 45 && fov <= 100))
+                return "missing_or_invalid";
+            double radians = Math.PI / 180;
+            double primaryPitch = direction.ScenePitchDegrees.Value * radians;
+            double auxiliaryPitch = pitch * radians;
+            double dot = Math.Sin(primaryPitch) * Math.Sin(auxiliaryPitch) +
+                Math.Cos(primaryPitch) * Math.Cos(auxiliaryPitch) * Math.Cos((yaw - direction.SceneYawDegrees.Value) * radians);
+            double separation = Math.Acos(Math.Max(-1, Math.Min(1, dot))) / radians;
+            if (separation < 8) return "duplicate_direction";
+            // Inscribed view cones must overlap by at least 10 degrees. This is a
+            // geometric guard (including the yaw seam), not semantic verification.
+            if (separation > (direction.SceneHorizontalFovDegrees.Value + fov) / 2 - 10)
+                return "insufficient_overlap";
+            return "director";
         }
     }
 }

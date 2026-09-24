@@ -295,6 +295,9 @@ namespace AnimusForge.Illustrator.Core
                 direction.SceneYawDegrees = null;
                 direction.ScenePitchDegrees = null;
                 direction.SceneHorizontalFovDegrees = null;
+                direction.AuxiliarySceneYawDegrees = null;
+                direction.AuxiliaryScenePitchDegrees = null;
+                direction.AuxiliarySceneHorizontalFovDegrees = null;
             }
             if (string.IsNullOrWhiteSpace(direction.ActionSummary))
                 direction.ActionSummary = IllustrationDirection.ExtractActionSummary(direction.Prompt);
@@ -649,9 +652,12 @@ namespace AnimusForge.Illustrator.Core
                 foreach (var reference in referenceImages)
                 {
                     if (reference?.Kind != IllustrationReferenceKind.ScenePanorama || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
-                    requestText += "\n【环境参考取景元数据】本次提供了360×180度环境全景。请按正文所选环境方向，在标题、主题、行动字段之后、四段正文之前，另输出一行【环境取景】yaw=0;pitch=0;hfov=55，并将示例数值改成你选定的数值。" +
+                    requestText += "\n【环境参考取景元数据】本次提供了360×180度环境全景。请从同一全景选择主、辅助两个视角，在标题、主题、行动字段之后、四段正文之前，另输出两行：\n【环境取景】yaw=0;pitch=0;hfov=55\n【环境辅助取景】yaw=25;pitch=0;hfov=55\n将示例数值改成你选定的数值。" +
                         "yaw范围-180至180度，0为全景中央前方，90为右方，180或-180为后方，-90为左方；pitch范围-60至60度，正值向上、负值向下；hfov范围45至100度。" +
-                        "该字段用于从全景投影正常透视环境参考，与完整全景一同交给画师。正文背景必须属于选定方向及视野；先确认地标在全景中的方向，再填写数值，不将背后或侧方的王座、门洞搬入前景。机位变化保留原有结构邻接关系，人物姿态由对话决定。只输出这一行数值，不在生图正文复述参数，不照搬展开畸变。";
+                        "程序只将这两个方向投影成普通透视图交给画师，不附带完整全景。主视角决定最终画面的方向与构图，正文背景必须属于主视角的视野。" +
+                        "辅助视角用于核对相邻结构和材质，须与主视角保留可辨认的重叠地标，不选相反方向；优先保持相同pitch与hfov，yaw相差约20至30度并考虑正负180度环绕。" +
+                        "两视线夹角至少8度，且不超过两者hfov平均值减10度；不能确认有用的相邻结构时省略辅助行。先确认地标在全景中的方向，再填写数值，不将辅助图独有的王座、门洞搬入主背景。" +
+                        "只输出上述数值行，不在生图正文复述参数，不照搬展开畸变；人物姿态由对话决定。";
                     break;
                 }
             }

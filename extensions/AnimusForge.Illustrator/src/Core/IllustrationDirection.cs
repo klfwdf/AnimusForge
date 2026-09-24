@@ -16,6 +16,9 @@ namespace AnimusForge.Illustrator.Core
         public double? SceneYawDegrees { get; internal set; }
         public double? ScenePitchDegrees { get; internal set; }
         public double? SceneHorizontalFovDegrees { get; internal set; }
+        public double? AuxiliarySceneYawDegrees { get; internal set; }
+        public double? AuxiliaryScenePitchDegrees { get; internal set; }
+        public double? AuxiliarySceneHorizontalFovDegrees { get; internal set; }
         // Generation metadata is stored/displayed separately and never appended to Prompt.
         public string DirectionStatus { get; internal set; } = "complete";
         public string FallbackReason { get; internal set; } = string.Empty;
@@ -60,12 +63,12 @@ namespace AnimusForge.Illustrator.Core
         {
             var result = new IllustrationDirection();
             result.Prompt = Regex.Replace(output ?? string.Empty,
-                @"【(画作标题|画作主题|人物行动|环境取景)】([^【]*)", match =>
+                @"【(画作标题|画作主题|人物行动|环境取景|环境辅助取景)】([^【]*)", match =>
                 {
                     string label = match.Groups[1].Value;
-                    if (label == "环境取景")
+                    if (label == "环境取景" || label == "环境辅助取景")
                     {
-                        ReadSceneFraming(result, match.Groups[2].Value);
+                        ReadSceneFraming(result, match.Groups[2].Value, label == "环境辅助取景");
                         return string.Empty;
                     }
                     string value = CleanLabel(match.Groups[2].Value, label == "画作标题" ? 18 : label == "画作主题" ? 36 : 160);
@@ -77,7 +80,7 @@ namespace AnimusForge.Illustrator.Core
             return result;
         }
 
-        private static void ReadSceneFraming(IllustrationDirection direction, string value)
+        private static void ReadSceneFraming(IllustrationDirection direction, string value, bool auxiliary)
         {
             // This selects a rectilinear environment reference, not character placement.
             var match = Regex.Match(value ?? string.Empty,
@@ -92,9 +95,18 @@ namespace AnimusForge.Illustrator.Core
                 double.IsNaN(pitch) || double.IsInfinity(pitch) || pitch < -60 || pitch > 60 ||
                 double.IsNaN(fov) || double.IsInfinity(fov) || fov < 45 || fov > 100)
                 return;
-            direction.SceneYawDegrees = yaw;
-            direction.ScenePitchDegrees = pitch;
-            direction.SceneHorizontalFovDegrees = fov;
+            if (auxiliary)
+            {
+                direction.AuxiliarySceneYawDegrees = yaw;
+                direction.AuxiliaryScenePitchDegrees = pitch;
+                direction.AuxiliarySceneHorizontalFovDegrees = fov;
+            }
+            else
+            {
+                direction.SceneYawDegrees = yaw;
+                direction.ScenePitchDegrees = pitch;
+                direction.SceneHorizontalFovDegrees = fov;
+            }
         }
 
         private static string CleanLabel(string value, int limit)

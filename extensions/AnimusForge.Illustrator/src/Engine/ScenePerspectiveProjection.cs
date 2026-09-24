@@ -7,19 +7,48 @@ using System.Threading;
 
 namespace AnimusForge.Illustrator.Engine
 {
-    // One bounded CPU projection after direction, on the generation worker. Input is
+    // At most two bounded CPU projections after direction, on the generation worker. Input is
     // the already colour-corrected panorama, never an uncorrected native face.
     internal static class ScenePerspectiveProjection
     {
         internal static byte[] Project(byte[] panorama, double yawDegrees, double pitchDegrees,
             double horizontalFovDegrees, CancellationToken token)
         {
-            const int size = 768;
             token.ThrowIfCancellationRequested();
+            ValidateView(yawDegrees, pitchDegrees, horizontalFovDegrees);
+            int width, height;
+            byte[] source = DecodePanorama(panorama, token, out width, out height);
+            return ProjectPixels(source, width, height, yawDegrees, pitchDegrees, horizontalFovDegrees, token);
+        }
+
+        internal static byte[][] ProjectPair(byte[] panorama, double yawDegrees, double pitchDegrees,
+            double horizontalFovDegrees, double auxiliaryYawDegrees, double auxiliaryPitchDegrees,
+            double auxiliaryHorizontalFovDegrees, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            ValidateView(yawDegrees, pitchDegrees, horizontalFovDegrees);
+            ValidateView(auxiliaryYawDegrees, auxiliaryPitchDegrees, auxiliaryHorizontalFovDegrees);
+            // The panorama is the largest allocation; decode it once and reuse the
+            // pixels for both views. No extra capture, camera work or director call.
+            int width, height;
+            byte[] source = DecodePanorama(panorama, token, out width, out height);
+            return new[]
+            {
+                ProjectPixels(source, width, height, yawDegrees, pitchDegrees, horizontalFovDegrees, token),
+                ProjectPixels(source, width, height, auxiliaryYawDegrees, auxiliaryPitchDegrees, auxiliaryHorizontalFovDegrees, token)
+            };
+        }
+
+        private static void ValidateView(double yawDegrees, double pitchDegrees, double horizontalFovDegrees)
+        {
             if (!Finite(yawDegrees) || yawDegrees < -180 || yawDegrees > 180 ||
                 !Finite(pitchDegrees) || pitchDegrees < -60 || pitchDegrees > 60 ||
                 !Finite(horizontalFovDegrees) || horizontalFovDegrees < 45 || horizontalFovDegrees > 100)
                 throw new ArgumentOutOfRangeException(nameof(yawDegrees), "Invalid scene reference view.");
+        }
+
+        private static byte[] DecodePanorama(byte[] panorama, CancellationToken token, out int width, out int height)
+        {
             if (panorama == null || panorama.Length < 33 || panorama.Length > 16 * 1024 * 1024 ||
                 panorama[0] != 137 || panorama[1] != 80 || panorama[2] != 78 || panorama[3] != 71 ||
                 panorama[4] != 13 || panorama[5] != 10 || panorama[6] != 26 || panorama[7] != 10 ||
@@ -28,7 +57,8 @@ namespace AnimusForge.Illustrator.Engine
             uint widthHeader = ReadBigEndian(panorama, 16), heightHeader = ReadBigEndian(panorama, 20);
             if (heightHeader < 2 || heightHeader > 2048 || widthHeader != heightHeader * 2)
                 throw new InvalidDataException("Scene panorama must be 2:1 and at most 4096 x 2048.");
-            int width = (int)widthHeader, height = (int)heightHeader;
+            width = (int)widthHeader;
+            height = (int)heightHeader;
             byte[] source = new byte[checked(width * height * 4)];
             using (var input = new MemoryStream(panorama, false))
             using (var bitmap = new Bitmap(input))
@@ -47,6 +77,14 @@ namespace AnimusForge.Illustrator.Engine
                 finally { bitmap.UnlockBits(data); }
             }
 
+            return source;
+        }
+
+        private static byte[] ProjectPixels(byte[] source, int width, int height, double yawDegrees,
+            double pitchDegrees, double horizontalFovDegrees, CancellationToken token)
+        {
+            const int size = 768;
+            token.ThrowIfCancellationRequested();
             double yaw = yawDegrees * Math.PI / 180, pitch = pitchDegrees * Math.PI / 180;
             double sinYaw = Math.Sin(yaw), cosYaw = Math.Cos(yaw);
             double sinPitch = Math.Sin(pitch), cosPitch = Math.Cos(pitch);
