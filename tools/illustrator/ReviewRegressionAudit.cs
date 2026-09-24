@@ -191,6 +191,28 @@ public static class ReviewRegressionAudit
             "unknown-owner-capture-is-rejected", "matching unavailable-owner placeholders are not evidence of the same scene");
         string geometryPriority = (string)rules.GetField("EnvironmentGeometryPriority", All).GetRawConstantValue();
         Confirm(system.Contains(geometryPriority), "director-must-ground-scene-in-environment-images", "text cannot redesign observed structures");
+        string locationGrounding = (string)rules.GetField("ConversationLocationGrounding", All).GetRawConstantValue();
+        Confirm(system.Contains(locationGrounding) && ((string)Property(direction, "Prompt")).Contains(locationGrounding),
+            "location-grounding-in-both-stages", "camera changes cannot relocate the conversation or turn clock time into direct sunlight");
+        Confirm(geometryPriority.Contains("屋盖、拱顶、横梁") && geometryPriority.Contains("门外景物留在真实门洞的可见范围内"),
+            "overhead-cover-and-portal-boundaries-retained", "visible exterior cannot replace the canopy or surrounding wall");
+        Confirm(!system.Contains("至少两到三组") && !((string)Property(direction, "Prompt")).Contains("至少两到三组"),
+            "conversation-has-no-minimum-background-quota", "nearby characters no longer require expanded group staging");
+        var crowdPlan = Activator.CreateInstance(planType, new object[] { "最近一轮对话联动的场景插画", facts + "【附近人群活动依据】附近10名，其中3名高度差超过2米。", "", narrative });
+        var crowdFallback = Call(director, "ResolveDirection", "不可用正文", crowdPlan, null);
+        Confirm((bool)Property(crowdFallback, "UsedLocalFallback") && !((string)Property(crowdFallback, "Prompt")).Contains("至少两到三组") &&
+            ((string)Property(crowdFallback, "Prompt")).Contains(locationGrounding), "fallback-also-honors-real-location", "local fallback does not reintroduce a background activity quota");
+        string crowdPriority = (string)rules.GetField("ConversationCrowdCountPriority", All).GetRawConstantValue();
+        var crowdDirection = Call(director, "ResolveDirection", body, crowdPlan, null);
+        Confirm(system.Contains(crowdPriority) && ((string)Property(crowdDirection, "Prompt")).Contains(crowdPriority) &&
+            ((string)Property(crowdDirection, "Prompt")).Contains("附近10名") && ((string)Property(crowdFallback, "Prompt")).Contains(crowdPriority),
+            "removing-group-quota-preserves-count-target", "scanned count survives director and local fallback; visible population cannot shrink without evidence");
+        Confirm(!((string)Call(rules, "GetEssentialContract", true, false, false)).Contains(locationGrounding) &&
+            !((string)Call(rules, "GetEssentialContract", false, false, true)).Contains(locationGrounding),
+            "location-grounding-is-conversation-only", "portrait design and weekly artistic reconstruction do not acquire live-location constraints");
+        var environment = assembly.GetType("AnimusForge.Illustrator.Context.EnvironmentVisualExtractor", true);
+        Confirm((string)Call(environment, "ResolveTimeOfDay", 12) == "白昼 (Daytime)",
+            "clock-does-not-assert-clear-sunny-weather", "hour twelve records daytime without claiming sunshine reaches the conversation");
         Confirm(!((string)Call(popup, "GenerateConversationSceneVariation", new object[] { null })).Contains("两人处于面对面真实交谈"),
             "no-forced-face-to-face", "conversation composition no longer injects an unconditional face-to-face action");
 
