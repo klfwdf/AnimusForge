@@ -6283,7 +6283,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				continue;
 			}
 			bool shortOnly = WeeklyMaterialBatchPlanner.IsShortOnly(group, context.FullReportKingdomIds);
-			PrepareWeeklyPromptMaterialsForGroup(group, shortOnly);
+			WeeklyPromptMaterialOwner.Prepare(group, shortOnly);
 			break;
 		}
 		if (context.PromptMaterialIndex >= groups.Count)
@@ -37165,68 +37165,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)));
 		foreach (WeeklyEventMaterialPreviewGroup item2 in list)
 		{
-			PrepareWeeklyPromptMaterialsForGroup(item2, WeeklyMaterialBatchPlanner.IsShortOnly(item2, fullReportKingdomIds));
+			WeeklyPromptMaterialOwner.Prepare(item2, WeeklyMaterialBatchPlanner.IsShortOnly(item2, fullReportKingdomIds));
 		}
 		return list;
 	}
 
-	private static void PrepareWeeklyPromptMaterialsForGroup(WeeklyEventMaterialPreviewGroup group, bool shortOnly)
-	{
-		if (group == null)
-		{
-			return;
-		}
-		group.OutputMode = shortOnly ? WeeklyReportOutputMode.TitleShortTagsOnly : WeeklyReportOutputMode.FullReport;
-		group.IncludePreviousReportInPrompt = !shortOnly;
-		group.PromptMaterials = shortOnly ? BuildWeeklyPromptMaterialsShort(group) : BuildWeeklyPromptMaterialsFull(group);
-		if (group.PromptMaterials == null)
-		{
-			group.PromptMaterials = new List<EventMaterialReference>();
-		}
-	}
-
-	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsFull(WeeklyEventMaterialPreviewGroup group)
-	{
-		List<EventMaterialReference> source = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
-		return BuildWeeklyPromptMaterialsWithResolvedVillageRaids(source);
-	}
-
-	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsWithResolvedVillageRaids(List<EventMaterialReference> source)
-	{
-		List<EventMaterialReference> list = new List<EventMaterialReference>();
-		Dictionary<string, List<EventMaterialReference>> dictionary = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-		int num = 0;
-		foreach (EventMaterialReference item in OrderWeeklyPreviewMaterials(source).Where((EventMaterialReference x) => x != null))
-		{
-			if (!IsWeeklyPromptVillageRaidMaterial(item))
-			{
-				list.Add(item);
-				continue;
-			}
-			string text = ResolveWeeklyPromptVillageRaidKey(item);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "unknown_village_raid_" + num++;
-			}
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new List<EventMaterialReference>();
-				dictionary[text] = value;
-			}
-			value.Add(item);
-		}
-		foreach (List<EventMaterialReference> item2 in dictionary.Values.Where((List<EventMaterialReference> x) => x != null && x.Count > 0).OrderBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionDay ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionSequence ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => ResolveWeeklyPromptVillageRaidKey(x[0]), StringComparer.OrdinalIgnoreCase))
-		{
-			EventMaterialReference eventMaterialReference = BuildWeeklyPromptResolvedVillageRaidMaterial(item2);
-			if (eventMaterialReference != null)
-			{
-				list.Add(eventMaterialReference);
-			}
-		}
-		return OrderWeeklyPreviewMaterials(list).ToList();
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptResolvedVillageRaidMaterial(List<EventMaterialReference> source)
+	internal static EventMaterialReference BuildWeeklyPromptResolvedVillageRaidMaterial(List<EventMaterialReference> source)
 	{
 		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(source).Where((EventMaterialReference x) => x != null).ToList();
 		if (list.Count == 0)
@@ -37297,60 +37241,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsShort(WeeklyEventMaterialPreviewGroup group)
-	{
-		List<EventMaterialReference> list = new List<EventMaterialReference>();
-		List<EventMaterialReference> list2 = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList();
-		List<EventMaterialReference> settlementStatsMaterials = list2.Where(IsWeeklyPromptSettlementStatsMaterial).ToList();
-		List<EventMaterialReference> villageRaidMaterials = list2.Where(IsWeeklyPromptVillageRaidMaterial).ToList();
-		bool flag = false;
-		bool flag2 = false;
-		foreach (EventMaterialReference item in list2)
-		{
-			if (IsWeeklyPromptTournamentMaterial(item))
-			{
-				continue;
-			}
-			if (IsWeeklyPromptOpeningSummaryMaterial(item))
-			{
-				continue;
-			}
-			if (IsWeeklyPromptSettlementStatsMaterial(item))
-			{
-				if (!flag)
-				{
-					EventMaterialReference eventMaterialReference2 = BuildWeeklyPromptShortSettlementStatsMaterial(settlementStatsMaterials, group);
-					if (eventMaterialReference2 != null)
-					{
-						list.Add(eventMaterialReference2);
-					}
-					flag = true;
-				}
-				continue;
-			}
-			if (IsWeeklyPromptVillageRaidMaterial(item))
-			{
-				if (!flag2)
-				{
-					EventMaterialReference eventMaterialReference3 = BuildWeeklyPromptShortVillageRaidMaterial(villageRaidMaterials, group);
-					if (eventMaterialReference3 != null)
-					{
-						list.Add(eventMaterialReference3);
-					}
-					flag2 = true;
-				}
-				continue;
-			}
-			EventMaterialReference eventMaterialReference = BuildWeeklyPromptShortMaterial(item, group);
-			if (eventMaterialReference != null)
-			{
-				list.Add(eventMaterialReference);
-			}
-		}
-		return OrderWeeklyPreviewMaterials(list).ToList();
-	}
-
-	private static bool IsWeeklyPromptTournamentMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptTournamentMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -37362,7 +37253,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("tournament_finished:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("竞技大会结算", StringComparison.OrdinalIgnoreCase));
 	}
 
-	private static bool IsWeeklyPromptOpeningSummaryMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptOpeningSummaryMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -37372,7 +37263,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "world_opening_summary", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_opening_summary", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static EventMaterialReference BuildWeeklyPromptShortMaterial(EventMaterialReference item, WeeklyEventMaterialPreviewGroup group)
+	internal static EventMaterialReference BuildWeeklyPromptShortMaterial(EventMaterialReference item, WeeklyEventMaterialPreviewGroup group)
 	{
 		if (IsWeeklyPromptMovementAggregateMaterial(item))
 		{
@@ -37405,7 +37296,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return CloneEventMaterialReference(item);
 	}
 
-	private static bool IsWeeklyPromptSettlementStatsMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptSettlementStatsMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -37417,7 +37308,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("settlement_stats:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("定居点状态变化", StringComparison.OrdinalIgnoreCase));
 	}
 
-	private static bool IsWeeklyPromptVillageRaidMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptVillageRaidMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -37712,7 +37603,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return eventMaterialReference;
 	}
 
-	private static EventMaterialReference BuildWeeklyPromptShortSettlementStatsMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
+	internal static EventMaterialReference BuildWeeklyPromptShortSettlementStatsMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
 	{
 		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
 		if (list.Count == 0)
@@ -37829,7 +37720,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static EventMaterialReference BuildWeeklyPromptShortVillageRaidMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
+	internal static EventMaterialReference BuildWeeklyPromptShortVillageRaidMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
 	{
 		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
 		if (list.Count == 0)
@@ -37901,7 +37792,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return eventMaterialReference;
 	}
 
-	private static string ResolveWeeklyPromptVillageRaidKey(EventMaterialReference material)
+	internal static string ResolveWeeklyPromptVillageRaidKey(EventMaterialReference material)
 	{
 		string text = (material?.SettlementId ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
@@ -42462,7 +42353,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Title = (entry.Title ?? "").Trim(),
 			Summary = (entry.ShortSummary ?? "").Trim(),
 			Materials = list,
-			PromptMaterials = BuildWeeklyPromptMaterialsWithResolvedVillageRaids(list),
+			PromptMaterials = WeeklyPromptMaterialOwner.ResolveVillageRaids(list),
 			OutputMode = WeeklyReportOutputMode.FullReport,
 			IncludePreviousReportInPrompt = true
 		};
