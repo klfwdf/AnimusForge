@@ -108,7 +108,25 @@ internal static class WeeklyReportCommitQueueReplay
         Check(Won(), "completed short report wins without requiring full body");
         entryType.GetField("WeekIndex", Members).SetValue(entry, 2);
         Check(!Won(), "wrong week cannot win");
-        Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission/full-short-winner live=NOT_RUN");
+        Type listType = typeof(List<>).MakeGenericType(groupType);
+        IList fresh = (IList)Activator.CreateInstance(listType);
+        IList failed = (IList)Activator.CreateInstance(listType);
+        object freshWorld = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(freshWorld, "world");
+        object freshKingdom = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(freshKingdom, "kingdom");
+        groupType.GetField("KingdomId", Members).SetValue(freshKingdom, "k1");
+        fresh.Add(freshWorld); fresh.Add(freshKingdom); failed.Add(group);
+        var selectFresh = behavior.GetMethod("SelectFreshWeeklyReportRetryGroups", Members);
+        IList Selected() => (IList)selectFresh.Invoke(null, new object[] { fresh, failed });
+        Check(Selected().Count == 1 && ReferenceEquals(Selected()[0], freshWorld),
+            "fresh retry targets only failed identity, not previously completed groups");
+        object missing = Activator.CreateInstance(groupType, true);
+        groupType.GetField("GroupKind", Members).SetValue(missing, "kingdom");
+        groupType.GetField("KingdomId", Members).SetValue(missing, "missing");
+        failed.Add(missing);
+        Check(Selected() == null, "missing failed group refuses partial fresh retry");
+        Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission/full-short-winner/fresh-targets live=NOT_RUN");
     }
 
     private static void Check(bool passed, string name)
