@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 分块材料提交游标切片（2026-09-24）
+
+状态 `J13a_A2_BLOCK_MATERIAL_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `bd972386`。`src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs:6,20` 持有单个已解析 block 的有序源材料下标与克隆结果，`Advance` 每次只处理一项并跳过 null 克隆。`MyBehavior.cs:1458,45620–45662` 的真实 pending commit 消费者在预算检查之间调用该 owner，完成后仍由主线程 `UpsertWeeklyReportEventRecord` 写记录；原 `OrderedMaterials/ClonedMaterials/MaterialIndex` 三份瞬态字段从宿主 DTO 删除，不改保存身份或 API。每项处理 O(1) 外加原克隆成本；首次排序仍 O(M log M)、最终记录写入仍原子且没有帧耗时证明。
+
+- 验证：复核获准四目录绝对路径/内容/reparse 后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 SHA256 `01AB3C5A0069C223B3A06104BF45F8947E7B6CE09CA6DFAEC076239EB6867F99`，Phase8 显式当前候选校验与新增 one-step/null/恢复/不重放回放通过；入口 11、source inventory 7、453 锚点地图 recorded/working-tree 通过。没把队列/材料游标用例冒充整体批量请求或 live 发布验收。
+- 发现的剩余门禁：活动批量 `MyBehavior.cs:45517–45667,44217–44261` 虽在提交前检查 `SaveRuntimeGuard` generation，但 `UpsertWeeklyReportEventRecord` 会直接改现有目标记录；当前未见按需全文的“已发布胜出者/源状态变化”同等级重验。a2 **不能**标完成。下一步先设计/复现该反例并核对自动与手动重试的目标身份、捕获时点与分块预算，补主线程 owner/目标/源门禁而不把 worker 读取 live 对象，也不悄悄改变成功/失败或一次发布语义。a3 与 J13b–g 未施工；实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+
 ## J13a a2 批量 commit 队列生命周期切片（2026-09-24）
 
 状态 `J13a_A2_COMMIT_QUEUE_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE / J13a_ACTIVE`，产品 `e4a78829`。`src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs:7,22,32,46,60` 持有 worker 完成到主线程提交之间的 FIFO、无工作 volatile 快路径、仅队首可移除、读档清理及每个遗弃请求等待者结算。`MyBehavior.cs:1908–1909,2481,17423–17427,45453–45512` 保留原 Campaign tick、主线程预算/分块提交、generation 检查、结果投影及私有嵌套 DTO 身份；队列锁/标志/容器已从宿主删除，无第二套队列。泛型 owner 用原私有 DTO 和结算回调，不扩大存档/公开类型可见性。实际请求 worker 仍在 `:45302–45373` 经 `EnqueueWeeklyReportCommitAsync` 等待提交；`WeeklyFullReportCompletionOwner` 的按需全文队列保持独立既有语义。
