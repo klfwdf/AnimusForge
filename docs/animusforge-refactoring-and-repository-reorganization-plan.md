@@ -1,3 +1,14 @@
+## J13d1 Notoriety/Romance 切片验证，Recruitment 接续（2026-09-25）
+
+状态 `J13d1_ACTIVE / J13_ACTIVE`；已验证产品 `e7a16ba7`（意图 `3252444d`）及 `a49642bf`（意图 `f7392390`）。J13a–c 有限离线完成。未推送/改 HANDOFF/部署/写游戏或存档，继续 Recruitment 与其后各包。
+
+- Notoriety：`NotorietyObservationOwner` 接走唯一原 state graph/active 字典、观察者创建、会话判定缓存、近期信息渠道规则、有效名声计算、文化/世界累加、legacy 结算与低调状态变更。作为私有嵌套 owner 仅为保持原私有 JSON DTO 类型身份；不是只搬 partial 方法。根 Behavior 属性是同一状态的兼容视图，原 SyncData JSON/witness、Hero/Agent 资格、RNG/时钟、历史摘要、归一化/事件/UI 和精确 receipt journal 保留。原 NormalizeState 多次 O(N) 复制/排序仍存在，未声称本包解决全仓热路径；新增观察/缓存操作平均 O(1)，无新增 tick 扫描。
+- Romance：`RomanceRelationshipOwner` 接走唯一 love 字典、一次性 marriage topic context、数值/年龄及指令/约束状态决策。宿主保留 Hero/Clan 资格读取、年龄权限例外、已授权标签执行规则、真实婚姻/家族/信任变更、原记录 wire 与存档键。love 保存用同类型局部 ref 接口回填唯一字典，不复制第二张表。
+- 修复有据：原 context TryGetValue→TryRemove 允许并发重复消费，且静态表跨 Behavior 替换/读档残留。现在单次 TryRemove 消费，绑定 Behavior 实例，加载清理；缺 owner 不授予 topic context。原正常话题注入/一次消费顺序不变，未新增婚姻规则或默认入口。请求/对话时 O(1)，保存规范化 O(love 项数)，未引入轮询。
+- 验证：Notoriety 当前 DLL host 重复结束一次、空会话不加分、冻结会话判定、文化增量限幅/世界 1/3、信使阈值/低调清理/加载状态；原 AFNR1 14/14 与原 DLL metadata/IL 接线回放通过。Romance 当前 DLL 32 并发只有一次成功消费、禁用/读档清理/换 owner、love 饱和/归一化、年龄/权限例外与资格状态矩阵通过。合并当前 Debug 1.4 SHA256 `084E5361B935D554F1DBE7ECB4499B6962E9A6F76BB4C7C10A4AACD93226F771` 全 Phase8、Debug 双版本+Bootstrap 零警告错误、V1 119/两 DLL metadata 530 通过；入口 11/source 7 通过于 Notoriety 切片。
+- PersistenceIdentity 原字段扫描不识别局部 SyncData alias，补齐局部类型声明（与既有 Profile validator 一致），保留 baseline 双向比较；新增 local/field 等价、变更类型失败、return 不作声明反例，工具 6 tests 通过。相同基线 `053ad485` 比较 142 key/type 对与 36 behaviors 无差异；原 146 是包含 4 个重复 key 的 UNRESOLVED 类型记录，不是删除保存键。原 JSON DTO 和 love 的 Dictionary<string,int> 保持。
+- 未验证：真实 Campaign Hero/Agent 资格与 MBRandom、真正婚姻/家族/信任 mutation、旧档、UI/provider/帧性能 NOT-RUN。Notoriety 历史摘要未迁移且不以本次 owner 回放代替其异步验收。Recruitment（含升格 Persona/skills 主线程与编辑保护）尚未完成，故 d1/d/J13 不标完成。
+
 ## J13c Persona 有限离线收口，转入 J13d（2026-09-25）
 
 状态 `J13a/J13b/J13c_OFFLINE_VERIFIED / J13d_ACTIVE / J13_ACTIVE`；意图 `97882c5a`，产品 `877ba4a9`。本段是最新状态；继续所有后续包，不推送、不更新 HANDOFF、不 Stage/部署/打包/写存档/J14。
