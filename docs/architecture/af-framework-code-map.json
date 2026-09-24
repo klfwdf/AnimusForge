@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "8f960d650890228eb4aa0d52f7781d87281eaecf",
+  "sourceRevision": "89b38557c9b2f01b77e145dffa7fabfcc953bcc9",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -249,35 +249,35 @@
     {
       "id": "memory.summary.accept",
       "path": "MyBehavior.cs",
-      "start": 4996,
-      "end": 4996,
+      "start": 4987,
+      "end": 4987,
       "symbol": "if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++;",
       "match": "contains",
       "status": "mixed-host",
       "note": "源重验紧接真实Apply；部分/未知错误通知，不盲重放或假报成功",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "legacy.history",
       "path": "MyBehavior.cs",
-      "start": 27319,
-      "end": 27319,
+      "start": 27069,
+      "end": 27069,
       "symbol": "public static string BuildHistoryContextForExternal(",
       "match": "contains",
       "status": "retained-live",
       "note": "Scene/Courier 仍调用，共享兼容入口不能盲删",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "legacy.recall",
       "path": "MyBehavior.cs",
-      "start": 32814,
-      "end": 32814,
+      "start": 32564,
+      "end": 32564,
       "symbol": "private string BuildCompressedMemoryContextById(",
       "match": "contains",
       "status": "mixed-host",
       "note": "snapshot 和默认旧调用共用原算法",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "scene.chain.group-prompt",
@@ -502,35 +502,35 @@
     {
       "id": "memory.summary.admission",
       "path": "MyBehavior.cs",
-      "start": 4894,
-      "end": 4894,
+      "start": 4885,
+      "end": 4885,
       "symbol": "private void TryStartMemorySummaryQueue(bool forceOverviewCandidateScan = false)",
       "match": "exact",
       "status": "mixed-host",
       "note": "raw数量入场；候选ID扫描仍有同步全扫，不代表全部入口已预算",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.summary.planner",
       "path": "MyBehavior.cs",
-      "start": 4954,
-      "end": 4954,
+      "start": 4945,
+      "end": 4945,
       "symbol": "private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)",
       "match": "exact",
       "status": "mixed-host",
       "note": "分段初筛/extra/cleanup，冻结metadata排序与失败汇总在worker；仅完整接受才计数",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.summary.maintenance",
       "path": "MyBehavior.cs",
-      "start": 17611,
-      "end": 17611,
+      "start": 17361,
+      "end": 17361,
       "symbol": "private void TryRunCampaignMemoryMaintenance()",
       "match": "exact",
       "status": "mixed-host",
       "note": "不在每Tick重复读完整summary来源；past draft检查仍有全扫",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.plan.entry",
@@ -579,57 +579,57 @@
     {
       "id": "memory.editor.text",
       "path": "MyBehavior.cs",
-      "start": 49263,
-      "end": 49263,
+      "start": 49002,
+      "end": 49002,
       "symbol": "private void OpenDevDailyMemoryLineTextEditor(",
       "match": "contains",
       "status": "mixed-host",
       "note": "文本保存/取消真实红绿证据；同代记录引用/指纹也须保持",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.import.single",
       "path": "MyBehavior.cs",
-      "start": 54103,
-      "end": 54103,
+      "start": 53842,
+      "end": 53842,
       "symbol": "private void ImportSingleNpcDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "单NPC导入窗口生命周期，真实文件路径/ReadJson/选择/Apply受控回放",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.import.batch",
       "path": "MyBehavior.cs",
-      "start": 55981,
-      "end": 55981,
+      "start": 55720,
+      "end": 55720,
       "symbol": "private void ImportDialogueHistoryData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "记忆批量导入生命周期，保留overwrite/merge业务",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.import.hero-all",
       "path": "MyBehavior.cs",
-      "start": 54300,
-      "end": 54300,
+      "start": 54039,
+      "end": 54039,
       "symbol": "private void ImportHeroNpcAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF汇总导入窗口门禁；业务owner不重写，本轮结构验证",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.import.all",
       "path": "MyBehavior.cs",
-      "start": 56509,
-      "end": 56509,
+      "start": 56248,
+      "end": 56248,
       "symbol": "private void ImportAllData(",
       "match": "contains",
       "status": "mixed-host",
       "note": "仅AF全量导入窗口门禁；非全部导入业务已运行验收",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.summary.raw-view",
@@ -667,13 +667,13 @@
     {
       "id": "memory.overview.pending-projection",
       "path": "MyBehavior.cs",
-      "start": 26342,
-      "end": 26342,
+      "start": 26092,
+      "end": 26092,
       "symbol": "private bool HasMemoryOverviewPendingBlocks(",
       "match": "contains",
       "status": "mixed-host",
       "note": "一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.material.index-owner",
@@ -704,9 +704,9 @@
       "match": "contains",
       "status": "source-linked-offline-verified",
       "note": "原记录/追加/发布仍归主体 owner，使用独立索引",
-      "start": 13660,
-      "end": 13660,
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "start": 13410,
+      "end": 13410,
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.material.rebuild",
@@ -715,9 +715,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "重建后复核来源引用，再发布和绑定",
-      "start": 19794,
-      "end": 19794,
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "start": 19544,
+      "end": 19544,
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.sealing.continue",
@@ -759,9 +759,9 @@
       "match": "contains",
       "status": "source-linked-offline-verified",
       "note": "真实主/deferred维护共享周期与异常/nested恢复",
-      "start": 17585,
-      "end": 17585,
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "start": 17335,
+      "end": 17335,
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.budget.caller",
@@ -770,9 +770,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "实际Campaign入口接入共享维护周期，其他顺序保持",
-      "start": 17518,
-      "end": 17518,
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "start": 17268,
+      "end": 17268,
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.budget.deferred",
@@ -781,9 +781,9 @@
       "match": "exact",
       "status": "source-linked-offline-verified",
       "note": "复用共享deadline，原子超时后不再开始下一维护域",
-      "start": 5948,
-      "end": 5948,
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "start": 5939,
+      "end": 5939,
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.sealing.queue-tail",
@@ -821,24 +821,24 @@
     {
       "id": "memory.sort.daily-normalize",
       "path": "MyBehavior.cs",
-      "start": 26246,
-      "end": 26246,
+      "start": 25996,
+      "end": 25996,
       "symbol": "private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Daily净化体原样提取；同步Sanitize与分片尾部共用，权威DTO仍在主体",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.sort.major-normalize",
       "path": "MyBehavior.cs",
-      "start": 26412,
-      "end": 26412,
+      "start": 26162,
+      "end": 26162,
       "symbol": "private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原Major净化体原样提取；先pending再dedupe/normalize，保留引用和重试字段",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.source-digest.runtime",
@@ -900,33 +900,33 @@
       "path": "MyBehavior.cs",
       "symbol": "private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)",
       "note": "同步入口组合共用bind/line helper；clone/seen/trigger列表规则保持",
-      "start": 26142,
-      "end": 26142,
+      "start": 25892,
+      "end": 25892,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.owner-normalize.line",
       "path": "MyBehavior.cs",
       "symbol": "private static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)",
       "note": "原Where+Select体精确提取；同步与续跑共用，不含第二套规则",
-      "start": 26103,
-      "end": 26103,
+      "start": 25853,
+      "end": 25853,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.owner-normalize.trigger-bind",
       "path": "MyBehavior.cs",
       "symbol": "private static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)",
       "note": "原draft内trigger MemoryId/day/date绑定；按条metadata计费",
-      "start": 26092,
-      "end": 26092,
+      "start": 25842,
+      "end": 25842,
       "match": "exact",
       "status": "wired-boundary",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "memory.owner-normalize.entry-work",
@@ -1239,13 +1239,13 @@
     {
       "id": "persona.reroll.ui",
       "path": "MyBehavior.cs",
-      "start": 48679,
-      "end": 48679,
+      "start": 48418,
+      "end": 48418,
       "symbol": "private async Task RunHeroPersonaRerollAsync(",
       "match": "contains",
       "status": "wired-partial",
       "note": "原编辑器入口；异步完成UI回主线程，清理/编辑不报假成功",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "persona.readiness",
@@ -2603,24 +2603,24 @@
     {
       "id": "j04.host.builder",
       "path": "MyBehavior.cs",
-      "start": 30197,
-      "end": 30197,
+      "start": 29947,
+      "end": 29947,
       "symbol": "private ShoutPromptContext BuildShoutPromptContextForExternalInternal(",
       "match": "contains",
       "status": "mixed-host",
       "note": "共享主链：三步（Begin/Routing/Complete）的顺序组合；Scene 八个调用点与静态门面走此路径",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04.host.courier.preprocess",
       "path": "MyBehavior.cs",
-      "start": 30027,
-      "end": 30027,
+      "start": 29777,
+      "end": 29777,
       "symbol": "private List<string> RunCourierRulePreprocessInternal(",
       "match": "contains",
       "status": "mixed-host",
       "note": "Courier 前处理入口；命中排序归 PromptRuleIdPolicy.OrderPreprocessHitIds",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04.host.target.apply",
@@ -2713,68 +2713,68 @@
     {
       "id": "j04.host.capture.request",
       "path": "MyBehavior.cs",
-      "start": 30452,
-      "end": 30452,
+      "start": 30202,
+      "end": 30202,
       "symbol": "private PromptBuildRequest CapturePromptBuildRequest(",
       "match": "contains",
       "status": "mixed-host",
       "note": "阶段1：游戏线程读取身份/排除/资格/历史上下文",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04.host.capture.sections",
       "path": "MyBehavior.cs",
-      "start": 30546,
-      "end": 30546,
+      "start": 30296,
+      "end": 30296,
       "symbol": "private void CapturePromptSections(",
       "match": "contains",
       "status": "mixed-host",
       "note": "步骤3 内部：Reward/Duel/Army/Weekly/Policy/Lore/Entity 段落按旧序捕获；mentions 优先用步骤2 预取",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04.host.appendices",
       "path": "MyBehavior.cs",
-      "start": 30756,
-      "end": 30756,
+      "start": 30506,
+      "end": 30506,
       "symbol": "private void ApplyPromptRuntimeAppendices(",
       "match": "contains",
       "status": "mixed-host",
       "note": "阶段5：GCCZ 运行时 prompt 与共享资源追加",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04f.build.begin",
       "path": "MyBehavior.cs",
-      "start": 30240,
-      "end": 30240,
+      "start": 29990,
+      "end": 29990,
       "symbol": "internal PromptBuildPhases BeginSharedPromptBuild(",
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享构建步骤1（游戏线程）：请求捕获 + 排除列表；渠道调度器直接调用",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04f.build.routing",
       "path": "MyBehavior.cs",
-      "start": 30275,
-      "end": 30275,
+      "start": 30025,
+      "end": 30025,
       "symbol": "internal void RunSharedPromptRouting(",
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享构建步骤2（任意线程）：话题路由 + 完整 mention 解析；调用方在该线程应用目标绑定",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04f.build.complete",
       "path": "MyBehavior.cs",
-      "start": 30416,
-      "end": 30416,
+      "start": 30166,
+      "end": 30166,
       "symbol": "internal ShoutPromptContext CompleteSharedPromptBuild(",
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享构建步骤3（游戏线程）：段落捕获 + 纯装配 + 追加；调用方跨线程后需重验 owner",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04f.native.schedule",
@@ -2801,24 +2801,24 @@
     {
       "id": "j04f.courier.preprocess.begin",
       "path": "MyBehavior.cs",
-      "start": 30062,
-      "end": 30062,
+      "start": 29812,
+      "end": 29812,
       "symbol": "internal CourierPreprocessRequest BeginCourierRulePreprocess(",
       "match": "contains",
       "status": "wired-boundary",
       "note": "Courier 前处理步骤1（游戏线程）：排除集合/目标绑定/历史上下文",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04f.courier.preprocess.retrieval",
       "path": "MyBehavior.cs",
-      "start": 30090,
-      "end": 30090,
+      "start": 29840,
+      "end": 29840,
       "symbol": "internal List<string> RunCourierRulePreprocessRetrieval(",
       "match": "contains",
       "status": "wired-boundary",
       "note": "Courier 前处理步骤2（任意线程）：语义规则检索",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j04f.retrieval.capture",
@@ -2867,13 +2867,13 @@
     {
       "id": "j04g.host.rule.capture",
       "path": "MyBehavior.cs",
-      "start": 28649,
-      "end": 28649,
+      "start": 28399,
+      "end": 28399,
       "symbol": "private PromptRuleInstructionSections CaptureRuleInstructionSections(",
       "match": "contains",
       "status": "mixed-host",
       "note": "游戏线程按需解析各话题运行时正文；BuildExtraRuleInstructions 语义检索仍在此（J06）",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j05.records.action",
@@ -2900,24 +2900,24 @@
     {
       "id": "j05.host.record.action",
       "path": "MyBehavior.cs",
-      "start": 15483,
-      "end": 15483,
+      "start": 15233,
+      "end": 15233,
       "symbol": "private void RecordNpcActionInternal(",
       "match": "contains",
       "status": "mixed-host",
       "note": "游戏线程入口：Hero 解析 + 存储字典；规则归 NpcActionLedger",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j05.host.record.history",
       "path": "MyBehavior.cs",
-      "start": 27158,
-      "end": 27158,
+      "start": 26908,
+      "end": 26908,
       "symbol": "private bool AppendDialogueHistoryById(",
       "match": "contains",
       "status": "mixed-host",
       "note": "游戏线程入口：按 heroId 追加并截断；规则归 DialogueHistoryLedger",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j05.persist.codec",
@@ -2955,24 +2955,24 @@
     {
       "id": "j05.host.syncdata",
       "path": "MyBehavior.cs",
-      "start": 17662,
-      "end": 17662,
+      "start": 17412,
+      "end": 17412,
       "symbol": "public override void SyncData(IDataStore dataStore)",
       "match": "contains",
       "status": "mixed-host",
       "note": "存档键/chunk helper/字段原地保留；每 owner JSON 循环已归 OwnerJsonStorageCodec",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j05.host.npcfile.name",
       "path": "MyBehavior.cs",
-      "start": 57319,
-      "end": 57319,
+      "start": 57058,
+      "end": 57058,
       "symbol": "private static string ResolveHeroNameForNpcDataFile(",
       "match": "contains",
       "status": "mixed-host",
       "note": "文件名所需 Hero 名解析（唯一留 host 的 Hero 依赖）",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "knowledge.index.owner",
@@ -3120,13 +3120,13 @@
     {
       "id": "knowledge.import.consumer",
       "path": "MyBehavior.cs",
-      "start": 55303,
-      "end": 55303,
+      "start": 55042,
+      "end": 55042,
       "symbol": "KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(importDir)",
       "match": "contains",
       "status": "wired-boundary",
       "note": "MyBehavior 导入门面调用 Knowledge 来源读取",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j06.lore.prepare",
@@ -3186,24 +3186,24 @@
     {
       "id": "j06.prompt.capture",
       "path": "MyBehavior.cs",
-      "start": 30307,
-      "end": 30307,
+      "start": 30057,
+      "end": 30057,
       "symbol": "internal void CaptureSharedKnowledgeSnapshot(",
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享知识游戏线程捕获阶段",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j06.prompt.worker",
       "path": "MyBehavior.cs",
-      "start": 30407,
-      "end": 30407,
+      "start": 30157,
+      "end": 30157,
       "symbol": "internal void RunSharedKnowledgeRetrieval(",
       "match": "contains",
       "status": "wired-boundary",
       "note": "共享知识后台检索与额外规则例外回退",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "j06.extra.worker",
@@ -3285,13 +3285,13 @@
     {
       "id": "j06.prompt.worker_retrieval",
       "path": "MyBehavior.cs",
-      "start": 30360,
-      "end": 30360,
+      "start": 30110,
+      "end": 30110,
       "symbol": "internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput input)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "后台 Lore/实体/额外规则候选；最终 owner 阶段才发布结果",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "native.admission.owner",
@@ -4990,145 +4990,145 @@
     {
       "id": "weekly.commit.target.capture",
       "path": "MyBehavior.cs",
-      "start": 42580,
-      "end": 42580,
+      "start": 42330,
+      "end": 42330,
       "symbol": "private Dictionary<string, string> CaptureWeeklyReportCommitRecordStates(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, int weekIndex)",
       "match": "exact",
       "status": "wired-j13a2-target-guard-slice",
       "note": "批量请求发出前，在主线程按目标记录捕获原状态；一次扫描记录集合",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.target.compare",
       "path": "MyBehavior.cs",
-      "start": 42606,
-      "end": 42606,
+      "start": 42356,
+      "end": 42356,
       "symbol": "private bool IsWeeklyReportCommitRecordUnchanged(PendingWeeklyReportCommitContext context, string reportId, WeeklyEventMaterialPreviewGroup group)",
       "match": "exact",
       "status": "wired-j13a2-target-guard-slice",
       "note": "批量 commit 比较捕获目标状态，拒绝迟到结果覆盖编辑或已完成胜出者",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.target.write",
       "path": "MyBehavior.cs",
-      "start": 46284,
-      "end": 46284,
+      "start": 46027,
+      "end": 46027,
       "symbol": "private bool ProcessPendingWeeklyReportBlockCommit(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)",
       "match": "exact",
       "status": "wired-j13a2-target-guard-slice",
       "note": "分块材料克隆后、写入前再次比较目标，冲突不发布",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.retry.admission",
       "path": "MyBehavior.cs",
-      "start": 42635,
-      "end": 42635,
+      "start": 42385,
+      "end": 42385,
       "symbol": "private static bool AreWeeklyReportCommitRecordStatesCurrent(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, Dictionary<string, string> captured, Dictionary<string, string> current)",
       "match": "exact",
       "status": "wired-j13a2-retry-guard-slice",
       "note": "批量手动重试沿用初始目标状态；目标变化时请求发送前拒绝旧素材",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.retry.entry",
       "path": "MyBehavior.cs",
-      "start": 43572,
-      "end": 43572,
+      "start": 43322,
+      "end": 43322,
       "symbol": "private async Task RetryBlockedWeeklyReportsAsync(WeeklyReportRetryContext context, int retryVersion)",
       "match": "exact",
       "status": "wired-j13a2-retry-guard-slice",
       "note": "失败上下文携带原目标状态到手动重试入口，不重新授权旧回包",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.winner",
       "path": "MyBehavior.cs",
-      "start": 42622,
-      "end": 42622,
+      "start": 42372,
+      "end": 42372,
       "symbol": "private static bool IsWeeklyReportCommitWinner(EventRecordEntry entry, WeeklyEventMaterialPreviewGroup group, int weekIndex)",
       "match": "exact",
       "status": "wired-j13a2-winner-slice",
       "note": "完整/短报分别确认现有已完成胜出者；迟到批量回包不写入或重复通知",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.retry.fresh.selection",
       "path": "MyBehavior.cs",
-      "start": 43419,
-      "end": 43419,
+      "start": 43169,
+      "end": 43169,
       "symbol": "private static List<WeeklyEventMaterialPreviewGroup> SelectFreshWeeklyReportRetryGroups(List<WeeklyEventMaterialPreviewGroup> freshGroups, List<WeeklyEventMaterialPreviewGroup> failedGroups)",
       "match": "exact",
       "status": "wired-j13a2-fresh-retry-slice",
       "note": "仅选旧失败目标在当前素材中仍存在的完整集合；缺一项不发送新请求",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.retry.fresh.entry",
       "path": "MyBehavior.cs",
-      "start": 43430,
-      "end": 43430,
+      "start": 43180,
+      "end": 43180,
       "symbol": "private void BeginFreshWeeklyReportRetry(WeeklyReportRetryContext staleContext)",
       "match": "exact",
       "status": "wired-j13a2-fresh-retry-slice",
       "note": "明确点击后主线程重采失败分组并开启新请求；旧捕获状态不再沿用",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.retry.popup",
       "path": "MyBehavior.cs",
-      "start": 43280,
-      "end": 43280,
+      "start": 43030,
+      "end": 43030,
       "symbol": "private void ShowWeeklyReportFailurePopup(bool ignoreDelay = false)",
       "match": "exact",
       "status": "wired-j13a2-fresh-retry-slice",
       "note": "目标变更专用弹窗说明新请求可能替换未完成编辑，避免误导为 API 故障",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.prompt.prepare",
       "path": "MyBehavior.cs",
-      "start": 41548,
-      "end": 41548,
+      "start": 41298,
+      "end": 41298,
       "symbol": "private void PrepareWeeklyReportBatchPrompt(WeeklyReportBatchRequest batch)",
       "match": "exact",
       "status": "wired-j13a2-batch-prompt-pump-slice",
       "note": "主线程准备系统/用户提示、预览与标签；worker 不构造 live Prompt",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.prompt.worker",
       "path": "MyBehavior.cs",
-      "start": 43101,
-      "end": 43101,
+      "start": 42851,
+      "end": 42851,
       "symbol": "private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L)",
       "match": "exact",
       "status": "wired-j13a2-batch-prompt-pump-slice",
       "note": "未准备批次及旧代请求在 API 前拒绝，自动/手动/重试共用",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.prompt.pump",
       "path": "MyBehavior.cs",
-      "start": 45928,
-      "end": 45928,
+      "start": 45671,
+      "end": 45671,
       "symbol": "private bool ProcessPendingWeeklyPromptPreparations()",
       "match": "exact",
       "status": "wired-j13a2-batch-prompt-pump-slice",
       "note": "Campaign tick 在预算内每次推进一个批次，读档清理结算等待者",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.retry.stale",
       "path": "MyBehavior.cs",
-      "start": 43117,
-      "end": 43117,
+      "start": 42867,
+      "end": 42867,
       "symbol": "if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, \"weekly_batch_before_attempt\"))",
       "match": "exact",
       "status": "wired-j13a2-stale-retry-slice",
       "note": "每次自动重试发 API 前复核原 generation，读档后旧请求不再外发",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.wave.launch.queue",
@@ -5139,29 +5139,29 @@
       "match": "contains",
       "status": "wired-j13a2-wave-launch-slice-offline-verified",
       "note": "Campaign tick 波次发布 FIFO；换代清理等待者",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.wave.launch.entry",
       "path": "MyBehavior.cs",
-      "start": 45812,
-      "end": 45812,
+      "start": 45555,
+      "end": 45555,
       "symbol": "private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(",
       "match": "contains",
       "status": "wired-j13a2-wave-launch-slice-offline-verified",
       "note": "异步 minute burst 排队；不在后台发送 UI/首轮请求",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.wave.launch.pump",
       "path": "MyBehavior.cs",
-      "start": 45837,
-      "end": 45837,
+      "start": 45580,
+      "end": 45580,
       "symbol": "private bool ProcessPendingWeeklyWaveLaunches()",
       "match": "contains",
       "status": "wired-j13a2-wave-launch-slice-offline-verified",
       "note": "主线程按队首启动整波，异常结算等待者；Phase8 双排队波次与次波源失效反例已回放，未驱动真实 60 秒延迟",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.attempt.queue",
@@ -5172,29 +5172,29 @@
       "match": "contains",
       "status": "wired-j13a2-retry-attempt-slice-offline-verified",
       "note": "批量重试 attempt 的主线程启动队列；换代结算",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.attempt.entry",
       "path": "MyBehavior.cs",
-      "start": 43075,
-      "end": 43075,
+      "start": 42825,
+      "end": 42825,
       "symbol": "private async Task<ApiCallResult> CallWeeklyReportBatchApiAttemptAsync(",
       "match": "contains",
       "status": "wired-j13a2-retry-attempt-slice-offline-verified",
       "note": "首轮同波直发，重试回 tick，旧 owner/代拒绝",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.attempt.pump",
       "path": "MyBehavior.cs",
-      "start": 45884,
-      "end": 45884,
+      "start": 45627,
+      "end": 45627,
       "symbol": "private bool ProcessPendingWeeklyBatchApiAttempts()",
       "match": "contains",
       "status": "wired-j13a2-retry-attempt-slice-offline-verified",
       "note": "Campaign tick 读取当前 MCM 配置并启动一次 attempt",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.target.owner",
@@ -5238,18 +5238,18 @@
       "match": "contains",
       "status": "wired-j13a2-partial-target-slice-offline-verified",
       "note": "真实 pending commit 使用同一目标结算实例",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.target.finalize",
       "path": "MyBehavior.cs",
-      "start": 46321,
-      "end": 46321,
+      "start": 46064,
+      "end": 46064,
       "symbol": "private void FinalizePendingWeeklyReportCommitBatch(PendingWeeklyReportCommitContext context, WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult batchResult)",
       "match": "contains",
       "status": "wired-j13a2-partial-target-slice-offline-verified",
       "note": "批次仅登记暂缺，最终按尚未恢复目标结算",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.source.revision.owner",
@@ -5287,123 +5287,123 @@
     {
       "id": "weekly.source.revision.host",
       "path": "MyBehavior.cs",
-      "start": 2045,
-      "end": 2045,
+      "start": 2046,
+      "end": 2046,
       "symbol": "private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions =",
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "Campaign 单一 owner，writer 按日/全局/开局修订",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.source.revision.batch",
       "path": "MyBehavior.cs",
-      "start": 45614,
-      "end": 45614,
+      "start": 45357,
+      "end": 45357,
       "symbol": "private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(",
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "自动/手动/重试将捕获快照贯穿批量生命周期",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.source.revision.wave",
       "path": "MyBehavior.cs",
-      "start": 45837,
-      "end": 45837,
+      "start": 45580,
+      "end": 45580,
       "symbol": "private bool ProcessPendingWeeklyWaveLaunches()",
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "每波主线程发请求前核对源快照",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.source.revision.commit",
       "path": "MyBehavior.cs",
-      "start": 46284,
-      "end": 46284,
+      "start": 46027,
+      "end": 46027,
       "symbol": "private bool ProcessPendingWeeklyReportBlockCommit(",
       "match": "contains",
       "status": "wired-j13a2-source-revision-slice-offline-verified",
       "note": "分块材料克隆结束后、写记录前再次核对源快照",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.source.kingdom.clan-move",
       "path": "MyBehavior.cs",
-      "start": 3995,
-      "end": 3995,
+      "start": 3986,
+      "end": 3986,
       "symbol": "private void OnClanChangedKingdom(",
       "match": "contains",
       "status": "wired-j13a2-kingdom-event-slice-offline-verified",
       "note": "Clan 换国事件无论是否产生日素材都失效 live 归属投影",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.source.kingdom.ruler",
       "path": "MyBehavior.cs",
-      "start": 4168,
-      "end": 4168,
+      "start": 4159,
+      "end": 4159,
       "symbol": "private void OnRulingClanChanged(",
       "match": "contains",
       "status": "wired-j13a2-kingdom-event-slice-offline-verified",
       "note": "执政家族变化失效当前统治者上下文",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.source.kingdom.destroy",
       "path": "MyBehavior.cs",
-      "start": 7136,
-      "end": 7136,
+      "start": 7106,
+      "end": 7106,
       "symbol": "private void OnKingdomDestroyed(",
       "match": "contains",
       "status": "wired-j13a2-kingdom-event-slice-offline-verified",
       "note": "王国消亡事件失效报告资格和 live 王国列表",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.failure.attempt-metadata",
       "path": "MyBehavior.cs",
-      "start": 43185,
-      "end": 43185,
+      "start": 42935,
+      "end": 42935,
       "symbol": "private static void CaptureWeeklyReportBatchAttemptFailureMetadata(",
       "match": "contains",
       "status": "wired-j13a2-failure-metadata-slice-offline-verified",
       "note": "每次 attempt 覆盖 RPM/配额/Retry-After，HTTP 成功清除旧限流标记",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.failure.target-metadata",
       "path": "MyBehavior.cs",
-      "start": 46400,
-      "end": 46400,
+      "start": 46143,
+      "end": 46143,
       "symbol": "private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(",
       "match": "contains",
       "status": "wired-j13a2-failure-metadata-slice-offline-verified",
       "note": "pending commit 按失败目标选择其真实批次结果，保留次数和 API 分类",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.batch.failure.popup-consumer",
       "path": "MyBehavior.cs",
-      "start": 43280,
-      "end": 43280,
+      "start": 43030,
+      "end": 43030,
       "symbol": "private void ShowWeeklyReportFailurePopup(bool ignoreDelay = false)",
       "match": "contains",
       "status": "wired-j13a2-failure-metadata-slice-offline-verified",
       "note": "真实失败 UI 根据恢复上下文 RPM 分类显示对应按钮",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.exception.recovery",
       "path": "MyBehavior.cs",
-      "start": 46207,
-      "end": 46207,
+      "start": 45950,
+      "end": 45950,
       "symbol": "private WeeklyReportGenerationResult BuildWeeklyReportCommitExceptionResult(PendingWeeklyReportCommitContext context)",
       "match": "exact",
       "status": "wired-j13a2-exception-recovery-slice-offline-verified",
       "note": "异常后只对未有权威胜出记录的目标构造显式新素材重试上下文；已有胜出目标不再覆盖。",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.commit.attempted-write",
@@ -5414,7 +5414,7 @@
       "match": "exact",
       "status": "wired-j13a2-exception-recovery-slice-offline-verified",
       "note": "仅本次提交生命周期记录已尝试写入的目标，用于异常后幂等通知恢复，不入存档。",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.wave.coordinator",
@@ -5430,13 +5430,13 @@
     {
       "id": "weekly.wave.host-coordination",
       "path": "MyBehavior.cs",
-      "start": 45793,
-      "end": 45793,
+      "start": 45536,
+      "end": 45536,
       "symbol": "private Task<WeeklyReportBatchExecutionResult[]> CoordinateWeeklyReportWavesAsync(",
       "match": "contains",
       "status": "wired-j13a2-wave-admission-slice-offline-verified",
       "note": "真实 minute-burst 消费者接新 owner，主线程队列与 source/generation 提交门禁保留。",
-      "fileSha256": "c2bb3876ceb34de72bac383968f4a0188960c8efa49abdeb7aa0877bf5504625"
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
     },
     {
       "id": "weekly.queue.admission",
@@ -5558,6 +5558,83 @@
       "status": "wired-j13a-offline-verified",
       "note": "保留原 DailyMemoryDraft 的 exact trigger/readback/MarkApplied 游戏写入适配。",
       "fileSha256": "4c441e06982d2fe9872c861f644603ba48965e8540b679bbc6015b349562cb9b"
+    },
+    {
+      "id": "kingdom.stability.policy",
+      "path": "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs",
+      "start": 5,
+      "end": 5,
+      "symbol": "internal static class KingdomStabilityPolicy",
+      "match": "contains",
+      "status": "wired-j13b-offline-verified",
+      "note": "稳定度分档/上下界/忠诚度/周平衡/叛乱概率实际规则。",
+      "fileSha256": "df472a97aff0cf12ddf09248fda05f05c54ec46dfdf202b32bb46543c722f203"
+    },
+    {
+      "id": "kingdom.stability.state",
+      "path": "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityOwner.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class KingdomStabilityOwner",
+      "match": "contains",
+      "status": "wired-j13b-offline-verified",
+      "note": "唯一稳定度/偏移/周报 delta 状态与 reconcile；保存适配共享字典。",
+      "fileSha256": "f19d9c0145b9346a96f7995eb66687ef0a51d80fa6d83a96a22e91e9462af149"
+    },
+    {
+      "id": "kingdom.maintenance.cursor",
+      "path": "src/modules/AF.Module.Kingdom/Scheduling/KingdomMaintenanceOwner.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class KingdomMaintenanceOwner<T>",
+      "match": "contains",
+      "status": "wired-j13b-offline-verified",
+      "note": "主线程逐王国关系/周度游标，维持异常前后推进顺序。",
+      "fileSha256": "8fe4379a3b745e729813d252a8b41227385f3a7d9e14890e1e2ada15e6213a21"
+    },
+    {
+      "id": "kingdom.rebellion.flow",
+      "path": "src/modules/AF.Module.Kingdom/Scheduling/AutomaticKingdomRebellionOwner.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal sealed class AutomaticKingdomRebellionOwner<T>",
+      "match": "contains",
+      "status": "wired-j13b-offline-verified",
+      "note": "FIFO/命名就绪/周报阻塞；取消票据拒绝迟到结果。",
+      "fileSha256": "94619d03976804e5d4ae8dc36a25dca61a7fbf6e012af609499604c0e1c1cb9e"
+    },
+    {
+      "id": "kingdom.rebellion.host",
+      "path": "MyBehavior.cs",
+      "start": 12967,
+      "end": 12967,
+      "symbol": "private void TryStartNextAutomaticKingdomRebellionAsync()",
+      "match": "contains",
+      "status": "wired-j13b-offline-verified",
+      "note": "保留主线程游戏资格/Prompt/原命名网关与 UI 接缝，实际消费新 owner。",
+      "fileSha256": "7e4c4dfd677147379c85401ef28bd529c94d2323fc5a8e4d3b95941c2b59606b"
+    },
+    {
+      "id": "kingdom.stability.model",
+      "path": "AnimusForgeSettlementLoyaltyModel.cs",
+      "start": 70,
+      "end": 70,
+      "symbol": "int adjustment = MyBehavior.GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(town);",
+      "match": "contains",
+      "status": "wired-j13b-offline-verified",
+      "note": "原忠诚度模型入口和 MCM 资格保持。",
+      "fileSha256": "d705c7f210df95f97c1bd59cb4030e89d6a1f9971ddeaee15fdadc8cf2d96b81"
+    },
+    {
+      "id": "kingdom.owner.replay",
+      "path": "tools/PhaseEightParityReplayTests/KingdomOwnerReplay.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal static class KingdomOwnerReplay",
+      "match": "contains",
+      "status": "wired-j13b-offline-verified",
+      "note": "源码/当前 DLL 同套边界、账本撤销、批次、取消和保存周游标回放。",
+      "fileSha256": "cf6ef32ad4c28902cc889d76fe8356999ddd91fca670406ba77382fe59840ede"
     }
   ]
 }

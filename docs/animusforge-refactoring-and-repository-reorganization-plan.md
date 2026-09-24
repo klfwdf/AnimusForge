@@ -1,4 +1,16 @@
 <a id="j13-plan-20260924"></a>
+## J13b Kingdom 有限离线收口，转入 J13c（2026-09-25）
+
+状态 `J13a/J13b_OFFLINE_VERIFIED / J13c_ACTIVE / J13_ACTIVE`；意图 `64284105`，产品 `89b38557`。从 J13a 继续，遵守不推送、不更新 HANDOFF、不 Stage/部署/打包/写存档/J14。
+
+- `KingdomStabilityPolicy` 实际拥有数值上下界、分档、关系目标、皇家直辖地忠诚度、周度平衡与叛乱概率；`KingdomStabilityOwner` 拥有原三份状态字典及关系对账/替换撤销、周报 delta 去重。`MyBehavior` 原同名私有成员改为指向唯一字典的保存兼容属性；保存字符串字典/SyncData 键、原模型/百科/公开入口不变。关系饱和只记真实 applied 值，撤销不抹除同期其他变化。
+- `KingdomMaintenanceOwner<Kingdom>` 持有逐王国关系游标和一次捕获的周度列表/游标；`AutomaticKingdomRebellionOwner<原私有context>` 拥有 FIFO、命名在途/就绪和 Weekly 阻塞状态。真实 `ProcessWeeklyKingdomRebellionsSlice`、自动命名/重试/消费/取消、`TryStartDeferredAutoWeeklyReports` 已接入；游戏对象仍只在原主线程读写。原叛乱候选资格/随机选择、家族/领地动作、命名 Prompt/gateway、弹窗、MCM/玩家免疫判断仍由现有 host 执行，未重写 J12 或制作组业务。
+- 具体修复：原自动命名主线程回调只验存档代际，取消后若同代回包会无条件重新置 Ready。现在 BeginNaming 返回请求版本，Cancel 使它失效，旧结果不能恢复已取消流程或占用新请求；当前 owner/generation 仍由原 main-thread action pump 校验。回放覆盖 canceled/result、替换请求/旧结果、duplicate completion；不宣称真实 provider 回调时序已实测。
+- 验证：同一 owner 源码用例及当前 Debug 1.4 DLL（SHA256 `5B9DE7C3E61BD4C95FE8AC0652AB948DC854C2486F74D02CCAF058F104E643DC`）Phase8 通过；包括忠诚度/稳定度边界、关系饱和/重复/撤销/缺对象、周 delta、列表缩减/异常不跳游标/加载重置、已保存周不重跑、队列阻塞/恢复/取消。原 Debug 1.3+1.4+Bootstrap 三构建零警告错误，V1 119 / 两 DLL metadata 530、PersistenceIdentity 146 keys/36 behaviors、入口 11/source 7 通过。Release 四实现最终统一在 J13g 重建；本包必要双版本已通过。
+- 性能：规则 O(1)，FIFO 出队由列表前删改为 Queue O(1)；关系 reconcile 仍一次遍历已记录 offsets，原每个关系 slice 的 Kingdom 列表捕获和每王国成员枚举保留，未声称每 tick 常数成本。周列表每周一次，单步一个王国；主线程资格/Clan mutation、实机模型效果、真实叛乱和旧档读取/帧性能 NOT-RUN。
+- 下一步 J13c Persona：归位原唯一预约 owner，转移生成合并/编辑冲突/准备状态决策，保持编辑器/三渠道原契约；单独核对升格同伴与非 Hero 路径，不用 Hero fixture 代替它们。
+
+
 ## J13a Weekly 有限离线收口，转入 J13b（2026-09-25）
 
 状态 `J13a_OFFLINE_VERIFIED / J13b_ACTIVE / J13_ACTIVE`，意图 `be50b6c6`、恢复回放 `c637bc82`、a3 产品 `8f960d65`。下列旧段落记录各自当时的 ACTIVE，当前由本段和恢复组合段取代；a1–a3 的必要离线退出门已满足，直接进入 Kingdom，不再围绕 Weekly helper 增加独立切片。不更新 HANDOFF、不推送，仍无 Stage/部署/打包/游戏或存档写入。
