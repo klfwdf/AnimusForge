@@ -7,7 +7,9 @@ using System.Runtime.InteropServices;
 
 namespace AnimusForge.Illustrator.Engine
 {
-    // Normalize an already rendered whole banner: no atlas, recoloring or geometry.
+    // Decode the native BannerTableau IView final-image export, never a normal
+    // UI/cache PNG. The 2026-09-25 captured brown/orange banner arrived blue/cyan:
+    // correct that producer's reversed R/B once, preserving all rendered geometry.
     internal static class NativeBannerImage
     {
         internal static string Encode(byte[] png, int maxDimension)
@@ -49,7 +51,7 @@ namespace AnimusForge.Illustrator.Engine
 
         private static bool NormalizeAndValidate(Bitmap bitmap)
         {
-            var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
             try
             {
                 int length = data.Stride * bitmap.Height;
@@ -59,10 +61,13 @@ namespace AnimusForge.Illustrator.Engine
                 int firstR = -1, firstG = 0, firstB = 0;
                 for (int i = 0; i < length; i += 4)
                 {
+                    // Correct every pixel, including translucent edges. This is
+                    // an observed native-export convention, not inferred from BGRA storage.
+                    byte channel = pixels[i];
+                    pixels[i] = pixels[i + 2];
+                    pixels[i + 2] = channel;
                     if (pixels[i + 3] < 128) continue;
                     opaque++;
-                    // Format32bppArgb is stored as BGRA in memory; interpret it for
-                    // validation only. The already rendered banner PNG must not be recolored.
                     int red = pixels[i + 2];
                     int green = pixels[i + 1];
                     int blue = pixels[i];
@@ -71,6 +76,7 @@ namespace AnimusForge.Illustrator.Engine
                 }
                 // Conservative gate: intentionally uniform flags are also omitted.
                 if (opaque < bitmap.Width * bitmap.Height / 8 || distinct < Math.Max(16, bitmap.Width * bitmap.Height / 200)) return false;
+                Marshal.Copy(pixels, 0, data.Scan0, length);
                 return true;
             }
             finally { bitmap.UnlockBits(data); }
