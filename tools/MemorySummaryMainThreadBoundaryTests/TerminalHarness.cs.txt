@@ -89,11 +89,8 @@ namespace AnimusForge {
   int CountNonHeroDialogueHistoryOwners()=>_dialogueHistory.Keys.Count(IsNonHeroMemoryId);
   int CountNonHeroDailyDraftOwners()=>_dailyMemoryDrafts.Keys.Count(IsNonHeroMemoryId);
   string BuildNonHeroMemorySampleIds()=>string.Join(",",_dialogueHistory.Keys.Where(IsNonHeroMemoryId).Take(5));
-  WeeklyMemoryMaterialOutcomeLedger _weeklyActionOutcomeLedger=new();
-  int _weeklyActionOutcomeLoadImportConfirmed=1;
-  long _weeklyActionOutcomeLoadedGeneration=SaveRuntimeGuard.CurrentGeneration;
-  int _hasWeeklyActionOutcomePublishWork;
-  long _weeklyActionOutcomeNextAttemptUtcTicks;
+  WeeklyActionOutcomePublicationOwner _weeklyActionOutcomePublication=NewWeeklyPublication();
+  static WeeklyActionOutcomePublicationOwner NewWeeklyPublication(){var owner=new WeeklyActionOutcomePublicationOwner();owner.Reset("new_game_created",SaveRuntimeGuard.CurrentGeneration);return owner;}
   WeeklyMemoryMaterialOutcomeReceipt WeeklyReceipt(string id,bool confirm=true){
    var action=new EconomyRewardDebtAction(EconomyRewardDebtActionKind.GiveAsset,"ACTION:GIVE_ASSET","grain","grain","2",string.Empty,string.Empty,string.Empty,string.Empty,EconomyRewardDebtCapabilityIds.GiveAsset);
    Check(WeeklyMemoryMaterialFingerprintHelper.TryCreateCandidate("terminal-request-"+id,"terminal-trace",InteractionChannel.NativeConversation,"scene:7",id,SaveRuntimeGuard.CaptureGeneration(),SaveRuntimeGuard.CaptureGeneration(),"",10,11,"town",7,-1,23,new[]{action},out var candidate,out var error),"weekly candidate fixture invalid: "+error);
@@ -125,7 +122,7 @@ namespace AnimusForge {
     var frozen=receipt.Payload;var labels=frozen.Atoms.Select(x=>x.Label).ToList();b.AddWeeklyMemoryMaterialTriggerToDraft(b._dailyMemoryDrafts["a"].Single(),new WeeklyMemoryMaterialTrigger{MemoryId="a",NpcName=frozen.NpcName,GameDayIndex=10,GameDate="Summer 10",SceneSessionId=receipt.SceneSessionId,DialogueSessionId=receipt.DialogueSessionId,TargetAgentIndex=receipt.TargetAgentIndex,FootholdKingdomId=frozen.FootholdKingdomId,FootholdSettlementId=frozen.FootholdSettlementId,Tags=labels,NormalizedTagText=string.Join("\n",labels),EstimatedValueDenars=frozen.EstimatedValueDenars,TriggerReason=frozen.Reason,StableKey="weekly_outcome:"+receipt.ReceiptId+":"+receipt.PayloadHash,OutcomeReceiptId=receipt.ReceiptId,OutcomeCandidateHash=receipt.CandidateHash,OutcomePayloadHash=receipt.PayloadHash,OutcomeActionFingerprint=new string('A',64),OutcomeTurnFingerprint=receipt.TurnFingerprint,CreatedUtcTicks=receipt.ConfirmedUtcTicks});
    }
    Check(PublishWeekly(receipt)==WeeklyMemoryMaterialOutcomeOperationStatus.NotReady,"weekly "+mode+" falsely acknowledged success");Check(receipt.State==(mode=="prepared"?WeeklyMemoryMaterialOutcomeState.Prepared:WeeklyMemoryMaterialOutcomeState.Confirmed),"weekly failed publication advanced ledger");
-   if(mode!="prepared")Check(b._hasWeeklyActionOutcomePublishWork==1&&b._weeklyActionOutcomeNextAttemptUtcTicks>0,"weekly unconfirmed publication lost retry");MainReads();
+   if(mode!="prepared")Check(b._weeklyActionOutcomePublication.HasWork&&b._weeklyActionOutcomePublication.NextAttemptUtcTicks>0,"weekly unconfirmed publication lost retry");MainReads();
   }
   InteractionMemoryRecoveryLedger _interactionMemoryRecoveryLedger=new();
   static string GetCurrentGameDateTextSafe()=>"Summer 10";

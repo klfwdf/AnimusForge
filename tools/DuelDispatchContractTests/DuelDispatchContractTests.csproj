@@ -18,7 +18,7 @@
     <Compile Include="..\..\src\modules\AF.Module.Actions\Execute\LegacyChannelActionCommitter.cs" Link="Runtime\LegacyChannelActionCommitter.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Memory\Recovery\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
-    <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Weekly\Receipts\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
     <Compile Include="..\..\Refactor\Runtime\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />

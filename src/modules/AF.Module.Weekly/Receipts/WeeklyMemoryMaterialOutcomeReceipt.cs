@@ -1913,6 +1913,22 @@ internal sealed class WeeklyMemoryMaterialOutcomeLedger
         return status;
     }
 
+    // Equivalent to GetEntries().FirstOrDefault(Confirmed), without sorting or allocating
+    // all terminal receipts on each publication tick. Journal capacity remains 64 + 512.
+    internal WeeklyMemoryMaterialOutcomeReceipt FirstConfirmed()
+    {
+        WeeklyMemoryMaterialOutcomeReceipt first = null;
+        foreach (WeeklyMemoryMaterialOutcomeReceipt entry in _entries.Values)
+        {
+            if (entry.State != WeeklyMemoryMaterialOutcomeState.Confirmed) continue;
+            if (first == null || entry.CreatedUtcTicks < first.CreatedUtcTicks
+                || (entry.CreatedUtcTicks == first.CreatedUtcTicks
+                    && StringComparer.Ordinal.Compare(entry.ReceiptId, first.ReceiptId) < 0))
+                first = entry;
+        }
+        return first;
+    }
+
     internal IReadOnlyList<WeeklyMemoryMaterialOutcomeReceipt> GetEntries()
         => _entries.Values
             .OrderBy(entry => entry.CreatedUtcTicks)
