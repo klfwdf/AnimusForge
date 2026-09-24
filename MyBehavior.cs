@@ -1513,7 +1513,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public bool AggregationComplete;
 
-		public List<string> FullReportKingdomIds;
+		public HashSet<string> FullReportKingdomIds;
 
 		public int PromptMaterialIndex;
 
@@ -6272,14 +6272,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		List<WeeklyEventMaterialPreviewGroup> groups = context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>();
 		if (context.FullReportKingdomIds == null)
 		{
-			List<string> nearestKingdomIds = GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-			if (nearestKingdomIds.Count == 0)
-			{
-				nearestKingdomIds = groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-			}
-			context.FullReportKingdomIds = nearestKingdomIds;
+			context.FullReportKingdomIds = WeeklyMaterialBatchPlanner.SelectFullReportKingdomIds(groups,
+				GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)));
 		}
-		HashSet<string> fullReportKingdomIds = new HashSet<string>(context.FullReportKingdomIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
 		while (context.PromptMaterialIndex < groups.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			WeeklyEventMaterialPreviewGroup group = groups[context.PromptMaterialIndex++];
@@ -6287,8 +6282,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			bool isKingdom = string.Equals((group?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
-			bool shortOnly = isKingdom && !fullReportKingdomIds.Contains((group?.KingdomId ?? "").Trim());
+			bool shortOnly = WeeklyMaterialBatchPlanner.IsShortOnly(group, context.FullReportKingdomIds);
 			PrepareWeeklyPromptMaterialsForGroup(group, shortOnly);
 			break;
 		}
@@ -37167,17 +37161,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			ApplyWeeklyPromptMaterialAggregation(item2);
 		}
-		List<string> list2 = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-		if (list2.Count == 0)
-		{
-			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-		}
-		HashSet<string> hashSet = new HashSet<string>((list2 ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()), StringComparer.OrdinalIgnoreCase);
+		HashSet<string> fullReportKingdomIds = WeeklyMaterialBatchPlanner.SelectFullReportKingdomIds(list,
+			GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)));
 		foreach (WeeklyEventMaterialPreviewGroup item2 in list)
 		{
-			bool flag = string.Equals((item2?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
-			bool flag2 = flag && !hashSet.Contains((item2?.KingdomId ?? "").Trim());
-			PrepareWeeklyPromptMaterialsForGroup(item2, flag2);
+			PrepareWeeklyPromptMaterialsForGroup(item2, WeeklyMaterialBatchPlanner.IsShortOnly(item2, fullReportKingdomIds));
 		}
 		return list;
 	}

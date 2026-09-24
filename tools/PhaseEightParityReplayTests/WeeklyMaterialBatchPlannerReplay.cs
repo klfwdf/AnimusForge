@@ -31,6 +31,18 @@ internal static class WeeklyMaterialBatchPlannerReplay
         object other = Group("kingdom", "other", "other");
         object otherTwo = Group("kingdom", "other-two", "other-two");
         groups.Add(otherTwo); groups.Add(other); groups.Add(far); groups.Add(world); groups.Add(near);
+        var selected = (HashSet<string>)planner.GetMethod("SelectFullReportKingdomIds", Members).Invoke(null,
+            new object[] { groups, new List<string> { " FAR ", "far", "NEAR" } });
+        Check(selected.Count == 2 && selected.Contains("far") && selected.Contains("near"),
+            "nearby full-report IDs are trimmed and deduplicated");
+        Check(!(bool)planner.GetMethod("IsShortOnly", Members).Invoke(null, new object[] { near, selected })
+            && !(bool)planner.GetMethod("IsShortOnly", Members).Invoke(null, new object[] { world, selected })
+            && (bool)planner.GetMethod("IsShortOnly", Members).Invoke(null, new object[] { other, selected }),
+            "only non-selected kingdom uses short prompt");
+        var fallback = (HashSet<string>)planner.GetMethod("SelectFullReportKingdomIds", Members).Invoke(null,
+            new object[] { groups, new List<string>() });
+        Check(fallback.Count == 3 && fallback.Contains("other-two") && fallback.Contains("other")
+            && fallback.Contains("far") && !fallback.Contains("near"), "empty proximity falls back to first three kingdoms");
         IList ordered = (IList)planner.GetMethod("OrderGroups", Members).Invoke(null,
             new object[] { groups, new List<string> { "near", "far" } });
         Check(ordered.Count == 5 && ReferenceEquals(ordered[0], near) && ReferenceEquals(ordered[1], world)
@@ -55,7 +67,7 @@ internal static class WeeklyMaterialBatchPlannerReplay
             "batch week and date bounds");
         Check(batches[3].GetType().GetField("OutputMode", Members).GetValue(batches[3]).Equals(shortMode),
             "short batch keeps short-only mode");
-        Console.WriteLine("PASS WeeklyMaterialBatchPlannerReplay order/world/full/short/identity/date live=NOT_RUN");
+        Console.WriteLine("PASS WeeklyMaterialBatchPlannerReplay full-selection/fallback/order/world/full/short/identity/date live=NOT_RUN");
     }
 
     private static void Check(bool passed, string name)

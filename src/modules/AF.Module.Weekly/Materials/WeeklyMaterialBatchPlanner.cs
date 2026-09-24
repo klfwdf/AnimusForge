@@ -6,6 +6,28 @@ namespace AnimusForge;
 
 internal static class WeeklyMaterialBatchPlanner
 {
+	internal static HashSet<string> SelectFullReportKingdomIds(
+		List<MyBehavior.WeeklyEventMaterialPreviewGroup> groups, IEnumerable<string> nearbyKingdomIds)
+	{
+		List<string> selected = (nearbyKingdomIds ?? Enumerable.Empty<string>())
+			.Where(id => !string.IsNullOrWhiteSpace(id)).Select(id => id.Trim())
+			.Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+		if (selected.Count == 0)
+		{
+			selected = (groups ?? new List<MyBehavior.WeeklyEventMaterialPreviewGroup>())
+				.Where(group => group != null && string.Equals((group.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
+				.Select(group => (group.KingdomId ?? "").Trim()).Where(id => !string.IsNullOrWhiteSpace(id))
+				.Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
+		}
+		return new HashSet<string>(selected, StringComparer.OrdinalIgnoreCase);
+	}
+
+	internal static bool IsShortOnly(MyBehavior.WeeklyEventMaterialPreviewGroup group, HashSet<string> fullReportKingdomIds)
+	{
+		return group != null && string.Equals((group.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)
+			&& !(fullReportKingdomIds?.Contains((group.KingdomId ?? "").Trim()) ?? false);
+	}
+
 	internal static List<MyBehavior.WeeklyEventMaterialPreviewGroup> OrderGroups(
 		List<MyBehavior.WeeklyEventMaterialPreviewGroup> groups, List<string> nearbyKingdomIds)
 	{
