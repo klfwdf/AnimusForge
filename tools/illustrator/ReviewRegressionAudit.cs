@@ -225,9 +225,9 @@ public static class ReviewRegressionAudit
         var routing = assembly.GetType("AnimusForge.Illustrator.Core.IllustrationReferenceRouting", true);
         Call(routing, "AddSceneReferences", generationRefs,
             Refs(Ref(png, "STATIC_PANORAMA", "ScenePanorama"), Ref(png, "ACTUAL_LIGHT_AND_ACTORS", "Scene")), textDirection, CancellationToken.None);
-        Confirm(generationRefs.Count == 3 && Property(generationRefs[0], "Kind").ToString() == "ScenePerspective" &&
-            Property(generationRefs[1], "Kind").ToString() == "ScenePanorama" && Property(generationRefs[2], "Kind").ToString() == "Scene",
-            "text-only-director-keeps-real-location", "actual location screenshot accompanies both the static perspective and full panorama");
+        Confirm(generationRefs.Count == 2 && Property(generationRefs[0], "Kind").ToString() == "ScenePerspective" &&
+            Property(generationRefs[1], "Kind").ToString() == "Scene",
+            "text-only-director-keeps-real-location", "actual location screenshot accompanies the static perspective without sending the full panorama");
         directionType.GetProperty("VisionUnsupported", All).SetValue(textDirection, false, null);
         directionType.GetProperty("UsedTextOnlyDirector", All).SetValue(textDirection, true, null);
         generationRefs.Clear();
