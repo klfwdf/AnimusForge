@@ -1,4 +1,12 @@
 <a id="j13-plan-20260924"></a>
+## J13a PromptMaterials 组装切片（2026-09-24）
+
+状态 `J13a_PROMPT_MATERIAL_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `c2d8565b`。`src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs:10,12,35,71` 真正接管全文/短报 PromptMaterials 选择与组装、普通材料克隆、短报大会/开局摘要排除、定居点统计/劫掠归并一次，以及全文劫掠开始/结果按稳定 key 合并。真实消费者 `MyBehavior.cs:6286` 延迟自动周报、`:37168` 同步预览和 `:42356` 独立劫掠材料构造均调用同一 owner；原 host 只保留 live Settlement/Hero 解析和既有专用文字/素材转换 helper，未迁 Campaign/存档/Harmony 身份，也未复制第二个组装循环。
+
+- 频率/成本：每次材料组准备最多一次，源材料排序/归并 O(M log M)，仍由延迟准备按组预算调用；单组内部和初始 O(N) snapshot 是原子工作，尚无严格帧耗时上界。没有新增逐帧轮询、跨线程 live 游戏读取或全量历史重复扫描。
+- 验证：获准四目录复核路径/内容/reparse 后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 DLL SHA256 `C319221CE7B0D9C523EA305DBFA315B71FE6EABC46D612A86540812B1C348DE1` 的 Phase8 marker/来源/新鲜度及新增 Full/Short/克隆/排除/劫掠合并回放通过。WeeklyMemoryMaterialOutcomeContractTests 通过，Phase8 入口 11、source inventory 7、447 锚点地图 recorded/working-tree 通过。上述回放不证明实机事件顺序或旧档。
+- 未完：a1 的自动阶段游标与一次性快照预算/边界仍待核查；a2 请求/完成、a3 回执发布及 J13b–g 未施工。下一动作将 `MyBehavior.cs:6244–6315` 的聚合/Prompt/Batch 三阶段推进状态移交同一 Weekly owner 并验证重入/空组/预算反例，然后有限关闭 a1，转入 a2。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+
 ## J13a 周报全文/短报材料选择切片（2026-09-24）
 
 状态 `J13a_PROMPT_MODE_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `12f9e3d2`。`src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs:9–29` 统一邻近王国 ID 规范化去重、最多三国全文、无邻近结果时按原 group 顺序回退，以及其余王国短报判定。同步预览 `MyBehavior.cs:37146–37169` 与延迟自动准备 `:6266–6293` 两个真实消费者改用同一 owner；后者在 context 中缓存 `HashSet<string>`，不再每次预算回调重复分配。原 live 玩家距离计算、PromptMaterials 具体内容、周报 UI 和存档身份不变。
