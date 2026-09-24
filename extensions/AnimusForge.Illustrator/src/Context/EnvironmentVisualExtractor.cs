@@ -786,7 +786,8 @@ namespace AnimusForge.Illustrator.Context
         private static string ResolveTimeOfDay(int hour)
         {
             if (hour >= 5 && hour < 8) return "破晓清晨 (Dawn)";
-            if (hour >= 8 && hour < 16) return "明媚白昼 (Midday)";
+            // Scene clock confirms time, not exposure to sunlight or clear weather.
+            if (hour >= 8 && hour < 16) return "白昼 (Daytime)";
             if (hour >= 16 && hour < 19) return "暮色黄昏 (Sunset / Golden Hour)";
             return "沉寂夜幕 (Midnight)";
         }
