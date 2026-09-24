@@ -39,7 +39,9 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "candidate build identity mismatch");
     DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
     Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "MyBehavior.cs"))
-        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs")),
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs")),
         "candidate predates J13a production source");
     Console.WriteLine("PhaseEight candidate SHA256=" + actualHash);
 }
@@ -269,6 +271,7 @@ Console.WriteLine("PASS mergedTerminalSettings pagination/search/groups/hotkey-c
 Call(vm, "ExecuteClose"); Check(closed == 1, "close callback exactly once per command"); Call(vm, "OnFinalize");
 
 WeeklyReportOwnerReplay.Run(af);
+WeeklyMaterialBatchPlannerReplay.Run(af);
 
 Type warType = af.GetType("AFWarStatsTerminal.Behaviors.AfWarStatsBehavior", true);
 Type recordType = warType.GetNestedType("WarStatsRecord", BindingFlags.NonPublic);

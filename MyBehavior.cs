@@ -76,7 +76,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		RetryProgress
 	}
 
-	private enum WeeklyReportOutputMode
+	internal enum WeeklyReportOutputMode
 	{
 		FullReport,
 		TitleShortTagsOnly
@@ -732,7 +732,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string DisplayName;
 	}
 
-	private sealed class EventMaterialReference
+	internal sealed class EventMaterialReference
 	{
 		public string MaterialType;
 
@@ -1211,7 +1211,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string KingdomProfilesJson = "";
 	}
 
-	private sealed class WeeklyEventMaterialPreviewGroup
+	internal sealed class WeeklyEventMaterialPreviewGroup
 	{
 		public string GroupKind;
 
@@ -1268,7 +1268,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int? RetryAfterSeconds;
 	}
 
-	private sealed class WeeklyReportBatchRequest
+	internal sealed class WeeklyReportBatchRequest
 	{
 		public int WeekIndex;
 
@@ -41619,51 +41619,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static List<WeeklyReportBatchRequest> BuildWeeklyReportBatchRequests(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay)
 	{
-		List<WeeklyReportBatchRequest> list = new List<WeeklyReportBatchRequest>();
 		List<WeeklyEventMaterialPreviewGroup> list2 = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
-		if (list2.Count == 0)
-		{
-			return list;
-		}
-		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = list2.FirstOrDefault((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase));
-		List<WeeklyEventMaterialPreviewGroup> list3 = list2.Where((WeeklyEventMaterialPreviewGroup x) => !string.Equals((x.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase)).ToList();
-		if (weeklyEventMaterialPreviewGroup != null)
-		{
-			list.Add(new WeeklyReportBatchRequest
-			{
-				WeekIndex = weekIndex,
-				StartDay = startDay,
-				EndDay = endDay,
-				OutputMode = WeeklyReportOutputMode.FullReport,
-				Groups = new List<WeeklyEventMaterialPreviewGroup> { weeklyEventMaterialPreviewGroup }
-			});
-		}
-		int weeklyReportBatchSize = Math.Max(1, GetWeeklyReportBatchSize());
-		List<WeeklyEventMaterialPreviewGroup> list4 = list3.Where((WeeklyEventMaterialPreviewGroup x) => (x?.OutputMode ?? WeeklyReportOutputMode.FullReport) != WeeklyReportOutputMode.TitleShortTagsOnly).ToList();
-		List<WeeklyEventMaterialPreviewGroup> list5 = list3.Where((WeeklyEventMaterialPreviewGroup x) => (x?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly).ToList();
-		for (int i = 0; i < list4.Count; i += weeklyReportBatchSize)
-		{
-			list.Add(new WeeklyReportBatchRequest
-			{
-				WeekIndex = weekIndex,
-				StartDay = startDay,
-				EndDay = endDay,
-				OutputMode = WeeklyReportOutputMode.FullReport,
-				Groups = list4.Skip(i).Take(weeklyReportBatchSize).ToList()
-			});
-		}
-		for (int j = 0; j < list5.Count; j += weeklyReportBatchSize)
-		{
-			list.Add(new WeeklyReportBatchRequest
-			{
-				WeekIndex = weekIndex,
-				StartDay = startDay,
-				EndDay = endDay,
-				OutputMode = WeeklyReportOutputMode.TitleShortTagsOnly,
-				Groups = list5.Skip(j).Take(weeklyReportBatchSize).ToList()
-			});
-		}
-		return list;
+		return WeeklyMaterialBatchPlanner.BuildBatches(list2, weekIndex, startDay, endDay, GetWeeklyReportBatchSize());
 	}
 
 #if false
@@ -43665,32 +43622,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<WeeklyEventMaterialPreviewGroup> list = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
 		List<string> kingdomIdsByPlayerProximity = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
-		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		for (int i = 0; i < kingdomIdsByPlayerProximity.Count; i++)
-		{
-			string text = (kingdomIdsByPlayerProximity[i] ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !dictionary.ContainsKey(text))
-			{
-				dictionary[text] = i;
-			}
-		}
-		return list.OrderBy(delegate(WeeklyEventMaterialPreviewGroup x)
-		{
-			if (string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
-			{
-				string text = (x.KingdomId ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text) && dictionary.TryGetValue(text, out var value))
-				{
-					return (value == 0) ? 0 : (value + 1);
-				}
-				return 1000;
-			}
-			if (string.Equals((x.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
-			{
-				return 1;
-			}
-			return 2000;
-		}).ThenBy((WeeklyEventMaterialPreviewGroup x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		return WeeklyMaterialBatchPlanner.OrderGroups(list, kingdomIdsByPlayerProximity);
 	}
 
 	private static void AppendWeeklyReportWritingRequirements(StringBuilder stringBuilder)
