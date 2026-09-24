@@ -154,7 +154,13 @@ namespace AnimusForge.DialogueUI
             if (movieName == "ShoutTextInputPopup" && OwnedMovies.ContainsKey(identifier.Movie))
             {
                 foreach (string id in new[] { "AFDialogueShoutHistory", "AFDialogueShoutSubmit", "AFDialogueShoutCancel" })
-                    DialogueUiButtons.Style(identifier.Movie.RootWidget.FindChild(id, true) as TaleWorlds.GauntletUI.BaseTypes.ButtonWidget);
+                {
+                    try
+                    {
+                        DialogueUiButtons.StylePlate(identifier.Movie.RootWidget.FindChild(id, true) as TaleWorlds.GauntletUI.BaseTypes.ButtonWidget);
+                    }
+                    catch (Exception ex) { DialogueUiRuntime.Log("Shout button styling failed for " + id + ": " + ex); }
+                }
                 return;
             }
             bool isNativeConversation = movieName == "SPConversation" || movieName == "AFDialogueConversation";
@@ -163,9 +169,22 @@ namespace AnimusForge.DialogueUI
             try
             {
                 if (DialogueUiSprites.EnsureLoaded())
+                {
                     NativeUiAdapter.OnMovieLoaded(isNativeConversation ? "SPConversation" : movieName, identifier.Movie.RootWidget, identifier.DataSource);
+                    if (movieName == "AnimusForgeNativeConversationOverlay")
+                    {
+                        foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
+                        {
+                            try
+                            {
+                                DialogueUiButtons.StyleParchmentTab(identifier.Movie.RootWidget.FindChild(id, true) as TaleWorlds.GauntletUI.BaseTypes.ButtonWidget);
+                            }
+                            catch (Exception ex) { DialogueUiRuntime.Log("Conversation tab styling failed for " + id + ": " + ex); }
+                        }
+                    }
+                }
             }
-            catch (Exception ex) { DialogueUiRuntime.LogOnce("native-load", "Native presentation retained/restored: " + ex.Message); }
+            catch (Exception ex) { DialogueUiRuntime.LogOnce("native-load", "Native presentation retained/restored: " + ex); }
         }
 
         private static void LayerReleasePrefix(GauntletMovieIdentifier identifier)

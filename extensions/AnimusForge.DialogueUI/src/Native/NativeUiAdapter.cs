@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Conversation;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection;
+using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.GauntletUI.Widgets;
+using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge.DialogueUI.Native;
 
@@ -21,6 +24,9 @@ public static class NativeUiAdapter
     private static OverlayLayout _overlay;
     private static bool _installed;
     private static long _tick;
+    private static FieldInfo _overlayLayerField;
+    private static FieldInfo _overlayDataSourceField;
+    private static FieldInfo _overlaySubmittingField;
 
     public static void Install(Harmony harmony)
     {
@@ -29,11 +35,17 @@ public static class NativeUiAdapter
         var close = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "Close");
         var finalize = AccessTools.Method(typeof(MissionConversationVM), nameof(MissionConversationVM.OnFinalize));
         var dataSource = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_dataSource");
-        if (hit == null || close == null || finalize == null || dataSource?.FieldType != typeof(AnimusForgeNativeConversationOverlayVM))
+        var restrictions = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "UpdateButtonsOnlyInputRestrictions");
+        _overlayLayerField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_layer");
+        _overlaySubmittingField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_isSubmitting");
+        _overlayDataSourceField = dataSource;
+        if (hit == null || close == null || finalize == null || dataSource?.FieldType != typeof(AnimusForgeNativeConversationOverlayVM)
+            || restrictions == null || _overlayLayerField?.FieldType != typeof(GauntletLayer) || _overlaySubmittingField?.FieldType != typeof(bool))
             throw new MissingMemberException("DialogueUI native lifecycle contract is unavailable.");
         harmony.Patch(hit, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(MouseHitPrefix)));
         harmony.Patch(close, postfix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(OverlayClosed)));
         harmony.Patch(finalize, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(NativeFinalizing)));
+        harmony.Patch(restrictions, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(UpdateRestrictionsPrefix)));
         _installed = true;
     }
 
@@ -131,6 +143,35 @@ public static class NativeUiAdapter
         return false;
     }
 
+    // The host evaluates buttons-only restrictions only at discrete moments (open,
+    // submit, restore).  With the pen layout the controls sit at the bottom console,
+    // so a cursor outside the column at that instant permanently resets restrictions
+    // and leaves the toolbar and input field dead until the next evaluation.  While
+    // the custom answer input is visible the overlay must instead claim full input
+    // and focus, matching the host's own FocusInputIfVisible path.
+    private static bool UpdateRestrictionsPrefix(AnimusForgeNativeConversationOverlay __instance)
+    {
+        try
+        {
+            if (!(_overlayDataSourceField.GetValue(__instance) is AnimusForgeNativeConversationOverlayVM ds) || !ds.IsCustomAnswerVisible)
+                return true;
+            if (_overlaySubmittingField.GetValue(__instance) is true)
+                return true;
+            if (_overlayLayerField.GetValue(__instance) is GauntletLayer layer)
+            {
+                layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+                layer.IsFocusLayer = true;
+                ScreenManager.TrySetFocus(layer);
+            }
+            ds.RequestInputFocus();
+            return false;
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
     private static bool Attached(Widget widget)
     {
         Widget node = widget;
@@ -149,6 +190,11 @@ public static class NativeUiAdapter
         private Agent _speaker;
         private bool _disposed;
         private long _lastRefreshTick = -6;
+        private BodyProperties _portraitBodyProperties;
+        private int _portraitRace = -1;
+        private bool _portraitFemale;
+        private float _portraitRenderScale = 1.35f;
+        private bool _hasPortraitScale;
 
         internal NativeSession(Widget root, MissionConversationVM source)
         {
@@ -173,19 +219,64 @@ public static class NativeUiAdapter
         private void RefreshSpeaker(bool force = false)
         {
             var manager = Campaign.Current?.ConversationManager;
-            var speaker = manager?.SpeakerAgent as Agent;
-            var character = speaker?.Character as CharacterObject
-                ?? manager?.OneToOneConversationCharacter;
-            if (!force && ReferenceEquals(character, _character) && ReferenceEquals(speaker, _speaker)) return;
+            CharacterObject character = manager?.OneToOneConversationCharacter;
+            Agent speaker = null;
+
+            if (manager?.ConversationAgents != null)
+            {
+                foreach (var a in manager.ConversationAgents)
+                {
+                    if (a is Agent agent && !agent.IsMainAgent)
+                    {
+                        speaker = agent;
+                        if (character == null) character = agent.Character as CharacterObject;
+                        break;
+                    }
+                }
+            }
+
+            if (speaker == null)
+            {
+                var spk = manager?.SpeakerAgent as Agent;
+                var lst = manager?.ListenerAgent as Agent;
+                speaker = (spk != null && !spk.IsMainAgent) ? spk : (lst != null && !lst.IsMainAgent) ? lst : spk ?? lst;
+                if (character == null && speaker != null)
+                    character = speaker.Character as CharacterObject;
+            }
+
+            if (character == null)
+                character = (speaker?.Character as CharacterObject) ?? manager?.OneToOneConversationCharacter;
+
+            bool speakerChanged = !ReferenceEquals(character, _character) || !ReferenceEquals(speaker, _speaker);
+            if (!force && !speakerChanged) return;
             _character = character;
             _speaker = speaker;
             if (_tableau == null) return;
             if (character == null)
             {
                 _tableau.IsVisible = false;
+                _hasPortraitScale = false;
                 return;
             }
-            _tableau.IsVisible = LiveSpeakerPortrait.Apply(_tableau, speaker, character);
+            BodyProperties bodyProperties = speaker != null
+                ? speaker.BodyPropertiesValue
+                : character.HeroObject != null
+                    ? character.HeroObject.BodyProperties
+                    : character.GetBodyProperties(character.Equipment);
+            bool appearanceChanged = speakerChanged
+                || !_hasPortraitScale
+                || bodyProperties != _portraitBodyProperties
+                || character.Race != _portraitRace
+                || (speaker != null ? speaker.IsFemale : character.IsFemale) != _portraitFemale;
+            if (appearanceChanged)
+            {
+                _portraitBodyProperties = bodyProperties;
+                _portraitRace = character.Race;
+                _portraitFemale = speaker != null ? speaker.IsFemale : character.IsFemale;
+                _portraitRenderScale = LiveSpeakerPortrait.GetHeadLockedRenderScale(bodyProperties, _portraitRace, _portraitFemale);
+                _hasPortraitScale = true;
+            }
+            _tableau.IsVisible = LiveSpeakerPortrait.Apply(_tableau, speaker, character, _portraitRenderScale);
         }
 
         public void Dispose()
@@ -194,6 +285,7 @@ public static class NativeUiAdapter
             _disposed = true;
             if (_tableau != null) _tableau.IsVisible = false;
             _tableau = null;
+            _hasPortraitScale = false;
         }
     }
 
@@ -211,7 +303,8 @@ public static class NativeUiAdapter
         {
             Root = root; Original = original; Mission = Mission.Current;
             _vm = Wrappers.TryGetValue(original, out var vm) ? vm : null;
-            foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave", "AFDialogueSubmit" })
+            _column = root.FindChild("AFDialogueRightColumn", true);
+            foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
             {
                 var button = root.FindChild(id, true);
                 if (button != null)
@@ -220,6 +313,8 @@ public static class NativeUiAdapter
                 }
             }
         }
+
+        private readonly Widget _column;
 
         internal void Tick(long tick)
         {
@@ -230,15 +325,21 @@ public static class NativeUiAdapter
                 _defaultModeApplied = true;
                 if (!Original.IsCustomAnswerVisible) Original.SwitchTalk();
             }
-            // The owning AFDialogueConversation tree updates the sole live tableau.
-            // This overlay remains an input and toolbar layer, so it never creates a
-            // second portrait over the native conversation movie.
         }
 
         internal bool HitTest()
         {
             if (!Root.IsRecursivelyVisible()) return false;
             var mouse = Input.MousePositionPixel;
+
+            // If mouse is within the whole right interaction column, retain input restrictions
+            if (_column != null && _column.IsRecursivelyVisible())
+            {
+                var cp = _column.GlobalPosition; var cs = _column.Size;
+                if (mouse.x >= cp.X && mouse.x <= cp.X + cs.X && mouse.y >= cp.Y && mouse.y <= cp.Y + cs.Y)
+                    return true;
+            }
+
             foreach (var widget in _buttons)
             {
                 if (!widget.IsEnabled || !widget.IsRecursivelyVisible()) continue;
