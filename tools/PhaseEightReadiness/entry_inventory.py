@@ -20,8 +20,8 @@ RULES = {
     ),
     "social-progression-reports": (
         "PlayerNotorietyBehavior*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",
-        "AnimusForgeWeeklyReportMapNotification.cs", "WeeklyReportSchedulePolicy.cs",
-        "WeeklyReportTextHelper.cs", "TerminalWeeklyReportBrowserPopupVM.cs",
+        "AnimusForgeWeeklyReportMapNotification.cs",
+        "src/modules/AF.Module.Weekly/**/*.cs", "TerminalWeeklyReportBrowserPopupVM.cs",
     ),
     "world-simulation-worldmap": (
         "WarStats/AfWarStatsBehavior.cs",
