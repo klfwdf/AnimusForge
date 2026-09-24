@@ -1404,6 +1404,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public TaskCompletionSource<WeeklyPromptPreparationResult> CompletionSource;
 	}
 
+	private sealed class PendingWeeklyWaveLaunchContext
+	{
+		public long RuntimeGeneration;
+
+		public string DisplayLabel;
+
+		public int WaveIndex;
+
+		public int TotalWaves;
+
+		public int TotalTargets;
+
+		public int TotalBatches;
+
+		public int BurstSize;
+
+		public int FirstBatchIndex;
+
+		public List<WeeklyReportBatchRequest> Batches;
+
+		public TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>> CompletionSource;
+	}
+
 	private sealed class PendingWeeklyReportCommitContext
 	{
 		public long RuntimeGeneration;
@@ -1936,6 +1959,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext, WeeklyPromptPreparationResult> _weeklyPromptPreparationQueue =
 		new WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext, WeeklyPromptPreparationResult>(CompletePendingWeeklyPromptPreparation, () => WeeklyPromptPreparationResult.Canceled);
+
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyWaveLaunchContext, List<Task<WeeklyReportBatchExecutionResult>>> _weeklyWaveLaunchQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyWaveLaunchContext, List<Task<WeeklyReportBatchExecutionResult>>>(CompletePendingWeeklyWaveLaunch, () => null);
 
 	private int _kingdomStabilityMaintenanceCursor;
 
@@ -2508,6 +2534,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_weeklyAutoSchedule.Clear();
 			ResetPendingWeeklyKingdomRebellionMaintenance();
 			_weeklyPromptPreparationQueue.CancelAll();
+			_weeklyWaveLaunchQueue.CancelAll();
 			_weeklyReportCommitQueue.CancelAll();
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
@@ -17455,6 +17482,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyPromptPreparations"))
 				{
 					processedWeeklyReportCommits = ProcessPendingWeeklyPromptPreparations();
+				}
+			}
+			if (!processedWeeklyReportCommits && _weeklyWaveLaunchQueue.HasPending)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyWaveLaunches"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyWaveLaunches();
 				}
 			}
 			if (!processedWeeklyReportCommits && _weeklyReportCommitQueue.HasPending)
@@ -45532,7 +45566,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		int burstSize = Math.Max(1, GetWeeklyReportRequestsPerMinute());
 		int totalWaves = Math.Max(1, (int)Math.Ceiling((double)batches.Count / (double)burstSize));
 		List<Task<WeeklyReportBatchExecutionResult>> runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>();
-		InformationManager.DisplayMessage(new InformationMessage("开始生成" + displayLabel + "，共 " + list.Count + " 条周报目标，" + batches.Count + " 个批次；将按分钟整批发送，每分钟同时发送 " + burstSize + " 个请求。"));
 		for (int i = 0; i < batches.Count; i += burstSize)
 		{
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_wave"))
@@ -45544,14 +45577,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			int waveIndex = i / burstSize + 1;
-			string waveLabel = string.Join(" | ", wave.Select(BuildWeeklyReportBatchDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)));
-			Logger.Log("EventWeeklyReport", "[BATCH-WAVE] " + displayLabel + " wave " + waveIndex + "/" + totalWaves + " launch count=" + wave.Count + " :: " + waveLabel);
-			InformationManager.DisplayMessage(new InformationMessage("周报批次 " + waveIndex + "/" + totalWaves + " 已发出，共 " + wave.Count + " 个请求。"));
-			for (int j = 0; j < wave.Count; j++)
+			List<Task<WeeklyReportBatchExecutionResult>> launched = await EnqueueWeeklyWaveLaunchAsync(wave, i, i / burstSize + 1, totalWaves, list.Count, batches.Count, burstSize, displayLabel, runtimeGeneration);
+			if (launched == null || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_wave_launch"))
 			{
-				runningTasks.Add(ExecuteWeeklyReportBatchAsync(wave[j], i + j, 3, runtimeGeneration));
+				return generationResult;
 			}
+			runningTasks.AddRange(launched);
 			if (i + burstSize < batches.Count)
 			{
 				await Task.Delay(60000);
@@ -45658,6 +45689,72 @@ public partial class MyBehavior : CampaignBehaviorBase
 		generationResult.Completed = true;
 		return generationResult;
 #endif
+	}
+
+	private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave, int firstBatchIndex, int waveIndex, int totalWaves, int totalTargets, int totalBatches, int burstSize, string displayLabel, long runtimeGeneration)
+	{
+		TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>> completionSource = new TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>>(TaskCreationOptions.RunContinuationsAsynchronously);
+		_weeklyWaveLaunchQueue.Enqueue(new PendingWeeklyWaveLaunchContext
+		{
+			RuntimeGeneration = runtimeGeneration,
+			DisplayLabel = displayLabel,
+			WaveIndex = waveIndex,
+			TotalWaves = totalWaves,
+			TotalTargets = totalTargets,
+			TotalBatches = totalBatches,
+			BurstSize = burstSize,
+			FirstBatchIndex = firstBatchIndex,
+			Batches = wave,
+			CompletionSource = completionSource
+		});
+		return completionSource.Task;
+	}
+
+	private static void CompletePendingWeeklyWaveLaunch(PendingWeeklyWaveLaunchContext context, List<Task<WeeklyReportBatchExecutionResult>> result)
+	{
+		context?.CompletionSource?.TrySetResult(result);
+	}
+
+	private bool ProcessPendingWeeklyWaveLaunches()
+	{
+		PendingWeeklyWaveLaunchContext context = _weeklyWaveLaunchQueue.Peek();
+		if (context == null)
+		{
+			return false;
+		}
+		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_wave_launch"))
+		{
+			_weeklyWaveLaunchQueue.Complete(context, null);
+			_weeklyWaveLaunchQueue.CompleteProcessed(context);
+			return true;
+		}
+		List<Task<WeeklyReportBatchExecutionResult>> runningTasks = null;
+		try
+		{
+			if (context.WaveIndex == 1)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("开始生成" + context.DisplayLabel + "，共 " + context.TotalTargets + " 条周报目标，" + context.TotalBatches + " 个批次；将按分钟整批发送，每分钟同时发送 " + context.BurstSize + " 个请求。"));
+			}
+			string waveLabel = string.Join(" | ", context.Batches.Select(BuildWeeklyReportBatchDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)));
+			Logger.Log("EventWeeklyReport", "[BATCH-WAVE] " + context.DisplayLabel + " wave " + context.WaveIndex + "/" + context.TotalWaves + " launch count=" + context.Batches.Count + " :: " + waveLabel);
+			InformationManager.DisplayMessage(new InformationMessage("周报批次 " + context.WaveIndex + "/" + context.TotalWaves + " 已发出，共 " + context.Batches.Count + " 个请求。"));
+			runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>(context.Batches.Count);
+			for (int i = 0; i < context.Batches.Count; i++)
+			{
+				runningTasks.Add(ExecuteWeeklyReportBatchAsync(context.Batches[i], context.FirstBatchIndex + i, 3, context.RuntimeGeneration));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[ERROR] weekly wave launch failed: " + ex);
+			runningTasks = null;
+		}
+		finally
+		{
+			_weeklyWaveLaunchQueue.Complete(context, runningTasks);
+			_weeklyWaveLaunchQueue.CompleteProcessed(context);
+		}
+		return true;
 	}
 
 	private Task<WeeklyPromptPreparationResult> EnqueueWeeklyPromptPreparationAsync(List<WeeklyReportBatchRequest> batches, long runtimeGeneration)
