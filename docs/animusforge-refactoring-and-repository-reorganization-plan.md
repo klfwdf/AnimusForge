@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 批量 commit 队列生命周期切片（2026-09-24）
+
+状态 `J13a_A2_COMMIT_QUEUE_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE / J13a_ACTIVE`，产品 `e4a78829`。`src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs:7,22,32,46,60` 持有 worker 完成到主线程提交之间的 FIFO、无工作 volatile 快路径、仅队首可移除、读档清理及每个遗弃请求等待者结算。`MyBehavior.cs:1908–1909,2481,17423–17427,45453–45512` 保留原 Campaign tick、主线程预算/分块提交、generation 检查、结果投影及私有嵌套 DTO 身份；队列锁/标志/容器已从宿主删除，无第二套队列。泛型 owner 用原私有 DTO 和结算回调，不扩大存档/公开类型可见性。实际请求 worker 仍在 `:45302–45373` 经 `EnqueueWeeklyReportCommitAsync` 等待提交；`WeeklyFullReportCompletionOwner` 的按需全文队列保持独立既有语义。
+
+- 回归：Phase8 新 `WeeklyReportCommitQueueReplay` 覆盖 FIFO、非队首不可出队、CancelAll 结算等待者、旧 context 不移除读档后新队首及二次清理。队列入/出/查 O(1)，读档清理 O(Q) 且只在重置触发；未把 worker 结果当已发布。首次 Debug 1.3 编译因将嵌套 DTO 改 `internal` 触发 `CS0052` 三项，诊断后改为泛型 owner 并恢复 private 身份；最终 Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error。
+- 当前 Debug 1.4 候选 SHA256 `CF2279401002FABF2F140289AF834C7806836631F6E198783EFAF5129BDEAD86`，Phase8 显式当前候选 marker/新鲜度及原有/新增回放通过；入口清单 11、source inventory 7、451 锚点地图 recorded/working-tree 通过。没有 Stage/Deploy/Push；实机、旧档、provider、音频、帧性能 NOT-RUN。此切片仅解决队列生命周期，**不**宣称 a2 完成：minute burst 发送/重试、pending commit 每块工作量、记录源重验/一次发布、失败 popup/恢复仍留宿主。下一动作核对 `MyBehavior.cs:42876–42972,45302–45373,45513–45650,45668–45752` 的请求和提交游标，优先将分块提交的状态转换归 owner 并验证大积压/旧代/部分失败；a3 与 J13b–g 未施工。
+
 ## J13a a1 调度与材料有限退出门（2026-09-24）
 
 状态 `J13a_A1_OFFLINE_VERIFIED / J13a_ACTIVE`；此结论以 `577f7cac` 的同输入材料组合回放补齐并**取代**下方三阶段游标切片的 `J13a_A1_VERIFY` 临时状态，不代表 a2/a3 或 J13 全包完成。已接通的真实责任为自动补周/叛乱延期 `WeeklyAutoScheduleOwner`，材料分组/全文短报/批次 `WeeklyMaterialBatchPlanner`，聚合 `WeeklyMaterialAggregationOwner`，recent/major action 游标 `WeeklyActionMaterialCursor`，Full/Short PromptMaterials 与劫掠归并 `WeeklyPromptMaterialOwner`，三阶段单步推进 `WeeklyMaterialStageCursor`。真实宿主 `MyBehavior.cs:6033–6065,6081–6121,6130–6299,37140–37169,42356` 保留 Campaign/主线程 Kingdom/Hero 捕获与预算/生成入口；`MyBehavior` 保存游标、DTO 类型身份、周界和公开接口未改。各具体锚点见[代码地图](architecture/af-framework-code-map.json)与[范围图](architecture/af-framework-code-scope.md)。
