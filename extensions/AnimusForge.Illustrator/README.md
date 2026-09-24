@@ -209,9 +209,9 @@
 TableauView/ThumbnailCache 离屏渲染:  基于提取属性离线动态组装
 人物3D肖像 + 家族纹章 + 现场实景      (含文化头饰/纹章铁律)
        │                                       │
-       ▼ (核心修复)                             │
-[SwapRedAndBlueInBitmap]                       │
-DirectX BGRA -> 标准 RGBA 通道反转              │
+       ▼ (场景全景专用)                          │
+ [PanoramaProjection.DecodeNativeFace]           │
+ 仅对原生场景全景面做一次 R/B 校准；人物/纹章 PNG 原样保留 │
        │                                       │
        ▼                                       │
 [VisualDirectorEngine (LLM)]                   │
@@ -232,7 +232,7 @@ DirectX BGRA -> 标准 RGBA 通道反转              │
 - **为什么以前黄色刺绣会变成蓝色？**
   DirectX 11 引擎的显存帧缓冲区以 BGRA 排列。红（R）与蓝（B）反转后，金黄色（高红高绿低蓝）直接被反转成青蓝色（高蓝高绿低红）。视觉大模型由于“看到的垫图就是蓝色的”，便会输出 `cobalt-blue trim`（深钴蓝滚边），生图模型便画成了蓝色。
 - **本系统的解决方案**：
-  1. 底层内存级遍历直接互换 R 与 B 字节（指针操作，极速且 0 内存开销）；
+  1. 只有原生场景全景面在 `PanoramaProjection.DecodeNativeFace` 做一次 R/B 校准；人物参考图、纹章 PNG、缓存和 UI 不再重复交换；
   2. 提取层引入 HSV 色相判定，明确把佩特罗斯家族等主辅色翻译为中文并打上铁律标签：
      `【极其关键颜色铁律：黄色/金色刺绣绝对严禁画成蓝色！严禁颠倒服饰颜色！】`
 

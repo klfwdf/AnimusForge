@@ -49,7 +49,7 @@ namespace AnimusForge.Illustrator.Engine
 
         private static bool NormalizeAndValidate(Bitmap bitmap)
         {
-            var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+            var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             try
             {
                 int length = data.Stride * bitmap.Height;
@@ -59,16 +59,18 @@ namespace AnimusForge.Illustrator.Engine
                 int firstR = -1, firstG = 0, firstB = 0;
                 for (int i = 0; i < length; i += 4)
                 {
-                    // Existing native TableauView exporter convention: swap once.
-                    byte temp = pixels[i]; pixels[i] = pixels[i + 2]; pixels[i + 2] = temp;
                     if (pixels[i + 3] < 128) continue;
                     opaque++;
-                    if (firstR < 0) { firstR = pixels[i + 2]; firstG = pixels[i + 1]; firstB = pixels[i]; }
-                    else if (Math.Abs(pixels[i + 2] - firstR) + Math.Abs(pixels[i + 1] - firstG) + Math.Abs(pixels[i] - firstB) > 24) distinct++;
+                    // Format32bppArgb is stored as BGRA in memory; interpret it for
+                    // validation only. The already rendered banner PNG must not be recolored.
+                    int red = pixels[i + 2];
+                    int green = pixels[i + 1];
+                    int blue = pixels[i];
+                    if (firstR < 0) { firstR = red; firstG = green; firstB = blue; }
+                    else if (Math.Abs(red - firstR) + Math.Abs(green - firstG) + Math.Abs(blue - firstB) > 24) distinct++;
                 }
                 // Conservative gate: intentionally uniform flags are also omitted.
                 if (opaque < bitmap.Width * bitmap.Height / 8 || distinct < Math.Max(16, bitmap.Width * bitmap.Height / 200)) return false;
-                Marshal.Copy(pixels, 0, data.Scan0, length);
                 return true;
             }
             finally { bitmap.UnlockBits(data); }

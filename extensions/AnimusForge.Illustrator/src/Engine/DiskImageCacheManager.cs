@@ -24,6 +24,10 @@ namespace AnimusForge.Illustrator.Engine
         public string DirectorStatus { get; set; } = string.Empty;
         public string DirectorStatusText { get; set; } = string.Empty;
         public string DirectorFallbackReason { get; set; } = string.Empty;
+        // Fingerprint of the selected image style/custom and negative prompt. A cache hit
+        // with a different fingerprint must be regenerated instead of being presented as
+        // if it followed the current style settings.
+        public string StyleFingerprint { get; set; } = string.Empty;
         [JsonIgnore]
         public string ThemeText => string.IsNullOrWhiteSpace(Theme) ? "纪事画卷" : "主题：" + Theme;
         [JsonIgnore]
@@ -112,29 +116,41 @@ namespace AnimusForge.Illustrator.Engine
             if (string.IsNullOrWhiteSpace(subjectKey) || string.IsNullOrWhiteSpace(campaignKey)) return null;
             try
             {
-                CachedIllustrationItem result;
+                List<CachedIllustrationItem> candidatesToRead;
                 lock (CacheLock)
                 {
                     EnsureMetadataIndex(campaignKey, false);
                     string[] categories = !string.IsNullOrEmpty(category) ? new[] { ValidCategory(category) } : Categories;
-                    CachedIllustrationItem fallback = null;
-                    CachedIllustrationItem preferred = null;
+                    candidatesToRead = new List<CachedIllustrationItem>();
                     foreach (var cat in categories)
                     {
                         if (!_cachedLookup.TryGetValue(cat, out var subjects) || !subjects.TryGetValue(subjectKey, out var candidates)) continue;
                         foreach (var item in candidates)
                         {
-                            if (!File.Exists(item.FilePath)) continue;
-                            if (item.IsDefault) { preferred = item; break; }
-                            if (fallback == null || item.CreatedTime > fallback.CreatedTime) fallback = item;
+                            if (File.Exists(item.FilePath)) candidatesToRead.Add(item.CopyMetadata());
                         }
-                        if (preferred != null) break;
                     }
-                    result = (preferred ?? fallback)?.CopyMetadata();
+                    // Prefer the explicit default, then the newest generated history. A corrupt
+                    // default must not hide a valid newer image from the same subject.
+                    candidatesToRead = candidatesToRead
+                        .OrderByDescending(item => item.IsDefault)
+                        .ThenByDescending(item => item.CreatedTime)
+                        .ToList();
                 }
                 // Do not hold the metadata lock while reading or decoding up to 24 MiB.
-                if (result != null) result.ImageData = ImagePayload.ReadFile(result.FilePath);
-                return result;
+                foreach (var candidate in candidatesToRead)
+                {
+                    try
+                    {
+                        candidate.ImageData = ImagePayload.ReadFile(candidate.FilePath);
+                        if (candidate.ImageData != null && candidate.ImageData.Length > 0) return candidate;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Print($"[Illustrator] Skipping unreadable cached image '{candidate.FilePath}': {ex.Message}");
+                    }
+                }
+                return null;
             }
             catch (Exception ex)
             {
@@ -143,7 +159,21 @@ namespace AnimusForge.Illustrator.Engine
             }
         }
 
-        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null, string diagnosticId = null, string directorStatus = null, string directorStatusText = null, string directorFallbackReason = null)
+        public static bool IsStyleCompatible(CachedIllustrationItem item, string styleFingerprint)
+        {
+            // Missing legacy metadata is unknown, not evidence of a style mismatch.
+            return item != null && (string.IsNullOrWhiteSpace(item.StyleFingerprint) ||
+                string.IsNullOrWhiteSpace(styleFingerprint) ||
+                string.Equals(item.StyleFingerprint, styleFingerprint, StringComparison.Ordinal));
+        }
+
+        public static string CachedDisplayStatus(CachedIllustrationItem item, string styleFingerprint)
+        {
+            return item.DisplayStatusText + (IsStyleCompatible(item, styleFingerprint)
+                ? string.Empty : "\n画风设置已更改；点击重新绘制后应用新画风。");
+        }
+
+        public static CachedIllustrationItem SaveImage(string subjectKey, byte[] bytes, string prompt, string title, string category, string campaignKey, int maxCacheCount, bool makeDefault = false, bool allowImplicitDefault = true, string theme = null, string actionSummary = null, string diagnosticId = null, string directorStatus = null, string directorStatusText = null, string directorFallbackReason = null, string styleFingerprint = null)
         {
             try { bytes = ImagePayload.Normalize(bytes); }
             catch (Exception ex) { Debug.Print("[Illustrator] Rejected cache image: " + ex.Message); return null; }
@@ -174,6 +204,7 @@ namespace AnimusForge.Illustrator.Engine
                     DirectorStatus = directorStatus ?? string.Empty,
                     DirectorStatusText = directorStatusText ?? string.Empty,
                     DirectorFallbackReason = directorFallbackReason ?? string.Empty,
+                    StyleFingerprint = styleFingerprint ?? string.Empty,
                     CreatedTime = DateTime.UtcNow,
                     IsDefault = isDefault
                 };
@@ -340,6 +371,28 @@ namespace AnimusForge.Illustrator.Engine
                     !IsSafePath(target.FilePath, CampaignDirectory(campaignKey)) || !File.Exists(target.FilePath)) return false;
                 var actual = ReadMetadata(Path.ChangeExtension(target.FilePath, ".json"));
                 if (actual == null || actual.Key != target.Key || actual.SubjectKey != target.SubjectKey || actual.Category != target.Category) return false;
+                string pointer = DefaultPath(campaignKey, actual.Category, actual.SubjectKey);
+                Directory.CreateDirectory(Path.GetDirectoryName(pointer));
+                AtomicWrite(pointer, actual.Key);
+                InvalidateCache();
+                return true;
+            }
+        }
+
+        public static bool PromoteDefaultIfNewest(CachedIllustrationItem target, string campaignKey)
+        {
+            lock (CacheLock)
+            {
+                if (target == null || string.IsNullOrWhiteSpace(target.SubjectKey) ||
+                    !IsSafePath(target.FilePath, CampaignDirectory(campaignKey)) || !File.Exists(target.FilePath)) return false;
+                var actual = ReadMetadata(Path.ChangeExtension(target.FilePath, ".json"));
+                if (actual == null || actual.Key != target.Key || actual.SubjectKey != target.SubjectKey || actual.Category != target.Category) return false;
+                EnsureMetadataIndex(campaignKey, false);
+                if (_cachedLookup.TryGetValue(actual.Category, out var subjects) && subjects.TryGetValue(actual.SubjectKey, out var candidates))
+                {
+                    var current = candidates.FirstOrDefault(item => item.IsDefault);
+                    if (current != null && current.CreatedTime > actual.CreatedTime) return false;
+                }
                 string pointer = DefaultPath(campaignKey, actual.Category, actual.SubjectKey);
                 Directory.CreateDirectory(Path.GetDirectoryName(pointer));
                 AtomicWrite(pointer, actual.Key);

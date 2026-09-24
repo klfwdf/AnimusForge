@@ -443,8 +443,7 @@ namespace AnimusForge.Illustrator.Engine
                             using (var ms = new MemoryStream(pngBytes))
                             using (var bmp = new Bitmap(ms))
                             {
-                                // 引擎原生导出的 PNG 文件来自显卡 BGRA 渲染目标，需互换红蓝通道恢复 100% 真实肉色与服饰色彩 (杜绝金黄变蓝)
-                                SwapRedAndBlueInBitmap(bmp);
+                                // SaveToFile 已经是标准 PNG。此处只读取并编码，人物参考图不得再次交换 R/B。
                                 string b64 = ConvertBitmapToBase64(bmp, maxDimension);
                                 if (!string.IsNullOrWhiteSpace(b64))
                                 {
@@ -648,7 +647,6 @@ namespace AnimusForge.Illustrator.Engine
                         using (var fs = new FileStream(tempPngPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                         using (var bmp = new Bitmap(fs))
                         {
-                            SwapRedAndBlueInBitmap(bmp);
                             string b64 = ConvertBitmapToBase64(bmp, maxDimension);
                             if (!string.IsNullOrWhiteSpace(b64))
                             {
@@ -722,7 +720,6 @@ namespace AnimusForge.Illustrator.Engine
                         bmp.UnlockBits(bmpData);
                     }
 
-                    SwapRedAndBlueInBitmap(bmp);
                     return ConvertBitmapToBase64(bmp, maxDimension);
                 }
             }
@@ -839,7 +836,7 @@ namespace AnimusForge.Illustrator.Engine
                     // cancelled caller must still receive ownership of a created stage.
                     try { tcs.TrySetResult(work()); }
                     catch (Exception ex) { tcs.TrySetException(ex); }
-                })) return default;
+                })) throw new InvalidOperationException("游戏线程任务队列已满，无法执行插画采集操作。");
                 return await tcs.Task.ConfigureAwait(false);
             }
         }
@@ -1009,7 +1006,7 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         /// <summary>
-        /// 后台读已落盘的 PNG：BGRA→RGB 通道互换 + 缩放 JPEG base64，读取后删除临时文件。
+        /// 后台读取标准 PNG 并缩放为 JPEG base64，读取后删除临时文件。编码颜色保持不变。
         /// </summary>
         private static async Task<string> ReadOffscreenPngBase64(string path, int maxDimension, CancellationToken cancellationToken)
         {
@@ -1022,7 +1019,6 @@ namespace AnimusForge.Illustrator.Engine
                 using (var ms = new MemoryStream(pngBytes))
                 using (var bmp = new Bitmap(ms))
                 {
-                    SwapRedAndBlueInBitmap(bmp);
                     return ConvertBitmapToBase64(bmp, maxDimension);
                 }
             }
@@ -1366,38 +1362,6 @@ namespace AnimusForge.Illustrator.Engine
             }
 
             return null;
-        }
-
-        public static void SwapRedAndBlueInBitmap(Bitmap bmp)
-        {
-            if (bmp == null) return;
-            try
-            {
-                var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-                var bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-                try
-                {
-                    unsafe
-                    {
-                        byte* ptr = (byte*)bmpData.Scan0.ToPointer();
-                        int totalBytes = bmpData.Stride * bmp.Height;
-                        for (int i = 0; i < totalBytes; i += 4)
-                        {
-                            byte temp = ptr[i];
-                            ptr[i] = ptr[i + 2];
-                            ptr[i + 2] = temp;
-                        }
-                    }
-                }
-                finally
-                {
-                    bmp.UnlockBits(bmpData);
-                }
-            }
-            catch (Exception ex)
-            {
-                TaleWorlds.Library.Debug.Print($"[ScreenCaptureHelper] SwapRedAndBlueInBitmap error: {ex.Message}");
-            }
         }
 
         private static ImageCodecInfo GetEncoder(ImageFormat format)

@@ -22,7 +22,10 @@ namespace AnimusForge.Illustrator.Engine
             private readonly Mission _mission;
             private readonly MapConversationView _mapView;
             private readonly MapConversationView.MapConversationMission _mapMission;
-            private readonly MapConversationTableau _tableau;
+            // MapConversationMission can publish its Tableau one or more frames after the
+            // view is created. Keep this mutable so a source captured at conversation open
+            // can bind the real Tableau before the first image generation.
+            private MapConversationTableau _tableau;
 
             internal bool IsMapConversation => _mapView != null;
             internal bool HasMapTableau => _tableau != null;
@@ -47,6 +50,8 @@ namespace AnimusForge.Illustrator.Engine
             {
                 IllustratorRuntime.AssertMainThread();
                 token.ThrowIfCancellationRequested();
+                if (IsMapConversation && _tableau == null && _mapMission != null)
+                    _tableau = _mapMission.ConversationTableau;
                 bool current = _screen != null && !_screen.IsFinalized && ReferenceEquals(ScreenManager.TopScreen, _screen);
                 if (IsMapConversation)
                     current = current && _mapView.IsConversationActive &&
@@ -111,6 +116,18 @@ namespace AnimusForge.Illustrator.Engine
             bool captured = false;
             try
             {
+                // Tableau initialization is asynchronous. Retry only during this capture,
+                // on game frames, and stop immediately if the conversation owner changes.
+                for (int attempt = 0; attempt < 15 && string.IsNullOrWhiteSpace(preCapturedScene); attempt++)
+                {
+                    Task pendingFrame = await RunOnGameThreadAsync(() =>
+                    {
+                        source.EnsureCurrent(token);
+                        return source.HasMapTableau ? null : IllustratorRuntime.AfterFramesAsync(2, token);
+                    }, token).ConfigureAwait(false);
+                    if (pendingFrame == null) break;
+                    await pendingFrame.ConfigureAwait(false);
+                }
                 var result = await RunOnGameThreadAsync(() =>
                 {
                     source.EnsureCurrent(token);

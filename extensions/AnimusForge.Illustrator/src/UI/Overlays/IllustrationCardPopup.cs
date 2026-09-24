@@ -35,6 +35,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private string _activeSpriteName;
         private bool _closed;
         private int _generationCount;
+        private int _cacheLoadVersion;
         private bool _autoRedrawPending;
         private bool _autoReplyArmed;
         private bool _autoReplyRequested;
@@ -132,6 +133,19 @@ namespace AnimusForge.Illustrator.UI.Overlays
             catch { Close(); throw; }
         }
 
+        private static bool StartCachedImageLoad(IllustrationCardPopup popup, string key, string campaignKey, string category, Action<CachedIllustrationItem, Exception> completed)
+        {
+            if (popup == null || completed == null) return false;
+            int version = ++popup._cacheLoadVersion;
+            return IllustratorRuntime.Start(
+                () => Task.Run(() => DiskImageCacheManager.LoadImage(key, campaignKey, category)),
+                (cached, error) =>
+                {
+                    if (popup._closed || !popup._scope.IsCurrent || !ReferenceEquals(_activeInstance, popup) || version != popup._cacheLoadVersion) return;
+                    completed(cached, error);
+                });
+        }
+
         public static void ShowForEncyclopedia(Hero hero, Widget tableauWidget)
         {
             IllustratorRuntime.AssertMainThread();
@@ -154,12 +168,15 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 _activeInstance = popup;
 
                 string key = $"Hero_{hero.StringId}";
-                var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "encyclopedia");
-                if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
+                popup._dataSource.SetLoading("正在读取缓存画卷…");
+                if (!StartCachedImageLoad(popup, key, popup._scope.CampaignKey, "encyclopedia", (cached, error) =>
                 {
-                    popup._dataSource.SetReady(cached.DisplayStatusText);
-                }
-                else
+                    if (error != null) Debug.Print("[Illustrator] Encyclopedia cache read failed: " + error.Message);
+                    if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
+                        popup._dataSource.SetReady(DiskImageCacheManager.CachedDisplayStatus(cached, IllustratorRuntime.CaptureOptions()?.StyleFingerprint));
+                    else
+                        popup.ExecuteEncyclopediaGeneration(hero, tableauWidget);
+                }))
                 {
                     popup.ExecuteEncyclopediaGeneration(hero, tableauWidget);
                 }
@@ -243,17 +260,27 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
                 string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
                 string key = $"Conv_{partnerId}";
-                var cached = DiskImageCacheManager.LoadImage(key, popup._scope.CampaignKey, "conversation");
-                if (!forceGenerate && cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
+                if (!forceGenerate)
                 {
-                    popup._dataSource.SetReady(cached.DisplayStatusText);
-                }
-                else if (!forceGenerate)
-                {
-                    // Opening the card only prepares the conversation context. The first
-                    // generation must come from the player's explicit Regenerate action;
-                    // enabling automatic redraw must never issue an entry-time request.
-                    popup._dataSource.SetReady("请点击“重新绘制”生成本次对话的第一张场景插画。");
+                    popup._dataSource.SetLoading("正在读取缓存画卷…");
+                    if (!StartCachedImageLoad(popup, key, popup._scope.CampaignKey, "conversation", (cached, error) =>
+                    {
+                        if (error != null) Debug.Print("[Illustrator] Conversation cache read failed: " + error.Message);
+                        if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
+                        {
+                            popup._dataSource.SetReady(DiskImageCacheManager.CachedDisplayStatus(cached, IllustratorRuntime.CaptureOptions()?.StyleFingerprint));
+                        }
+                        else
+                        {
+                            // Opening the card only prepares the conversation context. The first
+                            // generation must come from the player's explicit Regenerate action;
+                            // enabling automatic redraw must never issue an entry-time request.
+                            popup._dataSource.SetReady("请点击“重新绘制”生成本次对话的第一张场景插画。");
+                        }
+                    }))
+                    {
+                        popup._dataSource.SetReady("请点击“重新绘制”生成本次对话的第一张场景插画。");
+                    }
                 }
                 else
                 {
@@ -275,6 +302,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private void ExecuteEncyclopediaGenerationCore(Hero hero, Widget tableauWidget)
         {
+            ++_cacheLoadVersion;
             _dataSource.SetLoading("AI画师正在细致描摹人物面相骨相与专属构图...");
 
             string key = $"Hero_{hero.StringId}";
@@ -302,35 +330,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             string hardFacts = profile.BuildVisualSummary(includeMount: false);
             string directorFacts = $"【纪元时间】卡拉迪亚历 {TaleWorlds.CampaignSystem.CampaignTime.Now.GetYear} 年\n" + profile.BuildDirectorOnlyFacts();
             _generationCount++;
-            // 跨会话变体去重：_generationCount 是弹窗实例字段，重开弹窗即归零，
-            // 必须统计本存档已留存的百科肖像版本，并把已用过的场景母题回传导演避让。
-            int priorVersions = 0;
-            var usedMotifs = new List<string>();
-            string recentActions = string.Empty;
-            try
-            {
-                var priorItems = DiskImageCacheManager.GetAllCachedIllustrations(_scope.CampaignKey)
-                    ?.Where(i => string.Equals(i.SubjectKey, $"Hero_{hero.StringId}", StringComparison.OrdinalIgnoreCase)
-                              && string.Equals(i.Category, "encyclopedia", StringComparison.OrdinalIgnoreCase))
-                    .OrderByDescending(i => i.CreatedTime)
-                    .ToList();
-                priorVersions = priorItems?.Count ?? 0;
-                recentActions = IllustrationDirection.BuildActionHistory(priorItems);
-                foreach (string motif in (priorItems ?? new List<CachedIllustrationItem>())
-                    .Select(i => ExtractSceneMotif(i.Prompt))
-                    .Where(m => !string.IsNullOrWhiteSpace(m))
-                    .Distinct()
-                    .Take(3))
-                {
-                    usedMotifs.Add(motif);
-                }
-            }
-            catch { }
-            string artDirection = GenerateDiversePoseDirective();
-            if (!string.IsNullOrWhiteSpace(recentActions)) artDirection += "\n" + recentActions;
-            if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
-            if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——结合本次人物行动选择场景与镜头，不仅更换背景。";
-            var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
+            string baseArtDirection = GenerateDiversePoseDirective();
             var options = IllustratorRuntime.CaptureOptions();
             if (options?.EnableOffscreenRendering != true)
             {
@@ -341,6 +341,37 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _scope.Run(async token =>
             {
                 GenerationDiagnostics.Current?.SetSubject(key);
+                // Metadata enumeration can scan a large campaign cache. Keep it on the
+                // worker before composing redraw history so the game thread stays responsive.
+                int priorVersions = 0;
+                var usedMotifs = new List<string>();
+                string recentActions = string.Empty;
+                try
+                {
+                    var priorItems = await Task.Run(() => DiskImageCacheManager.GetAllCachedIllustrations(_scope.CampaignKey), token).ConfigureAwait(false);
+                    priorItems = priorItems
+                        ?.Where(i => string.Equals(i.SubjectKey, key, StringComparison.OrdinalIgnoreCase)
+                                  && string.Equals(i.Category, "encyclopedia", StringComparison.OrdinalIgnoreCase))
+                        .OrderByDescending(i => i.CreatedTime)
+                        .ToList();
+                    priorVersions = priorItems?.Count ?? 0;
+                    recentActions = IllustrationDirection.BuildActionHistory(priorItems);
+                    foreach (string motif in (priorItems ?? new List<CachedIllustrationItem>())
+                        .Select(i => ExtractSceneMotif(i.Prompt))
+                        .Where(m => !string.IsNullOrWhiteSpace(m))
+                        .Distinct()
+                        .Take(3))
+                    {
+                        usedMotifs.Add(motif);
+                    }
+                }
+                catch (OperationCanceledException) { throw; }
+                catch { }
+                string artDirection = baseArtDirection;
+                if (!string.IsNullOrWhiteSpace(recentActions)) artDirection += "\n" + recentActions;
+                if (_generationCount > 1 || priorVersions > 0) artDirection += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount + priorVersions);
+                if (usedMotifs.Count > 0) artDirection += $"\n【已用过的场景母题·须避开】：{string.Join("；", usedMotifs)}——结合本次人物行动选择场景与镜头，不仅更换背景。";
+                var promptPlan = new IllustrationPromptPlan("人物百科纪事", hardFacts, artDirection, directorFacts);
                 var portraits = await ScreenCaptureHelper.ExtractHeroPortraitReferencesAsync(hero,
                     maxDimension: 768, cancellationToken: token, cleanTempFiles: options?.AutoCleanTempFiles == true,
                     equipmentCodeOverride: equipmentCode, appearance: appearance).ConfigureAwait(false);
@@ -373,12 +404,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? $"{heroName} 纪事肖像" : direction.Title, _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason);
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? $"{heroName} 纪事肖像" : direction.Title, _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason, styleFingerprint: options?.StyleFingerprint);
+                    if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, _scope.CampaignKey);
                 }
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
-                if (completion.SavedItem != null) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
+                if (completion.SavedItem != null) DiskImageCacheManager.PromoteDefaultIfNewest(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
@@ -548,6 +580,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
 
         private void ExecuteConversationGenerationCore(ConversationVisualContext convContext, string preCapturedBase64 = null, List<EmblemSpec> emblemSpecs = null, bool automatic = false)
         {
+            ++_cacheLoadVersion;
             _dataSource.SetLoading("AI画师正在分析现场交谈与肢体姿势...");
 
             string partnerId = convContext.InterlocutorHero?.StringId ?? convContext.InterlocutorCharacter?.StringId ?? "NPC";
@@ -564,9 +597,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
             // 台词与最近一轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
             _generationCount++;
             string variation = GenerateConversationSceneVariation(convContext);
-            variation += "\n" + IllustrationDirection.ReadEventActionHistory(_scope.CampaignKey, key, _category);
             if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
-            var promptPlan = new IllustrationPromptPlan("最近一轮对话联动的场景插画", convContext.BuildHardFacts(), convContext.BuildArtDirection(variation), convContext.BuildDirectorOnlyFacts());
+            string hardFacts = convContext.BuildHardFacts();
+            string directorFacts = convContext.BuildDirectorOnlyFacts();
+            string baseArtDirection = convContext.BuildArtDirection(variation);
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvScene host='{convContext.EnvironmentProfile?.HostSceneDescription ?? ""}' loc='{convContext.EnvironmentProfile?.SpecificLocation ?? ""}' scene='{convContext.EnvironmentProfile?.RealSceneName ?? ""}'");
             TaleWorlds.Library.Debug.Print($"[Illustrator] ConvLight sceneTime={convContext.EnvironmentProfile?.HasSceneTime == true}, time='{convContext.EnvironmentProfile?.TimeOfDay ?? ""}'");
             string partnerName = convContext.InterlocutorHero != null && convContext.InterlocutorHero.Name != null
@@ -593,6 +627,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return;
             }
             var sceneSource = ScreenCaptureHelper.GetConversationSceneCaptureSource();
+            string campaignKey = _scope.CampaignKey;
 
             _scope.Run(async token =>
             {
@@ -610,6 +645,16 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     ["reusedPanorama"] = session != null && session.SceneReferences != null,
                     ["reusedCharacterReferences"] = session != null && session.CharacterReferences != null
                 });
+                string actionHistory = string.Empty;
+                try
+                {
+                    actionHistory = await Task.Run(() => IllustrationDirection.ReadEventActionHistory(campaignKey, key, _category), token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception ex) { Debug.Print("[Illustrator] Conversation action history read failed: " + ex.Message); }
+                string workerArtDirection = baseArtDirection;
+                if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
+                var promptPlan = new IllustrationPromptPlan("最近一轮对话联动的场景插画", hardFacts, workerArtDirection, directorFacts);
                 // 按实际owner分流：Mission用附近30米全景，地图对话只读当前展示画面。
                 var ageEvidence = convContext.InterlocutorAgeSnapshot;
                 if (ageEvidence != null)
@@ -728,13 +773,17 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? $"与 {partnerName} 的会晤纪事" : direction.Title, _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason);
+                    saved = DiskImageCacheManager.SaveImage(key, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? $"与 {partnerName} 的会晤纪事" : direction.Title, _category, _scope.CampaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason, styleFingerprint: options?.StyleFingerprint);
+                    if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, _scope.CampaignKey);
                 }
                 return new GenerationCompletion(result, saved, effectivePrompt);
             }, completion =>
             {
                 if (sceneSource != null) sceneSource.EnsureCurrent(System.Threading.CancellationToken.None);
-                if (completion.SavedItem != null && !_autoReplyArmed) DiskImageCacheManager.SetDefault(completion.SavedItem, _scope.CampaignKey);
+                // Every successful redraw is the newest conversation image. Promote it
+                // before publishing so closing and reopening the card cannot resurrect an
+                // older default while an automatic reply redraw is in flight.
+                if (completion.SavedItem != null) DiskImageCacheManager.PromoteDefaultIfNewest(completion.SavedItem, _scope.CampaignKey);
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
