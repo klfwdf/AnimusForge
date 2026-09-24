@@ -1,4 +1,14 @@
-# 当前交接：J13 暂停于 Weekly a2（2026-09-25）
+# 当前交接：主体 J13 暂停于 d1 收口，d2 尚未实施（2026-09-25）
+
+- **任务与交付边界**：用户要求先停在这里，更新主体 HANDOFF 并推送主体重构；本次授权取代此前“不推送、不更新 HANDOFF”，不包含另一个外交任务。实际工作树为 `.wt/diplomacy-latest-20260925`，本地分支 `codex/diplomacy-refactor-20260925`，交付目标为 `origin/codex/af-main-refactor-continuation-20260831`。本地名称不代表此次工作是外交重构；不推送 `.wt/af-continuation` 的同名本地分支或其 HANDOFF，也不改主 checkout。
+- **当前停点**：最新产品 `eb641aaa`，证据 `6281ec6f`，暂停前 HEAD `3cf846bb`。J13a Weekly、J13b Kingdom、J13c Persona、J13d1 Notoriety/Romance/Recruitment 均有限 `OFFLINE_VERIFIED`；J13/J13d2 为 `PAUSED`。d2 只有空意图提交和只读调查，没有产品或测试改动；d2–d4、e、f、g 未完成。本交接只改文档。
+- **已验证与限制**：最新产品 Debug 1.3/1.4 + Bootstrap 零警告错误，当前 DLL Phase8 通过；Hero/升格 269、三渠道 169、V1 119、两 DLL metadata 530 检查通过，升格 worker commit 负向变异产生预期的 20 个行为失败。PersistenceIdentity 对基线 `053ad485` 的 142 key/type 对、36 behaviors 无差异。代码地图绑定 `eb641aaa`，522 锚点两种模式通过。最新 Release 尚未重建；旧 Persona/Channel source-parity 依赖 hash 失配及旧 terminal harness 提取失败仍保留，不宣称全仓全绿。真实游戏、旧档、provider、UI/音频、帧性能均 `NOT-RUN`。
+- **接续与回滚**：下次获准继续时，从 J13d2 Proactive/Issue 的主动资格、冷却、会话/pending consumption、原版任务生命周期及迟到回调开始，保持 J10 Courier 语义；按原计划推进，不进入 J14。源码职责、保留 host、复现入口和各片回滚点见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[原计划](docs/plans/j13-domain-owners-plan.md)、[代码范围](docs/architecture/af-framework-code-scope.md)与[代码地图](docs/architecture/af-framework-code-map.json)。撤销用对应产品提交的定向 inverse/revert，保留历史；未授权 Stage、部署、打包、游戏/存档或外仓写入。
+- **推送基线**：待交付增量从远端 `053ad48502f49c96753ece20be4cc25006fcb3ae` 起，暂停前共 24 个主体提交，另加本次文档提交；逐提交路径及历史已核对，无另一外交任务提交或 HANDOFF 增量。实际发布结果以推送后的远端 ref 核对为准，不能把此记录当作推送成功证明。
+
+## 以下为历史交接，不作为当前执行指令
+
+# 历史交接：J13 暂停于 Weekly a2（2026-09-25）
 
 - **停点与半途改动**：当前分支 `codex/af-main-refactor-continuation-20260831`；截至本交接前的最新提交 `66eda319`。本次中断只发生在阅读/设计下一步多波协调归属期间，尚未编辑生产或测试代码；无未提交的已跟踪改动。唯一未跟踪的 `.dotnet-cli-home/` 保留原状，不提交、不清理。
 - **实际完成**：J13a 的 a1 调度/材料已有限 `OFFLINE_VERIFIED`；a2 请求/完成生命周期仍 `ACTIVE`。最近产品提交 `78b87434`，回放提交 `c0221d02`：部分提交与异常恢复、双排队波次源失效均有受控回放。产品切片经原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `2268E88063FA5BC640EB61976A554203E4C147E6859EA7F4264603A23EC8493A` 的 Phase8、V1 119/四 DLL metadata 1060、入口 11/source 7、492 锚点地图已通过。交接本身未重跑构建；这些证据不等于实机或完整多波验收。

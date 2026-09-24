@@ -1,4 +1,10 @@
-# 当前范围：J13d1 离线收口，J13d2 施工
+# 当前范围：主体 J13 暂停，d1 有限离线收口，d2 尚未实施（2026-09-25）
+
+产品仍为 `eb641aaa`，证据 `6281ec6f`；`3cf846bb` 仅 d2 空意图提交，随后只读调查，未实施 Proactive/Issue。J13a–c、d1 有限 `OFFLINE_VERIFIED`，J13/d2 为 `PAUSED`，d2–d4、e、f、g 未完成。用户已授权本次主体推送及 HANDOFF 更新，明确排除另一外交任务及其 HANDOFF；详见[当前 HANDOFF](../../HANDOFF.md)与[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。代码地图仍绑定 `eb641aaa`，522 锚点验证不变；最新 Release、实机、旧档等未验项继续保留。
+
+## 以下均为历史时点，不作为当前施工或授权指令
+
+# 历史范围：J13d1 离线收口，J13d2 施工
 
 产品 `eb641aaa`：Recruitment 原协调算法及升格 Persona/skills 主线程、单预约、source/target/generation 保护；详细覆盖和未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。不更新 HANDOFF、不推送；以下为历史时点。
 
