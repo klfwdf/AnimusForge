@@ -1,4 +1,12 @@
 <a id="j13-plan-20260924"></a>
+## J13a a1 调度与材料有限退出门（2026-09-24）
+
+状态 `J13a_A1_OFFLINE_VERIFIED / J13a_ACTIVE`；此结论以 `577f7cac` 的同输入材料组合回放补齐并**取代**下方三阶段游标切片的 `J13a_A1_VERIFY` 临时状态，不代表 a2/a3 或 J13 全包完成。已接通的真实责任为自动补周/叛乱延期 `WeeklyAutoScheduleOwner`，材料分组/全文短报/批次 `WeeklyMaterialBatchPlanner`，聚合 `WeeklyMaterialAggregationOwner`，recent/major action 游标 `WeeklyActionMaterialCursor`，Full/Short PromptMaterials 与劫掠归并 `WeeklyPromptMaterialOwner`，三阶段单步推进 `WeeklyMaterialStageCursor`。真实宿主 `MyBehavior.cs:6033–6065,6081–6121,6130–6299,37140–37169,42356` 保留 Campaign/主线程 Kingdom/Hero 捕获与预算/生成入口；`MyBehavior` 保存游标、DTO 类型身份、周界和公开接口未改。各具体锚点见[代码地图](architecture/af-framework-code-map.json)与[范围图](architecture/af-framework-code-scope.md)。
+
+- 同输入离线门禁：`WeeklyMaterialPipelineParityReplay` 在同一组已捕获 detached 世界/近远王国材料上分别执行同步与单步分阶段 owner 链，比较 PromptMaterials 类型/稳定键/日期、模式、顺序、批次身份与周界；通过。分项回放覆盖空邻近回退、大小写去重、劫掠开始/完成归并、1000 个失效 action owner、空/null 组与完成后不重放。宿主源码审阅确认自动入口 `GetDevEditableKingdoms().Where(IsKingdomEligibleForWeeklyReport)` 和同步入口 `foreach GetDevEditableKingdoms` 后同一资格判断；fixture 不构造 live Kingdom，故不冒称实机资格验收。首次安装/补周/禁用/叛乱延期由 schedule smoke 覆盖，日期 `42–48` 批次由生产 DLL replay 覆盖。
+- 验证边界：Debug/Release × Bannerlord 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 SHA256 `9FE600156D304C3E97B5682AFF1F720A8BFFA8A7DD7713E0A5B039354168349A` 的 Phase8 当前候选回放通过。Weekly outcome contract、Phase8 入口 11/source inventory 7、source-linked V1 119/snapshot 36/5 mutation、四 DLL metadata 1060、449 锚点地图 recorded/working-tree 通过。没有 Stage/Deploy/Push。`SanitizeEventSourceMaterials` 和 action owner 字典在每次周报初始化/首预览分别 O(N) 快照；每组材料聚合/Prompt 和每批 Prompt 仍原子工作，只有组/owner 之间检查预算，没有实机帧耗时保证。跨 tick live 源变更仍按原捕获时点语义，旧档/实机/provider/音频/性能 NOT-RUN。
+- 下一包 a2：读取并建立自动/手动、多模式、minute burst、批量重试、按需全文、pending commit 与发布/失败路径的单一请求/完成责任清单；不只复用已完成的按需全文队列切片。先定向核对 `MyBehavior.cs:42400–42800,43000–43700,45500–46900` 的实际符号/调用与 SaveRuntimeGuard、源状态重验，再逐有限切片迁 owner 和验证。a3 回执发布、J13b–g 均未完成。
+
 ## J13a 自动材料三阶段游标切片（2026-09-24）
 
 状态 `J13a_STAGE_CURSOR_SLICE_OFFLINE_VERIFIED / J13a_A1_VERIFY / J13a_ACTIVE`，产品 `cd37d2f2`。`src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs:5,17` 持有单阶段下标与完成状态，每次预算回调最多取一个组/批次。`MyBehavior.cs:1512–1520,6238–6298` 的聚合、PromptMaterials、Batch Prompt 三个真实消费者共用此 owner，删除原三套下标/完成布尔；宿主保留主线程游戏调用、每日预算检查和例外清理。空组立即完成；null 组只消费一次预算机会，不会一帧空转扫完整表；结束后不能重放。该 cursor 为瞬态，不影响 SyncData、公开类型或保存键。
