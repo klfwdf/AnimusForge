@@ -26,6 +26,7 @@ RULES = {
     "world-simulation-worldmap": (
         "WarStats/AfWarStatsBehavior.cs",
         "src/modules/AF.Module.Diplomacy/**/*.cs",
+        "src/modules/AF.Module.Kingdom/**/*.cs",
         "src/modules/AF.Module.WorldMap/**/*.cs",
     ),
     "ui-tts-external-integration": (

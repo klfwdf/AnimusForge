@@ -61,6 +61,7 @@ AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 };
 Assembly af = Assembly.LoadFrom(dll);
 WeeklyActionOutcomeProductionReplay.Run(af);
+KingdomOwnerReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
 IList roots = (IList)Activator.CreateInstance(typeof(System.Collections.Generic.List<>).MakeGenericType(nodeType));
