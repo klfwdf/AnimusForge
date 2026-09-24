@@ -1455,11 +1455,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string PromptText = "";
 
-		public List<EventMaterialReference> OrderedMaterials = new List<EventMaterialReference>();
-
-		public List<EventMaterialReference> ClonedMaterials = new List<EventMaterialReference>();
-
-		public int MaterialIndex;
+		public WeeklyReportBlockMaterialCursor<EventMaterialReference> MaterialCursor;
 	}
 
 	private enum DailyMaintenanceTaskKind
@@ -45632,8 +45628,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Report = block?.Report ?? "",
 			TagText = block?.TagText ?? "",
 			PromptText = promptText ?? "",
-			OrderedMaterials = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList(),
-			ClonedMaterials = new List<EventMaterialReference>()
+			MaterialCursor = new WeeklyReportBlockMaterialCursor<EventMaterialReference>(
+				OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList())
 		};
 	}
 
@@ -45644,19 +45640,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		while (pending.MaterialIndex < pending.OrderedMaterials.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		while (!pending.MaterialCursor.Complete && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.CloneMaterial"))
 			{
-				EventMaterialReference material = CloneEventMaterialReference(pending.OrderedMaterials[pending.MaterialIndex]);
-				if (material != null)
-				{
-					pending.ClonedMaterials.Add(material);
-				}
-				pending.MaterialIndex++;
+				pending.MaterialCursor.Advance(CloneEventMaterialReference);
 			}
 		}
-		if (pending.MaterialIndex < pending.OrderedMaterials.Count)
+		if (!pending.MaterialCursor.Complete)
 		{
 			return false;
 		}
@@ -45666,7 +45657,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.WriteRecord"))
 		{
-			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.ClonedMaterials, sanitizeAfter: false);
+			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.MaterialCursor.Cloned, sanitizeAfter: false);
 		}
 		context.CurrentBlockCommit = null;
 		return true;

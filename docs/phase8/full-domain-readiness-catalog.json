@@ -900,6 +900,7 @@
         "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs"
       ],
