@@ -1,4 +1,12 @@
 <a id="j13-plan-20260924"></a>
+## J13a 材料聚合分桶切片（2026-09-24）
+
+状态 `J13a_AGGREGATION_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `f54fbcf6`。`src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs:6,8–61` 接管预览材料克隆、普通材料保留、按 action 分类与 stable event key 分桶、分类顺序及最终排序；`MyBehavior.cs:38550–38553` 的自动预算入口 `:6301–6321` 和同步预览入口 `:37220–37227` 共用该 owner。原 host 仍按现有 Hero/Kingdom 规则渲染聚合文本，避免把 live 游戏查询搬到 worker；DTO 全名、存档键、公开 API 不变，没有第二套分桶算法。
+
+- 频率/成本：每个材料组在每次周报准备时聚合一次；克隆/分桶 O(M)、排序 O(M log M)，自动路径仍每次预算回调只处理一个组。单组聚合仍不可中断，初始化全量 action snapshot 仍 O(N)，**未**证明帧耗时或预算严格上界；后续 a1 游标切片必须处理/量化。新增 owner 不在逐帧空转时扫描历史。
+- 门禁：获准四目录复核绝对路径、内容和递归 reparse point 均正常；原脚本无 `-Stage/-Deploy` 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 DLL SHA256 `5FF0628720BA2D06A27F12C99096AC8D82A087A3134526CACFAF80F5727FF1C9`，Phase8 从显式当前候选读取并校验 marker/新鲜度；`WeeklyMaterialAggregationReplay` 覆盖普通材料克隆、分类和同事件键归桶，原 Phase8 断言通过。入口清单 11、source inventory 7、440 锚点地图 recorded/working-tree 通过。以上为离线证据，不是实机或性能验收。
+- 未完：预览游标与预算、a2 自动/多模式请求完成、a3 动作回执发布，及 J13b–g。下一动作核对 `MyBehavior.cs:6051–6389` 的一次性 snapshot 与每组聚合/提示准备的预算单元，设计可复现的单次工作量反例并把状态转换移交 Weekly owner。实机、旧档、provider、音频、帧性能 `NOT-RUN`；未 Stage/部署/打包/推送。
+
 ## J13a 材料分组/批次切片（2026-09-24）
 
 状态 `J13a_MATERIAL_BATCH_OFFLINE_VERIFIED / J13a_ACTIVE`，不代表整个材料构建或 Weekly 包完成。产品 `008a3f84`：`src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs:7,9,35,63` 接走邻近王国/世界/其他分组优先级和世界单列、全文/短报按上限分批的真实算法；`MyBehavior.cs:41620–41624,43621–43625` 的实际自动/手动/重试消费者继续在主线程筛掉失效王国并捕获邻近顺序，然后调用 owner。`MyBehavior` 私有嵌套 DTO/枚举仅改为 `internal` 可见性，类型全名、字段、程序集、存档键和外部 public API 不改；未复制第二套批次算法。
