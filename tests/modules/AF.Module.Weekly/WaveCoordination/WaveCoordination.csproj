@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Generation/WeeklyReportWaveCoordinator.cs" Link="WeeklyReportWaveCoordinator.cs" />
+    <Compile Include="../../../../tools/PhaseEightParityReplayTests/WeeklyReportWaveCoordinationReplay.cs" Link="WeeklyReportWaveCoordinationReplay.cs" />
+  </ItemGroup>
+</Project>

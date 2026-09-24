@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 internal static class WeeklyReportCommitQueueReplay
@@ -12,6 +14,7 @@ internal static class WeeklyReportCommitQueueReplay
 
     internal static void Run(Assembly af)
     {
+        WeeklyReportWaveCoordinationReplay.Run(af.GetType("AnimusForge.WeeklyReportWaveCoordinator", true));
         Type ownerType = af.GetType("AnimusForge.WeeklyReportCommitQueueOwner`2", true)
             .MakeGenericType(typeof(string), typeof(string));
         var waiters = new Dictionary<string, TaskCompletionSource<string>>();
@@ -119,6 +122,77 @@ internal static class WeeklyReportCommitQueueReplay
                 && second.GetType().GetProperty("Result", Members).GetValue(second) == null
                 && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
                 "changed source cancels the next queued wave before API launch");
+
+            // Drive the production coordinator through the actual host launch
+            // queue/pump, rather than enqueueing two independent waves by hand.
+            // The controlled context retains main-thread pumping; only the clock
+            // and deliberately unprepared provider requests are fixtures.
+            SynchronizationContext previousContext = SynchronizationContext.Current;
+            using var context = new WaveReplayContext();
+            SynchronizationContext.SetSynchronizationContext(context);
+            try
+            {
+                foreach (bool invalidateSource in new[] { false, true })
+                {
+                    snapshot = revisionsType.GetMethod("Capture", Members).Invoke(revisions, new object[] { 0, 6 });
+                    IList coordinatedBatches = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(batchType));
+                    for (int index = 0; index < 3; index++)
+                    {
+                        object batch = Activator.CreateInstance(batchType, true);
+                        object group = Activator.CreateInstance(groupType, true);
+                        groupType.GetField("GroupKind", Members).SetValue(group, "world");
+                        ((IList)batchType.GetField("Groups", Members).GetValue(batch)).Add(group);
+                        coordinatedBatches.Add(batch);
+                    }
+                    var clock = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                    int delayCalls = 0;
+                    Func<int, Task> delay = ms => {
+                        Check(ms == 60000, "real host coordinator retains minute interval");
+                        delayCalls++;
+                        return clock.Task;
+                    };
+                    Task coordinated = (Task)behavior.GetMethod("CoordinateWeeklyReportWavesAsync", Members).Invoke(host,
+                        new object[] { coordinatedBatches, 2, 3, "coordinated fixture week", generation, snapshot, delay });
+                    Check((bool)queueType.GetProperty("HasPending", Members).GetValue(queue) && !coordinated.IsCompleted,
+                        "real coordinator enqueues first wave and waits for Campaign pump");
+                    behavior.GetMethod("ProcessPendingWeeklyWaveLaunches", Members).Invoke(host, null);
+                    context.Until(() => delayCalls == 1);
+                    Check(!coordinated.IsCompleted && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+                        "minute wait does not enqueue or launch a later wave early");
+                    if (invalidateSource) revisionsType.GetMethod("MarkDay", Members).Invoke(revisions, new object[] { 2 });
+                    clock.SetResult(true);
+                    context.Until(() => (bool)queueType.GetProperty("HasPending", Members).GetValue(queue));
+                    behavior.GetMethod("ProcessPendingWeeklyWaveLaunches", Members).Invoke(host, null);
+                    context.Until(() => coordinated.IsCompleted);
+                    coordinated.GetAwaiter().GetResult();
+                    Array results = (Array)coordinated.GetType().GetProperty("Result", Members).GetValue(coordinated);
+                    Check(results?.Length == 3 && delayCalls == 1 && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+                        "production multi-wave run settles all batches and drains the queue");
+                    for (int index = 0; index < results.Length; index++)
+                    {
+                        object coordinatedExecution = results.GetValue(index);
+                        object coordinatedResult = resultType.GetField("Result", Members).GetValue(coordinatedExecution);
+                        string reason = (string)coordinatedResult.GetType().GetField("FailureReason", Members).GetValue(coordinatedResult);
+                        Check((int)resultType.GetField("BatchIndex", Members).GetValue(coordinatedExecution) == index
+                            && reason.Contains(invalidateSource && index == 2 ? "not launched" : "not prepared"),
+                            "host keeps earlier results and classifies only the unsent source-invalidated batch");
+                    }
+
+                    // This is the exact queue cancellation used by load/reset:
+                    // it must release a coordinator waiting for its first pump.
+                    Task canceledRun = (Task)behavior.GetMethod("CoordinateWeeklyReportWavesAsync", Members).Invoke(host,
+                        new object[] { coordinatedBatches, 2, 3, "canceled fixture week", generation, snapshot, delay });
+                    queueType.GetMethod("CancelAll", Members).Invoke(queue, null);
+                    context.Until(() => canceledRun.IsCompleted);
+                    canceledRun.GetAwaiter().GetResult();
+                    Check(((Array)canceledRun.GetType().GetProperty("Result", Members).GetValue(canceledRun)).Length == 3
+                        && delayCalls == 1, "queue cleanup settles every unsent target without delay or orphaned coordinator");
+                }
+            }
+            finally
+            {
+                SynchronizationContext.SetSynchronizationContext(previousContext);
+            }
         }
         finally
         {
@@ -509,5 +583,21 @@ internal static class WeeklyReportCommitQueueReplay
     private static void Check(bool passed, string name)
     {
         if (!passed) throw new InvalidOperationException("WeeklyReportCommitQueueReplay: " + name);
+    }
+
+    private sealed class WaveReplayContext : SynchronizationContext, IDisposable
+    {
+        private readonly BlockingCollection<Action> _continuations = new();
+        public override void Post(SendOrPostCallback callback, object state) => _continuations.Add(() => callback(state));
+        internal void Until(Func<bool> complete)
+        {
+            for (int steps = 0; !complete(); steps++)
+            {
+                if (steps >= 20 || !_continuations.TryTake(out Action next, TimeSpan.FromSeconds(5)))
+                    throw new InvalidOperationException("weekly wave continuation did not settle");
+                next();
+            }
+        }
+        public void Dispose() => _continuations.Dispose();
     }
 }

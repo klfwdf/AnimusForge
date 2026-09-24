@@ -45691,54 +45691,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return generationResult;
 		}
 		int burstSize = Math.Max(1, GetWeeklyReportRequestsPerMinute());
-		int totalWaves = Math.Max(1, (int)Math.Ceiling((double)batches.Count / (double)burstSize));
-		List<Task<WeeklyReportBatchExecutionResult>> runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>();
-		for (int i = 0; i < batches.Count; i += burstSize)
-		{
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_wave"))
-			{
-				return generationResult;
-			}
-			List<WeeklyReportBatchRequest> wave = batches.Skip(i).Take(burstSize).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
-			if (wave.Count == 0)
-			{
-				continue;
-			}
-			List<Task<WeeklyReportBatchExecutionResult>> launched = await EnqueueWeeklyWaveLaunchAsync(wave, i, i / burstSize + 1, totalWaves, list.Count, batches.Count, burstSize, displayLabel, runtimeGeneration, sourceSnapshot);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_wave_launch") || !ReferenceEquals(Instance, this))
-			{
-				return generationResult;
-			}
-			if (launched == null)
-			{
-				for (int k = i; k < batches.Count; k++)
-				{
-					WeeklyReportBatchRequest unsent = batches[k];
-					runningTasks.Add(Task.FromResult(new WeeklyReportBatchExecutionResult
-					{
-						BatchIndex = k,
-						Batch = unsent,
-						Result = new WeeklyReportBatchRequestResult
-						{
-							FailureReason = "Weekly batch wave was not launched.",
-							MissingReportIds = BuildWeeklyBatchExpectedReportIds(unsent)
-						}
-					}));
-				}
-				break;
-			}
-			runningTasks.AddRange(launched);
-			if (i + burstSize < batches.Count)
-			{
-				await Task.Delay(60000);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_wave_delay"))
-				{
-					return generationResult;
-				}
-			}
-		}
-		WeeklyReportBatchExecutionResult[] completed = await Task.WhenAll(runningTasks);
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_commit_enqueue"))
+		WeeklyReportBatchExecutionResult[] completed = await CoordinateWeeklyReportWavesAsync(batches, burstSize, list.Count, displayLabel, runtimeGeneration, sourceSnapshot);
+		if (completed == null)
 		{
 			return generationResult;
 		}
@@ -45834,6 +45788,25 @@ public partial class MyBehavior : CampaignBehaviorBase
 		generationResult.Completed = true;
 		return generationResult;
 #endif
+	}
+
+	private Task<WeeklyReportBatchExecutionResult[]> CoordinateWeeklyReportWavesAsync(List<WeeklyReportBatchRequest> batches, int burstSize, int totalTargets, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, Func<int, Task> delay = null)
+	{
+		return WeeklyReportWaveCoordinator.RunAsync<WeeklyReportBatchRequest, WeeklyReportBatchExecutionResult>(
+			batches, burstSize,
+			batch => batch != null && batch.Groups != null && batch.Groups.Count > 0,
+			phase => !SaveRuntimeGuard.IsStale(runtimeGeneration, phase) && ReferenceEquals(Instance, this),
+			(wave, first, index, total) => EnqueueWeeklyWaveLaunchAsync(wave, first, index, total, totalTargets, batches.Count, burstSize, displayLabel, runtimeGeneration, sourceSnapshot),
+			(batch, index) => new WeeklyReportBatchExecutionResult
+			{
+				BatchIndex = index,
+				Batch = batch,
+				Result = new WeeklyReportBatchRequestResult
+				{
+					FailureReason = "Weekly batch wave was not launched.",
+					MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch)
+				}
+			}, delay);
 	}
 
 	private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave, int firstBatchIndex, int waveIndex, int totalWaves, int totalTargets, int totalBatches, int burstSize, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot)
