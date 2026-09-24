@@ -6,6 +6,9 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
+  <ItemGroup>
+    <Compile Include="..\ProductionOptInEntryReplayTests\WeeklyActionOutcomeProductionReplay.cs" Link="WeeklyActionOutcomeProductionReplay.cs" />
+  </ItemGroup>
   <PropertyGroup>
     <_ReplayImplementationPath Condition="'$(ReplayCandidateDll)' != ''">$(ReplayCandidateDll)</_ReplayImplementationPath>
   </PropertyGroup>

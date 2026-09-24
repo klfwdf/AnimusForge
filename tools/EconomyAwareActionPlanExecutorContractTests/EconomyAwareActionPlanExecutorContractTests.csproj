@@ -23,7 +23,7 @@
     <Compile Include="..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Memory\Recovery\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
-    <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Weekly\Receipts\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
     <Compile Include="..\..\Refactor\Runtime\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
   </ItemGroup>
 </Project>

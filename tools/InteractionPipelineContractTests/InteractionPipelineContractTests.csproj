@@ -21,7 +21,7 @@
     <Compile Include="..\..\src\modules\AF.Module.Actions\Execute\LegacyChannelActionPlanExecutor.cs" Link="Adapters\LegacyChannelActionPlanExecutor.cs" />
     <Compile Include="..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Actions\Receipts\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
-    <Compile Include="..\..\Refactor\Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Weekly\Receipts\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Conversation\Internal\DetachedInteractionHost.cs" Link="Runtime\DetachedInteractionHost.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Conversation\Internal\RuntimeConfigSnapshotStore.cs" Link="Runtime\RuntimeConfigSnapshotStore.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Memory\Recovery\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />

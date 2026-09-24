@@ -58,8 +58,10 @@ internal static class WeeklyActionOutcomeProductionReplay
                 "_af_weeklyActionOutcomeReceipts_v1",
                 StringComparison.Ordinal),
             "weekly outcome storage key drifted");
-        Require(owner.GetField("_weeklyActionOutcomeLedger", AnyInstance)?.FieldType == ledger,
-            "weekly outcome ledger owner field drifted");
+        Type publication = RequireType(assembly, "AnimusForge.WeeklyActionOutcomePublicationOwner");
+        Require(owner.GetField("_weeklyActionOutcomePublication", AnyInstance)?.FieldType == publication
+            && publication.GetProperty("Ledger", AnyInstance)?.PropertyType == ledger,
+            "weekly publication owner must retain the unique original ledger");
         FieldInfo storage = owner.GetField("_weeklyActionOutcomeStorage", AnyInstance);
         Require(storage != null
             && storage.FieldType.IsGenericType
@@ -340,7 +342,8 @@ internal static class WeeklyActionOutcomeProductionReplay
             "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
             "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
             "Refactor/Runtime/NotorietyConversationOutcomeReceipt.cs",
-            "Refactor/Runtime/WeeklyMemoryMaterialOutcomeReceipt.cs"
+            "src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs"
+            , "src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs"
         };
         DateTime newestSource = sources
             .Select(relative => Path.Combine(directory.FullName,
