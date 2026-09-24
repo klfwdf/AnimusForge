@@ -219,6 +219,10 @@ namespace AnimusForge.Illustrator.Core
             {
                 result.ErrorMessage = "生图请求已超时或被取消";
             }
+            catch (InvalidDataException ex)
+            {
+                result.ErrorMessage = ex.Message;
+            }
             catch (Exception ex)
             {
                 result.ErrorMessage = "生图通信异常: " + ex.Message;
@@ -242,6 +246,15 @@ namespace AnimusForge.Illustrator.Core
 
         public static bool IsChatCompletionProtocol(string model, string baseUrl, bool useExactUrl)
         {
+            // An explicit standard endpoint wins over model-name heuristics. Parse
+            // only the path so query parameters cannot change the request schema.
+            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var endpoint))
+            {
+                string path = endpoint.AbsolutePath.TrimEnd('/');
+                if (path.EndsWith("/chat/completions", StringComparison.OrdinalIgnoreCase)) return true;
+                if (useExactUrl && (path.EndsWith("/images/generations", StringComparison.OrdinalIgnoreCase) ||
+                    path.EndsWith("/images/edits", StringComparison.OrdinalIgnoreCase))) return false;
+            }
             if (!string.IsNullOrWhiteSpace(baseUrl) && baseUrl.IndexOf("/chat/completions", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;
@@ -328,16 +341,23 @@ namespace AnimusForge.Illustrator.Core
 
         private const int MaxReferencePayloadBytes = 48 * 1024 * 1024;
 
-        private static IReadOnlyList<IllustrationReferenceImage> PrepareReferenceImages(IReadOnlyList<IllustrationReferenceImage> references)
+        private static IReadOnlyList<IllustrationReferenceImage> PrepareReferenceImages(IReadOnlyList<IllustrationReferenceImage> references, CancellationToken cancellationToken)
         {
             if (references == null) return null;
             var prepared = new List<IllustrationReferenceImage>();
             int totalBytes = 0;
-            foreach (var reference in references)
+            for (int index = 0; index < references.Count; index++)
             {
-                if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
+                cancellationToken.ThrowIfCancellationRequested();
+                var reference = references[index];
+                string failure = "图片解码或格式转换失败";
                 try
                 {
+                    if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image))
+                    {
+                        failure = "图片数据为空";
+                        throw new InvalidDataException();
+                    }
                     string encoded = reference.Base64Image.Trim();
                     if (encoded.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
                     {
@@ -345,20 +365,31 @@ namespace AnimusForge.Illustrator.Core
                         int metadataEnd = comma < 0 ? -1 : encoded.IndexOf(';');
                         if (comma < 0 || metadataEnd < 0 ||
                             encoded.IndexOf(";base64", metadataEnd, StringComparison.OrdinalIgnoreCase) < 0)
-                            throw new InvalidDataException("参考图不是 base64 data URI");
+                        {
+                            failure = "data URI 格式错误";
+                            throw new InvalidDataException();
+                        }
                         encoded = encoded.Substring(comma + 1);
                     }
                     if (encoded.Length > ImagePayload.MaxBytes * 4L / 3L + 8)
-                        throw new InvalidDataException("参考图超过单图大小限制");
+                    {
+                        failure = "超过单图24 MiB限制";
+                        throw new InvalidDataException();
+                    }
                     byte[] normalized = ImagePayload.Normalize(Convert.FromBase64String(encoded));
                     if (totalBytes > MaxReferencePayloadBytes - normalized.Length)
-                        throw new InvalidDataException("参考图总大小超过限制");
+                    {
+                        failure = "参考图累计超过48 MiB限制";
+                        throw new InvalidDataException();
+                    }
                     totalBytes += normalized.Length;
                     prepared.Add(new IllustrationReferenceImage(Convert.ToBase64String(normalized), reference.Label, reference.Kind));
                 }
                 catch (Exception ex)
                 {
-                    Log("[Illustrator] Ignored invalid reference image: " + ex.GetType().Name);
+                    // Once selected, every reference must survive preparation. Optional
+                    // captures are omitted by their producer, never silently dropped here.
+                    throw new InvalidDataException($"参考图 {index + 1}（{reference?.Kind.ToString() ?? "未知用途"}）无效：{failure}；已停止生成，未发送请求。", ex);
                 }
             }
             return prepared;
@@ -431,7 +462,7 @@ namespace AnimusForge.Illustrator.Core
         {
             string editsUrl = ResolveEditsEndpointUrl(baseUrl);
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
-            referenceImages = PrepareReferenceImages(referenceImages);
+            referenceImages = PrepareReferenceImages(referenceImages, cancellationToken);
             if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
                 return (false, null, null, "没有可用的参考图；请求未发送。", false, effectivePrompt ?? string.Empty);
             string sentPrompt = effectivePrompt ?? string.Empty;
@@ -453,18 +484,8 @@ namespace AnimusForge.Illustrator.Core
                     int sent = 0;
                     foreach (var reference in referenceImages)
                     {
-                        if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
-                        string data = reference.Base64Image;
-                        if (data.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
-                        {
-                            int comma = data.IndexOf(',');
-                            if (comma < 0) continue;
-                            data = data.Substring(comma + 1);
-                        }
-                        byte[] bytes;
-                        try { bytes = Convert.FromBase64String(data); }
-                        catch { continue; }
-                        bytes = ImagePayload.Normalize(bytes);
+                        // PrepareReferenceImages already normalized and validated every image.
+                        byte[] bytes = Convert.FromBase64String(reference.Base64Image);
                         labels.Append("\n参考图 ").Append(sent + 1).Append("（reference_").Append(sent).Append(".png）：").Append(VisualFidelityRules.ReferenceRoleInstruction(reference.Kind)).Append(" ").Append(reference.Label);
                         var imageContent = new ByteArrayContent(bytes);
                         imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
@@ -529,7 +550,7 @@ namespace AnimusForge.Illustrator.Core
             JObject payload;
             int actualRefImages = 0;
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
-            referenceImages = PrepareReferenceImages(referenceImages);
+            referenceImages = PrepareReferenceImages(referenceImages, cancellationToken);
             if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
                 return (false, null, null, "没有可用的参考图；请求未发送。", false, effectivePrompt ?? string.Empty);
             string sentPrompt = effectivePrompt ?? string.Empty;
@@ -627,7 +648,7 @@ namespace AnimusForge.Illustrator.Core
                                 ["type"] = "text",
                                 ["text"] = (reference.Kind == IllustrationReferenceKind.MapConversationScene ? "【地图对话单视角布景参考】" :
                                     reference.Kind == IllustrationReferenceKind.ScenePerspective ? "【场景普通透视结构参考】" :
-                                    reference.Kind == IllustrationReferenceKind.SceneViews ? "【场景前后双视角参考】" : reference.Kind == IllustrationReferenceKind.ScenePanorama ? "【场景预制体全景参考】" : "【现场3D实景采光与地形参考】") +
+                                    reference.Kind == IllustrationReferenceKind.SceneViews ? "【场景前后双视角参考】" : reference.Kind == IllustrationReferenceKind.ScenePanorama ? "【场景预制体全景参考】" : "【当前位置与环境定位参考】") +
                                     VisualFidelityRules.ReferenceRoleInstruction(reference.Kind) + " 按导演画风重绘，不复制UI或游戏渲染质感。"
                             });
                         }

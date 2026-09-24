@@ -35,6 +35,7 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             sb.AppendLine("【会话台词与历史记录（用于理解情绪、关系、已发生动作与现场氛围；严禁在画面中绘制任何台词文字、对话框、气泡框或字幕）】");
+            sb.AppendLine(Core.VisualFidelityRules.ConversationActionPriority);
             if (!string.IsNullOrWhiteSpace(DialogueSentence) && (string.IsNullOrWhiteSpace(RecentDialogueHistory) || RecentDialogueHistory.IndexOf(DialogueSentence, StringComparison.Ordinal) < 0))
                 sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
             if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
@@ -409,9 +410,9 @@ namespace AnimusForge.Illustrator.Context
                 (string.IsNullOrWhiteSpace(siegeFacts) ? string.Empty : siegeFacts + "。\n") +
                 $"地点为【{locName}】。";
             context.SceneDirective =
-                "依据最近一轮对话推导能表现双方情绪与关系的瞬间，镜头和姿势由导演设计，保留已确认的骑乘状态与空间关系。" +
+                "优先采用最近一轮对话中已发生或正在进行的动作，导演据此设计镜头；对话未涉及的骑乘状态与环境空间关系保留已知记录。" +
                 "若实景或现场记录显示双方分处城墙上下，须保留高低差，不能改成平地会面。\n" +
-                $"【动作线索（启发用，不作为硬事实）】{basePose}。";
+                $"【引擎待机线索（仅在对话没有动作描述时参考，不覆盖对话动作）】{basePose}。";
 
             return context;
         }

@@ -34,8 +34,9 @@ namespace AnimusForge.Illustrator.Core
                 (x.Kind == IllustrationReferenceKind.Scene || x.Kind == IllustrationReferenceKind.MapConversationScene) && !string.IsNullOrWhiteSpace(x.Base64Image));
             return scene == null ? null : new IllustrationReferenceImage(scene.Base64Image,
                 scene.Label + (scene.Kind == IllustrationReferenceKind.MapConversationScene
-                    ? " 生图环境参考：仅保留这张对话布景可见的地貌、植被、材质与采光，屏幕人物位置不作为野外实际站位证据。"
-                    : " 生图环境参考：保持实际建筑布局、墙面材质与固有色、门窗楼梯及人物高低关系；") +
+                    ? " 生图环境参考：仅用于当前位置与环境定位，保留这张对话布景可见的地貌、植被与材质，屏幕人物位置不作为野外实际站位证据。"
+                    : " 生图环境参考：仅用于当前位置与环境定位，保持实际建筑布局、墙面材质与固有色、门窗楼梯及环境高低关系；") +
+                "人物动作优先采用对话中的已发生叙事，不以截图待机姿势覆盖导演动作。" +
                 "依导演选择的机位和画风重新绘制，参考图不作为必须保留的像素底图，不复制UI或截图渲染质感。", scene.Kind);
         }
 
@@ -44,7 +45,8 @@ namespace AnimusForge.Illustrator.Core
         {
             token.ThrowIfCancellationRequested();
             var current = SelectSceneAnchor(scenes);
-            bool sendCurrent = current != null && (current.Kind == IllustrationReferenceKind.MapConversationScene || direction?.UsedLocalFallback == true);
+            bool sendCurrent = current != null && (current.Kind == IllustrationReferenceKind.MapConversationScene ||
+                direction?.UsedLocalFallback == true || direction?.VisionUnsupported == true || direction?.UsedTextOnlyDirector == true);
             var panorama = scenes?.FirstOrDefault(x => x != null && x.Kind == IllustrationReferenceKind.ScenePanorama && !string.IsNullOrWhiteSpace(x.Base64Image));
             if (panorama != null)
             {
@@ -79,7 +81,7 @@ namespace AnimusForge.Illustrator.Core
             }
             // MapConversation has no panorama: its only environment reference remains
             // the passive tabletop view. Mission screenshots calibrate the director;
-            // only local composition needs that calibration on the image side too.
+            // local composition and text-only directors need that calibration on the image side too.
             if (sendCurrent)
                 image.Insert(panorama != null ? 1 : 0, current);
         }
