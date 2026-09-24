@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 批量失败恢复元数据切片（2026-09-25）
+
+状态 `J13a_A2_FAILURE_METADATA_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `683987dd`。活动批量链的 `WeeklyReportBatchRequestResult` 已携带 RPM/配额/Retry-After/尝试次数，但原 `MyBehavior.cs` 的 pending commit finalizer 丢弃这些字段，固定生成 `AttemptsUsed=3` 的通用失败上下文，导致原 `ShowWeeklyReportFailurePopup` 的“修改RPM并重试”分支不能按真实错误触发。现 `MyBehavior.cs:43134,43183–43195` 每次 attempt 重新设置错误分类，HTTP 成功但后处理失败时不会沿用前一次 429；`MyBehavior.cs:46329,46350–46383` 在最终失败目标对应的批次执行结果中选取错误元数据，传入原 `CreateWeeklyReportRetryContext` 与 UI，不把另一失败王国的配额错误误配给当前 RPM 目标。未改请求次数上限、退避、route、保存身份或手动恢复入口。最终一次 O(批次数 × 每批分组数) 查找，不在每 tick 扫描历史。
+
+- 验证：四获准目录绝对路径、内容及无链接复核后，原脚本不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 SHA256 `C22AC98C51B314330927FB848E80D9B2C9D80F75E01AE85C81BB9EE50187C7C4` 的 Phase8 显式候选通过真实失败目标批次匹配、RPM/Retry-After 到重试上下文、其他目标 quota 隔离和后续 HTTP 成功清除旧 429 标记回放；V1 119/四 DLL metadata 1060、入口 11/source 7、490 锚点地图 recorded/working-tree 通过。回放只覆盖结果映射与分类，不是 live 弹窗或 provider 请求。
+- 未完：多 wave/Campaign tick、部分成功/失败 UI 和一次发布的组合回放未做；其他动态投影的源重验仍需核对，a2/J13a/J13 `ACTIVE`，a3/J13b–g 未施工。实机、旧档、provider、音频、帧性能 `NOT-RUN`；未 Stage/部署/打包/推送，`.dotnet-cli-home/` 未动。
+
 ## J13a a2 王国拓扑事件源失效切片（2026-09-25）
 
 状态 `J13a_A2_KINGDOM_EVENT_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `dc2dd917`。复核 `MyBehavior.cs:37253–37279,44698–44791` 可见 Weekly 分组/Prompt 会读取当前王国资格、英雄归属和统治者上下文；这些 live 投影发生变化时不一定产出目标周界内的素材，前一切片的逐日版本可能漏判。因此已注册的 `OnClanChangedKingdom`、`OnClanDefected`、`OnRulingClanChanged`、`OnClanLeaderChanged`、`OnKingdomDestroyed`、`OnClanDestroyed` 在 `MyBehavior.cs:3993,4084,4166,4398,7134,7210` 先使同一修订 owner 的全局版本失效，再沿原事件处理；无被跟踪 Lord/无新增同周素材时也会拒绝请求期间捕获的旧投影。事件触发 O(1)，不增加 tick 扫描；可能保守取消与目标王国无关的在途周报，这是刻意的安全侧失效，用户仍可通过已有显式重采恢复。未改变原事件订阅、玩法、存档/公开身份或 API route。
