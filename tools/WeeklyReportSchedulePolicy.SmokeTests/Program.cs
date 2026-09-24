@@ -22,7 +22,7 @@ bool current = true;
 long staleGeneration = -1;
 var completions = new WeeklyFullReportCompletionOwner(() => current, (generation, _) => generation == staleGeneration);
 int applied = 0;
-Task<bool> first = await Task.Run(() => completions.Enqueue(1, () => { applied++; return true; }));
+Task<bool> first = await Task.Factory.StartNew(() => completions.Enqueue(1, () => { applied++; return true; }));
 Task<bool> second = completions.Enqueue(1, () => { applied++; return true; });
 Task<bool> third = completions.Enqueue(1, () => { applied++; return true; });
 if (first.IsCompleted || second.IsCompleted || third.IsCompleted) throw new InvalidOperationException("enqueue must await main-thread processing");
