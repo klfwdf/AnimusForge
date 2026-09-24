@@ -1388,6 +1388,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public WeeklyReportRetryContext RetryContext;
 	}
 
+	private enum WeeklyPromptPreparationResult
+	{
+		Canceled,
+		Prepared,
+		Failed
+	}
+
+	private sealed class PendingWeeklyPromptPreparationContext
+	{
+		public long RuntimeGeneration;
+
+		public WeeklyMaterialStageCursor<WeeklyReportBatchRequest> Cursor;
+
+		public TaskCompletionSource<WeeklyPromptPreparationResult> CompletionSource;
+	}
+
 	private sealed class PendingWeeklyReportCommitContext
 	{
 		public long RuntimeGeneration;
@@ -1917,6 +1933,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult> _weeklyReportCommitQueue =
 		new WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult>(CompletePendingWeeklyReportCommit, () => new WeeklyReportGenerationResult());
+
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext, WeeklyPromptPreparationResult> _weeklyPromptPreparationQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext, WeeklyPromptPreparationResult>(CompletePendingWeeklyPromptPreparation, () => WeeklyPromptPreparationResult.Canceled);
 
 	private int _kingdomStabilityMaintenanceCursor;
 
@@ -2488,6 +2507,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_weeklyReportGenerationInProgress = false;
 			_weeklyAutoSchedule.Clear();
 			ResetPendingWeeklyKingdomRebellionMaintenance();
+			_weeklyPromptPreparationQueue.CancelAll();
 			_weeklyReportCommitQueue.CancelAll();
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
@@ -17430,7 +17450,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				ProcessOneTailPersistenceRecoveryOnTick();
 				bool processedWeeklyReportCommits = false;
-			if (_weeklyReportCommitQueue.HasPending)
+			if (_weeklyPromptPreparationQueue.HasPending)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyPromptPreparations"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyPromptPreparations();
+				}
+			}
+			if (!processedWeeklyReportCommits && _weeklyReportCommitQueue.HasPending)
 			{
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
 				{
@@ -41411,16 +41438,23 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void PrepareWeeklyReportBatchPrompt(WeeklyReportBatchRequest batch)
 	{
-		if (batch == null || IsWeeklyReportBatchPromptPrepared(batch))
+		if (batch == null)
 		{
 			return;
 		}
-		string systemPrompt = BuildWeeklyBatchReportSystemPrompt(batch);
-		string userPrompt = BuildWeeklyBatchReportUserPrompt(batch);
-		batch.SystemPrompt = systemPrompt ?? "";
-		batch.UserPrompt = userPrompt ?? "";
-		batch.PromptPreview = BuildWeeklyBatchPromptPreviewText(batch, systemPrompt, userPrompt);
-		batch.DisplayLabel = BuildWeeklyReportBatchDisplayLabel(batch);
+		if (!IsWeeklyReportBatchPromptPrepared(batch))
+		{
+			batch.SystemPrompt = BuildWeeklyBatchReportSystemPrompt(batch) ?? "";
+			batch.UserPrompt = BuildWeeklyBatchReportUserPrompt(batch) ?? "";
+		}
+		if (string.IsNullOrWhiteSpace(batch.PromptPreview))
+		{
+			batch.PromptPreview = BuildWeeklyBatchPromptPreviewText(batch, batch.SystemPrompt, batch.UserPrompt);
+		}
+		if (string.IsNullOrWhiteSpace(batch.DisplayLabel))
+		{
+			batch.DisplayLabel = BuildWeeklyReportBatchDisplayLabel(batch);
+		}
 	}
 
 	private static List<WeeklyEventMaterialPreviewGroup> BuildRemainingWeeklyReportGroupsForRetry(List<WeeklyReportBatchRequest> batches, int batchIndex, IEnumerable<WeeklyEventMaterialPreviewGroup> currentBatchRemainingGroups)
@@ -42932,10 +42966,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts)
 	{
 		WeeklyReportBatchRequestResult weeklyReportBatchRequestResult = new WeeklyReportBatchRequestResult();
-		PrepareWeeklyReportBatchPrompt(batch);
-		string text = IsWeeklyReportBatchPromptPrepared(batch) ? (batch.SystemPrompt ?? "") : BuildWeeklyBatchReportSystemPrompt(batch);
-		string text2 = IsWeeklyReportBatchPromptPrepared(batch) ? (batch.UserPrompt ?? "") : BuildWeeklyBatchReportUserPrompt(batch);
-		string text3 = !string.IsNullOrWhiteSpace(batch?.PromptPreview) ? (batch.PromptPreview ?? "") : BuildWeeklyBatchPromptPreviewText(batch, text, text2);
+		if (!IsWeeklyReportBatchPromptPrepared(batch))
+		{
+			weeklyReportBatchRequestResult.FailureReason = "Weekly batch prompt was not prepared on the main thread.";
+			weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
+			return weeklyReportBatchRequestResult;
+		}
+		string text = batch.SystemPrompt;
+		string text2 = batch.UserPrompt;
+		string text3 = batch.PromptPreview ?? "";
 		string text4 = BuildWeeklyReportBatchDisplayLabel(batch);
 		weeklyReportBatchRequestResult.PromptPreview = text3;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
@@ -45460,6 +45499,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			batches = BuildWeeklyReportBatchRequests(list, weekIndex, startDay, endDay);
 		}
+		WeeklyPromptPreparationResult promptPreparation = await EnqueueWeeklyPromptPreparationAsync(batches, runtimeGeneration);
+		if (promptPreparation == WeeklyPromptPreparationResult.Canceled || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_prompt_prepare"))
+		{
+			return generationResult;
+		}
+		if (promptPreparation != WeeklyPromptPreparationResult.Prepared)
+		{
+			generationResult.FailureCount = list.Count;
+			generationResult.BlockedByFatalFailure = true;
+			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly batch prompt preparation failed before dispatch." }, list2, capturedRecordStates);
+			if (queueBlockingPopupOnFatalFailure)
+			{
+				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
+			}
+			return generationResult;
+		}
 		int burstSize = Math.Max(1, GetWeeklyReportRequestsPerMinute());
 		int totalWaves = Math.Max(1, (int)Math.Ceiling((double)batches.Count / (double)burstSize));
 		List<Task<WeeklyReportBatchExecutionResult>> runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>();
@@ -45589,6 +45644,71 @@ public partial class MyBehavior : CampaignBehaviorBase
 		generationResult.Completed = true;
 		return generationResult;
 #endif
+	}
+
+	private Task<WeeklyPromptPreparationResult> EnqueueWeeklyPromptPreparationAsync(List<WeeklyReportBatchRequest> batches, long runtimeGeneration)
+	{
+		TaskCompletionSource<WeeklyPromptPreparationResult> completionSource = new TaskCompletionSource<WeeklyPromptPreparationResult>();
+		_weeklyPromptPreparationQueue.Enqueue(new PendingWeeklyPromptPreparationContext
+		{
+			RuntimeGeneration = runtimeGeneration,
+			Cursor = new WeeklyMaterialStageCursor<WeeklyReportBatchRequest>(batches),
+			CompletionSource = completionSource
+		});
+		return completionSource.Task;
+	}
+
+	private static void CompletePendingWeeklyPromptPreparation(PendingWeeklyPromptPreparationContext context, WeeklyPromptPreparationResult result)
+	{
+		context?.CompletionSource?.TrySetResult(result);
+	}
+
+	private bool ProcessPendingWeeklyPromptPreparations()
+	{
+		if (!_weeklyPromptPreparationQueue.HasPending)
+		{
+			return false;
+		}
+		long startTimestamp = Stopwatch.GetTimestamp();
+		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
+		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			PendingWeeklyPromptPreparationContext context = _weeklyPromptPreparationQueue.Peek();
+			if (context == null)
+			{
+				break;
+			}
+			if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_prompt_prepare"))
+			{
+				_weeklyPromptPreparationQueue.Complete(context, WeeklyPromptPreparationResult.Canceled);
+				_weeklyPromptPreparationQueue.CompleteProcessed(context);
+				continue;
+			}
+			if (context.Cursor.TryTake(out WeeklyReportBatchRequest batch))
+			{
+				try
+				{
+					PrepareWeeklyReportBatchPrompt(batch);
+					if (!IsWeeklyReportBatchPromptPrepared(batch))
+					{
+						throw new InvalidOperationException("Weekly batch prompt preparation returned an empty prompt.");
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("EventWeeklyReport", "[ERROR] weekly batch prompt preparation failed before dispatch: " + ex);
+					_weeklyPromptPreparationQueue.Complete(context, WeeklyPromptPreparationResult.Failed);
+					_weeklyPromptPreparationQueue.CompleteProcessed(context);
+					continue;
+				}
+			}
+			if (context.Cursor.Complete)
+			{
+				_weeklyPromptPreparationQueue.Complete(context, WeeklyPromptPreparationResult.Prepared);
+				_weeklyPromptPreparationQueue.CompleteProcessed(context);
+			}
+		}
+		return true;
 	}
 
 	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, Dictionary<string, string> capturedRecordStates, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration)

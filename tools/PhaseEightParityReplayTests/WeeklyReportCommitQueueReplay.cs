@@ -126,6 +126,17 @@ internal static class WeeklyReportCommitQueueReplay
         groupType.GetField("KingdomId", Members).SetValue(missing, "missing");
         failed.Add(missing);
         Check(Selected() == null, "missing failed group refuses partial fresh retry");
+        Type batchType = behavior.GetNestedType("WeeklyReportBatchRequest", BindingFlags.NonPublic);
+        object unpreparedBatch = Activator.CreateInstance(batchType, true);
+        object uninitializedHost = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        Task rejected = (Task)behavior.GetMethod("GenerateWeeklyReportBatchWithRetriesAsync", Members)
+            .Invoke(uninitializedHost, new[] { unpreparedBatch, (object)3 });
+        rejected.GetAwaiter().GetResult();
+        object rejection = rejected.GetType().GetProperty("Result").GetValue(rejected);
+        Check(!(bool)rejection.GetType().GetField("Success", Members).GetValue(rejection)
+            && ((string)rejection.GetType().GetField("FailureReason", Members).GetValue(rejection)).Contains("not prepared"),
+            "worker refuses unprepared prompt before API or live-state access");
+        Console.WriteLine("PASS WeeklyReportBatchPromptWorkerReplay unprepared-rejected-before-network live=NOT_RUN");
         Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials/retry-admission/full-short-winner/fresh-targets live=NOT_RUN");
     }
 
