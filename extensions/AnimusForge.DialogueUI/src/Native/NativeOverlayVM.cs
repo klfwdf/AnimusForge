@@ -37,10 +37,13 @@ public sealed class NativeOverlayVM : ViewModel
             if (_disposed) return;
             string text = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
             if (text == _inputText) return;
+            bool wasEmpty = string.IsNullOrWhiteSpace(_inputText);
             _inputText = text;
             OnPropertyChangedWithValue(text, nameof(InputText));
+            if (wasEmpty != string.IsNullOrWhiteSpace(text)) OnPropertyChanged(nameof(IsInputEmpty));
         }
     }
+    [DataSourceProperty] public bool IsInputEmpty => string.IsNullOrWhiteSpace(_inputText);
     [DataSourceProperty] public string SwitchTitle => Original.SwitchTitle;
     [DataSourceProperty] public string AIChatHistoryButtonText => Original.AIChatHistoryButtonText;
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;
@@ -135,8 +138,10 @@ public sealed class NativeOverlayVM : ViewModel
         if (_disposed) return;
         if (name == nameof(InputText))
         {
+            bool wasEmpty = string.IsNullOrWhiteSpace(_inputText);
             _inputText = Original.InputText ?? string.Empty;
             OnPropertyChangedWithValue(_inputText, nameof(InputText));
+            if (wasEmpty != string.IsNullOrWhiteSpace(_inputText)) OnPropertyChanged(nameof(IsInputEmpty));
             return;
         }
         OnPropertyChanged(name);
