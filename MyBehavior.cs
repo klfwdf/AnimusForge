@@ -43083,13 +43083,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return await CallWeeklyReportApiDetailed(systemPrompt, userPrompt).ConfigureAwait(false);
 		}
 		TaskCompletionSource<Task<ApiCallResult>> completionSource = new TaskCompletionSource<Task<ApiCallResult>>(TaskCreationOptions.RunContinuationsAsynchronously);
-		_weeklyBatchApiAttemptQueue.Enqueue(new PendingWeeklyBatchApiAttemptContext
+		_weeklyBatchApiAttemptQueue.EnqueueIfCurrent(new PendingWeeklyBatchApiAttemptContext
 		{
 			RuntimeGeneration = runtimeGeneration,
 			SystemPrompt = systemPrompt,
 			UserPrompt = userPrompt,
 			CompletionSource = completionSource
-		});
+		}, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
 		Task<ApiCallResult> attempt = await completionSource.Task.ConfigureAwait(false);
 		if (attempt == null || !ReferenceEquals(Instance, this) || (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_api_launch")))
 		{
@@ -45812,7 +45812,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave, int firstBatchIndex, int waveIndex, int totalWaves, int totalTargets, int totalBatches, int burstSize, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot)
 	{
 		TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>> completionSource = new TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>>(TaskCreationOptions.RunContinuationsAsynchronously);
-		_weeklyWaveLaunchQueue.Enqueue(new PendingWeeklyWaveLaunchContext
+		_weeklyWaveLaunchQueue.EnqueueIfCurrent(new PendingWeeklyWaveLaunchContext
 		{
 			RuntimeGeneration = runtimeGeneration,
 			SourceSnapshot = sourceSnapshot,
@@ -45825,7 +45825,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			FirstBatchIndex = firstBatchIndex,
 			Batches = wave,
 			CompletionSource = completionSource
-		});
+		}, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
 		return completionSource.Task;
 	}
 
@@ -45911,12 +45911,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private Task<WeeklyPromptPreparationResult> EnqueueWeeklyPromptPreparationAsync(List<WeeklyReportBatchRequest> batches, long runtimeGeneration)
 	{
 		TaskCompletionSource<WeeklyPromptPreparationResult> completionSource = new TaskCompletionSource<WeeklyPromptPreparationResult>();
-		_weeklyPromptPreparationQueue.Enqueue(new PendingWeeklyPromptPreparationContext
+		_weeklyPromptPreparationQueue.EnqueueIfCurrent(new PendingWeeklyPromptPreparationContext
 		{
 			RuntimeGeneration = runtimeGeneration,
 			Cursor = new WeeklyMaterialStageCursor<WeeklyReportBatchRequest>(batches),
 			CompletionSource = completionSource
-		});
+		}, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
 		return completionSource.Task;
 	}
 
@@ -45994,7 +45994,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Executions = (executions ?? Enumerable.Empty<WeeklyReportBatchExecutionResult>()).Where((WeeklyReportBatchExecutionResult x) => x != null).OrderBy((WeeklyReportBatchExecutionResult x) => x.BatchIndex).ToList(),
 			CompletionSource = completionSource
 		};
-		_weeklyReportCommitQueue.Enqueue(context);
+		_weeklyReportCommitQueue.EnqueueIfCurrent(context, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
 		return completionSource.Task;
 	}
 
