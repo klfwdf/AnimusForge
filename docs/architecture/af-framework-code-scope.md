@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-24）
 
+`c2d8565b` 将 Full/Short PromptMaterials 组装、短报排除/单次统计与劫掠归并、全文劫掠结果合并归 `src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs:10,12,35,71`；自动 `MyBehavior.cs:6286`、同步 `:37168` 与独立劫掠构造 `:42356` 真实消费者均接通。Settlement/Hero 解析及原专用转换 helper 留主线程 host。六构建、当前候选 Phase8/材料回放通过；阶段游标和初始化快照尚未闭合，a1/J13a 仍 ACTIVE。447 锚点地图仅证明定位，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `12f9e3d2` 将邻近前三王国全文、其余短报及空邻近回退规则统一交给 `src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs:9,25`；同步预览 `MyBehavior.cs:37146–37169` 与延迟自动准备 `:6266–6293` 共用且延迟路径缓存 ID 集合。双版本六构建及当前候选 Phase8/选择反例通过；PromptMaterials 具体构造和阶段游标仍在 host，a1/J13a 尚未全包完成。444 锚点地图只证明定位，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `8d934447` 将 recent/major action owner/action 游标与 Hero 缓存归 `src/modules/AF.Module.Weekly/Materials/WeeklyActionMaterialCursor.cs:6,21`；真实 `MyBehavior.cs:6132–6172,6195–6228` 保留日维护预算检查、主线程 Hero 解析和材料分发。每次游标调用只跨一个 owner 边界或消费一条 action；1000 个失效 owner 负例通过。初始 O(N) snapshot、单组聚合和王国分发尚未严格预算化；J13a 全包仍 ACTIVE。442 锚点地图仅为定位，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
