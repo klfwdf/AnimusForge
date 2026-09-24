@@ -49,6 +49,21 @@ static class Program
         Check(widget.CharStringId == "second_guard" && widget.BodyProperties == "77" && widget.BannerCodeText == ""
             && widget.ArmorColor1 == 12 && widget.ArmorColor2 == 34, "No-agent map NPC replaces old face and clears banner");
         Check(!portrait.Apply(widget, null, null) && !portrait.Apply(null, agent, character), "Missing portrait inputs are safe");
+        var map = new MapPortraitAppearance { Character = guard, Body = new BodyProperties(901), Equipment = new Equipment(),
+            Race = 7, Female = true, Color1 = 1234, Color2 = 5678, Banner = null };
+        map.Equipment[5] = new EquipmentElement(88); // Native encounter's hood, absent from troop default.
+        string encounterEquipment = map.Equipment.CalculateEquipmentCode();
+        portrait.Apply(widget, null, guard, map);
+        Check(widget.EquipmentCode == encounterEquipment && widget.BodyProperties == "901", "Map portrait uses encounter hood and face, not troop defaults");
+        Check(widget.Race == 7 && widget.IsFemale && widget.ArmorColor1 == 1234 && widget.ArmorColor2 == 5678,
+            "Map portrait uses actual native race, sex and clothing colors");
+        int mapEquipmentEncodes = Equipment.Encodes;
+        for (int i = 0; i < 120; i++) portrait.Apply(widget, null, guard, map);
+        Check(Equipment.Encodes == mapEquipmentEncodes, "Captured map appearance remains cached");
+        map = new MapPortraitAppearance { Character = guard, Body = new BodyProperties(902), Equipment = new Equipment() };
+        map.Equipment[5] = new EquipmentElement(99);
+        portrait.Apply(widget, null, guard, map);
+        Check(widget.BodyProperties == "902" && widget.EquipmentCode != encounterEquipment, "Same troop in a new encounter replaces old individual");
         Console.WriteLine($"PASS: {_checks} portrait assertions; first 120 unchanged refreshes performed one body/equipment/banner encode each.");
     }
 }

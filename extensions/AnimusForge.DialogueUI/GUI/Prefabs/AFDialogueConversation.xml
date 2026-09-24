@@ -25,6 +25,11 @@
         <Widget Id="AFDialogueConsoleFrame" WidthSizePolicy="Fixed" SuggestedWidth="1440" HeightSizePolicy="Fixed" SuggestedHeight="283"
             HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="43" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
           <Children>
+            <!-- Fitted to the artwork's oval opening, with overlap UNDER the gold rim. -->
+            <Widget Id="AFDialoguePortraitBackground" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                SuggestedWidth="166.125194" SuggestedHeight="177.992105" HorizontalAlignment="Left" VerticalAlignment="Top"
+                MarginLeft="125.152612" MarginTop="40.960526" Sprite="afdui_portrait_background"
+                DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" />
             <Widget Id="AFDialogueBackdrop" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                 Sprite="afdui_console_base_option_02_walnut_original_ratio" DoNotAcceptEvents="true" />
 
@@ -37,9 +42,6 @@
                     HorizontalAlignment="Left" VerticalAlignment="Top" CircularClipEnabled="true" CircularClipRadius="79"
                     CircularClipSmoothingRadius="2" DoNotAcceptEvents="true">
                   <Children>
-                    <!-- Opaque material under the transparent tableau; clipped to the portrait aperture. -->
-                    <Widget Id="AFDialoguePortraitBackground" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        Sprite="afdui_portrait_background" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" />
                     <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
                         SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-134"
                         StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />

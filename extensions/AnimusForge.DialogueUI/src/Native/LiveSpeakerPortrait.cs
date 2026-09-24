@@ -28,31 +28,32 @@ internal sealed class LiveSpeakerPortrait
     private string _equipmentCode;
     private float _renderScale;
 
-    public bool Apply(CharacterTableauWidget tableau, Agent speaker, CharacterObject character)
+    public bool Apply(CharacterTableauWidget tableau, Agent speaker, CharacterObject character, MapPortraitAppearance map = null)
     {
         if (tableau == null || character == null)
             return false;
 
         try
         {
-            BodyProperties bodyProperties = speaker != null
+            BodyProperties bodyProperties = map != null ? map.Body : speaker != null
                 ? speaker.BodyPropertiesValue
                 : character.HeroObject != null
                     ? character.HeroObject.BodyProperties
                     : character.GetBodyProperties(character.Equipment);
-            bool female = speaker != null ? speaker.IsFemale : character.IsFemale;
-            if (!_hasBody || bodyProperties != _body || character.Race != _race || female != _female)
+            bool female = map != null ? map.Female : speaker != null ? speaker.IsFemale : character.IsFemale;
+            int race = map != null ? map.Race : character.Race;
+            if (!_hasBody || bodyProperties != _body || race != _race || female != _female)
             {
                 string bodyText = bodyProperties.ToString();
-                float scale = GetHeadLockedRenderScale(bodyProperties, character.Race, female);
+                float scale = GetHeadLockedRenderScale(bodyProperties, race, female);
                 _body = bodyProperties;
-                _race = character.Race;
+                _race = race;
                 _female = female;
                 _bodyText = bodyText;
                 _renderScale = scale;
                 _hasBody = true;
             }
-            Equipment equipment = speaker?.SpawnEquipment ?? character.Equipment;
+            Equipment equipment = map?.Equipment ?? speaker?.SpawnEquipment ?? character.Equipment;
             bool equipmentChanged = !_hasEquipment;
             // Compare the fixed set of slots, including in-place edits; allocate/encode only on change.
             if (!equipmentChanged)
@@ -76,12 +77,12 @@ internal sealed class LiveSpeakerPortrait
             tableau.CharStringId = character.StringId ?? string.Empty;
             tableau.BodyProperties = _bodyText;
             tableau.IsFemale = female;
-            tableau.Race = character.Race;
+            tableau.Race = race;
             tableau.EquipmentCode = _equipmentCode;
-            tableau.ArmorColor1 = speaker != null ? speaker.ClothingColor1 : character.Culture?.Color ?? 0;
-            tableau.ArmorColor2 = speaker != null ? speaker.ClothingColor2 : character.Culture?.Color2 ?? 0;
+            tableau.ArmorColor1 = map != null ? map.Color1 : speaker != null ? speaker.ClothingColor1 : character.Culture?.Color ?? 0;
+            tableau.ArmorColor2 = map != null ? map.Color2 : speaker != null ? speaker.ClothingColor2 : character.Culture?.Color2 ?? 0;
             // BannerCode is the engine's invalidated cache; Serialize would rebuild it every sample.
-            tableau.BannerCodeText = character.HeroObject?.Clan?.Banner?.BannerCode ?? string.Empty;
+            tableau.BannerCodeText = (map != null ? map.Banner : character.HeroObject?.Clan?.Banner)?.BannerCode ?? string.Empty;
 
             // A guard's channel-1 weapon/attack animation is an additive scene action, not a
             // complete portrait stance. Use the native tableau idle with both hands unwielded.
