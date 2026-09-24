@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "78b87434fe92f6b74a13495ac4415ca424a0cef4",
+  "sourceRevision": "c0221d0284e01a285695319ee483fa87e23396ea",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5160,7 +5160,7 @@
       "symbol": "private bool ProcessPendingWeeklyWaveLaunches()",
       "match": "contains",
       "status": "wired-j13a2-wave-launch-slice-offline-verified",
-      "note": "主线程按队首启动整波，异常结算等待者",
+      "note": "主线程按队首启动整波，异常结算等待者；Phase8 双排队波次与次波源失效反例已回放，未驱动真实 60 秒延迟",
       "fileSha256": "c6b1a1cfe0672372b893ec8ee336f092096ebc52fcc2bc07c656aac0343d3f2c"
     },
     {

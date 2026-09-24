@@ -1,5 +1,7 @@
 # 当前范围：J13a Weekly 施工中（2026-09-25）
 
+`c0221d02` 的 `tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs:64–125` 回放真实 `MyBehavior.cs:45839–45903` 两个已排队波次：单次主线程 pump 只启一波，源修订后次波网络前取消。产品未改；当前候选 Phase8 通过，但真实 60 秒延迟、Campaign tick/部分提交/UI/一次发布组合未跑，a2/J13a/J13 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
+
 `0a1d6c8d` 通过真实 `MyBehavior.cs:46065` pending commit 验证既有胜出周报与另一 RPM 失败目标并存；`78b87434` 在 `MyBehavior.cs:1503,46209–46303,46341` 的提交异常路径按权威记录筛掉已完成目标、结算等待者并仅为未完成目标提供显式新素材重试，已尝试写入的记录幂等补通知。六构建、当前候选 Phase8 组合/异常反例、492 锚点地图通过；live UI/Campaign tick/一次发布组合及积压成本未验，a2/J13a/J13 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
 `683987dd` 使 `MyBehavior.cs:43134,43183–43195,46329,46350–46383` 的活动批次重试与 pending commit 保留每个失败目标自己的 RPM/配额/Retry-After/实际尝试数，原 `:43278–43338` UI 消费该分类；后续 HTTP 成功清除前次 429 标记。六构建、当前候选 Phase8 匹配与重试上下文反例、490 锚点地图通过；live 弹窗、多 wave/一次发布仍未验，a2/J13a/J13 ACTIVE，见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。

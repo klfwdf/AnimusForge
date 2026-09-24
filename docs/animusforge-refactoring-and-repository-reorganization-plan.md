@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 双排队波次与源失效回放切片（2026-09-25）
+
+状态 `J13a_A2_WAVE_PUMP_REPLAY_VERIFIED / J13a_A2_ACTIVE`，回放 `c0221d02`，无产品变更。`tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs:64–125` 直接调用真实 `MyBehavior.cs:45839–45903` 的入队与 Campaign 主线程波次 pump：两个已排队波次每次 pump 只处理队首，第一波保留原 batch index，未准备 Prompt 的 fixture 在网络前被拒；同周源修订后，第二波在网络前结算为空并清空队列。仅是受控双排队反例，**没有**穿过 `Task.Delay(60000)`、真实多 wave orchestration、Campaign 游戏事件或 provider，不能据此关闭 a2 的多波门禁。
+
+- 验证：当前 Debug 1.4 候选 DLL SHA256 `2268E88063FA5BC640EB61976A554203E4C147E6859EA7F4264603A23EC8493A` 的 build marker 来源/新鲜度与 Phase8 全回放通过；产品未改，沿用前一切片已完成的原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。代码地图 492 锚点 recorded/working-tree 通过。此回放没有 Stage/Deploy。
+- 未完：真实分钟延迟、Campaign tick/部分提交/UI 显式重采/一次发布组合、积压和提交工作量仍无闭合证据；a2/J13a/J13 `ACTIVE`，a3/J13b–g 未施工。实机、旧档、provider、音频、帧性能 `NOT-RUN`；`.dotnet-cli-home/` 未动，未推送、Stage、部署或打包。
+
 ## J13a a2 部分提交组合与异常恢复切片（2026-09-25）
 
 状态 `J13a_A2_PARTIAL_EXCEPTION_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，回放 `0a1d6c8d`，产品与异常反例 `78b87434`。真实 `ProcessPendingWeeklyReportCommitContext` 消费者在已有完整周报胜出、另一王国批次 RPM 失败的组合下，只给失败目标建立原有 RPM 恢复上下文，不改已有胜出记录，也不重复发布通知。`MyBehavior.cs:46209–46303` 的提交异常路径现在按稳定 report ID 重查权威完整/短报记录，只对未完成目标生成 `RequiresFreshMaterials` 的显式重采上下文并结算等待者；`:1503,46341` 记录本轮尝试写入的目标，以便写入后、通知前异常时幂等补通知。异常恢复只在失败时 O(分组数 × 权威记录查找)，不新增每 tick 扫描；重采仍须用户显式触发，不静默重发请求。保留同 DLL、保存键、公开入口、原 UI/网关和双版本身份。
