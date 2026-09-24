@@ -55,9 +55,75 @@ internal static class WeeklyReportCommitQueueReplay
             "second reset settles new waiter");
         RunRecordStateReplay(af);
         RunBatchApiLaunchReplay(af);
+        RunWaveLaunchReplay(af);
         RunCommitTargetOwnerReplay(af);
         RunPartialCommitReplay(af);
-        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/partial-missing-recovery/rpm-metadata/retry-clear/real-partial-commit/exception-recovery live=NOT_RUN");
+        Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context/batch-api-waiter-cancel-stale/two-wave-pump-source-guard/partial-missing-recovery/rpm-metadata/retry-clear/real-partial-commit/exception-recovery live=NOT_RUN");
+    }
+
+    private static void RunWaveLaunchReplay(Assembly af)
+    {
+        Type behavior = af.GetType("AnimusForge.MyBehavior", true);
+        Type groupType = behavior.GetNestedType("WeeklyEventMaterialPreviewGroup", BindingFlags.NonPublic);
+        Type batchType = behavior.GetNestedType("WeeklyReportBatchRequest", BindingFlags.NonPublic);
+        Type resultType = behavior.GetNestedType("WeeklyReportBatchExecutionResult", BindingFlags.NonPublic);
+        Type revisionsType = af.GetType("AnimusForge.WeeklyReportMaterialRevisionOwner", true);
+        object revisions = Activator.CreateInstance(revisionsType, true);
+        object snapshot = revisionsType.GetMethod("Capture", Members).Invoke(revisions, new object[] { 0, 6 });
+        object host = System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(behavior);
+        behavior.GetField("_weeklyReportMaterialRevisions", Members).SetValue(host, revisions);
+        Type contextType = behavior.GetNestedType("PendingWeeklyWaveLaunchContext", BindingFlags.NonPublic);
+        Type launchedType = typeof(List<>).MakeGenericType(typeof(Task<>).MakeGenericType(resultType));
+        Type queueType = af.GetType("AnimusForge.WeeklyReportCommitQueueOwner`2", true).MakeGenericType(contextType, launchedType);
+        Type completeType = typeof(Action<,>).MakeGenericType(contextType, launchedType);
+        Delegate complete = Delegate.CreateDelegate(completeType, behavior.GetMethod("CompletePendingWeeklyWaveLaunch", Members));
+        Delegate canceled = Expression.Lambda(typeof(Func<>).MakeGenericType(launchedType), Expression.Constant(null, launchedType)).Compile();
+        object queue = Activator.CreateInstance(queueType, Members, null, new object[] { complete, canceled }, null);
+        behavior.GetField("_weeklyWaveLaunchQueue", Members).SetValue(host, queue);
+        Type guard = af.GetType("AnimusForge.SaveRuntimeGuard", true);
+        long generation = (long)guard.GetMethod("CaptureGeneration", Members).Invoke(null, null);
+        Task Enqueue(int batchIndex, int waveIndex)
+        {
+            object batch = Activator.CreateInstance(batchType, true);
+            object group = Activator.CreateInstance(groupType, true);
+            groupType.GetField("GroupKind", Members).SetValue(group, "world");
+            ((IList)batchType.GetField("Groups", Members).GetValue(batch)).Add(group);
+            IList batches = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(batchType));
+            batches.Add(batch);
+            return (Task)behavior.GetMethod("EnqueueWeeklyWaveLaunchAsync", Members).Invoke(host,
+                new object[] { batches, batchIndex, waveIndex, 2, 2, 2, 1, "fixture week", generation, snapshot });
+        }
+        Task first = Enqueue(0, 1), second = Enqueue(1, 2);
+        FieldInfo activeOwner = behavior.GetField("<Instance>k__BackingField", Members);
+        object previousOwner = activeOwner.GetValue(null);
+        activeOwner.SetValue(null, host);
+        try
+        {
+            Check((bool)behavior.GetMethod("ProcessPendingWeeklyWaveLaunches", Members).Invoke(host, null),
+                "campaign wave pump processes first queued wave");
+            Check(first.IsCompletedSuccessfully && !second.IsCompleted
+                && (bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+                "one pump does not launch a later queued wave");
+            IList launched = (IList)first.GetType().GetProperty("Result", Members).GetValue(first);
+            Check(launched?.Count == 1, "first wave returns one batch execution task");
+            Task batchTask = (Task)launched[0];
+            batchTask.GetAwaiter().GetResult();
+            object execution = batchTask.GetType().GetProperty("Result", Members).GetValue(batchTask);
+            object result = resultType.GetField("Result", Members).GetValue(execution);
+            Check((int)resultType.GetField("BatchIndex", Members).GetValue(execution) == 0
+                && ((string)result.GetType().GetField("FailureReason", Members).GetValue(result)).Contains("not prepared"),
+                "first wave retains its batch index while unprepared fixture refuses network");
+            revisionsType.GetMethod("MarkDay", Members).Invoke(revisions, new object[] { 2 });
+            Check((bool)behavior.GetMethod("ProcessPendingWeeklyWaveLaunches", Members).Invoke(host, null)
+                && second.IsCompletedSuccessfully
+                && second.GetType().GetProperty("Result", Members).GetValue(second) == null
+                && !(bool)queueType.GetProperty("HasPending", Members).GetValue(queue),
+                "changed source cancels the next queued wave before API launch");
+        }
+        finally
+        {
+            activeOwner.SetValue(null, previousOwner);
+        }
     }
 
     private static void RunPartialCommitReplay(Assembly af)
