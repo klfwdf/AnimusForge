@@ -1408,6 +1408,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public List<string> PopupCandidateKingdomIds = new List<string>();
 
+		public bool RequiresFreshMaterials;
+
 		public bool WeeklyReportNoticeNearestKingdomResolved;
 
 		public string WeeklyReportNoticeNearestKingdomId = "";
@@ -1539,6 +1541,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public Dictionary<string, string> CapturedRecordStates;
 
 		public List<string> PopupCandidateKingdomIds = new List<string>();
+
+		public bool RequiresFreshMaterials;
 
 		public int WeekIndex;
 
@@ -43093,6 +43097,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			text = string.IsNullOrWhiteSpace(weeklyReportRetryContext.DisplayLabel) ? ("第" + weeklyReportRetryContext.WeekIndex + "周周报") : weeklyReportRetryContext.DisplayLabel;
 		}
+		if (weeklyReportRetryContext.RequiresFreshMaterials)
+		{
+			string changedMessage = text + "的目标记录或保存素材已变更，旧请求和旧素材重试均已取消。\n\n重新采集会按当前游戏状态重新构建失败分组，并可能替换这些分组尚未完成的手工编辑。其他已完成分组不会重跑。\n\n你可以明确选择重新采集并生成，或保存并退出；不会自动覆盖编辑。";
+			InformationManager.ShowInquiry(new InquiryData("周报目标已变更", changedMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新采集并生成", "保存并退出", delegate
+			{
+				BeginFreshWeeklyReportRetry(weeklyReportRetryContext);
+			}, ExitCurrentGameFromWeeklyReportGate), pauseGameActiveState: true);
+			return;
+		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(text + "在生成过程中遇到了无法自动恢复的 API/模型错误。");
 		stringBuilder.AppendLine();
@@ -43202,6 +43215,45 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_weeklyReportUiStage = WeeklyReportUiStage.RetryProgress;
 		ShowWeeklyReportRetryProgressPopup();
 		_ = RetryBlockedWeeklyReportsAsync(_weeklyReportRetryContext, num);
+	}
+
+	private static List<WeeklyEventMaterialPreviewGroup> SelectFreshWeeklyReportRetryGroups(List<WeeklyEventMaterialPreviewGroup> freshGroups, List<WeeklyEventMaterialPreviewGroup> failedGroups)
+	{
+		HashSet<string> requiredIds = new HashSet<string>((failedGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupReportId).Where((string id) => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
+		if (requiredIds.Count == 0)
+		{
+			return null;
+		}
+		List<WeeklyEventMaterialPreviewGroup> selected = (freshGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup group) => group != null && requiredIds.Contains(BuildWeeklyReportGroupReportId(group))).ToList();
+		return BuildWeeklyReportGroupMap(selected).Count == requiredIds.Count ? selected : null;
+	}
+
+	private void BeginFreshWeeklyReportRetry(WeeklyReportRetryContext staleContext)
+	{
+		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || !ReferenceEquals(_weeklyReportRetryContext, staleContext) || _weeklyReportManualRetryInProgress)
+		{
+			return;
+		}
+		try
+		{
+			List<WeeklyEventMaterialPreviewGroup> freshGroups = SelectFreshWeeklyReportRetryGroups(BuildWeeklyEventMaterialPreviewGroups(staleContext.StartDay, staleContext.EndDay), staleContext.Groups);
+			if (freshGroups == null || freshGroups.Count == 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("当前已无法找到全部失败的周报分组，未发送新请求；请保存退出后检查本周素材。"));
+				QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
+				return;
+			}
+			freshGroups = OrderWeeklyReportGenerationGroups(freshGroups);
+			WeeklyReportRetryContext freshContext = CreateWeeklyReportRetryContext(freshGroups, staleContext.WeekIndex, staleContext.StartDay, staleContext.EndDay, staleContext.DisplayLabel, staleContext.OpenViewerWhenDone, staleContext.IsAutoGeneration, freshGroups[0], new WeeklyReportRequestResult { Success = false }, staleContext.PopupCandidateKingdomIds);
+			_weeklyReportRetryContext = freshContext;
+			BeginRetryBlockedWeeklyReports();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[ERROR] refresh changed weekly report materials failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("重新采集周报素材失败，未发送新请求。"));
+			QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
+		}
 	}
 
 	private void CancelWeeklyReportManualRetryAndReturn()
@@ -43340,6 +43392,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			else
 			{
+				if (weeklyReportGenerationResult?.BlockedByChangedRecord == true)
+				{
+					context.RequiresFreshMaterials = true;
+					context.FailedReason = "周报目标在失败后已变更，旧素材不能重试。";
+				}
 				_pendingWeeklyReportManualRetryMessage = weeklyReportGenerationResult?.BlockedByChangedRecord == true
 					? "周报目标已被编辑或由其他请求完成，旧素材不能重试；请重新收集本周素材并生成。"
 					: "周事件补跑仍未成功，请检查 API / 模型配置后再试。";
@@ -45659,6 +45716,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 							}
 							else
 							{
+								context.RequiresFreshMaterials = true;
 								context.FailureCount++;
 								context.FailedGroups.Add(group);
 								context.FailureMessages.Add("周报目标在请求期间已变更，旧回包未覆盖：" + block.ReportId);
@@ -45692,6 +45750,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 							}
 							else
 							{
+								context.RequiresFreshMaterials = true;
 								context.FailureCount++;
 								context.FailedGroups.Add(group);
 								context.FailureMessages.Add("周报目标在提交期间已变更，旧回包未覆盖：" + block.ReportId);
@@ -45860,6 +45919,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			result.BlockedByFatalFailure = true;
 			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates);
+			result.RetryContext.RequiresFreshMaterials = context.RequiresFreshMaterials;
 			InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation paused: " + context.FailureCount + " weekly report target(s) failed."));
 			if (context.QueueBlockingPopupOnFatalFailure)
 			{
