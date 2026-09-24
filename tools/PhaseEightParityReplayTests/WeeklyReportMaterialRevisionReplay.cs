@@ -56,7 +56,10 @@ internal static class WeeklyReportMaterialRevisionReplay
         Check(processed && (bool)contextType.GetField("CurrentBlockRejected", Members).GetValue(context)
             && contextType.GetField("CurrentBlockCommit", Members).GetValue(context) == null,
             "real block writer rejects changed source after staged material cloning");
-        Console.WriteLine("PASS WeeklyReportMaterialRevisionReplay next-week/same-week/opening/removal/real-block-write-guard live=NOT_RUN");
+        object beforeKingdomEvent = Capture();
+        behavior.GetMethod("OnKingdomDestroyed", Members).Invoke(host, new object[] { null });
+        Check(!Current(beforeKingdomEvent), "kingdom roster event invalidates live source projection even without a day material");
+        Console.WriteLine("PASS WeeklyReportMaterialRevisionReplay next-week/same-week/opening/removal/real-block-write-guard/kingdom-event live=NOT_RUN");
     }
 
     private static void Check(bool passed, string name)
