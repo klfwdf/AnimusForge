@@ -2117,14 +2117,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly ConcurrentQueue<Action> _weekZeroShortSummaryMainThreadActions = new ConcurrentQueue<Action>();
 
-	private readonly Queue<WeeklyFullReportCompletion> _weeklyFullReportCompletions = new Queue<WeeklyFullReportCompletion>();
-
-	private sealed class WeeklyFullReportCompletion
-	{
-		internal long RuntimeGeneration;
-		internal Func<bool> Apply;
-		internal readonly TaskCompletionSource<bool> Completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-	}
+	private readonly WeeklyFullReportCompletionOwner _weeklyFullReportCompletions;
 
 	private bool _weekZeroShortSummaryQueueProcessing;
 
@@ -2226,6 +2219,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public MyBehavior()
 	{
+		_weeklyFullReportCompletions = new WeeklyFullReportCompletionOwner(
+			() => ReferenceEquals(Instance, this), SaveRuntimeGuard.IsStale);
 		Instance = this;
 	}
 
@@ -42742,52 +42737,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private Task<bool> QueueWeeklyFullReportCompletionAsync(long runtimeGeneration, Func<bool> apply)
 	{
-		lock (_pendingWeeklyReportCommitLock)
-		{
-			if (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_full_report_enqueue"))
-			{
-				return Task.FromResult(false);
-			}
-			var pending = new WeeklyFullReportCompletion { RuntimeGeneration = runtimeGeneration, Apply = apply };
-			_weeklyFullReportCompletions.Enqueue(pending);
-			return pending.Completion.Task;
-		}
+		return _weeklyFullReportCompletions.Enqueue(runtimeGeneration, apply);
 	}
 
 	private void ProcessWeeklyFullReportCompletions()
 	{
-		// Only completed on-demand requests are queued; at most two commits per engine tick.
-		for (int processed = 0; processed < 2; processed++)
-		{
-			WeeklyFullReportCompletion pending;
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				if (_weeklyFullReportCompletions.Count == 0) return;
-				pending = _weeklyFullReportCompletions.Dequeue();
-			}
-			try
-			{
-				bool accepted = ReferenceEquals(Instance, this)
-					&& !SaveRuntimeGuard.IsStale(pending.RuntimeGeneration, "weekly_full_report_commit");
-				pending.Completion.TrySetResult(accepted && (pending.Apply?.Invoke() ?? false));
-			}
-			catch (Exception ex)
-			{
-				// Observe exceptions in the awaiting request so its failure UI is also queued.
-				pending.Completion.TrySetException(ex);
-			}
-		}
+		_weeklyFullReportCompletions.Process();
 	}
 
 	private void CancelWeeklyFullReportCompletions()
 	{
-		lock (_pendingWeeklyReportCommitLock)
-		{
-			while (_weeklyFullReportCompletions.Count > 0)
-			{
-				_weeklyFullReportCompletions.Dequeue().Completion.TrySetResult(false);
-			}
-		}
+		_weeklyFullReportCompletions.Cancel();
 	}
 
 	private static void ShowWeeklyFullOnDemandProgressPopup(EventRecordEntry entry)
