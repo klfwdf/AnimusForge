@@ -58,24 +58,26 @@ namespace AnimusForge.Illustrator.Core
                 // 35 mm-equivalent default on a full-frame camera is about 54-55°
                 // horizontal FOV. Keep the director-selected value when present.
                 double fov = selected ? direction.SceneHorizontalFovDegrees.Value : 55;
-                // Internally produced base64 only. Bound allocation before decode and do
-                // not retry with the distorted panorama if projection fails.
+                // Internally produced base64 only. Bound allocation before decode.
                 if (panorama.Base64Image.Length > 24 * 1024 * 1024)
                     throw new InvalidOperationException("场景全景超过投影预算，已停止生图。");
                 byte[] perspective = ScenePerspectiveProjection.Project(Convert.FromBase64String(panorama.Base64Image), yaw, pitch, fov, token);
                 image.Insert(0, new IllustrationReferenceImage(Convert.ToBase64String(perspective),
                     "同一现场独立静态副本的普通透视环境参考：" +
                     (selected ? "依据导演选择的方向从完整全景重新投影。" : "从完整全景取默认前向，仅补充可见环境资料，最终取景由正文决定。") +
-                    "保留可见建筑、家具、门窗与材质的空间关系，按正文统一绘制人物和环境；不把参考取景作为必须复制的画面。" +
+                    "这是全景中的一个方向，不能把画外的王座、门洞或其他方向的陈设搬进此视角；需扩大取景时依据随附完整全景保留邻接关系。" +
                     "此参考图主动省略了现场所有人物与动态实体，空桌椅或空地不代表现场无人；在场人物及有证据的背景人群按正文绘制，不照搬副本的无人状态。" +
                     "这张图只约束场景环境，不用于推断人物脸部、发型、年龄、服装或姿态；人物外观以对应身份参考图为准。" +
                     "这是中性观察补光，不代表现场光源；光源方向、时段与氛围按正文，人物位置按本次事实。缺失区域不作为开放天空或新增物体的证据。",
                     IllustrationReferenceKind.ScenePerspective));
+                // Keep the full spatial evidence: the chosen crop may not contain all
+                // structures described by the director. Both images depict one room.
+                image.Insert(1, panorama);
                 GenerationDiagnostics.Current?.RecordStage("scene_perspective_reference", new JObject
                 {
                     ["selection"] = selected ? "director" : "default_front", ["yawDegrees"] = yaw,
                     ["pitchDegrees"] = pitch, ["horizontalFovDegrees"] = fov, ["width"] = 768, ["height"] = 768,
-                    ["elapsedMs"] = watch.ElapsedMilliseconds, ["panoramaSentToImage"] = false,
+                    ["elapsedMs"] = watch.ElapsedMilliseconds, ["panoramaSentToImage"] = true,
                     ["currentScreenshotSentToImage"] = sendCurrent
                 });
             }
@@ -83,7 +85,7 @@ namespace AnimusForge.Illustrator.Core
             // the passive tabletop view. Mission screenshots calibrate the director;
             // local composition and text-only directors need that calibration on the image side too.
             if (sendCurrent)
-                image.Insert(panorama != null ? 1 : 0, current);
+                image.Insert(panorama != null ? 2 : 0, current);
         }
     }
 }

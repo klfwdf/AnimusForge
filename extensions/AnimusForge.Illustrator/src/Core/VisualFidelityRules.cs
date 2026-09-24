@@ -2,6 +2,12 @@ namespace AnimusForge.Illustrator.Core
 {
     internal static class VisualFidelityRules
     {
+        internal const string EnvironmentGeometryPriority =
+            "【现场结构优先级】：有环境参考图时，建筑布局、拱券与门窗数量、封闭墙面、楼层、阶梯、家具位置及地面拼花以环境图为准，高于导演文字中的概括与补充。" +
+            "完整全景与普通透视参考是同一空间；透视图只覆盖其中一个方向，全景补充周围结构，不能把不同方向的设施搬到同一背景。" +
+            "封闭壁龛保持封闭，石墙不改成门窗或开敞回廊，既有地纹不重新设计；画风只改变笔触，不扩建大厅或新增采光口。" +
+            "最终绘制单幅正常透视画面，不照搬全景展开畸变。人物动作仍以对话中已发生的叙事为先，环境图不限定人物姿态。";
+
         internal const string ConversationActionPriority =
             "【动作与定位优先级】：人物动作、姿态、手势、朝向、视线和互动优先采用拉取的最近一轮玩家对话中明确已发生或正在进行的叙事。" +
             "现场截图仅用于判断当前位置与环境定位，不以截图中的待机姿势覆盖对话动作，也不从截图裁定人物行动。" +
@@ -48,9 +54,9 @@ namespace AnimusForge.Illustrator.Core
                 case IllustrationReferenceKind.Scene:
                     return "现场参考：仅用于判断当前位置与环境定位，保留已确认的地形及环境空间关系，以指定画风重新绘制。" + ConversationActionPriority;
                 case IllustrationReferenceKind.ScenePanorama:
-                    return "环境全景参考：这张图只约束同一个空间的建筑、家具、预制体、材质和陈设，不约束人物外观、年龄、服装、姿态或人数；这是360度水平、180度垂直展开，中央是前方，左右边缘在后方相接，顶部与底部是上方与下方。不是多个房间，不照搬边缘或两极的展开拉伸作为最终构图。副本补光不代表现场采光，副本未覆盖的地形与动态物体保持未知。";
+                    return "环境全景参考：这张图只约束同一个空间的建筑、家具、预制体、材质和陈设，不约束人物外观、年龄、服装、姿态或人数；这是360度水平、180度垂直展开，中央是前方，左右边缘在后方相接，顶部与底部是上方与下方。不是多个房间，不照搬边缘或两极的展开拉伸作为最终构图。副本补光不代表现场采光，副本未覆盖的地形与动态物体保持未知。" + EnvironmentGeometryPriority;
                 case IllustrationReferenceKind.ScenePerspective:
-                    return "普通透视的环境结构参考：这张图只约束场景建筑与陈设，不约束人物外观或姿态；按正文保留实际建筑与陈设关系，直线结构保持自然透视。副本观察补光只帮助辨认材质，现场光照依导演正文；不把补光亮斑或几何空缺推断为天窗、屋顶开口或日光束。";
+                    return "普通透视的环境结构参考：这张图只约束场景建筑与陈设，不约束人物外观或姿态；保留图中实际建筑与陈设关系，直线结构保持自然透视。副本观察补光只帮助辨认材质，现场光照依已知时段与文字事实；不把补光亮斑或几何空缺推断为天窗、屋顶开口或日光束。" + EnvironmentGeometryPriority;
                 case IllustrationReferenceKind.SceneViews:
                     return "环境前后视角参考：左半是同一位置的前方，右半是转180度后的后方，各水平视野120度；不是完整360全景，不把两半接缝当作相邻建筑。仅供当前位置与环境定位，不判断人物动作或采光；方向栏只供识别，不画进作品；最终按导演构图绘制单幅自然视角，未覆盖方向和动态物体保持未知。";
                 case IllustrationReferenceKind.MapConversationScene:

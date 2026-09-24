@@ -673,7 +673,7 @@ namespace AnimusForge.Illustrator.Core
                         ["type"] = "text",
                         ["text"] = "【最终呈现规范/Artistic Redraw & Fidelity Mandate】：\n" +
                                    styleClause +
-                                   "2. 人物容貌与实际衣着装备以对应身份参考图为准，人物数量、动作、站位和环境按导演描述呈现。\n" +
+                                   "2. 人物容貌与实际衣着装备以对应身份参考图为准；动作及互动按导演从已发生叙事提取的描述呈现。有环境参考时，建筑布局与陈设关系以环境图为准，正文不能覆盖图中结构。\n" +
                                    "3. 单幅完整艺术画卷（Single Unified Canvas）：整幅画面为单一完整画面，画面无画中画（No picture-in-picture）、无贴片小图或缩略图框（No inset reference boxes or thumbnails）、无角色设定立绘板（No character concept sheets or turnarounds）。\n" +
                                    "4. 姿态与互动遵循导演描述，与支撑物和空间关系保持物理一致。\n" +
                                    "5. 落实导演选定的场所、空间关系与构图；非具名艺术布景可补充与主题一致的材质、装饰和光影细节，真实现场仅保留有依据的内容。背景须保留导演设计的空间与环境细节。"

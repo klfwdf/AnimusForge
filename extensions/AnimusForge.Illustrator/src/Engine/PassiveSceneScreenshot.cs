@@ -80,6 +80,7 @@ namespace AnimusForge.Illustrator.Engine
                 string name = layer.Name ?? string.Empty;
                 string panelId;
                 if (name == "IllustrationCardOverlay" || name == "WeeklyReportIllustrationOverlay") panelId = "CardPanel";
+                else if (name == "IllustrationFullscreenOverlay") panelId = "TopPanel";
                 else if (name == "IllustratorGalleryPopup") panelId = "MainPanel";
                 else if (name == "DevWeeklyReportPopup") return false; // Modal full-screen dimmer; not the original scene colour.
                 else

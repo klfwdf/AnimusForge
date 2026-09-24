@@ -182,6 +182,15 @@ public static class ReviewRegressionAudit
         Confirm(mapNote.Contains("仅供当前位置与环境定位") && mapNote.Contains("不以截图里的待机姿势覆盖"),
             "map-screenshot-has-location-only-role", "map conversation applies the same action precedence");
         var popup = assembly.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardPopup", true);
+        Confirm((string)Call(popup, "SelectOpeningSceneReference", png, "mission:1|player|npc", "mission:1|player|npc") == png,
+            "opening-location-capture-survives-redraw", "a capture from before fullscreen is reused in the same conversation");
+        foreach (string other in new[] { "mission:2|player|npc", "mission:1|player|other", "map:1|player|npc", "", null })
+            Confirm(Call(popup, "SelectOpeningSceneReference", png, "mission:1|player|npc", other) == null,
+                "opening-capture-owner-is-checked", "changed scene, partner or unavailable owner cannot reuse the old location");
+        Confirm(Call(popup, "SelectOpeningSceneReference", png, "unavailable:1|player|npc", "unavailable:1|player|npc") == null,
+            "unknown-owner-capture-is-rejected", "matching unavailable-owner placeholders are not evidence of the same scene");
+        string geometryPriority = (string)rules.GetField("EnvironmentGeometryPriority", All).GetRawConstantValue();
+        Confirm(system.Contains(geometryPriority), "director-must-ground-scene-in-environment-images", "text cannot redesign observed structures");
         Confirm(!((string)Call(popup, "GenerateConversationSceneVariation", new object[] { null })).Contains("两人处于面对面真实交谈"),
             "no-forced-face-to-face", "conversation composition no longer injects an unconditional face-to-face action");
 
@@ -216,8 +225,9 @@ public static class ReviewRegressionAudit
         var routing = assembly.GetType("AnimusForge.Illustrator.Core.IllustrationReferenceRouting", true);
         Call(routing, "AddSceneReferences", generationRefs,
             Refs(Ref(png, "STATIC_PANORAMA", "ScenePanorama"), Ref(png, "ACTUAL_LIGHT_AND_ACTORS", "Scene")), textDirection, CancellationToken.None);
-        Confirm(generationRefs.Count == 2 && Property(generationRefs[0], "Kind").ToString() == "ScenePerspective" && Property(generationRefs[1], "Kind").ToString() == "Scene",
-            "text-only-director-keeps-real-location", "actual screenshot accompanies the neutral static perspective for location only");
+        Confirm(generationRefs.Count == 3 && Property(generationRefs[0], "Kind").ToString() == "ScenePerspective" &&
+            Property(generationRefs[1], "Kind").ToString() == "ScenePanorama" && Property(generationRefs[2], "Kind").ToString() == "Scene",
+            "text-only-director-keeps-real-location", "actual location screenshot accompanies both the static perspective and full panorama");
         directionType.GetProperty("VisionUnsupported", All).SetValue(textDirection, false, null);
         directionType.GetProperty("UsedTextOnlyDirector", All).SetValue(textDirection, true, null);
         generationRefs.Clear();

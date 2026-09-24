@@ -210,7 +210,7 @@ namespace AnimusForge.Illustrator.Engine
                 return new ConversationSceneReferenceCapture(references,
                     (context.Item4 == "player_eye" ? "本次以玩家眼位为零附加偏移视点。" : "未取得有效玩家眼位，本次保留当前相机位置并已记录回退。") +
                     "依据附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；全景只约束环境，真实当前截图如有附加，仅用于当前位置与环境定位。",
-                    "任务场景：附近30米全景参考" + (string.IsNullOrWhiteSpace(currentScene) ? "；当前画面校准缺失" : string.Empty), snapshot.NearbyPropFacts);
+                    "任务场景：附近30米全景参考可用" + (string.IsNullOrWhiteSpace(currentScene) ? "；当前位置截图未取得" : string.Empty), snapshot.NearbyPropFacts);
             }
             catch (OperationCanceledException) when (!token.IsCancellationRequested)
             { throw new TimeoutException("环境全景采集超过时间预算，已停止；没有发送不完整环境图。"); }
