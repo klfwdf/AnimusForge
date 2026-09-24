@@ -1,0 +1,39 @@
+ static void PromotedCases(){
+  foreach(string kind in new[]{"success","fallback_parse","fallback_http","fallback_throw","edit","owner","generation","target","reset","duplicate","normal_overlap","skills_edit","skills_persona_edit","skills_generation","skills_target","skills_owner","skills_reset","skills_http","skills_throw"}){
+   Probe.OffThread=0;AnimusForge.SaveRuntimeGuard.Generation=1;
+   var hero=new Hero("hero");var o=new AnimusForge.MyBehavior();AnimusForge.MyBehavior.Instance=o;AnimusForge.MyBehavior.RegisteredHero=hero;o.Seed("","","voice");
+   Task t=Task.Run(()=>o.Promote(hero));Pump(o,()=>o.Calls>0||t.IsCompleted);
+   Check(o.Calls==1,kind+" promotion capture starts exactly one request");
+   if(kind=="duplicate"||kind=="normal_overlap"){
+    Task duplicate=kind=="duplicate"?Task.Run(()=>o.Promote(hero)):Task.Run(()=>o.Generate(hero));Pump(o,()=>duplicate.IsCompleted);duplicate.GetAwaiter().GetResult();Check(o.Calls==1,kind+" shared reservation rejects concurrent generation");
+   }
+   if(kind=="edit")o.Seed("editedP","editedB");
+   if(kind=="owner")AnimusForge.MyBehavior.Instance=new();
+   if(kind=="generation")AnimusForge.SaveRuntimeGuard.Generation++;
+   if(kind=="target")AnimusForge.MyBehavior.RegisteredHero=new Hero("hero");
+   if(kind=="reset")o.ResetGenerationState();
+   o.Release(kind=="fallback_parse"?"bad":"P|B",kind!="fallback_http",kind=="fallback_throw");
+   Pump(o,()=>o.SkillCalls>0||t.IsCompleted);
+   if(o.SkillCalls>0){
+    if(kind=="skills_edit")o.Skills=50;
+    if(kind=="skills_persona_edit")o.Seed("editedP","editedB");
+    if(kind=="skills_generation")AnimusForge.SaveRuntimeGuard.Generation++;
+    if(kind=="skills_target")AnimusForge.MyBehavior.RegisteredHero=new Hero("hero");
+    if(kind=="skills_owner")AnimusForge.MyBehavior.Instance=new();
+    if(kind=="skills_reset")o.ResetGenerationState();
+    o.ReleaseSkills(kind!="skills_http",kind=="skills_throw");
+   }
+   Pump(o,()=>t.IsCompleted);t.GetAwaiter().GetResult();
+   bool skipped=kind is "edit" or "owner" or "generation" or "target" or "reset";
+   bool noSkills=skipped||kind.StartsWith("skills_");
+   Check(Probe.OffThread==0,kind+" promotion live/config/profile/skills/UI are main thread");
+   Check(o.Saves==(skipped?0:1),kind+" promotion writes once or rejects");
+   Check(o.SkillSaves==(noSkills?0:1),kind+" skill source checked before application");
+   Check(o.SkillCalls==(skipped?0:1),kind+" skill stage only follows accepted profile");
+   Check(!o.Active("hero"),kind+" promotion lease released");
+   Check(o.Values()[2]=="voice",kind+" promotion preserves voice");
+   if(kind.StartsWith("fallback_"))Check(o.Values()[0].Contains("Troop")&&o.Values()[1].Contains("Joined"),kind+" original local fallback retained");
+   if(kind=="edit"||kind=="skills_persona_edit")Check(o.Values()[0]=="editedP",kind+" edit not overwritten");
+   if(kind=="skills_edit")Check(o.Skills==50,kind+" edited skills retained");
+  }
+ }

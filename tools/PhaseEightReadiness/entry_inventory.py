@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 RULES = {
-    "knowledge-persona-profile": ("MyBehavior.Persona*.cs", "src/modules/AF.Module.Persona/**/*.cs"),
+    "knowledge-persona-profile": ("MyBehavior.Persona*.cs", "MyBehavior.PromotedPersonaGeneration.cs", "src/modules/AF.Module.Persona/**/*.cs"),
     "economy-reward-debt": ("RewardSystemBehavior*.cs", "src/modules/AF.Module.Economy/**/*.cs"),
     "policy-political": ("PolicySystem/Core/CustomPolicyBehavior*.cs",),
     "settlement-siege-gccz-sets": ("SiegeAiInterventionBehavior*.cs",),

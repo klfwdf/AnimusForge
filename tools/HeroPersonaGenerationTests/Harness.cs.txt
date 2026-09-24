@@ -46,7 +46,7 @@ namespace AnimusForge {
   private static string NormalizePersonaPromptSourceText(string s,int n)=>(s??"").Trim();
   private static string NormalizeGeneratedPersonaText(string s)=>(s??"").Replace("\r\n","\n").Replace('\r','\n').Trim();
   private static bool TryParsePersonaJson(string s,out string p,out string b){var a=(s??"").Split('|');p=a[0];b=a.Length==2?a[1]:"";return a.Length==2;}
-  private Task<ApiCallResult> CallAuxiliaryGatewayDetailed(string sys,string user,string source,int n,bool forceThinkingDisabled){Probe.Read();SentSystem=sys;SentUser=user;Calls++;return response.Task;}
+  private Task<ApiCallResult> CallAuxiliaryGatewayDetailed(string sys,string user,string source,int n,bool forceThinkingDisabled){Probe.Read();SentSystem=sys;SentUser=user;Calls++;return source=="PromotedCompanionSkills"?GetPromotedSkillsResponse():response.Task;}
   private static void InvokePersonaRerollClosed(Action action){Probe.Read();action?.Invoke();}
   internal async Task<string> External(Hero h){await EnsureNpcPersonaGeneratedForExternalAsync(h);return "";}
   internal async Task<string> RerollUi(Hero h){await RunHeroPersonaRerollAsync(h,null);return "";}
@@ -58,6 +58,8 @@ namespace AnimusForge {
   internal void ResetGenerationState(){@@RESET@@;dispatcher.Reset();}
   internal bool Active(string id){@@ACTIVE@@}
   internal bool Cooling(string id){@@COOLING@@}
+  private Task<ApiCallResult> GetPromotedSkillsResponse() { @@PROMOTED_RESPONSE@@ }
+  @@PROMOTED_HELPERS@@
   @@GENERATOR@@
  }
 }
@@ -98,8 +100,9 @@ internal static class Program {
   if(kind is "parse" or "http" or "throw")Check(!string.IsNullOrWhiteSpace(failure)&&o.Cooling("hero"),kind+" failure + cooldown");
   if(o.Calls>0)Check(o.SentSystem.EndsWith("custom-requirements")&&o.SentUser.Contains("facts:hero"),kind+" original prompt inputs");
  }
+ @@PROMOTED_TESTS@@
  static void Reservations(){
 @@RESERVATION_TESTS@@
  }
- static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+ static int Main(){TWParallel.MainId=Environment.CurrentManagedThreadId;try{foreach(var c in new[]{"normal","partial_p","partial_b","one_field","reroll","reroll_voice","normal_edit","reroll_edit","complete","null","parse","http","throw","owner","generation","target","reset","reroll_reset","external_success","external_failure","ui_reroll","ui_edit","ui_reset","ui_failure","ui_reset_before","ui_reset_accept"})Case(c);Reservations();@@RUN_PROMOTED@@Console.WriteLine($"Hero persona: {checks} checks, {failures} failures; engine/parser/network are fixtures; actual generator + dispatcher.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
 }
