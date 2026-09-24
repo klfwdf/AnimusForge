@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 周报源素材修订门禁切片（2026-09-25）
+
+状态 `J13a_A2_SOURCE_REVISION_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `d4443bcb`。`src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs:6–63` 持有非存档的逐日、全局淘汰/合并、开局概要修订；真实写入点包括 `MyBehavior.cs:13687,13707,15504–15529,25587,25846,29626–29646,35570,35666,36131,37033,47186–47187,53084,53138`。自动分阶段、同步自动及手动预览在材料构造前捕获周界，`MyBehavior.cs:6127,6394,45591,45630–45632` 将快照贯穿准备、minute wave、重试与 pending commit；`MyBehavior.cs:45846–45863,46060,46105,46219–46241` 在主线程每波发起前、解析 block 和写入前重验，源变更时旧结果不覆盖，失败组走已有显式重新采集入口。已发波次保留其结果结算；未发波次补失败结果供最终目标结算，避免遗失等待者。原目标胜出者、存档键、公开接口及单一 DLL 身份保留。捕获/重验 O(周天数)，写入标记 O(1)；淘汰/合并采用保守全局失效，无每 tick 全 Hero 扫描。
+
+- 验证：四个获准构建目录的绝对路径、内容及无链接复核后，原脚本不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 SHA256 `1560FCA28974CEE714465BCF8B042BC8777B5A012B30625D2F4DAC5F683799E5` 的 Phase8 显式候选来源/新鲜度与跨周不误杀、同周变更、开局概要、全局淘汰及真实 block 写入前拒绝回放通过；V1 119/四 DLL metadata 1060、入口清单 11、source inventory 7、484 锚点地图 recorded/working-tree 通过。回放未驱动真实 Campaign tick、provider 或弹窗。
+- 未完：修订 owner 只覆盖已定位的事件源、NPC 行动、开局概要写入；live Kingdom/统治者资格等动态投影尚无同等级修订证明。多 wave/Campaign tick、部分成功/失败 UI、一次发布与积压成本的组合证据不足，故 a2/J13a/J13 仍 `ACTIVE`，a3/J13b–g 未施工。实机、旧档、provider、音频、帧性能 `NOT-RUN`；未 Stage/部署/打包/推送，`.dotnet-cli-home/` 未动。
+
 ## J13a a2 跨批次部分结果目标结算切片（2026-09-24）
 
 状态 `J13a_A2_PARTIAL_TARGET_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `d6fea0e6`。源码复核发现原 `FinalizePendingWeeklyReportCommitBatch` 会对同一 `MissingReportIds` 重复项及跨批次暂缺立即累加失败，而稍后其他批次解析成功时不会撤销早先失败，导致计数/重试目标失真。`src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitTargetOwner.cs:6–40` 现在拥有本次 commit 的大小写不敏感已结算 ID 与待恢复缺失目标；真实 `MyBehavior.cs:1487,46018–46055,46170–46217` 在每批只按稳定 ID 登记暂缺、后续成功/冲突结算时移除它，最终只对仍未恢复的目标各计一次失败与对应原因。已解析 block 的原目标记录/胜出者门禁、主线程写入、通知和存档/公开身份不变。owner 平均 O(1) 去重/结算，最终 O(尚未恢复目标数)，不增加每 tick 全量来源扫描。
