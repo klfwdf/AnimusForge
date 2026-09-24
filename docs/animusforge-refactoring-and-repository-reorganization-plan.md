@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 部分提交组合与异常恢复切片（2026-09-25）
+
+状态 `J13a_A2_PARTIAL_EXCEPTION_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，回放 `0a1d6c8d`，产品与异常反例 `78b87434`。真实 `ProcessPendingWeeklyReportCommitContext` 消费者在已有完整周报胜出、另一王国批次 RPM 失败的组合下，只给失败目标建立原有 RPM 恢复上下文，不改已有胜出记录，也不重复发布通知。`MyBehavior.cs:46209–46303` 的提交异常路径现在按稳定 report ID 重查权威完整/短报记录，只对未完成目标生成 `RequiresFreshMaterials` 的显式重采上下文并结算等待者；`:1503,46341` 记录本轮尝试写入的目标，以便写入后、通知前异常时幂等补通知。异常恢复只在失败时 O(分组数 × 权威记录查找)，不新增每 tick 扫描；重采仍须用户显式触发，不静默重发请求。保留同 DLL、保存键、公开入口、原 UI/网关和双版本身份。
+
+- 验证：四获准目录绝对路径、内容、无链接复核后，原脚本不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 DLL SHA256 `2268E88063FA5BC640EB61976A554203E4C147E6859EA7F4264603A23EC8493A` 的 Phase8 显式候选来源/新鲜度与真实部分提交、RPM 目标隔离、异常结算/仅失败目标新素材恢复回放通过；V1 119/四 DLL metadata 1060、入口 11/source 7、492 锚点代码地图 recorded/working-tree 通过。首次新增断言因 fixture 把泛型 `HashSet<string>` 强转非泛型 `ICollection` 失败，改读 `Count` 后用同一当前候选重跑通过；不是产品构建失败。代码证据：`MyBehavior.cs:1503,46065–46303,46341`、`tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs:63–186`；覆盖结果/异常恢复，不覆盖 live Campaign tick、弹窗或 provider。
+- 未完：多 wave/Campaign tick、真实 UI 显式重采与一次发布组合、队列积压/每次提交 record 与字符工作量、其他动态投影源重验未闭合。a2/J13a/J13 `ACTIVE`，a3/J13b–g 未施工；实机、旧档、provider、音频、帧性能 `NOT-RUN`。未 Stage/部署/打包/推送，`.dotnet-cli-home/` 未动。
+
 ## J13a a2 批量失败恢复元数据切片（2026-09-25）
 
 状态 `J13a_A2_FAILURE_METADATA_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `683987dd`。活动批量链的 `WeeklyReportBatchRequestResult` 已携带 RPM/配额/Retry-After/尝试次数，但原 `MyBehavior.cs` 的 pending commit finalizer 丢弃这些字段，固定生成 `AttemptsUsed=3` 的通用失败上下文，导致原 `ShowWeeklyReportFailurePopup` 的“修改RPM并重试”分支不能按真实错误触发。现 `MyBehavior.cs:43134,43183–43195` 每次 attempt 重新设置错误分类，HTTP 成功但后处理失败时不会沿用前一次 429；`MyBehavior.cs:46329,46350–46383` 在最终失败目标对应的批次执行结果中选取错误元数据，传入原 `CreateWeeklyReportRetryContext` 与 UI，不把另一失败王国的配额错误误配给当前 RPM 目标。未改请求次数上限、退避、route、保存身份或手动恢复入口。最终一次 O(批次数 × 每批分组数) 查找，不在每 tick 扫描历史。
