@@ -1,4 +1,13 @@
 <a id="j13-plan-20260924"></a>
+## J13a action 材料游标切片（2026-09-24）
+
+状态 `J13a_ACTION_CURSOR_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `8d934447`。`src/modules/AF.Module.Weekly/Materials/WeeklyActionMaterialCursor.cs:6,21` 持有 recent/major action 的 owner/action 下标及当前 Hero 缓存，每次 `Advance` 至多消费一个 owner 边界或一条 action。真实自动周报预览入口 `MyBehavior.cs:6132–6172` 逐次检查日维护预算；`MyBehavior.cs:6195–6228` 保留主线程 Hero 解析及世界/王国材料回调。原 `PendingAutoWeeklyReportBuild` 两套下标/缓存已移除，没有并行游标；瞬态类型不是存档身份，原 Campaign/SyncData 不动。
+
+- 具名反例：旧 `ProcessPendingAutoWeeklyReportActionSlice` 在一次调用中会连续跳过任意多个空或失效 owner，直到有效 action/尾部才返回，外层预算无法在中途介入。新 `WeeklyActionMaterialCursorReplay` 以连续 1000 个无效 owner、空 owner、双 action 和完成后重入验证每步至多一次解析/消费、同一 Hero 两条 action 不重放。没有更改 action 的世界/王国资格或素材文本规则。
+- 性能/边界：每步 owner/action 游标 O(1) 加一次原有 live 解析/材料分发；分发仍可能遍历合格王国。初始化 `.ToList()` owner 快照、`SanitizeEventSourceMaterials` O(N) 及每组聚合 O(M log M) 仍是原子工作，**未**声称整体帧预算完成。主线程使用缓存 Hero 与旧实现一致，旧档/实机事件顺序未验证。
+- 验证：复核获准四目录绝对路径、内容及递归 reparse point；原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 候选 SHA256 `E169B058AF9653A908B4814126CE09CB83CBFE6C35B8EE17903A67E845593537` 的 Phase8 marker/来源/新鲜度及含新游标负例的回放通过；Phase8 入口 11、source inventory 7、442 锚点地图 recorded/working-tree 通过。J13a2/a3 和 J13b–g 未完；实机、旧档、provider、音频、帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- 下一动作：继续核对 `MyBehavior.cs:6039–6151,6244–6321` 的一次性 source/owner snapshot、每组聚合与提示准备预算，决定不改变源状态语义的增量化边界；再做 a2 请求/完成与 a3 回执发布。
+
 ## J13a 材料聚合分桶切片（2026-09-24）
 
 状态 `J13a_AGGREGATION_SLICE_OFFLINE_VERIFIED / J13a_ACTIVE`，产品 `f54fbcf6`。`src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs:6,8–61` 接管预览材料克隆、普通材料保留、按 action 分类与 stable event key 分桶、分类顺序及最终排序；`MyBehavior.cs:38550–38553` 的自动预算入口 `:6301–6321` 和同步预览入口 `:37220–37227` 共用该 owner。原 host 仍按现有 Hero/Kingdom 规则渲染聚合文本，避免把 live 游戏查询搬到 worker；DTO 全名、存档键、公开 API 不变，没有第二套分桶算法。
