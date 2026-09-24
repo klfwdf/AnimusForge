@@ -6,7 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\WeeklyReportSchedulePolicy.cs" Link="WeeklyReportSchedulePolicy.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Weekly\Scheduling\WeeklyReportSchedulePolicy.cs" Link="WeeklyReportSchedulePolicy.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Weekly\Scheduling\WeeklyAutoScheduleOwner.cs" Link="WeeklyAutoScheduleOwner.cs" />
     <Compile Include="..\..\src\modules\AF.Module.Weekly\Generation\WeeklyFullReportCompletionOwner.cs" Link="WeeklyFullReportCompletionOwner.cs" />
   </ItemGroup>
 </Project>

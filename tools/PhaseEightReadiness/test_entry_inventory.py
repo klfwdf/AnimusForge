@@ -49,8 +49,10 @@ EXPANDED_ENTRIES = {
     "social-progression-reports": (
         "AnimusForgeWeeklyReportMapNotification.cs",
         "MyBehavior.WeeklyActionOutcomeReceipts.cs",
-        "WeeklyReportSchedulePolicy.cs",
-        "WeeklyReportTextHelper.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
     ),
     "ui-tts-external-integration": (

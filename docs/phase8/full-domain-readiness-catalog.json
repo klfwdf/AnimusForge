@@ -892,8 +892,10 @@
         "RomanceSystemBehavior.cs",
         "SexualConceptionBehavior.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
-        "WeeklyReportSchedulePolicy.cs",
-        "WeeklyReportTextHelper.cs"
+        "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",

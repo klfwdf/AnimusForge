@@ -18,6 +18,26 @@ AssertEqual(0, WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(13112, 91777)
 AssertEqual(91679, WeeklyReportSchedulePolicy.GetStartDay(13098), "historical week start");
 AssertEqual(91685, WeeklyReportSchedulePolicy.GetEndDay(13098), "historical week end");
 
+var schedule = new WeeklyAutoScheduleOwner();
+AssertEqual(13111, schedule.SelectWeek(-1, 91777, 13111, false, true, false), "new save selects latest complete week");
+AssertEqual(13098, schedule.SelectWeek(13097, 91777, 13111, false, true, false), "existing save catches oldest gap");
+AssertEqual(0, schedule.SelectWeek(13097, 91777, 13111, false, false, false), "disabled does not start");
+AssertEqual(0, schedule.PendingWeek, "disabled does not defer");
+AssertEqual(0, schedule.SelectWeek(13097, 91777, 13111, false, true, true), "rebellion pauses generation");
+AssertEqual(13111, schedule.PendingWeek, "rebellion retains latest pending week");
+schedule.Defer(13110);
+AssertEqual(13111, schedule.PendingWeek, "older deferral cannot replace newer week");
+AssertEqual(0, schedule.ResolvePendingWeek(13097, 91777, false, true, true), "active rebellion keeps pending");
+AssertEqual(0, schedule.ResolvePendingWeek(13097, 91777, false, false, false), "disabled keeps pending without starting");
+AssertEqual(0, schedule.ResolvePendingWeek(13097, 91770, false, true, false), "pending future week waits");
+AssertEqual(13098, schedule.ResolvePendingWeek(13097, 91777, false, true, false), "resume catches oldest gap");
+AssertEqual(13111, schedule.PendingWeek, "pending remains until generation starts");
+AssertEqual(0, schedule.ResolvePendingWeek(13111, 91777, false, true, false), "fully caught up does not resume");
+AssertEqual(0, schedule.PendingWeek, "fully caught up clears pending");
+schedule.Defer(2);
+schedule.Clear();
+AssertEqual(0, schedule.PendingWeek, "load reset clears transient deferral");
+
 bool current = true;
 long staleGeneration = -1;
 var completions = new WeeklyFullReportCompletionOwner(() => current, (generation, _) => generation == staleGeneration);
