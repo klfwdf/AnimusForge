@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -50,7 +51,34 @@ internal static class WeeklyReportCommitQueueReplay
         Cancel();
         Check(newerTask.IsCompletedSuccessfully && newerTask.Result == "canceled" && !Pending(),
             "second reset settles new waiter");
+        RunRecordStateReplay(af);
         Console.WriteLine("PASS WeeklyReportCommitQueueReplay FIFO/non-head/reset-waiters/retired-context live=NOT_RUN");
+    }
+
+    private static void RunRecordStateReplay(Assembly af)
+    {
+        Type behavior = af.GetType("AnimusForge.MyBehavior", true);
+        Type entryType = behavior.GetNestedType("EventRecordEntry", BindingFlags.NonPublic);
+        var state = behavior.GetMethod("BuildWeeklyReportCommitRecordState", Members);
+        object entry = Activator.CreateInstance(entryType, true);
+        string Read() => (string)state.Invoke(null, new[] { entry });
+        Check(state.Invoke(null, new object[] { null }) == null, "absent target sentinel");
+        entryType.GetField("EventId", Members).SetValue(entry, "weekly_report:world:1:");
+        entryType.GetField("Title", Members).SetValue(entry, "original");
+        string captured = Read();
+        Check(captured == Read(), "unchanged target retains state");
+        entryType.GetField("Title", Members).SetValue(entry, "user edit");
+        Check(captured != Read(), "edited target invalidates old response");
+        entryType.GetField("Title", Members).SetValue(entry, "original");
+        entryType.GetField("Summary", Members).SetValue(entry, "other completed winner");
+        Check(captured != Read(), "newly completed winner invalidates old response");
+        entryType.GetField("Summary", Members).SetValue(entry, null);
+        IList materials = (IList)entryType.GetField("Materials", Members).GetValue(entry);
+        object material = Activator.CreateInstance(af.GetType("AnimusForge.MyBehavior+EventMaterialReference", true), true);
+        material.GetType().GetField("SnapshotText", Members).SetValue(material, "new source");
+        materials.Add(material);
+        Check(captured != Read(), "edited saved source materials invalidate old response");
+        Console.WriteLine("PASS WeeklyReportCommitRecordStateReplay absent/edit/winner/materials live=NOT_RUN");
     }
 
     private static void Check(bool passed, string name)
