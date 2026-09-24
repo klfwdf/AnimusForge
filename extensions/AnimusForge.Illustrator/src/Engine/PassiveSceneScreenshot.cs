@@ -81,6 +81,7 @@ namespace AnimusForge.Illustrator.Engine
                 string panelId;
                 if (name == "IllustrationCardOverlay" || name == "WeeklyReportIllustrationOverlay") panelId = "CardPanel";
                 else if (name == "IllustrationFullscreenOverlay") panelId = "TopPanel";
+                else if (name == "IllustrationFullscreenBackdrop") panelId = "BackdropPanel";
                 else if (name == "IllustratorGalleryPopup") panelId = "MainPanel";
                 else if (name == "DevWeeklyReportPopup") return false; // Modal full-screen dimmer; not the original scene colour.
                 else
