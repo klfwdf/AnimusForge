@@ -1,4 +1,10 @@
 <a id="j13-plan-20260924"></a>
+## J13 暂停与远端交接停点（2026-09-25）
+
+用户要求暂停施工、写妥 `HANDOFF.md` 并将本工作分支交付到其已配置远端。中断发生在 a2 多波协调抽取的阅读/设计阶段，**没有**半途未提交的生产/测试改动；截至本段编写前 HEAD `66eda319`，工作树仅有原未跟踪 `.dotnet-cli-home/`，不纳入提交。当前状态保持 J13a a1 有限 `OFFLINE_VERIFIED`，a2/J13a/J13 `ACTIVE`，a3/J13b–g 未施工；不得因交接或推送标整体离线验收。最近产品 `78b87434` 的六构建及当前候选 Phase8/API/代码地图证据、回放 `c0221d02` 的边界见下方两节。实机、旧档、provider、音频、帧性能仍 `NOT-RUN`。
+
+本次远端交付仅针对 `origin/codex/af-main-refactor-continuation-20260831` 的普通快进：推送前核对 `origin`、远端 tip、outgoing 提交/路径及排除物。历史本地专用提交 `ae8e6b89` 与聚焦逆提交 `3a57007d` 已在共同祖先 `0624d502` 之前且已存在于该远端分支；本次新增区间不包含这些提交，也不包含 `.dotnet-cli-home/`、PlayerExports、构建 DLL、ZIP 或日志。推送结果以实际远端 ref 回读为准。恢复工作时先完成 a2 的真实 minute orchestration/Campaign tick、部分提交＋UI 显式重采＋一次发布组合及积压/工作量门禁，再按原计划进入 a3 与 J13b–g；未授权 Stage、部署、打包、外仓写入或 J14。
+
 ## J13a a2 双排队波次与源失效回放切片（2026-09-25）
 
 状态 `J13a_A2_WAVE_PUMP_REPLAY_VERIFIED / J13a_A2_ACTIVE`，回放 `c0221d02`，无产品变更。`tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs:64–125` 直接调用真实 `MyBehavior.cs:45839–45903` 的入队与 Campaign 主线程波次 pump：两个已排队波次每次 pump 只处理队首，第一波保留原 batch index，未准备 Prompt 的 fixture 在网络前被拒；同周源修订后，第二波在网络前结算为空并清空队列。仅是受控双排队反例，**没有**穿过 `Task.Delay(60000)`、真实多 wave orchestration、Campaign 游戏事件或 provider，不能据此关闭 a2 的多波门禁。
