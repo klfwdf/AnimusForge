@@ -1505,21 +1505,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public int PreviewSourceMaterialIndex;
 
-		public List<KeyValuePair<string, List<NpcActionEntry>>> RecentActionOwners = new List<KeyValuePair<string, List<NpcActionEntry>>>();
+		public WeeklyActionMaterialCursor<NpcActionEntry, Hero> RecentActionCursor;
 
-		public int RecentActionOwnerIndex;
-
-		public int RecentActionIndex;
-
-		public Hero CurrentRecentActionHero;
-
-		public List<KeyValuePair<string, List<NpcActionEntry>>> MajorActionOwners = new List<KeyValuePair<string, List<NpcActionEntry>>>();
-
-		public int MajorActionOwnerIndex;
-
-		public int MajorActionIndex;
-
-		public Hero CurrentMajorActionHero;
+		public WeeklyActionMaterialCursor<NpcActionEntry, Hero> MajorActionCursor;
 
 		public int AggregationIndex;
 
@@ -6157,8 +6145,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				context.Groups.Add(CreateKingdomWeeklyEventMaterialPreviewGroup(kingdom));
 			}
-			context.RecentActionOwners = (_npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList();
-			context.MajorActionOwners = (_npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList();
+			context.RecentActionCursor = new WeeklyActionMaterialCursor<NpcActionEntry, Hero>((_npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList());
+			context.MajorActionCursor = new WeeklyActionMaterialCursor<NpcActionEntry, Hero>((_npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList());
 			context.PreviewGroupsInitialized = true;
 			return false;
 		}
@@ -6174,14 +6162,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) && !ProcessPendingAutoWeeklyReportActionSlice(context, recentOnly: true))
 		{
 		}
-		if (context.RecentActionOwnerIndex < (context.RecentActionOwners?.Count ?? 0))
+		if (context.RecentActionCursor != null && !context.RecentActionCursor.Complete)
 		{
 			return false;
 		}
 		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) && !ProcessPendingAutoWeeklyReportActionSlice(context, recentOnly: false))
 		{
 		}
-		return context.MajorActionOwnerIndex >= (context.MajorActionOwners?.Count ?? 0);
+		return context.MajorActionCursor == null || context.MajorActionCursor.Complete;
 	}
 
 	private void ProcessPendingAutoWeeklyReportSourceMaterial(PendingAutoWeeklyReportBuild context, EventSourceMaterialEntry item)
@@ -6210,54 +6198,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		List<KeyValuePair<string, List<NpcActionEntry>>> owners = recentOnly ? context.RecentActionOwners : context.MajorActionOwners;
-		int ownerIndex = recentOnly ? context.RecentActionOwnerIndex : context.MajorActionOwnerIndex;
-		int actionIndex = recentOnly ? context.RecentActionIndex : context.MajorActionIndex;
-		Hero currentHero = recentOnly ? context.CurrentRecentActionHero : context.CurrentMajorActionHero;
-		while (ownerIndex < (owners?.Count ?? 0))
-		{
-			KeyValuePair<string, List<NpcActionEntry>> owner = owners[ownerIndex];
-			List<NpcActionEntry> actions = owner.Value;
-			if (actionIndex == 0)
-			{
-				currentHero = FindHeroById(owner.Key);
-			}
-			if (currentHero == null || actions == null || actionIndex >= actions.Count)
-			{
-				ownerIndex++;
-				actionIndex = 0;
-				currentHero = null;
-				continue;
-			}
-			NpcActionEntry action = actions[actionIndex++];
-			ProcessPendingAutoWeeklyReportNpcAction(context, currentHero, action, recentOnly);
-			if (recentOnly)
-			{
-				context.RecentActionOwnerIndex = ownerIndex;
-				context.RecentActionIndex = actionIndex;
-				context.CurrentRecentActionHero = currentHero;
-			}
-			else
-			{
-				context.MajorActionOwnerIndex = ownerIndex;
-				context.MajorActionIndex = actionIndex;
-				context.CurrentMajorActionHero = currentHero;
-			}
-			return false;
-		}
-		if (recentOnly)
-		{
-			context.RecentActionOwnerIndex = ownerIndex;
-			context.RecentActionIndex = 0;
-			context.CurrentRecentActionHero = null;
-		}
-		else
-		{
-			context.MajorActionOwnerIndex = ownerIndex;
-			context.MajorActionIndex = 0;
-			context.CurrentMajorActionHero = null;
-		}
-		return true;
+		WeeklyActionMaterialCursor<NpcActionEntry, Hero> cursor = recentOnly ? context.RecentActionCursor : context.MajorActionCursor;
+		return cursor == null || cursor.Advance(FindHeroById,
+			(hero, action) => ProcessPendingAutoWeeklyReportNpcAction(context, hero, action, recentOnly));
 	}
 
 	private void ProcessPendingAutoWeeklyReportNpcAction(PendingAutoWeeklyReportBuild context, Hero hero, NpcActionEntry action, bool recentOnly)
