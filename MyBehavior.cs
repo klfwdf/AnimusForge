@@ -3992,6 +3992,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			string text = BuildClanChangedKingdomStableKey(clan, oldKingdom, newKingdom, detail);
@@ -4082,6 +4083,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanDefected(Clan clan, Kingdom oldKingdom, Kingdom newKingdom)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			string text = BuildClanChangedKingdomStableKey(clan, oldKingdom, newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdomByDefection);
@@ -4163,6 +4165,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnRulingClanChanged(Kingdom kingdom, Clan eventRulingClan)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			// Bannerlord 1.3 passes the new ruling clan here, while 1.4.5 passes the old one.
@@ -4394,6 +4397,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanLeaderChanged(Hero oldLeader, Hero newLeader)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			Clan clan = newLeader?.Clan ?? oldLeader?.Clan;
@@ -7129,6 +7133,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnKingdomDestroyed(Kingdom destroyedKingdom)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			RecordKingdomDestroyedMaterial(destroyedKingdom, "event");
@@ -7204,6 +7209,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanDestroyed(Clan destroyedClan)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			string clanDisplayName = GetClanDisplayName(destroyedClan);
