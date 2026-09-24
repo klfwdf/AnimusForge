@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 批量目标记录迟到回包防覆盖切片（2026-09-24）
+
+状态 `J13a_A2_TARGET_GUARD_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `d59848d1`。`MyBehavior.cs:42429–42464,45326–45397,45558–45742` 在请求前由当前主线程 owner 为各目标捕获原事件记录状态（含保存的素材、全文与展示字段），在主线程 pending commit 的 block 接纳和材料游标结束后写入前重验；不同代/非当前 owner 直接结算旧任务。期间编辑或其他请求已写入的胜出者不再被旧结果覆盖、不计成功、不发地图通知；按原失败路径计入部分失败并保留显式重试弹窗。跨 batch 重复 report ID 只结算一次。原 `UpsertWeeklyReportEventRecord` 写入/发布逻辑、存档 DTO 与外部接口身份未改。
+
+- 验证：授权的四个构建目录均复核绝对路径、内容、无 reparse point 后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error。当前 Debug 1.4 DLL SHA256 `FCAB4573DD0A2DE6FC9524BF8A786C93D7AC1C9A35738C46ABFA47FC30FAA066` 的 Phase8 显式候选 marker/新鲜度与记录 absent/编辑/胜出者/保存素材改变回放通过；入口 11、source inventory 7、四实现 DLL metadata 1060/公开 V1 119、456 锚点地图 recorded/working-tree 通过。回放只证明状态序列化反例与源码接线，未在 live Campaign 并发驱动整个 pending commit。
+- 成本/未完：请求前一次 O(R+G) 记录索引捕获并序列化命中目标；每个 block 至少一次当前记录线性查找 O(R) 与按记录字符/素材大小的序列化，延迟材料克隆恢复时再重验。没有帧耗时上界或大积压证据。独立于目标记录的 live 材料源变化尚未被本门禁覆盖；显式重试会重新捕获目标状态，需要继续定义“源已编辑”时的恢复语义。minute burst/请求协调、失败 popup/恢复和 a3 回执发布未闭合，**a2/J13a/J13 仍 ACTIVE**。实机、旧档、provider、音频、性能 NOT-RUN；未 Stage/部署/打包/推送，未动 `.dotnet-cli-home/`。
+
 ## J13a a2 分块材料提交游标切片（2026-09-24）
 
 状态 `J13a_A2_BLOCK_MATERIAL_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `bd972386`。`src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs:6,20` 持有单个已解析 block 的有序源材料下标与克隆结果，`Advance` 每次只处理一项并跳过 null 克隆。`MyBehavior.cs:1458,45620–45662` 的真实 pending commit 消费者在预算检查之间调用该 owner，完成后仍由主线程 `UpsertWeeklyReportEventRecord` 写记录；原 `OrderedMaterials/ClonedMaterials/MaterialIndex` 三份瞬态字段从宿主 DTO 删除，不改保存身份或 API。每项处理 O(1) 外加原克隆成本；首次排序仍 O(M log M)、最终记录写入仍原子且没有帧耗时证明。
