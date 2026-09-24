@@ -24,6 +24,7 @@ namespace AnimusForge.Illustrator.Core
         public string SelectedQuality { get; }
         public string SelectedStyle { get; }
         public string CustomStylePrompt { get; }
+        public string StyleFingerprint { get; }
         public bool UseExactEndpointUrl { get; }
         public bool EnableReferenceImageForGeneration { get; }
         public bool AutoCleanTempFiles { get; }
@@ -49,6 +50,10 @@ namespace AnimusForge.Illustrator.Core
             SelectedQuality = settings.SelectedQuality;
             SelectedStyle = settings.SelectedStyle;
             CustomStylePrompt = settings.CustomStylePrompt;
+            StyleFingerprint = DiskImageCacheManager.ComputeHash(
+                (settings.SelectedStyle ?? string.Empty) + "\n" +
+                (settings.CustomStylePrompt ?? string.Empty) + "\n" +
+                (settings.NegativePrompt ?? string.Empty));
             UseExactEndpointUrl = settings.UseExactEndpointUrl;
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
             AutoCleanTempFiles = settings.AutoCleanTempFiles;

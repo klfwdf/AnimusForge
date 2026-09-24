@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.Core;
@@ -69,6 +70,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private int _previewCounter;
         private readonly GalleryPreviewLoader _previewLoader;
         private bool _disposed;
+        private int _refreshVersion;
 
         public IllustratorGalleryPopupVM(Action onClose, string campaignKey)
             : this(onClose, campaignKey, () => string.Equals(campaignKey, IllustratorRuntime.CampaignKey, StringComparison.Ordinal))
@@ -207,18 +209,42 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
         private void RefreshItems(bool forceRefresh)
         {
-            try { RefreshItemsCore(forceRefresh); }
-            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = "画廊操作失败：" + ex.Message; }
-        }
-
-        private void RefreshItemsCore(bool forceRefresh)
-        {
+            IllustratorRuntime.AssertMainThread();
+            int version = ++_refreshVersion;
             _previewLoader.Cancel();
             ReleasePreviewSprite();
             SelectedSpriteName = string.Empty;
             _selectedItem = null;
             Items.Clear();
-            var cached = DiskImageCacheManager.GetAllCachedIllustrations(_campaignKey, forceRefresh);
+            HasSelection = false;
+            StatusText = "正在读取画廊目录…";
+
+            if (!IllustratorRuntime.Start(
+                () => Task.Run(() => DiskImageCacheManager.GetAllCachedIllustrations(_campaignKey, forceRefresh)),
+                (cached, error) =>
+                {
+                    if (_disposed || version != _refreshVersion) return;
+                    if (error != null)
+                    {
+                        StatusText = "画廊操作失败：" + error.Message;
+                        return;
+                    }
+                    try { ApplyCachedItems(cached); }
+                    catch (Exception ex)
+                    {
+                        HasSelection = false;
+                        SelectedSpriteName = string.Empty;
+                        StatusText = "画廊操作失败：" + ex.Message;
+                    }
+                }))
+            {
+                StatusText = "画廊后台读取忙碌，请稍后刷新。";
+            }
+        }
+
+        private void ApplyCachedItems(System.Collections.Generic.List<CachedIllustrationItem> cached)
+        {
+            Items.Clear();
             foreach (var item in cached)
             {
                 Items.Add(new IllustrationItemVM(item, HandleItemSelect));

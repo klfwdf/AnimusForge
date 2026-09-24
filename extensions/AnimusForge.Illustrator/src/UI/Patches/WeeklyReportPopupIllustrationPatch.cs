@@ -270,20 +270,41 @@ namespace AnimusForge.Illustrator.UI.Patches
             _overlayLayer = layer;
             topScreen.AddLayer(_overlayLayer);
 
-            var cached = DiskImageCacheManager.LoadImage(_currentEventKey, _scope.CampaignKey, "weekly_report");
-            Debug.Print($"[Illustrator] Weekly overlay attached: cached={(cached != null)}, autoGen={IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration}");
-            if (cached != null && Publish(cached, cached.Prompt))
+            string campaignKey = _scope.CampaignKey;
+            string cachedEventKey = _currentEventKey;
+            IllustrationScope openedScope = _scope;
+            bool autoGenerate = IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration;
+            _overlayVm.IsLoading = true;
+            bool cacheLoadStarted = IllustratorRuntime.Start(
+                () => Task.Run(() => DiskImageCacheManager.LoadImage(cachedEventKey, campaignKey, "weekly_report")),
+                (cached, error) =>
+                {
+                    if (!ReferenceEquals(_scope, openedScope) || !openedScope.IsCurrent || _overlayVm == null || _redrawCount != 0) return;
+                    if (error != null) Debug.Print("[Illustrator] Weekly cache read failed: " + error.Message);
+                    var cacheOptions = IllustratorRuntime.CaptureOptions();
+                    if (error == null && cached != null && Publish(cached, cached.Prompt))
+                    {
+                        Debug.Print("[Illustrator] Weekly overlay attached: cached=true");
+                        _overlayVm.StatusText = DiskImageCacheManager.CachedDisplayStatus(cached, cacheOptions?.StyleFingerprint);
+                        _overlayVm.IsLoading = false;
+                    }
+                    else if (autoGenerate)
+                    {
+                        Debug.Print("[Illustrator] Weekly overlay cache miss or style mismatch; auto-generating.");
+                        TriggerRegenerate();
+                    }
+                    else
+                    {
+                        Debug.Print("[Illustrator] Weekly overlay attached: cached=false, autoGen=false");
+                        _overlayVm.StatusText = "点击【生成纪事插画】绘制本周大事件";
+                        _overlayVm.IsLoading = false;
+                    }
+                });
+            if (!cacheLoadStarted)
             {
-                _overlayVm.StatusText = cached.DisplayStatusText;
-            }
-            else if (IllustratorSettings.Instance.AutoGenerateWeeklyReportIllustration)
-            {
-                TriggerRegenerate();
-            }
-            else
-            {
-                _overlayVm.StatusText = "点击【生成纪事插画】绘制本周大事件";
+                _overlayVm.StatusText = autoGenerate ? "正在准备最新纪事画卷..." : "点击【生成纪事插画】绘制本周大事件";
                 _overlayVm.IsLoading = false;
+                if (autoGenerate) TriggerRegenerate();
             }
         }
 
@@ -313,11 +334,11 @@ namespace AnimusForge.Illustrator.UI.Patches
             // 周报重绘围绕事件叙事变化，不复用百科肖像的动作与镜头变体。
             _redrawCount++;
             string artDirection = context.BuildArtDirection();
-            artDirection += "\n" + IllustrationDirection.ReadEventActionHistory(_scope.CampaignKey, eventKey, "weekly_report");
             string variation = GenerateWeeklyVariation();
             if (!string.IsNullOrWhiteSpace(variation)) artDirection += "\n" + variation;
             if (_redrawCount > 1) artDirection += "\n" + BuildWeeklyRedrawDirective(_redrawCount);
-            var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", context.BuildHardFacts(), artDirection, context.BuildDirectorOnlyFacts());
+            string hardFacts = context.BuildHardFacts();
+            string directorFacts = context.BuildDirectorOnlyFacts();
             var options = IllustratorRuntime.CaptureOptions();
             string campaignKey = _scope.CampaignKey;
             var generationScope = _scope;
@@ -331,6 +352,16 @@ namespace AnimusForge.Illustrator.UI.Patches
             {
                 Debug.Print("[Illustrator] Weekly generation task started.");
                 GenerationDiagnostics.Current?.SetSubject(eventKey);
+                string actionHistory = string.Empty;
+                try
+                {
+                    actionHistory = await Task.Run(() => IllustrationDirection.ReadEventActionHistory(campaignKey, eventKey, "weekly_report"), token).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception ex) { Debug.Print("[Illustrator] Weekly action history read failed: " + ex.Message); }
+                string workerArtDirection = artDirection;
+                if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
+                var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", hardFacts, workerArtDirection, directorFacts);
                 var refs = new List<IllustrationReferenceImage>();
                 // 离屏舞台提取在 scope 内携带 token：关闭弹窗或重新生成时旧任务立即取消并拆舞台
                 Task<CharacterPortraitReferences> portraitStage = null;
@@ -364,12 +395,13 @@ namespace AnimusForge.Illustrator.UI.Patches
                 if (result.Success && result.ImageBytes != null)
                 {
                     token.ThrowIfCancellationRequested();
-                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? context.Title : direction.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason);
+                    saved = DiskImageCacheManager.SaveImage(eventKey, result.ImageBytes, effectivePrompt, string.IsNullOrWhiteSpace(direction.Title) ? context.Title : direction.Title, "weekly_report", campaignKey, options?.MaxCacheCount ?? 200, makeDefault: false, allowImplicitDefault: false, theme: direction.Theme, actionSummary: direction.ActionSummary, diagnosticId: result.DiagnosticId, directorStatus: direction.DirectionStatus, directorStatusText: direction.StatusText, directorFallbackReason: direction.FallbackReason, styleFingerprint: options?.StyleFingerprint);
+                    if (saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(saved, campaignKey);
                 }
                 return new { Result = result, Saved = saved, Prompt = effectivePrompt };
             }, completion =>
             {
-                if (completion.Saved != null) DiskImageCacheManager.SetDefault(completion.Saved, campaignKey);
+                if (completion.Saved != null) DiskImageCacheManager.PromoteDefaultIfNewest(completion.Saved, campaignKey);
                 _overlayVm.PromptText = completion.Prompt;
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null && Publish(completion.Saved, completion.Prompt, completion.Result.ImageBytes))
                 {

@@ -115,6 +115,12 @@ if ($ValidateOnly) {
 
 Write-Host "==> [Illustrator] Deploying to $TargetDir..." -ForegroundColor Cyan
 
+$resolvedTargetDir = [IO.Path]::GetFullPath($TargetDir).TrimEnd('\')
+$expectedTargetSuffix = [IO.Path]::GetFullPath((Join-Path $GamePath "Modules\AnimusForge_Illustrator")).TrimEnd('\')
+if (-not [string]::Equals($resolvedTargetDir, $expectedTargetSuffix, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Refusing to clean an unexpected Illustrator target directory: $resolvedTargetDir"
+}
+
 $backupRoot = Join-Path $RepoRoot "artifacts\deploy-backups\AnimusForge_Illustrator\v$BannerlordApi\$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 if (Test-Path $TargetDir) {
     $existingFiles = Get-ChildItem $TargetDir -Recurse -File
@@ -150,6 +156,32 @@ catch {
     }
 }
 Copy-Item -Path "$SourceDir\GUI\Prefabs\*" -Destination "$TargetDir\GUI\Prefabs\" -Force
+
+# Clean retired module-owned files only after the new payload was copied. Keep the
+# active DLL in place until the existing rename-and-replace fallback handles it.
+$staleFiles = @(Get-ChildItem -LiteralPath "$TargetDir\GUI\Prefabs" -File | Where-Object {
+    -not (Test-Path -LiteralPath (Join-Path "$SourceDir\GUI\Prefabs" $_.Name) -PathType Leaf)
+})
+$staleFiles += @(Get-ChildItem -LiteralPath $TargetDir -File | Where-Object {
+    $_.Extension -in @('.pdb', '.old')
+})
+$runtimeDir = Join-Path $TargetDir 'bin\Win64_Shipping_Client'
+$retiredRuntimeNames = @("$dllName.old")
+if (-not (Test-Path -LiteralPath ([IO.Path]::ChangeExtension($builtDll, '.pdb')))) {
+    $retiredRuntimeNames += [IO.Path]::ChangeExtension($dllName, '.pdb')
+}
+foreach ($name in $retiredRuntimeNames) {
+    $candidate = Join-Path $runtimeDir $name
+    if (Test-Path -LiteralPath $candidate -PathType Leaf) { $staleFiles += Get-Item -LiteralPath $candidate }
+}
+foreach ($file in $staleFiles) {
+    $resolvedFile = [IO.Path]::GetFullPath($file.FullName)
+    if (-not $resolvedFile.StartsWith($resolvedTargetDir + '\', [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Refusing to clean a path outside the Illustrator module: $resolvedFile"
+    }
+    try { Remove-Item -LiteralPath $resolvedFile -Force }
+    catch { Write-Warning "Could not remove retired file '$resolvedFile': $($_.Exception.Message)" }
+}
 
 Write-Host "==> [Illustrator] Deployment complete!" -ForegroundColor Green
 Get-ChildItem -Path $TargetDir -Recurse | Where-Object { -not $_.PSIsContainer } | Select-Object Name, Length, LastWriteTime | Format-Table -AutoSize

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using AnimusForge.Illustrator.Engine;
 using System.Diagnostics;
@@ -124,11 +125,11 @@ namespace AnimusForge.Illustrator.Core
                     result.ErrorMessage = "精确 images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
                     return result;
                 }
-                if (settings.UseExactEndpointUrl && !exactEditsEndpoint && requestedRefImages > 0)
+                if (settings.UseExactEndpointUrl && !exactEditsEndpoint && !isChatProtocol && requestedRefImages > 0)
                 {
                     // /images/generations has no image field. Do not report a successful
                     // text-only generation as if the caller's identity/scene references were
-                    // honored when an exact URL explicitly selected that endpoint.
+                    // honored when an exact images/generations URL explicitly selected that endpoint.
                     result.ErrorMessage = "精确 images/generations 端点不能携带参考图；请改用 /images/edits 或开启对话多模态生图通道。未发送请求。";
                     return result;
                 }
@@ -143,7 +144,7 @@ namespace AnimusForge.Illustrator.Core
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
                 if (!isChatProtocol && requestedRefImages > 0 && (!settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
-                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken).ConfigureAwait(false);
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
@@ -306,6 +307,63 @@ namespace AnimusForge.Illustrator.Core
         /// </summary>
         private const string BuiltinNegativePrompt = "extra limbs, malformed hands, bad anatomy, unwanted text, watermark, UI overlay, reference image collage";
 
+        private static string BuildImageStyleAnchor(string customStyleHint, string style)
+        {
+            string resolved = !string.IsNullOrWhiteSpace(customStyleHint)
+                ? customStyleHint.Trim()
+                : (style ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(resolved)) return string.Empty;
+
+            var anchor = new StringBuilder();
+            anchor.Append("【最高优先级画风锚点】整幅成图必须统一采用指定画风：")
+                .Append(resolved)
+                .Append("。参考图只提供人物身份、装备、纹章载体和已确认场景事实，不决定最终媒介、渲染质感或摄影风格；从零重绘人物与环境，保持指定画风的笔触、材质和光影一致。");
+            if (resolved.IndexOf("油画", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                resolved.IndexOf("oil painting", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                anchor.Append("必须看得见有层次的油彩笔触、画布质感和概括性笔触，禁止输出照片、3D渲染、游戏截图或平滑的数字插画质感。");
+            }
+            return anchor.ToString();
+        }
+
+        private const int MaxReferencePayloadBytes = 48 * 1024 * 1024;
+
+        private static IReadOnlyList<IllustrationReferenceImage> PrepareReferenceImages(IReadOnlyList<IllustrationReferenceImage> references)
+        {
+            if (references == null) return null;
+            var prepared = new List<IllustrationReferenceImage>();
+            int totalBytes = 0;
+            foreach (var reference in references)
+            {
+                if (reference == null || string.IsNullOrWhiteSpace(reference.Base64Image)) continue;
+                try
+                {
+                    string encoded = reference.Base64Image.Trim();
+                    if (encoded.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int comma = encoded.IndexOf(',');
+                        int metadataEnd = comma < 0 ? -1 : encoded.IndexOf(';');
+                        if (comma < 0 || metadataEnd < 0 ||
+                            encoded.IndexOf(";base64", metadataEnd, StringComparison.OrdinalIgnoreCase) < 0)
+                            throw new InvalidDataException("参考图不是 base64 data URI");
+                        encoded = encoded.Substring(comma + 1);
+                    }
+                    if (encoded.Length > ImagePayload.MaxBytes * 4L / 3L + 8)
+                        throw new InvalidDataException("参考图超过单图大小限制");
+                    byte[] normalized = ImagePayload.Normalize(Convert.FromBase64String(encoded));
+                    if (totalBytes > MaxReferencePayloadBytes - normalized.Length)
+                        throw new InvalidDataException("参考图总大小超过限制");
+                    totalBytes += normalized.Length;
+                    prepared.Add(new IllustrationReferenceImage(Convert.ToBase64String(normalized), reference.Label, reference.Kind));
+                }
+                catch (Exception ex)
+                {
+                    Log("[Illustrator] Ignored invalid reference image: " + ex.GetType().Name);
+                }
+            }
+            return prepared;
+        }
+
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
             string effectivePrompt = chatProtocol
@@ -368,16 +426,24 @@ namespace AnimusForge.Illustrator.Core
             string style,
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
             string apiKey,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            string customStyleHint = null)
         {
             string editsUrl = ResolveEditsEndpointUrl(baseUrl);
+            bool hadReferences = referenceImages != null && referenceImages.Count > 0;
+            referenceImages = PrepareReferenceImages(referenceImages);
+            if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
+                return (false, null, null, "没有可用的参考图；请求未发送。", false, effectivePrompt ?? string.Empty);
             string sentPrompt = effectivePrompt ?? string.Empty;
             try
             {
                 using (var form = new MultipartFormDataContent())
                 {
                     form.Add(new StringContent(model ?? string.Empty, Encoding.UTF8), "model");
-                    var labels = new StringBuilder(VisualFidelityRules.ReferenceRepaint);
+                    var labels = new StringBuilder();
+                    string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
+                    if (!string.IsNullOrWhiteSpace(styleAnchor)) labels.AppendLine(styleAnchor);
+                    labels.AppendLine(VisualFidelityRules.ReferenceRepaint);
                     labels.AppendLine().AppendLine(effectivePrompt ?? string.Empty);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
                     if (!string.IsNullOrWhiteSpace(style)) labels.Append("\n画风要求：").Append(style);
@@ -462,6 +528,10 @@ namespace AnimusForge.Illustrator.Core
         {
             JObject payload;
             int actualRefImages = 0;
+            bool hadReferences = referenceImages != null && referenceImages.Count > 0;
+            referenceImages = PrepareReferenceImages(referenceImages);
+            if (hadReferences && (referenceImages == null || referenceImages.Count == 0))
+                return (false, null, null, "没有可用的参考图；请求未发送。", false, effectivePrompt ?? string.Empty);
             string sentPrompt = effectivePrompt ?? string.Empty;
             if (isChatProtocol)
             {
@@ -471,8 +541,11 @@ namespace AnimusForge.Illustrator.Core
                 {
                     var content = new JArray
                     {
+                        new JObject { ["type"] = "text", ["text"] = BuildImageStyleAnchor(customStyleHint, style) },
                         new JObject { ["type"] = "text", ["text"] = VisualFidelityRules.ReferenceRepaint }
                     };
+
+                    if (string.IsNullOrWhiteSpace((string)content[0]["text"])) content.RemoveAt(0);
 
                     // 1. 统计真实人物参考图数量
                     int heroCount = 0;
@@ -589,7 +662,10 @@ namespace AnimusForge.Illustrator.Core
                 }
                 else
                 {
-                    messageContent = effectivePrompt;
+                    string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
+                    messageContent = string.IsNullOrWhiteSpace(styleAnchor)
+                        ? (JToken)effectivePrompt
+                        : (JToken)(styleAnchor + "\n" + effectivePrompt);
                 }
                 sentPrompt = ExtractChatPromptText(messageContent);
 
@@ -631,6 +707,13 @@ namespace AnimusForge.Illustrator.Core
                 if (!string.IsNullOrWhiteSpace(style))
                 {
                     payload["style"] = style;
+                }
+
+                string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
+                if (!string.IsNullOrWhiteSpace(styleAnchor))
+                {
+                    payload["prompt"] = styleAnchor + "\n" + payload["prompt"];
+                    sentPrompt = (string)payload["prompt"];
                 }
             }
 
@@ -870,15 +953,62 @@ namespace AnimusForge.Illustrator.Core
             return null;
         }
 
+        private const int MaxImageDownloadRedirects = 3;
+
         private static async Task<byte[]> DownloadImageBytesAsync(string url, CancellationToken cancellationToken)
         {
             try
             {
-                using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(60) })
-                using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
+                if (!Uri.TryCreate(url, UriKind.Absolute, out Uri current) ||
+                    !await IsSafeImageDownloadUriAsync(current, cancellationToken).ConfigureAwait(false))
                 {
-                    response.EnsureSuccessStatusCode();
-                    return ImagePayload.Normalize(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxBytes, cancellationToken).ConfigureAwait(false));
+                    Log($"[Illustrator] Refused unsafe generated-image URL: {SensitiveLogText.SafeUrl(url)}");
+                    return null;
+                }
+
+                // The URL comes from a provider response rather than the user's configured API
+                // endpoint. Disable the process proxy and automatic redirects so a provider cannot
+                // turn an apparently public image URL into a request to a local or private target.
+                using (var handler = new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false })
+                using (var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(60) })
+                {
+                    for (int redirect = 0; redirect <= MaxImageDownloadRedirects; redirect++)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        if (!await IsSafeImageDownloadUriAsync(current, cancellationToken).ConfigureAwait(false))
+                        {
+                            Log($"[Illustrator] Refused unsafe generated-image redirect: {SensitiveLogText.SafeUrl(current.ToString())}");
+                            return null;
+                        }
+
+                        using (var request = new HttpRequestMessage(HttpMethod.Get, current))
+                        using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
+                        {
+                            if (IsRedirectStatus(response.StatusCode))
+                            {
+                                if (redirect >= MaxImageDownloadRedirects || response.Headers.Location == null)
+                                {
+                                    Log($"[Illustrator] Refused generated-image redirect chain from {SensitiveLogText.SafeUrl(url)}");
+                                    return null;
+                                }
+
+                                Uri next = response.Headers.Location.IsAbsoluteUri
+                                    ? response.Headers.Location
+                                    : new Uri(current, response.Headers.Location);
+                                if (!await IsSafeImageDownloadUriAsync(next, cancellationToken).ConfigureAwait(false))
+                                {
+                                    Log($"[Illustrator] Refused unsafe generated-image redirect: {SensitiveLogText.SafeUrl(next.ToString())}");
+                                    return null;
+                                }
+                                current = next;
+                                continue;
+                            }
+
+                            response.EnsureSuccessStatusCode();
+                            return ImagePayload.Normalize(await ImagePayload.ReadBoundedAsync(response.Content, ImagePayload.MaxBytes, cancellationToken).ConfigureAwait(false));
+                        }
+                    }
+                    return null;
                 }
             }
             catch (OperationCanceledException) { throw; }
@@ -887,6 +1017,77 @@ namespace AnimusForge.Illustrator.Core
                 Log($"[Illustrator] Failed to download generated image from {SensitiveLogText.SafeUrl(url)}: {ex.GetType().Name}");
                 return null;
             }
+        }
+
+        private static bool IsRedirectStatus(HttpStatusCode statusCode)
+        {
+            return statusCode == HttpStatusCode.MovedPermanently || statusCode == HttpStatusCode.Found ||
+                statusCode == HttpStatusCode.SeeOther || statusCode == HttpStatusCode.TemporaryRedirect ||
+                (int)statusCode == 308;
+        }
+
+        private static async Task<bool> IsSafeImageDownloadUriAsync(Uri uri, CancellationToken cancellationToken)
+        {
+            if (uri == null || !uri.IsAbsoluteUri ||
+                (!string.Equals(uri.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase) &&
+                 !string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) ||
+                string.IsNullOrWhiteSpace(uri.Host) || !string.IsNullOrEmpty(uri.UserInfo))
+            {
+                return false;
+            }
+
+            string host = uri.DnsSafeHost?.TrimEnd('.');
+            if (string.IsNullOrWhiteSpace(host) || IsLocalImageHostName(host)) return false;
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (IPAddress.TryParse(host, out IPAddress literal))
+                return !IsDisallowedImageAddress(literal);
+
+            IPAddress[] addresses;
+            try
+            {
+                addresses = await Dns.GetHostAddressesAsync(host).ConfigureAwait(false);
+            }
+            catch
+            {
+                return false;
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            if (addresses == null || addresses.Length == 0) return false;
+            foreach (IPAddress address in addresses)
+                if (IsDisallowedImageAddress(address)) return false;
+            return true;
+        }
+
+        private static bool IsLocalImageHostName(string host)
+        {
+            string normalized = (host ?? string.Empty).TrimEnd('.').ToLowerInvariant();
+            return normalized == "localhost" || normalized.EndsWith(".localhost", StringComparison.Ordinal) ||
+                normalized.EndsWith(".local", StringComparison.Ordinal) || normalized.EndsWith(".internal", StringComparison.Ordinal) ||
+                normalized.EndsWith(".lan", StringComparison.Ordinal) || normalized == "metadata.google.internal" ||
+                normalized == "metadata";
+        }
+
+        private static bool IsDisallowedImageAddress(IPAddress address)
+        {
+            if (address == null) return true;
+            if (address.IsIPv4MappedToIPv6) address = address.MapToIPv4();
+            if (IPAddress.IsLoopback(address) || address.Equals(IPAddress.Any) || address.Equals(IPAddress.IPv6Any) ||
+                address.IsIPv6LinkLocal || address.IsIPv6SiteLocal || address.IsIPv6Multicast)
+                return true;
+
+            byte[] bytes = address.GetAddressBytes();
+            if (bytes.Length == 16)
+                return (bytes[0] & 0xFE) == 0xFC; // IPv6 unique-local fc00::/7.
+            if (bytes.Length != 4) return true;
+
+            int first = bytes[0], second = bytes[1], third = bytes[2];
+            return first == 0 || first == 10 || (first == 100 && second >= 64 && second <= 127) ||
+                (first == 169 && second == 254) || (first == 172 && second >= 16 && second <= 31) ||
+                (first == 192 && second == 168) || (first == 192 && second == 0 && third == 0) ||
+                (first == 198 && second >= 18 && second <= 19) || (first == 198 && second == 51 && third == 100) ||
+                (first == 203 && second == 0 && third == 113) || first >= 224;
         }
 
         private static string ExtractErrorMessage(string responseBody, int statusCode)
@@ -958,7 +1159,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 if (quality.Equals("hd", StringComparison.OrdinalIgnoreCase) || quality.Equals("high", StringComparison.OrdinalIgnoreCase))
                 {
-                    directives.Add("ultra-high definition, 4k resolution, hyper-detailed, masterpiece, hd quality");
+                    directives.Add("high rendering quality, coherent detail appropriate to the selected artistic medium");
                 }
                 else if (quality.Equals("standard", StringComparison.OrdinalIgnoreCase) || quality.Equals("auto", StringComparison.OrdinalIgnoreCase))
                 {
@@ -966,7 +1167,7 @@ namespace AnimusForge.Illustrator.Core
                 }
                 else if (quality.Equals("medium", StringComparison.OrdinalIgnoreCase))
                 {
-                    directives.Add("medium-high definition quality, detailed");
+                    directives.Add("balanced rendering quality appropriate to the selected artistic medium");
                 }
                 else if (quality.Equals("low", StringComparison.OrdinalIgnoreCase))
                 {
@@ -974,7 +1175,7 @@ namespace AnimusForge.Illustrator.Core
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(style))
+            if (string.IsNullOrWhiteSpace(customStyleHint) && !string.IsNullOrWhiteSpace(style))
             {
                 if (style.Equals("vivid", StringComparison.OrdinalIgnoreCase))
                 {
