@@ -53,6 +53,7 @@ EXPANDED_ENTRIES = {
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs",
         "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
         "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
     ),
     "ui-tts-external-integration": (
