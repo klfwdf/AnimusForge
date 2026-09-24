@@ -1,4 +1,11 @@
 <a id="j13-plan-20260924"></a>
+## J13a a2 minute wave 主线程发布切片（2026-09-24）
+
+状态 `J13a_A2_WAVE_LAUNCH_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `5ca5e5c3`。真实批量消费者 `MyBehavior.cs:45501–45593` 仍按原 `burstSize` 和 `Task.Delay(60000)` 分波，但每波经 `EnqueueWeeklyWaveLaunchAsync` 排入复用 `WeeklyReportCommitQueueOwner` 的 `_weeklyWaveLaunchQueue`；`OnCampaignTick` `:17487–17492` 的 `ProcessPendingWeeklyWaveLaunches` `:45718–45759` 在主线程发 UI 通知、记录波次并启动该波请求。读档清理 `:2537` 结算未发波次等待者，旧代/换 owner 在发布前拒绝；完成源使用异步 continuation，避免同步回调在 tick 内继续下一波。原完成任务汇总、批次索引、三次重试、API route 和保存/公开身份不变。每 tick 至多启动一波，单波请求启动仍为 O(该波批次数)，没有帧耗时上界。
+
+- 验证：四获准构建目录绝对路径、内容、递归链接检查通过；原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。当前 Debug 1.4 DLL SHA256 `114EFBCB2B1053BEA585E06AE99A8BE99F79B0CFE04DFAB7D4466D0747960288` 作为显式候选通过 Phase8 来源/新鲜度/哈希及原队列 FIFO、旧 context/新队首和清理回放；入口 11、source inventory 7、V1 119/四 DLL metadata 1060、469 锚点代码地图 recorded/working-tree 通过。此处未用假时钟完整驱动多 wave/Campaign tick，真实分钟节奏仍待验证。
+- 未完：自动重试在延迟后重新读取可变 API 配置的主线程边界、独立 live 材料源提交重验、部分成功/失败/popup/一次发布及积压成本尚未闭合；a2/J13a/J13 仍 ACTIVE，a3 与 J13b–g 未施工。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送，`.dotnet-cli-home/` 未动。
+
 ## J13a a2 批量自动重试旧代请求拦截切片（2026-09-24）
 
 状态 `J13a_A2_STALE_RETRY_SLICE_OFFLINE_VERIFIED / J13a_A2_ACTIVE`，产品 `39606755`。`MyBehavior.cs:42966–43059,45553` 将请求开始时的 `SaveRuntimeGuard` generation 传入每个批次执行与最多三次自动重试；每次尝试发 API 前、每次回包后均复核原代。读档/换代期间已在途请求的完成仍由原结果链清理，**不会**在延迟结束后向新存档再发送旧批次自动重试。未改原每分钟 wave、1200ms/限流/Retry-After 间隔、API route 或部分结果解析；`#if false` 历史路径不作为活动消费者。
