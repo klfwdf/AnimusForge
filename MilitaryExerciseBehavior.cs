@@ -909,7 +909,7 @@ public static class MilitaryExerciseBehavior
 	private static readonly MilitaryExerciseSessionOwner<PendingSelection, MilitaryExerciseRuntime> _sessionOwner =
 		new MilitaryExerciseSessionOwner<PendingSelection, MilitaryExerciseRuntime>(
 			selection => selection.Stage == MilitaryExerciseSelectionStage.SecondTeam,
-			runtime => runtime.SettlementDone);
+			runtime => runtime.Settlement.SettlementDone);
 	private static MilitaryExerciseRuntime _runtime { get => _sessionOwner.Runtime; set => _sessionOwner.Runtime = value; }
 
 	private static PendingSelection _pendingSelection { get => _sessionOwner.Selection; set => _sessionOwner.Selection = value; }
@@ -1089,7 +1089,7 @@ public static class MilitaryExerciseBehavior
 		try
 		{
 			MilitaryExerciseRuntime runtime = _runtime;
-			if (runtime == null || runtime.SettlementStarted || runtime.SettlementDone || agent == null || !agent.IsHuman || !agent.IsAIControlled)
+			if (runtime == null || runtime.Settlement.SettlementStarted || runtime.Settlement.SettlementDone || agent == null || !agent.IsHuman || !agent.IsAIControlled)
 			{
 				return false;
 			}
@@ -1114,7 +1114,7 @@ public static class MilitaryExerciseBehavior
 		{
 			MilitaryExerciseRuntime runtime = _runtime;
 			Mission mission = Mission.Current;
-			if (runtime == null || runtime.SettlementStarted || runtime.SettlementDone || mission == null || formation == null || !formation.IsAIControlled)
+			if (runtime == null || runtime.Settlement.SettlementStarted || runtime.Settlement.SettlementDone || mission == null || formation == null || !formation.IsAIControlled)
 			{
 				return false;
 			}
@@ -1135,7 +1135,7 @@ public static class MilitaryExerciseBehavior
 	internal static void RecordNoRetreatSuppression()
 	{
 		MilitaryExerciseRuntime runtime = _runtime;
-		if (runtime != null && !runtime.SettlementStarted && !runtime.SettlementDone)
+		if (runtime != null && !runtime.Settlement.SettlementStarted && !runtime.Settlement.SettlementDone)
 		{
 			Interlocked.Increment(ref runtime.NoRetreatSuppressions);
 		}
@@ -1185,14 +1185,11 @@ public static class MilitaryExerciseBehavior
 			}
 			return true;
 		}
-		runtime.VanillaResultPatchHit = true;
-		if (!runtime.XpCommittedByVanillaPatch)
+		runtime.Settlement.MarkVanillaResultPatchHit();
+		if (runtime.Settlement.TryBeginXpCommit())
 		{
-			runtime.XpCommitSucceeded = CommitXpOnlyForRuntime(runtime, mapEvent, source);
-			runtime.XpCommittedByVanillaPatch = true;
-		}
-		else
-		{
+			bool succeeded = CommitXpOnlyForRuntime(runtime, mapEvent, source);
+			runtime.Settlement.CompleteXpCommit(succeeded, fromVanillaPatch: true, onMissionEnd: false);
 		}
 		try
 		{
@@ -1207,16 +1204,16 @@ public static class MilitaryExerciseBehavior
 	internal static void TryCleanupAfterVanillaPlayerEncounterResults(PlayerEncounter encounter, string source)
 	{
 		MilitaryExerciseRuntime runtime = _runtime;
-		if (runtime == null || runtime.SettlementDone)
+		if (runtime == null || runtime.Settlement.SettlementDone)
 		{
 			return;
 		}
 		MapEvent encounterMapEvent = GetPrivateField<MapEvent>(encounter, "_mapEvent");
-		if (!runtime.VanillaResultPatchHit && !ReferenceEquals(runtime.MapEvent, encounterMapEvent))
+		if (!runtime.Settlement.VanillaResultPatchHit && !ReferenceEquals(runtime.MapEvent, encounterMapEvent))
 		{
 			return;
 		}
-		CleanupExerciseRuntime(runtime, source, skipXpCommit: runtime.XpCommittedByVanillaPatch && runtime.XpCommitSucceeded);
+		CleanupExerciseRuntime(runtime, source, skipXpCommit: runtime.Settlement.XpCommittedByVanillaPatch && runtime.Settlement.XpCommitSucceeded);
 	}
 
 	internal static bool TryHandlePlayerEncounterApplyResultsXpOnly(PlayerEncounter encounter, string source)
@@ -1233,11 +1230,11 @@ public static class MilitaryExerciseBehavior
 		}
 		if (runtime != null)
 		{
-			runtime.VanillaResultPatchHit = true;
-			if (!runtime.XpCommittedByVanillaPatch)
+			runtime.Settlement.MarkVanillaResultPatchHit();
+			if (runtime.Settlement.TryBeginXpCommit())
 			{
-				runtime.XpCommitSucceeded = CommitXpOnlyForRuntime(runtime, encounterMapEvent, source);
-				runtime.XpCommittedByVanillaPatch = true;
+				bool succeeded = CommitXpOnlyForRuntime(runtime, encounterMapEvent, source);
+				runtime.Settlement.CompleteXpCommit(succeeded, fromVanillaPatch: true, onMissionEnd: false);
 			}
 			CleanupExerciseRuntime(runtime, source, skipXpCommit: true);
 		}
@@ -1265,7 +1262,7 @@ public static class MilitaryExerciseBehavior
 		}
 		if (runtime != null)
 		{
-			bool skipXp = runtime.XpCommittedByVanillaPatch && runtime.XpCommitSucceeded;
+			bool skipXp = runtime.Settlement.XpCommittedByVanillaPatch && runtime.Settlement.XpCommitSucceeded;
 			CleanupExerciseRuntime(runtime, source, skipXpCommit: skipXp);
 		}
 		else
@@ -1281,7 +1278,7 @@ public static class MilitaryExerciseBehavior
 	internal static void TryCleanupAfterVanillaPlayerEncounterContinue(PlayerEncounter encounter, string source)
 	{
 		MilitaryExerciseRuntime runtime = _runtime;
-		if (runtime == null || runtime.SettlementDone || !runtime.RenownInfluenceSkipped)
+		if (runtime == null || runtime.Settlement.SettlementDone || !runtime.Settlement.RenownInfluenceSkipped)
 		{
 			return;
 		}
@@ -1290,7 +1287,7 @@ public static class MilitaryExerciseBehavior
 		{
 			return;
 		}
-		CleanupExerciseRuntime(runtime, source, skipXpCommit: runtime.XpCommittedByVanillaPatch && runtime.XpCommitSucceeded);
+		CleanupExerciseRuntime(runtime, source, skipXpCommit: runtime.Settlement.XpCommittedByVanillaPatch && runtime.Settlement.XpCommitSucceeded);
 	}
 
 	internal static bool ShouldSkipRenownInfluenceForExercise(MapEvent mapEvent, string source)
@@ -1304,12 +1301,7 @@ public static class MilitaryExerciseBehavior
 			}
 			return true;
 		}
-		runtime.RenownInfluenceSkipped = true;
-		if (!runtime.VanillaResultPatchHit && !runtime.XpCommittedByVanillaPatch)
-		{
-			runtime.XpCommittedByVanillaPatch = true;
-			runtime.XpCommitSucceeded = true;
-		}
+		runtime.Settlement.MarkRenownInfluenceSkipped();
 		return true;
 	}
 
@@ -1328,11 +1320,7 @@ public static class MilitaryExerciseBehavior
 	{
 		try
 		{
-			if (runtime == null || runtime.SettlementDone)
-			{
-				return;
-			}
-			if (runtime.XpCommittedByVanillaPatch)
+			if (runtime == null || runtime.Settlement.SettlementDone)
 			{
 				return;
 			}
@@ -1340,13 +1328,14 @@ public static class MilitaryExerciseBehavior
 			{
 				return;
 			}
-			runtime.XpCommitSucceeded = CommitXpOnlyForRuntime(runtime, runtime.MapEvent, source + ".early_xp_only");
-			runtime.XpCommittedByVanillaPatch = true;
-			if (runtime.XpCommitSucceeded && string.Equals(source, "OnEndMission", StringComparison.Ordinal))
+			if (!runtime.Settlement.TryBeginXpCommit())
 			{
-				runtime.EarlyXpCommittedOnMissionEnd = true;
+				return;
 			}
-			Log($"xp_early_commit_done source={source} success={runtime.XpCommitSucceeded}");
+			bool succeeded = CommitXpOnlyForRuntime(runtime, runtime.MapEvent, source + ".early_xp_only");
+			runtime.Settlement.CompleteXpCommit(succeeded, fromVanillaPatch: true,
+				onMissionEnd: string.Equals(source, "OnEndMission", StringComparison.Ordinal));
+			Log($"xp_early_commit_done source={source} success={runtime.Settlement.XpCommitSucceeded}");
 		}
 		catch (Exception ex)
 		{
@@ -1362,7 +1351,7 @@ public static class MilitaryExerciseBehavior
 	private static MilitaryExerciseRuntime GetRuntimeForMapEvent(MapEvent mapEvent)
 	{
 		MilitaryExerciseRuntime runtime = _runtime;
-		if (runtime == null || runtime.SettlementDone || mapEvent == null)
+		if (runtime == null || runtime.Settlement.SettlementDone || mapEvent == null)
 		{
 			return null;
 		}
@@ -1498,7 +1487,7 @@ public static class MilitaryExerciseBehavior
 		try
 		{
 			MilitaryExerciseRuntime runtime = _runtime;
-			if (runtime == null || runtime.SettlementDone || runtime.SettlementStarted || runtime.IsOpening || Mission.Current != null)
+			if (runtime == null || runtime.Settlement.SettlementDone || runtime.Settlement.SettlementStarted || runtime.IsOpening || Mission.Current != null)
 			{
 				return;
 			}
@@ -1518,13 +1507,13 @@ public static class MilitaryExerciseBehavior
 			catch
 			{
 			}
-			bool earlyMissionEndCleanup = runtime.EarlyXpCommittedOnMissionEnd && runtime.XpCommitSucceeded;
+			bool earlyMissionEndCleanup = runtime.Settlement.EarlyXpCommittedOnMissionEnd && runtime.Settlement.XpCommitSucceeded;
 			if (!hasTerminalBattleState && !waitingRemoval && !earlyMissionEndCleanup)
 			{
 				return;
 			}
-			bool skipXp = runtime.XpCommittedByVanillaPatch && runtime.XpCommitSucceeded;
-			Log($"tick_finished_runtime_cleanup battle_state={mapEvent.BattleState} map_event_state={mapEvent.State} early_mission_end_cleanup={earlyMissionEndCleanup} skip_xp_commit={skipXp} xp_committed_by_patch={runtime.XpCommittedByVanillaPatch} xp_success={runtime.XpCommitSucceeded}");
+			bool skipXp = runtime.Settlement.XpCommittedByVanillaPatch && runtime.Settlement.XpCommitSucceeded;
+			Log($"tick_finished_runtime_cleanup battle_state={mapEvent.BattleState} map_event_state={mapEvent.State} early_mission_end_cleanup={earlyMissionEndCleanup} skip_xp_commit={skipXp} xp_committed_by_patch={runtime.Settlement.XpCommittedByVanillaPatch} xp_success={runtime.Settlement.XpCommitSucceeded}");
 			CleanupExerciseRuntime(runtime, "OnEngineTick.finished_runtime", skipXpCommit: skipXp);
 		}
 		catch (Exception ex)
@@ -1561,7 +1550,7 @@ public static class MilitaryExerciseBehavior
 					_knownDummyPartyIds.Remove(partyId);
 					continue;
 				}
-				if (_runtime != null && !_runtime.SettlementDone
+				if (_runtime != null && !_runtime.Settlement.SettlementDone
 					&& (ReferenceEquals(party, _runtime.OpponentDummyParty) || ReferenceEquals(party, _runtime.HoldingDummyParty)))
 				{
 					continue;
@@ -1585,7 +1574,7 @@ public static class MilitaryExerciseBehavior
 						continue;
 					}
 					RegisterKnownDummyParty(party);
-					if (_runtime != null && !_runtime.SettlementDone
+					if (_runtime != null && !_runtime.Settlement.SettlementDone
 						&& (ReferenceEquals(party, _runtime.OpponentDummyParty) || ReferenceEquals(party, _runtime.HoldingDummyParty)))
 					{
 						continue;
@@ -1910,9 +1899,7 @@ public static class MilitaryExerciseBehavior
 				OpponentDummyParty = null,
 				HoldingDummyParty = null,
 				MapEvent = null,
-				IsOpening = false,
-				SettlementStarted = false,
-				SettlementDone = false
+				IsOpening = false
 			};
 			_runtime.FirstTeamSummary = RosterSummary(_runtime.FirstTeamRoster);
 			_runtime.OpponentSummary = RosterSummary(_runtime.OpponentRoster);
@@ -2808,15 +2795,10 @@ public static class MilitaryExerciseBehavior
 		{
 			return;
 		}
-		if (runtime.SettlementDone)
+		if (!runtime.Settlement.TryBeginSettlement())
 		{
 			return;
 		}
-		if (runtime.SettlementStarted)
-		{
-			return;
-		}
-		runtime.SettlementStarted = true;
 		ExerciseSettlementSummary summary = new ExerciseSettlementSummary();
 		Log($"cleanup_exercise begin reason={reason} skip_xp_commit={skipXpCommit}");
 		try
@@ -2825,17 +2807,15 @@ public static class MilitaryExerciseBehavior
 			Dictionary<CharacterObject, RosterTotals> mainBeforeXp = BuildRosterTotals(MobileParty.MainParty?.MemberRoster);
 			Dictionary<CharacterObject, RosterTotals> opponentBeforeXp = BuildRosterTotals(runtime.OpponentDummyParty?.MemberRoster);
 			Dictionary<CharacterObject, RosterTotals> holdingBeforeXp = BuildRosterTotals(runtime.HoldingDummyParty?.MemberRoster);
-			if (skipXpCommit)
+			if (runtime.Settlement.TryBeginCleanupXpCommit(skipXpCommit))
 			{
-				summary.XpCommitted = runtime.XpCommitSucceeded;
-			}
-			else if (runtime.XpCommittedByVanillaPatch)
-			{
-				summary.XpCommitted = runtime.XpCommitSucceeded;
+				bool succeeded = CommitXpGainsForMapEvent(runtime.MapEvent);
+				runtime.Settlement.CompleteXpCommit(succeeded, fromVanillaPatch: false, onMissionEnd: false);
+				summary.XpCommitted = succeeded;
 			}
 			else
 			{
-				summary.XpCommitted = CommitXpGainsForMapEvent(runtime.MapEvent);
+				summary.XpCommitted = runtime.Settlement.XpCommitSucceeded;
 			}
 			int mainXpDelta = CalculateRosterXpDelta(mainBeforeXp, BuildRosterTotals(MobileParty.MainParty?.MemberRoster));
 			int opponentXpDelta = CalculateRosterXpDelta(opponentBeforeXp, BuildRosterTotals(runtime.OpponentDummyParty?.MemberRoster));
@@ -2870,7 +2850,7 @@ public static class MilitaryExerciseBehavior
 			runtime.OpponentDummyParty = null;
 			runtime.HoldingDummyParty = null;
 			runtime.MapEvent = null;
-			runtime.SettlementDone = true;
+			runtime.Settlement.CompleteSettlement();
 			_sessionOwner.ReleaseRuntime(runtime);
 		}
 	}
@@ -3069,11 +3049,10 @@ public static class MilitaryExerciseBehavior
 
 	private static int RestoreRoutedRegularTroops(MilitaryExerciseRuntime runtime, string reason)
 	{
-		if (runtime == null || runtime.RoutedTroopsRestored)
+		if (runtime == null || !runtime.Settlement.TryBeginRoutedRestore())
 		{
 			return 0;
 		}
-		runtime.RoutedTroopsRestored = true;
 		try
 		{
 			MapEvent mapEvent = runtime.MapEvent;
@@ -4106,23 +4085,10 @@ public static class MilitaryExerciseBehavior
 
 		public bool IsOpening { get; set; }
 
-		public bool SettlementStarted { get; set; }
-
-		public bool SettlementDone { get; set; }
-
-		public bool VanillaResultPatchHit { get; set; }
-
-		public bool XpCommittedByVanillaPatch { get; set; }
-
-		public bool XpCommitSucceeded { get; set; }
-
-		public bool EarlyXpCommittedOnMissionEnd { get; set; }
-
-		public bool RenownInfluenceSkipped { get; set; }
+		public ExerciseSettlementOwner Settlement { get; } = new ExerciseSettlementOwner();
 
 		public int NoRetreatSuppressions;
 
-		public bool RoutedTroopsRestored { get; set; }
 	}
 
 	internal sealed class MainPartyRoleSnapshot
