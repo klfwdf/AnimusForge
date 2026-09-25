@@ -1,3 +1,9 @@
+# 当前范围：主体 J13d2 Proactive/Issue 有限离线收口（2026-09-25）
+
+Social：产品 `a59a0fc0` 的 `src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs:24–3734` 承接完整候选资格，opening/cooldown/scan/session 的既有 Social owners 沿前片；`ProactiveNpcRequestBehavior.cs` 仍为 Campaign/TW/存档/会面/AFEF host。Issue：`fe74d4fa`–`96d058ca` 将完成回执、offer/in-progress/ready 状态、三渠道 prompt/标签、受理/同伴/交付动作及选项判定分别归 `src/modules/AF.Module.Issue/{Completion,Runtime,Actions}/`，`VanillaIssueOfferBridge.cs` 与 `VanillaIssuePromptBehavior.cs` 保留公开入口、原版 Quest/窗口/ConversationManager/事件适配。聚合契约 `36037592`、`7fc6f680` 验证消费者与信件送达≠任务受理；详细行为/构建与 `NOT-RUN` 见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。[代码地图](af-framework-code-map.json)绑定 `7fc6f680`，575 锚点。**J13d2 `OFFLINE_VERIFIED`，J13 `ACTIVE`**；无 push、Stage、部署、打包、游戏/外仓写入或 J14。
+
+## 以下为 d2 Proactive 资格范围（历史）
+
 # 当前范围：主体 J13d2 Proactive 资格归 Social，Issue 继续（2026-09-25）
 
 产品 `a59a0fc0` 将 `FindBestRequestCandidate`、各需要候选/快照、玩家资格过滤与触发决策完整迁至 `src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs:24–3734`；`ProactiveNpcRequestBehavior.cs:403–540,542+` 仍为 Campaign 主线程增量扫描、会话/会面/存档/AFEF 适配。Social 的 opening、cooldown、scan、session 沿前片；Issue 目前仅同伴窗口派遣 pending 已迁，offer/in-progress/turn-in/完成回执未完成，**J13d2/J13 `ACTIVE`**。具体反例、构建、未验见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `a59a0fc0`，560 锚点。无 push、Stage、部署、打包、游戏/外仓写入或 J14。
