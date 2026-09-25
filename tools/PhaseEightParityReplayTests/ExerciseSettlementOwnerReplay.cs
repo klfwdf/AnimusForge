@@ -57,6 +57,23 @@ internal static class ExerciseSettlementOwnerReplay
         Check(!(bool)Get(renownAfterPatch, "XpCommitAttempted")
             && (bool)Call(renownAfterPatch, "TryBeginXpCommit"),
             "renown path bypassed prior vanilla-result ownership");
+        Type orphanType = assembly.GetType("AnimusForge.Refactor.Modules.ExerciseOrphanXpOwner`1", true)
+            .MakeGenericType(typeof(object));
+        object orphan = Activator.CreateInstance(orphanType, true);
+        MethodInfo commitOnce = orphanType.GetMethod("CommitOnce", All);
+        object eventA = new object(), eventB = new object(), eventFailed = new object();
+        int commits = 0;
+        Func<object, bool> commit = _ => { commits++; return true; };
+        bool Commit(object mapEvent, Func<object, bool> action)
+            => (bool)commitOnce.Invoke(orphan, new object[] { mapEvent, action });
+        Check(Commit(eventA, commit) && Commit(eventA, commit) && commits == 1,
+            "orphan MapEvent XP committed twice");
+        Check(Commit(eventB, commit) && commits == 2, "different orphan MapEvent lost XP");
+        Check(!Commit(null, commit) && commits == 2, "null orphan MapEvent invoked XP");
+        int failedAttempts = 0;
+        Func<object, bool> failedCommit = _ => { failedAttempts++; return false; };
+        Check(!Commit(eventFailed, failedCommit) && !Commit(eventFailed, failedCommit)
+            && failedAttempts == 1, "uncertain orphan XP retried");
         Console.WriteLine("PASS ExerciseSettlementOwnerReplay current-DLL XP receipt/partial failure/early commit/renown/one-shot restoration; live rewards=NOT_RUN");
     }
 }

@@ -890,6 +890,8 @@ public static class MilitaryExerciseRenownInfluenceSkipPatch
 public static class MilitaryExerciseBehavior
 {
 	private static readonly Func<MapEvent, MobileParty, bool> MapEventContainsExerciseParty = MapEventContainsParty;
+	private static readonly Func<MapEvent, bool> CommitOrphanMapEventXp = CommitXpGainsForMapEvent;
+	private static readonly ExerciseOrphanXpOwner<MapEvent> OrphanXpOwner = new ExerciseOrphanXpOwner<MapEvent>();
 	private const string OpponentDummyPartyPrefix = "animusforge_military_exercise_opponent_";
 
 	private const string HoldingDummyPartyPrefix = "animusforge_military_exercise_holding_";
@@ -1180,7 +1182,7 @@ public static class MilitaryExerciseBehavior
 			{
 				return false;
 			}
-			bool orphanXpCommitted = CommitXpGainsForMapEvent(mapEvent);
+			bool orphanXpCommitted = OrphanXpOwner.CommitOnce(mapEvent, CommitOrphanMapEventXp);
 			try
 			{
 				SetPrivateField(mapEvent, "_mapEventResultsApplied", true);
@@ -1245,7 +1247,7 @@ public static class MilitaryExerciseBehavior
 		}
 		else
 		{
-			bool xpCommitted = CommitXpGainsForMapEvent(encounterMapEvent);
+			bool xpCommitted = OrphanXpOwner.CommitOnce(encounterMapEvent, CommitOrphanMapEventXp);
 			CleanupOrphanDummyPartiesForMapEvent(encounterMapEvent, source);
 		}
 		SetPlayerEncounterState(encounter, "End");
@@ -1272,7 +1274,7 @@ public static class MilitaryExerciseBehavior
 		}
 		else
 		{
-			bool xpCommitted = CommitXpGainsForMapEvent(encounterMapEvent);
+			bool xpCommitted = OrphanXpOwner.CommitOnce(encounterMapEvent, CommitOrphanMapEventXp);
 			CleanupOrphanDummyPartiesForMapEvent(encounterMapEvent, source);
 		}
 		SetPlayerEncounterState(encounter, "End");

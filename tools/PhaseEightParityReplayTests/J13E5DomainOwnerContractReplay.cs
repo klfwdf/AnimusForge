@@ -91,6 +91,8 @@ internal static class J13E5DomainOwnerContractReplay
             && host.Contains("runtime.Settlement.TryBeginXpCommit()", StringComparison.Ordinal)
             && host.Contains("runtime.Settlement.TryBeginCleanupXpCommit(skipXpCommit)", StringComparison.Ordinal)
             && settlement.Contains("if (SettlementDone || XpCommitAttempted) return false;", StringComparison.Ordinal)
+            && Count(host, "OrphanXpOwner.CommitOnce(") == 3
+            && settlement.Contains("ConditionalWeakTable<TEvent, ExerciseSettlementOwner>", StringComparison.Ordinal)
             && cleanup.Contains("runtime.Settlement.TryBeginSettlement()", StringComparison.Ordinal)
             && cleanup.Contains("RestoreRoutedRegularTroops(runtime, reason)", StringComparison.Ordinal)
             && cleanup.Contains("MoveAllMembersBackToMainParty(runtime.OpponentDummyParty", StringComparison.Ordinal)
