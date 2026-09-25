@@ -1,5 +1,15 @@
 # ProductionDuelOutcomeReplayTests
 
+## Read-only build-artifact replay (no Stage)
+
+After the repository's original `build_single_module.ps1` has built both variants without `-Stage`, run:
+
+```powershell
+dotnet run --project .\tools\ProductionDuelOutcomeReplayTests\ProductionDuelOutcomeReplayTests.csproj -- --use-build-artifacts --configuration Debug
+```
+
+`--use-build-artifacts` reads only `bin/<Configuration>/single_module_artifacts/versions/{1.3,1.4}` and retains the marker SHA-256, reference-line, flavor, source-freshness and dual-variant checks. The default entry point below remains Stage-based. Neither mode is a live Bannerlord or old-save test.
+
 This isolated runner inspects both freshly staged production implementations:
 
 - `versions/1.3/AnimusForge.dll`
