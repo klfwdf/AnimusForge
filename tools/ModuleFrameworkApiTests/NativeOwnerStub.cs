@@ -6,4 +6,6 @@ internal static class ShoutBehavior
     internal static void RevokeModuleSceneTickets(string clientId) { }
     internal static void SubmitModuleNativeDialogue(Refactor.Modules.CoreDialogueOperation operation)
         => operation.Finish("native.owner_unavailable");
+    internal static void SubmitModuleSceneDialogue(Refactor.Modules.CoreDialogueOperation operation)
+        => operation.Finish("scene.owner_unavailable");
 }

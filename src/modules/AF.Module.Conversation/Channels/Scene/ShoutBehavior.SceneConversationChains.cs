@@ -354,7 +354,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData)
+	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
 	{
 		try
 		{
@@ -370,7 +370,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				bool usePerHeroIndependentRequests = true;
 				if (usePerHeroIndependentRequests)
 				{
-					await HandleGroupResponsePerHeroIndependent(playerText, allNpcData, sceneDesc, primaryNpc, extraFact, precomputedContexts, resolvedHeroes, conversationEpoch, conversationScope, framedNpcData);
+					await HandleGroupResponsePerHeroIndependent(playerText, allNpcData, sceneDesc, primaryNpc, extraFact, precomputedContexts, resolvedHeroes, conversationEpoch, conversationScope, framedNpcData, receipt);
 					return;
 				}
 				DuelSettings settings = DuelSettings.GetSettings();
@@ -757,6 +757,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Exception ex2 = ex;
+			receipt?.Fail("scene.group_exception");
 			Logger.Log("ShoutBehavior", "[ERROR] " + ex2.Message);
 			Logger.Obs("ShoutGroup", "error", new Dictionary<string, object>
 			{
@@ -767,10 +768,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData)
+	private async Task HandleGroupResponsePerHeroIndependent(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
 	{
 		long sceneReplyGeneration = SaveRuntimeGuard.CaptureGeneration();
 		int sceneReplySessionId = Volatile.Read(ref _sceneHistorySessionId);
+		bool IsCurrentModuleGroup() => IsModuleSceneGroupCurrent(receipt, sceneReplyGeneration, sceneReplySessionId, conversationEpoch);
 		HashSet<int> engagedAgentIndices = new HashSet<int>();
 		if (primaryNpc != null && primaryNpc.AgentIndex >= 0)
 		{
@@ -778,9 +780,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			if (!IsCurrentModuleGroup()) return;
 			ApplySceneLocalDisambiguatedNames(allNpcData);
 			if (!IsSceneConversationEpochCurrent(conversationEpoch))
 			{
+				receipt?.Fail("scene.stale_context");
 				return;
 			}
 			if (allNpcData == null)
@@ -812,8 +816,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			bool relaySingleFramedNpc = framedNpcData != null && framedNpcData.Count == 1;
 			int primaryTargetAgentIndex = primaryNpc?.AgentIndex ?? (-1);
 			NpcDataPacket currentSpeaker = await RunNativeConversationMainThreadFuncAsync("scene_primary_first_validate", primaryNpc?.Name, primaryTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, primaryTargetAgentIndex), (NpcDataPacket)null);
+			if (!IsCurrentModuleGroup()) return;
 			if (currentSpeaker == null)
 			{
+				receipt?.Fail("scene.primary_unavailable");
 				List<NpcDataPacket> failedPrimaryParticipants = primaryNpc == null ? new List<NpcDataPacket>() : new List<NpcDataPacket> { primaryNpc };
 				await RunNativeConversationMainThreadFuncAsync("scene_primary_first_release", primaryNpc?.Name, primaryTargetAgentIndex, delegate
 				{
@@ -837,6 +843,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			string responseEventId = "player_utterance:" + conversationEpoch;
 			while (currentSpeaker != null && remainingTurns-- > 0)
 			{
+				if (!IsCurrentModuleGroup()) return;
 				Stopwatch turnSw = Stopwatch.StartNew();
 				string turnHeroId = "";
 				try
@@ -853,11 +860,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				Logger.Log("Logic", "[MemoryPerf] group_turn_start agent=" + currentSpeaker.AgentIndex + " npc=" + (GetSceneNpcHistoryNameForPrompt(currentSpeaker) ?? "") + " hero=" + turnHeroId + " multi=" + multiNpcScene + " candidates=" + ((speakableCandidates ?? new List<NpcDataPacket>()).Count) + " firstTurn=" + firstTurn + " remainingAfterDecrement=" + remainingTurns);
 				if (!IsSceneConversationEpochCurrent(conversationEpoch))
 				{
+					receipt?.Fail("scene.stale_context");
 					return;
 				}
 				NpcDataPacket validatedCurrentSpeaker = await RunNativeConversationMainThreadFuncAsync("scene_relay_turn_validate", currentSpeaker.Name, currentSpeaker.AgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, currentSpeaker.AgentIndex), (NpcDataPacket)null);
+				if (!IsCurrentModuleGroup()) return;
 				if (validatedCurrentSpeaker == null)
 				{
+					receipt?.Fail("scene.target_unavailable");
 					break;
 				}
 				currentSpeaker = validatedCurrentSpeaker;
@@ -877,6 +887,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				if (personaPreparedAgentIndices.Add(currentSpeaker.AgentIndex))
 				{
 					await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { currentSpeaker }, resolvedHeroes);
+					if (!IsCurrentModuleGroup()) return;
 				}
 				List<NpcDataPacket> engagedParticipants = speakableCandidates.Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
 				List<Agent> engagedAgents = new List<Agent>(engagedParticipants.Count);
@@ -896,7 +907,9 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					HoldSceneConversationAgents(engagedAgents);
 					return true;
 				}, fallback: false);
+				if (!IsCurrentModuleGroup()) return;
 				SceneRelayEligibilitySnapshot turnEligibility = await RunNativeConversationMainThreadFuncAsync("scene_relay_turn_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
+				if (!IsCurrentModuleGroup()) return;
 				List<string> patienceStatusLines = turnEligibility.PatienceStatusLines;
 				string cleaned = "";
 				Hero speakingHero = null;
@@ -953,9 +966,22 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					speakingHero = npcCharacter?.HeroObject ?? contextHero;
 					string npcKingdomIdOverride = TryGetKingdomIdOverrideFromAgent(npcAgent);
 					List<string> preprocessExcludedRuleIds = BuildPreprocessExcludedRuleIdsForCurrentInteraction(contextHero, npcCharacter, currentSpeaker.AgentIndex, currentSpeaker.IsHero, sceneSummonTargets, sceneGuideTargets, currentSpeaker, speakableCandidates, playerText);
-					Task<string> persistedHeroHistoryTask = StartPrecomputedPersistedHistoryContextTask(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn");
+					Task<string> persistedHeroHistoryTask = receipt == null
+						? StartPrecomputedPersistedHistoryContextTask(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, "group_turn")
+						: Task.FromResult((BuildPersistedHeroHistoryContext(currentSpeaker.AgentIndex, playerText, resolvedHeroes) ?? "").Trim());
 					Stopwatch preprocessSw = Stopwatch.StartNew();
-					MyBehavior.ShoutPromptContext ctx = MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, fullExtra, cultureId, hasAnyHero: currentSpeaker.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: currentSpeaker.AgentIndex, usePrefetchedLoreContext: hasPrecomputed && precomputed != null && precomputed.HasLoreContext, prefetchedLoreContext: precomputed?.LoreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds);
+					MyBehavior.ShoutPromptContext ctx = receipt == null
+						? MyBehavior.BuildShoutPromptContextForExternal(contextHero, playerText, fullExtra, cultureId, hasAnyHero: currentSpeaker.IsHero, targetCharacter: npcCharacter, kingdomIdOverride: npcKingdomIdOverride, targetAgentIndex: currentSpeaker.AgentIndex, usePrefetchedLoreContext: hasPrecomputed && precomputed != null && precomputed.HasLoreContext, prefetchedLoreContext: precomputed?.LoreContext, preprocessExcludedRuleIds: preprocessExcludedRuleIds)
+						: await BuildModuleScenePromptContextAsync(contextHero, npcCharacter, playerText, fullExtra, cultureId,
+							npcKingdomIdOverride, currentSpeaker.AgentIndex, currentSpeaker.IsHero,
+							hasPrecomputed && precomputed != null && precomputed.HasLoreContext, precomputed?.LoreContext,
+							preprocessExcludedRuleIds, sceneReplyGeneration, sceneReplySessionId, conversationEpoch);
+					if (!IsCurrentModuleGroup()) return;
+					if (receipt != null && ctx == null)
+					{
+						receipt.Fail("scene.prompt_unconfirmed");
+						return;
+					}
 					preprocessSw.Stop();
 					postprocessPreprocessHits = ctx?.PreprocessRuleIds ?? new List<string>();
 					postprocessEntityContext = ctx?.EntityPostprocessContext ?? "";
@@ -982,6 +1008,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					}
 					scenePublicHistorySection = BuildScenePublicHistorySection(historyLines);
 					string persistedHeroHistory = await AwaitPrecomputedPersistedHistoryContextAsync(currentSpeaker.AgentIndex, playerText, resolvedHeroes, precomputedContexts, persistedHeroHistoryTask, "group_turn");
+					if (!IsCurrentModuleGroup()) return;
 					string privateRecentWindowSection = "";
 					string persistedWithoutRecentWindow = "";
 					SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
@@ -1103,7 +1130,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 								currentSpeaker.Name,
 								currentSpeaker.AgentIndex,
 								() => LegacyInteractionSnapshotAdapters.CaptureSceneShout(playerText, currentSpeaker.AgentIndex, null, null),
-								null).ConfigureAwait(false);
+								null);
+							if (!IsCurrentModuleGroup()) return;
 							if (envelope != null)
 							{
 								// Freeze this speaker's authoritative request; capture above only supplies identity.
@@ -1133,13 +1161,16 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 											string legOutput = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true).ConfigureAwait(false);
 											return LlmVisibleReplyNormalizer.NormalizeComplete(legOutput);
 										},
-										CancellationToken.None).ConfigureAwait(false);
+									CancellationToken.None);
+									if (!IsCurrentModuleGroup()) return;
 									if (hostResult?.Status == InteractionStatus.CancelledAsStale)
 									{
+										receipt?.Fail("scene.stale_context");
 										return;
 									}
 									if (hostResult == null || (hostResult.Status != InteractionStatus.Executed && hostResult.Status != InteractionStatus.Succeeded))
 									{
+										receipt?.Fail("scene.main_reply_failed");
 										Logger.Log("ShoutBehavior", "[SceneRefactor] terminal reply stopped error=" + (hostResult?.ErrorCode ?? "missing_host_result"));
 										QueueSceneInfoMessage("本轮回应已停止，本轮尚未进入动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
 										break;
@@ -1153,6 +1184,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 							Logger.Log("ShoutBehavior", "[SceneRefactor] cutover error=" + ex.Message);
 							if (sceneShoutDetachedSubmitted)
 							{
+								receipt?.Fail("scene.main_reply_failed");
 								QueueSceneInfoMessage("本轮回应发生错误，系统已停止后续动作处理。", new Color(1f, 0.3f, 0.3f), conversationEpoch);
 								break;
 							}
@@ -1160,17 +1192,20 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					}
 					if (!sceneShoutDetachedSubmitted)
 					{
-						output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true).ConfigureAwait(false);
+						output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
+						if (!IsCurrentModuleGroup()) return;
 						output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
 					}
 					apiSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_api_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " outputLen=" + ((output ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
 					{
+						receipt?.Fail("scene.stale_context");
 						return;
 					}
 					if (!string.IsNullOrWhiteSpace(output) && (output.StartsWith("（错误") || output.StartsWith("（程序错误") || output.StartsWith("（API请求失败") || output.StartsWith("（API响应格式错误")))
 					{
+						receipt?.Fail("scene.main_reply_failed");
 						Logger.Log("ShoutBehavior(主动)", "<<< API错误: " + output);
 						_mainThreadActions.Enqueue(delegate
 						{
@@ -1186,9 +1221,11 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				else
 				{
 					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes), sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens);
+					if (!IsCurrentModuleGroup()) return;
 					cleaned = historyFullText;
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))
 					{
+						receipt?.Fail("scene.stale_context");
 						return;
 					}
 				}
@@ -1208,6 +1245,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				bool flag9 = endRequested && IsAgentFollowingPlayerBySceneCommand(currentSpeakerAgent);
 				bool flag10 = endRequested && TryGetSceneSummonConversationSessionForAgentIndex(currentSpeaker.AgentIndex) != null;
 				cleaned = PrepareSceneMainReplySpeechText(cleaned, flag9, flag10);
+				string visibleReplyForReceipt = SanitizeSceneSpeechText(cleaned);
 				if (!string.IsNullOrWhiteSpace(cleaned))
 				{
 					lastSpeakerOutputText = cleaned;
@@ -1221,13 +1259,16 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 						}
 						bool historyRecorded = await RecordSceneReplyHistoryOnMainThreadAsync(
 							currentSpeaker, allNpcData, speakingHero, npcCharacter, historyText,
-							sceneReplyGeneration, sceneReplySessionId, conversationEpoch).ConfigureAwait(false);
+							sceneReplyGeneration, sceneReplySessionId, conversationEpoch, requireMemoryReceipt: receipt != null);
+						if (!IsCurrentModuleGroup()) return;
 						if (!historyRecorded)
 						{
+							receipt?.Fail("scene.history_unconfirmed");
 							if (!IsSceneConversationEpochCurrent(conversationEpoch)) return;
 							break;
 						}
 					}
+					else receipt?.Fail("scene.history_unconfirmed");
 					bool duelPostprocessSelected = duelRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "duel");
 					bool rewardPostprocessSelected = rewardRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "reward");
 					bool loanPostprocessSelected = loanRuleInjected || HasPreprocessRuleHit(postprocessPreprocessHits, "loan");
@@ -1277,7 +1318,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 									return false;
 								}
 								return AfGcczShoutBridge.TryProcessDirectSceneCommand(currentSpeaker.AgentIndex, playerText, replyIsDirectPlayerResponse, out bool handled) && handled;
-							}, false).ConfigureAwait(false);
+							}, false);
+						if (!IsCurrentModuleGroup()) return;
 						if (directSceneCommandHandled)
 						{
 							siegeInterventionPostprocessSelected = false;
@@ -1291,6 +1333,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					if (!suppressBattleSpeechFollowups && !endRequested && remainingTurns > 0)
 					{
 						SceneRelayEligibilitySnapshot nextEligibility = await RunNativeConversationMainThreadFuncAsync("scene_relay_next_candidates", currentSpeaker.Name, currentSpeaker.AgentIndex, () => BuildSceneRelayEligibilitySnapshot(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch), new SceneRelayEligibilitySnapshot());
+						if (!IsCurrentModuleGroup()) return;
 						relayCandidatesForNextTurn = nextEligibility.Candidates
 							.Where(candidate => candidate != null
 								&& candidate.AgentIndex != currentSpeaker.AgentIndex
@@ -1301,23 +1344,33 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				bool flag11 = BattleSpeechFrameworkV2.ShouldQueueOrdinaryScenePostprocess(suppressBattleSpeechFollowups, duelPostprocessSelected || rewardPostprocessSelected || loanPostprocessSelected || persistentAdpDebtPostprocessSelected || kingdomServicePostprocessSelected || kingdomVassalagePostprocessSelected || kingdomAnnexationPostprocessSelected || lordsHallPostprocessSelected || meetingReleasePostprocessSelected || vanillaIssuePostprocessSelected || heroJoinPartyPostprocessSelected || sceneMechanismPostprocessSelected || partyTransferPostprocessSelected || voteDealPostprocessSelected || customPolicyAgendaPostprocessSelected || diplomacyPostprocessSelected || worldMapPartyCommandPostprocessSelected || nobleGatheringPostprocessSelected || marriagePostprocessSelected || proposeAgendaPostprocessSelected || siegeInterventionPostprocessSelected || npcSurrenderPostprocessSelected || royalPostprocessSelected || relayPostprocessSelected);
 				Logger.Log("ShoutBehavior", "[RuleInjectionDebug] stage=scene_queue npc=" + GetSceneNpcHistoryNameForPrompt(currentSpeaker) + " battleSpeechClaimed=" + battleSpeechClaimedReply + " duelInjected=" + duelRuleInjected + " rewardInjected=" + rewardRuleInjected + " loanInjected=" + loanRuleInjected + " persistentAdpDebtSelected=" + persistentAdpDebtPostprocessSelected + " kingdomServiceInjected=" + kingdomServiceRuleInjected + " kingdomVassalageInjected=" + kingdomVassalageRuleInjected + " kingdomAnnexationInjected=" + kingdomAnnexationRuleInjected + " lordsHallInjected=" + lordsHallRuleInjected + " meetingReleaseInjected=" + meetingReleaseRuleInjected + " vanillaIssueInjected=" + vanillaIssueRuleInjected + " heroJoinPartyInjected=" + heroJoinPartyRuleInjected + " sceneMechanismInjected=" + sceneMechanismRuleInjected + " partyTransferInjected=" + partyTransferRuleInjected + " voteDealInjected=" + voteDealRuleInjected + " customPolicyAgendaSelected=" + customPolicyAgendaPostprocessSelected + " diplomacyInjected=" + diplomacyRuleInjected + " independentClanPeaceResident=" + independentClanPeaceResident + " worldMapInjected=" + worldMapPartyCommandRuleInjected + " nobleGatheringSelected=" + nobleGatheringPostprocessSelected + " marriageSelected=" + marriagePostprocessSelected + " proposeAgendaSelected=" + proposeAgendaPostprocessSelected + " siegeInterventionSelected=" + siegeInterventionPostprocessSelected + " npcSurrenderSelected=" + npcSurrenderPostprocessSelected + " royalSelected=" + royalPostprocessSelected + " relaySelected=" + relayPostprocessSelected + " replyIsDirectPlayerResponse=" + replyIsDirectPlayerResponse + " preprocessHits=" + ((postprocessPreprocessHits == null || postprocessPreprocessHits.Count == 0) ? "(none)" : string.Join(",", postprocessPreprocessHits)) + " queueDeferred=" + flag11 + " replyLen=" + cleaned.Length);
 					float dynamicTimeoutSeconds = ResolveDynamicSceneConversationTimeoutSeconds(playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count, Math.Max(1, speakableCandidates.Count));
+					var speechCompletion = receipt == null ? null : new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
 					bool speechQueued = await QueueSceneMainReplyOnMainThreadAsync(
 						currentSpeaker, allNpcData, speakingHero, npcCharacter, cleaned,
 						sceneReplyGeneration, sceneReplySessionId, conversationEpoch,
 						sceneSummonTargets, sceneGuideTargets, flag11,
 						remainingTurns > 0 ? (-1f) : dynamicTimeoutSeconds,
-						Math.Max(1, engagedAgentIndices.Count), playerText, replyIsDirectPlayerResponse).ConfigureAwait(false);
-					if (!speechQueued) break;
+						Math.Max(1, engagedAgentIndices.Count), playerText, replyIsDirectPlayerResponse, speechCompletion);
+					if (!IsCurrentModuleGroup()) return;
+					if (!speechQueued)
+					{
+						receipt?.Fail("scene.speech_not_queued");
+						break;
+					}
+					receipt?.AddTurn(currentSpeaker.AgentIndex, currentSpeaker.Name, visibleReplyForReceipt, speechCompletion.Task);
 					if (flag11)
 					{
 						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
 						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId);
+						receipt?.AddPostprocess(postprocessTask);
 						if (relayPostprocessSelected)
 						{
 							// Release the processing flag while keeping the input gate: queued speech
 							// and action-only lines must run before a relay can complete.
-							await WaitForScenePostprocessGateAsync("scene_relay").ConfigureAwait(false);
-							ScenePostprocessOutcome postprocessOutcome = postprocessTask.IsCompleted ? await postprocessTask.ConfigureAwait(false) : null;
+							await WaitForScenePostprocessGateAsync("scene_relay");
+							if (!IsCurrentModuleGroup()) return;
+							ScenePostprocessOutcome postprocessOutcome = postprocessTask.IsCompleted ? await postprocessTask : null;
+							if (!IsCurrentModuleGroup()) return;
 							relayTargetAgentIndex = postprocessOutcome?.RelayTargetAgentIndex ?? -1;
 							if (postprocessOutcome?.Status == ScenePostprocessStatus.TargetUnavailable)
 							{
@@ -1326,6 +1379,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 							}
 							else if (postprocessOutcome?.Succeeded != true)
 							{
+								receipt?.Fail("scene.postprocess_unconfirmed");
 								Logger.Log("ShoutBehavior", "[SceneRelay] postprocess did not complete status=" + postprocessOutcome?.Status);
 								relayRequested = false;
 							}
@@ -1353,6 +1407,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				if (!string.IsNullOrWhiteSpace(cleaned) && relayRequested)
 				{
 					nextSpeaker = await RunNativeConversationMainThreadFuncAsync("scene_relay_next_validate", currentSpeaker.Name, relayTargetAgentIndex, () => ResolveLiveSceneRelayTarget(conversationScope, audienceByAgentIndex, resolvedHeroes, conversationEpoch, relayTargetAgentIndex), (NpcDataPacket)null);
+					if (!IsCurrentModuleGroup()) return;
 					resolvedRelayTargetAgentIndex = nextSpeaker?.AgentIndex ?? (-1);
 				}
 			if (relayPostprocessSelected && !string.IsNullOrWhiteSpace(cleaned))
@@ -1369,9 +1424,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				currentSpeaker = nextSpeaker;
 				firstTurn = false;
 			}
+			if (!IsCurrentModuleGroup()) return;
 			if (battleSpeechClaimedRound)
 			{
-				await RunNativeConversationMainThreadFuncAsync("battle_speech_followup_suppression", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+				bool followupSettled = await RunNativeConversationMainThreadFuncAsync("battle_speech_followup_suppression", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
 				{
 					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
 						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
@@ -1379,11 +1435,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					SuppressOrdinarySceneFollowupsForBattleSpeech(speakableCandidates);
 					return true;
 				}, fallback: false);
+				if (!followupSettled) receipt?.Fail("scene.followup_unconfirmed");
 			}
 			else
 			{
 				List<NpcDataPacket> finalEngagedParticipants = speakableCandidates.Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
-				await RunNativeConversationMainThreadFuncAsync("scene_relay_idle_timeout", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
+				bool followupSettled = await RunNativeConversationMainThreadFuncAsync("scene_relay_idle_timeout", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
 				{
 					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
 						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
@@ -1391,10 +1448,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					PrepareAutoGroupParticipantsForIdleTimeout(finalEngagedParticipants, lastSpeakerOutputText, playerText, roundNpcVisibleTexts, roundNpcSpeakerIndices.Count);
 					return true;
 				}, fallback: false);
+				if (!followupSettled) receipt?.Fail("scene.followup_unconfirmed");
 			}
 		}
 		catch (Exception ex)
 		{
+			receipt?.Fail("scene.group_exception");
 			Logger.Log("ShoutBehavior", "[ERROR] HandleGroupResponsePerHeroIndependent: " + ex.Message);
 			if (IsSceneConversationEpochCurrent(conversationEpoch))
 			{

@@ -32,11 +32,13 @@ out=HERE/'.generated'/('original' if a.original else 'memory-baseline' if a.memo
 contracts=(ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig');types='\n'.join(ex.declaration(contracts,x) for x in ['public enum ActionExecutionEffectState','public enum MemoryCommitStatus','public sealed class MemoryCommitResult']);(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+types,encoding='utf-8')
 if not baseline:
  memory_owner=read('MyBehavior.DialogueHistoryCommit.cs')
- canonical=ex.declaration(memory_owner,'internal static MemoryCommitResult CommitDialogueHistoryWithScene(')
+ wrapper=ex.declaration(memory_owner,'internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)')
+ assert 'return CommitDialogueHistoryWithScene(memoryId, isNonHero, npcName, playerText, aiText, extraFact, sceneSessionId, -1, null);' in wrapper, 'seven-argument Native memory ABI changed'
+ canonical=ex.declaration(memory_owner,'internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex')
  prior=ex.declaration(subprocess.check_output(['git','show','29ca75c9:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig'),'public static MemoryCommitResult CommitExternalDialogueHistory(')
- inverse=canonical.replace(canonical.splitlines()[0],prior.splitlines()[0],1).replace('owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId)','owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact)',1).replace('owner.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId)','owner.AppendDialogueHistory(hero, playerText, aiText, extraFact)',1)
+ inverse=canonical.replace(canonical.splitlines()[0],prior.splitlines()[0],1).replace('owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName)','owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact)',1).replace('owner.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName)','owner.AppendDialogueHistory(hero, playerText, aiText, extraFact)',1)
  assert inverse==prior, 'Strict owner logic changed beyond the explicit scene argument'
- if a.mutate=='lose-owner-scene':memory_owner=memory_owner.replace('extraFact, sceneSessionId)','extraFact, -1)')
+ if a.mutate=='lose-owner-scene':memory_owner=memory_owner.replace('extraFact, sceneSessionId, -1, null)','extraFact, -1, -1, null)')
  if a.mutate=='accept-owner-false':memory_owner=memory_owner.replace('new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_write_unconfirmed")','new MemoryCommitResult(MemoryCommitStatus.Applied)',1)
  if a.mutate=='drop-memory-thread':memory_owner=memory_owner.replace('if (!TWParallel.IsMainThread())','if (false)',1)
  if a.mutate=='public-scene-owner':memory_owner=memory_owner.replace('internal static MemoryCommitResult CommitDialogueHistoryWithScene','public static MemoryCommitResult CommitDialogueHistoryWithScene',1)

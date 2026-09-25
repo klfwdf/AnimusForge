@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.MountAndBlade;
@@ -23,7 +25,10 @@ namespace AnimusForge {
   public static string Mode;
   public static Hero Hero; public static CharacterObject Character;
   public static TaskCompletionSource<bool> Release;
-  public static void Reset() {MainThread=Thread.CurrentThread.ManagedThreadId;Calls=Effects=Writes=WrongThread=Echo=Tts=Captures=0;MemoryFails=ActionFails=Duplicate=false;TargetValid=true;Mode="normal";Hero=new Hero();Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation++;Release=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);ShoutBehavior.ResetOwner();}
+  public static TaskCompletionSource<bool> SceneSecondRelease;
+  public static bool SceneFirstQueued;
+  public static void Reset() {MainThread=Thread.CurrentThread.ManagedThreadId;Calls=Effects=Writes=WrongThread=Echo=Tts=Captures=0;MemoryFails=ActionFails=Duplicate=false;TargetValid=true;Mode="normal";Hero=new Hero();Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation++;Release=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);SceneSecondRelease=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);SceneFirstQueued=false;ShoutBehavior.ResetOwner();}
+  public static void ReleaseSecondSceneTurn()=>SceneSecondRelease.SetResult(true);
   public static void Game(){if(MainThread!=Thread.CurrentThread.ManagedThreadId)WrongThread++;}
   public static void Pump()=>ShoutBehavior.Pump();
   public static void Retire()=>ShoutBehavior.Retire();
@@ -70,18 +75,38 @@ namespace AnimusForge {
  static class WorldMapPartyCommandBehavior {internal sealed class WorldMapOrderApplyResult {internal bool NeedsChannelExit;}}
  static class MyBehavior { internal static MemoryCommitResult CommitDialogueHistoryWithScene(string id,bool nonHero,string name,string player,string reply,string fact,int session){NativeHost.Game();NativeHost.Writes++;return new MemoryCommitResult(NativeHost.MemoryFails?MemoryCommitStatus.Failed:MemoryCommitStatus.Applied);} }
  public partial class ShoutBehavior {
+  private readonly object _moduleSceneGroupGate=new();
+  private SceneGroupReceipt _activeModuleSceneGroup;
   private static readonly Dictionary<string,string> SceneTickets=new();
   internal static int SceneTicketCount=>SceneTickets.Count;
   internal static string IssueModuleSceneTicket(string clientId){string id=Guid.NewGuid().ToString("N");SceneTickets.Add(id,clientId);return id;}
   internal static void RevokeModuleSceneTickets(string clientId){foreach(string id in SceneTickets.Where(x=>x.Value==clientId).Select(x=>x.Key).ToArray())SceneTickets.Remove(id);}
+  private sealed class SceneTargetingContext { internal int PrimaryAgentIndex=7; }
+  private sealed class ScenePlayerShoutRequest { internal long RuntimeGeneration; internal int SceneSessionId; internal SceneTargetingContext TargetingContext=new(); }
+  private static bool TryClaimModuleSceneTicket(string clientId,string identity,out ScenePlayerShoutRequest request){
+   NativeHost.Game();request=null;
+   if(!SceneTickets.TryGetValue(identity,out string owner)||owner!=clientId)return false;
+   SceneTickets.Remove(identity);request=new ScenePlayerShoutRequest{RuntimeGeneration=SaveRuntimeGuard.Generation,SceneSessionId=CurrentInstance._sceneHistorySessionId};return true;
+  }
+  private int _sceneHistorySessionId=3,_sceneConversationEpoch;
+  private bool IsSceneConversationEpochCurrent(int epoch)=>epoch==_sceneConversationEpoch;
+  private async Task ProcessCapturedScenePlayerShoutAsync(string text,string extra,int? primary,ScenePlayerShoutRequest request,Action<Action> scope,SceneGroupReceipt receipt){
+   NativeHost.Game();receipt.Bind(Interlocked.Increment(ref _sceneConversationEpoch));
+   receipt.AddTurn(7,"Alice","first",Task.FromResult(true));
+   NativeHost.SceneFirstQueued=true;
+   await NativeHost.SceneSecondRelease.Task.ConfigureAwait(false);
+   receipt.AddTurn(8,"Bob","second",Task.FromResult(true));
+  }
+@@SCENE_DECLARATIONS@@
   private static ShoutBehavior CurrentInstance;
   private readonly ConcurrentQueue<Action> _mainThreadActions=new ConcurrentQueue<Action>();
   private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions=new AnimusForge.Refactor.Runtime.PendingOperationRegistry();
   private const int NativeConversationMainThreadPreprocessTimeoutMs=100;
+  private const int ScenePostprocessGateWaitTimeoutMilliseconds=1000;
   private sealed class NpcDataPacket { internal string Name="NPC"; internal int AgentIndex=1; }
   private sealed class SceneSummonPromptTarget {} private sealed class SceneGuidePromptTarget {}
   internal static void ResetOwner()=>CurrentInstance=new ShoutBehavior();
-  internal static void Retire(){SaveRuntimeGuard.Generation++;CurrentInstance._pendingMainThreadFunctions.Seal();while(CurrentInstance._mainThreadActions.TryDequeue(out _)){};}
+  internal static void Retire(){SaveRuntimeGuard.Generation++;CurrentInstance.RetireModuleSceneGroup("scene.stale_context");CurrentInstance._pendingMainThreadFunctions.Seal();while(CurrentInstance._mainThreadActions.TryDequeue(out _)){};}
   internal static void Pump(){while(CurrentInstance._mainThreadActions.TryDequeue(out var action)){action();if(NativeHost.Duplicate)action();}}
   internal static Task<string> SubmitLegacy()=>CurrentInstance.SubmitNativeConversationAdmittedAsync("legacy",null,null,null,null,false);
   private static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==NativeHost.MainThread;

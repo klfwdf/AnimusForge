@@ -120,15 +120,15 @@ internal static class Program
         string[] expected = { "AfApi", "AfCapabilityIds", "AfCapabilityInfo", "AfCapabilityState", "AfFrameworkSnapshot",
             "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo",
             "AfDialogueClient", "AfDialogueOperation", "AfDialogueResult", "AfDialogueState",
-            "AfDialogueEffectState", "AfDialogueCancelResult" };
+            "AfDialogueEffectState", "AfDialogueCancelResult", "AfSceneUtterance" };
         Check(lifecycleTypes.Count == 3 && retirementOwners.Count == 3, "all core lifetime types and retirement bindings exist in actual DLL");
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
         Check(foundCourierOwner, "actual DLL includes original Courier owner");
-        Check(api.SetEquals(expected), "exact additive Native V1 type surface");
+        Check(api.SetEquals(expected), "exact additive Native and Scene V1 type surface");
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
             "CoreDialogueClient", "CoreDialogueOperation", "CoreDialogueResult", "CoreDialogueServices",
-            "CoreDialogueState", "CoreDialogueEffectState", "CoreDialogueCancelResult",
+            "CoreDialogueState", "CoreDialogueEffectState", "CoreDialogueCancelResult", "CoreSceneUtterance",
             "InternalModuleDirectory", "ModuleFrameworkRuntime", "CampaignComposition",
             "CampaignModelComposition", "TeamModuleRegistration", "ModuleFrameworkSnapshot",
             "ModuleBindingSnapshot", "ModuleFrameworkLifecycleState" })
@@ -140,26 +140,32 @@ internal static class Program
     private static void CheckMemoryOwner(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
     {
         Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public, "legacy MyBehavior visibility preserved");
-        int found = 0;
+        int foundLegacy = 0, foundScene = 0, foundSceneAddressed = 0;
         foreach (MethodDefinitionHandle handle in type.GetMethods())
         {
             MethodDefinition method = reader.GetMethodDefinition(handle);
             string name = reader.GetString(method.Name);
             if (name != "CommitExternalDialogueHistory" && name != "CommitDialogueHistoryWithScene") continue;
-            found++;
             bool legacy = name == "CommitExternalDialogueHistory";
             MethodSignature<string> signature = method.DecodeSignature(provider, null);
+            bool addressed = !legacy && signature.ParameterTypes.Length == 9;
+            if (legacy) foundLegacy++;
+            else if (addressed) foundSceneAddressed++;
+            else foundScene++;
             Check((method.Attributes & MethodAttributes.Static) != 0, name + " remains static");
             Check((method.Attributes & MethodAttributes.MemberAccessMask) == (legacy ? MethodAttributes.Public : MethodAttributes.Assembly), name + " exact visibility");
             Check(signature.ReturnType == "AnimusForge.Refactor.Contracts.MemoryCommitResult", name + " existing result type");
-            string expected = "String,Boolean,String,String,String,String" + (legacy ? "" : ",Int32");
+            string expected = "String,Boolean,String,String,String,String" + (legacy ? "" : ",Int32")
+                + (addressed ? ",Int32,String" : "");
             Check(string.Join(",", signature.ParameterTypes) == expected, name + " exact ABI parameter types");
             var parameters = method.GetParameters().Select(reader.GetParameter).Where(p => p.SequenceNumber > 0).ToArray();
-            Check(string.Join(",", parameters.Select(p => reader.GetString(p.Name))) == "memoryId,isNonHero,npcName,playerText,aiText,extraFact" + (legacy ? "" : ",sceneSessionId"), name + " parameter names/order");
+            Check(string.Join(",", parameters.Select(p => reader.GetString(p.Name))) == "memoryId,isNonHero,npcName,playerText,aiText,extraFact" + (legacy ? "" : ",sceneSessionId")
+                + (addressed ? ",playerTargetAgentIndex,playerTargetName" : ""), name + " parameter names/order");
             Check(parameters.All(p => (p.Attributes & ParameterAttributes.Optional) == 0 && p.GetDefaultValue().IsNil), name + " no accidental optional ABI");
             lines.Add("MEMORY " + name + " " + method.Attributes + " " + signature.ReturnType + "(" + expected + ")");
         }
-        Check(found == 2, "one legacy facade and one internal scene-aware memory owner");
+        Check(foundLegacy == 1 && foundScene == 1 && foundSceneAddressed == 1,
+            "legacy and scene memory ABI preserved with one additive addressed owner");
     }
 
     private static void CheckPersonaEntry(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
