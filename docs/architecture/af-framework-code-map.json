@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "39cf9d4724cc372a33503da270fd0c0e9dc6e6af",
+  "sourceRevision": "b6c18a5cf612ba8476c04405caa72dd9c5a2703b",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
+      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
     },
     {
       "id": "native.history.dispatch",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
+      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
     },
     {
       "id": "memory.acceptance",
@@ -348,13 +348,57 @@
     {
       "id": "scene.player-request.owner",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs",
-      "start": 56,
-      "end": 56,
+      "start": 73,
+      "end": 73,
       "symbol": "internal sealed class ScenePlayerShoutRequestOwner",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "transient player-input sequence, frozen request identity and one-shot claim owner",
-      "fileSha256": "9c3720f35a008066e73b8ef3436706a37c4023b0e25891c7e6916b7354845dc5"
+      "fileSha256": "b6093140f36ae6f6dda5b2fe28acddcbc6bbcf55bdccfe096216d89a1182ff7c"
+    },
+    {
+      "id": "scene.player-context.claim",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs",
+      "start": 106,
+      "end": 106,
+      "symbol": "internal bool TryClaimContext(",
+      "match": "exact",
+      "status": "j14a1-foundation-not-public",
+      "note": "read-only context capture leaves input sequence unchanged; atomic claim invalidates competing captures; host/public binding pending",
+      "fileSha256": "b6093140f36ae6f6dda5b2fe28acddcbc6bbcf55bdccfe096216d89a1182ff7c"
+    },
+    {
+      "id": "scene.player-context.host-claim",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneContext.cs",
+      "start": 34,
+      "end": 34,
+      "symbol": "internal bool TryClaimModuleSceneContext(ScenePlayerShoutContext context, out ScenePlayerShoutRequest request)",
+      "match": "exact",
+      "status": "j14a1-foundation-not-public",
+      "note": "main-thread UI source and live Agent identity check before owner claim; public client ticket and group completion pending",
+      "fileSha256": "c72775fd6e7896c9618adda9f10faa059c6798c06717fd2e1cb9607a9957d681"
+    },
+    {
+      "id": "scene.player-group.dispatch-await",
+      "path": "ShoutBehavior.cs",
+      "start": 26212,
+      "end": 26212,
+      "symbol": "private async Task ProcessCapturedScenePlayerShoutAsync(",
+      "match": "contains",
+      "status": "j14a2-await-only-not-receipt",
+      "note": "input dispatch awaits its started group task; completion is not authoritative success",
+      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
+    },
+    {
+      "id": "scene.player-group.kickoff",
+      "path": "ShoutBehavior.cs",
+      "start": 26240,
+      "end": 26240,
+      "symbol": "private Task ProcessCurrentScenePlayerShout(",
+      "match": "contains",
+      "status": "j14a2-await-only-not-receipt",
+      "note": "returns the actual group Task rather than fire-and-forget; early returns and swallowed group errors still need typed receipts",
+      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
     },
     {
       "id": "scene.audience.scope",
@@ -3368,7 +3412,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
+      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
     },
     {
       "id": "native.turn.entry",
@@ -3379,7 +3423,7 @@
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
-      "fileSha256": "feee71827923c9a494e431662ec634771a028584ed3f91f4be26baf7ecf49cf2"
+      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
     },
     {
       "id": "native.turn.coordinator",
