@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "fc394f431325bf51bd48f3f3bb711e9a27d416e4",
+  "sourceRevision": "1740b338a9d343349d1abfd280cf8dc62dde44c3",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -88,9 +88,9 @@
       "end": 14,
       "symbol": "public static class AfApi",
       "match": "exact",
-      "status": "readonly-api",
-      "note": "只读目录与Native submit/result/开始前cancel已接实际owner；Scene/Courier仍NotSupported，非全部SDK验收",
-      "fileSha256": "5e5524aec712fd8b94cd59096301e1cbadae66d231d7cc80f609967b910d205c"
+      "status": "j14a-offline-verified",
+      "note": "只读目录、Native 和 Scene submit/result 已接实际 owner；Courier 仍 NotSupported，非实机 SDK 验收",
+      "fileSha256": "ce3433e34f09277859f25b2c49b21328090b4a069f47488b2dee5bf3e8c8b375"
     },
     {
       "id": "public.ids",
@@ -161,13 +161,13 @@
     {
       "id": "native.history.bridge",
       "path": "ShoutBehavior.cs",
-      "start": 15991,
-      "end": 15991,
+      "start": 15995,
+      "end": 15995,
       "symbol": "private static Func<string> CaptureNativeConversationPersistedHistoryWork",
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
+      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
     },
     {
       "id": "native.history.dispatch",
@@ -194,24 +194,24 @@
     {
       "id": "native.dispatch.shared",
       "path": "ShoutBehavior.cs",
-      "start": 19248,
-      "end": 19248,
+      "start": 19253,
+      "end": 19253,
       "symbol": "private Task<T> RunNativeConversationMainThreadFuncAsync<T>",
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
+      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
     },
     {
       "id": "memory.acceptance",
       "path": "MyBehavior.DialogueHistoryCommit.cs",
       "start": 12,
       "end": 12,
-      "symbol": "internal static MemoryCommitResult CommitDialogueHistoryWithScene",
-      "match": "contains",
+      "symbol": "internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)",
+      "match": "exact",
       "status": "wired-boundary",
       "note": "运行期接受，不是磁盘/跨动作事务",
-      "fileSha256": "c83eac734c9be55050eea528f1b3bed136af1d3acafbf15537e0add3f5ec7886"
+      "fileSha256": "85fe0541d47d5875a62d0de3de9921ff3bee5fd11a387c4f3bd2f3b5f19d59fb"
     },
     {
       "id": "memory.failure.ui",
@@ -288,7 +288,7 @@
       "match": "contains",
       "status": "wired-j10-candidate",
       "note": "group-turn Prompt/request chain moved verbatim into the Scene channel partial",
-      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
+      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
     },
     {
       "id": "scene.chain.passive",
@@ -299,29 +299,29 @@
       "match": "contains",
       "status": "wired-j10-candidate",
       "note": "passive response chain remains a real ShoutBehavior consumer under the Scene channel path",
-      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
+      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
     },
     {
       "id": "scene.chain.group-relay",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs",
-      "start": 770,
-      "end": 770,
+      "start": 771,
+      "end": 771,
       "symbol": "private async Task HandleGroupResponsePerHeroIndependent(",
       "match": "contains",
-      "status": "wired-j10-candidate",
-      "note": "authoritative multi-speaker history/speech/postprocess/relay orchestration",
-      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
+      "status": "j14a-offline-verified",
+      "note": "original multi-speaker/relay owner, now optionally returns API speech, postprocess and strict history receipts",
+      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
     },
     {
       "id": "scene.chain.reaction",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs",
-      "start": 1568,
-      "end": 1568,
+      "start": 1633,
+      "end": 1633,
       "symbol": "private bool TriggerImmediateSceneBehaviorReaction(",
       "match": "contains",
       "status": "wired-j10-candidate",
       "note": "immediate reaction reservation/capture/background/completion chain moved with its helpers",
-      "fileSha256": "aca9603ecf8865e459f6314df70675d4cb434dad009eb098fb54296700340f3c"
+      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
     },
     {
       "id": "scene.speech-queue.owner",
@@ -332,7 +332,7 @@
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "FIFO queue and single worker lease; host retains payload execution/audio/history/actions",
-      "fileSha256": "ecb710f943d512a1f2f973c2db9d8163366df5129216666556c52952933aa91d"
+      "fileSha256": "a24aca653c85f8d0bd4dfbf942ce98f08a2ae2f06ebd410f1b8abbd4ad7fa7d1"
     },
     {
       "id": "scene.pending-afef.owner",
@@ -354,51 +354,51 @@
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "transient player-input sequence, frozen request identity and one-shot claim owner",
-      "fileSha256": "b6093140f36ae6f6dda5b2fe28acddcbc6bbcf55bdccfe096216d89a1182ff7c"
+      "fileSha256": "c89154b9e39b780aff29e621fd8e48c57a8a6fa9d4cab3f161fde6b8496d854d"
     },
     {
       "id": "scene.player-context.claim",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs",
-      "start": 106,
-      "end": 106,
+      "start": 170,
+      "end": 170,
       "symbol": "internal bool TryClaimContext(",
       "match": "exact",
       "status": "j14a1-foundation-not-public",
       "note": "read-only context capture leaves input sequence unchanged; atomic claim invalidates competing captures; host/public binding pending",
-      "fileSha256": "b6093140f36ae6f6dda5b2fe28acddcbc6bbcf55bdccfe096216d89a1182ff7c"
+      "fileSha256": "c89154b9e39b780aff29e621fd8e48c57a8a6fa9d4cab3f161fde6b8496d854d"
     },
     {
       "id": "scene.player-context.host-claim",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneContext.cs",
-      "start": 34,
-      "end": 34,
+      "start": 56,
+      "end": 56,
       "symbol": "internal bool TryClaimModuleSceneContext(ScenePlayerShoutContext context, out ScenePlayerShoutRequest request)",
       "match": "exact",
       "status": "j14a1-foundation-not-public",
       "note": "main-thread UI source and live Agent identity check before owner claim; public client ticket and group completion pending",
-      "fileSha256": "c72775fd6e7896c9618adda9f10faa059c6798c06717fd2e1cb9607a9957d681"
+      "fileSha256": "de2f85193484302429415486898c5fe5fd6cd93b904ab69b2f59f543421f2c08"
     },
     {
       "id": "scene.player-group.dispatch-await",
       "path": "ShoutBehavior.cs",
-      "start": 26212,
-      "end": 26212,
+      "start": 26222,
+      "end": 26222,
       "symbol": "private async Task ProcessCapturedScenePlayerShoutAsync(",
       "match": "contains",
-      "status": "j14a2-await-only-not-receipt",
-      "note": "input dispatch awaits its started group task; completion is not authoritative success",
-      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
+      "status": "j14a-offline-verified",
+      "note": "input dispatch awaits the actual group; API completion additionally requires typed group receipts",
+      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
     },
     {
       "id": "scene.player-group.kickoff",
       "path": "ShoutBehavior.cs",
-      "start": 26240,
-      "end": 26240,
+      "start": 26252,
+      "end": 26252,
       "symbol": "private Task ProcessCurrentScenePlayerShout(",
       "match": "contains",
-      "status": "j14a2-await-only-not-receipt",
-      "note": "returns the actual group Task rather than fire-and-forget; early returns and swallowed group errors still need typed receipts",
-      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
+      "status": "j14a-offline-verified",
+      "note": "returns actual group Task; API path gathers failure and dependency receipts, UI path remains unchanged",
+      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
     },
     {
       "id": "scene.audience.scope",
@@ -414,13 +414,13 @@
     {
       "id": "scene.postprocess",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
-      "start": 26,
-      "end": 26,
+      "start": 40,
+      "end": 40,
       "symbol": "private sealed class SceneActionPostprocessWorkItem",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "live Scene postprocess/queue/completion partial relocated under the channel owner path; behavior unchanged",
-      "fileSha256": "a74385eedc3e4c4eaa6109ea619405f673227d7ed207d08d3799c266ba24e504"
+      "fileSha256": "8975c818ebff22a3ee64a266bdcb3736f88ac7afaf6989b0c2885797bc7f98f8"
     },
     {
       "id": "courier.prepare.reply",
@@ -1615,11 +1615,11 @@
       "path": "Refactor/Modules/CoreDialogueClient.cs",
       "symbol": "internal sealed class CoreDialogueClient",
       "match": "contains",
-      "status": "j14a1-fingerprint-not-public",
-      "note": "每 client 共用 128 ID，有界按渠道/上下文/文本精确去重；Scene/Courier 真实票据和派发未接",
+      "status": "j14a-offline-verified",
+      "note": "每 client 共用 128 ID，Native/Scene 按渠道/票据/文本精确去重；Courier 未接",
       "start": 10,
       "end": 10,
-      "fileSha256": "6566eb5fa9d80ba5fdfd87db9ff071621b63d4a20c859bdd87180222b421cf05"
+      "fileSha256": "b453faa9557fb92d5d9969401a0f933e73b62f5334b9d946c88cdc7d73b453a1"
     },
     {
       "id": "internal.dialogue.operation",
@@ -1628,20 +1628,20 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "排队/claim/原owner回执与未知副作用，只取消未开始",
-      "start": 10,
-      "end": 10,
-      "fileSha256": "a0e9bb202e244bc11706ecf0aaf7cf9e0ccbf5229aa4223aefe924f7ffc883ed"
+      "start": 11,
+      "end": 11,
+      "fileSha256": "5f1fcd17960a8389cbfa744701174200b425c6bf13cd9cc3d50869f4ec6bc013"
     },
     {
       "id": "public.dialogue.client",
       "path": "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
       "symbol": "public sealed class AfDialogueClient",
       "match": "contains",
-      "status": "wired-boundary",
-      "note": "Native提交；目标于准入解析，非指定NPC，非完整三渠道SDK",
-      "start": 53,
-      "end": 53,
-      "fileSha256": "1fcba904516830e56da5aa4a58c013a335088f1c31c3bff40f7c586ffe685fbe"
+      "status": "j14a-offline-verified",
+      "note": "Native 提交及 Scene 票据/提交；不接受调用者指定 NPC，Courier 未接",
+      "start": 73,
+      "end": 73,
+      "fileSha256": "09b00efcd70e3c24d7df6478e3102e209acc5e8e3f55f415f2c59b6109d2a33b"
     },
     {
       "id": "public.dialogue.operation",
@@ -1650,9 +1650,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "不可变快照和terminal Task；不支持回滚已开始动作",
-      "start": 34,
-      "end": 34,
-      "fileSha256": "1fcba904516830e56da5aa4a58c013a335088f1c31c3bff40f7c586ffe685fbe"
+      "start": 54,
+      "end": 54,
+      "fileSha256": "09b00efcd70e3c24d7df6478e3102e209acc5e8e3f55f415f2c59b6109d2a33b"
     },
     {
       "id": "public.dialogue.projection",
@@ -3406,24 +3406,24 @@
     {
       "id": "native.raw.observation",
       "path": "ShoutBehavior.cs",
-      "start": 19905,
-      "end": 19905,
+      "start": 19910,
+      "end": 19910,
       "symbol": "private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
+      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
     },
     {
       "id": "native.turn.entry",
       "path": "ShoutBehavior.cs",
-      "start": 19899,
-      "end": 19899,
+      "start": 19904,
+      "end": 19904,
       "symbol": "private Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)",
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
-      "fileSha256": "55a174b37172352cccfa88c24c37a312d94ee4a8b4dc00ff9d75500b27456a74"
+      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
     },
     {
       "id": "native.turn.coordinator",
@@ -3791,13 +3791,13 @@
     {
       "id": "actions.default.scene",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
-      "start": 482,
-      "end": 482,
+      "start": 503,
+      "end": 503,
       "symbol": "private bool CommitDeferredSceneActionPlan(",
       "match": "exact",
       "status": "wired-j09-candidate",
       "note": "default Scene action wrapper preserving mood/GCCZ/direct/speech/relay order",
-      "fileSha256": "a74385eedc3e4c4eaa6109ea619405f673227d7ed207d08d3799c266ba24e504"
+      "fileSha256": "8975c818ebff22a3ee64a266bdcb3736f88ac7afaf6989b0c2885797bc7f98f8"
     },
     {
       "id": "actions.default.courier",
@@ -7989,6 +7989,50 @@
       "status": "j13f-offline-verified",
       "note": "三路 API/Base URL/模型拉取的并发版本与取消失效 owner",
       "fileSha256": "fd04cd2a66f5414ac3021bfe406073eee0c615897181c2c225babe4fd9fc78f3"
+    },
+    {
+      "id": "scene.ticket.issue",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneContext.cs",
+      "start": 10,
+      "end": 10,
+      "symbol": "internal static string IssueModuleSceneTicket(",
+      "match": "contains",
+      "status": "j14a-offline-verified",
+      "note": "Client-bound bounded ticket capture; no input claim",
+      "fileSha256": "de2f85193484302429415486898c5fe5fd6cd93b904ab69b2f59f543421f2c08"
+    },
+    {
+      "id": "scene.group.receipt",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs",
+      "start": 152,
+      "end": 152,
+      "symbol": "private sealed class SceneGroupReceipt",
+      "match": "contains",
+      "status": "j14a-offline-verified",
+      "note": "Ordered speech and postprocess receipts; retired partial effects",
+      "fileSha256": "4431d963f1861fc723a2119d903a692b6db47ce4f9cf32d4fcc0d1ec63f005fd"
+    },
+    {
+      "id": "scene.group.prompt",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs",
+      "start": 86,
+      "end": 86,
+      "symbol": "private async Task<MyBehavior.ShoutPromptContext> BuildModuleScenePromptContextAsync(",
+      "match": "contains",
+      "status": "j14a-offline-verified",
+      "note": "Main-thread live capture and completion; detached worker routing",
+      "fileSha256": "4431d963f1861fc723a2119d903a692b6db47ce4f9cf32d4fcc0d1ec63f005fd"
+    },
+    {
+      "id": "scene.group.submit",
+      "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs",
+      "start": 250,
+      "end": 250,
+      "symbol": "private async Task RunModuleSceneDialogueAsync(",
+      "match": "contains",
+      "status": "j14a-offline-verified",
+      "note": "Real Scene owner claim, group wait and terminal result",
+      "fileSha256": "4431d963f1861fc723a2119d903a692b6db47ce4f9cf32d4fcc0d1ec63f005fd"
     }
   ]
 }

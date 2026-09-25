@@ -2,7 +2,7 @@
 
 ## 当前交付边界
 
-**目录查询与 Native 提交/结果/开始前取消已接线；Scene / Courier 仍未开放。三渠道全部开放仍是整体收尾必交，不因 Native 完成而缩小任务。**
+**目录查询、Native 与 Scene 提交/结果/开始前取消已接线；Courier 尚未开放。J14 整体仍需 Courier 与三渠道最终收口。**
 
 当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。仅目录变更，`AnimusForge.Api.V1` namespace 与外部 ABI 不变。
 
@@ -10,7 +10,7 @@
 |---|---|---|
 | `CatalogRead` | Available | 任意线程查询框架装配、只读模块接缝目录 |
 | `NativeSubmit` | Available | 对当前 AF 原生自由对话提交玩家文本，复用实际准入、正文、标签、动作、记忆 owner |
-| `SceneSubmit` | NotSupported | 群组启动目前 fire-and-forget；尚缺完整接力/旁听/最终结果绑定 |
+| `SceneSubmit` | Available | 对当前 AF 场景喊话框选签发 client 绑定票据，再由原群组 owner 提交；等待相关发言、语音发布、后处理和必要记忆回执 |
 | `CourierSubmit` | NotSupported | 尚缺运输会话、预生成与到达提交的公共安全边界 |
 | `ActionExecute` / `MemoryWrite` / `ExtensionRegister` | NotSupported | 不提供任意动作、事实写入或第三方 provider 注册 |
 
@@ -41,6 +41,27 @@ if (AfApi.GetCapability(AfCapabilityIds.NativeSubmit, 1).State == AfCapabilitySt
 client.Dispose();
 ```
 
+Scene 必须先由游戏主线程在当前有效的 AF 场景喊话框选期间调用 `client.CaptureSceneContextTicket()`；返回 `null` 表示当前无可签发上下文。签发只预览框选，不推进玩家输入序号、不发送请求或写历史。随后可从任意线程提交：
+
+```csharp
+string ticket = client.CaptureSceneContextTicket(); // 在游戏主线程调用
+if (ticket != null)
+{
+    AfDialogueOperation operation = client.SubmitScene(ticket, "scene-turn-1", "请说说你的看法");
+    AfDialogueResult receipt = await operation.Completion;
+    if (receipt.State == AfDialogueState.Completed)
+    {
+        foreach (AfSceneUtterance utterance in receipt.SceneUtterances)
+        {
+            // SpeakerAgentIndex 仅供诊断；不是可长期持有的 Agent 句柄。
+            string line = utterance.SpeakerName + ": " + utterance.Text;
+        }
+    }
+}
+```
+
+票据为不透明、一次 claim、当前 owner/游戏代次/场景会话/输入序号/框选目标绑定。改选、UI 抢先提交、场景或存档更替、错 client 或重复领取均拒绝；失败后应重新捕获，不能擅自换 ID 自动重发。每个 Scene owner 最多保留 128 张待领取票据；失效或 client 释放会撤销。Scene 和 Native 共用每 client 128 个请求 ID 上限。同 ID 的渠道、票据或原文本不同均冲突；完全相同的重试返回原 operation。
+
 同一 client + 同一 request ID + 完全相同文本再次提交，复用同一个内部 operation，绝不再发 LLM 或执行动作。相同 ID 的不同文本返回 `dialogue.request_id_conflict`，不覆盖已有任务。ID 区分大小写，不 trim；长度 1–128，仅允许英文字母、数字、`.` / `_` / `-` / `:`。文本不能为空，最多 16000 UTF-16 字符，实际规范化仍由原 Native owner 完成。
 
 ### 有界去重，不静默淘汰
@@ -63,7 +84,7 @@ client.Dispose();
 | `Cancel()` | 返回 `CancelledBeforeStart` / `TooLate` / `AlreadyTerminal`；后两者不会改写真实结果 |
 
 - `GetSnapshot()` 返回不可变副本；`Completion` 返回终态 DTO。后台结果/回调不直接操作游戏对象。
-- `CompletedByOwner` 不代表 TTS 播放结束，也不表示每一个生成标签都必然被游戏资格规则接受；资格/效果仍由原 owner 处理。
+- Scene 的 `SceneUtterances` 是本次按顺序确认的只读可见发言快照；`Reply` 为这些发言的换行拼接。`CompletedByOwner` 不代表 TTS 播放结束，也不表示每一个生成标签都必然被游戏资格规则接受；资格/效果仍由原 owner 处理。退役/失败可携带部分已产生的发言，但整体仍为 `Failed + UnknownAfterStart`，不能据此重派。
 - 原方法返回空字符串、网络错误文案或换档错误文案都不能产生成功回执。异常不向公共 DTO 暴露原始消息、路径、Prompt 或凭据。
 - V1 从不承诺正在执行的 HTTP 可被强制取消。已开始后的取消/Dispose 不抢占最终回执。
 
@@ -74,6 +95,8 @@ client.Dispose();
 - Hero / Character / Mission / token 在原主线程准入时捕获，随后全程使用原身份守卫。API 不声称后台提交瞬间已读取/冻结游戏 Hero；同一未结束会话在准入前改变目标时，由原准入时目标决定。准入后目标变化会拒绝晚结果。
 - 与原 UI 共用后端 busy/admission。API 不能绕过正在运行的玩家对话；对现有 UI 的默认入口、开关和表现不做切换。
 - 内部枚举经显式 V1 投影，不把内部 enum 数值布局变成公开协议。
+
+Scene 使用原 `ProcessCapturedScenePlayerShoutAsync` 与每 Hero 群组链，不创建第二套 Prompt/动作/记忆 writer。live 游戏对象捕获和回写在游戏主线程；可分离的路由/知识检索在 worker，等待后重验 owner、generation、会话、轮次与目标。主群组、相关接力及后处理的回执才可完成；必要历史/AFEF 不可确认、无可见回复、语音未发布、超时或旧上下文均失败。群组、票据与去重仅按显式请求/阶段事件处理，无新增每帧全 client 扫描；API 分支每个发言在主线程同步装配持久历史，尚未进行实机帧耗时测量。
 
 ## 引用、兼容与目录查询
 
@@ -87,4 +110,4 @@ client.Dispose();
 
 `tools/NativeModuleSubmissionTests/README.md` 记录真实入口、物理主/后台线程、重复、取消、会话切换与失败回执测试。Provider正文、游戏动作及记忆底层是显式 fixture；不是完整 LLM/真实 Bannerlord 验收。
 
-仍需完成 Scene 全群组最终回执、Courier 完整运输/到达提交公共边界、当前候选独立子 MOD 实机加载与 LIVE/SAVE；三渠道剩余工作不计 DONE。
+Scene 离线证据包括真实源码群组回执/退休 fixture、请求生命周期、后处理、ChannelCutover、独立外部消费者、双版本六构建与四实现 DLL 元数据；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。Fixture 中的 provider/游戏效果不是实机。仍需完成 Courier 完整运输/到达提交公共边界和 J14c 三渠道最终候选；独立子 MOD 实机加载、LIVE/SAVE、provider、音频和帧性能均未验证，不是发布 READY。
