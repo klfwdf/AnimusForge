@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "1740b338a9d343349d1abfd280cf8dc62dde44c3",
+  "sourceRevision": "79fa7c482a61e4ee30f07048f19b11d785046229",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
+      "fileSha256": "aa8399425b039ef4fbef2d026ce2f273dab6a593a316388069b7e956c80f759c"
     },
     {
       "id": "native.history.dispatch",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
+      "fileSha256": "aa8399425b039ef4fbef2d026ce2f273dab6a593a316388069b7e956c80f759c"
     },
     {
       "id": "memory.acceptance",
@@ -288,7 +288,7 @@
       "match": "contains",
       "status": "wired-j10-candidate",
       "note": "group-turn Prompt/request chain moved verbatim into the Scene channel partial",
-      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
+      "fileSha256": "e4933bf409794f3f545feb24dce343fa69629411f1426fe4c17bb3a7d73c3b67"
     },
     {
       "id": "scene.chain.passive",
@@ -299,7 +299,7 @@
       "match": "contains",
       "status": "wired-j10-candidate",
       "note": "passive response chain remains a real ShoutBehavior consumer under the Scene channel path",
-      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
+      "fileSha256": "e4933bf409794f3f545feb24dce343fa69629411f1426fe4c17bb3a7d73c3b67"
     },
     {
       "id": "scene.chain.group-relay",
@@ -310,18 +310,18 @@
       "match": "contains",
       "status": "j14a-offline-verified",
       "note": "original multi-speaker/relay owner, now optionally returns API speech, postprocess and strict history receipts",
-      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
+      "fileSha256": "e4933bf409794f3f545feb24dce343fa69629411f1426fe4c17bb3a7d73c3b67"
     },
     {
       "id": "scene.chain.reaction",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs",
-      "start": 1633,
-      "end": 1633,
+      "start": 1634,
+      "end": 1634,
       "symbol": "private bool TriggerImmediateSceneBehaviorReaction(",
       "match": "contains",
       "status": "wired-j10-candidate",
       "note": "immediate reaction reservation/capture/background/completion chain moved with its helpers",
-      "fileSha256": "04997c660aec1f046cc6e1ddc88aeb74932ed33d68e4c123ddbd63350c45469d"
+      "fileSha256": "e4933bf409794f3f545feb24dce343fa69629411f1426fe4c17bb3a7d73c3b67"
     },
     {
       "id": "scene.speech-queue.owner",
@@ -387,7 +387,7 @@
       "match": "contains",
       "status": "j14a-offline-verified",
       "note": "input dispatch awaits the actual group; API completion additionally requires typed group receipts",
-      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
+      "fileSha256": "aa8399425b039ef4fbef2d026ce2f273dab6a593a316388069b7e956c80f759c"
     },
     {
       "id": "scene.player-group.kickoff",
@@ -398,7 +398,7 @@
       "match": "contains",
       "status": "j14a-offline-verified",
       "note": "returns actual group Task; API path gathers failure and dependency receipts, UI path remains unchanged",
-      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
+      "fileSha256": "aa8399425b039ef4fbef2d026ce2f273dab6a593a316388069b7e956c80f759c"
     },
     {
       "id": "scene.audience.scope",
@@ -3412,7 +3412,7 @@
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
+      "fileSha256": "aa8399425b039ef4fbef2d026ce2f273dab6a593a316388069b7e956c80f759c"
     },
     {
       "id": "native.turn.entry",
@@ -3423,7 +3423,7 @@
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
-      "fileSha256": "827f2f7d21548d03d35a508c4250661df5323a8da4b0d1c721b48ab7ef3137af"
+      "fileSha256": "aa8399425b039ef4fbef2d026ce2f273dab6a593a316388069b7e956c80f759c"
     },
     {
       "id": "native.turn.coordinator",
