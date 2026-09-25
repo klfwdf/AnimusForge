@@ -77,12 +77,12 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const int CandidateScanMaxPartiesPerTick = 16;
 	private const double CandidateScanFrameBudgetMilliseconds = 1.5;
 
-	private ProactiveNpcRequestSession _activeSession;
+	private readonly ProactiveRequestSessionOwner _sessionOwner = new ProactiveRequestSessionOwner();
+	private ProactiveNpcRequestSession _activeSession => _sessionOwner.Current;
 	private readonly ProactiveRequestCooldownOwner _cooldownOwner = new ProactiveRequestCooldownOwner();
 	private readonly ProactiveOpeningOwner _openingOwner = new ProactiveOpeningOwner();
 	private MobileParty _activePartyCache;
 	private string _activePartyCacheId = "";
-	private long _nextActiveEncounterProbeUtcTicks;
 	private readonly ProactiveCandidateScanOwner _candidateScanOwner = new ProactiveCandidateScanOwner();
 	private readonly Dictionary<string, BanditSuppressionSnapshotCacheEntry> _banditSuppressionSnapshotsByClan = new Dictionary<string, BanditSuppressionSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, SettlementSaleSnapshotCacheEntry> _settlementSaleSnapshotsByClan = new Dictionary<string, SettlementSaleSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
@@ -131,8 +131,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			storageJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, StorageKey, "ProactiveNpcRequest");
 			ProactiveNpcRequestStorage storage = string.IsNullOrWhiteSpace(storageJson) ? null : JsonConvert.DeserializeObject<ProactiveNpcRequestStorage>(storageJson);
-			_activeSession = storage?.ActiveSession;
-			NormalizeActiveSessionSingleNeed();
+			_sessionOwner.Import(storage?.ActiveSession);
 			_cooldownOwner.Import(storage?.HeroCooldownUntilDays,
 				storage?.NeedTypeFatigueUntilDays ?? storage?.NeedCooldownUntilDays,
 				storage?.DiplomacyDiscussionKeysUntilDays,
@@ -144,7 +143,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			_activeSession = null;
+			_sessionOwner.Clear();
 			_cooldownOwner.ResetDictionaries();
 			_openingOwner.Clear();
 			ClearActivePartyCache();
@@ -375,16 +374,10 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		try
 		{
 			ProcessCandidateScan();
-			if (_activeSession == null || !string.Equals(_activeSession.Stage, "Chasing", StringComparison.OrdinalIgnoreCase))
+			if (!_sessionOwner.TryReserveEncounterProbe(DateTime.UtcNow.Ticks))
 			{
 				return;
 			}
-			long nowTicks = DateTime.UtcNow.Ticks;
-			if (nowTicks < _nextActiveEncounterProbeUtcTicks)
-			{
-				return;
-			}
-			_nextActiveEncounterProbeUtcTicks = DateTime.UtcNow.AddSeconds(ActiveEncounterProbeSeconds).Ticks;
 			TryOpenActiveEncounterWhenClose();
 		}
 		catch (Exception ex)
@@ -4260,7 +4253,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		MobileParty party = candidate?.Party;
 		Hero hero = candidate?.Hero;
-		if (party == null || hero == null)
+		if (party == null || hero == null || _activeSession != null)
 		{
 			return;
 		}
@@ -4272,11 +4265,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		candidate.NeedTypes = eligibleNeedTypes;
 		candidate.NeedType = eligibleNeedTypes[0];
-		if (string.Equals(candidate.TriggerSource, TriggerSourceNotorietyDriven, StringComparison.OrdinalIgnoreCase))
-		{
-			PlayerNotorietyBehavior.MarkObserverKnowsPlayerForExternal(hero, "proactive_notoriety_request");
-		}
-		_activeSession = new ProactiveNpcRequestSession
+		ProactiveNpcRequestSession session = new ProactiveNpcRequestSession
 		{
 			Id = Guid.NewGuid().ToString("N"),
 			HeroId = GetHeroKey(hero),
@@ -4403,8 +4392,15 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			KingdomTargetVassalClanCount = candidate.KingdomTargetVassalClanCount,
 			IsTestFallback = candidate.IsTestFallback
 		};
+		if (!_sessionOwner.TryStart(session))
+		{
+			return;
+		}
+		if (string.Equals(candidate.TriggerSource, TriggerSourceNotorietyDriven, StringComparison.OrdinalIgnoreCase))
+		{
+			PlayerNotorietyBehavior.MarkObserverKnowsPlayerForExternal(hero, "proactive_notoriety_request");
+		}
 		CacheActiveParty(party);
-		_nextActiveEncounterProbeUtcTicks = 0L;
 		try
 		{
 			party.Ai?.SetDoNotAttackMainParty(Math.Max(2, (int)ActiveRequestTtlHours));
@@ -4421,7 +4417,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private void TryOpenActiveEncounterWhenClose()
 	{
-		if (_activeSession == null || !string.Equals(_activeSession.Stage, "Chasing", StringComparison.OrdinalIgnoreCase))
+		if (!_sessionOwner.IsChasing)
 		{
 			return;
 		}
@@ -4443,7 +4439,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		if (TryGetPlayerBusyReason(out string busyReason))
 		{
-			if (ShouldCancelActiveSessionForPlayerBusyReason(busyReason))
+			if (ProactiveRequestSessionOwner.ShouldCancelForBusyReason(busyReason))
 			{
 				CancelActiveSession("player_busy:" + busyReason, releaseParty: true);
 			}
@@ -4493,8 +4489,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			CancelActiveSession("target_native_activity_context", releaseParty: true);
 			return;
 		}
-		_activeSession.Stage = "OpeningMenu";
-		_activeSession.EncounterOpenedAtHours = NowHours();
+		_sessionOwner.MarkOpeningMenu(NowHours());
 		try
 		{
 			if (party.DefaultBehavior == AiBehavior.EngageParty && party.TargetParty == MobileParty.MainParty)
@@ -4538,7 +4533,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		if (PlayerEncounter.Current == null)
 		{
-			_activeSession.Stage = "Chasing";
+			_sessionOwner.ReturnToChasing();
 			LordEncounterBehavior.LogEncounterDiagnostic("ProactiveNpcRequest.OpenActiveEncounterMenu", "current_null_after_restart", null, hero, party.Party);
 			Logger.Log("ProactiveNpcRequest", "close contact reached but PlayerEncounter.Current is null; distance=" + distance.ToString("0.00") + " trigger=" + triggerDistance.ToString("0.00"));
 			return;
@@ -4571,7 +4566,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			CancelActiveSession(reason + ":missing_party", releaseParty: false);
 			return;
 		}
-		if (NowHours() > _activeSession.ExpiresAtHours)
+		if (_sessionOwner.IsExpired(NowHours()))
 		{
 			CancelActiveSession(reason + ":expired", releaseParty: true);
 			return;
@@ -4584,7 +4579,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		if (string.Equals(_activeSession.Stage, "Chasing", StringComparison.OrdinalIgnoreCase)
 			&& TryGetPlayerBusyReason(out string busyReason)
-			&& ShouldCancelActiveSessionForPlayerBusyReason(busyReason))
+			&& ProactiveRequestSessionOwner.ShouldCancelForBusyReason(busyReason))
 		{
 			CancelActiveSession(reason + ":player_busy:" + busyReason, releaseParty: true);
 			return;
@@ -4608,8 +4603,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		_activeSession.Stage = "Menu";
-		_activeSession.EncounterOpenedAtHours = NowHours();
+		_sessionOwner.MarkEncounterOpened(NowHours());
 	}
 
 	private void MarkConversationOpeningInternal(Hero hero, bool nativeConversation)
@@ -4626,14 +4620,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		string prompt = BuildOpeningPrompt(GetActiveNeedTypes());
 		_openingOwner.Open(nativeConversation, _activeSession.Id, GetHeroKey(hero), fact, prompt, NowHours());
-		if (nativeConversation)
-		{
-			_activeSession.Stage = "NativeConversationPending";
-		}
-		else
-		{
-			_activeSession.Stage = "SceneConversationPending";
-		}
+		_sessionOwner.MarkConversationOpening(nativeConversation);
 	}
 
 	private string BuildTriggerSourceOpeningFact(Hero hero)
@@ -4709,7 +4696,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private void RecordActiveNeedTypeFatigue()
 	{
-		if (_activeSession == null || _activeSession.NeedTypeFatigueRecorded)
+		if (!_sessionOwner.ShouldRecordFatigue)
 		{
 			return;
 		}
@@ -4722,7 +4709,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			int retentionDays = Math.Max(7, GetEffectiveNeedTypeFatigueDays(NeedDiplomacy, DuelSettings.GetSettings()));
 			_cooldownOwner.RecordDiscussion(_activeSession.DiplomacyDiscussionKey, NowDays(), retentionDays);
 		}
-		_activeSession.NeedTypeFatigueRecorded = true;
+		_sessionOwner.MarkFatigueRecorded();
 	}
 
 	private void RecordNeedTypeFatigue(string needType, string source)
@@ -4750,21 +4737,6 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return new List<string> { NeedFoodShortage };
 		}
 		return NormalizeSingleNeedType(_activeSession.NeedTypes, string.IsNullOrWhiteSpace(_activeSession.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
-	}
-
-	private void NormalizeActiveSessionSingleNeed()
-	{
-		if (_activeSession == null)
-		{
-			return;
-		}
-		if (string.IsNullOrWhiteSpace(_activeSession.Id))
-		{
-			_activeSession.Id = Guid.NewGuid().ToString("N");
-		}
-		List<string> normalized = NormalizeSingleNeedType(_activeSession.NeedTypes, string.IsNullOrWhiteSpace(_activeSession.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
-		_activeSession.NeedTypes = normalized;
-		_activeSession.NeedType = normalized.Count > 0 ? normalized[0] : NeedFoodShortage;
 	}
 
 	private static List<string> NormalizeSingleNeedType(IEnumerable<string> needTypes, string fallbackNeedType)
@@ -5093,10 +5065,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			ReleasePartyIfStillChasing(party);
 		}
 		Logger.Log("ProactiveNpcRequest", "cleared active request reason=" + (reason ?? "unknown") + " hero=" + (session?.HeroId ?? "") + " needs=" + JoinNeedTypesForLog(session?.NeedTypes, session?.NeedType));
-		_activeSession = null;
+		_sessionOwner.Clear();
 		_openingOwner.Clear();
 		ClearActivePartyCache();
-		_nextActiveEncounterProbeUtcTicks = 0L;
 	}
 
 	private void ReleasePartyIfStillChasing(MobileParty party)
@@ -5126,7 +5097,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return false;
 		}
 		string partyId = (party.StringId ?? "").Trim();
-		return !string.IsNullOrWhiteSpace(partyId) && string.Equals(partyId, _activeSession.PartyId, StringComparison.OrdinalIgnoreCase);
+		return _sessionOwner.MatchesPartyId(partyId);
 	}
 
 	private bool IsActiveHero(Hero hero)
@@ -5135,7 +5106,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		return string.Equals(GetHeroKey(hero), _activeSession.HeroId, StringComparison.OrdinalIgnoreCase);
+		return _sessionOwner.MatchesHeroId(GetHeroKey(hero));
 	}
 
 	private void CacheActiveParty(MobileParty party)
@@ -5850,19 +5821,6 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 		}
 		return false;
-	}
-
-	private static bool ShouldCancelActiveSessionForPlayerBusyReason(string reason)
-	{
-		if (string.IsNullOrWhiteSpace(reason))
-		{
-			return false;
-		}
-		return reason.IndexOf("siege", StringComparison.OrdinalIgnoreCase) >= 0
-			|| reason.IndexOf("besieg", StringComparison.OrdinalIgnoreCase) >= 0
-			|| reason.IndexOf("raid", StringComparison.OrdinalIgnoreCase) >= 0
-			|| reason.IndexOf("native_activity", StringComparison.OrdinalIgnoreCase) >= 0
-			|| reason.IndexOf("map_event", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private static bool IsSettlementCombatBehavior(AiBehavior behavior)
