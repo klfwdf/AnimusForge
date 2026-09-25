@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "d34fd858023cb9d8638bad51f0a7fbe769660d0e",
+  "sourceRevision": "b07898cbd8918cc02b412f8143b3d6c4c8a2b824",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -6328,6 +6328,127 @@
       "status": "wired-j13d2-offline-verified",
       "note": "Aggregate source wiring; not live Quest evidence",
       "fileSha256": "5ee178b0388f23fd15b63b06789f64d63d0fccd2b4516f64ae3fcb03f6138db2"
+    },
+    {
+      "id": "world.inbox.behavior",
+      "path": "WorldEvents/WorldEventInbox.cs",
+      "start": 44,
+      "end": 44,
+      "symbol": "public sealed class AnimusForgeWorldEventBehavior : CampaignBehaviorBase",
+      "match": "exact",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Original Campaign/DTO identity retained; inbox state delegated",
+      "fileSha256": "080607e137a9d3ae6d447de6340266662f4b15673d14a56b082dea9fe765031b"
+    },
+    {
+      "id": "world.inbox.savedata",
+      "path": "WorldEvents/WorldEventInbox.cs",
+      "start": 77,
+      "end": 77,
+      "symbol": "_inbox.Import(CampaignSaveChunkHelper.RestoreStringDictionary(stored, \"WorldEventInbox\"), unreadIds);",
+      "match": "exact",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Both original v1 keys and chunk helper remain in Campaign host",
+      "fileSha256": "080607e137a9d3ae6d447de6340266662f4b15673d14a56b082dea9fe765031b"
+    },
+    {
+      "id": "world.inbox.owner",
+      "path": "src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "internal sealed class WorldEventInboxOwner",
+      "match": "exact",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Single records/unread/stable-key/version authority; no tick work",
+      "fileSha256": "e0b8910735c84cd06f3accc68894d742d33083048c3fd59ee4680bc29bf51105"
+    },
+    {
+      "id": "world.inbox.import",
+      "path": "src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs",
+      "start": 28,
+      "end": 28,
+      "symbol": "internal void Import(Dictionary<string, string> stored, List<string> unreadIds)",
+      "match": "exact",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Legacy EventId JSON import, stable-key collapse and unread union",
+      "fileSha256": "e0b8910735c84cd06f3accc68894d742d33083048c3fd59ee4680bc29bf51105"
+    },
+    {
+      "id": "world.inbox.upsert",
+      "path": "src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs",
+      "start": 73,
+      "end": 73,
+      "symbol": "internal void Upsert(AnimusForgeWorldEventInboxEntry entry, bool markUnread)",
+      "match": "exact",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Stable-key dedup preserves read state and policy version acknowledgment",
+      "fileSha256": "e0b8910735c84cd06f3accc68894d742d33083048c3fd59ee4680bc29bf51105"
+    },
+    {
+      "id": "world.inbox.campaign.registration",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs",
+      "start": 31,
+      "end": 31,
+      "symbol": "campaignGameStarter.AddBehavior(new AnimusForgeWorldEventBehavior());",
+      "match": "exact",
+      "status": "retained-j13d3-host",
+      "note": "Original Campaign behavior registration remains in ordered composition",
+      "fileSha256": "50d9bc192826917dc204d15058146d096fde88fb48e6342faf3d340ea9bb4720"
+    },
+    {
+      "id": "world.inbox.policy.publisher",
+      "path": "PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs",
+      "start": 1281,
+      "end": 1281,
+      "symbol": "if (AnimusForgeWorldEventBehavior.GetInboxVersionForExternal() <= inboxVersion)",
+      "match": "exact",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Policy confirms publication through original version-bearing API",
+      "fileSha256": "3e026b6ded1e60f219c9cee19fe0877e9d81d171e43f7682f6da5a556cff6abb"
+    },
+    {
+      "id": "world.inbox.policy.ui",
+      "path": "PolicySystem/UI/PolicySystemUi.cs",
+      "start": 66,
+      "end": 66,
+      "symbol": "AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(EventInboxDisplayLimit)",
+      "match": "contains",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Policy UI reads detached inbox snapshot from original API",
+      "fileSha256": "1bb1f37ba5b9a75e740aac9157f5a221bef7819e04f6bad42e5e385ff3a898c4"
+    },
+    {
+      "id": "world.inbox.diplomacy.archive",
+      "path": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+      "start": 10885,
+      "end": 10885,
+      "symbol": "AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(160)",
+      "match": "contains",
+      "status": "wired-j13d3-offline-verified",
+      "note": "Royal announcement archive retains original consumer and policy re-review route",
+      "fileSha256": "c0f69aac7a09c9115a46fd2e0ae47e79a06f0fb556ce09743b29f0077f16e9c6"
+    },
+    {
+      "id": "world.inbox.replay",
+      "path": "tools/PhaseEightParityReplayTests/WorldEventInboxOwnerReplay.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal static class WorldEventInboxOwnerReplay",
+      "match": "exact",
+      "status": "replay-j13d3-offline-verified",
+      "note": "Current DLL state replay; synthetic entries/JSON, not live Campaign or IDataStore",
+      "fileSha256": "9990687bed05c58333e2fbab4bba7c580523c4d10863a4fe9a340efddd3cfb8f"
+    },
+    {
+      "id": "world.inbox.contract",
+      "path": "tools/PhaseEightParityReplayTests/J13D3DomainOwnerContractReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class J13D3DomainOwnerContractReplay",
+      "match": "exact",
+      "status": "replay-j13d3-offline-verified",
+      "note": "Aggregate source wiring only; not game execution evidence",
+      "fileSha256": "5919ed1c5dcef6eb278f229a9c40716b2ab0e08547a90da2d864d481e0667b16"
     }
   ]
 }
