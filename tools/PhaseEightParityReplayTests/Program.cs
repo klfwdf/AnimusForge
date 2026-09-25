@@ -40,6 +40,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
     DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
     foreach (string source in new[] {
         "WorldEvents/WorldEventInbox.cs", "src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs",
+        "WarStats/AfWarStatsBehavior.cs", "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
         "RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
         "ProactiveNpcRequestBehavior.cs", "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
         "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
@@ -102,6 +103,7 @@ IssueActionOwnerReplay.Run(af, repo);
 J13D2DomainOwnerContractReplay.Run(repo);
 WorldEventInboxOwnerReplay.Run(af);
 J13D3DomainOwnerContractReplay.Run(repo);
+J13D4DomainOwnerContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
@@ -456,5 +458,5 @@ Check(((IList)Get(legacy, "_historicalWars")).Count == 1
     "legacy ended pair migrates only into history");
 Call(legacyLedger, "ClearLegacyRecords");
 Check(legacyRecords.Count == 0, "legacy migration consumes queued rows");
-Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=archive/idempotence/list-roundtrip live=NOT_RUN");
+Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=ledger/archive/stale/reverse-count/death/recent/v1-v5/terminal live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));
