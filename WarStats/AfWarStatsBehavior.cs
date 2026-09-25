@@ -1180,17 +1180,10 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
                 AttackerSide = 0
             };
 
-            if (currentPairs.ContainsKey(legacy.Key))
-            {
-                _activeWars[legacy.Key] = migrated;
-            }
-            else
-            {
-                _ledger.AddHistorical(legacy.Key, migrated, 0);
-            }
+            _ledger.ApplyMigratedLegacy(legacy.Key, migrated, currentPairs.ContainsKey(legacy.Key));
         }
 
-        _legacyRecords.Clear();
+        _ledger.ClearLegacyRecords();
         _legacyMigrationPending = false;
         _dataVersion = CurrentDataVersion;
     }
@@ -1791,160 +1784,12 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
 
     private void PrepareSaveData()
     {
-        ClearAllSaveLists();
-        foreach (KeyValuePair<string, WarStatsRecord> item in _activeWars.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
-        {
-            _savedActiveKeysV2.Add(item.Key);
-            _savedActiveNamesAV2.Add(item.Value.NameA ?? string.Empty);
-            _savedActiveNamesBV2.Add(item.Value.NameB ?? string.Empty);
-            _savedActiveKillsAV2.Add(item.Value.KillsA);
-            _savedActiveKillsBV2.Add(item.Value.KillsB);
-            _savedActiveCasualtiesAV2.Add(item.Value.CasualtiesA);
-            _savedActiveCasualtiesBV2.Add(item.Value.CasualtiesB);
-            _savedActiveDurationV2.Add(item.Value.LastDurationDays);
-            _savedActiveTerritoryAV2.Add(item.Value.LastTerritoryA);
-            _savedActiveTerritoryBV2.Add(item.Value.LastTerritoryB);
-            _savedActivePlayerV2.Add(item.Value.InvolvesPlayer ? 1 : 0);
-            _savedActiveWinsAV3.Add(item.Value.WinsA);
-            _savedActiveWinsBV3.Add(item.Value.WinsB);
-            _savedActiveLossesAV3.Add(item.Value.LossesA);
-            _savedActiveLossesBV3.Add(item.Value.LossesB);
-            _savedActiveInitialTerritoryAV3.Add(item.Value.InitialTerritoryA < 0 ? item.Value.LastTerritoryA : item.Value.InitialTerritoryA);
-            _savedActiveInitialTerritoryBV3.Add(item.Value.InitialTerritoryB < 0 ? item.Value.LastTerritoryB : item.Value.InitialTerritoryB);
-            _savedActiveStartDayV4.Add(Math.Max(0, item.Value.StartDay));
-            _savedActiveAttackerSideV4.Add(item.Value.AttackerSide == 1 ? 1 : 0);
-            _savedActiveHeroDeathsV4.Add(SerializeHeroDeaths(item.Value.HeroDeaths));
-            _savedActiveRecentHeroBattlesV5.Add(SerializeRecentHeroBattles(item.Value.RecentHeroBattles));
-        }
-
-        foreach (HistoricalWarRecord record in _historicalWars)
-        {
-            _savedHistoryKeysV2.Add(record.PairKey ?? string.Empty);
-            _savedHistoryNamesAV2.Add(record.NameA ?? string.Empty);
-            _savedHistoryNamesBV2.Add(record.NameB ?? string.Empty);
-            _savedHistoryKillsAV2.Add(record.KillsA);
-            _savedHistoryKillsBV2.Add(record.KillsB);
-            _savedHistoryCasualtiesAV2.Add(record.CasualtiesA);
-            _savedHistoryCasualtiesBV2.Add(record.CasualtiesB);
-            _savedHistoryDurationV2.Add(record.LastDurationDays);
-            _savedHistoryTerritoryAV2.Add(record.LastTerritoryA);
-            _savedHistoryTerritoryBV2.Add(record.LastTerritoryB);
-            _savedHistoryEndDayV2.Add(record.EndDay);
-            _savedHistoryPlayerV2.Add(record.InvolvesPlayer ? 1 : 0);
-            _savedHistoryWinsAV3.Add(record.WinsA);
-            _savedHistoryWinsBV3.Add(record.WinsB);
-            _savedHistoryLossesAV3.Add(record.LossesA);
-            _savedHistoryLossesBV3.Add(record.LossesB);
-            _savedHistoryInitialTerritoryAV3.Add(record.InitialTerritoryA < 0 ? record.LastTerritoryA : record.InitialTerritoryA);
-            _savedHistoryInitialTerritoryBV3.Add(record.InitialTerritoryB < 0 ? record.LastTerritoryB : record.InitialTerritoryB);
-            _savedHistoryStartDayV4.Add(Math.Max(0, ResolveHistoryStartDay(record)));
-            _savedHistoryAttackerSideV4.Add(record.AttackerSide == 1 ? 1 : 0);
-            _savedHistoryHeroDeathsV4.Add(SerializeHeroDeaths(record.HeroDeaths));
-        }
+        _ledger.PrepareSaveData(this);
     }
 
     private void LoadSavedData()
     {
-        EnsureSaveLists();
-        _activeWars.Clear();
-        _historicalWars.Clear();
-        _legacyRecords.Clear();
-
-        if (_dataVersion >= CurrentDataVersion || _savedActiveKeysV2.Count > 0 || _savedHistoryKeysV2.Count > 0)
-        {
-            for (int i = 0; i < _savedActiveKeysV2.Count; i++)
-            {
-                string pairKey = ReadString(_savedActiveKeysV2, i);
-                if (string.IsNullOrWhiteSpace(pairKey))
-                {
-                    continue;
-                }
-
-                _activeWars[pairKey] = new WarStatsRecord
-                {
-                    NameA = ReadString(_savedActiveNamesAV2, i),
-                    NameB = ReadString(_savedActiveNamesBV2, i),
-                    KillsA = ReadInt(_savedActiveKillsAV2, i),
-                    KillsB = ReadInt(_savedActiveKillsBV2, i),
-                    CasualtiesA = ReadInt(_savedActiveCasualtiesAV2, i),
-                    CasualtiesB = ReadInt(_savedActiveCasualtiesBV2, i),
-                    WinsA = ReadInt(_savedActiveWinsAV3, i),
-                    WinsB = ReadInt(_savedActiveWinsBV3, i),
-                    LossesA = ReadInt(_savedActiveLossesAV3, i),
-                    LossesB = ReadInt(_savedActiveLossesBV3, i),
-                    LastDurationDays = ReadInt(_savedActiveDurationV2, i),
-                    LastTerritoryA = ReadInt(_savedActiveTerritoryAV2, i),
-                    LastTerritoryB = ReadInt(_savedActiveTerritoryBV2, i),
-                    InitialTerritoryA = ReadIntOrDefault(_savedActiveInitialTerritoryAV3, i, ReadInt(_savedActiveTerritoryAV2, i)),
-                    InitialTerritoryB = ReadIntOrDefault(_savedActiveInitialTerritoryBV3, i, ReadInt(_savedActiveTerritoryBV2, i)),
-                    InvolvesPlayer = ReadInt(_savedActivePlayerV2, i) != 0,
-                    StartDay = ReadIntOrDefault(
-                        _savedActiveStartDayV4,
-                        i,
-                        Math.Max(0, GetCurrentDay() - ReadInt(_savedActiveDurationV2, i))),
-                    AttackerSide = ReadSide(_savedActiveAttackerSideV4, i),
-                    HeroDeaths = DeserializeHeroDeaths(ReadString(_savedActiveHeroDeathsV4, i)),
-                    RecentHeroBattles = DeserializeRecentHeroBattles(ReadString(_savedActiveRecentHeroBattlesV5, i))
-                };
-            }
-
-            for (int i = 0; i < _savedHistoryKeysV2.Count; i++)
-            {
-                string pairKey = ReadString(_savedHistoryKeysV2, i);
-                if (string.IsNullOrWhiteSpace(pairKey))
-                {
-                    continue;
-                }
-
-                _historicalWars.Add(new HistoricalWarRecord
-                {
-                    PairKey = pairKey,
-                    NameA = ReadString(_savedHistoryNamesAV2, i),
-                    NameB = ReadString(_savedHistoryNamesBV2, i),
-                    KillsA = ReadInt(_savedHistoryKillsAV2, i),
-                    KillsB = ReadInt(_savedHistoryKillsBV2, i),
-                    CasualtiesA = ReadInt(_savedHistoryCasualtiesAV2, i),
-                    CasualtiesB = ReadInt(_savedHistoryCasualtiesBV2, i),
-                    WinsA = ReadInt(_savedHistoryWinsAV3, i),
-                    WinsB = ReadInt(_savedHistoryWinsBV3, i),
-                    LossesA = ReadInt(_savedHistoryLossesAV3, i),
-                    LossesB = ReadInt(_savedHistoryLossesBV3, i),
-                    LastDurationDays = ReadInt(_savedHistoryDurationV2, i),
-                    LastTerritoryA = ReadInt(_savedHistoryTerritoryAV2, i),
-                    LastTerritoryB = ReadInt(_savedHistoryTerritoryBV2, i),
-                    InitialTerritoryA = ReadIntOrDefault(_savedHistoryInitialTerritoryAV3, i, ReadInt(_savedHistoryTerritoryAV2, i)),
-                    InitialTerritoryB = ReadIntOrDefault(_savedHistoryInitialTerritoryBV3, i, ReadInt(_savedHistoryTerritoryBV2, i)),
-                    EndDay = ReadInt(_savedHistoryEndDayV2, i),
-                    InvolvesPlayer = ReadInt(_savedHistoryPlayerV2, i) != 0,
-                    StartDay = ReadIntOrDefault(
-                        _savedHistoryStartDayV4,
-                        i,
-                        Math.Max(0, ReadInt(_savedHistoryEndDayV2, i) - ReadInt(_savedHistoryDurationV2, i))),
-                    AttackerSide = ReadSide(_savedHistoryAttackerSideV4, i),
-                    HeroDeaths = DeserializeHeroDeaths(ReadString(_savedHistoryHeroDeathsV4, i))
-                });
-            }
-
-            _legacyMigrationPending = false;
-            _recentBattleSequence = Math.Max(_recentBattleSequence, GetMaxRecentBattleSequence());
-            return;
-        }
-
-        int legacyCount = Math.Min(_savedPairKeys.Count, Math.Min(_savedCasualtiesA.Count, _savedCasualtiesB.Count));
-        for (int i = 0; i < legacyCount; i++)
-        {
-            string pairKey = ReadString(_savedPairKeys, i);
-            if (!string.IsNullOrWhiteSpace(pairKey))
-            {
-                _legacyRecords[pairKey] = new LegacyPairRecord
-                {
-                    InflictedByA = Math.Max(0, ReadInt(_savedCasualtiesA, i)),
-                    InflictedByB = Math.Max(0, ReadInt(_savedCasualtiesB, i))
-                };
-            }
-        }
-
-        _legacyMigrationPending = _legacyRecords.Count > 0;
+        _legacyMigrationPending = _ledger.RestoreSavedData(this);
     }
 
     private void ClearAllSaveLists()
