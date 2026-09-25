@@ -1,3 +1,11 @@
+# 当前范围：J14a Scene 有限离线收口（2026-09-26）
+
+产品/测试 `1740b338`：`src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs:79–89` 增主线程捕获票据及任意线程 Scene 提交，`AfApi.cs:23` 在真实链路收口后标 `SceneSubmit=Available`；`Refactor/Modules/CoreDialogueClient.cs:25–67` 沿同一 client 128-ID 表按渠道、票据、原文本去重。`ShoutBehavior.ModuleSceneContext.cs:10–27,33–105` 与 `ScenePlayerShoutRequestOwner.cs:73–145` 保持原框选/source/Agent、主线程一次 claim 与有界票据；`ShoutBehavior.ModuleSceneSubmission.cs:45–56,86–150,152–285` 拥有当前组、分阶段主线程 Prompt、speech/postprocess/历史回执、退役与 terminal 结算。`ShoutBehavior.SceneConversationChains.cs:771–1454` 仍是原每 Hero 群组、接力和相关旁听/后处理 owner；`ShoutBehavior.cs:17198–17220,26380–26434,26559–27086,36882–36950` 保留原游戏/队列/记忆适配；`MyBehavior.DialogueHistoryCommit.cs:12–53` 旧七参 ABI 与新内部九参 Scene 定向记忆接受并存。未迁移的 Scene 场景动作/规则仍归原 host 和各领域 owner，不把整文件标为重写；Courier 公共能力仍未开放。
+
+独立外部消费者 55、群组回执 18、Scene 生命周期 34、后处理 37、ChannelCutover 132、NativeCompletion 186、V1 142 与四实际 DLL metadata 1252、Debug/Release × 1.3/1.4 + Bootstrap 六构建通过；[代码地图](af-framework-code-map.json)绑定 `1740b338`、730 锚点两模式通过。当前有限状态 `J14_G0_BASELINE_VERIFIED / J14a_OFFLINE_VERIFIED / J14_ACTIVE`，下一包 J14b Courier。真实两版本游戏、旧档、provider、音频、独立子 MOD 游戏加载与帧性能均 `NOT-RUN`，不推导 J14/发布完成；详细测试身份和旧 runner 限制见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
+
+## 以下为 J14 Scene 前置切片（历史）
+
 # 当前范围：J14 Scene 前置责任切片（2026-09-25）
 
 J14 当前 `ACTIVE`、J14a 未收口：`4ef5c77f` 在 `src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs:56–143` 增加无副作用 Scene 上下文捕获及一次 compare-exchange claim；`9ed9f914` 在 `ShoutBehavior.ModuleSceneContext.cs:11–105` 接上主线程框选读取与领取前 source/Agent 重验；`b6c18a5c` 在 `ShoutBehavior.cs:26212–26240,26385–26390` 使原玩家喊话入口等待实际群组 Task。`ShoutBehavior.SceneConversationChains.cs:357–374,770+` 仍持有接力/旁听/动作及历史，吞异常和后台 live Hero 读取尚未闭合；等待 Task **不是**权威成功回执。尚无公共 client 票据或群组终态，SceneSubmit/CourierSubmit 保持 `NotSupported`。`tools/SceneRequestLifetimeRegressionTests` 提取生产方法 32/32，旧早完成红例→当前绿例及两个编译成功上下文变异红例；Courier 预生成假完成红例、独立 Native 消费者 41 项通过。本轮授权四个精确仓内构建产物目录后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。[代码地图](af-framework-code-map.json)绑定 `b6c18a5c`、726 锚点两模式通过，仅源码定位。真实游戏、旧档、provider、音频、帧性能未由本片验证，详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。

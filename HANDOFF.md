@@ -1,7 +1,7 @@
-# 当前交接：J14 G0 / Scene 前置切片（2026-09-25）
+# 当前交接：J14a Scene 有限离线收口（2026-09-26）
 
-- **状态**：`J14_ACTIVE / J14a_ACTIVE`，并非 J14a/J14 离线收口。[J14 实施计划](docs/plans/j14-public-api-plan.md)的 G0 红例、Scene 上下文/群组等待及内部渠道化去重已本地提交 `c65ab56f`–`d1086fa5`；原 J13 离线收口不重开。Scene/Courier 公共能力仍 `NotSupported`，未签发 client 票据或提交真实公共请求；原未跟踪 `.dotnet-cli-home/` 保留。
-- **已验与下一步**：Scene 上下文/主线程来源断言 32/32，旧群组早完成红例→当前等待屏障绿例，Courier 预生成假完成红例；Native 独立消费者和内部枚举重排各 48 项、渠道/上下文冲突变异红例。经本轮授权四个精确仓内产物目录后，最新原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error，V1 119、四 DLL metadata 1152、代码地图绑定 `fc394f43` 的 726 锚点两模式通过。旧 Native 源码哈希逆门禁因 J14 改动预期失败，未刷新历史哈希；细节见主台账。下一片须先建立 Scene 群组/动作/历史/事实的 typed 终态回执并隔离后台 live 游戏对象，再完成 client 票据、Courier 运输回执和 J14c。真实游戏、旧档、provider、音频、帧性能 **NOT-RUN**；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。详细一基责任、SHA 和红绿边界见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[代码地图](docs/architecture/af-framework-code-map.json)。
+- **状态**：`J14_G0_BASELINE_VERIFIED / J14a_OFFLINE_VERIFIED / J14_ACTIVE`。产品/测试 `1740b338` 已开放真实 Scene 公共票据→原群组/接力→speech/后处理/记忆/AFEF 回执→终态，Native 原签名与 UI 入口不变；Courier/J14c 尚未完成。具体 owner、消费者和未覆盖责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)及[代码地图](docs/architecture/af-framework-code-map.json)。
+- **离线证据与下一步**：Scene 群组 18、请求生命周期 34、后处理 37、独立外部消费者正常/枚举重排各 55、ChannelCutover 132、NativeCompletion 186、V1 142、四实际 DLL metadata 1252；原脚本在用户授权四个精确仓内产物目录、不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；730 锚点地图 recorded/working-tree 通过。旧 MemorySummary terminal runner 的既存抽取锚失效，此次未通过，详细限制与 SHA 见主台账。下一包按[计划](docs/plans/j14-public-api-plan.md)做 J14b Courier，随后 J14c 最终候选；不能称整体 J14、实机或发布完成。真实游戏、旧档、provider、音频、帧性能 **NOT-RUN**；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。原未跟踪 `.dotnet-cli-home/` 保留。
 
 ## 以下为 J13 交接（历史）
 

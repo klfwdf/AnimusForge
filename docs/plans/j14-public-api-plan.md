@@ -1,6 +1,6 @@
 # J14 三渠道公共 API 收尾实施计划
 
-> 规划日期：2026-09-25。状态：`J14_PLANNED`；执行者实际开工后在主台账登记 `J14_ACTIVE`。
+> 规划日期：2026-09-25。本文为执行计划；当前 `J14a_OFFLINE_VERIFIED / J14_ACTIVE`，实际进度以[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)为准。
 > 规划源码基线：`2d9df159282334c02854b38663499ac4a5e9af71`；J13 最终产品为 `39cf9d4724cc372a33503da270fd0c0e9dc6e6af`。
 > 用户最新要求：将本计划保存成文件，新建任务，以 `gpt-6-sol` / `xhigh` 开始执行。不是继续只读规划。
 > 本文细化主台账 J14a–c。详细进度仍只记录在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)，[HANDOFF](../../HANDOFF.md)保留简短当前入口；本文不建立竞争台账。
