@@ -1015,6 +1015,11 @@ public static class MilitaryExerciseBehavior
 			Display("军事演习正在准备中。");
 			return;
 		}
+		if (_sessionOwner.HasActiveRuntime || _queuedOpenBattle)
+		{
+			Display("已有军事演习正在进行中。");
+			return;
+		}
 		if (_pendingSelection != null && _pendingSelection.Stage == MilitaryExerciseSelectionStage.SecondTeam)
 		{
 			_isOpening = true;
@@ -1786,6 +1791,7 @@ public static class MilitaryExerciseBehavior
 			PlayerOriginalHitPoints = GetMainHeroHitPoints(),
 			PlayerOriginalWasWounded = Hero.MainHero?.IsWounded ?? false
 		};
+		PendingSelection openedSelection = _pendingSelection;
 		PartyScreenHelper.OpenScreenWithDummyRoster(
 			availableRoster,
 			emptyPrisonRoster,
@@ -1796,7 +1802,10 @@ public static class MilitaryExerciseBehavior
 			Math.Max(availableRoster.TotalManCount, 0),
 			Math.Max(mainParty.Party?.PartySizeLimit ?? availableRoster.TotalManCount, availableRoster.TotalManCount),
 			new PartyPresentationDoneButtonConditionDelegate(FirstTeamDoneCondition),
-			new PartyScreenClosedDelegate(OnFirstTeamScreenClosed),
+			new PartyScreenClosedDelegate((leftOwnerParty, leftMemberRoster, leftPrisonRoster,
+				rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel) =>
+				OnFirstTeamScreenClosed(openedSelection, leftOwnerParty, leftMemberRoster, leftPrisonRoster,
+					rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel)),
 			new IsTroopTransferableDelegate(MilitaryExerciseTroopTransferableDelegate));
 	}
 
@@ -1805,19 +1814,20 @@ public static class MilitaryExerciseBehavior
 		return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
 	}
 
-	private static void OnFirstTeamScreenClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
+	private static void OnFirstTeamScreenClosed(PendingSelection openedSelection, PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
 	{
 		try
 		{
+			if (!_sessionOwner.IsCurrentSelection(openedSelection)
+				|| openedSelection.Stage != MilitaryExerciseSelectionStage.FirstTeam)
+			{
+				Log("first_team_screen ignored stale callback");
+				return;
+			}
 			if (fromCancel)
 			{
 				ResetPendingSelection("first_cancel");
 				Display("已取消军事演习。");
-				return;
-			}
-			if (_pendingSelection == null || _pendingSelection.Stage != MilitaryExerciseSelectionStage.FirstTeam)
-			{
-				ResetPendingSelection("first_stage_mismatch");
 				return;
 			}
 			TroopRoster firstTeamRoster = BuildSelectionRosterFromUi(rightMemberRoster);
@@ -1841,6 +1851,7 @@ public static class MilitaryExerciseBehavior
 	{
 		TroopRoster remainingRoster = CloneRoster(remainingAfterFirstRoster);
 		TroopRoster opponentRoster = TroopRoster.CreateDummyTroopRoster();
+		PendingSelection openedSelection = _pendingSelection;
 		PartyScreenHelper.OpenScreenWithDummyRoster(
 			remainingRoster,
 			TroopRoster.CreateDummyTroopRoster(),
@@ -1851,7 +1862,10 @@ public static class MilitaryExerciseBehavior
 			Math.Max(remainingRoster.TotalManCount, 0),
 			Math.Max(remainingRoster.TotalManCount, 1),
 			new PartyPresentationDoneButtonConditionDelegate(SecondTeamDoneCondition),
-			new PartyScreenClosedDelegate(OnSecondTeamScreenClosed),
+			new PartyScreenClosedDelegate((leftOwnerParty, leftMemberRoster, leftPrisonRoster,
+				rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel) =>
+				OnSecondTeamScreenClosed(openedSelection, leftOwnerParty, leftMemberRoster, leftPrisonRoster,
+					rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel)),
 			new IsTroopTransferableDelegate(MilitaryExerciseTroopTransferableDelegate));
 	}
 
@@ -1864,17 +1878,23 @@ public static class MilitaryExerciseBehavior
 		return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
 	}
 
-	private static void OnSecondTeamScreenClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
+	private static void OnSecondTeamScreenClosed(PendingSelection openedSelection, PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
 	{
 		try
 		{
+			if (!_sessionOwner.IsCurrentSelection(openedSelection)
+				|| openedSelection.Stage != MilitaryExerciseSelectionStage.SecondTeam)
+			{
+				Log("second_team_screen ignored stale callback");
+				return;
+			}
 			if (fromCancel)
 			{
 				ResetPendingSelection("second_cancel");
 				Display("已取消军事演习。");
 				return;
 			}
-			if (_pendingSelection == null || _pendingSelection.Stage != MilitaryExerciseSelectionStage.SecondTeam || _pendingSelection.FirstTeamRoster == null)
+			if (_pendingSelection.FirstTeamRoster == null)
 			{
 				ResetPendingSelection("second_stage_mismatch");
 				return;
@@ -1912,8 +1932,19 @@ public static class MilitaryExerciseBehavior
 			catch (Exception splitEx)
 			{
 				Log("split failed: " + splitEx.GetType().Name + ": " + splitEx.Message);
-				CleanupSplitRuntime(_runtime, "split_failed");
-				_runtime = null;
+				MilitaryExerciseRuntime failedRuntime = _runtime;
+				try
+				{
+					CleanupSplitRuntime(failedRuntime, "split_failed");
+				}
+				catch (Exception cleanupEx)
+				{
+					Log("split_cleanup failed: " + cleanupEx.GetType().Name + ": " + cleanupEx.Message);
+				}
+				finally
+				{
+					_sessionOwner.ReleaseRuntime(failedRuntime);
+				}
 				_pendingSelection = null;
 				_isOpening = false;
 				DisplayFailure("军事演习准备失败", splitEx);
@@ -1926,6 +1957,19 @@ public static class MilitaryExerciseBehavior
 		catch (Exception ex)
 		{
 			Log("second_team_screen failed: " + ex.GetType().Name + ": " + ex.Message);
+			MilitaryExerciseRuntime failedRuntime = _runtime;
+			if (failedRuntime != null && failedRuntime.MapEvent == null)
+			{
+				try
+				{
+					CleanupSplitRuntime(failedRuntime, "second_exception");
+				}
+				catch (Exception cleanupEx)
+				{
+					Log("second_team_cleanup failed: " + cleanupEx.GetType().Name + ": " + cleanupEx.Message);
+				}
+				_sessionOwner.ReleaseRuntime(failedRuntime);
+			}
 			ResetPendingSelection("second_exception");
 			DisplayFailure("选择失败", ex);
 		}

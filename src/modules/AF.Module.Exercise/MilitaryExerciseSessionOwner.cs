@@ -22,6 +22,7 @@ internal sealed class MilitaryExerciseSessionOwner<TSelection, TRuntime>
     internal bool SecondQueued { get; private set; }
     internal bool BattleQueued { get; private set; }
     internal bool HasActiveRuntime => Runtime != null && !_isSettled(Runtime);
+    internal bool IsCurrentSelection(TSelection selection) => ReferenceEquals(Selection, selection);
 
     private float _secondDueAt;
     private float _battleDueAt;

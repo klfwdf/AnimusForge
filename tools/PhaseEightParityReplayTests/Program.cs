@@ -139,6 +139,7 @@ J13E4DomainOwnerContractReplay.Run(repo);
 ExerciseMapEventIdentityOwnerReplay.Run(af);
 MilitaryExerciseSessionOwnerReplay.Run(af);
 ExerciseSettlementOwnerReplay.Run(af);
+J13E5DomainOwnerContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
