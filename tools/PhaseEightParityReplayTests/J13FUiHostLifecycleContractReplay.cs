@@ -22,6 +22,7 @@ internal static class J13FUiHostLifecycleContractReplay
         string onboarding = Read("AnimusForgeApiOnboardingPopup.cs");
         string overlay = Read("AnimusForgeNativeConversationOverlay.cs");
         string vm = Read("AnimusForgeApiOnboardingVM.cs");
+        string onboardingHost = Read("ModOnboardingBehavior.cs");
         string weeklyShow = Slice(weekly, "public static bool Show(", "public static void ProcessDeferredCloseIfNeeded()");
         string onboardingShow = Slice(onboarding, "public static bool Show(", "public static void CloseActive(");
         string overlayShow = Slice(overlay, "private static bool Show(ScreenBase screen)", "private void Open()");
@@ -38,6 +39,19 @@ internal static class J13FUiHostLifecycleContractReplay
             && vm.Contains("YjKeyMasked = key.Length > 8 ?", StringComparison.Ordinal)
             && !vm.Contains("YjKeyMasked = key.Length > 8 ? (key.Substring(0, 4) + \"...\" + key.Substring(key.Length - 4)) : key;", StringComparison.Ordinal),
             "overlay restoration or onboarding UI callback retirement disconnected");
+        foreach (string method in new[] { "private void BeginValidateApiConfigSetAndContinue(",
+            "private void BeginValidateBaseUrlAndContinueCore(", "private void BeginFetchAvailableModelsForSetup()",
+            "private void BeginValidateMcmApiAndContinueCore(" })
+        {
+            int start = onboardingHost.IndexOf(method, StringComparison.Ordinal);
+            int worker = onboardingHost.IndexOf("Task.Run(async delegate", start, StringComparison.Ordinal);
+            int source = onboardingHost.IndexOf("CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();", start, StringComparison.Ordinal);
+            Check(start >= 0 && source > start && source < worker, "cancellation source created after worker: " + method);
+        }
+        Check(!onboardingHost.Contains("_apiValidationVersion", StringComparison.Ordinal)
+            && !onboardingHost.Contains("_baseUrlValidationVersion", StringComparison.Ordinal)
+            && !onboardingHost.Contains("_modelFetchVersion", StringComparison.Ordinal),
+            "host still owns async invalidation versions");
         Console.WriteLine("PASS J13FUiHostLifecycleContractReplay popup/overlay partial-open cleanup, input release and callback retirement; source-wiring-only live=NOT_RUN");
     }
 }
