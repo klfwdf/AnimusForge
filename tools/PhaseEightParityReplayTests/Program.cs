@@ -107,6 +107,7 @@ WorldEventInboxOwnerReplay.Run(af);
 J13D3DomainOwnerContractReplay.Run(repo);
 J13D4DomainOwnerContractReplay.Run(repo);
 J13E1DomainOwnerContractReplay.Run(repo);
+DuelDispatchOwnerReplay.Run(af);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
