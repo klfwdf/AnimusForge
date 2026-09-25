@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "73bef7551d6f969911334c4f08e86b86dc71a2ef",
+  "sourceRevision": "ef6a83e15ed496e451a4614847b027e203222ad8",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -7296,6 +7296,193 @@
       "status": "replay-j13e3-offline-verified",
       "note": "Source-wiring only; current DLL replay separate",
       "fileSha256": "7a06eb7d78d753b8f3cb8d62949d0e5c4def59f500d39b75dd378bf5bfaa43d8"
+    },
+    {
+      "id": "settlement.owner.entry",
+      "path": "src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal sealed class SettlementMissionEntryOwner<TEntry> where TEntry : class",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "One-shot mission entry/cancel/expiry",
+      "fileSha256": "478d8361f14eb537b0ed278d58c683cf8eae093627751b404ce2a2f146a94668"
+    },
+    {
+      "id": "settlement.owner.followers",
+      "path": "src/modules/AF.Module.Settlement/SettlementFollowerMissionOwner.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class SettlementFollowerMissionOwner<TMission, TAgent>",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Mission-scoped Agent identity, not index-only",
+      "fileSha256": "f875fb61f056d5c617d905eb7b604b3dea87a1e08bacdde0a190e551dd3b39ee"
+    },
+    {
+      "id": "settlement.owner.inspection",
+      "path": "src/modules/AF.Module.Settlement/TroopInspectionSessionOwner.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal sealed class TroopInspectionSessionOwner<TRuntime, TSelection, TMission>",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Inspection admission/queue/cleanup state",
+      "fileSha256": "6cc2b380a1ce5b5681bdace61e39264ed6f70d4c53206aca433049f479e2adf4"
+    },
+    {
+      "id": "settlement.host.entry",
+      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "start": 72,
+      "end": 72,
+      "symbol": "private static readonly SettlementMissionEntryOwner<PendingMissionEntry> _missionEntryOwner =",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Host retains TW mission setup and profile roster",
+      "fileSha256": "f310f75c2c0a895a57b3f93e334b13d56365520da9241455f319f257684286c9"
+    },
+    {
+      "id": "settlement.host.followers",
+      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "start": 87,
+      "end": 87,
+      "symbol": "private static readonly SettlementFollowerMissionOwner<Mission, Agent> _followerOwner =",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Host retains spawn/formation and damage adapters",
+      "fileSha256": "f310f75c2c0a895a57b3f93e334b13d56365520da9241455f319f257684286c9"
+    },
+    {
+      "id": "settlement.host.mission-start",
+      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "start": 1676,
+      "end": 1676,
+      "symbol": "private void OnMissionStarted(IMission mission)",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Original Campaign MissionStarted consumer",
+      "fileSha256": "f310f75c2c0a895a57b3f93e334b13d56365520da9241455f319f257684286c9"
+    },
+    {
+      "id": "settlement.host.followers-active",
+      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "start": 952,
+      "end": 952,
+      "symbol": "private static void SetSetsSelectedFollowerState(Mission mission, bool active, string source)",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Mission-scoped selected follower state",
+      "fileSha256": "f310f75c2c0a895a57b3f93e334b13d56365520da9241455f319f257684286c9"
+    },
+    {
+      "id": "settlement.host.followers-register",
+      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "start": 974,
+      "end": 974,
+      "symbol": "private static void RegisterSetsSelectedFollowerAgent(Agent agent, string source)",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Registration of actual spawned Agent",
+      "fileSha256": "f310f75c2c0a895a57b3f93e334b13d56365520da9241455f319f257684286c9"
+    },
+    {
+      "id": "settlement.host.followers-clear",
+      "path": "SettlementEntryTroopSelectionBehavior.cs",
+      "start": 993,
+      "end": 993,
+      "symbol": "private static void ClearSetsSelectedFollowerState(string source)",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Mission end/new game/load cleanup",
+      "fileSha256": "f310f75c2c0a895a57b3f93e334b13d56365520da9241455f319f257684286c9"
+    },
+    {
+      "id": "settlement.host.inspection",
+      "path": "TroopInspectionBehavior.cs",
+      "start": 31,
+      "end": 31,
+      "symbol": "private static readonly AnimusForge.Refactor.Modules.TroopInspectionSessionOwner<TroopInspectionRuntime, PendingSelection, Mission> _sessionOwner =",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Original TW inspection host owns session owner",
+      "fileSha256": "3515f9a18f63a5aaf436876a1dc7231618acb30afe2331e9efe0dd32aa89c8a0"
+    },
+    {
+      "id": "settlement.host.inspection-load",
+      "path": "TroopInspectionBehavior.cs",
+      "start": 214,
+      "end": 214,
+      "symbol": "internal static void ResetForCampaignTransition()",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Drop stale old Campaign references without restoring into new game",
+      "fileSha256": "3515f9a18f63a5aaf436876a1dc7231618acb30afe2331e9efe0dd32aa89c8a0"
+    },
+    {
+      "id": "settlement.host.inspection-cleanup",
+      "path": "TroopInspectionBehavior.cs",
+      "start": 532,
+      "end": 532,
+      "symbol": "internal static void CleanupRuntime(string reason)",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Original roster/party/MapEvent/Hero restoration",
+      "fileSha256": "3515f9a18f63a5aaf436876a1dc7231618acb30afe2331e9efe0dd32aa89c8a0"
+    },
+    {
+      "id": "settlement.host.inspection-queue",
+      "path": "TroopInspectionBehavior.cs",
+      "start": 1749,
+      "end": 1749,
+      "symbol": "private static void QueueOpenInspectionMission()",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Delayed Mission queue producer",
+      "fileSha256": "3515f9a18f63a5aaf436876a1dc7231618acb30afe2331e9efe0dd32aa89c8a0"
+    },
+    {
+      "id": "settlement.composition.campaign",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs",
+      "start": 42,
+      "end": 42,
+      "symbol": "campaignGameStarter.AddBehavior(new SettlementEntryTroopSelectionBehavior());",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Original Campaign registration",
+      "fileSha256": "50d9bc192826917dc204d15058146d096fde88fb48e6342faf3d340ea9bb4720"
+    },
+    {
+      "id": "settlement.composition.patch-sets",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 453,
+      "end": 453,
+      "symbol": "SettlementEntryTroopSelectionBehavior.RegisterHarmonyPatches(harmony);",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Original SETS patch registration",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "settlement.composition.patch-inspection",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 437,
+      "end": 437,
+      "symbol": "TroopInspectionBehavior.RegisterHarmonyPatches(harmony);",
+      "match": "exact",
+      "status": "wired-j13e4-offline-verified",
+      "note": "Original Inspection patch registration",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "settlement.replay.aggregate",
+      "path": "tools/PhaseEightParityReplayTests/J13E4DomainOwnerContractReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class J13E4DomainOwnerContractReplay",
+      "match": "exact",
+      "status": "replay-j13e4-offline-verified",
+      "note": "Source wiring only; owner DLL replay separate",
+      "fileSha256": "cdaa631cb0e5d6cc6ecf8ae050cb82b1d587245f04f44628919d5c6965964ae8"
     }
   ]
 }

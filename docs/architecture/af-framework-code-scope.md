@@ -1,4 +1,10 @@
-# 当前范围：主体 J13e3 Encounter 有限离线收口（2026-09-25）
+# 当前范围：主体 J13e4 Settlement/Inspection 有限离线收口（2026-09-25）
+
+产品/行为 `a946301a`、`cf162dd5`、`35daa7a6`，聚合 `ef6a83e1`：`src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs:6–62` 管一次性入场/取消/过期，`SettlementFollowerMissionOwner.cs:7–60` 管 Mission+Agent 身份，`TroopInspectionSessionOwner.cs:4–88` 管选择/排队/临时 runtime/清理状态。`SettlementEntryTroopSelectionBehavior.cs:72–100,236–295,952–1004,1676–1719,3155–3240` 留 profile/TW Mission/随行生成/损伤/GCCZ 薄适配及保存；`TroopInspectionBehavior.cs:31,112–128,175–290,303–410,532–568,1740–1752,3770–3774` 留 PartyScreen、临时 roster/party/MapEvent/PlayerEncounter/角色与 Hero 实际恢复。原 Campaign、Harmony、Terminal 入口及 GCCZ 准备/取消/城堡场景消费者不改。当前 DLL 三 owner 回放、聚合源码接线、双版本六构建/API/保存证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `ef6a83e1`、680 锚点两模式通过，仅用于定位。**J13e4 `OFFLINE_VERIFIED`、J13 `ACTIVE`，下一包 e5**；实机两版本场景/旧档/GCCZ/副作用/帧性能 **NOT-RUN**，不提前 J14。
+
+## 以下为 e3 范围（历史）
+
+# 主体 J13e3 Encounter 有限离线收口（2026-09-25）
 
 `0b0b32c0`、`dc2bbe03`、`86c11889` 的四个真实 owner 分别见 `src/modules/AF.Module.Encounter/EncounterTargetOwner.cs:7–28`、`EncounterReleaseOwner.cs:7–86`、`EncounterPendingReturnOwner.cs:7–36`、`EncounterConversationTargetOwner.cs:6–27`：持有已选目标、释放授权/待执行状态、未授权返回身份、显式参数→instance→leader 优先级。`LordEncounterBehavior.cs:33–39,83–110,138–140,301–376,694,3728–3814,4871–4945,5314–5329,7280–7376` 留 Campaign/TW/Mission/save/原生副作用适配；`EncounterConversationTargetResolver.cs:17–37` 留 Hero/反射/prisoner 提取。`CampaignComposition.cs:35`、`ApplicationTickComposition.cs:73,114`、`StartupPatchComposition.cs:276,293,301` 和三个原会话 patch 仍为生产入口。源码链接 53 条、当前 DLL 四 owner、聚合源码契约、六构建/API/保存证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `73bef755`、663 锚点两模式通过，仅用于定位。**J13e3 `OFFLINE_VERIFIED`、J13 `ACTIVE`，下一包 e4**；实机两版本会面/Harmony/旧档/native 副作用/帧性能 **NOT-RUN**，不提前 J14。
 
