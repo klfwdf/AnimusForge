@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "b07898cbd8918cc02b412f8143b3d6c4c8a2b824",
+  "sourceRevision": "6b0c07f7dad77d756adb79f82bbe388ca00989e2",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -6449,6 +6449,160 @@
       "status": "replay-j13d3-offline-verified",
       "note": "Aggregate source wiring only; not game execution evidence",
       "fileSha256": "5919ed1c5dcef6eb278f229a9c40716b2ab0e08547a90da2d864d481e0667b16"
+    },
+    {
+      "id": "war.ledger.owner",
+      "path": "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "private sealed class WarStatsLedgerOwner",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Single active/history/legacy state owner; no polling",
+      "fileSha256": "70fa64e6d5909c3ae2cb8f7de73d5768b9cc72126cee534ab71f29383b3f201d"
+    },
+    {
+      "id": "war.ledger.declare",
+      "path": "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+      "start": 34,
+      "end": 34,
+      "symbol": "internal void StartWar(WarStatsRecord record, int attackerSide, int startDay)",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "War declaration start/orientation and recent-participation reset",
+      "fileSha256": "70fa64e6d5909c3ae2cb8f7de73d5768b9cc72126cee534ab71f29383b3f201d"
+    },
+    {
+      "id": "war.ledger.archive",
+      "path": "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+      "start": 191,
+      "end": 191,
+      "symbol": "internal void ArchiveAndRemove(string pairKey, WarStatsRecord record, int endDay)",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Identity-guarded archive snapshot and active removal",
+      "fileSha256": "70fa64e6d5909c3ae2cb8f7de73d5768b9cc72126cee534ab71f29383b3f201d"
+    },
+    {
+      "id": "war.ledger.battle",
+      "path": "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+      "start": 224,
+      "end": 224,
+      "symbol": "internal void ApplyBattleStats(",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Oriented/clamped battle count and winner decision",
+      "fileSha256": "70fa64e6d5909c3ae2cb8f7de73d5768b9cc72126cee534ab71f29383b3f201d"
+    },
+    {
+      "id": "war.ledger.death",
+      "path": "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+      "start": 108,
+      "end": 108,
+      "symbol": "internal void UpsertHeroDeath(",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Hero death upsert/duplicate decision from host facts",
+      "fileSha256": "70fa64e6d5909c3ae2cb8f7de73d5768b9cc72126cee534ab71f29383b3f201d"
+    },
+    {
+      "id": "war.ledger.save",
+      "path": "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+      "start": 324,
+      "end": 324,
+      "symbol": "internal bool RestoreSavedData(AfWarStatsBehavior host)",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "v1-v5 saved-list restore and invalid-row fallback",
+      "fileSha256": "70fa64e6d5909c3ae2cb8f7de73d5768b9cc72126cee534ab71f29383b3f201d"
+    },
+    {
+      "id": "war.host.behavior",
+      "path": "WarStats/AfWarStatsBehavior.cs",
+      "start": 15,
+      "end": 15,
+      "symbol": "public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Original CampaignBehavior and public identity retained",
+      "fileSha256": "a98138aa95e6eee8295bb6d268ff1d4cb5a1b93ef60ac49160b9154dbb2cd013"
+    },
+    {
+      "id": "war.host.sync",
+      "path": "WarStats/AfWarStatsBehavior.cs",
+      "start": 368,
+      "end": 368,
+      "symbol": "public override void SyncData(IDataStore dataStore)",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Original IDataStore v1-v5 keys and event host retained",
+      "fileSha256": "a98138aa95e6eee8295bb6d268ff1d4cb5a1b93ef60ac49160b9154dbb2cd013"
+    },
+    {
+      "id": "war.host.event",
+      "path": "WarStats/AfWarStatsBehavior.cs",
+      "start": 685,
+      "end": 685,
+      "symbol": "private void OnMapEventEnded(MapEvent mapEvent)",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Main-thread map event fact capture/order; not live event acceptance",
+      "fileSha256": "a98138aa95e6eee8295bb6d268ff1d4cb5a1b93ef60ac49160b9154dbb2cd013"
+    },
+    {
+      "id": "war.host.history",
+      "path": "WarStats/AfWarStatsBehavior.cs",
+      "start": 506,
+      "end": 506,
+      "symbol": "public List<HistoricalWarEntry> BuildHistoricalWars()",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Original terminal-facing historical projection",
+      "fileSha256": "a98138aa95e6eee8295bb6d268ff1d4cb5a1b93ef60ac49160b9154dbb2cd013"
+    },
+    {
+      "id": "war.host.delete",
+      "path": "WarStats/AfWarStatsBehavior.cs",
+      "start": 590,
+      "end": 590,
+      "symbol": "public int DeleteHistoricalWars(IEnumerable<HistoricalWarEntry> entries)",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Terminal delete facade to identity-scoped owner",
+      "fileSha256": "a98138aa95e6eee8295bb6d268ff1d4cb5a1b93ef60ac49160b9154dbb2cd013"
+    },
+    {
+      "id": "war.terminal.delete",
+      "path": "WarStats/AfWarStatsPopupVM.cs",
+      "start": 1064,
+      "end": 1064,
+      "symbol": "int removed = behavior.DeleteHistoricalWars(selectedEntries);",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Original terminal confirmed history-delete consumer",
+      "fileSha256": "77db48d0d989ed3d7313afdf9ec496b15ddf08209867e408bc31e0e1171a73ff"
+    },
+    {
+      "id": "war.campaign.registration",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs",
+      "start": 54,
+      "end": 54,
+      "symbol": "campaignGameStarter.AddBehavior(new AfWarStatsBehavior());",
+      "match": "exact",
+      "status": "wired-j13d4-offline-verified",
+      "note": "Original ordered Campaign composition registration",
+      "fileSha256": "50d9bc192826917dc204d15058146d096fde88fb48e6342faf3d340ea9bb4720"
+    },
+    {
+      "id": "war.contract",
+      "path": "tools/PhaseEightParityReplayTests/J13D4DomainOwnerContractReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class J13D4DomainOwnerContractReplay",
+      "match": "exact",
+      "status": "replay-j13d4-offline-verified",
+      "note": "Aggregate source wiring only; behavior replay is separate",
+      "fileSha256": "494599f290a70030b7e04265d8fbf6393bad5dbefda7333d6993dc2b08cd83ce"
     }
   ]
 }
