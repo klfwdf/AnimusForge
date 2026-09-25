@@ -1,3 +1,13 @@
+## 主体 J13d2 主动资格完整决策归 Social（2026-09-25）
+
+原目标仍为[计划 d2](plans/j13-domain-owners-plan.md)的 Proactive 与 Issue 整包；本片产品/回放 `a59a0fc07d8879ebf072b1d8b590ea3adbbde5aa`，开工意图 `cd776c19`。Proactive 资格子包有限 `OFFLINE_VERIFIED`，**J13d2/J13 仍 `ACTIVE`**，下一包必须实际迁移并核验 Issue offer/in-progress/turn-in/完成回执。
+
+- **归属与接线**：`src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs:24–3734` 现独占 `FindBestRequestCandidate`、基础 Party/Hero 资格、各类需要候选/快照、玩家可受理过滤、紧急度/名声触发和信件需要投影。`ProactiveNpcRequestBehavior.cs:403–540` 保留小时门禁、每帧增量扫描、MCM/TW 主线程读取与完成适配，`:542+` 保留追逐/会面/AFEF 和保存适配；Courier 原信件入口仍调用同一 `BuildLetterNeedSnapshots`，送达只计疲劳，不算 Issue 接受。原 `ProactiveCandidateScanOwner` 的 16 队伍/帧与 1.5ms 截断保留，没有新增热路径扫描、重复反射、锁或缓存副本；实际帧耗时未测。
+- **等价与门禁**：把前驱 `cd776c19` 的原连续资格单元从当前 host+新 owner 字节级重组，归一化换行后与原源码完全一致；仅位置变化。`tools/PhaseEightParityReplayTests/ProactiveQualificationReplay.cs:6–50` 对当前生产 DLL 覆盖缺队伍、无效 Hero、普通粮食需要、重复/未知需要过滤、零紧急度在 RNG/名声读取前拒绝，并断言完整资格源码归属；原 opening/cooldown/scan/session 回放也通过。原脚本无 `-Stage/-Deploy` 的 Debug/Release × 1.3/1.4+Bootstrap 六构建均 0 warning/0 error（引用 1.3.15 / 1.4.7）。Debug 1.4 SHA256 `DD81C07FD3F4146DC696A498A88467F703B886A8CBA69548BACABF1DCC1A85B5` 的 Phase8 全通过；其他实现：Debug 1.3 `4F70724EE4EFC608EA900EE3406BBF6BF458E768010337B5E1721289CDED5A3F`、Release 1.3 `72927F40AD14C43D847304C674FA4DA3EDCB05AEFF58FC2A393F5837716304`、Release 1.4 `4E1CC38D752E0AEB4BB6A281DDA9EF34E1F9AEB5FE45294BF6835ACEB7716304`。V1 119/四 DLL metadata 1060、PersistenceIdentity 142/36、source inventory 7、[代码地图](architecture/af-framework-code-map.json) 560 锚点 recorded/working-tree 均通过。真实 Campaign 小时触发/资格 RNG、Quest/party-screen、旧档、provider、UI/音频、帧性能仍 `NOT-RUN`。
+- **保留/下一步**：Social 的 active session、opening、cooldown、scan 沿各已验证前片；原 host 仍有合法 TW/存档/会面职责。Issue 当前仅派遣 pending 在 `IssueAlternativeDispatchOwner`，`VanillaIssueOfferBridge.cs` 的 offer/in-progress/turn-in 和 `VanillaIssuePromptBehavior.cs` 完成回执尚未归 Issue owner。先读其真实三渠道调用、原版 Quest 身份与反射/回调顺序，再作完整领域闭包和 d2 聚合负例。未推送、Stage、部署、打包、游戏/外仓写入或 J14；`.dotnet-cli-home/` 未触碰。逆转本片须定向 inverse/revert `a59a0fc0`，不 reset/改历史。
+
+## 以下为 d2 主会话切片记录（历史）
+
 ## 主体 J13d2 主动主会话 owner 切片（2026-09-25）
 
 目标仍是按[原 d2 计划](plans/j13-domain-owners-plan.md)完成 Proactive 资格/状态/opening 与 Issue offer/in-progress/turn-in/完成回执；本片不缩减最终退出门。起点 `171e2a8f`，意图 `614e2745`，产品/回放 `f1ecb315e1b444c05032e07945af5d9be5ee9fe3`。本主会话片有限 `OFFLINE_VERIFIED`，**J13d2/J13 仍 `ACTIVE`**。
