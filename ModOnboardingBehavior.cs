@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Modules;
 using MCM.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -125,15 +126,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private bool _setupDone;
 
-	private bool _welcomeShownThisSession;
+	private readonly OnboardingSessionOwner _onboardingSession = new OnboardingSessionOwner();
 
 	private bool _welcomeInProgress;
 
 	private long _suppressWelcomeUntilUtcTicks;
-
-	private bool _pendingWelcome;
-
-	private long _pendingWelcomeAfterUtcTicks;
 
 	private bool _apiValidationInProgress;
 
@@ -195,11 +192,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private long _pendingUnexpectedResumeAfterUtcTicks;
 
-	private bool _startupNoticeShownThisSession;
-
-	private bool _pendingStartupNotice;
-
-	private long _pendingStartupNoticeAfterUtcTicks;
 
 	private ApiSetupTarget _currentApiSetupTarget;
 
@@ -219,11 +211,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private ApiValidationFlow _apiValidationFlow;
 
-	private bool _pendingActionPostprocessSetup;
-
-	private long _pendingActionPostprocessSetupAfterUtcTicks;
-
-	private bool _actionPostprocessSetupShownThisSession;
 
 	public static ModOnboardingBehavior Instance { get; private set; }
 
@@ -246,7 +233,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_AnimusForge_setup_done_v1", ref _setupDone);
 		if (!_setupDone)
 		{
-			_welcomeShownThisSession = false;
+			_onboardingSession.ResetWelcomeShown();
 		}
 	}
 
@@ -267,8 +254,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_pendingWelcome = true;
-			_pendingWelcomeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(2.0).Ticks;
+			_onboardingSession.MarkWelcome(DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
@@ -279,8 +265,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_pendingStartupNotice = true;
-			_pendingStartupNoticeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(1.0).Ticks;
+			_onboardingSession.MarkStartupNotice(DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
@@ -308,8 +293,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_pendingActionPostprocessSetup = true;
-			_pendingActionPostprocessSetupAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(3.0).Ticks;
+			_onboardingSession.MarkActionPostprocess(DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
@@ -325,22 +309,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			ProcessPendingModelFetchResult();
 			ProcessPendingReturnToWelcome();
 			ProcessUnexpectedOnboardingDismissal();
-			if (_pendingStartupNotice && !_startupNoticeShownThisSession && DateTime.UtcNow.Ticks >= _pendingStartupNoticeAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			if (_onboardingSession.TryClaimStartupNotice(DateTime.UtcNow.Ticks, Campaign.Current != null && Campaign.Current.GameStarted))
 			{
-				_pendingStartupNotice = false;
-				_startupNoticeShownThisSession = true;
 				ShowStartupNotice();
 			}
-			if (!_setupDone && _pendingWelcome && !_welcomeShownThisSession && DateTime.UtcNow.Ticks >= _pendingWelcomeAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			if (_onboardingSession.TryClaimWelcome(DateTime.UtcNow.Ticks, Campaign.Current != null && Campaign.Current.GameStarted, _setupDone))
 			{
-				_pendingWelcome = false;
-				_welcomeShownThisSession = true;
 				ShowSetupModeChoicePopup(fromGate: false);
 			}
-			if (_setupDone && _pendingActionPostprocessSetup && !_actionPostprocessSetupShownThisSession && DateTime.UtcNow.Ticks >= _pendingActionPostprocessSetupAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			if (_onboardingSession.TryClaimActionPostprocess(DateTime.UtcNow.Ticks, Campaign.Current != null && Campaign.Current.GameStarted, _setupDone))
 			{
-				_pendingActionPostprocessSetup = false;
-				_actionPostprocessSetupShownThisSession = true;
 				ShowActionPostprocessApiSetupPopup(ignoreSuppress: true, allowWhenSetupDone: true);
 			}
 		}
@@ -1142,7 +1120,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			ResetYjApiSetup();
 			_apiOnlySetupFlowActive = true;
-			_pendingWelcome = false;
+			_onboardingSession.CancelWelcome();
 			_pendingReturnToWelcome = false;
 			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 			_quickPresetFlowActive = false;
@@ -3138,7 +3116,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			ResetYjApiSetup();
 			_saveAndExitStage = SaveAndExitStage.None;
-			_pendingWelcome = false;
+			_onboardingSession.CancelWelcome();
 			_pendingReturnToWelcome = false;
 			_pendingApiValidationResult = false;
 			_pendingApiValidationVersion = 0;
