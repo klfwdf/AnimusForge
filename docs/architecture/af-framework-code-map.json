@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "a59a0fc07d8879ebf072b1d8b590ea3adbbde5aa",
+  "sourceRevision": "7fc6f680917a75a71df332fcc3ce288e4de96f18",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5793,24 +5793,24 @@
     {
       "id": "issue.alternative.dispatch.host",
       "path": "VanillaIssueOfferBridge.cs",
-      "start": 686,
-      "end": 686,
+      "start": 269,
+      "end": 269,
       "symbol": "private static void OnAlternativePartyScreenClosed(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "真实 party-screen 回调按 captured pending 校验，取消/失效不伪造完成事实；原版受理执行仍在 host。",
-      "fileSha256": "081a77843f5393b1e3eb4555f44f125f337387184ce840c918fdc4e0930271dd"
+      "fileSha256": "f92087f86eecfe3b101bf720bb8a3921b79ad32746a0bfbc4aa32b44b1386cdb"
     },
     {
       "id": "issue.alternative.dispatch.complete",
       "path": "VanillaIssueOfferBridge.cs",
-      "start": 719,
-      "end": 719,
+      "start": 302,
+      "end": 302,
       "symbol": "private static bool CompleteAlternativeDispatch(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "派遣前重验当前 giver/issue，失败返回 false 并恢复 roster；真实原版副作用仍在 host。",
-      "fileSha256": "081a77843f5393b1e3eb4555f44f125f337387184ce840c918fdc4e0930271dd"
+      "fileSha256": "f92087f86eecfe3b101bf720bb8a3921b79ad32746a0bfbc4aa32b44b1386cdb"
     },
     {
       "id": "issue.alternative.load",
@@ -5821,7 +5821,7 @@
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "载入边界清除静态运行时窗口身份；原完成回执仍为 AFEF 写入，recent-record 兼容桩未启用。",
-      "fileSha256": "4ca570edaf8a179e1c6f248450b32f8a71b78c24f8daa5c2450e5d4834ef60bc"
+      "fileSha256": "e433e4ad51f6e0f1e5a077616490babdb0eab8699301bc9c85c28ec87bf099af"
     },
     {
       "id": "social.proactive.opening.replay",
@@ -6163,6 +6163,171 @@
       "status": "wired-j13d2-offline-verified",
       "note": "Production DLL replay plus source ownership contract; live Campaign not run",
       "fileSha256": "45df4cb91027ab9fcb193cb95497807878538e2d44daf17a487031c645c22c04"
+    },
+    {
+      "id": "issue.receipt.owner",
+      "path": "src/modules/AF.Module.Issue/Completion/IssueCompletionReceiptOwner.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "internal static bool TryBuildCompletionReceipt(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Quest completion event fact algorithm; Campaign host commits AFEF",
+      "fileSha256": "5152768bb30eb694f08847a88532bb494cc7cb155f94cf3533972d0c0f3060da"
+    },
+    {
+      "id": "issue.receipt.fact",
+      "path": "src/modules/AF.Module.Issue/Completion/IssueCompletionReceiptOwner.cs",
+      "start": 47,
+      "end": 47,
+      "symbol": "internal static string BuildMemoryFact(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Pure reward/journal receipt composition",
+      "fileSha256": "5152768bb30eb694f08847a88532bb494cc7cb155f94cf3533972d0c0f3060da"
+    },
+    {
+      "id": "issue.receipt.host",
+      "path": "VanillaIssuePromptBehavior.cs",
+      "start": 40,
+      "end": 40,
+      "symbol": "private void OnQuestCompleted(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Campaign event adapter, not second receipt state",
+      "fileSha256": "e433e4ad51f6e0f1e5a077616490babdb0eab8699301bc9c85c28ec87bf099af"
+    },
+    {
+      "id": "issue.runtime.state",
+      "path": "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs",
+      "start": 12,
+      "end": 12,
+      "symbol": "internal static bool TryGetRuntimeState(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Offer, ready-to-turn-in, in-progress precedence",
+      "fileSha256": "730391b513d8c7512bc61b0ce11d127be0d3e07e0a1bcc0d3ed5fd33d44ecbba"
+    },
+    {
+      "id": "issue.runtime.offer",
+      "path": "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs",
+      "start": 35,
+      "end": 35,
+      "symbol": "internal static bool TryGetOfferableIssue(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Exact giver and ongoing-without-quest check",
+      "fileSha256": "730391b513d8c7512bc61b0ce11d127be0d3e07e0a1bcc0d3ed5fd33d44ecbba"
+    },
+    {
+      "id": "issue.runtime.ready",
+      "path": "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs",
+      "start": 47,
+      "end": 47,
+      "symbol": "internal static bool TryGetReadyToTurnInIssue(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Explicit signal and original discuss probe decision",
+      "fileSha256": "730391b513d8c7512bc61b0ce11d127be0d3e07e0a1bcc0d3ed5fd33d44ecbba"
+    },
+    {
+      "id": "issue.runtime.prompt",
+      "path": "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs",
+      "start": 70,
+      "end": 70,
+      "symbol": "internal static bool TryBuildRuntimePromptBlock(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Shared three-channel prompt owner",
+      "fileSha256": "79ab22a79417fd099d3462b688f327dc0226daf558ebd9b74810a4ef5a57a3b2"
+    },
+    {
+      "id": "issue.runtime.postprocess",
+      "path": "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs",
+      "start": 27,
+      "end": 27,
+      "symbol": "internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRules(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "State-gated tags for shared postprocess",
+      "fileSha256": "79ab22a79417fd099d3462b688f327dc0226daf558ebd9b74810a4ef5a57a3b2"
+    },
+    {
+      "id": "issue.action.self",
+      "path": "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
+      "start": 27,
+      "end": 27,
+      "symbol": "internal static bool TryAcceptIssueSelf(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Original issue start and confirmed-only fact",
+      "fileSha256": "6146110e058a57e8d12e04dfd596800175306bdbb19d31b43713828131d0f9fb"
+    },
+    {
+      "id": "issue.action.alternative",
+      "path": "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
+      "start": 80,
+      "end": 80,
+      "symbol": "internal static bool TryAcceptIssueWithCompanion(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Companion eligibility and party-screen initiation",
+      "fileSha256": "6146110e058a57e8d12e04dfd596800175306bdbb19d31b43713828131d0f9fb"
+    },
+    {
+      "id": "issue.action.dispatch",
+      "path": "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
+      "start": 152,
+      "end": 152,
+      "symbol": "internal static bool CompleteAlternativeDispatch(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Exact issue revalidation before alternative start/fact",
+      "fileSha256": "6146110e058a57e8d12e04dfd596800175306bdbb19d31b43713828131d0f9fb"
+    },
+    {
+      "id": "issue.action.turnin",
+      "path": "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
+      "start": 296,
+      "end": 296,
+      "symbol": "internal static bool TryTurnInIssue(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Execute original turn-in before AFEF",
+      "fileSha256": "6146110e058a57e8d12e04dfd596800175306bdbb19d31b43713828131d0f9fb"
+    },
+    {
+      "id": "issue.turnin.analyze",
+      "path": "src/modules/AF.Module.Issue/Actions/IssueTurnInDecisionOwner.cs",
+      "start": 27,
+      "end": 27,
+      "symbol": "internal static TurnInProbeResult AnalyzeTurnInOptions(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Discuss option confidence decision",
+      "fileSha256": "3768317e989fdd7229906b0559565483fedd6b7691f139889545c9d1e1f5a517"
+    },
+    {
+      "id": "issue.turnin.score",
+      "path": "src/modules/AF.Module.Issue/Actions/IssueTurnInDecisionOwner.cs",
+      "start": 64,
+      "end": 64,
+      "symbol": "internal static int ScorePotentialTurnInOption(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Option and consequence scoring",
+      "fileSha256": "3768317e989fdd7229906b0559565483fedd6b7691f139889545c9d1e1f5a517"
+    },
+    {
+      "id": "issue.d2.contract",
+      "path": "tools/PhaseEightParityReplayTests/J13D2DomainOwnerContractReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class J13D2DomainOwnerContractReplay",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Aggregate source wiring; not live Quest evidence",
+      "fileSha256": "5ee178b0388f23fd15b63b06789f64d63d0fccd2b4516f64ae3fcb03f6138db2"
     }
   ]
 }
