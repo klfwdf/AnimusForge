@@ -1,3 +1,9 @@
+# 当前范围：主体 J13d2 主会话 owner 片完成，资格与 Issue 继续（2026-09-25）
+
+产品 `f1ecb315` 将主动保存 DTO 的唯一运行状态、旧档规范化、重复启动/探测/阶段/过期/取消决策归 `src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs:9–112`；原 `ProactiveNpcRequestBehavior.cs:130–151,373–384,4252–4624,4680–4713,5059–5110` 仍作 Campaign/TW/存档/AFEF 适配。opening、冷却、扫描 owners 沿前片；候选资格与 Issue offer/in-progress/turn-in/完成回执未闭合，**J13d2/J13 `ACTIVE`**。证据与未验见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `f1ecb315`，554 锚点。无 push、Stage、部署、打包、外仓写入或 J14。
+
+## 以下为 d2 增量扫描切片范围（历史）
+
 # 当前范围：主体 J13d2 增量扫描 owner 切片完成，继续主会话/Issue（2026-09-25）
 
 产品 `6eb3d170` 将主动请求的运行时增量扫描状态、批大小、统计/候选排名、精确完成归 `src/modules/AF.Module.Social/Proactive/ProactiveCandidateScanOwner.cs:10–87`；原 `ProactiveNpcRequestBehavior.cs:410–549` 保留 Campaign/MCM/TW 读取和 1.5ms 每帧预算。opening 与 cooldown owner 沿用前片，主 session 及 Issue offer/in-progress/turn-in/完成回执仍未闭合，**J13d2/J13 `ACTIVE`**。证据和未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `6eb3d170`，546 锚点。无 push、Stage、部署、打包、游戏/外仓写入或 J14。

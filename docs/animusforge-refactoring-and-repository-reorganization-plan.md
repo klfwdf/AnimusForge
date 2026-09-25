@@ -1,3 +1,13 @@
+## 主体 J13d2 主动主会话 owner 切片（2026-09-25）
+
+目标仍是按[原 d2 计划](plans/j13-domain-owners-plan.md)完成 Proactive 资格/状态/opening 与 Issue offer/in-progress/turn-in/完成回执；本片不缩减最终退出门。起点 `171e2a8f`，意图 `614e2745`，产品/回放 `f1ecb315e1b444c05032e07945af5d9be5ee9fe3`。本主会话片有限 `OFFLINE_VERIFIED`，**J13d2/J13 仍 `ACTIVE`**。
+
+- **状态 owner/真实消费者**：`src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs:9–112` 独占原 `ProactiveNpcRequestSession` DTO 实例、读档旧 ID/单需要规范化、重复启动保护、追逐探测节流、过期与 Hero/party 身份、Menu/Native/Scene 阶段和一次疲劳标记。`ProactiveNpcRequestBehavior.cs:130–151` 保留原保存键 `_af_proactive_npc_request_state_v1`、DTO/SyncData；`:373–384` Campaign tick、`:4252–4414` 候选启动、`:4415–4624` 会面与 opening、`:4680–4713` 消费/完成、`:5059–5110` 取消与主线程 AI 释放是真实调用者。候选游戏对象、MCM、党队/会面与 AFEF 仍在 host；无新 DLL/保存键。重复启动在任何名声观察或游戏 AI 副作用前拒绝，旧 pending opening 与 session 取消同路清理。静态繁忙原因只按原 siege/raid/native/map_event 分类取消；信件送达仍仅记 need fatigue，不当作受理。
+- **运行成本/验证**：会话身份/阶段判定 O(1)，原追逐探测 0.35s 间隔，不新增每 tick 集合扫描/分配。`tools/PhaseEightParityReplayTests/ProactiveSessionOwnerReplay.cs:5+` 的当前 DLL 回放覆盖旧档补 ID/单需要、Hero/party 大小写、严格过期边界、重复启动、探测节流、繁忙原因、阶段转换、一次疲劳与取消；旧 opening 回放改为直接导入同一 owner。获准四目录复核后原脚本无 `-Stage/-Deploy` 完成 Debug/Release × 1.3/1.4+Bootstrap 六构建均 `0 warning / 0 error`；Debug 1.4 候选 SHA256 `D42E34E7105D35D9289D4FAD8DCEBC0D879E47E4159EE9B87D063EB17A835DEB` 完整 Phase8 通过。四实现 DLL 其他 SHA：Debug 1.3 `6690B8D26FFEFBD19628A178132EED027D86D87DABC2B9BBE98B1991807D1D13`、Release 1.3 `B7BD426011AD8DAC7C4E1828932449773B2C15D96B508D080709DA4CFAB1B773`、Release 1.4 `71BFFB484C53353195C1D30F9ADD580FA8C6F0009ECF69ABDEA78B3498D75FE6`；V1 119/四 DLL metadata 1060、PersistenceIdentity 142 key/type 对/36 behaviors、source inventory 7、[代码地图](architecture/af-framework-code-map.json) 554 锚点两模式通过。
+- **剩余关闭项**：主动候选资格/需要判断仍主要由 `ProactiveNpcRequestBehavior.cs` 原 host 执行，需要实际归 Social 子包并做资格源／MCM／取消的聚合接线反例；Issue 除派遣 pending 外，offer/in-progress/turn-in/完成回执尚未迁入业务 owner。下一步优先核对并迁移这些真实决策及三渠道消费者，完成 d2 聚合门禁后才能标整包 `OFFLINE_VERIFIED`。真实 Campaign/Quest/party-screen、旧档、provider、UI/音频、帧耗时均 `NOT-RUN`。未 push、Stage、部署、打包、外仓/游戏写入、改自动化或进入 J14；`.dotnet-cli-home/` 原样保留。
+
+## 以下为 d2 增量扫描切片记录（历史）
+
 ## 主体 J13d2 主动请求增量扫描 owner 切片（2026-09-25）
 
 目标仍是按[原 J13d2 退出范围](plans/j13-domain-owners-plan.md)完整关闭 Proactive/Issue，而非以本片缩小目标。起点 `fe8d8d4a`，意图 `31641e3f`，产品/回放 `6eb3d170f68d1aecd40b158246cd07d800842223`。**本扫描片有限 `OFFLINE_VERIFIED`，J13d2/J13 仍 `ACTIVE`**。
