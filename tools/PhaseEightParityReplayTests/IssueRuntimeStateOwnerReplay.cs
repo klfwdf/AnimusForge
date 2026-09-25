@@ -10,19 +10,21 @@ internal static class IssueRuntimeStateOwnerReplay
     {
         string ownerPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs");
         string promptPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs");
+        string actionPath = Path.Combine(repo, "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs");
         string hostPath = Path.Combine(repo, "VanillaIssueOfferBridge.cs");
         if (!File.Exists(ownerPath)) throw new InvalidOperationException("Issue runtime state: owner source missing");
         if (!File.Exists(promptPath)) throw new InvalidOperationException("Issue runtime state: prompt owner source missing");
         string ownerSource = File.ReadAllText(ownerPath);
         string promptSource = File.ReadAllText(promptPath);
+        string actionSource = File.ReadAllText(actionPath);
         string hostSource = File.ReadAllText(hostPath);
         foreach (string symbol in new[] { "internal static bool TryGetRuntimeState(", "internal static bool TryGetOfferableIssue(",
             "internal static bool TryGetInProgressIssue(", "internal static bool TryGetReadyToTurnInIssue(" })
             if (!ownerSource.Contains(symbol, StringComparison.Ordinal) || hostSource.Contains(symbol, StringComparison.Ordinal))
                 throw new InvalidOperationException("Issue runtime state: decision is not uniquely in Issue: " + symbol);
         if (!hostSource.Contains("IssueRuntimeStateOwner.TryGetRuntimeState(", StringComparison.Ordinal)
-            || !hostSource.Contains("IssueRuntimeStateOwner.TryGetOfferableIssue(", StringComparison.Ordinal)
-            || !hostSource.Contains("IssueRuntimeStateOwner.TryGetReadyToTurnInIssue(", StringComparison.Ordinal))
+            || !actionSource.Contains("IssueRuntimeStateOwner.TryGetOfferableIssue(", StringComparison.Ordinal)
+            || !actionSource.Contains("IssueRuntimeStateOwner.TryGetReadyToTurnInIssue(", StringComparison.Ordinal))
             throw new InvalidOperationException("Issue runtime state: production consumers not wired");
         foreach (string symbol in new[] { "BuildOfferPromptBlock(", "BuildInProgressPromptBlock(",
             "BuildReadyToTurnInPromptBlock(", "BuildNoAvailableIssuePromptBlock(" })
