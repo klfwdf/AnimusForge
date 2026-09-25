@@ -1,3 +1,10 @@
+# 当前交接：J14 三渠道公共 API 开工（2026-09-25）
+
+- **状态**：`J14_ACTIVE / G0_ACTIVE`。本轮用户已授权按 [J14 实施计划](docs/plans/j14-public-api-plan.md)开始 Scene → Courier → 三渠道离线契约；原 J13 离线收口不重开。实际工作区/分支与计划一致，开工 HEAD `16c180b3`，仅保留原未跟踪 `.dotnet-cli-home/`。
+- **边界与下一步**：先复用 Native 独立消费者基线并补 Scene 早完成/Courier 预生成假完成反例，再逐片接真实 owner；只有完整链路验证后才开放能力。构建脚本递归清理目标尚未取得本轮精确授权，不运行；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。详细责任与证据归[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[代码地图](docs/architecture/af-framework-code-map.json)。
+
+## 以下为 J13 交接（历史）
+
 # 当前交接：主体 J13 最终离线收口（2026-09-25）
 
 - **状态**：`J13_OFFLINE_VERIFIED / J13g_OFFLINE_VERIFIED`，仅按[原 J13 计划](docs/plans/j13-domain-owners-plan.md)完成 a–f owner 与 g 最终离线门禁，不是实机或发布验收；J14 未启动。最终产品 `39cf9d47` 修复 Onboarding Base URL 取消后、主线程消费前的迟到结果竞态；证据目录 `894acdfc`，详细责任、候选身份和风险见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[范围图](docs/architecture/af-framework-code-scope.md)。
