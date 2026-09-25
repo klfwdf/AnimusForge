@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "f1ecb315e1b444c05032e07945af5d9be5ee9fe3",
+  "sourceRevision": "a59a0fc07d8879ebf072b1d8b590ea3adbbde5aa",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5760,24 +5760,24 @@
     {
       "id": "social.proactive.opening.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 4647,
-      "end": 4647,
+      "start": 937,
+      "end": 937,
       "symbol": "private bool TryConsumePendingOpening(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "真实 Native/Scene 消费者；host 保留 party 释放及 Campaign/存档适配，冷却状态已归 Social cooldown owner。",
-      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+      "fileSha256": "ca99d79afa24f33d9261f61865f62e7d385a86b6d552403b3ac84321e71726f8"
     },
     {
       "id": "social.proactive.opening.cancel",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 5059,
-      "end": 5059,
+      "start": 1349,
+      "end": 1349,
       "symbol": "private void CancelActiveSession(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "取消时清理 pending，避免同 Hero 后续会话误消费。",
-      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+      "fileSha256": "ca99d79afa24f33d9261f61865f62e7d385a86b6d552403b3ac84321e71726f8"
     },
     {
       "id": "issue.alternative.dispatch.owner",
@@ -5909,18 +5909,18 @@
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "Campaign/MCM/游戏对象适配，调用冷却 owner 节流/过期/全局冷却；主会话状态现归 Social session owner。",
-      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+      "fileSha256": "ca99d79afa24f33d9261f61865f62e7d385a86b6d552403b3ac84321e71726f8"
     },
     {
       "id": "social.proactive.cooldown.apply.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 4688,
-      "end": 4688,
+      "start": 978,
+      "end": 978,
       "symbol": "private void ApplyCooldowns(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "真实 Hero 完成路径将身份/时间/MCM 期限提交给唯一 owner。",
-      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+      "fileSha256": "ca99d79afa24f33d9261f61865f62e7d385a86b6d552403b3ac84321e71726f8"
     },
     {
       "id": "social.proactive.cooldown.replay",
@@ -5997,7 +5997,7 @@
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "原 Campaign tick 与 TW 候选构造保留 host，批次状态/决策调用单 owner。",
-      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+      "fileSha256": "ca99d79afa24f33d9261f61865f62e7d385a86b6d552403b3ac84321e71726f8"
     },
     {
       "id": "social.proactive.scan.replay",
@@ -6068,24 +6068,24 @@
     {
       "id": "social.proactive.session.start.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 4252,
-      "end": 4252,
+      "start": 542,
+      "end": 542,
       "symbol": "private void StartRequest(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "真实候选入口捕获 DTO；先占位成功，再进行名声/AI/全局冷却副作用。",
-      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+      "fileSha256": "ca99d79afa24f33d9261f61865f62e7d385a86b6d552403b3ac84321e71726f8"
     },
     {
       "id": "social.proactive.session.cancel.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 5059,
-      "end": 5059,
+      "start": 1349,
+      "end": 1349,
       "symbol": "private void CancelActiveSession(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "清理会话 owner、pending opening、追逐队伍缓存；游戏 AI 释放仍在主线程 host。",
-      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+      "fileSha256": "ca99d79afa24f33d9261f61865f62e7d385a86b6d552403b3ac84321e71726f8"
     },
     {
       "id": "social.proactive.session.replay",
@@ -6097,6 +6097,72 @@
       "status": "wired-j13d2-slice-offline-verified",
       "note": "当前 DLL 旧档单需要/ID、身份/过期、探测、阶段、疲劳、重复启动与取消；非实机。",
       "fileSha256": "b22122fd50009bb6585a3f8b02e740d3ee2a8af6b66e809f67300dccb7f13d20"
+    },
+    {
+      "id": "social.proactive.qualification.owner",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+      "start": 24,
+      "end": 24,
+      "symbol": "private ProactiveCandidate FindBestRequestCandidate(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Social owner holds candidate enumeration and selection; Campaign scan host remains adapter",
+      "fileSha256": "b540e10ade694098c46098fc18e34092430b276e901312607fca5c7bdd15b5a2"
+    },
+    {
+      "id": "social.proactive.qualification.trigger",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+      "start": 221,
+      "end": 221,
+      "symbol": "private bool TryEvaluateCandidateTrigger(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Urgency, notoriety and RNG admission in one production decision",
+      "fileSha256": "b540e10ade694098c46098fc18e34092430b276e901312607fca5c7bdd15b5a2"
+    },
+    {
+      "id": "social.proactive.qualification.base",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+      "start": 679,
+      "end": 679,
+      "symbol": "private bool TryBuildBaseCandidate(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Party and Hero base eligibility",
+      "fileSha256": "b540e10ade694098c46098fc18e34092430b276e901312607fca5c7bdd15b5a2"
+    },
+    {
+      "id": "social.proactive.qualification.need",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+      "start": 1567,
+      "end": 1567,
+      "symbol": "private bool TryBuildFoodShortageCandidate(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Representative of per-need builders and snapshots in this owner",
+      "fileSha256": "b540e10ade694098c46098fc18e34092430b276e901312607fca5c7bdd15b5a2"
+    },
+    {
+      "id": "social.proactive.qualification.last",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+      "start": 3709,
+      "end": 3709,
+      "symbol": "private static bool IsKingdomVassalInviteNeedMet(",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "End of per-need eligibility block",
+      "fileSha256": "b540e10ade694098c46098fc18e34092430b276e901312607fca5c7bdd15b5a2"
+    },
+    {
+      "id": "social.proactive.qualification.replay",
+      "path": "tools/PhaseEightParityReplayTests/ProactiveQualificationReplay.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal static class ProactiveQualificationReplay",
+      "match": "contains",
+      "status": "wired-j13d2-offline-verified",
+      "note": "Production DLL replay plus source ownership contract; live Campaign not run",
+      "fileSha256": "45df4cb91027ab9fcb193cb95497807878538e2d44daf17a487031c645c22c04"
     }
   ]
 }
