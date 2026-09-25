@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "6b0c07f7dad77d756adb79f82bbe388ca00989e2",
+  "sourceRevision": "d89a13b5c76f0e70d83542b574ab52244a5d3dc9",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -6603,6 +6603,193 @@
       "status": "replay-j13d4-offline-verified",
       "note": "Aggregate source wiring only; behavior replay is separate",
       "fileSha256": "494599f290a70030b7e04265d8fbf6393bad5dbefda7333d6993dc2b08cd83ce"
+    },
+    {
+      "id": "duel.dispatch.owner",
+      "path": "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
+      "start": 24,
+      "end": 24,
+      "symbol": "private sealed class DuelBehaviorDetachedDispatchOwner : IDetachedDuelDispatchOwner",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Exact request queue, rejection, cancellation and unknown terminal owner",
+      "fileSha256": "cd7dc1c13b82bf40bc323b4c3a17fcd926b0177e91b259b8dabe8524ca5f9989"
+    },
+    {
+      "id": "duel.dispatch.queue",
+      "path": "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
+      "start": 26,
+      "end": 26,
+      "symbol": "public bool TryQueue(",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Production exact admission and bounded duplicate decision",
+      "fileSha256": "cd7dc1c13b82bf40bc323b4c3a17fcd926b0177e91b259b8dabe8524ca5f9989"
+    },
+    {
+      "id": "duel.dispatch.delayed",
+      "path": "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
+      "start": 362,
+      "end": 362,
+      "symbol": "private static bool IsDetachedDuelDispatchReadyForDelayedHost(",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Queued plus host-accepted delayed start gate",
+      "fileSha256": "cd7dc1c13b82bf40bc323b4c3a17fcd926b0177e91b259b8dabe8524ca5f9989"
+    },
+    {
+      "id": "duel.dispatch.abort",
+      "path": "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
+      "start": 394,
+      "end": 394,
+      "symbol": "private static void AbortDetachedDuelDispatch(",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Side-effect-aware abort routes to cancel or unknown",
+      "fileSha256": "cd7dc1c13b82bf40bc323b4c3a17fcd926b0177e91b259b8dabe8524ca5f9989"
+    },
+    {
+      "id": "duel.settlement.owner",
+      "path": "src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal static class DuelSettlementEffectOwner",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Pure three-session terminal effect projection",
+      "fileSha256": "3b93c58b53f5cc3adfd84233c5a01848176f721d087e7b582a30dae480487496"
+    },
+    {
+      "id": "duel.outcome.begin",
+      "path": "DuelBehavior.Outcomes.cs",
+      "start": 134,
+      "end": 134,
+      "symbol": "private static bool TryBeginDuelOutcome(",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Host typed start and exact artifact binding",
+      "fileSha256": "60a9db08c387990574d6b2eafdd696dcb1d74d58ff2451e06d23296f804fc5eb"
+    },
+    {
+      "id": "duel.outcome.record",
+      "path": "DuelBehavior.Outcomes.cs",
+      "start": 374,
+      "end": 374,
+      "symbol": "private static bool TryRecordDuelOutcome(",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Typed result lock before gameplay settlement",
+      "fileSha256": "60a9db08c387990574d6b2eafdd696dcb1d74d58ff2451e06d23296f804fc5eb"
+    },
+    {
+      "id": "duel.outcome.finalize",
+      "path": "DuelBehavior.Outcomes.cs",
+      "start": 432,
+      "end": 432,
+      "symbol": "private static bool TryFinalizeDuelOutcome(",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Typed terminal finalization and bound artifact cleanup",
+      "fileSha256": "60a9db08c387990574d6b2eafdd696dcb1d74d58ff2451e06d23296f804fc5eb"
+    },
+    {
+      "id": "duel.outcome.effectadapter",
+      "path": "DuelBehavior.Outcomes.cs",
+      "start": 514,
+      "end": 514,
+      "symbol": "private static bool TryCreateDuelOutcomeEffects(",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Host delegates effect projection to Duel owner",
+      "fileSha256": "60a9db08c387990574d6b2eafdd696dcb1d74d58ff2451e06d23296f804fc5eb"
+    },
+    {
+      "id": "duel.host.arena",
+      "path": "DuelBehavior.cs",
+      "start": 1767,
+      "end": 1767,
+      "symbol": "private void EndDuelLocal(bool playerDefeated)",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Original arena Mission terminal writer",
+      "fileSha256": "b501d50405ebd245aa784348fd29e21379196e6a8a3d362eb837a54aab65a929"
+    },
+    {
+      "id": "duel.host.wilderness",
+      "path": "DuelBehavior.cs",
+      "start": 4339,
+      "end": 4339,
+      "symbol": "private static void SettleWildernessDuelRuntime(WildernessDuelBattleRuntime runtime, bool playerDefeated, string source)",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Original wilderness Mission terminal writer",
+      "fileSha256": "b501d50405ebd245aa784348fd29e21379196e6a8a3d362eb837a54aab65a929"
+    },
+    {
+      "id": "duel.host.meeting",
+      "path": "DuelBehavior.cs",
+      "start": 7454,
+      "end": 7454,
+      "symbol": "private void EndDuel(bool playerDefeated)",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Original meeting terminal writer",
+      "fileSha256": "b501d50405ebd245aa784348fd29e21379196e6a8a3d362eb837a54aab65a929"
+    },
+    {
+      "id": "duel.campaign.registration",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs",
+      "start": 24,
+      "end": 24,
+      "symbol": "campaignGameStarter.AddBehavior(new DuelBehavior());",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Original ordered Campaign behavior registration",
+      "fileSha256": "50d9bc192826917dc204d15058146d096fde88fb48e6342faf3d340ea9bb4720"
+    },
+    {
+      "id": "duel.harmony.registration",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 469,
+      "end": 469,
+      "symbol": "DuelBehavior.RegisterHarmonyPatches(harmony);",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Original Harmony registration",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "duel.tick.consumer",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs",
+      "start": 71,
+      "end": 71,
+      "symbol": "DuelBehavior.Instance?.OnEngineTick();",
+      "match": "exact",
+      "status": "wired-j13e1-offline-verified",
+      "note": "Original application tick consumer",
+      "fileSha256": "5f627261f6d9c91674a4ceb18c85e3663943cb7463a017d6196ad00ce76957cd"
+    },
+    {
+      "id": "duel.contract",
+      "path": "tools/PhaseEightParityReplayTests/J13E1DomainOwnerContractReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class J13E1DomainOwnerContractReplay",
+      "match": "exact",
+      "status": "replay-j13e1-offline-verified",
+      "note": "Aggregate source wiring only; behavior and live evidence separate",
+      "fileSha256": "20b18d8387bed152c71306b66214c10f7a2afc111d8c650e3fe248e9240275d9"
+    },
+    {
+      "id": "duel.replay.dispatch",
+      "path": "tools/PhaseEightParityReplayTests/DuelDispatchOwnerReplay.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal static class DuelDispatchOwnerReplay",
+      "match": "exact",
+      "status": "replay-j13e1-offline-verified",
+      "note": "Current production DLL exact queue/duplicate/conflict/stale/disabled/abort/cancel replay, not live Mission",
+      "fileSha256": "2144365d544a5500abb65c9b018ba1bb86b9422da27af661a6c1392552288080"
     }
   ]
 }
