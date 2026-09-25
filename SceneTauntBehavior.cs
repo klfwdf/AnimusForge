@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.SiegeAftermathIntervention;
 using HarmonyLib;
 using SandBox;
@@ -3118,6 +3119,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool IsOwnedSettlementPassiveAttackPeaceLocationScene(Settlement settlement)
 	{
+		return CanInitializePeaceSceneConflict(settlement);
+	}
+
+	private static bool CanInitializePeaceSceneConflict(Settlement settlement)
+	{
 		try
 		{
 			Mission mission = Mission.Current;
@@ -3125,68 +3131,34 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			{
 				return false;
 			}
-			if (IsCampaignBattleContextForOwnedSettlementPassiveAttack(mission, settlement))
+			var encounter = PlayerEncounter.LocationEncounter;
+			var location = CampaignMission.Current?.Location;
+			if (encounter == null || location == null)
 			{
 				return false;
 			}
-			if (PlayerEncounter.LocationEncounter == null || CampaignMission.Current?.Location == null)
-			{
-				return false;
-			}
-			Settlement encounterSettlement = PlayerEncounter.LocationEncounter.Settlement;
-			if (encounterSettlement != null && encounterSettlement != settlement)
-			{
-				return false;
-			}
-			string locationId = (CampaignMission.Current.Location.StringId ?? "").Trim().ToLowerInvariant();
-			if (locationId == "arena" || locationId == "training_field")
-			{
-				return false;
-			}
-			return true;
+			ScenePeaceConflictContext facts = new ScenePeaceConflictContext(
+				hasMission: true,
+				hasSettlement: true,
+				hasLocationEncounter: true,
+				hasCampaignLocation: true,
+				sameSettlement: encounter.Settlement == null || encounter.Settlement == settlement,
+				hasBattle: PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null,
+				hasSiegeHandler: mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null,
+				hasBattleTeamType: mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
+					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut
+					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle,
+				hasBattleMode: mission.Mode == MissionMode.Deployment
+					|| mission.Mode == MissionMode.Stealth
+					|| mission.Mode == MissionMode.Duel,
+				settlementUnderSiege: settlement.IsUnderSiege,
+				locationId: location.StringId);
+			return ScenePeaceConflictContextOwner.CanInitialize(in facts);
 		}
 		catch
 		{
 			return false;
 		}
-	}
-
-	private bool IsCampaignBattleContextForOwnedSettlementPassiveAttack(Mission mission, Settlement settlement)
-	{
-		try
-		{
-			if (PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null)
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			CampaignSiegeStateHandler siegeStateHandler = mission?.GetMissionBehavior<CampaignSiegeStateHandler>();
-			if (siegeStateHandler != null)
-			{
-				return true;
-			}
-			if (mission != null && (mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege || mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut || mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle))
-			{
-				return true;
-			}
-			if (mission != null && (mission.Mode == MissionMode.Deployment || mission.Mode == MissionMode.Stealth || mission.Mode == MissionMode.Duel))
-			{
-				return true;
-			}
-			if (settlement?.IsUnderSiege ?? false)
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		return false;
 	}
 
 	private static Settlement GetCurrentSettlementForOwnedSettlementPassiveAttack()
@@ -5454,6 +5426,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	internal bool CanStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
+		if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement))
+		{
+			return false;
+		}
 		_fightHandler = _fightHandler ?? Mission.Current?.GetMissionBehavior<MissionFightHandler>();
 		if (SettlementEntryTroopSelectionBehavior.IsSetsConflictProxyActiveForExternal(Mission.Current))
 		{
@@ -5681,6 +5657,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			long totalStart = StartPerfTimer();
 			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
+			{
+				return false;
+			}
+			if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement))
 			{
 				return false;
 			}
@@ -7539,6 +7519,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			return;
 		}
 		if (CampaignMission.Current?.Location == null || PlayerEncounter.LocationEncounter == null)
+		{
+			return;
+		}
+		if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement))
 		{
 			return;
 		}
