@@ -74,6 +74,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
         "MyBehavior.PersonaGeneration.cs", "MyBehavior.PersonaReadiness.cs",
+        "DevWeeklyReportPopup.cs", "src/modules/AF.Module.UI/WeeklyReportPopupSessionOwner.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
         "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityOwner.cs",
@@ -140,6 +141,7 @@ ExerciseMapEventIdentityOwnerReplay.Run(af);
 MilitaryExerciseSessionOwnerReplay.Run(af);
 ExerciseSettlementOwnerReplay.Run(af);
 J13E5DomainOwnerContractReplay.Run(repo);
+WeeklyReportPopupSessionOwnerReplay.Run(af);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
