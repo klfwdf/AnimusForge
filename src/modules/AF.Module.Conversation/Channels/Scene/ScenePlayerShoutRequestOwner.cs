@@ -50,6 +50,22 @@ internal sealed class ScenePlayerShoutRequest
 }
 
 /// <summary>
+/// A read-only pre-claim view. Issuing it must not invalidate an existing Scene input.
+/// The host also validates its mutable UI targeting source before claiming it.
+/// </summary>
+internal sealed class ScenePlayerShoutContext
+{
+	public ShoutBehavior Owner;
+	public Mission Mission;
+	public Agent Player;
+	public long RuntimeGeneration;
+	public int SceneSessionId;
+	public int ConversationEpoch;
+	public long InputSequence;
+	public ShoutTargetingContext TargetingContext;
+}
+
+/// <summary>
 /// Owns Scene player-input request sequencing and one-shot claim state. The host supplies
 /// current Mission/runtime values on the game thread; the owner does not read global game state.
 /// </summary>
@@ -60,6 +76,63 @@ internal sealed class ScenePlayerShoutRequestOwner
 	internal void InvalidateCurrent()
 	{
 		Interlocked.Increment(ref _inputSequence);
+	}
+
+	internal ScenePlayerShoutContext CaptureContext(
+		ShoutBehavior owner,
+		Mission mission,
+		Agent player,
+		long runtimeGeneration,
+		int sceneSessionId,
+		int conversationEpoch,
+		ShoutTargetingContext targetingContext)
+	{
+		return new ScenePlayerShoutContext
+		{
+			Owner = owner,
+			Mission = mission,
+			Player = player,
+			RuntimeGeneration = runtimeGeneration,
+			SceneSessionId = sceneSessionId,
+			ConversationEpoch = conversationEpoch,
+			InputSequence = Interlocked.Read(ref _inputSequence),
+			TargetingContext = targetingContext
+		};
+	}
+
+	internal bool TryClaimContext(
+		ScenePlayerShoutContext context,
+		ShoutBehavior owner,
+		Mission currentMission,
+		Agent currentPlayer,
+		bool runtimeGenerationIsCurrent,
+		int currentSceneSessionId,
+		int currentConversationEpoch,
+		out ScenePlayerShoutRequest request)
+	{
+		request = null;
+		if (context == null || !ReferenceEquals(context.Owner, owner)
+			|| context.Mission == null || !ReferenceEquals(context.Mission, currentMission)
+			|| context.Player == null || !ReferenceEquals(context.Player, currentPlayer)
+			|| !runtimeGenerationIsCurrent || context.SceneSessionId != currentSceneSessionId
+			|| context.ConversationEpoch != currentConversationEpoch
+			|| context.TargetingContext == null || context.InputSequence == long.MaxValue)
+			return false;
+		long nextSequence = context.InputSequence + 1;
+		if (Interlocked.CompareExchange(ref _inputSequence, nextSequence, context.InputSequence) != context.InputSequence)
+			return false;
+		request = new ScenePlayerShoutRequest
+		{
+			Owner = owner,
+			Mission = currentMission,
+			Player = currentPlayer,
+			RuntimeGeneration = context.RuntimeGeneration,
+			SceneSessionId = context.SceneSessionId,
+			ConversationEpoch = context.ConversationEpoch,
+			InputSequence = nextSequence,
+			TargetingContext = context.TargetingContext
+		};
+		return true;
 	}
 
 	internal ScenePlayerShoutRequest Capture(
