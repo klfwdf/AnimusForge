@@ -1,3 +1,11 @@
+## 主体 J13d3 WorldEvents 开工意图（2026-09-25）
+
+状态：`J13d3_ACTIVE / J13_ACTIVE`。基线 `938ce11645e0a93fb6b07d359e7fab68b8712740`；只推进[原计划](plans/j13-domain-owners-plan.md)的 WorldEvents 收件箱，随后按 d4、e1–e5 顺序施工，不提前 J14。当前仅 `.dotnet-cli-home/` 未跟踪，原样保留。
+
+- **目标与消费者**：把 `WorldEvents/WorldEventInbox.cs:44–182` 的 records/unread、归一化、stable-key 去重、容量与 version 决策迁入唯一领域 owner；保留 `AnimusForgeWorldEventBehavior`、`AnimusForgeWorldEventInboxEntry`、两条 v1 保存键与原静态入口身份。生产消费者包括 `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:1279–1285,5449–5475` 的发布确认、`PolicySystem/UI/PolicySystemUi.cs:66` 与 `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:10885` 的快照，以及弹窗已读操作。
+- **保持与风险**：Policy 现用 inbox version 增长确认 upsert，不能让幂等去重变成假失败；既有存档按 EventId 存放，不能借抽取改 JSON/键/公开 DTO。重复 stable key 不得出现双记录或无意重置未读；加载坏记录不丢其他记录。发布/载入/快照为低频主线程操作，不新增 tick 扫描或第二份权威账本。
+- **有限退出门**：先写针对当前生产路径的重复、已读、容量、载入、version 行为反例；迁真实状态与算法并接通上述消费者；补 d3 聚合源码接线契约，运行当前候选回放、保存/API/源码成员及双版本构建，再更新代码地图/HANDOFF。候选离线结论不覆盖真实 Campaign、旧档、UI 点击或帧性能。
+
 ## 主体 J13d2 Proactive/Issue 有限离线收口（2026-09-25）
 
 按[原 d2 计划](plans/j13-domain-owners-plan.md)核对后，状态为 **`J13d2_OFFLINE_VERIFIED / J13_ACTIVE`**；仅表示本次职责归属与所列离线门禁闭合，不是实机 Quest/旧档验收。Proactive 资格产品 `a59a0fc0` 及此前 opening/cooldown/scan/session 产品见下文；Issue 依次为完成回执 `fe74d4fa`、运行状态 `3f330c58`、三渠道提示词/后处理 `f739dbaf`、受理/交付动作 `4e4ad8bf`、交付选项判定 `96d058ca`，聚合接线契约 `36037592bc6038138b1ef8d27309a565697d09a7`、事实顺序断言 `7fc6f680917a75a71df332fcc3ce288e4de96f18` 及重复领取行为回放 `d34fd858023cb9d8638bad51f0a7fbe769660d0e`。
