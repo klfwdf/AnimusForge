@@ -50,6 +50,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs",
         "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs",
         "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
+        "src/modules/AF.Module.Issue/Actions/IssueTurnInDecisionOwner.cs",
         "MyBehavior.PromotedPersonaGeneration.cs",
         "RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",

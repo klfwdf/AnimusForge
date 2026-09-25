@@ -1,6 +1,7 @@
 using System;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Issues;
+using TaleWorlds.Library;
 
 namespace AnimusForge;
 
@@ -73,6 +74,39 @@ internal static partial class VanillaIssueOfferBridge
 					IsConfident = false
 				};
 				return true;
+			}
+			return false;
+		}
+
+		private static bool TryGetExplicitTurnInSignal(QuestBase quest, out string summary)
+		{
+			summary = "";
+			MBReadOnlyList<JournalLog> journalEntries = quest?.JournalEntries;
+			if (journalEntries == null || journalEntries.Count == 0)
+			{
+				return false;
+			}
+			for (int num = journalEntries.Count - 1; num >= 0; num--)
+			{
+				JournalLog journalLog = journalEntries[num];
+				if (journalLog == null)
+				{
+					continue;
+				}
+				string text = NormalizePromptText(GetText(journalLog.TaskName));
+				string text2 = NormalizePromptText(GetText(journalLog.LogText));
+				if (journalLog.Range > 0 && journalLog.CurrentProgress >= journalLog.Range)
+				{
+					string arg = string.IsNullOrWhiteSpace(text) ? text2 : text;
+					summary = string.IsNullOrWhiteSpace(arg) ? ("任务进度已满足：" + journalLog.CurrentProgress + "/" + journalLog.Range) : (arg + "（当前进度 " + journalLog.CurrentProgress + "/" + journalLog.Range + "，已满足）");
+					return true;
+				}
+				string text3 = (text + " " + text2).Trim().ToLowerInvariant();
+				if (ContainsAny(text3, "you have enough", "return back to", "return to", "go back to", "report back", "speak to", "回去找", "回到", "回去向", "你有足够", "已满足", "返回"))
+				{
+					summary = string.IsNullOrWhiteSpace(text2) ? text : text2;
+					return true;
+				}
 			}
 			return false;
 		}
