@@ -12,7 +12,7 @@ using TaleWorlds.Core;
 
 namespace AFWarStatsTerminal.Behaviors;
 
-public sealed class AfWarStatsBehavior : CampaignBehaviorBase
+public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
 {
     public enum WarAdvantage
     {
@@ -235,11 +235,13 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
 
     private const int CurrentDataVersion = 5;
 
-    private readonly Dictionary<string, WarStatsRecord> _activeWars = new(StringComparer.Ordinal);
+    private readonly WarStatsLedgerOwner _ledger = new();
 
-    private readonly List<HistoricalWarRecord> _historicalWars = new();
+    private Dictionary<string, WarStatsRecord> _activeWars => _ledger.ActiveWars;
 
-    private readonly Dictionary<string, LegacyPairRecord> _legacyRecords = new(StringComparer.Ordinal);
+    private List<HistoricalWarRecord> _historicalWars => _ledger.HistoricalWars;
+
+    private Dictionary<string, LegacyPairRecord> _legacyRecords => _ledger.LegacyRecords;
 
     private int _dataVersion;
 
@@ -582,8 +584,7 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
             }
         }
 
-        _historicalWars.Clear();
-        _legacyRecords.Clear();
+        _ledger.ClearHistoryAndLegacy();
         _legacyMigrationPending = false;
         _recentBattleSequence = 0;
         _dataVersion = CurrentDataVersion;
@@ -591,23 +592,7 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
 
     public int DeleteHistoricalWars(IEnumerable<HistoricalWarEntry> entries)
     {
-        if (entries == null)
-        {
-            return 0;
-        }
-
-        HashSet<string> identities = new(
-            entries
-                .Where(static entry => entry != null)
-                .Select(static entry => MakeHistoricalIdentity(entry.PairKey, entry.StartDay, entry.EndDay)),
-            StringComparer.Ordinal);
-        if (identities.Count == 0)
-        {
-            return 0;
-        }
-
-        int removed = _historicalWars.RemoveAll(record => identities.Contains(
-            MakeHistoricalIdentity(record.PairKey, ResolveHistoryStartDay(record), record.EndDay)));
+        int removed = _ledger.DeleteHistoricalWars(entries);
         if (removed > 0)
         {
             _dataVersion = CurrentDataVersion;
@@ -1207,8 +1192,8 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
         {
             record.LastDurationDays = Math.Max(0, GetCurrentDay() - record.StartDay);
         }
-        ArchiveEndedWar(pairKey, record);
-        _activeWars.Remove(pairKey);
+        int endDay = Campaign.Current == null ? 0 : Math.Max(0, (int)Math.Floor(CampaignTime.Now.ToDays));
+        _ledger.ArchiveAndRemove(pairKey, record, endDay);
     }
 
     private void MigrateLegacyRecords(Dictionary<string, (Kingdom A, Kingdom B)> currentPairs)
@@ -1240,47 +1225,13 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
             }
             else
             {
-                _historicalWars.Add(ToHistoricalRecord(legacy.Key, migrated, 0));
+                _ledger.AddHistorical(legacy.Key, migrated, 0);
             }
         }
 
         _legacyRecords.Clear();
         _legacyMigrationPending = false;
         _dataVersion = CurrentDataVersion;
-    }
-
-    private void ArchiveEndedWar(string pairKey, WarStatsRecord record)
-    {
-        int endDay = Campaign.Current == null ? 0 : Math.Max(0, (int)Math.Floor(CampaignTime.Now.ToDays));
-        _historicalWars.Add(ToHistoricalRecord(pairKey, record, endDay));
-    }
-
-    private static HistoricalWarRecord ToHistoricalRecord(string pairKey, WarStatsRecord record, int endDay)
-    {
-        return new HistoricalWarRecord
-        {
-            PairKey = pairKey,
-            NameA = record.NameA,
-            NameB = record.NameB,
-            KillsA = record.KillsA,
-            KillsB = record.KillsB,
-            CasualtiesA = record.CasualtiesA,
-            CasualtiesB = record.CasualtiesB,
-            WinsA = record.WinsA,
-            WinsB = record.WinsB,
-            LossesA = record.LossesA,
-            LossesB = record.LossesB,
-            InitialTerritoryA = record.InitialTerritoryA,
-            InitialTerritoryB = record.InitialTerritoryB,
-            LastDurationDays = record.LastDurationDays,
-            LastTerritoryA = record.LastTerritoryA,
-            LastTerritoryB = record.LastTerritoryB,
-            InvolvesPlayer = record.InvolvesPlayer,
-            EndDay = endDay,
-            StartDay = record.StartDay >= 0 ? record.StartDay : Math.Max(0, endDay - record.LastDurationDays),
-            AttackerSide = record.AttackerSide == 1 ? 1 : 0,
-            HeroDeaths = CloneHeroDeaths(record.HeroDeaths)
-        };
     }
 
     private void AccumulateBattleStats(MapEvent mapEvent)
@@ -1397,12 +1348,7 @@ public sealed class AfWarStatsBehavior : CampaignBehaviorBase
 
     private WarStatsRecord GetOrCreateActiveRecord(string pairKey, Kingdom kingdomA, Kingdom kingdomB)
     {
-        if (!_activeWars.TryGetValue(pairKey, out WarStatsRecord record))
-        {
-            record = new WarStatsRecord();
-            _activeWars[pairKey] = record;
-        }
-
+        WarStatsRecord record = _ledger.GetOrCreateActive(pairKey);
         UpdateRecordMetadata(record, kingdomA, kingdomB);
         return record;
     }
