@@ -1,10 +1,8 @@
-# 当前交接：主体 J13 暂停于 d1 收口，d2 尚未实施（2026-09-25）
+# 当前交接：主体 J13d2 生命周期首片离线验证，d2 整包继续（2026-09-25）
 
-- **任务与交付边界**：用户要求先停在这里，更新主体 HANDOFF 并推送主体重构；本次授权取代此前“不推送、不更新 HANDOFF”，不包含另一个外交任务。实际工作树为 `.wt/diplomacy-latest-20260925`，本地分支 `codex/diplomacy-refactor-20260925`，交付目标为 `origin/codex/af-main-refactor-continuation-20260831`。本地名称不代表此次工作是外交重构；不推送 `.wt/af-continuation` 的同名本地分支或其 HANDOFF，也不改主 checkout。
-- **当前停点**：最新产品 `eb641aaa`，证据 `6281ec6f`，暂停前 HEAD `3cf846bb`。J13a Weekly、J13b Kingdom、J13c Persona、J13d1 Notoriety/Romance/Recruitment 均有限 `OFFLINE_VERIFIED`；J13/J13d2 为 `PAUSED`。d2 只有空意图提交和只读调查，没有产品或测试改动；d2–d4、e、f、g 未完成。本交接只改文档。
-- **已验证与限制**：最新产品 Debug 1.3/1.4 + Bootstrap 零警告错误，当前 DLL Phase8 通过；Hero/升格 269、三渠道 169、V1 119、两 DLL metadata 530 检查通过，升格 worker commit 负向变异产生预期的 20 个行为失败。PersistenceIdentity 对基线 `053ad485` 的 142 key/type 对、36 behaviors 无差异。代码地图绑定 `eb641aaa`，522 锚点两种模式通过。最新 Release 尚未重建；旧 Persona/Channel source-parity 依赖 hash 失配及旧 terminal harness 提取失败仍保留，不宣称全仓全绿。真实游戏、旧档、provider、UI/音频、帧性能均 `NOT-RUN`。
-- **接续与回滚**：下次获准继续时，从 J13d2 Proactive/Issue 的主动资格、冷却、会话/pending consumption、原版任务生命周期及迟到回调开始，保持 J10 Courier 语义；按原计划推进，不进入 J14。源码职责、保留 host、复现入口和各片回滚点见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[原计划](docs/plans/j13-domain-owners-plan.md)、[代码范围](docs/architecture/af-framework-code-scope.md)与[代码地图](docs/architecture/af-framework-code-map.json)。撤销用对应产品提交的定向 inverse/revert，保留历史；未授权 Stage、部署、打包、游戏/存档或外仓写入。
-- **推送基线**：待交付增量从远端 `053ad48502f49c96753ece20be4cc25006fcb3ae` 起，暂停前共 24 个主体提交，另加本次文档提交；逐提交路径及历史已核对，无另一外交任务提交或 HANDOFF 增量。实际发布结果以推送后的远端 ref 核对为准，不能把此记录当作推送成功证明。
+- **工作区与状态**：实际分支 `codex/af-main-refactor-continuation-20260831`，最新产品/回放 `580a1466`。J13a Weekly、J13b Kingdom、J13c Persona、J13d1 Notoriety/Romance/Recruitment 维持有限 `OFFLINE_VERIFIED`；d2 的主动 opening 与原版 Issue 同伴窗口迟到回调首片有限 `OFFLINE_VERIFIED`，但 **J13d2/J13 仍 `ACTIVE`**。此前暂停/推送交接只作历史，不授权本轮再次推送。
+- **本片证据**：原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建零警告错误；当前 Debug 1.4 SHA256 `DDFBE3B5BE81CCED67D110524EE01F9AADDAC273D5974184E1367A3D49401300` Phase8 含新增生产回放通过，V1 119/四 DLL metadata 1060、PersistenceIdentity 142 key/type 对/36 behaviors、source inventory 7、代码地图 531 锚点两模式通过。真实 Campaign/Quest/party-screen、旧档、provider、UI/音频、帧性能仍 `NOT-RUN`；旧 Persona/Channel source-parity 与 terminal harness 问题未由本片解决。
+- **下一步**：按[主台账当前段](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[原计划](docs/plans/j13-domain-owners-plan.md)继续 d2 主动资格、冷却、session 生命周期，以及 Issue offer/in-progress/turn-in/完成回执；再按既定顺序推进 d3/d4、e、f、g，不缩小 J13 离线目标或提前 J14。[代码范围](docs/architecture/af-framework-code-scope.md)和[代码地图](docs/architecture/af-framework-code-map.json)标出已迁与保留 host。`.dotnet-cli-home/` 未跟踪且原样保留；未 Stage、部署、打包、写游戏/外仓、修改自动化或推送。需撤销时对 `580a1466` 作定向 inverse/revert，不 reset/改写历史。
 
 ## 以下为历史交接，不作为当前执行指令
 

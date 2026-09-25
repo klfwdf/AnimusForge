@@ -1,4 +1,10 @@
-# 当前范围：主体 J13 暂停，d1 有限离线收口，d2 尚未实施（2026-09-25）
+# 当前范围：主体 J13d2 生命周期首片完成，d2 整包继续（2026-09-25）
+
+产品 `580a1466` 将主动 Native/Scene pending 唯一状态归 `src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs:8–94`，真实 `ProactiveNpcRequestBehavior.cs:4652–4728,5138–5153` 消费并在取消/读档清理；同 Hero 的旧 session/旧渠道不能误消费。原版 Issue 同伴窗口唯一 pending 归 `src/modules/AF.Module.Issue/Dispatch/IssueAlternativeDispatchOwner.cs:8–46`，`VanillaIssueOfferBridge.cs:608–744` 的原 party-screen 回调绑定发起身份，失效任务不写成功事实；`VanillaIssuePromptBehavior.cs:11–29` 清理跨 Campaign/读档运行时状态。原主动资格/冷却/session 主算法、Issue offer/in-progress/turn-in/完成事实与反射/原版副作用仍属原 host，d2 不能标整包完成。当前证据、候选哈希和 NOT-RUN 见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定产品 `580a1466`，531 锚点。J13a–c/d1 有限 `OFFLINE_VERIFIED`，J13d2/J13 `ACTIVE`；不推送、Stage、部署、打包、外仓写入或提前 J14。
+
+## 以下为先前暂停范围记录（历史）
+
+# 历史范围：主体 J13 暂停，d1 有限离线收口，d2 尚未实施（2026-09-25）
 
 产品仍为 `eb641aaa`，证据 `6281ec6f`；`3cf846bb` 仅 d2 空意图提交，随后只读调查，未实施 Proactive/Issue。J13a–c、d1 有限 `OFFLINE_VERIFIED`，J13/d2 为 `PAUSED`，d2–d4、e、f、g 未完成。用户已授权本次主体推送及 HANDOFF 更新，明确排除另一外交任务及其 HANDOFF；详见[当前 HANDOFF](../../HANDOFF.md)与[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。代码地图仍绑定 `eb641aaa`，522 锚点验证不变；最新 Release、实机、旧档等未验项继续保留。
 
