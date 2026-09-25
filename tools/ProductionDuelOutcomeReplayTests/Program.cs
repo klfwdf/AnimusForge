@@ -458,7 +458,8 @@ internal static class Program
             projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyChannelActionCommitter.cs"));
         string executor = File.ReadAllText(Path.Combine(
             projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs"));
-        string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
+        string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"))
+            + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"));
         string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"));
         string shout = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
         string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"))
@@ -767,6 +768,7 @@ internal static class Program
             Path.Combine(projectRoot, "AnimusForge.csproj"),
             Path.Combine(projectRoot, "DuelBehavior.cs"),
             Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"),
             Path.Combine(projectRoot, "FourberieDuelCompatibility.cs"),
             Path.Combine(projectRoot, "MyBehavior.cs"),
             Path.Combine(projectRoot, "ShoutBehavior.cs"),
