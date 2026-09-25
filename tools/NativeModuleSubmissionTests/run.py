@@ -4,7 +4,7 @@ import argparse, importlib.util, os, shutil, subprocess, sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[2]; HERE=Path(__file__).parent
 sys.stdout.reconfigure(encoding='utf-8')
-p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision','skip-channel','skip-context']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));a=p.parse_args()
 dotnet=Path(a.dotnet) if Path(a.dotnet).is_absolute() else Path(shutil.which(a.dotnet) or '')
 if not dotnet.is_file():p.error('dotnet executable not found: '+a.dotnet)
 dotnet=dotnet.resolve()
@@ -23,6 +23,8 @@ mutations={
  'drop-receipt':('ShoutBehavior.NativeCompletion.cs','scope.Admission.ModuleOperation?.RecordOwnerCompletion(finalVisible);',';'),
  'replace-confirmed':('Refactor/Modules/CoreDialogueOperation.cs','if (_ownerCompleted)','if (false)'),
  'replay-id':('Refactor/Modules/CoreDialogueClient.cs','? operation : Rejected(requestId, "dialogue.request_id_conflict")','? Rejected(requestId, "mutant.replayed_id") : Rejected(requestId, "dialogue.request_id_conflict")'),
+ 'skip-channel':('Refactor/Modules/CoreDialogueClient.cs','operation.Channel == channel','true'),
+ 'skip-context':('Refactor/Modules/CoreDialogueClient.cs','string.Equals(operation.ContextIdentity, contextIdentity, StringComparison.Ordinal)','true'),
  'skip-generation':('ShoutBehavior.ModuleNativeSubmission.cs','|| !SaveRuntimeGuard.IsCurrentGeneration(generation)','|| false'),
  'skip-conversation':('ShoutBehavior.ModuleNativeSubmission.cs','|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)','|| false'),
  'skip-revision':('ShoutBehavior.ModuleNativeSubmission.cs','|| !_nativeAdmissionOwner.IsPresentationCurrent(presentationRevision)','|| false')}

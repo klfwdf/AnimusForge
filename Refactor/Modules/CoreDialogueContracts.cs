@@ -3,6 +3,7 @@ using System;
 namespace AnimusForge.Refactor.Modules;
 
 // Internal service contracts never depend on Api.V1 or carry engine objects.
+internal enum CoreDialogueChannel { Native, Scene, Courier }
 internal enum CoreDialogueState { Queued, Running, Completed, Rejected, Cancelled, Failed }
 internal enum CoreDialogueEffectState { NoConfirmedEffect, UnknownAfterStart, CompletedByOwner }
 internal enum CoreDialogueCancelResult { CancelledBeforeStart, AlreadyTerminal, TooLate }

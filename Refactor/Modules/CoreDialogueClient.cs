@@ -25,6 +25,18 @@ internal sealed class CoreDialogueClient : IDisposable
     internal string ClientId { get; }
 
     internal CoreDialogueOperation SubmitNative(string requestId, string playerText)
+        => Submit(CoreDialogueChannel.Native, "", requestId, playerText, _submitNative);
+
+    // Future Scene/Courier callers must supply an AF-issued context identity. This fingerprint
+    // does not validate a ticket: the real owner must claim its UI context before side effects.
+    internal CoreDialogueOperation SubmitForContext(CoreDialogueChannel channel, string contextIdentity,
+        string requestId, string playerText, Action<CoreDialogueOperation> dispatch)
+        => channel == CoreDialogueChannel.Scene || channel == CoreDialogueChannel.Courier
+            ? Submit(channel, contextIdentity, requestId, playerText, dispatch)
+            : Rejected(requestId, "dialogue.invalid_request");
+
+    private CoreDialogueOperation Submit(CoreDialogueChannel channel, string contextIdentity,
+        string requestId, string playerText, Action<CoreDialogueOperation> dispatch)
     {
         CoreDialogueOperation operation;
         lock (_gate)
@@ -32,15 +44,24 @@ internal sealed class CoreDialogueClient : IDisposable
             if (_disposed) return Rejected(requestId, "dialogue.client_disposed");
             if (!ValidId(requestId) || string.IsNullOrWhiteSpace(playerText) || playerText.Length > MaximumTextLength)
                 return Rejected(requestId, "dialogue.invalid_request");
+            if (channel != CoreDialogueChannel.Native && channel != CoreDialogueChannel.Scene
+                && channel != CoreDialogueChannel.Courier)
+                return Rejected(requestId, "dialogue.invalid_request");
+            if ((channel == CoreDialogueChannel.Native && !string.Equals(contextIdentity, "", StringComparison.Ordinal))
+                || (channel != CoreDialogueChannel.Native && (string.IsNullOrEmpty(contextIdentity)
+                    || contextIdentity.Length > 128 || dispatch == null)))
+                return Rejected(requestId, "dialogue.invalid_request");
             if (_requests.TryGetValue(requestId, out operation))
-                return string.Equals(operation.PlayerText, playerText, StringComparison.Ordinal)
+                return operation.Channel == channel
+                    && string.Equals(operation.ContextIdentity, contextIdentity, StringComparison.Ordinal)
+                    && string.Equals(operation.PlayerText, playerText, StringComparison.Ordinal)
                     ? operation : Rejected(requestId, "dialogue.request_id_conflict");
             // Do not auto-evict completed IDs: eviction would turn a retry into another action commit.
             if (_requests.Count >= MaximumRequests) return Rejected(requestId, "dialogue.client_capacity");
-            operation = new CoreDialogueOperation(ClientId, requestId, playerText);
+            operation = new CoreDialogueOperation(ClientId, requestId, playerText, channel, contextIdentity);
             _requests.Add(requestId, operation);
         }
-        try { _submitNative(operation); }
+        try { dispatch(operation); }
         catch (Exception) { operation.Finish("dialogue.dispatch_failed"); }
         return operation;
     }
