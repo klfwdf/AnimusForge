@@ -1,3 +1,9 @@
+# 当前范围：主体 J13d3 WorldEvents 有限离线收口（2026-09-25）
+
+产品/行为 `62ec9065` 与聚合契约 `b07898cb`：`src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs:9–181` 独占 records/unread/stable-key/version、旧 JSON 导入和发布/已读转换；`WorldEvents/WorldEventInbox.cs:44–85` 保留原 CampaignBehavior、DTO/public facade、两条 v1 保存键和 chunk/`IDataStore` 适配。`CampaignComposition.cs:31` 原注册与政策发布 version 确认、Policy UI/外交档案/弹窗已读消费者仍接原入口；当前源码未发现 Weekly 直接 upsert 该 inbox，不能虚报该源。Phase8 当前 DLL 行为回放、d3 聚合源码契约、政策 UI 定向测试、六构建、保存/API 身份证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `b07898cb`，586 锚点两模式通过，仅用于定位。**J13d3 `OFFLINE_VERIFIED`，J13 `ACTIVE`，下一包 d4 WarStats**；真实 Campaign/旧档/UI 点击/帧性能 NOT-RUN，无 push、Stage、部署、打包、游戏/外仓写入或 J14。
+
+## 以下为 d2 范围（历史）
+
 # 当前范围：主体 J13d2 Proactive/Issue 有限离线收口（2026-09-25）
 
 Social：产品 `a59a0fc0` 的 `src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs:24–3734` 承接完整候选资格，opening/cooldown/scan/session 的既有 Social owners 沿前片；`ProactiveNpcRequestBehavior.cs` 仍为 Campaign/TW/存档/会面/AFEF host。Issue：`fe74d4fa`–`96d058ca` 将完成回执、offer/in-progress/ready 状态、三渠道 prompt/标签、受理/同伴/交付动作及选项判定分别归 `src/modules/AF.Module.Issue/{Completion,Runtime,Actions}/`，`VanillaIssueOfferBridge.cs` 与 `VanillaIssuePromptBehavior.cs` 保留公开入口、原版 Quest/窗口/ConversationManager/事件适配。聚合契约 `36037592`、`7fc6f680` 验证消费者与信件送达≠任务受理；`d34fd858` 回放已受理任务拒绝重复 offer，仍非实机 Quest。详细行为/构建与 `NOT-RUN` 见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。[代码地图](af-framework-code-map.json)绑定 `d34fd858`，575 锚点。**J13d2 `OFFLINE_VERIFIED`，J13 `ACTIVE`**；无 push、Stage、部署、打包、游戏/外仓写入或 J14。

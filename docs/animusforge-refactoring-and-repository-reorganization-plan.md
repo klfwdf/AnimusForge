@@ -1,3 +1,11 @@
+## 主体 J13d3 WorldEvents 有限离线收口（2026-09-25）
+
+状态：**`J13d3_OFFLINE_VERIFIED / J13_ACTIVE`**，只表示本包真实 owner、生产消费者、相关行为与兼容离线门禁闭合；下一包是 J13d4 WarStats，随后 e1–e5，不提前 J14。意图 `82f406ca`，产品/行为 `62ec9065`，聚合接线及政策 UI 契约 `b07898cb`；[代码范围图](architecture/af-framework-code-scope.md)和[代码地图](architecture/af-framework-code-map.json)绑定产品/契约修订 `b07898cb`，586 锚点 recorded/working-tree 通过，定位不冒充行为验收。
+
+- **唯一 owner/保留边界**：`src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs:9–181` 的 `WorldEventInboxOwner` 独占 `_records`、未读、stable-key 索引、version、导入/导出、去重/容量/已读转换；`WorldEvents/WorldEventInbox.cs:44–85` 保留 `AnimusForgeWorldEventBehavior`、DTO/public facade、两条 v1 保存键与 chunk/`IDataStore` 适配。`CampaignComposition.cs:31` 原注册不变；政策发布 `NpcRulerPolicyBehavior.Generation.cs:1279–1285,5473–5475` 仍用 version 增长确认，Policy UI `PolicySystemUi.cs:66`、外交档案 `WorldDiplomacyBehavior.cs:10885` 和弹窗已读 `WorldEventInbox.cs:437` 共用原入口。现有代码里没有 Weekly 直接 upsert 该收件箱的生产调用，不能虚称已覆盖不存在的发布源。
+- **行为/成本**：同 stable key 的重复发布不再产生第二记录，更新投影时保留首个 EventId/已读状态，并为已接受的重复 upsert 增 version 维持政策确认；加载旧 EventId JSON/坏记录及旧重复项时保持有效记录与未读联合。最多 240 项的 trim/save、最多 200 项的快照只在发布/保存/UI 读取调用；没有新 Tick 扫描、后台游戏对象访问或第二持久化键。单次最多 240 项排序/JSON 成本仍存在，实机帧耗时未测。
+- **验证层级**：在旧 d2 DLL 上具名红灯、当前 Debug 1.4 SHA256 `C70D15E9B5251356F98FBDBA633E61205A45EB1B48D18FB0CE39C68E5BDE17B0` 的完整 Phase8（含 d3 行为和聚合接线）绿灯；PolicyEffect UI 路径在其源码链接测试产物上 387 断言通过。原脚本无 Stage/Deploy、引用 1.3.15.110062/1.4.7.117484 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；四实现 SHA256 见下方聚合回执。V1 119/四 DLL metadata 1060、PersistenceIdentity 基线 `053ad485` 142 key/type 对/36 behaviors、source inventory 7、代码地图 586 锚点两模式均通过。真实 Campaign 发布顺序、`IDataStore` 实例、旧存档、Gauntlet 点击、provider、音频、帧性能和 Stage/部署均 `NOT-RUN`；不把合成 JSON/源码接线当实机。
+
 ## 主体 J13d3 WorldEvents 聚合接线与兼容门禁（2026-09-25）
 
 产品/行为切片 `62ec9065ecbadd1ff147efc1e188438b59eaa3ab` 后，`J13D3DomainOwnerContractReplay` 已核对原 Campaign 注册、两条保存键与 chunk 导入/导出、公开发布/快照/已读门面、政策 version 确认及 Policy UI/外交档案/终端的真实消费者；这是源码接线证据，与当前生产 DLL 的 `WorldEventInboxOwnerReplay` 行为证据分层。原 `PolicyEffectModule.ContractTests` 的王国公告断言仍期待无参调用，但实际终端在基线 `938ce116` 已传 `OpenCustomPolicyManagementView` 回调；将断言更新为当前完整回调路由，不删除 re-review/prefab/政策身份检查。
