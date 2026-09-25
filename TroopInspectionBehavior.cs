@@ -28,6 +28,8 @@ namespace AnimusForge;
 
 public static partial class TroopInspectionBehavior
 {
+	private static readonly AnimusForge.Refactor.Modules.TroopInspectionSessionOwner<TroopInspectionRuntime, PendingSelection, Mission> _sessionOwner =
+		new AnimusForge.Refactor.Modules.TroopInspectionSessionOwner<TroopInspectionRuntime, PendingSelection, Mission>();
 	private sealed class TroopInspectionRuntime
 	{
 		public TroopRoster InspectionRoster { get; set; }
@@ -107,9 +109,9 @@ public static partial class TroopInspectionBehavior
 
 	private const string SelectionPoolDummyPartyPrefix = "animusforge_troop_inspection_selection_pool_";
 
-	private static TroopInspectionRuntime _runtime;
+	private static TroopInspectionRuntime _runtime { get => _sessionOwner.Runtime; set => _sessionOwner.Runtime = value; }
 
-	private static PendingSelection _pendingSelection;
+	private static PendingSelection _pendingSelection { get => _sessionOwner.PendingSelection; set => _sessionOwner.PendingSelection = value; }
 
 	private static MobileParty _dummyParty;
 
@@ -117,15 +119,13 @@ public static partial class TroopInspectionBehavior
 
 	private static string _dummyPartyStringId;
 
-	private static bool _isOpening;
+	private static bool _isOpening { get => _sessionOwner.IsOpening; set => _sessionOwner.IsOpening = value; }
 
-	private static bool _queuedOpenInspection;
+	private static bool _queuedOpenInspection => _sessionOwner.Queued;
 
-	private static float _queuedOpenInspectionAt;
+	private static bool _cleanupDone { get => _sessionOwner.CleanupDone; set => _sessionOwner.CleanupDone = value; }
 
-	private static bool _cleanupDone;
-
-	private static Mission _activeInspectionMission;
+	private static Mission _activeInspectionMission { get => _sessionOwner.ActiveMission; set => _sessionOwner.ActiveMission = value; }
 
 	private static string _inspectionLogPath;
 
@@ -178,17 +178,12 @@ public static partial class TroopInspectionBehavior
 		}
 		try
 		{
-			if (_runtime == null)
-			{
-				_queuedOpenInspection = false;
-				return;
-			}
-			if ((float)Environment.TickCount / 1000f < _queuedOpenInspectionAt || IsPartyScreenStillActive() || Mission.Current != null)
+			if (!_sessionOwner.IsQueuedOpenReady((float)Environment.TickCount / 1000f,
+				Mission.Current != null) || IsPartyScreenStillActive())
 			{
 				return;
 			}
-			_queuedOpenInspection = false;
-			_isOpening = true;
+			if (!_sessionOwner.BeginQueuedOpen()) return;
 			EnsureMainHeroReadyForInspection("queued_open");
 			if (!CanOpenFromCurrentState(out MobileParty mainParty, out string blockedReason))
 			{
@@ -213,7 +208,19 @@ public static partial class TroopInspectionBehavior
 
 	public static bool NeedsEngineTick()
 	{
-		return _queuedOpenInspection || _runtime != null || _isOpening;
+		return _sessionOwner.NeedsEngineTick;
+	}
+
+	internal static void ResetForCampaignTransition()
+	{
+		// Old Campaign/Mission objects must never be restored into a newly loaded game.
+		_sessionOwner.ResetForNewCampaign();
+		_dummyParty = null;
+		_mapEvent = null;
+		_dummyPartyStringId = null;
+		_playerStateCaptured = false;
+		_playerOriginalHitPoints = 0;
+		_playerOriginalWasWounded = false;
 	}
 
 	public static void OpenInspectionFromTerminal()
@@ -238,10 +245,7 @@ public static partial class TroopInspectionBehavior
 		}
 		TryCleanupStaleInspectionStateBeforeOpen("terminal_open_stale_cleanup");
 		EnsureMainHeroReadyForInspection("terminal_open");
-		_isOpening = true;
-		_cleanupDone = false;
-		_activeInspectionMission = null;
-		_runtime = null;
+		_sessionOwner.BeginLocalSelection();
 		try
 		{
 			if (!CanOpenFromCurrentState(out MobileParty mainParty, out string blockedReason))
@@ -312,9 +316,7 @@ public static partial class TroopInspectionBehavior
 
 		try
 		{
-			_cleanupDone = false;
-			_activeInspectionMission = null;
-			_pendingSelection = null;
+			_sessionOwner.BeginExternalPreparation();
 			EnsureMainHeroReadyForInspection("external_prepare");
 
 			TroopRoster inspectionMembers = BuildSelectionRosterFromUi(selectedMembers);
@@ -529,10 +531,8 @@ public static partial class TroopInspectionBehavior
 
 	internal static void CleanupRuntime(string reason)
 	{
-		bool alreadyDone = _cleanupDone;
-		_cleanupDone = true;
+		bool alreadyDone = _sessionOwner.BeginCleanup();
 		Log("cleanup begin reason=" + reason + " already_done=" + alreadyDone);
-		_activeInspectionMission = null;
 		TroopInspectionRuntime runtime = _runtime;
 		MapEvent mapEvent = ResolveInspectionMapEvent();
 		MobileParty dummyParty = _dummyParty;
@@ -556,9 +556,7 @@ public static partial class TroopInspectionBehavior
 		{
 			runtime.HoldingDummyParty = null;
 		}
-		_pendingSelection = null;
-		_queuedOpenInspection = false;
-		_runtime = null;
+		_sessionOwner.ReleaseTransient();
 		CleanupMapEventAndPlayerEncounter(mapEvent, reason);
 		DestroyInspectionDummyParty(dummyParty, dummyId, "inspection_dummy_cleanup");
 		CleanupOrphanInspectionDummyParties(dummyParty, "inspection_dummy_orphan_cleanup");
@@ -1745,15 +1743,12 @@ public static partial class TroopInspectionBehavior
 	{
 		Log("selection_reset reason=" + (reason ?? "unknown"));
 		CleanupOrphanSelectionPoolDummyParties(reason + "_selection_pool_orphan");
-		_pendingSelection = null;
-		_isOpening = false;
-		_queuedOpenInspection = false;
+		_sessionOwner.ResetPendingSelection();
 	}
 
 	private static void QueueOpenInspectionMission()
 	{
-		_queuedOpenInspection = true;
-		_queuedOpenInspectionAt = (float)Environment.TickCount / 1000f + 0.35f;
+		_sessionOwner.Queue((float)Environment.TickCount / 1000f, 0.35f);
 	}
 
 	private static bool IsPartyScreenStillActive()

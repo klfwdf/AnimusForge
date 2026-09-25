@@ -246,6 +246,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		ClearRuntime("new_game");
+		TroopInspectionBehavior.ResetForCampaignTransition();
 		ClearPendingSameKingdomVassalRebellion("new_game");
 		EnsureProfileRosters();
 	}
@@ -253,6 +254,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private void OnGameLoaded(CampaignGameStarter starter)
 	{
 		ClearRuntime("game_loaded");
+		TroopInspectionBehavior.ResetForCampaignTransition();
 		EnsureProfileRosters();
 	}
 
