@@ -3869,22 +3869,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		return LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), PlayerCustomPromptRuleJsonFileName);
 	}
 
-	public const string PlayerCustomPromptTailMarker = "===PLAYER_TAIL===";
-
-	internal static string GetPlayerCustomPromptRuleHead(string text)
-	{
-		text = (text ?? "").Replace("\r", "");
-		int markerIndex = text.IndexOf(PlayerCustomPromptTailMarker, StringComparison.Ordinal);
-		return markerIndex < 0 ? text.Trim() : text.Substring(0, markerIndex).TrimEnd();
-	}
-
-	internal static string GetPlayerCustomPromptRuleTail(string text)
-	{
-		text = (text ?? "").Replace("\r", "");
-		int markerIndex = text.IndexOf(PlayerCustomPromptTailMarker, StringComparison.Ordinal);
-		return markerIndex < 0 ? "" : text.Substring(markerIndex + PlayerCustomPromptTailMarker.Length).Trim();
-	}
-
 	private static string NormalizeKingdomRebellionSystemPromptText(string input)
 	{
 		string text = LimitCustomPromptText((input ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim(), KingdomRebellionSystemPromptJsonFileName);

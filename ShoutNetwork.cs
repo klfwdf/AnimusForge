@@ -327,63 +327,20 @@ public static class ShoutNetwork
 
 		string lastContent;
 		originalLastRole = GetLastMessageRole(result, out lastContent);
-		if (!string.Equals(originalLastRole, "user", StringComparison.OrdinalIgnoreCase) ||
-			string.IsNullOrWhiteSpace(lastContent))
+		if (string.Equals(originalLastRole, "user", StringComparison.OrdinalIgnoreCase) &&
+			!string.IsNullOrWhiteSpace(lastContent))
 		{
-			result.Add(new
-			{
-				role = "user",
-				content = IsBattleSpeechRequest(result)
-					? BattleSpeechContinuationInstruction
-					: GenericContinuationInstruction
-			});
+			return result;
 		}
-		AppendPlayerCustomPromptTailToLastUserTurn(result);
-		return result;
-	}
 
-	private static void AppendPlayerCustomPromptTailToLastUserTurn(List<object> messages)
-	{
-		try
+		result.Add(new
 		{
-			string tail = DuelSettings.GetPlayerCustomPromptRuleTail(DuelSettings.GetSettings()?.PlayerCustomPromptRule);
-			if (string.IsNullOrWhiteSpace(tail) || messages == null || messages.Count == 0 || IsBattleSpeechRequest(messages))
-			{
-				return;
-			}
-			bool hasConversationRuleMarker = false;
-			int lastUserIndex = -1;
-			string lastUserContent = "";
-			for (int i = 0; i < messages.Count; i++)
-			{
-				if (!TryReadMessage(messages[i], out string role, out string content))
-				{
-					continue;
-				}
-				if ((content ?? "").IndexOf("请遵循以下规则参与互动", StringComparison.Ordinal) >= 0)
-				{
-					hasConversationRuleMarker = true;
-				}
-				if (string.Equals((role ?? "").Trim(), "user", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(content))
-				{
-					lastUserIndex = i;
-					lastUserContent = content;
-				}
-			}
-			if (!hasConversationRuleMarker || lastUserIndex < 0 ||
-				lastUserContent.IndexOf(tail, StringComparison.Ordinal) >= 0)
-			{
-				return;
-			}
-			messages[lastUserIndex] = new
-			{
-				role = "user",
-				content = lastUserContent.TrimEnd() + "\n\n" + tail
-			};
-		}
-		catch
-		{
-		}
+			role = "user",
+			content = IsBattleSpeechRequest(result)
+				? BattleSpeechContinuationInstruction
+				: GenericContinuationInstruction
+		});
+		return result;
 	}
 
 	private static void LogNormalizedMessageTail(
