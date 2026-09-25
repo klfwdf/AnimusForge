@@ -1311,16 +1311,22 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					if (flag11)
 					{
 						string replyForPostprocess = string.IsNullOrWhiteSpace(historyText) ? cleaned : historyText;
-						Task<int> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId);
+						Task<ScenePostprocessOutcome> postprocessTask = QueueDeferredScenePostprocessActions(currentSpeaker, allNpcData, speakingHero, npcCharacter, scenePrivateRecentWindowSection, scenePublicHistorySection, playerText, replyForPostprocess, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, siegeInterventionPostprocessSelected, duelStakeOptions, kingdomServicePostprocessRules, sceneMechanismPostprocessRules, conversationEpoch, sceneSummonTargets, sceneGuideTargets, postprocessEntityContext, replyIsDirectPlayerResponse, preprocessRuleHits: postprocessPreprocessHits, relayRuleInjected: relayPostprocessSelected, relayCandidates: relayCandidatesForNextTurn, relayPrimaryTargetAgentIndex: primaryNpc?.AgentIndex ?? (-1), relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, expectedRuntimeGeneration: sceneReplyGeneration, expectedSceneSessionId: sceneReplySessionId);
 						if (relayPostprocessSelected)
 						{
 							// Release the processing flag while keeping the input gate: queued speech
 							// and action-only lines must run before a relay can complete.
 							await WaitForScenePostprocessGateAsync("scene_relay").ConfigureAwait(false);
-							relayTargetAgentIndex = postprocessTask.IsCompleted ? await postprocessTask.ConfigureAwait(false) : -1;
-							if (relayTargetAgentIndex == DeferredPostprocessTargetUnavailableResult)
+							ScenePostprocessOutcome postprocessOutcome = postprocessTask.IsCompleted ? await postprocessTask.ConfigureAwait(false) : null;
+							relayTargetAgentIndex = postprocessOutcome?.RelayTargetAgentIndex ?? -1;
+							if (postprocessOutcome?.Status == ScenePostprocessStatus.TargetUnavailable)
 							{
 								Logger.Log("ShoutBehavior", "[SceneRelay] stopped because the current postprocess target became unavailable agent=" + currentSpeaker.AgentIndex);
+								relayRequested = false;
+							}
+							else if (postprocessOutcome?.Succeeded != true)
+							{
+								Logger.Log("ShoutBehavior", "[SceneRelay] postprocess did not complete status=" + postprocessOutcome?.Status);
 								relayRequested = false;
 							}
 							else if (relayTargetAgentIndex < 0)

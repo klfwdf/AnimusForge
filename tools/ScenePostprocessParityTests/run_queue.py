@@ -24,7 +24,9 @@ def main():
         except (FileNotFoundError,subprocess.CalledProcessError): source=run.extractor.source('ShoutBehavior.ScenePostprocess.cs',args.source_ref)
     else: source=run.extractor.source(scene_path,None)
     snippets={
-      'QUEUE':run.extractor.declaration(source,'private Task<int> QueueDeferredScenePostprocessActions('),
+      'QUEUE':run.extractor.declaration(source,'private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions('),
+      'OUTCOME':'\n'.join(run.extractor.declaration(source, signature) for signature in
+          ['private enum ScenePostprocessStatus', 'private sealed class ScenePostprocessOutcome']),
       'WORK':run.extractor.declaration(source,'private sealed class SceneActionPostprocessWorkItem'),
       'COMPLETE':run.extractor.declaration(source,'private static string CompleteSceneUnifiedActionPostprocess('),
       'REQUEST':run.extractor.declaration(source,'private static bool TryRequestSceneUnifiedActionPostprocess('),
