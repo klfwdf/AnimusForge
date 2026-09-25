@@ -48,6 +48,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "VanillaIssueOfferBridge.cs", "VanillaIssuePromptBehavior.cs", "src/modules/AF.Module.Issue/Dispatch/IssueAlternativeDispatchOwner.cs",
         "src/modules/AF.Module.Issue/Completion/IssueCompletionReceiptOwner.cs",
         "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs",
+        "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs",
         "MyBehavior.PromotedPersonaGeneration.cs",
         "RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
