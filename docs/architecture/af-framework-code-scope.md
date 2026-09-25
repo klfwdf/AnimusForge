@@ -1,3 +1,9 @@
+# 当前范围：主体 J13e1 Duel 有限离线收口（2026-09-25）
+
+产品/回放 `88643619`、`ca49023f`、`d89a13b5` 与聚合 `d0d15a57`：`src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs:13–448` 实际承接 exact request 的有界受理、延迟就绪、拒绝/取消/Unknown 生命周期；`src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs:7–41` 统一三种终局的 typed 效果投影。`DuelBehavior.Outcomes.cs:12–130,134–562,735–833` 保留 process-local typed outcome、fingerprint/绑定/清理与读档适配；`DuelBehavior.cs:1767–1881,4339–4462,7454–7600` 保留三类 Mission/经济/记忆副作用 writer，原 Campaign/tick/Harmony 注册和 Courier 排除不变。当前 DLL 受理行为、typed/dispatch 测试、双版本 DLL 接线/六构建与完整 Phase8 见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `d89a13b5`，617 锚点两模式通过，仅用于定位。**J13e1 `OFFLINE_VERIFIED`，J13 `ACTIVE`，下一包 e2 Taunt**；真实 Mission/旧档/MCM/帧性能仍 NOT-RUN，不提前 J14。
+
+## 以下为 d4 范围（历史）
+
 # 当前范围：主体 J13d4 WarStats 有限离线收口（2026-09-25）
 
 产品/回放 `6d5657e9`、`c8cc0efd`、`ab05a736`、`db1830bc`、`f722dd41`，聚合接线 `f0cc3ede`/`6b0c07f7`：`src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs:9–482` 为唯一活动/历史/旧账及近期战斗序号 owner，负责宣战、计数、英雄死亡/近期战斗、终战归档、清空、v1–v5 平行列表投影/恢复与历史删除决策；`WarStats/AfWarStatsBehavior.cs:15,238–253,358–437,441–597,606–695,1099–1260,1774–1783` 保留原 CampaignBehavior 类型、原保存键、原事件/Kingdom/MapEvent 主线程事实采集、终端投影 facade。`src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs:54` 原注册；`WarStats/AfWarStatsPopupVM.cs:995–1103,1228–1292,1676–1680` 仍是终端消费者。当前 DLL 行为回放与 d4 聚合源码契约、六构建/保存/API/地图证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `6b0c07f7`，600 锚点两模式通过，仅用于定位。**J13d4 `OFFLINE_VERIFIED`，J13 `ACTIVE`，下一包 e1 Duel**；真实 Campaign、旧档、终端实机点击、帧性能 NOT-RUN，无 push、Stage、部署、打包、游戏/外仓写入或 J14。
