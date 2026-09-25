@@ -6,7 +6,7 @@ namespace AnimusForge.Refactor.Modules;
 /// <summary>
 /// Bounded timeline-document query. It runs only when the timeline projection is built.
 /// </summary>
-public sealed class WorldDiplomacyTimelineDocumentQueryFacade
+internal sealed class WorldDiplomacyTimelineDocumentQueryFacade
 {
     public const int MaximumDocumentCount = 420;
 

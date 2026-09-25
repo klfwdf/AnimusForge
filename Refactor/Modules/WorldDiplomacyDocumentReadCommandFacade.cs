@@ -3,7 +3,7 @@ using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Modules;
 
-public sealed class WorldDiplomacyDocumentReadCommandFacade
+internal sealed class WorldDiplomacyDocumentReadCommandFacade
 {
     private readonly IWorldDiplomacyDocumentReadCommand _command;
 

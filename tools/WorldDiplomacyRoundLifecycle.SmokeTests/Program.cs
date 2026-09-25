@@ -137,6 +137,7 @@ RunRepairCorrectionAndJobDecisionTests();
     RunRelayArrivalAndExternalFactDecisionTests();
     RunJobCompositionDecisionTests();
     RunGenerationJobCompositionDecisionTests();
+        RoundApplicationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -13365,6 +13366,11 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(commits.SequenceEqual(new[] { "analyze", "compress", "round_plan", "round_compress" }),
             "each completed job kind must route to its own commit");
 
+        commits.Clear();
+        WorldDiplomacyJob paddedKind = Job("padded", kind: "  AnAlYzE  ");
+        CommitResult(paddedKind, done, commits: commits);
+        Test.True(commits.SequenceEqual(new[] { "analyze" }) && paddedKind.Kind == "  AnAlYzE  ",
+            "completion retains case/whitespace classification without changing persisted Kind");
         List<string> failures2 = new List<string>();
         CommitResult(Job("j6", kind: "mystery"), done, failures2: failures2);
         Test.True(failures2.SequenceEqual(new[] { "unknown job kind" }),
@@ -14029,6 +14035,8 @@ RunRepairCorrectionAndJobDecisionTests();
 
     private static void VerifySourceBoundary()
     {
+        string applicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs")));
+
         string rulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"));
         string structureSource = File.ReadAllText(FindRepositoryFile(
@@ -14046,6 +14054,19 @@ RunRepairCorrectionAndJobDecisionTests();
 
         string behaviorSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        foreach (string transition in new[] { "EnsureOpen", "TryScheduleNormal", "Close", "AdvanceRelay", "IntegratePlayerDeclaration", "AdmitMandatoryReply" })
+            Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication." + transition + "(", StringComparison.Ordinal),
+                "live host must bind the application transition: " + transition);
+        Test.True(behaviorSource.Contains("WorldDiplomacyPolicyRoundApplication.TrySchedule(", StringComparison.Ordinal),
+            "live policy signal must enter the same canonical round through its application owner");
+        Test.True(!applicationSource.Contains("TaleWorlds", StringComparison.Ordinal)
+                  && !applicationSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal)
+                  && !applicationSource.Contains("Task.Run", StringComparison.Ordinal),
+            "application transitions must not retain live game objects or dispatch background work");
+        Test.True(!behaviorSource.Contains("_storage.CompletedRounds.Add(round)", StringComparison.Ordinal)
+                  && !behaviorSource.Contains("round.CompletedDay = CurrentDay()", StringComparison.Ordinal)
+                  && !behaviorSource.Contains("int selectedIndex = -1", StringComparison.Ordinal),
+            "replaced close and participant selection algorithms must not remain in the host");
         string threatMigrationSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Persistence", "WorldDiplomacyThreatStorageMigration.cs"));
         string storageMigrationSource = File.ReadAllText(FindRepositoryFile(
@@ -14133,11 +14154,11 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route next-round day computation through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeInitialCompressedYear", StringComparison.Ordinal),
             "the host must route the initial compressed year through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsNormalRoundDue", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsNormalRoundDue", StringComparison.Ordinal),
             "the host must route normal-round due checks through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeRotationStartIndex", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeRotationStartIndex", StringComparison.Ordinal),
             "the host must route rotation-index normalization through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NextRotationIndex", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NextRotationIndex", StringComparison.Ordinal),
             "the host must route rotation-index advancement through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsExchangeReminderDue", StringComparison.Ordinal),
             "the host must route exchange reminders through the lifecycle rules");
@@ -14150,7 +14171,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the lifecycle rules must own suspended-pause day shifts and state restoration");
         Test.True(!behaviorSource.Contains("Math.Abs(_storage.RotationIndex)", StringComparison.Ordinal),
             "raw rotation-index normalization must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateRelayAdvanceAction", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateRelayAdvanceAction", StringComparison.Ordinal),
             "the host must route relay advancement through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsActiveRoundState", StringComparison.Ordinal),
             "the host must route active-round checks through the lifecycle rules");
@@ -14159,11 +14180,11 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw round-state comparisons must not remain in the host");
         Test.True(!behaviorSource.Contains("string.Equals(_storage.ActiveRound.State, \"active\", StringComparison.OrdinalIgnoreCase)", StringComparison.Ordinal),
             "raw active-round comparisons must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateClosedRoundStatus", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateClosedRoundStatus", StringComparison.Ordinal),
             "the host must route close status classification through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ClosedRoundStatusName", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.ClosedRoundStatusName", StringComparison.Ordinal),
             "the host must route close status names through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsOpenLifecycleStatus", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsOpenLifecycleStatus", StringComparison.Ordinal),
             "the host must route open-status checks through the lifecycle rules");
         Test.True(rulesSource.Contains("CanScheduleRelayHop(", StringComparison.Ordinal),
             "relay-hop gates must be composed inside the lifecycle rules");
@@ -14669,7 +14690,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "host must delegate retired-job filtering to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRoundCompressionDocuments", StringComparison.Ordinal),
             "host must delegate compression document selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPublishedRoundDocuments", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPublishedRoundDocuments", StringComparison.Ordinal),
             "host must delegate published round document selection to the domain");
         Test.True(rulesSource.Contains("public static bool IsSuccessfulWarDocumentAgainst(", StringComparison.Ordinal),
             "successful-war detection must live in the domain");
@@ -14777,7 +14798,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "directed open-offer checks must be composed inside the generation-validation rules");
         Test.True(rulesSource.Contains("MatchesOfferSource(", StringComparison.Ordinal),
             "offer source matching must live in the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsPlayerOpportunityOfStatus(", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsPlayerOpportunityOfStatus(", StringComparison.Ordinal),
             "host must delegate opportunity status checks to the domain");
         Test.True(!behaviorSource.Contains("x.Status, \"open\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("offer.Status, \"open\"", StringComparison.Ordinal),
@@ -14811,7 +14832,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "known-round context must delegate newest-first chronological selection to the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedDocuments(", StringComparison.Ordinal),
             "host must delegate stored document retention ordering to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPublishedRoundDocuments(", StringComparison.Ordinal),
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPublishedRoundDocuments(", StringComparison.Ordinal),
             "host must delegate published round document selection to the domain");
         Test.True(!behaviorSource.Contains(".OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks)", StringComparison.Ordinal)
             && !behaviorSource.Contains(".OrderByDescending(x => x.Day).ThenByDescending(x => x.CreatedUtcTicks)", StringComparison.Ordinal)

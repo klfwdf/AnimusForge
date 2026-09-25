@@ -7547,8 +7547,11 @@ List<string> ids = new List<string>();
         Action<string> log)
     {
         if (job == null) return;
+        // Preserve runtime route classification without rewriting the persisted Kind.
+        string completionKind = (job.Kind ?? "").Trim();
+        bool IsCompletionKind(string kind) => string.Equals(completionKind, kind, StringComparison.OrdinalIgnoreCase);
         if (resultSuccess
-            && IsJobOfKind(job, "generate")
+            && IsCompletionKind("generate")
             && hasStaleThreatPresentation?.Invoke(job) == true)
         {
             if (refreshThreatPresentation?.Invoke(job) != true)
@@ -7563,7 +7566,7 @@ List<string> ids = new List<string>();
             return;
         }
         if (resultSuccess
-            && IsJobOfKind(job, "generate")
+            && IsCompletionKind("generate")
             && hasStaleActionPresentation?.Invoke(job) == true)
         {
             if (refreshActionPresentation?.Invoke(job) != true)
@@ -7579,7 +7582,7 @@ List<string> ids = new List<string>();
         }
         if (!resultSuccess)
         {
-            if (IsJobOfKind(job, "generate")
+            if (IsCompletionKind("generate")
                 && resultIsOutputTruncated
                 && !string.IsNullOrWhiteSpace(resultContent))
             {
@@ -7610,23 +7613,23 @@ List<string> ids = new List<string>();
         if (storage != null) storage.ConsecutiveServiceFailures = 0;
         try
         {
-            if (IsJobOfKind(job, "generate"))
+            if (IsCompletionKind("generate"))
             {
                 commitGeneratedDocument?.Invoke(job, resultContent);
             }
-            else if (IsJobOfKind(job, "analyze"))
+            else if (IsCompletionKind("analyze"))
             {
                 commitAnalysis?.Invoke(job, resultContent);
             }
-            else if (IsJobOfKind(job, "compress"))
+            else if (IsCompletionKind("compress"))
             {
                 commitCompression?.Invoke(job, resultContent);
             }
-            else if (IsJobOfKind(job, "round_plan"))
+            else if (IsCompletionKind("round_plan"))
             {
                 commitRoundPlan?.Invoke(job, resultContent);
             }
-            else if (IsJobOfKind(job, "round_compress"))
+            else if (IsCompletionKind("round_compress"))
             {
                 commitRoundCompression?.Invoke(job, resultContent);
             }
