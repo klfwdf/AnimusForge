@@ -31,9 +31,35 @@ public sealed partial class AfWarStatsBehavior
             return RecentBattleSequence;
         }
 
-        internal void ClearRecentHeroBattles(WarStatsRecord record)
+        internal void StartWar(WarStatsRecord record, int attackerSide, int startDay)
         {
-            record?.RecentHeroBattles?.Clear();
+            if (record == null)
+            {
+                return;
+            }
+
+            record.RecentHeroBattles?.Clear();
+            record.AttackerSide = attackerSide == 1 ? 1 : 0;
+            record.StartDay = Math.Max(0, startDay);
+        }
+
+        internal void ResetActiveCountsAndIncidents(WarStatsRecord record)
+        {
+            if (record == null)
+            {
+                return;
+            }
+
+            record.KillsA = 0;
+            record.KillsB = 0;
+            record.CasualtiesA = 0;
+            record.CasualtiesB = 0;
+            record.WinsA = 0;
+            record.WinsB = 0;
+            record.LossesA = 0;
+            record.LossesB = 0;
+            record.HeroDeaths?.Clear();
+            record.RecentHeroBattles?.Clear();
         }
 
         internal void RecordRecentHeroBattle(
