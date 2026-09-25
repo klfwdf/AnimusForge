@@ -1,3 +1,14 @@
+## 主体 J13d2 主动请求冷却与扫描节流 owner 切片（2026-09-25）
+
+承接 d2 opening/Issue 派遣生命周期首片 `580a1466`；本片意图 `a64442d6`，产品/回放 `43566f0f218775364fd3980e00b329f19ea61e7d`。**本片有限 `OFFLINE_VERIFIED`，J13d2/J13 仍 `ACTIVE`**；J13a–c/d1 既有有限结论不扩大为实机验收。未推送、Stage、部署、打包、改自动化、写游戏/外仓或进入 J14。
+
+- **状态/算法唯一归属与真实消费者**：`src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs:10–132` 的 `ProactiveRequestCooldownOwner` 独占三张 ID→绝对天数表和 global/lastScan 小时状态，负责旧字典键规范化、扫描节流、Hero/需要类型/外交话题冷却判定与记录、过期/256 容量裁剪。`ProactiveNpcRequestBehavior.cs:107–153` 的原 SyncData/DTO 是兼容适配；`:410–453` 小时扫描、`:528–543` 增量扫描完成重验、`:1270–1279` Hero 候选、`:2668–2675` 外交候选、`:4443–4447` 请求启动、`:4730–4773` 完成/会面/信件送达疲劳是真实调用者。MCM 读取、游戏时间/Hero/party、候选资格和主 session 仍在原 host。Courier `RecordLetterNeedDeliveredForExternal` 仍只记录需要类型疲劳，不声称 Issue 已受理。
+- **兼容与成本**：保留 `_af_proactive_npc_request_state_v1`、原 `ProactiveNpcRequestStorage` 字段及旧 `NeedCooldownUntilDays` 回退，保存中增量扫描的 `LastScanHour=-99999f` 重试语义和载入失败只清三表的原规则。原顺序仍是启用/时间间隔门→更新 lastScan→两次过期裁剪→active/global/busy 门；global 冷却在扫描完成前再核对。热候选冷却查询为字典 O(1)，过期裁剪 O(n) 只在通过小时扫描间隔门时执行，话题超 256 后排序裁剪沿旧规则；不新增每帧全表扫描、反射、线程或双份状态。
+- **反例与验证**：`tools/PhaseEightParityReplayTests/ProactiveCooldownOwnerReplay.cs:5–63` 对当前生产 DLL 验证脱离式旧键导入、大小写、边界相等、扫描重入、global/Hero/类型/话题记录、到期裁剪/256 上限/载入失败清表；先在旧候选红灯 `production host does not own a single cooldown state`，接线后 Debug 1.4 候选 SHA256 `D8C3AC41C447D13CE6DB3FA2D6F270C4CF811D3BB3EE6E61E736A8394E9A51D2` 的完整 Phase8 通过。经先前明确授权逐路径核实，原脚本无 `-Stage/-Deploy` 跑 Debug/Release × 1.3/1.4+Bootstrap 六构建，均 0 warning/0 error；四实现 DLL SHA256：Debug 1.3 `B1A231AE72080C86ACC25F96E68AAAE30DECF01E4DBAA7C55DB66ACB40C2E86E`，Release 1.3 `D985AF103ABEC0D062F3BB30A9ECD8BF38135683B3F41EC0668B46B4BC894113`，Release 1.4 `3CE30F3D0DBA433A7D8DB33419ACFD635E76A686766C23BA8C86FD3A2E18F8E8`。V1 119/四 DLL metadata 1060、PersistenceIdentity 142 key/type 对/36 behaviors、source inventory 7 tests、[代码地图](architecture/af-framework-code-map.json) 539 锚点 recorded/working-tree 均通过。
+- **未满足的门禁/下一动作**：本片不是完整主动请求资格/主 session owner，更不是 Issue offer/in-progress/turn-in/完成回执闭包；继续从 `ProactiveNpcRequestBehavior.cs:410` 小时资格→`:528` 扫描完成→`:4288` session 启动/失效/取消的实际调用链读入并迁移完整状态转换，再独立完成 Issue 四类职责。真实 Campaign 小时触发与随机资格、Courier 信件、Quest/party-screen、旧档、provider、UI/音频、帧性能仍 `NOT-RUN`；旧测试基建独立问题不因本片通过而豁免。`.dotnet-cli-home/` 未跟踪且未触碰；需撤销以定向 inverse/revert，不 reset/改历史。
+
+## 以下为 d2 前一切片记录（历史）
+
 ## 主体 J13d2 主动会话／原版任务派遣生命周期首片（2026-09-25）
 
 最新请求恢复按[既定 J13 计划](plans/j13-domain-owners-plan.md)推进；当前分支 `codex/af-main-refactor-continuation-20260831`，产品与回放提交 `580a1466aa22581ce7ea5c0d9b7748355698751d`，起点 `0c13ee56`，此前 d2 意图 `3cf846bb`。状态：`J13a/J13b/J13c/J13d1_OFFLINE_VERIFIED`，**本 d2 生命周期切片有限 `OFFLINE_VERIFIED`，J13d2/J13 仍 `ACTIVE`**；d3/d4、e、f、g 未施工。不把本片 fixture 当真实任务受理/旧档或实机验收；本轮未推送、Stage、部署、打包、改自动化、写游戏/外仓或进入 J14。
