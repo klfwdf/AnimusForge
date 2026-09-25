@@ -139,7 +139,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private CancellationTokenSource _apiValidationCancellation;
 
-	private bool _pendingApiValidationResult;
+	private volatile bool _pendingApiValidationResult;
 
 	private int _pendingApiValidationVersion;
 
@@ -155,7 +155,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private CancellationTokenSource _baseUrlValidationCancellation;
 
-	private bool _pendingBaseUrlValidationResult;
+	private volatile bool _pendingBaseUrlValidationResult;
+	private int _pendingBaseUrlValidationVersion;
 
 	private bool _pendingBaseUrlValidationSuccess;
 
@@ -169,7 +170,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private CancellationTokenSource _modelFetchCancellation;
 
-	private bool _pendingModelFetchResult;
+	private volatile bool _pendingModelFetchResult;
 
 	private int _pendingModelFetchVersion;
 
@@ -843,13 +844,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		int pendingBaseUrlValidationVersion = _pendingBaseUrlValidationVersion;
 		bool pendingBaseUrlValidationSuccess = _pendingBaseUrlValidationSuccess;
 		string pendingBaseUrlValidationMessage = _pendingBaseUrlValidationMessage ?? "";
 		string pendingValidatedBaseUrl = (_pendingValidatedBaseUrl ?? "").Trim();
 		_pendingBaseUrlValidationResult = false;
+		_pendingBaseUrlValidationVersion = 0;
 		_pendingBaseUrlValidationSuccess = false;
 		_pendingBaseUrlValidationMessage = "";
 		_pendingValidatedBaseUrl = "";
+		if (!_operationVersions.IsCurrent(OnboardingOperationKind.BaseUrlValidation, pendingBaseUrlValidationVersion))
+		{
+			return;
+		}
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
 		InformationManager.HideInquiry();
@@ -2390,6 +2397,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 						_baseUrlValidationCancellation = null;
 					}
 					_baseUrlValidationInProgress = false;
+					_pendingBaseUrlValidationVersion = num;
 					_pendingBaseUrlValidationSuccess = flag;
 					_pendingBaseUrlValidationMessage = message ?? "";
 					_pendingValidatedBaseUrl = flag ? validatedBaseUrl : "";
@@ -2481,6 +2489,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_operationVersions.Cancel(OnboardingOperationKind.BaseUrlValidation);
 			_baseUrlValidationInProgress = false;
+			_pendingBaseUrlValidationResult = false;
+			_pendingBaseUrlValidationVersion = 0;
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
 			try
@@ -3107,6 +3117,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_apiValidationFlow = ApiValidationFlow.Normal;
 			_apiValidationReturnToModelSelection = false;
 			_pendingBaseUrlValidationResult = false;
+			_pendingBaseUrlValidationVersion = 0;
 			_pendingBaseUrlValidationSuccess = false;
 			_pendingBaseUrlValidationMessage = "";
 			_pendingValidatedBaseUrl = "";
