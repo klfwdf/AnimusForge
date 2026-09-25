@@ -44,6 +44,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "DuelBehavior.cs", "DuelBehavior.Outcomes.cs", "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
         "src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs",
         "SceneTauntBehavior.cs", "src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs",
+        "src/modules/AF.Module.Taunt/SceneTauntPenaltyLedgerOwner.cs",
         "RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
         "ProactiveNpcRequestBehavior.cs", "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
         "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
@@ -110,6 +111,7 @@ J13D4DomainOwnerContractReplay.Run(repo);
 J13E1DomainOwnerContractReplay.Run(repo);
 DuelDispatchOwnerReplay.Run(af);
 ScenePeaceConflictOwnerReplay.Run(af, repo);
+SceneTauntPenaltyLedgerOwnerReplay.Run(af);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
