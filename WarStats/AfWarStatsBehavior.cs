@@ -1313,36 +1313,7 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
 
         WarStatsRecord record = GetOrCreateActiveRecord(pairKey, kingdomA, kingdomB);
         bool directOrder = string.Equals(kingdomOne.StringId, kingdomA.StringId, StringComparison.Ordinal);
-        if (directOrder)
-        {
-            record.KillsA += Math.Max(0, killsByOne);
-            record.CasualtiesA += Math.Max(0, casualtiesOfOne);
-            record.KillsB += Math.Max(0, killsByTwo);
-            record.CasualtiesB += Math.Max(0, casualtiesOfTwo);
-        }
-        else
-        {
-            record.KillsA += Math.Max(0, killsByTwo);
-            record.CasualtiesA += Math.Max(0, casualtiesOfTwo);
-            record.KillsB += Math.Max(0, killsByOne);
-            record.CasualtiesB += Math.Max(0, casualtiesOfOne);
-        }
-
-        if (hasWinner)
-        {
-            bool aWon = directOrder ? kingdomOneWon : !kingdomOneWon;
-            if (aWon)
-            {
-                record.WinsA++;
-                record.LossesB++;
-            }
-            else
-            {
-                record.LossesA++;
-                record.WinsB++;
-            }
-        }
-
+        _ledger.ApplyBattleStats(record, directOrder, killsByOne, casualtiesOfOne, killsByTwo, casualtiesOfTwo, hasWinner, kingdomOneWon);
         UpdateRecordMetadata(record, kingdomA, kingdomB);
     }
 
