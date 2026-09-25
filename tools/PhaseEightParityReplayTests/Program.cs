@@ -98,6 +98,7 @@ IssueAlternativeDispatchOwnerReplay.Run(af);
 IssueCompletionReceiptOwnerReplay.Run(af, repo);
 IssueRuntimeStateOwnerReplay.Run(af, repo);
 IssueActionOwnerReplay.Run(af, repo);
+J13D2DomainOwnerContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
