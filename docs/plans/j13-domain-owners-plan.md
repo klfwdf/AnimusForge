@@ -1,6 +1,7 @@
 # J13 其他领域职责拆分与离线验收计划
 
-> 状态：`J13_PLANNED`，2026-09-24；本轮只编写计划，未开始产品实现。
+> 执行后状态（2026-09-25）：`J13_OFFLINE_VERIFIED`；最终候选、各包证据及未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)与[当前交接](../../HANDOFF.md)。这只表示本计划的有限离线收尾，不是实机或发布验收，J14 未启动。
+> 规划时点状态（2026-09-24）：`J13_PLANNED`；该轮只编写计划，未开始产品实现。
 > 规划源码基线：`0624d5025fac98877332ccb1d5221dd4f85f836e`；J12 产品终点 `5c3e7b0e`，J07–J12 保持 `OFFLINE_VERIFIED`。
 > 本文细化主台账的 J13a–f，不授权 J14、新玩法、自动化、推送、Stage、部署、打包或外部目录写入。
 
