@@ -69,20 +69,24 @@ internal sealed class SceneSpeechQueueOwner<T> where T : class
 	/// Drops queued lines while preserving the running worker lease, matching the existing
 	/// conversation-epoch cancellation behavior.
 	/// </summary>
-	internal void ClearQueued()
+	internal T[] ClearQueued()
 	{
 		lock (_gate)
 		{
+			T[] dropped = _queue.ToArray();
 			_queue.Clear();
+			return dropped;
 		}
 	}
 
-	internal void Reset()
+	internal T[] Reset()
 	{
 		lock (_gate)
 		{
+			T[] dropped = _queue.ToArray();
 			_queue.Clear();
 			_workerRunning = false;
+			return dropped;
 		}
 	}
 

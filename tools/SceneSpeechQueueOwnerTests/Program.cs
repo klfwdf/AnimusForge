@@ -50,7 +50,8 @@ Case("clear-queued-preserves-worker-lease", () =>
     SceneSpeechQueueOwner<string> owner = new SceneSpeechQueueOwner<string>();
     owner.EnqueueAndTryStartWorker("one");
     owner.EnqueueAndTryStartWorker("two");
-    owner.ClearQueued();
+    string[] dropped = owner.ClearQueued();
+    Require(dropped.Length == 2 && dropped[0] == "one" && dropped[1] == "two", "clear did not return retired items in order");
     Require(owner.HasQueuedOrWorker(), "conversation clear cancelled the active worker lease");
     Require(!owner.TryDequeueOrStopWorker(out _), "cleared item was replayed");
     Require(!owner.HasQueuedOrWorker(), "empty worker did not retire after clear");
@@ -61,7 +62,8 @@ Case("reset-clears-queue-and-worker", () =>
     SceneSpeechQueueOwner<string> owner = new SceneSpeechQueueOwner<string>();
     owner.EnqueueAndTryStartWorker("one");
     owner.EnqueueAndTryStartWorker("two");
-    owner.Reset();
+    string[] dropped = owner.Reset();
+    Require(dropped.Length == 2 && dropped[0] == "one" && dropped[1] == "two", "reset did not return retired items in order");
     Require(!owner.HasQueuedOrWorker(), "reset retained queue or worker state");
     Require(owner.EnqueueAndTryStartWorker("new"), "reset did not release worker ownership");
 });

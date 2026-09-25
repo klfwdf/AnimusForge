@@ -2525,7 +2525,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				_immediateSceneReactionActiveRequestIds.Clear();
 				_pendingImmediateSceneReactionRequests.Clear();
 			}
-			_sceneSpeechQueueOwner.Reset();
+			RetireQueuedSceneSpeech(_sceneSpeechQueueOwner.Reset());
 			ResetPendingMainThreadFunctions();
 			_sceneConversationEpoch = 0;
 			_isProcessingShout = false;
@@ -10919,7 +10919,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_immediateSceneReactionActiveRequestIds.Clear();
 			_pendingImmediateSceneReactionRequests.Clear();
 		}
-		_sceneSpeechQueueOwner.Reset();
+		RetireQueuedSceneSpeech(_sceneSpeechQueueOwner.Reset());
 		_sceneConversationEpoch = 0;
 		_nextProactiveSceneOpeningProbeMissionTime = 0f;
 		ResetPendingMainThreadFunctions();
@@ -11017,7 +11017,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_immediateSceneReactionActiveRequestIds.Clear();
 				_pendingImmediateSceneReactionRequests.Clear();
 			}
-			_sceneSpeechQueueOwner.Reset();
+			RetireQueuedSceneSpeech(_sceneSpeechQueueOwner.Reset());
 			_sceneConversationEpoch = 0;
 			_nextProactiveSceneOpeningProbeMissionTime = 0f;
 			ResetPendingMainThreadFunctions();
@@ -34586,7 +34586,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private void ClearQueuedSceneSpeech()
 	{
-		_sceneSpeechQueueOwner.ClearQueued();
+		RetireQueuedSceneSpeech(_sceneSpeechQueueOwner.ClearQueued());
+	}
+
+	private static void RetireQueuedSceneSpeech(SceneSpeechQueueItem[] dropped)
+	{
+		foreach (SceneSpeechQueueItem item in dropped)
+		{
+			item.CompletionSource?.TrySetResult(false);
+		}
 	}
 
 	private bool IsSpeechPipelineBusy()
