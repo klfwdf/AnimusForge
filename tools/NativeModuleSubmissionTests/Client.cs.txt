@@ -91,7 +91,7 @@ class Program {
   Check(disposable.SubmitNative("closed","text").GetSnapshot().ReasonCode=="dialogue.client_disposed","disposed client rejects new work");
   // Engine-free ownership checks run inside a public test-control method, not friend access.
   bool[] core=NativeHost.CoreCases();
-  string[] coreLabels={"one atomic claim even with duplicate dispatcher","first confirmed receipt survives disposal and later error","capacity rejects rather than evicting processed ID","oldest ID retained at capacity","invalid ID rejected"};
+  string[] coreLabels={"one atomic claim even with duplicate dispatcher","first confirmed receipt survives disposal and later error","capacity rejects rather than evicting processed ID","oldest ID retained at capacity","invalid ID rejected","channel shares existing 128 ID capacity","scoped exact retry reuses operation","scoped changed context conflicts","scoped changed channel conflicts","Native and Scene cannot share one ID","scoped empty context rejected","scoped dispatch cannot spoof Native"};
   for(int i=0;i<core.Length;i++)Check(core[i],coreLabels[i]);
   Check(AfApi.GetCapability(AfCapabilityIds.NativeSubmit).State==AfCapabilityState.Available,"Native capability corresponds to callable request boundary");
   Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State==AfCapabilityState.NotSupported&&AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State==AfCapabilityState.NotSupported,"unimplemented group and transport boundaries not falsely advertised");

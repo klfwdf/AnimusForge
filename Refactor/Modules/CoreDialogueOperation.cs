@@ -17,14 +17,18 @@ internal sealed class CoreDialogueOperation
     private string _confirmedReply;
     private bool _ownerCompleted;
 
-    internal CoreDialogueOperation(string clientId, string requestId, string playerText)
+    internal CoreDialogueOperation(string clientId, string requestId, string playerText,
+        CoreDialogueChannel channel = CoreDialogueChannel.Native, string contextIdentity = "")
     {
         ClientId = clientId; RequestId = requestId; PlayerText = playerText;
+        Channel = channel; ContextIdentity = contextIdentity;
         _snapshot = Result(CoreDialogueState.Queued, CoreDialogueEffectState.NoConfirmedEffect, "dialogue.queued");
     }
     internal string ClientId { get; }
     internal string RequestId { get; }
     internal string PlayerText { get; }
+    internal CoreDialogueChannel Channel { get; }
+    internal string ContextIdentity { get; }
     internal Task<CoreDialogueResult> Completion => _completion.Task;
     internal CoreDialogueResult Snapshot { get { lock (_gate) return _snapshot; } }
 

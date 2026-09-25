@@ -38,6 +38,19 @@ namespace AnimusForge {
     results.Add(bounded.SubmitNative("overflow","text").Snapshot.ReasonCode=="dialogue.client_capacity");
     results.Add(bounded.SubmitNative("id0","text").Snapshot.State==AnimusForge.Refactor.Modules.CoreDialogueState.Cancelled);
     results.Add(bounded.SubmitNative("bad id","text").Snapshot.ReasonCode=="dialogue.invalid_request");
+    results.Add(bounded.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","overflow","text",op=>op.Cancel()).Snapshot.ReasonCode=="dialogue.client_capacity");
+   }
+   using(var scoped=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel())){
+    int dispatched=0;
+    Action<AnimusForge.Refactor.Modules.CoreDialogueOperation> send=op=>{dispatched++;op.Cancel();};
+    var scene=scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","shared","text",send);
+    var repeat=scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","shared","text",send);
+    results.Add(ReferenceEquals(scene,repeat)&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-b","shared","text",send).Snapshot.ReasonCode=="dialogue.request_id_conflict"&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Courier,"ticket-a","shared","text",send).Snapshot.ReasonCode=="dialogue.request_id_conflict"&&dispatched==1);
+    results.Add(scoped.SubmitNative("shared","text").Snapshot.ReasonCode=="dialogue.request_id_conflict");
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"","fresh","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Native,"","spoof","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
    }return results.ToArray();
   }
  }
