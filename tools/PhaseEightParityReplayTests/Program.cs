@@ -49,6 +49,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs",
         "src/modules/AF.Module.Settlement/SettlementFollowerMissionOwner.cs",
         "TroopInspectionBehavior.cs", "src/modules/AF.Module.Settlement/TroopInspectionSessionOwner.cs",
+        "MilitaryExerciseBehavior.cs", "src/modules/AF.Module.Exercise/ExerciseMapEventIdentityOwner.cs",
         "src/modules/AF.Module.Encounter/EncounterTargetOwner.cs",
         "src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs",
         "src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs",
@@ -133,6 +134,7 @@ SettlementMissionEntryOwnerReplay.Run(af);
 SettlementFollowerMissionOwnerReplay.Run(af);
 TroopInspectionSessionOwnerReplay.Run(af);
 J13E4DomainOwnerContractReplay.Run(repo);
+ExerciseMapEventIdentityOwnerReplay.Run(af);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);

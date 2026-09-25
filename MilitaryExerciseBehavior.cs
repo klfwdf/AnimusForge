@@ -26,6 +26,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.SaveSystem;
+using AnimusForge.Refactor.Modules;
 
 namespace AnimusForge;
 
@@ -888,6 +889,7 @@ public static class MilitaryExerciseRenownInfluenceSkipPatch
 [HarmonyPatch]
 public static class MilitaryExerciseBehavior
 {
+	private static readonly Func<MapEvent, MobileParty, bool> MapEventContainsExerciseParty = MapEventContainsParty;
 	private const string OpponentDummyPartyPrefix = "animusforge_military_exercise_opponent_";
 
 	private const string HoldingDummyPartyPrefix = "animusforge_military_exercise_holding_";
@@ -1383,25 +1385,31 @@ public static class MilitaryExerciseBehavior
 		{
 			return null;
 		}
-		if (ReferenceEquals(runtime.MapEvent, mapEvent))
-		{
-			return runtime;
-		}
-		if (IsMilitaryExerciseMapEventByDummyParty(mapEvent))
-		{
-			return runtime;
-		}
+		return ExerciseMapEventIdentityOwner.IsCurrent(runtime.MapEvent, mapEvent,
+			runtime.OpponentDummyParty, runtime.HoldingDummyParty,
+			MapEventContainsExerciseParty) ? runtime : null;
+	}
+
+	private static bool MapEventContainsParty(MapEvent mapEvent, MobileParty party)
+	{
+		return MapEventSideContainsParty(mapEvent?.AttackerSide, party)
+			|| MapEventSideContainsParty(mapEvent?.DefenderSide, party);
+	}
+
+	private static bool MapEventSideContainsParty(MapEventSide side, MobileParty party)
+	{
+		if (side == null || party?.Party == null) return false;
 		try
 		{
-			if (ReferenceEquals(MapEvent.PlayerMapEvent, mapEvent))
+			foreach (MapEventParty member in side.Parties)
 			{
-				return runtime;
+				if (ReferenceEquals(member?.Party, party.Party)) return true;
 			}
 		}
 		catch
 		{
 		}
-		return null;
+		return false;
 	}
 
 	private static bool IsMilitaryExerciseMapEventByDummyParty(MapEvent mapEvent)
@@ -1424,9 +1432,9 @@ public static class MilitaryExerciseBehavior
 		{
 			foreach (MapEventParty party in side.Parties)
 			{
-				string id = party?.Party?.MobileParty?.StringId ?? "";
-				if (id.StartsWith(OpponentDummyPartyPrefix, StringComparison.Ordinal)
-					|| id.StartsWith(HoldingDummyPartyPrefix, StringComparison.Ordinal))
+				MobileParty mobileParty = party?.Party?.MobileParty;
+				if (mobileParty?.PartyComponent is MilitaryExerciseDummyPartyComponent
+					&& IsMilitaryExerciseDummyParty(mobileParty))
 				{
 					return true;
 				}
