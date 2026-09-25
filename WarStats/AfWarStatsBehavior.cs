@@ -572,16 +572,7 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         foreach (KeyValuePair<string, WarStatsRecord> item in _activeWars)
         {
             WarStatsRecord record = item.Value;
-            record.KillsA = 0;
-            record.KillsB = 0;
-            record.CasualtiesA = 0;
-            record.CasualtiesB = 0;
-            record.WinsA = 0;
-            record.WinsB = 0;
-            record.LossesA = 0;
-            record.LossesB = 0;
-            record.HeroDeaths.Clear();
-            record.RecentHeroBattles?.Clear();
+            _ledger.ResetActiveCountsAndIncidents(record);
             if (TryResolvePair(item.Key, out Kingdom kingdomA, out Kingdom kingdomB))
             {
                 record.InitialTerritoryA = CountTerritory(kingdomA);
@@ -637,9 +628,7 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         }
 
         WarStatsRecord record = GetOrCreateActiveRecord(pairKey, kingdomA, kingdomB);
-        _ledger.ClearRecentHeroBattles(record);
-        record.AttackerSide = string.Equals(attacker.StringId, kingdomA.StringId, StringComparison.Ordinal) ? 0 : 1;
-        record.StartDay = GetCurrentDay();
+        _ledger.StartWar(record, string.Equals(attacker.StringId, kingdomA.StringId, StringComparison.Ordinal) ? 0 : 1, GetCurrentDay());
         UpdateRecordMetadata(record, kingdomA, kingdomB);
     }
 

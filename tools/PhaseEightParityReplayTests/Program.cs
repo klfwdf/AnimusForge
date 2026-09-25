@@ -458,5 +458,26 @@ Check(((IList)Get(legacy, "_historicalWars")).Count == 1
     "legacy ended pair migrates only into history");
 Call(legacyLedger, "ClearLegacyRecords");
 Check(legacyRecords.Count == 0, "legacy migration consumes queued rows");
+Check(ledgerType.GetMethod("StartWar", Members) != null
+    && ledgerType.GetMethod("ResetActiveCountsAndIncidents", Members) != null,
+    "ledger owns declaration and terminal-clear state transitions");
+object lifecycle = Activator.CreateInstance(warType);
+object lifecycleLedger = Get(lifecycle, "_ledger");
+object currentWar = Activator.CreateInstance(recordType, true);
+Set(currentWar, "KillsA", 21); Set(currentWar, "CasualtiesB", 34);
+((IDictionary)Get(lifecycle, "_activeWars")).Add("|", currentWar);
+((IList)Get(lifecycle, "_historicalWars")).Add(history[0]);
+Call(lifecycleLedger, "RecordRecentHeroBattle", currentWar, "hero-a", "kingdom-a", 20, 1);
+Call(lifecycleLedger, "UpsertHeroDeath", currentWar, "hero-a", "A", null, 3, 20, "Battle", 0);
+Call(lifecycleLedger, "StartWar", currentWar, 1, 21);
+Check((int)Get(currentWar, "AttackerSide") == 1 && (int)Get(currentWar, "StartDay") == 21
+    && ((IDictionary)Get(currentWar, "RecentHeroBattles")).Count == 0,
+    "declaration resets only recent participation and records oriented start");
+Call(lifecycle, "ClearAllRecords");
+Check(((IDictionary)Get(lifecycle, "_activeWars")).Count == 1
+    && ((IList)Get(lifecycle, "_historicalWars")).Count == 0
+    && (int)Get(currentWar, "KillsA") == 0 && (int)Get(currentWar, "CasualtiesB") == 0
+    && ((IList)Get(currentWar, "HeroDeaths")).Count == 0,
+    "terminal clear preserves live pair while resetting counts, deaths and history");
 Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=ledger/archive/stale/reverse-count/death/recent/v1-v5/terminal live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));
