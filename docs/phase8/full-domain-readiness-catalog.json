@@ -897,6 +897,11 @@
         "SexualConceptionBehavior.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
         "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveCandidateScanOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
         "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
         "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
@@ -1036,6 +1041,7 @@
         "DevWeeklyReportPopup.cs",
         "DevWeeklyReportPopupVM.cs",
         "DuelSettings.TerminalSave.cs",
+        "ModOnboardingBehavior.cs",
         "SceneActionsIntegrationBoundary.cs",
         "SubModule.cs",
         "TerminalSettingsRegistry.cs",
@@ -1050,7 +1056,12 @@
         "WarStats/AfWarStatsPopupVM.cs",
         "WarStats/AfWarStatsRowVM.cs",
         "WarStats/AfWarStatsSettings.cs",
-        "WarStats/AfWarStatsTexts.cs"
+        "WarStats/AfWarStatsTexts.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingDismissalOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingOperationVersionOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingSessionOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingUiDispatchOwner.cs",
+        "src/modules/AF.Module.UI/WeeklyReportPopupSessionOwner.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",

@@ -12,7 +12,7 @@
       "bindings": [
         {
           "source": "ModOnboardingBehavior.cs",
-          "line": 246,
+          "line": 226,
           "ref": "_setupDone",
           "type": "bool",
           "kind": "scalar"
@@ -82,14 +82,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17897,
+          "line": 17654,
           "ref": "dictionaryMemoryBlocks",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18186,
+          "line": 17943,
           "ref": "dictionaryMemoryBlocksLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -103,14 +103,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17894,
+          "line": 17651,
           "ref": "dictionaryMemoryDrafts",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18179,
+          "line": 17936,
           "ref": "dictionaryMemoryDraftsLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -152,14 +152,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17928,
+          "line": 17685,
           "ref": "dictionaryMemoryOverviewStates",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18224,
+          "line": 17981,
           "ref": "dictionaryMemoryOverviewStatesLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -173,14 +173,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17959,
+          "line": 17716,
           "ref": "dictionaryMajorActionSummaries",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18261,
+          "line": 18018,
           "ref": "dictionaryMajorActionSummariesLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -208,14 +208,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18025,
+          "line": 17782,
           "ref": "unreadWeeklyReportNoticeEventIds",
           "type": "List<string>",
           "kind": "list"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18422,
+          "line": 18179,
           "ref": "unreadWeeklyReportNoticeEventIdsLoad",
           "type": "List<string>",
           "kind": "list"
@@ -229,7 +229,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 417,
+          "line": 423,
           "ref": "_savedActiveAttackerSideV4",
           "type": "List<int>",
           "kind": "list"
@@ -243,7 +243,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 383,
+          "line": 389,
           "ref": "_savedActiveCasualtiesAV2",
           "type": "List<int>",
           "kind": "list"
@@ -257,7 +257,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 384,
+          "line": 390,
           "ref": "_savedActiveCasualtiesBV2",
           "type": "List<int>",
           "kind": "list"
@@ -271,7 +271,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 385,
+          "line": 391,
           "ref": "_savedActiveDurationV2",
           "type": "List<int>",
           "kind": "list"
@@ -285,7 +285,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 418,
+          "line": 424,
           "ref": "_savedActiveHeroDeathsV4",
           "type": "List<string>",
           "kind": "list"
@@ -299,7 +299,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 407,
+          "line": 413,
           "ref": "_savedActiveInitialTerritoryAV3",
           "type": "List<int>",
           "kind": "list"
@@ -313,7 +313,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 408,
+          "line": 414,
           "ref": "_savedActiveInitialTerritoryBV3",
           "type": "List<int>",
           "kind": "list"
@@ -327,7 +327,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 378,
+          "line": 384,
           "ref": "_savedActiveKeysV2",
           "type": "List<string>",
           "kind": "list"
@@ -341,7 +341,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 381,
+          "line": 387,
           "ref": "_savedActiveKillsAV2",
           "type": "List<int>",
           "kind": "list"
@@ -355,7 +355,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 382,
+          "line": 388,
           "ref": "_savedActiveKillsBV2",
           "type": "List<int>",
           "kind": "list"
@@ -369,7 +369,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 405,
+          "line": 411,
           "ref": "_savedActiveLossesAV3",
           "type": "List<int>",
           "kind": "list"
@@ -383,7 +383,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 406,
+          "line": 412,
           "ref": "_savedActiveLossesBV3",
           "type": "List<int>",
           "kind": "list"
@@ -397,7 +397,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 379,
+          "line": 385,
           "ref": "_savedActiveNamesAV2",
           "type": "List<string>",
           "kind": "list"
@@ -411,7 +411,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 380,
+          "line": 386,
           "ref": "_savedActiveNamesBV2",
           "type": "List<string>",
           "kind": "list"
@@ -425,7 +425,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 388,
+          "line": 394,
           "ref": "_savedActivePlayerV2",
           "type": "List<int>",
           "kind": "list"
@@ -439,7 +439,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 424,
+          "line": 432,
           "ref": "_savedActiveRecentHeroBattlesV5",
           "type": "List<string>",
           "kind": "list"
@@ -453,7 +453,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 416,
+          "line": 422,
           "ref": "_savedActiveStartDayV4",
           "type": "List<int>",
           "kind": "list"
@@ -467,7 +467,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 386,
+          "line": 392,
           "ref": "_savedActiveTerritoryAV2",
           "type": "List<int>",
           "kind": "list"
@@ -481,7 +481,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 387,
+          "line": 393,
           "ref": "_savedActiveTerritoryBV2",
           "type": "List<int>",
           "kind": "list"
@@ -495,7 +495,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 403,
+          "line": 409,
           "ref": "_savedActiveWinsAV3",
           "type": "List<int>",
           "kind": "list"
@@ -509,7 +509,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 404,
+          "line": 410,
           "ref": "_savedActiveWinsBV3",
           "type": "List<int>",
           "kind": "list"
@@ -523,7 +523,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 375,
+          "line": 381,
           "ref": "_savedCasualtiesA",
           "type": "List<int>",
           "kind": "list"
@@ -537,7 +537,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 376,
+          "line": 382,
           "ref": "_savedCasualtiesB",
           "type": "List<int>",
           "kind": "list"
@@ -551,7 +551,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 372,
+          "line": 378,
           "ref": "_dataVersion",
           "type": "int",
           "kind": "scalar"
@@ -565,7 +565,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 420,
+          "line": 426,
           "ref": "_savedHistoryAttackerSideV4",
           "type": "List<int>",
           "kind": "list"
@@ -579,7 +579,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 395,
+          "line": 401,
           "ref": "_savedHistoryCasualtiesAV2",
           "type": "List<int>",
           "kind": "list"
@@ -593,7 +593,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 396,
+          "line": 402,
           "ref": "_savedHistoryCasualtiesBV2",
           "type": "List<int>",
           "kind": "list"
@@ -607,7 +607,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 397,
+          "line": 403,
           "ref": "_savedHistoryDurationV2",
           "type": "List<int>",
           "kind": "list"
@@ -621,7 +621,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 400,
+          "line": 406,
           "ref": "_savedHistoryEndDayV2",
           "type": "List<int>",
           "kind": "list"
@@ -635,7 +635,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 421,
+          "line": 427,
           "ref": "_savedHistoryHeroDeathsV4",
           "type": "List<string>",
           "kind": "list"
@@ -649,7 +649,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 413,
+          "line": 419,
           "ref": "_savedHistoryInitialTerritoryAV3",
           "type": "List<int>",
           "kind": "list"
@@ -663,7 +663,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 414,
+          "line": 420,
           "ref": "_savedHistoryInitialTerritoryBV3",
           "type": "List<int>",
           "kind": "list"
@@ -677,7 +677,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 390,
+          "line": 396,
           "ref": "_savedHistoryKeysV2",
           "type": "List<string>",
           "kind": "list"
@@ -691,7 +691,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 393,
+          "line": 399,
           "ref": "_savedHistoryKillsAV2",
           "type": "List<int>",
           "kind": "list"
@@ -705,7 +705,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 394,
+          "line": 400,
           "ref": "_savedHistoryKillsBV2",
           "type": "List<int>",
           "kind": "list"
@@ -719,7 +719,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 411,
+          "line": 417,
           "ref": "_savedHistoryLossesAV3",
           "type": "List<int>",
           "kind": "list"
@@ -733,7 +733,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 412,
+          "line": 418,
           "ref": "_savedHistoryLossesBV3",
           "type": "List<int>",
           "kind": "list"
@@ -747,7 +747,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 391,
+          "line": 397,
           "ref": "_savedHistoryNamesAV2",
           "type": "List<string>",
           "kind": "list"
@@ -761,7 +761,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 392,
+          "line": 398,
           "ref": "_savedHistoryNamesBV2",
           "type": "List<string>",
           "kind": "list"
@@ -775,7 +775,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 401,
+          "line": 407,
           "ref": "_savedHistoryPlayerV2",
           "type": "List<int>",
           "kind": "list"
@@ -789,7 +789,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 419,
+          "line": 425,
           "ref": "_savedHistoryStartDayV4",
           "type": "List<int>",
           "kind": "list"
@@ -803,7 +803,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 398,
+          "line": 404,
           "ref": "_savedHistoryTerritoryAV2",
           "type": "List<int>",
           "kind": "list"
@@ -817,7 +817,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 399,
+          "line": 405,
           "ref": "_savedHistoryTerritoryBV2",
           "type": "List<int>",
           "kind": "list"
@@ -831,7 +831,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 409,
+          "line": 415,
           "ref": "_savedHistoryWinsAV3",
           "type": "List<int>",
           "kind": "list"
@@ -845,7 +845,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 410,
+          "line": 416,
           "ref": "_savedHistoryWinsBV3",
           "type": "List<int>",
           "kind": "list"
@@ -859,7 +859,7 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 374,
+          "line": 380,
           "ref": "_savedPairKeys",
           "type": "List<string>",
           "kind": "list"
@@ -873,8 +873,8 @@
       "bindings": [
         {
           "source": "WarStats/AfWarStatsBehavior.cs",
-          "line": 423,
-          "ref": "_recentBattleSequence",
+          "line": 430,
+          "ref": "recentBattleSequence",
           "type": "int",
           "kind": "scalar"
         }
@@ -887,14 +887,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18029,
+          "line": 17786,
           "ref": "weeklyReportReadingXpClaimedEventIds",
           "type": "List<string>",
           "kind": "list"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18425,
+          "line": 18182,
           "ref": "weeklyReportReadingXpClaimedEventIdsLoad",
           "type": "List<string>",
           "kind": "list"
@@ -908,14 +908,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18037,
+          "line": 17794,
           "ref": "weeklyReportReadingXpPendingCharm",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18428,
+          "line": 18185,
           "ref": "_weeklyReportReadingXpPendingCharm",
           "type": "int",
           "kind": "scalar"
@@ -929,14 +929,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18036,
+          "line": 17793,
           "ref": "weeklyReportReadingXpPendingCount",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18427,
+          "line": 18184,
           "ref": "_weeklyReportReadingXpPendingCount",
           "type": "int",
           "kind": "scalar"
@@ -950,14 +950,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18038,
+          "line": 17795,
           "ref": "weeklyReportReadingXpPendingLeadership",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18429,
+          "line": 18186,
           "ref": "_weeklyReportReadingXpPendingLeadership",
           "type": "int",
           "kind": "scalar"
@@ -971,14 +971,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18039,
+          "line": 17796,
           "ref": "weeklyReportReadingXpPendingSteward",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18430,
+          "line": 18187,
           "ref": "_weeklyReportReadingXpPendingSteward",
           "type": "int",
           "kind": "scalar"
@@ -1006,14 +1006,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17890,
+          "line": 17647,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18172,
+          "line": 17929,
           "ref": "dictionary8",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1027,7 +1027,7 @@
       "bindings": [
         {
           "source": "DuelBehavior.cs",
-          "line": 2504,
+          "line": 2500,
           "ref": "_duelCooldowns",
           "type": "Dictionary<string, float>",
           "kind": "flattened-dictionary"
@@ -1041,14 +1041,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18006,
+          "line": 17763,
           "ref": "dictionary6",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18386,
+          "line": 18143,
           "ref": "dictionary12",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1356,14 +1356,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18077,
+          "line": 17834,
           "ref": "dictionary14b",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18472,
+          "line": 18231,
           "ref": "dictionary15",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1377,14 +1377,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18066,
+          "line": 17823,
           "ref": "dictionary13",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18456,
+          "line": 18215,
           "ref": "dictionary14",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1398,14 +1398,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18100,
+          "line": 17857,
           "ref": "_lastAutoGeneratedWeeklyReportWeek",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18452,
+          "line": 18211,
           "ref": "_lastAutoGeneratedWeeklyReportWeek",
           "type": "int",
           "kind": "scalar"
@@ -1419,14 +1419,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18101,
+          "line": 17858,
           "ref": "_lastProcessedKingdomRebellionWeek",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18517,
+          "line": 18276,
           "ref": "_lastProcessedKingdomRebellionWeek",
           "type": "int",
           "kind": "scalar"
@@ -1440,14 +1440,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18099,
+          "line": 17856,
           "ref": "dictionary14d",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18504,
+          "line": 18263,
           "ref": "dictionary17",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1461,14 +1461,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17976,
+          "line": 17733,
           "ref": "_npcActionGlobalOrderCounter",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18379,
+          "line": 18136,
           "ref": "_npcActionGlobalOrderCounter",
           "type": "int",
           "kind": "scalar"
@@ -1482,14 +1482,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17972,
+          "line": 17729,
           "ref": "dictionary3",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18298,
+          "line": 18055,
           "ref": "dictionary9",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1503,14 +1503,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17994,
+          "line": 17751,
           "ref": "dictionary5",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18354,
+          "line": 18111,
           "ref": "dictionary11",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1524,14 +1524,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17975,
+          "line": 17732,
           "ref": "dictionary4",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18326,
+          "line": 18083,
           "ref": "dictionary10",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1545,14 +1545,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 35120,
+          "line": 34726,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 35129,
+          "line": 34735,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1720,7 +1720,7 @@
       "bindings": [
         {
           "source": "RomanceSystemBehavior.cs",
-          "line": 143,
+          "line": 124,
           "ref": "marriageRecordStorageForSync",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1734,8 +1734,8 @@
       "bindings": [
         {
           "source": "RomanceSystemBehavior.cs",
-          "line": 137,
-          "ref": "_privateLove",
+          "line": 117,
+          "ref": "privateLoveForSync",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
         }
@@ -1769,7 +1769,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 235,
+          "line": 226,
           "ref": "_armedSettlementCarryoverActive",
           "type": "bool",
           "kind": "scalar"
@@ -1783,7 +1783,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 236,
+          "line": 227,
           "ref": "_armedSettlementCarryoverSettlementId",
           "type": "string",
           "kind": "scalar"
@@ -1797,7 +1797,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 237,
+          "line": 228,
           "ref": "_armedSettlementCarryoverSource",
           "type": "string",
           "kind": "scalar"
@@ -1811,7 +1811,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 232,
+          "line": 223,
           "ref": "_crimeRefillReserveByFactionStorage",
           "type": "Dictionary<string, float>",
           "kind": "flattened-dictionary"
@@ -1825,7 +1825,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 234,
+          "line": 225,
           "ref": "_criminalTrustRewardTenthBySettlementStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1839,7 +1839,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 231,
+          "line": 222,
           "ref": "_pendingDeferredCrimeByFactionStorage",
           "type": "Dictionary<string, float>",
           "kind": "flattened-dictionary"
@@ -1853,7 +1853,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 233,
+          "line": 224,
           "ref": "_lastObservedNativeCrimeByFactionStorage",
           "type": "Dictionary<string, float>",
           "kind": "flattened-dictionary"
@@ -1867,7 +1867,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 226,
+          "line": 217,
           "ref": "_pendingDeferredLordSceneDiplomacy",
           "type": "bool",
           "kind": "scalar"
@@ -1881,7 +1881,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 230,
+          "line": 221,
           "ref": "_pendingDeferredLordSceneReason",
           "type": "string",
           "kind": "scalar"
@@ -1895,7 +1895,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 229,
+          "line": 220,
           "ref": "_pendingDeferredLordSceneSettlementId",
           "type": "string",
           "kind": "scalar"
@@ -1909,7 +1909,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 228,
+          "line": 219,
           "ref": "_pendingDeferredLordSceneTargetFactionId",
           "type": "string",
           "kind": "scalar"
@@ -1923,7 +1923,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 227,
+          "line": 218,
           "ref": "_pendingDeferredLordSceneTargetHeroId",
           "type": "string",
           "kind": "scalar"
@@ -1937,7 +1937,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 225,
+          "line": 216,
           "ref": "_pendingTemporaryDungeonWarEnemyFactionId",
           "type": "string",
           "kind": "scalar"
@@ -1951,7 +1951,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 223,
+          "line": 214,
           "ref": "_pendingTemporaryDungeonWarPeace",
           "type": "bool",
           "kind": "scalar"
@@ -1965,7 +1965,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 224,
+          "line": 215,
           "ref": "_pendingTemporaryDungeonWarPlayerFactionId",
           "type": "string",
           "kind": "scalar"
@@ -1979,7 +1979,7 @@
       "bindings": [
         {
           "source": "SceneTauntBehavior.cs",
-          "line": 222,
+          "line": 213,
           "ref": "_warnedSceneTargetKeysStorage",
           "type": "List<string>",
           "kind": "list"
@@ -1993,7 +1993,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 139,
+          "line": 148,
           "ref": "_otherSettlementProfile",
           "type": "TroopRoster",
           "kind": "native-save-type"
@@ -2007,7 +2007,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 138,
+          "line": 147,
           "ref": "_ownSettlementProfile",
           "type": "TroopRoster",
           "kind": "native-save-type"
@@ -2021,7 +2021,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 140,
+          "line": 149,
           "ref": "_pendingSameKingdomVassalRebellionKingdomId",
           "type": "string",
           "kind": "scalar"
@@ -2035,7 +2035,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 142,
+          "line": 151,
           "ref": "_pendingSameKingdomVassalRebellionOwnerClanId",
           "type": "string",
           "kind": "scalar"
@@ -2049,7 +2049,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 141,
+          "line": 150,
           "ref": "_pendingSameKingdomVassalRebellionSettlementId",
           "type": "string",
           "kind": "scalar"
@@ -2063,14 +2063,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17886,
+          "line": 17643,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18133,
+          "line": 17890,
           "ref": "dictionary7",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -2140,14 +2140,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18113,
+          "line": 17870,
           "ref": "_voiceMappingExportFolderStorage",
           "type": "string",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18519,
+          "line": 18278,
           "ref": "_voiceMappingExportFolderStorage",
           "type": "string",
           "kind": "scalar"
@@ -2161,14 +2161,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 18088,
+          "line": 17845,
           "ref": "dictionary14c",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18488,
+          "line": 18247,
           "ref": "dictionary16",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
