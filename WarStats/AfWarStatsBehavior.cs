@@ -247,7 +247,11 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
 
     private bool _legacyMigrationPending;
 
-    private int _recentBattleSequence;
+    private int _recentBattleSequence
+    {
+        get => _ledger.RecentBattleSequence;
+        set => _ledger.SetRecentBattleSequence(value);
+    }
 
     private List<string> _savedPairKeys = new();
 
@@ -422,7 +426,9 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         dataStore.SyncData("_af_war_stats_history_attacker_side_v4", ref _savedHistoryAttackerSideV4);
         dataStore.SyncData("_af_war_stats_history_hero_deaths_v4", ref _savedHistoryHeroDeathsV4);
 
-        dataStore.SyncData("_af_war_stats_recent_battle_sequence_v5", ref _recentBattleSequence);
+        int recentBattleSequence = _recentBattleSequence;
+        dataStore.SyncData("_af_war_stats_recent_battle_sequence_v5", ref recentBattleSequence);
+        _recentBattleSequence = recentBattleSequence;
         dataStore.SyncData("_af_war_stats_active_recent_hero_battles_v5", ref _savedActiveRecentHeroBattlesV5);
 
         if (dataStore.IsLoading)
@@ -631,7 +637,7 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         }
 
         WarStatsRecord record = GetOrCreateActiveRecord(pairKey, kingdomA, kingdomB);
-        record.RecentHeroBattles?.Clear();
+        _ledger.ClearRecentHeroBattles(record);
         record.AttackerSide = string.Equals(attacker.StringId, kingdomA.StringId, StringComparison.Ordinal) ? 0 : 1;
         record.StartDay = GetCurrentDay();
         UpdateRecordMetadata(record, kingdomA, kingdomB);
@@ -793,21 +799,10 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
         }
 
         string heroId = victim.StringId ?? string.Empty;
-        string heroName = victim.Name?.ToString() ?? heroId;
-        return _activeWars.Values
-            .Concat<WarStatsRecord>(_historicalWars)
-            .Any(record => record?.HeroDeaths != null
-                && record.HeroDeaths.Any(item => item != null && IsSameHero(item, heroId, heroName)));
+        return _ledger.HasRecordedHeroDeath(heroId, victim.Name?.ToString() ?? heroId);
     }
 
-    private static bool IsSameHero(HeroDeathRecord item, string heroId, string heroName)
-    {
-        return item != null
-            && ((!string.IsNullOrEmpty(heroId) && string.Equals(item.HeroId, heroId, StringComparison.Ordinal))
-                || (string.IsNullOrEmpty(heroId) && string.Equals(item.HeroName, heroName, StringComparison.Ordinal)));
-    }
-
-    private static void UpsertHeroDeath(
+    private void UpsertHeroDeath(
         WarStatsRecord record,
         Hero victim,
         Hero killer,
@@ -821,31 +816,9 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
             return;
         }
 
-        record.HeroDeaths ??= new List<HeroDeathRecord>();
         string heroId = victim.StringId ?? string.Empty;
         string heroName = victim.Name?.ToString() ?? heroId;
-        HeroDeathRecord existing = record.HeroDeaths.FirstOrDefault(item => IsSameHero(item, heroId, heroName));
-
-        if (existing == null)
-        {
-            existing = new HeroDeathRecord
-            {
-                HeroId = heroId,
-                HeroName = heroName,
-                Day = Math.Max(0, day),
-                Side = pairSide == 1 ? 1 : 0
-            };
-            record.HeroDeaths.Add(existing);
-        }
-
-        existing.HeroName = string.IsNullOrWhiteSpace(heroName) ? existing.HeroName : heroName;
-        existing.KillerName = killer?.Name?.ToString() ?? existing.KillerName ?? string.Empty;
-        existing.Cause = (int)cause;
-        existing.Side = pairSide == 1 ? 1 : 0;
-        if (!string.IsNullOrWhiteSpace(battleName))
-        {
-            existing.BattleName = battleName;
-        }
+        _ledger.UpsertHeroDeath(record, heroId, heroName, killer?.Name?.ToString(), (int)cause, day, battleName, pairSide);
     }
 
     private static bool IsRecordableDeath(KillCharacterAction.KillCharacterActionDetail detail)
@@ -981,12 +954,7 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
             return;
         }
 
-        if (_recentBattleSequence < int.MaxValue)
-        {
-            _recentBattleSequence++;
-        }
-
-        int battleSequence = _recentBattleSequence;
+        int battleSequence = _ledger.NextBattleSequence();
         int battleDay = GetCurrentDay();
         Dictionary<Kingdom, (int Contribution, int Participants)> attackerPriorities = BuildOpponentPriorities(mapEvent.AttackerSide);
         Dictionary<Kingdom, (int Contribution, int Participants)> defenderPriorities = BuildOpponentPriorities(mapEvent.DefenderSide);
@@ -1017,7 +985,6 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
                 continue;
             }
 
-            record.RecentHeroBattles ??= new Dictionary<string, RecentHeroBattleRecord>(StringComparer.Ordinal);
             foreach (Hero hero in ResolveParticipatingLords(eventParty))
             {
                 if (GetKingdom(hero) != ownKingdom)
@@ -1031,13 +998,7 @@ public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase
                     continue;
                 }
 
-                record.RecentHeroBattles[heroId] = new RecentHeroBattleRecord
-                {
-                    HeroId = heroId,
-                    Day = Math.Max(0, battleDay),
-                    Sequence = Math.Max(0, battleSequence),
-                    OwnKingdomId = ownKingdom.StringId ?? string.Empty
-                };
+                _ledger.RecordRecentHeroBattle(record, heroId, ownKingdom.StringId, battleDay, battleSequence);
             }
         }
     }
