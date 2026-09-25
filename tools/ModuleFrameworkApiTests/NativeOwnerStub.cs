@@ -2,6 +2,8 @@
 namespace AnimusForge;
 internal static class ShoutBehavior
 {
+    internal static string IssueModuleSceneTicket(string clientId) => null;
+    internal static void RevokeModuleSceneTickets(string clientId) { }
     internal static void SubmitModuleNativeDialogue(Refactor.Modules.CoreDialogueOperation operation)
         => operation.Finish("native.owner_unavailable");
 }
