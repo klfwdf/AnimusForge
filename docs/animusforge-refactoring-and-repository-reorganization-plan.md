@@ -1,3 +1,11 @@
+## 主体 J13d3 WorldEvents 聚合接线与兼容门禁（2026-09-25）
+
+产品/行为切片 `62ec9065ecbadd1ff147efc1e188438b59eaa3ab` 后，`J13D3DomainOwnerContractReplay` 已核对原 Campaign 注册、两条保存键与 chunk 导入/导出、公开发布/快照/已读门面、政策 version 确认及 Policy UI/外交档案/终端的真实消费者；这是源码接线证据，与当前生产 DLL 的 `WorldEventInboxOwnerReplay` 行为证据分层。原 `PolicyEffectModule.ContractTests` 的王国公告断言仍期待无参调用，但实际终端在基线 `938ce116` 已传 `OpenCustomPolicyManagementView` 回调；将断言更新为当前完整回调路由，不删除 re-review/prefab/政策身份检查。
+
+- **聚合结果**：当前 Debug 1.4 DLL SHA256 `C70D15E9B5251356F98FBDBA633E61205A45EB1B48D18FB0CE39C68E5BDE17B0` 的完整 Phase8（含 d3 状态与聚合）通过；`PolicyEffectModule.ContractTests --player-policy-ui-contracts-only` 在源码链接产物上 387 断言通过，`source inventory` 7 通过。原脚本不带 Stage/Deploy 且明确 1.4.7 参考目录的 Debug/Release × 1.3/1.4+Bootstrap 六构建均 0 warning/0 error；四实现 SHA256：Debug 1.3 `6AFC6CC40700C0B8101E00B98E301C8F9826CF8F2D302BD858ECBB27B3C0B74E`、Debug 1.4 如上、Release 1.3 `9A3CB45C4AEC5AF31ECD7990D9B241E7666BDB25675C54453FB2A978E81D2E26`、Release 1.4 `99FDFB4B96FEFB3B0EAF7492F412A4790C6D57C4E2314ABDEB9CD3F7076ECC3D`。
+- **保存/API**：`PersistenceIdentityAudit.py --baseline 053ad485` 比较 142 个 key/type 对与 36 个 CampaignBehavior 无变化；使用仓库固定 SDK 8.0.425 的 V1 119 / 四 DLL metadata 1060 通过。首次误用系统 SDK 10 导致离线 targeting pack `NU1100`，改为计划已指定的固定 SDK 后通过；首次省略存档审计基线得到历史新增 WarStats 误报，指定 `053ad485` 后通过。`PolicyEffect` 显式加载另一候选 DLL 时发生双程序集同名类型冲突，改由该 runner 加载它自身刚源码编译的产物后通过，故此 387 断言不是脚本候选 DLL 的行为回放。
+- **余项**：代码地图 recorded/working-tree、简短 HANDOFF 尚待更新后才能标 d3 有限整包收口。真实 Campaign、旧档、UI 点击、Stage/部署和帧性能 `NOT-RUN`；不以当前离线证据替代。
+
 ## 主体 J13d3 WorldEvents 收件箱 owner 行为切片（2026-09-25）
 
 状态：`J13d3_INBOX_SLICE_OFFLINE_VERIFIED / J13d3_ACTIVE / J13_ACTIVE`。开工意图 `82f406ca`；本片把原行为内的权威记录、未读、stable-key 索引、容量、version、导入/导出和已读转换移至 `src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs:9–181`。`WorldEvents/WorldEventInbox.cs:44–85` 仍保留原 CampaignBehavior/DTO、`_afWorldEventInboxRecords_v1` 与 `_afWorldEventInboxUnread_v1`、chunk 适配和公开静态入口；政策发布/Policy UI/外交档案/弹窗已读仍沿原入口消费同一 owner，没有第二份收件箱。
