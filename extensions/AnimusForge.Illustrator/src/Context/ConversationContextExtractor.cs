@@ -30,15 +30,15 @@ namespace AnimusForge.Illustrator.Context
         public string InterlocutorBodyProperties { get; set; } = string.Empty;
         internal ConversationNpcAgeSnapshot InterlocutorAgeSnapshot { get; set; }
 
-        /// <summary>台词与最近一轮对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
+        /// <summary>台词与最近2条对话——只进导演，不进生图模型（避免被渲染成画面文字）。</summary>
         public string BuildDialogueBlock()
         {
             var sb = new StringBuilder();
             sb.AppendLine("【会话台词与历史记录（用于理解情绪、关系、已发生动作与现场氛围；严禁在画面中绘制任何台词文字、对话框、气泡框或字幕）】");
             sb.AppendLine(Core.VisualFidelityRules.ConversationActionPriority);
-            if (!string.IsNullOrWhiteSpace(DialogueSentence) && (string.IsNullOrWhiteSpace(RecentDialogueHistory) || RecentDialogueHistory.IndexOf(DialogueSentence, StringComparison.Ordinal) < 0))
-                sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
             if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
+            else if (!string.IsNullOrWhiteSpace(DialogueSentence))
+                sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
             return sb.ToString().TrimEnd();
         }
 
@@ -255,7 +255,7 @@ namespace AnimusForge.Illustrator.Context
             {
             }
             context.DialogueSentence = CleanText(sentence);
-            context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), maxRounds: 1);
+            context.RecentDialogueHistory = BuildRecentDialogueHistory(ReadNativeConversationHistory(24), RecentDialogueLimit);
             context.EnvironmentProfile = EnvironmentVisualExtractor.Extract(settlement);
             context.EnvironmentProfile.UseConversationTimeEvidence();
             try
@@ -410,7 +410,7 @@ namespace AnimusForge.Illustrator.Context
                 (string.IsNullOrWhiteSpace(siegeFacts) ? string.Empty : siegeFacts + "。\n") +
                 $"地点为【{locName}】。";
             context.SceneDirective =
-                "优先采用最近一轮对话中已发生或正在进行的动作，导演据此设计镜头；对话未涉及的骑乘状态与环境空间关系保留已知记录。" +
+                "优先采用最近2条对话中已发生或正在进行的动作，导演据此设计镜头；对话未涉及的骑乘状态与环境空间关系保留已知记录。" +
                 "若实景或现场记录显示双方分处城墙上下，须保留高低差，不能改成平地会面。\n" +
                 $"【引擎待机线索（仅在对话没有动作描述时参考，不覆盖对话动作）】{basePose}。";
 
@@ -482,41 +482,27 @@ namespace AnimusForge.Illustrator.Context
             return lines;
         }
 
-        internal static string BuildRecentDialogueHistory(IEnumerable<NativeDialogueLine> entries, int maxRounds)
+        internal const int RecentDialogueLimit = 2;
+
+        internal static string BuildRecentDialogueHistory(IEnumerable<NativeDialogueLine> entries, int maxLines)
         {
             var lines = (entries ?? Enumerable.Empty<NativeDialogueLine>())
                 .Where(entry => entry != null && !string.IsNullOrWhiteSpace(entry.Text) &&
                     (string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase) || string.Equals(entry.Kind, "npc", StringComparison.OrdinalIgnoreCase)))
                 .ToList();
-            if (lines.Count == 0 || maxRounds <= 0) return string.Empty;
-
-            var rounds = new List<List<NativeDialogueLine>>();
-            List<NativeDialogueLine> current = null;
-            foreach (var entry in lines)
-            {
-                if (string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase) || current == null)
-                {
-                    current = new List<NativeDialogueLine>();
-                    rounds.Add(current);
-                }
-                current.Add(entry);
-            }
-            rounds = rounds.Skip(Math.Max(0, rounds.Count - maxRounds)).ToList();
+            if (lines.Count == 0 || maxLines <= 0) return string.Empty;
+            int start = Math.Max(0, lines.Count - maxLines);
 
             var sb = new StringBuilder();
-            sb.AppendLine($"【最近{rounds.Count}轮对话记录】");
-            for (int i = 0; i < rounds.Count; i++)
+            sb.AppendLine($"【最近{lines.Count - start}条对话记录（按时间先后）】");
+            for (int i = start; i < lines.Count; i++)
             {
-                sb.AppendLine($"第{i + 1}轮：");
-                foreach (var entry in rounds[i])
-                {
-                    string speaker = string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase)
-                        ? "玩家"
-                        : (!string.IsNullOrWhiteSpace(entry.Speaker) ? entry.Speaker.Trim() : "对方");
-                    string text = CleanText(entry.Text);
-                    if (text.Length > 240) text = text.Substring(0, 240) + "…";
-                    sb.AppendLine(speaker + "：" + text);
-                }
+                var entry = lines[i];
+                string speaker = string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase)
+                    ? "玩家"
+                    : (!string.IsNullOrWhiteSpace(entry.Speaker) ? entry.Speaker.Trim() : "对方");
+                // Preserve the whole selected utterance: a late refusal/action can change the scene.
+                sb.AppendLine(speaker + "：" + CleanText(entry.Text));
             }
             return sb.ToString().TrimEnd();
         }

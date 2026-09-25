@@ -37,7 +37,7 @@ namespace AnimusForge.Illustrator.Engine
         internal static string SceneReferenceLabel() =>
             "当前玩家视角的单张真实现场画面，不是全景或多个方向。仅用于判断当前位置与环境定位，保留可见的墙面材质与配色、门窗楼梯和环境高低关系；" +
             "只对已看见的环境作描述，画面外及被遮挡区域保持未知，不按地点名称重造建筑。" +
-            "人物行动优先采用最近一轮对话中的已发生叙事，不采用截图里的站姿、手势、朝向或视线；人物身份细节仍按对应人物参考，不把界面头像或画廊作品当作现场人物。" +
+            "人物行动优先采用最近2条对话中的已发生叙事，不采用截图里的站姿、手势、朝向或视线；人物身份细节仍按对应人物参考，不把界面头像或画廊作品当作现场人物。" +
             "忽略游戏对话UI、字幕、血条与名牌，不将界面内容画入作品。" + ScreenshotMaskReferenceNote;
 
         internal static IReadOnlyList<IllustrationReferenceImage> CreateCapturedSceneReferences(string image)

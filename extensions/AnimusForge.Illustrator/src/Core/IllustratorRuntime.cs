@@ -50,10 +50,14 @@ namespace AnimusForge.Illustrator.Core
             SelectedQuality = settings.SelectedQuality;
             SelectedStyle = settings.SelectedStyle;
             CustomStylePrompt = settings.CustomStylePrompt;
+            var resolvedStyle = IllustrationStylePresets.Resolve(SelectedStyle, CustomStylePrompt);
             StyleFingerprint = DiskImageCacheManager.ComputeHash(
                 (settings.SelectedStyle ?? string.Empty) + "\n" +
                 (settings.CustomStylePrompt ?? string.Empty) + "\n" +
-                (settings.NegativePrompt ?? string.Empty));
+                (settings.NegativePrompt ?? string.Empty) + "\n" +
+                (resolvedStyle.ImagePrompt ?? string.Empty) + "\n" +
+                (resolvedStyle.NegativePrompt ?? string.Empty) + "\n" +
+                (resolvedStyle.ApiStyle ?? string.Empty));
             UseExactEndpointUrl = settings.UseExactEndpointUrl;
             EnableReferenceImageForGeneration = settings.EnableReferenceImageForGeneration;
             AutoCleanTempFiles = settings.AutoCleanTempFiles;

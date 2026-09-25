@@ -165,11 +165,11 @@ public static class ClientEndpointAudit
         var oil = Call(styles, "Resolve", "classic-oil", "ignored");
         string oilDirector = Property<string>(oil, "DirectorPrompt");
         string oilImage = Property<string>(oil, "ImagePrompt");
-        Check(oilDirector.Length > oilImage.Length * 2 && oilImage.Length < 150, "oil director receives detailed painting guidance and image endpoint a compact anchor");
+        Check(oilImage == oilDirector && oilImage.Contains("伦勃朗") && oilImage.Contains("克雷格·穆林斯"), "oil image endpoint receives the complete selected painting guidance");
         Check(oilDirector.Contains("光源方向、昼夜、天气和物体固有色服从现场事实") && oilDirector.Contains("接触阴影、环境反光和遮挡关系"), "oil painting guidance preserves actual light colors and spatial integration");
-        Check(oilImage.Contains("人物与环境统一绘制") && !oilImage.Contains("8k") && !oilImage.Contains("戏剧性光影微光"), "oil anchor removes generic quality inflation and compulsory dim light");
+        Check(oilImage.Contains("统一的绘画语言") && !oilImage.Contains("8k") && !oilImage.Contains("戏剧性光影微光"), "full oil style preserves coherent rendering without compulsory dim light");
         Check((string)Call(director, "BuildDirectorStylePreference", new object[] { null }) == oilDirector, "director default resolves shared detailed oil preset");
-        Check((string)Call(director, "BuildImageStylePreference", new object[] { null }) == oilImage, "local image fallback resolves shared compact oil preset");
+        Check((string)Call(director, "BuildImageStylePreference", new object[] { null }) == oilImage, "local image fallback resolves the same complete oil preset");
         Check(object.ReferenceEquals(oil, Call(styles, "Resolve", null, "ignored")) && object.ReferenceEquals(oil, Call(styles, "Resolve", "unknown", "ignored")), "unknown and missing presets reuse safe cached oil default");
 
         string customText = "  用户手写画风\n自定义第二行  ";
@@ -205,7 +205,8 @@ public static class ClientEndpointAudit
         for (int i = 0; i < names.Length; i++)
         {
             var preset = Call(styles, "Resolve", names[i], imagePresets[i]);
-            Check(Property<string>(preset, "ImagePrompt") == imagePresets[i] && Property<string>(preset, "NegativePrompt") == negativePresets[i], "preset image and negative text remain defined: " + names[i]);
+            string fullStyle = Property<string>(preset, "ImagePrompt");
+            Check(fullStyle.Contains(directorPresets[i]) && (imagePresets[i] == null || fullStyle.Contains(imagePresets[i])) && Property<string>(preset, "NegativePrompt") == negativePresets[i], "full style retains director wording, image supplement and negatives: " + names[i]);
             Check(Property<string>(preset, "DirectorPrompt") == directorPresets[i] && Property<bool>(preset, "IsCustom") == (names[i] == "custom"), "preset director wording and custom flag remain defined: " + names[i]);
             bool native = names[i] == "vivid" || names[i] == "natural";
             Check(Property<string>(preset, "ApiStyle") == (native ? names[i] : null), "only native style enums enter API fields: " + names[i]);
@@ -217,9 +218,29 @@ public static class ClientEndpointAudit
             var payload = ParseJson(handler.Requests[0].Json);
             string prompt = (string)payload["prompt"];
             Check(OptionalText(payload, "style") == (native ? names[i] : null), "actual JSON style enum follows selected preset: " + names[i]);
-            Check(native ? !prompt.Contains("古典写实历史油画") : prompt.Contains(imagePresets[i]), "actual image prompt uses selected style without forced oil: " + names[i]);
+            Check(prompt.Contains(fullStyle) && (names[i] == "classic-oil" || !prompt.Contains("古典写实历史油画")), "actual image prompt contains the complete selected style: " + names[i]);
             Check(prompt.Contains("CUSTOM_NEGATIVE_SENTINEL") == (names[i] == "custom"), "custom negative text applies only to custom preset: " + names[i]);
             if (negativePresets[i] != null) Check(prompt.Contains(negativePresets[i]), "actual image prompt retains preset negatives: " + names[i]);
+
+            foreach (bool edits in new[] { false, true })
+            {
+                handler.Reset(Success());
+                var routed = Generate(Options("http://offline.invalid/v1/" + (edits ? "images/edits" : "chat/completions"), true, "audit", names[i]), References(png));
+                var sent = handler.Requests[0];
+                string sentText = edits ? sent.Fields["prompt"] : RequestText(sent);
+                Check(Property<bool>(routed, "Success") && sentText.Contains(fullStyle) && sentText.Contains("DIRECTOR_BODY_SENTINEL"), "full style reaches actual " + (edits ? "multipart Edits" : "Chat") + " request independently of director output: " + names[i]);
+            }
+        }
+
+        foreach (string route in new[] { "images/generations", "images/edits", "chat/completions" })
+        {
+            var options = Options("http://offline.invalid/v1/" + route, true, "audit", "custom");
+            SetOption(options, "CustomStylePrompt", "");
+            handler.Reset(Success());
+            var result = Generate(options, route == "images/generations" ? null : References(png));
+            var sent = handler.Requests[0];
+            string text = route == "images/edits" ? sent.Fields["prompt"] : RequestText(sent);
+            Check(Property<bool>(result, "Success") && !text.Contains("古典写实历史油画") && !text.Contains("CUSTOM_STYLE_SENTINEL"), "empty custom style remains empty in actual request: " + route);
         }
     }
 
@@ -288,7 +309,7 @@ public static class ClientEndpointAudit
                 CheckCapturedPrompt(chat, handler.Requests[0], "Chat with references");
                 string chatText = Property<string>(chat, "ResolvedPrompt");
                 Check(chatText.Contains("核心人物官方真实视觉基准图") && chatText.Contains("IDENTITY_LABEL") && chatText.Contains("家族纹章图案样板") && chatText.Contains("当前位置与环境定位参考") && chatText.Contains("最终呈现规范/Artistic Redraw"), "Chat cache includes all identity role scene and redraw text");
-                Check(chatText.Contains("DIRECTOR_BODY_SENTINEL") && chatText.Contains("焦点精细、次要区域笔触简练") && !chatText.Contains("视觉焦点集中于人物面部"), "Chat sends director body and compact style without detailed director-only style");
+                Check(chatText.Contains("DIRECTOR_BODY_SENTINEL") && chatText.Contains("视觉焦点集中于人物面部") && chatText.Contains("让绘画表现服务于人物当下的行动"), "Chat sends director body and complete style through its final sentence");
                 var chatMessage = (Dictionary<string, object>)((object[])ParseJson(handler.Requests[0].Json)["messages"])[0];
                 var chatContent = (object[])chatMessage["content"];
                 Check(chatContent.Cast<Dictionary<string, object>>().Count(p => (string)p["type"] == "image_url") == 3, "Chat actually sends the three image parts omitted from cached text");
@@ -311,6 +332,8 @@ public static class ClientEndpointAudit
                 Check(Property<bool>(fallback, "Success") && handler.Requests.Count == 2, "text-only Generations can fall back to Chat");
                 Check(handler.Requests[0].Url.EndsWith("/images/generations") && handler.Requests[1].Url.EndsWith("/chat/completions"), "text-only fallback uses the intended endpoint sequence");
                 CheckCapturedPrompt(fallback, handler.Requests[1], "successful Chat fallback");
+                foreach (var sent in handler.Requests)
+                    Check(RequestText(sent).Contains("伦勃朗") && RequestText(sent).Contains("让绘画表现服务于人物当下的行动"), "full oil style survives Generations to Chat fallback");
                 handler.Reset(NeedsChat(), new Reply(HttpStatusCode.OK, "{}"));
                 var failedFallback = Generate(Options("http://offline.invalid/v1", false, "audit", "classic-oil"), null);
                 Check(!Property<bool>(failedFallback, "Success") && handler.Requests.Count == 2, "failed text-only Chat fallback stops after two protocol attempts");
