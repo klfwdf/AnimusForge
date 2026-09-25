@@ -52,6 +52,11 @@ internal static class J13FUiHostLifecycleContractReplay
             && !onboardingHost.Contains("_baseUrlValidationVersion", StringComparison.Ordinal)
             && !onboardingHost.Contains("_modelFetchVersion", StringComparison.Ordinal),
             "host still owns async invalidation versions");
+        string baseUrlResult = Slice(onboardingHost, "private void ProcessPendingBaseUrlValidationResult()",
+            "private void ProcessPendingModelFetchResult()");
+        Check(baseUrlResult.Contains("_pendingBaseUrlValidationVersion", StringComparison.Ordinal)
+            && baseUrlResult.Contains("_operationVersions.IsCurrent(OnboardingOperationKind.BaseUrlValidation, pendingBaseUrlValidationVersion)", StringComparison.Ordinal),
+            "cancelled Base URL result could be consumed after worker publication");
         Console.WriteLine("PASS J13FUiHostLifecycleContractReplay popup/overlay partial-open cleanup, input release and callback retirement; source-wiring-only live=NOT_RUN");
     }
 }
