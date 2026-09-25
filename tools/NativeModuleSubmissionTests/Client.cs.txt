@@ -94,7 +94,19 @@ class Program {
   string[] coreLabels={"one atomic claim even with duplicate dispatcher","first confirmed receipt survives disposal and later error","capacity rejects rather than evicting processed ID","oldest ID retained at capacity","invalid ID rejected","channel shares existing 128 ID capacity","scoped exact retry reuses operation","scoped changed context conflicts","scoped changed channel conflicts","Native and Scene cannot share one ID","scoped empty context rejected","scoped dispatch cannot spoof Native","client captures a bound Scene ticket","dispose revokes own Scene tickets"};
   for(int i=0;i<core.Length;i++)Check(core[i],coreLabels[i]);
   Check(AfApi.GetCapability(AfCapabilityIds.NativeSubmit).State==AfCapabilityState.Available,"Native capability corresponds to callable request boundary");
-  Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State==AfCapabilityState.NotSupported&&AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State==AfCapabilityState.NotSupported,"unimplemented group and transport boundaries not falsely advertised");
-  Console.WriteLine("PASS "+Checks+" Native module API checks; actual admission/dispatcher/action-dispatch/completion, fixture provider/game effects; NOT LIVE");
+  NativeHost.Reset();using(var sceneClient=AfApi.CreateDialogueClient()){
+   string sceneTicket=sceneClient.CaptureSceneContextTicket();
+   var scene=sceneClient.SubmitScene(sceneTicket,"scene-public","hello group");
+   Until(()=>NativeHost.SceneFirstQueued);
+   Check(!scene.Completion.IsCompleted,"Scene first speaker cannot complete before relay");
+   NativeHost.ReleaseSecondSceneTurn();
+   var result=Finish(scene);
+   Check(result.State==AfDialogueState.Completed&&result.EffectState==AfDialogueEffectState.CompletedByOwner&&result.Reply=="first\nsecond","external Scene submit reaches owner receipt");
+   Check(result.SceneUtterances.Count==2&&result.SceneUtterances[0].SpeakerName=="Alice"&&result.SceneUtterances[1].SpeakerAgentIndex==8,"external Scene result preserves ordered speakers");
+   Check(((System.Collections.Generic.IList<AfSceneUtterance>)result.SceneUtterances).IsReadOnly,"external Scene utterance snapshot immutable");
+   Check(Finish(sceneClient.SubmitScene(sceneTicket,"scene-public","hello group")).SceneUtterances.Count==2,"exact Scene retry reuses owner receipt");
+  }
+  Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State==AfCapabilityState.Available&&AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State==AfCapabilityState.NotSupported,"Scene callable while Courier remains unsupported");
+  Console.WriteLine("PASS "+Checks+" Native/Scene public API checks; production owner entry and receipt, fixture provider/game effects; NOT LIVE");
  }
 }

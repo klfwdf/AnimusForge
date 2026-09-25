@@ -27,6 +27,10 @@ internal sealed class CoreDialogueClient : IDisposable
     internal CoreDialogueOperation SubmitNative(string requestId, string playerText)
         => Submit(CoreDialogueChannel.Native, "", requestId, playerText, _submitNative);
 
+    internal CoreDialogueOperation SubmitScene(string contextTicket, string requestId, string playerText)
+        => SubmitForContext(CoreDialogueChannel.Scene, contextTicket, requestId, playerText,
+            ShoutBehavior.SubmitModuleSceneDialogue);
+
     internal string CaptureSceneContextTicket()
     {
         lock (_gate) if (_disposed) return null;

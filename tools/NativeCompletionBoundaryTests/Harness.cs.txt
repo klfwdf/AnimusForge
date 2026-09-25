@@ -15,15 +15,16 @@ namespace TaleWorlds.MountAndBlade { public class Mission { public static Missio
 namespace TaleWorlds.Library { public static class TWParallel { public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==AnimusForge.Host.MainThread; } }
 namespace AnimusForge {
 static class Host {
- internal static int MainThread,WrongThread,Session,Effects,Echo,Marker,Tts,Closed,CaptureCount,Rollbacks,OwnerQueries;
+ internal static int MainThread,WrongThread,Session,Effects,Echo,Marker,Tts,Closed,CaptureCount,Rollbacks,OwnerQueries,PlayerTargetAgentIndex;
+ internal static string PlayerTargetName;
  internal static bool TargetAvailable=true,MemoryThrows,CaptureThrows,DuplicateCallback,OwnerPresent,OwnerAccept;
  internal static string Mode,NonHeroId="af_nonhero:party-a";
  internal static Hero Hero,RegisteredHero;internal static CharacterObject Character;
  internal static Action AfterValidation,AfterWrite;
  internal static readonly List<string> History=new List<string>();
  internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread)Interlocked.Increment(ref WrongThread);}
- internal static void Reset(bool nonHero=false){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Effects=Echo=Marker=Tts=Closed=CaptureCount=Rollbacks=OwnerQueries=0;Session=3;TargetAvailable=true;MemoryThrows=CaptureThrows=DuplicateCallback=false;OwnerPresent=OwnerAccept=true;Mode="normal";NonHeroId="af_nonhero:party-a";AfterValidation=AfterWrite=null;History.Clear();Hero=nonHero?null:new Hero();RegisteredHero=Hero;TaleWorlds.CampaignSystem.Hero.MainHero=null;Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
- internal static void Write(string key,string player,string reply,string fact,int session){Game();if(MemoryThrows)throw new InvalidOperationException("memory fixture failed");History.Add(key+"|"+session+"|"+(player??"<null>")+"|"+(reply??"<null>")+"|"+(fact??"<null>"));AfterWrite?.Invoke();AfterWrite=null;}
+ internal static void Reset(bool nonHero=false){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Effects=Echo=Marker=Tts=Closed=CaptureCount=Rollbacks=OwnerQueries=PlayerTargetAgentIndex=0;PlayerTargetName=null;Session=3;TargetAvailable=true;MemoryThrows=CaptureThrows=DuplicateCallback=false;OwnerPresent=OwnerAccept=true;Mode="normal";NonHeroId="af_nonhero:party-a";AfterValidation=AfterWrite=null;History.Clear();Hero=nonHero?null:new Hero();RegisteredHero=Hero;TaleWorlds.CampaignSystem.Hero.MainHero=null;Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
+ internal static void Write(string key,string player,string reply,string fact,int session,int target=0,string targetName=null){Game();if(MemoryThrows)throw new InvalidOperationException("memory fixture failed");PlayerTargetAgentIndex=target;PlayerTargetName=targetName;History.Add(key+"|"+session+"|"+(player??"<null>")+"|"+(reply??"<null>")+"|"+(fact??"<null>"));AfterWrite?.Invoke();AfterWrite=null;}
 }
 static class SaveRuntimeGuard {internal static long Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
 static class PlayerEncounterCompat {internal static bool IsInPostBattleResultFlow()=>false;}
@@ -36,8 +37,8 @@ public partial class MyBehavior {
  private static bool DeferMemorySourceWriteIfNeeded(Action<MyBehavior> write,string source){if(!TWParallel.IsMainThread())throw new InvalidOperationException("unexpected worker legacy write in completion fixture");return false;}
  private const string NonHeroMemoryIdPrefix = "af_nonhero:";
  private static Hero FindHeroById(string id)=>Hero.Find(id);
- private bool AppendDialogueHistory(Hero h,string p,string a,string f,int s=-1,int target=-1,string targetName=null){Host.Write(h.StringId,p,a,f,s);return Host.OwnerAccept;}
- private bool AppendDialogueHistoryById(string id,string name,string p,string a,string f,int s=-1,int target=-1,string targetName=null){Host.Write(id,p,a,f,s);return Host.OwnerAccept;}
+ private bool AppendDialogueHistory(Hero h,string p,string a,string f,int s=-1,int target=-1,string targetName=null){Host.Write(h.StringId,p,a,f,s,target,targetName);return Host.OwnerAccept;}
+ private bool AppendDialogueHistoryById(string id,string name,string p,string a,string f,int s=-1,int target=-1,string targetName=null){Host.Write(id,p,a,f,s,target,targetName);return Host.OwnerAccept;}
 @@MEMORY_METHODS@@
 }
 
@@ -182,6 +183,8 @@ static class Program {
   Check(legacy("A",false,"NPC","input","answer","fact").HistoryWritten&&Host.History[0]=="A|-1|input|answer|fact","legacy six-argument public facade preserves loose-session ABI and payload");
   Host.Reset();Check(MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC","input","answer","fact",73).HistoryWritten&&Host.History[0]=="A|73|input|answer|fact","strict Native Hero route retains requested scene session");
   Host.Reset(true);Check(MyBehavior.CommitDialogueHistoryWithScene(" AF_NONHERO:PARTY-X ",true,"NPC","input","answer","fact",73).HistoryWritten&&Host.History[0]=="af_nonhero:party-x|73|input|answer|fact","strict nonHero route retains normalization and scene session");
+  Host.Reset();Check(MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC","input","answer","fact",73,8,"Bob").HistoryWritten&&Host.PlayerTargetAgentIndex==8&&Host.PlayerTargetName=="Bob","Scene addressed Hero memory retains target identity");
+  Host.Reset(true);Check(MyBehavior.CommitDialogueHistoryWithScene("af_nonhero:party-x",true,"NPC","input","answer","fact",73,9,"Cora").HistoryWritten&&Host.PlayerTargetAgentIndex==9&&Host.PlayerTargetName=="Cora","Scene addressed nonHero memory retains target identity");
   foreach(var identity in new[]{("",false),("af_nonhero:x",false),("A",true),("af_nonhero:",true)}) {Host.Reset();var receipt=MyBehavior.CommitDialogueHistoryWithScene(identity.Item1,identity.Item2,"NPC","input","answer",null,3);Check(receipt.Status==MemoryCommitStatus.Rejected&&receipt.ErrorCode=="memory_identity_invalid"&&Host.History.Count==0,"original strict identity gate retained");}
   foreach(string mode in new[]{"dead","disabled","player","missing"}) {Host.Reset();if(mode=="dead")Host.RegisteredHero.IsAlive=false;if(mode=="disabled")Host.RegisteredHero.IsDisabled=true;if(mode=="player")Hero.MainHero=Host.RegisteredHero;if(mode=="missing")Host.RegisteredHero=null;var receipt=MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC","input","answer",null,3);Check(receipt.Status==MemoryCommitStatus.Rejected&&receipt.ErrorCode=="memory_target_ineligible"&&Host.History.Count==0,"original Hero eligibility retained: "+mode);}
   Host.Reset();var background=Task.Run(()=>MyBehavior.CommitDialogueHistoryWithScene("A",false,"NPC","input","answer",null,3)).GetAwaiter().GetResult();Check(background.Status==MemoryCommitStatus.Rejected&&background.ErrorCode=="memory_not_main_thread"&&Host.OwnerQueries==0&&Host.History.Count==0,"background memory entry rejects before game-owner access");

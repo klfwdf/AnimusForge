@@ -214,6 +214,7 @@ public sealed class ProductionBlockHost
     private static bool IsTerminalStage(CourierSession session) => false;
     private CourierSession GetSessionById(string sessionId) => Scenario.Current.Session;
     private static void QueueSceneInfoMessage(string message, Color color, int epoch) { Scenario.Current.Notifications++; }
+    private static string SanitizeSceneSpeechText(string text) => text;
     private void EnqueueMainThreadActionForGeneration(long generation, Action action, string reason)
     {
         Scenario.Current.MainThreadActions.Enqueue(() =>
@@ -296,13 +297,14 @@ public sealed class ProductionBlockHost
         reason = Scenario.Current.TargetUnavailable ? "target-unavailable" : string.Empty;
         return !Scenario.Current.TargetUnavailable;
     }
-    private void RecordResponseForAllNearbySafe(List<NpcDataPacket> audience, int index, string name, string response)
+    private bool RecordResponseForAllNearbySafe(List<NpcDataPacket> audience, int index, string name, string response, bool requireMemoryReceipt = false)
     {
         if (!Scenario.Current.OnMainThread) throw new Exception("Scene history must be dispatched to main thread");
         Scenario.Current.SceneHistoryCalls++;
         Scenario.Current.HistoryEvents.Add("scene:" + response);
+        return true;
     }
-    private void PersistNpcSpeechToNamedHeroes(int index, string name, string response, List<NpcDataPacket> audience)
+    private bool PersistNpcSpeechToNamedHeroes(int index, string name, string response, List<NpcDataPacket> audience, bool requireMemoryReceipt = false)
     {
         if (!Scenario.Current.OnMainThread) throw new Exception("Memory owner must be dispatched to main thread");
         Scenario.Current.ScenePersistenceCalls++;
@@ -313,6 +315,7 @@ public sealed class ProductionBlockHost
                 Scenario.Current.ObserverHistory[npc.AgentIndex] = history = new();
             history.Add(response);
         }
+        return true;
     }
     private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> audience,
         bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch,
@@ -386,6 +389,7 @@ public sealed class ProductionBlockHost
 
     public async Task SceneAsync()
     {
+        SceneReceiptProbe receipt = null;
         var currentSpeaker = new Speaker { Name = Scenario.Current.Subject, AgentIndex = Scenario.Current.AgentIndex };
         string playerText = "player-input";
         int conversationEpoch = 1;
@@ -404,6 +408,8 @@ public sealed class ProductionBlockHost
         }
         Scenario.Current.SceneCleanup = true;
     }
+    private sealed class SceneReceiptProbe { internal void Fail(string reason) { } }
+    private bool IsCurrentModuleGroup() => true;
 
     public async Task CourierAsync()
     {
@@ -917,7 +923,7 @@ public static class Program
         foreach (var observer in audience)
             Scenario.Current.ObserverHistory[observer.AgentIndex] = new() { "already-persisted-player-input" };
         var task = (Task<bool>)method.Invoke(host, new object[] { speaker, audience, new Hero(), new CharacterObject(),
-            "cleaned-npc-reply", 1L, Scenario.Current.HistorySessionId, 1 });
+            "cleaned-npc-reply", 1L, Scenario.Current.HistorySessionId, 1, false });
         Scenario.Current.HistoryResult = await task;
     }
 
@@ -973,7 +979,7 @@ public static class Program
         string speechText = ProductionBlockHost.MainSpeechText(s.SpeechInput);
         var task = (Task<bool>)method.Invoke(host, new object[] { speaker, audience, new Hero(), new CharacterObject(),
             speechText, 1L, s.SpeechSessionId, 1, new List<SceneSummonPromptTarget>(), new List<SceneGuidePromptTarget>(),
-            s.SpeechPostprocess, 17f, 2, "original-player-input", s.SpeechDirectResponse });
+            s.SpeechPostprocess, 17f, 2, "original-player-input", s.SpeechDirectResponse, null });
         s.SpeechQueueResult = await task;
     }
 

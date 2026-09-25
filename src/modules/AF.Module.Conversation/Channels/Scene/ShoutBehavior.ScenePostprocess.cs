@@ -679,6 +679,8 @@ public partial class ShoutBehavior
 			+ committed.Execution.Status + " effect=" + committed.Execution.EffectState
 			+ " error=" + committed.Execution.ErrorCode);
 		return !targetRejected && (pendingSpeech != null
+				&& committed.Execution.Status == InteractionStatus.NonRetryableFailure
+				&& committed.Execution.EffectState == ActionExecutionEffectState.UnknownAfterStart
 			|| committed.Execution.Status == InteractionStatus.Executed
 			|| committed.Execution.Status == InteractionStatus.Succeeded);
 	}

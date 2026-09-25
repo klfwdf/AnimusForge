@@ -13,6 +13,15 @@ out=HERE/'.generated'/('reordered' if a.reorder_core_enums else a.mutate or 'cur
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 sigs=['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(', 'private sealed class NativeConversationGameActionResult','private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(']
 host=(HERE/'Host.cs.txt').read_text().replace('@@REAL_DECLARATIONS@@','\n'.join(ex.declaration(s,sig) for sig in sigs))
+scene=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs').read_text(encoding='utf-8-sig')
+post=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs').read_text(encoding='utf-8-sig')
+scene_sigs=['private void RegisterModuleSceneGroup(', 'private void RetireModuleSceneGroup(',
+            'private void ReleaseModuleSceneGroup(', 'private sealed class SceneGroupReceipt',
+            'internal static void SubmitModuleSceneDialogue(', 'private async Task RunModuleSceneDialogueAsync(']
+scene_declarations='\n'.join([ex.declaration(post,'private enum ScenePostprocessStatus'),
+                              ex.declaration(post,'private sealed class ScenePostprocessOutcome')]
+                             +[ex.declaration(scene,sig) for sig in scene_sigs])
+host=host.replace('@@SCENE_DECLARATIONS@@',scene_declarations)
 (out/'Host.cs').write_text(host,encoding='utf-8')
 contracts=(ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig')
 (out/'Contracts.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+'\n'.join(ex.declaration(contracts,x) for x in ['public enum ActionExecutionEffectState','public enum MemoryCommitStatus','public sealed class MemoryCommitResult']),encoding='utf-8')

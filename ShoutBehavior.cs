@@ -2525,6 +2525,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				_immediateSceneReactionActiveRequestIds.Clear();
 				_pendingImmediateSceneReactionRequests.Clear();
 			}
+			RetireModuleSceneGroup("scene.stale_context");
 			RetireQueuedSceneSpeech(_sceneSpeechQueueOwner.Reset());
 			ResetPendingMainThreadFunctions();
 			_sceneConversationEpoch = 0;
@@ -10919,6 +10920,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			_immediateSceneReactionActiveRequestIds.Clear();
 			_pendingImmediateSceneReactionRequests.Clear();
 		}
+		RetireModuleSceneGroup("scene.stale_context");
 		RetireQueuedSceneSpeech(_sceneSpeechQueueOwner.Reset());
 		_sceneConversationEpoch = 0;
 		_nextProactiveSceneOpeningProbeMissionTime = 0f;
@@ -11017,6 +11019,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				_immediateSceneReactionActiveRequestIds.Clear();
 				_pendingImmediateSceneReactionRequests.Clear();
 			}
+			RetireModuleSceneGroup("scene.stale_context");
 			RetireQueuedSceneSpeech(_sceneSpeechQueueOwner.Reset());
 			_sceneConversationEpoch = 0;
 			_nextProactiveSceneOpeningProbeMissionTime = 0f;
@@ -17195,7 +17198,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private Task<bool> RecordSceneReplyHistoryOnMainThreadAsync(
 		NpcDataPacket speaker, List<NpcDataPacket> audience,
 		Hero expectedHero, CharacterObject expectedCharacter, string historyText,
-		long generation, int sceneSessionId, int conversationEpoch)
+		long generation, int sceneSessionId, int conversationEpoch, bool requireMemoryReceipt = false)
 	{
 		if (speaker == null || string.IsNullOrWhiteSpace(historyText))
 		{
@@ -17210,9 +17213,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			RecordResponseForAllNearbySafe(audience, speaker.AgentIndex, speaker.Name, historyText);
-			PersistNpcSpeechToNamedHeroes(speaker.AgentIndex, speaker.Name, historyText, audience);
-			return true;
+			bool factAccepted = RecordResponseForAllNearbySafe(audience, speaker.AgentIndex, speaker.Name, historyText, requireMemoryReceipt);
+			bool replyAccepted = PersistNpcSpeechToNamedHeroes(speaker.AgentIndex, speaker.Name, historyText, audience, requireMemoryReceipt);
+			return factAccepted && replyAccepted;
 		}, false);
 	}
 
@@ -17232,7 +17235,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		long generation, int sceneSessionId, int conversationEpoch,
 		List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets,
 		bool hasPostprocess, float interactionTimeoutSeconds, int participantCount,
-		string playerText, bool replyIsDirectPlayerResponse)
+		string playerText, bool replyIsDirectPlayerResponse,
+		TaskCompletionSource<bool> speechCompletion = null)
 	{
 		if (speaker == null || string.IsNullOrWhiteSpace(replyText)) return Task.FromResult(false);
 		bool CanStillPublish()
@@ -17249,7 +17253,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			EnqueueSpeechLineWithOptions(speaker, replyText, audience,
 				commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true,
 				conversationEpoch, sceneSummonTargets, sceneGuideTargets,
-				hasPostprocess ? "正在处理NPC行为............" : null, null,
+				hasPostprocess ? "正在处理NPC行为............" : null, speechCompletion,
 				interactionTimeoutSeconds, Math.Max(1, participantCount),
 				canStillPublish: CanStillPublish,
 				playerDirectedActionText: replyIsDirectPlayerResponse ? playerText : string.Empty,
@@ -25766,6 +25770,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Interlocked.Increment(ref _sceneConversationEpoch);
 			Interlocked.Increment(ref _sceneHistorySessionId);
+			RetireModuleSceneGroup("scene.stale_context");
 			ForceClearScenePostprocessGate("mission_end:" + (reason ?? ""));
 			_isWaitingForScenePostprocessGate = false;
 			EndShoutProcessing("mission_end:" + (reason ?? ""));
@@ -26215,17 +26220,18 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	}
 
 	private async Task ProcessCapturedScenePlayerShoutAsync(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
-		ScenePlayerShoutRequest request, Action<Action> runWithObservationScope)
+		ScenePlayerShoutRequest request, Action<Action> runWithObservationScope, SceneGroupReceipt receipt = null)
 	{
 		await WaitForScenePostprocessGateAsync("before_player_shout_pipeline");
 		Task groupTask = await RunNativeConversationMainThreadFuncAsync("scene_player_input", "player", request.TargetingContext.PrimaryAgentIndex, () =>
 		{
 			if (!IsScenePlayerShoutRequestCurrent(request))
 			{
+				receipt?.Fail("scene.stale_context");
 				return (Task)null;
 			}
 			Task startedGroup = null;
-			Action process = () => startedGroup = ProcessCurrentScenePlayerShout(shoutText, extraFact, forcedPrimaryAgentIndex, request);
+			Action process = () => startedGroup = ProcessCurrentScenePlayerShout(shoutText, extraFact, forcedPrimaryAgentIndex, request, receipt);
 			if (runWithObservationScope == null)
 			{
 				process();
@@ -26240,10 +26246,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			await groupTask.ConfigureAwait(false);
 		}
+		else receipt?.Fail("scene.group_not_started");
 	}
 
 	private Task ProcessCurrentScenePlayerShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
-		ScenePlayerShoutRequest request)
+		ScenePlayerShoutRequest request, SceneGroupReceipt receipt = null)
 	{
 		_stareTimer = 0f;
 		_currentStareTarget = null;
@@ -26259,6 +26266,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<Agent> framedAgents = GetAgentsForShoutTargetingContext(targetingContext);
 		if (framedAgents.Count == 0)
 		{
+			receipt?.Fail("scene.no_framed_target");
 			InformationManager.DisplayMessage(new InformationMessage("你正在自言自语...", new Color(0.6f, 0.6f, 0.6f)));
 			ResumeGame();
 			return Task.CompletedTask;
@@ -26269,6 +26277,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			primaryTarget = framedAgents.FirstOrDefault((Agent a) => a != null && a.Index == forcedPrimaryAgentIndex.Value);
 			if (primaryTarget == null)
 			{
+				receipt?.Fail("scene.primary_unavailable");
 				InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 异色主对象已经离场，请重新框选。", new Color(1f, 0.5f, 0.3f)));
 				ResumeGame();
 				return Task.CompletedTask;
@@ -26276,6 +26285,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		if (primaryTarget == null)
 		{
+			receipt?.Fail("scene.primary_unavailable");
 			primaryTarget = ResolvePrimaryAgentForShoutTargetingContext(targetingContext, framedAgents);
 		}
 		if (primaryTarget == null)
@@ -26285,8 +26295,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			return Task.CompletedTask;
 		}
 		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
+		receipt?.Bind(conversationEpoch);
 		if (!TryBuildSceneShoutConversationScope(framedAgents, primaryTarget, conversationEpoch, out var conversationScope, out var audienceAgents))
 		{
+			receipt?.Fail("scene.audience_stale");
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 在场人物快照已失效，请重新框选。", new Color(1f, 0.5f, 0.3f)));
 			ResumeGame();
 			return Task.CompletedTask;
@@ -26299,6 +26311,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		NpcDataPacket primaryDataPacket = allNpcData.FirstOrDefault((NpcDataPacket d) => d.AgentIndex == primaryTarget.Index);
 		if (primaryDataPacket == null)
 		{
+			receipt?.Fail("scene.primary_unavailable");
 			RemoveSceneMovementSuppressionAgents(new int[1] { primaryTarget.Index });
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 无法读取异色主对象，请重新框选。", new Color(1f, 0.5f, 0.3f)));
 			ResumeGame();
@@ -26352,13 +26365,16 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				try
 				{
-					PersistExtraFactToNamedHeroes(
+					bool factAccepted = PersistExtraFactToNamedHeroes(
 						extraFact,
 						allNpcData,
-						personalizedPlayerCraftFactAgentIndex);
+						personalizedPlayerCraftFactAgentIndex,
+						requireMemoryReceipt: receipt != null);
+					if (!factAccepted) receipt?.Fail("scene.fact_unconfirmed");
 				}
 				catch
 				{
+					receipt?.Fail("scene.fact_unconfirmed");
 				}
 			}
 		}
@@ -26382,22 +26398,24 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				capturedResolvedHeroes[audienceAgent.Index] = audienceCharacter.HeroObject;
 			}
 		}
-		RecordPlayerMessage(shoutText, capturedNpcData, primaryDataPacket?.AgentIndex ?? (-1), primaryDataPacket?.Name ?? "", capturedAudienceAgentsByIndex);
+		if (!RecordPlayerMessage(shoutText, capturedNpcData, primaryDataPacket?.AgentIndex ?? (-1), primaryDataPacket?.Name ?? "", capturedAudienceAgentsByIndex, requireMemoryReceipt: receipt != null))
+			receipt?.Fail("scene.history_unconfirmed");
 		TrackPlayerInteraction(primaryDataPacket, 1, -1f, false, targetingContext);
 
 		ResumeGame();
 
-		return Task.Run(async delegate
+		async Task RunGroupAsync()
 		{
 			try
 			{
 				Dictionary<int, PrecomputedShoutRagContext> precomputedContexts = new Dictionary<int, PrecomputedShoutRagContext>();
-				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, sharedExtraFact, precomputedContexts, capturedResolvedHeroes, conversationEpoch, conversationScope, framedNpcData);
+				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, sharedExtraFact, precomputedContexts, capturedResolvedHeroes, conversationEpoch, conversationScope, framedNpcData, receipt);
 			}
 			catch (Exception ex)
 			{
+				receipt?.Fail("scene.group_exception");
 				Logger.Log("ShoutBehavior", "[ERROR] ProcessShoutConfirmedInternal background failed: " + ex.Message);
-				if (ex is PreprocessFormatException)
+				if (ex is PreprocessFormatException && (receipt == null || !receipt.IsRetired))
 				{
 					_mainThreadActions.Enqueue(delegate
 					{
@@ -26411,7 +26429,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					});
 				}
 			}
-		});
+		}
+		return receipt == null ? Task.Run(RunGroupAsync) : RunSceneGroupOnMainThreadAsync(RunGroupAsync);
 	}
 
 	private static List<NpcDataPacket> BuildGroupSpeakingCandidates(List<NpcDataPacket> allNpcData, NpcDataPacket primaryNpc)
@@ -26591,6 +26610,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private async Task RunSpeechQueueWorker()
 	{
+		TaskCompletionSource<bool> dequeuedCompletion = null;
 		try
 		{
 			while (true)
@@ -26617,12 +26637,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				int requiredConversationEpoch = item.RequiredConversationEpoch;
 				string afterSpeechInfoMessage = item.AfterSpeechInfoMessage;
 				TaskCompletionSource<bool> completionSource = item.CompletionSource;
+				dequeuedCompletion = completionSource;
 				float interactionTimeoutSeconds = item.InteractionTimeoutSeconds;
 				int interactionParticipantCount = Math.Max(1, item.InteractionParticipantCount);
 				Func<bool> canStillPublish = item.CanStillPublish;
 				_mainThreadActions.Enqueue(delegate
 				{
-					try
+				bool speechPublished = false;
+				try
 					{
 						if (!CanPublishImmediateSceneReaction(canStillPublish))
 						{
@@ -26951,6 +26973,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								}
 								bool suppressInteractionTimeoutArm = interactionParticipantCount > 1 && interactionTimeoutSeconds <= 0f;
 								sceneSpeechPlaybackInfo = ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm);
+								speechPublished = !string.IsNullOrWhiteSpace(historyText);
 								if (!string.IsNullOrWhiteSpace(afterSpeechInfoMessage))
 								{
 									InformationManager.DisplayMessage(new InformationMessage(afterSpeechInfoMessage, new Color(1f, 0.95f, 0.25f)));
@@ -27048,17 +27071,19 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						Logger.Log("ShoutBehavior", "[ERROR] RunSpeechQueueWorker mainThread: " + ex.Message);
 						completionSource?.TrySetResult(false);
 					}
-					finally
-					{
-						completionSource?.TrySetResult(true);
-					}
-				});
+				finally
+				{
+					completionSource?.TrySetResult(speechPublished);
+				}
+			});
+			dequeuedCompletion = null;
 				await Task.Delay(2000);
 				item = null;
 			}
 		}
 		catch
 		{
+			dequeuedCompletion?.TrySetResult(false);
 			_sceneSpeechQueueOwner.StopWorker();
 		}
 	}
@@ -27503,27 +27528,30 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void PersistExtraFactToNamedHeroes(
+	private bool PersistExtraFactToNamedHeroes(
 		string extraFact,
 		List<NpcDataPacket> nearbyData,
-		int personalizedAgentIndex = -1)
+		int personalizedAgentIndex = -1,
+		bool requireMemoryReceipt = false)
 	{
 		if (string.IsNullOrWhiteSpace(extraFact) || nearbyData == null)
 		{
-			return;
+			return true;
 		}
 		string sharedExtraFact = personalizedAgentIndex >= 0
 			? StripPlayerCraftedAfefInspectionSuffix(extraFact)
 			: extraFact;
 		HashSet<string> persistedNonHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool accepted = true;
 		if (personalizedAgentIndex >= 0)
 		{
 			NpcDataPacket personalizedTarget = nearbyData.FirstOrDefault(
 				npc => npc != null && npc.AgentIndex == personalizedAgentIndex);
-			PersistExtraFactToNamedObserver(
+			accepted &= PersistExtraFactToNamedObserver(
 				personalizedTarget,
 				extraFact,
-				persistedNonHeroIds);
+				persistedNonHeroIds,
+				requireMemoryReceipt);
 		}
 		foreach (NpcDataPacket nearbyDatum in nearbyData)
 		{
@@ -27531,27 +27559,32 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				continue;
 			}
-			PersistExtraFactToNamedObserver(
+			accepted &= PersistExtraFactToNamedObserver(
 				nearbyDatum,
 				sharedExtraFact,
-				persistedNonHeroIds);
+				persistedNonHeroIds,
+				requireMemoryReceipt);
 		}
+		return accepted;
 	}
 
-	private void PersistExtraFactToNamedObserver(
+	private bool PersistExtraFactToNamedObserver(
 		NpcDataPacket observer,
 		string extraFact,
-		HashSet<string> persistedNonHeroIds)
+		HashSet<string> persistedNonHeroIds,
+		bool requireMemoryReceipt)
 	{
 		if (observer == null || string.IsNullOrWhiteSpace(extraFact))
 		{
-			return;
+			return true;
 		}
 		if (observer.IsHero)
 		{
 			Hero hero = ResolveHeroFromAgentIndex(observer.AgentIndex);
 			if (hero != null)
 			{
+				if (requireMemoryReceipt)
+					return MyBehavior.CommitDialogueHistoryWithScene(hero.StringId, false, hero.Name?.ToString(), null, null, extraFact, _sceneHistorySessionId)?.HistoryWritten == true;
 				MyBehavior.AppendExternalSceneDialogueHistory(
 					hero,
 					null,
@@ -27559,7 +27592,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					extraFact,
 					_sceneHistorySessionId);
 			}
-			return;
+			return true;
 		}
 		if (TryResolveWildernessNonHeroMemory(
 			observer,
@@ -27570,6 +27603,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			out var memoryName)
 			&& (persistedNonHeroIds == null || persistedNonHeroIds.Add(memoryId)))
 		{
+			if (requireMemoryReceipt)
+				return MyBehavior.CommitDialogueHistoryWithScene(memoryId, true, memoryName, null, null, extraFact, _sceneHistorySessionId)?.HistoryWritten == true;
 			MyBehavior.AppendExternalNonHeroSceneDialogueHistory(
 				memoryId,
 				memoryName,
@@ -27578,9 +27613,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				extraFact,
 				_sceneHistorySessionId);
 		}
+		return true;
 	}
 
-	private void RecordPlayerMessage(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex = -1, string primaryTargetName = "", Dictionary<int, Agent> audienceAgentsByIndex = null)
+	private bool RecordPlayerMessage(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex = -1, string primaryTargetName = "", Dictionary<int, Agent> audienceAgentsByIndex = null, bool requireMemoryReceipt = false)
 	{
 		// Must happen first so the dynamic AFEF fact sits directly above the player's current scene utterance.
 		TryInjectSceneFirstMeetingFactsBeforePlayerMessage(nearbyData);
@@ -27627,10 +27663,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		AppendSceneEventToNativeSharedHistoryForTargets(nearbyData, GetPlayerDisplayNameForShout(), text, "player", eventSequence, primaryTargetAgentIndex, text2, audienceAgentsByIndex);
 		try
 		{
-			PersistPlayerMessageToNamedHeroes(text, nearbyData, primaryTargetAgentIndex, text2, audienceAgentsByIndex);
+			return PersistPlayerMessageToNamedHeroes(text, nearbyData, primaryTargetAgentIndex, text2, audienceAgentsByIndex, requireMemoryReceipt);
 		}
 		catch
 		{
+			return false;
 		}
 	}
 
@@ -27717,7 +27754,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void FlushPendingHeroHistoryExtraFactAfterSceneReply()
+	private bool FlushPendingHeroHistoryExtraFactAfterSceneReply(bool requireMemoryReceipt = false)
 	{
 		string text = (_pendingHeroHistoryExtraFactAfterSceneReply ?? "").Trim();
 		List<NpcDataPacket> list = _pendingHeroHistoryExtraFactTargetsAfterSceneReply ?? new List<NpcDataPacket>();
@@ -27728,7 +27765,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		_pendingHeroHistoryExtraFactPersonalizedAgentIndexAfterSceneReply = -1;
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return;
+			return true;
 		}
 		if (personalizedAgentIndex >= 0)
 		{
@@ -27736,10 +27773,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				text,
 				personalizedAgentIndex);
 		}
-		PersistExtraFactToNamedHeroes(
+		return PersistExtraFactToNamedHeroes(
 			text,
 			list,
-			personalizedAgentIndex);
+			personalizedAgentIndex,
+			requireMemoryReceipt);
 	}
 
 	private static bool IsSingleUseSceneNpcFactText(string text)
@@ -27793,7 +27831,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void RecordResponseForAllNearbySafe(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response)
+	private bool RecordResponseForAllNearbySafe(List<NpcDataPacket> nearbyData, int speakerAgentIndex, string speakerName, string response, bool requireMemoryReceipt = false)
 	{
 		List<int> visibleAgentIndices = BuildVisibleAgentSnapshot(nearbyData);
 		string text = ResolveSceneHistorySpeakerNameForPrompt(speakerAgentIndex, speakerName, nearbyData);
@@ -27832,7 +27870,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		NpcDataPacket speakerNpc = nearbyData?.FirstOrDefault((NpcDataPacket x) => x != null && x.AgentIndex == speakerAgentIndex) ?? ResolveSceneNpcDataForSharedHistory(speakerAgentIndex, speakerName);
 		AfGcczShoutBridge.RecordOrdinarySpeakerUtterance(speakerNpc, response);
 		AppendSceneEventToNativeSharedHistory(speakerNpc, text, response, "npc", eventSequence);
-		FlushPendingHeroHistoryExtraFactAfterSceneReply();
+		return FlushPendingHeroHistoryExtraFactAfterSceneReply(requireMemoryReceipt);
 	}
 
 	private void RecordSystemFactForNearbySafe(List<NpcDataPacket> nearbyData, string factText)
@@ -34002,6 +34040,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 	private int BeginNewPlayerDrivenSceneConversationEpoch()
 	{
 		int num = Interlocked.Increment(ref _sceneConversationEpoch);
+		RetireModuleSceneGroup("scene.stale_context");
 		DeactivateMultiSceneMovementSuppression();
 		ClearPendingSceneConversationAttentionRelease();
 		ResetStaringBehavior();
@@ -36833,13 +36872,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 	}
 
-	private void PersistPlayerMessageToNamedHeroes(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex, string primaryTargetName, Dictionary<int, Agent> audienceAgentsByIndex)
+	private bool PersistPlayerMessageToNamedHeroes(string text, List<NpcDataPacket> nearbyData, int primaryTargetAgentIndex, string primaryTargetName, Dictionary<int, Agent> audienceAgentsByIndex, bool requireMemoryReceipt = false)
 	{
 		if (string.IsNullOrWhiteSpace(text) || nearbyData == null || nearbyData.Count == 0)
 		{
-			return;
+			return true;
 		}
 		HashSet<string> persistedNonHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool accepted = true;
 		foreach (NpcDataPacket nearbyDatum in nearbyData)
 		{
 			if (nearbyDatum != null && nearbyDatum.IsHero)
@@ -36854,39 +36894,43 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 					&& co.HeroObject != null
 					&& AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(co.HeroObject, co, nearbyDatum.AgentIndex))
 				{
-					MyBehavior.AppendExternalSceneDialogueHistory(co.HeroObject, text, null, null, _sceneHistorySessionId, primaryTargetAgentIndex, primaryTargetName);
+					if (requireMemoryReceipt)
+						accepted &= MyBehavior.CommitDialogueHistoryWithScene(co.HeroObject.StringId, false, co.HeroObject.Name?.ToString(), text, null, null, _sceneHistorySessionId, primaryTargetAgentIndex, primaryTargetName)?.HistoryWritten == true;
+					else
+						MyBehavior.AppendExternalSceneDialogueHistory(co.HeroObject, text, null, null, _sceneHistorySessionId, primaryTargetAgentIndex, primaryTargetName);
 				}
 			}
 			else if (nearbyDatum != null && TryResolveWildernessNonHeroMemory(nearbyDatum, null, null, nearbyDatum.AgentIndex, out var memoryId, out var memoryName) && persistedNonHeroIds.Add(memoryId))
 			{
-				MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, memoryName, text, null, null, _sceneHistorySessionId, primaryTargetAgentIndex, primaryTargetName);
+				if (requireMemoryReceipt)
+					accepted &= MyBehavior.CommitDialogueHistoryWithScene(memoryId, true, memoryName, text, null, null, _sceneHistorySessionId, primaryTargetAgentIndex, primaryTargetName)?.HistoryWritten == true;
+				else
+					MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, memoryName, text, null, null, _sceneHistorySessionId, primaryTargetAgentIndex, primaryTargetName);
 			}
 		}
+		return accepted;
 	}
 
-	private void PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speakerName, string response, List<NpcDataPacket> nearbyData)
+	private bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speakerName, string response, List<NpcDataPacket> nearbyData, bool requireMemoryReceipt = false)
 	{
 		if (string.IsNullOrWhiteSpace(response) || nearbyData == null || nearbyData.Count == 0)
 		{
-			return;
+			return true;
 		}
 		string text = ResolveSceneHistorySpeakerNameForPrompt(speakerAgentIndex, speakerName, nearbyData);
 		HashSet<string> persistedNonHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		bool accepted = true;
 		foreach (NpcDataPacket nearbyDatum in nearbyData)
 		{
 			if (nearbyDatum == null || !nearbyDatum.IsHero)
 			{
 				if (nearbyDatum != null && TryResolveWildernessNonHeroMemory(nearbyDatum, null, null, nearbyDatum.AgentIndex, out var memoryId, out var memoryName) && persistedNonHeroIds.Add(memoryId))
 				{
-					if (nearbyDatum.AgentIndex == speakerAgentIndex)
-					{
-						MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, memoryName, null, response, null, _sceneHistorySessionId);
-					}
+					string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : "[场景喊话] " + text + ": " + response;
+					if (requireMemoryReceipt)
+						accepted &= MyBehavior.CommitDialogueHistoryWithScene(memoryId, true, memoryName, null, aiText, null, _sceneHistorySessionId)?.HistoryWritten == true;
 					else
-					{
-						string aiText = "[场景喊话] " + text + ": " + response;
 						MyBehavior.AppendExternalNonHeroSceneDialogueHistory(memoryId, memoryName, null, aiText, null, _sceneHistorySessionId);
-					}
 				}
 				continue;
 			}
@@ -36896,15 +36940,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				&& co.HeroObject != null
 				&& AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(co.HeroObject, co, nearbyDatum.AgentIndex))
 			{
-				if (nearbyDatum.AgentIndex == speakerAgentIndex)
-				{
-					MyBehavior.AppendExternalSceneDialogueHistory(co.HeroObject, null, response, null, _sceneHistorySessionId);
-					continue;
-				}
-				string aiText = "[场景喊话] " + text + ": " + response;
-				MyBehavior.AppendExternalSceneDialogueHistory(co.HeroObject, null, aiText, null, _sceneHistorySessionId);
+				string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : "[场景喊话] " + text + ": " + response;
+				if (requireMemoryReceipt)
+					accepted &= MyBehavior.CommitDialogueHistoryWithScene(co.HeroObject.StringId, false, co.HeroObject.Name?.ToString(), null, aiText, null, _sceneHistorySessionId)?.HistoryWritten == true;
+				else
+					MyBehavior.AppendExternalSceneDialogueHistory(co.HeroObject, null, aiText, null, _sceneHistorySessionId);
 			}
 		}
+		return accepted;
 	}
 
 	public static int GetCurrentSceneHistorySessionIdForExternal()

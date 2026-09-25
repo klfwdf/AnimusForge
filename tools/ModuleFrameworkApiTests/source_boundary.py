@@ -66,7 +66,12 @@ def restore_runtime(current):
     api_inverse=importlib.util.module_from_spec(api_spec);api_spec.loader.exec_module(api_inverse)
     # This inverse checks AfApi's original public shape; Native's historical dependency
     # hashes are independently superseded by current J14 core-consumer tests.
-    api=api_inverse.restore('Api/V1/AfApi.cs',api,verify_dependencies=False)
+    scene_comment='/// V1 提供只读目录、Native 与 Scene 请求票据；Courier 仍未开放。'
+    old_comment='/// V1 提供只读目录和 Native 请求票据；Scene/Courier 仍未开放，不得绕过其未完成边界。'
+    scene_capability='new AfCapabilityInfo(AfCapabilityIds.SceneSubmit, AfCapabilityState.Available, "api.available"),'
+    assert api.count(scene_comment)==1 and api.count(scene_capability)==1, 'Unreviewed Scene catalog delta'
+    api=api.replace(scene_comment,old_comment).replace(scene_capability,'Unsupported(AfCapabilityIds.SceneSubmit),')
+    api=api_inverse.restore('Api/V1/AfApi.cs',api,verify_dependencies=False,live_current=api)
     expected_api=old('Api/V1/AfApi.cs').replace('using AnimusForge.Refactor.Modules;', 'using AnimusForge.Refactor.Modules;\nusing AnimusForge.Api.Internal;').replace('return ModuleFrameworkRuntime.GetSnapshot(Capabilities);', 'return AfV1SnapshotProjection.Create(ModuleFrameworkRuntime.CaptureSnapshot(), Capabilities);')
     assert api==expected_api, 'Unreviewed public API change'
     return prior

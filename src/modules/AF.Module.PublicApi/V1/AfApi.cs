@@ -8,7 +8,7 @@ namespace AnimusForge.Api.V1;
 
 /// <summary>
 /// 子 MOD 的 V1 入口；与制作组 internal ports 分开，但仍编入 AnimusForge.dll。
-/// V1 提供只读目录和 Native 请求票据；Scene/Courier 仍未开放，不得绕过其未完成边界。
+/// V1 提供只读目录、Native 与 Scene 请求票据；Courier 仍未开放。
 /// Bootstrap 必须先选中并加载本机游戏版本的唯一 AF 实现；API 不加载另一份 DLL。
 /// </summary>
 public static class AfApi
@@ -20,7 +20,7 @@ public static class AfApi
         {
             new AfCapabilityInfo(AfCapabilityIds.CatalogRead, AfCapabilityState.Available, "api.available"),
             new AfCapabilityInfo(AfCapabilityIds.NativeSubmit, AfCapabilityState.Available, "api.available"),
-            Unsupported(AfCapabilityIds.SceneSubmit),
+            new AfCapabilityInfo(AfCapabilityIds.SceneSubmit, AfCapabilityState.Available, "api.available"),
             Unsupported(AfCapabilityIds.CourierSubmit),
             Unsupported(AfCapabilityIds.ActionExecute),
             Unsupported(AfCapabilityIds.MemoryWrite),

@@ -1,0 +1,101 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Modules;
+
+public partial class ShoutBehavior
+{
+    private const int ScenePostprocessGateWaitTimeoutMilliseconds = 80;
+    @@DECLARATIONS@@
+    private void RegisterModuleSceneGroup(SceneGroupReceipt receipt) { }
+    private void ReleaseModuleSceneGroup(SceneGroupReceipt receipt) { }
+
+    private static int _checks;
+    private static int _requestSequence;
+    private static SceneGroupReceipt New() => new(new ShoutBehavior(),
+        new CoreDialogueOperation("client", "request" + Interlocked.Increment(ref _requestSequence), "text"));
+    private static void Check(bool condition, string name)
+    {
+        if (!condition) throw new Exception("FAIL " + name);
+        _checks++;
+    }
+    private static TaskCompletionSource<T> Pending<T>() => new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    public static async Task Main()
+    {
+        var complete = New();
+        complete.Bind(12);
+        var firstSpeech = Pending<bool>();
+        var secondSpeech = Pending<bool>();
+        var firstAction = Pending<ScenePostprocessOutcome>();
+        complete.AddTurn(7, "Alice", "first", firstSpeech.Task);
+        complete.AddPostprocess(firstAction.Task);
+        complete.AddTurn(8, "Bob", "second", secondSpeech.Task);
+        Task<bool> settling = complete.SettleAsync();
+        Check(!settling.IsCompleted, "first reply did not complete pending group");
+        firstSpeech.SetResult(true);
+        firstAction.SetResult(new ScenePostprocessOutcome(ScenePostprocessStatus.Completed, 8));
+        await Task.Delay(2);
+        Check(!settling.IsCompleted, "postprocess did not bypass second speech");
+        secondSpeech.SetResult(true);
+        Check(await settling, "all group owners did not confirm");
+        Check(complete.ConversationEpoch == 12 && complete.Reply == "first\nsecond", "ordered detached group reply");
+        Check(complete.Utterances.Count == 2 && complete.Utterances[0].SpeakerAgentIndex == 7
+            && complete.Utterances[1].SpeakerName == "Bob", "speaker identity and order");
+        Check(((IList<CoreSceneUtterance>)complete.Utterances).IsReadOnly, "utterance snapshot mutable");
+
+        var rejectedSpeech = New();
+        rejectedSpeech.AddTurn(7, "Alice", "partial", Task.FromResult(false));
+        Check(!await rejectedSpeech.SettleAsync() && rejectedSpeech.Failure == "scene.speech_not_published"
+            && rejectedSpeech.Utterances.Count == 1, "failed speech retained partial effect without success");
+
+        var rejectedAction = New();
+        rejectedAction.AddTurn(7, "Alice", "partial", Task.FromResult(true));
+        rejectedAction.AddPostprocess(Task.FromResult(new ScenePostprocessOutcome(ScenePostprocessStatus.Failed)));
+        Check(!await rejectedAction.SettleAsync() && rejectedAction.Failure == "scene.postprocess_unconfirmed",
+            "failed postprocess did not certify group");
+
+        var noReply = New();
+        Check(!await noReply.SettleAsync() && noReply.Failure == "scene.no_confirmed_reply", "empty group certified");
+        var missingVisible = New();
+        missingVisible.AddTurn(7, "Alice", " ", Task.FromResult(true));
+        Check(!await missingVisible.SettleAsync() && missingVisible.Failure == "scene.no_visible_reply", "control-only speech certified");
+
+        var fault = New();
+        fault.AddTurn(7, "Alice", "partial", Task.FromException<bool>(new Exception("private")));
+        Check(!await fault.SettleAsync() && fault.Failure == "scene.dependency_failed", "faulted owner certified or leaked error");
+
+        var timedOut = New();
+        var late = Pending<bool>();
+        timedOut.AddTurn(7, "Alice", "partial", late.Task);
+        Check(!await timedOut.SettleAsync() && timedOut.Failure == "scene.dependency_timeout", "unsettled queue hung operation");
+        late.SetResult(true);
+        Check(timedOut.Failure == "scene.dependency_timeout", "late receipt overwrote terminal failure");
+
+        var admitted = new CoreDialogueOperation("client", "retired", "text", CoreDialogueChannel.Scene);
+        Check(admitted.TryBegin(), "retirement operation began");
+        admitted.MarkOwnerAdmitted();
+        var retired = new SceneGroupReceipt(new ShoutBehavior(), admitted);
+        retired.AddTurn(9, "Cora", "already visible", Pending<bool>().Task);
+        retired.Retire("scene.stale_context");
+        CoreDialogueResult retiredResult = await admitted.Completion;
+        Check(retired.IsRetired && retiredResult.State == CoreDialogueState.Failed
+            && retiredResult.Effects == CoreDialogueEffectState.UnknownAfterStart
+            && retiredResult.SceneUtterances.Count == 1
+            && retiredResult.SceneUtterances[0].Text == "already visible",
+            "retirement settled admitted operation with partial effect");
+        Check(!await retired.SettleAsync(), "retired receipt did not wait on abandoned speech");
+
+        var inFlight = New();
+        inFlight.AddTurn(10, "Dara", "partial", Pending<bool>().Task);
+        Task<bool> inFlightSettlement = inFlight.SettleAsync();
+        Check(!inFlightSettlement.IsCompleted, "in-flight receipt was pending before retirement");
+        inFlight.Retire("scene.stale_context");
+        Check(!await inFlightSettlement && inFlight.Failure == "scene.stale_context",
+            "retirement released an already waiting receipt");
+        Console.WriteLine("PASS SceneGroupReceipt checks=" + _checks + " production source; detached owner tasks; LIVE=NOT_RUN");
+    }
+}

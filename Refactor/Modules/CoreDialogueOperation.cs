@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AnimusForge.Refactor.Modules;
@@ -16,6 +17,7 @@ internal sealed class CoreDialogueOperation
     private bool _ownerAdmitted;
     private string _confirmedReply;
     private bool _ownerCompleted;
+    private IReadOnlyList<CoreSceneUtterance> _sceneUtterances = Array.Empty<CoreSceneUtterance>();
 
     internal CoreDialogueOperation(string clientId, string requestId, string playerText,
         CoreDialogueChannel channel = CoreDialogueChannel.Native, string contextIdentity = "")
@@ -55,13 +57,24 @@ internal sealed class CoreDialogueOperation
 
     // Called only at the existing successful action + required history completion point.
     // This is a receipt, not a second writer. The worker still releases its real admission first.
-    internal void RecordOwnerCompletion(string reply)
+    internal void RecordOwnerCompletion(string reply, IReadOnlyList<CoreSceneUtterance> sceneUtterances = null)
     {
         lock (_gate)
         {
             if (!_ownerAdmitted || _snapshot.State != CoreDialogueState.Running || _ownerCompleted) return;
             _ownerCompleted = true;
             _confirmedReply = reply ?? "";
+            if (sceneUtterances != null) _sceneUtterances = new List<CoreSceneUtterance>(sceneUtterances).AsReadOnly();
+        }
+    }
+
+    internal void RecordSceneProgress(IReadOnlyList<CoreSceneUtterance> sceneUtterances)
+    {
+        lock (_gate)
+        {
+            if (_snapshot.State != CoreDialogueState.Running) return;
+            _sceneUtterances = new List<CoreSceneUtterance>(sceneUtterances ?? Array.Empty<CoreSceneUtterance>()).AsReadOnly();
+            _snapshot = Result(CoreDialogueState.Running, _snapshot.Effects, _snapshot.ReasonCode);
         }
     }
 
@@ -95,7 +108,7 @@ internal sealed class CoreDialogueOperation
     private static bool IsTerminal(CoreDialogueState state)
         => state != CoreDialogueState.Queued && state != CoreDialogueState.Running;
     private CoreDialogueResult Result(CoreDialogueState state, CoreDialogueEffectState effects, string reason, string reply = "")
-        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason, reply);
+        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason, reply, _sceneUtterances);
     private void SetTerminal(CoreDialogueResult result)
     {
         _snapshot = result;
