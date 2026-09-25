@@ -23,7 +23,7 @@ def generate(source_ref=None):
  if current:
   signatures=['internal object CaptureScenePlayerShoutRequestForReplay(','private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(','private bool IsScenePlayerShoutRequestCurrent(','internal bool TryReplayCapturedScenePlayerShout(','private async Task ProcessShoutConfirmedInternal(','private async Task ProcessCapturedScenePlayerShoutAsync(']
   if o:
-   scene_request_types='\n'.join(ex.declaration(o,x) for x in ['internal sealed class ShoutTargetingContext','internal sealed class ScenePlayerShoutRequest','internal sealed class ScenePlayerShoutRequestOwner'])
+   scene_request_types='\n'.join(ex.declaration(o,x) for x in ['internal sealed class ShoutTargetingContext','internal sealed class ScenePlayerShoutRequest','internal sealed class ScenePlayerShoutContext','internal sealed class ScenePlayerShoutRequestOwner'])
    request='\n'.join(ex.declaration(s,x) for x in signatures)
   else:request='\n'.join(ex.declaration(s,x) for x in ['private sealed class ScenePlayerShoutRequest']+signatures)
  sig='private void ProcessCurrentScenePlayerShout(' if current else 'private async Task ProcessShoutConfirmedInternal('
@@ -45,6 +45,7 @@ MUTATIONS = {
  'busy-lifetime': ('restoreProcessingFlag && processingSequence == Interlocked.Read(ref _sceneShoutProcessingSequence)', 'restoreProcessingFlag', 'resume-ui-no-stale-busy'),
  'observer-scope': ('if (!observeForBattleSpeech)', 'if (false)', 'deferred-ordinary-observation'),
  'replay-consumption': ('return request != null && Interlocked.CompareExchange(ref request.Started, 1, 0) == 0;', 'return request != null;', 'replay-pending-one-shot'),
+ 'context-capture-advances': ('InputSequence = Interlocked.Read(ref _inputSequence),', 'InputSequence = Interlocked.Increment(ref _inputSequence),', 'scene-context-claim-without-capture-side-effect'),
  'old-host-fallthrough': ('if (capturedRequest != null && BattleSpeechRuntimeHost.TryPreRouteNaturalPlayerShout(', 'if (capturedRequest == null) return true; if (BattleSpeechRuntimeHost.TryPreRouteNaturalPlayerShout(', 'old-host-observer-fallthrough'),
 }
 
