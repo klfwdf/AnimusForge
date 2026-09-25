@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "bee366a8924a3f72d3efd6ff46251ac3e81e9a99",
+  "sourceRevision": "73bef7551d6f969911334c4f08e86b86dc71a2ef",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -7120,6 +7120,182 @@
       "status": "replay-j13e2-offline-verified",
       "note": "Current DLL conflict transition/re-entry owner replay",
       "fileSha256": "61a44a56fb0e6deee024c2a584fa44dc759d978ae927c09d0085e898183f8923"
+    },
+    {
+      "id": "encounter.owner.target",
+      "path": "src/modules/AF.Module.Encounter/EncounterTargetOwner.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class EncounterTargetOwner<TTarget, TEncounter> where TTarget : class",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Selected target transition",
+      "fileSha256": "ad5477e058b05c2f21c6a779be9eabdbdc8aac1c52595c60fd1fcca3458b9159"
+    },
+    {
+      "id": "encounter.owner.conversation",
+      "path": "src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal static class EncounterConversationTargetOwner",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Argument/instance/leader precedence",
+      "fileSha256": "25682b6799783544b35f5152506533483b890c51b3ddd3f9c3e91b75c4f391bf"
+    },
+    {
+      "id": "encounter.owner.release",
+      "path": "src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs",
+      "start": 17,
+      "end": 17,
+      "symbol": "internal sealed class EncounterReleaseOwner<TRequest> where TRequest : class, IEncounterReleaseRequest",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Release authorization and pending request lifecycle",
+      "fileSha256": "bbd660de5529f8ad1ba4f6012082c8ea475f20611b42de768c56a74d847286b1"
+    },
+    {
+      "id": "encounter.owner.return",
+      "path": "src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class EncounterPendingReturnOwner<TEncounter, TParty>",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Exact unauthorized return identity",
+      "fileSha256": "13b2a9ae9a5f95fbcf2f0e67e86817ca6a733f575c0867104a5e314486276723"
+    },
+    {
+      "id": "encounter.host.target",
+      "path": "LordEncounterBehavior.cs",
+      "start": 33,
+      "end": 33,
+      "symbol": "private static readonly EncounterTargetOwner<Hero, PartyBase> _targetOwner = new EncounterTargetOwner<Hero, PartyBase>();",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Campaign host owns target instance",
+      "fileSha256": "fc3c95048eb22e73ea72ed203212db0e574cf39509f0d170bbc570d15abb3029"
+    },
+    {
+      "id": "encounter.host.release",
+      "path": "LordEncounterBehavior.cs",
+      "start": 83,
+      "end": 83,
+      "symbol": "private static readonly EncounterReleaseOwner<MeetingPlayerReleaseRequest> _releaseOwner = new EncounterReleaseOwner<MeetingPlayerReleaseRequest>();",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Campaign host owns release instance",
+      "fileSha256": "fc3c95048eb22e73ea72ed203212db0e574cf39509f0d170bbc570d15abb3029"
+    },
+    {
+      "id": "encounter.host.return",
+      "path": "LordEncounterBehavior.cs",
+      "start": 138,
+      "end": 138,
+      "symbol": "private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _pendingReturnOwner = new EncounterPendingReturnOwner<PlayerEncounter, PartyBase>();",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Campaign host owns pending return instance",
+      "fileSha256": "fc3c95048eb22e73ea72ed203212db0e574cf39509f0d170bbc570d15abb3029"
+    },
+    {
+      "id": "encounter.host.army",
+      "path": "LordEncounterBehavior.cs",
+      "start": 4920,
+      "end": 4920,
+      "symbol": "private static bool IsEncounterArmyMemberTarget(Hero hero, PartyBase encounterParty)",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Original army membership eligibility adapter",
+      "fileSha256": "fc3c95048eb22e73ea72ed203212db0e574cf39509f0d170bbc570d15abb3029"
+    },
+    {
+      "id": "encounter.host.ensure",
+      "path": "LordEncounterBehavior.cs",
+      "start": 5314,
+      "end": 5314,
+      "symbol": "private static Hero EnsureEncounterTargetHero(string reason)",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Repeated menu selection retention",
+      "fileSha256": "fc3c95048eb22e73ea72ed203212db0e574cf39509f0d170bbc570d15abb3029"
+    },
+    {
+      "id": "encounter.host.release-tick",
+      "path": "LordEncounterBehavior.cs",
+      "start": 7328,
+      "end": 7328,
+      "symbol": "private static void TryForcePendingNativeConversationMeetingReleaseIfReady()",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Native Mission release side effects retained",
+      "fileSha256": "fc3c95048eb22e73ea72ed203212db0e574cf39509f0d170bbc570d15abb3029"
+    },
+    {
+      "id": "encounter.host.return-tick",
+      "path": "LordEncounterBehavior.cs",
+      "start": 3728,
+      "end": 3728,
+      "symbol": "private static void TryForcePendingReturnToEncounterMenuAfterUnauthorizedMeetingExitIfReady()",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Map return side effects retained",
+      "fileSha256": "fc3c95048eb22e73ea72ed203212db0e574cf39509f0d170bbc570d15abb3029"
+    },
+    {
+      "id": "encounter.resolver",
+      "path": "EncounterConversationTargetResolver.cs",
+      "start": 34,
+      "end": 34,
+      "symbol": "internal static Hero TryResolveLordFromArgumentsThenEncounterLeader(object instance, object[] args)",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Original Bannerlord extraction adapter",
+      "fileSha256": "c0724cbad36525db14ab188fb813186488ae5ae40418824b369ff3d1343731c5"
+    },
+    {
+      "id": "encounter.patch.open",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 293,
+      "end": 293,
+      "symbol": "Patch_ConversationManager_OpenMapConversation.ManualPatch(harmony);",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Original open patch registration",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "encounter.patch.setup",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 301,
+      "end": 301,
+      "symbol": "Patch_ConversationManager_SetupAndStartMapConversation.ManualPatch(harmony);",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Original setup patch registration",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "encounter.patch.start",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 276,
+      "end": 276,
+      "symbol": "Patch_Conversation_Start_Intercept.ManualPatch(harmony);",
+      "match": "exact",
+      "status": "wired-j13e3-offline-verified",
+      "note": "Original start patch registration",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "encounter.replay.aggregate",
+      "path": "tools/PhaseEightParityReplayTests/J13E3DomainOwnerContractReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class J13E3DomainOwnerContractReplay",
+      "match": "exact",
+      "status": "replay-j13e3-offline-verified",
+      "note": "Source-wiring only; current DLL replay separate",
+      "fileSha256": "7a06eb7d78d753b8f3cb8d62949d0e5c4def59f500d39b75dd378bf5bfaa43d8"
     }
   ]
 }

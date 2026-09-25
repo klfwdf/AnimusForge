@@ -1,3 +1,9 @@
+# 当前范围：主体 J13e3 Encounter 有限离线收口（2026-09-25）
+
+`0b0b32c0`、`dc2bbe03`、`86c11889` 的四个真实 owner 分别见 `src/modules/AF.Module.Encounter/EncounterTargetOwner.cs:7–28`、`EncounterReleaseOwner.cs:7–86`、`EncounterPendingReturnOwner.cs:7–36`、`EncounterConversationTargetOwner.cs:6–27`：持有已选目标、释放授权/待执行状态、未授权返回身份、显式参数→instance→leader 优先级。`LordEncounterBehavior.cs:33–39,83–110,138–140,301–376,694,3728–3814,4871–4945,5314–5329,7280–7376` 留 Campaign/TW/Mission/save/原生副作用适配；`EncounterConversationTargetResolver.cs:17–37` 留 Hero/反射/prisoner 提取。`CampaignComposition.cs:35`、`ApplicationTickComposition.cs:73,114`、`StartupPatchComposition.cs:276,293,301` 和三个原会话 patch 仍为生产入口。源码链接 53 条、当前 DLL 四 owner、聚合源码契约、六构建/API/保存证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `73bef755`、663 锚点两模式通过，仅用于定位。**J13e3 `OFFLINE_VERIFIED`、J13 `ACTIVE`，下一包 e4**；实机两版本会面/Harmony/旧档/native 副作用/帧性能 **NOT-RUN**，不提前 J14。
+
+## 以下为 e1 与更早范围（历史）
+
 # 当前范围：主体 J13e1 Duel 有限离线收口（2026-09-25）
 
 产品/回放 `88643619`、`ca49023f`、`d89a13b5` 与聚合 `d0d15a57`：`src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs:13–448` 实际承接 exact request 的有界受理、延迟就绪、拒绝/取消/Unknown 生命周期；`src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs:7–41` 统一三种终局的 typed 效果投影。`DuelBehavior.Outcomes.cs:12–130,134–562,735–833` 保留 process-local typed outcome、fingerprint/绑定/清理与读档适配；`DuelBehavior.cs:1767–1881,4339–4462,7454–7600` 保留三类 Mission/经济/记忆副作用 writer，原 Campaign/tick/Harmony 注册和 Courier 排除不变。当前 DLL 受理行为、typed/dispatch 测试、双版本 DLL 接线/六构建与完整 Phase8 见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `d89a13b5`，617 锚点两模式通过，仅用于定位。**J13e1 `OFFLINE_VERIFIED`，J13 `ACTIVE`，下一包 e2 Taunt**；真实 Mission/旧档/MCM/帧性能仍 NOT-RUN，不提前 J14。
@@ -617,7 +623,9 @@ Courier transport/generation/session/commit/lifetime 已归位 `Channels/Courier
 本轮完整raw摘要接入独立4096-byte buffer writer，私有DTO122字段映射留owner边界；不迁移存档类型，不修改通用JSON摘要/Prompt/权威写入。对应字段与code-unit反例和原版成本对照已验证，但仍完整原子O(N)，不是深来源预算或主体总拆薄完成。
 
 owner封存尾部已逐draft计费并复用稳定排序；单draft内line净化与weekly trigger bind现按共享metadata计费，同步Sanitize与续跑共用原line/bind规则，未完成draft的列表保持私有。trigger列表sanitize、首次capture/copy、全owner绑定和Apply仍有原子工作；当前不按“大类行数减少”或“全部拆完”交付。
-# 当前范围：主体 J13e2 Taunt 有限离线收口（2026-09-25）
+## 以下为 e2 范围（历史）
+
+# 主体 J13e2 Taunt 有限离线收口（2026-09-25）
 
 产品/行为 `e62e2a82`、`9ec814eb`、`5873d594`，MCM/聚合 `bee366a8`：`src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs:7–67` 持有和平场景/MCM 物理入口判定；`SceneTauntPenaltyLedgerOwner.cs:9–114` 持有延迟犯罪和信任小数状态/提交转换；`SceneTauntConflictLifecycleOwner.cs:5–47` 持有普通/carryover/升格/结束状态。`SceneTauntBehavior.cs:31,83–97,119–264,792–859,2057,2357–2405,3015–3093,3947–3974,4000–4130,5365–5689,7450–7510,8156–8170,8545–8625,9769–9828` 保留 Campaign/Mission/TW/保存/原生处罚与队伍还原适配；原 `CampaignComposition.cs:38` 和 `StartupPatchComposition.cs:333–369` 的五 patch 注册不变。当前 DLL 回放、聚合契约、六构建与保存/API 证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `bee366a8`，647 锚点两模式通过且只用于定位。**J13e2 `OFFLINE_VERIFIED`、J13 `ACTIVE`，下一包 e3 Encounter**；真实 Mission/Harmony/旧档/MCM/帧性能 **NOT-RUN**，不提前 J14。
 
