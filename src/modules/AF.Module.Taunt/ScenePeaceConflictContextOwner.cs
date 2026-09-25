@@ -39,6 +39,9 @@ internal readonly struct ScenePeaceConflictContext
 
 internal static class ScenePeaceConflictContextOwner
 {
+    internal static bool CanInitializePhysical(bool enabled, in ScenePeaceConflictContext facts)
+        => enabled && CanInitialize(in facts);
+
     internal static bool CanInitialize(in ScenePeaceConflictContext facts)
     {
         if (!facts.HasMission || !facts.HasSettlement
@@ -48,8 +51,8 @@ internal static class ScenePeaceConflictContextOwner
             || facts.SettlementUnderSiege)
             return false;
 
-        // Bannerlord 1.3 and 1.4 MissionLocationLogic both recognize these
-        // peaceful settlement locations. Never infer eligibility merely from
+        // 1.3/1.4 stock peace locations plus the existing lord-hall alias.
+        // Never infer eligibility merely from
         // Settlement.CurrentSettlement, nor from absence of a known battle.
         string location = facts.LocationId;
         return string.Equals(location, "center", StringComparison.OrdinalIgnoreCase)

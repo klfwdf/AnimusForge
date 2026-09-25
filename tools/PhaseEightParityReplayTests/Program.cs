@@ -114,6 +114,7 @@ DuelDispatchOwnerReplay.Run(af);
 ScenePeaceConflictOwnerReplay.Run(af, repo);
 SceneTauntPenaltyLedgerOwnerReplay.Run(af);
 SceneTauntConflictLifecycleOwnerReplay.Run(af);
+J13E2DomainOwnerContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);

@@ -10,6 +10,8 @@ internal static class ScenePeaceConflictOwnerReplay
         Type context = assembly.GetType("AnimusForge.Refactor.Modules.ScenePeaceConflictContext", true);
         MethodInfo decide = assembly.GetType("AnimusForge.Refactor.Modules.ScenePeaceConflictContextOwner", true)
             .GetMethod("CanInitialize", All);
+        MethodInfo physical = assembly.GetType("AnimusForge.Refactor.Modules.ScenePeaceConflictContextOwner", true)
+            .GetMethod("CanInitializePhysical", All);
         void Check(bool condition, string label)
         {
             if (!condition) throw new InvalidOperationException("Taunt context owner: " + label);
@@ -32,13 +34,19 @@ internal static class ScenePeaceConflictOwnerReplay
             "battle/siege/deployment context admitted");
         Check(!Allows(matchingSettlement: false) && !Allows(encounter: false),
             "mismatched or missing encounter admitted");
+        object peace = Activator.CreateInstance(context, All, null,
+            new object[] { true, true, true, true, true, false, false, false, false, false, "center" }, null);
+        Check(!(bool)physical.Invoke(null, new[] { (object)false, peace })
+            && (bool)physical.Invoke(null, new[] { (object)true, peace }),
+            "physical MCM switch did not gate owner admission");
 
         string host = File.ReadAllText(Path.Combine(repo, "SceneTauntBehavior.cs"));
-        Check(host.Contains("return ScenePeaceConflictContextOwner.CanInitialize(in facts);", StringComparison.Ordinal)
+        Check(host.Contains("ScenePeaceConflictContextOwner.CanInitialize(in facts);", StringComparison.Ordinal)
+            && host.Contains("ScenePeaceConflictContextOwner.CanInitializePhysical(physicalEnabled, in facts)", StringComparison.Ordinal)
             && host.Contains("return CanInitializePeaceSceneConflict(settlement);", StringComparison.Ordinal)
-            && host.Contains("if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement))", StringComparison.Ordinal),
+            && host.Contains("if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement, physicalAttack: true))", StringComparison.Ordinal),
             "Mission fact adapter is disconnected from the tested owner");
-        Check(host.Split("CanInitializePeaceSceneConflict(Settlement.CurrentSettlement)", StringSplitOptions.None).Length - 1 == 3,
+        Check(host.Split("CanInitializePeaceSceneConflict(Settlement.CurrentSettlement)", StringSplitOptions.None).Length - 1 == 2,
             "custom, physical, and carryover initialization do not share the same gate");
         Console.WriteLine("PASS ScenePeaceConflictOwnerReplay current-DLL peace/battle/siege/location/encounter and host entry wiring; Mission/live=NOT_RUN");
     }

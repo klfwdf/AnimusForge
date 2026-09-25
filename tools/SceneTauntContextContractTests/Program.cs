@@ -35,7 +35,13 @@ Check(false, Facts(underSiege: true), "besieged settlement denied");
 Check(false, Facts(locationId: "arena"), "arena denied");
 Check(false, Facts(locationId: "TRAINING_FIELD"), "training field denied");
 Check(false, Facts(locationId: " "), "unknown location denied");
-Console.WriteLine("20/20 scene Taunt context cases passed; game Mission order NOT_RUN");
+if (ScenePeaceConflictContextOwner.CanInitializePhysical(false, Facts()))
+    throw new InvalidOperationException("disabled physical conflict admitted");
+Console.WriteLine("PASS MCM-disabled physical conflict denied");
+if (!ScenePeaceConflictContextOwner.CanInitialize(Facts()))
+    throw new InvalidOperationException("verbal Taunt was coupled to physical MCM switch");
+Console.WriteLine("PASS verbal Taunt remains independent of physical switch");
+Console.WriteLine("22/22 scene Taunt context cases passed; game Mission order NOT_RUN");
 
 static void LedgerCheck(bool condition, string label)
 {
