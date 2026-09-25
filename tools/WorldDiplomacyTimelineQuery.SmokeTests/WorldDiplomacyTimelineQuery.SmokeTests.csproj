@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyTimelineQueryContracts.cs" Link="WorldDiplomacyTimelineQueryContracts.cs" />
+    <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyTimelineDocumentQueryContracts.cs" Link="WorldDiplomacyTimelineDocumentQueryContracts.cs" />
+    <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyDocumentReadCommandContracts.cs" Link="WorldDiplomacyDocumentReadCommandContracts.cs" />
+    <Compile Include="..\..\Refactor\Modules\WorldDiplomacyTimelineRevisionFacade.cs" Link="WorldDiplomacyTimelineRevisionFacade.cs" />
+    <Compile Include="..\..\Refactor\Modules\WorldDiplomacyTimelineDocumentQueryFacade.cs" Link="WorldDiplomacyTimelineDocumentQueryFacade.cs" />
+    <Compile Include="..\..\Refactor\Modules\WorldDiplomacyDocumentReadCommandFacade.cs" Link="WorldDiplomacyDocumentReadCommandFacade.cs" />
+  </ItemGroup>
+</Project>

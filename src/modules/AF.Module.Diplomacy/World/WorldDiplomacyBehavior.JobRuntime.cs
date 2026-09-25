@@ -38,6 +38,7 @@ using BannerlordUiSprite = TaleWorlds.TwoDimension.Sprite;
 using BannerlordUiTexture = TaleWorlds.TwoDimension.Texture;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
@@ -49,124 +50,43 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		int hour = CurrentHour();
-		if (_storage.ServiceCooldownUntilHour > hour)
-		{
-			return;
-		}
-		string selectedJobId = WorldDiplomacyJobRuntimeCoordinator.SelectNextJobId(
-			_storage.Jobs.Where(x => x != null).Select(x => new WorldDiplomacyJobQueueItem
-			{
-				JobId = x.JobId,
-				Priority = x.Priority,
-				CreatedDay = x.CreatedDay,
-				CacheAffinityKey = ResolveCacheAffinityKey(x),
-				IsRunning = x.IsRunning,
-				AwaitingHistoryCompression = x.AwaitingHistoryCompression
-			}),
-			hour >= _storage.CompressionRetryAfterHour,
-			_lastLlmCacheAffinityKey);
-		WorldDiplomacyJob job = _storage.Jobs.FirstOrDefault(x => x != null
-			&& string.Equals(x.JobId, selectedJobId, StringComparison.OrdinalIgnoreCase));
+		WorldDiplomacyJob job = WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(
+			_storage,
+			CurrentHour(),
+			_lastLlmCacheAffinityKey,
+			HasStaleDiplomaticThreatPresentation,
+			RefreshDiplomaticThreatPresentationAndPrompt,
+			j => WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(j, BuildGenerationLegalActionSignature),
+			RefreshDiplomaticActionPresentationAndPrompt,
+			TryRebuildPendingWorldDiplomacyJob,
+			j => { string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(j.AuthorKingdomId), out reason) ? null : reason; },
+			(j, reason) => AbandonRejectedGeneration(j, ResolveKingdom(j.AuthorKingdomId), ResolveKingdom(j.TargetKingdomId), reason),
+			EnsureGenerationJobHasKingdomStrategicProfile,
+			() => { string configError; return WorldDiplomacyLlmClient.IsConfigured(out configError) ? null : configError; },
+			consume => TryConsumeDiplomacyLlmRequestBudget(consume),
+			j => CaptureCanonicalHistoryForJob(j, syncSources: true),
+			j => WorldDiplomacyPromptContractRules.BuildLlmMessageArray(j, BuildCanonicalHistoryBlock),
+			out JArray requestMessages,
+			EnsureRequestFitsInputBudget,
+			CommitFailedJob,
+			RemoveJob,
+			Log);
 		if (job == null)
 		{
 			return;
 		}
-		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
-			&& HasStaleDiplomaticThreatPresentation(job))
-		{
-			if (!RefreshDiplomaticThreatPresentationAndPrompt(job))
-			{
-				CommitFailedJob(job, "stale diplomatic threat presentation could not be rebuilt");
-				return;
-			}
-			Log("refreshed queued generation for current diplomatic threat stage job=" + job.JobId
-				+ " author=" + job.AuthorKingdomId);
-		}
-		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
-			&& HasStaleDiplomaticActionPresentation(job))
-		{
-			if (!RefreshDiplomaticActionPresentationAndPrompt(job))
-			{
-				CommitFailedJob(job, "stale diplomatic action list could not be rebuilt");
-				return;
-			}
-			Log("refreshed queued generation for current legal diplomatic actions job=" + job.JobId
-				+ " author=" + job.AuthorKingdomId);
-		}
-		if (!EnsureCurrentCanonicalPromptContractBeforeSend(job))
-		{
-			return;
-		}
-		if (job.LlmMessages?.Count > 0 && !IsValidSemanticRepairMessageChain(job))
-		{
-			Log("retired invalid persisted LLM message chain job=" + (job.JobId ?? "") + " kind=" + (job.Kind ?? ""));
-			job.LlmMessages.Clear();
-			job.SemanticRepairAttempts = 0;
-			if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
-				&& !TryRebuildPendingWorldDiplomacyJob(job))
-			{
-				CommitFailedJob(job, "invalid persisted LLM message chain could not be rebuilt");
-				return;
-			}
-		}
-		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
-			&& !CanAiAuthorDiplomaticDocument(ResolveKingdom(job.AuthorKingdomId), out string authorBlockReason))
-		{
-			Log("queued generation cancelled before request job=" + job.JobId + " author=" + (job.AuthorKingdomId ?? "")
-				+ " reason=" + authorBlockReason);
-			AbandonRejectedGeneration(job, ResolveKingdom(job.AuthorKingdomId), ResolveKingdom(job.TargetKingdomId), authorBlockReason);
-			RemoveJob(job.JobId);
-			return;
-		}
-		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase)
-			&& !EnsureGenerationJobHasKingdomStrategicProfile(job))
-		{
-			AbandonRejectedGeneration(job, ResolveKingdom(job.AuthorKingdomId), ResolveKingdom(job.TargetKingdomId), "missing_kingdom_strategic_profile");
-			RemoveJob(job.JobId);
-			return;
-		}
-		if (string.IsNullOrWhiteSpace(job.SystemPrompt))
-		{
-			CommitFailedJob(job, "empty prompt");
-			return;
-		}
-		if (!WorldDiplomacyLlmClient.IsConfigured(out string configError))
-		{
-			CommitFailedJob(job, "api not configured: " + configError);
-			return;
-		}
-		if (!TryConsumeDiplomacyLlmRequestBudget(consume: false)) return;
-		if (string.Equals(job.Kind, "generate", StringComparison.OrdinalIgnoreCase))
-		{
-			if (!EnsureGenerationJobHasKingdomStrategicProfile(job))
-			{
-				AbandonRejectedGeneration(job, ResolveKingdom(job.AuthorKingdomId), ResolveKingdom(job.TargetKingdomId), "missing_kingdom_strategic_profile");
-				RemoveJob(job.JobId);
-				return;
-			}
-			// Ordinary queued generations consume the newest committed archive at actual send time.
-			// Semantic repairs carry explicit messages and intentionally retain their rejected
-			// request's frozen prefix.
-			if (job.LlmMessages == null || job.LlmMessages.Count == 0)
-			{
-				CaptureCanonicalHistoryForJob(job, syncSources: true);
-			}
-		}
-		JArray requestMessages = BuildLlmMessageArray(job);
-		if (!EnsureRequestFitsInputBudget(job, requestMessages)) return;
-		if (!TryConsumeDiplomacyLlmRequestBudget()) return;
 		long generation = _runtimeGeneration;
-		int requestTimeoutMilliseconds = string.Equals(job.Kind, "compress", StringComparison.OrdinalIgnoreCase)
+		int requestTimeoutMilliseconds = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")
 			? DuelSettings.LlmRequestTimeoutMilliseconds
 			: DefaultApiTimeoutMilliseconds;
 		if (!_llmRequestLease.TryClaim(job.JobId, generation, job.MaxTokens, requestTimeoutMilliseconds, out WorldDiplomacyRequestSnapshot request))
 		{
+			job.IsRunning = false;
 			Log("world diplomacy request claim rejected job=" + (job.JobId ?? "") + " generation=" + generation);
 			return;
 		}
 		job.IsRunning = true;
-		job.CacheAffinityKey = ResolveCacheAffinityKey(job);
+		job.CacheAffinityKey = WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(job);
 		_lastLlmCacheAffinityKey = job.CacheAffinityKey;
 		LogPromptCacheShape(job);
 		_ = Task.Run(async delegate
@@ -236,110 +156,37 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			WorldDiplomacyJob job = _storage.Jobs.FirstOrDefault(x => x != null && string.Equals(x.JobId, result.JobId, StringComparison.OrdinalIgnoreCase));
+			WorldDiplomacyJob job = _storage.Jobs.FirstOrDefault(x => WorldDiplomacyRoundLifecycleRules.HasJobId(x, result.JobId));
 			if (job == null)
 			{
 				continue;
 			}
 			job.IsRunning = false;
-			WorldDiplomacyJobRoute route = WorldDiplomacyJobRuntimeCoordinator.Classify(job.Kind);
 			LogPromptCacheUsage(job, result);
-			if (result.Success
-				&& route == WorldDiplomacyJobRoute.Generate
-				&& HasStaleDiplomaticThreatPresentation(job))
-			{
-				if (!RefreshDiplomaticThreatPresentationAndPrompt(job))
-				{
-					CommitFailedJob(job, "completed generation used a stale diplomatic threat stage and could not be rebuilt");
-				}
-				else
-				{
-					Log("discarded completed generation from stale diplomatic threat stage and rebuilt job=" + job.JobId
-						+ " author=" + job.AuthorKingdomId);
-				}
-				continue;
-			}
-			if (result.Success
-				&& route == WorldDiplomacyJobRoute.Generate
-				&& HasStaleDiplomaticActionPresentation(job))
-			{
-				if (!RefreshDiplomaticActionPresentationAndPrompt(job))
-				{
-					CommitFailedJob(job, "completed generation used a stale diplomatic action list and could not be rebuilt");
-				}
-				else
-				{
-					Log("discarded completed generation from stale diplomatic action list and rebuilt job=" + job.JobId
-						+ " author=" + job.AuthorKingdomId);
-				}
-				continue;
-			}
-			if (!result.Success)
-			{
-				if (route == WorldDiplomacyJobRoute.Generate
-					&& result.IsOutputTruncated
-					&& !string.IsNullOrWhiteSpace(result.Content))
-				{
-					_storage.ConsecutiveServiceFailures = 0;
-					try
-					{
-						RejectGeneratedDraftBeforePublication(
-							job,
-							result.Content,
-							ResolveKingdom(job.AuthorKingdomId),
-							ResolveKingdom(job.TargetKingdomId),
-							"output_truncated",
-							null);
-						RemoveJob(job.JobId);
-					}
-					catch (Exception ex)
-					{
-						CommitFailedJob(job, "truncated generated draft handling failed: " + ex.Message);
-					}
-					continue;
-				}
-				if (result.IsServiceFailure)
-				{
-					_storage.ConsecutiveServiceFailures++;
-					if (_storage.ConsecutiveServiceFailures >= 2)
-					{
-						_storage.ServiceCooldownUntilHour = CurrentHour() + FailedServiceCooldownHours;
-						_storage.ConsecutiveServiceFailures = 0;
-					}
-				}
-				CommitFailedJob(job, result.Error);
-				continue;
-			}
-			_storage.ConsecutiveServiceFailures = 0;
-			try
-			{
-				switch (route)
-				{
-					case WorldDiplomacyJobRoute.Generate:
-						CommitGeneratedDocument(job, result.Content);
-						break;
-					case WorldDiplomacyJobRoute.Analyze:
-						CommitAnalysis(job, result.Content);
-						break;
-					case WorldDiplomacyJobRoute.Compress:
-						CommitCompression(job, result.Content);
-						break;
-					case WorldDiplomacyJobRoute.RoundPlan:
-						CommitRoundPlan(job, result.Content);
-						break;
-					case WorldDiplomacyJobRoute.RoundCompress:
-						CommitRoundCompression(job, result.Content);
-						break;
-					default:
-						CommitFailedJob(job, "unknown job kind");
-						continue;
-				}
-				RemoveJob(job.JobId);
-			}
-			catch (Exception ex)
-			{
-				CommitFailedJob(job, ex.Message);
-			}
+			WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(
+				job,
+				result.Content,
+				result.Success,
+				result.IsServiceFailure,
+				result.IsOutputTruncated,
+				result.Error,
+				_storage,
+				CurrentHour(),
+				FailedServiceCooldownHours,
+				HasStaleDiplomaticThreatPresentation,
+				RefreshDiplomaticThreatPresentationAndPrompt,
+				j => WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(j, BuildGenerationLegalActionSignature),
+				RefreshDiplomaticActionPresentationAndPrompt,
+				(j, content) => RejectGeneratedDraftBeforePublication(
+					j, content, ResolveKingdom(j.AuthorKingdomId), ResolveKingdom(j.TargetKingdomId), "output_truncated", null),
+				CommitGeneratedDocument,
+				CommitAnalysis,
+				CommitCompression,
+				CommitRoundPlan,
+				CommitRoundCompression,
+				CommitFailedJob,
+				RemoveJob,
+				Log);
 		}
 	}
 }

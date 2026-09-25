@@ -5,6 +5,10 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Domain;
+using AnimusForge.Refactor.Modules;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -22,6 +26,21 @@ namespace AnimusForge
 		public static DiplomacyBehavior Instance { get; private set; }
 
 		private static bool s_globalPatchesApplied;
+		private static readonly WorldDiplomacyDeclareWarCommandFacade DeclareWarCommandFacade =
+			new WorldDiplomacyDeclareWarCommandFacade(new BannerlordWorldDiplomacyDeclareWarGameActionPort());
+		private static readonly WorldDiplomacyIndependentClanPeaceCommandFacade IndependentClanPeaceCommandFacade =
+			new WorldDiplomacyIndependentClanPeaceCommandFacade(
+				new BannerlordWorldDiplomacyIndependentClanPeaceGameActionPort());
+		private static readonly WorldDiplomacyMakePeaceCommandFacade MakePeaceCommandFacade =
+			new WorldDiplomacyMakePeaceCommandFacade(new BannerlordWorldDiplomacyMakePeaceGameActionPort());
+		private static readonly WorldDiplomacyFormAllianceCommandFacade FormAllianceCommandFacade =
+			new WorldDiplomacyFormAllianceCommandFacade(new BannerlordWorldDiplomacyFormAllianceGameActionPort());
+		private static readonly WorldDiplomacyBreakAllianceCommandFacade BreakAllianceCommandFacade =
+			new WorldDiplomacyBreakAllianceCommandFacade(new BannerlordWorldDiplomacyBreakAllianceGameActionPort());
+		private static readonly WorldDiplomacyMakeTradeCommandFacade MakeTradeCommandFacade =
+			new WorldDiplomacyMakeTradeCommandFacade(new BannerlordWorldDiplomacyMakeTradeGameActionPort());
+		private static readonly WorldDiplomacyCancelTradeCommandFacade CancelTradeCommandFacade =
+			new WorldDiplomacyCancelTradeCommandFacade(new BannerlordWorldDiplomacyCancelTradeGameActionPort());
 
 		[ModuleInitializer]
 		internal static void ModuleInit()
@@ -420,5 +439,7 @@ namespace AnimusForge
 			}
 			catch (Exception ex) { Logger.Log("DiplomacyBehavior", $"[RuntimeInstruction Error] {ex.Message}"); return ""; }
 		}
+		// ════════════════════════════════════════════════════════ DECLARE_WAR
+
 	}
 }

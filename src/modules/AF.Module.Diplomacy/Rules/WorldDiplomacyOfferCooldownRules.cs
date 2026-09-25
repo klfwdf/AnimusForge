@@ -236,7 +236,29 @@ public static class WorldDiplomacyOfferCooldownRules
 	/// is less than failedRoundDay + configuredDays and expires exactly at equality.
 	/// A configured value of zero disables the rule without deleting stored history.
 	/// </summary>
-	public static bool IsCoolingDown(int failedRoundDay, int currentDay, int configuredDays)
+
+	/// <summary>
+	/// Directed cooldown probe used when building the legal action list. Kingdom
+	/// objects stay in the host; the rule works on StringIds only.
+	/// </summary>
+	public static bool IsTradeAllianceProposalCoolingDown(
+		Func<WorldDiplomacyOfferCooldownKey, int> lastFailedRoundDay,
+		string proposerKingdomId,
+		string targetKingdomId,
+		string proposalIntent,
+		int cooldownDays,
+		int currentDay)
+	{
+		if (cooldownDays <= 0
+			|| string.IsNullOrWhiteSpace(proposerKingdomId)
+			|| string.IsNullOrWhiteSpace(targetKingdomId)
+			|| !TryGetProposalDomain(proposalIntent, out WorldDiplomacyOfferDomain domain)) return false;
+		WorldDiplomacyOfferCooldownKey key = new WorldDiplomacyOfferCooldownKey(proposerKingdomId, targetKingdomId, domain);
+		return key.IsValid
+			&& IsCoolingDown(lastFailedRoundDay?.Invoke(key) ?? -1, currentDay, cooldownDays);
+	}
+
+		public static bool IsCoolingDown(int failedRoundDay, int currentDay, int configuredDays)
 	{
 		if (configuredDays <= 0 || failedRoundDay < 0) return false;
 		return (long)currentDay < (long)failedRoundDay + configuredDays;
@@ -293,4 +315,5 @@ public static class WorldDiplomacyOfferCooldownRules
 			return left.Key.Domain.CompareTo(right.Key.Domain);
 		}
 	}
+
 }

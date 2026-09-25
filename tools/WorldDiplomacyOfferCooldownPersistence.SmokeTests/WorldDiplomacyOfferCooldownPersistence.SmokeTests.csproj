@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyOfferCooldownRules.cs" Link="WorldDiplomacyOfferCooldownRules.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyOfferCooldownStorageNormalizer.cs" Link="WorldDiplomacyOfferCooldownStorageNormalizer.cs" />
+  </ItemGroup>
+</Project>
