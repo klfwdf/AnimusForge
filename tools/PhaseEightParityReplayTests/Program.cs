@@ -132,6 +132,7 @@ J13E3DomainOwnerContractReplay.Run(repo);
 SettlementMissionEntryOwnerReplay.Run(af);
 SettlementFollowerMissionOwnerReplay.Run(af);
 TroopInspectionSessionOwnerReplay.Run(af);
+J13E4DomainOwnerContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
