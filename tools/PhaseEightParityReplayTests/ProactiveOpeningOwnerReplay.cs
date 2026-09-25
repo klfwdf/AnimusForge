@@ -49,8 +49,8 @@ internal static class ProactiveOpeningOwnerReplay
         Check(!(bool)type.GetMethod("Matches", Members).Invoke(hostOwner, new object[] { true, "host-session", "hero-a" }), "production cancel clears pending opening");
         Type sessionType = hostType.GetNestedType("ProactiveNpcRequestSession", BindingFlags.NonPublic);
         object legacySession = Activator.CreateInstance(sessionType, true);
-        hostType.GetField("_activeSession", Members).SetValue(host, legacySession);
-        hostType.GetMethod("NormalizeActiveSessionSingleNeed", Members).Invoke(host, null);
+        object sessionOwner = hostType.GetField("_sessionOwner", Members).GetValue(host);
+        sessionOwner.GetType().GetMethod("Import", Members).Invoke(sessionOwner, new[] { legacySession });
         Check(!string.IsNullOrWhiteSpace((string)sessionType.GetProperty("Id", Members).GetValue(legacySession)), "legacy active session receives identity");
         Console.WriteLine("PASS proactiveOpeningOwnerReplay session=1 hero=1 singleConsume=1 channel=1 clear=1 replacement=1 hostCancel=1 legacyId=1; no live encounter/courier acceptance");
     }
