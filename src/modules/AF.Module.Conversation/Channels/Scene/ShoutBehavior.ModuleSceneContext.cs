@@ -7,6 +7,28 @@ namespace AnimusForge;
 
 public partial class ShoutBehavior
 {
+    internal static string IssueModuleSceneTicket(string clientId)
+    {
+        ShoutBehavior owner = CurrentInstance;
+        if (owner == null || !IsBannerlordMainThreadForNativeActions()) return null;
+        ScenePlayerShoutContext context = owner.CaptureModuleSceneContext();
+        return context == null ? null : owner._scenePlayerShoutRequestOwner.IssueModuleTicket(clientId, context);
+    }
+
+    internal static bool TryClaimModuleSceneTicket(string clientId, string ticketId, out ScenePlayerShoutRequest request)
+    {
+        request = null;
+        ShoutBehavior owner = CurrentInstance;
+        return owner != null && IsBannerlordMainThreadForNativeActions()
+            && owner._scenePlayerShoutRequestOwner.TryTakeModuleTicket(clientId, ticketId, out ScenePlayerShoutContext context)
+            && owner.TryClaimModuleSceneContext(context, out request);
+    }
+
+    internal static void RevokeModuleSceneTickets(string clientId)
+    {
+        CurrentInstance?._scenePlayerShoutRequestOwner.RevokeClientModuleTickets(clientId);
+    }
+
     // Main-thread only. This is a preview, not an input claim or a dialogue dispatch.
     internal ScenePlayerShoutContext CaptureModuleSceneContext()
     {

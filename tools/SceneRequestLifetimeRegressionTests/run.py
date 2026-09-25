@@ -27,7 +27,7 @@ def generate(source_ref=None):
    request='\n'.join(ex.declaration(s,x) for x in signatures)
  else:request='\n'.join(ex.declaration(s,x) for x in ['private sealed class ScenePlayerShoutRequest']+signatures)
  module_context_source=ex.source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneContext.cs',source_ref)
- module_context='\n'.join(ex.declaration(module_context_source,x) for x in ['internal ScenePlayerShoutContext CaptureModuleSceneContext(', 'internal bool TryClaimModuleSceneContext(', 'private bool IsModuleSceneTargetingSourceCurrent(', 'private static ShoutTargetingContext CloneModuleSceneTargetingContext('])
+ module_context='\n'.join(ex.declaration(module_context_source,x) for x in ['internal static string IssueModuleSceneTicket(', 'internal static bool TryClaimModuleSceneTicket(', 'internal static void RevokeModuleSceneTickets(', 'internal ScenePlayerShoutContext CaptureModuleSceneContext(', 'internal bool TryClaimModuleSceneContext(', 'private bool IsModuleSceneTargetingSourceCurrent(', 'private static ShoutTargetingContext CloneModuleSceneTargetingContext('])
  awaited_group=current and 'private Task ProcessCurrentScenePlayerShout(' in s
  sig=('private Task ProcessCurrentScenePlayerShout(' if awaited_group else 'private void ProcessCurrentScenePlayerShout(') if current else 'private async Task ProcessShoutConfirmedInternal('
  full=ex.declaration(s,sig);marker='\t\tif (!TryBuildSceneShoutConversationScope('

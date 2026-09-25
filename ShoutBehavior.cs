@@ -1837,6 +1837,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private void EndShoutProcessing(string reason)
 	{
+		_scenePlayerShoutRequestOwner.InvalidateModuleTickets();
 		Interlocked.Increment(ref _sceneShoutProcessingSequence);
 		if (_isProcessingShout || _shoutProcessingStartedAt >= 0f)
 		{
