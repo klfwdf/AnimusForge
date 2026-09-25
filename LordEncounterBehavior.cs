@@ -80,9 +80,13 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool _cameraLockWasActive;
 
-	private static MeetingPlayerReleaseRequest _meetingPlayerReleaseAuthorization;
+	private static readonly EncounterReleaseOwner<MeetingPlayerReleaseRequest> _releaseOwner = new EncounterReleaseOwner<MeetingPlayerReleaseRequest>();
 
-	private sealed class MeetingPlayerReleaseRequest
+	private static readonly Func<MeetingPlayerReleaseRequest, bool> ReleaseRequestCurrent = IsMeetingPlayerReleaseRequestCurrent;
+
+	private static MeetingPlayerReleaseRequest _meetingPlayerReleaseAuthorization => _releaseOwner.Authorization;
+
+	private sealed class MeetingPlayerReleaseRequest : IEncounterReleaseRequest
 	{
 		public PlayerEncounter Encounter { get; }
 		public PartyBase Party { get; }
@@ -92,6 +96,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		public string Reason { get; }
 		public float RequestedAt { get; }
 		public float LastAttemptAt { get; set; } = -1f;
+		object IEncounterReleaseRequest.EncounterIdentity => Encounter;
+		object IEncounterReleaseRequest.PartyIdentity => Party;
+		object IEncounterReleaseRequest.SourceMissionIdentity => SourceMission;
 
 		public MeetingPlayerReleaseRequest(PlayerEncounter encounter, PartyBase party, Mission sourceMission, long runtimeGeneration, Hero target, string reason, float requestedAt)
 		{
@@ -128,7 +135,9 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static string _lastLowHealthMeetingBlockedHeroId;
 
-	private static bool _pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit;
+	private static readonly EncounterPendingReturnOwner<PlayerEncounter, PartyBase> _pendingReturnOwner = new EncounterPendingReturnOwner<PlayerEncounter, PartyBase>();
+
+	private static bool _pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit => _pendingReturnOwner.IsPending;
 
 	private static bool _suspendEncounterRedirectDuringResultResolution;
 
@@ -230,7 +239,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static string _pendingNativeConversationNpcSurrenderReason;
 
-	private static MeetingPlayerReleaseRequest _pendingNativeConversationMeetingRelease;
+	private static MeetingPlayerReleaseRequest _pendingNativeConversationMeetingRelease => _releaseOwner.Pending;
 
 	private static bool _npcSurrenderSkipHeroCaptureConversations;
 
@@ -303,31 +312,28 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool IsMeetingPlayerReleaseRequestCurrent(MeetingPlayerReleaseRequest request)
 	{
-		return request != null
-			&& SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration)
-			&& ReferenceEquals(request.Encounter, PlayerEncounter.Current)
-			&& ReferenceEquals(request.Party, TryGetMeetingReleaseEncounterParty())
-			&& (Mission.Current == null || ReferenceEquals(request.SourceMission, Mission.Current));
+		return request != null && EncounterReleaseOwner<MeetingPlayerReleaseRequest>.IsCurrent(
+			request, SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration),
+			PlayerEncounter.Current, TryGetMeetingReleaseEncounterParty(), Mission.Current);
 	}
 
 	private static void AuthorizeMeetingPlayerRelease(string reason)
 	{
-		_meetingPlayerReleaseAuthorization = CaptureMeetingPlayerReleaseRequest(_targetHero, reason);
+		_releaseOwner.Authorize(CaptureMeetingPlayerReleaseRequest(_targetHero, reason));
 		Logger.Log("MeetingRelease", "Meeting player release authorized=" + (_meetingPlayerReleaseAuthorization != null) + ". Reason=" + (reason ?? "N/A"));
 	}
 
 	private static bool ConsumeMeetingPlayerReleaseAuthorization(string reason)
 	{
-		bool meetingPlayerReleaseAuthorized = IsMeetingPlayerReleaseRequestCurrent(_meetingPlayerReleaseAuthorization)
-			&& Time.ApplicationTime - _meetingPlayerReleaseAuthorization.RequestedAt <= 120f;
-		_meetingPlayerReleaseAuthorization = null;
+		bool meetingPlayerReleaseAuthorized = _releaseOwner.ConsumeAuthorization(
+			ReleaseRequestCurrent, Time.ApplicationTime, 120f);
 		Logger.Log("MeetingRelease", $"Meeting player release authorization consumed={meetingPlayerReleaseAuthorized}. Reason={reason ?? "N/A"}");
 		return meetingPlayerReleaseAuthorized;
 	}
 
 	private static void ClearMeetingPlayerReleaseAuthorization(string reason)
 	{
-		_meetingPlayerReleaseAuthorization = null;
+		_releaseOwner.ClearAuthorization();
 		Logger.Log("MeetingRelease", "Meeting player release authorization cleared. Reason=" + (reason ?? "N/A"));
 	}
 
@@ -352,13 +358,22 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static void MarkPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
 	{
-		_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit = true;
-		Logger.Log("MeetingRelease", "Pending return to encounter menu after unauthorized meeting exit. Reason=" + (reason ?? "N/A"));
+		bool marked = false;
+		try
+		{
+			marked = _pendingReturnOwner.Mark(PlayerEncounter.Current, GetCurrentEncounterPartySafe(),
+				SaveRuntimeGuard.CaptureGeneration());
+		}
+		catch
+		{
+			_pendingReturnOwner.Clear();
+		}
+		Logger.Log("MeetingRelease", "Pending return to encounter menu after unauthorized meeting exit. Marked=" + marked + ". Reason=" + (reason ?? "N/A"));
 	}
 
 	private static void ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit(string reason)
 	{
-		_pendingReturnToEncounterMenuAfterUnauthorizedMeetingExit = false;
+		_pendingReturnOwner.Clear();
 		Logger.Log("MeetingRelease", "Cleared pending unauthorized meeting exit return. Reason=" + (reason ?? "N/A"));
 	}
 
@@ -3738,6 +3753,20 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		}
 		if (!flag)
 		{
+			return;
+		}
+		try
+		{
+			if (!_pendingReturnOwner.IsCurrent(PlayerEncounter.Current, GetCurrentEncounterPartySafe(),
+				SaveRuntimeGuard.CaptureGeneration()))
+			{
+				ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("context_changed");
+				return;
+			}
+		}
+		catch
+		{
+			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("context_unavailable");
 			return;
 		}
 		bool flag2 = false;
@@ -7253,8 +7282,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			_pendingNativeConversationMeetingRelease = request;
-			_meetingPlayerReleaseAuthorization = request;
+			_releaseOwner.Schedule(request);
 			ClearPendingReturnToEncounterMenuAfterUnauthorizedMeetingExit("native_conversation_release_scheduled");
 			DisableCustomEncounterMenuForCurrentEncounter("native_conversation_release_scheduled");
 			try
@@ -7279,31 +7307,21 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	private static bool HasPendingNativeConversationMeetingRelease()
 	{
-		MeetingPlayerReleaseRequest request = _pendingNativeConversationMeetingRelease;
-		if (request == null)
+		bool current = _releaseOwner.HasCurrentPending(ReleaseRequestCurrent,
+			Time.ApplicationTime, 120f, out string invalidReason);
+		if (!current && invalidReason != null)
 		{
-			return false;
+			ClearPendingNativeConversationMeetingRelease(invalidReason);
 		}
-		if (!IsMeetingPlayerReleaseRequestCurrent(request))
-		{
-			ClearPendingNativeConversationMeetingRelease("context_changed");
-			return false;
-		}
-		if (Time.ApplicationTime - request.RequestedAt > 120f)
-		{
-			ClearPendingNativeConversationMeetingRelease("expired");
-			return false;
-		}
-		return true;
+		return current;
 	}
 
 	private static void ClearPendingNativeConversationMeetingRelease(string reason)
 	{
-		if (ReferenceEquals(_meetingPlayerReleaseAuthorization, _pendingNativeConversationMeetingRelease))
+		if (_releaseOwner.ClearPending())
 		{
-			ClearMeetingPlayerReleaseAuthorization(reason);
+			Logger.Log("MeetingRelease", "Meeting player release authorization cleared. Reason=" + (reason ?? "N/A"));
 		}
-		_pendingNativeConversationMeetingRelease = null;
 		Logger.Log("MeetingRelease", "Cleared pending native conversation release. Reason=" + (reason ?? "N/A"));
 	}
 
@@ -7318,19 +7336,11 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 		bool missionActive = IsMissionStateActiveForMeetingRelease() || Game.Current?.GameStateManager?.ActiveState is MissionState;
 		// Mission teardown can clear Mission.Current before MissionState is popped.
 		// Retain the request until the map tick can finish the same encounter.
-		if (missionActive && Mission.Current == null)
+		if (!_releaseOwner.TryBeginPendingAttempt(applicationTime, missionActive,
+			Mission.Current != null, NativeConversationReleaseDialogDelaySeconds, 0.25f))
 		{
 			return;
 		}
-		if (missionActive && applicationTime - request.RequestedAt < NativeConversationReleaseDialogDelaySeconds)
-		{
-			return;
-		}
-		if (request.LastAttemptAt >= 0f && applicationTime - request.LastAttemptAt < 0.25f)
-		{
-			return;
-		}
-		request.LastAttemptAt = applicationTime;
 		if (missionActive)
 		{
 			// Never close a newly opened Mission for an older release request.
