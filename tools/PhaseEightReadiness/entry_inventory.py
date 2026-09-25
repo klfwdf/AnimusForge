@@ -33,6 +33,7 @@ RULES = {
     "ui-tts-external-integration": (
         "AnimusForgeTerminal*.cs", "Terminal*PopupVM.cs", "DevWeeklyReportPopup*.cs",
         "AnimusForgeApiOnboarding*.cs", "TerminalSettingsRegistry.cs", "DuelSettings.TerminalSave.cs",
+        "ModOnboardingBehavior.cs", "src/modules/AF.Module.UI/**/*.cs", "src/modules/AF.Module.Onboarding/**/*.cs",
         "WarStats/*VM.cs", "WarStats/AfWarStatsMapButtonLayer.cs",
         "WarStats/AfWarStatsEncyclopedia.cs", "WarStats/AfWarStatsSettings.cs", "WarStats/AfWarStatsTexts.cs",
         "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
