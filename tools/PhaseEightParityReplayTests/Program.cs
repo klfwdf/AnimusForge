@@ -49,6 +49,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "src/modules/AF.Module.Issue/Completion/IssueCompletionReceiptOwner.cs",
         "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs",
         "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs",
+        "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
         "MyBehavior.PromotedPersonaGeneration.cs",
         "RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
@@ -95,6 +96,7 @@ ProactiveQualificationReplay.Run(af, repo);
 IssueAlternativeDispatchOwnerReplay.Run(af);
 IssueCompletionReceiptOwnerReplay.Run(af, repo);
 IssueRuntimeStateOwnerReplay.Run(af, repo);
+IssueActionOwnerReplay.Run(af, repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);

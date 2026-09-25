@@ -103,7 +103,7 @@ internal static partial class VanillaIssueOfferBridge
 			string text6 = "";
 			if (flag && flag2)
 			{
-				flag3 = TryBuildAlternativeCandidates(issue, out list, out text6);
+				flag3 = IssueActionOwner.TryBuildAlternativeCandidates(issue, out list, out text6);
 			}
 			else if (flag2)
 			{
