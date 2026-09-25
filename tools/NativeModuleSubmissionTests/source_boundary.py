@@ -14,11 +14,12 @@ def current_path(old_path):
     return CURRENT_PATHS.get(old_path,old_path)
 spec_owner=importlib.util.spec_from_file_location('j07b_admission_inverse',ROOT/'tools/NativeConversationAdmissionTests/owner_extraction.py');owner_inverse=importlib.util.module_from_spec(spec_owner);spec_owner.loader.exec_module(owner_inverse)
 
-def restore(path,current):
+def restore(path,current,verify_dependencies=True):
     path=str(path).replace('\\','/')
     current=owner_inverse.restore(path,current)
-    for dependency,expected_hash in REVIEW.get('dependencies',{}).items():
-        assert hashlib.sha256(owner_inverse.restore(dependency,(ROOT/current_path(dependency)).read_text(encoding='utf-8-sig')).encode()).hexdigest()==expected_hash, 'Unreviewed Native API dependency: '+dependency
+    if verify_dependencies:
+        for dependency,expected_hash in REVIEW.get('dependencies',{}).items():
+            assert hashlib.sha256(owner_inverse.restore(dependency,(ROOT/current_path(dependency)).read_text(encoding='utf-8-sig')).encode()).hexdigest()==expected_hash, 'Unreviewed Native API dependency: '+dependency
     evidence=REVIEW['files'].get(path)
     if evidence is None: return current
     old=subprocess.check_output(['git','show',REVIEW['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
