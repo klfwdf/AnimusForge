@@ -1,3 +1,7 @@
+## 主体 J13e2 Taunt 开工意图（2026-09-25）
+
+状态：`J13e2_ACTIVE / J13_ACTIVE`，基线 `d8059bd1`。按[原计划](plans/j13-domain-owners-plan.md)只推进和平场景 Taunt，随后 e3 Encounter、e4 Settlement/Inspection、e5 Exercise；不提前 J14。已重读[场景伤害上下文](scene_damage_context_guard_case.md)与 1.3/1.4 差异。`SceneTauntBehavior.cs:115–324,1863–2049,2127–3188,4090–4228,5455–5692,8236–8310,10301–10620` 当前同时持有 Campaign 保存/事件、Mission 回调、和平资格、冲突升级/犯罪/队伍恢复和五个原 patch；`CampaignComposition.cs:38` 与 `StartupPatchComposition.cs:333–369` 原装配保留。`IsOwnedSettlementPassiveAttackPeaceLocationScene` 已有严格 allowlist/战斗排除，但 `CanStartConflict` 的普通初始化尚仅凭 settlement/原 FightHandler，不能假定 siege/野战/部署等反例由旧门禁自动排除；此风险先用受控正反用例定位，再抽最小真实资格 owner 并接生产入口。MCM 的 `EnablePeaceSceneConflict` **只关闭直接攻击转换**，`TerminalSettingsRegistry.cs:218` 明文保留对话挑衅；不可误把 verbal path 也禁用。队伍变更/犯罪/恢复需逐段追真实状态，不批量搬 10k 行。先做入口资格/反例，再做升级/惩罚/恢复闭包、生产 DLL 与聚合接线；所有真实 Campaign/Mission/Harmony/旧档/帧性能验收仍待实机，不以源码串代替。`.dotnet-cli-home/` 不动，无 push、Stage、部署、打包、外仓写入或自动化。
+
 ## 主体 J13e1 Duel 有限离线收口（2026-09-25）
 
 状态：**`J13e1_OFFLINE_VERIFIED / J13_ACTIVE`**，仅 e1 离线门禁，下一包 e2 Taunt，随后 e3–e5；不提前 J14。意图 `8cc8ef63`，只读构建产物回放入口 `054781b1`，生产 owner/回放 `88643619`、`ca49023f`，聚合契约 `d0d15a57`，真实 DLL 受理行为回放 `d89a13b5`。此前 d4 的完成状态不扩大为场景实机验收。
