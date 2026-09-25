@@ -22,10 +22,14 @@ internal static class MilitaryExerciseSessionOwnerReplay
         }
 
         Set("Selection", first);
+        Check((bool)Call("IsCurrentSelection", first)
+            && !(bool)Call("IsCurrentSelection", second), "selection callback identity drifted");
         Call("QueueSecond", 10f, 0.2f);
         Check(!(bool)Call("IsSecondDue", 11f) && !(bool)Get("SecondQueued"),
             "first-stage selection retained second-stage ticket");
         Set("Selection", second);
+        Check(!(bool)Call("IsCurrentSelection", first)
+            && (bool)Call("IsCurrentSelection", second), "stale first-stage callback retained authority");
         Call("QueueSecond", 10f, 0.2f);
         Check(!(bool)Call("IsSecondDue", 10.19f) && (bool)Call("IsSecondDue", 10.21f),
             "second-stage delay was not respected");
