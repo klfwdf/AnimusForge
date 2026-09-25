@@ -383,5 +383,37 @@ Check((int)Get(second, "KillsA") == 16 && (int)Get(second, "CasualtiesA") == 6
     && (int)Get(second, "KillsB") == 8 && (int)Get(second, "CasualtiesB") == 12
     && (int)Get(second, "WinsA") == 2 && (int)Get(second, "LossesB") == 2,
     "reverse-order battle counts clamp negatives and preserve winner polarity");
+Check(ledgerType.GetMethod("UpsertHeroDeath", Members) != null
+    && ledgerType.GetMethod("RecordRecentHeroBattle", Members) != null,
+    "ledger owns hero death and recent battle decisions");
+Call(ledger, "UpsertHeroDeath", second, "hero-a", "A", "Killer", 3, 10, "Battle", 0);
+Call(ledger, "UpsertHeroDeath", second, "hero-a", "A renamed", null, 4, 11, "", 1);
+IList deaths = (IList)Get(second, "HeroDeaths");
+Check(deaths.Count == 1 && (string)Get(deaths[0], "HeroName") == "A renamed"
+    && (string)Get(deaths[0], "KillerName") == "Killer"
+    && (string)Get(deaths[0], "BattleName") == "Battle"
+    && (int)Get(deaths[0], "Day") == 10 && (int)Get(deaths[0], "Side") == 1,
+    "duplicate death updates details without losing first day or known killer/battle");
+Check((bool)Call(ledger, "HasRecordedHeroDeath", "hero-a", "A renamed")
+    && !(bool)Call(ledger, "HasRecordedHeroDeath", "hero-b", "B"),
+    "death lookup distinguishes recorded and unknown hero");
+Call(ledger, "RecordRecentHeroBattle", second, "hero-a", "kingdom-a", 12, 1);
+Call(ledger, "RecordRecentHeroBattle", second, "hero-a", "kingdom-a", 13, 2);
+IDictionary recent = (IDictionary)Get(second, "RecentHeroBattles");
+Check(recent.Count == 1 && (int)Get(recent["hero-a"], "Day") == 13
+    && (int)Get(recent["hero-a"], "Sequence") == 2, "recent battle replaces only same hero");
+Call(ledger, "RecordRecentHeroBattle", second, "", "kingdom-a", 14, 3);
+Check(recent.Count == 1, "missing hero identity cannot pollute recent battle state");
+Call(ledger, "SetRecentBattleSequence", int.MaxValue - 1);
+Check((int)Call(ledger, "NextBattleSequence") == int.MaxValue
+    && (int)Call(ledger, "NextBattleSequence") == int.MaxValue, "recent battle sequence saturates without overflow");
+Call(ledger, "SetRecentBattleSequence", -1);
+Check((int)Get(ledger, "RecentBattleSequence") == 0, "loaded negative sequence is clamped");
+Call(ledger, "ArchiveAndRemove", "|", second, 14);
+IList archivedDeaths = (IList)Get(history[0], "HeroDeaths");
+Check(active.Count == 0 && history.Count == 1 && archivedDeaths.Count == 1
+    && !ReferenceEquals(archivedDeaths, deaths)
+    && (bool)Call(ledger, "HasRecordedHeroDeath", "hero-a", "A renamed"),
+    "ended war retains a cloned death history for later duplicate suppression");
 Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=archive/idempotence/list-roundtrip live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));
