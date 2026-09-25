@@ -83,7 +83,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private MobileParty _activePartyCache;
 	private string _activePartyCacheId = "";
 	private long _nextActiveEncounterProbeUtcTicks;
-	private ProactiveCandidateScanState _candidateScan;
+	private readonly ProactiveCandidateScanOwner _candidateScanOwner = new ProactiveCandidateScanOwner();
 	private readonly Dictionary<string, BanditSuppressionSnapshotCacheEntry> _banditSuppressionSnapshotsByClan = new Dictionary<string, BanditSuppressionSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, SettlementSaleSnapshotCacheEntry> _settlementSaleSnapshotsByClan = new Dictionary<string, SettlementSaleSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, PolicySupportSnapshotCacheEntry> _policySupportSnapshotsByClan = new Dictionary<string, PolicySupportSnapshotCacheEntry>(StringComparer.OrdinalIgnoreCase);
@@ -117,7 +117,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				DiplomacyDiscussionKeysUntilDays = _cooldownOwner.DiplomacyDiscussionKeysUntilDays,
 				GlobalCooldownUntilHours = _cooldownOwner.GlobalCooldownUntilHours,
 				// Incremental scans are runtime-only. A save during the one-second scan window retries after load.
-				LastScanHour = _candidateScan == null ? _cooldownOwner.LastScanHour : -99999f
+				LastScanHour = !_candidateScanOwner.IsRunning ? _cooldownOwner.LastScanHour : -99999f
 			});
 			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "ProactiveNpcRequest", storageJson, "heroCooldowns=" + _cooldownOwner.HeroCooldownUntilDays.Count + " typeFatigues=" + _cooldownOwner.NeedTypeFatigueUntilDays.Count + " active=" + (_activeSession != null));
 			CampaignSaveChunkHelper.SaveChunkedString(dataStore, StorageKey, storageJson, "ProactiveNpcRequest");
@@ -139,7 +139,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				storage?.GlobalCooldownUntilHours ?? 0f, storage?.LastScanHour ?? -99999f);
 			_openingOwner.Clear();
 			ClearActivePartyCache();
-			_candidateScan = null;
+			_candidateScanOwner.Clear();
 			_policyDiscussionSnapshotCache = null;
 		}
 		catch (Exception ex)
@@ -148,7 +148,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_cooldownOwner.ResetDictionaries();
 			_openingOwner.Clear();
 			ClearActivePartyCache();
-			_candidateScan = null;
+			_candidateScanOwner.Clear();
 			_policyDiscussionSnapshotCache = null;
 			Logger.Log("ProactiveNpcRequest", "load failed: " + ex.Message);
 		}
@@ -409,7 +409,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private void TryStartNewRequest()
 	{
-		if (_candidateScan != null)
+		if (_candidateScanOwner.IsRunning)
 		{
 			return;
 		}
@@ -469,22 +469,16 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return;
 		}
 		List<MobileParty> parties = (MobileParty.AllLordParties ?? Enumerable.Empty<MobileParty>()).Where(party => party != null).ToList();
-		int batchSize = Math.Max(1, (int)Math.Ceiling(parties.Count / (double)CandidateScanTargetFrames));
-		batchSize = Math.Min(CandidateScanMaxPartiesPerTick, batchSize);
-		_candidateScan = new ProactiveCandidateScanState
+		ProactiveCandidateScanState scan = _candidateScanOwner.Start(settings, parties, DateTime.UtcNow.Ticks);
+		if (scan != null)
 		{
-			Settings = settings,
-			Parties = parties,
-			BatchSize = batchSize,
-			Stats = new CandidateScanStats(),
-			StartedAtUtcTicks = DateTime.UtcNow.Ticks
-		};
-		Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_start", () => "incremental scan started parties=" + parties.Count + " batchSize=" + batchSize + " targetFrames=" + CandidateScanTargetFrames + " nowHours=" + nowHours.ToString("0.0"), 5.0);
+			Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_start", () => "incremental scan started parties=" + parties.Count + " batchSize=" + scan.BatchSize + " targetFrames=" + CandidateScanTargetFrames + " nowHours=" + nowHours.ToString("0.0"), 5.0);
+		}
 	}
 
 	private void ProcessCandidateScan()
 	{
-		ProactiveCandidateScanState scan = _candidateScan;
+		ProactiveCandidateScanState scan = _candidateScanOwner.Current;
 		if (scan == null)
 		{
 			return;
@@ -493,7 +487,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (currentSettings == null || !currentSettings.EnableProactiveNpcRequests || _activeSession != null)
 		{
 			Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_cancel", () => "incremental scan cancelled enabled=" + (currentSettings?.EnableProactiveNpcRequests ?? false) + " active=" + (_activeSession != null), 5.0);
-			_candidateScan = null;
+			_candidateScanOwner.Clear();
 			return;
 		}
 		if (scan.NextIndex >= scan.Parties.Count)
@@ -509,11 +503,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			scan.WorkingBatch.Add(scan.Parties[scan.NextIndex++]);
 			processed++;
 			ProactiveCandidate batchCandidate = FindBestRequestCandidate(scan.Settings, out CandidateScanStats batchStats, scan.WorkingBatch, scan.TerritorialSettlementSnapshots);
-			scan.Stats.MergeFrom(batchStats);
-			if (IsCandidateBetter(batchCandidate, scan.BestCandidate))
-			{
-				scan.BestCandidate = batchCandidate;
-			}
+			_candidateScanOwner.Consider(scan, batchCandidate, batchStats);
 			if (stopwatch.Elapsed.TotalMilliseconds >= CandidateScanFrameBudgetMilliseconds)
 			{
 				break;
@@ -527,11 +517,10 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private void CompleteCandidateScan(ProactiveCandidateScanState scan)
 	{
-		if (!ReferenceEquals(_candidateScan, scan))
+		if (!_candidateScanOwner.TryComplete(scan))
 		{
 			return;
 		}
-		_candidateScan = null;
 		DuelSettings settings = DuelSettings.GetSettings();
 		if (settings == null || !settings.EnableProactiveNpcRequests || _activeSession != null)
 		{
@@ -555,24 +544,6 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		Logger.Log("ProactiveNpcRequest", "scan selected: triggerSource=" + (candidate.TriggerSource ?? "") + " knownMajorBefore=" + candidate.KnownMajorBeforeRequest + " effectiveNotoriety=" + candidate.EffectiveNotorietyAtRequest + " needChance=" + candidate.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + candidate.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + candidate.SelectedNeedUrgency.ToString("0.##") + " typeWeight=" + candidate.NeedTypeWeightMultiplier.ToString("0.##") + " need=" + (candidate.NeedType ?? "") + " hero=" + (candidate.Hero?.StringId ?? "") + " party=" + (candidate.Party?.StringId ?? "") + " distance=" + candidate.Distance.ToString("0.0") + " scanMs=" + TimeSpan.FromTicks(DateTime.UtcNow.Ticks - scan.StartedAtUtcTicks).TotalMilliseconds.ToString("0") + " stats=" + scan.Stats.ToLogString());
 		StartRequest(candidate, settings);
-	}
-
-	private static bool IsCandidateBetter(ProactiveCandidate candidate, ProactiveCandidate currentBest)
-	{
-		if (candidate == null)
-		{
-			return false;
-		}
-		if (currentBest == null)
-		{
-			return true;
-		}
-		float candidateWeightedUrgency = GetCandidateWeightedUrgency(candidate);
-		float bestWeightedUrgency = GetCandidateWeightedUrgency(currentBest);
-		if (Math.Abs(candidateWeightedUrgency - bestWeightedUrgency) > 0.001f) return candidateWeightedUrgency > bestWeightedUrgency;
-		if (Math.Abs(candidate.NeedUrgency - currentBest.NeedUrgency) > 0.001f) return candidate.NeedUrgency > currentBest.NeedUrgency;
-		if (candidate.EffectiveNotorietyAtRequest != currentBest.EffectiveNotorietyAtRequest) return candidate.EffectiveNotorietyAtRequest > currentBest.EffectiveNotorietyAtRequest;
-		return candidate.Distance < currentBest.Distance;
 	}
 
 	private ProactiveCandidate FindBestRequestCandidate(DuelSettings settings, out CandidateScanStats stats, IEnumerable<MobileParty> sourceParties = null, Dictionary<string, TerritorialSettlementSnapshot> territorialSettlementSnapshots = null)
@@ -762,7 +733,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 				stats.NeedCandidates++;
 				if (TryEvaluateCandidateTrigger(combinedCandidate, settings, stats))
 				{
-					if (IsCandidateBetter(combinedCandidate, bestCandidate))
+					if (ProactiveCandidateScanOwner.IsCandidateBetter(combinedCandidate, bestCandidate))
 					{
 						bestCandidate = combinedCandidate;
 					}
@@ -1569,7 +1540,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		List<ProactiveCandidate> ordered = needCandidates
 			.Where(c => c != null && !string.IsNullOrWhiteSpace(c.NeedType) && IsPlayerEligibleForProactiveNeed(c, c.NeedType, out _))
-			.OrderByDescending(GetCandidateWeightedUrgency)
+			.OrderByDescending(ProactiveCandidateScanOwner.GetWeightedUrgency)
 			.ThenByDescending(c => c.NeedUrgency)
 			.ThenByDescending(c => GetNeedPresentationPriority(c.NeedType))
 			.ToList();
@@ -4964,17 +4935,6 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return NeedDiplomacy;
 		}
 		return "";
-	}
-
-	private static float GetCandidateWeightedUrgency(ProactiveCandidate candidate)
-	{
-		if (candidate == null)
-		{
-			return 0f;
-		}
-		return Clamp(candidate.NeedUrgency, 0f, 100f)
-			* Clamp(candidate.NeedTypeFatigueMultiplier, 0f, 1f)
-			* Clamp(candidate.NeedTypeWeightMultiplier, 0f, 1f);
 	}
 
 	private static float GetEffectiveNeedTypeWeightMultiplier(string needType, DuelSettings settings, bool allowTestModeOverride = true)
