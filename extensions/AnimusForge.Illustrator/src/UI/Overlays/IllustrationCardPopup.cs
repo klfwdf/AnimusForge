@@ -508,7 +508,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private static string GenerateConversationSceneVariation(ConversationVisualContext context)
         {
             // 构图全权交给导演：只给自由创作授权 + 双人交互事实约束，不再提供预写取景句式。
-            return "【构图自由创作】：先采用最近一轮对话中已发生或正在进行的动作，再设计镜头景别、机位角度与前景运用；" +
+            return "【构图自由创作】：先采用最近2条对话中已发生或正在进行的动作，再设计镜头景别、机位角度与前景运用；" +
                 "双方可随对话动作改变朝向与互动，不预设面对面站立，不拘泥固定构图模板。";
         }
 
@@ -640,7 +640,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 session = _conversationSession != null && string.Equals(_conversationSession.SessionKey, conversationSessionKey, StringComparison.Ordinal)
                     ? _conversationSession : null;
             }
-            // 台词与最近一轮对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
+            // 台词与最近2条对话只进导演（DirectorOnlyFacts）——导演转成画面描述后，生图模型只见视觉文本，不再把台词画进图里
             _generationCount++;
             string variation = GenerateConversationSceneVariation(convContext);
             if (_generationCount > 1) variation += "\n" + VisualDirectorEngine.BuildRedrawVariationDirective(_generationCount);
@@ -703,7 +703,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 catch (Exception ex) { Debug.Print("[Illustrator] Conversation action history read failed: " + ex.Message); }
                 string workerArtDirection = baseArtDirection;
                 if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
-                var promptPlan = new IllustrationPromptPlan("最近一轮对话联动的场景插画", hardFacts, workerArtDirection, directorFacts);
+                var promptPlan = new IllustrationPromptPlan("最近2条对话联动的场景插画", hardFacts, workerArtDirection, directorFacts);
                 // 按实际owner分流：Mission用附近30米全景，地图对话只读当前展示画面。
                 var ageEvidence = convContext.InterlocutorAgeSnapshot;
                 if (ageEvidence != null)
@@ -982,7 +982,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     Kind = "npc", Text = instance._latestAutoReplyText,
                     Speaker = context.InterlocutorHero?.Name?.ToString() ?? context.InterlocutorCharacter?.Name?.ToString() ?? "对方"
                 });
-                context.RecentDialogueHistory = ConversationContextExtractor.BuildRecentDialogueHistory(turn, 1);
+                context.RecentDialogueHistory = ConversationContextExtractor.BuildRecentDialogueHistory(turn, ConversationContextExtractor.RecentDialogueLimit);
             }
             var emblems = new List<EmblemSpec>();
             AddEmblemSpec(emblems, context.InterlocutorHero, "对话对方");

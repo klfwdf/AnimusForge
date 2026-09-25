@@ -5,7 +5,11 @@ namespace AnimusForge.Illustrator.Core
         internal IllustrationStylePreset(string directorPrompt, string imagePrompt, string negativePrompt = null, string apiStyle = null, bool isCustom = false)
         {
             DirectorPrompt = directorPrompt;
-            ImagePrompt = imagePrompt;
+            // Send the full selected style independently of anything the director returns.
+            // Keep endpoint-specific wording as a supplement, never as a shorter replacement.
+            ImagePrompt = string.IsNullOrEmpty(imagePrompt) || imagePrompt == directorPrompt
+                ? directorPrompt
+                : directorPrompt + "\n" + imagePrompt;
             NegativePrompt = negativePrompt;
             ApiStyle = apiStyle;
             IsCustom = isCustom;
@@ -20,7 +24,7 @@ namespace AnimusForge.Illustrator.Core
 
     /// <summary>
     /// One shared definition per style. Resolve once per request; built-in presets are immutable and cached.
-    /// The director gets painting decisions to apply, while the image endpoint gets a concise style anchor.
+    /// The image endpoint receives the full director style plus any endpoint-specific supplement.
     /// </summary>
     internal static class IllustrationStylePresets
     {
@@ -34,7 +38,7 @@ namespace AnimusForge.Illustrator.Core
             "光源方向、昼夜、天气和物体固有色服从现场事实，明暗对照不改变真实时段。" +
             "人物、衣物、建筑与地面采用统一的绘画语言，以接触阴影、环境反光和遮挡关系自然结合。" +
             "整体厚重、克制、有历史叙事感，让绘画表现服务于人物当下的行动。",
-            "古典写实历史油画，准确结构与概括性油彩笔触并重；焦点精细、次要区域笔触简练，仍保留导演设计的环境结构、材质层次与叙事细节。轮廓虚实有别，暗部通透、冷暖丰富。人物与环境统一绘制，保留现场采光及固有色，避免全局棕黄、塑料质感和均匀锐化。",
+            null,
             "2d flat vector art, cheap cel-shading, lineart sketch, anime, cartoon, 卡通, 动漫风");
 
         private static readonly IllustrationStylePreset DarkEpic = new IllustrationStylePreset(
