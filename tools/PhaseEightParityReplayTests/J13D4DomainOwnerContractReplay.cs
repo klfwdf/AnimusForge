@@ -19,6 +19,7 @@ internal static class J13D4DomainOwnerContractReplay
         Require(composition.Contains("campaignGameStarter.AddBehavior(new AfWarStatsBehavior())", StringComparison.Ordinal)
             && host.Contains("public sealed partial class AfWarStatsBehavior : CampaignBehaviorBase", StringComparison.Ordinal)
             && host.Contains("CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded)", StringComparison.Ordinal)
+            && host.Contains("CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick)", StringComparison.Ordinal)
             && host.Contains("CampaignEvents.WarDeclared.AddNonSerializedListener(this, OnWarDeclared)", StringComparison.Ordinal)
             && host.Contains("CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace)", StringComparison.Ordinal)
             && host.Contains("CampaignEvents.BeforeHeroKilledEvent.AddNonSerializedListener(this, OnBeforeHeroKilled)", StringComparison.Ordinal),
