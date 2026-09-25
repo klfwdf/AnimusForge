@@ -41,6 +41,52 @@ public sealed partial class AfWarStatsBehavior
             HistoricalWars.Add(ToHistoricalRecord(pairKey, record, endDay));
         }
 
+        internal void ApplyBattleStats(
+            WarStatsRecord record,
+            bool directOrder,
+            int killsByOne,
+            int casualtiesOfOne,
+            int killsByTwo,
+            int casualtiesOfTwo,
+            bool hasWinner,
+            bool kingdomOneWon)
+        {
+            if (record == null)
+            {
+                return;
+            }
+
+            if (directOrder)
+            {
+                record.KillsA += Math.Max(0, killsByOne);
+                record.CasualtiesA += Math.Max(0, casualtiesOfOne);
+                record.KillsB += Math.Max(0, killsByTwo);
+                record.CasualtiesB += Math.Max(0, casualtiesOfTwo);
+            }
+            else
+            {
+                record.KillsA += Math.Max(0, killsByTwo);
+                record.CasualtiesA += Math.Max(0, casualtiesOfTwo);
+                record.KillsB += Math.Max(0, killsByOne);
+                record.CasualtiesB += Math.Max(0, casualtiesOfOne);
+            }
+
+            if (hasWinner)
+            {
+                bool aWon = directOrder ? kingdomOneWon : !kingdomOneWon;
+                if (aWon)
+                {
+                    record.WinsA++;
+                    record.LossesB++;
+                }
+                else
+                {
+                    record.LossesA++;
+                    record.WinsB++;
+                }
+            }
+        }
+
         internal int DeleteHistoricalWars(IEnumerable<HistoricalWarEntry> entries)
         {
             if (entries == null)

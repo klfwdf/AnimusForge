@@ -372,5 +372,16 @@ Array selection = Array.CreateInstance(historyEntryType, 1); selection.SetValue(
 Check((int)Call(owner, "DeleteHistoricalWars", selection) == 1 && history.Count == 0 && active.Count == 1,
     "terminal history deletion is identity-scoped and keeps reopened war");
 Check((int)Call(owner, "DeleteHistoricalWars", selection) == 0, "duplicate terminal deletion is harmless");
+Check(ledgerType.GetMethod("ApplyBattleStats", Members) != null, "ledger owns battle count decisions");
+Call(ledger, "ApplyBattleStats", second, true, 5, 6, 8, 9, true, true);
+Check((int)Get(second, "KillsA") == 12 && (int)Get(second, "CasualtiesA") == 6
+    && (int)Get(second, "KillsB") == 8 && (int)Get(second, "CasualtiesB") == 9
+    && (int)Get(second, "WinsA") == 1 && (int)Get(second, "LossesB") == 1,
+    "direct-order battle counts and winner apply once");
+Call(ledger, "ApplyBattleStats", second, false, -2, 3, 4, -5, true, false);
+Check((int)Get(second, "KillsA") == 16 && (int)Get(second, "CasualtiesA") == 6
+    && (int)Get(second, "KillsB") == 8 && (int)Get(second, "CasualtiesB") == 12
+    && (int)Get(second, "WinsA") == 2 && (int)Get(second, "LossesB") == 2,
+    "reverse-order battle counts clamp negatives and preserve winner polarity");
 Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=archive/idempotence/list-roundtrip live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));
