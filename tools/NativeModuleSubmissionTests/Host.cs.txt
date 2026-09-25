@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Contracts;
@@ -51,7 +52,13 @@ namespace AnimusForge {
     results.Add(scoped.SubmitNative("shared","text").Snapshot.ReasonCode=="dialogue.request_id_conflict");
     results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"","fresh","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
     results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Native,"","spoof","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
-   }return results.ToArray();
+   }
+   var ticketClient=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel());
+   string issued=ticketClient.CaptureSceneContextTicket();
+   results.Add(issued!=null&&ShoutBehavior.SceneTicketCount==1);
+   ticketClient.Dispose();
+   results.Add(ShoutBehavior.SceneTicketCount==0&&ticketClient.CaptureSceneContextTicket()==null);
+   return results.ToArray();
   }
  }
  static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
@@ -63,6 +70,10 @@ namespace AnimusForge {
  static class WorldMapPartyCommandBehavior {internal sealed class WorldMapOrderApplyResult {internal bool NeedsChannelExit;}}
  static class MyBehavior { internal static MemoryCommitResult CommitDialogueHistoryWithScene(string id,bool nonHero,string name,string player,string reply,string fact,int session){NativeHost.Game();NativeHost.Writes++;return new MemoryCommitResult(NativeHost.MemoryFails?MemoryCommitStatus.Failed:MemoryCommitStatus.Applied);} }
  public partial class ShoutBehavior {
+  private static readonly Dictionary<string,string> SceneTickets=new();
+  internal static int SceneTicketCount=>SceneTickets.Count;
+  internal static string IssueModuleSceneTicket(string clientId){string id=Guid.NewGuid().ToString("N");SceneTickets.Add(id,clientId);return id;}
+  internal static void RevokeModuleSceneTickets(string clientId){foreach(string id in SceneTickets.Where(x=>x.Value==clientId).Select(x=>x.Key).ToArray())SceneTickets.Remove(id);}
   private static ShoutBehavior CurrentInstance;
   private readonly ConcurrentQueue<Action> _mainThreadActions=new ConcurrentQueue<Action>();
   private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions=new AnimusForge.Refactor.Runtime.PendingOperationRegistry();

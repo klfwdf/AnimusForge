@@ -27,6 +27,16 @@ internal sealed class CoreDialogueClient : IDisposable
     internal CoreDialogueOperation SubmitNative(string requestId, string playerText)
         => Submit(CoreDialogueChannel.Native, "", requestId, playerText, _submitNative);
 
+    internal string CaptureSceneContextTicket()
+    {
+        lock (_gate) if (_disposed) return null;
+        string ticket = ShoutBehavior.IssueModuleSceneTicket(ClientId);
+        if (ticket == null) return null;
+        lock (_gate) if (!_disposed) return ticket;
+        ShoutBehavior.RevokeModuleSceneTickets(ClientId);
+        return null;
+    }
+
     // Future Scene/Courier callers must supply an AF-issued context identity. This fingerprint
     // does not validate a ticket: the real owner must claim its UI context before side effects.
     internal CoreDialogueOperation SubmitForContext(CoreDialogueChannel channel, string contextIdentity,
@@ -77,6 +87,7 @@ internal sealed class CoreDialogueClient : IDisposable
             _requests.Values.CopyTo(operations, 0);
             _requests.Clear();
         }
+        ShoutBehavior.RevokeModuleSceneTickets(ClientId);
         foreach (CoreDialogueOperation operation in operations) operation.Cancel();
     }
 
