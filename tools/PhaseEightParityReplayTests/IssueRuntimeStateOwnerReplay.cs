@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 internal static class IssueRuntimeStateOwnerReplay
 {
@@ -43,12 +44,34 @@ internal static class IssueRuntimeStateOwnerReplay
         object[] offer = { null, null };
         if ((bool)owner.GetMethod("TryGetOfferableIssue", Members).Invoke(null, offer) || offer[1] != null)
             throw new InvalidOperationException("Issue runtime state: missing giver reported offer");
+        Type heroType = owner.GetMethod("TryGetOfferableIssue", Members).GetParameters()[0].ParameterType;
+        Type issueBase = owner.GetMethod("TryGetOfferableIssue", Members).GetParameters()[1].ParameterType.GetElementType();
+        Type issueType = Assembly.Load("SandBox").GetType("SandBox.Issues.FamilyFeudIssueBehavior+FamilyFeudIssue", true);
+        object giver = RuntimeHelpers.GetUninitializedObject(heroType);
+        object other = RuntimeHelpers.GetUninitializedObject(heroType);
+        object issue = RuntimeHelpers.GetUninitializedObject(issueType);
+        heroType.GetProperty("Issue", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SetValue(giver, issue);
+        issueBase.GetField("_issueOwner", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(issue, giver);
+        FieldInfo stateField = issueBase.GetField("_issueState", BindingFlags.Instance | BindingFlags.NonPublic);
+        stateField.SetValue(issue, Enum.Parse(stateField.FieldType, "Ongoing"));
+        object[] active = { giver, null };
+        if (!(bool)owner.GetMethod("TryGetOfferableIssue", Members).Invoke(null, active) || !ReferenceEquals(active[1], issue))
+            throw new InvalidOperationException("Issue runtime state: active matching issue not offered");
+        stateField.SetValue(issue, Enum.Parse(stateField.FieldType, "SolvingWithQuestSolution"));
+        object[] accepted = { giver, null };
+        if ((bool)owner.GetMethod("TryGetOfferableIssue", Members).Invoke(null, accepted))
+            throw new InvalidOperationException("Issue runtime state: already accepted quest offered twice");
+        stateField.SetValue(issue, Enum.Parse(stateField.FieldType, "Ongoing"));
+        issueBase.GetField("_issueOwner", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(issue, other);
+        object[] wrongOwner = { giver, null };
+        if ((bool)owner.GetMethod("TryGetOfferableIssue", Members).Invoke(null, wrongOwner))
+            throw new InvalidOperationException("Issue runtime state: other giver's issue offered");
         object[] ready = { null, null, null };
         if ((bool)owner.GetMethod("TryGetReadyToTurnInIssue", Members).Invoke(null, ready)
             || ready[1] != null || ready[2] != null)
             throw new InvalidOperationException("Issue runtime state: missing giver reported turn-in");
         if ((string)bridge.GetMethod("BuildRuntimePromptBlockForExternal", Members).Invoke(null, new object[] { null }) != "")
             throw new InvalidOperationException("Issue runtime state: null Hero prompt changed");
-        Console.WriteLine("PASS issueRuntimeStateOwnerReplay ownerSource=1 promptSource=1 consumers=1 missingState=1 missingOffer=1 missingTurnIn=1 nullPrompt=1; liveQuest=NOT_RUN");
+        Console.WriteLine("PASS issueRuntimeStateOwnerReplay ownerSource=1 promptSource=1 consumers=1 missingState=1 missingOffer=1 activeOffer=1 acceptedReject=1 wrongOwner=1 missingTurnIn=1 nullPrompt=1; liveQuest=NOT_RUN");
     }
 }
