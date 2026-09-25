@@ -26205,6 +26205,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		List<Agent> framedTargets = GetAgentsForShoutTargetingContext(targetingContext);
 		int primaryAgentIndex = forcedPrimaryAgentIndex ?? targetingContext?.PrimaryAgentIndex ?? -1;
 		ScenePlayerShoutRequest request = CaptureScenePlayerShoutRequest(framedTargets, primaryAgentIndex);
+		if (request == null)
+		{
+			return;
+		}
 		_scenePlayerShoutRequestOwner.MarkStarted(request);
 		await ProcessCapturedScenePlayerShoutAsync(shoutText, extraFact, forcedPrimaryAgentIndex, request, null);
 	}
