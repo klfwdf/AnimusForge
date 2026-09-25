@@ -16,7 +16,18 @@ namespace AnimusForge.Illustrator.Engine
     // tableau, provider updates and deferred cleanup; only the screen blit is omitted.
     internal sealed class NativeCharacterExportWidget : CharacterTableauWidget
     {
-        public NativeCharacterExportWidget(UIContext context) : base(context) { }
+        public NativeCharacterExportWidget(UIContext context) : base(context)
+        {
+            // Identity references use the native display idle, never the scene action.
+            // Set the public property explicitly so provider creation receives it.
+            IdleAction = "act_inventory_idle_start";
+            IsEquipmentAnimActive = false;
+            CustomAnimation = string.Empty;
+            IsPlayingCustomAnimations = false;
+            ShouldLoopCustomAnimation = false;
+            LeftHandWieldedEquipmentIndex = -1;
+            RightHandWieldedEquipmentIndex = -1;
+        }
 
         private object _lastProvider;
         private Vec2 _lastSize;
