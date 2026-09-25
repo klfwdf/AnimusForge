@@ -1,3 +1,11 @@
+# 当前交接：主体 J13 最终离线收口（2026-09-25）
+
+- **状态**：`J13_OFFLINE_VERIFIED / J13g_OFFLINE_VERIFIED`，仅按[原 J13 计划](docs/plans/j13-domain-owners-plan.md)完成 a–f owner 与 g 最终离线门禁，不是实机或发布验收；J14 未启动。最终产品 `39cf9d47` 修复 Onboarding Base URL 取消后、主线程消费前的迟到结果竞态；证据目录 `894acdfc`，详细责任、候选身份和风险见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[范围图](docs/architecture/af-framework-code-scope.md)。
+- **最终证据**：原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；当前 Debug 1.4 SHA256 `03D0FACFC1199B7BFA68B8BDEEABCFF8B69E5B9A97AE6BB279050C33509F0E55` 完整 Phase8 当前 DLL 回放通过。V1 API 119、四 DLL metadata 1148、Persistence Profile 142 key/168 binding、Identity 142 SyncData/36 CampaignBehavior、Bridge/readiness、Native/Scene/Courier/J12 定向回归与 722 锚点代码地图均通过；证据层级和命令见主台账。真实游戏、旧档、provider、UI 焦点、音频、帧性能仍 **NOT-RUN**，Phase8 目录仍 `REPRESENTATIVE`，不能称发布 READY。
+- **交接边界**：本次只收口 J13；不 push、Stage、部署、打包、写游戏/外仓、改自动化或清理 `.dotnet-cli-home/`。J14 如需开工须另行授权。
+
+## 以下为 f 交接（历史）
+
 # 当前交接：主体 J13f UI/Overlay/Onboarding 有限离线收口（2026-09-25）
 
 - **状态**：`J13f_OFFLINE_VERIFIED / J13_ACTIVE`，仅本包离线完成，下一步按[原计划](docs/plans/j13-domain-owners-plan.md)执行 **J13g** 最终候选门禁；J14 不开始。真实 owner 与保留 Campaign/Gauntlet/Native/百科边界见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)。产品/回放 `1e2bd80a`、`a2e9b8eb`、`26bc72fa`、`48bcc48a`，Native 测试入口修复 `61f8720a`。

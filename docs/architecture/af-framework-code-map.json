@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "48bcc48ac3d089c1fff9aa6532ebcd3a24f5be85",
+  "sourceRevision": "39cf9d4724cc372a33503da270fd0c0e9dc6e6af",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -7883,24 +7883,24 @@
     {
       "id": "onboarding.host-dismissal",
       "path": "ModOnboardingBehavior.cs",
-      "start": 754,
-      "end": 754,
+      "start": 755,
+      "end": 755,
       "symbol": "private void ProcessUnexpectedOnboardingDismissal()",
       "match": "contains",
       "status": "j13f-offline-verified",
       "note": "原 Campaign/TW inquiry 消费者与可恢复阶段 allowlist",
-      "fileSha256": "b1841bcd7fab34ba9e23608ce16c05fde4fa209187baa65d77ce7a7e4ce850b6"
+      "fileSha256": "d44d2cd5f094fb6c61b4f000d27aa3b96c98393455020a24f96503f40f86820a"
     },
     {
       "id": "onboarding.host-tick",
       "path": "ModOnboardingBehavior.cs",
-      "start": 296,
-      "end": 296,
+      "start": 297,
+      "end": 297,
       "symbol": "private void OnTick(float dt)",
       "match": "contains",
       "status": "j13f-offline-verified",
       "note": "原 Campaign Tick 读取 startup owner 并执行提示",
-      "fileSha256": "b1841bcd7fab34ba9e23608ce16c05fde4fa209187baa65d77ce7a7e4ce850b6"
+      "fileSha256": "d44d2cd5f094fb6c61b4f000d27aa3b96c98393455020a24f96503f40f86820a"
     },
     {
       "id": "onboarding.popup-open",
