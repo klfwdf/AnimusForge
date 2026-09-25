@@ -26213,13 +26213,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		ScenePlayerShoutRequest request, Action<Action> runWithObservationScope)
 	{
 		await WaitForScenePostprocessGateAsync("before_player_shout_pipeline");
-		await RunNativeConversationMainThreadFuncAsync("scene_player_input", "player", request.TargetingContext.PrimaryAgentIndex, () =>
+		Task groupTask = await RunNativeConversationMainThreadFuncAsync("scene_player_input", "player", request.TargetingContext.PrimaryAgentIndex, () =>
 		{
 			if (!IsScenePlayerShoutRequestCurrent(request))
 			{
-				return false;
+				return (Task)null;
 			}
-			Action process = () => ProcessCurrentScenePlayerShout(shoutText, extraFact, forcedPrimaryAgentIndex, request);
+			Task startedGroup = null;
+			Action process = () => startedGroup = ProcessCurrentScenePlayerShout(shoutText, extraFact, forcedPrimaryAgentIndex, request);
 			if (runWithObservationScope == null)
 			{
 				process();
@@ -26228,11 +26229,15 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				runWithObservationScope(process);
 			}
-			return true;
-		}, false);
+			return startedGroup;
+		}, (Task)null);
+		if (groupTask != null)
+		{
+			await groupTask.ConfigureAwait(false);
+		}
 	}
 
-	private void ProcessCurrentScenePlayerShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
+	private Task ProcessCurrentScenePlayerShout(string shoutText, string extraFact, int? forcedPrimaryAgentIndex,
 		ScenePlayerShoutRequest request)
 	{
 		_stareTimer = 0f;
@@ -26251,7 +26256,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			InformationManager.DisplayMessage(new InformationMessage("你正在自言自语...", new Color(0.6f, 0.6f, 0.6f)));
 			ResumeGame();
-			return;
+			return Task.CompletedTask;
 		}
 		Agent primaryTarget = null;
 		if (forcedPrimaryAgentIndex.HasValue)
@@ -26261,7 +26266,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 异色主对象已经离场，请重新框选。", new Color(1f, 0.5f, 0.3f)));
 				ResumeGame();
-				return;
+				return Task.CompletedTask;
 			}
 		}
 		if (primaryTarget == null)
@@ -26272,14 +26277,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 没有找到异色主对象，请重新框选。", new Color(1f, 0.5f, 0.3f)));
 			ResumeGame();
-			return;
+			return Task.CompletedTask;
 		}
 		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
 		if (!TryBuildSceneShoutConversationScope(framedAgents, primaryTarget, conversationEpoch, out var conversationScope, out var audienceAgents))
 		{
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 在场人物快照已失效，请重新框选。", new Color(1f, 0.5f, 0.3f)));
 			ResumeGame();
-			return;
+			return Task.CompletedTask;
 		}
 		ActivateMultiSceneMovementSuppression(new int[1] { primaryTarget.Index });
 		InformationManager.DisplayMessage(new InformationMessage((primaryTarget.Name?.ToString() ?? "异色主对象") + " 正在思考...", new Color(0.7f, 0.7f, 0.7f)));
@@ -26292,7 +26297,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			RemoveSceneMovementSuppressionAgents(new int[1] { primaryTarget.Index });
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 无法读取异色主对象，请重新框选。", new Color(1f, 0.5f, 0.3f)));
 			ResumeGame();
-			return;
+			return Task.CompletedTask;
 		}
 		List<NpcDataPacket> framedNpcData = allNpcData.Where((NpcDataPacket npc) => conversationScope.TryGetEntry(npc.AgentIndex, out var entry) && entry.IsFramed).ToList();
 		string sceneTauntExtraFact = SceneTauntBehavior.BuildFrightenedCivilianShoutExtraFactExternal(primaryTarget);
@@ -26377,7 +26382,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 		ResumeGame();
 
-		_ = Task.Run(async delegate
+		return Task.Run(async delegate
 		{
 			try
 			{
