@@ -181,12 +181,12 @@ internal static partial class VanillaIssueOfferBridge
 
 	public static bool IsRagEligibleForExternal(Hero targetHero)
 	{
-		return TryGetRuntimeState(targetHero, out var _, out var _, out var _);
+		return IssueRuntimeStateOwner.TryGetRuntimeState(targetHero, out var _, out var _, out var _);
 	}
 
 	public static string BuildRagSemanticStateForExternal(Hero targetHero)
 	{
-		return TryGetRuntimeState(targetHero, out var stateKey, out var _, out var _) ? ("vanilla_issue:" + stateKey) : "";
+		return IssueRuntimeStateOwner.TryGetRuntimeState(targetHero, out var stateKey, out var _, out var _) ? ("vanilla_issue:" + stateKey) : "";
 	}
 
 	public static string BuildRuntimePromptBlockForExternal(Hero targetHero)
@@ -203,7 +203,7 @@ internal static partial class VanillaIssueOfferBridge
 		List<PostprocessRuleEntry> list = new List<PostprocessRuleEntry>();
 		try
 		{
-			if (!TryGetRuntimeState(targetHero, out var stateKey, out var _, out var _))
+			if (!IssueRuntimeStateOwner.TryGetRuntimeState(targetHero, out var stateKey, out var _, out var _))
 			{
 				return list;
 			}
@@ -244,7 +244,7 @@ internal static partial class VanillaIssueOfferBridge
 	private static bool TryBuildRuntimePromptBlock(Hero targetHero, out string stateKey, out string promptText)
 	{
 		promptText = "";
-		if (!TryGetRuntimeState(targetHero, out stateKey, out var issue, out var probe))
+		if (!IssueRuntimeStateOwner.TryGetRuntimeState(targetHero, out stateKey, out var issue, out var probe))
 		{
 			return false;
 		}
@@ -262,29 +262,6 @@ internal static partial class VanillaIssueOfferBridge
 			break;
 		}
 		return !string.IsNullOrWhiteSpace(promptText);
-	}
-
-	private static bool TryGetRuntimeState(Hero targetHero, out string stateKey, out IssueBase issue, out TurnInProbeResult probe)
-	{
-		stateKey = "";
-		issue = null;
-		probe = null;
-		if (TryGetOfferableIssue(targetHero, out issue))
-		{
-			stateKey = "offer";
-			return true;
-		}
-		if (TryGetReadyToTurnInIssue(targetHero, out issue, out probe))
-		{
-			stateKey = "ready_to_turn_in";
-			return true;
-		}
-		if (TryGetInProgressIssue(targetHero, out issue))
-		{
-			stateKey = (issue.IsSolvingWithAlternative ? "in_progress_alternative" : "in_progress");
-			return true;
-		}
-		return false;
 	}
 
 	private static string BuildOfferPromptBlock(Hero targetHero, IssueBase issue)
@@ -556,7 +533,7 @@ internal static partial class VanillaIssueOfferBridge
 	{
 		IssueBase issue2 = giver?.Issue;
 		Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf enter giver=" + (giver?.StringId ?? "") + " issuePresent=" + (issue2 != null) + " issueOwner=" + (issue2?.IssueOwner?.StringId ?? "") + " isOngoingWithoutQuest=" + ((issue2 != null) ? issue2.IsOngoingWithoutQuest.ToString() : "false") + " questPresent=" + ((issue2?.IssueQuest != null) ? "true" : "false"));
-		if (!TryGetOfferableIssue(giver, out var issue))
+		if (!IssueRuntimeStateOwner.TryGetOfferableIssue(giver, out var issue))
 		{
 			Logger.Log("Logic", "[IssueOffer] TryAcceptIssueSelf fail=no_offerable_issue giver=" + (giver?.StringId ?? ""));
 			ShowInfo("当前没有可接取的原版任务。", isError: true);
@@ -607,7 +584,7 @@ internal static partial class VanillaIssueOfferBridge
 
 	private static bool TryAcceptIssueWithCompanion(Hero giver, string companionId)
 	{
-		if (!TryGetOfferableIssue(giver, out var issue))
+		if (!IssueRuntimeStateOwner.TryGetOfferableIssue(giver, out var issue))
 		{
 			ShowInfo("当前没有可接取的原版任务。", isError: true);
 			return false;
@@ -720,7 +697,7 @@ internal static partial class VanillaIssueOfferBridge
 	{
 		try
 		{
-			if (companion == null || !TryGetOfferableIssue(giver, out IssueBase currentIssue) || !ReferenceEquals(currentIssue, issue))
+			if (companion == null || !IssueRuntimeStateOwner.TryGetOfferableIssue(giver, out IssueBase currentIssue) || !ReferenceEquals(currentIssue, issue))
 			{
 				SafeRestoreAlternativeRoster(issue);
 				return false;
@@ -742,52 +719,6 @@ internal static partial class VanillaIssueOfferBridge
 			ShowInfo("确认同伴代办时出现异常。", isError: true);
 			return false;
 		}
-	}
-
-	private static bool TryGetOfferableIssue(Hero targetHero, out IssueBase issue)
-	{
-		issue = targetHero?.Issue;
-		return issue != null && issue.IssueOwner == targetHero && issue.IsOngoingWithoutQuest;
-	}
-
-	private static bool TryGetInProgressIssue(Hero targetHero, out IssueBase issue)
-	{
-		issue = targetHero?.Issue;
-		return issue != null && issue.IssueOwner == targetHero && issue.IssueQuest != null && issue.IssueQuest.IsOngoing;
-	}
-
-	private static bool TryGetReadyToTurnInIssue(Hero targetHero, out IssueBase issue, out TurnInProbeResult probe)
-	{
-		issue = null;
-		probe = null;
-		if (!TryGetInProgressIssue(targetHero, out issue))
-		{
-			return false;
-		}
-		if (issue.IsSolvingWithAlternative)
-		{
-			return false;
-		}
-		string text = "";
-		bool flag = TryGetExplicitTurnInSignal(issue.IssueQuest, out text);
-		if (TryProbeQuestTurnIn(targetHero, issue, execute: false, out probe, out _))
-		{
-			probe.ExplicitCompletionSummary = text;
-			return true;
-		}
-		if (flag)
-		{
-			probe = new TurnInProbeResult
-			{
-				Issue = issue,
-				Quest = issue.IssueQuest,
-				ExplicitCompletionSummary = text,
-				IntroText = text,
-				IsConfident = false
-			};
-			return true;
-		}
-		return false;
 	}
 
 	private static bool TryGetExplicitTurnInSignal(QuestBase quest, out string summary)
@@ -1280,7 +1211,7 @@ internal static partial class VanillaIssueOfferBridge
 
 	private static bool TryTurnInIssue(Hero giver)
 	{
-		if (!TryGetReadyToTurnInIssue(giver, out var issue, out var probe))
+		if (!IssueRuntimeStateOwner.TryGetReadyToTurnInIssue(giver, out var issue, out var probe))
 		{
 			ShowInfo("当前没有可通过原版 discuss 流交付的任务。", isError: true);
 			return false;
