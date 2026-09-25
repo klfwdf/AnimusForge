@@ -1,5 +1,6 @@
 """Replay extracted encounter and duel control flow; no game or network access."""
 from pathlib import Path
+import argparse
 import importlib.util
 import os
 import subprocess
@@ -10,6 +11,12 @@ EXTRACTOR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(EXTRACTOR)
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dotnet", type=Path, default=ROOT.parent / ".dotnet-sdk/dotnet.exe")
+    args = parser.parse_args()
+    dotnet = args.dotnet.resolve()
+    if not dotnet.is_file():
+        parser.error(f"dotnet executable not found: {dotnet}")
     template = Path(__file__).with_name("Harness.cs.txt").read_text(encoding="utf-8")
     source = (ROOT / "LordEncounterBehavior.cs").read_text(encoding="utf-8-sig")
     signatures = [
@@ -35,7 +42,6 @@ def main():
     (output / "Program.cs").write_text(template, encoding="utf-8")
     (output / "Boundary.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649;CS0414</NoWarn></PropertyGroup></Project>', encoding="utf-8")
     (output / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
-    dotnet = ROOT.parent / ".dotnet-sdk/dotnet.exe"
     env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_CLI_UI_LANGUAGE="en")
     result = subprocess.run([str(dotnet), "run", "--project", str(output / "Boundary.csproj"), "-c", "Release"], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
     (output / "run.log").write_text(result.stdout + result.stderr, encoding="utf-8")
