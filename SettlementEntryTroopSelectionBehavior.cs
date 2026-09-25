@@ -27,6 +27,7 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.SaveSystem;
+using AnimusForge.Refactor.Modules;
 
 namespace AnimusForge;
 
@@ -68,7 +69,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static TroopRoster _ownSettlementProfile;
 	private static TroopRoster _otherSettlementProfile;
 	private static PendingProfileSelection _pendingProfileSelection;
-	private static PendingMissionEntry _pendingMissionEntry;
+	private static readonly SettlementMissionEntryOwner<PendingMissionEntry> _missionEntryOwner =
+		new SettlementMissionEntryOwner<PendingMissionEntry>(entry => entry.SettlementId,
+			entry => entry.ActivateVillageAftermath, entry => entry.CreatedUtc);
+	private static PendingMissionEntry _pendingMissionEntry
+	{
+		get => _missionEntryOwner.Pending;
+		set => _missionEntryOwner.Set(value);
+	}
 	private static PendingSettlementVictoryMenuEntry _pendingVictoryMenuEntry;
 	private static PendingVillageVictoryRewardEntry _pendingVillageVictoryRewardEntry;
 	private static PendingVillageAftermathEncounterExit _pendingVillageAftermathEncounterExit;
@@ -226,15 +234,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	internal static void CancelPendingVillageAftermathMissionEntryForExternal(string settlementId, string source)
 	{
-		PendingMissionEntry pending = _pendingMissionEntry;
-		if (pending == null
-			|| !pending.ActivateVillageAftermath
-			|| (!string.IsNullOrWhiteSpace(settlementId)
-				&& !string.Equals(pending.SettlementId, settlementId, StringComparison.OrdinalIgnoreCase)))
+		if (!_missionEntryOwner.CancelVillageAftermath(settlementId, out PendingMissionEntry pending))
 		{
 			return;
 		}
-		_pendingMissionEntry = null;
 		SettlementEntryTroopSelectionLog.Log("Cancelled pending GCCZ village mission entry. settlement=" + (pending.SettlementId ?? "N/A")
 			+ ", source=" + (source ?? "N/A"));
 	}
@@ -1669,16 +1672,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			PendingMissionEntry entry = _pendingMissionEntry;
-			if (entry == null || mission is not Mission concreteMission)
+			if (mission is not Mission concreteMission || _pendingMissionEntry == null)
 			{
 				return;
 			}
 			Settlement current = Settlement.CurrentSettlement ?? PlayerEncounter.LocationEncounter?.Settlement;
-			if (!string.IsNullOrWhiteSpace(entry.SettlementId) && current?.StringId != entry.SettlementId)
+			if (!_missionEntryOwner.TryConsumeForMission(current?.StringId,
+				out PendingMissionEntry entry, out bool mismatch))
 			{
-				SettlementEntryTroopSelectionLog.Log("Ignored mission start; settlement mismatch. expected=" + entry.SettlementId + ", live=" + SafeSettlementId(current));
-				_pendingMissionEntry = null;
+				if (mismatch)
+				{
+					SettlementEntryTroopSelectionLog.Log("Ignored mission start; settlement mismatch. expected=" + entry.SettlementId + ", live=" + SafeSettlementId(current));
+				}
 				return;
 			}
 			if (concreteMission.GetMissionBehavior<SettlementEntryTroopSelectionMissionLogic>() == null)
@@ -1686,7 +1691,6 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				concreteMission.AddMissionBehavior(new SettlementEntryTroopSelectionMissionLogic(entry));
 				SettlementEntryTroopSelectionLog.Log("Added mission logic. settlement=" + entry.SettlementId + ", selected=" + (entry.SelectedRoster?.TotalManCount ?? 0));
 			}
-			_pendingMissionEntry = null;
 		}
 		catch (Exception ex)
 		{
@@ -1703,15 +1707,11 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private static void ClearExpiredPendingMissionEntry()
 	{
-		PendingMissionEntry pending = _pendingMissionEntry;
-		if (pending == null
-			|| Mission.Current != null
-			|| pending.CreatedUtc == DateTime.MinValue
-			|| (DateTime.UtcNow - pending.CreatedUtc).TotalSeconds <= PendingMissionEntryLifetimeSeconds)
+		if (!_missionEntryOwner.TryExpire(DateTime.UtcNow, Mission.Current != null,
+			TimeSpan.FromSeconds(PendingMissionEntryLifetimeSeconds), out PendingMissionEntry pending))
 		{
 			return;
 		}
-		_pendingMissionEntry = null;
 		SettlementEntryTroopSelectionLog.Log("Cleared expired SETS pending mission entry. settlement=" + (pending.SettlementId ?? "N/A")
 			+ ", scene=" + pending.SceneKind
 			+ ", villageAftermath=" + pending.ActivateVillageAftermath);
