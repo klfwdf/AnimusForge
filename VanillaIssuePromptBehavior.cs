@@ -11,6 +11,7 @@ public class VanillaIssuePromptBehavior : CampaignBehaviorBase
 	public VanillaIssuePromptBehavior()
 	{
 		Instance = this;
+		VanillaIssueOfferBridge.ClearPendingAlternativeDispatchForCampaign();
 	}
 
 	public override void RegisterEvents()
@@ -21,6 +22,10 @@ public class VanillaIssuePromptBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		if (dataStore.IsLoading)
+		{
+			VanillaIssueOfferBridge.ClearPendingAlternativeDispatchForCampaign();
+		}
 	}
 
 	public bool TryGetRecentCompletionRecord(Hero giver, out string questTitle, out string completionDetail, out int rewardGold, out List<string> recentJournalEntries, bool consumeOnRead = false)

@@ -19,7 +19,7 @@ using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
-public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
+public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 {
 	public sealed class LetterNeedSnapshot
 	{
@@ -83,8 +83,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private Dictionary<string, float> _diplomacyDiscussionKeysUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 	private float _globalCooldownUntilHours;
 	private float _lastScanHour = -99999f;
-	private PendingOpeningFact _pendingNativeOpening;
-	private PendingOpeningFact _pendingSceneOpening;
+	private readonly ProactiveOpeningOwner _openingOwner = new ProactiveOpeningOwner();
 	private MobileParty _activePartyCache;
 	private string _activePartyCacheId = "";
 	private long _nextActiveEncounterProbeUtcTicks;
@@ -143,8 +142,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_diplomacyDiscussionKeysUntilDays = NormalizeCooldownDictionary(storage?.DiplomacyDiscussionKeysUntilDays);
 			_globalCooldownUntilHours = storage?.GlobalCooldownUntilHours ?? 0f;
 			_lastScanHour = storage?.LastScanHour ?? -99999f;
-			_pendingNativeOpening = null;
-			_pendingSceneOpening = null;
+			_openingOwner.Clear();
 			ClearActivePartyCache();
 			_candidateScan = null;
 			_policyDiscussionSnapshotCache = null;
@@ -155,6 +153,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			_heroCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 			_needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 			_diplomacyDiscussionKeysUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+			_openingOwner.Clear();
 			ClearActivePartyCache();
 			_candidateScan = null;
 			_policyDiscussionSnapshotCache = null;
@@ -290,7 +289,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		try
 		{
 			Hero hero = ShoutBehavior.GetNativeConversationTargetHeroForExternal();
-			return Instance?.PendingMatches(Instance._pendingNativeOpening, hero) == true;
+			return hero != null && Instance?._openingOwner.Matches(true, Instance._activeSession?.Id, GetHeroKey(hero)) == true;
 		}
 		catch
 		{
@@ -4663,21 +4662,13 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			fact = string.IsNullOrWhiteSpace(fact) ? needFact : fact + "\n" + needFact;
 		}
 		string prompt = BuildOpeningPrompt(GetActiveNeedTypes());
-		PendingOpeningFact pending = new PendingOpeningFact
-		{
-			HeroId = GetHeroKey(hero),
-			ExtraFact = fact,
-			PromptText = prompt,
-			CreatedAtHours = NowHours()
-		};
+		_openingOwner.Open(nativeConversation, _activeSession.Id, GetHeroKey(hero), fact, prompt, NowHours());
 		if (nativeConversation)
 		{
-			_pendingNativeOpening = pending;
 			_activeSession.Stage = "NativeConversationPending";
 		}
 		else
 		{
-			_pendingSceneOpening = pending;
 			_activeSession.Stage = "SceneConversationPending";
 		}
 	}
@@ -4707,20 +4698,9 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	{
 		extraFact = "";
 		promptText = "";
-		PendingOpeningFact pending = nativeConversation ? _pendingNativeOpening : _pendingSceneOpening;
-		if (!PendingMatches(pending, hero))
+		if (hero == null || !_openingOwner.TryConsume(nativeConversation, _activeSession?.Id, GetHeroKey(hero), out extraFact, out promptText))
 		{
 			return false;
-		}
-		extraFact = pending.ExtraFact ?? "";
-		promptText = pending.PromptText ?? "";
-		if (nativeConversation)
-		{
-			_pendingNativeOpening = null;
-		}
-		else
-		{
-			_pendingSceneOpening = null;
 		}
 		CompleteActiveForHeroInternal(hero, nativeConversation ? "native_opening_consumed" : "scene_opening_consumed");
 		return !string.IsNullOrWhiteSpace(extraFact);
@@ -4731,18 +4711,17 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		hero = null;
 		extraFact = "";
 		promptText = "";
-		PendingOpeningFact pending = nativeConversation ? _pendingNativeOpening : _pendingSceneOpening;
-		if (pending == null || string.IsNullOrWhiteSpace(pending.HeroId))
+		if (!_openingOwner.TryPeek(nativeConversation, _activeSession?.Id, out string heroId, out extraFact, out promptText))
 		{
 			return false;
 		}
-		hero = ResolveHero(pending.HeroId);
-		if (!PendingMatches(pending, hero))
+		hero = ResolveHero(heroId);
+		if (hero == null || !_openingOwner.Matches(nativeConversation, _activeSession?.Id, GetHeroKey(hero)))
 		{
+			extraFact = "";
+			promptText = "";
 			return false;
 		}
-		extraFact = pending.ExtraFact ?? "";
-		promptText = pending.PromptText ?? "";
 		return !string.IsNullOrWhiteSpace(extraFact);
 	}
 
@@ -4818,6 +4797,10 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (_activeSession == null)
 		{
 			return;
+		}
+		if (string.IsNullOrWhiteSpace(_activeSession.Id))
+		{
+			_activeSession.Id = Guid.NewGuid().ToString("N");
 		}
 		List<string> normalized = NormalizeSingleNeedType(_activeSession.NeedTypes, string.IsNullOrWhiteSpace(_activeSession.NeedType) ? NeedFoodShortage : _activeSession.NeedType);
 		_activeSession.NeedTypes = normalized;
@@ -5162,6 +5145,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		Logger.Log("ProactiveNpcRequest", "cleared active request reason=" + (reason ?? "unknown") + " hero=" + (session?.HeroId ?? "") + " needs=" + JoinNeedTypesForLog(session?.NeedTypes, session?.NeedType));
 		_activeSession = null;
+		_openingOwner.Clear();
 		ClearActivePartyCache();
 		_nextActiveEncounterProbeUtcTicks = 0L;
 	}
@@ -5203,11 +5187,6 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			return false;
 		}
 		return string.Equals(GetHeroKey(hero), _activeSession.HeroId, StringComparison.OrdinalIgnoreCase);
-	}
-
-	private bool PendingMatches(PendingOpeningFact pending, Hero hero)
-	{
-		return pending != null && hero != null && string.Equals(pending.HeroId, GetHeroKey(hero), StringComparison.OrdinalIgnoreCase);
 	}
 
 	private void CacheActiveParty(MobileParty party)
@@ -7626,6 +7605,7 @@ public sealed class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 
 	private sealed class PendingOpeningFact
 	{
+		public string SessionId { get; set; }
 		public string HeroId { get; set; }
 		public string ExtraFact { get; set; }
 		public string PromptText { get; set; }
