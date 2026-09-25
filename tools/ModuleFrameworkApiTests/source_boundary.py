@@ -64,7 +64,9 @@ def restore_runtime(current):
     api=(ROOT/'src/modules/AF.Module.PublicApi/V1/AfApi.cs').read_text(encoding='utf-8-sig')
     api_spec=importlib.util.spec_from_file_location('native_api_inverse',ROOT/'tools/NativeModuleSubmissionTests/source_boundary.py')
     api_inverse=importlib.util.module_from_spec(api_spec);api_spec.loader.exec_module(api_inverse)
-    api=api_inverse.restore('Api/V1/AfApi.cs',api)
+    # This inverse checks AfApi's original public shape; Native's historical dependency
+    # hashes are independently superseded by current J14 core-consumer tests.
+    api=api_inverse.restore('Api/V1/AfApi.cs',api,verify_dependencies=False)
     expected_api=old('Api/V1/AfApi.cs').replace('using AnimusForge.Refactor.Modules;', 'using AnimusForge.Refactor.Modules;\nusing AnimusForge.Api.Internal;').replace('return ModuleFrameworkRuntime.GetSnapshot(Capabilities);', 'return AfV1SnapshotProjection.Create(ModuleFrameworkRuntime.CaptureSnapshot(), Capabilities);')
     assert api==expected_api, 'Unreviewed public API change'
     return prior

@@ -52,6 +52,8 @@ python -X utf8 -B tools/NativeModuleSubmissionTests/source_boundary.py
 
 `source_boundary.py` 仅逆变换3个批准改动文件：API增量、admission optional票据、completion尾部receipt；校验新7生产依赖hash。原默认UI入口、动作/记忆算法、Saveable/SyncData未改变。它不是游戏回放或删除旧代码依据。
 
+J14 的渠道/上下文指纹有意修改了其中的 `CoreDialogueContracts`、`CoreDialogueOperation`、`CoreDialogueClient`，因此该历史 Native 依赖哈希门禁对当前源码预期报 `Unreviewed Native API dependency`；不要刷新旧 `source-review.json` 伪装成 2026-09-16 的审核。当前行为改由 `run.py` 的独立消费者、`skip-channel`/`skip-context` 编译成功反例和双版本实际 DLL 验证；ModuleFramework 的原 AfApi 逆变换仍验证原公共形状，但不复用上述过时依赖哈希。
+
 | 源码位置（一基） | 符号 | 责任 |
 |---|---|---|
 | `src/modules/AF.Module.PublicApi/V1/AfApi.cs:55` | `public static AfDialogueClient CreateDialogueClient()` | 公共V1创建入口；旧查询/身份不变 |
