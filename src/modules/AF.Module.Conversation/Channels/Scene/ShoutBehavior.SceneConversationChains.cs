@@ -1455,12 +1455,13 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		{
 			receipt?.Fail("scene.group_exception");
 			Logger.Log("ShoutBehavior", "[ERROR] HandleGroupResponsePerHeroIndependent: " + ex.Message);
-			if (IsSceneConversationEpochCurrent(conversationEpoch))
+			if (IsCurrentModuleGroup() && IsSceneConversationEpochCurrent(conversationEpoch))
 			{
 				List<NpcDataPacket> failedEngagedParticipants = (allNpcData ?? new List<NpcDataPacket>()).Where((NpcDataPacket npc) => npc != null && engagedAgentIndices.Contains(npc.AgentIndex)).ToList();
 				await RunNativeConversationMainThreadFuncAsync("scene_relay_failure_release", primaryNpc?.Name, primaryNpc?.AgentIndex ?? (-1), delegate
 				{
-					if (!SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
+					if (!IsCurrentModuleGroup()
+						|| !SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
 						|| sceneReplySessionId != Volatile.Read(ref _sceneHistorySessionId)
 						|| !IsSceneConversationEpochCurrent(conversationEpoch)) return false;
 					ReleaseSceneConversationConstraints(failedEngagedParticipants, primaryNpc?.AgentIndex ?? (-1), stopAutoGroupSession: true, clearQueuedSpeech: true, forceFullAutonomyRelease: true);
