@@ -19,6 +19,20 @@ namespace AnimusForge;
 
 public partial class ShoutBehavior
 {
+	private enum ScenePostprocessStatus { Completed, NoAction, Stale, TargetUnavailable, TimedOut, Failed }
+
+	private sealed class ScenePostprocessOutcome
+	{
+		internal ScenePostprocessOutcome(ScenePostprocessStatus status, int relayTargetAgentIndex = -1)
+		{
+			Status = status;
+			RelayTargetAgentIndex = relayTargetAgentIndex;
+		}
+		internal ScenePostprocessStatus Status { get; }
+		internal int RelayTargetAgentIndex { get; }
+		internal bool Succeeded => Status == ScenePostprocessStatus.Completed || Status == ScenePostprocessStatus.NoAction;
+	}
+
 	// One invocation owns this prepared state until completion. Its normalizer captures
 	// live Hero/Character references and request-local rule/asset candidates: it is not
 	// a detached DTO. Prepare and complete on the owning game context after checking
@@ -92,11 +106,11 @@ public partial class ShoutBehavior
 		return workItem.Normalize(content);
 	}
 
-	private Task<int> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, long expectedRuntimeGeneration = 0L, int expectedSceneSessionId = -1)
+	private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions(NpcDataPacket currentSpeaker, List<NpcDataPacket> allNpcData, Hero speakingHero, CharacterObject npcCharacter, string privateRecentWindowSection, string scenePublicHistorySection, string playerText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, bool siegeInterventionRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, int conversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, long expectedRuntimeGeneration = 0L, int expectedSceneSessionId = -1)
 	{
 		if (currentSpeaker == null || string.IsNullOrWhiteSpace(replyText))
 		{
-			return Task.FromResult(-1);
+			return Task.FromResult(new ScenePostprocessOutcome(ScenePostprocessStatus.Failed));
 		}
 		long queuedRuntimeGeneration = expectedRuntimeGeneration > 0L ? expectedRuntimeGeneration : SaveRuntimeGuard.CaptureGeneration();
 		int queuedSceneSessionId = expectedSceneSessionId >= 0 ? expectedSceneSessionId : Volatile.Read(ref _sceneHistorySessionId);
@@ -104,7 +118,9 @@ public partial class ShoutBehavior
 		ExecutionContext requestExecutionContext = ExecutionContext.Capture();
 		object runtimeScopeLock = new object();
 		int requestRetired = 0;
-		TaskCompletionSource<int> postprocessCompletion = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+		TaskCompletionSource<ScenePostprocessOutcome> postprocessCompletion = new TaskCompletionSource<ScenePostprocessOutcome>(TaskCreationOptions.RunContinuationsAsynchronously);
+		bool Complete(ScenePostprocessStatus status, int relayTargetAgentIndex = -1)
+			=> postprocessCompletion.TrySetResult(new ScenePostprocessOutcome(status, relayTargetAgentIndex));
 		List<string> preprocessRuleSnapshot = (preprocessRuleHits ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		NpcDataPacket speakerSnapshot = CloneNpcDataPacket(currentSpeaker);
 		List<NpcDataPacket> contextSnapshot = CloneNpcDataSnapshot(allNpcData);
@@ -132,6 +148,7 @@ public partial class ShoutBehavior
 		string runtimeTargetKingdomId = "";
 		string scenePostprocessChainName = "";
 		string targetLog = speakerSnapshot.Name ?? "unknown";
+		bool explicitlyNoRules = false;
 
 		bool IsRequestCurrent()
 		{
@@ -147,13 +164,13 @@ public partial class ShoutBehavior
 			if (!IsRequestCurrent())
 			{
 				Logger.Log("ShoutBehavior", "[DeferredPostprocess] skipped stale request phase=" + phase + " npc=" + targetLog);
-				postprocessCompletion.TrySetResult(-1);
+				Complete(ScenePostprocessStatus.Stale);
 				return false;
 			}
 			if (!IsNativeConversationResponseTargetAvailableForActionDispatch(runtimeTargetAgentIndex, speakingHero, npcCharacter, out string unavailableReason))
 			{
 				Logger.Log("ShoutBehavior", "[DeferredPostprocess] dropped response because target is unavailable npc=" + targetLog + " agentIndex=" + runtimeTargetAgentIndex + " phase=" + phase + " reason=" + unavailableReason);
-				postprocessCompletion.TrySetResult(DeferredPostprocessTargetUnavailableResult);
+				Complete(ScenePostprocessStatus.TargetUnavailable);
 				return false;
 			}
 			return true;
@@ -223,7 +240,7 @@ public partial class ShoutBehavior
 			{
 				await Task.Delay(ScenePostprocessGateWaitTimeoutMilliseconds, cancellationToken).ConfigureAwait(false);
 				Interlocked.Exchange(ref requestRetired, 1);
-				if (postprocessCompletion.TrySetResult(-1))
+				if (Complete(ScenePostprocessStatus.TimedOut))
 				{
 					Logger.Log("ShoutBehavior", "[DeferredPostprocess] request deadline exceeded npc=" + targetLog + " timeoutMs=" + ScenePostprocessGateWaitTimeoutMilliseconds);
 				}
@@ -234,7 +251,7 @@ public partial class ShoutBehavior
 			}
 		}
 
-		Task<int> task = postprocessCompletion.Task;
+		Task<ScenePostprocessOutcome> task = postprocessCompletion.Task;
 		RegisterScenePostprocessGateTask(task);
 		CancellationTokenSource deadlineCancellation = new CancellationTokenSource();
 		_ = EnforceRequestDeadlineAsync(deadlineCancellation.Token);
@@ -244,7 +261,7 @@ public partial class ShoutBehavior
 			{
 				if (!IsRequestCurrent())
 				{
-					postprocessCompletion.TrySetResult(-1);
+					Complete(ScenePostprocessStatus.Stale);
 					return;
 				}
 				Stopwatch postprocessWatch = Stopwatch.StartNew();
@@ -295,6 +312,7 @@ public partial class ShoutBehavior
 							diplomacyRuleInjected = diplomacyRuleInjected || independentClanPeaceResident;
 							if (!duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !persistentAdpDebtRuleInjected && !kingdomServiceRuleInjected && !kingdomVassalageRuleInjected && !kingdomAnnexationRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !voteDealRuleInjected && !customPolicyAgendaRuleInjected && !diplomacyRuleInjected && !worldMapPartyCommandRuleInjected && !nobleGatheringRuleInjected && !proposeAgendaRuleInjected && !marriageRuleInjected && !siegeInterventionRuleInjected && !relayRuleInjected && !npcSurrenderPostprocessSelected && !royalPostprocessSelected)
 							{
+								explicitlyNoRules = true;
 								return (SceneActionPostprocessWorkItem)null;
 							}
 							scenePostprocessChainName = ResolveScenePostprocessChainName();
@@ -332,7 +350,8 @@ public partial class ShoutBehavior
 					}, (SceneActionPostprocessWorkItem)null).ConfigureAwait(false);
 				if (workItem == null || !IsRequestCurrent())
 				{
-					postprocessCompletion.TrySetResult(-1);
+					Complete(!IsRequestCurrent() ? ScenePostprocessStatus.Stale
+						: explicitlyNoRules ? ScenePostprocessStatus.NoAction : ScenePostprocessStatus.Failed);
 					return;
 				}
 
@@ -345,7 +364,7 @@ public partial class ShoutBehavior
 					|| TryRequestSceneUnifiedActionPostprocess(systemPrompt, userPrompt, out content, out error);
 				if (!IsRequestCurrent())
 				{
-					postprocessCompletion.TrySetResult(-1);
+					Complete(ScenePostprocessStatus.Stale);
 					return;
 				}
 
@@ -385,7 +404,7 @@ public partial class ShoutBehavior
 						}
 						if (string.IsNullOrWhiteSpace(text2))
 						{
-							postprocessCompletion.TrySetResult(relayTargetAgentIndex);
+							Complete(succeeded ? ScenePostprocessStatus.Completed : ScenePostprocessStatus.Failed, relayTargetAgentIndex);
 							return true;
 						}
 						string deferredTags = text2;
@@ -422,12 +441,12 @@ public partial class ShoutBehavior
 						{
 							return false;
 						}
-						postprocessCompletion.TrySetResult(relayTargetAgentIndex);
+						Complete(succeeded ? ScenePostprocessStatus.Completed : ScenePostprocessStatus.Failed, relayTargetAgentIndex);
 						return true;
 					}), false).ConfigureAwait(false);
 				if (!dispatched)
 				{
-					postprocessCompletion.TrySetResult(-1);
+					Complete(ScenePostprocessStatus.Failed);
 					return;
 				}
 				if (speechCompletion != null)
@@ -438,7 +457,8 @@ public partial class ShoutBehavior
 					if (completed != speechCompletion.Task || !IsRequestCurrent())
 					{
 						Interlocked.Exchange(ref requestRetired, 1);
-						postprocessCompletion.TrySetResult(-1);
+						Complete(completed != speechCompletion.Task
+							? ScenePostprocessStatus.TimedOut : ScenePostprocessStatus.Stale);
 						return;
 					}
 					bool speechSucceeded = await speechCompletion.Task.ConfigureAwait(false);
@@ -449,24 +469,25 @@ public partial class ShoutBehavior
 							{
 								return false;
 							}
-							postprocessCompletion.TrySetResult(speechSucceeded ? relayTargetAgentIndex : -1);
+							Complete(speechSucceeded && succeeded ? ScenePostprocessStatus.Completed : ScenePostprocessStatus.Failed,
+								speechSucceeded ? relayTargetAgentIndex : -1);
 							return true;
 						}, false).ConfigureAwait(false);
 					if (!published)
 					{
-						postprocessCompletion.TrySetResult(-1);
+						Complete(ScenePostprocessStatus.Failed);
 					}
 				}
 			}
 			catch (Exception ex)
 			{
 				Logger.Log("ShoutBehavior", "[ERROR] QueueDeferredScenePostprocessActions: " + ex.Message);
-				postprocessCompletion.TrySetResult(-1);
+				Complete(ScenePostprocessStatus.Failed);
 			}
 			finally
 			{
 				Interlocked.Exchange(ref requestRetired, 1);
-				postprocessCompletion.TrySetResult(-1);
+				Complete(ScenePostprocessStatus.Failed);
 				deadlineCancellation.Cancel();
 				deadlineCancellation.Dispose();
 				lock (runtimeScopeLock)
@@ -508,7 +529,7 @@ public partial class ShoutBehavior
 				Logger.Log("ShoutBehavior", "[DeferredPostprocess] action protocol rejected error="
 					+ prepared.Execution.ErrorCode);
 			}
-			return true;
+			return prepared.Execution.Status == InteractionStatus.Succeeded;
 		}
 
 		InteractionEnvelope envelope;
@@ -657,7 +678,9 @@ public partial class ShoutBehavior
 		Logger.Log("ShoutBehavior", "[DeferredPostprocess] action commit status="
 			+ committed.Execution.Status + " effect=" + committed.Execution.EffectState
 			+ " error=" + committed.Execution.ErrorCode);
-		return !targetRejected;
+		return !targetRejected && (pendingSpeech != null
+			|| committed.Execution.Status == InteractionStatus.Executed
+			|| committed.Execution.Status == InteractionStatus.Succeeded);
 	}
 
 

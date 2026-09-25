@@ -17,6 +17,7 @@ public sealed class QueueHost
     private const int NativeConversationMainThreadPreprocessTimeoutMs=100;
     private const int ScenePostprocessGateWaitTimeoutMilliseconds=700;
     private const string PersistentAdpDebtPostprocessRuleId="persistent_adp_debt",CustomPolicyAgendaPostprocessRuleId="kingdom_agenda";
+    @@OUTCOME@@
     @@WORK@@
     @@COMPLETE@@
     @@REQUEST@@
@@ -36,7 +37,7 @@ public sealed class QueueHost
     private static string TrimPrivateRecentWindowForActionPostprocess(string text,int max)=>"trim["+max+"]:"+text;
     private static string FilterHistorySectionAgainstScenePublicHistory(string text,string pub)=>text+"|filtered:"+pub;
     private static string BuildSceneCompositeUserBlock(string a,string b,string c)=>b+"|public:"+c;
-    private static void RegisterScenePostprocessGateTask(Task<int> task){Q.GateRegistrations++;}
+    private static void RegisterScenePostprocessGateTask(Task task){Q.GateRegistrations++;}
     private static Task<T> RunNativeConversationMainThreadFuncAsync<T>(string stage,string target,int id,Func<T> action,T fallback)
     {
         var completion=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -99,7 +100,7 @@ public sealed class QueueHost
             });
         });
     }
-    public Task<int> Start(QueueFixture fixture)
+    public async Task<int> Start(QueueFixture fixture)
     {
         var method=GetType().GetMethod("QueueDeferredScenePostprocessActions",BindingFlags.NonPublic|BindingFlags.Instance);
         object[] args=method.GetParameters().Select<ParameterInfo,object>(p=>p.Name switch
@@ -129,7 +130,9 @@ public sealed class QueueHost
             _ when p.ParameterType==typeof(bool)=>!fixture.NoSelected && (p.Name=="sceneMechanismRuleInjected"||p.Name=="relayRuleInjected"),
             _=>throw new Exception("unmodeled Queue parameter "+p.Name)
         }).ToArray();
-        return (Task<int>)method.Invoke(this,args);
+        ScenePostprocessOutcome outcome=await (Task<ScenePostprocessOutcome>)method.Invoke(this,args);
+        Q.LastPostprocessStatus=outcome.Status.ToString();
+        return outcome.Status==ScenePostprocessStatus.TargetUnavailable?-2:outcome.RelayTargetAgentIndex;
     }
 }
 
@@ -141,10 +144,15 @@ public sealed class QueueFixture
     public bool SpeechTimeout,NormalizeThrows,Immediate,NullSpeaker,EmptyReply,NoSelected,MutateInputs,BlockNetwork,NetworkThrows,PrepareThrows;
     public int Expected=22,ExpectedActions=1,ExpectedSession=-1;
     public long ExpectedGeneration;
+    public string ExpectedStatus => NullSpeaker || EmptyReply || DropMainPhase!=null || NetworkThrows || PrepareThrows || NormalizeThrows || !NetworkSuccess || !SpeechSuccess
+        ? "Failed" : SpeechTimeout || BlockNetwork ? "TimedOut" : Change=="target" ? "TargetUnavailable"
+        : ExpectedGeneration>0 || ExpectedSession>0 || Change=="generation" || Change=="session" || Change=="epoch" ? "Stale"
+        : NoSelected ? "NoAction" : "Completed";
     public QueueFixture(string name){Name=name;}
 }
 public static class Q
 {
+    public static string LastPostprocessStatus;
     public static BlockingCollection<Action> Main=new();
     public static int MainThreadId;
     public static Thread MainThread;
@@ -327,6 +335,7 @@ public static class Program
                 if(fixture.BlockNetwork){Q.Check(!Q.NetworkExited.IsSet&&Q.NormalizeCalls==0,"deadline did not finish independently of blocked network");Q.NetworkResume.Set();Q.NetworkExited.Wait(TimeSpan.FromSeconds(1));await Task.Delay(20);await Q.Barrier();}
                 Q.Check(Q.OffMainReads==0,fixture.Name+" attempted game reads off main thread (including swallowed exceptions)");
                 Q.Check(result==fixture.Expected,fixture.Name+" result expected "+fixture.Expected+" actual "+result);
+                Q.Check(Q.LastPostprocessStatus==fixture.ExpectedStatus,fixture.Name+" typed status expected "+fixture.ExpectedStatus+" actual "+Q.LastPostprocessStatus);
                 Q.Check(Q.ActionEffects==fixture.ExpectedActions,fixture.Name+" unexpected action effects "+Q.ActionEffects);
                 Q.Check(Q.NetworkCalls<=1&&Q.NormalizeCalls<=1&&Q.SpeechEnqueues<=1,fixture.Name+" repeated pipeline");
                 Q.Check(Q.Ambient.Value=="caller-restored",fixture.Name+" caller AsyncLocal contaminated");
