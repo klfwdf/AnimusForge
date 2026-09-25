@@ -127,6 +127,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private bool _setupDone;
 
 	private readonly OnboardingSessionOwner _onboardingSession = new OnboardingSessionOwner();
+	private readonly OnboardingDismissalOwner<OnboardingUiStage> _dismissalOwner = new OnboardingDismissalOwner<OnboardingUiStage>();
 
 	private bool _welcomeInProgress;
 
@@ -187,10 +188,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private bool _pendingReturnToWelcome;
 
 	private OnboardingUiStage _activeOnboardingStage;
-
-	private OnboardingUiStage _pendingUnexpectedResumeStage;
-
-	private long _pendingUnexpectedResumeAfterUtcTicks;
 
 
 	private ApiSetupTarget _currentApiSetupTarget;
@@ -762,36 +759,28 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		if (_saveAndExitStage != SaveAndExitStage.None)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
 		if ((_setupDone && !_apiOnlySetupFlowActive) || _pendingReturnToWelcome || _pendingBaseUrlValidationResult || _pendingApiValidationResult || _pendingModelFetchResult)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
 		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.YjApiChoice && _activeOnboardingStage != OnboardingUiStage.YjApiKey && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.DeepSeekApiKeyOwnership && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
 		if (InformationManager.IsAnyInquiryActive() || AnimusForgeApiOnboardingPopup.IsOpen)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
-		if (_pendingUnexpectedResumeStage != _activeOnboardingStage)
-		{
-			_pendingUnexpectedResumeStage = _activeOnboardingStage;
-			_pendingUnexpectedResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
-			return;
-		}
-		if (DateTime.UtcNow.Ticks < _pendingUnexpectedResumeAfterUtcTicks)
+		if (!_dismissalOwner.TryClaim(_activeOnboardingStage, DateTime.UtcNow.Ticks, out OnboardingUiStage pendingUnexpectedResumeStage))
 		{
 			return;
 		}
-		OnboardingUiStage pendingUnexpectedResumeStage = _pendingUnexpectedResumeStage;
-		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 		_welcomeInProgress = false;
 		switch (pendingUnexpectedResumeStage)
 		{
@@ -1122,7 +1111,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_apiOnlySetupFlowActive = true;
 			_onboardingSession.CancelWelcome();
 			_pendingReturnToWelcome = false;
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			_quickPresetFlowActive = false;
 			_selectedQuickApiPreset = QuickApiPreset.None;
 			SetApiRepairFlowActive(active: false);
@@ -1147,7 +1136,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		SetApiRepairFlowActive(active: false);
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
-		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+		_dismissalOwner.Reset();
 		InformationManager.HideInquiry();
 		InformationManager.DisplayMessage(new InformationMessage("已取消 API 重新配置。"));
 	}
@@ -1161,7 +1150,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		SetApiRepairFlowActive(active: false);
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
-		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+		_dismissalOwner.Reset();
 		TryPersistMcmSettings(DuelSettings.GetSettings());
 		InformationManager.HideInquiry();
 		InformationManager.DisplayMessage(new InformationMessage("API 重新配置已完成：配置已写入 MCM，已返回游戏，不会进入数据库导入或首次使用流程。"));
@@ -3135,7 +3124,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingModelFetchSuccess = false;
 			_pendingModelFetchMessage = "";
 			_pendingModelFetchModels = new List<string>();
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			_welcomeInProgress = false;
 			_apiRepairFlowActive = false;
 			_currentApiSetupTarget = ApiSetupTarget.Primary;
@@ -3171,7 +3160,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			InformationManager.HideInquiry();
 			SaveHandler saveHandler = Campaign.Current?.SaveHandler;
 			if (saveHandler == null)

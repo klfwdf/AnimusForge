@@ -48,10 +48,11 @@ public sealed class AnimusForgeApiOnboardingPopup
 			return false;
 		}
 
+		AnimusForgeApiOnboardingPopup popup = null;
 		try
 		{
 			_activePopup?.Close(silent: true);
-			AnimusForgeApiOnboardingPopup popup = new AnimusForgeApiOnboardingPopup(topScreen, isApiOnlyFlow, onCompleted, onCancelled);
+			popup = new AnimusForgeApiOnboardingPopup(topScreen, isApiOnlyFlow, onCompleted, onCancelled);
 			popup.Open();
 			_activePopup = popup;
 			return true;
@@ -59,8 +60,7 @@ public sealed class AnimusForgeApiOnboardingPopup
 		catch (Exception ex)
 		{
 			Logger.Log("ApiOnboardingPopup", "[ERROR] Failed to open API onboarding popup: " + ex);
-			_activePopup?.Close(silent: true);
-			_activePopup = null;
+			popup?.Close(silent: true);
 			return false;
 		}
 	}
@@ -165,6 +165,7 @@ public sealed class AnimusForgeApiOnboardingPopup
 
 		try
 		{
+			_layer.InputRestrictions.ResetInputRestrictions();
 			_layer.IsFocusLayer = false;
 			ScreenManager.TryLoseFocus(_layer);
 		}
@@ -198,6 +199,10 @@ public sealed class AnimusForgeApiOnboardingPopup
 			catch
 			{
 			}
+		}
+		if (ReferenceEquals(_activePopup, this))
+		{
+			_activePopup = null;
 		}
 
 		if (!silent)

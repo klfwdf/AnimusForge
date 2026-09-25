@@ -178,9 +178,10 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 
 	private static bool Show(ScreenBase screen)
 	{
+		AnimusForgeNativeConversationOverlay overlay = null;
 		try
 		{
-			AnimusForgeNativeConversationOverlay overlay = new AnimusForgeNativeConversationOverlay(screen);
+			overlay = new AnimusForgeNativeConversationOverlay(screen);
 			overlay.Open();
 			_activeOverlay = overlay;
 			return true;
@@ -188,7 +189,7 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		catch (Exception ex)
 		{
 			Logger.Log("NativeConversationOverlay", "[ERROR] Failed to open overlay: " + ex);
-			CloseActive();
+			overlay?.Close(silent: true);
 			return false;
 		}
 	}
@@ -1639,8 +1640,26 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 		try
 		{
 			ShoutBehavior.CloseNativeConversationInputForExternal();
+		}
+		catch
+		{
+		}
+		try
+		{
 			NativeConversationAnswerAreaController.SetSuppressed(false);
+		}
+		catch
+		{
+		}
+		try
+		{
 			NativeConversationAnswerAreaController.ForceRestoreAll();
+		}
+		catch
+		{
+		}
+		try
+		{
 			_layer.InputRestrictions.ResetInputRestrictions();
 			_layer.IsFocusLayer = false;
 			ScreenManager.TryLoseFocus(_layer);
@@ -1659,10 +1678,19 @@ public sealed partial class AnimusForgeNativeConversationOverlay
 				Logger.Log("NativeConversationOverlay", "[WARN] Failed to remove overlay layer: " + ex.Message);
 			}
 		}
-		_dataSource?.OnFinalize();
-		if (ReferenceEquals(_activeOverlay, this))
+		try
 		{
-			_activeOverlay = null;
+			_dataSource?.OnFinalize();
+		}
+		catch
+		{
+		}
+		finally
+		{
+			if (ReferenceEquals(_activeOverlay, this))
+			{
+				_activeOverlay = null;
+			}
 		}
 	}
 }
