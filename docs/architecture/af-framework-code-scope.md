@@ -1,3 +1,9 @@
+# 当前范围：主体 J13d2 增量扫描 owner 切片完成，继续主会话/Issue（2026-09-25）
+
+产品 `6eb3d170` 将主动请求的运行时增量扫描状态、批大小、统计/候选排名、精确完成归 `src/modules/AF.Module.Social/Proactive/ProactiveCandidateScanOwner.cs:10–87`；原 `ProactiveNpcRequestBehavior.cs:410–549` 保留 Campaign/MCM/TW 读取和 1.5ms 每帧预算。opening 与 cooldown owner 沿用前片，主 session 及 Issue offer/in-progress/turn-in/完成回执仍未闭合，**J13d2/J13 `ACTIVE`**。证据和未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `6eb3d170`，546 锚点。无 push、Stage、部署、打包、游戏/外仓写入或 J14。
+
+## 以下为 d2 冷却切片范围（历史）
+
 # 当前范围：主体 J13d2 冷却/扫描节流 owner 切片完成，d2 整包继续（2026-09-25）
 
 产品 `43566f0f` 将主动请求三张冷却表、global/lastScan 状态及其导入/判定/记录/裁剪算法归 `src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs:10–132`；原 `ProactiveNpcRequestBehavior.cs:107–153,410–453,528–543,1270–1279,2668–2675,4443–4447,4730–4773` 保留 SyncData/MCM/TW 时间与对象适配和真实调用，`ProactiveOpeningOwner` 继续独占 pending。Issue 前片仅关闭窗口派遣 pending；主动候选资格/主 session 与 Issue offer/in-progress/turn-in/完成回执尚未闭合，**J13d2/J13 `ACTIVE`**。当前离线证据/未验范围见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定产品 `43566f0f`，539 锚点。未推送、Stage、部署、打包、外仓写入或提前 J14。

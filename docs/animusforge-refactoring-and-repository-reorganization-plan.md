@@ -1,3 +1,13 @@
+## 主体 J13d2 主动请求增量扫描 owner 切片（2026-09-25）
+
+目标仍是按[原 J13d2 退出范围](plans/j13-domain-owners-plan.md)完整关闭 Proactive/Issue，而非以本片缩小目标。起点 `fe8d8d4a`，意图 `31641e3f`，产品/回放 `6eb3d170f68d1aecd40b158246cd07d800842223`。**本扫描片有限 `OFFLINE_VERIFIED`，J13d2/J13 仍 `ACTIVE`**。
+
+- **真实归属和消费者**：`src/modules/AF.Module.Social/Proactive/ProactiveCandidateScanOwner.cs:10–87` 独占运行时扫描实例、起始/批大小、批次统计与候选排名、按身份一次性完成/清理；旧批次不能污染或退休新扫描。`ProactiveNpcRequestBehavior.cs:410–549` 原小时触发/主线程 `MobileParty` 快照与 Campaign tick 每帧处理调用 owner；`:736` 批内评优和`:1543` 候选排序也共用同一权重/紧急度/名声/距离决策。原主线程游戏对象读取及设置/资格仍在 host；无新 DLL/保存键，保存中的扫描继续以 `LastScanHour=-99999f` 在载入后重试。载入/MCM 关闭清理 owner 当前扫描。
+- **性能/验证**：建扫描时原有全 lord party 快照 O(N) 未谎称消除；批大小仍以 45 帧为目标并封顶每帧 16 队伍，host 仍按原 1.5ms `Stopwatch` 截断。`tools/PhaseEightParityReplayTests/ProactiveCandidateScanOwnerReplay.cs:5–76` 先在旧 DLL 红灯，再在当前 DLL 覆盖空/900 项批大小、重复发起、旧完成、统计隔离、排名全部 tie-break、一次完成、清理；不等于实机帧耗时。获准四目录复核后原脚本不带 `-Stage/-Deploy` 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 `0 warning / 0 error`。Debug 1.4 SHA256 `507BE34AEDA844518AC537DC43E05C773D96DDA1FEACB36EBF43DB919FF0580C` 的完整 Phase8 通过；四实现 DLL 其他 SHA：Debug 1.3 `437F5CD97499452F6F4FD369E163A59289B429BED212ECAB3EBC68B838168E9B`、Release 1.3 `2B5BE9217CCE9EE542D67192AE60329ACF030B9DD5D12820F9CD091C352B59F4`、Release 1.4 `BC4BAC6920AE7EA55B60CDF54F0423C96020ACCB46783B8F7DF06F6FB1AE016A`。V1 119、四 DLL metadata 1060、PersistenceIdentity 142 key/type 对/36 behaviors、source inventory 7 和[代码地图](architecture/af-framework-code-map.json) 546 锚点两模式通过。
+- **后续仍须关闭**：主动主 session 的资格/失效/取消/完成事实状态转换，及 Issue offer/in-progress/turn-in/完成回执与重复受理；此前 pending opening、冷却、派遣 pending 证据不能替代它们。下一步从 `ProactiveNpcRequestBehavior.cs:4259` 启动、`:4562` 清理、`:5087` 取消链及实际消费者读入，再转 Issue。真实 Campaign 触发、Quest/party-screen、旧档、provider/UI/音频/帧性能均 `NOT-RUN`，不得称实机验收。未 push、Stage、部署、打包、游戏/外仓写入或 J14，`.dotnet-cli-home/` 不动。
+
+## 以下为 d2 冷却切片记录（历史）
+
 ## 主体 J13d2 主动请求冷却与扫描节流 owner 切片（2026-09-25）
 
 承接 d2 opening/Issue 派遣生命周期首片 `580a1466`；本片意图 `a64442d6`，产品/回放 `43566f0f218775364fd3980e00b329f19ea61e7d`。**本片有限 `OFFLINE_VERIFIED`，J13d2/J13 仍 `ACTIVE`**；J13a–c/d1 既有有限结论不扩大为实机验收。未推送、Stage、部署、打包、改自动化、写游戏/外仓或进入 J14。
