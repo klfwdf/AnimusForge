@@ -78,11 +78,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 	private const double CandidateScanFrameBudgetMilliseconds = 1.5;
 
 	private ProactiveNpcRequestSession _activeSession;
-	private Dictionary<string, float> _heroCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-	private Dictionary<string, float> _needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-	private Dictionary<string, float> _diplomacyDiscussionKeysUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-	private float _globalCooldownUntilHours;
-	private float _lastScanHour = -99999f;
+	private readonly ProactiveRequestCooldownOwner _cooldownOwner = new ProactiveRequestCooldownOwner();
 	private readonly ProactiveOpeningOwner _openingOwner = new ProactiveOpeningOwner();
 	private MobileParty _activePartyCache;
 	private string _activePartyCacheId = "";
@@ -116,14 +112,14 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			storageJson = JsonConvert.SerializeObject(new ProactiveNpcRequestStorage
 			{
 				ActiveSession = _activeSession,
-				HeroCooldownUntilDays = _heroCooldownUntilDays,
-				NeedTypeFatigueUntilDays = _needTypeFatigueUntilDays,
-				DiplomacyDiscussionKeysUntilDays = _diplomacyDiscussionKeysUntilDays,
-				GlobalCooldownUntilHours = _globalCooldownUntilHours,
+				HeroCooldownUntilDays = _cooldownOwner.HeroCooldownUntilDays,
+				NeedTypeFatigueUntilDays = _cooldownOwner.NeedTypeFatigueUntilDays,
+				DiplomacyDiscussionKeysUntilDays = _cooldownOwner.DiplomacyDiscussionKeysUntilDays,
+				GlobalCooldownUntilHours = _cooldownOwner.GlobalCooldownUntilHours,
 				// Incremental scans are runtime-only. A save during the one-second scan window retries after load.
-				LastScanHour = _candidateScan == null ? _lastScanHour : -99999f
+				LastScanHour = _candidateScan == null ? _cooldownOwner.LastScanHour : -99999f
 			});
-			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "ProactiveNpcRequest", storageJson, "heroCooldowns=" + (_heroCooldownUntilDays?.Count ?? 0) + " typeFatigues=" + (_needTypeFatigueUntilDays?.Count ?? 0) + " active=" + (_activeSession != null));
+			CampaignSaveChunkHelper.LogRawJsonSaveStats(StorageKey, "ProactiveNpcRequest", storageJson, "heroCooldowns=" + _cooldownOwner.HeroCooldownUntilDays.Count + " typeFatigues=" + _cooldownOwner.NeedTypeFatigueUntilDays.Count + " active=" + (_activeSession != null));
 			CampaignSaveChunkHelper.SaveChunkedString(dataStore, StorageKey, storageJson, "ProactiveNpcRequest");
 			return;
 		}
@@ -137,11 +133,10 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			ProactiveNpcRequestStorage storage = string.IsNullOrWhiteSpace(storageJson) ? null : JsonConvert.DeserializeObject<ProactiveNpcRequestStorage>(storageJson);
 			_activeSession = storage?.ActiveSession;
 			NormalizeActiveSessionSingleNeed();
-			_heroCooldownUntilDays = NormalizeCooldownDictionary(storage?.HeroCooldownUntilDays);
-			_needTypeFatigueUntilDays = NormalizeCooldownDictionary(storage?.NeedTypeFatigueUntilDays ?? storage?.NeedCooldownUntilDays);
-			_diplomacyDiscussionKeysUntilDays = NormalizeCooldownDictionary(storage?.DiplomacyDiscussionKeysUntilDays);
-			_globalCooldownUntilHours = storage?.GlobalCooldownUntilHours ?? 0f;
-			_lastScanHour = storage?.LastScanHour ?? -99999f;
+			_cooldownOwner.Import(storage?.HeroCooldownUntilDays,
+				storage?.NeedTypeFatigueUntilDays ?? storage?.NeedCooldownUntilDays,
+				storage?.DiplomacyDiscussionKeysUntilDays,
+				storage?.GlobalCooldownUntilHours ?? 0f, storage?.LastScanHour ?? -99999f);
 			_openingOwner.Clear();
 			ClearActivePartyCache();
 			_candidateScan = null;
@@ -150,9 +145,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			_activeSession = null;
-			_heroCooldownUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-			_needTypeFatigueUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-			_diplomacyDiscussionKeysUntilDays = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+			_cooldownOwner.ResetDictionaries();
 			_openingOwner.Clear();
 			ClearActivePartyCache();
 			_candidateScan = null;
@@ -433,21 +426,20 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		float nowHours = NowHours();
 		int scanIntervalHours = GetEffectiveScanIntervalHours(settings);
-		if (nowHours - _lastScanHour < scanIntervalHours)
+		if (!_cooldownOwner.TryBeginScan(nowHours, scanIntervalHours))
 		{
 			return;
 		}
-		_lastScanHour = nowHours;
-		PruneExpiredNeedTypeFatigue(NowDays());
-		PruneExpiredDiplomacyDiscussionKeys(NowDays());
+		_cooldownOwner.PruneExpiredNeedTypeFatigue(NowDays());
+		_cooldownOwner.PruneExpiredDiplomacyDiscussionKeys(NowDays());
 		if (_activeSession != null)
 		{
 			Logger.Log("ProactiveNpcRequest", "scan skipped: active session hero=" + (_activeSession.HeroId ?? "") + " stage=" + (_activeSession.Stage ?? ""));
 			return;
 		}
-		if (nowHours < _globalCooldownUntilHours)
+		if (_cooldownOwner.IsGlobalCooldownActive(nowHours))
 		{
-			Logger.Log("ProactiveNpcRequest", "scan skipped: global cooldown remainingHours=" + Math.Max(0f, _globalCooldownUntilHours - nowHours).ToString("0.0"));
+			Logger.Log("ProactiveNpcRequest", "scan skipped: global cooldown remainingHours=" + Math.Max(0f, _cooldownOwner.GlobalCooldownUntilHours - nowHours).ToString("0.0"));
 			return;
 		}
 		if (TryGetPlayerBusyReason(out var busyReason))
@@ -545,9 +537,9 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (NowHours() < _globalCooldownUntilHours)
+		if (_cooldownOwner.IsGlobalCooldownActive(NowHours()))
 		{
-			Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_discard", () => "incremental scan discarded after global cooldown began remaining=" + (_globalCooldownUntilHours - NowHours()).ToString("0.0"), 5.0);
+			Logger.LogVerbose("ProactiveNpcRequest", "incremental_scan_discard", () => "incremental scan discarded after global cooldown began remaining=" + (_cooldownOwner.GlobalCooldownUntilHours - NowHours()).ToString("0.0"), 5.0);
 			return;
 		}
 		if (TryGetPlayerBusyReason(out string busyReason))
@@ -1278,7 +1270,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 			bool atWarWithPlayer = party.MapFaction.IsAtWarWith(mainParty.MapFaction);
 			string heroKey = GetHeroKey(hero);
 			float nowDays = NowDays();
-			if (IsOnCooldown(_heroCooldownUntilDays, heroKey, nowDays))
+			if (_cooldownOwner.IsHeroOnCooldown(heroKey, nowDays))
 			{
 				skipReason = "hero_cooldown";
 				return false;
@@ -2679,7 +2671,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (source?.Hero == null
 			|| !WorldDiplomacyBehavior.TryBuildProactiveDiscussionForExternal(source.Hero, out string discussionKey, out string discussionFact, out float urgency)
 			|| string.IsNullOrWhiteSpace(discussionKey)
-			|| (_diplomacyDiscussionKeysUntilDays.TryGetValue(discussionKey, out float untilDay) && untilDay > NowDays()))
+			|| _cooldownOwner.IsDiscussionOnCooldown(discussionKey, NowDays()))
 			return false;
 		candidate = TryBuildNeedCandidate(source, settings, NeedDiplomacy, urgency);
 		if (candidate == null) return false;
@@ -4451,7 +4443,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 		SetPartyAiAction.GetActionForEngagingParty(party, MobileParty.MainParty, MobileParty.NavigationType.Default, isFromPort: false);
 		int globalCooldown = GetEffectiveGlobalCooldownHours(settings);
-		_globalCooldownUntilHours = NowHours() + globalCooldown;
+		_cooldownOwner.StartGlobalCooldown(NowHours(), globalCooldown);
 		Logger.Log("ProactiveNpcRequest", "started request triggerSource=" + (_activeSession.TriggerSource ?? "") + " knownMajorBefore=" + _activeSession.KnownMajorBeforeRequest + " effectiveNotoriety=" + _activeSession.EffectiveNotorietyAtRequest + " needChance=" + _activeSession.NeedDrivenChance.ToString("0.##") + " notorietyChance=" + _activeSession.NotorietyDrivenChance.ToString("0.##") + " selectedUrgency=" + _activeSession.SelectedNeedUrgency.ToString("0.##") + " typeWeight=" + _activeSession.NeedTypeWeightMultiplierAtSelection.ToString("0.##") + " typeFatigueMultiplier=" + _activeSession.NeedTypeFatigueMultiplierAtSelection.ToString("0.##") + " typeFatigueRemainingDays=" + _activeSession.NeedTypeFatigueRemainingDaysAtSelection.ToString("0.##") + " need=" + _activeSession.NeedType + " needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " hero=" + _activeSession.HeroId + " party=" + _activeSession.PartyId + " kingdom=" + (_activeSession.TargetKingdomId ?? "") + " playerClanTier=" + _activeSession.PlayerClanTier + " isKingdomLeader=" + _activeSession.TargetHeroIsKingdomLeader + " kingdomVassals=" + _activeSession.KingdomFormalVassalClanCount + "/" + _activeSession.KingdomTargetVassalClanCount + " kingdomMercs=" + _activeSession.KingdomMercenaryClanCount + "/" + _activeSession.KingdomTargetMercenaryClanCount + " kingdomFiefScore=" + _activeSession.KingdomFiefScore + " kingdomWars=" + _activeSession.KingdomWarKingdomCount + " kingdomPowerRatio=" + _activeSession.KingdomPowerRatioToEnemies.ToString("0.00") + " foodDays=" + candidate.FoodDays + " partyGold=" + candidate.PartyGold + " totalWage=" + candidate.TotalWage + " unpaidWages=" + candidate.UnpaidWages.ToString("0.00") + " troops=" + candidate.MemberCount + "/" + candidate.PartySizeLimit + " troopRatio=" + candidate.PartySizeRatio.ToString("0.00") + " prisoners=" + candidate.PrisonerCount + "/" + candidate.PrisonerSizeLimit + " heroPrisoners=" + candidate.HeroPrisonerCount + " prisonerRatio=" + candidate.PrisonerSizeRatio.ToString("0.00") + " morale=" + candidate.Morale.ToString("0.0") + " mounts=" + candidate.MountCount + " packAnimals=" + candidate.PackAnimalCount + " mountRatio=" + candidate.MountRatio.ToString("0.00") + " carry=" + candidate.TotalWeightCarried.ToString("0.0") + "/" + candidate.InventoryCapacity + " carryRatio=" + candidate.CarryRatio.ToString("0.00") + " clanGold=" + candidate.ClanGold + " clanDebt=" + candidate.ClanDebtToKingdom + " captiveClanHeroes=" + candidate.CaptiveClanHeroCount + " captiveLeader=" + candidate.CaptiveClanLeaderHeld + " wageBudget=" + candidate.AvailableWageBudget + " distance=" + candidate.Distance.ToString("0.0") + " testFallback=" + candidate.IsTestFallback);
 		Logger.Log("ProactiveNpcRequest", "started request extra needs=" + JoinNeedTypesForLog(_activeSession.NeedTypes, _activeSession.NeedType) + " marriageAdults=" + _activeSession.LastKnownMarriageAdultClanHeroCount + " unmarriedAdults=" + _activeSession.LastKnownMarriageUnmarriedAdultCount + " firstUnmarried=" + (_activeSession.LastKnownMarriageFirstUnmarriedName ?? "") + " clanServiceClan=" + (_activeSession.LastKnownClanServiceTargetClanName ?? "") + " clanServiceKing=" + (_activeSession.LastKnownClanServiceCurrentKingName ?? "") + " clanServicePlayerRelation=" + _activeSession.LastKnownClanServicePlayerRelation + " clanServiceKingRelation=" + _activeSession.LastKnownClanServiceCurrentKingRelation + " clanServiceGap=" + _activeSession.LastKnownClanServiceRelationGap + " romanticPrivateRelation=" + _activeSession.LastKnownRomanticInteractionPrivateRelation + " greetingPrivateRelation=" + _activeSession.LastKnownGreetingPrivateRelation + " banditSettlement=" + (_activeSession.LastKnownBanditSuppressionSettlementName ?? "") + " banditCount=" + _activeSession.LastKnownBanditSuppressionBanditCount + " banditRadius=" + _activeSession.LastKnownBanditSuppressionRadius.ToString("0.0") + " banditTrust=" + _activeSession.LastKnownBanditSuppressionTrust + " banditPrivateRelation=" + _activeSession.LastKnownBanditSuppressionPrivateRelation + " territorialKingdom=" + (_activeSession.LastKnownTerritorialInterrogationKingdomName ?? "") + " territorialSettlement=" + (_activeSession.LastKnownTerritorialInterrogationSettlementName ?? "") + " territorialDistance=" + _activeSession.LastKnownTerritorialInterrogationSettlementDistance.ToString("0.0") + " territorialCulture=" + (_activeSession.LastKnownTerritorialInterrogationNpcCultureName ?? "") + " territorialCultureNotoriety=" + _activeSession.LastKnownTerritorialInterrogationCultureNotoriety + " revengeScore=" + _activeSession.LastKnownRevengePressureScore.ToString("0.0") + " revengeTarget=" + (_activeSession.LastKnownRevengeTargetName ?? "") + " revengeReason=" + (_activeSession.LastKnownRevengeReasonText ?? "") + " fiefProblems=" + _activeSession.LastKnownFiefProblemCount + " fief=" + (_activeSession.LastKnownFiefProblemName ?? "") + " fiefIssue=" + (_activeSession.LastKnownFiefIssueText ?? "") + " fiefLoyalty=" + _activeSession.LastKnownFiefLoyalty.ToString("0.0") + " fiefSecurity=" + _activeSession.LastKnownFiefSecurity.ToString("0.0") + " fiefGarrison=" + _activeSession.LastKnownFiefGarrisonCount + " allyInfluence=" + _activeSession.LastKnownClanInfluence.ToString("0.0") + " friendlyClans=" + _activeSession.LastKnownFriendlyClanCount + " hostileClans=" + _activeSession.LastKnownHostileClanCount);
 	}
@@ -4741,10 +4733,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		float nowDays = NowDays();
 		int heroCooldownDays = GetEffectiveHeroCooldownDays(settings);
 		string heroKey = GetHeroKey(hero);
-		if (!string.IsNullOrWhiteSpace(heroKey))
-		{
-			_heroCooldownUntilDays[heroKey] = nowDays + heroCooldownDays;
-		}
+		_cooldownOwner.RecordHeroCooldown(heroKey, nowDays, heroCooldownDays);
 	}
 
 	private void RecordActiveNeedTypeFatigue()
@@ -4760,7 +4749,7 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		if (!string.IsNullOrWhiteSpace(_activeSession.DiplomacyDiscussionKey))
 		{
 			int retentionDays = Math.Max(7, GetEffectiveNeedTypeFatigueDays(NeedDiplomacy, DuelSettings.GetSettings()));
-			_diplomacyDiscussionKeysUntilDays[_activeSession.DiplomacyDiscussionKey] = NowDays() + retentionDays;
+			_cooldownOwner.RecordDiscussion(_activeSession.DiplomacyDiscussionKey, NowDays(), retentionDays);
 		}
 		_activeSession.NeedTypeFatigueRecorded = true;
 	}
@@ -4776,10 +4765,10 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		int fatigueDays = GetEffectiveNeedTypeFatigueDays(normalized, settings);
 		if (fatigueDays <= 0)
 		{
-			_needTypeFatigueUntilDays.Remove(normalized);
+			_cooldownOwner.RecordNeedFatigue(normalized, 0f, fatigueDays);
 			return;
 		}
-		_needTypeFatigueUntilDays[normalized] = NowDays() + fatigueDays;
+		_cooldownOwner.RecordNeedFatigue(normalized, NowDays(), fatigueDays);
 		Logger.Log("ProactiveNpcRequest", "type fatigue recorded source=" + (source ?? "") + " need=" + normalized + " durationDays=" + fatigueDays + " multiplier=" + GetEffectiveNeedTypeFatigueMultiplier(settings).ToString("0.##"));
 	}
 
@@ -7260,67 +7249,10 @@ public sealed partial class ProactiveNpcRequestBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsOnCooldown(Dictionary<string, float> dict, string key, float nowDays)
-	{
-		return !string.IsNullOrWhiteSpace(key) && dict != null && dict.TryGetValue(key, out float untilDays) && untilDays > nowDays;
-	}
-
-	private static Dictionary<string, float> NormalizeCooldownDictionary(Dictionary<string, float> source)
-	{
-		Dictionary<string, float> result = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-		if (source == null)
-		{
-			return result;
-		}
-		foreach (KeyValuePair<string, float> pair in source)
-		{
-			string key = (pair.Key ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(key))
-			{
-				result[key] = pair.Value;
-			}
-		}
-		return result;
-	}
-
 	private float GetNeedTypeFatigueRemainingDays(string needType, float nowDays)
 	{
 		string normalized = NormalizeNeedType(needType);
-		if (string.IsNullOrWhiteSpace(normalized)
-			|| _needTypeFatigueUntilDays == null
-			|| !_needTypeFatigueUntilDays.TryGetValue(normalized, out float untilDays))
-		{
-			return 0f;
-		}
-		return Math.Max(0f, untilDays - nowDays);
-	}
-
-	private void PruneExpiredNeedTypeFatigue(float nowDays)
-	{
-		if (_needTypeFatigueUntilDays == null || _needTypeFatigueUntilDays.Count <= 0)
-		{
-			return;
-		}
-		foreach (string key in _needTypeFatigueUntilDays.Where(pair => pair.Value <= nowDays).Select(pair => pair.Key).ToList())
-		{
-			_needTypeFatigueUntilDays.Remove(key);
-		}
-	}
-
-	private void PruneExpiredDiplomacyDiscussionKeys(float nowDays)
-	{
-		if (_diplomacyDiscussionKeysUntilDays == null || _diplomacyDiscussionKeysUntilDays.Count == 0) return;
-		foreach (string key in _diplomacyDiscussionKeysUntilDays.Where(pair => pair.Value <= nowDays).Select(pair => pair.Key).ToList())
-		{
-			_diplomacyDiscussionKeysUntilDays.Remove(key);
-		}
-		if (_diplomacyDiscussionKeysUntilDays.Count > 256)
-		{
-			foreach (string key in _diplomacyDiscussionKeysUntilDays.OrderBy(pair => pair.Value).Take(_diplomacyDiscussionKeysUntilDays.Count - 256).Select(pair => pair.Key).ToList())
-			{
-				_diplomacyDiscussionKeysUntilDays.Remove(key);
-			}
-		}
+		return _cooldownOwner.GetNeedRemainingDays(normalized, nowDays);
 	}
 
 	private static int GetEffectiveScanIntervalHours(DuelSettings settings)
