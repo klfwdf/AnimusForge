@@ -84,19 +84,20 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static string _pendingSameKingdomVassalRebellionSettlementId;
 	private static string _pendingSameKingdomVassalRebellionOwnerClanId;
 	private static Mission _setsActiveUsableProtectionMission;
-	private static Mission _setsSelectedFollowerMission;
+	private static readonly SettlementFollowerMissionOwner<Mission, Agent> _followerOwner =
+		new SettlementFollowerMissionOwner<Mission, Agent>();
+	private static Mission _setsSelectedFollowerMission => _followerOwner.Mission;
 	private static Mission _setsNativeAlleyMission;
 	private static readonly FieldInfo NativeAlleyGuardAgentsField = AccessTools.Field(typeof(MissionAlleyHandler), "_guardAgents");
 	private static readonly FieldInfo NativeAlleyFightPositionField = AccessTools.Field(typeof(MissionAlleyHandler), "_fightPosition");
 	private static readonly HashSet<int> SetsActiveUsableProtectionAgentIndexes = new HashSet<int>();
-	private static readonly HashSet<int> SetsSelectedFollowerAgentIndexes = new HashSet<int>();
 	private static readonly Dictionary<int, float> SetsUsableProtectionLastLogTimes = new Dictionary<int, float>();
 	private static readonly object SettlementCivilianGatherRequestSync = new object();
 	private static PendingSettlementCivilianGatherRequest _pendingSettlementCivilianGatherRequest;
 	private static bool _settlementCivilianGatherRuntimeAvailable;
 	private static int _settlementCivilianGatherRuntimeGeneration;
 	private static bool _setsActiveUsableProtection;
-	private static bool _setsEntryMissionActive;
+	private static bool _setsEntryMissionActive => _followerOwner.Active;
 	private static bool _setsOrderControllerPrimed;
 	private static float _nextSetsOrderControllerPrimeTime;
 
@@ -269,7 +270,14 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	internal static bool IsSetsSelectedFollowerAgentForExternal(Agent agent)
 	{
-		return agent != null && IsSetsSelectedFollowerAgentForExternal(agent.Index);
+		try
+		{
+			return agent != null && _followerOwner.IsTracked(Mission.Current, agent.Index, agent);
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	internal static bool IsSetsSelectedFollowerAgentForExternal(int agentIndex)
@@ -280,7 +288,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			return SetsSelectedFollowerAgentIndexes.Contains(agentIndex);
+			return _followerOwner.ContainsIndex(Mission.Current, agentIndex);
 		}
 		catch
 		{
@@ -943,21 +951,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			bool missionChanged = mission == null || !ReferenceEquals(_setsSelectedFollowerMission, mission);
+			bool missionChanged = _followerOwner.SetActive(mission, active);
 			if (missionChanged)
 			{
-				SetsSelectedFollowerAgentIndexes.Clear();
-				_setsSelectedFollowerMission = mission;
 				_setsOrderControllerPrimed = false;
 				_nextSetsOrderControllerPrimeTime = 0f;
 			}
-			_setsEntryMissionActive = active && mission != null;
 			if (!active)
 			{
 				_setsOrderControllerPrimed = false;
 				_nextSetsOrderControllerPrimeTime = 0f;
 			}
-			SettlementEntryTroopSelectionLog.LogVerbose("SETS selected follower state updated. source=" + source + ", active=" + _setsEntryMissionActive + ", tracked=" + SetsSelectedFollowerAgentIndexes.Count);
+			SettlementEntryTroopSelectionLog.LogVerbose("SETS selected follower state updated. source=" + source + ", active=" + _setsEntryMissionActive + ", tracked=" + _followerOwner.Count);
 		}
 		catch
 		{
@@ -973,7 +978,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			SetSetsSelectedFollowerState(Mission.Current, active: true, source);
-			if (SetsSelectedFollowerAgentIndexes.Add(agent.Index))
+			if (_followerOwner.Register(agent.Index, agent))
 			{
 				SettlementEntryTroopSelectionLog.LogVerbose("Registered SETS selected follower agent. source=" + source + ", agent=" + agent.Index + ", troop=" + SafeCharacterId(agent.Character as CharacterObject));
 			}
@@ -987,10 +992,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			SetsSelectedFollowerAgentIndexes.Clear();
-			_setsSelectedFollowerMission = null;
+			_followerOwner.Clear();
 			_setsNativeAlleyMission = null;
-			_setsEntryMissionActive = false;
 			_setsOrderControllerPrimed = false;
 			_nextSetsOrderControllerPrimeTime = 0f;
 			BeginSettlementCivilianGatherRuntime(available: false);
@@ -3205,6 +3208,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				_defenderReserveAgentWaveNumbers.Remove(affectedAgent.Index);
 				RefreshSetsUsableProtectionState("agent_removed");
 			}
+			_followerOwner.Remove(affectedAgent.Index, affectedAgent);
 		}
 
 		protected override void OnEndMission()
