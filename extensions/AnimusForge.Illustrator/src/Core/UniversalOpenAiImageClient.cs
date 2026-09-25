@@ -398,11 +398,13 @@ namespace AnimusForge.Illustrator.Core
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
             string effectivePrompt = chatProtocol
-                ? BuildChatImagePrompt(prompt, size, quality, style, customStyleHint)
+                ? BuildChatImagePrompt(prompt, size, quality, string.Empty)
                 : (prompt ?? string.Empty);
-            if (!chatProtocol && !string.IsNullOrWhiteSpace(customStyleHint))
+            // One full style anchor shared by Chat, Edits and Generations.
+            string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
+            if (!string.IsNullOrWhiteSpace(styleAnchor))
             {
-                effectivePrompt += "\n[画风指令: " + customStyleHint.Trim() + "]";
+                effectivePrompt = styleAnchor + "\n" + effectivePrompt;
             }
             // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
             string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
@@ -472,12 +474,9 @@ namespace AnimusForge.Illustrator.Core
                 {
                     form.Add(new StringContent(model ?? string.Empty, Encoding.UTF8), "model");
                     var labels = new StringBuilder();
-                    string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
-                    if (!string.IsNullOrWhiteSpace(styleAnchor)) labels.AppendLine(styleAnchor);
-                    labels.AppendLine(VisualFidelityRules.ReferenceRepaint);
-                    labels.AppendLine().AppendLine(effectivePrompt ?? string.Empty);
+                    labels.AppendLine(effectivePrompt ?? string.Empty);
+                    labels.AppendLine().AppendLine(VisualFidelityRules.ReferenceRepaint);
                     if (!string.IsNullOrWhiteSpace(quality)) form.Add(new StringContent(quality, Encoding.UTF8), "quality");
-                    if (string.IsNullOrWhiteSpace(customStyleHint) && !string.IsNullOrWhiteSpace(style)) labels.Append("\n画风要求：").Append(style);
                     if (!string.IsNullOrWhiteSpace(size)) form.Add(new StringContent(size, Encoding.UTF8), "size");
                     form.Add(new StringContent("1"), "n");
 
@@ -562,7 +561,7 @@ namespace AnimusForge.Illustrator.Core
                 {
                     var content = new JArray
                     {
-                        new JObject { ["type"] = "text", ["text"] = BuildImageStyleAnchor(customStyleHint, style) },
+                        new JObject { ["type"] = "text", ["text"] = effectivePrompt },
                         new JObject { ["type"] = "text", ["text"] = VisualFidelityRules.ReferenceRepaint }
                     };
 
@@ -655,17 +654,9 @@ namespace AnimusForge.Illustrator.Core
                         actualRefImages++;
                     }
 
-                    // 3. 追加详细场景与构图描述
-                    content.Add(new JObject
-                    {
-                        ["type"] = "text",
-                        ["text"] = effectivePrompt
-                    });
-
-                    // 4. 追加艺术重绘与画风铁律
-                    string resolvedStyle = !string.IsNullOrWhiteSpace(customStyleHint) ? customStyleHint.Trim() : (!string.IsNullOrWhiteSpace(style) ? style.Trim() : null);
-                    string styleClause = !string.IsNullOrWhiteSpace(resolvedStyle)
-                        ? $"1. 严格遵循指定的画风要求（{resolvedStyle}），从零完整重绘整幅画面，统一处理人物、环境、材质、光照与透视；不要复制参考图像素、UI或游戏截图痕迹。\n"
+                    // The complete selected style is already in effectivePrompt.
+                    string styleClause = (!string.IsNullOrWhiteSpace(customStyleHint) || !string.IsNullOrWhiteSpace(style))
+                        ? "1. 严格遵循前述画风锚点，从零完整重绘整幅画面，统一处理人物、环境、材质、光照与透视；不要复制参考图像素、UI或游戏截图痕迹。\n"
                         : "1. 从零完整重绘整幅画面，统一处理人物、环境、材质、光照与透视；不要复制参考图像素、UI或游戏截图痕迹。\n";
 
                     content.Add(new JObject
@@ -683,10 +674,7 @@ namespace AnimusForge.Illustrator.Core
                 }
                 else
                 {
-                    string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
-                    messageContent = string.IsNullOrWhiteSpace(styleAnchor)
-                        ? (JToken)effectivePrompt
-                        : (JToken)(styleAnchor + "\n" + effectivePrompt);
+                    messageContent = effectivePrompt;
                 }
                 sentPrompt = ExtractChatPromptText(messageContent);
 
@@ -730,12 +718,6 @@ namespace AnimusForge.Illustrator.Core
                     payload["style"] = style;
                 }
 
-                string styleAnchor = BuildImageStyleAnchor(customStyleHint, style);
-                if (!string.IsNullOrWhiteSpace(styleAnchor))
-                {
-                    payload["prompt"] = styleAnchor + "\n" + payload["prompt"];
-                    sentPrompt = (string)payload["prompt"];
-                }
             }
 
             using (var request = new HttpRequestMessage(HttpMethod.Post, endpointUrl))

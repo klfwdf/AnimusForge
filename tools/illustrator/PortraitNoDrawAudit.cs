@@ -81,10 +81,21 @@ public static class PortraitNoDrawAudit
         writtenFields[0].SetValue(shell, false);
         render.Invoke(shell, new object[] { null, null });
         Check((bool)writtenFields[0].GetValue(shell), "render keeps provider creation and ticking requested");
-        Check(widget.GetMethod("OnUpdate", All).DeclaringType != widget &&
+        var update = widget.GetMethod("OnUpdate", All | BindingFlags.DeclaredOnly);
+        Check(update != null && ReadIl(update).Count(i => i.Item2 is MethodInfo &&
+            ((MethodInfo)i.Item2).Name == "OnUpdate" && ((MethodInfo)i.Item2).DeclaringType == nativeWidget) == 1 &&
             widget.GetMethod("OnClearTextureProvider", All).DeclaringType != widget,
-            "provider updates and deferred cleanup are inherited unchanged");
+            "warmup counting calls native update once and keeps native deferred cleanup");
         var ctor = widget.GetConstructors(All).Single();
+        var ctorIl = ReadIl(ctor);
+        Check(ctorIl.Any(i => object.Equals(i.Item2, "act_inventory_idle_start")) &&
+            ctorIl.Count(i => i.Item2 is MethodInfo && ((MethodInfo)i.Item2).Name == "set_IdleAction") == 1,
+            "export explicitly initializes the native display idle once");
+        foreach (string setter in new[] { "set_IsEquipmentAnimActive", "set_IsPlayingCustomAnimations", "set_ShouldLoopCustomAnimation" })
+        {
+            int index = ctorIl.FindIndex(i => i.Item2 is MethodInfo && ((MethodInfo)i.Item2).Name == setter);
+            Check(index > 0 && ctorIl[index - 1].Item1 == OpCodes.Ldc_I4_0, "export disables " + setter);
+        }
         Check(ReadIl(ctor).Count(i => i.Item2 is ConstructorInfo && ((ConstructorInfo)i.Item2).DeclaringType == nativeWidget) == 1,
             "export construction calls the original character widget constructor");
         Check(ReadIl(nativeWidget.GetConstructor(ctor.GetParameters().Select(p => p.ParameterType).ToArray()))

@@ -32,6 +32,15 @@ public static class ClientEndpointAudit
         Console.WriteLine("PASS " + name);
     }
 
+    private static int CountOccurrences(string text, string value)
+    {
+        if (string.IsNullOrEmpty(value)) return 0;
+        int count = 0, offset = 0;
+        while ((offset = text.IndexOf(value, offset, StringComparison.Ordinal)) >= 0)
+        { count++; offset += value.Length; }
+        return count;
+    }
+
     private static object Call(Type type, string method, params object[] args)
     { return type.GetMethod(method, Static).Invoke(null, args); }
 
@@ -72,9 +81,9 @@ public static class ClientEndpointAudit
         return references;
     }
 
-    private static object Generate(object options, Array references)
+    private static object Generate(object options, Array references, string prompt = "DIRECTOR_BODY_SENTINEL 人物正在阅读信件。")
     {
-        var task = (Task)generate.Invoke(null, new object[] { "DIRECTOR_BODY_SENTINEL 人物正在阅读信件。", references, options, CancellationToken.None });
+        var task = (Task)generate.Invoke(null, new object[] { prompt, references, options, CancellationToken.None });
         task.GetAwaiter().GetResult();
         return task.GetType().GetProperty("Result").GetValue(task, null);
     }
@@ -169,7 +178,7 @@ public static class ClientEndpointAudit
         Check(oilDirector.Contains("光源方向、昼夜、天气和物体固有色服从现场事实") && oilDirector.Contains("接触阴影、环境反光和遮挡关系"), "oil painting guidance preserves actual light colors and spatial integration");
         Check(oilImage.Contains("统一的绘画语言") && !oilImage.Contains("8k") && !oilImage.Contains("戏剧性光影微光"), "full oil style preserves coherent rendering without compulsory dim light");
         Check((string)Call(director, "BuildDirectorStylePreference", new object[] { null }) == oilDirector, "director default resolves shared detailed oil preset");
-        Check((string)Call(director, "BuildImageStylePreference", new object[] { null }) == oilImage, "local image fallback resolves the same complete oil preset");
+        Check(director.GetMethod("BuildImageStylePreference", Static) == null, "image client alone owns full image style injection");
         Check(object.ReferenceEquals(oil, Call(styles, "Resolve", null, "ignored")) && object.ReferenceEquals(oil, Call(styles, "Resolve", "unknown", "ignored")), "unknown and missing presets reuse safe cached oil default");
 
         string customText = "  用户手写画风\n自定义第二行  ";
@@ -219,6 +228,7 @@ public static class ClientEndpointAudit
             string prompt = (string)payload["prompt"];
             Check(OptionalText(payload, "style") == (native ? names[i] : null), "actual JSON style enum follows selected preset: " + names[i]);
             Check(prompt.Contains(fullStyle) && (names[i] == "classic-oil" || !prompt.Contains("古典写实历史油画")), "actual image prompt contains the complete selected style: " + names[i]);
+            Check(CountOccurrences(prompt, fullStyle) == 1, "Generations injects the full style exactly once: " + names[i]);
             Check(prompt.Contains("CUSTOM_NEGATIVE_SENTINEL") == (names[i] == "custom"), "custom negative text applies only to custom preset: " + names[i]);
             if (negativePresets[i] != null) Check(prompt.Contains(negativePresets[i]), "actual image prompt retains preset negatives: " + names[i]);
 
@@ -229,6 +239,27 @@ public static class ClientEndpointAudit
                 var sent = handler.Requests[0];
                 string sentText = edits ? sent.Fields["prompt"] : RequestText(sent);
                 Check(Property<bool>(routed, "Success") && sentText.Contains(fullStyle) && sentText.Contains("DIRECTOR_BODY_SENTINEL"), "full style reaches actual " + (edits ? "multipart Edits" : "Chat") + " request independently of director output: " + names[i]);
+                Check(CountOccurrences(sentText, fullStyle) == 1, "reference request injects the full style exactly once: " + names[i] + "/" + edits);
+            }
+        }
+
+        var plan = Activator.CreateInstance(assembly.GetType("AnimusForge.Illustrator.Core.IllustrationPromptPlan", true),
+            new object[] { "会话插画", "两人在街道阅读信件。", "中景，保留街道建筑。" });
+        foreach (string directorOutput in new[] { "", "中景，两人阅读信件。" })
+        {
+            var fallbackOptions = Options("http://offline.invalid/v1/images/edits", true, "audit", "classic-oil");
+            string local = (string)Call(director, "ResolveDirectorOutput", directorOutput, plan, fallbackOptions);
+            Check(!local.Contains(oilImage), "local composition leaves full style injection to image client");
+            foreach (string route in new[] { "images/generations", "images/edits", "chat/completions" })
+            {
+                var routeOptions = Options("http://offline.invalid/v1/" + route, true, "audit", "classic-oil");
+                handler.Reset(Success());
+                var result = Generate(routeOptions, route == "images/generations" ? null : References(png), local);
+                var sent = handler.Requests[0];
+                string text = route == "images/edits" ? sent.Fields["prompt"] : RequestText(sent);
+                Check(Property<bool>(result, "Success") && CountOccurrences(text, oilImage) == 1,
+                    "local composition sends one complete style through " + route);
+                Check(Property<string>(result, "ResolvedPrompt") == text, "displayed prompt matches sent text after deduplication: " + route);
             }
         }
 

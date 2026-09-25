@@ -333,7 +333,7 @@ namespace AnimusForge.Illustrator.Core
                 if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
                     !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                     return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output +
-                        "\n构图方向：" + IllustrationDirection.RemoveActionHistory(plan.ArtDirection) + "\n画风偏好：" + BuildImageStylePreference(options), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+                        "\n构图方向：" + IllustrationDirection.RemoveActionHistory(plan.ArtDirection), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             // The director is responsible for composition, but its prose can omit a visual
@@ -815,13 +815,6 @@ namespace AnimusForge.Illustrator.Core
             return IllustrationStylePresets.Resolve(options?.SelectedStyle, options?.CustomStylePrompt).DirectorPrompt;
         }
 
-        private static string BuildImageStylePreference(IllustrationOptions options)
-        {
-            var preset = IllustrationStylePresets.Resolve(options?.SelectedStyle, options?.CustomStylePrompt);
-            // Native vivid/natural styles have no image-text override; keep their short descriptive fallback.
-            return preset.ImagePrompt ?? preset.DirectorPrompt;
-        }
-
         private static string ResolveChatEndpoint(string baseUrl)
         {
             string url = baseUrl.TrimEnd('/');
@@ -844,17 +837,13 @@ namespace AnimusForge.Illustrator.Core
         private static string SynthesizeRuleBasedPrompt(IllustrationPromptPlan plan, IllustrationOptions options)
         {
             var sb = new StringBuilder();
-            string style = BuildImageStylePreference(options);
             sb.Append(BuildLocalSceneDirection(plan));
             string localArtDirection = IllustrationDirection.RemoveActionHistory(plan?.ArtDirection);
             if (!string.IsNullOrWhiteSpace(localArtDirection))
             {
                 sb.AppendLine().Append("可参考但不必逐项照搬的构图方向：").Append(localArtDirection);
             }
-            if (!string.IsNullOrWhiteSpace(style))
-            {
-                sb.AppendLine().Append("画风偏好：").Append(style).Append('。');
-            }
+            // The image client supplies the full selected style once for every route.
             bool isSingle = plan?.Mode?.Contains("百科") == true || plan?.Mode?.Contains("肖像") == true;
             return ComposeFinalPrompt(sb.ToString(), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
         }
