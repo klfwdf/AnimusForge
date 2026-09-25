@@ -356,5 +356,21 @@ Set(loaded, "_dataVersion", 5); Call(loaded, "LoadSavedData");
 Check(((IDictionary)Get(loaded, "_activeWars")).Count == 1 && ((IList)Get(loaded, "_historicalWars")).Count == 1, "active/history list roundtrip");
 Check((int)Get(((IDictionary)Get(loaded, "_activeWars"))["|"], "KillsA") == 7, "new war survives owner load");
 Check((int)Get(((IList)Get(loaded, "_historicalWars"))[0], "KillsA") == 123, "old war survives owner load");
+Type ledgerType = warType.GetNestedType("WarStatsLedgerOwner", BindingFlags.NonPublic);
+Check(ledgerType != null, "WarStats has a dedicated ledger owner");
+object ledger = Get(owner, "_ledger");
+Check(ledger != null && ReferenceEquals(Get(ledger, "ActiveWars"), active)
+    && ReferenceEquals(Get(ledger, "HistoricalWars"), history), "host and terminal share the ledger-owned state");
+Call(ledger, "ArchiveAndRemove", "|", first, 0);
+Check(history.Count == 1 && active.Count == 1, "stale ended record cannot archive a reopened pair");
+Set(first, "KillsA", 999);
+Check((int)Get(history[0], "KillsA") == 123, "archived war is a snapshot, not the ended live record");
+Type historyEntryType = warType.GetNestedType("HistoricalWarEntry", BindingFlags.Public);
+object selectedHistory = Activator.CreateInstance(historyEntryType);
+Set(selectedHistory, "PairKey", "|"); Set(selectedHistory, "StartDay", 0); Set(selectedHistory, "EndDay", 0);
+Array selection = Array.CreateInstance(historyEntryType, 1); selection.SetValue(selectedHistory, 0);
+Check((int)Call(owner, "DeleteHistoricalWars", selection) == 1 && history.Count == 0 && active.Count == 1,
+    "terminal history deletion is identity-scoped and keeps reopened war");
+Check((int)Call(owner, "DeleteHistoricalWars", selection) == 0, "duplicate terminal deletion is harmless");
 Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=archive/idempotence/list-roundtrip live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));
