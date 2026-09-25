@@ -77,6 +77,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "DevWeeklyReportPopup.cs", "src/modules/AF.Module.UI/WeeklyReportPopupSessionOwner.cs",
         "ModOnboardingBehavior.cs", "src/modules/AF.Module.Onboarding/OnboardingSessionOwner.cs",
         "src/modules/AF.Module.Onboarding/OnboardingDismissalOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingOperationVersionOwner.cs",
         "AnimusForgeApiOnboardingVM.cs", "src/modules/AF.Module.Onboarding/OnboardingUiDispatchOwner.cs",
         "AnimusForgeApiOnboardingPopup.cs", "AnimusForgeNativeConversationOverlay.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
@@ -148,6 +149,7 @@ J13E5DomainOwnerContractReplay.Run(repo);
 WeeklyReportPopupSessionOwnerReplay.Run(af);
 OnboardingSessionOwnerReplay.Run(af);
 OnboardingDismissalOwnerReplay.Run(af);
+OnboardingOperationVersionOwnerReplay.Run(af);
 OnboardingUiDispatchOwnerReplay.Run(af);
 J13FUiHostLifecycleContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);

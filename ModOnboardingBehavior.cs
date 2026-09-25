@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Modules;
+using OnboardingOperationKind = AnimusForge.Refactor.Modules.OnboardingOperationVersionOwner.Kind;
 using MCM.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -128,6 +129,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private readonly OnboardingSessionOwner _onboardingSession = new OnboardingSessionOwner();
 	private readonly OnboardingDismissalOwner<OnboardingUiStage> _dismissalOwner = new OnboardingDismissalOwner<OnboardingUiStage>();
+	private readonly OnboardingOperationVersionOwner _operationVersions = new OnboardingOperationVersionOwner();
 
 	private bool _welcomeInProgress;
 
@@ -136,8 +138,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private bool _apiValidationInProgress;
 
 	private CancellationTokenSource _apiValidationCancellation;
-
-	private int _apiValidationVersion;
 
 	private bool _pendingApiValidationResult;
 
@@ -155,8 +155,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private CancellationTokenSource _baseUrlValidationCancellation;
 
-	private int _baseUrlValidationVersion;
-
 	private bool _pendingBaseUrlValidationResult;
 
 	private bool _pendingBaseUrlValidationSuccess;
@@ -170,8 +168,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	private bool _modelFetchInProgress;
 
 	private CancellationTokenSource _modelFetchCancellation;
-
-	private int _modelFetchVersion;
 
 	private bool _pendingModelFetchResult;
 
@@ -898,7 +894,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_pendingModelFetchSuccess = false;
 		_pendingModelFetchMessage = "";
 		_pendingModelFetchModels = new List<string>();
-		if (pendingModelFetchVersion != _modelFetchVersion)
+		if (!_operationVersions.IsCurrent(OnboardingOperationKind.ModelFetch, pendingModelFetchVersion))
 		{
 			return;
 		}
@@ -936,7 +932,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_pendingApiValidationSuccess = false;
 		_pendingApiValidationMessage = "";
 		_pendingApiValidationFailureHint = "";
-		if (pendingApiValidationVersion != _apiValidationVersion)
+		if (!_operationVersions.IsCurrent(OnboardingOperationKind.ApiValidation, pendingApiValidationVersion))
 		{
 			return;
 		}
@@ -1818,18 +1814,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_apiValidationFlow = flow;
 		_apiValidationReturnToModelSelection = false;
 		_apiValidationInProgress = true;
-		int num = ++_apiValidationVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.ApiValidation);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_apiValidationCancellation = cancellationTokenSource;
 		ShowApiValidationProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string text = "";
 			string failureHint = "";
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_apiValidationCancellation = cancellationTokenSource;
 				ApiValidationTargetResult[] array = await Task.WhenAll(targets.Select((ApiValidationTargetInfo target) => ValidateApiTargetAsync(target, cancellationTokenSource.Token)));
 				List<ApiValidationTargetResult> failedResults = array.Where((ApiValidationTargetResult x) => x == null || !x.Success).ToList();
 				if (failedResults.Count == 0)
@@ -1855,7 +1850,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _apiValidationVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.ApiValidation, num))
 				{
 					if (ReferenceEquals(_apiValidationCancellation, cancellationTokenSource))
 					{
@@ -2348,17 +2343,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			return;
 		}
 		_baseUrlValidationInProgress = true;
-		int num = ++_baseUrlValidationVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.BaseUrlValidation);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_baseUrlValidationCancellation = cancellationTokenSource;
 		ShowBaseUrlValidationProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string message = "";
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_baseUrlValidationCancellation = cancellationTokenSource;
 				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().ProbeBaseUrlAsync(validatedBaseUrl, cancellationTokenSource.Token);
 				string text2 = exchange.ResponseBody;
 				if (exchange.Cancelled)
@@ -2389,7 +2383,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _baseUrlValidationVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.BaseUrlValidation, num))
 				{
 					if (ReferenceEquals(_baseUrlValidationCancellation, cancellationTokenSource))
 					{
@@ -2485,7 +2479,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_baseUrlValidationVersion++;
+			_operationVersions.Cancel(OnboardingOperationKind.BaseUrlValidation);
 			_baseUrlValidationInProgress = false;
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
@@ -2575,18 +2569,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			return;
 		}
 		_modelFetchInProgress = true;
-		int num = ++_modelFetchVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.ModelFetch);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_modelFetchCancellation = cancellationTokenSource;
 		ShowModelFetchProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string text = "";
 			List<string> list = new List<string>();
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_modelFetchCancellation = cancellationTokenSource;
 				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(apiUrl, apiKey, cancellationTokenSource.Token);
 				string text2 = exchange.ResponseBody;
 				if (exchange.Cancelled)
@@ -2625,7 +2618,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _modelFetchVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.ModelFetch, num))
 				{
 					if (ReferenceEquals(_modelFetchCancellation, cancellationTokenSource))
 					{
@@ -2666,7 +2659,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_modelFetchVersion++;
+			_operationVersions.Cancel(OnboardingOperationKind.ModelFetch);
 			_modelFetchInProgress = false;
 			_pendingModelFetchResult = false;
 			_pendingModelFetchVersion = 0;
@@ -2890,18 +2883,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_apiValidationReturnToModelSelection = returnToModelSelection;
 		_apiValidationInProgress = true;
 		ApiSetupTarget validationTarget = _currentApiSetupTarget;
-		int num = ++_apiValidationVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.ApiValidation);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_apiValidationCancellation = cancellationTokenSource;
 		ShowApiValidationProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string text = "";
 			string failureHint = "";
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_apiValidationCancellation = cancellationTokenSource;
 				string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(apiUrl);
 				JObject requestPayload = new JObject
 				{
@@ -2976,7 +2968,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _apiValidationVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.ApiValidation, num))
 				{
 					if (ReferenceEquals(_apiValidationCancellation, cancellationTokenSource))
 					{
@@ -3073,7 +3065,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_apiValidationVersion++;
+			_operationVersions.Cancel(OnboardingOperationKind.ApiValidation);
 			_apiValidationInProgress = false;
 			_apiValidationFlow = ApiValidationFlow.Normal;
 			_apiValidationReturnToModelSelection = false;
