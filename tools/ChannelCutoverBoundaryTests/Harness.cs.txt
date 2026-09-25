@@ -138,7 +138,7 @@ public sealed class Scenario
     public string Name;
     public bool BridgeEnabled = true, CaptureNull, CaptureThrows, PrepareThrows, HostThrows, NullResult;
     public bool UsedLegacyFallback, RuntimeStale, DisposeThrows, CallbackThenThrows, StaleBeforeDrain, LegacyThrows, EpochStale;
-    public bool OnMainThread, TargetUnavailable, HistoryResult;
+    public bool OnMainThread, TargetUnavailable, HistoryResult, GroupRetired;
     public bool UnexpectedGeneratedActions;
     public bool SpeechQueueResult, SpeechPostprocess = true, SpeechDirectResponse = true;
     public string SpeechInput = "cleaned-main-reply";
@@ -409,7 +409,7 @@ public sealed class ProductionBlockHost
         Scenario.Current.SceneCleanup = true;
     }
     private sealed class SceneReceiptProbe { internal void Fail(string reason) { } }
-    private bool IsCurrentModuleGroup() => true;
+    private bool IsCurrentModuleGroup() => !Scenario.Current.GroupRetired;
 
     public async Task CourierAsync()
     {
@@ -1082,5 +1082,14 @@ public static class Program
                 Scenario.Current.LifecycleResult = host.ExecuteSceneLifecycleDelegate(operation);
                 return Task.CompletedTask;
             });
+        await Case("scene-lifecycle/failure-release/retired-group", false, s => s.GroupRetired = true, s =>
+        {
+            Require(!s.LifecycleResult && s.LifecycleOwnerCalls.Count == 0,
+                "Retired API group must not release current scene participants");
+        }, host =>
+        {
+            Scenario.Current.LifecycleResult = host.ExecuteSceneLifecycleDelegate("failure-release");
+            return Task.CompletedTask;
+        });
     }
 }

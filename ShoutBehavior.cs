@@ -26415,12 +26415,14 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				receipt?.Fail("scene.group_exception");
 				Logger.Log("ShoutBehavior", "[ERROR] ProcessShoutConfirmedInternal background failed: " + ex.Message);
-				if (ex is PreprocessFormatException && (receipt == null || !receipt.IsRetired))
+				if (ex is PreprocessFormatException
+					&& (receipt == null || IsModuleSceneGroupCurrent(receipt, receipt.RuntimeGeneration, receipt.SceneSessionId, receipt.ConversationEpoch)))
 				{
 					_mainThreadActions.Enqueue(delegate
 					{
 						try
 						{
+							if (receipt != null && !IsModuleSceneGroupCurrent(receipt, receipt.RuntimeGeneration, receipt.SceneSessionId, receipt.ConversationEpoch)) return;
 							LlmRetryPrompt.ShowFailurePopup("AnimusForge 前处理失败", ex.Message);
 						}
 						catch
