@@ -6,7 +6,7 @@ def load(name,path):
  spec=importlib.util.spec_from_file_location(name,path);result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result);return result
 ex=load('decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
 util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text','drop-entity-text','drop-rule-text']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text','drop-entity-text','drop-rule-text','preflight-implies-delivery']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
 source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='drop-knowledge-text':
  needle='string extras = (ctx?.Extras ?? "").Trim();'
@@ -71,10 +71,15 @@ message_builders='\n'.join(new_messages)
 for method in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
  message_builders=message_builders.replace('private static List<object> '+method+'(', 'private static List<object> '+method+'Production(',1)
 reqs='\n'.join(ex.declaration(old_host,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
+generation=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs').read_text(encoding='utf-8-sig')
+finalize=ex.declaration(generation,'private void FinalizeCourierReplyGenerationOnMainThread(')
+if args.mutate=='preflight-implies-delivery':
+ needle='session.ReplyGenerated = true;';assert finalize.count(needle)==1
+ finalize=finalize.replace(needle,needle+' session.DeliveryApplied = true;',1)
 history=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs').read_text(encoding='utf-8-sig')
 owner=ex.declaration(history,'private bool IsCourierHistoryOwnerCurrent(')
 historytype=ex.declaration(history,'private sealed class CourierPreparedHistory')
-harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@OWNER_PHASE@@',phase).replace('@@BASELINE@@',methods).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historytype+'\n'+owner).replace('@@MESSAGE_BUILDERS@@',message_builders)
+harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@OWNER_PHASE@@',phase).replace('@@BASELINE@@',methods).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historytype+'\n'+owner).replace('@@MESSAGE_BUILDERS@@',message_builders).replace('@@FINALIZE_REPLY@@',finalize)
 if args.old_worker:harness='#define OLD_WORKER\n'+harness
 out=HERE/'.generated'/('old-worker' if args.old_worker else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')

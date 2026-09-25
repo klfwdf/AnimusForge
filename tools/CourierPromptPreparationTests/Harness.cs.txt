@@ -26,7 +26,7 @@ namespace TaleWorlds.CampaignSystem {
  }
 }
 namespace AnimusForge {
- internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long gen)=>gen==Generation; }
+ internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long gen)=>gen==Generation; internal static bool IsStale(long gen,string source)=>!IsCurrentGeneration(gen); }
  internal sealed class PreprocessFormatException : Exception { }
  public sealed class ConversationMessage { public string Role="assistant",Content="memory",SpeakerName="NPC",GameDate="",Scene=""; public int GameDayIndex,GameHour; }
  internal static class Probe {
@@ -130,7 +130,7 @@ namespace AnimusForge {
   internal CourierSession Session;
   private CourierPromptRun TestRun;
   internal void ReserveTestRun()=>TestRun=BeginCourierPromptRun(Session,1);
-  internal sealed class CourierSession {internal Hero Participant=new();internal bool Inbound,Terminal,ReplyGenerated,ReplyGenerationStarted=true,PostprocessConsumed;internal string ReplyText="",ReplyPostprocessedText="";internal string Id="session",LetterText=" letter ",InboundIntentText=" intent ",InboundFallbackLetter="stored",DeliveryFactText="",SenderName="NPC",InboundLetterKind="";}
+  internal sealed class CourierSession {internal Hero Participant=new();internal bool Inbound,Terminal,ReplyGenerated,ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied;internal string ReplyText="",ReplyPostprocessedText="";internal string Id="session",LetterText=" letter ",InboundIntentText=" intent ",InboundFallbackLetter="stored",DeliveryFactText="",SenderName="NPC",InboundLetterKind="";}
   internal static readonly string[] CourierExcludedRuleIds={"ban"};
   private CourierSession GetSessionById(string id){Probe.MainOnly();return Session;}
   private static bool IsTerminalStage(CourierSession s){Probe.MainOnly();return s.Terminal;}
@@ -139,6 +139,10 @@ namespace AnimusForge {
   private static Hero ResolveRecipient(CourierSession s){Probe.MainOnly();return s.Participant;}
   private static string SafeHeroId(Hero hero){Probe.MainOnly();return hero.Id;}
   private static void Log(string text){}
+  internal int ProcessedSessionsForTest;
+  private void ProcessSessionById(string id,string reason){Probe.MainOnly();ProcessedSessionsForTest++;}
+  internal void FinalizePreflightForTest()=>FinalizeCourierReplyGenerationOnMainThread(new CourierReplyGenerationRequest{SessionId=Session.Id,RuntimeGeneration=SaveRuntimeGuard.Generation},"preflight reply","postprocessed reply","");
+  @@FINALIZE_REPLY@@
 #if !LIVENESS
   private void FailCourierReplyGenerationOnMainThread(string id,long generation,string reason){Probe.MainOnly();Session.ReplyGenerated=true;Session.ReplyGenerationStarted=false;}
   private void FailInboundLetterGenerationOnMainThread(string id,long generation,string fallback,string reason){Probe.MainOnly();Session.LetterText=string.IsNullOrWhiteSpace(fallback)?Session.LetterText:fallback;Session.ReplyGenerated=true;Session.ReplyGenerationStarted=false;}
@@ -177,6 +181,7 @@ namespace AnimusForge {
 }
 internal static class Program {
  static int checks,cases;static void Check(bool ok,string name){checks++;if(!ok)throw new Exception("FAIL "+name);}
+ static void PreflightDoesNotDeliver(){var session=new AnimusForge.CourierDeliveryBehavior.CourierSession();var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};owner.FinalizePreflightForTest();Check(session.ReplyGenerated&&session.ReplyText=="preflight reply","real preflight result recorded");Check(!session.DeliveryApplied&&!session.PostprocessConsumed&&owner.ProcessedSessionsForTest==1,"preflight must not imply delivery or action commit");}
  static IEnumerable<string> Strings(JsonElement value){if(value.ValueKind==JsonValueKind.String){yield return value.GetString();yield break;}if(value.ValueKind==JsonValueKind.Object){foreach(var property in value.EnumerateObject())foreach(string text in Strings(property.Value))yield return text;}else if(value.ValueKind==JsonValueKind.Array){foreach(var item in value.EnumerateArray())foreach(string text in Strings(item))yield return text;}}
  static void PumpUntil(Func<bool> done,bool pump=true){var watch=Stopwatch.StartNew();while(!done()){if(pump)while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>5000)throw new Exception("fixture wait timeout");Thread.Sleep(1);}}
  static void Case(bool inbound,string scenario){
@@ -235,6 +240,7 @@ internal static class Program {
   string reason=scenario.Split('_')[0];switch(reason){case "owner":AnimusForge.CourierDeliveryBehavior.Instance=new();break;case "generation":AnimusForge.SaveRuntimeGuard.Generation++;break;case "session":owner.Session=new(){Inbound=s.Inbound};break;case "participant":s.Participant=new();break;case "terminal":s.Terminal=true;break;case "direction":s.Inbound=!s.Inbound;break;case "dead":s.Participant.Dead=true;break;case "letter":s.LetterText="edited";break;case "intent":s.InboundIntentText="edited";break;case "fallback":s.InboundFallbackLetter="edited";break;}
  }
  static int Main(){TWParallel.MainThread=Environment.CurrentManagedThreadId;try{
+  PreflightDoesNotDeliver();
   if(Environment.GetEnvironmentVariable("AF_J06_PRODUCTION_CONTEXT")!=null){Case(false,"knowledge_text_production");Case(true,"knowledge_text_production");Console.WriteLine($"PASS production-context Courier request checks={checks}");return 0;}
   foreach(bool inbound in new[]{false,true}){
    foreach(string s in new[]{"normal","main_caller","null_context","null_hits","commands","empty_extras","empty_history","letter_seed","fallback_seed","null_input","routing_error","assembly_error","timeout","owner_before","generation_before","session_before","terminal_before","participant_before","dead_before","direction_before","owner_after","generation_after","session_after","terminal_after","participant_after","direction_after","dead_after","letter_after"})Case(inbound,s);
