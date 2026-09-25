@@ -415,5 +415,46 @@ Check(active.Count == 0 && history.Count == 1 && archivedDeaths.Count == 1
     && !ReferenceEquals(archivedDeaths, deaths)
     && (bool)Call(ledger, "HasRecordedHeroDeath", "hero-a", "A renamed"),
     "ended war retains a cloned death history for later duplicate suppression");
+Check(ledgerType.GetMethod("PrepareSaveData", Members) != null
+    && ledgerType.GetMethod("RestoreSavedData", Members) != null,
+    "ledger owns v5 save projection and restore decisions");
+object malformed = Activator.CreateInstance(warType);
+Set(malformed, "_dataVersion", 5);
+Set(malformed, "_savedActiveKeysV2", new System.Collections.Generic.List<string> { "", "|" });
+Set(malformed, "_savedActiveKillsAV2", new System.Collections.Generic.List<int> { 4, -7 });
+Set(malformed, "_savedHistoryKeysV2", new System.Collections.Generic.List<string> { "", "|" });
+Set(malformed, "_savedHistoryEndDayV2", new System.Collections.Generic.List<int> { 0, 5 });
+Set(malformed, "_savedHistoryDurationV2", new System.Collections.Generic.List<int> { 0, 2 });
+Call(malformed, "LoadSavedData");
+IDictionary malformedActive = (IDictionary)Get(malformed, "_activeWars");
+IList malformedHistory = (IList)Get(malformed, "_historicalWars");
+Check(malformedActive.Count == 1 && (int)Get(malformedActive["|"], "KillsA") == 0
+    && malformedHistory.Count == 1 && (int)Get(malformedHistory[0], "StartDay") == 3,
+    "v5 restore skips blank keys, clamps bad counts, and recovers missing start day");
+object legacy = Activator.CreateInstance(warType);
+Set(legacy, "_dataVersion", 1);
+Set(legacy, "_savedPairKeys", new System.Collections.Generic.List<string> { "|", "" });
+Set(legacy, "_savedCasualtiesA", new System.Collections.Generic.List<int> { 8, 20 });
+Set(legacy, "_savedCasualtiesB", new System.Collections.Generic.List<int> { 5, 30 });
+Call(legacy, "LoadSavedData");
+IDictionary legacyRecords = (IDictionary)Get(legacy, "_legacyRecords");
+Check(legacyRecords.Count == 1 && (int)Get(legacyRecords["|"], "InflictedByA") == 8
+    && (int)Get(legacyRecords["|"], "InflictedByB") == 5
+    && (bool)Get(legacy, "_legacyMigrationPending"), "v1 restore queues only complete legacy pair rows");
+object legacyLedger = Get(legacy, "_ledger");
+object migratedCurrent = Activator.CreateInstance(recordType, true);
+Set(migratedCurrent, "CasualtiesA", 5);
+Call(legacyLedger, "ApplyMigratedLegacy", "|", migratedCurrent, true);
+Check(((IDictionary)Get(legacy, "_activeWars")).Count == 1
+    && ((IList)Get(legacy, "_historicalWars")).Count == 0,
+    "legacy current pair migrates only into active ledger");
+object migratedEnded = Activator.CreateInstance(recordType, true);
+Set(migratedEnded, "CasualtiesB", 8);
+Call(legacyLedger, "ApplyMigratedLegacy", "ended|pair", migratedEnded, false);
+Check(((IList)Get(legacy, "_historicalWars")).Count == 1
+    && (int)Get(((IList)Get(legacy, "_historicalWars"))[0], "CasualtiesB") == 8,
+    "legacy ended pair migrates only into history");
+Call(legacyLedger, "ClearLegacyRecords");
+Check(legacyRecords.Count == 0, "legacy migration consumes queued rows");
 Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=archive/idempotence/list-roundtrip live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));

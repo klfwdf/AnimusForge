@@ -178,6 +178,23 @@ public sealed partial class AfWarStatsBehavior
             HistoricalWars.Add(ToHistoricalRecord(pairKey, record, endDay));
         }
 
+        internal void ApplyMigratedLegacy(string pairKey, WarStatsRecord record, bool isCurrentWar)
+        {
+            if (isCurrentWar)
+            {
+                ActiveWars[pairKey] = record;
+            }
+            else
+            {
+                AddHistorical(pairKey, record, 0);
+            }
+        }
+
+        internal void ClearLegacyRecords()
+        {
+            LegacyRecords.Clear();
+        }
+
         internal void ApplyBattleStats(
             WarStatsRecord record,
             bool directOrder,
@@ -222,6 +239,163 @@ public sealed partial class AfWarStatsBehavior
                     record.WinsB++;
                 }
             }
+        }
+
+        internal void PrepareSaveData(AfWarStatsBehavior host)
+        {
+            host.ClearAllSaveLists();
+            foreach (KeyValuePair<string, WarStatsRecord> item in ActiveWars.OrderBy(static pair => pair.Key, StringComparer.Ordinal))
+            {
+                host._savedActiveKeysV2.Add(item.Key);
+                host._savedActiveNamesAV2.Add(item.Value.NameA ?? string.Empty);
+                host._savedActiveNamesBV2.Add(item.Value.NameB ?? string.Empty);
+                host._savedActiveKillsAV2.Add(item.Value.KillsA);
+                host._savedActiveKillsBV2.Add(item.Value.KillsB);
+                host._savedActiveCasualtiesAV2.Add(item.Value.CasualtiesA);
+                host._savedActiveCasualtiesBV2.Add(item.Value.CasualtiesB);
+                host._savedActiveDurationV2.Add(item.Value.LastDurationDays);
+                host._savedActiveTerritoryAV2.Add(item.Value.LastTerritoryA);
+                host._savedActiveTerritoryBV2.Add(item.Value.LastTerritoryB);
+                host._savedActivePlayerV2.Add(item.Value.InvolvesPlayer ? 1 : 0);
+                host._savedActiveWinsAV3.Add(item.Value.WinsA);
+                host._savedActiveWinsBV3.Add(item.Value.WinsB);
+                host._savedActiveLossesAV3.Add(item.Value.LossesA);
+                host._savedActiveLossesBV3.Add(item.Value.LossesB);
+                host._savedActiveInitialTerritoryAV3.Add(item.Value.InitialTerritoryA < 0 ? item.Value.LastTerritoryA : item.Value.InitialTerritoryA);
+                host._savedActiveInitialTerritoryBV3.Add(item.Value.InitialTerritoryB < 0 ? item.Value.LastTerritoryB : item.Value.InitialTerritoryB);
+                host._savedActiveStartDayV4.Add(Math.Max(0, item.Value.StartDay));
+                host._savedActiveAttackerSideV4.Add(item.Value.AttackerSide == 1 ? 1 : 0);
+                host._savedActiveHeroDeathsV4.Add(SerializeHeroDeaths(item.Value.HeroDeaths));
+                host._savedActiveRecentHeroBattlesV5.Add(SerializeRecentHeroBattles(item.Value.RecentHeroBattles));
+            }
+
+            foreach (HistoricalWarRecord record in HistoricalWars)
+            {
+                host._savedHistoryKeysV2.Add(record.PairKey ?? string.Empty);
+                host._savedHistoryNamesAV2.Add(record.NameA ?? string.Empty);
+                host._savedHistoryNamesBV2.Add(record.NameB ?? string.Empty);
+                host._savedHistoryKillsAV2.Add(record.KillsA);
+                host._savedHistoryKillsBV2.Add(record.KillsB);
+                host._savedHistoryCasualtiesAV2.Add(record.CasualtiesA);
+                host._savedHistoryCasualtiesBV2.Add(record.CasualtiesB);
+                host._savedHistoryDurationV2.Add(record.LastDurationDays);
+                host._savedHistoryTerritoryAV2.Add(record.LastTerritoryA);
+                host._savedHistoryTerritoryBV2.Add(record.LastTerritoryB);
+                host._savedHistoryEndDayV2.Add(record.EndDay);
+                host._savedHistoryPlayerV2.Add(record.InvolvesPlayer ? 1 : 0);
+                host._savedHistoryWinsAV3.Add(record.WinsA);
+                host._savedHistoryWinsBV3.Add(record.WinsB);
+                host._savedHistoryLossesAV3.Add(record.LossesA);
+                host._savedHistoryLossesBV3.Add(record.LossesB);
+                host._savedHistoryInitialTerritoryAV3.Add(record.InitialTerritoryA < 0 ? record.LastTerritoryA : record.InitialTerritoryA);
+                host._savedHistoryInitialTerritoryBV3.Add(record.InitialTerritoryB < 0 ? record.LastTerritoryB : record.InitialTerritoryB);
+                host._savedHistoryStartDayV4.Add(Math.Max(0, ResolveHistoryStartDay(record)));
+                host._savedHistoryAttackerSideV4.Add(record.AttackerSide == 1 ? 1 : 0);
+                host._savedHistoryHeroDeathsV4.Add(SerializeHeroDeaths(record.HeroDeaths));
+            }
+        }
+
+        internal bool RestoreSavedData(AfWarStatsBehavior host)
+        {
+            host.EnsureSaveLists();
+            ActiveWars.Clear();
+            HistoricalWars.Clear();
+            LegacyRecords.Clear();
+
+            if (host._dataVersion >= CurrentDataVersion || host._savedActiveKeysV2.Count > 0 || host._savedHistoryKeysV2.Count > 0)
+            {
+                for (int i = 0; i < host._savedActiveKeysV2.Count; i++)
+                {
+                    string pairKey = ReadString(host._savedActiveKeysV2, i);
+                    if (string.IsNullOrWhiteSpace(pairKey))
+                    {
+                        continue;
+                    }
+
+                    ActiveWars[pairKey] = new WarStatsRecord
+                    {
+                        NameA = ReadString(host._savedActiveNamesAV2, i),
+                        NameB = ReadString(host._savedActiveNamesBV2, i),
+                        KillsA = ReadInt(host._savedActiveKillsAV2, i),
+                        KillsB = ReadInt(host._savedActiveKillsBV2, i),
+                        CasualtiesA = ReadInt(host._savedActiveCasualtiesAV2, i),
+                        CasualtiesB = ReadInt(host._savedActiveCasualtiesBV2, i),
+                        WinsA = ReadInt(host._savedActiveWinsAV3, i),
+                        WinsB = ReadInt(host._savedActiveWinsBV3, i),
+                        LossesA = ReadInt(host._savedActiveLossesAV3, i),
+                        LossesB = ReadInt(host._savedActiveLossesBV3, i),
+                        LastDurationDays = ReadInt(host._savedActiveDurationV2, i),
+                        LastTerritoryA = ReadInt(host._savedActiveTerritoryAV2, i),
+                        LastTerritoryB = ReadInt(host._savedActiveTerritoryBV2, i),
+                        InitialTerritoryA = ReadIntOrDefault(host._savedActiveInitialTerritoryAV3, i, ReadInt(host._savedActiveTerritoryAV2, i)),
+                        InitialTerritoryB = ReadIntOrDefault(host._savedActiveInitialTerritoryBV3, i, ReadInt(host._savedActiveTerritoryBV2, i)),
+                        InvolvesPlayer = ReadInt(host._savedActivePlayerV2, i) != 0,
+                        StartDay = ReadIntOrDefault(
+                            host._savedActiveStartDayV4,
+                            i,
+                            Math.Max(0, GetCurrentDay() - ReadInt(host._savedActiveDurationV2, i))),
+                        AttackerSide = ReadSide(host._savedActiveAttackerSideV4, i),
+                        HeroDeaths = DeserializeHeroDeaths(ReadString(host._savedActiveHeroDeathsV4, i)),
+                        RecentHeroBattles = DeserializeRecentHeroBattles(ReadString(host._savedActiveRecentHeroBattlesV5, i))
+                    };
+                }
+
+                for (int i = 0; i < host._savedHistoryKeysV2.Count; i++)
+                {
+                    string pairKey = ReadString(host._savedHistoryKeysV2, i);
+                    if (string.IsNullOrWhiteSpace(pairKey))
+                    {
+                        continue;
+                    }
+
+                    HistoricalWars.Add(new HistoricalWarRecord
+                    {
+                        PairKey = pairKey,
+                        NameA = ReadString(host._savedHistoryNamesAV2, i),
+                        NameB = ReadString(host._savedHistoryNamesBV2, i),
+                        KillsA = ReadInt(host._savedHistoryKillsAV2, i),
+                        KillsB = ReadInt(host._savedHistoryKillsBV2, i),
+                        CasualtiesA = ReadInt(host._savedHistoryCasualtiesAV2, i),
+                        CasualtiesB = ReadInt(host._savedHistoryCasualtiesBV2, i),
+                        WinsA = ReadInt(host._savedHistoryWinsAV3, i),
+                        WinsB = ReadInt(host._savedHistoryWinsBV3, i),
+                        LossesA = ReadInt(host._savedHistoryLossesAV3, i),
+                        LossesB = ReadInt(host._savedHistoryLossesBV3, i),
+                        LastDurationDays = ReadInt(host._savedHistoryDurationV2, i),
+                        LastTerritoryA = ReadInt(host._savedHistoryTerritoryAV2, i),
+                        LastTerritoryB = ReadInt(host._savedHistoryTerritoryBV2, i),
+                        InitialTerritoryA = ReadIntOrDefault(host._savedHistoryInitialTerritoryAV3, i, ReadInt(host._savedHistoryTerritoryAV2, i)),
+                        InitialTerritoryB = ReadIntOrDefault(host._savedHistoryInitialTerritoryBV3, i, ReadInt(host._savedHistoryTerritoryBV2, i)),
+                        EndDay = ReadInt(host._savedHistoryEndDayV2, i),
+                        InvolvesPlayer = ReadInt(host._savedHistoryPlayerV2, i) != 0,
+                        StartDay = ReadIntOrDefault(
+                            host._savedHistoryStartDayV4,
+                            i,
+                            Math.Max(0, ReadInt(host._savedHistoryEndDayV2, i) - ReadInt(host._savedHistoryDurationV2, i))),
+                        AttackerSide = ReadSide(host._savedHistoryAttackerSideV4, i),
+                        HeroDeaths = DeserializeHeroDeaths(ReadString(host._savedHistoryHeroDeathsV4, i))
+                    });
+                }
+
+                RecentBattleSequence = Math.Max(RecentBattleSequence, host.GetMaxRecentBattleSequence());
+                return false;
+            }
+
+            int legacyCount = Math.Min(host._savedPairKeys.Count, Math.Min(host._savedCasualtiesA.Count, host._savedCasualtiesB.Count));
+            for (int i = 0; i < legacyCount; i++)
+            {
+                string pairKey = ReadString(host._savedPairKeys, i);
+                if (!string.IsNullOrWhiteSpace(pairKey))
+                {
+                    LegacyRecords[pairKey] = new LegacyPairRecord
+                    {
+                        InflictedByA = Math.Max(0, ReadInt(host._savedCasualtiesA, i)),
+                        InflictedByB = Math.Max(0, ReadInt(host._savedCasualtiesB, i))
+                    };
+                }
+            }
+
+            return LegacyRecords.Count > 0;
         }
 
         internal int DeleteHistoricalWars(IEnumerable<HistoricalWarEntry> entries)
