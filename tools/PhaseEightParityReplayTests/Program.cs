@@ -76,6 +76,9 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "MyBehavior.PersonaGeneration.cs", "MyBehavior.PersonaReadiness.cs",
         "DevWeeklyReportPopup.cs", "src/modules/AF.Module.UI/WeeklyReportPopupSessionOwner.cs",
         "ModOnboardingBehavior.cs", "src/modules/AF.Module.Onboarding/OnboardingSessionOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingDismissalOwner.cs",
+        "AnimusForgeApiOnboardingVM.cs", "src/modules/AF.Module.Onboarding/OnboardingUiDispatchOwner.cs",
+        "AnimusForgeApiOnboardingPopup.cs", "AnimusForgeNativeConversationOverlay.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
         "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
         "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityOwner.cs",
@@ -144,6 +147,9 @@ ExerciseSettlementOwnerReplay.Run(af);
 J13E5DomainOwnerContractReplay.Run(repo);
 WeeklyReportPopupSessionOwnerReplay.Run(af);
 OnboardingSessionOwnerReplay.Run(af);
+OnboardingDismissalOwnerReplay.Run(af);
+OnboardingUiDispatchOwnerReplay.Run(af);
+J13FUiHostLifecycleContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);

@@ -44,10 +44,11 @@ public sealed class DevWeeklyReportPopup
 		{
 			return false;
 		}
+		DevWeeklyReportPopup devWeeklyReportPopup = null;
 		try
 		{
 			_activePopup?.Close(silent: true);
-			DevWeeklyReportPopup devWeeklyReportPopup = new DevWeeklyReportPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, useChronicleColumns, useShortReportLayout, showCloseButton, minimumDwellSeconds, onMinimumDwellMet);
+			devWeeklyReportPopup = new DevWeeklyReportPopup(topScreen, titleText, subtitleText, bodyText, onClose, closeText, useChronicleColumns, useShortReportLayout, showCloseButton, minimumDwellSeconds, onMinimumDwellMet);
 			devWeeklyReportPopup.Open();
 			_activePopup = devWeeklyReportPopup;
 			return true;
@@ -55,8 +56,7 @@ public sealed class DevWeeklyReportPopup
 		catch (Exception ex)
 		{
 			Logger.Log("DevWeeklyReportPopup", "[ERROR] Failed to open popup: " + ex);
-			_activePopup?.Close(silent: true);
-			_activePopup = null;
+			devWeeklyReportPopup?.Close(silent: true);
 			return false;
 		}
 	}
@@ -246,10 +246,19 @@ public sealed class DevWeeklyReportPopup
 			}
 		}
 		UnregisterPauseRequest();
-		_dataSource?.OnFinalize();
-		if (ReferenceEquals(_activePopup, this))
+		try
 		{
-			_activePopup = null;
+			_dataSource?.OnFinalize();
+		}
+		catch
+		{
+		}
+		finally
+		{
+			if (ReferenceEquals(_activePopup, this))
+			{
+				_activePopup = null;
+			}
 		}
 	}
 
