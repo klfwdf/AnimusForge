@@ -40,7 +40,7 @@ def main():
     output = ROOT / ".tmp/encounter-lifecycle-boundary"
     output.mkdir(parents=True, exist_ok=True)
     (output / "Program.cs").write_text(template, encoding="utf-8")
-    (output / "Boundary.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649;CS0414</NoWarn></PropertyGroup></Project>', encoding="utf-8")
+    (output / "Boundary.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><NoWarn>CS0649;CS0414</NoWarn></PropertyGroup><ItemGroup><Compile Include="../../src/modules/AF.Module.Encounter/EncounterTargetOwner.cs" Link="EncounterTargetOwner.cs" /></ItemGroup></Project>', encoding="utf-8")
     (output / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
     env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_CLI_UI_LANGUAGE="en")
     result = subprocess.run([str(dotnet), "run", "--project", str(output / "Boundary.csproj"), "-c", "Release"], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)

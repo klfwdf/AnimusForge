@@ -4,8 +4,9 @@ Run `python -B tools/EncounterLifecycleBoundaryTests/run.py --dotnet local/dotne
 The launcher accepts an explicit project-local .NET SDK and has no package sources.
 Generated files and the result log stay under `.tmp/encounter-lifecycle-boundary`.
 
-The harness extracts production methods verbatim using the existing boundary extractor.
-Only native API effects are stubbed. Assertions cover the release deadline, manual map
+The harness extracts production methods verbatim using the existing boundary extractor
+and compiles the actual Encounter target owner source. Only native API effects are stubbed.
+Assertions cover selected army members, stale target fallback, the release deadline, manual map
 exit, duplicate completion, expired authorization, encounter/party/Mission/save changes,
 reentrant conversation callbacks, non-Hero parties, the duel deadline in both scene modes,
 and unconditional one-time FocusTick safety installation.
