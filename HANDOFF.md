@@ -267,3 +267,10 @@
 - **首包重点**：Weekly 的真实调度/材料/生成完成/回执发布 owner，保留唯一 Actions 提交、主线程捕获/回写、generation 和存档身份。不能只搬文件或拆 partial 就报完成。
 - **已知前置**：核实本机 SDK/引用；处理测试旧路径和 Stage DLL 依赖。原构建脚本有产物目录清理，运行前需要精确范围确认；计划没有更改原构建流程。
 - **未验证/未授权**：本轮未跑产品测试或构建；真实 Campaign/Mission、旧 SAVE、provider、音频和帧性能仍 NOT-RUN。未 Stage/Deploy/Package/push，未修改自动化、游戏、存档或外部工作树；不提前执行 J14。
+# 当前交接：主体 J13e2 Taunt 有限离线收口（2026-09-25）
+
+- **状态**：`J13e2_OFFLINE_VERIFIED / J13_ACTIVE`。和平场景/物理 MCM、延迟犯罪与信任小数、冲突升格/结束状态分别由 Taunt 三个真实 owner 承接；原 Campaign/Mission、五个 Harmony patch、保存键与原生处罚/队伍恢复适配保留。产品/行为 `e62e2a82`、`9ec814eb`、`5873d594`，聚合 `bee366a8`；一基坐标、Patch target/条件、覆盖和未验责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[代码范围图](docs/architecture/af-framework-code-scope.md)。
+- **离线证据**：Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 警告/错误；Debug 1.4 SHA256 `4C8FDC5AF6BD57AFDBB380B639FB4340792FA08237A0F2515C40EB2434DAE0A9` 的完整 Phase8 含三个当前 DLL owner 回放和 e2 聚合契约；context 22/22、penalty 16/16、lifecycle 14/14、V1 119/四 DLL metadata 1080、PersistenceIdentity 142/36、迁移 fixture 10、source inventory 7、[代码地图](docs/architecture/af-framework-code-map.json) recorded/working-tree。实际游戏 Mission/Harmony/旧档/MCM 点击/原生副作用和帧性能均 **NOT-RUN**。
+- **下一条具体动作**：按[原计划](docs/plans/j13-domain-owners-plan.md)进入 **e3 Encounter**，先按军团会面目标案例审选中军团成员优先、合法 `_targetHero` 保留、释放授权/超时、pending 回调的换 party/Mission/save 失效和原 patch/注册，再逐切片迁 owner 与行为/聚合契约；随后 e4、e5，不提前 J14。`.dotnet-cli-home/` 保留；无 push、Stage、部署、打包、写游戏/外仓或改自动化。
+
+## 以下为 e1 交接（历史）
