@@ -72,7 +72,15 @@ internal sealed class ScenePlayerShoutContext
 /// </summary>
 internal sealed class ScenePlayerShoutRequestOwner
 {
+	internal const int MaximumModuleTickets = 128;
+	private sealed class ModuleTicket
+	{
+		internal string ClientId;
+		internal ScenePlayerShoutContext Context;
+	}
+
 	private readonly object _inputGate = new object();
+	private readonly Dictionary<string, ModuleTicket> _moduleTickets = new Dictionary<string, ModuleTicket>(StringComparer.Ordinal);
 	private long _inputSequence;
 	private long _moduleClaimedSequence = -1;
 
@@ -82,6 +90,56 @@ internal sealed class ScenePlayerShoutRequestOwner
 		{
 			Interlocked.Increment(ref _inputSequence);
 			_moduleClaimedSequence = -1;
+			_moduleTickets.Clear();
+		}
+	}
+
+	internal string IssueModuleTicket(string clientId, ScenePlayerShoutContext context)
+	{
+		if (string.IsNullOrEmpty(clientId) || context == null)
+			return null;
+		lock (_inputGate)
+		{
+			if (context.InputSequence != _inputSequence || _moduleTickets.Count >= MaximumModuleTickets)
+				return null;
+			string id;
+			do { id = Guid.NewGuid().ToString("N"); } while (_moduleTickets.ContainsKey(id));
+			_moduleTickets.Add(id, new ModuleTicket { ClientId = clientId, Context = context });
+			return id;
+		}
+	}
+
+	internal bool TryTakeModuleTicket(string clientId, string id, out ScenePlayerShoutContext context)
+	{
+		context = null;
+		if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(id))
+			return false;
+		lock (_inputGate)
+		{
+			if (!_moduleTickets.TryGetValue(id, out ModuleTicket ticket)
+				|| !string.Equals(ticket.ClientId, clientId, StringComparison.Ordinal))
+				return false;
+			_moduleTickets.Remove(id);
+			context = ticket.Context;
+			return true;
+		}
+	}
+
+	internal void InvalidateModuleTickets()
+	{
+		lock (_inputGate) _moduleTickets.Clear();
+	}
+
+	internal void RevokeClientModuleTickets(string clientId)
+	{
+		if (string.IsNullOrEmpty(clientId)) return;
+		lock (_inputGate)
+		{
+			List<string> revoke = new List<string>();
+			foreach (KeyValuePair<string, ModuleTicket> entry in _moduleTickets)
+				if (string.Equals(entry.Value.ClientId, clientId, StringComparison.Ordinal))
+					revoke.Add(entry.Key);
+			foreach (string id in revoke) _moduleTickets.Remove(id);
 		}
 	}
 
