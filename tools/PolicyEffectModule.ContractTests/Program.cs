@@ -14890,7 +14890,7 @@ internal static class Program
 		string policyManagementSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Management.cs"), Encoding.UTF8);
 		string terminalSource = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForgeTerminalBehavior.cs"), Encoding.UTF8);
 		string worldInboxPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "AnimusForgeWorldEventInboxPopup.xml"), Encoding.UTF8);
-		Check(terminalSource.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive()")
+		Check(terminalSource.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView)")
 			&& worldInboxPrefab.Contains("Command.Click=\"ExecuteReReview\"")
 			&& worldInboxPrefab.Contains("IsVisible=\"@ShowSelectedRecordReReview\"")
 			&& worldInboxPrefab.Contains("IsEnabled=\"@CanReReviewSelectedRecord\""),
