@@ -41,6 +41,8 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
     foreach (string source in new[] {
         "WorldEvents/WorldEventInbox.cs", "src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs",
         "WarStats/AfWarStatsBehavior.cs", "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+        "DuelBehavior.cs", "DuelBehavior.Outcomes.cs", "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
+        "src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs",
         "RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
         "ProactiveNpcRequestBehavior.cs", "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
         "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
@@ -104,6 +106,7 @@ J13D2DomainOwnerContractReplay.Run(repo);
 WorldEventInboxOwnerReplay.Run(af);
 J13D3DomainOwnerContractReplay.Run(repo);
 J13D4DomainOwnerContractReplay.Run(repo);
+J13E1DomainOwnerContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
