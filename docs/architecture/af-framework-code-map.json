@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "6eb3d170f68d1aecd40b158246cd07d800842223",
+  "sourceRevision": "f1ecb315e1b444c05032e07945af5d9be5ee9fe3",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5760,24 +5760,24 @@
     {
       "id": "social.proactive.opening.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 4660,
-      "end": 4660,
+      "start": 4647,
+      "end": 4647,
       "symbol": "private bool TryConsumePendingOpening(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "真实 Native/Scene 消费者；host 保留 party 释放及 Campaign/存档适配，冷却状态已归 Social cooldown owner。",
-      "fileSha256": "2bad2dfb8ef90b9fcea0117fc0a0aa225c5f57e6de456b0f7e08be0c08df4c42"
+      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
     },
     {
       "id": "social.proactive.opening.cancel",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 5087,
-      "end": 5087,
+      "start": 5059,
+      "end": 5059,
       "symbol": "private void CancelActiveSession(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "取消时清理 pending，避免同 Hero 后续会话误消费。",
-      "fileSha256": "2bad2dfb8ef90b9fcea0117fc0a0aa225c5f57e6de456b0f7e08be0c08df4c42"
+      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
     },
     {
       "id": "issue.alternative.dispatch.owner",
@@ -5832,7 +5832,7 @@
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "当前 DLL owner 单次消费/换会话/换渠道/取消与旧存档空 ID；非实机。",
-      "fileSha256": "87c846b09247504f13912daeb040d29e2ae502ba76d7151ebc55a754fe0fe8dc"
+      "fileSha256": "11d5dca9e6c46c966a79635303f37f1cd5bf41db9432ec243531f185b702d631"
     },
     {
       "id": "issue.alternative.dispatch.replay",
@@ -5903,24 +5903,24 @@
     {
       "id": "social.proactive.cooldown.scan.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 410,
-      "end": 410,
+      "start": 403,
+      "end": 403,
       "symbol": "private void TryStartNewRequest(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
-      "note": "Campaign/MCM/游戏对象适配，调用 owner 节流/过期/全局冷却；候选资格与 session 主状态仍在 host。",
-      "fileSha256": "2bad2dfb8ef90b9fcea0117fc0a0aa225c5f57e6de456b0f7e08be0c08df4c42"
+      "note": "Campaign/MCM/游戏对象适配，调用冷却 owner 节流/过期/全局冷却；主会话状态现归 Social session owner。",
+      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
     },
     {
       "id": "social.proactive.cooldown.apply.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 4701,
-      "end": 4701,
+      "start": 4688,
+      "end": 4688,
       "symbol": "private void ApplyCooldowns(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "真实 Hero 完成路径将身份/时间/MCM 期限提交给唯一 owner。",
-      "fileSha256": "2bad2dfb8ef90b9fcea0117fc0a0aa225c5f57e6de456b0f7e08be0c08df4c42"
+      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
     },
     {
       "id": "social.proactive.cooldown.replay",
@@ -5991,13 +5991,13 @@
     {
       "id": "social.proactive.scan.host",
       "path": "ProactiveNpcRequestBehavior.cs",
-      "start": 479,
-      "end": 479,
+      "start": 472,
+      "end": 472,
       "symbol": "private void ProcessCandidateScan(",
       "match": "contains",
       "status": "wired-j13d2-slice-offline-verified",
       "note": "原 Campaign tick 与 TW 候选构造保留 host，批次状态/决策调用单 owner。",
-      "fileSha256": "2bad2dfb8ef90b9fcea0117fc0a0aa225c5f57e6de456b0f7e08be0c08df4c42"
+      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
     },
     {
       "id": "social.proactive.scan.replay",
@@ -6009,6 +6009,94 @@
       "status": "wired-j13d2-slice-offline-verified",
       "note": "当前 DLL 批大小、去重、旧完成、排序、载入清理反例；非实机帧测量。",
       "fileSha256": "3c7746b451bb13ff158f091b17a74de0e93af577f84feff68bdc8fb412e8b6c6"
+    },
+    {
+      "id": "social.proactive.session.owner",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "private sealed class ProactiveRequestSessionOwner",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "唯一 saved DTO 会话状态及运行时探测节流；原 CampaignBehavior/DTO 身份不变。",
+      "fileSha256": "fad5ddcd43f98eab8c53831b6533089aab55a693acceaf5b7720c6346fd4765c"
+    },
+    {
+      "id": "social.proactive.session.import",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
+      "start": 15,
+      "end": 15,
+      "symbol": "internal void Import(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "旧档复用原 DTO，补运行 ID 并保留单需要规范化与载入节流重置。",
+      "fileSha256": "fad5ddcd43f98eab8c53831b6533089aab55a693acceaf5b7720c6346fd4765c"
+    },
+    {
+      "id": "social.proactive.session.start",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
+      "start": 33,
+      "end": 33,
+      "symbol": "internal bool TryStart(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "重复启动拒绝覆盖当前会话，后续游戏/名声副作用只在成功占位后。",
+      "fileSha256": "fad5ddcd43f98eab8c53831b6533089aab55a693acceaf5b7720c6346fd4765c"
+    },
+    {
+      "id": "social.proactive.session.probe",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
+      "start": 59,
+      "end": 59,
+      "symbol": "internal bool TryReserveEncounterProbe(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "只在追逐期按原 0.35s 节流主线程会面探测，无新增每 tick 分配。",
+      "fileSha256": "fad5ddcd43f98eab8c53831b6533089aab55a693acceaf5b7720c6346fd4765c"
+    },
+    {
+      "id": "social.proactive.session.stage",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
+      "start": 69,
+      "end": 69,
+      "symbol": "internal void MarkOpeningMenu(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "原追逐→菜单→Native/Scene pending 与失败回追逐的阶段转换统一归 owner。",
+      "fileSha256": "fad5ddcd43f98eab8c53831b6533089aab55a693acceaf5b7720c6346fd4765c"
+    },
+    {
+      "id": "social.proactive.session.start.host",
+      "path": "ProactiveNpcRequestBehavior.cs",
+      "start": 4252,
+      "end": 4252,
+      "symbol": "private void StartRequest(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "真实候选入口捕获 DTO；先占位成功，再进行名声/AI/全局冷却副作用。",
+      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+    },
+    {
+      "id": "social.proactive.session.cancel.host",
+      "path": "ProactiveNpcRequestBehavior.cs",
+      "start": 5059,
+      "end": 5059,
+      "symbol": "private void CancelActiveSession(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "清理会话 owner、pending opening、追逐队伍缓存；游戏 AI 释放仍在主线程 host。",
+      "fileSha256": "9b9103d7cc44a5a3b204a7592510fdf18b305d866a22888df41d4474436011ea"
+    },
+    {
+      "id": "social.proactive.session.replay",
+      "path": "tools/PhaseEightParityReplayTests/ProactiveSessionOwnerReplay.cs",
+      "start": 5,
+      "end": 5,
+      "symbol": "internal static class ProactiveSessionOwnerReplay",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "当前 DLL 旧档单需要/ID、身份/过期、探测、阶段、疲劳、重复启动与取消；非实机。",
+      "fileSha256": "b22122fd50009bb6585a3f8b02e740d3ee2a8af6b66e809f67300dccb7f13d20"
     }
   ]
 }
