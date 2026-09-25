@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\src\modules\AF.Module.Taunt\ScenePeaceConflictContextOwner.cs" Link="ScenePeaceConflictContextOwner.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Taunt\SceneTauntPenaltyLedgerOwner.cs" Link="SceneTauntPenaltyLedgerOwner.cs" />
   </ItemGroup>
 </Project>

@@ -36,3 +36,49 @@ Check(false, Facts(locationId: "arena"), "arena denied");
 Check(false, Facts(locationId: "TRAINING_FIELD"), "training field denied");
 Check(false, Facts(locationId: " "), "unknown location denied");
 Console.WriteLine("20/20 scene Taunt context cases passed; game Mission order NOT_RUN");
+
+static void LedgerCheck(bool condition, string label)
+{
+    if (!condition) throw new InvalidOperationException("penalty ledger: " + label);
+    Console.WriteLine("PASS " + label);
+}
+
+var ledger = new SceneTauntPenaltyLedgerOwner();
+ledger.RestoreDeferredCrime(new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase)
+{
+    [" Faction-A "] = 7f, [" "] = 9f, ["Faction-B"] = -1f
+});
+LedgerCheck(ledger.HasDeferredCrime && ledger.GetDeferredCrime("faction-a") == 7f,
+    "deferred crime save restored by stable faction id");
+LedgerCheck(ledger.CaptureDeferredCrime().Count == 1, "invalid saved crime filtered");
+LedgerCheck(ledger.QueueDeferredCrime("FACTION-A", 6f) == 13f,
+    "repeated faction crime accumulates case-insensitively");
+LedgerCheck(ledger.QueueDeferredCrime("", 6f) == 0f && ledger.GetDeferredCrime("faction-a") == 13f,
+    "missing faction does not mutate ledger");
+LedgerCheck(ledger.PendingCrimeEntries().Length == 1, "pending iteration is bounded to recorded factions");
+LedgerCheck(ledger.ReserveNativeCommit("faction-a", 100f, 100f) == 0f
+    && ledger.GetDeferredCrime("faction-a") == 13f, "native cap preserves pending crime");
+LedgerCheck(ledger.ReserveNativeCommit("faction-a", 95f, 100f) == 5f
+    && ledger.GetDeferredCrime("faction-a") == 8f, "partial native commit retains remainder");
+ledger.RestoreFailedNativeCommit("faction-a", 13f);
+LedgerCheck(ledger.GetDeferredCrime("faction-a") == 13f, "failed native action restores pre-commit pool");
+LedgerCheck(ledger.ReserveNativeCommit("faction-a", 0f, 100f) == 13f
+    && !ledger.HasDeferredCrime, "full native commit consumes pool once");
+ledger.QueueDeferredCrime("faction-a", 2f);
+LedgerCheck(ledger.ClearDeferredCrime("FACTION-A") == 2f
+    && ledger.ClearDeferredCrime("faction-a") == 0f, "execution clear is idempotent");
+
+ledger.RestoreTrustTenths(new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+{ [" TOWN-A "] = 4, ["TOWN-B"] = -3 });
+LedgerCheck(ledger.CaptureTrustTenths().Count == 1, "trust save normalizes legacy entries");
+LedgerCheck(ledger.AwardCriminalKnockdownTrust("town-a", out int carry) == 1 && carry == 7,
+    "knockdown grants whole trust and carries seven tenths");
+LedgerCheck(ledger.AwardCriminalKnockdownTrust("TOWN-A", out carry) == 2 && carry == 0,
+    "second knockdown consumes fractional carry exactly once");
+LedgerCheck(ledger.CaptureTrustTenths().Count == 0, "zero trust carry is not persisted");
+LedgerCheck(ledger.AwardCriminalKnockdownTrust("", out carry) == 0 && carry == 0,
+    "missing settlement cannot earn trust");
+ledger.QueueDeferredCrime("faction-a", 3f);
+ledger.ClearForMainHeroDeath();
+LedgerCheck(!ledger.HasDeferredCrime, "main hero death clears pending crime");
+Console.WriteLine("16/16 scene Taunt penalty ledger cases passed; Bannerlord native crime/trust callbacks NOT_RUN");
