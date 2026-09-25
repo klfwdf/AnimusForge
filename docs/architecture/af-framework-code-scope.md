@@ -617,3 +617,8 @@ Courier transport/generation/session/commit/lifetime 已归位 `Channels/Courier
 本轮完整raw摘要接入独立4096-byte buffer writer，私有DTO122字段映射留owner边界；不迁移存档类型，不修改通用JSON摘要/Prompt/权威写入。对应字段与code-unit反例和原版成本对照已验证，但仍完整原子O(N)，不是深来源预算或主体总拆薄完成。
 
 owner封存尾部已逐draft计费并复用稳定排序；单draft内line净化与weekly trigger bind现按共享metadata计费，同步Sanitize与续跑共用原line/bind规则，未完成draft的列表保持私有。trigger列表sanitize、首次capture/copy、全owner绑定和Apply仍有原子工作；当前不按“大类行数减少”或“全部拆完”交付。
+# 当前范围：主体 J13e2 Taunt 有限离线收口（2026-09-25）
+
+产品/行为 `e62e2a82`、`9ec814eb`、`5873d594`，MCM/聚合 `bee366a8`：`src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs:7–67` 持有和平场景/MCM 物理入口判定；`SceneTauntPenaltyLedgerOwner.cs:9–114` 持有延迟犯罪和信任小数状态/提交转换；`SceneTauntConflictLifecycleOwner.cs:5–47` 持有普通/carryover/升格/结束状态。`SceneTauntBehavior.cs:31,83–97,119–264,792–859,2057,2357–2405,3015–3093,3947–3974,4000–4130,5365–5689,7450–7510,8156–8170,8545–8625,9769–9828` 保留 Campaign/Mission/TW/保存/原生处罚与队伍还原适配；原 `CampaignComposition.cs:38` 和 `StartupPatchComposition.cs:333–369` 的五 patch 注册不变。当前 DLL 回放、聚合契约、六构建与保存/API 证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `bee366a8`，647 锚点两模式通过且只用于定位。**J13e2 `OFFLINE_VERIFIED`、J13 `ACTIVE`，下一包 e3 Encounter**；真实 Mission/Harmony/旧档/MCM/帧性能 **NOT-RUN**，不提前 J14。
+
+## 以下为 e1 范围（历史）
