@@ -8,6 +8,7 @@ namespace AnimusForge.DialogueUI.Native;
 public sealed class NativeOverlayVM : ViewModel
 {
     public AnimusForgeNativeConversationOverlayVM Original { get; }
+    [DataSourceProperty] public DialogueAuxiliaryVM Auxiliary { get; }
     private bool _disposed;
     private bool _moreVisible;
     private string _inputText;
@@ -16,6 +17,7 @@ public sealed class NativeOverlayVM : ViewModel
     {
         Original = original ?? throw new ArgumentNullException(nameof(original));
         _inputText = original.InputText ?? string.Empty;
+        Auxiliary = new DialogueAuxiliaryVM(this);
         original.PropertyChanged += Changed;
         original.PropertyChangedWithValue += ValueChanged;
         original.PropertyChangedWithBoolValue += BoolChanged;
@@ -44,10 +46,11 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;
     [DataSourceProperty] public string PersonaEditButtonText => Original.PersonaEditButtonText;
     [DataSourceProperty] public string TagTestButtonText => Original.TagTestButtonText;
-    [DataSourceProperty] public bool IsCustomAnswerVisible => Original.IsCustomAnswerVisible;
-    [DataSourceProperty] public bool IsOrdinaryMode => !Original.IsCustomAnswerVisible;
+    [DataSourceProperty] public bool IsCustomAnswerVisible => Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
+    [DataSourceProperty] public bool IsOrdinaryMode => !Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
+    [DataSourceProperty] public bool IsToolbarVisible => !Auxiliary.IsOpen;
     [DataSourceProperty] public bool IsInputEnabled => Original.IsInputEnabled;
-    [DataSourceProperty] public bool IsInteractionEnabled => !_disposed;
+    [DataSourceProperty] public bool IsInteractionEnabled => !_disposed && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool CanLeave => !_disposed;
     [DataSourceProperty] public bool IsPersonaEditVisible => Original.IsPersonaEditVisible;
     [DataSourceProperty] public bool IsTagTestVisible => Original.IsTagTestVisible;
@@ -59,7 +62,7 @@ public sealed class NativeOverlayVM : ViewModel
 
     public void ExecuteSubmit()
     {
-        if (_disposed) return;
+        if (_disposed || Auxiliary.IsOpen) return;
         string multiline = AnimusForgeTextInputSanitizer.SanitizeMultiline(_inputText, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
         Original.InputText = AnimusForgeTextInputSanitizer.SanitizeSingleLine(multiline, AnimusForgeTextInputSanitizer.MaxNativeConversationChars);
         Original.ExecuteSubmit();
@@ -76,8 +79,8 @@ public sealed class NativeOverlayVM : ViewModel
         catch (Exception ex) { AnimusForge.DialogueUI.DialogueUiRuntime.Log("Leave conversation failed: " + ex.Message); }
     }
     public void SwitchTalk() { if (_disposed) return; CloseMore(); Original.SwitchTalk(); OnPropertyChanged(nameof(IsOrdinaryMode)); }
-    public void ShowLogView() { if (!_disposed) { CloseMore(); Original.ShowLogView(); } }
-    public void ShowGiveShowMenu() { if (!_disposed) { CloseMore(); Original.ShowGiveShowMenu(); } }
+    public void ShowLogView() { if (!_disposed) { CloseMore(); Auxiliary.Open(true); } }
+    public void ShowGiveShowMenu() { if (!_disposed) { CloseMore(); Auxiliary.Open(false); } }
     public void EditPersona() { if (!_disposed) { CloseMore(); Original.EditPersona(); } }
     public void OpenTagTest() { if (!_disposed) { CloseMore(); Original.OpenTagTest(); } }
     public void StartTyping() { if (!_disposed) Original.StartTyping(); }
@@ -85,6 +88,16 @@ public sealed class NativeOverlayVM : ViewModel
     public void ToggleMore() { if (!_disposed) { _moreVisible = !_moreVisible; OnPropertyChanged(nameof(IsMoreVisible)); } }
 
     private void CloseMore() { _moreVisible = false; OnPropertyChanged(nameof(IsMoreVisible)); }
+    internal void AuxiliaryStateChanged()
+    {
+        if (_disposed) return;
+        OnPropertyChanged(nameof(IsToolbarVisible));
+        OnPropertyChanged(nameof(IsCustomAnswerVisible));
+        OnPropertyChanged(nameof(IsOrdinaryMode));
+        OnPropertyChanged(nameof(IsInteractionEnabled));
+        NativeUiAdapter.AuxiliaryStateChanged(this);
+        if (!Auxiliary.IsOpen && !_disposed) Original.RequestInputFocus();
+    }
     private void Forward(string name)
     {
         if (_disposed) return;
@@ -97,6 +110,7 @@ public sealed class NativeOverlayVM : ViewModel
             return;
         }
         OnPropertyChanged(name);
+        if (name == nameof(IsInputEnabled)) Auxiliary.RefreshInteraction();
         if (name == nameof(IsCustomAnswerVisible)) OnPropertyChanged(nameof(IsOrdinaryMode));
         if (name == nameof(IsPersonaEditVisible) || name == nameof(IsTagTestVisible))
         { OnPropertyChanged(nameof(HasMoreActions)); OnPropertyChanged(nameof(IsMoreVisible)); }
@@ -110,7 +124,9 @@ public sealed class NativeOverlayVM : ViewModel
     public override void OnFinalize()
     {
         if (_disposed) return;
+        Original.StopTyping();
         _disposed = true;
+        Auxiliary.OnFinalize();
         Original.PropertyChanged -= Changed;
         Original.PropertyChangedWithValue -= ValueChanged;
         Original.PropertyChangedWithBoolValue -= BoolChanged;

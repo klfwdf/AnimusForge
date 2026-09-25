@@ -28,6 +28,8 @@ public static class NativeUiAdapter
     private static FieldInfo _overlayLayerField;
     private static FieldInfo _overlayDataSourceField;
     private static FieldInfo _overlaySubmittingField;
+    private static FieldInfo _activeOverlayField;
+    private static FieldInfo _temporaryUiField;
 
     public static void Install(Harmony harmony)
     {
@@ -37,18 +39,28 @@ public static class NativeUiAdapter
         var finalize = AccessTools.Method(typeof(MissionConversationVM), nameof(MissionConversationVM.OnFinalize));
         var dataSource = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_dataSource");
         var restrictions = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "UpdateButtonsOnlyInputRestrictions");
+        var focusInput = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "FocusInputIfVisible");
+        var restoreOrdinary = AccessTools.Method(typeof(AnimusForgeNativeConversationOverlay), "RestoreNativeConversationInputAfterOrdinaryMode");
         _overlayLayerField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_layer");
         _overlaySubmittingField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_isSubmitting");
         _overlayDataSourceField = dataSource;
+        _activeOverlayField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_activeOverlay");
+        _temporaryUiField = AccessTools.Field(typeof(AnimusForgeNativeConversationOverlay), "_temporarySystemUiActive");
         if (hit == null || close == null || finalize == null || dataSource?.FieldType != typeof(AnimusForgeNativeConversationOverlayVM)
-            || restrictions == null || _overlayLayerField?.FieldType != typeof(GauntletLayer) || _overlaySubmittingField?.FieldType != typeof(bool))
+            || restrictions == null || focusInput == null || restoreOrdinary == null || _activeOverlayField == null || _temporaryUiField == null
+            || _overlayLayerField?.FieldType != typeof(GauntletLayer) || _overlaySubmittingField?.FieldType != typeof(bool))
             throw new MissingMemberException("DialogueUI native lifecycle contract is unavailable.");
         harmony.Patch(hit, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(MouseHitPrefix)));
         harmony.Patch(close, postfix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(OverlayClosed)));
         harmony.Patch(finalize, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(NativeFinalizing)));
         harmony.Patch(restrictions, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(UpdateRestrictionsPrefix)));
+        harmony.Patch(focusInput,
+            prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(AuxiliaryFocusPrefix)));
+        harmony.Patch(restoreOrdinary, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(AuxiliaryRestorePrefix)));
         MapPortraitSource.Install(harmony);
         PortraitCamera.Install(harmony);
+        try { InlineTradeBridge.Install(harmony); }
+        catch (Exception ex) { DialogueUiRuntime.Log("Inline trade unavailable: " + ex.Message); }
         _installed = true;
     }
 
@@ -103,6 +115,8 @@ public static class NativeUiAdapter
         if (_overlay != null && ((!_overlay.IsMapConversation && !ReferenceEquals(Mission.Current, _overlay.Mission)) || !Attached(_overlay.Root)))
         { _overlay.Dispose(); _overlay = null; }
         _overlay?.Tick(_tick);
+        if (_overlay != null && Wrappers.TryGetValue(_overlay.Original, out var wrapper))
+            wrapper.Auxiliary.Tick(dt);
     }
 
     public static void OnMovieReleased(Widget root)
@@ -163,8 +177,15 @@ public static class NativeUiAdapter
         {
             if (!DialogueUiRuntime.Enabled || !_installed
                 || !(_overlayDataSourceField.GetValue(__instance) is AnimusForgeNativeConversationOverlayVM ds)
-                || !Wrappers.ContainsKey(ds) || !ds.IsCustomAnswerVisible)
-                return true;
+                || !Wrappers.TryGetValue(ds, out var wrapper)) return true;
+            if (_temporaryUiField.GetValue(__instance) is true)
+            { SetAuxiliaryLayerInput(__instance, false); return false; }
+            if (wrapper.Auxiliary.IsOpen)
+            {
+                SetAuxiliaryLayerInput(__instance, wrapper.Auxiliary.IsVisible);
+                return false;
+            }
+            if (!ds.IsCustomAnswerVisible) return true;
             if (_overlaySubmittingField.GetValue(__instance) is true)
                 return true;
             if (_overlayLayerField.GetValue(__instance) is GauntletLayer layer)
@@ -179,6 +200,62 @@ public static class NativeUiAdapter
         catch
         {
             return true;
+        }
+    }
+
+    private static bool AuxiliaryFocusPrefix(AnimusForgeNativeConversationOverlay __instance)
+    {
+        if (!DialogueUiRuntime.Enabled || !_installed
+            || !(_overlayDataSourceField.GetValue(__instance) is AnimusForgeNativeConversationOverlayVM ds)
+            || !Wrappers.TryGetValue(ds, out var vm) || !vm.Auxiliary.IsOpen) return true;
+        SetAuxiliaryLayerInput(__instance, vm.Auxiliary.IsVisible);
+        return false;
+    }
+
+    private static bool AuxiliaryRestorePrefix(AnimusForgeNativeConversationOverlayVM ____dataSource, bool ____temporarySystemUiActive)
+    {
+        if (!DialogueUiRuntime.Enabled || !_installed || ____temporarySystemUiActive
+            || ____dataSource == null || !Wrappers.TryGetValue(____dataSource, out var vm) || !vm.Auxiliary.IsVisible) return true;
+        NativeConversationAnswerAreaController.SetSuppressed(true);
+        return false;
+    }
+
+    // Called on panel transitions, not in a frame polling loop. Never steal encyclopedia focus.
+    private static void SetAuxiliaryLayerInput(AnimusForgeNativeConversationOverlay host, bool visible)
+    {
+        if (!(_overlayLayerField.GetValue(host) is GauntletLayer layer)) return;
+        visible = visible && !(_temporaryUiField?.GetValue(host) is true);
+        if (visible)
+        {
+            layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
+            layer.IsFocusLayer = true;
+            ScreenManager.TrySetFocus(layer);
+        }
+        else
+        {
+            layer.InputRestrictions.ResetInputRestrictions();
+            layer.IsFocusLayer = false;
+            ScreenManager.TryLoseFocus(layer);
+        }
+    }
+
+    internal static void AuxiliaryStateChanged(NativeOverlayVM vm)
+    {
+        if (!(_activeOverlayField?.GetValue(null) is AnimusForgeNativeConversationOverlay host)
+            || !ReferenceEquals(_overlayDataSourceField.GetValue(host), vm.Original)) return;
+        if (_overlay?.Root.EventManager != null)
+        {
+            _overlay.Root.EventManager.FocusedWidget = null;
+            if (!vm.Auxiliary.IsOpen && vm.Original.IsCustomAnswerVisible)
+                _overlay.Root.EventManager.FocusedWidget = _overlay.InputEditor;
+        }
+        if (vm.Auxiliary.IsOpen) SetAuxiliaryLayerInput(host, vm.Auxiliary.IsVisible);
+        else if (vm.Original.IsCustomAnswerVisible) UpdateRestrictionsPrefix(host);
+        else
+        {
+            NativeConversationAnswerAreaController.SetSuppressed(false);
+            NativeConversationAnswerAreaController.ForceRestoreAll();
+            SetAuxiliaryLayerInput(host, false);
         }
     }
 
@@ -292,6 +369,11 @@ public static class NativeUiAdapter
         internal readonly AnimusForgeNativeConversationOverlayVM Original;
         internal readonly bool IsMapConversation;
         private readonly List<Widget> _buttons = new();
+        private readonly NativeOverlayVM _wrapper;
+        private readonly System.Runtime.CompilerServices.ConditionalWeakTable<ButtonWidget, object> _styled = new();
+        private int _styledVersion = -1;
+        private int _stylePasses;
+        internal readonly Widget InputEditor;
         private bool _defaultModeApplied;
         private bool _disposed;
 
@@ -300,6 +382,9 @@ public static class NativeUiAdapter
             Root = root; Original = original; Mission = Mission.Current;
             IsMapConversation = isMapConversation;
             _column = root.FindChild("AFDialogueRightColumn", true);
+            _auxiliary = root.FindChild("AFDialogueAuxiliaryPanel", true);
+            Wrappers.TryGetValue(original, out _wrapper);
+            InputEditor = root.FindChild("AFDialogueInputEditor", true);
             foreach (string id in new[] { "AFDialogueHistory", "AFDialogueGift", "AnimusForgeConversationIllustrateButton", "AFDialogueSwitch", "AFDialogueLeave" })
             {
                 var button = root.FindChild(id, true);
@@ -311,10 +396,19 @@ public static class NativeUiAdapter
         }
 
         private readonly Widget _column;
+        private readonly Widget _auxiliary;
 
         internal void Tick(long tick)
         {
             if (_disposed) return;
+            // List binding can instantiate children on the next UI tick. Two bounded passes
+            // after a structural change, no perpetual widget scan or per-frame brush creation.
+            if (_wrapper?.Auxiliary.IsVisible == true)
+            {
+                if (_styledVersion != _wrapper.Auxiliary.LayoutVersion)
+                { _styledVersion = _wrapper.Auxiliary.LayoutVersion; _stylePasses = 2; }
+                if (_stylePasses > 0) { _stylePasses--; StyleAuxiliary(_auxiliary); }
+            }
             if (!_defaultModeApplied && tick > 1)
             {
                 _defaultModeApplied = true;
@@ -325,6 +419,7 @@ public static class NativeUiAdapter
         internal bool HitTest()
         {
             if (!Root.IsRecursivelyVisible()) return false;
+            if (_wrapper?.Auxiliary.IsVisible == true) return true;
             var mouse = Input.MousePositionPixel;
 
             // If mouse is within the whole right interaction column, retain input restrictions
@@ -335,6 +430,13 @@ public static class NativeUiAdapter
                     return true;
             }
 
+            if (_auxiliary != null && _auxiliary.IsRecursivelyVisible())
+            {
+                var ap = _auxiliary.GlobalPosition; var az = _auxiliary.Size;
+                if (mouse.x >= ap.X && mouse.x <= ap.X + az.X && mouse.y >= ap.Y && mouse.y <= ap.Y + az.Y)
+                    return true;
+            }
+
             foreach (var widget in _buttons)
             {
                 if (!widget.IsEnabled || !widget.IsRecursivelyVisible()) continue;
@@ -342,6 +444,14 @@ public static class NativeUiAdapter
                 if (mouse.x >= p.X && mouse.x <= p.X + s.X && mouse.y >= p.Y && mouse.y <= p.Y + s.Y) return true;
             }
             return false;
+        }
+
+        private void StyleAuxiliary(Widget node)
+        {
+            if (node == null) return;
+            if (node is ButtonWidget button && !_styled.TryGetValue(button, out _))
+            { DialogueUiButtons.StyleParchmentTab(button); _styled.Add(button, new object()); }
+            for (int i = 0; i < node.ChildCount; i++) StyleAuxiliary(node.GetChild(i));
         }
 
         public void Dispose()
