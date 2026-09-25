@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.MountAndBlade;
@@ -511,17 +512,19 @@ public partial class DuelBehavior
 	}
 
 	private static bool TryCreateDuelOutcomeEffects(
-		DuelOutcomeEffectState memory,
-		DuelOutcomeEffectState afef,
-		DuelOutcomeEffectState death,
+		DuelSessionKind kind,
+		bool hasHero,
+		bool hasNonHeroMemory,
+		bool playerDefeated,
 		DuelOutcomeEffectState renown,
 		DuelOutcomeEffectState stake,
 		out DuelOutcomeEffects effects)
 	{
-		if (DuelOutcomeEffects.TryCreate(
-			memory,
-			afef,
-			death,
+		if (DuelSettlementEffectOwner.TryCreate(
+			kind,
+			hasHero,
+			hasNonHeroMemory,
+			playerDefeated,
 			renown,
 			stake,
 			out effects,

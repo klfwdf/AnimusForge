@@ -8,5 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Duel\DuelSettlementEffectOwner.cs" Link="Duel\DuelSettlementEffectOwner.cs" />
   </ItemGroup>
 </Project>

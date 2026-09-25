@@ -159,6 +159,9 @@ internal static class Program
         string recordOutcome = ExtractMethod(host, "private static bool TryRecordDuelOutcome(");
         string finalizeOutcome = ExtractMethod(host, "private static bool TryFinalizeDuelOutcome(");
         string unknownOutcome = ExtractMethod(host, "private static void MarkDuelOutcomeUnknown(");
+        string settlementEffects = ExtractMethod(host, "private static bool TryCreateDuelOutcomeEffects(");
+        Require(settlementEffects.Contains("DuelSettlementEffectOwner.TryCreate(", StringComparison.Ordinal),
+            "Typed terminal effects do not use the Duel settlement projection owner.");
         Require(CountOccurrences(beginOutcome, "IndexDuelOutcome(normalizedSubject, exactDuelId);") == 1,
             "Duel start does not index exactly one subject/duel identity.");
         Require(recordOutcome.Contains("_duelOutcomeOwner.RecordOutcome(", StringComparison.Ordinal),
@@ -769,6 +772,7 @@ internal static class Program
             Path.Combine(projectRoot, "DuelBehavior.cs"),
             Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"),
             Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelSettlementEffectOwner.cs"),
             Path.Combine(projectRoot, "FourberieDuelCompatibility.cs"),
             Path.Combine(projectRoot, "MyBehavior.cs"),
             Path.Combine(projectRoot, "ShoutBehavior.cs"),
@@ -1143,6 +1147,12 @@ internal static class Program
         RequireCall(assembly, begin, DuelBehaviorType, "IndexDuelOutcome");
         RequireCall(assembly, finalize, DuelBehaviorType, "IndexDuelOutcome");
         RequireCall(assembly, markUnknown, DuelBehaviorType, "IndexDuelOutcome");
+        const string settlementOwnerType = "AnimusForge.Refactor.Modules.DuelSettlementEffectOwner";
+        MetadataAssembly.MethodView settlementProjection = assembly.RequireUniqueMethod(settlementOwnerType, "TryCreate");
+        RequireCall(assembly,
+            assembly.RequireUniqueMethod(DuelBehaviorType, "TryCreateDuelOutcomeEffects"),
+            settlementOwnerType, "TryCreate");
+        RequireCall(assembly, settlementProjection, RuntimeNamespace + "DuelOutcomeEffects", "TryCreate");
 
         MetadataAssembly.MethodView[] writers =
         {
@@ -1163,6 +1173,7 @@ internal static class Program
                     call => call.DeclaringType == DuelBehaviorType && call.Name == "TryRecordDuelOutcome",
                     out IReadOnlyList<string> recordPath),
                 "Terminal writer does not lock the typed result before effects: " + writer.DisplaySignature);
+            RequireCall(assembly, writer, DuelBehaviorType, "TryCreateDuelOutcomeEffects");
             Require(assembly.CallsTransitively(
                     writer,
                     call => call.DeclaringType == DuelBehaviorType && call.Name == "TryFinalizeDuelOutcome",

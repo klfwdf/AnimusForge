@@ -1,4 +1,5 @@
 using System.Reflection;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Runtime;
 
 var tests = new (string Name, Action Run)[]
@@ -7,6 +8,8 @@ var tests = new (string Name, Action Run)[]
     ("request start and result identities are bounded", IdentitiesAreBounded),
     ("meeting duel completes exactly once", MeetingDuelCompletesExactlyOnce),
     ("partial effects remain explicit", PartialEffectsRemainExplicit),
+    ("settlement projection keeps all three session effects", SettlementProjectionKeepsSessionEffects),
+    ("settlement projection fails closed on invalid inputs", SettlementProjectionRejectsInvalidInputs),
     ("unknown after start is terminal", UnknownAfterStartIsTerminal),
 	("unknown after dispatch is terminal without a start identity", UnknownAfterDispatchIsTerminal),
     ("outcome known can fail closed as unknown", OutcomeKnownCanFailClosedAsUnknown),
@@ -574,6 +577,43 @@ static void ContractIsDataOnlyAndNotReplayable()
         DuelOutcomeOperationStatus.InvalidIdentity,
         owner.Cancel(request, "this is raw human prose", out _, out _),
         "raw reason text was retained");
+}
+
+static void SettlementProjectionKeepsSessionEffects()
+{
+    foreach (DuelSessionKind kind in new[] { DuelSessionKind.Meeting, DuelSessionKind.Arena, DuelSessionKind.Wilderness })
+    {
+        Require(DuelSettlementEffectOwner.TryCreate(kind, hasHero: true, hasNonHeroMemory: false,
+            playerDefeated: true, DuelOutcomeEffectState.Confirmed, DuelOutcomeEffectState.Partial,
+            out DuelOutcomeEffects effects, out string error), kind + " settlement rejected: " + error);
+        Equal(DuelOutcomeEffectState.AttemptedUnconfirmed, effects.Memory, kind + " memory");
+        Equal(DuelOutcomeEffectState.AttemptedUnconfirmed, effects.Afef, kind + " AFEF");
+        Equal(DuelOutcomeEffectState.AttemptedUnconfirmed, effects.Death, kind + " death");
+        Equal(DuelOutcomeEffectState.Confirmed, effects.Renown, kind + " renown");
+        Equal(DuelOutcomeEffectState.Partial, effects.Stake, kind + " stake");
+    }
+    Require(DuelSettlementEffectOwner.TryCreate(DuelSessionKind.Wilderness, hasHero: false, hasNonHeroMemory: true,
+        playerDefeated: false, DuelOutcomeEffectState.NotApplicable, DuelOutcomeEffectState.NotApplicable,
+        out DuelOutcomeEffects nonHero, out _), "non-hero wilderness rejected");
+    Equal(DuelOutcomeEffectState.AttemptedUnconfirmed, nonHero.Memory, "non-hero memory");
+    Equal(DuelOutcomeEffectState.NotApplicable, nonHero.Afef, "non-hero AFEF");
+    Equal(DuelOutcomeEffectState.NotApplicable, nonHero.Death, "non-hero death");
+    Require(DuelSettlementEffectOwner.TryCreate(DuelSessionKind.Arena, hasHero: false, hasNonHeroMemory: true,
+        playerDefeated: false, DuelOutcomeEffectState.NotApplicable, DuelOutcomeEffectState.NotApplicable,
+        out DuelOutcomeEffects arena, out _), "arena without hero rejected");
+    Equal(DuelOutcomeEffectState.NotApplicable, arena.Memory, "arena must not use wilderness memory");
+}
+
+static void SettlementProjectionRejectsInvalidInputs()
+{
+    Require(!DuelSettlementEffectOwner.TryCreate((DuelSessionKind)99, true, false, false,
+        DuelOutcomeEffectState.Confirmed, DuelOutcomeEffectState.Confirmed, out DuelOutcomeEffects invalidKind,
+        out string kindError) && invalidKind == null && kindError == "duel_session_kind_invalid",
+        "invalid session did not fail closed");
+    Require(!DuelSettlementEffectOwner.TryCreate(DuelSessionKind.Meeting, true, false, false,
+        (DuelOutcomeEffectState)99, DuelOutcomeEffectState.Confirmed, out DuelOutcomeEffects invalidEffect,
+        out string effectError) && invalidEffect == null && effectError == "duel_effect_state_invalid",
+        "invalid effect did not fail closed");
 }
 
 static void Require(bool condition, string message)
