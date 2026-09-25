@@ -15,6 +15,7 @@ internal static class Program
     {
         ReleaseAudit.Run();
         TargetAudit.Run();
+        ConversationTargetAudit.Run();
         ReturnAudit.Run();
         DuelAudit.Run();
         InteractionComponentSafePatch.Run();
@@ -56,6 +57,33 @@ internal static class TargetAudit
             && !refreshed && cleared, "missing leader clears stale selected target");
         Program.Check(owner.Ensure(nextEncounter, Eligible, Fallback, out refreshed, out cleared) == null
             && !cleared, "empty recheck does not claim another clear");
+    }
+}
+internal static class ConversationTargetAudit
+{
+    public static void Run()
+    {
+        var selectedMember = new Hero();
+        var leader = new Hero();
+        var instanceLord = new Hero();
+        var invalid = new Hero();
+        object[] args = { invalid, selectedMember, leader };
+        int fallbackCalls = 0;
+        Hero Resolve(object instance, object[] values, Hero fallback) =>
+            EncounterConversationTargetOwner.Resolve(instance, values,
+                value => value as Hero, value => value != null && !ReferenceEquals(value, invalid),
+                () => { fallbackCalls++; return fallback; });
+        Program.Check(ReferenceEquals(Resolve(instanceLord, args, leader), selectedMember),
+            "selected army member argument outranks instance and encountered leader");
+        Program.Check(fallbackCalls == 0, "valid argument does not evaluate leader fallback");
+        Program.Check(ReferenceEquals(Resolve(instanceLord, new object[] { invalid }, leader), instanceLord),
+            "usable instance outranks encountered leader after invalid arguments");
+        Program.Check(ReferenceEquals(Resolve(invalid, null, leader), leader),
+            "leader is last fallback for missing arguments and unusable instance");
+        Program.Check(Resolve(null, new object[] { invalid }, invalid) == null,
+            "unusable leader cannot become conversation target");
+        Program.Check(Resolve(null, null, null) == null,
+            "missing source leaves conversation target unset");
     }
 }
 internal static class ReturnAudit
