@@ -1,7 +1,7 @@
 # Encounter lifecycle boundary regression
 
-Run `python -B tools/EncounterLifecycleBoundaryTests/run.py` from this checkout.
-The launcher uses the existing .NET SDK under the AFMOD root and has no package sources.
+Run `python -B tools/EncounterLifecycleBoundaryTests/run.py --dotnet local/dotnet/8.0.425/dotnet.exe` from this checkout.
+The launcher accepts an explicit project-local .NET SDK and has no package sources.
 Generated files and the result log stay under `.tmp/encounter-lifecycle-boundary`.
 
 The harness extracts production methods verbatim using the existing boundary extractor.
