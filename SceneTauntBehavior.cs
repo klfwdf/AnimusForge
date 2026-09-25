@@ -3053,10 +3053,15 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		return CanInitializePeaceSceneConflict(settlement);
 	}
 
-	private static bool CanInitializePeaceSceneConflict(Settlement settlement)
+	private static bool CanInitializePeaceSceneConflict(Settlement settlement, bool physicalAttack = false)
 	{
 		try
 		{
+			bool physicalEnabled = !physicalAttack || SceneTauntBehavior.IsPeaceSceneConflictEnabled();
+			if (!physicalEnabled)
+			{
+				return false;
+			}
 			Mission mission = Mission.Current;
 			if (mission == null || settlement == null)
 			{
@@ -3073,7 +3078,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				hasSettlement: true,
 				hasLocationEncounter: true,
 				hasCampaignLocation: true,
-				sameSettlement: encounter.Settlement == null || encounter.Settlement == settlement,
+				sameSettlement: encounter.Settlement == settlement,
 				hasBattle: PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null,
 				hasSiegeHandler: mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null,
 				hasBattleTeamType: mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
@@ -3084,7 +3089,9 @@ public class SceneTauntMissionBehavior : MissionBehavior
 					|| mission.Mode == MissionMode.Duel,
 				settlementUnderSiege: settlement.IsUnderSiege,
 				locationId: location.StringId);
-			return ScenePeaceConflictContextOwner.CanInitialize(in facts);
+			return physicalAttack
+				? ScenePeaceConflictContextOwner.CanInitializePhysical(physicalEnabled, in facts)
+				: ScenePeaceConflictContextOwner.CanInitialize(in facts);
 		}
 		catch
 		{
@@ -5588,11 +5595,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			long totalStart = StartPerfTimer();
-			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
-			{
-				return false;
-			}
-			if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement))
+			if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement, physicalAttack: true))
 			{
 				return false;
 			}
