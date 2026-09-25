@@ -1,3 +1,11 @@
+## 主体 J13d4 WarStats 开工意图（2026-09-25）
+
+状态：`J13d4_ACTIVE / J13_ACTIVE`；基线 `a30035d95a5ea281dea3dc7210b3a1321e50f226`，只推进[原计划](plans/j13-domain-owners-plan.md)的 WarStats，之后依序 e1–e5，不提前 J14。
+
+- **真实边界**：`WarStats/AfWarStatsBehavior.cs:15,238–424` 保留原 `AFWarStatsTerminal.Behaviors.AfWarStatsBehavior`、Campaign 事件注册、v1–v5 `SyncData` 字段/键；`:619–715` 收日 Tick、宣战/停战、战斗与英雄死亡；`:1164–1408` 对账、归档与战斗统计；`:433–618` 终端投影和删除；`:1865–2070` 平行保存列表。`CampaignComposition.cs:54` 原注册、`WarStats/AfWarStatsPopupVM.cs` 的终端消费者保持，游戏对象读取留主线程 host。
+- **有限切片**：先让单一 ledger owner 拥有活动/历史/旧账实例及终战归档/删除转换，复用 Phase8 现有真实 host 归档/幂等/列表往返；再按计数、近期战斗/死亡、迁移/保存投影分别迁算法与状态决策。不能仅把旧方法放进 partial 或机械转发。测试逐片覆盖重复和平、重开独立、错配对象、死亡去重/最近战斗、v5 旧/坏数据与终端筛选；合成空王国 fixture 不代表实际 Campaign 事件顺序。
+- **退出门**：每片生产 owner+消费者+行为反例单独提交；d4 聚合接线契约、原 Debug/Release × 1.3/1.4+Bootstrap、当前候选 Phase8、保存/API/Compile 和代码地图/HANDOFF 后才报有限离线收口。无 Stage、部署、打包、游戏/外仓写入、推送或自动化更改，`.dotnet-cli-home/` 保留。
+
 ## 主体 J13d3 WorldEvents 有限离线收口（2026-09-25）
 
 状态：**`J13d3_OFFLINE_VERIFIED / J13_ACTIVE`**，只表示本包真实 owner、生产消费者、相关行为与兼容离线门禁闭合；下一包是 J13d4 WarStats，随后 e1–e5，不提前 J14。意图 `82f406ca`，产品/行为 `62ec9065`，聚合接线及政策 UI 契约 `b07898cb`；[代码范围图](architecture/af-framework-code-scope.md)和[代码地图](architecture/af-framework-code-map.json)绑定产品/契约修订 `b07898cb`，586 锚点 recorded/working-tree 通过，定位不冒充行为验收。
