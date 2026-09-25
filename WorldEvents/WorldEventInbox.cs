@@ -45,10 +45,7 @@ public sealed class AnimusForgeWorldEventBehavior : CampaignBehaviorBase
 {
 	private const string SaveKeyRecords = "_afWorldEventInboxRecords_v1";
 	private const string SaveKeyUnread = "_afWorldEventInboxUnread_v1";
-	private const int MaxRecords = 240;
-	private readonly Dictionary<string, string> _records = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-	private readonly HashSet<string> _unread = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-	private long _version;
+	private readonly WorldEventInboxOwner _inbox = new WorldEventInboxOwner();
 
 	public static AnimusForgeWorldEventBehavior Instance { get; private set; }
 
@@ -67,118 +64,25 @@ public sealed class AnimusForgeWorldEventBehavior : CampaignBehaviorBase
 		if (dataStore == null) return;
 		if (dataStore.IsSaving)
 		{
-			Trim();
-			Dictionary<string, string> records = CampaignSaveChunkHelper.FlattenStringDictionary(_records, SaveKeyRecords, "WorldEventInbox");
+			Dictionary<string, string> records = CampaignSaveChunkHelper.FlattenStringDictionary(_inbox.ExportRecords(), SaveKeyRecords, "WorldEventInbox");
 			dataStore.SyncData(SaveKeyRecords, ref records);
-			List<string> unread = _unread.ToList();
+			List<string> unread = _inbox.ExportUnread();
 			dataStore.SyncData(SaveKeyUnread, ref unread);
 			return;
 		}
-		_records.Clear();
-		_unread.Clear();
 		Dictionary<string, string> stored = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		dataStore.SyncData(SaveKeyRecords, ref stored);
-		foreach (KeyValuePair<string, string> item in CampaignSaveChunkHelper.RestoreStringDictionary(stored, "WorldEventInbox"))
-		{
-			AnimusForgeWorldEventInboxEntry entry = Deserialize(item.Value);
-			if (entry != null) _records[entry.EventId] = JsonConvert.SerializeObject(entry);
-		}
 		List<string> unreadIds = new List<string>();
 		dataStore.SyncData(SaveKeyUnread, ref unreadIds);
-		foreach (string id in unreadIds ?? new List<string>()) if (_records.ContainsKey(id ?? "")) _unread.Add(id);
-		Trim();
-		_version++;
+		_inbox.Import(CampaignSaveChunkHelper.RestoreStringDictionary(stored, "WorldEventInbox"), unreadIds);
 	}
 
-	public static void UpsertWorldEventForExternal(AnimusForgeWorldEventInboxEntry entry, bool markUnread = true) => Instance?.Upsert(entry, markUnread);
-	public static long GetInboxVersionForExternal() => Instance?._version ?? 0L;
-	public static int GetUnreadCountForExternal() => Instance?._unread.Count ?? 0;
-	public static List<AnimusForgeWorldEventInboxEntry> GetInboxSnapshotForExternal(int maxCount = 80) => Instance?.Snapshot(maxCount) ?? new List<AnimusForgeWorldEventInboxEntry>();
-	public static bool MarkEventReadForExternal(string eventId) => Instance?.MarkRead(eventId) == true;
-	public static void MarkAllReadForExternal() => Instance?.MarkAllRead();
-
-	private void Upsert(AnimusForgeWorldEventInboxEntry entry, bool markUnread)
-	{
-		AnimusForgeWorldEventInboxEntry normalized = Normalize(entry);
-		if (normalized == null) return;
-		if (markUnread)
-		{
-			normalized.IsRead = false;
-			_unread.Add(normalized.EventId);
-		}
-		_records[normalized.EventId] = JsonConvert.SerializeObject(normalized);
-		Trim();
-		_version++;
-	}
-
-	private List<AnimusForgeWorldEventInboxEntry> Snapshot(int maxCount)
-	{
-		return _records.Values.Select(Deserialize).Where(x => x != null).OrderByDescending(x => x.Day).ThenByDescending(x => x.CreatedUtcTicks).Take(Math.Max(1, Math.Min(200, maxCount))).ToList();
-	}
-
-	private bool MarkRead(string eventId)
-	{
-		string id = (eventId ?? "").Trim();
-		if (!_records.TryGetValue(id, out string raw)) return false;
-		AnimusForgeWorldEventInboxEntry entry = Deserialize(raw);
-		if (entry == null) return false;
-		if (entry.IsRead)
-		{
-			bool removed = _unread.Remove(id);
-			if (removed) _version++;
-			return removed;
-		}
-		entry.IsRead = true;
-		_records[id] = JsonConvert.SerializeObject(entry);
-		_unread.Remove(id);
-		_version++;
-		return true;
-	}
-
-	private void MarkAllRead()
-	{
-		foreach (string id in _records.Keys.ToList())
-		{
-			AnimusForgeWorldEventInboxEntry entry = Deserialize(_records[id]);
-			if (entry == null) continue;
-			entry.IsRead = true;
-			_records[id] = JsonConvert.SerializeObject(entry);
-		}
-		_unread.Clear();
-		_version++;
-	}
-
-	private void Trim()
-	{
-		foreach (AnimusForgeWorldEventInboxEntry extra in _records.Values.Select(Deserialize).Where(x => x != null).OrderByDescending(x => x.Day).ThenByDescending(x => x.CreatedUtcTicks).Skip(MaxRecords).ToList())
-		{
-			_records.Remove(extra.EventId);
-			_unread.Remove(extra.EventId);
-		}
-	}
-
-	private static AnimusForgeWorldEventInboxEntry Deserialize(string raw)
-	{
-		try { return Normalize(JsonConvert.DeserializeObject<AnimusForgeWorldEventInboxEntry>(raw ?? "")); } catch { return null; }
-	}
-
-	private static AnimusForgeWorldEventInboxEntry Normalize(AnimusForgeWorldEventInboxEntry entry)
-	{
-		if (entry == null) return null;
-		entry.EventId = First(entry.EventId, entry.StableKey, Guid.NewGuid().ToString("N"));
-		entry.EventKind = First(entry.EventKind, "world_event");
-		entry.KindLabel = First(entry.KindLabel, "世界事件");
-		entry.Title = First(entry.Title, "AnimusForge 事件");
-		entry.Summary = First(entry.Summary, entry.DetailText);
-		entry.DetailText = First(entry.DetailText, entry.Summary);
-		entry.BodySectionTitleText = First(entry.BodySectionTitleText, "事件详情");
-		entry.Day = Math.Max(0, entry.Day);
-		entry.CreatedUtcTicks = entry.CreatedUtcTicks > 0 ? entry.CreatedUtcTicks : DateTime.UtcNow.Ticks;
-		entry.StableKey = First(entry.StableKey, entry.EventId);
-		return entry;
-	}
-
-	private static string First(params string[] values) => (values ?? Array.Empty<string>()).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x))?.Trim() ?? "";
+	public static void UpsertWorldEventForExternal(AnimusForgeWorldEventInboxEntry entry, bool markUnread = true) => Instance?._inbox.Upsert(entry, markUnread);
+	public static long GetInboxVersionForExternal() => Instance?._inbox.Version ?? 0L;
+	public static int GetUnreadCountForExternal() => Instance?._inbox.UnreadCount ?? 0;
+	public static List<AnimusForgeWorldEventInboxEntry> GetInboxSnapshotForExternal(int maxCount = 80) => Instance?._inbox.Snapshot(maxCount) ?? new List<AnimusForgeWorldEventInboxEntry>();
+	public static bool MarkEventReadForExternal(string eventId) => Instance?._inbox.MarkRead(eventId) == true;
+	public static void MarkAllReadForExternal() => Instance?._inbox.MarkAllRead();
 }
 
 public sealed class AnimusForgeWorldEventInboxPopup

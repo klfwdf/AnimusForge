@@ -39,6 +39,7 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
         "candidate build identity mismatch");
     DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
     foreach (string source in new[] {
+        "WorldEvents/WorldEventInbox.cs", "src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs",
         "RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
         "ProactiveNpcRequestBehavior.cs", "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
         "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
@@ -99,6 +100,7 @@ IssueCompletionReceiptOwnerReplay.Run(af, repo);
 IssueRuntimeStateOwnerReplay.Run(af, repo);
 IssueActionOwnerReplay.Run(af, repo);
 J13D2DomainOwnerContractReplay.Run(repo);
+WorldEventInboxOwnerReplay.Run(af);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
