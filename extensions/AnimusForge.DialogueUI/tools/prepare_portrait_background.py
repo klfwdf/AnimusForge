@@ -33,14 +33,18 @@ def main():
     padded = mask.filter(ImageFilter.MaxFilter(9))
     box = padded.getbbox()
     size = (box[2] - box[0], box[3] - box[1])
-    background = ImageOps.fit(Image.open(SOURCE).convert("RGB"), size, method=Image.Resampling.LANCZOS).convert("RGBA")
+    # Preserve the generated soft shading, but match the walnut/brass frame with warm amber.
+    source = Image.open(SOURCE).convert("RGB")
+    luminance = ImageOps.autocontrast(ImageOps.grayscale(source), cutoff=0.5)
+    warm = ImageOps.colorize(luminance, black=(39, 20, 12), white=(132, 85, 40))
+    background = ImageOps.fit(warm, size, method=Image.Resampling.LANCZOS).convert("RGBA")
     background.putalpha(padded.crop(box))
     background.save(ROOT / "GUI/SpriteParts/afdui_portrait_background.png")
     print("Background XML x/y/w/h:", [round(v, 6) for v in (box[0] * 1440 / art.width, box[1] * 283 / art.height, size[0] * 1440 / art.width, size[1] * 283 / art.height)])
     preview = Image.new("RGBA", art.size)
     preview.alpha_composite(background, (box[0], box[1]))
     preview.alpha_composite(art)
-    preview = Image.alpha_composite(Image.new("RGBA", art.size, (39, 45, 43, 255)), preview)
+    preview = Image.alpha_composite(Image.new("RGBA", art.size, (51, 33, 23, 255)), preview)
     preview.crop((95, 0, 450, 375)).save(ROOT / "artifacts/portrait-background-fitted-preview.png")
 
 

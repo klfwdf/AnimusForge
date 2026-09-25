@@ -72,7 +72,7 @@ namespace TaleWorlds.MountAndBlade
 }
 namespace TaleWorlds.MountAndBlade.GauntletUI.Widgets
 {
-    public class CharacterTableauWidget
+    public class CharacterTableauWidget : TaleWorlds.GauntletUI.BaseTypes.TextureWidget
     {
         public bool IsVisible, DoNotAcceptEvents, IsFemale, IsEquipmentAnimActive;
         public int StanceIndex, Race, LeftHandWieldedEquipmentIndex, RightHandWieldedEquipmentIndex;

@@ -48,6 +48,7 @@ public static class NativeUiAdapter
         harmony.Patch(finalize, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(NativeFinalizing)));
         harmony.Patch(restrictions, prefix: new HarmonyMethod(typeof(NativeUiAdapter), nameof(UpdateRestrictionsPrefix)));
         MapPortraitSource.Install(harmony);
+        PortraitCamera.Install(harmony);
         _installed = true;
     }
 
@@ -126,6 +127,7 @@ public static class NativeUiAdapter
         foreach (var vm in Wrappers.Values) vm.OnFinalize();
         Wrappers.Clear();
         MapPortraitSource.Shutdown();
+        PortraitCamera.Shutdown();
     }
 
     private static void ReleaseOverlay(AnimusForgeNativeConversationOverlayVM original)
@@ -209,6 +211,7 @@ public static class NativeUiAdapter
             _tableau = root.FindChild("AFDialogueLiveSpeakerPortrait", true) as CharacterTableauWidget;
             if (_tableau != null)
             {
+                PortraitCamera.Register(_tableau);
                 _tableau.StanceIndex = (int)CharacterViewModel.StanceTypes.EmphasizeFace;
                 RefreshSpeaker();
             }
@@ -276,6 +279,7 @@ public static class NativeUiAdapter
         {
             if (_disposed) return;
             _disposed = true;
+            PortraitCamera.Unregister(_tableau);
             if (_tableau != null) _tableau.IsVisible = false;
             _tableau = null;
         }
