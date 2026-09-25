@@ -1,4 +1,11 @@
-## J14 G0 与 Scene 前置责任切片（2026-09-25）
+## J14a1 渠道化指纹与当前 API 门禁（2026-09-25）
+
+状态仍为 **`J14_ACTIVE / J14a_ACTIVE`**，公共 Scene/Courier 尚未接线或开放。生产 `fc394f43` 在 `Refactor/Modules/CoreDialogueContracts.cs:6` 加内部 Native/Scene/Courier 渠道判别；`CoreDialogueOperation.cs:22–35` 保存渠道/上下文身份；`CoreDialogueClient.cs:26–68` 在原每 client **128** 个 ID 表中按渠道、上下文身份、原文本精确比较。同 ID 不同渠道/上下文拒绝 `dialogue.request_id_conflict`；同指纹返回原 operation；无票据身份拒绝；专用 scoped 入口不能伪装 Native。Native 原 `SubmitNative` 路由、公开 V1 签名/枚举值和取消回执不变。身份仍只是**内部去重键**，不是已经签发或验证的公共票据；真正 Scene/Courier owner/消费者尚未调用它，不将此片冒充 J14a1 退出门。
+
+- **当前行为与兼容**：独立 `NativeModuleSubmissionTests/run.py` 真实源外部消费者 **48** 项及原内部访问拒绝 `CS0122` 通过，内部枚举重排 **48** 项通过；`skip-channel`、`skip-context` 变异均编译成功并在具名冲突断言失败。`ModuleFrameworkApiTests/run.py` 的旧 V1 **119**、snapshot **36**、五个故意变异、外部 internal `CS0122`、四实现 DLL metadata **1152** 均通过。构建前逐一复核本轮获准四个仓内重建目录无 reparse/意外子项；原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建 **0 warning/0 error**。四实现 SHA256：Debug 1.3 `86E099C200F47FD5F09FD19DD5CFD5F0C05EFCF35DA1D6D7A61DF308086B8998`，Debug 1.4 `C91C0836A7414112F793BE12BB4D9FE20245135E5727FB83C95A520C00EB2E03`，Release 1.3 `D51EDEE6BF10B1DFA1798C4C9D0C16443414A2D11CC15031E85605AFA0C27888`，Release 1.4 `5E20147AAA6EAAE8F6284A5CD031A68E8A8468B11C358350702F81C5BE11CBF0`。[代码地图](architecture/af-framework-code-map.json)绑定产品 `fc394f43`，**726** 锚点 recorded/working-tree 通过，仅定位。
+- **旧源码门禁的明确边界**：2026-09-16 的 `tools/NativeModuleSubmissionTests/source_boundary.py` 仍保留旧 `source-review.json` 精确依赖哈希；当前 J14 有意改动 Core 三文件，直接运行它报 `Unreviewed Native API dependency: Refactor/Modules/CoreDialogueContracts.cs`，不是本片行为回归通过。测试适配 `d1086fa5` 仅使 ModuleFramework 原 `AfApi` 逆变换跳过这组无关的旧 Native 依赖哈希，仍检查原公共源码形状；当前 Core 另由外部消费者、变异、四 DLL 构建验证，未刷新旧审查哈希或删除断言。下一步仍是 Scene typed 群组终态、后台 live 对象隔离、client 绑定有界票据与真实提交，之后 Courier 和 J14c。实机、旧档、provider、音频、帧性能、公共 Scene/Courier 消费者 **NOT-RUN**；无 push/Stage/部署/打包、外仓/游戏写入或 J15。
+
+## J14 G0 与 Scene 前置责任切片（历史）
 
 状态：**`J14_ACTIVE / J14a_ACTIVE`，不是 `J14a_OFFLINE_VERIFIED` 或 `J14_OFFLINE_VERIFIED`**。从意图 `c65ab56f`、Scene owner/主线程 host `4ef5c77f`、`9ed9f914`、具名边界红例 `b4e093a1` 到群组等待屏障 `b6c18a5c`，均为本地切片；Native 公共签名、能力表与默认 UI 入口未改，Scene/Courier 仍 `NotSupported`。
 
