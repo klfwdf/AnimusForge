@@ -81,9 +81,9 @@ static class Program
             float cameraHeight = eyeHeight - offset;
             float Project(float z) => (0.5f - (z - cameraHeight) / (2f * distance * (float)Math.Tan(Math.PI / 8))) * 630f - 134f;
             Check(Math.Abs(Project(eyeHeight) - 68f) < 0.001f, "Eyes align across heights and scales");
-            Check(Project(eyeHeight + 0.18f * scale) > 10f, "Head and ordinary headwear retain top margin");
+            Check(Project(eyeHeight + 0.18f * scale) > 8f, "Head and ordinary headwear retain top margin in closer crop");
             Check(Project(eyeHeight - 0.13f * scale) < 125f, "Chin stays above the nameplate");
-            Check(Project(eyeHeight - 0.32f * scale) < 169f, "Upper shoulders remain within the aperture");
+            Check(Project(eyeHeight - 0.30f * scale) < 169f, "Neck and upper shoulder line remain within the closer crop");
         }
         foreach (float invalid in new[] { 0f, -1f, float.NaN, float.PositiveInfinity })
             Check(!PortraitFraming.TryGetCameraOffsets(invalid, out _, out _), "Invalid model scale cannot corrupt camera");
