@@ -31,7 +31,8 @@ def generate(source_ref=None):
  sig='private void ProcessCurrentScenePlayerShout(' if current else 'private async Task ProcessShoutConfirmedInternal('
  full=ex.declaration(s,sig);marker='\t\tif (!TryBuildSceneShoutConversationScope('
  assert full.count(marker)==1
- prefix=full.split(marker)[0]+'\nCheckMain(); Accepted++;if(AfCompatV130.Suppressed)SuppressedAccepted++;LastPrimary=primaryTarget;LastFramed=framedAgents;LastText=shoutText;AfCompatV130.Record(this,shoutText,primaryTarget.Index,framedAgents);\n}\n'
+ assert '_ = Task.Run(async delegate' in full, 'Scene group fire-and-forget seam changed; review completion fixture'
+ prefix=full.split(marker)[0]+'\nCheckMain(); Accepted++;if(AfCompatV130.Suppressed)SuppressedAccepted++;LastPrimary=primaryTarget;LastFramed=framedAgents;LastText=shoutText;AfCompatV130.Record(this,shoutText,primaryTarget.Index,framedAgents);if(Program.PendingGroup!=null)_ = Task.Run(async ()=>await Program.PendingGroup.Task);\n}\n'
  replay=ex.declaration(a,'internal static bool TryReplayOriginalPlayerShout(');resume=ex.declaration(a,'private static void ResumeAfShoutUi(')
  observer=ex.declaration(a,'private static bool ObserveAcceptedPlayerShout(');record=ex.declaration(a,'private static void ObserveRecordedPlayerMessage(')
  utils='\n'.join(ex.declaration(u,x) for x in ['public static List<Agent> GetNearbyNPCAgents()','private static List<Agent> GetNearbyNPCAgentsLegacy('])
@@ -53,7 +54,7 @@ MUTATIONS = {
 }
 
 def main():
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-ref');ap.add_argument('--mutation',choices=sorted(MUTATIONS));ap.add_argument('--core',action='store_true');ap.add_argument('--output-name',default='current');ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');args=ap.parse_args()
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-ref');ap.add_argument('--mutation',choices=sorted(MUTATIONS));ap.add_argument('--core',action='store_true');ap.add_argument('--j14-red',action='store_true');ap.add_argument('--output-name',default='current');ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');args=ap.parse_args()
  if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name):ap.error('Invalid output name')
  out=HERE/'.generated'/args.output_name;out.mkdir(parents=True,exist_ok=True);pre=generate(args.source_ref)
  if args.mutation:
@@ -62,7 +63,7 @@ def main():
   pre=pre.replace(old,new)
  (out/'Program.cs').write_text(pre,encoding='utf-8');(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
  env=os.environ.copy();env['DOTNET_ROOT']=str(Path(args.dotnet).parent);env['DOTNET_CLI_HOME']=str(out/'cli');env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'
- r=subprocess.run([args.dotnet,'run','--project',str(out/'Tests.csproj'),'-c','Release','--']+(['core'] if args.core else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
+ r=subprocess.run([args.dotnet,'run','--project',str(out/'Tests.csproj'),'-c','Release','--']+(['core'] if args.core else [])+(['j14-red'] if args.j14_red else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
  log='source='+(args.source_ref or 'working-tree')+' mutation='+(args.mutation or 'none')+'\nHarness SHA256='+hashlib.sha256(pre.encode()).hexdigest()+'\n'+r.stdout+r.stderr
  (out/'run.log').write_text(log,encoding='utf-8');print(log);return r.returncode
 if __name__=='__main__':raise SystemExit(main())
