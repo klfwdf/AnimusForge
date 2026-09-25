@@ -2354,9 +2354,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private readonly HashSet<Hero> _sceneNotableDeferredBattleDeathCandidates = new HashSet<Hero>();
 
-	private bool _conflictActive;
+	private readonly SceneTauntConflictLifecycleOwner _conflictLifecycle = new SceneTauntConflictLifecycleOwner();
 
-	private bool _armedConflict;
+	private bool _conflictActive => _conflictLifecycle.Active;
+
+	private bool _armedConflict => _conflictLifecycle.Armed;
 
 	private float _nextSetsFollowerArmedReadinessMissionTime;
 
@@ -2398,7 +2400,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private readonly Dictionary<int, float> _recentNeutralizedFleeingCivilianUntilMissionTime = new Dictionary<int, float>();
 
-	private bool _armedConflictOccurredThisConflict;
+	private bool _armedConflictOccurredThisConflict => _conflictLifecycle.ArmedOccurred;
 
 	private bool _armedDefeatOutcomeHandled;
 
@@ -5495,9 +5497,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				Logger.Log("SceneTaunt", $"Rejected conflict with ambiguous or missing active opponent. Target={agent.Name}, TargetIndex={agent.Index}");
 				return false;
 			}
-			_conflictActive = true;
-			_armedConflict = false;
-			_armedConflictOccurredThisConflict = false;
+			if (!_conflictLifecycle.TryBeginUnarmed())
+			{
+				return false;
+			}
 			_armedDefeatOutcomeHandled = false;
 			ResetArmedConflictReactionBudget();
 			_baseConsequencesApplied = false;
@@ -6551,7 +6554,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			if (externalArmedConflict)
 			{
-				_armedConflictOccurredThisConflict = true;
+				_conflictLifecycle.MarkExternalArmedConflict();
 				_armedDefeatWasCriminalConflict = false;
 			}
 			if (!_pendingPlayerBattleDeathDecisionCaptured)
@@ -7490,9 +7493,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			LogPerfPoint("carryover.start", $"player={list.Count} opponents={list2.Count} guards={guardAgents.Count}");
-			_conflictActive = true;
-			_armedConflict = true;
-			_armedConflictOccurredThisConflict = true;
+			if (!_conflictLifecycle.TryBeginArmedCarryover())
+			{
+				return;
+			}
 			_armedDefeatOutcomeHandled = false;
 			InitializeArmedConflictReactionSchedule();
 			_baseConsequencesApplied = true;
@@ -8155,8 +8159,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		long totalStart = StartPerfTimer();
 		LogPerfPoint("escalate.start", $"reason={reason ?? "N/A"} suppressAnnouncement={suppressAnnouncement}");
 		ClearMissionFightHandlerPendingFinishTimer();
-		_armedConflict = true;
-		_armedConflictOccurredThisConflict = true;
+		if (!_conflictLifecycle.TryEscalate())
+		{
+			return;
+		}
 		_lastArmedEscalationAtMissionTime = Mission.Current?.CurrentTime ?? -1f;
 		InitializeArmedConflictReactionSchedule();
 		_armedCarryoverHandledInThisMission = true;
@@ -9784,8 +9790,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		ReleaseAllArmedBystanderWatchers();
 		ResetArmedConflictReactionBudget();
 		RestoreAllCachedWeapons();
-		_conflictActive = false;
-		_armedConflict = false;
+		_conflictLifecycle.End(preserveArmedDefeatState);
 		_nextSetsFollowerArmedReadinessMissionTime = 0f;
 		_baseConsequencesApplied = false;
 		_appliedCrimeRatingAmount = 0f;
@@ -9821,7 +9826,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_pendingPlayerBattleDeathAfterMission = false;
 			_pendingPlayerBattleDeathDecisionCaptured = false;
 			_pendingPlayerBattleDeathKiller = null;
-			_armedConflictOccurredThisConflict = false;
 			_armedDefeatOutcomeHandled = false;
 			_armedDefeatWasCriminalConflict = false;
 		}

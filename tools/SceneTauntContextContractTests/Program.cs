@@ -82,3 +82,42 @@ ledger.QueueDeferredCrime("faction-a", 3f);
 ledger.ClearForMainHeroDeath();
 LedgerCheck(!ledger.HasDeferredCrime, "main hero death clears pending crime");
 Console.WriteLine("16/16 scene Taunt penalty ledger cases passed; Bannerlord native crime/trust callbacks NOT_RUN");
+
+static void LifecycleCheck(bool condition, string label)
+{
+    if (!condition) throw new InvalidOperationException("conflict lifecycle: " + label);
+    Console.WriteLine("PASS " + label);
+}
+
+var lifecycle = new SceneTauntConflictLifecycleOwner();
+LifecycleCheck(!lifecycle.Active && !lifecycle.Armed && !lifecycle.ArmedOccurred,
+    "Mission lifecycle starts idle");
+LifecycleCheck(!lifecycle.TryEscalate(), "idle Mission cannot escalate");
+LifecycleCheck(lifecycle.TryBeginUnarmed() && lifecycle.Active && !lifecycle.Armed,
+    "valid peace conflict begins unarmed");
+LifecycleCheck(!lifecycle.TryBeginUnarmed() && !lifecycle.TryBeginArmedCarryover(),
+    "active conflict rejects duplicate initialization");
+LifecycleCheck(lifecycle.TryEscalate() && lifecycle.Armed && lifecycle.ArmedOccurred,
+    "unarmed conflict escalates once");
+LifecycleCheck(!lifecycle.TryEscalate(), "armed conflict rejects repeat escalation");
+lifecycle.End(preserveArmedDefeatState: true);
+LifecycleCheck(!lifecycle.Active && !lifecycle.Armed && lifecycle.ArmedOccurred,
+    "end preserves armed defeat decision when requested");
+LifecycleCheck(lifecycle.TryBeginUnarmed() && !lifecycle.ArmedOccurred,
+    "new conflict resets stale armed outcome");
+lifecycle.End(preserveArmedDefeatState: false);
+LifecycleCheck(!lifecycle.Active && !lifecycle.ArmedOccurred,
+    "ordinary end clears all conflict flags");
+LifecycleCheck(lifecycle.TryBeginArmedCarryover() && lifecycle.Active && lifecycle.Armed,
+    "valid carryover starts armed");
+LifecycleCheck(!lifecycle.TryBeginArmedCarryover(), "carryover cannot start twice");
+lifecycle.End(preserveArmedDefeatState: false);
+LifecycleCheck(!lifecycle.Active && !lifecycle.Armed && !lifecycle.ArmedOccurred,
+    "carryover cleanup restores idle state");
+lifecycle.MarkExternalArmedConflict();
+LifecycleCheck(!lifecycle.Active && lifecycle.ArmedOccurred,
+    "external SETS defeat marker does not initialize Taunt conflict");
+lifecycle.End(preserveArmedDefeatState: false);
+LifecycleCheck(!lifecycle.ArmedOccurred && !lifecycle.TryEscalate(),
+    "external marker clears without admitting stale escalation");
+Console.WriteLine("14/14 scene Taunt lifecycle cases passed; Mission callback order NOT_RUN");
