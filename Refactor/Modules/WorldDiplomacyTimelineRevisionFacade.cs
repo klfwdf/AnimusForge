@@ -7,7 +7,7 @@ namespace AnimusForge.Refactor.Modules;
 /// Delegates the timeline revision read to the current diplomacy owner while keeping
 /// UI callers independent from the legacy campaign behavior.
 /// </summary>
-public sealed class WorldDiplomacyTimelineRevisionFacade
+internal sealed class WorldDiplomacyTimelineRevisionFacade
 {
     private readonly IWorldDiplomacyTimelineRevisionQuery _query;
 

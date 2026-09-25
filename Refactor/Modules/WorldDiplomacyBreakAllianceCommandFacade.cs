@@ -3,7 +3,7 @@ using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Modules;
 
-public sealed class WorldDiplomacyBreakAllianceCommandFacade
+internal sealed class WorldDiplomacyBreakAllianceCommandFacade
 {
     private readonly IWorldDiplomacyBreakAllianceGameActionPort _gameActionPort;
 

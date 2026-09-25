@@ -1484,18 +1484,19 @@ internal static class Program
 
     private static void RunOfferCooldownIntegrationContractTests(string source)
     {
-        string closeActiveRound = ExtractSection(
-            source,
-            "private void CloseActiveRound(",
-            "private void CommitLocalRoundSummary(");
+        string closeAdapter = ExtractMethod(source, "private void CloseActiveRound(");
+        Test.True(closeAdapter.Contains("WorldDiplomacyRoundApplication.Close(", StringComparison.Ordinal)
+                  && closeAdapter.Contains("SettleTradeAllianceOfferCooldownsForClosedRound,", StringComparison.Ordinal),
+            "the host must bind the close transition to the existing cooldown owner");
+        string closeActiveRound = ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs"))), "internal static void Close(");
         int expireOpenOffers = closeActiveRound.IndexOf(
             "offer.Status = \"expired\"",
             StringComparison.Ordinal);
         int settleCooldowns = closeActiveRound.IndexOf(
-            "SettleTradeAllianceOfferCooldownsForClosedRound(round);",
+            "settleCooldowns(round);",
             StringComparison.Ordinal);
         int persistClosedRound = closeActiveRound.IndexOf(
-            "_storage.CompletedRounds.Add(round);",
+            "storage.CompletedRounds.Add(round);",
             StringComparison.Ordinal);
         Test.True(expireOpenOffers >= 0
                   && settleCooldowns > expireOpenOffers
@@ -2677,7 +2678,7 @@ internal static class Program
             failedResultStart,
             ordinaryFailureContinue + "return;".Length - failedResultStart);
         int generateGuard = failedResultBranch.IndexOf(
-            "IsJobOfKind(job, \"generate\")",
+            "IsCompletionKind(\"generate\")",
             StringComparison.Ordinal);
         int truncationGuard = failedResultBranch.IndexOf("resultIsOutputTruncated", StringComparison.Ordinal);
         int partialContentGuard = failedResultBranch.IndexOf(
@@ -2980,7 +2981,11 @@ internal static class Program
 			source,
 			"private void TryScheduleMandatoryCourtResponse(",
 			"private void ProcessRoundLifecycle(");
-		int bindRequiredSource = mandatoryResponse.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal);
+		string admission = ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs"))), "internal static bool AdmitMandatoryReply(");
+        Test.True(admission.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal) >= 0
+                  && admission.IndexOf("return true;", StringComparison.Ordinal) > admission.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal),
+            "mandatory admission binds the source before granting enqueue permission");
+        int bindRequiredSource = mandatoryResponse.IndexOf("WorldDiplomacyRoundApplication.AdmitMandatoryReply(action, round, participant", StringComparison.Ordinal);
 		int enqueueRequiredResponse = mandatoryResponse.IndexOf("EnqueueGenerationJob(receiver, target", StringComparison.Ordinal);
 		Test.True(bindRequiredSource >= 0 && enqueueRequiredResponse > bindRequiredSource,
 			"mandatory source identity must be bound before shared preflight evaluates external statement eligibility");
