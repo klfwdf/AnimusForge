@@ -20,7 +20,7 @@ using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
-internal static class VanillaIssueOfferBridge
+internal static partial class VanillaIssueOfferBridge
 {
 	private sealed class CompanionCandidate
 	{
@@ -172,7 +172,12 @@ internal static class VanillaIssueOfferBridge
 
 	private static readonly FieldInfo DialogFlowLinesField = AccessTools.Field(typeof(DialogFlow), "Lines");
 
-	private static PendingAlternativeDispatch _pendingAlternativeDispatch;
+	private static readonly IssueAlternativeDispatchOwner _dispatchOwner = new IssueAlternativeDispatchOwner();
+
+	internal static void ClearPendingAlternativeDispatchForCampaign()
+	{
+		_dispatchOwner.Clear();
+	}
 
 	public static bool IsRagEligibleForExternal(Hero targetHero)
 	{
@@ -607,7 +612,7 @@ internal static class VanillaIssueOfferBridge
 			ShowInfo("当前没有可接取的原版任务。", isError: true);
 			return false;
 		}
-		if (_pendingAlternativeDispatch != null)
+		if (_dispatchOwner.HasPending)
 		{
 			ShowInfo("当前已有一个待确认的同伴代办派兵界面。", isError: true);
 			return false;
@@ -641,22 +646,30 @@ internal static class VanillaIssueOfferBridge
 			int totalAlternativeSolutionNeededMenCount = issue.GetTotalAlternativeSolutionNeededMenCount();
 			if (totalAlternativeSolutionNeededMenCount > 1)
 			{
-				_pendingAlternativeDispatch = new PendingAlternativeDispatch
+				var pending = new PendingAlternativeDispatch
 				{
 					Giver = giver,
 					Companion = companionCandidate.Hero,
 					Issue = issue
 				};
-				PartyScreenHelper.OpenScreenAsQuest(issue.AlternativeSolutionSentTroops, new TextObject("{=FbLOFO88}Select troops for mission", null), totalAlternativeSolutionNeededMenCount + 1, issue.GetTotalAlternativeSolutionDurationInDays(), AlternativePartyScreenDoneCondition, OnAlternativePartyScreenClosed, AlternativeTroopTransferableDelegate, null);
+				if (!_dispatchOwner.TryBegin(pending))
+				{
+					SafeRestoreAlternativeRoster(issue);
+					return false;
+				}
+				PartyScreenHelper.OpenScreenAsQuest(issue.AlternativeSolutionSentTroops, new TextObject("{=FbLOFO88}Select troops for mission", null), totalAlternativeSolutionNeededMenCount + 1, issue.GetTotalAlternativeSolutionDurationInDays(),
+					(leftMembers, leftPrisoners, rightMembers, rightPrisoners, leftLimit, rightLimit) => AlternativePartyScreenDoneCondition(leftMembers, leftPrisoners, rightMembers, rightPrisoners, leftLimit, rightLimit, pending),
+					(leftParty, leftMembers, leftPrisoners, rightParty, rightMembers, rightPrisoners, fromCancel) => OnAlternativePartyScreenClosed(leftParty, leftMembers, leftPrisoners, rightParty, rightMembers, rightPrisoners, fromCancel, pending),
+					(character, type, side, leftParty) => AlternativeTroopTransferableDelegate(character, type, side, leftParty, pending), null);
 				ShowInfo("已确认由 " + GetHeroName(companionCandidate.Hero) + " 带队，接下来请选择随行士兵。", isError: false);
 				Logger.Log("Logic", "[IssueOffer] 打开同伴代办派兵界面 giver=" + (giver.StringId ?? "") + " companion=" + (companionCandidate.Hero.StringId ?? ""));
 				return true;
 			}
-			CompleteAlternativeDispatch(giver, issue, companionCandidate.Hero);
-			return true;
+			return CompleteAlternativeDispatch(giver, issue, companionCandidate.Hero);
 		}
 		catch (Exception ex)
 		{
+			_dispatchOwner.Clear();
 			Logger.Log("Logic", "[IssueOffer] 同伴代办启动异常: " + ex);
 			SafeRestoreAlternativeRoster(issue);
 			ShowInfo("启动同伴代办流程时出现异常。", isError: true);
@@ -664,46 +677,54 @@ internal static class VanillaIssueOfferBridge
 		}
 	}
 
-	private static Tuple<bool, TextObject> AlternativePartyScreenDoneCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)
+	private static Tuple<bool, TextObject> AlternativePartyScreenDoneCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum, PendingAlternativeDispatch expected)
 	{
 		TextObject item;
-		return new Tuple<bool, TextObject>(DoTroopsSatisfyAlternativeSolution(leftMemberRoster, out item), item);
+		return new Tuple<bool, TextObject>(DoTroopsSatisfyAlternativeSolution(leftMemberRoster, expected, out item), item);
 	}
 
-	private static void OnAlternativePartyScreenClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
+	private static void OnAlternativePartyScreenClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel, PendingAlternativeDispatch expected)
 	{
-		PendingAlternativeDispatch pendingAlternativeDispatch = _pendingAlternativeDispatch;
-		_pendingAlternativeDispatch = null;
-		if (pendingAlternativeDispatch?.Issue == null)
+		if (!_dispatchOwner.IsCurrent(expected) || expected.Issue == null)
 		{
 			return;
 		}
 		if (fromCancel)
 		{
-			SafeRestoreAlternativeRoster(pendingAlternativeDispatch.Issue);
+			_dispatchOwner.TryTake(expected, out _);
+			SafeRestoreAlternativeRoster(expected.Issue);
 			ShowInfo("已取消同伴代办派兵。", isError: true);
 			return;
 		}
 		TextObject explanation;
-		if (!DoTroopsSatisfyAlternativeSolution(leftMemberRoster, out explanation))
+		if (!DoTroopsSatisfyAlternativeSolution(leftMemberRoster, expected, out explanation))
 		{
-			SafeRestoreAlternativeRoster(pendingAlternativeDispatch.Issue);
+			_dispatchOwner.TryTake(expected, out _);
+			SafeRestoreAlternativeRoster(expected.Issue);
 			ShowInfo("当前派兵结果不满足任务要求" + (string.IsNullOrWhiteSpace(GetText(explanation)) ? "。" : ("：" + GetText(explanation))), isError: true);
 			return;
 		}
-		CompleteAlternativeDispatch(pendingAlternativeDispatch.Giver, pendingAlternativeDispatch.Issue, pendingAlternativeDispatch.Companion);
+		if (_dispatchOwner.TryTake(expected, out PendingAlternativeDispatch pendingAlternativeDispatch))
+		{
+			CompleteAlternativeDispatch(pendingAlternativeDispatch.Giver, pendingAlternativeDispatch.Issue, pendingAlternativeDispatch.Companion);
+		}
 	}
 
-	private static bool AlternativeTroopTransferableDelegate(CharacterObject character, PartyScreenLogic.TroopType type, PartyScreenLogic.PartyRosterSide side, PartyBase leftOwnerParty)
+	private static bool AlternativeTroopTransferableDelegate(CharacterObject character, PartyScreenLogic.TroopType type, PartyScreenLogic.PartyRosterSide side, PartyBase leftOwnerParty, PendingAlternativeDispatch expected)
 	{
-		IssueBase issue = _pendingAlternativeDispatch?.Issue;
+		IssueBase issue = _dispatchOwner.IsCurrent(expected) ? expected.Issue : null;
 		return issue != null && !character.IsHero && !character.IsNotTransferableInPartyScreen && type != PartyScreenLogic.TroopType.Prisoner && issue.IsTroopTypeNeededByAlternativeSolution(character);
 	}
 
-	private static void CompleteAlternativeDispatch(Hero giver, IssueBase issue, Hero companion)
+	private static bool CompleteAlternativeDispatch(Hero giver, IssueBase issue, Hero companion)
 	{
 		try
 		{
+			if (companion == null || !TryGetOfferableIssue(giver, out IssueBase currentIssue) || !ReferenceEquals(currentIssue, issue))
+			{
+				SafeRestoreAlternativeRoster(issue);
+				return false;
+			}
 			issue.AlternativeSolutionStartConsequence();
 			issue.StartIssueWithAlternativeSolution();
 			string safeIssueTitle = GetSafeIssueTitle(issue);
@@ -712,12 +733,14 @@ internal static class VanillaIssueOfferBridge
 			MyBehavior.AppendExternalPlayerFact(giver, "你已经与对方谈妥，让 " + heroName + " 率队代办任务“" + safeIssueTitle + "”。");
 			ShowInfo("已由 " + heroName + " 接手任务：" + safeIssueTitle, isError: false);
 			Logger.Log("Logic", "[IssueOffer] 同伴代办启动成功 giver=" + (giver?.StringId ?? "") + " companion=" + (companion?.StringId ?? "") + " issue=" + safeIssueTitle);
+			return true;
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[IssueOffer] CompleteAlternativeDispatch 异常: " + ex);
 			SafeRestoreAlternativeRoster(issue);
 			ShowInfo("确认同伴代办时出现异常。", isError: true);
+			return false;
 		}
 	}
 
@@ -1122,9 +1145,9 @@ internal static class VanillaIssueOfferBridge
 		return string.IsNullOrWhiteSpace(reason);
 	}
 
-	private static bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
+	private static bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, PendingAlternativeDispatch expected, out TextObject explanation)
 	{
-		IssueBase issue = _pendingAlternativeDispatch?.Issue;
+		IssueBase issue = _dispatchOwner.IsCurrent(expected) ? expected.Issue : null;
 		if (issue == null)
 		{
 			explanation = new TextObject("{=!}No pending issue.", null);

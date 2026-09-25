@@ -40,6 +40,8 @@ using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
     DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
     foreach (string source in new[] {
         "RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
+        "ProactiveNpcRequestBehavior.cs", "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
+        "VanillaIssueOfferBridge.cs", "VanillaIssuePromptBehavior.cs", "src/modules/AF.Module.Issue/Dispatch/IssueAlternativeDispatchOwner.cs",
         "MyBehavior.PromotedPersonaGeneration.cs",
         "RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
         "PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
@@ -78,6 +80,8 @@ KingdomOwnerReplay.Run(af);
 NotorietyOwnerReplay.Run(af);
 RomanceOwnerReplay.Run(af);
 RecruitmentOwnerReplay.Run(af);
+ProactiveOpeningOwnerReplay.Run(af);
+IssueAlternativeDispatchOwnerReplay.Run(af);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
