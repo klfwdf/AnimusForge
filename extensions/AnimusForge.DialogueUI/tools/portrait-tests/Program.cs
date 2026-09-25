@@ -24,8 +24,8 @@ static class Program
         Check(portrait.Apply(widget, agent, character), "First portrait initializes");
         string firstCode = widget.EquipmentCode;
         for (int i = 0; i < 120; i++) Check(portrait.Apply(widget, agent, character), "Repeated appearance succeeds");
-        Check(BodyProperties.Encodes == 1 && Equipment.Encodes == 1 && banner.Encodes == 1 && MBBodyProperties.Calls == 1,
-            "Unchanged portrait does not re-encode body, equipment or banner or recalculate scale");
+        Check(BodyProperties.Encodes == 1 && Equipment.Encodes == 1 && banner.Encodes == 1 && MBBodyProperties.Calls == 0,
+            "Unchanged portrait does not re-encode appearance or recalculate render resolution from body height");
         Check(widget.IdleAction == "act_inventory_idle_start" && !widget.IsEquipmentAnimActive
             && widget.LeftHandWieldedEquipmentIndex == -1 && widget.RightHandWieldedEquipmentIndex == -1,
             "Armed guard uses a neutral, unwielded tableau stance");
@@ -41,7 +41,8 @@ static class Program
         Check(widget.BodyProperties == "4" && BodyProperties.Encodes == 2, "Face edit invalidates body cache");
         character.Race = 2; agent.IsFemale = true;
         portrait.Apply(widget, agent, character);
-        Check(widget.Race == 2 && widget.IsFemale && MBBodyProperties.Calls == 3, "Race and sex refresh scale");
+        Check(widget.Race == 2 && widget.IsFemale && widget.CustomRenderScale == 1.35f && MBBodyProperties.Calls == 0,
+            "Race and sex update without changing render-texture quality");
         banner.Edit(); portrait.Apply(widget, agent, character);
         Check(widget.BannerCodeText == "banner-1" && banner.Encodes == 2, "In-place banner edit reaches portrait");
         var guard = new CharacterObject { StringId = "second_guard", Culture = new Culture { Color = 12, Color2 = 34 } };
@@ -64,6 +65,27 @@ static class Program
         map.Equipment[5] = new EquipmentElement(99);
         portrait.Apply(widget, null, guard, map);
         Check(widget.BodyProperties == "902" && widget.EquipmentCode != encounterEquipment, "Same troop in a new encounter replaces old individual");
-        Console.WriteLine($"PASS: {_checks} portrait assertions; first 120 unchanged refreshes performed one body/equipment/banner encode each.");
+        CheckFraming();
+        CameraTests.Run(Check);
+        Console.WriteLine($"PASS: {_checks} portrait assertions; unchanged refreshes reuse appearance; eye framing covers height/scale variation.");
+    }
+
+    private static void CheckFraming()
+    {
+        // Independent perspective projection back into the clipped UI. These cover small/large
+        // bodies and vertically displaced eyes, rather than asserting implementation constants.
+        foreach (float scale in new[] { 0.55f, 0.85f, 1f, 1.15f, 1.5f })
+        foreach (float eyeHeight in new[] { 0.9f, 1.55f, 1.85f, 2.4f })
+        {
+            Check(PortraitFraming.TryGetCameraOffsets(scale, out float distance, out float offset), "Valid body has framing");
+            float cameraHeight = eyeHeight - offset;
+            float Project(float z) => (0.5f - (z - cameraHeight) / (2f * distance * (float)Math.Tan(Math.PI / 8))) * 630f - 134f;
+            Check(Math.Abs(Project(eyeHeight) - 68f) < 0.001f, "Eyes align across heights and scales");
+            Check(Project(eyeHeight + 0.18f * scale) > 10f, "Head and ordinary headwear retain top margin");
+            Check(Project(eyeHeight - 0.13f * scale) < 125f, "Chin stays above the nameplate");
+            Check(Project(eyeHeight - 0.32f * scale) < 169f, "Upper shoulders remain within the aperture");
+        }
+        foreach (float invalid in new[] { 0f, -1f, float.NaN, float.PositiveInfinity })
+            Check(!PortraitFraming.TryGetCameraOffsets(invalid, out _, out _), "Invalid model scale cannot corrupt camera");
     }
 }

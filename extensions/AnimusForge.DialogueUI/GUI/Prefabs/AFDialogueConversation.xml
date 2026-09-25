@@ -30,17 +30,14 @@
                 SuggestedWidth="166.125194" SuggestedHeight="177.992105" HorizontalAlignment="Left" VerticalAlignment="Top"
                 MarginLeft="125.152612" MarginTop="40.960526" Sprite="afdui_portrait_background"
                 DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" />
-            <Widget Id="AFDialogueBackdrop" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                Sprite="afdui_console_base_option_02_walnut_original_ratio" DoNotAcceptEvents="true" />
-
             <!-- Native 3D speaker tableau is inserted here by NativeSession. -->
-            <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="210"
+            <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="212"
                 HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="124" MarginBottom="28" ClipContents="true" DoNotAcceptEvents="true">
               <Children>
-                <!-- Keep the live tableau inside the circular aperture so short and tall NPCs cannot leak through the wooden frame corners. -->
+                <!-- Overscan beneath the foreground gold rim; preserve the aperture center. -->
                 <Widget Id="AFDialoguePortraitViewport" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="169"
-                    HorizontalAlignment="Left" VerticalAlignment="Top" CircularClipEnabled="true" CircularClipRadius="79"
-                    CircularClipSmoothingRadius="2" DoNotAcceptEvents="true">
+                    HorizontalAlignment="Left" VerticalAlignment="Top" MarginTop="2" CircularClipEnabled="true" CircularClipRadius="89"
+                    CircularClipSmoothingRadius="1" DoNotAcceptEvents="true">
                   <Children>
                     <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
                         SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-134"
@@ -52,6 +49,10 @@
                     HorizontalAlignment="Left" VerticalAlignment="Bottom" Sprite="afdui_nameplate" DoNotAcceptEvents="true" />
               </Children>
             </Widget>
+
+            <!-- Artwork masks the overscanned shoulders instead of the circle cutting them short. -->
+            <Widget Id="AFDialogueBackdrop" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                Sprite="afdui_console_base_option_02_walnut_original_ratio" DoNotAcceptEvents="true" />
 
             <ListPanel Id="VerticalContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
                 StackLayout.LayoutMethod="VerticalBottomToTop" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true">
