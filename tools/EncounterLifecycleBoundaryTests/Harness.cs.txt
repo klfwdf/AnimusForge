@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 internal static class Program
@@ -12,6 +13,7 @@ internal static class Program
     public static void Main()
     {
         ReleaseAudit.Run();
+        TargetAudit.Run();
         DuelAudit.Run();
         InteractionComponentSafePatch.Run();
         Console.WriteLine("PASS: " + _assertions + " extracted production boundary assertions.");
@@ -19,6 +21,41 @@ internal static class Program
 }
 internal sealed class Hero { }
 internal sealed class PartyBase { public Hero LeaderHero = new Hero(); public bool IsNonHero; }
+internal static class TargetAudit
+{
+    public static void Run()
+    {
+        var owner = new AnimusForge.Refactor.Modules.EncounterTargetOwner<Hero, PartyBase>();
+        var army = new PartyBase();
+        var selectedMember = new Hero();
+        var anotherMember = new Hero();
+        var members = new Dictionary<PartyBase, HashSet<Hero>>
+        {
+            [army] = new HashSet<Hero> { army.LeaderHero, selectedMember, anotherMember }
+        };
+        bool Eligible(Hero hero, PartyBase party) => party != null
+            && members.TryGetValue(party, out var roster) && roster.Contains(hero);
+        Hero Fallback(PartyBase party) => party?.LeaderHero;
+        owner.Set(selectedMember);
+        Program.Check(ReferenceEquals(owner.Ensure(army, Eligible, Fallback, out bool refreshed, out bool cleared), selectedMember)
+            && !refreshed && !cleared, "selected army member outranks encountered leader");
+        Program.Check(ReferenceEquals(owner.Ensure(army, Eligible, Fallback, out refreshed, out cleared), selectedMember)
+            && !refreshed, "menu recheck retains selected member");
+        owner.Set(anotherMember);
+        Program.Check(ReferenceEquals(owner.Ensure(army, Eligible, Fallback, out refreshed, out cleared), anotherMember),
+            "second selection replaces previous member");
+        var nextEncounter = new PartyBase();
+        members[nextEncounter] = new HashSet<Hero> { nextEncounter.LeaderHero };
+        Program.Check(ReferenceEquals(owner.Ensure(nextEncounter, Eligible, Fallback, out refreshed, out cleared), nextEncounter.LeaderHero)
+            && refreshed && !cleared, "new encounter invalidates old member and falls back to its own leader");
+        members[nextEncounter].Remove(nextEncounter.LeaderHero);
+        nextEncounter.LeaderHero = null;
+        Program.Check(owner.Ensure(nextEncounter, Eligible, Fallback, out refreshed, out cleared) == null
+            && !refreshed && cleared, "missing leader clears stale selected target");
+        Program.Check(owner.Ensure(nextEncounter, Eligible, Fallback, out refreshed, out cleared) == null
+            && !cleared, "empty recheck does not claim another clear");
+    }
+}
 internal sealed class PlayerEncounter { public static PlayerEncounter Current; }
 internal static class SaveRuntimeGuard
 {

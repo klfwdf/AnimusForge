@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AnimusForge.Refactor.Modules;
 using Helpers;
 using SandBox.Conversation.MissionLogics;
 using TaleWorlds.CampaignSystem;
@@ -29,7 +30,13 @@ namespace AnimusForge;
 
 public class LordEncounterBehavior : CampaignBehaviorBase
 {
-	private static Hero _targetHero;
+	private static readonly EncounterTargetOwner<Hero, PartyBase> _targetOwner = new EncounterTargetOwner<Hero, PartyBase>();
+
+	private static readonly Func<Hero, PartyBase, bool> TargetEligibility = IsEligibleCustomLordEncounterTarget;
+
+	private static readonly Func<PartyBase, Hero> TargetFallback = TryResolveEncounterLeaderHero;
+
+	private static Hero _targetHero => _targetOwner.Target;
 
 	public static bool IsOpeningConversation = false;
 
@@ -4832,7 +4839,7 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 
 	public static void SetTarget(Hero target)
 	{
-		_targetHero = target;
+		_targetOwner.Set(target);
 	}
 
 	internal static bool IsEligibleCustomLordEncounterTarget(Hero hero, PartyBase encounterParty = null)
@@ -5278,26 +5285,17 @@ public class LordEncounterBehavior : CampaignBehaviorBase
 	private static Hero EnsureEncounterTargetHero(string reason)
 	{
 		PartyBase encounteredParty = GetCurrentEncounterPartySafe();
-		if (_targetHero != null && IsEligibleCustomLordEncounterTarget(_targetHero, encounteredParty))
+		Hero hero = _targetOwner.Ensure(encounteredParty, TargetEligibility, TargetFallback,
+			out bool refreshed, out bool cleared);
+		if (refreshed)
 		{
-			return _targetHero;
+			Logger.Log("LordEncounter", string.Format("Refreshed encounter target from active encounter. Reason={0}, Target={1}", reason ?? "N/A", hero.Name));
 		}
-		Hero hero = TryResolveEncounterLeaderHero(encounteredParty);
-		if (hero != null)
-		{
-			if (_targetHero != hero)
-			{
-				Logger.Log("LordEncounter", string.Format("Refreshed encounter target from active encounter. Reason={0}, Target={1}", reason ?? "N/A", hero.Name));
-			}
-			_targetHero = hero;
-			return _targetHero;
-		}
-		if (_targetHero != null)
+		if (cleared)
 		{
 			Logger.Log("LordEncounter", "Clearing stale encounter target. Reason=" + (reason ?? "N/A"));
-			_targetHero = null;
 		}
-		return _targetHero;
+		return hero;
 	}
 
 	private static void EnsureMapCameraReflectionInitialized()
