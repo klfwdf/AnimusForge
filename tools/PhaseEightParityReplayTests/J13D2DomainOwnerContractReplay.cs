@@ -35,14 +35,16 @@ internal static class J13D2DomainOwnerContractReplay
         int start = action.IndexOf("internal static bool TryAcceptIssueSelf(", StringComparison.Ordinal);
         int end = action.IndexOf("internal static bool TryAcceptIssueWithCompanion(", start, StringComparison.Ordinal);
         string self = action.Substring(start, end - start);
-        Require(self.IndexOf("StartIssueQuest(giver)", StringComparison.Ordinal)
-            < self.IndexOf("FinalizeClassicQuestAcceptance(issue", StringComparison.Ordinal)
-            && self.IndexOf("FinalizeClassicQuestAcceptance(issue", StringComparison.Ordinal)
-            < self.IndexOf("MyBehavior.AppendExternalNpcFact(", StringComparison.Ordinal), "acceptance fact after original success");
+        int questStart = self.IndexOf("StartIssueQuest(giver)", StringComparison.Ordinal);
+        int acceptFinalized = self.IndexOf("FinalizeClassicQuestAcceptance(issue", StringComparison.Ordinal);
+        int acceptFact = self.IndexOf("MyBehavior.AppendExternalNpcFact(", StringComparison.Ordinal);
+        Require(questStart >= 0 && acceptFinalized > questStart && acceptFact > acceptFinalized,
+            "acceptance fact after original success");
         start = action.IndexOf("internal static bool TryTurnInIssue(", StringComparison.Ordinal);
         string turnIn = action.Substring(start);
-        Require(turnIn.IndexOf("TryProbeQuestTurnIn(giver, issue, execute: true", StringComparison.Ordinal)
-            < turnIn.IndexOf("MyBehavior.AppendExternalNpcFact(", StringComparison.Ordinal), "turn-in fact after original execution");
+        int questExecuted = turnIn.IndexOf("TryProbeQuestTurnIn(giver, issue, execute: true", StringComparison.Ordinal);
+        int turnInFact = turnIn.IndexOf("MyBehavior.AppendExternalNpcFact(", StringComparison.Ordinal);
+        Require(questExecuted >= 0 && turnInFact > questExecuted, "turn-in fact after original execution");
 
         Require(Read("AIConfigHandler.cs").Contains("VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(", StringComparison.Ordinal)
             && Read("ShoutBehavior.cs").Contains("VanillaIssueOfferBridge.ApplyIssueOfferTags(", StringComparison.Ordinal)
