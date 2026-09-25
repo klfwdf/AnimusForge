@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "ef6a83e15ed496e451a4614847b027e203222ad8",
+  "sourceRevision": "8654427abefc5e5974c4dc9ef809cb531eebc195",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -7483,6 +7483,314 @@
       "status": "replay-j13e4-offline-verified",
       "note": "Source wiring only; owner DLL replay separate",
       "fileSha256": "cdaa631cb0e5d6cc6ecf8ae050cb82b1d587245f04f44628919d5c6965964ae8"
+    },
+    {
+      "id": "exercise.death.patch",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 653,
+      "end": 653,
+      "symbol": "public static class MilitaryExerciseDeathRatePatch",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "死亡率 Harmony 宿主，仅 Mission 自有逻辑命中",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.result.patch",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 696,
+      "end": 696,
+      "symbol": "public static class MilitaryExerciseMapEventXpOnlySettlementPatch",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "MapEvent XP-only 前缀宿主",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.reward.patch",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 801,
+      "end": 801,
+      "symbol": "public static class MilitaryExerciseBattleRewardsZeroPatch",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "1.3/1.4 双签名奖励前缀宿主",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.session.host",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 911,
+      "end": 911,
+      "symbol": "private static readonly MilitaryExerciseSessionOwner<PendingSelection, MilitaryExerciseRuntime> _sessionOwner =",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "原宿主的会话 owner 接线",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.terminal.open",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 1012,
+      "end": 1012,
+      "symbol": "public static void OpenExerciseFromTerminal()",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "终端打开，阻止已活动演习重入",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.event.identity",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 1358,
+      "end": 1358,
+      "symbol": "private static MilitaryExerciseRuntime GetRuntimeForMapEvent(MapEvent mapEvent)",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "精确 MapEvent 或所属 dummy party 身份门禁",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.orphan.identity",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 1402,
+      "end": 1402,
+      "symbol": "private static bool MapEventSideHasMilitaryExerciseDummyParty(MapEventSide side)",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "孤立 MapEvent 仍须专用 PartyComponent 与前缀",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.patch.register",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 1439,
+      "end": 1439,
+      "symbol": "public static void RegisterHarmonyPatches(Harmony harmony)",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "保留原 Harmony 注册与 1.3 专用 renown 前缀",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.first.callback",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 1819,
+      "end": 1819,
+      "symbol": "private static void OnFirstTeamScreenClosed(PendingSelection openedSelection,",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "第一次选择回调需原 selection 身份",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.second.callback",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 1883,
+      "end": 1883,
+      "symbol": "private static void OnSecondTeamScreenClosed(PendingSelection openedSelection,",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "第二次选择回调、取消和分队失败清理",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.cleanup.host",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 2838,
+      "end": 2838,
+      "symbol": "internal static void CleanupExerciseRuntime(MilitaryExerciseRuntime runtime, string reason, bool skipXpCommit)",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "原 TW roster、party、Hero、MapEvent 与 Encounter 实际恢复",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.routed.restore",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 3096,
+      "end": 3096,
+      "symbol": "private static int RestoreRoutedRegularTroops(MilitaryExerciseRuntime runtime, string reason)",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "撤退士兵一次恢复，原 roster 操作仍在宿主",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.settlement.runtime",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 4134,
+      "end": 4134,
+      "symbol": "public ExerciseSettlementOwner Settlement { get; } = new ExerciseSettlementOwner();",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "每场演习一个非保存结算回执",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.identity.owner",
+      "path": "src/modules/AF.Module.Exercise/ExerciseMapEventIdentityOwner.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal static class ExerciseMapEventIdentityOwner",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "精确 MapEvent / party 身份决策",
+      "fileSha256": "84d7c41df6ab68858180d02d0ec1a22a394cb80895528c76c56587c2a517fe3c"
+    },
+    {
+      "id": "exercise.session.owner",
+      "path": "src/modules/AF.Module.Exercise/MilitaryExerciseSessionOwner.cs",
+      "start": 6,
+      "end": 6,
+      "symbol": "internal sealed class MilitaryExerciseSessionOwner<TSelection, TRuntime>",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "两段选择与延迟开启唯一状态",
+      "fileSha256": "a8537c7d84eef73ee9e004f48183bc54efbc87098fc19d86db6f77fd8721d940"
+    },
+    {
+      "id": "exercise.session.selection",
+      "path": "src/modules/AF.Module.Exercise/MilitaryExerciseSessionOwner.cs",
+      "start": 25,
+      "end": 25,
+      "symbol": "internal bool IsCurrentSelection(TSelection selection)",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "迟到回调的 selection 引用验证",
+      "fileSha256": "a8537c7d84eef73ee9e004f48183bc54efbc87098fc19d86db6f77fd8721d940"
+    },
+    {
+      "id": "exercise.settlement.owner",
+      "path": "src/modules/AF.Module.Exercise/ExerciseSettlementOwner.cs",
+      "start": 7,
+      "end": 7,
+      "symbol": "internal sealed class ExerciseSettlementOwner",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "临时 XP 回执、结算和恢复一次性授权",
+      "fileSha256": "142f01d5ef5aa9b7265c80b68bb40cad48016762cdbc6add90fea346b6abd270"
+    },
+    {
+      "id": "exercise.settlement.xp",
+      "path": "src/modules/AF.Module.Exercise/ExerciseSettlementOwner.cs",
+      "start": 21,
+      "end": 21,
+      "symbol": "internal bool TryBeginXpCommit()",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "提交前消耗 ticket，部分失败不重复发放",
+      "fileSha256": "142f01d5ef5aa9b7265c80b68bb40cad48016762cdbc6add90fea346b6abd270"
+    },
+    {
+      "id": "exercise.settlement.begin",
+      "path": "src/modules/AF.Module.Exercise/ExerciseSettlementOwner.cs",
+      "start": 49,
+      "end": 49,
+      "symbol": "internal bool TryBeginSettlement()",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "重复结束/重入拒绝",
+      "fileSha256": "142f01d5ef5aa9b7265c80b68bb40cad48016762cdbc6add90fea346b6abd270"
+    },
+    {
+      "id": "exercise.terminal.tick",
+      "path": "AnimusForgeTerminalBehavior.cs",
+      "start": 98,
+      "end": 98,
+      "symbol": "if (MilitaryExerciseBehavior.NeedsEngineTick())",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "原 Terminal 按需 EngineTick 消费",
+      "fileSha256": "2239a6c680d650212b865fb180963b5f98ece580365f965dd9da9cfc06414cca"
+    },
+    {
+      "id": "exercise.terminal.action",
+      "path": "AnimusForgeTerminalBehavior.cs",
+      "start": 471,
+      "end": 471,
+      "symbol": "MilitaryExerciseBehavior.OpenExerciseFromTerminal();",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "原 Terminal 真实打开消费者",
+      "fileSha256": "2239a6c680d650212b865fb180963b5f98ece580365f965dd9da9cfc06414cca"
+    },
+    {
+      "id": "exercise.startup.patch",
+      "path": "src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs",
+      "start": 461,
+      "end": 461,
+      "symbol": "MilitaryExerciseBehavior.RegisterHarmonyPatches(harmony);",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "原启动 patch 装配",
+      "fileSha256": "d95f36a02d60c9eb85b0345183912b6cb7ab0949638b2fb372b6881fcc8b5391"
+    },
+    {
+      "id": "exercise.identity.replay",
+      "path": "tools/PhaseEightParityReplayTests/ExerciseMapEventIdentityOwnerReplay.cs",
+      "start": 5,
+      "end": 5,
+      "symbol": "internal static class ExerciseMapEventIdentityOwnerReplay",
+      "match": "contains",
+      "status": "replay-j13e5-offline-verified",
+      "note": "当前 DLL 正/反例身份回放",
+      "fileSha256": "c1dadcfc2c94512005e6671aaf94dd79935a02631c6582a9b89d75c909b26e69"
+    },
+    {
+      "id": "exercise.session.replay",
+      "path": "tools/PhaseEightParityReplayTests/MilitaryExerciseSessionOwnerReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class MilitaryExerciseSessionOwnerReplay",
+      "match": "contains",
+      "status": "replay-j13e5-offline-verified",
+      "note": "当前 DLL 排队/取消/迟到回调回放",
+      "fileSha256": "af49e875e01d1095f8a8ef98d81d3e42673a2a82bfd43a3bcdbc60b3e406aab3"
+    },
+    {
+      "id": "exercise.settlement.replay",
+      "path": "tools/PhaseEightParityReplayTests/ExerciseSettlementOwnerReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class ExerciseSettlementOwnerReplay",
+      "match": "contains",
+      "status": "replay-j13e5-offline-verified",
+      "note": "当前 DLL XP 回执/失败/结束回放",
+      "fileSha256": "37085d8a3b7318649080db81ea5f6113631f9091454741dd7bfc0516bc400da8"
+    },
+    {
+      "id": "exercise.contract.replay",
+      "path": "tools/PhaseEightParityReplayTests/J13E5DomainOwnerContractReplay.cs",
+      "start": 8,
+      "end": 8,
+      "symbol": "internal static class J13E5DomainOwnerContractReplay",
+      "match": "contains",
+      "status": "replay-j13e5-offline-verified",
+      "note": "聚合源码接线及四 DLL 奖励签名；非实机",
+      "fileSha256": "5cbb3029547e81f995866c87043f6f82ebfa148ec4c36ddf6d948c4233deea69"
+    },
+    {
+      "id": "exercise.orphan.receipt",
+      "path": "MilitaryExerciseBehavior.cs",
+      "start": 894,
+      "end": 894,
+      "symbol": "private static readonly ExerciseOrphanXpOwner<MapEvent> OrphanXpOwner =",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "读档/孤立演习按 MapEvent 身份一次 XP 回执",
+      "fileSha256": "04b5cca19179aa3407d689daa07f044a37324410451918824ce1b9608093ee7a"
+    },
+    {
+      "id": "exercise.orphan.owner",
+      "path": "src/modules/AF.Module.Exercise/ExerciseSettlementOwner.cs",
+      "start": 67,
+      "end": 67,
+      "symbol": "internal sealed class ExerciseOrphanXpOwner<TEvent> where TEvent : class",
+      "match": "contains",
+      "status": "wired-j13e5-offline-verified",
+      "note": "弱引用事件身份回执，不持久化或强留 MapEvent",
+      "fileSha256": "142f01d5ef5aa9b7265c80b68bb40cad48016762cdbc6add90fea346b6abd270"
     }
   ]
 }
