@@ -1,3 +1,10 @@
+## 主体 J13e1 Duel 开工意图（2026-09-25）
+
+状态：`J13e1_ACTIVE / J13_ACTIVE`，基线 `6567d11c`。按[原计划](plans/j13-domain-owners-plan.md)只推进 Duel，再依序 e2–e5，不提前 J14。已读场景伤害/军团会面、三渠道/标签及 1.3/1.4 兼容案例；不改提示词、渠道例外、原 Mission/Harmony 注册或玩法。
+
+- **现有真实链路**：`Refactor/Runtime/DuelOutcomeReceipt.cs` 已有 typed request/start/result/effects 与有界 `DuelOutcomeOwner`，必须复用；`DuelBehavior.Outcomes.cs:12–1059` 承担 process-local owner/索引、detached dispatch 受理与转移，`DuelBehavior.cs:2004–2148,2611–3015,5976–6200,7465–7615` 仍持有待启动/会面/竞技场/野外状态与三类终局协调。`CampaignComposition.cs:24` 原行为、`StartupPatchComposition.cs:469` 原 Harmony、`ApplicationTickComposition.cs:71,112` tick 消费者保留。先核对 `DuelOutcomeContractTests`、`DuelDispatchContractTests`、`ProductionDuelOutcomeReplayTests` 的实际可运行入口；后者历史入口依赖 Stage，不得为了运行而擅自 Stage。
+- **切片顺序/门禁**：先从 exact dispatch 的受理/延迟 ready/拒绝状态决策提取可测真实 owner，再迁运行态与结算协调；每片应覆盖 exact DuelId/subject/fingerprint、重复与错对象、延迟启动/超时、stake/debt、终局一次性及非决斗/MCM 关闭/退出重入，宿主仍做 TW 主线程副作用。逐片本地提交；每包补聚合接线、双版本构建/三个 Duel 套件的可运行部分、代码地图/简短 HANDOFF。数据契约/fixture 不能冒充 Mission、旧档或实机性能；不新增重复 PatchAll/订阅，不改 Harmony target/signature，`.dotnet-cli-home/` 与他人改动不动。
+
 ## 主体 J13d4 WarStats 有限离线收口（2026-09-25）
 
 状态：**`J13d4_OFFLINE_VERIFIED / J13_ACTIVE`**；基线 `a30035d9`，开工意图 `7c2bc643`，逐片产品/回放 `6d5657e9`（唯一状态/归档/终端删除）、`c8cc0efd`（战斗计数）、`ab05a736`（死亡/近期战斗）、`db1830bc`（v1–v5 投影/恢复/旧账迁移）、`f722dd41`（宣战/清空转换），聚合接线 `f0cc3ede`、日 Tick 接线补充 `6b0c07f7`。以下是**有限离线**收口，不是实际 Campaign、旧档、Gauntlet 或性能验收；下一包按[原计划](plans/j13-domain-owners-plan.md)进入 e1 Duel，依序 e2–e5，不提前 J14。
