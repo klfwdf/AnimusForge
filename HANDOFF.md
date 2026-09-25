@@ -1,7 +1,7 @@
-# 当前交接：J14 三渠道公共 API 开工（2026-09-25）
+# 当前交接：J14 G0 / Scene 前置切片（2026-09-25）
 
-- **状态**：`J14_ACTIVE / G0_ACTIVE`。本轮用户已授权按 [J14 实施计划](docs/plans/j14-public-api-plan.md)开始 Scene → Courier → 三渠道离线契约；原 J13 离线收口不重开。实际工作区/分支与计划一致，开工 HEAD `16c180b3`，仅保留原未跟踪 `.dotnet-cli-home/`。
-- **边界与下一步**：先复用 Native 独立消费者基线并补 Scene 早完成/Courier 预生成假完成反例，再逐片接真实 owner；只有完整链路验证后才开放能力。构建脚本递归清理目标尚未取得本轮精确授权，不运行；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。详细责任与证据归[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[代码地图](docs/architecture/af-framework-code-map.json)。
+- **状态**：`J14_ACTIVE / J14a_ACTIVE`，并非 J14a/J14 离线收口。[J14 实施计划](docs/plans/j14-public-api-plan.md)的 G0 红例和 Scene 上下文/群组等待前置切片已本地提交 `c65ab56f`–`b6c18a5c`；原 J13 离线收口不重开。Scene/Courier 公共能力仍 `NotSupported`，未签发 client 票据或提交真实公共请求；原未跟踪 `.dotnet-cli-home/` 保留。
+- **已验与下一步**：Scene 上下文/主线程来源断言 32/32，旧群组早完成红例→当前等待屏障绿例，Courier 预生成假完成红例、Native 独立消费者 41 项；经本轮授权四个精确仓内产物目录后，原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error，代码地图绑定 `b6c18a5c`、726 锚点两模式通过。下一片须先建立 Scene 群组/动作/历史/事实的 typed 终态回执并隔离后台 live 游戏对象，再完成 client 票据、Courier 运输回执和 J14c。真实游戏、旧档、provider、音频、帧性能 **NOT-RUN**；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。详细一基责任、SHA 和红绿边界见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[代码地图](docs/architecture/af-framework-code-map.json)。
 
 ## 以下为 J13 交接（历史）
 
