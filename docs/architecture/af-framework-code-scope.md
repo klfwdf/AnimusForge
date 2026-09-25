@@ -1,4 +1,10 @@
-# 当前范围：主体 J13e4 Settlement/Inspection 有限离线收口（2026-09-25）
+# 当前范围：主体 J13e5 Exercise 有限离线收口（2026-09-25）
+
+产品/当前 DLL 回放 `ba645b29`、`def2b082`、`3d00d416`、`80e21be1`、`8654427a`：`src/modules/AF.Module.Exercise/ExerciseMapEventIdentityOwner.cs:6–17` 持有精确 MapEvent/两个 dummy party 身份决策，`MilitaryExerciseSessionOwner.cs:6–99` 持有两轮选择/延迟 ticket/运行态与迟到回调身份，`ExerciseSettlementOwner.cs:7–80` 持有活动与孤立事件一次 XP 回执、结算/恢复授予。`MilitaryExerciseBehavior.cs:653–887,894,911–1068,1174–1524,1784–1980,2753–2900,3096–3140,4134` 保留死亡率与结果/奖励 Harmony 宿主、TaleWorlds UI/Mission/MapEvent、XP 提交、roster/角色/Hero/Encounter/dummy party 实际恢复；`AnimusForgeTerminalBehavior.cs:98–102,469–472` 和 `StartupPatchComposition.cs:461` 仍是唯一现有消费者/注册点。四 DLL 1.3/1.4 奖励参数元数据与聚合接线见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)，[代码地图](af-framework-code-map.json)绑定 `8654427a`、708 锚点两模式通过，仅用于定位。**J13e5 `OFFLINE_VERIFIED`、J13 `ACTIVE`；f/g 与 J14 均未开始**。实机两版本 Mission/Harmony、旧档、伤害/奖励经济、异常清理和帧性能 **NOT-RUN**；MCM 无演习总开关，只有死亡率/可战死设置。原有 `.dotnet-cli-home/` 保留；无 push、Stage、部署、打包或游戏/外仓写入。
+
+## 以下为 e4 范围（历史）
+
+# 主体 J13e4 Settlement/Inspection 有限离线收口（2026-09-25）
 
 产品/行为 `a946301a`、`cf162dd5`、`35daa7a6`，聚合 `ef6a83e1`：`src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs:6–62` 管一次性入场/取消/过期，`SettlementFollowerMissionOwner.cs:7–60` 管 Mission+Agent 身份，`TroopInspectionSessionOwner.cs:4–88` 管选择/排队/临时 runtime/清理状态。`SettlementEntryTroopSelectionBehavior.cs:72–100,236–295,952–1004,1676–1719,3155–3240` 留 profile/TW Mission/随行生成/损伤/GCCZ 薄适配及保存；`TroopInspectionBehavior.cs:31,112–128,175–290,303–410,532–568,1740–1752,3770–3774` 留 PartyScreen、临时 roster/party/MapEvent/PlayerEncounter/角色与 Hero 实际恢复。原 Campaign、Harmony、Terminal 入口及 GCCZ 准备/取消/城堡场景消费者不改。当前 DLL 三 owner 回放、聚合源码接线、双版本六构建/API/保存证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `ef6a83e1`、680 锚点两模式通过，仅用于定位。**J13e4 `OFFLINE_VERIFIED`、J13 `ACTIVE`，下一包 e5**；实机两版本场景/旧档/GCCZ/副作用/帧性能 **NOT-RUN**，不提前 J14。
 
