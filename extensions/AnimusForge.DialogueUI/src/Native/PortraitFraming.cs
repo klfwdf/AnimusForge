@@ -9,7 +9,7 @@ internal static class PortraitFraming
     internal const float ViewportHeight = 169f;
     internal const float TextureOffsetY = -134f;
     internal const float EyeY = 68f;
-    internal const float PortraitWorldHeight = 0.62f;
+    internal const float PortraitWorldHeight = 0.52f;
     internal const float RenderQuality = 1.35f;
 
     internal static bool TryGetCameraOffsets(float scale, out float distance, out float eyeAboveCenter)
