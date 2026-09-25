@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyCancelTradeContracts.cs" Link="WorldDiplomacyCancelTradeContracts.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyOralCancelTradeRules.cs" Link="WorldDiplomacyOralCancelTradeRules.cs" />
+    <Compile Include="..\..\Refactor\Modules\WorldDiplomacyCancelTradeCommandFacade.cs" Link="WorldDiplomacyCancelTradeCommandFacade.cs" />
+  </ItemGroup>
+</Project>

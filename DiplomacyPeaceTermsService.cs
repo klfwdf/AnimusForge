@@ -83,6 +83,11 @@ internal static class DiplomacyPeaceTermsService
 		int durationForAction = appliedDurationDays;
 		MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(source ?? "diplomacy_make_peace", () =>
 			MakePeaceAction.ApplyByKingdomDecision(payer, receiver, tributeForAction, durationForAction));
+		if (FactionManager.IsAtWarAgainstFaction(payer, receiver))
+		{
+			failureReason = "和平动作未生效";
+			return false;
+		}
 		DiplomacyRecentPeaceGuard.RegisterPeace(payer, receiver, source ?? "diplomacy_make_peace");
 		return true;
 	}

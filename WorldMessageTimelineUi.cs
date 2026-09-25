@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
 using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Engine.GauntletUI;
@@ -115,7 +117,7 @@ public static class WorldMessageTimelineUi
 		{
 			PolicySequence = CustomPolicyBehavior.GetPublishedPolicyArtifactCurrentSequenceForExternal(),
 			WeeklyRevision = MyBehavior.GetWorldMessageWeeklyTimelineRevisionForExternal(),
-			DiplomacyRevision = WorldDiplomacyBehavior.GetWorldMessageTimelineRevisionForExternal()
+			DiplomacyRevision = WorldDiplomacyTimelineQueryHost.GetRevisionOrZero()
 		};
 	}
 
@@ -245,14 +247,13 @@ public static class WorldMessageTimelineUi
 		}
 		try
 		{
-			IEnumerable<WorldDiplomacyDocument> documents = WorldDiplomacyBehavior.GetRecentDocumentsForExternal(MaxDiplomacySourceEntries)
-				.Where(x => x != null && (x.IsPlayerAuthored || x.IsReadyForPublication));
-			foreach (WorldDiplomacyDocument document in documents)
+			IReadOnlyList<WorldDiplomacyTimelineDocument> documents =
+				WorldDiplomacyTimelineQueryHost.GetRecentDocumentsOrEmpty(MaxDiplomacySourceEntries);
+			foreach (WorldDiplomacyTimelineDocument document in documents)
 			{
 				string authorName = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, "未知国家");
 				string targetName = BuildDiplomacyTargetText(document);
 				string label = BuildDiplomacyLabel(document);
-				string diplomacyImpact = WorldDiplomacyBehavior.BuildDiplomaticStandingImpactTextForExternal(document);
 				WorldMessageTimelineEntryData entry = new WorldMessageTimelineEntryData
 				{
 					EntryId = "diplomacy:" + FirstNonEmpty(document.DocumentId, document.CreatedUtcTicks.ToString(CultureInfo.InvariantCulture)),
@@ -264,7 +265,7 @@ public static class WorldMessageTimelineUi
 					BodySectionTitleText = "外交公文",
 					BodyText = LimitMultiline(document.Body, DetailCharacterLimit, DetailLineLimit, "（该外交消息正文已经整理入外交编年档案。）"),
 					ImpactSectionTitleText = "外交结果与外交影响",
-					ImpactText = diplomacyImpact,
+					ImpactText = document.ImpactText,
 					Day = Math.Max(0, document.Day),
 					CreatedUtcTicks = document.CreatedUtcTicks,
 					Sequence = 0L,
@@ -275,12 +276,9 @@ public static class WorldMessageTimelineUi
 				};
 				AddCountry(entry, document.AuthorKingdomId, authorName);
 				AddCountry(entry, document.TargetKingdomId, document.TargetKingdomName);
-				foreach (WorldDiplomacyDocumentAction action in document.Actions ?? new List<WorldDiplomacyDocumentAction>())
+				foreach (WorldDiplomacyTimelineCountryReference actionTarget in document.ActionTargets)
 				{
-					if (action != null)
-					{
-						AddCountry(entry, action.TargetKingdomId, action.TargetKingdomName);
-					}
+					AddCountry(entry, actionTarget.CountryId, actionTarget.CountryName);
 				}
 				target.Add(entry);
 			}
@@ -377,7 +375,7 @@ public static class WorldMessageTimelineUi
 		return "政策";
 	}
 
-	private static string BuildDiplomacyLabel(WorldDiplomacyDocument document)
+	private static string BuildDiplomacyLabel(WorldDiplomacyTimelineDocument document)
 	{
 		if (document?.IsResponse == true) return "外交回应";
 		if (document?.RequiresResponse == true) return "外交照会";
@@ -385,7 +383,7 @@ public static class WorldMessageTimelineUi
 		return "外交消息";
 	}
 
-	private static string BuildDiplomacyTargetText(WorldDiplomacyDocument document)
+	private static string BuildDiplomacyTargetText(WorldDiplomacyTimelineDocument document)
 	{
 		List<string> names = new List<string>();
 		string directTarget = FirstNonEmpty(document?.TargetKingdomName, document?.TargetKingdomId);
@@ -393,18 +391,19 @@ public static class WorldMessageTimelineUi
 		{
 			names.Add(directTarget);
 		}
-		foreach (WorldDiplomacyDocumentAction action in document?.Actions ?? new List<WorldDiplomacyDocumentAction>())
+		foreach (WorldDiplomacyTimelineCountryReference actionTarget in document?.ActionTargets
+			?? Array.Empty<WorldDiplomacyTimelineCountryReference>())
 		{
-			string actionTarget = FirstNonEmpty(action?.TargetKingdomName, action?.TargetKingdomId);
-			if (!string.IsNullOrWhiteSpace(actionTarget) && !names.Contains(actionTarget, StringComparer.OrdinalIgnoreCase))
+			string actionTargetName = FirstNonEmpty(actionTarget?.CountryName, actionTarget?.CountryId);
+			if (!string.IsNullOrWhiteSpace(actionTargetName) && !names.Contains(actionTargetName, StringComparer.OrdinalIgnoreCase))
 			{
-				names.Add(actionTarget);
+				names.Add(actionTargetName);
 			}
 		}
 		return string.Join("、", names.Take(4));
 	}
 
-	private static string BuildDiplomacyMetaText(WorldDiplomacyDocument document, string label, string authorName, string targetName)
+	private static string BuildDiplomacyMetaText(WorldDiplomacyTimelineDocument document, string label, string authorName, string targetName)
 	{
 		string date = FirstNonEmpty(document?.GameDate, FormatDay(document?.Day ?? 0));
 		return date + "  ·  " + label + "  ·  " + FirstNonEmpty(authorName, "未知国家")
@@ -1387,7 +1386,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		WorldMessageTimelineRecordItemVM selected = RecordItems[index];
 		if (selected.IsUnread && selected.CanMarkRead && string.Equals(selected.ReadKind, WorldMessageTimelineUi.DiplomacyCategoryId, StringComparison.OrdinalIgnoreCase))
 		{
-			if (WorldDiplomacyBehavior.MarkDocumentReadForExternal(selected.ReadSourceId))
+			if (WorldDiplomacyTimelineQueryHost.MarkDocumentRead(selected.ReadSourceId))
 			{
 				selected.MarkRead();
 			}

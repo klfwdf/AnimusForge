@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyRoundLifecycleContracts.cs" Link="WorldDiplomacyRoundLifecycleContracts.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyIntentVocabulary.cs" Link="WorldDiplomacyIntentVocabulary.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyRoundLifecycleRules.cs" Link="WorldDiplomacyRoundLifecycleRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyEnvelopeJsonRules.cs" Link="WorldDiplomacyEnvelopeJsonRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyTextRules.cs" Link="WorldDiplomacyTextRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyReputationRules.cs" Link="WorldDiplomacyReputationRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyOfferContractRules.cs" Link="WorldDiplomacyOfferContractRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyPromptContractRules.cs" Link="WorldDiplomacyPromptContractRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyStructureRules.cs" Link="Refactor\Domain\WorldDiplomacyStructureRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyDocumentFactRules.cs" Link="Refactor\Domain\WorldDiplomacyDocumentFactRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyCanonicalRenderRules.cs" Link="Refactor\Domain\WorldDiplomacyCanonicalRenderRules.cs" />
+<Compile Include="..\..\Refactor\Domain\WorldDiplomacyCanonicalHistoryRules.cs" Link="Refactor\Domain\WorldDiplomacyCanonicalHistoryRules.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyActivityRecords.cs" Link="WorldDiplomacyActivityRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyCanonicalHistoryRecords.cs" Link="WorldDiplomacyCanonicalHistoryRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyDocumentRecords.cs" Link="WorldDiplomacyDocumentRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyRoundRecords.cs" Link="WorldDiplomacyRoundRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacySummaryRecords.cs" Link="WorldDiplomacySummaryRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyPropagationRecords.cs" Link="WorldDiplomacyPropagationRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyStorageRecord.cs" Link="WorldDiplomacyStorageRecord.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyOfferCooldownRecord.cs" Link="WorldDiplomacyOfferCooldownRecord.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyOfferCooldownStorageNormalizer.cs" Link="WorldDiplomacyOfferCooldownStorageNormalizer.cs" />
+<Compile Include="..\..\Refactor\Persistence\WorldDiplomacyThreatStorageMigration.cs" Link="WorldDiplomacyThreatStorageMigration.cs" />
+<Compile Include="..\..\Refactor\Persistence\WorldDiplomacyStorageMigration.cs" Link="WorldDiplomacyStorageMigration.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyPolicyHistoryRules.cs" Link="WorldDiplomacyPolicyHistoryRules.cs" />
+<Compile Include="..\..\Refactor\Domain\WorldDiplomacyGenerationValidationRules.cs" Link="WorldDiplomacyGenerationValidationRules.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyThreatStateRules.cs" Link="WorldDiplomacyThreatStateRules.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyThreatRecords.cs" Link="WorldDiplomacyThreatRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyWarPeaceRecords.cs" Link="WorldDiplomacyWarPeaceRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyWarSnapshotRecords.cs" Link="WorldDiplomacyWarSnapshotRecords.cs" />
+    <Compile Include="..\..\Refactor\Persistence\WorldDiplomacyWorkRecords.cs" Link="WorldDiplomacyWorkRecords.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyResultSettlementRules.cs" Link="WorldDiplomacyResultSettlementRules.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyOfferCooldownRules.cs" Link="WorldDiplomacyOfferCooldownRules.cs" />
+    <Compile Include="..\..\Refactor\Domain\WorldDiplomacyWarPressureRules.cs" Link="WorldDiplomacyWarPressureRules.cs" />
+  </ItemGroup>
+</Project>
