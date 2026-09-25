@@ -124,6 +124,7 @@ EncounterTargetOwnerReplay.Run(af);
 EncounterConversationTargetOwnerReplay.Run(af);
 EncounterReleaseOwnerReplay.Run(af);
 EncounterPendingReturnOwnerReplay.Run(af);
+J13E3DomainOwnerContractReplay.Run(repo);
 NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
