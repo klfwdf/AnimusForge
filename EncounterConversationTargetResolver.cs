@@ -4,11 +4,16 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Party;
+using AnimusForge.Refactor.Modules;
 
 namespace AnimusForge;
 
 internal static class EncounterConversationTargetResolver
 {
+	private static readonly Func<object, Hero> ExtractHero = TryResolveHeroFromObject;
+	private static readonly Func<Hero, bool> UsableLord = IsUsableLordTarget;
+	private static readonly Func<Hero> EncounterLeader = TryResolveEncounterLeader;
+
 	internal static Hero TryResolveExplicitPrisonerFromArguments(object[] args)
 	{
 		if (args == null)
@@ -28,35 +33,7 @@ internal static class EncounterConversationTargetResolver
 
 	internal static Hero TryResolveLordFromArgumentsThenEncounterLeader(object instance, object[] args)
 	{
-		Hero hero = TryResolveLordFromArguments(args);
-		if (IsUsableLordTarget(hero))
-		{
-			return hero;
-		}
-		hero = TryResolveHeroFromObject(instance);
-		if (IsUsableLordTarget(hero))
-		{
-			return hero;
-		}
-		hero = TryResolveEncounterLeader();
-		return IsUsableLordTarget(hero) ? hero : null;
-	}
-
-	private static Hero TryResolveLordFromArguments(object[] args)
-	{
-		if (args == null)
-		{
-			return null;
-		}
-		foreach (object arg in args)
-		{
-			Hero hero = TryResolveHeroFromObject(arg);
-			if (IsUsableLordTarget(hero))
-			{
-				return hero;
-			}
-		}
-		return null;
+		return EncounterConversationTargetOwner.Resolve(instance, args, ExtractHero, UsableLord, EncounterLeader);
 	}
 
 	private static Hero TryResolveExplicitConversationHero(object value)
