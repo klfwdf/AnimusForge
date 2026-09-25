@@ -1,3 +1,9 @@
+# 当前范围：主体 J13d4 WarStats 有限离线收口（2026-09-25）
+
+产品/回放 `6d5657e9`、`c8cc0efd`、`ab05a736`、`db1830bc`、`f722dd41`，聚合接线 `f0cc3ede`/`6b0c07f7`：`src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs:9–482` 为唯一活动/历史/旧账及近期战斗序号 owner，负责宣战、计数、英雄死亡/近期战斗、终战归档、清空、v1–v5 平行列表投影/恢复与历史删除决策；`WarStats/AfWarStatsBehavior.cs:15,238–253,358–437,441–597,606–695,1099–1260,1774–1783` 保留原 CampaignBehavior 类型、原保存键、原事件/Kingdom/MapEvent 主线程事实采集、终端投影 facade。`src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs:54` 原注册；`WarStats/AfWarStatsPopupVM.cs:995–1103,1228–1292,1676–1680` 仍是终端消费者。当前 DLL 行为回放与 d4 聚合源码契约、六构建/保存/API/地图证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `6b0c07f7`，600 锚点两模式通过，仅用于定位。**J13d4 `OFFLINE_VERIFIED`，J13 `ACTIVE`，下一包 e1 Duel**；真实 Campaign、旧档、终端实机点击、帧性能 NOT-RUN，无 push、Stage、部署、打包、游戏/外仓写入或 J14。
+
+## 以下为 d3 范围（历史）
+
 # 当前范围：主体 J13d3 WorldEvents 有限离线收口（2026-09-25）
 
 产品/行为 `62ec9065` 与聚合契约 `b07898cb`：`src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs:9–181` 独占 records/unread/stable-key/version、旧 JSON 导入和发布/已读转换；`WorldEvents/WorldEventInbox.cs:44–85` 保留原 CampaignBehavior、DTO/public facade、两条 v1 保存键和 chunk/`IDataStore` 适配。`CampaignComposition.cs:31` 原注册与政策发布 version 确认、Policy UI/外交档案/弹窗已读消费者仍接原入口；当前源码未发现 Weekly 直接 upsert 该 inbox，不能虚报该源。Phase8 当前 DLL 行为回放、d3 聚合源码契约、政策 UI 定向测试、六构建、保存/API 身份证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)；[代码地图](af-framework-code-map.json)绑定 `b07898cb`，586 锚点两模式通过，仅用于定位。**J13d3 `OFFLINE_VERIFIED`，J13 `ACTIVE`，下一包 d4 WarStats**；真实 Campaign/旧档/UI 点击/帧性能 NOT-RUN，无 push、Stage、部署、打包、游戏/外仓写入或 J14。

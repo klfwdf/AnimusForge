@@ -1,3 +1,11 @@
+## 主体 J13d4 WarStats 有限离线收口（2026-09-25）
+
+状态：**`J13d4_OFFLINE_VERIFIED / J13_ACTIVE`**；基线 `a30035d9`，开工意图 `7c2bc643`，逐片产品/回放 `6d5657e9`（唯一状态/归档/终端删除）、`c8cc0efd`（战斗计数）、`ab05a736`（死亡/近期战斗）、`db1830bc`（v1–v5 投影/恢复/旧账迁移）、`f722dd41`（宣战/清空转换），聚合接线 `f0cc3ede`、日 Tick 接线补充 `6b0c07f7`。以下是**有限离线**收口，不是实际 Campaign、旧档、Gauntlet 或性能验收；下一包按[原计划](plans/j13-domain-owners-plan.md)进入 e1 Duel，依序 e2–e5，不提前 J14。
+
+- **代码坐标与职责**：`src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs:9–482` 的 `WarStatsLedgerOwner` 独占活动/历史/旧账集合及近期战斗序号；`:34–163` 决定宣战、清空、近期战斗记录与死亡去重/更新，`:191–268` 决定同对象终战快照/移除和顺序/负数约束的战斗计数，`:270–425` 处理 v1–v5 平行列表投影、坏行/缺列恢复和旧账迁移去向，`:427–482` 按 pair/start/end 身份删除历史并克隆归档死亡。`WarStats/AfWarStatsBehavior.cs:15,238–253` 保留原类型并从唯一 owner 读取状态；`:358–437` 保留事件和所有 `IDataStore` 键，`:441–597` 保留终端投影/清空 facade，`:606–695,1099–1260` 仍在主线程解析 Kingdom/MapEvent/Hero、时间、战争事实及终战元数据。`src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs:54` 原行为注册不变；`WarStats/AfWarStatsPopupVM.cs:995–1103,1228–1292,1676–1680` 继续消费原行为、确认删除/清空与同一历史身份。产品修订 `f722dd411e0647d7fa857bb38876d2e89835a671`、契约修订 `6b0c07f7dad77d756adb79f82bbe388ca00989e2`，完整锚点见[代码地图](architecture/af-framework-code-map.json)；源码坐标只定位，不替代行为证据。
+- **行为/接线证据**：Phase8 先对旧候选验证红例（缺 owner/计数/死亡/保存/清空方法），再对当前 Debug 1.4 DLL SHA256 `656D4E9BF9E5894FEA899B6E3CA05BC264B1F725A16D32853E4874B6F051EC07` 全套通过。WarStats 回放覆盖重复和平幂等、旧对象不得归档重开 pair、归档独立快照、终端按身份删除且不删活动战事、正反序/负数战斗计数、死亡重入/已知杀手与战场名保留、近期战斗同英雄替换/空身份拒绝/序号饱和、死亡历史克隆、v5 空 key/负数/缺 start 恢复、v1 完整旧行与活动/结束迁移、宣战与清空。`tools/PhaseEightParityReplayTests/J13D4DomainOwnerContractReplay.cs:4–56` 单独核对行为注册、五事件、原保存键、owner 调用和终端消费者；它只是源码接线契约。合成空王国与私有状态回放未运行原版事件派发或游戏存档。
+- **兼容与边界**：原脚本在逐一核对 `bin/{Debug,Release}/single_module_artifacts`、`obj/single_module/{Debug,Release}` 的绝对路径和重解析点后，仅在仓内重建；Debug/Release × Bannerlord 1.3.15/1.4.7 + Bootstrap 六构建均 0 警告/错误。四实现 DLL 的 V1 119 与元数据 1060 断言、PersistenceIdentity `sync=142 behavior=36`、迁移 fixture 10、source inventory 7、代码地图 600 锚点 recorded/working-tree 通过。近期战斗/死亡仍复用原 MapEvent 多边解析和按活动/历史扫描，不新增定时扫描、反射或锁；真实游戏频率/帧耗时 **NOT-RUN**。旧档、实机战争/战斗事件顺序、终端点击、游戏内 1.3/1.4 装载均 **NOT-RUN**；没有 push、Stage、部署、打包、游戏/外仓写入或改自动化，未跟踪 `.dotnet-cli-home/` 保留。
+
 ## 主体 J13d4 WarStats 开工意图（2026-09-25）
 
 状态：`J13d4_ACTIVE / J13_ACTIVE`；基线 `a30035d95a5ea281dea3dc7210b3a1321e50f226`，只推进[原计划](plans/j13-domain-owners-plan.md)的 WarStats，之后依序 e1–e5，不提前 J14。
