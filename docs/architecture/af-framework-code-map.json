@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "b6c18a5cf612ba8476c04405caa72dd9c5a2703b",
+  "sourceRevision": "fc394f431325bf51bd48f3f3bb711e9a27d416e4",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -1615,11 +1615,11 @@
       "path": "Refactor/Modules/CoreDialogueClient.cs",
       "symbol": "internal sealed class CoreDialogueClient",
       "match": "contains",
-      "status": "wired-boundary",
-      "note": "不透明使用者空间，有界ID去重，不自动淘汰重放",
+      "status": "j14a1-fingerprint-not-public",
+      "note": "每 client 共用 128 ID，有界按渠道/上下文/文本精确去重；Scene/Courier 真实票据和派发未接",
       "start": 10,
       "end": 10,
-      "fileSha256": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3"
+      "fileSha256": "6566eb5fa9d80ba5fdfd87db9ff071621b63d4a20c859bdd87180222b421cf05"
     },
     {
       "id": "internal.dialogue.operation",
@@ -1630,7 +1630,7 @@
       "note": "排队/claim/原owner回执与未知副作用，只取消未开始",
       "start": 10,
       "end": 10,
-      "fileSha256": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a"
+      "fileSha256": "a0e9bb202e244bc11706ecf0aaf7cf9e0ccbf5229aa4223aefe924f7ffc883ed"
     },
     {
       "id": "public.dialogue.client",
