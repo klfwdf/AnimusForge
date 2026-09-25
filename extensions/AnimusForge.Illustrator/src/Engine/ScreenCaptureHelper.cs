@@ -860,6 +860,8 @@ namespace AnimusForge.Illustrator.Engine
             public int MaxTicks;
             public int Ticks;
             public bool SaveRequested;
+            public Newtonsoft.Json.Linq.JObject ExportState;
+            public Newtonsoft.Json.Linq.JObject RetireState;
             public string Dir;
             public string Prefix;
             public string SeenPath;
@@ -892,7 +894,7 @@ namespace AnimusForge.Illustrator.Engine
 
         /// <summary>
         /// 单帧泵步（仅游戏主线程执行）：预热帧后解析舞台控件的 TableauView 并请求落盘 →
-        /// 文件大小至少稳定 50ms 后完成；同帧可执行多次队列任务，不能仅按观察次数判断。
+        /// 由 ApplicationTick 每帧推进一次；人物还须等待控件实际更新，文件大小稳定 50ms 后完成。
         /// </summary>
         private static void PumpOffscreenStage(OffscreenStagePump pump)
         {
@@ -908,12 +910,15 @@ namespace AnimusForge.Illustrator.Engine
 
                 pump.Ticks++;
                 bool nativeBannerReady = !(pump.Widget is NativeBannerExportWidget nativeBanner) || nativeBanner.ReadyForExport;
-                if (!pump.SaveRequested && pump.Ticks > pump.WarmupTicks && nativeBannerReady)
+                var portrait = pump.Widget as NativeCharacterExportWidget;
+                bool portraitReady = portrait == null || portrait.ExportUpdateCount > pump.WarmupTicks;
+                if (!pump.SaveRequested && pump.Ticks > pump.WarmupTicks && nativeBannerReady && portraitReady)
                 {
                     var view = ResolveTableauView(pump.Widget);
                     if (view != null && TriggerTableauViewSave(view, out pump.Dir, out pump.Prefix))
                     {
                         pump.SaveRequested = true;
+                        pump.ExportState = CapturePortraitState(portrait);
                         TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage save requested at tick={pump.Ticks}, waiting for file...");
                     }
                     else if (pump.Ticks == pump.MaxTicks)
@@ -933,6 +938,7 @@ namespace AnimusForge.Illustrator.Engine
                         {
                             if (unchecked((uint)(Environment.TickCount - pump.SeenTick)) >= 50)
                             {
+                                pump.RetireState = CapturePortraitState(portrait);
                                 FinishStage(pump);
                                 pump.Done.TrySetResult(path);
                                 return;
@@ -947,7 +953,7 @@ namespace AnimusForge.Illustrator.Engine
                     }
                 }
 
-                if (pump.Ticks >= pump.MaxTicks || !Core.IllustratorRuntime.Post(() => PumpOffscreenStage(pump)))
+                if (pump.Ticks >= pump.MaxTicks)
                 {
                     FinishStage(pump);
                     pump.Done.TrySetResult(null);
@@ -962,6 +968,23 @@ namespace AnimusForge.Illustrator.Engine
         }
 
         private static OffscreenStagePump _activeStage;
+
+        private static Newtonsoft.Json.Linq.JObject CapturePortraitState(NativeCharacterExportWidget portrait)
+        {
+            try { return portrait?.DescribeExportState(); }
+            catch (Exception ex)
+            {
+                TaleWorlds.Library.Debug.Print("[OffscreenRenderer] Portrait diagnostics unavailable: " + ex.GetType().Name);
+                return null;
+            }
+        }
+
+        // Called only by OnApplicationTick; queued callbacks may run twice in one frame.
+        internal static void TickOffscreenStage()
+        {
+            Core.IllustratorRuntime.AssertMainThread();
+            PumpOffscreenStage(_activeStage);
+        }
 
         internal static void CancelActiveStage()
         {
@@ -1131,12 +1154,7 @@ namespace AnimusForge.Illustrator.Engine
                     };
                     _activeStage = pump;
                     top.AddLayer(layer);
-                    if (!Core.IllustratorRuntime.Post(() => PumpOffscreenStage(pump)))
-                    {
-                        TaleWorlds.Library.Debug.Print($"[OffscreenRenderer] Stage '{widgetId}' aborted: main-thread queue rejected pump");
-                        FinishStage(pump);
-                        return false;
-                    }
+                    // The runtime advances this stage once per application tick.
                     return true;
                 }
                 catch (Exception ex)
@@ -1164,9 +1182,21 @@ namespace AnimusForge.Illustrator.Engine
             {
                 // Never release serialization before native UI retirement finishes.
                 await RetireStageAsync(pump).ConfigureAwait(false);
-                if (!delivered && cleanTempFiles && pump != null)
-                    CleanupTempArtifacts(pump.Dir, pump.Prefix);
-                _stageLock.Release();
+                try
+                {
+                    // Native state was copied on the game thread. Write diagnostics on the worker.
+                    if (pump != null && (pump.ExportState != null || pump.RetireState != null))
+                        Core.GenerationDiagnostics.Current?.RecordStage("portrait_capture_state", new Newtonsoft.Json.Linq.JObject
+                        {
+                            ["saveRequested"] = pump.SaveRequested, ["delivered"] = delivered,
+                            ["applicationTicks"] = pump.Ticks, ["warmupUpdates"] = pump.WarmupTicks,
+                            ["nativeFilePrefix"] = pump.Prefix,
+                            ["atSaveRequest"] = pump.ExportState, ["atRetirement"] = pump.RetireState
+                        });
+                    if (!delivered && cleanTempFiles && pump != null)
+                        CleanupTempArtifacts(pump.Dir, pump.Prefix);
+                }
+                finally { _stageLock.Release(); }
             }
         }
 

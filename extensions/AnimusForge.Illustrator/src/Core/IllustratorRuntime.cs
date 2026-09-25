@@ -77,6 +77,7 @@ namespace AnimusForge.Illustrator.Core
         private static readonly ConcurrentQueue<Action> Critical = new ConcurrentQueue<Action>();
         private static readonly Queue<KeyValuePair<long, TaskCompletionSource<bool>>> FrameWaiters = new Queue<KeyValuePair<long, TaskCompletionSource<bool>>>();
         private static long _frame;
+        internal static long ApplicationFrame => _frame;
         internal static void PostCritical(Action action) { if (action != null) Critical.Enqueue(action); }
         internal static Task AfterFramesAsync(int frames, CancellationToken token)
         {
@@ -187,6 +188,7 @@ namespace AnimusForge.Illustrator.Core
             // Snapshot work has its own bounded batch. Avoid the worker -> queued
             // frame wait -> worker -> queued batch round trip between every slice.
             PanoramaBatchPump.Tick();
+            ScreenCaptureHelper.TickOffscreenStage();
         }
 
         private static void TickScopes()
