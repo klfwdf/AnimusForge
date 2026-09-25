@@ -16744,7 +16744,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildPlayerCustomPromptRuleBlock()
 	{
-		string text = (DuelSettings.GetSettings()?.PlayerCustomPromptRule ?? "").Replace("\r", "").Trim();
+		string text = DuelSettings.GetPlayerCustomPromptRuleHead(DuelSettings.GetSettings()?.PlayerCustomPromptRule);
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
