@@ -1,3 +1,11 @@
+## 主体 J13d3 WorldEvents 收件箱 owner 行为切片（2026-09-25）
+
+状态：`J13d3_INBOX_SLICE_OFFLINE_VERIFIED / J13d3_ACTIVE / J13_ACTIVE`。开工意图 `82f406ca`；本片把原行为内的权威记录、未读、stable-key 索引、容量、version、导入/导出和已读转换移至 `src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs:9–181`。`WorldEvents/WorldEventInbox.cs:44–85` 仍保留原 CampaignBehavior/DTO、`_afWorldEventInboxRecords_v1` 与 `_afWorldEventInboxUnread_v1`、chunk 适配和公开静态入口；政策发布/Policy UI/外交档案/弹窗已读仍沿原入口消费同一 owner，没有第二份收件箱。
+
+- **行为变化与兼容**：同一 `StableKey`、不同 `EventId` 的重复发布刷新投影但保留最初 UI `EventId` 和已读状态；新事件 `markUnread:false` 的 JSON 已读位与未读集合保持一致。成功重复 upsert 仍增长 version，维持政策发布的确认契约。旧 JSON 和按 EventId 存储的保存键不改；导入按 Day/ticks 稳定选择较新记录，并合并旧重复项的未读状态。发布/存档/快照最多处理 240 项，仍为低频主线程操作，无新增 tick 扫描；实际帧耗时未测。
+- **红绿证据**：针对 d2 Debug 1.4 DLL SHA256 `0071A62D00D40E4113222F7A3E1FCDA641CABFA26EA4FC9371301025EF745544`，新 `WorldEventInboxOwnerReplay` 在“stable key owns one inbox record”具名断言失败；此后原脚本不带 Stage/Deploy、显式 1.4.7 参考集的 Debug 1.3/1.4+Bootstrap 三构建均 0 warning/0 error。当前 Debug 1.4 SHA256 `C70D15E9B5251356F98FBDBA633E61205A45EB1B48D18FB0CE39C68E5BDE17B0` 的完整 Phase8 回放通过，包括重复/已读/version、坏 JSON 与旧重复加载、容量/全读；source inventory 7 通过。首次用游戏 bin 直接作 replay 引用失败于非托管 `TaleWorlds.Native.dll`，改用仓库现有 `local/bannerlord-refs/1.4.7.117484` 后通过；不把失败隐藏为产品回归。
+- **仍待本包收口**：补独立 d3 聚合接线契约、保存/API 与 PolicyEffect 对应回归、Release 双实现/Bootstrap、代码地图及 HANDOFF。回放使用合成条目/JSON，不证明真实 Campaign 发布、实际 IDataStore、旧档或 Gauntlet 点击；这些与帧性能均 `NOT-RUN`，d3 整包尚未宣称完成。
+
 ## 主体 J13d3 WorldEvents 开工意图（2026-09-25）
 
 状态：`J13d3_ACTIVE / J13_ACTIVE`。基线 `938ce11645e0a93fb6b07d359e7fab68b8712740`；只推进[原计划](plans/j13-domain-owners-plan.md)的 WorldEvents 收件箱，随后按 d4、e1–e5 顺序施工，不提前 J14。当前仅 `.dotnet-cli-home/` 未跟踪，原样保留。
