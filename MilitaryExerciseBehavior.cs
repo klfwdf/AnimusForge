@@ -906,19 +906,19 @@ public static class MilitaryExerciseBehavior
 
 	private static readonly FieldInfo TroopRosterTotalWoundedHeroesField = typeof(TroopRoster).GetField("_totalWoundedHeroes", BindingFlags.Instance | BindingFlags.NonPublic);
 
-	private static MilitaryExerciseRuntime _runtime;
+	private static readonly MilitaryExerciseSessionOwner<PendingSelection, MilitaryExerciseRuntime> _sessionOwner =
+		new MilitaryExerciseSessionOwner<PendingSelection, MilitaryExerciseRuntime>(
+			selection => selection.Stage == MilitaryExerciseSelectionStage.SecondTeam,
+			runtime => runtime.SettlementDone);
+	private static MilitaryExerciseRuntime _runtime { get => _sessionOwner.Runtime; set => _sessionOwner.Runtime = value; }
 
-	private static PendingSelection _pendingSelection;
+	private static PendingSelection _pendingSelection { get => _sessionOwner.Selection; set => _sessionOwner.Selection = value; }
 
-	private static bool _isOpening;
+	private static bool _isOpening { get => _sessionOwner.IsOpening; set => _sessionOwner.IsOpening = value; }
 
-	private static bool _queuedOpenSecondTeam;
+	private static bool _queuedOpenSecondTeam => _sessionOwner.SecondQueued;
 
-	private static float _queuedOpenSecondTeamAt;
-
-	private static bool _queuedOpenBattle;
-
-	private static float _queuedOpenBattleAt;
+	private static bool _queuedOpenBattle => _sessionOwner.BattleQueued;
 
 	private static bool _harmonyPatched;
 
@@ -942,36 +942,27 @@ public static class MilitaryExerciseBehavior
 		TryCleanupFinishedExerciseRuntimeOnTick();
 		if (_queuedOpenSecondTeam)
 		{
-			if (_pendingSelection == null || _pendingSelection.Stage != MilitaryExerciseSelectionStage.SecondTeam)
+			float now = (float)Environment.TickCount / 1000f;
+			if (_sessionOwner.IsSecondDue(now))
 			{
-				_queuedOpenSecondTeam = false;
-			}
-			else
-			{
-				float now = (float)Environment.TickCount / 1000f;
-				if (now >= _queuedOpenSecondTeamAt)
+				try
 				{
-					try
+					if (!IsPartyScreenStillActive() && _sessionOwner.BeginSecond())
 					{
-						if (!IsPartyScreenStillActive())
+						if (!CanOpenFromCurrentState(out _, out string blockedReason))
 						{
-							_queuedOpenSecondTeam = false;
-							_isOpening = true;
-							if (!CanOpenFromCurrentState(out _, out string blockedReason))
-							{
-								Display(blockedReason);
-								ResetPendingSelection("queued_second_blocked");
-								return;
-							}
-							OpenSecondTeamSelection(_pendingSelection.RemainingAfterFirstRoster);
+							Display(blockedReason);
+							ResetPendingSelection("queued_second_blocked");
+							return;
 						}
+						OpenSecondTeamSelection(_pendingSelection.RemainingAfterFirstRoster);
 					}
-					catch (Exception ex)
-					{
-						Log("queued second failed: " + ex.GetType().Name + ": " + ex.Message);
-						ResetPendingSelection("queued_second_exception");
-						DisplayFailure("打开选择界面失败", ex);
-					}
+				}
+				catch (Exception ex)
+				{
+					Log("queued second failed: " + ex.GetType().Name + ": " + ex.Message);
+					ResetPendingSelection("queued_second_exception");
+					DisplayFailure("打开选择界面失败", ex);
 				}
 			}
 		}
@@ -981,13 +972,8 @@ public static class MilitaryExerciseBehavior
 		}
 		try
 		{
-			if (_runtime == null || _runtime.SettlementDone)
-			{
-				_queuedOpenBattle = false;
-				return;
-			}
 			float now = (float)Environment.TickCount / 1000f;
-			if (now < _queuedOpenBattleAt)
+			if (!_sessionOwner.IsBattleDue(now))
 			{
 				return;
 			}
@@ -999,8 +985,7 @@ public static class MilitaryExerciseBehavior
 			{
 				return;
 			}
-			_queuedOpenBattle = false;
-			_isOpening = true;
+			if (!_sessionOwner.BeginBattle()) return;
 			OpenMilitaryExerciseBattleMission(_runtime);
 			_isOpening = false;
 			Display("军事演习开始。");
@@ -1011,19 +996,15 @@ public static class MilitaryExerciseBehavior
 			CleanupExerciseRuntime(_runtime, "battle_open_failed", skipXpCommit: true);
 			_runtime = null;
 			_isOpening = false;
-			_queuedOpenBattle = false;
+			_sessionOwner.ResetSelection();
 			DisplayFailure("军事演习开启失败", ex);
 		}
 	}
 
 	public static bool NeedsEngineTick()
 	{
-		return !_harmonyPatched
-			|| _queuedOpenSecondTeam
-			|| _queuedOpenBattle
-			|| (_runtime != null && !_runtime.SettlementDone)
-			|| _knownDummyPartyIds.Count > 0
-			|| _orphanDummyFallbackScanRequested;
+		return _sessionOwner.NeedsEngineTick(_harmonyPatched,
+			_knownDummyPartyIds.Count > 0, _orphanDummyFallbackScanRequested);
 	}
 
 	public static void OpenExerciseFromTerminal()
@@ -1083,7 +1064,7 @@ public static class MilitaryExerciseBehavior
 
 	public static bool IsCurrentExerciseRuntime()
 	{
-		return _runtime != null && !_runtime.SettlementDone;
+		return _sessionOwner.HasActiveRuntime;
 	}
 
 	internal static MilitaryExerciseRuntime GetCurrentRuntime()
@@ -2890,12 +2871,7 @@ public static class MilitaryExerciseBehavior
 			runtime.HoldingDummyParty = null;
 			runtime.MapEvent = null;
 			runtime.SettlementDone = true;
-			if (ReferenceEquals(_runtime, runtime))
-			{
-				_runtime = null;
-			}
-			_isOpening = false;
-			_queuedOpenBattle = false;
+			_sessionOwner.ReleaseRuntime(runtime);
 		}
 	}
 
@@ -3838,22 +3814,17 @@ public static class MilitaryExerciseBehavior
 
 	private static void ResetPendingSelection(string reason)
 	{
-		_pendingSelection = null;
-		_isOpening = false;
-		_queuedOpenSecondTeam = false;
-		_queuedOpenBattle = false;
+		_sessionOwner.ResetSelection();
 	}
 
 	private static void QueueOpenSecondTeamSelection()
 	{
-		_queuedOpenSecondTeam = true;
-		_queuedOpenSecondTeamAt = (float)Environment.TickCount / 1000f + 0.2f;
+		_sessionOwner.QueueSecond((float)Environment.TickCount / 1000f, 0.2f);
 	}
 
 	private static void QueueOpenBattleMission()
 	{
-		_queuedOpenBattle = true;
-		_queuedOpenBattleAt = (float)Environment.TickCount / 1000f + 0.35f;
+		_sessionOwner.QueueBattle((float)Environment.TickCount / 1000f, 0.35f);
 	}
 
 	private static bool IsPartyScreenStillActive()
