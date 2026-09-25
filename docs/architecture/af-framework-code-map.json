@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "eb641aaa7c58c05e61182e88a6e9719b119a7500",
+  "sourceRevision": "580a1466aa22581ce7ea5c0d9b7748355698751d",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -5745,6 +5745,105 @@
       "status": "wired-j13d1-offline-verified",
       "note": "真实 DLL 公开入口拒绝缺对象/Native token，无假事实；正向 mutation 仅源码保真证据。",
       "fileSha256": "55ed0de1589d93420395186bc4f0f061c6e24d9da5f8e39a835bb88db335bf99"
+    },
+    {
+      "id": "social.proactive.opening.owner",
+      "path": "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
+      "start": 8,
+      "end": 8,
+      "symbol": "private sealed class ProactiveOpeningOwner",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "运行时唯一 Native/Scene pending，session+Hero 精确身份、一次消费与清理；不接管 saved session 或候选资格。",
+      "fileSha256": "13ff7d183086bb0f8fec8de27a05dbfc473e1798f796224f493f115c237271a0"
+    },
+    {
+      "id": "social.proactive.opening.host",
+      "path": "ProactiveNpcRequestBehavior.cs",
+      "start": 4697,
+      "end": 4697,
+      "symbol": "private bool TryConsumePendingOpening(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "真实 Native/Scene 消费者，消费后由原 host 完成 cooldown/party 释放；Campaign 资格与存档仍在 host。",
+      "fileSha256": "b940993ba256b3061cc067f83a4ccf4b9a545b9f98d1d1d53f954a92f7a79dfc"
+    },
+    {
+      "id": "social.proactive.opening.cancel",
+      "path": "ProactiveNpcRequestBehavior.cs",
+      "start": 5138,
+      "end": 5138,
+      "symbol": "private void CancelActiveSession(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "取消时清理 pending，避免同 Hero 后续会话误消费。",
+      "fileSha256": "b940993ba256b3061cc067f83a4ccf4b9a545b9f98d1d1d53f954a92f7a79dfc"
+    },
+    {
+      "id": "issue.alternative.dispatch.owner",
+      "path": "src/modules/AF.Module.Issue/Dispatch/IssueAlternativeDispatchOwner.cs",
+      "start": 8,
+      "end": 8,
+      "symbol": "private sealed class IssueAlternativeDispatchOwner",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "单窗口运行时派遣身份；旧回调不能清掉新 pending，游戏对象只在主线程。",
+      "fileSha256": "21262300b5a19eff14c6cd04423e67e01bffe0ea2c00d9b5a60329801056df67"
+    },
+    {
+      "id": "issue.alternative.dispatch.host",
+      "path": "VanillaIssueOfferBridge.cs",
+      "start": 686,
+      "end": 686,
+      "symbol": "private static void OnAlternativePartyScreenClosed(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "真实 party-screen 回调按 captured pending 校验，取消/失效不伪造完成事实；原版受理执行仍在 host。",
+      "fileSha256": "081a77843f5393b1e3eb4555f44f125f337387184ce840c918fdc4e0930271dd"
+    },
+    {
+      "id": "issue.alternative.dispatch.complete",
+      "path": "VanillaIssueOfferBridge.cs",
+      "start": 719,
+      "end": 719,
+      "symbol": "private static bool CompleteAlternativeDispatch(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "派遣前重验当前 giver/issue，失败返回 false 并恢复 roster；真实原版副作用仍在 host。",
+      "fileSha256": "081a77843f5393b1e3eb4555f44f125f337387184ce840c918fdc4e0930271dd"
+    },
+    {
+      "id": "issue.alternative.load",
+      "path": "VanillaIssuePromptBehavior.cs",
+      "start": 23,
+      "end": 23,
+      "symbol": "public override void SyncData(",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "载入边界清除静态运行时窗口身份；原完成回执仍为 AFEF 写入，recent-record 兼容桩未启用。",
+      "fileSha256": "4ca570edaf8a179e1c6f248450b32f8a71b78c24f8daa5c2450e5d4834ef60bc"
+    },
+    {
+      "id": "social.proactive.opening.replay",
+      "path": "tools/PhaseEightParityReplayTests/ProactiveOpeningOwnerReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class ProactiveOpeningOwnerReplay",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "当前 DLL owner 单次消费/换会话/换渠道/取消与旧存档空 ID；非实机。",
+      "fileSha256": "87c846b09247504f13912daeb040d29e2ae502ba76d7151ebc55a754fe0fe8dc"
+    },
+    {
+      "id": "issue.alternative.dispatch.replay",
+      "path": "tools/PhaseEightParityReplayTests/IssueAlternativeDispatchOwnerReplay.cs",
+      "start": 4,
+      "end": 4,
+      "symbol": "internal static class IssueAlternativeDispatchOwnerReplay",
+      "match": "contains",
+      "status": "wired-j13d2-slice-offline-verified",
+      "note": "当前 DLL 重复/迟到回调/载入重置/缺 Issue；非真实 party-screen 或任务受理。",
+      "fileSha256": "a36b7c9325cd8a183898c746372cf1a5f273847563e5ac12e65ebeaff42fe156"
     }
   ]
 }
