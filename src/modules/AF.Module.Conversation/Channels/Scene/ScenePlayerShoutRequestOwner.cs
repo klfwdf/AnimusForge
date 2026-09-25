@@ -62,6 +62,7 @@ internal sealed class ScenePlayerShoutContext
 	public int SceneSessionId;
 	public int ConversationEpoch;
 	public long InputSequence;
+	public ShoutTargetingContext SourceTargetingContext;
 	public ShoutTargetingContext TargetingContext;
 }
 
@@ -85,6 +86,7 @@ internal sealed class ScenePlayerShoutRequestOwner
 		long runtimeGeneration,
 		int sceneSessionId,
 		int conversationEpoch,
+		ShoutTargetingContext sourceTargetingContext,
 		ShoutTargetingContext targetingContext)
 	{
 		return new ScenePlayerShoutContext
@@ -96,6 +98,7 @@ internal sealed class ScenePlayerShoutRequestOwner
 			SceneSessionId = sceneSessionId,
 			ConversationEpoch = conversationEpoch,
 			InputSequence = Interlocked.Read(ref _inputSequence),
+			SourceTargetingContext = sourceTargetingContext,
 			TargetingContext = targetingContext
 		};
 	}
