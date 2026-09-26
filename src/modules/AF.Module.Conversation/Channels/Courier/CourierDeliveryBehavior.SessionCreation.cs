@@ -50,6 +50,7 @@ public sealed partial class CourierDeliveryBehavior
 	private long BeginCourierDraftStep(PendingCourierFlow flow, bool readyToSend = false)
 	{
 		if (flow == null || !IsPendingCourierFlowCurrent(flow, flow.Revision)) return -1;
+		InvalidateCourierDraftTickets();
 		flow.ReadyToSend = readyToSend;
 		return ++flow.Revision;
 	}
@@ -613,25 +614,12 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		try
 		{
-			// No callback may replay this draft after the first dispatch attempt, including partial failure.
-			flow.Claimed = true;
-			flow.ReadyToSend = false;
-			CourierSession session = CreateCourierSession(flow, input.Trim());
-			if (session == null)
+			if (DispatchCourierDraft(flow, revision, input, out string reason) == null)
 			{
-				ResetPendingCourierFlow(flow, revision, "confirm_create_null", allowClaimed: true);
-				return;
+				ResetPendingCourierFlow(flow, revision, "confirm_rejected");
+				InformationManager.DisplayMessage(new InformationMessage("信使草稿已失效，请重新选择成员和附件。", Colors.Yellow));
+				Log("courier draft rejected reason=" + reason);
 			}
-			lock (_sessionLock)
-			{
-				_sessions[session.Id] = session;
-			}
-			AddCourierRuntimeIndex(session);
-			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
-			StartCourierReplyGeneration(session, "created_preflight");
-			InformationManager.DisplayMessage(new InformationMessage("信使队已出发，正在前往 " + session.RecipientName + "。", Colors.Green));
-			ResetPendingCourierFlow(flow, revision, "confirm_done", allowClaimed: true);
-			ProcessSession(session);
 		}
 		catch (Exception ex)
 		{
@@ -639,6 +627,34 @@ public sealed partial class CourierDeliveryBehavior
 			InformationManager.DisplayMessage(new InformationMessage("信使出发失败：" + ex.Message, Colors.Red));
 			ResetPendingCourierFlow(flow, revision, "confirm_exception", allowClaimed: true);
 		}
+	}
+
+	// Shared UI/module dispatch. No callback may replay a claimed draft, even after partial failure.
+	private CourierSession DispatchCourierDraft(PendingCourierFlow flow, long revision, string input, out string reason)
+	{
+		reason = ValidateCourierDraftForDispatch(flow, revision, input);
+		if (reason != null) return null;
+		flow.Claimed = true;
+		flow.ReadyToSend = false;
+		InvalidateCourierDraftTickets();
+		try
+		{
+			CourierSession session = CreateCourierSession(flow, input.Trim());
+			if (session == null)
+			{
+				reason = "courier.dispatch_unconfirmed";
+				return null;
+			}
+			lock (_sessionLock) _sessions[session.Id] = session;
+			AddCourierRuntimeIndex(session);
+			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
+			StartCourierReplyGeneration(session, "created_preflight");
+			InformationManager.DisplayMessage(new InformationMessage("信使队已出发，正在前往 " + session.RecipientName + "。", Colors.Green));
+			ResetPendingCourierFlow(flow, revision, "confirm_done", allowClaimed: true);
+			ProcessSession(session);
+			return session;
+		}
+		finally { ResetPendingCourierFlow(flow, revision, "dispatch_finished", allowClaimed: true); }
 	}
 
 	private CourierSession CreateCourierSession(PendingCourierFlow flow, string letter)

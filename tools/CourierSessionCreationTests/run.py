@@ -26,7 +26,8 @@ def ordered(text, *markers):
 source = SOURCE.read_text(encoding="utf-8-sig")
 
 confirmed = extract.declaration(source, "private void OnLetterConfirmed(")
-ordered(confirmed,
+dispatch = extract.declaration(source, "private CourierSession DispatchCourierDraft(")
+ordered(dispatch,
         "CreateCourierSession(flow, input.Trim());",
         "_sessions[session.Id] = session;",
         "AddCourierRuntimeIndex(session);",
@@ -50,7 +51,8 @@ for signature in ("private void OpenCourierFlow(", "private void ShowCourierMode
     require("BeginCourierDraftStep(flow" in callback_owner
             and "IsPendingCourierFlowCurrent(flow, revision)" in callback_owner,
             "UI callback must bind its originating draft and step: " + signature)
-ordered(confirmed, "IsPendingCourierFlowCurrent(flow, revision)", "flow.Claimed = true;",
+ordered(confirmed, "IsPendingCourierFlowCurrent(flow, revision)", "DispatchCourierDraft(flow, revision, input")
+ordered(dispatch, "ValidateCourierDraftForDispatch(flow, revision, input)", "flow.Claimed = true;",
         "CreateCourierSession(flow, input.Trim());")
 
 for signature in (
