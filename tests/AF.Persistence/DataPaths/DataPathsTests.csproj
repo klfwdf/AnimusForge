@@ -9,9 +9,11 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" />
+    <Compile Include="../../../src/AF.Persistence/AnimusForgeModelStore.cs" Link="AnimusForgeModelStore.cs" />
     <Compile Include="../../../src/AF.Persistence/PlayerExportsStore.cs" Link="PlayerExportsStore.cs" />
     <Compile Include="../../../src/AF.Persistence/PlayerExportsPackageExport.cs" Link="PlayerExportsPackageExport.cs" />
     <Compile Include="../../../AnimusForgeTerminalSettings.cs" Link="AnimusForgeTerminalSettings.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
+    <EmbeddedResource Include="../../../content/models.lock.json" LogicalName="AnimusForge.Dependencies.ModelsLock.json" />
   </ItemGroup>
 </Project>

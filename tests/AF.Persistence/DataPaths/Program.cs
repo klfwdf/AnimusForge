@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using AnimusForge;
 
 internal static class Program
@@ -162,6 +164,33 @@ internal static class Program
         File.WriteAllText(settingsPath, "{broken");
         Reject(() => AnimusForgeTerminalSettings.TrySaveSettingsFile(settingsPath, new AnimusForgeTerminalSettingsData()), "corrupt TerminalSettings cannot be overwritten");
         Check(File.ReadAllText(settingsPath) == "{broken", "corrupt TerminalSettings preserved");
+
+        string models = Path.Combine(workspace, "artifacts", "tests", "af2-model-store", Guid.NewGuid().ToString("N"), "Models");
+        string embedding = Path.Combine(models, "embedding");
+        Directory.CreateDirectory(embedding);
+        string modelFile = Path.Combine(embedding, "model.onnx");
+        File.WriteAllBytes(modelFile, Encoding.UTF8.GetBytes("model"));
+        string modelHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(modelFile))).Replace("-", "").ToLowerInvariant();
+        string lockJson = "{\"schemaVersion\":1,\"groups\":{\"embedding\":{\"variants\":{\"synthetic\":{\"model.onnx\":{\"size\":5,\"sha256\":\"" + modelHash + "\"}}}}}}";
+        byte[] lockBytes = Encoding.UTF8.GetBytes(lockJson);
+        string lockHash = BitConverter.ToString(SHA256.HashData(lockBytes)).Replace("-", "").ToLowerInvariant();
+        string ready = "{\"schema\":1,\"lockSha256\":\"" + lockHash + "\",\"groups\":{\"embedding\":{\"variant\":\"synthetic\",\"files\":{\"model.onnx\":{\"size\":5,\"sha256\":\"" + modelHash + "\",\"mtimeUtcTicks\":" + File.GetLastWriteTimeUtc(modelFile).Ticks + "}}}}}";
+        Check(AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready) == embedding, "complete locked model group is ready");
+        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "reranker", lockBytes, ready), "missing model group rejected");
+        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready.Replace(lockHash, new string('0', 64))), "model lock drift rejected");
+        File.WriteAllBytes(modelFile, Encoding.UTF8.GetBytes("changed"));
+        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready), "model size drift rejected");
+        File.WriteAllBytes(modelFile, Encoding.UTF8.GetBytes("model"));
+        File.WriteAllText(Path.Combine(embedding, "unknown.txt"), "unknown");
+        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready), "unknown group file rejected");
+        if (Environment.GetEnvironmentVariable("AF2_PROBE_REAL_MODELS_READONLY") == "1")
+        {
+            string actualModels = AnimusForgeDataPaths.GetModelsDirectory(AnimusForgeDataPaths.ResolveRoot());
+            byte[] actualLock = File.ReadAllBytes(Path.Combine(workspace, "content", "models.lock.json"));
+            string actualReady = File.ReadAllText(Path.Combine(actualModels, ".af-models-ready.json"), Encoding.UTF8);
+            Check(Directory.Exists(AnimusForgeModelStore.ValidateReadyGroup(actualModels, "embedding", actualLock, actualReady)), "real embedding group metadata ready");
+            Check(Directory.Exists(AnimusForgeModelStore.ValidateReadyGroup(actualModels, "reranker", actualLock, actualReady)), "real reranker group metadata ready");
+        }
 
         Console.WriteLine("PASS data-path checks=" + _checks);
     }

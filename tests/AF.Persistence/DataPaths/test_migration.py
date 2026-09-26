@@ -316,4 +316,130 @@ assert not list((settings_interrupt_root / "Recovery").glob("terminal-settings-*
 resumed = module.migrate_terminal_settings([("installed", settings_source)], settings_interrupt_root, allow_test_root=True)
 assert resumed["activated"] == 0 and not resumed["already_complete"]
 
-print("PASS AF2 migration synthetic: PlayerExports, Prompt and TerminalSettings, conflicts, repeat, interruption, backup corruption, lock, disk full, bad root")
+model_source = fixture / "models-installed"
+model_repo = fixture / "models-repo"
+model_root = fixture / "models-root"
+model_bytes = {
+    "embedding": {"config.json": b"installed-config", "model.onnx": b"embedding-graph"},
+    "reranker": {"config.json": b"reranker-config", "model.onnx": b"reranker-graph"},
+}
+for group, files in model_bytes.items():
+    for name, body in files.items():
+        put(model_source, "ONNX/" + ("" if group == "embedding" else "reranker/") + name, body)
+put(model_repo, "ONNX/config.json", b"repo-config")
+put(model_repo, "ONNX/model.onnx", b"embedding-graph")
+model_lock = {"schemaVersion": 1, "groups": {
+    "embedding": {"variants": {
+        "installed": {name: {"size": len(body), "sha256": module.hashlib.sha256(body).hexdigest()}
+                      for name, body in model_bytes["embedding"].items()},
+        "repo": {name: {"size": len(body), "sha256": module.hashlib.sha256(body).hexdigest()}
+                 for name, body in {"config.json": b"repo-config", "model.onnx": b"embedding-graph"}.items()},
+    }},
+    "reranker": {"variants": {
+        "installed": {name: {"size": len(body), "sha256": module.hashlib.sha256(body).hexdigest()}
+                      for name, body in model_bytes["reranker"].items()},
+    }},
+}}
+model_sources = [("installed", model_source), ("repo", model_repo)]
+assert module._snapshot_models(model_sources, model_root, model_lock)
+model_result = module.migrate_models(model_sources, model_root, allow_test_root=True, lock=model_lock)
+assert model_result["backed_up"] == 6 and model_result["activated"] == 4 and model_result["conflicts"] == 1, model_result
+model_recovery = pathlib.Path(model_result["recovery"])
+assert (model_root / "Models/embedding/config.json").read_bytes() == b"installed-config"
+assert (model_root / "Models/reranker/model.onnx").read_bytes() == b"reranker-graph"
+assert (model_recovery / "sources/repo/embedding/config.json").read_bytes() == b"repo-config"
+assert module.migrate_models(model_sources, model_root, allow_test_root=True, lock=model_lock)["already_complete"]
+model_ready = json.loads((model_root / "Models/.af-models-ready.json").read_text(encoding="utf-8"))
+assert model_ready["schema"] == 1 and set(model_ready["groups"]) == {"embedding", "reranker"}
+assert model_ready["groups"]["embedding"]["variant"] == "installed"
+
+model_conflict_root = fixture / "models-conflict-root"
+put(model_conflict_root, "Models/embedding/config.json", b"preexisting-private")
+conflict_result = module.migrate_models([("installed", model_source)], model_conflict_root,
+                                       allow_test_root=True, lock=model_lock)
+assert conflict_result["activated"] == 2 and conflict_result["conflicts"] == 1
+assert (model_conflict_root / "Models/embedding/config.json").read_bytes() == b"preexisting-private"
+assert (pathlib.Path(conflict_result["recovery"]) / "active-existing/embedding/config.json").read_bytes() == b"preexisting-private"
+conflict_ready = json.loads((model_conflict_root / "Models/.af-models-ready.json").read_text(encoding="utf-8"))
+assert set(conflict_ready["groups"]) == {"reranker"}
+
+model_bad_source = fixture / "models-bad-source"
+put(model_bad_source, "ONNX/config.json", b"wrong")
+put(model_bad_source, "ONNX/model.onnx", b"embedding-graph")
+try:
+    module.migrate_models([("installed", model_bad_source)], fixture / "models-bad-root",
+                          allow_test_root=True, lock=model_lock)
+    raise AssertionError("corrupt model group was accepted")
+except RuntimeError as ex:
+    assert "model" in str(ex).lower()
+assert not (fixture / "models-bad-root/Models").exists()
+
+model_interrupt_root = fixture / "models-interrupt-root"
+model_interrupt_root.mkdir()
+def interrupt_model(stage, group):
+    if stage == "activated" and group == "embedding":
+        raise OSError("synthetic interruption")
+
+
+try:
+    module.migrate_models([("installed", model_source)], model_interrupt_root,
+                          allow_test_root=True, lock=model_lock, hook=interrupt_model)
+    raise AssertionError("model interruption was not raised")
+except OSError as ex:
+    assert "synthetic interruption" in str(ex)
+assert (model_interrupt_root / "Models/embedding/model.onnx").read_bytes() == b"embedding-graph"
+assert not list((model_interrupt_root / "Recovery").glob("models-*/completed.json"))
+resumed_models = module.migrate_models([("installed", model_source)], model_interrupt_root,
+                                       allow_test_root=True, lock=model_lock)
+assert resumed_models["activated"] == 2 and resumed_models["conflicts"] == 0
+assert (model_interrupt_root / "Models/reranker/model.onnx").read_bytes() == b"reranker-graph"
+
+model_race_root = fixture / "models-race-root"
+model_race_root.mkdir()
+def create_racing_target(stage, group):
+    if stage == "before_activation" and group == "embedding":
+        put(model_race_root, "Models/embedding/private.bin", b"newer")
+
+
+try:
+    module.migrate_models([("installed", model_source)], model_race_root,
+                          allow_test_root=True, lock=model_lock, hook=create_racing_target)
+    raise AssertionError("racing model target was overwritten")
+except RuntimeError as ex:
+    assert "appeared" in str(ex)
+assert (model_race_root / "Models/embedding/private.bin").read_bytes() == b"newer"
+assert not list((model_race_root / "Recovery").glob("models-*/completed.json"))
+
+model_space_root = fixture / "models-space-root"
+model_space_root.mkdir()
+module.shutil.disk_usage = lambda path: types.SimpleNamespace(free=0)
+try:
+    try:
+        module.migrate_models([("installed", model_source)], model_space_root,
+                              allow_test_root=True, lock=model_lock)
+        raise AssertionError("model disk-full preflight was ignored")
+    except RuntimeError as ex:
+        assert "free space" in str(ex)
+finally:
+    module.shutil.disk_usage = original_usage
+assert not (model_space_root / "Recovery").exists()
+
+model_corrupt_root = fixture / "models-corrupt-backup-root"
+model_corrupt_root.mkdir()
+def corrupt_model_backup(stage, count):
+    if stage == "backed_up":
+        backups = list((model_corrupt_root / "Recovery").glob("models-*/sources/installed/embedding/model.onnx"))
+        assert len(backups) == 1
+        backups[0].write_bytes(b"corrupt")
+
+
+try:
+    module.migrate_models([("installed", model_source)], model_corrupt_root,
+                          allow_test_root=True, lock=model_lock, hook=corrupt_model_backup)
+    raise AssertionError("corrupt model backup was accepted")
+except RuntimeError as ex:
+    assert "verification failed" in str(ex) or "differs" in str(ex)
+assert not (model_corrupt_root / "Models").exists()
+assert not list((model_corrupt_root / "Recovery").glob("models-*/completed.json"))
+
+print("PASS AF2 migration synthetic: PlayerExports, Prompt, TerminalSettings and locked model groups; conflicts, repeat, interruption, backup corruption, disk full, bad root")
