@@ -690,9 +690,8 @@ if ((Get-FileSha256 -LiteralPath $dll13Full) -eq (Get-FileSha256 -LiteralPath $d
 }
 
 # A caller may launch the BAT/PowerShell script with its current directory
-# inside Modules\AnimusForge.  Windows then refuses to rename that directory
-# even when the game has never started.  Resolve every input first, then move
-# both PowerShell's provider location and the native process CWD to the project.
+# inside Modules\AnimusForge. Resolve inputs first, then leave that directory
+# before creating same-volume candidates or replacing managed files.
 Set-Location -LiteralPath $projectRootFull
 [System.Environment]::CurrentDirectory = $projectRootFull
 Write-Host "Deploy CWD   : $projectRootFull"
@@ -717,6 +716,12 @@ if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
     return
 }
 
+$legacyModules = @('AnimusForge_1_3_x', 'AnimusForge_1_4_5') | Where-Object {
+    Test-Path -LiteralPath (Join-Path $modulesDir $_) -PathType Container
+}
+if ($legacyModules.Count -gt 0) {
+    Write-Warning 'Legacy AnimusForge module folders were left untouched; disable them before launching the game to avoid duplicate module loading.'
+}
 Invoke-ManagedStageDeployment -StageModuleDir $projectStageDir -TargetModuleDir $targetModuleDir -ModulesDir $modulesDir
 Write-Host "Deploy Mode  : Stage-managed files only; unknown installed files untouched"
 Write-Host "Output       : $targetModuleDir"
