@@ -227,7 +227,8 @@ function Assert-AnimusForgeCleanStage {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)][string]$ProjectRoot,
-        [Parameter(Mandatory = $true)][string]$StageModuleDir
+        [Parameter(Mandatory = $true)][string]$StageModuleDir,
+        [switch]$RequireCurrentArtifacts
     )
 
     $projectFull = Get-AnimusForgeContentFullPath -Path $ProjectRoot
@@ -238,6 +239,7 @@ function Assert-AnimusForgeCleanStage {
     if (-not (@($allowedStages | Where-Object { $_.Equals($stageFull, [System.StringComparison]::OrdinalIgnoreCase) }).Count -eq 1)) {
         throw "Package input must be the project-local AnimusForge Stage."
     }
+    $configuration = if ($stageFull.Equals($allowedStages[0], [System.StringComparison]::OrdinalIgnoreCase)) { "Debug" } else { "Release" }
     if (-not (Test-Path -LiteralPath $stageFull -PathType Container)) {
         throw "Stage directory is missing: $stageFull"
     }
@@ -250,19 +252,29 @@ function Assert-AnimusForgeCleanStage {
         $expected.Add($key, (Get-FileHash -LiteralPath $entry.SourcePath -Algorithm SHA256).Hash)
     }
     $expected.Add("SubModule.xml", "")
-    foreach ($relative in @(
-        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll",
-        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.pdb",
-        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.build.json",
-        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll",
-        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.pdb",
-        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.build.json",
-        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll",
-        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.pdb",
-        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.build.json"
-    )) {
+    $programArtifacts = [ordered]@{
+        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll" = "bootstrap/AnimusForge.Bootstrap.dll"
+        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.pdb" = "bootstrap/AnimusForge.Bootstrap.pdb"
+        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.build.json" = "bootstrap/AnimusForge.Bootstrap.build.json"
+        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll" = "versions/1.3/AnimusForge.dll"
+        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.pdb" = "versions/1.3/AnimusForge.pdb"
+        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.build.json" = "versions/1.3/AnimusForge.build.json"
+        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll" = "versions/1.4/AnimusForge.dll"
+        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.pdb" = "versions/1.4/AnimusForge.pdb"
+        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.build.json" = "versions/1.4/AnimusForge.build.json"
+    }
+    foreach ($relative in $programArtifacts.Keys) {
         if ($expected.ContainsKey($relative)) { throw "Content map overlaps program output: $relative" }
-        $expected.Add($relative, "")
+        $artifactHash = ""
+        if ($RequireCurrentArtifacts) {
+            $artifact = Join-Path $projectFull "bin\$configuration\single_module_artifacts\$($programArtifacts[$relative].Replace('/', '\'))"
+            Assert-AnimusForgeNoReparsePoint -Path $artifact -Label "Current build artifact"
+            if (-not (Test-Path -LiteralPath $artifact -PathType Leaf)) {
+                throw "Current build artifact is missing: $relative"
+            }
+            $artifactHash = (Get-FileHash -LiteralPath $artifact -Algorithm SHA256).Hash
+        }
+        $expected.Add($relative, $artifactHash)
     }
     $lockPath = Join-Path $projectFull "content\runtime-dependencies.lock.json"
     $lock = Get-Content -LiteralPath $lockPath -Raw -Encoding UTF8 | ConvertFrom-Json

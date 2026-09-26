@@ -783,7 +783,7 @@ function Write-ZipFromModule {
     if ($outputFull.StartsWith($moduleFull + "\", [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "OutputDir must not be inside the Stage: $outputFull"
     }
-    Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull
+    Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
     New-Item -ItemType Directory -Path $outputFull -Force | Out-Null
 
     $versionForName = $PackageVersion -replace "[^\w\.\-]", "_"
@@ -832,7 +832,7 @@ function Write-ZipFromModule {
 
         Assert-ZipLayout -ZipPath $temporaryZipPath -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$false
         Assert-ZipMatchesCleanStage -ZipPath $temporaryZipPath -StageModuleDir $moduleFull -PackageVersion $PackageVersion
-        Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull
+        Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
         [System.IO.File]::Move($temporaryZipPath, $zipPath)
         $finalZipCreated = $true
 
@@ -882,7 +882,7 @@ if ([string]::IsNullOrWhiteSpace($ModuleDir)) {
     throw "AF2 packaging requires an explicit project-local -ModuleDir Stage path."
 }
 $projectRootFull = Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")
-Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $ModuleDir
+Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $ModuleDir -RequireCurrentArtifacts
 $resolved = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -BannerlordRootPath $BannerlordRoot -AllowFirstMatch:$UseFirstMatch
 $moduleFull = $resolved.Path
 $moduleXml = Join-Path $moduleFull "SubModule.xml"

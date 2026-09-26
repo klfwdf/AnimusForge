@@ -54,7 +54,32 @@ foreach ($name in $runtimeNames) {
 $lock = @{ schemaVersion = 1; files = $locked }
 [System.IO.File]::WriteAllText((Join-Path $project "content\runtime-dependencies.lock.json"), ($lock | ConvertTo-Json -Depth 5), [System.Text.UTF8Encoding]::new($false))
 
+$artifactRoot = Join-Path $project "bin\Debug\single_module_artifacts"
+$artifactFiles = [ordered]@{
+    "AnimusForge.Bootstrap.dll" = "bootstrap\AnimusForge.Bootstrap.dll"
+    "AnimusForge.Bootstrap.pdb" = "bootstrap\AnimusForge.Bootstrap.pdb"
+    "AnimusForge.Bootstrap.build.json" = "bootstrap\AnimusForge.Bootstrap.build.json"
+    "versions\1.3\AnimusForge.dll" = "versions\1.3\AnimusForge.dll"
+    "versions\1.3\AnimusForge.pdb" = "versions\1.3\AnimusForge.pdb"
+    "versions\1.3\AnimusForge.build.json" = "versions\1.3\AnimusForge.build.json"
+    "versions\1.4\AnimusForge.dll" = "versions\1.4\AnimusForge.dll"
+    "versions\1.4\AnimusForge.pdb" = "versions\1.4\AnimusForge.pdb"
+    "versions\1.4\AnimusForge.build.json" = "versions\1.4\AnimusForge.build.json"
+}
+foreach ($relative in $artifactFiles.Keys) {
+    $source = Join-Path $bin $relative
+    $target = Join-Path $artifactRoot $artifactFiles[$relative]
+    New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force | Out-Null
+    Copy-Item -LiteralPath $source -Destination $target
+}
 Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage
+Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage -RequireCurrentArtifacts
+$staleArtifact = Join-Path $artifactRoot "bootstrap\AnimusForge.Bootstrap.pdb"
+[System.IO.File]::WriteAllText($staleArtifact, "stale")
+MustReject { Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage -RequireCurrentArtifacts } "Stage accepted a stale build artifact"
+Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage
+Copy-Item -LiteralPath (Join-Path $bin "AnimusForge.Bootstrap.pdb") -Destination $staleArtifact -Force
+Assert-AnimusForgeCleanStage -ProjectRoot $project -StageModuleDir $stage -RequireCurrentArtifacts
 $private = Join-Path $stage "PlayerExports\private.json"
 New-Item -ItemType Directory -Path (Split-Path -Parent $private) | Out-Null
 [System.IO.File]::WriteAllText($private, "synthetic")
