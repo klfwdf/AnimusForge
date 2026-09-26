@@ -11,6 +11,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$contentLayoutHelper = Join-Path $PSScriptRoot "content_layout.ps1"
+if (-not (Test-Path -LiteralPath $contentLayoutHelper -PathType Leaf)) {
+    throw "Content layout helper not found: $contentLayoutHelper"
+}
+. $contentLayoutHelper
+
 $ModuleId = "AnimusForge"
 $ModuleName = "AnimusForge"
 $BootstrapAssemblyName = "AnimusForge.Bootstrap"
@@ -727,6 +733,7 @@ if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
             (Join-Path $sourceModuleDir "PlayerExports"),
             (Join-Path $sourceModuleDir "bin")
         )
+        Invoke-AnimusForgeContentProjection -ProjectRoot $projectRootFull -DestinationModuleDir $projectStageDir | Out-Null
         Set-SingleModuleIdentity -ModuleDir $projectStageDir
         Build-DesiredModuleBin -RuntimeDependencyDir $runtimeDependencyDirFull -StagingBinDir (Join-Path $projectStageDir "bin\Win64_Shipping_Client") -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
         Invoke-Robocopy -SourceDir (Join-Path $sourceModuleDir "PlayerExports") -TargetDir (Join-Path $projectStageDir "PlayerExports") -ExtraArguments @("/E")
@@ -791,6 +798,7 @@ try {
         (Join-Path $sourceModuleDir "bin")
     )
     Invoke-Robocopy -SourceDir $sourceModuleDir -TargetDir $stagingModuleDir -ExtraArguments $sourceCopyArguments
+    Invoke-AnimusForgeContentProjection -ProjectRoot $projectRootFull -DestinationModuleDir $stagingModuleDir | Out-Null
     Merge-InstalledCustomPromptsIntoStaging -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir -StagingModuleDir $stagingModuleDir
     $targetTerminalSettings = Join-Path $targetModuleDir "ModuleData\TerminalSettings.json"
     $stagingTerminalSettings = Join-Path $stagingModuleDir "ModuleData\TerminalSettings.json"
@@ -824,7 +832,7 @@ try {
 
     $sourceRules = Join-Path $sourceModuleDir "ModuleData\RuleBehaviorPrompts.json"
     Assert-SameHash -SourcePath $sourceRules -TargetPath (Join-Path $stagingModuleDir "ModuleData\RuleBehaviorPrompts.json")
-    $sourcePreprocessPrompts = Join-Path $sourceModuleDir "ModuleData\PreprocessPrompts.json"
+    $sourcePreprocessPrompts = Get-AnimusForgeContentSourcePath -ProjectRoot $projectRootFull -Target "ModuleData/PreprocessPrompts.json"
     Assert-SameHash -SourcePath $sourcePreprocessPrompts -TargetPath (Join-Path $stagingModuleDir "ModuleData\PreprocessPrompts.json")
     Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $stagingBinDir "AnimusForge.Bootstrap.dll")
     Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $stagingBinDir "versions\1.3\AnimusForge.dll")

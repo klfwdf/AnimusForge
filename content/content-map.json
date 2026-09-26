@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PreprocessPrompts.json",
+      "target": "ModuleData/PreprocessPrompts.json",
+      "logicalName": "AnimusForge.Defaults.PreprocessPrompts.json"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/RpItemIntroductionPrompts.json",
+      "target": "ModuleData/RpItemIntroductionPrompts.json",
+      "logicalName": "AnimusForge.Defaults.RpItemIntroductionPrompts.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json",
+      "target": "ModuleData/GcczTownPrompt.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownPrompt.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownEntryPresentation.zh-CN.json",
+      "target": "ModuleData/GcczTownEntryPresentation.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownActionPresentation.zh-CN.json",
+      "target": "ModuleData/GcczTownActionPresentation.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownActionPresentation.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownHiddenResidents.zh-CN.json",
+      "target": "ModuleData/GcczTownHiddenResidents.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownHiddenResidents.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownManual.zh-CN.json",
+      "target": "ModuleData/GcczTownManual.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownManual.zh-CN.json"
+    }
+  ]
+}

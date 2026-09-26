@@ -265,7 +265,7 @@ Test.True(whipSwordIsolation.Success, "explicit whip templates must not enter th
 string playerRpCrafting = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.PlayerRpCrafting.cs"));
 string playerRpModels = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCraftModels.cs"));
 string playerRpComponents = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpCraftItemComponentService.cs"));
-string preprocessPrompts = File.ReadAllText(Path.Combine(repoRoot, "AnimusForge", "ModuleData", "PreprocessPrompts.json"));
+string preprocessPrompts = File.ReadAllText(Path.Combine(repoRoot, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json"));
 string terminalBehavior = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeTerminalBehavior.cs"));
 string playerRpPopup = File.ReadAllText(Path.Combine(repoRoot, "PlayerRpForgePopup.cs"));
 Test.True(playerRpCrafting.Contains("PlayerRpTemplateCandidateLimit = 50", StringComparison.Ordinal)
