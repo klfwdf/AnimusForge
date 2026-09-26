@@ -142,6 +142,7 @@ RunRepairCorrectionAndJobDecisionTests();
         PublicationScheduleReplay.Run();
         OfferApplicationReplay.Run();
         CourtResponseReplay.Run();
+        DocumentApplicationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14043,6 +14044,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string propagationApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
         string offerApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyOfferApplication.cs")));
         string courtResponseApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs")));
+        string documentApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentApplication.cs")));
 
         string rulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"));
@@ -14841,8 +14843,9 @@ RunRepairCorrectionAndJobDecisionTests();
             FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyDocumentFactRules.cs")), Encoding.UTF8);
         Test.True(documentFactRules.Contains("WorldDiplomacyRoundLifecycleRules.SelectNewestDocumentsChronologically(", StringComparison.Ordinal),
             "known-round context must delegate newest-first chronological selection to the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedDocuments(", StringComparison.Ordinal),
-            "host must delegate stored document retention ordering to the domain");
+        Test.True(documentApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedDocuments(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyDocumentApplication.Add(", StringComparison.Ordinal),
+            "document application must own stored document retention and the host must delegate writes");
         Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPublishedRoundDocuments(", StringComparison.Ordinal),
             "host must delegate published round document selection to the domain");
         Test.True(!behaviorSource.Contains(".OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks)", StringComparison.Ordinal)
