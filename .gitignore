@@ -19,7 +19,7 @@ packages/
 
 *.log
 Logs/
-AnimusForge/ONNX/reranker/
+AnimusForge/ONNX/
 
 tools/ActionPostprocessPromptLab/runs/
 tools/ActionPostprocessPromptLab/local.settings.json
