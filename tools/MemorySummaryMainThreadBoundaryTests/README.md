@@ -1,3 +1,11 @@
+## J14c：恢复真实 terminal writer 链接（2026-09-26）
+
+`run_terminal.py` 原先报 `Missing TagSceneSessionHistoryLine`：历史 host 包装已迁到 `DialogueHistoryLedger`，NPC action 帮助方法也已迁到 `NpcActionLedger`。现在链接两个真实 ledger 和实际 `WeeklyReportMaterialRevisionOwner` 字段/类型；不恢复假 wrapper、不删除 terminal 断言、不仅刷新 hash。`omit-major-entry` 在真实 `NpcActionLedger.Append` 调用点注入同义故障。
+
+- 当前 `run_terminal.py`：85 scenarios / 0 failures。实际 Daily append/save/readback、Recovery Daily/Recent、marker/来源确认、Weekly outcome、Major/Block writer、最终 Process/Apply/Mark 全部执行；不是只比较源码哈希。
+- `--mutate omit-line-add` / `drop-afef` / `omit-recent-save` / `omit-major-entry` / `drop-recent-marker` / `weekly-false-success` 均 BUILD_PASS 后具名失败，分别 13 / 6 / 7 / 2 / 7 / 11；最低层写入、AFEF、marker 和假接受均能被原断言识别。
+- 显式 `DOTNET_EXE=local/dotnet/8.0.425/dotnet.exe`；输出和源码 SHA manifest 在 `.generated/terminal/<variant>/`。没有产品修改。Campaign/provider/真实存档/帧性能未验，原 fixture 边界不变。
+
 ## 2026-09-15：Memory dispatch owner职责提取
 
 队列/待办生命周期/预算/异常完成迁移到 `Refactor/Runtime/MemorySummaryDispatcher.cs`，通过 `IMemorySummaryDispatchHost` 获取游戏身份/设置，原Host仅薄适配。所有相关runner编入两个真实新文件；不保留假的旧队列/计数器让测试变绿。

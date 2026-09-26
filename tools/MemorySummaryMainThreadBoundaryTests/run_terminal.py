@@ -23,7 +23,7 @@ def main():
     def read(name):
         data=(ROOT/name).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data
     source=read('MyBehavior.cs');snippets=[]
-    names=list(dict.fromkeys(capture.NAMES+[re.search(r'(\w+)\($',s).group(1) for s in business.METHODS]+'''AppendDailyMemoryLineById LoadDailyMemoryDraftsById SaveDailyMemoryDraftsById IsDailyMemoryLinePublished AttachPendingWeeklyMemoryMaterialTriggers AddWeeklyMemoryMaterialTriggerToDraft PrunePendingWeeklyMemoryMaterialTriggers LoadCompressedMemoryBlocksById SaveCompressedMemoryBlocksById MarkMemoryOverviewDirty CountDailyMemoryDraftLines HasCompressedMemoryBlock LoadDialogueHistoryById SaveDialogueHistoryById TagSceneSessionHistoryLine RemoveExpiredSingleUseNpcFactLines IsSingleUseNpcFactLine IsFirstMeetingNpcFactBody IsMeaningfulDirectConversationLine IsMeaningfulConversationLine IsSystemFactLine IsLoreInjectionHistoryLine TryStripSceneSessionHistoryMarker CountDialogueHistoryLines RecordNpcMajorAction RecordNpcActionInternal CreateNpcActionEntry GetNpcActionHeroKey NormalizeNpcActionStableKey RemoveInvalidNpcActionEntries ContainsNpcActionStableKey ContainsNpcActionForDay GetNextNpcActionOrder CompareNpcActionTimeline'''.split()))
+    names=list(dict.fromkeys(capture.NAMES+[re.search(r'(\w+)\($',s).group(1) for s in business.METHODS]+'''AppendDailyMemoryLineById LoadDailyMemoryDraftsById SaveDailyMemoryDraftsById IsDailyMemoryLinePublished AttachPendingWeeklyMemoryMaterialTriggers AddWeeklyMemoryMaterialTriggerToDraft PrunePendingWeeklyMemoryMaterialTriggers LoadCompressedMemoryBlocksById SaveCompressedMemoryBlocksById MarkMemoryOverviewDirty CountDailyMemoryDraftLines HasCompressedMemoryBlock LoadDialogueHistoryById SaveDialogueHistoryById RemoveExpiredSingleUseNpcFactLines IsSingleUseNpcFactLine IsFirstMeetingNpcFactBody IsMeaningfulDirectConversationLine IsMeaningfulConversationLine IsSystemFactLine IsLoreInjectionHistoryLine CountDialogueHistoryLines RecordNpcMajorAction RecordNpcActionInternal CreateNpcActionEntry GetNpcActionHeroKey CompareNpcActionTimeline'''.split()))
     # Admission/maintenance scans have their own real business suite, not this terminal scenario.
     names=[name for name in names if name not in {'TryStartMemorySummaryQueue','ShouldScanMemoryOverviewCandidates','TryRunCampaignMemoryMaintenance','QueueAllMemoryOverviewCandidatesForDeferredScan'}]
     if a.admission_only:names=list(dict.fromkeys(names+['TryEnqueueMemoryOverviewForMemoryId']))
@@ -59,7 +59,7 @@ def main():
             pos=body.index('{')+1;body=body[:pos]+'\n BeforeRecentTerminalSave(memoryId);'+body[pos:]
             if a.mutate=='omit-recent-save':body=replace(body,'_dialogueHistory[stringId] = records;','/* fault: no Recent publish */')
         if name=='ProcessMemorySummaryQueueAsync' and a.mutate=='swallow-completion-failure':body=replace(body,'RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate','RunMemorySummaryRunCaptureAsync(run, runtimeGeneration, delegate',6)
-        if name=='RecordNpcActionInternal' and a.mutate=='omit-major-entry':body=replace(body,'value.Add(npcActionEntry);','/* fault: lost major entry */')
+        if name=='RecordNpcActionInternal' and a.mutate=='omit-major-entry':body=replace(body,'NpcActionLedger.Append(value, npcActionEntry, maxEntries, CompareNpcActionTimeline);','/* fault: lost major entry */')
         if name=='SaveCompressedMemoryBlocksById' and a.mutate=='omit-block-publish':body=replace(body,'_compressedMemoryBlocks[text] = list;','/* fault: lost block publication */')
         if name=='ProcessMemorySummaryQueueAsync' and a.mutate=='ignore-final-source':body=replace(body,' || !IsMemorySummaryInputCurrent(result.Source)','',3)
         if name=='AppendDailyMemoryLineById':
@@ -109,6 +109,10 @@ def main():
         match=re.search(r'private const [^;]+\b'+name+r'\s*=[^;]+;',data)
         if not match:raise ValueError('Missing actual constant '+name)
         snippets.append(match.group())
+    revision_field=re.search(r'private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions = [^;]+;',source)
+    if not revision_field:raise ValueError('Missing actual weekly revision owner field')
+    snippets.append(revision_field.group())
+    manifest.append(dict(file='MyBehavior.cs',signature='_weeklyReportMaterialRevisions',line=source[:revision_field.start()].count('\n')+1,sha256=hashlib.sha256(revision_field.group().encode()).hexdigest()))
     product='using System; using System.Diagnostics; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading; using System.Threading.Tasks; using Newtonsoft.Json; using Newtonsoft.Json.Linq; using AnimusForge.Refactor.Runtime; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior {\nprivate const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
     input_code=read('MyBehavior.MemorySummaryInput.cs')
     if a.admission_only:
@@ -131,6 +135,10 @@ def main():
     files={'Product.cs':product,'Input.cs':input_code,'Boundary.cs':read('MyBehavior.MemorySummaryMainThread.cs'),'Guard.cs':read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),'Fixture.cs':fixture,'Terminal.cs':read('tools/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt')}
     if a.admission_only:
         files['Terminal.cs']=replace(files['Terminal.cs'],'  void TryEnqueueMemoryOverviewForMemoryId(string id,string name,List<CompressedMemoryBlock> blocks)=>TerminalEvent("overview-after:"+id);\n','')
+    # These line rules moved out of MyBehavior; link the actual ledger, not removed wrapper names.
+    files['DialogueHistoryLedger.cs']=read('src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs')
+    files['NpcActionLedger.cs']=read('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
+    files['WeeklyReportMaterialRevisionOwner.cs']=read('src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs')
     files['RecoveryLedger.cs']=read('src/modules/AF.Module.Memory/Recovery/InteractionMemoryRecoveryLedger.cs')
     for name in ['src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs','src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs']:
         files[Path(name).name]=read(name)
