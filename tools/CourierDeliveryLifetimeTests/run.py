@@ -26,12 +26,12 @@ def ordered(text, *markers):
 source = SOURCE.read_text(encoding="utf-8-sig")
 complete = extract.declaration(source, "private void CompleteReturn(")
 ordered(complete,
-        "ReturnCourierContentsToPlayer(session, courier);",
+        "ReturnCourierContentsToPlayer(session, courier)",
         "AddCourierLetterToPlayerInventory(",
         "ShowCourierReplyNotice(",
         "CompleteAndDestroyCourier(session, courier);")
 
-refund = extract.declaration(source, "private void ReturnCourierContentsToPlayer(")
+refund = extract.declaration(source, "private bool ReturnCourierContentsToPlayer(")
 ordered(refund,
         "MoveWholeMemberRoster(",
         "MoveWholePrisonRoster(",

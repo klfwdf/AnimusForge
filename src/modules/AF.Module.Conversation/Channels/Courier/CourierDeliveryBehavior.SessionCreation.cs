@@ -659,7 +659,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(flow.RuntimeGeneration))
 				throw new OperationCanceledException("Courier dispatch source expired.");
 			lock (_sessionLock) _sessions[session.Id] = session;
-			BindModuleCourierSession(operation, session);
+			BindModuleCourierSession(operation, session, flow);
 			AddCourierRuntimeIndex(session);
 			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
 			StartCourierReplyGeneration(session, "created_preflight");

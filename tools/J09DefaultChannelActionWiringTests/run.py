@@ -61,7 +61,7 @@ def main():
             "Native default action boundary must not duplicate visible history/AFEF commit")
 
     scene_queue = extractor.declaration(
-        scene, "private Task<int> QueueDeferredScenePostprocessActions(")
+        scene, "private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions(")
     scene_commit = extractor.declaration(
         scene, "private bool CommitDeferredSceneActionPlan(")
     require(scene_queue.count("CommitDeferredSceneActionPlan(") == 1,
@@ -94,13 +94,13 @@ def main():
     courier_wrapper = extractor.declaration(
         courier_dispatch, "private void CommitGeneratedReplyAtRecipient(")
     courier_core = extractor.declaration(
-        courier, "private void CommitGeneratedReplyActionsAtRecipientCore(")
+        courier, "private bool CommitGeneratedReplyActionsAtRecipientCore(")
     courier_detached = extractor.declaration(
         courier, "private InteractionStatus ExecuteCourierActionPlanForExternal(")
     courier_delivery = extractor.declaration(
         courier, "private void DeliverToRecipient(")
     if args.mutate == "courier-pre-delivery-commit":
-        call = "\t\tCommitGeneratedReplyAtRecipient(session, recipient);\n"
+        call = "\t\t\tCommitGeneratedReplyAtRecipient(session, recipient);\n"
         require(courier_delivery.count(call) == 1,
                 "Courier delivery mutation no longer reaches the terminal call")
         courier_delivery = courier_delivery.replace(call, "", 1).replace(
@@ -108,14 +108,14 @@ def main():
             "\t\t\tCommitGeneratedReplyAtRecipient(session, recipient);\n"
             "\t\t\tApplyDeliveryPayload(session, courier, recipient);",
             1)
-    require(courier.count("CommitGeneratedReplyAtRecipient(session, recipient);") == 2,
+    require(courier.count("CommitGeneratedReplyAtRecipient(session, recipient);") == 3,
             "Courier delivery/return state machine lost a default commit call site")
     require("CommitGeneratedReplyAtRecipient(" not in courier_detached
             and "CommitGeneratedReplyActionsAtRecipientCore(" in courier_detached,
             "Detached Courier path must call the domain core, not nest the default wrapper")
     ordered(courier_delivery,
-            "ApplyDeliveryPayload(session, courier, recipient);",
             "session.DeliveryApplied = true;",
+            "ApplyDeliveryPayload(session, courier, recipient);",
             "if (!session.ReplyGenerated)",
             "CommitGeneratedReplyAtRecipient(session, recipient);")
     ordered(courier_wrapper,

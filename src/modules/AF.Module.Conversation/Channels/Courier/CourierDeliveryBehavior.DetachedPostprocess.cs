@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
+using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 
@@ -13,6 +15,53 @@ namespace AnimusForge;
 
 public sealed partial class CourierDeliveryBehavior
 {
+    private sealed class CourierDetachedSource
+    {
+        internal CourierSession Session;
+        internal CourierPromptRun Run;
+        internal long Generation;
+    }
+    private readonly ConditionalWeakTable<InteractionEnvelope, CourierDetachedSource> _courierDetachedSources =
+        new ConditionalWeakTable<InteractionEnvelope, CourierDetachedSource>();
+
+    private void BindCourierDetachedSource(InteractionEnvelope envelope, CourierSession session, long generation, CourierPromptRun run)
+    {
+        if (!TWParallel.IsMainThread() || envelope == null || session == null)
+            throw new OperationCanceledException("Courier detached capture has no owner.");
+        if (_courierDetachedSources.TryGetValue(envelope, out CourierDetachedSource existing))
+        {
+            if (!ReferenceEquals(existing.Session, session) || existing.Generation != generation || !ReferenceEquals(existing.Run, run))
+                throw new OperationCanceledException("Courier envelope cannot be rebound.");
+            return;
+        }
+        _courierDetachedSources.Add(envelope, new CourierDetachedSource { Session = session, Generation = generation, Run = run });
+    }
+
+    private CourierSession RequireCurrentCourierDetachedSource(InteractionEnvelope envelope)
+    {
+        if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || !_pendingOwnerPhases.Accepting
+            || envelope?.Snapshot?.Identity == null || !_courierDetachedSources.TryGetValue(envelope, out CourierDetachedSource source)
+            || !SaveRuntimeGuard.IsCurrentGeneration(source.Generation)
+            || envelope.Snapshot.Trace.RuntimeGeneration != source.Generation
+            || !ReferenceEquals(GetSessionById(envelope.Snapshot.Identity.SessionId), source.Session)
+            || IsTerminalStage(source.Session) || (source.Run != null && !IsCourierPromptRunCurrent(source.Run)))
+            throw new OperationCanceledException("Courier detached source expired or was replaced.");
+        return source.Session;
+    }
+
+    private InteractionCommitResult CommitCourierDetachedReply(InteractionEnvelope envelope, Func<InteractionCommitResult> commit)
+    {
+        CourierSession session = RequireCurrentCourierDetachedSource(envelope);
+        InteractionCommitResult result;
+        try { result = commit() ?? CreateUnconfirmedCourierCommit("missing_commit_result"); }
+        catch { FailModuleCourierSession(session, "courier.commit_unconfirmed"); throw; }
+        if (result.HistoryWritten) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.ReplyHistory);
+        if (result.Status == InteractionStatus.Succeeded || result.Status == InteractionStatus.Executed)
+            RecordModuleCourierStep(session, CoreCourierAcceptedSteps.Actions);
+        else FailModuleCourierSession(session, "courier.commit_unconfirmed");
+        return result;
+    }
+
     // Weak context keys keep each generation isolated without a static Hero/work-item cache.
     private sealed class CourierDetachedPostprocessOwner
     {
@@ -102,7 +151,7 @@ public sealed partial class CourierDeliveryBehavior
         if (!ReferenceEquals(Instance, this) || envelope?.Snapshot?.Identity?.Channel != InteractionChannel.Courier
             || !SaveRuntimeGuard.IsCurrentGeneration(envelope.Snapshot.Trace.RuntimeGeneration))
             throw new OperationCanceledException("Courier postprocess belongs to an expired owner.");
-        var session = GetSessionById(envelope.Snapshot.Identity.SessionId);
+        var session = RequireCurrentCourierDetachedSource(envelope);
         Hero recipient = session == null ? null : ResolveRecipient(session);
         if (session == null || IsTerminalStage(session) || !session.ReplyGenerationStarted || session.ReplyGenerated
             || recipient == null || recipient.IsDead

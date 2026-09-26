@@ -43,7 +43,7 @@ def main() -> None:
         encoding="utf-8-sig")
 
     core = extractor.declaration(
-        domain, "private void CommitGeneratedReplyActionsAtRecipientCore(")
+        domain, "private bool CommitGeneratedReplyActionsAtRecipientCore(")
     execute = extractor.declaration(
         domain, "private InteractionStatus ExecuteCourierActionPlanForExternal(")
     economy = extractor.declaration(
@@ -53,7 +53,7 @@ def main() -> None:
     reserve = extractor.declaration(
         domain, "private static bool TryReserveCourierEconomyOnly(")
     persist = extractor.declaration(
-        domain, "private void PersistCourierReplyToHistories(")
+        domain, "private bool PersistCourierReplyToHistories(")
     begin = extractor.declaration(
         wait, "private void BeginCourierReplyWaitPause(")
     end = extractor.declaration(
@@ -62,19 +62,19 @@ def main() -> None:
         wait, "private bool HasActiveCourierReplyWait(")
 
     if args.mutate == "drop-delivery-guard":
-        core = core.replace("\t\tif (!session.DeliveryApplied)\n\t\t{\n\t\t\treturn;\n\t\t}\n", "", 1)
+        core = core.replace("\t\tif (!session.DeliveryApplied)\n\t\t{\n\t\t\treturn false;\n\t\t}\n", "", 1)
     elif args.mutate == "release-before-active-check":
         end = end.replace(
             "\t\tif (HasActiveCourierReplyWait())\n\t\t{\n\t\t\treturn;\n\t\t}\n",
             "\t\t_courierReplyWaitTimeLocked = false;\n", 1)
 
     signatures = (
-        "private void CommitGeneratedReplyActionsAtRecipientCore(",
+        "private bool CommitGeneratedReplyActionsAtRecipientCore(",
         "private InteractionStatus ExecuteCourierActionPlanForExternal(",
         "private InteractionStatus GateCourierEconomyActionPlanForExternal(",
         "private static bool IsCourierActionSessionEligible(",
         "private static bool TryReserveCourierEconomyOnly(",
-        "private void PersistCourierReplyToHistories(",
+        "private bool PersistCourierReplyToHistories(",
         "private void ShowCourierReplyWaitPopupAndPause(",
         "private void BeginCourierReplyWaitPause(",
         "private void EndCourierReplyWaitPause(",
@@ -87,14 +87,14 @@ def main() -> None:
     ordered(core,
             "session.PostprocessConsumed",
             "!session.DeliveryApplied",
+            "session.PostprocessConsumed = true",
             "TeamModuleServices.Policy.TryProcessAcceptedAgendaTag",
             "session.ReplyPostprocessedText = text",
-            "session.PostprocessConsumed = true",
             "PersistCourierReplyToHistories(")
     require("!session.DeliveryApplied" in core,
             "Courier domain effects can run before recipient delivery")
     require(core.count("session.PostprocessConsumed = true") == 2,
-            "Courier domain owner lost invalid-target or successful terminal consumption")
+            "Courier domain owner lost invalid-target or pre-handler one-shot reservation")
 
     ordered(execute,
             "snapshot.Identity.Channel != InteractionChannel.Courier",
@@ -119,7 +119,7 @@ def main() -> None:
         require(marker in eligible, "Courier eligibility lost guard: " + marker)
     require("session.PostprocessConsumed = true" in reserve,
             "Courier economy reservation is no longer one-shot")
-    require(persist.count("AppendExternalDialogueHistory(") == 1
+    require(persist.count("CommitCourierDialogueHistory(") == 1
             and persist.count("RecordNativeConversationNpcLineForExternal(") == 1
             and persist.count("NoteCourierReplyForExternal(") == 1,
             "Courier reply history owner must write each downstream history exactly once")

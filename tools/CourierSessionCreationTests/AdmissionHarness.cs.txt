@@ -9,7 +9,7 @@ using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Runtime;
 #pragma warning disable CS0649 // Deliberately minimal game/session fixtures.
 
-static class Program
+static partial class Program
 {
     static int checks, failures;
     static void Check(bool value, string name)
@@ -25,6 +25,15 @@ static class Program
         =>Check(SpinWait.SpinUntil(()=>owner.ModuleCount==0,3000),"module-association-released-"+name);
     static void ModuleCases()
     {
+        foreach(bool missing in new[]{false,true})
+        {
+            var transport=CourierDeliveryBehavior.NewOwner();transport.Open("terminal");using var c=Client();
+            var op=c.SubmitCourier(c.CaptureCourierContextTicket(),"terminal","text");
+            transport.EndTransport(missing);
+            Check(op.Completion.IsCompleted&&op.Snapshot.State==CoreDialogueState.Failed,
+                missing?"missing-transport-settles-operation":"completed-stage-without-receipts-cannot-hang-or-succeed");
+            transport.Retire();Released(transport,"terminal");
+        }
         var owner=CourierDeliveryBehavior.NewOwner();owner.Open("module");
         using(var client=Client())
         {
@@ -240,11 +249,14 @@ static class Program
             Check(CourierDeliveryBehavior.IssueModuleCourierTicket("a")==null,"unfinished-draft-cannot-be-captured");
         }
 #endif
+#if COURIER_LIFECYCLE
+        LifecycleCases();
+#endif
         Console.WriteLine($"CourierDraftAdmission checks={checks} failures={failures}; production UI callbacks; fixture game dispatch; LIVE=NOT_RUN");
         return failures == 0 ? 0 : 1;
     }
 }
-sealed class Hero { public static Hero MainHero=new(); public string Name; public bool IsDead, InParty; public bool IsKnownToPlayer=true; public CharacterObject CharacterObject=new(){IsHero=true}; }
+sealed partial class Hero { public static Hero MainHero=new(); public string Name; public bool IsDead, InParty; public bool IsKnownToPlayer=true; public CharacterObject CharacterObject=new(){IsHero=true}; }
 sealed class CharacterObject { public bool IsPlayerCharacter,IsHero; public Hero HeroObject; }
 sealed class TroopRosterElement { public CharacterObject Character; public int Number,WoundedNumber,Xp; }
 sealed class TroopRoster
@@ -254,19 +266,22 @@ sealed class TroopRoster
     public int FindIndexOfTroop(CharacterObject character)=>Entries.FindIndex(x=>x.Character==character);
     public TroopRosterElement GetElementCopyAtIndex(int index)=>Entries[index];
 }
-sealed class MobileParty { public static MobileParty MainParty; public TroopRoster MemberRoster; }
+sealed partial class MobileParty { public static MobileParty MainParty; public TroopRoster MemberRoster=new(); public bool IsActive=true,IsCurrentlyUsedByAQuest; public void SetPartyUsedByQuest(bool value)=>IsCurrentlyUsedByAQuest=value; }
+static class DestroyPartyAction { public static void Apply(object source,MobileParty party){ if (!CourierFixture.FailCleanup) party.IsActive=false; } }
+enum CourierStage { Outbound,Returning,Completed,Destroyed,GeneratingReply }
 sealed class Settlement { public string StringId; }
 sealed class PartyEntry { public Settlement SourceSettlement; }
-sealed class CourierCargoEntry { public string Kind,Id,SourceSettlementId; public int Amount; }
+sealed class CourierCargoEntry { public string Kind,Id,SourceSettlementId; public int Amount; public bool Delivered; }
 sealed class CourierTradeOption { public string Kind,Id; public int AvailableAmount; public PartyEntry PartyEntry; }
 enum CourierPayloadMode { Normal,Give,Show,GiveTroops,GivePrisoners,GiveSettlements }
-static class MyBehavior
+static partial class MyBehavior
 {
     public static bool LordEligible=true,LeaderEligible=true;
     public static bool IsPartyTransferLordEligibleForExternal(Hero h,CharacterObject c)=>LordEligible;
     public static bool IsSettlementTransferLeaderEligibleForExternal(Hero h,CharacterObject c)=>LeaderEligible;
+    public static void AppendExternalDialogueHistory(Hero hero,string player,string npc,string fact) { }
 }
-static class ShoutBehavior
+static partial class ShoutBehavior
 {
     internal static string IssueModuleSceneTicket(string client)=>"scene-ticket";
     internal static void RevokeModuleSceneTickets(string client) { }
@@ -293,7 +308,7 @@ static class CourierLetterInputPopup
     internal static bool Show(string a, string b, string c, string d, Action<string> send, Action cancel)
     { if (UseFallback) return false; Last=new(send,cancel); return true; }
 }
-static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long value)=>Generation==value; }
+static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsStale(long generation,string reason)=>!IsCurrentGeneration(generation); internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long value)=>Generation==value; }
 static class TWParallel { internal static bool OnMain=true; internal static int MainThreadId; internal static bool IsMainThread()=>OnMain&&MainThreadId==Environment.CurrentManagedThreadId; }
 sealed partial class CourierDeliveryBehavior
 {
@@ -316,6 +331,8 @@ sealed partial class CourierDeliveryBehavior
     internal void Retire()=>_pendingOwnerPhases.Seal();
     internal static void Pump(){while(MainThreadActions.TryDequeue(out var action))action();}
 #if COURIER_DRAFT_TICKETS
+    internal void EndTransport(bool missing)
+    {var session=_sessions.Values.Single();if(missing)HandleCourierMissing(session);else CompleteAndDestroyCourier(session,new MobileParty());}
     internal int ModuleCount { get { lock(_moduleCourierGate)return _moduleCourierRequests.Count; } }
     internal int TicketCount=>_courierDraftTickets.Count;
     internal void MarkUnready()=>_pendingFlow.ReadyToSend=false;
@@ -377,13 +394,22 @@ sealed partial class CourierDeliveryBehavior
     private bool HasActiveCourierForHero(Hero h)=>ActiveCourier;
     private static List<TroopRosterElement> SnapshotRoster(TroopRoster roster)=>roster.Entries.ToList();
     private List<CourierTradeOption> BuildCourierTradeOptions(PendingCourierFlow flow,CourierPayloadMode mode){DuringStockRead?.Invoke();return _options;}
-    private sealed class CourierSession { public string Id,RecipientHeroId,CourierPartyId,PayloadMode,RecipientName; public List<object> Entries=new(); }
-    private static bool IsInboundToPlayer(CourierSession session)=>false;
+    private sealed partial class CourierSession { public string Id,RecipientHeroId,CourierPartyId,PayloadMode,RecipientName,Stage,TemporaryShipHullId; public bool TemporaryShipCreated,Inbound; public List<CourierCargoEntry> Entries=new(); }
+    private static bool IsInboundToPlayer(CourierSession session)=>session.Inbound;
     private CourierSession CreateCourierSession(PendingCourierFlow flow,string text)
-    { Sends++;LastRecipient=flow.Recipient.Name;AfterCreate?.Invoke();if(ThrowAfterCreate)throw new InvalidOperationException("fixture partial dispatch");return new(){Id=Guid.NewGuid().ToString(),RecipientName=LastRecipient}; }
+    { Sends++;LastRecipient=flow.Recipient.Name;AfterCreate?.Invoke();if(ThrowAfterCreate)throw new InvalidOperationException("fixture partial dispatch");return new(){Id=Guid.NewGuid().ToString(),RecipientName=LastRecipient,Entries=flow.SelectedEntries.Select(x=>new CourierCargoEntry{Kind=x.Kind,Id=x.Id,SourceSettlementId=x.SourceSettlementId,Amount=x.Amount}).ToList()}; }
     private void AddCourierRuntimeIndex(CourierSession session) { }
     private void StartCourierReplyGeneration(CourierSession session,string reason) { }
     private void ProcessSession(CourierSession session) { }
+    private void RemoveCourierRuntimeIndex(CourierSession session) { }
+    private void UntrackCourierMapVisual(MobileParty party,string reason) { }
+    private void DestroyCourierTemporaryShips(CourierSession session,MobileParty party,string reason) { }
+    private void HandleInboundCourierMissing(CourierSession session) { }
+    private void DisplayCourierDestroyedStatus(CourierSession session,string reason) { }
+    private Hero ResolveRecipient(CourierSession session)=>new(){Name=session.RecipientName};
+    private void EndCourierReplyWaitPause(CourierSession session,string reason) { }
     private static void Log(string message) { }
 @@DECLARATIONS@@
 }
+
+static class CourierFixture { internal static bool FailCleanup; }

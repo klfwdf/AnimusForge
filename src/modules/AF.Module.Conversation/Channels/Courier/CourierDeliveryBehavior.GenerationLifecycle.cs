@@ -38,37 +38,56 @@ namespace AnimusForge;
 
 public sealed partial class CourierDeliveryBehavior
 {
+	private readonly HashSet<CourierSession> _activeCourierDeliveries = new HashSet<CourierSession>();
 	private void DeliverToRecipient(CourierSession session, MobileParty courier, Hero recipient)
 	{
-		if (session == null || courier == null || recipient == null)
+		if (session == null || courier == null || recipient == null || IsTerminalStage(session) || !_activeCourierDeliveries.Add(session))
 		{
 			return;
 		}
-		if (!session.DeliveryApplied)
+		try
 		{
-			ApplyDeliveryPayload(session, courier, recipient);
-			session.DeliveryApplied = true;
-			session.DeliveryFactText = BuildDeliveryFactText(session, delivered: true, recipient, commitPlayerCraftInspection: true);
-			string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
-			if (string.IsNullOrWhiteSpace(playerName))
+			if (!session.DeliveryApplied)
 			{
-				playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+				RecordModuleCourierStep(session, CoreCourierAcceptedSteps.Arrived);
+				// Reserve before the first transfer; a reentrant arrival or partial exception cannot replay cargo.
+				session.DeliveryApplied = true;
+				try
+				{
+					ApplyDeliveryPayload(session, courier, recipient);
+					bool payloadAccepted = ConfirmModuleCourierPayload(session);
+					session.DeliveryFactText = BuildDeliveryFactText(session, delivered: true, recipient, commitPlayerCraftInspection: true);
+					string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
+					if (string.IsNullOrWhiteSpace(playerName))
+					{
+						playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+					}
+					bool historyAccepted = CommitCourierDialogueHistory(recipient, "【来信】" + playerName + "通过信使写道：" + session.LetterText, null, session.DeliveryFactText);
+					if (historyAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.DeliveryHistory);
+					if (!payloadAccepted || !historyAccepted)
+					FailModuleCourierSession(session, payloadAccepted ? "courier.history_unconfirmed" : "courier.payload_unconfirmed");
+					Log("delivered session=" + session.Id + " recipient=" + SafeHeroId(recipient) + " factLen=" + (session.DeliveryFactText ?? "").Length);
+				}
+				catch
+				{
+					FailModuleCourierSession(session, "courier.delivery_unconfirmed");
+					throw;
+				}
 			}
-			MyBehavior.AppendExternalDialogueHistory(recipient, "【来信】" + playerName + "通过信使写道：" + session.LetterText, null, session.DeliveryFactText);
-			Log("delivered session=" + session.Id + " recipient=" + SafeHeroId(recipient) + " factLen=" + (session.DeliveryFactText ?? "").Length);
+			if (!session.ReplyGenerated)
+			{
+				session.Stage = CourierStage.GeneratingReply.ToString();
+				ShowCourierReplyWaitPopupAndPause(session, recipient);
+				StartCourierReplyGeneration(session, "delivered");
+				MaintainReplyWaitAtRecipient(session, courier, recipient);
+				return;
+			}
+			CommitGeneratedReplyAtRecipient(session, recipient);
+			EndCourierReplyWaitPause(session, "delivered_reply_ready");
+			session.Stage = CourierStage.Returning.ToString();
+			RouteToSender(session, courier);
 		}
-		if (!session.ReplyGenerated)
-		{
-			session.Stage = CourierStage.GeneratingReply.ToString();
-			ShowCourierReplyWaitPopupAndPause(session, recipient);
-			StartCourierReplyGeneration(session, "delivered");
-			MaintainReplyWaitAtRecipient(session, courier, recipient);
-			return;
-		}
-		CommitGeneratedReplyAtRecipient(session, recipient);
-		EndCourierReplyWaitPause(session, "delivered_reply_ready");
-		session.Stage = CourierStage.Returning.ToString();
-		RouteToSender(session, courier);
+		finally { _activeCourierDeliveries.Remove(session); }
 	}
 
 	private void StartCourierReplyGeneration(CourierSession session, string reason)
@@ -175,35 +194,38 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			CourierPreparationAdmission admission = await RunCourierOwnerPhaseAsync(runtimeGeneration,
 				"courier_reply_admission", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);
-			if (admission == null) return;
+			if (admission == null) { QueueCourierPreparationFailure(promptRun); return; }
 			CourierSession session = admission.Session;
 			Hero recipient = admission.Participant;
-			if (!await EnsureCourierPersonaContextReadyAsync(recipient, "reply", sessionId, session, runtimeGeneration).ConfigureAwait(false)) return;
+			if (!await EnsureCourierPersonaContextReadyAsync(recipient, "reply", sessionId, session, runtimeGeneration).ConfigureAwait(false)) { QueueCourierPreparationFailure(promptRun); return; }
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_reply_persona_ready"))
 			{
 				return;
 			}
 			CourierPreparedHistory preparedHistory = await PrepareCourierHistoryAsync(sessionId, session, recipient, false, runtimeGeneration).ConfigureAwait(false);
-			if (preparedHistory == null) return;
+			if (preparedHistory == null) { QueueCourierPreparationFailure(promptRun); return; }
 			CourierReplyGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, recipient, false, null, runtimeGeneration, preparedHistory, promptRun, BuildReplyRequestFromPreparedPrompt).ConfigureAwait(false);
-			if (request == null) return;
+			if (request == null) { QueueCourierPreparationFailure(promptRun); return; }
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_reply_preflight");
 			// Preflight replies must retain their deferred, arrival-time action commit.
-			if (IsCourierBridgeEnabled() && session.DeliveryApplied)
+			if (IsCourierBridgeEnabled() && request.DeliveryAppliedAtCapture)
 			{
 				bool detachedSubmitted = false;
 				bool legacyFallbackStarted = false;
 				try
 				{
 					PromptPackage preparedMainPrompt = LegacyPromptPackageAdapter.FromLegacyMessages(request.Messages, MainReplyMaxTokens, "legacy-courier-reply");
+					RuntimeConfigSnapshot configuration = null;
 					InteractionEnvelope preparedEnvelope = await RunCourierOwnerPhaseAsync(runtimeGeneration,
 						"reply_capture_prepared", () =>
 						{
-							CourierSession current = GetSessionById(request.SessionId);
+							if (!IsCourierReplyRequestCurrent(request)) throw new OperationCanceledException("Courier source was replaced.");
+							CourierSession current = request.SourceRun.Session;
 							Hero currentRecipient = current == null ? null : ResolveRecipient(current);
 							if (current == null || IsTerminalStage(current) || currentRecipient == null || currentRecipient.IsDead
 								|| !string.Equals(SafeHeroId(currentRecipient), request.RecipientHeroId, StringComparison.Ordinal))
 								throw new OperationCanceledException("Courier prepared request expired.");
+							configuration = CaptureCourierReplyRefactorConfigurationForExternal();
 							return CapturePreparedCourierReplyEnvelope(request, currentRecipient, preparedMainPrompt);
 						}, CancellationToken.None).ConfigureAwait(false);
 					LegacyInteractionPipelinePorts ports = CreateCourierDetachedPorts(LegacyActionTagCatalog.DefaultAllowedTagFamilies, true, 64, preparedMainPrompt);
@@ -212,7 +234,6 @@ public sealed partial class CourierDeliveryBehavior
 					{
 						if (facade != null)
 						{
-							RuntimeConfigSnapshot configuration = CaptureCourierReplyRefactorConfigurationForExternal();
 							string moduleId = LegacyInteractionSnapshotAdapters.NativeConversationModuleId;
 							string providerId = configuration?.Providers?.Keys?.FirstOrDefault() ?? LegacyInteractionSnapshotAdapters.LegacyShoutNetworkProviderId;
 							detachedSubmitted = true;
@@ -222,16 +243,17 @@ public sealed partial class CourierDeliveryBehavior
 								moduleId,
 								providerId,
 								sessionId,
-								session.LetterText ?? "",
+								request.LetterText ?? "",
 								async () =>
 								{
 									legacyFallbackStarted = true;
 									await GenerateNpcReplyAsync(request).ConfigureAwait(false);
-									return session.ReplyText ?? "";
+									return string.Empty;
 								},
 								CancellationToken.None).ConfigureAwait(false);
 							if (hostResult?.Status == InteractionStatus.CancelledAsStale)
 							{
+								EnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailCourierReplyRequest(request, "reply_detached_cancelled"), "reply_detached_cancelled");
 								return;
 							}
 							// The legacy callback may have only queued its main-thread completion so far.
@@ -243,12 +265,13 @@ public sealed partial class CourierDeliveryBehavior
 							{
 								EnqueueMainThreadActionForGeneration(runtimeGeneration, () =>
 								{
-									FinalizeCourierReplyGenerationOnMainThread(request, hostResult.VisibleReply, session.ReplyPostprocessedText, " [detached_refactor]");
+									if (IsCourierReplyRequestCurrent(request))
+										FinalizeCourierReplyGenerationOnMainThread(request, hostResult.VisibleReply, request.SourceRun.Session.ReplyPostprocessedText, " [detached_refactor]");
 								}, "reply_detached_finalized");
 								return;
 							}
 							EnqueueMainThreadActionForGeneration(runtimeGeneration,
-								() => FailDetachedCourierReplyOnMainThread(sessionId, runtimeGeneration, hostResult?.ErrorCode ?? "missing_host_result"),
+								() => { if (IsCourierReplyRequestCurrent(request)) FailDetachedCourierReplyOnMainThread(sessionId, runtimeGeneration, hostResult?.ErrorCode ?? "missing_host_result"); },
 								"reply_detached_stopped");
 							return;
 						}
@@ -262,7 +285,7 @@ public sealed partial class CourierDeliveryBehavior
 						if (!legacyFallbackStarted)
 						{
 							EnqueueMainThreadActionForGeneration(runtimeGeneration,
-								() => FailDetachedCourierReplyOnMainThread(sessionId, runtimeGeneration, "host_exception_" + ex.GetType().Name),
+								() => { if (IsCourierReplyRequestCurrent(request)) FailDetachedCourierReplyOnMainThread(sessionId, runtimeGeneration, "host_exception_" + ex.GetType().Name); },
 								"reply_detached_exception");
 						}
 						return;
@@ -303,6 +326,8 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return;
 			}
+			if (!await RunCourierOwnerPhaseAsync(request.RuntimeGeneration, "reply_network_admission",
+				() => IsCourierReplyRequestCurrent(request), CancellationToken.None).ConfigureAwait(false)) return;
 			string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(request.Messages, MainReplyMaxTokens);
 			EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => CompleteCourierReplyGenerationOnMainThread(request, output), "reply_generated");
 		}
@@ -311,7 +336,7 @@ public sealed partial class CourierDeliveryBehavior
 			Log("generate reply failed session=" + request?.SessionId + " error=" + ex);
 			if (request != null)
 			{
-				EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => FailCourierReplyGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, "reply_generation_failed"), "reply_generation_failed");
+				EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => FailCourierReplyRequest(request, "reply_generation_failed"), "reply_generation_failed");
 			}
 		}
 	}
@@ -328,7 +353,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return;
 			}
-			CourierSession session = GetSessionById(request.SessionId);
+			CourierSession session = IsCourierReplyRequestCurrent(request) ? request.SourceRun.Session : null;
 			if (session == null || IsTerminalStage(session))
 			{
 				return;
@@ -336,6 +361,7 @@ public sealed partial class CourierDeliveryBehavior
 			Hero recipient = ResolveRecipient(session);
 			if (recipient == null || recipient.IsDead)
 			{
+				FailModuleCourierSession(session, "courier.recipient_unavailable");
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
 				ProcessSessionById(request.SessionId, "reply_generated_recipient_invalid");
@@ -357,6 +383,7 @@ public sealed partial class CourierDeliveryBehavior
 				session.ReplyPostprocessedText = "";
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
+				FailModuleCourierSession(session, "courier.reply_empty");
 				Log("npc no reply session=" + session.Id);
 				ProcessSessionById(request.SessionId, "reply_generated_empty");
 				return;
@@ -410,6 +437,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			catch (Exception ex)
 			{
+				FailModuleCourierSession(session, "courier.postprocess_failed");
 				Log("courier postprocess failed session=" + session.Id + " error=" + ex);
 				FinalizeCourierReplyGenerationOnMainThread(request, reply, reply, completionLogDetails);
 				return;
@@ -418,7 +446,7 @@ public sealed partial class CourierDeliveryBehavior
 		catch (Exception ex)
 		{
 			Log("complete reply failed session=" + request.SessionId + " error=" + ex);
-			FailCourierReplyGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, "reply_generation_failed");
+			FailCourierReplyRequest(request, "reply_generation_failed");
 		}
 	}
 
@@ -453,7 +481,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		try
 		{
-			CourierSession session = GetSessionById(request.SessionId);
+			CourierSession session = IsCourierReplyRequestCurrent(request) ? request.SourceRun.Session : null;
 			if (session == null || IsTerminalStage(session))
 			{
 				return;
@@ -461,6 +489,7 @@ public sealed partial class CourierDeliveryBehavior
 			Hero recipient = ResolveRecipient(session);
 			if (recipient == null || recipient.IsDead)
 			{
+				FailModuleCourierSession(session, "courier.recipient_unavailable");
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
 				ProcessSessionById(request.SessionId, "reply_generated_recipient_invalid");
@@ -473,6 +502,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			else
 			{
+				FailModuleCourierSession(session, "courier.postprocess_failed");
 				Logger.Log("CourierDelivery", "[UnifiedPostprocess] 调用失败: " + error);
 				postprocessed = workItem.FallbackText;
 			}
@@ -481,7 +511,7 @@ public sealed partial class CourierDeliveryBehavior
 		catch (Exception ex)
 		{
 			Log("complete courier postprocess failed session=" + request.SessionId + " error=" + ex);
-			FailCourierReplyGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, "reply_postprocess_failed");
+			FailCourierReplyRequest(request, "reply_postprocess_failed");
 		}
 	}
 
@@ -491,12 +521,14 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			return;
 		}
-		CourierSession session = GetSessionById(request.SessionId);
+		CourierSession session = IsCourierReplyRequestCurrent(request) ? request.SourceRun.Session : null;
 		if (session == null || IsTerminalStage(session))
 		{
 			return;
 		}
-		string replyText = reply ?? "";
+		string replyText = CleanNpcReply(LegacyActionTagParser.RemoveProtocolTags(reply ?? "", _ => true));
+		if (string.IsNullOrWhiteSpace(replyText)) FailModuleCourierSession(session, "courier.reply_empty");
+		else RecordModuleCourierStep(session, CoreCourierAcceptedSteps.ReplyPrepared);
 		session.ReplyText = replyText;
 		session.ReplyPostprocessedText = string.IsNullOrWhiteSpace(postprocessed) ? replyText : postprocessed;
 		session.ReplyGenerated = true;
@@ -513,11 +545,12 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		try
 		{
-			CourierSession session = GetSessionById(request.SessionId);
+			CourierSession session = IsCourierReplyRequestCurrent(request) ? request.SourceRun.Session : null;
 			if (session == null || IsTerminalStage(session))
 			{
 				return false;
 			}
+			int retryChoice = 0;
 			// 此窗口仅用于选择重试或放弃；完整接口错误改由左下角消息和日志承载。
 			NonBlockingErrorReport.Show("信使回信生成失败", "信使回信正文生成失败：\n\n" + (error ?? "未知错误"));
 			InformationManager.ShowInquiry(new InquiryData(
@@ -529,7 +562,8 @@ public sealed partial class CourierDeliveryBehavior
 				"放弃",
 				delegate
 				{
-					CourierSession retrySession = GetSessionById(request.SessionId);
+					if (Interlocked.CompareExchange(ref retryChoice, 1, 0) != 0) return;
+					CourierSession retrySession = IsCourierReplyRequestCurrent(request) ? request.SourceRun.Session : null;
 					if (retrySession == null || IsTerminalStage(retrySession))
 					{
 						return;
@@ -541,7 +575,8 @@ public sealed partial class CourierDeliveryBehavior
 				},
 				delegate
 				{
-					FailCourierReplyGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, "reply_generation_abandoned_after_api_error");
+					if (Interlocked.CompareExchange(ref retryChoice, 1, 0) != 0) return;
+					FailCourierReplyRequest(request, "reply_generation_abandoned_after_api_error");
 				}),
 				pauseGameActiveState: true,
 				prioritize: true);
@@ -588,6 +623,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return;
 			}
+			FailModuleCourierSession(session, "courier.generation_failed");
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
 			ProcessSessionById(sessionId, string.IsNullOrWhiteSpace(reason) ? "reply_generation_failed" : reason);

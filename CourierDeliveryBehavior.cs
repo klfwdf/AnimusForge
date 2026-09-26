@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -269,6 +269,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private sealed class CourierReplyGenerationRequest
 	{
+		public CourierPromptRun SourceRun;
+		public bool DeliveryAppliedAtCapture;
 		public string SessionId;
 		public long RuntimeGeneration;
 		public string RecipientHeroId;
@@ -539,8 +541,18 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		Task<DetachedInteractionHostResult> execution = await RunCourierOwnerPhaseAsync(
 			SaveRuntimeGuard.CaptureGeneration(), "reply_host_start", () =>
 		{
+		CourierSession source = GetSessionById(sessionId);
+		CourierPromptRun sourceRun = null;
+		if (source != null) _courierPromptRuns.TryGetValue(source, out sourceRun);
+		long sourceGeneration = SaveRuntimeGuard.CaptureGeneration();
 		DetachedInteractionHost host = new DetachedInteractionHost(
-			facade.Capture,
+			text =>
+			{
+				InteractionEnvelope envelope = facade.Capture(text);
+				BindCourierDetachedSource(envelope, source, sourceGeneration, sourceRun);
+				RequireCurrentCourierDetachedSource(envelope);
+				return envelope;
+			},
 			facade.GenerateAsync,
 			facade.Commit);
 		return host.ExecuteAsync(
@@ -551,7 +563,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			envelope => CreateCourierReplyActionPlanExecutorForExternal(sessionId),
 			CreateCourierMemoryFacadeForExternal,
 			(envelope, commit) => DispatchCourierRefactorCommitAsync(
-				commit,
+				() => CommitCourierDetachedReply(envelope, commit),
 				envelope?.Snapshot?.Identity?.SubjectId ?? "unknown",
 				sessionId),
 			fallbackToLegacy,
@@ -667,7 +679,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			["courier_request_history"] = request.HistoryText ?? string.Empty,
 			["courier_request_entities"] = request.EntityPostprocessContext ?? string.Empty
 		};
-		return LegacyInteractionSnapshotAdapters.CaptureCourierFromPromptPackage(
+		InteractionEnvelope envelope = LegacyInteractionSnapshotAdapters.CaptureCourierFromPromptPackage(
 			recipient,
 			request.LetterText,
 			request.SessionId,
@@ -675,6 +687,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			prompt,
 			null,
 			facts);
+		BindCourierDetachedSource(envelope, request.SourceRun?.Session ?? GetSessionById(request.SessionId), request.RuntimeGeneration, request.SourceRun);
+		return envelope;
 	}
 
 	/// <summary>

@@ -20,11 +20,11 @@ message_source=ex.courier_source(None)
 message_builders='\n'.join(ex.declaration(message_source,marker) for marker in message_markers)
 for name in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
  message_builders=message_builders.replace('private static List<object> '+name+'(', 'private static List<object> '+name+'Production(',1)
-base=base.replace('@@MESSAGE_BUILDERS@@',message_builders)
+base=base.replace('@@MESSAGE_BUILDERS@@',message_builders).replace('@@FINALIZE_REPLY@@','')
 base=base.replace('  private CourierPromptRun TestRun;\n  internal void ReserveTestRun()=>TestRun=BeginCourierPromptRun(Session,1);','')
 base=base.replace(ex.declaration(base,'internal async Task<string> Start('),'')
-base=base.replace('internal static long Generation=1;','internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsStale(long g,string s)=>!IsCurrentGeneration(g);')
-base=base.replace('ReplyGenerationStarted=true,PostprocessConsumed;internal string ReplyText="",ReplyPostprocessedText="";','ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied=true,ReplyWaitPopupShown=true;internal string Stage="GeneratingReply",ReplyText="",ReplyPostprocessedText="",RecipientWaitReason="";')
+base=base.replace('internal static long Generation=1;','internal static long Generation=1; internal static long CaptureGeneration()=>Generation;')
+base=base.replace('ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied;internal string ReplyText="",ReplyPostprocessedText="";','ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied=true,ReplyWaitPopupShown=true;internal string Stage="GeneratingReply",ReplyText="",ReplyPostprocessedText="",RecipientWaitReason="";')
 base=base.replace('static ManualResetEventSlim Entered=new(),Release=new(true);','static ManualResetEventSlim Entered=new(),Release=new(true);')
 # The held provider snapshots its release event before a replacement Start can install the new test request.
 base=base.replace('Probe.Entered.Set();\n   if(!Probe.Release.Wait(5000))','var release=Probe.Release;Probe.Entered.Set();\n   if(!release.Wait(5000))')
@@ -37,7 +37,7 @@ base=base.replace(ex.declaration(base,'internal string Sync('),'')
 methods='\n'.join(ex.declaration(courier,sig) for sig in ['private void StartCourierReplyGeneration(','private void StartInboundLetterGeneration(','private void BeginCourierReplyGenerationOnMainThread(','private void BeginInboundLetterGenerationOnMainThread(','private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(','private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(','private void FailCourierReplyGenerationOnMainThread(','private void FailInboundLetterGenerationOnMainThread(','private void ProcessInboundToPlayerSession('])
 # Observability only: retain the actual background task handle, without replacing its delegate.
 methods=methods.replace('_ = Task.Run(() => PrepareAndGenerate','Liveness.Background = Task.Run(() => PrepareAndGenerate')
-process=ex.declaration(courier,'private void ProcessSession(')
+process=ex.declaration(courier,'private void ProcessSessionCore(' if 'private void ProcessSessionCore(' in courier else 'private void ProcessSession(')
 replytick=ex.declaration(process,'if (stage == CourierStage.GeneratingReply)')
 deliver=ex.declaration(courier,'private void DeliverInboundLetterToPlayer(');cut=deliver.index('\n\t\tstring letter = (session.LetterText')
 inboundprefix=deliver[:cut]+'\n\t\tLiveness.Deliveries++;\n\t}\n'
@@ -46,7 +46,7 @@ if a.mutate=='ignore-run':partial=partial.replace('&& _courierPromptRuns.TryGetV
 if a.mutate=='keep-stale-tags':
  partial=partial.replace('input.Session.ReplyText = string.Empty;','').replace('input.Session.ReplyPostprocessedText = string.Empty;','').replace('input.Session.PostprocessConsumed = true;','')
 if a.mutate=='old-fallback':partial=partial.replace('input.Session.InboundFallbackLetter, "inbound_prompt_source_changed"','input.FallbackLetter, "inbound_prompt_source_changed"')
-commit=ex.declaration(courier,'private void CommitGeneratedReplyActionsAtRecipientCore(');commit=commit[:commit.index('\n\t\tif (recipient == null')]+'\n\t\tif (text.Contains("[ACTION:")) Liveness.StaleTagEffects++;\n\t}\n'
+commit=ex.declaration(courier,'private void CommitGeneratedReplyActionsAtRecipientCore(' if a.old else 'private bool CommitGeneratedReplyActionsAtRecipientCore(');commit=commit[:commit.index('\n\t\tif (recipient == null')]+'\n\t\tif (text.Contains("[ACTION:")) Liveness.StaleTagEffects++;\n'+('' if a.old else '\t\treturn true;\n')+'\t}\n'
 commit+='\n\tprivate void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient, bool persistHistory = true) => CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);\n'
 hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@REPLY_TICK@@',replytick).replace('@@INBOUND_PREFIX@@',inboundprefix).replace('@@COMMIT_GUARD@@',commit)
 out=HERE/'.generated'/('liveness-old' if a.old else 'liveness-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)

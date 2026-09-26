@@ -70,7 +70,10 @@ assert old_messages==new_messages, 'Courier final message builders changed since
 message_builders='\n'.join(new_messages)
 for method in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
  message_builders=message_builders.replace('private static List<object> '+method+'(', 'private static List<object> '+method+'Production(',1)
-reqs='\n'.join(ex.declaration(old_host,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
+reqs='\n'.join(ex.declaration(current_host,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
+# Compare every historical prompt field, excluding only the new runtime-only source handle and
+# delivery snapshot. They are validated by the lifecycle tests, not prompt JSON parity.
+reqs=reqs.replace('public CourierPromptRun SourceRun;', '[System.Text.Json.Serialization.JsonIgnore] public CourierPromptRun SourceRun;').replace('public bool DeliveryAppliedAtCapture;', '[System.Text.Json.Serialization.JsonIgnore] public bool DeliveryAppliedAtCapture;')
 generation=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs').read_text(encoding='utf-8-sig')
 finalize=ex.declaration(generation,'private void FinalizeCourierReplyGenerationOnMainThread(')
 if args.mutate=='preflight-implies-delivery':

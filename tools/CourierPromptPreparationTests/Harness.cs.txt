@@ -139,10 +139,18 @@ namespace AnimusForge {
   private static Hero ResolveRecipient(CourierSession s){Probe.MainOnly();return s.Participant;}
   private static string SafeHeroId(Hero hero){Probe.MainOnly();return hero.Id;}
   private static void Log(string text){}
+  private void FailModuleCourierSession(CourierSession session,string reason){} // Operation receipts are exercised by CourierSessionCreationTests.
+#if !LIVENESS
+  private enum CoreCourierAcceptedSteps { ReplyPrepared }
+  private void RecordModuleCourierStep(CourierSession s,CoreCourierAcceptedSteps step){}
+  private static string CleanNpcReply(string text)=>text;
+  private static class LegacyActionTagParser { internal static string RemoveProtocolTags(string text,Func<string,bool> predicate)=>text; }
+  private static void EnqueueMainThreadActionForGeneration(long g,Action action,string source)=>MainThreadActions.Enqueue(()=>{if(SaveRuntimeGuard.IsCurrentGeneration(g))action();});
   internal int ProcessedSessionsForTest;
   private void ProcessSessionById(string id,string reason){Probe.MainOnly();ProcessedSessionsForTest++;}
-  internal void FinalizePreflightForTest()=>FinalizeCourierReplyGenerationOnMainThread(new CourierReplyGenerationRequest{SessionId=Session.Id,RuntimeGeneration=SaveRuntimeGuard.Generation},"preflight reply","postprocessed reply","");
+  internal void FinalizePreflightForTest()=>FinalizeCourierReplyGenerationOnMainThread(new CourierReplyGenerationRequest{SessionId=Session.Id,RuntimeGeneration=SaveRuntimeGuard.Generation,SourceRun=BeginCourierPromptRun(Session,SaveRuntimeGuard.Generation)},"preflight reply","postprocessed reply","");
   @@FINALIZE_REPLY@@
+#endif
 #if !LIVENESS
   private void FailCourierReplyGenerationOnMainThread(string id,long generation,string reason){Probe.MainOnly();Session.ReplyGenerated=true;Session.ReplyGenerationStarted=false;}
   private void FailInboundLetterGenerationOnMainThread(string id,long generation,string fallback,string reason){Probe.MainOnly();Session.LetterText=string.IsNullOrWhiteSpace(fallback)?Session.LetterText:fallback;Session.ReplyGenerated=true;Session.ReplyGenerationStarted=false;}
@@ -181,7 +189,7 @@ namespace AnimusForge {
 }
 internal static class Program {
  static int checks,cases;static void Check(bool ok,string name){checks++;if(!ok)throw new Exception("FAIL "+name);}
- static void PreflightDoesNotDeliver(){var session=new AnimusForge.CourierDeliveryBehavior.CourierSession();var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};owner.FinalizePreflightForTest();Check(session.ReplyGenerated&&session.ReplyText=="preflight reply","real preflight result recorded");Check(!session.DeliveryApplied&&!session.PostprocessConsumed&&owner.ProcessedSessionsForTest==1,"preflight must not imply delivery or action commit");}
+ static void PreflightDoesNotDeliver(){var session=new AnimusForge.CourierDeliveryBehavior.CourierSession();var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};AnimusForge.CourierDeliveryBehavior.Instance=owner;owner.FinalizePreflightForTest();Check(session.ReplyGenerated&&session.ReplyText=="preflight reply","real preflight result recorded");Check(!session.DeliveryApplied&&!session.PostprocessConsumed&&owner.ProcessedSessionsForTest==1,"preflight must not imply delivery or action commit");}
  static IEnumerable<string> Strings(JsonElement value){if(value.ValueKind==JsonValueKind.String){yield return value.GetString();yield break;}if(value.ValueKind==JsonValueKind.Object){foreach(var property in value.EnumerateObject())foreach(string text in Strings(property.Value))yield return text;}else if(value.ValueKind==JsonValueKind.Array){foreach(var item in value.EnumerateArray())foreach(string text in Strings(item))yield return text;}}
  static void PumpUntil(Func<bool> done,bool pump=true){var watch=Stopwatch.StartNew();while(!done()){if(pump)while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>5000)throw new Exception("fixture wait timeout");Thread.Sleep(1);}}
  static void Case(bool inbound,string scenario){
