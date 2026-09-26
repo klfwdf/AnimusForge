@@ -77,9 +77,10 @@ static class Program
         {
             var ticket=right.CaptureCourierContextTicket();
             var rejected=wrong.SubmitCourier(ticket,"wrong","text");
-            Check(rejected.Completion.GetAwaiter().GetResult().State==CoreDialogueState.Rejected&&owner.Sends==0,"module-wrong-client-no-effects");
+            Check(rejected.Snapshot.State==CoreDialogueState.Rejected&&owner.Sends==0,"module-wrong-client-no-effects");
             right.Dispose();
             Check(right.CaptureCourierContextTicket()==null&&right.SubmitCourier(ticket,"new","text").Snapshot.ReasonCode=="dialogue.client_disposed"&&owner.TicketCount==0,"disposed-client-revokes-ticket-and-new-submits");
+            owner.Retire();
             Released(owner,"wrong-client");
         }
         using(var client=Client())

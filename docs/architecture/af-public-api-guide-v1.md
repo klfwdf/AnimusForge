@@ -4,6 +4,8 @@
 
 **目录查询、Native 与 Scene 提交/结果/开始前取消已接线；Courier 尚未开放。J14 整体仍需 Courier 与三渠道最终收口。**
 
+J14b1 已实现内部草稿票据及 UI/内部提交共用的一次派出准入，尚不是子 MOD 可调用能力。运输阶段、必要动作/历史和回信交付回执接齐并通过外部消费者验证之前，V1 保持 `CourierSubmit=NotSupported`；不能将内部派出后的 Running 当完成。
+
 当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。仅目录变更，`AnimusForge.Api.V1` namespace 与外部 ABI 不变。
 
 | 能力 | 状态 | 实际含义 |
