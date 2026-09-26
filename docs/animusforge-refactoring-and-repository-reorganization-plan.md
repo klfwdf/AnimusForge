@@ -1,3 +1,87 @@
+## J14 三渠道公共 API 最终离线验收（2026-09-26）
+
+状态：**`J14_OFFLINE_VERIFIED`**。按[既有 J14 计划](plans/j14-public-api-plan.md)完成 G0、Scene a、Courier b1–b3 和最终候选 c；本条明确取代下方 J14 历史 `ACTIVE` / “Courier 未开放” / “记忆 runner 失效” / “最终矩阵待验”状态，但不改写当时证据。工作区 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`。本轮开工基线 `fb4af2d8`、意图 `9e6e93ee`；最终产品 **`e58f3558cddfe473f396bb7f11470b05e30afce9`**，其后仅测试/证据变更，产品和最终四实现相同。未开始 J15，也不是全仓、实机或发布 READY。
+
+### 实际交付与有限责任
+
+- **Courier b1/b2/b3**：原 UI 先完成成员/模式/附件选择，主线程签发绑定 client、owner、generation、草稿实例/修订及目标的有界票据。UI/API 共用重验和一次派出；claim 先于队伍创建/资产转移，旧回调不能修改或清理新草稿，部分派出失败不自动重派。`CaptureCourierContextTicket()` / `SubmitCourier(contextTicket, requestId, playerText)` 只开放该范围，不允许任意目标/编组/附件构造。
+- **权威完成**：operation 绑定真实运输 session 实例。只读 detached `AfCourierReceipt` 独立记录派出、预生成、到达、附件接受、投递历史、动作、回信历史、回信交付、内容归还及运输结局。必要接受回执和实际回信入库/运输收尾齐备才成功；`PostprocessConsumed`、预生成、`Stage=Completed` 均不单独判成功。正文仅在实际交付确认后公开；失败保留已知阶段/已交付正文，不伪造回滚或承诺后续网络/游戏逻辑被中止。死亡、失踪、被毁、生成/提交失败、换档、退休及同 ID 对象替换均结算旧任务。
+- **共享与兼容**：沿原 Prompt、后处理、动作、历史/AFEF owner，无第二条缩水链。三渠道同一 client 共用 128-ID 去重空间；相同 ID/渠道/票据/原文复用原内部 operation，冲突不覆盖；开始前可取消，开始后 TooLate。Courier owner 的待领票据与活动/未排空关联分别有 128 上限，取消不能绕过物理队列背压。关联只在内存，不增保存键，不认领入站，不对读档恢复运输重新绑定旧 operation；原入站/回复例外和六种模式保留。
+- **开放次序**：`e58f3558` 在独立外部消费者、内部枚举重排、Debug 双实现/Bootstrap 及元数据验证后开放 `CourierSubmit=Available`。目录/Native/Scene/Courier Available；任意 `ActionExecute / MemoryWrite / ExtensionRegister` 保持 NotSupported。既有 V1 签名、默认参数和枚举值不变，内部状态按名字显式投影。实际 owner、消费者及一基坐标集中见[范围图](architecture/af-framework-code-scope.md)和[代码地图](architecture/af-framework-code-map.json)，使用语义见[V1 指南](architecture/af-public-api-guide-v1.md)。
+- **性能边界**：新增关联按既有事件 O(1) 查找/更新并在终态释放，不新增每帧全 client/operation 扫描、反射或轮询。显式发送重验选中成员/资产，到达聚合本信件附件，归还检查该运输队；Dispose 撤销扫描最多 128 张票据。Scene 主线程持久历史装配和这些单次成本仍存在，离线次数/容量断言不等于实机帧耗时通过。
+
+### 当前候选离线门禁与证据层级
+
+| 门禁 | 当前结果与可证明范围 |
+| --- | --- |
+| 外部 Courier 消费者 | `tools/CourierSessionCreationTests/run_admission.py --public-api` 正常 **264**、加 `--reorder-core-enums` **264**；均保留 internal 访问 CS0122 拒绝。测试独立程序集只调用 V1，执行实际准入/到达/动作接受/回信确认/归还 owner；游戏资产/provider/最低层 writer 明确 fixture。六模式、并发重复/UI 竞争、错 client/旧票据/共享容量/取消/Dispose、无提前正文/效果、重复到达、延迟回信、部分成功后失败、退休覆盖。日志 `.generated/public-current/public.log`、`public-reordered/public.log`。 |
+| Native/Scene 兼容消费者 | `tools/NativeModuleSubmissionTests/run.py` 与 `--reorder-core-enums` 各 **55**，外部 internal CS0122；原默认入口及 source-boundary 精确逆变换通过。Courier additive review 绑定 `fb4af2d8 → e58f3558` 的 7 文件逐 hunk 差异，再逆 Scene/Native 历史提取，恢复原依赖检查；不只刷新 hash，7 个未审源码修改反例被拒绝。 |
+| 旧 Native ABI | `--legacy-abi` 固定 `39cf9d4724cc372a33503da270fd0c0e9dc6e6af` 的 5 个 V1 源文件和旧 Native 消费者，先编旧 API/旧消费者 **41** 通过，再不重编消费者、替换当前 source-linked library **41** 通过。消费者 SHA256 `185a59740a7a29e0f553655558a6ae2efaf37a659afef37beaf46f90f7d24ed0` 前后相同。编译一次前仅适配追加的 fixture CoreCases 取原 5 项、能力状态随旧/新库由 NotSupported 变 Available；旧 Native ABI/行为断言保留。证明 CLR 成员绑定与所测行为，不是子 MOD 在游戏中的加载。manifest/log 位于该 runner `.generated/legacy-abi/`。 |
+| API/四 DLL 元数据 | `tools/ModuleFrameworkApiTests/run.py` 指定 Debug/Release 两 artifact-root 和上述基线 `NativeModuleUnderTest.dll` 的 `--legacy-v1`：**36 snapshot、158 API、5 编译成功故障反例、CS0122、1620 四实现 metadata** 通过。核旧 V1 全部成员/枚举常量/默认参数保留，当前四 DLL surface 一致、旧 memory/Courier/scene 签名不变、内部类型未泄漏。最终日志 `.tmp/j14c-final/module-api-final.log`；PE 证据不是游戏加载。 |
+| 三渠道完成/回归 | NativeCompletion **186**；SceneGroupReceipt **18**、SceneRequestLifetime **34**（另 J14 completion 2）、ScenePostprocessParity **71**、SpeechQueue **6**、ConversationScope **5**；ChannelCutover **134/0**。分别执行实际 host/群组/请求/后处理源码，游戏/domain 下层按各 fixture 声明隔离，不声称全量实机路径覆盖。 |
+| Courier owner/原模式 | 最终 lifecycle **179/0**（含准入）、postprocess **44**、Prompt **552 / 76 scenarios**、liveness **59 / 16 scenarios**、DomainCommit **32**，SessionCreation/DeliveryLifetime source-order、InboundCompletion 契约均通过；owner-phase 16 的 b2 同源码证据保留。准入 9 个和生命周期 5 个编译成功故障反例已在 b1/b2 验证，不重算成新增用例。 |
+| 真实记忆写入与回读 | `tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py` **85/0**；`run_commit_writers.py` **51/0**。前者真实 Daily/Recovery/Weekly/Major/Block writer 与 Process/Apply/Mark；后者真实普通 Commit→Daily/Recent 保存→精确回读、角色/标签/AFEF/部分写入、编辑闭包与导入 Apply。terminal 6 个和普通 writer 原 10 个故障变异均 BUILD_PASS 后具名失败。使用内存生产账本和显式游戏/文件系统 fixture，不证明真实磁盘存档或 provider。 |
+| 保存身份/格式 | PersistenceIdentity `--baseline 053ad485` **142 SyncData / 36 CampaignBehavior** 无增删；Profile **142 keys / 168 typed bindings / 9 types / 3 profiles / 5 cases / 10 legacy cases**，5 凭据字段排除。Chunk 的 UTF8 边界、缺块/坏数据/旧格式/字典 round-trip/isolation 通过；保存/Profile 工具单测 **6 + 2** 通过。无新增 API 保存键。 |
+| Bridge/入口/成员 | BridgeBindings **16（12 wired / 4 declared-only）**、契约单测 **23**；实际 source-linked BridgeRuntimeIsolation **12 process scenarios**。Readiness 单测 **73**、入口 inventory、source inventory unknown=0 及其 **7** 单测通过。Readiness 的 `entryCoverage=REPRESENTATIVE` 保留，未提升成全实机覆盖。 |
+| 当前实际 DLL | `ProductionCourierHostReplayTests` 与完整 `PhaseEightParityReplayTests` 均显式当前 Debug 1.4 路径与 SHA，通过候选 marker/依赖清单/新鲜度校验；前者新增错 SHA 反例确实拒绝。Courier 回放实际 detached host，provider/记忆底层 fixture；Phase8 的实际 owner 与源码接线证据按输出分层，不采用旧 Stage。日志 `.tmp/j14b-draft-ui/courier-current-dll.log`、`phase8-current-dll.log`。 |
+| 定位/差异 | JSON 地图绑定最终产品 `e58f3558`，**755 锚点 / 336 文件**，recorded-revision 与 `--working-tree` 均 PASS；仅定位。`git diff --check`、当前文档链接及具名文件差异检查通过，不以地图 hash 代替行为测试。 |
+
+### 失败信号及修复（保留原断言）
+
+1. `5067fbb4`：terminal 的旧 `TagSceneSessionHistoryLine`/NPC helper 抽取失败；实际已迁 `DialogueHistoryLedger` / `NpcActionLedger`，补真实 ledger 和 Weekly revision owner/字段，`omit-major-entry` 在真实 Append 调用点注入同义故障。6 变异具名失败数量为 **13/6/7/2/7/11**，没有删除写入/回读断言。
+2. `a90e1b45`：普通 writer 继续暴露旧文件名 helper 抽取失效；链接真实 `NpcDataFileName`，抽取实际 `PlayerExportsStore.ReadJson`，仅把原虚拟目录 fixture 移到对应 owner。**51/0** 且原 10 变异失败数 **1/8/1/2/6/12/11/1/1/8**；不是用 terminal 85 或更新 hash 掩盖普通对话入口未测。
+3. `38c22f24`：ChannelCutover 缺 B2 请求字段/当前 source helper，补实际身份/失败/可见文本净化方法；旧“stale”场景未真正切 generation，修正测试安排，保留其不回写断言，并加“当前 run + host stale 必须失败释放等待”的场景。保存 typed catalog 只改 Shout 两个既有绑定的行号（10813→10815、10816→10818），键/ref/类型/source 多重集完全不变；readiness inventory 仅补 DraftAdmission/ModuleSubmission 两路径，未删入口或提升覆盖状态。
+4. `.tmp/j14c-final/matrix.json` 保留最初 27 项的原始结果，其中 ChannelCutover、Profile、Readiness inventory/单测曾失败；对应修复后日志为 `channel-cutover-current.log`、`profile-current.log`、`readiness-current.log`，不能把原矩阵改成从未失败。独立 Scene 全生命周期、Bridge runtime 和普通记忆日志也保留在同目录。
+5. `e744f6cb`：Courier DLL runner 原依赖旧 Stage，改用既有 ReplayDependencies 与显式候选路径/SHA；依赖只读，解析只取已校验 runner 输出顶层。不修改原 Phase8 行为门禁。`b6386b60` 增旧 ABI/精确 additive inverse，`e58f3558` 的公共探针在接口增加前实际报 `FAIL public Courier surface missing`，随后外部消费者转绿。
+
+### 六构建与最终候选身份
+
+沿未修改的 `一键编译覆盖推送/build_single_module.ps1`，固定 SDK `local/dotnet/8.0.425/dotnet.exe`，实际引用 `_deps_auto` **1.3.15.110062**、`local/bannerlord-refs/1.4.7.117484` **1.4.7.117484**。GameRoot `D:/steam/steamapps/common/Mount & Blade II Bannerlord` 仅作原脚本只读依赖；Harmony/MCM/UIExtender/AF 私有 runtime 也仅只读。分别 `-Configuration Debug` / `Release`，不传 Stage/Deploy；**Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning / 0 error**。命令/完整输出保留 `.tmp/j14b-draft-ui/build-Debug-j14c-e58f3558.log` 与 `build-Release-j14c-e58f3558.log`。
+
+| 仓内候选 | SHA256 |
+| --- | --- |
+| `bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll` | `6755c4e35b52345c11b1ada3bc0b839e6252eff4748a082e4f6eb67d137ff1cf` |
+| `bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll` | `a12440d2def0fd683c9b0b3cd1fc6bbc28f8dc51b17bc1b37053f0961876f91d` |
+| `bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll` | `69550e6e78aa5841fd3f478779586401e0dc4e62e8d5e5aeae5753fdb827f10e` |
+| `bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll` | `ada385d8c6c20d0380f85cc150361a21c864dab99600d2f54830e67e14fde24f` |
+| `bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll` | `ebe3d21a34953acbf38dd4df176b1876413cbcd29e7ebb6bb2cf918d5bbfbe40` |
+| `bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll` | `01f52e487ca99eb37d457582095f5d8ada01230dc2ca2e3f67ab0040cf25cbb7` |
+
+清理只发生在本轮已授权的四个精确仓内构建目录；每次原脚本执行前核过绝对路径、内容、tracked 与父/子 reparse，不扩大范围。工具自带临时目录清理的测试使用仓内 preserve-temp 模式；BridgeRuntimeIsolation 仅在生成副本把最终 `Directory.Delete(tempRoot, true)` 改为保留日志，其 12 场景/真实 runtime 源不变，manifest 记录该唯一 fixture 差异。未清理 `.dotnet-cli-home/`。
+
+### 可复核命令与运行边界
+
+下列为本轮已执行入口，工作目录均为实际仓库根。构建命令是证据记录，不是给后续任务新增清理授权；再跑仍须核对四个精确目录。固定 `DOTNET_EXE` / `DOTNET_ROOT` 指向仓内 8.0.425，CLI home/NuGet 缓存均在 `.tmp/`。
+
+```powershell
+$root = 'E:/AnimusForge-refactor-continuation-20260831'
+$dotnet = "$root/local/dotnet/8.0.425/dotnet.exe"
+$game = 'D:/steam/steamapps/common/Mount & Blade II Bannerlord'
+# 本轮分别执行 Debug / Release，无 Stage/Deploy。
+& 'C:/Program Files/PowerShell/7-preview/pwsh.exe' -NoProfile -File "$root/一键编译覆盖推送/build_single_module.ps1" -ProjectRoot $root -BannerlordRoot $game -Bannerlord13ReferenceDir "$root/_deps_auto" -Bannerlord14ReferenceDir "$root/local/bannerlord-refs/1.4.7.117484" -RuntimeDependencyDir "$game/Modules/AnimusForge/bin/Win64_Shipping_Client" -HarmonyCorePath "$game/Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/0Harmony.dll" -Configuration Debug
+python -X utf8 -B tools/CourierSessionCreationTests/run_admission.py --dotnet $dotnet --public-api
+python -X utf8 -B tools/CourierSessionCreationTests/run_admission.py --dotnet $dotnet --public-api --reorder-core-enums
+python -X utf8 -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet --legacy-abi
+python -X utf8 -B tools/NativeModuleSubmissionTests/source_boundary.py
+python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts --legacy-v1 tools/NativeModuleSubmissionTests/.generated/legacy-abi/Baseline/Consumer/bin/Release/net8.0/NativeModuleUnderTest.dll
+$env:DOTNET_EXE = $dotnet
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py
+python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py
+python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py --working-tree
+git diff --check
+```
+
+两个当前 DLL 回放均使用 `dotnet run --project tools/<runner>/<runner>.csproj -c Debug`（runner 为 `ProductionCourierHostReplayTests` / `PhaseEightParityReplayTests`），传入 `-p:GameRoot=$game`、`-p:Bannerlord14ReferencePath=$root/local/bannerlord-refs/1.4.7.117484`、`-p:ReplayHarmonyModulePath=$game/Modules/Bannerlord.Harmony`、`-p:ReplayMcmModulePath=$game/Modules/Bannerlord.MBOptionScreen`、`-p:ReplayUiExtenderModulePath=$game/Modules/Bannerlord.UIExtenderEx`、`-p:ReplayPrivateRuntimePath=$game/Modules/AnimusForge/bin/Win64_Shipping_Client`、`-p:ReplayCandidateDll=<上表 Debug 1.4 绝对路径>`，并在 `--` 后传同一 DLL 绝对路径及上表完整 SHA256。空格路径以单一参数传递；依赖解析清单与 marker 校验均通过，无 Stage。其余 27 项原始命令/退出码在 `.tmp/j14c-final/matrix.json`，失败后的 superseding 日志如上，不能丢弃原失败记录。
+
+### 停点、未验与回退
+
+本地验证切片：b1 `4bc855cd / 8fb16385 / b6daf65f`，b2 `b2572623`，b3 `e58f3558`，c `5067fbb4 / e744f6cb / b6386b60 / 38c22f24 / a90e1b45`。如需回退，按真实依赖做具名 inverse 提交，不能 hard reset/amend/rewrite。最终文档/地图提交不再修改产品。
+
+**两版本实机、真实旧档、真实 provider、音频、独立子 MOD 游戏加载、帧性能分别为 `NOT-RUN`。** 这是用户要求的全部 J14 离线门槛通过，不是发布完成，不代表对所有游戏版本或所有场景作无缺陷保证。未 push、Stage、部署、打包、安装工具、写游戏/外仓/玩家存档、修改默认入口或进入 J15；原 `.dotnet-cli-home/` 保留。后续实机/发布或 J15 须按新的明确请求执行。
+
+## 以下为 J14b2 及更早证据（历史切片）
+
 ## J14b2 权威阶段与生命周期切片（2026-09-26）
 
 状态：**`J14b_ACTIVE / J14_ACTIVE`**；本地产品/测试提交 `b2572623`，接续 b1 的 `24ea6e05`。本片已接通内部 operation 的真实运输回执，但 **V1 Courier 尚未开放，J14_OFFLINE_VERIFIED 尚未达到**。本条取代下方 b1 的“下一动作=实现 b2”；后续为 b3 公共投影/外部消费者，再完成 c 的同候选最终矩阵。

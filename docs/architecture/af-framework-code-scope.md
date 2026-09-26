@@ -1,3 +1,26 @@
+# 当前范围：J14 三渠道公共 API 离线完成（2026-09-26）
+
+当前 **`J14_OFFLINE_VERIFIED`**，产品修订 **`e58f3558cddfe473f396bb7f11470b05e30afce9`**；本段取代下方历史 ACTIVE/未开放/待验状态。测试修复止于 `a90e1b45`，未改变候选产品。以下为真实 owner/消费者与保留责任，不把整个 host 标为重写。
+
+| 源码与一基定位（均为该产品修订） | 已接线责任与消费者 | 未覆盖或保留责任 |
+| --- | --- | --- |
+| `src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs:40,92–98`；`src/AF.Contracts/PublicApi/V1/AfApiContracts.cs:35–72` | V1 Courier 捕获/提交和只读阶段 DTO；外部消费者只依赖 V1 | 游戏对象/任意目标/附件不公开；不是独立 SDK DLL 或游戏加载验收 |
+| `src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs:9–35`；`V1/AfApi.cs:24`（同 PublicApi 前缀） | 显式 flags/transport 映射；验证后开放 CourierSubmit | 任意 Action/Memory/Extension 仍 NotSupported，Available 不是当前上下文可运行 |
+| `Refactor/Modules/CoreDialogueClient.cs:34–47,69–111`；`CoreDialogueOperation.cs:100–109`（同 Core 目录） | 三渠道共享 client ID 上限/指纹/取消/Dispose，阶段快照仅交付后带正文 | 无跨 client/读档去重，不承诺开始后网络中止或事务回滚 |
+| `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DraftAdmission.cs:26–146` | 原完成选择草稿的票据签发/领取/撤销/资格复验；API 捕获和共用发送消费 | 成员/物资以发送时原游戏 roster/选项为准，不新增全库存缓存或自动编组 |
+| 同 Courier 前缀 `CourierDeliveryBehavior.SessionCreation.cs:43–64,633–672` | 原 UI 闭包识别旧草稿，共用 `DispatchCourierDraft` 在效果前 claim | `CreateCourierSession` 仍负责实际队伍/资产/原模式；部分失败不重派 |
+| 同前缀 `CourierDeliveryBehavior.ModuleSubmission.cs:33–240` | 每 owner 128 活动/未排空关联、真实 session 绑定、阶段/失败/运输完成及 exact 身份；原 phase/运输事件调用 | API 关联仅内存，读档/退休结算；不认领入站或恢复运输 |
+| 同前缀 `CourierDeliveryBehavior.PromptPreparation.cs:35–53`；`GenerationLifecycle.cs:42,518`（同 CourierDeliveryBehavior. 前缀） | 原 source/run 准入和 finalize、实际到达回执；预生成不提前提交/公开 | Prompt/网络/游戏资格仍由已有 owner 执行，非第二条 API 专用链 |
+| 同前缀 `CourierDeliveryBehavior.DomainCommit.cs:41,313`；`DeliveryLifetime.cs:42,329,351,442,477`；`LetterInventory.cs:455`（后二者同 CourierDeliveryBehavior. 前缀） | 原动作前 claim/历史接受、返程/内容归还、销毁/失踪、实际信件记录及入库/停用确认 | 各领域 handler 保留真实玩法；离线 fixture 不代替资产销毁/导航/海运/旧档实机 |
+| `src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneContext.cs:10`；`ShoutBehavior.ModuleSceneSubmission.cs:86,152,250`（同 Scene 前缀） | 原框选票据、主线程 Prompt、群组回执及实际群组等待；Native/Scene 原公共入口保持 | 原 Scene 群组/接力/旁听和 per-Hero 行为仍由既有 SceneConversationChains/host 持有；未承诺 TTS 播完 |
+| `MyBehavior.DialogueHistoryCommit.cs:12–53`；`src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs:13` | 原真实 memory 接受入口及共享行规则；terminal/普通 writer runner 现已链接实际写入与回读 | 游戏/disk save、Notoriety 等下层在测试中仍隔离；无新 API memory writer |
+
+[代码地图](af-framework-code-map.json)现绑定上述产品修订，**755 锚点/336 文件**，recorded-revision 和 working-tree 均通过；这是定位而非实机证明。详细六构建/四 DLL SHA、旧 ABI、实际 DLL 回放、行为与故障证据集中在[主台账当前条目](../animusforge-refactoring-and-repository-reorganization-plan.md)，接口使用见[V1 指南](af-public-api-guide-v1.md)。新增关联事件驱动、终态释放，无每帧全请求扫描；单次附件/历史成本与帧性能仍须实测。
+
+两版本实机、旧档、provider、音频、子 MOD 游戏加载、帧性能分别 **NOT-RUN**。无 push/Stage/部署/打包/外写/默认入口变更或 J15；不是发布 READY。下方坐标、状态和“继续”语句均为历史记录，不是当前施工指令。
+
+## 以下为 J14b2 及更早范围（历史切片）
+
 # 当前范围：J14b2 Courier 阶段与生命周期（2026-09-26）
 
 产品/测试 `b2572623`，状态 `J14b_ACTIVE / J14_ACTIVE`，V1 Courier 仍未开放。以下是内部真实 owner 的已接线范围，不代表三渠道最终离线或实机通过。

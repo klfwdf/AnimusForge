@@ -1,3 +1,11 @@
+# 当前交接：J14 三渠道公共 API 离线完成（2026-09-26）
+
+- **状态**：`J14_OFFLINE_VERIFIED`。Courier 公共票据/一次派出/权威阶段与失败回执已开放；三渠道共用限额、幂等和开始前取消。最终产品 `e58f3558`，测试修复止于 `a90e1b45`；责任、候选 SHA、失败修复与全部证据见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)及[V1 指南](docs/architecture/af-public-api-guide-v1.md)。
+- **验收**：六构建、四 DLL 元数据/旧 Native ABI、三渠道及真实记忆写入/回读、保存/Bridge、显式当前 DLL Courier/Phase8 回放、755 锚点地图两模式和差异检查通过。仅离线完成；两版本实机、旧档、真实 provider、音频、独立子 MOD 游戏加载与帧性能分别 NOT-RUN。
+- **停点**：J14 收口，不进入 J15，不推送、Stage、部署、打包、写游戏/外仓/玩家存档、安装工具或修改默认入口。`.dotnet-cli-home/` 保留；后续实机/发布或新阶段需新的明确请求。下方旧 ACTIVE 和继续指令均被本段取代，仅作历史证据。
+
+## 以下为 J14b2 及更早交接（历史切片）
+
 # 当前交接：J14b2 内部运输回执已接线，继续 b3/c（2026-09-26）
 
 - **状态**：`J14b_ACTIVE / J14_ACTIVE`，产品/测试 `b2572623`。原运输各阶段、实际历史/信件接受、终态与精确 session/run 防陈旧回写已接线；179 项准入/生命周期、44 项后处理、552 项 Prompt、59 项 liveness、Native/Scene 55 与 Debug 双版本+Bootstrap 通过。详细身份与未覆盖范围见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[范围图](docs/architecture/af-framework-code-scope.md)。
