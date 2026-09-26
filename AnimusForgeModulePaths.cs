@@ -44,12 +44,7 @@ public static class AnimusForgeModulePaths
 
 	public static string GetLogsDirectory()
 	{
-		string moduleRoot = GetCurrentModuleRoot();
-		if (string.IsNullOrWhiteSpace(moduleRoot))
-		{
-			return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "AnimusForgeLogs");
-		}
-		return Path.Combine(moduleRoot, "Logs");
+		return AnimusForgeDataPaths.GetLogsDirectory(AnimusForgeDataPaths.GetCurrentRoot());
 	}
 
 	public static string GetLogFilePath(string fileName)

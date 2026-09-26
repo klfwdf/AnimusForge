@@ -198,4 +198,80 @@ except RuntimeError as ex:
     assert "Unresolved export" in str(ex)
 assert not (stale_root / "Recovery").exists()
 
-print("PASS AF2 migration synthetic: duplicate sources, target conflict, repeat, interruption, mtime, source change, corrupt backup, lock, empty, long path, disk full, bad root, unresolved export")
+prompt_source = fixture / "prompt-installed"
+prompt_repo = fixture / "prompt-repo"
+prompt_root = fixture / "prompt-root"
+baseline_a = b'{"Version":1,"Text":"BASELINE_A"}'
+baseline_b = b'{"Version":1,"Text":"BASELINE_B"}'
+put(prompt_source, "CustomPrompts/A.json", baseline_a)
+put(prompt_source, "CustomPrompts/B.json", b'{"Version":1,"Text":"INSTALLED_CUSTOM"}')
+put(prompt_source, "CustomPrompts/extra.json", b'{"Version":1,"Text":"EXTRA_CUSTOM"}')
+put(prompt_source, "CustomPrompts/Policy/Effects/X.json", b'{"Version":1,"Text":"SOURCE_X"}')
+put(prompt_source, "CustomPrompts/B.json.bad", b"legacy-corrupt-backup")
+put(prompt_repo, "CustomPrompts/B.json", b'{"Version":1,"Text":"REPO_CUSTOM"}')
+put(prompt_root, "UserData/Overrides/CustomPrompts/Policy/Effects/X.json", b"{broken-existing")
+prompt_baselines = {"a.json": module._hash(prompt_source / "CustomPrompts/A.json"),
+                    "b.json": module.hashlib.sha256(baseline_b).hexdigest()}
+prompt_sources = [("installed", prompt_source), ("repo", prompt_repo)]
+prompt_result = module.migrate_prompts(prompt_sources, prompt_root,
+                                       baselines=prompt_baselines, allow_test_root=True)
+assert prompt_result["backed_up"] == 6 and prompt_result["activated"] == 2, prompt_result
+assert prompt_result["conflicts"] == 2, prompt_result
+prompt_active = prompt_root / "UserData/Overrides/CustomPrompts"
+assert not (prompt_active / "A.json").exists()
+assert (prompt_active / "B.json").read_bytes() == b'{"Version":1,"Text":"INSTALLED_CUSTOM"}'
+assert (prompt_active / "extra.json").read_bytes() == b'{"Version":1,"Text":"EXTRA_CUSTOM"}'
+assert (prompt_active / "Policy/Effects/X.json").read_bytes() == b"{broken-existing"
+assert not (prompt_active / "B.json.bad").exists()
+prompt_recovery = pathlib.Path(prompt_result["recovery"])
+assert (prompt_recovery / "sources/installed/CustomPrompts/A.json").read_bytes() == baseline_a
+assert (prompt_recovery / "sources/installed/CustomPrompts/B.json.bad").read_bytes() == b"legacy-corrupt-backup"
+assert (prompt_recovery / "sources/repo/CustomPrompts/B.json").read_bytes() == b'{"Version":1,"Text":"REPO_CUSTOM"}'
+assert json.loads((prompt_recovery / "completed.json").read_text(encoding="utf-8"))["manifestSha256"] == prompt_result["manifest_sha256"]
+assert json.loads((prompt_root / "UserData/.prompt-overrides-ready.json").read_text(encoding="utf-8"))["sources"] == {
+    module._source_key(prompt_source): prompt_result["manifest_sha256"],
+    module._source_key(prompt_repo): prompt_result["manifest_sha256"]}
+prompt_repeat = module.migrate_prompts(prompt_sources, prompt_root,
+                                       baselines=prompt_baselines, allow_test_root=True)
+assert prompt_repeat["already_complete"] is True and prompt_repeat["activated"] == 0
+
+prompt_interrupt_source = fixture / "prompt-interrupt-source"
+prompt_interrupt_root = fixture / "prompt-interrupt-root"
+put(prompt_interrupt_source, "CustomPrompts/one.json", b'{"Text":"one"}')
+put(prompt_interrupt_source, "CustomPrompts/two.json", b'{"Text":"two"}')
+prompt_interrupt_root.mkdir()
+try:
+    module.migrate_prompts([("installed", prompt_interrupt_source)], prompt_interrupt_root,
+                           baselines={}, allow_test_root=True, hook=fail_after_first)
+    raise AssertionError("prompt interruption was not raised")
+except OSError as ex:
+    assert "synthetic interruption" in str(ex)
+assert not list((prompt_interrupt_root / "Recovery").glob("prompt-overrides-*/completed.json"))
+prompt_resumed = module.migrate_prompts([("installed", prompt_interrupt_source)], prompt_interrupt_root,
+                                        baselines={}, allow_test_root=True)
+assert prompt_resumed["activated"] == 1 and not prompt_resumed["already_complete"]
+assert len(list((prompt_interrupt_root / "UserData/Overrides/CustomPrompts").glob("*.json"))) == 2
+
+prompt_corrupt_source = fixture / "prompt-corrupt-source"
+prompt_corrupt_root = fixture / "prompt-corrupt-root"
+put(prompt_corrupt_source, "CustomPrompts/one.json", b'{"Text":"original"}')
+prompt_corrupt_root.mkdir()
+
+
+def corrupt_prompt_backup(stage, count):
+    if stage == "backed_up":
+        backups = list((prompt_corrupt_root / "Recovery").glob("prompt-overrides-*/sources/installed/CustomPrompts/one.json"))
+        assert len(backups) == 1
+        backups[0].write_bytes(b"corrupt")
+
+
+try:
+    module.migrate_prompts([("installed", prompt_corrupt_source)], prompt_corrupt_root,
+                           baselines={}, allow_test_root=True, hook=corrupt_prompt_backup)
+    raise AssertionError("corrupt prompt backup was not rejected")
+except RuntimeError as ex:
+    assert "verification failed" in str(ex) or "differs" in str(ex)
+assert not (prompt_corrupt_root / "UserData/Overrides/CustomPrompts/one.json").exists()
+assert not list((prompt_corrupt_root / "Recovery").glob("prompt-overrides-*/completed.json"))
+
+print("PASS AF2 migration synthetic: PlayerExports and Prompt defaults/overrides, conflicts, repeat, interruption, backup corruption, lock, disk full, bad root")
