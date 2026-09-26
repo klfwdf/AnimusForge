@@ -150,6 +150,21 @@ empty_root.mkdir()
 empty = module.migrate([("installed", empty_source)], empty_root, allow_test_root=True)
 assert empty["backed_up"] == 0 and not (empty_root / "Recovery").exists()
 
+long_source = fixture / "long-source"
+long_root = fixture / "long-root"
+backup_parent = long_root / "Recovery" / ("player-exports-" + "x" * 24) / "sources/installed/PlayerExports/demo"
+leaf_size = max(20, 236 - len(str(backup_parent)) - len(".json") - 1)
+long_name = "x" * leaf_size + ".json"
+assert len(str(backup_parent / long_name)) < 250
+if os.name == "nt":
+    assert len(str(backup_parent / long_name)) + len(".partial.") + 32 >= 260
+put(long_source, "PlayerExports/demo/" + long_name, b'{"long":true}')
+long_root.mkdir()
+long_result = module.migrate([("installed", long_source)], long_root, allow_test_root=True)
+assert long_result["activated"] == 1
+assert (long_root / "UserData/PlayerExports/demo" / long_name).read_bytes() == b'{"long":true}'
+assert (pathlib.Path(long_result["recovery"]) / "sources/installed/PlayerExports/demo" / long_name).read_bytes() == b'{"long":true}'
+
 space_source = fixture / "space-source"
 space_root = fixture / "space-root"
 put(space_source, "PlayerExports/demo/one.json", b"x")
@@ -183,4 +198,4 @@ except RuntimeError as ex:
     assert "Unresolved export" in str(ex)
 assert not (stale_root / "Recovery").exists()
 
-print("PASS AF2 migration synthetic: duplicate sources, target conflict, repeat, interruption, mtime, source change, corrupt backup, lock, empty, disk full, bad root, unresolved export")
+print("PASS AF2 migration synthetic: duplicate sources, target conflict, repeat, interruption, mtime, source change, corrupt backup, lock, empty, long path, disk full, bad root, unresolved export")
