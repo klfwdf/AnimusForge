@@ -126,7 +126,7 @@ internal static class PublicationScheduleReplay
                 && !adapter.Contains("new WorldDiplomacyPropagationArrival", StringComparison.Ordinal),
             "real publication caller delegates queue construction and replacement to the application");
         int recalculateStart = host.IndexOf("private void RecalculatePendingPropagationIfNeeded()", StringComparison.Ordinal);
-        int recalculateEnd = host.IndexOf("private void SynchronizeCourtKnowledge()", recalculateStart, StringComparison.Ordinal);
+        int recalculateEnd = host.IndexOf("private void ProcessCourtArrival(", recalculateStart, StringComparison.Ordinal);
         string recalculateAdapter = host.Substring(recalculateStart, recalculateEnd - recalculateStart);
         Test.True(recalculateAdapter.Contains("WorldDiplomacyPropagationApplication.RecalculatePending(", StringComparison.Ordinal)
                 && !recalculateAdapter.Contains("new WorldDiplomacyPropagationArrival", StringComparison.Ordinal),
