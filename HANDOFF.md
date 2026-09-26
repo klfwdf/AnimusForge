@@ -1,7 +1,7 @@
-# 当前交接：AF2.0 PlayerExports 游戏/编辑器用户根已接，继续 F1–F5（2026-09-26）
+# 当前交接：AF2.0 PlayerExports 双来源真实迁移可恢复完成，继续 F1–F5（2026-09-26）
 
-- **状态**：最新产品/测试 **`38c5effd`** 将游戏与独立编辑器的 PlayerExports 默认根接到同一 `%LOCALAPPDATA%/AnimusForge/UserData/PlayerExports` typed 约定；旧模块数据未完成显式迁移时默认根失败关闭，绝对路径只读导入仍可用，编辑器旧目录只可查看不可写。迁移器只在备份/激活全批完成后写匹配指针。DataPaths 44 项、迁移 synthetic、编辑器路径正反例、编辑器 App 零警告构建、Debug/Release 双 API 与 Bootstrap 六构建及 762 锚点地图两模式通过。D: 安装与仓内旧树各 3139 项仍只读，真实 `--apply` 未运行。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)；**F1–F5 未完成**。
-- **下一步**：接普通/Policy Prompt、可编辑配置、TerminalSettings、日志/缓存、ONNX 的真实消费者及合成迁移/回退，再做真实数据备份恢复、Stage/ZIP 白名单和旧树退役。BAAI 原模型 MIT 标签不能直接证明 ONNX 转换仓文件可再分发，F4 许可仍阻断发布。无 Stage、部署、打包、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入；编辑器完整编辑 smoke、实机旧档与发布许可 **NOT-RUN**。
+- **状态**：产品/测试 **`38c5effd`** 将游戏与编辑器 PlayerExports 接同一 typed 用户根、未迁移默认根失败关闭；**`d8acf666`** 修复首次真实迁移发现的 Windows 临时路径过长，并有合成长路径回归。安装与仓内两来源各 3139 项已分别备份到私有 Recovery，安装激活 3139、仓内因相同字节激活 0；独立逐文件 hash/大小与原件一致，两来源重复运行均无再次激活。首次失败停在备份第 51 项之前、无活动数据/完成记录，修复后在同一恢复材料上续作；D: 与仓内原件、原始 `.sav` 未删除/修改。此前 DataPaths 44 项、编辑器路径正反例、编辑器 App 和六构建、762 锚点地图仍有效，但它们不证明剩余 F1–F5。详细见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)。
+- **下一步**：接普通/Policy Prompt、可编辑配置、TerminalSettings、日志/缓存、ONNX 的真实消费者及合成迁移/回退；之后 Stage/ZIP 白名单、其他旧资料迁移与仓内旧树退役。BAAI 原模型 MIT 标签不能直接证明 ONNX 转换仓文件可再分发，F4 许可仍阻断发布。无 Stage、部署、打包、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入；编辑器完整编辑 smoke、实机旧档与发布许可 **NOT-RUN**。**F1–F5 仍未完成。**
 
 ## 以下为 AF2.0 设计交接（历史）
 
