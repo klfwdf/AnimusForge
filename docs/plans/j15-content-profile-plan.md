@@ -1,6 +1,6 @@
 # J15 content / profile 执行计划
 
-> **最新执行（2026-09-26）**：用户已授权按[第 9 节](#j15-af2-final-state)连续实施，边界为离线验收。F1 typed 路径与 F2 的 PlayerExports 游戏/编辑器接线和安全导出已验；安装与仓内 PlayerExports 各 3139 项完成私有备份、独立 hash 恢复验证和无覆盖激活。普通/Policy Prompt 分层与用户覆盖保存已验；D: 安装 Prompt 30 项私有备份验证、14 项非基线无覆盖激活。TerminalSettings 用户根读写及显式迁移契约已验，两真实来源均无旧文件。ONNX、其余真实资料、Stage/ZIP 和资源退役仍未完成。下方旧 107 项验收不能代替新候选验收；不覆盖游戏、不启动游戏、不改原始存档。
+> **最新执行（2026-09-27）**：用户已授权按[第 9 节](#j15-af2-final-state)连续实施，边界为离线验收。F1 typed 路径、F2 的 PlayerExports、普通/Policy Prompt 与 TerminalSettings 接线/显式迁移已有分片证据；安装与仓内 PlayerExports 各 3139 项完成私有备份和 hash 复验，D: Prompt 30 项备份、14 项非基线激活，TerminalSettings 两真实来源均无旧文件。F3 Debug/Release 干净 Stage 和 ZIP 白名单工程候选各 123 项、两次无输入 Stage 稳定；部署仍失败关闭，33 项未映射 GUI/TPAC 与模型等 F4 权利/功能门禁未闭，不能将纯净 ZIP 当发布完成。ONNX 用户模型定位、其余真实资料退役及 F5 同候选总验收仍未完成。下方旧 107 项验收不能代替新候选验收；不覆盖游戏、不启动游戏、不改原始存档。
 >
 > 当前续接（2026-09-26）：`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。用户要求直接按计划推进，产品 `9db8fa8b` 完成 30 份默认 Prompt 原样归位及安装覆盖接缝，测试修复 `a3fa77af`；映射 107，旧根 HOLD 40。完整投影/覆盖反例/Bridge/Policy/六构建/四 DLL 资源与 API/当前 DLL Phase8 已验，详细证据及额外重复清理被自动审查拒绝的边界见主台账。下一步为剩余用户数据、模型及素材来源边界；完整 J15 目标与第 2 节完成定义不变。
 > 最新补证 `2b61f1c5`：PlayerExports 独立合成保护 45 断言、四个行为变异拒绝通过；ONNX 五文件匹配固定上游版本。没有真实备份/迁移或分发决定，不解除 G0.3/G0.4，也没有重跑被拒的整体 runner 清理。证据见主台账当前条目“数据保护合成契约与模型来源补证”。

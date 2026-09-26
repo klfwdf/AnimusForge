@@ -1,4 +1,11 @@
-# 当前交接：AF2.0 TerminalSettings 用户根与迁移契约已验，继续 F1–F5（2026-09-26）
+# 当前交接：AF2.0 F3 干净 Stage/ZIP 已验，部署和资源门禁未闭（2026-09-27）
+
+- **产品/测试 `d7c16c06`**：原一键打包入口现只接收项目内经清单验证的 Stage；Stage 仅从 107 项 `content` 映射、唯一 XML、双实现/Bootstrap 和六项 hash 锁定私有 DLL 组装，不复制 PlayerExports、ONNX、日志、安装覆盖或源码其他文件。ZIP 不再“扫安装目录再排除”，逐文件匹配 Stage，版本只在 ZIP 中生成，不回写源码/Stage。旧 Stage 中与来源不同的 9 个文件先私有备份并复验；Debug/Release 新 Stage 各 **123** 文件，两次无输入重组的文件集合/hash 稳定；两种 ZIP 与 Stage 集合/hash 独立核对通过，未知文件及旧打包参数失败关闭。代码地图 **780** 锚点两模式通过。详细见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)。
+- **未闭门禁**：部署入口目前失败关闭，未实现/验收“仅程序文件”的事务部署；33 项未映射 GUI 和 TPAC 等必需资产还须 loader、来源与权利核对或功能等价替代，当前 Stage/ZIP 不可宣称功能完整或发布就绪。ONNX 用户模型定位/全组锁、其余旧资料退役及 F5 同候选总验收也未完成。未覆盖游戏、启动游戏、修改原始 `.sav`、推送或写 G:；实机旧档 **NOT-RUN**。**F1–F5 保持未完成。**
+
+## 以下为 TerminalSettings 接线交接（历史）
+
+# AF2.0 TerminalSettings 用户根与迁移契约已验，继续 F1–F5（2026-09-26）
 
 - **本轮产品/测试 `7c39b200`**：TerminalSettings 活读写改为 typed `UserData/Settings`，损坏旧文件不被保存覆盖，候选校验后原子替换；写失败时 UI 内存值回退。显式迁移器对旧安装/仓内单文件按私有备份、hash、冲突保留与中断续作处理。两真实来源只读盘点均为 **0**，故无真实设置激活，也未读取旧模块作为日常回退。合成迁移及 DataPaths **50** 项通过，当前六构建均 0 warning/error；代码地图 775 锚点两模式通过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)。
 - **下一步**：ONNX 定位及依赖锁、F3 干净 Stage/ZIP 白名单、F4 其余资料与资产许可/退役，之后 F5 同候选离线总验收。无游戏覆盖/启动、原始 `.sav` 修改、Stage/ZIP、推送或 G: 外仓写入；实机旧档与发布验收 **NOT-RUN**。**F1–F5 不标完成。**

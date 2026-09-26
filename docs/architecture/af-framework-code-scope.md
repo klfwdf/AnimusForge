@@ -1,4 +1,12 @@
-# 当前范围：AF2.0 F2 TerminalSettings 用户根与迁移契约已验（2026-09-26）
+# 当前范围：AF2.0 F3 纯 Stage/ZIP 白名单已验、部署失败关闭（2026-09-27）
+
+产品/测试 **`d7c16c06`**：`一键编译覆盖推送/content_layout.ps1:226–310` 的 `Assert-AnimusForgeCleanStage` 根据唯一内容映射、源码 hash 和 `content/runtime-dependencies.lock.json` 验证项目内 Stage 的精确文件/目录集合，拒绝 reparse、未知文件及内容漂移。`deploy_module.ps1:223–241,519–579,717–742` 在已验证旧 Stage 上重建，仅复制 XML、107 项内容和已验证双实现/Bootstrap/六 DLL，不再复制 PlayerExports；旧源码回写函数和调用已删除。非 Stage 部署入口明确失败关闭，不触达安装。`package_mod.ps1:163–190,730–854,878–910` 只接受项目内干净 Stage，ZIP-only XML 版本和逐条 ZIP/Stage hash 比对替代安装扫描加排除；原 BAT 入口参数同步。Stage/ZIP 读取不是游戏运行或许可验收；部署程序文件事务仍未实现。
+
+重建前旧 Debug/Release Stage 的 3139 项 PlayerExports、五项 ONNX 均与仓内来源逐文件一致，107 项映射字节与 `content` 一致；9 个额外/差异文件在私有 Recovery 备份和逐项 hash 验证后才重建。Debug/Release Stage 各 **123** 文件，两次不重编 DLL 的无用户输入重组文件集合/hash 稳定；Debug（`-NoBump` 与 ZIP-only bump）及 Release ZIP 独立集合/hash 检查通过，无 PlayerExports、ONNX、Logs、AssetSources/AssetPackages。合成白名单及未知文件、安装目录、旧参数拒绝通过；旧 content 投影 107 项与历史导出 merge 合成通过，但不证明当前部署。33 项未映射 GUI、TPAC 等 F4 功能/权利门禁未闭，当前 ZIP **非发布候选**。当前实现/旧档/实机与最终 F5 同候选总验收未做；地图 **780** 锚点通过。
+
+## 以下为 TerminalSettings 接线的已验历史范围
+
+# AF2.0 F2 TerminalSettings 用户根与迁移契约已验（2026-09-26）
 
 产品/测试 **`7c39b200`**：`AnimusForgeTerminalSettings.cs:83–178` 只从 typed `UserData/Settings/TerminalSettings.json` 读取/保存，不日常回退旧 `ModuleData`；无文件或损坏文件沿用原 owner 的两个入口均开启安全默认，保存只对有效旧文件用同目录候选校验及 `File.Replace`，坏文件原样保留且 UI 值回滚。`tools/af2_migrate.py:490–605` 新增显式单文件迁移：安装/仓内来源分开标识、备份与 hash 验证、有效 JSON 无覆盖激活、无效 JSON 仅私有备份、冲突与中断续作记录。两真实来源只读盘点均 0 文件，未执行无意义真实 `--apply`，不存在可宣称的真实设置激活。`tests/AF.Persistence/DataPaths/Program.cs:156–165` 的路径/保存/坏文件测试及 `test_migration.py:270–319` 合成迁移通过，DataPaths **50 checks PASS**，Debug/Release × 1.3/1.4 + Bootstrap **六构建 0 warning/error**；地图 775 锚点两模式通过。ONNX、Stage/ZIP、其他资料/资产与 F5 仍未完成。
 
