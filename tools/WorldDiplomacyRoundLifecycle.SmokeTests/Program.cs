@@ -139,6 +139,7 @@ RunRepairCorrectionAndJobDecisionTests();
     RunGenerationJobCompositionDecisionTests();
         RoundApplicationReplay.Run();
         PropagationApplicationReplay.Run();
+        PublicationScheduleReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14037,6 +14038,7 @@ RunRepairCorrectionAndJobDecisionTests();
     private static void VerifySourceBoundary()
     {
         string applicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs")));
+        string propagationApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
 
         string rulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"));
@@ -14841,8 +14843,9 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw two-key document orderings must not remain in the host");
         Test.True(rulesSource.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal),
             "relay arrival ordering must be composed inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderPropagationArrivalsByDueDate(", StringComparison.Ordinal),
-            "host must delegate propagation arrival ordering to the domain");
+        Test.True(propagationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderPropagationArrivalsByDueDate(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderPropagationArrivalsByDueDate(", StringComparison.Ordinal),
+            "propagation application delegates arrival ordering to the domain and host owns no queue ordering");
         Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderProtectedFactsBySequence(", StringComparison.Ordinal)
             || storageMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderProtectedFactsBySequence(", StringComparison.Ordinal),
             "protected-fact ordering must delegate to the domain");
@@ -15031,7 +15034,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("WorldDiplomacyTextRules.StripGeneratedActionReasonPrefix(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.ParseDayForArchive(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyTextRules.TryGetImmersionViolation(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(", StringComparison.Ordinal)
+            && propagationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(", StringComparison.Ordinal)
             && canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ParseCompressionSequence(", StringComparison.Ordinal),
             "host must delegate text parsing, immersion checks, and propagation math to the domain rules");
         Test.True(!behaviorSource.Contains("private static bool IsExclusivePeaceOfferResponseSet(", StringComparison.Ordinal)
