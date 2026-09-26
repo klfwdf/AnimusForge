@@ -69,6 +69,10 @@ def restore_runtime(current):
     scene_comment='/// V1 提供只读目录、Native 与 Scene 请求票据；Courier 仍未开放。'
     old_comment='/// V1 提供只读目录和 Native 请求票据；Scene/Courier 仍未开放，不得绕过其未完成边界。'
     scene_capability='new AfCapabilityInfo(AfCapabilityIds.SceneSubmit, AfCapabilityState.Available, "api.available"),'
+    courier_comment='/// V1 提供只读目录及 Native、Scene、Courier 请求票据；由各渠道真实 owner 校验准入。'
+    courier_capability='new AfCapabilityInfo(AfCapabilityIds.CourierSubmit, AfCapabilityState.Available, "api.available"),'
+    assert api.count(courier_comment)==1 and api.count(courier_capability)==1, 'Unreviewed Courier catalog delta'
+    api=api.replace(courier_comment,scene_comment).replace(courier_capability,'Unsupported(AfCapabilityIds.CourierSubmit),')
     assert api.count(scene_comment)==1 and api.count(scene_capability)==1, 'Unreviewed Scene catalog delta'
     api=api.replace(scene_comment,old_comment).replace(scene_capability,'Unsupported(AfCapabilityIds.SceneSubmit),')
     api=api_inverse.restore('Api/V1/AfApi.cs',api,verify_dependencies=False,live_current=api)

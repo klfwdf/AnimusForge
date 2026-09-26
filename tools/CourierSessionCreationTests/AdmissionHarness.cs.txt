@@ -283,6 +283,7 @@ static partial class MyBehavior
 }
 static partial class ShoutBehavior
 {
+    internal static void SubmitModuleNativeDialogue(CoreDialogueOperation operation)=>operation.Cancel();
     internal static string IssueModuleSceneTicket(string client)=>"scene-ticket";
     internal static void RevokeModuleSceneTickets(string client) { }
     internal static void SubmitModuleSceneDialogue(CoreDialogueOperation operation)=>operation.Cancel();

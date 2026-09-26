@@ -31,6 +31,46 @@ public enum AfModuleCapabilityState
     InvalidRegistration = 3
 }
 
+/// <summary>Courier transport outcome, independent of accepted dialogue effects.</summary>
+public enum AfCourierTransportOutcome
+{
+    NotStarted = 0,
+    InTransit = 1,
+    Returned = 2,
+    Destroyed = 3,
+    Missing = 4,
+    Unconfirmed = 5
+}
+
+/// <summary>
+/// Immutable, game-object-free Courier observations. Stages need not occur in property order:
+/// a reply may be prepared before arrival. False means not confirmed, not proof of rollback.
+/// Overall success is reported only by AfDialogueResult.State after required return cleanup.
+/// </summary>
+public sealed class AfCourierReceipt
+{
+    public AfCourierTransportOutcome Transport { get; }
+    public bool Dispatched { get; }
+    public bool ReplyPrepared { get; }
+    public bool Arrived { get; }
+    public bool PayloadAccepted { get; }
+    public bool DeliveryHistoryAccepted { get; }
+    public bool ActionsAccepted { get; }
+    public bool ReplyHistoryAccepted { get; }
+    public bool ReplyDelivered { get; }
+    public bool ContentsReturned { get; }
+
+    internal AfCourierReceipt(AfCourierTransportOutcome transport, bool dispatched, bool replyPrepared,
+        bool arrived, bool payloadAccepted, bool deliveryHistoryAccepted, bool actionsAccepted,
+        bool replyHistoryAccepted, bool replyDelivered, bool contentsReturned)
+    {
+        Transport = transport; Dispatched = dispatched; ReplyPrepared = replyPrepared;
+        Arrived = arrived; PayloadAccepted = payloadAccepted; DeliveryHistoryAccepted = deliveryHistoryAccepted;
+        ActionsAccepted = actionsAccepted; ReplyHistoryAccepted = replyHistoryAccepted;
+        ReplyDelivered = replyDelivered; ContentsReturned = contentsReturned;
+    }
+}
+
 /// <summary>稳定英文 ID；列出未开放能力是为了让调用者探测，而非暗示存在对应执行方法。</summary>
 public static class AfCapabilityIds
 {

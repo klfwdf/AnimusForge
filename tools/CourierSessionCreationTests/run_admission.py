@@ -14,8 +14,13 @@ def main():
     parser.add_argument('--dotnet', required=True)
     parser.add_argument('--ref')
     parser.add_argument('--lifecycle', action='store_true')
+    parser.add_argument('--public-api', action='store_true')
+    parser.add_argument('--probe', action='store_true', help='Run a compiled reflection probe before adding the public surface')
+    parser.add_argument('--expect-disabled', action='store_true')
+    parser.add_argument('--reorder-core-enums', action='store_true')
     parser.add_argument('--mutate', choices=['ignore-revision', 'ignore-generation', 'ignore-owner', 'ignore-client', 'ignore-ticket-capacity', 'ignore-stock', 'ignore-cancel', 'ignore-operation-capacity', 'release-undrained', 'ignore-completion-receipts', 'late-action-claim', 'ignore-history-receipt', 'ignore-letter-record', 'ignore-source-run'])
     args = parser.parse_args()
+    if args.public_api: args.lifecycle = True
     spec = importlib.util.spec_from_file_location('extract', ROOT / 'tools/ChannelCutoverBoundaryTests/run.py')
     extract = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extract)
@@ -102,7 +107,7 @@ def main():
             assert sum(part.count(before) for part in declarations) == 1, 'Mutation anchor drift: ' + args.mutate
             declarations = [part.replace(before, after) for part in declarations]
 
-    output = HERE / '.generated' / ('lifecycle-' + (args.mutate or 'current') if args.lifecycle else 'admission-baseline' if args.ref else 'admission-' + (args.mutate or 'current'))
+    output = HERE / '.generated' / ('public-' + ('reordered' if args.reorder_core_enums else 'current') if args.public_api else 'lifecycle-' + (args.mutate or 'current') if args.lifecycle else 'admission-baseline' if args.ref else 'admission-' + (args.mutate or 'current'))
     output.mkdir(parents=True, exist_ok=True)
     harness = (HERE / 'AdmissionHarness.cs.txt').read_text(encoding='utf-8')
     (output / 'Program.cs').write_text(harness.replace('@@DECLARATIONS@@', '\n'.join(declarations)) + ((HERE / 'LifecycleHarness.cs.txt').read_text(encoding='utf-8') if args.lifecycle else ''), encoding='utf-8')
@@ -122,6 +127,8 @@ def main():
             # Default compile items already include this generated mutant.
             continue
         includes += '<Compile Include="' + escape(str(target)) + '" />'
+    if args.public_api:
+        return run_public_consumer(args, output, extract, defines)
     (output / 'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable><NuGetAudit>false</NuGetAudit>' + defines + '</PropertyGroup><ItemGroup>' + includes + '</ItemGroup></Project>', encoding='utf-8')
     (output / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
     env = os.environ.copy()
@@ -133,6 +140,69 @@ def main():
     (output / 'run.log').write_text(log, encoding='utf-8')
     print(log, end='')
     return result.returncode
+
+
+def run_public_consumer(args, output, extract, defines):
+    # Reuse exactly the preceding production-owner extraction and existing lifecycle fixtures.
+    # Only the control assembly's surface manipulates fixture game state; the consumer is unrelated.
+    spec = importlib.util.spec_from_file_location('api_suite', ROOT / 'tools/ModuleFrameworkApiTests/run.py')
+    api = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(api)
+    host = (ROOT / 'tools/ModuleFrameworkApiTests/HostStubs.cs').read_text(encoding='utf-8-sig')
+    courier_stub = extract.declaration(host, 'internal static class CourierDeliveryBehavior')
+    host = host.replace(courier_stub, '') # Never let the directory-only stub shadow the actual owner.
+    (output / 'DirectoryStubs.cs').write_text(host, encoding='utf-8')
+    paths = [p for p in api.SOURCES if p != 'tools/ModuleFrameworkApiTests/NativeOwnerStub.cs']
+    paths += ['src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs']
+    sources = [output / 'Program.cs', output / 'DirectoryStubs.cs', HERE / 'PublicControl.cs.txt']
+    for path in paths:
+        target = ROOT / path
+        if args.reorder_core_enums and path == 'Refactor/Modules/CoreDialogueContracts.cs':
+            text = target.read_text(encoding='utf-8-sig')
+            changes = {
+                'Queued, Running, Completed, Rejected, Cancelled, Failed': 'Queued=41, Running=12, Completed=8, Rejected=3, Cancelled=79, Failed=20',
+                'NoConfirmedEffect, UnknownAfterStart, CompletedByOwner': 'NoConfirmedEffect=28, UnknownAfterStart=91, CompletedByOwner=53',
+                'CancelledBeforeStart, AlreadyTerminal, TooLate': 'CancelledBeforeStart=56, AlreadyTerminal=17, TooLate=99',
+                'NotStarted, InTransit, Returned, Destroyed, Missing, Unconfirmed': 'NotStarted=55, InTransit=91, Returned=32, Destroyed=11, Missing=8, Unconfirmed=23',
+                'None = 0, Dispatched = 1, ReplyPrepared = 2, Arrived = 4, Payload = 8,': 'None = 0, Dispatched = 512, ReplyPrepared = 1024, Arrived = 2048, Payload = 4096,',
+                'DeliveryHistory = 16, Actions = 32, ReplyHistory = 64, ReplyDelivered = 128, ContentsReturned = 256': 'DeliveryHistory = 8192, Actions = 16384, ReplyHistory = 32768, ReplyDelivered = 65536, ContentsReturned = 131072',
+            }
+            for before, after in changes.items():
+                assert text.count(before) == 1, 'Enum reordering anchor drift: ' + before
+                text = text.replace(before, after)
+            target = output / 'ReorderedContracts.cs'
+            target.write_text(text, encoding='utf-8')
+        sources.append(target)
+    # Explicit Compile items and separate project directories prevent consumer/denied sources
+    # from being accidentally compiled into the host under test.
+    library = api.project(output / 'Library', 'CourierApiUnderTest', [p.resolve() for p in sources])
+    project_text = library.read_text(encoding='utf-8').replace('</PropertyGroup>', defines + '</PropertyGroup>', 1)
+    library.write_text(project_text, encoding='utf-8')
+    (output / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')
+    source = HERE / 'PublicClient.cs.txt'
+    if args.probe:
+        source = output / 'Probe.cs'
+        source.write_text('using AnimusForge.Api.V1; class Probe { static int Main() { '
+            'bool ready=typeof(AfDialogueClient).GetMethod("CaptureCourierContextTicket")!=null '
+            '&&typeof(AfDialogueClient).GetMethod("SubmitCourier")!=null '
+            '&&typeof(AfDialogueResult).GetProperty("Courier")!=null; '
+            'System.Console.WriteLine(ready?"PASS public Courier surface exists":"FAIL public Courier surface missing");return ready?0:1;} }', encoding='utf-8')
+    client = api.project(output / 'Client', 'CourierIndependentConsumer', [source.resolve()], [library.resolve()], True)
+    dotnet = str(Path(args.dotnet).resolve())
+    command = ['run', '--project', str(client.resolve()), '-c', 'Release']
+    if args.expect_disabled: command += ['--', '--expect-disabled']
+    status, log = api.run_dotnet(dotnet, command, ROOT)
+    (output / 'public.log').write_text(log, encoding='utf-8')
+    print(log, end='')
+    if status or args.probe: return status
+    denied_source = output / 'Denied.cs'
+    denied_source.write_text('class Denied { static void Main(){ AnimusForge.Refactor.Modules.CoreDialogueServices.CreateClient(); } }', encoding='utf-8')
+    denied = api.project(output / 'Denied', 'CourierUnrelatedDenied', [denied_source.resolve()], [library.resolve()], True)
+    status, log = api.run_dotnet(dotnet, ['build', str(denied.resolve()), '-c', 'Release'], ROOT)
+    (output / 'denied.log').write_text(log, encoding='utf-8')
+    assert status != 0 and 'CS0122' in log and 'CoreDialogueServices' in log, log
+    print('PASS unrelated Courier consumer cannot use internal CoreDialogueServices (CS0122)')
+    return 0
 
 
 if __name__ == '__main__':

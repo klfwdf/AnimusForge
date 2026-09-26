@@ -44,7 +44,7 @@ static class Program
         Check(before.ReasonCode == "framework.not_initialized" && before.Modules.Count == 0, "before load empty catalog");
         Check(before.ContractVersion == 1 && AfApi.ContractVersion == 1, "V1 contract identity");
         Check(before.PublicCapabilities.Count == 7, "seven declared public capabilities");
-        Check(before.PublicCapabilities.Count(x => x.State == AfCapabilityState.Available) == 3, "catalog, Native and Scene contracts callable, not game readiness");
+        Check(before.PublicCapabilities.Count(x => x.State == AfCapabilityState.Available) == 4, "catalog, Native, Scene and Courier contracts callable, not game readiness");
         Check(AfApi.GetCapability(AfCapabilityIds.CatalogRead).State == AfCapabilityState.Available, "catalog query before load supported");
         Check(AfApi.GetCapability(AfCapabilityIds.NativeSubmit).State == AfCapabilityState.Available, "Native contract available; real owner checked by Submit");
         Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State == AfCapabilityState.Available, "Scene contract available; real owner checked by Submit");
@@ -56,7 +56,16 @@ static class Program
                 && unavailable.SceneUtterances.Count == 0, "unavailable Scene owner rejects without fabricated receipt");
             Immutable(unavailable.SceneUtterances, "empty Scene utterances");
         }
-        string[] unsupported = { AfCapabilityIds.CourierSubmit, AfCapabilityIds.ActionExecute, AfCapabilityIds.MemoryWrite,
+        Check(AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State == AfCapabilityState.Available, "Courier contract available; real owner checked by Submit");
+        using (AfDialogueClient courierClient = AfApi.CreateDialogueClient())
+        {
+            Check(courierClient.CaptureCourierContextTicket() == null, "no prepared Courier draft cannot issue ticket");
+            AfDialogueResult unavailable = courierClient.SubmitCourier("fixture-ticket", "courier-unavailable", "hello").Completion.GetAwaiter().GetResult();
+            Check(unavailable.State == AfDialogueState.Rejected && unavailable.EffectState == AfDialogueEffectState.NoConfirmedEffect
+                && unavailable.Courier.Transport == AfCourierTransportOutcome.NotStarted && !unavailable.Courier.Dispatched
+                && unavailable.Reply == "", "unavailable Courier owner rejects without fabricated dispatch or reply");
+        }
+        string[] unsupported = { AfCapabilityIds.ActionExecute, AfCapabilityIds.MemoryWrite,
             AfCapabilityIds.ExtensionRegister };
         foreach (string id in unsupported)
         {
@@ -142,7 +151,7 @@ static class Program
         AfFrameworkSnapshot detached = HostControl.CreateDetachedSnapshotThenMutateSources();
         Check(detached.PublicCapabilities.Count == 1 && detached.Modules.Count == 1
             && detached.Modules[0].Capabilities.Count == 1, "DTO constructors defensively copy source lists");
-        Type[] dtoTypes = { typeof(AfCapabilityInfo), typeof(AfModuleCapabilityInfo), typeof(AfModuleInfo), typeof(AfFrameworkSnapshot), typeof(AfDialogueResult), typeof(AfSceneUtterance) };
+        Type[] dtoTypes = { typeof(AfCapabilityInfo), typeof(AfModuleCapabilityInfo), typeof(AfModuleInfo), typeof(AfFrameworkSnapshot), typeof(AfDialogueResult), typeof(AfSceneUtterance), typeof(AfCourierReceipt) };
         foreach (Type type in dtoTypes)
         {
             Check(type.IsSealed && type.GetConstructors().Length == 0, "DTO sealed with no public constructors " + type.Name);
