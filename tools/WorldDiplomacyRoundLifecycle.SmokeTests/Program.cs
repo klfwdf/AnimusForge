@@ -13454,6 +13454,8 @@ RunRepairCorrectionAndJobDecisionTests();
         int enqueues = 0, advances = 0, settlementSchedules = 0, courtMarks = 0;
         string lastSlotArg = "unset";
         Action<WorldDiplomacyStorage, int> runArrivals = (store, day) =>
+        {
+            store.RelayArrivals = WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList(store.RelayArrivals);
             WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(
                 store, day, id => id == "r1" ? round : null,
                 id => id,
@@ -13461,6 +13463,7 @@ RunRepairCorrectionAndJobDecisionTests();
                 id => string.Equals(id, "c", StringComparison.OrdinalIgnoreCase),
                 (id, doc) => courtMarks++, r => settlementSchedules++, r => advances++,
                 (arrival, source, r, slotId) => { enqueues++; lastSlotArg = slotId ?? "null"; }, m => { });
+        };
 
         WorldDiplomacyRelayArrival late = new WorldDiplomacyRelayArrival
         { RoundId = "r1", Sequence = 7, DueDay = 99, FromKingdomId = "a", ToKingdomId = "b" };
@@ -13519,6 +13522,8 @@ RunRepairCorrectionAndJobDecisionTests();
             }
         };
         Action<WorldDiplomacyStorage, int> runSettlement = (store, day) =>
+        {
+            store.RelayArrivals = WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList(store.RelayArrivals);
             WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(
                 store, day, id => id == "r1" ? settlementRound : null,
                 id => id,
@@ -13526,6 +13531,7 @@ RunRepairCorrectionAndJobDecisionTests();
                 id => false,
                 (id, doc) => courtMarks++, r => settlementSchedules++, r => advances++,
                 (arrival, source, r, slotId) => { enqueues++; lastSlotArg = slotId ?? "null"; }, m => { });
+        };
         storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
         { RoundId = "r1", Sequence = 9, DueDay = 6, FromKingdomId = "a", ToKingdomId = "b", ResultSettlementSlotId = "sX" });
         runSettlement(storage, 10);
@@ -13555,6 +13561,39 @@ RunRepairCorrectionAndJobDecisionTests();
         runSettlement(storage, 10);
         Test.True(storage.RelayArrivals.Count == 3,
             "due relay processing must stay capped at eight arrivals per pass");
+
+        var futureOnly = new WorldDiplomacyStorage();
+        for (int i = 0; i < 10000; i++) futureOnly.RelayArrivals.Add(new WorldDiplomacyRelayArrival
+            { RoundId = "r1", ToKingdomId = "b", DueDay = 100 + i, Sequence = i });
+        int futureResolves = 0;
+        WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(futureOnly, 10,
+            id => { futureResolves++; return round; }, id => id, id => true, id => false,
+            (id, doc) => { }, r => { }, r => { }, (arrival, source, r, slot) => { }, m => { });
+        Test.True(futureOnly.RelayArrivals.Count == 10000 && futureResolves == 0,
+            "future-only relay queue must return without resolving rounds or consuming arrivals");
+        var reentrant = new WorldDiplomacyStorage();
+        reentrant.RelayArrivals.Add(new WorldDiplomacyRelayArrival
+            { RoundId = "r1", ToKingdomId = "b", DueDay = 1, Sequence = 7 });
+        int reentrantDispatches = 0;
+        WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(reentrant, 10,
+            id => round, id => id, id => true, id => false,
+            (id, doc) => { }, r => { }, r => { },
+            (arrival, source, r, slot) =>
+            {
+                reentrantDispatches++;
+                reentrant.RelayArrivals.Add(new WorldDiplomacyRelayArrival
+                    { RoundId = "r1", ToKingdomId = "b", DueDay = 1, Sequence = 7 });
+            }, m => { });
+        Test.True(reentrantDispatches == 1 && reentrant.RelayArrivals.Count == 1,
+            "arrival enqueued during dispatch waits for the next bounded batch");
+        string lifecycleSource = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        int relayStart = lifecycleSource.IndexOf("public static void ProcessDueRelayArrivals(", StringComparison.Ordinal);
+        int relayEnd = lifecycleSource.IndexOf("public static void NotifyExternalDiplomacyResolved(", relayStart, StringComparison.Ordinal);
+        string relayProcessor = lifecycleSource.Substring(relayStart, relayEnd - relayStart);
+        Test.True(relayProcessor.Contains("arrivals[0]?.DueDay > currentDay", StringComparison.Ordinal)
+            && !relayProcessor.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal),
+            "daily relay consumption must use the sorted due prefix without sorting the whole queue");
 
         // DPL-060DI: external resolved-fact intake.
         int created = 0, ensured = 0, addedDocs = 0, propagated = 0, canonical = 0, retries = 0, handled = 0;

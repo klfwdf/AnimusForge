@@ -7659,8 +7659,19 @@ public static void ProcessDueRelayArrivals(
         Action<WorldDiplomacyRelayArrival, WorldDiplomacyDocument, WorldDiplomacyRound, string> enqueueRelayTurn,
         Action<string> log)
 {
-	List<WorldDiplomacyRelayArrival> due = OrderRelayArrivalsByDueDate((storage?.RelayArrivals ?? new List<WorldDiplomacyRelayArrival>())
-			.Where(x => x != null && x.DueDay <= currentDay)).Take(8).ToList();
+	// The persisted queue is sorted on load and at both insertion sites. Snapshot
+	// only the due prefix so a callback that enqueues another arrival cannot make
+	// it part of this daily batch.
+	List<WorldDiplomacyRelayArrival> arrivals = storage?.RelayArrivals;
+	if (arrivals == null || arrivals.Count == 0 || arrivals[0]?.DueDay > currentDay) return;
+	List<WorldDiplomacyRelayArrival> due = new List<WorldDiplomacyRelayArrival>(Math.Min(8, arrivals.Count));
+	for (int index = 0; index < arrivals.Count && due.Count < 8; index++)
+	{
+		WorldDiplomacyRelayArrival candidate = arrivals[index];
+		if (candidate == null) continue;
+		if (candidate.DueDay > currentDay) break;
+		due.Add(candidate);
+	}
 	foreach (WorldDiplomacyRelayArrival arrival in due)
 	{
 		storage.RelayArrivals.Remove(arrival);
