@@ -1,4 +1,12 @@
-# 当前范围：AF2.0 F1 路径契约与 F2 整组导出/显式迁移器（2026-09-26）
+# 当前范围：AF2.0 F2 Prompt 分层与显式迁移已验（2026-09-26）
+
+产品/测试 **`528031c5`**：`src/AF.Persistence/AnimusForgeModulePaths.cs:45` 的日志定位及 `DuelSettings.cs:5241` 的模型下拉缓存定位采用 typed 用户根；`DuelSettings.cs:4360–4760,5018` 的普通 Prompt 按用户覆盖→随包默认→owner 回退读取，写入仅到 `UserData/Overrides/CustomPrompts` 的同目录候选，不在读取时播种默认值或修复并覆盖损坏文件。`PolicySystem/Effects/PolicyEffectPromptService.cs:250–430,683` 的 Policy Prompt 采用同一分层语义，字段级回退和最小覆盖保存。`content/content-map.json` 为 30 份随包默认固定 SHA-256，`tests/content/J15ContentContractTests/run.py:458` 验证映射；`tools/af2_migrate.py:313–500` 显式备份旧安装 Prompt、核对基线 hash、仅激活 14 份非基线 JSON，重复运行不双写。游戏/编辑器热路径不作全量扫描；迁移仅显式调用，按文件分批 hash。
+
+D: 安装 Prompt 来源 30 文件/88,472 字节已私有备份、逐文件大小/hash 独立验证；14 份非基线活动覆盖再次逐文件验证，16 份基线仅随包读取，重复迁移激活 0。安装原件保留。仓内旧 Prompt 来源为空，未捏造仓内迁移。`tools/PolicyEffectModule.ContractTests/Program.cs:9097–9540` 的普通/Policy 分层、空覆盖、损坏文件测试，迁移合成测试、DataPaths 44 项、内容 SHA 静态核验和 Debug/Release × 1.3/1.4 + Bootstrap 六构建通过；代码地图 772 锚点两模式通过。完整 J15 runner 因清理未授权根 **NOT-RUN**。TerminalSettings/ONNX、Stage/ZIP、其他资料与资源退役、发布许可、实机旧档未完成，F1–F5 不标完成。
+
+## 以下为 PlayerExports 路径与迁移的已验历史范围
+
+# AF2.0 F1 路径契约与 F2 整组导出/显式迁移器（2026-09-26）
 
 `tools/af2_migrate.py` **`d8acf666`** 将备份/候选的同目录临时名缩短，避免合法最终路径因附加 GUID 越过 Windows 路径限制；`tests/AF.Persistence/DataPaths/test_migration.py` 的长路径虚构样本已验。此后安装来源与仓内来源分别真实迁到默认用户根：各 3139 文件私有备份，安装激活 3139、仓内激活 0；两来源及活动副本逐项独立 hash/大小一致、重复运行无再次激活。首次失败无完成记录/活动文件，已按同一 Recovery 续作；原来源未退役，真实玩家正文/文件名未入 Git/普通日志。此为 PlayerExports 字节迁移证据，不证明其他用户资料、Stage/ZIP、实机旧档或 F4 资源许可。
 

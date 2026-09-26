@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "38c5effdf116eb658cc9ba2123b12494f0d1ae7f",
+  "sourceRevision": "528031c56f480a6402387eb1b5714fc82f0a7050",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -8385,6 +8385,116 @@
       "status": "af2-f2-offline-verified",
       "note": "编辑器写入只允许 typed UserData/PlayerExports；旧目录仅可读检查",
       "fileSha256": "d81b4d46f16a69491c9a940e9bc35d7f47dc7c7d99ed40b0dca773a08e55d2d5"
+    },
+    {
+      "id": "af2.path.logs",
+      "path": "AnimusForgeModulePaths.cs",
+      "start": 45,
+      "end": 45,
+      "symbol": "public static string GetLogsDirectory()",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "typed user Logs; no module/CWD fallback",
+      "fileSha256": "4886b09f4e30fe9fa4d4c2214107e42e32754e28c6927456debd55e693363bf7"
+    },
+    {
+      "id": "af2.prompt.layer",
+      "path": "DuelSettings.cs",
+      "start": 4733,
+      "end": 4733,
+      "symbol": "private static bool TryReadLayeredCustomPromptTextJsonFile(",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "ordinary/Policy user override then packaged default",
+      "fileSha256": "8b51bcb61aef43f73dd015d7ae3085fa0cfbf77264e863afb54ffef28e369114"
+    },
+    {
+      "id": "af2.prompt.write",
+      "path": "DuelSettings.cs",
+      "start": 4504,
+      "end": 4504,
+      "symbol": "private static void PersistCustomPromptTextFileUnlocked(string path, string text)",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "atomic user override save and blank restore",
+      "fileSha256": "8b51bcb61aef43f73dd015d7ae3085fa0cfbf77264e863afb54ffef28e369114"
+    },
+    {
+      "id": "af2.prompt.path",
+      "path": "DuelSettings.cs",
+      "start": 5018,
+      "end": 5018,
+      "symbol": "private static string GetCustomPromptTextStoreDirectory()",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "typed user Overrides/CustomPrompts",
+      "fileSha256": "8b51bcb61aef43f73dd015d7ae3085fa0cfbf77264e863afb54ffef28e369114"
+    },
+    {
+      "id": "af2.cache.path",
+      "path": "DuelSettings.cs",
+      "start": 5241,
+      "end": 5241,
+      "symbol": "private static string GetModelDropdownCachePath()",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "typed user Cache",
+      "fileSha256": "8b51bcb61aef43f73dd015d7ae3085fa0cfbf77264e863afb54ffef28e369114"
+    },
+    {
+      "id": "af2.policy.layer",
+      "path": "PolicySystem/Effects/PolicyEffectPromptService.cs",
+      "start": 381,
+      "end": 381,
+      "symbol": "private static PromptSnapshot RefreshSnapshotUnlocked(PromptSnapshot existing, string directory)",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "Policy field-level override, package, embedded fallback",
+      "fileSha256": "cd7fc53a265a3ebe2724253848df1fd2b801bdc83a994001d52263c7172fae7d"
+    },
+    {
+      "id": "af2.policy.save",
+      "path": "PolicySystem/Effects/PolicyEffectPromptService.cs",
+      "start": 250,
+      "end": 250,
+      "symbol": "internal static bool TrySaveModulePrompt(",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "Policy minimal field override and restore",
+      "fileSha256": "cd7fc53a265a3ebe2724253848df1fd2b801bdc83a994001d52263c7172fae7d"
+    },
+    {
+      "id": "af2.policy.package",
+      "path": "PolicySystem/Effects/PolicyEffectPromptService.cs",
+      "start": 683,
+      "end": 683,
+      "symbol": "private static string GetPackagedStorageDirectory()",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "read-only packaged Policy defaults",
+      "fileSha256": "cd7fc53a265a3ebe2724253848df1fd2b801bdc83a994001d52263c7172fae7d"
+    },
+    {
+      "id": "af2.prompt.baseline",
+      "path": "tools/af2_migrate.py",
+      "start": 313,
+      "end": 313,
+      "symbol": "def _prompt_baselines() -> dict[str, str]:",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "locked content-map Prompt hashes",
+      "fileSha256": "66c65f340a802e301c2a29b6f7add2ee445b1ef912dde3201bcd7d02946b333e"
+    },
+    {
+      "id": "af2.prompt.migrate",
+      "path": "tools/af2_migrate.py",
+      "start": 394,
+      "end": 394,
+      "symbol": "def migrate_prompts(sources: list[tuple[str, Path]], root: Path, *,",
+      "match": "exact",
+      "status": "wired-af2-prompt-slice",
+      "note": "explicit backed-up and non-overwriting Prompt migration",
+      "fileSha256": "66c65f340a802e301c2a29b6f7add2ee445b1ef912dde3201bcd7d02946b333e"
     }
   ]
 }
