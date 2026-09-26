@@ -10,6 +10,33 @@ namespace AnimusForge;
 // Only the due prefix is inspected; game-object resolution stays in the host ports.
 internal static class WorldDiplomacyPropagationApplication
 {
+    internal static List<WorldDiplomacyDocument> SelectPendingRumors(WorldDiplomacyStorage storage, int maximum)
+    {
+        int limit = Math.Max(0, maximum);
+        var selected = new List<WorldDiplomacyDocument>(limit);
+        if (limit == 0 || storage?.Documents == null) return selected;
+        // Notifications poll once per second. Keep only the earliest bounded
+        // candidates instead of sorting the entire retained document archive.
+        foreach (WorldDiplomacyDocument document in storage.Documents)
+        {
+            if (document == null || document.IsPlayerAuthored || !document.IsReadyForPublication
+                || document.RumorNotified) continue;
+            int index = 0;
+            while (index < selected.Count && (selected[index].Day < document.Day
+                || (selected[index].Day == document.Day
+                    && selected[index].CreatedUtcTicks <= document.CreatedUtcTicks))) index++;
+            if (index >= limit) continue;
+            selected.Insert(index, document);
+            if (selected.Count > limit) selected.RemoveAt(limit);
+        }
+        return selected;
+    }
+
+    internal static void MarkRumorNotified(WorldDiplomacyDocument document)
+    {
+        if (document != null) document.RumorNotified = true;
+    }
+
     internal static void BeginPublication(
         WorldDiplomacyStorage storage,
         WorldDiplomacyDocument document,
