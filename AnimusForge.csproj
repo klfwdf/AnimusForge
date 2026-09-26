@@ -78,29 +78,29 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="AnimusForge\ModuleData\PreprocessPrompts.json">
+    <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PreprocessPrompts.json">
       <LogicalName>AnimusForge.Defaults.PreprocessPrompts.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="AnimusForge\ModuleData\RpItemIntroductionPrompts.json">
+    <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\RpItemIntroductionPrompts.json">
       <LogicalName>AnimusForge.Defaults.RpItemIntroductionPrompts.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownPrompt.zh-CN.json">
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownPrompt.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownPrompt.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
-    <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownEntryPresentation.zh-CN.json">
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownEntryPresentation.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
-    <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownActionPresentation.zh-CN.json">
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownActionPresentation.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownActionPresentation.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
-    <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownHiddenResidents.zh-CN.json">
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownHiddenResidents.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownHiddenResidents.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>
-    <EmbeddedResource Include="AnimusForge\ModuleData\GcczTownManual.zh-CN.json">
+    <EmbeddedResource Include="content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownManual.zh-CN.json">
       <LogicalName>AnimusForge.Defaults.GcczTownManual.zh-CN.json</LogicalName>
       <WithCulture>false</WithCulture>
     </EmbeddedResource>

@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)..\..\..\artifacts\j15-content\j15a-contracts\dotnet\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\..\..\artifacts\j15-content\j15a-contracts\dotnet\obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

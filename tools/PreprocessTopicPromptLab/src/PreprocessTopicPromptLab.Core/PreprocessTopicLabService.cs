@@ -22,7 +22,7 @@ public sealed class PreprocessTopicLabService
             {
                 var service = new PreprocessTopicLabService();
                 var root = service.FindDefaultRepoRoot(Directory.GetCurrentDirectory());
-                return service.LoadModulePreprocessPrompts(Path.Combine(root, "AnimusForge", "ModuleData", "PreprocessPrompts.json")).StrictJson.SystemPrompt;
+                return service.LoadModulePreprocessPrompts(Path.Combine(root, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json")).StrictJson.SystemPrompt;
             }
             catch
             {
@@ -53,7 +53,7 @@ public sealed class PreprocessTopicLabService
         while (current != null)
         {
             if (File.Exists(Path.Combine(current.FullName, "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json")) &&
-                File.Exists(Path.Combine(current.FullName, "AnimusForge", "ModuleData", "PreprocessPrompts.json")))
+                File.Exists(Path.Combine(current.FullName, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json")))
             {
                 return current.FullName;
             }
@@ -73,7 +73,7 @@ public sealed class PreprocessTopicLabService
     {
         var root = string.IsNullOrWhiteSpace(repoRoot) ? FindDefaultRepoRoot(Directory.GetCurrentDirectory()) : repoRoot;
         var rulePath = Path.Combine(root, "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json");
-        var preprocessPath = Path.Combine(root, "AnimusForge", "ModuleData", "PreprocessPrompts.json");
+        var preprocessPath = Path.Combine(root, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json");
         if (!File.Exists(rulePath))
         {
             throw new FileNotFoundException("RuleBehaviorPrompts.json was not found.", rulePath);

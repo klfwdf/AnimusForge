@@ -60,6 +60,12 @@ def classify_path(path: str) -> str | None:
         return "HOLD:skill-draft"
     if path.startswith("AnimusForge/AssetPackages/"):
         return "HOLD:asset-package-provenance"
+    if top == "content" and len(parts) > 1 and parts[1].lower() == "playerexports":
+        return "HOLD:user-data"
+    if top == "content" and any(part.lower() == "onnx" for part in parts[1:-1]):
+        return "HOLD:model-provenance"
+    if top == "content" and any(part.lower() == "assetpackages" for part in parts[1:-1]):
+        return "HOLD:asset-package-provenance"
     if top == "extensions" and "AssetPackages" in parts:
         return "HOLD:asset-package-provenance"
     if top == "tools" and path.startswith("tools/PlayerExportsEditor/dist/"):
@@ -81,6 +87,15 @@ def classify_path(path: str) -> str | None:
         if len(parts) == 2 and name in {"SubModule.xml", "VoiceMapping.json"}:
             return "content"
         return None
+    if top == "content":
+        if path == "content/content-map.json":
+            return "content"
+        owned_roots = (
+            "content/modules/AF.Module.Prompt/",
+            "content/modules/AF.Module.Economy/",
+            "content/modules/AnimusForge.SiegeAftermathIntervention/",
+        )
+        return "content" if path.startswith(owned_roots) else None
     if top == "tests":
         return "tests"
     if top == "tools":

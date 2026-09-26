@@ -78,11 +78,11 @@ foreach ($file in $standaloneCoreFiles) {
 }
 
 $resourceMappings = @(
-    @("ModuleData\GcczTownActionPresentation.zh-CN.json", "AnimusForge\ModuleData\GcczTownActionPresentation.zh-CN.json"),
-    @("ModuleData\GcczTownEntryPresentation.zh-CN.json", "AnimusForge\ModuleData\GcczTownEntryPresentation.zh-CN.json"),
-    @("ModuleData\GcczTownHiddenResidents.zh-CN.json", "AnimusForge\ModuleData\GcczTownHiddenResidents.zh-CN.json"),
-    @("ModuleData\GcczTownManual.zh-CN.json", "AnimusForge\ModuleData\GcczTownManual.zh-CN.json"),
-    @("ModuleData\GcczTownPrompt.zh-CN.json", "AnimusForge\ModuleData\GcczTownPrompt.zh-CN.json"),
+    @("ModuleData\GcczTownActionPresentation.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownActionPresentation.zh-CN.json"),
+    @("ModuleData\GcczTownEntryPresentation.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownEntryPresentation.zh-CN.json"),
+    @("ModuleData\GcczTownHiddenResidents.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownHiddenResidents.zh-CN.json"),
+    @("ModuleData\GcczTownManual.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownManual.zh-CN.json"),
+    @("ModuleData\GcczTownPrompt.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownPrompt.zh-CN.json"),
     @("ModuleData\Languages\CNs\gccz_town_manual_strings.xml", "AnimusForge\ModuleData\Languages\CNs\gccz_town_manual_strings.xml")
 )
 foreach ($mapping in $resourceMappings) {
