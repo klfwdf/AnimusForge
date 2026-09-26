@@ -1,4 +1,6 @@
-## AF2.0 F1–F5 连续实施：模型用户根/迁移与仓内副本退役已验，整体仍未完成（2026-09-27）
+## AF2.0 F1–F5 连续实施：模型用户根/迁移及仓内 PlayerExports 退役已验，整体仍未完成（2026-09-27）
+
+最新 F4 仓内 PlayerExports 退役 **`7f30aaa6`**：`AnimusForge/PlayerExports` 3139 项与私有 `Recovery/player-exports-*` 完成清单、备份和 `UserData/PlayerExports` 活动副本逐项大小/SHA-256 一致，源码树无 reparse/额外文件，跟踪清单也恰好 3139。整目录同卷移至忽略的 `local/legacy-repo-player-exports`，移后 3139 项再次逐项 hash 复验；Git 当前索引该目录跟踪数为 0，未删除本地字节。编辑器 `--path-contract` 在旧源码目录不存在后仍 PASS，只用 typed 用户根并拒绝旧路径写入。D: 原件、用户活动副本和私有 Recovery 保留。**历史 Git 仍含私人文件名/数据，未改写历史、未推送；此前 `PlayerExports` 备份已验证不等于历史泄漏消除。**这不证明其他仓内数据退役或实机旧档。
 
 最新 F2/F4 模型切片 **`eb03ce28`、`2f589e6b`、`0188367a`、`44e91672`**：`content/models.lock.json` 固定 embedding 安装/仓内两个完整变体及安装 reranker 五件套的字节大小/SHA-256，内嵌 LogicalName `AnimusForge.Dependencies.ModelsLock.json`；`.gitattributes` 固定锁文件 LF，防止不同 Git checkout 使私有 readiness hash 漂移。`src/AF.Persistence/AnimusForgeModelStore.cs:15–106` 在两 ONNX 引擎一次性初始化时验证 typed 用户 Models 路径、锁/Recovery 完成记录、文件集合、大小/mtime 与 reparse；`OnnxEmbeddingEngine.cs:472`、`OnnxCrossEncoderReranker.cs:556` 不再读取模块 `ONNX` 或候选旧路径。模型大文件 SHA 仅在显式迁移/独立验收流式计算，不进入请求/Tick；首次初始化仅检查十项元数据。缺失/损坏显式显示依赖未就绪，不借旧安装回退。模型运行于真实 Bannerlord 的加载/检索 **NOT-RUN**。
 
