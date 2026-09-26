@@ -22,8 +22,8 @@ public sealed class PromptLabService
         var current = new DirectoryInfo(string.IsNullOrWhiteSpace(startDirectory) ? Directory.GetCurrentDirectory() : startDirectory);
         while (current != null)
         {
-            if (File.Exists(Path.Combine(current.FullName, "AnimusForge", "ModuleData", "ActionPostprocessPrompts.json")) &&
-                File.Exists(Path.Combine(current.FullName, "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json")))
+            if (File.Exists(Path.Combine(current.FullName, "content", "modules", "AF.Module.Prompt", "ModuleData", "ActionPostprocessPrompts.json")) &&
+                File.Exists(Path.Combine(current.FullName, "content", "modules", "AF.Module.Prompt", "ModuleData", "RuleBehaviorPrompts.json")))
             {
                 return current.FullName;
             }
@@ -46,9 +46,9 @@ public sealed class PromptLabService
             throw new InvalidOperationException("Repository root is empty.");
         }
 
-        var rulePath = Path.Combine(repoRoot, "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json");
+        var rulePath = Path.Combine(repoRoot, "content", "modules", "AF.Module.Prompt", "ModuleData", "RuleBehaviorPrompts.json");
         var actionPath = string.IsNullOrWhiteSpace(actionPostprocessPath)
-            ? Path.Combine(repoRoot, "AnimusForge", "ModuleData", "ActionPostprocessPrompts.json")
+            ? Path.Combine(repoRoot, "content", "modules", "AF.Module.Prompt", "ModuleData", "ActionPostprocessPrompts.json")
             : actionPostprocessPath;
 
         if (!File.Exists(rulePath))

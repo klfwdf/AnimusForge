@@ -93,7 +93,19 @@ def classify_path(path: str) -> str | None:
         owned_roots = (
             "content/modules/AF.Module.Prompt/",
             "content/modules/AF.Module.Economy/",
+            "content/modules/AF.Module.Social/",
+            "content/modules/AF.Module.Conversation/",
+            "content/modules/AF.Module.WarStats/",
+            "content/modules/AnimusForge.XihaiAction/",
+            "content/modules/AF.Module.UI/",
+            "content/modules/AF.Module.Onboarding/",
+            "content/modules/AF.Module.WorldEvents/",
+            "content/modules/AF.Module.Weekly/",
+            "content/modules/PolicySystem/",
+            "content/modules/AF.Module.Diplomacy/",
             "content/modules/AnimusForge.SiegeAftermathIntervention/",
+            "content/foundation/AF.Foundation.Localization/",
+            "content/foundation/AF.Foundation.UI/",
         )
         return "content" if path.startswith(owned_roots) else None
     if top == "tests":

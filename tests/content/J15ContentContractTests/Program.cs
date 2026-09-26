@@ -40,7 +40,10 @@ internal static class Program
     private static int AuditResources(string mapPath, IEnumerable<string> assemblyPaths)
     {
         using JsonDocument document = JsonDocument.Parse(File.ReadAllText(mapPath));
-        var expected = document.RootElement.GetProperty("entries").EnumerateArray().ToDictionary(
+        var expected = document.RootElement.GetProperty("entries").EnumerateArray()
+            .Where(entry => entry.TryGetProperty("logicalName", out JsonElement logicalName) &&
+                            !string.IsNullOrWhiteSpace(logicalName.GetString()))
+            .ToDictionary(
             entry => entry.GetProperty("logicalName").GetString() ?? "",
             entry => new
             {

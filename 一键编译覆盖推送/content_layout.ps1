@@ -128,16 +128,17 @@ function Get-AnimusForgeContentLayout {
         $owner = [string]$entry.owner
         $source = [string]$entry.source
         $target = [string]$entry.target
-        $logicalName = [string]$entry.logicalName
-        if ([string]::IsNullOrWhiteSpace($owner) -or [string]::IsNullOrWhiteSpace($logicalName)) {
-            throw "Content map owner and logicalName are required."
+        $logicalNameProperty = $entry.PSObject.Properties["logicalName"]
+        $logicalName = if ($null -eq $logicalNameProperty) { "" } else { [string]$logicalNameProperty.Value }
+        if ([string]::IsNullOrWhiteSpace($owner)) {
+            throw "Content map owner is required."
         }
         Assert-AnimusForgeRelativeContentPath -Path $source -Label "Content source"
         Assert-AnimusForgeRelativeContentPath -Path $target -Label "Content target"
         if (-not $targets.Add($target)) {
             throw "Duplicate content target: $target"
         }
-        if (-not $logicalNames.Add($logicalName)) {
+        if (-not [string]::IsNullOrWhiteSpace($logicalName) -and -not $logicalNames.Add($logicalName)) {
             throw "Duplicate embedded logical name: $logicalName"
         }
 

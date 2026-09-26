@@ -118,10 +118,20 @@ def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
     for relative in host_files:
         add_file(relative, "host_integration")
 
+    content_map = json.loads((ROOT / "content" / "content-map.json").read_text(encoding="utf-8"))
+    content_sources_by_target: dict[str, str] = {}
+    for entry in content_map.get("entries", []):
+        target = str(entry.get("target", ""))
+        source = str(entry.get("source", ""))
+        if not target or not source or target in content_sources_by_target:
+            raise RuntimeError("content-map entries must have unique non-empty source and target values")
+        content_sources_by_target[target] = source
+
     runtime_assets = [
         "AnimusForge/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
         "AnimusForge/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
         "AnimusForge/CustomPrompts/WorldDiplomacyPrompt.json",
+        "AnimusForge/ModuleData/PreprocessPrompts.json",
         "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
         "AnimusForge/ModuleData/ActionPostprocessPrompts.json",
         "AnimusForge/ModuleData/ProactiveNpcRequestPrompts.json",
@@ -135,20 +145,9 @@ def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
         "AnimusForge/GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice_v2.png",
     ]
     for relative in runtime_assets:
-        add_file(relative, "runtime_assets")
-
-    content_map = json.loads((ROOT / "content" / "content-map.json").read_text(encoding="utf-8"))
-    preprocess_entries = [
-        entry for entry in content_map.get("entries", [])
-        if entry.get("target") == "ModuleData/PreprocessPrompts.json"
-    ]
-    if len(preprocess_entries) != 1:
-        raise RuntimeError("PreprocessPrompts content-map entry must exist exactly once")
-    add_file(
-        str(preprocess_entries[0]["source"]),
-        "runtime_assets",
-        "AnimusForge/ModuleData/PreprocessPrompts.json",
-    )
+        runtime_target = relative.removeprefix("AnimusForge/")
+        source = content_sources_by_target.get(runtime_target, relative)
+        add_file(source, "runtime_assets", relative)
 
     add_tree("tools/PolicyEffectModule.ContractTests", "contract_tests")
     add_tree(

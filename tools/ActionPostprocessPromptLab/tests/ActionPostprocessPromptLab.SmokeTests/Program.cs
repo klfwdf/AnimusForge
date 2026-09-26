@@ -10,7 +10,7 @@ if (string.IsNullOrWhiteSpace(repoRoot))
 
 if (string.IsNullOrWhiteSpace(repoRoot))
 {
-    Console.Error.WriteLine("Could not find repository root with AnimusForge/ModuleData prompt files.");
+    Console.Error.WriteLine("Could not find repository root with AF.Module.Prompt content files.");
     return 1;
 }
 

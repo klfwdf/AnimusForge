@@ -52,7 +52,7 @@ public sealed class PreprocessTopicLabService
         var current = new DirectoryInfo(string.IsNullOrWhiteSpace(startDirectory) ? Directory.GetCurrentDirectory() : startDirectory);
         while (current != null)
         {
-            if (File.Exists(Path.Combine(current.FullName, "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json")) &&
+            if (File.Exists(Path.Combine(current.FullName, "content", "modules", "AF.Module.Prompt", "ModuleData", "RuleBehaviorPrompts.json")) &&
                 File.Exists(Path.Combine(current.FullName, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json")))
             {
                 return current.FullName;
@@ -72,7 +72,7 @@ public sealed class PreprocessTopicLabService
     public PromptCatalog LoadCatalog(string repoRoot)
     {
         var root = string.IsNullOrWhiteSpace(repoRoot) ? FindDefaultRepoRoot(Directory.GetCurrentDirectory()) : repoRoot;
-        var rulePath = Path.Combine(root, "AnimusForge", "ModuleData", "RuleBehaviorPrompts.json");
+        var rulePath = Path.Combine(root, "content", "modules", "AF.Module.Prompt", "ModuleData", "RuleBehaviorPrompts.json");
         var preprocessPath = Path.Combine(root, "content", "modules", "AF.Module.Prompt", "ModuleData", "PreprocessPrompts.json");
         if (!File.Exists(rulePath))
         {

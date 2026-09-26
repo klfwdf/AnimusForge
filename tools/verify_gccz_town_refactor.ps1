@@ -83,7 +83,7 @@ $resourceMappings = @(
     @("ModuleData\GcczTownHiddenResidents.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownHiddenResidents.zh-CN.json"),
     @("ModuleData\GcczTownManual.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownManual.zh-CN.json"),
     @("ModuleData\GcczTownPrompt.zh-CN.json", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\GcczTownPrompt.zh-CN.json"),
-    @("ModuleData\Languages\CNs\gccz_town_manual_strings.xml", "AnimusForge\ModuleData\Languages\CNs\gccz_town_manual_strings.xml")
+    @("ModuleData\Languages\CNs\gccz_town_manual_strings.xml", "content\modules\AnimusForge.SiegeAftermathIntervention\ModuleData\Languages\CNs\gccz_town_manual_strings.xml")
 )
 foreach ($mapping in $resourceMappings) {
     Assert-NormalizedMirror (Join-Path $StandaloneRoot $mapping[0]) (Join-Path $FusedRoot $mapping[1]) "player resource $($mapping[0])"
