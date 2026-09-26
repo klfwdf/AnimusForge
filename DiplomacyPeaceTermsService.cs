@@ -17,7 +17,7 @@ internal static class DiplomacyPeaceTermsService
 		}
 		if (token.Equals("auto", StringComparison.OrdinalIgnoreCase))
 		{
-			return DiplomacyBehavior.TryBuildTributePowerContext(payer, receiver, out AfTributePowerContext context)
+			return DiplomacyConversationBridge.TryBuildTributePowerContext(payer, receiver, out AfTributePowerContext context)
 				? context.CalculatedTribute
 				: 0;
 		}

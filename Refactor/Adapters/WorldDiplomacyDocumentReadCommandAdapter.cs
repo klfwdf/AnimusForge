@@ -3,7 +3,7 @@ using AnimusForge.Refactor.Contracts;
 
 namespace AnimusForge.Refactor.Adapters;
 
-internal sealed class LegacyWorldDiplomacyDocumentReadCommand : IWorldDiplomacyDocumentReadCommand
+internal sealed class WorldDiplomacyDocumentReadCommandAdapter : IWorldDiplomacyDocumentReadCommand
 {
     private const string TimelinePrefix = "diplomacy:";
 
@@ -19,7 +19,7 @@ internal sealed class LegacyWorldDiplomacyDocumentReadCommand : IWorldDiplomacyD
             return WorldDiplomacyDocumentReadResult.InvalidDocumentId();
         }
 
-        bool applied = WorldDiplomacyBehavior.TryMarkDocumentReadForCommand(
+        bool applied = DiplomacyModuleServices.World.TryMarkDocumentRead(
             cleanId,
             out bool ownerAvailable);
         if (!ownerAvailable)

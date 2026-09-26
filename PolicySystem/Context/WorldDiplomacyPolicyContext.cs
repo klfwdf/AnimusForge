@@ -124,20 +124,19 @@ internal static class WorldDiplomacyPolicyContext
 					.OrderBy(id => id, StringComparer.OrdinalIgnoreCase))
 				{
 					NpcRulerPolicyEffectDto metadata = FindEffectMetadata(record, targetId);
-					result.Add(new WorldDiplomacyPolicySignalSnapshot
-					{
-						SignalKey = "policy:" + record.PolicyId.Trim() + ":" + targetId,
-						PolicyId = record.PolicyId.Trim(),
-						PolicyKind = string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyEffectScopes.Kingdom : record.PolicyKind.Trim(),
-						PolicyName = Limit(FirstNonEmpty(record.PolicyName, "未命名政策"), 80),
-						PolicySummary = Limit(FirstNonEmpty(record.PolicyDigest, record.PolicyContent), 260),
-						IssuerKingdomId = issuerId,
-						IssuerKingdomName = Limit(FirstNonEmpty(record.KingdomName, issuerId), 60),
-						TargetKingdomId = targetId,
-						TargetKingdomName = Limit(FirstNonEmpty(metadata?.TargetKingdomName, targetId), 60),
-						DirectEffect = Limit(BuildEffectSummary(record, targetId), 180),
-						PublishedDay = Math.Max(0, record.Day)
-					});
+					result.Add(new WorldDiplomacyPolicySignalSnapshot(
+						"policy:" + record.PolicyId.Trim() + ":" + targetId,
+						record.PolicyId.Trim(),
+						string.IsNullOrWhiteSpace(record.PolicyKind) ? PolicyEffectScopes.Kingdom : record.PolicyKind.Trim(),
+						Limit(FirstNonEmpty(record.PolicyName, "未命名政策"), 80),
+						Limit(FirstNonEmpty(record.PolicyDigest, record.PolicyContent), 260),
+						issuerId,
+						Limit(FirstNonEmpty(record.KingdomName, issuerId), 60),
+						targetId,
+						Limit(FirstNonEmpty(metadata?.TargetKingdomName, targetId), 60),
+						Limit(BuildEffectSummary(record, targetId), 180),
+						Math.Max(0, record.Day)
+					));
 				}
 			}
 			return result.OrderBy(item => item.PublishedDay).ThenBy(item => item.SignalKey, StringComparer.OrdinalIgnoreCase).ToList();
@@ -696,19 +695,4 @@ internal static class WorldDiplomacyPolicyContext
 		string text = (value ?? "").Trim();
 		return text.Length <= maxChars ? text : text.Substring(0, Math.Max(0, maxChars));
 	}
-}
-
-internal sealed class WorldDiplomacyPolicySignalSnapshot
-{
-	public string SignalKey { get; set; } = "";
-	public string PolicyId { get; set; } = "";
-	public string PolicyKind { get; set; } = PolicyEffectScopes.Kingdom;
-	public string PolicyName { get; set; } = "";
-	public string PolicySummary { get; set; } = "";
-	public string IssuerKingdomId { get; set; } = "";
-	public string IssuerKingdomName { get; set; } = "";
-	public string TargetKingdomId { get; set; } = "";
-	public string TargetKingdomName { get; set; } = "";
-	public string DirectEffect { get; set; } = "";
-	public int PublishedDay { get; set; }
 }

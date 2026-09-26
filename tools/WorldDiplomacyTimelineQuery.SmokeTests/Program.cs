@@ -275,9 +275,9 @@ internal static class Program
         string documentFacadePath = FindRepositoryFile("Refactor", "Modules", "WorldDiplomacyTimelineDocumentQueryFacade.cs");
         string readContractPath = FindRepositoryFile("Refactor", "Contracts", "WorldDiplomacyDocumentReadCommandContracts.cs");
         string readFacadePath = FindRepositoryFile("Refactor", "Modules", "WorldDiplomacyDocumentReadCommandFacade.cs");
-        string adapterPath = FindRepositoryFile("Refactor", "Adapters", "LegacyWorldDiplomacyTimelineRevisionQuery.cs");
-        string documentAdapterPath = FindRepositoryFile("Refactor", "Adapters", "LegacyWorldDiplomacyTimelineDocumentQuery.cs");
-        string readAdapterPath = FindRepositoryFile("Refactor", "Adapters", "LegacyWorldDiplomacyDocumentReadCommand.cs");
+        string adapterPath = FindRepositoryFile("Refactor", "Adapters", "WorldDiplomacyTimelineRevisionQueryAdapter.cs");
+        string documentAdapterPath = FindRepositoryFile("Refactor", "Adapters", "WorldDiplomacyTimelineDocumentQueryAdapter.cs");
+        string readAdapterPath = FindRepositoryFile("Refactor", "Adapters", "WorldDiplomacyDocumentReadCommandAdapter.cs");
         string hostPath = FindRepositoryFile("Refactor", "Modules", "WorldDiplomacyTimelineQueryHost.cs");
         string uiPath = FindRepositoryFile("WorldMessageTimelineUi.cs");
         string behaviorPath = FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs");
@@ -302,30 +302,30 @@ internal static class Program
             Test.True(!source.Contains("TaleWorlds", StringComparison.Ordinal), "pure query source must not reference TaleWorlds");
             Test.True(!source.Contains("WorldMessageTimelineUi", StringComparison.Ordinal), "pure query source must not reference UI");
         }
-        Test.True(adapter.Contains("WorldDiplomacyBehavior.QueryWorldMessageTimelineRevision()", StringComparison.Ordinal),
+        Test.True(adapter.Contains("DiplomacyModuleServices.World.QueryTimelineRevision()", StringComparison.Ordinal),
             "legacy adapter must delegate to the current diplomacy owner");
-        Test.True(host.Contains("new LegacyWorldDiplomacyTimelineRevisionQuery()", StringComparison.Ordinal)
+        Test.True(host.Contains("new WorldDiplomacyTimelineRevisionQueryAdapter()", StringComparison.Ordinal)
                   && host.Contains("RevisionFacade.GetRevisionOrZero()", StringComparison.Ordinal),
             "query host must compose the legacy adapter behind the facade once");
         Test.True(!documentContract.Contains("WorldDiplomacyDocument", StringComparison.Ordinal),
             "timeline document contract must not expose persisted document DTOs");
-        Test.True(documentAdapter.Contains("WorldDiplomacyBehavior.QueryTimelineDocuments(maxCount)", StringComparison.Ordinal)
+        Test.True(documentAdapter.Contains("DiplomacyModuleServices.World.QueryTimelineDocuments(maxCount)", StringComparison.Ordinal)
                   && behavior.Contains("WorldDiplomacyPresentationQueries.Timeline(owner._storage, maxCount)", StringComparison.Ordinal)
                   && queries.Contains("document.IsPlayerAuthored || document.IsReadyForPublication", StringComparison.Ordinal)
                   && queries.Contains("BuildImpactText(document)", StringComparison.Ordinal),
             "document adapter must preserve the bounded source, visibility filter, and standing impact formatter");
-        Test.True(host.Contains("new LegacyWorldDiplomacyTimelineDocumentQuery()", StringComparison.Ordinal)
+        Test.True(host.Contains("new WorldDiplomacyTimelineDocumentQueryAdapter()", StringComparison.Ordinal)
                   && host.Contains("DocumentFacade.Query(maxCount).Documents", StringComparison.Ordinal),
             "query host must compose the document adapter behind the facade once");
         Test.True(readAdapter.Contains("cleanId = (documentId ?? string.Empty).Trim()", StringComparison.Ordinal)
                   && readAdapter.Contains("cleanId.StartsWith(TimelinePrefix, StringComparison.OrdinalIgnoreCase)", StringComparison.Ordinal)
                   && readAdapter.Contains("cleanId = cleanId.Substring(TimelinePrefix.Length)", StringComparison.Ordinal),
             "document-read adapter must preserve exact trim and diplomacy-prefix normalization");
-        Test.True(readAdapter.Contains("TryMarkDocumentReadForCommand", StringComparison.Ordinal)
+        Test.True(readAdapter.Contains("DiplomacyModuleServices.World.TryMarkDocumentRead", StringComparison.Ordinal)
                   && readAdapter.Contains("WorldDiplomacyDocumentReadResult.Unavailable()", StringComparison.Ordinal)
                   && readAdapter.Contains("WorldDiplomacyDocumentReadResult.NotFound()", StringComparison.Ordinal),
             "document-read adapter must preserve owner availability and lookup failure boundaries");
-        Test.True(host.Contains("new LegacyWorldDiplomacyDocumentReadCommand()", StringComparison.Ordinal)
+        Test.True(host.Contains("new WorldDiplomacyDocumentReadCommandAdapter()", StringComparison.Ordinal)
                   && host.Contains("DocumentReadFacade.MarkReadOrFalse(documentId)", StringComparison.Ordinal),
             "query host must compose the document-read adapter behind the facade once");
         Test.True(ui.Contains("DiplomacyRevision = WorldDiplomacyTimelineQueryHost.GetRevisionOrZero()", StringComparison.Ordinal),
