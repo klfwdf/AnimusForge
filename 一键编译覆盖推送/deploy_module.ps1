@@ -235,6 +235,7 @@ function Reset-ProjectStageDirectory {
     Assert-PathUnderRoot -Path $actual -Root $ProjectRoot
     if (Test-Path -LiteralPath $actual) {
         Assert-NotReparsePoint -Path $actual
+        Assert-AnimusForgeCleanStage -ProjectRoot $ProjectRoot -StageModuleDir $actual
         Remove-Item -LiteralPath $actual -Recurse -Force
     }
     New-Item -ItemType Directory -Path $actual -Force | Out-Null
@@ -247,7 +248,7 @@ function Test-SourceModuleDir {
     if (-not (Test-Path -LiteralPath $Path -PathType Container)) {
         throw "Source module directory not found: $Path"
     }
-    $missing = @("SubModule.xml", "ModuleData", "GUI", "ONNX", "PlayerExports") | Where-Object {
+    $missing = @("SubModule.xml") | Where-Object {
         -not (Test-Path -LiteralPath (Join-Path $Path $_))
     }
     if ($missing.Count -gt 0) {
@@ -458,28 +459,6 @@ function Merge-PlayerExports {
     Write-Host "Merged Data  : $($winners.Count) PlayerExports file(s) into staging"
 }
 
-function Sync-PlayerExportsBackToSource {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
-        [Parameter(Mandatory = $true)][string]$TargetModuleDir
-    )
-
-    $targetExports = Join-Path $TargetModuleDir "PlayerExports"
-    if (-not (Test-Path -LiteralPath $targetExports -PathType Container)) {
-        Write-Warning "PlayerExports source sync skipped because the deployed unified module has no PlayerExports directory."
-        return
-    }
-
-    $sourceExports = Join-Path $SourceModuleDir "PlayerExports"
-    try {
-        Invoke-Robocopy -SourceDir $targetExports -TargetDir $sourceExports -ExtraArguments @("/E", "/XO")
-        Write-Host "Synced Data  : $targetExports -> $sourceExports (non-deleting /E; newer source files preserved)"
-    }
-    catch {
-        Write-Warning "Deployment succeeded, but PlayerExports could not be synced back to the source with non-deleting /E: $($_.Exception.Message)"
-    }
-}
-
 function Copy-RequiredPdb {
     param(
         [Parameter(Mandatory = $true)][string]$SourceDll,
@@ -546,6 +525,17 @@ function Build-DesiredModuleBin {
         [Parameter(Mandatory = $true)][string]$Bootstrap
     )
 
+    $lockPath = Join-Path $projectRootFull "content\runtime-dependencies.lock.json"
+    $dependencyLock = Get-Content -LiteralPath $lockPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ([int]$dependencyLock.schemaVersion -ne 1 -or @($dependencyLock.files.PSObject.Properties).Count -ne $PrivateRuntimeDlls.Count) {
+        throw "Private runtime dependency lock is incomplete."
+    }
+    foreach ($runtimeDll in $PrivateRuntimeDlls) {
+        $hash = [string]$dependencyLock.files.$runtimeDll
+        if ($hash -cnotmatch '^[0-9a-f]{64}$' -or (Get-FileSha256 -LiteralPath (Join-Path $RuntimeDependencyDir $runtimeDll)) -ne $hash) {
+            throw "Private runtime dependency is not the locked build input: $runtimeDll"
+        }
+    }
     if (Test-Path -LiteralPath $StagingBinDir) {
         throw "Staging bin must not already exist: $StagingBinDir"
     }
@@ -556,6 +546,9 @@ function Build-DesiredModuleBin {
             throw "Required private runtime DLL not found: $runtimeSource"
         }
         Copy-Item -LiteralPath $runtimeSource -Destination (Join-Path $StagingBinDir $runtimeDll) -Force
+        if ((Get-FileSha256 -LiteralPath (Join-Path $StagingBinDir $runtimeDll)) -ne [string]$dependencyLock.files.$runtimeDll) {
+            throw "Private runtime dependency changed while staging: $runtimeDll"
+        }
     }
 
     $dir13 = Join-Path $StagingBinDir "versions\1.3"
@@ -726,34 +719,18 @@ Write-Host "Deploy CWD   : $projectRootFull"
 if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
     $projectStageDir = Reset-ProjectStageDirectory -Path $StageOnlyOutputDir -ProjectRoot $projectRootFull -ConfigurationName $Configuration
     try {
-        Invoke-Robocopy -SourceDir $sourceModuleDir -TargetDir $projectStageDir -ExtraArguments @(
-            "/E",
-            "/XD",
-            (Join-Path $sourceModuleDir "Logs"),
-            (Join-Path $sourceModuleDir "PlayerExports"),
-            (Join-Path $sourceModuleDir "bin")
-        )
+        Copy-Item -LiteralPath (Join-Path $sourceModuleDir "SubModule.xml") -Destination (Join-Path $projectStageDir "SubModule.xml")
         Invoke-AnimusForgeContentProjection -ProjectRoot $projectRootFull -DestinationModuleDir $projectStageDir | Out-Null
         Set-SingleModuleIdentity -ModuleDir $projectStageDir
         Build-DesiredModuleBin -RuntimeDependencyDir $runtimeDependencyDirFull -StagingBinDir (Join-Path $projectStageDir "bin\Win64_Shipping_Client") -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
-        Invoke-Robocopy -SourceDir (Join-Path $sourceModuleDir "PlayerExports") -TargetDir (Join-Path $projectStageDir "PlayerExports") -ExtraArguments @("/E")
         Assert-SingleModuleLayout -ModuleDir $projectStageDir
+        Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $projectStageDir
         Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $projectStageDir "bin\Win64_Shipping_Client\AnimusForge.Bootstrap.dll")
         Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $projectStageDir "bin\Win64_Shipping_Client\versions\1.3\AnimusForge.dll")
         Assert-SameHash -SourcePath $dll14Full -TargetPath (Join-Path $projectStageDir "bin\Win64_Shipping_Client\versions\1.4\AnimusForge.dll")
     }
     catch {
-        $stageFailure = $_
-        if (Test-Path -LiteralPath $projectStageDir) {
-            try {
-                Assert-NotReparsePoint -Path $projectStageDir
-                Remove-Item -LiteralPath $projectStageDir -Recurse -Force
-            }
-            catch {
-                Write-Warning "Failed to clean project staging directory after an assembly error: $projectStageDir"
-            }
-        }
-        throw $stageFailure
+        throw
     }
 
     Write-Host "Stage Mode   : project-local unified module; no game directory was modified"
@@ -761,6 +738,8 @@ if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
     Write-Host "Output       : $projectStageDir"
     return
 }
+
+throw "AF2 program-only deployment is not yet verified; no installed module was changed."
 
 $legacy13ModuleDir = Get-FullPathSafe -Path (Join-Path $modulesDir "AnimusForge_1_3_x")
 $legacy14ModuleDir = Get-FullPathSafe -Path (Join-Path $modulesDir "AnimusForge_1_4_5")
@@ -987,8 +966,6 @@ if (Test-Path -LiteralPath $stagingModuleDir) {
         Write-Warning "Deployment succeeded, but the staging directory could not be cleaned: $stagingModuleDir ($($_.Exception.Message))"
     }
 }
-
-Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir
 
 Write-Host "Deploy Mode  : one unified module with Bootstrap version selection"
 Write-Host "Deploy Result: success"

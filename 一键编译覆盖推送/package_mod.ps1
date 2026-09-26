@@ -18,6 +18,17 @@ $ErrorActionPreference = "Stop"
 if ($IncludeOnnx -or $IncludeReranker) {
     throw "Unified client packages never include the ONNX model folder. Remove -IncludeOnnx/-IncludeReranker."
 }
+if ($ExcludeCustomPrompts) {
+    throw "AF2 packages require the locked Prompt defaults; -ExcludeCustomPrompts is no longer supported."
+}
+if (-not [string]::IsNullOrWhiteSpace($SourceModuleDir)) {
+    throw "AF2 packages never edit or read a separate source module; remove -SourceModuleDir."
+}
+$contentLayoutHelper = Join-Path $PSScriptRoot "content_layout.ps1"
+if (-not (Test-Path -LiteralPath $contentLayoutHelper -PathType Leaf)) {
+    throw "Content layout helper not found: $contentLayoutHelper"
+}
+. $contentLayoutHelper
 $VersionPattern = "^(?<prefix>v?)(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:\.(?<micro>\d))?$"
 $ModuleName = "AnimusForge"
 $BootstrapAssemblyName = "AnimusForge.Bootstrap"
@@ -149,7 +160,7 @@ function Resolve-PackageVersion {
     return Get-NextPatchVersion -CurrentVersion $CurrentVersion
 }
 
-function Set-SubModuleVersion {
+function Get-VersionedSubModuleBytes {
     param(
         [Parameter(Mandatory = $true)][string]$SubModulePath,
         [Parameter(Mandatory = $true)][string]$NewVersion
@@ -157,10 +168,9 @@ function Set-SubModuleVersion {
 
     [xml]$xml = Get-Content -Raw -Encoding UTF8 -LiteralPath $SubModulePath
     if ([string]$xml.Module.Version.value -eq $NewVersion) {
-        return
+        return ,([System.IO.File]::ReadAllBytes($SubModulePath))
     }
     $xml.Module.Version.value = $NewVersion
-
     $settings = New-Object System.Xml.XmlWriterSettings
     $settings.Encoding = New-Object System.Text.UTF8Encoding($false)
     $settings.Indent = $true
@@ -168,12 +178,16 @@ function Set-SubModuleVersion {
     $settings.NewLineChars = "`r`n"
     $settings.NewLineHandling = [System.Xml.NewLineHandling]::Replace
     $settings.OmitXmlDeclaration = $true
-    $writer = [System.Xml.XmlWriter]::Create($SubModulePath, $settings)
+    $memory = New-Object System.IO.MemoryStream
+    $writer = [System.Xml.XmlWriter]::Create($memory, $settings)
     try {
         $xml.Save($writer)
+        $writer.Flush()
+        return ,($memory.ToArray())
     }
     finally {
         $writer.Dispose()
+        $memory.Dispose()
     }
 }
 
@@ -274,7 +288,7 @@ function Test-AnimusForgeModuleDir {
     if (-not (Split-Path -Leaf (Get-FullPathSafe -Path $Path)).Equals($ModuleName, [System.StringComparison]::Ordinal)) {
         $missing.Add("folder name must be AnimusForge")
     }
-    foreach ($entry in @("bin", "SubModule.xml", "ModuleData", "GUI", "PlayerExports")) {
+    foreach ($entry in @("bin", "SubModule.xml", "ModuleData", "GUI")) {
         if (-not (Test-Path -LiteralPath (Join-Path $Path $entry))) {
             $missing.Add($entry)
         }
@@ -713,6 +727,47 @@ function Assert-ZipLayout {
     }
 }
 
+function Assert-ZipMatchesCleanStage {
+    param(
+        [Parameter(Mandatory = $true)][string]$ZipPath,
+        [Parameter(Mandatory = $true)][string]$StageModuleDir,
+        [Parameter(Mandatory = $true)][string]$PackageVersion
+    )
+
+    $stageFull = (Get-FullPathSafe -Path $StageModuleDir).TrimEnd('\', '/')
+    $stageFiles = @(Get-ChildItem -LiteralPath $stageFull -Recurse -File -Force)
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+    try {
+        if ($archive.Entries.Count -ne $stageFiles.Count) {
+            throw "ZIP entry count differs from the clean Stage."
+        }
+        foreach ($file in $stageFiles) {
+            $relative = $file.FullName.Substring($stageFull.Length).TrimStart('\', '/') -replace '\\', '/'
+            $entry = Get-RequiredZipEntry -Archive $archive -EntryName "AnimusForge/$relative"
+            if ($relative -ceq "SubModule.xml") {
+                $bytes = Get-VersionedSubModuleBytes -SubModulePath $file.FullName -NewVersion $PackageVersion
+                $xmlSha = [System.Security.Cryptography.SHA256]::Create()
+                try { $expected = [System.BitConverter]::ToString($xmlSha.ComputeHash($bytes)) -replace '-', '' }
+                finally { $xmlSha.Dispose() }
+            }
+            else {
+                $expected = Get-FileSha256 -LiteralPath $file.FullName
+            }
+            $stream = $entry.Open()
+            try {
+                $sha = [System.Security.Cryptography.SHA256]::Create()
+                try { $actual = [System.BitConverter]::ToString($sha.ComputeHash($stream)) -replace '-', '' }
+                finally { $sha.Dispose() }
+            }
+            finally { $stream.Dispose() }
+            if (-not $actual.Equals($expected, [System.StringComparison]::OrdinalIgnoreCase)) {
+                throw "ZIP file differs from the locked Stage: $relative"
+            }
+        }
+    }
+    finally { $archive.Dispose() }
+}
+
 function Write-ZipFromModule {
     param(
         [Parameter(Mandatory = $true)][string]$ModulePath,
@@ -725,10 +780,11 @@ function Write-ZipFromModule {
     if ($outputFull.Equals($moduleFull, [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "OutputDir must not be the module directory itself: $outputFull"
     }
+    if ($outputFull.StartsWith($moduleFull + "\", [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "OutputDir must not be inside the Stage: $outputFull"
+    }
+    Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull
     New-Item -ItemType Directory -Path $outputFull -Force | Out-Null
-    $isOutputInsideModule = $outputFull.Equals($moduleFull, [System.StringComparison]::OrdinalIgnoreCase) -or $outputFull.StartsWith($moduleFull + "\", [System.StringComparison]::OrdinalIgnoreCase)
-    $onnxFull = (Get-FullPathSafe -Path (Join-Path $moduleFull "ONNX")).TrimEnd('\', '/')
-    $customPromptsFull = (Get-FullPathSafe -Path (Join-Path $moduleFull "CustomPrompts")).TrimEnd('\', '/')
 
     $versionForName = $PackageVersion -replace "[^\w\.\-]", "_"
     $labelForName = ""
@@ -749,19 +805,22 @@ function Write-ZipFromModule {
     try {
         try {
             $zip = [System.IO.Compression.ZipFile]::Open($temporaryZipPath, [System.IO.Compression.ZipArchiveMode]::Create)
-            $files = Get-ChildItem -LiteralPath $moduleFull -Recurse -File -Force | Where-Object {
-                $fullPath = (Get-FullPathSafe -Path $_.FullName).TrimEnd('\', '/')
-                $isLog = $fullPath -match '[\\/]+Logs[\\/]+'
-                $isOutput = $isOutputInsideModule -and ($fullPath.Equals($outputFull, [System.StringComparison]::OrdinalIgnoreCase) -or $fullPath.StartsWith($outputFull + "\", [System.StringComparison]::OrdinalIgnoreCase))
-                $isOnnx = $fullPath.Equals($onnxFull, [System.StringComparison]::OrdinalIgnoreCase) -or $fullPath.StartsWith($onnxFull + "\", [System.StringComparison]::OrdinalIgnoreCase)
-                $isCustomPrompt = $fullPath.Equals($customPromptsFull, [System.StringComparison]::OrdinalIgnoreCase) -or $fullPath.StartsWith($customPromptsFull + "\", [System.StringComparison]::OrdinalIgnoreCase)
-                $isGameOwnedDll = $_.Extension -eq ".dll" -and $_.Name -match '^(TaleWorlds\.|SandBox(?:\.|$)|StoryMode(?:\.|$)|Native\.dll$|CustomBattle\.dll$)'
-                -not $isLog -and -not $isOutput -and -not $isOnnx -and (-not $ExcludeCustomPrompts -or -not $isCustomPrompt) -and -not $isGameOwnedDll
-            }
+            $files = @(Get-ChildItem -LiteralPath $moduleFull -Recurse -File -Force | Sort-Object FullName)
 
             foreach ($file in $files) {
                 $relative = $file.FullName.Substring($moduleFull.Length).TrimStart('\', '/') -replace '\\', '/'
-                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file.FullName, "AnimusForge/$relative", [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+                if ($relative -ceq "SubModule.xml") {
+                    $entry = $zip.CreateEntry("AnimusForge/SubModule.xml", [System.IO.Compression.CompressionLevel]::Optimal)
+                    $stream = $entry.Open()
+                    try {
+                        $bytes = Get-VersionedSubModuleBytes -SubModulePath $file.FullName -NewVersion $PackageVersion
+                        $stream.Write($bytes, 0, $bytes.Length)
+                    }
+                    finally { $stream.Dispose() }
+                }
+                else {
+                    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $file.FullName, "AnimusForge/$relative", [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+                }
             }
         }
         finally {
@@ -771,7 +830,9 @@ function Write-ZipFromModule {
             }
         }
 
-        Assert-ZipLayout -ZipPath $temporaryZipPath -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$ExcludeCustomPrompts
+        Assert-ZipLayout -ZipPath $temporaryZipPath -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$false
+        Assert-ZipMatchesCleanStage -ZipPath $temporaryZipPath -StageModuleDir $moduleFull -PackageVersion $PackageVersion
+        Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull
         [System.IO.File]::Move($temporaryZipPath, $zipPath)
         $finalZipCreated = $true
 
@@ -779,10 +840,7 @@ function Write-ZipFromModule {
         Write-Host "Module Path  : $moduleFull"
         Write-Host "Module Detect: $(if ($AutoDetected) { 'Auto' } else { 'Manual' })"
         Write-Host "Output ZIP   : $zipPath"
-        Write-Host "Exclude Rule : Logs/**/*"
-        if ($ExcludeCustomPrompts) {
-            Write-Host "Exclude Rule : CustomPrompts/**/*"
-        }
+        Write-Host "Input Rule   : exact clean Stage file set; no exclusion scan"
         Write-Host "ONNX ZIP     : Excluded by unified client package policy"
         return $zipPath
     }
@@ -820,6 +878,11 @@ function Write-ZipFromModule {
     }
 }
 
+if ([string]::IsNullOrWhiteSpace($ModuleDir)) {
+    throw "AF2 packaging requires an explicit project-local -ModuleDir Stage path."
+}
+$projectRootFull = Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")
+Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $ModuleDir
 $resolved = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -BannerlordRootPath $BannerlordRoot -AllowFirstMatch:$UseFirstMatch
 $moduleFull = $resolved.Path
 $moduleXml = Join-Path $moduleFull "SubModule.xml"
@@ -828,77 +891,11 @@ if ($outputFullPreflight.Equals($moduleFull.TrimEnd('\', '/'), [System.StringCom
     throw "OutputDir must not be the module directory itself: $outputFullPreflight"
 }
 
-$versionSourceXml = $moduleXml
-if (-not [string]::IsNullOrWhiteSpace($SourceModuleDir)) {
-    $sourceFull = Get-FullPathSafe -Path $SourceModuleDir
-    $versionSourceXml = Join-Path $sourceFull "SubModule.xml"
-    if (-not (Test-Path -LiteralPath $versionSourceXml -PathType Leaf)) {
-        throw "SourceModuleDir must contain SubModule.xml: $versionSourceXml"
-    }
-}
-
-$currentVersion = Get-SubModuleVersion -SubModulePath $versionSourceXml
+$currentVersion = Get-SubModuleVersion -SubModulePath $moduleXml
 $packageVersion = Resolve-PackageVersion -CurrentVersion $currentVersion
-$xmlSnapshots = New-Object System.Collections.Generic.List[object]
-foreach ($xmlPath in @($versionSourceXml, $moduleXml)) {
-    $xmlFullPath = Get-FullPathSafe -Path $xmlPath
-    $alreadyCaptured = $false
-    foreach ($snapshot in $xmlSnapshots) {
-        if ($snapshot.Path.Equals($xmlFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
-            $alreadyCaptured = $true
-            break
-        }
-    }
-    if (-not $alreadyCaptured) {
-        $xmlSnapshots.Add([PSCustomObject]@{
-            Path = $xmlFullPath
-            Bytes = [System.IO.File]::ReadAllBytes($xmlFullPath)
-        })
-    }
-}
-
-$createdZipPath = ""
-try {
-    Set-SubModuleVersion -SubModulePath $versionSourceXml -NewVersion $packageVersion
-    if (-not (Get-FullPathSafe -Path $versionSourceXml).Equals((Get-FullPathSafe -Path $moduleXml), [System.StringComparison]::OrdinalIgnoreCase)) {
-        Set-SubModuleVersion -SubModulePath $moduleXml -NewVersion $packageVersion
-    }
-
-    $checkAfterVersion = Test-AnimusForgeModuleDir -Path $moduleFull
-    if (-not $checkAfterVersion.IsValid) {
-        throw "Module became invalid before packaging: $($checkAfterVersion.Missing -join ', ')"
-    }
-
-    Write-Host "Version      : $currentVersion -> $packageVersion"
-    Write-Host "Version XML  : $versionSourceXml"
-    $createdZipPath = Write-ZipFromModule -ModulePath $moduleFull -PackageVersion $packageVersion -AutoDetected:$resolved.AutoDetected
-    Write-Host "Package Result: success"
-    Write-Host "Package       : $createdZipPath"
-}
-catch {
-    $packageFailure = $_
-    $rollbackFailures = New-Object System.Collections.Generic.List[string]
-    foreach ($snapshot in $xmlSnapshots) {
-        try {
-            [System.IO.File]::WriteAllBytes($snapshot.Path, $snapshot.Bytes)
-        }
-        catch {
-            $rollbackFailures.Add("$($snapshot.Path): $($_.Exception.Message)")
-        }
-    }
-    if (-not [string]::IsNullOrWhiteSpace($createdZipPath) -and (Test-Path -LiteralPath $createdZipPath -PathType Leaf)) {
-        try {
-            Remove-Item -LiteralPath $createdZipPath -Force
-        }
-        catch {
-            $rollbackFailures.Add("${createdZipPath}: $($_.Exception.Message)")
-        }
-    }
-
-    if ($rollbackFailures.Count -gt 0) {
-        throw "Packaging failed and rollback was incomplete.`nOriginal error: $($packageFailure.Exception.Message)`nRollback errors:`n$($rollbackFailures -join "`n")"
-    }
-    throw $packageFailure
-}
+Write-Host "Version      : $currentVersion -> $packageVersion (ZIP only; Stage/source unchanged)"
+$createdZipPath = Write-ZipFromModule -ModulePath $moduleFull -PackageVersion $packageVersion -AutoDetected:$resolved.AutoDetected
+Write-Host "Package Result: success"
+Write-Host "Package       : $createdZipPath"
 
 exit 0
