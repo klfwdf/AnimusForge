@@ -487,9 +487,124 @@ def migrate_prompts(sources: list[tuple[str, Path]], root: Path, *,
         lock_stream.close()
 
 
+def _snapshot_terminal_settings(sources: list[tuple[str, Path]], root: Path) -> list[dict]:
+    entries: list[dict] = []
+    seen_ids: set[str] = set()
+    for source_id, module in sources:
+        if not source_id or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for c in source_id):
+            raise ValueError("Source identity must be a simple non-private label")
+        if source_id in seen_ids:
+            raise ValueError("Duplicate source identity")
+        seen_ids.add(source_id)
+        module = Path(os.path.abspath(module))
+        _check_ancestors(module)
+        if root == module or root in module.parents or module in root.parents:
+            raise ValueError("Migration source and data root must be separate")
+        path = module / "ModuleData" / "TerminalSettings.json"
+        _check_ancestors(path)
+        if not path.exists():
+            continue
+        if not path.is_file():
+            raise RuntimeError("Legacy TerminalSettings is not a regular file")
+        stat = path.stat()
+        try:
+            value = json.loads(path.read_text(encoding="utf-8-sig"))
+            valid = isinstance(value, dict) and all(
+                key not in value or isinstance(value[key], bool)
+                for key in ("IsHotkeyEnabled", "IsMapIconEnabled"))
+        except (UnicodeError, ValueError):
+            valid = False
+        entries.append({"source": source_id, "relative": "TerminalSettings.json",
+                        "sha256": _hash(path), "size": stat.st_size,
+                        "mtimeNs": stat.st_mtime_ns, "valid": valid})
+    return entries
+
+
+def migrate_terminal_settings(sources: list[tuple[str, Path]], root: Path, *,
+                              allow_test_root: bool = False, hook=None) -> dict:
+    """Explicitly back up legacy TerminalSettings and activate only valid non-conflicting bytes."""
+    root = _safe_root(Path(root), allow_test_root)
+    normalized = [(label, Path(os.path.abspath(path))) for label, path in sources]
+    entries = _snapshot_terminal_settings(normalized, root)
+    if not entries:
+        return {"backed_up": 0, "activated": 0, "conflicts": 0, "already_complete": False}
+    existing = root
+    while not existing.exists():
+        existing = existing.parent
+    if shutil.disk_usage(existing).free < sum(entry["size"] for entry in entries) * 2 + 64 * 1024 * 1024:
+        raise RuntimeError("Insufficient free space for verified backup and candidate")
+    manifest = {"schema": 1, "kind": "terminal-settings",
+                "sources": [{"id": label, "path": str(path)} for label, path in normalized],
+                "files": entries}
+    manifest_hash = hashlib.sha256(_json_bytes(manifest)).hexdigest()
+    recovery = root / "Recovery" / ("terminal-settings-" + manifest_hash[:24])
+    _check_ancestors(recovery)
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "Recovery").mkdir(exist_ok=True)
+    recovery.mkdir(exist_ok=True)
+    lock_stream = (root / "Recovery" / ".terminal-settings-migration.lock").open("a+b")
+    acquired_lock = False
+    try:
+        _lock_stream(lock_stream)
+        acquired_lock = True
+        result = {"backed_up": len(entries), "activated": 0, "conflicts": 0,
+                  "already_complete": False, "recovery": str(recovery),
+                  "manifest_sha256": manifest_hash}
+        source_by_id = dict(normalized)
+        for entry in entries:
+            source = source_by_id[entry["source"]] / "ModuleData" / "TerminalSettings.json"
+            backup = recovery / "sources" / entry["source"] / "TerminalSettings.json"
+            _write_new_verified(source, backup, entry)
+        manifest_file = recovery / "manifest.json"
+        if manifest_file.exists():
+            if _hash(manifest_file) != manifest_hash:
+                raise RuntimeError("Private manifest differs; manual recovery required")
+        else:
+            _write_record(manifest_file, manifest)
+        if hook:
+            hook("backed_up", len(entries))
+        if _snapshot_terminal_settings(normalized, root) != entries:
+            raise RuntimeError("TerminalSettings source changed during migration; no activation performed")
+        completed = recovery / "completed.json"
+        if completed.exists():
+            record = json.loads(completed.read_text(encoding="utf-8"))
+            if record.get("manifestSha256") != manifest_hash:
+                raise RuntimeError("Completion record differs; manual recovery required")
+            result["already_complete"] = True
+            result["conflicts"] = record["conflicts"]
+            return result
+        selected = next((entry for entry in entries if entry["valid"]), None)
+        if selected is not None:
+            backup = recovery / "sources" / selected["source"] / "TerminalSettings.json"
+            candidate = recovery / "candidate" / "TerminalSettings.json"
+            _write_new_verified(backup, candidate, selected)
+            target = root / "UserData" / "Settings" / "TerminalSettings.json"
+            _check_ancestors(target)
+            if target.exists():
+                if not target.is_file() or _hash(target) != selected["sha256"]:
+                    result["conflicts"] += 1
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                _check_ancestors(target.parent)
+                os.rename(candidate, target)
+                result["activated"] = 1
+                if hook:
+                    hook("activated", 1)
+            result["conflicts"] += sum(
+                entry["valid"] and entry["sha256"] != selected["sha256"]
+                for entry in entries if entry is not selected)
+        _write_record(completed, {"schema": 1, "manifestSha256": manifest_hash,
+                                  "activated": result["activated"], "conflicts": result["conflicts"]})
+        return result
+    finally:
+        if acquired_lock:
+            _unlock_stream(lock_stream)
+        lock_stream.close()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Explicit AF2 user-data migration; no source deletion")
-    parser.add_argument("--data-kind", choices=("player-exports", "prompts"), default="player-exports")
+    parser.add_argument("--data-kind", choices=("player-exports", "prompts", "terminal-settings"), default="player-exports")
     parser.add_argument("--source-kind", choices=("installed", "repo"), default="installed",
                         help="one source identity per operation; repository data is never auto-imported")
     parser.add_argument("--installed-module", type=Path)
@@ -506,7 +621,12 @@ def main() -> int:
     else:
         sources = [("repo", REPO / "AnimusForge")]
     if not args.apply:
-        entries = _snapshot(sources, root) if args.data_kind == "player-exports" else _snapshot_prompts(sources, root, _prompt_baselines())
+        if args.data_kind == "player-exports":
+            entries = _snapshot(sources, root)
+        elif args.data_kind == "prompts":
+            entries = _snapshot_prompts(sources, root, _prompt_baselines())
+        else:
+            entries = _snapshot_terminal_settings(sources, root)
         print(f"read-only inventory: files={len(entries)} bytes={sum(e['size'] for e in entries)}")
         return 0
     if os.name != "nt":
@@ -515,7 +635,12 @@ def main() -> int:
     for row in csv.reader(processes.stdout.splitlines()):
         if row and ("bannerlord" in row[0].lower() or "playerexportseditor" in row[0].lower()):
             raise RuntimeError("Close Bannerlord and the PlayerExports editor before migration")
-    result = migrate(sources, root) if args.data_kind == "player-exports" else migrate_prompts(sources, root)
+    if args.data_kind == "player-exports":
+        result = migrate(sources, root)
+    elif args.data_kind == "prompts":
+        result = migrate_prompts(sources, root)
+    else:
+        result = migrate_terminal_settings(sources, root)
     print(f"migration: backed_up={result['backed_up']} activated={result['activated']} "
           f"conflicts={result['conflicts']} already_complete={result['already_complete']}")
     return 0

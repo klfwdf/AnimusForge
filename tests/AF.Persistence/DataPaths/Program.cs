@@ -153,6 +153,26 @@ internal static class Program
         File.WriteAllText(marker, "{broken");
         Reject(() => PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker), "corrupt migration record cannot permit cutover");
 
+        string settingsPath = Path.Combine(workspace, "artifacts", "tests", "af2-terminal-settings", Guid.NewGuid().ToString("N"), "TerminalSettings.json");
+        Check(AnimusForgeTerminalSettings.GetSettingsPath() == Path.Combine(isolatedRoot(), "UserData", "Settings", "TerminalSettings.json"), "TerminalSettings uses typed user path");
+        Check(!AnimusForgeTerminalSettings.TryLoadSettingsFile(settingsPath, out _), "missing TerminalSettings uses built-in defaults");
+        AnimusForgeTerminalSettings.TrySaveSettingsFile(settingsPath, new AnimusForgeTerminalSettingsData { IsHotkeyEnabled = false, IsMapIconEnabled = true });
+        Check(AnimusForgeTerminalSettings.TryLoadSettingsFile(settingsPath, out var terminal) && !terminal.IsHotkeyEnabled && terminal.IsMapIconEnabled, "TerminalSettings user file round trip");
+        Check(Directory.GetFiles(Path.GetDirectoryName(settingsPath), ".afp-*").Length == 0, "TerminalSettings candidate published");
+        File.WriteAllText(settingsPath, "{broken");
+        Reject(() => AnimusForgeTerminalSettings.TrySaveSettingsFile(settingsPath, new AnimusForgeTerminalSettingsData()), "corrupt TerminalSettings cannot be overwritten");
+        Check(File.ReadAllText(settingsPath) == "{broken", "corrupt TerminalSettings preserved");
+
         Console.WriteLine("PASS data-path checks=" + _checks);
+    }
+
+    private static string isolatedRoot() => Path.Combine(Path.GetTempPath(), "af-f1-isolated-root");
+}
+
+namespace AnimusForge
+{
+    internal static class Logger
+    {
+        internal static void Log(string category, string message) { }
     }
 }

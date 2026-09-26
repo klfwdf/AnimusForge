@@ -33,8 +33,9 @@ public static class AnimusForgeTerminalSettings
 			{
 				return;
 			}
+			bool previous = _isHotkeyEnabled;
 			_isHotkeyEnabled = value;
-			Save();
+			if (!Save()) _isHotkeyEnabled = previous;
 		}
 	}
 
@@ -52,8 +53,9 @@ public static class AnimusForgeTerminalSettings
 			{
 				return;
 			}
+			bool previous = _isMapIconEnabled;
 			_isMapIconEnabled = value;
-			Save();
+			if (!Save()) _isMapIconEnabled = previous;
 		}
 	}
 
@@ -78,55 +80,102 @@ public static class AnimusForgeTerminalSettings
 	{
 		try
 		{
-			string path = AnimusForgeModulePaths.GetModuleDataFilePath(SettingsFileName);
-			if (File.Exists(path))
+			if (TryLoadSettingsFile(GetSettingsPath(), out AnimusForgeTerminalSettingsData data))
 			{
-				string json = File.ReadAllText(path);
-				AnimusForgeTerminalSettingsData data = JsonConvert.DeserializeObject<AnimusForgeTerminalSettingsData>(json);
-				if (data != null)
+				_isHotkeyEnabled = data.IsHotkeyEnabled;
+				_isMapIconEnabled = data.IsMapIconEnabled;
+				// 防死锁规则：如果被外部文件修改导致两个都被关闭，强制恢复按键开启
+				if (!_isHotkeyEnabled && !_isMapIconEnabled)
 				{
-					_isHotkeyEnabled = data.IsHotkeyEnabled;
-					_isMapIconEnabled = data.IsMapIconEnabled;
-					// 防死锁规则：如果被外部文件修改导致两个都被关闭，强制恢复按键开启
-					if (!_isHotkeyEnabled && !_isMapIconEnabled)
-					{
-						_isHotkeyEnabled = true;
-					}
-					return;
+					_isHotkeyEnabled = true;
 				}
+				return;
 			}
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
-			Logger.Log("TerminalSettings", "[WARN] Failed to load TerminalSettings: " + ex.Message);
+			Logger.Log("TerminalSettings", "[WARN] Failed to load user TerminalSettings; using built-in defaults.");
 		}
 		_isHotkeyEnabled = true;
 		_isMapIconEnabled = true;
 	}
 
-	private static void Save()
+	internal static string GetSettingsPath()
+	{
+		return Path.Combine(AnimusForgeDataPaths.GetSettingsDirectory(AnimusForgeDataPaths.GetCurrentRoot()), SettingsFileName);
+	}
+
+	internal static bool TryLoadSettingsFile(string path, out AnimusForgeTerminalSettingsData data)
+	{
+		data = null;
+		if (!File.Exists(path))
+		{
+			return false;
+		}
+		if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+		{
+			throw new InvalidOperationException("TerminalSettings file is a reparse point.");
+		}
+		data = JsonConvert.DeserializeObject<AnimusForgeTerminalSettingsData>(File.ReadAllText(path));
+		return data != null;
+	}
+
+	internal static void TrySaveSettingsFile(string path, AnimusForgeTerminalSettingsData data)
+	{
+		string directory = Path.GetDirectoryName(path);
+		Directory.CreateDirectory(directory);
+		if ((new DirectoryInfo(directory).Attributes & FileAttributes.ReparsePoint) != 0)
+		{
+			throw new InvalidOperationException("TerminalSettings directory is a reparse point.");
+		}
+		if (File.Exists(path))
+		{
+			if (!TryLoadSettingsFile(path, out _))
+			{
+				throw new InvalidDataException("Existing TerminalSettings is invalid; refusing to overwrite it.");
+			}
+		}
+		string candidate = Path.Combine(directory, ".afp-" + Guid.NewGuid().ToString("N"));
+		try
+		{
+			File.WriteAllText(candidate, JsonConvert.SerializeObject(data, Formatting.Indented));
+			if (!TryLoadSettingsFile(candidate, out _))
+			{
+				throw new InvalidDataException("TerminalSettings candidate is invalid.");
+			}
+			if (File.Exists(path))
+			{
+				File.Replace(candidate, path, null);
+			}
+			else
+			{
+				File.Move(candidate, path);
+			}
+		}
+		finally
+		{
+			if (File.Exists(candidate)) File.Delete(candidate);
+		}
+	}
+
+	private static bool Save()
 	{
 		lock (_lock)
 		{
 			try
 			{
-				string path = AnimusForgeModulePaths.GetModuleDataFilePath(SettingsFileName);
-				string dir = Path.GetDirectoryName(path);
-				if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-				{
-					Directory.CreateDirectory(dir);
-				}
 				AnimusForgeTerminalSettingsData data = new AnimusForgeTerminalSettingsData
 				{
 					IsHotkeyEnabled = _isHotkeyEnabled,
 					IsMapIconEnabled = _isMapIconEnabled
 				};
-				string json = JsonConvert.SerializeObject(data, Formatting.Indented);
-				File.WriteAllText(path, json);
+				TrySaveSettingsFile(GetSettingsPath(), data);
+				return true;
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				Logger.Log("TerminalSettings", "[WARN] Failed to save TerminalSettings: " + ex.Message);
+				Logger.Log("TerminalSettings", "[WARN] Failed to save user TerminalSettings; existing file was preserved.");
+				return false;
 			}
 		}
 	}
