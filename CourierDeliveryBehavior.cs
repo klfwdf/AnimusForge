@@ -241,6 +241,11 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private sealed class PendingCourierFlow
 	{
+		public long RuntimeGeneration;
+		public long Revision;
+		public bool ReadyToSend;
+		public bool Claimed;
+		public bool AllowLetterReply;
 		public Hero Recipient;
 		public TroopRoster CrewRoster;
 		public CourierPayloadMode Mode;

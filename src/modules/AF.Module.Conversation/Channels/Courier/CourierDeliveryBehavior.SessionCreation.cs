@@ -38,6 +38,27 @@ namespace AnimusForge;
 
 public sealed partial class CourierDeliveryBehavior
 {
+	// Main-thread draft identity is shared by UI callbacks and the module submission boundary.
+	// Advancing a step revokes every callback issued by the preceding window, even on the same draft.
+	private bool IsPendingCourierFlowCurrent(PendingCourierFlow flow, long revision, bool allowClaimed = false)
+	{
+		return TWParallel.IsMainThread() && ReferenceEquals(Instance, this) && _pendingOwnerPhases.Accepting
+			&& flow != null && ReferenceEquals(_pendingFlow, flow) && flow.Revision == revision
+			&& (allowClaimed || !flow.Claimed) && SaveRuntimeGuard.IsCurrentGeneration(flow.RuntimeGeneration);
+	}
+
+	private long BeginCourierDraftStep(PendingCourierFlow flow, bool readyToSend = false)
+	{
+		if (flow == null || !IsPendingCourierFlowCurrent(flow, flow.Revision)) return -1;
+		flow.ReadyToSend = readyToSend;
+		return ++flow.Revision;
+	}
+
+	private void ResetPendingCourierFlow(PendingCourierFlow flow, long revision, string reason, bool allowClaimed = false)
+	{
+		if (IsPendingCourierFlowCurrent(flow, revision, allowClaimed)) ResetPendingFlow(reason);
+	}
+
 	public static bool ShouldShowCourierButtonForExternal(Hero hero, bool informationHidden)
 	{
 		try
@@ -215,10 +236,15 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		_pendingFlow = new PendingCourierFlow
 		{
+			RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
+			AllowLetterReply = allowLetterReply,
 			Recipient = recipient,
 			CrewRoster = null,
 			Mode = CourierPayloadMode.Normal
 		};
+		_letterInputOpen = false;
+		PendingCourierFlow flow = _pendingFlow;
+		long revision = BeginCourierDraftStep(flow);
 		Log("open crew selection recipient=" + SafeHeroId(recipient) + " available=" + available.TotalManCount);
 		PartyScreenHelper.OpenScreenWithDummyRoster(
 			available,
@@ -230,7 +256,11 @@ public sealed partial class CourierDeliveryBehavior
 			Math.Max(available.TotalManCount, 0),
 			Math.Max(1, available.TotalManCount),
 			new PartyPresentationDoneButtonConditionDelegate(CrewSelectionDoneCondition),
-			new PartyScreenClosedDelegate(OnCrewSelectionClosed),
+			new PartyScreenClosedDelegate((leftOwner, leftMembers, leftPrisoners, rightOwner, rightMembers, rightPrisoners, cancelled) =>
+			{
+				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
+				OnCrewSelectionClosed(leftOwner, leftMembers, leftPrisoners, rightOwner, rightMembers, rightPrisoners, cancelled);
+			}),
 			new IsTroopTransferableDelegate(CourierCrewTransferableDelegate));
 	}
 
@@ -250,29 +280,32 @@ public sealed partial class CourierDeliveryBehavior
 
 	private void OnCrewSelectionClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
 	{
+		PendingCourierFlow flow = _pendingFlow;
+		long revision = flow?.Revision ?? -1;
+		if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 		try
 		{
-			if (fromCancel || _pendingFlow == null)
+			if (fromCancel)
 			{
-				ResetPendingFlow("crew_cancel");
+				ResetPendingCourierFlow(flow, revision, "crew_cancel");
 				return;
 			}
 			TroopRoster selected = BuildSelectionRosterFromUi(rightMemberRoster);
 			if (selected.TotalManCount <= 0)
 			{
-				ResetPendingFlow("crew_empty");
+				ResetPendingCourierFlow(flow, revision, "crew_empty");
 				InformationManager.DisplayMessage(new InformationMessage("信使部队必须至少 1 人。", Colors.Yellow));
 				return;
 			}
-			_pendingFlow.CrewRoster = selected;
-			_pendingFlow.CrewEntries = BuildCargoEntriesFromRoster(selected, "crew");
-			Log("crew selected recipient=" + SafeHeroId(_pendingFlow.Recipient) + " roster=" + RosterSummary(selected));
+			flow.CrewRoster = selected;
+			flow.CrewEntries = BuildCargoEntriesFromRoster(selected, "crew");
+			Log("crew selected recipient=" + SafeHeroId(flow.Recipient) + " roster=" + RosterSummary(selected));
 			ShowCourierModeInquiry();
 		}
 		catch (Exception ex)
 		{
 			Log("crew close failed: " + ex);
-			ResetPendingFlow("crew_exception");
+			ResetPendingCourierFlow(flow, revision, "crew_exception");
 			InformationManager.DisplayMessage(new InformationMessage("信使部队选择失败：" + ex.Message, Colors.Red));
 		}
 	}
@@ -280,6 +313,8 @@ public sealed partial class CourierDeliveryBehavior
 	private void ShowCourierModeInquiry()
 	{
 		PendingCourierFlow flow = _pendingFlow;
+		long revision = BeginCourierDraftStep(flow);
+		if (revision < 0) return;
 		if (flow?.Recipient == null)
 		{
 			ResetPendingFlow("mode_no_flow");
@@ -306,6 +341,7 @@ public sealed partial class CourierDeliveryBehavior
 			"取消",
 			selected =>
 			{
+				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 				if (selected == null || selected.Count == 0)
 				{
 					ResetPendingFlow("mode_empty");
@@ -339,7 +375,7 @@ public sealed partial class CourierDeliveryBehavior
 					ShowLetterInput();
 				}
 			},
-			_ => ResetPendingFlow("mode_cancel"),
+			_ => ResetPendingCourierFlow(flow, revision, "mode_cancel"),
 			"",
 			true), true);
 	}
@@ -347,6 +383,8 @@ public sealed partial class CourierDeliveryBehavior
 	private void BeginPayloadSelection(CourierPayloadMode mode)
 	{
 		PendingCourierFlow flow = _pendingFlow;
+		long revision = BeginCourierDraftStep(flow);
+		if (revision < 0) return;
 		if (flow?.Recipient == null)
 		{
 			ResetPendingFlow("payload_no_flow");
@@ -419,8 +457,12 @@ public sealed partial class CourierDeliveryBehavior
 			list.Count,
 			"确定",
 			"取消",
-			OnPayloadResourcesSelected,
-			_ => ResetPendingFlow("payload_cancel"),
+			selected =>
+			{
+				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
+				OnPayloadResourcesSelected(selected);
+			},
+			_ => ResetPendingCourierFlow(flow, revision, "payload_cancel"),
 			"",
 			true), true);
 	}
@@ -477,6 +519,8 @@ public sealed partial class CourierDeliveryBehavior
 	private void ShowPayloadAmountInquiry()
 	{
 		PendingCourierFlow flow = _pendingFlow;
+		long revision = BeginCourierDraftStep(flow);
+		if (revision < 0) return;
 		if (flow == null)
 		{
 			ResetPendingFlow("amount_no_flow");
@@ -501,6 +545,7 @@ public sealed partial class CourierDeliveryBehavior
 		string text = $"[{flow.PendingAmountIndex + 1}/{flow.SelectedEntries.Count}] {entryDisplayName} 最多可填 {max}。\n请输入 1 到 {max} 的整数：";
 		InformationManager.ShowTextInquiry(new TextInquiryData(title, text, true, true, "确定", "返回", input =>
 		{
+			if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 			if (!int.TryParse(input, out var amount) || amount <= 0 || amount > max)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("请输入合法的数量。", Colors.Yellow));
@@ -510,12 +555,17 @@ public sealed partial class CourierDeliveryBehavior
 			entry.Amount = amount;
 			flow.PendingAmountIndex++;
 			ShowPayloadAmountInquiry();
-		}, () => BeginPayloadSelection(flow.Mode)), true);
+		}, () =>
+		{
+			if (IsPendingCourierFlowCurrent(flow, revision)) BeginPayloadSelection(flow.Mode);
+		}), true);
 	}
 
 	private void ShowLetterInput()
 	{
 		PendingCourierFlow flow = _pendingFlow;
+		long revision = BeginCourierDraftStep(flow, readyToSend: true);
+		if (revision < 0) return;
 		if (flow?.Recipient == null)
 		{
 			ResetPendingFlow("letter_no_flow");
@@ -525,23 +575,23 @@ public sealed partial class CourierDeliveryBehavior
 		_letterInputOpen = true;
 		bool opened = CourierLetterInputPopup.Show("写给 " + targetName + " 的信", "", "", "", input =>
 		{
+			if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 			_letterInputOpen = false;
 			OnLetterConfirmed(input);
 		}, () =>
 		{
-			_letterInputOpen = false;
-			ResetPendingFlow("letter_cancel");
+			ResetPendingCourierFlow(flow, revision, "letter_cancel");
 		});
 		if (!opened)
 		{
 			InformationManager.ShowTextInquiry(new TextInquiryData("写给 " + targetName + " 的信", "", true, true, "发送", "取消", input =>
 			{
+				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 				_letterInputOpen = false;
 				OnLetterConfirmed(input);
 			}, () =>
 			{
-				_letterInputOpen = false;
-				ResetPendingFlow("letter_cancel_fallback");
+				ResetPendingCourierFlow(flow, revision, "letter_cancel_fallback");
 			}), true);
 		}
 	}
@@ -549,6 +599,8 @@ public sealed partial class CourierDeliveryBehavior
 	private void OnLetterConfirmed(string input)
 	{
 		PendingCourierFlow flow = _pendingFlow;
+		long revision = flow?.Revision ?? -1;
+		if (!IsPendingCourierFlowCurrent(flow, revision) || !flow.ReadyToSend) return;
 		if (flow == null || flow.Recipient == null)
 		{
 			ResetPendingFlow("confirm_no_flow");
@@ -561,10 +613,13 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		try
 		{
+			// No callback may replay this draft after the first dispatch attempt, including partial failure.
+			flow.Claimed = true;
+			flow.ReadyToSend = false;
 			CourierSession session = CreateCourierSession(flow, input.Trim());
 			if (session == null)
 			{
-				ResetPendingFlow("confirm_create_null");
+				ResetPendingCourierFlow(flow, revision, "confirm_create_null", allowClaimed: true);
 				return;
 			}
 			lock (_sessionLock)
@@ -575,14 +630,14 @@ public sealed partial class CourierDeliveryBehavior
 			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
 			StartCourierReplyGeneration(session, "created_preflight");
 			InformationManager.DisplayMessage(new InformationMessage("信使队已出发，正在前往 " + session.RecipientName + "。", Colors.Green));
-			ResetPendingFlow("confirm_done");
+			ResetPendingCourierFlow(flow, revision, "confirm_done", allowClaimed: true);
 			ProcessSession(session);
 		}
 		catch (Exception ex)
 		{
 			Log("confirm failed: " + ex);
 			InformationManager.DisplayMessage(new InformationMessage("信使出发失败：" + ex.Message, Colors.Red));
-			ResetPendingFlow("confirm_exception");
+			ResetPendingCourierFlow(flow, revision, "confirm_exception", allowClaimed: true);
 		}
 	}
 
