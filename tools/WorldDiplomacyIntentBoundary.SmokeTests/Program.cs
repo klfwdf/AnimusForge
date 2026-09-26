@@ -29,6 +29,9 @@ internal static class Program
         string source = File.ReadAllText(sourcePath, Encoding.UTF8) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs"));
         string canonicalHistoryFile = File.ReadAllText(
             FindRepositoryFile(Path.Combine(
                 "Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")),
@@ -80,18 +83,12 @@ internal static class Program
             source,
             "private string BuildFallbackAnalysisJson(",
             "private string BuildFallbackAnnualSummary(");
-        string playerSubmission = ExtractSection(
-            source,
-            "private void SubmitPlayerDocument(",
-            "private void RestoreSuspendedExchangeIfAny(");
+        string playerSubmission = ExtractMethod(source, "internal static string SubmitPlayerDocument(");
         string invalidSuppression = ExtractSection(
             source,
             "private void SuppressInvalidDocumentBeforePropagation(",
             "private bool TryApplyGeneratedSemanticEnvelope(");
-        string playerReplySubmission = ExtractSection(
-            source,
-            "private void OpenPlayerReplyCompose(",
-            "private WorldEventInboxPopupData BuildRoyalAnnouncementArchiveData(");
+        string playerReplySubmission = ExtractMethod(source, "internal static string SubmitPlayerReply(");
 
         Test.True(NaturalTradeProposal.Contains("商路", StringComparison.Ordinal), "fixture must describe the trade domain");
         Test.True(!new[] { "提议", "建议", "倡议", "邀请", "请求" }
@@ -636,7 +633,7 @@ internal static class Program
 		Test.True(resultRules.Contains("kind != WorldDiplomacyConfirmedResultKind.OfferRejected", StringComparison.Ordinal),
 			"rejecting one proposal must not be a confirmed terminal result for the whole round");
 
-		string impactBuilder = ExtractMethod(source, "public static string BuildDiplomaticStandingImpactTextForExternal(");
+		string impactBuilder = ExtractMethod(source, "internal static string BuildImpactText(");
 		string boundaryImpact = ExtractMethod(repRules, "public static string BuildInternationalReputationImpactDeltaText(");
 		string documentQuery = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("Refactor", "Adapters", "LegacyWorldDiplomacyTimelineDocumentQuery.cs")),
@@ -646,7 +643,8 @@ internal static class Program
 			&& impactBuilder.Contains("【国家威望】", StringComparison.Ordinal)
 			&& impactBuilder.Contains("变化：", StringComparison.Ordinal)
 			&& impactBuilder.Contains("原因：", StringComparison.Ordinal)
-			&& documentQuery.Contains("BuildDiplomaticStandingImpactTextForExternal(document)", StringComparison.Ordinal),
+			&& documentQuery.Contains("WorldDiplomacyBehavior.QueryTimelineDocuments(maxCount)", StringComparison.Ordinal)
+            && ExtractMethod(source, "internal static WorldDiplomacyTimelineDocumentsResult Timeline(").Contains("BuildImpactText(document)", StringComparison.Ordinal),
 			"the persisted declaration detail must render diplomatic results and standing changes as separate readable sections");
 		Test.True(boundaryImpact.Contains("已达上限100", StringComparison.Ordinal)
 			&& boundaryImpact.Contains("已达下限0", StringComparison.Ordinal)
@@ -685,9 +683,9 @@ internal static class Program
 			&& popupPrefab.Contains("Text=\"@ImpactText\"", StringComparison.Ordinal),
 			"the formal letter popup must bind the standing changes and reasons into its right-side impact area");
 		string encyclopedia = File.ReadAllText(FindRepositoryFile("EncyclopediaKingdomStabilityPatch.cs"), Encoding.UTF8);
-		Test.True(encyclopedia.Contains("BuildKingdomDiplomaticStandingEncyclopediaTextForExternal", StringComparison.Ordinal),
+		Test.True(encyclopedia.Contains("WorldDiplomacyPresentationHost.Standing(kingdom?.StringId)", StringComparison.Ordinal),
 			"kingdom encyclopedia refresh must append prestige and international reputation beside stability");
-		string encyclopediaStanding = ExtractMethod(source, "public static string BuildKingdomDiplomaticStandingEncyclopediaTextForExternal(");
+		string encyclopediaStanding = ExtractMethod(source, "internal static string Standing(");
 		Test.True(encyclopediaStanding.Contains("该国的外交信用与威慑", StringComparison.Ordinal)
 			&& encyclopediaStanding.Contains("他国对该国的评价", StringComparison.Ordinal),
 			"kingdom encyclopedia standing values must include concise player-facing explanations");
@@ -760,8 +758,9 @@ internal static class Program
 			&& propagationOwner.Contains("knownDocumentIds", StringComparison.Ordinal)
 			&& source.Contains("RecoverPlayerCourtReceiptsFromKnowledge();", StringComparison.Ordinal),
 			"old saves whose player court already knows a declaration must recover the missing formal receipt flag");
-		string notifications = ExtractMethod(source, "private void TryPublishPendingNotifications(");
-		Test.True(notifications.Contains("WorldDiplomacyPropagationApplication.SelectPendingRumors(_storage, 3)", StringComparison.Ordinal)
+		Test.True(ExtractMethod(source, "private void TryPublishPendingNotifications(").Contains("_notifications.Poll(_storage, DateTime.UtcNow, NotificationSink)"), "host binds notification owner");
+        string notifications = ExtractMethod(source, "internal void Poll(");
+		Test.True(notifications.Contains("WorldDiplomacyPropagationApplication.SelectPendingRumors(storage, 3)", StringComparison.Ordinal)
 			&& notifications.Contains("WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor)", StringComparison.Ordinal)
 			&& propagationOwner.Contains("document.RumorNotified", StringComparison.Ordinal)
 			&& notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal)
@@ -786,14 +785,14 @@ internal static class Program
 			&& detailedMemory.Contains("具体诉求与条件", StringComparison.Ordinal),
 			"known declarations must expose concrete demands to NPC conversation memory");
 
-		string archive = ExtractMethod(source, "private WorldEventInboxPopupData BuildRoyalAnnouncementArchiveData(");
+		string archive = ExtractMethod(source, "internal static IReadOnlyList<WorldDiplomacyArchiveRecord> Archive(");
 		Test.True(archive.Contains("x.IsPlayerAuthored || x.IsReadyForPublication", StringComparison.Ordinal)
 			&& !archive.Contains("x.IsReadyForPublication && x.HasReachedPlayerCourt", StringComparison.Ordinal),
 			"the U-key archive must expose every published declaration immediately, even before the player joins a kingdom");
 		Test.True(notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal),
 			"the right-side formal notice must still wait for delivery to the player's affiliated court");
-		Test.True(archive.Contains("IndexTitleText = WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document)", StringComparison.Ordinal)
-			&& archive.Contains("IndexMetaText = \"外交宣言：\" + typeLabel", StringComparison.Ordinal),
+		Test.True(archive.Contains("IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document)", StringComparison.Ordinal)
+			&& archive.Contains("IndexMetaText: \"外交宣言：\" + typeLabel", StringComparison.Ordinal),
 			"the archive index must show a clean title and centered declaration type line");
 		string displayedTitle = ExtractMethod(documentTextRules, "public static string BuildDisplayedDocumentTitle(");
 		Test.True(!displayedTitle.Contains("外交事件开始", StringComparison.Ordinal)

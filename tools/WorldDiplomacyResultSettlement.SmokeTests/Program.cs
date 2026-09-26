@@ -1548,7 +1548,7 @@ internal static class Program
 				StringComparison.Ordinal) > relaySourceContext,
 			"ordinary relay prompts must select any still-open incoming peace offer and pass that required source into response context");
 
-		string submitPlayer = ExtractMethod(source, "private void SubmitPlayerDocument(");
+		string submitPlayer = ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs")), "internal static string SubmitPlayerDocument(");
 		int currentPlayerSlot = submitPlayer.IndexOf(
 			"WorldDiplomacyResultSettlementSlot playerSettlementSlot = round?.ResultSettlementPending == true",
 			StringComparison.Ordinal);
@@ -1559,7 +1559,7 @@ internal static class Program
 		int addPlayerDocument = submitPlayer.IndexOf("AddDocument(document)", stampPlayerSlot, StringComparison.Ordinal);
 		Test.True(currentPlayerSlot >= 0
 			&& submitPlayer.IndexOf("WorldDiplomacyRoundLifecycleRules.SelectWaitingPlayerSettlementSlot(", currentPlayerSlot, StringComparison.Ordinal) > currentPlayerSlot
-			&& submitPlayer.IndexOf("round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, playerKingdom.StringId", currentPlayerSlot, StringComparison.Ordinal) > currentPlayerSlot
+			&& submitPlayer.IndexOf("round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, playerKingdom", currentPlayerSlot, StringComparison.Ordinal) > currentPlayerSlot
 			&& stampPlayerSlot > currentPlayerSlot
 			&& addPlayerDocument > stampPlayerSlot,
 			"player analysis may inherit only the current result-settlement slot owned by the player and already waiting for player input");

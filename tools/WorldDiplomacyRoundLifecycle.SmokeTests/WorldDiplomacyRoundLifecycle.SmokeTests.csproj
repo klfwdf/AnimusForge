@@ -6,6 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs" Link="WorldDiplomacyPresentationQueries.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs" Link="WorldDiplomacyPlayerApplication.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs" Link="WorldDiplomacyNotificationApplication.cs" />
+    <Compile Include="../../Refactor/Contracts/WorldDiplomacyPresentationContracts.cs" Link="WorldDiplomacyPresentationContracts.cs" />
+    <Compile Include="../../Refactor/Contracts/WorldDiplomacyTimelineDocumentQueryContracts.cs" Link="WorldDiplomacyTimelineDocumentQueryContracts.cs" />
+
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyDraftRepairWorld.cs" Link="IWorldDiplomacyDraftRepairWorld.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs" Link="WorldDiplomacyDraftRepairApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyPromptWorld.cs" Link="IWorldDiplomacyPromptWorld.cs" />

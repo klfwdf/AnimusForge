@@ -26,6 +26,7 @@ internal static class Program
 {
     private static int Main()
     {
+        Dpl090PresentationReplay.Run();
         Dpl080PromptReplay.Run();
         VerifyReconcileAfterLoadDecisionTable();
         VerifyDeadlineRules();
@@ -14103,6 +14104,10 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!vocabularySource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "intent vocabulary must not reference the host behavior");
 
+        string presentationQueriesSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs"));
+        string playerApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs"));
+        string notificationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs"));
+        string presentationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyPresentation.cs"));
         string behaviorSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         // Inspect the active host-to-application path after DPL-080 ownership transfer.
@@ -14791,8 +14796,9 @@ RunRepairCorrectionAndJobDecisionTests();
             "host must delegate closed-round detection to the domain");
         Test.True(storageMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectFinalRoundDocumentId", StringComparison.Ordinal),
             "host must delegate final document selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectWaitingPlayerSettlementSlot", StringComparison.Ordinal),
-            "host must delegate waiting-player slot selection to the domain");
+        Test.True(playerApplicationSource
+                .Contains("WorldDiplomacyRoundLifecycleRules.SelectWaitingPlayerSettlementSlot", StringComparison.Ordinal),
+            "player command application must delegate waiting-player slot selection to the domain");
         Test.True(storageMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.ReleaseNonWaitingSettlementReplies", StringComparison.Ordinal),
             "host must delegate mandatory-reply release to the domain");
         Test.True(storageMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.CountAutomaticRoundDocuments", StringComparison.Ordinal),
@@ -14879,7 +14885,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("string.Equals(x.SourceDocumentId,", StringComparison.Ordinal)
             && !behaviorSource.Contains("string.Equals(x.SourceId,", StringComparison.Ordinal),
             "raw document-id comparisons must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(", StringComparison.Ordinal),
+        Test.True(notificationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(", StringComparison.Ordinal),
             "host must delegate chronological document ordering to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(", StringComparison.Ordinal),
             "host must delegate recency document ordering to the domain");
@@ -14984,10 +14990,10 @@ RunRepairCorrectionAndJobDecisionTests();
             "text rules must stay free of TaleWorlds references");
         Test.True(!textRulesSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "text rules must not reference the host behavior");
-        Test.True(behaviorSource.Contains("WorldDiplomacyTextRules.NormalizeBody(", StringComparison.Ordinal)
+        Test.True(playerApplicationSource.Contains("WorldDiplomacyTextRules.NormalizeBody(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.NormalizeCanonicalHistoryText(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.SanitizePublicDiplomacyText(", StringComparison.Ordinal)
+            && presentationQueriesSource.Contains("WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(", StringComparison.Ordinal)
+            && presentationQueriesSource.Contains("WorldDiplomacyTextRules.SanitizePublicDiplomacyText(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.CompactPromptFact(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.Limit(", StringComparison.Ordinal),
             "host must delegate public-text normalization and formatting to the domain");
@@ -14997,9 +15003,9 @@ RunRepairCorrectionAndJobDecisionTests();
             && textRulesSource.Contains("public static string BuildFallbackDocumentTitle(", StringComparison.Ordinal)
             && textRulesSource.Contains("public static string BuildArchiveIndexDocumentTitle(", StringComparison.Ordinal),
             "title derivation and paragraph splitting must live in the domain rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyTextRules.DocumentTypeLabel(", StringComparison.Ordinal)
+        Test.True(presentationQueriesSource.Contains("WorldDiplomacyTextRules.DocumentTypeLabel(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.BuildFallbackDocumentTitle(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(", StringComparison.Ordinal)
+            && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string DocumentTypeLabel(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildFallbackDocumentTitle(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildArchiveIndexDocumentTitle(", StringComparison.Ordinal),
@@ -15024,8 +15030,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.AnchorInternationalReputationNaturalChangeDays(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.FormatSignedStandingDelta(", StringComparison.Ordinal)
+            && presentationQueriesSource.Contains("WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(", StringComparison.Ordinal)
+            && presentationQueriesSource.Contains("WorldDiplomacyReputationRules.FormatSignedStandingDelta(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.FormatSignedDelta(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeNationalPrestige(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeInternationalReputation(", StringComparison.Ordinal)
@@ -15089,7 +15095,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "host and document fact rules must delegate offer and commitment contract checks to the domain rules");
         Test.True(validationSource.Contains("WorldDiplomacyTextRules.ContainsWholeNumber(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.StripGeneratedActionReasonPrefix(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.ParseDayForArchive(", StringComparison.Ordinal)
+            && presentationSource.Contains("WorldDiplomacyTextRules.ParseDayForArchive(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyTextRules.TryGetImmersionViolation(", StringComparison.Ordinal)
             && propagationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(", StringComparison.Ordinal)
             && canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ParseCompressionSequence(", StringComparison.Ordinal),
@@ -15317,7 +15323,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(", StringComparison.Ordinal),
+            && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(", StringComparison.Ordinal),
             "host call sites must qualify the owning domain rule directly");
         Test.True(textRulesSource.Contains("public static string BuildDisplayedDocumentTitle(", StringComparison.Ordinal),
             "displayed document title composition must live in the text rules");
@@ -15358,8 +15364,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && textRulesSource.Contains("Func<string, WorldDiplomacyRound> resolveRound", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<string, WorldDiplomacyDocument> resolveDocument", StringComparison.Ordinal),
             "notification and event-meta text composition must live in the text rules behind day/resolver ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, FormatCampaignDate)", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.BuildDocumentEventMeta(document, ResolveRound, ResolveDocument)", StringComparison.Ordinal)
+        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildNotificationDescription(document, sink.FormatCampaignDate)", StringComparison.Ordinal)
+            && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument)", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildNotificationDescription(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildDocumentEventMeta(", StringComparison.Ordinal),
             "host must delegate notification text composition to the text rules");
@@ -15381,7 +15387,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && factSource.Contains("public static bool ContainsDirectedPeaceTerm(", StringComparison.Ordinal)
             && factSource.Contains("public static string BuildPeaceKingdomReferencePattern(", StringComparison.Ordinal),
             "pair-key, rumor, offer-requirement and directed-peace-term rules must live in domain files");
-        Test.True(behaviorSource.Contains("WorldDiplomacyTextRules.BuildDiplomacyRumor(", StringComparison.Ordinal)
+        Test.True(notificationApplicationSource.Contains("WorldDiplomacyTextRules.BuildDiplomacyRumor(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.AppendOpenOfferAnswerRequirement(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyDocumentFactRules.ContainsDirectedPeaceTerm(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string PairKey(", StringComparison.Ordinal)
