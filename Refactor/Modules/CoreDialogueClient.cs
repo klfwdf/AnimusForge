@@ -31,6 +31,20 @@ internal sealed class CoreDialogueClient : IDisposable
         => SubmitForContext(CoreDialogueChannel.Scene, contextTicket, requestId, playerText,
             ShoutBehavior.SubmitModuleSceneDialogue);
 
+    internal CoreDialogueOperation SubmitCourier(string contextTicket, string requestId, string playerText)
+        => SubmitForContext(CoreDialogueChannel.Courier, contextTicket, requestId, playerText,
+            CourierDeliveryBehavior.SubmitModuleCourierDialogue);
+
+    internal string CaptureCourierContextTicket()
+    {
+        lock (_gate) if (_disposed) return null;
+        string ticket = CourierDeliveryBehavior.IssueModuleCourierTicket(ClientId);
+        if (ticket == null) return null;
+        lock (_gate) if (!_disposed) return ticket;
+        CourierDeliveryBehavior.RevokeModuleCourierTickets(ClientId);
+        return null;
+    }
+
     internal string CaptureSceneContextTicket()
     {
         lock (_gate) if (_disposed) return null;
@@ -93,6 +107,7 @@ internal sealed class CoreDialogueClient : IDisposable
         }
         ShoutBehavior.RevokeModuleSceneTickets(ClientId);
         foreach (CoreDialogueOperation operation in operations) operation.Cancel();
+        CourierDeliveryBehavior.RevokeModuleCourierTickets(ClientId);
     }
 
     private CoreDialogueOperation Rejected(string requestId, string reason)
