@@ -1,29 +1,44 @@
-# 外交重构 handoff — DPL-070（2026-09-26）
+# 外交重构 handoff — DPL-070（2026-09-27）
 
-当前状态：**DPL-070_ACTIVE / DPL-070A_OFFLINE_VERIFIED**。已进入 070 并完成首个传播到达切片，尚未宣称整个 070 完成。用户明确要求只维护本文件；根 HANDOFF、主体台账、范围图和代码地图未增加本次状态。
+状态：**DPL-070_OFFLINE_VERIFIED；DPL-080 尚未开始**。本交接对应工作树 `.wt/diplomacy-latest-20260925`、分支 `codex/diplomacy-refactor-20260925`，产品与回放收口 HEAD 为 **`c2140320514ca5449544169994f1b5334dfe2eb4`**。070A 交接提交 `a12ed631` 之后的 070B–J 与收口测试均为本地提交；工作树干净，未推送。此处“完成”仅指 070 的代码与离线验证，不等于实机或旧存档验收。
 
-- 工作树 `.wt/diplomacy-latest-20260925`，分支 `codex/diplomacy-refactor-20260925`。060 单一交接已补交为 `b633eacb`；070A 意图 `a05d8c5f`，产品/回放 **`bd360c6b822a169c01940cb3f94107016106dd99`**。先前 Git 权限阻塞已解除。
-- 本片完成“每日到达队列 → civilian/noble/kingdom 知识 → 宫廷回执”。`src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPropagationApplication.cs` 的 `ProcessDue` 与 `ReceiveCourt` 持有真实队列和知识转换；`WorldDiplomacyBehavior.ProcessPropagationArrivals` 已接入，旧算法已从 host 删除。host 仍只在同步主线程解析 live Kingdom/Settlement、执行宫廷回执；application 不持有游戏对象或后台任务。
-- 顺序不变：读取当日 → 截取最多 1200 条到期前缀 → 整批出队 → 按原顺序重新查文书 → 目标 kingdom 优先、缺失则 settlement 当前 owner 兜底 → 写贵族知识 → 写王国知识 → 首次知情或玩家缺失正式回执时执行原 ProcessCourtArrival。民间传播只写 settlement 知识。空文书/失效目标、null/future 队首、异常中断、重入入队、处理期间文书替换/移除均保留原行为。不会把传闻当正式送达。
-- `OnDailyTick`、`ProcessCourtArrival`、`TryScheduleMandatoryCourtResponse` 与 `260ba51e` 逐段内容相同；原 active round、author/representative、mandatory response 和玩家权限门禁保持。保存 record、字段、v1 key、程序集和一键脚本未改，也没有第二份可写 storage。
-- 性能：每天既有调度点执行一次。通过索引检查已排序 List 的到期前缀，最多 1200 项，空闲不分配 due 列表；10000 条未来队尾场景不执行未来文书或目标解析。沿用原 List.RemoveRange 的 O(队尾数量) 移位、每条文书查询和知识规则成本，不声称整次回调 O(1200) 或实机帧性能已验。接缝闭包仅同步调用，不缓存 live 对象；为保留处理中替换/撤销的语义，未引入可能过期的批次文书缓存。
+## 已接线的职责
 
-## 本片验证
+| 切片 | 产品提交 | 当前归属与行为边界 |
+| --- | --- | --- |
+| 070A | `bd360c6b` | `WorldDiplomacyPropagationApplication.ProcessDue` / `ReceiveCourt` 消费每日到达前缀，写民间、贵族、王国知识及正式宫廷回执。每日最多 1200 条；保持玩家缺失回执补发与重入批次语义。 |
+| 070B | `10f7a481` | 同一 application 负责发布路径排程与设置变化重算；主线程 host 提供 live 地图距离、定居点与王庭快照，保留原 due-day、已知跳过和到达排序。 |
+| 070C | `a4ed0a01` | `WorldDiplomacyOfferApplication` 处理 relay 提案登记、精确来源文书/动作匹配及答复结算；游戏端口在执行前重验原案和 live 当事国。 |
+| 070D | `e68df609` | `WorldDiplomacyCourtResponseApplication` 处理正式回执后的强制答复准入与排程；玩家优先、权限和来源绑定保持。 |
+| 070E、H | `fa02cdc9`、`a8e4e962` | `WorldDiplomacyDocumentApplication` 持有 canonical 文书创建、单一存储列表写入/保留、多动作逐项上下文和结果归并；host 只传当前游戏身份、时间及执行效果。 |
+| 070F | `e6a95a9e` | 传播 application 持有发布轮次/知识初始化、玩家宫廷回执恢复及有界延迟重试。 |
+| 070G | `26b30a06` | `WorldDiplomacyThreatApplication` 持有目标首次声明裁决、多动作不服从记录、未成功履行的延迟处理及正式道歉/让步压力决策；live Kingdom 检查和压力效果仍在同步端口。 |
+| 070I | `09343fb7` | 已排序 relay 到达列表按到期前缀读取，每批最多 8 条；先选定本批，处理时新入队的到达留待下一批。 |
+| 070J | `19b0da71` | 传播 application 按日期与创建时间选取最多 3 条传闻，逐条展示前标记；传闻标记与正式宫廷通知分离。每秒既有轮询点只保留 3 个候选，不再对整个文书档案排序。 |
+| 收口 | `c2140320` | 结果结算回放改查真实 application 与 game port 接缝，避免继续断言已迁走的 host 代码。 |
 
-- `tools/WorldDiplomacyRoundLifecycle.SmokeTests`：**2569 assertions**；比 060 新增 99 项，覆盖 38 组新旧差分场景，以及重复日调用、真实 JSON roundtrip 后不重复回执、生产适配器逐字匹配、领域边界。比对完整 serialized state、resolver/effect trace 与异常；world 查询和最终 court effect 是显式 fake，知识规则/records/application 为真实源码。
-- 原控制方法保存于 `PropagationHostControls.cs`，逐字来自 `260ba51e` 的 `ProcessPropagationArrivals`，LF/UTF-8 SHA256 `256f812c0eacb08dad527d88ae73917dc687054b68d9305d491c9486a9a2d453`。当前适配器副本同样由源码匹配断言绑定；没有通过弱化旧 player receipt 规则让测试通过。
-- `tools/WorldDiplomacyIntentBoundary.SmokeTests`：**1269 assertions**，包含真实 host → application → 原回执绑定。测试套件仍有既存 net6 EOL/nullable 等警告，未宣称测试零 warning。
-- 原脚本无 Stage/Deploy 的 **Debug 1.3、1.4、Bootstrap 三构建通过，各 0 warning/0 error**。本片没重跑 Release/全 Phase8/四 DLL metadata，060 历史结果不冒充当前产物验收。
-- Debug 1.3：引用 `v1.3.15.110062`，SHA256 `3CC442ECBF71B5A8E136468D62822610637462B525D6E5B9ADCE77048D26AA5B`。
-- Debug 1.4：引用 `v1.4.6.115628`，SHA256 `4AA85BEECC9185E8308758D9742F710963085A53E94BD1A560453E095C010366`。
-- 命令：`dotnet run --project tools/WorldDiplomacyRoundLifecycle.SmokeTests -c Release --verbosity quiet -p:NuGetAudit=false`；IntentBoundary 同参数。构建参数沿用下方 060 的原 Debug 命令。本机详细日志 `_codex_tmp/dpl070/lifecycle.log`、`intent.log`、`build-debug.log`（忽略目录）。`git diff --check` 通过。
-- **NOT-RUN**：真实两版本游戏、旧 SAVE、MCM/UI、provider、实际 court 游戏副作用及帧耗时；没有 push、Stage、部署、打包或游戏/外仓写入。
+仍由已接线的 `WorldDiplomacyRoundLifecycleRules`、`WorldDiplomacyResultSettlementRules`、`WorldDiplomacyWarPressureRules` 和 `WorldDiplomacyOfferCooldownRules` 承担来源/版本与晚结果拒绝、响应/过期、作业选择及完成、冷却和结算队列规则；070 没有复制出第二份可写状态或第二条交互链。`WorldDiplomacyBehavior` 仍是 Campaign/live 对象和机械动作适配，LLM/prompt、查询/UI 与旧入口清理分别留给 080/090/110。保存键 `_af_world_diplomacy_v1`、records 的 JSON 身份、程序集/Bootstrap 身份和一键脚本未改。
 
-## 下一切片
+## 离线验证
 
-先梳理 `StartDocumentPropagation` 的文书发布、origin/author 知识、民间/宫廷路径快照、到达队列替换，以及 `RecalculatePendingPropagationIfNeeded` 的设置变化重算。按稳定 ID/距离值分离主线程地图读取与领域排程，保持已知知识跳过、玩家正式回执补发、按日排序和原 due-day 公式，再做旧实现对照回放。
+- `WorldDiplomacyRoundLifecycle.SmokeTests` **2643**、`WorldDiplomacyIntentBoundary.SmokeTests` **1273**、`WorldDiplomacyResultSettlement.SmokeTests` **499** 断言通过。包含发布、来源动作、强制答复、威胁、晚结果、JSON roundtrip、1 万条未来 relay 到达、8 条批次上限与重入入队回放。测试中的 live world/最终游戏效果由显式端口代替，不冒充实机验收。
+- 存储形状 **70**、提案冷却持久化 **23**、通知迁移 **12**、持久化适配 **15**、压缩 **305**、政策历史 **102**、时间线查询 **90** 条断言通过。
+- 原 `build_single_module.ps1` 仅执行构建：**Debug/Release × BannerlordApi 1.3/1.4 + Bootstrap** 六构建均 0 warning、0 error；参考版本分别为 `v1.3.15.110062`、`v1.4.6.115628`。未 Stage、Deploy、打包或覆盖游戏。
+- `ModuleFrameworkApiTests/run.py`：snapshot 36、V1 API 142、四个实际实现 DLL metadata **1296** 条断言通过；外部访问 internal 的预期 CS0122 也通过。该门禁不验证 CLR/Bootstrap 实际加载或游戏动作。
 
-之后继续文书/chain/version、提案/义务、响应/过期、cooldown/threat/pressure、settlement/jobs 的实际归属和到期工作；070A 仅覆盖到达消费与正式知识写入，不等于上述范围全部完成。不要把未调用的 `SynchronizeCourtKnowledge` helper 当作已迁移真实入口。DPL-080 尚未开始。
+| 配置 | BannerlordApi | 当前实现 DLL SHA256 |
+| --- | --- | --- |
+| Debug | 1.3 | `43B8DE47566B0F52D247AB07CFC85C12E200E3419581CC24A9F421E4E5F6FE58` |
+| Debug | 1.4 | `F99149CE41ED94442D540114DB64148F18A7160B39B585EFC646A070CE452C6E` |
+| Release | 1.3 | `05519FBD2F88FC19DD3AF0596540E88A91334D8A433805A937B2FF5D92E47CDD` |
+| Release | 1.4 | `2B40A262763725A890AD7BE5A76CB99425F8796E16F507D6C8581941E1F6A064` |
+
+性能边界：传播与 relay 到达在每日既有调度点读取已排序前缀；非到期队首不解析 world 对象。relay 每条出队仍使用 List 删除，存在随队尾长度增长的移位/查找成本，不宣称整批 O(8)。传闻在每秒既有通知点扫描至多 420 份保留文书并仅维护 3 个最早候选；正式地图通知仍属于 090 的 UI/通知范围。无新常驻任务、锁、反射或跨帧 live 对象缓存；实机帧耗时未测。
+
+## 限制与下一阶段
+
+- **NOT-RUN**：真实 1.3/1.4 游戏、真实旧存档加载与存回、MCM、UI/地图通知效果、provider、Bootstrap 实际加载、真实宫廷/机械副作用和帧耗时。`WorldDiplomacyGatewayReplayTests` 需要 `single_module_stage`；本阶段未 Stage，因此未把它记为通过。没有 push、部署、游戏/存档或外仓写入。
+- 下一阶段 **DPL-080**：在现有 AF 通用 LLM host port 下整理外交协议、prompt 包、预算、解析/修复/重试与降级；保持稳定前缀、transcript/history、取消、晚结果及已确认事实/AFEF 发布。开始前以当前 HEAD 与源码重新核对 owner 和工作树，不把下面的 060 历史数值当当前验收结果。
 
 ## DPL-060 历史交接（下文数字和产物身份仅对应当时提交）
 
