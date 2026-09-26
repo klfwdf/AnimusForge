@@ -1,7 +1,7 @@
 # 当前交接：AF2.0 F1 路径约定与 F2 单文件导出保护已验，继续 F1–F5（2026-09-26）
 
 - **状态**：用户授权离线连续实施；`AnimusForgeDataPaths` 路径约定及 `PlayerExportsStore.WriteJson` 单文件候选/校验/替换已落地。独立测试 22 项和最新 Debug/Release × 1.3/1.4 + Bootstrap 六构建均通过、零警告错误。消费者尚未接线，整组导出仍有先清旧文件点，因此尚不改变运行数据位置；不是 F1/F2 全部，更不是 AF2.0 完成。意图提交 `d2aca97f`，实际代码/证据见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[范围图](docs/architecture/af-framework-code-scope.md)。
-- **下一步**：补齐有效覆盖/随包默认/owner 安全回退契约，再接实际 writer/编辑器及可恢复迁移；Stage/ZIP 白名单与真实数据退役须另按计划门禁执行。D: 游戏仅只读依赖/旧来源；无覆盖、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入。实机旧档与发布许可 **NOT-RUN**。
+- **下一步**：补齐有效覆盖/随包默认/owner 安全回退契约，再接实际 writer/编辑器及可恢复迁移；Stage/ZIP 白名单与真实数据退役须另按计划门禁执行。BAAI 原模型 MIT 标签不能直接证明 ONNX 转换仓文件可再分发，F4 许可仍阻断发布。D: 游戏仅只读依赖/旧来源；无覆盖、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入。实机旧档与发布许可 **NOT-RUN**。
 
 ## 以下为 AF2.0 设计交接（历史）
 
