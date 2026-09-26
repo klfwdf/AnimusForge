@@ -4284,29 +4284,18 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			: settlements.Max(x => origin.GatePosition.Distance(x.GatePosition));
 		int civilianSpreadDays = GetCivilianSpreadDays();
 		int courtDeliveryDays = GetCourtMaxDeliveryDays();
-		int latestCivilianDueDay = CurrentDay();
-		List<WorldDiplomacyPropagationArrival> newArrivals = new List<WorldDiplomacyPropagationArrival>(settlements.Count + Math.Max(0, Kingdom.All.Count - 1));
-		HashSet<string> knownSettlementIds = WorldDiplomacyDocumentFactRules.GetKnownSettlementIdsForDocument(_storage.SettlementKnowledge, document.DocumentId);
-		HashSet<string> knownKingdomIds = WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(_storage.KingdomKnowledge, document.DocumentId);
+		List<WorldDiplomacyPropagationApplication.SettlementTarget> settlementTargets =
+			new List<WorldDiplomacyPropagationApplication.SettlementTarget>(settlements.Count);
 		foreach (Settlement settlement in settlements)
 		{
-			if (origin != null && settlement == origin)
+			bool isOrigin = origin != null && settlement == origin;
+			settlementTargets.Add(new WorldDiplomacyPropagationApplication.SettlementTarget
 			{
-				continue;
-			}
-			if (knownSettlementIds.Contains(settlement.StringId)) continue;
-			float distance = origin == null ? maxCivilianDistance : origin.GatePosition.Distance(settlement.GatePosition);
-			int travelDays = maxCivilianDistance <= 0.01f
-				? 1
-				: WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(distance, maxCivilianDistance, civilianSpreadDays);
-			latestCivilianDueDay = Math.Max(latestCivilianDueDay, CurrentDay() + travelDays);
-			newArrivals.Add(new WorldDiplomacyPropagationArrival
-			{
-				DocumentId = document.DocumentId,
-				RoundId = document.RoundId,
-				SettlementId = settlement.StringId,
-				Scope = "civilian",
-				DueDay = CurrentDay() + travelDays
+				Id = settlement.StringId,
+				IsOrigin = isOrigin,
+				Distance = isOrigin || origin == null
+					? maxCivilianDistance
+					: origin.GatePosition.Distance(settlement.GatePosition)
 			});
 		}
 		List<Tuple<Kingdom, Settlement>> courtDestinations = Kingdom.All
@@ -4317,44 +4306,33 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		float maxCourtDistance = origin == null
 			? 0f
 			: courtDestinations.Where(x => x.Item2 != null).Select(x => origin.GatePosition.Distance(x.Item2.GatePosition)).DefaultIfEmpty(0f).Max();
-		int latestCourtDueDay = CurrentDay();
+		List<WorldDiplomacyPropagationApplication.CourtTarget> courtTargets =
+			new List<WorldDiplomacyPropagationApplication.CourtTarget>(courtDestinations.Count);
 		foreach (Tuple<Kingdom, Settlement> destination in courtDestinations)
 		{
-			bool playerCourtReceiptMissing = IsPlayerAffiliatedKingdom(destination.Item1)
-				&& !document.HasReachedPlayerCourt;
-			if (knownKingdomIds.Contains(destination.Item1.StringId) && !playerCourtReceiptMissing) continue;
-			float distance = origin == null || destination.Item2 == null
-				? maxCourtDistance
-				: origin.GatePosition.Distance(destination.Item2.GatePosition);
-			int travelDays = maxCourtDistance <= 0.01f
-				? courtDeliveryDays
-				: WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(distance, maxCourtDistance, courtDeliveryDays);
-			latestCourtDueDay = Math.Max(latestCourtDueDay, CurrentDay() + travelDays);
-			newArrivals.Add(new WorldDiplomacyPropagationArrival
+			courtTargets.Add(new WorldDiplomacyPropagationApplication.CourtTarget
 			{
-				DocumentId = document.DocumentId,
-				RoundId = document.RoundId,
-				SettlementId = destination.Item2?.StringId ?? "",
 				KingdomId = destination.Item1.StringId,
-				Scope = "court",
-				DueDay = CurrentDay() + travelDays
+				SettlementId = destination.Item2?.StringId ?? "",
+				IsPlayerAffiliated = IsPlayerAffiliatedKingdom(destination.Item1),
+				Distance = origin == null || destination.Item2 == null
+					? maxCourtDistance
+					: origin.GatePosition.Distance(destination.Item2.GatePosition)
 			});
 		}
-		List<WorldDiplomacyPropagationArrival> committedArrivals = WorldDiplomacyRoundLifecycleRules.OrderPropagationArrivalsByDueDate((_storage.PropagationArrivals ?? new List<WorldDiplomacyPropagationArrival>())
-				.Where(x => x != null && !WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.DocumentId, document.DocumentId))
-				.Concat(newArrivals))
-			.ToList();
-		_storage.PropagationArrivals = committedArrivals;
-		document.PropagationCompleted = true;
+		WorldDiplomacyPropagationApplication.ScheduleResult schedule =
+			WorldDiplomacyPropagationApplication.SchedulePublication(
+				_storage, document, CurrentDay(), civilianSpreadDays, courtDeliveryDays,
+				settlementTargets, maxCivilianDistance, courtTargets, maxCourtDistance);
 		Log("propagation started document=" + document.DocumentId
 			+ " round=" + document.RoundId
 			+ " origin=" + (origin?.StringId ?? "none")
 			+ " settlements=" + settlements.Count.ToString(CultureInfo.InvariantCulture)
 			+ " civilianDays=" + civilianSpreadDays.ToString(CultureInfo.InvariantCulture)
-			+ " latestCivilianDay=" + latestCivilianDueDay.ToString(CultureInfo.InvariantCulture)
+			+ " latestCivilianDay=" + schedule.LatestCivilianDueDay.ToString(CultureInfo.InvariantCulture)
 			+ " courts=" + courtDestinations.Count.ToString(CultureInfo.InvariantCulture)
 			+ " courtDays=" + courtDeliveryDays.ToString(CultureInfo.InvariantCulture)
-			+ " latestCourtDay=" + latestCourtDueDay.ToString(CultureInfo.InvariantCulture)
+			+ " latestCourtDay=" + schedule.LatestCourtDueDay.ToString(CultureInfo.InvariantCulture)
 			+ " addressed=" + string.Join(",", document.AddressedKingdomIds ?? new List<string>()));
 	}
 	private void RetryDeferredDocumentPropagation()
@@ -4451,66 +4429,56 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		List<Settlement> settlements = Settlement.All.Where(x => x != null && !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId)).ToList();
+		List<Settlement> allSettlements = Settlement.All.Where(x => x != null).ToList();
+		List<Settlement> settlements = allSettlements
+			.Where(x => !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId)).ToList();
 		List<Tuple<Kingdom, Settlement>> courts = Kingdom.All
 			.Where(x => x != null && !x.IsEliminated && !string.IsNullOrWhiteSpace(x.StringId))
 			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
 			.Select(x => Tuple.Create(x, ResolveCourtSettlement(x)))
 			.ToList();
-		List<string> pendingDocumentIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(_storage.PropagationArrivals
-			.Where(x => x != null)
-			.Select(x => x.DocumentId));
-		foreach (string documentId in pendingDocumentIds)
+		List<WorldDiplomacyPropagationApplication.CourtTarget> courtTargets =
+			new List<WorldDiplomacyPropagationApplication.CourtTarget>(courts.Count);
+		foreach (Tuple<Kingdom, Settlement> court in courts)
 		{
-			WorldDiplomacyDocument document = ResolveDocument(documentId);
-			Settlement origin = ResolveSettlementById(document?.OriginSettlementId);
-			if (document == null || origin == null) continue;
-			float maxCourtDistance = courts.Where(x => x.Item2 != null).Select(x => origin.GatePosition.Distance(x.Item2.GatePosition)).DefaultIfEmpty(0f).Max();
+			courtTargets.Add(new WorldDiplomacyPropagationApplication.CourtTarget
+			{
+				KingdomId = court.Item1.StringId,
+				SettlementId = court.Item2?.StringId ?? "",
+				IsPlayerAffiliated = IsPlayerAffiliatedKingdom(court.Item1)
+			});
+		}
+		Dictionary<string, Settlement> settlementsById = new Dictionary<string, Settlement>(StringComparer.OrdinalIgnoreCase);
+		foreach (Settlement settlement in allSettlements)
+		{
+			if (!string.IsNullOrWhiteSpace(settlement.StringId) && !settlementsById.ContainsKey(settlement.StringId))
+				settlementsById.Add(settlement.StringId, settlement);
+		}
+		WorldDiplomacyPropagationApplication.DistanceSnapshot CaptureDistances(WorldDiplomacyDocument document)
+		{
+			if (!settlementsById.TryGetValue(document.OriginSettlementId ?? "", out Settlement origin))
+				return null;
+			Dictionary<string, float> settlementDistances = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+			foreach (KeyValuePair<string, Settlement> destination in settlementsById)
+				settlementDistances.Add(destination.Key, origin.GatePosition.Distance(destination.Value.GatePosition));
+			Dictionary<string, float> courtDistances = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 			foreach (Tuple<Kingdom, Settlement> court in courts)
 			{
-				bool playerCourtReceiptMissing = IsPlayerAffiliatedKingdom(court.Item1)
-					&& !document.HasReachedPlayerCourt;
-				if (string.Equals(court.Item1.StringId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-					|| (WorldDiplomacyDocumentFactRules.HasKingdomKnowledge(_storage.KingdomKnowledge, court.Item1.StringId, document.DocumentId) && !playerCourtReceiptMissing)
-					|| _storage.PropagationArrivals.Any(x => x != null && WorldDiplomacyStructureRules.IsCourtArrival(x)
-						&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.DocumentId, document.DocumentId)
-						&& string.Equals(x.KingdomId, court.Item1.StringId, StringComparison.OrdinalIgnoreCase))) continue;
-				float distance = court.Item2 == null ? maxCourtDistance : origin.GatePosition.Distance(court.Item2.GatePosition);
-				int travelDays = maxCourtDistance <= 0.01f ? courtDays : WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(distance, maxCourtDistance, courtDays);
-				_storage.PropagationArrivals.Add(new WorldDiplomacyPropagationArrival
-				{
-					DocumentId = document.DocumentId,
-					RoundId = document.RoundId,
-					SettlementId = court.Item2?.StringId ?? "",
-					KingdomId = court.Item1.StringId,
-					Scope = "court",
-					DueDay = Math.Max(CurrentDay(), document.Day + travelDays)
-				});
+				if (court.Item2 != null && !courtDistances.ContainsKey(court.Item1.StringId))
+					courtDistances.Add(court.Item1.StringId, origin.GatePosition.Distance(court.Item2.GatePosition));
 			}
-		}
-		foreach (IGrouping<string, WorldDiplomacyPropagationArrival> group in _storage.PropagationArrivals.Where(x => x != null).GroupBy(x => x.DocumentId, StringComparer.OrdinalIgnoreCase))
-		{
-			WorldDiplomacyDocument document = ResolveDocument(group.Key);
-			Settlement origin = ResolveSettlementById(document?.OriginSettlementId);
-			if (document == null || origin == null) continue;
-			float maxCivilianDistance = settlements.Count == 0 ? 0f : settlements.Max(x => origin.GatePosition.Distance(x.GatePosition));
-			float maxCourtDistance = courts.Where(x => x.Item2 != null).Select(x => origin.GatePosition.Distance(x.Item2.GatePosition)).DefaultIfEmpty(0f).Max();
-			foreach (WorldDiplomacyPropagationArrival arrival in group)
+			return new WorldDiplomacyPropagationApplication.DistanceSnapshot
 			{
-				Settlement destination = ResolveSettlementById(arrival.SettlementId);
-				float maximumDistance = WorldDiplomacyStructureRules.IsCourtArrival(arrival) ? maxCourtDistance : maxCivilianDistance;
-				int maximumDays = WorldDiplomacyStructureRules.IsCourtArrival(arrival) ? courtDays : civilianDays;
-				if (!WorldDiplomacyStructureRules.IsCourtArrival(arrival) && destination == null) continue;
-				float distance = destination == null ? maximumDistance : origin.GatePosition.Distance(destination.GatePosition);
-				int travelDays = maximumDistance <= 0.01f ? maximumDays : WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(distance, maximumDistance, maximumDays);
-				arrival.DueDay = Math.Max(CurrentDay(), document.Day + travelDays);
-			}
+				MaxCivilianDistance = settlements.Count == 0
+					? 0f : settlements.Max(x => origin.GatePosition.Distance(x.GatePosition)),
+				MaxCourtDistance = courts.Where(x => x.Item2 != null)
+					.Select(x => origin.GatePosition.Distance(x.Item2.GatePosition)).DefaultIfEmpty(0f).Max(),
+				SettlementDistances = settlementDistances,
+				CourtDistances = courtDistances
+			};
 		}
-		_storage.PropagationArrivals = WorldDiplomacyRoundLifecycleRules.OrderPropagationArrivalsByDueDate(_storage.PropagationArrivals)
-			.ToList();
-		_storage.LastAppliedContinentSpreadDays = civilianDays;
-		_storage.LastAppliedCivilianSpreadDays = civilianDays;
-		_storage.LastAppliedCourtDeliveryDays = courtDays;
+		WorldDiplomacyPropagationApplication.RecalculatePending(
+			_storage, CurrentDay(), civilianDays, courtDays, courtTargets, CaptureDistances);
 		Log("pending propagation recalculated courtDays=" + courtDays.ToString(CultureInfo.InvariantCulture)
 			+ " civilianDays=" + civilianDays.ToString(CultureInfo.InvariantCulture)
 			+ " arrivals=" + _storage.PropagationArrivals.Count.ToString(CultureInfo.InvariantCulture));

@@ -729,11 +729,12 @@ internal static class Program
 		Test.True(propagation.Contains("IsPlayerAffiliatedKingdom(author)", StringComparison.Ordinal)
 			&& propagation.Contains("document.HasReachedPlayerCourt = true", StringComparison.Ordinal),
 			"a declaration authored at the player-affiliated sovereign court must be formally available immediately");
-		Test.True(propagation.Contains("playerCourtReceiptMissing", StringComparison.Ordinal)
-			&& propagation.Contains("knownKingdomIds.Contains", StringComparison.Ordinal),
+		string propagationOwner = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
+		Test.True(propagation.Contains("WorldDiplomacyPropagationApplication.SchedulePublication(", StringComparison.Ordinal)
+			&& propagationOwner.Contains("bool playerCourtReceiptMissing = court.IsPlayerAffiliated", StringComparison.Ordinal)
+			&& propagationOwner.Contains("knownKingdomIds.Contains(court.KingdomId)", StringComparison.Ordinal),
 			"relay knowledge must not suppress a still-missing formal player-court delivery");
 		string propagationArrivals = ExtractMethod(source, "private void ProcessPropagationArrivals(");
-        string propagationOwner = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
         Test.True(propagationArrivals.Contains("WorldDiplomacyPropagationApplication.ProcessDue(", StringComparison.Ordinal)
                   && propagationArrivals.Contains("WorldDiplomacyPropagationApplication.ReceiveCourt(", StringComparison.Ordinal)
                   && propagationArrivals.Contains("() => IsPlayerAffiliatedKingdom(receiver), () => ProcessCourtArrival(receiver, document)", StringComparison.Ordinal),
