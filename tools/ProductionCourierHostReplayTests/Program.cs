@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,37 +18,43 @@ static void AssertTrue(bool condition, string message)
     }
 }
 
-string stageDirectory = Path.GetFullPath(Path.Combine(
-    AppContext.BaseDirectory,
-    "..", "..", "..", "..", "..",
-    "bin", "Debug", "single_module_stage", "AnimusForge",
-    "bin", "Win64_Shipping_Client"));
+try
+{
 string projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
-string referenceDirectory = Path.Combine(projectRoot, ".tmp", "build_check", "1.4");
-string implementationPath = Path.Combine(stageDirectory, "versions", "1.4", "AnimusForge.dll");
-AssertTrue(File.Exists(implementationPath), "project-local 1.4 AnimusForge.dll is missing");
+AssertTrue(args.Length == 2, "Pass the current candidate DLL path and expected SHA256 after --.");
+string implementationPath = Path.GetFullPath(args[0]);
+AssertTrue(new[] { "Debug", "Release" }.Any(configuration => string.Equals(implementationPath,
+    Path.GetFullPath(Path.Combine(projectRoot, "bin", configuration, "single_module_artifacts", "versions", "1.4", "AnimusForge.dll")),
+    StringComparison.OrdinalIgnoreCase)), "Courier candidate must be a current project-local 1.4 artifact, never Stage");
+string markerPath = Path.ChangeExtension(implementationPath, ".build.json");
+AssertTrue(File.Exists(implementationPath) && File.Exists(markerPath), "current candidate DLL/marker is missing");
+string actualHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(implementationPath)));
+using (JsonDocument marker = JsonDocument.Parse(File.ReadAllText(markerPath)))
+{
+    JsonElement build = marker.RootElement;
+    AssertTrue(string.Equals(actualHash, args[1], StringComparison.OrdinalIgnoreCase)
+        && string.Equals(actualHash, build.GetProperty("Sha256").GetString(), StringComparison.OrdinalIgnoreCase), "Courier candidate SHA256 mismatch");
+    AssertTrue(build.GetProperty("Role").GetString() == "Implementation" && build.GetProperty("BannerlordApi").GetString() == "1.4"
+        && build.GetProperty("BuildFlavor").GetString() == "ANIMUSFORGE_BANNERLORD_API_1_4", "Courier build identity mismatch");
+    DateTime created = build.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
+    foreach (string source in Directory.GetFiles(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Courier"), "*.cs")
+        .Concat(new[] { "CourierDeliveryBehavior.cs", "Refactor/Modules/CoreDialogueContracts.cs", "Refactor/Modules/CoreDialogueOperation.cs",
+            "Refactor/Modules/CoreDialogueClient.cs", "Refactor/Modules/CoreDialogueServices.cs" }.Select(path => Path.Combine(projectRoot, path))))
+        AssertTrue(created >= File.GetLastWriteTimeUtc(source), "Courier candidate predates " + source);
+}
+using (JsonDocument manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "af-replay-dependencies.json"))))
+{
+    JsonElement input = manifest.RootElement;
+    AssertTrue(string.Equals(Path.GetFullPath(input.GetProperty("ImplementationPath").GetString()), implementationPath, StringComparison.OrdinalIgnoreCase)
+        && string.Equals(input.GetProperty("ImplementationSha256").GetString(), actualHash, StringComparison.OrdinalIgnoreCase), "Courier replay dependencies were validated for another candidate");
+}
+Console.WriteLine("Courier candidate=" + implementationPath + " SHA256=" + actualHash);
 
 AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 {
     string name = new AssemblyName(arguments.Name).Name;
-    foreach (string root in new[] { AppContext.BaseDirectory, stageDirectory, referenceDirectory })
-    {
-        if (!Directory.Exists(root))
-        {
-            continue;
-        }
-        foreach (string candidate in Directory.GetFiles(root, name + ".dll", SearchOption.AllDirectories))
-        {
-            try
-            {
-                return Assembly.LoadFrom(candidate);
-            }
-            catch
-            {
-            }
-        }
-    }
-    return null;
+    string candidate = Path.Combine(AppContext.BaseDirectory, name + ".dll");
+    return File.Exists(candidate) ? Assembly.LoadFrom(candidate) : null;
 };
 
 Assembly animusForge = Assembly.LoadFrom(implementationPath);
@@ -341,7 +349,7 @@ AssertTrue((bool)hostResultType.GetProperty("UsedLegacyFallback").GetValue(fallb
     && fallbackCalls == 1, "Courier fallback isolation mismatch");
 AssertTrue(commitDispatches == committedBeforeTerminalCases, "Courier terminal/fallback cases dispatched an unexpected commit");
 
-// Exercise the actual private receipt classifier in the staged DLL, not a fixture enum.
+// Exercise the actual private receipt classifier in the candidate DLL, not a fixture enum.
 MethodInfo unconfirmed = courierType.GetMethod("CreateUnconfirmedCourierCommit", BindingFlags.NonPublic | BindingFlags.Static);
 AssertTrue(unconfirmed != null, "actual DLL is missing unconfirmed Courier receipt classifier");
 object uncertain = unconfirmed.Invoke(null, new object[] { "fixture_commit_uncertain" });
@@ -371,6 +379,13 @@ AssertTrue(hostResultType.GetProperty("Status").GetValue(uncertainResult).ToStri
     && retainedReceipt != null && retainedReceipt.GetType().GetProperty("EffectState").GetValue(retainedReceipt).ToString() == "UnknownAfterStart", "actual host lost the uncertain receipt");
 
 Console.WriteLine("PASS productionCourierHostReplay courierPorts=1 replyMain=1 syntheticOwnerAbsent=1 unboundPostprocessDenied=1 postprocessTransportDenied=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1 unconfirmedReceipt=1 uncertainHostNoReplay=1");
+Console.WriteLine("NOT TESTED: live transport/game/provider; fixture gateway and memory below the actual detached host.");
+}
+catch (Exception error)
+{
+    Console.Error.WriteLine("FAIL productionCourierHostReplay " + error);
+    Environment.ExitCode = 1;
+}
 
 internal class ReplayProxy : DispatchProxy
 {
