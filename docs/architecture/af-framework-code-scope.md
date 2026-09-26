@@ -1,4 +1,10 @@
-# 当前范围：AF2.0 F2 Prompt 分层与显式迁移已验（2026-09-26）
+# 当前范围：AF2.0 F2 TerminalSettings 用户根与迁移契约已验（2026-09-26）
+
+产品/测试 **`7c39b200`**：`AnimusForgeTerminalSettings.cs:83–178` 只从 typed `UserData/Settings/TerminalSettings.json` 读取/保存，不日常回退旧 `ModuleData`；无文件或损坏文件沿用原 owner 的两个入口均开启安全默认，保存只对有效旧文件用同目录候选校验及 `File.Replace`，坏文件原样保留且 UI 值回滚。`tools/af2_migrate.py:490–605` 新增显式单文件迁移：安装/仓内来源分开标识、备份与 hash 验证、有效 JSON 无覆盖激活、无效 JSON 仅私有备份、冲突与中断续作记录。两真实来源只读盘点均 0 文件，未执行无意义真实 `--apply`，不存在可宣称的真实设置激活。`tests/AF.Persistence/DataPaths/Program.cs:156–165` 的路径/保存/坏文件测试及 `test_migration.py:270–319` 合成迁移通过，DataPaths **50 checks PASS**，Debug/Release × 1.3/1.4 + Bootstrap **六构建 0 warning/error**；地图 775 锚点两模式通过。ONNX、Stage/ZIP、其他资料/资产与 F5 仍未完成。
+
+## 以下为 Prompt 分层与迁移的已验历史范围
+
+# AF2.0 F2 Prompt 分层与显式迁移已验（2026-09-26）
 
 产品/测试 **`528031c5`**：`src/AF.Persistence/AnimusForgeModulePaths.cs:45` 的日志定位及 `DuelSettings.cs:5241` 的模型下拉缓存定位采用 typed 用户根；`DuelSettings.cs:4360–4760,5018` 的普通 Prompt 按用户覆盖→随包默认→owner 回退读取，写入仅到 `UserData/Overrides/CustomPrompts` 的同目录候选，不在读取时播种默认值或修复并覆盖损坏文件。`PolicySystem/Effects/PolicyEffectPromptService.cs:250–430,683` 的 Policy Prompt 采用同一分层语义，字段级回退和最小覆盖保存。`content/content-map.json` 为 30 份随包默认固定 SHA-256，`tests/content/J15ContentContractTests/run.py:458` 验证映射；`tools/af2_migrate.py:313–500` 显式备份旧安装 Prompt、核对基线 hash、仅激活 14 份非基线 JSON，重复运行不双写。游戏/编辑器热路径不作全量扫描；迁移仅显式调用，按文件分批 hash。
 
