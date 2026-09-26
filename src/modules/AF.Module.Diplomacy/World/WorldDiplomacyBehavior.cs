@@ -7252,45 +7252,31 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		bool isResponse,
 		string exchangeId)
 	{
-		return new WorldDiplomacyDocument
+		return WorldDiplomacyDocumentApplication.Create(new WorldDiplomacyDocumentApplication.CreationSnapshot
 		{
 			DocumentId = NewId("diplomacy_document"),
-			ExchangeId = exchangeId ?? "",
-			RoundId = exchangeId ?? "",
-			AuthorKingdomId = author?.StringId ?? "",
+			ExchangeId = exchangeId,
+			AuthorKingdomId = author?.StringId,
 			AuthorKingdomName = KingdomName(author),
-			AuthorRulerId = author?.RulingClan?.Leader?.StringId ?? "",
+			AuthorRulerId = author?.RulingClan?.Leader?.StringId,
 			AuthorRulerName = RulerName(author),
-			TargetKingdomId = target?.StringId ?? "",
+			TargetKingdomId = target?.StringId,
 			TargetKingdomName = target == null ? "" : KingdomName(target),
-			Title = WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(title, "外交宣言"), 100),
-			Body = WorldDiplomacyTextRules.NormalizeBody(body),
-			Origin = origin ?? "",
+			HasTarget = target != null,
+			Title = title,
+			Body = body,
+			Origin = origin,
 			Day = CurrentDay(),
 			GameDate = FormatCampaignDate(CurrentDay()),
 			CreatedUtcTicks = DateTime.UtcNow.Ticks,
 			IsPlayerAuthored = isPlayerAuthored,
-			IsResponse = isResponse,
-			IsRead = isPlayerAuthored,
-			AddressedKingdomIds = target == null ? new List<string>() : new List<string> { target.StringId }
-		};
+			IsResponse = isResponse
+		});
 	}
 	private void AddDocument(WorldDiplomacyDocument document)
 	{
-		if (document == null || string.IsNullOrWhiteSpace(document.DocumentId))
-		{
-			return;
-		}
-		_storage.Documents.RemoveAll(x => x != null && WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.DocumentId, document.DocumentId));
-		_storage.Documents.Add(document);
-		// Keep any publishable artifact whose canonical append is still pending
-		// ahead of ordinary archive eviction.
-		_storage.Documents = WorldDiplomacyRoundLifecycleRules.SelectRetainedDocuments(
-			_storage.Documents,
-			WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry,
-			MaxStoredDocuments);
-		// This runs only on publication/update, not during the message UI's frame tick.
-		AdvanceWorldMessageTimelineRevision();
+		WorldDiplomacyDocumentApplication.Add(_storage, document, MaxStoredDocuments,
+			AdvanceWorldMessageTimelineRevision);
 	}
 	private void AdvanceWorldMessageTimelineRevision()
 	{
