@@ -1,4 +1,10 @@
-# 当前范围：J15c 默认 Prompt 唯一源与安装覆盖接线（2026-09-26）
+# 当前范围：AF2.0 F1 路径契约首片（2026-09-26）
+
+`src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 新增纯 .NET 内部路径约定：默认 `%LOCALAPPDATA%/AnimusForge`，环境变量或显式绝对根优先，拒绝相对路径、源码/模块/Stage 根与现存 reparse，提供 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery` typed 目录。`tests/AF.Persistence/DataPaths/Program.cs:1–61` 验证 17 个定位及错误路径反例。现有 reader/writer 尚未接此约定；本片不改变 V1 API、保存身份、游戏安装或默认入口。Debug/Release × 1.3/1.4 + Bootstrap 六构建和独立路径测试通过，实机/旧档/迁移/Stage/ZIP **NOT-RUN**。完整 F1–F5 仍未验收，证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
+
+## 以下为前序 J15c 已验范围
+
+# J15c 默认 Prompt 唯一源与安装覆盖接线（2026-09-26）
 
 产品 **`9db8fa8b`**，测试修复 **`a3fa77af`**；状态 **`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。30 份默认 JSON 按 Memory/Persona/Prompt/Kingdom/Weekly/Diplomacy/PolicySystem 归到 `content/modules/<owner>/CustomPrompts`，`content/content-map.json:396–545` 保持原安装 target；总映射 107。`deploy_module.ps1:172–220,802` 只迁默认源查找和已解析 root 参数，安装用户覆盖、旧 Policy 替换及 runtime writer 仍是原 owner 的责任。
 
