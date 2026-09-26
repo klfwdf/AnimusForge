@@ -140,9 +140,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private int _aiDocumentsStartedToday;
 	private int _lastSchedulerDay = -1;
 	private string _lastLlmCacheAffinityKey = "";
-	private int _llmRequestsStartedDay = -1;
-	private int _llmRequestsStartedToday;
-	private int _lastLlmBudgetLogDay = -1;
+	private readonly WorldDiplomacyLlmBudget _llmBudget = new WorldDiplomacyLlmBudget();
 	private long _cacheHitTokensThisSession;
 	private long _cacheMissTokensThisSession;
 	private long _relayCacheHitTokensThisSession;
@@ -883,9 +881,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_lastSchedulerDay = -1;
 		_aiDocumentsStartedDay = -1;
 		_aiDocumentsStartedToday = 0;
-		_llmRequestsStartedDay = -1;
-		_llmRequestsStartedToday = 0;
-		_lastLlmBudgetLogDay = -1;
+		_llmBudget.Reset();
 		_cacheHitTokensThisSession = 0;
 		_cacheMissTokensThisSession = 0;
 		_relayCacheHitTokensThisSession = 0;
@@ -4083,26 +4079,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private bool TryConsumeDiplomacyLlmRequestBudget(bool consume = true)
 	{
-		int day = CurrentDay();
-		if (_llmRequestsStartedDay != day)
-		{
-			_llmRequestsStartedDay = day;
-			_llmRequestsStartedToday = 0;
-		}
-		if (_llmRequestsStartedToday >= MaxDiplomacyLlmRequestsPerDay)
-		{
-			if (_lastLlmBudgetLogDay != day)
-			{
-				_lastLlmBudgetLogDay = day;
-				Log("llm daily throughput reached day=" + day.ToString(CultureInfo.InvariantCulture)
-					+ " limit=" + MaxDiplomacyLlmRequestsPerDay.ToString(CultureInfo.InvariantCulture)
-					+ " action=defer_pending_jobs");
-			}
-			return false;
-		}
-		if (consume) _llmRequestsStartedToday++;
-		return true;
+		return _llmBudget.TryConsume(CurrentDay(), MaxDiplomacyLlmRequestsPerDay, consume, Log);
 	}
+
 	private void StartDocumentPropagation(WorldDiplomacyDocument document, Kingdom author)
 	{
 		if (document == null || document.PropagationCompleted || author == null)
@@ -8711,23 +8690,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		public MyBehavior.WorldWeeklyReportHistoryEntry WorldWeeklyReport;
 		public PublishedPolicyArtifactLedgerEntry Policy;
 	}
-	private sealed class LlmJobResult
-	{
-		public string JobId = "";
-		public long RuntimeGeneration;
-		public bool Success;
-		public string Content = "";
-		public string Error = "";
-		public bool IsServiceFailure;
-		public bool IsOutputTruncated;
-		public int? PromptTokens;
-		public int? CompletionTokens;
-		public int? PromptCacheHitTokens;
-		public int? PromptCacheMissTokens;
-		public int? PromptCacheCreationTokens;
-		public int? PromptUncachedTokens;
-	}
-
 
 	private bool IsDiplomaticRepresentativeForAddressedVassal(Kingdom receiver, WorldDiplomacyDocument document)
 	{

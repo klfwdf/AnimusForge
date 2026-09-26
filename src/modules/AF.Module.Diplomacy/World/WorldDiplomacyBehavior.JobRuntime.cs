@@ -89,50 +89,13 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		job.CacheAffinityKey = WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(job);
 		_lastLlmCacheAffinityKey = job.CacheAffinityKey;
 		LogPromptCacheShape(job);
+		LlmGenerateRequest detachedRequest = WorldDiplomacyLlmApplication.PrepareRequest(
+			request, requestMessages);
+		ILlmGateway gateway = new LegacyWorldDiplomacyLlmGateway();
 		_ = Task.Run(async delegate
 		{
-			LlmJobResult result = new LlmJobResult
-			{
-				JobId = request.JobId,
-				RuntimeGeneration = request.RuntimeGeneration
-			};
-			try
-			{
-				PromptPackage sharedPrompt = LegacyWorldDiplomacyLlmGateway.BuildPromptPackage(
-					requestMessages,
-					request.MaxTokens,
-					"world-diplomacy");
-				TraceContext trace = new TraceContext(
-					"world-diplomacy-" + request.JobId,
-					request.RuntimeGeneration,
-					0,
-					"single-player",
-					"shared");
-				LlmGenerateResult generated = await new LegacyWorldDiplomacyLlmGateway().GenerateAsync(
-					new LlmGenerateRequest(
-						trace,
-						new LlmProviderSnapshot("world-diplomacy", "legacy://world-diplomacy", "world-diplomacy", request.TimeoutMilliseconds, request.MaxTokens),
-						sharedPrompt,
-						InteractionStage.MainReply),
-					CancellationToken.None).ConfigureAwait(false);
-				LlmGenerateMetadata metadata = generated.Metadata ?? LlmGenerateMetadata.Empty;
-				result.Success = generated.Status == LlmResultStatus.Succeeded;
-				result.Content = generated.RawText ?? "";
-				result.Error = generated.Status == LlmResultStatus.Succeeded ? "" : (generated.ErrorCode ?? "world_diplomacy_gateway_failure");
-				result.IsServiceFailure = metadata.IsTimeout || metadata.IsRateLimit || metadata.IsQuotaLimit || metadata.IsAuthFailure || generated.Status != LlmResultStatus.Succeeded;
-				result.IsOutputTruncated = metadata.IsOutputTruncated;
-				result.PromptTokens = generated.PromptTokens;
-				result.CompletionTokens = generated.CompletionTokens;
-				result.PromptCacheHitTokens = metadata.PromptCacheHitTokens;
-				result.PromptCacheMissTokens = metadata.PromptCacheMissTokens;
-				result.PromptCacheCreationTokens = metadata.PromptCacheCreationTokens;
-				result.PromptUncachedTokens = metadata.PromptUncachedTokens;
-			}
-			catch (Exception ex)
-			{
-				result.Error = ex.ToString();
-				result.IsServiceFailure = true;
-			}
+			LlmJobResult result = await WorldDiplomacyLlmApplication.ExecuteAsync(
+				request.JobId, detachedRequest, gateway, CancellationToken.None).ConfigureAwait(false);
 			_completedJobs.Enqueue(result);
 		});
 	}

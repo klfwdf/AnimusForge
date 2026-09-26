@@ -54,7 +54,14 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         task = runtime[runtime.index("_ = Task.Run(async delegate") : runtime.index("_completedJobs.Enqueue(result);")]
         self.assertNotIn("job.", task)
         self.assertIn("request.JobId", task)
-        self.assertIn("request.RuntimeGeneration", task)
+        application = read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs")
+        self.assertIn("WorldDiplomacyLlmApplication.ExecuteAsync(", task)
+        self.assertIn("detachedRequest, gateway, CancellationToken.None", task)
+        self.assertLess(runtime.index("WorldDiplomacyLlmApplication.PrepareRequest("), runtime.index("_ = Task.Run"))
+        self.assertNotIn("requestMessages", task)
+        self.assertIn("RuntimeGeneration = request.Trace.RuntimeGeneration", application)
+        self.assertIn("gateway.GenerateAsync(", application)
+        self.assertNotIn("TaleWorlds", application)
         self.assertIn("internal static string SelectNextJobId(", coordinator)
 
     def test_worldmap_protocol_admission_lifecycle_and_delay_are_split(self) -> None:
