@@ -9,5 +9,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" />
+    <Compile Include="../../../src/AF.Persistence/PlayerExportsStore.cs" Link="PlayerExportsStore.cs" />
+    <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

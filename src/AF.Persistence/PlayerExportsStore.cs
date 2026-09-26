@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge;
 
@@ -135,19 +136,28 @@ internal static class PlayerExportsStore
 
 	internal static void WriteJson(string path, object obj)
 	{
-		Directory.CreateDirectory(Path.GetDirectoryName(path));
+		string contents = JsonConvert.SerializeObject(obj, Formatting.Indented);
+		JToken.Parse(contents);
+		string directory = Path.GetDirectoryName(path);
+		Directory.CreateDirectory(directory);
+		string candidate = Path.Combine(directory, "." + Path.GetFileName(path) + "." + Guid.NewGuid().ToString("N") + ".tmp");
 		try
 		{
+			File.WriteAllText(candidate, contents, Encoding.UTF8);
+			JToken.Parse(File.ReadAllText(candidate, Encoding.UTF8));
 			if (File.Exists(path))
 			{
-				File.Delete(path);
+				File.Replace(candidate, path, null);
+			}
+			else
+			{
+				File.Move(candidate, path);
 			}
 		}
-		catch
+		finally
 		{
+			if (File.Exists(candidate)) File.Delete(candidate);
 		}
-		string contents = JsonConvert.SerializeObject(obj, Formatting.Indented);
-		File.WriteAllText(path, contents, Encoding.UTF8);
 	}
 
 	/// <summary>Missing, blank or unreadable file → null (legacy tolerant read).</summary>

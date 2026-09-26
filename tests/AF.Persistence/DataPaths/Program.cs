@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using AnimusForge;
 
 internal static class Program
 {
     private static int _checks;
+    private sealed class BrokenRow { public string Value => throw new InvalidOperationException("synthetic serialization failure"); }
 
     private static void Check(bool condition, string name)
     {
@@ -54,6 +56,27 @@ internal static class Program
         finally
         {
             Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, previous);
+        }
+
+        string workspace = Directory.GetCurrentDirectory();
+        Check(File.Exists(Path.Combine(workspace, "AnimusForge.csproj")), "test writes only inside workspace");
+        string fixture = Path.Combine(workspace, "artifacts", "tests", "af2-data-paths", "atomic-" + Guid.NewGuid().ToString("N") + ".json");
+        Directory.CreateDirectory(Path.GetDirectoryName(fixture));
+        try
+        {
+            File.WriteAllText(fixture, "{\"old\":true}");
+            bool failed = false;
+            try { PlayerExportsStore.WriteJson(fixture, new BrokenRow()); }
+            catch (Exception) { failed = true; }
+            Check(failed, "serialization failure reported");
+            Check(File.ReadAllText(fixture) == "{\"old\":true}", "failed write preserves existing export");
+            PlayerExportsStore.WriteJson(fixture, new { Value = 2 });
+            Check(PlayerExportsStore.ReadJson<Dictionary<string, int>>(fixture)["Value"] == 2, "validated candidate replaces existing export");
+            Check(Directory.GetFiles(Path.GetDirectoryName(fixture), "." + Path.GetFileName(fixture) + ".*.tmp").Length == 0, "candidate removed after publication");
+        }
+        finally
+        {
+            if (File.Exists(fixture)) File.Delete(fixture);
         }
 
         Console.WriteLine("PASS data-path checks=" + _checks);
