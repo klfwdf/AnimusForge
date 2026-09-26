@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "7c39b2002cf30ec8b55de61d4f37fbcd7ae8864d",
+  "sourceRevision": "d7c16c0679a8f86d4a489a8f565f056116948ce4",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -8528,6 +8528,61 @@
       "status": "wired-af2-terminal-slice",
       "note": "explicit backed-up and non-overwriting TerminalSettings migration",
       "fileSha256": "7c466a2061715f063f6994016d90f1c3104981a571191138963e84d163defa3b"
+    },
+    {
+      "id": "af2.stage.whitelist",
+      "path": "一键编译覆盖推送/content_layout.ps1",
+      "start": 226,
+      "end": 226,
+      "symbol": "function Assert-AnimusForgeCleanStage {",
+      "match": "exact",
+      "status": "af2-f3-stage-zip-verified-deploy-blocked",
+      "note": "exact mapped/default/program/dependency file set and hashes",
+      "fileSha256": "9d0aefbdd8ba0954247b711121d5eb118c50cdd8501227de4d30e59f0f7c980a"
+    },
+    {
+      "id": "af2.stage.reset",
+      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "start": 223,
+      "end": 223,
+      "symbol": "function Reset-ProjectStageDirectory {",
+      "match": "exact",
+      "status": "af2-f3-stage-zip-verified-deploy-blocked",
+      "note": "only previously clean project Stage is reset",
+      "fileSha256": "2a2dd42e6114d98f870fabeea5bd13c862b73d5eaa9ad3f4a29120168c02bfea"
+    },
+    {
+      "id": "af2.stage.bin",
+      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "start": 519,
+      "end": 519,
+      "symbol": "function Build-DesiredModuleBin {",
+      "match": "exact",
+      "status": "af2-f3-stage-zip-verified-deploy-blocked",
+      "note": "locked private runtime DLLs and captured dual build artifacts",
+      "fileSha256": "2a2dd42e6114d98f870fabeea5bd13c862b73d5eaa9ad3f4a29120168c02bfea"
+    },
+    {
+      "id": "af2.package.version",
+      "path": "一键编译覆盖推送/package_mod.ps1",
+      "start": 163,
+      "end": 163,
+      "symbol": "function Get-VersionedSubModuleBytes {",
+      "match": "exact",
+      "status": "af2-f3-stage-zip-verified-deploy-blocked",
+      "note": "ZIP-only XML version without source or Stage mutation",
+      "fileSha256": "259822366b42adc5aa93aae4fe26a14b54a02bdba736eeb09a0553fd751bdc65"
+    },
+    {
+      "id": "af2.package.whitelist",
+      "path": "一键编译覆盖推送/package_mod.ps1",
+      "start": 730,
+      "end": 730,
+      "symbol": "function Assert-ZipMatchesCleanStage {",
+      "match": "exact",
+      "status": "af2-f3-stage-zip-verified-deploy-blocked",
+      "note": "ZIP byte/hash equality to clean Stage",
+      "fileSha256": "259822366b42adc5aa93aae4fe26a14b54a02bdba736eeb09a0553fd751bdc65"
     }
   ]
 }
