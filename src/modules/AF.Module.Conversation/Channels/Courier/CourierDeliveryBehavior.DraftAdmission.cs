@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AnimusForge.Refactor.Modules;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -85,7 +86,7 @@ public sealed partial class CourierDeliveryBehavior
     private string ValidateCourierDraftForDispatch(PendingCourierFlow flow, long revision, string input)
     {
         if (!IsPendingCourierFlowCurrent(flow, revision) || !flow.ReadyToSend) return "courier.context_unavailable";
-        if (string.IsNullOrWhiteSpace(input) || input.Length > Refactor.Modules.CoreDialogueClient.MaximumTextLength)
+        if (string.IsNullOrWhiteSpace(input) || input.Length > CoreDialogueClient.MaximumTextLength)
             return "dialogue.invalid_request";
         Hero recipient = flow.Recipient;
         if (recipient == null || recipient == Hero.MainHero || recipient.CharacterObject?.IsHero != true

@@ -114,7 +114,7 @@ public sealed partial class CourierDeliveryBehavior
     private static string ReadCourierFact(IReadOnlyDictionary<string, string> facts, string key)
         => facts.TryGetValue(key, out string value) ? value ?? string.Empty : string.Empty;
 
-    private async Task<T> RunCourierOwnerPhaseAsync<T>(long generation, string source, Func<T> action, CancellationToken cancellationToken)
+    private async Task<T> RunCourierOwnerPhaseAsync<T>(long generation, string source, Func<T> action, CancellationToken cancellationToken, Action onDequeued = null)
     {
         long retirementVersion = _pendingOwnerPhases.Version;
         cancellationToken.ThrowIfCancellationRequested();
@@ -123,6 +123,8 @@ public sealed partial class CourierDeliveryBehavior
         int state = 0;
         void Invoke()
         {
+            try
+            {
             if (Interlocked.CompareExchange(ref state, 1, 0) != 0) return;
             if (cancellationToken.IsCancellationRequested || !ReferenceEquals(Instance, this)
                 || !SaveRuntimeGuard.IsCurrentGeneration(generation))
@@ -133,6 +135,8 @@ public sealed partial class CourierDeliveryBehavior
             try { completion.TrySetResult(action()); }
             catch (OperationCanceledException) { completion.TrySetCanceled(); }
             catch (Exception error) { completion.TrySetException(error); }
+            }
+            finally { onDequeued?.Invoke(); }
         }
         using (IDisposable registration = _pendingOwnerPhases.Register(retirementVersion, () =>
         {

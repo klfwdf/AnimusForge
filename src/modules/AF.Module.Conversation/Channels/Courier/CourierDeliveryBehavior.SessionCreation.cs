@@ -630,13 +630,24 @@ public sealed partial class CourierDeliveryBehavior
 	}
 
 	// Shared UI/module dispatch. No callback may replay a claimed draft, even after partial failure.
-	private CourierSession DispatchCourierDraft(PendingCourierFlow flow, long revision, string input, out string reason)
+	private CourierSession DispatchCourierDraft(PendingCourierFlow flow, long revision, string input, out string reason, CoreDialogueOperation operation = null)
 	{
 		reason = ValidateCourierDraftForDispatch(flow, revision, input);
 		if (reason != null) return null;
+		if (!IsPendingCourierFlowCurrent(flow, revision) || !flow.ReadyToSend)
+		{
+			reason = "courier.context_unavailable";
+			return null;
+		}
+		if (operation != null && !operation.TryBegin())
+		{
+			reason = "dialogue.cancelled_before_start";
+			return null;
+		}
 		flow.Claimed = true;
 		flow.ReadyToSend = false;
 		InvalidateCourierDraftTickets();
+		operation?.MarkOwnerAdmitted();
 		try
 		{
 			CourierSession session = CreateCourierSession(flow, input.Trim());
@@ -645,7 +656,10 @@ public sealed partial class CourierDeliveryBehavior
 				reason = "courier.dispatch_unconfirmed";
 				return null;
 			}
+			if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(flow.RuntimeGeneration))
+				throw new OperationCanceledException("Courier dispatch source expired.");
 			lock (_sessionLock) _sessions[session.Id] = session;
+			BindModuleCourierSession(operation, session);
 			AddCourierRuntimeIndex(session);
 			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
 			StartCourierReplyGeneration(session, "created_preflight");

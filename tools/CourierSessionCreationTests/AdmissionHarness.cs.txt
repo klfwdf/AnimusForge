@@ -2,6 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Modules;
+using AnimusForge.Refactor.Runtime;
 #pragma warning disable CS0649 // Deliberately minimal game/session fixtures.
 
 static class Program
@@ -12,8 +17,113 @@ static class Program
         checks++;
         if (!value) { failures++; Console.WriteLine("FAIL " + name); }
     }
+#if COURIER_DRAFT_TICKETS
+    static CoreDialogueClient Client()=>new(op=>op.Cancel());
+    static CoreDialogueOperation Queue(CoreDialogueClient client,string ticket,string id="send")
+        =>Task.Run(()=>client.SubmitCourier(ticket,id,"module text")).GetAwaiter().GetResult();
+    static void Released(CourierDeliveryBehavior owner,string name)
+        =>Check(SpinWait.SpinUntil(()=>owner.ModuleCount==0,3000),"module-association-released-"+name);
+    static void ModuleCases()
+    {
+        var owner=CourierDeliveryBehavior.NewOwner();owner.Open("module");
+        using(var client=Client())
+        {
+            string ticket=client.CaptureCourierContextTicket();
+            var tasks=Enumerable.Range(0,16).Select(_=>Task.Run(()=>client.SubmitCourier(ticket,"same","module text"))).ToArray();
+            Task.WaitAll(tasks);var operation=tasks[0].Result;
+            Check(tasks.All(t=>ReferenceEquals(t.Result,operation))&&owner.Sends==0,"concurrent-identical-requests-share-operation");
+            Check(client.SubmitNative("same","module text").Snapshot.ReasonCode=="dialogue.request_id_conflict"
+                && client.SubmitScene("scene-ticket","same","module text").Snapshot.ReasonCode=="dialogue.request_id_conflict","three-channels-share-id-namespace");
+            Check(client.SubmitCourier(ticket,"same","changed").Snapshot.ReasonCode=="dialogue.request_id_conflict","courier-input-conflict");
+            CourierDeliveryBehavior.Pump();
+            Check(owner.Sends==1&&operation.Snapshot.State==CoreDialogueState.Running&&!operation.Completion.IsCompleted,"dispatch-does-not-complete-operation");
+            Check(operation.Cancel()==CoreDialogueCancelResult.TooLate,"claimed-cancellation-too-late");
+            client.Dispose();
+            Check(!operation.Completion.IsCompleted&&operation.Snapshot.Effects==CoreDialogueEffectState.UnknownAfterStart,"dispose-does-not-revoke-claimed-effects");
+            owner.Retire();
+            Check(operation.Completion.GetAwaiter().GetResult().State==CoreDialogueState.Failed,"retired-started-operation-settles-unknown");
+            Released(owner,"started-retirement");
+        }
+        foreach(string stop in new[]{"cancel","dispose","retire","generation","ui-first"})
+        {
+            owner=CourierDeliveryBehavior.NewOwner();owner.Open(stop);using var client=Client();
+            var operation=Queue(client,client.CaptureCourierContextTicket());
+            switch(stop)
+            {
+                case "cancel":Check(operation.Cancel()==CoreDialogueCancelResult.CancelledBeforeStart,"queued-cancel-result");break;
+                case "dispose":client.Dispose();break;
+                case "retire":owner.Retire();break;
+                case "generation":SaveRuntimeGuard.Generation++;break;
+                case "ui-first":CourierLetterInputPopup.Last.Send("ui text");break;
+            }
+            if(stop=="cancel"||stop=="dispose"||stop=="retire")
+                Check(SpinWait.SpinUntil(()=>operation.Completion.IsCompleted,3000),"settles-without-main-tick-"+stop);
+            CourierDeliveryBehavior.Pump();
+            Check(SpinWait.SpinUntil(()=>operation.Completion.IsCompleted,3000)&&owner.Sends==(stop=="ui-first"?1:0),"queued-stop-no-module-dispatch-"+stop);
+            Released(owner,stop);
+        }
+        owner=CourierDeliveryBehavior.NewOwner();owner.Open("partial-module");
+        using(var client=Client())
+        {
+            var ticket=client.CaptureCourierContextTicket();owner.ThrowAfterCreate=true;
+            var operation=client.SubmitCourier(ticket,"partial","text");
+            Check(operation.Completion.GetAwaiter().GetResult().State==CoreDialogueState.Failed
+                &&operation.Snapshot.Effects==CoreDialogueEffectState.UnknownAfterStart&&owner.Sends==1,"partial-dispatch-failed-not-rejected");
+            Check(ReferenceEquals(operation,client.SubmitCourier(ticket,"partial","text"))&&owner.Sends==1,"partial-dispatch-idempotent-no-retry");
+            Released(owner,"partial");
+        }
+        owner=CourierDeliveryBehavior.NewOwner();owner.Open("wrong-client");
+        using(var right=Client())using(var wrong=Client())
+        {
+            var ticket=right.CaptureCourierContextTicket();
+            var rejected=wrong.SubmitCourier(ticket,"wrong","text");
+            Check(rejected.Completion.GetAwaiter().GetResult().State==CoreDialogueState.Rejected&&owner.Sends==0,"module-wrong-client-no-effects");
+            right.Dispose();
+            Check(right.CaptureCourierContextTicket()==null&&right.SubmitCourier(ticket,"new","text").Snapshot.ReasonCode=="dialogue.client_disposed"&&owner.TicketCount==0,"disposed-client-revokes-ticket-and-new-submits");
+            Released(owner,"wrong-client");
+        }
+        using(var client=Client())
+        {
+            for(int i=0;i<128;i++)
+                if(i%3==0)client.SubmitNative("capacity"+i,"text");
+                else if(i%3==1)client.SubmitScene("scene","capacity"+i,"text");
+                else client.SubmitCourier("invalid","capacity"+i,"text");
+            Check(client.SubmitCourier("ticket","extra","text").Snapshot.ReasonCode=="dialogue.client_capacity","shared-128-request-limit-terminal-ids-retained");
+        }
+        Released(owner,"capacity-ids");
+        owner=CourierDeliveryBehavior.NewOwner();owner.Open("cancel-during-validation");owner.SetMode(CourierPayloadMode.Give);
+        using(var client=Client())
+        {
+            var operation=Queue(client,client.CaptureCourierContextTicket());
+            owner.DuringStockRead=()=>operation.Cancel();
+            CourierDeliveryBehavior.Pump();
+            Check(owner.Sends==0&&operation.Snapshot.State==CoreDialogueState.Cancelled,"cancel-wins-until-dispatch-claim-even-after-validation-starts");
+            Released(owner,"validation-cancel");
+        }
+        owner=CourierDeliveryBehavior.NewOwner();owner.Open("reentrant-validation");owner.SetMode(CourierPayloadMode.Give);
+        owner.DuringStockRead=()=>owner.Open("replacement");
+        CourierLetterInputPopup.Last.Send("old validation");
+        Check(owner.Sends==0&&owner.PendingName=="replacement"&&owner.InputOpen,"validation-reentry-cannot-claim-old-draft");
+        owner=CourierDeliveryBehavior.NewOwner();owner.Open("owner-limit");
+        var clients=Enumerable.Range(0,129).Select(_=>Client()).ToArray();
+        var pending=new List<CoreDialogueOperation>();
+        for(int i=0;i<128;i++)pending.Add(Queue(clients[i],"not-a-ticket"));
+        var overflow=Queue(clients[128],"not-a-ticket");
+        Check(overflow.Snapshot.ReasonCode=="courier.owner_capacity"&&owner.ModuleCount==128,"queued-owner-capacity-cannot-bypass-with-new-clients");
+        foreach(var operation in pending)operation.Cancel();
+        SpinWait.SpinUntil(()=>owner.ModuleCount==0,1000);
+        Check(owner.ModuleCount==128&&Queue(clients[128],"not-a-ticket","after-cancel").Snapshot.ReasonCode=="courier.owner_capacity",
+            "cancelled-undrained-callbacks-still-count-against-physical-queue-capacity");
+        owner.Retire();
+        Check(SpinWait.SpinUntil(()=>pending.All(x=>x.Completion.IsCompleted),3000),"retirement-settles-all-queued-without-tick");
+        Released(owner,"owner-capacity");CourierDeliveryBehavior.Pump();
+        Check(owner.Sends==0,"retired-physical-queue-does-not-dispatch");
+        foreach(var client in clients)client.Dispose();
+    }
+#endif
     static int Main()
     {
+        TWParallel.MainThreadId=Environment.CurrentManagedThreadId;
         foreach (bool fallback in new[] { false, true })
         {
             CourierLetterInputPopup.UseFallback = fallback;
@@ -81,6 +191,7 @@ static class Program
             Check(owner.Sends == 1, "unknown-recipient-letter-reply-exception-preserved");
         }
 #if COURIER_DRAFT_TICKETS
+        ModuleCases();
         {
             var owner=CourierDeliveryBehavior.NewOwner();
             Check(CourierDeliveryBehavior.IssueModuleCourierTicket("a")==null,"no-draft-no-ticket");
@@ -154,7 +265,12 @@ static class MyBehavior
     public static bool IsPartyTransferLordEligibleForExternal(Hero h,CharacterObject c)=>LordEligible;
     public static bool IsSettlementTransferLeaderEligibleForExternal(Hero h,CharacterObject c)=>LeaderEligible;
 }
-namespace Refactor.Modules { static class CoreDialogueClient { public const int MaximumTextLength=16000; } }
+static class ShoutBehavior
+{
+    internal static string IssueModuleSceneTicket(string client)=>"scene-ticket";
+    internal static void RevokeModuleSceneTickets(string client) { }
+    internal static void SubmitModuleSceneDialogue(CoreDialogueOperation operation)=>operation.Cancel();
+}
 sealed class InformationMessage { public InformationMessage(string text, object color) { } }
 static class Colors { public static object Green, Red, Yellow; }
 sealed class TextInquiryData
@@ -177,12 +293,12 @@ static class CourierLetterInputPopup
     { if (UseFallback) return false; Last=new(send,cancel); return true; }
 }
 static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long value)=>Generation==value; }
-static class TWParallel { internal static bool OnMain=true; internal static bool IsMainThread()=>OnMain; }
-sealed class PendingOwnerPhases { internal bool Accepting=true; }
+static class TWParallel { internal static bool OnMain=true; internal static int MainThreadId; internal static bool IsMainThread()=>OnMain&&MainThreadId==Environment.CurrentManagedThreadId; }
 sealed partial class CourierDeliveryBehavior
 {
     internal static CourierDeliveryBehavior Instance;
-    private readonly PendingOwnerPhases _pendingOwnerPhases=new();
+    private readonly PendingOperationRegistry _pendingOwnerPhases=new();
+    private static readonly ConcurrentQueue<Action> MainThreadActions=new();
     private PendingCourierFlow _pendingFlow;
     private static bool _letterInputOpen;
     private readonly object _sessionLock=new();
@@ -190,19 +306,29 @@ sealed partial class CourierDeliveryBehavior
     internal int Sends; internal string LastRecipient;
     internal bool ThrowAfterCreate; internal Action AfterCreate;
     internal bool ActiveCourier;
+    internal Action DuringStockRead;
     private List<CourierTradeOption> _options=new();
     internal string PendingName=>_pendingFlow?.Recipient?.Name;
     internal bool InputOpen=>_letterInputOpen;
     internal static CourierDeliveryBehavior NewOwner(){_letterInputOpen=false;MyBehavior.LordEligible=MyBehavior.LeaderEligible=true;return Instance=new();}
     internal void Reopen()=>ShowLetterInput();
-    internal void Retire()=>_pendingOwnerPhases.Accepting=false;
+    internal void Retire()=>_pendingOwnerPhases.Seal();
+    internal static void Pump(){while(MainThreadActions.TryDequeue(out var action))action();}
 #if COURIER_DRAFT_TICKETS
+    internal int ModuleCount { get { lock(_moduleCourierGate)return _moduleCourierRequests.Count; } }
     internal int TicketCount=>_courierDraftTickets.Count;
     internal void MarkUnready()=>_pendingFlow.ReadyToSend=false;
     internal void ReplaceRecipient()=>_pendingFlow.Recipient=new Hero{Name="replaced"};
     internal bool SendTicket(string client,string ticket)
-        =>TryTakeModuleCourierTicket(client,ticket,out var flow,out var revision)
-            && DispatchCourierDraft(flow,revision,"ticket text",out _)!=null;
+    {
+        try { return TryTakeModuleCourierTicket(client,ticket,out var flow,out var revision)
+            && DispatchCourierDraft(flow,revision,"ticket text",out _)!=null; }
+        catch(OperationCanceledException) { return false; }
+    }
+#else
+    internal static string IssueModuleCourierTicket(string client)=>null;
+    internal static void RevokeModuleCourierTickets(string client) { }
+    internal static void SubmitModuleCourierDialogue(CoreDialogueOperation operation)=>operation.Cancel();
 #endif
     internal void Open(string name)
     {
@@ -249,8 +375,9 @@ sealed partial class CourierDeliveryBehavior
     private static bool ShouldShowCourierButtonForExternal(Hero h,bool informationHidden)=>h.IsKnownToPlayer;
     private bool HasActiveCourierForHero(Hero h)=>ActiveCourier;
     private static List<TroopRosterElement> SnapshotRoster(TroopRoster roster)=>roster.Entries.ToList();
-    private List<CourierTradeOption> BuildCourierTradeOptions(PendingCourierFlow flow,CourierPayloadMode mode)=>_options;
+    private List<CourierTradeOption> BuildCourierTradeOptions(PendingCourierFlow flow,CourierPayloadMode mode){DuringStockRead?.Invoke();return _options;}
     private sealed class CourierSession { public string Id,RecipientHeroId,CourierPartyId,PayloadMode,RecipientName; public List<object> Entries=new(); }
+    private static bool IsInboundToPlayer(CourierSession session)=>false;
     private CourierSession CreateCourierSession(PendingCourierFlow flow,string text)
     { Sends++;LastRecipient=flow.Recipient.Name;AfterCreate?.Invoke();if(ThrowAfterCreate)throw new InvalidOperationException("fixture partial dispatch");return new(){Id=Guid.NewGuid().ToString(),RecipientName=LastRecipient}; }
     private void AddCourierRuntimeIndex(CourierSession session) { }

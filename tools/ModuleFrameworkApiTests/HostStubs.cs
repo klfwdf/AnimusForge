@@ -26,6 +26,19 @@ namespace AnimusForge.Refactor.Modules
     }
 }
 
+// Directory/Native/Scene suites do not pretend to exercise the Courier transport owner.
+// CourierSessionCreationTests source-links that admission boundary separately.
+namespace AnimusForge
+{
+    internal static class CourierDeliveryBehavior
+    {
+        internal static string IssueModuleCourierTicket(string clientId) => null;
+        internal static void RevokeModuleCourierTickets(string clientId) { }
+        internal static void SubmitModuleCourierDialogue(Refactor.Modules.CoreDialogueOperation operation)
+            => operation.Finish("courier.owner_unavailable");
+    }
+}
+
 namespace AnimusForge.Refactor.Runtime
 {
     internal static class FeatureBridgeRuntime
