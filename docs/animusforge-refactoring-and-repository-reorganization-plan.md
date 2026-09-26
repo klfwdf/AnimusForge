@@ -1,3 +1,41 @@
+## J15c 默认 Prompt 已归位并完成候选离线门禁，完整 J15 仍有边界未闭合（2026-09-26）
+
+状态：**`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。最新用户指令为“做到 J15 收尾，按计划做完，不要找我要权限，直接做”，据此连续推进此前具名的仓内生成目录验证及 30 份默认 Prompt 迁移，不再重复索取这两项实施确认。意图提交 `27ca2e34`，产品/接线 **`9db8fa8b`**，测试消费者修复 **`a3fa77af`**；本条取代下方 FeatureBridges 待授权停点。未缩小完整 J15 定义，未把原位用户数据和来源不明素材自动改为完成。
+
+### 实际变更与保持项
+
+- `AnimusForge/CustomPrompts` 的 30 份已审计 JSON（普通 8、Policy 22）逐文件 **R100** 迁入 `content/modules/{AF.Module.Memory,AF.Module.Persona,AF.Module.Prompt,AF.Module.Kingdom,AF.Module.Weekly,AF.Module.Diplomacy,PolicySystem}/CustomPrompts/...`。`content/content-map.json:396–545` 增加明确映射，固定运行目标仍为 `CustomPrompts/...`；总映射 **107**（a=7、b=69、c=31）。所有文件保持迁前 checkout SHA，特别保留与内建常量不同的 PlayerCustomPromptRule 文案；不生成第二可编辑副本。
+- `deploy_module.ps1:172–220,802` 仅把旧 Policy 默认源改为通过唯一映射解析，并向 merge 传入已解析的 `$projectRootFull`。新旧安装目录分支、两次 `/MIR`、四个旧根 Policy 文件替换、安装目录只读和运行路径不变；没有擅改为“补齐所有缺失默认/永久保留所有未知 Policy 文件”。映射解析只发生在组装的旧 Policy 兼容分支，按 107 个条目有界处理，无新增游戏 Tick/请求 I/O。
+- `tests/content/J15ContentContractTests/run.py:241–393,419–554,615–654` 固定 30 份 SHA/owner/source/target，验证旧 CustomPrompts 源退出、七资源不变和 **14** 个真实 overlay alias。`ContentLayoutContractTests.ps1:106–205` 只提取生产 merge 及其依赖函数，不执行 deploy 顶层；用合成模块测试 fresh/empty/split/legacy 四场景，每场景重复组装，验证默认 hash、同名覆盖、未知文件、缺省缺失及安装源不变。
+- inventory 只增加 Memory/Persona/Kingdom 三个具名 owner；敏感 HOLD 优先规则保持。Policy 契约工具的默认源读取改到新 content，实际安装路径断言仍是旧 CustomPrompts/Policy。live probe 只改默认源定位，**未运行**，未读凭据或访问 provider。overlay 本已消费映射，无需改打包脚本。
+- 未改生产 C#、AnimusForge.csproj、Bootstrap、一键构建/打包入口或玩家数据；相对 J14 `e58f3558` 的生产 C#（排除 tools/tests）仍无差异。保存身份、默认入口、实际 ONNX/GUI loader 和 public API 不变。
+
+### 实际验证、候选与失败诊断
+
+| 门禁 | 本轮证据 |
+| --- | --- |
+| TDD 与内容契约 | 先红：映射数量、Policy 源接线、新 owner、PowerShell 默认数量断言分别失败；迁移后完整 runner **107 mappings / 31 J15c / 40 holds / 8 invalid / 4 GCCZ fallback / 14 aliases PASS**，107 项真实合成投影逐文件 SHA/集合通过，覆盖四种安装状态及四次重复组装。 |
+| Bridge / inventory | Bridge **24 unittest PASS**，隔离进程 **12 scenarios PASS**；inventory **7 tests PASS**，实际 Git 索引 `unknown_count=0`、tracked=22650。 |
+| Policy | 源码链接测试产物构建 0 warning/error；Prompt 管理 **216**、18 效果模块 **1406**、UI **387** 断言通过。不是当前四实现 DLL 的 Policy 行为回放。 |
+| 原流程六构建 | 复核四个精确生成根及祖先/后代无 reparse，原脚本不带 Stage/Deploy；Debug/Release × 1.3/1.4 + Bootstrap 均 **0 warning / 0 error**。引用 **1.3.15.110062 / 1.4.7.117484**，SDK 8.0.425。 |
+| DLL / API | 四实现各恰好七资源且名称/字节一致，卫星资源=0；当前 DLL 元数据 **1620 assertions**、V1 **158**、snapshot **36** 及五变异拒绝通过；Native/Scene **55**、固定旧 Native 消费者 **41+41** 和未改二进制绑定通过。源码链接 Native fixture 有既有 CS0649 警告，不能称所有测试构建零警告。 |
+| 当前 DLL 回放 / 定位 | 当前 Debug 1.4 候选的完整 Phase8 PASS；代码地图 recorded/working-tree 各 **755** 锚点 PASS，仍绑定 `e58f3558`。真实游戏/provider/UI/旧档等仍 NOT-RUN。 |
+| 持久化静态契约 | 当前候选重跑 profile/config PASS：142 literal keys、168 typed bindings、13 chunked/44 flattened keys、3 profiles/5 cases/10 legacy-first cases；对 J14 `e58f3558` 身份审计 PASS：142/142 保存绑定、36/36 行为、增删差集为空、模块名/Id/唯一 Bootstrap 不变。 |
+
+四实现 SHA256：Debug 1.3 `B451E460F3AF6B556BB9AFCFB38FB4C9BDA4C06D20BA34A9D542FE18F5278380`，Debug 1.4 `9324536D37F34FE53370977618A65441AB7841EA70FA4618D9A75F3F48678FB2`；Release 1.3 `81AA11ECFA64C83D4DFCFBF170D636FB656F3C169953856CBC20F179FDC9350E`，Release 1.4 `C431867BB9D063191D96368858CFD9DCA915285926D4906400EF9B130A99A805`。Bootstrap Debug `0447DCCFA5CA512BF83B605E7ABF125D1B93F895479311585F1580B2BC281965`，Release `1519D8F5D13B3815036AA7E1B3FE2C9158D3EA629460FAA46E43096C84913A8F`。全部与各自 `.build.json` 复核一致。日志位于仓内 `artifacts/j15-content/j15c-feature-bridges/`：`custom-prompts-contracts.log`、`build-{Debug,Release}-9db8fa8b.log`、`policy-*.log`、`native-legacy-abi.log`、`api-four-dll.log`、`phase8-9db8fa8b.log`；不是发布包。
+
+实际失败保持记录：Policy 首跑在第 48 断言找不到旧 `AnimusForge/GUI/Prefabs/CustomPolicyComposePopup.xml`，只修复六处 J15b 遗留 GUI 源消费者并加静态断言；随后第 86 断言找不到 `BuildPolicyRecordEffectSummary/1`，已读真实 `CustomPolicyBehavior.Management.cs:1409` 的二参数签名，仅给反射测试显式传默认 `true`，不改业务或删断言；重跑得到上述 216/1406/387。构建启动曾因 encoded helper stdin 编码报 UnicodeEncodeError，显式 UTF-8 后运行原脚本成功；资源审计曾误用默认 bin 路径，实际由 `tests/content/J15ContentContractTests/Directory.Build.props` 路由到 artifacts，读取真实 TargetPath 后审计通过。inventory 不支持 `--json`，改用其原无参入口通过。
+
+完整内容 runner 在产品 `9db8fa8b` 上已经通过；`a3fa77af` 仅改测试路径/反射调用和静态源检查，新增静态段亦已执行 PASS，产品/映射/资源和六 DLL 未变。额外重复全量运行时，自动安全审查拒绝了测试 junction 解链及 runner 递归清理，**该次命令未执行、未绕过**，不能冒充又跑了一次全量。首次验证前核实 junction 只指向同一 fixture 的 real-source，再仅解除该链接；没有清理 .dotnet-cli-home 或其他目录。
+
+### 尚未闭合的完整范围与下一动作
+
+CustomPrompts 不再 HOLD；其余仍按下方逐类读写审计：PlayerExports 3139 项、旧 UnnamedNpcProfiles 6 项、根 VoiceMapping、ONNX 5 项、pack0.tpac、AssetSources 6 项、GUI 33 项和异常 HTML 原位未改，尚无具名数据备份/恢复验收或完整来源/许可决定。ONNX config 仅确认 BertModel/bert、tokenizer 为 BertTokenizer/512，没有原始模型地址，不能由模型结构推断来源或分发权。金币设计 README 明确 OBJ/MTL 非运行素材，当前 live XML 使用原版 mesh，不能自动导入资源包。
+
+下一步是继续闭合这些数据/模型/素材边界，而不是重跑已通过的静态片、重开 J15a/b 或把 HOLD 计 DONE；随后按完整原计划作 J15d 退出审计。无 Stage/Deploy/Package/push/外仓同步/真实用户配置写入；原 Stage 会包含受保护数据，不能用合成投影冒充真实 Stage。完整目标保持 active，不进入 J16/J17。
+
+## 以下为 FeatureBridges 最小片历史停点
+
 ## J15c FeatureBridges 已归位，完整验证与其余范围待授权（2026-09-26）
 
 状态：**`J15c_FEATUREBRIDGES_VERIFY / J15_PARTIAL_HOLD`**。完整目标仍为按计划完成 J15，不能以本片替代整个 J15。用户选定先做 FeatureBridges 最小片；开工 HEAD `a251799e`，意图 `3e6fb1ad`，产品/测试提交 **`7bc2ffbf`**。本条取代下方 J15b 停点；J15a/b 已验成果保持，其余 J15c 和最终 J15d 尚未闭合。
