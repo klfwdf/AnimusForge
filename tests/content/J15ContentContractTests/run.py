@@ -5,14 +5,14 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
+import uuid
 import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_RUN_ROOT = ROOT / "artifacts" / "j15-content" / "j15-contracts"
+DEFAULT_RUN_ROOT = ROOT / "artifacts" / "j15-content" / ("j15-contracts-" + uuid.uuid4().hex)
 J15B_BASELINE_REVISION = "f54a812757699f108371b6bfd1c37de0222d9adb"
 
 J15A_EXPECTED = {
@@ -499,25 +499,17 @@ def verify_project_resources() -> None:
 def verify_script_wiring() -> None:
     deploy = (ROOT / "一键编译覆盖推送" / "deploy_module.ps1").read_text(encoding="utf-8-sig")
     call = "Invoke-AnimusForgeContentProjection"
-    check(deploy.count(call) == 2, "Stage and Deploy must each project content once")
-    stage_start = deploy.index('if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir))')
-    stage_end = deploy.index("$legacy13ModuleDir", stage_start)
-    stage = deploy[stage_start:stage_end]
-    check(stage.index("Invoke-Robocopy") < stage.index(call) < stage.index("Set-SingleModuleIdentity"),
-          "Stage projection order")
-    deploy_start = deploy.index("$sourceCopyArguments = @(")
-    deploy_end = deploy.index("Set-SingleModuleIdentity", deploy_start)
-    deploy_block = deploy[deploy_start:deploy_end]
-    check(deploy_block.index("Invoke-Robocopy") < deploy_block.index(call) < deploy_block.index("Merge-InstalledCustomPromptsIntoStaging"),
-          "Deploy projection must precede installed prompt merge")
-    check(deploy.count("Get-AnimusForgeContentSourcePath") == 3,
-          "Preprocess, Rule and Policy defaults must use content map")
-    check("Merge-InstalledCustomPromptsIntoStaging -ProjectRoot $projectRootFull" in deploy,
-          "Policy merge must use the resolved project root, including default invocation")
-    check('Join-Path $SourceModuleDir "CustomPrompts\\Policy"' not in deploy,
-          "Policy merge defaults must not use the legacy editable tree")
-    check('Join-Path $sourceModuleDir "ModuleData\\RuleBehaviorPrompts.json"' not in deploy,
-          "Rule source hash lookup must not use the legacy editable tree")
+    check(deploy.count(call) == 1, "Stage and Deploy must share one content projection")
+    stage = deploy[deploy.index('$projectStagePath = Join-Path $projectRootFull'):]
+    check(stage.index("Reset-ProjectStageDirectory") < stage.index(call) <
+          stage.index("Set-SingleModuleIdentity") < stage.index("Assert-AnimusForgeCleanStage") <
+          stage.index("Invoke-ManagedStageDeployment"), "clean Stage must precede managed deployment")
+    check("-RequireCurrentArtifacts" in stage, "deploy must require current build artifacts")
+    for retired in ("Invoke-Robocopy", "/MIR", "Merge-PlayerExports",
+                    "Merge-InstalledCustomPromptsIntoStaging", "Sync-PlayerExportsBackToSource"):
+        check(retired not in deploy, f"retired install/data merge remains: {retired}")
+    check("Get-AnimusForgeContentSourcePath" not in deploy,
+          "deploy must use the validated Stage rather than direct source fallbacks")
 
 
 def verify_formats_and_references() -> None:
@@ -666,9 +658,9 @@ def main() -> int:
     parser.add_argument("--run-root", type=Path, default=DEFAULT_RUN_ROOT)
     args = parser.parse_args()
     run_root = args.run_root.resolve()
-    check(run_root == DEFAULT_RUN_ROOT.resolve(), "run root must remain the authorized J15 content directory")
-    if run_root.exists():
-        shutil.rmtree(run_root)
+    allowed_root = (ROOT / "artifacts" / "j15-content").resolve()
+    check(allowed_root in run_root.parents, "run root must remain under the authorized J15 content directory")
+    check(not run_root.exists(), "run root must be new; existing fixtures are never cleared")
     run_root.mkdir(parents=True)
 
     verify_map_and_resources()
