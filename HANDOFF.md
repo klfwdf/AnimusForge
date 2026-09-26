@@ -3,7 +3,7 @@
 - **状态**：`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。产品 `9db8fa8b`，测试消费者修复 `a3fa77af`；30 份默认 Prompt 原样 R100 归位，映射 107，安装覆盖/运行路径不变。完整目标未缩小；详见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)、[J15 计划](docs/plans/j15-content-profile-plan.md)。
 - **已验**：完整 107 项合成投影、四种安装状态及重复组装、Bridge 24/隔离 12、Policy 216/1406/UI 387、六构建零警告错误、四实现七资源、旧 Native ABI、1620 DLL 元数据和当前 DLL Phase8 均通过；755 锚点两模式通过。额外重复 runner 清理被自动审查拒绝，未绕过，新增静态段单独通过，证据层级见台账。
 - **最新补证 `2b61f1c5`**：PlayerExports 独立合成测试 45 断言及四个行为变异拒绝通过，没有读取真实导出或清理旧 fixture。ONNX 五文件已匹配固定上游提交，不再是来源未知；分发许可与真实数据迁移仍未闭合。hash、源码坐标、失败诊断只记主台账；新增子测试不冒充整体 runner 重跑。
-- **下一步**：继续完成 PlayerExports/旧 profile/VoiceMapping、ONNX、素材/GUI 来源与数据边界，再作完整 J15d 退出审计，不把 HOLD 算完成。不要再把已迁 Prompt 或已验六构建当作待授权工作。无 Stage/Deploy/Package/push/外写；实机、旧档、provider、Gauntlet、音频、帧性能 NOT-RUN，`.dotnet-cli-home/` 保留。
+- **下一步**：数据合成保护、模型来源和剩余 GUI/素材的可用 Git/loader 证据已查完，细节见主台账。已请求保护项处置决定：用户明确批准原位排除本次迁移，或维持全范围并补数据备份/迁移要求及素材来源凭据；未答复，不自动缩范围。之后再作 J15d 退出审计，不把 HOLD 算完成。不重做已迁 Prompt、已验六构建或被拒清理。无 Stage/Deploy/Package/push/外写；实机、旧档、provider、Gauntlet、音频、帧性能 NOT-RUN，`.dotnet-cli-home/` 保留。
 
 ## 以下为 FeatureBridges 最小片历史交接
 

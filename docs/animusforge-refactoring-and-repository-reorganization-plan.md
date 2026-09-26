@@ -49,11 +49,21 @@
 
 该转换仓库模型卡指向 [BAAI/bge-small-zh-v1.5](https://huggingface.co/BAAI/bge-small-zh-v1.5)，后者模型卡标 MIT；在固定转换版本 API 中 `cardData.license` 缺失且没有 LICENSE 命名文件。**这是已验证来源与许可证声明的记录，不是对转换文件再分发权的结论**。五个文件整体原位保留，Knowledge owner、graph→external data/tokenizer/config 依赖及原加载路径不变，不自动下载、不转 LFS、不入 ZIP。
 
+### 剩余 GUI / 素材的只读追溯
+
+- 33 项 GUI HOLD 的首次纳入历史已逐项查明：25 张 `ui_account` / `ui_achievement` / `ui_subscribe` 图及两个索引在 `767a9d70`；旧 courier/terminal 两图在 `33de401e`；notoriety 临时/patch 两图在 `e8829c8b`；旧 diplomacy 图在 `4cbf55f9`；vassalage sheet 在 `0af96671`。这是本仓历史来源，不是原作者或使用权证据；PNG 中仅六图有 `Software` 文本键，没有据此猜作者或授权。未改这些文件。
+- `AnimusForge/GUI/SpriteParts/Config.xml:4–17` 声明三个 AlwaysLoad 类别；`SplitShadowsOnlyAISpriteData.xml:3–352` 的 25 个 SpritePart 均能找到对应源 PNG（5/9/11），但三个声明的 sheet 在当前工作树均不存在。对根生产 C#、`src`、`Refactor`、`PolicySystem` 及 `content` XML/mbproj 的定向搜索未发现这三个类别或旧索引文件名的直接引用；**不能由此证明游戏自动资源加载器不使用它们**，也不补生成、迁移或删除该组。
+- `VassalageBehavior.cs:500–513,642–673,709–713` 实际按 SpriteParts 的五张 PNG 创建运行 sprite，不读那张历史 sheet；`src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:19694–19700,19766` 实际读取 `_v2.png`，但 `tools/package_policy_system_source_overlay.py:144` 仍把旧 diplomacy 图列入交付。因此旧图“无当前直接 loader”不等于可以删；不更改 overlay 既有集合。
+- 两份现存 TPAC（`AnimusForge/AssetPackages/pack0.tpac` 和 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac`）均 1,671,304 bytes，SHA256 同为 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`，同在 `bd4d001c` 纳入。真实消费者为后者源码 `src/Runtime/ActionProviders.cs:43–61,207–224` 的 Xihai/speech 静态资源 probe。相同字节和纳入提交仍不提供素材授权，不合并/去重这两个受保护路径，不重跑外部 TPAC 历史失败冒充通过。
+- AssetSources 六项在 `6997f1be` 纳入；OBJ 的 `mtllib` 对应现有 MTL，prefab 明确需要自定义 mesh/collision。README 关于 raw OBJ 不是运行素材的界限有效，但其第 5–6 行写 `ui_intentory_coin_a` 已与当前源 XML 不符：`content/modules/AF.Module.Economy/ModuleData/animusforge_scene_gold_items.xml:7–12` 的 body 是 `bo_sling_ammo`，mesh/flying/holster 是 **`boardpiece_sturgia_white`**。这里只纠正审计事实，没有改 README、运行 XML 或生成 TPAC。当前检查没有找到根或 AnimusForge 内 LICENSE/COPYING 文件；不把没有文件推定为没有权利，也不反向推定为允许分发。
+
 ### 尚未闭合的完整范围与下一动作
 
 CustomPrompts 不再 HOLD；其余仍按下方逐类读写审计：PlayerExports 3139 项、旧 UnnamedNpcProfiles 6 项、根 VoiceMapping、ONNX 5 项、pack0.tpac、AssetSources 6 项、GUI 33 项和异常 HTML 原位未改。上方合成保护测试和五项模型来源比对已完成，但尚无具名真实数据备份/恢复验收或完整分发/素材来源决定；不能把“模型来源未知”继续当作已确认事实，也不能把来源比对当作发布许可。金币设计 README 明确 OBJ/MTL 非运行素材，当前 live XML 使用原版 mesh，不能自动导入资源包。
 
-下一步是继续闭合这些数据/模型/素材边界，而不是重跑已通过的静态片、重开 J15a/b 或把 HOLD 计 DONE；随后按完整原计划作 J15d 退出审计。无 Stage/Deploy/Package/push/外仓同步/真实用户配置写入；原 Stage 会包含受保护数据，不能用合成投影冒充真实 Stage。完整目标保持 active，不进入 J16/J17。
+上述可独立完成的合成保护、模型比对、GUI 索引/实际 loader 和 Git 首次纳入核查已完成。接续缺口是**保护项的处置决定和素材来源/使用凭据**，不是再批准已完成的 Prompt 迁移或六构建：已向用户请求二选一，明确批准这些保护项原位保留、排除本次迁移（范围调整），或保持原完整范围并提供真实数据备份/迁移要求与素材来源凭据。尚未获得答复，不能自行选择前者，也不能靠重复只读检查把 HOLD 计 DONE。随后才按最终约定范围作 J15d 退出审计。
+
+无 Stage/Deploy/Package/push/外仓同步/真实用户配置写入；原 Stage 会包含受保护数据，不能用合成投影冒充真实 Stage。完整目标保持 active，不进入 J16/J17；待确认期间不要重跑已通过的静态片、重新扫描玩家内容、重开 J15a/b 或再次尝试被拒的清理。
 
 ## 以下为 FeatureBridges 最小片历史停点
 
