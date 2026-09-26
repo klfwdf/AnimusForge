@@ -1,4 +1,6 @@
-# 当前范围：AF2.0 ONNX 与仓内 PlayerExports 退役已验，F3/F4/F5 未闭（2026-09-27）
+# 当前范围：AF2.0 F3 单向 Stage/部署/ZIP 离线已验，F4/F5 未闭（2026-09-27）
+
+F3 产品/测试 **`a8f69b57`、`82d8ce53`**：`一键编译覆盖推送/deploy_module.ps1:103–123` 的 Stage reset 只处理精确项目内生成根；`:505–649` 的 `Invoke-ManagedStageDeployment` 是冷路径文件级 owner，按经验证 Stage 枚举受管文件、对已有目标做私有 SHA 备份、同卷候选替换、失败逆序恢复和中断记录拒绝，不扫/不合并安装用户资料，未知安装项保持，旧双模块仅只读告警。`:699–725` 由 Stage-only/部署共用一次静态装配和当前九项构建产物门禁；`package_mod.ps1` 仍仅从干净 Stage 生成 ZIP。旧 `/MIR`、安装 Prompt/PlayerExports merge 与死部署分支已移除。`tests/content/J15ContentContractTests/ManagedDeployContractTests.ps1:1–110` 的虚构故障、回滚/恢复、无变化重跑、中断与七类未受管哨兵是脚本行为证据；完整虚构游戏根部署 123 项 SHA 与 Stage 一致，Debug/Release Stage 重组稳定、两 ZIP 123 项集合及 122 个非 XML SHA 独立一致。部署不在游戏 Tick；仅显式构建/部署时按受管文件逐项 hash，非高频路径。当前六 DLL 来源是此前已验构建，本切片未重编 C#。代码地图 **789** 锚点绑定 `82d8ce53`，仅导航；D: 游戏目录/实机/旧档未执行。F3 仅离线闭合，F4 GUI/TPAC/权利与其余旧资料、F5 总验收仍阻断完整发布；按用户指令本轮到 F3 即停。
 
 F3 新产品 **`8b3f3b51`**：`一键编译覆盖推送/content_layout.ps1:226–321` 的 Stage owner 在包装时额外比对九项当前构建产物 hash，Stage 重建仍使用原精确文件/内容白名单；`package_mod.ps1:786,835,885` 三次检查均强制当前产物匹配。旧 Stage 不再借“123 文件干净”绕过新 DLL；合成漂移拒绝、当前 Debug/Release Stage 两次稳定组装、ZIP 集合/非 XML hash 独立检查通过。部署入口仍失败关闭，GUI/TPAC 未映射资产仍缺；代码地图 **785** 锚点绑定 `8b3f3b51`，不证明完整发布或实机。
 

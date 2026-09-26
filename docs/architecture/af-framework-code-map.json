@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "8b3f3b51068b761341c95ace6eb3a4e23bdb229c",
+  "sourceRevision": "82d8ce53a2b8a8c44470cb1f9ba19bab6e027c2a",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -8543,24 +8543,24 @@
     {
       "id": "af2.stage.reset",
       "path": "一键编译覆盖推送/deploy_module.ps1",
-      "start": 223,
-      "end": 223,
+      "start": 103,
+      "end": 103,
       "symbol": "function Reset-ProjectStageDirectory {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "only previously clean project Stage is reset",
-      "fileSha256": "2a2dd42e6114d98f870fabeea5bd13c862b73d5eaa9ad3f4a29120168c02bfea"
+      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
     },
     {
       "id": "af2.stage.bin",
       "path": "一键编译覆盖推送/deploy_module.ps1",
-      "start": 519,
-      "end": 519,
+      "start": 337,
+      "end": 337,
       "symbol": "function Build-DesiredModuleBin {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "locked private runtime DLLs and captured dual build artifacts",
-      "fileSha256": "2a2dd42e6114d98f870fabeea5bd13c862b73d5eaa9ad3f4a29120168c02bfea"
+      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
     },
     {
       "id": "af2.package.version",
@@ -8638,6 +8638,50 @@
       "status": "af2-f3-fresh-package-verified",
       "note": "package requires exact current build artifact bytes; Stage reset uses clean-file-set mode",
       "fileSha256": "bd8e9b18b45c305cb592a077d38162e7a17b491d840ae5bbf204d3376e25c511"
+    },
+    {
+      "id": "af2.deploy.managed",
+      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "start": 505,
+      "end": 505,
+      "symbol": "function Invoke-ManagedStageDeployment {",
+      "match": "exact",
+      "status": "wired-f3-offline-verified",
+      "note": "只覆盖已验证 Stage 白名单；私有备份、同卷候选、失败回滚与中断拒绝",
+      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+    },
+    {
+      "id": "af2.deploy.current-stage",
+      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "start": 710,
+      "end": 710,
+      "symbol": "Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $projectStageDir -RequireCurrentArtifacts",
+      "match": "exact",
+      "status": "wired-f3-offline-verified",
+      "note": "部署前同时校验内容、依赖和当前九项构建产物",
+      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+    },
+    {
+      "id": "af2.deploy.execute",
+      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "start": 725,
+      "end": 725,
+      "symbol": "Invoke-ManagedStageDeployment -StageModuleDir $projectStageDir -TargetModuleDir $targetModuleDir -ModulesDir $modulesDir",
+      "match": "exact",
+      "status": "wired-f3-offline-verified",
+      "note": "Stage-only 返回后才执行受管文件安装；不合并安装资料",
+      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+    },
+    {
+      "id": "af2.deploy.legacy-warning",
+      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "start": 723,
+      "end": 723,
+      "symbol": "Write-Warning 'Legacy AnimusForge module folders were left untouched; disable them before launching the game to avoid duplicate module loading.'",
+      "match": "exact",
+      "status": "wired-f3-offline-verified",
+      "note": "旧双模块只读提示；不迁入 Stage 或修改旧安装目录",
+      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
     }
   ]
 }
