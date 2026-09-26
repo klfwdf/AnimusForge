@@ -1,4 +1,11 @@
-# 当前交接：AF2.0 F3 干净 Stage/ZIP 已验，部署和资源门禁未闭（2026-09-27）
+# 当前交接：AF2.0 模型整组迁移与运行时用户根已验，F3/F4/F5 仍未闭（2026-09-27）
+
+- **产品 `eb03ce28`、锁换行固定 `2f589e6b`、旧模型退役 `0188367a`、完成记录门禁 `44e91672`**：两 ONNX 消费者只从 typed `%LOCALAPPDATA%/AnimusForge/Models/{embedding,reranker}` 加载；内嵌 `content/models.lock.json`、私有完成记录和整组文件元数据一次性验证，旧模块路径不再日常回退。显式迁移对 D: 安装源 10 项与仓内源 5 项分别做完整组 SHA-256、私有备份、同卷候选和目标优先激活；安装 10 项激活，仓内 0 项激活且一组字节冲突保留，两源重复执行均无再次激活。独立复验活动组 10 项全组 SHA；仓内五个已跟踪模型字节在验证两套私有备份后移至工作区忽略的 `local/` 并停止跟踪，D: 原件及用户活动库不动。合成迁移涵盖冲突、损坏、并发目标、中断、磁盘满与重复；DataPaths **58** 项、四实现各 **8** 内嵌资源、当前 Debug/Release × 1.3/1.4 + Bootstrap **六构建零警告错误**、代码地图 **784** 锚点两模式通过。模型活动库约 1.14 GiB、私有 Recovery 约 5.09 GiB；锁格式修正产生额外已验证备份集，未清理。详情见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[范围图](docs/architecture/af-framework-code-scope.md)。
+- **仍未闭合**：模型运行时未在游戏中启动；reranker 本地文件的上游身份与转换仓再分发权未证实，故仍不进客户端 ZIP，也不能宣称发布许可通过。F3 程序文件部署仍失败关闭；GUI/TPAC/设计源及其他旧资料退役、F5 同候选 Stage/ZIP 与总验收继续。无游戏覆盖/启动、原始 `.sav` 修改、推送或 G: 写入；实机旧档 **NOT-RUN**，**F1–F5 未完成**。
+
+## 以下为 F3 Stage/ZIP 交接（历史）
+
+# AF2.0 F3 干净 Stage/ZIP 已验，部署和资源门禁未闭（2026-09-27）
 
 - **产品/测试 `d7c16c06`**：原一键打包入口现只接收项目内经清单验证的 Stage；Stage 仅从 107 项 `content` 映射、唯一 XML、双实现/Bootstrap 和六项 hash 锁定私有 DLL 组装，不复制 PlayerExports、ONNX、日志、安装覆盖或源码其他文件。ZIP 不再“扫安装目录再排除”，逐文件匹配 Stage，版本只在 ZIP 中生成，不回写源码/Stage。旧 Stage 中与来源不同的 9 个文件先私有备份并复验；Debug/Release 新 Stage 各 **123** 文件，两次无输入重组的文件集合/hash 稳定；两种 ZIP 与 Stage 集合/hash 独立核对通过，未知文件及旧打包参数失败关闭。代码地图 **780** 锚点两模式通过。详细见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)。
 - **未闭门禁**：部署入口目前失败关闭，未实现/验收“仅程序文件”的事务部署；33 项未映射 GUI 和 TPAC 等必需资产还须 loader、来源与权利核对或功能等价替代，当前 Stage/ZIP 不可宣称功能完整或发布就绪。ONNX 用户模型定位/全组锁、其余旧资料退役及 F5 同候选总验收也未完成。未覆盖游戏、启动游戏、修改原始 `.sav`、推送或写 G:；实机旧档 **NOT-RUN**。**F1–F5 保持未完成。**

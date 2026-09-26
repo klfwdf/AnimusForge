@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "d7c16c0679a8f86d4a489a8f565f056116948ce4",
+  "sourceRevision": "44e9167223317fd5d91bc4a333c4b5ab6aba7608",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -8483,7 +8483,7 @@
       "match": "exact",
       "status": "wired-af2-prompt-slice",
       "note": "locked content-map Prompt hashes",
-      "fileSha256": "7c466a2061715f063f6994016d90f1c3104981a571191138963e84d163defa3b"
+      "fileSha256": "b235f4dee92e919804c84d1bfd9057b0435353bed92abbc1255c85868a84b9fb"
     },
     {
       "id": "af2.prompt.migrate",
@@ -8494,7 +8494,7 @@
       "match": "exact",
       "status": "wired-af2-prompt-slice",
       "note": "explicit backed-up and non-overwriting Prompt migration",
-      "fileSha256": "7c466a2061715f063f6994016d90f1c3104981a571191138963e84d163defa3b"
+      "fileSha256": "b235f4dee92e919804c84d1bfd9057b0435353bed92abbc1255c85868a84b9fb"
     },
     {
       "id": "af2.terminal.path",
@@ -8527,7 +8527,7 @@
       "match": "exact",
       "status": "wired-af2-terminal-slice",
       "note": "explicit backed-up and non-overwriting TerminalSettings migration",
-      "fileSha256": "7c466a2061715f063f6994016d90f1c3104981a571191138963e84d163defa3b"
+      "fileSha256": "b235f4dee92e919804c84d1bfd9057b0435353bed92abbc1255c85868a84b9fb"
     },
     {
       "id": "af2.stage.whitelist",
@@ -8583,6 +8583,50 @@
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "ZIP byte/hash equality to clean Stage",
       "fileSha256": "259822366b42adc5aa93aae4fe26a14b54a02bdba736eeb09a0553fd751bdc65"
+    },
+    {
+      "id": "af2.model.store",
+      "path": "src/AF.Persistence/AnimusForgeModelStore.cs",
+      "start": 15,
+      "end": 15,
+      "symbol": "internal static string GetReadyGroupDirectory(string group)",
+      "match": "exact",
+      "status": "af2-f2-f4-model-offline-verified",
+      "note": "typed user Models and embedded dependency lock; readiness checked once per engine init",
+      "fileSha256": "ebf62953a73b829eb421c61030630e79f3eb7ada89c05a970a3e948a021cac4f"
+    },
+    {
+      "id": "af2.model.embedding",
+      "path": "OnnxEmbeddingEngine.cs",
+      "start": 472,
+      "end": 472,
+      "symbol": "string text4 = AnimusForgeModelStore.GetReadyGroupDirectory(\"embedding\");",
+      "match": "exact",
+      "status": "af2-f2-f4-model-offline-verified",
+      "note": "embedding loads only verified user model group; no daily module fallback",
+      "fileSha256": "f7c6cf515b6e3b153fc622108258a576a428252aefdc65120e499c5cede0e656"
+    },
+    {
+      "id": "af2.model.reranker",
+      "path": "OnnxCrossEncoderReranker.cs",
+      "start": 556,
+      "end": 556,
+      "symbol": "string path = AnimusForgeModelStore.GetReadyGroupDirectory(\"reranker\");",
+      "match": "exact",
+      "status": "af2-f2-f4-model-offline-verified",
+      "note": "reranker loads only verified user model group; no daily module fallback",
+      "fileSha256": "5b4ff2721b690a16d95b55777394f520f645363887ac4451b9c18b659b7f1370"
+    },
+    {
+      "id": "af2.model.migration",
+      "path": "tools/af2_migrate.py",
+      "start": 726,
+      "end": 726,
+      "symbol": "def migrate_models(sources: list[tuple[str, Path]], root: Path, *,",
+      "match": "exact",
+      "status": "af2-f2-f4-model-offline-verified",
+      "note": "explicit full-group hash backup and activation; no source deletion",
+      "fileSha256": "b235f4dee92e919804c84d1bfd9057b0435353bed92abbc1255c85868a84b9fb"
     }
   ]
 }
