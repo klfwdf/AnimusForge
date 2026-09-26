@@ -1,10 +1,12 @@
-# 当前范围：AF2.0 F1 路径契约与 F2 显式迁移器（2026-09-26）
+# 当前范围：AF2.0 F1 路径契约与 F2 整组导出/显式迁移器（2026-09-26）
+
+产品/测试 **`d838145a`**：`src/AF.Persistence/PlayerExportsPackageExport.cs:13–245` 的 `Begin`/`Publish`/`RestoreSubdirectory` 负责显式开发菜单整组导出的旧包快照、隐藏同目录候选、候选 JSON 校验、私有 Recovery 逐文件 hash 备份、同卷激活与可选失败小节的旧字节恢复；`src/AF.Persistence/PlayerExportsStore.cs:54–58,219–234` 提供实际入口及只准清理候选的 API。真实消费者是 `MyBehavior.cs:53232–56032` 的 14 个导出入口及 `KingdomStrategicProfileBehavior.DevUi.cs:326–396` 的两个 UI 委托；`MyBehavior.cs:51903,51970,52988`、Kingdom/Onboarding 导入选择器忽略隐藏候选。`tools/af2_migrate.py` 对未解决 `.af-export-` 来源失败关闭。路径/导出合成测试 37 项、迁移 synthetic、六构建与 758 锚点代码地图已验；导出只由显式菜单触发，单次 O(文件数) hash/拷贝，没有 Tick 扫描。**此片仍沿原模块根运行**，未接 typed 用户根、编辑器或 Prompt 等消费者；真实数据、Stage/ZIP、旧档和游戏均未验收。
 
 `tools/af2_migrate.py:25–324` 新增非启动钩子的 PlayerExports 专用显式迁移入口：按安装/仓内两个来源分别执行只读盘点、私有 Recovery 备份与逐文件 hash/大小验证、同卷候选、目标优先和来源冲突保留、同卷不覆盖激活及完成记录；OS 排他锁在崩溃后释放，保留源/备份和含文件名的私有清单。`tests/AF.Persistence/DataPaths/test_migration.py:1–166` 用虚构数据覆盖空、两来源冲突、已有损坏目标、重复、中断续作、mtime、源变化、损坏备份、磁盘满、锁与错根。CLI 对 D: 安装和仓内来源各自只读盘点为 3139 文件、14,274,532 字节，先前逐文件 SHA-256 全一致；**未执行真实 `--apply`**，未接 runtime/编辑器，不据此退役旧树。完整 F2/F4 仍未完成。
 
 `src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 新增纯 .NET 内部路径约定：默认 `%LOCALAPPDATA%/AnimusForge`，环境变量或显式绝对根优先，拒绝相对路径、源码/模块/Stage 根与现存 reparse，提供 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery` typed 目录。`tests/AF.Persistence/DataPaths/Program.cs:1–59` 验证 17 个定位及错误路径反例。现有 reader/writer 尚未接此约定；本片不改变 V1 API、保存身份、游戏安装或默认入口。Debug/Release × 1.3/1.4 + Bootstrap 六构建和独立路径测试通过，实机/旧档/迁移/Stage/ZIP **NOT-RUN**。完整 F1–F5 仍未验收，证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
 
-`src/AF.Persistence/PlayerExportsStore.cs:137–162` 另将单 JSON 写入改为先序列化、同目录候选写入并解析校验，再 `File.Replace`/`File.Move` 发布；`tests/AF.Persistence/DataPaths/Program.cs:61–84` 的合成序列化失败反例证明旧文件不被先删，成功替换后不留候选。全组 `ClearJsonFiles` 仍在宿主导出路径中，尚无组级事务保证；不把此单文件改善算成 F2 完成。
+`src/AF.Persistence/PlayerExportsStore.cs:137–162` 先前已把单 JSON 写入改为候选复验后 `File.Replace`/`File.Move`；`tests/AF.Persistence/DataPaths/Program.cs:61–84` 的序列化失败反例证明旧文件不被先删。该单文件保证现在叠加上述组级候选，但还未解决模块根与用户数据根分离，不能据此算 F2 完成。
 
 ## 以下为前序 J15c 已验范围
 
