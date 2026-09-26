@@ -1,0 +1,127 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+#pragma warning disable CS0649 // Deliberately minimal game/session fixtures.
+
+static class Program
+{
+    static int checks, failures;
+    static void Check(bool value, string name)
+    {
+        checks++;
+        if (!value) { failures++; Console.WriteLine("FAIL " + name); }
+    }
+    static int Main()
+    {
+        foreach (bool fallback in new[] { false, true })
+        {
+            CourierLetterInputPopup.UseFallback = fallback;
+            var owner = CourierDeliveryBehavior.NewOwner();
+            owner.Open("old"); var old = CourierLetterInputPopup.Last;
+            owner.Open("new"); old.Send("old text");
+            Check(owner.Sends == 0 && owner.PendingName == "new" && owner.InputOpen,
+                "old-confirm-cannot-send-or-close-new-draft fallback=" + fallback);
+            old.Cancel();
+            Check(owner.PendingName == "new" && owner.InputOpen,
+                "old-cancel-cannot-clear-new-draft fallback=" + fallback);
+            CourierLetterInputPopup.Last.Send("current text");
+            Check(owner.Sends == 1 && owner.LastRecipient == "new" && owner.PendingName == null,
+                "current-draft-sends-once fallback=" + fallback);
+            old.Send("late retry");
+            Check(owner.Sends == 1, "late-retry-does-not-dispatch fallback=" + fallback);
+
+            owner = CourierDeliveryBehavior.NewOwner(); owner.Open("retired"); old = CourierLetterInputPopup.Last;
+            CourierDeliveryBehavior.NewOwner(); old.Send("retired text");
+            Check(owner.Sends == 0, "replaced-owner-cannot-dispatch fallback=" + fallback);
+
+            owner = CourierDeliveryBehavior.NewOwner(); owner.Open("old-save"); old = CourierLetterInputPopup.Last;
+            SaveRuntimeGuard.Generation++; old.Send("old-save text");
+            Check(owner.Sends == 0, "old-generation-cannot-dispatch fallback=" + fallback);
+
+            owner = CourierDeliveryBehavior.NewOwner(); owner.Open("same-draft"); old = CourierLetterInputPopup.Last;
+            owner.Reopen(); old.Send("old revision"); old.Cancel();
+            Check(owner.Sends == 0 && owner.PendingName == "same-draft" && owner.InputOpen,
+                "old-step-cannot-send-or-clear-same-draft fallback=" + fallback);
+            CourierLetterInputPopup.Last.Send("new revision");
+            Check(owner.Sends == 1, "current-revision-still-sends fallback=" + fallback);
+
+            owner = CourierDeliveryBehavior.NewOwner(); owner.Open("retired-phase"); old = CourierLetterInputPopup.Last;
+            owner.Retire(); old.Send("retired");
+            Check(owner.Sends == 0, "sealed-owner-cannot-send fallback=" + fallback);
+
+            owner = CourierDeliveryBehavior.NewOwner(); owner.Open("wrong-thread"); old = CourierLetterInputPopup.Last;
+            TWParallel.OnMain = false; old.Send("worker"); TWParallel.OnMain = true;
+            Check(owner.Sends == 0, "non-main-callback-cannot-send fallback=" + fallback);
+
+            owner = CourierDeliveryBehavior.NewOwner(); owner.Open("partial"); old = CourierLetterInputPopup.Last;
+            owner.ThrowAfterCreate = true; old.Send("partial effect"); old.Send("replay");
+            Check(owner.Sends == 1 && owner.PendingName == null, "partial-dispatch-not-replayed fallback=" + fallback);
+
+            owner = CourierDeliveryBehavior.NewOwner(); owner.Open("first"); old = CourierLetterInputPopup.Last;
+            owner.AfterCreate = () => owner.Open("reentrant-new"); old.Send("first");
+            Check(owner.Sends == 1 && owner.PendingName == "reentrant-new" && owner.InputOpen,
+                "old-dispatch-tail-cannot-clear-reentrant-new-draft fallback=" + fallback);
+        }
+        Console.WriteLine($"CourierDraftAdmission checks={checks} failures={failures}; production UI callbacks; fixture game dispatch; LIVE=NOT_RUN");
+        return failures == 0 ? 0 : 1;
+    }
+}
+sealed class Hero { public string Name; }
+sealed class TroopRoster { }
+sealed class CourierCargoEntry { }
+sealed class CourierTradeOption { }
+enum CourierPayloadMode { Normal }
+sealed class InformationMessage { public InformationMessage(string text, object color) { } }
+static class Colors { public static object Green, Red; }
+sealed class TextInquiryData
+{
+    public Action<string> Send; public Action Cancel;
+    public TextInquiryData(string title, string text, bool a, bool b, string yes, string no, Action<string> send, Action cancel)
+    { Send=send; Cancel=cancel; }
+}
+static class InformationManager
+{
+    public static void DisplayMessage(InformationMessage message) { }
+    public static void ShowTextInquiry(TextInquiryData data, bool pause) => CourierLetterInputPopup.Last = new(data.Send, data.Cancel);
+}
+static class CourierLetterInputPopup
+{
+    internal sealed record Callback(Action<string> Send, Action Cancel);
+    internal static Callback Last;
+    internal static bool UseFallback;
+    internal static bool Show(string a, string b, string c, string d, Action<string> send, Action cancel)
+    { if (UseFallback) return false; Last=new(send,cancel); return true; }
+}
+static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsCurrentGeneration(long value)=>Generation==value; }
+static class TWParallel { internal static bool OnMain=true; internal static bool IsMainThread()=>OnMain; }
+sealed class PendingOwnerPhases { internal bool Accepting=true; }
+sealed partial class CourierDeliveryBehavior
+{
+    internal static CourierDeliveryBehavior Instance;
+    private readonly PendingOwnerPhases _pendingOwnerPhases=new();
+    private PendingCourierFlow _pendingFlow;
+    private static bool _letterInputOpen;
+    private readonly object _sessionLock=new();
+    private readonly Dictionary<string,CourierSession> _sessions=new();
+    internal int Sends; internal string LastRecipient;
+    internal bool ThrowAfterCreate; internal Action AfterCreate;
+    internal string PendingName=>_pendingFlow?.Recipient?.Name;
+    internal bool InputOpen=>_letterInputOpen;
+    internal static CourierDeliveryBehavior NewOwner(){_letterInputOpen=false;return Instance=new();}
+    internal void Reopen()=>ShowLetterInput();
+    internal void Retire()=>_pendingOwnerPhases.Accepting=false;
+    internal void Open(string name)
+    {
+        _pendingFlow=new PendingCourierFlow{Recipient=new Hero{Name=name}};
+        typeof(PendingCourierFlow).GetField("RuntimeGeneration")?.SetValue(_pendingFlow,SaveRuntimeGuard.Generation);
+        ShowLetterInput();
+    }
+    private sealed class CourierSession { public string Id,RecipientHeroId,CourierPartyId,PayloadMode,RecipientName; public List<object> Entries=new(); }
+    private CourierSession CreateCourierSession(PendingCourierFlow flow,string text)
+    { Sends++;LastRecipient=flow.Recipient.Name;AfterCreate?.Invoke();if(ThrowAfterCreate)throw new InvalidOperationException("fixture partial dispatch");return new(){Id=Guid.NewGuid().ToString(),RecipientName=LastRecipient}; }
+    private void AddCourierRuntimeIndex(CourierSession session) { }
+    private void StartCourierReplyGeneration(CourierSession session,string reason) { }
+    private void ProcessSession(CourierSession session) { }
+    private static void Log(string message) { }
+@@DECLARATIONS@@
+}

@@ -31,7 +31,7 @@ ordered(confirmed,
         "_sessions[session.Id] = session;",
         "AddCourierRuntimeIndex(session);",
         "StartCourierReplyGeneration(session, \"created_preflight\");",
-        "ResetPendingFlow(\"confirm_done\");",
+        "ResetPendingCourierFlow(flow, revision, \"confirm_done\", allowClaimed: true);",
         "ProcessSession(session);")
 
 outbound = extract.declaration(source, "private CourierSession CreateCourierSession(")
@@ -42,6 +42,16 @@ ordered(outbound,
         "EnsureCourierCampaignIdentity(courier, session, \"create_session\");",
         "PrepareOutgoingPayload(session, courier);",
         "BuildDeliveryFactText(session, delivered: false")
+
+for signature in ("private void OpenCourierFlow(", "private void ShowCourierModeInquiry(",
+                  "private void BeginPayloadSelection(", "private void ShowPayloadAmountInquiry(",
+                  "private void ShowLetterInput("):
+    callback_owner = extract.declaration(source, signature)
+    require("BeginCourierDraftStep(flow" in callback_owner
+            and "IsPendingCourierFlowCurrent(flow, revision)" in callback_owner,
+            "UI callback must bind its originating draft and step: " + signature)
+ordered(confirmed, "IsPendingCourierFlowCurrent(flow, revision)", "flow.Claimed = true;",
+        "CreateCourierSession(flow, input.Trim());")
 
 for signature in (
         "private bool TryCreateNpcInitiatedLetterSession(",
