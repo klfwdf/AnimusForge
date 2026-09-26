@@ -1,3 +1,13 @@
+## J14c 当前兼容证据（2026-09-26）
+
+- `run.py --legacy-abi --dotnet <sdk>` 先保留现有 55 项 Native/Scene 独立消费者和 CS0122，然后从 `39cf9d47` 提取旧 V1 五个实际文件与旧 Native 消费者，编译后对旧 V1 跑 41 项；只替换其运行目录内的宿主 library，不重新编译消费者，再对当前 V1 跑同 41 项。消费者 SHA256 `185a59740a7a29e0f553655558a6ae2efaf37a659afef37beaf46f90f7d24ed0` 两次一致。基线和当前库分目录保留，来源及 hash 在 `.generated/legacy-abi/legacy-abi.json`。
+- 对旧测试代码只有两处显式 fixture 适配：CoreCases 只消费旧五项（新用例由当前 55 项另验）；原 Scene/Courier 未开放的查询期望通过环境参数选择旧 NotSupported/新 Available。旧 Native 的 submit/result/cancel/Dispose/幂等/容量/线程/生命周期断言保留。两套库都运行当前原 Native owner 与游戏/provider fixture；这是 CLR 成员绑定与行为兼容，不是旧子 MOD 在游戏中加载。
+- `ModuleFrameworkApiTests/run.py --legacy-v1 tools/NativeModuleSubmissionTests/.generated/legacy-abi/Baseline/Consumer/bin/Release/net8.0/NativeModuleUnderTest.dll --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts --dotnet <sdk>` 还验证旧公开类型/成员/参数/默认值/枚举常量全部是四份当前实现的子集。当前 1620 项 metadata 检查通过，六构建候选产品为 `e58f3558`。
+- `courier-additive-review.json` 精确记录 `fb4af2d8` → `e58f3558` 的七文件有意 Courier 增量；先逆本片，再逆原 Scene 增量和 Native 抽取。原 `source-review.json` 依赖 hash 未改；Native 三文件、依赖、API 目录原形状检查均通过，不再把历史失效 hash 门禁当作免检。
+- 当前三个渠道已接通；以下早期“仍未完成”和计数是历史证据，已由 J14 条目取代。最终状态以主台账/HANDOFF 为准，游戏/旧档/provider/音频/子 MOD 加载/帧性能仍 NOT-RUN。
+
+## 以下为历史 Native 包记录
+
 # Native 制作组服务与子 MOD API 验证
 
 > 根整合状态（2026-09-16）：生产源码 `6e419f6d` 已本地提交，最终六Stage与4DLL1056元数据通过；整体收尾仍ACTIVE。当前边界以[总交接](../../docs/handoffs/2026-09-16-parallel-closeout-handoff.md)为准，以下包内记录保留原验证上下文。
@@ -52,7 +62,7 @@ python -X utf8 -B tools/NativeModuleSubmissionTests/source_boundary.py
 
 `source_boundary.py` 仅逆变换3个批准改动文件：API增量、admission optional票据、completion尾部receipt；校验新7生产依赖hash。原默认UI入口、动作/记忆算法、Saveable/SyncData未改变。它不是游戏回放或删除旧代码依据。
 
-J14 的渠道/上下文指纹有意修改了其中的 `CoreDialogueContracts`、`CoreDialogueOperation`、`CoreDialogueClient`，因此该历史 Native 依赖哈希门禁对当前源码预期报 `Unreviewed Native API dependency`；不要刷新旧 `source-review.json` 伪装成 2026-09-16 的审核。当前行为改由 `run.py` 的独立消费者、`skip-channel`/`skip-context` 编译成功反例和双版本实际 DLL 验证；ModuleFramework 的原 AfApi 逆变换仍验证原公共形状，但不复用上述过时依赖哈希。
+J14 曾因新的渠道/上下文指纹使此历史依赖门禁失配。现已由本页顶部的 Scene/Courier 精确批准差异逆变换恢复原 hash 校验；旧 manifest 未被刷新，行为由独立消费者和旧二进制兼容另验。
 
 | 源码位置（一基） | 符号 | 责任 |
 |---|---|---|
