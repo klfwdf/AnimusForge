@@ -20,7 +20,7 @@ if (-not $apiUrl.EndsWith('/chat/completions', [StringComparison]::OrdinalIgnore
     $apiUrl += '/chat/completions'
 }
 $model = [string]$settings.ModelName
-$writingPromptPath = Join-Path $RepositoryRoot 'AnimusForge\CustomPrompts\Policy\PlayerPolicyAutoDraftPrompt.json'
+$writingPromptPath = Join-Path $RepositoryRoot 'content\modules\PolicySystem\CustomPrompts\Policy\PlayerPolicyAutoDraftPrompt.json'
 $writingPrompt = (Get-Content -LiteralPath $writingPromptPath -Raw -Encoding UTF8 | ConvertFrom-Json).Text
 
 $assemblyDirectory = Split-Path -Parent $AssemblyPath
