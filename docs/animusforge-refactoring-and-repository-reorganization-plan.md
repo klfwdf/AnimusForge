@@ -6,6 +6,8 @@
 
 F2 首个独立安全改进：`src/AF.Persistence/PlayerExportsStore.cs:137–162` 不再先删唯一旧 JSON，改为先序列化、同目录候选写入和解析复验，再 `File.Replace` 或 `File.Move`，失败保留旧文件。`tests/AF.Persistence/DataPaths/Program.cs:61–84` 用抛异常的虚构对象得到预期 red（旧实现删除旧文件），新实现 22 项 PASS；候选成功替换与不留临时文件也覆盖。最新 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。**仍未解决** `MyBehavior.cs` 等宿主在整组导出前调用 `ClearJsonFiles`、`GetPlayerExportsRootPath` 仍指模块，以及编辑器/Prompt/TerminalSettings/模型/迁移器/Stage/ZIP；本片只降低单文件失败丢失风险，不可启动真实数据迁移或声称 F1/F2 完成。
 
+F4 许可只读核查（2026-09-26）：[BAAI 原模型页面](https://huggingface.co/BAAI/bge-small-zh-v1.5)明确标示 MIT；[ONNX 转换仓页面](https://huggingface.co/onnx-community/bge-small-zh-v1.5-ONNX)只说明它是原模型的 ONNX 权重，本次页面未给出独立的许可证标识或可直接用于再分发的完整证明。故不能从原模型 MIT 标记推断转换仓文件可直接放入客户端 ZIP；模型依赖锁、固定 revision/全组 hash 与实际权利证据仍是 F4 发布阻断。本次未下载、搬运、打包模型。
+
 ## AF2.0 资源与数据层完整终态方案（历史规划）
 
 用户明确否定“保护项原位保留、缩小范围结项”，要求 AF2.0 更完整的最终方案。本轮按此完成既有 [J15 计划第 9 节](plans/j15-content-profile-plan.md#j15-af2-final-state)，不新建竞争计划/台账。意图 `093e4d3a`；本轮只有规划文档，不修改产品、测试、脚本、用户资料或模型。**旧的二选一等待已被本次完整范围设计请求取代，不能再次要求用户在缩范围/继续原方案之间选择。**
