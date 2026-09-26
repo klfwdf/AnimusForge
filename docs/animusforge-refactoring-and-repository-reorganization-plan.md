@@ -1,3 +1,32 @@
+## J15a 七项 EmbeddedResource 有限离线完成（2026-09-26）
+
+状态：**`J15a_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。用户授权执行到 J15a、四个具名构建目录清理及不带 Stage 的 Debug/Release 六构建；产品/测试切片为 **`ade4f629`**。本条取代下方“J15 尚未施工”当前状态，但不把 J15b/c/d、实机或发布标为完成。
+
+### 实际迁移与责任边界
+
+- 七个原 `AnimusForge/ModuleData` 可编辑默认文件以 Git `R100` 原样迁移：Preprocess 归 `content/modules/AF.Module.Prompt/ModuleData`，RP item introduction 归 `content/modules/AF.Module.Economy/ModuleData`，五个 `GcczTown*.zh-CN.json` 归 `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData`。迁前固定 SHA256 由 `tests/content/J15ContentContractTests/run.py` 逐文件校验，旧可编辑路径必须不存在。
+- `content/content-map.json:1–47` 是唯一七项构建期映射；运行目标仍为原 `ModuleData/<file>`，七个 `LogicalName` 及五个 GCCZ `WithCulture=false` 不变。`AnimusForge.csproj:81–107` 只改源 Include；Prompt/GCCZ 生产 loader、fallback 次序、public API、保存键、程序集名和 Bootstrap 选择均未改。
+- `一键编译覆盖推送/content_layout.ps1:87–223` 在任何输出前校验 schema、缺源、重复 target/LogicalName、绝对/越界/ADS 和 reparse，并只向调用方指定目录投影/复核 SHA。`deploy_module.ps1:736,801,835` 的 Stage、Deploy 与源 hash 查询共用该映射；原复制顺序为 source copy → mapped defaults → installed CustomPrompts merge。没有新增游戏 Tick/请求期扫描、反射或缓存。
+- overlay 仍以 `AnimusForge/ModuleData/PreprocessPrompts.json` 为交付名，但源由映射解析；PromptLab、GiveAsset 压测与 GCCZ mirror verifier 改读唯一新源。inventory 只放行三个已知 content owner，未知 owner fail-closed，PlayerExports/ONNX/AssetPackages 的 HOLD 保留。
+
+### 当前候选与验证
+
+| 门禁 | 结果 |
+| --- | --- |
+| J15a 合成契约 | `mappings=7 / invalidCases=8 / gcczFallbackCases=4 / overlayAlias=1` PASS；无效映射零部分输出。 |
+| 既有定向回归 | Prompt configuration **36**；GiveAsset **80562 assertions**；repository inventory **7 tests**；PreprocessTopicPromptLab **19 topics、recall=1、precision=1**，均 PASS。首次用仓内 .NET 8 跑 net10 PromptLab 得到预期 `NETSDK1045`，改用已安装 .NET SDK `10.0.400` 后通过，未改目标框架。 |
+| 双版本单模块构建 | 原 `build_single_module.ps1` 不传 Stage/Deploy；Debug/Release × 1.3/1.4 + Bootstrap 六项均 **0 warning / 0 error**。实际引用仍为 1.3.15.110062、1.4.7.117484。 |
+| 实际实现资源 | 四个 `AnimusForge.dll` 的 ManifestResource 集合均恰好七项，逻辑名与源字节 SHA 全部一致；`*.resources.dll` 为 **0**。 |
+| 定位与静态检查 | PowerShell 两脚本语法、content JSON、Python compile、`git diff --check` 通过；代码地图仍绑定未改的 J14 C# 产品 `e58f3558`，recorded/working-tree 各 **755** 锚点 PASS，仅作定位。 |
+
+候选 SHA256：Debug 1.3 `97A589FF135591C9E3223DEA9777F8A39DFDF342B3A99EDB8EBE45FDA72B4DF7`、Debug 1.4 `7FFF471B3A8932FF4F3CBB9F2AE43A8343A04B22B6A81006CA2818E20FE7EE4F`、Debug Bootstrap `724785DCB2745DEA38C6EE7CB2AA5E3FA2DFE131CD21E354FF264D0AA9670A55`；Release 1.3 `8841C1587F3E58E6224DB2F86409B255B96121C4AE3FB02818B6EFDA488A2169`、Release 1.4 `45CCE7EE38208573E8FD283AD71E7398B9C5407C49AE307411DCA6BEF4A6C22E`、Release Bootstrap `69C9E3B8020DDE5E1DA6D48A472B4ECC0200F5812DB47F7DFC54FBF7872CB8E1`。
+
+### 停点与未验
+
+仅清理由用户具名授权、且事前确认无 reparse 的四个仓内生成目录；J15a 契约 runner 只清理 `artifacts/j15-content/j15a-contracts`。没有 Stage、Deploy、Package、游戏目录写入、push、外仓 GCCZ mirror、玩家数据/存档写入或 J15b/c/d。真实两版本游戏加载、旧档、安装用户覆盖、provider、音频与帧性能均 **NOT-RUN**；`.dotnet-cli-home/` 保留。后续如继续，下一项是按原计划重新取得对应范围后执行 **J15b**，不能由本次 J15a 授权推导。
+
+## 以下为 J15 计划就绪历史状态
+
 ## J15 content / profile 计划就绪（2026-09-26）
 
 状态：**`J15_PLAN_READY / IMPLEMENTATION_NOT_STARTED`**。按本轮用户“准备做 J15，写执行计划，写到能开新对话执行”的要求完成[可接续执行计划](plans/j15-content-profile-plan.md)，不是产品施工授权或验收。基线 `fc445335b364859c1d5b87c122f51d7a46d1df57`，计划意图 `0d9bb898`；工作区和分支仍为本仓实际 Git 根 / `codex/af-main-refactor-continuation-20260831`，原未跟踪 `.dotnet-cli-home/` 保留。
