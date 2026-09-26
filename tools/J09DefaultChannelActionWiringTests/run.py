@@ -61,7 +61,7 @@ def main():
             "Native default action boundary must not duplicate visible history/AFEF commit")
 
     scene_queue = extractor.declaration(
-        scene, "private Task<int> QueueDeferredScenePostprocessActions(")
+        scene, "private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions(")
     scene_commit = extractor.declaration(
         scene, "private bool CommitDeferredSceneActionPlan(")
     require(scene_queue.count("CommitDeferredSceneActionPlan(") == 1,

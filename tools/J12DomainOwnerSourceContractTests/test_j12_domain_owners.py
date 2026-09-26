@@ -62,7 +62,11 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         self.assertIn("RuntimeGeneration = request.Trace.RuntimeGeneration", application)
         self.assertIn("gateway.GenerateAsync(", application)
         self.assertNotIn("TaleWorlds", application)
-        self.assertIn("internal static string SelectNextJobId(", coordinator)
+        # DPL-110 retired the unused selector; the live state machine owns selection.
+        self.assertNotIn("SelectNextJobId(", coordinator)
+        self.assertNotIn("WorldDiplomacyJobQueueItem", coordinator)
+        self.assertEqual(runtime.count("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob("), 1)
+        self.assertEqual(lifecycle.count("public static WorldDiplomacyJob SelectAndPrepareLlmJob("), 1)
 
     def test_worldmap_protocol_admission_lifecycle_and_delay_are_split(self) -> None:
         host = read("src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs")
