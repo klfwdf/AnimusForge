@@ -1,4 +1,12 @@
-## AF2.0 F1 路径契约、F2 导出候选与显式迁移器：实施中（2026-09-26）
+## AF2.0 F1–F5 连续实施：模型用户根/迁移与仓内副本退役已验，整体仍未完成（2026-09-27）
+
+最新 F2/F4 模型切片 **`eb03ce28`、`2f589e6b`、`0188367a`、`44e91672`**：`content/models.lock.json` 固定 embedding 安装/仓内两个完整变体及安装 reranker 五件套的字节大小/SHA-256，内嵌 LogicalName `AnimusForge.Dependencies.ModelsLock.json`；`.gitattributes` 固定锁文件 LF，防止不同 Git checkout 使私有 readiness hash 漂移。`src/AF.Persistence/AnimusForgeModelStore.cs:15–106` 在两 ONNX 引擎一次性初始化时验证 typed 用户 Models 路径、锁/Recovery 完成记录、文件集合、大小/mtime 与 reparse；`OnnxEmbeddingEngine.cs:472`、`OnnxCrossEncoderReranker.cs:556` 不再读取模块 `ONNX` 或候选旧路径。模型大文件 SHA 仅在显式迁移/独立验收流式计算，不进入请求/Tick；首次初始化仅检查十项元数据。缺失/损坏显式显示依赖未就绪，不借旧安装回退。模型运行于真实 Bannerlord 的加载/检索 **NOT-RUN**。
+
+`tools/af2_migrate.py:605–836` 对安装/仓内来源分别只读盘点、严格完整组匹配、私有备份与 hash、隔离候选、冲突保留、同卷整组无覆盖激活和完成记录；`tests/AF.Persistence/DataPaths/test_migration.py:320–445` 合成覆盖两源冲突、目标优先、坏组、并发目标、中断续作、磁盘满、损坏备份、重复。真实 D: 安装 10 项/1,224,729,882 字节激活 10；仓内 5 项/95,170,721 字节激活 0、embedding 文本变体冲突 1；来源、私有备份和活动组分别经完整 SHA 复验，重复运行无二次激活。锁格式调整产生第二套私有 Recovery，均保留；当前模型活动库约 **1.14 GiB**、私有模型 Recovery 约 **5.09 GiB**。仓内已跟踪旧 `ONNX` 五文件在恢复集验证后移至忽略的 `local/models/legacy-repo-onnx` 并停止跟踪；该本地副本再核对五项 SHA，D: 原件和原始存档未动。旧 Git 历史中模型字节仍存留，未改历史/推送。reranker 来源版本仅是本机字节锁，不冒充 ONNX 转换仓身份或再分发批准。
+
+本切片 `DataPathsTests` **58 checks**（含只读真实模型元数据探针）、合成迁移 PASS、四个当前实现 DLL 各 **8** 资源的名称/hash 审计 PASS、J15 映射/剩余 HOLD 静态检查 PASS；原一键入口无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap **六构建均 0 warning/error**；代码范围图 **784** 锚点 recorded/working-tree PASS。模型退役后未再重建 Stage/ZIP，故旧 123 文件 Stage 不能代替最终同候选；F3 部署、GUI/TPAC 权利与功能、其他旧资料、F5 离线总验收仍未闭。实机 1.3/1.4 与旧档加载→另存→重载 **NOT-RUN**；无游戏覆盖/启动、原始 `.sav` 修改、推送或 G: 外仓写入。
+
+### 以下为 F3 Stage/ZIP 历史切片
 
 最新 F3 Stage/ZIP 片 **`d7c16c06`**：原一键打包入口保留，但 Stage 只由 `content/content-map.json` 的 107 项、唯一 `SubModule.xml`、已验证的 1.3/1.4/Bootstrap 和 `content/runtime-dependencies.lock.json` 六项私有 DLL 构成；`Assert-AnimusForgeCleanStage` 在重建和包装前检查精确文件/目录集合、源 hash、依赖锁、reparse 及未知物。打包只接受项目内干净 Stage，不再扫描安装目录后排除少数项，逐项验证 ZIP 和 Stage 字节；版本仅写 ZIP 中 XML，源码/Stage 不回写。旧 Stage 重建前只读比对：两配置各 3139 导出与仓内源、五项 ONNX 与仓内源、107 映射文件与 content 源逐文件相同，另 9 个额外/差异文件在私有 Recovery 备份并复验后才重建。Debug/Release 各 123 文件，两次保持构建 DLL 不变的无输入 Stage 重组文件集合/hash 稳定；Debug 与 Release ZIP 独立验证精确集合/hash，不含玩家数据、日志、模型、设计源或未映射素材。未知文件、安装路径和已废弃包参数均失败关闭。合成 Stage 白名单、旧 107 项投影/历史 merge 均通过；地图 780 锚点两模式 PASS。**但**实际部署仍显式失败关闭，程序文件事务替换未实现/验证；当前 Stage 缺 33 项未映射 GUI 和 TPAC，不能以隐去功能达成 F4，故 ZIP 仅为隐私/装配工程候选，不是功能完整或发布就绪。未写游戏/存档/G:，无推送；F1–F5 仍未闭合。下述 TerminalSettings/Prompt 段是更早切片证据。
 

@@ -1,4 +1,10 @@
-# 当前范围：AF2.0 F3 纯 Stage/ZIP 白名单已验、部署失败关闭（2026-09-27）
+# 当前范围：AF2.0 ONNX 用户模型整组迁移已验，F3/F4/F5 未闭（2026-09-27）
+
+产品 **`eb03ce28`、`2f589e6b`、`0188367a`、`44e91672`**：`src/AF.Persistence/AnimusForgeModelStore.cs:15–106` 是模型依赖定位 owner，消费内嵌 `content/models.lock.json`、typed Models 根和私有 `.af-models-ready.json`，只在两引擎首次初始化检查整组元数据，不在推理热路径 hash/扫树。真实消费者 `OnnxEmbeddingEngine.cs:472`、`OnnxCrossEncoderReranker.cs:556` 现在分别读用户 `Models/embedding` 和 `Models/reranker`；模块旧 `ONNX` 路径无日常回退。`tools/af2_migrate.py:605–836` 是独立显式字节迁移 owner，按完整组 SHA、私有备份、候选/冲突、无覆盖同卷激活；安装/仓内源分别执行，原件保留。仓内五个已跟踪模型文件验证恢复后移至被忽略的 `local/`，不进入程序/ZIP。`tests/AF.Persistence/DataPaths/Program.cs` 与 `test_migration.py` 覆盖定位、锁漂移及故障反例；新锁使四实现各有 8 个 EmbeddedResource，LogicalName/hash 审计通过。模型来源/再分发权、实际 ONNX 游戏加载与检索不由离线路径测试证明；reranker 上游身份仍未知。F3 程序部署及 GUI/TPAC 完整资源也未闭合；代码地图 **784** 锚点绑定 `44e91672`，不是游戏功能测试。
+
+## 以下为 F3 Stage/ZIP 的历史已验范围
+
+# AF2.0 F3 纯 Stage/ZIP 白名单已验、部署失败关闭（2026-09-27）
 
 产品/测试 **`d7c16c06`**：`一键编译覆盖推送/content_layout.ps1:226–310` 的 `Assert-AnimusForgeCleanStage` 根据唯一内容映射、源码 hash 和 `content/runtime-dependencies.lock.json` 验证项目内 Stage 的精确文件/目录集合，拒绝 reparse、未知文件及内容漂移。`deploy_module.ps1:223–241,519–579,717–742` 在已验证旧 Stage 上重建，仅复制 XML、107 项内容和已验证双实现/Bootstrap/六 DLL，不再复制 PlayerExports；旧源码回写函数和调用已删除。非 Stage 部署入口明确失败关闭，不触达安装。`package_mod.ps1:163–190,730–854,878–910` 只接受项目内干净 Stage，ZIP-only XML 版本和逐条 ZIP/Stage hash 比对替代安装扫描加排除；原 BAT 入口参数同步。Stage/ZIP 读取不是游戏运行或许可验收；部署程序文件事务仍未实现。
 
