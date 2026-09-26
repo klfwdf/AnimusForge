@@ -274,4 +274,46 @@ except RuntimeError as ex:
 assert not (prompt_corrupt_root / "UserData/Overrides/CustomPrompts/one.json").exists()
 assert not list((prompt_corrupt_root / "Recovery").glob("prompt-overrides-*/completed.json"))
 
-print("PASS AF2 migration synthetic: PlayerExports and Prompt defaults/overrides, conflicts, repeat, interruption, backup corruption, lock, disk full, bad root")
+settings_source = fixture / "settings-installed"
+settings_repo = fixture / "settings-repo"
+settings_root = fixture / "settings-root"
+put(settings_source, "ModuleData/TerminalSettings.json", b'{"IsHotkeyEnabled":false,"IsMapIconEnabled":true}')
+put(settings_repo, "ModuleData/TerminalSettings.json", b'{"IsHotkeyEnabled":true,"IsMapIconEnabled":false}')
+settings_sources = [("installed", settings_source), ("repo", settings_repo)]
+settings_result = module.migrate_terminal_settings(settings_sources, settings_root, allow_test_root=True)
+assert settings_result["backed_up"] == 2 and settings_result["activated"] == 1 and settings_result["conflicts"] == 1, settings_result
+settings_target = settings_root / "UserData/Settings/TerminalSettings.json"
+assert settings_target.read_bytes() == (settings_source / "ModuleData/TerminalSettings.json").read_bytes()
+settings_recovery = pathlib.Path(settings_result["recovery"])
+assert (settings_recovery / "sources/repo/TerminalSettings.json").read_bytes() == (settings_repo / "ModuleData/TerminalSettings.json").read_bytes()
+assert module.migrate_terminal_settings(settings_sources, settings_root, allow_test_root=True)["already_complete"]
+assert module.migrate_terminal_settings(settings_sources, settings_root, allow_test_root=True)["activated"] == 0
+
+settings_bad_source = fixture / "settings-bad-source"
+settings_bad_root = fixture / "settings-bad-root"
+put(settings_bad_source, "ModuleData/TerminalSettings.json", b"{broken")
+bad_result = module.migrate_terminal_settings([("installed", settings_bad_source)], settings_bad_root, allow_test_root=True)
+assert bad_result["backed_up"] == 1 and bad_result["activated"] == 0
+assert not (settings_bad_root / "UserData/Settings/TerminalSettings.json").exists()
+assert (pathlib.Path(bad_result["recovery"]) / "sources/installed/TerminalSettings.json").read_bytes() == b"{broken"
+
+settings_preexisting_root = fixture / "settings-preexisting-root"
+put(settings_preexisting_root, "UserData/Settings/TerminalSettings.json", b'{"IsHotkeyEnabled":true}')
+preexisting = module.migrate_terminal_settings([("installed", settings_source)], settings_preexisting_root, allow_test_root=True)
+assert preexisting["conflicts"] == 1 and preexisting["activated"] == 0
+assert (settings_preexisting_root / "UserData/Settings/TerminalSettings.json").read_bytes() == b'{"IsHotkeyEnabled":true}'
+
+settings_interrupt_root = fixture / "settings-interrupt-root"
+settings_interrupt_root.mkdir()
+try:
+    module.migrate_terminal_settings([("installed", settings_source)], settings_interrupt_root,
+                                     allow_test_root=True, hook=fail_after_first)
+    raise AssertionError("TerminalSettings interruption was not raised")
+except OSError as ex:
+    assert "synthetic interruption" in str(ex)
+assert (settings_interrupt_root / "UserData/Settings/TerminalSettings.json").read_bytes() == (settings_source / "ModuleData/TerminalSettings.json").read_bytes()
+assert not list((settings_interrupt_root / "Recovery").glob("terminal-settings-*/completed.json"))
+resumed = module.migrate_terminal_settings([("installed", settings_source)], settings_interrupt_root, allow_test_root=True)
+assert resumed["activated"] == 0 and not resumed["already_complete"]
+
+print("PASS AF2 migration synthetic: PlayerExports, Prompt and TerminalSettings, conflicts, repeat, interruption, backup corruption, lock, disk full, bad root")
