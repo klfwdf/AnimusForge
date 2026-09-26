@@ -396,152 +396,182 @@
     {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
-      "target": "CustomPrompts/DailyMemoryCompressionWritingRequirements.json"
+      "target": "CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+      "sha256": "F98FDE4FBC3B46AF28360F1878323BA4EC7933C10C2958694BAFC2A16483CDA8"
     },
     {
       "owner": "AF.Module.Kingdom",
       "source": "content/modules/AF.Module.Kingdom/CustomPrompts/KingdomRebellionSystemPrompt.json",
-      "target": "CustomPrompts/KingdomRebellionSystemPrompt.json"
+      "target": "CustomPrompts/KingdomRebellionSystemPrompt.json",
+      "sha256": "3F09ABD7AEB0BCB6A79A381D5E108754F8C851030939C13E3D5183A15AA628A3"
     },
     {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/CustomPrompts/MajorActionCompressionWritingRequirements.json",
-      "target": "CustomPrompts/MajorActionCompressionWritingRequirements.json"
+      "target": "CustomPrompts/MajorActionCompressionWritingRequirements.json",
+      "sha256": "76FE731751575BDC20DA2E6D305F673E12E07F60884C85143E848D2B3C9770BB"
     },
     {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
-      "target": "CustomPrompts/MemoryOverviewCompressionWritingRequirements.json"
+      "target": "CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+      "sha256": "001E824BBE950960C46AAA8106BA4E77DE891111F602818A30CE9BAE5C92427C"
     },
     {
       "owner": "AF.Module.Persona",
       "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
-      "target": "CustomPrompts/NpcPersonaGenerationRequirements.json"
+      "target": "CustomPrompts/NpcPersonaGenerationRequirements.json",
+      "sha256": "2D22EF667F1876FE5F9D034F53D4AC88E5252350ECA80DC5FD4315615DE23C46"
     },
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/CustomPrompts/PlayerCustomPromptRule.json",
-      "target": "CustomPrompts/PlayerCustomPromptRule.json"
+      "target": "CustomPrompts/PlayerCustomPromptRule.json",
+      "sha256": "A1634CE335855F66C209196B2581A2A85FE26A24392F69318F7AA71FDEC38752"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
-      "target": "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json"
+      "target": "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+      "sha256": "A3E55780284E374399A5BDC341F04E0DA4B7F8BE3F7AD95DD59DFACFF2FA86C8"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/_Common.json",
-      "target": "CustomPrompts/Policy/Effects/_Common.json"
+      "target": "CustomPrompts/Policy/Effects/_Common.json",
+      "sha256": "22DEB7EBB84EEE57759C6F928ADF8C030474AF585E28F464E54DD6FC343542DD"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
-      "target": "CustomPrompts/Policy/Effects/armyFormationTendencyPct.json"
+      "target": "CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
+      "sha256": "06DF8D195219863004845E526E44AE2656CF5D5AC11CF6B5D9E30452B38948FD"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanInfluence.json",
-      "target": "CustomPrompts/Policy/Effects/clanInfluence.json"
+      "target": "CustomPrompts/Policy/Effects/clanInfluence.json",
+      "sha256": "4C81BD8FD757E5DD2F80DA1037806816415713DF8407EC2BBB092F2EFC70AC54"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
-      "target": "CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json"
+      "target": "CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
+      "sha256": "BEA0F61625F44BE055B77653EABDC8115ED5ACBB7496852749A880A1859A021C"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/constructionPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/constructionPerDay.json"
+      "target": "CustomPrompts/Policy/Effects/constructionPerDay.json",
+      "sha256": "25AB8E65C8A377DEA734BFC69F7DB67B08654643111A250B730763DF15561AE1"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/foodPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/foodPerDay.json"
+      "target": "CustomPrompts/Policy/Effects/foodPerDay.json",
+      "sha256": "E29DD6FCD5C0CB20CA6BE466DF7E848E3B4A0A14C9BCF78B12B17E69C500A3EB"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/hearthPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/hearthPerDay.json"
+      "target": "CustomPrompts/Policy/Effects/hearthPerDay.json",
+      "sha256": "C5FDDA6DC400F49941B6BE29702B9E85CE19439F8D6CF310FCAB18C593426BDD"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/heroGold.json",
-      "target": "CustomPrompts/Policy/Effects/heroGold.json"
+      "target": "CustomPrompts/Policy/Effects/heroGold.json",
+      "sha256": "E0D279AC34F7541F904368BAE9C397D8049A3AB80BA368C7F54113BF4C06B4B6"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomStability.json",
-      "target": "CustomPrompts/Policy/Effects/kingdomStability.json"
+      "target": "CustomPrompts/Policy/Effects/kingdomStability.json",
+      "sha256": "CD227EF3658CC649C2B9AB5C00D2F2B8A8D5A51F3713D015750554746B6585C2"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
-      "target": "CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json"
+      "target": "CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
+      "sha256": "577D9ECAD527CD254958D5329DE601B28671474D7656210381701DD91CA6CC2B"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/loyaltyPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/loyaltyPerDay.json"
+      "target": "CustomPrompts/Policy/Effects/loyaltyPerDay.json",
+      "sha256": "48E1378098C69013E1CCFE35A63D3D2E2DBF35CB4A41CA2E88EA049A79D850DC"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/militiaPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/militiaPerDay.json"
+      "target": "CustomPrompts/Policy/Effects/militiaPerDay.json",
+      "sha256": "8A3C7D56A49AFD63BCB85C9F64786FFBD6A00E406226FA6E2A89219D7FA6AF6F"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/partySizeLimit.json",
-      "target": "CustomPrompts/Policy/Effects/partySizeLimit.json"
+      "target": "CustomPrompts/Policy/Effects/partySizeLimit.json",
+      "sha256": "2CBF42B52B0D7EF271E510B55A2C744923D0F82BC794BD79635E24FBE2ABF9B0"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/prosperityPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/prosperityPerDay.json"
+      "target": "CustomPrompts/Policy/Effects/prosperityPerDay.json",
+      "sha256": "8D078E4C87D85B30F56904FF9526E3116C9AA61BEE843892593D08C18254E39C"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/securityPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/securityPerDay.json"
+      "target": "CustomPrompts/Policy/Effects/securityPerDay.json",
+      "sha256": "07EF750768E207510B8F2CA199AEF0B3DF3A20C8760C1A31442178EFB1DF3F52"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/soldierTroopXp.json",
-      "target": "CustomPrompts/Policy/Effects/soldierTroopXp.json"
+      "target": "CustomPrompts/Policy/Effects/soldierTroopXp.json",
+      "sha256": "3B29F8B387522E947F7E7F0B4BFFFB3B7158FB806C5FADE5C479557E1A5491F2"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/taxIncomePct.json",
-      "target": "CustomPrompts/Policy/Effects/taxIncomePct.json"
+      "target": "CustomPrompts/Policy/Effects/taxIncomePct.json",
+      "sha256": "BED00201317CEF2E08261385B220D519435EC4FCFCB7314826C091ABDD0A3E0B"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/villageProductionPct.json",
-      "target": "CustomPrompts/Policy/Effects/villageProductionPct.json"
+      "target": "CustomPrompts/Policy/Effects/villageProductionPct.json",
+      "sha256": "1417C3FF9D5A269955C019B3F01268FBADF0E55451BB13CA5C8696B5E1767389"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
-      "target": "CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json"
+      "target": "CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
+      "sha256": "949822045EF6089CC3D19470F894811089F72A9B7AC490B77F78C713BF56E2AE"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
-      "target": "CustomPrompts/Policy/NpcRulerPolicyPrompt.json"
+      "target": "CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+      "sha256": "9DEECA538F12E9F5A861D1A50554A9A2814FD2FBCF1179CC59B12E0AB28237C1"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
-      "target": "CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json"
+      "target": "CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
+      "sha256": "25BA42E2DB584E644CA4C9E223DF27896FD54BBD4898F55EDAB22BE5919AB90D"
     },
     {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WeeklyReportWritingRequirements.json",
-      "target": "CustomPrompts/WeeklyReportWritingRequirements.json"
+      "target": "CustomPrompts/WeeklyReportWritingRequirements.json",
+      "sha256": "8655B07FE203288E3F579A2CB6043EAF711BE263559185272DE224FF10C210DB"
     },
     {
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/CustomPrompts/WorldDiplomacyPrompt.json",
-      "target": "CustomPrompts/WorldDiplomacyPrompt.json"
+      "target": "CustomPrompts/WorldDiplomacyPrompt.json",
+      "sha256": "A447D0691F322388EDF27B9075DCA624414015964BE367D8A379BA78E3EC168A"
     }
   ]
 }

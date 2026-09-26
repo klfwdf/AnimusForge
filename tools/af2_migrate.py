@@ -1,4 +1,4 @@
-"""Explicit, byte-preserving AF2 PlayerExports migration; never deletes legacy data.
+"""Explicit, byte-preserving AF2 user-data migration; never deletes legacy data.
 
 Private manifests (including filenames) stay under AFDataRoot/Recovery. Console output
 contains counts only. This tool is not a startup hook and does not touch game saves.
@@ -310,8 +310,186 @@ def migrate(sources: list[tuple[str, Path]], root: Path, *, allow_test_root: boo
         lock_stream.close()
 
 
+def _prompt_baselines() -> dict[str, str]:
+    mapping = json.loads((REPO / "content" / "content-map.json").read_text(encoding="utf-8"))
+    baselines: dict[str, str] = {}
+    for entry in mapping["entries"]:
+        target = entry["target"]
+        if not target.startswith("CustomPrompts/"):
+            continue
+        relative = target[len("CustomPrompts/"):].casefold()
+        source = REPO / entry["source"]
+        _check_ancestors(source)
+        if relative in baselines or not source.is_file():
+            raise RuntimeError("Prompt baseline mapping is missing or ambiguous")
+        expected = entry.get("sha256", "").lower()
+        if len(expected) != 64 or any(c not in "0123456789abcdef" for c in expected) or _hash(source) != expected:
+            raise RuntimeError("Prompt baseline hash lock differs from the content source")
+        baselines[relative] = expected
+    return baselines
+
+
+def _snapshot_prompts(sources: list[tuple[str, Path]], root: Path,
+                      baselines: dict[str, str]) -> list[dict]:
+    entries: list[dict] = []
+    seen_ids: set[str] = set()
+    for source_id, module in sources:
+        if not source_id or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for c in source_id):
+            raise ValueError("Source identity must be a simple non-private label")
+        if source_id in seen_ids:
+            raise ValueError("Duplicate source identity")
+        seen_ids.add(source_id)
+        module = Path(os.path.abspath(module))
+        _check_ancestors(module)
+        if root == module or root in module.parents or module in root.parents:
+            raise ValueError("Migration source and data root must be separate")
+        base = module / "CustomPrompts"
+        if not base.is_dir():
+            continue
+        _check_ancestors(base)
+        casefolded: set[str] = set()
+        for directory, dirs, files in os.walk(base, followlinks=False):
+            directory_path = Path(directory)
+            _check_ancestors(directory_path)
+            dirs.sort()
+            files.sort()
+            for name in dirs + files:
+                if ":" in name or name in (".", ".."):
+                    raise ValueError("Invalid prompt source entry")
+                if _reparse(directory_path / name):
+                    raise RuntimeError("Prompt source contains a reparse point")
+            for name in files:
+                path = directory_path / name
+                if not path.is_file():
+                    raise RuntimeError("Prompt source contains a non-file entry")
+                relative = path.relative_to(base).as_posix()
+                folded = relative.casefold()
+                if folded in casefolded:
+                    raise RuntimeError("Case-insensitive prompt source path collision")
+                casefolded.add(folded)
+                stat = path.stat()
+                digest = _hash(path)
+                entries.append({"source": source_id, "relative": relative,
+                                "sha256": digest, "size": stat.st_size,
+                                "mtimeNs": stat.st_mtime_ns,
+                                "isDefault": digest == baselines.get(folded)})
+    return entries
+
+
+def _mark_prompts_ready(root: Path, sources: list[tuple[str, Path]], manifest_hash: str) -> None:
+    marker = root / "UserData" / ".prompt-overrides-ready.json"
+    _check_ancestors(marker)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    if marker.exists():
+        record = json.loads(marker.read_text(encoding="utf-8"))
+        if record.get("schema") != 1 or not isinstance(record.get("sources"), dict):
+            raise RuntimeError("Invalid private prompt migration readiness record")
+    else:
+        record = {"schema": 1, "sources": {}}
+    for _, path in sources:
+        record["sources"][_source_key(path)] = manifest_hash
+    _write_record(marker, record)
+
+
+def migrate_prompts(sources: list[tuple[str, Path]], root: Path, *,
+                    baselines: dict[str, str] | None = None,
+                    allow_test_root: bool = False, hook=None) -> dict:
+    """Back up all legacy Prompt files; activate only non-baseline JSON without overwrite."""
+    root = _safe_root(Path(root), allow_test_root)
+    normalized = [(label, Path(os.path.abspath(path))) for label, path in sources]
+    known = _prompt_baselines() if baselines is None else baselines
+    entries = _snapshot_prompts(normalized, root, known)
+    if not entries:
+        return {"backed_up": 0, "activated": 0, "conflicts": 0, "already_complete": False}
+    existing = root
+    while not existing.exists():
+        existing = existing.parent
+    if shutil.disk_usage(existing).free < sum(entry["size"] for entry in entries) * 2 + 64 * 1024 * 1024:
+        raise RuntimeError("Insufficient free space for verified backup and candidate")
+    manifest = {"schema": 1, "kind": "prompt-overrides",
+                "sources": [{"id": label, "path": str(path)} for label, path in normalized],
+                "files": entries}
+    manifest_hash = hashlib.sha256(_json_bytes(manifest)).hexdigest()
+    recovery = root / "Recovery" / ("prompt-overrides-" + manifest_hash[:24])
+    _check_ancestors(recovery)
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "Recovery").mkdir(exist_ok=True)
+    recovery.mkdir(exist_ok=True)
+    lock = root / "Recovery" / ".prompt-overrides-migration.lock"
+    lock_stream = lock.open("a+b")
+    acquired_lock = False
+    try:
+        _lock_stream(lock_stream)
+        acquired_lock = True
+        result = {"backed_up": len(entries), "activated": 0, "conflicts": 0,
+                  "already_complete": False, "recovery": str(recovery),
+                  "manifest_sha256": manifest_hash}
+        source_by_id = dict(normalized)
+        for entry in entries:
+            source = source_by_id[entry["source"]] / "CustomPrompts" / entry["relative"]
+            backup = recovery / "sources" / entry["source"] / "CustomPrompts" / entry["relative"]
+            _write_new_verified(source, backup, entry)
+        manifest_file = recovery / "manifest.json"
+        if manifest_file.exists():
+            if _hash(manifest_file) != manifest_hash:
+                raise RuntimeError("Private manifest differs; manual recovery required")
+        else:
+            _write_record(manifest_file, manifest)
+        if hook:
+            hook("backed_up", len(entries))
+        if _snapshot_prompts(normalized, root, known) != entries:
+            raise RuntimeError("Prompt source changed during migration; no activation performed")
+        selected: dict[str, dict] = {}
+        for entry in entries:
+            if entry["isDefault"] or not entry["relative"].lower().endswith(".json"):
+                continue
+            folded = entry["relative"].casefold()
+            if folded in selected:
+                if selected[folded]["sha256"] != entry["sha256"]:
+                    result["conflicts"] += 1
+            else:
+                selected[folded] = entry
+        completed = recovery / "completed.json"
+        if completed.exists():
+            record = json.loads(completed.read_text(encoding="utf-8"))
+            if record.get("manifestSha256") != manifest_hash:
+                raise RuntimeError("Completion record differs; manual recovery required")
+            result["already_complete"] = True
+            result["conflicts"] = record["conflicts"]
+            _mark_prompts_ready(root, normalized, manifest_hash)
+            return result
+        for entry in selected.values():
+            backup = recovery / "sources" / entry["source"] / "CustomPrompts" / entry["relative"]
+            candidate = recovery / "candidate" / "CustomPrompts" / entry["relative"]
+            _write_new_verified(backup, candidate, entry)
+        active = root / "UserData" / "Overrides" / "CustomPrompts"
+        for entry in selected.values():
+            target = active / entry["relative"]
+            _check_ancestors(target)
+            if target.exists():
+                if not target.is_file() or _hash(target) != entry["sha256"]:
+                    result["conflicts"] += 1
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            _check_ancestors(target.parent)
+            candidate = recovery / "candidate" / "CustomPrompts" / entry["relative"]
+            os.rename(candidate, target)
+            result["activated"] += 1
+            if hook:
+                hook("activated", result["activated"])
+        _write_record(completed, {"schema": 1, "manifestSha256": manifest_hash,
+                                  "activated": result["activated"], "conflicts": result["conflicts"]})
+        _mark_prompts_ready(root, normalized, manifest_hash)
+        return result
+    finally:
+        if acquired_lock:
+            _unlock_stream(lock_stream)
+        lock_stream.close()
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Explicit AF2 PlayerExports migration; no source deletion")
+    parser = argparse.ArgumentParser(description="Explicit AF2 user-data migration; no source deletion")
+    parser.add_argument("--data-kind", choices=("player-exports", "prompts"), default="player-exports")
     parser.add_argument("--source-kind", choices=("installed", "repo"), default="installed",
                         help="one source identity per operation; repository data is never auto-imported")
     parser.add_argument("--installed-module", type=Path)
@@ -328,7 +506,7 @@ def main() -> int:
     else:
         sources = [("repo", REPO / "AnimusForge")]
     if not args.apply:
-        entries = _snapshot(sources, root)
+        entries = _snapshot(sources, root) if args.data_kind == "player-exports" else _snapshot_prompts(sources, root, _prompt_baselines())
         print(f"read-only inventory: files={len(entries)} bytes={sum(e['size'] for e in entries)}")
         return 0
     if os.name != "nt":
@@ -337,7 +515,7 @@ def main() -> int:
     for row in csv.reader(processes.stdout.splitlines()):
         if row and ("bannerlord" in row[0].lower() or "playerexportseditor" in row[0].lower()):
             raise RuntimeError("Close Bannerlord and the PlayerExports editor before migration")
-    result = migrate(sources, root)
+    result = migrate(sources, root) if args.data_kind == "player-exports" else migrate_prompts(sources, root)
     print(f"migration: backed_up={result['backed_up']} activated={result['activated']} "
           f"conflicts={result['conflicts']} already_complete={result['already_complete']}")
     return 0

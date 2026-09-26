@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -113,6 +114,7 @@ internal static class PolicyEffectPromptService
 	private static PromptSnapshot _snapshot;
 	private static long _nextRefreshTimestamp;
 	private static string _storageDirectoryOverride;
+	private static string _packagedStorageDirectoryOverrideForContractTests;
 
 	internal static string GetAutoDraftPrompt()
 	{
@@ -153,21 +155,35 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizeAutoDraftPrompt(input);
-			if (prompt.Length == 0)
-			{
-				prompt = DefaultAutoDraftPrompt;
-			}
 			lock (Sync)
 			{
 				Directory.CreateDirectory(directory);
-				WriteJsonAtomically(Path.Combine(directory, AutoDraftPromptFileName), new JObject
+				string path = Path.Combine(directory, AutoDraftPromptFileName);
+				JObject document = new JObject();
+				if (File.Exists(path))
 				{
-					["Version"] = CurrentVersion,
-					["Text"] = prompt
-				});
-				PromptSnapshot snapshot = EnsureSnapshotUnlocked(directory);
-				snapshot.AutoDraftPrompt = prompt;
-				snapshot.AutoDraftFingerprint = FileFingerprint(Path.Combine(directory, AutoDraftPromptFileName));
+					if (!TryReadJsonObject(path, out JObject existing) || !IsSupportedVersion(existing, path))
+					{
+						throw new InvalidOperationException("已有玩家AI编写提示词文件损坏；请先备份或修复原件，未覆盖原件。");
+					}
+					document = (JObject)existing.DeepClone();
+				}
+				document["Version"] = CurrentVersion;
+				if (prompt.Length == 0)
+				{
+					document.Remove("Text");
+					if (document.Properties().Count() == 1)
+					{
+						if (File.Exists(path)) File.Delete(path);
+					}
+					else WriteJsonAtomically(path, document);
+				}
+				else
+				{
+					document["Text"] = prompt;
+					WriteJsonAtomically(path, document);
+				}
+				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
 			return true;
@@ -188,24 +204,36 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizeCommonEvaluationPrompt(input);
-			if (prompt.Length == 0)
-			{
-				prompt = DefaultCommonEvaluationPrompt;
-			}
 			lock (Sync)
 			{
 				string effectsDirectory = GetEffectsDirectory(directory);
 				Directory.CreateDirectory(effectsDirectory);
 				string path = Path.Combine(effectsDirectory, CommonEffectPromptFileName);
-				JObject document = TryReadCommonDocument(path, out JObject existing, out _)
-					? (JObject)existing.DeepClone()
-					: CreateDefaultCommonDocument();
+				JObject document = new JObject();
+				if (File.Exists(path))
+				{
+					if (!TryReadJsonObject(path, out JObject existing) || !IsSupportedVersion(existing, path))
+					{
+						throw new InvalidOperationException("已有政策效果共同要求文件损坏；未覆盖原件。");
+					}
+					document = (JObject)existing.DeepClone();
+				}
 				document["Version"] = CurrentVersion;
-				document["CommonEvaluationPrompt"] = prompt;
-				WriteJsonAtomically(path, document);
-				PromptSnapshot snapshot = EnsureSnapshotUnlocked(directory);
-				snapshot.CommonEvaluationPrompt = prompt;
-				snapshot.CommonEvaluationFingerprint = FileFingerprint(path);
+				if (prompt.Length == 0)
+				{
+					document.Remove("CommonEvaluationPrompt");
+					if (document.Properties().Count() == 1)
+					{
+						if (File.Exists(path)) File.Delete(path);
+					}
+					else WriteJsonAtomically(path, document);
+				}
+				else
+				{
+					document["CommonEvaluationPrompt"] = prompt;
+					WriteJsonAtomically(path, document);
+				}
+				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
 			return true;
@@ -237,33 +265,40 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizePrompt(input);
-			if (prompt.Length == 0)
-			{
-				prompt = kind == PolicyEffectPromptKind.Understanding
-					? module.Descriptor.EditableUnderstandingPrompt
-					: module.Descriptor.EditableEvaluationPrompt;
-			}
 			lock (Sync)
 			{
 				string effectsDirectory = GetEffectsDirectory(directory);
 				Directory.CreateDirectory(effectsDirectory);
 				string path = GetModulePromptPath(effectsDirectory, module.Id);
-				JObject document = TryReadModuleDocument(path, module, out JObject existing, out _, out _)
-					? (JObject)existing.DeepClone()
-					: CreateDefaultModuleDocument(module);
+				JObject document = new JObject();
+				if (File.Exists(path))
+				{
+					if (!TryReadModuleDocument(path, module, out JObject existing, out _, out _))
+					{
+						throw new InvalidOperationException("已有政策效果要求文件损坏；未覆盖原件。");
+					}
+					document = (JObject)existing.DeepClone();
+				}
 				document["Version"] = CurrentVersion;
 				document["ModuleId"] = module.Id;
 				string fieldName = kind == PolicyEffectPromptKind.Understanding
 					? "UnderstandingPrompt"
 					: "EvaluationPrompt";
-				document[fieldName] = prompt;
-				WriteJsonAtomically(path, document);
-				PromptSnapshot snapshot = EnsureSnapshotUnlocked(directory);
-				Dictionary<string, string> target = kind == PolicyEffectPromptKind.Understanding
-					? snapshot.UnderstandingByModuleId
-					: snapshot.EvaluationByModuleId;
-				target[module.Id] = prompt;
-				snapshot.FingerprintByModuleId[module.Id] = FileFingerprint(path);
+				if (prompt.Length == 0)
+				{
+					document.Remove(fieldName);
+					if (document.Properties().Count() == 2)
+					{
+						if (File.Exists(path)) File.Delete(path);
+					}
+					else WriteJsonAtomically(path, document);
+				}
+				else
+				{
+					document[fieldName] = prompt;
+					WriteJsonAtomically(path, document);
+				}
+				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
 			return true;
@@ -286,34 +321,6 @@ internal static class PolicyEffectPromptService
 			lock (Sync)
 			{
 				Directory.CreateDirectory(directory);
-				string autoPath = Path.Combine(directory, AutoDraftPromptFileName);
-				if (!File.Exists(autoPath))
-				{
-					WriteJsonAtomically(autoPath, new JObject
-					{
-						["Version"] = CurrentVersion,
-						["Text"] = DefaultAutoDraftPrompt
-					});
-				}
-				string effectsDirectory = GetEffectsDirectory(directory);
-				Directory.CreateDirectory(effectsDirectory);
-				string commonPath = Path.Combine(effectsDirectory, CommonEffectPromptFileName);
-				if (!File.Exists(commonPath))
-				{
-					WriteJsonAtomically(commonPath, CreateDefaultCommonDocument());
-				}
-				foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
-				{
-					if (module?.Descriptor?.PromptVisible != true)
-					{
-						continue;
-					}
-					string modulePath = GetModulePromptPath(effectsDirectory, module.Id);
-					if (!File.Exists(modulePath))
-					{
-						WriteJsonAtomically(modulePath, CreateDefaultModuleDocument(module));
-					}
-				}
 				InvalidateUnlocked();
 			}
 			return true;
@@ -355,20 +362,20 @@ internal static class PolicyEffectPromptService
 			{
 				return _snapshot;
 			}
-			string directory = GetStorageDirectory();
-			_snapshot = RefreshSnapshotUnlocked(_snapshot, directory);
+			try
+			{
+				string directory = GetStorageDirectory();
+				_snapshot = RefreshSnapshotUnlocked(_snapshot, directory);
+			}
+			catch (Exception ex)
+			{
+				WarnOnce("root:" + ex.GetType().FullName,
+					"政策提示词数据根不可用，已仅使用内置安全回退: " + ex.GetType().Name);
+				_snapshot = new PromptSnapshot();
+			}
 			_nextRefreshTimestamp = now + RefreshIntervalTicks;
 			return _snapshot;
 		}
-	}
-
-	private static PromptSnapshot EnsureSnapshotUnlocked(string directory)
-	{
-		if (_snapshot == null)
-		{
-			_snapshot = RefreshSnapshotUnlocked(null, directory);
-		}
-		return _snapshot;
 	}
 
 	private static PromptSnapshot RefreshSnapshotUnlocked(PromptSnapshot existing, string directory)
@@ -378,30 +385,47 @@ internal static class PolicyEffectPromptService
 		{
 			return result;
 		}
+		string packagedDirectory = GetPackagedStorageDirectory();
 
 		string autoPath = Path.Combine(directory, AutoDraftPromptFileName);
-		long autoFingerprint = FileFingerprint(autoPath);
+		string packagedAutoPath = string.IsNullOrWhiteSpace(packagedDirectory)
+			? string.Empty : Path.Combine(packagedDirectory, AutoDraftPromptFileName);
+		long autoFingerprint = unchecked(FileFingerprint(autoPath) * 31L + FileFingerprint(packagedAutoPath));
 		if (existing == null || autoFingerprint != result.AutoDraftFingerprint)
 		{
 			result.AutoDraftPrompt = DefaultAutoDraftPrompt;
-			if (TryReadJsonObject(autoPath, out JObject autoDocument)
-				&& IsSupportedVersion(autoDocument, autoPath))
+			if (TryReadJsonObject(packagedAutoPath, out JObject packagedAutoDocument)
+				&& IsSupportedVersion(packagedAutoDocument, packagedAutoPath))
 			{
-				string autoPrompt = NormalizeAutoDraftPrompt(ReadPromptValue(autoDocument, "Text", autoPath, "auto"));
+				string autoPrompt = NormalizeAutoDraftPrompt(ReadPromptValue(packagedAutoDocument, "Text", packagedAutoPath, "auto-default"));
 				if (autoPrompt.Length > 0)
 				{
 					result.AutoDraftPrompt = autoPrompt;
 				}
 			}
+			if (TryReadJsonObject(autoPath, out JObject autoDocument)
+				&& IsSupportedVersion(autoDocument, autoPath))
+			{
+				string autoPrompt = NormalizeAutoDraftPrompt(ReadPromptValue(autoDocument, "Text", autoPath, "auto"));
+				if (autoPrompt.Length > 0) result.AutoDraftPrompt = autoPrompt;
+			}
 			result.AutoDraftFingerprint = autoFingerprint;
 		}
 
 		string effectsDirectory = GetEffectsDirectory(directory);
+		string packagedEffectsDirectory = string.IsNullOrWhiteSpace(packagedDirectory)
+			? string.Empty : GetEffectsDirectory(packagedDirectory);
 		string commonPath = Path.Combine(effectsDirectory, CommonEffectPromptFileName);
-		long commonFingerprint = FileFingerprint(commonPath);
+		string packagedCommonPath = string.IsNullOrWhiteSpace(packagedEffectsDirectory)
+			? string.Empty : Path.Combine(packagedEffectsDirectory, CommonEffectPromptFileName);
+		long commonFingerprint = unchecked(FileFingerprint(commonPath) * 31L + FileFingerprint(packagedCommonPath));
 		if (existing == null || commonFingerprint != result.CommonEvaluationFingerprint)
 		{
 			result.CommonEvaluationPrompt = DefaultCommonEvaluationPrompt;
+			if (TryReadCommonDocument(packagedCommonPath, out _, out string packagedCommonPrompt))
+			{
+				result.CommonEvaluationPrompt = packagedCommonPrompt;
+			}
 			if (TryReadCommonDocument(commonPath, out _, out string commonPrompt))
 			{
 				result.CommonEvaluationPrompt = commonPrompt;
@@ -415,7 +439,9 @@ internal static class PolicyEffectPromptService
 				continue;
 			}
 			string modulePath = GetModulePromptPath(effectsDirectory, module.Id);
-			long moduleFingerprint = FileFingerprint(modulePath);
+			string packagedModulePath = string.IsNullOrWhiteSpace(packagedEffectsDirectory)
+				? string.Empty : GetModulePromptPath(packagedEffectsDirectory, module.Id);
+			long moduleFingerprint = unchecked(FileFingerprint(modulePath) * 31L + FileFingerprint(packagedModulePath));
 			if (existing != null
 				&& result.FingerprintByModuleId.TryGetValue(module.Id, out long previousFingerprint)
 				&& moduleFingerprint == previousFingerprint)
@@ -425,18 +451,20 @@ internal static class PolicyEffectPromptService
 			result.UnderstandingByModuleId.Remove(module.Id);
 			result.EvaluationByModuleId.Remove(module.Id);
 			result.FingerprintByModuleId[module.Id] = moduleFingerprint;
-			if (!TryReadModuleDocument(modulePath, module, out _, out string understanding, out string evaluation))
+			string understanding = module.Descriptor.EditableUnderstandingPrompt;
+			string evaluation = module.Descriptor.EditableEvaluationPrompt;
+			if (TryReadModuleDocument(packagedModulePath, module, out _, out string packagedUnderstanding, out string packagedEvaluation))
 			{
-				continue;
+				if (packagedUnderstanding.Length > 0) understanding = packagedUnderstanding;
+				if (packagedEvaluation.Length > 0) evaluation = packagedEvaluation;
 			}
-			if (understanding.Length > 0)
+			if (TryReadModuleDocument(modulePath, module, out _, out string overriddenUnderstanding, out string overriddenEvaluation))
 			{
-				result.UnderstandingByModuleId[module.Id] = understanding;
+				if (overriddenUnderstanding.Length > 0) understanding = overriddenUnderstanding;
+				if (overriddenEvaluation.Length > 0) evaluation = overriddenEvaluation;
 			}
-			if (evaluation.Length > 0)
-			{
-				result.EvaluationByModuleId[module.Id] = evaluation;
-			}
+			if (understanding.Length > 0) result.UnderstandingByModuleId[module.Id] = understanding;
+			if (evaluation.Length > 0) result.EvaluationByModuleId[module.Id] = evaluation;
 		}
 		return result;
 	}
@@ -498,6 +526,12 @@ internal static class PolicyEffectPromptService
 			{
 				return false;
 			}
+			if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+			{
+				WarnOnce("reparse:" + Path.GetFileName(path),
+					"政策提示词文件是未认可的 reparse 文件，已回退对应默认内容。");
+				return false;
+			}
 			FileInfo info = new FileInfo(path);
 			if (info.Length < 0 || info.Length > MaxJsonBytes)
 			{
@@ -511,7 +545,7 @@ internal static class PolicyEffectPromptService
 		catch (Exception ex)
 		{
 			WarnOnce("read:" + path + ":" + FileFingerprint(path),
-				"读取政策提示词文件失败，已回退对应默认内容: " + ex.Message);
+				"读取政策提示词文件失败，已回退对应默认内容: " + ex.GetType().Name);
 			return false;
 		}
 	}
@@ -551,7 +585,7 @@ internal static class PolicyEffectPromptService
 			throw new InvalidOperationException("政策提示词目标目录为空。");
 		}
 		Directory.CreateDirectory(directory);
-		string tempPath = path + ".tmp-" + Guid.NewGuid().ToString("N");
+		string tempPath = Path.Combine(directory, ".afp-" + Guid.NewGuid().ToString("N"));
 		try
 		{
 			string json = (document ?? new JObject()).ToString(Formatting.Indented);
@@ -585,30 +619,6 @@ internal static class PolicyEffectPromptService
 			{
 			}
 		}
-	}
-
-	private static JObject CreateDefaultCommonDocument()
-	{
-		return new JObject
-		{
-			["Version"] = CurrentVersion,
-			["CommonEvaluationPrompt"] = DefaultCommonEvaluationPrompt
-		};
-	}
-
-	private static JObject CreateDefaultModuleDocument(IPolicyEffectModule module)
-	{
-		if (module?.Descriptor == null || !module.Descriptor.PromptVisible)
-		{
-			throw new InvalidOperationException("无法为不可见政策效果创建提示词文件。");
-		}
-		return new JObject
-		{
-			["Version"] = CurrentVersion,
-			["ModuleId"] = module.Id,
-			["UnderstandingPrompt"] = module.Descriptor.EditableUnderstandingPrompt,
-			["EvaluationPrompt"] = module.Descriptor.EditableEvaluationPrompt
-		};
 	}
 
 	private static string NormalizePrompt(string input)
@@ -646,7 +656,21 @@ internal static class PolicyEffectPromptService
 		{
 			throw new InvalidOperationException("无法定位政策提示词文件夹。");
 		}
+		if (string.IsNullOrWhiteSpace(_storageDirectoryOverride))
+		{
+			AnimusForgeDataPaths.EnsureWritableRoot(AnimusForgeDataPaths.GetCurrentRoot());
+		}
 		return directory;
+	}
+
+	internal static void SetPackagedStorageDirectoryOverrideForContractTests(string directory)
+	{
+		lock (Sync)
+		{
+			_packagedStorageDirectoryOverrideForContractTests = string.IsNullOrWhiteSpace(directory)
+				? null : Path.GetFullPath(directory);
+			InvalidateUnlocked();
+		}
 	}
 
 	private static string GetStorageDirectory()
@@ -654,6 +678,17 @@ internal static class PolicyEffectPromptService
 		return !string.IsNullOrWhiteSpace(_storageDirectoryOverride)
 			? _storageDirectoryOverride
 			: DuelSettings.GetCustomPromptTextStoreDirectoryForPolicyPrompts();
+	}
+
+	private static string GetPackagedStorageDirectory()
+	{
+		if (!string.IsNullOrWhiteSpace(_packagedStorageDirectoryOverrideForContractTests))
+		{
+			return _packagedStorageDirectoryOverrideForContractTests;
+		}
+		return !string.IsNullOrWhiteSpace(_storageDirectoryOverride)
+			? string.Empty
+			: DuelSettings.GetPackagedCustomPromptTextStoreDirectoryForPolicyPrompts();
 	}
 
 	private static string GetEffectsDirectory(string policyDirectory)

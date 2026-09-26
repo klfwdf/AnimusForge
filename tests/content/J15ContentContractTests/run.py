@@ -454,6 +454,8 @@ def verify_map_and_resources() -> None:
         entry = by_target[target]
         for field in ("owner", "source"):
             check(entry.get(field) == expected[field], f"{target} {field}")
+        if target in J15C_PROMPT_EXPECTED:
+            check(entry.get("sha256") == expected["sha256"], f"{target} baseline hash lock")
         check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing migrated source: {source}")
