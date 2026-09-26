@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "528031c56f480a6402387eb1b5714fc82f0a7050",
+  "sourceRevision": "7c39b2002cf30ec8b55de61d4f37fbcd7ae8864d",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -8483,7 +8483,7 @@
       "match": "exact",
       "status": "wired-af2-prompt-slice",
       "note": "locked content-map Prompt hashes",
-      "fileSha256": "66c65f340a802e301c2a29b6f7add2ee445b1ef912dde3201bcd7d02946b333e"
+      "fileSha256": "7c466a2061715f063f6994016d90f1c3104981a571191138963e84d163defa3b"
     },
     {
       "id": "af2.prompt.migrate",
@@ -8494,7 +8494,40 @@
       "match": "exact",
       "status": "wired-af2-prompt-slice",
       "note": "explicit backed-up and non-overwriting Prompt migration",
-      "fileSha256": "66c65f340a802e301c2a29b6f7add2ee445b1ef912dde3201bcd7d02946b333e"
+      "fileSha256": "7c466a2061715f063f6994016d90f1c3104981a571191138963e84d163defa3b"
+    },
+    {
+      "id": "af2.terminal.path",
+      "path": "AnimusForgeTerminalSettings.cs",
+      "start": 103,
+      "end": 103,
+      "symbol": "internal static string GetSettingsPath()",
+      "match": "exact",
+      "status": "wired-af2-terminal-slice",
+      "note": "typed UserData/Settings path; no module fallback",
+      "fileSha256": "042cc7b2f09364d51d0719f96257c884883cc184710d2e45d5dfbcaa976f4662"
+    },
+    {
+      "id": "af2.terminal.save",
+      "path": "AnimusForgeTerminalSettings.cs",
+      "start": 123,
+      "end": 123,
+      "symbol": "internal static void TrySaveSettingsFile(string path, AnimusForgeTerminalSettingsData data)",
+      "match": "exact",
+      "status": "wired-af2-terminal-slice",
+      "note": "validated atomic user settings save; corrupt file preserved",
+      "fileSha256": "042cc7b2f09364d51d0719f96257c884883cc184710d2e45d5dfbcaa976f4662"
+    },
+    {
+      "id": "af2.terminal.migrate",
+      "path": "tools/af2_migrate.py",
+      "start": 523,
+      "end": 523,
+      "symbol": "def migrate_terminal_settings(sources: list[tuple[str, Path]], root: Path, *,",
+      "match": "exact",
+      "status": "wired-af2-terminal-slice",
+      "note": "explicit backed-up and non-overwriting TerminalSettings migration",
+      "fileSha256": "7c466a2061715f063f6994016d90f1c3104981a571191138963e84d163defa3b"
     }
   ]
 }
