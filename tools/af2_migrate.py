@@ -125,7 +125,9 @@ def _write_new_verified(source: Path, destination: Path, expected: dict) -> None
         return
     destination.parent.mkdir(parents=True, exist_ok=True)
     _check_ancestors(destination.parent)
-    temporary = destination.with_name(destination.name + ".partial." + uuid.uuid4().hex)
+    # Keep the same-volume candidate name short: appending a GUID to a long
+    # player filename can exceed Windows MAX_PATH even when the final path fits.
+    temporary = destination.parent / (".afp-" + uuid.uuid4().hex)
     try:
         with source.open("rb") as read, temporary.open("xb") as write:
             shutil.copyfileobj(read, write, CHUNK)
