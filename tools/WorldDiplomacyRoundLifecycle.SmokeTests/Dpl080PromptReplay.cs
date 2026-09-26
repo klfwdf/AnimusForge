@@ -9,6 +9,9 @@ internal static class Dpl080PromptReplay
 {
     internal static void Run()
     {
+        var fallback = JObject.Parse(WorldDiplomacyPromptComposer.BuildFallbackAnalysisJson(null, "b"));
+        Test.True((string)fallback["intent"] == "statement" && (string)fallback["commitment"] == "non_binding" && !(bool)fallback["requires_response"], "080 degraded analysis never fabricates a binding action");
+        Test.True((string)fallback["primary_target_kingdom_id"] == "b" && (double)fallback["confidence"] == 0, "080 fallback target and uncertainty");
         var world = new PromptWorldFixture();
         var round = world.Round;
         var doc = world.Document;
