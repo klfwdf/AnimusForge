@@ -4645,95 +4645,39 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TrySettleRelayOffer(WorldDiplomacyDocument document)
 	{
-		WorldDiplomacyRound round = ResolveRound(document?.RoundId);
-		if (round == null || document == null) return;
-		round.PendingOffers ??= new List<WorldDiplomacyRoundOffer>();
-		PruneInvalidOffers(round);
-		string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent);
-		if (WorldDiplomacyIntentVocabulary.IsProposalIntent(intent) && !string.IsNullOrWhiteSpace(document.TargetKingdomId))
-		{
-			Kingdom proposalAuthor = ResolveKingdom(document.AuthorKingdomId);
-			Kingdom proposalTarget = ResolveKingdom(document.TargetKingdomId);
-			if (TryGetDiplomaticStateViolation(intent, proposalAuthor, proposalTarget, out string proposalBlockReason))
+		Kingdom proposer = null;
+		Kingdom target = null;
+		WorldDiplomacyOfferApplication.Settle(
+			ResolveRound(document?.RoundId), document, PruneInvalidOffers,
+			(intent, proposal) =>
 			{
-				document.MechanicalResult = "提议未登记：" + proposalBlockReason;
-				return;
-			}
-			// A proposal in the reverse direction is a counter-offer. Retire the superseded offer so
-			// later speakers see one current proposal instead of two contradictory open offers.
-			WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(round, document, intent);
-			return;
-		}
-		string proposalIntent = intent switch
-		{
-			"accept_peace" or "reject_peace" => "propose_peace",
-			"accept_alliance" or "reject_alliance" => "propose_alliance",
-			"accept_trade" or "reject_trade" => "propose_trade",
-			_ => ""
-		};
-		if (string.IsNullOrWhiteSpace(proposalIntent)) return;
-		if (string.IsNullOrWhiteSpace(document.RespondingToOfferDocumentId))
-		{
-			document.MechanicalResult = "答复未执行：缺少唯一来源提议";
-			return;
-		}
-		List<WorldDiplomacyRoundOffer> matchingOffers = WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(round, document, proposalIntent);
-		if (matchingOffers.Count != 1)
-		{
-			document.MechanicalResult = "答复未执行：来源提议已关闭、失效或不唯一";
-			return;
-		}
-		WorldDiplomacyRoundOffer resolvedOffer = matchingOffers[0];
-		if (intent.StartsWith("reject_", StringComparison.OrdinalIgnoreCase))
-		{
-			resolvedOffer.Status = "rejected";
-			return;
-		}
-		WorldDiplomacyDocument source = ResolveDocument(resolvedOffer.SourceDocumentId);
-		Kingdom proposer = ResolveKingdom(resolvedOffer.ProposerKingdomId);
-		Kingdom target = ResolveKingdom(resolvedOffer.TargetKingdomId);
-		if (source == null || proposer == null || target == null)
-		{
-			resolvedOffer.Status = "invalidated";
-			document.MechanicalResult = "接受未执行：原提议或当事国已失效";
-			return;
-		}
-		try
-		{
-			if (proposalIntent == "propose_peace")
+				Kingdom author = ResolveKingdom(proposal.AuthorKingdomId);
+				Kingdom recipient = ResolveKingdom(proposal.TargetKingdomId);
+				bool blocked = TryGetDiplomaticStateViolation(intent, author, recipient, out string reason);
+				return (blocked, reason);
+			},
+			ResolveDocument,
+			offer =>
 			{
-				if (!AreOfferedPeaceTermsCurrentlyExecutable(resolvedOffer, source, proposer, target))
+				proposer = ResolveKingdom(offer.ProposerKingdomId);
+				target = ResolveKingdom(offer.TargetKingdomId);
+				return proposer != null && target != null;
+			},
+			(intent, offer, source, response) =>
+			{
+				if (intent == "propose_peace")
 				{
-					resolvedOffer.Status = "invalidated";
-					document.MechanicalResult = "接受未执行：和平原案条款已无法原样履行";
-					return;
+					if (!AreOfferedPeaceTermsCurrentlyExecutable(offer, source, proposer, target)) return false;
+					response.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(
+						WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId));
+					ExecuteMakePeace(proposer, target, response);
 				}
-				// Acceptance ratifies the source offer exactly.
-				document.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, resolvedOffer.SourceActionId));
-				ExecuteMakePeace(proposer, target, document);
-			}
-			else if (proposalIntent == "propose_alliance") ExecuteAlliance(proposer, target, document);
-			else if (proposalIntent == "propose_trade") ExecuteTradeAgreement(proposer, target, document);
-		}
-		catch (Exception ex)
-		{
-			if (HasProposalTakenEffect(proposalIntent, proposer, target))
-			{
-				document.ChangedDiplomaticState = true;
-				document.MechanicalResult = WorldDiplomacyOfferContractRules.ProposalSuccessResult(proposalIntent);
-				resolvedOffer.Status = "accepted";
-			}
-			else
-			{
-				document.MechanicalResult = "接受未执行：" + WorldDiplomacyTextRules.Limit(ex.Message, 180);
-				resolvedOffer.Status = "execution_failed";
-			}
-			Log("offer acceptance execution failed document=" + document.DocumentId + " offer=" + resolvedOffer.SourceDocumentId + " error=" + ex.Message);
-			return;
-		}
-		resolvedOffer.Status = document.ChangedDiplomaticState
-			? ((document.MechanicalResult ?? "").IndexOf("交割失败", StringComparison.OrdinalIgnoreCase) >= 0 ? "partially_executed" : "accepted")
-			: "execution_failed";
+				else if (intent == "propose_alliance") ExecuteAlliance(proposer, target, response);
+				else if (intent == "propose_trade") ExecuteTradeAgreement(proposer, target, response);
+				return true;
+			},
+			(intent, offer) => HasProposalTakenEffect(intent, proposer, target),
+			Log);
 	}
 	private static bool HasProposalTakenEffect(string proposalIntent, Kingdom proposer, Kingdom target)
 	{
