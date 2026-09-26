@@ -698,12 +698,15 @@ internal static class Program
 		Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") >= 8,
 			"AI author authority must be checked at scheduling, request, commit, propagation, and execution boundaries");
 		string mandatoryResponse = ExtractMethod(source, "private void TryScheduleMandatoryCourtResponse(");
+		string courtResponseApplication = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs")), Encoding.UTF8);
+		string mandatoryResponseOwner = ExtractMethod(courtResponseApplication, "internal static void TryScheduleMandatory(");
 		Test.True(mandatoryResponse.Contains("CanAiAuthorDiplomaticDocument(receiver", StringComparison.Ordinal)
 			&& !mandatoryResponse.Contains("ruler_is_prisoner", StringComparison.Ordinal)
 			&& !mandatoryResponse.Contains("王庭暂时无法正式回应你的宣言", StringComparison.Ordinal),
 			"a player declaration delivered to a captive ruler must continue into the normal response path");
-		Test.True(mandatoryResponse.IndexOf("CanAiAuthorDiplomaticDocument(receiver", StringComparison.Ordinal)
-			< mandatoryResponse.IndexOf("round.ResultSettlementPending", StringComparison.Ordinal),
+		Test.True(mandatoryResponseOwner.IndexOf("canAiAuthor()", StringComparison.Ordinal) >= 0
+			&& mandatoryResponseOwner.IndexOf("canAiAuthor()", StringComparison.Ordinal)
+			< mandatoryResponseOwner.IndexOf("round.ResultSettlementPending", StringComparison.Ordinal),
 			"captive-ruler feedback must not be bypassed when the round has already entered result settlement");
 		string captivityContext = ExtractMethod(source, "private static void AppendRulerCaptivityDecisionContext(");
 		string captivityTargetHint = ExtractMethod(source, "private static string BuildRulerCaptivityTargetHint(");
@@ -2987,13 +2990,15 @@ internal static class Program
 			source,
 			"private void TryScheduleMandatoryCourtResponse(",
 			"private void ProcessRoundLifecycle(");
+		string mandatoryOwner = ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs"))), "internal static void TryScheduleMandatory(");
 		string admission = ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs"))), "internal static bool AdmitMandatoryReply(");
         Test.True(admission.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal) >= 0
                   && admission.IndexOf("return true;", StringComparison.Ordinal) > admission.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal),
             "mandatory admission binds the source before granting enqueue permission");
-        int bindRequiredSource = mandatoryResponse.IndexOf("WorldDiplomacyRoundApplication.AdmitMandatoryReply(action, round, participant", StringComparison.Ordinal);
-		int enqueueRequiredResponse = mandatoryResponse.IndexOf("EnqueueGenerationJob(receiver, target", StringComparison.Ordinal);
-		Test.True(bindRequiredSource >= 0 && enqueueRequiredResponse > bindRequiredSource,
+		int bindRequiredSource = mandatoryOwner.IndexOf("WorldDiplomacyRoundApplication.AdmitMandatoryReply(", StringComparison.Ordinal);
+		int enqueueRequiredResponse = mandatoryOwner.IndexOf("enqueueResponse(round, trigger)", StringComparison.Ordinal);
+		Test.True(mandatoryResponse.Contains("EnqueueGenerationJob(receiver, target", StringComparison.Ordinal)
+			&& bindRequiredSource >= 0 && enqueueRequiredResponse > bindRequiredSource,
 			"mandatory source identity must be bound before shared preflight evaluates external statement eligibility");
 		string fixedDeclarationContract = ExtractSection(
 			promptRules,

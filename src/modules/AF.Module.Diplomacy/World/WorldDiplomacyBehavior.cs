@@ -4499,89 +4499,39 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void ProcessCourtArrival(Kingdom receiver, WorldDiplomacyDocument document)
 	{
-		if (receiver == null || document == null || string.Equals(receiver.StringId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)) return;
-		bool directlyAddressed = (document.AddressedKingdomIds ?? new List<string>()).Contains(receiver.StringId, StringComparer.OrdinalIgnoreCase)
-			|| string.Equals(document.TargetKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase)
-			|| IsDiplomaticRepresentativeForAddressedVassal(receiver, document);
-		if (IsPlayerAffiliatedKingdom(receiver))
-		{
-			document.HasReachedPlayerCourt = true;
-		}
-		if (document.IsPlayerAuthored && HasIndependentWorldDiplomacyAuthority(receiver))
-		{
-			WorldDiplomacyRound round = ResolveRound(document.RoundId);
-			bool activeDelivery = round != null && ReferenceEquals(_storage.ActiveRound, round)
-				&& WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State);
-			if (!activeDelivery) return;
-			InformationManager.DisplayMessage(new InformationMessage("你的宣言已传播至" + KingdomName(receiver) + "。"));
-			bool isPrimaryTarget = string.Equals(document.TargetKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase);
-			if (directlyAddressed && (isPrimaryTarget || WorldDiplomacyStructureRules.DocumentRequiresResponseFrom(document, receiver.StringId)))
-			{
-				WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, receiver.StringId, "active", mandatoryReply: true);
-				TryScheduleMandatoryCourtResponse(round, participant, receiver, document);
-			}
-		}
-		Log("court received document=" + document.DocumentId + " receiver=" + receiver.StringId + " direct=" + directlyAddressed + " day=" + CurrentDay().ToString(CultureInfo.InvariantCulture));
+		WorldDiplomacyCourtResponseApplication.Receive(
+			_storage, receiver?.StringId, document,
+			() => IsDiplomaticRepresentativeForAddressedVassal(receiver, document),
+			() => IsPlayerAffiliatedKingdom(receiver),
+			() => HasIndependentWorldDiplomacyAuthority(receiver),
+			ResolveRound,
+			() => InformationManager.DisplayMessage(new InformationMessage("你的宣言已传播至" + KingdomName(receiver) + "。")),
+			(round, participant) => TryScheduleMandatoryCourtResponse(round, participant, receiver, document),
+			CurrentDay, Log);
 	}
 
 	private void TryScheduleMandatoryCourtResponse(WorldDiplomacyRound round, WorldDiplomacyRoundParticipant participant, Kingdom receiver, WorldDiplomacyDocument trigger)
 	{
-		bool isPrimaryTarget = trigger != null
-			&& string.Equals(trigger.TargetKingdomId, receiver?.StringId, StringComparison.OrdinalIgnoreCase);
-		bool earlyEligible = round != null && participant != null && receiver != null && trigger != null
-			&& !IsPlayerKingdom(receiver) && HasIndependentWorldDiplomacyAuthority(receiver)
-			&& trigger.IsPlayerAuthored;
-		bool representativeForVassal = earlyEligible && !isPrimaryTarget
-			&& IsDiplomaticRepresentativeForAddressedVassal(receiver, trigger);
-		bool responseRequiredFrom = earlyEligible && !isPrimaryTarget && !representativeForVassal
-			&& WorldDiplomacyRoundLifecycleRules.IsResponseRequiredFrom(trigger, receiver.StringId);
-		bool alreadyResponded = earlyEligible && (isPrimaryTarget || representativeForVassal || responseRequiredFrom)
-			&& WorldDiplomacyDocumentFactRules.HasKingdomRespondedToDocument(_storage.Documents, receiver.StringId, trigger.DocumentId);
-		string authorBlockReason = null;
-		bool authorBlocked = earlyEligible && (isPrimaryTarget || representativeForVassal || responseRequiredFrom)
-			&& !alreadyResponded && !CanAiAuthorDiplomaticDocument(receiver, out authorBlockReason);
-		bool settlementPending = round != null && round.ResultSettlementPending;
-		bool jobAlreadyQueued = earlyEligible && !alreadyResponded && !authorBlocked && !settlementPending
-			&& _storage.Jobs.Any(x => x != null
-				&& string.Equals(x.AuthorKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase)
-				&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.SourceDocumentId, trigger.DocumentId));
-		int existingResponses = 0;
-		int queuedResponses = 0;
-		if (earlyEligible && !alreadyResponded && !authorBlocked && !settlementPending && !jobAlreadyQueued)
-		{
-			existingResponses = _storage.Documents.Count(x => x != null && x.IsReadyForPublication
-				&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.SourceDocumentId, trigger.DocumentId));
-			queuedResponses = _storage.Jobs.Count(x => x != null
-				&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.SourceDocumentId, trigger.DocumentId));
-		}
-		WorldDiplomacyMandatoryReplyAction action = WorldDiplomacyRoundLifecycleRules.EvaluateMandatoryReplyAction(
-			new WorldDiplomacyMandatoryReplyInput
+		WorldDiplomacyCourtResponseApplication.TryScheduleMandatory(
+			_storage, round, participant, receiver?.StringId, trigger,
+			() => IsPlayerKingdom(receiver),
+			() => HasIndependentWorldDiplomacyAuthority(receiver),
+			() => IsDiplomaticRepresentativeForAddressedVassal(receiver, trigger),
+			() =>
 			{
-				RoundResolved = round != null,
-				ParticipantResolved = participant != null,
-				ReceiverResolved = receiver != null,
-				TriggerResolved = trigger != null,
-				ReceiverIsPlayer = receiver != null && IsPlayerKingdom(receiver),
-				ReceiverHasAuthority = receiver != null && HasIndependentWorldDiplomacyAuthority(receiver),
-				TriggerPlayerAuthored = trigger != null && trigger.IsPlayerAuthored,
-				IsPrimaryTarget = isPrimaryTarget,
-				RepresentativeForAddressedVassal = representativeForVassal,
-				ResponseRequiredFrom = responseRequiredFrom,
-				AlreadyResponded = alreadyResponded,
-				AuthorBlocked = authorBlocked,
-				SettlementPending = settlementPending,
-				JobAlreadyQueued = jobAlreadyQueued,
-				ExistingResponses = existingResponses,
-				QueuedResponses = queuedResponses,
-				MaxPriorityResponses = MaxPriorityPlayerResponsesPerDocument
-			});
-		if (!WorldDiplomacyRoundApplication.AdmitMandatoryReply(action, round, participant, receiver?.StringId, authorBlockReason, trigger, Log)) return;
-		Kingdom target = ResolveKingdom(trigger.AuthorKingdomId);
-		bool reuseRelayTranscript = round.RelayPlanned;
-		EnqueueGenerationJob(receiver, target, null, isResponse: true, sourceDocument: trigger,
-			priority: 95, externalResponseOnly: true, roundId: round.RoundId, isRelayTurn: reuseRelayTranscript,
-			previousKingdomId: trigger.AuthorKingdomId, scheduledDay: CurrentDay());
-		Log("mandatory response queued round=" + round.RoundId + " author=" + receiver.StringId + " target=" + (target?.StringId ?? "") + " source=" + trigger.DocumentId);
+				bool allowed = CanAiAuthorDiplomaticDocument(receiver, out string reason);
+				return (!allowed, reason);
+			},
+			(r, source) =>
+			{
+				Kingdom target = ResolveKingdom(source.AuthorKingdomId);
+				bool reuseRelayTranscript = r.RelayPlanned;
+				EnqueueGenerationJob(receiver, target, null, isResponse: true, sourceDocument: source,
+					priority: 95, externalResponseOnly: true, roundId: r.RoundId, isRelayTurn: reuseRelayTranscript,
+					previousKingdomId: source.AuthorKingdomId, scheduledDay: CurrentDay());
+				return target?.StringId;
+			},
+			Log, MaxPriorityPlayerResponsesPerDocument);
 	}
 	private void ProcessRoundLifecycle()
 	{
