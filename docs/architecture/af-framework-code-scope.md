@@ -1,5 +1,7 @@
 # 当前范围：AF2.0 ONNX 与仓内 PlayerExports 退役已验，F3/F4/F5 未闭（2026-09-27）
 
+F3 新产品 **`8b3f3b51`**：`一键编译覆盖推送/content_layout.ps1:226–321` 的 Stage owner 在包装时额外比对九项当前构建产物 hash，Stage 重建仍使用原精确文件/内容白名单；`package_mod.ps1:786,835,885` 三次检查均强制当前产物匹配。旧 Stage 不再借“123 文件干净”绕过新 DLL；合成漂移拒绝、当前 Debug/Release Stage 两次稳定组装、ZIP 集合/非 XML hash 独立检查通过。部署入口仍失败关闭，GUI/TPAC 未映射资产仍缺；代码地图 **785** 锚点绑定 `8b3f3b51`，不证明完整发布或实机。
+
 F4 仓内 PlayerExports 退役 **`7f30aaa6`**：`PlayerExportsStore` 与独立编辑器仍消费 `UserData/PlayerExports`；仓内 3139 个旧跟踪文件在来源/Recovery/活动三方逐项 hash 后移到忽略的 `local/`，移后再复验，当前源码旧目录不存在、跟踪数 0。编辑器旧路径拒写契约通过。此切片只退出旧源码副本，不改保存身份/API、D: 安装原件、用户活动包或历史 Git；历史隐私风险仍在，不能推送。代码地图源修订 `7f30aaa6` 仅用于导航。
 
 产品 **`eb03ce28`、`2f589e6b`、`0188367a`、`44e91672`**：`src/AF.Persistence/AnimusForgeModelStore.cs:15–106` 是模型依赖定位 owner，消费内嵌 `content/models.lock.json`、typed Models 根和私有 `.af-models-ready.json`，只在两引擎首次初始化检查整组元数据，不在推理热路径 hash/扫树。真实消费者 `OnnxEmbeddingEngine.cs:472`、`OnnxCrossEncoderReranker.cs:556` 现在分别读用户 `Models/embedding` 和 `Models/reranker`；模块旧 `ONNX` 路径无日常回退。`tools/af2_migrate.py:605–836` 是独立显式字节迁移 owner，按完整组 SHA、私有备份、候选/冲突、无覆盖同卷激活；安装/仓内源分别执行，原件保留。仓内五个已跟踪模型文件验证恢复后移至被忽略的 `local/`，不进入程序/ZIP。`tests/AF.Persistence/DataPaths/Program.cs` 与 `test_migration.py` 覆盖定位、锁漂移及故障反例；新锁使四实现各有 8 个 EmbeddedResource，LogicalName/hash 审计通过。模型来源/再分发权、实际 ONNX 游戏加载与检索不由离线路径测试证明；reranker 上游身份仍未知。F3 程序部署及 GUI/TPAC 完整资源也未闭合；代码地图 **784** 锚点绑定 `44e91672`，不是游戏功能测试。

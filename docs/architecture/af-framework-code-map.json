@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "7f30aaa67beb13fc991a4f250c60725dba8b9c28",
+  "sourceRevision": "8b3f3b51068b761341c95ace6eb3a4e23bdb229c",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -8538,7 +8538,7 @@
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "exact mapped/default/program/dependency file set and hashes",
-      "fileSha256": "9d0aefbdd8ba0954247b711121d5eb118c50cdd8501227de4d30e59f0f7c980a"
+      "fileSha256": "bd8e9b18b45c305cb592a077d38162e7a17b491d840ae5bbf204d3376e25c511"
     },
     {
       "id": "af2.stage.reset",
@@ -8571,7 +8571,7 @@
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "ZIP-only XML version without source or Stage mutation",
-      "fileSha256": "259822366b42adc5aa93aae4fe26a14b54a02bdba736eeb09a0553fd751bdc65"
+      "fileSha256": "e09aa6edaffc61f7c81735fe35168a77d36adee74b837d7b07153c4b191be8df"
     },
     {
       "id": "af2.package.whitelist",
@@ -8582,7 +8582,7 @@
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "ZIP byte/hash equality to clean Stage",
-      "fileSha256": "259822366b42adc5aa93aae4fe26a14b54a02bdba736eeb09a0553fd751bdc65"
+      "fileSha256": "e09aa6edaffc61f7c81735fe35168a77d36adee74b837d7b07153c4b191be8df"
     },
     {
       "id": "af2.model.store",
@@ -8627,6 +8627,17 @@
       "status": "af2-f2-f4-model-offline-verified",
       "note": "explicit full-group hash backup and activation; no source deletion",
       "fileSha256": "b235f4dee92e919804c84d1bfd9057b0435353bed92abbc1255c85868a84b9fb"
+    },
+    {
+      "id": "af2.stage.current-artifacts",
+      "path": "一键编译覆盖推送/content_layout.ps1",
+      "start": 269,
+      "end": 269,
+      "symbol": "if ($RequireCurrentArtifacts) {",
+      "match": "exact",
+      "status": "af2-f3-fresh-package-verified",
+      "note": "package requires exact current build artifact bytes; Stage reset uses clean-file-set mode",
+      "fileSha256": "bd8e9b18b45c305cb592a077d38162e7a17b491d840ae5bbf204d3376e25c511"
     }
   ]
 }
