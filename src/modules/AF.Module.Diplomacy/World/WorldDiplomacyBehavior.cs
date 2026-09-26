@@ -790,7 +790,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(_storage?.OfferCooldowns, _offerCooldownByKey);
 		_kingdomBorderCacheDay = -1;
 		_realmInstitutionalVoiceRuleVersion = -1L;
-		WorldDiplomacyPolicyContext.Clear();
+		DiplomacyModuleServices.Policy.Clear();
 		_lastLlmCacheAffinityKey = "";
 		_nativeDiplomacyDecisionQueueSanitized = false;
 		_lastSchedulerDay = -1;
@@ -951,7 +951,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 
 		int day = CurrentDay();
-		foreach (WorldDiplomacyPolicySignalSnapshot snapshot in WorldDiplomacyPolicyContext.GetForeignPolicySignals())
+		foreach (WorldDiplomacyPolicySignalSnapshot snapshot in DiplomacyModuleServices.Policy.GetForeignPolicySignals())
 		{
 			if (snapshot == null || string.IsNullOrWhiteSpace(snapshot.SignalKey) || known.Contains(snapshot.SignalKey)
 				|| day - snapshot.PublishedDay > PolicySignalRetentionDays)
@@ -2792,7 +2792,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		foreach (WorldDiplomacyPolicySignal signal in round?.AttachedPolicySignals ?? new List<WorldDiplomacyPolicySignal>())
 		{
 			if (!WorldDiplomacyRoundLifecycleRules.IsPolicySignalEligibleForThreatBinding(signal)
-				|| !WorldDiplomacyPolicyContext.IsForeignPolicySignalActive(
+				|| !DiplomacyModuleServices.Policy.IsForeignPolicySignalActive(
 					signal.PolicyId,
 					signal.IssuerKingdomId,
 					signal.TargetKingdomId))
@@ -5243,7 +5243,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		sb.AppendLine("【权威人物与亲属关系】");
 		sb.AppendLine(BuildAuthorRulerFamilyContext(author));
 		sb.AppendLine("只有本段列出的直接亲属关系才是事实；仅在本次外交确实涉及王朝、联姻、人质或王室安全时使用。");
-		string policySnapshot = WorldDiplomacyPolicyContext.BuildSnapshot(authorId);
+		string policySnapshot = DiplomacyModuleServices.Policy.BuildSnapshot(authorId);
 		if (!string.IsNullOrWhiteSpace(policySnapshot))
 		{
 			sb.AppendLine("【发文国政策快照】");
@@ -5270,7 +5270,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				_storage?.RecentBattles, author?.StringId, target?.StringId, CurrentDay(), RecentBattleRetentionDays,
 				id => KingdomName(ResolveKingdom(id)), FormatCampaignDate);
 		string nativeReasons = WorldDiplomacyDocumentFactRules.BuildRecentNativeSignalContext(_storage.NativeSignals, authorId, targetId);
-		string targetPolicy = WorldDiplomacyPolicyContext.BuildSnapshot(targetId);
+		string targetPolicy = DiplomacyModuleServices.Policy.BuildSnapshot(targetId);
 		int relation = GetRulerRelation(author, target);
 		int culturalFiefs = CountCulturalClaims(author, target);
 		int pressure = WorldDiplomacyWarPressureRules.GetWarPressure(_storage?.WarPressure, authorId, targetId);
@@ -5408,7 +5408,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private string BuildCompactDiplomaticRelationshipLine(Kingdom initiator, Kingdom candidate)
 	{
 		if (initiator == null || candidate == null) return "";
-		string policy = WorldDiplomacyTextRules.CompactPromptFact(WorldDiplomacyPolicyContext.BuildSnapshot(candidate.StringId), 180);
+		string policy = WorldDiplomacyTextRules.CompactPromptFact(DiplomacyModuleServices.Policy.BuildSnapshot(candidate.StringId), 180);
 		StringBuilder sb = new StringBuilder();
 		WorldDiplomacyRealmRelationProfile relationProfile = GetRealmRelationProfile(initiator, candidate);
 		WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(initiator, candidate);
@@ -6238,18 +6238,18 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			EnsureCanonicalHistoryInitialized, NewId, FormatCampaignDate, Logger.EstimateTokens,
 			InvalidateCanonicalHistoryRenderCache, CurrentDay, Log,
 			maxBatches, PolicyHistorySyncBatchSize,
-			WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId,
-			WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentRevision,
-			WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentSequence,
-			WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts,
-			WorldDiplomacyPolicyContext.TryAcknowledgePublishedPolicyHistoryThrough);
+			DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryLedgerId,
+			DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryCurrentRevision,
+			DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryCurrentSequence,
+			DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryArtifacts,
+			DiplomacyModuleServices.Policy.TryAcknowledgePublishedPolicyHistoryThrough);
 	}
 
 	private void RebuildPublishedPolicySignaturesThrough(long throughSequence)
 	{
 		WorldDiplomacyCanonicalHistoryRules.RebuildPublishedPolicySignaturesThrough(
 			_storage.CanonicalHistory, throughSequence,
-			WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts);
+			DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryArtifacts);
 	}
 
 	private bool AppendPublishedPolicyArtifact(PublishedPolicyArtifactLedgerEntry policy)
@@ -6305,10 +6305,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		List<PublishedPolicyArtifactLedgerEntry> result = new List<PublishedPolicyArtifactLedgerEntry>();
 		long cursor = 0L;
-		long available = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryCurrentSequence();
+		long available = DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryCurrentSequence();
 		while (cursor < available)
 		{
-			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> batch = WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryArtifacts(cursor, 1024);
+			IReadOnlyList<PublishedPolicyArtifactLedgerEntry> batch = DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryArtifacts(cursor, 1024);
 			if (batch == null || batch.Count == 0) break;
 			long previousCursor = cursor;
 			foreach (PublishedPolicyArtifactLedgerEntry entry in batch.OrderBy(x => x?.Sequence ?? long.MaxValue))
@@ -6351,7 +6351,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (_storage.HistoryMemorySchemaVersion >= 3)
 		{
 			string currentPolicyLedgerId =
-				(WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
+				(DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
 			if (!string.Equals(history.LastPolicyArtifactLedgerId, currentPolicyLedgerId, StringComparison.Ordinal))
 			{
 				history.LastPolicyArtifactLedgerId = currentPolicyLedgerId;
@@ -6395,7 +6395,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 		}
 		history.LastPolicyArtifactLedgerId =
-			(WorldDiplomacyPolicyContext.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
+			(DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryLedgerId() ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(history.Snapshot.Content) && history.DeltaEntries.Count == 0)
 		{
 			List<string> legacy = new List<string>();
@@ -6473,7 +6473,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (policyArtifacts.Count > 0)
 		{
 			history.LastPolicyArtifactSequence = Math.Max(history.LastPolicyArtifactSequence, policyArtifacts.Max(x => x.Sequence));
-			WorldDiplomacyPolicyContext.TryAcknowledgePublishedPolicyHistoryThrough(history.LastPolicyArtifactSequence);
+			DiplomacyModuleServices.Policy.TryAcknowledgePublishedPolicyHistoryThrough(history.LastPolicyArtifactSequence);
 		}
 		_lastObservedWorldWeeklyHistoryRevision = MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
 		foreach (WorldDiplomacyRound round in (_storage.CompletedRounds ?? new List<WorldDiplomacyRound>())

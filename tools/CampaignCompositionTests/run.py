@@ -19,7 +19,7 @@ SOURCES = ['src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs', '
             'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs',
             'src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs', 'Refactor/Contracts/FeatureBridgeContracts.cs',
             'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
-            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs']
+            'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs', 'src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs']
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path)
@@ -54,6 +54,10 @@ def verify_source():
     current = extract(campaign,'internal static void Register(')
     body = current[current.index('{'):].replace('CampaignModelComposition.Register(campaignGameStarter);',
             '\n'.join(name+'(campaignGameStarter);' for name in METHODS))
+    composition = read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs')
+    registration = extract(composition, 'internal static void Register(')
+    assert compact(registration[registration.index('{'):]) == compact('{ starter.AddBehavior(new WorldDiplomacyBehavior()); starter.AddBehavior(new DiplomacyBehavior()); }')
+    body = body.replace('DiplomacyModuleComposition.Register(campaignGameStarter);', 'campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior()); campaignGameStarter.AddBehavior(new DiplomacyBehavior());')
     assert compact(body) == compact(original_body), 'Changed behavior construction/order'
     register = extract(models,'internal static void Register(')
     expected = '{'+''.join(name+'(campaignGameStarter);' for name in METHODS)+'}'
@@ -69,6 +73,10 @@ def verify_source():
     end = before.index('\n                InternalModuleValidationResult',start)
     old_registration = before[start:end]
     create = extract(team,'internal static InternalModuleDirectory CreateDirectory(')
+    # The new module's exact capabilities/gates are exercised by ModuleFrameworkApiTests.
+    start100 = create.index('        if (DiplomacyModuleServices.Conversation')
+    end100 = create.index('        return directory;', start100)
+    create = create[:start100] + create[end100:]
     assert compact(create[create.index('{'):]) == compact('{'+old_registration+'return directory;}'), 'Changed typed registration list'
     before = before[:start]+'                var directory = TeamModuleRegistration.CreateDirectory();'+before[end:]
     before = before.replace('    private const int InternalContractVersion = 1;\n','')
@@ -111,7 +119,8 @@ def main():
     behaviors=''
     for n in names:
         ns='AFWarStatsTerminal.Behaviors' if n=='AfWarStatsBehavior' else 'AnimusForge'
-        behaviors+='namespace '+ns+' { internal class '+n+' : TaleWorlds.CampaignSystem.CampaignBehaviorBase { } }\n'
+        extra = ' public static void RegisterHarmonyPatches(HarmonyLib.Harmony harmony) { } ' if n == 'WorldDiplomacyBehavior' else ''
+        behaviors+='namespace '+ns+' { internal class '+n+' : TaleWorlds.CampaignSystem.CampaignBehaviorBase { '+extra+'} }\n'
     (out/'Behaviors.cs').write_text(behaviors,encoding='utf-8')
     api_stubs=read('tools/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
     (out/'ApiHostStubs.cs').write_text(api_stubs,encoding='utf-8')

@@ -43,8 +43,7 @@ internal static class CampaignComposition
             campaignGameStarter.AddBehavior(new NoblePrisonerEscortBehavior());
             campaignGameStarter.AddBehavior(new NoblePrisonerExecutionOrderBehavior());
             campaignGameStarter.AddBehavior(new VoteDealBehavior());
-            campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior());
-            campaignGameStarter.AddBehavior(new DiplomacyBehavior());
+            DiplomacyModuleComposition.Register(campaignGameStarter);
             campaignGameStarter.AddBehavior(new VanillaIssuePromptBehavior());
             campaignGameStarter.AddBehavior(new WorldMapPartyCommandBehavior());
             campaignGameStarter.AddBehavior(new NobleGatheringBehavior());

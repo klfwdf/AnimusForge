@@ -11,11 +11,11 @@ namespace AnimusForge.Refactor.Modules;
 internal static class WorldDiplomacyTimelineQueryHost
 {
     private static readonly WorldDiplomacyTimelineRevisionFacade RevisionFacade =
-        new WorldDiplomacyTimelineRevisionFacade(new LegacyWorldDiplomacyTimelineRevisionQuery());
+        new WorldDiplomacyTimelineRevisionFacade(new WorldDiplomacyTimelineRevisionQueryAdapter());
     private static readonly WorldDiplomacyTimelineDocumentQueryFacade DocumentFacade =
-        new WorldDiplomacyTimelineDocumentQueryFacade(new LegacyWorldDiplomacyTimelineDocumentQuery());
+        new WorldDiplomacyTimelineDocumentQueryFacade(new WorldDiplomacyTimelineDocumentQueryAdapter());
     private static readonly WorldDiplomacyDocumentReadCommandFacade DocumentReadFacade =
-        new WorldDiplomacyDocumentReadCommandFacade(new LegacyWorldDiplomacyDocumentReadCommand());
+        new WorldDiplomacyDocumentReadCommandFacade(new WorldDiplomacyDocumentReadCommandAdapter());
 
     internal static long GetRevisionOrZero()
     {

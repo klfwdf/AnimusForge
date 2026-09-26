@@ -10487,7 +10487,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 							{
 								MyBehavior.ApplyPatienceFromSceneHeroResponseExternal(characterObject.HeroObject, ref aiResponse);
 								VoteDealBehavior.ProcessAgendaTagsDispatch(characterObject.HeroObject, ref aiResponse);
-									DiplomacyBehavior.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref aiResponse);
+									DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref aiResponse);
 								worldMapResult = WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref aiResponse);
 								DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref aiResponse);
@@ -18705,7 +18705,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				LogNativeActionStep("hero_dispatch_before", targetHero, targetCharacter, content);
 				TryProcessCustomPolicyAgendaActionTag(targetHero, actionChainName ?? ResolveNativeConversationPostprocessChainName(), latestPlayerText, ref content, npcReplyTextOverride);
 				VoteDealBehavior.ProcessAgendaTagsDispatch(targetHero, ref content);
-				DiplomacyBehavior.ProcessDiplomacyTagsDispatch(targetHero, ref content);
+				DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(targetHero, ref content);
 				worldMapResult = WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(targetHero, ref content);
 				DuelBehavior.TryCacheDuelAfterLinesFromText(targetHero, ref content);
 				DuelBehavior.TryCacheDuelStakeFromText(targetHero, ref content);
@@ -22198,8 +22198,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			voteDealRuleInjected = voteDealRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "kingdom_agenda");
 			bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 			bool royalDiplomacyRequested = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
-			bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-			bool independentClanPeaceResident = latestReplyHasPlayerInput && DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+			bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+			bool independentClanPeaceResident = latestReplyHasPlayerInput && DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 			diplomacyRuleInjected = royalDiplomacyRuleInjected || independentClanPeaceResident;
 			kingdomAnnexationRuleInjected = false;
 			worldMapPartyCommandRuleInjected = worldMapPartyCommandRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "worldmap_party_command");
@@ -22569,7 +22569,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			if (diplomacyRuleInjected)
 			{
-				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
+				runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
 			}
 			if (siegeInterventionRuleInjected)
 			{
@@ -24505,9 +24505,9 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRulesForScene(Hero targetHero, CharacterObject targetCharacter)
 	{
-		bool allowRoyalDiplomacy = DiplomacyBehavior.CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-		bool allowNpcDeclareWar = DiplomacyBehavior.CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
-		bool allowIndependentClanPeace = DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+		bool allowRoyalDiplomacy = DiplomacyConversationBridge.CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+		bool allowNpcDeclareWar = DiplomacyConversationBridge.CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
+		bool allowIndependentClanPeace = DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 		List<PostprocessRuleEntry> diplomacyRules = (AIConfigHandler.GetGuardrailRulePostprocessRules("diplomacy") ?? new List<PostprocessRuleEntry>())
 			.Where((PostprocessRuleEntry rule) =>
 			{
@@ -24520,7 +24520,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				{
 					return allowRoyalDiplomacy || allowNpcDeclareWar;
 				}
-				return DiplomacyBehavior.IsIndependentClanPeacePostprocessTag(tag)
+				return DiplomacyConversationBridge.IsIndependentClanPeacePostprocessTag(tag)
 					? allowIndependentClanPeace
 					: allowRoyalDiplomacy;
 			})
@@ -26734,7 +26734,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 								{
 									TryProcessCustomPolicyAgendaActionTag(characterObject.HeroObject, ResolveScenePostprocessChainName(), playerDirectedActionText, ref content, playerDirectedNpcReplyText);
 									VoteDealBehavior.ProcessAgendaTagsDispatch(characterObject.HeroObject, ref content);
-									DiplomacyBehavior.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref content);
+									DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(characterObject.HeroObject, ref content);
 									worldMapResult = WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelAfterLinesFromText(characterObject.HeroObject, ref content);
 									DuelBehavior.TryCacheDuelStakeFromText(characterObject.HeroObject, ref content);

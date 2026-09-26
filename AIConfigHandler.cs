@@ -1761,11 +1761,11 @@ public static class AIConfigHandler
 		}
 		if (string.Equals(text, "diplomacy", StringComparison.OrdinalIgnoreCase))
 		{
-			return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+			return DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 		}
 		if (string.Equals(text, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase))
 		{
-			return WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
+			return DiplomacyConversationBridge.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
 		}
 		if (string.Equals(text, "kingdom_agenda", StringComparison.OrdinalIgnoreCase))
 		{
@@ -5795,8 +5795,8 @@ public static class AIConfigHandler
 			try { result.SceneMoveRuleExcludedForMission = ShouldExcludeSceneMoveRuleForCurrentMission(); } catch { }
 			try { result.GcczSiegeAftermathActive = AfGcczShoutBridge.IsActive(); } catch { }
 			try { result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForPromptCapture(hero, targetCharacter); } catch { }
-			try { result.DiplomacyEligible = DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(hero, targetCharacter); } catch { }
-			try { result.WorldDiplomacyEligible = WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(hero); } catch { }
+			try { result.DiplomacyEligible = DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(hero, targetCharacter); } catch { }
+			try { result.WorldDiplomacyEligible = DiplomacyConversationBridge.CanDiscussWorldDiplomacyForExternal(hero); } catch { }
 			try { result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter); } catch { }
 			try { result.MarriageEligible = hero != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero)); } catch { }
 			try { result.NpcMajorActionsEligible = !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(hero)); } catch { }
@@ -7440,9 +7440,9 @@ public static class AIConfigHandler
 				return runtimeEligible;
 			}
 			case "diplomacy":
-				return DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
+				return DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "world_diplomacy_discussion":
-				return WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
+				return DiplomacyConversationBridge.CanDiscussWorldDiplomacyForExternal(ResolveConversationTargetHero());
 			case "kingdom_agenda":
 				return IsKingdomLordOrKingRuleTargetForPreprocess(ResolveConversationTargetHero(), ResolveConversationTargetCharacter());
 			case "marriage":

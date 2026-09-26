@@ -83,24 +83,30 @@ static class Program
         Check(HostControl.ServiceInitializations == 1, "services constructed once");
         AfFrameworkSnapshot ready = AfApi.GetSnapshot();
         Check(ready.State == AfFrameworkState.Ready && ready.ReasonCode == "framework.adapters_bound", "ready means adapter binding only");
-        Check(ready.Modules.Count == 3, "three composed team modules");
-        Check(ready.Modules.Select(x => x.Id).Order().SequenceEqual(new[] { "af.team.gathering", "af.team.policy", "af.team.siege" }), "stable module identities");
+        Check(ready.Modules.Count == 4, "four composed team modules");
+        Check(ready.Modules.Select(x => x.Id).Order().SequenceEqual(new[] { "af.team.diplomacy", "af.team.gathering", "af.team.policy", "af.team.siege" }), "stable module identities");
         foreach (AfModuleInfo module in ready.Modules)
         {
-            Check(module.ContractVersion == 1 && module.Capabilities.Count == 1, "module version and selected seam only");
-            Check(module.Capabilities[0].Id == module.Id + ".dialogue", "stable capability identity");
-            Check(module.Capabilities[0].State == AfModuleCapabilityState.Available, "bound adapter available");
-            Check(!module.Capabilities[0].IsExternallyCallable, "internal port not public executor");
+            Check(module.ContractVersion == 1 && module.Capabilities.Count == (module.Id == "af.team.diplomacy" ? 3 : 1), "module version and selected seam only");
+            var expectedIds = module.Id == "af.team.diplomacy"
+                ? new[] { "af.team.diplomacy.dialogue", "af.team.diplomacy.policy", "af.team.diplomacy.world" }
+                : new[] { module.Id + ".dialogue" };
+            Check(module.Capabilities.Select(c => c.Id).Order().SequenceEqual(expectedIds), "stable capability identities");
+            Check(module.Capabilities.All(c => c.State == AfModuleCapabilityState.Available), "bound adapters available");
+            Check(module.Capabilities.All(c => !c.IsExternallyCallable), "internal ports not public executors");
             Immutable(module.Capabilities, "module capabilities");
         }
         Immutable(ready.Modules, "ready module list");
         Check(HostControl.Initialize(), "duplicate load is idempotent");
-        Check(AfApi.GetSnapshot().Modules.Count == 3 && HostControl.ServiceInitializations == 1, "no duplicate registrations");
+        Check(AfApi.GetSnapshot().Modules.Count == 4 && HostControl.ServiceInitializations == 1, "no duplicate registrations");
         HostControl.SetGates(true, true);
         AfFrameworkSnapshot gated = AfApi.GetSnapshot();
         Check(Capability(gated, "af.team.siege").State == AfModuleCapabilityState.Unavailable, "disabled siege bridge unavailable");
         Check(Capability(gated, "af.team.policy").State == AfModuleCapabilityState.Available, "policy not globally disabled by diplomacy bridge");
         Check(Capability(gated, "af.team.gathering").State == AfModuleCapabilityState.Available, "unrelated gathering unaffected");
+        var diplomacy = gated.Modules.Single(m => m.Id == "af.team.diplomacy");
+        Check(diplomacy.Capabilities.Single(c => c.Id.EndsWith(".policy")).State == AfModuleCapabilityState.Unavailable, "policy bridge disabled independently");
+        Check(diplomacy.Capabilities.Where(c => !c.Id.EndsWith(".policy")).All(c => c.State == AfModuleCapabilityState.Available), "policy bridge does not disable dialogue/world");
         Check(gated.State == AfFrameworkState.Ready, "bridge gate not framework load failure");
         Check(Capability(ready, "af.team.siege").State == AfModuleCapabilityState.Available, "old snapshot is immutable observation");
         HostControl.SetGates(false, false, true);
@@ -109,7 +115,7 @@ static class Program
         Parallel.For(0, 256, _ =>
         {
             AfFrameworkSnapshot snapshot = AfApi.GetSnapshot();
-            if (snapshot.State != AfFrameworkState.Ready || snapshot.Modules.Count != 3
+            if (snapshot.State != AfFrameworkState.Ready || snapshot.Modules.Count != 4
                 || snapshot.Modules.Any(m => m.Capabilities[0].State != AfModuleCapabilityState.Available))
                 throw new Exception("concurrent query corrupted snapshot");
         });
@@ -118,7 +124,7 @@ static class Program
         HostControl.Shutdown(); HostControl.Shutdown();
         AfFrameworkSnapshot stopped = AfApi.GetSnapshot();
         Check(stopped.State == AfFrameworkState.Stopped && stopped.ReasonCode == "framework.stopped", "shutdown idempotent");
-        Check(stopped.Modules.Count == 3 && stopped.Modules.All(m => m.Capabilities.All(c =>
+        Check(stopped.Modules.Count == 4 && stopped.Modules.All(m => m.Capabilities.All(c =>
             c.State == AfModuleCapabilityState.Unavailable && c.ReasonCode == "framework.stopped")), "stopped retains descriptions not availability");
         int gateCalls = HostControl.GateCalls;
         AfApi.GetSnapshot();
@@ -126,7 +132,7 @@ static class Program
         Check(before.State == AfFrameworkState.NotInitialized && before.Modules.Count == 0, "old pre-init snapshot unchanged");
         Check(ready.State == AfFrameworkState.Ready, "old ready snapshot unchanged after shutdown");
         Check(HostControl.Initialize(), "reload supported");
-        Check(AfApi.GetSnapshot().Modules.Count == 3 && HostControl.ServiceInitializations == 1, "reload uses same stateless adapters");
+        Check(AfApi.GetSnapshot().Modules.Count == 4 && HostControl.ServiceInitializations == 1, "reload uses same stateless adapters");
         Check(stopped.State == AfFrameworkState.Stopped, "old stopped snapshot unchanged on reload");
 
         HostControl.Shutdown(); HostControl.SetPolicyAdapterPresent(false);

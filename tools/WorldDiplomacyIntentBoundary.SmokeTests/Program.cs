@@ -636,14 +636,14 @@ internal static class Program
 		string impactBuilder = ExtractMethod(source, "internal static string BuildImpactText(");
 		string boundaryImpact = ExtractMethod(repRules, "public static string BuildInternationalReputationImpactDeltaText(");
 		string documentQuery = File.ReadAllText(
-			FindRepositoryFile(Path.Combine("Refactor", "Adapters", "LegacyWorldDiplomacyTimelineDocumentQuery.cs")),
+			FindRepositoryFile(Path.Combine("Refactor", "Adapters", "WorldDiplomacyTimelineDocumentQueryAdapter.cs")),
 			Encoding.UTF8);
 		Test.True(impactBuilder.Contains("【外交结果】", StringComparison.Ordinal)
 			&& impactBuilder.Contains("【国际声誉】", StringComparison.Ordinal)
 			&& impactBuilder.Contains("【国家威望】", StringComparison.Ordinal)
 			&& impactBuilder.Contains("变化：", StringComparison.Ordinal)
 			&& impactBuilder.Contains("原因：", StringComparison.Ordinal)
-			&& documentQuery.Contains("WorldDiplomacyBehavior.QueryTimelineDocuments(maxCount)", StringComparison.Ordinal)
+			&& documentQuery.Contains("DiplomacyModuleServices.World.QueryTimelineDocuments(maxCount)", StringComparison.Ordinal)
             && ExtractMethod(source, "internal static WorldDiplomacyTimelineDocumentsResult Timeline(").Contains("BuildImpactText(document)", StringComparison.Ordinal),
 			"the persisted declaration detail must render diplomatic results and standing changes as separate readable sections");
 		Test.True(boundaryImpact.Contains("已达上限100", StringComparison.Ordinal)
@@ -904,7 +904,7 @@ internal static class Program
             "BuildRulerVoiceContext",
             "BuildRealmInstitutionalVoiceContext",
             "BuildAuthorRulerFamilyContext",
-            "WorldDiplomacyPolicyContext.BuildSnapshot"
+            "DiplomacyModuleServices.Policy.BuildSnapshot"
         })
         {
             Test.True(authorContext.Contains(requiredAuthorFactBuilder, StringComparison.Ordinal),
@@ -925,7 +925,7 @@ internal static class Program
             "CountCulturalClaims",
             "GetWarPressure",
             "BuildRecentNativeSignalContext",
-            "WorldDiplomacyPolicyContext.BuildSnapshot",
+            "DiplomacyModuleServices.Policy.BuildSnapshot",
             "BuildWarDecisionContext"
         })
         {
@@ -939,7 +939,7 @@ internal static class Program
             "BuildRecentBilateralBattleContext",
             "GetKingdomBorderRelation",
             "GetRealmRelationProfile",
-            "WorldDiplomacyPolicyContext.BuildSnapshot",
+            "DiplomacyModuleServices.Policy.BuildSnapshot",
             "BuildWarDecisionContext"
         })
         {
@@ -1147,7 +1147,7 @@ internal static class Program
             "GetKingdomBorderRelation",
             "GetWarSituation",
             "DescribeStrengthBalance",
-            "WorldDiplomacyPolicyContext.BuildSnapshot"
+            "DiplomacyModuleServices.Policy.BuildSnapshot"
         })
         {
             Test.True(compactRelationship.Contains(relationshipFact, StringComparison.Ordinal),
@@ -3855,7 +3855,7 @@ internal static class Program
                   && policyBindingEligibility.Contains("string.IsNullOrWhiteSpace(signal.PolicyKind)", StringComparison.Ordinal)
                   && policyBindingEligibility.Contains("signal.PolicyKind.Trim(), \"kingdom\"", StringComparison.Ordinal),
             "only a blank legacy kind or an explicit kingdom policy may become a threat cancellation condition");
-        Test.True(resolvePolicyCondition.Contains("WorldDiplomacyPolicyContext.IsForeignPolicySignalActive(", StringComparison.Ordinal)
+        Test.True(resolvePolicyCondition.Contains("DiplomacyModuleServices.Policy.IsForeignPolicySignalActive(", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("signal.PolicyId", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("signal.IssuerKingdomId", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("signal.TargetKingdomId", StringComparison.Ordinal),

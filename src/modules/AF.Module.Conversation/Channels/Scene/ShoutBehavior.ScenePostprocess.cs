@@ -308,7 +308,7 @@ public partial class ShoutBehavior
 							bool royalPostprocessSelected = AIConfigHandler.CanUseAuxiliaryActionPostprocess()
 								&& AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(speakingHero ?? npcCharacter?.HeroObject);
 							bool independentClanPeaceResident = replyIsDirectPlayerResponse
-								&& DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
+								&& DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(speakingHero, npcCharacter);
 							diplomacyRuleInjected = diplomacyRuleInjected || independentClanPeaceResident;
 							if (!duelRuleInjected && !rewardRuleInjected && !loanRuleInjected && !persistentAdpDebtRuleInjected && !kingdomServiceRuleInjected && !kingdomVassalageRuleInjected && !kingdomAnnexationRuleInjected && !lordsHallRuleInjected && !meetingReleaseRuleInjected && !vanillaIssueRuleInjected && !heroJoinPartyRuleInjected && !sceneMechanismRuleInjected && !partyTransferRuleInjected && !voteDealRuleInjected && !customPolicyAgendaRuleInjected && !diplomacyRuleInjected && !worldMapPartyCommandRuleInjected && !nobleGatheringRuleInjected && !proposeAgendaRuleInjected && !marriageRuleInjected && !siegeInterventionRuleInjected && !relayRuleInjected && !npcSurrenderPostprocessSelected && !royalPostprocessSelected)
 							{
@@ -703,8 +703,8 @@ public partial class ShoutBehavior
 		kingdomVassalageRuleInjected = kingdomVassalageRuleInjected || kingdomVassalagePreprocessHit;
 		bool royalPostprocessEligible = AIConfigHandler.IsRoyalAbdicationPostprocessTargetForExternal(targetHero ?? targetCharacter?.HeroObject);
 		bool royalDiplomacyRequested = diplomacyRuleInjected || kingdomAnnexationRuleInjected || HasPreprocessRuleHit(preprocessRuleHits, "diplomacy");
-		bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
-		bool independentClanPeaceResident = replyIsDirectPlayerResponse && DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
+		bool royalDiplomacyRuleInjected = royalDiplomacyRequested && DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal(targetHero, targetCharacter);
+		bool independentClanPeaceResident = replyIsDirectPlayerResponse && DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal(targetHero, targetCharacter);
 		diplomacyRuleInjected = royalDiplomacyRuleInjected || independentClanPeaceResident;
 		kingdomAnnexationRuleInjected = false;
 		duelRuleInjected = duelRuleInjected && AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.DuelRuleId, targetAgentIndex);
@@ -1107,7 +1107,7 @@ public partial class ShoutBehavior
 		}
 		if (diplomacyRuleInjected)
 		{
-			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyBehavior.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
+			runtimeContext = AppendPostprocessContextBlockForScene(runtimeContext, DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(targetHero ?? targetCharacter?.HeroObject));
 		}
 		if (marriageRuleInjected && RomanceSystemBehavior.Instance != null)
 		{
