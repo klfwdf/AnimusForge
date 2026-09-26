@@ -143,6 +143,7 @@ RunRepairCorrectionAndJobDecisionTests();
         OfferApplicationReplay.Run();
         CourtResponseReplay.Run();
         DocumentApplicationReplay.Run();
+        PropagationLifecycleReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -15153,9 +15154,9 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(structureSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldRefreshParticipantState", StringComparison.Ordinal)
             && structureSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateRouteAdmission", StringComparison.Ordinal),
             "structure rules must route participant state and route admission through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyStructureRules.EnsureRoundParticipant(", StringComparison.Ordinal)
+        Test.True(propagationApplicationSource.Contains("WorldDiplomacyStructureRules.EnsureRoundParticipant(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyStructureRules.RoundRouteContainsKingdom(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyStructureRules.AddParticipantToRelayRouteIfNeeded(", StringComparison.Ordinal)
+            && propagationApplicationSource.Contains("WorldDiplomacyStructureRules.AddParticipantToRelayRouteIfNeeded(", StringComparison.Ordinal)
             && behaviorSource.Contains("GetRoundParticipantLimit()", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static bool RoundContainsKingdom(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static WorldDiplomacyRoundParticipant EnsureRoundParticipant(", StringComparison.Ordinal)
@@ -15422,9 +15423,9 @@ RunRepairCorrectionAndJobDecisionTests();
                   && !behaviorSource.Contains("private string BuildKnownRoundContext(")
                   && !behaviorSource.Contains("private const int MaxKnownDocumentsPerLocation"),
             "knowledge recording and context composition must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyDocumentFactRules.RecordSettlementKnowledge(")
-                  && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(")
-                  && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(")
+        Test.True(propagationApplicationSource.Contains("WorldDiplomacyDocumentFactRules.RecordSettlementKnowledge(")
+                  && propagationApplicationSource.Contains("WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(")
+                  && propagationApplicationSource.Contains("WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(")
                   && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.BuildRecentNativeSignalContext("),
             "the host must delegate knowledge recording through the document-fact rules");
         Test.True(rulesSource.Contains("public static void ClearRoundScopedQueuesAndExpireOpportunities(")
