@@ -1,10 +1,14 @@
 # J15 content / profile 执行计划
 
-> 2026-09-26；状态：`PLAN_READY / IMPLEMENTATION_NOT_STARTED`。本轮只编写计划，不实施迁移。
+> 2026-09-26；当前执行状态：`J15a_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。七项 EmbeddedResource 与最小内容接线已在产品/测试提交 `ade4f629` 完成；J15b/c/d 尚未开始。
 > 规划基线：`fc445335b364859c1d5b87c122f51d7a46d1df57`；计划意图提交：`0d9bb898`。J14 产品基线仍为 `e58f3558cddfe473f396bb7f11470b05e30afce9`，已有限离线完成。
-> 本文细化[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)的 J15，不新建进度账本；进度和详细证据回写主台账，[HANDOFF](../../HANDOFF.md)只保留当前摘要。文中拟新增文件、命令和验收均是后续规格，不是已实现或已通过。
+> 本文细化[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)的 J15，不新建进度账本；J15a 的实际证据已回写主台账，[HANDOFF](../../HANDOFF.md)只保留当前摘要。文中 J15b/c/d 的拟议文件、命令和验收仍是后续规格，不是已实现或已通过。
 
-## 1. 可复制到新对话的启动指令
+J15a 实际结果：七项文件按 owner R100 迁入 `content/modules`，显式 `content/content-map.json` 与窄 `content_layout.ps1` 接通 csproj、Stage/Deploy 源投影和必要工具；合成契约、既有定向回归、不带 Stage/Deploy 的双配置六构建及四实现 DLL 七资源逐字节审计通过。没有真实 Stage、Deploy、Package、游戏/外仓/玩家数据写入。后续执行应从 J15b 重新核实 dirty 和授权，不能重复 J15a 或把本片扩大解释为整个 J15 完成。
+
+## 1. 原始 J15a 启动指令（历史，不再直接执行）
+
+以下代码块保留规划时输入，不能覆盖本文顶部的实际 J15a 完成状态，也不能作为 J15b/c/d 的新授权。
 
 ```text
 执行 E:/AnimusForge-refactor-continuation-20260831/docs/plans/j15-content-profile-plan.md。
@@ -16,7 +20,7 @@
 每个完整、已验证切片独立本地提交；失败先诊断，不刷新 hash 或删断言凑 PASS。结束或中断时更新同一主台账、受影响范围图/代码地图及简短 HANDOFF，写明下一条具体动作和 NOT-RUN。
 ```
 
-本次不自动创建新任务，也不选择或切换模型。新对话收到上述指令即可从 G0 开始；涉及安全边界的批准必须由用户实际给出，不能将本文当作已经批准。
+本次没有自动创建新任务，也没有选择或切换模型。J15a 已完成；后续新对话应从 J15b 重新核实实际 Git/dirty、读取主台账当前条目并取得对应范围授权，不能再按上方历史块从 G0/J15a 重做，也不能将本文当作已经批准 J15b/c/d。
 
 ## 2. 目标、非目标与完成含义
 
