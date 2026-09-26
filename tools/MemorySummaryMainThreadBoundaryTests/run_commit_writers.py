@@ -42,7 +42,7 @@ def main():
         if data.count(old)!=count:raise ValueError('Commit anchor drift '+old)
         return data.replace(old,new)
     source=read('MyBehavior.cs');snippets=[]
-    for name in ['AppendDialogueHistory','AppendDialogueHistoryById','IsDialogueHistoryPublished','BuildPlayerAddressedInputForName','GetMemoryHeroId','FindHeroById','OpenDevDailyMemoryLineTextEditor','ApplyDevDailyMemoryLineMutation','SaveDevDailyMemoryDraftsAfterEdit','SyncDialogueHistoryForDailyMemoryDraftEdit','CloneDevDailyMemoryLines','NormalizeDevDailyMemoryDraftForSave','FindDevDailyMemoryDraft','FindDevDailyMemoryLine','NormalizeDevCompressedMemoryMultilineInput','BuildDevDailyMemoryLineSubtitle','LoadDailyMemoryDrafts','SaveDailyMemoryDrafts','LoadDialogueHistory','SaveDialogueHistory','BuildDailyMemorySyncLineCounts','BuildDailyMemorySyncCountDelta','RemoveDialogueHistoryLinesByCounts','BuildDailyMemorySyncAddedDialogueLines','BuildDialogueHistoryLineForDailyMemorySync','NormalizeDialogueHistoryLineForDailyMemorySync','ResolveDailyMemorySyncGameDate','ImportDialogueHistoryData','ImportSingleNpcDialogueHistoryData','ApplyCompressedMemoryExportBundle','HasCompressedMemoryDataForHero','ShowDuplicateImportInquiry','TryParseHeroIdFromNpcFileName','TryParseNpcFileNameParts']:
+    for name in ['AppendDialogueHistory','AppendDialogueHistoryById','IsDialogueHistoryPublished','BuildPlayerAddressedInputForName','GetMemoryHeroId','FindHeroById','OpenDevDailyMemoryLineTextEditor','ApplyDevDailyMemoryLineMutation','SaveDevDailyMemoryDraftsAfterEdit','SyncDialogueHistoryForDailyMemoryDraftEdit','CloneDevDailyMemoryLines','NormalizeDevDailyMemoryDraftForSave','FindDevDailyMemoryDraft','FindDevDailyMemoryLine','NormalizeDevCompressedMemoryMultilineInput','BuildDevDailyMemoryLineSubtitle','LoadDailyMemoryDrafts','SaveDailyMemoryDrafts','LoadDialogueHistory','SaveDialogueHistory','BuildDailyMemorySyncLineCounts','BuildDailyMemorySyncCountDelta','RemoveDialogueHistoryLinesByCounts','BuildDailyMemorySyncAddedDialogueLines','BuildDialogueHistoryLineForDailyMemorySync','NormalizeDialogueHistoryLineForDailyMemorySync','ResolveDailyMemorySyncGameDate','ImportDialogueHistoryData','ImportSingleNpcDialogueHistoryData','ApplyCompressedMemoryExportBundle','HasCompressedMemoryDataForHero','ShowDuplicateImportInquiry']:
         match=re.search(r'^\s*private [^\n]*?\b'+name+r'\(',source,re.M)
         if not match:raise ValueError('Missing actual ordinary commit method '+name)
         body=ex.declaration(source,match.group().strip());inventory.append(dict(file='MyBehavior.cs',signature=name,line=source[:source.index(body)].count('\n')+1,sha256=sha(body)))
@@ -60,10 +60,17 @@ def main():
             if a.mutate=='swap-daily-order':
                 first=body.index('if (!string.IsNullOrWhiteSpace(playerText))');second=body.index('if (!string.IsNullOrWhiteSpace(extraFact))',first);third=body.index('if (!string.IsNullOrWhiteSpace(aiText))',second);body=body[:first]+body[second:third]+body[first:second]+body[third:]
         snippets.append(body)
-    for signature in ['private sealed class CompressedMemoryExportBundle','private static T ReadJson<T>(']:
+    for signature in ['private sealed class CompressedMemoryExportBundle']:
         body=ex.declaration(source,signature);inventory.append(dict(file='MyBehavior.cs',signature=signature,line=source[:source.index(body)].count('\n')+1,sha256=sha(body)))
-        if 'ReadJson<T>' in signature:body=body.replace('File.Exists(', 'CommitImportFileBoundary.FileExists(').replace('File.ReadAllText(', 'CommitImportFileBoundary.ReadAllText(')
         snippets.append(body)
+    # Filename parsing and JSON reads moved to persistence owners. Keep the actual
+    # parser/decoder; only the existing virtual filesystem and folder lookup are fixtures.
+    files['NpcDataFileName.cs']=read('src/AF.Persistence/NpcDataFileName.cs')
+    exports=read('src/AF.Persistence/PlayerExportsStore.cs')
+    reader=ex.declaration(exports,'internal static T ReadJson<T>(')
+    inventory.append(dict(file='src/AF.Persistence/PlayerExportsStore.cs',signature='ReadJson<T>',line=exports[:exports.index(reader)].count('\n')+1,sha256=sha(reader)))
+    reader=reader.replace('File.Exists(', 'CommitImportFileBoundary.FileExists(').replace('File.ReadAllText(', 'CommitImportFileBoundary.ReadAllText(')
+    files['PlayerExportsRead.cs']='using System; using System.Text; using Newtonsoft.Json; namespace AnimusForge { internal static partial class PlayerExportsStore { '+reader+' }}'
     editor_windows=['OpenDevDailyMemoryLineEditor','OpenDevDailyMemoryLineTextEditor','OpenDevDailyMemoryLineSpeakerEditor','OpenDevDailyMemoryLineSceneEditor','OpenDevDailyMemoryLineHourEditor','OpenDevAddDailyMemoryLine','ConfirmDevDeleteDailyMemoryLine','ConfirmDevDeleteDailyMemoryDraft']
     for name in editor_windows:
         body=ex.declaration(source,'private void '+name+'(')

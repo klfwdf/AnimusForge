@@ -21,6 +21,7 @@ namespace TaleWorlds.Core {
 }
 namespace TaleWorlds.Library { public static partial class InformationManager { public static void ShowTextInquiry(TaleWorlds.Core.TextInquiryData data)=>throw new InvalidOperationException("Fallback UI is outside the editor delivery fixture"); } }
 namespace AnimusForge {
+ internal static partial class PlayerExportsStore { internal static string ResolveImportFolderPath(string folderName){Probe.Live("import-resolve-folder");return CommitImportFileBoundary.Root;} }
  static class CommitImportProbe {
   internal static TaleWorlds.Core.MultiSelectionInquiryData Popup;
   internal static int Applies,Reads;
@@ -136,7 +137,6 @@ namespace AnimusForge {
   static void EditorCancel(bool stale){
    var b=EditorOwner();b.OpenActualEditor();var callback=DevHistoryEditPopup.Cancel;Check(callback!=null,"real editor cancel closure missing");if(stale)SaveRuntimeGuard.AdvanceGeneration("editor-cancel-fixture-load");TerminalProbe.Events.Clear();callback();Check(CommitWriterProbe.DailySaves==0&&CommitWriterProbe.RecentSaves==0&&TerminalProbe.Count("editor-navigation-line")== (stale?0:1),"editor cancel navigated through stale owner/generation or lost current navigation");MainReads();
   }
-  string ResolveImportFolderPath(string folderName){Probe.Live("import-resolve-folder");return CommitImportFileBoundary.Root;}
   static string FindNpcJsonByHeroId(string dir,string heroId)=>throw new InvalidOperationException("Single import directory matching is not exercised; use the explicit fixture file");
   static MyBehavior ImportOwner(bool existing){
    var b=CommitOwner();CommitImportProbe.Reset();b.heroes["b"]=new Hero{Id="b",Label="NPC b"};
