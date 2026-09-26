@@ -1,3 +1,9 @@
+## J14c current boundary (2026-09-26)
+
+Current source: 134 cases pass. The runner now supplies the captured Courier request fields and executes the real request guard/failure adapter, finalizer and visible-letter sanitizer. Run-lifetime admission and operation-stage observation remain explicit ports, tested by the separate actual Courier lifecycle/public consumers; no second owner is invented here.
+
+The old synthetic `CancelledAsStale` case now actually advances the generation before draining, preserving its no-stale-write assertion. A separate current-run/stale-host-result case requires terminal failure and release (J14b intentionally prevents a hanging operation). Empty prepared replies cannot produce an accepted API stage. No original assertion was removed; source-only transport/game/provider boundaries remain.
+
 # Channel cutover boundary regression
 
 This offline suite executes extracted production control flow against deterministic dependency stubs. It does not deploy a module, access a live API, modify player settings, or load a game save.

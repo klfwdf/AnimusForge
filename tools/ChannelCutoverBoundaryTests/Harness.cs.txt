@@ -21,6 +21,8 @@ public sealed class InteractionCommitResult { }
 @@MAIN_COMPOSER@@
 @@POSTPROCESS_COMPOSER@@
 @@ACTION_PARSER@@
+@@COURIER_OBSERVATION_TYPES@@
+@@COURIER_VISIBLE_SANITIZER@@
 @@LEGACY_PROMPT_ADAPTER@@
 @@GIVE_ASSET_CODEC@@
 public static class LegacyConfiguredChatGateway
@@ -129,8 +131,16 @@ public sealed class CourierSession
 public sealed class CourierReplyGenerationRequest
 {
     public string SessionId = "session", RecipientHeroId = "recipient";
+    public string LetterText;
+    public bool DeliveryAppliedAtCapture;
+    public CourierPromptRun SourceRun;
     public List<object> Messages = new() { new { role = "system", content = "courier persona" }, new { role = "user", content = "courier letter" } };
     public long RuntimeGeneration = 1;
+}
+public sealed class CourierPromptRun
+{
+    public CourierSession Session;
+    public long Generation = 1;
 }
 public sealed class Scenario
 {
@@ -157,6 +167,7 @@ public sealed class Scenario
     public InteractionStatus Status = InteractionStatus.Succeeded;
     public string VisibleReply = "detached-reply", LegacyReply = "legacy-reply";
     public int LegacyCalls, HostCalls, FinalizeCalls, FailureCalls, UnconsumedFailureCalls, LegacyCompletionCalls, Notifications;
+    public int ModuleFailures, ModulePrepared;
     public int EarlyCommitCalls, PostprocessCompositions, DirectCaptures, RecomputedCaptures;
     public bool SceneCleanup, ScenePostBlock, SceneCommitted;
     public string SceneReply;
@@ -213,6 +224,14 @@ public sealed class ProductionBlockHost
     private static bool IsCourierBridgeEnabled() => Scenario.Current.BridgeEnabled;
     private static bool IsTerminalStage(CourierSession session) => false;
     private CourierSession GetSessionById(string sessionId) => Scenario.Current.Session;
+    // Run lifetime and operation observers are ports here; their real owners run in the Courier lifecycle suite.
+    private bool IsCourierPromptRunCurrent(CourierPromptRun run) => run != null
+        && ReferenceEquals(run.Session, Scenario.Current.Session) && !run.Session.ReplyGenerated
+        && !SaveRuntimeGuard.IsStale(run.Generation, "fixture-run");
+    private void FailModuleCourierSession(CourierSession session, string reason) => Scenario.Current.ModuleFailures++;
+    private void RecordModuleCourierStep(CourierSession session, CoreCourierAcceptedSteps step) => Scenario.Current.ModulePrepared++;
+    @@COURIER_REQUEST_GUARDS@@
+    @@COURIER_CLEAN@@
     private static void QueueSceneInfoMessage(string message, Color color, int epoch) { Scenario.Current.Notifications++; }
     private static string SanitizeSceneSpeechText(string text) => text;
     private void EnqueueMainThreadActionForGeneration(long generation, Action action, string reason)
@@ -416,7 +435,8 @@ public sealed class ProductionBlockHost
         string sessionId = "session";
         long runtimeGeneration = 1;
         CourierSession session = Scenario.Current.Session;
-        var request = new CourierReplyGenerationRequest();
+        var request = new CourierReplyGenerationRequest { SourceRun = new CourierPromptRun { Session = session },
+            LetterText = session.LetterText, DeliveryAppliedAtCapture = session.DeliveryApplied };
         @@COURIER_BLOCK@@
     }
 
@@ -594,7 +614,7 @@ public static class Program
             }
             await Case(channel + "/host-throws", courier, s => s.HostThrows = true, courier ? TerminalCourier : TerminalScene);
             await Case(channel + "/null-result", courier, s => s.NullResult = true, courier ? TerminalCourier : TerminalScene);
-            await Case(channel + "/stale", courier, s => s.Status = InteractionStatus.CancelledAsStale, s =>
+            await Case(channel + "/stale", courier, s => { s.Status = InteractionStatus.CancelledAsStale; s.StaleBeforeDrain = courier; }, s =>
             {
                 NoSecondRequest(s);
                 if (!courier) Require(!s.SceneCleanup && !s.ScenePostBlock, "Stale scene must return without touching a new epoch");
@@ -610,7 +630,12 @@ public static class Program
                     {
                         NoSecondRequest(s);
                         Require(s.FailureCalls == 0, "Success cannot become failure");
-                        if (courier) Require(s.FinalizeCalls == 1, "Success must finalize once");
+                        if (courier)
+                        {
+                            Require(s.FinalizeCalls == 1, "Success must finalize once");
+                            Require(s.ModuleFailures == (reply.Length == 0 ? 1 : 0) && s.ModulePrepared == (reply.Length == 0 ? 0 : 1),
+                                "Empty preparation must not fabricate an accepted API reply");
+                        }
                         else
                         {
                             Require(s.SceneCleanup && s.SceneReply == reply, "Success must preserve visible reply for later authoritative Scene processing");
@@ -631,6 +656,13 @@ public static class Program
                     });
             }
         }
+        await Case("courier/stale-outcome-current-run-settles", true, s => s.Status = InteractionStatus.CancelledAsStale, s =>
+        {
+            NoSecondRequest(s);
+            Require(s.FinalizeCalls == 0 && s.FailureCalls == 1 && s.ModuleFailures == 1,
+                "A stale host outcome for the still-current run must settle instead of hanging");
+            Require(s.Session.ReplyGenerated && !s.Session.ReplyGenerationStarted, "Current failed run must release its generation wait");
+        });
         await Case("scene/capture-exception", false, s => s.CaptureThrows = true, LegacyOnce);
         foreach (string reply in new[] { "unexpected-executed", "" })
             await Case("scene/unexpected-executed-status-" + (reply.Length == 0 ? "empty" : "text"), false,

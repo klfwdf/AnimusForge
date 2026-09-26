@@ -147,6 +147,11 @@ def extract(ref: str | None) -> dict[str, str]:
     blocks = {
         "SCENE_BLOCK": scene[begin:end],
         "COURIER_BLOCK": method[begin_c:end_c],
+        "COURIER_REQUEST_GUARDS": "",
+        "COURIER_OBSERVATION_TYPES": declaration(source("Refactor/Modules/CoreDialogueContracts.cs", None), "internal enum CoreCourierAcceptedSteps"),
+        "COURIER_CLEAN": "\n\n".join(declaration(courier, signature) for signature in (
+            "private static string CleanNpcReply(", "private static string PrepareNpcReplyForActionPostprocess(", "private static bool LooksLikeApiError(")),
+        "COURIER_VISIBLE_SANITIZER": declaration(source("CourierVisibleLetterSanitizer.cs", None), "internal static class CourierVisibleLetterSanitizer"),
         "FAIL_METHOD": declaration(courier, "private void FailCourierReplyGenerationOnMainThread("),
         "FINALIZE_METHOD": declaration(courier, "private void FinalizeCourierReplyGenerationOnMainThread("),
         "DETACHED_FAIL_METHOD": declaration(courier, "private void FailDetachedCourierReplyOnMainThread(", optional=True),
@@ -182,6 +187,10 @@ def extract(ref: str | None) -> dict[str, str]:
         "GIVE_ASSET_CODEC": "\n\n".join(declaration(source("GiveAssetTagCodec.cs", ref), signature) for signature in (
             "internal readonly struct GiveAssetTag", "internal static class GiveAssetTagCodec")),
     }
+    if "IsCourierReplyRequestCurrent" in method:
+        preparation = source("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs", ref)
+        blocks["COURIER_REQUEST_GUARDS"] = "\n\n".join(declaration(preparation, signature) for signature in (
+            "private bool IsCourierReplyRequestCurrent(", "private void FailCourierReplyRequest("))
     group_method = declaration(scene, "private async Task HandleGroupResponsePerHeroIndependent(")
     for name, operation in SCENE_LIFECYCLE_DISPATCHES.items():
         dispatch_start = group_method.index('RunNativeConversationMainThreadFuncAsync("' + operation + '"')
