@@ -1,3 +1,16 @@
+## J14b2 权威阶段与生命周期切片（2026-09-26）
+
+状态：**`J14b_ACTIVE / J14_ACTIVE`**；本地产品/测试提交 `b2572623`，接续 b1 的 `24ea6e05`。本片已接通内部 operation 的真实运输回执，但 **V1 Courier 尚未开放，J14_OFFLINE_VERIFIED 尚未达到**。本条取代下方 b1 的“下一动作=实现 b2”；后续为 b3 公共投影/外部消费者，再完成 c 的同候选最终矩阵。
+
+- **真实 owner 与边界**：仍使用原 UI 派出、运输、Prompt、后处理、领域动作和历史 owner，不增第二条链。operation 精确绑定实际 session 实例与 generation；记录派出、预生成、到达、完整附件接受、投递历史、动作接受、回信历史、回信入库、内容归还和运输结局。`ReplyGenerated`、`PostprocessConsumed`、`Stage=Completed` 都不能单独令 operation 成功；仅所有必要回执及确认停用的运输队伍共同完成。回信正文在实际物品写入并记录信件后才进入内部结果；已交付后清理失败仍保留正文/已确认阶段。失败立即结算当前已知回执，不承诺中止原运输、撤销后续游戏逻辑或自动重派。必要代码坐标/消费者集中在[范围图当前段](architecture/af-framework-code-scope.md)，避免重复全表。
+- **生命周期/线程**：缺失、被毁、目标死亡、生成/后处理/提交失败、换档/退休和同 ID 实例替换都会结算，不绑定恢复运输或入站来信。网络请求/重试/后处理/最终回写重验原 `CourierPromptRun`；prepared envelope 以弱键保存原 session/run，不能重新绑定替换对象。worker 使用捕获的投递状态和来信文本，配置捕获回到主线程。返程复用同一动作 owner，删除原重复动作尾巴；动作调用前 consumed claim、到达/返程短期重入保护防止重复效果及历史倒序。所有关联仅进程内，无新保存键；原入站/回复资格特例不改。
+- **行为证据**：`CourierSessionCreationTests/run_admission.py --lifecycle` **179/0（包含 b1 准入）**；source-link 实际到达、finalize、领域 reservation/历史接受、归还、信件记录/入库确认、销毁/失踪与内部回执，游戏转移/领域 handler/记忆底层/导航/provider 明确为 fixture。覆盖六种模式、预生成不提交或公开、重复及重入到达、延迟返程、历史/附件/动作失败、物品/信件记录/归还/清理失败、送达后返程损失、退休/代次/同 ID 替换、旧 run 回复。新增 payload 重入先暴露 **6 个历史顺序失败**，加实际到达重入保护后 179/0。五个编译成功 mutation（忽略完成回执、后置动作 claim、忽略历史接受、忽略信件记录、忽略 run 身份）均出现具名行为失败；不是用编译错误作红例。
+- **相关回归**：`CourierPostprocessOwnerRegressionTests` **44/0**（真实 parser、原 work item、实际 source 绑定/回写、真实 immutable commit result；包含同 ID session/new run 替换及部分历史接受）；`CourierPromptPreparationTests/run.py` **552/76 scenarios**，仍比较历史完整 Prompt 字段与生产消息构造，仅从比较 JSON 排除新增运行态身份字段；`run_liveness.py` **59/16 scenarios**，`CourierOwnerPhaseTests` **16/0**；`NativeModuleSubmissionTests` **55** 与外部 internal 拒绝 **CS0122**。DomainCommit/DeliveryLifetime/J09 三渠道 source-order 检查通过；旧 void/Scene Task<int>/finalizer fixture 锚随本次有意变化修正，保留原断言及 preflight/wiring 负例，不以更新 hash 代替行为。完整当前日志位于 `.tmp/j14b-draft-ui/`、各 runner `.generated/`，fixture CS0649 警告不算产品警告。
+- **构建候选**：再次核对四个获准目录的绝对范围、tracked、父/子 reparse 与内容后，原脚本不带 Stage/Deploy 完成当前 Debug 1.3/1.4 + Bootstrap，三次均 **0 warning / 0 error**。日志 `.tmp/j14b-draft-ui/build-Debug-b2-final.log`；Debug 1.3 SHA256 `CEF213F6319092C944871563B9C5682B4C541D363065ADB412CBD488868A9B3F`，Debug 1.4 `938EEF2CB61FCED182F47EC1A870F9705BAA9480BE83B8D427CD46C08268932B`。Release 尚未更新，不把历史产物作为本片候选。
+- **性能与未验**：阶段关联在已有事件/回调中 O(1) 查找，仍受每 owner 128 活动请求和每 client 128-ID 约束；到达只聚合该信件附件一次，归还只检查该运输队内容；弱键/终态释放与短期重入 set 不增每帧全请求扫描。仍需 b3 的 V1 detached DTO/显式枚举投影/独立消费者；c 的旧 Native ABI、四 DLL 元数据及枚举重排、同候选六构建、保存/Bridge 回归、修复记忆 runner 并真实写入/回读、显式候选 SHA 的 Courier/Phase8 回放、代码地图两模式。JSON 地图仍为历史 J14a，不是当前坐标验收。实际游戏两版本、旧档、真实 provider、音频、子 MOD 游戏加载和帧性能均 **NOT-RUN**。不 push、Stage、部署、打包、写游戏/外仓/存档或进入 J15；`.dotnet-cli-home/` 保留。
+
+## 以下为 J14b1 准入证据（历史切片）
+
 ## J14b1 草稿及一次派出准入切片（2026-09-26）
 
 状态：**`J14b1_ADMISSION_VERIFIED / J14b_ACTIVE / J14_ACTIVE`**，不是 Courier 全链离线完成。开工 `9e6e93ee` 后，产品/测试分片为 `4bc855cd`（旧草稿 UI 回调）、`8fb16385`（票据及资格）、`b6daf65f`（内部提交及物理队列背压）。V1 Courier 仍 `NotSupported`，未增加公共方法；成功派出目前只保持 Running，必须等 b2 接齐真实运输回执后才能完成，再由 b3 开放。

@@ -1,3 +1,10 @@
+# 当前交接：J14b2 内部运输回执已接线，继续 b3/c（2026-09-26）
+
+- **状态**：`J14b_ACTIVE / J14_ACTIVE`，产品/测试 `b2572623`。原运输各阶段、实际历史/信件接受、终态与精确 session/run 防陈旧回写已接线；179 项准入/生命周期、44 项后处理、552 项 Prompt、59 项 liveness、Native/Scene 55 与 Debug 双版本+Bootstrap 通过。详细身份与未覆盖范围见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[范围图](docs/architecture/af-framework-code-scope.md)。
+- **继续执行**：b3 增加 V1 Courier 票据/提交与只读阶段投影，外部消费者/兼容验证后再开放能力；然后 c 完成当前候选 SHA 回放、真实记忆写入/回读、旧 ABI、六构建和代码地图两模式。Courier 仍 `NotSupported`，尚不能标 J14_OFFLINE_VERIFIED。仅本地；保留 `.dotnet-cli-home/`，不 push/Stage/部署/打包/外写/J15；实机、旧档、provider、音频、子 MOD 游戏加载、帧性能均 NOT-RUN。
+
+## 以下为 J14b1 交接（历史切片）
+
 # 当前交接：J14b1 准入完成，接续运输回执（2026-09-26）
 
 - **状态**：`J14b1_ADMISSION_VERIFIED / J14b_ACTIVE / J14_ACTIVE`；本地产品切片 `4bc855cd`、`8fb16385`、`b6daf65f`，105 项准入检查、Native/Scene 55、Debug 双版本及 Bootstrap 通过。真实责任及证据见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[代码范围图](docs/architecture/af-framework-code-scope.md)；JSON 地图仍是历史 J14a 基线，不声称本轮最终矩阵已过。
