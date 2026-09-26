@@ -15,13 +15,13 @@ internal static class Program
     }
     private static string Qualified(MetadataReader reader, TypeDefinition definition)
         => reader.GetString(definition.Namespace) + "." + reader.GetString(definition.Name);
-    private static List<string> Surface(string path)
+    private static List<string> Surface(string path, bool legacyV1 = false)
     {
         using var stream = File.OpenRead(path);
         using var pe = new PEReader(stream);
         Check(pe.HasMetadata, "managed implementation metadata");
         MetadataReader reader = pe.GetMetadataReader();
-        Check(reader.GetString(reader.GetAssemblyDefinition().Name) == "AnimusForge", "implementation assembly identity");
+        Check(reader.GetString(reader.GetAssemblyDefinition().Name) == (legacyV1 ? "NativeModuleUnderTest" : "AnimusForge"), "implementation or explicit legacy fixture assembly identity");
         var provider = new Names(); var lines = new List<string>();
         var api = new HashSet<string>(); var internalTypes = new HashSet<string>();
         bool foundMemoryOwner = false, foundCourierOwner = false;
@@ -30,6 +30,7 @@ internal static class Program
         {
             TypeDefinition type = reader.GetTypeDefinition(handle);
             string ns = reader.GetString(type.Namespace), name = reader.GetString(type.Name);
+            if (legacyV1 && ns != "AnimusForge.Api.V1") continue;
             if ((ns == "AnimusForge.Refactor.Runtime" && (name == "PendingOperationRegistry" || name == "GameLifetimeCoordinator"))
                 || (ns == "AnimusForge" && name == "AfCampaignRuntimeLifecycle"))
             {
@@ -122,6 +123,12 @@ internal static class Program
             "AfDialogueClient", "AfDialogueOperation", "AfDialogueResult", "AfDialogueState",
             "AfDialogueEffectState", "AfDialogueCancelResult", "AfSceneUtterance",
             "AfCourierReceipt", "AfCourierTransportOutcome" };
+        if (legacyV1)
+        {
+            Check(api.SetEquals(expected.Except(new[] { "AfSceneUtterance", "AfCourierReceipt", "AfCourierTransportOutcome" })), "exact pinned pre-J14 Native V1 reference surface");
+        }
+        else
+        {
         Check(lifecycleTypes.Count == 3 && retirementOwners.Count == 3, "all core lifetime types and retirement bindings exist in actual DLL");
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
         Check(foundCourierOwner, "actual DLL includes original Courier owner");
@@ -135,6 +142,7 @@ internal static class Program
             "CampaignModelComposition", "TeamModuleRegistration", "ModuleFrameworkSnapshot",
             "ModuleBindingSnapshot", "ModuleFrameworkLifecycleState" })
             Check(internalTypes.Contains(name), "actual DLL contains internal " + name);
+        }
         lines.Sort(StringComparer.Ordinal);
         Console.WriteLine("ARTIFACT " + path + " SHA256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant());
         return lines;
@@ -230,12 +238,20 @@ internal static class Program
     }
     static void Main(string[] args)
     {
+        List<string> legacy = null;
+        if (args.Length >= 2 && args[0] == "--legacy-v1")
+        {
+            legacy = Surface(args[1], legacyV1: true);
+            args = args.Skip(2).ToArray();
+        }
         Check(args.Length > 0 && args.Length % 2 == 0, "pass paired 1.3 and 1.4 artifact paths");
         List<string> baseline = null;
         for (int i = 0; i < args.Length; i += 2)
         {
             List<string> left = Surface(args[i]), right = Surface(args[i + 1]);
             Check(left.SequenceEqual(right), "1.3 and 1.4 public metadata signatures/defaults/constants identical");
+            if (legacy != null)
+                Check(!legacy.Except(left).Any() && !legacy.Except(right).Any(), "every old Native V1 type/member/parameter/default/enum constant preserved in both actual DLLs");
             if (baseline != null) Check(baseline.SequenceEqual(left), "Debug and Release public metadata surface identical");
             baseline = left;
         }

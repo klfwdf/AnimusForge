@@ -89,6 +89,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dotnet", default=r"G:\AFMOD\.dotnet-sdk\dotnet.exe")
     parser.add_argument("--artifact-root", action="append", default=[], help="Optional actual single_module_artifacts directory; repeat for Debug/Release")
+    parser.add_argument("--legacy-v1", help="Pinned pre-J14 V1 reference library produced by NativeModuleSubmissionTests --legacy-abi")
     args = parser.parse_args()
     out = HERE / ".generated/current"
     out.mkdir(parents=True, exist_ok=True)
@@ -124,7 +125,8 @@ def main():
         for folder in args.artifact_root:
             base = Path(folder).resolve()
             paths.extend(str(base / "versions" / api / "AnimusForge.dll") for api in ["1.3", "1.4"])
-        meta_code, metadata_log = run_dotnet(args.dotnet, ["run", "--project", str(metadata), "-c", "Release", "--"] + paths, out)
+        legacy_args = ["--legacy-v1", str(Path(args.legacy_v1).resolve())] if args.legacy_v1 else []
+        meta_code, metadata_log = run_dotnet(args.dotnet, ["run", "--project", str(metadata), "-c", "Release", "--"] + legacy_args + paths, out)
         metadata_ok = meta_code == 0
         print(metadata_log, end="")
     else:

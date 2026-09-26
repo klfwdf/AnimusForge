@@ -4,12 +4,13 @@ import argparse, importlib.util, os, shutil, subprocess, sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[2]; HERE=Path(__file__).parent
 sys.stdout.reconfigure(encoding='utf-8')
-p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision','skip-channel','skip-context']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--legacy-abi',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision','skip-channel','skip-context']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));a=p.parse_args()
+if a.legacy_abi and (a.reorder_core_enums or a.mutate):p.error('Legacy ABI runs against the unmodified current candidate only')
 dotnet=Path(a.dotnet) if Path(a.dotnet).is_absolute() else Path(shutil.which(a.dotnet) or '')
 if not dotnet.is_file():p.error('dotnet executable not found: '+a.dotnet)
 dotnet=dotnet.resolve()
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-out=HERE/'.generated'/('reordered' if a.reorder_core_enums else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=HERE/'.generated'/('legacy-abi' if a.legacy_abi else 'reordered' if a.reorder_core_enums else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 sigs=['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(', 'private sealed class NativeConversationGameActionResult','private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(']
 host=(HERE/'Host.cs.txt').read_text().replace('@@REAL_DECLARATIONS@@','\n'.join(ex.declaration(s,sig) for sig in sigs))
@@ -60,4 +61,8 @@ if result.returncode==0:
  denied_log=probe.stdout+probe.stderr;(out/'denied.log').write_text(denied_log,encoding='utf-8')
  assert probe.returncode!=0 and 'CS0122' in denied_log and 'CoreDialogueServices' in denied_log, 'Internal service was not rejected from unrelated external assembly'
  log+='PASS unrelated external client cannot use internal CoreDialogueServices (CS0122)\n'
-(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(result.returncode)
+(out/'run.log').write_text(log,encoding='utf-8');print(log)
+if result.returncode==0 and a.legacy_abi:
+ spec=importlib.util.spec_from_file_location('legacy_abi',HERE/'legacy_abi.py');legacy=importlib.util.module_from_spec(spec);spec.loader.exec_module(legacy)
+ legacy.verify(dotnet,out,sources)
+raise SystemExit(result.returncode)
