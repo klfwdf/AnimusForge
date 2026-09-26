@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
@@ -72,5 +73,38 @@ internal static class WorldDiplomacyDocumentApplication
         storage.Documents = WorldDiplomacyRoundLifecycleRules.SelectRetainedDocuments(
             storage.Documents, WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry, maximumStored);
         advanceTimelineRevision();
+    }
+
+    internal static void BeginAction(WorldDiplomacyDocument document,
+        WorldDiplomacyDocumentAction action, string targetKingdomId)
+    {
+        WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, action);
+        document.ProcessingActionId = action.ActionId ?? "";
+        document.AddressedKingdomIds = new List<string> { targetKingdomId };
+        document.ChangedDiplomaticState = false;
+        document.MechanicalResult = "";
+    }
+
+    internal static void CaptureActionResult(WorldDiplomacyDocument document, WorldDiplomacyDocumentAction action)
+    {
+        action.ChangedDiplomaticState = document.ChangedDiplomaticState;
+        action.MechanicalResult = document.MechanicalResult ?? "";
+        action.PeaceTerms = document.PeaceTerms;
+    }
+
+    internal static void SealActions(WorldDiplomacyDocument document, List<string> addressedKingdomIds,
+        string originalSourceDocumentId)
+    {
+        List<WorldDiplomacyDocumentAction> actions = document.Actions;
+        document.ProcessingActionId = "";
+        document.AddressedKingdomIds = addressedKingdomIds;
+        WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, actions[0]);
+        document.SourceDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
+            actions[0].RespondingToOfferDocumentId,
+            actions[0].RespondingToThreatDocumentId,
+            originalSourceDocumentId);
+        document.ChangedDiplomaticState = actions.Any(x => x.ChangedDiplomaticState);
+        document.MechanicalResult = WorldDiplomacyDocumentFactRules.BuildMultiActionMechanicalResult(actions);
+        document.RequiresResponse = actions.Any(x => x.RequiresResponse);
     }
 }
