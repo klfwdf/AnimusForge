@@ -2991,15 +2991,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void ApplyDiplomaticPressureEffect(WorldDiplomacyDocument document)
 	{
-		if (document == null || !string.IsNullOrWhiteSpace(document.MechanicalResult)) return;
-		string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent);
-		if (intent != "apology" && intent != "concession") return;
-		Kingdom author = ResolveKingdom(document.AuthorKingdomId);
-		Kingdom target = ResolveKingdom(document.TargetKingdomId);
-		if (author == null || target == null || author == target) return;
-		int reduction = intent == "concession" ? -22 : -16;
-		AddWarPressure(author.StringId, target.StringId, reduction, "正式" + (intent == "concession" ? "让步" : "道歉") + "：" + document.Title, intent);
-		AddWarPressure(target.StringId, author.StringId, reduction / 2, "对方作出正式" + (intent == "concession" ? "让步" : "道歉"), intent);
+		WorldDiplomacyThreatApplication.ApplyPressure(document, () =>
+		{
+			Kingdom author = ResolveKingdom(document.AuthorKingdomId);
+			Kingdom target = ResolveKingdom(document.TargetKingdomId);
+			return (author != null && target != null && author != target, author?.StringId, target?.StringId);
+		}, AddWarPressure);
 	}
 	private void RecordDiplomaticThreatTargetDecisions(
 		WorldDiplomacyDocument document,
@@ -3007,70 +3004,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom selectedIssuer,
 		string intent)
 	{
-		if (document == null || author == null) return;
-		HashSet<string> presented = new HashSet<string>(
-			document.PresentedThreatDocumentIds ?? new List<string>(),
-			StringComparer.OrdinalIgnoreCase);
-		if (presented.Count == 0) return;
-		string normalizedIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(intent);
-		string selectedSourceId = WorldDiplomacyRoundLifecycleRules.ResolveThreatDecisionSourceDocumentId(
-			normalizedIntent, document.RespondingToThreatDocumentId);
-		foreach (WorldDiplomacyThreat threat in (_storage?.DiplomaticThreats ?? new List<WorldDiplomacyThreat>())
-			.Where(x => WorldDiplomacyRoundLifecycleRules.IsThreatTargetDecisionCandidate(x, author.StringId, presented))
-			.ToList())
-		{
-			bool targetsIssuer = selectedIssuer != null
-				&& string.Equals(threat.IssuerKingdomId, selectedIssuer.StringId, StringComparison.OrdinalIgnoreCase);
-			WorldDiplomacyThreatStateRuleResult decision = WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration(
-				threat.TargetDecision,
-				threat.StageDocumentId,
-				currentStageWasPresented: true,
-				normalizedIntent,
-				selectedSourceId,
-				targetsIssuer);
-			if (decision != WorldDiplomacyThreatStateRuleResult.MarkTargetNoncomplied) continue;
-			threat.TargetDecision = "noncomplied";
-			threat.TargetDecisionDocumentId = document.DocumentId ?? "";
-			threat.TargetDecisionRoundId = document.RoundId ?? "";
-			threat.TargetDecisionDay = CurrentDay();
-			threat.ResolutionReason = "target_did_not_comply_in_first_declaration";
-			threat.UpdatedDay = CurrentDay();
-			WorldDiplomacyRoundLifecycleRules.CaptureThreatNonComplianceEvent(threat);
-			Log("diplomatic threat target noncompliance confirmed threat=" + threat.ThreatId
-				+ " issuer=" + threat.IssuerKingdomId + " target=" + threat.TargetKingdomId
-				+ " document=" + document.DocumentId + " intent=" + normalizedIntent);
-		}
+		WorldDiplomacyThreatApplication.RecordTargetDecision(_storage, document,
+			author?.StringId, selectedIssuer?.StringId, intent, CurrentDay, Log);
 	}
 	private void RecordDiplomaticThreatTargetDecisionsForActions(
 		WorldDiplomacyDocument document,
 		Kingdom author)
 	{
-		if (document == null || author == null || document.Actions == null) return;
-		HashSet<string> presented = new HashSet<string>(
-			document.PresentedThreatDocumentIds ?? new List<string>(),
-			StringComparer.OrdinalIgnoreCase);
-		if (presented.Count == 0) return;
-		foreach (WorldDiplomacyThreat threat in (_storage?.DiplomaticThreats ?? new List<WorldDiplomacyThreat>())
-			.Where(x => WorldDiplomacyRoundLifecycleRules.IsThreatTargetDecisionCandidate(x, author.StringId, presented))
-			.ToList())
-		{
-			WorldDiplomacyDocumentAction compliance = document.Actions
-				.FirstOrDefault(x => WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAction(x, threat));
-			if (compliance != null) continue;
-			WorldDiplomacyDocumentAction decisionAction = WorldDiplomacyRoundLifecycleRules.SelectThreatDecisionAction(
-				document.Actions, threat.IssuerKingdomId);
-			threat.TargetDecision = "noncomplied";
-			threat.TargetDecisionDocumentId = document.DocumentId ?? "";
-			threat.TargetDecisionActionId = decisionAction?.ActionId ?? "";
-			threat.TargetDecisionRoundId = document.RoundId ?? "";
-			threat.TargetDecisionDay = CurrentDay();
-			threat.ResolutionReason = "target_did_not_comply_in_first_declaration";
-			threat.UpdatedDay = CurrentDay();
-			WorldDiplomacyRoundLifecycleRules.CaptureThreatNonComplianceEvent(threat);
-			Log("diplomatic threat target noncompliance confirmed threat=" + threat.ThreatId
-				+ " issuer=" + threat.IssuerKingdomId + " target=" + threat.TargetKingdomId
-				+ " document=" + document.DocumentId + " actions=" + document.Actions.Count.ToString(CultureInfo.InvariantCulture));
-		}
+		WorldDiplomacyThreatApplication.RecordTargetDecisionsForActions(_storage, document,
+			author?.StringId, CurrentDay, Log);
 	}
 	private void ProcessDiplomaticThreatDocument(
 		WorldDiplomacyDocument document,
@@ -3097,32 +3039,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom target,
 		string intent)
 	{
-		if (document == null || author == null) return false;
-		WorldDiplomacyThreat threat = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatIssuedBy(_storage?.DiplomaticThreats, author.StringId);
-		if (!WorldDiplomacyRoundLifecycleRules.IsThreatFollowThroughObligationPending(
-			threat, document.PresentedThreatFollowThroughDocumentIds)) return false;
-		WorldDiplomacyDocumentAction matchingAction = WorldDiplomacyRoundLifecycleRules.SelectThreatDecisionAction(
-			document.Actions, threat.TargetKingdomId);
-		if (document.Actions?.Count > 0 && matchingAction == null) return false;
-		if (matchingAction == null && (target == null || author == target
-			|| !string.Equals(threat.TargetKingdomId, target.StringId, StringComparison.OrdinalIgnoreCase))) return false;
-		string normalizedIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(matchingAction?.Intent ?? intent);
-		bool changedState = matchingAction?.ChangedDiplomaticState ?? document.ChangedDiplomaticState;
-		WorldDiplomacyThreatStateRuleResult result = WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough(
-			threat.TargetDecision,
-			threat.Stage,
-			threat.StageDocumentId,
-			currentStageWasPresented: true,
-			normalizedIntent,
-			declarationTargetsThreatTarget: true,
-			warActionMechanicallySucceeded: changedState);
-		if (result != WorldDiplomacyThreatStateRuleResult.MarkFollowThroughSatisfied
-			&& result != WorldDiplomacyThreatStateRuleResult.DeferFollowThroughForTechnicalFailure) return false;
-		threat.ResolutionReason = "required_action_mechanical_retry";
-		threat.UpdatedDay = CurrentDay();
-		Log("diplomatic threat next-declaration obligation deferred after unresolved required action threat=" + threat.ThreatId
-			+ " stage=" + threat.Stage + " document=" + document.DocumentId + " intent=" + normalizedIntent);
-		return true;
+		return WorldDiplomacyThreatApplication.DeferUnresolvedRequiredAction(_storage, document,
+			author?.StringId, target?.StringId, author == target, intent, CurrentDay, Log);
 	}
 
 	private void LogDiplomaticThreatFallbackAnalysisPublished(WorldDiplomacyJob job)

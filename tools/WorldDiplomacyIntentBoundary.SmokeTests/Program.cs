@@ -474,8 +474,10 @@ internal static class Program
                       Encoding.UTF8)
                   .Contains("SelectNoncompliedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId)", StringComparison.Ordinal),
             "a queued player declaration must still be judged against the issuer obligation current at publication");
-        Test.True(source.Contains("WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration", StringComparison.Ordinal)
-                  && source.Contains("WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough", StringComparison.Ordinal),
+        string threatApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatApplication.cs")), Encoding.UTF8);
+        Test.True(threatApplicationSource.Contains("WorldDiplomacyThreatStateRules.EvaluateTargetDeclaration", StringComparison.Ordinal)
+                  && threatApplicationSource.Contains("WorldDiplomacyThreatStateRules.EvaluateIssuerFollowThrough", StringComparison.Ordinal),
             "the tested pure state rules must be wired into the publication pipeline");
         string threatMigrationFile = File.ReadAllText(FindRepositoryFile(
             Path.Combine("Refactor", "Persistence", "WorldDiplomacyThreatStorageMigration.cs")), Encoding.UTF8);
@@ -3496,7 +3498,9 @@ internal static class Program
 			&& ExtractMethod(lifecycleRules, "public static void ApplyThreatComplianceResolution(")
 				.Contains("ResolutionActionId = document.ProcessingActionId", StringComparison.Ordinal),
 			"ultimatum compliance must match the source action and persist the deciding action id");
-		string threatDecisions = ExtractMethod(source, "private void RecordDiplomaticThreatTargetDecisionsForActions(");
+		string threatApplication = File.ReadAllText(FindRepositoryFile(Path.Combine(
+			"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatApplication.cs")), Encoding.UTF8);
+		string threatDecisions = ExtractMethod(threatApplication, "internal static void RecordTargetDecisionsForActions(");
 		Test.True(threatDecisions.Contains("threat.IssuerKingdomId", StringComparison.Ordinal)
 			&& threatDecisions.Contains(".ActionId", StringComparison.Ordinal)
 			&& threatDecisions.Contains("TargetDecisionActionId", StringComparison.Ordinal)

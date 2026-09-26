@@ -144,6 +144,7 @@ RunRepairCorrectionAndJobDecisionTests();
         CourtResponseReplay.Run();
         DocumentApplicationReplay.Run();
         PropagationLifecycleReplay.Run();
+        ThreatApplicationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14376,21 +14377,22 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw terminal-move reasons must not remain in the host");
         Test.True(rulesSource.Contains("EvaluateThreatDocumentDispatch(", StringComparison.Ordinal),
             "the host must route threat document dispatch through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAction", StringComparison.Ordinal),
+        string threatApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatApplication.cs"));
+        Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAction", StringComparison.Ordinal),
             "the host must route threat compliance matching through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectThreatDecisionAction", StringComparison.Ordinal),
+        Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectThreatDecisionAction", StringComparison.Ordinal),
             "the host must route threat decision action selection through the lifecycle rules");
         Test.True(rulesSource.Contains("SelectEnforceableUltimatumThreat(", StringComparison.Ordinal),
             "the host must route enforceable ultimatum selection through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatTargetDecisionCandidate", StringComparison.Ordinal),
+        Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatTargetDecisionCandidate", StringComparison.Ordinal),
             "the host must route target-decision candidacy through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatDecisionSourceDocumentId", StringComparison.Ordinal),
+        Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatDecisionSourceDocumentId", StringComparison.Ordinal),
             "the host must route decision source resolution through the lifecycle rules");
         Test.True(rulesSource.Contains("IsThreatBetweenParties(", StringComparison.Ordinal),
             "the host must route between-parties checks through the lifecycle rules");
         Test.True(rulesSource.Contains("ShouldKeepWarningOpenAfterWar(", StringComparison.Ordinal),
             "the host must route warning-retention checks through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatFollowThroughObligationPending", StringComparison.Ordinal),
+        Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatFollowThroughObligationPending", StringComparison.Ordinal),
             "the host must route follow-through obligation gates through the lifecycle rules");
         Test.True(rulesSource.Contains("ThreatDeclarationTargetsThreatTarget(", StringComparison.Ordinal),
             "the host must route threat-target checks through the lifecycle rules");
@@ -14512,7 +14514,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "threat settlement retention checks must live in the lifecycle rules");
         Test.True(threatMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.InvalidateThreatForNormalization", StringComparison.Ordinal),
             "threat storage migration must route normalization invalidation through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatNonComplianceEvent", StringComparison.Ordinal),
+        Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatNonComplianceEvent", StringComparison.Ordinal),
             "the host must route noncompliance capture through the lifecycle rules");
         Test.True(rulesSource.Contains("ResolveThreatRequiredSpeakerId(", StringComparison.Ordinal),
             "required speaker resolution must live in the lifecycle rules");
