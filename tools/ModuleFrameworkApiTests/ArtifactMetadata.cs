@@ -120,15 +120,17 @@ internal static class Program
         string[] expected = { "AfApi", "AfCapabilityIds", "AfCapabilityInfo", "AfCapabilityState", "AfFrameworkSnapshot",
             "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo",
             "AfDialogueClient", "AfDialogueOperation", "AfDialogueResult", "AfDialogueState",
-            "AfDialogueEffectState", "AfDialogueCancelResult", "AfSceneUtterance" };
+            "AfDialogueEffectState", "AfDialogueCancelResult", "AfSceneUtterance",
+            "AfCourierReceipt", "AfCourierTransportOutcome" };
         Check(lifecycleTypes.Count == 3 && retirementOwners.Count == 3, "all core lifetime types and retirement bindings exist in actual DLL");
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
         Check(foundCourierOwner, "actual DLL includes original Courier owner");
-        Check(api.SetEquals(expected), "exact additive Native and Scene V1 type surface");
+        Check(api.SetEquals(expected), "exact additive Native, Scene and Courier V1 type surface");
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
             "CoreDialogueClient", "CoreDialogueOperation", "CoreDialogueResult", "CoreDialogueServices",
             "CoreDialogueState", "CoreDialogueEffectState", "CoreDialogueCancelResult", "CoreSceneUtterance",
+            "CoreCourierReceipt", "CoreCourierTransportOutcome", "CoreCourierAcceptedSteps",
             "InternalModuleDirectory", "ModuleFrameworkRuntime", "CampaignComposition",
             "CampaignModelComposition", "TeamModuleRegistration", "ModuleFrameworkSnapshot",
             "ModuleBindingSnapshot", "ModuleFrameworkLifecycleState" })

@@ -1,0 +1,135 @@
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Api.V1;
+
+internal static class Consumer
+{
+    private static int Checks;
+    private static void Check(bool value, string name)
+    {
+        if (!value) throw new Exception("FAIL " + name);
+        Checks++;
+    }
+    private static AfDialogueResult Finish(AfDialogueOperation operation)
+    {
+        Check(SpinWait.SpinUntil(() => operation.Completion.IsCompleted, 3000), "operation settled");
+        return operation.Completion.GetAwaiter().GetResult();
+    }
+    private static void Release()
+    {
+        CourierTestHost.Retire();
+        CourierTestHost.Pump();
+        Check(SpinWait.SpinUntil(() => CourierTestHost.Associations == 0, 3000), "bound owner references released");
+    }
+    private static AfDialogueOperation Worker(AfDialogueClient c, string ticket, string id = "send", string text = "letter")
+        => Task.Run(() => c.SubmitCourier(ticket, id, text)).GetAwaiter().GetResult();
+    private static void Run(bool expectAvailable)
+    {
+        Check(AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State == (expectAvailable ? AfCapabilityState.Available : AfCapabilityState.NotSupported), "capability gate matches acceptance stage");
+        Check(AfApi.GetCapability(AfCapabilityIds.MemoryWrite).State == AfCapabilityState.NotSupported
+            && AfApi.GetCapability(AfCapabilityIds.ActionExecute).State == AfCapabilityState.NotSupported, "no arbitrary writes opened");
+        foreach (string mode in new[] { "Normal", "Give", "Show", "GiveTroops", "GivePrisoners", "GiveSettlements" })
+        {
+            CourierTestHost.Reset(mode);
+            using var client = AfApi.CreateDialogueClient();
+            Check(Task.Run(() => client.CaptureCourierContextTicket()).GetAwaiter().GetResult() == null, "capture cannot read world on worker");
+            string ticket = client.CaptureCourierContextTicket();
+            Check(!string.IsNullOrEmpty(ticket) && CourierTestHost.Sends == 0, "capture has no dispatch effect");
+            var calls = Enumerable.Range(0, 16).Select(_ => Task.Run(() => client.SubmitCourier(ticket, "same", "letter"))).ToArray();
+            Task.WaitAll(calls);
+            var operation = calls[0].Result;
+            var queued = operation.GetSnapshot();
+            Check(queued.State == AfDialogueState.Queued && !queued.Courier.Dispatched && queued.Courier.Transport == AfCourierTransportOutcome.NotStarted, "queued detached receipt");
+            CourierTestHost.Pump();
+            Check(CourierTestHost.Sends == 1 && operation.Cancel() == AfDialogueCancelResult.TooLate, "shared claim once before effects");
+            CourierTestHost.Prepare();
+            var preflight = operation.GetSnapshot();
+            Check(preflight.Courier.Dispatched && preflight.Courier.ReplyPrepared && !preflight.Courier.Arrived
+                && preflight.Reply == "" && !operation.Completion.IsCompleted && CourierTestHost.Actions == 0 && CourierTestHost.HistoryWrites == 0, "preflight does not imply effects or visible reply");
+            Check(preflight.Courier.Transport == AfCourierTransportOutcome.InTransit && !queued.Courier.ReplyPrepared, "old receipt detached from subsequent events");
+            CourierTestHost.Arrive(); CourierTestHost.Arrive();
+            var arrived = operation.GetSnapshot();
+            Check(arrived.Courier.Arrived && arrived.Courier.PayloadAccepted && arrived.Courier.DeliveryHistoryAccepted
+                && arrived.Courier.ActionsAccepted && arrived.Courier.ReplyHistoryAccepted
+                && !arrived.Courier.ReplyDelivered && arrived.Reply == "" && !operation.Completion.IsCompleted, "authoritative arrival still waits for return");
+            Check(CourierTestHost.Actions == 1 && CourierTestHost.HistoryWrites == 2, "duplicate arrival no duplicate actions or histories");
+            CourierTestHost.Return();
+            var done = Finish(operation);
+            Check(done.State == AfDialogueState.Completed && done.Reply == "reply" && done.Courier.ReplyDelivered
+                && done.Courier.ContentsReturned && done.Courier.Transport == AfCourierTransportOutcome.Returned, "success needs actual letter plus cleanup");
+            Check(calls.All(x => Finish(x.Result).Reply == "reply") && CourierTestHost.Letters == 1, "all duplicates share original completion");
+            Check(Finish(client.SubmitCourier(ticket, "same", "letter")).State == AfDialogueState.Completed
+                && CourierTestHost.Sends == 1 && !done.CanRetryAutomatically, "terminal ID retained without replay");
+            Check(client.SubmitNative("same", "letter").GetSnapshot().ReasonCode == "dialogue.request_id_conflict"
+                && client.SubmitScene("scene", "same", "letter").GetSnapshot().ReasonCode == "dialogue.request_id_conflict", "all three channels share request namespace");
+            Check(client.SubmitCourier(ticket, "same", "changed").GetSnapshot().ReasonCode == "dialogue.request_id_conflict", "changed payload conflicts");
+            Release();
+        }
+        foreach (string stop in new[] { "cancel", "dispose", "ui", "edit", "retire" })
+        {
+            CourierTestHost.Reset();
+            using var client = AfApi.CreateDialogueClient();
+            var operation = Worker(client, client.CaptureCourierContextTicket());
+            if (stop == "cancel") Check(operation.Cancel() == AfDialogueCancelResult.CancelledBeforeStart, "cancel before owner claim");
+            if (stop == "dispose") client.Dispose();
+            if (stop == "ui") CourierTestHost.UiSend();
+            if (stop == "edit") CourierTestHost.EditDraft();
+            if (stop == "retire") CourierTestHost.Retire();
+            CourierTestHost.Pump();
+            var done = Finish(operation);
+            Check((done.State == AfDialogueState.Rejected || done.State == AfDialogueState.Cancelled)
+                && CourierTestHost.Sends == (stop == "ui" ? 1 : 0), "no API dispatch after " + stop);
+            Release();
+        }
+        foreach (string fault in new[] { "history", "action", "payload", "inventory", "record", "cleanup", "contents", "destroyed", "missing", "recipient", "generation", "retire", "replacement" })
+        {
+            CourierTestHost.Reset("Give");
+            using var client = AfApi.CreateDialogueClient();
+            var operation = client.SubmitCourier(client.CaptureCourierContextTicket(), fault, "letter");
+            CourierTestHost.Prepare();
+            bool early = new[] { "history", "action", "payload", "recipient" }.Contains(fault);
+            if (early) CourierTestHost.Fault(fault);
+            CourierTestHost.Arrive();
+            if (!early) CourierTestHost.Fault(fault);
+            if (!new[] { "destroyed", "missing", "generation", "retire", "replacement" }.Contains(fault)) CourierTestHost.Return();
+            var done = Finish(operation);
+            Check(done.State == AfDialogueState.Failed && done.EffectState == AfDialogueEffectState.UnknownAfterStart && !done.CanRetryAutomatically, "partial failure not fake rollback: " + fault);
+            if (fault == "destroyed" || fault == "missing")
+                Check(done.Courier.ActionsAccepted && done.Courier.ReplyHistoryAccepted && done.Reply == ""
+                    && done.Courier.Transport == (fault == "destroyed" ? AfCourierTransportOutcome.Destroyed : AfCourierTransportOutcome.Missing), "confirmed arrival survives return loss");
+            if (fault == "cleanup") Check(done.Courier.ReplyDelivered && done.Reply == "reply" && done.Courier.Transport == AfCourierTransportOutcome.Unconfirmed, "delivered letter survives failed cleanup");
+            if (fault == "inventory" || fault == "record") Check(!done.Courier.ReplyDelivered && done.Reply == "", "unconfirmed delivery never leaks body");
+            Release();
+        }
+        CourierTestHost.Reset();
+        using (var one = AfApi.CreateDialogueClient()) using (var two = AfApi.CreateDialogueClient())
+        {
+            string ticket = one.CaptureCourierContextTicket();
+            Check(Finish(two.SubmitCourier(ticket, "wrong", "text")).State == AfDialogueState.Rejected && CourierTestHost.Sends == 0, "wrong client cannot claim ticket");
+            one.Dispose();
+            Check(one.CaptureCourierContextTicket() == null && one.SubmitCourier(ticket, "later", "text").GetSnapshot().ReasonCode == "dialogue.client_disposed", "dispose revokes capture and future submissions");
+            Release();
+        }
+        CourierTestHost.Reset();
+        using (var client = AfApi.CreateDialogueClient())
+        {
+            for (int i = 0; i < 128; i++)
+                if (i % 3 == 0) client.SubmitNative("id" + i, "text");
+                else if (i % 3 == 1) client.SubmitScene("invalid", "id" + i, "text");
+                else client.SubmitCourier("invalid", "id" + i, "text");
+            Check(client.SubmitCourier("invalid", "extra", "text").GetSnapshot().ReasonCode == "dialogue.client_capacity", "shared 128-ID limit does not evict terminal IDs");
+            foreach (string id in new[] { "", "spaces not valid", new string('a', 129) })
+                Check(client.SubmitCourier("invalid", id, "text").GetSnapshot().ReasonCode == "dialogue.invalid_request", "invalid ID rejected before dispatch");
+            Release();
+        }
+        Check(typeof(AfCourierReceipt).GetProperties().All(p => p.SetMethod == null), "public receipt immutable");
+        Console.WriteLine($"PASS {Checks} independent Courier public consumer checks; actual API/admission/lifecycle owners; game/provider/writer fixtures; LIVE=NOT_RUN");
+    }
+    public static int Main(string[] args)
+    {
+        try { Run(!args.Contains("--expect-disabled")); return 0; }
+        catch (Exception error) { Console.WriteLine(error); return 1; }
+    }
+}

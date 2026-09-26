@@ -106,7 +106,7 @@ class Program {
    Check(((System.Collections.Generic.IList<AfSceneUtterance>)result.SceneUtterances).IsReadOnly,"external Scene utterance snapshot immutable");
    Check(Finish(sceneClient.SubmitScene(sceneTicket,"scene-public","hello group")).SceneUtterances.Count==2,"exact Scene retry reuses owner receipt");
   }
-  Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State==AfCapabilityState.Available&&AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State==AfCapabilityState.NotSupported,"Scene callable while Courier remains unsupported");
+  Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State==AfCapabilityState.Available&&AfApi.GetCapability(AfCapabilityIds.CourierSubmit).State==AfCapabilityState.Available,"all three channel contracts callable; owner admission remains required");
   Console.WriteLine("PASS "+Checks+" Native/Scene public API checks; production owner entry and receipt, fixture provider/game effects; NOT LIVE");
  }
 }

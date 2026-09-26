@@ -2,9 +2,9 @@
 
 ## 当前交付边界
 
-**目录查询、Native 与 Scene 提交/结果/开始前取消已接线；Courier 尚未开放。J14 整体仍需 Courier 与三渠道最终收口。**
+**目录查询及 Native、Scene、Courier 提交/结果/开始前取消已接线；J14c 同候选最终离线验收尚未完成。**
 
-J14b1/b2 已接通内部草稿票据、UI 共用派出与真实运输阶段回执，但尚不是子 MOD 可调用能力。内部完成需要必要动作/历史接受、回信实际入库及运输收尾确认，预生成/consumed/Completed 标志不单独判成功。V1 DTO/投影及独立消费者验证尚待 b3，当前仍保持 `CourierSubmit=NotSupported`；最终离线矩阵见主台账。
+J14b3 在原草稿准入与运输 owner 上开放 Courier 公共接口，返回只读阶段回执。完成需要必要动作/历史接受、回信实际入库及运输收尾确认，预生成/consumed/Completed 标志不单独判成功。开放前独立消费者、内部枚举重排及 Debug 双版本/Bootstrap/元数据已验证；最终离线矩阵见主台账，不能以此宣称实机或发布完成。
 
 当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。仅目录变更，`AnimusForge.Api.V1` namespace 与外部 ABI 不变。
 
@@ -13,7 +13,7 @@ J14b1/b2 已接通内部草稿票据、UI 共用派出与真实运输阶段回�
 | `CatalogRead` | Available | 任意线程查询框架装配、只读模块接缝目录 |
 | `NativeSubmit` | Available | 对当前 AF 原生自由对话提交玩家文本，复用实际准入、正文、标签、动作、记忆 owner |
 | `SceneSubmit` | Available | 对当前 AF 场景喊话框选签发 client 绑定票据，再由原群组 owner 提交；等待相关发言、语音发布、后处理和必要记忆回执 |
-| `CourierSubmit` | NotSupported | 内部运输回执已接线；公共投影/独立消费者与最终候选验证尚未完成 |
+| `CourierSubmit` | Available | 领取原 UI 已完成选择的草稿；同一派出与运输 owner 执行，等待实际回信交付及必要收尾 |
 | `ActionExecute` / `MemoryWrite` / `ExtensionRegister` | NotSupported | 不提供任意动作、事实写入或第三方 provider 注册 |
 
 `Available` 是 API 契约存在，不是当前游戏/目标可执行，更不是实机验收通过。框架快照的 `Ready` 也仅代表装配。
@@ -62,7 +62,22 @@ if (ticket != null)
 }
 ```
 
-票据为不透明、一次 claim、当前 owner/游戏代次/场景会话/输入序号/框选目标绑定。改选、UI 抢先提交、场景或存档更替、错 client 或重复领取均拒绝；失败后应重新捕获，不能擅自换 ID 自动重发。每个 Scene owner 最多保留 128 张待领取票据；失效或 client 释放会撤销。Scene 和 Native 共用每 client 128 个请求 ID 上限。同 ID 的渠道、票据或原文本不同均冲突；完全相同的重试返回原 operation。
+Scene 票据为不透明、一次 claim、当前 owner/游戏代次/场景会话/输入序号/框选目标绑定。改选、UI 抢先提交、场景或存档更替、错 client 或重复领取均拒绝；失败后应重新捕获，不能擅自换 ID 自动重发。每个 Scene owner 最多保留 128 张待领取票据；失效或 client 释放会撤销。三渠道共用每 client 128 个请求 ID 上限。同 ID 的渠道、票据或原文本不同均冲突；完全相同的重试返回同一内部 operation 的包装。
+
+Courier 必须先在原 UI 选好成员、模式和附件；API 不能构造任意收件人或绕过这些选择。主线程捕获，随后可从任意线程提交：
+
+```csharp
+string ticket = client.CaptureCourierContextTicket(); // 游戏主线程；无有效草稿时为 null
+if (ticket != null)
+{
+    AfDialogueOperation operation = client.SubmitCourier(ticket, "courier-letter-1", "信件正文");
+    AfDialogueResult result = await operation.Completion; // 可能等待多个 Campaign tick
+    AfCourierReceipt courier = result.Courier;
+    // 仅 ReplyDelivered 确认后公开 Reply；失败也可能保留已确认阶段，不能自动重派。
+}
+```
+
+Courier 票据绑定 client、owner、游戏 generation、草稿实例与修订；待领票据和 owner 活动/未排空提交各有 128 上限。原 UI/API 共用派出前重验与一次 claim；旧 UI 回调不修改或清理新草稿。API 关联仅在内存，读档不恢复旧 operation、不认领入站来信或恢复运输；读档/退休结算旧任务但不伪造效果回滚。
 
 同一 client + 同一 request ID + 完全相同文本再次提交，复用同一个内部 operation，绝不再发 LLM 或执行动作。相同 ID 的不同文本返回 `dialogue.request_id_conflict`，不覆盖已有任务。ID 区分大小写，不 trim；长度 1–128，仅允许英文字母、数字、`.` / `_` / `-` / `:`。文本不能为空，最多 16000 UTF-16 字符，实际规范化仍由原 Native owner 完成。
 
@@ -79,14 +94,15 @@ if (ticket != null)
 |---|---|
 | `Queued` | 尚未被真实主线程入口 claim，可以取消 |
 | `Running` | 主线程入口开始处理；不能承诺取消/回滚 |
-| `Completed` | 原唯一动作/必要记忆收尾产生了真实完成回执；不是按返回字符串推测 |
-| `Rejected` | 未被原 Native owner 准入；包括 busy、失效、不可用、非法输入 |
+| `Completed` | 原唯一动作/必要记忆收尾产生真实完成回执；Courier 还需实际回信交付与运输归还确认，不按返回字符串推测 |
+| `Rejected` | 未被相应渠道 owner 准入；包括 busy、失效、不可用、非法输入 |
 | `Cancelled` | 取消赢在开始之前，没有本 operation 的游戏副作用 |
 | `Failed` + `UnknownAfterStart` | 原 owner 已准入但没有完整回执；前置动作/部分记忆可能已经发生，不自动重试 |
 | `Cancel()` | 返回 `CancelledBeforeStart` / `TooLate` / `AlreadyTerminal`；后两者不会改写真实结果 |
 
 - `GetSnapshot()` 返回不可变副本；`Completion` 返回终态 DTO。后台结果/回调不直接操作游戏对象。
 - Scene 的 `SceneUtterances` 是本次按顺序确认的只读可见发言快照；`Reply` 为这些发言的换行拼接。`CompletedByOwner` 不代表 TTS 播放结束，也不表示每一个生成标签都必然被游戏资格规则接受；资格/效果仍由原 owner 处理。退役/失败可携带部分已产生的发言，但整体仍为 `Failed + UnknownAfterStart`，不能据此重派。
+- Courier 的 `Courier` 快照包含 `Dispatched`、`ReplyPrepared`、`Arrived`、`PayloadAccepted`、`DeliveryHistoryAccepted`、`ActionsAccepted`、`ReplyHistoryAccepted`、`ReplyDelivered`、`ContentsReturned` 和独立 `Transport`。字段不代表严格时间顺序；false 表示尚未确认，不证明已回滚。运输结局为 `NotStarted` / `InTransit` / `Returned` / `Destroyed` / `Missing` / `Unconfirmed`；送达后损失保留已接受动作/历史，交付后收尾失败可保留正文。非 Courier 或早期输入拒绝时该字段可为 null。
 - 原方法返回空字符串、网络错误文案或换档错误文案都不能产生成功回执。异常不向公共 DTO 暴露原始消息、路径、Prompt 或凭据。
 - V1 从不承诺正在执行的 HTTP 可被强制取消。已开始后的取消/Dispose 不抢占最终回执。
 
@@ -112,4 +128,4 @@ Scene 使用原 `ProcessCapturedScenePlayerShoutAsync` 与每 Hero 群组链，�
 
 `tools/NativeModuleSubmissionTests/README.md` 记录真实入口、物理主/后台线程、重复、取消、会话切换与失败回执测试。Provider正文、游戏动作及记忆底层是显式 fixture；不是完整 LLM/真实 Bannerlord 验收。
 
-Scene 离线证据包括真实源码群组回执/退休 fixture、请求生命周期、后处理、ChannelCutover、独立外部消费者、双版本六构建与四实现 DLL 元数据；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。Fixture 中的 provider/游戏效果不是实机。仍需完成 Courier 完整运输/到达提交公共边界和 J14c 三渠道最终候选；独立子 MOD 实机加载、LIVE/SAVE、provider、音频和帧性能均未验证，不是发布 READY。
+Scene 与 Courier 离线证据包括真实源码群组/运输/退休 owner、独立外部消费者、显式枚举重排和兼容构建；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。Courier 消费者执行真实准入/到达/提交接受/信件确认/运输收尾方法，但底层游戏资产、provider 和最低层 writer 为 fixture。三渠道均不增加每帧全请求扫描，性能仍须实测。J14c 的最终四实现/旧 ABI/真实记忆回读/当前 DLL 回放和代码地图仍待收口；独立子 MOD 实机加载、LIVE/SAVE、provider、音频和帧性能均未验证，不是发布 READY。
