@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "79fa7c482a61e4ee30f07048f19b11d785046229",
+  "sourceRevision": "e58f3558cddfe473f396bb7f11470b05e30afce9",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -88,20 +88,20 @@
       "end": 14,
       "symbol": "public static class AfApi",
       "match": "exact",
-      "status": "j14a-offline-verified",
-      "note": "只读目录、Native 和 Scene submit/result 已接实际 owner；Courier 仍 NotSupported，非实机 SDK 验收",
-      "fileSha256": "ce3433e34f09277859f25b2c49b21328090b4a069f47488b2dee5bf3e8c8b375"
+      "status": "j14-offline-verified",
+      "note": "目录及 Native/Scene/Courier submit/result 已接实际 owner；任意 Action/Memory/Extension 仍 NotSupported，非实机验收",
+      "fileSha256": "09d5f3329a2108603e87af433cf0c3f341aafebe36c10d2f044b2e92522db115"
     },
     {
       "id": "public.ids",
       "path": "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
-      "start": 35,
-      "end": 35,
+      "start": 75,
+      "end": 75,
       "symbol": "public static class AfCapabilityIds",
       "match": "exact",
       "status": "readonly-api",
       "note": "公开 ID 和同文件 DTO，可按兼容版本演进",
-      "fileSha256": "49c0a3e170ea53da978b2895dfb16fa38b042a1cf051834c6279e9ca2e94229f"
+      "fileSha256": "95ccca5e1c70f87a1b4ae863d4bdd56716eb795ce4ea85daa2b09859a7767346"
     },
     {
       "id": "lifecycle.load",
@@ -425,24 +425,24 @@
     {
       "id": "courier.prepare.reply",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
-      "start": 197,
-      "end": 197,
+      "start": 217,
+      "end": 217,
       "symbol": "private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(",
       "match": "contains",
       "status": "mixed-responsibility",
       "note": "保留有真实消费者的同步兼容捕获；正常worker用异步prepare；共享规则/lore仍混合live读",
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "courier.prepare.inbound",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
-      "start": 203,
-      "end": 203,
+      "start": 223,
+      "end": 223,
       "symbol": "private InboundLetterGenerationRequest BuildInboundLetterGenerationRequestOnMainThread(",
       "match": "contains",
       "status": "mixed-responsibility",
       "note": "保留有真实消费者的同步兼容捕获；正常worker用异步prepare；共享规则/lore仍混合live读",
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "memory.summary.capture",
@@ -1360,13 +1360,13 @@
     {
       "id": "courier.phase.receipt",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs",
-      "start": 117,
-      "end": 117,
+      "start": 166,
+      "end": 166,
       "symbol": "private async Task<T> RunCourierOwnerPhaseAsync<T>(",
       "match": "contains",
       "status": "wired-partial",
       "note": "未claim可退役，已claim等待真实回执",
-      "fileSha256": "84fa27b203cd5f65725ae84fec5275a760f9f51758a38238d238e35888be3099"
+      "fileSha256": "c062fcb3591aa5d12f7b02b1625b903b93aa8c1c370e822ed73019083ba3d276"
     },
     {
       "id": "lifetime.engine.begin",
@@ -1492,24 +1492,24 @@
     {
       "id": "lifetime.courier.commit",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
-      "start": 138,
-      "end": 138,
+      "start": 140,
+      "end": 140,
       "symbol": "private Task<InteractionCommitResult> DispatchCourierRefactorCommitAsync(",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "最终提交原子 claim/待办退役/真实回执",
-      "fileSha256": "c2d62f51f3dd60631dcbf204722f6b538e8f252f281f76f40fb48b482da6a030"
+      "fileSha256": "d761625783ce78397c8640abb1977a6579b78b1a3c85e33754a1c5f3d483e703"
     },
     {
       "id": "courier.commit.unconfirmed",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
-      "start": 132,
-      "end": 132,
+      "start": 134,
+      "end": 134,
       "symbol": "private static InteractionCommitResult CreateUnconfirmedCourierCommit(string errorCode)",
       "match": "exact",
       "status": "wired-offline-verified",
       "note": "真实commit后异常/空回执保留不确定性和非重试状态，不用于未开始拒绝",
-      "fileSha256": "c2d62f51f3dd60631dcbf204722f6b538e8f252f281f76f40fb48b482da6a030"
+      "fileSha256": "d761625783ce78397c8640abb1977a6579b78b1a3c85e33754a1c5f3d483e703"
     },
     {
       "id": "memory.run.owner",
@@ -1562,9 +1562,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "每次请求输入捕获；Hero句柄仅供未迁移shared builder，不是纯快照",
-      "start": 72,
-      "end": 72,
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "start": 92,
+      "end": 92,
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "courier.prompt.prepare",
@@ -1573,9 +1573,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "捕获/后台旧routing/owner主线程验证及最终消息组装",
-      "start": 156,
-      "end": 156,
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "start": 176,
+      "end": 176,
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "courier.prompt.reply",
@@ -1584,9 +1584,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "固定main完整final request业务尾部保持；仅owner主线程调用",
-      "start": 209,
-      "end": 209,
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "start": 229,
+      "end": 229,
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "courier.prompt.inbound",
@@ -1595,9 +1595,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "来信主线程最终消息组装，原种子和fallback责任保持",
-      "start": 247,
-      "end": 247,
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "start": 270,
+      "end": 270,
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "internal.dialogue.services",
@@ -1619,7 +1619,7 @@
       "note": "每 client 共用 128 ID，Native/Scene 按渠道/票据/文本精确去重；Courier 未接",
       "start": 10,
       "end": 10,
-      "fileSha256": "b453faa9557fb92d5d9969401a0f933e73b62f5334b9d946c88cdc7d73b453a1"
+      "fileSha256": "a59070fd9cc1b2c400830bc8f0f87f90360fe0beb961d22a08b70f61473d00f2"
     },
     {
       "id": "internal.dialogue.operation",
@@ -1630,7 +1630,7 @@
       "note": "排队/claim/原owner回执与未知副作用，只取消未开始",
       "start": 11,
       "end": 11,
-      "fileSha256": "5f1fcd17960a8389cbfa744701174200b425c6bf13cd9cc3d50869f4ec6bc013"
+      "fileSha256": "e5d0fa83b9ed54be9745d397c7484fa6f4061c23abbb161ebd2f51188ec8868d"
     },
     {
       "id": "public.dialogue.client",
@@ -1639,9 +1639,9 @@
       "match": "contains",
       "status": "j14a-offline-verified",
       "note": "Native 提交及 Scene 票据/提交；不接受调用者指定 NPC，Courier 未接",
-      "start": 73,
-      "end": 73,
-      "fileSha256": "09b00efcd70e3c24d7df6478e3102e209acc5e8e3f55f415f2c59b6109d2a33b"
+      "start": 76,
+      "end": 76,
+      "fileSha256": "117d10488aa28006d668d81b2a92992da35c88e435f1289a971a738a8b7d5957"
     },
     {
       "id": "public.dialogue.operation",
@@ -1650,9 +1650,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "不可变快照和terminal Task；不支持回滚已开始动作",
-      "start": 54,
-      "end": 54,
-      "fileSha256": "09b00efcd70e3c24d7df6478e3102e209acc5e8e3f55f415f2c59b6109d2a33b"
+      "start": 57,
+      "end": 57,
+      "fileSha256": "117d10488aa28006d668d81b2a92992da35c88e435f1289a971a738a8b7d5957"
     },
     {
       "id": "public.dialogue.projection",
@@ -1663,7 +1663,7 @@
       "note": "显式enum版本映射，内部重排不改V1承诺",
       "start": 7,
       "end": 7,
-      "fileSha256": "056c88e02fd05a89a8c6c763dccba303798c4c63653df03ef3cfd2ff19ea59a5"
+      "fileSha256": "db382122d4750925ac0a9fa88ce89c8d2d8db63b8614d08b35addb4ec96af5f8"
     },
     {
       "id": "native.module.entry",
@@ -1685,7 +1685,7 @@
       "note": "原Start建立runtime-only弱表reservation，无Saveable字段；不覆盖旧retry/final commit所有权",
       "start": 26,
       "end": 26,
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "courier.prompt.source-failure",
@@ -1694,9 +1694,9 @@
       "match": "contains",
       "status": "wired-boundary",
       "note": "仅当前run调用原Fail推进，清旧reply/tags防失败tick重放",
-      "start": 46,
-      "end": 46,
-      "fileSha256": "6b54de5f39190f55c0d69cfcab1c124b0af2189c50a3575eb68867619733a94a"
+      "start": 66,
+      "end": 66,
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
     },
     {
       "id": "llm.protocol.primary-policy",
@@ -3808,73 +3808,73 @@
       "match": "exact",
       "status": "wired-j09-candidate",
       "note": "default Courier wrapper; effects remain delivery-time only",
-      "fileSha256": "c2d62f51f3dd60631dcbf204722f6b538e8f252f281f76f40fb48b482da6a030"
+      "fileSha256": "d761625783ce78397c8640abb1977a6579b78b1a3c85e33754a1c5f3d483e703"
     },
     {
       "id": "courier.generation.delivery",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
-      "start": 41,
-      "end": 41,
+      "start": 42,
+      "end": 42,
       "symbol": "private void DeliverToRecipient(CourierSession session, MobileParty courier, Hero recipient)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "arrival owner starts reply only after DeliveryApplied",
-      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+      "fileSha256": "45f05babaf508d580d1dcb0b32befe963ea9cb381c58f648242bbed9ebfde8b9"
     },
     {
       "id": "courier.generation.reply-worker",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
-      "start": 168,
-      "end": 168,
+      "start": 187,
+      "end": 187,
       "symbol": "private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "captured run/source guards and detached worker generation",
-      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+      "fileSha256": "45f05babaf508d580d1dcb0b32befe963ea9cb381c58f648242bbed9ebfde8b9"
     },
     {
       "id": "courier.generation.reply-retry",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
-      "start": 508,
-      "end": 508,
+      "start": 540,
+      "end": 540,
       "symbol": "private bool ShowCourierReplyGenerationRetryPrompt(CourierReplyGenerationRequest request, string error)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "retry UI remains session and captured-request guarded",
-      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+      "fileSha256": "45f05babaf508d580d1dcb0b32befe963ea9cb381c58f648242bbed9ebfde8b9"
     },
     {
       "id": "courier.generation.inbound-worker",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
-      "start": 619,
-      "end": 619,
+      "start": 655,
+      "end": 655,
       "symbol": "private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(string sessionId, long runtimeGeneration, CourierPromptRun promptRun)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "inbound pregeneration keeps current run/source identity",
-      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+      "fileSha256": "45f05babaf508d580d1dcb0b32befe963ea9cb381c58f648242bbed9ebfde8b9"
     },
     {
       "id": "courier.generation.inbound-retry",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
-      "start": 737,
-      "end": 737,
+      "start": 773,
+      "end": 773,
       "symbol": "private bool ShowInboundLetterGenerationRetryPrompt(InboundLetterGenerationRequest request, string error, string fallbackLetter)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "stale inbound retry cannot advance a replacement session",
-      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+      "fileSha256": "45f05babaf508d580d1dcb0b32befe963ea9cb381c58f648242bbed9ebfde8b9"
     },
     {
       "id": "courier.generation.session-resume",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
-      "start": 811,
-      "end": 811,
+      "start": 847,
+      "end": 847,
       "symbol": "private void ProcessSessionById(string sessionId, string reason)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "terminal completion resumes only the matching current session",
-      "fileSha256": "22faa86a1040feec54ed1fb52e1f65c3496cc779d95b84a372e528d4c450bea9"
+      "fileSha256": "45f05babaf508d580d1dcb0b32befe963ea9cb381c58f648242bbed9ebfde8b9"
     },
     {
       "id": "courier.transport.session",
@@ -3885,51 +3885,51 @@
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "single live session state-machine entry",
-      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+      "fileSha256": "db63e5dcd957c43ea682dedb93c457a23d5aed097dc3b0038290edbcdeb7ee4a"
     },
     {
       "id": "courier.transport.inbound",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
-      "start": 157,
-      "end": 157,
+      "start": 171,
+      "end": 171,
       "symbol": "private void ProcessInboundToPlayerSession(CourierSession session, MobileParty courier)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "inbound route and busy-delivery gate",
-      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+      "fileSha256": "db63e5dcd957c43ea682dedb93c457a23d5aed097dc3b0038290edbcdeb7ee4a"
     },
     {
       "id": "courier.transport.inbound-delivery",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
-      "start": 188,
-      "end": 188,
+      "start": 202,
+      "end": 202,
       "symbol": "private void DeliverInboundLetterToPlayer(CourierSession session, MobileParty courier)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "receipt-ready letter delivery and one-time history/inventory commit",
-      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+      "fileSha256": "db63e5dcd957c43ea682dedb93c457a23d5aed097dc3b0038290edbcdeb7ee4a"
     },
     {
       "id": "courier.transport.player-busy",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
-      "start": 243,
-      "end": 243,
+      "start": 257,
+      "end": 257,
       "symbol": "private static bool IsPlayerBusyForInboundLetterDelivery(MobileParty mainParty)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "conversation/combat/siege gate before showing inbound letter",
-      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+      "fileSha256": "db63e5dcd957c43ea682dedb93c457a23d5aed097dc3b0038290edbcdeb7ee4a"
     },
     {
       "id": "courier.transport.inbound-notice",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
-      "start": 272,
-      "end": 272,
+      "start": 286,
+      "end": 286,
       "symbol": "private static void ShowInboundCourierLetterNotice(string senderHeroId, string senderName, string letterText, string letterKind)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "sanitized letter UI with optional reply entry",
-      "fileSha256": "ae0088a19bf48f7dc2729b0cd610046a43b97fb95efb6c34ae74feeac7d69153"
+      "fileSha256": "db63e5dcd957c43ea682dedb93c457a23d5aed097dc3b0038290edbcdeb7ee4a"
     },
     {
       "id": "courier.route.plan",
@@ -4011,68 +4011,68 @@
     {
       "id": "courier.delivery.return",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
-      "start": 41,
-      "end": 41,
+      "start": 42,
+      "end": 42,
       "symbol": "private void CompleteReturn(CourierSession session, MobileParty courier, Hero recipient)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "return arrival, reply notice, and terminal teardown",
-      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+      "fileSha256": "dde2c6cd5c53a2161c7d3794183de7830f49670f07de7cb48ce5ee2068f4d853"
     },
     {
       "id": "courier.delivery.payload",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
-      "start": 231,
-      "end": 231,
+      "start": 142,
+      "end": 142,
       "symbol": "private void ApplyDeliveryPayload(CourierSession session, MobileParty courier, Hero recipient)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "arrival-only payload side effects",
-      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+      "fileSha256": "dde2c6cd5c53a2161c7d3794183de7830f49670f07de7cb48ce5ee2068f4d853"
     },
     {
       "id": "courier.delivery.refund",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
-      "start": 418,
-      "end": 418,
-      "symbol": "private void ReturnCourierContentsToPlayer(CourierSession session, MobileParty courier)",
+      "start": 329,
+      "end": 329,
+      "symbol": "private bool ReturnCourierContentsToPlayer(CourierSession session, MobileParty courier)",
       "match": "exact",
-      "status": "wired-j10-candidate",
-      "note": "undelivered escrow and roster refund",
-      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+      "status": "j14-offline-verified",
+      "note": "undelivered escrow and roster refund; actual acceptance receipt, not rollback or live-game proof",
+      "fileSha256": "dde2c6cd5c53a2161c7d3794183de7830f49670f07de7cb48ce5ee2068f4d853"
     },
     {
       "id": "courier.delivery.destroyed",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
-      "start": 436,
-      "end": 436,
+      "start": 351,
+      "end": 351,
       "symbol": "private void OnMobilePartyDestroyed(MobileParty destroyedParty, PartyBase destroyerParty)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "outbound/inbound destroyed-session terminal split",
-      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+      "fileSha256": "dde2c6cd5c53a2161c7d3794183de7830f49670f07de7cb48ce5ee2068f4d853"
     },
     {
       "id": "courier.delivery.complete",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
-      "start": 526,
-      "end": 526,
+      "start": 442,
+      "end": 442,
       "symbol": "private void CompleteAndDestroyCourier(CourierSession session, MobileParty courier)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "completed session/index/party teardown",
-      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+      "fileSha256": "dde2c6cd5c53a2161c7d3794183de7830f49670f07de7cb48ce5ee2068f4d853"
     },
     {
       "id": "courier.delivery.missing",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
-      "start": 558,
-      "end": 558,
+      "start": 477,
+      "end": 477,
       "symbol": "private void HandleCourierMissing(CourierSession session)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "missing-party terminal cleanup",
-      "fileSha256": "d9dd4103053a382d44317ebbf4c7c83705707826c0b48ec3a411b49a587fa766"
+      "fileSha256": "dde2c6cd5c53a2161c7d3794183de7830f49670f07de7cb48ce5ee2068f4d853"
     },
     {
       "id": "courier.registry.lookup",
@@ -4121,79 +4121,79 @@
     {
       "id": "courier.creation.external",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
-      "start": 95,
-      "end": 95,
+      "start": 117,
+      "end": 117,
       "symbol": "public static void OpenCourierFlowForExternal(Hero recipient)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "public compatibility entry into existing flow",
-      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+      "fileSha256": "336d4ae6dc6e15262c8bdfe47522454eb7bf23bcd6a9e6be72e23d7d4cd282f3"
     },
     {
       "id": "courier.creation.outbound",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
-      "start": 549,
-      "end": 549,
+      "start": 600,
+      "end": 600,
       "symbol": "private void OnLetterConfirmed(string input)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "publish outbound session before generation and processing",
-      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+      "fileSha256": "336d4ae6dc6e15262c8bdfe47522454eb7bf23bcd6a9e6be72e23d7d4cd282f3"
     },
     {
       "id": "courier.creation.npc-initiated",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
-      "start": 686,
-      "end": 686,
+      "start": 771,
+      "end": 771,
       "symbol": "private bool TryCreateNpcInitiatedLetterSession(NpcInitiatedLetterCandidate candidate, NpcInitiatedLetterMotive motive, out string status)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "generated proactive inbound session publication",
-      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+      "fileSha256": "336d4ae6dc6e15262c8bdfe47522454eb7bf23bcd6a9e6be72e23d7d4cd282f3"
     },
     {
       "id": "courier.creation.diplomacy",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
-      "start": 770,
-      "end": 770,
+      "start": 855,
+      "end": 855,
       "symbol": "private bool TryCreateNpcDiplomacyLetterSession(Hero sender, string letterText, string reason, out string status)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "generated diplomacy inbound session publication",
-      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+      "fileSha256": "336d4ae6dc6e15262c8bdfe47522454eb7bf23bcd6a9e6be72e23d7d4cd282f3"
     },
     {
       "id": "courier.creation.prewritten",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
-      "start": 864,
-      "end": 864,
+      "start": 949,
+      "end": 949,
       "symbol": "private bool TryCreateNpcLetterToPlayerSession(Hero sender, string letterText, string reason, out string status)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "prewritten inbound path skips LLM generation",
-      "fileSha256": "4a654d886cf25556344b6c6fa798df9d48aba2319c9a7df0400711644b4a2745"
+      "fileSha256": "336d4ae6dc6e15262c8bdfe47522454eb7bf23bcd6a9e6be72e23d7d4cd282f3"
     },
     {
       "id": "courier.runtime.tick",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
-      "start": 118,
-      "end": 118,
+      "start": 119,
+      "end": 119,
       "symbol": "private void OnCampaignTick(float dt)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "throttled scan/receipt/inventory/session tick",
-      "fileSha256": "17bf94fb36bec0ae297e469be560e905cf71f0cce5427db52027f7984852595d"
+      "fileSha256": "db299db362019c65d376f5679f5974281eae0a3b45921cec6efe438eb273a1fd"
     },
     {
       "id": "courier.runtime.hourly",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
-      "start": 176,
-      "end": 176,
+      "start": 177,
+      "end": 177,
       "symbol": "private void OnHourlyTick()",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "proactive scan schedule entry",
-      "fileSha256": "17bf94fb36bec0ae297e469be560e905cf71f0cce5427db52027f7984852595d"
+      "fileSha256": "db299db362019c65d376f5679f5974281eae0a3b45921cec6efe438eb273a1fd"
     },
     {
       "id": "courier.proactive.scan",
@@ -4237,40 +4237,40 @@
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "runtime letter inventory owner",
-      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+      "fileSha256": "523be20543b3f4d3b1abe67cf6d82dccbed58c48a1af75eea354686bb82ca60c"
     },
     {
       "id": "courier.letter.retry-guard",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
-      "start": 288,
-      "end": 288,
+      "start": 290,
+      "end": 290,
       "symbol": "private void ScheduleCourierLetterInventoryRestoreRetries(string reason, int attempts)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "discard guard keeps automatic retry disabled",
-      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+      "fileSha256": "523be20543b3f4d3b1abe67cf6d82dccbed58c48a1af75eea354686bb82ca60c"
     },
     {
       "id": "courier.letter.add",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
-      "start": 453,
-      "end": 453,
-      "symbol": "private static void AddCourierLetterToPlayerInventory(CourierSession session, Hero sender, string senderName, string letterText, bool isReply)",
+      "start": 455,
+      "end": 455,
+      "symbol": "private static bool AddCourierLetterToPlayerInventory(CourierSession session, Hero sender, string senderName, string letterText, bool isReply)",
       "match": "exact",
-      "status": "wired-j10-candidate",
-      "note": "sanitized generated inventory letter",
-      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+      "status": "j14-offline-verified",
+      "note": "sanitized generated inventory letter; actual acceptance receipt, not rollback or live-game proof",
+      "fileSha256": "523be20543b3f4d3b1abe67cf6d82dccbed58c48a1af75eea354686bb82ca60c"
     },
     {
       "id": "courier.letter.detail",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
-      "start": 703,
-      "end": 703,
+      "start": 707,
+      "end": 707,
       "symbol": "public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody)",
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "public compatibility detail lookup",
-      "fileSha256": "25a1b0613fe276673f20b943f382dd096e0f60a38186c0b82a900d364a621fbd"
+      "fileSha256": "523be20543b3f4d3b1abe67cf6d82dccbed58c48a1af75eea354686bb82ca60c"
     },
     {
       "id": "courier.prompt.messages.reply",
@@ -4299,44 +4299,44 @@
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
       "start": 41,
       "end": 41,
-      "symbol": "private void CommitGeneratedReplyActionsAtRecipientCore(",
+      "symbol": "private bool CommitGeneratedReplyActionsAtRecipientCore(",
       "match": "contains",
-      "status": "wired-j10-offline-verified",
-      "note": "arrival-only domain effects and single history fan-out after DeliveryApplied",
-      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+      "status": "j14-offline-verified",
+      "note": "arrival-only domain effects and single history fan-out after DeliveryApplied; actual acceptance receipt, not rollback or live-game proof",
+      "fileSha256": "b8fd7c83d1056213ec8df2e996e9584412ae4e2dfb32e6cc1e44106ba9ccb06e"
     },
     {
       "id": "courier.commit.executor",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
-      "start": 167,
-      "end": 167,
+      "start": 186,
+      "end": 186,
       "symbol": "private InteractionStatus ExecuteCourierActionPlanForExternal(",
       "match": "contains",
       "status": "wired-j10-offline-verified",
       "note": "request-bound detached action executor revalidates Courier session and target",
-      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+      "fileSha256": "b8fd7c83d1056213ec8df2e996e9584412ae4e2dfb32e6cc1e44106ba9ccb06e"
     },
     {
       "id": "courier.commit.economy-gate",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
-      "start": 215,
-      "end": 215,
+      "start": 233,
+      "end": 233,
       "symbol": "private InteractionStatus GateCourierEconomyActionPlanForExternal(",
       "match": "contains",
       "status": "wired-j10-offline-verified",
       "note": "typed economy gate and one-shot reservation; domain execution stays with Economy owner",
-      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+      "fileSha256": "b8fd7c83d1056213ec8df2e996e9584412ae4e2dfb32e6cc1e44106ba9ccb06e"
     },
     {
       "id": "courier.commit.history",
       "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
-      "start": 289,
-      "end": 289,
-      "symbol": "private void PersistCourierReplyToHistories(",
+      "start": 313,
+      "end": 313,
+      "symbol": "private bool PersistCourierReplyToHistories(",
       "match": "contains",
-      "status": "wired-j10-offline-verified",
-      "note": "single Courier reply history/AFEF/notoriety fan-out after successful arrival commit",
-      "fileSha256": "9c3e4cdaae1521d24e4d1f64db972a447b63e0e7318417d1b48382c6f2b1675b"
+      "status": "j14-offline-verified",
+      "note": "single Courier reply history/AFEF/notoriety fan-out after successful arrival commit; actual acceptance receipt, not rollback or live-game proof",
+      "fileSha256": "b8fd7c83d1056213ec8df2e996e9584412ae4e2dfb32e6cc1e44106ba9ccb06e"
     },
     {
       "id": "courier.wait.pause",
@@ -8033,6 +8033,281 @@
       "status": "j14a-offline-verified",
       "note": "Real Scene owner claim, group wait and terminal result",
       "fileSha256": "4431d963f1861fc723a2119d903a692b6db47ce4f9cf32d4fcc0d1ec63f005fd"
+    },
+    {
+      "id": "courier.draft.issue",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DraftAdmission.cs",
+      "start": 26,
+      "end": 26,
+      "symbol": "internal static string IssueModuleCourierTicket(string clientId)",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "主线程签发原 UI 完成选择的草稿；client/owner/generation/实例/修订绑定，128 上限",
+      "fileSha256": "85a1b13a145be9639bb848f1fbd9145a9394193ab4c10206d95b91e8cbdc04c1"
+    },
+    {
+      "id": "courier.draft.claim",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DraftAdmission.cs",
+      "start": 46,
+      "end": 46,
+      "symbol": "private bool TryTakeModuleCourierTicket(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "主线程一次领取，错 client/旧草稿/目标替换拒绝",
+      "fileSha256": "85a1b13a145be9639bb848f1fbd9145a9394193ab4c10206d95b91e8cbdc04c1"
+    },
+    {
+      "id": "courier.draft.revoke",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DraftAdmission.cs",
+      "start": 66,
+      "end": 66,
+      "symbol": "internal static void RevokeModuleCourierTickets(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "Dispose 只撤销该 client 待领票据，扫描上界 128；非 Tick",
+      "fileSha256": "85a1b13a145be9639bb848f1fbd9145a9394193ab4c10206d95b91e8cbdc04c1"
+    },
+    {
+      "id": "courier.draft.validate",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DraftAdmission.cs",
+      "start": 86,
+      "end": 86,
+      "symbol": "private string ValidateCourierDraftForDispatch(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "发送前重验目标/活跃信使/成员/模式/附件；保留原回复例外",
+      "fileSha256": "85a1b13a145be9639bb848f1fbd9145a9394193ab4c10206d95b91e8cbdc04c1"
+    },
+    {
+      "id": "courier.draft.current",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+      "start": 43,
+      "end": 43,
+      "symbol": "private bool IsPendingCourierFlowCurrent(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "所有原 UI 回调重验，不能修改新草稿",
+      "fileSha256": "336d4ae6dc6e15262c8bdfe47522454eb7bf23bcd6a9e6be72e23d7d4cd282f3"
+    },
+    {
+      "id": "courier.draft.dispatch",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+      "start": 633,
+      "end": 633,
+      "symbol": "private CourierSession DispatchCourierDraft(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "原 UI/API 共用发送；claim 早于第一处派出效果，部分失败不自动重派",
+      "fileSha256": "336d4ae6dc6e15262c8bdfe47522454eb7bf23bcd6a9e6be72e23d7d4cd282f3"
+    },
+    {
+      "id": "courier.module.submit",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 33,
+      "end": 33,
+      "symbol": "internal static void SubmitModuleCourierDialogue(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "每 owner 128 活动/未排空关联；沿原 owner phase 队列",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.module.queue-release",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 117,
+      "end": 117,
+      "symbol": "private void ReleaseModuleCourierAdmission(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "取消不提前释放尚未排空的物理回调容量",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.module.bind",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 131,
+      "end": 131,
+      "symbol": "private void BindModuleCourierSession(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "实际 session 实例与 generation 绑定；不认领入站或恢复运输",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.module.step",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 178,
+      "end": 178,
+      "symbol": "private void RecordModuleCourierStep(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "按实际阶段事件累计不可变内部回执；无新增每帧全请求扫描",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.module.failure",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 189,
+      "end": 189,
+      "symbol": "private void FailModuleCourierSession(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "结算已知阶段和运输结果，不伪造效果回滚",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.module.complete",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 202,
+      "end": 202,
+      "symbol": "private void CompleteModuleCourierTransport(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "必要阶段与实际回信交付/归还/队伍收尾同时确认才完成",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.module.identity",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 216,
+      "end": 216,
+      "symbol": "private void CheckModuleCourierSessionIdentity(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "同 ID session 替换不能继承旧 API operation",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.module.payload",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ModuleSubmission.cs",
+      "start": 224,
+      "end": 224,
+      "symbol": "private bool ConfirmModuleCourierPayload(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "按资产种类/ID/来源聚合本信件实际接受量",
+      "fileSha256": "5d6749d8d2561f020ef94771b091e0a04d08c696ddc9e0cb5a83416ec41dc77c"
+    },
+    {
+      "id": "courier.prompt.current-run",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
+      "start": 36,
+      "end": 36,
+      "symbol": "private bool IsCourierPromptRunCurrent(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "捕获的真实 session/run 失效后拒绝晚回写",
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
+    },
+    {
+      "id": "courier.prompt.current-request",
+      "path": "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
+      "start": 46,
+      "end": 46,
+      "symbol": "private bool IsCourierReplyRequestCurrent(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "原请求 source 与当前 run 共同校验",
+      "fileSha256": "8b1c9267be0a164dbec193c9820d19f5229e62d3db73af3233e62127cb4ac095"
+    },
+    {
+      "id": "courier.core.receipt",
+      "path": "Refactor/Modules/CoreDialogueContracts.cs",
+      "start": 22,
+      "end": 22,
+      "symbol": "internal sealed class CoreCourierReceipt",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "独立阶段与运输结局；完成需要所有必要回执",
+      "fileSha256": "fd79f00a50e96f38faa9fa2e5364745c242b83c9b95c775d4d1e4d06d3b9a08e"
+    },
+    {
+      "id": "courier.core.progress",
+      "path": "Refactor/Modules/CoreDialogueOperation.cs",
+      "start": 100,
+      "end": 100,
+      "symbol": "internal void RecordCourierProgress(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "Running 内更新 detached 快照；ReplyDelivered 前不公开正文",
+      "fileSha256": "e5d0fa83b9ed54be9745d397c7484fa6f4061c23abbb161ebd2f51188ec8868d"
+    },
+    {
+      "id": "courier.core.submit",
+      "path": "Refactor/Modules/CoreDialogueClient.cs",
+      "start": 34,
+      "end": 34,
+      "symbol": "internal CoreDialogueOperation SubmitCourier(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "三渠道共享每 client 128-ID 指纹空间和既有取消/Dispose",
+      "fileSha256": "a59070fd9cc1b2c400830bc8f0f87f90360fe0beb961d22a08b70f61473d00f2"
+    },
+    {
+      "id": "courier.api.capture",
+      "path": "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
+      "start": 92,
+      "end": 92,
+      "symbol": "public string CaptureCourierContextTicket()",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "V1 主线程捕获；不提供任意目标/成员/附件构造",
+      "fileSha256": "117d10488aa28006d668d81b2a92992da35c88e435f1289a971a738a8b7d5957"
+    },
+    {
+      "id": "courier.api.submit",
+      "path": "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
+      "start": 97,
+      "end": 97,
+      "symbol": "public AfDialogueOperation SubmitCourier(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "V1 任意线程提交原草稿文本；返回既有 operation 类型",
+      "fileSha256": "117d10488aa28006d668d81b2a92992da35c88e435f1289a971a738a8b7d5957"
+    },
+    {
+      "id": "courier.api.result",
+      "path": "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
+      "start": 40,
+      "end": 40,
+      "symbol": "public AfCourierReceipt Courier { get; }",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "只读阶段快照；非 Courier/早期无效拒绝可为 null",
+      "fileSha256": "117d10488aa28006d668d81b2a92992da35c88e435f1289a971a738a8b7d5957"
+    },
+    {
+      "id": "courier.api.receipt",
+      "path": "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
+      "start": 50,
+      "end": 50,
+      "symbol": "public sealed class AfCourierReceipt",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "纯只读 DTO，无游戏对象；false 是未确认而不是回滚",
+      "fileSha256": "95ccca5e1c70f87a1b4ae863d4bdd56716eb795ce4ea85daa2b09859a7767346"
+    },
+    {
+      "id": "courier.api.projection",
+      "path": "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs",
+      "start": 9,
+      "end": 9,
+      "symbol": "internal static AfCourierReceipt Courier(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "named flag 显式投影，内部 flags 重排不改变公开语义",
+      "fileSha256": "db382122d4750925ac0a9fa88ce89c8d2d8db63b8614d08b35addb4ec96af5f8"
+    },
+    {
+      "id": "courier.api.transport",
+      "path": "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs",
+      "start": 25,
+      "end": 25,
+      "symbol": "private static AfCourierTransportOutcome CourierTransport(",
+      "match": "contains",
+      "status": "j14-offline-verified",
+      "note": "显式枚举映射，公开枚举值固定 0–5",
+      "fileSha256": "db382122d4750925ac0a9fa88ce89c8d2d8db63b8614d08b35addb4ec96af5f8"
     }
   ]
 }

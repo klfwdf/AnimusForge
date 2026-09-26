@@ -2,11 +2,11 @@
 
 ## 当前交付边界
 
-**目录查询及 Native、Scene、Courier 提交/结果/开始前取消已接线；J14c 同候选最终离线验收尚未完成。**
+**目录查询及 Native、Scene、Courier 提交/结果/开始前取消已接线；J14 同候选最终离线验收已完成（`J14_OFFLINE_VERIFIED`）。**
 
-J14b3 在原草稿准入与运输 owner 上开放 Courier 公共接口，返回只读阶段回执。完成需要必要动作/历史接受、回信实际入库及运输收尾确认，预生成/consumed/Completed 标志不单独判成功。开放前独立消费者、内部枚举重排及 Debug 双版本/Bootstrap/元数据已验证；最终离线矩阵见主台账，不能以此宣称实机或发布完成。
+J14b3 在原草稿准入与运输 owner 上开放 Courier 公共接口，返回只读阶段回执。完成需要必要动作/历史接受、回信实际入库及运输收尾确认，预生成/consumed/Completed 标志不单独判成功。开放前独立消费者、内部枚举重排及 Debug 双版本/Bootstrap/元数据已验证；最终六构建、四 DLL 元数据、旧 Native 二进制 ABI、三渠道/记忆回读及当前 DLL 回放均通过，详细证据见主台账；不能以此宣称实机或发布完成。
 
-当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。仅目录变更，`AnimusForge.Api.V1` namespace 与外部 ABI 不变。
+当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。上述分区不改变 `AnimusForge.Api.V1` namespace 或程序集身份；本轮方法/DTO 是保留旧 ABI 的兼容性扩展。
 
 | 能力 | 状态 | 实际含义 |
 |---|---|---|
@@ -79,7 +79,7 @@ if (ticket != null)
 
 Courier 票据绑定 client、owner、游戏 generation、草稿实例与修订；待领票据和 owner 活动/未排空提交各有 128 上限。原 UI/API 共用派出前重验与一次 claim；旧 UI 回调不修改或清理新草稿。API 关联仅在内存，读档不恢复旧 operation、不认领入站来信或恢复运输；读档/退休结算旧任务但不伪造效果回滚。
 
-同一 client + 同一 request ID + 完全相同文本再次提交，复用同一个内部 operation，绝不再发 LLM 或执行动作。相同 ID 的不同文本返回 `dialogue.request_id_conflict`，不覆盖已有任务。ID 区分大小写，不 trim；长度 1–128，仅允许英文字母、数字、`.` / `_` / `-` / `:`。文本不能为空，最多 16000 UTF-16 字符，实际规范化仍由原 Native owner 完成。
+同一 client + 同一 request ID + 同一渠道/票据 + 完全相同文本再次提交，复用同一个内部 operation，绝不再发 LLM 或执行动作。相同 ID 的不同文本返回 `dialogue.request_id_conflict`，不覆盖已有任务。ID 区分大小写，不 trim；长度 1–128，仅允许英文字母、数字、`.` / `_` / `-` / `:`。文本不能为空，最多 16000 UTF-16 字符，实际规范化仍由相应原渠道 owner 完成。
 
 ### 有界去重，不静默淘汰
 
@@ -124,8 +124,8 @@ Scene 使用原 `ProcessCapturedScenePlayerShoutAsync` 与每 Hero 群组链，�
 
 目录中的制作组 `IsExternallyCallable` 仍为 false：Native API 不是把制作组内部 port 公开。模块加载前/卸载后查询不初始化 AF、不发 LLM。同进程 DLL 不是安全沙箱；此层不承诺防御反射型恶意 MOD。
 
-## 证据与仍未完成
+## 离线证据与未验证边界
 
 `tools/NativeModuleSubmissionTests/README.md` 记录真实入口、物理主/后台线程、重复、取消、会话切换与失败回执测试。Provider正文、游戏动作及记忆底层是显式 fixture；不是完整 LLM/真实 Bannerlord 验收。
 
-Scene 与 Courier 离线证据包括真实源码群组/运输/退休 owner、独立外部消费者、显式枚举重排和兼容构建；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。Courier 消费者执行真实准入/到达/提交接受/信件确认/运输收尾方法，但底层游戏资产、provider 和最低层 writer 为 fixture。三渠道均不增加每帧全请求扫描，性能仍须实测。J14c 的最终四实现/旧 ABI/真实记忆回读/当前 DLL 回放和代码地图仍待收口；独立子 MOD 实机加载、LIVE/SAVE、provider、音频和帧性能均未验证，不是发布 READY。
+Scene 与 Courier 离线证据包括真实源码群组/运输/退休 owner、独立外部消费者、显式枚举重排和兼容构建；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。Courier 消费者执行真实准入/到达/提交接受/信件确认/运输收尾方法，但底层游戏资产、provider 和最低层 writer 为 fixture。三渠道均不增加每帧全请求扫描，性能仍须实测。J14c 已通过最终四实现/旧 ABI/真实记忆回读/当前 DLL 回放及代码地图两模式。旧 Native 消费者先对基线 V1 编译，再以同一消费者二进制运行当前源码链接宿主；四游戏实现另验元数据，不把它们等同于游戏加载。独立子 MOD 实机加载、两版本 LIVE、真实旧 SAVE、provider、音频和帧性能分别 NOT-RUN，不是发布 READY。
