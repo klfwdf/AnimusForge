@@ -1,4 +1,12 @@
-# 当前交接：J15b 已确认静态内容有限离线完成（2026-09-26）
+# 当前交接：J15c FeatureBridges 已归位，完整验证待授权（2026-09-26）
+
+- **状态**：`J15c_FEATUREBRIDGES_VERIFY / J15_PARTIAL_HOLD`，产品/测试 `7bc2ffbf`。FeatureBridges 默认源按 Foundation.Runtime 原样 R100 归位；映射 77、旧根 HOLD 40，运行路径/正文/七嵌入资源/C# 行为不变。完整 J15 目标未缩小，J15a/b 不重做；详见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)、[J15 计划](docs/plans/j15-content-profile-plan.md)。
+- **已验**：五项 J15 无写入静态函数、15 项无临时文件 Bridge 测试、16/12 Bridge validator、inventory 7 和 unknown=0、755 锚点两模式通过。修复当前 Bridge 清单两处遗留 RuleBehavior 源路径，未改历史记录或 runtime。
+- **下一步**：待确认具名构建/测试生成目录清理，再跑完整投影、Bridge 隔离、六构建和候选 DLL 门禁；这些当前 NOT-RUN，不能继承 J15b 结果。CustomPrompts/用户数据/模型/素材等继续按台账 HOLD 与授权条件推进，未到 J15d，更不是 J15 完成。无 Stage/Deploy/Package/push/外写，`.dotnet-cli-home/` 保留；实机/旧档/provider/Gauntlet/音频/帧性能均 NOT-RUN。
+
+## 以下为 J15b 历史交接
+
+# J15b 已确认静态内容有限离线完成（2026-09-26）
 
 - **状态**：`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`；J15b 产品/测试切片 `04056ce7`。在 J15a 7 项基础上，69 个已确认静态 JSON/GUI/XML/语言文件按 15 个 module/foundation owner 逐文件 `R100` 迁入 `content/`，映射现为 76 项；运行时 `ModuleData`/`GUI` 目标、7 个 EmbeddedResource、loader/LoadMovie/sprite/XML/Bootstrap/public API/保存身份均不变。实际责任、坐标与精确 HOLD 见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[J15 计划](docs/plans/j15-content-profile-plan.md)与[范围图](docs/architecture/af-framework-code-scope.md)。
 - **验证**：J15 契约 `76 mappings / 69 J15b / 41 holds / 76 real projection / 8 invalid / 4 GCCZ fallback / 11 overlay aliases`；Prompt 36、两个 PromptLab、Xihai Core 88、inventory 7/11 与 unknown=0、当前 Debug 1.4 完整 Phase8 均 PASS。原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；四实现 DLL 各仍恰好 7 个资源且字节一致，卫星资源 0。代码地图仍绑定未改 J14 C# 产品 `e58f3558`，755 锚点两模式 PASS。
