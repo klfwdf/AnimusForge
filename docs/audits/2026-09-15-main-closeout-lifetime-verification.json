@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "73774a94fc1d2fcbebc69ea221e9a906a4e70b8e",
+  "mainBaseline": "437925b856fae76b4e9ee207e96ba048f35d5a67",
+  "refactorBaseline": "f03557fbdfeabb921988fd177e6beb405cc0e614",
+  "scope": "C1 shared request lifetime closure only; all three external channels required but not yet implemented",
+  "sourceBinding": "Final Debug/Release Stage built working-tree production identical to73774a94 at checkpointc8c074c8. stage-debug.log predates the final pre-cancel check; only stage-debug-final.log and stage-release.log are final build evidence.",
+  "verification": {
+    "mainCommonAssertions": 30,
+    "mainRuntimeDefectsReproduced": 5,
+    "currentLifetimeAssertions": 51,
+    "validLifetimeMutations": 3,
+    "publicSurfaceEqualsMain": true,
+    "oldCompiledClient": "unchanged client IL runs with replacement source-built core, all 3 channels; not actual Bannerlord sub-MOD loading",
+    "pipelineCases": 40,
+    "nativeCommitFailureCases": 4,
+    "detachedCommitCases": 69,
+    "receiptCases": 39,
+    "asyncOwnerCases": 18,
+    "anonymousPromptCases": 13,
+    "courierPostprocessCases": 39,
+    "teamPortAssertions": 308,
+    "teamPortMutations": 3,
+    "apiAssertions": 119,
+    "concurrentApiReads": 256,
+    "snapshotAssertions": 32,
+    "snapshotMutations": 3,
+    "actualDllMetadataAssertions": 584,
+    "stageOutputs": 6,
+    "mainSyncDataKeys": 146,
+    "mainCampaignBehaviorTypes": 36
+  },
+  "warnings": [
+    "NU1900: NuGet vulnerability metadata unavailable offline; not a vulnerability-audit PASS.",
+    "Initial test fixture did not compile due to lambda parameter/discard name collision; corrected before main red/current green evidence."
+  ],
+  "unverified": [
+    "all original main core feature outcomes",
+    "versioned Native/Scene/Courier submit/result/cancel SDK",
+    "full Campaign/Mission lifecycle and Courier prepare thread safety",
+    "B1 memory deep-copy/writer/budget closure",
+    "actual game, old-save roundtrip, live Economy/AFEF, frame time"
+  ],
+  "sourceFiles": [
+    {
+      "path": "Refactor/Runtime/InteractionRequestCoordinator.cs",
+      "normalizedSha256": "064a5c58879982a4ba6277162647f2537f73d75c6ee1db189fbeb61cb154ff82"
+    },
+    {
+      "path": "Refactor/Runtime/InteractionRequestLease.cs",
+      "normalizedSha256": "593bc46a9816b140c723d32ac530b0f8874c3e0cfae4140079c7d2f496c9839b"
+    },
+    {
+      "path": "tools/CourierPostprocessOwnerRegressionTests/run.py",
+      "normalizedSha256": "6b3357f42cf346204637eb1c341641b54c04821cf54532e366d766082b8f9941"
+    },
+    {
+      "path": "tools/InteractionPipelineContractTests/InteractionPipelineContractTests.csproj",
+      "normalizedSha256": "41a3d981faab01bb4e94537175dd981cc54f584e732236cc14bbabbfd5bd3a4a"
+    },
+    {
+      "path": "tools/InteractionRequestLifetimeTests/LegacyClient.cs",
+      "normalizedSha256": "b98218d03a1bff1218d122a0ee628d34b8c35b1bff6ff6f30abdf991fc596157"
+    },
+    {
+      "path": "tools/InteractionRequestLifetimeTests/Program.cs",
+      "normalizedSha256": "4b77fef767883021dcf82bdf64803745de40c0f37ffb84a8718842367a195af7"
+    },
+    {
+      "path": "tools/InteractionRequestLifetimeTests/run.py",
+      "normalizedSha256": "53b3383514872b113f93a928aea6c55258678f5c843310d48855da2a666e6934"
+    },
+    {
+      "path": "tools/InteractionRequestLifetimeTests/verify_compat.py",
+      "normalizedSha256": "e127caf453370c0caf06cc77de68e4fc869429cc55d3a3928bf2a82165b4b0ae"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "2b051878da3add2c08ff031e7307460b72ba09a13ded47a2a19825378a4437e0",
+      "bytes": 43008
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "8ba7fa199a369ace05991a428320de80ab022d173ddc20f9fd87fc5c39b2f2cb",
+      "bytes": 12724736
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "4a6b95b19094bdba309ee77e5d015872d99aa91e2ab8a51c346a3f9f108e66a1",
+      "bytes": 12724224
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "626692ee415ca5073d0a0e56389946e1ad33944513728b535f003616adaff8ec",
+      "bytes": 41472
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "13b12be576d1d6c650f8fd2c46e91cc564915f09ec4000fa5ecfd78e959ec9db",
+      "bytes": 11808256
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "c43c65ce93f1fe9f2d0229c772fb05725cfe19ad4239c427f0db31f4cbf099c3",
+      "bytes": 11807744
+    }
+  ],
+  "evidence": [
+    {
+      "original": ".tmp/main-closeout-20260915/api-final.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/00-api-final.log",
+      "sha256": "75fcccf4586f0ceda619d356bbaa191f3aeeed40628d9c56381cd260f0b220d0"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/courier-final.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/01-courier-final.log",
+      "sha256": "db3245c31bbd5cdd653b23f698f5bc0c42fbcde1378f73ca198b1dac25ea7715"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/courier.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/02-courier.log",
+      "sha256": "db3245c31bbd5cdd653b23f698f5bc0c42fbcde1378f73ca198b1dac25ea7715"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/legacy-client.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/03-legacy-client.log",
+      "sha256": "ace803fcbcf55fea7284d49f3312a443c88273ac9d4538046e8a8df95e4e0f06"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/lifetime-current-final.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/04-lifetime-current-final.log",
+      "sha256": "0daa15e247129393d83b445737649948cd463fd43630d4f83da13cd56af381c9"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/lifetime-current.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/05-lifetime-current.log",
+      "sha256": "c8e05dc0de31b0b55623dbcb3840b3f0a7d1b26e829b8b8b9462f10167c57375"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/lifetime-dispose_early.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/06-lifetime-dispose_early.log",
+      "sha256": "ad75d933cb945f0130c6d0fc6dabba9e5c38bcece70e98fd6dc61b70bfa062fd"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/lifetime-ignore_active_cancel.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/07-lifetime-ignore_active_cancel.log",
+      "sha256": "77a6a6b5487383d24cebde50030a9440d660e7f6965735a3908d770e8768f1cc"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/lifetime-propagate_callback.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/08-lifetime-propagate_callback.log",
+      "sha256": "510f52079b48766a9ef07017002953bc9b1176cac01109ebd2a5e62b45b51130"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-common-verified.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/09-main-common-verified.log",
+      "sha256": "3ce7faa629e4468c3ae3c6c03f8515bc4726427a5a4bb19b8f6fe5f6eec23d65"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-common.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/10-main-common.log",
+      "sha256": "f19f3d51d719571ac0ca2d50db8b7c9b02d2a6b4ddea85993c851beef463792a"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-dispose-verified.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/11-main-dispose-verified.log",
+      "sha256": "4156e87a428a72c56105decbf5a933abaf532d17586ca4d4d934d5ea708bf10c"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-precancel.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/12-main-precancel.log",
+      "sha256": "33de86db98de6ce9658a167bf7677bc447a44a45fd34299972b9f4820cdcb34d"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-race-verified.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/13-main-race-verified.log",
+      "sha256": "2e6d031f5e3ee541f70525b65607831d47e33d2d3260a65bacc82d813d57c76a"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-supersede-verified.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/14-main-supersede-verified.log",
+      "sha256": "c6017e7fccb2e26678df9f0412b5ec3ce3e0126b4b4494372a152b41f3dd1503"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-supersede.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/15-main-supersede.log",
+      "sha256": "f19f3d51d719571ac0ca2d50db8b7c9b02d2a6b4ddea85993c851beef463792a"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/main-token-verified.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/16-main-token-verified.log",
+      "sha256": "0a50cbd3cc7c596799425425d9f8349ee606bde2bf360445e757b9070520886e"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/persistence-main.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/17-persistence-main.log",
+      "sha256": "82edff5918d6a37257e01467d4d5d1778a68b68e9bcfc14e9348fd07905d590d"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/pipeline-final.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/18-pipeline-final.log",
+      "sha256": "1ddf5483068ecfb921993f00c480bcabfe436fdf2abcbaa63ced08782abd3512"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/pipeline.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/19-pipeline.log",
+      "sha256": "1ddf5483068ecfb921993f00c480bcabfe436fdf2abcbaa63ced08782abd3512"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/stage-debug-final.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/20-stage-debug-final.log",
+      "sha256": "7cefb212b022244e8ba0821764fa3e8f8f4e823e6c4d1011a7e4d8b9929ccd41"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/stage-debug.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/21-stage-debug.log",
+      "sha256": "a0a9aa8492cf7eb2b4aabdc1c51b491d3a499374ed635d4dfc086b9ace446c1d"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/stage-release.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/22-stage-release.log",
+      "sha256": "b94d00b76880bad2bf3bc70fecfedd3f58941a638772592bbca5736c06be2e8f"
+    },
+    {
+      "original": ".tmp/main-closeout-20260915/team-ports.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/23-team-ports.log",
+      "sha256": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f"
+    },
+    {
+      "original": "tools/InteractionRequestLifetimeTests/.generated/compat/run.log",
+      "frozen": ".tmp/main-closeout-20260915/final-evidence/compat-client-run.log",
+      "sha256": "6e93340895747a513a68882b1c1c6e30b00ac70da036d50f0318e497898f2693"
+    }
+  ],
+  "push": false,
+  "deployment": false,
+  "automation": "PAUSED",
+  "overallCloseout": "ACTIVE_NOT_COMPLETE",
+  "compiledClientArtifacts": [
+    {
+      "path": "tools/InteractionRequestLifetimeTests/.generated/compat/bin/Release/net8.0/LegacyClient.dll",
+      "sha256": "60eb57acaa258849b44362989e8031b59a0aedade78acf583086958568771ae9"
+    },
+    {
+      "path": "tools/InteractionRequestLifetimeTests/.generated/compat/bin/Release/net8.0/InteractionRequestLifetimeChecks.dll",
+      "sha256": "b6abefea6cf57ffc755ea0db6672271fb13964848efeec7d0b5fda90ed062dae"
+    }
+  ]
+}

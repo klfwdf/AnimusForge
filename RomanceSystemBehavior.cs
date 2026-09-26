@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -50,7 +50,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	private static readonly Regex DivorcePairRegex = new Regex("\\[ACTION:DIVORCE:([^\\]:]+):([^\\]:]+)(?::(\\d+))?\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-	private Dictionary<string, int> _privateLove = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	private readonly RomanceRelationshipOwner _relationshipOwner = new RomanceRelationshipOwner();
+	private Dictionary<string, int> _privateLove { get => _relationshipOwner.PrivateLove; set => _relationshipOwner.PrivateLove = value; }
 
 	private Dictionary<string, string> _marriageRecordStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -73,7 +74,6 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	public static RomanceSystemBehavior Instance { get; private set; }
 
-	private static readonly ConcurrentDictionary<string, bool> _marriagePostprocessContextBySpeaker = new ConcurrentDictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 
 	public RomanceSystemBehavior()
 	{
@@ -82,34 +82,12 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	public static void SetMarriagePostprocessContextEnabled(Hero speaker, bool enabled)
 	{
-		string text = (speaker?.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		if (enabled)
-		{
-			_marriagePostprocessContextBySpeaker[text] = true;
-		}
-		else
-		{
-			_marriagePostprocessContextBySpeaker.TryRemove(text, out var _);
-		}
+		Instance?._relationshipOwner.SetContext(speaker?.StringId, enabled);
 	}
 
 	private static bool ConsumeMarriagePostprocessContextEnabled(Hero speaker)
 	{
-		string text = (speaker?.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		if (_marriagePostprocessContextBySpeaker.TryGetValue(text, out var value) && value)
-		{
-			_marriagePostprocessContextBySpeaker.TryRemove(text, out var _);
-			return true;
-		}
-		return false;
+		return Instance?._relationshipOwner.ConsumeContext(speaker?.StringId) == true;
 	}
 
 	public override void RegisterEvents()
@@ -130,11 +108,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	public override void SyncData(IDataStore dataStore)
 	{
+		if (dataStore.IsLoading) _relationshipOwner.ClearContext();
 		if (_privateLove == null)
 		{
 			_privateLove = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
-		dataStore.SyncData("_romancePrivateLove_v1", ref _privateLove);
+		Dictionary<string, int> privateLoveForSync = _privateLove;
+		dataStore.SyncData("_romancePrivateLove_v1", ref privateLoveForSync);
+		_privateLove = privateLoveForSync;
 		if (_marriageRecordStorage == null)
 		{
 			_marriageRecordStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -153,39 +134,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			_marriageRecordStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
-		List<string> list = _privateLove.Keys.ToList();
-		for (int i = 0; i < list.Count; i++)
-		{
-			string key = list[i];
-			if (string.IsNullOrWhiteSpace(key))
-			{
-				_privateLove.Remove(key);
-				continue;
-			}
-			int value = ClampLove(_privateLove[key]);
-			if (value == 0)
-			{
-				_privateLove.Remove(key);
-			}
-			else
-			{
-				_privateLove[key] = value;
-			}
-		}
+		_relationshipOwner.NormalizeLove();
 	}
 
-	private static int ClampLove(int value)
-	{
-		if (value < -100)
-		{
-			value = -100;
-		}
-		if (value > 100)
-		{
-			value = 100;
-		}
-		return value;
-	}
+	private static int ClampLove(int value) => RomanceRelationshipOwner.ClampLove(value);
 
 	private static string NormalizeId(string value)
 	{
@@ -704,20 +656,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static int ToLoveLevelIndex(int value)
-	{
-		double num = ((double)ClampLove(value) + 100.0) / 200.0;
-		int num2 = (int)Math.Floor(num * 10.0) + 1;
-		if (num2 < 1)
-		{
-			num2 = 1;
-		}
-		if (num2 > 10)
-		{
-			num2 = 10;
-		}
-		return num2;
-	}
+	private static int ToLoveLevelIndex(int value) => RomanceRelationshipOwner.ToLoveLevelIndex(value);
 
 	private static string BuildLoveKey(Hero hero)
 	{
@@ -801,15 +740,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			return 0;
 		}
-		if (_privateLove == null)
-		{
-			_privateLove = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_privateLove.TryGetValue(text, out var value))
-		{
-			return ClampLove(value);
-		}
-		return 0;
+		return _relationshipOwner.GetLove(text);
 	}
 
 	public void SetPrivateLove(Hero hero, int value, string reason)
@@ -823,20 +754,8 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (_privateLove == null)
-		{
-			_privateLove = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		}
-		int privateLove = GetPrivateLove(hero);
-		int num = ClampLove(value);
-		if (num == 0)
-		{
-			_privateLove.Remove(text);
-		}
-		else
-		{
-			_privateLove[text] = num;
-		}
+		int privateLove = _relationshipOwner.GetLove(text);
+		int num = _relationshipOwner.SetLove(text, value);
 		Logger.Log("Romance", $"hero={hero.StringId} reason={reason} love={privateLove}->{num}");
 		int num2 = num - privateLove;
 		if (num2 == 0)
@@ -2198,7 +2117,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			int marriageCandidateMaxAgeSetting = GetMarriageCandidateMaxAgeSetting();
-			if (hero.Age < (float)MarriageCandidateMinAge || (hero.Age > (float)marriageCandidateMaxAgeSetting && !IsMarriageAuthorityHero(hero)))
+			if (!RomanceRelationshipOwner.IsCandidateAge(hero.Age, marriageCandidateMaxAgeSetting, hero.Age > (float)marriageCandidateMaxAgeSetting && IsMarriageAuthorityHero(hero)))
 			{
 				return false;
 			}
@@ -2235,7 +2154,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (!IsMarriageAuthorityHero(left) && !IsMarriageAuthorityHero(right) && Math.Abs(left.Age - right.Age) > (float)GetMarriageCandidateMaxAgeGapSetting())
+			if (!IsMarriageAuthorityHero(left) && !IsMarriageAuthorityHero(right) && !RomanceRelationshipOwner.IsAgeGapAllowed(left.Age, right.Age, GetMarriageCandidateMaxAgeGapSetting()))
 			{
 				reason = "双方年龄差超过当前设置允许范围。";
 				return false;
@@ -3057,72 +2976,16 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	private static string GetMarriageRuntimeInstructionState(MarriageRuntimeFacts facts)
 	{
-		if (Hero.MainHero == null)
-		{
-			return "no_player_hero";
-		}
-		if (facts == null || facts.Speaker == null)
-		{
-			return "no_target";
-		}
-		if (!facts.PairAvailable)
-		{
-			return "unavailable";
-		}
-		if (!facts.HasClan)
-		{
-			return "clanless_path";
-		}
-		if (facts.IsLeader)
-		{
-			return "leader_path";
-		}
-		return "member_path";
+		return RomanceRelationshipOwner.GetMarriageRuntimeInstructionState(Hero.MainHero != null, facts?.Speaker != null,
+			facts?.PairAvailable == true, facts?.HasClan == true, facts?.IsLeader == true, facts?.CanElope == true,
+			facts?.TierDiff ?? 0, facts?.ClanRelation ?? 0, facts?.EffectiveTrust ?? 0, facts?.FormalThreshold ?? 0);
 	}
 
 	private static string GetMarriageRuntimeConstraintState(MarriageRuntimeFacts facts)
 	{
-		if (Hero.MainHero == null)
-		{
-			return "no_player_hero";
-		}
-		if (facts == null || facts.Speaker == null)
-		{
-			return "no_target";
-		}
-		if (!facts.PairAvailable)
-		{
-			return "unavailable";
-		}
-		if (!facts.HasClan)
-		{
-			return (facts.CanElope ? "clanless_elope_ready" : "clanless_elope_blocked");
-		}
-		if (facts.IsLeader)
-		{
-			if (facts.TierDiff <= -3)
-			{
-				return "leader_blocked_tier_gap";
-			}
-			if (facts.TierDiff == -2)
-			{
-				return "leader_need_heavy_brideprice";
-			}
-			if (facts.TierDiff == -1)
-			{
-				return ((facts.ClanRelation >= 20 && facts.EffectiveTrust >= 20) ? "leader_need_brideprice_ready" : "leader_need_brideprice_blocked");
-			}
-			if (facts.TierDiff >= 2)
-			{
-				return ((facts.ClanRelation >= facts.FormalThreshold && facts.EffectiveTrust >= facts.FormalThreshold) ? "leader_offer_brideprice_major" : "leader_standard_blocked");
-			}
-			if (facts.TierDiff == 1)
-			{
-				return ((facts.ClanRelation >= facts.FormalThreshold && facts.EffectiveTrust >= facts.FormalThreshold) ? "leader_offer_brideprice_minor" : "leader_standard_blocked");
-			}
-			return ((facts.ClanRelation >= facts.FormalThreshold && facts.EffectiveTrust >= facts.FormalThreshold) ? "leader_standard_ready" : "leader_standard_blocked");
-		}
-		return (facts.CanElope ? "member_redirect_elope_ready" : "member_redirect_elope_blocked");
+		return RomanceRelationshipOwner.GetMarriageRuntimeConstraintState(Hero.MainHero != null, facts?.Speaker != null,
+			facts?.PairAvailable == true, facts?.HasClan == true, facts?.IsLeader == true, facts?.CanElope == true,
+			facts?.TierDiff ?? 0, facts?.ClanRelation ?? 0, facts?.EffectiveTrust ?? 0, facts?.FormalThreshold ?? 0);
 	}
 
 	public string BuildMarriageRuntimeInstruction(Hero speaker)

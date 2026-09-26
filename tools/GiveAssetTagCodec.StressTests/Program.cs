@@ -175,14 +175,22 @@ while (!File.Exists(Path.Combine(repoRoot, "MyBehavior.cs")))
 
 string myBehavior = File.ReadAllText(Path.Combine(repoRoot, "MyBehavior.cs"));
 string shoutBehavior = File.ReadAllText(Path.Combine(repoRoot, "ShoutBehavior.cs"));
-string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.cs"));
-string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "ShoutBehavior.ScenePostprocess.cs"));
-string courier = File.ReadAllText(Path.Combine(repoRoot, "CourierDeliveryBehavior.cs"));
+string rewardSystem = File.ReadAllText(Path.Combine(repoRoot, "RewardSystemBehavior.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Authorization", "RewardSystemBehavior.EconomyAssetAuthorization.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Hero", "RewardSystemBehavior.EconomyReplay.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Party", "RewardSystemBehavior.EconomyPartyReplay.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Economy", "Execution", "Merchant", "RewardSystemBehavior.EconomyMerchantReplay.cs"));
+string scenePostprocess = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"));
+string sceneChains = File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.SceneConversationChains.cs"));
+string courier = File.ReadAllText(Path.Combine(repoRoot, "CourierDeliveryBehavior.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.GenerationLifecycle.cs"))
+    + File.ReadAllText(Path.Combine(repoRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"));
 string nativeOverlay = File.ReadAllText(Path.Combine(repoRoot, "AnimusForgeNativeConversationOverlay.cs"));
 Test.True(myBehavior.Contains("GiveAssetTagCodec.TryParseWhole", StringComparison.Ordinal), "free-conversation input codec missing");
 Test.True(HasSharedRewardCodec(shoutBehavior, scenePostprocess), "shared Native/Scene/Courier reward codec chain missing");
-Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationTextForExternalAsync(", StringComparison.Ordinal)
-    && shoutBehavior.Contains("postprocessed = TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+Test.True(nativeOverlay.Contains("ShoutBehavior.SubmitNativeConversationForOverlayAsync(", StringComparison.Ordinal)
+    && scenePostprocess.Contains("private static string TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+    && sceneChains.Contains("TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
     && courier.Contains("ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(", StringComparison.Ordinal),
     "real Native overlay and Courier owner must reach the shared Shout postprocessor");
 Test.True(!HasSharedRewardCodec(shoutBehavior.Replace("GiveAssetTagCodec.ReplaceTags(text,", "RemovedCodec(text,"), scenePostprocess),

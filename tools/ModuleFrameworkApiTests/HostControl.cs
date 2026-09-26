@@ -6,6 +6,7 @@ namespace ModuleFramework.TestControl;
 // Test-only host operations; a real sub-MOD only uses AnimusForge.Api.V1.
 public static class HostControl
 {
+    public static int VerifySnapshotBoundary() => SnapshotBoundaryChecks.Run();
     public static int ServiceInitializations => StubObservations.ServiceInitializations;
     public static int GateCalls => StubObservations.GateCalls;
     public static bool Initialize() => ModuleFrameworkRuntime.Initialize(out _);

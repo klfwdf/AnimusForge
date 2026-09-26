@@ -14,7 +14,12 @@ import re
 for name in baseline_names:baseline=re.sub(r'\b'+name+r'\b','Baseline'+name,baseline)
 code=code.replace('@@BASELINE_METHODS@@',baseline)
 if a.native:
- shout=read('ShoutBehavior.cs');turn=ex.declaration(shout,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
+ shout=read('ShoutBehavior.cs')
+ import sys
+ sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+ from turn_extraction import projected_source, NEW_SIGNATURE
+ if NEW_SIGNATURE in shout: shout=projected_source(shout)
+ turn=ex.declaration(shout,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
  start=turn.index('\t\tTask<string> persistedHeroHistoryTask = Task.Run(') if a.original else turn.index('\t\tFunc<string> nativeHistoryWork = await')
  end=turn.index('\t\tStopwatch nativePreprocessSw =',start)
  join=turn.index('\t\tstring persistedHeroHistory = ((await persistedHeroHistoryTask)')
@@ -46,8 +51,11 @@ if not a.original:
  if a.mutate=='drop-accept-guard':
   old='() => IsNativeConversationAdmissionCurrent(admission, out _), false)';assert old in code;code=code.replace(old,'() => true, false)',1)
  (out/'Snapshot.cs').write_text(snap,encoding='utf-8')
-(out/'Program.cs').write_text(code,encoding='utf-8');(out/'Guard.cs').write_text(read('SaveRuntimeGuard.cs'),encoding='utf-8');(out/'Error.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
+if a.native:(out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
+(out/'Program.cs').write_text(code,encoding='utf-8');(out/'Guard.cs').write_text(read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8');(out/'Error.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=os.environ.get('DOTNET_EXE',r'C:\Program Files\dotnet\dotnet.exe')
 env=os.environ.copy();env.update(DOTNET_ROOT=str(Path(dotnet).parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1',DOTNET_CLI_UI_LANGUAGE='en',APPDATA=str(ROOT/'.tmp/appdata'))
-r=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180);log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)
+build=subprocess.run([dotnet,'build',str(out/'Proof.csproj'),'-c','Release','-p:UseAppHost=false','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)
+run=subprocess.run([dotnet,str(out/'bin/Release/net8.0/Proof.dll')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180) if build.returncode==0 else None
+log=build.stdout+build.stderr+((run.stdout+run.stderr) if run else '');(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(build.returncode or (run.returncode if run else 0))

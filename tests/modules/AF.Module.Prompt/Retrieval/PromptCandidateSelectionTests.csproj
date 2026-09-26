@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="FacadeStubs.cs" />
+    <Compile Include="../../../../PromptListRetrievalService.cs" Link="PromptListRetrievalService.cs" />
+    <Compile Include="../../../../RagWarmupCoordinator.cs" Link="RagWarmupCoordinator.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelection.cs" Link="PromptCandidateSelection.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs" Link="IntentQueryOptimizer.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptCandidateSnapshotIndex.cs" Link="PromptCandidateSnapshotIndex.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/RevisionedPromptConfigurationStore.cs" Link="RevisionedPromptConfigurationStore.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptRevisionedDerivedCache.cs" Link="PromptRevisionedDerivedCache.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalContextOwner.cs" Link="PromptRetrievalContextOwner.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptSemanticWarmupSeedBatch.cs" Link="PromptSemanticWarmupSeedBatch.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptAuxiliaryMentionStore.cs" Link="PromptAuxiliaryMentionStore.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptSemanticVectorCache.cs" Link="PromptSemanticVectorCache.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalOperationScope.cs" Link="PromptRetrievalOperationScope.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleRanking.cs" Link="PromptRuleRanking.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptSingleEvaluationCache.cs" Link="PromptSingleEvaluationCache.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptStickyRuleStore.cs" Link="PromptStickyRuleStore.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleSemanticRecall.cs" Link="PromptRuleSemanticRecall.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleIntentSelection.cs" Link="PromptRuleIntentSelection.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleTextEvidence.cs" Link="PromptRuleTextEvidence.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleIntentSplitter.cs" Link="PromptRuleIntentSplitter.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleIntentInputBatch.cs" Link="PromptRuleIntentInputBatch.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationModels.cs" Link="PromptRuleEvaluationModels.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationAssembler.cs" Link="PromptRuleEvaluationAssembler.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptAuxiliaryRuleEvaluation.cs" Link="PromptAuxiliaryRuleEvaluation.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleEvaluationCacheKey.cs" Link="PromptRuleEvaluationCacheKey.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleRetrievalPipeline.cs" Link="PromptRuleRetrievalPipeline.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleAggregation.cs" Link="PromptRuleAggregation.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRuleFinalRanking.cs" Link="PromptRuleFinalRanking.cs" />
+    <Compile Include="../../../../GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
+  </ItemGroup>
+</Project>

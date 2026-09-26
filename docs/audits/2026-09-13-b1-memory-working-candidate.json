@@ -1,0 +1,145 @@
+{
+  "task": "B1",
+  "status": "IN_PROGRESS_NOT_BATCH_ACCEPTED",
+  "productionRevision": "aece8f3d3d9e9ede03e5f30ac3bb510a3d4e8a09",
+  "checkpoint": "0d5857bc",
+  "baseline": "90201155",
+  "checks": {
+    "helper": 24,
+    "completionCases": 19,
+    "capturedCases": 57,
+    "writerChecks": 238,
+    "uiChecks": 85,
+    "historyChecks": 852,
+    "apiChecks": 119,
+    "apiConcurrentReads": 256,
+    "actualDllMetadataChecks": 532,
+    "syncKeys": [
+      146,
+      146
+    ],
+    "campaignBehaviors": [
+      36,
+      36
+    ],
+    "stageBuilds": "Debug/Release x 1.3/1.4/Bootstrap PASS"
+  },
+  "controls": {
+    "completion": 20,
+    "helper": 4,
+    "captured": 12,
+    "writers": 3,
+    "oldBusiness": "e40c92d7 compiled/runtime 2 PASS / 17 FAIL",
+    "binding": "Each control ran on its recorded generated input. Earlier captured mutations retain their frozen input manifests; later wave-lifetime and payload-release each have new runtime counterexamples. Do not call these identical-final-source full reruns."
+  },
+  "gaps": [
+    "1000-line atomic capture/check unbounded: ~58-149ms, 9257688 allocated bytes; concurrent machine load, not game benchmark",
+    "TryStart/filter/sort/extra planning/cleanup/individual Apply internals still lack full record/time budget",
+    "Actual terminal storage/recovery/weekly writers and all direct in-place edit paths need integrated evidence",
+    "No live provider/game/save/audio/sub-MOD CLR acceptance"
+  ],
+  "sandbox": {
+    "initialFailure": "MSB4184 denied C:/Users/28358/AppData/Local/Microsoft SDKs",
+    "redirect": "LOCALAPPDATA did not resolve",
+    "resolution": "Reviewed escalation for unchanged official Stage command; project-local output only"
+  },
+  "scopeCorrection": "Legacy Scene fallback behind unconditional per-hero return is not an active writer finding; initial audit claim withdrawn. ShoutBehavior unchanged.",
+  "sourceMap": "docs/architecture/af-framework-code-map.json",
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "5329385a990df3e35de1f6ee17965284b90e60aa6cde2472ae94f50f6b6c49f1",
+      "marker": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.build.json",
+      "markerSha256": "ea7f81fe695dd5c666931b354404b44ce1039c2a8d3fa18fe08b79b90b596d85"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "6b7867704bc14719b0b7c0a16a51c875ecca4d4b191c49ab7dabcef1c38058bb",
+      "marker": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.build.json",
+      "markerSha256": "f825b80b1aa4b630238794cadcf760e235437da58b1fe98ce2de7753d69432e8"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "6aeb59a849057460d396b433ca6c7b3971f0c570f6fed65e7e74003edb1fdbb6",
+      "marker": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.build.json",
+      "markerSha256": "2753a8a1edc14350d84da2350b7bb2f5c997fca4e5dbfb8f04c74d2fbb737f55"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "ba8459836ad0baecf6054ab69c81e1f3b1eb7d7db3ba1b4479199aee8e7a8060",
+      "marker": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.build.json",
+      "markerSha256": "92d2ef434f8121f5fc7c227569cbb936201480a55316d01c7cbe6b9eaa9998ef"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "d7f85dda6f77dce86e653d44c66117a3a7a5a9f6c80e39203d6907d65b1b2a9a",
+      "marker": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.build.json",
+      "markerSha256": "7f984dfb48312352e9a8782466397f6936d2585f138e831080773c27625a5666"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "581644ccc7c845edbd998f3127a5ae99d6931e8984619df11419f7f4a5388ea2",
+      "marker": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.build.json",
+      "markerSha256": "12b20e8e58a96210ede9883229b7192ab0aa63c78fd681a7153f0e411d81a03e"
+    }
+  ],
+  "evidence": [
+    {
+      "path": ".tmp/b1-20260913/debug-stage-final.log",
+      "sha256": "6d461767ad13f0c955fb8f3767f95522fe679ba73c7bc926934f50e4bbda8093"
+    },
+    {
+      "path": ".tmp/b1-20260913/release-stage-final.log",
+      "sha256": "3422ee2db06015b24547b752fa2d29707eb59fc1a13640642a779b0d98c8442e"
+    },
+    {
+      "path": ".tmp/b1-20260913/api-final.log",
+      "sha256": "d22fceeedfaa99ac322260caac364d76298e8649f5c8d58f5808343f2b049a76"
+    },
+    {
+      "path": ".tmp/b1-20260913/persistence.log",
+      "sha256": "a12e0fb4ea9140c1615914f72babf3a197f010a96a0fd8549866ba12ae21027d"
+    },
+    {
+      "path": ".tmp/b1-20260913/ui.log",
+      "sha256": "a273c33db49bee826813e34acd78996cc447908881f3a0605a9a904fcd4cad69"
+    },
+    {
+      "path": ".tmp/b1-20260913/history.log",
+      "sha256": "0f1c4f7d9c04ad381a4515884dfdc562d568cf3b2860267b387a06a6c9eab695"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/b1-completion-results.json",
+      "sha256": "1f4f23581c18f1b1489946e3cd6c4f63d31567cda5132b299de1dd3c22506546"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
+      "sha256": "60431c124c6b3aecac235f5d97342f994cb9ac778a51bdd229a07ddf1e0e8dd3"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/run.log",
+      "sha256": "f89e0c3b3e069aaa45251eb37b0899dfca24e37b6c2920c9d078167014649fc4"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/retain-payload/run.log",
+      "sha256": "13ad1af7819b9e432b568f2fb53a5c123cbb125117fe1f3eea73841ec987b0d5"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/ignore-wave-lifetime/run.log",
+      "sha256": "b0792b58a234a938755bb6975b8d8ee0674c06f5295e86ffd73dddb757de7c44"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/manifest.json",
+      "sha256": "3e618d1d56feb0c1fdd965dbad24364511505d4c77b6f6879a9765c43c4536d4"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/run.log",
+      "sha256": "f0f160b460bc3afc66f52b2bb5a6f00b25a4a14516e0d065a89e0e3975be67dc"
+    }
+  ],
+  "next": "Continue same B1: consistency-preserving large-source cost reduction and actual record/time budget across planning/cleanup/writers; do not enter B2 or restart completed P1-01.",
+  "pushed": false,
+  "deployed": false,
+  "live": "NOT_RUN",
+  "automation": "af-7-8 ACTIVE"
+}

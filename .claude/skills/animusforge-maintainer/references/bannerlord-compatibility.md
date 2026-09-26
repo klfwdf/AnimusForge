@@ -9,7 +9,7 @@ docs/bannerlord_1_3_to_1_4_5_compatibility_diff.md
 docs/bannerlord_dual_module_output.md
 ```
 
-## Unified module invariant
+## Existing dual-version invariant (not a future milestone)
 
 ```text
 Modules/AnimusForge/
@@ -30,7 +30,7 @@ Modules/AnimusForge/
 
 ## Module packaging under the plugin architecture
 
-Foundation/modules/bridges may become controlled DLLs, but they remain within one validated AnimusForge launcher module. The profile manifest must identify the complete DLL/content closure for each API implementation.
+Foundation/modules/bridges may become controlled DLLs, but they remain within one validated AnimusForge launcher module. Any separately approved DLL split must identify the complete DLL/content closure for both API implementations in the actual build/package declarations. Require a profile manifest only if a real profile loader consumes it.
 
 Before approving a physical assembly split, prove:
 
@@ -67,11 +67,11 @@ Failure/degradation behavior
 Focused test or in-game scenario
 ```
 
-Profile resolution must catch known patch conflicts before campaign load when possible. Do not depend on patch order by accident.
+The actual composition/registration owner should detect known patch conflicts before campaign load when possible; this does not require adding a profile system. Do not depend on patch order by accident.
 
 ## Build evidence
 
-A compatibility-sensitive completion normally requires:
+For compatibility-sensitive changes, retain the following build evidence; Stage, package and live checks apply when required by the changed surface and separately authorized (see [validation](validation.md)):
 
 - verified 1.3 reference provenance/pinned overlay;
 - 1.3 implementation build;
@@ -79,16 +79,16 @@ A compatibility-sensitive completion normally requires:
 - 1.4 implementation build;
 - Bootstrap build;
 - implementation markers/hash checks;
-- profile/module/bridge closure checks;
+- closure checks for actual dependencies and any implemented profiles;
 - staged single-module validation;
-- package allowlist/no forbidden entries;
+- package allowlist/no forbidden entries when packaging is in scope;
 - focused in-game validation on each affected API line when runtime behavior changed.
 
 A compile symbol alone does not prove reference provenance. A successful compile does not prove Harmony target/runtime behavior.
 
 ## Deploy safety
 
-- Use same-volume complete staging and transactional replacement.
+- Follow the verified repository deployment/merge/rollback workflow; do not rewrite build or deployment scripts as a side effect of validation.
 - Preserve/merge user PlayerExports and logs according to repository policy.
 - Never delete unknown module persistence during profile changes or SafeMode.
 - Validate package before final publication.

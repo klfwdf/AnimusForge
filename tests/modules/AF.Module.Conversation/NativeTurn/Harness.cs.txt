@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Runtime.ExceptionServices;
+using System.Threading;
+using System.Threading.Tasks;
+namespace AnimusForge;
+static class Check
+{
+    internal static int Count;
+    internal static void That(bool ok, string name) { Count++; if (!ok) throw new Exception("ASSERT "+name); }
+}
+static class AIConfigHandler
+{
+    internal static readonly AsyncLocal<string> Runtime = new();
+    internal static IDisposable BeginGuardrailRuntimeScope() => new Scope(Runtime.Value);
+    sealed class Scope : IDisposable { readonly string previous; internal Scope(string p){previous=p;} public void Dispose(){Runtime.Value=previous;} }
+}
+sealed class FakeOwner : IDisposable
+{
+    readonly BlockingCollection<Action> queue = new(); readonly Thread game;
+    [ThreadStatic] internal static bool IsGame;
+    internal bool Current=true, RejectQueued;
+    internal int Rollbacks; internal string RolledKey; internal long RolledSequence;
+    internal FakeOwner(){game=new Thread(()=> {IsGame=true; AIConfigHandler.Runtime.Value="game";foreach(var action in queue.GetConsumingEnumerable()) {action();Check.That(AIConfigHandler.Runtime.Value=="game","game-context-restored");}});game.IsBackground=true;game.Start();}
+    internal bool IsNativeConversationAdmissionCurrent(object admission,out string reason){Check.That(IsGame,"guard-on-game-thread");reason=Current?"":"changed-context";return Current;}
+    internal Task<T> RunNativeConversationMainThreadFuncAsync<T>(string phase,string target,int index,Func<T> f,T fallback)
+    {var done=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);if(RejectQueued){done.SetResult(fallback);return done.Task;} queue.Add(()=>{try{done.SetResult(f());}catch{done.SetResult(fallback);}});return done.Task;}
+    internal Task RollbackNativeConversationPendingPlayerHistoryAsync(object admission,string key,long sequence,string reason)
+    { Rollbacks++;RolledKey=key;RolledSequence=sequence;return Task.CompletedTask; }
+    public void Dispose(){queue.CompleteAdding();game.Join();queue.Dispose();}
+}
+sealed class ProbeHost
+{
+    readonly FakeOwner _owner;
+    readonly object admission=new();
+    string nativeTargetLog="captured-target";int nativeTargetAgentIndex=42;
+    string nativePendingAfefKey="captured-key";long nativePendingPlayerHistoryEventSequence=17;
+@@FIELDS@@
+    internal bool RequiresNetwork=true, ProviderSuccess=true, RetireAfterNetwork;
+    internal int Prepared, Requested, Completed;
+    internal readonly Exception Failure=new InvalidOperationException("owner-partial-effect");
+    internal ProbeHost(FakeOwner owner){_owner=owner;}
+@@CAPTURE@@
+    internal Task<bool> Capture(Action action) => CaptureOnGameThreadAsync("probe", action);
+    private string GetSceneNpcHistoryNameForPrompt(object npc) => "NPC";
+    private sealed class SceneActionPostprocessWorkItem {internal bool RequiresNetwork;internal string SystemPrompt="system",UserPrompt="user";}
+@@PREPARE@@
+    {Check.That(FakeOwner.IsGame,"prepare-on-game-thread");Check.That(AIConfigHandler.Runtime.Value=="request","prepare-request-context");Prepared++;return new SceneActionPostprocessWorkItem{RequiresNetwork=RequiresNetwork};}
+    private bool TryRequestSceneUnifiedActionPostprocess(string system,string user,out string content,out string error)
+    {Check.That(!FakeOwner.IsGame,"provider-off-game-thread");Check.That(system=="system"&&user=="user","detached-provider-input");Requested++;if(RetireAfterNetwork)_owner.Current=false;content="normalized";error="failure";return ProviderSuccess;}
+    private string CompleteSceneUnifiedActionPostprocess(SceneActionPostprocessWorkItem item,bool succeeded,string content,string error)
+    {Check.That(FakeOwner.IsGame,"normalize-on-game-thread");Check.That(AIConfigHandler.Runtime.Value=="request","normalize-request-context");Check.That(Completed++==0,"normalize-once");return item.RequiresNetwork?(succeeded?content:"fallback-mood"):"immediate";}
+    internal async Task<NativeConversationTurnStep> Postprocess()
+    {
+        AIConfigHandler.Runtime.Value="request";
+        string postprocessed;
+@@SLICE@@
+        return NativeConversationTurnStep.Stop(postprocessed);
+    }
+}
+sealed class SequenceHost : INativeConversationTurnHost
+{
+    internal List<int> Trace=new();internal int StopAt=-1,ThrowAt=-1;internal bool BadTerminal;
+    internal Exception Failure=new InvalidOperationException("unknown");
+    async Task<NativeConversationTurnStep> Step(int n){await Task.Yield();Trace.Add(n);if(n==ThrowAt)throw Failure;return n==StopAt?NativeConversationTurnStep.Stop("stop-"+n):n==3&&!BadTerminal?NativeConversationTurnStep.Stop("done"):NativeConversationTurnStep.Continue();}
+    public Task<NativeConversationTurnStep> PrepareAsync()=>Step(0);
+    public Task<NativeConversationTurnStep> BuildPromptAsync()=>Step(1);
+    public Task<NativeConversationTurnStep> ReceiveAndPresentAsync()=>Step(2);
+    public Task<NativeConversationTurnStep> PostprocessAndCommitAsync()=>Step(3);
+}
+static class Program
+{
+    static async Task Main()
+    {
+        Check.That(!default(NativeConversationTurnStep).CanContinue,"default-stops");
+        for(int stage=-1;stage<4;stage++)
+        {var h=new SequenceHost{StopAt=stage};string result=await NativeConversationTurnCoordinator.RunAsync(h);Check.That(result==(stage<0?"done":"stop-"+stage),"sequencer-stop-"+stage);Check.That(string.Join(",",h.Trace)==(stage<0?"0,1,2,3":string.Join(",",System.Linq.Enumerable.Range(0,stage+1))),"sequencer-order-"+stage);}
+        for(int stage=0;stage<4;stage++)
+        {var h=new SequenceHost{ThrowAt=stage};Exception got=null;try{await NativeConversationTurnCoordinator.RunAsync(h);}catch(Exception e){got=e;}Check.That(ReferenceEquals(got,h.Failure),"exception-identity-"+stage);Check.That(h.Trace.Count==stage+1,"no-retry-after-exception-"+stage);}
+        var invalid=new SequenceHost{BadTerminal=true};bool rejected=false;try{await NativeConversationTurnCoordinator.RunAsync(invalid);}catch(InvalidOperationException){rejected=true;}Check.That(rejected,"commit-must-be-terminal");
+        using(var owner=new FakeOwner())
+        {
+            var h=new ProbeHost(owner);AIConfigHandler.Runtime.Value="request";
+            int calls=0;Check.That(await h.Capture(()=>{Check.That(FakeOwner.IsGame,"capture-on-game-thread");Check.That(AIConfigHandler.Runtime.Value=="request","capture-request-context");AIConfigHandler.Runtime.Value="mutated";calls++;}),"accepted-capture");
+            Check.That(calls==1&&AIConfigHandler.Runtime.Value=="request","capture-once-no-context-leak");
+            owner.Current=false;Check.That(!await h.Capture(()=>calls++),"stale-capture-rejected");Check.That(calls==1,"no-stale-side-effect");Check.That(owner.Rollbacks==1&&owner.RolledKey=="captured-key"&&owner.RolledSequence==17,"scoped-rollback");
+            owner.Current=true;Exception got=null;try{await h.Capture(()=>throw h.Failure);}catch(Exception e){got=e;}Check.That(ReferenceEquals(got,h.Failure),"capture-exception-not-fallback");Check.That(owner.Rollbacks==1,"partial-effect-not-rolled-back");
+            owner.RejectQueued=true;Check.That(!await h.Capture(()=>calls++),"expired-before-claim");Check.That(calls==1&&owner.Rollbacks==2,"expiry-does-not-execute");
+        }
+        foreach(string scenario in new[]{"normal","immediate","provider-failure","stale-before-prepare","stale-before-complete"})
+        {
+            using var owner=new FakeOwner();var h=new ProbeHost(owner){RequiresNetwork=scenario!="immediate",ProviderSuccess=scenario!="provider-failure",RetireAfterNetwork=scenario=="stale-before-complete"};owner.Current=scenario!="stale-before-prepare";
+            NativeConversationTurnStep result=await Task.Run(h.Postprocess);
+            string expected=scenario=="normal"?"normalized":scenario=="immediate"?"immediate":scenario=="provider-failure"?"fallback-mood":"";
+            Check.That(!result.CanContinue&&result.StopText==expected,"postprocess-result-"+scenario);
+            Check.That(h.Prepared==(scenario=="stale-before-prepare"?0:1),"prepare-count-"+scenario);
+            Check.That(h.Requested==(scenario=="immediate"||scenario=="stale-before-prepare"?0:1),"provider-count-"+scenario);
+            Check.That(h.Completed==(scenario.StartsWith("stale-")?0:1),"completion-count-"+scenario);
+        }
+        Console.WriteLine("PASS NativeTurn checks="+Check.Count+"; real sequencer/capture/postprocess statements; deterministic game/provider ports");
+    }
+}

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using AnimusForge.Refactor.Modules;
 
 internal static class Program
 {
@@ -12,6 +14,9 @@ internal static class Program
     public static void Main()
     {
         ReleaseAudit.Run();
+        TargetAudit.Run();
+        ConversationTargetAudit.Run();
+        ReturnAudit.Run();
         DuelAudit.Run();
         InteractionComponentSafePatch.Run();
         Console.WriteLine("PASS: " + _assertions + " extracted production boundary assertions.");
@@ -19,6 +24,88 @@ internal static class Program
 }
 internal sealed class Hero { }
 internal sealed class PartyBase { public Hero LeaderHero = new Hero(); public bool IsNonHero; }
+internal static class TargetAudit
+{
+    public static void Run()
+    {
+        var owner = new AnimusForge.Refactor.Modules.EncounterTargetOwner<Hero, PartyBase>();
+        var army = new PartyBase();
+        var selectedMember = new Hero();
+        var anotherMember = new Hero();
+        var members = new Dictionary<PartyBase, HashSet<Hero>>
+        {
+            [army] = new HashSet<Hero> { army.LeaderHero, selectedMember, anotherMember }
+        };
+        bool Eligible(Hero hero, PartyBase party) => party != null
+            && members.TryGetValue(party, out var roster) && roster.Contains(hero);
+        Hero Fallback(PartyBase party) => party?.LeaderHero;
+        owner.Set(selectedMember);
+        Program.Check(ReferenceEquals(owner.Ensure(army, Eligible, Fallback, out bool refreshed, out bool cleared), selectedMember)
+            && !refreshed && !cleared, "selected army member outranks encountered leader");
+        Program.Check(ReferenceEquals(owner.Ensure(army, Eligible, Fallback, out refreshed, out cleared), selectedMember)
+            && !refreshed, "menu recheck retains selected member");
+        owner.Set(anotherMember);
+        Program.Check(ReferenceEquals(owner.Ensure(army, Eligible, Fallback, out refreshed, out cleared), anotherMember),
+            "second selection replaces previous member");
+        var nextEncounter = new PartyBase();
+        members[nextEncounter] = new HashSet<Hero> { nextEncounter.LeaderHero };
+        Program.Check(ReferenceEquals(owner.Ensure(nextEncounter, Eligible, Fallback, out refreshed, out cleared), nextEncounter.LeaderHero)
+            && refreshed && !cleared, "new encounter invalidates old member and falls back to its own leader");
+        members[nextEncounter].Remove(nextEncounter.LeaderHero);
+        nextEncounter.LeaderHero = null;
+        Program.Check(owner.Ensure(nextEncounter, Eligible, Fallback, out refreshed, out cleared) == null
+            && !refreshed && cleared, "missing leader clears stale selected target");
+        Program.Check(owner.Ensure(nextEncounter, Eligible, Fallback, out refreshed, out cleared) == null
+            && !cleared, "empty recheck does not claim another clear");
+    }
+}
+internal static class ConversationTargetAudit
+{
+    public static void Run()
+    {
+        var selectedMember = new Hero();
+        var leader = new Hero();
+        var instanceLord = new Hero();
+        var invalid = new Hero();
+        object[] args = { invalid, selectedMember, leader };
+        int fallbackCalls = 0;
+        Hero Resolve(object instance, object[] values, Hero fallback) =>
+            EncounterConversationTargetOwner.Resolve(instance, values,
+                value => value as Hero, value => value != null && !ReferenceEquals(value, invalid),
+                () => { fallbackCalls++; return fallback; });
+        Program.Check(ReferenceEquals(Resolve(instanceLord, args, leader), selectedMember),
+            "selected army member argument outranks instance and encountered leader");
+        Program.Check(fallbackCalls == 0, "valid argument does not evaluate leader fallback");
+        Program.Check(ReferenceEquals(Resolve(instanceLord, new object[] { invalid }, leader), instanceLord),
+            "usable instance outranks encountered leader after invalid arguments");
+        Program.Check(ReferenceEquals(Resolve(invalid, null, leader), leader),
+            "leader is last fallback for missing arguments and unusable instance");
+        Program.Check(Resolve(null, new object[] { invalid }, invalid) == null,
+            "unusable leader cannot become conversation target");
+        Program.Check(Resolve(null, null, null) == null,
+            "missing source leaves conversation target unset");
+    }
+}
+internal static class ReturnAudit
+{
+    public static void Run()
+    {
+        var owner = new EncounterPendingReturnOwner<object, object>();
+        object encounter = new object(), party = new object();
+        Program.Check(!owner.Mark(null, party, 1) && !owner.IsPending,
+            "missing encounter cannot queue return");
+        Program.Check(!owner.Mark(encounter, null, 1) && !owner.IsPending,
+            "missing party cannot queue return");
+        Program.Check(owner.Mark(encounter, party, 1) && owner.IsCurrent(encounter, party, 1),
+            "unauthorized exit captures exact encounter/party/generation");
+        Program.Check(!owner.IsCurrent(new object(), party, 1) && !owner.IsCurrent(encounter, new object(), 1),
+            "new encounter or party cannot consume stale return");
+        Program.Check(!owner.IsCurrent(encounter, party, 2), "save generation invalidates pending return");
+        owner.Clear();
+        Program.Check(!owner.IsPending && !owner.IsCurrent(encounter, party, 1),
+            "release/cancel clears return and rejects old callback");
+    }
+}
 internal sealed class PlayerEncounter { public static PlayerEncounter Current; }
 internal static class SaveRuntimeGuard
 {
@@ -51,7 +138,10 @@ internal static class Logger { public static void Log(string category, string me
 internal static class ReleaseAudit
 {
     private static Hero _targetHero;
-    private static MeetingPlayerReleaseRequest _pendingNativeConversationMeetingRelease, _meetingPlayerReleaseAuthorization;
+    private static readonly EncounterReleaseOwner<MeetingPlayerReleaseRequest> _releaseOwner = new EncounterReleaseOwner<MeetingPlayerReleaseRequest>();
+    private static readonly Func<MeetingPlayerReleaseRequest, bool> ReleaseRequestCurrent = IsMeetingPlayerReleaseRequestCurrent;
+    private static MeetingPlayerReleaseRequest _pendingNativeConversationMeetingRelease => _releaseOwner.Pending;
+    private static MeetingPlayerReleaseRequest _meetingPlayerReleaseAuthorization => _releaseOwner.Authorization;
     private const float NativeConversationReleaseDialogDelaySeconds = 10f;
     private static PartyBase _party;
     private static int _executions;
@@ -75,8 +165,7 @@ internal static class ReleaseAudit
         Game.Current.GameStateManager.ActiveState=mission ? new MissionState() : null;
         Time.ApplicationTime=0; SaveRuntimeGuard.Generation=1; _executions=0;
         Campaign.Current.ConversationManager=new ConversationManager();
-        _pendingNativeConversationMeetingRelease=CaptureMeetingPlayerReleaseRequest(_targetHero, "test");
-        _meetingPlayerReleaseAuthorization=_pendingNativeConversationMeetingRelease;
+        _releaseOwner.Schedule(CaptureMeetingPlayerReleaseRequest(_targetHero, "test"));
         return Mission.Current;
     }
     public static void Run()

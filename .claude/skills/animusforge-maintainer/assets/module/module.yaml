@@ -1,29 +1,14 @@
-# Copy into one AF.Module.* project and replace every __PLACEHOLDER__.
-id: af.module.__MODULE_ID__
+# Optional declaration example, not an installed runtime schema.
+# Use only when a real consumer exists; adapt to its verified schema.
+# Ordinary internal extraction does not require this file.
+id: "af.module.__ID__"
 kind: module
-version: 0.1.0
-contractVersion: 1
-entryType: __ENTRY_TYPE__
 owner:
-  team: __TEAM__
-  maintainers:
-    - __MAINTAINER__
-profiles:
-  - developer
-requiredModules:
-  - id: af.foundation.runtime
-    version: ">=1.0.0 <2.0.0"
-optionalModules: []
-requiresCapabilities: []
-providesCapabilities: []
-persistence:
-  namespace: __PERSISTENCE_NAMESPACE__
-  schemaVersion: 1
-lifecycle:
-  activation: save-load-boundary
-  harmonyPatches: false
-  runtimeUnload: unsupported
+  team: "__OWNER__"
+  maintainers: ["__MAINTAINERS__"]
 compatibility:
-  bannerlord:
-    - "1.3"
-    - "1.4"
+  bannerlord: ["1.3", "1.4"]
+# Conditional: actual module/contract versions, entryType, dependencies,
+# capabilities, profiles and lifecycle effects accepted by the consumer.
+# Declare persistence only when state exists; preserve legacy keys/types.
+# A bridge also documents both participating owners and supported contracts.

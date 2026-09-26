@@ -32,6 +32,7 @@ tools/PreprocessTopicPromptLab/dist/
 _codex_tmp/
 .codex_tmp/
 artifacts/
+/local/
 AnimusForge/PlayerExports/
 FUYONG/
 
@@ -41,3 +42,9 @@ integrated_tabs_settings_preview.html
 
 # Explicitly local-only team brief; publishing must also exclude its unpushed history.
 /docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md
+
+# Campaign composition test build output (never product source).
+/tools/CampaignCompositionTests/.generated/
+/tools/HostCompositionTests/.generated/
+/tests/modules/AF.Module.Economy/PromptProjection/.generated/
+/tests/modules/AF.Module.Economy/DebtNormalization/.generated/

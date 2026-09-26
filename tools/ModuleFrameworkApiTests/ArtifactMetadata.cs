@@ -24,21 +24,59 @@ internal static class Program
         Check(reader.GetString(reader.GetAssemblyDefinition().Name) == "AnimusForge", "implementation assembly identity");
         var provider = new Names(); var lines = new List<string>();
         var api = new HashSet<string>(); var internalTypes = new HashSet<string>();
-        bool foundMemoryOwner = false;
+        bool foundMemoryOwner = false, foundCourierOwner = false;
+        var lifecycleTypes = new HashSet<string>(); var retirementOwners = new HashSet<string>();
         foreach (TypeDefinitionHandle handle in reader.TypeDefinitions)
         {
             TypeDefinition type = reader.GetTypeDefinition(handle);
             string ns = reader.GetString(type.Namespace), name = reader.GetString(type.Name);
+            if ((ns == "AnimusForge.Refactor.Runtime" && (name == "PendingOperationRegistry" || name == "GameLifetimeCoordinator"))
+                || (ns == "AnimusForge" && name == "AfCampaignRuntimeLifecycle"))
+            {
+                lifecycleTypes.Add(name);
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "lifecycle infrastructure remains internal");
+            }
+            if (ns == "AnimusForge" && (name == "MyBehavior" || name == "ShoutBehavior" || name == "CourierDeliveryBehavior"))
+                foreach (MethodDefinitionHandle retirementHandle in type.GetMethods())
+                {
+                    MethodDefinition retirement = reader.GetMethodDefinition(retirementHandle);
+                    if (reader.GetString(retirement.Name) != "RetireCampaignRuntime") continue;
+                    retirementOwners.Add(name);
+                    Check((retirement.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Assembly
+                        && (retirement.Attributes & MethodAttributes.Static) == 0, "retirement is internal instance-only");
+                }
             if (ns == "AnimusForge.Refactor.Modules")
             {
                 Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
                     name + " stays assembly-internal in actual DLL");
                 internalTypes.Add(name);
             }
+            if (ns == "AnimusForge.Api.Internal")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic,
+                    name + " API projection remains internal");
+            if (ns == "AnimusForge" && name == "CourierDeliveryBehavior")
+            {
+                foundCourierOwner = true;
+                CheckCourierCaptures(reader, type, provider, lines);
+            }
+            if (ns == "AnimusForge.Refactor.Runtime" && name == "NpcPersonaGenerationOwner")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "persona reservation owner stays internal");
+            if (ns == "AnimusForge.Refactor.Runtime" && name == "PersonaGenerationWaiter")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "persona waiter stays internal");
+            if (ns == "AnimusForge.Refactor.Contracts" && name == "NpcPersonaReadinessSnapshot")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NotPublic, "readiness snapshot stays internal");
+            if (name == "ScenePersonaPreparationScope" || name == "ScenePersonaCandidate" || name == "CourierPreparationAdmission")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate, "channel persona identity handle stays private");
+            if (name == "NpcPersonaGenerationWork")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate, "persona work stays private");
+            if (name == "CourierPreparedHistory" || name == "CourierHistoryWork")
+                Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPrivate,
+                    name + " is not a public game-object API");
             if (ns == "AnimusForge" && name == "MyBehavior")
             {
                 foundMemoryOwner = true;
                 CheckMemoryOwner(reader, type, provider, lines);
+                CheckPersonaEntry(reader, type, provider, lines);
             }
             if (ns != "AnimusForge.Api.V1") continue;
             Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public, name + " is published");
@@ -80,12 +118,20 @@ internal static class Program
             }
         }
         string[] expected = { "AfApi", "AfCapabilityIds", "AfCapabilityInfo", "AfCapabilityState", "AfFrameworkSnapshot",
-            "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo" };
+            "AfFrameworkState", "AfModuleCapabilityInfo", "AfModuleCapabilityState", "AfModuleInfo",
+            "AfDialogueClient", "AfDialogueOperation", "AfDialogueResult", "AfDialogueState",
+            "AfDialogueEffectState", "AfDialogueCancelResult", "AfSceneUtterance" };
+        Check(lifecycleTypes.Count == 3 && retirementOwners.Count == 3, "all core lifetime types and retirement bindings exist in actual DLL");
         Check(foundMemoryOwner, "actual DLL includes legacy memory owner");
-        Check(api.SetEquals(expected), "exact initial V1 type surface");
+        Check(foundCourierOwner, "actual DLL includes original Courier owner");
+        Check(api.SetEquals(expected), "exact additive Native and Scene V1 type surface");
         foreach (string name in new[] { "IPolicyModulePort", "IGatheringModulePort", "ISiegeModulePort",
             "PolicyModuleAdapter", "GatheringModuleAdapter", "SiegeModuleAdapter", "TeamModuleServices",
-            "InternalModuleDirectory", "ModuleFrameworkRuntime" })
+            "CoreDialogueClient", "CoreDialogueOperation", "CoreDialogueResult", "CoreDialogueServices",
+            "CoreDialogueState", "CoreDialogueEffectState", "CoreDialogueCancelResult", "CoreSceneUtterance",
+            "InternalModuleDirectory", "ModuleFrameworkRuntime", "CampaignComposition",
+            "CampaignModelComposition", "TeamModuleRegistration", "ModuleFrameworkSnapshot",
+            "ModuleBindingSnapshot", "ModuleFrameworkLifecycleState" })
             Check(internalTypes.Contains(name), "actual DLL contains internal " + name);
         lines.Sort(StringComparer.Ordinal);
         Console.WriteLine("ARTIFACT " + path + " SHA256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant());
@@ -94,26 +140,84 @@ internal static class Program
     private static void CheckMemoryOwner(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
     {
         Check((type.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public, "legacy MyBehavior visibility preserved");
-        int found = 0;
+        int foundLegacy = 0, foundScene = 0, foundSceneAddressed = 0;
         foreach (MethodDefinitionHandle handle in type.GetMethods())
         {
             MethodDefinition method = reader.GetMethodDefinition(handle);
             string name = reader.GetString(method.Name);
             if (name != "CommitExternalDialogueHistory" && name != "CommitDialogueHistoryWithScene") continue;
-            found++;
             bool legacy = name == "CommitExternalDialogueHistory";
             MethodSignature<string> signature = method.DecodeSignature(provider, null);
+            bool addressed = !legacy && signature.ParameterTypes.Length == 9;
+            if (legacy) foundLegacy++;
+            else if (addressed) foundSceneAddressed++;
+            else foundScene++;
             Check((method.Attributes & MethodAttributes.Static) != 0, name + " remains static");
             Check((method.Attributes & MethodAttributes.MemberAccessMask) == (legacy ? MethodAttributes.Public : MethodAttributes.Assembly), name + " exact visibility");
             Check(signature.ReturnType == "AnimusForge.Refactor.Contracts.MemoryCommitResult", name + " existing result type");
-            string expected = "String,Boolean,String,String,String,String" + (legacy ? "" : ",Int32");
+            string expected = "String,Boolean,String,String,String,String" + (legacy ? "" : ",Int32")
+                + (addressed ? ",Int32,String" : "");
             Check(string.Join(",", signature.ParameterTypes) == expected, name + " exact ABI parameter types");
             var parameters = method.GetParameters().Select(reader.GetParameter).Where(p => p.SequenceNumber > 0).ToArray();
-            Check(string.Join(",", parameters.Select(p => reader.GetString(p.Name))) == "memoryId,isNonHero,npcName,playerText,aiText,extraFact" + (legacy ? "" : ",sceneSessionId"), name + " parameter names/order");
+            Check(string.Join(",", parameters.Select(p => reader.GetString(p.Name))) == "memoryId,isNonHero,npcName,playerText,aiText,extraFact" + (legacy ? "" : ",sceneSessionId")
+                + (addressed ? ",playerTargetAgentIndex,playerTargetName" : ""), name + " parameter names/order");
             Check(parameters.All(p => (p.Attributes & ParameterAttributes.Optional) == 0 && p.GetDefaultValue().IsNil), name + " no accidental optional ABI");
             lines.Add("MEMORY " + name + " " + method.Attributes + " " + signature.ReturnType + "(" + expected + ")");
         }
-        Check(found == 2, "one legacy facade and one internal scene-aware memory owner");
+        Check(foundLegacy == 1 && foundScene == 1 && foundSceneAddressed == 1,
+            "legacy and scene memory ABI preserved with one additive addressed owner");
+    }
+
+    private static void CheckPersonaEntry(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
+    {
+        int found = 0;
+        foreach (MethodDefinitionHandle handle in type.GetMethods())
+        {
+            MethodDefinition method = reader.GetMethodDefinition(handle);
+            if (reader.GetString(method.Name) != "EnsureNpcPersonaGeneratedForExternalAsync") continue;
+            found++;
+            Check((method.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Public
+                && (method.Attributes & MethodAttributes.Static) != 0, "persona legacy entry remains public static");
+            var sig = method.DecodeSignature(provider, null);
+            Check(sig.ReturnType == "System.Threading.Tasks.Task", "persona Task result ABI");
+            Check(string.Join(",", sig.ParameterTypes) == "TaleWorlds.CampaignSystem.Hero,Boolean", "persona parameter ABI");
+            foreach (ParameterHandle parameterHandle in method.GetParameters())
+            {
+                var parameter = reader.GetParameter(parameterHandle);
+                if (parameter.SequenceNumber == 0) continue;
+                string name = reader.GetString(parameter.Name);
+                bool optional = (parameter.Attributes & ParameterAttributes.Optional) != 0;
+                string value = Constant(reader, parameter.GetDefaultValue());
+                Check(parameter.SequenceNumber == 1 ? name == "hero" && !optional
+                    : name == "ignoreRetryCooldown" && optional && value == "Boolean:00", "persona parameter names/defaults ABI");
+                lines.Add("PERSONA:" + name + ":" + parameter.Attributes + ":" + value);
+            }
+        }
+        Check(found == 1, "one legacy persona entry in same MyBehavior type");
+    }
+
+    private static void CheckCourierCaptures(MetadataReader reader, TypeDefinition type, Names provider, List<string> lines)
+    {
+        int count = 0;
+        foreach (MethodDefinitionHandle handle in type.GetMethods())
+        {
+            MethodDefinition method = reader.GetMethodDefinition(handle);
+            string name = reader.GetString(method.Name);
+            if (name != "CaptureCourierReplyRefactorEnvelopeForExternal" && name != "CaptureCourierInboundRefactorEnvelopeForExternal") continue;
+            count++;
+            MethodSignature<string> signature = method.DecodeSignature(provider, null);
+            Check((method.Attributes & MethodAttributes.MemberAccessMask) == MethodAttributes.Public
+                && (method.Attributes & MethodAttributes.Static) != 0, name + " public static preserved");
+            Check(signature.ReturnType == "AnimusForge.Refactor.Contracts.InteractionEnvelope", name + " synchronous envelope result preserved");
+            Check(string.Join(",", signature.ParameterTypes) == "String,String", name + " exact parameters");
+            var parameters = method.GetParameters().Select(reader.GetParameter).Where(p => p.SequenceNumber > 0).ToArray();
+            Check(string.Join(",", parameters.Select(p => reader.GetString(p.Name))) == "sessionId,playerText", name + " named arguments preserved");
+            Check((parameters[0].Attributes & ParameterAttributes.Optional) == 0 && parameters[0].GetDefaultValue().IsNil, name + " required session");
+            Check((parameters[1].Attributes & ParameterAttributes.Optional) != 0
+                && Constant(reader, parameters[1].GetDefaultValue()) == "NullReference:00000000", name + " optional null player text");
+            lines.Add("COURIER " + name + " " + signature.ReturnType + "(String sessionId,String playerText=null)");
+        }
+        Check(count == 2, "both original synchronous Courier captures remain available");
     }
 
     private static string Constant(MetadataReader reader, ConstantHandle handle)

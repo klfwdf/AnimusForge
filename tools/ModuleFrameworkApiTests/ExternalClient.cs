@@ -31,16 +31,32 @@ static class Program
 
     static void Main()
     {
+        // Fail deterministically without invoking native crash reporting for expected mutations.
+        try { Run(); }
+        catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
+    }
+
+    private static void Run()
+    {
         Check(HostControl.ServiceInitializations == 0 && HostControl.GateCalls == 0, "host initially untouched");
         AfFrameworkSnapshot before = AfApi.GetSnapshot();
         Check(before.State == AfFrameworkState.NotInitialized, "before load NotInitialized");
         Check(before.ReasonCode == "framework.not_initialized" && before.Modules.Count == 0, "before load empty catalog");
         Check(before.ContractVersion == 1 && AfApi.ContractVersion == 1, "V1 contract identity");
         Check(before.PublicCapabilities.Count == 7, "seven declared public capabilities");
-        Check(before.PublicCapabilities.Count(x => x.State == AfCapabilityState.Available) == 1, "only catalog callable");
+        Check(before.PublicCapabilities.Count(x => x.State == AfCapabilityState.Available) == 3, "catalog, Native and Scene contracts callable, not game readiness");
         Check(AfApi.GetCapability(AfCapabilityIds.CatalogRead).State == AfCapabilityState.Available, "catalog query before load supported");
-        string[] unsupported = { AfCapabilityIds.NativeSubmit, AfCapabilityIds.SceneSubmit,
-            AfCapabilityIds.CourierSubmit, AfCapabilityIds.ActionExecute, AfCapabilityIds.MemoryWrite,
+        Check(AfApi.GetCapability(AfCapabilityIds.NativeSubmit).State == AfCapabilityState.Available, "Native contract available; real owner checked by Submit");
+        Check(AfApi.GetCapability(AfCapabilityIds.SceneSubmit).State == AfCapabilityState.Available, "Scene contract available; real owner checked by Submit");
+        using (AfDialogueClient sceneClient = AfApi.CreateDialogueClient())
+        {
+            Check(sceneClient.CaptureSceneContextTicket() == null, "no active Scene cannot issue ticket");
+            AfDialogueResult unavailable = sceneClient.SubmitScene("fixture-ticket", "scene-unavailable", "hello").Completion.GetAwaiter().GetResult();
+            Check(unavailable.State == AfDialogueState.Rejected && unavailable.EffectState == AfDialogueEffectState.NoConfirmedEffect
+                && unavailable.SceneUtterances.Count == 0, "unavailable Scene owner rejects without fabricated receipt");
+            Immutable(unavailable.SceneUtterances, "empty Scene utterances");
+        }
+        string[] unsupported = { AfCapabilityIds.CourierSubmit, AfCapabilityIds.ActionExecute, AfCapabilityIds.MemoryWrite,
             AfCapabilityIds.ExtensionRegister };
         foreach (string id in unsupported)
         {
@@ -126,7 +142,7 @@ static class Program
         AfFrameworkSnapshot detached = HostControl.CreateDetachedSnapshotThenMutateSources();
         Check(detached.PublicCapabilities.Count == 1 && detached.Modules.Count == 1
             && detached.Modules[0].Capabilities.Count == 1, "DTO constructors defensively copy source lists");
-        Type[] dtoTypes = { typeof(AfCapabilityInfo), typeof(AfModuleCapabilityInfo), typeof(AfModuleInfo), typeof(AfFrameworkSnapshot) };
+        Type[] dtoTypes = { typeof(AfCapabilityInfo), typeof(AfModuleCapabilityInfo), typeof(AfModuleInfo), typeof(AfFrameworkSnapshot), typeof(AfDialogueResult), typeof(AfSceneUtterance) };
         foreach (Type type in dtoTypes)
         {
             Check(type.IsSealed && type.GetConstructors().Length == 0, "DTO sealed with no public constructors " + type.Name);
@@ -142,8 +158,9 @@ static class Program
         }
         string[] apiMethods = typeof(AfApi).GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
             .Select(m => m.Name).Order().ToArray();
-        Check(apiMethods.SequenceEqual(new[] { "GetCapability", "GetSnapshot" }), "no undeclared public execution path");
+        Check(apiMethods.SequenceEqual(new[] { "CreateDialogueClient", "GetCapability", "GetSnapshot" }), "no undeclared public execution path");
         Check(typeof(AfApi).Assembly != typeof(Program).Assembly, "external client is a separate assembly");
+        Console.WriteLine($"PASS {HostControl.VerifySnapshotBoundary()} snapshot boundary assertions; 128 parallel captures/projections; pinned old/new DTO parity.");
         Console.WriteLine($"PASS {checks} public API assertions; 256 concurrent reads; actual source-linked V1 contracts/runtime.");
         Console.WriteLine("NOT TESTED: Bannerlord host, live saves, economy, gameplay ports, request submission, external DLL load order.");
     }

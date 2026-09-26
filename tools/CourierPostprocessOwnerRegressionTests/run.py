@@ -27,20 +27,23 @@ SIGNATURES = [
     'private sealed class CourierReplyGenerationRequest',
 ]
 LINKS = [
-    'CourierVisibleLetterSanitizer.cs', 'LlmVisibleReplyNormalizer.cs',
+    'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
+    'CourierVisibleLetterSanitizer.cs', 'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs',
     'Refactor/Contracts/InteractionContracts.cs', 'Refactor/Contracts/LlmContracts.cs',
-    'Refactor/Contracts/ProfileConfigContracts.cs', 'Refactor/Contracts/InteractionPipeline.cs',
-    'Refactor/Contracts/FullInteractionPipeline.cs', 'Refactor/Runtime/InteractionRequestCoordinator.cs',
-    'Refactor/Adapters/LegacyInteractionPipelineComposition.cs', 'Refactor/Adapters/LegacyActionTagParser.cs',
+    'Refactor/Contracts/ProfileConfigContracts.cs', 'src/modules/AF.Module.Conversation/Internal/Pipeline/InteractionPipeline.cs',
+    'src/modules/AF.Module.Conversation/Internal/Pipeline/FullInteractionPipeline.cs', 'src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs',
+    'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs',
+    'Refactor/Adapters/LegacyInteractionPipelineComposition.cs', 'src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs',
     'Refactor/Adapters/LegacyDetachedPromptComposer.cs', 'Refactor/Adapters/LegacyPromptPackageAdapter.cs',
+    'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs',
 ]
 
 def extract():
-    courier = ex.source('CourierDeliveryBehavior.cs', None)
+    courier = ex.courier_source(None)
     shout = ex.source('ShoutBehavior.cs', None)
     return {
         'METHODS': '\n\n'.join(ex.declaration(courier, signature) for signature in SIGNATURES),
-        'PARTIAL': ex.source('CourierDeliveryBehavior.DetachedPostprocess.cs', None),
+        'PARTIAL': ex.source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs', None),
         'WORK_ITEM': ex.declaration(shout, 'internal sealed class CourierActionPostprocessWorkItem'),
     }
 
@@ -54,6 +57,13 @@ MUTATIONS = {
     'same-id-recipient': [('PARTIAL', '!ReferenceEquals(owner.Recipient, owner.Behavior.RequireCurrentCourierPostprocessRecipient(owner.Envelope))', 'owner.Behavior.RequireCurrentCourierPostprocessRecipient(owner.Envelope) == null')],
     'owner-one-shot': [('PARTIAL', '!owners.Remove(context)', 'false'), ('WORK_ITEM', 'Interlocked.Exchange(ref _completeOnMainThread, null)', '_completeOnMainThread')],
 }
+
+
+def resolve_newtonsoft(path):
+    candidate = Path(path).expanduser()
+    if not candidate.is_absolute() or not candidate.is_file():
+        raise FileNotFoundError(f'Newtonsoft.Json.dll is missing: {candidate}')
+    return candidate.resolve(strict=True)
 EXPECTED_FAILURES = {
     'visible-protocol-bypass': 'raw-evidence-visible-cleanup',
     'raw-parser': 'normalize-before-parser-once', 'sync-authority': 'unbound-sync-and-async-zero-actions',
@@ -65,10 +75,15 @@ EXPECTED_FAILURES = {
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet', default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    parser.add_argument('--newtonsoft', default=str(ROOT / '.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
     parser.add_argument('--output-name', default='current')
     parser.add_argument('--mutation', choices=sorted(MUTATIONS))
     args = parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+', args.output_name): parser.error('Invalid output name')
+    try:
+        newtonsoft = resolve_newtonsoft(args.newtonsoft)
+    except FileNotFoundError as error:
+        parser.error(str(error))
     output = HERE / '.generated' / args.output_name
     output.mkdir(parents=True, exist_ok=True)
     blocks = extract()
@@ -86,7 +101,7 @@ def main():
     assert blocks['PARTIAL'].count('Task.Delay(30000)') == 1
     instrumented = blocks['PARTIAL'].replace('Task.Delay(30000)', 'Task.Delay(180)')
     (output / 'CourierOwner.cs').write_text(instrumented, encoding='utf-8')
-    includes = '<Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(ROOT / '.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll')) + '</HintPath></Reference>'
+    includes = '<Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(newtonsoft)) + '</HintPath></Reference>'
     includes += ''.join('<Compile Include="' + escape(str(ROOT / item)) + '" Link="' + escape(Path(item).name) + '"/>' for item in LINKS)
     (output / 'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup><ItemGroup>' + includes + '</ItemGroup></Project>', encoding='utf-8')
     (output / 'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>', encoding='utf-8')

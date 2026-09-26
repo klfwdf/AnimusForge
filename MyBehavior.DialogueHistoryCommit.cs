@@ -11,6 +11,11 @@ public partial class MyBehavior
     // Applied is not SyncData/disk durability; failed acceptance may follow partial writes.
 	internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)
 	{
+		return CommitDialogueHistoryWithScene(memoryId, isNonHero, npcName, playerText, aiText, extraFact, sceneSessionId, -1, null);
+	}
+
+	internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex, string playerTargetName)
+	{
 		try
 		{
 			if (!TWParallel.IsMainThread())
@@ -37,8 +42,8 @@ public partial class MyBehavior
 				return new MemoryCommitResult(MemoryCommitStatus.Rejected, "memory_target_ineligible");
 			}
 			bool accepted = isNonHero
-				? owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId)
-				: owner.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId);
+				? owner.AppendDialogueHistoryById(normalizedMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName)
+				: owner.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
 			return accepted
 				? new MemoryCommitResult(MemoryCommitStatus.Applied)
 				: new MemoryCommitResult(MemoryCommitStatus.Failed, "memory_owner_write_unconfirmed");

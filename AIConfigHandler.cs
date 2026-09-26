@@ -32,16 +32,21 @@ using TaleWorlds.MountAndBlade.Missions;
 
 namespace AnimusForge;
 
+// Explicit per-call boundaries keep deterministic rule tests out of process-wide provider state.
+internal sealed class PromptRuleEvaluationPorts
+{
+	internal Func<List<GuardrailRulePromptConfig>> EligibleRules;
+	internal Func<string, float[]> InputEmbedding;
+	internal Func<string, float[]> PhraseEmbedding;
+	internal Func<string, IReadOnlyList<string>, IReadOnlyList<float>> Rerank;
+	internal Func<string, int, GuardrailEvalSnapshot> AuxiliarySnapshot;
+}
+
 public static class AIConfigHandler
 {
 	private const int ActionPostprocessRequestTimeoutMilliseconds = DuelSettings.LlmRequestTimeoutMilliseconds;
-	private const string EmbeddedPreprocessPromptsResourceName = "AnimusForge.Defaults.PreprocessPrompts.json";
-	private const string EmbeddedRpItemIntroductionPromptsResourceName = "AnimusForge.Defaults.RpItemIntroductionPrompts.json";
 	private const string KingAbdicateToPlayerActionTag = "[ACTION:KING_ABDICATE_TO_PLAYER]";
-	private static readonly Lazy<JObject> EmbeddedPreprocessPromptsDefaults = new Lazy<JObject>(LoadEmbeddedDefaultPreprocessPrompts, LazyThreadSafetyMode.ExecutionAndPublication);
-	private static readonly Lazy<RpItemIntroductionPromptsConfigModel> EmbeddedRpItemIntroductionPromptsDefaults = new Lazy<RpItemIntroductionPromptsConfigModel>(LoadEmbeddedDefaultRpItemIntroductionPrompts, LazyThreadSafetyMode.ExecutionAndPublication);
-	private static readonly Encoding StrictUtf8Encoding = new UTF8Encoding(false, true);
-	private static volatile string _preprocessPromptsLoadError = "";
+	private static string _preprocessPromptsLoadError => _promptConfiguration.Read().Value.PreprocessLoadError;
 	private static int _rpItemIntroductionPromptsFallbackLogged;
 	private static int _rpItemIntroductionPromptBuildFailureLogged;
 	private sealed class ActionPostprocessHistoryEntry
@@ -53,91 +58,6 @@ public static class AIConfigHandler
 		public bool IsRoleMessage;
 	}
 
-	private sealed class GuardrailRuleEval
-	{
-		public string RuleTag;
-
-		public string MatchedSeed;
-
-		public string MatchedIntent;
-
-		public float RawInput;
-
-		public float RawContext;
-
-		public float MixedRaw;
-
-		public float AmpScore;
-
-		public float RerankScore;
-
-		public float Delta;
-
-		public float Mean;
-
-		public float MaxOther;
-
-		public string MaxOtherTag;
-
-		public int Rank;
-
-		public bool Candidate;
-
-		public bool AbsHit;
-
-		public bool RelHit;
-
-		public bool HighAmpHit;
-
-		public bool ForceHit;
-
-		public float TopGap;
-
-		public float IntentEvidence;
-
-		public float IntentGate;
-
-		public string IntentSeed;
-
-		public bool LexicalAnchor;
-
-		public string RejectReason;
-
-		public string MatchMode;
-
-		public bool Hit;
-	}
-
-	private sealed class GuardrailEvalSnapshot
-	{
-		public string Key;
-
-		public string MatchMode = "none";
-
-		public int IntentCount;
-
-		public int RecallPerIntent;
-
-		public int RerankPerIntent;
-
-		public int ReturnCap;
-
-		public MentionedWorldEntities MentionedEntities = new MentionedWorldEntities();
-
-		public Dictionary<string, GuardrailRuleEval> Rules = new Dictionary<string, GuardrailRuleEval>(StringComparer.OrdinalIgnoreCase);
-	}
-
-	private sealed class GuardrailAuxiliaryTopic
-	{
-		public int Number;
-
-		public string Label;
-
-		public string Code;
-
-		public string RuleId;
-	}
-
 	private sealed class PreprocessExcludedPromptEntry
 	{
 		public string RuleId;
@@ -147,64 +67,6 @@ public static class AIConfigHandler
 		public int Priority;
 
 		public string Instruction;
-	}
-
-	private sealed class GuardrailIntentInput
-	{
-		public string Text;
-
-		public float[] Vector;
-
-		public float Weight = 1f;
-	}
-
-	private sealed class GuardrailRuleScore
-	{
-		public GuardrailRulePromptConfig Rule;
-
-		public float RawScore;
-
-		public float FinalScore;
-
-		public string MatchedSeed;
-
-		public string MatchedIntent;
-	}
-
-	private sealed class GuardrailRuleAggregate
-	{
-		public GuardrailRuleEval Eval;
-
-		public float ScoreSum;
-
-		public int HitCount;
-
-		public int BestRank = int.MaxValue;
-
-		public float BestScore;
-
-		public string MatchedSeed;
-
-		public string MatchedIntent;
-	}
-
-	private sealed class StickyGuardrailRuleState
-	{
-		public string RuleId = "";
-
-		public string Group = "";
-
-		public int Priority;
-
-		public float LastScore;
-
-		public string MatchedSeed = "";
-
-		public int RemainingCarryTurns;
-
-		public int MaxCarryTurns;
-
-		public int CarryTurnIndex;
 	}
 
 	private static string BuildSemanticHitRateDetail(string detail, string secondaryText)
@@ -242,17 +104,32 @@ public static class AIConfigHandler
 		public float AnchorRawFloor;
 	}
 
-	private static AIConfigModel _config;
+	private static readonly RevisionedPromptConfigurationStore<PromptConfigurationSnapshot> _promptConfiguration =
+		new RevisionedPromptConfigurationStore<PromptConfigurationSnapshot>(new PromptConfigurationSnapshot(null, null, null, null, null, null, ""));
+	private static readonly PromptConfigurationLoader _promptConfigurationLoader =
+		new PromptConfigurationLoader(new ProductionPromptConfigurationFiles());
+	private static readonly object _promptConfigurationReloadLock = new object();
 
-	private static GuardrailConfigModel _guardrail;
+	private static AIConfigModel _config => _promptConfiguration.Read().Value.ReadMainForOwner();
+	private static GuardrailConfigModel _guardrail => _promptConfiguration.Read().Value.ReadGuardrailForOwner();
+	private static ActionPostprocessConfigModel _actionPostprocess => _promptConfiguration.Read().Value.ReadActionPostprocessForOwner();
+	private static PreprocessPromptsConfigModel _preprocessPrompts => _promptConfiguration.Read().Value.ReadPreprocessForOwner();
+	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts => _promptConfiguration.Read().Value.ReadProactiveRequestForOwner();
+	private static RpItemIntroductionPromptsConfigModel _rpItemIntroductionPrompts => _promptConfiguration.Read().Value.ReadRpItemIntroductionForOwner();
 
-	private static ActionPostprocessConfigModel _actionPostprocess;
+	private static List<string> CopyConfigList(List<string> values) => values == null ? new List<string>() : new List<string>(values);
 
-	private static PreprocessPromptsConfigModel _preprocessPrompts;
+	private static Dictionary<string, string> CopyConfigMap(Dictionary<string, string> values) =>
+		values == null ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) : new Dictionary<string, string>(values, values.Comparer);
 
-	private static ProactiveNpcRequestPromptsConfigModel _proactiveNpcRequestPrompts;
-
-	private static RpItemIntroductionPromptsConfigModel _rpItemIntroductionPrompts;
+	private static List<PostprocessRuleEntry> CopyPostprocessRules(List<PostprocessRuleEntry> rules) =>
+		(rules ?? new List<PostprocessRuleEntry>()).Select(rule => rule == null ? null : new PostprocessRuleEntry
+		{
+			Tag = rule.Tag,
+			Description = rule.Description,
+			SingleFramedNpcDescription = rule.SingleFramedNpcDescription,
+			RuntimeAllowedParameterValues = rule.RuntimeAllowedParameterValues == null ? null : new HashSet<string>(rule.RuntimeAllowedParameterValues, rule.RuntimeAllowedParameterValues.Comparer)
+		}).ToList();
 
 	private static readonly Regex PreprocessTemplateVariableRegex = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
@@ -265,65 +142,41 @@ public static class AIConfigHandler
 		"dialogue"
 	};
 
-	private static readonly object _guardrailSemanticLock = new object();
-
-	private static readonly Dictionary<string, float[]> _guardrailPhraseVecCache = new Dictionary<string, float[]>(StringComparer.Ordinal);
-
-	private static readonly Dictionary<string, float[]> _guardrailInputVecCache = new Dictionary<string, float[]>(StringComparer.Ordinal);
+	private static readonly PromptSemanticVectorCache _guardrailVectors = new PromptSemanticVectorCache(1024, 256);
 
 	private static int _guardrailWarmupState;
 
 	private static long _guardrailWarmupVersion = -1L;
 
-	private static long _guardrailConfigVersion = 1L;
 
-	private static readonly object _preprocessExcludedPromptCacheLock = new object();
+	private static readonly PromptRevisionedDerivedCache<Dictionary<string, GuardrailRulePromptConfig>> _ruleRegistryCache =
+		new PromptRevisionedDerivedCache<Dictionary<string, GuardrailRulePromptConfig>>();
+	private static readonly PromptRevisionedDerivedCache<List<PreprocessExcludedPromptEntry>> _preprocessExcludedPromptCache =
+		new PromptRevisionedDerivedCache<List<PreprocessExcludedPromptEntry>>();
 
-	private static long _preprocessExcludedPromptCacheVersion = -1L;
 
-	private static List<PreprocessExcludedPromptEntry> _preprocessExcludedPromptCache = new List<PreprocessExcludedPromptEntry>();
+	private static readonly PromptRetrievalContextSlot<string> _guardrailSemanticRuntimeContext = PromptRetrievalContextOwner.Semantic;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetKingdomId = PromptRetrievalContextOwner.Kingdom;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetHeroId = PromptRetrievalContextOwner.Hero;
+	private static readonly PromptRetrievalContextSlot<object> _guardrailRuntimeEligibility = PromptRetrievalContextOwner.Eligibility;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetCharacterId = PromptRetrievalContextOwner.Character;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetTroopId = PromptRetrievalContextOwner.Troop;
+	private static readonly PromptRetrievalContextSlot<string> _guardrailRuntimeTargetUnnamedRank = PromptRetrievalContextOwner.UnnamedRank;
+	private static readonly PromptRetrievalContextSlot<int> _guardrailRuntimeTargetAgentIndex = PromptRetrievalContextOwner.AgentIndex;
 
-	private const int GuardrailPhraseVecCacheMax = 1024;
+	private static readonly PromptStickyRuleStore _stickyGuardrailRuleStore = new PromptStickyRuleStore();
 
-	private const int GuardrailInputVecCacheMax = 256;
-
-	private static readonly AsyncLocal<string> _guardrailSemanticRuntimeContext = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetKingdomId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetHeroId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetCharacterId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetTroopId = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<string> _guardrailRuntimeTargetUnnamedRank = new AsyncLocal<string>();
-
-	private static readonly AsyncLocal<int> _guardrailRuntimeTargetAgentIndex = new AsyncLocal<int>();
-
-	private static readonly object _stickyGuardrailRuleLock = new object();
-
-	private static readonly Dictionary<string, List<StickyGuardrailRuleState>> _stickyGuardrailRules = new Dictionary<string, List<StickyGuardrailRuleState>>(StringComparer.OrdinalIgnoreCase);
-
-	private static readonly string[] StickyGuardrailFollowUpPhrases = new string[17]
-	{
-		"然后", "然后呢", "接着呢", "接下来呢", "那然后呢", "那接下来呢", "那我该怎么办", "我该怎么办", "下一步呢", "下一步怎么做",
-		"具体怎么做", "具体呢", "细说", "继续说", "继续", "展开说说", "后面呢"
-	};
-
-	private const int MaxStickyGuardrailRulesPerTarget = 3;
-
-	private static GuardrailEvalSnapshot _lastGuardrailEval;
+	private static readonly PromptSingleEvaluationCache<GuardrailEvalSnapshot> _guardrailEvalCache =
+		new PromptSingleEvaluationCache<GuardrailEvalSnapshot>();
 
 	private static readonly Regex AuxiliaryGuardrailNumberRegex = new Regex("\\d+", RegexOptions.Compiled);
 
-	private static readonly object _auxiliaryMentionedEntitiesLock = new object();
+	private static readonly PromptAuxiliaryMentionStore _auxiliaryMentionedEntitiesStore =
+		new PromptAuxiliaryMentionStore(AuxiliaryMentionedEntitiesCacheMax);
 
-	private static readonly Dictionary<string, MentionedWorldEntities> _auxiliaryMentionedEntitiesCache = new Dictionary<string, MentionedWorldEntities>(StringComparer.Ordinal);
-
-	private static readonly Queue<string> _auxiliaryMentionedEntitiesCacheOrder = new Queue<string>();
-
-	private static readonly AsyncLocal<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest = new AsyncLocal<MentionedWorldEntities>();
+	private static readonly PromptRetrievalContextSlot<MentionedWorldEntities> _auxiliaryMentionedEntitiesLatest =
+		PromptRetrievalContextOwner.CreateSlot<MentionedWorldEntities>(context => (MentionedWorldEntities)context.LatestEntities,
+			(context, value) => context.LatestEntities = value);
 
 	private const int AuxiliaryMentionedEntitiesCacheMax = 64;
 
@@ -385,19 +238,19 @@ public static class AIConfigHandler
 		return text.Replace("{npcName}", name).Replace("{healthPercent}", percent).Replace("{healthRatio}", percent);
 	}
 
-	public static List<string> DuelTriggerKeywords => _guardrail?.Duel?.AcceptKeywords ?? new List<string>();
+	public static List<string> DuelTriggerKeywords => CopyConfigList(_guardrail?.Duel?.AcceptKeywords);
 
-	public static List<PostprocessRuleEntry> DuelPostprocessRules => _guardrail?.Duel?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> DuelPostprocessRules => CopyPostprocessRules(_guardrail?.Duel?.PostprocessRules);
 
 	public static bool RewardEnabled => _guardrail?.Reward?.IsEnabled == true;
 
 	public static string RewardInstruction => BuildRewardInstructionForExternal();
 
-	public static List<PostprocessRuleEntry> RewardPostprocessRules => _guardrail?.Reward?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> RewardPostprocessRules => CopyPostprocessRules(_guardrail?.Reward?.PostprocessRules);
 
-	public static List<string> RewardTriggerKeywords => _guardrail?.Reward?.TriggerKeywords ?? new List<string>();
+	public static List<string> RewardTriggerKeywords => CopyConfigList(_guardrail?.Reward?.TriggerKeywords);
 
-	public static Dictionary<string, string> RewardRuntimeInstructionTemplates => _guardrail?.Reward?.RuntimeInstructionTemplates ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	public static Dictionary<string, string> RewardRuntimeInstructionTemplates => CopyConfigMap(_guardrail?.Reward?.RuntimeInstructionTemplates);
 
 	public static bool IsPlayerCompanionOrFamilyTradeTarget(Hero targetHero)
 	{
@@ -470,6 +323,11 @@ public static class AIConfigHandler
 	{
 		try
 		{
+			PromptRuleEligibility captured = CapturedRuleEligibility;
+			if (captured != null && captured.IsCaptured)
+			{
+				return captured.TargetIsPlayerPartyTradeLimited;
+			}
 			return IsPlayerPartyTradeLimitedTarget(ResolveConversationTargetHero());
 		}
 		catch
@@ -603,17 +461,17 @@ public static class AIConfigHandler
 
 	public static string LoanInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Loan?.Instruction ?? "");
 
-	public static List<PostprocessRuleEntry> LoanPostprocessRules => _guardrail?.Loan?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> LoanPostprocessRules => CopyPostprocessRules(_guardrail?.Loan?.PostprocessRules);
 
-	public static List<string> LoanTriggerKeywords => _guardrail?.Loan?.TriggerKeywords ?? new List<string>();
+	public static List<string> LoanTriggerKeywords => CopyConfigList(_guardrail?.Loan?.TriggerKeywords);
 
-	public static Dictionary<string, string> LoanRuntimeInstructionTemplates => _guardrail?.Loan?.RuntimeInstructionTemplates ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+	public static Dictionary<string, string> LoanRuntimeInstructionTemplates => CopyConfigMap(_guardrail?.Loan?.RuntimeInstructionTemplates);
 
 	public static bool SurroundingsEnabled => _guardrail?.Surroundings?.IsEnabled == true;
 
 	public static string SurroundingsInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Surroundings?.Instruction ?? "");
 
-	public static List<string> SurroundingsTriggerKeywords => _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>();
+	public static List<string> SurroundingsTriggerKeywords => CopyConfigList(_guardrail?.Surroundings?.TriggerKeywords);
 
 	public static string DuelNonHeroInstruction => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.Duel?.NonHeroInstruction ?? "");
 
@@ -638,7 +496,7 @@ public static class AIConfigHandler
 		try
 		{
 			GuardrailRulePromptConfig rulePromptByTag = GetRulePromptByTag(ruleTag);
-			return rulePromptByTag?.PostprocessRules ?? new List<PostprocessRuleEntry>();
+			return CopyPostprocessRules(rulePromptByTag?.PostprocessRules);
 		}
 		catch
 		{
@@ -807,13 +665,13 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static List<PostprocessRuleEntry> WildernessPostprocessRules => _actionPostprocess?.WildernessPostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> WildernessPostprocessRules => CopyPostprocessRules(_actionPostprocess?.WildernessPostprocessRules);
 
-	public static List<PostprocessRuleEntry> RoyalPostprocessRules => _actionPostprocess?.RoyalPostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> RoyalPostprocessRules => CopyPostprocessRules(_actionPostprocess?.RoyalPostprocessRules);
 
-	public static List<PostprocessRuleEntry> IntimacyPostprocessRules => _actionPostprocess?.IntimacyPostprocessRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> IntimacyPostprocessRules => CopyPostprocessRules(_actionPostprocess?.IntimacyPostprocessRules);
 
-	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => _actionPostprocess?.MoodRules ?? new List<PostprocessRuleEntry>();
+	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => CopyPostprocessRules(_actionPostprocess?.MoodRules);
 
 	public static bool IsRoyalAbdicationPostprocessTargetForExternal(Hero targetHero)
 	{
@@ -1669,112 +1527,6 @@ public static class AIConfigHandler
 		return text2.Replace("\r", " ").Replace("\n", " ").Trim();
 	}
 
-	private static List<string> SplitGuardrailIntents(string input, int maxParts = IntentQueryOptimizer.MaxCombinedIntentCount)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			string text = NormalizeSemanticText(input);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return list;
-			}
-			List<string> list2 = new List<string>();
-			StringBuilder stringBuilder = new StringBuilder();
-			foreach (char c in text)
-			{
-				if (c == '。' || c == '！' || c == '!' || c == '？' || c == '?' || c == '；' || c == ';' || c == '，' || c == ',' || c == '、' || c == '\n' || c == '\r')
-				{
-					string text2 = stringBuilder.ToString().Trim();
-					if (!string.IsNullOrWhiteSpace(text2))
-					{
-						list2.Add(text2);
-					}
-					stringBuilder.Clear();
-				}
-				else
-				{
-					stringBuilder.Append(c);
-				}
-			}
-			string text3 = stringBuilder.ToString().Trim();
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				list2.Add(text3);
-			}
-			if (list2.Count <= 0)
-			{
-				list2.Add(text);
-			}
-			List<string> list3 = new List<string>();
-			string[] array = new string[13]
-			{
-				"然后", "顺便", "另外", "再说", "并且", "而且", "以及", "同时", "还有", "再加上",
-				"顺带", "并且还", "以及还"
-			};
-			for (int j = 0; j < list2.Count; j++)
-			{
-				string text4 = (list2[j] ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text4))
-				{
-					continue;
-				}
-				bool flag = false;
-				foreach (string text5 in array)
-				{
-					int num = text4.IndexOf(text5, StringComparison.Ordinal);
-					if (num > 1 && num < text4.Length - text5.Length - 1)
-					{
-						string text6 = text4.Substring(0, num).Trim();
-						string text7 = text4.Substring(num + text5.Length).Trim();
-						if (text6.Length >= 2)
-						{
-							list3.Add(text6);
-						}
-						if (text7.Length >= 2)
-						{
-							list3.Add(text7);
-						}
-						flag = true;
-						break;
-					}
-				}
-				if (!flag)
-				{
-					list3.Add(text4);
-				}
-			}
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			list.Add(text);
-			hashSet.Add(text);
-			for (int l = 0; l < list3.Count; l++)
-			{
-				if (list.Count >= Math.Max(1, maxParts))
-				{
-					break;
-				}
-				string text8 = NormalizeSemanticText(list3[l]);
-				if (!string.IsNullOrWhiteSpace(text8) && text8.Length >= 2 && hashSet.Add(text8))
-				{
-					list.Add(text8);
-				}
-			}
-		}
-		catch
-		{
-		}
-		list = IntentQueryOptimizer.OptimizeSplitIntents(list, Math.Max(1, maxParts));
-		if (list.Count <= 0)
-		{
-			string text9 = NormalizeSemanticText(input);
-			if (!string.IsNullOrWhiteSpace(text9))
-			{
-				list = IntentQueryOptimizer.OptimizeSplitIntents(new List<string> { text9 }, 1);
-			}
-		}
-		return list;
-	}
-
 	private static float DotProductNormalized(float[] a, float[] b)
 	{
 		try
@@ -1887,131 +1639,6 @@ public static class AIConfigHandler
 		return result;
 	}
 
-	private static List<string> GetBuiltInIntentAnchorSeeds(string ruleTag)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			string text = (ruleTag ?? "").Trim().ToLowerInvariant();
-			List<string> guardrailKeywordsByTag = GetGuardrailKeywordsByTag(ruleTag);
-			if (guardrailKeywordsByTag != null && guardrailKeywordsByTag.Count > 0)
-			{
-				list.AddRange(guardrailKeywordsByTag);
-			}
-			switch (text)
-			{
-			case "reward":
-				list.Add("我想和你做点生意");
-				list.Add("我想和你交易");
-				list.Add("我们谈谈买卖");
-				list.Add("我想买东西");
-				list.Add("我想卖东西");
-				list.Add("看看你有什么货");
-				list.Add("谈个价格");
-				list.Add("交换物品");
-				break;
-			case "loan":
-				list.Add("我想借钱周转");
-				list.Add("我想赊账");
-				list.Add("我欠你钱");
-				list.Add("还款期限怎么定");
-				list.Add("谈还款日");
-				break;
-			case "duel":
-				list.Add("我想和你决斗");
-				list.Add("我们单挑");
-				list.Add("来比试一场");
-				list.Add("你敢不敢决斗");
-				break;
-			case "surroundings":
-				list.Add("这里是哪里");
-				list.Add("附近有什么地方");
-				list.Add("离哪座城最近");
-				list.Add("这地方属于谁");
-				list.Add("往北往南有什么");
-				break;
-			}
-		}
-		catch
-		{
-		}
-		return NormalizeStringList(list, 96);
-	}
-
-	private static float GetBuiltInIntentEvidenceGate(string ruleTag, int inputLen)
-	{
-		float num = 0.52f;
-		switch ((ruleTag ?? "").Trim().ToLowerInvariant())
-		{
-		case "duel":
-			num = 0.52f;
-			break;
-		case "reward":
-			num = 0.47f;
-			break;
-		case "loan":
-			num = 0.52f;
-			break;
-		case "surroundings":
-			num = 0.56f;
-			break;
-		}
-		if (num < 0.2f)
-		{
-			num = 0.2f;
-		}
-		if (num > 0.92f)
-		{
-			num = 0.92f;
-		}
-		return num;
-	}
-
-	private static float ComputeBuiltInIntentSemanticEvidence(string ruleTag, List<GuardrailIntentInput> queryInputs, out string bestSeed)
-	{
-		bestSeed = "";
-		try
-		{
-			if (queryInputs == null || queryInputs.Count <= 0)
-			{
-				return 0f;
-			}
-			List<string> builtInIntentAnchorSeeds = GetBuiltInIntentAnchorSeeds(ruleTag);
-			if (builtInIntentAnchorSeeds == null || builtInIntentAnchorSeeds.Count <= 0)
-			{
-				return 0f;
-			}
-			float num = 0f;
-			for (int i = 0; i < builtInIntentAnchorSeeds.Count; i++)
-			{
-				string text = NormalizeSemanticText(builtInIntentAnchorSeeds[i]);
-				if (string.IsNullOrWhiteSpace(text) || !TryGetPhraseEmbedding(text, out var vec) || vec == null || vec.Length == 0)
-				{
-					continue;
-				}
-				for (int j = 0; j < queryInputs.Count; j++)
-				{
-					GuardrailIntentInput guardrailIntentInput = queryInputs[j];
-					if (guardrailIntentInput?.Vector == null || guardrailIntentInput.Vector.Length == 0)
-					{
-						continue;
-					}
-					float num2 = DotProductNormalized(guardrailIntentInput.Vector, vec) * Math.Max(0f, guardrailIntentInput.Weight);
-					if (num2 > num)
-					{
-						num = num2;
-						bestSeed = text;
-					}
-				}
-			}
-			return num;
-		}
-		catch
-		{
-			return 0f;
-		}
-	}
-
 	private static float ApplyGuardrailAmplifiedScore(float raw, float maxOther, float meanAll, GuardrailGateProfile p)
 	{
 		float num = ((maxOther <= -0.5f) ? raw : (raw - maxOther));
@@ -2111,6 +1738,11 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
+		PromptRuleEligibility captured = CapturedRuleEligibility;
+		if (captured != null && captured.IsCaptured)
+		{
+			return captured.IsRuleEligibleForRag(text);
+		}
 		if (ShouldExcludeRuntimeRuleForConversationTarget(text))
 		{
 			return false;
@@ -2201,212 +1833,18 @@ public static class AIConfigHandler
 		return list;
 	}
 
-	private static List<string> NormalizeTriggerKeywordList(List<string> source, int minLen = 2, int maxLen = 8)
-	{
-		List<string> list = new List<string>();
-		try
-		{
-			if (source == null || source.Count <= 0)
-			{
-				return list;
-			}
-			if (minLen < 1)
-			{
-				minLen = 1;
-			}
-			if (maxLen < minLen)
-			{
-				maxLen = minLen;
-			}
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			for (int i = 0; i < source.Count; i++)
-			{
-				string text = NormalizeSemanticText(source[i]);
-				if (!string.IsNullOrWhiteSpace(text) && text.Length >= minLen)
-				{
-					if (text.Length > maxLen)
-					{
-						text = text.Substring(0, maxLen);
-					}
-					if (hashSet.Add(text))
-					{
-						list.Add(text);
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
+	private static Dictionary<string, string> NormalizeTemplateMap(Dictionary<string, string> source, int maxKeyLen = 80) =>
+		PromptRuleRegistry.NormalizeTemplateMap(source, maxKeyLen);
 
-	private static Dictionary<string, string> NormalizeTemplateMap(Dictionary<string, string> source, int maxKeyLen = 80)
-	{
-		Dictionary<string, string> dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			if (source == null || source.Count <= 0)
-			{
-				return dictionary;
-			}
-			foreach (KeyValuePair<string, string> item in source)
-			{
-				string text = NormalizeSemanticText(item.Key);
-				string text2 = (item.Value ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
-				{
-					continue;
-				}
-				if (maxKeyLen > 0 && text.Length > maxKeyLen)
-				{
-					text = text.Substring(0, maxKeyLen);
-				}
-				dictionary[text.ToLowerInvariant()] = text2;
-			}
-		}
-		catch
-		{
-		}
-		return dictionary;
-	}
-
-	private static string NormalizeRuleCode(string code, string id, string label = null)
-	{
-		string text = (code ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			string text2 = (id ?? "").Trim().ToLowerInvariant();
-			text = text2 switch
-			{
-				"duel" => "DUEL",
-				"reward" => "TRADE",
-				"loan" => "DEBT",
-				"surroundings" => "NEARBY",
-				"kingdom_service" => "KINGDOM",
-				"lords_hall_access" => "PASSAGE",
-				"marriage" => "MARRIAGE",
-				"scene_mechanism_actions" => "SCENE_MOVE",
-				"party_transfer" => "PARTY_TRANSFER",
-				"vanilla_issue" => "ISSUE",
-				"npc_major_actions" => "NPC_MAJOR",
-				"encounter_release_player" => "MEETING_RELEASE",
-				"noble_deference" => "NOBLE_PRESSURE",
-				"kingdom_agenda" => "KINGDOM_AGENDA",
-				"diplomacy" => "DIPLOMACY",
-				_ => ""
-			};
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = (label ?? id ?? "RULE").Trim();
-		}
-		text = Regex.Replace(text.ToUpperInvariant(), "[^A-Z0-9_]+", "_").Trim('_');
-		return string.IsNullOrWhiteSpace(text) ? "RULE" : text;
-	}
-
-	private static GuardrailRulePromptConfig BuildLegacyRulePrompt(string id, bool enabled, string instruction, List<string> triggerKeywords, string group, int priority, int topicNumber, string topicLabel, string code = "", string preprocessExcludedInstruction = "")
-	{
-		return new GuardrailRulePromptConfig
-		{
-			Id = (id ?? "").Trim().ToLowerInvariant(),
-			IsEnabled = enabled,
-			TopicNumber = topicNumber,
-			TopicLabel = (topicLabel ?? "").Trim(),
-			Code = NormalizeRuleCode(code, id, topicLabel),
-			Instruction = (instruction ?? ""),
-			PreprocessExcludedInstruction = (preprocessExcludedInstruction ?? ""),
-			TriggerKeywords = NormalizeTriggerKeywordList(triggerKeywords),
-			Group = (group ?? "").Trim(),
-			Priority = priority
-		};
-	}
-
-	private static GuardrailRulePromptConfig NormalizeCustomRulePrompt(GuardrailRulePromptConfig src, int autoIndex)
-	{
-		try
-		{
-			if (src == null)
-			{
-				return null;
-			}
-			string text = (src.Id ?? "").Trim().ToLowerInvariant();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "rule_" + autoIndex;
-			}
-			return new GuardrailRulePromptConfig
-			{
-				Id = text,
-				IsEnabled = src.IsEnabled,
-				Group = (src.Group ?? "").Trim(),
-				Priority = src.Priority,
-				TopicNumber = src.TopicNumber,
-				TopicLabel = (src.TopicLabel ?? "").Trim(),
-				Code = NormalizeRuleCode(src.Code, text, src.TopicLabel),
-				Instruction = (src.Instruction ?? ""),
-				NonHeroInstruction = (src.NonHeroInstruction ?? ""),
-				PreprocessExcludedInstruction = (src.PreprocessExcludedInstruction ?? ""),
-				PostprocessRules = ((src.PostprocessRules != null) ? src.PostprocessRules.Where((PostprocessRuleEntry x) => x != null && !string.IsNullOrWhiteSpace((x.Tag ?? "").Trim())).Select((PostprocessRuleEntry x) => new PostprocessRuleEntry
-				{
-					Tag = (x.Tag ?? "").Trim(),
-					Description = (x.Description ?? "").Trim(),
-					SingleFramedNpcDescription = (x.SingleFramedNpcDescription ?? "").Trim()
-				}).ToList() : new List<PostprocessRuleEntry>()),
-				TriggerKeywords = NormalizeTriggerKeywordList(src.TriggerKeywords),
-				RuntimeInstructionTemplates = NormalizeTemplateMap(src.RuntimeInstructionTemplates),
-				RuntimeConstraintTemplates = NormalizeTemplateMap(src.RuntimeConstraintTemplates)
-			};
-		}
-		catch
-		{
-			return null;
-		}
-	}
+	private static string NormalizeRuleCode(string code, string id, string label = null) =>
+		PromptRuleRegistry.NormalizeRuleCode(code, id, label);
 
 	private static Dictionary<string, GuardrailRulePromptConfig> BuildRulePromptRegistry()
 	{
-		Dictionary<string, GuardrailRulePromptConfig> map = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			string duelRegistryInstruction = (_guardrail?.Duel?.TriggerInstruction ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(duelRegistryInstruction))
-			{
-				duelRegistryInstruction = (_guardrail?.Duel?.DialogueInstruction ?? "").Trim();
-			}
-			upsert(BuildLegacyRulePrompt("duel", _guardrail?.Duel?.IsEnabled ?? true, duelRegistryInstruction, _guardrail?.Duel?.AcceptKeywords ?? new List<string>(), "combat", 90, _guardrail?.Duel?.TopicNumber ?? 0, _guardrail?.Duel?.TopicLabel ?? "", _guardrail?.Duel?.Code ?? "", _guardrail?.Duel?.PreprocessExcludedInstruction ?? ""));
-			upsert(BuildLegacyRulePrompt("reward", _guardrail?.Reward?.IsEnabled ?? true, _guardrail?.Reward?.Instruction ?? "", _guardrail?.Reward?.TriggerKeywords ?? new List<string>(), "trade", 80, _guardrail?.Reward?.TopicNumber ?? 0, _guardrail?.Reward?.TopicLabel ?? "", _guardrail?.Reward?.Code ?? "", _guardrail?.Reward?.PreprocessExcludedInstruction ?? ""));
-			if (_guardrail?.Loan != null)
-			{
-				upsert(BuildLegacyRulePrompt("loan", _guardrail.Loan.IsEnabled, _guardrail.Loan.Instruction ?? "", _guardrail.Loan.TriggerKeywords ?? new List<string>(), "finance", 85, _guardrail.Loan.TopicNumber, _guardrail.Loan.TopicLabel ?? "", _guardrail.Loan.Code ?? "", _guardrail.Loan.PreprocessExcludedInstruction ?? ""));
-			}
-			upsert(BuildLegacyRulePrompt("surroundings", _guardrail?.Surroundings?.IsEnabled ?? true, _guardrail?.Surroundings?.Instruction ?? "", _guardrail?.Surroundings?.TriggerKeywords ?? new List<string>(), "world", 70, _guardrail?.Surroundings?.TopicNumber ?? 0, _guardrail?.Surroundings?.TopicLabel ?? "", _guardrail?.Surroundings?.Code ?? "", _guardrail?.Surroundings?.PreprocessExcludedInstruction ?? ""));
-			if (_guardrail?.RulePrompts != null && _guardrail.RulePrompts.Count > 0)
-			{
-				for (int i = 0; i < _guardrail.RulePrompts.Count; i++)
-				{
-					GuardrailRulePromptConfig rule = NormalizeCustomRulePrompt(_guardrail.RulePrompts[i], i + 1);
-					upsert(rule);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return map;
-		void upsert(GuardrailRulePromptConfig guardrailRulePromptConfig)
-		{
-			if (guardrailRulePromptConfig != null)
-			{
-				string text = (guardrailRulePromptConfig.Id ?? "").Trim().ToLowerInvariant();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					guardrailRulePromptConfig.Id = text;
-					guardrailRulePromptConfig.Code = NormalizeRuleCode(guardrailRulePromptConfig.Code, text, guardrailRulePromptConfig.TopicLabel);
-					map[text] = guardrailRulePromptConfig;
-				}
-			}
-		}
+		var revision = _promptConfiguration.Read();
+		return _ruleRegistryCache.GetOrBuild(revision.Revision,
+			() => _promptConfiguration.Capture().Revision,
+			() => PromptRuleRegistry.Build(revision.Value.ReadGuardrailForOwner()));
 	}
 
 	private static List<GuardrailRulePromptConfig> GetAllEnabledRulePrompts()
@@ -2467,96 +1905,52 @@ public static class AIConfigHandler
 		return (guardrailKeywordsByTag == null) ? new List<string>() : new List<string>(guardrailKeywordsByTag);
 	}
 
-	private static string BuildRuleInstructionSeed(string ruleTag, string ruleInstruction)
-	{
-		string text = NormalizeSemanticText(ruleTag);
-		string text2 = NormalizeSemanticText(ruleInstruction);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return text;
-		}
-		int num = text2.IndexOfAny(new char[9] { '。', '！', '!', '？', '?', '\n', '\r', ';', '；' });
-		if (num > 0)
-		{
-			text2 = text2.Substring(0, num);
-		}
-		if (text2.Length > 120)
-		{
-			text2 = text2.Substring(0, 120);
-		}
-		return string.IsNullOrWhiteSpace(text) ? text2 : (text + " " + text2);
-	}
-
-	private static List<string> BuildRuleSemanticSeeds(string ruleTag, string ruleInstruction, List<string> triggerKeywords)
-	{
-		List<string> seeds = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			if (triggerKeywords != null)
-			{
-				for (int i = 0; i < triggerKeywords.Count; i++)
-				{
-					string text = NormalizeSemanticText(triggerKeywords[i]);
-					if (!string.IsNullOrWhiteSpace(text))
-					{
-						addSeed(text);
-					}
-				}
-			}
-			if (string.Equals((ruleTag ?? "").Trim(), "reward", StringComparison.OrdinalIgnoreCase))
-			{
-				addSeed(BuildRuleInstructionSeed(ruleTag, ruleInstruction));
-			}
-			if (seeds.Count <= 0)
-			{
-				addSeed(ruleTag);
-			}
-		}
-		catch
-		{
-		}
-		return seeds;
-		void addSeed(string raw)
-		{
-			string text2 = NormalizeSemanticText(raw);
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				if (text2.Length > 260)
-				{
-					text2 = text2.Substring(0, 260);
-				}
-				if (seen.Add(text2))
-				{
-					seeds.Add(text2);
-				}
-			}
-		}
-	}
-
 	internal static void TryStartBackgroundSemanticWarmup(string source)
 	{
+		try { TryStartBackgroundSemanticWarmup(source, CaptureGuardrailSemanticWarmupSeeds()); }
+		catch { }
+	}
+
+	internal static PromptSemanticWarmupSeedBatch CaptureGuardrailSemanticWarmupSeeds()
+	{
+		using (_promptConfiguration.BeginCapture())
+		{
+			long revision = _promptConfiguration.Read().Revision;
+			HashSet<string> seeds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			List<GuardrailRulePromptConfig> rules = GetAllEnabledRulePrompts();
+			for (int i = 0; i < rules.Count; i++)
+			{
+				GuardrailRulePromptConfig rule = rules[i];
+				if (rule == null || string.IsNullOrWhiteSpace(rule.Id)) continue;
+				List<string> ruleSeeds = PromptRuleTextEvidence.SemanticSeeds(rule.Id, rule.Instruction ?? "", rule.TriggerKeywords);
+				for (int j = 0; j < ruleSeeds.Count; j++)
+				{
+					string seed = NormalizeSemanticText(ruleSeeds[j]);
+					if (!string.IsNullOrWhiteSpace(seed)) seeds.Add(seed);
+				}
+			}
+			return new PromptSemanticWarmupSeedBatch(revision, seeds);
+		}
+	}
+
+	internal static void TryStartBackgroundSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)
+	{
 		try
 		{
-			long num = Volatile.Read(ref _guardrailConfigVersion);
-			if (num <= 0)
+			if (seeds == null) return;
+			long num = seeds.Revision;
+			lock (_promptConfigurationReloadLock)
 			{
-				num = 1L;
+				if (num != _promptConfiguration.Capture().Revision ||
+					(Volatile.Read(ref _guardrailWarmupState) == 2 && Volatile.Read(ref _guardrailWarmupVersion) == num) ||
+					Interlocked.CompareExchange(ref _guardrailWarmupState, 1, 0) != 0) return;
+				Interlocked.Exchange(ref _guardrailWarmupVersion, num);
 			}
-			if (Volatile.Read(ref _guardrailWarmupState) == 2 && Volatile.Read(ref _guardrailWarmupVersion) == num)
-			{
-				return;
-			}
-			if (Interlocked.CompareExchange(ref _guardrailWarmupState, 1, 0) != 0)
-			{
-				return;
-			}
-			Interlocked.Exchange(ref _guardrailWarmupVersion, num);
 			string warmupSource = string.IsNullOrWhiteSpace(source) ? "unknown" : source.Trim();
 			Logger.Log("GuardrailWarmup", $"start source={warmupSource} version={num}");
 			Task.Run(delegate
 			{
-				RunGuardrailSemanticWarmup(warmupSource, num);
+				RunGuardrailSemanticWarmup(warmupSource, seeds);
 			});
 		}
 		catch
@@ -2564,56 +1958,39 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static void RunGuardrailSemanticWarmup(string source, long version)
+	private static void RunGuardrailSemanticWarmup(string source, PromptSemanticWarmupSeedBatch seeds)
 	{
+		long version = seeds.Revision;
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		int num = 0;
 		int num2 = 0;
 		string text = "";
 		try
 		{
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
-			for (int i = 0; i < allEnabledRulePrompts.Count; i++)
-			{
-				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[i];
-				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
-				{
-					continue;
-				}
-				List<string> list = BuildRuleSemanticSeeds(guardrailRulePromptConfig.Id, guardrailRulePromptConfig.Instruction ?? "", guardrailRulePromptConfig.TriggerKeywords);
-				for (int j = 0; j < list.Count; j++)
-				{
-					string item = NormalizeSemanticText(list[j]);
-					if (!string.IsNullOrWhiteSpace(item))
-					{
-						hashSet.Add(item);
-					}
-				}
-			}
-			num = hashSet.Count;
-			foreach (string item3 in hashSet)
-			{
-				if (TryGetPhraseEmbedding(item3, out var vec) && vec != null && vec.Length != 0)
-				{
-					num2++;
-				}
-			}
+			PromptSemanticWarmupResult result = PromptSemanticWarmupExecutor.Run(seeds,
+				() => _promptConfiguration.Capture().Revision,
+				(revision, seed) => TryGetPhraseEmbedding(seed, out var vec, revision) && vec != null && vec.Length != 0);
+			num = result.SeedCount;
+			num2 = result.Warmed;
 		}
 		catch (Exception ex)
 		{
 			text = ex.Message ?? "guardrail warmup exception";
 		}
 		stopwatch.Stop();
-		bool flag = Volatile.Read(ref _guardrailConfigVersion) != version;
-		if (flag)
+		bool flag;
+		lock (_promptConfigurationReloadLock)
 		{
-			Interlocked.Exchange(ref _guardrailWarmupState, 0);
-			Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
-		}
-		else
-		{
-			Interlocked.Exchange(ref _guardrailWarmupState, 2);
+			flag = _promptConfiguration.Capture().Revision != version;
+			if (Volatile.Read(ref _guardrailWarmupVersion) == version)
+			{
+				if (flag)
+				{
+					Interlocked.Exchange(ref _guardrailWarmupState, 0);
+					Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
+				}
+				else Interlocked.Exchange(ref _guardrailWarmupState, 2);
+			}
 		}
 		Logger.Log("GuardrailWarmup", $"complete source={source} version={version} stale={flag} ms={Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)} seedCount={num} warmed={num2} error={text}");
 	}
@@ -2626,13 +2003,12 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		lock (_guardrailSemanticLock)
+		long cacheRevision = _promptConfiguration.Read().Revision;
+		string cacheKey = cacheRevision.ToString(CultureInfo.InvariantCulture) + "|" + text;
+		if (_guardrailVectors.TryGetInput(cacheKey, out var value))
 		{
-			if (_guardrailInputVecCache.TryGetValue(text, out var value) && value != null && value.Length != 0)
-			{
-				vec = value;
-				return true;
-			}
+			vec = value;
+			return true;
 		}
 		OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
 		if (instance == null || !instance.IsAvailable)
@@ -2643,19 +2019,15 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		lock (_guardrailSemanticLock)
+		lock (_promptConfigurationReloadLock)
 		{
-			if (_guardrailInputVecCache.Count >= 256)
-			{
-				_guardrailInputVecCache.Clear();
-			}
-			_guardrailInputVecCache[text] = vector;
+			_guardrailVectors.PublishInput(cacheKey, vector, cacheRevision, _promptConfiguration.Capture().Revision);
 		}
 		vec = vector;
 		return true;
 	}
 
-	private static bool TryGetPhraseEmbedding(string phraseSeed, out float[] vec)
+	private static bool TryGetPhraseEmbedding(string phraseSeed, out float[] vec, long expectedRevision = 0L)
 	{
 		vec = null;
 		string text = NormalizeSemanticText(phraseSeed);
@@ -2663,13 +2035,13 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		lock (_guardrailSemanticLock)
+		long cacheRevision = expectedRevision > 0L ? expectedRevision : _promptConfiguration.Read().Revision;
+		if (expectedRevision > 0L && _promptConfiguration.Capture().Revision != expectedRevision) return false;
+		string cacheKey = cacheRevision.ToString(CultureInfo.InvariantCulture) + "|" + text;
+		if (_guardrailVectors.TryGetPhrase(cacheKey, out var value))
 		{
-			if (_guardrailPhraseVecCache.TryGetValue(text, out var value) && value != null && value.Length != 0)
-			{
-				vec = value;
-				return true;
-			}
+			vec = value;
+			return true;
 		}
 		OnnxEmbeddingEngine instance = OnnxEmbeddingEngine.Instance;
 		if (instance == null || !instance.IsAvailable)
@@ -2680,13 +2052,9 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		lock (_guardrailSemanticLock)
+		lock (_promptConfigurationReloadLock)
 		{
-			if (_guardrailPhraseVecCache.Count >= 1024)
-			{
-				_guardrailPhraseVecCache.Clear();
-			}
-			_guardrailPhraseVecCache[text] = vector;
+			_guardrailVectors.PublishPhrase(cacheKey, vector, cacheRevision, _promptConfiguration.Capture().Revision);
 		}
 		vec = vector;
 		return true;
@@ -3028,120 +2396,6 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static PreprocessPromptsConfigModel LoadPreprocessPromptsConfig(string filePath, out bool usedEmbeddedDefaults, out int sourceVersion, out int defaultVersion)
-	{
-		string sourceJson = File.ReadAllText(filePath, StrictUtf8Encoding);
-		JObject sourceObject = JObject.Parse(sourceJson);
-		JObject defaultObject = (JObject)EmbeddedPreprocessPromptsDefaults.Value.DeepClone();
-		defaultVersion = defaultObject.Value<int?>("Version").GetValueOrDefault();
-		if (defaultVersion <= 0)
-		{
-			throw new InvalidDataException("程序集内置 PreprocessPrompts.json 的 Version 无效");
-		}
-		sourceVersion = sourceObject.Value<int?>("Version").GetValueOrDefault();
-		usedEmbeddedDefaults = sourceVersion < defaultVersion;
-		if (usedEmbeddedDefaults)
-		{
-			sourceObject = defaultObject;
-		}
-		return sourceObject.ToObject<PreprocessPromptsConfigModel>() ?? new PreprocessPromptsConfigModel();
-	}
-
-	private static JObject LoadEmbeddedDefaultPreprocessPrompts()
-	{
-		using Stream stream = typeof(AIConfigHandler).Assembly.GetManifestResourceStream(EmbeddedPreprocessPromptsResourceName);
-		if (stream == null)
-		{
-			throw new MissingManifestResourceException("找不到程序集内置前处理提示词资源: " + EmbeddedPreprocessPromptsResourceName);
-		}
-		using StreamReader reader = new StreamReader(stream, StrictUtf8Encoding, detectEncodingFromByteOrderMarks: true);
-		return JObject.Parse(reader.ReadToEnd());
-	}
-
-	private static RpItemIntroductionPromptsConfigModel LoadRpItemIntroductionPromptsConfig(string filePath, out bool usedEmbeddedDefaults, out string fallbackReason)
-	{
-		usedEmbeddedDefaults = false;
-		fallbackReason = "";
-		try
-		{
-			if (!File.Exists(filePath))
-			{
-				throw new FileNotFoundException("找不到 RpItemIntroductionPrompts.json", filePath);
-			}
-			RpItemIntroductionPromptsConfigModel config = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(ReadStrictUtf8NoBomFile(filePath, "RpItemIntroductionPrompts.json"));
-			if (config == null)
-			{
-				throw new InvalidDataException("RpItemIntroductionPrompts.json 内容为空或不是对象");
-			}
-			ValidateRpItemIntroductionPromptsConfig(config, "RpItemIntroductionPrompts.json");
-			return config;
-		}
-		catch (Exception diskConfigEx)
-		{
-			usedEmbeddedDefaults = true;
-			fallbackReason = diskConfigEx.Message;
-			RpItemIntroductionPromptsConfigModel embeddedConfig = EmbeddedRpItemIntroductionPromptsDefaults.Value;
-			ValidateRpItemIntroductionPromptsConfig(embeddedConfig, "程序集内置 RpItemIntroductionPrompts.json");
-			return embeddedConfig;
-		}
-	}
-
-	private static RpItemIntroductionPromptsConfigModel LoadEmbeddedDefaultRpItemIntroductionPrompts()
-	{
-		using Stream stream = typeof(AIConfigHandler).Assembly.GetManifestResourceStream(EmbeddedRpItemIntroductionPromptsResourceName);
-		if (stream == null)
-		{
-			throw new MissingManifestResourceException("找不到程序集内置 RP物品介绍提示词资源: " + EmbeddedRpItemIntroductionPromptsResourceName);
-		}
-		using StreamReader reader = new StreamReader(stream, StrictUtf8Encoding, detectEncodingFromByteOrderMarks: false);
-		RpItemIntroductionPromptsConfigModel config = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(reader.ReadToEnd());
-		if (config == null)
-		{
-			throw new InvalidDataException("程序集内置 RpItemIntroductionPrompts.json 内容为空或不是对象");
-		}
-		return config;
-	}
-
-	private static string ReadStrictUtf8NoBomFile(string filePath, string displayName)
-	{
-		byte[] bytes = File.ReadAllBytes(filePath);
-		if (bytes.Length >= 3 && bytes[0] == 239 && bytes[1] == 187 && bytes[2] == 191)
-		{
-			throw new InvalidDataException((displayName ?? "配置文件") + " 必须使用 UTF-8 无 BOM 编码");
-		}
-		return StrictUtf8Encoding.GetString(bytes);
-	}
-
-	private static void ValidateRpItemIntroductionPromptsConfig(RpItemIntroductionPromptsConfigModel config, string configName)
-	{
-		if (config == null)
-		{
-			throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 内容为空");
-		}
-		if (config.Version != 1)
-		{
-			throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 的 Version 必须为 1，当前为 " + config.Version);
-		}
-		RequireRpItemIntroductionPromptValue(config.SystemPrompt, "SystemPrompt");
-		string template = RequireRpItemIntroductionPromptValue(config.UserPromptTemplate, "UserPromptTemplate");
-		bool hasItemName = false;
-		bool hasDialogue = false;
-		foreach (Match match in RpItemIntroductionTemplateVariableRegex.Matches(template))
-		{
-			string variable = match.Groups[1].Value;
-			if (!RpItemIntroductionTemplateVariables.Contains(variable))
-			{
-				throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 的 UserPromptTemplate 包含不支持的占位符: {" + variable + "}。只允许 {item_name}、{giver_name}、{dialogue}");
-			}
-			hasItemName |= string.Equals(variable, "item_name", StringComparison.Ordinal);
-			hasDialogue |= string.Equals(variable, "dialogue", StringComparison.Ordinal);
-		}
-		if (!hasItemName || !hasDialogue)
-		{
-			throw new InvalidDataException((configName ?? "RpItemIntroductionPrompts.json") + " 的 UserPromptTemplate 必须包含 {item_name} 和 {dialogue}");
-		}
-	}
-
 	private static string RequireRpItemIntroductionPromptValue(string value, string fieldName)
 	{
 		string text = (value ?? "").Trim();
@@ -3180,39 +2434,6 @@ public static class AIConfigHandler
 			}
 			return value ?? "";
 		}).Trim();
-	}
-
-	private static void ValidateLoadedPreprocessPrompts()
-	{
-		RequirePreprocessPromptValue(StrictPreprocessJsonSystemPrompt, "StrictJson.SystemPrompt");
-		JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
-		if (!(schema?["entities"] is JArray))
-		{
-			throw new InvalidOperationException("PreprocessPrompts.json schema 缺少数组: StrictJson.MentionedEntitiesSchema.entities");
-		}
-		RequirePreprocessPromptValue(_preprocessPrompts?.TopicRouting?.EmptyValue, "TopicRouting.EmptyValue");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.TopicRouting?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", "topic_list", "routing_guidance", "history", "latest_npc", "latest_player", "top_n", "mentioned_entities_schema");
-		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
-		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.UnifiedModeInstruction, "MemorySelection.UnifiedModeInstruction");
-		RequirePreprocessPromptValue(_preprocessPrompts?.MemorySelection?.EmptyValue, "MemorySelection.EmptyValue");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.UserPromptTemplate, "MemorySelection.UserPromptTemplate", "mode_instruction", "final_count", "latest_player_input", "latest_npc_input", "current_scene", "memory_candidates");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.CandidateLineTemplate, "MemorySelection.CandidateLineTemplate", "memory_id", "game_date", "age_suffix", "hour_range", "rich_title");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.MemorySelection?.FallbackGameDateTemplate, "MemorySelection.FallbackGameDateTemplate", "game_day");
-		RequirePreprocessPromptValue(_preprocessPrompts?.ConnectionTest?.ExpectedRuleCode, "ConnectionTest.ExpectedRuleCode");
-		ValidatePreprocessTemplateVariables(_preprocessPrompts?.ConnectionTest?.UserPromptTemplate, "ConnectionTest.UserPromptTemplate", "expected_rule_code", "mentioned_entities_schema");
-	}
-
-	private static void ValidatePreprocessTemplateVariables(string template, string configPath, params string[] requiredVariables)
-	{
-		string text = RequirePreprocessPromptValue(template, configPath);
-		HashSet<string> variables = new HashSet<string>(PreprocessTemplateVariableRegex.Matches(text).Cast<Match>().Select((Match x) => x.Groups[1].Value), StringComparer.Ordinal);
-		foreach (string requiredVariable in requiredVariables ?? new string[0])
-		{
-			if (!variables.Contains(requiredVariable))
-			{
-				throw new InvalidOperationException("PreprocessPrompts.json 模板缺少占位符: " + configPath + ".{" + requiredVariable + "}");
-			}
-		}
 	}
 
 	internal static string BuildAuxiliaryConnectionTestPromptForExternal()
@@ -3496,6 +2717,26 @@ public static class AIConfigHandler
 		}
 	}
 
+	internal static IDisposable BeginGuardrailRuntimeScope()
+	{
+		IDisposable configuration = _promptConfiguration.BeginCapture();
+		try
+		{
+			IDisposable context = PromptRetrievalContextOwner.BeginScope((parent, child) =>
+			{
+				MentionedWorldEntities merged = (parent as MentionedWorldEntities)?.Clone() ?? new MentionedWorldEntities();
+				if (child is MentionedWorldEntities newMentions) merged.Merge(newMentions);
+				return merged;
+			});
+			return new PromptRetrievalOperationScope(context, configuration);
+		}
+		catch
+		{
+			configuration.Dispose();
+			throw;
+		}
+	}
+
 	private static LlmGenerateResult GenerateConfiguredGatewayResult(
 		IEnumerable<object> messages,
 		string apiUrl,
@@ -3721,18 +2962,10 @@ public static class AIConfigHandler
 
 	private static List<PreprocessExcludedPromptEntry> GetConfiguredPreprocessExcludedPromptEntries()
 	{
-		long version = Volatile.Read(ref _guardrailConfigVersion);
-		if (Volatile.Read(ref _preprocessExcludedPromptCacheVersion) == version)
-		{
-			List<PreprocessExcludedPromptEntry> snapshot = _preprocessExcludedPromptCache;
-			if (snapshot != null)
-			{
-				return snapshot;
-			}
-		}
-		lock (_preprocessExcludedPromptCacheLock)
-		{
-			if (_preprocessExcludedPromptCacheVersion != version || _preprocessExcludedPromptCache == null)
+		long version = _promptConfiguration.Read().Revision;
+		return _preprocessExcludedPromptCache.GetOrBuild(version,
+			() => _promptConfiguration.Capture().Revision,
+			() =>
 			{
 				Dictionary<string, GuardrailRulePromptConfig> registry = BuildRulePromptRegistry();
 				IEnumerable<GuardrailRulePromptConfig> configuredRules = registry != null
@@ -3751,11 +2984,8 @@ public static class AIConfigHandler
 					.ThenByDescending((PreprocessExcludedPromptEntry entry) => entry.Priority)
 					.ThenBy((PreprocessExcludedPromptEntry entry) => entry.RuleId, StringComparer.OrdinalIgnoreCase)
 					.ToList();
-				_preprocessExcludedPromptCache = rebuilt;
-				Volatile.Write(ref _preprocessExcludedPromptCacheVersion, version);
-			}
-			return _preprocessExcludedPromptCache;
-		}
+				return rebuilt;
+			});
 	}
 
 	public static List<string> GetConfiguredEnabledGuardrailRuleIdsForExternal()
@@ -3828,36 +3058,11 @@ public static class AIConfigHandler
 
 	private static List<GuardrailAuxiliaryTopic> GetEligibleAuxiliaryGuardrailTopics(IEnumerable<string> availableRuleIds, bool applyRuntimeEligibility)
 	{
-		HashSet<string> hashSet = new HashSet<string>((availableRuleIds ?? Enumerable.Empty<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
-		List<GuardrailAuxiliaryTopic> list = new List<GuardrailAuxiliaryTopic>();
-		Dictionary<string, GuardrailRulePromptConfig> dictionary = null;
-		try
-		{
-			dictionary = BuildRulePromptRegistry();
-		}
-		catch
-		{
-			dictionary = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
-		}
-		foreach (GuardrailRulePromptConfig value in dictionary.Values)
-		{
-			string text = (value?.Id ?? "").Trim();
-			string text2 = (value?.TopicLabel ?? "").Trim();
-			int num = value?.TopicNumber ?? 0;
-			string text3 = NormalizeRuleCode(value?.Code, text, text2);
-			if (num > 0 && !string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3) && hashSet.Contains(text) && (!applyRuntimeEligibility || IsRuleCurrentlyEligibleForRag(text)))
-			{
-				list.Add(new GuardrailAuxiliaryTopic
-				{
-					Number = num,
-					Label = text2,
-					Code = text3,
-					RuleId = text
-				});
-			}
-		}
-		list = list.OrderBy((GuardrailAuxiliaryTopic x) => x.Number).ToList();
-		return list;
+		Dictionary<string, GuardrailRulePromptConfig> registry;
+		try { registry = BuildRulePromptRegistry(); }
+		catch { registry = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase); }
+		return PromptAuxiliaryRuleEvaluation.EligibleTopics(registry.Values, availableRuleIds,
+			applyRuntimeEligibility, NormalizeRuleCode, IsRuleCurrentlyEligibleForRag);
 	}
 
 	private static string BuildAuxiliaryGuardrailHistoryBlock(string runtimeGuardrailContext, string secondaryText, string latestPlayerText, out string latestNpcText)
@@ -5080,24 +4285,7 @@ public static class AIConfigHandler
 				Logger.Log("AuxiliaryEntity", "mentioned_entities latest_only reason=empty_key " + FormatMentionedEntitiesCounts(entities));
 				return entities.Clone();
 			}
-			lock (_auxiliaryMentionedEntitiesLock)
-			{
-				if (!_auxiliaryMentionedEntitiesCache.TryGetValue(key, out var existing) || existing == null)
-				{
-					existing = new MentionedWorldEntities();
-					_auxiliaryMentionedEntitiesCache[key] = existing;
-					_auxiliaryMentionedEntitiesCacheOrder.Enqueue(key);
-				}
-				existing.Merge(entities);
-				while (_auxiliaryMentionedEntitiesCache.Count > AuxiliaryMentionedEntitiesCacheMax && _auxiliaryMentionedEntitiesCacheOrder.Count > 0)
-				{
-					string oldKey = _auxiliaryMentionedEntitiesCacheOrder.Dequeue();
-					if (!string.Equals(oldKey, key, StringComparison.Ordinal))
-					{
-						_auxiliaryMentionedEntitiesCache.Remove(oldKey);
-					}
-				}
-			}
+			_auxiliaryMentionedEntitiesStore.Publish(key, entities);
 			Logger.Log("AuxiliaryEntity", "mentioned_entities published key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
 			return entities.Clone();
 		}
@@ -5128,13 +4316,11 @@ public static class AIConfigHandler
 			{
 				return new MentionedWorldEntities();
 			}
-			lock (_auxiliaryMentionedEntitiesLock)
+			MentionedWorldEntities entities = _auxiliaryMentionedEntitiesStore.Get(key);
+			if (entities != null)
 			{
-				if (_auxiliaryMentionedEntitiesCache.TryGetValue(key, out var entities) && entities != null)
-				{
-					Logger.Log("AuxiliaryEntity", "mentioned_entities get hit key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
-					return entities.Clone();
-				}
+				Logger.Log("AuxiliaryEntity", "mentioned_entities get hit key=" + HashAuxiliaryMentionKey(key) + " " + FormatMentionedEntitiesCounts(entities));
+				return entities;
 			}
 			Logger.Log("AuxiliaryEntity", "mentioned_entities get miss key=" + HashAuxiliaryMentionKey(key));
 		}
@@ -5164,13 +4350,9 @@ public static class AIConfigHandler
 			{
 				return;
 			}
-			MentionedWorldEntities latest = _auxiliaryMentionedEntitiesLatest.Value;
-			if (latest == null)
-			{
-				latest = new MentionedWorldEntities();
-				_auxiliaryMentionedEntitiesLatest.Value = latest;
-			}
+			MentionedWorldEntities latest = _auxiliaryMentionedEntitiesLatest.Value?.Clone() ?? new MentionedWorldEntities();
 			latest.Merge(entities);
+			_auxiliaryMentionedEntitiesLatest.Value = latest;
 		}
 		catch
 		{
@@ -5383,7 +4565,7 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot, HashSet<string> excludedRuleIds = null, bool applyRuntimeEligibility = true)
+	private static bool TryBuildAuxiliaryGuardrailEvalSnapshot(string userText, string runtimeGuardrailContext, string secondaryText, string cacheKey, out GuardrailEvalSnapshot snapshot, List<GuardrailRulePromptConfig> allEnabledRulePrompts, int returnCap, HashSet<string> excludedRuleIds = null, bool applyRuntimeEligibility = true)
 	{
 		snapshot = null;
 		try
@@ -5392,38 +4574,13 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
-			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
 			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
 			{
 				return false;
 			}
-			snapshot = new GuardrailEvalSnapshot
-			{
-				Key = cacheKey,
-				MatchMode = "auxiliary_api",
-				ReturnCap = GuardrailRuleReturnCap
-			};
-			for (int i = 0; i < allEnabledRulePrompts.Count; i++)
-			{
-				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[i];
-				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
-				{
-					continue;
-				}
-				string text = guardrailRulePromptConfig.Id.Trim();
-				if (excludedRuleIds != null && excludedRuleIds.Contains(text))
-				{
-					continue;
-				}
-				snapshot.Rules[text] = new GuardrailRuleEval
-				{
-					RuleTag = text,
-					MatchedIntent = NormalizeSemanticText(userText),
-					MatchMode = "auxiliary_api",
-					Rank = int.MaxValue,
-					RejectReason = "auxiliary_api_miss"
-				};
-			}
+			snapshot = PromptAuxiliaryRuleEvaluation.Create(cacheKey, userText, returnCap,
+				allEnabledRulePrompts.Where(rule => rule != null && !string.IsNullOrWhiteSpace(rule.Id)
+					&& (excludedRuleIds == null || !excludedRuleIds.Contains(rule.Id.Trim()))).Select(rule => rule.Id));
 			List<GuardrailAuxiliaryTopic> list = GetEligibleAuxiliaryGuardrailTopics(snapshot.Rules.Keys, applyRuntimeEligibility);
 			if (list.Count <= 0)
 			{
@@ -5461,69 +4618,11 @@ public static class AIConfigHandler
 				snapshot = null;
 				return false;
 			}
-			HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			List<string> list3 = new List<string>();
-			for (int j = 0; j < list2.Count; j++)
-			{
-				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(NormalizeRuleCode(x.Code, x.RuleId, x.Label), list2[j], StringComparison.OrdinalIgnoreCase));
-				string text3 = guardrailAuxiliaryTopic?.RuleId ?? "";
-				if (!string.IsNullOrWhiteSpace(text3) && hashSet2.Add(text3))
-				{
-					list3.Add(text3);
-				}
-				if (list3.Count >= snapshot.ReturnCap)
-				{
-					break;
-				}
-			}
+			List<string> list3 = PromptAuxiliaryRuleEvaluation.Apply(snapshot, list, list2);
 			if (list3.Count <= 0)
 			{
 				snapshot = null;
 				return false;
-			}
-			float num = 0f;
-			for (int k = 0; k < list3.Count; k++)
-			{
-				string text4 = list3[k];
-				if (!snapshot.Rules.TryGetValue(text4, out var value2))
-				{
-					continue;
-				}
-				GuardrailAuxiliaryTopic guardrailAuxiliaryTopic2 = list.FirstOrDefault((GuardrailAuxiliaryTopic x) => x != null && string.Equals(x.RuleId, text4, StringComparison.OrdinalIgnoreCase));
-				float num2 = Math.Max(0.2f, 1f - (float)k * 0.08f);
-				value2.MatchedSeed = guardrailAuxiliaryTopic2?.Label ?? ("topic_" + (k + 1));
-				value2.RawInput = num2;
-				value2.MixedRaw = num2;
-				value2.AmpScore = num2;
-				value2.RerankScore = num2;
-				value2.Candidate = true;
-				value2.AbsHit = true;
-				value2.Hit = true;
-				value2.Rank = k + 1;
-				value2.RejectReason = $"auxiliary_api_return({k + 1}/{snapshot.ReturnCap})";
-				num += num2;
-			}
-			float num3 = (list3.Count > 0) ? (num / (float)list3.Count) : 0f;
-			for (int l = 0; l < list3.Count; l++)
-			{
-				string text5 = list3[l];
-				if (!snapshot.Rules.TryGetValue(text5, out var value3))
-				{
-					continue;
-				}
-				value3.Mean = num3;
-				if (l == 0 && list3.Count > 1 && snapshot.Rules.TryGetValue(list3[1], out var value4))
-				{
-					value3.TopGap = Math.Max(0f, value3.AmpScore - value4.AmpScore);
-					value3.MaxOther = value4.AmpScore;
-					value3.MaxOtherTag = value4.RuleTag;
-				}
-				else if (list3.Count > 0)
-				{
-					value3.TopGap = 1f;
-					value3.MaxOther = (l > 0 && snapshot.Rules.TryGetValue(list3[0], out var value5)) ? value5.AmpScore : 0f;
-					value3.MaxOtherTag = ((l > 0) ? list3[0] : "");
-				}
 			}
 			Logger.Log("GuardrailSemantic", $"auxiliary_router success returnCap={snapshot.ReturnCap} raw={JsonConvert.ToString(content ?? "")} selected={string.Join(",", list3)}");
 			return true;
@@ -5629,39 +4728,70 @@ public static class AIConfigHandler
 		return TryGetGuardrailEvalSnapshot(userText, secondaryText, out snapshot, excludedRuleIds, applyRuntimeAutoExclusions: true);
 	}
 
-	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions)
+	private static bool TryGetGuardrailEvalSnapshot(string userText, string secondaryText, out GuardrailEvalSnapshot snapshot, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, PromptRuleEvaluationPorts ports = null)
 	{
+		using IDisposable configurationScope = _promptConfiguration.BeginCapture();
+		long configurationRevision = _promptConfiguration.Read().Revision;
 		snapshot = null;
-		List<GuardrailIntentInput> list = new List<GuardrailIntentInput>();
-		List<string> list2 = new List<string>();
 		try
 		{
 			string runtimeGuardrailContext = GetRuntimeGuardrailContext();
 			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
 			string excludeKey = excluded.Count == 0 ? "" : ("|exclude:" + string.Join(",", excluded.OrderBy(x => x, StringComparer.OrdinalIgnoreCase)));
-			string text = BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (UseAuxiliaryRuleApiRetrieval ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText) + (UseAuxiliaryRuleApiRetrieval ? "|aux" : "|rag") + excludeKey;
-			lock (_guardrailSemanticLock)
+			DuelSettings retrievalSettings = TryGetMcmSettings();
+			bool useAuxiliary = false;
+			bool retrievalEnabled = GuardrailKnowledgeEnabled;
+			bool semanticFirst = GuardrailKnowledgeSemanticFirst;
+			int semanticTopK = GuardrailKnowledgeTopK;
+			int returnCap = 4;
+			if (retrievalSettings != null)
 			{
-				if (_lastGuardrailEval != null && string.Equals(_lastGuardrailEval.Key, text, StringComparison.Ordinal))
+				try { useAuxiliary = retrievalSettings.UseAuxiliaryRuleApi || retrievalSettings.MemoryPreprocessMode == 1 || retrievalSettings.MemoryPreprocessMode == 2; } catch { }
+				try { retrievalEnabled = retrievalSettings.KnowledgeRetrievalEnabled; } catch { retrievalEnabled = true; }
+				try { semanticFirst = retrievalSettings.KnowledgeSemanticFirst; } catch { semanticFirst = true; }
+				try
 				{
-					snapshot = _lastGuardrailEval;
-					return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
+					int directTopN = retrievalSettings.KnowledgeDirectTopN;
+					semanticTopK = ClampKnowledgeTopK(directTopN > 0 ? directTopN : retrievalSettings.KnowledgeSemanticTopK);
+				}
+				catch { semanticTopK = 4; }
+				try { returnCap = ClampGuardrailReturnCap(retrievalSettings.GuardrailDirectTopN); } catch { }
+			}
+			List<GuardrailRulePromptConfig> eligibleRules = ports == null ? GetAllEnabledRulePrompts() : ports.EligibleRules?.Invoke() ?? new List<GuardrailRulePromptConfig>();
+			string eligibilityKey = string.Join(",", eligibleRules.Select(rule => rule.Id.Length + ":" + rule.Id));
+			string targetKey = _guardrailRuntimeTargetKingdomId.Value + ":" + _guardrailRuntimeTargetHeroId.Value + ":" + _guardrailRuntimeTargetCharacterId.Value
+				+ ":" + _guardrailRuntimeTargetTroopId.Value + ":" + _guardrailRuntimeTargetUnnamedRank.Value + ":" + _guardrailRuntimeTargetAgentIndex.Value;
+			string text = PromptRuleEvaluationCacheKey.Build(
+				BuildGuardrailEvalKey(userText, runtimeGuardrailContext + (useAuxiliary ? ("\n" + GetAuxiliarySceneDialogueHistoryContext()) : ""), secondaryText),
+				useAuxiliary, excludeKey, configurationRevision, applyRuntimeAutoExclusions,
+				retrievalEnabled, semanticFirst, semanticTopK, returnCap, eligibilityKey, targetKey);
+			if (_guardrailEvalCache.TryGet(text, configurationRevision, out snapshot))
+			{
+				return snapshot.Rules != null && snapshot.Rules.Count > 0;
+			}
+			bool auxiliaryMatched = false;
+			if (useAuxiliary)
+			{
+				if (ports == null)
+					auxiliaryMatched = TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, eligibleRules, returnCap, excluded, applyRuntimeAutoExclusions);
+				else
+				{
+					snapshot = ports.AuxiliarySnapshot?.Invoke(text, returnCap);
+					auxiliaryMatched = snapshot != null;
 				}
 			}
-			if (UseAuxiliaryRuleApiRetrieval && TryBuildAuxiliaryGuardrailEvalSnapshot(userText, runtimeGuardrailContext, secondaryText, text, out snapshot, excluded, applyRuntimeAutoExclusions))
+			if (auxiliaryMatched)
 			{
-				lock (_guardrailSemanticLock)
+				lock (_promptConfigurationReloadLock)
 				{
-					_lastGuardrailEval = snapshot;
+					_guardrailEvalCache.Publish(text, snapshot, configurationRevision, _promptConfiguration.Capture().Revision);
 				}
 				return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
 			}
-			appendInputs(SplitGuardrailIntents(userText, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker, 1f);
-			string text2 = NormalizeSemanticText(secondaryText);
-			if (!string.IsNullOrWhiteSpace(text2) && !string.Equals(text2, NormalizeSemanticText(userText), StringComparison.Ordinal))
-			{
-				appendInputs(SplitGuardrailIntents(text2, IntentQueryOptimizer.MaxIntentCountPerSpeaker), IntentQueryOptimizer.MaxIntentCountPerSpeaker, 1f);
-			}
+			PromptRuleIntentInputBatch batch = PromptRuleIntentInputBatch.Collect(userText, secondaryText,
+				input => ports == null ? (TryGetInputEmbedding(input, out var vector) ? vector : null) : ports.InputEmbedding?.Invoke(input));
+			List<PromptRuleRecallIntent> list = batch.Intents;
+			List<string> list2 = batch.Texts;
 			if (list.Count <= 0)
 			{
 				try
@@ -5686,336 +4816,61 @@ public static class AIConfigHandler
 			float[] vec2 = null;
 			if (!string.IsNullOrWhiteSpace(runtimeGuardrailContext))
 			{
-				TryGetInputEmbedding(runtimeGuardrailContext, out vec2);
+				if (ports == null) TryGetInputEmbedding(runtimeGuardrailContext, out vec2);
+				else vec2 = ports.InputEmbedding?.Invoke(runtimeGuardrailContext);
 			}
-			bool flag = vec2 != null && vec2.Length != 0;
-			List<GuardrailRulePromptConfig> allEnabledRulePrompts = GetAllEnabledRulePrompts();
+			List<GuardrailRulePromptConfig> allEnabledRulePrompts = eligibleRules;
 			if (allEnabledRulePrompts == null || allEnabledRulePrompts.Count <= 0)
 			{
 				return false;
 			}
-			GuardrailEvalSnapshot guardrailEvalSnapshot = new GuardrailEvalSnapshot
-			{
-				Key = text
-			};
-			List<GuardrailRuleEval> list4 = new List<GuardrailRuleEval>();
-			Dictionary<string, GuardrailRulePromptConfig> dictionary = new Dictionary<string, GuardrailRulePromptConfig>(StringComparer.OrdinalIgnoreCase);
+			List<PromptRuleRetrievalRule> detachedRules = new List<PromptRuleRetrievalRule>(allEnabledRulePrompts.Count);
 			for (int j = 0; j < allEnabledRulePrompts.Count; j++)
 			{
-				GuardrailRulePromptConfig guardrailRulePromptConfig = allEnabledRulePrompts[j];
-				if (guardrailRulePromptConfig == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig.Id))
-				{
-					continue;
-				}
-				string id = guardrailRulePromptConfig.Id;
-				if (excluded.Contains(id))
-				{
-					continue;
-				}
-				string ruleInstruction = guardrailRulePromptConfig.Instruction ?? "";
-				List<string> list5 = BuildRuleSemanticSeeds(id, ruleInstruction, guardrailRulePromptConfig.TriggerKeywords);
-				float num = 0f;
-				float num2 = 0f;
-				string matchedSeed = "";
-				string matchedIntent = "";
-				for (int k = 0; k < list5.Count; k++)
-				{
-					string text3 = list5[k];
-					if (string.IsNullOrWhiteSpace(text3) || !TryGetPhraseEmbedding(text3, out var vec3) || vec3 == null || vec3.Length == 0)
-					{
-						continue;
-					}
-					for (int l = 0; l < list.Count; l++)
-					{
-						GuardrailIntentInput guardrailIntentInput2 = list[l];
-						if (guardrailIntentInput2?.Vector == null || guardrailIntentInput2.Vector.Length == 0)
-						{
-							continue;
-						}
-						float num3 = DotProductNormalized(guardrailIntentInput2.Vector, vec3) * Math.Max(0f, guardrailIntentInput2.Weight);
-						if (num3 > num)
-						{
-							num = num3;
-							matchedSeed = text3;
-							matchedIntent = guardrailIntentInput2.Text;
-						}
-					}
-					if (flag)
-					{
-						float num4 = DotProductNormalized(vec2, vec3);
-						if (num4 > num2)
-						{
-							num2 = num4;
-						}
-					}
-				}
-				float num5 = 0f;
-				float mixedRaw = (flag ? (num * (1f - num5) + num2 * num5) : num);
-				GuardrailRuleEval guardrailRuleEval = new GuardrailRuleEval
-				{
-					RuleTag = id,
-					MatchedSeed = matchedSeed,
-					MatchedIntent = matchedIntent,
-					RawInput = num,
-					RawContext = num2,
-					MixedRaw = mixedRaw,
-					AmpScore = mixedRaw,
-					RerankScore = mixedRaw
-				};
-				list4.Add(guardrailRuleEval);
-				dictionary[id] = guardrailRulePromptConfig;
-				guardrailEvalSnapshot.Rules[id] = guardrailRuleEval;
+				GuardrailRulePromptConfig rule = allEnabledRulePrompts[j];
+				detachedRules.Add(rule == null || string.IsNullOrWhiteSpace(rule.Id) || excluded.Contains(rule.Id)
+					? new PromptRuleRetrievalRule("", "", "", null)
+					: new PromptRuleRetrievalRule(rule.Id, rule.Group, rule.Instruction, rule.TriggerKeywords));
 			}
-			int guardrailReturnCapFromMcm = GuardrailRuleReturnCap;
-			int num6 = Math.Max(1, list.Count);
-			int guardrailRerankBudget = GetGuardrailRerankBudget(guardrailReturnCapFromMcm);
-			int guardrailPerIntentRerank = GetGuardrailPerIntentRerank(guardrailRerankBudget, num6);
-			int guardrailPerIntentRecall = GetGuardrailPerIntentRecall(guardrailPerIntentRerank);
-			guardrailEvalSnapshot.IntentCount = num6;
-			guardrailEvalSnapshot.ReturnCap = guardrailReturnCapFromMcm;
-			guardrailEvalSnapshot.RerankPerIntent = guardrailPerIntentRerank;
-			guardrailEvalSnapshot.RecallPerIntent = guardrailPerIntentRecall;
 			OnnxCrossEncoderReranker onnxCrossEncoderReranker = null;
-			bool flag2 = false;
-			try
+			bool flag2 = ports?.Rerank != null;
+			if (ports == null)
 			{
-				onnxCrossEncoderReranker = OnnxCrossEncoderReranker.Instance;
-				flag2 = onnxCrossEncoderReranker != null && onnxCrossEncoderReranker.IsAvailable;
-			}
-			catch
-			{
-				flag2 = false;
-			}
-			string text4 = (flag2 ? ((list.Count > 1) ? "rerank_multi" : "rerank") : ((list.Count > 1) ? "semantic_multi" : "semantic"));
-			guardrailEvalSnapshot.MatchMode = text4;
-			Dictionary<string, GuardrailRuleAggregate> dictionary2 = new Dictionary<string, GuardrailRuleAggregate>(StringComparer.OrdinalIgnoreCase);
-			for (int k = 0; k < list.Count; k++)
-			{
-				GuardrailIntentInput guardrailIntentInput = list[k];
-				if (guardrailIntentInput?.Vector == null || guardrailIntentInput.Vector.Length == 0)
+				try
 				{
-					continue;
+					onnxCrossEncoderReranker = OnnxCrossEncoderReranker.Instance;
+					flag2 = onnxCrossEncoderReranker != null && onnxCrossEncoderReranker.IsAvailable;
 				}
-				List<GuardrailRuleScore> list5 = new List<GuardrailRuleScore>();
-				for (int l = 0; l < allEnabledRulePrompts.Count; l++)
+				catch
 				{
-					GuardrailRulePromptConfig guardrailRulePromptConfig2 = allEnabledRulePrompts[l];
-					if (guardrailRulePromptConfig2 == null || string.IsNullOrWhiteSpace(guardrailRulePromptConfig2.Id))
-					{
-						continue;
-					}
-					string id2 = guardrailRulePromptConfig2.Id;
-					if (excluded.Contains(id2))
-					{
-						continue;
-					}
-					guardrailEvalSnapshot.Rules.TryGetValue(id2, out var value);
-					List<string> list6 = BuildRuleSemanticSeeds(id2, guardrailRulePromptConfig2.Instruction ?? "", guardrailRulePromptConfig2.TriggerKeywords);
-					float num7 = 0f;
-					string text5 = "";
-					for (int m = 0; m < list6.Count; m++)
-					{
-						string text6 = list6[m];
-						if (string.IsNullOrWhiteSpace(text6) || !TryGetPhraseEmbedding(text6, out var vec3) || vec3 == null || vec3.Length == 0)
-						{
-							continue;
-						}
-						float num8 = DotProductNormalized(guardrailIntentInput.Vector, vec3) * Math.Max(0f, guardrailIntentInput.Weight);
-						if (num8 > num7)
-						{
-							num7 = num8;
-							text5 = text6;
-						}
-					}
-					float num9 = ((flag && value != null) ? value.RawContext : 0f);
-					float num10 = 0f;
-					float num11 = (flag ? (num7 * (1f - num10) + num9 * num10) : num7);
-					list5.Add(new GuardrailRuleScore
-					{
-						Rule = guardrailRulePromptConfig2,
-						RawScore = num11,
-						FinalScore = num11,
-						MatchedSeed = text5,
-						MatchedIntent = guardrailIntentInput.Text
-					});
-				}
-				list5 = list5.OrderByDescending((GuardrailRuleScore x) => x.RawScore).ThenBy((GuardrailRuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).Take(guardrailPerIntentRecall).ToList();
-				if (list5.Count <= 0)
-				{
-					continue;
-				}
-				int num12 = Math.Min(guardrailPerIntentRerank, list5.Count);
-				List<GuardrailRuleScore> list7 = new List<GuardrailRuleScore>();
-				List<string> rerankTexts = null;
-				List<float> rerankScores = null;
-				bool flag3 = false;
-				if (flag2)
-				{
-					rerankTexts = new List<string>(num12);
-					for (int n = 0; n < num12; n++)
-					{
-						GuardrailRuleScore guardrailRuleScore = list5[n];
-						rerankTexts.Add((guardrailRuleScore?.Rule == null) ? "" : BuildGuardrailRuleRerankText(guardrailRuleScore.Rule));
-					}
-					flag3 = onnxCrossEncoderReranker.TryScoreBatch(guardrailIntentInput.Text, rerankTexts, out rerankScores) && rerankScores != null && rerankScores.Count == num12;
-				}
-				for (int n = 0; n < num12; n++)
-				{
-					GuardrailRuleScore guardrailRuleScore = list5[n];
-					if (guardrailRuleScore?.Rule == null)
-					{
-						continue;
-					}
-					float num13 = guardrailRuleScore.RawScore;
-					if (flag2 && flag3 && rerankTexts != null && n < rerankTexts.Count && !string.IsNullOrWhiteSpace(rerankTexts[n]) && rerankScores != null && n < rerankScores.Count)
-					{
-						num13 = rerankScores[n] * Math.Max(0f, guardrailIntentInput.Weight);
-					}
-					list7.Add(new GuardrailRuleScore
-					{
-						Rule = guardrailRuleScore.Rule,
-						RawScore = guardrailRuleScore.RawScore,
-						FinalScore = num13,
-						MatchedSeed = guardrailRuleScore.MatchedSeed,
-						MatchedIntent = guardrailRuleScore.MatchedIntent
-					});
-				}
-				List<GuardrailRuleScore> list8 = SelectGuardrailCandidateScores(list7, (flag2 && flag3) ? "cross_encoder" : "recall_fallback", guardrailIntentInput.Text, num12);
-				for (int num14 = 0; num14 < list8.Count; num14++)
-				{
-					GuardrailRuleScore guardrailRuleScore2 = list8[num14];
-					if (guardrailRuleScore2?.Rule == null)
-					{
-						continue;
-					}
-					string text8 = (guardrailRuleScore2.Rule.Id ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(text8) || !guardrailEvalSnapshot.Rules.TryGetValue(text8, out var value2))
-					{
-						continue;
-					}
-					if (!dictionary2.TryGetValue(text8, out var value3))
-					{
-						value3 = new GuardrailRuleAggregate
-						{
-							Eval = value2
-						};
-					}
-					value3.ScoreSum += guardrailRuleScore2.FinalScore;
-					value3.HitCount++;
-					if (num14 + 1 < value3.BestRank)
-					{
-						value3.BestRank = num14 + 1;
-					}
-					if (guardrailRuleScore2.FinalScore >= value3.BestScore)
-					{
-						value3.BestScore = guardrailRuleScore2.FinalScore;
-						value3.MatchedSeed = guardrailRuleScore2.MatchedSeed;
-						value3.MatchedIntent = guardrailRuleScore2.MatchedIntent;
-					}
-					dictionary2[text8] = value3;
+					flag2 = false;
 				}
 			}
-			for (int num15 = 0; num15 < list4.Count; num15++)
+			PromptRuleRetrievalResult result = PromptRuleRetrievalPipeline.Run(text, list, detachedRules, vec2,
+				returnCap, flag2, seed => ports == null ? (TryGetPhraseEmbedding(seed, out var vector) ? vector : null) : ports.PhraseEmbedding?.Invoke(seed),
+				DotProductNormalized, ports?.Rerank ?? (flag2 ? (Func<string, IReadOnlyList<string>, IReadOnlyList<float>>)((query, texts) =>
 			{
-				GuardrailRuleEval guardrailRuleEval2 = list4[num15];
-				if (guardrailRuleEval2 != null)
-				{
-					guardrailRuleEval2.Candidate = false;
-					guardrailRuleEval2.AmpScore = guardrailRuleEval2.MixedRaw;
-					guardrailRuleEval2.RerankScore = guardrailRuleEval2.MixedRaw;
-					guardrailRuleEval2.MatchMode = text4;
-				}
-			}
-			int num16 = 0;
-			if (dictionary2.Count > 0)
+				List<float> scores;
+				return onnxCrossEncoderReranker.TryScoreBatch(query, texts, out scores) ? scores : null;
+			}) : null));
+			GuardrailEvalSnapshot guardrailEvalSnapshot = result.Snapshot;
+			int guardrailReturnCapFromMcm = returnCap;
+			int num6 = guardrailEvalSnapshot.IntentCount;
+			int guardrailRerankBudget = result.RerankBudget;
+			int guardrailPerIntentRerank = result.PerIntentRerank;
+			int guardrailPerIntentRecall = result.PerIntentRecall;
+			string text4 = guardrailEvalSnapshot.MatchMode;
+			foreach (PromptRuleIntentSelection selected in result.IntentSelections)
 			{
-				int num17 = Math.Max(guardrailReturnCapFromMcm * 2, guardrailPerIntentRerank * Math.Min(list.Count, 3));
-				if (num17 < guardrailReturnCapFromMcm)
+				try
 				{
-					num17 = guardrailReturnCapFromMcm;
+					PromptRuleSelection evidence = selected.Selection;
+					Logger.Log("GuardrailSemantic", $"semantic_accept source={(flag2 && selected.Reranked ? "cross_encoder" : "recall_fallback")} mode=scored selected={selected.Scores.Count} strictSelected={evidence.StrictCount} topN={guardrailPerIntentRerank} minScore={0.21f:0.000} bestRaw={evidence.BestFinal:0.000} second={evidence.SecondFinal:0.000} bestEvidence={evidence.BestRaw:0.000} secondEvidence={evidence.SecondRaw:0.000}");
 				}
-				if (num17 > 24)
-				{
-					num17 = 24;
-				}
-				List<GuardrailRuleAggregate> list9 = (from x in dictionary2.Values
-					orderby Math.Min(1f, x.ScoreSum / (float)Math.Max(1, x.HitCount) + (float)(x.HitCount - 1) * 0.08f) descending, x.BestRank
-					select x).ThenBy((GuardrailRuleAggregate x) => x?.Eval?.RuleTag ?? "", StringComparer.OrdinalIgnoreCase).Take(num17).ToList();
-				num16 = list9.Count;
-				for (int num18 = 0; num18 < list9.Count; num18++)
-				{
-					GuardrailRuleAggregate guardrailRuleAggregate = list9[num18];
-					if (guardrailRuleAggregate?.Eval == null)
-					{
-						continue;
-					}
-					float num19 = guardrailRuleAggregate.ScoreSum / (float)Math.Max(1, guardrailRuleAggregate.HitCount) + (float)(guardrailRuleAggregate.HitCount - 1) * 0.08f;
-					if (num19 > 1f)
-					{
-						num19 = 1f;
-					}
-					guardrailRuleAggregate.Eval.Candidate = true;
-					guardrailRuleAggregate.Eval.AmpScore = num19;
-					guardrailRuleAggregate.Eval.RerankScore = guardrailRuleAggregate.BestScore;
-					guardrailRuleAggregate.Eval.MatchMode = text4;
-					if (!string.IsNullOrWhiteSpace(guardrailRuleAggregate.MatchedSeed))
-					{
-						guardrailRuleAggregate.Eval.MatchedSeed = guardrailRuleAggregate.MatchedSeed;
-					}
-					if (!string.IsNullOrWhiteSpace(guardrailRuleAggregate.MatchedIntent))
-					{
-						guardrailRuleAggregate.Eval.MatchedIntent = guardrailRuleAggregate.MatchedIntent;
-					}
-				}
+				catch { }
 			}
-			list4 = list4.OrderByDescending((GuardrailRuleEval x) => x.Candidate ? 1 : 0).ThenByDescending((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw).ThenBy((GuardrailRuleEval x) => x.RuleTag, StringComparer.OrdinalIgnoreCase).ToList();
-			float num20 = ((list4.Count > 0) ? list4.Average((GuardrailRuleEval x) => x.Candidate ? x.AmpScore : x.MixedRaw) : 0f);
-			float num21 = ((list4.Count > 1) ? ((list4[0].Candidate ? list4[0].AmpScore : list4[0].MixedRaw) - (list4[1].Candidate ? list4[1].AmpScore : list4[1].MixedRaw)) : 1f);
-			for (int num22 = 0; num22 < list4.Count; num22++)
-			{
-				GuardrailRuleEval guardrailRuleEval3 = list4[num22];
-				guardrailRuleEval3.Mean = num20;
-				guardrailRuleEval3.Rank = num22 + 1;
-				float num23 = -1f;
-				string maxOtherTag = "";
-				for (int num24 = 0; num24 < list4.Count; num24++)
-				{
-					if (num24 == num22)
-					{
-						continue;
-					}
-					GuardrailRuleEval guardrailRuleEval4 = list4[num24];
-					float num25 = (guardrailRuleEval4.Candidate ? guardrailRuleEval4.AmpScore : guardrailRuleEval4.MixedRaw);
-					if (num25 > num23)
-					{
-						num23 = num25;
-						maxOtherTag = guardrailRuleEval4.RuleTag;
-					}
-				}
-				float num26 = guardrailRuleEval3.Candidate ? guardrailRuleEval3.AmpScore : guardrailRuleEval3.MixedRaw;
-				float delta = ((num23 < -0.5f) ? num26 : (num26 - num23));
-				float num27 = 0f;
-				float num28 = 0f;
-				string bestSeed = "";
-				bool lexicalAnchor = false;
-				bool flag3 = guardrailRuleEval3.Candidate && guardrailRuleEval3.Rank <= guardrailReturnCapFromMcm;
-				string rejectReason = (flag3 ? (text4 + "_return(" + guardrailRuleEval3.Rank + "/" + guardrailReturnCapFromMcm + ")") : (guardrailRuleEval3.Candidate ? (text4 + "_return_overflow") : (text4 + "_recall_miss")));
-				guardrailRuleEval3.MaxOther = num23;
-				guardrailRuleEval3.MaxOtherTag = maxOtherTag;
-				guardrailRuleEval3.Delta = delta;
-				guardrailRuleEval3.TopGap = num21;
-				guardrailRuleEval3.IntentEvidence = num27;
-				guardrailRuleEval3.IntentGate = num28;
-				guardrailRuleEval3.IntentSeed = bestSeed;
-				guardrailRuleEval3.LexicalAnchor = lexicalAnchor;
-				guardrailRuleEval3.AbsHit = flag3;
-				guardrailRuleEval3.RelHit = false;
-				guardrailRuleEval3.HighAmpHit = false;
-				guardrailRuleEval3.ForceHit = false;
-				guardrailRuleEval3.RejectReason = rejectReason;
-				guardrailRuleEval3.MatchMode = text4;
-				guardrailRuleEval3.Hit = flag3;
-			}
+			List<GuardrailRuleEval> list4 = result.Evaluated.Ranked;
+			int num16 = result.Evaluated.CandidatePoolCount;
 			try
 			{
 				Logger.Log("GuardrailSemantic", $"candidate_pool mode={text4} returnCap={guardrailReturnCapFromMcm} rerankBudget={guardrailRerankBudget} rerankPerIntent={guardrailPerIntentRerank} recallPerIntent={guardrailPerIntentRecall} intents={num6} got={num16}");
@@ -6044,9 +4899,9 @@ public static class AIConfigHandler
 			catch
 			{
 			}
-			lock (_guardrailSemanticLock)
+			lock (_promptConfigurationReloadLock)
 			{
-				_lastGuardrailEval = guardrailEvalSnapshot;
+				_guardrailEvalCache.Publish(text, guardrailEvalSnapshot, configurationRevision, _promptConfiguration.Capture().Revision);
 			}
 			snapshot = guardrailEvalSnapshot;
 			return snapshot != null && snapshot.Rules != null && snapshot.Rules.Count > 0;
@@ -6067,200 +4922,12 @@ public static class AIConfigHandler
 			return false;
 		}
 
-		void appendInputs(List<string> intents, int perSourceLimit, float weight)
-		{
-			if (intents == null || intents.Count <= 0 || weight <= 0f || perSourceLimit <= 0)
-			{
-				return;
-			}
-			int num = 0;
-			for (int i = 0; i < intents.Count; i++)
-			{
-				if (list.Count >= IntentQueryOptimizer.MaxCombinedIntentCount)
-				{
-					break;
-				}
-				string text4 = NormalizeSemanticText(intents[i]);
-				if (!string.IsNullOrWhiteSpace(text4) && TryGetInputEmbedding(text4, out var vec) && vec != null && vec.Length != 0)
-				{
-					num++;
-					if (num > perSourceLimit)
-					{
-						break;
-					}
-					list2.Add(text4);
-					list.Add(new GuardrailIntentInput
-					{
-						Text = text4,
-						Vector = vec,
-						Weight = weight
-					});
-				}
-			}
-		}
 	}
 
-	private static string BuildGuardrailRuleRerankText(GuardrailRulePromptConfig rule)
-	{
-		try
-		{
-			if (rule == null)
-			{
-				return "";
-			}
-			string text = NormalizeSemanticText(rule.Id);
-			string text2 = NormalizeSemanticText(rule.Group);
-			string text3 = NormalizeSemanticText(BuildRuleInstructionSeed(rule.Id, rule.Instruction));
-			List<string> list = NormalizeStringList(rule.TriggerKeywords, 48);
-			if (list.Count > 6)
-			{
-				list = list.Take(6).ToList();
-			}
-			StringBuilder stringBuilder = new StringBuilder();
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				stringBuilder.AppendLine("规则组: " + text2);
-			}
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				stringBuilder.AppendLine("规则ID: " + text);
-			}
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				stringBuilder.AppendLine("用途: " + text3);
-			}
-			if (list.Count > 0)
-			{
-				stringBuilder.AppendLine("触发词: " + string.Join(" / ", list));
-			}
-			return NormalizeSemanticText(stringBuilder.ToString());
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static int GetGuardrailRerankBudget(int returnCap)
-	{
-		int num = Math.Max(1, returnCap) * 3;
-		if (num < 8)
-		{
-			num = 8;
-		}
-		if (num > 36)
-		{
-			num = 36;
-		}
-		return num;
-	}
-
-	private static int GetGuardrailPerIntentRerank(int rerankBudget, int intentCount)
-	{
-		int num = ((intentCount > 0) ? intentCount : 1);
-		int num2 = (int)Math.Round((double)rerankBudget / (double)num, MidpointRounding.AwayFromZero);
-		if (num2 < 4)
-		{
-			num2 = 4;
-		}
-		if (num2 > 12)
-		{
-			num2 = 12;
-		}
-		return num2;
-	}
-
-	private static int GetGuardrailPerIntentRecall(int rerankPerIntent)
-	{
-		int num = (int)Math.Round((double)rerankPerIntent * 2.5, MidpointRounding.AwayFromZero);
-		if (num < 10)
-		{
-			num = 10;
-		}
-		if (num > 30)
-		{
-			num = 30;
-		}
-		return num;
-	}
-
-	private static List<GuardrailRuleScore> SelectGuardrailCandidateScores(List<GuardrailRuleScore> scored, string source, string input, int topK)
-	{
-		List<GuardrailRuleScore> list = new List<GuardrailRuleScore>();
-		try
-		{
-			int num = ((topK <= 0) ? 4 : topK);
-			float num2 = 0.21f;
-			List<GuardrailRuleScore> list2 = (from x in scored
-				where x?.Rule != null && !float.IsNaN(x.FinalScore)
-				orderby x.FinalScore descending, x.RawScore descending
-				select x).ThenBy((GuardrailRuleScore x) => x?.Rule?.Id ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-			if (list2.Count <= 0)
-			{
-				return list;
-			}
-			float num3 = ((list2.Count > 0) ? list2[0].FinalScore : 0f);
-			float num4 = ((list2.Count > 1) ? list2[1].FinalScore : 0f);
-			float num5 = ((list2.Count > 0) ? list2[0].RawScore : 0f);
-			float num6 = ((list2.Count > 1) ? list2[1].RawScore : 0f);
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			int num7 = 0;
-			for (int i = 0; i < list2.Count; i++)
-			{
-				if (list.Count >= num)
-				{
-					break;
-				}
-				GuardrailRuleScore guardrailRuleScore = list2[i];
-				if (guardrailRuleScore?.Rule == null || guardrailRuleScore.FinalScore < num2)
-				{
-					continue;
-				}
-				string text = (guardrailRuleScore.Rule.Id ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text) || hashSet.Add(text))
-				{
-					list.Add(guardrailRuleScore);
-					num7++;
-				}
-			}
-			if (list.Count < num)
-			{
-				for (int j = 0; j < list2.Count; j++)
-				{
-					if (list.Count >= num)
-					{
-						break;
-					}
-					GuardrailRuleScore guardrailRuleScore2 = list2[j];
-					if (guardrailRuleScore2?.Rule == null)
-					{
-						continue;
-					}
-					string text2 = (guardrailRuleScore2.Rule.Id ?? "").Trim();
-					if (string.IsNullOrWhiteSpace(text2) || hashSet.Add(text2))
-					{
-						list.Add(guardrailRuleScore2);
-					}
-				}
-			}
-			try
-			{
-				Logger.Log("GuardrailSemantic", $"semantic_accept source={source} mode=scored selected={list.Count} strictSelected={num7} topN={num} minScore={num2:0.000} bestRaw={num3:0.000} second={num4:0.000} bestEvidence={num5:0.000} secondEvidence={num6:0.000}");
-			}
-			catch
-			{
-			}
-		}
-		catch
-		{
-		}
-		return list;
-	}
-
-	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval, IEnumerable<string> excludedRuleIds = null)
+	private static bool TryGetRuleEval(string userText, string secondaryText, string ruleTag, out GuardrailRuleEval eval, IEnumerable<string> excludedRuleIds = null, bool applyRuntimeAutoExclusions = true)
 	{
 		eval = null;
-		if (!TryGetGuardrailEvalSnapshot(userText, secondaryText, out var snapshot, excludedRuleIds) || snapshot == null || snapshot.Rules == null)
+		if (!TryGetGuardrailEvalSnapshot(userText, secondaryText, out var snapshot, excludedRuleIds, applyRuntimeAutoExclusions) || snapshot == null || snapshot.Rules == null)
 		{
 			return false;
 		}
@@ -6378,6 +5045,7 @@ public static class AIConfigHandler
 
 	private static List<GuardrailRuleHit> GetGuardrailSemanticRuleHits(string input, string secondaryInput, int maxCount, bool includeBuiltInRules, IEnumerable<string> excludedRuleIds, bool applyRuntimeAutoExclusions, out MentionedWorldEntities mentionedEntities)
 	{
+		using IDisposable configurationScope = _promptConfiguration.BeginCapture();
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		mentionedEntities = new MentionedWorldEntities();
 		try
@@ -6473,46 +5141,17 @@ public static class AIConfigHandler
 
 	private static bool TryLexicalRuleKeywordHit(string input, string secondaryInput, List<string> triggerKeywords, out string matchedKeyword)
 	{
-		matchedKeyword = "";
-		try
-		{
-			if (triggerKeywords == null || triggerKeywords.Count <= 0)
-			{
-				return false;
-			}
-			string text = NormalizeSemanticText(input);
-			string text2 = NormalizeSemanticText(secondaryInput);
-			if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
-			{
-				return false;
-			}
-			for (int i = 0; i < triggerKeywords.Count; i++)
-			{
-				string text3 = NormalizeSemanticText(triggerKeywords[i]);
-				if (string.IsNullOrWhiteSpace(text3))
-				{
-					continue;
-				}
-				if ((!string.IsNullOrWhiteSpace(text) && text.IndexOf(text3, StringComparison.OrdinalIgnoreCase) >= 0) || (!string.IsNullOrWhiteSpace(text2) && text2.IndexOf(text3, StringComparison.OrdinalIgnoreCase) >= 0))
-				{
-					matchedKeyword = text3;
-					return true;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
+		try { return PromptRuleRanking.TryLexicalHit(input, secondaryInput, triggerKeywords, out matchedKeyword); }
+		catch { matchedKeyword = ""; return false; }
 	}
 
-	private static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false, IEnumerable<string> excludedRuleIds = null)
+	private static List<GuardrailRuleHit> GetGuardrailLexicalRuleHits(string input, string secondaryInput, int maxCount = 0, bool includeBuiltInRules = false, IEnumerable<string> excludedRuleIds = null, bool applyRuntimeAutoExclusions = true)
 	{
 		List<GuardrailRuleHit> list = new List<GuardrailRuleHit>();
 		try
 		{
 			int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
-			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
 			Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
 			if (dictionary == null || dictionary.Count <= 0)
 			{
@@ -6625,39 +5264,19 @@ public static class AIConfigHandler
 		return "";
 	}
 
-	private static int GetStickyGuardrailTurnLimit(string ruleId)
+	/// <summary>Game thread: resolve the legacy sticky identity before background retrieval.</summary>
+	internal static string CaptureGuardrailStickyTargetKey(PromptRuntimeTargetBinding binding)
 	{
-		string text = (ruleId ?? "").Trim().ToLowerInvariant();
-		if (string.IsNullOrWhiteSpace(text))
+		using IDisposable scope = BeginGuardrailRuntimeScope();
+		try
 		{
-			return 0;
+			ApplyGuardrailRuntimeTarget(binding);
+			return ResolveGuardrailStickyTargetKey();
 		}
-		switch (text)
+		catch
 		{
-		case "kingdom_service":
-		case "marriage":
-			return 3;
-		default:
-			return 0;
+			return "";
 		}
-	}
-
-	private static bool IsStickyGuardrailFollowUpInput(string input)
-	{
-		string text = NormalizeSemanticText(input);
-		if (string.IsNullOrWhiteSpace(text) || text.Length > 24)
-		{
-			return false;
-		}
-		for (int i = 0; i < StickyGuardrailFollowUpPhrases.Length; i++)
-		{
-			string value = StickyGuardrailFollowUpPhrases[i];
-			if (!string.IsNullOrWhiteSpace(value) && text.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static bool DidGuardrailRuleRecentlyComplete(string ruleId, string secondaryInput)
@@ -6693,216 +5312,27 @@ public static class AIConfigHandler
 		}
 	}
 
-	private static bool ShouldStartStickyGuardrailRule(string input, string secondaryInput, GuardrailRuleHit hit, int rank, IEnumerable<string> excludedRuleIds = null)
+	private static List<GuardrailRuleHit> MergeStickyGuardrailRuleHits(string input, string secondaryInput, List<GuardrailRuleHit> liveHits, int maxCount, IEnumerable<string> excludedRuleIds = null, string capturedTargetKey = null, bool applyRuntimeAutoExclusions = true)
 	{
-		if (hit == null)
-		{
-			return false;
-		}
-		string text = (hit.RuleId ?? "").Trim();
-		if (GetStickyGuardrailTurnLimit(text) <= 0 || DidGuardrailRuleRecentlyComplete(text, secondaryInput))
-		{
-			return false;
-		}
-		if (hit.Score >= 0.999f)
-		{
-			return true;
-		}
-		if (TryGetRuleEval(input, secondaryInput, text, out var eval, excludedRuleIds) && eval != null && eval.Hit)
-		{
-			if (eval.ForceHit || eval.HighAmpHit || eval.AbsHit)
+		HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions);
+		int cap = maxCount > 0 ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap;
+		string target = capturedTargetKey ?? ResolveGuardrailStickyTargetKey();
+		Dictionary<string, GuardrailRulePromptConfig> rules = string.IsNullOrWhiteSpace(target) ? null : BuildRulePromptRegistry();
+		List<GuardrailRuleHit> result = _stickyGuardrailRuleStore.Merge(_promptConfiguration.Read().Revision,
+			() => _promptConfiguration.Capture().Revision, target, input, liveHits, cap, excluded, rules,
+			ruleId => DidGuardrailRuleRecentlyComplete(ruleId, secondaryInput),
+			ruleId =>
 			{
-				return true;
-			}
-			if (eval.Rank <= 1 && eval.AmpScore >= 0.48f)
-			{
-				return true;
-			}
-		}
-		if (rank == 0 && hit.Score >= 0.56f)
+				if (!TryGetRuleEval(input, secondaryInput, ruleId, out var eval, excluded, applyRuntimeAutoExclusions) || eval == null)
+					return default;
+				return new PromptStickyEvidence(eval.Hit, eval.ForceHit, eval.HighAmpHit, eval.AbsHit, eval.Rank, eval.AmpScore);
+			}, IsRuleCurrentlyEligibleForRag, out int carriedCount);
+		if (!string.IsNullOrWhiteSpace(target) && rules != null && rules.Count > 0)
 		{
-			return true;
+			try { Logger.Log("GuardrailSemantic", $"sticky_rule_merge target={target} live={(liveHits?.Count ?? 0)} sticky={carriedCount} final={result.Count}"); }
+			catch { }
 		}
-		return hit.Score >= 0.62f;
-	}
-
-	private static bool ShouldContinueStickyGuardrailRule(StickyGuardrailRuleState state, GuardrailRulePromptConfig rule, string input, int currentLiveCount, string secondaryInput)
-	{
-		if (state == null || rule == null || state.RemainingCarryTurns <= 0 || DidGuardrailRuleRecentlyComplete(state.RuleId, secondaryInput))
-		{
-			return false;
-		}
-		if (currentLiveCount > 0)
-		{
-			return false;
-		}
-		if (TryLexicalRuleKeywordHit(input, null, rule.TriggerKeywords, out var _))
-		{
-			return true;
-		}
-		string text = NormalizeSemanticText(input);
-		string text2 = NormalizeSemanticText(state.MatchedSeed);
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && text.IndexOf(text2, StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return true;
-		}
-		return IsStickyGuardrailFollowUpInput(input);
-	}
-
-	private static float ApplyStickyGuardrailScoreDecay(float score, int maxCarryTurns, int carryTurnIndex)
-	{
-		float num = ((score > 0f) ? score : 0.6f);
-		float num2;
-		if (maxCarryTurns >= 3)
-		{
-			num2 = ((carryTurnIndex <= 1) ? 0.78f : ((carryTurnIndex == 2) ? 0.58f : 0.36f));
-		}
-		else
-		{
-			num2 = ((carryTurnIndex <= 1) ? 0.72f : 0.45f);
-		}
-		return Math.Max(0.18f, num * num2);
-	}
-
-	private static List<GuardrailRuleHit> MergeStickyGuardrailRuleHits(string input, string secondaryInput, List<GuardrailRuleHit> liveHits, int maxCount, IEnumerable<string> excludedRuleIds = null)
-	{
-		HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
-		List<GuardrailRuleHit> list = (liveHits ?? new List<GuardrailRuleHit>()).Where((GuardrailRuleHit x) => x != null && !string.IsNullOrWhiteSpace(x.RuleId) && !excluded.Contains((x.RuleId ?? "").Trim())).OrderByDescending((GuardrailRuleHit x) => x.Priority).ThenByDescending((GuardrailRuleHit x) => x.Score).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
-		int num = ((maxCount > 0) ? ClampGuardrailReturnCap(maxCount) : GuardrailRuleReturnCap);
-		string text = ResolveGuardrailStickyTargetKey();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return (num > 0 && list.Count > num) ? list.Take(num).ToList() : list;
-		}
-		Dictionary<string, GuardrailRulePromptConfig> dictionary = BuildRulePromptRegistry();
-		if (dictionary == null || dictionary.Count <= 0)
-		{
-			return (num > 0 && list.Count > num) ? list.Take(num).ToList() : list;
-		}
-		HashSet<string> hashSet = new HashSet<string>(list.Select((GuardrailRuleHit x) => (x.RuleId ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
-		List<StickyGuardrailRuleState> list2 = new List<StickyGuardrailRuleState>();
-		lock (_stickyGuardrailRuleLock)
-		{
-			_stickyGuardrailRules.TryGetValue(text, out var value);
-			value = value ?? new List<StickyGuardrailRuleState>();
-			List<StickyGuardrailRuleState> list3 = new List<StickyGuardrailRuleState>();
-			for (int i = 0; i < value.Count; i++)
-			{
-				StickyGuardrailRuleState stickyGuardrailRuleState = value[i];
-				if (stickyGuardrailRuleState == null || string.IsNullOrWhiteSpace(stickyGuardrailRuleState.RuleId))
-				{
-					continue;
-				}
-				string text2 = stickyGuardrailRuleState.RuleId.Trim();
-				if (excluded.Contains(text2))
-				{
-					list3.Add(stickyGuardrailRuleState);
-					continue;
-				}
-				if (hashSet.Contains(stickyGuardrailRuleState.RuleId))
-				{
-					continue;
-				}
-				if (GetStickyGuardrailTurnLimit(text2) <= 0 || !dictionary.TryGetValue(text2, out var value2) || value2 == null || !value2.IsEnabled)
-				{
-					continue;
-				}
-				if (!ShouldContinueStickyGuardrailRule(stickyGuardrailRuleState, value2, input, list.Count, secondaryInput))
-				{
-					continue;
-				}
-				stickyGuardrailRuleState.CarryTurnIndex = Math.Max(1, stickyGuardrailRuleState.MaxCarryTurns - stickyGuardrailRuleState.RemainingCarryTurns + 1);
-				list2.Add(new StickyGuardrailRuleState
-				{
-					RuleId = text2,
-					Group = stickyGuardrailRuleState.Group,
-					Priority = stickyGuardrailRuleState.Priority,
-					LastScore = stickyGuardrailRuleState.LastScore,
-					MatchedSeed = stickyGuardrailRuleState.MatchedSeed,
-					RemainingCarryTurns = stickyGuardrailRuleState.RemainingCarryTurns,
-					MaxCarryTurns = stickyGuardrailRuleState.MaxCarryTurns,
-					CarryTurnIndex = stickyGuardrailRuleState.CarryTurnIndex
-				});
-				stickyGuardrailRuleState.RemainingCarryTurns = Math.Max(0, stickyGuardrailRuleState.RemainingCarryTurns - 1);
-				if (stickyGuardrailRuleState.RemainingCarryTurns > 0)
-				{
-					list3.Add(stickyGuardrailRuleState);
-				}
-			}
-			for (int j = 0; j < list.Count; j++)
-			{
-				GuardrailRuleHit guardrailRuleHit = list[j];
-				if (!ShouldStartStickyGuardrailRule(input, secondaryInput, guardrailRuleHit, j, excluded))
-				{
-					continue;
-				}
-				string text3 = (guardrailRuleHit.RuleId ?? "").Trim();
-				int stickyGuardrailTurnLimit = GetStickyGuardrailTurnLimit(text3);
-				StickyGuardrailRuleState stickyGuardrailRuleState2 = list3.FirstOrDefault((StickyGuardrailRuleState x) => x != null && string.Equals(x.RuleId, text3, StringComparison.OrdinalIgnoreCase));
-				if (stickyGuardrailRuleState2 == null)
-				{
-					list3.Add(new StickyGuardrailRuleState
-					{
-						RuleId = text3,
-						Group = (guardrailRuleHit.Group ?? ""),
-						Priority = guardrailRuleHit.Priority,
-						LastScore = guardrailRuleHit.Score,
-						MatchedSeed = (guardrailRuleHit.MatchedSeed ?? ""),
-						RemainingCarryTurns = stickyGuardrailTurnLimit,
-						MaxCarryTurns = stickyGuardrailTurnLimit
-					});
-					continue;
-				}
-				stickyGuardrailRuleState2.Group = (guardrailRuleHit.Group ?? stickyGuardrailRuleState2.Group);
-				stickyGuardrailRuleState2.Priority = guardrailRuleHit.Priority;
-				stickyGuardrailRuleState2.LastScore = guardrailRuleHit.Score;
-				stickyGuardrailRuleState2.MatchedSeed = (guardrailRuleHit.MatchedSeed ?? stickyGuardrailRuleState2.MatchedSeed);
-				stickyGuardrailRuleState2.RemainingCarryTurns = stickyGuardrailTurnLimit;
-				stickyGuardrailRuleState2.MaxCarryTurns = stickyGuardrailTurnLimit;
-			}
-			list3 = list3.OrderByDescending((StickyGuardrailRuleState x) => x.Priority).ThenByDescending((StickyGuardrailRuleState x) => x.LastScore).ThenBy((StickyGuardrailRuleState x) => x.RuleId, StringComparer.OrdinalIgnoreCase).Take(MaxStickyGuardrailRulesPerTarget).ToList();
-			if (list3.Count > 0)
-			{
-				_stickyGuardrailRules[text] = list3;
-			}
-			else
-			{
-				_stickyGuardrailRules.Remove(text);
-			}
-		}
-		if (list2.Count > 0)
-		{
-			for (int k = 0; k < list2.Count; k++)
-			{
-				StickyGuardrailRuleState stickyGuardrailRuleState3 = list2[k];
-				if (stickyGuardrailRuleState3 == null || hashSet.Contains(stickyGuardrailRuleState3.RuleId) || !IsRuleCurrentlyEligibleForRag(stickyGuardrailRuleState3.RuleId) || !dictionary.TryGetValue(stickyGuardrailRuleState3.RuleId, out var value3) || value3 == null)
-				{
-					continue;
-				}
-				list.Add(new GuardrailRuleHit
-				{
-					RuleId = stickyGuardrailRuleState3.RuleId,
-					Group = stickyGuardrailRuleState3.Group,
-					Priority = stickyGuardrailRuleState3.Priority,
-					Score = ApplyStickyGuardrailScoreDecay(stickyGuardrailRuleState3.LastScore, stickyGuardrailRuleState3.MaxCarryTurns, stickyGuardrailRuleState3.CarryTurnIndex),
-					MatchedSeed = (stickyGuardrailRuleState3.MatchedSeed ?? ""),
-					Instruction = (value3.Instruction ?? "")
-				});
-			}
-		}
-		list = list.OrderByDescending((GuardrailRuleHit x) => x.Priority).ThenByDescending((GuardrailRuleHit x) => x.Score).ThenBy((GuardrailRuleHit x) => x.RuleId, StringComparer.OrdinalIgnoreCase).ToList();
-		if (num > 0 && list.Count > num)
-		{
-			list = list.Take(num).ToList();
-		}
-		try
-		{
-			Logger.Log("GuardrailSemantic", $"sticky_rule_merge target={text} live={hashSet.Count} sticky={list2.Count} final={list.Count}");
-		}
-		catch
-		{
-		}
-		return list;
+		return result;
 	}
 
 	private static string BuildExtraRuleHitDebugDetail(string input, string secondaryInput, GuardrailRuleHit hit, IEnumerable<string> excludedRuleIds = null)
@@ -6972,10 +5402,42 @@ public static class AIConfigHandler
 				guardrailSemanticRuleHits = GetGuardrailLexicalRuleHits(input, secondaryInput, maxRules, includeBuiltInRules: false, excludedRuleIds: excluded);
 			}
 			guardrailSemanticRuleHits = MergeStickyGuardrailRuleHits(input, secondaryInput, guardrailSemanticRuleHits, maxRules, excluded);
+			return FormatMatchedExtraRuleInstructions(input, secondaryInput, hasAnyHero, excluded, guardrailSemanticRuleHits);
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	/// <summary>Worker-only fallback selection; runtime instruction formatting stays on the game thread.</summary>
+	internal static List<GuardrailRuleHit> GetMatchedExtraRuleHitsForWorker(string input, string secondaryInput, int maxRules, IEnumerable<string> excludedRuleIds, string capturedStickyTargetKey)
+	{
+		try
+		{
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds, applyRuntimeAutoExclusions: false);
+			List<GuardrailRuleHit> hits = GetGuardrailSemanticRuleHits(input, secondaryInput, maxRules, includeBuiltInRules: false, excluded, applyRuntimeAutoExclusions: false);
+			if (hits == null || hits.Count == 0)
+			{
+				hits = GetGuardrailLexicalRuleHits(input, secondaryInput, maxRules, includeBuiltInRules: false, excluded, applyRuntimeAutoExclusions: false);
+			}
+			return MergeStickyGuardrailRuleHits(input, secondaryInput, hits, maxRules, excluded, capturedStickyTargetKey ?? "", applyRuntimeAutoExclusions: false);
+		}
+		catch
+		{
+			return new List<GuardrailRuleHit>();
+		}
+	}
+
+	internal static string FormatMatchedExtraRuleInstructions(string input, string secondaryInput, bool hasAnyHero, IEnumerable<string> excludedRuleIds, List<GuardrailRuleHit> guardrailSemanticRuleHits)
+	{
+		try
+		{
 			if (guardrailSemanticRuleHits == null || guardrailSemanticRuleHits.Count <= 0)
 			{
 				return "";
 			}
+			HashSet<string> excluded = BuildExcludedRuleIdSet(excludedRuleIds);
 			Dictionary<string, GuardrailRulePromptConfig> dictionary = (hasAnyHero ? null : BuildRulePromptRegistry());
 			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < guardrailSemanticRuleHits.Count; i++)
@@ -7186,6 +5648,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetKingdom(string kingdomId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetKingdomId.Value = ((kingdomId ?? "").Trim().ToLowerInvariant() ?? "");
@@ -7198,6 +5661,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetHero(string heroId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetHeroId.Value = (heroId ?? "").Trim();
@@ -7210,6 +5674,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetCharacter(string characterId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetCharacterId.Value = (characterId ?? "").Trim();
@@ -7222,6 +5687,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetTroop(string troopId)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetTroopId.Value = ((troopId ?? "").Trim().ToLowerInvariant() ?? "");
@@ -7234,6 +5700,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetUnnamedRank(string unnamedRank)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetUnnamedRank.Value = ((unnamedRank ?? "").Trim().ToLowerInvariant() ?? "");
@@ -7246,6 +5713,7 @@ public static class AIConfigHandler
 
 	public static void SetGuardrailRuntimeTargetAgentIndex(int agentIndex)
 	{
+		ClearCapturedEligibilityOnTargetMutation();
 		try
 		{
 			_guardrailRuntimeTargetAgentIndex.Value = agentIndex;
@@ -7254,6 +5722,97 @@ public static class AIConfigHandler
 		{
 			_guardrailRuntimeTargetAgentIndex.Value = -1;
 		}
+	}
+
+	private static void ClearCapturedEligibilityOnTargetMutation()
+	{
+		if (_guardrailRuntimeEligibility.Value != null)
+		{
+			_guardrailRuntimeEligibility.Value = null;
+		}
+	}
+
+	/// <summary>Publish one detached target binding into the ambient retrieval context (legacy six-setter order).</summary>
+	internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding)
+	{
+		ApplyGuardrailRuntimeTarget(binding, null);
+	}
+
+	/// <summary>Publish the binding plus the eligibility facts captured on the game thread; null facts keep legacy live resolution.</summary>
+	internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding, PromptRuleEligibility eligibility)
+	{
+		binding.Apply(SetGuardrailRuntimeTargetKingdom, SetGuardrailRuntimeTargetHero, SetGuardrailRuntimeTargetCharacter, SetGuardrailRuntimeTargetTroop, SetGuardrailRuntimeTargetUnnamedRank, SetGuardrailRuntimeTargetAgentIndex);
+		try
+		{
+			_guardrailRuntimeEligibility.Value = eligibility;
+		}
+		catch
+		{
+		}
+	}
+
+	private static PromptRuleEligibility CapturedRuleEligibility
+	{
+		get
+		{
+			try
+			{
+				return _guardrailRuntimeEligibility.Value as PromptRuleEligibility;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+	}
+
+	/// <summary>Game thread: resolve every live fact the RAG eligibility decisions need for the bound target.</summary>
+	internal static PromptRuleEligibility CapturePromptRuleEligibility(Hero targetHero, CharacterObject targetCharacter, PromptRuntimeTargetBinding binding)
+	{
+		// Failed exclusion checks must not make a restricted rule eligible.
+		PromptRuleEligibility result = new PromptRuleEligibility
+		{
+			TargetIsPlayerPartyTradeLimited = true,
+			SceneMoveRuleExcludedForMission = true
+		};
+		// Lords-hall eligibility reads the ambient target. Bind this request only for the
+		// capture, then restore the caller's target (including its eligibility facts).
+		using IDisposable scope = BeginGuardrailRuntimeScope();
+		try
+		{
+			ApplyGuardrailRuntimeTarget(binding);
+			Hero hero = targetHero;
+			if (hero == null)
+			{
+				try { hero = targetCharacter?.HeroObject; } catch { }
+			}
+			if (hero == null && !string.IsNullOrWhiteSpace(binding.HeroId))
+			{
+				try { hero = Hero.Find(binding.HeroId.Trim()); } catch { }
+			}
+			// Gates fail independently: positive grants stay false, exclusions stay true.
+			try { result.TargetIsPlayerPartyTradeLimited = IsPlayerPartyTradeLimitedTarget(hero); } catch { }
+			try { result.SceneMoveRuleExcludedForMission = ShouldExcludeSceneMoveRuleForCurrentMission(); } catch { }
+			try { result.GcczSiegeAftermathActive = AfGcczShoutBridge.IsActive(); } catch { }
+			try { result.VassalageEligible = VassalageBehavior.CanInjectVassalageRuleForPromptCapture(hero, targetCharacter); } catch { }
+			try { result.DiplomacyEligible = DiplomacyBehavior.CanInjectDiplomacyRuleForExternal(hero, targetCharacter); } catch { }
+			try { result.WorldDiplomacyEligible = WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(hero); } catch { }
+			try { result.KingdomAgendaEligible = IsKingdomLordOrKingRuleTargetForPreprocess(hero, targetCharacter); } catch { }
+			try { result.MarriageEligible = hero != null && !string.IsNullOrWhiteSpace(RomanceSystemBehavior.Instance?.BuildMarriageRuntimeInstruction(hero)); } catch { }
+			try { result.NpcMajorActionsEligible = !string.IsNullOrWhiteSpace(MyBehavior.BuildNpcMajorActionsRuntimeInstructionForExternal(hero)); } catch { }
+			try { result.LordsHallAccessEligible = !string.IsNullOrWhiteSpace(BuildRuntimeLordsHallAccessInstructionForExternal()); } catch { }
+			result.HasAnyTargetIdentity = hero != null || targetCharacter != null || !string.IsNullOrWhiteSpace(binding.TroopId) || !string.IsNullOrWhiteSpace(binding.UnnamedRank);
+		}
+		catch
+		{
+		}
+		return result;
+	}
+
+	/// <summary>Legacy finally-block reset; the enclosing BeginGuardrailRuntimeScope restores the parent context afterwards.</summary>
+	internal static void ClearGuardrailRuntimeTarget()
+	{
+		ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding.Cleared);
 	}
 
 	internal static int GetGuardrailRuntimeTargetAgentIndexForExternal()
@@ -8839,6 +7398,26 @@ public static class AIConfigHandler
 			{
 				return false;
 			}
+			PromptRuleEligibility captured = CapturedRuleEligibility;
+			if (captured != null && captured.IsCaptured)
+			{
+				bool allowed = captured.CanInjectRuleTopicIntoPreprocess(text);
+				if (string.Equals(text, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase))
+				{
+					VassalageDiagnosticLog.Event("preprocess.gate", new Dictionary<string, object>
+					{
+						["ruleId"] = text,
+						["hasAnyHero"] = hasAnyHero,
+						["targetHeroId"] = (_guardrailRuntimeTargetHeroId.Value ?? "").Trim(),
+						["targetCharacterId"] = (_guardrailRuntimeTargetCharacterId.Value ?? "").Trim(),
+						["runtimeEligible"] = allowed,
+						["allowRuleIntoPreprocess"] = allowed,
+						["reason"] = allowed ? "player_and_target_are_rulers" : "requires_player_and_target_rulers",
+						["source"] = "captured"
+					});
+				}
+				return allowed;
+			}
 			switch (text)
 			{
 			case "kingdom_service":
@@ -9148,152 +7727,61 @@ public static class AIConfigHandler
 
 	public static void ReloadConfig()
 	{
-		try
+		lock (_promptConfigurationReloadLock)
 		{
-			_preprocessPromptsLoadError = "";
-			string path = ResolveModuleDataFilePath("AIConfig.json");
-			if (!File.Exists(path))
+			PromptConfigurationLoadResult loaded;
+			try { loaded = _promptConfigurationLoader.Load(); }
+			catch (Exception ex)
 			{
-				Logger.Log("AIConfig", "[错误] 找不到 AIConfig.json");
-				_config = new AIConfigModel();
+				Logger.Log("AIConfig", "[错误] 加载失败: " + ex.Message);
+				loaded = new PromptConfigurationLoadResult(
+					new PromptConfigurationSnapshot(new AIConfigModel(), new GuardrailConfigModel(),
+						new ActionPostprocessConfigModel(), new PreprocessPromptsConfigModel(),
+						new ProactiveNpcRequestPromptsConfigModel(), new RpItemIntroductionPromptsConfigModel(), ex.Message),
+					false, false, "");
+			}
+			PromptConfigurationSnapshot replacement = loaded.Snapshot;
+			if (loaded.RpBothUnavailable)
+			{
+				if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
+					Logger.Log("AIConfig", "[错误] RP物品介绍提示词配置及其内置默认值均不可用，自动介绍已停用: " + loaded.RpFallbackReason);
 			}
 			else
 			{
-				string value = File.ReadAllText(path);
-				_config = JsonConvert.DeserializeObject<AIConfigModel>(value) ?? new AIConfigModel();
-			}
-			string path2 = ResolveModuleDataFilePath("RuleBehaviorPrompts.json");
-			string path3 = ResolveModuleDataFilePath("ActionPostprocessPrompts.json");
-			string path4 = ResolveModuleDataFilePath("PreprocessPrompts.json");
-			string path5 = ResolveModuleDataFilePath("ProactiveNpcRequestPrompts.json");
-			string path6 = ResolveModuleDataFilePath("RpItemIntroductionPrompts.json");
-			if (!File.Exists(path2))
-			{
-				Logger.Log("AIConfig", "[错误] 找不到 RuleBehaviorPrompts.json");
-				_guardrail = new GuardrailConfigModel();
-			}
-			else
-			{
-				string value2 = File.ReadAllText(path2);
-				_guardrail = JsonConvert.DeserializeObject<GuardrailConfigModel>(value2) ?? new GuardrailConfigModel();
-			}
-			if (!File.Exists(path3))
-			{
-				Logger.Log("AIConfig", "[错误] 找不到 ActionPostprocessPrompts.json");
-				_actionPostprocess = new ActionPostprocessConfigModel();
-			}
-			else
-			{
-				string value3 = File.ReadAllText(path3);
-				_actionPostprocess = JsonConvert.DeserializeObject<ActionPostprocessConfigModel>(value3) ?? new ActionPostprocessConfigModel();
-			}
-			try
-			{
-				if (!File.Exists(path4))
-				{
-					throw new FileNotFoundException("找不到 PreprocessPrompts.json", path4);
-				}
-				_preprocessPrompts = LoadPreprocessPromptsConfig(path4, out var usedEmbeddedDefaults, out var sourceVersion, out var defaultVersion);
-				ValidateLoadedPreprocessPrompts();
-				if (usedEmbeddedDefaults)
-				{
-					Logger.Log("AIConfig", string.Format("[兼容] 检测到旧版 PreprocessPrompts.json (v{0})，其输出 schema 与 v{1} 不兼容；本次运行已采用程序集内置 v{1} 默认提示词，磁盘文件未改写。", sourceVersion, defaultVersion));
-				}
-			}
-			catch (Exception preprocessEx)
-			{
-				_preprocessPrompts = new PreprocessPromptsConfigModel();
-				_preprocessPromptsLoadError = preprocessEx.Message;
-				Logger.Log("AIConfig", "[错误] 前处理提示词配置加载失败: " + preprocessEx.Message);
-			}
-			try
-			{
-				if (!File.Exists(path5))
-				{
-					throw new FileNotFoundException("找不到 ProactiveNpcRequestPrompts.json", path5);
-				}
-				string value5 = File.ReadAllText(path5, Encoding.UTF8);
-				_proactiveNpcRequestPrompts = JsonConvert.DeserializeObject<ProactiveNpcRequestPromptsConfigModel>(value5) ?? new ProactiveNpcRequestPromptsConfigModel();
-			}
-			catch (Exception proactivePromptEx)
-			{
-				Logger.Log("AIConfig", "[错误] 载入 ProactiveNpcRequestPrompts.json 失败: " + proactivePromptEx.Message);
-				_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
-			}
-			try
-			{
-				_rpItemIntroductionPrompts = LoadRpItemIntroductionPromptsConfig(path6, out var usedEmbeddedDefaults2, out var fallbackReason);
 				Interlocked.Exchange(ref _rpItemIntroductionPromptBuildFailureLogged, 0);
-				if (usedEmbeddedDefaults2)
+				if (loaded.RpUsedEmbeddedDefaults)
 				{
 					if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
-					{
-						Logger.Log("AIConfig", "[RP物品介绍] RpItemIntroductionPrompts.json 无效或缺失，已回退程序集内置默认提示词；磁盘文件未改写。原因: " + fallbackReason);
-					}
+						Logger.Log("AIConfig", "[RP物品介绍] RpItemIntroductionPrompts.json 无效或缺失，已回退程序集内置默认提示词；磁盘文件未改写。原因: " + loaded.RpFallbackReason);
 				}
-				else
-				{
-					Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 0);
-				}
+				else Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 0);
 			}
-			catch (Exception rpItemIntroductionPromptEx)
-			{
-				_rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
-				if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
-				{
-					Logger.Log("AIConfig", "[错误] RP物品介绍提示词配置及其内置默认值均不可用，自动介绍已停用: " + rpItemIntroductionPromptEx.Message);
-				}
-			}
-			lock (_guardrailSemanticLock)
-			{
-				_guardrailPhraseVecCache.Clear();
-				_guardrailInputVecCache.Clear();
-				_lastGuardrailEval = null;
-			}
-			long num = Interlocked.Increment(ref _guardrailConfigVersion);
+			_guardrailVectors.Clear();
+			_guardrailEvalCache.Clear();
+			_promptConfiguration.Reload(() => replacement,
+				_ => new PromptConfigurationSnapshot(new AIConfigModel(), new GuardrailConfigModel(),
+					new ActionPostprocessConfigModel(), new PreprocessPromptsConfigModel(),
+					new ProactiveNpcRequestPromptsConfigModel(), new RpItemIntroductionPromptsConfigModel(), replacement.PreprocessLoadError));
 			Interlocked.Exchange(ref _guardrailWarmupState, 0);
 			Interlocked.Exchange(ref _guardrailWarmupVersion, -1L);
 			_guardrailSemanticRuntimeContext.Value = "";
 			_guardrailRuntimeTargetKingdomId.Value = "";
-			int valueOrDefault = (_guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault2 = (_guardrail?.Reward?.TriggerKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault3 = (_guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault4 = (_guardrail?.Surroundings?.TriggerKeywords?.Count).GetValueOrDefault();
-			int valueOrDefault5 = (_guardrail?.RulePrompts?.Count).GetValueOrDefault();
-			int num2 = 0;
 			try
 			{
-				num2 = GetAllEnabledRulePrompts().Count;
+				GuardrailConfigModel guardrail = replacement.ReadGuardrailForOwner();
+				Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。",
+					(guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault(), (guardrail?.Reward?.TriggerKeywords?.Count).GetValueOrDefault(),
+					(guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault(), (guardrail?.Surroundings?.TriggerKeywords?.Count).GetValueOrDefault(),
+					(guardrail?.RulePrompts?.Count).GetValueOrDefault(), GetAllEnabledRulePrompts().Count, GetGuardrailReturnCapFromMcm(),
+					KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail", KnowledgeRetrievalEnabled ? "开启" : "关闭",
+					KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
 			}
-			catch
+			catch { }
+			try
 			{
-				num2 = 0;
+				AnimusForge.Refactor.Adapters.LegacyInteractionSnapshotAdapters.ReloadNativeConversationRuntimeConfigurationForExternal();
 			}
-			string text = (KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail");
-			Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。", valueOrDefault, valueOrDefault2, valueOrDefault3, valueOrDefault4, valueOrDefault5, num2, GetGuardrailReturnCapFromMcm(), text, KnowledgeRetrievalEnabled ? "开启" : "关闭", KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
-			Logger.Log("AIConfig", "配置文件路径：AIConfig=" + path + " RuleBehavior=" + path2 + " ActionPostprocess=" + path3 + " PreprocessPrompts=" + path4 + " RpItemIntroductionPrompts=" + path6);
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("AIConfig", "[错误] 加载失败: " + ex.Message);
-			_config = new AIConfigModel();
-			_guardrail = new GuardrailConfigModel();
-			_actionPostprocess = new ActionPostprocessConfigModel();
-			_preprocessPrompts = new PreprocessPromptsConfigModel();
-			_preprocessPromptsLoadError = ex.Message;
-			_proactiveNpcRequestPrompts = new ProactiveNpcRequestPromptsConfigModel();
-			_rpItemIntroductionPrompts = new RpItemIntroductionPromptsConfigModel();
-		}
-		try
-		{
-			// Publish only a new immutable detached snapshot. In-flight requests
-			// retain the instance they captured before this reload.
-			AnimusForge.Refactor.Adapters.LegacyInteractionSnapshotAdapters.ReloadNativeConversationRuntimeConfigurationForExternal();
-		}
-		catch
-		{
-			// The legacy configuration reload must remain authoritative even if
-			// the optional detached snapshot store is unavailable.
+			catch { }
 		}
 	}
 
@@ -9314,6 +7802,11 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities)
 	{
+		return GetLoreContextWithCandidates(inputText, npcHero, secondaryInput, mentionedEntities, null, 0L);
+	}
+
+	internal static string GetLoreContextWithCandidates(string inputText, Hero npcHero, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules candidates, long candidateVersion)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
 			try
@@ -9333,7 +7826,9 @@ public static class AIConfigHandler
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcHero, secondaryInput, mentionedEntities);
+				string text = candidates != null && instance.GetRuleDataVersionForExternal() == candidateVersion
+					? instance.BuildLoreContextWithCandidates(inputText, npcHero, secondaryInput, mentionedEntities, candidates)
+					: instance.BuildLoreContext(inputText, npcHero, secondaryInput, mentionedEntities);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;
@@ -9358,6 +7853,11 @@ public static class AIConfigHandler
 
 	public static string GetLoreContext(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities)
 	{
+		return GetLoreContextWithCandidates(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities, null, 0L);
+	}
+
+	internal static string GetLoreContextWithCandidates(string inputText, CharacterObject npcCharacter, string kingdomIdOverride, string secondaryInput, MentionedWorldEntities mentionedEntities, LoreCandidateRules candidates, long candidateVersion)
+	{
 		if (string.IsNullOrWhiteSpace(inputText))
 		{
 			try
@@ -9377,7 +7877,9 @@ public static class AIConfigHandler
 			KnowledgeLibraryBehavior instance = KnowledgeLibraryBehavior.Instance;
 			if (instance != null)
 			{
-				string text = instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities);
+				string text = candidates != null && instance.GetRuleDataVersionForExternal() == candidateVersion
+					? instance.BuildLoreContextWithCandidates(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities, candidates)
+					: instance.BuildLoreContext(inputText, npcCharacter, kingdomIdOverride, secondaryInput, mentionedEntities);
 				if (!string.IsNullOrEmpty(text))
 				{
 					return text;

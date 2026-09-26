@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../src/AF.Foundation.Runtime/Diagnostics/PerformanceWindow.cs" Link="PerformanceWindow.cs" />
+    <Compile Include="../../src/AF.Foundation.Runtime/Diagnostics/DiagnosticTraceContext.cs" Link="DiagnosticTraceContext.cs" />
+    <Compile Include="../../src/AF.Foundation.Runtime/Diagnostics/MetricWindow.cs" Link="MetricWindow.cs" />
+    <Compile Include="../../src/AF.Foundation.Runtime/Diagnostics/BoundedLogWriteQueue.cs" Link="BoundedLogWriteQueue.cs" />
+    <Compile Include="../../src/AF.Foundation.Runtime/Diagnostics/FreezeWatchState.cs" Link="FreezeWatchState.cs" />
+  </ItemGroup>
+</Project>

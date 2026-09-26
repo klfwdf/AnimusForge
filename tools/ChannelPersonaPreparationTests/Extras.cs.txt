@@ -1,0 +1,35 @@
+  Probe.Reset();var hero=new Hero("snapshot"){P="oldP",B="oldB"};var state=AnimusForge.MyBehavior.CaptureNpcPersonaReadiness(hero,AnimusForge.MyBehavior.Instance);hero.P="newP";
+  Check(state.Personality=="oldP"&&state.Background=="oldB","readiness snapshot is detached text");
+  var wrong=Task.Run(()=>{try{AnimusForge.MyBehavior.CaptureNpcPersonaReadiness(hero,AnimusForge.MyBehavior.Instance);return false;}catch(InvalidOperationException){return true;}});Check(wrong.GetAwaiter().GetResult(),"capture rejects worker callers");
+  foreach(bool inbound in new[]{false,true})foreach(string kind in new[]{"valid","dead","null","terminal","wrong_direction","replace_session","replace_target","replace_owner","expire_generation"}){
+   Probe.Reset();var h=new Hero("admission"){Dead=kind!="valid"&&kind!="terminal"&&kind!="wrong_direction"};
+   var o=new AnimusForge.CourierDeliveryBehavior{Session=new(){Participant=kind=="null"?null:h,Inbound=kind=="wrong_direction"?!inbound:inbound,Terminal=kind=="terminal"}};AnimusForge.CourierDeliveryBehavior.Instance=o;var before=o.Session;
+   bool admitted=o.Admit(inbound).GetAwaiter().GetResult();
+   if(kind=="replace_session")o.Session=new(){Participant=h,Inbound=inbound};
+   if(kind=="replace_target")o.Session.Participant=new Hero("new_target");
+   if(kind=="replace_owner")AnimusForge.CourierDeliveryBehavior.Instance=new();
+   if(kind=="expire_generation")AnimusForge.SaveRuntimeGuard.Generation++;
+   while(Probe.Queue.TryDequeue(out var action))action();
+   Check(admitted==(kind=="valid"),"admission "+inbound+" "+kind+" eligibility");
+   Check(o.Processed==((kind=="dead"||kind=="null")?1:0),"admission "+inbound+" "+kind+" exact deferred cleanup");
+   if(kind=="dead"||kind=="null")Check(before.ReplyGenerated&&!before.ReplyGenerationStarted&&(!inbound||before.LetterText=="fallback"),"invalid target keeps legacy flags/fallback");
+   Check(Probe.OffThread==0,"admission main-thread reads");
+  }
+  foreach(string kind in new[]{"epoch","session","memory","generation"}){
+   Probe.Reset();AnimusForge.ShoutBehavior.ResetScope();var h=new Hero("queued");var o=new AnimusForge.ShoutBehavior();AnimusForge.ShoutBehavior.CurrentInstance=o;var npc=new AnimusForge.ShoutBehavior.NpcDataPacket();var task=Task.Run(()=>o.Scene(new(){npc},new(){{1,h}}));
+   var until=DateTime.UtcNow.AddSeconds(8);while(Probe.Queue.IsEmpty&&!task.IsCompleted){if(DateTime.UtcNow>until)throw new Exception("no queued scope");Thread.Sleep(1);}o.Expire(kind);Probe.Pump(()=>task.IsCompleted);task.GetAwaiter().GetResult();
+   Check(Probe.Generations==0&&npc.PersonalityDesc==""&&npc.BackgroundDesc=="","scene scope retired before first capture "+kind);
+  }
+
+  Probe.Reset();Probe.Mode="hung";var hn=new Hero("hung-native");var no=new AnimusForge.ShoutBehavior();AnimusForge.ShoutBehavior.CurrentInstance=no;var na=new AnimusForge.ShoutBehavior.NativeConversationAdmission{Hero=hn};
+  Check(!Wait(Task.Run(()=>no.Native(na))),"native timeout covers pending generation, not just subsequent polls");Probe.GenerationHold.TrySetResult(true);
+  foreach(bool inbound in new[]{false,true}){
+   Probe.Reset();Probe.Mode="hung";var h=new Hero("hung-courier");var co=new AnimusForge.CourierDeliveryBehavior{Session=new(){Participant=h,Inbound=inbound}};AnimusForge.CourierDeliveryBehavior.Instance=co;
+   Check(Wait(Task.Run(()=>co.Wait(h,inbound))),"courier pending generation timeout preserves fallback");Probe.GenerationHold.TrySetResult(true);
+  }
+  Probe.Reset();Probe.Mode="hung";var hs=new Hero("hung-scene");var so=new AnimusForge.ShoutBehavior();AnimusForge.ShoutBehavior.CurrentInstance=so;var sn=new AnimusForge.ShoutBehavior.NpcDataPacket();Probe.DuringGenerate=()=>so.Expire("mission");
+  var st=Task.Run(()=>so.Scene(new(){sn},new(){{1,hs}}));Probe.Pump(()=>st.IsCompleted);st.GetAwaiter().GetResult();Check(sn.PersonalityDesc==""&&sn.BackgroundDesc=="","scene leaves retired scope without awaiting shared generation forever");Probe.GenerationHold.TrySetResult(true);
+
+  Scene("late_target");
+  Probe.Reset();Probe.Mode="hung";var ht=new Hero("hung-target");var to=new AnimusForge.ShoutBehavior();AnimusForge.ShoutBehavior.CurrentInstance=to;var tn=new AnimusForge.ShoutBehavior.NpcDataPacket();var th=new Dictionary<int,Hero>{{1,ht}};Probe.DuringGenerate=()=>th[1]=new Hero("replacement");
+  var tt=Task.Run(()=>to.Scene(new(){tn},th));Probe.Pump(()=>tt.IsCompleted);tt.GetAwaiter().GetResult();Check(tn.PersonalityDesc=="","scene stops waiting when only candidate identity is replaced");Probe.GenerationHold.TrySetResult(true);

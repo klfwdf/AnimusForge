@@ -2,6 +2,10 @@
 
 本文档是 AnimusForge 的硬性维护规则：**信使、自由对话、场景喊话三条 LLM 交流渠道，所有同类逻辑必须同步**。UI、触发方式和游戏流程可以不同，但请求体阶段、规则选择、历史结构、记忆注入、事实边界、后处理标签和执行入口必须保持同一套设计。
 
+## J10 后的生产位置（2026-09-21）
+
+三渠道语义规则不变，但物理入口不再只位于两个根大类：Scene owner 位于 `src/modules/AF.Module.Conversation/Channels/Scene/`，Courier owner 位于 `src/modules/AF.Module.Conversation/Channels/Courier/`；根 `ShoutBehavior.cs` / `CourierDeliveryBehavior.cs` 仍是同一 partial class 的宿主适配、DTO/SyncData/Harmony/UI 边界。维护者应按符号和代码地图定位，不得因为历史路径描述把已迁 owner 复制回根类。三渠道标签/计划/执行/回执继续共享 `src/modules/AF.Module.Actions`。
+
 ## 适用范围
 
 - 信使：`CourierDeliveryBehavior.cs` 中通过信使送信、收信、给予/展示物资后生成 NPC 回信的链路。

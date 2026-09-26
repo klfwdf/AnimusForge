@@ -1,0 +1,372 @@
+{
+  "sourceRevision": "73a6977cfea435af8e68fb8b6f608699dbc03681",
+  "checkpoint": "ebdabd63",
+  "previousRemote": "3f00fefa",
+  "preExtractionProduction": "c21523f8",
+  "localStatus": "SCOPED_OFFLINE_VERIFIED_B1_NOT_DONE",
+  "worktree": "G:/AFMOD/AF-REFACTOR",
+  "changes": [
+    "Independent runtime event-material index/binding component; authoritative records/save publication remain MyBehavior.",
+    "Removed old index partial and private binding/check helpers; owner file-family reduced 45 lines (not overall completion percentage).",
+    "54-declaration/2-deletion exact inverse, explicit added composition span, whole component/test input locks; eight read-only anti-bypass tests."
+  ],
+  "checks": {
+    "materials": 23,
+    "materialsPreExtraction": 23,
+    "materialsOldFailures": 8,
+    "materialsRuntimeControls": 7,
+    "sealing": 30,
+    "sealingRuntimeControls": 8,
+    "inverseGuardTests": 8,
+    "inverseDependencySubcases": 5,
+    "helper": 32,
+    "captured": 109,
+    "business": 36,
+    "planning": 24,
+    "writers": 238,
+    "terminal": 85,
+    "commitWriters": 51,
+    "admission": 54,
+    "history": 852,
+    "nativeHistory": 27,
+    "failureUi": 85,
+    "nativePreparation": 589,
+    "channelCutover": 132,
+    "api": 119,
+    "concurrentReads": 256,
+    "actualDllMetadata": 532,
+    "syncKeys": 146,
+    "behaviors": 36,
+    "stageBuilds": 6,
+    "codeMapAnchors": 58
+  },
+  "stage": {
+    "sourceSha256": {
+      "MyBehavior.cs": "5d36aeb49849c3246833c21ea21123ab1c5b1d8b40b9821a47b8987f53a6b068",
+      "Refactor/Runtime/EventSourceMaterialIndex.cs": "3e4c8078101eedce18d8820ec0717e08e76790d02be709e0ada64815cc2ae451",
+      "MyBehavior.MemorySealing.cs": "fd51afb49b8279a21bffe3e5b7837003706ae0705bb72aac3aa65c9311502bc2"
+    },
+    "builds": [
+      {
+        "configuration": "Debug",
+        "exit": 0,
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+          "-ProjectRoot",
+          "G:\\AFMOD\\AF-REFACTOR",
+          "-BannerlordRoot",
+          "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+          "-Bannerlord13ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\_deps_auto",
+          "-Bannerlord14ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+          "-WorkshopContentDir",
+          "E:\\steam\\steamapps\\workshop\\content\\261550",
+          "-RuntimeDependencyDir",
+          "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+          "-Configuration",
+          "Debug",
+          "-Stage"
+        ]
+      },
+      {
+        "configuration": "Release",
+        "exit": 0,
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+          "-ProjectRoot",
+          "G:\\AFMOD\\AF-REFACTOR",
+          "-BannerlordRoot",
+          "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+          "-Bannerlord13ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\_deps_auto",
+          "-Bannerlord14ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+          "-WorkshopContentDir",
+          "E:\\steam\\steamapps\\workshop\\content\\261550",
+          "-RuntimeDependencyDir",
+          "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+          "-Configuration",
+          "Release",
+          "-Stage"
+        ]
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "configuration": "Debug",
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "fec4386a8dbdcea5fa96e4449c7dd046f8aca931eb2678da7d3a1876785245cb",
+      "stageMatches": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "183f6ed012fa8a0c911004b40a9ff2236a651202bd05e3790c5db6363a35de72",
+      "stageMatches": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "8fda366fcf73a90ff34d472fe0da00c7625b74453fb487a6e82738e0e430916b",
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "7b1cdebb125df8c88ac6fedfaf70bc0c31c9e39b9415f6ac2c080bfd36333d4d",
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "49e2552037079b331d2b1cb6647e3af63e2584d35cb1fa32cba8e8e7072a3b28",
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "42b3d83f2add06fd0797e3f8267653144f46495ce49fa3d62305012b99177f27",
+      "stageMatches": true
+    }
+  ],
+  "controls": [
+    {
+      "name": "abandon-incomplete-same-day",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=abandon-incomplete-same-day",
+        "FAIL same-day-no-job-resume: incomplete no-job Seal abandoned by same-day maintenance gate",
+        "SEALING_RESULT pass=29 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "ignore-empty-probe",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-empty-probe",
+        "FAIL probe-empty-no-candidate-start: completion receipt changed empty/proven-past candidate-start responsibility",
+        "SEALING_RESULT pass=29 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "ignore-stale-queued-job",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-stale-queued-job",
+        "FAIL same-reference-indexed-key-change: old indexed key suppressed live draft or replaced current first job",
+        "SEALING_RESULT pass=29 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "ignore-owner-binding",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-owner-binding",
+        "FAIL owner-list-replacement: old reverse cursor skipped replacement-list records",
+        "SEALING_RESULT pass=29 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "ignore-cleanup-identity",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-cleanup-identity",
+        "FAIL cleanup-same-ref-retarget: old pending qualification survived same-ref retarget",
+        "SEALING_RESULT pass=29 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "unbounded-metadata",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=unbounded-metadata",
+        "FAIL finite-4096-convergence: initial/index metadata exceeded per-call cap",
+        "FAIL same-tick-multiple-callers: actual campaign+deferred entry caller multiplicity changed",
+        "SEALING_RESULT pass=28 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "unbounded-expensive",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=unbounded-expensive",
+        "FAIL finite-48draft-convergence: expensive work exceeded per-call cap",
+        "SEALING_RESULT pass=29 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "ignore-deadline",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-deadline",
+        "FAIL expired-budget-then-sync: expired budget did not defer before job creation",
+        "FAIL same-day-no-job-resume: first tick did not stop before enqueue",
+        "FAIL same-reference-indexed-key-change: did not pause after actual key-index read",
+        "FAIL owner-list-replacement: did not pause within actual owner draft iteration",
+        "FAIL owner-inserted-after-index: owner-index fixture failed to pause",
+        "FAIL major-indexed-key-change: major index fixture failed to pause",
+        "SEALING_RESULT pass=24 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    }
+  ],
+  "regressions": [
+    {
+      "name": "helper",
+      "exit": 0,
+      "summary": [
+        "PASS MemorySummaryMainThread checks=32 failures=0 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "captured",
+      "exit": 0,
+      "summary": [
+        "SOURCE_FIELD_COVERAGE kind=daily mutation_checks=76 includes_unrendered_fields=true same_generation=true",
+        "SOURCE_FIELD_COVERAGE kind=major mutation_checks=75 includes_unrendered_fields=true same_generation=true",
+        "SOURCE_FIELD_COVERAGE kind=overview mutation_checks=143 includes_unrendered_fields=true same_generation=true",
+        "CAPTURED_RESULT pass=109 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+      ]
+    },
+    {
+      "name": "planning",
+      "exit": 0,
+      "summary": [
+        "PLANNING_RESULT pass=24 fail=0 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "writers",
+      "exit": 0,
+      "summary": [
+        "WRITER_RESULT checks=238 failures=0"
+      ]
+    },
+    {
+      "name": "terminal",
+      "exit": 0,
+      "summary": [
+        "TERMINAL_RESULT scenarios=85 failures=0 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    {
+      "name": "commit-writers",
+      "exit": 0,
+      "summary": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0 real_commit=true real_daily_recent=true exact_readback=true actual_editor_closure=true actual_import_apply=true game_save=NOT_TESTED"
+      ]
+    },
+    {
+      "name": "history",
+      "exit": 0,
+      "summary": [
+        "PASS HistorySnapshot checks=852 failures=0 realRenderRecallSelect=true ownerDataAndNetwork=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "native-history",
+      "exit": 0,
+      "summary": [
+        "PASS NativeHistorySnapshot checks=27 failures=0 actualCaptureAndAccept=true actualMemoryRenderer=true game=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "failure-ui",
+      "exit": 0,
+      "summary": [
+        "PASS MemoryFailureUi checks=85 failures=0 realPopupOwner=true realEngineHook=true gameUI=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "native-preparation",
+      "exit": 0,
+      "summary": [
+        "PASS NativePreparation checks=589 failures=0 productionCapture=extracted queue=real-helper domainHelpers=recording-stubs LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "channel-cutover",
+      "exit": 0,
+      "summary": [
+        "RESULT_TYPE sha256=f59e15cd4affac49cb2d1631c74da21f3eeed02962b63de0da38397906c501c4",
+        "ChannelCutoverBoundary passes=132 failures=0 extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN"
+      ]
+    },
+    {
+      "name": "persistence",
+      "exit": 0,
+      "summary": []
+    }
+  ],
+  "evidence": {
+    "directory": ".tmp/b1-index-owner-20260914/final-evidence",
+    "files": 88,
+    "indexSha256": "a3373616467619342ad0a3d21cdd19d3f357a1b2a1b5df2eec37588ffcafebcd"
+  },
+  "notVerified": [
+    "Global deep-record/per-Tick hard budget",
+    "Real game/provider/save/old-save acceptance",
+    "Actual economy/AFEF/TTS/external DLL loading",
+    "Courier live-read gap; not changed in this batch"
+  ],
+  "notPerformed": [
+    "GitHub push",
+    "Game deployment or save operations",
+    "Automation resume",
+    "Public API expansion/default-channel switch",
+    "Team gameplay rewrites"
+  ],
+  "anchors": [
+    {
+      "id": "memory.material.index-owner",
+      "path": "Refactor/Runtime/EventSourceMaterialIndex.cs",
+      "start": 11,
+      "end": 14,
+      "symbol": "internal sealed class EventSourceMaterialIndex<T> where T : class",
+      "note": "独立派生索引/绑定 owner，无游戏和存档写入"
+    },
+    {
+      "id": "memory.material.index-build",
+      "path": "Refactor/Runtime/EventSourceMaterialIndex.cs",
+      "start": 39,
+      "end": 42,
+      "symbol": "internal Dictionary<string, T> Build(List<T> source)",
+      "note": "未发布重建、命名last-wins/空键first-wins"
+    },
+    {
+      "id": "memory.material.record",
+      "path": "MyBehavior.cs",
+      "start": 13707,
+      "end": 13710,
+      "symbol": "private void RecordEventSourceMaterial(",
+      "note": "原记录/追加/发布仍归主体 owner，使用独立索引"
+    },
+    {
+      "id": "memory.material.rebuild",
+      "path": "MyBehavior.cs",
+      "start": 20126,
+      "end": 20129,
+      "symbol": "private void RebuildEventSourceMaterialIndex()",
+      "note": "重建后复核来源引用，再发布和绑定"
+    },
+    {
+      "id": "memory.sealing.continue",
+      "path": "MyBehavior.MemorySealing.cs",
+      "start": 198,
+      "end": 201,
+      "symbol": "private bool ContinueDailyMemorySeal(long startTimestamp, double budgetMs, bool requirePendingProbe)",
+      "note": "七阶段封存已纳入源差异审查，深原子预算仍未通过"
+    }
+  ]
+}

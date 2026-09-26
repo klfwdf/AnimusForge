@@ -1,0 +1,19 @@
+  CourierDeliveryBehavior.FailLog=false;
+  foreach(bool main in new[]{true,false}){
+   owner=new CourierDeliveryBehavior();
+   InteractionCommitResult Run(Func<InteractionCommitResult> work){if(main)return owner.Submit(work).GetAwaiter().GetResult();var queued=Task.Run(()=>owner.Submit(work));Until(()=>owner.Queued||queued.IsCompleted);if(owner.Queued)owner.Take()();return queued.GetAwaiter().GetResult();}
+   var failed=Run(()=>{effects++;throw new Exception("after real effect");});
+   Check(failed.Status==InteractionStatus.NonRetryableFailure&&failed.EffectState==ActionExecutionEffectState.UnknownAfterStart&&failed.ErrorCode=="main_thread_commit_exception","partial failure is uncertain and nonretryable; main="+main);
+   var missing=Run(()=>{effects++;return null;});
+   Check(missing.Status==InteractionStatus.NonRetryableFailure&&missing.EffectState==ActionExecutionEffectState.UnknownAfterStart&&missing.ErrorCode=="missing_commit_result","missing receipt after execution is not proof of rollback; main="+main);
+   CourierDeliveryBehavior.FailLog=true;failed=Run(()=>{effects++;throw new Exception("logged failure");});
+   Check(failed.Status==InteractionStatus.NonRetryableFailure&&failed.EffectState==ActionExecutionEffectState.UnknownAfterStart,"diagnostic failure preserves uncertainty; main="+main);CourierDeliveryBehavior.FailLog=false;
+   var rejected=Run(null);Check(rejected.Status==InteractionStatus.RejectedByValidation&&rejected.EffectState==ActionExecutionEffectState.NoConfirmedEffect,"before-start rejection stays no-effect; main="+main);
+   Check(ReferenceEquals(Run(()=>receipt),receipt),"real successful receipt not replaced; main="+main);
+   CourierDeliveryBehavior.InboundForTests=true;
+   failed=Run(()=>{effects++;throw new Exception("inbound partial");});
+   Check(failed.ErrorCode=="courier_inbound_completion_receipt_missing"&&failed.Status==InteractionStatus.NonRetryableFailure&&failed.EffectState==ActionExecutionEffectState.UnknownAfterStart,"inbound missing-receipt mapping preserves uncertainty; main="+main);
+   var applied=Run(()=>receipt);Check(applied.HistoryWritten&&applied.ActionsExecuted&&applied.EffectState==ActionExecutionEffectState.ConfirmedEffect,"inbound failure cannot erase a confirmed commit receipt; main="+main);
+   CourierDeliveryBehavior.InboundForTests=false;
+  }
+  Check(CourierDeliveryBehavior.AbortsForTests==4,"inbound cleanup keeps original single owner/count");

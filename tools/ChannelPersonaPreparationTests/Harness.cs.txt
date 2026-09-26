@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.MountAndBlade;
+using TaleWorlds.Library;
+using TaleWorlds.Core;
+using AnimusForge.Refactor.Contracts;
+internal static class Probe {
+ internal static readonly ConcurrentQueue<Action> Queue=new();internal static int Main,OffThread,Generations,Hints,StateReads;internal static string Mode;internal static Action DuringGenerate;internal static Action<string> BeforeOperation;internal static TaskCompletionSource<bool> GenerationHold;
+ internal static void Read(){if(Environment.CurrentManagedThreadId!=Main)Interlocked.Increment(ref OffThread);}
+ internal static Task<T> Run<T>(Func<T> f){if(Environment.CurrentManagedThreadId==Main)return Task.FromResult(f());var t=new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);Queue.Enqueue(()=>{try{t.TrySetResult(f());}catch(Exception e){t.TrySetException(e);}});return t.Task;}
+ internal static void Pump(Func<bool> done){var until=DateTime.UtcNow.AddSeconds(8);while(!done()){while(Queue.TryDequeue(out var a))a();if(DateTime.UtcNow>until)throw new Exception("fixture timeout");Thread.Sleep(1);}}
+ internal static void Reset(){Main=Environment.CurrentManagedThreadId;OffThread=Generations=Hints=StateReads=0;Mode="success";DuringGenerate=null;BeforeOperation=null;GenerationHold=new(TaskCreationOptions.RunContinuationsAsynchronously);while(Queue.TryDequeue(out _)){} AnimusForge.SaveRuntimeGuard.Generation=1;AnimusForge.MyBehavior.Instance=new();Campaign.Owner=AnimusForge.MyBehavior.Instance;Mission.Current=new();}
+}
+namespace TaleWorlds.Library {internal static class TWParallel {internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==Probe.Main;} public struct Color {public Color(float r,float g,float b){} } }
+namespace TaleWorlds.Core {internal sealed class InformationMessage {internal InformationMessage(string t,Color c){}} internal static class InformationManager {internal static void DisplayMessage(InformationMessage m){Probe.Read();Probe.Hints++;}} }
+namespace TaleWorlds.MountAndBlade {public sealed class Mission {private static Mission value;public static Mission Current {get{Probe.Read();return value;}set{Probe.Read();Mission.value=value;}}} }
+namespace TaleWorlds.CampaignSystem {
+ public sealed class Hero {private string id;public Hero(string s){id=s;}public string StringId {get{Probe.Read();return id;}} public string Name {get{Probe.Read();return "NPC";}} public bool IsDead {get{Probe.Read();return Dead;} } internal bool Dead;internal string P="",B="";internal bool Active,Cooling;}
+ internal sealed class Campaign {internal static AnimusForge.MyBehavior Owner;internal static Campaign Current {get{Probe.Read();return new();}}internal T GetCampaignBehavior<T>() where T:class {Probe.Read();return Owner as T;}}
+}
+namespace AnimusForge {
+ internal static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;internal static bool IsStale(long g,string s=null)=>g!=Generation;}
+ internal static class Logger {internal static void Log(string c,string m){} }
+ internal static class ShoutUtils {internal static bool TryGetUnnamedPersonaByKey(string k,out string p,out string b){Probe.Read();p="unnamedP";b="unnamedB";return true;} }
+ public partial class MyBehavior {
+  internal static MyBehavior Instance;
+  private void GetNpcPersonaStrings(Hero h,out string p,out string b){Probe.Read();p=h.P;b=h.B;}
+  private void GetNpcPersonaGenerationRuntimeState(Hero h,out bool a,out bool c){Probe.Read();a=h.Active;c=h.Cooling;}
+  internal static void GetNpcPersonaForExternal(Hero h,out string p,out string b){Probe.Read();p=h.P;b=h.B;}
+  internal static bool TryGetNpcPersonaGenerationStatusForExternal(Hero h,out bool needsGeneration,out bool inFlight){Probe.Read();Probe.StateReads++;needsGeneration=h!=null&&(string.IsNullOrWhiteSpace(h.P)||string.IsNullOrWhiteSpace(h.B));inFlight=h!=null&&(h.Active||h.Cooling);return Instance!=null&&h!=null;}
+  internal static bool TryGetNpcPersonaGenerationRuntimeStateForExternal(Hero h,out bool active,out bool coolingDown){Probe.Read();active=h.Active;coolingDown=h.Cooling;return Instance!=null;}
+  internal static string BuildNpcPersonaGenerationHintForExternal(Hero h){Probe.Read();return "hint "+h.Name;}
+  internal static async Task EnsureNpcPersonaGeneratedForExternalAsync(Hero h,bool ignoreRetryCooldown=false){Probe.Generations++;await Task.Yield();await Probe.Run(()=>{Probe.DuringGenerate?.Invoke();if(Probe.Mode=="success"){h.P=string.IsNullOrWhiteSpace(h.P)?"generatedP":h.P;h.B=string.IsNullOrWhiteSpace(h.B)?"generatedB":h.B;h.Active=false;}else if(Probe.Mode=="failed"){h.Active=false;h.Cooling=true;}return true;});if(Probe.Mode=="hung")await Probe.GenerationHold.Task;}
+ }
+ public partial class ShoutBehavior {
+  internal static ShoutBehavior CurrentInstance;private static int _sceneHistorySessionId=1;private int _sceneConversationEpoch=1;private const int NativeConversationPersonaGenerationWaitTimeoutMs=40;
+  internal sealed class NativeConversationAdmission {internal Hero Hero;internal string NpcName="NPC";internal int AgentIndex=1;internal long Generation=1;internal bool Valid=true;}
+  internal sealed class NpcDataPacket {internal int AgentIndex=1;internal string Name="NPC",UnnamedKey="key";internal bool IsHero=true;private string p="",b="";internal string PersonalityDesc{get=>p;set{Probe.Read();p=value;}}internal string BackgroundDesc{get=>b;set{Probe.Read();b=value;}} }
+  private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission a,out string reason){Probe.Read();reason="";return ReferenceEquals(CurrentInstance,this)&&a.Valid&&SaveRuntimeGuard.IsCurrentGeneration(a.Generation);}
+  private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name,string target,int index,Func<T> f,T fallback)=>Probe.Run(()=>{Probe.BeforeOperation?.Invoke(name);return f();});
+  private static void BuildHeroPersonaFallback(Hero h,out string p,out string b){Probe.Read();p="fallbackP";b="fallbackB";}
+  private static string BuildNativeConversationPersonaBackgroundHint(Hero h){Probe.Read();return "hint "+h.Name;}
+  private static string BuildNativeConversationPersonaGenerationFailedText(Hero h){Probe.Read();return "failed "+h.Name;}
+  internal Task<bool> Native(NativeConversationAdmission a)=>@@NATIVE_CALL@@;
+  internal Task Scene(List<NpcDataPacket> p,Dictionary<int,Hero> h)=>EnsurePersonaForCandidatesAsync(p,h);
+  internal static void ResetScope(){_sceneHistorySessionId=1;}
+  internal void Expire(string kind){if(kind=="session")_sceneHistorySessionId++;if(kind=="epoch")_sceneConversationEpoch++;if(kind=="mission")Mission.Current=new();if(kind=="owner")CurrentInstance=new();if(kind=="memory"){MyBehavior.Instance=new();Campaign.Owner=MyBehavior.Instance;}if(kind=="generation")SaveRuntimeGuard.Generation++;}
+  @@SHOUT_METHODS@@
+ }
+ public partial class CourierDeliveryBehavior {
+  internal static CourierDeliveryBehavior Instance;
+  internal sealed class CourierSession {internal Hero Participant;internal bool Inbound,Terminal,ReplyGenerated,ReplyGenerationStarted=true;internal string LetterText="letter",InboundFallbackLetter="fallback";}
+  internal CourierSession Session;internal int Processed;
+  private CourierSession GetSessionById(string id){Probe.Read();return Session;}
+  private static bool IsTerminalStage(CourierSession s){Probe.Read();return s==null||s.Terminal;}
+  private static bool IsInboundToPlayer(CourierSession s){Probe.Read();return s.Inbound;}
+  private static Hero ResolveSender(CourierSession s){Probe.Read();return s.Participant;}
+  private static Hero ResolveRecipient(CourierSession s){Probe.Read();return s.Participant;}
+  private static string SafeHeroId(Hero h)=>h?.StringId??"";
+  private static string NormalizeInboundLetterText(string text,CourierSession s,Hero h){Probe.Read();return text;}
+  private void ProcessSessionById(string id,string reason){Probe.Read();Processed++;}
+  private static void EnqueueMainThreadActionForGeneration(long g,Action a,string source){Probe.Queue.Enqueue(()=>{if(SaveRuntimeGuard.IsCurrentGeneration(g))a();});}
+  private static void Log(string m){}
+  private Task<T> RunCourierOwnerPhaseAsync<T>(long g,string source,Func<T> f,CancellationToken token)=>Probe.Run(()=>{if(!ReferenceEquals(Instance,this)||!SaveRuntimeGuard.IsCurrentGeneration(g))throw new OperationCanceledException();return f();});
+  @@COURIER_SCOPE@@
+  internal Task<bool> Wait(Hero hero,bool inbound)=>@@COURIER_CALL@@;
+  internal Task<bool> Admit(bool inbound)=>@@ADMIT_CALL@@;
+  @@COURIER_METHODS@@
+ }
+}
+internal static class Program {
+ static int checks,failures;static void Check(bool b,string s){checks++;if(!b){failures++;Console.WriteLine("FAIL "+s);}}
+ static bool Wait<T>(Task<T> t){Probe.Pump(()=>t.IsCompleted);return t.GetAwaiter().GetResult() is bool b&&b;}
+ static void Native(string kind){Probe.Reset();var h=new Hero("h");if(kind=="ready")h.P=h.B="ready";if(kind=="partial")h.P="keepP";if(kind=="failed")Probe.Mode="failed";if(kind=="timeout"){Probe.Mode="active";h.Active=true;}
+  var o=new AnimusForge.ShoutBehavior();AnimusForge.ShoutBehavior.CurrentInstance=o;var a=new AnimusForge.ShoutBehavior.NativeConversationAdmission{Hero=h};bool stale=kind is "generation" or "owner" or "memory" or "target";
+  if(stale)Probe.DuringGenerate=()=>{if(kind=="target")a.Valid=false;else o.Expire(kind);};
+  var task=Task.Run(()=>o.Native(a));bool result=Wait(task);Check(Probe.OffThread==0,"native "+kind+" owner-thread reads/UI");Check(result==(!stale&&kind!="failed"&&kind!="timeout"),"native "+kind+" readiness result");if(kind=="ready")Check(Probe.Generations==0,"ready native avoids generation");if(kind=="partial")Check(h.P=="keepP","native existing field preserved");
+ }
+ static void Courier(bool inbound,string kind){Probe.Reset();var h=new Hero("h");if(kind=="ready")h.P=h.B="ready";if(kind=="failed")Probe.Mode="failed";if(kind=="timeout"){Probe.Mode="active";h.Active=true;}
+  var o=new AnimusForge.CourierDeliveryBehavior{Session=new(){Participant=h,Inbound=inbound}};AnimusForge.CourierDeliveryBehavior.Instance=o;
+  bool stale=kind is "generation" or "owner" or "memory" or "target" or "session" or "terminal";
+  if(stale)Probe.DuringGenerate=()=>{if(kind=="generation")AnimusForge.SaveRuntimeGuard.Generation++;if(kind=="owner")AnimusForge.CourierDeliveryBehavior.Instance=new();if(kind=="memory"){AnimusForge.MyBehavior.Instance=new();Campaign.Owner=AnimusForge.MyBehavior.Instance;}if(kind=="target")o.Session.Participant=new Hero("other");if(kind=="session")o.Session=new(){Participant=h,Inbound=inbound};if(kind=="terminal")o.Session.Terminal=true;};
+  bool result=Wait(Task.Run(()=>o.Wait(h,inbound)));Check(Probe.OffThread==0,"courier "+inbound+" "+kind+" main reads");Check(result==!stale,"courier "+inbound+" "+kind+" fallback/stale");if(kind=="ready")Check(Probe.Generations==0,"courier ready no generation");
+ }
+ static void Scene(string kind){Probe.Reset();AnimusForge.ShoutBehavior.ResetScope();var h=new Hero("h");if(kind=="ready")h.P=h.B="ready";if(kind=="partial")h.P="keepP";if(kind=="failed")Probe.Mode="failed";
+  var o=new AnimusForge.ShoutBehavior();AnimusForge.ShoutBehavior.CurrentInstance=o;var npc=new AnimusForge.ShoutBehavior.NpcDataPacket{IsHero=kind!="unnamed"};var list=new List<AnimusForge.ShoutBehavior.NpcDataPacket>{npc};var heroes=new Dictionary<int,Hero>{{1,h}};if(kind=="duplicate")list.Add(new(){AgentIndex=1});
+  bool stale=kind is "generation" or "owner" or "memory" or "target" or "session" or "epoch" or "mission" or "late_target";
+  if(stale)Probe.DuringGenerate=()=>{if(kind=="target")heroes[1]=new Hero("other");else o.Expire(kind);};
+  if(kind=="late_target")Probe.BeforeOperation=operation=>{if(operation=="scene_persona_accept")heroes[1]=new Hero("late_other");};
+  var task=Task.Run(()=>o.Scene(list,heroes));Probe.Pump(()=>task.IsCompleted);task.GetAwaiter().GetResult();Check(Probe.OffThread==0,"scene "+kind+" all reads/writes/UI main");
+  if(stale)Check(npc.PersonalityDesc==""&&npc.BackgroundDesc=="","scene "+kind+" rejects stale packet mutation");
+  else {Check(npc.PersonalityDesc==(kind=="ready"?"ready":kind=="partial"?"keepP":kind=="failed"?"fallbackP":kind=="unnamed"?"unnamedP":"generatedP"),"scene "+kind+" personality");Check(npc.BackgroundDesc==(kind=="ready"?"ready":kind=="partial"||kind=="failed"?"fallbackB":kind=="unnamed"?"unnamedB":"generatedB"),"scene "+kind+" background");}
+  if(kind is "partial" or "ready" or "unnamed")Check(Probe.Generations==0,"scene preserves both-empty-only generation rule");if(kind=="duplicate")Check(Probe.Hints==1&&Probe.Generations==1,"scene duplicate Hero processed once after success");
+ }
+ static void Extras(){
+@@EXTRAS@@
+ }
+ static int Main(){try{foreach(var k in new[]{"normal","ready","partial","failed","timeout","generation","owner","memory","target"})Native(k);foreach(bool inbound in new[]{false,true})foreach(var k in new[]{"normal","ready","failed","timeout","generation","owner","memory","target","session","terminal"})Courier(inbound,k);foreach(var k in new[]{"normal","ready","partial","failed","unnamed","duplicate","generation","owner","memory","target","session","epoch","mission"})Scene(k);Extras();Console.WriteLine($"ChannelPersona checks={checks} failures={failures}; actual consumer methods; game/generation/dispatcher seams are fixtures.");return failures==0?0:1;}catch(Exception e){Console.WriteLine("FAIL "+e);return 1;}}
+}

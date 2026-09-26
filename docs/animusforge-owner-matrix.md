@@ -1,6 +1,6 @@
 # AnimusForge 逐文件 Owner Matrix（第一版）
 
-> 用于重构前导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。以当前 `d4cb1467` 及后续已记录的准备文档为基线。
+> 用于重构导航和代码评审。这里的 owner 是逻辑责任，不是当前 DLL 边界，也不是立即移动文件的授权。初版基线为历史 `d4cb1467`；当前 J06 状态以本表增量及唯一台账为准。
 
 ## 使用规则
 
@@ -10,21 +10,66 @@
 - 生产程序集暂时仍为单一 `AnimusForge.dll`；物理 DLL 拆分延后。
 - 任何涉及 `SyncData`、Harmony、Mission、UI、Tick 或 LLM 动作的切片，都要在这里补充影响和验收记录。
 
+## J06 当前责任边界（VERIFY / NOT_ACCEPTED）
+
+`49441aa1` 的实体生产 `BuildPromptContext` Hero 直接/称谓、当前空 capture 回退已验证；`3aaece30` 将 Courier 两种最终消息构建器及历史转换改为从旧/新生产源码提取执行，76 场景/550 检查和三项丢文本变异通过。共享 `CompleteSharedPromptBuild` 尚未消费这三类同输入生产检索正文，Native 最终请求未完成；不能据此标记 J06 验收。产品 owner、公开 API 和 291 锚点地图未变。
+
+实体 owner 新增 Hero 直接/称谓生产上下文差分：旧同步与当前捕获/脱离匹配生成相同主文、后处理、计数和显式 ID，空 capture 回退相同；三项负向变异拒收。中性假游戏对象未覆盖其他实体类别或最终请求，owner/验收状态不变。
+
+额外规则 owner 新增生产方法旧/新差分：语义预选和无预选词法回退在相同假配置下生成相同 ID/正文，删正文/漏词法回退变异拒收。运行时特例、实体事实及最终模型请求全文仍需合并验证，矩阵状态不变。
+
+Lore 生产方法差分新增一条确定性假 Hero/Praven 规则回放：旧同步、当前预选与版本过期回退正文逐字节一致，版本守卫/正文丢失变异拒收；它不替代实体、额外规则及 Native/Courier 最终请求全文对照，owner 不变。
+
+`1fa1a4e1` 追加 Courier 最终序列化请求体的旧同步/新调度六类知识文本 fixture 对照与 Lore 丢失变异；生产请求体和 `PromptExtrasComposer` 参与，知识结果/游戏读取为假端口。Native 最终请求全文与真实知识结果仍未闭合，不改变本矩阵状态。
+
+本次 Courier 测试把旧请求体和最终组装体固定提取自 `77a3d234`，并确认 Lore/实体/规则三项仅新侧文本丢失变异分别被完整请求比较拒收。责任边界不变：检索结果及游戏消息端口仍是假输入，Native 全文与真实检索差分未验收。
+
+接续验证：产品 owner/源码未变；`ae2cb4f4` 的生产候选/元数据捕获方法样本（fake Hero 2,000，9 轮）与两项变异通过，`db9a899e` 的生产 `PromptAssemblyStage` 完整 `Extras` 八组合及三项变异通过。原脚本 Debug/Release 六项已获授权执行并成功；尚缺旧同步与新捕获路径的**最终模型请求 Prompt 全文**对照，故本矩阵仍为 `VERIFY / NOT_ACCEPTED`。旧下方“原脚本拒绝”仅是先前历史状态。
+
+| 责任 | 当前 owner 与真实消费者 | 保留责任 / 验收缺口 |
+| --- | --- | --- |
+| 知识规则索引、Lore 候选 | `src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs`、`Lore/LoreCandidateRetriever.cs`；`KnowledgeLibraryBehavior.Index`/`Retriever` 接入；`MyBehavior.CaptureSharedKnowledgeSnapshot` 游戏每版本一次发布脱离原对象的规则快照、准备索引及 MCM 数值快照、`RunSharedKnowledgeRetrieval` 后台召回 | `KnowledgeLibraryBehavior` 仍负责 Campaign/ONNX 生命周期、知识存档与 Hero 事实；冷索引仍在游戏线程；版本/缓存与每版本规则发布已有可执行契约；最终文本对照未齐。索引缓存上限 512 |
+| 世界实体候选与匹配 | `WorldEntityRetrievalService.CaptureEntityCandidates` 游戏线程复用原枚举抓取名称、别名、称谓/领袖、可见队伍；`MatchDetachedCandidates` 后台复用原 `FindMatches`/称谓算法和唯一全局分配；`Entities/{EntityNameMatcher,EntityMentionList,EntityInjectionAllocator}.cs` 提供纯算法 | 成功路径不重复全量枚举或直接/称谓评分；关系/距离同趟捕获，生产分配方法 4 项排序/分数对照及范围/距离负向变异已跑；旧 `ApplyGlobalInjectionLimit` 只供同步/失败回退，事实块留最终游戏线程；逐候选捕获耗时与完整文本对照未齐；同步 API 与异常回退保留 |
+| 额外规则例外路径 | `AIConfigHandler.GetMatchedExtraRuleHitsForWorker` 在无预选 ID 时后台选择；`FormatMatchedExtraRuleInstructions` 保留游戏线程运行时补文；正常预选沿既有路由 | 生产回退方法 21 项和两项负向变异已验证语义、词法、异常、sticky 与排除；最终 Prompt 文本对照未齐，不删除同步入口 |
+| 共享阶段与渠道 | `MyBehavior` 五步顺序组合；Native 游戏捕获→纯 DTO 后台检索→游戏完成；Courier owner→纯 DTO worker→owner，同步 Scene 不变 | Courier 知识阶段迟到已有 6 例回放；Native 新阶段实际调度方法 4 场景/8 检查与两项负向守卫变异已跑；最终 Prompt 文本对照未齐；Scene 异步调度归 J10，不扩 J06 |
+| Prompt 检索资格 | `AIConfigHandler.CapturePromptRuleEligibility` 在游戏线程读 11 事实，正向门控独立失效、排除事实异常默认拒绝；`PromptRuleEligibility` 提供 worker 纯判断；Native/Courier 请求 DTO/ambient 消费 | 旧 setter-only 同步消费仍用 live fallback；Scene 调度属于 J10；仅生产方法提取 + fake 游戏端口异常契约，真实游戏异常/提前计算副作用未实测，J06d 未验收 |
+| Knowledge 导入 | `src/modules/AF.Module.Knowledge/Import/KnowledgeImportSupport.cs` 拥有 8 个关键词/When 纯规则与来源文件读取方法；`MyBehavior` 12 个调用点直接接 owner、旧方法删除 | `ValidateKnowledgeKeywordsForSingleRuleImport`/`ValidateKnowledgeKeywordsForImport`/`BuildKnowledgeRuleImportFailureMessage` 仍依赖当前 Campaign/KnowledgeLibrary 导出和原中文错误语义，保留游戏线程 host 适配；真实玩家文件/旧档未测 |
+
+精确路径/一基坐标在[代码范围图与地图](architecture/af-framework-code-scope.md)，证据和状态见[主台账 J06 当前节](animusforge-refactoring-and-repository-reorganization-plan.md#j06-retrieval-cutover-20260919)。当前 `70db6ec2` 的非删除性直接构建六项通过；原一键脚本重置被自动审核拒绝，不标离线验收完成。实机/旧档/provider `NOT-RUN` 不作为此离线阻塞理由。
+
+## J03 历史责任边界（PARTIAL / NOT_ACCEPTED）
+
+| 当前生产路径 | 唯一责任 / 调用频率 | 旧入口与残留 | 离线证据及风险 |
+| --- | --- | --- | --- |
+| `src/modules/AF.Module.Prompt/Configuration/{PromptConfigurationLoader,PromptRuleRegistry,RevisionedPromptConfigurationStore,PromptRevisionedDerivedCache}.cs` | 六配置加载、同 ID 规则覆盖、reload 换代及配置派生值；仅加载/显式 reload 与检索懒建 | `AIConfigHandler` 保留原 getter/reload；模型内部可变、深层只读未闭合 | 22 项生产 loader 契约、Debug/Release 双 API/Bootstrap；旧红矩阵仍不足 |
+| `src/modules/AF.Module.Prompt/Retrieval/{IntentQueryOptimizer,PromptCandidateSelection,PromptCandidateSnapshotIndex}.cs` | 唯一意图规范化、纯候选排序、80-key/10 分钟索引；对话/请求时调用，无 Tick 扫描 | `PromptListRetrievalService` 保留游戏别名、授权 payload、全量/展示 scope | 聚焦 88 项含排序/TTL；跨 My/Reward/Scene/Native/Policy 完整生产契约未闭合 |
+| `src/modules/AF.Module.Prompt/Retrieval/{PromptRuleSemanticRecall,PromptRuleAggregation,PromptRuleFinalRanking,PromptRuleRanking,PromptSingleEvaluationCache}.cs` | seed/vector 只算一次、跨意图聚合/预算/最终命中与 revision+MCM+资格评估缓存；请求时调用 | `AIConfigHandler.TryGetGuardrailEvalSnapshot` 仍编排 ONNX 与网络回退 | 真实 provider 与完整语义/辅助双路径测试仍缺，不能标 J03 完成 |
+| `src/modules/AF.Module.Prompt/Retrieval/{PromptAuxiliaryMentionStore,PromptStickyRuleStore,PromptSemanticVectorCache,PromptSemanticWarmupSeedBatch,PromptRetrievalContextOwner}.cs` | 64 实体 FIFO、三轮 sticky、1024/256 向量缓存、请求 scope 与 warmup seed；只在请求/会话/Mission 入口使用 | 旧类保留游戏资格、embedding 调用及原 public 接口；sticky 总目标数仍无硬上限 | scope 嵌套/yield、旧代拒收与跨 reload carry 有聚焦测试；实机/旧档 `NOT-RUN` |
+
+当前精确坐标见[代码地图与范围图](architecture/af-framework-code-scope.md)，未覆盖项和 runner 失败见[主台账](animusforge-refactoring-and-repository-reorganization-plan.md#j03-implementation-status-20260918)。不新增 DLL、Host、public API，也不迁 J04/J06。
+
+## J02 历史覆盖
+
+完整责任/已核实坐标与未覆盖边界见[当前范围图](architecture/af-framework-code-scope.md)及[唯一台账](animusforge-refactoring-and-repository-reorganization-plan.md#j02-full-completion)。J02_OFFLINE_VERIFIED不解除全仓G0.7或LIVE/旧SAVE门禁。
+
 ## 运行与基础设施
 
 | 当前文件/路径 | 当前职责 | 目标 owner | 迁移策略 | 风险/验收 |
 |---|---|---|---|---|
+| `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs:7-95` | 目录生命周期4字段及加载/停止/冻结捕获的唯一状态/算法 | Foundation / ModuleDirectory | J02有限包已真实提取；源码 `102eab84`，不是新游戏Host | 同锁、重入、固定失败码、Stopped保留目录与冻结快照；双版Stage/反例已验，LIVE未验 |
+| `src/AF.Foundation.Runtime/ModuleDirectory/{InternalModuleDirectory,ModuleFrameworkSnapshot}.cs` | 原注册/依赖/能力状态与冻结快照 | Foundation / ModuleDirectory | Git 100%归位，声明/程序集身份保持；原工作树字节hash无迁前对照 | 目录44、API及实际DLL元数据；不声明完整模块生命周期Host |
+| `src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs:11-36` | Team工厂选择、旧静态门面、原Campaign注册转接 | GameAdapter / Composition facade | 目录状态与算法已退出；注册壳保留且不受目录门控 | 原API签名/注册顺序/无第二状态owner；Startup/Tick已迁，UI/Mission等必要引擎适配保留 |
 | `AnimusForge/SubModule.xml` | 统一模块声明、Bootstrap-only 加载、Items XML | Bootstrap / Host | 保持不变；只允许 Bootstrap DLL | Id/Name/版本/资源路径；不得声明实现 DLL |
 | `AnimusForge.Bootstrap/BootstrapSubModule.cs` | 生命周期转发、启动失败处理 | Bootstrap | 保持独立 | 启动、卸载、类型注册、1.3/1.4 |
 | `AnimusForge.Bootstrap/BootstrapRuntime.cs` | API 线检测、实现 DLL 选择/加载、resolver | Bootstrap | 保持最小 | 只加载一个实现；版本歧义 fail-closed |
 | `AnimusForge.Bootstrap/BootstrapLog.cs` | Bootstrap 诊断 | Bootstrap | 保持独立 | 输出实际版本、路径、实现版本 |
-| `SubModule.cs` | 所有行为/模型/Harmony/Mission/每帧调度的组合根 | Host/Composition | 先按注册、Patch、Tick、模型、外部集成分组；保持顺序 | 任何一帧成本、注册顺序、失败隔离 |
+| `SubModule.cs`、`src/AF.GameAdapter.Bannerlord/Composition/` | 薄引擎override；Startup/Tick与已有Campaign/Team装配独立owner | GameAdapter/Composition | J02源码离线完成，原注册/catch/tick顺序与ABI保留 | 整SubModule逆向、故障变异、双版Stage；LIVE未验 |
 | `AnimusForge.csproj` | 单实现项目、1.3/1.4 条件编译、依赖解析、资源嵌入 | Host/Build boundary | 暂不重排；先建立包含/资源/依赖清单 | 两 API 线、资源嵌入、链接源码 |
 | `AnimusForgeModulePaths.cs` | 活动模块根、legacy 只读迁移路径 | Foundation/GameAdapter | 提取路径端口，保留迁移规则 | 不把 legacy 目录当活动输出 |
-| `Logger.cs`, `TraceHelper.cs`, `FeatureDiagnosticLogFile.cs` | 日志、trace、功能诊断 | Foundation/Diagnostics | 统一 trace 与有界日志 | 不记录 API key/无限制玩家文本 |
-| `PerfProbe.cs`, `FreezeWatchdog.cs`, `CampaignTickDiagnosticsPatch.cs` | 性能、冻结和 Tick 诊断 | Foundation/Runtime Safety | 保持低分配；按阶段抽取 | 每帧预算、队列深度、丢弃/过期统计 |
+| `src/AF.Foundation.Runtime/Diagnostics/{DiagnosticTraceContext,MetricWindow,BoundedLogWriteQueue}.cs` + `Logger.cs`门面 | trace、180秒指标、4096/8192通用日志队列已独占 | Foundation/Diagnostics | J02真实状态/算法接线完成；路径/UTF8/MCM留根适配 | 旧新oracle/6反例/双版Stage；hit-rate和token dump仍领域责任，不声称隐私问题全修 |
+| `src/AF.Foundation.Runtime/Diagnostics/{PerformanceWindow,FreezeWatchState}.cs` + Perf/Freeze门面 | 通用窗口/心跳/scope/ring唯一owner | Foundation/Runtime Safety | J02完成；实际线程/OSdump/游戏读取/MCM缓存不移入Foundation | 关键时序/旧新oracle/反例通过，无新增fast path分配；LIVE未验 |
 | `BannerlordExceptionSentinel.cs`, `NonBlockingErrorReport.cs` | 原版异常边界和错误报告 | Compatibility/Safety | 与功能 owner 分离；保留 fail-open/native fallback 语义 | 不因 AF 关闭而吞掉原版逻辑 |
-| `SaveRuntimeGuard.cs` | 存档/加载 generation 和 stale work 防护 | Foundation/Persistence | 作为所有异步模块的公共端口 | load 后 stale completion 必须被拒绝 |
+| `src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs` | 存档/加载 generation 和 stale work 防护 | Foundation/Persistence | 作为所有异步模块的公共端口 | load 后 stale completion 必须被拒绝 |
 
 ## 交互、AI、记忆和动作
 
@@ -33,8 +78,11 @@
 | `MyBehavior.cs` | 自由对话、记忆、事件、Persona、AFEF、周报、外部 facade、巨大 `SyncData` | Conversation facade + Memory/Persistence 子域 | 不整体移动；先从公开 facade、保存镜像和纯转换器开始 | 旧 key/type、三渠道历史、save/load |
 | `ShoutBehavior.cs` | 场景喊话、Native Conversation、Prompt、后处理、动作、TTS、Mission、目标 | Conversation orchestration；Scene/Action adapter | 保留为过渡编排器；先抽 DTO、目标解析、ActionPlan | 三渠道、主线程、可见文本、stale target |
 | `AIConfigHandler.cs` | Prompt 配置、preprocess、guardrail、postprocess、AFEF normalization、辅助 LLM | Prompt/Rule + LLM Gateway + ActionPostprocess | 分成纯配置/规则、网络、归一化三个边界；不放领域副作用 | JSON/C# 标签同步、超时、fallback |
-| `PromptComposer.cs`, `PromptListRetrievalService.cs`, `IntentQueryOptimizer.cs` | Prompt 组合、规则/知识候选检索、意图优化 | Prompt/Retrieval | 保持纯输入输出；缓存和批量策略明确 | 不做热路径全量扫描 |
-| `LlmApiCompat.cs`, `LlmRetryPrompt.cs`, `LlmVisibleReplyNormalizer.cs` | LLM API 兼容、重试、可见回复清理 | LLM Gateway/Safety | 统一请求/结果状态和 trace | 不把内部标签泄露给玩家 |
+| `src/modules/AF.Module.Prompt/Composition/*.cs`, `PromptListRetrievalService.cs`, `src/modules/AF.Module.Prompt/Retrieval/IntentQueryOptimizer.cs` | Prompt 组合（规则 ID 策略、内置话题路由、sticky、Extras 段落、目标身份）、规则/知识候选检索、意图优化；原 `PromptComposer.cs` 零调用者已删除 | Prompt/Composition + Prompt/Retrieval | 保持纯输入输出；缓存和批量策略明确 | 不做热路径全量扫描 |
+| `src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs` | API URL/payload、认证头、普通/流响应协议兼容；J01 原字节迁入 | AF.Module.Llm/Protocol | 保持既有 public 类/namespace/同 DLL；不代替实际 provider 网络验收 | 双 API Stage/协议离线通过；真实网络 NOT-RUN |
+| `src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs` | 可见回复 envelope 清理；`StreamFilter:62-144` 的候选/预览/透传/发射长度为每实例状态 | AF.Module.Llm/Protocol | 原字节迁入，不共享跨流实例、不改变旧 Unicode 逐字符行为 | 协议离线通过；逐字符 Unicode 旧缺陷未修 |
+| `src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs` | 8 个消息/重试策略方法与 4 常量；13 处原宿主调用直连，无共享可变状态 | AF.Module.Llm/Protocol | J01 真提取，仅 policy 内部可见性调整，不引入新 public API/每 Tick 扫描 | 13 协议用例/7 变异及双版本 Stage；不代表网络调度已迁 |
+| `LlmRetryPrompt.cs` | 原重试提示/失败详情与交互 | LLM Gateway/Safety | 本次不迁、不改行为 | 真实 provider/LIVE 未验 |
 | `Guardrail*.cs`, `AnimusForgeTextInputSanitizer.cs` | 输入/规则安全和文本清理 | Safety/Prompt | 与领域动作分离 | 关闭 AF 时不改变原版行为 |
 | `OnnxEmbeddingEngine.cs`, `OnnxCrossEncoderReranker.cs`, `RagWarmupCoordinator.cs`, `WorldEntityRetrievalService.cs` | 本地 embedding/rerank/RAG | Knowledge/Retrieval | 通过 provider 接口使用；模型运行时不进入 Foundation | ONNX 资源/线程/缓存/热路径 |
 | `KnowledgeLibraryBehavior.cs` | 知识文件、RAG 索引、知识存档、导入导出 | Knowledge/Persistence | 先抽 storage codec/index facade；保留旧 chunk key | 自定义 chunk 协议、SemanticPrototypes 丢弃行为 |
@@ -46,7 +94,7 @@
 | `AnimusForgeNativeConversationOverlay*.cs` | Native 对话 UI、输入、提交、历史/动作入口 | UI + Conversation adapter | UI 只持有公开 Conversation session | 主线程、输入焦点、关闭后 stale work |
 | `ConversationVMCapturePatch.cs`, `NativeConversationAnswerAreaController.cs` | 原版 VM/回答区接入 | UI/GameAdapter | 保持 UI patch 薄 | Gauntlet 版本差异、事件抢占 |
 | `ConversationHelper.cs`, `ConversationMessage.cs` | 会话消息和辅助逻辑 | Conversation.Contracts | 先冻结 role/AFEF 语义 | user=玩家，assistant=NPC |
-| `ShoutNetwork.cs` | 场景/对话网络调用和消息请求 | LLM Gateway adapter | 与渠道编排分离 | 后台请求不可携带 live game object |
+| `ShoutNetwork.cs` | 保留普通/流实际 SendAsync、SSE/取消/重试调度、配置/统计/姓名与渠道接入；13 处直调新 policy | LLM Gateway adapter（过渡混合宿主） | J01 仅移出 8 方法/4 常量，不能把全类标完成；后续网络责任另包 | 后台请求不可携带 live game object；LIVE/旧 SAVE/真实 provider 未验 |
 | `ShoutUtils.cs` | 场景辅助、Persona、历史和数据导入导出 | Conversation/Knowledge compatibility | 按功能拆 facade，不整体搬迁 | 外部 JSON 与 save authority |
 | `ActionPostprocessConfigModel.cs`, `PreprocessPromptsConfigModel.cs`, `AIConfigModel.cs` | 配置 DTO | Prompt/Contracts | 纯模型，禁止游戏副作用 | 配置版本和 unknown fields |
 | `GiveAssetTagCodec.cs`, `TransferQuantitySpec.cs` | 资产动作标签/参数编解码 | Action/Asset transfer | 纯 parser 先独立测试 | 规则、parser、executor 三方一致 |
@@ -140,7 +188,7 @@
 ## 2026-08-31 Conversation Host commit boundary
 
 - Owner: Conversation lifecycle / GameAdapter dispatch contract, not Economy gameplay or GCCZ rules.
-- `Refactor/Runtime/DetachedInteractionHost.cs`: each submitted commit callback is consumed once and closed before pre-commit fallback; failures after callback entry are terminal, retaining any observed receipt. `afterCommit` requires successful history. Queued cancellation is checked on callback entry.
+- `src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs`: each submitted commit callback is consumed once and closed before pre-commit fallback; failures after callback entry are terminal, retaining any observed receipt. `afterCommit` requires successful history. Queued cancellation is checked on callback entry.
 - Entry points: Native opt-in runner and Shout/Courier detached hosts. Default channel entries, public signatures, save identity/key/type and resources are unchanged; no new Harmony, tick, queue or scan work.
 - Validation: `InteractionPipelineContractTests` fault matrix and `ProductionConfiguredHostReplayTests`; actual results/rollback/NOT-RUN scope are recorded in the execution ledger and `docs/handoffs/2026-08-31-local-refactor-commit-boundary.md`.
 

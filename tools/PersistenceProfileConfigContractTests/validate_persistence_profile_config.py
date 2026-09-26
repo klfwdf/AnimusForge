@@ -58,30 +58,55 @@ def split_call_arguments(body: str) -> list[str]:
     return parts
 
 
+def extract_call_arguments(source: str, name: str):
+    call_pattern = re.compile(r"\b" + re.escape(name) + r"\s*\(")
+    for match in call_pattern.finditer(source):
+        depth = 1
+        quoted = False
+        escaped = False
+        for index in range(match.end(), len(source)):
+            char = source[index]
+            if quoted:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    quoted = False
+            elif char == '"':
+                quoted = True
+            elif char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if depth == 0:
+                    yield source[match.end():index]
+                    break
+
+
 def resolve_storage_call_keys(name: str, argument_index: int) -> set[str]:
     resolved: set[str] = set()
-    call_pattern = re.compile(name + r"\s*\((.*?)\)", re.DOTALL)
     constant_pattern = re.compile(r"\b(?:private|internal|public|protected)?\s*(?:static\s+)?const\s+string\s+(\w+)\s*=\s*\"([^\"]+)\"")
     source_paths = []
     for source_path in ROOT.rglob("*.cs"):
-        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
             continue
-        if any("原版游戏本体代码" in part for part in source_path.parts):
+        if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
             continue
         source_paths.append(source_path)
     constant_values: dict[str, set[str]] = {}
     for source_path in source_paths:
-        for name, value in constant_pattern.findall(source_path.read_text(encoding="utf-8")):
-            constant_values.setdefault(name, set()).add(value)
+        for const_name, value in constant_pattern.findall(source_path.read_text(encoding="utf-8")):
+            constant_values.setdefault(const_name, set()).add(value)
     globally_unique_constants = {
-        name: next(iter(values)) for name, values in constant_values.items() if len(values) == 1
+        const_name: next(iter(values)) for const_name, values in constant_values.items() if len(values) == 1
     }
     for source_path in source_paths:
         source = source_path.read_text(encoding="utf-8")
         constants = dict(globally_unique_constants)
         constants.update(dict(constant_pattern.findall(source)))
-        for match in call_pattern.finditer(source):
-            arguments = split_call_arguments(match.group(1))
+        for body in extract_call_arguments(source, name):
+            arguments = split_call_arguments(body)
             if len(arguments) <= argument_index:
                 continue
             expression = arguments[argument_index]
@@ -139,9 +164,9 @@ DECLARATION_PATTERN = re.compile(
 def discover_typed_bindings() -> list[dict]:
     rows: list[dict] = []
     for source_path in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
             continue
-        if any("原版游戏本体代码" in part for part in source_path.parts):
+        if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
             continue
         source = source_path.read_text(encoding="utf-8")
         declarations = list(DECLARATION_PATTERN.finditer(source))
@@ -205,9 +230,9 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(any(item["status"] == "inventory-required" for item in catalog["symbolicKeyFamilies"]), "symbolic key debt was hidden")
     symbolic_sources = []
     for source in sorted(ROOT.rglob("*.cs")):
-        if any(part in {"tools", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source.parts):
+        if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source.relative_to(ROOT).parts):
             continue
-        if any("原版游戏本体代码" in part for part in source.parts):
+        if any("原版游戏本体代码" in part for part in source.relative_to(ROOT).parts):
             continue
         if SYMBOLIC_PATTERN.search(source.read_text(encoding="utf-8")):
             symbolic_sources.append(source.relative_to(ROOT).as_posix())

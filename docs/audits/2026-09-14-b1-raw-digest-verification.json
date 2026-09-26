@@ -1,0 +1,1453 @@
+{
+  "kind": "B1-complete-raw-source-fingerprint-verification",
+  "recordedUtc": "2026-09-14T00:14:34.814901+00:00",
+  "productionRevision": "40b92e671f41beba14e5d4d876195961835dac98",
+  "previousProduction": "8bcde78b9f477a9cc7cdb8ef12b2a4cbf1e60dc3",
+  "checkpoint": "9076ab95",
+  "remoteRevision": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
+  "state": "Stage8/B1 VERIFY NOT_BATCH_ACCEPTED",
+  "automation": "af-7-8 ACTIVE hourly",
+  "sourceFiles": {
+    "MyBehavior.cs": {
+      "rawSha256": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+      "normalizedSha256": "1181dc6a181c373770623f13b23601f1ace7319cbe3bfdc91119e77580e912bc"
+    },
+    "MyBehavior.MemorySummaryInput.cs": {
+      "rawSha256": "01db7fb410490d0ac70d9d568aa87338fadd8553526d603b2f752bf1dc517e1a",
+      "normalizedSha256": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08"
+    },
+    "MyBehavior.MemorySourceFingerprint.cs": {
+      "rawSha256": "7e635eeb6726e93ee582c289b8aebe71767e875df98c312672b4754996fb44ec",
+      "normalizedSha256": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad"
+    },
+    "Refactor/Runtime/MemorySourceFingerprintWriter.cs": {
+      "rawSha256": "9280735936f8760e759f225d928d6a2f017a5f75b82b8bb03134ab916f330a24",
+      "normalizedSha256": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684"
+    }
+  },
+  "captured": [
+    {
+      "label": "current",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py"
+      ],
+      "exit": 0,
+      "expectedExit": 0,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=116 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "original-8bcde78b",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--source-baseline",
+        "8bcde78b"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=112 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "observe-rebuilds",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--observe-rebuilds"
+      ],
+      "exit": 0,
+      "expectedExit": 0,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=7 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "retain-payload",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "retain-payload"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "reuse-source",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "reuse-source"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=84 fail=32 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "ignore-fingerprint",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "ignore-fingerprint"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=77 fail=39 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "worker-parse",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "worker-parse"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=99 fail=17 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "skip-retry-source",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "skip-retry-source"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=113 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "drop-afef",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "drop-afef"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "drop-overview-ids",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "drop-overview-ids"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "drop-major-cursor",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "drop-major-cursor"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "background-sanitize-alias",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "background-sanitize-alias"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=113 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "main-sanitize-detach",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "main-sanitize-detach"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=113 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "drop-source-receipt",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "drop-source-receipt"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "ignore-wave-lifetime",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "ignore-wave-lifetime"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=114 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "drop-nested-copy",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "drop-nested-copy"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=114 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "drop-scalar-copy",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "drop-scalar-copy"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "omit-stream-source",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "omit-stream-source"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=77 fail=39 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "drop-plan-expected",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "drop-plan-expected"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=110 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "skip-planned-source-check",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "skip-planned-source-check"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=110 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "ignore-context",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "ignore-context"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=95 fail=21 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "rebuild-on-check",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "rebuild-on-check"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=89 fail=27 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "clone-on-check",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "clone-on-check"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=93 fail=23 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "stale-pre-getter-view",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "stale-pre-getter-view"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "skip-initial-binding",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "skip-initial-binding"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "skip-retarget-guard",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "skip-retarget-guard"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "skip-overview-threshold",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "skip-overview-threshold"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=114 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "raw-denominator-context",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "raw-denominator-context"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "raw-scene-context",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "raw-scene-context"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=114 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "ignore-initial-retry",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "ignore-initial-retry"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=113 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "omit-state-presence",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "omit-state-presence"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=112 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "omit-raw-line-field",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "omit-raw-line-field"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "omit-raw-nested-tags",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "omit-raw-nested-tags"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=112 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "unframed-raw-strings",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "unframed-raw-strings"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=113 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "truncate-raw-long",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "truncate-raw-long"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "repeat-raw-list-head",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "repeat-raw-list-head"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=102 fail=14 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "raw-low-code-unit-only",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "raw-low-code-unit-only"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    },
+    {
+      "label": "ignore-full-raw-buffer",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py",
+        "--mutate",
+        "ignore-full-raw-buffer"
+      ],
+      "exit": 1,
+      "expectedExit": 1,
+      "valid": true,
+      "result": "CAPTURED_RESULT pass=115 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+    }
+  ],
+  "adjacent": [
+    {
+      "label": "sealing",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS campaign-sort-budget",
+        "SEALING_RESULT pass=60 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "label": "business",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_business.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS owner-during-failure-aggregate",
+        "BUSINESS_RESULT passed=36 failed=0"
+      ]
+    },
+    {
+      "label": "planning",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_planning.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS compact-concurrent-remove",
+        "PLANNING_RESULT pass=24 fail=0 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "label": "writers",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_writers.py"
+      ],
+      "exit": 0,
+      "result": [
+        "DTO_INVENTORY SettlementTransferPromptEntry=AssetId,AssetKind,CaravanParty,DailyIncomeDenars,DisplayName,GuidePriceDenars,OwnerClan,OwnerHero,PromptIndex,Section,Settlement,SettlementId,TypeLabel,Workshop",
+        "WRITER_RESULT checks=238 failures=0"
+      ]
+    },
+    {
+      "label": "terminal",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS before-final-apply-True-True",
+        "TERMINAL_RESULT scenarios=85 failures=0 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "terminal-old-input",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py",
+        "--source-baseline",
+        "e77602f9"
+      ],
+      "exit": 1,
+      "result": [
+        "PASS before-final-apply-True-True",
+        "TERMINAL_RESULT scenarios=85 failures=30 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "terminal-ignore-parse",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py",
+        "--mutate",
+        "ignore-parse-source"
+      ],
+      "exit": 1,
+      "result": [
+        "PASS before-final-apply-True-True",
+        "TERMINAL_RESULT scenarios=85 failures=31 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "terminal-ignore-final",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py",
+        "--mutate",
+        "ignore-final-source"
+      ],
+      "exit": 1,
+      "result": [
+        "FAIL before-final-apply-True-True: old failure terminalized new source",
+        "TERMINAL_RESULT scenarios=85 failures=16 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "commit",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_commit_writers.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS single-fact",
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0 real_commit=true real_daily_recent=true exact_readback=true actual_editor_closure=true actual_import_apply=true game_save=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "admission",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py",
+        "--admission-only"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS large-source-operation-count",
+        "TERMINAL_RESULT mode=admission scenarios=54 failures=0 actual_enqueue=true old_predicate_oracle=e77602f9 game_frame_time=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "materials",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_materials.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS live-source-exhausted-probe",
+        "MATERIALS_RESULT scenarios=23 failures=0 actual_record_index_sanitize=true game_save=NOT_TESTED"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "label": "fingerprint-writer",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_fingerprint.py"
+      ],
+      "exit": 0,
+      "result": [
+        "BUILD_PASS fingerprint-writer",
+        "FINGERPRINT_WRITER_RESULT vectors=9 guards=5 failures=0 actual_sink=true game=NOT_RUN"
+      ]
+    },
+    {
+      "label": "helper",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS MemorySummaryMainThread checks=32 failures=0 LIVE=NOT_RUN SAVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "history",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS HistorySnapshot checks=852 failures=0 realRenderRecallSelect=true ownerDataAndNetwork=STUBBED LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "native-history",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\run.py",
+        "--native"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS NativeHistorySnapshot checks=27 failures=0 actualCaptureAndAccept=true actualMemoryRenderer=true game=STUBBED LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "failure-ui",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemoryFailureUiBoundaryTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS MemoryFailureUi checks=85 failures=0 realPopupOwner=true realEngineHook=true gameUI=STUBBED LIVE=NOT_RUN",
+        ""
+      ],
+      "initialExit": 1,
+      "initialFailure": "Review-update helper normalized changed-file names but not a stored backslash evidence path; source hash lock correctly refused unreviewed metadata. Corrected exact path matching and completed the scoped review; no assertions weakened."
+    },
+    {
+      "label": "native-preparation",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativePreparationBoundaryTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS NativePreparation checks=589 failures=0 productionCapture=extracted queue=real-helper domainHelpers=recording-stubs LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "channel",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\ChannelCutoverBoundaryTests\\run.py",
+        "--dotnet",
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "--output-name",
+        "raw-digest-20260914"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS scene-lifecycle/failure-release/epoch",
+        "ChannelCutoverBoundary passes=132 failures=0 extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN"
+      ]
+    },
+    {
+      "label": "persistence",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\PersistenceIdentityAudit.py",
+        "--baseline",
+        "8bcde78b",
+        "--json"
+      ],
+      "exit": 0,
+      "result": [
+        "baseline source batch reading",
+        "comparison complete"
+      ]
+    },
+    {
+      "label": "api",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\ModuleFrameworkApiTests\\run.py",
+        "--dotnet",
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "--artifact-root",
+        "bin/Debug/single_module_artifacts",
+        "--artifact-root",
+        "bin/Release/single_module_artifacts"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS 532 actual-DLL metadata assertions; 4 implementation DLLs; public V1/legacy memory signatures match; module ports and scene-aware memory owner remain internal.",
+        "NOT TESTED: CLR loading, Bootstrap ordering, game object access, real sub-MOD execution."
+      ]
+    }
+  ],
+  "builds": [
+    {
+      "label": "stage-Debug",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+        "-ProjectRoot",
+        "G:\\AFMOD\\AF-REFACTOR",
+        "-BannerlordRoot",
+        "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-Bannerlord13ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\_deps_auto",
+        "-Bannerlord14ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-WorkshopContentDir",
+        "E:\\steam\\steamapps\\workshop\\content\\261550",
+        "-RuntimeDependencyDir",
+        "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+        "-Configuration",
+        "Debug",
+        "-Stage"
+      ],
+      "exit": 0,
+      "seconds": 59.33,
+      "sourceBefore": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySummaryInput.cs": "01db7fb410490d0ac70d9d568aa87338fadd8553526d603b2f752bf1dc517e1a",
+        "MyBehavior.MemorySourceFingerprint.cs": "7e635eeb6726e93ee582c289b8aebe71767e875df98c312672b4754996fb44ec",
+        "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "9280735936f8760e759f225d928d6a2f017a5f75b82b8bb03134ab916f330a24"
+      },
+      "sourceAfter": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySummaryInput.cs": "01db7fb410490d0ac70d9d568aa87338fadd8553526d603b2f752bf1dc517e1a",
+        "MyBehavior.MemorySourceFingerprint.cs": "7e635eeb6726e93ee582c289b8aebe71767e875df98c312672b4754996fb44ec",
+        "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "9280735936f8760e759f225d928d6a2f017a5f75b82b8bb03134ab916f330a24"
+      }
+    },
+    {
+      "label": "stage-Release",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+        "-ProjectRoot",
+        "G:\\AFMOD\\AF-REFACTOR",
+        "-BannerlordRoot",
+        "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-Bannerlord13ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\_deps_auto",
+        "-Bannerlord14ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-WorkshopContentDir",
+        "E:\\steam\\steamapps\\workshop\\content\\261550",
+        "-RuntimeDependencyDir",
+        "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+        "-Configuration",
+        "Release",
+        "-Stage"
+      ],
+      "exit": 0,
+      "seconds": 37.75,
+      "sourceBefore": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySummaryInput.cs": "01db7fb410490d0ac70d9d568aa87338fadd8553526d603b2f752bf1dc517e1a",
+        "MyBehavior.MemorySourceFingerprint.cs": "7e635eeb6726e93ee582c289b8aebe71767e875df98c312672b4754996fb44ec",
+        "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "9280735936f8760e759f225d928d6a2f017a5f75b82b8bb03134ab916f330a24"
+      },
+      "sourceAfter": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySummaryInput.cs": "01db7fb410490d0ac70d9d568aa87338fadd8553526d603b2f752bf1dc517e1a",
+        "MyBehavior.MemorySourceFingerprint.cs": "7e635eeb6726e93ee582c289b8aebe71767e875df98c312672b4754996fb44ec",
+        "Refactor/Runtime/MemorySourceFingerprintWriter.cs": "9280735936f8760e759f225d928d6a2f017a5f75b82b8bb03134ab916f330a24"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "stagePath": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "d0fba16e6bed4b80534a6a4835456b60e648ed5f8677d7870d19666330284601",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "D0FBA16E6BED4B80534A6A4835456B60E648ED5F8677D7870D19666330284601",
+        "CreatedUtc": "2026-09-13T23:59:17.4856007Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "stagePath": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "cbc9c92b1cc4810329dccad860ed7fda2b1e180b2f5021efc5f209f3aafb95f8",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "CBC9C92B1CC4810329DCCAD860ED7FDA2B1E180B2F5021EFC5F209F3AAFB95F8",
+        "CreatedUtc": "2026-09-13T23:58:57.5443850Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "stagePath": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "54821571fda9f19af7ce60f3e6d340532852961369f34263b8f5df0b0f99c7ed",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "54821571FDA9F19AF7CE60F3E6D340532852961369F34263B8F5DF0B0F99C7ED",
+        "CreatedUtc": "2026-09-13T23:59:14.7181420Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "stagePath": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "2539ca53fae1c26caf68b9e11794e30bae5e4f596c2a379dfe93b400c8a29c2c",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "2539CA53FAE1C26CAF68B9E11794E30BAE5E4F596C2A379DFE93B400C8A29C2C",
+        "CreatedUtc": "2026-09-13T23:59:56.2340358Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "stagePath": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "eedb4bdb744a040011c6c8ca7ea9ac078813254c17370bd7536a236ebce52b68",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "EEDB4BDB744A040011C6C8CA7EA9AC078813254C17370BD7536A236EBCE52B68",
+        "CreatedUtc": "2026-09-13T23:59:40.1769398Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "stagePath": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "3dfd74b73df59247cc2a3db1dbb2a7711fc0423a274f5c2532763b0dbfe67c75",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "3DFD74B73DF59247CC2A3DB1DBB2A7711FC0423A274F5C2532763B0DBFE67C75",
+        "CreatedUtc": "2026-09-13T23:59:53.7892215Z"
+      },
+      "stageMatches": true
+    }
+  ],
+  "measurements": [
+    {
+      "kind": "daily",
+      "records": "1000",
+      "repeats": "12",
+      "old_bytes": "2578792",
+      "current_bytes": "97960",
+      "old_ms": "112.638",
+      "current_ms": "37.450",
+      "raw_records_not_sliced": "true",
+      "allocatedReductionPercent": 96.2
+    },
+    {
+      "kind": "major",
+      "records": "1000",
+      "repeats": "12",
+      "old_bytes": "1903048",
+      "current_bytes": "62248",
+      "old_ms": "309.671",
+      "current_ms": "49.457",
+      "raw_records_not_sliced": "true",
+      "allocatedReductionPercent": 96.73
+    },
+    {
+      "kind": "overview",
+      "records": "1000",
+      "repeats": "12",
+      "old_bytes": "5074600",
+      "current_bytes": "98824",
+      "old_ms": "422.142",
+      "current_ms": "111.918",
+      "raw_records_not_sliced": "true",
+      "allocatedReductionPercent": 98.05
+    }
+  ],
+  "inverse": {
+    "mainDeclarations": 58,
+    "addedSourceSpans": 4,
+    "deletedDeclarations": 2,
+    "mainBaseline": "90201155",
+    "inputDeclarations": 4,
+    "inputBaseline": "8bcde78b",
+    "wholeComponents": 8,
+    "guardTests": 11,
+    "status": "PASS",
+    "initialToolIssue": "Review-update script used canonical slashes for changed-file set but not one stored backslash evidence key; failed before writing JSON. Guards failed honestly until exact scoped review completed. Initial logs preserved."
+  },
+  "codeMap": {
+    "anchors": 71,
+    "recordedRevision": "PASS",
+    "workingTree": "PASS",
+    "sourceRevision": "40b92e671f41beba14e5d4d876195961835dac98"
+  },
+  "protectedFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "frozenFiles": {
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\adjacent-runs.json": "3d0a307654f379899bc99ea8b76ab2b0b643823cdde67975849b14801826dd7d",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\admission.log": "02f38cf8eb4dce13f9753b65f5b5c0e39f686a8a313b1b91a8f91560410d1609",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\api.log": "9c38309719dea4aa18de71726f1f52da5fd272519092ef97cccf4d245f4e24cd",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\background-sanitize-alias.log": "605fff4434e5940f2f92d6fbc5fca69459c2328e9605bf806372420d005a0275",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\build-runs.json": "155e80aaeef248cab6abc173c4c37529bc9e82e0ba65b6beed97739c98f98067",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\business-current-build.log": "b9b2eed56a3ee0e936e8fe071eafd273dba550ce5cc4c9dbe1edd14009cb944d",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\business-current-manifest.json": "f86e6184407f7719648e7019a0e60b2b3259f29b78d7dd2ef74e642a0abc297b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\business-current-run.log": "286a170e827db18983fd3bae18fdd649ec9b1f4092deceb1764f8285c18adf97",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\business.log": "20ba2d1610e1b164e5e980d5bd2c924f6a34f87ff21b538776ccf9d0f6b857f8",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-background-sanitize-alias-build.log": "2f1850c76b39a8249264b5cd505e7276b66e1117451cfc437693c762ef7fcc0c",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-background-sanitize-alias-manifest.json": "5c8841317a80a2f279bb97838527f2422a3f1ddcacadb05edcbfed4ea2d7bc74",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-background-sanitize-alias-run.log": "86d5aaacfb69ae7e874b2a967a58dfd99a16a6020bf9913b82c0e5d934788db7",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-clone-on-check-build.log": "7276115e137f8619ab62cc5703a2aa334690566bc1ae654281f330a3cf9e0856",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-clone-on-check-manifest.json": "42cd33710f541c1c12eb3f5a1cacefc6902ad0ceacfc29e2283a2349bd4558a9",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-clone-on-check-run.log": "ec41e2db728a4b69f9e695b52c8ff75c5c6e79bcdb7dd59f2a1e2ffd833b40aa",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-current-build.log": "1d11d14818f79399724a3782e55575642c314c31f2fbb2e41a444a98672aa232",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-current-manifest.json": "7afc95e89666bdead3cd9c49ddac5ef029ae3a658519346aeb59cc0a8282a2b3",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-current-run.log": "5419067ca3d9535b3fd65189c00d19265930f787170208a421c137e4671de789",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-afef-build.log": "20c3a10e4dde75620f3c0eca62429419ccc229b088d8ad04cf40326e5a4ae817",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-afef-manifest.json": "8bba419ef95cba40ea55cab49e752af394468446fbc4805e15606850223b1c35",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-afef-run.log": "f2f6c878a30abcc4f8d978cb0f04669a5f5b72a369bf6b6039078ecd8cd894e7",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-major-cursor-build.log": "f5fedc1cffbe835fdb457509596420dca4c10a05b86544d473bda269b7c913af",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-major-cursor-manifest.json": "27ce207974f79d101f73a574078ba5e8952c0f129a090f4bf91361d15dbba213",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-major-cursor-run.log": "7369d962166ee1da1148cd3d4841ab0d7e456298234a21dfaab082bc000417fa",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-nested-copy-build.log": "46b30509c42f9bb0e0dd9bf074ca74e6f5dce3a3aec9de07cc399837363144a8",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-nested-copy-manifest.json": "e9f572703335cabb97cdd8fc0ef16cef7bfa527f198d28a4098c0ca8875c299e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-nested-copy-run.log": "93b5df064a4ab91b8e1422a4c333b67446c00ac8cc9fa25e7f91f2d61a024e3a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-overview-ids-build.log": "206bcce8231c40ad3ed1b3fcf27fbbf0e87da28dde5c3a3a12ea0dd5e018ac07",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-overview-ids-manifest.json": "40ff1dd7fa3a1d1f2c38f2eb65a8a490400b9170fc77b188040ce7eddc2f178a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-overview-ids-run.log": "6dc30b5390e970a39d7c9fde2cd20ac285b2fc768eaf3c795c5dccdc8cb09ea4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-plan-expected-build.log": "2c7eccc5e002bd34a540263f75bf25ae902855cc62425d6c1d65161b136f50bb",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-plan-expected-manifest.json": "c32f4006bcc3c7f4e31eb1da093f1039e9eaeae4a88f6e9f5960e0daf8c9fc00",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-plan-expected-run.log": "da92195d7815d91625e00de65b16b1396ef27f98f0cc96c281e2f6180cf8737f",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-scalar-copy-build.log": "48dac0fc705b4b1da0620a6b34873a0221e22e13b92352ba793e141f5b68dcd0",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-scalar-copy-manifest.json": "fe26943c4426797a5e87b6ebca001396967b9344af52268f4f0195a918015336",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-scalar-copy-run.log": "e0860a0e801a7f197b7703b0b881179050b100273afffa31ba3585c06c557130",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-source-receipt-build.log": "1feddaafffa0319188613fccbf3ffae8b8ae0a2420f2bb9b2cc79b1fe2271803",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-source-receipt-manifest.json": "ad5be9b9495744ff58f20e58a4485cfa2e51bd473055e1169e5765ed90b0ee2b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-drop-source-receipt-run.log": "263e45e4d8bba3b869b4b5e188df3d0a8042de773caaed217b75a057f1c19b1c",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-context-build.log": "a2ad6df31e7c80cfe56397beb60cc66286638550650b7db15ba1dd06712ee514",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-context-manifest.json": "091c1f41aad130c79073ab7db3cee165a550b4c44cc2f9743ef6bdeb98a89bca",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-context-run.log": "d77aaad99786f6ab58b37b10aebaccb59fc369c273ea2432abd82fc7c3c24dd8",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-fingerprint-build.log": "73548b39b68ab705de5d75883672861b1bedd5b5d0f50b968be97c5f579a2a9a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-fingerprint-manifest.json": "39ad71e86b8737d2eb6969010ede72b246d6ca9ee3348f5bca769d451550958d",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-fingerprint-run.log": "e490568d2d0ff9e8d90da429657aa84ed7f1799824c14dab03ab06fe24c25a96",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-full-raw-buffer-build.log": "defb839b37573ce1c5b12d122a7788dd3ed0866301cca1cbb1b1dfddee819ed4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-full-raw-buffer-manifest.json": "63d37b6f05d25ad44cb58e50b0fe49796662a28b55738ccd37762f5c9e25e736",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-full-raw-buffer-run.log": "4db65db325dad3003281502f7a71fc6e4ded407f46c3a5c6909f224eb0e1e86c",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-initial-retry-build.log": "f7fbf84bf176b614c1de098f66508313b40a19edac0250c35bc49673d50b3a3e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-initial-retry-manifest.json": "cb45ed2771a4a30d7e8fb0d1f48d45b8f5d92ec9312f0cb6cb4886f8f1c2aaa2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-initial-retry-run.log": "ba0a9b2c1b18b3cc4a744a51e4c7418b4b8f4b53bea18cd5f143df4c50b61ff9",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-wave-lifetime-build.log": "45bb32a9ea0d675d2d21963b963d6cdab8213033327987957a26fbe7a6103093",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-wave-lifetime-manifest.json": "df5d9429e9295b32c403ed2503ec9b9f760093674f6b6ae80e94007a12c32a1e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-ignore-wave-lifetime-run.log": "0278d7b256ccb51e17b5b4d47c929d80e9efa2226f0ef1bb8495dd7e9bf26c03",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-main-sanitize-detach-build.log": "f65bd23bb571306656093bf46f65d4ecb45b4c24cb5b8323fa053b80dcc93172",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-main-sanitize-detach-manifest.json": "b994f778821d32d63ae76c573364a41ea812434105c8926041d288f420f2d3af",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-main-sanitize-detach-run.log": "a72ed79ed1d1e0b3bbbac3df5a0bc64f09998e91eab76fa3731449724c84a589",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-observe-rebuilds-build.log": "02b40cc72c535961f36181ebbccb5eed90b395209b1add9a787543d77205f4fd",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-observe-rebuilds-manifest.json": "42b111e32d4dcbf2825b8755409d62e8635bdd1fa3ec04f57be367ed84a4ab72",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-observe-rebuilds-run.log": "980100674c7b5b8705c699bb7ba0c23347ae05e6a07098b7cde614211721ae7c",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-raw-line-field-build.log": "9bd32fb03d8b626cd497a94e44b7bb6086895c842082ed0d3628207008f576cb",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-raw-line-field-manifest.json": "86debb173ae99a2f1cde8e7f09c178184d358a5ebb7134961561c6c75fd39fa5",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-raw-line-field-run.log": "8ee19acba754ae76f27dab5413d76a96e78bd15df9bb7b441f2e66ebb537afa9",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-raw-nested-tags-build.log": "9e725fe07e5248c427b8541411b9d35e8c7b4f0f6aabd205e10946c2f17da3ac",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-raw-nested-tags-manifest.json": "c985481ff380ec2e5bae8e6520b3ece80ff9e58d952fb0a7951ec9f8003aafdd",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-raw-nested-tags-run.log": "9399611257e4825256dea5ef91fdac204aec106e2bf6238836cfdad52a465b09",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-state-presence-build.log": "75cf8378d8bb221b54094822a393ebf8ed75ce8709223ac3b52cc4cbf020753a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-state-presence-manifest.json": "27777a21bdbbb72b6a97c57bfe1524abdcb7c272607dbf72efc9976e06b02a24",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-state-presence-run.log": "2b3a824b5b6f6eb346d67a5b9bd8cbcdbe1ff9801518385deb015ddc9c51cd30",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-stream-source-build.log": "6d35e503eb8c32fcd37a2feb8f7bcfa56dd6c0b8184fabb5dc9306497d94b826",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-stream-source-manifest.json": "d42e9a15da68b79189e0031b7f417b721f4442e12f8df343bcfe5f7497cd08ea",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-omit-stream-source-run.log": "5dad515a988fb7743a248079bcd3c0be4da7b73d97a39e30de40ecbebe6b6fad",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-original-8bcde78b-build.log": "cf8bc50b6bb182643e416ca78c0fc13511fa1e562bbc026a31bda28f6ec56d29",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-original-8bcde78b-manifest.json": "dd21b3cac9ff439c648cb2d637ae878a06266c59a0f442453bc6acc953b8b641",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-original-8bcde78b-run.log": "4b8101bae640481b99494ab8c8633bb7e4b23b4b7c3bb88d51e489d1acc2acf6",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-denominator-context-build.log": "15ada766e6d764c912b23847c54cadb851d6b0fc447fdab899c639bd25571c95",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-denominator-context-manifest.json": "71101bc54ac593f4496e058db17b9692b567e8a05fff98973e72604d1e4147b4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-denominator-context-run.log": "d0a0b23e8d7ef46f3f4ba2675f0e381f43741c258dd9a019ce2f6184970a9e44",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-low-code-unit-only-build.log": "42006dfd6107869779ade3e43bffad586087aeb36cbc68ccacc74c108992c896",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-low-code-unit-only-manifest.json": "7c3b3482d1f3b2d0554498285cb0081d1e810ff95c6ebd85e59377b701cd60c8",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-low-code-unit-only-run.log": "50033d3e738dd87ddc76fb4312fd3d93cb1021dca98455db7a46b605fc8685a7",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-scene-context-build.log": "ae674bd9394cc318e93b99cf45933710eb6767f0a03a4b66adb5be50d077d019",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-scene-context-manifest.json": "a6a314b170cbb182144cd8782c60a3395563e5b0e60fbc570ca2086f2490f90c",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-raw-scene-context-run.log": "d3f393188e542d0a6752c8a47d2fcd5ba498821707ff5853c136e52816983d97",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-rebuild-on-check-build.log": "9f40bf724709c49317e66a71fd0e0877df56e6dc807a23afa3e0f5067a562f34",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-rebuild-on-check-manifest.json": "b7f6ab88c7b769e57e9927ba2f691a492daeb7f121e3ee1ea48a8bcc17c4f5ca",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-rebuild-on-check-run.log": "37eb480f6240b42d0304b476874c0635b51445ee6d7490b49fd0b36d36342290",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-repeat-raw-list-head-build.log": "11f37049f8a54df3c7c051495e87eb91183aad51a82f83990f5eb0e2c3067ffc",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-repeat-raw-list-head-manifest.json": "b588ba89f5a5553f6871c28df9bd193cef5cf1a4dabd1274e11953b204fe9115",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-repeat-raw-list-head-run.log": "2d33082d2758beea156a160da2540e7f88acc11f8c3e5bf426bd854deb6f6247",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-retain-payload-build.log": "82fc480aa4054d41a01bf4bcf19e49594d8a56a5b69152a4347a7900b2e64a7a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-retain-payload-manifest.json": "1312375ff99cc98b95bb37f49e5c93a6d09e109ec49b0b1470835cbd0cf6955d",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-retain-payload-run.log": "54717d7f11a59a6135e23cd37a0c958c1de4c90505a01adec291ce8cbea803ca",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-reuse-source-build.log": "523a9c41ac6a10f989c36c6d06eec36578e67551a941fddccf6b4d35da61ec7f",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-reuse-source-manifest.json": "e5400dc9dc76d46efdfc6d54be8c8383ac96b646dd568209c4cab5e77c831530",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-reuse-source-run.log": "b2a57ec87fb4102b37b31e86e932d1c34a83a0e2b37bbadbf4b957747a34846e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-runs.json": "6620ce3c4d9e72b68c47c98516be3a2de3f965c200cd2fce5ee50add8520c668",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-initial-binding-build.log": "5244685d82a46a3a6433105a5a409a21a19752f47808e03d29a71a2cea118d3d",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-initial-binding-manifest.json": "23bfd1f76efafa528ec8e49c21a6b48a854ef9c4df58b9799008d18512f44311",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-initial-binding-run.log": "704ee32dca0a028903f830ad17a36e3bb9abb3d1a865f3097be8e8d2654c4506",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-overview-threshold-build.log": "3444e0e6b860a15d0992e73b8359fd2646652b6527af5a2ea8a6022b7d128bb0",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-overview-threshold-manifest.json": "a004e5da96760b7da9e4ed086b17fa30cd064c099303ba7fd2ed0d3a6171ed4e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-overview-threshold-run.log": "f1ec904f74c568e842330abb3e89d2454c627768fc2f3feb0d88ddd46ef09953",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-planned-source-check-build.log": "e443ba364462d1a5543ead247d5ccea4344f1a6d0ba36698d3584a160b8ed4ba",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-planned-source-check-manifest.json": "21ebc972f679b22b2a00db289f301cf073cf5bfdc30251284fe1b43a28a1a0ad",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-planned-source-check-run.log": "6a8f7c3419bb0a52cee8e09558ea98d9289e77177484e7873055b1d2533752e8",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-retarget-guard-build.log": "c67944bedaaccddb24adf372d9bebdef81718415c7134a6c1b0855b3a9709ce4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-retarget-guard-manifest.json": "0148fad8509f8f474a280c67ec415b34f4d3cee1d9f0bb8261f26039f7979df6",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-retarget-guard-run.log": "693fdc571ead5e2c0d953ceabc5cf00abece7fbd5b7163fbfb4525b04fb52cc9",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-retry-source-build.log": "70db4ae15e89a920c69db61b6f16d56b832a7945a8ef83d3e66ac220af48879b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-retry-source-manifest.json": "510c19f487d4f4a642d822c3f13ecb7d7b00516798d214047fed12d9ee9fb4a4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-skip-retry-source-run.log": "03756ce340081ed86b497eec9a425c060cff0502bf9d5bac13324e45c956e3b3",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-stale-pre-getter-view-build.log": "95c8a5e19021bec6a9d217fe4512ba582e6743a8c1ee11fabea5a95153c3657f",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-stale-pre-getter-view-manifest.json": "f91e4d51cbc4ba68038d67d25a10a11f9f9fffc2825428622880d249afd9ec6b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-stale-pre-getter-view-run.log": "adafad291624c11c33d6ce3e0a1b90199244ae206c4802edd02309a3cf2f8bd2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-truncate-raw-long-build.log": "64636076fdfa00e2620f04fea320ce4d8816812718f29dbc368cac17056cc57c",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-truncate-raw-long-manifest.json": "1d2e7e2520171d4d78e25043a6e27338297d296d5d5dbfdee39f2b5e3aa414bc",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-truncate-raw-long-run.log": "f8c060d05896390e73fa9b51b321a857bf87ad004b719bad09ee5bb111942b67",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-unframed-raw-strings-build.log": "55310b92065c0e67c7f420e91c89ced6d0009b0f434b7e30a0c95637787778d6",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-unframed-raw-strings-manifest.json": "69ebad1c35098326efa5e95342fd1775c7eb97156d55b9dbf5fe2645a5c80603",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-unframed-raw-strings-run.log": "5e25b6dffc79ac888367dcec6eaf0d80e9310b3f33c8c7d48f7aee3deee9ecea",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-worker-parse-build.log": "cd08130b62ff3affbbb1636deca03b21fb6ef3ec030522f254854b00a947b2a0",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-worker-parse-manifest.json": "a735f13d44143aeee3d8b7277579c2fb1788852c743d6ed4f07b29405e841fed",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\captured-worker-parse-run.log": "218a6378847c73a08f684b4565ca772419e9d1d1316f1b858cb18d58fca6de86",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\channel.log": "5043b5e2f839bbb62833c03f9bae1aa155b7edc1f098509d6628eec429eb17e0",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\clone-on-check.log": "a451cf31f80c324ef3e2385dbafbf89be03042f6dbe7997607ab2f9f073158a2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\commit.log": "d13a32458108722fab38ac8d3cc739ee771230bf49c514a48979695f72c52961",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\commit_writers-current-build.log": "65c66532816f21f37c15e7e680b454ff600e928c2530ba3136e3ce2b4a5cb28b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\commit_writers-current-manifest.json": "a67e0751ae35e02b04af1b72184141f1d806a1cce483268b5c04ad86a2296034",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\commit_writers-current-run.log": "4862b8654b321b753bdc708418076946f9ecac69470f790a7c26f15b0502c00b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\current.log": "11a9e51b2d0ea9b9d824a088336cf346b5de1883998a9b79139204c932d584f2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\Debug-Bootstrap-1.3-compatible baseline.build.json": "516b84f7b7370b7ae26636c16572f29989fd645b44e23537abc8488f25b9613e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\Debug-Implementation-1.3.build.json": "ff59a2dd4e56e87a39e4c4bf6262b4185fbc6524d4f963974d79a6ff7a70df36",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\Debug-Implementation-1.4.build.json": "f25140fe45b926964b533f0852ea7660050836dc68dfc0728ca09e4654dc03fe",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\drop-afef.log": "e1845a9dcee18ac82c7f043a35b9949deafc31ec20d36712796c8d63ed743f88",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\drop-major-cursor.log": "edba3e6a4a33a5e55abb00f201c06410da9c400acff0259b25728779e81394c2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\drop-nested-copy.log": "13f6bb6e9837360c0db9a60a36be3a583a836c337e7a7480dc2af02e36282208",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\drop-overview-ids.log": "d16be603eb6d3869709256261a2a360f8edff649d2987d9eecfcdd891e7e3b54",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\drop-plan-expected.log": "a3fb923f4bad0ea8fbecc255e9d362e6a8bd244e36f5043bbd51c7185fe3cd93",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\drop-scalar-copy.log": "4f6b6ab9e3893fba27fa88eacc10fe822a408a8f99421ec8a3797238a67aea09",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\drop-source-receipt.log": "0ac609d8c57534fea80b8a398f0bd54e8007dadf1c8919a594215deb22095f3c",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\failure-ui-initial-source-lock.log": "b86fb1f7b8e8fbf00b88984ffda2cf1547cc5b57071b15e12b90d4bbc535d5e2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\failure-ui.log": "a273c33db49bee826813e34acd78996cc447908881f3a0605a9a904fcd4cad69",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\fingerprint-current-build.log": "8c108f8a49d763a2e2fbf189e593608253a10302f9cd1a629f5c184ddca6c748",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\fingerprint-current-manifest.json": "981de890a3caf906e5633c0abd1004345aac5d2e2739a90863dab366c79e503b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\fingerprint-current-run.log": "9a2e8c4eb5fab67ae8dd9a0038e32a0b5e3ce87fb59c6b217ce59a607d5cdba9",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\fingerprint-writer.log": "34d080b2febbc23c5d6c34cb700a9d3336ac47fc3af48ec930864a2459a0aba6",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\gate-runs.json": "a9475badb6a4b8ef874bd9466730fd871e703a6ab1a34bf0d252bfdb9fa5d54e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\helper.log": "9ccf3eb75bd4cfb98871ebd854847ab1a00721a49c83bc2c6ea32ddddacb8395",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\history.log": "fcb0f52d229a43f0bb647ef74d4588d94f195656f877562d0410a0eada753c6d",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\ignore-context.log": "4c91de6326cfb2cf4f7034f632d9db47667284811e6c88c8dbf4c08182c59bd4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\ignore-fingerprint.log": "3a0ef4f5d128680da98c0b52d49afe61323228fb750dd629431e8ee573f075f0",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\ignore-full-raw-buffer.log": "bb87f53e92e2ccd814efe0207ce75586943e56298894b71a72c7c6e172b47ce1",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\ignore-initial-retry.log": "b6377b1e941950770ac4d22b29c48e67bda2dbad32bd8e4decb6decfce667492",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\ignore-wave-lifetime.log": "2e12fc682484b8e294aab82d48c7bf4d8f168f8ac4010ccfa8a6e0df210cb0d3",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\inverse-initial-evidence-path-failure.log": "5808b1cc377b8a4c207a10a0fc0d6d26babe8dc64502f6dcc171419926363bbd",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\inverse.log": "8f3a372bd92dd6410cbee671b1352fc16762e0af78018893c551b5261b0a1f69",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\main-sanitize-detach.log": "12c7225c4b4912f8ca56fbdcad9a1cb2051700169d21d07642f6406ffd9634f0",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\materials-current-build.log": "cff5505bdb339ac503ec7051801a793879a1a179ff8605a3dd3177e80d4cadcd",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\materials-current-manifest.json": "7a7b5f04adea33775155cde0d206d001d854fb359f787c732daf28447d8c59c4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\materials-current-run.log": "0c8000153b22684351d05dfbae5e94b8547be4ba69ef61eb5b34187cad4362f6",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\materials.log": "cf6aeefee79e51bee6eae1157b88fcac422f6bdc322cc7cd680fa442f41b0845",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\native-history.log": "6b5e7770cc3f21154923300de8ca1470d292195d0dc468cb768412922b878830",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\native-preparation.log": "075b0f15df3860341876ab8bb218daaca9ad3540b86eee22b01ca0dfdc2af265",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\observe-rebuilds.log": "2cfb1fcb0dcf7452257b51d98105bd3d5e420c17d2f8e2a37298975acb87f8c2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\omit-raw-line-field.log": "e29bbe8672e1f39cddeda4fdf3330fce39fa2d15660fede5ed0eef4589d83e0d",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\omit-raw-nested-tags.log": "b2b148a9e68e198d5bdca0d782ea92ad2aa651c265baaac72446bbdb53b4e312",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\omit-state-presence.log": "253f5c032d6b0db7f269570b13f782e6ecba42ed7eb34d4c4ca4d9d45a6036db",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\omit-stream-source.log": "80317e2109b0e3fc63e1833f36bf9949b145ea31d9b16b010865123b1b95c6fa",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\original-8bcde78b.log": "a0b04a47891b1f36b747f369debc6c1475f599a64f35c3e17ab60fa282c99119",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\persistence.log": "fa6a2a2c4dd43003d9f8d15e5faea4283532e22ed22e3cf6c1d3a0928cbebd3e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\planning-current-build.log": "e949fe97d6ab01e195d1a08291715f9a3cd7e2b286296c6dd9f6f032e10031a2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\planning-current-manifest.json": "f5258c071610220d6ca77130d645f98d7860d3c8285bd386cd0939be8c1ca062",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\planning-current-run.log": "b00b3b17dc79e7ea929225f0f68967de889504ceb2e2a4aeafc0625a8f5935b4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\planning.log": "e91ff30cd0ad09f40c2845fd81331a4e67aaea186dd0a21e18649cedbd6fe569",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\raw-denominator-context.log": "505aad214b24b0555e03b333b87700aad9a73d32d8ed205ebd9c83f25c3bb158",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\raw-low-code-unit-only.log": "fe62755c7e50d7585ac9902acfddc16dfb440648aaeaaec64a2ba39a9dcfb53a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\raw-scene-context.log": "90204f1ee4a83be3fea8d98bbf3e7b6a54d85b35f396e93922245a08ab4f5caa",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\rebuild-on-check.log": "22e1f5e7f0ab6424905e65dd330b83f3bfe1acec8e5a4f4e76d9f298a48c67ea",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\Release-Bootstrap-1.3-compatible baseline.build.json": "a103a77d5fc50c26af850772e822cf1ad53c69650678e92537204ed382aefc96",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\Release-Implementation-1.3.build.json": "9248b73b2043f60221d835ceaf97134df69187f2553378bde66426217f4664fe",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\Release-Implementation-1.4.build.json": "13bb3e0f89063044f4c5f174aa6690cd6cc572e6791f442990b2562b0a010066",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\repeat-raw-list-head.log": "c073e59d2dc5bb68bdce36c45a6f1ef03c1cf17d4144ab705eea5db5daffaf27",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\retain-payload.log": "1d21c363a0abc2b30f7593654fbda41453f9a1b4254501ad44598abcc6008742",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\reuse-source.log": "84d46208a8f4c2aa97ba397164263b5825fa888647df73a177a8a5cb68e2d9f4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\sealing-current-build.log": "7d02126e0b4ac232c0206bb67f3aecc89638ea24bbbfaf39c3b68a9968ecc7fc",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\sealing-current-manifest.json": "f7a7c7c3b272907de6b9f823cfd0c54d3963d9c9f3600c7065dc4ecf8390a428",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\sealing-current-run.log": "84c2ecc20cae63b1fb6fa4020db2f867889cc2c56d5463525db158b39dc985d3",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\sealing.log": "823a3bc08bdd1d79688618136e5f56acf5135900bb040098985ce261325084cb",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\skip-initial-binding.log": "cd82ed768c922d03ecafc77c11c499ade353f17ebf6666eff6ba735767fb2cf7",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\skip-overview-threshold.log": "a8350ecc8612bcc6075b92a919c91854673bc17dd0ebbc0739d8bf466b3ef725",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\skip-planned-source-check.log": "5fb2f53e71706afccbbd31f5a83f3261e25afefc106b89599dbafd225c32efbb",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\skip-retarget-guard.log": "52a5603ef68e9dd2839ef9c44c263bb4851f3397d19120b01729bf95c2eb5839",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\skip-retry-source.log": "52178ae817e661a7191928f17642bb180763f7fd0be8b35087299134cbd25536",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\stage-Debug.log": "8a88e26f697dd0b6ae838ba5f3807dd22c8fdbdd0ca44b8e842c9e2c17f8cb3e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\stage-Release.log": "aed0dd58c4f9c0507c8f5c57fc158fdc595f6b3e6b957078bf05f1740f1b073a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\stale-pre-getter-view.log": "6605b22c19533ad5da4e791d02716ca76777710572c23f20ab69ff5878da3677",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-admission-current-build.log": "ed00d49a26cbfb2269ad350b47c4a38d31d515aef1a550431b5d0785ed4fcab4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-admission-current-manifest.json": "1c65f5d12a2a26ced9294a87a757b1b911bb84a68e471af4d44b39a75b3a814e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-admission-current-run.log": "6d120961d5dce51cf9226f5d1efd887e3dc14f959c9d8297241b6049a5ee3a5b",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-current-build.log": "5142281b89a2ee9e89d4cf21c17da01808b1e6deb57804156df25991035354d5",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-current-manifest.json": "915502f0f57b778d8a922c564a33b82be7f5e1bbc9cb28aba346931bcf0e1621",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-current-run.log": "d64101fdb96dfa9ead5ca3e38ac66c8dd191d34cca99228b02f798392cd768ed",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-final-source-build.log": "f32a3a5c0ec96b0b6e0420bc7a574c2889737b8a398a61659efc0d2d63f9d953",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-final-source-manifest.json": "07bda845263c0b4210dc6fe52e049f0d3431bdf0581600f575dcb42af0c3418e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-final-source-run.log": "a8094b070a2ef0970b64801ea3b75645dd52d5cbe1fc6c8234f7d6e03fcdb406",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-final.log": "e854a963f88fd4579882231908dd4718d4df4553df5a1c565bbe697da13b61e4",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-parse-source-build.log": "78cb185dbfd321f7907bbdc0e72c1d1fe3451f4083f940285bf5fa1eb318b1fd",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-parse-source-manifest.json": "a0d7daea81c0feff9ba797c8a912bd86fc3ad6bbf47addffad6f13de456aa76e",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-parse-source-run.log": "152e4ff7e0ee989659db9a01f4c6e644d6d30c68078f7cd721a9ca16b932ed15",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-ignore-parse.log": "9aed59f3894f8b99bea24be4e8534f391ed2f6c7871f631f1cee1d26bb2d048a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-old-input.log": "14eaa89dd4002788ec8d7426a9c5ef71d9bd54bc168e7918e2fed69ee030c6f6",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-source-baseline-e77602f9-build.log": "649f1f54c39659f2be64ecb4d949df39b85873524fa774822a459edeef617427",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-source-baseline-e77602f9-manifest.json": "6a281be2e4d72021185b3fa832cf09c0fb478eda539ad7d07778a84093d4e75f",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal-source-baseline-e77602f9-run.log": "91f782ff7df2190b6841fd564caa7b07bc40d362839dc3a3b1aeb9efb9747052",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\terminal.log": "bb11f83bd32ab55981538e1e844b718ac4e271e0100d586ba785bc8d38f50e9a",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\truncate-raw-long.log": "e21210b49d4d6a596e30fbc5915ddee68dbed1a5e51728951ad150ecec480f85",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\unframed-raw-strings.log": "9b58000507992c54f9ccb5a3e444e9228a8168a8ad2a6f4286b49364b30e0df2",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\worker-parse.log": "1bc877093d746c6f43e6131c37a3d918b2e9ac00a34bad562950ef78c80c3a83",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\writers-current-build.log": "8f6e4f237e8a43075c9fb6aaeb96d4a92a0e92f5276420c02d31ec7bb609a555",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\writers-current-manifest.json": "6394e419295cc1427ff6a23c1553c4f4c318d1871df69977ab0f1b48359ce961",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\writers-current-run.log": "f0f160b460bc3afc66f52b2bb5a6f00b25a4a14516e0d065a89e0e3975be67dc",
+    ".tmp\\b1-raw-digest-20260914\\final-evidence\\writers.log": "d3908954e755c5cc6e29b2c69f27646ca609331b2a766cd15036840f45c58000"
+  },
+  "limits": [
+    "All raw records are still hashed atomically; no writer epoch shortcut, no hard frame budget or worst-case admission bound",
+    "No actual Bannerlord host/save/economy/AFEF/TTS/provider/external DLL load verification",
+    "Full raw digest schema changed only for ephemeral source receipts; generic JSON editor/plan/context hashes kept unchanged, including their existing encoding semantics",
+    "122 private DTO fields explicitly encoded; future model/schema additions must extend field coverage and cannot bypass tests",
+    "No push/deploy/save operation/default or public capability switch. B2/B3 not entered"
+  ]
+}

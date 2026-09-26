@@ -1,0 +1,538 @@
+{
+  "sourceRevision": "9158132c06659b8bcd660bb85c388ff8ce5db3bc",
+  "checkpoint": "01e24b9e",
+  "previousProduction": "73a6977c",
+  "automation": "af-7-8 ACTIVE",
+  "status": "SCOPED_OFFLINE_VERIFIED_B1_NOT_DONE",
+  "changes": [
+    "One actual finite Campaign maintenance cycle shares deadline and sealing grants. Lazy window: idle cycles do not allocate/read settings.",
+    "Late post-seal start request retained with save generation and dispatched next cycle without repeating seal.",
+    "Standalone/unlimited calls, weekly-commit skip, nested/exception scope restoration preserved. EngineTick is a separate window."
+  ],
+  "results": [
+    {
+      "name": "sealing-current",
+      "exit": 0,
+      "summary": [
+        "BUILD_PASS sealing=current",
+        "SEALING_RESULT pass=40 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-previous",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=original-73a6977c",
+        "FAIL campaign-shared-metadata: one Campaign cycle refreshed metadata allowance",
+        "FAIL campaign-shared-expensive: one Campaign cycle refreshed expensive allowance",
+        "FAIL campaign-shared-convergence: shared cycle exceeded metadata cap",
+        "FAIL campaign-shared-deadline: deferred domain received a fresh deadline after primary overrun",
+        "FAIL campaign-deferred-start: deferred same-day summary request lost/duplicated or survived load",
+        "SEALING_RESULT pass=35 fail=5 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-abandon-incomplete-same-day",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=abandon-incomplete-same-day",
+        "FAIL same-day-no-job-resume: incomplete no-job Seal abandoned by same-day maintenance gate",
+        "SEALING_RESULT pass=39 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-ignore-empty-probe",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-empty-probe",
+        "FAIL probe-empty-no-candidate-start: completion receipt changed empty/proven-past candidate-start responsibility",
+        "SEALING_RESULT pass=39 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-ignore-stale-queued-job",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-stale-queued-job",
+        "FAIL same-reference-indexed-key-change: old indexed key suppressed live draft or replaced current first job",
+        "SEALING_RESULT pass=39 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-ignore-owner-binding",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-owner-binding",
+        "FAIL owner-list-replacement: old reverse cursor skipped replacement-list records",
+        "SEALING_RESULT pass=39 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-ignore-cleanup-identity",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-cleanup-identity",
+        "FAIL cleanup-same-ref-retarget: old pending qualification survived same-ref retarget",
+        "SEALING_RESULT pass=39 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-unbounded-metadata",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=unbounded-metadata",
+        "FAIL finite-4096-convergence: initial/index metadata exceeded per-call cap",
+        "FAIL standalone-multiple-callers-compatibility: standalone direct helper multiplicity changed",
+        "FAIL campaign-shared-metadata: one Campaign cycle refreshed metadata allowance",
+        "FAIL campaign-shared-convergence: shared cycle exceeded metadata cap",
+        "SEALING_RESULT pass=36 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-unbounded-expensive",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=unbounded-expensive",
+        "FAIL finite-48draft-convergence: expensive work exceeded per-call cap",
+        "FAIL campaign-shared-expensive: one Campaign cycle refreshed expensive allowance",
+        "SEALING_RESULT pass=38 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-ignore-deadline",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-deadline",
+        "FAIL expired-budget-then-sync: expired budget did not defer before job creation",
+        "FAIL same-day-no-job-resume: first tick did not stop before enqueue",
+        "FAIL same-reference-indexed-key-change: did not pause after actual key-index read",
+        "FAIL owner-list-replacement: did not pause within actual owner draft iteration",
+        "FAIL owner-inserted-after-index: owner-index fixture failed to pause",
+        "FAIL major-indexed-key-change: major index fixture failed to pause",
+        "SEALING_RESULT pass=34 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-renew-seal-budget",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=renew-seal-budget",
+        "FAIL campaign-shared-metadata: one Campaign cycle refreshed metadata allowance",
+        "FAIL campaign-shared-expensive: one Campaign cycle refreshed expensive allowance",
+        "FAIL campaign-shared-convergence: shared cycle exceeded metadata cap",
+        "SEALING_RESULT pass=37 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-renew-deferred-deadline",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=renew-deferred-deadline",
+        "FAIL campaign-shared-metadata: one Campaign cycle refreshed metadata allowance",
+        "FAIL campaign-shared-expensive: one Campaign cycle refreshed expensive allowance",
+        "FAIL campaign-shared-convergence: shared cycle exceeded metadata cap",
+        "FAIL campaign-shared-deadline: deferred domain received a fresh deadline after primary overrun",
+        "SEALING_RESULT pass=36 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-omit-window-restore",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=omit-window-restore",
+        "FAIL campaign-shared-convergence: shared windows did not converge",
+        "FAIL campaign-deferred-start: deferred same-day summary request lost/duplicated or survived load",
+        "FAIL campaign-scope-exception: expired scope leaked to the next cycle",
+        "SEALING_RESULT pass=37 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-drop-deferred-start",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=drop-deferred-start",
+        "FAIL campaign-deferred-start: deferred same-day summary request lost/duplicated or survived load",
+        "SEALING_RESULT pass=39 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-ignore-pending-generation",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-pending-generation",
+        "FAIL campaign-retired-start: deferred same-day summary request lost/duplicated or survived load",
+        "SEALING_RESULT pass=39 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "sealing-ignore-campaign-scope",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS sealing=ignore-campaign-scope",
+        "FAIL campaign-shared-metadata: one Campaign cycle refreshed metadata allowance",
+        "FAIL campaign-shared-expensive: one Campaign cycle refreshed expensive allowance",
+        "FAIL campaign-shared-convergence: shared cycle exceeded metadata cap",
+        "FAIL campaign-shared-deadline: deferred domain received a fresh deadline after primary overrun",
+        "SEALING_RESULT pass=36 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+      ]
+    },
+    {
+      "name": "business",
+      "exit": 0,
+      "summary": [
+        "BUILD_PASS business=current",
+        "BUSINESS_RESULT passed=36 failed=0"
+      ]
+    },
+    {
+      "name": "business-original",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS business=e40c92d7",
+        "FAIL success/reentry/side-effects: business writes/release happened before a main-thread tick",
+        "FAIL mixed-three-type-failures: off-main effects: ApplyMemorySummarySuccess,find-hero,load-blocks,save-blocks,load-drafts,save-drafts",
+        "FAIL obsolete/null-results: off-main effects: eligibility,eligibility,block-exists,eligibility,eligibility,ui:AnimusForge 日结压缩完成：对话记忆 1 个，重大履历 1 个，记忆总览 2 个。",
+        "FAIL extra-overview-success: off-main effects: ApplyMemorySummarySuccess,find-hero,load-blocks,save-blocks,load-drafts,save-drafts",
+        "FAIL extra-overview-failure: off-main effects: ApplyMemorySummarySuccess,find-hero,load-blocks,save-blocks,load-drafts,save-drafts",
+        "FAIL owner-swap-queued: retired owner/generation accepted old business writes",
+        "FAIL generation-change-queued: retired owner/generation accepted old business writes",
+        "FAIL load-retirement: retired owner/generation accepted old business writes",
+        "FAIL load-during-extra-delay: off-main effects: ApplyMemorySummarySuccess,find-hero,load-blocks,save-blocks,load-drafts,save-drafts",
+        "FAIL provider-exception: off-main effects: release",
+        "FAIL target-removed-after-await: removed target still received derived state",
+        "FAIL actual-work-budget-observation: off-main effects: ApplyMemorySummarySuccess,find-hero,load-blocks,save-blocks,load-drafts,save-drafts",
+        "FAIL synchronous-provider-job-budget: completion acceptance exceeds two actual Apply jobs per tick: 12",
+        "FAIL same-generation-source-changed: rejected source was committed",
+        "FAIL missing-source-proof: rejected source was committed",
+        "FAIL changed-source-failure-discard: stale failed source marked current input as exhausted",
+        "FAIL mixed-accepted-counts: UI counts payloads instead of actual accepted completions",
+        "FAIL admission-defers-eligibility: admission rescanned sources before guarded planner could run",
+        "FAIL maintenance-defers-eligibility: admission rescanned sources before guarded planner could run",
+        "FAIL daily-terminal-duplicate: off-main effects: ApplyMemorySummarySuccess,find-hero,load-blocks,save-blocks,load-drafts,save-drafts",
+        "FAIL major-terminal-duplicate: off-main effects: ApplyMajorActionSummarySuccess,find-hero,ui:AnimusForge 日结压缩完成：对话记忆 0 个，重大履历 1 个，记忆总览 0 个。,release",
+        "FAIL overview-terminal-duplicate: off-main effects: ApplyMemoryOverviewSuccess,find-hero,ui:AnimusForge 日结压缩完成：对话记忆 0 个，重大履历 0 个，记忆总览 1 个。,release",
+        "FAIL invalid-only-no-maintenance-spin: terminal queues not cleared",
+        "FAIL new-queue-entry-survives-cleanup: off-main effects: ApplyMemorySummarySuccess,find-hero,load-blocks,save-blocks,load-drafts,save-drafts",
+        "FAIL worker-admission-no-source-read: worker admission executed planner or source reads instead of publishing",
+        "FAIL busy-admission-retains-work: busy caller consumed queued work",
+        "FAIL partial-apply-block-exception: partial exception did not explain partial execution",
+        "FAIL partial-apply-weekly-exception: partial exception did not explain partial execution",
+        "FAIL partial-mark-exception: partial exception did not explain partial execution",
+        "FAIL 64-failure-detached-aggregate: large failure message was constructed on the main thread or repeated",
+        "FAIL generation-during-failure-aggregate: did not pause the detached failure aggregation",
+        "FAIL owner-during-failure-aggregate: did not pause the detached failure aggregation",
+        "BUSINESS_RESULT passed=4 failed=32"
+      ]
+    },
+    {
+      "name": "business-maintenance",
+      "exit": 1,
+      "summary": [
+        "BUILD_PASS business=maintenance-rescan",
+        "FAIL maintenance-defers-eligibility: admission rescanned sources before guarded planner could run",
+        "FAIL busy-admission-retains-work: busy caller consumed queued work",
+        "BUSINESS_RESULT passed=34 failed=2"
+      ]
+    }
+  ],
+  "regressions": [
+    {
+      "name": "helper",
+      "exit": 0,
+      "summary": [
+        "PASS MemorySummaryMainThread checks=32 failures=0 LIVE=NOT_RUN SAVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "captured",
+      "exit": 0,
+      "summary": [
+        "SOURCE_FIELD_COVERAGE kind=daily mutation_checks=76 includes_unrendered_fields=true same_generation=true",
+        "SOURCE_FIELD_COVERAGE kind=major mutation_checks=75 includes_unrendered_fields=true same_generation=true",
+        "SOURCE_FIELD_COVERAGE kind=overview mutation_checks=143 includes_unrendered_fields=true same_generation=true",
+        "CAPTURED_RESULT pass=109 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+      ]
+    },
+    {
+      "name": "planning",
+      "exit": 0,
+      "summary": [
+        "PLANNING_RESULT pass=24 fail=0 INNER_SOURCE_BUDGET=NOT_PROVEN LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "writers",
+      "exit": 0,
+      "summary": [
+        "WRITER_RESULT checks=238 failures=0"
+      ]
+    },
+    {
+      "name": "terminal",
+      "exit": 0,
+      "summary": [
+        "TERMINAL_RESULT scenarios=85 failures=0 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    {
+      "name": "commit-writers",
+      "exit": 0,
+      "summary": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0 real_commit=true real_daily_recent=true exact_readback=true actual_editor_closure=true actual_import_apply=true game_save=NOT_TESTED"
+      ]
+    },
+    {
+      "name": "admission",
+      "exit": 0,
+      "summary": [
+        "TERMINAL_RESULT mode=admission scenarios=54 failures=0 actual_enqueue=true old_predicate_oracle=e77602f9 game_frame_time=NOT_TESTED"
+      ]
+    },
+    {
+      "name": "materials",
+      "exit": 0,
+      "summary": [
+        "MATERIALS_RESULT scenarios=23 failures=0 actual_record_index_sanitize=true game_save=NOT_TESTED"
+      ]
+    },
+    {
+      "name": "inverse-guards",
+      "exit": 0,
+      "summary": [
+        "Ran 9 tests in 2.233s"
+      ]
+    },
+    {
+      "name": "history",
+      "exit": 0,
+      "summary": [
+        "PASS HistorySnapshot checks=852 failures=0 realRenderRecallSelect=true ownerDataAndNetwork=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "native-history",
+      "exit": 0,
+      "summary": [
+        "PASS NativeHistorySnapshot checks=27 failures=0 actualCaptureAndAccept=true actualMemoryRenderer=true game=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "failure-ui",
+      "exit": 0,
+      "summary": [
+        "PASS MemoryFailureUi checks=85 failures=0 realPopupOwner=true realEngineHook=true gameUI=STUBBED LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "native-preparation",
+      "exit": 0,
+      "summary": [
+        "PASS NativePreparation checks=589 failures=0 productionCapture=extracted queue=real-helper domainHelpers=recording-stubs LIVE=NOT_RUN"
+      ]
+    },
+    {
+      "name": "channel",
+      "exit": 0,
+      "summary": [
+        "RESULT_TYPE sha256=f59e15cd4affac49cb2d1631c74da21f3eeed02962b63de0da38397906c501c4",
+        "ChannelCutoverBoundary passes=132 failures=0 extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN"
+      ]
+    },
+    {
+      "name": "persistence",
+      "exit": 0,
+      "summary": []
+    }
+  ],
+  "stage": {
+    "sourceSha256": {
+      "MyBehavior.cs": "c693e4e3fe3d597c8bc43f058c179f193782bf067b06a4b779f03643720029bb",
+      "MyBehavior.MemorySealing.cs": "ed87dddb5cc4a3cbbac756b30bccf5e73cfdb6a940204a30093f370a23a344a7",
+      "MyBehavior.MemoryMaintenanceBudget.cs": "3732fcee5eda8bf97bd8c8f1f48f26463c5b710398760ca127051581712b19fb",
+      "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs": "d11f05c04ed7535205a214385638887918c952de38acda20d95f054044d65ede"
+    },
+    "builds": [
+      {
+        "configuration": "Debug",
+        "exit": 0,
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+          "-ProjectRoot",
+          "G:\\AFMOD\\AF-REFACTOR",
+          "-BannerlordRoot",
+          "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+          "-Bannerlord13ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\_deps_auto",
+          "-Bannerlord14ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+          "-WorkshopContentDir",
+          "E:\\steam\\steamapps\\workshop\\content\\261550",
+          "-RuntimeDependencyDir",
+          "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+          "-Configuration",
+          "Debug",
+          "-Stage"
+        ]
+      },
+      {
+        "configuration": "Release",
+        "exit": 0,
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-File",
+          "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+          "-ProjectRoot",
+          "G:\\AFMOD\\AF-REFACTOR",
+          "-BannerlordRoot",
+          "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+          "-Bannerlord13ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\_deps_auto",
+          "-Bannerlord14ReferenceDir",
+          "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+          "-WorkshopContentDir",
+          "E:\\steam\\steamapps\\workshop\\content\\261550",
+          "-RuntimeDependencyDir",
+          "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+          "-Configuration",
+          "Release",
+          "-Stage"
+        ]
+      }
+    ]
+  },
+  "checks": {
+    "sealing": 40,
+    "previousSourcePass": 35,
+    "previousSourceFailures": 5,
+    "runtimeMutations": 14,
+    "business": 36,
+    "businessOriginalFailures": 32,
+    "inverseGuards": 9,
+    "inverseDeclarations": 56,
+    "inverseDeleted": 2,
+    "inverseAddedSpans": 2,
+    "wholeComponentLocks": 4,
+    "codeMapAnchors": 63,
+    "api": 119,
+    "concurrentReads": 256,
+    "actualDllMetadata": 532,
+    "syncKeys": 146,
+    "behaviors": 36,
+    "stageBuilds": 6
+  },
+  "performanceScope": {
+    "normalFiniteCampaignSealMetadataCap": 128,
+    "normalFiniteCampaignSealExpensiveCap": 8,
+    "convergenceWindows4096Owners": 225,
+    "explicitUnboundedExcluded": true,
+    "wholeGameFrameHardBudgetProven": false,
+    "atomicSourceAndSortTailsBounded": false
+  },
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "21746f57c444bf3e656d5b7ed14006f72691c3b3275c96d91f3a15c2db3b8ff6",
+      "stageMatches": true
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "f83e258169660c5ef9d8090ab2f6d070a70ec77008190431beb965bc9deb2727",
+      "stageMatches": true
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "f2fe9a0b7733f01e028ac334abe150eca8f259ae04e9b123b6bbbf5d886cf62b",
+      "stageMatches": true
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "e3ffb699be47b47c2d9c5dc86a0a6c81f380a72f5c9c2ddef76edda05aea9430",
+      "stageMatches": true
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "e80cbf644ee2c446dbf6e9a1b01fe773d60a99b510a03b1c90a51e23212d4f90",
+      "stageMatches": true
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "f55503656912a92d7591c4b04c68af91d24de9ac8fcd637c907a5373438a45f5",
+      "stageMatches": true
+    }
+  ],
+  "evidence": {
+    "directory": ".tmp/b1-campaign-budget-20260914/final-evidence",
+    "files": 83,
+    "indexSha256": "b41f95c025d17f9f233f058a46209bcd873f825af2992d0dd0e5c9942e59e22c"
+  },
+  "anchors": [
+    {
+      "id": "memory.sealing.continue",
+      "path": "MyBehavior.MemorySealing.cs",
+      "start": 180,
+      "end": 183,
+      "symbol": "private bool ContinueDailyMemorySeal(long startTimestamp, double budgetMs, bool requirePendingProbe)",
+      "note": "有限Campaign窗口共享封存授予；独立/同步调用与深原子成本单列"
+    },
+    {
+      "id": "memory.budget.runtime",
+      "path": "Refactor/Runtime/MemoryMaintenanceWorkBudget.cs",
+      "start": 10,
+      "end": 13,
+      "symbol": "internal sealed class MemoryMaintenanceWorkBudget",
+      "note": "独立协作预算窗口；不抢占单次深操作"
+    },
+    {
+      "id": "memory.budget.resolve",
+      "path": "MyBehavior.MemoryMaintenanceBudget.cs",
+      "start": 16,
+      "end": 19,
+      "symbol": "private void ResolveDailyMaintenanceBudget(",
+      "note": "有限Campaign周期懒创建共享窗口，空闲不读取预算设置"
+    },
+    {
+      "id": "memory.budget.cycle",
+      "path": "MyBehavior.cs",
+      "start": 17733,
+      "end": 17736,
+      "symbol": "private void RunCampaignMemoryMaintenanceCycle(",
+      "note": "真实主/deferred维护共享周期与异常/nested恢复"
+    },
+    {
+      "id": "memory.budget.caller",
+      "path": "MyBehavior.cs",
+      "start": 17687,
+      "end": 17690,
+      "symbol": "private void OnCampaignTick(float dt)",
+      "note": "实际Campaign入口接入共享维护周期，其他顺序保持"
+    },
+    {
+      "id": "memory.budget.deferred",
+      "path": "MyBehavior.cs",
+      "start": 5923,
+      "end": 5926,
+      "symbol": "private void ProcessDeferredDailyMaintenance()",
+      "note": "复用共享deadline，原子超时后不再开始下一维护域"
+    }
+  ],
+  "notVerified": [
+    "Real Campaign/Mission/provider/save/economy/AFEF/TTS/external DLL loading",
+    "Full raw source/capture/one-owner sanitize/all-owner binding/final sort or Apply hard budget",
+    "Global budget across all Engine/Campaign callbacks/modules"
+  ],
+  "notPerformed": [
+    "Push",
+    "Deployment",
+    "Default switching",
+    "Public API expansion",
+    "Team gameplay rewrite"
+  ]
+}

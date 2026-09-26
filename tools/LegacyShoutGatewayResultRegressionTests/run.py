@@ -10,7 +10,7 @@ def main():
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  gateway=ex.source(GATEWAY,a.source_ref)
  (out/'Gateway.cs').write_text(gateway,encoding='utf-8')
- for name in ['Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Adapters/LegacyPromptPackageAdapter.cs','SaveRuntimeGuard.cs']:
+ for name in ['Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Adapters/LegacyPromptPackageAdapter.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']:
   (out/Path(name).name).write_text((ROOT/name).read_text(encoding='utf-8-sig'),encoding='utf-8')
  retry=(ROOT/'LlmRetryPrompt.cs').read_text(encoding='utf-8-sig')
  detail='\n'.join(ex.declaration(retry,sig) for sig in ['public static string BuildFailureDetail(','private static string NormalizeFullText('])

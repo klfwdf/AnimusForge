@@ -20,14 +20,76 @@ SCENE_LIFECYCLE_DISPATCHES = {
     "SCENE_IDLE_TIMEOUT_DELEGATE": "scene_relay_idle_timeout",
     "SCENE_FAILURE_RELEASE_DELEGATE": "scene_relay_failure_release",
 }
+SCENE_CHAINS_PATH = "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs"
+COURIER_GENERATION_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs"
+COURIER_SESSION_TRANSPORT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
+COURIER_ROUTE_TRANSPORT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs"
+COURIER_DELIVERY_LIFETIME_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs"
+COURIER_SESSION_REGISTRY_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs"
+COURIER_SESSION_CREATION_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs"
+COURIER_RUNTIME_TICK_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs"
+COURIER_PROACTIVE_LETTERS_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs"
+COURIER_LETTER_INVENTORY_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs"
+COURIER_PROMPT_MESSAGES_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs"
+COURIER_DOMAIN_COMMIT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs"
+COURIER_REPLY_WAIT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs"
 
 
 def source(path: str, ref: str | None) -> str:
     if ref:
+        # Historical cutover references predate the byte-identical J07a/J09a moves.
+        if path == "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs":
+            exists = subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+            if not exists:
+                path = "Refactor/Runtime/DetachedInteractionHost.cs"
+        if path == "src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs":
+            exists = subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+            if not exists:
+                path = "Refactor/Adapters/LegacyActionTagParser.cs"
         return subprocess.check_output(
             ["git", "show", f"{ref}:{path}"], cwd=ROOT
         ).decode("utf-8-sig").replace("\r\n", "\n")
     return (ROOT / path).read_text(encoding="utf-8-sig")
+
+
+def scene_source(ref: str | None) -> str:
+    host = source("ShoutBehavior.cs", ref)
+    if ref:
+        exists = subprocess.run(
+            ["git", "cat-file", "-e", f"{ref}:{SCENE_CHAINS_PATH}"],
+            cwd=ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if not exists:
+            return host
+    return host + "\n" + source(SCENE_CHAINS_PATH, ref)
+
+
+def courier_source(ref: str | None) -> str:
+    """Read the mixed host plus the current Courier generation owner.
+
+    Historical refs before J10b4 keep those methods in the root host, so the
+    fallback must not synthesize a second copy for baseline comparisons.
+    """
+    combined = source("CourierDeliveryBehavior.cs", ref)
+    for path in (COURIER_GENERATION_PATH, COURIER_SESSION_TRANSPORT_PATH,
+                 COURIER_ROUTE_TRANSPORT_PATH, COURIER_DELIVERY_LIFETIME_PATH,
+                 COURIER_SESSION_REGISTRY_PATH, COURIER_SESSION_CREATION_PATH,
+                 COURIER_RUNTIME_TICK_PATH, COURIER_PROACTIVE_LETTERS_PATH,
+                 COURIER_LETTER_INVENTORY_PATH, COURIER_PROMPT_MESSAGES_PATH,
+                 COURIER_DOMAIN_COMMIT_PATH, COURIER_REPLY_WAIT_PATH):
+        if ref:
+            exists = subprocess.run(
+                ["git", "cat-file", "-e", f"{ref}:{path}"],
+                cwd=ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            ).returncode == 0
+            if not exists:
+                continue
+        combined += "\n" + source(path, ref)
+    return combined
 
 
 def declaration(text: str, signature: str, optional: bool = False) -> str:
@@ -52,11 +114,11 @@ def declaration(text: str, signature: str, optional: bool = False) -> str:
 
 
 def extract(ref: str | None) -> dict[str, str]:
-    scene = source("ShoutBehavior.cs", ref)
+    scene = scene_source(ref)
     anchor = scene.index('"[MemoryPerf] group_turn_prompt_ready')
     begin = scene.index('string output = "";', anchor)
     end = scene.index("apiSw.Stop();", begin)
-    courier = source("CourierDeliveryBehavior.cs", ref)
+    courier = courier_source(ref)
     method = declaration(courier, "private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(")
     begin_c = method.index("if (IsCourierBridgeEnabled()")
     # The same await also appears inside the fallback lambda; select the last.
@@ -89,14 +151,14 @@ def extract(ref: str | None) -> dict[str, str]:
         "FINALIZE_METHOD": declaration(courier, "private void FinalizeCourierReplyGenerationOnMainThread("),
         "DETACHED_FAIL_METHOD": declaration(courier, "private void FailDetachedCourierReplyOnMainThread(", optional=True),
         "STATUS_ENUM": declaration(source("Refactor/Contracts/InteractionContracts.cs", ref), "public enum InteractionStatus"),
-        "RESULT_TYPE": declaration(source("Refactor/Runtime/DetachedInteractionHost.cs", ref), "public sealed class DetachedInteractionHostResult"),
+        "RESULT_TYPE": declaration(source("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs", ref), "public sealed class DetachedInteractionHostResult"),
         "PROMPT_CONTRACTS": "\n\n".join(declaration(contracts, item) for item in prompt_contracts),
         "POSTPROCESS_INTERFACE": declaration(source("Refactor/Contracts/LlmContracts.cs", ref), "public interface IPostprocessPromptComposer"),
         "PORTS_TYPE": declaration(source("Refactor/Adapters/LegacyInteractionPipelineComposition.cs", ref), "public sealed class LegacyInteractionPipelinePorts"),
         "MAIN_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPromptComposer.cs", ref), "public sealed class LegacyDetachedPromptComposer"),
         "POSTPROCESS_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs", ref), "public sealed class LegacyDetachedPostprocessPromptComposer"),
         "LEGACY_PROMPT_ADAPTER": declaration(source("Refactor/Adapters/LegacyPromptPackageAdapter.cs", ref), "public static class LegacyPromptPackageAdapter"),
-        "ACTION_PARSER": declaration(source("Refactor/Adapters/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
+        "ACTION_PARSER": declaration(source("src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
         "BUILD_PROMPT": declaration(source("Refactor/Adapters/LegacyConfiguredChatGateway.cs", ref), "internal static PromptPackage BuildPromptPackage("),
         "CREATE_MESSAGE": declaration(scene, "private static object CreateChatMessage("),
         "PUBLIC_SCENE_FACTORY": declaration(scene, "public static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal("),

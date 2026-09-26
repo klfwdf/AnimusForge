@@ -10,19 +10,21 @@ spec.loader.exec_module(extractor)
 
 def extract(ref=None):
     owner = extractor.source('RewardSystemBehavior.cs', ref)
-    hero = extractor.source('RewardSystemBehavior.EconomyReplay.cs', ref)
+    hero = extractor.source('src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs', ref)
     blocks = {}
     methods = [extractor.declaration(hero, marker) for marker in [
         'private bool TryReplayGiveAsset(', 'private bool TryReplayGiveGold(',
         'private EconomyRewardDebtReplayResult ReplayEconomyRewardDebtPlanOnMainThread(',
+        'private EconomyReplayStepOutcome ExecuteHeroEconomyStep(',
         'private bool TryReplayAction(', 'private static EconomyRewardDebtReplayResult ReplayFailure(',
         'private static void LogEconomyReplayFailureSafe(', 'private sealed class EconomyMutationObservation']]
     for path, names in [
-        ('RewardSystemBehavior.EconomyPartyReplay.cs', ['TryReplayPartyAsset','TryReplayPartyGold']),
-        ('RewardSystemBehavior.EconomyMerchantReplay.cs', ['TryReplayMerchantAsset','TryReplayMerchantGold'])]:
+        ('src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs', ['TryReplayPartyAsset','TryReplayPartyGold']),
+        ('src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs', ['TryReplayMerchantAsset','TryReplayMerchantGold'])]:
         text = extractor.source(path, ref)
         methods += [extractor.declaration(text, 'private bool '+name+'(') for name in names]
-    methods += [extractor.declaration(owner, marker) for marker in [
+    authorization = extractor.source('src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs', ref)
+    methods += [extractor.declaration(authorization, marker) for marker in [
         'private static string GetRewardItemTransferKey(',
         'private static bool TryResolveExactAuthorizedRewardItem(',
         'private bool TryResolveAuthorizedHeroRewardItem(',
@@ -33,17 +35,22 @@ def extract(ref=None):
         'public static bool IsGoldAssetTokenForExternal(',
         'public static bool IsValidGeneratedRpAssetNameForExternal(']]
     blocks['METHODS'] = '\n\n'.join(methods)
-    contracts = extractor.source('Refactor/Contracts/EconomyRewardDebtContracts.cs', ref)
+    contracts = extractor.source('src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs', ref)
     interaction = extractor.source('Refactor/Contracts/InteractionContracts.cs', ref)
     declarations = [extractor.declaration(contracts, marker) for marker in [
         'public static class EconomyRewardDebtCapabilityIds', 'public enum EconomyRewardDebtActionKind',
         'public sealed class EconomyRewardDebtAction', 'public sealed class EconomyRewardDebtReplayPlan',
         'public enum EconomyRewardDebtReplayStatus', 'public sealed class EconomyRewardDebtReplayResult',
         'public interface IEconomyRewardDebtMainThreadPort']]
-    declarations += [extractor.declaration(extractor.source('Refactor/Adapters/LegacyEconomyRewardDebtMainThreadPort.cs', ref), 'public sealed class LegacyEconomyRewardDebtMainThreadPort')]
+    declarations += [extractor.declaration(extractor.source('src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs', ref), 'public sealed class LegacyEconomyRewardDebtMainThreadPort')]
     declarations += [extractor.declaration(interaction, marker) for marker in [
         'public sealed class FactRecord', 'internal static class ContractGuard']]
     declarations += [extractor.declaration(extractor.source('TransferQuantitySpec.cs', ref), 'internal readonly struct TransferQuantitySpec')]
+    coordinator = extractor.source('src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs', ref)
+    declarations += [extractor.declaration(coordinator, marker) for marker in [
+        'internal enum EconomyReplayStepState', 'internal sealed class EconomyReplayStepOutcome',
+        'internal sealed class EconomyReplayAppliedFact', 'internal sealed class EconomyReplayBatchOutcome',
+        'internal static class EconomyReplayBatchCoordinator']]
     blocks['CONTRACTS'] = '\n\n'.join(declarations)
     return blocks
 
@@ -51,13 +58,18 @@ def main():
     sys.stdout.reconfigure(encoding='utf-8')
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source-ref')
-    ap.add_argument('--mutate',choices=['force-all','drop-modifier','drop-observation','drop-market-route'])
+    ap.add_argument('--mutate',choices=['force-all','drop-modifier','drop-observation','drop-market-route','continue-unknown'])
     ap.add_argument('--output-name',default='current')
     ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
     args=ap.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): ap.error('Invalid output name')
     blocks=extract(args.source_ref)
-    if args.mutate:
+    if args.mutate == 'continue-unknown':
+        before = 'unknownAfterStart = true;\n                break;'
+        after = 'unknownAfterStart = true;\n                continue;'
+        if before not in blocks['CONTRACTS']: raise ValueError('Mutation anchor missing: '+before)
+        blocks['CONTRACTS'] = blocks['CONTRACTS'].replace(before, after, 1)
+    elif args.mutate:
         body=extractor.declaration(blocks['METHODS'],'private bool TryReplayGiveAsset(')
         mutations={
             'force-all': ('forceComplete: !quantity.IsAll && receiver == Hero.MainHero && giver != Hero.MainHero', 'forceComplete: true'),

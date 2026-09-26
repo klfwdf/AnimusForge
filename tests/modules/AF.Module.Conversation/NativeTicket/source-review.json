@@ -1,0 +1,134 @@
+{
+  "baseline": "d2b167cc",
+  "files": {
+    "ShoutBehavior.NativeAdmission.cs": {
+      "beforeSha256": "2994455bd73c352e3ea542ff8209fd54a5a81d59118fb7b2f6eefdc8c4e0a5d6",
+      "afterSha256": "7c326c416d628846a3424528e9b8da3a3e2d732142804d26232555ba4f366535",
+      "edits": [
+        {
+          "before": "    private NativeConversationAdmission _nativeConversationAdmission;\n    private long _nativeConversationAdmissionEpoch;\n    private long _nativeConversationPresentationRevision;",
+          "after": "    private readonly NativeConversationAdmissionOwner<NativeConversationAdmission> _nativeAdmissionOwner =\n        new NativeConversationAdmissionOwner<NativeConversationAdmission>();",
+          "count": 1
+        },
+        {
+          "before": "            Interlocked.Increment(ref owner._nativeConversationAdmissionEpoch);\n            Interlocked.Exchange(ref owner._nativeConversationAdmission, null);",
+          "after": "            owner._nativeAdmissionOwner.EndConversation();",
+          "count": 1
+        },
+        {
+          "before": "Volatile.Read(ref owner._nativeConversationAdmission)",
+          "after": "owner._nativeAdmissionOwner.Current",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.Read(ref _nativeConversationAdmissionEpoch)",
+          "after": "_nativeAdmissionOwner.ConversationEpoch",
+          "count": 3
+        },
+        {
+          "before": "Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);",
+          "after": "_nativeAdmissionOwner.Release(admission);",
+          "count": 3
+        },
+        {
+          "before": "Volatile.Read(ref _nativeConversationAdmission)",
+          "after": "_nativeAdmissionOwner.Current",
+          "count": 2
+        },
+        {
+          "before": "Interlocked.Exchange(ref _nativeConversationAdmission, admission);",
+          "after": "_nativeAdmissionOwner.ReserveCaptured(admission);",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.Increment(ref _nativeConversationPresentationRevision)",
+          "after": "_nativeAdmissionOwner.BeginPresentation()",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.Read(ref _nativeConversationPresentationRevision)",
+          "after": "_nativeAdmissionOwner.PresentationRevision",
+          "count": 1
+        },
+        {
+          "before": "admission != null && ReferenceEquals(_nativeAdmissionOwner.Current, admission)",
+          "after": "_nativeAdmissionOwner.Owns(admission)",
+          "count": 1
+        },
+        {
+          "before": "conversationEpoch != _nativeAdmissionOwner.ConversationEpoch",
+          "after": "!_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)",
+          "count": 1
+        },
+        {
+          "before": "admission.ConversationEpoch != _nativeAdmissionOwner.ConversationEpoch",
+          "after": "!_nativeAdmissionOwner.IsConversationEpochCurrent(admission.ConversationEpoch)",
+          "count": 1
+        },
+        {
+          "before": "_snapshot.PresentationRevision == Interlocked.Read(ref _owner._nativeConversationPresentationRevision)",
+          "after": "_owner._nativeAdmissionOwner.IsPresentationCurrent(_snapshot.PresentationRevision)",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.Read(ref owner._nativeConversationAdmissionEpoch)",
+          "after": "owner._nativeAdmissionOwner.ConversationEpoch",
+          "count": 1
+        }
+      ]
+    },
+    "ShoutBehavior.NativeCompletion.cs": {
+      "beforeSha256": "a11d72568e9261b31a51caccaa62eee7a6c302f658155755f6bc3b5a5e1e758a",
+      "afterSha256": "2eda8bb2728c022af11e0d1f2eb116e06c5df8b656f19f0d90fa2162662b0329",
+      "edits": [
+        {
+          "before": "scope.Admission.PresentationRevision == Interlocked.Read(ref _nativeConversationPresentationRevision)",
+          "after": "_nativeAdmissionOwner.IsPresentationCurrent(scope.Admission.PresentationRevision)",
+          "count": 1
+        }
+      ]
+    },
+    "ShoutBehavior.ModuleNativeSubmission.cs": {
+      "beforeSha256": "26538e78762ca3f8aba96abfc6cb9bc5c1a43c5c452de9cdbcb8b6f7046fe9ca",
+      "afterSha256": "9e404bc3ce62ef71ae7f202c44a04bd72bb0cc45032c0bbd090b0f3f765ca620",
+      "edits": [
+        {
+          "before": "Interlocked.Read(ref owner._nativeConversationAdmissionEpoch)",
+          "after": "owner._nativeAdmissionOwner.ConversationEpoch",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.Read(ref owner._nativeConversationPresentationRevision)",
+          "after": "owner._nativeAdmissionOwner.PresentationRevision",
+          "count": 1
+        },
+        {
+          "before": "conversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch)",
+          "after": "!_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)",
+          "count": 1
+        },
+        {
+          "before": "presentationRevision != Interlocked.Read(ref _nativeConversationPresentationRevision)",
+          "after": "!_nativeAdmissionOwner.IsPresentationCurrent(presentationRevision)",
+          "count": 1
+        },
+        {
+          "before": "using System.Threading;\n",
+          "after": "",
+          "count": 1
+        }
+      ]
+    },
+    "ShoutBehavior.cs": {
+      "beforeSha256": "14272aca05c9eaabf1b03edb938e0e09efe8d5e14270b10d7a9221c040a708a0",
+      "afterSha256": "ae715fd1acc943fc4c6fb6201b183440a60e17172f1a6476fec24fbe94500975",
+      "edits": [
+        {
+          "before": "admission.PresentationRevision != Interlocked.Read(ref owner._nativeConversationPresentationRevision)",
+          "after": "!owner._nativeAdmissionOwner.IsPresentationCurrent(admission.PresentationRevision)",
+          "count": 1
+        }
+      ]
+    }
+  }
+}

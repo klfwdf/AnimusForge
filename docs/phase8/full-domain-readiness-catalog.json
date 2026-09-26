@@ -237,7 +237,7 @@
       ],
       "entryPaths": [
         "ShoutBehavior.cs",
-        "ShoutBehavior.ScenePostprocess.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
         "LordEncounterBehavior.cs",
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
       ],
@@ -335,10 +335,10 @@
         "action-owner"
       ],
       "entryPaths": [
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
-        "Refactor/Runtime/DetachedInteractionHost.cs",
-        "Refactor/Runtime/InteractionCommitReceiptCache.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionCommitReceiptCache.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -436,12 +436,25 @@
         "economy-owner"
       ],
       "entryPaths": [
-        "RewardSystemBehavior.EconomyMerchantReplay.cs",
-        "RewardSystemBehavior.EconomyPartyReplay.cs",
-        "RewardSystemBehavior.EconomyReplay.cs",
         "RewardSystemBehavior.PlayerRpCrafting.cs",
         "RewardSystemBehavior.RpItemIntroduction.cs",
-        "RewardSystemBehavior.cs"
+        "RewardSystemBehavior.cs",
+        "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DailyEconomyLifecycle.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtLedger.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtNormalizationPolicy.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtPromiseLifecycle.cs",
+        "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.DebtSchedulePolicy.cs",
+        "src/modules/AF.Module.Economy/Execution/EconomyReplayBatchCoordinator.cs",
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/LegacyEconomyRewardDebtMainThreadPort.cs",
+        "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
+        "src/modules/AF.Module.Economy/Planning/LegacyEconomyRewardDebtAdapter.cs",
+        "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs",
+        "src/modules/AF.Module.Economy/Projection/RewardSystemBehavior.InventoryPromptCapture.cs",
+        "src/modules/AF.Module.Economy/Trust/EconomyTrustPolicy.cs",
+        "src/modules/AF.Module.Economy/Trust/RewardSystemBehavior.TrustState.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -481,7 +494,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 11,
@@ -552,13 +565,35 @@
         "world-map-owner"
       ],
       "entryPaths": [
-        "DiplomacyBehavior.cs",
         "KingdomAnnexationBehavior.cs",
         "NpcTributeVassalageBehavior.cs",
         "VassalageBehavior.cs",
         "WarStats/AfWarStatsBehavior.cs",
-        "WorldDiplomacyBehavior.cs",
-        "WorldMapPartyCommandBehavior.cs"
+        "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs",
+        "src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/Direct/DiplomacyCrossDomainActionOwner.cs",
+        "src/modules/AF.Module.Diplomacy/Direct/DirectDiplomacyWarGuard.cs",
+        "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyOfferCooldownRules.cs",
+        "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs",
+        "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyResultSettlementRules.cs",
+        "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyThreatStateRules.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs",
+        "src/modules/AF.Module.Kingdom/Scheduling/AutomaticKingdomRebellionOwner.cs",
+        "src/modules/AF.Module.Kingdom/Scheduling/KingdomMaintenanceOwner.cs",
+        "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityOwner.cs",
+        "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapDelayedRequestCoordinator.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapOrderCoordination.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.Admission.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.DelayedRequests.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.EventLifecycle.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.Protocol.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.QueueRuntime.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs",
+        "src/modules/AF.Module.WorldMap/Runtime/WorldMapPendingRequestCoordinator.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -723,11 +758,11 @@
         "DuelBehavior.cs",
         "DuelSettings.cs",
         "FourberieDuelCompatibility.cs",
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
         "Refactor/Runtime/DuelOutcomeReceipt.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs",
-        "ShoutBehavior.ScenePostprocess.cs",
-        "ShoutBehavior.cs"
+        "ShoutBehavior.cs",
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -776,14 +811,32 @@
       ],
       "entryPaths": [
         "CompanionProactiveChatBehavior.cs",
-        "CourierDeliveryBehavior.DetachedPostprocess.cs",
-        "CourierDeliveryBehavior.InboundCompletion.cs",
         "CourierDeliveryBehavior.cs",
         "ProactiveNpcRequestBehavior.cs",
         "Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs",
         "Refactor/Runtime/CourierInboundCompletionReceipt.cs",
         "VanillaIssueOfferBridge.cs",
-        "VanillaIssuePromptBehavior.cs"
+        "VanillaIssuePromptBehavior.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -821,7 +874,7 @@
         "persistence-domain-owners"
       ],
       "ownerAssignmentState": "ASSIGNED",
-      "entryCoverage": "COMPLETE"
+      "entryCoverage": "REPRESENTATIVE"
     },
     {
       "number": 17,
@@ -843,8 +896,30 @@
         "RomanceSystemBehavior.cs",
         "SexualConceptionBehavior.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
-        "WeeklyReportSchedulePolicy.cs",
-        "WeeklyReportTextHelper.cs"
+        "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveCandidateScanOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
+        "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
+        "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitTargetOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyReportWaveCoordinator.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyActionMaterialCursor.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
+        "src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs",
+        "src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -895,9 +970,14 @@
         "profile-owner"
       ],
       "entryPaths": [
-        "KnowledgeLibraryBehavior.cs",
         "KingdomStrategicProfileBehavior.cs",
-        "MyBehavior.cs"
+        "KnowledgeLibraryBehavior.cs",
+        "MyBehavior.PersonaGeneration.cs",
+        "MyBehavior.PersonaReadiness.cs",
+        "MyBehavior.PromotedPersonaGeneration.cs",
+        "MyBehavior.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -961,6 +1041,7 @@
         "DevWeeklyReportPopup.cs",
         "DevWeeklyReportPopupVM.cs",
         "DuelSettings.TerminalSave.cs",
+        "ModOnboardingBehavior.cs",
         "SceneActionsIntegrationBoundary.cs",
         "SubModule.cs",
         "TerminalSettingsRegistry.cs",
@@ -975,7 +1056,12 @@
         "WarStats/AfWarStatsPopupVM.cs",
         "WarStats/AfWarStatsRowVM.cs",
         "WarStats/AfWarStatsSettings.cs",
-        "WarStats/AfWarStatsTexts.cs"
+        "WarStats/AfWarStatsTexts.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingDismissalOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingOperationVersionOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingSessionOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingUiDispatchOwner.cs",
+        "src/modules/AF.Module.UI/WeeklyReportPopupSessionOwner.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -1194,7 +1280,7 @@
       "entryPaths": [
         "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
         "ShoutBehavior.cs",
-        "ShoutBehavior.ScenePostprocess.cs"
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1222,7 +1308,7 @@
       "implementationState": "OPT_IN",
       "entryPaths": [
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1249,7 +1335,7 @@
       "owner": "Action.Memory",
       "implementationState": "OPT_IN",
       "entryPaths": [
-        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
         "MyBehavior.MemoryRecovery.cs"
       ],
       "requiredCases": [
@@ -1276,8 +1362,8 @@
       "owner": "Action.Economy",
       "implementationState": "OPT_IN",
       "entryPaths": [
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
-        "RewardSystemBehavior.EconomyReplay.cs"
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1304,7 +1390,7 @@
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
         "PolicySystem/Core/CustomPolicyBehavior.cs",
-        "WorldDiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
         "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"
       ],
       "requiredCases": [

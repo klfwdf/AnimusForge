@@ -1,0 +1,119 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+
+namespace AnimusForge
+{
+    internal static class Probe
+    {
+        internal static int MainThread = Environment.CurrentManagedThreadId;
+        internal static int LiveCalls;
+        internal static bool ThrowHeroFind, ThrowVassalage, ThrowTrade, ThrowScene;
+        internal static void MainOnly()
+        {
+            if (Environment.CurrentManagedThreadId != MainThread) throw new Exception("live game read on worker");
+            Interlocked.Increment(ref LiveCalls);
+        }
+    }
+    internal sealed class Hero
+    {
+        internal static Hero Find(string id)
+        {
+            Probe.MainOnly();
+            if (Probe.ThrowHeroFind) throw new Exception("Hero.Find failure");
+            return new Hero();
+        }
+    }
+    internal sealed class CharacterObject
+    {
+        internal Hero HeroObject { get { Probe.MainOnly(); return new Hero(); } }
+    }
+    internal static class AfGcczShoutBridge { internal static bool IsActive() { Probe.MainOnly(); return true; } }
+    internal static class VassalageBehavior
+    {
+        internal static bool CanInjectVassalageRuleForPromptCapture(Hero h, CharacterObject c)
+        {
+            Probe.MainOnly();
+            if (Probe.ThrowVassalage) throw new Exception("vassalage failure");
+            return true;
+        }
+    }
+    internal static class DiplomacyBehavior { internal static bool CanInjectDiplomacyRuleForExternal(Hero h, CharacterObject c) { Probe.MainOnly(); return true; } }
+    internal static class WorldDiplomacyBehavior { internal static bool CanDiscussWorldDiplomacyForExternal(Hero h) { Probe.MainOnly(); return true; } }
+    internal sealed class RomanceSystemBehavior
+    {
+        internal static RomanceSystemBehavior Instance = new RomanceSystemBehavior();
+        internal string BuildMarriageRuntimeInstruction(Hero h) { Probe.MainOnly(); return "marriage"; }
+    }
+    internal static class MyBehavior { internal static string BuildNpcMajorActionsRuntimeInstructionForExternal(Hero h) { Probe.MainOnly(); return "actions"; } }
+    internal static class AIConfigHandler
+    {
+        internal static readonly PromptRetrievalContextSlot<string> HeroId = PromptRetrievalContextOwner.Hero;
+        internal static IDisposable BeginGuardrailRuntimeScope() => PromptRetrievalContextOwner.BeginScope();
+        internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding)
+        {
+            binding.Apply(_ => { }, value => HeroId.Value = value, _ => { }, _ => { }, _ => { }, _ => { });
+        }
+        private static bool IsPlayerPartyTradeLimitedTarget(Hero h) { Probe.MainOnly(); if (Probe.ThrowTrade) throw new Exception("trade failure"); return false; }
+        private static bool ShouldExcludeSceneMoveRuleForCurrentMission() { Probe.MainOnly(); if (Probe.ThrowScene) throw new Exception("scene failure"); return false; }
+        private static bool IsKingdomLordOrKingRuleTargetForPreprocess(Hero h, CharacterObject c) { Probe.MainOnly(); return true; }
+        private static string BuildRuntimeLordsHallAccessInstructionForExternal()
+        {
+            Probe.MainOnly();
+            return HeroId.Value == "target" ? "hall" : "";
+        }
+@@CAPTURE@@
+    }
+}
+
+internal static class Program
+{
+    private static int checks;
+    private static void Check(bool condition, string message)
+    {
+        checks++;
+        if (!condition) throw new Exception(message);
+    }
+    private static void Main()
+    {
+        AIConfigHandler.HeroId.Value = "parent";
+        var target = new PromptRuntimeTargetBinding("", "target", "", "", "", -1);
+        var hero = new Hero();
+        var facts = AIConfigHandler.CapturePromptRuleEligibility(hero, null, target);
+        Check(facts.IsCaptured && facts.GcczSiegeAftermathActive && facts.VassalageEligible && facts.DiplomacyEligible
+            && facts.WorldDiplomacyEligible && facts.KingdomAgendaEligible && facts.MarriageEligible
+            && facts.NpcMajorActionsEligible && facts.LordsHallAccessEligible && facts.HasAnyTargetIdentity,
+            "all 11 facts captured against current target");
+        Check(AIConfigHandler.HeroId.Value == "parent", "capture restores parent target");
+        int liveBefore = Probe.LiveCalls;
+        Task.Run(() =>
+        {
+            Check(facts.IsRuleEligibleForRag("kingdom_vassalage"), "worker RAG uses captured facts");
+            Check(facts.CanInjectRuleTopicIntoPreprocess("lords_hall_access"), "worker preprocess uses captured facts");
+        }).GetAwaiter().GetResult();
+        Check(Probe.LiveCalls == liveBefore, "worker does not read Hero, Mission or module methods");
+
+        Probe.ThrowVassalage = true;
+        var failedGate = AIConfigHandler.CapturePromptRuleEligibility(hero, null, target);
+        Check(!failedGate.VassalageEligible && failedGate.DiplomacyEligible && failedGate.WorldDiplomacyEligible
+            && failedGate.LordsHallAccessEligible, "one failing gate does not hide independent later topics");
+        Check(AIConfigHandler.HeroId.Value == "parent", "failed gate restores parent target");
+        Probe.ThrowVassalage = false;
+        Probe.ThrowTrade = Probe.ThrowScene = true;
+        var failedExclusions = AIConfigHandler.CapturePromptRuleEligibility(hero, null, target);
+        Check(failedExclusions.TargetIsPlayerPartyTradeLimited && failedExclusions.SceneMoveRuleExcludedForMission,
+            "failed exclusions deny restricted rules");
+        Check(!failedExclusions.IsRuleEligibleForRag("loan") && !failedExclusions.IsRuleEligibleForRag("scene_mechanism_actions"),
+            "worker fails closed for exclusion checks");
+        Check(failedExclusions.VassalageEligible && failedExclusions.LordsHallAccessEligible,
+            "exclusion failure does not hide independent grants");
+        Probe.ThrowTrade = Probe.ThrowScene = false;
+        Probe.ThrowHeroFind = true;
+        var missing = AIConfigHandler.CapturePromptRuleEligibility(null, null, target);
+        Check(!missing.HasAnyTargetIdentity && missing.GcczSiegeAftermathActive && missing.LordsHallAccessEligible,
+            "Hero.Find failure keeps non-hero facts and target-specific hall capture");
+        Check(AIConfigHandler.HeroId.Value == "parent", "Hero.Find failure restores parent target");
+        Console.WriteLine("PASS prompt-rule-eligibility capture checks=" + checks + " source=production-method game=fake worker=no-live-read");
+    }
+}

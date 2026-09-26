@@ -15,16 +15,14 @@ public partial class MyBehavior
 {
     private const string WeeklyActionOutcomeReceiptsStorageKey =
         "_af_weeklyActionOutcomeReceipts_v1";
-    private const long WeeklyActionOutcomeRetryDelayTicks = TimeSpan.TicksPerSecond * 5L;
-
-    private WeeklyMemoryMaterialOutcomeLedger _weeklyActionOutcomeLedger =
-        new WeeklyMemoryMaterialOutcomeLedger();
+    private WeeklyActionOutcomePublicationOwner _weeklyActionOutcomePublication = new WeeklyActionOutcomePublicationOwner();
     private Dictionary<string, string> _weeklyActionOutcomeStorage =
         new Dictionary<string, string>(StringComparer.Ordinal);
-    private int _hasWeeklyActionOutcomePublishWork;
-    private int _weeklyActionOutcomeLoadImportConfirmed;
-    private long _weeklyActionOutcomeLoadedGeneration;
-    private long _weeklyActionOutcomeNextAttemptUtcTicks;
+
+    private WeeklyActionOutcomePublicationOwner EnsureWeeklyActionOutcomePublication()
+    {
+        return _weeklyActionOutcomePublication ??= new WeeklyActionOutcomePublicationOwner();
+    }
 
     internal static WeeklyMemoryMaterialOutcomeOperationStatus PrepareWeeklyActionOutcomeForExternal(
         WeeklyMemoryMaterialOutcomeCandidate candidate,
@@ -443,52 +441,29 @@ public partial class MyBehavior
 
     private WeeklyMemoryMaterialOutcomeLedger EnsureWeeklyActionOutcomeLedger()
     {
-        if (_weeklyActionOutcomeLedger == null)
-        {
-            _weeklyActionOutcomeLedger = new WeeklyMemoryMaterialOutcomeLedger();
-        }
-        return _weeklyActionOutcomeLedger;
+        return EnsureWeeklyActionOutcomePublication().Ledger;
     }
 
     private bool IsWeeklyActionOutcomeOwnerActive()
-        => Volatile.Read(ref _weeklyActionOutcomeLoadImportConfirmed) != 0
-            && Interlocked.Read(ref _weeklyActionOutcomeLoadedGeneration)
-                == SaveRuntimeGuard.CurrentGeneration;
+        => EnsureWeeklyActionOutcomePublication().IsActive(SaveRuntimeGuard.CurrentGeneration);
 
     private void RefreshWeeklyActionOutcomeWorkFlag()
     {
-        bool hasConfirmed = EnsureWeeklyActionOutcomeLedger().GetEntries()
-            .Any(receipt => receipt != null
-                && receipt.State == WeeklyMemoryMaterialOutcomeState.Confirmed);
-        Volatile.Write(ref _hasWeeklyActionOutcomePublishWork, hasConfirmed ? 1 : 0);
+        EnsureWeeklyActionOutcomePublication().RefreshWork();
     }
 
     private void ScheduleWeeklyActionOutcomeRetry()
     {
-        Interlocked.Exchange(ref _weeklyActionOutcomeNextAttemptUtcTicks,
-            DateTime.UtcNow.Ticks + WeeklyActionOutcomeRetryDelayTicks);
-        Volatile.Write(ref _hasWeeklyActionOutcomePublishWork, 1);
+        EnsureWeeklyActionOutcomePublication().ScheduleRetry(DateTime.UtcNow.Ticks);
     }
 
     private void ProcessOneWeeklyActionOutcomeOnTick()
     {
         try
         {
-            if (!IsWeeklyActionOutcomeOwnerActive()
-                || Volatile.Read(ref _hasWeeklyActionOutcomePublishWork) == 0
-                || DateTime.UtcNow.Ticks < Interlocked.Read(ref _weeklyActionOutcomeNextAttemptUtcTicks))
-            {
-                return;
-            }
-            WeeklyMemoryMaterialOutcomeReceipt receipt = EnsureWeeklyActionOutcomeLedger().GetEntries()
-                .FirstOrDefault(item => item != null
-                    && item.State == WeeklyMemoryMaterialOutcomeState.Confirmed);
-            if (receipt == null)
-            {
-                RefreshWeeklyActionOutcomeWorkFlag();
-                return;
-            }
-            TryPublishWeeklyActionOutcome(receipt.ReceiptId, receipt.CandidateHash);
+            WeeklyMemoryMaterialOutcomeReceipt receipt = EnsureWeeklyActionOutcomePublication()
+                .GetDue(SaveRuntimeGuard.CurrentGeneration, DateTime.UtcNow.Ticks);
+            if (receipt != null) TryPublishWeeklyActionOutcome(receipt.ReceiptId, receipt.CandidateHash);
         }
         catch (Exception ex)
         {
@@ -499,30 +474,8 @@ public partial class MyBehavior
 
     private void ResetWeeklyActionOutcomeTransientState(string reason)
     {
-        Volatile.Write(ref _hasWeeklyActionOutcomePublishWork, 0);
-        Interlocked.Exchange(ref _weeklyActionOutcomeNextAttemptUtcTicks, 0L);
-        string normalizedReason = (reason ?? string.Empty).Trim();
-        if (string.Equals(normalizedReason, "sync_load", StringComparison.Ordinal))
-        {
-            EnsureWeeklyActionOutcomeLedger().Import(new Dictionary<string, string>(), out _);
+        if (EnsureWeeklyActionOutcomePublication().Reset(reason, SaveRuntimeGuard.CurrentGeneration))
             _weeklyActionOutcomeStorage = new Dictionary<string, string>(StringComparer.Ordinal);
-            Volatile.Write(ref _weeklyActionOutcomeLoadImportConfirmed, 0);
-            Interlocked.Exchange(ref _weeklyActionOutcomeLoadedGeneration, 0L);
-        }
-        else if (string.Equals(normalizedReason, "new_game_created", StringComparison.Ordinal))
-        {
-            EnsureWeeklyActionOutcomeLedger().Import(new Dictionary<string, string>(), out _);
-            _weeklyActionOutcomeStorage = new Dictionary<string, string>(StringComparer.Ordinal);
-            Volatile.Write(ref _weeklyActionOutcomeLoadImportConfirmed, 1);
-            Interlocked.Exchange(ref _weeklyActionOutcomeLoadedGeneration,
-                SaveRuntimeGuard.CurrentGeneration);
-        }
-        else if (string.Equals(normalizedReason, "game_loaded", StringComparison.Ordinal)
-            && Volatile.Read(ref _weeklyActionOutcomeLoadImportConfirmed) != 0)
-        {
-            Interlocked.Exchange(ref _weeklyActionOutcomeLoadedGeneration,
-                SaveRuntimeGuard.CurrentGeneration);
-        }
     }
 
     private void ActivateWeeklyActionOutcomeAfterLoad()
@@ -531,7 +484,7 @@ public partial class MyBehavior
         {
             if (!IsWeeklyActionOutcomeOwnerActive())
             {
-                Volatile.Write(ref _hasWeeklyActionOutcomePublishWork, 0);
+                EnsureWeeklyActionOutcomePublication().SuspendWork();
                 Logger.Log("WeeklyActionOutcome", "[WARN] load activation not confirmed");
                 return;
             }
@@ -553,7 +506,7 @@ public partial class MyBehavior
             Dictionary<string, string> storage;
             if (dataStore.IsSaving)
             {
-                if (Volatile.Read(ref _weeklyActionOutcomeLoadImportConfirmed) != 0)
+                if (EnsureWeeklyActionOutcomePublication().ImportConfirmed)
                 {
                     _weeklyActionOutcomeStorage = ledger.Export();
                 }
@@ -570,26 +523,18 @@ public partial class MyBehavior
             _weeklyActionOutcomeStorage = CampaignSaveChunkHelper.RestoreStringDictionary(
                 storage,
                 "WeeklyActionOutcome") ?? new Dictionary<string, string>(StringComparer.Ordinal);
-            bool acceptedAll = ledger.Import(_weeklyActionOutcomeStorage, out string errorCode);
+            bool acceptedAll = EnsureWeeklyActionOutcomePublication().Import(
+                _weeklyActionOutcomeStorage, SaveRuntimeGuard.CurrentGeneration, out string errorCode);
             if (!acceptedAll)
             {
-                Volatile.Write(ref _weeklyActionOutcomeLoadImportConfirmed, 0);
-                Interlocked.Exchange(ref _weeklyActionOutcomeLoadedGeneration, 0L);
-                Volatile.Write(ref _hasWeeklyActionOutcomePublishWork, 0);
                 Logger.Log("WeeklyActionOutcome", "[WARN] recovery disabled; invalid journal preserved error=" + errorCode);
                 return;
             }
-            Volatile.Write(ref _weeklyActionOutcomeLoadImportConfirmed, 1);
-            Interlocked.Exchange(ref _weeklyActionOutcomeLoadedGeneration,
-                SaveRuntimeGuard.CurrentGeneration);
-            RefreshWeeklyActionOutcomeWorkFlag();
+
         }
         catch (Exception ex)
         {
-            EnsureWeeklyActionOutcomeLedger().Import(new Dictionary<string, string>(), out _);
-            Volatile.Write(ref _weeklyActionOutcomeLoadImportConfirmed, 0);
-            Interlocked.Exchange(ref _weeklyActionOutcomeLoadedGeneration, 0L);
-            Volatile.Write(ref _hasWeeklyActionOutcomePublishWork, 0);
+            EnsureWeeklyActionOutcomePublication().ImportFailed();
             Logger.Log("WeeklyActionOutcome", "[WARN] SyncData isolated error=" + ex.Message);
         }
     }

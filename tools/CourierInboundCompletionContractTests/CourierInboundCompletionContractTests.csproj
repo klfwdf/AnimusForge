@@ -11,6 +11,6 @@
     <Compile Include="..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
     <Compile Include="..\..\Refactor\Runtime\CourierInboundCompletionCommitCoordinator.cs" Link="Runtime\CourierInboundCompletionCommitCoordinator.cs" />
     <Compile Include="..\..\Refactor\Runtime\CourierInboundCompletionReceipt.cs" Link="Runtime\CourierInboundCompletionReceipt.cs" />
-    <Compile Include="..\..\Refactor\Runtime\InteractionMemoryRecoveryLedger.cs" Link="Runtime\InteractionMemoryRecoveryLedger.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Memory\Recovery\InteractionMemoryRecoveryLedger.cs" Link="Runtime\InteractionMemoryRecoveryLedger.cs" />
   </ItemGroup>
 </Project>

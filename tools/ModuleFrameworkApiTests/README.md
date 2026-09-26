@@ -1,10 +1,24 @@
+# Snapshot boundary extraction (2026-09-15)
+
+The suite compiles the real internal snapshot capture and the API-side V1 projector. An additional CoreOnly library compiles all selected framework sources **without any API source/reference**. The existing internal/public assemblies and rejection checks remain.
+
+`SnapshotBoundaryChecks.cs` compares complete serialized public DTOs against the actual runtime source pinned at `955a6be3` (namespace/class renamed only in generated test code). It covers freeze across stop/reload, input-container mutation, exhaustive capability mapping, unknown state fail-closed, gate evaluation timing and parallel capture/projection. Public API shape and read-only guarantees remain unchanged.
+
+Three compiled behavioral faults must be rejected: wrong Ready mapping, retaining a caller's mutable list, or re-reading the live directory during projection. Test entrypoints catch assertion exceptions and exit nonzero so expected failures do not enter Windows native crash reporting. This changes failure transport, not assertions.
+
+`source_boundary.py` provides an exact reviewed inverse for original root/entrypoint comparisons. It does not restore arbitrary snapshots or waive lifecycle/registration changes. Module compilation/import direction is tested independently.
+
+These are bounded directory/API checks, not actual Campaign/Mission or old-save acceptance. Intermediate snapshots are created only for explicit queries, never Tick; the original directory bounds still apply.
+
+## Existing test usage
+
 # 模块框架 V1：公共 API 契约验收
 
 ## 这套测试回答什么
 
 **子 MOD 看得到什么、看不到什么；框架状态是否如实报告。** 不加载 Bannerlord，不操作游戏或存档。
 
-- 实际源码链接：`Api/V1/AfApi.cs`、`AfApiContracts.cs`、`ModuleFrameworkRuntime.cs`、`InternalModuleDirectory.cs` 与原 `FeatureBridgeContracts.cs`。
+- 实际源码链接：`src/modules/AF.Module.PublicApi/V1/AfApi.cs`、`src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`、`ModuleFrameworkRuntime.cs`、`InternalModuleDirectory.cs` 与原 `FeatureBridgeContracts.cs`。
 - `ModuleFrameworkUnderTest` 是独立测试 library；`ModuleFrameworkExternalClient` 是另一程序集，仅通过 `AnimusForge.Api.V1` 使用生产公开接口。
 - `ModuleFrameworkControl` 是测试专用 friend 控制库，用于模拟宿主启动/停止、门禁和缺失适配器；**生产 DLL 没有增加 friend 权限**。
 - `TeamModuleServices`、`FeatureBridgeRuntime` 是明确标注的测试 stub；本套不据此声称真实模块业务通过。
@@ -14,14 +28,15 @@
 在仓库根目录：
 
 ```powershell
-python tools/ModuleFrameworkApiTests/run.py
+$dotnet = (Resolve-Path .\local\dotnet\8.0.425\dotnet.exe).Path
+python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet
 # 同时检查实际构建产物，不加载 DLL，只读 PE 元数据：
-python tools/ModuleFrameworkApiTests/run.py `
+python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet `
   --artifact-root bin/Debug/single_module_artifacts `
   --artifact-root bin/Release/single_module_artifacts
 ```
 
-默认使用 `G:/AFMOD/.dotnet-sdk/dotnet.exe`，可传 `--dotnet`。仅需 SDK 8，无 NuGet 网络包；复用仓库 `.tmp/dotnet-cli` 与 `.tmp/nuget-packages`，禁用开发证书生成。生成物和原始日志留在本工具 `.generated/current/`，已忽略，不提交产物。
+本次 B0/B1 显式传入仓库内固定 SDK 8.0.425；不依赖 runner 的历史默认路径。无需 NuGet 网络包；复用仓库 `.tmp/dotnet-cli` 与 `.tmp/nuget-packages`，禁用开发证书生成。生成物和原始日志留在本工具 `.generated/current/`，已忽略，不提交产物。
 
 ## 已覆盖
 

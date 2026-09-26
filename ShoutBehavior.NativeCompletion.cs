@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 
@@ -68,7 +67,7 @@ public partial class ShoutBehavior
     // Unlike backend busy, this remains valid after Task completion, but not after a newer request.
     private bool IsNativeConversationCompletionContextCurrent(NativeConversationCompletionScope scope)
     {
-        return scope != null && scope.Admission.PresentationRevision == Interlocked.Read(ref _nativeConversationPresentationRevision)
+        return scope != null && _nativeAdmissionOwner.IsPresentationCurrent(scope.Admission.PresentationRevision)
             && IsNativeConversationContextCurrent(scope.Admission, out _);
     }
 
@@ -116,7 +115,9 @@ public partial class ShoutBehavior
             TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible);
 
         QueueNativeConversationCompletionExit(scope, result);
-        return string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+        string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+        scope.Admission.ModuleOperation?.RecordOwnerCompletion(finalVisible);
+        return finalVisible;
     }
 
     private void QueueNativeConversationCompletionExit(NativeConversationCompletionScope scope, NativeConversationGameActionResult result)

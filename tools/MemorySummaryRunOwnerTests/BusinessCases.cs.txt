@@ -1,0 +1,23 @@
+        private static void RunOwnerReplacement(bool failure, bool queuedAcceptance)
+        {
+            var b = NewOwner(); b.AddDaily("same");
+            if(failure)b.failures.Add("daily:same:10");
+            var old = b.Start(); Until(()=>b.batches.Count==1,b.Tick);
+            ProviderBatch oldBatch=b.batches.Single();
+            if(queuedAcceptance)
+            {
+                oldBatch.Ready.TrySetResult(true);
+                Until(()=>MemoryPhaseQueued(b)||old.IsCompleted);
+                Check(!old.IsCompleted,"old acceptance must be pending before reset");
+            }
+            b._memorySummaryProcessing=false; // Same-generation runtime reset, persistent source unchanged.
+            var replacement=b.Start();Until(()=>b.batches.Count==2,b.Tick);
+            oldBatch.Ready.TrySetResult(true);
+            Until(()=>old.IsCompleted,b.Tick);old.GetAwaiter().GetResult();
+            Check(b._memorySummaryProcessing&&!replacement.IsCompleted,"old finally released the replacement run");
+            Check(applied==0&&b._dailyMemoryDrafts["same"].Count==1&&!b._compressedMemoryBlocks.ContainsKey("same"),"retired same-source result was applied");
+            Check(!Witness.Events.Any(x=>x.Name.StartsWith("popup:")||x.Name.StartsWith("ui:AnimusForge 日结压缩完成")),"retired run published completion/failure notice");
+            b.failures.Clear();b.Finish(replacement);
+            Check(!b._memorySummaryProcessing&&applied==1,"replacement did not complete exactly once");MainThreadEffects();
+        }
+        private static bool MemoryPhaseQueued(MyBehavior owner)=>owner.MemorySummaryDispatch.HasPending;

@@ -1,0 +1,13 @@
+using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+internal static class Program {
+ static int checks;static void Check(bool b,string name){if(!b)throw new Exception("FAIL "+name);checks++;}
+ static int Main(){try{
+  var owner=new MemorySummaryRunOwner();Check(!owner.IsRunning,"initially idle");var old=owner.TryBegin(7);Check(old!=null&&old.IsCurrent&&old.Generation==7&&owner.IsRunning,"one run captures generation");Check(owner.TryBegin(8)==null,"busy owner rejects overlap");
+  owner.Reset();Check(!old.IsCurrent&&!owner.IsRunning,"reset retires exact old run");var fresh=owner.TryBegin(7);Check(fresh!=null&&!ReferenceEquals(fresh,old),"same generation is a distinct run");old.Dispose();old.Dispose();Check(fresh.IsCurrent&&owner.IsRunning,"old finally cannot release replacement");fresh.Dispose();Check(!fresh.IsCurrent&&!owner.IsRunning,"own completion releases exactly its run");
+  for(int round=0;round<20;round++){owner.Reset();var winners=new ConcurrentBag<MemorySummaryRunOwner.Lease>();Parallel.For(0,128,i=>{var lease=owner.TryBegin(round);if(lease!=null)winners.Add(lease);});Check(winners.Count==1,"atomic one winner "+round);foreach(var lease in winners)lease.Dispose();Check(!owner.IsRunning,"parallel winner released "+round);}
+  Console.WriteLine($"MemoryRunOwner checks={checks} failures=0; actual engine-free owner and concurrent callers.");return 0;
+ }catch(Exception e){Console.WriteLine(e);return 1;}}
+}

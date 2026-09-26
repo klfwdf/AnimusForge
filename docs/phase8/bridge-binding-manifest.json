@@ -239,7 +239,7 @@
       "entryPaths": [
         "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
         "ShoutBehavior.cs",
-        "ShoutBehavior.ScenePostprocess.cs"
+        "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "symbols": [
         {
@@ -288,7 +288,7 @@
       "owner": "Conversation.ActionCommit",
       "entryPaths": [
         "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
-        "Refactor/Runtime/InteractionResultCommitter.cs"
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
       "symbols": [
         {
@@ -297,7 +297,7 @@
           "kind": "type"
         },
         {
-          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "path": "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
           "symbol": "InteractionResultCommitter",
           "kind": "type"
         }
@@ -320,7 +320,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Runtime/InteractionResultCommitter.cs",
+        "entryPath": "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
         "symbol": "Commit",
         "frequency": "event",
         "notes": "The shared main-thread committer rejects ActionPlan execution when the explicit action bridge is disabled; default native callers are unchanged."
@@ -335,12 +335,12 @@
       "topology": "PAIR",
       "owner": "Action.Memory",
       "entryPaths": [
-        "Refactor/Runtime/InteractionResultCommitter.cs",
+        "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
         "MyBehavior.MemoryRecovery.cs"
       ],
       "symbols": [
         {
-          "path": "Refactor/Runtime/InteractionResultCommitter.cs",
+          "path": "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
           "symbol": "InteractionResultCommitter",
           "kind": "type"
         },
@@ -368,7 +368,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Runtime/InteractionResultCommitter.cs",
+        "entryPath": "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
         "symbol": "Commit",
         "frequency": "event",
         "notes": "The same main-thread commit boundary gates history/memory receipt publication before the existing committer; no new save key or coordinator is introduced."
@@ -383,17 +383,17 @@
       "topology": "PAIR",
       "owner": "Action.Economy",
       "entryPaths": [
-        "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
-        "RewardSystemBehavior.EconomyReplay.cs"
+        "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs"
       ],
       "symbols": [
         {
-          "path": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+          "path": "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
           "symbol": "LegacyNativeActionPlanExecutor",
           "kind": "type"
         },
         {
-          "path": "RewardSystemBehavior.EconomyReplay.cs",
+          "path": "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
           "symbol": "TryReplayAction",
           "kind": "method"
         }
@@ -416,7 +416,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Adapters/LegacyNativeActionPlanExecutor.cs",
+        "entryPath": "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "symbol": "ValidateAndExecuteCore",
         "frequency": "event",
         "notes": "Economy actions are checked after pure raw-plan validation and before any Economy owner or legacy callback side effect; whole-plan and unknown-after-start semantics remain unchanged."
@@ -432,7 +432,7 @@
       "owner": "Policy.WorldDiplomacy",
       "entryPaths": [
         "PolicySystem/Core/CustomPolicyBehavior.cs",
-        "WorldDiplomacyBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
         "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"
       ],
       "symbols": [
@@ -442,7 +442,7 @@
           "kind": "type"
         },
         {
-          "path": "WorldDiplomacyBehavior.cs",
+          "path": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
           "symbol": "NotifyExternalDiplomacyResolved",
           "kind": "method"
         },
@@ -470,7 +470,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "WorldDiplomacyBehavior.cs",
+        "entryPath": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
         "symbol": "NotifyExternalDiplomacyResolved",
         "frequency": "event",
         "notes": "The existing diplomacy-to-world notification is guarded at the event boundary; policy and native diplomacy remain independent owners."

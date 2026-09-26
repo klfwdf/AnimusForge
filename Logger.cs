@@ -17,30 +17,16 @@ namespace AnimusForge;
 
 public static class Logger
 {
-	private sealed class TraceScopeState
-	{
-		public string TraceId;
-
-		public string Channel;
-
-		public string HeroId;
-
-		public string NpcName;
-
-		public long StartUtcTicks;
-
-		public TraceScopeState Parent;
-	}
 
 	private sealed class TraceScope : IDisposable
 	{
-		private readonly TraceScopeState _prev;
+		private readonly DiagnosticTraceContext.ScopeState _prev;
 
-		private readonly TraceScopeState _current;
+		private readonly DiagnosticTraceContext.ScopeState _current;
 
 		private bool _disposed;
 
-		public TraceScope(TraceScopeState prev, TraceScopeState current)
+		public TraceScope(DiagnosticTraceContext.ScopeState prev, DiagnosticTraceContext.ScopeState current)
 		{
 			_prev = prev;
 			_current = current;
@@ -69,21 +55,8 @@ public static class Logger
 			catch
 			{
 			}
-			_traceState.Value = _prev;
+			TraceContext.Restore(_prev);
 		}
-	}
-
-	private sealed class MetricBucket
-	{
-		public long Count;
-
-		public long Ok;
-
-		public long Err;
-
-		public double SumMs;
-
-		public double MaxMs;
 	}
 
 	private sealed class HitRateBucket
@@ -116,15 +89,6 @@ public static class Logger
 		public string TraceId;
 	}
 
-	private sealed class LogWriteWorkItem
-	{
-		public string Path;
-
-		public string Content;
-
-		public bool IsVerbose;
-	}
-
 	private static string _modLogPath;
 
 	private static string _gameTracePath;
@@ -141,11 +105,11 @@ public static class Logger
 
 	private static readonly object _fileLock;
 
-	private static readonly AsyncLocal<TraceScopeState> _traceState;
+	private static readonly DiagnosticTraceContext TraceContext = new DiagnosticTraceContext();
+	private static readonly MetricWindow Metrics = new MetricWindow();
+	private static readonly BoundedLogWriteQueue LogQueue = new BoundedLogWriteQueue(IsPathEnabled, FlushLogBatches, WriteLogWorkItem);
 
-	private static readonly object _metricsLock;
 
-	private static readonly Dictionary<string, MetricBucket> _metrics;
 
 	private static readonly object _hitRateLock;
 
@@ -163,33 +127,21 @@ public static class Logger
 
 	private static readonly ConcurrentQueue<TokenStatsWorkItem> _tokenStatsWriteQueue;
 
-	private static readonly ConcurrentQueue<LogWriteWorkItem> _logWriteQueue;
 
-	private static DateTime _metricsWindowStartUtc;
 
-	private static DateTime _nextMetricsFlushUtc;
 
-	private static long _traceSeed;
 
 	private static long _hitRateEventSeed;
 
-	private static long _droppedVerboseLogCount;
 
-	private static long _droppedNormalLogCount;
 
-	private static long _lastDroppedLogSummaryUtcTicks;
 
-	private const int MetricsFlushIntervalSeconds = 180;
 
 	private const int LogCleanupCheckIntervalSeconds = 5;
 
-	private const int MaxLogWriteQueueItems = 4096;
 
-	private const int HardMaxLogWriteQueueItems = 8192;
 
-	private const int LogBatchFlushItemCount = 256;
 
-	private const int DroppedLogSummaryIntervalSeconds = 10;
 
 	private static string _lastLogCleanupSelection;
 
@@ -201,13 +153,11 @@ public static class Logger
 
 	private static int _tokenStatsWorkerRunning;
 
-	private static int _logWriterRunning;
 
-	private static int _logWriteQueueCount;
 
-	public static string CurrentTraceId => _traceState.Value?.TraceId ?? "";
+	public static string CurrentTraceId => TraceContext.CurrentTraceId;
 
-	public static string CurrentChannel => _traceState.Value?.Channel ?? "";
+	public static string CurrentChannel => TraceContext.CurrentChannel;
 
 	public static bool IsModLogicEnabled => IsPathEnabled(_modLogPath);
 
@@ -215,12 +165,12 @@ public static class Logger
 	{
 		try
 		{
-			return "logQueue=" + Volatile.Read(ref _logWriteQueueCount)
+			return "logQueue=" + LogQueue.Count
 				+ " tokenQueue=" + _tokenStatsWriteQueue.Count
-				+ " logWriter=" + Volatile.Read(ref _logWriterRunning)
+				+ " logWriter=" + LogQueue.WriterRunning
 				+ " tokenWriter=" + Volatile.Read(ref _tokenStatsWorkerRunning)
-				+ " droppedVerbose=" + Interlocked.Read(ref _droppedVerboseLogCount)
-				+ " droppedNormal=" + Interlocked.Read(ref _droppedNormalLogCount);
+				+ " droppedVerbose=" + LogQueue.DroppedVerbose
+				+ " droppedNormal=" + LogQueue.DroppedNormal;
 		}
 		catch
 		{
@@ -250,9 +200,6 @@ public static class Logger
 	static Logger()
 	{
 		_fileLock = new object();
-		_traceState = new AsyncLocal<TraceScopeState>();
-		_metricsLock = new object();
-		_metrics = new Dictionary<string, MetricBucket>(StringComparer.Ordinal);
 		_hitRateLock = new object();
 		_verboseLogThrottleLock = new object();
 		_utf8WithBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
@@ -261,10 +208,6 @@ public static class Logger
 		_hitRateActiveQuery = new Dictionary<string, long>(StringComparer.Ordinal);
 		_verboseLogNextAllowedTicks = new Dictionary<string, long>(StringComparer.Ordinal);
 		_tokenStatsWriteQueue = new ConcurrentQueue<TokenStatsWorkItem>();
-		_logWriteQueue = new ConcurrentQueue<LogWriteWorkItem>();
-		_metricsWindowStartUtc = DateTime.UtcNow;
-		_nextMetricsFlushUtc = DateTime.UtcNow.AddSeconds(180.0);
-		_traceSeed = 0L;
 		_hitRateEventSeed = 0L;
 		try
 		{
@@ -336,29 +279,14 @@ public static class Logger
 
 	public static IDisposable BeginTrace(string channel, string heroId = null, string npcName = null, string traceId = null)
 	{
-		TraceScopeState value = _traceState.Value;
-		string text = (traceId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = ((value == null || string.IsNullOrWhiteSpace(value.TraceId)) ? NewTraceId() : value.TraceId);
-		}
-		TraceScopeState traceScopeState = new TraceScopeState
-		{
-			TraceId = text,
-			Channel = (channel ?? value?.Channel ?? "").Trim(),
-			HeroId = (heroId ?? value?.HeroId ?? "").Trim(),
-			NpcName = (npcName ?? value?.NpcName ?? "").Trim(),
-			StartUtcTicks = DateTime.UtcNow.Ticks,
-			Parent = value
-		};
-		_traceState.Value = traceScopeState;
+		DiagnosticTraceContext.ScopeState state = TraceContext.Push(channel, heroId, npcName, traceId);
 		Obs("Trace", "start", new Dictionary<string, object>
 		{
-			["channel"] = traceScopeState.Channel,
-			["heroId"] = traceScopeState.HeroId,
-			["npcName"] = traceScopeState.NpcName
+			["channel"] = state.Channel,
+			["heroId"] = state.HeroId,
+			["npcName"] = state.NpcName
 		});
-		return new TraceScope(value, traceScopeState);
+		return new TraceScope(state.Parent, state);
 	}
 
 	public static void Log(string source, string message)
@@ -538,7 +466,7 @@ public static class Logger
 				["source"] = source ?? "",
 				["stage"] = stage ?? ""
 			};
-			TraceScopeState value = _traceState.Value;
+			DiagnosticTraceContext.ScopeState value = TraceContext.Current;
 			if (value != null)
 			{
 				if (!string.IsNullOrWhiteSpace(value.TraceId))
@@ -582,35 +510,8 @@ public static class Logger
 		try
 		{
 			string text = (metric ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				return;
-			}
-			lock (_metricsLock)
-			{
-				if (!_metrics.TryGetValue(text, out var value) || value == null)
-				{
-					value = new MetricBucket();
-					_metrics[text] = value;
-				}
-				value.Count++;
-				if (ok)
-				{
-					value.Ok++;
-				}
-				else
-				{
-					value.Err++;
-				}
-				if (latencyMs >= 0.0)
-				{
-					value.SumMs += latencyMs;
-					if (latencyMs > value.MaxMs)
-					{
-						value.MaxMs = latencyMs;
-					}
-				}
-			}
+			if (string.IsNullOrWhiteSpace(text)) return;
+			Metrics.Record(text, ok, latencyMs);
 			MaybeFlushMetrics();
 		}
 		catch
@@ -1097,38 +998,19 @@ public static class Logger
 	{
 		try
 		{
-			DateTime utcNow = DateTime.UtcNow;
-			if (utcNow < _nextMetricsFlushUtc)
-			{
-				return;
-			}
-			DateTime metricsWindowStartUtc;
-			List<KeyValuePair<string, MetricBucket>> list;
-			lock (_metricsLock)
-			{
-				if (utcNow < _nextMetricsFlushUtc)
-				{
-					return;
-				}
-				metricsWindowStartUtc = _metricsWindowStartUtc;
-				list = new List<KeyValuePair<string, MetricBucket>>(_metrics);
-				_metrics.Clear();
-				_metricsWindowStartUtc = utcNow;
-				_nextMetricsFlushUtc = utcNow.AddSeconds(180.0);
-			}
-			double value = Math.Max(1.0, (utcNow - metricsWindowStartUtc).TotalSeconds);
+			if (!Metrics.TryDrain(DateTime.UtcNow, out double value, out List<KeyValuePair<string, MetricWindow.Bucket>> list)) return;
 			if (list.Count <= 0)
 			{
 				Obs("Metrics", "rollup_empty", new Dictionary<string, object> { ["windowSec"] = Math.Round(value, 1) });
 				return;
 			}
 			WriteHumanLine(_modLogPath, "OBS-SUMMARY", $"window={Math.Round(value, 1)}s metrics={list.Count}");
-			foreach (KeyValuePair<string, MetricBucket> item in list)
+			foreach (KeyValuePair<string, MetricWindow.Bucket> item in list)
 			{
 				string key = item.Key;
-				MetricBucket metricBucket = item.Value ?? new MetricBucket();
-				double value2 = ((metricBucket.Count > 0) ? (metricBucket.SumMs / (double)metricBucket.Count) : 0.0);
-				WriteHumanLine(_modLogPath, "OBS-SUMMARY", $"{key}: count={metricBucket.Count} ok={metricBucket.Ok} err={metricBucket.Err} avgMs={Math.Round(value2, 2)} maxMs={Math.Round(metricBucket.MaxMs, 2)}");
+				MetricWindow.Bucket metricBucket = item.Value ?? new MetricWindow.Bucket();
+				double average = metricBucket.Count > 0 ? metricBucket.SumMs / metricBucket.Count : 0.0;
+				WriteHumanLine(_modLogPath, "OBS-SUMMARY", $"{key}: count={metricBucket.Count} ok={metricBucket.Ok} err={metricBucket.Err} avgMs={Math.Round(average, 2)} maxMs={Math.Round(metricBucket.MaxMs, 2)}");
 				Obs("Metrics", "rollup", new Dictionary<string, object>
 				{
 					["metric"] = key,
@@ -1136,7 +1018,7 @@ public static class Logger
 					["count"] = metricBucket.Count,
 					["ok"] = metricBucket.Ok,
 					["err"] = metricBucket.Err,
-					["avgMs"] = Math.Round(value2, 2),
+					["avgMs"] = Math.Round(average, 2),
 					["maxMs"] = Math.Round(metricBucket.MaxMs, 2)
 				});
 			}
@@ -1284,12 +1166,6 @@ public static class Logger
 		}
 	}
 
-	private static string NewTraceId()
-	{
-		long num = Interlocked.Increment(ref _traceSeed);
-		string text = DateTime.UtcNow.ToString("yyyyMMddHHmmssfff");
-		return "vf-" + text + "-" + num.ToString("x");
-	}
 
 	private static DuelSettings TryGetSettings()
 	{
@@ -1489,137 +1365,18 @@ public static class Logger
 
 	private static void EnqueueLogWrite(string path, string content, bool isVerbose = false, bool bypassBackpressure = false)
 	{
-		if (string.IsNullOrWhiteSpace(path) || content == null)
-		{
-			return;
-		}
-		if (!bypassBackpressure)
-		{
-			int queued = Volatile.Read(ref _logWriteQueueCount);
-			if (queued >= MaxLogWriteQueueItems && isVerbose)
-			{
-				Interlocked.Increment(ref _droppedVerboseLogCount);
-				TryEnqueueDroppedLogSummary();
-				return;
-			}
-			if (queued >= HardMaxLogWriteQueueItems)
-			{
-				if (isVerbose)
-				{
-					Interlocked.Increment(ref _droppedVerboseLogCount);
-				}
-				else
-				{
-					Interlocked.Increment(ref _droppedNormalLogCount);
-				}
-				TryEnqueueDroppedLogSummary();
-				return;
-			}
-		}
-		Interlocked.Increment(ref _logWriteQueueCount);
-		_logWriteQueue.Enqueue(new LogWriteWorkItem
-		{
-			Path = path,
-			Content = content,
-			IsVerbose = isVerbose
-		});
-		TryStartLogWriter();
+		if (!LogQueue.Enqueue(path, content, isVerbose, bypassBackpressure)) TryEnqueueDroppedLogSummary();
 	}
 
 	private static void TryEnqueueDroppedLogSummary()
 	{
 		try
 		{
-			if (!IsModLogicEnabled)
-			{
-				return;
-			}
-			long now = DateTime.UtcNow.Ticks;
-			long last = Interlocked.Read(ref _lastDroppedLogSummaryUtcTicks);
-			if (now - last < TimeSpan.FromSeconds(DroppedLogSummaryIntervalSeconds).Ticks)
-			{
-				return;
-			}
-			if (Interlocked.CompareExchange(ref _lastDroppedLogSummaryUtcTicks, now, last) != last)
-			{
-				return;
-			}
-			long verbose = Interlocked.Exchange(ref _droppedVerboseLogCount, 0L);
-			long normal = Interlocked.Exchange(ref _droppedNormalLogCount, 0L);
-			if (verbose <= 0 && normal <= 0)
-			{
-				return;
-			}
+			if (!IsModLogicEnabled) return;
+			if (!LogQueue.TryTakeDroppedSummary(DateTime.UtcNow.Ticks, out long verbose, out long normal)) return;
 			string text = DateTime.Now.ToString("HH:mm:ss");
-			string line = $"[{text}] [Logger] dropped verbose={verbose} normal={normal} queued={Volatile.Read(ref _logWriteQueueCount)}\n";
+			string line = $"[{text}] [Logger] dropped verbose={verbose} normal={normal} queued={LogQueue.Count}\n";
 			EnqueueLogWrite(_modLogPath, line, isVerbose: false, bypassBackpressure: true);
-		}
-		catch
-		{
-		}
-	}
-
-	private static void TryStartLogWriter()
-	{
-		if (Interlocked.CompareExchange(ref _logWriterRunning, 1, 0) != 0)
-		{
-			return;
-		}
-		Task.Run(ProcessLogWriteQueue);
-	}
-
-	private static void ProcessLogWriteQueue()
-	{
-		try
-		{
-			while (true)
-			{
-				Dictionary<string, StringBuilder> batches = new Dictionary<string, StringBuilder>(StringComparer.OrdinalIgnoreCase);
-				int batchCount = 0;
-				while (_logWriteQueue.TryDequeue(out var item))
-				{
-					Interlocked.Decrement(ref _logWriteQueueCount);
-					AppendLogWorkItemToBatch(item, batches, ref batchCount);
-					if (batchCount >= LogBatchFlushItemCount)
-					{
-						FlushLogBatches(batches);
-						batches.Clear();
-						batchCount = 0;
-					}
-				}
-				FlushLogBatches(batches);
-				Interlocked.Exchange(ref _logWriterRunning, 0);
-				if (_logWriteQueue.IsEmpty || Interlocked.CompareExchange(ref _logWriterRunning, 1, 0) != 0)
-				{
-					break;
-				}
-			}
-		}
-		catch
-		{
-			Interlocked.Exchange(ref _logWriterRunning, 0);
-			if (!_logWriteQueue.IsEmpty)
-			{
-				TryStartLogWriter();
-			}
-		}
-	}
-
-	private static void AppendLogWorkItemToBatch(LogWriteWorkItem item, Dictionary<string, StringBuilder> batches, ref int batchCount)
-	{
-		try
-		{
-			if (item == null || string.IsNullOrWhiteSpace(item.Path) || item.Content == null || !IsPathEnabled(item.Path) || batches == null)
-			{
-				return;
-			}
-			if (!batches.TryGetValue(item.Path, out var stringBuilder) || stringBuilder == null)
-			{
-				stringBuilder = new StringBuilder();
-				batches[item.Path] = stringBuilder;
-			}
-			stringBuilder.Append(item.Content);
-			batchCount++;
 		}
 		catch
 		{
@@ -1650,7 +1407,7 @@ public static class Logger
 		}
 	}
 
-	private static void WriteLogWorkItem(LogWriteWorkItem item)
+	private static void WriteLogWorkItem(BoundedLogWriteQueue.WorkItem item)
 	{
 		try
 		{
@@ -1670,17 +1427,8 @@ public static class Logger
 
 	private static void DrainQueuedLogWrites()
 	{
-		try
-		{
-			while (_logWriteQueue.TryDequeue(out var item))
-			{
-				Interlocked.Decrement(ref _logWriteQueueCount);
-				WriteLogWorkItem(item);
-			}
-		}
-		catch
-		{
-		}
+		try { LogQueue.Drain(); }
+		catch { }
 	}
 
 	private static void DrainQueuedTokenStatsWrites()

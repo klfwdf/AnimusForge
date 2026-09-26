@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "043b62b4318670e602015ac96740de476b5f4224",
+  "mainBaseline": "437925b856fae76b4e9ee207e96ba048f35d5a67",
+  "publishedBeforeThisWork": "10defeb4976f3ffa096a77e847fba254308f6aba",
+  "scope": "Full core closeout ACTIVE; this candidate closes normal Hero persona generation/legacy external entry/reroll request boundaries only",
+  "sourceBinding": "Final stage-debug-final.log and stage-release-final.log built working-tree C# identical to043b62b4 while HEAD was968ca283. The first Stage/API logs and final-evidence folder are intermediate only. API/actual-Courier and source-linked suites were rerun after the queued-reset fix; no product changes after final Stage.",
+  "verification": {
+    "personaAssertions": 125,
+    "personaCases": 26,
+    "reservationAssertionsIncluded": 12,
+    "originalAssertions": 114,
+    "originalFailedAssertions": 40,
+    "originalDeclarationsEqualMain": 4,
+    "validBehavioralMutations": 7,
+    "exactPersonaInverseGuards": 6,
+    "retainedB1InverseGuards": 15,
+    "sharedDispatcherAssertions": 37,
+    "historyAssertions": 852,
+    "nativeHistoryAssertions": 27,
+    "channelAssertions": 132,
+    "courierPostprocessAssertions": 39,
+    "courierHistoryAssertions": 122,
+    "teamPortAssertions": 308,
+    "teamPortMethods": 13,
+    "teamPortCalls": 31,
+    "teamPortMutations": 3,
+    "apiAssertions": 119,
+    "concurrentApiReads": 256,
+    "snapshotAssertions": 32,
+    "concurrentSnapshots": 128,
+    "snapshotMutations": 3,
+    "actualDllMetadataAssertions": 680,
+    "actualCourierHostReplay": "PASS (fixture ports, no live Campaign)",
+    "stageOutputs": 6,
+    "mainSyncDataKeys": 146,
+    "mainBehaviorTypes": 36,
+    "codeMapAnchors": 105,
+    "intermediateQueuedResetDefects": 2
+  },
+  "unverified": [
+    "consumer-side Native/Courier status polling and Scene preparation game reads",
+    "promoted companion persona and skills pipeline",
+    "Courier rule/lore/full message preparation",
+    "complete GameEnd/Mission/owner lifecycle",
+    "main-thread facts/hero lookup cost and B1 budget/backpressure",
+    "internal bidirectional services and versioned Native/Scene/Courier submit/result/cancel SDK",
+    "all main core outcomes; actual game, old-save, live Economy/AFEF, external sub-MOD execution"
+  ],
+  "notes": [
+    "Final125 assertions include12 reservation checks. Original114/40 failed uses the same26 case names but has one additional old HTTP-start prompt assertion when queued capture should retire; counts are not falsely equated. Failures are assertion counts, not distinct bug counts.",
+    "Original 4 executed methods exactly match main. Parser/game/profile store/network/UI surfaces in the harness are fixtures.",
+    "Existing MemorySummaryDispatcher queue is reused; its historical name is retained. This is not a new scheduler or complete per-job budget guarantee.",
+    "Legacy Ensure method remains on public MyBehavior with original parameters/default; no public V1 capability enabled.",
+    "Implicit ordinary auto-generation failure popup and reroll UI completion now go through owner thread checks.",
+    "Intermediate968ca283 failed2 added queued-reset UI assertions. Final043b62b4 reports retirement explicitly for rerolls and passes125/0 plus7 valid behavioral mutations."
+  ],
+  "sourceFiles": [
+    {
+      "path": "MyBehavior.PersonaGeneration.cs",
+      "normalizedSha256": "98e162a04bb7c65b06763b4e8ba3823a54cd204c9750b5d3dec20ebbdd229b5b"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "normalizedSha256": "deac4f2c9d718f8286f13892a43bf4fa1cb0f48755166ff21a4ce32158f64ee9"
+    },
+    {
+      "path": "Refactor/Runtime/NpcPersonaGenerationOwner.cs",
+      "normalizedSha256": "041cf88b5f053be54549080769ea38421c4a537a6733692380e50397950dd4e9"
+    },
+    {
+      "path": "tools/HeroPersonaGenerationTests/Harness.cs.txt",
+      "normalizedSha256": "341cd2c2ea3f2e0978702ee505cf969adf1bc28eb2fc8d670858f9e905631411"
+    },
+    {
+      "path": "tools/HeroPersonaGenerationTests/Reservations.cs.txt",
+      "normalizedSha256": "b73c660c5a82f98cc033a944e543c6e10f0ab86457b159c438e9b0b63fc0ad8a"
+    },
+    {
+      "path": "tools/HeroPersonaGenerationTests/run.py",
+      "normalizedSha256": "83587b6fb5572e7f519e3eccc6fdcfe625c90b28adef75823d1ab6db007029c7"
+    },
+    {
+      "path": "tools/HeroPersonaGenerationTests/source-review.json",
+      "normalizedSha256": "f10610ecc6491d55aee928715dbc6d0894fc5094c431546b577e30e523c261c7"
+    },
+    {
+      "path": "tools/HeroPersonaGenerationTests/source_parity.py",
+      "normalizedSha256": "c630b42d8c77b11cdc287a408d49a2f50df7ac729b5745cc46b054b7e9267666"
+    },
+    {
+      "path": "tools/HeroPersonaGenerationTests/test_source_parity.py",
+      "normalizedSha256": "5b83dda6994da47e8b884d98a3559ccfb3455d0e9736d38e7919966c8a888c64"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/source_parity.py",
+      "normalizedSha256": "f9bac7a43796d1ddb231613763b987728e34bb8d461b9b0b469d4720b5fd5490"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/ArtifactMetadata.cs",
+      "normalizedSha256": "bee3f5da133813b1dd27bbdf35e4fd38436a1730c896fe4d953cc5d5c8b3f9ef"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "eb49ef610f49b6d9fe8600c996f42beea469f402402ed7d897ed3e40f7dd268c"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "b155688fd4db9d2432c791f9a1c7f0ae2e284c14ef92d8e9a34a922060f1796c"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "429af5653b3dbfb479c6a0167e4a6bfc5983ca736225d1e527898a085248fe5b"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "255d863befa63d7cb67aede5999da16c211d837fbed47b2d49a58aa4bd796d7a"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "72bf99385051f5e39371a54c2f0d4b5148adbf57eca71b95c6250f080e3c1be9"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "0551ac06d2fa096bb0541c892011d80c4a6d3dbd89a23d56f90f8865080cba2a"
+    }
+  ],
+  "localEvidence": [
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-final.log",
+      "sha256": "10a2a7e4835b3b1efadea9eb1f1ee096b149d0280067c7d0c8ce5f2c6bf41668"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-original-final.log",
+      "sha256": "e14d5f1ea0f6cd89d6b5de4dc31ee744e621afbb70fef364452b3265de86ffd8"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-guards-final.log",
+      "sha256": "c63d463cbc68831235e003238bdd8259dd0d2b3de18466658e6680414f87602e"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/b1-guards-final.log",
+      "sha256": "ee5e234ee6195b8ff632e4ef52af6b300c7198780b84c38967d86c9fe6e44545"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/dispatcher-final.log",
+      "sha256": "c27d85b4e1c7b3bf7fa0a9b4995a7448882f7b9a6c07c8efb204ce260e0e59d8"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/team-ports-final.log",
+      "sha256": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/history-final.log",
+      "sha256": "241a0bdf47690abdc52329ad81e5a482d434f63f13ac5123ad0386cf71f438d6"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/native-history-final.log",
+      "sha256": "3f556e04e0a6295fbb5309c8295ca592a80f80e8d1c270201a8fa59d01b000cc"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/channel-final.log",
+      "sha256": "83b947d4ea8970a6a8c63954a915c357367e2b02710ff3fc6958f4f433ad53af"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/courier-postprocess-final.log",
+      "sha256": "db3245c31bbd5cdd653b23f698f5bc0c42fbcde1378f73ca198b1dac25ea7715"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/courier-history-final.log",
+      "sha256": "c7174feeecc51eaa4ba71e4bfac1a22969d994fd3d74e0064c141ac7286c3228"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/api-final.log",
+      "sha256": "5ad0c4f231a905a277efc43fcc43750fdb08301f8851f5f09056e8f3fdc7791c"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/actual-courier-host-final.log",
+      "sha256": "5657cd5c61cdf3acd5f2259028b83beed125e63e8275681a19592d031e8f1e35"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persistence-final.log",
+      "sha256": "8edc7b3500ff4e02b977fbae27c34ae2417e122269d28e7143e9275ed1b68dd2"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/stage-debug-final.log",
+      "sha256": "76069ab8ec28fbbe48de59ccb65f5336115b8eba609f1d0adeb398b907992eff"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/stage-release-final.log",
+      "sha256": "f6a38c11c0356eb581353b0fbec761fe5b5111c446511d071be1ac4ffe00cf5c"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/main-declaration-parity.log",
+      "sha256": "d9b11c895aa97bbf8bc314dc5b35b80b5dd295f4c7715d3ba8f111266465e074"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-v2-mutation-worker_capture.log",
+      "sha256": "b75fed82f562a5ea82ed815cec47d7916bdca7a452005c4149710eda73725ff3"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-v2-mutation-worker_commit.log",
+      "sha256": "1d0b9ab585e421d11b12fe22969daf52abb22462a9abcd8747b3b56ddd48e6da"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-v2-mutation-ignore_edit.log",
+      "sha256": "5cf4d132818591da96bc072e053de103fe4c650b44f024ce093c745d26e0b961"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-v2-mutation-stale_lease.log",
+      "sha256": "5ea9d49f53ede93651d8d3e302237ffe51dcfa2df8c3571672e6fba405f43a56"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-v2-mutation-release_new.log",
+      "sha256": "ef81820eac61e296dafe81a5054af24667707f71bcb20565312cf6d249703e56"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-v2-mutation-drop_voice.log",
+      "sha256": "e43aa2908ac623e533be9bc32a09ab28bf7a5d2515f3eac3b0d8da504f03faca"
+    },
+    {
+      "path": ".tmp/full-closeout-20260915/final-evidence-v2/persona-v2-mutation-false_queued_success.log",
+      "sha256": "5d67bfd3dbb47caafb272f2957ff6eb72589eeb157a1c04f252c1ef935352444"
+    }
+  ],
+  "delivery": {
+    "thisCandidatePushed": false,
+    "priorPushVerified": true,
+    "deployed": false,
+    "automationRestarted": false
+  }
+}

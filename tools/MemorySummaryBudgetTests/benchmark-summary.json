@@ -1,0 +1,522 @@
+{
+  "head": "19ed8e3dcf961bd2664491811ac500fa28405d29",
+  "candidateWriterSha256": "b2776a23b6f1445aac9cb193ebb823f518b1376046b195084451f6160895cbdb",
+  "baselineWriterSha256": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+  "normalization": "utf8-no-bom-lf",
+  "assertionsPerVariant": 65808,
+  "failuresPerVariant": 0,
+  "sourceHashComparisons": [
+    {
+      "kind": "daily",
+      "records": 128,
+      "chars": 256,
+      "digest": "135DBF2E5F591C1754697D849FE660F0ED25A4822BFAFC54E98A2777E5208CC8"
+    },
+    {
+      "kind": "daily",
+      "records": 1024,
+      "chars": 256,
+      "digest": "50B286298EAB19D201C65C098D1FF1234C4D493054CEF4AD25A5C3430DDD673F"
+    },
+    {
+      "kind": "daily",
+      "records": 4096,
+      "chars": 256,
+      "digest": "37D6AE534CC63659981B371D5CD73568C50C816841C411E19B9878CDA2B9D400"
+    },
+    {
+      "kind": "daily",
+      "records": 128,
+      "chars": 16384,
+      "digest": "F5D2DDE893564F72FF34A50B815A3B268BEE512D4A0E8D74DB6CD36840C8C3F9"
+    },
+    {
+      "kind": "major",
+      "records": 128,
+      "chars": 256,
+      "digest": "B838FC761D45E0EAED8A03426B452ECDC3BCCEB78D12D1620E73EF268C4AD005"
+    },
+    {
+      "kind": "major",
+      "records": 1024,
+      "chars": 256,
+      "digest": "EEDCD355EC033D1761634A5FE3200145D15B65D0A71A41858C87578A060BF21F"
+    },
+    {
+      "kind": "major",
+      "records": 4096,
+      "chars": 256,
+      "digest": "121A1013BF9A1E2737EAA6B376F88BCC12E6731F3FEB9CFD298D33496AA68B58"
+    },
+    {
+      "kind": "major",
+      "records": 128,
+      "chars": 16384,
+      "digest": "16B6FBA9AA3B95E259CEF072CE58C56D6CCB5773611DC87B4C1BC8290098A2B8"
+    },
+    {
+      "kind": "overview",
+      "records": 128,
+      "chars": 256,
+      "digest": "E48561E39E27ABB9FAC2676928F2CAC2D3F49EBB37922DE4CBB52EE53A18A661"
+    },
+    {
+      "kind": "overview",
+      "records": 1024,
+      "chars": 256,
+      "digest": "A1B01985C2810261644E348B6EC4E438227415D16C575BF55126829A862B5A42"
+    },
+    {
+      "kind": "overview",
+      "records": 4096,
+      "chars": 256,
+      "digest": "EFDB3E41792C75995196842DA3530B1DAED93B58480206C6B45ACD0FBFD9350C"
+    },
+    {
+      "kind": "overview",
+      "records": 128,
+      "chars": 16384,
+      "digest": "385FCDE4F1BEF2E3FBDDB48CB9B6A3DB1495FCE47F446F49851DEBB9C73DFE0B"
+    },
+    {
+      "kind": "daily",
+      "records": 1,
+      "chars": 2000000,
+      "digest": "C0751D65C61B022EE53B7BFCAA4C1E6B25EC8AB04599CFB79C4DBB8CC856ED9D"
+    }
+  ],
+  "rawMeasurements": [
+    {
+      "input": {
+        "kind": "daily",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768
+      },
+      "baseline": {
+        "kind": "daily",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768,
+        "operation": "raw-digest",
+        "median_ms": 0.4282,
+        "max_ms": 0.5356,
+        "median_allocated_bytes": 6160
+      },
+      "candidate": {
+        "kind": "daily",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768,
+        "operation": "raw-digest",
+        "median_ms": 0.2551,
+        "max_ms": 0.5507,
+        "median_allocated_bytes": 6160
+      }
+    },
+    {
+      "input": {
+        "kind": "daily",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144
+      },
+      "baseline": {
+        "kind": "daily",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144,
+        "operation": "raw-digest",
+        "median_ms": 2.8409,
+        "max_ms": 3.4885,
+        "median_allocated_bytes": 6032
+      },
+      "candidate": {
+        "kind": "daily",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144,
+        "operation": "raw-digest",
+        "median_ms": 1.6783,
+        "max_ms": 2.8417,
+        "median_allocated_bytes": 6032
+      }
+    },
+    {
+      "input": {
+        "kind": "daily",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576
+      },
+      "baseline": {
+        "kind": "daily",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576,
+        "operation": "raw-digest",
+        "median_ms": 8.4003,
+        "max_ms": 8.7968,
+        "median_allocated_bytes": 5008
+      },
+      "candidate": {
+        "kind": "daily",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576,
+        "operation": "raw-digest",
+        "median_ms": 6.3207,
+        "max_ms": 7.7256,
+        "median_allocated_bytes": 5008
+      }
+    },
+    {
+      "input": {
+        "kind": "daily",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152
+      },
+      "baseline": {
+        "kind": "daily",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152,
+        "operation": "raw-digest",
+        "median_ms": 12.5984,
+        "max_ms": 13.5198,
+        "median_allocated_bytes": 6160
+      },
+      "candidate": {
+        "kind": "daily",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152,
+        "operation": "raw-digest",
+        "median_ms": 11.1243,
+        "max_ms": 14.6081,
+        "median_allocated_bytes": 6160
+      }
+    },
+    {
+      "input": {
+        "kind": "major",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768
+      },
+      "baseline": {
+        "kind": "major",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768,
+        "operation": "raw-digest",
+        "median_ms": 0.3476,
+        "max_ms": 0.4558,
+        "median_allocated_bytes": 8464
+      },
+      "candidate": {
+        "kind": "major",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768,
+        "operation": "raw-digest",
+        "median_ms": 0.2016,
+        "max_ms": 0.2104,
+        "median_allocated_bytes": 8464
+      }
+    },
+    {
+      "input": {
+        "kind": "major",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144
+      },
+      "baseline": {
+        "kind": "major",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144,
+        "operation": "raw-digest",
+        "median_ms": 3.3577,
+        "max_ms": 3.6992,
+        "median_allocated_bytes": 8080
+      },
+      "candidate": {
+        "kind": "major",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144,
+        "operation": "raw-digest",
+        "median_ms": 1.8666,
+        "max_ms": 2.1017,
+        "median_allocated_bytes": 8080
+      }
+    },
+    {
+      "input": {
+        "kind": "major",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576
+      },
+      "baseline": {
+        "kind": "major",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576,
+        "operation": "raw-digest",
+        "median_ms": 12.9883,
+        "max_ms": 13.8438,
+        "median_allocated_bytes": 5008
+      },
+      "candidate": {
+        "kind": "major",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576,
+        "operation": "raw-digest",
+        "median_ms": 7.8091,
+        "max_ms": 9.8696,
+        "median_allocated_bytes": 5008
+      }
+    },
+    {
+      "input": {
+        "kind": "major",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152
+      },
+      "baseline": {
+        "kind": "major",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152,
+        "operation": "raw-digest",
+        "median_ms": 16.7788,
+        "max_ms": 19.5048,
+        "median_allocated_bytes": 8464
+      },
+      "candidate": {
+        "kind": "major",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152,
+        "operation": "raw-digest",
+        "median_ms": 10.6158,
+        "max_ms": 11.5198,
+        "median_allocated_bytes": 8464
+      }
+    },
+    {
+      "input": {
+        "kind": "overview",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768
+      },
+      "baseline": {
+        "kind": "overview",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768,
+        "operation": "raw-digest",
+        "median_ms": 0.6021,
+        "max_ms": 1.2264,
+        "median_allocated_bytes": 7360
+      },
+      "candidate": {
+        "kind": "overview",
+        "records": 128,
+        "chars_per_record": 256,
+        "source_text_code_units": 32768,
+        "operation": "raw-digest",
+        "median_ms": 0.4721,
+        "max_ms": 0.5042,
+        "median_allocated_bytes": 7360
+      }
+    },
+    {
+      "input": {
+        "kind": "overview",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144
+      },
+      "baseline": {
+        "kind": "overview",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144,
+        "operation": "raw-digest",
+        "median_ms": 4.1824,
+        "max_ms": 5.1724,
+        "median_allocated_bytes": 8944
+      },
+      "candidate": {
+        "kind": "overview",
+        "records": 1024,
+        "chars_per_record": 256,
+        "source_text_code_units": 262144,
+        "operation": "raw-digest",
+        "median_ms": 3.2065,
+        "max_ms": 4.4245,
+        "median_allocated_bytes": 8944
+      }
+    },
+    {
+      "input": {
+        "kind": "overview",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576
+      },
+      "baseline": {
+        "kind": "overview",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576,
+        "operation": "raw-digest",
+        "median_ms": 18.3597,
+        "max_ms": 20.5371,
+        "median_allocated_bytes": 6896
+      },
+      "candidate": {
+        "kind": "overview",
+        "records": 4096,
+        "chars_per_record": 256,
+        "source_text_code_units": 1048576,
+        "operation": "raw-digest",
+        "median_ms": 11.0186,
+        "max_ms": 11.9053,
+        "median_allocated_bytes": 6896
+      }
+    },
+    {
+      "input": {
+        "kind": "overview",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152
+      },
+      "baseline": {
+        "kind": "overview",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152,
+        "operation": "raw-digest",
+        "median_ms": 15.7474,
+        "max_ms": 16.1196,
+        "median_allocated_bytes": 7360
+      },
+      "candidate": {
+        "kind": "overview",
+        "records": 128,
+        "chars_per_record": 16384,
+        "source_text_code_units": 2097152,
+        "operation": "raw-digest",
+        "median_ms": 12.4696,
+        "max_ms": 15.3358,
+        "median_allocated_bytes": 7360
+      }
+    },
+    {
+      "input": {
+        "kind": "daily",
+        "records": 1,
+        "chars_per_record": 2000000,
+        "source_text_code_units": 2000000
+      },
+      "baseline": {
+        "kind": "daily",
+        "records": 1,
+        "chars_per_record": 2000000,
+        "source_text_code_units": 2000000,
+        "operation": "raw-digest",
+        "median_ms": 17.4701,
+        "max_ms": 17.7755,
+        "median_allocated_bytes": 7384
+      },
+      "candidate": {
+        "kind": "daily",
+        "records": 1,
+        "chars_per_record": 2000000,
+        "source_text_code_units": 2000000,
+        "operation": "raw-digest",
+        "median_ms": 13.1347,
+        "max_ms": 14.8788,
+        "median_allocated_bytes": 7384
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "name": "omit-string-length",
+      "exit": 1,
+      "passCount": 27,
+      "failCount": 65781
+    },
+    {
+      "name": "lose-high-code-unit",
+      "exit": 1,
+      "passCount": 319,
+      "failCount": 65489
+    },
+    {
+      "name": "skip-full-buffer",
+      "exit": 1,
+      "passCount": 65583,
+      "failCount": 225
+    }
+  ],
+  "limitations": [
+    "Synthetic microbenchmark with real extracted production models and source code, not LIVE or game frame timing.",
+    "Existing source capture uses more work than copy plus raw digest: prompt, sanitize and game rendering were not benchmarked.",
+    "Final full-source binding is retained; record/character frame caps remain unresolved."
+  ],
+  "evidence": {
+    ".tmp/memory-budget-20260916/writer-155f1b7a-manifest.json": "501086a1ec8160a63557460db992f810dd17729652360c02591f3880b6344b16",
+    ".tmp/memory-budget-20260916/writer-155f1b7a-build.log": "fdcd2313fcee6f1ff61bef42bea8dc965228ef33850aeb746a0213d1220e050f",
+    ".tmp/memory-budget-20260916/writer-155f1b7a-run.log": "0e78c76166e2430780781736bb34c69df2a94b6577793f0613b39310f79422f2",
+    ".tmp/memory-budget-20260916/writer-155f1b7a-measurements.json": "38cc3c644aebf851e3b205efc84a90da601a783908c456ff01183851c08324b4",
+    ".tmp/memory-budget-20260916/writer-155f1b7a-source-hashes.json": "6806b0a6dcf14df54ce70a72062597424b95f912189d17b765dbbebf4736930e",
+    ".tmp/memory-budget-20260916/current-manifest.json": "fe7b28d5345f86f5b1a3cb7697c26d1360f3a92d2bceaba7caa6299c1eeb23d7",
+    ".tmp/memory-budget-20260916/current-build.log": "5af90a6766d0467a651683df3389334f4c16a9c39ee5a73b76ecd66589c13cf9",
+    ".tmp/memory-budget-20260916/current-run.log": "764463e4bdd19b985df6e55eaad003b2242c7febb86ca20e1336586ee208a57d",
+    ".tmp/memory-budget-20260916/current-measurements.json": "47416b8889605ef355a2e1b07d078c040a79d77af6c248dbc62e5893669dbc83",
+    ".tmp/memory-budget-20260916/current-source-hashes.json": "6806b0a6dcf14df54ce70a72062597424b95f912189d17b765dbbebf4736930e",
+    ".tmp/memory-budget-20260916/omit-string-length-manifest.json": "6ad95a33f74815b8a03b85e1bc1e6cf0ba2d9b80c43ec028a427f1f32bc45b64",
+    ".tmp/memory-budget-20260916/omit-string-length-build.log": "b79933e867679342b58e80a654a379c9f46bc2c4fd9cfebf5df385094690d304",
+    ".tmp/memory-budget-20260916/omit-string-length-run.log": "8215e08e006a016ea5379a3eea5001941f47bf7a7ecf07464b83368d96bbedd6",
+    ".tmp/memory-budget-20260916/omit-string-length-measurements.json": "46cc7b43e82448dc6cf6c8a393c790b881f3cb54a0d54d43b615fe0c574d2f29",
+    ".tmp/memory-budget-20260916/omit-string-length-source-hashes.json": "50882f2015075bb75a8521af484b9171bc85b29914fc42bb4465189f02477f7c",
+    ".tmp/memory-budget-20260916/lose-high-code-unit-manifest.json": "7169bba4369f4d33c73bf0d09c941ada735db4b5c64db5905afd9c5bf87bc3bd",
+    ".tmp/memory-budget-20260916/lose-high-code-unit-build.log": "44cf439fb3b06f98ee36a891f50009d1e5bc8ab5e321a5a9c22ebe31f1dd9b8b",
+    ".tmp/memory-budget-20260916/lose-high-code-unit-run.log": "f8b8c94644abd28cd1ddd6af1288e5d4c47e024325b050139e442192c59e95bd",
+    ".tmp/memory-budget-20260916/lose-high-code-unit-measurements.json": "6ecf21666cee5ba0f2a1cb0efaf9eb818bf9c10e837e259fe7d299243ec62482",
+    ".tmp/memory-budget-20260916/lose-high-code-unit-source-hashes.json": "3591c3c7e2a29763ac1fa34f628f397157475599ae3a7cf3d24e6bb931ec9ec5",
+    ".tmp/memory-budget-20260916/skip-full-buffer-manifest.json": "a2d97f123323c898e68273635786b2319f71bed18fdd0331bc49ca51c82344a7",
+    ".tmp/memory-budget-20260916/skip-full-buffer-build.log": "51074f984f705e282f657c90db66571002ca72253a55d15580c3edbb9f7c8ceb",
+    ".tmp/memory-budget-20260916/skip-full-buffer-run.log": "4cfbe673fd75b546502020611b5bcca470bba4d7be8cdfd5c514d4262758f515",
+    ".tmp/memory-budget-20260916/skip-full-buffer-measurements.json": "2f2393fc09e2d7095349467e30ed551947e9988c052d23c2121953d04d58d802",
+    ".tmp/memory-budget-20260916/skip-full-buffer-source-hashes.json": "ae28e3ed84ef052bb16b09afa81127fdc119bc0aa98ed4736eddcb43f4564061"
+  },
+  "test_source_sha256": {
+    "tools/MemorySummaryBudgetTests/run.py": "7ab8a4d2a36e3ea2679e49147d292a6880a27cb8cb2700c9f83647ab71f86697",
+    "tools/MemorySummaryBudgetTests/Harness.cs.txt": "014991005d5e6bdc1fb11f2a602cef86e89d77f6a5c587cd6c2286d670cddf7f",
+    "tools/MemorySummaryBudgetTests/verify.py": "60718bedaa8b5c7363deab6ed979d8b95207a887e048da855e71725aa6f83c3a",
+    "tools/MemorySummaryBudgetTests/source_review.py": "b1c39a3d3942cac4543edcc925f205f9fd511425a484cc718370078f931d80b9"
+  },
+  "originalFingerprintRunner": {
+    "vectors": 9,
+    "guards": 5,
+    "failures": 0,
+    "path": "tools/MemorySummaryMainThreadBoundaryTests/run_fingerprint.py"
+  },
+  "sourceInverseGuards": {
+    "count": 6,
+    "failures": 0
+  }
+}

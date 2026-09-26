@@ -14,20 +14,11 @@ namespace AnimusForge;
 
 internal static class FreezeWatchdog
 {
-	internal sealed class ScopeState
-	{
-		public string Name;
-		public long StartTimestamp;
-		public int ThreadId;
-		public bool MainThreadScope;
-		public ScopeState Parent;
-	}
-
 	internal readonly struct ScopeToken : IDisposable
 	{
-		private readonly ScopeState _state;
+		private readonly FreezeWatchState.ScopeState _state;
 
-		internal ScopeToken(ScopeState state)
+		internal ScopeToken(FreezeWatchState.ScopeState state)
 		{
 			_state = state;
 		}
@@ -41,7 +32,6 @@ internal static class FreezeWatchdog
 	private const string LogSource = "FreezeWatchdog";
 	private const string SnapshotFileName = "FreezeWatchdog_LastCheckpoint.txt";
 	private const string TimelineFileName = "FreezeWatchdog_Timeline.txt";
-	private const int RecentEventLimit = 256;
 	private const double MainThreadSlowScopeMs = 250.0;
 	private const double BackgroundSlowScopeMs = 1000.0;
 	private const double FrameGapReportMs = 1000.0;
@@ -52,31 +42,16 @@ internal static class FreezeWatchdog
 	private static readonly long RuntimeContextRefreshTicks = TimeSpan.FromMilliseconds(250.0).Ticks;
 	private static readonly long RuntimeActivationRefreshTicks = TimeSpan.FromMilliseconds(250.0).Ticks;
 
-	private static readonly object SyncRoot = new object();
+	private static readonly FreezeWatchState State = new FreezeWatchState();
 	private static readonly object FileWriteRoot = new object();
 	private static readonly UTF8Encoding Utf8WithBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
-	private static readonly string[] RecentEvents = new string[RecentEventLimit];
-	private static int _recentEventNext;
-	private static int _recentEventCount;
-	private static long _frameIndex;
-	private static int _mainThreadId;
-	private static long _lastMainHeartbeatTimestamp;
-	private static long _lastMainHeartbeatUtcTicks;
-	private static string _mainThreadActiveScope = "";
-	private static long _mainThreadActiveScopeStartTimestamp;
-	private static string _lastCompletedMainScope = "";
-	private static long _lastCompletedMainScopeUtcTicks;
 	private static long _lastMonitorReportTimestamp;
-	private static string _cachedRuntimeContext = "state=unknown mission=False conversation=False menu=";
-	private static long _cachedRuntimeContextUtcTicks;
 	private static long _nextRuntimeContextRefreshUtcTicks;
 	private static long _nextActivationRefreshUtcTicks;
 	private static long _skippedFileWriteCount;
 	private static long _fileWriteSequence;
 	private static long _lastSnapshotWrittenSequence;
 	private static Thread _monitorThread;
-	private static long _monitorHeartbeatUtcTicks;
-	private static int _monitorStarted;
 	private static int _hangDumpEnabled = 1;
 	private static int _saveInProgress;
 	private static int _aiInteractionActive;
@@ -96,9 +71,6 @@ internal static class FreezeWatchdog
 	[return: MarshalAs(UnmanagedType.Bool)]
 	private static extern bool MiniDumpWriteDump(IntPtr processHandle, uint processId, SafeFileHandle fileHandle, MiniDumpType dumpType, IntPtr exceptionParam, IntPtr userStreamParam, IntPtr callbackParam);
 
-	[ThreadStatic]
-	private static ScopeState _currentScope;
-
 	internal static ScopeToken Scope(string name)
 	{
 		try
@@ -111,24 +83,7 @@ internal static class FreezeWatchdog
 			int threadId = Thread.CurrentThread.ManagedThreadId;
 			bool isMainThread = IsKnownMainThread(threadId);
 			long startTimestamp = Stopwatch.GetTimestamp();
-			ScopeState state = new ScopeState
-			{
-				Name = Sanitize(name, 180),
-				StartTimestamp = startTimestamp,
-				ThreadId = threadId,
-				MainThreadScope = isMainThread,
-				Parent = _currentScope
-			};
-			_currentScope = state;
-			if (isMainThread)
-			{
-				TouchMainHeartbeat(startTimestamp);
-				lock (SyncRoot)
-				{
-					_mainThreadActiveScope = state.Name;
-					_mainThreadActiveScopeStartTimestamp = startTimestamp;
-				}
-			}
+			FreezeWatchState.ScopeState state = State.EnterScope(name, threadId, isMainThread, startTimestamp);
 			RecordEvent("begin", state.Name, "", threadId);
 			return new ScopeToken(state);
 		}
@@ -150,15 +105,11 @@ internal static class FreezeWatchdog
 			}
 			EnsureMonitorStarted();
 			int threadId = Thread.CurrentThread.ManagedThreadId;
-			if (_mainThreadId == 0)
-			{
-				Interlocked.CompareExchange(ref _mainThreadId, threadId, 0);
-			}
+			State.EnsureMainThread(threadId);
 			long now = Stopwatch.GetTimestamp();
-			long previous = Interlocked.Exchange(ref _lastMainHeartbeatTimestamp, now);
-			Interlocked.Exchange(ref _lastMainHeartbeatUtcTicks, DateTime.UtcNow.Ticks);
+			long previous = State.BeginFrameHeartbeat(now, DateTime.UtcNow.Ticks);
 			Interlocked.Exchange(ref _hangDumpCapturedForCurrentStall, 0);
-			long frame = Interlocked.Increment(ref _frameIndex);
+			long frame = State.AdvanceFrame();
 			double dtMs = Math.Max(0.0, dt * 1000.0);
 			RecordEvent("frame_begin", "SubModule.OnApplicationTick", "dtMs=" + dtMs.ToString("0.00") + " frame=" + frame, threadId);
 			if (nowUtcTicks >= Interlocked.Read(ref _nextRuntimeContextRefreshUtcTicks))
@@ -191,18 +142,8 @@ internal static class FreezeWatchdog
 				return;
 			}
 			long now = Stopwatch.GetTimestamp();
-			TouchMainHeartbeat(now);
-			lock (SyncRoot)
-			{
-				if (_currentScope == null)
-				{
-					_mainThreadActiveScope = "";
-					_mainThreadActiveScopeStartTimestamp = 0L;
-				}
-				_lastCompletedMainScope = "SubModule.OnApplicationTick.frame_end";
-				_lastCompletedMainScopeUtcTicks = DateTime.UtcNow.Ticks;
-			}
-			RecordEvent("frame_end", "SubModule.OnApplicationTick", "frame=" + Interlocked.Read(ref _frameIndex), Thread.CurrentThread.ManagedThreadId);
+			State.EndFrame(now);
+			RecordEvent("frame_end", "SubModule.OnApplicationTick", "frame=" + State.FrameIndex, Thread.CurrentThread.ManagedThreadId);
 		}
 		catch
 		{
@@ -232,7 +173,7 @@ internal static class FreezeWatchdog
 		}
 	}
 
-	private static void CompleteScope(ScopeState state)
+	private static void CompleteScope(FreezeWatchState.ScopeState state)
 	{
 		try
 		{
@@ -242,33 +183,7 @@ internal static class FreezeWatchdog
 			}
 			long now = Stopwatch.GetTimestamp();
 			double elapsedMs = TimestampDeltaMs(state.StartTimestamp, now);
-			if (ReferenceEquals(_currentScope, state))
-			{
-				_currentScope = state.Parent;
-			}
-			else
-			{
-				_currentScope = state.Parent;
-			}
-			if (state.MainThreadScope)
-			{
-				TouchMainHeartbeat(now);
-				lock (SyncRoot)
-				{
-					if (state.Parent != null && state.Parent.MainThreadScope)
-					{
-						_mainThreadActiveScope = state.Parent.Name;
-						_mainThreadActiveScopeStartTimestamp = state.Parent.StartTimestamp;
-					}
-					else
-					{
-						_mainThreadActiveScope = "";
-						_mainThreadActiveScopeStartTimestamp = 0L;
-					}
-					_lastCompletedMainScope = state.Name + " elapsedMs=" + elapsedMs.ToString("0.00");
-					_lastCompletedMainScopeUtcTicks = DateTime.UtcNow.Ticks;
-				}
-			}
+			State.CompleteScope(state, now, elapsedMs);
 			RecordEvent("end", state.Name, "elapsedMs=" + elapsedMs.ToString("0.00"), state.ThreadId);
 			double threshold = state.MainThreadScope ? MainThreadSlowScopeMs : BackgroundSlowScopeMs;
 			if (elapsedMs >= threshold)
@@ -285,7 +200,7 @@ internal static class FreezeWatchdog
 	{
 		try
 		{
-			if (Interlocked.CompareExchange(ref _monitorStarted, 1, 0) != 0)
+			if (!State.TryStartMonitor())
 			{
 				return;
 			}
@@ -296,7 +211,7 @@ internal static class FreezeWatchdog
 				Priority = ThreadPriority.BelowNormal
 			};
 			_monitorThread.Start();
-			WriteImmediate("[WATCHDOG_START] schema=3 writer=dedicated_thread runtimeContext=main_thread_cached recentLimit=" + RecentEventLimit + " mainThread=" + Interlocked.CompareExchange(ref _mainThreadId, 0, 0), writeSnapshot: true);
+			WriteImmediate("[WATCHDOG_START] schema=3 writer=dedicated_thread runtimeContext=main_thread_cached recentLimit=" + FreezeWatchState.RecentEventLimit + " mainThread=" + State.MainThreadId, writeSnapshot: true);
 		}
 		catch
 		{
@@ -310,7 +225,7 @@ internal static class FreezeWatchdog
 			try
 			{
 				Thread.Sleep(MonitorIntervalMs);
-				Interlocked.Exchange(ref _monitorHeartbeatUtcTicks, DateTime.UtcNow.Ticks);
+				State.SetMonitorHeartbeat(DateTime.UtcNow.Ticks);
 				MonitorOnce();
 			}
 			catch
@@ -327,7 +242,7 @@ internal static class FreezeWatchdog
 			{
 				return;
 			}
-			long lastHeartbeat = Interlocked.Read(ref _lastMainHeartbeatTimestamp);
+			long lastHeartbeat = State.LastMainHeartbeatTimestamp;
 			if (lastHeartbeat <= 0L)
 			{
 				return;
@@ -497,28 +412,11 @@ internal static class FreezeWatchdog
 		}
 	}
 
-	private static void TouchMainHeartbeat(long timestamp)
-	{
-		try
-		{
-			Interlocked.Exchange(ref _lastMainHeartbeatTimestamp, timestamp);
-			Interlocked.Exchange(ref _lastMainHeartbeatUtcTicks, DateTime.UtcNow.Ticks);
-		}
-		catch
-		{
-		}
-	}
-
 	private static bool IsKnownMainThread(int threadId)
 	{
 		try
 		{
-			int known = Interlocked.CompareExchange(ref _mainThreadId, 0, 0);
-			if (known == 0)
-			{
-				return false;
-			}
-			return known == threadId;
+			return State.IsKnownMainThread(threadId);
 		}
 		catch
 		{
@@ -530,21 +428,7 @@ internal static class FreezeWatchdog
 	{
 		try
 		{
-			string line = DateTime.Now.ToString("HH:mm:ss.fff")
-				+ " frame=" + Interlocked.Read(ref _frameIndex)
-				+ " tid=" + threadId
-				+ " " + Sanitize(kind, 32)
-				+ " " + Sanitize(name, 180)
-				+ (string.IsNullOrWhiteSpace(detail) ? "" : " " + Sanitize(detail, 300));
-			lock (SyncRoot)
-			{
-				RecentEvents[_recentEventNext] = line;
-				_recentEventNext = (_recentEventNext + 1) % RecentEventLimit;
-				if (_recentEventCount < RecentEventLimit)
-				{
-					_recentEventCount++;
-				}
-			}
+			State.RecordEvent(kind, name, detail, threadId);
 		}
 		catch
 		{
@@ -603,38 +487,26 @@ internal static class FreezeWatchdog
 
 	private static string BuildStateSummary(bool includeRecent)
 	{
-		string activeScope;
-		long activeStart;
-		string lastCompleted;
-		long lastCompletedUtc;
-		long lastHeartbeatUtc;
-		lock (SyncRoot)
-		{
-			activeScope = _mainThreadActiveScope ?? "";
-			activeStart = _mainThreadActiveScopeStartTimestamp;
-			lastCompleted = _lastCompletedMainScope ?? "";
-			lastCompletedUtc = _lastCompletedMainScopeUtcTicks;
-			lastHeartbeatUtc = _lastMainHeartbeatUtcTicks;
-		}
-		double activeMs = activeStart > 0L ? TimestampDeltaMs(activeStart, Stopwatch.GetTimestamp()) : 0.0;
-		string summary = "frame=" + Interlocked.Read(ref _frameIndex)
-			+ " mainThread=" + Interlocked.CompareExchange(ref _mainThreadId, 0, 0)
+		FreezeWatchState.Snapshot state = State.Capture();
+		double activeMs = state.ActiveStart > 0L ? TimestampDeltaMs(state.ActiveStart, Stopwatch.GetTimestamp()) : 0.0;
+		string summary = "frame=" + state.FrameIndex
+			+ " mainThread=" + state.MainThreadId
 			+ " saveInProgress=" + Volatile.Read(ref _saveInProgress)
 			+ " aiInteractionActive=" + Volatile.Read(ref _aiInteractionActive)
-			+ " active=" + (string.IsNullOrWhiteSpace(activeScope) ? "(none)" : activeScope)
+			+ " active=" + (string.IsNullOrWhiteSpace(state.ActiveScope) ? "(none)" : state.ActiveScope)
 			+ " activeMs=" + activeMs.ToString("0.00")
-			+ " lastCompleted=" + (string.IsNullOrWhiteSpace(lastCompleted) ? "(none)" : Sanitize(lastCompleted, 180))
-			+ " lastCompletedAgeMs=" + AgeMsFromUtcTicks(lastCompletedUtc).ToString("0.00")
-			+ " heartbeatAgeMs=" + AgeMsFromUtcTicks(lastHeartbeatUtc).ToString("0.00")
-			+ " context={" + (Volatile.Read(ref _cachedRuntimeContext) ?? "state=unknown") + "}"
-			+ " contextAgeMs=" + AgeMsFromUtcTicks(Interlocked.Read(ref _cachedRuntimeContextUtcTicks)).ToString("0.00")
-			+ " monitorAgeMs=" + AgeMsFromUtcTicks(Interlocked.Read(ref _monitorHeartbeatUtcTicks)).ToString("0.00")
+			+ " lastCompleted=" + (string.IsNullOrWhiteSpace(state.LastCompleted) ? "(none)" : Sanitize(state.LastCompleted, 180))
+			+ " lastCompletedAgeMs=" + AgeMsFromUtcTicks(state.LastCompletedUtc).ToString("0.00")
+			+ " heartbeatAgeMs=" + AgeMsFromUtcTicks(state.LastHeartbeatUtc).ToString("0.00")
+			+ " context={" + state.RuntimeContext + "}"
+			+ " contextAgeMs=" + AgeMsFromUtcTicks(state.RuntimeContextUtc).ToString("0.00")
+			+ " monitorAgeMs=" + AgeMsFromUtcTicks(state.MonitorHeartbeatUtc).ToString("0.00")
 			+ " skippedWrites=" + Interlocked.Read(ref _skippedFileWriteCount)
 			+ " process={" + BuildProcessDiagnostics() + "}"
 			+ " diagnostics={" + Logger.GetFreezeWatchdogDiagnosticSnapshot() + " " + ShoutBehavior.GetFreezeWatchdogDiagnosticSnapshot() + "}";
 		if (includeRecent)
 		{
-			summary += " recent={" + BuildRecentEventsOneLine(12) + "}";
+			summary += " recent={" + State.RecentEventsOneLine(12) + "}";
 		}
 		return summary;
 	}
@@ -649,7 +521,7 @@ internal static class FreezeWatchdog
 			sb.AppendLine("trigger=" + Sanitize(trigger, 500));
 			sb.AppendLine("state=" + BuildStateSummary(includeRecent: false));
 			sb.AppendLine("recent:");
-			foreach (string line in BuildRecentEventsSnapshot())
+			foreach (string line in State.RecentEventsSnapshot())
 			{
 				sb.AppendLine(line);
 			}
@@ -660,57 +532,6 @@ internal static class FreezeWatchdog
 		catch
 		{
 			return "AnimusForge FreezeWatchdog snapshot failed.";
-		}
-	}
-
-	private static List<string> BuildRecentEventsSnapshot()
-	{
-		List<string> result = new List<string>();
-		try
-		{
-			lock (SyncRoot)
-			{
-				int start = (_recentEventNext - _recentEventCount + RecentEventLimit) % RecentEventLimit;
-				for (int i = 0; i < _recentEventCount; i++)
-				{
-					string line = RecentEvents[(start + i) % RecentEventLimit];
-					if (!string.IsNullOrWhiteSpace(line))
-					{
-						result.Add(line);
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return result;
-	}
-
-	private static string BuildRecentEventsOneLine(int maxCount)
-	{
-		try
-		{
-			List<string> snapshot = BuildRecentEventsSnapshot();
-			if (snapshot.Count == 0)
-			{
-				return "";
-			}
-			int start = Math.Max(0, snapshot.Count - Math.Max(1, maxCount));
-			StringBuilder sb = new StringBuilder();
-			for (int i = start; i < snapshot.Count; i++)
-			{
-				if (sb.Length > 0)
-				{
-					sb.Append(" | ");
-				}
-				sb.Append(Sanitize(snapshot[i], 180));
-			}
-			return sb.ToString();
-		}
-		catch
-		{
-			return "";
 		}
 	}
 
@@ -756,13 +577,11 @@ internal static class FreezeWatchdog
 			{
 				mission = false;
 			}
-			Volatile.Write(ref _cachedRuntimeContext, "state=" + activeState + " mission=" + mission + " conversation=" + conversation + " menu=" + menu);
-			Interlocked.Exchange(ref _cachedRuntimeContextUtcTicks, DateTime.UtcNow.Ticks);
+			State.SetRuntimeContext("state=" + activeState + " mission=" + mission + " conversation=" + conversation + " menu=" + menu, DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
-			Volatile.Write(ref _cachedRuntimeContext, "state=unknown");
-			Interlocked.Exchange(ref _cachedRuntimeContextUtcTicks, DateTime.UtcNow.Ticks);
+			State.SetRuntimeContext("state=unknown", DateTime.UtcNow.Ticks);
 		}
 	}
 
@@ -770,7 +589,7 @@ internal static class FreezeWatchdog
 	{
 		try
 		{
-			return Volatile.Read(ref _cachedRuntimeContext) ?? "state=unknown";
+			return State.CachedRuntimeContext;
 		}
 		catch
 		{
@@ -856,12 +675,7 @@ internal static class FreezeWatchdog
 	{
 		try
 		{
-			string text = (value ?? "").Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", " ").Trim();
-			if (maxLength > 0 && text.Length > maxLength)
-			{
-				text = text.Substring(0, maxLength) + "...";
-			}
-			return text;
+			return FreezeWatchState.Sanitize(value, maxLength);
 		}
 		catch
 		{

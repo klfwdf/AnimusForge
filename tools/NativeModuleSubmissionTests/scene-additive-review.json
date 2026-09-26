@@ -1,0 +1,203 @@
+{
+  "baseline": "39cf9d4724cc372a33503da270fd0c0e9dc6e6af",
+  "files": {
+    "Refactor/Modules/CoreDialogueContracts.cs": {
+      "beforeSha256": "fe79f283606dc0365e6bf9e23bd7d4d411fef870f034ac375f3532df225773e7",
+      "afterSha256": "61fc4a9160941ede3ebb339f8cd62dff7b9d0fd8b1990330f2e664f110765668",
+      "hunks": [
+        {
+          "oldStart": 1,
+          "oldEnd": 1,
+          "before": "",
+          "after": "using System.Collections.Generic;\nusing System.Collections.ObjectModel;\n"
+        },
+        {
+          "oldStart": 5,
+          "oldEnd": 5,
+          "before": "",
+          "after": "internal enum CoreDialogueChannel { Native, Scene, Courier }\n"
+        },
+        {
+          "oldStart": 9,
+          "oldEnd": 9,
+          "before": "",
+          "after": "internal sealed class CoreSceneUtterance\n{\n    internal CoreSceneUtterance(int speakerAgentIndex, string speakerName, string text)\n    {\n        SpeakerAgentIndex = speakerAgentIndex;\n        SpeakerName = speakerName ?? string.Empty;\n        Text = text ?? string.Empty;\n    }\n    internal int SpeakerAgentIndex { get; }\n    internal string SpeakerName { get; }\n    internal string Text { get; }\n}\n\n"
+        },
+        {
+          "oldStart": 12,
+          "oldEnd": 13,
+          "before": "        CoreDialogueEffectState effects, string reason, string reply = \"\")\n",
+          "after": "        CoreDialogueEffectState effects, string reason, string reply = \"\",\n        IReadOnlyList<CoreSceneUtterance> sceneUtterances = null)\n"
+        },
+        {
+          "oldStart": 16,
+          "oldEnd": 16,
+          "before": "",
+          "after": "        SceneUtterances = new ReadOnlyCollection<CoreSceneUtterance>(\n            new List<CoreSceneUtterance>(sceneUtterances ?? Array.Empty<CoreSceneUtterance>()));\n"
+        },
+        {
+          "oldStart": 23,
+          "oldEnd": 23,
+          "before": "",
+          "after": "    internal IReadOnlyList<CoreSceneUtterance> SceneUtterances { get; }\n"
+        }
+      ]
+    },
+    "Refactor/Modules/CoreDialogueOperation.cs": {
+      "beforeSha256": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a",
+      "afterSha256": "5f1fcd17960a8389cbfa744701174200b425c6bf13cd9cc3d50869f4ec6bc013",
+      "hunks": [
+        {
+          "oldStart": 1,
+          "oldEnd": 1,
+          "before": "",
+          "after": "using System.Collections.Generic;\n"
+        },
+        {
+          "oldStart": 18,
+          "oldEnd": 18,
+          "before": "",
+          "after": "    private IReadOnlyList<CoreSceneUtterance> _sceneUtterances = Array.Empty<CoreSceneUtterance>();\n"
+        },
+        {
+          "oldStart": 19,
+          "oldEnd": 20,
+          "before": "    internal CoreDialogueOperation(string clientId, string requestId, string playerText)\n",
+          "after": "    internal CoreDialogueOperation(string clientId, string requestId, string playerText,\n        CoreDialogueChannel channel = CoreDialogueChannel.Native, string contextIdentity = \"\")\n"
+        },
+        {
+          "oldStart": 22,
+          "oldEnd": 22,
+          "before": "",
+          "after": "        Channel = channel; ContextIdentity = contextIdentity;\n"
+        },
+        {
+          "oldStart": 27,
+          "oldEnd": 27,
+          "before": "",
+          "after": "    internal CoreDialogueChannel Channel { get; }\n    internal string ContextIdentity { get; }\n"
+        },
+        {
+          "oldStart": 53,
+          "oldEnd": 54,
+          "before": "    internal void RecordOwnerCompletion(string reply)\n",
+          "after": "    internal void RecordOwnerCompletion(string reply, IReadOnlyList<CoreSceneUtterance> sceneUtterances = null)\n"
+        },
+        {
+          "oldStart": 60,
+          "oldEnd": 60,
+          "before": "",
+          "after": "            if (sceneUtterances != null) _sceneUtterances = new List<CoreSceneUtterance>(sceneUtterances).AsReadOnly();\n        }\n    }\n\n    internal void RecordSceneProgress(IReadOnlyList<CoreSceneUtterance> sceneUtterances)\n    {\n        lock (_gate)\n        {\n            if (_snapshot.State != CoreDialogueState.Running) return;\n            _sceneUtterances = new List<CoreSceneUtterance>(sceneUtterances ?? Array.Empty<CoreSceneUtterance>()).AsReadOnly();\n            _snapshot = Result(CoreDialogueState.Running, _snapshot.Effects, _snapshot.ReasonCode);\n"
+        },
+        {
+          "oldStart": 93,
+          "oldEnd": 94,
+          "before": "        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason, reply);\n",
+          "after": "        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason, reply, _sceneUtterances);\n"
+        }
+      ]
+    },
+    "Refactor/Modules/CoreDialogueClient.cs": {
+      "beforeSha256": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3",
+      "afterSha256": "b453faa9557fb92d5d9969401a0f933e73b62f5334b9d946c88cdc7d73b453a1",
+      "hunks": [
+        {
+          "oldStart": 27,
+          "oldEnd": 27,
+          "before": "",
+          "after": "        => Submit(CoreDialogueChannel.Native, \"\", requestId, playerText, _submitNative);\n\n    internal CoreDialogueOperation SubmitScene(string contextTicket, string requestId, string playerText)\n        => SubmitForContext(CoreDialogueChannel.Scene, contextTicket, requestId, playerText,\n            ShoutBehavior.SubmitModuleSceneDialogue);\n\n    internal string CaptureSceneContextTicket()\n    {\n        lock (_gate) if (_disposed) return null;\n        string ticket = ShoutBehavior.IssueModuleSceneTicket(ClientId);\n        if (ticket == null) return null;\n        lock (_gate) if (!_disposed) return ticket;\n        ShoutBehavior.RevokeModuleSceneTickets(ClientId);\n        return null;\n    }\n\n    // Future Scene/Courier callers must supply an AF-issued context identity. This fingerprint\n    // does not validate a ticket: the real owner must claim its UI context before side effects.\n    internal CoreDialogueOperation SubmitForContext(CoreDialogueChannel channel, string contextIdentity,\n        string requestId, string playerText, Action<CoreDialogueOperation> dispatch)\n        => channel == CoreDialogueChannel.Scene || channel == CoreDialogueChannel.Courier\n            ? Submit(channel, contextIdentity, requestId, playerText, dispatch)\n            : Rejected(requestId, \"dialogue.invalid_request\");\n\n    private CoreDialogueOperation Submit(CoreDialogueChannel channel, string contextIdentity,\n        string requestId, string playerText, Action<CoreDialogueOperation> dispatch)\n"
+        },
+        {
+          "oldStart": 34,
+          "oldEnd": 34,
+          "before": "",
+          "after": "            if (channel != CoreDialogueChannel.Native && channel != CoreDialogueChannel.Scene\n                && channel != CoreDialogueChannel.Courier)\n                return Rejected(requestId, \"dialogue.invalid_request\");\n            if ((channel == CoreDialogueChannel.Native && !string.Equals(contextIdentity, \"\", StringComparison.Ordinal))\n                || (channel != CoreDialogueChannel.Native && (string.IsNullOrEmpty(contextIdentity)\n                    || contextIdentity.Length > 128 || dispatch == null)))\n                return Rejected(requestId, \"dialogue.invalid_request\");\n"
+        },
+        {
+          "oldStart": 35,
+          "oldEnd": 36,
+          "before": "                return string.Equals(operation.PlayerText, playerText, StringComparison.Ordinal)\n",
+          "after": "                return operation.Channel == channel\n                    && string.Equals(operation.ContextIdentity, contextIdentity, StringComparison.Ordinal)\n                    && string.Equals(operation.PlayerText, playerText, StringComparison.Ordinal)\n"
+        },
+        {
+          "oldStart": 39,
+          "oldEnd": 40,
+          "before": "            operation = new CoreDialogueOperation(ClientId, requestId, playerText);\n",
+          "after": "            operation = new CoreDialogueOperation(ClientId, requestId, playerText, channel, contextIdentity);\n"
+        },
+        {
+          "oldStart": 42,
+          "oldEnd": 43,
+          "before": "        try { _submitNative(operation); }\n",
+          "after": "        try { dispatch(operation); }\n"
+        },
+        {
+          "oldStart": 58,
+          "oldEnd": 58,
+          "before": "",
+          "after": "        ShoutBehavior.RevokeModuleSceneTickets(ClientId);\n"
+        }
+      ]
+    },
+    "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs": {
+      "beforeSha256": "1fcba904516830e56da5aa4a58c013a335088f1c31c3bff40f7c586ffe685fbe",
+      "afterSha256": "09b00efcd70e3c24d7df6478e3102e209acc5e8e3f55f415f2c59b6109d2a33b",
+      "hunks": [
+        {
+          "oldStart": 1,
+          "oldEnd": 1,
+          "before": "",
+          "after": "using System.Collections.Generic;\nusing System.Collections.ObjectModel;\n"
+        },
+        {
+          "oldStart": 10,
+          "oldEnd": 10,
+          "before": "",
+          "after": "\n/// <summary>Scene-only detached utterance; the index is diagnostic, not an Agent handle.</summary>\npublic sealed class AfSceneUtterance\n{\n    public int SpeakerAgentIndex { get; }\n    public string SpeakerName { get; }\n    public string Text { get; }\n    internal AfSceneUtterance(CoreSceneUtterance source)\n    {\n        SpeakerAgentIndex = source.SpeakerAgentIndex;\n        SpeakerName = source.SpeakerName;\n        Text = source.Text;\n    }\n}\n"
+        },
+        {
+          "oldStart": 21,
+          "oldEnd": 21,
+          "before": "",
+          "after": "    public IReadOnlyList<AfSceneUtterance> SceneUtterances { get; }\n"
+        },
+        {
+          "oldStart": 29,
+          "oldEnd": 29,
+          "before": "",
+          "after": "        var utterances = new List<AfSceneUtterance>(source.SceneUtterances.Count);\n        foreach (CoreSceneUtterance utterance in source.SceneUtterances) utterances.Add(new AfSceneUtterance(utterance));\n        SceneUtterances = new ReadOnlyCollection<AfSceneUtterance>(utterances);\n"
+        },
+        {
+          "oldStart": 49,
+          "oldEnd": 50,
+          "before": "/// One isolated consumer namespace. Native uses the currently active AF conversation, not an arbitrary Hero.\n",
+          "after": "/// One isolated consumer namespace. Native uses the active AF conversation; Scene claims an AF-issued UI context ticket.\n"
+        },
+        {
+          "oldStart": 62,
+          "oldEnd": 62,
+          "before": "",
+          "after": "    /// <summary>Main-thread preview of the active Scene shout selection; null means no eligible context.</summary>\n    public string CaptureSceneContextTicket() => _client.CaptureSceneContextTicket();\n    /// <summary>Claim one opaque Scene ticket. Cancellation only wins before the host's main-thread claim.</summary>\n    public AfDialogueOperation SubmitScene(string contextTicket, string requestId, string playerText)\n        => new AfDialogueOperation(_client.SubmitScene(contextTicket, requestId, playerText));\n"
+        }
+      ]
+    },
+    "src/modules/AF.Module.PublicApi/V1/AfApi.cs": {
+      "beforeSha256": "5e5524aec712fd8b94cd59096301e1cbadae66d231d7cc80f609967b910d205c",
+      "afterSha256": "ce3433e34f09277859f25b2c49b21328090b4a069f47488b2dee5bf3e8c8b375",
+      "hunks": [
+        {
+          "oldStart": 10,
+          "oldEnd": 11,
+          "before": "/// V1 提供只读目录和 Native 请求票据；Scene/Courier 仍未开放，不得绕过其未完成边界。\n",
+          "after": "/// V1 提供只读目录、Native 与 Scene 请求票据；Courier 仍未开放。\n"
+        },
+        {
+          "oldStart": 22,
+          "oldEnd": 23,
+          "before": "            Unsupported(AfCapabilityIds.SceneSubmit),\n",
+          "after": "            new AfCapabilityInfo(AfCapabilityIds.SceneSubmit, AfCapabilityState.Available, \"api.available\"),\n"
+        }
+      ]
+    }
+  }
+}

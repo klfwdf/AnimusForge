@@ -1,0 +1,107 @@
+// Real publication/index semantics live in Product.cs and the production partial.
+// The fixture owns only deterministic host values, operation counters and fault delivery.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TaleWorlds.CampaignSystem;
+namespace TaleWorlds.CampaignSystem { public sealed class Hero { public string StringId; public static Hero MainHero=new(){StringId="player"}; } }
+namespace AnimusForge {
+ static class MaterialsProbe {
+  public static int Day=10,Rebuilds,RebuildKeys,FallbackVisits,FailAt;
+  public static bool InRebuild,FailInsert;
+  public static void Reset(){Day=10;Rebuilds=0;RebuildKeys=0;FallbackVisits=0;FailAt=0;InRebuild=false;FailInsert=false;}
+  public static void Key(){if(InRebuild){RebuildKeys++;if(FailAt>0&&RebuildKeys==FailAt)throw new InvalidOperationException("controlled index build failure");}}
+  public static bool FallbackVisit(){FallbackVisits++;return true;}
+  public static void AfterAppend(){if(FailInsert)throw new InvalidOperationException("controlled index insertion failure");}
+ }
+ public static class PlayerNotorietyBehavior {
+  public static string RenderPlayerHistoryMaterialForExternal(string value)=>"H:"+(value??"");
+  public static string RenderPlayerNamedReferenceForExternal(string value)=>value??"";
+ }
+ public partial class MyBehavior {
+  List<EventSourceMaterialEntry> _eventSourceMaterials=new();
+  Dictionary<string,EventSourceMaterialEntry> _eventSourceMaterialIndex=new(StringComparer.OrdinalIgnoreCase);
+  int _npcActionGlobalOrderCounter;
+  static int GetCurrentGameDayIndexSafe()=>MaterialsProbe.Day;
+  static string GetCurrentGameDateTextSafe()=>"Fixture day "+MaterialsProbe.Day;
+  static string GetHeroId(Hero hero)=>hero?.StringId??"";
+  static void Check(bool condition,string message){if(!condition)throw new Exception(message);}
+  static MyBehavior Owner(){MaterialsProbe.Reset();return new();}
+  void Record(string key,string text="body",int day=10,string date=" date ",bool world=false,bool kingdom=false,string kind="event",string actor="actor")=>RecordEventSourceMaterial(kind," Label ",text,key," Kingdom "," Town ",world,kingdom,actor," ActorKingdom ",day,date);
+  static EventSourceMaterialEntry Entry(string key,string text,int sequence=1,int day=10)=>new(){StableKey=key,SnapshotText=text,Sequence=sequence,Day=day,GameDate="loaded date",Label="loaded",MaterialKind="event"};
+  static void AppendAndUpdate(){
+   var b=Owner();b.Record(" KEY "," first\r\nline ",world:true);var entry=b._eventSourceMaterials.Single();int sequence=entry.Sequence;
+   Check(entry.StableKey=="key"&&entry.SnapshotText=="first  line"&&entry.Label=="Label"&&entry.GameDate=="date"&&entry.KingdomId=="Kingdom"&&entry.SettlementId=="Town"&&entry.ActorKingdomId=="ActorKingdom","actual append normalization changed");
+   b.Record("kEy","new",date:"changed date",kingdom:true);Check(b._eventSourceMaterials.Count==1&&ReferenceEquals(entry,b._eventSourceMaterials[0]),"update duplicated or replaced live entry");
+   Check(entry.Sequence==sequence&&b._npcActionGlobalOrderCounter==sequence&&entry.GameDate=="date"&&entry.IncludeInWorld&&entry.IncludeInKingdom&&entry.SnapshotText=="new","update changed ordering/date or lost OR flags");
+   b.Record("KEY","next day",11);Check(b._eventSourceMaterials.Count==2&&b._eventSourceMaterials.Last().Sequence==sequence+1,"same key on next day should append");
+  }
+  static void Rendering(string mode){
+   var b=Owner();string kind=mode=="kind"?" public_daily_memory ":"event",actor=mode=="actor"?" PLAYER ":"actor",key=mode=="key"?" player_key ":"key";
+   b.Record(key,kind:kind,actor:actor);Check(b._eventSourceMaterials.Single().SnapshotText=="H:body","actual player material classification bypassed renderer");
+  }
+  static void KeySemantics(string mode){
+   var b=Owner();if(mode=="null"){b.Record(null,"one");b.Record(null,"two");Check(b._eventSourceMaterials.Count==2&&b._eventSourceMaterials[0].StableKey=="label:one","null key fallback changed");}
+   else if(mode=="empty"){b.Record("","one");b.Record("  ","two");Check(b._eventSourceMaterials.Count==1&&b._eventSourceMaterials[0].StableKey==""&&b._eventSourceMaterials[0].SnapshotText=="two","empty key was wrongly converted to fallback");}
+   else {b.Record("key","   ");Check(b._eventSourceMaterials.Count==0&&b._npcActionGlobalOrderCounter==0,"blank snapshot generated a material");}
+  }
+  static void ReplacedSource(string mode){
+   var b=Owner();b.Record("key","orphan");var orphan=b._eventSourceMaterials.Single();var replacement=Entry("KEY","replacement",40);
+   if(mode=="replace-list")b._eventSourceMaterials=new(){replacement};
+   else if(mode=="clear-add"){b._eventSourceMaterials.Clear();b._eventSourceMaterials.Add(replacement);}
+   else if(mode=="slot")b._eventSourceMaterials[0]=replacement;
+   else if(mode=="exception-reset")b._eventSourceMaterials=new();
+   else if(mode=="null-source")b._eventSourceMaterials=null;
+   else if(mode=="exhausted-probe"){for(int i=0;i<20;i++)b.Record("key","orphan");b._eventSourceMaterials[0]=replacement;}
+   else throw new Exception("unknown source mutation");
+   b.Record("key","accepted new source");Check(orphan.SnapshotText=="orphan","stale index updated an entry detached from the live collection");
+   Check(b._eventSourceMaterials.Count==1&&b._eventSourceMaterials[0].SnapshotText=="accepted new source","actual material silently lost after source replacement");
+   if(mode!="exception-reset"&&mode!="null-source")Check(ReferenceEquals(b._eventSourceMaterials[0],replacement)&&replacement.Sequence==40,"source replacement should update existing live material, not append");
+  }
+  static void RebuildLoadDuplicates(bool empty){
+   var b=Owner();var first=Entry(empty?"":" Same ","first",2);var last=Entry(empty?"":"SAME","last",9);
+   b._eventSourceMaterials=SanitizeEventSourceMaterials(new(){last,null,Entry("bad"," "),first});b.RebuildEventSourceMaterialIndex();var winner=b._eventSourceMaterials[empty?0:1];var other=b._eventSourceMaterials[empty?1:0];
+   b.Record(empty?"":"same","updated",date:"not retained");Check(winner.SnapshotText=="updated"&&other.SnapshotText==(empty?"last":"first"),"loaded duplicate winner changed");
+   Check(winner.Sequence==(empty?2:9)&&winner.GameDate=="loaded date"&&b._eventSourceMaterials.Count==2,"load update changed sequence/date/count");
+  }
+  static void NullIndex(){var b=Owner();b.Record("key");var original=b._eventSourceMaterials[0];b._eventSourceMaterialIndex=null;b.Record("KEY","after null index");Check(b._eventSourceMaterials.Count==1&&ReferenceEquals(b._eventSourceMaterials[0],original)&&original.SnapshotText=="after null index","null-index rebuild missed live entry");}
+  static void ReplacedMap(){var b=Owner();b.Record("key");var original=b._eventSourceMaterials[0];b._eventSourceMaterialIndex=new(StringComparer.OrdinalIgnoreCase);b.Record("key","updated");Check(b._eventSourceMaterials.Count==1&&original.SnapshotText=="updated","replacement map was incorrectly trusted as complete");}
+  static void RawNegativeDay(bool blank){
+   var b=Owner();string key=blank?"":"same";var zero=Entry(key,"zero",2,0);var negative=Entry(key,"negative",3,-1);b._eventSourceMaterials=new(){zero,negative};b.RebuildEventSourceMaterialIndex();b.Record(key,"updated",0);
+   Check((blank?zero:negative).SnapshotText=="updated"&&(blank?negative:zero).SnapshotText==(blank?"negative":"zero"),"raw negative day changed original blank fallback/named clamped-index semantics");Check(b._eventSourceMaterials.Count==2,"raw negative input unexpectedly appended");
+  }
+  static void SanitizerContract(){
+   var b=Owner();var entry=Entry(null," raw\r\nmaterial ",-2,-4);entry.Label=" Label ";entry.GameDate=" date ";entry.IncludeInWorld=true;
+   var sanitized=SanitizeEventSourceMaterials(new(){null,Entry("drop"," "),entry});var output=sanitized.Single();
+   Check(!ReferenceEquals(output,entry)&&entry.Day==-4&&entry.Sequence==-2&&entry.SnapshotText==" raw\r\nmaterial ","sanitizer unexpectedly published or mutated source");
+   Check(output.Day==0&&output.Sequence==0&&output.StableKey=="raw  material"&&output.SnapshotText=="raw  material"&&output.Label=="Label"&&output.GameDate=="date"&&output.IncludeInWorld,"real load sanitizer normalization contract changed");
+  }
+  static void FailedRebuild(){
+   var b=Owner();b.Record("old");var oldIndex=b._eventSourceMaterialIndex;b._eventSourceMaterials=new(){Entry("a","A"),Entry("b","B"),Entry("c","C")};MaterialsProbe.RebuildKeys=0;MaterialsProbe.FailAt=2;bool failed=false;
+   try{b.RebuildEventSourceMaterialIndex();}catch(InvalidOperationException ex){failed=ex.Message=="controlled index build failure";}finally{MaterialsProbe.FailAt=0;}
+   Check(failed,"controlled actual second-key rebuild failure did not execute");Check(ReferenceEquals(oldIndex,b._eventSourceMaterialIndex)&&oldIndex.Count==1,"failed build published a partial replacement index");
+   b.Record("c","recovered");Check(b._eventSourceMaterials.Count==3&&b._eventSourceMaterials[2].SnapshotText=="recovered","failed rebuild left index authoritative for wrong source");
+  }
+  static void FailedIndexInsertion(){
+   var b=Owner();b.Record("first");MaterialsProbe.FailInsert=true;bool failed=false;
+   try{b.Record("second","partially appended");}catch(InvalidOperationException ex){failed=ex.Message=="controlled index insertion failure";}finally{MaterialsProbe.FailInsert=false;}
+   Check(failed&&b._eventSourceMaterials.Count==2,"fixture did not fail between actual source append and index insertion");var entry=b._eventSourceMaterials[1];int sequence=entry.Sequence;
+   b.Record("second","recovered");Check(b._eventSourceMaterials.Count==2&&ReferenceEquals(entry,b._eventSourceMaterials[1])&&entry.Sequence==sequence&&entry.SnapshotText=="recovered","index insertion retry duplicated/lost actual partially appended source");
+  }
+  static void FreshKeyCost(){
+   var b=Owner();b._eventSourceMaterials=Enumerable.Range(0,2000).Select(i=>Entry("existing-"+i,"body",i+1)).ToList();b._npcActionGlobalOrderCounter=2000;b.RebuildEventSourceMaterialIndex();int baselineBuilds=MaterialsProbe.Rebuilds;MaterialsProbe.FallbackVisits=0;
+   for(int i=0;i<50;i++)b.Record("fresh-"+i);Check(b._eventSourceMaterials.Count==2050,"large-source fresh append lost material");
+   Console.WriteLine($"MATERIALS_COST historical=2000 fresh=50 fallback_visits={MaterialsProbe.FallbackVisits} initial_rebuilds={baselineBuilds} subsequent_rebuilds={MaterialsProbe.Rebuilds-baselineBuilds}");
+   Check(MaterialsProbe.FallbackVisits==0,"every fresh key rescanned historical material");Check(MaterialsProbe.Rebuilds==baselineBuilds,"own append invalidated index and caused repeated full rebuild");
+   b._eventSourceMaterials=b._eventSourceMaterials.ToList();b.Record("fresh-0","after replacement");Check(MaterialsProbe.Rebuilds==baselineBuilds+1,"source replacement did not cause exactly one rebuild");b.Record("fresh-next");Check(MaterialsProbe.Rebuilds==baselineBuilds+1,"stable source unexpectedly rebuilt twice");
+  }
+  public static int Main(){
+   var cases=new List<(string Name,Action Run)>{("append-update-preserve-order-date-flags",AppendAndUpdate),("null-index-rebuild",NullIndex),("replaced-map-rebuild",ReplacedMap),("raw-negative-blank-key",()=>RawNegativeDay(true)),("raw-negative-named-key",()=>RawNegativeDay(false)),("load-sanitizer-contract",SanitizerContract),("loaded-last-wins",()=>RebuildLoadDuplicates(false)),("loaded-empty-key-first-match",()=>RebuildLoadDuplicates(true)),("build-failure-no-half-publication",FailedRebuild),("failed-insert-after-real-append",FailedIndexInsertion),("large-history-fresh-key-cost",FreshKeyCost)};
+   foreach(var mode in new[]{"kind","actor","key"}){var m=mode;cases.Add(("player-render-"+m,()=>Rendering(m)));}
+   foreach(var mode in new[]{"null","empty","blank-text"}){var m=mode;cases.Add(("key-semantics-"+m,()=>KeySemantics(m)));}
+   foreach(var mode in new[]{"replace-list","clear-add","slot","exception-reset","null-source","exhausted-probe"}){var m=mode;cases.Add(("live-source-"+m,()=>ReplacedSource(m)));}
+   int failed=0;foreach(var test in cases){try{test.Run();Console.WriteLine("PASS "+test.Name);}catch(Exception ex){failed++;Console.WriteLine("FAIL "+test.Name+": "+ex.Message);}}
+   Console.WriteLine($"MATERIALS_RESULT scenarios={cases.Count} failures={failed} actual_record_index_sanitize=true game_save=NOT_TESTED");return failed==0?0:1;
+  }
+ }
+}

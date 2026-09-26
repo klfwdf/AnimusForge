@@ -1,0 +1,41 @@
+{
+  "baseline": "00574541",
+  "files": {
+    "ShoutBehavior.cs": {
+      "beforeSha256": "063fe2d6ebd2b62455a20ebf7680faa7020a098467719adaaa1943af6e433c5b",
+      "afterSha256": "956987812c4b94bb4827f846bd9337aab693294a8d6557e7914b79a5c8d8b753",
+      "edits": [
+        {
+          "before": "\t\t\t\t\tpostprocessReply = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);\n\t\t\t\t}\n\t\t\t\treturn true;\n",
+          "after": "\t\t\t\t\tpostprocessReply = BuildFallbackSceneTauntSpeech(nativeRawSceneTauntEscalated);\n\t\t\t\t}\n\t\t\t\t// The observer reads Mission/Agents. Keep it with the validated raw actions on\n\t\t\t\t// their owning thread, before this callback releases the worker continuation.\n\t\t\t\tSubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);\n\t\t\t\treturn true;\n",
+          "count": 1
+        },
+        {
+          "before": "\t\t// Native AI conversation replies do not pass through AF's scene-shout\n\t\t// publication hook. Feed the completed natural prose into the same\n\t\t// SceneActions parser so descriptions such as “他慢慢跪下并指向旁边”\n\t\t// work in the conversation input shown in the native dialogue screen.\n\t\tSubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);\n",
+          "after": "",
+          "count": 1
+        },
+        {
+          "before": "\t\tstring cleaned = StripStageDirectionsForPassiveShout(postprocessReply);\n\t\tstring nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);\n\t\tbool nativeTtsDispatchedBeforePostprocess = false;\n\t\tif (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))\n\t\t{\n\t\t\tTrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);\n\t\t\tnativeTtsDispatchedBeforePostprocess = true;\n\t\t\tLogTtsReport(\"NativeConversationTts.EarlyDispatchBeforePostprocess\", nativeTargetAgentIndex, $\"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? \"unknown\")}\");\n\t\t}\n",
+          "after": "",
+          "count": 1
+        },
+        {
+          "before": "\t\tstring nativeMainReplyTargetUnavailableReason = \"\";",
+          "after": "\t\tstring cleaned = \"\";\n\t\tstring nativeMainVisibleForTts = \"\";\n\t\tbool nativeTtsDispatchedBeforePostprocess = false;\n\t\tstring nativeMainReplyTargetUnavailableReason = \"\";",
+          "count": 1
+        },
+        {
+          "before": "\t\t\t\tSubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);\n",
+          "after": "\t\t\t\tSubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);\n\t\t\t\tcleaned = StripStageDirectionsForPassiveShout(postprocessReply);\n\t\t\t\tnativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);\n\t\t\t\tif (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))\n\t\t\t\t{\n\t\t\t\t\tTrySpeakNativeConversationReplyWithTts(targetHero, targetCharacter, npc, nativeTargetAgentIndex, nativeMainVisibleForTts);\n\t\t\t\t\tnativeTtsDispatchedBeforePostprocess = true;\n\t\t\t\t\tLogTtsReport(\"NativeConversationTts.EarlyDispatchBeforePostprocess\", nativeTargetAgentIndex, $\"uiLen={nativeMainVisibleForTts.Length};target={(targetHero?.StringId ?? targetCharacter?.StringId ?? npc?.Name ?? \"unknown\")}\");\n\t\t\t\t}\n",
+          "count": 1
+        },
+        {
+          "before": "\t\t// existing stage-direction cleanup below.",
+          "after": "\t\t// sanitized display/TTS variants captured in the validated phase above.",
+          "count": 1
+        }
+      ]
+    }
+  }
+}

@@ -751,3 +751,51 @@ Require(!typeof(WeeklyMemoryMaterialOutcomeReceipt).GetMembers(
 
 Console.WriteLine(
     "PASS weeklyMemoryMaterialOutcomeContract fingerprintVersion=1 identityFields=13 direction=1 order=1 hiddenSemantic=3 duplicate=3 conflict=4 payloadMismatch=3 durablePreflight=2 states=7 wire=5 capacity=4 atomicImport=2 loadPrepared=1 confirmedRetry=1 applyIdempotency=2 clockRollback=2 dataOnly=1");
+
+// Publication lifecycle shares the production ledger, preserves import failure isolation,
+// and never turns Prepared/Partial/Unknown/Rejected into publishable facts.
+var publication = new AnimusForge.WeeklyActionOutcomePublicationOwner();
+Require(!publication.IsActive(7) && publication.GetDue(7, long.MaxValue) == null, "unloaded owner published");
+Require(publication.Reset("new_game_created", 7) && publication.IsActive(7), "new game activation");
+var publicationCandidate = Candidate(requestId: "publication:first");
+Prepare(publication.Ledger, publicationCandidate, Payload(), 4000);
+publication.RefreshWork();
+Require(!publication.HasWork && publication.GetDue(7, 4001) == null, "prepared is not publishable");
+publication.Ledger.Complete(publicationCandidate.ReceiptId, publicationCandidate.CandidateHash,
+    WeeklyMemoryMaterialOutcomeState.Confirmed, "", 4002, out _);
+publication.RefreshWork();
+var due = publication.GetDue(7, 4003);
+Require(due != null && due.ReceiptId == publicationCandidate.ReceiptId, "confirmed publication missing");
+publication.ScheduleRetry(5000);
+Require(publication.GetDue(7, 5000 + AnimusForge.WeeklyActionOutcomePublicationOwner.RetryDelayTicks - 1) == null
+    && publication.GetDue(8, long.MaxValue) == null
+    && ReferenceEquals(publication.GetDue(7, 5000 + AnimusForge.WeeklyActionOutcomePublicationOwner.RetryDelayTicks), due), "retry due/generation boundary");
+var savedPublication = publication.Ledger.Export();
+Require(publication.Reset("sync_load", 8) && !publication.IsActive(8) && publication.Ledger.GetEntries().Count == 0, "load reset");
+Require(publication.Import(savedPublication, 8, out _) && publication.IsActive(8) && publication.HasWork, "confirmed load recovery");
+Require(!publication.Reset("game_loaded", 9) && publication.IsActive(9) && !publication.HasWork, "load event rebinding");
+publication.RefreshWork();
+Require(publication.GetDue(8, long.MaxValue) == null && publication.GetDue(9, 1) != null, "old generation cannot publish loaded receipt");
+Require(!publication.Import(new Dictionary<string,string>{{"bad","invalid"}}, 10, out _)
+    && !publication.ImportConfirmed && !publication.HasWork && publication.Ledger.GetEntries().Count == 1,
+    "invalid import must preserve journal atomically but disable recovery");
+publication.Reset("game_loaded", 11);
+Require(!publication.IsActive(11), "game loaded cannot activate rejected import");
+publication.Import(savedPublication, 12, out _);
+publication.Ledger.MarkApplied(publicationCandidate.ReceiptId, publicationCandidate.CandidateHash, 6000, out _);
+publication.RefreshWork();
+Require(publication.GetDue(12, long.MaxValue) == null, "applied receipt published twice");
+publication.ImportFailed();
+Require(publication.Ledger.GetEntries().Count == 0 && !publication.ImportConfirmed, "exception import reset");
+var ordering = new WeeklyMemoryMaterialOutcomeLedger();
+foreach (string id in new[]{"z", "a", "b"}) {
+    var candidate = Candidate(requestId: "publication:ordering:" + id);
+    Require(ordering.Prepare(candidate, Payload(), 7000, out _) == WeeklyMemoryMaterialOutcomeOperationStatus.Accepted, "ordering prepare");
+    ordering.Complete(candidate.ReceiptId, candidate.CandidateHash, WeeklyMemoryMaterialOutcomeState.Confirmed,"",7001,out _);
+}
+while (ordering.FirstConfirmed() != null) {
+    var first = ordering.FirstConfirmed();
+    Require(ReferenceEquals(first, ordering.GetEntries().First(x=>x.State==WeeklyMemoryMaterialOutcomeState.Confirmed)), "allocation-free selection changed stable ordering");
+    ordering.MarkApplied(first.ReceiptId,first.CandidateHash,7002,out _);
+}
+Console.WriteLine("PASS weeklyPublicationOwner activation/retry/generation/atomic-import/failed-load/once/stable-order");

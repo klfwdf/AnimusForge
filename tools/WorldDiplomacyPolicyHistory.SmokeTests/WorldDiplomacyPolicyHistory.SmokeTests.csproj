@@ -6,6 +6,6 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../WorldDiplomacyPolicyHistoryRules.cs" Link="WorldDiplomacyPolicyHistoryRules.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs" Link="WorldDiplomacyPolicyHistoryRules.cs" />
   </ItemGroup>
 </Project>

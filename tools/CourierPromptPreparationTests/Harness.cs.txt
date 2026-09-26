@@ -1,0 +1,253 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library {
+ internal static class TWParallel { internal static int MainThread; internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==MainThread; }
+}
+namespace TaleWorlds.CampaignSystem {
+ public sealed class CultureObject { internal string StringId="culture"; }
+ public sealed class CharacterObject { }
+ public sealed class Hero {
+  internal static Hero MainHero;
+  internal string Id="hero", RawName="NPC"; internal bool Dead;
+  internal CharacterObject CharacterObject {get {AnimusForge.Probe.MainOnly();return Character;}}
+  internal CharacterObject Character=new();
+  internal CultureObject Culture {get{AnimusForge.Probe.MainOnly();return new();}}
+  internal string Name {get{AnimusForge.Probe.MainOnly();return RawName;}}
+  internal bool IsDead {get{AnimusForge.Probe.MainOnly();return Dead;}}
+ }
+}
+namespace AnimusForge {
+ internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long gen)=>gen==Generation; internal static bool IsStale(long gen,string source)=>!IsCurrentGeneration(gen); }
+ internal sealed class PreprocessFormatException : Exception { }
+ public sealed class ConversationMessage { public string Role="assistant",Content="memory",SpeakerName="NPC",GameDate="",Scene=""; public int GameDayIndex,GameHour; }
+ internal static class Probe {
+  internal static int WrongThread, Routing, Contexts, Assemblies, Reads, KnowledgeApplies;internal static bool SyncAllowed, ThrowRouting, ThrowAssembly, NullContext, NullHits, Command, EmptyExtras, EmptyHistory, BlockKnowledge;
+  internal static string Input, Culture, Facts, PreviousFacts, KnowledgeVariant;
+  internal static CharacterObject Character;
+  internal static ManualResetEventSlim Entered=new(),Release=new(true);
+  internal static ManualResetEventSlim KnowledgeEntered=new(),KnowledgeRelease=new(true);
+  internal static void MainOnly(){if(!TWParallel.IsMainThread()){Interlocked.Increment(ref WrongThread);throw new Exception("fixture game read on worker");}Reads++;}
+  internal static void Reset(){WrongThread=Routing=Contexts=Assemblies=Reads=KnowledgeApplies=0;SyncAllowed=ThrowRouting=ThrowAssembly=NullContext=NullHits=Command=EmptyExtras=EmptyHistory=BlockKnowledge=false;Input=Culture=Facts=PreviousFacts=KnowledgeVariant=null;Character=null;Entered.Reset();Release.Set();KnowledgeEntered.Reset();KnowledgeRelease.Set();SaveRuntimeGuard.Generation=1;}
+ }
+  public partial class MyBehavior {
+  public sealed class ShoutPromptContext { public string Extras="extras",EntityPostprocessContext="entities",PreprocessExcludedRuleBlock="excluded";public List<string> PreprocessRuleIds=new(){"ctx"}; }
+  internal static MyBehavior Instance=new();
+  internal static string BuildPlayerPublicDisplayNameForExternal(Hero hero)=>"Player";
+  internal static string BuildHistoryContextForExternal(Hero hero,int limit,string letter,string fact)=>"history";
+  internal static string BuildRecentNpcFactContextForExternal(Hero hero,int limit)=>"";
+  internal static string BuildPlayerCourierSenderIdentityForExternal(Hero hero)=>"sender";
+  internal static string BuildPlayerCourierRecipientIdentityForExternal(Hero hero)=>"recipient";
+  internal static string BuildNpcPlayerKinshipPromptLineForExternal(Hero hero)=>"";
+  internal static string BuildCurrentDateFactForExternal()=>"date";
+  internal static string AppendPlayerCustomPromptRuleToSystemPromptForExternal(string text)=>text;
+  internal static ShoutPromptContext CreateEmptyShoutPromptContext()=>new(){Extras="",PreprocessRuleIds=new()};
+  internal sealed class CourierPreprocessRequest { internal string Input,ExtraFact; internal CharacterObject Character; internal AnimusForge.PromptRuntimeTargetBinding Target; internal PromptRuleEligibility Eligibility=new(); }
+  // Step 1 (game thread): the legacy synchronous facade and the scheduled Begin both capture here.
+  internal CourierPreprocessRequest BeginCourierRulePreprocess(Hero hero,string input,string extraFact,CharacterObject character,string kingdomIdOverride,int targetAgentIndex,IEnumerable<string> excludedRuleIds){
+   Probe.MainOnly();return new(){Input=input,ExtraFact=extraFact,Character=character};
+  }
+  // Step 2 (worker): counts as the single routing I/O; the same probe gates the legacy Task.Run shape.
+  internal List<string> RunCourierRulePreprocessRetrieval(CourierPreprocessRequest request,out MentionedWorldEntities entities){
+   if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("routing I/O on main thread");}
+   Interlocked.Increment(ref Probe.Routing);Probe.Input=request.Input;Probe.Facts=request.ExtraFact;Probe.Character=request.Character;entities=new MentionedWorldEntities();Probe.Entered.Set();
+   if(!Probe.Release.Wait(5000))throw new Exception("fixture routing timed out");if(Probe.ThrowRouting)throw new PreprocessFormatException();
+   return Probe.NullHits?null:new(){"route","ban"};
+  }
+  internal static List<string> RunCourierRulePreprocessForExternal(Hero hero,string input,string extraFact,out MentionedWorldEntities entities,CharacterObject character,int targetAgentIndex,IEnumerable<string> excludedRuleIds){
+   var request=Instance.BeginCourierRulePreprocess(hero,input,extraFact,character,null,targetAgentIndex,excludedRuleIds);return Instance.RunCourierRulePreprocessRetrieval(request,out entities);
+  }
+  public sealed class WeeklyPromptSnapshot { }
+  internal PromptBuildPhases BeginSharedPromptBuild(Hero hero,string input,string extraFact,string cultureId,bool hasAnyHero,CharacterObject targetCharacter,string kingdomIdOverride,int targetAgentIndex,bool suppressDynamicRuleAndLore,bool usePrefetchedLoreContext,string prefetchedLoreContext,IEnumerable<string> excludedRuleIds,IEnumerable<string> preprocessExcludedRuleIds,IEnumerable<string> forcedPreprocessRuleIds,MentionedWorldEntities preprocessMentionedEntities){
+   Probe.MainOnly();return new(){Culture=cultureId};
+  }
+  internal void RunSharedPromptRouting(PromptBuildPhases phases){ if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared routing on main thread");} }
+  internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases,Hero hero){ Probe.MainOnly(); }
+  internal static PromptKnowledgeWorkInput CreateSharedKnowledgeWorkInput(PromptBuildPhases phases){Probe.MainOnly();return new();}
+  internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput input){if(TWParallel.IsMainThread()&&!Probe.SyncAllowed){Probe.WrongThread++;throw new Exception("shared retrieval on main thread");}if(Probe.BlockKnowledge){Probe.KnowledgeEntered.Set();Probe.KnowledgeRelease.Wait();}return new();}
+  internal static void ApplySharedKnowledgeRetrieval(PromptBuildPhases phases,PromptKnowledgeWorkResult result){Probe.MainOnly();if(result==null)throw new Exception("missing knowledge result");Probe.KnowledgeApplies++;}
+  internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases){ApplySharedKnowledgeRetrieval(phases,RunSharedKnowledgeRetrieval(CreateSharedKnowledgeWorkInput(phases)));}
+  internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases,Hero hero,CharacterObject character,WeeklyPromptSnapshot weekly){
+   Probe.MainOnly();Probe.Contexts++;Probe.Culture=phases.Culture;
+   if(Probe.NullContext)return null;
+   if(Probe.KnowledgeVariant=="knowledge_text_production"){
+    string encoded=Environment.GetEnvironmentVariable("AF_J06_PRODUCTION_CONTEXT")??throw new Exception("missing production context");
+    var context=JsonSerializer.Deserialize<ShoutPromptContext>(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encoded)),new JsonSerializerOptions{IncludeFields=true});
+    if(context==null||string.IsNullOrWhiteSpace(context.Extras)||string.IsNullOrWhiteSpace(context.EntityPostprocessContext))throw new Exception("empty production context");
+    return context;
+   }
+   if(Probe.KnowledgeVariant!=null){
+    bool loreHit=Probe.KnowledgeVariant.Contains("lore_hit");
+    bool entityHit=Probe.KnowledgeVariant.Contains("entity_hit");
+    bool preselected=Probe.KnowledgeVariant.Contains("rule_preselected");
+    var sections=new PromptExtrasSections{TrustPrompt="固定前缀",TriggeredRuleInstructions=preselected?"【附加规则:trade】预选正文":"【附加规则:trade】回退正文",LoreContext=loreHit?"【Lore】命中正文":"【Lore】兼容回退正文",EntityMainPromptBlock=entityHit?"【实体】完整事实块":null};
+    return new(){Extras=PromptExtrasComposer.Compose(sections),EntityPostprocessContext=entityHit?"【实体后处理】完整事实块":"",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
+   }
+   return new(){Extras=Probe.EmptyExtras?"":"  extras  ",PreprocessRuleIds=Probe.Command?new(){"worldmap_party_command"}:new(){"ctx"}};
+  }
+  internal static ShoutPromptContext BuildShoutPromptContextForExternal(Hero hero,string input,string extraFact,string cultureId,bool hasAnyHero,CharacterObject targetCharacter,int targetAgentIndex,IEnumerable<string> excludedRuleIds,IEnumerable<string> forcedPreprocessRuleIds,MentionedWorldEntities preprocessMentionedEntities){
+   var phases=Instance.BeginSharedPromptBuild(hero,input,extraFact,cultureId,hasAnyHero,targetCharacter,null,targetAgentIndex,false,false,null,excludedRuleIds,null,forcedPreprocessRuleIds,preprocessMentionedEntities);
+   if(phases==null)return null;Instance.RunSharedPromptRouting(phases);return Instance.CompleteSharedPromptBuild(phases,hero,targetCharacter,null);
+  }
+  internal static List<ConversationMessage> BuildUncompressedMemoryRoleMessagesForExternal(Hero hero,int index,bool includeCurrentActiveSceneSession){Probe.MainOnly();if(includeCurrentActiveSceneSession)throw new Exception("scene included");return new(){new()};}
+ }
+ internal readonly struct PromptRuntimeTargetBinding { }
+ public sealed class MentionedWorldEntities { }
+ internal sealed class PromptBuildPhases { internal string Culture; internal PromptBuildRequestStub Request=new(); }
+ internal sealed class PromptKnowledgeWorkInput { }
+ internal sealed class PromptKnowledgeWorkResult { }
+ internal sealed class PromptBuildRequestStub { internal PromptRuntimeTargetBinding Target; internal PromptRuleEligibility Eligibility=new(); }
+ internal sealed class PromptRuleEligibility { }
+ internal static class AIConfigHandler {
+  internal static IDisposable BeginGuardrailRuntimeScope()=>new Scope();
+  private sealed class Scope:IDisposable{public void Dispose(){}}
+  internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding b,PromptRuleEligibility eligibility){if(eligibility==null)throw new Exception("worker received no detached eligibility");}
+  internal static void ClearGuardrailRuntimeTarget(){}
+  internal static void SetGuardrailSemanticContext(string s){}
+ }
+ internal static class Logger { internal static void Log(string c,string m){} }
+ internal static class DuelSettings { internal static int GetDailyConversationHistoryLineLimitForExternal()=>8; internal static DuelSettingsValue GetSettings()=>new(); }
+ internal sealed class DuelSettingsValue { internal int NpcInitiatedLetterTargetChars=220; }
+ public partial class ShoutBehavior {
+  internal static bool HasInjectedRuleBlockForExternal(string extras,string rule)=>false;
+  internal static string BuildHeroStableRoleContextForExternal(Hero hero){Probe.MainOnly();return "role:"+hero.Id;}
+ }
+ internal static class WorldMapPartyCommandBehavior {
+  internal static string BuildCurrentNpcCommandTasksPromptForExternal(Hero hero,CharacterObject ch,int i){Probe.MainOnly();return "commands";}
+ }
+ public partial class CourierDeliveryBehavior {
+  internal static CourierDeliveryBehavior Instance;
+  internal static readonly ConcurrentQueue<Action> MainThreadActions=new();
+  private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingOwnerPhases=new();
+  internal CourierSession Session;
+  private CourierPromptRun TestRun;
+  internal void ReserveTestRun()=>TestRun=BeginCourierPromptRun(Session,1);
+  internal sealed class CourierSession {internal Hero Participant=new();internal bool Inbound,Terminal,ReplyGenerated,ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied;internal string ReplyText="",ReplyPostprocessedText="";internal string Id="session",LetterText=" letter ",InboundIntentText=" intent ",InboundFallbackLetter="stored",DeliveryFactText="",SenderName="NPC",InboundLetterKind="";}
+  internal static readonly string[] CourierExcludedRuleIds={"ban"};
+  private CourierSession GetSessionById(string id){Probe.MainOnly();return Session;}
+  private static bool IsTerminalStage(CourierSession s){Probe.MainOnly();return s.Terminal;}
+  private static bool IsInboundToPlayer(CourierSession s){Probe.MainOnly();return s.Inbound;}
+  private static Hero ResolveSender(CourierSession s){Probe.MainOnly();return s.Participant;}
+  private static Hero ResolveRecipient(CourierSession s){Probe.MainOnly();return s.Participant;}
+  private static string SafeHeroId(Hero hero){Probe.MainOnly();return hero.Id;}
+  private static void Log(string text){}
+  internal int ProcessedSessionsForTest;
+  private void ProcessSessionById(string id,string reason){Probe.MainOnly();ProcessedSessionsForTest++;}
+  internal void FinalizePreflightForTest()=>FinalizeCourierReplyGenerationOnMainThread(new CourierReplyGenerationRequest{SessionId=Session.Id,RuntimeGeneration=SaveRuntimeGuard.Generation},"preflight reply","postprocessed reply","");
+  @@FINALIZE_REPLY@@
+#if !LIVENESS
+  private void FailCourierReplyGenerationOnMainThread(string id,long generation,string reason){Probe.MainOnly();Session.ReplyGenerated=true;Session.ReplyGenerationStarted=false;}
+  private void FailInboundLetterGenerationOnMainThread(string id,long generation,string fallback,string reason){Probe.MainOnly();Session.LetterText=string.IsNullOrWhiteSpace(fallback)?Session.LetterText:fallback;Session.ReplyGenerated=true;Session.ReplyGenerationStarted=false;}
+#endif
+  private static List<string> MergeCourierSelectedRuleIds(IEnumerable<string> one,IEnumerable<string> two)=>(one??Array.Empty<string>()).Concat(two??Array.Empty<string>()).Distinct().ToList();
+  private static List<string> ExcludeCourierSelectedRuleIds(IEnumerable<string> hits,IEnumerable<string> excluded)=>(hits??Array.Empty<string>()).Except(excluded).ToList();
+  private static bool HasPreprocessRuleHit(IEnumerable<string> hits,string rule)=>hits.Contains(rule);
+  private static string AppendCourierPlayerRecentActions(string text,Hero hero){Probe.MainOnly();return text+"\nrecent";}
+  private static List<object> BuildCourierReplyMessages(Hero hero,CourierSession session,string extras,string fact,string history,IEnumerable<ConversationMessage> memory,string role,string excluded){Probe.MainOnly();Probe.Assemblies++;if(Probe.ThrowAssembly)throw new InvalidOperationException("assembly failed");return BuildCourierReplyMessagesProduction(hero,session,extras,fact,history,memory,role,excluded);}
+  private static List<object> BuildInboundNpcLetterMessages(Hero hero,CourierSession session,string seed,string extras,string fact,string history,IEnumerable<ConversationMessage> memory,string role,string excluded){Probe.MainOnly();Probe.Assemblies++;if(Probe.ThrowAssembly)throw new InvalidOperationException("assembly failed");return BuildInboundNpcLetterMessagesProduction(hero,session,seed,extras,fact,history,memory,role,excluded);}
+  private static string BuildCourierCurrentLocationLine(Hero hero)=>"location";
+  private static int ClampInt(int value,int min,int max)=>Math.Max(min,Math.Min(max,value));
+  private static string GetInboundLetterKindDisplayText(CourierSession session)=>"来信";
+  @@MESSAGE_BUILDERS@@
+  private static void LogCourierContextAlignment(string direction,string session,Hero hero,string role,string extras,string entities,string history,IEnumerable<ConversationMessage> memory){Probe.MainOnly();}
+  internal async Task<string> Start(CourierSession session,bool inbound,bool directly=false){
+   var history=new CourierPreparedHistory("fact",Probe.EmptyHistory?"":"history");
+#if OLD_WORKER
+   object request=inbound?(object)BuildInboundLetterGenerationRequestOnMainThreadBaseline(session,session.Participant,"fallback",1,history):BuildCourierReplyGenerationRequestOnMainThreadBaseline(session,session.Participant,1,history);
+#else
+   object request=inbound?(object)await PrepareCourierPromptRequestAsync("session",session,session.Participant,true,"fallback",1,history,TestRun,BuildInboundRequestFromPreparedPrompt):await PrepareCourierPromptRequestAsync("session",session,session.Participant,false,null,1,history,TestRun,BuildReplyRequestFromPreparedPrompt);
+#endif
+   return request==null?null:JsonSerializer.Serialize(request,new JsonSerializerOptions{IncludeFields=true});
+  }
+  internal string Sync(bool inbound,bool baseline){
+   var h=new CourierPreparedHistory("fact",Probe.EmptyHistory?"":"history");
+   object request=baseline?(inbound?(object)BuildInboundLetterGenerationRequestOnMainThreadBaseline(Session,Session.Participant,"fallback",1,h):BuildCourierReplyGenerationRequestOnMainThreadBaseline(Session,Session.Participant,1,h)):(inbound?(object)BuildInboundLetterGenerationRequestOnMainThread(Session,Session.Participant,"fallback",1,h):BuildCourierReplyGenerationRequestOnMainThread(Session,Session.Participant,1,h));
+   return JsonSerializer.Serialize(request,new JsonSerializerOptions{IncludeFields=true});
+  }
+  internal void Retire()=>_pendingOwnerPhases.Seal();
+  @@OWNER_PHASE@@
+  @@REQUESTS@@
+  @@BASELINE@@
+  @@HISTORY@@
+ }
+}
+internal static class Program {
+ static int checks,cases;static void Check(bool ok,string name){checks++;if(!ok)throw new Exception("FAIL "+name);}
+ static void PreflightDoesNotDeliver(){var session=new AnimusForge.CourierDeliveryBehavior.CourierSession();var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};owner.FinalizePreflightForTest();Check(session.ReplyGenerated&&session.ReplyText=="preflight reply","real preflight result recorded");Check(!session.DeliveryApplied&&!session.PostprocessConsumed&&owner.ProcessedSessionsForTest==1,"preflight must not imply delivery or action commit");}
+ static IEnumerable<string> Strings(JsonElement value){if(value.ValueKind==JsonValueKind.String){yield return value.GetString();yield break;}if(value.ValueKind==JsonValueKind.Object){foreach(var property in value.EnumerateObject())foreach(string text in Strings(property.Value))yield return text;}else if(value.ValueKind==JsonValueKind.Array){foreach(var item in value.EnumerateArray())foreach(string text in Strings(item))yield return text;}}
+ static void PumpUntil(Func<bool> done,bool pump=true){var watch=Stopwatch.StartNew();while(!done()){if(pump)while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();if(watch.ElapsedMilliseconds>5000)throw new Exception("fixture wait timeout");Thread.Sleep(1);}}
+ static void Case(bool inbound,string scenario){
+  cases++;AnimusForge.Probe.Reset();while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out _)){}
+  var session=new AnimusForge.CourierDeliveryBehavior.CourierSession{Inbound=inbound};if(scenario=="knowledge_text_production"){session.Participant.Id="npc_1";session.Participant.RawName="Alda";session.LetterText=Environment.GetEnvironmentVariable("AF_J06_COMMON_INPUT")??"Tell me about Praven, Alda the King; can we barter this item?";session.InboundIntentText=session.LetterText;}var owner=new AnimusForge.CourierDeliveryBehavior{Session=session};AnimusForge.CourierDeliveryBehavior.Instance=owner;owner.ReserveTestRun();
+  AnimusForge.Probe.NullContext=scenario=="null_context";AnimusForge.Probe.NullHits=scenario=="null_hits";AnimusForge.Probe.Command=scenario=="commands";AnimusForge.Probe.EmptyExtras=scenario=="empty_extras";AnimusForge.Probe.EmptyHistory=scenario=="empty_history";AnimusForge.Probe.ThrowRouting=scenario=="routing_error";AnimusForge.Probe.ThrowAssembly=scenario=="assembly_error";AnimusForge.Probe.KnowledgeVariant=scenario.StartsWith("knowledge_text_")?scenario:null;
+  if(scenario=="letter_seed")session.InboundIntentText=" ";if(scenario=="fallback_seed"){session.InboundIntentText=null;session.LetterText=null;}
+  if(scenario=="null_input")session.LetterText=null;
+  bool knowledgeAfter=scenario.EndsWith("_knowledge_after");bool after=scenario.EndsWith("_after");bool before=scenario.EndsWith("_before");
+  if(knowledgeAfter){AnimusForge.Probe.BlockKnowledge=true;AnimusForge.Probe.KnowledgeRelease.Reset();}
+  else if(after)AnimusForge.Probe.Release.Reset();
+  string old=null;
+  if(!after&&!before&&scenario!="timeout"&&scenario!="routing_error"&&scenario!="assembly_error"){
+   AnimusForge.Probe.SyncAllowed=true;old=owner.Sync(inbound,true);var actual=owner.Sync(inbound,false);Check(old==actual,scenario+" synchronous field/message parity");AnimusForge.Probe.SyncAllowed=false;AnimusForge.Probe.Routing=AnimusForge.Probe.Contexts=AnimusForge.Probe.Assemblies=0;
+  }
+  Task<string> task=scenario=="main_caller"?owner.Start(session,inbound):Task.Run(()=>owner.Start(session,inbound));
+  if(before){PumpUntil(()=>!AnimusForge.CourierDeliveryBehavior.MainThreadActions.IsEmpty,false);Alter(owner,session,scenario);}
+  if(knowledgeAfter){PumpUntil(()=>AnimusForge.Probe.KnowledgeEntered.IsSet);Alter(owner,session,scenario);AnimusForge.Probe.KnowledgeRelease.Set();}
+  else if(after){PumpUntil(()=>AnimusForge.Probe.Entered.IsSet);Alter(owner,session,scenario);AnimusForge.Probe.Release.Set();}
+  PumpUntil(()=>task.IsCompleted,scenario!="timeout");
+  if(scenario=="timeout"){
+   Check(task.IsCanceled,"timeout propagates");while(AnimusForge.CourierDeliveryBehavior.MainThreadActions.TryDequeue(out var action))action();Check(AnimusForge.Probe.Assemblies==0&&AnimusForge.Probe.Routing==0,"expired callback cannot execute");return;
+  }
+  if(scenario=="routing_error"||scenario=="assembly_error"){
+   Check(task.IsFaulted,"error reaches existing caller");Check(task.Exception!.InnerException is AnimusForge.PreprocessFormatException==(scenario=="routing_error"),"error type preserved");Check(AnimusForge.Probe.WrongThread==0,"failure threads");return;
+  }
+  string result=task.GetAwaiter().GetResult();Check((result==null)==(after||before),scenario+" acceptance "+inbound);Check(AnimusForge.Probe.WrongThread==0,scenario+" no wrong physical thread");
+  if(after||before){Check(AnimusForge.Probe.Assemblies==0&&AnimusForge.Probe.Contexts==0&&AnimusForge.Probe.KnowledgeApplies==0,scenario+" no stale context or knowledge publication");return;}
+  Check(result==old,scenario+" actual async result equals old request");Check(AnimusForge.Probe.Routing==1&&AnimusForge.Probe.Contexts==1&&AnimusForge.Probe.Assemblies==1,scenario+" exactly once each stage");
+  using(var full=JsonDocument.Parse(result)){
+   var messages=full.RootElement.GetProperty("Messages");
+   Check(messages.ValueKind==JsonValueKind.Array&&messages.GetArrayLength()>=3,scenario+" production message list");
+   Check(messages[0].GetProperty("role").GetString()=="system"&&messages[0].GetProperty("content").GetString().Contains("Mount & Blade II"),scenario+" production system message");
+   Check(messages[1].GetProperty("role").GetString()=="user"&&messages[1].GetProperty("content").GetString().Contains(inbound?"recipient":"sender"),scenario+" production context message");
+   Check(messages[1].GetProperty("content").GetString().Contains("history")==!AnimusForge.Probe.EmptyHistory,scenario+" production history placement");
+   Check(messages[messages.GetArrayLength()-1].GetProperty("role").GetString()=="user",scenario+" production current-letter message order");
+  }
+  if(AnimusForge.Probe.KnowledgeVariant!=null){
+   using var json=JsonDocument.Parse(result);string fullText=string.Join("\n",Strings(json.RootElement));
+   if(scenario=="knowledge_text_production"){
+    string raw=System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Environment.GetEnvironmentVariable("AF_J06_PRODUCTION_CONTEXT")));
+    using var ctx=JsonDocument.Parse(raw);
+    string extras=ctx.RootElement.GetProperty("Extras").GetString();
+    Check(fullText.Contains(extras.Trim()),scenario+" production Extras in full request");
+    Console.WriteLine("REQUEST_"+(inbound?"inbound":"outbound")+"="+Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(result)));
+   }else{
+   Check(fullText.Contains("固定前缀")&&fullText.Contains("【Lore】")&&fullText.Contains("【附加规则:trade】"),scenario+" full request retains composed knowledge text");
+   Check(fullText.Contains("【实体】完整事实块")==scenario.Contains("entity_hit"),scenario+" entity text presence");
+   Check(fullText.Contains("预选正文")==scenario.Contains("rule_preselected"),scenario+" selected/fallback rule text");
+   }
+  }
+  string seed=string.IsNullOrWhiteSpace(session.InboundIntentText)?(string.IsNullOrWhiteSpace(session.LetterText)?"fallback":session.LetterText.Trim()):session.InboundIntentText.Trim();
+  Check(AnimusForge.Probe.Input==(inbound?"[NPC主动写信意图] "+seed:session.LetterText),scenario+" original direction/seed");Check(AnimusForge.Probe.Culture=="culture"&&ReferenceEquals(AnimusForge.Probe.Character,session.Participant.Character)&&AnimusForge.Probe.Facts=="fact","captured routing input");
+ }
+ static void Alter(AnimusForge.CourierDeliveryBehavior owner,AnimusForge.CourierDeliveryBehavior.CourierSession s,string scenario){
+  string reason=scenario.Split('_')[0];switch(reason){case "owner":AnimusForge.CourierDeliveryBehavior.Instance=new();break;case "generation":AnimusForge.SaveRuntimeGuard.Generation++;break;case "session":owner.Session=new(){Inbound=s.Inbound};break;case "participant":s.Participant=new();break;case "terminal":s.Terminal=true;break;case "direction":s.Inbound=!s.Inbound;break;case "dead":s.Participant.Dead=true;break;case "letter":s.LetterText="edited";break;case "intent":s.InboundIntentText="edited";break;case "fallback":s.InboundFallbackLetter="edited";break;}
+ }
+ static int Main(){TWParallel.MainThread=Environment.CurrentManagedThreadId;try{
+  PreflightDoesNotDeliver();
+  if(Environment.GetEnvironmentVariable("AF_J06_PRODUCTION_CONTEXT")!=null){Case(false,"knowledge_text_production");Case(true,"knowledge_text_production");Console.WriteLine($"PASS production-context Courier request checks={checks}");return 0;}
+  foreach(bool inbound in new[]{false,true}){
+   foreach(string s in new[]{"normal","main_caller","null_context","null_hits","commands","empty_extras","empty_history","letter_seed","fallback_seed","null_input","routing_error","assembly_error","timeout","owner_before","generation_before","session_before","terminal_before","participant_before","dead_before","direction_before","owner_after","generation_after","session_after","terminal_after","participant_after","direction_after","dead_after","letter_after"})Case(inbound,s);
+   foreach(string s in new[]{"knowledge_text_lore_hit","knowledge_text_lore_fallback","knowledge_text_entity_hit","knowledge_text_entity_fallback","knowledge_text_rule_preselected","knowledge_text_rule_fallback"})Case(inbound,s);
+   if(inbound){Case(inbound,"intent_after");Case(inbound,"fallback_after");}
+   foreach(string s in new[]{"owner_knowledge_after","generation_knowledge_after","participant_knowledge_after"})Case(inbound,s);
+  }
+  Console.WriteLine($"PASS {checks} Courier prompt checks / {cases} scenarios; actual old/new request bodies and production final message builders; game/context inputs remain fixtures.");return 0;
+ }catch(Exception ex){Console.Error.WriteLine("FAIL CourierPrompt "+ex);return 1;}finally{AnimusForge.Probe.Release.Set();AnimusForge.Probe.KnowledgeRelease.Set();}}
+}

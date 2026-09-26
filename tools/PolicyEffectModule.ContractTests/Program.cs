@@ -14884,12 +14884,13 @@ internal static class Program
 			"Kingdom, local, and vassal history UI must expose enabled re-review commands.");
 
 		string worldInboxSource = File.ReadAllText(Path.Combine(repositoryRoot, "WorldEvents", "WorldEventInbox.cs"), Encoding.UTF8);
-		string worldDiplomacySource = File.ReadAllText(Path.Combine(repositoryRoot, "WorldDiplomacyBehavior.cs"), Encoding.UTF8);
+		string worldDiplomacySource = File.ReadAllText(Path.Combine(repositoryRoot,
+			"src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"), Encoding.UTF8);
 		string policyGenerationSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.Generation.cs"), Encoding.UTF8);
 		string policyManagementSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Management.cs"), Encoding.UTF8);
 		string terminalSource = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForgeTerminalBehavior.cs"), Encoding.UTF8);
 		string worldInboxPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "AnimusForgeWorldEventInboxPopup.xml"), Encoding.UTF8);
-		Check(terminalSource.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive()")
+		Check(terminalSource.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView)")
 			&& worldInboxPrefab.Contains("Command.Click=\"ExecuteReReview\"")
 			&& worldInboxPrefab.Contains("IsVisible=\"@ShowSelectedRecordReReview\"")
 			&& worldInboxPrefab.Contains("IsEnabled=\"@CanReReviewSelectedRecord\""),

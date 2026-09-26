@@ -534,7 +534,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 
 	private void OpenFolderPicker(string title, bool isExport, Action<string> onSelected, Action onReturn)
 	{
-		string root = GetPlayerExportsRootPath();
+		string root = PlayerExportsStore.GetPlayerExportsRootPath();
 		try
 		{
 			Directory.CreateDirectory(root);
@@ -612,8 +612,8 @@ public sealed partial class KingdomStrategicProfileBehavior
 		errorMessage = "";
 		try
 		{
-			string root = Path.GetFullPath(GetPlayerExportsRootPath());
-			string name = SanitizeFolderName(folderInput);
+			string root = Path.GetFullPath(PlayerExportsStore.GetPlayerExportsRootPath());
+			string name = PlayerExportsStore.SanitizeFolderName(folderInput);
 			if (string.IsNullOrWhiteSpace(name))
 			{
 				name = DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
@@ -658,7 +658,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 				errorMessage = "绝对路径不存在，或不是 JSON 文件。";
 				return false;
 			}
-			string root = Path.GetFullPath(GetPlayerExportsRootPath());
+			string root = Path.GetFullPath(PlayerExportsStore.GetPlayerExportsRootPath());
 			if (string.IsNullOrEmpty(input))
 			{
 				DirectoryInfo latest = Directory.Exists(root)
@@ -672,7 +672,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 				importRoot = latest.FullName;
 				return true;
 			}
-			string name = SanitizeFolderName(input);
+			string name = PlayerExportsStore.SanitizeFolderName(input);
 			if (name == "." || name == "..")
 			{
 				errorMessage = "导入文件夹名无效。";
@@ -692,43 +692,6 @@ public sealed partial class KingdomStrategicProfileBehavior
 			errorMessage = ex.Message;
 			return false;
 		}
-	}
-
-	private static string GetPlayerExportsRootPath()
-	{
-		string moduleRoot = "";
-		try
-		{
-			string location = typeof(SubModule).Assembly.Location;
-			DirectoryInfo directory = string.IsNullOrWhiteSpace(location) ? null : new DirectoryInfo(Path.GetDirectoryName(Path.GetFullPath(location)));
-			while (directory != null && directory.Exists)
-			{
-				if (File.Exists(Path.Combine(directory.FullName, "SubModule.xml")))
-				{
-					moduleRoot = directory.FullName;
-					break;
-				}
-				directory = directory.Parent;
-			}
-		}
-		catch
-		{
-		}
-		if (string.IsNullOrWhiteSpace(moduleRoot))
-		{
-			moduleRoot = Path.GetFullPath(Directory.GetCurrentDirectory());
-		}
-		return Path.Combine(moduleRoot, "PlayerExports");
-	}
-
-	private static string SanitizeFolderName(string input)
-	{
-		string value = (input ?? "").Trim();
-		foreach (char invalid in Path.GetInvalidFileNameChars())
-		{
-			value = value.Replace(invalid, '_');
-		}
-		return value.Trim().TrimEnd('.');
 	}
 
 	private static bool IsPathInsideRoot(string candidate, string root)

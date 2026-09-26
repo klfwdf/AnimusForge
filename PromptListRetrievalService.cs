@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -17,7 +15,6 @@ public static class PromptListRetrievalService
 	private const int CandidateMaxHardCap = 30;
 	private const int CandidateSnapshotMaxCount = 80;
 	private const int CandidateSnapshotMaxAgeMinutes = 10;
-	private const float MatchThreshold = 0.66f;
 	public const string PlayerVisibleEquipmentSnapshotScope = "player_visible_equipment";
 	public const string NpcRewardItemsSnapshotScope = "npc_reward_items";
 	internal const string NpcRewardItemsAllSnapshotScope = "npc_reward_items_all";
@@ -35,22 +32,10 @@ public static class PromptListRetrievalService
 
 	private static readonly object CandidateSnapshotLock = new object();
 	private static readonly Dictionary<string, CandidateSnapshot> CandidateSnapshots = new Dictionary<string, CandidateSnapshot>(StringComparer.OrdinalIgnoreCase);
-
-	private sealed class CandidateMatch<T>
-	{
-		public T Value;
-
-		public int Index;
-
-		public int MentionPriority;
-
-		public float Score;
-	}
+	private static readonly PromptCandidateSnapshotIndex CandidateSnapshotIndex = new PromptCandidateSnapshotIndex(CandidateSnapshotMaxCount, TimeSpan.FromMinutes(CandidateSnapshotMaxAgeMinutes));
 
 	private sealed class CandidateSnapshot
 	{
-		public DateTime CreatedUtc;
-
 		public List<RewardSystemBehavior.RewardItemInfo> RewardItems;
 
 		public List<MyBehavior.PartyTransferPromptEntry> PartyTransferEntries;
@@ -172,9 +157,11 @@ public static class PromptListRetrievalService
 		}
 		lock (CandidateSnapshotLock)
 		{
-			snapshot.CreatedUtc = DateTime.UtcNow;
 			CandidateSnapshots[key] = snapshot;
-			TrimSnapshotsLocked();
+			foreach (string expiredKey in CandidateSnapshotIndex.Publish(key, DateTime.UtcNow))
+			{
+				CandidateSnapshots.Remove(expiredKey);
+			}
 		}
 	}
 
@@ -187,34 +174,16 @@ public static class PromptListRetrievalService
 		}
 		lock (CandidateSnapshotLock)
 		{
+			if (!CandidateSnapshotIndex.IsFresh(key, DateTime.UtcNow))
+			{
+				CandidateSnapshots.Remove(key);
+				return false;
+			}
 			if (!CandidateSnapshots.TryGetValue(key, out snapshot) || snapshot == null)
 			{
 				return false;
 			}
-			if (DateTime.UtcNow - snapshot.CreatedUtc > TimeSpan.FromMinutes(CandidateSnapshotMaxAgeMinutes))
-			{
-				CandidateSnapshots.Remove(key);
-				snapshot = null;
-				return false;
-			}
 			return true;
-		}
-	}
-
-	private static void TrimSnapshotsLocked()
-	{
-		DateTime cutoff = DateTime.UtcNow - TimeSpan.FromMinutes(CandidateSnapshotMaxAgeMinutes);
-		foreach (string key in CandidateSnapshots.Where((KeyValuePair<string, CandidateSnapshot> x) => x.Value == null || x.Value.CreatedUtc < cutoff).Select((KeyValuePair<string, CandidateSnapshot> x) => x.Key).ToList())
-		{
-			CandidateSnapshots.Remove(key);
-		}
-		if (CandidateSnapshots.Count <= CandidateSnapshotMaxCount)
-		{
-			return;
-		}
-		foreach (string key in CandidateSnapshots.OrderBy((KeyValuePair<string, CandidateSnapshot> x) => x.Value?.CreatedUtc ?? DateTime.MinValue).Take(Math.Max(0, CandidateSnapshots.Count - CandidateSnapshotMaxCount)).Select((KeyValuePair<string, CandidateSnapshot> x) => x.Key).ToList())
-		{
-			CandidateSnapshots.Remove(key);
 		}
 	}
 
@@ -239,82 +208,19 @@ public static class PromptListRetrievalService
 		{
 			return fillWithFallback ? list.Take(limit).ToList() : new List<T>();
 		}
-		Dictionary<string, int> mentionPriority = BuildMentionPriority(terms);
-		List<CandidateMatch<T>> matches = new List<CandidateMatch<T>>();
+		List<PromptCandidateDescriptor> descriptions = new List<PromptCandidateDescriptor>(list.Count);
+		Dictionary<T, int> equalityGroups = new Dictionary<T, int>();
 		for (int i = 0; i < list.Count; i++)
 		{
 			T candidate = list[i];
-			List<string> aliases = BuildDistinctAliases(aliasesFactory(candidate));
-			if (aliases.Count == 0)
+			if (!equalityGroups.TryGetValue(candidate, out int group))
 			{
-				continue;
+				group = i;
+				equalityGroups[candidate] = group;
 			}
-			float bestScore = 0f;
-			int bestPriority = int.MaxValue;
-			int positiveAliasMatches = 0;
-			foreach (string term in terms)
-			{
-				if (string.IsNullOrWhiteSpace(term))
-				{
-					continue;
-				}
-				float termBest = 0f;
-				foreach (string alias in aliases)
-				{
-					float score = CalculateFuzzyScore(term, alias);
-					if (score > termBest)
-					{
-						termBest = score;
-					}
-					if (score >= MatchThreshold)
-					{
-						positiveAliasMatches++;
-					}
-				}
-				if (termBest > bestScore)
-				{
-					bestScore = termBest;
-					bestPriority = mentionPriority.TryGetValue(term, out var priority) ? priority : int.MaxValue;
-				}
-			}
-			if (bestScore >= MatchThreshold)
-			{
-				matches.Add(new CandidateMatch<T>
-				{
-					Value = candidate,
-					Index = i,
-					MentionPriority = bestPriority,
-					Score = bestScore + Math.Min(0.18f, positiveAliasMatches * 0.02f)
-				});
-			}
+			descriptions.Add(new PromptCandidateDescriptor(i, (aliasesFactory(candidate) ?? Enumerable.Empty<string>()).ToList(), group));
 		}
-		if (matches.Count == 0)
-		{
-			return fillWithFallback ? list.Take(limit).ToList() : new List<T>();
-		}
-		List<T> selected = matches
-			.OrderByDescending((CandidateMatch<T> x) => x.Score)
-			.ThenBy((CandidateMatch<T> x) => x.MentionPriority)
-			.ThenBy((CandidateMatch<T> x) => x.Index)
-			.Take(limit)
-			.Select((CandidateMatch<T> x) => x.Value)
-			.ToList();
-		if (fillWithFallback && selected.Count < limit)
-		{
-			HashSet<T> selectedSet = new HashSet<T>(selected);
-			foreach (T candidate in list)
-			{
-				if (selected.Count >= limit)
-				{
-					break;
-				}
-				if (selectedSet.Add(candidate))
-				{
-					selected.Add(candidate);
-				}
-			}
-		}
-		return selected;
+		return PromptCandidateSelection.SelectIndices(descriptions, terms, limit, fillWithFallback).Select(index => list[index]).ToList();
 	}
 
 	public static List<RewardSystemBehavior.RewardItemInfo> FilterRewardItems(IEnumerable<RewardSystemBehavior.RewardItemInfo> candidates, MentionedWorldEntities mentions, int maxCount = 0)
@@ -921,172 +827,5 @@ public static class PromptListRetrievalService
 		}
 	}
 
-	private static List<string> BuildDistinctAliases(IEnumerable<string> aliases)
-	{
-		List<string> result = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (string alias in aliases ?? Enumerable.Empty<string>())
-		{
-			string text = (alias ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
-			{
-				result.Add(text);
-			}
-		}
-		return result;
-	}
 
-	private static Dictionary<string, int> BuildMentionPriority(List<string> terms)
-	{
-		Dictionary<string, int> result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		for (int i = 0; i < (terms?.Count ?? 0); i++)
-		{
-			string text = (terms[i] ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !result.ContainsKey(text))
-			{
-				result[text] = i;
-			}
-		}
-		return result;
-	}
-
-	private static float CalculateFuzzyScore(string mention, string alias)
-	{
-		string left = NormalizeFuzzyText(mention);
-		string right = NormalizeFuzzyText(alias);
-		if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))
-		{
-			return 0f;
-		}
-		if (string.Equals(left, right, StringComparison.OrdinalIgnoreCase))
-		{
-			return 1f;
-		}
-		if (left.Contains(right) || right.Contains(left))
-		{
-			int min = Math.Min(left.Length, right.Length);
-			int max = Math.Max(left.Length, right.Length);
-			float ratio = max <= 0 ? 0f : (float)min / max;
-			return Math.Max(0.78f, Math.Min(0.96f, 0.82f + ratio * 0.14f));
-		}
-		float tokenScore = CalculateTokenOverlapScore(left, right);
-		if (tokenScore > 0f)
-		{
-			return tokenScore;
-		}
-		if (HasCjk(left) || HasCjk(right))
-		{
-			return CalculateCjkOverlapScore(left, right);
-		}
-		int maxLen = Math.Max(left.Length, right.Length);
-		if (maxLen <= 0)
-		{
-			return 0f;
-		}
-		int distance = LevenshteinDistance(left, right, 64);
-		if (distance < 0)
-		{
-			return 0f;
-		}
-		return Math.Max(0f, 1f - (float)distance / maxLen);
-	}
-
-	private static string NormalizeFuzzyText(string value)
-	{
-		string text = (value ?? "").Trim().ToLowerInvariant();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		StringBuilder stringBuilder = new StringBuilder(text.Length);
-		foreach (char ch in text)
-		{
-			if (char.IsLetterOrDigit(ch) || IsCjk(ch))
-			{
-				stringBuilder.Append(ch);
-			}
-			else if (char.IsWhiteSpace(ch) || ch == '_' || ch == '-' || ch == '/' || ch == '\\')
-			{
-				stringBuilder.Append(' ');
-			}
-		}
-		return Regex.Replace(stringBuilder.ToString(), "\\s+", " ").Trim();
-	}
-
-	private static float CalculateTokenOverlapScore(string left, string right)
-	{
-		string[] leftTokens = left.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-		string[] rightTokens = right.Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-		if (leftTokens.Length == 0 || rightTokens.Length == 0)
-		{
-			return 0f;
-		}
-		HashSet<string> leftSet = new HashSet<string>(leftTokens, StringComparer.OrdinalIgnoreCase);
-		HashSet<string> rightSet = new HashSet<string>(rightTokens, StringComparer.OrdinalIgnoreCase);
-		int overlap = leftSet.Count((string x) => rightSet.Contains(x));
-		if (overlap <= 0)
-		{
-			return 0f;
-		}
-		float precision = (float)overlap / Math.Max(1, rightSet.Count);
-		float recall = (float)overlap / Math.Max(1, leftSet.Count);
-		return Math.Max(precision, recall) >= 0.5f ? Math.Max(precision, recall) : 0f;
-	}
-
-	private static float CalculateCjkOverlapScore(string left, string right)
-	{
-		HashSet<char> leftChars = new HashSet<char>(left.Where(IsCjk));
-		HashSet<char> rightChars = new HashSet<char>(right.Where(IsCjk));
-		if (leftChars.Count == 0 || rightChars.Count == 0)
-		{
-			return 0f;
-		}
-		int overlap = leftChars.Count((char x) => rightChars.Contains(x));
-		if (overlap <= 0)
-		{
-			return 0f;
-		}
-		float score = (float)overlap / Math.Min(leftChars.Count, rightChars.Count);
-		return score >= 0.66f ? score : 0f;
-	}
-
-	private static bool HasCjk(string value)
-	{
-		return !string.IsNullOrWhiteSpace(value) && value.Any(IsCjk);
-	}
-
-	private static bool IsCjk(char ch)
-	{
-		return (ch >= '\u3400' && ch <= '\u9fff') || (ch >= '\uf900' && ch <= '\ufaff');
-	}
-
-	private static int LevenshteinDistance(string left, string right, int maxLength)
-	{
-		if (left == null || right == null)
-		{
-			return -1;
-		}
-		if (left.Length > maxLength || right.Length > maxLength)
-		{
-			return -1;
-		}
-		int[,] d = new int[left.Length + 1, right.Length + 1];
-		for (int i = 0; i <= left.Length; i++)
-		{
-			d[i, 0] = i;
-		}
-		for (int j = 0; j <= right.Length; j++)
-		{
-			d[0, j] = j;
-		}
-		for (int i = 1; i <= left.Length; i++)
-		{
-			for (int j = 1; j <= right.Length; j++)
-			{
-				int cost = left[i - 1] == right[j - 1] ? 0 : 1;
-				d[i, j] = Math.Min(Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1), d[i - 1, j - 1] + cost);
-			}
-		}
-		return d[left.Length, right.Length];
-	}
 }

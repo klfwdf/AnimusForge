@@ -1,0 +1,2396 @@
+{
+  "schemaVersion": 1,
+  "baseline": "90201155",
+  "purpose": "Exact reviewed B1 declaration inverse only; then run all original postSnapshot/default/surrounding assertions unchanged.",
+  "status": "B1_PARTIAL_NOT_HARD_BUDGET_ACCEPTED",
+  "limitations": [
+    "No live/game/save or actual provider evidence",
+    "Facade-only writers suite retains terminal fixtures; separate commit_writers evidence executes named actual writers/readback without real saves/game.",
+    "Shared cumulative Stopwatch is cooperative only; a single large atomic operation can overrun. Planner/cleanup/Apply record slicing remains incomplete.",
+    "Queue slot classification/compaction is now bounded, but each HasPending/capture/apply may still traverse an unbounded single source; no hard per-frame source record budget or global writer epoch proof.",
+    "Received c21523f8 WIP is recorded in previousUnreviewedWip. Exact facade inverse and whole component hashes are reviewed; this does not accept remaining atomic budgets, a full B1 batch or real game/save behavior."
+  ],
+  "declarations": [
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class DailyMemoryLine",
+      "baselineSignature": "private sealed class DailyMemoryLine",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 220,
+      "sha256": "36580ea07fb5832f5d519822ada4eba814eadfdd7a3be65de37c6ad65fabebbb",
+      "baselineSha256": "0ec22fce0590b599a76564bfe61cce6bbb79c2ddbf538eef7ae86e1a04309175"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class DailyMemoryDraft",
+      "baselineSignature": "private sealed class DailyMemoryDraft",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 266,
+      "sha256": "a66965f13795c2342234e2ee2811d60833979d7757b294970c7da1de8238d22b",
+      "baselineSha256": "a403edf51c930b6de71f3e00bf162319cfc44c967dd5e5dc2de71192914af5cd"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class CompressedMemoryBlock",
+      "baselineSignature": "private sealed class CompressedMemoryBlock",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 298,
+      "sha256": "2016c46cfd2e755f7f32a9eb37be3d1a318b46cbb2f8441299c4ac2d6c6f7e75",
+      "baselineSha256": "61714a292506428737644974e78189c3943bbb09cde8c6408dd32c9a4dc9e631"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class WeeklyMemoryMaterialTrigger",
+      "baselineSignature": "private sealed class WeeklyMemoryMaterialTrigger",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 343,
+      "sha256": "591f014e898845f3bc893fdba986d7d8424ee09e3ebd4765130c2a37907a685c",
+      "baselineSha256": "7bc1087f1fe3e6df672d436c98cc3d5e6ab540c30aa10f19ed2096d2b7f27157"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MemorySummaryJob",
+      "baselineSignature": "private sealed class MemorySummaryJob",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 410,
+      "sha256": "9388a352ce928589553cdc52134db86d5e921ef414de8389b418d295ebda4dcc",
+      "baselineSha256": "2f42ede03812f12fbfbf5f5e7e8476f99a9a57f02d476be60df4f7c861f88a4e"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MemorySummaryExecutionResult",
+      "baselineSignature": "private sealed class MemorySummaryExecutionResult",
+      "line": 441,
+      "sha256": "4062c14bcfc2f58949b44b111f7bd4336813a82db547461b8e146f83c3edf066",
+      "baselineSha256": "8865bbc34968bccc97ae7ece99c604bc62e2c9fac997503e610bc7dbe1710b08",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MemoryOverviewState",
+      "baselineSignature": "private sealed class MemoryOverviewState",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 457,
+      "sha256": "2f3110262e6b2857527a08abcceb8445b051add9eaf379c781a992f4a94edf0c",
+      "baselineSha256": "09a7a1274952ae44aa3124d7efbdb44950d9d9d5e952c319917eb117a1cb7379"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MemoryOverviewJob",
+      "baselineSignature": "private sealed class MemoryOverviewJob",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 480,
+      "sha256": "bfcb625e6ea9301ca71c3cc5687d8536bd5b19b94228a53c4845d40ab5ea2589",
+      "baselineSha256": "7105bafdad6229b134533606fd4c3180921fc03a78c00d1294f2a176c712c3ae"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MemoryOverviewExecutionResult",
+      "baselineSignature": "private sealed class MemoryOverviewExecutionResult",
+      "line": 502,
+      "sha256": "ecfcd15d849200c428d971408131044cdbe4016b5741c2ff036b86c20eeb9981",
+      "baselineSha256": "2d09b1d5880b8aa511812b0fe4ebd33eb725653df63739a830415f09a1be1435",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MajorActionSummaryState",
+      "baselineSignature": "private sealed class MajorActionSummaryState",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 518,
+      "sha256": "f0d8c18baebd7402e91171d901a563e238fe0dbb14eaed3407303465d32da351",
+      "baselineSha256": "3bfbe12ee653c46f97c835b600d2613fad97fac5e4afc62ff17cabd557736769"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MajorActionSummaryJob",
+      "baselineSignature": "private sealed class MajorActionSummaryJob",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 542,
+      "sha256": "efab0adc601ccad8c97d4d3f6457369d5cdf06b99e36cd7c80294c9e34c079ff",
+      "baselineSha256": "55075cd5b1de43d0f8c5ff9e62c15a6547af5e5dee2e745cf457986416762298"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private sealed class MajorActionSummaryExecutionResult",
+      "baselineSignature": "private sealed class MajorActionSummaryExecutionResult",
+      "line": 564,
+      "sha256": "39c02df5ae1b4d3818e636a3c44005a8e5f513a0c2ff28befb223a5df060c4d1",
+      "baselineSha256": "e06e55cc5ba892409575098888d87c05adbd10133a092b60df47619cfeb8f890",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private class NpcActionEntry",
+      "baselineSignature": "private class NpcActionEntry",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "all-model-copy-fields",
+        "daily-every-source-field",
+        "major-every-source-field",
+        "overview-every-source-field"
+      ],
+      "line": 602,
+      "sha256": "44f3543ccf9a873c0978826f4e25233984e315bb040e1b566dcc32f78bd77ef4",
+      "baselineSha256": "375046503c3316c0080f07dcbe857aa9534e35de8056f14bfa7779a262796b57"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static void RecordNpcActionForExternal(",
+      "baselineSignature": "public static void RecordNpcActionForExternal(",
+      "line": 2699,
+      "sha256": "2523d9b7db58a96144446d166e7c6333fae442624a3f8c5633dd812805c8e154",
+      "baselineSha256": "efcc16520eb6967a8f3690876fccec6cc6ecec0f220ff189c0398226a37792ec",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void TryStartMemorySummaryQueue(",
+      "baselineSignature": "private void TryStartMemorySummaryQueue(",
+      "evidence": [
+        "completion"
+      ],
+      "targetedCases": [
+        "admission-defers-eligibility",
+        "maintenance-defers-eligibility",
+        "invalid-only-no-maintenance-spin",
+        "force-scan-after-invalid-admission",
+        "daily-terminal-duplicate",
+        "major-terminal-duplicate",
+        "overview-terminal-duplicate",
+        "new-queue-entry-survives-cleanup",
+        "worker-admission-no-source-read"
+      ],
+      "line": 4859,
+      "sha256": "0ee8ac7a299c5d8f5c7323defb03c54dcb56ee35c8573e668d0bf2d66feec287",
+      "baselineSha256": "c52f2716f083d8f3d87a5dd68e3b9d6f52e210a95c979ccec53f6a1dda2c5c68"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task ProcessMemorySummaryQueueAsync(",
+      "baselineSignature": "private async Task ProcessMemorySummaryQueueAsync(",
+      "line": 4921,
+      "sha256": "ec857c19337d100574df16db71a1246a8aad334b0788d1042559ceb00c2cc8d8",
+      "baselineSha256": "a8103086c3d6404881820ec5a16aabc342d214bbff269b00d4ac4c5764b38f22",
+      "evidence": [
+        "completion"
+      ],
+      "targetedCases": [
+        "success/reentry/side-effects",
+        "mixed-three-type-failures",
+        "daily-terminal-duplicate",
+        "major-terminal-duplicate",
+        "overview-terminal-duplicate",
+        "force-scan-after-invalid-admission",
+        "new-queue-entry-survives-cleanup",
+        "partial-apply-block-exception",
+        "partial-apply-weekly-exception",
+        "partial-mark-exception"
+      ],
+      "mutations": [
+        "dedupe-before-filter",
+        "keep-invalid-queue",
+        "worker-initial",
+        "worker-primary",
+        "worker-major",
+        "worker-extra",
+        "worker-extra-plan",
+        "worker-cleanup",
+        "worker-release",
+        "bypass-completion-error-wrapper",
+        "swallow-completion-error"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task RunDailySummaryQueueItemsAsync(",
+      "baselineSignature": "private async Task RunDailySummaryQueueItemsAsync(",
+      "line": 5051,
+      "sha256": "0bcdf7ed55176c47f514d61a4ae8e709d091b70f367b7cb458c207d37d321e3b",
+      "baselineSha256": "45f8a4b4df62ed96b7c0949c90a0a0f5525c7e6d2cd286039db0e75f39c52852",
+      "evidence": [
+        "captured"
+      ],
+      "targetedCases": [
+        "generation-during-wave-spacing",
+        "owner-during-wave-spacing",
+        "rpm-wave-order"
+      ],
+      "mutation": "ignore-wave-lifetime"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(",
+      "baselineSignature": "private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(",
+      "evidence": [
+        "captured"
+      ],
+      "line": 5088,
+      "sha256": "4991659ba82a2202fd6b4b579aa0fe951c86f5ac5696fcf9b0fff39c0bce4a8a",
+      "baselineSha256": "1d1c882f052f31927096e81af4a84cdf8aeedb1a410f3be6b95c6a007118f8ff",
+      "targetedCases": [
+        "daily/major/overview planned-unchanged",
+        "daily/major/overview planned-before-dispatch",
+        "daily/major/overview planned-before-capture"
+      ],
+      "mutations": [
+        "drop-plan-expected",
+        "skip-planned-source-check"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(",
+      "baselineSignature": "private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(",
+      "line": 5152,
+      "sha256": "3f212546522a7440c4dcd05287a0038fc348652851cb14309f2a126ae94c3799",
+      "baselineSha256": "c866fb086270b466bf6b6f29c16eec50d01668e0fb576da5052afcb46417f061",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(",
+      "baselineSignature": "private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(",
+      "line": 5165,
+      "sha256": "a858fe27238bd1ae685f2c938d02ff071cd43d8e745dc02ee7c455d9f397a56e",
+      "baselineSha256": "b1c5ed16bc86f0db00cb40572869abba6ab119fa3147a79a5a291595ffa746c2",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(",
+      "baselineSignature": "private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(",
+      "line": 5178,
+      "sha256": "f3c5617f737a9efdf533dffd628dd90ce88d4040fb134e7716e17d455f62c5b0",
+      "baselineSha256": "f2b125eedad5737ad47b6689d05ea69e0a83ab7677205d0df11def2264aa8720",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool ApplyMemoryOverviewSuccess(",
+      "baselineSignature": "private void ApplyMemoryOverviewSuccess(",
+      "line": 5325,
+      "sha256": "6004110f183021fcc4d80d93a5f04ce97758f072fcc59b959aada0a494f4dc60",
+      "baselineSha256": "1fba9c86af385c75d7c3991f73759931fd99ef40db6510d3ae7076b231bb33d5",
+      "evidence": [
+        "completion"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool ApplyMajorActionSummarySuccess(",
+      "baselineSignature": "private void ApplyMajorActionSummarySuccess(",
+      "line": 5480,
+      "sha256": "04c1b73cc8603b25c084355375ddf5849536cac53c28549e9244babf39470f7f",
+      "baselineSha256": "80525b15cde3ba5ecb00e68bbc2c1aaf7bfc2fc5da121cce230d9ba969f3d2ce",
+      "evidence": [
+        "completion"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool ApplyMemorySummarySuccess(",
+      "baselineSignature": "private void ApplyMemorySummarySuccess(",
+      "line": 5706,
+      "sha256": "a86e20672d1748fb66b5804e0096b09549974f5279837209199e0ea721a86c04",
+      "baselineSha256": "0a7a8ac5086f3dd87b63811f1414bd469b6bca53e173120997cf57a06f8c97ad",
+      "evidence": [
+        "completion"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static void MarkWeeklyMemoryMaterialTriggerForExternal(",
+      "baselineSignature": "public static void MarkWeeklyMemoryMaterialTriggerForExternal(",
+      "line": 14096,
+      "sha256": "2b3276daea4b6b53fb87c972aa60e4ee3abc1d2bf7a64eaa8eccd1c1b5047677",
+      "baselineSha256": "8f016d050e9baa05c94b4488d574d9aa545e2937739fbdacb4f57bd696630f8a",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(",
+      "baselineSignature": "internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(",
+      "line": 14117,
+      "sha256": "de2e910d4332009421a084e5b3d36ff20ec1085194d2fb959743435714c58087",
+      "baselineSha256": "59812424d975891e574f8ea450b0bea458206fe71aad19018c4e092b44ac9739",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void TryRunCampaignMemoryMaintenance(",
+      "baselineSignature": "private void TryRunCampaignMemoryMaintenance(",
+      "evidence": [
+        "sealing",
+        "completion"
+      ],
+      "targetedCases": [
+        "admission-defers-eligibility",
+        "maintenance-defers-eligibility",
+        "invalid-only-no-maintenance-spin",
+        "force-scan-after-invalid-admission",
+        "daily-terminal-duplicate",
+        "major-terminal-duplicate",
+        "overview-terminal-duplicate",
+        "new-queue-entry-survives-cleanup",
+        "worker-admission-no-source-read"
+      ],
+      "line": 17759,
+      "sha256": "449dcb264159b51203fe2dfe885101576919d5cdf7084b38d285ab6f9b3650dd",
+      "baselineSha256": "a146ea5c155f6a3a3a21a5a4112e940c396710d374b086fdd9d7bc411dbac1b9",
+      "reason": "Use shared deadline/caps and retain one exhausted-window start request with save generation; next cycle dispatches without repeating sealing. Busy/processing gates and actual summary owner remain."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static void MigrateNonHeroPartyScopedMemoryForExternal(",
+      "baselineSignature": "public static void MigrateNonHeroPartyScopedMemoryForExternal(",
+      "line": 25555,
+      "sha256": "3226c0f4108b318791146c66977bc7c9c1135165e355cf5554ac6f24499465d5",
+      "baselineSha256": "814ea20bc0fcc503124fff57c6ef7dba1452a0915526489b0c621686bc711114",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(",
+      "baselineSignature": "private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(",
+      "line": 26464,
+      "sha256": "fe7936ac761ffe973c5d62e2ac5341d5cb19a1877f2c7fe1649fcf512b76b89b",
+      "baselineSha256": "322763023c4c779d1c06623a1c384f45f5ff497b85cea484aba88ac69874c2d9",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
+      "baselineSignature": "private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(",
+      "line": 26573,
+      "sha256": "10f55c23a4caaa93750b36c79884e232a2de1d3bc672cfc9b3ac95bdf15fbf86",
+      "baselineSha256": "7caa0014b33ad43e30c9f28e81e1b2a278ad87644b663cc7476a52b59f45cc4d",
+      "evidence": [
+        "captured",
+        "sealing"
+      ],
+      "targetedCases": [
+        "owner-normalize-contract",
+        "owner-normalize-finite-cost",
+        "owner-normalize-campaign-cost"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
+      "baselineSignature": "private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(",
+      "line": 26657,
+      "sha256": "93b78b9ec3c8dd0934d381e80a8b5ae530d630edca94f735e1c7f654b752275c",
+      "baselineSha256": "27c5b5d9c8d33f0ca6fa2b21670dc2d8ac2d9cc2d1db792bf5dc31f72679844b",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private MemoryOverviewState GetMemoryOverviewState(",
+      "baselineSignature": "private MemoryOverviewState GetMemoryOverviewState(",
+      "line": 26787,
+      "sha256": "d7af22ad65fcab2a4a393f9c4d46f9ccc532010398f939235fc92eab11a285dd",
+      "baselineSha256": "84c3828a78aeba73b32d273acd83e23bb98f1ffe04fa941b00236d731a636a84",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool HasMemoryOverviewPendingBlocks(",
+      "baselineSignature": "private bool HasMemoryOverviewPendingBlocks(",
+      "line": 26811,
+      "sha256": "89dfecbb0e24c4ecf9ca3553118329dd4bbddea9d6c17f554ca79ad464d86dc5",
+      "baselineSha256": "84068d59abb0f92e6b1d90435656417167320a59a6cdb98bc2b00b89dda4b605",
+      "evidence": [
+        "captured",
+        "admission"
+      ],
+      "targetedCases": [
+        "oracle-title-twice-pre-False",
+        "oracle-title-twice-pre-True",
+        "oracle-first-empty-duplicate-pre-False",
+        "oracle-raw-id-distinct-count-pre-False",
+        "oracle-other-owner-pre-False",
+        "enqueue-title-twice",
+        "large-source-operation-count"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private MajorActionSummaryState GetMajorActionSummaryState(",
+      "baselineSignature": "private MajorActionSummaryState GetMajorActionSummaryState(",
+      "line": 26910,
+      "sha256": "8d6e83958890000151a72b7407d0ccc4cad33da79362b609c932a9b4876b50da",
+      "baselineSha256": "1440f4d53a9c641121b88e1a3c6cb2724dbeac17c274132689885fed86a40065",
+      "evidence": [
+        "captured"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static void AppendExternalDialogueHistory(",
+      "baselineSignature": "public static void AppendExternalDialogueHistory(",
+      "line": 27542,
+      "sha256": "4241cdfeb36886e1c73465a80b995ad41bd51fceb3ca6d2b45a6d12c591cf593",
+      "baselineSha256": "e0ff60b95a5740d87064a237e644c55daa532b2e8d7238e308fab7795c7ae608",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static void AppendExternalSceneDialogueHistory(",
+      "baselineSignature": "public static void AppendExternalSceneDialogueHistory(",
+      "line": 27566,
+      "sha256": "be0e4aecf26ca789533fdc23838a6b23ce47b4808f9a45b9aca3ccc72d17492a",
+      "baselineSha256": "61b21fe4ab5b041288a52708946ca991ddd3c271a32df2fbb39eee30673db7e1",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static void AppendExternalNonHeroDialogueHistory(",
+      "baselineSignature": "public static void AppendExternalNonHeroDialogueHistory(",
+      "line": 27579,
+      "sha256": "d872c7be4c8c596f282ab852ac2c8d73cf14d7e2641cb9983c982badf2c76985",
+      "baselineSha256": "29d45e998b70b8645ce7f5edb049fb6f69856093719bb3166e007b0595c10bf4",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
+      "baselineSignature": "public static void AppendExternalNonHeroSceneDialogueHistory(",
+      "line": 27592,
+      "sha256": "00bb71e1de80054398872e1c0849315124db196071ff28d39ab18d263c87dfe0",
+      "baselineSha256": "310ec210e62dcb68961e51f8f536567351a9067fa7e5bbf3273af63eb0d056a6",
+      "evidence": [
+        "writers"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 49977,
+      "sha256": "78261bc4882d632f24ae2b5ab00e45dbd8809d693f6de81516580d4bf29efad8",
+      "baselineSha256": "5cc7f21759e292824bb974c4c560759ac77976478243eba2213b2195dad2db44",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineTextEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineTextEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50051,
+      "sha256": "3af489646e2b910040bdda07a79756a34ace55b560a41022bebaf9bba08a7b8b",
+      "baselineSha256": "1d7015d8ac12ce452e64f495722d28a44b70f9680488e57782b94a36d100af42",
+      "verificationLevel": "actual extracted method/closure execution plus structural guards",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineSpeakerEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineSpeakerEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50089,
+      "sha256": "0fb8f92c78b2d89afed8dd7f0c3c451ee08e3d580004c125f5628dd175063762",
+      "baselineSha256": "249754eee4dbe0099b0a1bdd4e0041c6c64daf344bad4d0acb89ec5469507470",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineSceneEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineSceneEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50119,
+      "sha256": "078d20ad099ac6fdab1c6975deebce947cbacd4007e1fe1f96c0b8239199be59",
+      "baselineSha256": "2dc5cf1ed7edd8b81d43eec58f039798c57f67daa2e17277dbc183024a443294",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevDailyMemoryLineHourEditor(",
+      "baselineSignature": "private void OpenDevDailyMemoryLineHourEditor(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50149,
+      "sha256": "5bf19d80b828e436d57f4b7a14dc0128c7006bf58eefb075f65f8a282af0f24f",
+      "baselineSha256": "144f8db4cf2f36dbf3e08228fc5e5590d7f5c0dbcb9e661ad000fd4a791dda4a",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OpenDevAddDailyMemoryLine(",
+      "baselineSignature": "private void OpenDevAddDailyMemoryLine(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50219,
+      "sha256": "8d2d58ed846230326e5b56c212323e921b0a8ac1f56d92322304922d04c33814",
+      "baselineSha256": "99dd71d92fd9c25517c34c027bf0b2db231193e35d6ebcdd3580f7a2d3ac09c9",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ConfirmDevDeleteDailyMemoryLine(",
+      "baselineSignature": "private void ConfirmDevDeleteDailyMemoryLine(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50280,
+      "sha256": "31927e9edf1b549e0699fc57a22ff4ddac7cc857444307adbd9447803b7986d3",
+      "baselineSha256": "5b2d2becef7a15335347ad45288a4262ed8d3599911ad4ccd9ad0cecc4c94612",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ConfirmDevDeleteDailyMemoryDraft(",
+      "baselineSignature": "private void ConfirmDevDeleteDailyMemoryDraft(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 50312,
+      "sha256": "bf7e6c0f370b3ec05146e9dc6d89a87ecbbac12bc1e1f7d8699ad13adf1d2721",
+      "baselineSha256": "4201867d4b5c62fecff826fb639fa3404635ff20a7f9e6e1d9f6ae7279aacc67",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportSingleNpcDialogueHistoryData(",
+      "baselineSignature": "private void ImportSingleNpcDialogueHistoryData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 54889,
+      "sha256": "9cad101c484d6a8516d41210650f1c83717ea6957d78bc8d95b610afac4a7831",
+      "baselineSha256": "de972b72d399783cfbb3b87972f4e215d8c7c62f10e1316c07f13d7e940dfdc8",
+      "verificationLevel": "actual extracted method/closure execution plus structural guards",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportHeroNpcAllData(",
+      "baselineSignature": "private void ImportHeroNpcAllData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 55086,
+      "sha256": "0dfcaa1289fb5091c5c1afa18308d2dd1a39b7b54286aeb0da04adf90f8af2fd",
+      "baselineSha256": "3a3323995a9e62cb6686588682b698b8c189a6c631dcb6485bbc6a27211a99da",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportDialogueHistoryData(",
+      "baselineSignature": "private void ImportDialogueHistoryData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 56994,
+      "sha256": "8c87cbac510f1c9ce96be601ed0d4abdd0d415f9cdd506fc7374a157597e7f3c",
+      "baselineSha256": "08cf2cf3387a75448450f61b54dfbbecc0ebacde51e73f7891bd0cbc376cabfe",
+      "verificationLevel": "actual extracted method/closure execution plus structural guards",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ImportAllData(",
+      "baselineSignature": "private void ImportAllData(",
+      "evidence": [
+        "commit_writers"
+      ],
+      "line": 57522,
+      "sha256": "1164e21ef32229e6e63bf87afa42b5ea252117f23579951beeee1c81ac7cf48f",
+      "baselineSha256": "443f988853cd789d4fa7ab5e72676ebd95cd622dfc9767212c63f1a6e0dc74b2",
+      "verificationLevel": "structural guards only; no full business execution",
+      "targetedCases": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0; consult per-case run.log and added_extraction structure_only flags"
+      ]
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void RecordEventSourceMaterial(",
+      "baselineSignature": "private void RecordEventSourceMaterial(",
+      "sha256": "929ce07c6301bd869d92311de6d0decc226b57f84c21d73fc9af7f94e4197e23",
+      "baselineSha256": "11de9a9a4945cc247dd21d5b4f2d5040a332e87964cb39465c48d519034c456c",
+      "evidence": [
+        "materials"
+      ],
+      "reason": "Complete derived index owns misses. Component binding detects replaced lists/maps and same-count List writes. Authoritative record update/append and flag/date semantics remain in MyBehavior. 23 actual cases, seven valid mutations, c21523f8 exact-WIP oracle.",
+      "line": 13707
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void RebuildEventSourceMaterialIndex(",
+      "baselineSignature": "private void RebuildEventSourceMaterialIndex(",
+      "sha256": "79c2eb9b4374a5ce53440bc720b4e37654061a3c91210731dc9a0c23e4800fe0",
+      "baselineSha256": "1f5469f22c9091673de3552448a577ed2f651db0ffee68308476d00a98d4a347",
+      "evidence": [
+        "materials"
+      ],
+      "reason": "Independent runtime component builds an unpublished map. Owner rechecks the source pointer, publishes, then binds. Named last-wins and blank nonnegative-day first-wins preserve AF semantics; rebuild failures cannot publish half a map.",
+      "line": 20162
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool TrySealPastDailyMemoryDrafts(",
+      "baselineSignature": "private bool TrySealPastDailyMemoryDrafts(",
+      "sha256": "23c688a5db84801e006e1bcfa08234f455e901563a92330dc4d23f3c03814ed3",
+      "baselineSha256": "0424fc3bd9580b15db03068b78e208017d30eced0818c922985eaa91ad721648",
+      "evidence": [
+        "sealing",
+        "completion"
+      ],
+      "reason": "Only the resumable seal entry changed: optional probe, retain old synchronous/unlimited behavior, reset on caught failure. Thirty actual cases plus original and eight mutation controls; not a hard per-Tick/deep-record budget acceptance.",
+      "line": 4816
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ResetDailyMemoryDraftSealSliceState(",
+      "baselineSignature": "private void ResetDailyMemoryDraftSealSliceState(",
+      "sha256": "91be719a833b52be3ebf815618d13adb3936b00569dbed6514488acdbed5079b",
+      "baselineSha256": "731ddf61cd5d7d38622a1979dfaacee7127b0a35b8e5b1f1913419585e4df7d3",
+      "evidence": [
+        "sealing",
+        "completion"
+      ],
+      "reason": "Retire both new transient state and completion receipt alongside the six original transient fields; no persistent schema change.",
+      "line": 4837
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void OnCampaignTick(",
+      "baselineSignature": "private void OnCampaignTick(",
+      "sha256": "57430b6d5b2f376ad1a664bf5cff1b6c9bded6c86eed9fe060c9cae582ee0218",
+      "baselineSha256": "872ef0aed204aea02fa1132ef9e9793cdd499c5ae1d83dbf2c2f4cc379a681bd",
+      "evidence": [
+        "sealing",
+        "completion"
+      ],
+      "reason": "Original primary/deferred maintenance callsite invokes one real shared cycle; other Campaign work and weekly-commit skip order remain unchanged.",
+      "line": 17687
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void ProcessDeferredDailyMaintenance(",
+      "baselineSignature": "private void ProcessDeferredDailyMaintenance(",
+      "sha256": "568de6ea43979003f7c2f67625f68b60f56c38f5a408554d663489326db9f2ba",
+      "baselineSha256": "ab146a531ac1a6a575cc09a8225f01ec08f30f008a55459e24bf65561fe3bea3",
+      "evidence": [
+        "sealing",
+        "completion"
+      ],
+      "reason": "Use the active Campaign deadline and reject a second domain after exhaustion; standalone calls retain their own deadline. Real old callsite/current/fault replays.",
+      "line": 5923
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(",
+      "baselineSignature": "private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(",
+      "evidence": [
+        "sealing",
+        "completion",
+        "planning"
+      ],
+      "targetedCases": [
+        "queue-normalizer-alias-contract",
+        "queue-sort-budget-False",
+        "daily-queue-contract",
+        "major-queue-contract"
+      ],
+      "line": 26710,
+      "sha256": "26f2fd6cd18477c90e4b4f76fcf75634f238a667275a57fb17f921b06b987c15",
+      "baselineSha256": "0d7133e638e0c20f08cbfd228b243f7e2100d63e13d995597c964e9ad3f43ac1",
+      "reason": "Keep the original synchronous sorted entry point; delegate only normalization, exact old mutation order separately checked."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(",
+      "baselineSignature": "private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(",
+      "evidence": [
+        "sealing",
+        "completion",
+        "planning"
+      ],
+      "targetedCases": [
+        "queue-normalizer-alias-contract",
+        "queue-sort-budget-True",
+        "daily-queue-contract",
+        "major-queue-contract"
+      ],
+      "line": 26876,
+      "sha256": "78c968606109e9e58e9cc2105a895b0410a39e5fe8a060b196717caac754519a",
+      "baselineSha256": "aa7643a6f6db58cb73bb46b4197a6cdc2c64d9d860295f9c04ca58bf53aa66e7",
+      "reason": "Keep the original synchronous sorted entry point; delegate only normalization, exact old mutation order separately checked."
+    }
+  ],
+  "evidence": {
+    "completion": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_business.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt",
+      "scope": "Actual Process/Apply/Mark state mutation and accepted counters, stale/owner/generation rejection, terminal cleanup and release; source proof is a scripted completion-layer seam, not a real capture test. Actual TryStart/TryRunCampaignMemoryMaintenance/ShouldScan/QueueAll execute; past-draft sealing, busy/current-day, and candidate-ID terminal remain fixtures. Partial Apply and Mark fault cases preserve published state, stop later work, emit an exception notice and release without replay. Uses actual resumable planning module for initial/extra/cleanup. Scripted provider unwraps PlanEntry at its existing external boundary; actual dispatcher planned fingerprint enforcement is covered by captured suite. 64 large failure strings aggregate off-thread, preserving exact message/order and discarding late owner/generation notifications.",
+      "observed": "BUSINESS_RESULT passed=36 failed=0",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "9cf78162ca26d28ea55f46829263edcb368a861e0e36c2a38bcadc0f18f17c5b",
+        "harness": "999006de2ebd755f9f94e52cdb51031272531a65a41e9c137b507e6d47eba2f4"
+      },
+      "extractedProductionEvidence": 49,
+      "additionalTestSourceSha256": {
+        "tools/MemorySummaryMainThreadBoundaryTests/run.py": "cdf46aff12e86cd8057f068e88c312e6e8597762d8e81c4b20a607ed6ffb8bd8",
+        "tools/MemorySummaryMainThreadBoundaryTests/Harness.cs.txt": "5281e64030406f3584386d439bb9b6da291341d9e853e7b20e637a9e06f9af76"
+      }
+    },
+    "captured": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt",
+      "scope": "Actual result Source receipt, queue/Execute/input/fingerprint/Build/Parse/sanitizer flow, nested source isolation and edits, retries and metadata; game renderer/settings/provider are fixtures, not real-game validation. Queue wave spacing retains its starting owner/generation and never dispatches or sends the next wave after retirement. Runtime reflection fills every field for ten private models and two list types, checks exact scalar/null equivalence and every mutable node detachment. Every populated raw-source field and mutable collection is changed separately under the same generation and the actual source check must reject it. Actual PlanEntry/Describe and dispatcher pass frozen job fingerprints into the same guarded Capture callback; same-reference edits before dispatch or while awaiting capture cannot send a stale request. Effective context checks use actual requirement/target getters and entity render resolvers over instrumented game objects, compared to the unchanged six Build methods; explicit/equivalent scene and denominator changes are accepted, effective changes rejected. Revalidation prohibits Capture/Clone/HasPending/Build calls. Initial binding and context/threshold getter mutation probes, retarget-before-observer guard and absent/present-null state identity are covered. Raw source digest uses complete typed encoding; generic plan/context/editor JSON remains unchanged. List/null/presence/order/UTF16/buffer-prefix and direct primitive SHA oracle are additional checks, not a hard frame budget.",
+      "observed": "Current 116/0; pinned 8bcde78b same116 ->112/4 runtime red (three allocation gates plus distinct raw UTF16);35 BUILD_PASS fault controls EXIT=1;7/0 actual retry/final-check observations. Full 294 recursive source-field mutations remain covered.",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "harness": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1"
+      },
+      "extractedProductionEvidence": 98,
+      "priorObserved": "CAPTURED_RESULT pass=109 fail=0; reflection scalar checks=351; independent mutable nodes=49; exact raw field mutations=294; 28 compiled runtime mutation controls; observe mode 7 PASS: Capture1/Build1 per prompt across 1 or 3 attempts, checks3/7, clone2 daily or3 major/overview; hard budget NOT_PROVEN",
+      "additionalTestSourceSha256": {
+        "tools/MemorySummaryMainThreadBoundaryTests/run_fingerprint.py": "3f6eebbb0d09a7b19a179bdae6a203e680e8593f709b3b9c04c72fd8c4e8fc78"
+      },
+      "counterexampleSummary": ".tmp/b1-raw-digest-20260914/captured-runs.json",
+      "redMutations": [
+        {
+          "name": "retain-payload",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "reuse-source",
+          "exit": 1,
+          "failedCases": [
+            "all-model-copy-fields",
+            "three-kinds-metadata",
+            "detached-source",
+            "late-generation",
+            "late-owner",
+            "major-capture-pure",
+            "overview-capture-pure",
+            "overview-every-source-field",
+            "overview-planned-unchanged",
+            "daily-background-sanitize",
+            "blocks-background-sanitize",
+            "weekly-background-sanitize",
+            "daily-retired-queue-job",
+            "major-retired-queue-job",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-list-success",
+            "overview-list-failure",
+            "overview-state-success",
+            "overview-state-failure",
+            "overview-retired-queue-job",
+            "overview-valid-retry",
+            "overview-stale-retry",
+            "overview-terminal-failures",
+            "overview-requirements",
+            "overview-target",
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "ignore-fingerprint",
+          "exit": 1,
+          "failedCases": [
+            "detached-source",
+            "daily-every-source-field",
+            "major-every-source-field",
+            "overview-every-source-field",
+            "daily-body-success",
+            "daily-body-failure",
+            "daily-nested-success",
+            "daily-nested-failure",
+            "daily-list-success",
+            "daily-list-failure",
+            "daily-state-success",
+            "daily-state-failure",
+            "daily-stale-retry",
+            "major-body-success",
+            "major-body-failure",
+            "major-nested-success",
+            "major-nested-failure",
+            "major-list-success",
+            "major-list-failure",
+            "major-state-success",
+            "major-state-failure",
+            "major-stale-retry",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-list-success",
+            "overview-list-failure",
+            "overview-state-success",
+            "overview-state-failure",
+            "overview-stale-retry",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "initial-getter-binding",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "worker-parse",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata",
+            "rpm-wave-order",
+            "generation-during-wave-spacing",
+            "owner-during-wave-spacing",
+            "parser-formats",
+            "daily-planned-unchanged",
+            "major-planned-unchanged",
+            "overview-planned-unchanged",
+            "daily-valid-retry",
+            "daily-stale-retry",
+            "daily-terminal-failures",
+            "major-valid-retry",
+            "major-stale-retry",
+            "major-terminal-failures",
+            "overview-valid-retry",
+            "overview-stale-retry",
+            "overview-terminal-failures"
+          ]
+        },
+        {
+          "name": "skip-retry-source",
+          "exit": 1,
+          "failedCases": [
+            "daily-stale-retry",
+            "major-stale-retry",
+            "overview-stale-retry"
+          ]
+        },
+        {
+          "name": "drop-afef",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "drop-overview-ids",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "drop-major-cursor",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "background-sanitize-alias",
+          "exit": 1,
+          "failedCases": [
+            "daily-background-sanitize",
+            "blocks-background-sanitize",
+            "weekly-background-sanitize"
+          ]
+        },
+        {
+          "name": "main-sanitize-detach",
+          "exit": 1,
+          "failedCases": [
+            "daily-main-sanitize",
+            "blocks-main-sanitize",
+            "weekly-main-sanitize"
+          ]
+        },
+        {
+          "name": "drop-source-receipt",
+          "exit": 1,
+          "failedCases": [
+            "three-kinds-metadata"
+          ]
+        },
+        {
+          "name": "ignore-wave-lifetime",
+          "exit": 1,
+          "failedCases": [
+            "generation-during-wave-spacing",
+            "owner-during-wave-spacing"
+          ]
+        },
+        {
+          "name": "drop-nested-copy",
+          "exit": 1,
+          "failedCases": [
+            "all-model-copy-fields",
+            "detached-source"
+          ]
+        },
+        {
+          "name": "drop-scalar-copy",
+          "exit": 1,
+          "failedCases": [
+            "all-model-copy-fields"
+          ]
+        },
+        {
+          "name": "omit-stream-source",
+          "exit": 1,
+          "failedCases": [
+            "detached-source",
+            "daily-every-source-field",
+            "major-every-source-field",
+            "overview-every-source-field",
+            "daily-body-success",
+            "daily-body-failure",
+            "daily-nested-success",
+            "daily-nested-failure",
+            "daily-list-success",
+            "daily-list-failure",
+            "daily-state-success",
+            "daily-state-failure",
+            "daily-stale-retry",
+            "major-body-success",
+            "major-body-failure",
+            "major-nested-success",
+            "major-nested-failure",
+            "major-list-success",
+            "major-list-failure",
+            "major-state-success",
+            "major-state-failure",
+            "major-stale-retry",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-list-success",
+            "overview-list-failure",
+            "overview-state-success",
+            "overview-state-failure",
+            "overview-stale-retry",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "initial-getter-binding",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "drop-plan-expected",
+          "exit": 1,
+          "failedCases": [
+            "daily-planned-before-dispatch",
+            "daily-planned-before-capture",
+            "major-planned-before-dispatch",
+            "major-planned-before-capture",
+            "overview-planned-before-dispatch",
+            "overview-planned-before-capture"
+          ]
+        },
+        {
+          "name": "skip-planned-source-check",
+          "exit": 1,
+          "failedCases": [
+            "daily-planned-before-dispatch",
+            "daily-planned-before-capture",
+            "major-planned-before-dispatch",
+            "major-planned-before-capture",
+            "overview-planned-before-dispatch",
+            "overview-planned-before-capture"
+          ]
+        },
+        {
+          "name": "ignore-context",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-effective",
+            "daily-requirements",
+            "major-requirements",
+            "overview-requirements",
+            "overview-target",
+            "daily-observer-name",
+            "daily-unknown-scene",
+            "daily-unknown-day",
+            "major-entity-hero",
+            "major-entity-clan",
+            "major-entity-owner-clan",
+            "major-entity-kingdom",
+            "major-entity-old-kingdom",
+            "major-entity-settlement",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "overview-threshold-getter-raw-edit",
+            "identity-trust",
+            "identity-hero",
+            "identity-player",
+            "identity-rendering-alias"
+          ]
+        },
+        {
+          "name": "rebuild-on-check",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-effective",
+            "daily-denominator-equivalent",
+            "daily-requirements",
+            "major-requirements",
+            "overview-requirements",
+            "overview-target",
+            "daily-observer-name",
+            "daily-unknown-scene",
+            "daily-explicit-scene",
+            "daily-unknown-day",
+            "daily-empty-unknown-day-equivalent",
+            "major-entity-hero",
+            "major-entity-clan",
+            "major-entity-owner-clan",
+            "major-entity-kingdom",
+            "major-entity-old-kingdom",
+            "major-entity-settlement",
+            "context-getter-edits-raw",
+            "context-getter-replaces-raw",
+            "initial-getter-binding",
+            "retarget-no-old-observer-query",
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "clone-on-check",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-effective",
+            "daily-denominator-equivalent",
+            "daily-requirements",
+            "major-requirements",
+            "overview-requirements",
+            "overview-target",
+            "daily-observer-name",
+            "daily-unknown-scene",
+            "daily-explicit-scene",
+            "daily-unknown-day",
+            "daily-empty-unknown-day-equivalent",
+            "major-entity-hero",
+            "major-entity-clan",
+            "major-entity-owner-clan",
+            "major-entity-kingdom",
+            "major-entity-old-kingdom",
+            "major-entity-settlement",
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit",
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "stale-pre-getter-view",
+          "exit": 1,
+          "failedCases": [
+            "context-getter-replaces-raw"
+          ]
+        },
+        {
+          "name": "skip-initial-binding",
+          "exit": 1,
+          "failedCases": [
+            "initial-getter-binding"
+          ]
+        },
+        {
+          "name": "skip-retarget-guard",
+          "exit": 1,
+          "failedCases": [
+            "retarget-no-old-observer-query"
+          ]
+        },
+        {
+          "name": "skip-overview-threshold",
+          "exit": 1,
+          "failedCases": [
+            "overview-raised-threshold",
+            "overview-threshold-getter-raw-edit"
+          ]
+        },
+        {
+          "name": "raw-denominator-context",
+          "exit": 1,
+          "failedCases": [
+            "daily-denominator-equivalent"
+          ]
+        },
+        {
+          "name": "raw-scene-context",
+          "exit": 1,
+          "failedCases": [
+            "daily-explicit-scene",
+            "daily-empty-unknown-day-equivalent"
+          ]
+        },
+        {
+          "name": "ignore-initial-retry",
+          "exit": 1,
+          "failedCases": [
+            "daily-initial-gate-retry",
+            "major-initial-gate-retry",
+            "overview-initial-gate-retry"
+          ]
+        },
+        {
+          "name": "omit-state-presence",
+          "exit": 1,
+          "failedCases": [
+            "major-state-presence-absent-to-present",
+            "major-state-presence-present-to-absent",
+            "overview-state-presence-absent-to-present",
+            "overview-state-presence-present-to-absent"
+          ]
+        },
+        {
+          "name": "omit-raw-line-field",
+          "exit": 1,
+          "failedCases": [
+            "daily-every-source-field"
+          ]
+        },
+        {
+          "name": "omit-raw-nested-tags",
+          "exit": 1,
+          "failedCases": [
+            "daily-every-source-field",
+            "overview-every-source-field",
+            "daily-nested-success",
+            "daily-nested-failure"
+          ]
+        },
+        {
+          "name": "unframed-raw-strings",
+          "exit": 1,
+          "failedCases": [
+            "daily-raw-digest-framing",
+            "major-raw-digest-framing",
+            "overview-raw-digest-framing"
+          ]
+        },
+        {
+          "name": "truncate-raw-long",
+          "exit": 1,
+          "failedCases": [
+            "overview-raw-digest-framing"
+          ]
+        },
+        {
+          "name": "repeat-raw-list-head",
+          "exit": 1,
+          "failedCases": [
+            "daily-every-source-field",
+            "major-every-source-field",
+            "overview-every-source-field",
+            "major-body-success",
+            "major-body-failure",
+            "major-nested-success",
+            "major-nested-failure",
+            "major-stale-retry",
+            "overview-body-success",
+            "overview-body-failure",
+            "overview-nested-success",
+            "overview-nested-failure",
+            "overview-stale-retry",
+            "overview-threshold-getter-raw-edit"
+          ]
+        },
+        {
+          "name": "raw-low-code-unit-only",
+          "exit": 1,
+          "failedCases": [
+            "raw-digest-code-units"
+          ]
+        },
+        {
+          "name": "ignore-full-raw-buffer",
+          "exit": 1,
+          "failedCases": [
+            "daily-raw-digest-framing"
+          ]
+        }
+      ],
+      "rawMutationEvidenceSourceRevision": "40b92e67",
+      "currentOwnerSanitizerRevalidation": "Current116/0; pinned8bc112/4; main-sanitize-detach113/3 and background-sanitize-alias113/3 rerun. Other raw35 controls retain explicitly pinned40b evidence: Input/encoder unchanged, extracted entry body exact-old proof added."
+    },
+    "writers": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_writers.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/WriterHarness.cs.txt",
+      "scope": "Actual 8 facade bodies and source-write queue/copy helper; final game/storage/recovery/weekly writers are witnesses, not actual full persistence execution.",
+      "observed": "WRITER_RESULT checks=238 failures=0",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "8376730a777f6834d7fa5e1a9df17b385e181603bd8fb3499c16485f9ecee2e3",
+        "harness": "5f95b006fdf5e625b368d538060af47ff8b7c51edcb3d41568595dd9d9e4e49a"
+      },
+      "extractedProductionEvidence": 19
+    },
+    "planning": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_planning.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/PlanningHarness.cs.txt",
+      "scope": "Actual resumable filter and compaction, including null slots, structural List revision/reference probes, immutable sort keys, queue replacement, repeated mutation, cleanup-only path, and actual invalid-owner cancellation. Source-pending/game eligibility are fixtures. No record hard bound within one source predicate.",
+      "observed": "PLANNING_RESULT pass=24 fail=0; 4096 layouts visit exactly 4096 filter+4096 compact slots; max 8/slice and 16/tick; slow predicate and shared remaining Stopwatch budget proven; 10 runtime mutation controls",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/planning/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "e0d0de2b1a140f20fbae3f3ef5147e126789902f09b844e9e59e0621abafecb3",
+        "harness": "a1622f275b2e0c4470072213ae74db767bd5136fb6f7c4cb2a7c28a69a372d18"
+      },
+      "extractedProductionEvidence": 13
+    },
+    "commit_writers": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/CommitWritersHarness.cs.txt",
+      "scope": "Actual commit/daily/recent/readback, text-editor closure, and single/global dialogue-import apply callbacks; remaining editor windows and aggregated all-data import windows are structural guard checks only. No real save/game acceptance.",
+      "observed": "COMMIT_WRITERS_RESULT scenarios=51 failures=0",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/commit_writers/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "565e18d55d25588d372e564e517e601ef9470429ff840b912cbb9a3ef968d89f",
+        "harness": "2fc7214de09f87beed9b24b811e06a726f49fae43a343a3f28af657d13296747"
+      },
+      "additionalTestSourceSha256": {
+        "tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py": "be7e18ff64721373d90049f845e6788148269795b5e714247ec9429816297592",
+        "tools\\MemorySummaryMainThreadBoundaryTests\\TerminalHarness.cs.txt": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "9cf78162ca26d28ea55f46829263edcb368a861e0e36c2a38bcadc0f18f17c5b",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "999006de2ebd755f9f94e52cdb51031272531a65a41e9c137b507e6d47eba2f4"
+      },
+      "extractedProductionEvidence": 237
+    },
+    "admission": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt",
+      "scope": "Actual TryEnqueueMemoryOverviewForMemoryId and current pending predicate compared against the extracted e77602f9 clone+sanitize predicate oracle on raw and pre-sanitized inputs. Covers non-idempotent title stripping, raw-ID duplicate occupancy before content filtering, trim-at-inclusion semantics, other owner IDs, eligibility, LastError and threshold. Operation counts use 2000 blocks; not game time or hard-budget proof.",
+      "observed": "TERMINAL_RESULT mode=admission scenarios=54 failures=0; 5 compiled runtime mutation controls",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/admission-current/manifest.json",
+      "additionalTestSourceSha256": {
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_business.py": "9cf78162ca26d28ea55f46829263edcb368a861e0e36c2a38bcadc0f18f17c5b",
+        "tools/MemorySummaryMainThreadBoundaryTests/BusinessHarness.cs.txt": "999006de2ebd755f9f94e52cdb51031272531a65a41e9c137b507e6d47eba2f4"
+      },
+      "extractedProductionEvidence": 183,
+      "testSourceSha256": {
+        "runner": "be7e18ff64721373d90049f845e6788148269795b5e714247ec9429816297592",
+        "harness": "a1ae5756aa2c7178135856db738dcbbd429ccda29d92f179d68e5ebb74e4beab"
+      }
+    },
+    "sealing": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/SealingHarness.cs.txt",
+      "scope": "Actual seal/probe/reset/maintenance plus real Campaign maintenance callsite: one shared finite window, metadata/expensive grants, deferred-start generation, exception scope restore, sync and idle compatibility. Game/start/other-domain bodies remain labelled fixtures; not a whole-game frame or deep-source hard budget. Also real daily/major cooperative sort: 513 jobs, cumulative Campaign grants, source slot/ref/scalar/culture changes, synchronous resume, stable same-key ties and alias normalization; allocation/normalization/key capture/final binding remain atomic. Actual owner normalization counts each draft, no stale key/empty/source list prune, invalidated key reseals before final queues; record-level timing changes documented, no whole-owner transaction; inner lines/trigger binds use metadata grants, trigger list sanitize stays atomic. Inner lines and pre-sanitize trigger lists now bind List structure versions; same-count source changes invalidate and reseal. Does not detect arbitrary in-place element field changes.",
+      "observed": "Current88/0; pinned4d6994bc same88 ->80/8; three focused valid BUILD_PASS mutations EXIT=1. Earlier broad mutation evidence remains pinned in previousReportBeforeInnerStructureFix; not all rerun this slice.",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "34b476501f519ee1f3702b46f40d022ae4f2314cb18c58eb08cd5fa5f1229ebd",
+        "harness": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205"
+      },
+      "acceptedInverse": true,
+      "counterexampleSummary": "docs/audits/2026-09-15-inner-structure-fix-verification.json",
+      "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/",
+      "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/<variant>/run.log",
+      "current": {
+        "pass": 88,
+        "fail": 0,
+        "exit": 0
+      },
+      "original": {
+        "revision": "4d6994bc",
+        "pass": 80,
+        "fail": 8,
+        "exit": 1
+      },
+      "redMutations": [
+        {
+          "name": "ignore-line-structure",
+          "exit": 1,
+          "failedCases": [
+            "inner-structure-lines-slot",
+            "inner-structure-lines-remove-add",
+            "inner-structure-lines-swap",
+            "inner-structure-lines-finalize-slot"
+          ]
+        },
+        {
+          "name": "ignore-trigger-structure",
+          "exit": 1,
+          "failedCases": [
+            "inner-structure-triggers-slot",
+            "inner-structure-triggers-remove-add",
+            "inner-structure-triggers-swap",
+            "inner-structure-triggers-finalize-slot"
+          ]
+        },
+        {
+          "name": "ignore-line-source",
+          "exit": 1,
+          "failedCases": [
+            "owner-normalize-change-empty-grows",
+            "owner-normalize-change-kept-empties",
+            "owner-normalize-line-change",
+            "inner-structure-lines-append",
+            "inner-structure-lines-slot",
+            "inner-structure-lines-remove-add",
+            "inner-structure-lines-swap",
+            "inner-structure-lines-finalize-slot"
+          ]
+        }
+      ],
+      "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
+      "additionalTestSourceSha256": {
+        "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
+        "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
+        "tools/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1"
+      },
+      "historicalOriginal": {
+        "revision": "62abfdb3",
+        "pass": 19,
+        "fail": 11,
+        "exit": 1,
+        "harnessRevision": "73a6977c"
+      },
+      "historicalCampaignOriginal": {
+        "revision": "73a6977c",
+        "pass": 35,
+        "fail": 5,
+        "exit": 1,
+        "harnessRevision": "9158132c"
+      },
+      "historicalQueueSortOriginal": {
+        "revision": "9158132c",
+        "fail": 14,
+        "exit": 1,
+        "pass": 46,
+        "harnessRevision": "40b92e67"
+      },
+      "previousReportBeforeInnerStructureFix": {
+        "observed": "Current76/0; pinned40b92e67 same75 ->62/13;28 effective BUILD_PASS fault variants EXIT=1; 1draft/1024lines max 127 metadata lines/window.",
+        "original": {
+          "revision": "40b92e67",
+          "pass": 62,
+          "fail": 13,
+          "exit": 1
+        },
+        "current": {
+          "pass": 76,
+          "fail": 0,
+          "exit": 0
+        },
+        "redMutations": [
+          {
+            "name": "abandon-incomplete-same-day",
+            "exit": 1,
+            "failedCases": [
+              "same-day-no-job-resume"
+            ]
+          },
+          {
+            "name": "ignore-empty-probe",
+            "exit": 1,
+            "failedCases": [
+              "probe-empty-no-candidate-start"
+            ]
+          },
+          {
+            "name": "ignore-stale-queued-job",
+            "exit": 1,
+            "failedCases": [
+              "same-reference-indexed-key-change"
+            ]
+          },
+          {
+            "name": "ignore-owner-binding",
+            "exit": 1,
+            "failedCases": [
+              "owner-list-replacement"
+            ]
+          },
+          {
+            "name": "ignore-cleanup-identity",
+            "exit": 1,
+            "failedCases": [
+              "cleanup-same-ref-retarget",
+              "queue-sort-resume-False-name",
+              "queue-sort-resume-False-retry",
+              "queue-sort-resume-False-day",
+              "queue-sort-resume-True-name",
+              "queue-sort-resume-True-retry",
+              "queue-sort-resume-True-day"
+            ]
+          },
+          {
+            "name": "unbounded-metadata",
+            "exit": 1,
+            "failedCases": [
+              "finite-4096-convergence",
+              "finite-48draft-convergence",
+              "standalone-multiple-callers-compatibility",
+              "campaign-shared-metadata",
+              "campaign-shared-convergence",
+              "queue-sort-budget-False",
+              "queue-sort-budget-True",
+              "campaign-sort-budget",
+              "owner-normalize-finite-cost",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "unbounded-expensive",
+            "exit": 1,
+            "failedCases": [
+              "finite-48draft-convergence",
+              "campaign-shared-expensive",
+              "owner-normalize-finite-cost",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "ignore-deadline",
+            "exit": 1,
+            "failedCases": [
+              "expired-budget-then-sync",
+              "same-day-no-job-resume",
+              "same-reference-indexed-key-change",
+              "owner-list-replacement",
+              "owner-inserted-after-index",
+              "major-indexed-key-change"
+            ]
+          },
+          {
+            "name": "renew-seal-budget",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-metadata",
+              "campaign-shared-expensive",
+              "campaign-shared-convergence",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "renew-deferred-deadline",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-metadata",
+              "campaign-shared-expensive",
+              "campaign-shared-convergence",
+              "campaign-shared-deadline",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "omit-window-restore",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-convergence",
+              "campaign-deferred-start",
+              "campaign-scope-exception",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "drop-deferred-start",
+            "exit": 1,
+            "failedCases": [
+              "campaign-deferred-start"
+            ]
+          },
+          {
+            "name": "ignore-pending-generation",
+            "exit": 1,
+            "failedCases": [
+              "campaign-retired-start"
+            ]
+          },
+          {
+            "name": "ignore-campaign-scope",
+            "exit": 1,
+            "failedCases": [
+              "campaign-shared-metadata",
+              "campaign-shared-expensive",
+              "campaign-shared-convergence",
+              "campaign-shared-deadline",
+              "campaign-sort-budget",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "unbudgeted-sort",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-budget-False",
+              "queue-sort-budget-True",
+              "campaign-sort-budget"
+            ]
+          },
+          {
+            "name": "unstable-sort",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-budget-False",
+              "queue-sort-budget-True"
+            ]
+          },
+          {
+            "name": "ordinal-sort",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-budget-False",
+              "queue-sort-resume-False-unchanged",
+              "queue-sort-resume-False-name",
+              "queue-sort-resume-False-retry",
+              "queue-sort-resume-False-day",
+              "queue-sort-resume-False-append",
+              "queue-sort-resume-False-replace",
+              "queue-sort-resume-False-slot",
+              "queue-sort-budget-True",
+              "queue-sort-resume-True-unchanged",
+              "queue-sort-resume-True-name",
+              "queue-sort-resume-True-retry",
+              "queue-sort-resume-True-day",
+              "queue-sort-resume-True-append",
+              "queue-sort-resume-True-replace",
+              "queue-sort-resume-True-slot"
+            ]
+          },
+          {
+            "name": "ignore-sort-source",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-resume-False-slot",
+              "queue-sort-resume-True-append",
+              "queue-sort-resume-True-slot"
+            ]
+          },
+          {
+            "name": "ignore-sort-culture",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-resume-False-culture",
+              "queue-sort-resume-True-culture"
+            ]
+          },
+          {
+            "name": "ignore-sort-final-binding",
+            "exit": 1,
+            "failedCases": [
+              "queue-sort-resume-False-name",
+              "queue-sort-resume-False-retry",
+              "queue-sort-resume-False-day",
+              "queue-sort-resume-True-name",
+              "queue-sort-resume-True-retry",
+              "queue-sort-resume-True-day"
+            ]
+          },
+          {
+            "name": "unbudgeted-owner-normalize",
+            "exit": 1,
+            "failedCases": [
+              "finite-48draft-convergence",
+              "owner-normalize-finite-cost",
+              "owner-normalize-campaign-cost"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-key",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-key",
+              "owner-normalize-change-past-key"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-empty",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-empty-grows"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-kept-empty",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-kept-empties"
+            ]
+          },
+          {
+            "name": "skip-owner-normalize-reseal",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-past-key"
+            ]
+          },
+          {
+            "name": "ignore-owner-normalize-source",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-publish-race"
+            ]
+          },
+          {
+            "name": "unbudgeted-line-normalize",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-inner-cost"
+            ]
+          },
+          {
+            "name": "ignore-line-source",
+            "exit": 1,
+            "failedCases": [
+              "owner-normalize-change-empty-grows",
+              "owner-normalize-change-kept-empties",
+              "owner-normalize-line-change"
+            ]
+          }
+        ]
+      }
+    },
+    "materials": {
+      "runner": "tools/MemorySummaryMainThreadBoundaryTests/run_materials.py",
+      "harness": "tools/MemorySummaryMainThreadBoundaryTests/MaterialsHarness.cs.txt",
+      "scope": "Actual event-source material index append/rebuild/current-check. 23 current cases, 62abfdb3 baseline 8 reds, seven --mutate reds. No live/game/save. Current index binding/rebuild policy executes the whole independent src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs component. Explicit Compile items exclude stale generated sources.",
+      "observed": "MATERIALS_RESULT scenarios=23 failures=0; source-baseline-62abfdb3 failures=8; seven mutations EXIT=1",
+      "artifact": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/current/manifest.json",
+      "testSourceSha256": {
+        "runner": "ed96ee14c37866dcee909f965d2435ef3e25b1b0087434287ca819ffc15bd219",
+        "harness": "0d61f265762b514fa447cc0dd0a075c46802e7d7bbb6174fcc1d7311dcc2bda2"
+      },
+      "acceptedInverse": true,
+      "counterexampleSummary": ".tmp/b1-adjacent-20260914/summary.json",
+      "variantDirectory": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/<variant>/",
+      "variantLog": "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/<variant>/run.log",
+      "current": {
+        "scenarios": 23,
+        "failures": 0,
+        "exit": 0
+      },
+      "original": {
+        "revision": "62abfdb3",
+        "scenarios": 23,
+        "failures": 8,
+        "exit": 1
+      },
+      "redMutations": [
+        {
+          "name": "ignore-structure",
+          "exit": 1,
+          "failures": 3,
+          "failedCases": [
+            "live-source-clear-add",
+            "live-source-slot",
+            "live-source-exhausted-probe"
+          ]
+        },
+        {
+          "name": "ignore-map-binding",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "replaced-map-rebuild"
+          ]
+        },
+        {
+          "name": "ignore-source-binding",
+          "exit": 1,
+          "failures": 2,
+          "failedCases": [
+            "large-history-fresh-key-cost",
+            "live-source-replace-list"
+          ]
+        },
+        {
+          "name": "publish-partial",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "build-failure-no-half-publication"
+          ]
+        },
+        {
+          "name": "blank-last-wins",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "loaded-empty-key-first-match"
+          ]
+        },
+        {
+          "name": "omit-append-bind",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "large-history-fresh-key-cost"
+          ]
+        },
+        {
+          "name": "restore-fallback",
+          "exit": 1,
+          "failures": 1,
+          "failedCases": [
+            "large-history-fresh-key-cost"
+          ]
+        }
+      ],
+      "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
+      "additionalTestSourceSha256": {
+        "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a"
+      },
+      "preExtraction": {
+        "revision": "c21523f8",
+        "scenarios": 23,
+        "failures": 0,
+        "exit": 0
+      }
+    }
+  },
+  "testSourceHashNormalization": "utf8-no-bom-lf",
+  "productionFileSha256": "c6f529cb8d548c2034b9ff6724f4f27b71f99bc47297af10e26830b6d5d538a7",
+  "deletedDeclarations": [
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private void CancelUnavailableHeroCompressionQueuedJobs(",
+      "baselineSignature": "private void CancelUnavailableHeroCompressionQueuedJobs(",
+      "baselineSha256": "745fe03f86589e712375a23dcc0ed92ad495f6ef9b3f84b143ab723fc95336f7",
+      "baselineSpanSha256": "b7ac409bcf598f4e880c1f79db7b0e29b6f3379591e93c0d00c72d2daadbedce",
+      "nextSignature": "private void RemoveMemoryEntityDataById(",
+      "nextDeclarationSha256": "76e52fb6268317691e25ef6d35a573de805a3dcf56f4007857208c106a113799",
+      "evidence": [
+        "planning"
+      ],
+      "reason": "No remaining production caller; real sliced scanner retains queued invalid-owner discovery and real CancelUnavailableHeroCompressionWorkById cleanup. Exact deleted body and its next declaration anchor are restored for older whole-source parity only."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "signature": "private bool HasPastDailyMemoryDrafts(",
+      "baselineSignature": "private bool HasPastDailyMemoryDrafts(",
+      "baselineSha256": "15e0b4826643eace4a765e68c43d4be144568e986b79d18bbb99d3e27d51acd7",
+      "baselineSpanSha256": "b168a8f16c27804201d3fd68de5c3851205f411da07f8bec991ab7cab54c787f",
+      "nextSignature": "public override void SyncData(IDataStore dataStore)",
+      "nextDeclarationSha256": "107e1aa4a75ad989dac0e9c748cba11fef61f9668b9780a544e4ee3f2af53f83",
+      "evidence": [
+        "sealing"
+      ],
+      "reviewed": true,
+      "status": "SCOPED_INVERSE_REVIEWED",
+      "wipSourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
+      "reason": "Replaced by the actual non-mutating RunDailyMemorySealProbe, including empty and terminal completion receipt paths. Exact baseline deletion span is restored only for source parity; original/candidate and eight valid mutation controls do not establish live acceptance.",
+      "mutations": [
+        "ignore-empty-probe",
+        "abandon-incomplete-same-day"
+      ],
+      "targetedCases": [
+        "probe-empty-no-candidate-start",
+        "same-day-no-job-resume"
+      ],
+      "acceptedInverse": true,
+      "logs": [
+        "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log",
+        "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/abandon-incomplete-same-day/run.log"
+      ]
+    }
+  ],
+  "wipIntegration": "SCOPED_INVERSE_REVIEWED_BATCH_ACCEPTANCE_PENDING",
+  "previousUnreviewedWip": {
+    "status": "UNREVIEWED_NOT_INVERSE_ACCEPTED",
+    "wipSourceRevision": "c21523f81c314e9d6a6c6062ba2b3b4affd21ade",
+    "verifiedRevision": "62abfdb3039b64660f6aebce6ebd4af2a60e719a",
+    "identity": "Symbols identify declarations. Line numbers are locating aids only and are not inverse keys.",
+    "note": "These hashes describe the paused WIP. They are not accepted inverse replacements. productionFileSha256 remains the last reviewed MyBehavior.cs at 62abfdb3. Counterexample pointers on these items are not inverse acceptance.",
+    "declarations": [
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void RecordEventSourceMaterial(",
+        "kind": "changed",
+        "currentSha256": "b535ad83b8c3c28918653f3c219afb2b8225b1fe17d84687ca1488787e3d08eb",
+        "baselineSignature": "private void RecordEventSourceMaterial(",
+        "baselineSha256": "11de9a9a4945cc247dd21d5b4f2d5040a332e87964cb39465c48d519034c456c",
+        "currentLine": 13705,
+        "reason": "Complete index owns misses; a new daily key must not rescan all history. Bind only after append and index insert both succeed.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "omit-append-bind",
+          "restore-fallback"
+        ],
+        "targetedCases": [
+          "large-history-fresh-key-cost"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/omit-append-bind/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/restore-fallback/run.log"
+        ]
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void RebuildEventSourceMaterialIndex(",
+        "kind": "changed",
+        "currentSha256": "695c11a92724ea4cc336ccc7d23f6205504907589d260ac76c54c2b31723bb10",
+        "baselineSignature": "private void RebuildEventSourceMaterialIndex(",
+        "baselineSha256": "1f5469f22c9091673de3552448a577ed2f651db0ffee68308476d00a98d4a347",
+        "currentLine": 20126,
+        "reason": "Named keys keep last-wins. Same-day blank keys keep first-wins for Day>=0. Throw if the source list changes mid-rebuild, then bind.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "blank-last-wins",
+          "publish-partial"
+        ],
+        "targetedCases": [
+          "loaded-empty-key-first-match",
+          "build-failure-no-half-publication"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/blank-last-wins/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/publish-partial/run.log"
+        ]
+      },
+      {
+        "path": "MyBehavior.EventSourceMaterialIndex.cs",
+        "signature": "private bool IsEventSourceMaterialIndexCurrent(",
+        "kind": "added",
+        "currentSha256": "a70e517165fed7280cebc6fefb6cd9660a4c4a84222a09ffe1e6c6ecb9585d1b",
+        "baselineSignature": null,
+        "baselineSha256": null,
+        "currentLine": 16,
+        "reason": "Runtime-only derived index current-check: source/map reference, count, and List structure probe. Not in inverse baseline 90201155.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "ignore-structure",
+          "ignore-map-binding",
+          "ignore-source-binding"
+        ],
+        "targetedCases": [
+          "live-source-clear-add",
+          "live-source-slot",
+          "live-source-exhausted-probe",
+          "replaced-map-rebuild",
+          "live-source-replace-list",
+          "large-history-fresh-key-cost"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/ignore-structure/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/ignore-map-binding/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/ignore-source-binding/run.log"
+        ]
+      },
+      {
+        "path": "MyBehavior.EventSourceMaterialIndex.cs",
+        "signature": "private void BindEventSourceMaterialIndex(",
+        "kind": "added",
+        "currentSha256": "27250ac886f91a3adcf8d6479f938e2b9323117d4889b7161f9dd6fe4acd08d6",
+        "baselineSignature": null,
+        "baselineSha256": null,
+        "currentLine": 27,
+        "reason": "Publish the derived index binding after a complete rebuild or successful append+insert. Not in inverse baseline 90201155.",
+        "evidence": [
+          "materials"
+        ],
+        "mutations": [
+          "omit-append-bind",
+          "publish-partial"
+        ],
+        "targetedCases": [
+          "large-history-fresh-key-cost",
+          "build-failure-no-half-publication"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/omit-append-bind/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/materials/publish-partial/run.log"
+        ]
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private bool TrySealPastDailyMemoryDrafts(",
+        "kind": "changed",
+        "currentSha256": "23c688a5db84801e006e1bcfa08234f455e901563a92330dc4d23f3c03814ed3",
+        "baselineSignature": "private bool TrySealPastDailyMemoryDrafts(",
+        "baselineSha256": "0424fc3bd9580b15db03068b78e208017d30eced0818c922985eaa91ad721648",
+        "currentLine": 4814,
+        "reason": "Entry now takes requirePendingProbe and delegates to ContinueDailyMemorySeal. Empty drafts still reset unless a seal state remains.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "ignore-deadline",
+          "ignore-empty-probe"
+        ],
+        "targetedCases": [
+          "expired-budget-then-sync",
+          "probe-empty-no-candidate-start"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-deadline/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log"
+        ]
+      },
+      {
+        "path": "MyBehavior.MemorySealing.cs",
+        "signature": "private bool ContinueDailyMemorySeal(",
+        "kind": "added",
+        "currentSha256": "9dface10f4246f1c233ba6afbb940f20e37ca5106f1eb92218c75c9fcbf7271a",
+        "baselineSignature": null,
+        "baselineSha256": null,
+        "currentLine": 198,
+        "reason": "Seven-phase resumable seal. 128 metadata / 8 expensive operations are per call, not per Tick. Atomic tail steps remain.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "ignore-empty-probe",
+          "ignore-stale-queued-job",
+          "ignore-owner-binding",
+          "ignore-cleanup-identity",
+          "unbounded-metadata",
+          "unbounded-expensive",
+          "ignore-deadline"
+        ],
+        "targetedCases": [
+          "probe-empty-no-candidate-start",
+          "same-reference-indexed-key-change",
+          "owner-list-replacement",
+          "cleanup-same-ref-retarget",
+          "finite-4096-convergence",
+          "finite-48draft-convergence",
+          "same-tick-multiple-callers"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-stale-queued-job/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-owner-binding/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-cleanup-identity/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/unbounded-metadata/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/unbounded-expensive/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-deadline/run.log",
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log"
+        ]
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void TryRunCampaignMemoryMaintenance(",
+        "kind": "changed",
+        "currentSha256": "037aa99b7a2e9425b1a8da4dfc15b5f27826225be067f356a6982e8e2c6e6fa8",
+        "reviewedSha256": "17da5e8912d2a987d94f302015b25690107b979642d017d6e8a3dea6f7f01e62",
+        "baselineSignature": "private void TryRunCampaignMemoryMaintenance(",
+        "baselineSha256": "a146ea5c155f6a3a3a21a5a4112e940c396710d374b086fdd9d7bc411dbac1b9",
+        "currentLine": 17741,
+        "reason": "Same-day resume uses seal state, not raw queue counts. HasPast is a non-mutating probe sharing the deadline. Completion receipt preserves the old post-seal path. Keep declarations[].sha256 at the last reviewed 62abfdb3 body.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "abandon-incomplete-same-day"
+        ],
+        "targetedCases": [
+          "same-day-no-job-resume"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/abandon-incomplete-same-day/run.log"
+        ]
+      },
+      {
+        "path": "MyBehavior.cs",
+        "signature": "private void ResetDailyMemoryDraftSealSliceState(",
+        "kind": "changed",
+        "currentSha256": "91be719a833b52be3ebf815618d13adb3936b00569dbed6514488acdbed5079b",
+        "baselineSignature": "private void ResetDailyMemoryDraftSealSliceState(",
+        "baselineSha256": "731ddf61cd5d7d38622a1979dfaacee7127b0a35b8e5b1f1913419585e4df7d3",
+        "currentLine": 4835,
+        "reason": "Also clears _dailyMemorySealState and _dailyMemorySealCompletedPass.",
+        "evidence": [
+          "sealing"
+        ],
+        "mutations": [
+          "ignore-empty-probe"
+        ],
+        "targetedCases": [
+          "probe-empty-no-candidate-start"
+        ],
+        "acceptedInverse": false,
+        "logs": [
+          "tools/MemorySummaryMainThreadBoundaryTests/.generated/sealing/ignore-empty-probe/run.log"
+        ]
+      }
+    ]
+  },
+  "addedSourceSpans": [
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate readonly AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry> _eventSourceMaterialIndexBinding =\n\t\tnew AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry>(item => item.Day, item => item.StableKey, BuildEventSourceMaterialIndexKey);\n",
+      "sha256": "e0b96439a7b872c4f1e0250bd505d7172ad58dc6de50bc476f56b6fcf0f65876",
+      "evidence": [
+        "materials"
+      ],
+      "reason": "One runtime-only index component per owner; removes the obsolete partial binding fields/methods, no save identity change."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate void RunCampaignMemoryMaintenanceCycle(bool processedWeeklyReportCommits)\n\t{\n\t\tvar previous = _campaignMemoryMaintenanceBudget;\n\t\tbool previousActive = _campaignMemoryMaintenanceCycleActive;\n\t\t_campaignMemoryMaintenanceCycleActive = true;\n\t\ttry\n\t\t{\n\t\t\tusing (PerfProbe.Scope(\"MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance\"))\n\t\t\t{\n\t\t\t\tTryRunCampaignMemoryMaintenance();\n\t\t\t}\n\t\t\tif (!processedWeeklyReportCommits && HasPendingDeferredDailyMaintenanceWork())\n\t\t\t{\n\t\t\t\tusing (PerfProbe.Scope(\"MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance\"))\n\t\t\t\t{\n\t\t\t\t\tProcessDeferredDailyMaintenance();\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\tfinally\n\t\t{\n\t\t\t_campaignMemoryMaintenanceBudget = previous;\n\t\t\t_campaignMemoryMaintenanceCycleActive = previousActive;\n\t\t}\n\t}\n\n",
+      "sha256": "7e4001fb7934c615260ddd1619a07583db8ac1c51989c717969504b8de51a47d",
+      "evidence": [
+        "sealing"
+      ],
+      "reason": "Real Campaign callsite thin scope owner, lazy shared budget, restores nested/exception scope; no extra source differences permitted."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)\n\t{\n\t\tList<MemorySummaryJob> list = new List<MemorySummaryJob>();\n\t\tHashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);\n\t\tforeach (MemorySummaryJob job in jobs ?? Enumerable.Empty<MemorySummaryJob>())\n\t\t{\n\t\t\tif (job == null)\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tjob.HeroId = NormalizeMemoryHeroId(job.HeroId);\n\t\t\tif (string.IsNullOrWhiteSpace(job.HeroId) || job.GameDayIndex < 0)\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tstring key = job.HeroId + \"|\" + job.GameDayIndex;\n\t\t\tif (!seen.Add(key))\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tjob.HeroName = (job.HeroName ?? \"\").Trim();\n\t\t\tjob.GameDate = (job.GameDate ?? \"\").Trim();\n\t\t\tjob.LastError = (job.LastError ?? \"\").Trim();\n\t\t\tjob.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);\n\t\t\tlist.Add(job);\n\t\t}\n\t\treturn list;\n\t}\n\n",
+      "sha256": "249d29829eede88808e83f939e76bd074cdf27318e3506d55edd330082b8bc4e",
+      "evidence": [
+        "sealing",
+        "completion",
+        "planning"
+      ],
+      "reason": "Exact old normalize/filter/first-winner dedupe body, shared by synchronous sanitizer and cooperative seal tail; no independent duplicate implementation."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)\n\t{\n\t\tList<MajorActionSummaryJob> list = new List<MajorActionSummaryJob>();\n\t\tHashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);\n\t\tforeach (MajorActionSummaryJob job in jobs ?? Enumerable.Empty<MajorActionSummaryJob>())\n\t\t{\n\t\t\tif (job == null)\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tjob.HeroId = NormalizeMemoryHeroId(job.HeroId);\n\t\t\tif (string.IsNullOrWhiteSpace(job.HeroId))\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tif (!seen.Add(job.HeroId))\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tjob.HeroName = (job.HeroName ?? \"\").Trim();\n\t\t\tjob.TriggerGameDate = (job.TriggerGameDate ?? \"\").Trim();\n\t\t\tjob.TriggerGameDayIndex = Math.Max(0, job.TriggerGameDayIndex);\n\t\t\tjob.LastError = (job.LastError ?? \"\").Trim();\n\t\t\tjob.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);\n\t\t\tlist.Add(job);\n\t\t}\n\t\treturn list;\n\t}\n\n",
+      "sha256": "94e950cf10d37ed1ed69a9541e50b376d3330742f0b15622e1d78019c121843c",
+      "evidence": [
+        "sealing",
+        "completion",
+        "planning"
+      ],
+      "reason": "Exact old normalize/filter/first-winner dedupe body, shared by synchronous sanitizer and cooperative seal tail; no independent duplicate implementation."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)\n\t{\n\t\tif (trigger == null)\n\t\t{\n\t\t\treturn;\n\t\t}\n\t\ttrigger.MemoryId = memoryId;\n\t\ttrigger.GameDayIndex = gameDayIndex;\n\t\ttrigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? gameDate : trigger.GameDate;\n\t}\n\n",
+      "sha256": "2f6b42a3c1acc1eed0540c34dec5395ba75303892b000c8cbcb3d9c5be642328",
+      "evidence": [
+        "sealing"
+      ],
+      "reason": "Exact previous per-trigger MemoryId/day/date bind; shared by synchronous entry and cooperative bind pass."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)\n\t{\n\t\tif (x == null || string.IsNullOrWhiteSpace((x.Text ?? \"\").Trim()))\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tx.GameDayIndex = draft.GameDayIndex;\n\t\tx.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();\n\t\tx.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);\n\t\tx.Scene = (x.Scene ?? \"\").Trim();\n\t\tx.Speaker = (x.Speaker ?? \"\").Trim();\n\t\tx.Text = (x.Text ?? \"\").Trim();\n\t\tx.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);\n\t\tx.TargetName = (x.TargetName ?? \"\").Trim();\n\t\tx.MemorySessionKey = (x.MemorySessionKey ?? \"\").Trim();\n\t\tx.MemoryCommitId = (x.MemoryCommitId ?? \"\").Trim();\n\t\tx.MemoryCommitPart = (x.MemoryCommitPart ?? \"\").Trim();\n\t\tx.MemoryCommitHash = (x.MemoryCommitHash ?? \"\").Trim();\n\t\tx.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);\n\t\tx.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? \"\").Trim();\n\t\tif (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))\n\t\t{\n\t\t\tx.MemoryCommitId = \"\";\n\t\t\tx.MemoryCommitPart = \"\";\n\t\t\tx.MemoryCommitHash = \"\";\n\t\t\tx.MemoryCommitOriginGameDay = -1;\n\t\t\tx.MemoryCommitOriginGameDate = \"\";\n\t\t}\n\t\tif (x.SceneSessionId < -1)\n\t\t{\n\t\t\tx.SceneSessionId = -1;\n\t\t}\n\t\tif (x.DialogueSessionId < -1)\n\t\t{\n\t\t\tx.DialogueSessionId = -1;\n\t\t}\n\t\treturn x;\n\t}\n\n",
+      "sha256": "bbbaa1e2fcd08f66c101943999044892c744845f72272bd9d50815c57160386d",
+      "evidence": [
+        "sealing",
+        "captured"
+      ],
+      "reason": "Exact previous line filter+normalize body; shared by synchronous entry and cooperative line pass."
+    },
+    {
+      "path": "MyBehavior.cs",
+      "text": "\tprivate static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)\n\t{\n\t\tDailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);\n\t\tif (draft == null)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring text = NormalizeMemoryHeroId(draft.HeroId);\n\t\tif (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tstring key = text + \"|\" + draft.GameDayIndex;\n\t\tif (!seen.Add(key))\n\t\t{\n\t\t\treturn null;\n\t\t}\n\t\tdraft.HeroId = text;\n\t\tdraft.HeroName = (draft.HeroName ?? \"\").Trim();\n\t\tdraft.GameDate = (draft.GameDate ?? \"\").Trim();\n\t\tdraft.LastSummaryError = (draft.LastSummaryError ?? \"\").Trim();\n\t\tif (draft.WeeklyMaterialTriggers != null)\n\t\t{\n\t\t\tforeach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)\n\t\t\t{\n\t\t\t\tBindDailyMemoryDraftWeeklyTrigger(trigger, text, draft.GameDayIndex, draft.GameDate);\n\t\t\t}\n\t\t}\n\t\tdraft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);\n\t\tList<DailyMemoryLine> lines = new List<DailyMemoryLine>();\n\t\tbool hasLlmDialogue = draft.HasLlmDialogue;\n\t\tforeach (DailyMemoryLine sourceLine in draft.Lines ?? new List<DailyMemoryLine>())\n\t\t{\n\t\t\tDailyMemoryLine line = SanitizeDailyMemoryDraftLine(sourceLine, draft);\n\t\t\tif (line == null)\n\t\t\t{\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tlines.Add(line);\n\t\t\thasLlmDialogue = hasLlmDialogue || (line.IsLlmDialogue && !line.IsAfef);\n\t\t}\n\t\tdraft.Lines = lines;\n\t\tdraft.HasLlmDialogue = hasLlmDialogue;\n\t\treturn draft.Lines.Count > 0 ? draft : null;\n\t}\n\n",
+      "sha256": "3b2e1b40fc51892d2a6e4ebc710b9bfa1b4c865e2bb018e8279f2038401fef75",
+      "evidence": [
+        "sealing",
+        "captured"
+      ],
+      "reason": "Synchronous draft entry now composes shared bind/line helpers; clone/seen-before-empty and trigger-list sanitizer preserved."
+    }
+  ],
+  "productionDependencies": {
+    "MyBehavior.MemorySealing.cs": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a",
+    "src/modules/AF.Module.Memory/Records/EventSourceMaterialIndex.cs": "bc85ccc1e004df68c7dd50973c20bdd5a9034268fba1f2589119995c1788dd9c",
+    "MyBehavior.MemoryMaintenanceBudget.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    "src/modules/AF.Module.Memory/Summary/MemoryMaintenanceWorkBudget.cs": "646717f4caa12ee3c61a0bb5fda7050c67b4756dd54bc99b1a93f90dd0866051",
+    "src/modules/AF.Module.Memory/Summary/CooperativeMemoryQueueSort.cs": "2f3c91e5bdfe76d421b6e674ea7a429c5a32d0d0bc65ffbd0415e53ca14dfe3a",
+    "MyBehavior.MemorySummaryInput.cs": "d2b61e6977d10080ba7f9af110d49b5f95e79620f1d59ac18c3260167425cc08",
+    "MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    "src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    "MyBehavior.MemorySummaryMainThread.cs": "b67404c862ed8a1c87a4de502a7befd7d9a324e27eaad39eca593774144b51e7",
+    "MyBehavior.MemorySummaryPlanning.cs": "ee7992bb8e480f899091ae9a472c70b6becd0971d5e7acdc2aff0de1c8e0897b",
+    "src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs": "c56d160e4bfe7a3bdfa3bc8feefbf6cd2d404ecc40a7af89a526369c6dcf2cb6",
+    "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs": "b2566900ebc296b34272c0f7b08a7e511ed64b5b9f8c246b82e67251843b1a5a"
+  },
+  "removedProductionFiles": [
+    "MyBehavior.EventSourceMaterialIndex.cs"
+  ],
+  "campaignBudgetReview": {
+    "status": "SCOPED_INVERSE_REVIEWED_B1_NOT_DONE",
+    "previousProduction": "73a6977c",
+    "coverage": "One actual synchronous Campaign maintenance cycle, not all engine/module callbacks. Explicit unbounded calls and indivisible source/Apply/sort tails are not hard bounded.",
+    "counterexamples": "Five real pre-change failures plus fourteen compiled mutations; original 30 semantics retained among current 40."
+  },
+  "queueSortReview": {
+    "previousProduction": "9158132c",
+    "checkpoint": "99a7dbfe",
+    "scope": "New independently consumed stable queue sorting responsibility. Existing DTO identities, pending-before-dedupe, mutation order and synchronous entry points preserved. Normalized metadata may become visible before completed ordering.",
+    "notClaimed": "No hard game frame budget, no complete B1 or game/save/provider validation. Other synchronous sanitizers still sort atomically.",
+    "evidence": "docs/audits/2026-09-14-b1-queue-sort-verification.json"
+  },
+  "rawSourceFingerprintReview": {
+    "baseline": "8bcde78b",
+    "checkpoint": "9076ab95",
+    "inputPath": "MyBehavior.MemorySummaryInput.cs",
+    "inputDeclarations": [
+      {
+        "signature": "private sealed class MemorySummarySourceView",
+        "sha256": "b93cd120f0ec275eb1b95ea425f23ff21d6f5f51b639c8762451c404bab7da6c",
+        "baselineSha256": "3f303c98f9780101f752a886f8526b5fc98e17013258cb7e909bd8eadea7d071"
+      },
+      {
+        "signature": "private MemorySummarySourceView ReadMemorySummarySource(",
+        "sha256": "ac71db233116af68eb168b3738979bd404a00d87e9270724f05f695993f05944",
+        "baselineSha256": "c869fa62ee0141aa532b5d653613a777b10e9baff95cbc0f5e6628a6005e6314"
+      },
+      {
+        "signature": "private MemorySummaryInput CaptureMemorySummaryInput(",
+        "sha256": "1ef88f425223a871761a8a65dc1b386f3d009c58a74fbe6a6614393aea94388d",
+        "baselineSha256": "ce946ef570e0a1bd4d30a170b66633258110564e94fd64b1da65101999a1a2dc"
+      },
+      {
+        "signature": "private bool IsMemorySummaryInputCurrent(",
+        "sha256": "e3ca8900da8f2c0a15fb6079e65b027c7e72ed620398fde6e85720a2e5b35a89",
+        "baselineSha256": "d02be0d78fdea761b08171f81814d05097831a3fdaff30ad9c32734e63997b4a"
+      }
+    ],
+    "scope": "Runtime-only complete raw source receipt encoding; owner/generation/context/queue rights and original Build/Parse/Apply/Mark, editor/plan/context JSON hash unchanged. No save/ABI format change.",
+    "schemaFields": 122,
+    "sourceFieldMutationChecks": 294,
+    "primitiveOracle": "run_fingerprint.py: 9 BinaryWriter/SHA256 vectors under checked arithmetic and 5 lifetime/list mutation rejection cases",
+    "evidence": "docs/audits/2026-09-14-b1-raw-digest-verification.json",
+    "notClaimed": "Still atomic full raw scan/capture/Apply work. Not B1 batch accepted, no real game/save/provider."
+  },
+  "ownerNormalizationReview": {
+    "baseline": "40b92e67",
+    "checkpoint": "7c1da946",
+    "scope": "Record-granted owner tail, stable day-only sort and delayed pruning. Key/empty metadata guards remain atomic; single-draft deep sanitation unchanged and atomic.",
+    "evidence": "docs/audits/2026-09-14-b1-owner-normalize-verification.json",
+    "status": "Historical record-level slice; current line/trigger structure fix is innerStructureReview."
+  },
+  "innerStructureReview": {
+    "baseline": "4d6994bc",
+    "checkpoint": "b467179b",
+    "path": "MyBehavior.MemorySealing.cs",
+    "scope": "Two O(1) mutable List enumerator probes in the existing active inner cursor; invalidation reuses owner reseal. Remove unreachable post-Done line guard fields; no DTO/prompt/synchronous algorithm changes.",
+    "exactEdits": [
+      {
+        "before": "\npublic partial class MyBehavior\n{\n    // Metadata has no source-text traversal. Keep its independent, measurable cap\n    // higher than the existing expensive-job cap. A Campaign cycle shares both caps\n    // and its deadline; standalone finite calls retain their own allowance.\n    private DailyMemorySealState _dailyMemorySealState;\n    // One-call completion receipt, not a feature switch: maintenance preserves\n    // the old HasPast=true path even when cleanup consumes its last raw job.\n",
+        "after": "\npublic partial class MyBehavior\n{\n    // Metadata grants account for individual lines, trigger binds and sort units.\n    // A single text operation can still be atomic. The Campaign cycle shares caps\n    // and deadline; standalone finite calls retain their own allowance.\n    private DailyMemorySealState _dailyMemorySealState;\n    // One-call completion receipt, not a feature switch: maintenance preserves\n    // the old HasPast=true path even when cleanup consumes its last raw job.\n"
+      },
+      {
+        "before": "    }\n\n    // Draft identity remains one expensive grant. Lines and trigger binds consume\n    // shared metadata; the draft's line/trigger lists stay private until it finishes.\n    private sealed class DailyMemoryDraftNormalization\n    {\n        private struct Binding\n",
+        "after": "    }\n\n    // Draft identity remains one expensive grant. Lines and trigger binds consume\n    // shared metadata. Lines publish after completion; triggers publish after their\n    // bind/sanitize phase. Neither path is a transaction for object field changes.\n    private sealed class DailyMemoryDraftNormalization\n    {\n        private struct Binding\n"
+      },
+      {
+        "before": "        private readonly int _boundTriggerCount;\n        private readonly List<DailyMemoryLine> _lineSource;\n        private readonly int _boundLineCount;\n        private readonly List<DailyMemoryLine> _lineResult = new List<DailyMemoryLine>();\n        private DailyMemoryDraftEntryPhase _phase;\n        private int _triggerIndex;\n        private int _lineIndex;\n        private bool _hasLlm;\n        private bool _triggersPublished;\n        private bool _linesPublished;\n        private List<WeeklyMemoryMaterialTrigger> _publishedTriggers;\n        private List<DailyMemoryLine> _publishedLines;\n        internal bool Invalidated { get; private set; }\n        internal DailyMemoryDraft Result { get; private set; }\n\n",
+        "after": "        private readonly int _boundTriggerCount;\n        private readonly List<DailyMemoryLine> _lineSource;\n        private readonly int _boundLineCount;\n        private List<DailyMemoryLine>.Enumerator _lineStructureProbe;\n        private List<WeeklyMemoryMaterialTrigger>.Enumerator _triggerStructureProbe;\n        private readonly List<DailyMemoryLine> _lineResult = new List<DailyMemoryLine>();\n        private DailyMemoryDraftEntryPhase _phase;\n        private int _triggerIndex;\n        private int _lineIndex;\n        private bool _hasLlm;\n        private bool _triggersPublished;\n        private List<WeeklyMemoryMaterialTrigger> _publishedTriggers;\n        internal bool Invalidated { get; private set; }\n        internal DailyMemoryDraft Result { get; private set; }\n\n"
+      },
+      {
+        "before": "            _boundTriggerCount = _triggerSource?.Count ?? 0;\n            _lineSource = _draft.Lines;\n            _boundLineCount = _lineSource?.Count ?? 0;\n            _hasLlm = _draft.HasLlmDialogue;\n            _phase = DailyMemoryDraftEntryPhase.BindTriggers;\n        }\n",
+        "after": "            _boundTriggerCount = _triggerSource?.Count ?? 0;\n            _lineSource = _draft.Lines;\n            _boundLineCount = _lineSource?.Count ?? 0;\n            _lineStructureProbe = _lineSource == null ? default(List<DailyMemoryLine>.Enumerator) : _lineSource.GetEnumerator();\n            _triggerStructureProbe = _triggerSource == null ? default(List<WeeklyMemoryMaterialTrigger>.Enumerator) : _triggerSource.GetEnumerator();\n            _hasLlm = _draft.HasLlmDialogue;\n            _phase = DailyMemoryDraftEntryPhase.BindTriggers;\n        }\n"
+      },
+      {
+        "before": "                if (!InnerCurrent()) return false;\n                _draft.Lines = _lineResult;\n                _draft.HasLlmDialogue = _hasLlm;\n                _linesPublished = true;\n                _publishedLines = _lineResult;\n                Result = _lineResult.Count > 0 ? _draft : null;\n                _phase = DailyMemoryDraftEntryPhase.Done;\n            }\n",
+        "after": "                if (!InnerCurrent()) return false;\n                _draft.Lines = _lineResult;\n                _draft.HasLlmDialogue = _hasLlm;\n                Result = _lineResult.Count > 0 ? _draft : null;\n                _phase = DailyMemoryDraftEntryPhase.Done;\n            }\n"
+      },
+      {
+        "before": "                Invalidated = true;\n                return false;\n            }\n            if (!_linesPublished)\n            {\n                if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)\n                {\n                    Invalidated = true;\n                    return false;\n                }\n            }\n            else if (!ReferenceEquals(_draft.Lines, _publishedLines))\n            {\n                Invalidated = true;\n                return false;\n",
+        "after": "                Invalidated = true;\n                return false;\n            }\n            if (!ReferenceEquals(_source.Lines, _lineSource) || (_source.Lines?.Count ?? 0) != _boundLineCount)\n            {\n                Invalidated = true;\n                return false;\n            }\n            // List enumerators check structural versions even after exhaustion:\n            // same-count replacement/removal/reordering must invalidate a saved cursor.\n            // O(1) checks, no reflection/full copy; object field edits are not covered.\n            try\n            {\n                if (_lineSource != null) _lineStructureProbe.MoveNext();\n                // Sanitization legitimately replaces the trigger list. Once published,\n                // it is no longer an input cursor and must not check that obsolete list.\n                if (!_triggersPublished && _triggerSource != null) _triggerStructureProbe.MoveNext();\n            }\n            catch (InvalidOperationException)\n            {\n                Invalidated = true;\n                return false;\n"
+      }
+    ],
+    "evidence": ".tmp/inner-structure-fix-20260915/",
+    "notClaimed": [
+      "in-place field revisions",
+      "trigger-list sanitizer hard budget",
+      "game play reproduction",
+      "whole B1 acceptance"
+    ]
+  },
+  "dispatchOwnerReview": {
+    "baseline": "9617f96a",
+    "checkpoint": "94e05a2f",
+    "scope": "Move queue, claim/retire state, actual elapsed-time/action allowance and partial-completion exception semantics to MemorySummaryDispatcher; host remains engine/settings identity adapter. Planner reads the same elapsed value from the dispatcher. No capture/copy batching or public API change.",
+    "validation": "Common old/new32 checks PASS; five new lazy/parallel/typed-port checks PASS; seven runtime/host fault controls expose regressions. Adjacent suites and six Stage recorded in final handoff.",
+    "notClaimed": [
+      "Deep source hard budget",
+      "whole M1/M2 owner extraction",
+      "game validation",
+      "new public API capabilities"
+    ],
+    "paths": [
+      "src/modules/AF.Module.Memory/Summary/IMemorySummaryDispatchHost.cs",
+      "src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs",
+      "MyBehavior.MemorySummaryMainThread.cs",
+      "MyBehavior.MemorySummaryPlanning.cs"
+    ]
+  }
+}

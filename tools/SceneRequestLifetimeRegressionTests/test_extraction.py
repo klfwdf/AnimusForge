@@ -7,16 +7,23 @@ class ExtractionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.scene = run.ex.source("ShoutBehavior.cs", None)
+        cls.owner = run.ex.source("src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs", None)
         cls.compat = run.ex.source("extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs", None)
         cls.generated = run.generate()
 
     def test_request_methods_are_verbatim(self):
-        for signature in ("private sealed class ScenePlayerShoutRequest", "internal object CaptureScenePlayerShoutRequestForReplay(",
+        for signature in ("internal object CaptureScenePlayerShoutRequestForReplay(",
                           "private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(", "private bool IsScenePlayerShoutRequestCurrent(",
                           "internal bool TryReplayCapturedScenePlayerShout(", "private async Task ProcessShoutConfirmedInternal(",
                           "private async Task ProcessCapturedScenePlayerShoutAsync("):
             with self.subTest(signature=signature):
                 self.assertIn(run.ex.declaration(self.scene, signature), self.generated)
+
+    def test_request_owner_types_are_verbatim(self):
+        for signature in ("internal sealed class ShoutTargetingContext", "internal sealed class ScenePlayerShoutRequest",
+                          "internal sealed class ScenePlayerShoutRequestOwner"):
+            with self.subTest(signature=signature):
+                self.assertIn(run.ex.declaration(self.owner, signature), self.generated)
 
     def test_gate_and_ui_methods_are_verbatim(self):
         for signature in ("private void RegisterScenePostprocessGateTask(", "private Task GetScenePostprocessGateTask(",
@@ -60,6 +67,7 @@ class ExtractionTests(unittest.TestCase):
     def test_own_resume_does_not_cancel_accepted_request(self):
         for signature in ("private void ResumeGame(", "private void EndShoutProcessing("):
             self.assertNotIn("_scenePlayerInputSequence", run.ex.declaration(self.scene, signature))
+            self.assertNotIn("InvalidateCurrent", run.ex.declaration(self.scene, signature))
         self.assertIn("_sceneShoutProcessingSequence", run.ex.declaration(self.scene, "private void EndShoutProcessing("))
 
 

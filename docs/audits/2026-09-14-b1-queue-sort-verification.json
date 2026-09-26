@@ -1,0 +1,1025 @@
+{
+  "kind": "B1-cooperative-queue-sort-local-verification",
+  "recordedUtc": "2026-09-13T23:15:55.474380+00:00",
+  "productionRevision": "8bcde78b9f477a9cc7cdb8ef12b2a4cbf1e60dc3",
+  "previousProduction": "9158132c06659b8bcd660bb85c388ff8ce5db3bc",
+  "checkpoint": "99a7dbfe",
+  "remoteRevision": "3f00fefa4040df8caa12d42195f8543b3d7f0296",
+  "stage": "8/B1 VERIFY; local slice validated, NOT_BATCH_ACCEPTED",
+  "automation": "af-7-8 ACTIVE hourly; application view and local config confirmed",
+  "sourceFiles": {
+    "MyBehavior.cs": {
+      "rawSha256": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+      "normalizedSha256": "1181dc6a181c373770623f13b23601f1ace7319cbe3bfdc91119e77580e912bc"
+    },
+    "MyBehavior.MemorySealing.cs": {
+      "rawSha256": "3e604601e856abd121d035c1abf61905cea140e73e277767576759c0bb69790d",
+      "normalizedSha256": "28c9cf6be1b5788c207a8a3e3d87e00c71c9b023bae3610c71b41b3b07835076"
+    },
+    "Refactor/Runtime/CooperativeMemoryQueueSort.cs": {
+      "rawSha256": "6956b69629fa7b42249572fbc4faf8e5d7480b2d78f5726e75959404c207265f",
+      "normalizedSha256": "2f3c91e5bdfe76d421b6e674ea7a429c5a32d0d0bc65ffbd0415e53ca14dfe3a"
+    }
+  },
+  "sealing": [
+    {
+      "label": "current",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "valid": true,
+      "result": "SEALING_RESULT pass=60 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "original-9158132c",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--source-baseline",
+        "9158132c"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=46 fail=14 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "abandon-incomplete-same-day",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "abandon-incomplete-same-day"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=59 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-empty-probe",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-empty-probe"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=59 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-stale-queued-job",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-stale-queued-job"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=59 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-owner-binding",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-owner-binding"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=59 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-cleanup-identity",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-cleanup-identity"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=53 fail=7 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "unbounded-metadata",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "unbounded-metadata"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=52 fail=8 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "unbounded-expensive",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "unbounded-expensive"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=58 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-deadline",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-deadline"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=54 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "renew-seal-budget",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "renew-seal-budget"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=56 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "renew-deferred-deadline",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "renew-deferred-deadline"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=55 fail=5 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "omit-window-restore",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "omit-window-restore"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=56 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "drop-deferred-start",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "drop-deferred-start"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=59 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-pending-generation",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-pending-generation"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=59 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-campaign-scope",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-campaign-scope"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=55 fail=5 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "unbudgeted-sort",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "unbudgeted-sort"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=57 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "unstable-sort",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "unstable-sort"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=58 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ordinal-sort",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ordinal-sort"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=44 fail=16 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-sort-source",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-sort-source"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=57 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-sort-culture",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-sort-culture"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=58 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    },
+    {
+      "label": "ignore-sort-final-binding",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_sealing.py",
+        "--mutate",
+        "ignore-sort-final-binding"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "valid": true,
+      "result": "SEALING_RESULT pass=54 fail=6 LIVE=NOT_RUN SAVE=NOT_RUN INNER_ATOMIC_SOURCE=NOT_BOUNDED"
+    }
+  ],
+  "adjacent": [
+    {
+      "label": "business",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_business.py"
+      ],
+      "result": [
+        "BUSINESS_RESULT passed=36 failed=0"
+      ]
+    },
+    {
+      "label": "business-original",
+      "exit": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_business.py",
+        "--original"
+      ],
+      "result": [
+        "BUSINESS_RESULT passed=4 failed=32"
+      ]
+    },
+    {
+      "label": "business-mutation",
+      "exit": 1,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_business.py",
+        "--mutate",
+        "maintenance-rescan"
+      ],
+      "result": [
+        "BUSINESS_RESULT passed=34 failed=2"
+      ]
+    },
+    {
+      "label": "terminal",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py"
+      ],
+      "result": [
+        "TERMINAL_RESULT scenarios=85 failures=0 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "commit",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_commit_writers.py"
+      ],
+      "result": [
+        "COMMIT_WRITERS_RESULT scenarios=51 failures=0 real_commit=true real_daily_recent=true exact_readback=true actual_editor_closure=true actual_import_apply=true game_save=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "planning",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_planning.py"
+      ],
+      "result": [
+        "PLANNING_RESULT pass=24 fail=0"
+      ],
+      "initialExit": 2,
+      "initialFailure": "Missing extraction of two new real Normalize helpers (CS0103); not an accepted red case.",
+      "finalLog": ".tmp\\b1-queue-sort-20260914\\planning-fixed.log"
+    },
+    {
+      "label": "writers",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_writers.py"
+      ],
+      "result": [
+        "WRITER_RESULT checks=238 failures=0"
+      ]
+    },
+    {
+      "label": "captured",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_captured.py"
+      ],
+      "result": [
+        "CAPTURED_RESULT pass=109 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+      ]
+    },
+    {
+      "label": "admission",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_terminal.py",
+        "--admission-only"
+      ],
+      "result": [
+        "TERMINAL_RESULT mode=admission scenarios=54 failures=0 actual_enqueue=true old_predicate_oracle=e77602f9 game_frame_time=NOT_TESTED"
+      ]
+    },
+    {
+      "label": "materials",
+      "exit": 0,
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run_materials.py"
+      ],
+      "result": [
+        "MATERIALS_RESULT scenarios=23 failures=0 actual_record_index_sanitize=true game_save=NOT_TESTED"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "label": "helper",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemorySummaryMainThreadBoundaryTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS MemorySummaryMainThread checks=32 failures=0 LIVE=NOT_RUN SAVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "history",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS HistorySnapshot checks=852 failures=0 realRenderRecallSelect=true ownerDataAndNetwork=STUBBED LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "native-history",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativeHistorySnapshotTests\\run.py",
+        "--native"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS NativeHistorySnapshot checks=27 failures=0 actualCaptureAndAccept=true actualMemoryRenderer=true game=STUBBED LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "failure-ui",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\MemoryFailureUiBoundaryTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS MemoryFailureUi checks=85 failures=0 realPopupOwner=true realEngineHook=true gameUI=STUBBED LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "native-preparation",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\NativePreparationBoundaryTests\\run.py"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS NativePreparation checks=589 failures=0 productionCapture=extracted queue=real-helper domainHelpers=recording-stubs LIVE=NOT_RUN",
+        ""
+      ]
+    },
+    {
+      "label": "channel",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\ChannelCutoverBoundaryTests\\run.py",
+        "--dotnet",
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "--output-name",
+        "queue-sort-20260914"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS scene-lifecycle/failure-release/epoch",
+        "ChannelCutoverBoundary passes=132 failures=0 extractedProductionBlocks=true live=NOT_RUN apiNetwork=NOT_RUN"
+      ]
+    },
+    {
+      "label": "persistence",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\PersistenceIdentityAudit.py",
+        "--baseline",
+        "9158132c",
+        "--json"
+      ],
+      "exit": 0,
+      "result": [
+        "{\"baseline\": \"9158132c\", \"behaviorAdded\": [], \"behaviorBaseline\": 36, \"behaviorCurrent\": 36, \"behaviorRemoved\": [], \"moduleAssemblies\": [\"AnimusForge.Bootstrap.dll\"], \"moduleId\": \"AnimusForge\", \"moduleName\": \"AnimusForge\", \"status\": \"PASS\", \"syncAdded\": [], \"syncBaseline\": 146, \"syncCurrent\": 146, \"syncRemoved\": []}"
+      ]
+    },
+    {
+      "label": "api",
+      "command": [
+        "G:\\Python310\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "G:\\AFMOD\\AF-REFACTOR\\tools\\ModuleFrameworkApiTests\\run.py",
+        "--dotnet",
+        "G:\\AFMOD\\.dotnet-sdk\\dotnet.exe",
+        "--artifact-root",
+        "bin/Debug/single_module_artifacts",
+        "--artifact-root",
+        "bin/Release/single_module_artifacts"
+      ],
+      "exit": 0,
+      "result": [
+        "PASS 532 actual-DLL metadata assertions; 4 implementation DLLs; public V1/legacy memory signatures match; module ports and scene-aware memory owner remain internal.",
+        "NOT TESTED: CLR loading, Bootstrap ordering, game object access, real sub-MOD execution."
+      ]
+    }
+  ],
+  "builds": [
+    {
+      "label": "stage-Debug",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+        "-ProjectRoot",
+        "G:\\AFMOD\\AF-REFACTOR",
+        "-BannerlordRoot",
+        "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-Bannerlord13ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\_deps_auto",
+        "-Bannerlord14ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-WorkshopContentDir",
+        "E:\\steam\\steamapps\\workshop\\content\\261550",
+        "-RuntimeDependencyDir",
+        "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+        "-Configuration",
+        "Debug",
+        "-Stage"
+      ],
+      "exit": 0,
+      "seconds": 74.2,
+      "sourceBefore": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySealing.cs": "3e604601e856abd121d035c1abf61905cea140e73e277767576759c0bb69790d",
+        "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "6956b69629fa7b42249572fbc4faf8e5d7480b2d78f5726e75959404c207265f"
+      },
+      "sourceAfter": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySealing.cs": "3e604601e856abd121d035c1abf61905cea140e73e277767576759c0bb69790d",
+        "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "6956b69629fa7b42249572fbc4faf8e5d7480b2d78f5726e75959404c207265f"
+      }
+    },
+    {
+      "label": "stage-Release",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "G:\\AFMOD\\AF-REFACTOR\\一键编译覆盖推送\\build_single_module.ps1",
+        "-ProjectRoot",
+        "G:\\AFMOD\\AF-REFACTOR",
+        "-BannerlordRoot",
+        "E:\\steam\\steamapps\\common\\Mount & Blade II Bannerlord",
+        "-Bannerlord13ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\_deps_auto",
+        "-Bannerlord14ReferenceDir",
+        "G:\\AFMOD\\NEW-10\\.tmp\\build_check\\1.4",
+        "-WorkshopContentDir",
+        "E:\\steam\\steamapps\\workshop\\content\\261550",
+        "-RuntimeDependencyDir",
+        "G:\\AFMOD\\NEW-10\\AnimusForge\\bin\\Win64_Shipping_Client",
+        "-Configuration",
+        "Release",
+        "-Stage"
+      ],
+      "exit": 0,
+      "seconds": 31.8,
+      "sourceBefore": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySealing.cs": "3e604601e856abd121d035c1abf61905cea140e73e277767576759c0bb69790d",
+        "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "6956b69629fa7b42249572fbc4faf8e5d7480b2d78f5726e75959404c207265f"
+      },
+      "sourceAfter": {
+        "MyBehavior.cs": "bec1a73d3b26b4edf6e7485da595283f240245ee625202ef30cfc594d27d67d2",
+        "MyBehavior.MemorySealing.cs": "3e604601e856abd121d035c1abf61905cea140e73e277767576759c0bb69790d",
+        "Refactor/Runtime/CooperativeMemoryQueueSort.cs": "6956b69629fa7b42249572fbc4faf8e5d7480b2d78f5726e75959404c207265f"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "568c95349a54213c7b1632dbb458b8fda1cb53653d886b824b9bbd89df0d7e5e",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "568C95349A54213C7B1632DBB458B8FDA1CB53653D886B824B9BBD89DF0D7E5E",
+        "CreatedUtc": "2026-09-13T23:10:47.6173957Z"
+      },
+      "verifiedStageMatch": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "9412d3067070b8f6289b8654d276dfb7c5dbd44f1cf44a6b84dd752ea8e6c258",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "9412D3067070B8F6289B8654D276DFB7C5DBD44F1CF44A6B84DD752EA8E6C258",
+        "CreatedUtc": "2026-09-13T23:10:22.0317457Z"
+      },
+      "verifiedStageMatch": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "4f41be3a78cee77eb81a11604e53e3bbad57ab4fee4990b3220246f0f2b847c0",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "4F41BE3A78CEE77EB81A11604E53E3BBAD57AB4FEE4990B3220246F0F2B847C0",
+        "CreatedUtc": "2026-09-13T23:10:44.7238647Z"
+      },
+      "verifiedStageMatch": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "7c872a600bc820730f8ece9fb326fb00b1f738d39d4ddad66ed35e6e7586a845",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "7C872A600BC820730F8ECE9FB326FB00B1F738D39D4DDAD66ED35E6E7586A845",
+        "CreatedUtc": "2026-09-13T23:11:20.2468973Z"
+      },
+      "verifiedStageMatch": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "32c5745a8bd42c9c9338c6af0e4056aa7b8d75a1461ad52ac5fa3d3902aff7cf",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "32C5745A8BD42C9C9338C6AF0E4056AA7B8D75A1461AD52AC5FA3D3902AFF7CF",
+        "CreatedUtc": "2026-09-13T23:11:06.9193891Z"
+      },
+      "verifiedStageMatch": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "b6d935bdf9000478b6d7e895a4e5ab035a305f166c6bb80cb4bc3ccd8941a5c6",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "B6D935BDF9000478B6D7E895A4E5AB035A305F166C6BB80CB4BC3CCD8941A5C6",
+        "CreatedUtc": "2026-09-13T23:11:18.2863947Z"
+      },
+      "verifiedStageMatch": true
+    }
+  ],
+  "inverse": {
+    "declarations": 58,
+    "deletedDeclarations": 2,
+    "addedSourceSpans": 4,
+    "wholeComponents": 5,
+    "guardTests": 10,
+    "exactBaseline": "90201155",
+    "status": "PASS"
+  },
+  "codeMapAnchors": 68,
+  "protectedFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "frozenFiles": {
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\abandon-incomplete-same-day.log": "d99a0e9803e0135e80d864cc20647d342183ff7bdd25e26695e328da705e1d32",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\adjacent-runs.json": "1709e316a0a1dc0dc36723c4189fef0ef20e047cf4d37d5ccd594d125854ff61",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\admission.log": "02f38cf8eb4dce13f9753b65f5b5c0e39f686a8a313b1b91a8f91560410d1609",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\api.log": "d23619898a512e03b74a3b092148ed2db24b0825f3010967d3be2f648cbbaba9",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\build-runs.json": "6451b164fb1b86c7267c690da3912e9d94c86be9a531f5b9b9d6575cd0dce391",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\business-current-build.log": "421131f4ae643d82869281f0899555b8b3769f074c0523f2da9b306368d620a1",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\business-current-manifest.json": "01f642f363891c8647121ccd1789c9e9b254bc6a68bfc4b62ea172b13f5f6daa",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\business-current-run.log": "286a170e827db18983fd3bae18fdd649ec9b1f4092deceb1764f8285c18adf97",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\business-mutation.log": "9b9cb33118c0b1c0e04597ed4fbfbc6dbdfa3ddd9b1d866dc0e4d511a8e42552",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\business-original.log": "4c7b356aef57b88cb843d14a1f7900bfa5dd3e70756e9002fc36a7f83e407352",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\business.log": "20ba2d1610e1b164e5e980d5bd2c924f6a34f87ff21b538776ccf9d0f6b857f8",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\captured-current-build.log": "05556049c475290a3245221ba2dab493e76301ea0c6ddbad82f42b85f94ded87",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\captured-current-manifest.json": "e5e754356c671189dd7a9219ee56bffe04aa646e7fc70873c3f22aa40bf30398",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\captured-current-run.log": "88a080b0308e1571d868f7bf2963b2da021bcc15012c444cfca695a768585695",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\captured.log": "ae0e107356538bb893d2a4c3a9035b164c0623cf1b04237e1c18dfec6afa9957",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\channel.log": "d655a857aaa41260932a484c6b46b8992840f5efc4864695cff66bfb4a71d2ec",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\commit.log": "d13a32458108722fab38ac8d3cc739ee771230bf49c514a48979695f72c52961",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\commit_writers-current-build.log": "9a3851ad3bff6d04fc9d27d7deed48f6d7d46da577a642f945ce1794eb1786f5",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\commit_writers-current-manifest.json": "5c4d5196c7551821e2ecb7fb203c6c5990e6c72928aaf665f88795960f2a6a04",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\commit_writers-current-run.log": "4862b8654b321b753bdc708418076946f9ecac69470f790a7c26f15b0502c00b",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\current.log": "45147c09b90ae5b9d70e2577770b0b912dc9bebb36e70f136db7b5c31746428f",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\Debug-Bootstrap-1.3-compatible baseline.build.json": "f0900a0e491ffdf8e676de6aa28578a2485f619150387031dff6dc01e45c2444",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\Debug-Implementation-1.3.build.json": "611866399c3b24101d023cfbc0f024704b199ea7c15282f6294e91135e99ec20",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\Debug-Implementation-1.4.build.json": "535de2772e77c1840dce05722abf6e4ecfbe7fdd1c30aff0afef9cb48ae5f600",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\drop-deferred-start.log": "625235534b7cc55c080f2a36937a0a8e905adc92de41ba923ef05277fda31ee1",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\failure-ui.log": "a273c33db49bee826813e34acd78996cc447908881f3a0605a9a904fcd4cad69",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\gate-runs.json": "c80ebbcedb0d9bc330d1bcd7107e72cd5c156eec681eeba42ce944028a4f89a2",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\helper.log": "9ccf3eb75bd4cfb98871ebd854847ab1a00721a49c83bc2c6ea32ddddacb8395",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\history.log": "d61794d838dc5f325a1f12227567aac6a4fb60c7171f8d56ab77455639a0667b",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-campaign-scope.log": "f6212fd2b7baff43152c41d2347431152f3de8a418e3feee8a8506e01995366d",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-cleanup-identity.log": "9360fda2b5ffe9389271a7fc81d67a09a34aef2e5fe86966fa1a5c22edbf721c",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-deadline.log": "dd00b5171b714f4381feca7fd4c3f16ff56095e893fa15573125c0d84ad61db0",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-empty-probe.log": "1fd5d87191a3e4cf90113035e6110bcd8191a739efe6855cb5f6079aa41bec89",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-owner-binding.log": "08508a34e3e5042e5502e271dff5e90d1bf93951d205b344eadc338fc21925b5",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-pending-generation.log": "8bec2d1b137b5741d23897f5a8ee0e07e3f4a92ed7e2bba86c9a4ebf7c4e4449",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-sort-culture.log": "4928c9bbe3d510d07adc92e58faf182badcbb149eb9627720dd3358acfcc1ef0",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-sort-final-binding.log": "4a1a6c7d07a35d5d607409c0c2b695e62857b542981eba42837223c0a0891ef9",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-sort-source.log": "275a9059f4984bbbca0848b82ec0734276030123818d6243c65635b56e29e5fc",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ignore-stale-queued-job.log": "e00c95f5685756e9ab853f8202cbe76b7a1e6511876af5a1f020d660d1027297",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\inverse.log": "7f8145b5f88d1920f8d424fa791633c7540fce0126880d2fb8749bef764a17cb",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\materials-current-build.log": "469c87e4e15fca8fdcf701e970a8e034f7ee721b81e382a7a1233db660d37e21",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\materials-current-manifest.json": "7a7b5f04adea33775155cde0d206d001d854fb359f787c732daf28447d8c59c4",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\materials-current-run.log": "0c8000153b22684351d05dfbae5e94b8547be4ba69ef61eb5b34187cad4362f6",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\materials.log": "cf6aeefee79e51bee6eae1157b88fcac422f6bdc322cc7cd680fa442f41b0845",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\native-history.log": "3bcb919547c185cf36e9fe8a8240c39810f3e7d8adfc0f1f78cf54a2c6bc272a",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\native-preparation.log": "075b0f15df3860341876ab8bb218daaca9ad3540b86eee22b01ca0dfdc2af265",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\omit-window-restore.log": "8f2932724296bea297e0bb58bcf95d3e7a3e4972318b24917a76bb8881a16a15",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\ordinal-sort.log": "72721965294f7071654a53627cebebb351170a65289e0dcfb65465bbfc03b7e5",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\original-9158132c.log": "0e8bfc064c4adb0d5c46b241b1d8fbb7b3de86380f178b98b41f235b8bff98fd",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\persistence.log": "8d2c89df28c6a736a6be99501556b9f56e79e356951d654f7e79ac11b8885d67",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\planning-current-build.log": "bc255ff5737f77a474c1d78e171293114fe61e4d1f3bb74a7076692b22ddc603",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\planning-current-manifest.json": "f5258c071610220d6ca77130d645f98d7860d3c8285bd386cd0939be8c1ca062",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\planning-current-run.log": "77b5dd5ef72ec0514088fa9d6ed79db94600a3dcab5b3f6a883ef57e8d951b22",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\planning-fixed.log": "0100eb6ddce3ced3d93acbb49f2f03d55c95af3a9865e9d65b79b8450ffbe2c4",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\planning.log": "c0b5da4dd9682476cf6ff6a41d1c48b79807f9c182ed343789db3fc5287aad11",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\Release-Bootstrap-1.3-compatible baseline.build.json": "54de4d8c6025b1d6de89ba73d6347dd7edcd82cbef327b6ebe189dc20a84b3cf",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\Release-Implementation-1.3.build.json": "c7fd533e110cc539c74c1ecffca67c144ea0620f26ac76807eb54818d987f574",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\Release-Implementation-1.4.build.json": "b7e026c0d39ad0dd19f0bbf2131f60f4f6c99cacb59005899dda52ac3dbfbc7d",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\renew-deferred-deadline.log": "28166082b9470e1a231fa5be2f9f33939c2aef994f85619fa4d5aeac34ef15e1",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\renew-seal-budget.log": "fb542ad6b7cbb770188eb6c841b77ea7e4066ba2181bb73aee28af029a3c3c63",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-abandon-incomplete-same-day-build.log": "1aa9572fce46331d1b9087a721331da660bd09d9ec578e027564f510ef3ae210",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-abandon-incomplete-same-day-manifest.json": "1d1f5a89ce810d9f7e47dd6a1684205c2e8051f401d7d3bb43588b29ad74049e",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-abandon-incomplete-same-day-run.log": "a1bff1be41de7e90d2a45d44373ff6a02e63886bc3d4df063db195e184c76932",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-current-build.log": "01eb05ce86222bed108956914af3f128d1de55ebe6226c7579bf999efcf6af16",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-current-manifest.json": "e24504e262d44859910cc32ba98c8814262352c9828e2c2b327f67e0f516adba",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-current-run.log": "12e67527b9df216085fab01c2ec3a6c0c2221090ada869b34e4d31cef8178724",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-drop-deferred-start-build.log": "8539572dc0e65142fa7335c499d5b6f9b82459c3078c5009af136ad239d3b0fe",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-drop-deferred-start-manifest.json": "efd68a4a888481988105b679662b9a88e38f52305b5ca65a8c4e753f6d9cf88e",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-drop-deferred-start-run.log": "39c69b2ffa94b3e8fd223abcf40e7af3d577a624121e13681b29c5c5bdd91cc7",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-campaign-scope-build.log": "03eb3d9f4da54bcd5f1c2560372b6fec68271672d679c814a321cc1aa78a2974",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-campaign-scope-manifest.json": "bf6f22296109a05d2e888d11e81ebbd2e3903a910fb339427782005cd99019ce",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-campaign-scope-run.log": "1c0be34724154e1f9eaa264250d26a89147fe8cf9f32b6be4bf912210c5af85e",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-cleanup-identity-build.log": "373f58528955c7a1d4ddb3e80a138b74cf926ff4379e8558cb86d04eef02a697",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-cleanup-identity-manifest.json": "6791b23b76c2abe2c6444cc62742b70260c95215e491735d90fca400025afae6",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-cleanup-identity-run.log": "eba8269030284c3acc1c9c66d71d415fc3ff8d1be16bb1d2da60e72c1e24d006",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-deadline-build.log": "0f7981bb674cd7411369246fef10c234171ea95428e94d70594cbafca6df7907",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-deadline-manifest.json": "30bd5f8dad3e697ebc20e87bba02bf0694fb937d4598d586b90fe7d34d0d6bd9",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-deadline-run.log": "85de472866791a1633f2eabd5566cb040c49acd42e503deee7c74bfd3ecb9982",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-empty-probe-build.log": "5f86134bc4b95c73a9189d3880e9e49b7aae6ba591ef87e59d3de6d15fa6bf19",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-empty-probe-manifest.json": "9723d47729a8ffbc7f88f450482afb3fd9d8fa8d779e3ef20718ba00a9899349",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-empty-probe-run.log": "0a681bc0c4e65946c57b62b7f77c3e583a56b405b847c5d1035edfd151b00c47",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-owner-binding-build.log": "bcd73e9c0f33715cf6de8b8eb5e12090b848bc53df0bb06daa466d776803e573",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-owner-binding-manifest.json": "1ce112885e9fdd3855c740bd1217e82691129066da2c6fa8b1d6b07cf1a438a2",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-owner-binding-run.log": "4f1bfa153de39e4dff7ee9da707da51b90b5aaf3ccdaf1b69b62e0373ad68fa8",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-pending-generation-build.log": "63b94059d991d6f835733615685e9fbdac9b33ed80a85a684703fa378752cb19",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-pending-generation-manifest.json": "875e750c0174a30cd6f4b06af5d80a97786450c8fb45e347f9714e05ca5c3e27",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-pending-generation-run.log": "305183bbf402250f1ec72b85d0e3118c5c4c5e29e362582f85717748485fb8f4",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-culture-build.log": "732fa65f39ce1d2d179b99f346378bbd64f0aa5a5c7182413eb0b56a453cf9d3",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-culture-manifest.json": "df41051c4838709857cf0f045c35d9e1ec8db27cc1ca7c452b319eecd72fb654",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-culture-run.log": "c0b54d3661fb3bca885eafab68297a0e60394243fc6f22d1ace9583a20f45437",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-final-binding-build.log": "c0ac63f7905706fd390f548f137a8fef1f9862bd7dd5a93fc5b7d5c33bf2223d",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-final-binding-manifest.json": "db98c3325f5c2f988d6ba4232bd2252e9bd151ad0d911d5ba37ed7941fcadf3a",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-final-binding-run.log": "28652006783649c60d4e29e3be614792cd2afed024d034d2ff4a1ae8d212134e",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-source-build.log": "ed05a2bfebddcc9c1bc3a05317427e2d20570a59e4da392d20f2d0d7c042a30b",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-source-manifest.json": "b290869b163f8d85106ba07360e109d7d772b1057d87ff2c6b1cfb56b530f6d3",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-sort-source-run.log": "ee6d7a45ef606720d53ed9fb8d87cd0e7c21ef8c94c10b73e40e34e455707323",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-stale-queued-job-build.log": "23d03b5002c1496e1cd1a458ebe1c6f27932cc2442e12f30e37348860ee79146",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-stale-queued-job-manifest.json": "131fea538354013cd349ae1c9efd5abac56bfe0165aa67bfd12cd033d8f435a8",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ignore-stale-queued-job-run.log": "4774a36213234a90d32ae4fb0497ae4b9b7f657faf51b9c7940b49f9ca67c0f2",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-omit-window-restore-build.log": "6baa914c13709e8474c2f1bbb4ec069c87212afbfd3187e5eac31447d98fac8c",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-omit-window-restore-manifest.json": "4b3021f33534faf467c0a484a88629a88193e8d34887e1214dba0c0e14fb53f4",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-omit-window-restore-run.log": "41c882de7892c086f9c47db37f00cf066ae739e5c18c5d8d0e569ac463c88f83",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ordinal-sort-build.log": "faeb683defbb6e31a00797458f9efa87d4c7593c69ef5ef670c8cb01d323db89",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ordinal-sort-manifest.json": "3fc6d171607e1d9dbd1e58e60d1e1ec88d3fd197b2b9c68b68807a3af54ea04d",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-ordinal-sort-run.log": "8d0a48b7ecb22e99aac1209d43c88e2bc2514729d61da1285ecd56bf25f60924",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-original-9158132c-build.log": "78c29eac7c98b49ce8e0f36e323bf815578da828d643dce23366305be2f78032",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-original-9158132c-manifest.json": "4c14425c99ef95b5af393959663ec141983eb47fd10b2ac19e6367a4e7cdc5c0",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-original-9158132c-run.log": "bdd5aec7b5d8bbd939c29635ee5b72f6a612829f6d4abdb6962cb0ddda4bf706",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-renew-deferred-deadline-build.log": "9265ac5d1a7326faf5ac74f6350efdad9ac9cd8aa4836ec881ae2f1e90ff61af",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-renew-deferred-deadline-manifest.json": "89e68d2707e9181a34517fb1e97a2a792a4346b310f5a6a3d5a3c6d7265acf95",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-renew-deferred-deadline-run.log": "00dc89a136ad6325d37dfee91356619aa5d0e7baddcb93c77db17557fcc7297e",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-renew-seal-budget-build.log": "3480f32a22589c63bc41d7591015a4fac16e8c17f2e79a88a1bd74b507b8687c",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-renew-seal-budget-manifest.json": "0915e17db66df48c1b3258823acd8666d6dc9541e513f0cf8a27340d1b9281e1",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-renew-seal-budget-run.log": "f230cf18b1ad9a6bd84e4704dfab1cb949befa653ca207b29a409c379c8c8ce0",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-runs.json": "8742d8791c0c71a50145f162ec8a11ae96c49982d1b519f3791559e67041f270",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbounded-expensive-build.log": "45a3b3c0f107e7e88ba1a9f864e8219f17874c642d5fa132ecf073f2726cd52f",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbounded-expensive-manifest.json": "1f79fab579e6500db272eb1ef60b9812522a7c57df0d85de619791661613422f",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbounded-expensive-run.log": "2af360b90edd6e31ffeae19cd8b6e47384b0c100b3743d016516765a5f33e5cc",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbounded-metadata-build.log": "6773aa1c63d09df43e4d77b5816bc8d00abcf5c6e55dc62f79bcd21aceb52f51",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbounded-metadata-manifest.json": "3e104507859d1c76c61a21f5ed6106b306e066067e0cb87709d399ff33447ae5",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbounded-metadata-run.log": "2efcb948c66e4816f85c296cf0fe10aa5a47a116a78aa8d2835a7f49cacd138d",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbudgeted-sort-build.log": "f63df4a9d956e4328eb63fda74b51491b3b9cb4f883f00be9324f5aca718584d",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbudgeted-sort-manifest.json": "08961df97ec25ef54e5a3afad9ff1d531a5d8bf3e2c0fc10ac7021db419754e8",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unbudgeted-sort-run.log": "f02e66546145abbb8b27e9db4fafdbcac9718cfe47591e787437803c63105ced",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unstable-sort-build.log": "4d265112cbb16cf9896a471a8237dd40f3c43bd865d3fdcc3a28525546324340",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unstable-sort-manifest.json": "6d8138ab7224b3e2c6b3c4da86c245d3e7d7f251eefd0aa25981d884589ac555",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\sealing-unstable-sort-run.log": "a38c772086fc5f9b790d7d6912dd3d961c5dfb7d03e7397ff0c4be5e9a69fa32",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\stage-Debug.log": "cab78cdba5100a9d1eca8892fa90b3e474b013597d911ea83ae6d60eee6ed1d7",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\stage-Release.log": "2aa0531ee00a78ba3e8a6af38aedc5b110661beee7901a89922264806e43e22b",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\terminal-current-build.log": "e10e9fda5dd977f14a44a86ec5087e10a05cae1b01714c966ee376626e6bdf67",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\terminal-current-manifest.json": "2d9e274055e920354552806a04224ff633d6bbfb28a9cf030f05cce4ab966625",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\terminal-current-run.log": "d64101fdb96dfa9ead5ca3e38ac66c8dd191d34cca99228b02f798392cd768ed",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\terminal.log": "bb11f83bd32ab55981538e1e844b718ac4e271e0100d586ba785bc8d38f50e9a",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\unbounded-expensive.log": "03c7b45586668ae9505464399433cb4af0c454ccae709b8dc6b6fc34220afeee",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\unbounded-metadata.log": "66dde36c909fcbcabd3a939745669bcc21eb8b7113fa91a6ba84d7fe8eec2aa1",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\unbudgeted-sort.log": "df75ebb7b50732f2379c8cb65b0d49784c64215214272b607696f0bc99aef23b",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\unstable-sort.log": "6ca3d770583f799277b056e4d05837ed86bc34996221fe8cf0b5bd6b030c99cf",
+    ".tmp\\b1-queue-sort-20260914\\final-evidence\\writers.log": "d3908954e755c5cc6e29b2c69f27646ca609331b2a766cd15036840f45c58000"
+  },
+  "limits": [
+    "No live game/save/assets/AFEF/provider/TTS/external DLL load proof",
+    "Atomic normalization, snapshot allocation/key capture, final scalar binding, single source and string comparison remain",
+    "Only sealing tails use cooperative sort; synchronous sanitizers retain atomic LINQ order",
+    "New normalized metadata may be visible while final order remains private; no early summary start or duplicate authority added",
+    "No automatic push/deploy/save operation/default/API cutover; B2/B3 not entered"
+  ],
+  "codeMapVerification": {
+    "recordedRevision": "PASS",
+    "workingTree": "PASS",
+    "anchors": 68,
+    "sourceRevision": "8bcde78b9f477a9cc7cdb8ef12b2a4cbf1e60dc3"
+  }
+}

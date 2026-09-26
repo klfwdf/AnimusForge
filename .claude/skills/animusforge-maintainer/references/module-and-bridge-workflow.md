@@ -1,114 +1,46 @@
-# Module and bridge workflow
+# 完成一个真实职责工作包
 
-Use this reference to create, extract, change, integrate or review an AF module or bridge.
+用于内部抽取、新模块与正式跨域 Bridge。先区分三类任务，不共用一套平台建设清单。
 
-## Choose the owner first
+## 规划与执行
 
-Classify every change as one of:
+当用户要求先写计划、再交由其他模型执行时：
 
-| Owner | Use when |
-| --- | --- |
-| Foundation | Composition/safety capability required across independent modules. |
-| GameAdapter | TaleWorlds/Harmony/version/main-thread mechanism with no gameplay policy. |
-| One module | Behavior, data, prompt, action, UI or policy belongs to one domain/team. |
-| One bridge | Behavior exists only from the interaction of two or more modules. |
+- 只请求计划就只交付计划，不自动实施或启动代理；具体计划沿用项目台账，不写入 Skill。
+- 基于真实代码写清范围与非目标、关键文件/符号及消费者、职责与状态归属、依赖顺序、必须保持的行为及验收标准。规划者解决关键设计歧义；不逐行翻译代码、不重复已有规则，只对高风险边界补充必要细节。
+- 近期工作包细化到可执行，远期保留职责、依赖与完成条件；后续按实际代码更新，不提前写死全部方法或行号。
+- 获准执行后，执行者在既定范围内自行处理实现细节、编译接线与普通回归，不逐步交回规划者。发现必须改变既定设计、行为或授权范围的冲突时，暂停受影响部分并请求决策；权限与安全审批仍适用，不能削弱测试或兼容门禁来凑通过。
 
-Do not move code while ownership is unresolved. Record conflicts in the module catalog/ledger.
+## 普通内部职责抽取
 
-## New/extracted module checklist
+沿实际入口检查：旧算法/状态/资源 → 新归属 → 真实调用者 → 输出或提交。开工时明确：
 
-Before substantial gameplay code:
+1. 真正转移哪些算法、状态和资源，哪些仍归旧 owner？
+2. 哪些生产消费者接入，测试替身覆盖什么？
+3. 哪些行为、顺序、线程、身份和资源路径必须保持？
+4. 旧入口因哪些调用、ABI 或存档责任保留，退出条件是什么？
+5. 哪些测试/构建/运行证据足以证明本包完成？
 
-1. Stable `af.module.<name>` ID.
-2. Owner/team/maintainers.
-3. Purpose and explicit non-goals.
-4. Required and optional module/capability dependencies.
-5. Provided capabilities/events with contract versions.
-6. Profiles and Bannerlord 1.3/1.4 support.
-7. Persistence namespace/schema and legacy keys/types it owns.
-8. Lifecycle class and Harmony/UI/tick/background contributions.
-9. Health check and structured failure/degradation behavior.
-10. README, manifest, focused tests and real profile composition test.
-11. Content mapping and package closure.
-12. Known limitations and rollback/facade path.
+按“确认旧职责与状态 → 确定新归属 → 转移实现 → 接通消费者 → 更新路径与资源 → 验证行为 → 处理旧实现”完成。目录迁移和实现抽取可分步，但共享同一目标；允许单独验收结构，不把结构完成冒充职责完成。详见[联合工作包](repository-structure.md#joint-module-packages)。
 
-Start with an adapter/facade around existing behavior. Move one vertical slice and keep old entry points delegating. Delete old code only after call-site, save, dual-version, channel, profile and composition evidence.
+不要仅拆 partial、复制第二套核心或让新 owner 把全部工作转回旧类。混合大类按符号标明已迁移与仍在运行的责任。旧入口仍有序列化/反射/外部调用责任时保留窄门面；移除前确认替代路径及消费者闭合，并遵守删除授权。
 
-## Bridge qualification
+普通组件不强制新增 manifest、持久化命名空间、运行入口、独立项目或 Bridge。验收选[风险矩阵](validation.md)，不强制同时做源码逆向、运行对照和变异测试。
 
-A bridge is justified only if:
+## 新的独立管理模块
 
-- A and B remain independently coherent;
-- the behavior cannot be owned honestly by only A or only B;
-- both owners agree on the public capabilities and outcome;
-- the bridge can fail/disable without making A/B crash;
-- its state has a clear owner and persistence namespace.
+仅在确有独立管理需求时记录 owner、职责、消费者、依赖、生命周期/副作用、兼容和失败行为。存在实际运行 manifest 读取者才按其 schema 声明，不虚构平台版本/入口/profile。
 
-If several consumers need a generic capability, consider a small contract/provider instead. Do not create a bridge as a dumping ground for copied module logic.
+持久化、UI、Harmony、后台任务、内容包、公开 API 是条件项：涉及才定义所有权、清理或重启语义、迁移及相应测试。无状态组件不制造保存数据。可参考[模块说明模板](../assets/module/README.template.md)与[声明示例](../assets/module/module.yaml)。
 
-## Bridge contract
+## 正式跨域 Bridge
 
-A bridge must declare:
+只用于不能诚实归入单一领域的组合行为。参与 owner 共同确认契约、行为与状态；不得依赖私有字段反射、另一个领域的原始存档键、偶然 Harmony 顺序或复制业务算法。supported capability 可为同 DLL internal，不意味着必须 public。
 
-```text
-Participating module IDs and compatible versions
-Required/optional capabilities and event versions
-Joint maintainers/review owners
-Cross-module behavior and non-goals
-Data owner and persistence namespace/schema
-Activation/profile/lifecycle class
-Conflict/arbitration behavior
-Missing/incompatible/failed bridge degradation
-A/B/bridge composition test matrix
-```
+验证 A 单独、B 单独、A+B 无桥、A+B+桥，以及缺依赖/不兼容、桥失败、桥停用：无关业务保持可用，桥不执行无效副作用，已有数据保留。只有实际提供 SafeMode/profile 才验证该入口，不能造假状态来充数。有持久化才定义桥自己的数据归属，并保持已有兼容身份。
 
-It may call public services or subscribe to public typed events. It may not:
+薄转接不承担以上新玩法承诺，也不假装已完成 Bridge。参考[桥说明模板](../assets/bridge/README.template.md)与[声明示例](../assets/bridge/module.yaml)。
 
-- import participating modules' implementation assemblies;
-- reflect private fields/methods;
-- read/write another module's raw save keys;
-- patch around the other module without declared conflict ownership;
-- duplicate the other module's domain algorithm;
-- put its state under A or B's namespace;
-- rely on Harmony registration order.
+## 交付
 
-## Required composition matrix
-
-| Composition | Expected result |
-| --- | --- |
-| Foundation + A | A works independently. |
-| Foundation + B | B works independently. |
-| Foundation + A + B, no bridge | Both work independently; no hidden integration. |
-| Foundation + A + B + bridge | Declared integration works. |
-| Bridge without A or B | Manifest resolves to `Blocked`; entry point not invoked. |
-| Incompatible A/B version | `Blocked` with exact version reason. |
-| Bridge start/runtime failure | A/B remain usable; inventory reports bridge failure and trace. |
-| Bridge disabled | No cross-state writes; existing saved bridge data preserved. |
-| SafeMode | Bridge absent; data preserved and inventory explains it. |
-
-## Module review questions
-
-- Does this change force an unrelated module author to edit code?
-- Is any private module type exposed through a contract?
-- Did a one-consumer helper get promoted prematurely to foundation?
-- Does the manifest reflect actual, not aspirational, dependencies?
-- Are optional dependencies truly optional under test?
-- Can failure leave registrations, tasks or patches active?
-- Does save ownership remain unique?
-- Does the module support both declared API lines?
-- Is a cross-module behavior hidden in one module instead of a bridge?
-- Are module owner and bridge co-owners recorded in the ledger/catalog?
-
-## Minimal directory
-
-```text
-AF.Module.<Name>/ or AF.Bridge.<A><B>/
-  *.csproj
-  module.yaml
-  README.md
-  src/
-  tests/
-  content/    # only when this owner ships content
-```
-
-The README covers responsibility, public APIs/capabilities/events, configuration, persistence, lifecycle, Harmony/tick/UI effects, extension rules, validation and limitations.
+记录实际 owner、旧→新位置、生产消费者、兼容壳及未迁移责任、验证结果和未验证风险。证据只维护一份，其他入口链接；详见[台账与交接](ledger-and-handoff.md)。
