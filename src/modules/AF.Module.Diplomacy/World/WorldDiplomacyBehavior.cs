@@ -4155,43 +4155,14 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void MarkPlayerCourtReachedByRelay(Kingdom receiver, WorldDiplomacyDocument document)
 	{
-		if (receiver == null || document == null || document.IsPlayerAuthored
-			|| document.HasReachedPlayerCourt || !IsPlayerAffiliatedKingdom(receiver)) return;
-		if (string.Equals(receiver.StringId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase))
-		{
-			document.HasReachedPlayerCourt = true;
-		}
-		else
-		{
-			ProcessCourtArrival(receiver, document);
-		}
-		Log("formal-player-relay.received document=" + document.DocumentId
-			+ " receiver=" + receiver.StringId
-			+ " day=" + CurrentDay().ToString(CultureInfo.InvariantCulture));
+		WorldDiplomacyPropagationApplication.ReceivePlayerRelay(
+			receiver?.StringId, document, () => IsPlayerAffiliatedKingdom(receiver),
+			() => ProcessCourtArrival(receiver, document), CurrentDay, Log);
 	}
 	private void RecoverPlayerCourtReceiptsFromKnowledge()
 	{
-		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-		if (playerKingdom == null || _storage?.Documents == null) return;
-		WorldDiplomacyKingdomKnowledge knowledge = (_storage.KingdomKnowledge ?? new List<WorldDiplomacyKingdomKnowledge>())
-			.FirstOrDefault(x => x != null
-				&& string.Equals(x.KingdomId, playerKingdom.StringId, StringComparison.OrdinalIgnoreCase));
-		if (knowledge?.DocumentIds == null || knowledge.DocumentIds.Count == 0) return;
-		HashSet<string> knownDocumentIds = new HashSet<string>(knowledge.DocumentIds, StringComparer.OrdinalIgnoreCase);
-		int recovered = 0;
-		foreach (WorldDiplomacyDocument document in _storage.Documents)
-		{
-			if (document == null || document.IsPlayerAuthored || !document.IsReadyForPublication
-				|| document.HasReachedPlayerCourt || document.FormalNoticeShown
-				|| !knownDocumentIds.Contains(document.DocumentId ?? "")) continue;
-			document.HasReachedPlayerCourt = true;
-			recovered++;
-		}
-		if (recovered > 0)
-		{
-			Log("formal-player-receipts.recovered kingdom=" + playerKingdom.StringId
-				+ " documents=" + recovered.ToString(CultureInfo.InvariantCulture));
-		}
+		WorldDiplomacyPropagationApplication.RecoverPlayerCourtReceipts(
+			_storage, Clan.PlayerClan?.Kingdom?.StringId, Log);
 	}
 	private void AdvanceRelay(WorldDiplomacyRound round, bool scheduleImmediately = false)
 	{
@@ -4240,41 +4211,14 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			SuppressInvalidDocumentBeforePropagation(document, authorBlockReason);
 			return;
 		}
-		WorldDiplomacyRound round = ResolveRound(document.RoundId);
-		if (round == null
-			&& !string.Equals(document.AnalysisStatus, "external_fact", StringComparison.OrdinalIgnoreCase))
-		{
-			round = EnsureActiveRound(author, ResolveKingdom(document.TargetKingdomId), document.IsPlayerAuthored);
-			document.RoundId = round?.RoundId ?? "";
-			document.ExchangeId = document.RoundId;
-		}
-		Settlement origin = ResolveCourtSettlement(author);
-		document.OriginSettlementId = origin?.StringId ?? "";
-		if (!document.IsPlayerAuthored && IsPlayerAffiliatedKingdom(author))
-		{
-			document.HasReachedPlayerCourt = true;
-		}
-		document.PropagationStarted = true;
-		document.IsReadyForPublication = true;
-		if (round != null)
-		{
-			round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RootDocumentId, document.DocumentId);
-			round.LastActivityDay = CurrentDay();
-			WorldDiplomacyRoundParticipant authorParticipant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, author.StringId, "active", mandatoryReply: false);
-			authorParticipant.SelectedForRelay = true;
-			authorParticipant.IsPlayerAsync = IsPlayerKingdom(author);
-			WorldDiplomacyStructureRules.AddParticipantToRelayRouteIfNeeded(round, author.StringId, GetRoundParticipantLimit());
-			authorParticipant.LastSpokeDay = CurrentDay();
-			if (document.IsResponse)
-			{
-				authorParticipant.MandatoryReplyPending = false;
-				authorParticipant.LastTriggeredDocumentId = document.SourceDocumentId ?? "";
-			}
-		}
-		WorldDiplomacyDocumentFactRules.RecordSettlementKnowledge(_storage.SettlementKnowledge, origin?.StringId, document.DocumentId, CurrentDay());
-		WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(_storage.KingdomKnowledge, author.StringId, document.DocumentId, CurrentDay());
-		WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(_storage.NobleKnowledge, author.StringId, document.DocumentId, CurrentDay());
-		RecordDiplomacyWeeklyMaterial(document);
+		Settlement origin = null;
+		WorldDiplomacyPropagationApplication.BeginPublication(
+			_storage, document, author.StringId, ResolveRound,
+			() => EnsureActiveRound(author, ResolveKingdom(document.TargetKingdomId), document.IsPlayerAuthored),
+			() => { origin = ResolveCourtSettlement(author); return origin?.StringId; },
+			() => IsPlayerAffiliatedKingdom(author),
+			() => IsPlayerKingdom(author),
+			CurrentDay, GetRoundParticipantLimit, RecordDiplomacyWeeklyMaterial);
 		List<Settlement> settlements = Settlement.All
 			.Where(x => x != null && !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId))
 			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
@@ -4337,20 +4281,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void RetryDeferredDocumentPropagation()
 	{
-		foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically((_storage.Documents ?? new List<WorldDiplomacyDocument>())
-				.Where(x => x != null && x.IsReadyForPublication && !x.PropagationCompleted)).Take(8))
-		{
-			Kingdom author = ResolveKingdom(document.AuthorKingdomId);
-			if (author == null) continue;
-			try
-			{
-				StartDocumentPropagation(document, author);
-			}
-			catch (Exception ex)
-			{
-				Log("deferred propagation retry failed document=" + document.DocumentId + " error=" + ex.Message);
-			}
-		}
+		Kingdom author = null;
+		WorldDiplomacyPropagationApplication.RetryDeferred(
+			_storage,
+			id => { author = ResolveKingdom(id); return author != null; },
+			document => StartDocumentPropagation(document, author),
+			Log);
 	}
 	private bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
 	{

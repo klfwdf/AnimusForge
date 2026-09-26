@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AnimusForge.Refactor.Domain;
 
@@ -9,6 +10,123 @@ namespace AnimusForge;
 // Only the due prefix is inspected; game-object resolution stays in the host ports.
 internal static class WorldDiplomacyPropagationApplication
 {
+    internal static void BeginPublication(
+        WorldDiplomacyStorage storage,
+        WorldDiplomacyDocument document,
+        string authorId,
+        Func<string, WorldDiplomacyRound> resolveRound,
+        Func<WorldDiplomacyRound> ensureRound,
+        Func<string> resolveOriginSettlementId,
+        Func<bool> isPlayerAffiliatedAuthor,
+        Func<bool> isPlayerKingdom,
+        Func<int> currentDay,
+        Func<int> participantLimit,
+        Action<WorldDiplomacyDocument> recordWeeklyMaterial)
+    {
+        WorldDiplomacyRound round = resolveRound(document.RoundId);
+        if (round == null
+            && !string.Equals(document.AnalysisStatus, "external_fact", StringComparison.OrdinalIgnoreCase))
+        {
+            round = ensureRound();
+            document.RoundId = round?.RoundId ?? "";
+            document.ExchangeId = document.RoundId;
+        }
+        string originId = resolveOriginSettlementId();
+        document.OriginSettlementId = originId ?? "";
+        if (!document.IsPlayerAuthored && isPlayerAffiliatedAuthor())
+            document.HasReachedPlayerCourt = true;
+        document.PropagationStarted = true;
+        document.IsReadyForPublication = true;
+        if (round != null)
+        {
+            round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
+                round.RootDocumentId, document.DocumentId);
+            round.LastActivityDay = currentDay();
+            WorldDiplomacyRoundParticipant authorParticipant = WorldDiplomacyStructureRules.EnsureRoundParticipant(
+                round, authorId, "active", mandatoryReply: false);
+            authorParticipant.SelectedForRelay = true;
+            authorParticipant.IsPlayerAsync = isPlayerKingdom();
+            WorldDiplomacyStructureRules.AddParticipantToRelayRouteIfNeeded(round, authorId, participantLimit());
+            authorParticipant.LastSpokeDay = currentDay();
+            if (document.IsResponse)
+            {
+                authorParticipant.MandatoryReplyPending = false;
+                authorParticipant.LastTriggeredDocumentId = document.SourceDocumentId ?? "";
+            }
+        }
+        WorldDiplomacyDocumentFactRules.RecordSettlementKnowledge(
+            storage.SettlementKnowledge, originId, document.DocumentId, currentDay());
+        WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(
+            storage.KingdomKnowledge, authorId, document.DocumentId, currentDay());
+        WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(
+            storage.NobleKnowledge, authorId, document.DocumentId, currentDay());
+        recordWeeklyMaterial(document);
+    }
+
+    internal static void RecoverPlayerCourtReceipts(
+        WorldDiplomacyStorage storage,
+        string playerKingdomId,
+        Action<string> log)
+    {
+        if (playerKingdomId == null || storage?.Documents == null) return;
+        WorldDiplomacyKingdomKnowledge knowledge = (storage.KingdomKnowledge
+                ?? new List<WorldDiplomacyKingdomKnowledge>())
+            .FirstOrDefault(x => x != null
+                && string.Equals(x.KingdomId, playerKingdomId, StringComparison.OrdinalIgnoreCase));
+        if (knowledge?.DocumentIds == null || knowledge.DocumentIds.Count == 0) return;
+        HashSet<string> knownDocumentIds = new HashSet<string>(knowledge.DocumentIds, StringComparer.OrdinalIgnoreCase);
+        int recovered = 0;
+        foreach (WorldDiplomacyDocument document in storage.Documents)
+        {
+            if (document == null || document.IsPlayerAuthored || !document.IsReadyForPublication
+                || document.HasReachedPlayerCourt || document.FormalNoticeShown
+                || !knownDocumentIds.Contains(document.DocumentId ?? "")) continue;
+            document.HasReachedPlayerCourt = true;
+            recovered++;
+        }
+        if (recovered > 0)
+            log("formal-player-receipts.recovered kingdom=" + playerKingdomId
+                + " documents=" + recovered.ToString(CultureInfo.InvariantCulture));
+    }
+
+    internal static void ReceivePlayerRelay(
+        string receiverId,
+        WorldDiplomacyDocument document,
+        Func<bool> isPlayerAffiliated,
+        Action processCourtArrival,
+        Func<int> currentDay,
+        Action<string> log)
+    {
+        if (receiverId == null || document == null || document.IsPlayerAuthored
+            || document.HasReachedPlayerCourt || !isPlayerAffiliated()) return;
+        if (string.Equals(receiverId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase))
+            document.HasReachedPlayerCourt = true;
+        else
+            processCourtArrival();
+        log("formal-player-relay.received document=" + document.DocumentId
+            + " receiver=" + receiverId
+            + " day=" + currentDay().ToString(CultureInfo.InvariantCulture));
+    }
+
+    internal static void RetryDeferred(
+        WorldDiplomacyStorage storage,
+        Func<string, bool> resolveAuthor,
+        Action<WorldDiplomacyDocument> startPropagation,
+        Action<string> log)
+    {
+        foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(
+                     (storage.Documents ?? new List<WorldDiplomacyDocument>())
+                         .Where(x => x != null && x.IsReadyForPublication && !x.PropagationCompleted)).Take(8))
+        {
+            if (!resolveAuthor(document.AuthorKingdomId)) continue;
+            try { startPropagation(document); }
+            catch (Exception ex)
+            {
+                log("deferred propagation retry failed document=" + document.DocumentId + " error=" + ex.Message);
+            }
+        }
+    }
+
     internal struct SettlementTarget
     {
         internal string Id;

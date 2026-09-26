@@ -729,10 +729,11 @@ internal static class Program
 		Test.True(courtArrival.Contains("IsPlayerAffiliatedKingdom(receiver)", StringComparison.Ordinal),
 			"formal court arrival must work for player rulers and player vassals");
 		string propagation = ExtractMethod(source, "private void StartDocumentPropagation(");
-		Test.True(propagation.Contains("IsPlayerAffiliatedKingdom(author)", StringComparison.Ordinal)
-			&& propagation.Contains("document.HasReachedPlayerCourt = true", StringComparison.Ordinal),
-			"a declaration authored at the player-affiliated sovereign court must be formally available immediately");
 		string propagationOwner = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
+		Test.True(propagation.Contains("IsPlayerAffiliatedKingdom(author)", StringComparison.Ordinal)
+			&& propagation.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
+			&& propagationOwner.Contains("document.HasReachedPlayerCourt = true", StringComparison.Ordinal),
+			"a declaration authored at the player-affiliated sovereign court must be formally available immediately");
 		Test.True(propagation.Contains("WorldDiplomacyPropagationApplication.SchedulePublication(", StringComparison.Ordinal)
 			&& propagationOwner.Contains("bool playerCourtReceiptMissing = court.IsPlayerAffiliated", StringComparison.Ordinal)
 			&& propagationOwner.Contains("knownKingdomIds.Contains(court.KingdomId)", StringComparison.Ordinal),
@@ -751,7 +752,8 @@ internal static class Program
 		Test.True(CountOccurrences(relayArrivals, "markPlayerCourtReached?.Invoke") == 2,
 			"both ordinary and result-settlement relays must mark formal delivery when they reach the player court");
 		string receiptRecovery = ExtractMethod(source, "private void RecoverPlayerCourtReceiptsFromKnowledge(");
-		Test.True(receiptRecovery.Contains("knownDocumentIds", StringComparison.Ordinal)
+		Test.True(receiptRecovery.Contains("WorldDiplomacyPropagationApplication.RecoverPlayerCourtReceipts(", StringComparison.Ordinal)
+			&& propagationOwner.Contains("knownDocumentIds", StringComparison.Ordinal)
 			&& source.Contains("RecoverPlayerCourtReceiptsFromKnowledge();", StringComparison.Ordinal),
 			"old saves whose player court already knows a declaration must recover the missing formal receipt flag");
 		string notifications = ExtractMethod(source, "private void TryPublishPendingNotifications(");
