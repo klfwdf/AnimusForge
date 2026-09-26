@@ -1,7 +1,7 @@
-# 当前交接：AF2.0 F2 整组导出候选已验，继续 F1–F5（2026-09-26）
+# 当前交接：AF2.0 PlayerExports 游戏/编辑器用户根已接，继续 F1–F5（2026-09-26）
 
-- **状态**：产品/测试 **`d838145a`** 已使 14 个 AF 开发菜单导出入口和 Kingdom UI 导出以隐藏同目录候选、JSON 校验、旧包私有 Recovery 逐文件 hash 备份、同卷发布工作；可选 Knowledge/Kingdom 小节失败只恢复候选旧字节。37 项路径/导出测试、迁移 synthetic、Debug/Release 双 API 与 Bootstrap 六构建通过；代码地图 758 锚点两模式通过。D: 安装与仓内旧树各 3139 项此前只读盘点且 hash 一致，真实 `--apply` 未运行。**运行根仍是模块目录，编辑器/Prompt/设置等未接线，F1–F5 未完成**。详细证据与未覆盖责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[范围图](docs/architecture/af-framework-code-scope.md)。
-- **下一步**：先接游戏与独立编辑器的 typed 用户根、Prompt/Policy/设置/日志缓存/ONNX 真实消费者，再作真实数据备份迁移及逐文件恢复验证；之后 Stage/ZIP 白名单和旧树退役。BAAI 原模型 MIT 标签不能直接证明 ONNX 转换仓文件可再分发，F4 许可仍阻断发布。无 Stage、部署、打包、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入；实机旧档与发布许可 **NOT-RUN**。
+- **状态**：最新产品/测试 **`38c5effd`** 将游戏与独立编辑器的 PlayerExports 默认根接到同一 `%LOCALAPPDATA%/AnimusForge/UserData/PlayerExports` typed 约定；旧模块数据未完成显式迁移时默认根失败关闭，绝对路径只读导入仍可用，编辑器旧目录只可查看不可写。迁移器只在备份/激活全批完成后写匹配指针。DataPaths 44 项、迁移 synthetic、编辑器路径正反例、编辑器 App 零警告构建、Debug/Release 双 API 与 Bootstrap 六构建及 762 锚点地图两模式通过。D: 安装与仓内旧树各 3139 项仍只读，真实 `--apply` 未运行。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)；**F1–F5 未完成**。
+- **下一步**：接普通/Policy Prompt、可编辑配置、TerminalSettings、日志/缓存、ONNX 的真实消费者及合成迁移/回退，再做真实数据备份恢复、Stage/ZIP 白名单和旧树退役。BAAI 原模型 MIT 标签不能直接证明 ONNX 转换仓文件可再分发，F4 许可仍阻断发布。无 Stage、部署、打包、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入；编辑器完整编辑 smoke、实机旧档与发布许可 **NOT-RUN**。
 
 ## 以下为 AF2.0 设计交接（历史）
 
