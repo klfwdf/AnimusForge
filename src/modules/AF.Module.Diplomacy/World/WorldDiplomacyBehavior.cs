@@ -2476,11 +2476,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			WorldDiplomacyDocumentAction action = actions[index];
 			Kingdom target = targets[index];
-			WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, action);
-			document.ProcessingActionId = action.ActionId ?? "";
-			document.AddressedKingdomIds = new List<string> { target.StringId };
-			document.ChangedDiplomaticState = false;
-			document.MechanicalResult = "";
+			WorldDiplomacyDocumentApplication.BeginAction(document, action, target.StringId);
 			bool noAction = string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(action.Intent), "statement", StringComparison.OrdinalIgnoreCase);
 			try
 			{
@@ -2508,9 +2504,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				Log("multi-target diplomatic action failed without discarding declaration document=" + document.DocumentId
 					+ " action=" + action.ActionId + " intent=" + action.Intent + " error=" + ex.Message);
 			}
-			action.ChangedDiplomaticState = document.ChangedDiplomaticState;
-			action.MechanicalResult = document.MechanicalResult ?? "";
-			action.PeaceTerms = document.PeaceTerms;
+			WorldDiplomacyDocumentApplication.CaptureActionResult(document, action);
 		}
 		RecordDiplomaticThreatTargetDecisionsForActions(document, author);
 		bool requiredThreatActionDeferred = DeferUnresolvedRequiredThreatAction(
@@ -2521,16 +2515,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (!requiredThreatActionDeferred) WorldDiplomacyRoundLifecycleRules.SettleDiplomaticThreatFollowThroughAfterDeclaration(
 			document, _storage?.DiplomaticThreats, author?.StringId, ApplyDiplomaticThreatReputationPenalty);
 
-		document.ProcessingActionId = "";
-		document.AddressedKingdomIds = allAddressed;
-		WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(document, actions[0]);
-		document.SourceDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
-			actions[0].RespondingToOfferDocumentId,
-			actions[0].RespondingToThreatDocumentId,
-			sourceContextDocumentId);
-		document.ChangedDiplomaticState = actions.Any(x => x.ChangedDiplomaticState);
-		document.MechanicalResult = WorldDiplomacyDocumentFactRules.BuildMultiActionMechanicalResult(actions);
-		document.RequiresResponse = actions.Any(x => x.RequiresResponse);
+		WorldDiplomacyDocumentApplication.SealActions(document, allAddressed, sourceContextDocumentId);
 		SettleInternationalReputationForDocument(document);
 		try
 		{

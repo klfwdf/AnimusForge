@@ -59,6 +59,33 @@ internal static class DocumentApplicationReplay
         Test.True(JsonConvert.SerializeObject(JsonConvert.DeserializeObject<WorldDiplomacyStorage>(saved)) == saved,
             "canonical document list and identities survive a real JSON round trip");
 
+        var multi = new WorldDiplomacyDocument
+        {
+            SourceDocumentId = "original", Actions = new System.Collections.Generic.List<WorldDiplomacyDocumentAction>
+            {
+                new WorldDiplomacyDocumentAction { ActionId = "one", TargetKingdomId = "a", Intent = "declare_war",
+                    RespondingToThreatDocumentId = "warning", RequiresResponse = true },
+                new WorldDiplomacyDocumentAction { ActionId = "two", TargetKingdomId = "b", Intent = "statement" }
+            }
+        };
+        WorldDiplomacyDocumentApplication.BeginAction(multi, multi.Actions[0], "a");
+        Test.True(multi.ProcessingActionId == "one" && multi.AddressedKingdomIds.Single() == "a",
+            "first action exposes only its own target to mechanical execution");
+        multi.ChangedDiplomaticState = true;
+        multi.MechanicalResult = "applied";
+        WorldDiplomacyDocumentApplication.CaptureActionResult(multi, multi.Actions[0]);
+        WorldDiplomacyDocumentApplication.BeginAction(multi, multi.Actions[1], "b");
+        Test.True(!multi.ChangedDiplomaticState && multi.MechanicalResult == ""
+            && multi.Actions[0].ChangedDiplomaticState && multi.Actions[0].MechanicalResult == "applied",
+            "each action starts with fresh mechanism state while the previous result remains durable");
+        WorldDiplomacyDocumentApplication.CaptureActionResult(multi, multi.Actions[1]);
+        WorldDiplomacyDocumentApplication.SealActions(multi,
+            new System.Collections.Generic.List<string> { "a", "b" }, "original");
+        Test.True(multi.ProcessingActionId == "" && multi.AddressedKingdomIds.Count == 2
+            && multi.SourceDocumentId == "warning" && multi.ChangedDiplomaticState
+            && multi.RequiresResponse,
+            "sealed document restores all addressees, source precedence, and aggregate action state");
+
         DirectoryInfo root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "AnimusForge.csproj"))) root = root.Parent;
         Test.True(root != null, "repository located for document source boundary");
@@ -68,7 +95,9 @@ internal static class DocumentApplicationReplay
             "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
         Test.True(!owner.Contains("TaleWorlds", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyDocumentApplication.Create(", StringComparison.Ordinal)
-                && host.Contains("WorldDiplomacyDocumentApplication.Add(", StringComparison.Ordinal),
+                && host.Contains("WorldDiplomacyDocumentApplication.Add(", StringComparison.Ordinal)
+                && host.Contains("WorldDiplomacyDocumentApplication.BeginAction(", StringComparison.Ordinal)
+                && host.Contains("WorldDiplomacyDocumentApplication.SealActions(", StringComparison.Ordinal),
             "real document callers use one game-free canonical creation and write owner");
     }
 }

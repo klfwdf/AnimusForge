@@ -3402,9 +3402,12 @@ internal static class Program
 			source,
 			"private void ProcessAnalyzedDocument(",
 			"private bool TryGetPlayerWorldStateIntentViolation(");
+		string documentApplication = File.ReadAllText(FindRepositoryFile(Path.Combine(
+			"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentApplication.cs")), Encoding.UTF8);
 		Test.True(analyzedPublication.Contains("document?.Actions", StringComparison.Ordinal)
-			&& analyzedPublication.Contains("action.ChangedDiplomaticState", StringComparison.Ordinal)
-			&& analyzedPublication.Contains("action.MechanicalResult", StringComparison.Ordinal)
+			&& analyzedPublication.Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, action)", StringComparison.Ordinal)
+			&& documentApplication.Contains("action.ChangedDiplomaticState = document.ChangedDiplomaticState", StringComparison.Ordinal)
+			&& documentApplication.Contains("action.MechanicalResult = document.MechanicalResult", StringComparison.Ordinal)
 			&& analyzedPublication.Contains("catch (Exception", StringComparison.Ordinal),
 			"mechanical execution must isolate each action result so one failure cannot discard the document or later actions");
 
@@ -3438,16 +3441,12 @@ internal static class Program
 			"for (int index = 0; index < actions.Count; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = multiActionProcessing.IndexOf(
-			"document.ProcessingActionId = action.ActionId",
+			"WorldDiplomacyDocumentApplication.BeginAction(document, action, target.StringId)",
 			actionLoop,
-			StringComparison.Ordinal);
-		int narrowAddressedTargets = multiActionProcessing.IndexOf(
-			"document.AddressedKingdomIds = new List<string> { target.StringId }",
-			setActionContext,
 			StringComparison.Ordinal);
 		int applyPressure = multiActionProcessing.IndexOf(
 			"ApplyDocumentPressure(document,",
-			narrowAddressedTargets,
+			setActionContext,
 			StringComparison.Ordinal);
 		int executeThreat = multiActionProcessing.IndexOf(
 			"ProcessDiplomaticThreatDocument(document, author, target",
@@ -3458,11 +3457,13 @@ internal static class Program
 			setActionContext,
 			StringComparison.Ordinal);
 		int saveActionResult = multiActionProcessing.IndexOf(
-			"action.ChangedDiplomaticState = document.ChangedDiplomaticState",
+			"WorldDiplomacyDocumentApplication.CaptureActionResult(document, action)",
 			executeOffer,
 			StringComparison.Ordinal);
 		Test.True(actionLoop >= 0 && setActionContext > actionLoop
-			&& narrowAddressedTargets > setActionContext && applyPressure > narrowAddressedTargets
+			&& documentApplication.Contains("document.ProcessingActionId = action.ActionId", StringComparison.Ordinal)
+			&& documentApplication.Contains("document.AddressedKingdomIds = new List<string> { targetKingdomId }", StringComparison.Ordinal)
+			&& applyPressure > setActionContext
 			&& executeThreat > setActionContext && executeOffer > setActionContext
 			&& saveActionResult > executeOffer,
 			"pressure, threats, offers, and mechanical results must execute under only the current target/action before advancing");
