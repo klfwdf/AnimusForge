@@ -45,6 +45,19 @@ internal static class AnimusForgeModelStore
         if ((int?)dependencyLock["schemaVersion"] != 1 || (int?)marker["schema"] != 1
             || !string.Equals((string)marker["lockSha256"], lockHash, StringComparison.Ordinal))
             throw new InvalidOperationException("Model dependency readiness record does not match the lock.");
+        string manifestHash = (string)marker["completionManifestSha256"];
+        if (manifestHash == null || manifestHash.Length != 64)
+            throw new InvalidOperationException("Model migration completion reference is missing.");
+        foreach (char digit in manifestHash)
+            if (!((digit >= '0' && digit <= '9') || (digit >= 'a' && digit <= 'f')))
+                throw new InvalidOperationException("Model migration completion reference is invalid.");
+        string recovery = Path.Combine(Path.GetDirectoryName(models) ?? "", "Recovery", "models-" + manifestHash.Substring(0, 24));
+        string completed = Path.Combine(recovery, "completed.json");
+        if (!Directory.Exists(recovery) || (File.GetAttributes(recovery) & FileAttributes.ReparsePoint) != 0
+            || !File.Exists(completed) || (File.GetAttributes(completed) & FileAttributes.ReparsePoint) != 0
+            || new FileInfo(completed).Length > 1024 * 1024
+            || (string)JObject.Parse(File.ReadAllText(completed, Encoding.UTF8))["manifestSha256"] != manifestHash)
+            throw new InvalidOperationException("Model migration completion record is unavailable or invalid.");
 
         JToken readyGroup = marker["groups"]?[group]
             ?? throw new InvalidOperationException("Model dependency group is not ready: " + group);

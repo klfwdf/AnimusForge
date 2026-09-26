@@ -174,8 +174,15 @@ internal static class Program
         string lockJson = "{\"schemaVersion\":1,\"groups\":{\"embedding\":{\"variants\":{\"synthetic\":{\"model.onnx\":{\"size\":5,\"sha256\":\"" + modelHash + "\"}}}}}}";
         byte[] lockBytes = Encoding.UTF8.GetBytes(lockJson);
         string lockHash = BitConverter.ToString(SHA256.HashData(lockBytes)).Replace("-", "").ToLowerInvariant();
-        string ready = "{\"schema\":1,\"lockSha256\":\"" + lockHash + "\",\"groups\":{\"embedding\":{\"variant\":\"synthetic\",\"files\":{\"model.onnx\":{\"size\":5,\"sha256\":\"" + modelHash + "\",\"mtimeUtcTicks\":" + File.GetLastWriteTimeUtc(modelFile).Ticks + "}}}}}";
+        string modelManifest = new string('a', 64);
+        string modelCompleted = Path.Combine(Path.GetDirectoryName(models), "Recovery", "models-" + modelManifest.Substring(0, 24), "completed.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(modelCompleted));
+        File.WriteAllText(modelCompleted, "{\"schema\":1,\"manifestSha256\":\"" + modelManifest + "\"}");
+        string ready = "{\"schema\":1,\"lockSha256\":\"" + lockHash + "\",\"completionManifestSha256\":\"" + modelManifest + "\",\"groups\":{\"embedding\":{\"variant\":\"synthetic\",\"files\":{\"model.onnx\":{\"size\":5,\"sha256\":\"" + modelHash + "\",\"mtimeUtcTicks\":" + File.GetLastWriteTimeUtc(modelFile).Ticks + "}}}}}";
         Check(AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready) == embedding, "complete locked model group is ready");
+        File.Delete(modelCompleted);
+        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready), "missing completion record rejected");
+        File.WriteAllText(modelCompleted, "{\"schema\":1,\"manifestSha256\":\"" + modelManifest + "\"}");
         Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "reranker", lockBytes, ready), "missing model group rejected");
         Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready.Replace(lockHash, new string('0', 64))), "model lock drift rejected");
         File.WriteAllBytes(modelFile, Encoding.UTF8.GetBytes("changed"));

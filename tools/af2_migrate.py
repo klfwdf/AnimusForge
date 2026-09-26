@@ -695,7 +695,7 @@ def _snapshot_existing_model_group(folder: Path) -> list[dict]:
     return sorted(entries, key=lambda item: item["relative"])
 
 
-def _mark_models_ready(root: Path, locked: dict, lock_hash: str) -> None:
+def _mark_models_ready(root: Path, locked: dict, lock_hash: str, manifest_hash: str) -> None:
     """Publish only groups whose complete active bytes still match one locked variant."""
     models = root / "Models"
     marker = models / ".af-models-ready.json"
@@ -719,7 +719,8 @@ def _mark_models_ready(root: Path, locked: dict, lock_hash: str) -> None:
                                           "mtimeUtcTicks": item["mtimeNs"] // 100 + 621355968000000000
                                       } for item in current}}
                 break
-    _write_record(marker, {"schema": 1, "lockSha256": lock_hash, "groups": groups})
+    _write_record(marker, {"schema": 1, "lockSha256": lock_hash,
+                           "completionManifestSha256": manifest_hash, "groups": groups})
 
 
 def migrate_models(sources: list[tuple[str, Path]], root: Path, *,
@@ -790,7 +791,7 @@ def migrate_models(sources: list[tuple[str, Path]], root: Path, *,
                 raise RuntimeError("Model completion record differs; manual recovery required")
             result["already_complete"] = True
             result["conflicts"] = record["conflicts"]
-            _mark_models_ready(root, locked, lock_hash)
+            _mark_models_ready(root, locked, lock_hash, manifest_hash)
             return result
         _check_ancestors(active)
         for group, selected_files in selected.items():
@@ -824,9 +825,9 @@ def migrate_models(sources: list[tuple[str, Path]], root: Path, *,
                 result["activated"] += len(selected_files)
                 if hook:
                     hook("activated", group)
-        _mark_models_ready(root, locked, lock_hash)
         _write_record(completed, {"schema": 1, "manifestSha256": manifest_hash,
                                   "activated": result["activated"], "conflicts": result["conflicts"]})
+        _mark_models_ready(root, locked, lock_hash, manifest_hash)
         return result
     finally:
         if acquired_lock:

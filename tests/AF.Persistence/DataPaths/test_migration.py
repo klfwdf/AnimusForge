@@ -352,6 +352,7 @@ assert module.migrate_models(model_sources, model_root, allow_test_root=True, lo
 model_ready = json.loads((model_root / "Models/.af-models-ready.json").read_text(encoding="utf-8"))
 assert model_ready["schema"] == 1 and set(model_ready["groups"]) == {"embedding", "reranker"}
 assert model_ready["groups"]["embedding"]["variant"] == "installed"
+assert model_ready["completionManifestSha256"] == model_result["manifest_sha256"]
 
 model_conflict_root = fixture / "models-conflict-root"
 put(model_conflict_root, "Models/embedding/config.json", b"preexisting-private")
