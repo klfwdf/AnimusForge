@@ -733,8 +733,13 @@ internal static class Program
 			&& propagation.Contains("knownKingdomIds.Contains", StringComparison.Ordinal),
 			"relay knowledge must not suppress a still-missing formal player-court delivery");
 		string propagationArrivals = ExtractMethod(source, "private void ProcessPropagationArrivals(");
-		Test.True(propagationArrivals.Contains("newlyKnown || (IsPlayerAffiliatedKingdom(receiver) && !document.HasReachedPlayerCourt)", StringComparison.Ordinal),
-			"an already-known declaration must still complete its formal player-court receipt");
+        string propagationOwner = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
+        Test.True(propagationArrivals.Contains("WorldDiplomacyPropagationApplication.ProcessDue(", StringComparison.Ordinal)
+                  && propagationArrivals.Contains("WorldDiplomacyPropagationApplication.ReceiveCourt(", StringComparison.Ordinal)
+                  && propagationArrivals.Contains("() => IsPlayerAffiliatedKingdom(receiver), () => ProcessCourtArrival(receiver, document)", StringComparison.Ordinal),
+            "the live propagation host must bind court resolution and formal receipts to the application owner");
+        Test.True(propagationOwner.Contains("newlyKnown || (isPlayerAffiliated() && !document.HasReachedPlayerCourt)", StringComparison.Ordinal),
+            "an already-known declaration must still complete its formal player-court receipt");
 		string relayArrivals = ExtractMethod(
 			File.ReadAllText(FindRepositoryFile(Path.Combine(
 				"Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")), Encoding.UTF8),

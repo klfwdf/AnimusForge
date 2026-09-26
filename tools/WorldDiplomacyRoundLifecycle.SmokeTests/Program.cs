@@ -138,6 +138,7 @@ RunRepairCorrectionAndJobDecisionTests();
     RunJobCompositionDecisionTests();
     RunGenerationJobCompositionDecisionTests();
         RoundApplicationReplay.Run();
+        PropagationApplicationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
