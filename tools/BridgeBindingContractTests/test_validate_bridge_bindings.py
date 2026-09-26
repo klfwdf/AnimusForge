@@ -32,7 +32,18 @@ class BridgeBindingManifestTests(unittest.TestCase):
         self.assertEqual(result["configEnabled"], 12)
 
     def load_config(self) -> dict:
-        return json.loads((ROOT / "AnimusForge" / "ModuleData" / "FeatureBridges.json").read_text(encoding="utf-8"))
+        return json.loads((ROOT / validator.EXPECTED_CONFIG_PATH).read_text(encoding="utf-8"))
+
+    def test_config_source_is_unique_mapped_default(self) -> None:
+        content_map = json.loads((ROOT / "content" / "content-map.json").read_text(encoding="utf-8"))
+        entries = [entry for entry in content_map["entries"]
+                   if entry["target"] == "ModuleData/FeatureBridges.json"]
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["owner"], "AF.Foundation.Runtime")
+        self.assertEqual(entries[0]["source"], validator.EXPECTED_CONFIG_PATH)
+        self.assertFalse(entries[0].get("logicalName"))
+        self.assertFalse((ROOT / "AnimusForge" / entries[0]["target"]).exists())
+        self.assertEqual(self.load_config()["contractVersion"], 1)
 
     def assert_config_rejected(self, mutate) -> None:
         config = self.load_config()
@@ -181,7 +192,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
                 target.write_text(altered, encoding="utf-8")
                 # Copy the minimum project files needed by the validator and
                 # replace only the reviewed source path through a temp project.
-                for relative in ("docs/phase8/bridge-binding-manifest.json", "docs/phase8/full-domain-readiness-catalog.json", "AnimusForge/ModuleData/FeatureBridges.json"):
+                for relative in ("docs/phase8/bridge-binding-manifest.json", "docs/phase8/full-domain-readiness-catalog.json", validator.EXPECTED_CONFIG_PATH):
                     destination = root / relative
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     destination.write_text((ROOT / relative).read_text(encoding="utf-8"), encoding="utf-8")

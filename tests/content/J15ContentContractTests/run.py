@@ -230,7 +230,16 @@ J15B_HOLD_PATHS = {
     "GUI/SpriteParts/ui_subscribe/subscribe_background_3.png",
 }
 
-EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED}
+J15C_EXPECTED = {
+    "ModuleData/FeatureBridges.json": {
+        "owner": "AF.Foundation.Runtime",
+        "source": "content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json",
+        "sha256": "10C573B461EC148EF8478A0D4269F73A7CA106F5A8C6A50C9D37FACC4FF86896",
+    },
+}
+
+CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys()
+EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED}
 
 
 def check(condition: bool, message: str) -> None:
@@ -287,7 +296,18 @@ def verify_map_and_resources() -> None:
         old = ROOT / "AnimusForge" / Path(target)
         check(not old.exists(), f"old editable source remains: {old}")
 
-    for target in J15B_HOLD_PATHS:
+    for target, expected in J15C_EXPECTED.items():
+        entry = by_target[target]
+        for field in ("owner", "source"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
+        source = ROOT / expected["source"]
+        check(source.is_file(), f"missing migrated source: {source}")
+        check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected["sha256"],
+              f"source hash drift: {target}")
+        check(not (ROOT / "AnimusForge" / target).exists(), f"old editable source remains: {target}")
+
+    for target in CURRENT_HOLD_PATHS:
         check((ROOT / "AnimusForge" / Path(target)).is_file(), f"HOLD path was moved or removed: {target}")
         check(target not in by_target, f"HOLD path entered content map: {target}")
 
@@ -297,7 +317,7 @@ def verify_map_and_resources() -> None:
         for path in (ROOT / "AnimusForge" / root_name).rglob("*")
         if path.is_file()
     }
-    check(remaining == J15B_HOLD_PATHS, "legacy resource roots must contain only explicit HOLD files")
+    check(remaining == CURRENT_HOLD_PATHS, "legacy resource roots must contain only explicit HOLD files")
 
 
 def verify_project_resources() -> None:
@@ -338,7 +358,7 @@ def verify_script_wiring() -> None:
 
 
 def verify_formats_and_references() -> None:
-    for target, expected in J15B_EXPECTED.items():
+    for target, expected in {**J15B_EXPECTED, **J15C_EXPECTED}.items():
         source = ROOT / expected["source"]
         suffix = source.suffix.lower()
         if suffix == ".json":
@@ -496,8 +516,8 @@ def main() -> int:
         str(dotnet), "run", "--project", str(Path(__file__).with_name("GcczLoaderHarness.csproj")),
         "-c", "Release", "--", str(run_root / "gccz"),
     ])
-    print(f"j15ContentContracts mappings={len(EXPECTED)} j15b={len(J15B_EXPECTED)} "
-          f"holds={len(J15B_HOLD_PATHS)} invalidCases=8 gcczFallbackCases=4 overlayAliases=11 PASS")
+    print(f"j15ContentContracts mappings={len(EXPECTED)} j15b={len(J15B_EXPECTED)} j15c={len(J15C_EXPECTED)} "
+          f"holds={len(CURRENT_HOLD_PATHS)} invalidCases=8 gcczFallbackCases=4 overlayAliases=11 PASS")
     return 0
 
 
