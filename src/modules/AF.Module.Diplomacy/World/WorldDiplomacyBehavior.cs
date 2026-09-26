@@ -4431,36 +4431,16 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void ProcessPropagationArrivals()
 	{
-		int day = CurrentDay();
-		List<WorldDiplomacyPropagationArrival> due = _storage.PropagationArrivals
-			.TakeWhile(x => x != null && x.DueDay <= day)
-			.Take(MaxPropagationArrivalsPerDay)
-			.ToList();
-		if (due.Count > 0) _storage.PropagationArrivals.RemoveRange(0, due.Count);
-		foreach (WorldDiplomacyPropagationArrival arrival in due)
-		{
-			WorldDiplomacyDocument document = ResolveDocument(arrival.DocumentId);
-			if (document == null)
-			{
-				continue;
-			}
-			if (WorldDiplomacyStructureRules.IsCourtArrival(arrival))
+		WorldDiplomacyPropagationApplication.ProcessDue(_storage, CurrentDay(), MaxPropagationArrivalsPerDay,
+			ResolveDocument,
+			(arrival, document, day) =>
 			{
 				Kingdom receiver = ResolveKingdom(arrival.KingdomId) ?? ResolveSettlementById(arrival.SettlementId)?.OwnerClan?.Kingdom;
-				if (receiver != null)
-				{
-					WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(_storage.NobleKnowledge, receiver.StringId, document.DocumentId, day);
-					bool newlyKnown = WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(_storage.KingdomKnowledge, receiver.StringId, document.DocumentId, day);
-					if (newlyKnown || (IsPlayerAffiliatedKingdom(receiver) && !document.HasReachedPlayerCourt))
-					{
-						ProcessCourtArrival(receiver, document);
-					}
-				}
-				continue;
-			}
-			Settlement settlement = ResolveSettlementById(arrival.SettlementId);
-			if (settlement != null) WorldDiplomacyDocumentFactRules.RecordSettlementKnowledge(_storage.SettlementKnowledge, settlement.StringId, document.DocumentId, day);
-		}
+				if (receiver == null) return;
+				WorldDiplomacyPropagationApplication.ReceiveCourt(_storage, document, receiver.StringId, day,
+					() => IsPlayerAffiliatedKingdom(receiver), () => ProcessCourtArrival(receiver, document));
+			},
+			id => ResolveSettlementById(id)?.StringId);
 	}
 	private void RecalculatePendingPropagationIfNeeded()
 	{
