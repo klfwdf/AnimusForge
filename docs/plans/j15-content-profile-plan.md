@@ -190,7 +190,8 @@ $dotnet = "$root/local/dotnet/8.0.425/dotnet.exe"
 & $dotnet run --project "$root/tests/modules/AF.Module.Prompt/Configuration/PromptConfigurationLoaderTests.csproj" -c Release
 python -X utf8 -B tools/test_repository_source_inventory.py
 python -X utf8 -B tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py
-python -X utf8 -B tools/PersistenceIdentityAudit.py
+# J15 对照本文指定的 J14 产品基线；脚本默认 d4cb1467 早于既有 WarStats，不能混作本轮基线。
+python -X utf8 -B tools/PersistenceIdentityAudit.py --baseline e58f3558cddfe473f396bb7f11470b05e30afce9
 python -X utf8 -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet --legacy-abi
 python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts --legacy-v1 tools/NativeModuleSubmissionTests/.generated/legacy-abi/Baseline/Consumer/bin/Release/net8.0/NativeModuleUnderTest.dll
 ```

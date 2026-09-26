@@ -16,6 +16,7 @@
 - 直接调用既有 J15 runner 的五个无写入函数：映射/源字节、项目七资源、脚本接线、格式/引用、inventory/真实 overlay file-set 均 PASS，结果 **77 mappings / 40 holds / 11 overlay aliases**。未执行 runner 的 `main()`，不能称为完整投影或 GCCZ harness 通过。
 - Bridge validator PASS：**16 bindings / 12 wired / 4 declared-only / 12 configEnabled / 33 sourceFiles**。Bridge unittest 中 **15 个不创建临时文件的用例** PASS，包括新唯一源、当前清单、全关、非法字段/版本/ID及安全 gate 反例；不是整个套件已跑。
 - repository inventory **7 tests PASS**；定向暂存后实际索引 inventory `unknown_count=0`。代码地图仍绑定未改 J14 C# `e58f3558`，recorded / working-tree 各 **755** 锚点 PASS；`git diff --check` PASS。定位和静态证据不代替运行验收。
+- 当前候选补跑只读持久化检查：`python -X utf8 -B tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --json` PASS，142 个 literal keys、168 个 typed bindings、13 个 chunked keys、44 个 flattened keys、3 profiles / 5 cases / 10 legacy-first cases。`PersistenceIdentityAudit.py --json` 的默认旧基线 `d4cb1467` 实际 FAIL：当前 142 对基线 95 个保存绑定、36 对 35 个行为，仅新增既有 WarStats 的 47 个绑定与 `AfWarStatsBehavior`，无删除，不能记该命令通过。诊断确认自计划指定的 J14 产品基线 `e58f3558` 起，生产 C# 无差异（只排除 `tests/**`、`tools/**`）；显式 `--baseline e58f3558cddfe473f396bb7f11470b05e30afce9 --json` 复核 PASS，142/142 保存绑定、36/36 行为、差集全空，模块 Id/Name 均 AnimusForge、唯一 Bootstrap 不变。未改审计脚本或基线断言，只修正 J15 计划示例命令以明确其 J14 回归范围；不是 DLL 元数据、真实旧档或整个持久化运行验收。
 - **本候选完整 J15 runner、真实合成投影、GCCZ harness、Bridge 进程隔离、Debug/Release 双 API + Bootstrap 六构建及新 DLL 审计均 NOT-RUN**：待明确清理/测试输出授权。不能借用 J15b 六构建结果标成本候选已验。
 
 ### 剩余分类与接续门禁
