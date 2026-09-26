@@ -4,7 +4,7 @@
 
 **目录查询、Native 与 Scene 提交/结果/开始前取消已接线；Courier 尚未开放。J14 整体仍需 Courier 与三渠道最终收口。**
 
-J14b1 已实现内部草稿票据及 UI/内部提交共用的一次派出准入，尚不是子 MOD 可调用能力。运输阶段、必要动作/历史和回信交付回执接齐并通过外部消费者验证之前，V1 保持 `CourierSubmit=NotSupported`；不能将内部派出后的 Running 当完成。
+J14b1/b2 已接通内部草稿票据、UI 共用派出与真实运输阶段回执，但尚不是子 MOD 可调用能力。内部完成需要必要动作/历史接受、回信实际入库及运输收尾确认，预生成/consumed/Completed 标志不单独判成功。V1 DTO/投影及独立消费者验证尚待 b3，当前仍保持 `CourierSubmit=NotSupported`；最终离线矩阵见主台账。
 
 当前物理分区：纯 V1 契约位于 `src/AF.Contracts/PublicApi/V1/AfApiContracts.cs`；同一 `AnimusForge.dll` 内的入口/客户端在 `src/modules/AF.Module.PublicApi/V1/{AfApi,AfDialogueClient}.cs`，快照/对话投影在 `src/modules/AF.Module.PublicApi/Internal/{AfV1SnapshotProjection,AfV1DialogueProjection}.cs`。仅目录变更，`AnimusForge.Api.V1` namespace 与外部 ABI 不变。
 
@@ -13,7 +13,7 @@ J14b1 已实现内部草稿票据及 UI/内部提交共用的一次派出准入�
 | `CatalogRead` | Available | 任意线程查询框架装配、只读模块接缝目录 |
 | `NativeSubmit` | Available | 对当前 AF 原生自由对话提交玩家文本，复用实际准入、正文、标签、动作、记忆 owner |
 | `SceneSubmit` | Available | 对当前 AF 场景喊话框选签发 client 绑定票据，再由原群组 owner 提交；等待相关发言、语音发布、后处理和必要记忆回执 |
-| `CourierSubmit` | NotSupported | 尚缺运输会话、预生成与到达提交的公共安全边界 |
+| `CourierSubmit` | NotSupported | 内部运输回执已接线；公共投影/独立消费者与最终候选验证尚未完成 |
 | `ActionExecute` / `MemoryWrite` / `ExtensionRegister` | NotSupported | 不提供任意动作、事实写入或第三方 provider 注册 |
 
 `Available` 是 API 契约存在，不是当前游戏/目标可执行，更不是实机验收通过。框架快照的 `Ready` 也仅代表装配。

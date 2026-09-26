@@ -1,3 +1,19 @@
+# 当前范围：J14b2 Courier 阶段与生命周期（2026-09-26）
+
+产品/测试 `b2572623`，状态 `J14b_ACTIVE / J14_ACTIVE`，V1 Courier 仍未开放。以下是内部真实 owner 的已接线范围，不代表三渠道最终离线或实机通过。
+
+| 源码（本表 Courier 前缀为 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.`） | 已覆盖职责与实际消费者 | 未覆盖/保留责任 |
+|---|---|---|
+| `ModuleSubmission.cs:131–241`；`Refactor/Modules/CoreDialogueContracts.cs:13–34`、`CoreDialogueOperation.cs:100–112` | 派出绑定真实 session/generation；原到达/回信/运输终态调用阶段 observer；不可变内部阶段快照，正文只在交付后公开 | 公共 DTO、V1 显式投影与外部消费者仍待 b3 |
+| `GenerationLifecycle.cs:42–91,187–318,518–538`；`PromptPreparation.cs:46–64,229–270` | 原到达 payload/history、异步准备、finalize 接阶段回执；精确 run 校验及短期到达重入保护 | 游戏导航、provider 和底层 Prompt/记忆规则仍在原 owner，不宣称其全部重写 |
+| `DetachedPostprocess.cs:17–63,140–161`；根 `CourierDeliveryBehavior.cs` 的 `SubmitCourierReplyRefactorOptInCoreAsync`、`CapturePreparedCourierReplyEnvelope` | 原 prepared envelope 弱键绑定、postprocess/commit 重验原 source；复用原 commit result 接受动作/必要历史 | 外部旧 Bridge ABI/当前实际 DLL 聚合回放留在 c 验证 |
+| `DomainCommit.cs:41–184,307–350`；`CommitDispatch.cs` 的 `CommitGeneratedReplyAtRecipient` | 原领域 handlers 前 claim；实际 bool 历史接受；原 UI 到达及返程共用一个动作 owner | 各领域实际游戏效果仍归原 handler；fixture 不代替真实记忆 writer/readback |
+| `DeliveryLifetime.cs:42–88,329–349,351–409,442–501`；`LetterInventory.cs:87–129,455–514` | 原归还/回信入库/信件记录/停用确认，以及失踪/被毁阶段结算；部分确认效果保留 | 游戏物品/队伍销毁、海运/存档恢复仍须实机；未新增 API 保存键 |
+
+详细门禁、候选 SHA 和差异证据在[主台账当前条目](../animusforge-refactoring-and-repository-reorganization-plan.md)。当前 Debug 双实现与 Bootstrap 已验证；Release、最终旧 ABI/保存/Bridge/实际 DLL 矩阵及 JSON 地图重绑仍待 c，不把 [JSON 地图](af-framework-code-map.json)的历史 J14a 哈希当当前验证。
+
+## 以下为 J14b1 范围（历史切片）
+
 # 当前范围：J14b1 Courier 草稿准入（2026-09-26）
 
 产品 `4bc855cd`、`8fb16385`、`b6daf65f`：原 Courier UI 的草稿/代次/修订保护、只读有界票据、发送资格和一次派出在 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs:43–64,600–680`、`CourierDeliveryBehavior.DraftAdmission.cs:12–152`；真正运输仍由原 SessionCreation/SessionTransport/GenerationLifecycle/CommitDispatch/DomainCommit/DeliveryLifetime/LetterInventory 执行。`CourierDeliveryBehavior.ModuleSubmission.cs:11–140` 只承接内部 Core 提交、owner 队列/活动关联限额、实例绑定和退休，不是第二条运输或动作链。`CourierDeliveryBehavior.DetachedPostprocess.cs:117–170` 给原队列增加可选出队通知；`Refactor/Modules/CoreDialogueClient.cs:34–47,97–111` 复用三渠道同一 ID 表及 Dispose，尚未增加 V1 Courier 方法。
