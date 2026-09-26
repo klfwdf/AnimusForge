@@ -19,7 +19,7 @@ packages/
 
 *.log
 Logs/
-AnimusForge/ONNX/reranker/
+AnimusForge/ONNX/
 
 
 # Local Codex/release-prep scratch and large handoff backups.
