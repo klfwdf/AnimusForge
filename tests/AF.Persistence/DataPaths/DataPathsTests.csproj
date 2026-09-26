@@ -10,6 +10,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" />
     <Compile Include="../../../src/AF.Persistence/PlayerExportsStore.cs" Link="PlayerExportsStore.cs" />
+    <Compile Include="../../../src/AF.Persistence/PlayerExportsPackageExport.cs" Link="PlayerExportsPackageExport.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>$(MSBuildSDKsPath)/../Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

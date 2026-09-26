@@ -51903,6 +51903,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			DirectoryInfo directoryInfo = new DirectoryInfo(playerExportsRootPath);
 			List<DirectoryInfo> list2 = (from d in directoryInfo.GetDirectories()
+				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d).ToList();
 			foreach (DirectoryInfo item in list2)
@@ -51969,7 +51970,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			if (!string.IsNullOrWhiteSpace(playerExportsRootPath) && Directory.Exists(playerExportsRootPath))
 			{
-				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
+				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().Where((DirectoryInfo x) => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
 				{
 					list.Add(new InquiryElement(item.Name, item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 				}
@@ -52987,6 +52988,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			DirectoryInfo directoryInfo = new DirectoryInfo(playerExportsRootPath);
 			List<DirectoryInfo> list2 = (from d in directoryInfo.GetDirectories()
+				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d).ToList();
 			foreach (DirectoryInfo item in list2)
@@ -53230,8 +53232,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
 			NpcPersonaProfile value = null;
@@ -53250,7 +53252,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -53265,14 +53268,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
 			CompressedMemoryExportBundle value = BuildCompressedMemoryExportBundle(heroId);
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -53425,8 +53429,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text2);
 			RewardSystemBehavior.DebtExportEntry value = null;
@@ -53437,7 +53441,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -53786,11 +53791,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
@@ -53804,7 +53809,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string text3 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text3);
-			PlayerExportsStore.ClearJsonFiles(text3);
+			PlayerExportsStore.ClearCandidateJsonFiles(text3);
 			HashSet<string> memoryHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -53848,7 +53853,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			PlayerExportsStore.ClearJsonFiles(text4);
+			PlayerExportsStore.ClearCandidateJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -53862,7 +53867,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54115,11 +54121,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
@@ -54133,7 +54139,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string text3 = Path.Combine(text, "dialogue_history");
 			Directory.CreateDirectory(text3);
-			PlayerExportsStore.ClearJsonFiles(text3);
+			PlayerExportsStore.ClearCandidateJsonFiles(text3);
 			if (_dialogueHistory != null)
 			{
 				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
@@ -54147,7 +54153,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			PlayerExportsStore.ClearJsonFiles(text4);
+			PlayerExportsStore.ClearCandidateJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -54163,7 +54169,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			if (!TryExportKnowledgeToDir(text, out var exportedKnowledgeCount, out var knowledgeExportError))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("警告：Knowledge 导出失败，已跳过。原因：" + knowledgeExportError));
+				export.RestoreSubdirectory("knowledge");
+				InformationManager.DisplayMessage(new InformationMessage("警告：Knowledge 导出失败，已保留旧导出。原因：" + knowledgeExportError));
 			}
 			else
 			{
@@ -54172,7 +54179,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
 			string text5 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text5);
-			PlayerExportsStore.ClearJsonFiles(text5);
+			PlayerExportsStore.ClearCandidateJsonFiles(text5);
 			string path5 = Path.Combine(text5, "VoiceMapping.json");
 			string text6 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text6))
@@ -54183,10 +54190,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ExportEventDataToDir(text);
 			if (KingdomStrategicProfileBehavior.Instance != null && !KingdomStrategicProfileBehavior.Instance.ExportAllToDirectory(text, out var kingdomProfileExportMessage))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导出失败，已跳过。原因：" + kingdomProfileExportMessage));
+				export.RestoreSubdirectory("kingdom_profiles");
+				InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导出失败，已保留旧导出。原因：" + kingdomProfileExportMessage));
 			}
-			VoiceMapper.SetPreferredExportFolder(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			VoiceMapper.SetPreferredExportFolder(export.FinalPath);
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54201,10 +54210,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54219,11 +54229,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
@@ -54235,7 +54245,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54250,11 +54261,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			HashSet<string> heroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -54296,7 +54307,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 				PlayerExportsStore.WriteJson(path2, BuildCompressedMemoryExportBundle(heroId));
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54311,11 +54323,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -54329,7 +54341,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54344,15 +54357,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			if (!TryExportKnowledgeToDir(text, out var exportedCount, out var error))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text + "（Knowledge " + exportedCount + " 条）"));
+				export.Publish();
+				InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath + "（Knowledge " + exportedCount + " 条）"));
 			}
 		}
 		catch (Exception ex)
@@ -54368,10 +54382,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			ExportEventDataToDir(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54383,7 +54398,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		string text = Path.Combine(exportDir, "event_data");
 		Directory.CreateDirectory(text);
-		PlayerExportsStore.ClearJsonFiles(text);
+		PlayerExportsStore.ClearCandidateJsonFiles(text);
 		PlayerExportsStore.WriteJson(Path.Combine(text, "WorldOpeningSummary.json"), new EventWorldOpeningSummaryJson
 		{
 			Summary = (_eventWorldOpeningSummary ?? "").Trim()
@@ -54441,7 +54456,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string text = Path.Combine(exportDir, "knowledge", "rules");
 			Directory.CreateDirectory(text);
-			PlayerExportsStore.ClearJsonFiles(text);
+			PlayerExportsStore.ClearCandidateJsonFiles(text);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			foreach (KnowledgeLibraryBehavior.LoreRule rule in knowledgeFile.Rules)
 			{
@@ -54552,8 +54567,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text3 = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text3);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text3 = export.CandidatePath;
 			string text4 = Path.Combine(text3, "knowledge", "rules");
 			Directory.CreateDirectory(text4);
 			KnowledgeLibraryBehavior.LoreRule loreRule = null;
@@ -54607,7 +54622,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string path2 = Path.Combine(text4, text8 + ".json");
 			File.WriteAllText(path2, text2, Encoding.UTF8);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text3));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -55097,8 +55113,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text2 = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text2);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text2 = export.CandidatePath;
 			string text3 = Path.Combine(text2, "unnamed_persona");
 			Directory.CreateDirectory(text3);
 			string text4 = text;
@@ -55128,7 +55144,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				Personality = (personality ?? "").Trim(),
 				Background = (background ?? "").Trim()
 			});
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text2));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -55982,11 +55999,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			string path2 = Path.Combine(text2, "VoiceMapping.json");
 			string text3 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -55994,8 +56011,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 				text3 = "{}";
 			}
 			File.WriteAllText(path2, text3, Encoding.UTF8);
-			VoiceMapper.SetPreferredExportFolder(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			VoiceMapper.SetPreferredExportFolder(export.FinalPath);
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{

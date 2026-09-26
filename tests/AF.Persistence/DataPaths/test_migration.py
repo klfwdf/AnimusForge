@@ -163,4 +163,15 @@ try:
 except ValueError:
     pass
 
-print("PASS AF2 migration synthetic: duplicate sources, target conflict, repeat, interruption, mtime, source change, corrupt backup, lock, empty, disk full, bad root")
+stale_source = fixture / "stale-source"
+stale_root = fixture / "stale-root"
+put(stale_source, "PlayerExports/.af-export-retired.fake/old.json", b"old")
+stale_root.mkdir()
+try:
+    module.migrate([("installed", stale_source)], stale_root, allow_test_root=True)
+    raise AssertionError("retired export was activated as a package")
+except RuntimeError as ex:
+    assert "Unresolved export" in str(ex)
+assert not (stale_root / "Recovery").exists()
+
+print("PASS AF2 migration synthetic: duplicate sources, target conflict, repeat, interruption, mtime, source change, corrupt backup, lock, empty, disk full, bad root, unresolved export")

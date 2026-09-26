@@ -20,6 +20,7 @@ internal static class Program
         try { action(); }
         catch (ArgumentException) { rejected = true; }
         catch (InvalidOperationException) { rejected = true; }
+        catch (Newtonsoft.Json.JsonReaderException) { rejected = true; }
         Check(rejected, name);
     }
 
@@ -78,6 +79,54 @@ internal static class Program
         {
             if (File.Exists(fixture)) File.Delete(fixture);
         }
+
+        string exportFixture = Path.Combine(workspace, "artifacts", "tests", "af2-export-package", Guid.NewGuid().ToString("N"));
+        string exportRoot = Path.Combine(exportFixture, "PlayerExports");
+        string recovery = Path.Combine(exportFixture, "Recovery");
+        string existing = Path.Combine(exportRoot, "demo", "event_data", "old.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(existing));
+        File.WriteAllText(existing, "{\"old\":true}");
+        string oldKnowledge = Path.Combine(exportRoot, "demo", "knowledge", "rules.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(oldKnowledge));
+        File.WriteAllText(oldKnowledge, "{\"prior\":true}");
+        var package = PlayerExportsPackageExport.Begin(exportRoot, "demo", recovery);
+        string candidateDir = Path.Combine(package.CandidatePath, "event_data");
+        Reject(() => PlayerExportsStore.ClearCandidateJsonFiles(Path.GetDirectoryName(existing)), "active JSON set cannot be cleared by candidate API");
+        PlayerExportsStore.ClearCandidateJsonFiles(candidateDir);
+        PlayerExportsStore.WriteJson(Path.Combine(candidateDir, "new.json"), new { New = true });
+        File.WriteAllText(Path.Combine(package.CandidatePath, "knowledge", "rules.json"), "{\"partial\":true}");
+        package.RestoreSubdirectory("knowledge");
+        Check(File.ReadAllText(Path.Combine(package.CandidatePath, "knowledge", "rules.json")) == "{\"prior\":true}", "failed optional section restores prior candidate bytes");
+        Reject(() => package.RestoreSubdirectory("../demo"), "section restore rejects traversal");
+        Check(File.Exists(existing) && !File.Exists(Path.Combine(exportRoot, "demo", "event_data", "new.json")), "group candidate leaves old package active");
+        package.Publish();
+        Check(!File.Exists(existing) && File.Exists(Path.Combine(exportRoot, "demo", "event_data", "new.json")), "group publication replaces old JSON set");
+        Check(File.ReadAllText(oldKnowledge) == "{\"prior\":true}", "failed optional section leaves prior active bytes");
+        Check(Directory.GetFiles(recovery, "old.json", SearchOption.AllDirectories).Length == 1, "verified old package remains in private recovery");
+        Check(Directory.GetDirectories(exportRoot, ".af-export-retired.*").Length == 0, "verified retired copy removed after backup");
+        Check(PlayerExportsStore.FindLatestExportFolder(exportRoot) == Path.Combine(exportRoot, "demo"), "hidden candidates excluded from latest import");
+
+        string guarded = Path.Combine(exportRoot, "guarded", "value.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(guarded));
+        File.WriteAllText(guarded, "{\"keep\":1}");
+        var malformed = PlayerExportsPackageExport.Begin(exportRoot, "guarded", recovery);
+        File.WriteAllText(Path.Combine(malformed.CandidatePath, "value.json"), "{broken");
+        Reject(() => malformed.Publish(), "malformed candidate rejected");
+        Check(File.ReadAllText(guarded) == "{\"keep\":1}", "malformed group leaves old active");
+
+        var raced = PlayerExportsPackageExport.Begin(exportRoot, "guarded", recovery);
+        File.WriteAllText(guarded, "{\"newer\":2}");
+        Reject(() => raced.Publish(), "concurrent edit rejected");
+        Check(File.ReadAllText(guarded) == "{\"newer\":2}", "concurrent edit not overwritten");
+        Check(!Path.GetFileName(PlayerExportsStore.FindLatestExportFolder(exportRoot)).StartsWith(".", StringComparison.Ordinal), "failed hidden candidates excluded from latest import");
+
+        string blockedRecovery = Path.Combine(exportFixture, "blocked-recovery");
+        File.WriteAllText(blockedRecovery, "not a directory");
+        var noBackup = PlayerExportsPackageExport.Begin(exportRoot, "guarded", blockedRecovery);
+        bool backupFailed = false;
+        try { noBackup.Publish(); }
+        catch (IOException) { backupFailed = true; }
+        Check(backupFailed && File.ReadAllText(guarded) == "{\"newer\":2}", "unwritable recovery cannot publish over old package");
 
         Console.WriteLine("PASS data-path checks=" + _checks);
     }

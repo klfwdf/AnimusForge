@@ -88,6 +88,8 @@ def _snapshot(sources: list[tuple[str, Path]], root: Path) -> list[dict]:
             _check_ancestors(directory_path)
             dirs.sort()
             files.sort()
+            if directory_path == base and any(name.startswith(".af-export-") for name in dirs):
+                raise RuntimeError("Unresolved export candidate or retired package requires recovery before migration")
             for name in dirs + files:
                 if ":" in name or name in (".", ".."):
                     raise ValueError("Invalid source entry")

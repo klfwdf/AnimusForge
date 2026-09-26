@@ -340,7 +340,19 @@ public sealed partial class KingdomStrategicProfileBehavior
 			"该文件夹中已有国家卡全量导出。",
 			delegate(string resolvedRoot)
 			{
-				bool ok = ExportAllToDirectory(resolvedRoot, out string detail);
+				bool ok = false;
+				string detail;
+				try
+				{
+					var export = PlayerExportsStore.BeginExportPackage(Path.GetDirectoryName(resolvedRoot), Path.GetFileName(resolvedRoot));
+					ok = ExportAllToDirectory(export.CandidatePath, out detail);
+					if (ok) export.Publish();
+				}
+				catch (Exception ex)
+				{
+					ok = false;
+					detail = ex.Message;
+				}
 				InformationManager.DisplayMessage(new InformationMessage((ok ? "导出完成：" : "导出失败：") + detail));
 				OpenDevMenu();
 			},
@@ -363,7 +375,19 @@ public sealed partial class KingdomStrategicProfileBehavior
 			"该文件夹中已有这个国家的单国导出。",
 			delegate(string resolvedRoot)
 			{
-				bool ok = ExportSingleToDirectory(resolvedRoot, kingdom, out string detail);
+				bool ok = false;
+				string detail;
+				try
+				{
+					var export = PlayerExportsStore.BeginExportPackage(Path.GetDirectoryName(resolvedRoot), Path.GetFileName(resolvedRoot));
+					ok = ExportSingleToDirectory(export.CandidatePath, kingdom, out detail);
+					if (ok) export.Publish();
+				}
+				catch (Exception ex)
+				{
+					ok = false;
+					detail = ex.Message;
+				}
 				InformationManager.DisplayMessage(new InformationMessage((ok ? "导出完成：" : "导出失败：") + detail));
 				OpenKingdomDetail(kingdom);
 			},
@@ -555,7 +579,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 		}
 		try
 		{
-			foreach (DirectoryInfo directory in new DirectoryInfo(root).GetDirectories().OrderByDescending(x => x.LastWriteTimeUtc))
+			foreach (DirectoryInfo directory in new DirectoryInfo(root).GetDirectories().Where(x => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(x => x.LastWriteTimeUtc))
 			{
 				elements.Add(new InquiryElement(directory.Name, directory.Name + "  (" + directory.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 			}
@@ -629,7 +653,6 @@ public sealed partial class KingdomStrategicProfileBehavior
 				errorMessage = "导出目标必须位于 PlayerExports 内。";
 				return false;
 			}
-			Directory.CreateDirectory(candidate);
 			exportRoot = candidate;
 			return true;
 		}
@@ -662,7 +685,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 			if (string.IsNullOrEmpty(input))
 			{
 				DirectoryInfo latest = Directory.Exists(root)
-					? new DirectoryInfo(root).GetDirectories().OrderByDescending(x => x.LastWriteTimeUtc).FirstOrDefault()
+					? new DirectoryInfo(root).GetDirectories().Where(x => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(x => x.LastWriteTimeUtc).FirstOrDefault()
 					: null;
 				if (latest == null)
 				{
