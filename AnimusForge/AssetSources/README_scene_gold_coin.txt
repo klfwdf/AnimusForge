@@ -21,6 +21,7 @@ as runtime meshes; they must be imported and packed first.
 
 When the asset package is ready:
 
-1. Put animusforge_scene_gold_items.xml into AnimusForge/ModuleData/.
+1. Edit content/modules/AF.Module.Economy/ModuleData/animusforge_scene_gold_items.xml;
+   the content projection publishes it as AnimusForge/ModuleData/animusforge_scene_gold_items.xml.
 2. Add the XmlNode from SubModule_items_patch_example.xml into AnimusForge/SubModule.xml.
 3. Put animusforge_denar_coin.prefab.xml into AnimusForge/Prefabs/ if you still want the prefab fallback.

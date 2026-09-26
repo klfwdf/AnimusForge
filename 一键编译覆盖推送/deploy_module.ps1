@@ -830,7 +830,7 @@ try {
     $playerExportSources += [PSCustomObject]@{ Path = (Join-Path $targetModuleDir "PlayerExports"); Priority = 100; Label = "unified-target" }
     Merge-PlayerExports -DestinationDir (Join-Path $stagingModuleDir "PlayerExports") -Sources $playerExportSources
 
-    $sourceRules = Join-Path $sourceModuleDir "ModuleData\RuleBehaviorPrompts.json"
+    $sourceRules = Get-AnimusForgeContentSourcePath -ProjectRoot $projectRootFull -Target "ModuleData/RuleBehaviorPrompts.json"
     Assert-SameHash -SourcePath $sourceRules -TargetPath (Join-Path $stagingModuleDir "ModuleData\RuleBehaviorPrompts.json")
     $sourcePreprocessPrompts = Get-AnimusForgeContentSourcePath -ProjectRoot $projectRootFull -Target "ModuleData/PreprocessPrompts.json"
     Assert-SameHash -SourcePath $sourcePreprocessPrompts -TargetPath (Join-Path $stagingModuleDir "ModuleData\PreprocessPrompts.json")

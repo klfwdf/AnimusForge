@@ -12,9 +12,10 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_RUN_ROOT = ROOT / "artifacts" / "j15-content" / "j15a-contracts"
+DEFAULT_RUN_ROOT = ROOT / "artifacts" / "j15-content" / "j15-contracts"
+J15B_BASELINE_REVISION = "f54a812757699f108371b6bfd1c37de0222d9adb"
 
-EXPECTED = {
+J15A_EXPECTED = {
     "ModuleData/PreprocessPrompts.json": {
         "owner": "AF.Module.Prompt",
         "source": "content/modules/AF.Module.Prompt/ModuleData/PreprocessPrompts.json",
@@ -67,6 +68,171 @@ EXPECTED = {
 }
 
 
+J15B_EXPECTED: dict[str, dict[str, str]] = {}
+
+
+def add_j15b_group(owner: str, source_root: str, targets: list[str]) -> None:
+    for target in targets:
+        if target in J15B_EXPECTED:
+            raise AssertionError(f"duplicate test target: {target}")
+        J15B_EXPECTED[target] = {
+            "owner": owner,
+            "source": f"{source_root}/{target}",
+        }
+
+
+add_j15b_group("AF.Module.Prompt", "content/modules/AF.Module.Prompt", [
+    "ModuleData/ActionPostprocessPrompts.json",
+    "ModuleData/RuleBehaviorPrompts.json",
+])
+add_j15b_group("AF.Module.Social", "content/modules/AF.Module.Social", [
+    "ModuleData/ProactiveNpcRequestPrompts.json",
+    "GUI/Prefabs/PlayerNotorietyPopup.xml",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_bar_frame.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_bar_frame_overlay.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_century_patch.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_culture_patch.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_culture.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_mask.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_world.png",
+])
+add_j15b_group("AF.Module.Conversation", "content/modules/AF.Module.Conversation", [
+    "ModuleData/TownAmbientDialogue.json",
+    "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml",
+    "GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml",
+    "GUI/Prefabs/CourierLetterInputPopup.xml",
+    "GUI/Prefabs/CourierLetterReplyPopup.xml",
+    "GUI/Prefabs/ShoutTextInputPopup.xml",
+    "GUI/SpriteParts/af_courier/af_courier_reply_notice.png",
+    "GUI/SpriteParts/af_courier/af_courier_scroll.png",
+])
+add_j15b_group("AF.Module.WarStats", "content/modules/AF.Module.WarStats", [
+    "ModuleData/Languages/afwarstats_strings.xml",
+    "ModuleData/Languages/CNs/afwarstats_strings-zh-CN.xml",
+    "GUI/Prefabs/AFWarStatsMapButton.xml",
+])
+add_j15b_group(
+    "AnimusForge.SiegeAftermathIntervention",
+    "content/modules/AnimusForge.SiegeAftermathIntervention",
+    [
+        "ModuleData/Languages/CNs/gccz_town_manual_strings.xml",
+        "ModuleData/Languages/sets_hostile_meeting_strings.xml",
+        "ModuleData/Languages/CNs/sets_hostile_meeting_strings-zh-CN.xml",
+    ],
+)
+add_j15b_group("AnimusForge.XihaiAction", "content/modules/AnimusForge.XihaiAction", [
+    "ModuleData/Languages/sceneactions_strings.xml",
+    "ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml",
+    "ModuleData/SceneActions/battle-speech-performance.v1.json",
+    "ModuleData/SceneActions/battle-speech.v1.json",
+    "ModuleData/SceneActions/settings.v1.json",
+    "ModuleData/SceneActions/settings.v2.json",
+    "ModuleData/SceneActions/settings.v3.json",
+    "ModuleData/SceneActions/settings.v4.json",
+    "ModuleData/action_sets.xml",
+    "ModuleData/action_types.xml",
+    "ModuleData/combat_parameters.xml",
+    "ModuleData/project.mbproj",
+    "ModuleData/sceneactions.mbproj",
+    "ModuleData/sceneactions_items.xml",
+])
+add_j15b_group("AF.Module.Economy", "content/modules/AF.Module.Economy", [
+    "ModuleData/animusforge_scene_gold_items.xml",
+    "GUI/Prefabs/PlayerRpForgePopup.xml",
+    "GUI/SpriteParts/af_player_rp_forge/af_player_rp_forge_background.png",
+])
+add_j15b_group(
+    "AF.Foundation.Localization",
+    "content/foundation/AF.Foundation.Localization",
+    ["ModuleData/Languages/language_data.xml", "ModuleData/Languages/CNs/language_data.xml"],
+)
+add_j15b_group("AF.Foundation.UI", "content/foundation/AF.Foundation.UI", [
+    "GUI/Brushes/AFCourierLetterBrushes.xml",
+    "GUI/Prefabs/FloatingTextLayer.xml",
+])
+add_j15b_group("AF.Module.UI", "content/modules/AF.Module.UI", [
+    "GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+    "GUI/Prefabs/DevHistoryEditPopup.xml",
+    "GUI/Prefabs/DevLargeSelectionPopup.xml",
+])
+add_j15b_group("AF.Module.Onboarding", "content/modules/AF.Module.Onboarding", [
+    "GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml",
+])
+add_j15b_group("AF.Module.WorldEvents", "content/modules/AF.Module.WorldEvents", [
+    "GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml",
+])
+add_j15b_group("AF.Module.Weekly", "content/modules/AF.Module.Weekly", [
+    "GUI/Prefabs/AnimusForgeWorldMessageTimelinePopup.xml",
+    "GUI/Prefabs/DevWeeklyReportPopup.xml",
+    "GUI/SpriteParts/af_weekly_chronicle/af_weekly_chronicle_clean.png",
+    "GUI/SpriteParts/af_weekly_report/af_weekly_report.png",
+])
+add_j15b_group("PolicySystem", "content/modules/PolicySystem", [
+    "GUI/Prefabs/CustomPolicyComposePopup.xml",
+    "GUI/Prefabs/CustomPolicyHistoryPopup.xml",
+    "GUI/Prefabs/CustomPolicyResultPopup.xml",
+    "GUI/Prefabs/LocalPolicyComposePopup.xml",
+    "GUI/Prefabs/LocalPolicyHistoryPopup.xml",
+    "GUI/Prefabs/PolicyEffectModuleManagerPopup.xml",
+])
+add_j15b_group("AF.Module.Diplomacy", "content/modules/AF.Module.Diplomacy", [
+    "GUI/Prefabs/WorldDiplomacyComposePopup.xml",
+    "GUI/SpriteParts/af_vassalage_notifications/af_npc_tributary_vassalage.png",
+    "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_breach.png",
+    "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_contract.png",
+    "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_protection.png",
+    "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_tribute.png",
+    "GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice_v2.png",
+])
+
+J15B_HOLD_PATHS = {
+    "ModuleData/EarlyException_2026-06-28.html",
+    "ModuleData/FeatureBridges.json",
+    "ModuleData/UnnamedNpcProfiles.json",
+    "ModuleData/UnnamedNpcProfiles/troop_hidden_hand_tier_3_kingdom_empire_w__f1274041.json",
+    "ModuleData/UnnamedNpcProfiles/troop_imperial_veteran_archer_kingdom_empire_w__71cc7949.json",
+    "ModuleData/UnnamedNpcProfiles/troop_townsman_empire_kingdom_empire_w__a97b2802.json",
+    "ModuleData/UnnamedNpcProfiles/troop_townsman_vlandia_kingdom_vlandia__edca3492.json",
+    "ModuleData/UnnamedNpcProfiles/troop_townswoman_empire_kingdom_empire_s__365dece0.json",
+    "GUI/SplitShadowsOnlyAISpriteData.xml",
+    "GUI/SpriteParts/Config.xml",
+    "GUI/SpriteParts/af_courier/af_courier_scroll_version_a.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png.tmp.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_culture_panel_patch.png",
+    "GUI/SpriteParts/af_terminal/af_scroll_quill.png",
+    "GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice.png",
+    "GUI/SpriteSheets/af_vassalage_notifications/af_vassalage_notifications_1.png",
+    "GUI/SpriteParts/ui_account/MODDB.png",
+    "GUI/SpriteParts/ui_account/STEAM.png",
+    "GUI/SpriteParts/ui_account/discord.png",
+    "GUI/SpriteParts/ui_account/input.png",
+    "GUI/SpriteParts/ui_account/ss_account_background.png",
+    "GUI/SpriteParts/ui_achievement/bim.png",
+    "GUI/SpriteParts/ui_achievement/icon_hint.png",
+    "GUI/SpriteParts/ui_achievement/return.png",
+    "GUI/SpriteParts/ui_achievement/split_titile.png",
+    "GUI/SpriteParts/ui_achievement/ss_button_down.png",
+    "GUI/SpriteParts/ui_achievement/ss_button_right.png",
+    "GUI/SpriteParts/ui_achievement/ss_deepseek.png",
+    "GUI/SpriteParts/ui_achievement/ss_tax.png",
+    "GUI/SpriteParts/ui_achievement/ss_x2.png",
+    "GUI/SpriteParts/ui_subscribe/duke.png",
+    "GUI/SpriteParts/ui_subscribe/knight.png",
+    "GUI/SpriteParts/ui_subscribe/lord.png",
+    "GUI/SpriteParts/ui_subscribe/ss_campaigns_title.png",
+    "GUI/SpriteParts/ui_subscribe/ss_center_title.png",
+    "GUI/SpriteParts/ui_subscribe/ss_duke_title.png",
+    "GUI/SpriteParts/ui_subscribe/ss_knight_title.png",
+    "GUI/SpriteParts/ui_subscribe/ss_lord_title.png",
+    "GUI/SpriteParts/ui_subscribe/ss_outline.png",
+    "GUI/SpriteParts/ui_subscribe/ss_subscribe_level_background.png",
+    "GUI/SpriteParts/ui_subscribe/subscribe_background_3.png",
+}
+
+EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED}
+
+
 def check(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
@@ -80,16 +246,25 @@ def load_module(path: Path, name: str):
     return module
 
 
+def git_worktree_blob(revision: str, path: str) -> bytes:
+    return subprocess.check_output(
+        ["git", "cat-file", "--filters", f"--path={path}", f"{revision}:{path}"],
+        cwd=ROOT,
+    )
+
+
 def verify_map_and_resources() -> None:
     map_path = ROOT / "content" / "content-map.json"
     payload = json.loads(map_path.read_text(encoding="utf-8"))
     check(payload.get("schemaVersion") == 1, "content map schemaVersion")
     entries = payload.get("entries")
-    check(isinstance(entries, list) and len(entries) == 7, "content map must contain seven entries")
+    check(isinstance(entries, list) and len(entries) == len(EXPECTED), "content map entry count")
     by_target = {entry["target"]: entry for entry in entries}
+    check(len(by_target) == len(entries), "content map target uniqueness")
+    check(len({entry["source"] for entry in entries}) == len(entries), "content map source uniqueness")
     check(set(by_target) == set(EXPECTED), "content map target set")
 
-    for target, expected in EXPECTED.items():
+    for target, expected in J15A_EXPECTED.items():
         entry = by_target[target]
         for field in ("owner", "source", "logicalName"):
             check(entry.get(field) == expected[field], f"{target} {field}")
@@ -97,8 +272,32 @@ def verify_map_and_resources() -> None:
         check(source.is_file(), f"missing migrated source: {source}")
         digest = hashlib.sha256(source.read_bytes()).hexdigest().upper()
         check(digest == expected["sha256"], f"source hash drift: {target}")
-        old = ROOT / "AnimusForge" / target.replace("/", "\\")
+        old = ROOT / "AnimusForge" / Path(target)
         check(not old.exists(), f"old editable source remains: {old}")
+
+    for target, expected in J15B_EXPECTED.items():
+        entry = by_target[target]
+        for field in ("owner", "source"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
+        source = ROOT / expected["source"]
+        check(source.is_file(), f"missing migrated source: {source}")
+        baseline = git_worktree_blob(J15B_BASELINE_REVISION, f"AnimusForge/{target}")
+        check(source.read_bytes() == baseline, f"source bytes drifted from J15b baseline: {target}")
+        old = ROOT / "AnimusForge" / Path(target)
+        check(not old.exists(), f"old editable source remains: {old}")
+
+    for target in J15B_HOLD_PATHS:
+        check((ROOT / "AnimusForge" / Path(target)).is_file(), f"HOLD path was moved or removed: {target}")
+        check(target not in by_target, f"HOLD path entered content map: {target}")
+
+    remaining = {
+        path.relative_to(ROOT / "AnimusForge").as_posix()
+        for root_name in ("ModuleData", "GUI")
+        for path in (ROOT / "AnimusForge" / root_name).rglob("*")
+        if path.is_file()
+    }
+    check(remaining == J15B_HOLD_PATHS, "legacy resource roots must contain only explicit HOLD files")
 
 
 def verify_project_resources() -> None:
@@ -110,9 +309,9 @@ def verify_project_resources() -> None:
         culture = item.findtext("WithCulture")
         if logical:
             resources[logical] = {"include": include, "culture": culture}
-    expected_names = {item["logicalName"] for item in EXPECTED.values()}
+    expected_names = {item["logicalName"] for item in J15A_EXPECTED.values()}
     check(set(resources) == expected_names, "EmbeddedResource LogicalName set must remain exactly seven")
-    for expected in EXPECTED.values():
+    for expected in J15A_EXPECTED.values():
         actual = resources[expected["logicalName"]]
         check(actual["include"] == expected["source"], f"include path: {expected['logicalName']}")
         check(actual["culture"] == expected["withCulture"], f"WithCulture: {expected['logicalName']}")
@@ -132,14 +331,111 @@ def verify_script_wiring() -> None:
     deploy_block = deploy[deploy_start:deploy_end]
     check(deploy_block.index("Invoke-Robocopy") < deploy_block.index(call) < deploy_block.index("Merge-InstalledCustomPromptsIntoStaging"),
           "Deploy projection must precede installed prompt merge")
-    check("Get-AnimusForgeContentSourcePath" in deploy, "source hash lookup must use content map")
+    check(deploy.count("Get-AnimusForgeContentSourcePath") == 2,
+          "Preprocess and Rule source hash lookups must use content map")
+    check('Join-Path $sourceModuleDir "ModuleData\\RuleBehaviorPrompts.json"' not in deploy,
+          "Rule source hash lookup must not use the legacy editable tree")
+
+
+def verify_formats_and_references() -> None:
+    for target, expected in J15B_EXPECTED.items():
+        source = ROOT / expected["source"]
+        suffix = source.suffix.lower()
+        if suffix == ".json":
+            json.loads(source.read_text(encoding="utf-8-sig"))
+        elif suffix in {".xml", ".mbproj"}:
+            ET.parse(source)
+        elif suffix == ".png":
+            data = source.read_bytes()
+            check(data.startswith(b"\x89PNG\r\n\x1a\n") and len(data) > 24, f"invalid PNG: {target}")
+
+    for target in (
+        "ModuleData/Languages/language_data.xml",
+        "ModuleData/Languages/CNs/language_data.xml",
+    ):
+        tree = ET.parse(ROOT / J15B_EXPECTED[target]["source"])
+        for item in tree.getroot().iter("LanguageFile"):
+            referenced = "ModuleData/Languages/" + item.attrib["xml_path"].replace("\\", "/")
+            check(referenced in J15B_EXPECTED, f"language index target not mapped: {referenced}")
+
+    for target in ("ModuleData/project.mbproj", "ModuleData/sceneactions.mbproj"):
+        tree = ET.parse(ROOT / J15B_EXPECTED[target]["source"])
+        for item in tree.getroot().iter("file"):
+            referenced = item.attrib["name"].replace("\\", "/")
+            check(referenced in J15B_EXPECTED, f"mbproj target not mapped: {referenced}")
+
+    submodule = ET.parse(ROOT / "AnimusForge" / "SubModule.xml")
+    xml_targets = {
+        f"ModuleData/{item.attrib['path']}.xml"
+        for item in submodule.getroot().iter("XmlName")
+    }
+    check(xml_targets == {
+        "ModuleData/animusforge_scene_gold_items.xml",
+        "ModuleData/sceneactions_items.xml",
+    }, "SubModule XML targets")
+    check(xml_targets <= set(J15B_EXPECTED), "SubModule XML targets must be mapped")
+
+    movie_consumers = {
+        "GUI/Prefabs/AFWarStatsMapButton.xml": "WarStats/AfWarStatsMapButtonLayer.cs",
+        "GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml": "AnimusForgeApiOnboardingPopup.cs",
+        "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "AnimusForgeConversationHistoryLogPopup.cs",
+        "GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml": "AnimusForgeNativeConversationOverlay.cs",
+        "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "AnimusForgeTerminalUiModels.cs",
+        "GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml": "WorldEvents/WorldEventInbox.cs",
+        "GUI/Prefabs/AnimusForgeWorldMessageTimelinePopup.xml": "WorldMessageTimelineUi.cs",
+        "GUI/Prefabs/CourierLetterInputPopup.xml": "CourierLetterInputPopup.cs",
+        "GUI/Prefabs/CourierLetterReplyPopup.xml": "CourierLetterReplyPopup.cs",
+        "GUI/Prefabs/CustomPolicyComposePopup.xml": "PolicySystem/UI/KingdomPolicyUi.cs",
+        "GUI/Prefabs/CustomPolicyHistoryPopup.xml": "PolicySystem/UI/KingdomPolicyUi.cs",
+        "GUI/Prefabs/CustomPolicyResultPopup.xml": "PolicySystem/UI/KingdomPolicyUi.cs",
+        "GUI/Prefabs/DevHistoryEditPopup.xml": "DevHistoryEditPopup.cs",
+        "GUI/Prefabs/DevLargeSelectionPopup.xml": "DevLargeSelectionPopup.cs",
+        "GUI/Prefabs/DevWeeklyReportPopup.xml": "DevWeeklyReportPopup.cs",
+        "GUI/Prefabs/FloatingTextLayer.xml": "FloatingTextMissionView.cs",
+        "GUI/Prefabs/LocalPolicyComposePopup.xml": "PolicySystem/UI/LocalPolicyUi.cs",
+        "GUI/Prefabs/LocalPolicyHistoryPopup.xml": "PolicySystem/UI/LocalPolicyUi.cs",
+        "GUI/Prefabs/PlayerNotorietyPopup.xml": "PlayerNotorietyPopup.cs",
+        "GUI/Prefabs/PlayerRpForgePopup.xml": "PlayerRpForgePopup.cs",
+        "GUI/Prefabs/PolicyEffectModuleManagerPopup.xml": "PolicySystem/UI/PolicyEffectModuleManagerUi.cs",
+        "GUI/Prefabs/ShoutTextInputPopup.xml": "ShoutTextInputPopup.cs",
+        "GUI/Prefabs/WorldDiplomacyComposePopup.xml": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+    }
+    for target, consumer in movie_consumers.items():
+        movie = Path(target).stem
+        text = (ROOT / consumer).read_text(encoding="utf-8-sig")
+        check(f'LoadMovie("{movie}"' in text, f"movie consumer drift: {movie}")
+
+    sprite_consumers = {
+        "GUI/SpriteParts/af_courier/": "AnimusForgeCourierUiSprites.cs",
+        "GUI/SpriteParts/af_player_notoriety/": "AnimusForgePlayerNotorietyUiSprites.cs",
+        "GUI/SpriteParts/af_player_rp_forge/": "AnimusForgePlayerRpForgeUiSprites.cs",
+        "GUI/SpriteParts/af_vassalage_notifications/": "VassalageBehavior.cs",
+        "GUI/SpriteParts/af_weekly_": "AnimusForgeWeeklyReportMapNotification.cs",
+        "GUI/SpriteParts/af_world_diplomacy/": "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
+    }
+    for target in (item for item in J15B_EXPECTED if item.endswith(".png")):
+        matches = [consumer for prefix, consumer in sprite_consumers.items() if target.startswith(prefix)]
+        check(len(matches) == 1, f"sprite owner mapping: {target}")
+        text = (ROOT / matches[0]).read_text(encoding="utf-8-sig")
+        check(Path(target).name in text, f"sprite consumer drift: {target}")
+
+    brush = (ROOT / J15B_EXPECTED["GUI/Brushes/AFCourierLetterBrushes.xml"]["source"]).read_text(encoding="utf-8-sig")
+    courier_prefab = (ROOT / J15B_EXPECTED["GUI/Prefabs/CourierLetterInputPopup.xml"]["source"]).read_text(encoding="utf-8-sig")
+    check("AFCourierLetter." in brush and "AFCourierLetter." in courier_prefab, "courier brush linkage")
+
+    generator = (ROOT / "_DeveloperPatch" / "generate_town_ambient_dialogue.ps1").read_text(encoding="utf-8-sig")
+    check(J15B_EXPECTED["ModuleData/TownAmbientDialogue.json"]["source"].replace("/", "\\") in generator,
+          "TownAmbient generator must write the unique source")
 
 
 def verify_inventory_and_overlay() -> None:
     inventory = load_module(ROOT / "tools" / "repository_source_inventory.py", "j15_inventory")
     check(inventory.classify_path("content/content-map.json") == "content", "map inventory class")
-    check(inventory.classify_path(EXPECTED["ModuleData/PreprocessPrompts.json"]["source"]) == "content", "prompt content class")
+    for expected in EXPECTED.values():
+        check(inventory.classify_path(expected["source"]) == "content",
+              f"migrated content inventory class: {expected['source']}")
     check(inventory.classify_path("content/modules/Unknown/ModuleData/file.json") is None, "unknown content owner must fail closed")
+    check(inventory.classify_path("content/foundation/Unknown/GUI/file.xml") is None, "unknown foundation owner must fail closed")
     check(inventory.classify_path("content/PlayerExports/private.json") == "HOLD:user-data", "content user data hold")
     check(inventory.classify_path("content/modules/AF.Module.Knowledge/ONNX/model.json") == "HOLD:model-provenance", "content model hold")
     check(inventory.classify_path("content/modules/AF.Module.Knowledge/onnx/model.json") == "HOLD:model-provenance", "content model hold is case-insensitive")
@@ -147,10 +443,25 @@ def verify_inventory_and_overlay() -> None:
 
     overlay = load_module(ROOT / "tools" / "package_policy_system_source_overlay.py", "j15_overlay")
     files, categories = overlay.build_file_set()
-    delivery = "AnimusForge/ModuleData/PreprocessPrompts.json"
-    check(delivery in files, "overlay delivery path preserved")
-    check(files[delivery].resolve() == (ROOT / EXPECTED["ModuleData/PreprocessPrompts.json"]["source"]).resolve(), "overlay source uses content map")
-    check(categories[delivery] == "runtime_assets", "overlay category preserved")
+    alias_targets = {
+        "ModuleData/PreprocessPrompts.json",
+        "ModuleData/RuleBehaviorPrompts.json",
+        "ModuleData/ActionPostprocessPrompts.json",
+        "ModuleData/ProactiveNpcRequestPrompts.json",
+        "GUI/Prefabs/CustomPolicyComposePopup.xml",
+        "GUI/Prefabs/CustomPolicyHistoryPopup.xml",
+        "GUI/Prefabs/CustomPolicyResultPopup.xml",
+        "GUI/Prefabs/LocalPolicyComposePopup.xml",
+        "GUI/Prefabs/LocalPolicyHistoryPopup.xml",
+        "GUI/Prefabs/WorldDiplomacyComposePopup.xml",
+        "GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice_v2.png",
+    }
+    for target in alias_targets:
+        delivery = "AnimusForge/" + target
+        check(delivery in files, f"overlay delivery path preserved: {delivery}")
+        check(files[delivery].resolve() == (ROOT / EXPECTED[target]["source"]).resolve(),
+              f"overlay source uses content map: {delivery}")
+        check(categories[delivery] == "runtime_assets", f"overlay category preserved: {delivery}")
 
 
 def run_command(command: list[str]) -> None:
@@ -163,7 +474,7 @@ def main() -> int:
     parser.add_argument("--run-root", type=Path, default=DEFAULT_RUN_ROOT)
     args = parser.parse_args()
     run_root = args.run_root.resolve()
-    check(run_root == DEFAULT_RUN_ROOT.resolve(), "run root must remain the authorized J15a directory")
+    check(run_root == DEFAULT_RUN_ROOT.resolve(), "run root must remain the authorized J15 content directory")
     if run_root.exists():
         shutil.rmtree(run_root)
     run_root.mkdir(parents=True)
@@ -171,6 +482,7 @@ def main() -> int:
     verify_map_and_resources()
     verify_project_resources()
     verify_script_wiring()
+    verify_formats_and_references()
     verify_inventory_and_overlay()
 
     pwsh = Path(r"C:\Program Files\PowerShell\7-preview\pwsh.exe")
@@ -184,7 +496,8 @@ def main() -> int:
         str(dotnet), "run", "--project", str(Path(__file__).with_name("GcczLoaderHarness.csproj")),
         "-c", "Release", "--", str(run_root / "gccz"),
     ])
-    print("j15ContentContracts mappings=7 invalidCases=8 gcczFallbackCases=4 overlayAlias=1 PASS")
+    print(f"j15ContentContracts mappings={len(EXPECTED)} j15b={len(J15B_EXPECTED)} "
+          f"holds={len(J15B_HOLD_PATHS)} invalidCases=8 gcczFallbackCases=4 overlayAliases=11 PASS")
     return 0
 
 

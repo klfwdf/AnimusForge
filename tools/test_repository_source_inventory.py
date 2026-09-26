@@ -39,6 +39,8 @@ class RepositorySourceInventoryTests(unittest.TestCase):
             "MyBehavior.cs": "source",
             "Refactor/Runtime/Host.cs": "source",
             "AnimusForge/GUI/Prefabs/Panel.xml": "content",
+            "content/modules/AF.Module.Social/GUI/Prefabs/PlayerNotorietyPopup.xml": "content",
+            "content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml": "content",
             "tools/ModuleFrameworkApiTests/Program.cs": "tests",
             "tools/PlayerExportsEditor/src/Program.cs": "tools",
             "tools/test_repository_source_inventory.py": "tests",
@@ -50,6 +52,8 @@ class RepositorySourceInventoryTests(unittest.TestCase):
         for path, expected in examples.items():
             self.assertEqual(inventory.classify_path(path), expected, path)
         self.assertIsNone(inventory.classify_path("unknown/new.bin"))
+        self.assertIsNone(inventory.classify_path("content/modules/Unknown.Owner/GUI/Prefabs/Panel.xml"))
+        self.assertIsNone(inventory.classify_path("content/foundation/Unknown.Foundation/Languages/strings.xml"))
         self.assertEqual(inventory.classify_path("Mystery.cs"), "source")  # transitional, not verified business owner
 
     def test_git_inventory_reads_only_git_metadata_and_hides_sensitive_paths(self) -> None:

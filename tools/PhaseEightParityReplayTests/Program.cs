@@ -313,7 +313,7 @@ Call(emptyWeekly, "OnFinalize");
 object selectedWeekly = Activator.CreateInstance(weeklyType, countries, "world", (Action)(() => {}));
 Check((string)Get(selectedWeekly, "SelectedCountryNameText") == "世界周报", "weekly explicit selected country preserved");
 Call(selectedWeekly, "OnFinalize");
-XElement weeklyView = XDocument.Load(Path.Combine(repo, "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
+XElement weeklyView = XDocument.Load(Path.Combine(repo, "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
     .Descendants().Single(element => (string)element.Attribute("IsVisible") == "@IsWeeklyReportsVisible");
 var weeklyBindings = weeklyView.DescendantsAndSelf().Attributes().Select(attribute => attribute.Value).ToList();
 foreach (string binding in new[] { "@BodyText", "@BodyFontSize", "@WeekText", "@DateText", "@TagText", "@ShowViewFullReport", "ExecuteViewFullReport" })
@@ -364,8 +364,8 @@ Call(vm, "StartListeningKey", hotkeyItem); Call(vm, "SelectTab", "全部");
 Check(!(bool)Get(vm, "IsListeningForKey"), "navigation cannot leave an invisible key listener");
 Check(vmType.GetMethod("ExecuteSaveSettings") != null && af.GetType("AnimusForge.DuelSettings", true).GetMethod("SaveCurrentSettings") != null, "upstream save entrypoints retained without writing settings");
 Check(af.GetType("AnimusForge.AnimusForgeApiOnboardingPopup", false) != null && af.GetType("AnimusForge.AnimusForgeApiOnboardingVM", false) != null, "upstream API wizard types retained");
-XDocument.Load(Path.Combine(repo, "AnimusForge/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"));
-var mergeXml = XDocument.Load(Path.Combine(repo, "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml"));
+XDocument.Load(Path.Combine(repo, "content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"));
+var mergeXml = XDocument.Load(Path.Combine(repo, "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"));
 var mergeBindings = mergeXml.Descendants().Attributes().Select(a => a.Value).ToHashSet();
 foreach (string binding in new[] { "@IsBool", "@IsNumeric", "@IsDropdown", "@IsHotkey", "@IsText", "@IsButton", "@BodyText", "@SearchText", "@ImageId" })
     Check(mergeBindings.Contains(binding), "merged XML retains " + binding);

@@ -45,7 +45,7 @@ $mapPath = Join-Path $fixtureProject "content\content-map.json"
 New-Item -ItemType Directory -Path (Split-Path -Parent $mapPath) -Force | Out-Null
 $validEntries = @(
     [ordered]@{ owner="Test"; source="content/modules/Test/ModuleData/one.json"; target="ModuleData/one.json"; logicalName="Test.One" },
-    [ordered]@{ owner="Test"; source="content/modules/Test/ModuleData/two.json"; target="ModuleData/two.json"; logicalName="Test.Two" }
+    [ordered]@{ owner="Test"; source="content/modules/Test/ModuleData/two.json"; target="ModuleData/two.json" }
 )
 Write-TestMap -Path $mapPath -Entries $validEntries
 $validDestination = Join-Path $fixtureRoot "valid-output"
@@ -84,4 +84,20 @@ Assert-ThrowsWithoutOutput -Label "reparse-source" -Destination $reparseDestinat
     Invoke-AnimusForgeContentProjection -ProjectRoot $fixtureProject -DestinationModuleDir $reparseDestination -MapPath $reparseMap | Out-Null
 }
 
-Write-Output "contentLayoutContract valid=1 invalid=8 PASS"
+$realMapPath = Join-Path $ProjectRoot "content\content-map.json"
+$realMap = Get-Content -LiteralPath $realMapPath -Raw -Encoding UTF8 | ConvertFrom-Json
+$realDestination = Join-Path $RunRoot "real-projection"
+$realResult = @(Invoke-AnimusForgeContentProjection -ProjectRoot $ProjectRoot -DestinationModuleDir $realDestination -MapPath $realMapPath)
+Assert-Contract ($realResult.Count -eq $realMap.entries.Count) "real projection count"
+foreach ($entry in $realMap.entries) {
+    $source = Join-Path $ProjectRoot ([string]$entry.source)
+    $target = Join-Path $realDestination ([string]$entry.target)
+    Assert-Contract (Test-Path -LiteralPath $target -PathType Leaf) "real projection target missing: $($entry.target)"
+    $sourceHash = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
+    $targetHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
+    Assert-Contract ($sourceHash -eq $targetHash) "real projection bytes drifted: $($entry.target)"
+}
+$realFiles = @(Get-ChildItem -LiteralPath $realDestination -Recurse -File -Force)
+Assert-Contract ($realFiles.Count -eq $realMap.entries.Count) "real projection contains unexpected files"
+
+Write-Output "contentLayoutContract valid=1 real=$($realMap.entries.Count) invalid=8 PASS"

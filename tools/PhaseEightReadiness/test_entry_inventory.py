@@ -67,9 +67,9 @@ EXPANDED_ENTRIES = {
         "WarStats/AfWarStatsMapButtonVM.cs",
         "WarStats/AfWarStatsPopupVM.cs",
         "WarStats/AfWarStatsEncyclopedia.cs",
-        "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
-        "AnimusForge/GUI/Prefabs/AFWarStatsMapButton.xml",
-        "AnimusForge/GUI/Prefabs/DevWeeklyReportPopup.xml",
+        "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+        "content/modules/AF.Module.WarStats/GUI/Prefabs/AFWarStatsMapButton.xml",
+        "content/modules/AF.Module.Weekly/GUI/Prefabs/DevWeeklyReportPopup.xml",
     ),
 }
 
