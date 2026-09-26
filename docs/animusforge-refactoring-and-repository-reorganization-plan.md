@@ -1,6 +1,12 @@
-## J15 执行计划编写意图（2026-09-26）
+## J15 content / profile 计划就绪（2026-09-26）
 
-本轮用户只要求“准备做 J15，写执行计划，写到能开新对话执行”。以 `fc445335` 为规划基线，核实本工作区与当前分支，仅编写 J15 content/profile 的可执行计划并更新本台账和 HANDOFF；不开始产品迁移，不改资源、生产源码、项目或构建/部署脚本。已存在的未跟踪 `.dotnet-cli-home/` 保留。资源数据分类、G0.3、ONNX/素材来源，以及物理迁移必需的构建资源接线与授权边界均须写清；J14 保持 `J14_OFFLINE_VERIFIED`，不继承其清理、Stage 或其他历史授权。
+状态：**`J15_PLAN_READY / IMPLEMENTATION_NOT_STARTED`**。按本轮用户“准备做 J15，写执行计划，写到能开新对话执行”的要求完成[可接续执行计划](plans/j15-content-profile-plan.md)，不是产品施工授权或验收。基线 `fc445335b364859c1d5b87c122f51d7a46d1df57`，计划意图 `0d9bb898`；工作区和分支仍为本仓实际 Git 根 / `codex/af-main-refactor-continuation-20260831`，原未跟踪 `.dotnet-cli-home/` 保留。
+
+- **计划与下一动作**：新对话可直接使用计划第 1 节启动指令，从 G0 逐文件 owner/读写者/映射/授权清单开始，随后 a 七项 EmbeddedResource 与内容接线、b 其他静态 GUI/XML/JSON、c profile/用户数据/模型边界、d 同候选最终离线门禁。首次资源批量迁移、最小组装脚本接线、四个构建清理目录和可选 Stage 需按精确范围批准，不继承 J14 或历史授权。
+- **真实边界**：读取了项目 7 项资源声明、实际 Prompt/GCCZ/模块路径/UI/模型消费者、构建/Stage/部署/打包及 overlay/inventory 源路径引用。ModuleData 41、GUI 76、CustomPrompts 30、ONNX 5、PlayerExports 3139 为 tracked 计数，不是全部可迁。CustomPrompts 和 PlayerExports 存在运行写入/部署回写；Stage 也会复制 PlayerExports。计划禁止复制第二资源源树、移动未知用户数据、将模型放 ZIP 或借逻辑 owner 声称物理迁移完成；代码坐标及拟议映射入口集中于计划第 3–4 节，实施后的实际证据仍回写本台账/范围图。
+- **核验与未验**：本轮代码地图 recorded-revision / working-tree 各 755 锚点 PASS，仍绑定 J14 产品 `e58f3558`，仅定位核验。计划及当前交接/台账链接、25 项已有路径、坐标行号边界、Markdown 代码围栏、UTF-8、仓内 SDK/引用路径及 `git diff --check` 通过；差异限定三份文档。未改生产源码、资源、测试、项目、脚本或代码地图，未运行产品构建/行为回归/Stage/provider/游戏。J14 保持 `J14_OFFLINE_VERIFIED`，实机、旧档、音频和帧性能仍 NOT-RUN；J15 不提前标 ACTIVE 或完成。没有 push、部署、打包、外写、工具安装、自动化或 J16/J17。
+
+以下 J14 收口是有效前序产品证据；其中“J15 需新请求”不阻止本次已请求的规划，但不自动授权资源迁移。
 
 ## J14 三渠道公共 API 最终离线验收（2026-09-26）
 
