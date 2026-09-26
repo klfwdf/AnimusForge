@@ -1207,7 +1207,7 @@ internal static class Program
 			"private bool EnqueueGeneratedDeclarationRepair(");
 		Test.True(repair.Contains("BuildCurrentLegalDiplomaticOptions(", StringComparison.Ordinal)
 			&& repair.Contains("source.ResultSettlementSlotId", StringComparison.Ordinal)
-			&& repair.Contains("repair.PresentedLegalActionSignature = BuildGenerationLegalActionSignature(repair)", StringComparison.Ordinal),
+			&& repair.Contains("repair.PresentedLegalActionSignature = world.BuildGenerationLegalActionSignature(repair)", StringComparison.Ordinal),
 			"repair prompts and their refreshed signature must retain the same war-response slot filter");
 
 		string generatedLegality = ExtractMethod(
@@ -1367,9 +1367,9 @@ internal static class Program
 
 		string relayPrompt = ExtractMethod(source, "private string BuildRelayConversationTurnPrompt(");
 		string targetedPrompt = ExtractMethod(source, "private string BuildGenerationPrompt(");
-		Test.True(relayPrompt.Contains("BuildSourceActionFactForTarget(prioritySource, author.StringId)", StringComparison.Ordinal)
-			&& targetedPrompt.Contains("BuildSourceActionFactForTarget(sourceDocument, author.StringId)", StringComparison.Ordinal)
-			&& targetedPrompt.Contains("BuildPeaceOfferTermsFact(sourceDocument, author.StringId)", StringComparison.Ordinal)
+		Test.True(relayPrompt.Contains("BuildSourceActionFactForTarget(prioritySource, author)", StringComparison.Ordinal)
+			&& targetedPrompt.Contains("BuildSourceActionFactForTarget(sourceDocument, author)", StringComparison.Ordinal)
+			&& targetedPrompt.Contains("BuildPeaceOfferTermsFact(sourceDocument, author)", StringComparison.Ordinal)
 			&& relayPrompt.Contains("不得附加、修改条款或另提和平方案", StringComparison.Ordinal)
 			&& targetedPrompt.Contains("不得附加、修改条款或另提和平方案", StringComparison.Ordinal),
 			"AI response prompts must bind the source action to the current responder and forbid conditional rejection/counter-terms");
@@ -1441,7 +1441,7 @@ internal static class Program
 				Encoding.UTF8),
 			"public static void AppendGeneratedRepairCorrection(");
 		int requiredOfferLookup = repair.IndexOf(
-			"WorldDiplomacyRoundOffer requiredPeaceOffer = FindRequiredPeaceOfferResponse(",
+			"WorldDiplomacyRoundOffer requiredPeaceOffer = world.FindRequiredPeaceOfferResponse(",
 			StringComparison.Ordinal);
 		int requiredOfferRepair = repairCorrection.IndexOf(
 			"string.Equals(reason, \"required_peace_offer_response_missing\"",
@@ -1530,7 +1530,7 @@ internal static class Program
 
 		string relayPrompt = ExtractMethod(source, "private string BuildRelayConversationTurnPrompt(");
 		int relayRequiredOffer = relayPrompt.IndexOf(
-			"WorldDiplomacyRoundOffer requiredPeaceOffer = FindRequiredPeaceOfferResponse(",
+			"WorldDiplomacyRoundOffer requiredPeaceOffer = world.FindRequiredPeaceOfferResponse(",
 			StringComparison.Ordinal);
 		int relayFallback = relayPrompt.IndexOf(
 			"requireAnyOpenPeaceOffer: true",
@@ -1612,10 +1612,10 @@ internal static class Program
 
 		string playerAnalysis = ExtractMethod(source, "private string BuildAnalysisPrompt(");
 		int prunePlayerOffers = playerAnalysis.IndexOf(
-			"if (document.IsPlayerAuthored) PruneInvalidOffers(analysisRound)",
+			"if (document.IsPlayerAuthored) world.PruneInvalidOffers(analysisRound)",
 			StringComparison.Ordinal);
 		int playerRequiredOffer = playerAnalysis.IndexOf(
-			"WorldDiplomacyRoundOffer requiredPlayerPeaceOffer = FindRequiredPeaceOfferResponse(",
+			"WorldDiplomacyRoundOffer requiredPlayerPeaceOffer = world.FindRequiredPeaceOfferResponse(",
 			prunePlayerOffers,
 			StringComparison.Ordinal);
 		int playerRequireAny = playerAnalysis.IndexOf(
@@ -1877,7 +1877,7 @@ internal static class Program
 
 		string relayPrompt = ExtractMethod(source, "private string BuildRelayConversationTurnPrompt(");
 		int cessionPromptGate = relayPrompt.IndexOf(
-			"if (HasCessionBoundMultiplePeaceAcceptanceOptions(round, author, legalActionsByTarget))",
+			"if (world.HasCessionBoundMultiplePeaceAcceptanceOptions(round, author, legalActionsByTarget))",
 			StringComparison.Ordinal);
 		int cessionPromptLine = relayPrompt.IndexOf(
 			"本篇最多接受一份",
@@ -2108,8 +2108,26 @@ internal static class Program
         throw new FileNotFoundException("Could not locate repository file.", fileName);
     }
 
+    // Follow the actual DPL-080 owner while retaining host-routing checks.
+    private static string? ReadDpl080Owner(string source, string marker)
+    {
+        string[] promptMethods = { "BuildRoundPlanSystemPrompt", "BuildRoundPlanPrompt", "BuildRelayConversationTurnPrompt", "BuildAutonomousOpeningPrompt", "BuildGenerationPrompt", "BuildAnalysisPrompt" };
+        string[] repairMethods = { "RejectGeneratedDraftBeforePublication", "EnqueueGeneratedDeclarationRepair" };
+        foreach (string name in promptMethods.Concat(repairMethods))
+        {
+            if (!marker.StartsWith("private ", StringComparison.Ordinal) || !marker.EndsWith(" " + name + "(", StringComparison.Ordinal)) continue;
+            string owner = promptMethods.Contains(name) ? "WorldDiplomacyPromptComposer" : "WorldDiplomacyDraftRepairApplication";
+            Test.True(source.Contains(owner + "." + name + "(new PromptWorld(this),", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
+            string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/" + owner + ".cs"));
+            return ExtractMethod(text, marker.Replace("private ", "internal static "));
+        }
+        return null;
+    }
+
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
+        string? moved = ReadDpl080Owner(source, startMarker);
+        if (moved != null) return moved;
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
         Test.True(start >= 0, "missing start marker: " + startMarker);
         int end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
@@ -2119,6 +2137,8 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
+		string? moved = ReadDpl080Owner(source, marker);
+		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);
 		int openBrace = source.IndexOf('{', start + marker.Length);

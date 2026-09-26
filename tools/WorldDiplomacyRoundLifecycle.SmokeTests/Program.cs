@@ -26,6 +26,7 @@ internal static class Program
 {
     private static int Main()
     {
+        Dpl080PromptReplay.Run();
         VerifyReconcileAfterLoadDecisionTable();
         VerifyDeadlineRules();
         VerifyStatusRules();
@@ -14104,6 +14105,9 @@ RunRepairCorrectionAndJobDecisionTests();
 
         string behaviorSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        // Inspect the active host-to-application path after DPL-080 ownership transfer.
+        behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
+        behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
         foreach (string transition in new[] { "EnsureOpen", "TryScheduleNormal", "Close", "AdvanceRelay", "IntegratePlayerDeclaration" })
             Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication." + transition + "(", StringComparison.Ordinal),
                 "live host must bind the application transition: " + transition);
@@ -15902,7 +15906,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "repair correction and job construction must live in domain rules behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyPromptContractRules.AppendGeneratedRepairCorrection(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildGeneratedDeclarationRepairJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("() => BuildCanonicalRealmGovernmentHardFact(", StringComparison.Ordinal),
+            && behaviorSource.Contains("() => world.BuildGovernmentHardFact(", StringComparison.Ordinal),
             "the host must bind repair text, job construction, and lazy realm-fact ports");
         Test.True(!behaviorSource.Contains("SemanticRepairAttempts = source.SemanticRepairAttempts + 1", StringComparison.Ordinal)
             && !behaviorSource.Contains("CandidateKingdomIds = resultSettlementRepair", StringComparison.Ordinal),
@@ -16151,7 +16155,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", StringComparison.Ordinal),
             "the host must route LLM job selection and result commits through the lifecycle rules");
         Test.True(behaviorSource.Contains("_llmRequestLease.IsRunning", StringComparison.Ordinal)
-            && behaviorSource.Contains("request.RuntimeGeneration", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyLlmApplication.PrepareRequest(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyLlmApplication.ExecuteAsync(", StringComparison.Ordinal)
             && behaviorSource.Contains("_completedJobs.TryDequeue", StringComparison.Ordinal)
             && behaviorSource.Contains("Task.Run(", StringComparison.Ordinal)
             && behaviorSource.Contains("LogPromptCacheUsage(job, result)", StringComparison.Ordinal),
