@@ -101,3 +101,103 @@ $realFiles = @(Get-ChildItem -LiteralPath $realDestination -Recurse -File -Force
 Assert-Contract ($realFiles.Count -eq $realMap.entries.Count) "real projection contains unexpected files"
 
 Write-Output "contentLayoutContract valid=1 real=$($realMap.entries.Count) invalid=8 PASS"
+
+# Load only the production merge and its dependencies, never deploy's top-level actions.
+$parseErrors = $null
+$deployAst = [System.Management.Automation.Language.Parser]::ParseFile(
+    (Join-Path $ProjectRoot "一键编译覆盖推送\deploy_module.ps1"), [ref]$null, [ref]$parseErrors)
+Assert-Contract ($parseErrors.Count -eq 0) "deploy script parse errors"
+foreach ($name in @("Get-FullPathSafe", "Assert-PathUnderRoot", "Assert-NotReparsePoint", "Invoke-Robocopy", "Merge-InstalledCustomPromptsIntoStaging")) {
+    $definitions = @($deployAst.FindAll({ param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name
+    }, $false))
+    Assert-Contract ($definitions.Count -eq 1) "merge dependency missing or duplicated: $name"
+    . ([scriptblock]::Create($definitions[0].Extent.Text))
+}
+$legacyAssignment = @($deployAst.FindAll({ param($node)
+    $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
+        $node.Left.Extent.Text -eq '$LegacyRootPolicyPromptFileNames'
+}, $false))
+Assert-Contract ($legacyAssignment.Count -eq 1) "legacy prompt name list missing"
+. ([scriptblock]::Create($legacyAssignment[0].Extent.Text))
+
+$promptEntries = @($realMap.entries | Where-Object { $_.target.StartsWith("CustomPrompts/") })
+$policyEntries = @($promptEntries | Where-Object { $_.target.StartsWith("CustomPrompts/Policy/") })
+Assert-Contract ($promptEntries.Count -eq 30 -and $policyEntries.Count -eq 22) "mapped prompt default counts"
+
+function Write-PromptFixture {
+    param([string]$Root, [string]$Relative, [string]$Text)
+    $path = Join-Path $Root $Relative
+    Assert-AnimusForgePathUnderRoot -Path $path -Root $RunRoot -Label "Prompt fixture"
+    Assert-AnimusForgeNoReparsePoint -Path $path -Label "Prompt fixture"
+    New-Item -ItemType Directory -Path (Split-Path -Parent $path) -Force | Out-Null
+    [System.IO.File]::WriteAllText($path, $Text, [System.Text.UTF8Encoding]::new($false))
+}
+
+foreach ($caseName in @("fresh", "empty", "split", "legacy")) {
+    $caseRoot = Join-Path $RunRoot "custom-prompts\$caseName"
+    $installed = Join-Path $caseRoot "installed"
+    $staging = Join-Path $caseRoot "staging"
+    Assert-AnimusForgePathUnderRoot -Path $caseRoot -Root $RunRoot -Label "Prompt fixture"
+    Assert-AnimusForgeNoReparsePoint -Path $caseRoot -Label "Prompt fixture"
+    Assert-Contract (-not (Test-Path -LiteralPath $caseRoot)) "prompt fixture must start empty"
+    New-Item -ItemType Directory -Path $staging -Force | Out-Null
+    $installedFiles = @{}
+    if ($caseName -eq "empty") {
+        New-Item -ItemType Directory -Path (Join-Path $installed "CustomPrompts") -Force | Out-Null
+    } elseif ($caseName -eq "split") {
+        $installedFiles = @{
+            "CustomPrompts/PlayerCustomPromptRule.json" = "user override"
+            "CustomPrompts/unknown.json" = "unknown root"
+            "CustomPrompts/Policy/unknown.json" = "unknown policy"
+            "CustomPrompts/Policy/Effects/heroGold.json" = "user effect"
+            "CustomPrompts/Policy/Effects/unknown.json" = "unknown effect"
+        }
+    } elseif ($caseName -eq "legacy") {
+        $installedFiles = @{
+            "CustomPrompts/PlayerCustomPromptRule.json" = "user override"
+            "CustomPrompts/unknown.json" = "unknown root"
+            "CustomPrompts/Policy/unknown.json" = "legacy policy to replace"
+        }
+        foreach ($fileName in $LegacyRootPolicyPromptFileNames) {
+            $installedFiles["CustomPrompts/$fileName"] = "legacy policy"
+        }
+    }
+    foreach ($entry in $installedFiles.GetEnumerator()) {
+        Write-PromptFixture -Root $installed -Relative $entry.Key -Text $entry.Value
+    }
+    foreach ($pass in 1..2) {
+        # Each pass mirrors real assembly order: mapped defaults, then installed override.
+        Copy-Item -LiteralPath (Join-Path $realDestination "CustomPrompts") -Destination $staging -Recurse -Force
+        Merge-InstalledCustomPromptsIntoStaging -ProjectRoot $ProjectRoot -TargetModuleDir $installed -StagingModuleDir $staging
+        $expectedDefaults = @()
+        $expectedUserFiles = @{}
+        switch ($caseName) {
+            "fresh" { $expectedDefaults = $promptEntries }
+            "empty" { $expectedDefaults = $policyEntries }
+            "split" { $expectedUserFiles = $installedFiles }
+            "legacy" {
+                $expectedDefaults = $policyEntries
+                $expectedUserFiles = @{
+                    "CustomPrompts/PlayerCustomPromptRule.json" = "user override"
+                    "CustomPrompts/unknown.json" = "unknown root"
+                }
+            }
+        }
+        foreach ($entry in $expectedDefaults) {
+            $source = Join-Path $ProjectRoot $entry.source
+            $target = Join-Path $staging $entry.target
+            Assert-Contract ((Get-FileHash -LiteralPath $source).Hash -eq (Get-FileHash -LiteralPath $target).Hash) "$caseName default drift: $($entry.target)"
+        }
+        foreach ($entry in $expectedUserFiles.GetEnumerator()) {
+            Assert-Contract ([System.IO.File]::ReadAllText((Join-Path $staging $entry.Key)) -eq $entry.Value) "$caseName override drift: $($entry.Key)"
+        }
+        $actualFiles = @(Get-ChildItem -LiteralPath $staging -Recurse -File)
+        Assert-Contract ($actualFiles.Count -eq $expectedDefaults.Count + $expectedUserFiles.Count) "$caseName unexpected files, pass $pass"
+        # Merging must never mutate the installed source, including old/unknown policy files.
+        foreach ($entry in $installedFiles.GetEnumerator()) {
+            Assert-Contract ([System.IO.File]::ReadAllText((Join-Path $installed $entry.Key)) -eq $entry.Value) "$caseName installed source changed"
+        }
+    }
+}
+Write-Output "customPromptMerge defaults=30 policy=22 scenarios=4 repeated=4 installedUnchanged=1 PASS"

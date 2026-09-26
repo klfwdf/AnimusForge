@@ -238,6 +238,160 @@ J15C_EXPECTED = {
     },
 }
 
+J15C_PROMPT_EXPECTED = {
+    "CustomPrompts/DailyMemoryCompressionWritingRequirements.json": {
+        "owner": "AF.Module.Memory",
+        "source": "content/modules/AF.Module.Memory/CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+        "sha256": "F98FDE4FBC3B46AF28360F1878323BA4EC7933C10C2958694BAFC2A16483CDA8"
+    },
+    "CustomPrompts/KingdomRebellionSystemPrompt.json": {
+        "owner": "AF.Module.Kingdom",
+        "source": "content/modules/AF.Module.Kingdom/CustomPrompts/KingdomRebellionSystemPrompt.json",
+        "sha256": "3F09ABD7AEB0BCB6A79A381D5E108754F8C851030939C13E3D5183A15AA628A3"
+    },
+    "CustomPrompts/MajorActionCompressionWritingRequirements.json": {
+        "owner": "AF.Module.Memory",
+        "source": "content/modules/AF.Module.Memory/CustomPrompts/MajorActionCompressionWritingRequirements.json",
+        "sha256": "76FE731751575BDC20DA2E6D305F673E12E07F60884C85143E848D2B3C9770BB"
+    },
+    "CustomPrompts/MemoryOverviewCompressionWritingRequirements.json": {
+        "owner": "AF.Module.Memory",
+        "source": "content/modules/AF.Module.Memory/CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+        "sha256": "001E824BBE950960C46AAA8106BA4E77DE891111F602818A30CE9BAE5C92427C"
+    },
+    "CustomPrompts/NpcPersonaGenerationRequirements.json": {
+        "owner": "AF.Module.Persona",
+        "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
+        "sha256": "2D22EF667F1876FE5F9D034F53D4AC88E5252350ECA80DC5FD4315615DE23C46"
+    },
+    "CustomPrompts/PlayerCustomPromptRule.json": {
+        "owner": "AF.Module.Prompt",
+        "source": "content/modules/AF.Module.Prompt/CustomPrompts/PlayerCustomPromptRule.json",
+        "sha256": "A1634CE335855F66C209196B2581A2A85FE26A24392F69318F7AA71FDEC38752"
+    },
+    "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+        "sha256": "A3E55780284E374399A5BDC341F04E0DA4B7F8BE3F7AD95DD59DFACFF2FA86C8"
+    },
+    "CustomPrompts/Policy/Effects/_Common.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/_Common.json",
+        "sha256": "22DEB7EBB84EEE57759C6F928ADF8C030474AF585E28F464E54DD6FC343542DD"
+    },
+    "CustomPrompts/Policy/Effects/armyFormationTendencyPct.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
+        "sha256": "06DF8D195219863004845E526E44AE2656CF5D5AC11CF6B5D9E30452B38948FD"
+    },
+    "CustomPrompts/Policy/Effects/clanInfluence.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanInfluence.json",
+        "sha256": "4C81BD8FD757E5DD2F80DA1037806816415713DF8407EC2BBB092F2EFC70AC54"
+    },
+    "CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
+        "sha256": "BEA0F61625F44BE055B77653EABDC8115ED5ACBB7496852749A880A1859A021C"
+    },
+    "CustomPrompts/Policy/Effects/constructionPerDay.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/constructionPerDay.json",
+        "sha256": "25AB8E65C8A377DEA734BFC69F7DB67B08654643111A250B730763DF15561AE1"
+    },
+    "CustomPrompts/Policy/Effects/foodPerDay.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/foodPerDay.json",
+        "sha256": "E29DD6FCD5C0CB20CA6BE466DF7E848E3B4A0A14C9BCF78B12B17E69C500A3EB"
+    },
+    "CustomPrompts/Policy/Effects/hearthPerDay.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/hearthPerDay.json",
+        "sha256": "C5FDDA6DC400F49941B6BE29702B9E85CE19439F8D6CF310FCAB18C593426BDD"
+    },
+    "CustomPrompts/Policy/Effects/heroGold.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/heroGold.json",
+        "sha256": "E0D279AC34F7541F904368BAE9C397D8049A3AB80BA368C7F54113BF4C06B4B6"
+    },
+    "CustomPrompts/Policy/Effects/kingdomStability.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomStability.json",
+        "sha256": "CD227EF3658CC649C2B9AB5C00D2F2B8A8D5A51F3713D015750554746B6585C2"
+    },
+    "CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
+        "sha256": "577D9ECAD527CD254958D5329DE601B28671474D7656210381701DD91CA6CC2B"
+    },
+    "CustomPrompts/Policy/Effects/loyaltyPerDay.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/loyaltyPerDay.json",
+        "sha256": "48E1378098C69013E1CCFE35A63D3D2E2DBF35CB4A41CA2E88EA049A79D850DC"
+    },
+    "CustomPrompts/Policy/Effects/militiaPerDay.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/militiaPerDay.json",
+        "sha256": "8A3C7D56A49AFD63BCB85C9F64786FFBD6A00E406226FA6E2A89219D7FA6AF6F"
+    },
+    "CustomPrompts/Policy/Effects/partySizeLimit.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/partySizeLimit.json",
+        "sha256": "2CBF42B52B0D7EF271E510B55A2C744923D0F82BC794BD79635E24FBE2ABF9B0"
+    },
+    "CustomPrompts/Policy/Effects/prosperityPerDay.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/prosperityPerDay.json",
+        "sha256": "8D078E4C87D85B30F56904FF9526E3116C9AA61BEE843892593D08C18254E39C"
+    },
+    "CustomPrompts/Policy/Effects/securityPerDay.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/securityPerDay.json",
+        "sha256": "07EF750768E207510B8F2CA199AEF0B3DF3A20C8760C1A31442178EFB1DF3F52"
+    },
+    "CustomPrompts/Policy/Effects/soldierTroopXp.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/soldierTroopXp.json",
+        "sha256": "3B29F8B387522E947F7E7F0B4BFFFB3B7158FB806C5FADE5C479557E1A5491F2"
+    },
+    "CustomPrompts/Policy/Effects/taxIncomePct.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/taxIncomePct.json",
+        "sha256": "BED00201317CEF2E08261385B220D519435EC4FCFCB7314826C091ABDD0A3E0B"
+    },
+    "CustomPrompts/Policy/Effects/villageProductionPct.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/villageProductionPct.json",
+        "sha256": "1417C3FF9D5A269955C019B3F01268FBADF0E55451BB13CA5C8696B5E1767389"
+    },
+    "CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
+        "sha256": "949822045EF6089CC3D19470F894811089F72A9B7AC490B77F78C713BF56E2AE"
+    },
+    "CustomPrompts/Policy/NpcRulerPolicyPrompt.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+        "sha256": "9DEECA538F12E9F5A861D1A50554A9A2814FD2FBCF1179CC59B12E0AB28237C1"
+    },
+    "CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json": {
+        "owner": "PolicySystem",
+        "source": "content/modules/PolicySystem/CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
+        "sha256": "25BA42E2DB584E644CA4C9E223DF27896FD54BBD4898F55EDAB22BE5919AB90D"
+    },
+    "CustomPrompts/WeeklyReportWritingRequirements.json": {
+        "owner": "AF.Module.Weekly",
+        "source": "content/modules/AF.Module.Weekly/CustomPrompts/WeeklyReportWritingRequirements.json",
+        "sha256": "8655B07FE203288E3F579A2CB6043EAF711BE263559185272DE224FF10C210DB"
+    },
+    "CustomPrompts/WorldDiplomacyPrompt.json": {
+        "owner": "AF.Module.Diplomacy",
+        "source": "content/modules/AF.Module.Diplomacy/CustomPrompts/WorldDiplomacyPrompt.json",
+        "sha256": "A447D0691F322388EDF27B9075DCA624414015964BE367D8A379BA78E3EC168A"
+    }
+}
+J15C_EXPECTED.update(J15C_PROMPT_EXPECTED)
+
 CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys()
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED}
 
@@ -313,7 +467,7 @@ def verify_map_and_resources() -> None:
 
     remaining = {
         path.relative_to(ROOT / "AnimusForge").as_posix()
-        for root_name in ("ModuleData", "GUI")
+        for root_name in ("ModuleData", "GUI", "CustomPrompts")
         for path in (ROOT / "AnimusForge" / root_name).rglob("*")
         if path.is_file()
     }
@@ -351,8 +505,12 @@ def verify_script_wiring() -> None:
     deploy_block = deploy[deploy_start:deploy_end]
     check(deploy_block.index("Invoke-Robocopy") < deploy_block.index(call) < deploy_block.index("Merge-InstalledCustomPromptsIntoStaging"),
           "Deploy projection must precede installed prompt merge")
-    check(deploy.count("Get-AnimusForgeContentSourcePath") == 2,
-          "Preprocess and Rule source hash lookups must use content map")
+    check(deploy.count("Get-AnimusForgeContentSourcePath") == 3,
+          "Preprocess, Rule and Policy defaults must use content map")
+    check("Merge-InstalledCustomPromptsIntoStaging -ProjectRoot $projectRootFull" in deploy,
+          "Policy merge must use the resolved project root, including default invocation")
+    check('Join-Path $SourceModuleDir "CustomPrompts\\Policy"' not in deploy,
+          "Policy merge defaults must not use the legacy editable tree")
     check('Join-Path $sourceModuleDir "ModuleData\\RuleBehaviorPrompts.json"' not in deploy,
           "Rule source hash lookup must not use the legacy editable tree")
 
@@ -464,6 +622,9 @@ def verify_inventory_and_overlay() -> None:
     overlay = load_module(ROOT / "tools" / "package_policy_system_source_overlay.py", "j15_overlay")
     files, categories = overlay.build_file_set()
     alias_targets = {
+        "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+        "CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+        "CustomPrompts/WorldDiplomacyPrompt.json",
         "ModuleData/PreprocessPrompts.json",
         "ModuleData/RuleBehaviorPrompts.json",
         "ModuleData/ActionPostprocessPrompts.json",
@@ -517,7 +678,7 @@ def main() -> int:
         "-c", "Release", "--", str(run_root / "gccz"),
     ])
     print(f"j15ContentContracts mappings={len(EXPECTED)} j15b={len(J15B_EXPECTED)} j15c={len(J15C_EXPECTED)} "
-          f"holds={len(CURRENT_HOLD_PATHS)} invalidCases=8 gcczFallbackCases=4 overlayAliases=11 PASS")
+          f"holds={len(CURRENT_HOLD_PATHS)} invalidCases=8 gcczFallbackCases=4 overlayAliases=14 PASS")
     return 0
 
 

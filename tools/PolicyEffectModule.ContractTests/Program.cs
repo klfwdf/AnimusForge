@@ -1089,7 +1089,9 @@ internal static class Program
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		JObject packagedPrompt = JObject.Parse(File.ReadAllText(Path.Combine(
 			repositoryRoot,
-			"AnimusForge",
+			"content",
+			"modules",
+			"PolicySystem",
 			"CustomPrompts",
 			"Policy",
 			"Effects",
@@ -1268,7 +1270,7 @@ internal static class Program
 			"Volunteer player text must expose the abstract supplement/growth result and relative-frequency semantics.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
+		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
 		Check(File.Exists(promptPath), "Volunteer production/growth prompt JSON is missing: " + promptPath);
 		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
 		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
@@ -1492,7 +1494,7 @@ internal static class Program
 			"Village production player text must expose relative original-production semantics.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
+		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
 		Check(File.Exists(promptPath), "Village production prompt JSON is missing: " + promptPath);
 		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
 		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
@@ -1689,7 +1691,7 @@ internal static class Program
 			"RelativePercent player text must describe candidate-score scaling without reusing tax wording.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
+		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
 		Check(File.Exists(promptPath), "Army formation prompt JSON is missing: " + promptPath);
 		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
 		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
@@ -2068,7 +2070,7 @@ internal static class Program
 			"Hidden party-size descendants must render as one visible source capability.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", source.Id + ".json");
+		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", source.Id + ".json");
 		Check(File.Exists(promptPath), "partySizeLimit prompt JSON is missing: " + promptPath);
 		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
 		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
@@ -2375,7 +2377,7 @@ internal static class Program
 			"AnyBlock runtime semantics must be non-stacking and require at least one positive compatible contribution.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string promptPath = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
+		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
 		Check(File.Exists(promptPath), "Village raid ban prompt JSON is missing: " + promptPath);
 		JObject prompt = JObject.Parse(File.ReadAllText(promptPath, Encoding.UTF8));
 		Check(prompt.Value<int>("Version") == descriptor.PayloadSchemaVersion
@@ -2658,7 +2660,7 @@ internal static class Program
 			"The visible module prompt must keep only domain lifecycle semantics and vanilla-calibrated limits, without shared semantic-ledger wire terminology.");
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string customPromptText = File.ReadAllText(
-			Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", "soldierTroopXp.json"),
+			Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", "soldierTroopXp.json"),
 			Encoding.UTF8);
 		Check(customPromptText.IndexOf("语义腿", StringComparison.Ordinal) < 0
 			&& customPromptText.IndexOf("assignment", StringComparison.OrdinalIgnoreCase) < 0
@@ -8222,9 +8224,9 @@ internal static class Program
 			"soldierTroopXp's non-editable instruction must leave effect selection to the model instead of enforcing keyword exclusions.");
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		JObject packagedHeroGoldPrompt = JObject.Parse(File.ReadAllText(Path.Combine(
-			repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", "heroGold.json"), Encoding.UTF8));
+			repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", "heroGold.json"), Encoding.UTF8));
 		JObject packagedTroopXpPrompt = JObject.Parse(File.ReadAllText(Path.Combine(
-			repositoryRoot, "AnimusForge", "CustomPrompts", "Policy", "Effects", "soldierTroopXp.json"), Encoding.UTF8));
+			repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", "soldierTroopXp.json"), Encoding.UTF8));
 		Check(packagedHeroGoldPrompt.Value<string>("UnderstandingPrompt").Contains("受影响定居点当前所有者家族领袖")
 			&& packagedTroopXpPrompt.Value<string>("UnderstandingPrompt").Contains("目标家族")
 			&& packagedTroopXpPrompt.Value<string>("UnderstandingPrompt").Contains("城镇、城堡驻军")
@@ -8955,7 +8957,7 @@ internal static class Program
 			&& monolithicEffectSectionTokens.All(token => npcPolicyDefault.IndexOf(token, StringComparison.Ordinal) < 0),
 			"General player/NPC prompts must not repeat effect-module responsibilities or numeric calibration.");
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string policyPromptDirectory = Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy");
+		string policyPromptDirectory = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy");
 		string[] packagedPolicyPromptFileNames =
 		{
 			"CustomPolicyEvaluatorPrompt.json",
@@ -8969,7 +8971,7 @@ internal static class Program
 			&& packagedPolicyPromptFileNames.All(fileName => !File.Exists(Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", fileName)))
 			&& string.Equals(
 				(string)InvokeStatic(settingsType, "BuildPolicyPromptSubdirectoryForContractTests", new object[] { Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts") }, 1),
-				policyPromptDirectory,
+				Path.Combine(repositoryRoot, "AnimusForge", "CustomPrompts", "Policy"),
 				StringComparison.OrdinalIgnoreCase),
 			"All policy prompt files must live together under CustomPrompts/Policy, with no policy prompt copies left at the CustomPrompts root.");
 		JObject packagedPlayerPrompt = JObject.Parse(File.ReadAllText(

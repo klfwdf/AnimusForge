@@ -92,6 +92,9 @@ def classify_path(path: str) -> str | None:
             return "content"
         owned_roots = (
             "content/modules/AF.Module.Prompt/",
+            "content/modules/AF.Module.Memory/",
+            "content/modules/AF.Module.Persona/",
+            "content/modules/AF.Module.Kingdom/",
             "content/modules/AF.Module.Economy/",
             "content/modules/AF.Module.Social/",
             "content/modules/AF.Module.Conversation/",

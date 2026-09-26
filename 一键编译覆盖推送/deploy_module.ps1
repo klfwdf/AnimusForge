@@ -171,7 +171,7 @@ function Invoke-Robocopy {
 
 function Merge-InstalledCustomPromptsIntoStaging {
     param(
-        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
+        [Parameter(Mandatory = $true)][string]$ProjectRoot,
         [Parameter(Mandatory = $true)][string]$TargetModuleDir,
         [Parameter(Mandatory = $true)][string]$StagingModuleDir
     )
@@ -205,7 +205,7 @@ function Merge-InstalledCustomPromptsIntoStaging {
         }
     }
 
-    $sourcePolicyPrompts = Join-Path $SourceModuleDir "CustomPrompts\Policy"
+    $sourcePolicyPrompts = Split-Path -Parent (Get-AnimusForgeContentSourcePath -ProjectRoot $ProjectRoot -Target "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json")
     $sourceEffectPrompts = Join-Path $sourcePolicyPrompts "Effects"
     if (-not (Test-Path -LiteralPath $sourceEffectPrompts -PathType Container)) {
         throw "Source split policy prompts are missing: $sourceEffectPrompts"
@@ -799,7 +799,7 @@ try {
     )
     Invoke-Robocopy -SourceDir $sourceModuleDir -TargetDir $stagingModuleDir -ExtraArguments $sourceCopyArguments
     Invoke-AnimusForgeContentProjection -ProjectRoot $projectRootFull -DestinationModuleDir $stagingModuleDir | Out-Null
-    Merge-InstalledCustomPromptsIntoStaging -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir -StagingModuleDir $stagingModuleDir
+    Merge-InstalledCustomPromptsIntoStaging -ProjectRoot $projectRootFull -TargetModuleDir $targetModuleDir -StagingModuleDir $stagingModuleDir
     $targetTerminalSettings = Join-Path $targetModuleDir "ModuleData\TerminalSettings.json"
     $stagingTerminalSettings = Join-Path $stagingModuleDir "ModuleData\TerminalSettings.json"
     if (Test-Path -LiteralPath $targetTerminalSettings -PathType Leaf) {

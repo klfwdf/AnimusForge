@@ -392,6 +392,156 @@
       "owner": "AF.Foundation.Runtime",
       "source": "content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json",
       "target": "ModuleData/FeatureBridges.json"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+      "target": "CustomPrompts/DailyMemoryCompressionWritingRequirements.json"
+    },
+    {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/CustomPrompts/KingdomRebellionSystemPrompt.json",
+      "target": "CustomPrompts/KingdomRebellionSystemPrompt.json"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/MajorActionCompressionWritingRequirements.json",
+      "target": "CustomPrompts/MajorActionCompressionWritingRequirements.json"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+      "target": "CustomPrompts/MemoryOverviewCompressionWritingRequirements.json"
+    },
+    {
+      "owner": "AF.Module.Persona",
+      "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
+      "target": "CustomPrompts/NpcPersonaGenerationRequirements.json"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/CustomPrompts/PlayerCustomPromptRule.json",
+      "target": "CustomPrompts/PlayerCustomPromptRule.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+      "target": "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/_Common.json",
+      "target": "CustomPrompts/Policy/Effects/_Common.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
+      "target": "CustomPrompts/Policy/Effects/armyFormationTendencyPct.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanInfluence.json",
+      "target": "CustomPrompts/Policy/Effects/clanInfluence.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
+      "target": "CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/constructionPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/constructionPerDay.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/foodPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/foodPerDay.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/hearthPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/hearthPerDay.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/heroGold.json",
+      "target": "CustomPrompts/Policy/Effects/heroGold.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomStability.json",
+      "target": "CustomPrompts/Policy/Effects/kingdomStability.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
+      "target": "CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/loyaltyPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/loyaltyPerDay.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/militiaPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/militiaPerDay.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/partySizeLimit.json",
+      "target": "CustomPrompts/Policy/Effects/partySizeLimit.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/prosperityPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/prosperityPerDay.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/securityPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/securityPerDay.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/soldierTroopXp.json",
+      "target": "CustomPrompts/Policy/Effects/soldierTroopXp.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/taxIncomePct.json",
+      "target": "CustomPrompts/Policy/Effects/taxIncomePct.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/villageProductionPct.json",
+      "target": "CustomPrompts/Policy/Effects/villageProductionPct.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
+      "target": "CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+      "target": "CustomPrompts/Policy/NpcRulerPolicyPrompt.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
+      "target": "CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/CustomPrompts/WeeklyReportWritingRequirements.json",
+      "target": "CustomPrompts/WeeklyReportWritingRequirements.json"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/CustomPrompts/WorldDiplomacyPrompt.json",
+      "target": "CustomPrompts/WorldDiplomacyPrompt.json"
     }
   ]
 }
