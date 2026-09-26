@@ -443,16 +443,17 @@ internal static class Program
             "outside settlement expansion, off-route external parties may join only through their matching still-open bilateral offer");
 
         string propagation = ExtractSection(
-            source,
-            "private void StartDocumentPropagation(",
-            "private void RetryDeferredDocumentPropagation(");
-        Test.True(propagation.Contains("WorldDiplomacyRound round = ResolveRound(document.RoundId)", StringComparison.Ordinal)
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPropagationApplication.cs")),
+            "internal static void BeginPublication(",
+            "internal static ScheduleResult SchedulePublication(");
+        Test.True(source.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
+                  && propagation.Contains("WorldDiplomacyRound round = resolveRound(document.RoundId)", StringComparison.Ordinal)
                   && propagation.Contains("document.AnalysisStatus, \"external_fact\"", StringComparison.Ordinal)
-                  && propagation.Contains("round = EnsureActiveRound(", StringComparison.Ordinal),
+                  && propagation.Contains("round = ensureRound()", StringComparison.Ordinal),
             "propagation must distinguish a roundless external fact from an ordinary round-opening document");
         int noRoundGuard = propagation.IndexOf("if (round == null", StringComparison.Ordinal);
         int externalFactException = propagation.IndexOf("document.AnalysisStatus, \"external_fact\"", noRoundGuard, StringComparison.Ordinal);
-        int ensureRound = propagation.IndexOf("round = EnsureActiveRound(", externalFactException, StringComparison.Ordinal);
+        int ensureRound = propagation.IndexOf("round = ensureRound()", externalFactException, StringComparison.Ordinal);
         Test.True(noRoundGuard >= 0 && externalFactException > noRoundGuard && ensureRound > externalFactException,
             "a roundless external fact must bypass EnsureActiveRound instead of contaminating an unrelated round");
 
@@ -860,6 +861,8 @@ internal static class Program
 			"offers sharing one source document must retain exact per-action ownership");
 
 		string offerSettlement = ExtractMethod(source, "private void TrySettleRelayOffer(");
+		string offerApplication = File.ReadAllText(FindRepositoryFile(
+			"src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"), Encoding.UTF8);
 		string offerRules = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
 			Encoding.UTF8);
@@ -867,10 +870,11 @@ internal static class Program
 			offerRules, "public static void RegisterRelayProposalOffer(");
 		string responseMatching = ExtractMethod(
 			offerRules, "public static List<WorldDiplomacyRoundOffer> SelectMatchingRelayResponseOffers(");
-		Test.True(offerSettlement.Contains("SourceActionId", StringComparison.Ordinal)
+		Test.True(offerSettlement.Contains("WorldDiplomacyOfferApplication.Settle(", StringComparison.Ordinal)
+			&& offerApplication.Contains("resolvedOffer.SourceDocumentId", StringComparison.Ordinal)
 			&& proposalRegistration.Contains("ProcessingActionId", StringComparison.Ordinal)
 			&& responseMatching.Contains("RespondingToOfferActionId", StringComparison.Ordinal)
-			&& offerSettlement.Contains("ResolveOfferedPeaceTerms(source, resolvedOffer.SourceActionId)", StringComparison.Ordinal),
+			&& source.Contains("ResolveOfferedPeaceTerms(source, offer.SourceActionId)", StringComparison.Ordinal),
 			"proposal registration and acceptance/rejection must match one document/action source pair");
 		Test.True(proposalRegistration.Contains("RemoveAll", StringComparison.Ordinal)
 			&& proposalRegistration.Contains("SourceDocumentId", StringComparison.Ordinal)
@@ -903,7 +907,7 @@ internal static class Program
 			"for (int index = 0; index < actions.Count; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = analyzedPublication.IndexOf(
-			"document.ProcessingActionId = action.ActionId",
+			"WorldDiplomacyDocumentApplication.BeginAction(document, action, target.StringId)",
 			actionLoop,
 			StringComparison.Ordinal);
 		int registerOffer = analyzedPublication.IndexOf(
@@ -1746,22 +1750,19 @@ internal static class Program
 
 		string settleOffer = ExtractMethod(source, "private void TrySettleRelayOffer(");
 		int acceptExecutability = settleOffer.IndexOf(
-			"AreOfferedPeaceTermsCurrentlyExecutable(resolvedOffer, source, proposer, target)",
-			StringComparison.Ordinal);
-		int acceptFailure = settleOffer.IndexOf(
-			"和平原案条款已无法原样履行",
-			acceptExecutability,
+			"AreOfferedPeaceTermsCurrentlyExecutable(offer, source, proposer, target)",
 			StringComparison.Ordinal);
 		int cloneExactTerms = settleOffer.IndexOf(
-			"WorldDiplomacyOfferContractRules.ClonePeaceTerms(WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, resolvedOffer.SourceActionId))",
-			acceptFailure,
+			"WorldDiplomacyOfferContractRules.ClonePeaceTerms(",
+			acceptExecutability,
 			StringComparison.Ordinal);
-		int executePeace = settleOffer.IndexOf("ExecuteMakePeace(proposer, target, document)", cloneExactTerms, StringComparison.Ordinal);
+		int executePeace = settleOffer.IndexOf("ExecuteMakePeace(proposer, target, response)", cloneExactTerms, StringComparison.Ordinal);
 		Test.True(acceptExecutability >= 0
-			&& acceptFailure > acceptExecutability
-			&& settleOffer.IndexOf("return;", acceptFailure, StringComparison.Ordinal) > acceptFailure
-			&& cloneExactTerms > acceptFailure
-			&& executePeace > cloneExactTerms,
+			&& settleOffer.Contains("if (!AreOfferedPeaceTermsCurrentlyExecutable(offer, source, proposer, target)) return false;", StringComparison.Ordinal)
+			&& cloneExactTerms > acceptExecutability
+			&& executePeace > cloneExactTerms
+			&& File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"))
+				.Contains("和平原案条款已无法原样履行", StringComparison.Ordinal),
 			"peace acceptance must revalidate exact terms, abort on drift, then clone the original terms before executing peace");
 	}
 
