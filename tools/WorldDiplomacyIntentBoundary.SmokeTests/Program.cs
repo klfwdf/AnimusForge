@@ -27,6 +27,8 @@ internal static class Program
         string sourcePath = FindRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string source = File.ReadAllText(sourcePath, Encoding.UTF8) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs"));
         string canonicalHistoryFile = File.ReadAllText(
             FindRepositoryFile(Path.Combine(
                 "Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")),
@@ -1939,7 +1941,7 @@ internal static class Program
             "private string BuildGenerationPrompt(",
             "private string BuildCompactRoundPlanCandidateLine(");
         Test.True(targetedPrompt.Contains(
-                      "List<string> legalActions = BuildLegalDiplomaticDeclarationIntents(",
+                      "List<string> legalActions = world.BuildLegalDiplomaticDeclarationIntents(",
                       StringComparison.Ordinal)
                   && targetedPrompt.Contains(
                       "isExternalResponseOnly: isExternalResponseOnly",
@@ -2155,7 +2157,7 @@ internal static class Program
 
         int repairLegalActions = generationRepair.IndexOf("BuildCurrentLegalDiplomaticOptions(", StringComparison.Ordinal);
         int repairSignature = generationRepair.IndexOf(
-            "repair.PresentedLegalActionSignature = BuildGenerationLegalActionSignature(repair);",
+            "repair.PresentedLegalActionSignature = world.BuildGenerationLegalActionSignature(repair);",
             StringComparison.Ordinal);
         int repairEnqueue = generationRepair.IndexOf("EnqueueJob(repair);", StringComparison.Ordinal);
         Test.True(repairLegalActions >= 0
@@ -2494,7 +2496,7 @@ internal static class Program
                   && abandonSecondFailure > stopFirstFailure,
             "a first invalid draft may return only after a viable repair was enqueued; failed or non-viable repair must abandon");
         Test.True(rejectionGate.Contains(
-                "&& EnqueueGeneratedDeclarationRepair(job, rejectedRaw, author, target, normalizedReason, parsedJson)",
+                "&& EnqueueGeneratedDeclarationRepair(world, job, rejectedRaw, author, target, normalizedReason, parsedJson)",
                 StringComparison.Ordinal),
             "the retry gate must pass the rejected parsed envelope and must not suppress abandonment when no legal repair action remains");
         Test.True(CountOccurrences(rejectionGate, "EnqueueGeneratedDeclarationRepair(") == 1
@@ -2586,13 +2588,13 @@ internal static class Program
             "authorized repair targets must remain live, independent, actionable, and deterministic");
 
         Test.True(generationRepair.Contains(
-                "List<string> authorizedTargetIds = GetAuthorizedGenerationTargetIds(source, repairRound, author);",
+                "List<string> authorizedTargetIds = world.GetAuthorizedGenerationTargetIds(source, repairRound, author);",
                 StringComparison.Ordinal)
                   && generationRepair.Contains(
-                      "target != null && authorizedTargetIds.Contains(target.StringId, StringComparer.OrdinalIgnoreCase)",
+                      "target != null && authorizedTargetIds.Contains(target, StringComparer.OrdinalIgnoreCase)",
                       StringComparison.Ordinal)
                   && generationRepair.Contains(
-                      "authorizedTargetIds.Count == 1 ? ResolveKingdom(authorizedTargetIds[0]) : null",
+                      "authorizedTargetIds.Count == 1 ? world.ResolveKingdom(authorizedTargetIds[0]) : null",
                       StringComparison.Ordinal),
             "an unauthorized model target must fall back to the original sole target or the full authorized target range");
 		Test.True(generationRepair.Contains("BuildCurrentLegalDiplomaticOptions(", StringComparison.Ordinal)
@@ -2657,17 +2659,11 @@ internal static class Program
                   && emptyContentBranch.Contains("LLM returned empty content", StringComparison.Ordinal),
             "empty content must remain an ordinary failed request, not a partial draft repair");
 
-        string requestCompletionBridge = ExtractMethod(
-            source,
-            "private void TryStartNextLlmJob()");
-        Test.True(requestCompletionBridge.Contains(
-                "result.IsOutputTruncated = metadata.IsOutputTruncated;",
-                StringComparison.Ordinal),
-            "the shared Gateway metadata truncation signal must survive transfer into the queued LLM job result");
-        string llmJobResultDto = ExtractSection(
-            source,
-            "private sealed class LlmJobResult",
-            "internal sealed class WorldDiplomacyMapNotification");
+        string requestCompletionBridge = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs"));
+        Test.True(requestCompletionBridge.Contains("result.IsOutputTruncated = metadata.IsOutputTruncated;", StringComparison.Ordinal)
+            && source.Contains("WorldDiplomacyLlmApplication.ExecuteAsync(", StringComparison.Ordinal),
+            "shared Gateway truncation must cross the application receipt into the real host queue");
+        string llmJobResultDto = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs"));
         Test.True(llmJobResultDto.Contains("public bool IsOutputTruncated;", StringComparison.Ordinal),
             "the completed-job queue item must retain output truncation until main-thread commit");
 
@@ -2983,7 +2979,7 @@ internal static class Program
 			"private void AbandonRejectedGeneration(");
 		Test.True(repair.Contains("source.IsExternalResponseOnly", StringComparison.Ordinal)
 			&& repair.Contains("ResolveDocument(source.SourceDocumentId)", StringComparison.Ordinal)
-			&& repair.Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal),
+			&& ExtractMethod(source, "private List<string> GetAuthorizedGenerationTargetIds(").Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal),
 			"repair options and authorized targets must retain the same external source-bound statement gate");
 		string externalRelayPrompt = ExtractSection(
 			source,
@@ -4285,8 +4281,26 @@ internal static class Program
         throw new FileNotFoundException("Could not locate repository file.", fileName);
     }
 
+    // Follow the actual DPL-080 owner while retaining host-routing checks.
+    private static string? ReadDpl080Owner(string source, string marker)
+    {
+        string[] promptMethods = { "BuildRoundPlanSystemPrompt", "BuildRoundPlanPrompt", "BuildRelayConversationTurnPrompt", "BuildAutonomousOpeningPrompt", "BuildGenerationPrompt", "BuildAnalysisPrompt" };
+        string[] repairMethods = { "RejectGeneratedDraftBeforePublication", "EnqueueGeneratedDeclarationRepair" };
+        foreach (string name in promptMethods.Concat(repairMethods))
+        {
+            if (!marker.StartsWith("private ", StringComparison.Ordinal) || !marker.EndsWith(" " + name + "(", StringComparison.Ordinal)) continue;
+            string owner = promptMethods.Contains(name) ? "WorldDiplomacyPromptComposer" : "WorldDiplomacyDraftRepairApplication";
+            Test.True(source.Contains(owner + "." + name + "(new PromptWorld(this),", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
+            string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/" + owner + ".cs"));
+            return ExtractMethod(text, marker.Replace("private ", "internal static "));
+        }
+        return null;
+    }
+
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
+        string? moved = ReadDpl080Owner(source, startMarker);
+        if (moved != null) return moved;
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
         Test.True(start >= 0, "missing start marker: " + startMarker);
         int end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
@@ -4296,6 +4310,8 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
+		string? moved = ReadDpl080Owner(source, marker);
+		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);
 		int openBrace = source.IndexOf('{', start + marker.Length);
