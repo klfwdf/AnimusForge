@@ -6191,25 +6191,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private string BuildFallbackAnalysisJson(WorldDiplomacyJob job)
 	{
-		WorldDiplomacyDocument document = ResolveDocument(job?.DocumentId);
-		return new JObject
-		{
-			["status"] = "fallback",
-			["title_summary"] = WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, "statement"),
-			["responding_to_offer_document_id"] = "",
-			["responding_to_threat_document_id"] = "",
-			["primary_target_kingdom_id"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document?.TargetKingdomId, job?.TargetKingdomId),
-			["addressed_kingdom_ids"] = new JArray(),
-			["mentioned_kingdom_ids"] = new JArray(),
-			["intent"] = "statement",
-			["commitment"] = "non_binding",
-			["requires_response"] = false,
-			["tone"] = "neutral",
-			["confidence"] = 0.0,
-			["international_reputation_delta"] = 0,
-			["international_reputation_reason"] = "语义分析服务未完成评估，交由本地结构化规则给出非零评价。"
-		}.ToString(Formatting.None);
+		return WorldDiplomacyPromptComposer.BuildFallbackAnalysisJson(ResolveDocument(job?.DocumentId), job?.TargetKingdomId);
 	}
+
 	private string BuildFallbackAnnualSummary(int year, List<string> ids)
 	{
 		List<WorldDiplomacyDocument> documents = _storage.Documents

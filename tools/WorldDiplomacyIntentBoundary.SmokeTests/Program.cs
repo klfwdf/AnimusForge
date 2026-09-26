@@ -4284,6 +4284,11 @@ internal static class Program
     // Follow the actual DPL-080 owner while retaining host-routing checks.
     private static string? ReadDpl080Owner(string source, string marker)
     {
+        if (marker == "private string BuildFallbackAnalysisJson(")
+        {
+            Test.True(source.Contains("WorldDiplomacyPromptComposer.BuildFallbackAnalysisJson(ResolveDocument(job?.DocumentId), job?.TargetKingdomId)", StringComparison.Ordinal), "host must pass current fallback document and target");
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs")), "internal static string BuildFallbackAnalysisJson(");
+        }
         string[] promptMethods = { "BuildRoundPlanSystemPrompt", "BuildRoundPlanPrompt", "BuildRelayConversationTurnPrompt", "BuildAutonomousOpeningPrompt", "BuildGenerationPrompt", "BuildAnalysisPrompt" };
         string[] repairMethods = { "RejectGeneratedDraftBeforePublication", "EnqueueGeneratedDeclarationRepair" };
         foreach (string name in promptMethods.Concat(repairMethods))

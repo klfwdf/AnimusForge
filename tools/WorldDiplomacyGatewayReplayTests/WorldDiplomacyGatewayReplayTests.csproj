@@ -10,4 +10,7 @@
     <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
   </ItemGroup>
   <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
+  <PropertyGroup>
+    <_ReplayImplementationPath Condition="'$(ReplayCandidateDll)' != ''">$(ReplayCandidateDll)</_ReplayImplementationPath>
+  </PropertyGroup>
 </Project>

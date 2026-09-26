@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
@@ -430,5 +432,25 @@ internal static class WorldDiplomacyPromptComposer
 		sb.AppendLine("【MODE=ANALYZE】");
 		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildAnalysisModeContract());
 		return sb.ToString().TrimEnd();
+	}
+	internal static string BuildFallbackAnalysisJson(WorldDiplomacyDocument document, string targetKingdomId)
+	{
+		return new JObject
+		{
+			["status"] = "fallback",
+			["title_summary"] = WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, "statement"),
+			["responding_to_offer_document_id"] = "",
+			["responding_to_threat_document_id"] = "",
+			["primary_target_kingdom_id"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document?.TargetKingdomId, targetKingdomId),
+			["addressed_kingdom_ids"] = new JArray(),
+			["mentioned_kingdom_ids"] = new JArray(),
+			["intent"] = "statement",
+			["commitment"] = "non_binding",
+			["requires_response"] = false,
+			["tone"] = "neutral",
+			["confidence"] = 0.0,
+			["international_reputation_delta"] = 0,
+			["international_reputation_reason"] = "语义分析服务未完成评估，交由本地结构化规则给出非零评价。"
+		}.ToString(Formatting.None);
 	}
 }
