@@ -1,4 +1,11 @@
-# 当前交接：AF2.0 完整资源/数据终态方案，待实际实施（2026-09-26）
+# 当前交接：AF2.0 F1 路径约定首片已验，继续 F1–F5（2026-09-26）
+
+- **状态**：用户授权离线连续实施；当前仅完成 `AnimusForgeDataPaths` 纯 .NET 约定与 17 项反例测试。Debug/Release × 1.3/1.4 + Bootstrap 六构建均零警告错误。消费者尚未接线，因此尚不改变运行数据位置；不是 F1 全部，更不是 AF2.0 完成。意图提交 `d2aca97f`，实际代码/证据见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[范围图](docs/architecture/af-framework-code-scope.md)。
+- **下一步**：补齐有效覆盖/随包默认/owner 安全回退契约，再接实际 writer/编辑器及可恢复迁移；Stage/ZIP 白名单与真实数据退役须另按计划门禁执行。D: 游戏仅只读依赖/旧来源；无覆盖、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入。实机旧档与发布许可 **NOT-RUN**。
+
+## 以下为 AF2.0 设计交接（历史）
+
+# AF2.0 完整资源/数据终态方案，待实际实施（2026-09-26）
 
 - **最新请求**：用户拒绝“保护项原位排除、缩范围收尾”，要求完整最终方案；不再重复之前的二选一问题。
 - **方案**：[J15 计划第 9 节](docs/plans/j15-content-profile-plan.md#j15-af2-final-state)定义独立用户数据、唯一默认源、可恢复迁移、取消源码回写、纯 Stage 与发布白名单，分 F1–F5 有限批次。意图 `093e4d3a`；实际 consumer 坐标与范围变化集中于[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)，[范围图](docs/architecture/af-framework-code-scope.md)仍反映已实现的旧候选。
