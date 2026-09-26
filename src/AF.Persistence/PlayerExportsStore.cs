@@ -51,6 +51,12 @@ internal static class PlayerExportsStore
 		return Path.Combine(GetModuleRootPath(), FolderName);
 	}
 
+	internal static PlayerExportsPackageExport BeginExportPackage(string root, string folderName)
+	{
+		return PlayerExportsPackageExport.Begin(root, folderName,
+			AnimusForgeDataPaths.GetRecoveryDirectory(AnimusForgeDataPaths.GetCurrentRoot()));
+	}
+
 	/// <summary>Invalid file-name chars → '_', trimmed, trailing dots removed; empty input stays empty.</summary>
 	internal static string SanitizeFolderName(string input)
 	{
@@ -125,6 +131,7 @@ internal static class PlayerExportsStore
 			}
 			DirectoryInfo directoryInfo = new DirectoryInfo(root);
 			return (from d in directoryInfo.GetDirectories()
+				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d).FirstOrDefault()?.FullName;
 		}
@@ -139,6 +146,7 @@ internal static class PlayerExportsStore
 		string contents = JsonConvert.SerializeObject(obj, Formatting.Indented);
 		JToken.Parse(contents);
 		string directory = Path.GetDirectoryName(path);
+		PlayerExportsPackageExport.AssertNoReparse(path);
 		Directory.CreateDirectory(directory);
 		string candidate = Path.Combine(directory, "." + Path.GetFileName(path) + "." + Guid.NewGuid().ToString("N") + ".tmp");
 		try
@@ -205,6 +213,23 @@ internal static class PlayerExportsStore
 		}
 		catch
 		{
+		}
+	}
+
+	/// <summary>Only a hidden export candidate may have its old JSON set cleared.</summary>
+	internal static void ClearCandidateJsonFiles(string dir)
+	{
+		if (string.IsNullOrWhiteSpace(dir)) throw new ArgumentException("Candidate directory is required.", nameof(dir));
+		string fullPath = Path.GetFullPath(dir);
+		if (!fullPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+			.Any(segment => segment.StartsWith(".af-export-candidate.", StringComparison.Ordinal)))
+			throw new InvalidOperationException("Refusing to clear JSON outside an export candidate.");
+		PlayerExportsPackageExport.AssertNoReparse(fullPath);
+		if (!Directory.Exists(fullPath)) return;
+		foreach (string path in Directory.GetFiles(fullPath, "*.json", SearchOption.TopDirectoryOnly))
+		{
+			PlayerExportsPackageExport.AssertNoReparse(path);
+			File.Delete(path);
 		}
 	}
 }
