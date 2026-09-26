@@ -141,6 +141,7 @@ RunRepairCorrectionAndJobDecisionTests();
         PropagationApplicationReplay.Run();
         PublicationScheduleReplay.Run();
         OfferApplicationReplay.Run();
+        CourtResponseReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14041,6 +14042,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string applicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs")));
         string propagationApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
         string offerApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyOfferApplication.cs")));
+        string courtResponseApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs")));
 
         string rulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"));
@@ -14059,9 +14061,12 @@ RunRepairCorrectionAndJobDecisionTests();
 
         string behaviorSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
-        foreach (string transition in new[] { "EnsureOpen", "TryScheduleNormal", "Close", "AdvanceRelay", "IntegratePlayerDeclaration", "AdmitMandatoryReply" })
+        foreach (string transition in new[] { "EnsureOpen", "TryScheduleNormal", "Close", "AdvanceRelay", "IntegratePlayerDeclaration" })
             Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication." + transition + "(", StringComparison.Ordinal),
                 "live host must bind the application transition: " + transition);
+        Test.True(behaviorSource.Contains("WorldDiplomacyCourtResponseApplication.TryScheduleMandatory(", StringComparison.Ordinal)
+            && courtResponseApplicationSource.Contains("WorldDiplomacyRoundApplication.AdmitMandatoryReply(", StringComparison.Ordinal),
+            "live court admission must bind through the court application to the round transition");
         Test.True(behaviorSource.Contains("WorldDiplomacyPolicyRoundApplication.TrySchedule(", StringComparison.Ordinal),
             "live policy signal must enter the same canonical round through its application owner");
         Test.True(!applicationSource.Contains("TaleWorlds", StringComparison.Ordinal)
@@ -14242,16 +14247,17 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw direction flips must not remain in the host");
         Test.True(!behaviorSource.Contains("Math.Min(3, round.ConsecutiveNoActionPasses + 1)", StringComparison.Ordinal),
             "raw no-action increments must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsResponseRequiredFrom", StringComparison.Ordinal),
-            "the host must route response-required checks through the lifecycle rules");
+        Test.True(courtResponseApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsResponseRequiredFrom", StringComparison.Ordinal),
+            "the court application must route response-required checks through the lifecycle rules");
         Test.True(structureSource.Contains("WorldDiplomacyRoundLifecycleRules.CollectDocumentTargetIds", StringComparison.Ordinal),
             "the host must route document target collection through the lifecycle rules");
         Test.True(structureSource.Contains("WorldDiplomacyRoundLifecycleRules.DocumentRespondsToSource", StringComparison.Ordinal),
             "the host must route responds-to checks through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateMandatoryReplyAction", StringComparison.Ordinal),
-            "the host must route mandatory-reply scheduling through the lifecycle rules");
-        Test.True(behaviorSource.Contains("new WorldDiplomacyMandatoryReplyInput", StringComparison.Ordinal),
-            "the host must build the mandatory-reply input from live storage state");
+        Test.True(behaviorSource.Contains("WorldDiplomacyCourtResponseApplication.TryScheduleMandatory(", StringComparison.Ordinal)
+            && courtResponseApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateMandatoryReplyAction", StringComparison.Ordinal),
+            "the court application must route mandatory-reply scheduling through the lifecycle rules");
+        Test.True(courtResponseApplicationSource.Contains("new WorldDiplomacyMandatoryReplyInput", StringComparison.Ordinal),
+            "the court application must build the mandatory-reply input from canonical storage and live probes");
         Test.True(behaviorSource.Contains("WorldDiplomacyIntentVocabulary.NormalizeIntent", StringComparison.Ordinal),
             "the host must route intent normalization through the vocabulary");
         Test.True(offerApplicationSource.Contains("WorldDiplomacyIntentVocabulary.IsProposalIntent", StringComparison.Ordinal),
@@ -15275,8 +15281,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && factSource.Contains("public static string BuildFallbackRoundSummary(", StringComparison.Ordinal)
             && factSource.Contains("public static string BuildFallbackRoundCompressionJson(", StringComparison.Ordinal),
             "storage knowledge/document queries must live in the document fact rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyDocumentFactRules.HasKingdomRespondedToDocument(_storage.Documents", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(_storage.KingdomKnowledge", StringComparison.Ordinal)
+        Test.True(courtResponseApplicationSource.Contains("WorldDiplomacyDocumentFactRules.HasKingdomRespondedToDocument(", StringComparison.Ordinal)
+            && propagationApplicationSource.Contains("WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.BuildFallbackRoundCompressionJson(_storage.Documents", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool HasKingdomRespondedToDocument(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool HasUndeliveredCourtArrivals(", StringComparison.Ordinal)
