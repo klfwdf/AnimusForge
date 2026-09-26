@@ -228,7 +228,7 @@ python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet --artifa
 
 <a id="j15-af2-final-state"></a>
 
-## 9. AF2.0 完整收尾方案（待实施）
+## 9. AF2.0 完整收尾方案（实施中，未完成）
 
 ### 9.1 目标与有意改变的边界
 

@@ -1,4 +1,6 @@
-# 当前范围：AF2.0 F1 路径契约及 F2 单文件安全写入首片（2026-09-26）
+# 当前范围：AF2.0 F1 路径契约与 F2 显式迁移器（2026-09-26）
+
+`tools/af2_migrate.py:25–324` 新增非启动钩子的 PlayerExports 专用显式迁移入口：按安装/仓内两个来源分别执行只读盘点、私有 Recovery 备份与逐文件 hash/大小验证、同卷候选、目标优先和来源冲突保留、同卷不覆盖激活及完成记录；OS 排他锁在崩溃后释放，保留源/备份和含文件名的私有清单。`tests/AF.Persistence/DataPaths/test_migration.py:1–166` 用虚构数据覆盖空、两来源冲突、已有损坏目标、重复、中断续作、mtime、源变化、损坏备份、磁盘满、锁与错根。CLI 对 D: 安装和仓内来源各自只读盘点为 3139 文件、14,274,532 字节，先前逐文件 SHA-256 全一致；**未执行真实 `--apply`**，未接 runtime/编辑器，不据此退役旧树。完整 F2/F4 仍未完成。
 
 `src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 新增纯 .NET 内部路径约定：默认 `%LOCALAPPDATA%/AnimusForge`，环境变量或显式绝对根优先，拒绝相对路径、源码/模块/Stage 根与现存 reparse，提供 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery` typed 目录。`tests/AF.Persistence/DataPaths/Program.cs:1–59` 验证 17 个定位及错误路径反例。现有 reader/writer 尚未接此约定；本片不改变 V1 API、保存身份、游戏安装或默认入口。Debug/Release × 1.3/1.4 + Bootstrap 六构建和独立路径测试通过，实机/旧档/迁移/Stage/ZIP **NOT-RUN**。完整 F1–F5 仍未验收，证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
 

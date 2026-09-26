@@ -1,4 +1,6 @@
-## AF2.0 F1 路径契约与 F2 单文件安全写入首片：离线已验（2026-09-26）
+## AF2.0 F1 路径契约、F2 单文件安全写入与显式迁移器：实施中（2026-09-26）
+
+最新 F2 迁移工具切片：`tools/af2_migrate.py:25–324` 只在显式 CLI `--apply` 时触达默认 `%LOCALAPPDATA%/AnimusForge`，安装模块与仓内旧树是**分别标识**的只读来源，仓内不会自动混入安装迁移。工具按块 SHA-256/大小/mtime 盘点，拒绝 reparse、同源大小写碰撞、错误根、磁盘空间不足和并发操作；私有 `Recovery` 下按来源备份并复验、隔离候选；活动目标已有文件（包括损坏 JSON）绝不覆盖，不同来源版本均留私有备份；同卷逐文件不覆盖激活，完成标记仅在全批成功后写入。中断或备份损坏不写成功记录，重复运行可续作；包目录 mtime 恢复以维持“最新包”选择。完整文件名只在私有 Recovery 清单，CLI 仅输出计数。`tests/AF.Persistence/DataPaths/test_migration.py:1–166` 合成覆盖两来源/目标冲突、空、损坏、重复、中断、源变更、备份损坏、磁盘满、排他锁、错误根。实来源只读盘点：安装和仓内各 3139 文件、14,274,532 字节，上一轮逐文件 SHA-256 3139/3139 相同；未读玩家正文到报告、未运行真实 `--apply`。目前仅覆盖 PlayerExports；普通/Policy Prompt、TerminalSettings、模型及其他数据类别迁移和 runtime/编辑器接线仍待实现，所以 F2/F4 未完成。
 
 意图 `d2aca97f`。`src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 提供纯 .NET 内部定位，默认 `%LOCALAPPDATA%/AnimusForge`；显式绝对根/环境覆盖须拒绝相对、源码、模块、Stage、现存 reparse 或文件根，绝不回退 CWD。typed 子目录包括 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery`。路径缓存仅初始化一次，目录检查只在显式解析时运行，未进入 Tick。`tests/AF.Persistence/DataPaths/Program.cs:1–61` 独立编入同一生产源码，17 个定位/越界反例通过；源码新增前曾得到预期 CS2001 red。随后原一键脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均零警告错误；清理前核实四个获准生成目录为工作区内、无 reparse、仅含构建产物。该类尚未接任何 reader/writer，因此**不是 F1 完成**，也不证明迁移、Stage/ZIP、真实数据或游戏验收。
 
