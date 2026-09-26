@@ -602,9 +602,241 @@ def migrate_terminal_settings(sources: list[tuple[str, Path]], root: Path, *,
         lock_stream.close()
 
 
+def _model_lock() -> dict:
+    path = REPO / "content" / "models.lock.json"
+    lock = json.loads(path.read_text(encoding="utf-8"))
+    if lock.get("schemaVersion") != 1 or set(lock.get("groups", {})) != {"embedding", "reranker"}:
+        raise RuntimeError("Model dependency lock is incomplete")
+    for group in lock["groups"].values():
+        variants = group.get("variants")
+        if not isinstance(variants, dict) or not variants:
+            raise RuntimeError("Model dependency lock has no variants")
+        for files in variants.values():
+            if not isinstance(files, dict) or not files:
+                raise RuntimeError("Model dependency lock has an empty file group")
+            for name, expected in files.items():
+                if (not name or name in (".", "..") or "/" in name or "\\" in name or ":" in name
+                        or not isinstance(expected, dict) or not isinstance(expected.get("size"), int)
+                        or expected["size"] < 0 or not isinstance(expected.get("sha256"), str)
+                        or len(expected["sha256"]) != 64
+                        or any(c not in "0123456789abcdef" for c in expected["sha256"])):
+                    raise RuntimeError("Model dependency lock contains an invalid file")
+    return lock
+
+
+def _model_group_path(module: Path, group: str) -> Path:
+    base = module / "ONNX"
+    return base if group == "embedding" else base / "reranker"
+
+
+def _snapshot_models(sources: list[tuple[str, Path]], root: Path, lock: dict) -> list[dict]:
+    entries: list[dict] = []
+    seen_ids: set[str] = set()
+    for source_id, module in sources:
+        if not source_id or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for c in source_id):
+            raise ValueError("Source identity must be a simple non-private label")
+        if source_id in seen_ids:
+            raise ValueError("Duplicate source identity")
+        seen_ids.add(source_id)
+        module = Path(os.path.abspath(module))
+        _check_ancestors(module)
+        if root == module or root in module.parents or module in root.parents:
+            raise ValueError("Migration source and data root must be separate")
+        base = module / "ONNX"
+        if not base.exists():
+            continue
+        _check_ancestors(base)
+        if not base.is_dir():
+            raise RuntimeError("Legacy model root is not a directory")
+        expected_root = set(lock["groups"]["embedding"]["variants"].get(source_id, {}))
+        if source_id in lock["groups"]["reranker"]["variants"]:
+            expected_root.add("reranker")
+        if set(os.listdir(base)) != expected_root:
+            raise RuntimeError("Legacy model root differs from the locked complete group")
+        for group_name, group in lock["groups"].items():
+            files = group["variants"].get(source_id)
+            if files is None:
+                continue
+            folder = _model_group_path(module, group_name)
+            _check_ancestors(folder)
+            if not folder.is_dir() or (group_name != "embedding" and set(os.listdir(folder)) != set(files)):
+                raise RuntimeError("Legacy model group differs from the lock")
+            for name, expected in sorted(files.items()):
+                path = folder / name
+                _check_ancestors(path)
+                if not path.is_file():
+                    raise RuntimeError("Legacy model group has a missing or non-file member")
+                stat = path.stat()
+                digest = _hash(path)
+                if stat.st_size != expected["size"] or digest != expected["sha256"]:
+                    raise RuntimeError("Legacy model bytes differ from the dependency lock")
+                entries.append({"source": source_id, "group": group_name, "relative": name,
+                                "sha256": digest, "size": stat.st_size, "mtimeNs": stat.st_mtime_ns})
+    return entries
+
+
+def _snapshot_existing_model_group(folder: Path) -> list[dict]:
+    _check_ancestors(folder)
+    if not folder.is_dir():
+        raise RuntimeError("Active model group is not a directory")
+    entries: list[dict] = []
+    for directory, dirs, files in os.walk(folder, followlinks=False):
+        parent = Path(directory)
+        _check_ancestors(parent)
+        for name in dirs + files:
+            _check_ancestors(parent / name)
+        for name in files:
+            path = parent / name
+            if not path.is_file():
+                raise RuntimeError("Active model group contains a non-file entry")
+            stat = path.stat()
+            entries.append({"relative": path.relative_to(folder).as_posix(), "sha256": _hash(path),
+                            "size": stat.st_size, "mtimeNs": stat.st_mtime_ns})
+    return sorted(entries, key=lambda item: item["relative"])
+
+
+def _mark_models_ready(root: Path, locked: dict, lock_hash: str) -> None:
+    """Publish only groups whose complete active bytes still match one locked variant."""
+    models = root / "Models"
+    marker = models / ".af-models-ready.json"
+    _check_ancestors(marker)
+    if marker.exists():
+        prior = json.loads(marker.read_text(encoding="utf-8"))
+        if prior.get("schema") != 1 or not isinstance(prior.get("groups"), dict):
+            raise RuntimeError("Invalid private model readiness record")
+    groups: dict[str, dict] = {}
+    for group_name, group in locked["groups"].items():
+        folder = models / group_name
+        if not folder.exists():
+            continue
+        current = _snapshot_existing_model_group(folder)
+        current_files = {item["relative"]: (item["size"], item["sha256"]) for item in current}
+        for variant_name, expected in group["variants"].items():
+            if current_files == {name: (value["size"], value["sha256"]) for name, value in expected.items()}:
+                groups[group_name] = {"variant": variant_name,
+                                      "files": {item["relative"]: {
+                                          "size": item["size"], "sha256": item["sha256"],
+                                          "mtimeUtcTicks": item["mtimeNs"] // 100 + 621355968000000000
+                                      } for item in current}}
+                break
+    _write_record(marker, {"schema": 1, "lockSha256": lock_hash, "groups": groups})
+
+
+def migrate_models(sources: list[tuple[str, Path]], root: Path, *,
+                   allow_test_root: bool = False, lock: dict | None = None, hook=None) -> dict:
+    """Verify complete locked groups, retain source and active conflicts, then rename whole candidates."""
+    root = _safe_root(Path(root), allow_test_root)
+    locked = _model_lock() if lock is None else lock
+    normalized = [(label, Path(os.path.abspath(path))) for label, path in sources]
+    entries = _snapshot_models(normalized, root, locked)
+    if not entries:
+        return {"backed_up": 0, "activated": 0, "conflicts": 0, "already_complete": False}
+    active = root / "Models"
+    existing_groups = {group: _snapshot_existing_model_group(active / group)
+                       for group in {item["group"] for item in entries} if (active / group).exists()}
+    existing = root
+    while not existing.exists():
+        existing = existing.parent
+    needed = sum(item["size"] for item in entries) * 2 + sum(
+        item["size"] for group in existing_groups.values() for item in group) + 64 * 1024 * 1024
+    if shutil.disk_usage(existing).free < needed:
+        raise RuntimeError("Insufficient free space for verified model backup and candidate")
+    lock_hash = (_hash(REPO / "content" / "models.lock.json") if lock is None
+                 else hashlib.sha256(_json_bytes(locked)).hexdigest())
+    manifest = {"schema": 1, "kind": "models", "lockSha256": lock_hash,
+                "sources": [{"id": label, "path": str(path)} for label, path in normalized], "files": entries}
+    manifest_hash = hashlib.sha256(_json_bytes(manifest)).hexdigest()
+    recovery = root / "Recovery" / ("models-" + manifest_hash[:24])
+    _check_ancestors(recovery)
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "Recovery").mkdir(exist_ok=True)
+    recovery.mkdir(exist_ok=True)
+    lock_stream = (root / "Recovery" / ".models-migration.lock").open("a+b")
+    acquired_lock = False
+    try:
+        _lock_stream(lock_stream)
+        acquired_lock = True
+        result = {"backed_up": len(entries), "activated": 0, "conflicts": 0,
+                  "already_complete": False, "recovery": str(recovery), "manifest_sha256": manifest_hash}
+        source_by_id = dict(normalized)
+        for item in entries:
+            source = _model_group_path(source_by_id[item["source"]], item["group"]) / item["relative"]
+            backup = recovery / "sources" / item["source"] / item["group"] / item["relative"]
+            _write_new_verified(source, backup, item)
+        manifest_file = recovery / "manifest.json"
+        if manifest_file.exists():
+            if _hash(manifest_file) != manifest_hash:
+                raise RuntimeError("Private model manifest differs; manual recovery required")
+        else:
+            _write_record(manifest_file, manifest)
+        if hook:
+            hook("backed_up", len(entries))
+        if _snapshot_models(normalized, root, locked) != entries:
+            raise RuntimeError("Model source changed during migration; no activation performed")
+        selected: dict[str, list[dict]] = {}
+        for item in entries:
+            selected.setdefault(item["group"], [])
+            if not selected[item["group"]] or selected[item["group"]][0]["source"] == item["source"]:
+                selected[item["group"]].append(item)
+        for group, chosen in selected.items():
+            chosen_hashes = {item["relative"]: item["sha256"] for item in chosen}
+            if any(item["sha256"] != chosen_hashes.get(item["relative"])
+                   for item in entries if item["group"] == group and item["source"] != chosen[0]["source"]):
+                result["conflicts"] += 1
+        completed = recovery / "completed.json"
+        if completed.exists():
+            record = json.loads(completed.read_text(encoding="utf-8"))
+            if record.get("manifestSha256") != manifest_hash:
+                raise RuntimeError("Model completion record differs; manual recovery required")
+            result["already_complete"] = True
+            result["conflicts"] = record["conflicts"]
+            _mark_models_ready(root, locked, lock_hash)
+            return result
+        _check_ancestors(active)
+        for group, selected_files in selected.items():
+            candidate = recovery / "candidate" / group
+            for item in selected_files:
+                backup = recovery / "sources" / item["source"] / group / item["relative"]
+                _write_new_verified(backup, candidate / item["relative"], item)
+            actual_candidate = _snapshot_existing_model_group(candidate)
+            if {item["relative"]: (item["size"], item["sha256"]) for item in actual_candidate} != {
+                    item["relative"]: (item["size"], item["sha256"]) for item in selected_files}:
+                raise RuntimeError("Private model candidate is incomplete")
+            target = active / group
+            if target.exists():
+                current = _snapshot_existing_model_group(target)
+                if current != existing_groups.get(group):
+                    raise RuntimeError("Active model group changed during migration")
+                for item in current:
+                    _write_new_verified(target / item["relative"],
+                                        recovery / "active-existing" / group / item["relative"], item)
+                if {item["relative"]: (item["size"], item["sha256"]) for item in current} != {
+                        item["relative"]: (item["size"], item["sha256"]) for item in selected_files}:
+                    result["conflicts"] += 1
+            else:
+                active.mkdir(parents=True, exist_ok=True)
+                _check_ancestors(active)
+                if hook:
+                    hook("before_activation", group)
+                if target.exists():
+                    raise RuntimeError("Active model group appeared during activation")
+                os.rename(candidate, target)
+                result["activated"] += len(selected_files)
+                if hook:
+                    hook("activated", group)
+        _mark_models_ready(root, locked, lock_hash)
+        _write_record(completed, {"schema": 1, "manifestSha256": manifest_hash,
+                                  "activated": result["activated"], "conflicts": result["conflicts"]})
+        return result
+    finally:
+        if acquired_lock:
+            _unlock_stream(lock_stream)
+        lock_stream.close()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Explicit AF2 user-data migration; no source deletion")
-    parser.add_argument("--data-kind", choices=("player-exports", "prompts", "terminal-settings"), default="player-exports")
+    parser.add_argument("--data-kind", choices=("player-exports", "prompts", "terminal-settings", "models"), default="player-exports")
     parser.add_argument("--source-kind", choices=("installed", "repo"), default="installed",
                         help="one source identity per operation; repository data is never auto-imported")
     parser.add_argument("--installed-module", type=Path)
@@ -625,6 +857,8 @@ def main() -> int:
             entries = _snapshot(sources, root)
         elif args.data_kind == "prompts":
             entries = _snapshot_prompts(sources, root, _prompt_baselines())
+        elif args.data_kind == "models":
+            entries = _snapshot_models(sources, root, _model_lock())
         else:
             entries = _snapshot_terminal_settings(sources, root)
         print(f"read-only inventory: files={len(entries)} bytes={sum(e['size'] for e in entries)}")
@@ -639,6 +873,8 @@ def main() -> int:
         result = migrate(sources, root)
     elif args.data_kind == "prompts":
         result = migrate_prompts(sources, root)
+    elif args.data_kind == "models":
+        result = migrate_models(sources, root)
     else:
         result = migrate_terminal_settings(sources, root)
     print(f"migration: backed_up={result['backed_up']} activated={result['activated']} "

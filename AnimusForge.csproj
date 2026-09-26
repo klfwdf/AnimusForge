@@ -78,6 +78,9 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="content\models.lock.json">
+      <LogicalName>AnimusForge.Dependencies.ModelsLock.json</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PreprocessPrompts.json">
       <LogicalName>AnimusForge.Defaults.PreprocessPrompts.json</LogicalName>
     </EmbeddedResource>
