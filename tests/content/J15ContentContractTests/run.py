@@ -678,6 +678,11 @@ def main() -> int:
         str(Path(__file__).with_name("ContentLayoutContractTests.ps1")),
         "-ProjectRoot", str(ROOT), "-RunRoot", str(run_root),
     ])
+    run_command([
+        str(pwsh), "-NoLogo", "-NoProfile", "-File",
+        str(Path(__file__).with_name("PlayerExportsContractTests.ps1")),
+        "-ProjectRoot", str(ROOT), "-RunRoot", str(run_root / "playerexports"),
+    ])
     dotnet = ROOT / "local" / "dotnet" / "8.0.425" / "dotnet.exe"
     run_command([
         str(dotnet), "run", "--project", str(Path(__file__).with_name("GcczLoaderHarness.csproj")),
