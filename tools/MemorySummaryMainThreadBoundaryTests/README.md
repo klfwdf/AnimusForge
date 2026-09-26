@@ -6,6 +6,12 @@
 - `--mutate omit-line-add` / `drop-afef` / `omit-recent-save` / `omit-major-entry` / `drop-recent-marker` / `weekly-false-success` 均 BUILD_PASS 后具名失败，分别 13 / 6 / 7 / 2 / 7 / 11；最低层写入、AFEF、marker 和假接受均能被原断言识别。
 - 显式 `DOTNET_EXE=local/dotnet/8.0.425/dotnet.exe`；输出和源码 SHA manifest 在 `.generated/terminal/<variant>/`。没有产品修改。Campaign/provider/真实存档/帧性能未验，原 fixture 边界不变。
 
+普通对话 `run_commit_writers.py` 另行复测：旧 `TryParseHeroIdFromNpcFileName` / `TryParseNpcFileNameParts` 已迁至 `NpcDataFileName`，导入读取已改用 `PlayerExportsStore.ReadJson`。现在链接真实文件名解析器并抽取实际 JSON reader；只迁移原虚拟文件系统/目录解析 fixture，不恢复旧 host 方法或删除断言。
+
+- 当前 51 scenarios / 0 failures：执行真实 `CommitDialogueHistoryWithScene` → Daily/Recent append/save → 精确回读，覆盖角色/AFEF/scene 标记、部分写入、真实编辑回调及导入 Apply。该 51 项与 terminal 85 项是不同链路，不互相替代。
+- 原十个 `--mutate` 全部 BUILD_PASS 后出现具名行为失败；依次为忽略主线程 1、假成功 8、忽略 Daily 回读 1、忽略 Recent 回读 2、错序 6、遗漏 Recent 保存 12、忽略编辑生命周期 11、忽略对象身份 1、忽略来源指纹 1、绕过导入代次 8。
+- 输出在 `.generated/commit_writers/<variant>/`，汇总 `.tmp/j14c-final/memory-commit-mutations.json`。虚拟目录字符串不是实际外仓读写；游戏存档、provider、实际 UI 和完整外部副作用仍 NOT-RUN。
+
 ## 2026-09-15：Memory dispatch owner职责提取
 
 队列/待办生命周期/预算/异常完成迁移到 `Refactor/Runtime/MemorySummaryDispatcher.cs`，通过 `IMemorySummaryDispatchHost` 获取游戏身份/设置，原Host仅薄适配。所有相关runner编入两个真实新文件；不保留假的旧队列/计数器让测试变绿。
