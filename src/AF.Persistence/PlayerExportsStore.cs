@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -48,7 +49,61 @@ internal static class PlayerExportsStore
 
 	internal static string GetPlayerExportsRootPath()
 	{
-		return Path.Combine(GetModuleRootPath(), FolderName);
+		string dataRoot = AnimusForgeDataPaths.GetCurrentRoot();
+		string exports = AnimusForgeDataPaths.GetPlayerExportsDirectory(dataRoot);
+		if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable)))
+			EnsureLegacyMigrationReady(GetModuleRootPath(), dataRoot);
+		return exports;
+	}
+
+	internal static void EnsureLegacyMigrationReady(string moduleRoot, string dataRoot)
+	{
+		string legacy = Path.Combine(moduleRoot, FolderName);
+		if (!Directory.Exists(legacy)) return;
+		for (DirectoryInfo directory = new DirectoryInfo(legacy); directory != null; directory = directory.Parent)
+			if (directory.Exists && (directory.Attributes & FileAttributes.ReparsePoint) != 0)
+				throw new InvalidOperationException("Legacy PlayerExports crosses a reparse point; migration requires recovery.");
+		if (!Directory.EnumerateFileSystemEntries(legacy).Any()) return;
+
+		string marker = Path.Combine(AnimusForgeDataPaths.GetUserDataDirectory(dataRoot), ".player-exports-ready.json");
+		VerifyMigrationMarker(moduleRoot, marker);
+	}
+
+	internal static void VerifyMigrationMarker(string moduleRoot, string marker)
+	{
+		PlayerExportsPackageExport.AssertNoReparse(marker);
+		if (!File.Exists(marker))
+			throw new InvalidOperationException("Legacy PlayerExports awaits verified migration; the new user-data root is not ready.");
+		try
+		{
+			if ((File.GetAttributes(marker) & FileAttributes.ReparsePoint) != 0)
+				throw new InvalidOperationException("Legacy PlayerExports migration record is a reparse point.");
+			string key = ComputeModuleRootKey(moduleRoot);
+			JObject record = JObject.Parse(File.ReadAllText(marker, Encoding.UTF8));
+			string manifestHash = record["sources"]?[key]?.Value<string>();
+			if (record.Value<int>("schema") != 1 || string.IsNullOrWhiteSpace(manifestHash)
+				|| manifestHash.Length != 64 || !manifestHash.All(Uri.IsHexDigit))
+				throw new InvalidOperationException("Legacy PlayerExports migration record does not match this module.");
+			string dataRoot = Directory.GetParent(Directory.GetParent(marker).FullName).FullName;
+			string completed = Path.Combine(dataRoot, "Recovery", "player-exports-" + manifestHash.Substring(0, 24), "completed.json");
+			PlayerExportsPackageExport.AssertNoReparse(completed);
+			if (!File.Exists(completed) || (File.GetAttributes(completed) & FileAttributes.ReparsePoint) != 0)
+				throw new InvalidOperationException("Legacy PlayerExports migration completion record is missing.");
+			JObject completion = JObject.Parse(File.ReadAllText(completed, Encoding.UTF8));
+			if (completion.Value<int>("schema") != 1 || completion.Value<string>("manifestSha256") != manifestHash)
+				throw new InvalidOperationException("Legacy PlayerExports migration completion record is inconsistent.");
+		}
+		catch (Exception ex) when (!(ex is InvalidOperationException))
+		{
+			throw new InvalidOperationException("Legacy PlayerExports migration record is invalid; no old-path fallback is allowed.", ex);
+		}
+	}
+
+	internal static string ComputeModuleRootKey(string moduleRoot)
+	{
+		string normalized = Path.GetFullPath(moduleRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+		using (var sha = SHA256.Create())
+			return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(normalized))).Replace("-", "").ToLowerInvariant();
 	}
 
 	internal static PlayerExportsPackageExport BeginExportPackage(string root, string folderName)

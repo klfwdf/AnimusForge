@@ -151,6 +151,28 @@ def _write_record(path: Path, value: dict) -> None:
     os.replace(temporary, path)
 
 
+def _source_key(module: Path) -> str:
+    normalized = str(Path(os.path.abspath(module))).rstrip("\\/").upper()
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
+def _mark_sources_ready(root: Path, sources: list[tuple[str, Path]], manifest_hash: str) -> None:
+    if not sources:
+        return
+    marker = root / "UserData" / ".player-exports-ready.json"
+    _check_ancestors(marker)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    if marker.exists():
+        record = json.loads(marker.read_text(encoding="utf-8"))
+        if record.get("schema") != 1 or not isinstance(record.get("sources"), dict):
+            raise RuntimeError("Invalid private migration readiness record")
+    else:
+        record = {"schema": 1, "sources": {}}
+    for _, path in sources:
+        record["sources"][_source_key(path)] = manifest_hash
+    _write_record(marker, record)
+
+
 def _lock_stream(stream) -> None:
     stream.seek(0)
     if os.name == "nt":
@@ -232,6 +254,7 @@ def migrate(sources: list[tuple[str, Path]], root: Path, *, allow_test_root: boo
                 raise RuntimeError("Completion record differs; manual recovery required")
             result["already_complete"] = True
             result["conflicts"] = record["conflicts"]
+            _mark_sources_ready(root, normalized, manifest_hash)
             return result
         activation_plan = recovery / "activation-plan.json"
         if activation_plan.exists():
@@ -277,6 +300,7 @@ def migrate(sources: list[tuple[str, Path]], root: Path, *, allow_test_root: boo
                 os.utime(package_path, ns=(mtime_ns, mtime_ns))
         _write_record(completed, {"schema": 1, "manifestSha256": manifest_hash,
                                   "activated": result["activated"], "conflicts": result["conflicts"]})
+        _mark_sources_ready(root, normalized, manifest_hash)
         return result
     finally:
         if acquired_lock:

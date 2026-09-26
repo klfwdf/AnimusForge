@@ -1,4 +1,8 @@
 using System.Text.Json.Nodes;
+using System.Text.Json;
+using System.Security.Cryptography;
+using System.Text;
+using AnimusForge;
 
 namespace PlayerExportsEditor.Core;
 
@@ -6,21 +10,14 @@ public sealed class PlayerExportsService
 {
     private readonly JsonFileStore _json = new();
 
-    public string? FindDefaultPlayerExportsRoot(string startDirectory)
+    public string FindDefaultPlayerExportsRoot(string startDirectory)
     {
-        var dir = new DirectoryInfo(startDirectory);
-        while (dir != null)
-        {
-            var candidate = Path.Combine(dir.FullName, "AnimusForge", "PlayerExports");
-            if (Directory.Exists(candidate))
-            {
-                return candidate;
-            }
-
-            dir = dir.Parent;
-        }
-
-        return null;
+        // Kept for editor callers; the current directory is never a data-root fallback.
+        var dataRoot = AnimusForgeDataPaths.GetCurrentRoot();
+        var exports = AnimusForgeDataPaths.GetPlayerExportsDirectory(dataRoot);
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable)))
+            AssertNearbyLegacyMigrationReady(startDirectory, dataRoot);
+        return exports;
     }
 
     public IReadOnlyList<PlayerExportsPackageInfo> ListPackages(string playerExportsRoot)
@@ -39,8 +36,11 @@ public sealed class PlayerExportsService
 
     public PlayerExportsPackageInfo CreatePackage(string playerExportsRoot, string packageName)
     {
+        var root = ValidateEditablePlayerExportsRoot(playerExportsRoot);
         var safeName = FileNameHelper.SanitizeFileNamePart(packageName, "NewPackage", 80);
-        var packagePath = Path.Combine(playerExportsRoot, safeName);
+        if (safeName.StartsWith(".", StringComparison.Ordinal))
+            throw new InvalidOperationException("Hidden package names are reserved for recovery.");
+        var packagePath = Path.Combine(root, safeName);
         if (Directory.Exists(packagePath))
         {
             throw new InvalidOperationException("Package already exists: " + safeName);
@@ -63,13 +63,14 @@ public sealed class PlayerExportsService
 
     public string MovePackageToDeleted(string playerExportsRoot, string packagePath)
     {
-        var root = Path.GetFullPath(playerExportsRoot);
+        var root = ValidateEditablePlayerExportsRoot(playerExportsRoot);
         var source = Path.GetFullPath(packagePath);
-        var relative = Path.GetRelativePath(root, source);
-        if (relative.StartsWith("..", StringComparison.Ordinal) || Path.IsPathRooted(relative))
+        if (!string.Equals(Path.GetDirectoryName(source), root, StringComparison.OrdinalIgnoreCase)
+            || Path.GetFileName(source).StartsWith(".", StringComparison.Ordinal))
         {
-            throw new InvalidOperationException("Package is outside the PlayerExports root.");
+            throw new InvalidOperationException("Only an active package directly under PlayerExports may be moved.");
         }
+        AssertNoReparse(source);
 
         var deletedRoot = Path.Combine(root, ".deleted_packages");
         Directory.CreateDirectory(deletedRoot);
@@ -92,6 +93,7 @@ public sealed class PlayerExportsService
 
     public string SaveJsonDocument(string packageRoot, string filePath, string contents)
     {
+        ValidateEditableFile(packageRoot, filePath);
         return _json.SaveUtf8WithBackup(filePath, contents, packageRoot);
     }
 
@@ -101,6 +103,8 @@ public sealed class PlayerExportsService
         {
             throw new ArgumentNullException(nameof(rule));
         }
+
+        ValidateEditableFile(packageRoot, filePath);
 
         NormalizeRule(rule);
         return _json.SaveUtf8WithBackup(filePath, _json.ToIndentedJson(rule), packageRoot);
@@ -112,6 +116,8 @@ public sealed class PlayerExportsService
         {
             throw new ArgumentNullException(nameof(rule));
         }
+
+        ValidateEditablePackageRoot(packageRoot);
 
         NormalizeRule(rule);
         if (string.IsNullOrWhiteSpace(rule.Id))
@@ -148,6 +154,8 @@ public sealed class PlayerExportsService
             throw new ArgumentNullException(nameof(profile));
         }
 
+        ValidateEditableFile(packageRoot, filePath);
+
         profile.Personality = (profile.Personality ?? "").Trim();
         profile.Background = (profile.Background ?? "").Trim();
         profile.VoiceId = (profile.VoiceId ?? "").Trim();
@@ -156,6 +164,7 @@ public sealed class PlayerExportsService
 
     public string MoveJsonFileToDeleted(string packageRoot, string filePath)
     {
+        ValidateEditableFile(packageRoot, filePath);
         var deletedRoot = CreateUniqueDeletedRoot(packageRoot);
         return MoveJsonFileToDeletedRoot(packageRoot, filePath, deletedRoot);
     }
@@ -178,7 +187,9 @@ public sealed class PlayerExportsService
 
     public DeletedFilesMoveResult MoveDataTypeToDeleted(string packageRoot, PlayerExportsDataType dataType)
     {
+        ValidateEditablePackageRoot(packageRoot);
         var files = ListDataTypeJsonFiles(packageRoot, dataType);
+        foreach (var file in files) ValidateEditableFile(packageRoot, file);
         if (files.Count == 0)
         {
             return new DeletedFilesMoveResult { DeletedRoot = "", MovedFiles = Array.Empty<string>() };
@@ -200,6 +211,111 @@ public sealed class PlayerExportsService
     public string FormatJson(string json)
     {
         return _json.ToIndentedJson(_json.ParseNode(json));
+    }
+
+    private static string ValidateEditablePlayerExportsRoot(string playerExportsRoot)
+    {
+        if (string.IsNullOrWhiteSpace(playerExportsRoot) || !Path.IsPathRooted(playerExportsRoot))
+            throw new ArgumentException("PlayerExports root must be absolute.", nameof(playerExportsRoot));
+
+        var full = Path.GetFullPath(playerExportsRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var parent = Directory.GetParent(full);
+        if (!string.Equals(Path.GetFileName(full), "PlayerExports", StringComparison.OrdinalIgnoreCase)
+            || parent == null || !string.Equals(parent.Name, "UserData", StringComparison.OrdinalIgnoreCase)
+            || parent.Parent == null)
+            throw new InvalidOperationException("Editable PlayerExports must be under an AF user-data root.");
+
+        var expected = AnimusForgeDataPaths.GetPlayerExportsDirectory(parent.Parent.FullName);
+        if (!string.Equals(full, expected, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Editable PlayerExports root is not canonical.");
+        var defaultRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AnimusForge");
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable))
+            && string.Equals(parent.Parent.FullName, defaultRoot, StringComparison.OrdinalIgnoreCase))
+            AssertNearbyLegacyMigrationReady(AppContext.BaseDirectory, parent.Parent.FullName);
+        return expected;
+    }
+
+    private static void AssertNearbyLegacyMigrationReady(string startDirectory, string dataRoot)
+    {
+        for (DirectoryInfo? directory = new DirectoryInfo(Path.GetFullPath(startDirectory)); directory != null; directory = directory.Parent)
+        {
+            var moduleRoot = File.Exists(Path.Combine(directory.FullName, "SubModule.xml"))
+                ? directory.FullName : Path.Combine(directory.FullName, "AnimusForge");
+            if (!File.Exists(Path.Combine(moduleRoot, "SubModule.xml"))) continue;
+            var legacy = Path.Combine(moduleRoot, "PlayerExports");
+            if (!Directory.Exists(legacy)) continue;
+            AssertNoReparse(legacy);
+            if (!Directory.EnumerateFileSystemEntries(legacy).Any()) continue;
+            VerifyNearbyMigrationRecord(moduleRoot, dataRoot);
+            return;
+        }
+    }
+
+    private static void VerifyNearbyMigrationRecord(string moduleRoot, string dataRoot)
+    {
+        var marker = Path.Combine(dataRoot, "UserData", ".player-exports-ready.json");
+        if (!File.Exists(marker))
+            throw new InvalidOperationException("Legacy PlayerExports awaits verified migration; editing the new root is blocked.");
+        try
+        {
+            AssertNoReparse(marker);
+            var normalized = Path.GetFullPath(moduleRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+            var key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(normalized))).ToLowerInvariant();
+            using var ready = JsonDocument.Parse(File.ReadAllText(marker, Encoding.UTF8));
+            if (ready.RootElement.GetProperty("schema").GetInt32() != 1
+                || !ready.RootElement.GetProperty("sources").TryGetProperty(key, out var manifest))
+                throw new InvalidOperationException("Legacy PlayerExports migration record does not match this module.");
+            var hash = manifest.GetString();
+            if (hash == null || hash.Length != 64 || !hash.All(Uri.IsHexDigit))
+                throw new InvalidOperationException("Legacy PlayerExports migration record is invalid.");
+            var completed = Path.Combine(dataRoot, "Recovery", "player-exports-" + hash[..24], "completed.json");
+            AssertNoReparse(completed);
+            using var completion = JsonDocument.Parse(File.ReadAllText(completed, Encoding.UTF8));
+            if (completion.RootElement.GetProperty("schema").GetInt32() != 1
+                || completion.RootElement.GetProperty("manifestSha256").GetString() != hash)
+                throw new InvalidOperationException("Legacy PlayerExports migration completion record is inconsistent.");
+        }
+        catch (Exception ex) when (ex is not InvalidOperationException)
+        {
+            throw new InvalidOperationException("Legacy PlayerExports migration record is invalid; no old-path fallback is allowed.", ex);
+        }
+    }
+
+    private static string ValidateEditablePackageRoot(string packageRoot)
+    {
+        if (string.IsNullOrWhiteSpace(packageRoot) || !Path.IsPathRooted(packageRoot))
+            throw new ArgumentException("Package root must be absolute.", nameof(packageRoot));
+        var full = Path.GetFullPath(packageRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var exportRoot = ValidateEditablePlayerExportsRoot(Path.GetDirectoryName(full) ?? "");
+        if (!string.Equals(Path.GetDirectoryName(full), exportRoot, StringComparison.OrdinalIgnoreCase)
+            || Path.GetFileName(full).StartsWith(".", StringComparison.Ordinal))
+            throw new InvalidOperationException("Only an active package is editable.");
+        AssertNoReparse(full);
+        return full;
+    }
+
+    private static void ValidateEditableFile(string packageRoot, string filePath)
+    {
+        var root = ValidateEditablePackageRoot(packageRoot);
+        if (string.IsNullOrWhiteSpace(filePath) || !Path.IsPathRooted(filePath))
+            throw new ArgumentException("Editable file path must be absolute.", nameof(filePath));
+        var full = Path.GetFullPath(filePath);
+        if (!full.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Editable file is outside the active package.");
+        if (!string.Equals(Path.GetExtension(full), ".json", StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Only JSON files in an active package are editable.");
+        AssertNoReparse(full);
+    }
+
+    private static void AssertNoReparse(string path)
+    {
+        for (DirectoryInfo? directory = new DirectoryInfo(path); directory != null; directory = directory.Parent)
+        {
+            if (directory.Exists && (directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                throw new IOException("Editor path crosses a reparse point.");
+        }
+        if (File.Exists(path) && (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+            throw new IOException("Editor file is a reparse point.");
     }
 
     private static void NormalizeRule(LoreRule rule)

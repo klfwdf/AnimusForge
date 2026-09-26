@@ -45,6 +45,7 @@ internal static class Program
 
             Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, isolated);
             Check(AnimusForgeDataPaths.ResolveRoot() == isolated, "environment override");
+            Check(PlayerExportsStore.GetPlayerExportsRootPath() == Path.Combine(isolated, "UserData", "PlayerExports"), "game export root uses shared user-data contract");
             Reject(() => AnimusForgeDataPaths.ResolveRoot("relative-path"), "relative root rejected");
             Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Directory.GetCurrentDirectory(), "artifacts", "user-data")), "repository root rejected");
             Reject(() => AnimusForgeDataPaths.ResolveRoot(Path.Combine(Directory.GetCurrentDirectory(), "AnimusForge", "PlayerExports")), "module root rejected");
@@ -127,6 +128,30 @@ internal static class Program
         try { noBackup.Publish(); }
         catch (IOException) { backupFailed = true; }
         Check(backupFailed && File.ReadAllText(guarded) == "{\"newer\":2}", "unwritable recovery cannot publish over old package");
+
+        string legacyModule = Path.Combine(workspace, "artifacts", "tests", "af2-data-paths", "legacy-" + Guid.NewGuid().ToString("N"));
+        string legacyFile = Path.Combine(legacyModule, "PlayerExports", "demo", "old.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(legacyFile));
+        File.WriteAllText(legacyFile, "{\"old\":true}");
+        string pendingRoot = Path.Combine(Path.GetTempPath(), "af2-pending-" + Guid.NewGuid().ToString("N"));
+        Reject(() => PlayerExportsStore.EnsureLegacyMigrationReady(legacyModule, pendingRoot), "detected legacy data blocks an unready user root");
+        string marker = Path.Combine(legacyModule, "UserData", ".player-exports-ready.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(marker));
+        string moduleKey = PlayerExportsStore.ComputeModuleRootKey(legacyModule);
+        if (Path.DirectorySeparatorChar == '\\')
+            Check(PlayerExportsStore.ComputeModuleRootKey(@"C:\Games\AnimusForge") == "341e25efcc78c23c0ae0dd148a422cbd8cbcd7746d6307246c90ab2bea29bf79", "C# migration key normalization");
+        string manifestHash = new string('a', 64);
+        File.WriteAllText(marker, "{\"schema\":1,\"sources\":{\"" + moduleKey + "\":\"" + manifestHash + "\"}}");
+        Reject(() => PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker), "ready pointer without completed recovery cannot permit cutover");
+        string completed = Path.Combine(legacyModule, "Recovery", "player-exports-" + manifestHash.Substring(0, 24), "completed.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(completed));
+        File.WriteAllText(completed, "{\"schema\":1,\"manifestSha256\":\"" + manifestHash + "\"}");
+        PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker);
+        Check(true, "matching verified migration record permits cutover");
+        File.WriteAllText(marker, "{\"schema\":1,\"sources\":{\"different\":\"" + manifestHash + "\"}}");
+        Reject(() => PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker), "unrelated migration record cannot permit cutover");
+        File.WriteAllText(marker, "{broken");
+        Reject(() => PlayerExportsStore.VerifyMigrationMarker(legacyModule, marker), "corrupt migration record cannot permit cutover");
 
         Console.WriteLine("PASS data-path checks=" + _checks);
     }

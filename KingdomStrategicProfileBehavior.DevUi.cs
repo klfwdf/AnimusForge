@@ -558,28 +558,28 @@ public sealed partial class KingdomStrategicProfileBehavior
 
 	private void OpenFolderPicker(string title, bool isExport, Action<string> onSelected, Action onReturn)
 	{
-		string root = PlayerExportsStore.GetPlayerExportsRootPath();
+		string root = null;
 		try
 		{
-			Directory.CreateDirectory(root);
+			root = PlayerExportsStore.GetPlayerExportsRootPath();
+			if (isExport) Directory.CreateDirectory(root);
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("无法打开 PlayerExports：" + ex.Message));
-			onReturn?.Invoke();
-			return;
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			if (isExport) { onReturn?.Invoke(); return; }
 		}
 		List<InquiryElement> elements = new List<InquiryElement>
 		{
 			new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null)
 		};
-		if (!isExport)
+		if (!isExport && root != null)
 		{
 			elements.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
 		}
 		try
 		{
-			foreach (DirectoryInfo directory in new DirectoryInfo(root).GetDirectories().Where(x => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(x => x.LastWriteTimeUtc))
+			foreach (DirectoryInfo directory in (root == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(root).GetDirectories()).Where(x => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending(x => x.LastWriteTimeUtc))
 			{
 				elements.Add(new InquiryElement(directory.Name, directory.Name + "  (" + directory.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 			}

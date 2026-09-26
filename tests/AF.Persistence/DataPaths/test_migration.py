@@ -11,6 +11,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 spec = importlib.util.spec_from_file_location("af2_migrate", ROOT / "tools" / "af2_migrate.py")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
+if os.name == "nt":
+    assert module._source_key(pathlib.Path("C:/Games/AnimusForge")) == "341e25efcc78c23c0ae0dd148a422cbd8cbcd7746d6307246c90ab2bea29bf79"
 
 fixture = ROOT / "artifacts" / "tests" / "af2-migration" / uuid.uuid4().hex
 source_a = fixture / "installed"
@@ -48,6 +50,9 @@ assert (recovery / "sources/installed/PlayerExports/demo/a.json").read_bytes() =
 assert (recovery / "sources/repo/PlayerExports/demo/a.json").read_bytes() == b'{"from":"repo"}'
 record = json.loads((recovery / "completed.json").read_text(encoding="utf-8"))
 assert record["schema"] == 1 and record["manifestSha256"] == result["manifest_sha256"]
+ready = json.loads((data_root / "UserData/.player-exports-ready.json").read_text(encoding="utf-8"))
+assert ready == {"schema": 1, "sources": {module._source_key(source_a): result["manifest_sha256"],
+                                          module._source_key(source_b): result["manifest_sha256"]}}
 repeat = module.migrate(sources, data_root, allow_test_root=True)
 assert repeat["already_complete"] is True and repeat["activated"] == 0
 
@@ -71,10 +76,12 @@ try:
 except OSError as ex:
     assert "synthetic interruption" in str(ex)
 assert not list((interrupted_root / "Recovery").glob("*/completed.json"))
+assert not (interrupted_root / "UserData/.player-exports-ready.json").exists()
 resumed = module.migrate([("installed", interrupted_source)], interrupted_root, allow_test_root=True)
 assert resumed["activated"] == 1 and resumed["already_complete"] is False
 assert len(list((interrupted_root / "UserData/PlayerExports/demo").glob("*.json"))) == 2
 assert (interrupted_root / "UserData/PlayerExports/demo").stat().st_mtime_ns == old_time
+assert (interrupted_root / "UserData/.player-exports-ready.json").exists()
 
 changed_source = fixture / "changed-source"
 changed_root = fixture / "changed-root"
@@ -94,6 +101,7 @@ except RuntimeError as ex:
     assert "changed" in str(ex).lower()
 assert not (changed_root / "UserData/PlayerExports/demo/one.json").exists()
 assert not list((changed_root / "Recovery").glob("*/completed.json"))
+assert not (changed_root / "UserData/.player-exports-ready.json").exists()
 
 corrupt_source = fixture / "corrupt-source"
 corrupt_root = fixture / "corrupt-root"
@@ -115,6 +123,7 @@ except RuntimeError as ex:
     assert "verification failed" in str(ex) or "differs" in str(ex)
 assert not (corrupt_root / "UserData/PlayerExports/demo/one.json").exists()
 assert not list((corrupt_root / "Recovery").glob("*/completed.json"))
+assert not (corrupt_root / "UserData/.player-exports-ready.json").exists()
 
 locked_source = fixture / "locked-source"
 locked_root = fixture / "locked-root"

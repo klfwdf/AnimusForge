@@ -51891,18 +51891,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-		Directory.CreateDirectory(playerExportsRootPath);
+		string playerExportsRootPath = null;
+		try
+		{
+			playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
+			if (isExport) Directory.CreateDirectory(playerExportsRootPath);
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			if (isExport) { onReturn(); return; }
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
-		if (!isExport)
+		if (!isExport && playerExportsRootPath != null)
 		{
 			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
 		}
 		try
 		{
-			DirectoryInfo directoryInfo = new DirectoryInfo(playerExportsRootPath);
-			List<DirectoryInfo> list2 = (from d in directoryInfo.GetDirectories()
+			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
 				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d).ToList();
@@ -51915,7 +51923,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择来源文件夹。");
+		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -51962,12 +51970,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 		try
 		{
-			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null),
-				new InquiryElement("__latest__", "使用最新导出（自动）", null)
+				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null)
 			};
+			string playerExportsRootPath = null;
+			try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
+			catch (Exception)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用；仍可用只读绝对路径导入。"));
+			}
+			if (playerExportsRootPath != null)
+				list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
 			if (!string.IsNullOrWhiteSpace(playerExportsRootPath) && Directory.Exists(playerExportsRootPath))
 			{
 				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().Where((DirectoryInfo x) => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
@@ -51985,7 +51999,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string text = selected[0].Identifier as string;
 				if (string.Equals(text, "__input__", StringComparison.Ordinal))
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", "留空会使用最新导出；也可输入完整资料包文件夹路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", playerExportsRootPath == null ? "请输入只读的完整资料包文件夹路径。" : "留空会使用最新导出；也可输入完整资料包文件夹路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
 					{
 						BeginDatabaseReloadPreflight(input, action);
 					}, delegate
@@ -52001,10 +52015,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}, "", isSeachAvailable: true);
 			MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
-			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("无法打开资料包选择器：" + ex.Message));
+			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker.");
+			InformationManager.DisplayMessage(new InformationMessage("无法打开资料包选择器；请检查 PlayerExports 路径。"));
 			action();
 		}
 	}
@@ -52976,18 +52990,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-		Directory.CreateDirectory(playerExportsRootPath);
+		string playerExportsRootPath = null;
+		try
+		{
+			playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
+			if (isExport) Directory.CreateDirectory(playerExportsRootPath);
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			if (isExport) { onReturn(); return; }
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", "手动输入文件夹名…", null));
-		if (!isExport)
+		if (!isExport && playerExportsRootPath != null)
 		{
 			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
 		}
 		try
 		{
-			DirectoryInfo directoryInfo = new DirectoryInfo(playerExportsRootPath);
-			List<DirectoryInfo> list2 = (from d in directoryInfo.GetDirectories()
+			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
 				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d).ToList();
@@ -53000,7 +53022,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择要导入的来源文件夹。");
+		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -53106,8 +53128,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-				Directory.CreateDirectory(playerExportsRootPath);
+				string playerExportsRootPath;
+				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
+				catch (Exception ex)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+					return;
+				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
@@ -53191,8 +53218,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-				Directory.CreateDirectory(playerExportsRootPath);
+				string playerExportsRootPath;
+				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
+				catch (Exception ex)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+					return;
+				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
