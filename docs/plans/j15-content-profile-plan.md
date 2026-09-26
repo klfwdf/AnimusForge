@@ -1,10 +1,12 @@
 # J15 content / profile 执行计划
 
-> 2026-09-26；当前执行状态：`J15a_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。七项 EmbeddedResource 与最小内容接线已在产品/测试提交 `ade4f629` 完成；J15b/c/d 尚未开始。
+> 2026-09-26；当前执行状态：`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。J15a 七项 EmbeddedResource 在 `ade4f629` 完成；J15b 其余 69 个已确认静态 JSON/GUI/XML/语言文件在产品/测试提交 `04056ce7` 完成；J15c/d 尚未开始。
 > 规划基线：`fc445335b364859c1d5b87c122f51d7a46d1df57`；计划意图提交：`0d9bb898`。J14 产品基线仍为 `e58f3558cddfe473f396bb7f11470b05e30afce9`，已有限离线完成。
-> 本文细化[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)的 J15，不新建进度账本；J15a 的实际证据已回写主台账，[HANDOFF](../../HANDOFF.md)只保留当前摘要。文中 J15b/c/d 的拟议文件、命令和验收仍是后续规格，不是已实现或已通过。
+> 本文细化[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)的 J15，不新建进度账本；J15a/b 的实际证据已回写主台账，[HANDOFF](../../HANDOFF.md)只保留当前摘要。文中 J15c/d 的拟议文件、命令和验收仍是后续规格，不是已实现或已通过。
 
-J15a 实际结果：七项文件按 owner R100 迁入 `content/modules`，显式 `content/content-map.json` 与窄 `content_layout.ps1` 接通 csproj、Stage/Deploy 源投影和必要工具；合成契约、既有定向回归、不带 Stage/Deploy 的双配置六构建及四实现 DLL 七资源逐字节审计通过。没有真实 Stage、Deploy、Package、游戏/外仓/玩家数据写入。后续执行应从 J15b 重新核实 dirty 和授权，不能重复 J15a 或把本片扩大解释为整个 J15 完成。
+J15a 实际结果：七项文件按 owner R100 迁入 `content/modules`，显式 `content/content-map.json` 与窄 `content_layout.ps1` 接通 csproj、Stage/Deploy 源投影和必要工具；合成契约、既有定向回归、不带 Stage/Deploy 的双配置六构建及四实现 DLL 七资源逐字节审计通过。没有真实 Stage、Deploy、Package、游戏/外仓/玩家数据写入。该切片当时停在 J15a，现已由下方 J15b 结果接续；它仍不能单独解释为整个 J15 完成。
+
+J15b 实际结果：69 个已确认静态文件按 15 个 module/foundation owner 逐项 R100 归位，映射扩为 76 项；真实投影逐文件 SHA、格式与语言/mbproj/SubModule/movie/sprite/brush/writer 引用、11 个 overlay alias、Prompt/Xihai Core/inventory、当前 DLL Phase8 及不带 Stage/Deploy 的六构建通过。旧 ModuleData/GUI 精确保留 41 个 HOLD；完整 Xihai StaticVerifier 的三个外部 TPAC/bridge 失败已记录，未冒充通过。没有 Stage、Deploy、Package、游戏/外仓/玩家数据写入。按用户要求停在 J15b，后续必须从 J15c 重新核实 dirty 和授权。
 
 ## 1. 原始 J15a 启动指令（历史，不再直接执行）
 
@@ -20,7 +22,7 @@ J15a 实际结果：七项文件按 owner R100 迁入 `content/modules`，显式
 每个完整、已验证切片独立本地提交；失败先诊断，不刷新 hash 或删断言凑 PASS。结束或中断时更新同一主台账、受影响范围图/代码地图及简短 HANDOFF，写明下一条具体动作和 NOT-RUN。
 ```
 
-本次没有自动创建新任务，也没有选择或切换模型。J15a 已完成；后续新对话应从 J15b 重新核实实际 Git/dirty、读取主台账当前条目并取得对应范围授权，不能再按上方历史块从 G0/J15a 重做，也不能将本文当作已经批准 J15b/c/d。
+本次没有自动创建新任务，也没有选择或切换模型。J15a/b 已完成；后续新对话应从 J15c 重新核实实际 Git/dirty、读取主台账当前条目并取得对应范围授权，不能再按上方历史块从 G0/J15a 重做，也不能将本文当作已经批准 J15c/d。
 
 ## 2. 目标、非目标与完成含义
 
@@ -141,6 +143,8 @@ Stage 若获准，必须再从实际脚本解析它的精确输出/清理路径�
 - Stage 与 Deploy 两条资源构造分支共用 helper，合成临时模块投影布局/hash 相同；真实 Stage 依授权验证。关键反例和 Debug 双版本+Bootstrap 通过后记 a 的有限离线结果，进入 b。
 
 ### J15b：其余已确认静态 JSON / GUI / XML / 语言
+
+**实际状态（2026-09-26）**：本节已按产品/测试提交 `04056ce7` 完成并有限离线验证；具体 69 项 owner/target、41 个 HOLD、候选 SHA、通过项和完整 Xihai verifier 的三项未通过见主台账当前条目。下列条目保留为实施规格与复核边界，不是下一步待执行清单。
 
 - 按 G0 清单按 owner 分几个完整批次，补齐 RuleBehavior/ActionPostprocess/Proactive、GUI 及游戏 XML/语言等资源；禁止递归移动整个 ModuleData/GUI 作为快捷方式。
 - 每批沿“源→映射→组装目标→loader/LoadMovie/XML/sprite”核对；GUI 共享索引与其引用图片必须同时可达。mbproj 中若含引用设计源，保留相对可达性；无法保证就先 HOLD 该小组而非改运行资源名。

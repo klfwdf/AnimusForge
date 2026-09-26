@@ -1,8 +1,8 @@
-# 当前交接：J15a 七项 EmbeddedResource 有限离线完成（2026-09-26）
+# 当前交接：J15b 已确认静态内容有限离线完成（2026-09-26）
 
-- **状态**：`J15a_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`；产品/测试切片 `ade4f629`。七项默认资源按 Prompt、Economy、GCCZ owner 以 R100 迁入 `content/modules`，`content/content-map.json` 成为唯一构建期映射；运行时 `ModuleData` 目标、七个 LogicalName、五个 GCCZ `WithCulture=false`、loader fallback、public API/保存/Bootstrap 均不变。实际责任、坐标、候选 SHA 和失败信号见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[J15 计划](docs/plans/j15-content-profile-plan.md)与[范围图](docs/architecture/af-framework-code-scope.md)。
-- **验证**：J15a 契约 `7 mappings / 8 invalid / 4 GCCZ fallback / 1 overlay alias`，Prompt 36、GiveAsset 80562、inventory 7、PromptLab 19 topics 全通过；原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。四实现 DLL 各恰好七项资源且名称/字节 SHA 与唯一源一致，卫星资源程序集 0；代码地图未因纯资源/工具接线重绑，仍为 J14 C# 产品 `e58f3558` 的 755 锚点两模式 PASS。
-- **停点**：按用户要求停在 J15a；J15b/c/d 未开始。没有 Stage、Deploy、Package、push、游戏/外仓/玩家数据写入，外仓 GCCZ mirror 与真实安装覆盖均 NOT-RUN；两版本实机、旧档、provider、音频、帧性能也 NOT-RUN。`.dotnet-cli-home/` 保留。后续若明确继续，下一项是 J15b，不能继承本轮限定授权。
+- **状态**：`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`；J15b 产品/测试切片 `04056ce7`。在 J15a 7 项基础上，69 个已确认静态 JSON/GUI/XML/语言文件按 15 个 module/foundation owner 逐文件 `R100` 迁入 `content/`，映射现为 76 项；运行时 `ModuleData`/`GUI` 目标、7 个 EmbeddedResource、loader/LoadMovie/sprite/XML/Bootstrap/public API/保存身份均不变。实际责任、坐标与精确 HOLD 见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[J15 计划](docs/plans/j15-content-profile-plan.md)与[范围图](docs/architecture/af-framework-code-scope.md)。
+- **验证**：J15 契约 `76 mappings / 69 J15b / 41 holds / 76 real projection / 8 invalid / 4 GCCZ fallback / 11 overlay aliases`；Prompt 36、两个 PromptLab、Xihai Core 88、inventory 7/11 与 unknown=0、当前 Debug 1.4 完整 Phase8 均 PASS。原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；四实现 DLL 各仍恰好 7 个资源且字节一致，卫星资源 0。代码地图仍绑定未改 J14 C# 产品 `e58f3558`，755 锚点两模式 PASS。
+- **HOLD/停点**：旧 ModuleData/GUI 精确保留 41 项（异常/动态 profile、FeatureBridges、sprite 索引、临时/旧版/来源未确认图）；J15c 的 CustomPrompts、PlayerExports、VoiceMapping、ONNX、AssetPackages 等也未动。完整 Xihai StaticVerifier 为 10/13，未通过的是外部 TPAC `nacisword1`、其连带初始化和 AF bridge 签名漂移，不冒充通过。没有 Stage、Deploy、Package、push、游戏/外仓/玩家数据写入；两版本实机、旧档、安装覆盖、Gauntlet、provider、音频、帧性能均 NOT-RUN。`.dotnet-cli-home/` 保留。按用户要求停在 J15b；后续若明确继续，下一项是 J15c。
 
 ## 以下为 J15 计划就绪历史交接
 

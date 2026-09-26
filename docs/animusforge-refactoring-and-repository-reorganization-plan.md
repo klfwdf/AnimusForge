@@ -1,3 +1,35 @@
+## J15b 其余已确认静态内容有限离线完成（2026-09-26）
+
+状态：**`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。用户明确要求按既有计划做到 J15b 结束；J15b 意图提交 `f54a8127`，产品/测试切片 **`04056ce7`**。本条取代下方 J15a 当前状态，但只完成已确认静态 JSON / GUI / XML / 语言批次，不启动 J15c/d，也不把整个 J15、实机或发布标为完成。
+
+### 实际迁移、映射与责任
+
+- 在 J15a 七项基础上，将 **69** 个已确认静态文件按真实 owner 从 `AnimusForge/ModuleData` / `AnimusForge/GUI` 逐文件 Git `R100` 迁入 `content/modules` 或 `content/foundation`：ModuleData **26** 项、GUI **43** 项。owner 为 Prompt、Social、Conversation、WarStats、SiegeAftermathIntervention、XihaiAction、Economy、Foundation.Localization/UI、UI、Onboarding、WorldEvents、Weekly、PolicySystem、Diplomacy；没有递归搬整个目录，也没有改 Prompt/JSON/XML/PNG 字节。
+- `content/content-map.json:1–392` 现有 **76** 个唯一 source/target（J15a 7 + J15b 69）；J15b 非嵌入项不伪造 `LogicalName`。运行时目标仍是原 `ModuleData/...` / `GUI/...`，`SubModule.xml`、movie 名、sprite 名、语言索引和 mbproj 相对目标不变。`一键编译覆盖推送/content_layout.ps1:87–224` 允许非嵌入项省略 `logicalName`，但 owner、路径边界、重复 target、已给出的重复 LogicalName、ADS、越界及 reparse 仍 fail-closed；`deploy_module.ps1:736,801,833–836` 的 Stage/Deploy 投影与 Rule/Preprocess hash 都从同一映射解析。
+- 源定位已同步到 `PromptLabService`、`PreprocessTopicLabService`、TownAmbient writer、GCCZ mirror verifier、Phase8 GUI 回放与 readiness catalog；`tools/package_policy_system_source_overlay.py:121–150` 从映射解析 11 个受影响源，同时保留原 `AnimusForge/...` 交付别名。`tools/repository_source_inventory.py:93–110` 只放行本批精确 owner 根，未知 module/foundation 继续返回 unknown，PlayerExports/ONNX/AssetPackages 的敏感 HOLD 仍优先。
+- 生产运行 loader、`LoadMovie` 调用、sprite consumer、`SubModule.xml`、程序集/public API/保存身份与 Bootstrap 均未改。投影只在组装时按 76 个映射线性校验/复制；没有新增 Tick、请求热路径 I/O、反射、缓存或轮询。
+
+### 当前候选与验证
+
+| 门禁 | 当前结果与证据边界 |
+| --- | --- |
+| J15 内容契约 | `tests/content/J15ContentContractTests/run.py:71–233,256–500` 固定 69 个 owner/source/target、基线 checkout 字节与 41 个 HOLD；结果 `mappings=76 / j15b=69 / holds=41 / invalidCases=8 / gcczFallbackCases=4 / overlayAliases=11` PASS。`ContentLayoutContractTests.ps1:89–103` 对真实 76 项投影逐文件 SHA 校验且无额外文件；无效映射仍零部分输出。 |
+| 引用与格式 | 69 个迁移源逐项 JSON/XML/mbproj/PNG 校验；两个 language index、两个 mbproj、两个 SubModule XML target、23 个 `LoadMovie`、所有 19 个活动 sprite、Courier brush/prefab 与 TownAmbient 唯一 writer 接线均 PASS。旧 `ModuleData`/`GUI` 根只剩精确 41 个 HOLD。 |
+| Prompt / Xihai / inventory | Prompt configuration **36**；ActionPostprocess PromptLab **18 rules / 5 mood / 15 cases**；Preprocess PromptLab **19 topics、recall=1、precision=1**；Xihai Core **88/0**；repository inventory **7**、Phase8 entry inventory **11** 且 catalog check、索引 inventory `unknown_count=0`，均 PASS。 |
+| 当前 DLL 回放 | 当前 Debug 1.4 `AnimusForge.dll` SHA256 `3E91D8893F862E693917D4107B6EA13FF09DA778F8436842858EBBE38F2CBA8E` 的完整 Phase8 回放 PASS，包含迁后 Terminal/Onboarding/Weekly GUI 源读取；输出中的真实游戏、provider、Gauntlet 等仍分别标 `NOT_RUN`。 |
+| 双版本单模块构建 | 事前复核四个精确仓内生成目录及所有祖先/后代无 reparse；原 `build_single_module.ps1` 不传 Stage/Deploy，Debug/Release × 1.3/1.4 + Bootstrap 六项均 **0 warning / 0 error**。引用为 1.3.15.110062、1.4.7.117484。 |
+| 实现资源与定位 | 四个实现 DLL 各恰好七个 J15a EmbeddedResource，逻辑名/源字节一致，`*.resources.dll=0`；J15b 文件经独立真实投影交付而非嵌入。代码地图仍绑定未改的 J14 C# 产品 `e58f3558`，recorded/working-tree 各 **755** 锚点 PASS，仅作定位；`git diff --check` PASS。 |
+
+候选 SHA256：Debug 1.3 `1B82FFC8E56EA7A054B29430E769D09F50EDAC71169ADA9C30D37D073D400387`、Debug 1.4 `3E91D8893F862E693917D4107B6EA13FF09DA778F8436842858EBBE38F2CBA8E`、Debug Bootstrap `635D4902AA063E6D2A09C091E69B37FA0E4878A9141582D303CFECC48D06304E`；Release 1.3 `38E88612E9642589EAA353AF563952372C961B0BFDA8CD935279DF3388124708`、Release 1.4 `088435310658E93ECBBAD96F3A83AE16B70C1CF765CCD98AD8A4D6EA58896BB2`、Release Bootstrap `592BA877FB7B078F4C3FF48FA2563E39683082C6C0421C7C618238B196828FDA`。
+
+### HOLD、失败信号与停点
+
+- 旧根保留 **8** 个 ModuleData HOLD：异常 HTML、留待 J15c 的 `FeatureBridges.json`、动态 `UnnamedNpcProfiles.json` 与五个生成 profile；保留 **33** 个 GUI HOLD：sprite 配置/索引、旧或临时变体、来源未确认的 account/achievement/subscribe 图和生成 sprite sheet。精确集合固定在 `run.py:189–231`；它们未进入映射，也未删除。CustomPrompts、PlayerExports、VoiceMapping、ONNX、AssetPackages 等 J15c 边界继续原位，不由本片授权。
+- 完整 Xihai StaticVerifier 实际运行结果为 **10 passed / 3 failed**：外部模块 TPAC 不含 `nacisword1`、其连带 composition 初始化失败、以及 AF bridge 的 accepted-player-message 签名漂移；这三项不由静态内容源搬迁产生，不能记为 J15b 通过。与本片资源直接相关的 deployed paths、settings、battle-speech 资源/语言及 MCM 契约通过，另有 88 项 Core 回归通过。首次 Phase8 调用缺必填 `GameRoot` 等参数而 fail-closed，补齐显式固定引用和三个模块根后当前候选完整回放通过；没有绕过依赖校验。
+- 没有执行 Stage、Deploy、Package、push、游戏目录/外仓/玩家数据写入或 GCCZ mirror；真实 1.3/1.4 加载、旧档、安装用户覆盖、Gauntlet 渲染/点击/焦点、provider、音频与帧性能均 **NOT-RUN**。`.dotnet-cli-home/` 保留。按用户要求停在 **J15b 结束**；若另行请求，下一项是 J15c 的 profile/可写默认项/模型与素材边界，不能由本轮自动继续。
+
+## 以下为 J15a 历史状态
+
 ## J15a 七项 EmbeddedResource 有限离线完成（2026-09-26）
 
 状态：**`J15a_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。用户授权执行到 J15a、四个具名构建目录清理及不带 Stage 的 Debug/Release 六构建；产品/测试切片为 **`ade4f629`**。本条取代下方“J15 尚未施工”当前状态，但不把 J15b/c/d、实机或发布标为完成。

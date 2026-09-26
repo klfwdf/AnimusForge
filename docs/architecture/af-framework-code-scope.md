@@ -1,16 +1,16 @@
-# 当前范围：J15a 七项 EmbeddedResource 内容归位（2026-09-26）
+# 当前范围：J15b 已确认静态内容归位（2026-09-26）
 
-产品/测试 `ade4f629`，状态 **`J15a_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。本片只改变七项静态默认资源的仓库可编辑源及构建/组装源定位，不改变游戏运行资源名、业务 loader、C# owner、public API、保存或单模块加载身份。
+产品/测试 `04056ce7`，状态 **`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。本片将 69 个已确认静态 JSON/GUI/XML/语言源按 owner 原样归入 `content/`；J15a 7 项继续有效。只改变仓库可编辑源、组装源定位和对应测试/工具，不改变运行资源名、业务 loader、C# owner、public API、保存或单模块加载身份。
 
 | 路径与一基定位 | 已覆盖责任与消费者 | 未覆盖或保留责任 |
 | --- | --- | --- |
-| `content/content-map.json:1–47` | 七项 source → 原 `ModuleData/<file>` target → 原 LogicalName 的唯一显式映射；Prompt、Economy、GCCZ owner 分开 | 不是运行时 manifest；J15b/c 的 GUI/XML/其他 JSON/profile/用户数据不在本片 |
-| `AnimusForge.csproj:81–107` | 两版本同一源嵌入七项默认；五个 GCCZ 继续 `WithCulture=false` | 程序集仍名 `AnimusForge`，Bootstrap/双实现加载不变 |
-| `一键编译覆盖推送/content_layout.ps1:87–223`；`deploy_module.ps1:736,801,835` | 组装期 fail-closed 校验/投影；Stage 与 Deploy 使用相同 target，源 hash 也由映射解析 | 本轮只做合成投影和无 Stage 六构建，真实 Stage/Deploy/用户安装覆盖 NOT-RUN |
-| `tests/content/J15ContentContractTests/run.py:83–192`；`Program.cs:40–115` | 固定迁前字节、映射反例、GCCZ disk→embedded→fail-safe、overlay alias、四 DLL 资源名/字节审计 | 合成 fixture/PE 审计不是游戏加载、旧档或 provider 验收 |
-| `tools/package_policy_system_source_overlay.py:36–180`；`repository_source_inventory.py:28–149` | overlay 保留旧交付名但消费唯一新源；仅已知 content owner 放行，敏感 HOLD 保留 | 未打包；PlayerExports、ONNX、AssetPackages、未知 owner 仍不获迁移/分发授权 |
+| `content/content-map.json:1–392` | 76 个唯一 source → 原 `ModuleData/...` / `GUI/...` target；J15a 7 项保留 LogicalName，J15b 69 项按 15 个 owner 映射且无第二可编辑源 | 不是运行时 manifest；41 个明确 HOLD 及 J15c profile/用户数据/模型不在映射 |
+| `content/modules/{AF.Module.Prompt,AF.Module.Social,AF.Module.Conversation,AF.Module.WarStats,AnimusForge.SiegeAftermathIntervention,AnimusForge.XihaiAction,AF.Module.Economy,AF.Module.UI,AF.Module.Onboarding,AF.Module.WorldEvents,AF.Module.Weekly,PolicySystem,AF.Module.Diplomacy}`；`content/foundation/{AF.Foundation.Localization,AF.Foundation.UI}` | Rule/Action/Proactive/Town JSON、游戏 XML/语言/mbproj、23 个 prefab、19 个活动 PNG 与 Courier brush 的唯一仓库源 | 运行时仍由原 loader、`LoadMovie`、sprite category、SubModule XML 和语言索引消费投影目标；无玩法或文案变更 |
+| `一键编译覆盖推送/content_layout.ps1:87–224`；`deploy_module.ps1:736,801,833–836` | 可选 LogicalName 的 fail-closed 组装映射；Stage/Deploy 投影与 Rule/Preprocess hash 使用同一源 | 本轮只做真实合成投影和无 Stage 六构建；实际 Stage/Deploy/用户安装覆盖 NOT-RUN |
+| `tests/content/J15ContentContractTests/run.py:71–233,256–500`；`ContentLayoutContractTests.ps1:89–103` | 固定 69 项 checkout 字节、41 HOLD、格式/语言/mbproj/SubModule/movie/sprite/brush/writer、11 overlay alias、76 项真实投影与 8 类失败零部分输出 | 静态/PE/合成证据不是真实 Gauntlet、游戏加载、旧档或 provider 验收 |
+| `tools/package_policy_system_source_overlay.py:121–150`；`repository_source_inventory.py:93–110` | overlay 保留旧交付别名但从映射取源；inventory 仅放行具名 owner，未知 module/foundation fail-closed | 未执行 Package；PlayerExports、ONNX、AssetPackages 与未知 owner 保持 HOLD |
 
-详细六构建、候选 SHA、定向回归与 NOT-RUN 见[主台账当前条目](../animusforge-refactoring-and-repository-reorganization-plan.md)和[根 HANDOFF](../../HANDOFF.md)。[代码地图](af-framework-code-map.json)仍绑定未改的 J14 C# 产品 `e58f3558`，755 锚点 recorded/working-tree 通过；这是定位且不包含新的内容映射证据。无运行时扫描/轮询、push、Stage、部署、打包或外仓同步。下一范围若获明确请求为 J15b；下方 J14 范围仍是有效前序业务/API 证据。
+原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建、四实现 DLL 七嵌入资源审计、Prompt/Xihai Core/inventory/当前 DLL Phase8 回放均通过；完整 Xihai StaticVerifier 的外部 TPAC/bridge 三项失败单列在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)，没有隐藏。[代码地图](af-framework-code-map.json)仍绑定未改的 J14 C# 产品 `e58f3558`，755 锚点 recorded/working-tree 通过；只作定位。无运行时扫描/轮询、push、Stage、部署、打包或外仓同步。按用户要求停在 J15b，下一范围若获明确请求为 J15c；下方 J14 范围仍是有效前序业务/API 证据。
 
 ## 以下为 J14 及更早范围
 
