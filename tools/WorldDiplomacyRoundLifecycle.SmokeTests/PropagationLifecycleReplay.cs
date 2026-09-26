@@ -10,6 +10,27 @@ internal static class PropagationLifecycleReplay
 {
     internal static void Run()
     {
+        var rumorStorage = new WorldDiplomacyStorage();
+        rumorStorage.Documents.Add(new WorldDiplomacyDocument
+            { DocumentId = "late", Day = 5, CreatedUtcTicks = 2, IsReadyForPublication = true });
+        rumorStorage.Documents.Add(new WorldDiplomacyDocument
+            { DocumentId = "early", Day = 4, CreatedUtcTicks = 3, IsReadyForPublication = true });
+        rumorStorage.Documents.Add(new WorldDiplomacyDocument
+            { DocumentId = "tie", Day = 4, CreatedUtcTicks = 3, IsReadyForPublication = true });
+        rumorStorage.Documents.Add(new WorldDiplomacyDocument
+            { DocumentId = "player", Day = 1, IsReadyForPublication = true, IsPlayerAuthored = true });
+        rumorStorage.Documents.Add(new WorldDiplomacyDocument
+            { DocumentId = "draft", Day = 1 });
+        var rumors = WorldDiplomacyPropagationApplication.SelectPendingRumors(rumorStorage, 2);
+        Test.True(rumors.Select(x => x.DocumentId).SequenceEqual(new[] { "early", "tie" })
+            && !rumors[0].RumorNotified,
+            "rumor selection preserves chronological ties, batch limit, and per-display acknowledgement");
+        WorldDiplomacyPropagationApplication.MarkRumorNotified(rumors[0]);
+        Test.True(rumors[0].RumorNotified && !rumors[1].RumorNotified
+            && WorldDiplomacyPropagationApplication.SelectPendingRumors(rumorStorage, 2)
+                .Select(x => x.DocumentId).SequenceEqual(new[] { "tie", "late" }),
+            "failed later display remains pending while acknowledged rumor is not selected again");
+
         var storage = new WorldDiplomacyStorage();
         var round = new WorldDiplomacyRound { RoundId = "r" };
         var document = new WorldDiplomacyDocument

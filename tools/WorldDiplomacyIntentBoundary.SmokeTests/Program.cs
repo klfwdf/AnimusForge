@@ -759,7 +759,9 @@ internal static class Program
 			&& source.Contains("RecoverPlayerCourtReceiptsFromKnowledge();", StringComparison.Ordinal),
 			"old saves whose player court already knows a declaration must recover the missing formal receipt flag");
 		string notifications = ExtractMethod(source, "private void TryPublishPendingNotifications(");
-		Test.True(notifications.Contains("!x.RumorNotified", StringComparison.Ordinal)
+		Test.True(notifications.Contains("WorldDiplomacyPropagationApplication.SelectPendingRumors(_storage, 3)", StringComparison.Ordinal)
+			&& notifications.Contains("WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor)", StringComparison.Ordinal)
+			&& propagationOwner.Contains("document.RumorNotified", StringComparison.Ordinal)
 			&& notifications.Contains("x.HasReachedPlayerCourt", StringComparison.Ordinal)
 			&& notifications.Contains("!x.FormalNoticeShown", StringComparison.Ordinal),
 			"rumor and formal court delivery must remain separate notification stages");

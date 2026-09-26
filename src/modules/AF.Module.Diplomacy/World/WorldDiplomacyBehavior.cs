@@ -5449,10 +5449,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		DateTime nowUtc = DateTime.UtcNow;
 		if (nowUtc < _nextNotificationPollUtc) return;
 		_nextNotificationPollUtc = nowUtc.AddSeconds(1d);
-		foreach (WorldDiplomacyDocument rumor in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(_storage.Documents
-				.Where(x => x != null && !x.IsPlayerAuthored && x.IsReadyForPublication && !x.RumorNotified)).Take(3))
+		foreach (WorldDiplomacyDocument rumor in WorldDiplomacyPropagationApplication.SelectPendingRumors(_storage, 3))
 		{
-			rumor.RumorNotified = true;
+			WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor);
 			InformationManager.DisplayMessage(new InformationMessage(
 				WorldDiplomacyTextRules.BuildDiplomacyRumor(rumor, id => KingdomName(ResolveKingdom(id)))));
 			Log("diplomacy-rumor.shown document=" + rumor.DocumentId + " day=" + CurrentDay().ToString(CultureInfo.InvariantCulture));
