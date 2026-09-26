@@ -1,6 +1,8 @@
-# 当前范围：AF2.0 F1 路径契约首片（2026-09-26）
+# 当前范围：AF2.0 F1 路径契约及 F2 单文件安全写入首片（2026-09-26）
 
-`src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 新增纯 .NET 内部路径约定：默认 `%LOCALAPPDATA%/AnimusForge`，环境变量或显式绝对根优先，拒绝相对路径、源码/模块/Stage 根与现存 reparse，提供 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery` typed 目录。`tests/AF.Persistence/DataPaths/Program.cs:1–61` 验证 17 个定位及错误路径反例。现有 reader/writer 尚未接此约定；本片不改变 V1 API、保存身份、游戏安装或默认入口。Debug/Release × 1.3/1.4 + Bootstrap 六构建和独立路径测试通过，实机/旧档/迁移/Stage/ZIP **NOT-RUN**。完整 F1–F5 仍未验收，证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
+`src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 新增纯 .NET 内部路径约定：默认 `%LOCALAPPDATA%/AnimusForge`，环境变量或显式绝对根优先，拒绝相对路径、源码/模块/Stage 根与现存 reparse，提供 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery` typed 目录。`tests/AF.Persistence/DataPaths/Program.cs:1–59` 验证 17 个定位及错误路径反例。现有 reader/writer 尚未接此约定；本片不改变 V1 API、保存身份、游戏安装或默认入口。Debug/Release × 1.3/1.4 + Bootstrap 六构建和独立路径测试通过，实机/旧档/迁移/Stage/ZIP **NOT-RUN**。完整 F1–F5 仍未验收，证据见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
+
+`src/AF.Persistence/PlayerExportsStore.cs:137–162` 另将单 JSON 写入改为先序列化、同目录候选写入并解析校验，再 `File.Replace`/`File.Move` 发布；`tests/AF.Persistence/DataPaths/Program.cs:61–84` 的合成序列化失败反例证明旧文件不被先删，成功替换后不留候选。全组 `ClearJsonFiles` 仍在宿主导出路径中，尚无组级事务保证；不把此单文件改善算成 F2 完成。
 
 ## 以下为前序 J15c 已验范围
 

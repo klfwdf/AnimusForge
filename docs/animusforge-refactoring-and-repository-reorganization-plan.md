@@ -1,8 +1,10 @@
-## AF2.0 F1 路径契约首片：离线已验，消费者尚未接线（2026-09-26）
+## AF2.0 F1 路径契约与 F2 单文件安全写入首片：离线已验（2026-09-26）
 
 意图 `d2aca97f`。`src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 提供纯 .NET 内部定位，默认 `%LOCALAPPDATA%/AnimusForge`；显式绝对根/环境覆盖须拒绝相对、源码、模块、Stage、现存 reparse 或文件根，绝不回退 CWD。typed 子目录包括 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery`。路径缓存仅初始化一次，目录检查只在显式解析时运行，未进入 Tick。`tests/AF.Persistence/DataPaths/Program.cs:1–61` 独立编入同一生产源码，17 个定位/越界反例通过；源码新增前曾得到预期 CS2001 red。随后原一键脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均零警告错误；清理前核实四个获准生成目录为工作区内、无 reparse、仅含构建产物。该类尚未接任何 reader/writer，因此**不是 F1 完成**，也不证明迁移、Stage/ZIP、真实数据或游戏验收。
 
-后续真实 owner/消费者边界（本片不宣称已改）：`src/AF.Persistence/PlayerExportsStore.cs:19–51,85–150,175–199` 模块根导出、先删后写和清旧包；编辑器 `tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:9–24` 旧向上查找；`DuelSettings.cs:4280–4327,4358–4565,4681–4773,5013–5033` 与 `PolicySystem/Effects/PolicyEffectPromptService.cs:280–317,374–441,546–587,642–657` 的默认/覆盖策略；`AnimusForgeTerminalSettings.cs:77–129` 与 `AnimusForgeModulePaths.cs:30–62` 的设置/日志；`OnnxEmbeddingEngine.cs:472–515`、`OnnxCrossEncoderReranker.cs:556–591` 的模型定位；`Refactor/Runtime/FeatureBridgeRuntime.cs:225–275,385–400` 的损坏全关语义必须保留。F2 要以实际读写接线和合成恢复反例证明，不能只改路径字符串。
+后续真实 owner/消费者边界（本片不宣称已改）：`src/AF.Persistence/PlayerExportsStore.cs:19–51,85–113,186–210` 模块根导出和清旧包；编辑器 `tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:9–24` 旧向上查找；`DuelSettings.cs:4280–4327,4358–4565,4681–4773,5013–5033` 与 `PolicySystem/Effects/PolicyEffectPromptService.cs:280–317,374–441,546–587,642–657` 的默认/覆盖策略；`AnimusForgeTerminalSettings.cs:77–129` 与 `AnimusForgeModulePaths.cs:30–62` 的设置/日志；`OnnxEmbeddingEngine.cs:472–515`、`OnnxCrossEncoderReranker.cs:556–591` 的模型定位；`Refactor/Runtime/FeatureBridgeRuntime.cs:225–275,385–400` 的损坏全关语义必须保留。F2 要以实际读写接线和合成恢复反例证明，不能只改路径字符串。
+
+F2 首个独立安全改进：`src/AF.Persistence/PlayerExportsStore.cs:137–162` 不再先删唯一旧 JSON，改为先序列化、同目录候选写入和解析复验，再 `File.Replace` 或 `File.Move`，失败保留旧文件。`tests/AF.Persistence/DataPaths/Program.cs:61–84` 用抛异常的虚构对象得到预期 red（旧实现删除旧文件），新实现 22 项 PASS；候选成功替换与不留临时文件也覆盖。最新 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。**仍未解决** `MyBehavior.cs` 等宿主在整组导出前调用 `ClearJsonFiles`、`GetPlayerExportsRootPath` 仍指模块，以及编辑器/Prompt/TerminalSettings/模型/迁移器/Stage/ZIP；本片只降低单文件失败丢失风险，不可启动真实数据迁移或声称 F1/F2 完成。
 
 ## AF2.0 资源与数据层完整终态方案（历史规划）
 
