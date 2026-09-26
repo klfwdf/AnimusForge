@@ -3400,6 +3400,7 @@ internal static class Program
 			"mechanical execution must isolate each action result so one failure cannot discard the document or later actions");
 
 		string relayOffers = ExtractMethod(source, "private void TrySettleRelayOffer(");
+		string offerApplication = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyOfferApplication.cs")), Encoding.UTF8);
 		string offerBookkeepingRules = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
 			Encoding.UTF8);
@@ -3407,9 +3408,10 @@ internal static class Program
 			offerBookkeepingRules, "public static void RegisterRelayProposalOffer(");
 		string responseMatching = ExtractMethod(
 			offerBookkeepingRules, "public static List<WorldDiplomacyRoundOffer> SelectMatchingRelayResponseOffers(");
-		Test.True(relayOffers.Contains("WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(", StringComparison.Ordinal)
-			&& relayOffers.Contains("WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),
-			"the host must route offer registration and response matching through the lifecycle rules");
+		Test.True(relayOffers.Contains("WorldDiplomacyOfferApplication.Settle(", StringComparison.Ordinal)
+			&& offerApplication.Contains("WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(", StringComparison.Ordinal)
+			&& offerApplication.Contains("WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),
+			"the offer application must route registration and exact response matching through the lifecycle rules");
 		Test.True(proposalRegistration.Contains("SourceActionId", StringComparison.Ordinal)
 			&& proposalRegistration.Contains("ProcessingActionId", StringComparison.Ordinal)
 			&& responseMatching.Contains("RespondingToOfferActionId", StringComparison.Ordinal)

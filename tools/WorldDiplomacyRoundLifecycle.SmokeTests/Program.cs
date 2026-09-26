@@ -140,6 +140,7 @@ RunRepairCorrectionAndJobDecisionTests();
         RoundApplicationReplay.Run();
         PropagationApplicationReplay.Run();
         PublicationScheduleReplay.Run();
+        OfferApplicationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14039,6 +14040,7 @@ RunRepairCorrectionAndJobDecisionTests();
     {
         string applicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs")));
         string propagationApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
+        string offerApplicationSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyOfferApplication.cs")));
 
         string rulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"));
@@ -14252,8 +14254,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must build the mandatory-reply input from live storage state");
         Test.True(behaviorSource.Contains("WorldDiplomacyIntentVocabulary.NormalizeIntent", StringComparison.Ordinal),
             "the host must route intent normalization through the vocabulary");
-        Test.True(behaviorSource.Contains("WorldDiplomacyIntentVocabulary.IsProposalIntent", StringComparison.Ordinal),
-            "the host must route proposal checks through the vocabulary");
+        Test.True(offerApplicationSource.Contains("WorldDiplomacyIntentVocabulary.IsProposalIntent", StringComparison.Ordinal),
+            "the offer application must route proposal checks through the vocabulary");
         Test.True(rulesSource.Contains("WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation", StringComparison.Ordinal),
             "the lifecycle rules must route response obligations through the vocabulary");
         Test.True(!behaviorSource.Contains("\"make_peace\" or \"peace\" or \"peace_proposal\"", StringComparison.Ordinal),
@@ -15027,7 +15029,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyOfferContractRules.IsExclusivePeaceOfferResponseSet(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyOfferContractRules.GeneratedActionsContainRequiredPeaceOfferResponse(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyOfferContractRules.ProposalSuccessResult(", StringComparison.Ordinal)
+            && offerApplicationSource.Contains("WorldDiplomacyOfferContractRules.ProposalSuccessResult(", StringComparison.Ordinal)
             && factSource.Contains("WorldDiplomacyOfferContractRules.IsRequiredPeaceOfferResponse(", StringComparison.Ordinal),
             "host and document fact rules must delegate offer and commitment contract checks to the domain rules");
         Test.True(validationSource.Contains("WorldDiplomacyTextRules.ContainsWholeNumber(", StringComparison.Ordinal)
@@ -15741,9 +15743,10 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompletePolicySignal(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.AttachPolicySignalToRound(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),
-            "the host must route bookkeeping through the lifecycle rules");
+            && behaviorSource.Contains("WorldDiplomacyOfferApplication.Settle(", StringComparison.Ordinal)
+            && offerApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(", StringComparison.Ordinal)
+            && offerApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),
+            "the offer application must route canonical bookkeeping through the lifecycle rules");
         Test.True(!behaviorSource.Contains("countered.Status = \"countered\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("_storage.PendingPolicySignals.RemoveAll(item => item != null && string.Equals(item.SignalKey", StringComparison.Ordinal)
             && !behaviorSource.Contains("decision.Action == WorldDiplomacyOfferCooldownAction.ClearCooldown", StringComparison.Ordinal),
