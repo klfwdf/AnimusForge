@@ -597,6 +597,12 @@ def verify_formats_and_references() -> None:
         text = (ROOT / matches[0]).read_text(encoding="utf-8-sig")
         check(Path(target).name in text, f"sprite consumer drift: {target}")
 
+    policy_tests = (ROOT / "tools/PolicyEffectModule.ContractTests/Program.cs").read_text(encoding="utf-8-sig")
+    for file_name in ('CustomPolicyComposePopup.xml', 'LocalPolicyComposePopup.xml', 'PolicyEffectModuleManagerPopup.xml', 'CustomPolicyHistoryPopup.xml', 'LocalPolicyHistoryPopup.xml', 'AnimusForgeWorldEventInboxPopup.xml'):
+        parts = J15B_EXPECTED["GUI/Prefabs/" + file_name]["source"].split("/")
+        expression = "Path.Combine(repositoryRoot, " + ", ".join(json.dumps(part) for part in parts) + ")"
+        check(expression in policy_tests, f"Policy test must read the mapped GUI source: {file_name}")
+
     brush = (ROOT / J15B_EXPECTED["GUI/Brushes/AFCourierLetterBrushes.xml"]["source"]).read_text(encoding="utf-8-sig")
     courier_prefab = (ROOT / J15B_EXPECTED["GUI/Prefabs/CourierLetterInputPopup.xml"]["source"]).read_text(encoding="utf-8-sig")
     check("AFCourierLetter." in brush and "AFCourierLetter." in courier_prefab, "courier brush linkage")
