@@ -1,3 +1,7 @@
+## J15 执行计划编写意图（2026-09-26）
+
+本轮用户只要求“准备做 J15，写执行计划，写到能开新对话执行”。以 `fc445335` 为规划基线，核实本工作区与当前分支，仅编写 J15 content/profile 的可执行计划并更新本台账和 HANDOFF；不开始产品迁移，不改资源、生产源码、项目或构建/部署脚本。已存在的未跟踪 `.dotnet-cli-home/` 保留。资源数据分类、G0.3、ONNX/素材来源，以及物理迁移必需的构建资源接线与授权边界均须写清；J14 保持 `J14_OFFLINE_VERIFIED`，不继承其清理、Stage 或其他历史授权。
+
 ## J14 三渠道公共 API 最终离线验收（2026-09-26）
 
 状态：**`J14_OFFLINE_VERIFIED`**。按[既有 J14 计划](plans/j14-public-api-plan.md)完成 G0、Scene a、Courier b1–b3 和最终候选 c；本条明确取代下方 J14 历史 `ACTIVE` / “Courier 未开放” / “记忆 runner 失效” / “最终矩阵待验”状态，但不改写当时证据。工作区 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`。本轮开工基线 `fb4af2d8`、意图 `9e6e93ee`；最终产品 **`e58f3558cddfe473f396bb7f11470b05e30afce9`**，其后仅测试/证据变更，产品和最终四实现相同。未开始 J15，也不是全仓、实机或发布 READY。
