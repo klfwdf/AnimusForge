@@ -1,4 +1,12 @@
-# 当前范围：J14a Scene 有限离线收口（2026-09-26）
+# 当前范围：J14b1 Courier 草稿准入（2026-09-26）
+
+产品 `4bc855cd`、`8fb16385`、`b6daf65f`：原 Courier UI 的草稿/代次/修订保护、只读有界票据、发送资格和一次派出在 `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs:43–64,600–680`、`CourierDeliveryBehavior.DraftAdmission.cs:12–152`；真正运输仍由原 SessionCreation/SessionTransport/GenerationLifecycle/CommitDispatch/DomainCommit/DeliveryLifetime/LetterInventory 执行。`CourierDeliveryBehavior.ModuleSubmission.cs:11–140` 只承接内部 Core 提交、owner 队列/活动关联限额、实例绑定和退休，不是第二条运输或动作链。`CourierDeliveryBehavior.DetachedPostprocess.cs:117–170` 给原队列增加可选出队通知；`Refactor/Modules/CoreDialogueClient.cs:34–47,97–111` 复用三渠道同一 ID 表及 Dispose，尚未增加 V1 Courier 方法。
+
+**`J14b1_ADMISSION_VERIFIED / J14b_ACTIVE / J14_ACTIVE`**。当前成功派出不等于 operation 完成：b2 必须接上权威阶段与运输结局，再由 b3 对外开放。105 项 source-linked 准入与 55 项 Native/Scene 回归、9 个负向 mutation、Debug 双版本及 Bootstrap 的具体身份见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。[JSON 代码地图](af-framework-code-map.json)暂保留 `79fa7c48` 的历史 J14a 定位基线；最终候选需重绑并跑两模式，不将旧 hash 当当前源码验证。
+
+## 以下为 J14a 范围（历史）
+
+# J14a Scene 有限离线收口（2026-09-26）
 
 产品/测试 `1740b338`, `79fa7c48`：`src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs:79–89` 增主线程捕获票据及任意线程 Scene 提交，`AfApi.cs:23` 在真实链路收口后标 `SceneSubmit=Available`；`Refactor/Modules/CoreDialogueClient.cs:25–67` 沿同一 client 128-ID 表按渠道、票据、原文本去重。`ShoutBehavior.ModuleSceneContext.cs:10–27,33–105` 与 `ScenePlayerShoutRequestOwner.cs:73–145` 保持原框选/source/Agent、主线程一次 claim 与有界票据；`ShoutBehavior.ModuleSceneSubmission.cs:45–56,86–150,152–285` 拥有当前组、分阶段主线程 Prompt、speech/postprocess/历史回执、退役与 terminal 结算。`ShoutBehavior.SceneConversationChains.cs:771–1454` 仍是原每 Hero 群组、接力和相关旁听/后处理 owner；`ShoutBehavior.cs:17198–17220,26380–26434,26559–27086,36882–36950` 保留原游戏/队列/记忆适配；`MyBehavior.DialogueHistoryCommit.cs:12–53` 旧七参 ABI 与新内部九参 Scene 定向记忆接受并存。未迁移的 Scene 场景动作/规则仍归原 host 和各领域 owner，不把整文件标为重写；Courier 公共能力仍未开放。
 

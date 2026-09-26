@@ -1,7 +1,7 @@
-# 当前交接：J14b–c 接续实施（2026-09-26）
+# 当前交接：J14b1 准入完成，接续运输回执（2026-09-26）
 
-- **状态**：`J14b_ACTIVE / J14_ACTIVE`；J14a 保持有限离线完成，尚非整个 J14 完成。基线 `fb4af2d8`，本轮实施授权、真实 owner、最终候选证据缺口及退出门见[主台账当前意图](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[J14 计划](docs/plans/j14-public-api-plan.md)。
-- **下一动作**：先增加旧草稿 UI 回调与一次派出的行为红例，再实现 b1；随后 b2/b3 和 c 最终离线矩阵。保留 `.dotnet-cli-home/`；仅本地实施/测试/提交及本轮限定四个构建目录，无 push、Stage、部署、打包、游戏/外仓/存档写入或 J15。实机/旧档/provider/音频/帧性能仍 NOT-RUN。
+- **状态**：`J14b1_ADMISSION_VERIFIED / J14b_ACTIVE / J14_ACTIVE`；本地产品切片 `4bc855cd`、`8fb16385`、`b6daf65f`，105 项准入检查、Native/Scene 55、Debug 双版本及 Bootstrap 通过。真实责任及证据见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[代码范围图](docs/architecture/af-framework-code-scope.md)；JSON 地图仍是历史 J14a 基线，不声称本轮最终矩阵已过。
+- **下一动作**：实施 b2 实际 session 阶段/动作与历史/回信交付/运输终止及失败回执；当前内部成功派出只保持 Running，Courier V1 仍未开放。再做 b3 和 c 最终离线矩阵及地图重绑，按[J14 计划](docs/plans/j14-public-api-plan.md)完成整体离线验收。保留 `.dotnet-cli-home/`；仅本地实施/测试/提交及本轮限定四个构建目录，无 push、Stage、部署、打包、游戏/外仓/存档写入或 J15。实机/旧档/provider/音频/帧性能仍 NOT-RUN。
 
 ## 以下为 J14a 交接（历史基线）
 
