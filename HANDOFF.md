@@ -1,4 +1,11 @@
-# 当前交接：AF2.0 PlayerExports 双来源真实迁移可恢复完成，继续 F1–F5（2026-09-26）
+# 当前交接：AF2.0 Prompt 分层与真实迁移已验，继续 F1–F5（2026-09-26）
+
+- **本轮产品/测试 `528031c5`**：普通/Policy Prompt 读取改为用户覆盖→随包默认→owner 安全回退；编辑写入用户根且候选原子替换，损坏覆盖保留而不回写模块或源码。日志、模型下拉缓存改用 typed 用户根；30 份随包 Prompt 默认已加入 SHA 锁。D: 安装来源 30 份 Prompt 已分别私有备份并逐文件 hash 验证，14 份非基线文件无覆盖激活，重复执行激活 0；安装原件未改。合成迁移、Prompt/Policy 契约 9055 断言、DataPaths 44 项、内容映射静态核验及当前 Debug/Release × 1.3/1.4 + Bootstrap 六构建通过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)。
+- **仍未完成**：TerminalSettings、ONNX 定位及其迁移，F3 干净 Stage/ZIP 白名单，F4 其余资料与资产权利/退役，F5 同候选离线总验收。完整 J15 runner 会清理未授权目录，因此本轮仅运行其静态映射检查；游戏启动、部署、原始 `.sav` 修改、实机旧档与发布验收均 **NOT-RUN**。没有推送或 G: 外仓写入。**F1–F5 不标完成。**
+
+## 以下为 PlayerExports 迁移交接（历史）
+
+# AF2.0 PlayerExports 双来源真实迁移可恢复完成，继续 F1–F5（2026-09-26）
 
 - **状态**：产品/测试 **`38c5effd`** 将游戏与编辑器 PlayerExports 接同一 typed 用户根、未迁移默认根失败关闭；**`d8acf666`** 修复首次真实迁移发现的 Windows 临时路径过长，并有合成长路径回归。安装与仓内两来源各 3139 项已分别备份到私有 Recovery，安装激活 3139、仓内因相同字节激活 0；独立逐文件 hash/大小与原件一致，两来源重复运行均无再次激活。首次失败停在备份第 51 项之前、无活动数据/完成记录，修复后在同一恢复材料上续作；D: 与仓内原件、原始 `.sav` 未删除/修改。此前 DataPaths 44 项、编辑器路径正反例、编辑器 App 和六构建、762 锚点地图仍有效，但它们不证明剩余 F1–F5。详细见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)。
 - **下一步**：接普通/Policy Prompt、可编辑配置、TerminalSettings、日志/缓存、ONNX 的真实消费者及合成迁移/回退；之后 Stage/ZIP 白名单、其他旧资料迁移与仓内旧树退役。BAAI 原模型 MIT 标签不能直接证明 ONNX 转换仓文件可再分发，F4 许可仍阻断发布。无 Stage、部署、打包、游戏启动、原始 `.sav` 修改、推送或 G: 外仓写入；编辑器完整编辑 smoke、实机旧档与发布许可 **NOT-RUN**。**F1–F5 仍未完成。**
