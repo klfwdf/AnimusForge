@@ -432,7 +432,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		case "diplomatic_document":
 			CloseTerminal();
-			if (!WorldDiplomacyBehavior.OpenComposeFromTerminal())
+			if (!WorldDiplomacyPresentation.OpenComposeFromTerminal())
 			{
 				InformationManager.DisplayMessage(new InformationMessage("打开外交宣言撰写界面失败。"));
 			}
@@ -445,7 +445,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 
 		case "world_policies":
 			CloseTerminal();
-			if (!WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView))
+			if (!WorldDiplomacyPresentation.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("打开王国公告界面失败。"));
 			}

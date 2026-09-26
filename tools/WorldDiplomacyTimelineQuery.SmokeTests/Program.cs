@@ -294,6 +294,7 @@ internal static class Program
         string host = File.ReadAllText(hostPath, Encoding.UTF8);
         string ui = File.ReadAllText(uiPath, Encoding.UTF8);
         string behavior = File.ReadAllText(behaviorPath, Encoding.UTF8);
+        string queries = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs"));
         string inbox = File.ReadAllText(FindRepositoryFile("WorldEvents", "WorldEventInbox.cs"), Encoding.UTF8);
 
         foreach (string source in new[] { contract, facade, documentContract, documentFacade, readContract, readFacade })
@@ -308,9 +309,10 @@ internal static class Program
             "query host must compose the legacy adapter behind the facade once");
         Test.True(!documentContract.Contains("WorldDiplomacyDocument", StringComparison.Ordinal),
             "timeline document contract must not expose persisted document DTOs");
-        Test.True(documentAdapter.Contains("TryGetRecentDocumentsForTimelineQuery", StringComparison.Ordinal)
-                  && documentAdapter.Contains("document.IsPlayerAuthored || document.IsReadyForPublication", StringComparison.Ordinal)
-                  && documentAdapter.Contains("BuildDiplomaticStandingImpactTextForExternal(document)", StringComparison.Ordinal),
+        Test.True(documentAdapter.Contains("WorldDiplomacyBehavior.QueryTimelineDocuments(maxCount)", StringComparison.Ordinal)
+                  && behavior.Contains("WorldDiplomacyPresentationQueries.Timeline(owner._storage, maxCount)", StringComparison.Ordinal)
+                  && queries.Contains("document.IsPlayerAuthored || document.IsReadyForPublication", StringComparison.Ordinal)
+                  && queries.Contains("BuildImpactText(document)", StringComparison.Ordinal),
             "document adapter must preserve the bounded source, visibility filter, and standing impact formatter");
         Test.True(host.Contains("new LegacyWorldDiplomacyTimelineDocumentQuery()", StringComparison.Ordinal)
                   && host.Contains("DocumentFacade.Query(maxCount).Documents", StringComparison.Ordinal),
@@ -349,7 +351,8 @@ internal static class Program
         Test.True(behavior.Contains("public static bool MarkDocumentReadForExternal(string documentId)", StringComparison.Ordinal)
                   && behavior.Contains("return WorldDiplomacyTimelineQueryHost.MarkDocumentRead(documentId);", StringComparison.Ordinal)
                   && behavior.Contains("internal static bool TryMarkDocumentReadForCommand", StringComparison.Ordinal)
-                  && behavior.Contains("document.IsRead = true;", StringComparison.Ordinal),
+                  && behavior.Contains("WorldDiplomacyPresentationQueries.MarkRead(behavior.ResolveDocument(documentId))", StringComparison.Ordinal)
+                  && queries.Contains("document.IsRead = true;", StringComparison.Ordinal),
             "legacy document-read surface must delegate while the current owner retains the mutation");
     }
 

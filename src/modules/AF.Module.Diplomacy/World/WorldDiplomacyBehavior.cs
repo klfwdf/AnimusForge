@@ -112,7 +112,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		new BannerlordWorldDiplomacyPersistenceAdapter();
 
 	private readonly ConcurrentQueue<LlmJobResult> _completedJobs = new ConcurrentQueue<LlmJobResult>();
-	private readonly HashSet<string> _notifiedDocumentIdsThisSession = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private readonly WorldDiplomacyNotificationApplication _notifications = new WorldDiplomacyNotificationApplication();
+	private NotificationWorld _notificationSink;
+	private NotificationWorld NotificationSink => _notificationSink ?? (_notificationSink = new NotificationWorld(this));
 	private readonly Dictionary<string, WarSituationSnapshot> _warSituationCache = new Dictionary<string, WarSituationSnapshot>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _courtSettlementCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly Dictionary<string, string> _realmInstitutionalVoiceCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -145,8 +147,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private long _cacheMissTokensThisSession;
 	private long _relayCacheHitTokensThisSession;
 	private long _relayCacheMissTokensThisSession;
-	private bool? _lastMapNotificationsEnabled;
-	private DateTime _nextNotificationPollUtc = DateTime.MinValue;
 	private bool _initialPeaceApplicationAttempted;
 	private string _canonicalHistoryRenderCacheKey = "";
 	private string _canonicalHistoryRenderCache = "";
@@ -290,35 +290,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	public static bool OpenComposeFromTerminal(Action onClose = null)
 	{
-		WorldDiplomacyBehavior behavior = ResolveInstance();
-		if (behavior == null)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("AI 外交功能尚未初始化。"));
-			return false;
-		}
-		return behavior.OpenComposeInternal(onClose);
+		return WorldDiplomacyPresentation.OpenComposeFromTerminal(onClose);
 	}
 
 	public static bool ShowRoyalAnnouncementArchive(Action onClose = null)
 	{
-		WorldDiplomacyBehavior behavior = ResolveInstance();
-		if (behavior == null || Campaign.Current == null || !(ScreenManager.TopScreen is MapScreen))
-		{
-			return false;
-		}
-		try
-		{
-			Action returnToArchive = () => ShowRoyalAnnouncementArchive(onClose);
-			return AnimusForgeWorldEventInboxPopup.Show(
-				behavior.BuildRoyalAnnouncementArchiveData(),
-				recordId => CustomPolicyBehavior.OpenKingdomPolicyReReviewFromWorldArchive(recordId, returnToArchive),
-				onClose);
-		}
-		catch (Exception ex)
-		{
-			Log("archive open failed: " + ex.Message);
-			return false;
-		}
+		return WorldDiplomacyPresentation.ShowRoyalAnnouncementArchive(onClose);
 	}
 
 	public static void NotifyExternalDiplomacyResolved(string action, Kingdom initiator, Kingdom target, string reason = null)
@@ -371,6 +348,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
+    internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount)
+    {
+        WorldDiplomacyBehavior owner = ResolveInstance();
+        return owner == null ? WorldDiplomacyTimelineDocumentsResult.Unavailable()
+            : WorldDiplomacyPresentationQueries.Timeline(owner._storage, maxCount);
+    }
 
 	public static long GetWorldMessageTimelineRevisionForExternal()
 	{
@@ -395,73 +378,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	public static string BuildKingdomDiplomaticStandingEncyclopediaTextForExternal(Kingdom kingdom)
 	{
-		try
-		{
-			WorldDiplomacyBehavior behavior = ResolveInstance();
-			if (behavior == null || kingdom == null) return "";
-			int prestige = WorldDiplomacyReputationRules.GetNationalPrestige(behavior._storage?.NationalPrestigeByKingdom, kingdom.StringId);
-			int reputation = WorldDiplomacyReputationRules.GetInternationalReputation(behavior._storage?.InternationalReputationByKingdom, kingdom.StringId);
-			return "【国家威望与国际声誉】\n"
-				+ "国家威望：" + prestige.ToString(CultureInfo.InvariantCulture)
-				+ "/100（该国的外交信用与威慑；过低会损害国内贵族关系）\n"
-				+ "国际声誉：" + reputation.ToString(CultureInfo.InvariantCulture)
-				+ "/100（他国对该国的评价；影响合作意愿与施压倾向）";
-		}
-		catch
-		{
-			return "";
-		}
+		return WorldDiplomacyPresentationHost.Standing(kingdom?.StringId);
 	}
 
 	public static string BuildDiplomaticStandingImpactTextForExternal(WorldDiplomacyDocument document)
 	{
-		if (document == null) return "";
-		List<WorldDiplomacyStandingChange> changes = document.DiplomaticStandingChanges
-			?? new List<WorldDiplomacyStandingChange>();
-		List<WorldDiplomacyStandingChange> authorChanges = changes
-			.Where(x => x != null && string.Equals(x.KingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase))
-			.ToList();
-		WorldDiplomacyStandingChange international = authorChanges.LastOrDefault(x =>
-			string.Equals(x.Kind, "international_reputation", StringComparison.OrdinalIgnoreCase));
-		List<WorldDiplomacyStandingChange> prestigeChanges = authorChanges.Where(x =>
-			string.Equals(x.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase)).ToList();
-		int prestigeDelta = prestigeChanges.Sum(x => x.Delta);
-		string prestigeReason = string.Join("；", prestigeChanges.Select(x => x.Reason)
-			.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
-		StringBuilder sb = new StringBuilder();
-		if (!string.IsNullOrWhiteSpace(document.MechanicalResult))
-		{
-			sb.AppendLine("【外交结果】");
-			sb.AppendLine(document.MechanicalResult.Trim());
-			sb.AppendLine();
-		}
-		sb.AppendLine("【国际声誉】");
-		sb.AppendLine("变化：" + WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(document, international));
-		sb.AppendLine("原因：" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(international?.Reason,
-			document.InternationalReputationEvaluationReason,
-			"本篇没有形成明确的国际声誉变化。"));
-		sb.AppendLine();
-		sb.AppendLine("【国家威望】");
-		sb.AppendLine("变化：" + WorldDiplomacyReputationRules.FormatSignedStandingDelta(prestigeDelta));
-		sb.AppendLine("原因：" + (prestigeChanges.Count == 0 || string.IsNullOrWhiteSpace(prestigeReason)
-			? "本篇没有触发国家威望结算。"
-			: prestigeReason));
-		bool hasOtherKingdomImpact = false;
-		foreach (WorldDiplomacyStandingChange other in changes.Where(x => x != null
-			&& !string.Equals(x.KingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)))
-		{
-			sb.AppendLine();
-			if (!hasOtherKingdomImpact)
-			{
-				sb.AppendLine("【其他国家影响】");
-				hasOtherKingdomImpact = true;
-			}
-			sb.AppendLine(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.KingdomName, other.KingdomId, "未知国家") + "："
-				+ (string.Equals(other.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase) ? "国家威望" : "国际声誉"));
-			sb.AppendLine("变化：" + WorldDiplomacyReputationRules.FormatSignedStandingDelta(other.Delta));
-			sb.AppendLine("原因：" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.Reason, "无说明"));
-		}
-		return sb.ToString().TrimEnd();
+		return WorldDiplomacyPresentationQueries.BuildImpactText(document);
 	}
 
 	public static bool CanDiscussWorldDiplomacyForExternal(Hero hero)
@@ -510,14 +432,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return false;
 		}
 
-		WorldDiplomacyDocument document = behavior.ResolveDocument(documentId);
-		if (document == null)
-		{
-			return false;
-		}
-
-		document.IsRead = true;
-		return true;
+		return WorldDiplomacyPresentationQueries.MarkRead(behavior.ResolveDocument(documentId));
 	}
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
@@ -866,7 +781,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		while (_completedJobs.TryDequeue(out _))
 		{
 		}
-		_notifiedDocumentIdsThisSession.Clear();
+		_notifications.ResetView();
 		_registeredMapNotificationView = null;
 		_warSituationCache.Clear();
 		_realmInstitutionalVoiceCache.Clear();
@@ -886,8 +801,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_cacheMissTokensThisSession = 0;
 		_relayCacheHitTokensThisSession = 0;
 		_relayCacheMissTokensThisSession = 0;
-		_lastMapNotificationsEnabled = null;
-		_nextNotificationPollUtc = DateTime.MinValue;
+		_notifications.Reset();
 		_initialPeaceApplicationAttempted = false;
 		_canonicalHistorySourceKeys.Clear();
 		_deferredCanonicalHistoryDocumentIds.Clear();
@@ -994,94 +908,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		ScheduleNextNormalRoundAfter(CurrentDay());
 		_nativeDiplomacyDecisionQueueSanitized = false;
 	}
-	private bool OpenComposeInternal(Action onClose)
-	{
-		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-		if (playerKingdom == null || playerKingdom.IsEliminated || playerKingdom.RulingClan?.Leader != Hero.MainHero)
-		{
-			InformationManager.ShowInquiry(new InquiryData(
-				"无法发布外交宣言",
-				"只有王国统治者才能发布外交宣言。",
-				true,
-				false,
-				"知道了",
-				"",
-				onClose,
-				null),
-				pauseGameActiveState: true);
-			return false;
-		}
-		if (!HasIndependentWorldDiplomacyAuthority(playerKingdom))
-		{
-			Kingdom suzerain = ResolveWorldDiplomacyRepresentative(playerKingdom);
-			InformationManager.ShowInquiry(new InquiryData(
-				"无法发布外交宣言",
-				"我国的外交事务目前由" + KingdomName(suzerain) + "掌管，不能独立发布外交宣言。",
-				true,
-				false,
-				"知道了",
-				"",
-				onClose,
-				null),
-				pauseGameActiveState: true);
-			return false;
-		}
-		return WorldDiplomacyComposePopup.Show(
-			"撰写外交宣言",
-			"",
-			"",
-			SubmitPlayerDocument,
-			onClose);
-	}
-	private void SubmitPlayerDocument(string body)
-	{
-		string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
-		if (string.IsNullOrWhiteSpace(cleanBody))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("外交宣言正文不能为空。"));
-			return;
-		}
-		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-		if (playerKingdom == null || playerKingdom.IsEliminated || playerKingdom.RulingClan?.Leader != Hero.MainHero)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("你当前不再是王国统治者，外交宣言没有发布。"));
-			return;
-		}
-		if (!HasIndependentWorldDiplomacyAuthority(playerKingdom))
-		{
-			InformationManager.DisplayMessage(new InformationMessage("我国的外交事务由" + KingdomName(ResolveWorldDiplomacyRepresentative(playerKingdom)) + "掌管，外交宣言没有发布。"));
-			return;
-		}
-		WorldDiplomacyRound round = EnsureActiveRound(playerKingdom, null, isPlayerInsertion: true);
-		WorldDiplomacyDocument document = CreateDocument(
-			playerKingdom,
-			null,
-			"外交宣言",
-			cleanBody,
-			"player",
-			isPlayerAuthored: true,
-			isResponse: false,
-			exchangeId: round?.RoundId ?? "");
-		document.RoundId = round?.RoundId ?? "";
-		WorldDiplomacyResultSettlementSlot playerSettlementSlot = round?.ResultSettlementPending == true
-			? WorldDiplomacyRoundLifecycleRules.SelectWaitingPlayerSettlementSlot(
-				round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, playerKingdom.StringId)
-			: null;
-		if (playerSettlementSlot != null)
-		{
-			document.ResultSettlementSlotId = playerSettlementSlot.SlotId ?? "";
-		}
-		AddDocument(document);
-		if (round != null)
-		{
-			round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RootDocumentId, document.DocumentId);
-			round.LastActivityDay = CurrentDay();
-			WorldDiplomacyStructureRules.EnsureRoundParticipant(round, playerKingdom.StringId, "active", mandatoryReply: false);
-		}
-		PublishPlayerAuthoredDocumentImmediately(document);
-		EnqueueAnalysisJob(document, priority: 100);
-		InformationManager.DisplayMessage(new InformationMessage("外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。"));
-	}
+
 	private void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document)
 	{
 		if (document?.IsPlayerAuthored != true) return;
@@ -2713,7 +2540,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-
 	private bool TryApplyDiplomaticThreatIssuerRelationReward(
 		WorldDiplomacyThreat threat,
 		Kingdom issuerKingdom,
@@ -3052,7 +2878,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-
 	private void ApplyDiplomaticThreatReputationPenalty(
 		WorldDiplomacyThreat threat,
 		WorldDiplomacyDocument document)
@@ -3183,7 +3008,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 	}
 
-
 	private void TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(WorldDiplomacyThreat threat)
 	{
 		WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
@@ -3191,7 +3015,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			id => KingdomName(ResolveKingdomIncludingEliminated(id)),
 			Log, threat);
 	}
-
 
 	private void TryAppendDiplomaticThreatNonComplianceHistoryResult(
 		WorldDiplomacyThreat threat,
@@ -3224,7 +3047,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				GetRoundHardDurationDays(duration), GetCourtMaxDeliveryDays(), isPlayerInsertion);
 		});
 	}
-
 
 	private bool IsNonRootAiRelayNoActionAllowed(
 		WorldDiplomacyRound round,
@@ -3427,7 +3249,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round.ResultSettlementTriggerDocumentId, "", prioritize: false, TryIncludeResultSettlementTarget, NewId);
 		return true;
 	}
-
 
 	private void RefreshResultSettlementActionSlots(WorldDiplomacyRound round)
 	{
@@ -3762,7 +3583,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return profile;
 	}
 
-
 	private string BuildRelayConversationTurnPrompt(
 		WorldDiplomacyRound round,
 		Kingdom author,
@@ -3786,8 +3606,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			CloseActiveRound,
 			Log);
 	}
-
-
 
 		private void ProcessRelayArrivals()
 	{
@@ -3840,7 +3658,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			id => ResolveWorldDiplomacyRepresentative(ResolveKingdom(id))?.StringId,
 			id => IsPlayerKingdom(ResolveKingdom(id)), Log);
 	}
-
 
 	private bool TryConsumeDiplomacyLlmRequestBudget(bool consume = true)
 	{
@@ -4123,7 +3940,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			ScheduleNextResultSettlementTurn, r => ScheduleNextRelayHop(r),
 			CloseActiveRound, Log);
 	}
-
 
 	private void ProcessPlayerMandatoryResponseTimeout(WorldDiplomacyRound round, WorldDiplomacyRoundParticipant participant)
 	{
@@ -5190,65 +5006,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TryPublishPendingNotifications()
 	{
-		DateTime nowUtc = DateTime.UtcNow;
-		if (nowUtc < _nextNotificationPollUtc) return;
-		_nextNotificationPollUtc = nowUtc.AddSeconds(1d);
-		foreach (WorldDiplomacyDocument rumor in WorldDiplomacyPropagationApplication.SelectPendingRumors(_storage, 3))
-		{
-			WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor);
-			InformationManager.DisplayMessage(new InformationMessage(
-				WorldDiplomacyTextRules.BuildDiplomacyRumor(rumor, id => KingdomName(ResolveKingdom(id)))));
-			Log("diplomacy-rumor.shown document=" + rumor.DocumentId + " day=" + CurrentDay().ToString(CultureInfo.InvariantCulture));
-		}
-		bool enabled = AreMapNotificationsEnabled();
-		if (!enabled)
-		{
-			foreach (WorldDiplomacyDocument document in _storage.Documents.Where(x => x != null
-				&& !x.IsPlayerAuthored && x.IsReadyForPublication && x.HasReachedPlayerCourt && !x.FormalNoticeShown))
-			{
-				document.FormalNoticeShown = true;
-				document.IsNotified = true;
-			}
-			if (_lastMapNotificationsEnabled != false)
-			{
-				_notifiedDocumentIdsThisSession.Clear();
-			}
-			_lastMapNotificationsEnabled = false;
-			return;
-		}
-		_lastMapNotificationsEnabled = true;
-		if (!CanPublishMapNotification() || !TryEnsureMapNotificationRegistered())
-		{
-			return;
-		}
-		foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(_storage.Documents
-				.Where(x => x != null
-					&& !x.IsPlayerAuthored
-					&& x.IsReadyForPublication
-					&& x.HasReachedPlayerCourt
-					&& !x.IsRead
-					&& !x.FormalNoticeShown
-					&& !_notifiedDocumentIdsThisSession.Contains(x.DocumentId ?? ""))).Take(3))
-		{
-			try
-			{
-				_notifiedDocumentIdsThisSession.Add(document.DocumentId);
-				MBInformationManager.AddNotice(new WorldDiplomacyMapNotification(
-					document.DocumentId,
-					WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document),
-					WorldDiplomacyTextRules.BuildNotificationDescription(document, FormatCampaignDate)));
-				document.IsNotified = true;
-				document.FormalNoticeShown = true;
-				Log("formal-court-notice.shown document=" + document.DocumentId + " realm=" + (Clan.PlayerClan?.Kingdom?.StringId ?? "")
-					+ " day=" + CurrentDay().ToString(CultureInfo.InvariantCulture));
-			}
-			catch (Exception ex)
-			{
-				_notifiedDocumentIdsThisSession.Remove(document.DocumentId ?? "");
-				Log("notification publish failed: " + ex.Message);
-				break;
-			}
-		}
+		_notifications.Poll(_storage, DateTime.UtcNow, NotificationSink);
 	}
 	private bool TryEnsureMapNotificationRegistered()
 	{
@@ -5263,7 +5021,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			{
 				view.RegisterMapNotificationType(typeof(WorldDiplomacyMapNotification), typeof(WorldDiplomacyMapNotificationItemVM));
 				_registeredMapNotificationView = view;
-				_notifiedDocumentIdsThisSession.Clear();
+				_notifications.ResetView();
 			}
 			return true;
 		}
@@ -5274,284 +5032,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	internal bool OpenDocumentFromNotification(string documentId)
-	{
-		WorldDiplomacyDocument document = ResolveDocument(documentId);
-		if (document == null)
-		{
-			return false;
-		}
-		document.IsRead = true;
-		Action replyAction = null;
-		WorldDiplomacyRound round = ResolveRound(document.RoundId);
-		WorldDiplomacyRoundParticipant playerParticipant = round?.Participants?.FirstOrDefault(x => x != null && IsPlayerKingdom(ResolveKingdom(x.KingdomId)));
-		Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-		if (round != null && playerParticipant?.MandatoryReplyPending == true
-			&& HasIndependentWorldDiplomacyAuthority(playerKingdom))
-		{
-			replyAction = () => OpenPlayerReplyCompose(document);
-		}
-		string subtitle = document.AuthorKingdomName
-			+ " · "
-			+ document.AuthorRulerName
-			+ " · "
-			+ WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, FormatCampaignDate(document.Day))
-			+ " · "
-			+ WorldDiplomacyTextRules.DocumentTypeLabel(document);
-		return CourierLetterReplyPopup.ShowWithReply(
-			WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document),
-			subtitle,
-			string.IsNullOrWhiteSpace(document.Body) ? "（该旧公文正文已压缩至年度摘要。）" : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
-			replyAction,
-			"回应",
-			null,
-			"关闭",
-			BuildDiplomaticStandingImpactTextForExternal(document));
-	}
-	private void OpenPlayerReplyCompose(WorldDiplomacyDocument sourceDocument)
-	{
-		WorldDiplomacyRound round = ResolveRound(sourceDocument?.RoundId);
-		if (round == null || sourceDocument == null)
-		{
-			return;
-		}
-		WorldDiplomacyComposePopup.Show(
-			"回应外交宣言",
-			"",
-			"",
-			delegate(string body)
-			{
-				Kingdom player = Clan.PlayerClan?.Kingdom;
-				Kingdom target = ResolveKingdom(sourceDocument.AuthorKingdomId);
-				if (player == null || target == null || !HasIndependentWorldDiplomacyAuthority(player))
-				{
-					if (player != null && !HasIndependentWorldDiplomacyAuthority(player))
-					{
-						InformationManager.DisplayMessage(new InformationMessage("我国的外交事务由" + KingdomName(ResolveWorldDiplomacyRepresentative(player)) + "掌管，不能独立回应外交宣言。"));
-					}
-					return;
-				}
-				WorldDiplomacyDocument response = CreateDocument(
-					player,
-					target,
-					"外交回应",
-					WorldDiplomacyTextRules.NormalizeBody(body),
-					"player_response",
-					isPlayerAuthored: true,
-					isResponse: true,
-					exchangeId: round.RoundId);
-				response.RoundId = round.RoundId;
-				response.SourceDocumentId = sourceDocument.DocumentId;
-				response.AutomaticReplyDepth = Math.Max(1, sourceDocument.AutomaticReplyDepth + 1);
-				AddDocument(response);
-				WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, player.StringId, "active", mandatoryReply: false);
-				participant.MandatoryReplyPending = false;
-				participant.LastTriggeredDocumentId = sourceDocument.DocumentId;
-				round.LastActivityDay = CurrentDay();
-				PublishPlayerAuthoredDocumentImmediately(response);
-				EnqueueAnalysisJob(response, priority: 100);
-				InformationManager.DisplayMessage(new InformationMessage("外交回应已经公开发布；系统正在后台解析其诉求与外交动作。"));
-			},
-			null);
-	}
-	private WorldEventInboxPopupData BuildRoyalAnnouncementArchiveData()
-	{
-		Dictionary<string, WorldEventCountryData> groups = new Dictionary<string, WorldEventCountryData>(StringComparer.OrdinalIgnoreCase);
-		foreach (AnimusForgeWorldEventInboxEntry entry in AnimusForgeWorldEventBehavior.GetInboxSnapshotForExternal(160))
-		{
-			if (entry == null)
-			{
-				continue;
-			}
-			string kingdomId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomId, "policy_unknown");
-			WorldEventCountryData group = GetOrCreateArchiveGroup(groups, kingdomId, WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, "未知国家"));
-			string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.GameDate, entry.Day > 0 ? "第" + entry.Day.ToString(CultureInfo.InvariantCulture) + "天" : "未知日期");
-			bool showReReview = TryResolveWorldEventPolicyReReview(
-				entry,
-				out string policyRecordId,
-				out bool canReReview,
-				out string reReviewDisabledReason);
-			group.Records.Add(new WorldEventRecordData
-			{
-				EventId = entry.EventId ?? "",
-				KindLabel = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, "自定义政策"),
-				HeaderRightText = entry.HeaderRightText ?? "",
-				DateText = date,
-				TitleText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.Title, entry.KindLabel, "自定义政策"),
-				MetaText = date + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, "自定义政策") + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, entry.KingdomId),
-				PolicyNameText = "",
-				BodyText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.DetailText, entry.Summary, "（无详情）"),
-				BodySectionTitleText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.BodySectionTitleText, "公告详情"),
-				ImpactSectionTitleText = entry.ImpactSectionTitleText ?? "",
-				ImpactText = entry.ImpactText ?? "",
-				IndexMetaText = date + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, "自定义政策"),
-				UnreadMarkerText = entry.IsRead ? "" : "新",
-				PolicyRecordId = policyRecordId,
-				ReReviewText = "重新评议政策",
-				ReReviewDisabledReasonText = reReviewDisabledReason,
-				IsUnread = !entry.IsRead,
-				HasPolicyName = false,
-				HasImpact = !string.IsNullOrWhiteSpace(entry.ImpactText),
-				ShowReReview = showReReview,
-				CanReReview = canReReview
-			});
-		}
-		foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(_storage.Documents
-				.Where(x => x != null && (x.IsPlayerAuthored || x.IsReadyForPublication))).Take(240))
-		{
-			if (document == null)
-			{
-				continue;
-			}
-			WorldEventCountryData group = GetOrCreateArchiveGroup(groups, document.AuthorKingdomId, document.AuthorKingdomName);
-			string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, FormatCampaignDate(document.Day));
-			string typeLabel = WorldDiplomacyTextRules.DocumentTypeLabel(document);
-			string eventMeta = WorldDiplomacyTextRules.BuildDocumentEventMeta(document, ResolveRound, ResolveDocument);
-			string targetSummary = document.Actions?.Count > 1
-				? string.Join("、", document.Actions.Where(x => x != null).Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId)))
-				: document.TargetKingdomName;
-			group.Records.Add(new WorldEventRecordData
-			{
-				EventId = document.DocumentId,
-				KindLabel = typeLabel,
-				HeaderRightText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(targetSummary, "世界公告"),
-				DateText = date,
-				TitleText = WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document),
-				IndexTitleText = WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document),
-				MetaText = date + "  ·  " + typeLabel + "  ·  " + document.AuthorKingdomName + (string.IsNullOrWhiteSpace(targetSummary) ? "" : " → " + targetSummary) + eventMeta,
-				PolicyNameText = "",
-				BodyText = string.IsNullOrWhiteSpace(document.Body) ? "该旧公文正文已经压缩，可查看对应年度外交摘要。" : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
-				BodySectionTitleText = "公告正文",
-				ImpactSectionTitleText = "外交结果与外交影响",
-				ImpactText = BuildDiplomaticStandingImpactTextForExternal(document),
-				IndexMetaText = "外交宣言：" + typeLabel,
-				UnreadMarkerText = document.IsRead ? "" : "新",
-				IsUnread = !document.IsRead,
-				HasPolicyName = false,
-				HasImpact = true
-			});
-		}
-		foreach (WorldDiplomacyAnnualSummary summary in _storage.AnnualSummaries.OrderByDescending(x => x.Year))
-		{
-			WorldEventCountryData group = GetOrCreateArchiveGroup(groups, "diplomacy_archive", "外交编年档案");
-			group.Records.Add(new WorldEventRecordData
-			{
-				EventId = "diplomacy_summary:" + summary.Year.ToString(CultureInfo.InvariantCulture),
-				KindLabel = "年度外交摘要",
-				HeaderRightText = "世界共享记忆",
-				DateText = "第" + (summary.Year + 1).ToString(CultureInfo.InvariantCulture) + "年",
-				TitleText = "第" + (summary.Year + 1).ToString(CultureInfo.InvariantCulture) + "年外交纪要",
-				MetaText = "年度压缩档案",
-				BodyText = summary.Summary,
-				BodySectionTitleText = "年度摘要",
-				ImpactSectionTitleText = summary.MajorEvents.Count > 0 ? "重大事件索引" : "",
-				ImpactText = string.Join("\n", summary.MajorEvents ?? new List<string>()),
-				IndexMetaText = "年度外交摘要",
-				HasImpact = summary.MajorEvents.Count > 0
-			});
-		}
-		foreach (WorldDiplomacyCompressionSummary summary in (_storage.CompressionSummaries ?? new List<WorldDiplomacyCompressionSummary>()).OrderByDescending(x => x.CreatedDay))
-		{
-			WorldEventCountryData group = GetOrCreateArchiveGroup(groups, "diplomacy_archive", "外交编年档案");
-			group.Records.Add(new WorldEventRecordData
-			{
-				EventId = "diplomacy_summary:" + summary.BatchId,
-				KindLabel = "外交历史整理",
-				HeaderRightText = "长期外交记忆",
-				DateText = FormatCampaignDate(summary.CreatedDay),
-				TitleText = "外交历史整理档案",
-				MetaText = "累计 " + summary.TokenCount.ToString("N0", CultureInfo.InvariantCulture) + " Tokens 后整理",
-				BodyText = summary.Summary,
-				BodySectionTitleText = "外交纪要",
-				ImpactSectionTitleText = summary.ConfirmedResults.Count > 0 ? "游戏确认结果" : "",
-				ImpactText = string.Join("\n", summary.ConfirmedResults),
-				IndexMetaText = "外交历史整理",
-				HasImpact = summary.ConfirmedResults.Count > 0
-			});
-		}
-		WorldEventInboxPopupData data = new WorldEventInboxPopupData
-		{
-			TitleText = "王国公告",
-			SubtitleText = BuildRoyalAnnouncementSubtitle(),
-			EmptyStateText = "目前还没有王国公告。",
-			CloseText = "关闭",
-			Countries = groups.Values
-				.OrderBy(x => string.Equals(x.KingdomId, "diplomacy_archive", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
-				.ThenBy(x => x.KingdomName, StringComparer.CurrentCulture)
-				.ToList()
-		};
-		foreach (WorldEventCountryData group in data.Countries)
-		{
-			group.Records = group.Records
-				.OrderByDescending(x => WorldDiplomacyTextRules.ParseDayForArchive(x.DateText))
-				.ThenBy(x => x.TitleText, StringComparer.CurrentCulture)
-				.ToList();
-			group.UnreadCount = group.Records.Count(x => x.IsUnread);
-		}
-		data.SelectedCountryIndex = Math.Max(0, data.Countries.FindIndex(x => x.Records.Count > 0));
-		return data;
-	}
-	private static bool TryResolveWorldEventPolicyReReview(
-		AnimusForgeWorldEventInboxEntry entry,
-		out string recordId,
-		out bool canReReview,
-		out string disabledReason)
-	{
-		recordId = string.Empty;
-		canReReview = false;
-		disabledReason = string.Empty;
-		if (entry == null)
-		{
-			return false;
-		}
-
-		string candidateId = (entry.PolicyRecordId ?? string.Empty).Trim();
-		if (entry.Version >= 2)
-		{
-			if (!entry.IsPlayerPolicy || candidateId.Length == 0)
-			{
-				return false;
-			}
-		}
-		else if (candidateId.Length == 0)
-		{
-			const string legacyPrefix = "npc_ruler_policy:";
-			string eventId = (entry.EventId ?? string.Empty).Trim();
-			if (!eventId.StartsWith(legacyPrefix, StringComparison.OrdinalIgnoreCase))
-			{
-				return false;
-			}
-			candidateId = eventId.Substring(legacyPrefix.Length).Trim();
-		}
-
-		if (candidateId.Length == 0
-			|| !CustomPolicyBehavior.TryGetKingdomPolicyReReviewAvailabilityForExternal(
-				candidateId,
-				out canReReview,
-				out disabledReason))
-		{
-			canReReview = false;
-			disabledReason = string.Empty;
-			return false;
-		}
-
-		recordId = candidateId;
-		return true;
-	}
-	private static WorldEventCountryData GetOrCreateArchiveGroup(Dictionary<string, WorldEventCountryData> groups, string id, string name)
-	{
-		string key = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(id, "unknown");
-		if (!groups.TryGetValue(key, out WorldEventCountryData group))
-		{
-			group = new WorldEventCountryData
-			{
-				KingdomId = key,
-				KingdomName = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(name, key, "未知国家")
-			};
-			groups[key] = group;
-		}
-		return group;
-	}
 	private static string BuildCommonDiplomacySystemPrefix()
 	{
 		return DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? "";
@@ -5969,7 +5449,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		return sb.ToString().TrimEnd();
 	}
-
 
 	private static IEnumerable<string> ProjectCessionCandidates(IEnumerable<Settlement> settlements)
 	{
@@ -6724,7 +6203,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			InvalidateCanonicalHistoryRenderCache, document);
 	}
 
-
 	private void SyncCanonicalHistorySources(bool force = false)
 	{
 		EnsureCanonicalHistoryInitialized();
@@ -7192,7 +6670,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			_storage?.Documents, SettleInternationalReputationForDocument, Log);
 	}
 
-
 	private void ReconcileAllNationalPrestigeVassalRelations()
 	{
 		if (Campaign.Current == null) return;
@@ -7308,7 +6785,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(_storage?.OfferCooldowns, _offerCooldownByKey);
 	}
 
-
 	private void ClearBilateralOfferCooldowns(Kingdom first, Kingdom second, WorldDiplomacyOfferDomain domain)
 	{
 		if (first == null || second == null || first == second)
@@ -7318,7 +6794,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyRoundLifecycleRules.ClearBilateralOfferCooldowns(
 			_storage?.OfferCooldowns, _offerCooldownByKey, first.StringId, second.StringId, domain);
 	}
-
 
 	private void SettleTradeAllianceOfferCooldownsForClosedRound(WorldDiplomacyRound round)
 	{
@@ -8152,33 +7627,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.Select(ResolveKingdom).Where(x => x != null && !string.Equals(x.StringId, excludedId, StringComparison.OrdinalIgnoreCase))
 			.Select(x => x.StringId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
-	private string BuildRoyalAnnouncementSubtitle()
-	{
-		WorldDiplomacyRound round = _storage.ActiveRound;
-		if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)
-			|| string.IsNullOrWhiteSpace(round.RootDocumentId))
-		{
-			return "统一查看自定义政策、政策衍生事件与各国公开发布的外交宣言。";
-		}
-		string topic = WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RoundTopic, ResolveDocument(round.RootDocumentId)?.Title, "外交交涉"));
-		List<string> participantNames = (round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
-			.Where(x => x != null && string.Equals(x.State, "active", StringComparison.OrdinalIgnoreCase))
-			.Select(x => ResolveKingdom(x.KingdomId))
-			.Select(ResolveWorldDiplomacyRepresentative)
-			.Where(HasIndependentWorldDiplomacyAuthority)
-			.Select(KingdomName)
-			.Where(x => !string.IsNullOrWhiteSpace(x))
-			.Distinct(StringComparer.CurrentCulture)
-			.ToList();
-		if (participantNames.Count == 0)
-		{
-			Kingdom initiator = ResolveKingdom(round.InitiatorKingdomId);
-			if (initiator != null) participantNames.Add(KingdomName(initiator));
-		}
-		return "当前外交事件：" + WorldDiplomacyTextRules.Limit(topic, 60)
-			+ "  ·  进行中"
-			+ (participantNames.Count == 0 ? "" : "  ·  参与国：" + string.Join("、", participantNames));
-	}
+
 	private static bool CanPublishMapNotification()
 	{
 		try
@@ -8224,490 +7673,4 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return addressed != null && addressed != receiver && ResolveWorldDiplomacyRepresentative(addressed) == receiver;
 		});
 	}
-}
-
-internal sealed class WorldDiplomacyMapNotification : InformationData
-{
-	private readonly TextObject _titleText;
-
-	public string DocumentId { get; }
-
-	public override TextObject TitleText => _titleText;
-
-	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
-
-	public WorldDiplomacyMapNotification(string documentId, string title, string description)
-		: base(new TextObject(string.IsNullOrWhiteSpace(description) ? "点击查看外交宣言。" : description))
-	{
-		DocumentId = (documentId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(title) ? "新的外交宣言" : title);
-	}
-
-	public override bool IsValid()
-	{
-		return !string.IsNullOrWhiteSpace(DocumentId);
-	}
-}
-
-internal sealed class WorldDiplomacyMapNotificationItemVM : MapNotificationItemBaseVM
-{
-	public WorldDiplomacyMapNotificationItemVM(WorldDiplomacyMapNotification data)
-		: base(data)
-	{
-		WorldDiplomacyUiSprites.EnsureInstalledForNotificationUi();
-		NotificationIdentifier = WorldDiplomacyUiSprites.NotificationIdentifier;
-		_onInspect = delegate
-		{
-			if (WorldDiplomacyBehavior.Instance?.OpenDocumentFromNotification(data.DocumentId) == true)
-			{
-				ExecuteRemove();
-			}
-		};
-	}
-}
-
-internal static class WorldDiplomacyUiSprites
-{
-	public const string NotificationIdentifier = "af_world_diplomacy_notice";
-	private const string Source = "WorldDiplomacyUiSprites";
-	private const string Category = "af_world_diplomacy";
-	private const string FileName = "af_world_diplomacy_notice_v2.png";
-	private const string BrushName = "Map.Notification.Type.Circle.Image";
-	private static readonly string SpriteName = Category + "\\" + NotificationIdentifier;
-	private static readonly HashSet<string> LoggedFailures = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-	private static BannerlordUiSprite _runtimeSprite;
-	private static bool _patched;
-	private static bool _brushApplied;
-
-	public static void EnsurePatched(Harmony harmony)
-	{
-		if (_patched)
-		{
-			return;
-		}
-		_patched = true;
-		Harmony patcher = harmony ?? new Harmony("AnimusForge.world.diplomacy.ui.sprites");
-		TryPatch(patcher, "RefreshSpriteData", nameof(RefreshSpriteDataPostfix));
-		TryPatch(patcher, "RefreshBrushFactory", nameof(RefreshBrushFactoryPostfix));
-		EnsureInstalledForNotificationUi();
-	}
-
-	public static void EnsureInstalledForNotificationUi()
-	{
-		TryInstallRuntimeSprite();
-		TryApplyBrushLayerSprite();
-	}
-
-	public static void RefreshSpriteDataPostfix()
-	{
-		TryInstallRuntimeSprite();
-	}
-
-	public static void RefreshBrushFactoryPostfix()
-	{
-		TryInstallRuntimeSprite();
-		TryApplyBrushLayerSprite();
-	}
-	private static void TryPatch(Harmony harmony, string targetName, string postfixName)
-	{
-		try
-		{
-			MethodInfo target = AccessTools.Method(typeof(UIResourceManager), targetName);
-			if (target != null)
-			{
-				harmony.Patch(target, postfix: new HarmonyMethod(typeof(WorldDiplomacyUiSprites), postfixName));
-			}
-		}
-		catch (Exception ex)
-		{
-			LogOnce("patch-" + targetName, ex.Message);
-		}
-	}
-	private static void TryInstallRuntimeSprite()
-	{
-		try
-		{
-			if (UIResourceManager.SpriteData == null)
-			{
-				return;
-			}
-			if (UIResourceManager.SpriteData.Sprites.TryGetValue(SpriteName, out BannerlordUiSprite existing) && existing is RuntimeTextureSprite)
-			{
-				_runtimeSprite = existing;
-				return;
-			}
-			string filePath = Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "GUI", "SpriteParts", Category, FileName);
-			if (!File.Exists(filePath))
-			{
-				LogOnce("file-missing", "file missing: " + filePath);
-				return;
-			}
-			BannerlordEngineTexture engineTexture = null;
-			try
-			{
-				engineTexture = BannerlordEngineTexture.CreateFromMemory(File.ReadAllBytes(filePath));
-			}
-			catch
-			{
-			}
-			engineTexture ??= BannerlordEngineTexture.LoadTextureFromPath(Path.GetFileName(filePath), Path.GetDirectoryName(filePath));
-			if (engineTexture == null)
-			{
-				LogOnce("texture-null", "native texture loader returned null");
-				return;
-			}
-			try
-			{
-				engineTexture.Name = SpriteName;
-				engineTexture.SetTextureAsAlwaysValid();
-				engineTexture.PreloadTexture(true);
-			}
-			catch
-			{
-			}
-			int width = engineTexture.Width > 0 ? engineTexture.Width : 2048;
-			int height = engineTexture.Height > 0 ? engineTexture.Height : 2048;
-			BannerlordUiTexture uiTexture = new BannerlordUiTexture(new EngineTexture(engineTexture));
-			_runtimeSprite = new RuntimeTextureSprite(SpriteName, uiTexture, width, height);
-			UIResourceManager.SpriteData.Sprites[SpriteName] = _runtimeSprite;
-		}
-		catch (Exception ex)
-		{
-			LogOnce("install", ex.Message);
-		}
-	}
-	private static void TryApplyBrushLayerSprite()
-	{
-		try
-		{
-			Brush brush = UIResourceManager.BrushFactory?.GetBrush(BrushName);
-			if (brush == null || _runtimeSprite == null)
-			{
-				return;
-			}
-			if (AnimusForgeRuntimeBrushSpriteGuard.TryApplyLayerStyle(brush, NotificationIdentifier, _runtimeSprite, out string failureReason))
-			{
-				Style style = brush.GetStyle(NotificationIdentifier);
-				StyleLayer styleLayer = style?.GetLayer(NotificationIdentifier);
-				if (styleLayer != null)
-				{
-					styleLayer.Sprite = _runtimeSprite;
-					styleLayer.Color = TaleWorlds.Library.Color.White;
-					styleLayer.ColorFactor = 1f;
-					styleLayer.AlphaFactor = 1f;
-					styleLayer.HueFactor = 0f;
-					styleLayer.SaturationFactor = 0f;
-					styleLayer.ValueFactor = 0f;
-					styleLayer.ImageFitType = ImageFit.ImageFitTypes.Cover;
-					styleLayer.ImageFitHorizontalAlignment = ImageFit.ImageHorizontalAlignments.Center;
-					styleLayer.ImageFitVerticalAlignment = ImageFit.ImageVerticalAlignments.Center;
-				}
-				_brushApplied = true;
-			}
-			else if (!_brushApplied)
-			{
-				LogOnce("brush", failureReason);
-			}
-		}
-		catch (Exception ex)
-		{
-			LogOnce("brush-exception", ex.Message);
-		}
-	}
-	private static void LogOnce(string key, string message)
-	{
-		if (LoggedFailures.Add(key))
-		{
-			Logger.Log(Source, "[AF-WORLD-DIPLOMACY-UI] " + message);
-		}
-	}
-	private sealed class RuntimeTextureSprite : BannerlordUiSprite
-	{
-		private readonly BannerlordUiTexture _texture;
-
-		public RuntimeTextureSprite(string name, BannerlordUiTexture texture, int width, int height)
-			: base(name, width, height, TaleWorlds.TwoDimension.SpriteNinePatchParameters.Empty)
-		{
-			_texture = texture;
-		}
-
-		public override BannerlordUiTexture Texture => _texture;
-
-		public override Vec2 GetMinUvs()
-		{
-			return Vec2.Zero;
-		}
-
-		public override Vec2 GetMaxUvs()
-		{
-			return Vec2.One;
-		}
-	}
-}
-
-public sealed class WorldDiplomacyComposePopup
-{
-	private enum PendingCloseAction
-	{
-		None,
-		Submit,
-		Cancel
-	}
-	private static WorldDiplomacyComposePopup _activePopup;
-
-	private readonly ScreenBase _screen;
-	private readonly GauntletLayer _layer;
-	private readonly WorldDiplomacyComposePopupVM _dataSource;
-	private readonly Action<string> _onSubmit;
-	private readonly Action _onCancel;
-	private PendingCloseAction _pendingAction;
-	private string _pendingBody = "";
-	private bool _closed;
-
-	public static bool IsOpen => _activePopup != null && !_activePopup._closed;
-
-	private WorldDiplomacyComposePopup(ScreenBase screen, string title, string subtitle, string hint, Action<string> onSubmit, Action onCancel)
-	{
-		_screen = screen;
-		_onSubmit = onSubmit;
-		_onCancel = onCancel;
-		_dataSource = new WorldDiplomacyComposePopupVM(title, subtitle, hint, HandleSubmit, HandleCancel);
-		_layer = new GauntletLayer("WorldDiplomacyComposePopup", 4050, false);
-	}
-
-	public static bool Show(string title, string subtitle, string hint, Action<string> onSubmit, Action onCancel)
-	{
-		ScreenBase screen = ScreenManager.TopScreen;
-		if (screen == null)
-		{
-			return false;
-		}
-		try
-		{
-			_activePopup?.Close(silent: true);
-			WorldDiplomacyComposePopup popup = new WorldDiplomacyComposePopup(screen, title, subtitle, hint, onSubmit, onCancel);
-			popup.Open();
-			_activePopup = popup;
-			return true;
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("WorldDiplomacyComposePopup", "[ERROR] " + ex);
-			_activePopup?.Close(silent: true);
-			_activePopup = null;
-			return false;
-		}
-	}
-
-	public static void ProcessDeferredCloseIfNeeded()
-	{
-		WorldDiplomacyComposePopup popup = _activePopup;
-		if (popup == null || popup._closed)
-		{
-			return;
-		}
-		try
-		{
-			if (popup._layer?.Input != null && (popup._layer.Input.IsHotKeyReleased("Exit") || popup._layer.Input.IsKeyReleased(InputKey.Escape)))
-			{
-				popup.HandleCancel();
-			}
-		}
-		catch
-		{
-		}
-		popup.ProcessPendingAction();
-	}
-	private void Open()
-	{
-		_layer.LoadMovie("WorldDiplomacyComposePopup", _dataSource);
-		_layer.InputRestrictions.SetInputRestrictions(true, InputUsageMask.All);
-		try
-		{
-			_layer.Input.RegisterHotKeyCategory(HotKeyManager.GetCategory("GenericPanelGameKeyCategory"));
-		}
-		catch
-		{
-		}
-		_screen.AddLayer(_layer);
-		_layer.IsFocusLayer = true;
-		ScreenManager.TrySetFocus(_layer);
-	}
-	private void HandleSubmit(string body)
-	{
-		if (_pendingAction != PendingCloseAction.None)
-		{
-			return;
-		}
-		_pendingBody = body ?? "";
-		_pendingAction = PendingCloseAction.Submit;
-	}
-	private void HandleCancel()
-	{
-		if (_pendingAction == PendingCloseAction.None)
-		{
-			_pendingAction = PendingCloseAction.Cancel;
-		}
-	}
-	private void ProcessPendingAction()
-	{
-		if (_pendingAction == PendingCloseAction.None)
-		{
-			return;
-		}
-		PendingCloseAction action = _pendingAction;
-		string body = _pendingBody;
-		_pendingAction = PendingCloseAction.None;
-		_pendingBody = "";
-		Close(silent: true);
-		if (action == PendingCloseAction.Submit)
-		{
-			_onSubmit?.Invoke(body);
-		}
-		else
-		{
-			_onCancel?.Invoke();
-		}
-	}
-	private void Close(bool silent)
-	{
-		if (_closed)
-		{
-			return;
-		}
-		_closed = true;
-		try
-		{
-			_layer.IsFocusLayer = false;
-			ScreenManager.TryLoseFocus(_layer);
-			_screen.RemoveLayer(_layer);
-		}
-		catch (Exception ex)
-		{
-			if (!silent)
-			{
-				Logger.Log("WorldDiplomacyComposePopup", "[WARN] " + ex.Message);
-			}
-		}
-		_dataSource?.OnFinalize();
-		if (ReferenceEquals(_activePopup, this))
-		{
-			_activePopup = null;
-		}
-	}
-}
-
-public sealed class WorldDiplomacyComposePopupVM : ViewModel
-{
-	private readonly Action<string> _onSubmit;
-	private readonly Action _onCancel;
-	private string _titleText;
-	private string _subtitleText;
-	private string _hintText;
-	private string _bodyText;
-	private bool _canPublish;
-
-	public WorldDiplomacyComposePopupVM(string title, string subtitle, string hint, Action<string> onSubmit, Action onCancel)
-	{
-		_onSubmit = onSubmit;
-		_onCancel = onCancel;
-		TitleText = string.IsNullOrWhiteSpace(title) ? "撰写外交宣言" : title;
-		SubtitleText = subtitle ?? "";
-		HintText = hint ?? "";
-		BodyText = "";
-	}
-
-	[DataSourceProperty]
-	public string TitleText
-	{
-		get => _titleText;
-		set
-		{
-			if (value != _titleText)
-			{
-				_titleText = value;
-				OnPropertyChangedWithValue(value, nameof(TitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string SubtitleText
-	{
-		get => _subtitleText;
-		set
-		{
-			if (value != _subtitleText)
-			{
-				_subtitleText = value;
-				OnPropertyChangedWithValue(value, nameof(SubtitleText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string HintText
-	{
-		get => _hintText;
-		set
-		{
-			if (value != _hintText)
-			{
-				_hintText = value;
-				OnPropertyChangedWithValue(value, nameof(HintText));
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public string BodyText
-	{
-		get => _bodyText;
-		set
-		{
-			string clean = AnimusForgeTextInputSanitizer.SanitizeMultiline(value, 6000);
-			if (clean != _bodyText)
-			{
-				_bodyText = clean;
-				OnPropertyChangedWithValue(clean, nameof(BodyText));
-				CanPublish = !string.IsNullOrWhiteSpace(clean);
-			}
-		}
-	}
-
-	[DataSourceProperty]
-	public bool CanPublish
-	{
-		get => _canPublish;
-		private set
-		{
-			if (value != _canPublish)
-			{
-				_canPublish = value;
-				OnPropertyChangedWithValue(value, nameof(CanPublish));
-			}
-		}
-	}
-
-	public void ExecutePublish()
-	{
-		if (CanPublish)
-		{
-			_onSubmit?.Invoke(BodyText);
-		}
-	}
-
-	public void ExecuteCancel()
-	{
-		_onCancel?.Invoke();
-	}
-
-	public void StartTyping()
-	{
-	}
-
-	public void StopTyping()
-	{
-	}
-
 }
