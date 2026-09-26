@@ -105,6 +105,7 @@ def classify_path(path: str) -> str | None:
             "content/modules/AF.Module.Diplomacy/",
             "content/modules/AnimusForge.SiegeAftermathIntervention/",
             "content/foundation/AF.Foundation.Localization/",
+            "content/foundation/AF.Foundation.Runtime/",
             "content/foundation/AF.Foundation.UI/",
         )
         return "content" if path.startswith(owned_roots) else None

@@ -41,6 +41,7 @@ class RepositorySourceInventoryTests(unittest.TestCase):
             "AnimusForge/GUI/Prefabs/Panel.xml": "content",
             "content/modules/AF.Module.Social/GUI/Prefabs/PlayerNotorietyPopup.xml": "content",
             "content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml": "content",
+            "content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json": "content",
             "tools/ModuleFrameworkApiTests/Program.cs": "tests",
             "tools/PlayerExportsEditor/src/Program.cs": "tools",
             "tools/test_repository_source_inventory.py": "tests",

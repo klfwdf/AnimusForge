@@ -387,6 +387,11 @@
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/sceneactions_items.xml",
       "target": "ModuleData/sceneactions_items.xml"
+    },
+    {
+      "owner": "AF.Foundation.Runtime",
+      "source": "content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json",
+      "target": "ModuleData/FeatureBridges.json"
     }
   ]
 }

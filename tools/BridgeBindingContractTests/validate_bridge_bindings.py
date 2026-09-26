@@ -21,7 +21,7 @@ from typing import Any
 
 EXPECTED_MANIFEST_ID = "af.phase8.bridge-bindings"
 EXPECTED_CATALOG_PATH = "docs/phase8/full-domain-readiness-catalog.json"
-EXPECTED_CONFIG_PATH = "AnimusForge/ModuleData/FeatureBridges.json"
+EXPECTED_CONFIG_PATH = "content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json"
 EXPECTED_CONTRACT_VERSION = 1
 EXPECTED_BRIDGE_COUNT = 16
 EXPECTED_WIRED = {
