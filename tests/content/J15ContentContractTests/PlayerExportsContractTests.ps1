@@ -27,13 +27,14 @@ $parseErrors = $null
 $deployAst = [System.Management.Automation.Language.Parser]::ParseFile(
     (Join-Path $ProjectRoot "一键编译覆盖推送\deploy_module.ps1"), [ref]$null, [ref]$parseErrors)
 Assert-Contract ($parseErrors.Count -eq 0) "deploy script parse errors"
-foreach ($name in @("Get-FullPathSafe", "Assert-PathUnderRoot", "Get-RelativePathUnderRoot", "Invoke-Robocopy", "Merge-PlayerExports", "Sync-PlayerExportsBackToSource")) {
+foreach ($name in @("Get-FullPathSafe", "Assert-PathUnderRoot", "Get-RelativePathUnderRoot", "Invoke-Robocopy", "Merge-PlayerExports")) {
     $definitions = @($deployAst.FindAll({ param($node)
         $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name
     }, $false))
     Assert-Contract ($definitions.Count -eq 1) "PlayerExports dependency missing or duplicated: $name"
     . ([scriptblock]::Create($definitions[0].Extent.Text))
 }
+Assert-Contract (-not $deployAst.Extent.Text.Contains("Sync-PlayerExportsBackToSource")) "source back-sync must be absent"
 $sourceAssignments = @($deployAst.FindAll({ param($node)
     $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and
         $node.Left.Extent.Text -eq '$playerExportSources'
@@ -164,30 +165,4 @@ Merge-PlayerExports -DestinationDir $emptyDestination -Sources @(
 )
 Assert-Contract ((Test-Path -LiteralPath $emptyDestination -PathType Container) -and (Get-FixtureSnapshot $emptyDestination) -eq "") "missing sources must produce an empty staging directory"
 
-# Back-sync uses the real robocopy /E /XO helper, but both ends are synthetic.
-$syncSourceModule = Join-Path $RunRoot "sync\source"
-$syncTargetModule = Join-Path $RunRoot "sync\target"
-$syncSource = Join-Path $syncSourceModule "PlayerExports"
-$syncTarget = Join-Path $syncTargetModule "PlayerExports"
-Write-Fixture $syncSource "source-only.json" "keep-source-only"
-Write-Fixture $syncSource "source-newer.json" "keep-newer-source" 3
-Write-Fixture $syncTarget "source-newer.json" "ignore-older-target"
-Write-Fixture $syncSource "target-newer.json" "replace-older-source"
-Write-Fixture $syncTarget "target-newer.json" "copy-newer-target" 3
-Write-Fixture $syncTarget "unknown\target-only.dat" "copy-unknown-target"
-$targetBefore = Get-FixtureSnapshot $syncTarget
-Sync-PlayerExportsBackToSource -SourceModuleDir $syncSourceModule -TargetModuleDir $syncTargetModule
-Assert-FileText $syncSource "source-only.json" "keep-source-only"
-Assert-FileText $syncSource "source-newer.json" "keep-newer-source"
-Assert-FileText $syncSource "target-newer.json" "copy-newer-target"
-Assert-FileText $syncSource "unknown\target-only.dat" "copy-unknown-target"
-Assert-Contract (@(Get-ChildItem -LiteralPath $syncSource -Recurse -File).Count -eq 4) "back-sync exact file set"
-Assert-Contract ($targetBefore -ceq (Get-FixtureSnapshot $syncTarget)) "back-sync modified installed exports"
-$syncBeforeRepeat = Get-FixtureSnapshot $syncSource
-Sync-PlayerExportsBackToSource -SourceModuleDir $syncSourceModule -TargetModuleDir $syncTargetModule
-Assert-Contract ($syncBeforeRepeat -ceq (Get-FixtureSnapshot $syncSource)) "back-sync replay drift"
-$missingSyncSource = Join-Path $RunRoot "missing-sync-source"
-Sync-PlayerExportsBackToSource -SourceModuleDir $missingSyncSource -TargetModuleDir (Join-Path $RunRoot "missing-sync-target")
-Assert-Contract (-not (Test-Path -LiteralPath $missingSyncSource)) "missing installed exports must not create source data"
-
-Write-Host "playerExportsContracts assertions=$script:assertions firstInstall=PASS unifiedInstalled=PASS existingDestination=REFUSED missingSources=PASS nonDeletingBackSync=PASS realPlayerData=NOT_READ cleanup=NONE PASS"
+Write-Host "playerExportsContracts assertions=$script:assertions historicalMerge=PASS sourceBackSync=ABSENT realPlayerData=NOT_READ cleanup=NONE PASS"

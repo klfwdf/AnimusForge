@@ -65,7 +65,7 @@ if not "%ERR%"=="0" (
 
 echo.
 echo [2/2] Creating one AnimusForge ZIP...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -SourceModuleDir "%PROJECT_ROOT%\AnimusForge" -ExcludeOnnx -ExcludeCustomPrompts %*
+powershell -NoProfile -ExecutionPolicy Bypass -File "%PACKAGE_SCRIPT%" -ModuleDir "%STAGE_MODULE%" -ExcludeOnnx %*
 set "ERR=%ERRORLEVEL%"
 if not "%ERR%"=="0" (
     echo [FAILED] Packaging failed. ExitCode=%ERR%

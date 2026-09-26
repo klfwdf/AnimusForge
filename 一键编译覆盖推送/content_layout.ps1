@@ -222,3 +222,88 @@ function Invoke-AnimusForgeContentProjection {
         }
     }
 }
+
+function Assert-AnimusForgeCleanStage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)][string]$ProjectRoot,
+        [Parameter(Mandatory = $true)][string]$StageModuleDir
+    )
+
+    $projectFull = Get-AnimusForgeContentFullPath -Path $ProjectRoot
+    $stageFull = Get-AnimusForgeContentFullPath -Path $StageModuleDir
+    $allowedStages = @("Debug", "Release") | ForEach-Object {
+        Get-AnimusForgeContentFullPath -Path (Join-Path $projectFull "bin\$_\single_module_stage\AnimusForge")
+    }
+    if (-not (@($allowedStages | Where-Object { $_.Equals($stageFull, [System.StringComparison]::OrdinalIgnoreCase) }).Count -eq 1)) {
+        throw "Package input must be the project-local AnimusForge Stage."
+    }
+    if (-not (Test-Path -LiteralPath $stageFull -PathType Container)) {
+        throw "Stage directory is missing: $stageFull"
+    }
+    Assert-AnimusForgeNoReparsePoint -Path $stageFull -Label "Stage root"
+
+    $expected = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($entry in @(Get-AnimusForgeContentLayout -ProjectRoot $projectFull)) {
+        $key = $entry.Target.Replace('\', '/')
+        if ($expected.ContainsKey($key)) { throw "Duplicate Stage target: $key" }
+        $expected.Add($key, (Get-FileHash -LiteralPath $entry.SourcePath -Algorithm SHA256).Hash)
+    }
+    $expected.Add("SubModule.xml", "")
+    foreach ($relative in @(
+        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll",
+        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.pdb",
+        "bin/Win64_Shipping_Client/AnimusForge.Bootstrap.build.json",
+        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll",
+        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.pdb",
+        "bin/Win64_Shipping_Client/versions/1.3/AnimusForge.build.json",
+        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll",
+        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.pdb",
+        "bin/Win64_Shipping_Client/versions/1.4/AnimusForge.build.json"
+    )) {
+        if ($expected.ContainsKey($relative)) { throw "Content map overlaps program output: $relative" }
+        $expected.Add($relative, "")
+    }
+    $lockPath = Join-Path $projectFull "content\runtime-dependencies.lock.json"
+    $lock = Get-Content -LiteralPath $lockPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $names = @($lock.files.PSObject.Properties.Name)
+    $approved = @("Microsoft.ML.OnnxRuntime.dll", "onnxruntime.dll", "onnxruntime_providers_shared.dll", "System.Buffers.dll", "System.Memory.dll", "System.Runtime.CompilerServices.Unsafe.dll")
+    if ([int]$lock.schemaVersion -ne 1 -or $names.Count -ne $approved.Count -or @($names | Where-Object { $approved -cnotcontains $_ }).Count -ne 0) {
+        throw "Private runtime dependency lock has an unexpected file set."
+    }
+    foreach ($property in $lock.files.PSObject.Properties) {
+        $hash = [string]$property.Value
+        if ($hash -cnotmatch '^[0-9a-f]{64}$') { throw "Invalid private runtime dependency hash lock." }
+        $expected.Add("bin/Win64_Shipping_Client/$($property.Name)", $hash)
+    }
+
+    $allowedDirs = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($relative in $expected.Keys) {
+        $parent = [System.IO.Path]::GetDirectoryName($relative.Replace('/', [System.IO.Path]::DirectorySeparatorChar))
+        while (-not [string]::IsNullOrEmpty($parent)) {
+            $null = $allowedDirs.Add($parent.Replace('\', '/'))
+            $parent = [System.IO.Path]::GetDirectoryName($parent)
+        }
+    }
+    $seen = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($item in @(Get-ChildItem -LiteralPath $stageFull -Force -Recurse)) {
+        if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw "Stage contains a reparse point."
+        }
+        $relative = $item.FullName.Substring($stageFull.Length).TrimStart('\', '/') -replace '\\', '/'
+        if ($item.PSIsContainer) {
+            if (-not $allowedDirs.Contains($relative)) { throw "Stage contains an unknown directory: $relative" }
+            continue
+        }
+        if (-not $expected.ContainsKey($relative) -or -not $seen.Add($relative)) {
+            throw "Stage contains an unknown or duplicate file: $relative"
+        }
+        $hash = $expected[$relative]
+        if ($hash -and -not (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256).Hash.Equals($hash, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Stage file differs from its locked source: $relative"
+        }
+    }
+    if ($seen.Count -ne $expected.Count) {
+        throw "Stage is incomplete: expected $($expected.Count) files, found $($seen.Count)."
+    }
+}
