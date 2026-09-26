@@ -1,4 +1,10 @@
-## AF2.0 F1–F5 连续实施：模型用户根/迁移及仓内 PlayerExports 退役已验，整体仍未完成（2026-09-27）
+## AF2.0 F3 单向产物链离线验收完成；F4/F5 未开始本轮续作（2026-09-27）
+
+最新 F3 程序部署产品/测试 **`a8f69b57`、`82d8ce53`**：`一键编译覆盖推送/deploy_module.ps1:505–649,699–725` 让 Stage-only 和部署共享一次精确 `content` 投影、唯一 XML、已锁双实现/Bootstrap 与私有依赖装配，并在两路径共同要求 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts`。部署只枚举 Stage 白名单文件；旧目标受管文件先复制到 `%LOCALAPPDATA%/AnimusForge/Recovery/deploy` 并复核 SHA，同目录候选经 hash 后逐文件替换，失败逆序恢复且逐项核 hash；中断记录阻止无检查重试。未知安装文件/目录（包括旧导出、日志、模型、自定义配置）不镜像、不删除；旧双模块只作只读存在性警告，虚构旧模块重跑不改原件且无新 Recovery；旧 `robocopy /MIR`、安装 Prompt/PlayerExports 合并、回写源码的遗留函数/调用已退出。此事务是逐文件替换加可恢复回滚，**不是跨 123 文件原子提交**；若进程在激活中被杀，须检查私有记录与目标状态后再部署，不能宣称自动恢复。
+
+离线证据：工作区虚构游戏根完整部署 **123** 个受管文件，逐个与 Stage SHA 相同，合成 PlayerExports 未变；重复运行无新增 Recovery。`ManagedDeployContractTests.ps1:1–110` 的第二项激活故障注入验证首项回滚、私有备份与目标 hash 相同，正常重试、无变化重跑、中断记录拒绝及 **7** 个未受管/旧模块虚构哨兵不变。新版 J15 内容 runner 无递归清理现有 fixture，完整运行映射 **107**、坏映射 **8**、GCCZ 回退 **4** 及新部署契约 PASS；历史安装合并测试由新用户根/无合并行为替代，不把旧合并结果冒充现行部署。Debug/Release Stage 各 **123** 项在同一已构建程序候选下重组 hash 稳定；两份本地仅供离线检查的 ZIP 各 **123** 项，与对应 Stage 集合及 **122** 个非 XML 条目 SHA 一致，XML 版本仅在 ZIP 中，私有目录条目 0。首个独立隐私断言误将允许的 `onnxruntime.dll` 视为 `ONNX` 目录而失败，改按目录段判断后通过；非产品缺陷。代码地图 **789** 锚点绑定本产品修订，recorded/working-tree PASS。现有 C# 六构建结果仍属未改的同一源码/产物，**本切片未重跑构建**。未写 D: 游戏目录、启动游戏、改原始 `.sav`、推送或写 G:；实机部署/旧档 **NOT-RUN**。
+
+**F3_OFFLINE_VERIFIED，仅 F3 收口并按用户最新指令停下。**F4 的 33 项未映射 GUI、TPAC/设计源功能和分发权、`UnnamedNpcProfiles`/根 `VoiceMapping.json` 等资料，以及 F5 同候选总验收均未执行/未闭。现有 ZIP 是装配/隐私工程候选，**非功能完整包或发布就绪**；下方各段为更早修订的历史状态，不能以其中“部署仍失败关闭”覆盖本段。
 
 最新 F3 防陈旧候选 **`8b3f3b51`**：`一键编译覆盖推送/content_layout.ps1:226–321` 的 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts` 将 Stage 九项 Bootstrap/双实现 DLL、PDB、构建记录的 hash 与当前配置 `single_module_artifacts` 精确绑定并拒绝 reparse；打包入口三处均强制此门，旧干净 Stage 仍在创建 ZIP 目录前失败。Stage 重建调用保留无此开关的精确隐私/内容白名单，允许验证过的旧程序候选被替换；没有放松未知文件、模型、用户数据或内容 hash 断言。合成九产物比对、程序产物漂移拒绝及原白名单反例 PASS；以现有已验六构建产物在当前源码下重组 Debug/Release Stage 各 123 项，两次无输入重组的文件集合/hash 一致。Debug/Release ZIP 各 123 条，独立逐项核对与 Stage 相同（版本 XML 单列），PlayerExports/ONNX/Logs/设计源/未映射资产均为 0。旧 Stage 打包拒绝、当前 Stage 打包成功，均未读写游戏模块；代码地图 **785** 锚点 recorded/working-tree PASS。**仍非功能完整包**：部署程序文件事务未接通，33 GUI/TPAC/权利与剩余旧资料未闭，F5 最终同候选总验收未执行。
 

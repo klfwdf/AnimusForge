@@ -1,6 +1,6 @@
 # J15 content / profile 执行计划
 
-> **最新执行（2026-09-27）**：用户已授权按[第 9 节](#j15-af2-final-state)连续实施，边界为离线验收。F1 typed 路径、F2 PlayerExports/普通及 Policy Prompt/TerminalSettings/ONNX 消费者与显式迁移已有分片证据；安装与仓内 PlayerExports 各 3139 项、D: Prompt 30 项和安装/仓内 ONNX 10/5 项均完成私有备份与 hash 复验。安装模型 10 项激活到用户 Models；仓内旧模型五项与 PlayerExports 3139 项均在恢复验证后移至忽略的本地库并停止跟踪，原始 Git 历史未改。F3 Debug/Release 新候选 Stage/ZIP 各 123 项且两次无输入重组稳定；打包现拒绝与当前构建产物不一致的旧 Stage。但部署仍失败关闭，33 项未映射 GUI/TPAC 及模型再分发来源等 F4 权利/功能门禁未闭，不能把纯净 ZIP 当发布就绪。F5 同候选总验收仍未完成；不覆盖游戏、不启动游戏、不改原始存档、不得推送含历史私人数据的分支。
+> **最新执行与停点（2026-09-27）**：用户授权离线连续实施后，现又明确“F3做完就停下”。F1/F2 typed 用户路径、消费者与显式迁移已分片验收；F3 在 `a8f69b57`、`82d8ce53` 接通只从当前构建产物及干净 Stage 装配的受管文件部署，移除旧 `/MIR`/安装资料合并，私有 SHA 备份、同卷候选、失败回滚及中断拒绝已用虚构游戏根验证。Debug/Release Stage/ZIP 各 123 项，重组稳定、ZIP 集合与非 XML 字节对齐；D: 游戏仍只读。**F3_OFFLINE_VERIFIED 后停下，不继续 F4/F5。**33 项未映射 GUI/TPAC、剩余资料与模型再分发来源等 F4 权利/功能门禁未闭，不能把纯净 ZIP 当发布就绪；F5 同候选总验收、实机/旧档未做。未覆盖游戏、启动游戏、改原始存档或推送含历史私人数据的分支；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
 >
 > 当前续接（2026-09-26）：`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。用户要求直接按计划推进，产品 `9db8fa8b` 完成 30 份默认 Prompt 原样归位及安装覆盖接缝，测试修复 `a3fa77af`；映射 107，旧根 HOLD 40。完整投影/覆盖反例/Bridge/Policy/六构建/四 DLL 资源与 API/当前 DLL Phase8 已验，详细证据及额外重复清理被自动审查拒绝的边界见主台账。下一步为剩余用户数据、模型及素材来源边界；完整 J15 目标与第 2 节完成定义不变。
 > 最新补证 `2b61f1c5`：PlayerExports 独立合成保护 45 断言、四个行为变异拒绝通过；ONNX 五文件匹配固定上游版本。没有真实备份/迁移或分发决定，不解除 G0.3/G0.4，也没有重跑被拒的整体 runner 清理。证据见主台账当前条目“数据保护合成契约与模型来源补证”。
