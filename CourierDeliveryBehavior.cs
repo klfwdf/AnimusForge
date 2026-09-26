@@ -2320,6 +2320,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private void ResetPendingFlow(string reason)
 	{
+		InvalidateCourierDraftTickets();
 		Log("reset pending reason=" + reason);
 		_pendingFlow = null;
 		_letterInputOpen = false;

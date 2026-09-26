@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 #pragma warning disable CS0649 // Deliberately minimal game/session fixtures.
 
 static class Program
@@ -62,17 +63,100 @@ static class Program
             Check(owner.Sends == 1 && owner.PendingName == "reentrant-new" && owner.InputOpen,
                 "old-dispatch-tail-cannot-clear-reentrant-new-draft fallback=" + fallback);
         }
+        foreach (string scenario in new[] { "dead", "unknown", "in-party", "active", "missing-party", "crew-short", "crew-wounded", "crew-xp", "empty-crew", "troop-ineligible", "prisoner-ineligible", "settlement-ineligible", "cargo-short", "cargo-source", "cargo-duplicate", "normal-with-cargo", "invalid-mode" })
+        {
+            var owner = CourierDeliveryBehavior.NewOwner(); owner.Open("validation"); owner.Change(scenario);
+            CourierLetterInputPopup.Last.Send("validate before dispatch");
+            Check(owner.Sends == 0, "dispatch-revalidates-" + scenario);
+        }
+        foreach (CourierPayloadMode mode in Enum.GetValues<CourierPayloadMode>())
+        {
+            var owner = CourierDeliveryBehavior.NewOwner(); owner.Open("mode"); owner.SetMode(mode);
+            CourierLetterInputPopup.Last.Send("mode regression");
+            Check(owner.Sends == 1, "valid-mode-" + mode);
+        }
+        {
+            var owner = CourierDeliveryBehavior.NewOwner(); owner.Open("reply"); owner.Change("unknown-reply");
+            CourierLetterInputPopup.Last.Send("reply exception");
+            Check(owner.Sends == 1, "unknown-recipient-letter-reply-exception-preserved");
+        }
+#if COURIER_DRAFT_TICKETS
+        {
+            var owner=CourierDeliveryBehavior.NewOwner();
+            Check(CourierDeliveryBehavior.IssueModuleCourierTicket("a")==null,"no-draft-no-ticket");
+            owner.Open("ticket");
+            TWParallel.OnMain=false;
+            Check(CourierDeliveryBehavior.IssueModuleCourierTicket("a")==null,"capture-main-thread-only");
+            TWParallel.OnMain=true;
+            string ticket=CourierDeliveryBehavior.IssueModuleCourierTicket("a");
+            Check(ticket!=null && owner.Sends==0 && owner.InputOpen,"capture-does-not-claim-or-send");
+            Check(!owner.SendTicket("b",ticket),"wrong-client-cannot-consume-ticket");
+            var ui=CourierLetterInputPopup.Last;
+            Check(owner.SendTicket("a",ticket) && owner.Sends==1,"right-client-dispatches-prepared-draft");
+            ui.Send("late ui");ui.Cancel();
+            Check(owner.Sends==1 && !owner.SendTicket("a",ticket),"api-wins-ui-race-and-replay");
+
+            owner=CourierDeliveryBehavior.NewOwner();owner.Open("ui-first");
+            ticket=CourierDeliveryBehavior.IssueModuleCourierTicket("a");CourierLetterInputPopup.Last.Send("ui first");
+            Check(!owner.SendTicket("a",ticket) && owner.Sends==1,"ui-wins-api-race");
+
+            foreach(string invalidation in new[]{"draft","revision","generation","owner","recipient","retire","revoke"})
+            {
+                owner=CourierDeliveryBehavior.NewOwner();owner.Open("old");ticket=CourierDeliveryBehavior.IssueModuleCourierTicket("a");
+                switch(invalidation)
+                {
+                    case "draft":owner.Open("new");break;
+                    case "revision":owner.Reopen();break;
+                    case "generation":SaveRuntimeGuard.Generation++;break;
+                    case "owner":CourierDeliveryBehavior.NewOwner();break;
+                    case "recipient":owner.ReplaceRecipient();break;
+                    case "retire":owner.Retire();break;
+                    case "revoke":CourierDeliveryBehavior.RevokeModuleCourierTickets("a");break;
+                }
+                Check(!owner.SendTicket("a",ticket) && owner.Sends==0,"ticket-invalidated-by-"+invalidation);
+            }
+            owner=CourierDeliveryBehavior.NewOwner();owner.Open("bounded");
+            int issued=0;for(int i=0;i<128;i++)if(CourierDeliveryBehavior.IssueModuleCourierTicket("a")!=null)issued++;
+            Check(issued==128 && CourierDeliveryBehavior.IssueModuleCourierTicket("b")==null,"owner-ticket-capacity-shared-across-clients");
+            CourierDeliveryBehavior.RevokeModuleCourierTickets("b");
+            Check(CourierDeliveryBehavior.IssueModuleCourierTicket("b")==null,"revoke-is-client-scoped");
+            CourierDeliveryBehavior.RevokeModuleCourierTickets("a");
+            Check(CourierDeliveryBehavior.IssueModuleCourierTicket("b")!=null,"revoke-releases-bounded-storage");
+            owner.Open("replacement");
+            Check(owner.TicketCount==0,"draft-step-releases-live-ticket-references");
+            owner.MarkUnready();
+            Check(CourierDeliveryBehavior.IssueModuleCourierTicket("a")==null,"unfinished-draft-cannot-be-captured");
+        }
+#endif
         Console.WriteLine($"CourierDraftAdmission checks={checks} failures={failures}; production UI callbacks; fixture game dispatch; LIVE=NOT_RUN");
         return failures == 0 ? 0 : 1;
     }
 }
-sealed class Hero { public string Name; }
-sealed class TroopRoster { }
-sealed class CourierCargoEntry { }
-sealed class CourierTradeOption { }
-enum CourierPayloadMode { Normal }
+sealed class Hero { public static Hero MainHero=new(); public string Name; public bool IsDead, InParty; public bool IsKnownToPlayer=true; public CharacterObject CharacterObject=new(){IsHero=true}; }
+sealed class CharacterObject { public bool IsPlayerCharacter,IsHero; public Hero HeroObject; }
+sealed class TroopRosterElement { public CharacterObject Character; public int Number,WoundedNumber,Xp; }
+sealed class TroopRoster
+{
+    public List<TroopRosterElement> Entries=new();
+    public int TotalManCount=>Entries.Sum(x=>x.Number);
+    public int FindIndexOfTroop(CharacterObject character)=>Entries.FindIndex(x=>x.Character==character);
+    public TroopRosterElement GetElementCopyAtIndex(int index)=>Entries[index];
+}
+sealed class MobileParty { public static MobileParty MainParty; public TroopRoster MemberRoster; }
+sealed class Settlement { public string StringId; }
+sealed class PartyEntry { public Settlement SourceSettlement; }
+sealed class CourierCargoEntry { public string Kind,Id,SourceSettlementId; public int Amount; }
+sealed class CourierTradeOption { public string Kind,Id; public int AvailableAmount; public PartyEntry PartyEntry; }
+enum CourierPayloadMode { Normal,Give,Show,GiveTroops,GivePrisoners,GiveSettlements }
+static class MyBehavior
+{
+    public static bool LordEligible=true,LeaderEligible=true;
+    public static bool IsPartyTransferLordEligibleForExternal(Hero h,CharacterObject c)=>LordEligible;
+    public static bool IsSettlementTransferLeaderEligibleForExternal(Hero h,CharacterObject c)=>LeaderEligible;
+}
+namespace Refactor.Modules { static class CoreDialogueClient { public const int MaximumTextLength=16000; } }
 sealed class InformationMessage { public InformationMessage(string text, object color) { } }
-static class Colors { public static object Green, Red; }
+static class Colors { public static object Green, Red, Yellow; }
 sealed class TextInquiryData
 {
     public Action<string> Send; public Action Cancel;
@@ -105,17 +189,67 @@ sealed partial class CourierDeliveryBehavior
     private readonly Dictionary<string,CourierSession> _sessions=new();
     internal int Sends; internal string LastRecipient;
     internal bool ThrowAfterCreate; internal Action AfterCreate;
+    internal bool ActiveCourier;
+    private List<CourierTradeOption> _options=new();
     internal string PendingName=>_pendingFlow?.Recipient?.Name;
     internal bool InputOpen=>_letterInputOpen;
-    internal static CourierDeliveryBehavior NewOwner(){_letterInputOpen=false;return Instance=new();}
+    internal static CourierDeliveryBehavior NewOwner(){_letterInputOpen=false;MyBehavior.LordEligible=MyBehavior.LeaderEligible=true;return Instance=new();}
     internal void Reopen()=>ShowLetterInput();
     internal void Retire()=>_pendingOwnerPhases.Accepting=false;
+#if COURIER_DRAFT_TICKETS
+    internal int TicketCount=>_courierDraftTickets.Count;
+    internal void MarkUnready()=>_pendingFlow.ReadyToSend=false;
+    internal void ReplaceRecipient()=>_pendingFlow.Recipient=new Hero{Name="replaced"};
+    internal bool SendTicket(string client,string ticket)
+        =>TryTakeModuleCourierTicket(client,ticket,out var flow,out var revision)
+            && DispatchCourierDraft(flow,revision,"ticket text",out _)!=null;
+#endif
     internal void Open(string name)
     {
         _pendingFlow=new PendingCourierFlow{Recipient=new Hero{Name=name}};
         typeof(PendingCourierFlow).GetField("RuntimeGeneration")?.SetValue(_pendingFlow,SaveRuntimeGuard.Generation);
+        var crew=new CharacterObject();
+        _pendingFlow.CrewRoster=new(){Entries=new(){new(){Character=crew,Number=2,WoundedNumber=1,Xp=10}}};
+        MobileParty.MainParty=new(){MemberRoster=new(){Entries=new(){new(){Character=crew,Number=3,WoundedNumber=1,Xp=20}}}};
         ShowLetterInput();
     }
+    internal void SetMode(CourierPayloadMode mode)
+    {
+        _pendingFlow.Mode=mode;_pendingFlow.SelectedEntries.Clear();_options.Clear();
+        if(mode==CourierPayloadMode.Normal)return;
+        string kind=mode switch {CourierPayloadMode.Give=>"item",CourierPayloadMode.Show=>"show_item",CourierPayloadMode.GiveTroops=>"troop",CourierPayloadMode.GivePrisoners=>"prisoner",_=>"settlement"};
+        _pendingFlow.SelectedEntries.Add(new(){Kind=kind,Id="asset",Amount=1});
+        _options.Add(new(){Kind=kind,Id="asset",AvailableAmount=1});
+    }
+    internal void Change(string scenario)
+    {
+        switch(scenario)
+        {
+            case "dead":_pendingFlow.Recipient.IsDead=true;break;
+            case "unknown":_pendingFlow.Recipient.IsKnownToPlayer=false;break;
+            case "unknown-reply":_pendingFlow.Recipient.IsKnownToPlayer=false;typeof(PendingCourierFlow).GetField("AllowLetterReply")?.SetValue(_pendingFlow,true);break;
+            case "in-party":_pendingFlow.Recipient.InParty=true;break;
+            case "active":ActiveCourier=true;break;
+            case "missing-party":MobileParty.MainParty=null;break;
+            case "crew-short":MobileParty.MainParty.MemberRoster.Entries[0].Number=1;break;
+            case "crew-wounded":MobileParty.MainParty.MemberRoster.Entries[0].WoundedNumber=0;break;
+            case "crew-xp":MobileParty.MainParty.MemberRoster.Entries[0].Xp=0;break;
+            case "empty-crew":_pendingFlow.CrewRoster.Entries.Clear();break;
+            case "troop-ineligible":SetMode(CourierPayloadMode.GiveTroops);MyBehavior.LordEligible=false;break;
+            case "prisoner-ineligible":SetMode(CourierPayloadMode.GivePrisoners);MyBehavior.LordEligible=false;break;
+            case "settlement-ineligible":SetMode(CourierPayloadMode.GiveSettlements);MyBehavior.LeaderEligible=false;break;
+            case "cargo-short":SetMode(CourierPayloadMode.Give);_options[0].AvailableAmount=0;break;
+            case "cargo-source":SetMode(CourierPayloadMode.GivePrisoners);_options[0].PartyEntry=new(){SourceSettlement=new(){StringId="other-dungeon"}};break;
+            case "cargo-duplicate":SetMode(CourierPayloadMode.Give);_pendingFlow.SelectedEntries.Add(_pendingFlow.SelectedEntries[0]);break;
+            case "normal-with-cargo":SetMode(CourierPayloadMode.Give);_pendingFlow.Mode=CourierPayloadMode.Normal;break;
+            case "invalid-mode":_pendingFlow.Mode=(CourierPayloadMode)99;break;
+        }
+    }
+    private static bool IsHeroInPlayerPartyForCourier(Hero h)=>h.InParty;
+    private static bool ShouldShowCourierButtonForExternal(Hero h,bool informationHidden)=>h.IsKnownToPlayer;
+    private bool HasActiveCourierForHero(Hero h)=>ActiveCourier;
+    private static List<TroopRosterElement> SnapshotRoster(TroopRoster roster)=>roster.Entries.ToList();
+    private List<CourierTradeOption> BuildCourierTradeOptions(PendingCourierFlow flow,CourierPayloadMode mode)=>_options;
     private sealed class CourierSession { public string Id,RecipientHeroId,CourierPartyId,PayloadMode,RecipientName; public List<object> Entries=new(); }
     private CourierSession CreateCourierSession(PendingCourierFlow flow,string text)
     { Sends++;LastRecipient=flow.Recipient.Name;AfterCreate?.Invoke();if(ThrowAfterCreate)throw new InvalidOperationException("fixture partial dispatch");return new(){Id=Guid.NewGuid().ToString(),RecipientName=LastRecipient}; }
