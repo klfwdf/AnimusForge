@@ -3,10 +3,45 @@ using PlayerExportsEditor.Core;
 var service = new PlayerExportsService();
 var validator = new PlayerExportsValidator();
 
+if (args.Contains("--path-contract", StringComparer.Ordinal))
+{
+    var isolated = Path.Combine(Path.GetTempPath(), "af-editor-path-" + Guid.NewGuid().ToString("N"));
+    Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", isolated);
+    var expected = Path.Combine(isolated, "UserData", "PlayerExports");
+    if (service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory) != expected ||
+        service.FindDefaultPlayerExportsRoot(Directory.GetCurrentDirectory()) != expected ||
+        Directory.Exists(expected))
+    {
+        Console.Error.WriteLine("FAIL editor path contract");
+        return 1;
+    }
+    var legacy = Path.Combine(Directory.GetCurrentDirectory(), "AnimusForge", "PlayerExports");
+    var legacyPackage = Path.Combine(legacy, "synthetic");
+    RejectWrite(() => service.CreatePackage(legacy, "synthetic"));
+    RejectWrite(() => service.SaveJsonDocument(legacyPackage, Path.Combine(legacyPackage, "data.json"), "{}"));
+    RejectWrite(() => service.SaveKnowledgeRule(legacyPackage, Path.Combine(legacyPackage, "knowledge", "rules", "rule.json"), new LoreRule()));
+    RejectWrite(() => service.CreateKnowledgeRule(legacyPackage, new LoreRule()));
+    RejectWrite(() => service.SavePersonaProfile(legacyPackage, Path.Combine(legacyPackage, "personality_background", "npc.json"), new NpcPersonaProfile()));
+    RejectWrite(() => service.MovePackageToDeleted(legacy, legacyPackage));
+    RejectWrite(() => service.MoveJsonFileToDeleted(legacyPackage, Path.Combine(legacyPackage, "data.json")));
+    RejectWrite(() => service.MoveDataTypeToDeleted(legacyPackage, PlayerExportsDataType.EventData));
+    var validPackage = Path.Combine(expected, "synthetic");
+    RejectWrite(() => service.SaveJsonDocument(validPackage, Path.Combine(isolated, "escape.json"), "{}"));
+    Console.WriteLine("PASS editor path contract: shared override, no cwd fallback, no legacy or escaping writes");
+    return 0;
+}
+
+if (args.Contains("--path-contract-invalid", StringComparer.Ordinal))
+{
+    Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", "relative-root");
+    RejectWrite(() => service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory));
+    Console.WriteLine("PASS editor path contract: invalid override fails closed");
+    return 0;
+}
+
 RunDataTypeDeletionSmoke(service);
 
-var root = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory) ??
-           service.FindDefaultPlayerExportsRoot(Directory.GetCurrentDirectory());
+var root = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
 
 if (string.IsNullOrWhiteSpace(root))
 {
@@ -14,7 +49,7 @@ if (string.IsNullOrWhiteSpace(root))
     return 1;
 }
 
-Console.WriteLine("PlayerExports root: " + root);
+Console.WriteLine("PlayerExports root resolved");
 var packages = service.ListPackages(root);
 if (packages.Count == 0)
 {
@@ -23,36 +58,30 @@ if (packages.Count == 0)
 }
 
 ConditionCatalog? conditionCatalog = null;
+var packageIndex = 0;
 foreach (var package in packages)
 {
+    packageIndex++;
     var data = service.LoadPackage(package.FullPath);
     var issues = validator.Validate(data);
     var errors = issues.Count(x => x.Severity == ValidationSeverity.Error);
     var warnings = issues.Count(x => x.Severity == ValidationSeverity.Warning);
 
     Console.WriteLine(
-        $"{package.Name}: knowledge={data.KnowledgeRules.Count}, personas={data.Personas.Count}, events={data.EventFiles.Count}, " +
+        $"package-index={packageIndex}: knowledge={data.KnowledgeRules.Count}, personas={data.Personas.Count}, events={data.EventFiles.Count}, " +
         $"voice={(data.VoiceMapping == null ? "missing" : "ok")}, unnamed={(data.UnnamedPersona == null ? "missing" : "ok")}, " +
         $"errors={errors}, warnings={warnings}");
 
     if (conditionCatalog == null)
     {
         conditionCatalog = new ConditionCatalogBuilder().Build(data, AppContext.BaseDirectory);
-        Console.WriteLine("condition-catalog: " + conditionCatalog.Summary);
+        Console.WriteLine("condition-catalog built");
         if (conditionCatalog.Roles.Count < 7)
         {
             Console.Error.WriteLine("Condition catalog did not include the built-in role conditions.");
             return 1;
         }
 
-        var localizedSamples = conditionCatalog.Heroes
-            .Concat(conditionCatalog.Kingdoms)
-            .Concat(conditionCatalog.Settlements)
-            .Concat(conditionCatalog.Cultures)
-            .Where(x => (x.Label ?? "").Any(c => c > 127))
-            .Take(3)
-            .Select(x => x.ToString())
-            .ToList();
         Console.WriteLine(
             "localized-counts: heroes=" + CountLocalized(conditionCatalog.Heroes) +
             ", cultures=" + CountLocalized(conditionCatalog.Cultures) +
@@ -61,12 +90,11 @@ foreach (var package in packages)
             ", settlements=" + CountLocalized(conditionCatalog.Settlements) +
             ", identities=" + CountLocalized(conditionCatalog.Identities) +
             ", skills=" + CountLocalized(conditionCatalog.Skills));
-        Console.WriteLine("localized-samples: " + (localizedSamples.Count == 0 ? "none" : string.Join(" | ", localizedSamples)));
     }
 
     foreach (var issue in issues.Where(x => x.Severity == ValidationSeverity.Error).Take(10))
     {
-        Console.Error.WriteLine("  ERROR " + issue.Area + " " + issue.FileName + ": " + issue.Message);
+        Console.Error.WriteLine("  ERROR " + issue.Area);
     }
 
     if (data.LoadIssues.Any(x => x.Severity == ValidationSeverity.Error))
@@ -76,6 +104,14 @@ foreach (var package in packages)
 }
 
 return 0;
+
+static void RejectWrite(Action action)
+{
+    try { action(); }
+    catch (ArgumentException) { return; }
+    catch (InvalidOperationException) { return; }
+    throw new InvalidOperationException("Expected path rejection before any write.");
+}
 
 static int CountLocalized(IEnumerable<ConditionCandidate> candidates)
 {

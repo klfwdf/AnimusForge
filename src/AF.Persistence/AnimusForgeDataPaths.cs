@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.IO;
 
@@ -11,9 +12,9 @@ internal static class AnimusForgeDataPaths
 
     internal static string GetCurrentRoot() => CurrentRoot.Value;
 
-    internal static string ResolveRoot(string requestedRoot = null)
+    internal static string ResolveRoot(string? requestedRoot = null)
     {
-        string path = requestedRoot;
+        string? path = requestedRoot;
         if (path == null)
         {
             path = Environment.GetEnvironmentVariable(OverrideEnvironmentVariable);
@@ -31,11 +32,11 @@ internal static class AnimusForgeDataPaths
             throw new ArgumentException("AnimusForge data root must be a local absolute path.", nameof(requestedRoot));
 
         string fullPath = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        string volumeRoot = Path.GetPathRoot(fullPath);
+        string? volumeRoot = Path.GetPathRoot(fullPath);
         if (string.IsNullOrWhiteSpace(volumeRoot) || fullPath.Length <= volumeRoot.TrimEnd(Path.DirectorySeparatorChar).Length)
             throw new ArgumentException("AnimusForge data root cannot be a volume root.", nameof(requestedRoot));
 
-        for (DirectoryInfo directory = new DirectoryInfo(fullPath); directory != null; directory = directory.Parent)
+        for (DirectoryInfo? directory = new DirectoryInfo(fullPath); directory != null; directory = directory.Parent)
         {
             if (File.Exists(directory.FullName))
                 throw new InvalidOperationException("AnimusForge data root crosses a file.");
@@ -82,7 +83,7 @@ internal static class AnimusForgeDataPaths
         string validatedRoot = ResolveRoot(root);
         string relative = ValidateRelativePath(relativePath);
         string combined = Path.Combine(validatedRoot, relative.Replace('/', Path.DirectorySeparatorChar));
-        for (DirectoryInfo directory = new DirectoryInfo(combined); directory != null
+        for (DirectoryInfo? directory = new DirectoryInfo(combined); directory != null
             && directory.FullName.Length > validatedRoot.Length; directory = directory.Parent)
         {
             if (directory.Exists && (directory.Attributes & FileAttributes.ReparsePoint) != 0)
