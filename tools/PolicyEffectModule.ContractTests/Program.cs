@@ -4349,7 +4349,7 @@ internal static class Program
 		IList recordEffects = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(recordEffectType));
 		recordEffects.Add(recordEffect);
 		SetProperty(recordType, record, "Effects", recordEffects);
-		string nationalHistory = (string)InvokeStatic(playerBehavior, "BuildPolicyRecordEffectSummary", new[] { record }, 1);
+		string nationalHistory = (string)InvokeStatic(playerBehavior, "BuildPolicyRecordEffectSummary", new object[] { record, true }, 2);
 		string[] nationalLines = nationalHistory.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 		Check(nationalLines.Length == 2
 			&& nationalLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
@@ -8881,8 +8881,8 @@ internal static class Program
 		}
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string kingdomPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "CustomPolicyComposePopup.xml"), Encoding.UTF8);
-		string localPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "LocalPolicyComposePopup.xml"), Encoding.UTF8);
+		string kingdomPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "GUI", "Prefabs", "CustomPolicyComposePopup.xml"), Encoding.UTF8);
+		string localPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "GUI", "Prefabs", "LocalPolicyComposePopup.xml"), Encoding.UTF8);
 		Type kingdomVm = SutType("AnimusForge.CustomPolicyComposePopupVM");
 		Type localVm = SutType("AnimusForge.LocalPolicyComposePopupVM");
 		Check(kingdomVm.GetMethod("ExecuteAutoDraft", All) != null
@@ -9372,7 +9372,7 @@ internal static class Program
 			"Manager VM must expose four independent row toggles plus staged reset, cancel, and save actions.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
-		string prefabPath = Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "PolicyEffectModuleManagerPopup.xml");
+		string prefabPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "GUI", "Prefabs", "PolicyEffectModuleManagerPopup.xml");
 		Check(File.Exists(prefabPath), "Policy effect module manager prefab is missing.");
 		string prefab = File.ReadAllText(prefabPath, Encoding.UTF8);
 		Check(prefab.Contains("SuggestedWidth=\"1540\"")
@@ -14877,8 +14877,8 @@ internal static class Program
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string kingdomUi = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "UI", "KingdomPolicyUi.cs"), Encoding.UTF8);
 		string localUi = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "UI", "LocalPolicyUi.cs"), Encoding.UTF8);
-		string kingdomPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "CustomPolicyHistoryPopup.xml"), Encoding.UTF8);
-		string localPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "LocalPolicyHistoryPopup.xml"), Encoding.UTF8);
+		string kingdomPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "GUI", "Prefabs", "CustomPolicyHistoryPopup.xml"), Encoding.UTF8);
+		string localPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "GUI", "Prefabs", "LocalPolicyHistoryPopup.xml"), Encoding.UTF8);
 		Check(kingdomUi.Contains("ExecuteReReview") && kingdomUi.Contains("CanReReview")
 			&& localUi.Contains("ExecuteReReview") && localUi.Contains("CanReReview")
 			&& kingdomPrefab.Contains("Command.Click=\"ExecuteReReview\"")
@@ -14891,7 +14891,7 @@ internal static class Program
 		string policyGenerationSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Npc", "NpcRulerPolicyBehavior.Generation.cs"), Encoding.UTF8);
 		string policyManagementSource = File.ReadAllText(Path.Combine(repositoryRoot, "PolicySystem", "Core", "CustomPolicyBehavior.Management.cs"), Encoding.UTF8);
 		string terminalSource = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForgeTerminalBehavior.cs"), Encoding.UTF8);
-		string worldInboxPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "AnimusForgeWorldEventInboxPopup.xml"), Encoding.UTF8);
+		string worldInboxPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "content", "modules", "AF.Module.WorldEvents", "GUI", "Prefabs", "AnimusForgeWorldEventInboxPopup.xml"), Encoding.UTF8);
 		Check(terminalSource.Contains("WorldDiplomacyBehavior.ShowRoyalAnnouncementArchive(OpenCustomPolicyManagementView)")
 			&& worldInboxPrefab.Contains("Command.Click=\"ExecuteReReview\"")
 			&& worldInboxPrefab.Contains("IsVisible=\"@ShowSelectedRecordReReview\"")
