@@ -1,3 +1,40 @@
+## J15c FeatureBridges 已归位，完整验证与其余范围待授权（2026-09-26）
+
+状态：**`J15c_FEATUREBRIDGES_VERIFY / J15_PARTIAL_HOLD`**。完整目标仍为按计划完成 J15，不能以本片替代整个 J15。用户选定先做 FeatureBridges 最小片；开工 HEAD `a251799e`，意图 `3e6fb1ad`，产品/测试提交 **`7bc2ffbf`**。本条取代下方 J15b 停点；J15a/b 已验成果保持，其余 J15c 和最终 J15d 尚未闭合。
+
+### 实际变更与真实消费者
+
+- 唯一默认源从 `AnimusForge/ModuleData/FeatureBridges.json` 以 `R100` 迁至 `content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json:1–18`。checkout SHA256 前后均为 `10c573b461ec148ef8478a0d4269f73a7ca106f5a8c6a50c9d37facc4ff86896`；没有配置正文、schema、contract 或默认开关变化。
+- `content/content-map.json:391–395` 新增 Foundation.Runtime 条目，运行 target 仍为 `ModuleData/FeatureBridges.json`，无 LogicalName。总映射 77，原 76 项保持，七项 EmbeddedResource 不变；组装仍用既有 helper，未改部署/构建脚本。`Refactor/Runtime/FeatureBridgeRuntime.cs:226–263,267–344,351–415` 的一次性加载、缺失内建默认、非法配置全关及模块根查找原样；没有新增 Tick、I/O、轮询或反射。
+- `tools/BridgeBindingContractTests/validate_bridge_bindings.py:24,675` 与 `test_validate_bridge_bindings.py:34–47,195` 改读新仓库源；新增唯一映射/owner/旧源退出断言，运行隔离 fixture 的 `ModuleData` 目标不变。`tools/repository_source_inventory.py:108` 仅增加具名 Foundation.Runtime owner 根，未知 owner 和敏感 HOLD 仍保留。
+- 开工现有 Bridge validator 实际失败为 `source file AnimusForge/ModuleData/RuleBehaviorPrompts.json does not exist`。定位为 J15b 后 `docs/phase8/bridge-binding-manifest.json:784,793` 的两处当前源坐标遗漏；仅改为既有 Prompt content 源，不改历史报告、Bridge wiring 或正文，随后 validator 通过。
+- `tests/content/J15ContentContractTests/run.py:233–242,265–320,360–368,451–484` 增加本片固定 SHA/owner/source/target，并从历史 41 HOLD 派生当前 40 HOLD；J15a/b 原基线与断言未削弱。
+
+### 已执行验证与明确未执行项
+
+- 测试先红后绿：迁移前新增 J15 映射断言报 `content map entry count`，Bridge 新测试报 `0 != 1`，inventory 新 owner 报 `None != 'content'`；迁移接线后相应检查通过。
+- 直接调用既有 J15 runner 的五个无写入函数：映射/源字节、项目七资源、脚本接线、格式/引用、inventory/真实 overlay file-set 均 PASS，结果 **77 mappings / 40 holds / 11 overlay aliases**。未执行 runner 的 `main()`，不能称为完整投影或 GCCZ harness 通过。
+- Bridge validator PASS：**16 bindings / 12 wired / 4 declared-only / 12 configEnabled / 33 sourceFiles**。Bridge unittest 中 **15 个不创建临时文件的用例** PASS，包括新唯一源、当前清单、全关、非法字段/版本/ID及安全 gate 反例；不是整个套件已跑。
+- repository inventory **7 tests PASS**；定向暂存后实际索引 inventory `unknown_count=0`。代码地图仍绑定未改 J14 C# `e58f3558`，recorded / working-tree 各 **755** 锚点 PASS；`git diff --check` PASS。定位和静态证据不代替运行验收。
+- **本候选完整 J15 runner、真实合成投影、GCCZ harness、Bridge 进程隔离、Debug/Release 双 API + Bootstrap 六构建及新 DLL 审计均 NOT-RUN**：待明确清理/测试输出授权。不能借用 J15b 六构建结果标成本候选已验。
+
+### 剩余分类与接续门禁
+
+| 剩余范围 | 实际读写责任与保留决定 |
+| --- | --- |
+| CustomPrompts 30 项（普通 8、Policy 22） | `DuelSettings.cs:4358–4618,4970–5050` 与 `PolicySystem/Effects/PolicyEffectPromptService.cs:149–307,349–361,546–587` 真读写，分别归 Memory/Persona/Prompt/Kingdom/Weekly/Diplomacy/PolicySystem。待逐文件确认 curated 默认并批准源迁移/脚本接缝；运行实例、正文、缓存、缺省生成与隔离语义不改 |
+| PlayerExports 3139 项 | PlayerExportsStore 负责路径/文件层；MyBehavior、Knowledge、Persona、Kingdom、WorldEvents、ShoutUtils、VoiceMapper 负责业务，Onboarding 读取、Editor 写入，部署回写源。G0.3 尚缺具名数据/备份地点/恢复 hash/操作授权，不复制、搬移或去跟踪；curated 源必须先隔离回写 |
+| 旧 UnnamedNpcProfiles 6 项；根 VoiceMapping 1 项 | `ShoutUtils.cs:108–121` 不自动读旧文件、保存 helper 为空；`VoiceMapper.cs:322–343,388–415` 仅显式导入，初始化不自动读取外部 JSON；实际持久化在 MyBehavior save/导出。历史生成/用户内容继续 G0.3 HOLD，不能因无自动 reader 删除或改成自动加载 |
+| ONNX 5 项 | Knowledge 逻辑 owner，原 OnnxEmbeddingEngine / OnnxCrossEncoderReranker 加载。graph 内已核实含 `model.onnx_data` 文件名且 sidecar 存在，本地无 reranker 目录。来源/许可、模型+data+tokenizer/config 整体决定待 G0.4；不下载、不转 LFS、不入 ZIP |
+| AssetPackages/pack0.tpac；AssetSources 6 项 | 前者由 XihaiAction/SceneActions 消费，但内容/版权未闭合；后者为 Economy 场景金币设计源而非运行模型。待来源/许可和依赖核实及具名操作批准，不自动导入/生成素材包 |
+| GUI 33 项；异常 HTML 1 项 | 两项索引配置、25 张来源未确认 UI 图、五张旧/临时变体和一张生成 sheet；旧 diplomacy 图仍在 overlay 中。HTML 为诊断内容。逐项来源/消费者/atlas/隐私和处理方式未闭合，原位保留，不按名字删除 |
+
+现有 `deploy_module.ps1:172–220` 的已安装 CustomPrompts `/MIR` 与旧 Policy 替换并非“所有未知文件永远保留/缺省始终补齐”；改变需另批。PlayerExports 按较新时间优先，同时间 source=10、legacy-1.3=20、legacy-1.4=30、unified=100，成功后 `/E /XO` 回写源，不能直接指向不可变默认树。**原位 HOLD 不等于交付排除**：Stage 会复制 ONNX、旧源内容及 PlayerExports，Package 也不排除所有 HOLD。Xihai 全量 verifier 的历史 10/13 和三个失败继续保留，不属于本片已修复范围。
+
+下一步先取得精确生成目录授权，再跑本片完整门禁。四个既有构建目录（`bin/{Debug,Release}/single_module_artifacts`、`obj/single_module/{Debug,Release}`）只读预检均在仓内且无 reparse；`artifacts/j15-content/j15-contracts` 含测试 junction `powershell/project/linked-source`，已解析只指向同一 fixture 内 `powershell/real-source`，未清理。待批准测试临时根为仓内 `artifacts/j15-content/j15c-feature-bridges`，不得默认写系统 temp，执行前重新预检。此后必须逐类完成原 J15c 或获得明确范围调整，再做同候选 J15d；不把 HOLD 记 DONE。`.dotnet-cli-home/` 保留，无 Stage/Deploy/Package/push/外仓同步/游戏或玩家数据写入；LIVE 1.3/1.4、旧档、provider、Gauntlet、音频和帧性能均 NOT-RUN，未开始 J16/J17。
+
+## 以下为 J15b 历史完成证据
+
 ## J15b 其余已确认静态内容有限离线完成（2026-09-26）
 
 状态：**`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。用户明确要求按既有计划做到 J15b 结束；J15b 意图提交 `f54a8127`，产品/测试切片 **`04056ce7`**。本条取代下方 J15a 当前状态，但只完成已确认静态 JSON / GUI / XML / 语言批次，不启动 J15c/d，也不把整个 J15、实机或发布标为完成。
