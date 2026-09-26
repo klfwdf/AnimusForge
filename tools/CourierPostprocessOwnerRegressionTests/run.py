@@ -25,8 +25,14 @@ SIGNATURES = [
     'private static string StripCourierActionTags(',
     'private static bool HasPreprocessRuleHit(',
     'private sealed class CourierReplyGenerationRequest',
+    'private static InteractionCommitResult CreateUnconfirmedCourierCommit(',
+    'private sealed class CourierPromptRun',
+    'private CourierPromptRun BeginCourierPromptRun(',
+    'private bool IsCourierPromptRunCurrent(',
 ]
 LINKS = [
+    'Refactor/Modules/CoreDialogueContracts.cs',
+    'Refactor/Runtime/DuelOutcomeReceipt.cs',
     'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
     'CourierVisibleLetterSanitizer.cs', 'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs',
     'Refactor/Contracts/InteractionContracts.cs', 'Refactor/Contracts/LlmContracts.cs',
@@ -40,6 +46,8 @@ LINKS = [
 
 def extract():
     courier = ex.courier_source(None)
+    for part in ('CommitDispatch', 'PromptPreparation'):
+        courier += '\n' + ex.source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.' + part + '.cs', None)
     shout = ex.source('ShoutBehavior.cs', None)
     return {
         'METHODS': '\n\n'.join(ex.declaration(courier, signature) for signature in SIGNATURES),
@@ -97,6 +105,8 @@ def main():
         assert harness.count('@@' + name + '@@') == 1
         harness = harness.replace('@@' + name + '@@', blocks[name])
     (output / 'Program.cs').write_text(harness, encoding='utf-8')
+    receipt = ex.declaration(ex.source('src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs', None), 'public sealed class InteractionCommitResult')
+    (output / 'Receipt.cs').write_text('using AnimusForge.Refactor.Contracts; namespace AnimusForge.Refactor.Runtime;\n' + receipt, encoding='utf-8')
     # Only the scheduler deadline is accelerated; source and instrumentation are fingerprinted separately.
     assert blocks['PARTIAL'].count('Task.Delay(30000)') == 1
     instrumented = blocks['PARTIAL'].replace('Task.Delay(30000)', 'Task.Delay(180)')

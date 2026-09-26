@@ -38,142 +38,53 @@ namespace AnimusForge;
 
 public sealed partial class CourierDeliveryBehavior
 {
+	private readonly HashSet<CourierSession> _activeCourierReturns = new HashSet<CourierSession>();
 	private void CompleteReturn(CourierSession session, MobileParty courier, Hero recipient)
 	{
-		if (session == null || courier == null)
+		if (session == null || courier == null || IsTerminalStage(session) || !_activeCourierReturns.Add(session))
 		{
 			return;
 		}
-		Log("return arrived session=" + session.Id + " deliveryApplied=" + session.DeliveryApplied + " replyGenerated=" + session.ReplyGenerated + " postConsumed=" + session.PostprocessConsumed);
-		if (session.DeliveryApplied && !session.PostprocessConsumed && !string.IsNullOrWhiteSpace(session.ReplyPostprocessedText) && recipient != null)
+		try
 		{
-			string text = session.ReplyPostprocessedText;
-			try
+			Log("return arrived session=" + session.Id + " deliveryApplied=" + session.DeliveryApplied + " replyGenerated=" + session.ReplyGenerated + " postConsumed=" + session.PostprocessConsumed);
+			if (session.DeliveryApplied && !session.PostprocessConsumed && !string.IsNullOrWhiteSpace(session.ReplyPostprocessedText) && recipient != null)
 			{
-				TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
-				if (!string.IsNullOrWhiteSpace(proposalFailure))
+				CommitGeneratedReplyAtRecipient(session, recipient);
+			}
+			if (ReturnCourierContentsToPlayer(session, courier))
+				RecordModuleCourierStep(session, CoreCourierAcceptedSteps.ContentsReturned);
+			else FailModuleCourierSession(session, "courier.contents_return_unconfirmed");
+			if (session.DeliveryApplied && !session.ReplyPopupShown && !string.IsNullOrWhiteSpace(session.ReplyText))
+			{
+				session.ReplyPopupShown = true;
+				string reply = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(session.ReplyPostprocessedText ?? session.ReplyText));
+				string senderName = recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC";
+				string senderHeroId = SafeHeroId(recipient);
+				if (AddCourierLetterToPlayerInventory(session, recipient, senderName, reply, isReply: true))
+					RecordModuleCourierStep(session, CoreCourierAcceptedSteps.ReplyDelivered, reply);
+				else FailModuleCourierSession(session, "courier.reply_delivery_unconfirmed");
+				EnqueueMainThreadActionForGeneration(SaveRuntimeGuard.CaptureGeneration(), () =>
 				{
-					Log("kingdom agenda custom policy fallback not queued session=" + session.Id + " reason=" + proposalFailure);
-				}
+					ShowCourierReplyNotice(senderHeroId, senderName, reply);
+				}, "reply_notice");
 			}
-			catch (Exception ex)
+			else if (!session.DeliveryApplied)
 			{
-				Log("apply kingdom agenda custom policy fallback tag failed session=" + session.Id + " error=" + ex.Message);
+				InformationManager.DisplayMessage(new InformationMessage("信使队已返回，未交付的信件与物资已退还。", Colors.Yellow));
 			}
-			try
+			else
 			{
-				VoteDealBehavior.ProcessAgendaTagsDispatch(recipient, ref text);
-			DiplomacyBehavior.ProcessDiplomacyTagsDispatch(recipient, ref text);
+				InformationManager.DisplayMessage(new InformationMessage("信使队已返回并解散。", Colors.Green));
 			}
-			catch (Exception ex)
-			{
-				Log("apply vote deal tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			try
-			{
-				WorldMapPartyCommandBehavior.ProcessWorldMapOrderTagsDispatch(recipient, ref text);
-			}
-			catch (Exception ex)
-			{
-				Log("apply world map tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			try
-			{
-				if (TeamModuleServices.Gathering.TryApplyNobleGatheringTagsForExternal(recipient, ref text, out var nobleFacts, out var nobleNotifications))
-				{
-						foreach (string fact in nobleFacts ?? new List<string>())
-						{
-							MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
-						}
-						foreach (string note in nobleNotifications ?? new List<string>())
-						{
-							if (!string.IsNullOrWhiteSpace(note))
-							{
-									InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
-							}
-						}
-				}
-			}
-			catch (Exception ex)
-			{
-				Log("apply noble gathering tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			try
-			{
-				if (MyBehavior.TryApplyPartyTransferTagsForExternal(recipient, recipient.CharacterObject, -1, ref text, out var facts, out var notifications))
-				{
-					foreach (string fact in facts ?? new List<string>())
-					{
-						MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
-					}
-					foreach (string note in notifications ?? new List<string>())
-					{
-						InformationManager.DisplayMessage(new InformationMessage(note, Colors.Green));
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				Log("apply party transfer tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			try
-			{
-				bool rewardBeforeHasVassalage = ContainsVassalageActionTag(text);
-				bool rewardBeforeHasKingdomAnnex = ContainsKingdomAnnexActionTag(text);
-				Log("ApplyRewardTags start chain=courier session=" + session.Id + " containsVASSALAGE=" + rewardBeforeHasVassalage + " containsKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex);
-				RewardSystemBehavior.RpItemIntroductionContext rpItemIntroductionContext = MayContainGeneratedRpItemReward(text)
-					? CreateCourierRpItemIntroductionContext(session, recipient, text)
-					: null;
-				RewardSystemBehavior.Instance?.ApplyRewardTags(recipient, Hero.MainHero, ref text, rpItemIntroductionContext);
-				Log("ApplyRewardTags done chain=courier session=" + session.Id + " beforeVASSALAGE=" + rewardBeforeHasVassalage + " afterVASSALAGE=" + ContainsVassalageActionTag(text) + " beforeKINGDOM_ANNEX=" + rewardBeforeHasKingdomAnnex + " afterKINGDOM_ANNEX=" + ContainsKingdomAnnexActionTag(text));
-			}
-			catch (Exception ex)
-			{
-				Log("apply reward tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			try
-			{
-				VanillaIssueOfferBridge.ApplyIssueOfferTags(recipient, ref text);
-			}
-			catch (Exception ex)
-			{
-				Log("apply vanilla issue tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			try
-			{
-				RomanceSystemBehavior.Instance?.ApplyMarriageTags(recipient, Hero.MainHero, ref text, runPostprocessIfMissing: false);
-			}
-			catch (Exception ex)
-			{
-				Log("apply marriage tags failed session=" + session.Id + " error=" + ex.Message);
-			}
-			session.ReplyPostprocessedText = text;
-			session.PostprocessConsumed = true;
-			PersistCourierReplyToHistories(session, recipient, text);
-			Log("postprocess consumed session=" + session.Id + " remainingLen=" + (text ?? "").Length);
+			CompleteAndDestroyCourier(session, courier);
 		}
-		ReturnCourierContentsToPlayer(session, courier);
-		if (session.DeliveryApplied && !session.ReplyPopupShown && !string.IsNullOrWhiteSpace(session.ReplyText))
+		catch
 		{
-			session.ReplyPopupShown = true;
-			string reply = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(session.ReplyPostprocessedText ?? session.ReplyText));
-			string senderName = recipient?.Name?.ToString() ?? session.RecipientName ?? "NPC";
-			string senderHeroId = SafeHeroId(recipient);
-			AddCourierLetterToPlayerInventory(session, recipient, senderName, reply, isReply: true);
-			MainThreadActions.Enqueue(() =>
-			{
-				ShowCourierReplyNotice(senderHeroId, senderName, reply);
-			});
+			FailModuleCourierSession(session, "courier.return_unconfirmed");
+			throw;
 		}
-		else if (!session.DeliveryApplied)
-		{
-			InformationManager.DisplayMessage(new InformationMessage("信使队已返回，未交付的信件与物资已退还。", Colors.Yellow));
-		}
-		else
-		{
-			InformationManager.DisplayMessage(new InformationMessage("信使队已返回并解散。", Colors.Green));
-		}
-		CompleteAndDestroyCourier(session, courier);
+		finally { _activeCourierReturns.Remove(session); }
 	}
 
 	private static void ShowCourierReplyNotice(string senderHeroId, string senderName, string replyText)
@@ -415,12 +326,12 @@ public sealed partial class CourierDeliveryBehavior
 		}
 	}
 
-	private void ReturnCourierContentsToPlayer(CourierSession session, MobileParty courier)
+	private bool ReturnCourierContentsToPlayer(CourierSession session, MobileParty courier)
 	{
 		PartyBase playerParty = MobileParty.MainParty?.Party ?? PartyBase.MainParty;
 		if (playerParty == null || courier == null)
 		{
-			return;
+			return false;
 		}
 		MoveWholeMemberRoster(courier.Party, playerParty);
 		MoveWholePrisonRoster(courier.Party, playerParty);
@@ -431,6 +342,10 @@ public sealed partial class CourierDeliveryBehavior
 			Log("refunded escrow gold session=" + session.Id + " amount=" + session.EscrowGold);
 			session.EscrowGold = 0;
 		}
+		if (courier.MemberRoster.TotalManCount != 0 || courier.PrisonRoster.TotalManCount != 0) return false;
+		for (int i = 0; i < courier.ItemRoster.Count; i++)
+			if (courier.ItemRoster.GetElementCopyAtIndex(i).Amount > 0) return false;
+		return session.DeliveryApplied || session.EscrowGold == 0;
 	}
 
 	private void OnMobilePartyDestroyed(MobileParty destroyedParty, PartyBase destroyerParty)
@@ -458,6 +373,7 @@ public sealed partial class CourierDeliveryBehavior
 				HandleInboundCourierDestroyed(session, destroyedParty, destroyerName);
 				return;
 			}
+			FailModuleCourierSession(session, "courier.transport_destroyed", CoreCourierTransportOutcome.Destroyed);
 			DisplayCourierDestroyedStatus(session, "歼灭者：" + destroyerName);
 			TryMoveHeroLossesToDestroyer(session, destroyerParty);
 			string fact = "[AFEF玩家行为补充] " + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家") + "通过信使寄出的信使队在途中被" + destroyerName + "歼灭。";
@@ -529,6 +445,7 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			return;
 		}
+		bool cleanupConfirmed = false;
 		session.Stage = CourierStage.Completed.ToString();
 		lock (_sessionLock)
 		{
@@ -547,11 +464,13 @@ public sealed partial class CourierDeliveryBehavior
 				}
 				DestroyPartyAction.Apply(null, courier);
 			}
+			cleanupConfirmed = courier != null && !courier.IsActive;
 		}
 		catch (Exception ex)
 		{
 			Log("destroy completed courier failed session=" + session.Id + " error=" + ex.Message);
 		}
+		CompleteModuleCourierTransport(session, cleanupConfirmed);
 		Log("session completed id=" + session.Id);
 	}
 
@@ -567,6 +486,7 @@ public sealed partial class CourierDeliveryBehavior
 			HandleInboundCourierMissing(session);
 			return;
 		}
+		FailModuleCourierSession(session, "courier.transport_missing", CoreCourierTransportOutcome.Missing);
 		DisplayCourierDestroyedStatus(session, "信使队伍已从大地图消失。");
 		Hero recipient = ResolveRecipient(session);
 		MyBehavior.AppendExternalDialogueHistory(recipient, null, null, "[AFEF玩家行为补充] 玩家派出的信使队失去踪迹，信件与随信物资未能确认送达。");

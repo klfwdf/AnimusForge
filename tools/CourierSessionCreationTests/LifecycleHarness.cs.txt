@@ -1,0 +1,183 @@
+// Game/domain dependencies are fixtures. Arrival, finalization, domain reservation/history,
+// return, letter inventory acknowledgement, missing/destroy and receipt owners are source-linked.
+static partial class Program
+{
+    static void LifecycleCases()
+    {
+        foreach (CourierPayloadMode mode in Enum.GetValues<CourierPayloadMode>())
+        {
+            var owner=CourierDeliveryBehavior.NewOwner();owner.Open("lifecycle");owner.SetMode(mode);owner.ResetLifecycle();
+            using var client=Client();var op=client.SubmitCourier(client.CaptureCourierContextTicket(),"life","letter");
+            owner.PrepareReply();
+            Check(op.Snapshot.Courier.Has(CoreCourierAcceptedSteps.ReplyPrepared)&&op.Snapshot.Reply==""
+                &&!op.Completion.IsCompleted&&Life.Actions==0&&Life.History.Count==0,"preflight-no-effects-or-body-"+mode);
+            Life.PayloadReenter=()=>owner.Arrive();Life.Reenter=()=>owner.Arrive();owner.Arrive();owner.Arrive();
+            Check(Life.Payloads==1&&Life.Actions==1&&Life.History.Count==2,"arrival-and-action-reserved-before-reentry-"+mode);
+            Check(op.Snapshot.Courier.Has(CoreCourierAcceptedSteps.Payload|CoreCourierAcceptedSteps.Actions|CoreCourierAcceptedSteps.ReplyHistory)
+                &&op.Snapshot.Reply==""&&!op.Completion.IsCompleted,"arrival-history-not-transport-completion-"+mode);
+            Check(Life.History[0].player?.Contains("【来信】")==true&&Life.History[0].reply==null&&Life.History[0].fact.StartsWith("[AFEF")
+                &&Life.History[1].player==null&&Life.History[1].reply=="【回信】reply"&&Life.History[1].fact.StartsWith("[AFEF NPC"),"history-roles-facts-clean-tags-"+mode);
+            owner.ReturnNow();
+            Check(op.Completion.IsCompleted&&op.Snapshot.State==CoreDialogueState.Completed&&op.Snapshot.Reply=="reply"
+                &&op.Snapshot.Courier.Complete&&owner.LetterCount==1&&Life.Letters==1,"only-letter-and-cleanup-complete-"+mode);
+            owner.Retire();Released(owner,"lifecycle-"+mode);
+        }
+        foreach(string fault in new[]{"history","action","payload","inventory","record","cleanup","contents","destroyed","missing","recipient","generation","retire","replacement"})
+        {
+            var owner=CourierDeliveryBehavior.NewOwner();owner.Open(fault);owner.SetMode(CourierPayloadMode.Give);owner.ResetLifecycle();
+            using var client=Client();var op=client.SubmitCourier(client.CaptureCourierContextTicket(),fault,"letter");
+            owner.PrepareReply();
+            if(fault=="history")Life.FailHistory=true;
+            if(fault=="action")Life.FailAction=true;
+            if(fault=="payload")Life.FailPayload=true;
+            if(fault=="recipient")owner.KillRecipient();
+            owner.Arrive();
+            if(fault=="inventory")Life.FailInventory=true;
+            if(fault=="record")Life.FailRecord=true;
+            if(fault=="contents")Life.FailContents=true;
+            if(fault=="cleanup")CourierFixture.FailCleanup=true;
+            if(fault=="destroyed")owner.DestroyNow();
+            else if(fault=="missing")owner.EndTransport(true);
+            else if(fault=="generation"){SaveRuntimeGuard.Generation++;owner.CheckIdentity();}
+            else if(fault=="retire")owner.Retire();
+            else if(fault=="replacement")owner.ReplaceTransport();
+            else owner.ReturnNow();
+            Check(op.Completion.IsCompleted&&op.Snapshot.State==CoreDialogueState.Failed,"terminal-failure-settled-"+fault);
+            if(fault=="destroyed"||fault=="missing")
+                Check(op.Snapshot.Courier.Has(CoreCourierAcceptedSteps.Actions|CoreCourierAcceptedSteps.ReplyHistory)
+                    &&op.Snapshot.Reply==""&&op.Snapshot.Courier.Transport==(fault=="destroyed"?CoreCourierTransportOutcome.Destroyed:CoreCourierTransportOutcome.Missing),"partial-confirmed-effects-survive-return-loss-"+fault);
+            if(fault=="cleanup")Check(op.Snapshot.Reply=="reply"&&op.Snapshot.Courier.Has(CoreCourierAcceptedSteps.ReplyDelivered)
+                &&op.Snapshot.Courier.Transport==CoreCourierTransportOutcome.Unconfirmed,"delivered-reply-survives-cleanup-failure");
+            if(fault=="record"||fault=="inventory")Check(op.Snapshot.Reply==""&&!op.Snapshot.Courier.Has(CoreCourierAcceptedSteps.ReplyDelivered),"no-body-without-inventory-and-record-"+fault);
+            if(fault=="action")Check(Life.Actions==1,"partial-action-exception-not-replayed-on-return");
+            owner.Retire();Released(owner,"fault-"+fault);
+        }
+        var stale=CourierDeliveryBehavior.NewOwner();stale.Open("old-response");stale.ResetLifecycle();
+        using(var client=Client())
+        {
+            var op=client.SubmitCourier(client.CaptureCourierContextTicket(),"old-response","letter");
+            stale.CheckOldFinalizer();
+            Check(!op.Snapshot.Courier.Has(CoreCourierAcceptedSteps.ReplyPrepared)&&!stale.HasReply,"old-run-response-cannot-write-new-run");
+            stale.Retire();Released(stale,"old-response");
+        }
+    }
+}
+static class Life
+{
+    internal static int Actions,Payloads,Letters;
+    internal static bool FailHistory,FailAction,FailPayload,FailInventory,FailRecord,FailContents;
+    internal static Action Reenter,PayloadReenter;
+    internal static List<(string player,string reply,string fact)> History=new();
+    internal static void Reset(){Actions=Payloads=Letters=0;FailHistory=FailAction=FailPayload=FailInventory=FailRecord=FailContents=CourierFixture.FailCleanup=false;History.Clear();Reenter=PayloadReenter=null;}
+}
+sealed partial class Hero { public Clan Clan=new(); }
+sealed class Clan { public int Tier; }
+sealed class ItemObject { public string StringId; public ObjectId Id=new(); }
+sealed class ObjectId { public uint InternalValue; }
+sealed class EquipmentElement { public ItemObject Item; }
+sealed class ItemRosterElement { public EquipmentElement EquipmentElement; public int Amount; }
+sealed class ItemRoster
+{
+    internal List<ItemRosterElement> Entries=new(); public int Count=>Entries.Count;
+    public ItemRosterElement GetElementCopyAtIndex(int i)=>Entries[i];
+}
+sealed class PartyBase { public static PartyBase MainParty; public ItemRoster ItemRoster=new(); public TroopRoster MemberRoster=new(),PrisonRoster=new(); public string Name; }
+sealed partial class MobileParty
+{
+    public string StringId="courier"; public TroopRoster PrisonRoster=new(); public ItemRoster ItemRoster=new();
+    private PartyBase _party;
+    public PartyBase Party=>_party??=new(){MemberRoster=MemberRoster,PrisonRoster=PrisonRoster,ItemRoster=ItemRoster};
+}
+static class GiveGoldAction { public static void ApplyBetweenCharacters(Hero a,Hero b,int n,bool show){} }
+sealed class HistoryReceipt { public bool HistoryWritten; }
+static partial class MyBehavior
+{
+    public static string BuildPlayerPublicDisplayNameForExternal()=>"player";
+    public static HistoryReceipt CommitExternalDialogueHistory(string id,bool generic,string name,string player,string reply,string fact)
+    {Life.History.Add((player,reply,fact));return new(){HistoryWritten=!Life.FailHistory};}
+    public static bool TryApplyPartyTransferTagsForExternal(Hero h,CharacterObject c,int index,ref string text,out List<string> facts,out List<string> notifications)
+    {facts=notifications=null;return false;}
+}
+static partial class ShoutBehavior { public static void RecordNativeConversationNpcLineForExternal(Hero h,CharacterObject c,string n,string line){} }
+static class PlayerNotorietyBehavior { public static void NoteCourierReplyForExternal(Hero h){} }
+static class TeamModuleServices
+{
+    internal static PolicyStub Policy=new();internal static GatheringStub Gathering=new();
+    internal sealed class PolicyStub { public bool TryProcessAcceptedAgendaTag(Hero h,string channel,string letter,string reply,ref string text,out string error){error=null;return false;} }
+    internal sealed class GatheringStub { public bool TryApplyNobleGatheringTagsForExternal(Hero h,ref string text,out List<string> facts,out List<string> notes){facts=notes=null;return false;} }
+}
+static class VoteDealBehavior { public static void ProcessAgendaTagsDispatch(Hero h,ref string t){} }
+static class DiplomacyBehavior { public static void ProcessDiplomacyTagsDispatch(Hero h,ref string t){} }
+static class WorldMapPartyCommandBehavior { public static void ProcessWorldMapOrderTagsDispatch(Hero h,ref string t){} }
+static class VanillaIssueOfferBridge { public static void ApplyIssueOfferTags(Hero h,ref string t){} }
+sealed class RomanceSystemBehavior { public static RomanceSystemBehavior Instance=new();public void ApplyMarriageTags(Hero h,Hero p,ref string text,bool runPostprocessIfMissing){} }
+sealed class RewardSystemBehavior
+{
+    public static RewardSystemBehavior Instance=new();public sealed class RpItemIntroductionContext{}
+    public void ApplyRewardTags(Hero h,Hero p,ref string text,RpItemIntroductionContext context)
+    {if(!text.Contains("[ACTION:TEST]"))return;Life.Actions++;var callback=Life.Reenter;Life.Reenter=null;callback?.Invoke();if(Life.FailAction)throw new Exception("fixture partial action");text=text.Replace("[ACTION:TEST]","");}
+    public static int GenerateNamedInventoryItemToRosterForExternal(ItemRoster roster,string name,int count,out string id,out string itemName,string source,string key,string template)
+    {id="letter";itemName=name;Life.Letters++;if(Life.FailInventory)return 0;roster.Entries.Add(new(){Amount=1,EquipmentElement=new(){Item=new(){StringId=id}}});return 1;}
+    public static bool TryPrimeGeneratedInventoryItemForExternal(string id,string name,string template,uint objectId,out string normalizedId,out string normalizedTemplate,out uint normalizedObjectId,string reason)
+    {if(Life.FailRecord&&reason=="courier_letter_remember")throw new Exception("fixture record failed");normalizedId=id;normalizedTemplate=template;normalizedObjectId=objectId;return true;}
+}
+enum InteractionStatus { Succeeded,NonRetryableFailure }
+sealed class LegacyChannelActionCommitResult { public bool HasActions; public Execution Execution=new(); }
+sealed class Execution { public InteractionStatus Status; }
+sealed class LegacyChannelActionCommitter { public LegacyChannelActionCommitResult Prepare(string text)=>new(){HasActions=(text??"").Contains("[ACTION:")}; }
+static class LegacyActionTagParser { public static string RemoveProtocolTags(string text,Func<string,bool> predicate)=>System.Text.RegularExpressions.Regex.Replace(text??"",@"\[ACTION:[^\]]*\]",""); }
+static class AnimusForgeTextInputSanitizer { public const int MaxCourierLetterChars=16000; public static string SanitizeMultiline(string t,int max)=>t??""; }
+static class CourierVisibleLetterSanitizer { public static string Clean(string t)=>t??""; }
+sealed partial class CourierDeliveryBehavior
+{
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<CourierSession,CourierPromptRun> _courierPromptRuns=new();
+    private readonly HashSet<CourierSession> _activeCourierReturns=new();
+    private readonly HashSet<CourierSession> _activeCourierDeliveries=new();
+    private Dictionary<string,CourierLetterInventoryRecord> _courierLetterInventoryRecords;
+    private Dictionary<string,string> _courierLetterInventoryStorage;
+    private const int CourierLetterVelvetClanTier=3;
+    private const string CourierLetterVelvetTemplateItemId="velvet",CourierLetterLinenTemplateItemId="linen";
+    private Hero LifeRecipient=new(){Name="recipient"};
+    private MobileParty LifeParty=new();
+    private CourierSession LifeSession;
+    private sealed partial class CourierSession { public bool DeliveryApplied,ReplyGenerated,ReplyGenerationStarted,ReplyPopupShown,PostprocessConsumed;public string LetterText="letter",DeliveryFactText,ReplyText,ReplyPostprocessedText;public int EscrowGold; }
+    internal void ResetLifecycle(){Life.Reset();PartyBase.MainParty=MobileParty.MainParty.Party;LifeParty.MemberRoster.Entries.Add(new(){Number=1});}
+    private static bool IsTerminalStage(CourierSession s)=>s.Stage=="Completed"||s.Stage=="Destroyed";
+    private CourierSession Current=>LifeSession??=_sessions.Values.Single();
+    internal int LetterCount=>_courierLetterInventoryRecords?.Count??0;
+    internal bool HasReply=>Current.ReplyGenerated;
+    private CourierReplyGenerationRequest PrepareRequest()
+    {Current.ReplyGenerationStarted=true;return new(){SessionId=Current.Id,RuntimeGeneration=SaveRuntimeGuard.Generation,SourceRun=BeginCourierPromptRun(Current,SaveRuntimeGuard.Generation)};}
+    internal void PrepareReply()=>FinalizeCourierReplyGenerationOnMainThread(PrepareRequest(),"reply[ACTION:TEST]","reply[ACTION:TEST]","");
+    internal void CheckOldFinalizer(){var old=PrepareRequest();PrepareRequest();FinalizeCourierReplyGenerationOnMainThread(old,"old","old","");}
+    internal void Arrive()=>DeliverToRecipient(Current,LifeParty,LifeRecipient);
+    internal void ReturnNow()=>CompleteReturn(Current,LifeParty,LifeRecipient);
+    internal void DestroyNow(){Current.CourierPartyId=LifeParty.StringId;OnMobilePartyDestroyed(LifeParty,null);}
+    internal void KillRecipient()=>LifeRecipient.IsDead=true;
+    internal void CheckIdentity()=>CheckModuleCourierSessionIdentity(Current);
+    internal void ReplaceTransport(){var old=Current;_sessions[old.Id]=new(){Id=old.Id};CheckModuleCourierSessionIdentity(_sessions[old.Id]);}
+    private void ApplyDeliveryPayload(CourierSession s,MobileParty p,Hero h){Life.Payloads++;var callback=Life.PayloadReenter;Life.PayloadReenter=null;callback?.Invoke();foreach(var e in s.Entries)e.Delivered=!Life.FailPayload;}
+    private string BuildDeliveryFactText(CourierSession s,bool delivered,Hero h,bool commitPlayerCraftInspection)=>"[AFEF玩家行为补充] letter delivered";
+    private void CommitGeneratedReplyAtRecipient(CourierSession s,Hero h)=>CommitGeneratedReplyActionsAtRecipientCore(s,h);
+    private void ShowCourierReplyWaitPopupAndPause(CourierSession s,Hero h){}
+    private void MaintainReplyWaitAtRecipient(CourierSession s,MobileParty p,Hero h){}
+    private void RouteToSender(CourierSession s,MobileParty p){}
+    private void ProcessSessionById(string id,string reason){}
+    private void HandleInboundCourierDestroyed(CourierSession s,MobileParty p,string n){}
+    private void TryMoveHeroLossesToDestroyer(CourierSession s,PartyBase p){}
+    private static void ShowCourierReplyNotice(string id,string name,string text){}
+    private static void EnqueueMainThreadActionForGeneration(long g,Action a,string reason){MainThreadActions.Enqueue(()=>{if(SaveRuntimeGuard.IsCurrentGeneration(g))a();});}
+    private static string SafeHeroId(Hero h)=>h?.Name??"";
+    private static string StripCourierActionTags(string t)=>LegacyActionTagParser.RemoveProtocolTags(t,_=>true);
+    private static string CleanNpcReply(string t)=>t??"";
+    private static bool ContainsVassalageActionTag(string t)=>false;
+    private static bool ContainsKingdomAnnexActionTag(string t)=>false;
+    private static bool MayContainGeneratedRpItemReward(string t)=>false;
+    private RewardSystemBehavior.RpItemIntroductionContext CreateCourierRpItemIntroductionContext(CourierSession s,Hero h,string t)=>null;
+    private static void MoveWholeMemberRoster(PartyBase from,PartyBase to){if(Life.FailContents)return;to.MemberRoster.Entries.AddRange(from.MemberRoster.Entries);from.MemberRoster.Entries.Clear();}
+    private static void MoveWholePrisonRoster(PartyBase from,PartyBase to){to.PrisonRoster.Entries.AddRange(from.PrisonRoster.Entries);from.PrisonRoster.Entries.Clear();}
+    private static void MoveWholeItemRoster(ItemRoster from,ItemRoster to){to.Entries.AddRange(from.Entries);from.Entries.Clear();}
+    private static string BuildCourierLetterInventoryTitle(string name,bool reply)=>name+" letter";
+    private static bool TrySplitCourierLetterInventoryDisplayName(string name,out string title,out string body){title=name;body="";return false;}
+    private static int GetCourierInventoryDayIndex()=>1;
+}

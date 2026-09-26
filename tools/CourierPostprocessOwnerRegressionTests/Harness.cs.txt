@@ -4,7 +4,10 @@ using System.Text.RegularExpressions;
 using AnimusForge;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
+using AnimusForge.Refactor.Runtime;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Library;
 
 namespace TaleWorlds.CampaignSystem
 {
@@ -56,6 +59,13 @@ namespace AnimusForge
         private static readonly string[] CourierExcludedRuleIds = { "scene_only" };
         private static readonly ConcurrentQueue<Action> MainThreadActions = new();
         internal readonly Dictionary<string, CourierSession> Sessions = new();
+        private readonly ConditionalWeakTable<CourierSession, CourierPromptRun> _courierPromptRuns = new();
+        internal CoreCourierAcceptedSteps Observed;
+        internal string Failure;
+        private void RecordModuleCourierStep(CourierSession s, CoreCourierAcceptedSteps step) => Observed |= step;
+        private void FailModuleCourierSession(CourierSession s, string reason) => Failure = reason;
+        internal void Restart(CourierSession s) => BeginCourierPromptRun(s, SaveRuntimeGuard.Generation);
+        internal InteractionCommitResult Commit(InteractionEnvelope e, Func<InteractionCommitResult> commit) => CommitCourierDetachedReply(e, commit);
         internal int BuilderCalls;
         private CourierReplyGenerationRequest BuildCourierReplyGenerationRequestOnMainThread(CourierSession session, Hero hero, long generation)
         { BuilderCalls++; throw new Exception("prepared capture must not rebuild the request"); }
@@ -75,6 +85,7 @@ namespace AnimusForge
             return CapturePreparedCourierReplyEnvelope(new CourierReplyGenerationRequest
             {
                 SessionId = id, RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(), RecipientHeroId = recipient.StringId,
+                SourceRun = BeginCourierPromptRun(Sessions[id], SaveRuntimeGuard.Generation),
                 RecipientName = recipient.Name.ToString(), LetterText = letter, HistoryText = history, Extras = extras,
                 EntityPostprocessContext = "entity:" + id, SelectedRuleHits = hits?.ToList() ?? new List<string>(), ExtraFact = "fact:" + id
             }, recipient, prompt);
@@ -287,6 +298,8 @@ public static class Program
             case "generation": SaveRuntimeGuard.Generation++; break;
             case "owner": CourierDeliveryBehavior.Instance = new CourierDeliveryBehavior(); break;
             case "session": Host.Sessions.Remove(Session.Id); break;
+            case "same-session-instance": Host.Sessions[Session.Id] = new CourierSession { Id=Session.Id, Recipient=Session.Recipient }; break;
+            case "new-run": Host.Restart(Session); break;
             case "terminal": Session.Terminal = true; break;
             case "not-started": Session.ReplyGenerationStarted = false; break;
             case "already-generated": Session.ReplyGenerated = true; break;
@@ -353,12 +366,25 @@ public static class Program
         try { Reset(); action(); passed++; Console.WriteLine("PASS " + name); }
         catch (Exception exception) { failed++; Console.WriteLine("FAIL " + name + ": " + exception.Message); }
     }
+    private static void CommitReceipt()
+    {
+        var request=Request();int calls=0;
+        var result=Host.Commit(request.Envelope,()=>{calls++;return new InteractionCommitResult(InteractionStatus.Succeeded,true,false,"");});
+        Check(calls==1&&result.HistoryWritten&&Host.Observed==(CoreCourierAcceptedSteps.Actions|CoreCourierAcceptedSteps.ReplyHistory)&&Host.Failure==null,"no-action success/history receipt not observed");
+        Host.Observed=CoreCourierAcceptedSteps.None;
+        Host.Commit(request.Envelope,()=>new InteractionCommitResult(InteractionStatus.NonRetryableFailure,true,true,"partial"));
+        Check(Host.Observed==CoreCourierAcceptedSteps.ReplyHistory&&Host.Failure!=null,"partial history lost or failed actions marked accepted");
+        Mutate("same-session-instance");bool rejected=false;
+        try { Host.Commit(request.Envelope,()=>{calls++;return result;}); } catch(OperationCanceledException){rejected=true;}
+        Check(rejected&&calls==1,"replaced source reached detached commit");
+    }
     public static int Main()
     {
+        Case("detached-commit-authoritative-receipt-source", CommitReceipt);
         Case("prepared-exact-main-prompt-no-rebuild", ExactPrompt); Case("owner-real-input-reply-rules-5000", OwnerMapping);
         Case("raw-evidence-visible-cleanup", RawEvidenceAndVisibleCleanup); Case("full-valid-owner-pipeline", FullValidOwnerPipeline);
         foreach (string raw in new[] { "", "无回信", "[ACTION:GIVE_GOLD:999]", "（smiles）", "（API请求失败：fixture）" }) Case("reject-invalid-main-" + raw, () => InvalidVisibleCannotCommit(raw)); Case("nested-and-other-protocol-visible-cleanup", NestedVisibleTags); Case("normalize-before-parser-once", NormalizedOnly); Case("unbound-sync-and-async-zero-actions", Unbound);
-        foreach (string phase in new[] { "prepare", "complete" }) foreach (string kind in new[] { "generation", "owner", "session", "terminal", "not-started", "already-generated", "dead", "target-id" }) Case(phase + "-reject-" + kind, () => Stale(phase, kind));
+        foreach (string phase in new[] { "prepare", "complete" }) foreach (string kind in new[] { "generation", "owner", "session", "same-session-instance", "new-run", "terminal", "not-started", "already-generated", "dead", "target-id" }) Case(phase + "-reject-" + kind, () => Stale(phase, kind));
         Case("complete-reject-same-id-instance", () => Stale("complete", "same-id-instance"));
         Case("prepare-cancel-queued", () => CancelQueued("prepare")); Case("complete-cancel-queued", () => CancelQueued("complete"));
         Case("phase-timeout-late-callback", TimeoutLateCallback); Case("phase-duplicate-callback", DuplicateCallback); Case("phase-cancel-after-start-no-fake-rollback", CancelAfterStart);

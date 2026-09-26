@@ -13,7 +13,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet', required=True)
     parser.add_argument('--ref')
-    parser.add_argument('--mutate', choices=['ignore-revision', 'ignore-generation', 'ignore-owner', 'ignore-client', 'ignore-ticket-capacity', 'ignore-stock', 'ignore-cancel', 'ignore-operation-capacity', 'release-undrained'])
+    parser.add_argument('--lifecycle', action='store_true')
+    parser.add_argument('--mutate', choices=['ignore-revision', 'ignore-generation', 'ignore-owner', 'ignore-client', 'ignore-ticket-capacity', 'ignore-stock', 'ignore-cancel', 'ignore-operation-capacity', 'release-undrained', 'ignore-completion-receipts', 'late-action-claim', 'ignore-history-receipt', 'ignore-letter-record', 'ignore-source-run'])
     args = parser.parse_args()
     spec = importlib.util.spec_from_file_location('extract', ROOT / 'tools/ChannelCutoverBoundaryTests/run.py')
     extract = importlib.util.module_from_spec(spec)
@@ -70,11 +71,42 @@ def main():
         declarations.append(module[module.index('{') + 1:module.rfind('}')])
         declarations.append(extract.declaration(read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs'),
                                                'private async Task<T> RunCourierOwnerPhaseAsync<T>('))
-    output = HERE / '.generated' / ('admission-baseline' if args.ref else 'admission-' + (args.mutate or 'current'))
+        delivery = read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs')
+        declarations.extend(extract.declaration(delivery, signature) for signature in
+                            ('private void CompleteAndDestroyCourier(', 'private void HandleCourierMissing('))
+        declarations.append(extract.declaration(read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs'),
+                                               'private CourierSession GetSessionById('))
+    if args.lifecycle:
+        assert not args.ref, 'Lifecycle requires current receipt owners.'
+        sources_by_file = {
+            'GenerationLifecycle': ['private void DeliverToRecipient(', 'private void FinalizeCourierReplyGenerationOnMainThread('],
+            'DomainCommit': ['private bool CommitGeneratedReplyActionsAtRecipientCore(', 'private static bool CommitCourierDialogueHistory(', 'private bool PersistCourierReplyToHistories('],
+            'DeliveryLifetime': ['private void CompleteReturn(', 'private bool ReturnCourierContentsToPlayer(', 'private void OnMobilePartyDestroyed('],
+            'LetterInventory': ['private void EnsureCourierLetterInventoryData(', 'private CourierLetterInventoryRecord NormalizeCourierLetterInventoryRecord(', 'private bool RememberCourierLetterInventoryRecord(', 'private static bool AddCourierLetterToPlayerInventory(', 'private static int CountItemInRoster(ItemRoster roster, string itemStringId, out ItemObject firstItem)'],
+            'PromptPreparation': ['private sealed class CourierPromptRun', 'private CourierPromptRun BeginCourierPromptRun(', 'private bool IsCourierPromptRunCurrent(', 'private bool IsCourierReplyRequestCurrent('],
+        }
+        for name, signatures in sources_by_file.items():
+            source = read('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.' + name + '.cs')
+            declarations.extend(extract.declaration(source, signature) for signature in signatures)
+        declarations.extend(extract.declaration(host, signature) for signature in
+                            ('private sealed class CourierReplyGenerationRequest', 'private sealed class CourierLetterInventoryRecord'))
+        lifecycle_mutations = {
+            'ignore-completion-receipts': ('if (receipt.Complete)', 'if (true)'),
+            'late-action-claim': ('// Consume before domain handlers: reentrant arrivals must not replay any accepted action.\n\t\tsession.PostprocessConsumed = true;', '// Mutant omits the pre-handler claim.'),
+            'ignore-history-receipt': ('?.HistoryWritten == true', '!= null'),
+            'ignore-letter-record': ('return remembered;', 'return true;'),
+            'ignore-source-run': ('&& _courierPromptRuns.TryGetValue(run.Session, out CourierPromptRun current) && ReferenceEquals(current, run)', ''),
+        }
+        if args.mutate in lifecycle_mutations:
+            before, after = lifecycle_mutations[args.mutate]
+            assert sum(part.count(before) for part in declarations) == 1, 'Mutation anchor drift: ' + args.mutate
+            declarations = [part.replace(before, after) for part in declarations]
+
+    output = HERE / '.generated' / ('lifecycle-' + (args.mutate or 'current') if args.lifecycle else 'admission-baseline' if args.ref else 'admission-' + (args.mutate or 'current'))
     output.mkdir(parents=True, exist_ok=True)
     harness = (HERE / 'AdmissionHarness.cs.txt').read_text(encoding='utf-8')
-    (output / 'Program.cs').write_text(harness.replace('@@DECLARATIONS@@', '\n'.join(declarations)), encoding='utf-8')
-    defines = '' if args.ref else '<DefineConstants>COURIER_DRAFT_TICKETS</DefineConstants>'
+    (output / 'Program.cs').write_text(harness.replace('@@DECLARATIONS@@', '\n'.join(declarations)) + ((HERE / 'LifecycleHarness.cs.txt').read_text(encoding='utf-8') if args.lifecycle else ''), encoding='utf-8')
+    defines = '' if args.ref else '<DefineConstants>COURIER_DRAFT_TICKETS' + (';COURIER_LIFECYCLE' if args.lifecycle else '') + '</DefineConstants>'
     sources = ['Refactor/Modules/CoreDialogueContracts.cs', 'Refactor/Modules/CoreDialogueOperation.cs', 'Refactor/Modules/CoreDialogueClient.cs',
                'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs']
     from xml.sax.saxutils import escape

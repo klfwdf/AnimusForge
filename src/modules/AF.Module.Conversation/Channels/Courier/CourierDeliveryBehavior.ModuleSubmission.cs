@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Modules;
+using TaleWorlds.Library;
 
 namespace AnimusForge;
 
@@ -17,6 +18,9 @@ public sealed partial class CourierDeliveryBehavior
         internal bool AdmissionReleased;
         internal bool Finished;
         internal IDisposable QueueRegistration;
+        internal CoreCourierAcceptedSteps Accepted;
+        internal CoreCourierTransportOutcome Transport = CoreCourierTransportOutcome.NotStarted;
+        internal Dictionary<Tuple<string, string, string>, int> ExpectedPayload;
     }
     private readonly object _moduleCourierGate = new object();
     private readonly Dictionary<CoreDialogueOperation, ModuleCourierRequest> _moduleCourierRequests =
@@ -124,7 +128,7 @@ public sealed partial class CourierDeliveryBehavior
         queued?.Dispose();
     }
 
-    private void BindModuleCourierSession(CoreDialogueOperation operation, CourierSession session)
+    private void BindModuleCourierSession(CoreDialogueOperation operation, CourierSession session, PendingCourierFlow flow)
     {
         if (operation == null) return;
         lock (_moduleCourierGate)
@@ -134,7 +138,105 @@ public sealed partial class CourierDeliveryBehavior
                 || session == null || IsInboundToPlayer(session) || _moduleCourierSessions.ContainsKey(session.Id))
                 throw new InvalidOperationException("Courier module source expired before binding.");
             request.Session = session;
+            request.ExpectedPayload = new Dictionary<Tuple<string, string, string>, int>();
+            foreach (CourierCargoEntry entry in flow.SelectedEntries)
+            {
+                var key = CourierCargoIdentity(entry.Kind, entry.Id, entry.SourceSettlementId);
+                request.ExpectedPayload.TryGetValue(key, out int count);
+                request.ExpectedPayload[key] = checked(count + entry.Amount);
+            }
+            request.Accepted = CoreCourierAcceptedSteps.Dispatched;
+            request.Transport = CoreCourierTransportOutcome.InTransit;
             _moduleCourierSessions.Add(session.Id, request);
+            operation.RecordCourierProgress(new CoreCourierReceipt(request.Accepted, request.Transport));
         }
+    }
+
+    private ModuleCourierRequest FindModuleCourierRequest(CourierSession session, bool allowRemoved = false)
+    {
+        if (!TWParallel.IsMainThread() || session == null) return null;
+        ModuleCourierRequest request;
+        lock (_moduleCourierGate)
+        {
+            if (!_moduleCourierSessions.TryGetValue(session.Id, out request)
+                || !ReferenceEquals(request.Session, session)) return null;
+        }
+        CourierSession current = GetSessionById(session.Id);
+        if (!ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(request.Generation))
+        {
+            request.Operation.Finish("courier.context_expired");
+            return null;
+        }
+        if (!ReferenceEquals(current, session) && !(allowRemoved && current == null))
+        {
+            request.Operation.Finish("courier.session_replaced");
+            return null;
+        }
+        return request;
+    }
+
+    private void RecordModuleCourierStep(CourierSession session, CoreCourierAcceptedSteps step, string deliveredReply = null)
+    {
+        ModuleCourierRequest request = FindModuleCourierRequest(session);
+        if (request == null) return;
+        lock (_moduleCourierGate)
+        {
+            request.Accepted |= step;
+            request.Operation.RecordCourierProgress(new CoreCourierReceipt(request.Accepted, request.Transport), deliveredReply);
+        }
+    }
+
+    private void FailModuleCourierSession(CourierSession session, string reason,
+        CoreCourierTransportOutcome? transport = null)
+    {
+        ModuleCourierRequest request = FindModuleCourierRequest(session, allowRemoved: true);
+        if (request == null) return;
+        lock (_moduleCourierGate)
+        {
+            if (transport.HasValue) request.Transport = transport.Value;
+            request.Operation.RecordCourierProgress(new CoreCourierReceipt(request.Accepted, request.Transport));
+            request.Operation.Finish(reason);
+        }
+    }
+
+    private void CompleteModuleCourierTransport(CourierSession session, bool cleanupConfirmed)
+    {
+        ModuleCourierRequest request = FindModuleCourierRequest(session, allowRemoved: true);
+        if (request == null) return;
+        lock (_moduleCourierGate)
+        {
+            request.Transport = cleanupConfirmed ? CoreCourierTransportOutcome.Returned : CoreCourierTransportOutcome.Unconfirmed;
+            var receipt = new CoreCourierReceipt(request.Accepted, request.Transport);
+            request.Operation.RecordCourierProgress(receipt);
+            if (receipt.Complete) request.Operation.RecordOwnerCompletion(request.Operation.Snapshot.Reply);
+            request.Operation.Finish(cleanupConfirmed ? "courier.completion_receipt_missing" : "courier.transport_cleanup_unconfirmed");
+        }
+    }
+
+    private void CheckModuleCourierSessionIdentity(CourierSession current)
+    {
+        if (current == null) return;
+        ModuleCourierRequest request;
+        lock (_moduleCourierGate) _moduleCourierSessions.TryGetValue(current.Id, out request);
+        if (request != null) FindModuleCourierRequest(request.Session);
+    }
+
+    private bool ConfirmModuleCourierPayload(CourierSession session)
+    {
+        ModuleCourierRequest request = FindModuleCourierRequest(session);
+        if (request == null) return true;
+        var delivered = new Dictionary<Tuple<string, string, string>, int>();
+        foreach (CourierCargoEntry entry in session.Entries)
+        {
+            if (entry == null || !entry.Delivered || entry.Amount <= 0) return false;
+            var key = CourierCargoIdentity(entry.Kind, entry.Id, entry.SourceSettlementId);
+            delivered.TryGetValue(key, out int count);
+            delivered[key] = checked(count + entry.Amount);
+        }
+        if (delivered.Count != request.ExpectedPayload.Count) return false;
+        foreach (var expected in request.ExpectedPayload)
+            if (!delivered.TryGetValue(expected.Key, out int count) || count != expected.Value) return false;
+        RecordModuleCourierStep(session, CoreCourierAcceptedSteps.Payload);
+        return true;
     }
 }
