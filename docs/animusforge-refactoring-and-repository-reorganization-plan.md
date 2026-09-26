@@ -28,9 +28,30 @@
 
 完整内容 runner 在产品 `9db8fa8b` 上已经通过；`a3fa77af` 仅改测试路径/反射调用和静态源检查，新增静态段亦已执行 PASS，产品/映射/资源和六 DLL 未变。额外重复全量运行时，自动安全审查拒绝了测试 junction 解链及 runner 递归清理，**该次命令未执行、未绕过**，不能冒充又跑了一次全量。首次验证前核实 junction 只指向同一 fixture 的 real-source，再仅解除该链接；没有清理 .dotnet-cli-home 或其他目录。
 
+### 数据保护合成契约与模型来源补证（2026-09-26）
+
+意图 `78e83c40`，测试切片 **`2b61f1c5`**；产品仍为 `9db8fa8b`，没有改生产部署函数、content 映射、资源字节或 DLL。此补证取代本条此前“ONNX 没有原始模型地址”的判断，不解除数据搬移或分发 gate。
+
+- `tests/content/J15ContentContractTests/PlayerExportsContractTests.ps1:17–52` 先验证新建运行根在仓内 `artifacts/j15-content` 且祖先无 reparse，拒绝已存在目录；AST 只提取生产 helper 和有界源选择块，命令白名单阻止误执行 deploy 顶层。`:87–165` 用虚构文件验证首次统一安装、空/已有统一目录、重复组装、目标已存在拒绝、源缺失；`:167–191` 实际调用原非删除回写 helper，双方均为 fixture。生产依据是 `一键编译覆盖推送/deploy_module.ps1:398–481,820–831` 的 `Merge-PlayerExports`、`Sync-PlayerExportsBackToSource` 及调用分支。
+- 独立运行 **45 assertions PASS**：较新时间优先，同时间 legacy-1.4 > legacy-1.3 > source、unified > source；统一模块目录一旦存在，即使为空也不再取 legacy；源/未知文件并集、mtime 保留、源 hash/mtime 不变和两次新目标组装一致；已有暂存目录拒绝且不写，缺源生成空暂存；实际 `/E /XO` 保留 source-only/较新源，复制未知/较新目标并可重复。fixture 为 `artifacts/j15-content/playerexports-contract-78e83c40`，**不含真实数据、没有清理**。
+- 四个隔离的生产函数变异分别因优先级颠倒、时间方向颠倒、错误引入 legacy、丢失 `/XO` 被预期断言拒绝；首个 legacy 变异先触发命令白名单，保留 `Test-Path` 后第二个变异才命中行为断言，未删除/放宽断言。反例日志保留在 `artifacts/j15-content/playerexports-negative-78e83c40`。另验相同 RunRoot 重入被拒且全部合成文件 hash/mtime 不变，越界 RunRoot 被拒且零输出。没有制造 `/MIR` 删除变异。
+- `run.py:681–685` 接入此子测试；五项无清理静态函数和 Python 语法再次通过。**新增子测试独立运行通过，不等于整体 runner 在该提交重跑**；先前被拒的额外递归清理未重试或换目录绕过。没有执行真实备份/恢复、读取导出正文、触发原 Stage/Deploy 或访问 provider；合成保护验收不能代替 G0.3 的真实数据决定。
+
+模型内容来源已由公开上游固定版本与本地文件身份比对确认，而非仅根据 Bert 结构推测：上游为 [onnx-community/bge-small-zh-v1.5-ONNX 固定提交](https://huggingface.co/onnx-community/bge-small-zh-v1.5-ONNX/tree/9507db33464b5da99a532ac26b2a251767cbc62b)，revision **`9507db33464b5da99a532ac26b2a251767cbc62b`**。只读取模型 API 的文件元数据，并流式计算本地大文件 SHA；没有下载权重或修改 ONNX 文件。
+
+| 本地 `AnimusForge/ONNX/` 文件 | 固定上游路径 / 已匹配身份 |
+| --- | --- |
+| `model.onnx`，41,689 bytes | `onnx/model.onnx`；原始 SHA256 `69b353bb2aa2d09ab606ddbbc35437b03c843615a6bff28216a37fee7309c2aa` 与 LFS 一致 |
+| `model.onnx_data`，94,765,056 bytes | `onnx/model.onnx_data`；原始 SHA256 `e72da961b03613124aa11317470c995ca197651a9d7f6be2b0e90aad92f71df0` 与 LFS 一致 |
+| `config.json`，checkout 943 / 上游 904 bytes | 根同名文件；仅 CRLF→LF 后 Git blob SHA1 `711d85d7eff21f51bd6181b547e66eef5a8fe6d2` 一致 |
+| `tokenizer.json`，362,603 bytes | 根同名文件；Git blob SHA1 `b8f4b05ae1e11a204d57040fc05fdde5c8c3b235` 一致 |
+| `tokenizer_config.json`，checkout 430 / 上游 414 bytes | 根同名文件；仅 CRLF→LF 后 Git blob SHA1 `965b029d8cf40c8e7397c1ee1d76847cba3b2990` 一致 |
+
+该转换仓库模型卡指向 [BAAI/bge-small-zh-v1.5](https://huggingface.co/BAAI/bge-small-zh-v1.5)，后者模型卡标 MIT；在固定转换版本 API 中 `cardData.license` 缺失且没有 LICENSE 命名文件。**这是已验证来源与许可证声明的记录，不是对转换文件再分发权的结论**。五个文件整体原位保留，Knowledge owner、graph→external data/tokenizer/config 依赖及原加载路径不变，不自动下载、不转 LFS、不入 ZIP。
+
 ### 尚未闭合的完整范围与下一动作
 
-CustomPrompts 不再 HOLD；其余仍按下方逐类读写审计：PlayerExports 3139 项、旧 UnnamedNpcProfiles 6 项、根 VoiceMapping、ONNX 5 项、pack0.tpac、AssetSources 6 项、GUI 33 项和异常 HTML 原位未改，尚无具名数据备份/恢复验收或完整来源/许可决定。ONNX config 仅确认 BertModel/bert、tokenizer 为 BertTokenizer/512，没有原始模型地址，不能由模型结构推断来源或分发权。金币设计 README 明确 OBJ/MTL 非运行素材，当前 live XML 使用原版 mesh，不能自动导入资源包。
+CustomPrompts 不再 HOLD；其余仍按下方逐类读写审计：PlayerExports 3139 项、旧 UnnamedNpcProfiles 6 项、根 VoiceMapping、ONNX 5 项、pack0.tpac、AssetSources 6 项、GUI 33 项和异常 HTML 原位未改。上方合成保护测试和五项模型来源比对已完成，但尚无具名真实数据备份/恢复验收或完整分发/素材来源决定；不能把“模型来源未知”继续当作已确认事实，也不能把来源比对当作发布许可。金币设计 README 明确 OBJ/MTL 非运行素材，当前 live XML 使用原版 mesh，不能自动导入资源包。
 
 下一步是继续闭合这些数据/模型/素材边界，而不是重跑已通过的静态片、重开 J15a/b 或把 HOLD 计 DONE；随后按完整原计划作 J15d 退出审计。无 Stage/Deploy/Package/push/外仓同步/真实用户配置写入；原 Stage 会包含受保护数据，不能用合成投影冒充真实 Stage。完整目标保持 active，不进入 J16/J17。
 
