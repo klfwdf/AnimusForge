@@ -1,4 +1,11 @@
-# 当前交接：J14a Scene 有限离线收口（2026-09-26）
+# 当前交接：J14b–c 接续实施（2026-09-26）
+
+- **状态**：`J14b_ACTIVE / J14_ACTIVE`；J14a 保持有限离线完成，尚非整个 J14 完成。基线 `fb4af2d8`，本轮实施授权、真实 owner、最终候选证据缺口及退出门见[主台账当前意图](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[J14 计划](docs/plans/j14-public-api-plan.md)。
+- **下一动作**：先增加旧草稿 UI 回调与一次派出的行为红例，再实现 b1；随后 b2/b3 和 c 最终离线矩阵。保留 `.dotnet-cli-home/`；仅本地实施/测试/提交及本轮限定四个构建目录，无 push、Stage、部署、打包、游戏/外仓/存档写入或 J15。实机/旧档/provider/音频/帧性能仍 NOT-RUN。
+
+## 以下为 J14a 交接（历史基线）
+
+# J14a Scene 有限离线收口（2026-09-26）
 
 - **状态**：`J14_G0_BASELINE_VERIFIED / J14a_OFFLINE_VERIFIED / J14_ACTIVE`。产品/测试 `1740b338`, `79fa7c48` 已开放真实 Scene 公共票据→原群组/接力→speech/后处理/记忆/AFEF 回执→终态，Native 原签名与 UI 入口不变；Courier/J14c 尚未完成。具体 owner、消费者和未覆盖责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)及[代码地图](docs/architecture/af-framework-code-map.json)。
 - **离线证据与下一步**：Scene 群组 18、请求生命周期 34、后处理 37、独立外部消费者正常/枚举重排各 55、ChannelCutover 133、NativeCompletion 186、V1 142、四实际 DLL metadata 1252；原脚本在用户授权四个精确仓内产物目录、不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；730 锚点地图 recorded/working-tree 通过。旧 MemorySummary terminal runner 的既存抽取锚失效，此次未通过，详细限制与 SHA 见主台账。下一包按[计划](docs/plans/j14-public-api-plan.md)做 J14b Courier，随后 J14c 最终候选；不能称整体 J14、实机或发布完成。真实游戏、旧档、provider、音频、帧性能 **NOT-RUN**；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。原未跟踪 `.dotnet-cli-home/` 保留。

@@ -1,4 +1,13 @@
-## J14 G0 与 J14a Scene 有限离线收口（2026-09-26）
+## J14b–c 接续开工意图（2026-09-26）
+
+状态：**`J14b_ACTIVE / J14_ACTIVE`**。本轮用户已明确要求实施 J14B → J14C 并完成整个 J14 的离线验收；只读准备结束，不把历史计划模式说明当作新的禁写指令。实际根 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`、基线 `fb4af2d81418febe7696963e2766801b683ad3ce`；已跟踪/暂存干净，原未跟踪 `.dotnet-cli-home/` 保留。上一目标轮因用户中断没有实施写入，本轮重新核实现场后开始。
+
+- **顺序与真实责任**：依[既有计划](plans/j14-public-api-plan.md)做 b1 已准备草稿的 client 票据、UI/API 共用一次派出与派出前资格重验；b2 真实 session 的派出/送达/动作与必要历史/回信交付/运输终止回执及退休；b3 只读 V1 投影与外部消费者通过后开放 Courier；c 同一最终候选三渠道/旧 ABI/六构建/保存/Bridge/实际 DLL 回放/地图完整门禁。原普通、给予、展示、转移及入站/回复例外保留，不用单个布尔或 Task 返回推断成功。
+- **现存证据限制**：J14a 仅有限离线完成；四实现 SHA 与其台账一致。Phase8 现存依赖清单仍绑定 J13 候选 `03D0FACF…`，ProductionCourierHostReplay 仍固定旧 Stage；MemorySummary terminal 抽取锚失效，NativeCompletion 底层 writer 是 fixture。c 必须修复相关测试接线并绑定新候选，不用旧产物、hash 刷新或删断言冒充通过。
+- **运行与保存边界**：游戏对象在主线程捕获/重验，后台只接 detached 输入；票据/关联 process-local、有界且事件驱动，沿现有每 client 128 请求 ID 规则，不新增每帧全请求扫描/保存键/第二条 LLM 或动作记忆 writer。开始前取消无效果，开始后保守未知，不自动重派；旧回调不能清理新草稿/session。
+- **授权及退出门**：仅本仓具名文件、测试产物与本地分片提交。用户本轮计划限定原构建脚本只重建 `E:/AnimusForge-refactor-continuation-20260831/bin/Debug/single_module_artifacts`、`bin/Release/single_module_artifacts`、`obj/single_module/Debug`、`obj/single_module/Release` 四个精确仓内目录；执行前重新核对绝对路径、内容及父/子 reparse。无 Stage/Deploy/push/打包/游戏或外仓/存档写入/工具安装/默认入口切换/J15。全部 J14 离线退出门满足后才标 `J14_OFFLINE_VERIFIED`；真实两版本游戏、旧档、provider、音频、子 MOD 游戏加载及帧耗时仍单列 NOT-RUN。
+
+## J14 G0 与 J14a Scene 有限离线收口（2026-09-26，历史基线）
 
 状态：**`J14_G0_BASELINE_VERIFIED / J14a_OFFLINE_VERIFIED / J14_ACTIVE`**。这只关闭[本轮 J14 计划](plans/j14-public-api-plan.md)的开工基线与 Scene 包，不表示 Courier/J14c、全仓 G0.7、实机或发布已完成。前置 `cbf874ac`、`40c0ccc5` 分别结算队列丢弃与 typed 后处理；本包产品/测试提交 **`1740b338`, `79fa7c48`**。保留原未跟踪 `.dotnet-cli-home/`，未 push、Stage、Deploy、打包、写游戏/外仓/存档或改自动化。
 
