@@ -1,4 +1,8 @@
-## AF2.0 F1 路径契约、F2 单文件安全写入与显式迁移器：实施中（2026-09-26）
+## AF2.0 F1 路径契约、F2 导出候选与显式迁移器：实施中（2026-09-26）
+
+最新 F2 整组导出切片 **`d838145a`**：`src/AF.Persistence/PlayerExportsPackageExport.cs:13–245` 由开发菜单显式调用，克隆活动包到同目录隐藏候选，逐文件 hash 检查活动包未变、解析候选全部 JSON、复制旧包到独立 Recovery 并逐文件复验，再同卷改名发布；失败不预清空唯一活动包，已验证的旧包才从临时 retired 位置删除。`RestoreSubdirectory` 在 Knowledge/Kingdom 可选导出失败时把候选对应小节复原为旧字节，保持原有警告并跳过语义。`MyBehavior.cs:53232–56032` 的 14 个导出入口与 `KingdomStrategicProfileBehavior.DevUi.cs:326–396` 的导出委托已接候选；导入选择器过滤隐藏候选，显式绝对路径导入不变。`PlayerExportsStore.ClearCandidateJsonFiles` 拒绝活动包与 reparse，迁移器拒绝含未解决 `.af-export-` 暂存目录的来源，避免把失败候选迁入活动数据。完整组 hash 成本只在显式开发菜单导出发生，不进入 Tick。
+
+虚构数据 `DataPaths` **37 checks PASS**，覆盖旧包保留、整组替换/Recovery、可选小节恢复、坏 JSON、并发修改、不可用 Recovery、活动目录清理拒绝；迁移 synthetic PASS，增加未解决候选拒绝。原一键入口不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap **六构建均 0 warning / 0 error**；四个获准仓内产物目录执行前检查了解析路径、顶层内容和 reparse。代码地图 **758** 锚点 recorded/working-tree PASS，`git diff --check` PASS。当前 `GetPlayerExportsRootPath` 仍指模块根，编辑器、Prompt、TerminalSettings、日志/缓存与 ONNX 尚未接 typed 用户根；真实数据迁移、源码退役、Stage/ZIP 白名单、实机旧档均未运行，因此**F1–F5 仍未完成**。失败候选保留以供人工恢复，不当作可导入包；后续迁移会明确拒绝它，不自动清理或吞掉。
 
 最新 F2 迁移工具切片：`tools/af2_migrate.py:25–324` 只在显式 CLI `--apply` 时触达默认 `%LOCALAPPDATA%/AnimusForge`，安装模块与仓内旧树是**分别标识**的只读来源，仓内不会自动混入安装迁移。工具按块 SHA-256/大小/mtime 盘点，拒绝 reparse、同源大小写碰撞、错误根、磁盘空间不足和并发操作；私有 `Recovery` 下按来源备份并复验、隔离候选；活动目标已有文件（包括损坏 JSON）绝不覆盖，不同来源版本均留私有备份；同卷逐文件不覆盖激活，完成标记仅在全批成功后写入。中断或备份损坏不写成功记录，重复运行可续作；包目录 mtime 恢复以维持“最新包”选择。完整文件名只在私有 Recovery 清单，CLI 仅输出计数。`tests/AF.Persistence/DataPaths/test_migration.py:1–166` 合成覆盖两来源/目标冲突、空、损坏、重复、中断、源变更、备份损坏、磁盘满、排他锁、错误根。实来源只读盘点：安装和仓内各 3139 文件、14,274,532 字节，上一轮逐文件 SHA-256 3139/3139 相同；未读玩家正文到报告、未运行真实 `--apply`。目前仅覆盖 PlayerExports；普通/Policy Prompt、TerminalSettings、模型及其他数据类别迁移和 runtime/编辑器接线仍待实现，所以 F2/F4 未完成。
 
