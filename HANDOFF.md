@@ -1,4 +1,12 @@
-# 当前交接：J14 三渠道公共 API 离线完成（2026-09-26）
+# 当前交接：J15 content / profile 计划就绪，尚未施工（2026-09-26）
+
+- **状态**：`J15_PLAN_READY / IMPLEMENTATION_NOT_STARTED`；前序 J14 仍 `J14_OFFLINE_VERIFIED`。本次只编写[可直接交给新对话的执行计划](docs/plans/j15-content-profile-plan.md)，规划基线 `fc445335`、意图 `0d9bb898`，详细检查与风险见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)；现有产品定位仍见[范围图](docs/architecture/af-framework-code-scope.md)。
+- **下一条动作**：新对话使用计划第 1 节指令，先做 G0 逐文件静态/可写分类、owner/消费者/旧新路径映射和精确授权清单；获准后 a 七项内嵌资源与组装接线 → b 其他静态资源 → c profile/用户数据/模型边界 → d 最终离线验收。现有组装脚本消费旧资源树，不能只搬文件；批量迁移、最小脚本接线、构建清理及可选 Stage 分别需明确批准。
+- **验证与边界**：规划中代码地图两模式 755 锚点通过（仅定位）；未改产品/资源/项目/脚本、未构建/Stage/运行游戏。PlayerExports/CustomPrompts 的用户数据、来源未明模型/素材保持相关 HOLD，`.dotnet-cli-home/` 保留。无 push、部署、打包、外写、自动化、安装或 J16/J17；LIVE/旧档/provider/音频/帧性能仍 NOT-RUN。下方历史继续指令不覆盖本入口。
+
+## 以下为前序 J14 产品交接
+
+# J14 三渠道公共 API 离线完成（2026-09-26）
 
 - **状态**：`J14_OFFLINE_VERIFIED`。Courier 公共票据/一次派出/权威阶段与失败回执已开放；三渠道共用限额、幂等和开始前取消。最终产品 `e58f3558`，测试修复止于 `a90e1b45`；责任、候选 SHA、失败修复与全部证据见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)及[V1 指南](docs/architecture/af-public-api-guide-v1.md)。
 - **验收**：六构建、四 DLL 元数据/旧 Native ABI、三渠道及真实记忆写入/回读、保存/Bridge、显式当前 DLL Courier/Phase8 回放、755 锚点地图两模式和差异检查通过。仅离线完成；两版本实机、旧档、真实 provider、音频、独立子 MOD 游戏加载与帧性能分别 NOT-RUN。
