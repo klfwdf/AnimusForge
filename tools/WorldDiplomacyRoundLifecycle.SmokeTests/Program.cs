@@ -13196,6 +13196,22 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(Select(awaiting) == null,
             "a job awaiting compression must be skipped before its retry hour");
 
+        // DPL-110: transfer the retired J12 queue DTO/selector cases to the live scheduler.
+        WorldDiplomacyStorage formerQueue = Store();
+        WorldDiplomacyJob running = Job("running", priority: 99); running.IsRunning = true;
+        WorldDiplomacyJob waiting = Job("waiting", priority: 90); waiting.AwaitingHistoryCompression = true;
+        WorldDiplomacyJob older = Job("older", priority: 80); older.CreatedDay = 2; older.CacheAffinityKey = "other";
+        WorldDiplomacyJob affinity = Job("affinity", priority: 80); affinity.CreatedDay = 5; affinity.CacheAffinityKey = "cache-a";
+        WorldDiplomacyJob alphabetical = Job("alphabetical", priority: 80); alphabetical.CreatedDay = 2; alphabetical.CacheAffinityKey = "other";
+        formerQueue.Jobs.AddRange(new[] { running, waiting, older, affinity, alphabetical });
+        formerQueue.CompressionRetryAfterHour = 101;
+        Test.True(Select(formerQueue, affinity: "cache-a") == affinity,
+            "J12: cache affinity wins within highest runnable priority");
+        formerQueue.CompressionRetryAfterHour = 100;
+        Test.True(Select(formerQueue, affinity: "cache-a") == waiting,
+            "J12: compression-ready higher priority job becomes runnable");
+        Test.True(Select(Store()) == null, "J12: empty queue has no selection");
+
         // Stale presentation refresh failures route to the failed commit.
         WorldDiplomacyStorage staleThreat = Store();
         staleThreat.Jobs.Add(Job("j1", kind: "generate"));
@@ -14155,8 +14171,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && !threatMigrationSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "threat storage migration must stay free of TaleWorlds and host references");
         Test.True(behaviorSource.Contains("WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyThreatStorageMigration.MigrateDiplomaticThreatsToNextDeclarationRules(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyThreatStorageMigration.MigrateThreatComplianceConsequencesV3(", StringComparison.Ordinal)
+            && threatMigrationSource.Contains("MigrateDiplomaticThreatsToNextDeclarationRules(storage, currentDay, resolveDocument, log);", StringComparison.Ordinal)
+            && threatMigrationSource.Contains("MigrateThreatComplianceConsequencesV3(storage);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion", StringComparison.Ordinal),
             "the host must route threat storage migration through the persistence migrator");
         Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad", StringComparison.Ordinal),
@@ -14200,10 +14216,10 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route technical-failure counting through the lifecycle rules");
         Test.True(rulesSource.Contains("ShouldTripTechnicalCircuitBreaker(", StringComparison.Ordinal),
             "the host must route circuit-breaker trips through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsReminderDue", StringComparison.Ordinal),
-            "the host must route mandatory-response reminders through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsMandatoryTimeoutExpired", StringComparison.Ordinal),
-            "the host must route mandatory-response timeouts through the lifecycle rules");
+        Test.True(!behaviorSource.Contains("private void ProcessPlayerMandatoryResponseTimeout(", StringComparison.Ordinal) && rulesSource.Contains("public static bool IsReminderDue(", StringComparison.Ordinal),
+            "retired mandatory reminder path stays absent; public reminder rule retains compatibility");
+        Test.True(!behaviorSource.Contains("private void ProcessPlayerMandatoryResponseTimeout(", StringComparison.Ordinal) && rulesSource.Contains("public static bool IsMandatoryTimeoutExpired(", StringComparison.Ordinal),
+            "retired mandatory timeout path stays absent; public timeout rule retains compatibility");
         Test.True(!behaviorSource.Contains("ConsecutiveTechnicalGenerationFailures >= ", StringComparison.Ordinal),
             "raw technical-failure thresholds must not remain in the host");
         Test.True(!behaviorSource.Contains("MandatorySinceDay + 3", StringComparison.Ordinal),
@@ -14222,10 +14238,10 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route rotation-index normalization through the lifecycle rules");
         Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NextRotationIndex", StringComparison.Ordinal),
             "the host must route rotation-index advancement through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsExchangeReminderDue", StringComparison.Ordinal),
-            "the host must route exchange reminders through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsExchangeCloseDue", StringComparison.Ordinal),
-            "the host must route exchange close checks through the lifecycle rules");
+        Test.True(!behaviorSource.Contains("private void ProcessPlayerResponseTimeouts(", StringComparison.Ordinal) && rulesSource.Contains("public static bool IsExchangeReminderDue(", StringComparison.Ordinal),
+            "retired exchange reminder path stays absent; public reminder rule retains compatibility");
+        Test.True(!behaviorSource.Contains("private void ProcessPlayerResponseTimeouts(", StringComparison.Ordinal) && rulesSource.Contains("public static bool IsExchangeCloseDue(", StringComparison.Ordinal),
+            "retired exchange timeout path stays absent; public close rule retains compatibility");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny", StringComparison.Ordinal),
             "the host must route suspended-pause day shifts through the lifecycle rules");
         Test.True(rulesSource.Contains("ComputeSuspendedPauseDays(currentDay, exchange.SuspendedDay)", StringComparison.Ordinal)
@@ -15623,7 +15639,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "canonical-history and result-settlement migrations must live in the persistence migrator");
         Test.True(rulesSource.Contains("public static void RecalculateCanonicalHistoryTokens(", StringComparison.Ordinal),
             "canonical token accounting must live in the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyStorageMigration.MigratePolicyCountdownHistory(", StringComparison.Ordinal)
+        Test.True(storageMigrationSource.Contains("MigratePolicyCountdownHistory(history, storage.Jobs,", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyStorageMigration.BackfillCanonicalResponseLinksV2(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(", StringComparison.Ordinal),
@@ -15640,7 +15656,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(rulesSource.Contains("public static List<WorldDiplomacyCanonicalProtectedFact> BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal),
             "protected-fact projection must live in the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyStorageMigration.NormalizeCanonicalHistoryState(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal)
+            && canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal)
             && behaviorSource.Contains("_canonicalHistoryInitializedThisSession", StringComparison.Ordinal),
             "the host must keep the session guard and delegate normalization/projection through extracted ports");
         Test.True(!behaviorSource.Contains("threat-response:", StringComparison.Ordinal)
@@ -15821,7 +15837,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("Func<List<string>> buildPotentialActions", StringComparison.Ordinal)
             && rulesSource.Contains("Func<string, WorldDiplomacyDocument> resolveDocument", StringComparison.Ordinal),
             "legal action-intent orchestration must live in the lifecycle rules behind ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.AppendOpenOfferResponseIntents(", StringComparison.Ordinal)
+        Test.True(rulesSource.Contains("AppendOpenOfferResponseIntents(round, authorKingdomId, targetKingdomId, actions);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(", StringComparison.Ordinal)
             && behaviorSource.Contains("() => BuildPotentialDiplomaticActionIntents(author, target), ResolveDocument", StringComparison.Ordinal),
@@ -15976,7 +15992,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("Func<WorldDiplomacyRound, string, bool> includeResultSettlementTarget", StringComparison.Ordinal)
             && rulesSource.Contains("Action<WorldDiplomacyRound> refreshActionSlots", StringComparison.Ordinal),
             "offer reconciliation and settlement-open bookkeeping must live in the lifecycle rules behind ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ReconcilePlayerDeclarationWithOpenOffer(", StringComparison.Ordinal)
+        Test.True(rulesSource.Contains("ReconcilePlayerDeclarationWithOpenOffer(document, intent, resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
             && behaviorSource.Contains("ResolveRound(document?.RoundId)", StringComparison.Ordinal)
             && behaviorSource.Contains("RefreshResultSettlementActionSlots", StringComparison.Ordinal),
@@ -15994,7 +16010,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("Action<string> removeJob", StringComparison.Ordinal),
             "pre-send gates must live in the lifecycle rules behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
+            && rulesSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
             && behaviorSource.Contains("GetHistoryCompressionTriggerTokens()", StringComparison.Ordinal)
             && behaviorSource.Contains("Logger.EstimateTokens", StringComparison.Ordinal),
             "the host must bind token limits and job ports through thin adapters");
@@ -16171,7 +16187,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("ResolveCacheAffinityKey(x)", StringComparison.Ordinal)
             && rulesSource.Contains("ThenBy(x => x.CreatedDay)", StringComparison.Ordinal)
             && rulesSource.Contains("IsValidSemanticRepairMessageChain(job)", StringComparison.Ordinal)
-            && rulesSource.Contains("EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
+            && rulesSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
             "job selection and preflight checks must live inside the lifecycle rules");
         Test.True(rulesSource.Contains("completed generation used a stale diplomatic threat stage", StringComparison.Ordinal)
             && rulesSource.Contains("truncated generated draft handling failed", StringComparison.Ordinal)

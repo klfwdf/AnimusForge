@@ -4283,6 +4283,11 @@ internal static class Program
     // Follow the actual DPL-080 owner while retaining host-routing checks.
     private static string? ReadDpl080Owner(string source, string marker)
     {
+        if (marker == "private void ReconcilePlayerDeclarationWithOpenOffer(" || marker == "private static void AppendOpenOfferResponseIntents(")
+        {
+            string rules = File.ReadAllText(FindRepositoryFile("Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+            return ExtractMethod(rules, marker.Replace("private static ", "public static ").Replace("private void ", "public static void "));
+        }
         if (marker == "private string BuildFallbackAnalysisJson(")
         {
             Test.True(source.Contains("WorldDiplomacyPromptComposer.BuildFallbackAnalysisJson(ResolveDocument(job?.DocumentId), job?.TargetKingdomId)", StringComparison.Ordinal), "host must pass current fallback document and target");
@@ -4294,8 +4299,15 @@ internal static class Program
         {
             if (!marker.StartsWith("private ", StringComparison.Ordinal) || !marker.EndsWith(" " + name + "(", StringComparison.Ordinal)) continue;
             string owner = promptMethods.Contains(name) ? "WorldDiplomacyPromptComposer" : "WorldDiplomacyDraftRepairApplication";
-            Test.True(source.Contains(owner + "." + name + "(new PromptWorld(this),", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/" + owner + ".cs"));
+            if (name == "BuildAutonomousOpeningPrompt")
+                Test.True(source.Contains("WorldDiplomacyPromptComposer.BuildGenerationPrompt(new PromptWorld(this),", StringComparison.Ordinal)
+                    && text.Contains("return BuildAutonomousOpeningPrompt(world, author, roundId, roundPlanCandidateIds);", StringComparison.Ordinal), "generation composer calls autonomous opening");
+            else if (name == "EnqueueGeneratedDeclarationRepair")
+                Test.True(source.Contains("WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(new PromptWorld(this),", StringComparison.Ordinal)
+                    && text.Contains("&& EnqueueGeneratedDeclarationRepair(world, job, rejectedRaw, author, target, normalizedReason, parsedJson)", StringComparison.Ordinal), "draft rejection calls repair owner");
+            else
+                Test.True(source.Contains(owner + "." + name + "(new PromptWorld(this),", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
         }
         return null;
@@ -4305,6 +4317,23 @@ internal static class Program
     {
         string? moved = ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
+        if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
+        if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
+        if (endMarker == "private void ReconcilePlayerDeclarationWithOpenOffer(") endMarker = "private void ProcessAnalyzedDocument(";
+        if (endMarker == "private string BuildCurrentGeographicRelations(") endMarker = "private WorldDiplomacyRealmRelationProfile GetRealmRelationProfile(";
+        if (endMarker == "private void SynchronizeCourtKnowledge(") endMarker = "private void ProcessCourtArrival(";
+        if (endMarker == "private void ProcessPlayerMandatoryResponseTimeout(") endMarker = "private void CloseActiveRound(";
+        if (endMarker == "private void ProcessPlayerResponseTimeouts(") endMarker = "private void NotifyExternalDiplomacyResolvedInternal(";
+        if (endMarker == "private string BuildAutonomousOpeningPrompt(") endMarker = "private string BuildGenerationPrompt(";
+        if (endMarker == "private string BuildFallbackAnnualSummary(") endMarker = "private static string BuildExternalFactBody(";
+        if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
+        if (endMarker == "private void MigratePolicyCountdownHistory(") endMarker = "private bool AppendCanonicalHistoryEntry(";
+        if (endMarker == "private List<WorldDiplomacyCanonicalProtectedFact> BuildCanonicalProtectedFactsThrough(") endMarker = "private string BuildCanonicalHistoryBlock(";
+        if (endMarker == "private void MigrateDiplomaticThreatsToNextDeclarationRules(") endMarker = "private void NormalizeDiplomaticThreats(";
+        if (endMarker == "private void MigrateDiplomaticThreatComplianceConsequencesV3(") endMarker = "private void NormalizeDiplomaticThreats(";
+        if (endMarker == "private int ApplyInternationalReputationDelta(") endMarker = "private void SettleInternationalReputationForDocument(";
+        if (endMarker == "private static Settlement ResolveMentionedSettlement(") endMarker = "private static string BuildBilateralState(";
+        if (endMarker == "private void CompleteActiveExchange(") endMarker = "private void CompleteExchange(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
         Test.True(start >= 0, "missing start marker: " + startMarker);
         int end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);

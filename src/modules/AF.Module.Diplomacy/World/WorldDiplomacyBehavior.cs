@@ -1308,12 +1308,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Logger.EstimateTokens, BuildCanonicalHistoryBlock,
 			TryRebuildPendingWorldDiplomacyJob, CommitFailedJob, TryScheduleTokenCompression, Log);
 	}
-	private bool EnsureCurrentCanonicalPromptContractBeforeSend(WorldDiplomacyJob job)
-	{
-		return WorldDiplomacyRoundLifecycleRules.EnsureCurrentCanonicalPromptContractBeforeSend(
-			job, _storage, TryRebuildPendingWorldDiplomacyJob, CommitFailedJob, RemoveJob, Log);
-	}
-
 	private void CommitFailedJob(WorldDiplomacyJob job, string error)
 	{
 		WorldDiplomacyRoundLifecycleRules.CommitFailedJob(
@@ -1586,17 +1580,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(new PromptWorld(this), job, rejectedRaw, author?.StringId, target?.StringId, reason, parsedJson);
 	}
-	private bool EnqueueGeneratedDeclarationRepair(
-		WorldDiplomacyJob source,
-		string rejectedRaw,
-		Kingdom author,
-		Kingdom target,
-		string reason,
-		JObject rejectedJson)
-	{
-		return WorldDiplomacyDraftRepairApplication.EnqueueGeneratedDeclarationRepair(new PromptWorld(this), source, rejectedRaw, author?.StringId, target?.StringId, reason, rejectedJson);
-	}
-
 	private List<string> GetAuthorizedGenerationTargetIds(
 		WorldDiplomacyJob source,
 		WorldDiplomacyRound round,
@@ -1732,16 +1715,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Log);
 	}
 
-	private void ReconcilePlayerDeclarationWithOpenOffer(
-		WorldDiplomacyDocument document,
-		string intent,
-		ref string targetId,
-		ref string respondingToOfferDocumentId)
-	{
-		WorldDiplomacyRoundLifecycleRules.ReconcilePlayerDeclarationWithOpenOffer(
-			document, intent, ResolveRound(document?.RoundId),
-			ref targetId, ref respondingToOfferDocumentId, Log);
-	}
 	private void ProcessAnalyzedDocument(
 		WorldDiplomacyDocument document,
 		string intent,
@@ -3503,40 +3476,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " threshold=" + maximumBorderDistance.ToString("0.0", CultureInfo.InvariantCulture)
 			+ " pairs=" + _kingdomBorderCache.Count.ToString(CultureInfo.InvariantCulture));
 	}
-	private string BuildCurrentGeographicRelations(
-		WorldDiplomacyRound round,
-		Kingdom author,
-		IEnumerable<string> targetKingdomIds = null)
-	{
-		if (round == null || author == null) return "【当前地理关系】无可核实对象。";
-		List<string> lines = new List<string>();
-		foreach (string id in WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder((targetKingdomIds ?? round.RelayRouteKingdomIds ?? new List<string>())
-			.Where(x => !string.Equals(x, author.StringId, StringComparison.OrdinalIgnoreCase))))
-		{
-			Kingdom target = ResolveKingdom(id);
-			if (target == null) continue;
-			WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(author, target);
-			if (border.SharesBorder)
-			{
-				lines.Add(id + "=" + KingdomName(target) + "；接壤，可称邻国或讨论共同边境；" + WorldDiplomacyTextRules.DescribeBorderRelation(border));
-				continue;
-			}
-
-			float courtDistance = CourtDistance(author, target);
-			float distanceScale = Math.Max(MinimumBorderDistance, _kingdomBorderDistanceThreshold);
-			string distanceBand = courtDistance == float.MaxValue
-				? "王庭间距离无法确认"
-				: courtDistance <= distanceScale * 2f
-					? "距离较近但不接壤"
-					: courtDistance <= distanceScale * 4f
-						? "距离中等且不接壤"
-						: "相距遥远且不接壤";
-			lines.Add(id + "=" + KingdomName(target) + "；" + distanceBand + "；不得称为邻国，不得声称拥有共同边境或边界争端");
-		}
-		return lines.Count == 0
-			? "【当前地理关系】无可核实对象。"
-			: "【当前地理关系；仅标为接壤的国家才可称邻国】\n" + string.Join("\n", lines);
-	}
 	private WorldDiplomacyRealmRelationProfile GetRealmRelationProfile(Kingdom source, Kingdom target)
 	{
 		if (source == null || target == null) return new WorldDiplomacyRealmRelationProfile();
@@ -3883,20 +3822,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " civilianDays=" + civilianDays.ToString(CultureInfo.InvariantCulture)
 			+ " arrivals=" + _storage.PropagationArrivals.Count.ToString(CultureInfo.InvariantCulture));
 	}
-	private void SynchronizeCourtKnowledge()
-	{
-		foreach (Kingdom kingdom in Kingdom.All.Where(x => x != null && !x.IsEliminated))
-		{
-			Settlement court = ResolveCourtSettlement(kingdom);
-			WorldDiplomacySettlementKnowledge local = _storage.SettlementKnowledge.FirstOrDefault(x => x != null && string.Equals(x.SettlementId, court?.StringId, StringComparison.OrdinalIgnoreCase));
-			foreach (string documentId in local?.DocumentIds ?? new List<string>())
-			{
-				WorldDiplomacyDocument document = ResolveDocument(documentId);
-				if (document != null && WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(_storage.KingdomKnowledge, kingdom.StringId, documentId, CurrentDay())) ProcessCourtArrival(kingdom, document);
-			}
-		}
-	}
-
 	private void ProcessCourtArrival(Kingdom receiver, WorldDiplomacyDocument document)
 	{
 		WorldDiplomacyCourtResponseApplication.Receive(
@@ -3941,30 +3866,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			CloseActiveRound, Log);
 	}
 
-	private void ProcessPlayerMandatoryResponseTimeout(WorldDiplomacyRound round, WorldDiplomacyRoundParticipant participant)
-	{
-		if (round == null || participant == null || participant.MandatorySinceDay <= 0) return;
-		int day = CurrentDay();
-		WorldDiplomacyDocument source = ResolveDocument(participant.LastTriggeredDocumentId);
-		if (WorldDiplomacyRoundLifecycleRules.IsReminderDue(
-				participant.ReminderSent, day, participant.MandatorySinceDay)
-			&& source != null && WorldDiplomacyRoundLifecycleRules.TryConsumeAiDocumentBudget(ref _aiDocumentsStartedDay, ref _aiDocumentsStartedToday, CurrentDay(), MaxAiDocumentsStartedPerDay))
-		{
-			Kingdom author = ResolveKingdom(source.AuthorKingdomId);
-			Kingdom player = ResolveKingdom(participant.KingdomId);
-			if (author != null && player != null)
-			{
-				participant.ReminderSent = true;
-				EnqueueGenerationJob(author, player, null, isResponse: true, sourceDocument: source, priority: 80, externalResponseOnly: true, isReminder: true, roundId: round.RoundId);
-			}
-		}
-		if (WorldDiplomacyRoundLifecycleRules.IsMandatoryTimeoutExpired(day, participant.MandatorySinceDay))
-		{
-			participant.MandatoryReplyPending = false;
-			participant.State = "observer";
-			round.LastActivityDay = day;
-		}
-	}
 	private void CloseActiveRound(string reason)
 	{
 		WorldDiplomacyRoundApplication.Close(_storage, reason, CurrentDay,
@@ -4400,10 +4301,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		return true;
 	}
-	private void CompleteActiveExchange(string reason)
-	{
-		CompleteExchange(_storage.ActiveExchange?.ExchangeId, reason);
-	}
 	private void CompleteExchange(string exchangeId, string reason)
 	{
 		WorldDiplomacyExchange exchange = WorldDiplomacyRoundLifecycleRules.ResolveExchange(
@@ -4417,32 +4314,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ProcessPlayerResponseTimeouts()
-	{
-		WorldDiplomacyExchange exchange = _storage.ActiveExchange;
-		if (exchange == null || !string.Equals(exchange.State, "waiting_player_response", StringComparison.OrdinalIgnoreCase))
-		{
-			return;
-		}
-		int day = CurrentDay();
-		if (WorldDiplomacyRoundLifecycleRules.IsExchangeReminderDue(exchange.ReminderSent, day, exchange.ResponseDueDay))
-		{
-			Kingdom author = ResolveKingdom(exchange.InitiatorKingdomId);
-			Kingdom player = ResolveKingdom(exchange.TargetKingdomId);
-			WorldDiplomacyDocument source = ResolveDocument(exchange.SourceDocumentId);
-			if (author != null && player != null && source != null)
-			{
-				exchange.ReminderSent = true;
-				exchange.State = "generating_player_reminder";
-				EnqueueGenerationJob(author, player, exchange, isResponse: true, sourceDocument: source, priority: 80, externalResponseOnly: true, isReminder: true);
-				exchange.State = "waiting_player_response";
-			}
-		}
-		if (WorldDiplomacyRoundLifecycleRules.IsExchangeCloseDue(day, exchange.CloseDueDay))
-		{
-			CompleteActiveExchange("player_no_response");
-		}
-	}
 		private void NotifyExternalDiplomacyResolvedInternal(string action, Kingdom initiator, Kingdom target, string reason)
 	{
 		if (initiator == null || target == null || initiator == target)
@@ -5335,10 +5206,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb, round, author.StringId, responseSource, requiredSourceDocumentId,
 			_storage?.Documents);
 	}
-	private string BuildAutonomousOpeningPrompt(Kingdom author, string roundId, List<string> candidateIds)
-	{
-		return WorldDiplomacyPromptComposer.BuildAutonomousOpeningPrompt(new PromptWorld(this), author?.StringId, roundId, candidateIds);
-	}
 	private string BuildGenerationPrompt(
 		Kingdom author,
 		Kingdom target,
@@ -5673,21 +5540,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return WorldDiplomacyPromptComposer.BuildFallbackAnalysisJson(ResolveDocument(job?.DocumentId), job?.TargetKingdomId);
 	}
 
-	private string BuildFallbackAnnualSummary(int year, List<string> ids)
-	{
-		List<WorldDiplomacyDocument> documents = _storage.Documents
-			.Where(x => x != null && (ids ?? new List<string>()).Contains(x.DocumentId))
-			.OrderBy(x => x.Day)
-			.ToList();
-		List<string> major = documents.Where(WorldDiplomacyDocumentFactRules.IsMajorDiplomaticDocument).Select(x => WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(x, FormatCampaignDate)).Take(18).ToList();
-		if (major.Count == 0)
-		{
-			major = documents.Select(x => WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(x, FormatCampaignDate)).Take(10).ToList();
-		}
-		return major.Count == 0
-			? "这一年没有留下值得长期记录的重大外交变化。"
-			: string.Join("；", major) + "。";
-	}
 	private static string BuildExternalFactBody(string action, Kingdom initiator, Kingdom target, string reason)
 	{
 		string result = action switch
@@ -5886,15 +5738,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(GetOfferCooldownLastFailedRoundDay, first?.StringId, second?.StringId, "propose_trade", GetTradeAllianceFailedProposalCooldownDays(), CurrentDay())) actions.Add("propose_trade");
 		}
 		return WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(actions);
-	}
-	private static void AppendOpenOfferResponseIntents(
-		WorldDiplomacyRound round,
-		Kingdom author,
-		Kingdom target,
-		List<string> actions)
-	{
-		WorldDiplomacyRoundLifecycleRules.AppendOpenOfferResponseIntents(
-			round, author?.StringId, target?.StringId, actions);
 	}
 	private List<string> BuildLegalDiplomaticActionIntents(
 		WorldDiplomacyRound round,
@@ -6165,11 +6008,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sb.AppendLine("本国君主被俘但当前关押/控制方无法可靠确认。本国处境恶化，应更重视稳定与谈判；不得猜测关押方，也不得把当前对象自动认定为关押方。");
 		}
 	}
-	private void MigratePolicyCountdownHistory(WorldDiplomacyCanonicalHistoryState history)
-	{
-		WorldDiplomacyStorageMigration.MigratePolicyCountdownHistory(
-			history, _storage.Jobs, InvalidateCanonicalHistoryRenderCache, Log);
-	}
 	private bool AppendCanonicalHistoryEntry(
 		string kind,
 		string sourceKey,
@@ -6260,11 +6098,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			InvalidateCanonicalHistoryRenderCache, CurrentDay, policy);
 	}
 
-	private List<WorldDiplomacyCanonicalProtectedFact> BuildCanonicalProtectedFactsThrough(long cutoff)
-	{
-		EnsureCanonicalHistoryInitialized();
-		return WorldDiplomacyRoundLifecycleRules.BuildCanonicalProtectedFactsThrough(_storage.CanonicalHistory, cutoff);
-	}
 	private string BuildCanonicalHistoryBlock(long throughSequence = long.MaxValue)
 	{
 		EnsureCanonicalHistoryInitialized();
@@ -6581,15 +6414,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom target = ResolveKingdom(targetKingdomId);
 		return issuer != null && target != null && FactionManager.IsAtWarAgainstFaction(issuer, target);
 	}
-	private void MigrateDiplomaticThreatsToNextDeclarationRules()
-	{
-		WorldDiplomacyThreatStorageMigration.MigrateDiplomaticThreatsToNextDeclarationRules(
-			_storage, CurrentDay(), ResolveDocument, Log);
-	}
-	private void MigrateDiplomaticThreatComplianceConsequencesV3()
-	{
-		WorldDiplomacyThreatStorageMigration.MigrateThreatComplianceConsequencesV3(_storage);
-	}
 	private void NormalizeDiplomaticThreats(bool allowWorldValidation)
 	{
 		Func<WorldDiplomacyThreat, string> validateWorld = null;
@@ -6638,21 +6462,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			_storage.NationalPrestigeByKingdom, normalizedId, delta, sourceDocument, reason,
 			id => KingdomName(ResolveKingdomIncludingEliminated(id)),
 			id => ReconcileNationalPrestigeVassalRelations(ResolveKingdomIncludingEliminated(id)));
-	}
-
-	private int ApplyInternationalReputationDelta(
-		string kingdomId,
-		int delta,
-		WorldDiplomacyDocument sourceDocument,
-		string reason)
-	{
-		string normalizedId = (kingdomId ?? "").Trim();
-		if (normalizedId.Length == 0) return WorldDiplomacyReputationRules.DefaultInternationalReputation;
-		_storage ??= new WorldDiplomacyStorage();
-		_storage.InternationalReputationByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		return WorldDiplomacyReputationRules.ApplyInternationalReputationDelta(
-			_storage.InternationalReputationByKingdom, normalizedId, delta, sourceDocument, reason,
-			id => KingdomName(ResolveKingdomIncludingEliminated(id)));
 	}
 
 	private void SettleInternationalReputationForDocument(WorldDiplomacyDocument document)
@@ -7198,37 +7007,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		return Settlement.All.FirstOrDefault(x => x != null
 			&& string.Equals(x.StringId, settlementId, StringComparison.OrdinalIgnoreCase));
-	}
-	private static Settlement ResolveMentionedSettlement(string tokenOrText, IEnumerable<Settlement> allowed)
-	{
-		string text = (tokenOrText ?? "").Trim();
-		List<Settlement> candidates = (allowed ?? Enumerable.Empty<Settlement>()).Where(x => x != null).Distinct().ToList();
-		if (string.IsNullOrWhiteSpace(text) || candidates.Count == 0)
-		{
-			return null;
-		}
-		Settlement exact = candidates.FirstOrDefault(x => string.Equals(x.StringId, text, StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(x.Name?.ToString(), text, StringComparison.OrdinalIgnoreCase));
-		if (exact != null)
-		{
-			return exact;
-		}
-		exact = candidates.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name?.ToString())
-			&& text.IndexOf(x.Name.ToString(), StringComparison.OrdinalIgnoreCase) >= 0);
-		if (exact != null)
-		{
-			return exact;
-		}
-		return candidates
-			.Select(x => new
-			{
-				Settlement = x,
-				Score = WorldEntityRetrievalService.CalculateBestAliasScoreForExternal(text, new[] { x.Name?.ToString() ?? "", x.StringId ?? "" })
-			})
-			.Where(x => x.Score >= 0.72f)
-			.OrderByDescending(x => x.Score)
-			.Select(x => x.Settlement)
-			.FirstOrDefault();
 	}
 	private static string BuildBilateralState(Kingdom author, Kingdom target)
 	{

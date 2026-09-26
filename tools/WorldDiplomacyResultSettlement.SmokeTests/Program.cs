@@ -2122,8 +2122,15 @@ internal static class Program
         {
             if (!marker.StartsWith("private ", StringComparison.Ordinal) || !marker.EndsWith(" " + name + "(", StringComparison.Ordinal)) continue;
             string owner = promptMethods.Contains(name) ? "WorldDiplomacyPromptComposer" : "WorldDiplomacyDraftRepairApplication";
-            Test.True(source.Contains(owner + "." + name + "(new PromptWorld(this),", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/" + owner + ".cs"));
+            if (name == "BuildAutonomousOpeningPrompt")
+                Test.True(source.Contains("WorldDiplomacyPromptComposer.BuildGenerationPrompt(new PromptWorld(this),", StringComparison.Ordinal)
+                    && text.Contains("return BuildAutonomousOpeningPrompt(world, author, roundId, roundPlanCandidateIds);", StringComparison.Ordinal), "generation composer calls autonomous opening");
+            else if (name == "EnqueueGeneratedDeclarationRepair")
+                Test.True(source.Contains("WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(new PromptWorld(this),", StringComparison.Ordinal)
+                    && text.Contains("&& EnqueueGeneratedDeclarationRepair(world, job, rejectedRaw, author, target, normalizedReason, parsedJson)", StringComparison.Ordinal), "draft rejection calls repair owner");
+            else
+                Test.True(source.Contains(owner + "." + name + "(new PromptWorld(this),", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
         }
         return null;
@@ -2133,6 +2140,7 @@ internal static class Program
     {
         string? moved = ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
+        if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
         Test.True(start >= 0, "missing start marker: " + startMarker);
         int end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);

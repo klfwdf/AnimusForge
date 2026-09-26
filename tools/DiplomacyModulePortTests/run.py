@@ -29,9 +29,12 @@ def boundaries():
    prior=prior.replace(block+'\n\n','')
   assert current.strip()==prior.strip(), 'Caller guard/order/argument drift: '+p
  world='src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs'
- assert read(world).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==old(world),'Policy cadence/state owner changed'
+ assert read(world).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(old(world),declaration),'Policy cadence/state owner changed'
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)
+ ledger=declaration(before,'internal sealed class PublishedPolicyArtifactLedgerEntry')
+ assert ledger==declaration(read('Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs'),'internal sealed class PublishedPolicyArtifactLedgerEntry')
+ before=before[:before.index('/// <summary>')]+before[before.index(ledger)+len(ledger):].lstrip('\n')
  snapshot=declaration(before,'internal sealed class WorldDiplomacyPolicySignalSnapshot')
  before=before.replace(snapshot,'').strip()
  start=before.index('result.Add(new WorldDiplomacyPolicySignalSnapshot')
@@ -55,7 +58,7 @@ def main():
  out=HERE/'.generated/current';out.mkdir(parents=True,exist_ok=True)
  (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>',encoding='utf-8')
  # Compile the existing immutable ledger DTO verbatim, never a hand-maintained mirror.
- entry=declaration(read('PolicySystem/Context/WorldDiplomacyPolicyContext.cs'),'internal sealed class PublishedPolicyArtifactLedgerEntry')
+ entry=declaration(read('Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs'),'internal sealed class PublishedPolicyArtifactLedgerEntry')
  (out/'LedgerEntry.cs').write_text('namespace AnimusForge;\n'+entry,encoding='utf-8')
  common=[HERE/'HostStubs.cs',HERE/'Program.cs',out/'LedgerEntry.cs']
  variants=[
