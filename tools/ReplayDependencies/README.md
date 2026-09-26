@@ -24,10 +24,17 @@
 通常的 `Program.cs` 仍加载项目本地固定的
 `bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll`。
 先用既有官方流程单独准备 Stage；此框架只读取它，不构建、不修改 Stage。
-`PhaseEightParityReplayTests` 是 J13 离线候选例外：必须显式传 `ReplayCandidateDll`
+`PhaseEightParityReplayTests` 和 J14 的 `ProductionCourierHostReplayTests` 使用显式离线候选：必须传 `ReplayCandidateDll`
 指向本仓库刚构建的 `bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll`，
 并在 `--` 后传相同 DLL 绝对路径及其 SHA256。runner 校验 build marker、SHA256 和
 产物时间不早于本次生产源码；不读取旧 Stage，不改变其他 replay 的默认路径。
+Courier 也可选择同仓 Release 1.4；启动时还核对依赖 manifest 的候选路径/SHA，
+只从验证后的 runner 顶层解析依赖，不再回退旧 Stage 或 `.tmp/build_check/1.4`。
+当前 J14 产品 `e58f3558` Debug 1.4 SHA256
+`A12440D2DEF0FD683C9B0B3CD1FC6BBC28F8DC51B17BC1B37053F0961876F91D`
+已执行完整 Phase8 和原 Courier detached host 断言；错误 SHA 明确被 Courier 启动守卫拒绝。
+Courier 回放验证 reply/inbound 角色、无 owner 后处理拒绝、取消/失效/回退、未知效果不重派；
+其 gateway/memory 是 fixture，不冒充真实运输、provider 或最低层存档验收。
 自定义 runner 输出层级/RuntimeIdentifier 会被拒绝，避免验证与实际加载不同的 Stage。
 
 ## Fail-closed 与证据
