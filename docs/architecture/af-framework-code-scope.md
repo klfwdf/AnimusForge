@@ -1,3 +1,13 @@
+# 当前范围：J15c 默认 Prompt 唯一源与安装覆盖接线（2026-09-26）
+
+产品 **`9db8fa8b`**，测试修复 **`a3fa77af`**；状态 **`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。30 份默认 JSON 按 Memory/Persona/Prompt/Kingdom/Weekly/Diplomacy/PolicySystem 归到 `content/modules/<owner>/CustomPrompts`，`content/content-map.json:396–545` 保持原安装 target；总映射 107。`deploy_module.ps1:172–220,802` 只迁默认源查找和已解析 root 参数，安装用户覆盖、旧 Policy 替换及 runtime writer 仍是原 owner 的责任。
+
+`tests/content/J15ContentContractTests/run.py:241–393,419–554,615–654` 固定默认字节、真实源/消费者及 14 overlay aliases；`ContentLayoutContractTests.ps1:106–205` 覆盖生产 merge 四种安装状态和重复组装。Policy 工具源定位与反射测试修复没有产品行为变更；live provider probe 只改路径且未运行。详细失败、修复、当前四实现/Bootstrap hash 和门禁证据集中于[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。
+
+生产 C#、七资源声明、public API 和保存身份未变，代码地图保持 `e58f3558` 的 755 锚点。数据/模型/素材仍原位未闭合；完整 J15 和实际游戏验收尚未完成。
+
+## 以下为 FeatureBridges 最小片历史范围
+
 # 当前范围：J15c FeatureBridges 静态源归位，完整验证待授权（2026-09-26）
 
 产品/测试 **`7bc2ffbf`**；状态 **`J15c_FEATUREBRIDGES_VERIFY / J15_PARTIAL_HOLD`**。`content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json:1–18` 是唯一仓库源，`content/content-map.json:391–395` 仍投影到原模块 `ModuleData/FeatureBridges.json`，当前共 77 项。真实 runtime owner 仍为 `Refactor/Runtime/FeatureBridgeRuntime.cs:226–263,267–344,351–415`，一次性读取、缺失默认和错误全关语义未改；不增加 runtime I/O、Tick 或公开 API。

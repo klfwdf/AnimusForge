@@ -1,3 +1,11 @@
+# 当前交接：J15c 默认源已归位并离线验收，剩余数据/素材边界待闭合（2026-09-26）
+
+- **状态**：`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。产品 `9db8fa8b`，测试消费者修复 `a3fa77af`；30 份默认 Prompt 原样 R100 归位，映射 107，安装覆盖/运行路径不变。完整目标未缩小；详见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)、[J15 计划](docs/plans/j15-content-profile-plan.md)。
+- **已验**：完整 107 项合成投影、四种安装状态及重复组装、Bridge 24/隔离 12、Policy 216/1406/UI 387、六构建零警告错误、四实现七资源、旧 Native ABI、1620 DLL 元数据和当前 DLL Phase8 均通过；755 锚点两模式通过。额外重复 runner 清理被自动审查拒绝，未绕过，新增静态段单独通过，证据层级见台账。
+- **下一步**：继续完成 PlayerExports/旧 profile/VoiceMapping、ONNX、素材/GUI 来源与数据边界，再作完整 J15d 退出审计，不把 HOLD 算完成。不要再把已迁 Prompt 或已验六构建当作待授权工作。无 Stage/Deploy/Package/push/外写；实机、旧档、provider、Gauntlet、音频、帧性能 NOT-RUN，`.dotnet-cli-home/` 保留。
+
+## 以下为 FeatureBridges 最小片历史交接
+
 # 当前交接：J15c FeatureBridges 已归位，完整验证待授权（2026-09-26）
 
 - **状态**：`J15c_FEATUREBRIDGES_VERIFY / J15_PARTIAL_HOLD`，产品/测试 `7bc2ffbf`。FeatureBridges 默认源按 Foundation.Runtime 原样 R100 归位；映射 77、旧根 HOLD 40，运行路径/正文/七嵌入资源/C# 行为不变。完整 J15 目标未缩小，J15a/b 不重做；详见[主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)、[J15 计划](docs/plans/j15-content-profile-plan.md)。
