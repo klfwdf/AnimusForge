@@ -1,0 +1,10 @@
+{
+  "baseline": "d9e9aae156c208d599f95354d10ba45e142155a0",
+  "addedFiles": {
+    "ShoutBehavior.NativeTurn.cs": "ac657218ac8ece14a7cbca17edd2ddd04e27c943ff712374ffd4026088369ab8",
+    "ShoutBehavior.NativeTurnCommit.cs": "486cdd1de84c2f8e814ea208e91b5548ac73bb3eaa1b116046aa50671ed52c90",
+    "ShoutBehavior.NativeTurnPresentation.cs": "f95c358e5e4202ae01acab18ec08c6f69ef43547c2bce2c568f0cea24951fe45",
+    "ShoutBehavior.NativeTurnPrompt.cs": "3758dfc47c774319eb5bfa867d45646b8a77255eca4582cdcdde97f69029af91",
+    "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationTurnCoordinator.cs": "43ea7ea866a0029c05062e3c9f9f30a78a13ec5df2770ac3f43bd9c48f46f553"
+  }
+}

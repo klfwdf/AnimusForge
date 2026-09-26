@@ -1,429 +1,323 @@
-# AF 总 HANDOFF — 本地目标模式续作（2026-09-12）
+# 当前交接：J14a Scene 有限离线收口（2026-09-26）
 
-## 最新城镇每帧批次调度（2026-09-21 06:42:54）
+- **状态**：`J14_G0_BASELINE_VERIFIED / J14a_OFFLINE_VERIFIED / J14_ACTIVE`。产品/测试 `1740b338`, `79fa7c48` 已开放真实 Scene 公共票据→原群组/接力→speech/后处理/记忆/AFEF 回执→终态，Native 原签名与 UI 入口不变；Courier/J14c 尚未完成。具体 owner、消费者和未覆盖责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)及[代码地图](docs/architecture/af-framework-code-map.json)。
+- **离线证据与下一步**：Scene 群组 18、请求生命周期 34、后处理 37、独立外部消费者正常/枚举重排各 55、ChannelCutover 133、NativeCompletion 186、V1 142、四实际 DLL metadata 1252；原脚本在用户授权四个精确仓内产物目录、不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；730 锚点地图 recorded/working-tree 通过。旧 MemorySummary terminal runner 的既存抽取锚失效，此次未通过，详细限制与 SHA 见主台账。下一包按[计划](docs/plans/j14-public-api-plan.md)做 J14b Courier，随后 J14c 最终候选；不能称整体 J14、实机或发布完成。真实游戏、旧档、provider、音频、帧性能 **NOT-RUN**；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。原未跟踪 `.dotnet-cli-home/` 保留。
 
-用户反馈分组版仍超时。223659/223734两条实机已加载MVID a0a0aa8d，提前排除4420/4412项，处理约94%仍25秒、faces=0，最终357网格。rgl现场113批5773ms/112批6185ms；旧每批调度两次主线程且AfterFramesAsync(1)强制至少等两帧。检查点`0457b53`，生产`7baff04e2049825018e8f5de319f2cf81897b8a9`，当前F盘分支，仅Illustrator四份源码。
+## 以下为 J13 交接（历史）
 
-新增单槽PanoramaBatchPump，由既有应用Tick每帧推进一次原CopyBatch，现场/资源阶段各注册一次；原预算、30m、25秒、分组边界和镜头导出等待保持。批次返回后才通知后台；Reset/Shutdown清理前取消并唤醒。分段诊断scene_snapshot_batches记录workMs/elapsedMs/maxBatchMs等；旧版没有CPU细分，不能把全部帧间隔冒称纯空转。
+# 当前交接：主体 J13 最终离线收口（2026-09-25）
 
-源码审查、双API Release均0警告/0错误；未跑离线测试/审计脚本或模型。原脚本已部署，8文件哈希一致，SHA256`23AD821D8F0C94BE01924B0A027A7EB08718C4DB45E52784C56D5D5A6978ACB2`，MVID`3b86c026-b6d4-44b7-a3ac-dad20312017c`。06:43核对无游戏相关进程，可启动新版；完整城镇试采、帧率、退出和GPU仍待实机。备份`artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260921-064254`是已知超时版。未推送/改主模组；代码行号、职责、证据与回滚见[调度续修报告](docs/audits/2026-09-21-illustrator-frame-pump.md)。
+- **状态**：`J13_OFFLINE_VERIFIED / J13g_OFFLINE_VERIFIED`，仅按[原 J13 计划](docs/plans/j13-domain-owners-plan.md)完成 a–f owner 与 g 最终离线门禁，不是实机或发布验收；J14 未启动。最终产品 `39cf9d47` 修复 Onboarding Base URL 取消后、主线程消费前的迟到结果竞态；证据目录 `894acdfc`，详细责任、候选身份和风险见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[范围图](docs/architecture/af-framework-code-scope.md)。
+- **最终证据**：原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；当前 Debug 1.4 SHA256 `03D0FACFC1199B7BFA68B8BDEEABCFF8B69E5B9A97AE6BB279050C33509F0E55` 完整 Phase8 当前 DLL 回放通过。V1 API 119、四 DLL metadata 1148、Persistence Profile 142 key/168 binding、Identity 142 SyncData/36 CampaignBehavior、Bridge/readiness、Native/Scene/Courier/J12 定向回归与 722 锚点代码地图均通过；证据层级和命令见主台账。真实游戏、旧档、provider、UI 焦点、音频、帧性能仍 **NOT-RUN**，Phase8 目录仍 `REPRESENTATIVE`，不能称发布 READY。
+- **交接边界**：本次只收口 J13；不 push、Stage、部署、打包、写游戏/外仓、改自动化或清理 `.dotnet-cli-home/`。J14 如需开工须另行授权。
 
-## 最新城镇资产分组与边界预筛选（2026-09-21 06:32:42）
+## 以下为 f 交接（历史）
 
-用户确认优化前两项。旧版街道两次约25.2秒超时、faces=0；XML279ms/缓存0ms不再是瓶颈，5637计划项首轮只处理1062、755次模板加载、78次提前排除、最终113网格。检查点`101fe5e`，生产`5add4b7bf67f141e9de3d37255cd6f7858d544a2`，F盘当前分支，仅Illustrator两份生产源码。
+# 当前交接：主体 J13f UI/Overlay/Onboarding 有限离线收口（2026-09-25）
 
-资源计划后台按准确资产稳定分组；重复资产用一个Identity私有模板完整测得局部AABB，按各实例八角变换预筛选，复用不同旋转/缩放，近处仍原生实例精查复制。单次资产不增加测量，无效边界回原路径，runtime优先；只保留当前组托管边界。30m/1024网格/32768节点/25秒与分帧预算保持，未改调度或增加跨采集缓存。新增测量/实例加载/组数诊断，不能承诺所有城镇必然完成。
+- **状态**：`J13f_OFFLINE_VERIFIED / J13_ACTIVE`，仅本包离线完成，下一步按[原计划](docs/plans/j13-domain-owners-plan.md)执行 **J13g** 最终候选门禁；J14 不开始。真实 owner 与保留 Campaign/Gauntlet/Native/百科边界见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)。产品/回放 `1e2bd80a`、`a2e9b8eb`、`26bc72fa`、`48bcc48a`，Native 测试入口修复 `61f8720a`。
+- **离线证据**：Debug 1.3/1.4 + Bootstrap 0 warning/error；当前 Debug 1.4 `AnimusForge.dll` SHA256 `E07886118A440F3B462EE7C6A0182213B5C00BD42391AF76435E52EDD51156A5` 的完整 Phase8 包含五个 J13f owner 回放及 UI 宿主源码契约；Native admission 44/44、presentation 46/46，source inventory 7；[代码地图](docs/architecture/af-framework-code-map.json) 722 锚点 recorded/working-tree 通过（仅定位）。真实 Gauntlet/Campaign/provider/旧档/帧性能 **NOT-RUN**；Release 和最终 API/保存/Bridge 门禁留给 g，不冒充已验。
+- **下一条具体动作**：以当前提交为候选，先核实 Release 两个仓内原脚本清理目标的绝对路径和 reparse，再运行原脚本 Debug/Release 六构建；随后四实现 DLL API/metadata、Persistence Profile/Chunk/Identity、Bridge/readiness/source inventory、当前 DLL Phase8、Native/Scene/Courier 与 J12 相关回归及地图两模式，最后主台账/交接收口。`.dotnet-cli-home/` 保留；无 push、Stage、部署、打包、游戏/外仓写入或自动化改动。
 
-双API Release均0警告/0错误、源码审查完成；未跑离线测试/审计脚本、未调用模型。原脚本已部署独立模块，8文件哈希一致，SHA256`4CA5BB9E3AA0D0E7DFCE15FDE7CAEC82B5B5A902F7384BABA74973AE92288E31`，MVID`a0a0aa8d-d50b-4dc9-8a66-bf05dcfe8883`。DLL占用走既有重命名替换，06:33仍有Launcher9128；需完整重启，不把磁盘部署当已加载。备份`artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260921-063242`。城镇新耗时、第三方变换、墙顶家具覆盖和GPU稳定性待实机；未推送或改主模组。核实源码行号、责任边界、证据及回滚见[本轮报告](docs/audits/2026-09-21-illustrator-grouped-bounds.md)。
+## 历史交接（以下各节按原记录保留）
 
-## 最新城镇XML流式读取与预算分离（2026-09-21 06:10:16）
+# 当前交接：主体 J13e1 Duel 有限离线收口（2026-09-25）
 
-用户城镇生图报32768 XML预算，真实失败`20260920T215714_51bae0ea63fa45cf8fdeb24952ced6cd`共284ms、faces=0、尚未请求模型。rgl确认empire_town_s街道；安装同名XML约6.53MiB、111806元素/17037实体/9030根，最大根子树817。检查点`137300e`，源码`78c13e6cf1b1550bf9ab8b565d854cd2cf6d58e6`，F盘当前分支，仅Illustrator三份生产源码。
+- **状态**：`J13e1_OFFLINE_VERIFIED / J13_ACTIVE`。Duel 模块持有 exact 受理/运行转换与三种终局 typed 效果投影，原 Mission/Harmony/保存/Courier 薄适配保留。意图 `8cc8ef63`，生产/回放 `054781b1`、`88643619`、`ca49023f`、`d0d15a57`、`d89a13b5`；一基坐标、Patch 清单、覆盖和未验责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[代码范围图](docs/architecture/af-framework-code-scope.md)。
+- **离线证据**：原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4+Bootstrap 六构建成功；Debug 1.4 SHA256 `64CBF30A1F436F1D05B8A0A8817DBA9A4A186C568F9484080E67B4427BC6A700` 的 Phase8 含当前 DLL exact owner 行为回放与 e1 聚合契约通过；DuelOutcome 20/20、DuelDispatch 16/16、ProductionDuel 35/35 × Debug/Release；V1 119/四 DLL metadata 1064、PersistenceIdentity 142/36、source inventory 7、[代码地图](docs/architecture/af-framework-code-map.json) 617 锚点两模式通过。实机 Mission/Harmony、旧档、MCM、经济副作用与帧性能均 **NOT-RUN**。
+- **下一条具体动作**：按[原计划](docs/plans/j13-domain-owners-plan.md)进入 **e2 Taunt**：先核对和平冲突 allowlist/原场景伤害上下文、`SceneTauntBehavior`/五个原 patch/生产消费者与关闭恢复路径，再逐责任切片迁真正 owner、做正反/失效回放和聚合契约；随后 e3–e5，不提前 J14。`.dotnet-cli-home/` 原未跟踪目录保留；无 push、Stage、部署、打包、写游戏/外仓或改自动化。
 
-资源改同一锁定文件两遍顺序读取：全局levels+逐根子树，处理后释放DOM，保存最后一个精简计划。文件仍8MiB/64层；每遍524288 XML元素、单树32768、计划32768分别限额。根遍历提升32768，实际总节点32768、30m/1024渲染副本、4ms软预算/分帧/25秒仍保留。新增本次采集内同资产同旋转缩放AABB缓存，完整边界才复用、远处重复实例可提前排除；不按原点误删大墙屋顶、不跨场景缓存native。首轮仍扫描完整文件和现场节点，不声称只读30m或全部远处资源不加载。
+## 以下为 d4 交接（历史）
 
-源码审查、API1.3/1.4 Release最终均0警告/0错误；未跑离线测试/审计脚本或模型。原脚本已部署独立模块，8文件哈希一致，SHA256`D5C24B6F4C27E2987F7F70878DADF36A1F7FAAA5935E53A3C276747BE38C5D7F`，MVID`bee95733-ba3c-4f6e-8283-54a8b756a73e`。备份`artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260921-061016`。新解析诊断记录sourceFile/峰值子树/计划耗时及模板加载数。实际街道耗时、节点/副本/超时预算、缓存命中与画面仍待重启实机试采；没有推送或修改主模组。证据、源码范围、未覆盖责任及回滚见[城镇读取报告](docs/audits/2026-09-21-illustrator-town-streaming.md)。
+# 当前交接：主体 J13d4 WarStats 有限离线收口（2026-09-25）
 
-## 最新全景透视、导演失败与副本太阳光纠正（2026-09-20 08:35:45）
+- **状态**：`J13d4_OFFLINE_VERIFIED / J13_ACTIVE`。WarStats 活动/历史/旧账及近期序号、宣战/计数/死亡/归档/保存恢复归唯一 ledger；原 CampaignBehavior、v1–v5 保存键、事件装配和终端消费者保留。产品/行为 `6d5657e9`、`c8cc0efd`、`ab05a736`、`db1830bc`、`f722dd41`，聚合接线 `f0cc3ede`/`6b0c07f7`；一基坐标、覆盖/未覆盖责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[代码范围图](docs/architecture/af-framework-code-scope.md)。
+- **当前证据**：原脚本 Debug/Release × 1.3/1.4+Bootstrap 六构建 0 警告/错误；Debug 1.4 SHA256 `656D4E9BF9E5894FEA899B6E3CA05BC264B1F725A16D32853E4874B6F051EC07` 的 Phase8 含 d4 状态反例及聚合契约通过；V1 119/四 DLL metadata 1060、PersistenceIdentity 142/36、迁移 fixture 10、source inventory 7、[代码地图](docs/architecture/af-framework-code-map.json) 600 锚点两模式通过。合成数据不是实机 Campaign/旧档/终端点击/帧性能验收，均 `NOT-RUN`。
+- **下一条动作**：按[原计划](docs/plans/j13-domain-owners-plan.md)与场景伤害/军团会面案例先审 e1 Duel 的 host、typed outcome、三个现有 Duel 套件和生产消费者，开工意图后逐验证切片迁 owner；依序 e2–e5，不提前 J14。`.dotnet-cli-home/` 原未跟踪目录保留；未 push、Stage、部署、打包、写游戏/外仓或改自动化。
 
-工作区/分支沿用当前F盘，本轮仅独立Illustrator；检查点`12d734f`，源码`e24cea6e56da9a44e05c93166b30cc2b867719d4`。用户反馈本地回退、成图照搬全景与屋顶漏光，后续询问10m、蓝色、第二张恢复及截图仅本地回退发送。001727真实导演HTTP400为上游地区拒绝，未产正文；002244《殿堂承命》导演成功，不能据一次好图称为管线完全验收。原生蓝面已一次转换、实际发送全景暖色正常，颜色代码未动。
+## 以下为 d3 交接（历史）
 
-导演实际请求失败/空包/截断现在停止生图并显示短原因；关闭/未配置与可用正文契约回退保持，后者移除历史行动。导演继续看全景+现场截图，以单独yaw/pitch/hfov选环境参考方向；生图仅768普通透视环境图，缺元数据默认前向并记录。Mission截图只本地构图发给生图，地图独立路径保持。副本零太阳、保留3观察灯和导出shadow初始化；30m复制保持，按完整AABB扩展far、上限200m并记录，不新增扫描/镜头/模型调用。
+# 当前交接：主体 J13d3 WorldEvents 有限离线收口（2026-09-25）
 
-双API Release均0警告/0错误，独立源码复核完成，未跑离线测试。原脚本已部署独立模块，8文件哈希一致；SHA256`9F04F4CF697AD28BBA9299D7C65DDF3C788A587438D3D0CB0DAFD877E05DFC3B`，MVID`79de0ab6-c83d-40e0-989e-089757f3c0e5`。备份`artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260920-083545`。亮条/照明、取景元数据和正常透视最终成图、新耗时仍待实机；上游可用性不受本地修复控制。已保存真实诊断防轮转，未推送/调用模型。核实源码坐标、边界和回滚见[本轮报告](docs/audits/2026-09-20-illustrator-panorama-correction.md)。
+- **状态**：按[原 J13 计划](docs/plans/j13-domain-owners-plan.md)，`J13d3_OFFLINE_VERIFIED / J13_ACTIVE`；WorldEvents 收件箱 records/unread/stable-key/version 归唯一 owner，原 CampaignBehavior、v1 保存键和政策/UI/档案入口保留。产品/行为 `62ec9065`，聚合接线/政策 UI 契约 `b07898cb`；具体一基代码坐标、保留职责和风险见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[代码范围图](docs/architecture/af-framework-code-scope.md)。
+- **证据边界**：原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建零警告错误；当前 Debug 1.4 SHA256 `C70D15E9B5251356F98FBDBA633E61205A45EB1B48D18FB0CE39C68E5BDE17B0` 的 Phase8 含 d3 行为/聚合通过，Policy UI 387、V1 119/四 DLL metadata 1060、PersistenceIdentity 142/36、source inventory 7、代码地图 586 锚点两模式通过。真实 Campaign、旧档、Gauntlet、provider/音频及帧性能均 `NOT-RUN`；离线数据不冒充实机。
+- **下一步**：依计划先读 d4 WarStats 的事件→计数→归档→v5 保存/终端消费链，逐验证切片迁真正 owner、保持原 `AFWarStatsTerminal` 类型及事件注册；随后 e1–e5。`.dotnet-cli-home/` 未触碰；未 push、Stage、部署、打包、写游戏/外仓、改自动化或启动 J14。
 
-## 宣权篡位选兵全选崩溃修复已覆盖（2026-09-20 08:10:22）
+## 以下为 d2 交接（历史）
 
-用户实机“挑选突击队崩溃”：rgl与WER14300.dmp确认 `ExecuteTransferAllOtherTroops → PartyCharacterVM.InitializeUpgrades` 空引用。旧版RightOwnerParty=null，而原版先读其ItemRoster再检查禁升级。检查点 `8533df8`，修复 `63de4323`：独立子MOD选兵补主队/领袖UI上下文，继续保持dummy名册，并隔离取消时的物品快照；不修改AF主体。
+# 当前交接：主体 J13d2 Proactive/Issue 有限离线收口（2026-09-25）
 
-双API Release均0警告/0错误，部署DLL的29项选兵数据工厂fixture检查、44个Harmony注册目标通过。已覆盖游戏v1.4.8独立 `AnimusForge_Coup`，4文件哈希一致、AF原DLL不变；SHA256 `9141B301EC8481F45F38C4DE2999E26DCDB1900FE4BE3805E82CADAB997BA920`，MVID `e548649d-8d0b-4590-892e-e87c42afc682`。旧版备份 `artifacts/deploy-backups/AnimusForge_Coup/20260920-081022/module`。未启动游戏；实际转入/退回/确认/取消和大厅选兵仍需重启后复验。证据、核实源码坐标及边界见 [选兵崩溃修复报告](docs/audits/2026-09-20-coup-selection-crash.md)。
+- **状态**：按[原计划](docs/plans/j13-domain-owners-plan.md)的 d2 范围，`J13d2_OFFLINE_VERIFIED / J13_ACTIVE`；Social 的资格/状态/pending opening 与 Issue 的 offer/in-progress/turn-in/完成回执已迁入各自 owner，Campaign/TW/反射/窗口保留原 host 适配。产品提交 `a59a0fc0`、`fe74d4fa`、`3f330c58`、`f739dbaf`、`4e4ad8bf`、`96d058ca`，聚合证据 `36037592`、`7fc6f680`，重复领取行为回放 `d34fd858`。
+- **当前证据**：原脚本 Debug/Release × 1.3/1.4+Bootstrap 六构建零警告错误；Debug 1.4 SHA256 `0071A62D00D40E4113222F7A3E1FCDA641CABFA26EA4FC9371301025EF745544` 的 Phase8 包含 d2 聚合与行为反例通过，其中当前生产方法对合成的原版 Issue/Hero 验证未受理可 offer、已受理及错 owner 不可 offer；V1 119/四 DLL metadata 1060、PersistenceIdentity 142/36、source inventory 7、代码地图 575 锚点 recorded/working-tree 通过。真实 Quest/PartyScreen/旧档/provider/UI/音频/帧耗时未验，不以合成 fixture 冒充实机。
+- **下一步**：依[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[代码范围图](docs/architecture/af-framework-code-scope.md)进入 J13d3 WorldEvents，随后 d4 WarStats；J13e/f/g 未由 d2 替代。未 push、Stage、部署、打包、写游戏/外仓或 J14；`.dotnet-cli-home/` 不动。
 
-## 最新360×180全景与base层家具漏采纠正（2026-09-20 08:08:05）
+## 以下为 d2 资格切片交接（历史）
 
-用户要求完整全景，提出两个180度镜头；已说明普通透视相机不能直接设180度，改为独立副本六个90度方向顺序共用512RT，后台合成2048×1024球面展开图。源码 `869166fe`，检查点 `f0b9139`。正式参考与不付费试采均改用ScenePanorama，注明中心前方、边缘后方相接和上下极拉伸，30米/一次副本/原预算保持。全方向不代表全部几何或实时状态覆盖。
+# 当前交接：主体 J13d2 主动资格归 Social，继续 Issue（2026-09-25）
 
-实图已证实123组件中大厅主体仅一份、源/目标Frame一致，未发现主体重复；确定漏家具因activeMask21包含implicit base1，而常规平民家具mask30不声明base。本轮按XML base定义剔除公共位，匹配实际variant20，继续排除siege46；修正第二红座椅/多张桌子被误筛的路径。亮条原因仍未确证，不称为已修复z-fighting或光照。
+- **状态**：产品/回放 `a59a0fc0`，Proactive 的资格、状态、pending opening/消费均有有限离线证据；**J13d2/J13 仍 `ACTIVE`**，Issue 的 offer/in-progress/turn-in/完成回执未闭合。
+- **本片证据**：完整主动候选/各需要资格算法迁入 `src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs`，原 host 留 Campaign/存档/会面适配；前驱源码字节级重组相等。原脚本 Debug/Release × 1.3/1.4+Bootstrap 六构建零警告错误；Debug 1.4 SHA256 `DD81C07FD3F4146DC696A498A88467F703B886A8CBA69548BACABF1DCC1A85B5` Phase8 全通过，API 119/四 DLL metadata 1060、PersistenceIdentity 142/36、source inventory 7、代码地图 560 锚点两模式通过。真实游戏/Quest/旧档/provider/UI/音频/帧耗时未验。
+- **下一步**：依[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)核对三渠道、Quest 身份、offer/受理/交付与完成事实，迁入 Issue owner 并做 d2 聚合退出门。未 push、Stage、部署、打包、写游戏或外仓；`.dotnet-cli-home/` 不动。
 
-双API Release均0警告/0错误，源码复核通过，未跑离线测试。已原脚本部署、8文件哈希一致；SHA256 `1C241BB36519AB485CCC14C1079B6CE8585EDEA823299B9E07054B938AD9AE65`，MVID `5bfac8d7-55ee-41ce-be61-25611834d0a0`，备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260920-080805`。六面原生方向/接缝、补回家具、性能及稳定性仍待实机，未推送/调用模型。证据与坐标见 [全景覆盖报告](docs/audits/2026-09-20-illustrator-panorama-coverage.md)。
+## 以下为 d2 主会话切片交接（历史）
 
-## 最新返回独立场景、资源补齐及独立试采（2026-09-20 07:46:33）
+# 当前交接：主体 J13d2 主会话 owner 有限切片完成，继续资格/Issue（2026-09-25）
 
-用户决定“那就独立场景吧”。检查点 `0983bf1`，源码 `c2861606`。已删除共享Mission.Scene试采代码/调度，按钮改为“独立场景试采”，与正式生成复用独立前后双镜头，仅预览不调用模型。原运行时网格复制继续保留，另由引擎解析实际scene.xscene，后台构建有界静态计划；准确mesh/prefab资产在自有未渲染模板Scene读取，纯几何补入最终30米副本，不整场Scene.Read。已观察实例（包括隐藏/零网格）优先，跳过脚本、动态、骨骼、cloth、复杂覆盖，记录省略与源/目标边界。均匀中灰标记几何未覆盖。
+- **状态**：分支 `codex/af-main-refactor-continuation-20260831`，产品/回放 `f1ecb315`；J13a–c/d1 和 d2 opening、冷却、扫描、主会话/Issue 派遣 pending 均有有限离线证据，**J13d2/J13 仍 `ACTIVE`**，不提前 d3/J14。
+- **本片证据**：Social 唯一 session owner 接管原保存 DTO 的读档规范化、重复启动、追逐探测/阶段/过期/取消与一次疲劳；原 Campaign/TW/AFEF 适配仍保留。原脚本 Debug/Release × 1.3/1.4+Bootstrap 六构建零警告错误；当前 Debug 1.4 SHA256 `D42E34E7105D35D9289D4FAD8DCEBC0D879E47E4159EE9B87D063EB17A835DEB` 的 Phase8 全通过，V1 119/四 DLL metadata 1060、PersistenceIdentity 142/36、source inventory 7、代码地图 554 锚点两模式通过。真实游戏/旧档/provider/UI/音频/帧耗时未验。
+- **下一条具体动作**：依[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)先关闭主动候选资格的 Social 归属与聚合反例，再迁 Issue offer/in-progress/turn-in/完成回执并做 d2 聚合退出验收。未 push、Stage、部署、打包、游戏/外仓写入或改自动化；`.dotnet-cli-home/` 不动。
 
-最终双API Release均0警告/0错误，源码/资源结构/退场复核和XML检查完成，未跑离线测试。已用原脚本部署独立模块、8文件哈希一致；SHA256 `2E38A32B3C3E7AE9C0767F3A70CACEA80A7F55353C3EA8A4507AE296751212F9`，MVID `40acdac8-efb3-493d-a07b-c66b13a7f2c3`，备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260920-074633`。新资源路径、建筑/家具可见性、性能和稳定性未实机验收；资源基线不保证实时破坏状态，也未覆盖native terrain/水面。未推送或代理付费生成。坐标、预算、诊断及回滚见 [独立资源补齐报告](docs/audits/2026-09-20-illustrator-isolated-resource.md)。
+## 以下为 d2 增量扫描切片交接（历史）
 
-## 宣权篡位独立子模组已部署（2026-09-20 07:23:55）
+# 当前交接：主体 J13d2 增量扫描 owner 有限切片完成，继续主会话/Issue（2026-09-25）
 
-用户最终改为“先做成子模组部署到游戏，后面再考虑整合”。生产 `ce89346c`，意图 `e081202` / `2bca39a6`。新增 `extensions/AnimusForge.Coup`；本轮临时 AF 主体接线已定向撤回，不替换主 DLL。支持本国封臣城镇发动、60 人街道突破、20 人大厅擒王、换王转城、释放/扣押旧王、失败带地叛离，以及按 AF 现有规则立即判定一次叛乱；独立状态/存档和缓存反射桥，公共 API 未扩展。
+- **状态**：分支 `codex/af-main-refactor-continuation-20260831`，产品/回放 `6eb3d170`；J13a–c/d1 及 d2 opening、冷却、扫描/Issue 派遣 pending 各有限片有离线证据，**J13d2/J13 仍 `ACTIVE`**，不提前进入 d3/J14。
+- **本片证据**：唯一 Social owner 负责扫描实例、批大小、统计/排名、精确完成；原每帧 16 队伍/1.5ms 上限保留。原脚本 Debug/Release × 1.3/1.4+Bootstrap 六构建零警告错误；当前 Debug 1.4 SHA256 `507BE34AEDA844518AC537DC43E05C773D96DDA1FEACB36EBF43DB919FF0580C` 的 Phase8 全通过，V1 119/四 DLL metadata 1060、PersistenceIdentity 142/36、source inventory 7、代码地图 546 锚点两模式通过。实机帧耗时、Quest/旧档/provider/UI/音频仍 `NOT-RUN`。
+- **下一条具体动作**：依[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)读主动主 session 启动/失效/取消/完成的全部消费者并归属 Social，再关闭 Issue offer/in-progress/turn-in/完成回执，按[原计划](docs/plans/j13-domain-owners-plan.md)的 d2 聚合退出门验收。未 push、Stage、部署、打包、游戏/外仓写入或改自动化；`.dotnet-cli-home/` 不动。
 
-独立 1.3/1.4 Release 各0警告/0错误，32项契约通过；已部署DLL在net472隔离进程实际注册44个Harmony目标（42 prefix+2 transpiler），4项接缝标志全部true，未创建战役或调用模型。已按授权部署单独 `Modules/AnimusForge_Coup` 到游戏v1.4.8，4文件哈希一致；原AF两实现哈希不变。DLL SHA256 `9353774FE1FB0A3D749094A5C7358CCB422F74E55E1E0789E05967AE9C7203D1`，MVID `a253f962-7beb-4054-b17f-a98a3f4a6c48`。首次安装回滚标记位于 `artifacts/deploy-backups/AnimusForge_Coup/20260920-072355/NEW_MODULE.txt`，无旧版模块。
+## 以下为 d2 冷却切片交接（历史）
 
-需启动器勾选“AnimusForge - 宣权篡位”并放在AF后面；未改默认勾选、未启动游戏、未推送。场景导航、真实战斗/兵损/政治与存档全链仍待实机。核实源码坐标、版本证据、剩余职责及回滚见 [独立交付报告](docs/audits/2026-09-20-coup-standalone.md)。
+# 当前交接：主体 J13d2 冷却/扫描节流有限切片完成，继续 d2（2026-09-25）
 
-## 最新实机结果：试采排序调整未解决人物消失（2026-09-20 07:02 后反馈）
+- **状态**：实际分支 `codex/af-main-refactor-continuation-20260831`，产品/回放 `43566f0f`；J13a–c/d1 保持有限 `OFFLINE_VERIFIED`，d2 opening/派遣 pending 首片及本冷却片有限 `OFFLINE_VERIFIED`，但 **J13d2/J13 仍 `ACTIVE`**。用户恢复推进的请求不授权 push、Stage、部署、打包、外仓写入、自动化或 J14。
+- **本片/证据**：唯一 Social owner 接管 Hero/类型/外交话题冷却与 global/lastScan、存档导入和小时裁剪；host 保留 Campaign/MCM/DTO 适配。原脚本 Debug/Release × 1.3/1.4+Bootstrap 六构建均零警告错误；当前 Debug 1.4 SHA256 `D8C3AC41C447D13CE6DB3FA2D6F270C4CF811D3BB3EE6E61E736A8394E9A51D2` 的 Phase8 全通过；V1 119/四 DLL metadata 1060、PersistenceIdentity 142/36、source inventory 7、代码地图 539 锚点两模式通过。真实 Campaign/Quest/旧档/provider/UI/音频/帧性能仍 `NOT-RUN`，不可当实机验收。
+- **下一条具体动作**：按[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)先读 `ProactiveNpcRequestBehavior.cs:410,528,4288` 的资格/增量扫描/主 session 转换并做下一个可回放闭包，随后 Issue offer/in-progress/turn-in/完成回执；再依[原计划](docs/plans/j13-domain-owners-plan.md)推进 d3/d4、e、f、g。不要以本片替代完整 J13 离线目标。`.dotnet-cli-home/` 未跟踪且原样保留；需撤销以定向 inverse/revert，不 reset/改历史。
 
-用户再次确认“还是消失”。最新四条试采（07:02:09/10/12/13）加载MVID `0341c278-a944-4269-99fc-7b3176ccdbbe`，均记录renderOrder=-2001，成功取得PNG、322/334/423/419ms、无清理异常；主画面人物仍在采集期间消失并在结束后恢复。因此 `8dc8053e` 的排序候选**实机未通过**，不是未部署，也不能继续宣称调序已修复。当前安装版本保持该版，本轮仅取证/更新文档，没有再次改源码或部署。
+## 以下为 d2 前一切片交接（历史）
 
-公开SceneView/View没有找到按单个视图排除或隔离Agent的接口；全局RenderAgents、真实Agent可见性/剔除和重建源renderer controller不作为兜底。主SceneView现有图像导出接口可作为另一个单朝向实验方向，但没有原版Mission导出实测及保存配置getter，尚未实施，且它不等于隐藏前后镜头。完整证据 `artifacts/illustrator-probe-render-order-20260920/render-order-failed-evidence.json`；共享副视图路线尚不满足玩家无感，双镜头不扩展。
+# 当前交接：主体 J13d2 生命周期首片离线验证，d2 整包继续（2026-09-25）
 
-## 最新试采人物短暂消失：渲染顺序试验（2026-09-20 06:57:37）
+- **工作区与状态**：实际分支 `codex/af-main-refactor-continuation-20260831`，最新产品/回放 `580a1466`。J13a Weekly、J13b Kingdom、J13c Persona、J13d1 Notoriety/Romance/Recruitment 维持有限 `OFFLINE_VERIFIED`；d2 的主动 opening 与原版 Issue 同伴窗口迟到回调首片有限 `OFFLINE_VERIFIED`，但 **J13d2/J13 仍 `ACTIVE`**。此前暂停/推送交接只作历史，不授权本轮再次推送。
+- **本片证据**：原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建零警告错误；当前 Debug 1.4 SHA256 `DDFBE3B5BE81CCED67D110524EE01F9AADDAC273D5974184E1367A3D49401300` Phase8 含新增生产回放通过，V1 119/四 DLL metadata 1060、PersistenceIdentity 142 key/type 对/36 behaviors、source inventory 7、代码地图 531 锚点两模式通过。真实 Campaign/Quest/party-screen、旧档、provider、UI/音频、帧性能仍 `NOT-RUN`；旧 Persona/Channel source-parity 与 terminal harness 问题未由本片解决。
+- **下一步**：按[主台账当前段](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[原计划](docs/plans/j13-domain-owners-plan.md)继续 d2 主动资格、冷却、session 生命周期，以及 Issue offer/in-progress/turn-in/完成回执；再按既定顺序推进 d3/d4、e、f、g，不缩小 J13 离线目标或提前 J14。[代码范围](docs/architecture/af-framework-code-scope.md)和[代码地图](docs/architecture/af-framework-code-map.json)标出已迁与保留 host。`.dotnet-cli-home/` 未跟踪且原样保留；未 Stage、部署、打包、写游戏/外仓、修改自动化或推送。需撤销时对 `580a1466` 作定向 inverse/revert，不 reset/改写历史。
 
-用户确认人物仅在试采期间消失，结束后恢复。前三次原场景单镜头成功导出，耗时475/466/556ms，7/13/16个应用帧，无退休报错；因此不是已证明的清理删除或持久隐藏问题。检查点 `9bca4d7`，源码 `8dc8053e` 只给自有副视图设置 `SetRenderOrder(-2001)`，排在原版活动屏幕视图（从-2000起）之前，并写入诊断。未修改真实Agent、原Scene、主Camera或全局人物显示开关；仍仅手动单镜头实验。
+## 以下为历史交接，不作为当前执行指令
 
-排序有原版依据，但尚未证明能够消除原生人物渲染冲突。双API Release均0警告/0错误，未跑离线测试，已按原脚本部署，8文件哈希一致。SHA256 `A37F0EA0A388A02DAFD5C3C7FF66D5B2DA8081CDF5733E97B59749DBC6EEC99E`，MVID `0341c278-a944-4269-99fc-7b3176ccdbbe`；备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260920-065737`。待完整启动新版，在同场景再点“单镜头试采”，确认采集期间主画面人物是否保持可见，不能以成功导出替代此验收。证据与回滚见 [顺序试验报告](docs/audits/2026-09-20-illustrator-probe-render-order.md)。
+# 历史交接：J13 暂停于 Weekly a2（2026-09-25）
 
-## 最新原场景单镜头手动试采（2026-09-20 06:36:17）
+- **停点与半途改动**：当前分支 `codex/af-main-refactor-continuation-20260831`；截至本交接前的最新提交 `66eda319`。本次中断只发生在阅读/设计下一步多波协调归属期间，尚未编辑生产或测试代码；无未提交的已跟踪改动。唯一未跟踪的 `.dotnet-cli-home/` 保留原状，不提交、不清理。
+- **实际完成**：J13a 的 a1 调度/材料已有限 `OFFLINE_VERIFIED`；a2 请求/完成生命周期仍 `ACTIVE`。最近产品提交 `78b87434`，回放提交 `c0221d02`：部分提交与异常恢复、双排队波次源失效均有受控回放。产品切片经原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `2268E88063FA5BC640EB61976A554203E4C147E6859EA7F4264603A23EC8493A` 的 Phase8、V1 119/四 DLL metadata 1060、入口 11/source 7、492 锚点地图已通过。交接本身未重跑构建；这些证据不等于实机或完整多波验收。
+- **继续时的第一步**：先按[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)复核 Git、代码地图和候选新鲜度；完成 a2 真实 minute orchestration/Campaign tick、部分提交＋UI 显式重采＋一次发布组合、提交工作量/积压和余下动态源门禁，随后 a3，再依计划 J13b–g。不要把已排队两波 fixture 当作真实 60 秒多波。实机、旧档、provider、音频、帧性能仍 `NOT-RUN`；本交接不授权 Stage、部署、打包、写游戏/外仓或 J14。
 
-用户在获知旧共享Scene副视图有重复角度/人物破面后明确“试试”，批准先验证单镜头。检查点 `12b9c9c`，源码 `03cb39ce`。已在Mission会话插画卡片增加“单镜头试采”：固定当前朝向、512×512、自有Camera/RT/SceneView借用原Mission.Scene，导出后立即停用，仅预览和诊断、不发模型、不写画廊/默认图。每次实验Tick及导出前向自有view重新SetCamera；不建Scene/SceneLayer、不修改玩家Camera/源Scene参数、不主动设置focused-shadow区域，清理仅AddClearTask(true)。8秒预算、原串行锁、owner检查与取消/退场接线保留。
+## 以下为双排队波次切片交接（历史）
 
-普通重绘仍走前后静态快照管线；本实验没有证明共享渲染状态安全，也没有扩双镜头。双API Release最终0警告/0错误，XML与源码复核完成，未跑离线测试。原脚本已部署独立模块，8文件哈希一致；SHA256 `F472B300A9E7357AA2587BD9D68E47CE103D6512BE97A3C4A29984009FC9D03B`，MVID `7dbaf06b-e752-4469-8e56-7973435c6a62`，备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260920-063617`。核对时无游戏进程，试采PNG、无闪烁/破面、GPU清理、实际耗时与按钮布局均待实机；未推送或调用模型。操作与回滚见 [试采报告](docs/audits/2026-09-20-illustrator-shared-scene-probe.md)。
+# 当前交接：J13a a2 双排队波次源失效回放（2026-09-25）
 
-## 最新实体复制清单与观察补光（2026-09-20 06:06:11）
+- **最新切片**：`c0221d02` 为真实 `EnqueueWeeklyWaveLaunchAsync`/`ProcessPendingWeeklyWaveLaunches` 补受控双排队波次回放：每次 pump 只启动队首，同周源变化使第二波网络前取消。当前 Debug 1.4 SHA256 `2268E88063FA5BC640EB61976A554203E4C147E6859EA7F4264603A23EC8493A` 的 Phase8 全回放通过；产品未改，沿用前片原脚本六构建通过。**没有**实测 60 秒延迟或真实 Campaign 多波；a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE。实机、旧档、provider、音频、帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：补真实 minute orchestration/Campaign tick 与部分提交、UI 显式重采、一次发布组合，并量化提交工作量/积压。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)和[代码地图](docs/architecture/af-framework-code-map.json)。`.dotnet-cli-home/` 不动。
 
-用户只批准“前两条”：实体清单、独立场景补光。检查点 `294c141`，源码 `a32ed40c`。沿原分帧遍历记录最多1024节点、每节点4个网格明细，后台一次写 `scene-inventory.json`（2MiB上限），保留名称、位置、组件数、跳过原因、复制结果及未完成状态；不按名称选择几何。自有Scene新增固定3盏中性无阴影点光（8/6/6强度），前后镜头共用，诊断记录位置/半径/强度。未改变原筛选/复制来源、30米范围、postfx/shadow导出初始化、颜色契约或其他管线；未实现黑图拦截。
+## 以下为部分提交与异常恢复切片交接（历史）
 
-双API Release均0警告/0错误，源码复核通过，未跑离线测试。原脚本已部署独立模块，8文件哈希一致；SHA256 `3DDDFBC80A8D62B9B41632111CBCCE1851570721646B39ED8181BBE89C88B1E6`，MVID `70893834-3341-4131-b83c-60008e5b401e`，核对时无游戏进程。备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260920-060611`。家具/墙体是否枚举或可见、观察灯亮度、GPU稳定性、清理和帧率仍待实机，不能把编译/挂载成功称为环境完整还原；未推送或调用模型。源码坐标与诊断用法见 [本轮报告](docs/audits/2026-09-20-illustrator-scene-inventory-lighting.md)。
+# 当前交接：J13a a2 部分提交与异常恢复切片离线闭合（2026-09-25）
 
-## 最新独立管线、百科创作自由与空回复提示（2026-09-19 08:30:49）
+- **最新切片**：`0a1d6c8d` 补真实 pending commit 的“已有胜出者 + 另一目标 RPM 失败”组合回放；`78b87434` 使提交异常只对未完成目标生成需显式重采的恢复上下文、结算等待者，并尝试幂等补发已写记录通知。原脚本六构建 0 warning/error；当前 Debug 1.4 SHA256 `2268E88063FA5BC640EB61976A554203E4C147E6859EA7F4264603A23EC8493A` 的 Phase8 显式候选、V1 119/四 DLL metadata 1060、入口 11/source 7、492 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；live 弹窗、实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：补多 wave/Campaign tick、真实 UI 显式重采/一次发布组合与提交工作量上界；核对余下动态源投影，再判定 a2 有限退出门。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)和[代码地图](docs/architecture/af-framework-code-map.json)。`.dotnet-cli-home/` 不动。
 
-源码 `3a73006a`，空回复提示小片 `2a565c51`；检查点分别 `2b44da6`、`fc258ee`。当前F盘工作区与原分支不变。用户要求城镇/野外/周报分开：Mission保留30米前后双镜头，MapConversation走真实当前画面单视角并检查具体会话owner，周报使用独立事件导演/候选人物与地点证据/重绘/最终规范，已接入weekly_report诊断。野外双方、周报一位候选英雄的全身+头肩离屏参考均保留，参考图不指定人物必须主导事件。
+## 以下为批量失败恢复元数据切片交接（历史）
 
-百科允许更大胆地设计场所、陈设、动作、镜头与氛围，环境参与叙事；随机提示和油画画法不再把艺术布景压成空墙/色面，未恢复字数比例或固定镜头轨道。真实现场保真与人物身份装备边界保持。三条最新HTTP200空包已确证无图片、输出token为0；原始响应不再覆盖画面，改短原因+诊断后缀，完整脱敏响应仍留存。**上游空回复原因未解决，没有自动付费重试，也未改120秒期限。**
+# 当前交接：J13a a2 批量失败恢复元数据切片离线闭合（2026-09-25）
 
-双API Release最终均0警告/0错误，源码审查完成，按用户要求未跑离线测试。原脚本已部署独立模块、8文件哈希一致；SHA256 `C5653D341A1290C423DE6845820719245F9E513E23F6B5A4CE52ED202CA8C908`，MVID `da2ba76c-3ac2-4e28-9630-70e868c4be5b`。核对时无游戏进程，下一次启动加载新版。备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260919-083049`。新野外/周报/百科成图、会话切换与退出仍待实机，未推送或由代理调用模型。详见 [本轮证据与交接](docs/audits/2026-09-19-illustrator-separated-pipelines.md)。
+- **最新切片**：`683987dd` 修复批量失败到暂停恢复 UI 的分类丢失：按失败目标对应批次传递真实 RPM/配额/Retry-After/尝试数，HTTP 后续成功清除旧 429 标记。四目录复核后原脚本六构建 0 warning/error；当前 Debug 1.4 SHA256 `C22AC98C51B314330927FB848E80D9B2C9D80F75E01AE85C81BB9EE50187C7C4` 的 Phase8 分类/目标隔离回放、V1 119/四 DLL metadata 1060、入口 11/source 7、490 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；live 弹窗、实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：补多 wave/Campaign tick、部分成功/失败 UI/显式重采和一次发布的组合回放；核对剩余动态投影源状态，再判定 a2 有限退出门。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)和[代码地图](docs/architecture/af-framework-code-map.json)。`.dotnet-cli-home/` 不动。
 
-## 最新导演输出契约与酒馆超时分析（2026-09-19 07:46:54）
+## 以下为王国拓扑事件失效切片交接（历史）
 
-源码 `d652694a`，检查点 `1097fd7`。导演交付单一时刻、单一机位的具体画面，明确行动、可见手部、外观及高低/遮挡/支撑关系；取消600–900字与环境占一半的门槛。会话/周报输入同步移除补造未知建筑、陈设和地点的授权。四段结构、外观保真、标题主题分离、正常正文不灌完整事实、有限校验及本地降级保持。已更新现有审计断言但未运行离线测试，双API编译均0警告/0错误，代码复核完成。
+# 当前交接：J13a a2 王国拓扑事件源失效切片离线闭合（2026-09-25）
 
-已用原部署脚本覆盖独立模块，游戏22976仍运行，脚本使用既有DLL重命名替换逻辑；**磁盘已更新，当前游戏仍是上一版，必须完整重启才加载新提示词**。8文件哈希一致，SHA256 `EFA20354777DA23EA5462C37BEFB269AEE36ACF79FE0FFAA302A36DF1FF359E8`，MVID `77ed68e2-8649-4040-84b2-d4deeecd305e`；备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260919-074654`。
+- **最新切片**：`dc2dd917` 将六个已注册的王国/家族变更事件接到 Weekly 修订 owner，补足无同周材料写入时当前统治者、归属等 live 投影的失效信号。四目录复核后原脚本六构建 0 warning/error；当前 Debug 1.4 SHA256 `2D1E29B437B67FF955BF2511A3749B3FB8CFC54B46E0723F65FBAA746294C942` 的 Phase8 真实空王国事件负例、V1 119/四 DLL metadata 1060、入口 11/source 7、487 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：覆盖多 wave/Campaign tick、部分失败 UI/显式重采和一次发布的组合回放，核对余下动态投影的源重验；再决定 a2 是否满足有限退出门。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)和[代码地图](docs/architecture/af-framework-code-map.json)。`.dotnet-cli-home/` 不动。
 
-酒馆旧进程最新实测：场景双视角约2.33秒完成、导演约11.10秒正常返回，生图等待120.003秒报超时；下一次同模型、同样6图及相近文字量21.71秒成功。6图是前后拼板1+当前截图1+两人各全身/头肩2，不是6个镜头。本轮只分析超时，未修改120秒限制，未自动付费重试。新提示词的实际生成效果待重启验收；未推送。源码坐标、证据及回滚见 [本轮报告](docs/audits/2026-09-19-illustrator-director-output-contract.md)。
+## 以下为源素材修订切片交接（历史）
 
-## 最新前后双镜头、30米范围与原生名称修复（2026-09-19 07:27:12）
+# 当前交接：J13a a2 源素材修订门禁切片离线闭合（2026-09-25）
 
-当前工作区 `F:/AnimusForge-main`，分支 `codex/af-main-refactor-continuation-20260831`。源码 `00888812`，检查点 `2d62a075`。最新 `24200.dmp` 是 `ucrtbase.dll + 0x11858`、`0xc0000409`（fast-fail 5）；Native `+0xd7936` 调用 `strcpy_s` 的128字节目标，重复长Scene名使GBuffer标签超长。Scene/RT现用13字节ASCII递增名称并在native调用前检查长度。这轮与此前Native空指针崩溃分开记录。
+- **最新切片**：`d4443bcb` 将同周事件素材、NPC 行动和开局概要的请求期修订快照接入自动/手动批量周报、每波发起及写前重验。获准四目录复核后，原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `1560FCA28974CEE714465BCF8B042BC8777B5A012B30625D2F4DAC5F683799E5` 的 Phase8 真正 block 写前拒绝回放、V1 119/四 DLL metadata 1060、入口 11/source 7、484 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：核对 live Kingdom/统治者等未入修订 owner 的动态素材投影；补多 wave/Campaign tick、部分结果 UI 与一次发布的组合证据，之后才评估 a2 有限退出门。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)和[代码地图](docs/architecture/af-framework-code-map.json)。`.dotnet-cli-home/` 不动。
 
-按用户最新要求，生产路径改为玩家当前位置周围约30米的独立静态网格副本、前后两个120度离屏镜头，合成左前右后1024×544参考图，发送导演及启用参考图的生图端。按全局包围盒与球相交过滤，保留跨边界整块墙/屋顶；不接管玩家相机，不把双视角声称为完整360度。分帧/数量/超时预算保持；terrain、水面、动态骨骼及完整实时光照仍未覆盖。
+## 以下为跨批次部分结果结算切片交接（历史）
 
-代码审查、API1.3/1.4 Release编译通过（均0警告/0错误）；遵照用户要求未跑离线测试。已用原脚本部署到独立Illustrator模块，8文件哈希一致；DLL SHA256 `E704559B8D2F5518C3FF631F84364CA7BA4BE1B9F03CD46F009D9C5ED483580D`，MVID `21cc0212-07ea-4d6e-ae7e-d278aed36474`。备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260919-072712` 保存的是发生名称溢出的上一版，不能称为稳定版。新GPU稳定性、无感采集、双视图内容及完整耗时待重启实机验收；未推送或付费调用。核实源码坐标、证据、限制与定向回滚见 [本轮报告](docs/audits/2026-09-19-illustrator-front-back-30m.md)。
+# 当前交接：J13a a2 部分结果跨批次结算切片离线闭合（2026-09-24）
 
-## 最新酒馆全景崩溃修正版（2026-09-19 06:44:06）
+- **最新切片**：`d6fea0e6` 将跨批次已结算 ID 和暂缺目标归 Weekly owner；重复缺失只登记一次，后续批次解析成功会移除早先暂缺，最终只计仍未恢复目标。四授权目录复核后原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `3587CB727BBE95A2B5F3B3CD4289165B41C0204288A6280937B2CC9AB3BAFCF4` 的 Phase8 owner/真实 finalizer 回放、入口 11/source 7、V1 119/四 DLL metadata 1060、477 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：设计并验证与周界/目标相关的 live 素材源提交重验，不能靠目标事件记录状态代替；随后补多 wave/Campaign tick、部分结果 UI 与一次发布组合回放，判定 a2 退出门。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 不动。
 
-修正提交 `500ab25e`，检查点 `ece3f36`。最新酒馆 `30808.dmp` 与此前大厅 `1740.dmp` 同为Native `+0x461a0b`、RAX=0读取0x8，尚未产出全景PNG。移除整棵GameEntity跨场景复制，改为实际静态MetaMesh+冻结全局帧，通过原版AddItemEntity挂载；不携带源灯光/阴影/粒子/物理组件，排除骨骼和布料模拟。按原版Tableau初始化独立场景基础设施，关闭天空绘制；六镜头和性能预算保留。另修Shutdown清理等待竞态，增加首面渲染前诊断。
+## 以下为自动重试配置主线程边界切片交接（历史）
 
-用户要求不跑离线测试：本轮仅真实日志/转储分析、源码审查、双API编译（均0警告/0错误），没有运行审计脚本，不能沿用下方759项作为当前修正版验收。已部署、8文件哈希一致，SHA256 `43F3A19B6353368603DB0F81D725FAA29CC7520610DF182614B5A197F09F8C30`，MVID `6714c5e2-77a3-48e5-8642-5abcf7131255`。备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260919-064406` 为已崩溃旧版。新GPU稳定性/完整六面/实际耗时待实机，未付费调用或推送。证据、源码坐标和回滚见 [原生崩溃修正报告](docs/audits/2026-09-19-illustrator-panorama-native-crash.md)。
+# 当前交接：J13a a2 自动重试配置主线程边界切片离线闭合（2026-09-24）
 
-## 预制体六镜头全景部署（2026-09-19 05:44:52）
+- **最新切片**：`4721460f` 保留首轮同波并发，第二/三次批量自动重试经 Campaign tick 主线程读取当前 MCM 配置并启动原 gateway；读档结算等待者，旧代/退役 owner 在配置读取前拒绝。四授权目录复核后原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `47452DC940B1E6D4199E6449928088A8303D06BDDDF83D8B934F49F2F0145369` 的 Phase8 强制后台/清理负例、入口 11/source 7、V1 119/四 DLL metadata 1060、472 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：核对独立于已保存目标记录的 live 素材源变化；补多 wave、部分失败、积压与一次发布的组合回放，再判定 a2 退出门。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 不动。
 
-生产/测试 `b63c10f8`，检查点 `c6da95b`。用户实机证明 `1c92decf` 共享Mission副视图产出重复角度、破面和蓝色原始参考；前轮离线通过不能算实机通过。现改为实际静态预制体的独立冻结副本，6个512方形相机顺序共用RT，由引擎PaintNeeded调度，后台投影成2048×1024全景；原生场景导出仅在合成入口做一次通道适配。附加真实画面只作颜色/人物关系校验，不以单截图替代全景。人物导出控件禁止屏幕Draw。
+## 以下为 minute wave 主线程发布切片交接（历史）
 
-性能限额：8次复制/批、4ms软预算、根/节点/副本和25秒总预算；实际native调用不可抢占。普通第三方静态实体使用实际实例，不按名称重搭；terrain、水面、真实骨骼和完整实时光照明确未覆盖。双API0警告/0错误，每版14组759 PASS/0 FAIL；部署副本同样759/0，8文件哈希一致。部署SHA256 `5E381C8910F16A5A47F5A9933CEA1CC771490E9229F08D70A444C5283D38429A`，MVID `0f61f17a-693d-48c3-adc9-c3be45ebfba1`。备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260919-054452` 为旧问题版，不能标稳定版。新GPU六面、闪烁、帧率、第三方及成图仍待实机验收，未付费调用/推送。证据、源码坐标和回滚见 [预制体全景报告](docs/audits/2026-09-19-illustrator-prefab-panorama.md)。
+# 当前交接：J13a a2 minute wave 主线程发布切片离线闭合（2026-09-24）
 
-## 生图五项优化与部署（2026-09-19 04:27:38）
+- **最新切片**：`5ca5e5c3` 把每分钟每波的 UI 通知和初次请求启动排入 Campaign tick 主线程，旧代/读档结算未发波次等待者，原 60 秒间隔与批次汇总不变。四授权目录复核后原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `114EFBCB2B1053BEA585E06AE99A8BE99F79B0CFE04DFAB7D4466D0747960288` 的 Phase8 来源/新鲜度及原队列回放、入口 11/source 7、V1 119/四 DLL metadata 1060、469 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；真实多 wave、实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：审查自动重试延迟后的可变 API 配置读取，把配置快照/执行边界闭合；再处理独立 live 素材源变化及部分失败、积压、一次发布组合回放。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 不动。
 
-生产/测试 `1c92decf`，检查点 `6ccc335f`：限量脱敏诊断、原生全身+头肩参考、百科无载体提前跳过纹章、导演截断/降级状态、缓存索引及画廊后台准备均已接入。追加将一张真实现场图送生图端，多向图仍供导演识图；独立离屏相机不接管玩家镜头。用户本轮跳镜反馈时核实游戏仍是9月18日旧版，本轮已实际覆盖到独立模块。
+## 以下为旧代自动重试拦截切片交接（历史）
 
-双API构建0警告/0错误，每版九组离线审计595 PASS/0 FAIL。实际部署DLL同字节副本也595/0，8文件哈希一致；部署SHA256 `152DBB6A49DCF568FD1E26BE7F8669290A40CB2FA14842F6373A1DD2954D8712`，MVID `70fac8d5-a1cd-4139-a423-89102346f0c2`。回滚备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260919-042738`。未推送、未启动游戏或付费调用；原生头肩/离屏场景、GPU退出与帧率、实际成图及UI布局待实机验收。源码坐标、诊断容量、验证边界与回滚详见 [本轮优化部署报告](docs/audits/2026-09-19-illustrator-optimization-deployment.md)。下方“未部署”为前轮历史状态。
+# 当前交接：J13a a2 旧代自动重试拦截切片离线闭合、多 wave 待核（2026-09-24）
 
-## 生图全量审查、画风与无可见转镜采集（2026-09-19）
+- **最新切片**：`39606755` 把原请求 generation 传入批次自动重试，发 API 前与回包后拒绝旧代，避免读档后延迟完成又外发旧请求。四授权目录复核后原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `9A6376610A6CE7223AEEDC8FE509B69606A1FFF69ED54FDDF334BF7627C2D303` 的 Phase8/网络前旧代负例、入口 11/source 7、V1 119/四 DLL metadata 1060、466 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：审查后续 minute wave 的主线程通知/配置快照，独立 live 素材源变化，以及部分失败、积压和一次发布的组合回放；a2 全门禁未过。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 不动。
 
-当前工作区仍为 `F:/AnimusForge-main` / `codex/af-main-refactor-continuation-20260831`。检查点 `cd1b1cfa` 保存原有生图改动；生产与测试 `d7061300`，场景事实复查收尾 `e337754a`。已统一古典油画导演长版/生图短版，移除须发和普通 NPC 外观伪事实，修正物种误判；场景采集改为独立相机+SceneView借用 Mission Scene，玩家相机与界面不修改，并接入 Mission 结束清理。全量审查 33 C# / 5 GUI 及项目清单，修复精确 Edits、实际 Chat 提示词记录、重复请求/超时、事件地点与围城误判、图片拉伸和画廊主题等问题；无 Location 不再判定平地谈判。
+## 以下为批次 Prompt 主线程准备切片交接（历史）
 
-双 API Release 0 警告/0 错误，两份 DLL 各 **299 PASS / 0 FAIL**（PromptRouting 144、ClientEndpoint 108、ModuleReview 33、SceneCapture 14）。**未部署、未推送、未付费调用；游戏仍是下方 9 月 18 日 16:36 版本**。GPU 离屏导出与取消/切场景、帧率、实际 UI 布局及发型/画风成图未实机验收。已核实源码坐标、证据、性能与回滚见 [全量审查报告](docs/audits/2026-09-19-illustrator-full-review.md)。回滚按逆序定向 revert `e337754a`、`d7061300`，保留检查点和其他作者改动。
+# 当前交接：J13a a2 批次 Prompt 主线程准备切片离线闭合、请求全链路待核（2026-09-24）
 
-## 导演行动、命名与四向场景参考（2026-09-18 后续）
+- **最新切片**：`f812ec1b` 避免手动/重试后续 minute wave 在后台构建含 live Kingdom/统治者的 Prompt；Campaign tick 按预算逐批准备，旧代/读档结算等待者，worker 未准备就在网络前拒绝。四授权目录复核后原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `E68FF3F12D19C426E3D6611CC1BD24D2BB977838946A94E3689DBA3C13C30962` 的 Phase8/worker 负例、入口 11/source 7、V1 119/四 DLL metadata 1060、465 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：检查多 wave 调度的后台 UI 通知、API 配置快照及 live 源变更边界，补实际队列积压/部分失败/发布组合回放。此切片不代表 a2 收口。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 不动。
 
-本地生产 `987fa696`（精简负面词，导演先行动后姿态，标题/主题单独显示与缓存，最近三张动作参考）和 `192098f2`（完整当前视图＋最多四向环境参考，仅发导演，现有 Mission 相机采集及恢复）。双 API 构建通过，最终两份 DLL 各 131 PASS/0 FAIL；缓存、HTTP 与相机数学离线验证，GPU/真实转镜恢复/成图/界面尚未验收。**已于 2026-09-18 16:36:53 按用户授权部署，未推送**：原脚本识别游戏 v1.4.8，API 1.4 Release 构建 0 警告/0 错误，8 文件哈希一致，部署 DLL 同字节副本 131 PASS/0 FAIL。DLL SHA256 `4939DEBD704A8B775302773C5BD634A59218ED50E948CE5D8383E3C23EC70371`；旧版备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260918-163653`。intent `ac0a33c`，渲染器修改前检查点 `ec38ea99`。核实坐标、适用边界、性能和定向回滚见 [本轮报告](docs/audits/2026-09-18-illustrator-action-title-panorama.md)。
+## 以下为显式重采切片交接（历史）
 
-## 生图部署更新（2026-09-18 15:48:59）
+# 当前交接：J13a a2 目标变更显式重采切片离线闭合、源状态与批量生命周期待核（2026-09-24）
 
-用户授权后，已通过原独立生图部署脚本将含 `b36fe53b` 的当前工作区构建部署到游戏 `v1.4.8` 的 `Modules/AnimusForge_Illustrator`。构建 0 warning/error，8 文件哈希一致，实际部署 DLL 96 PASS/0 FAIL；DLL SHA256 `8A841CFED9EC939DDE8C84704DCEB2F69DD37EA65A977A6A21C524CC2B69AC79`。旧版备份 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260918-154859`。未推送、未启动游戏，真实出图仍待验收；详见 [外观保真报告部署节](docs/audits/2026-09-18-illustrator-appearance-fidelity.md)。下方“未部署”为此前修复完成时状态。
+- **最新切片**：`240c10aa` 将目标编辑冲突与 API/RPM 错误分开；用户明确点击后才重新采集当前周界内原失败分组，任一失踪则不发请求，原已完成分组不重跑。四授权目录复核后原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `E7738A4EE42B65C625D3C65D9748A7ADB582BF1CFD0077664B91C0A71834112C` 的 Phase8/选择反例、入口 11/source 7、V1 119/四 DLL metadata 1060、462 锚点地图通过。UI 仅源码接线，live 弹窗/API NOT-RUN。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：核对并补足独立于目标记录的 live 材料源变更防护，以及 minute burst/部分失败/发布全链路；a2 必要门禁未过不标完成。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 不动。
 
-## 会话外观与现场时段保真（2026-09-18）
+## 以下为批量胜出者切片交接（历史）
 
-`b36fe53b` 修复按装备名称推断冠冕造型、遮发遮须误推全脸遮覆、会话战役时间冒充现场日夜；导演须转写可见装备特征，Chat/Edits 共用参考外观优先规则。游戏隐藏须发标记和原生装备渲染保持。双 API 构建各 0 warning/error，实际 DLL 各 96 PASS/0 FAIL；未付费生图、未部署、未推送，尚无新成图/原生渲染验收。检查点 `5eca84eb`，回滚只定向 revert `b36fe53b`。核实源码坐标、日志证据、性能与边界见 [外观保真报告](docs/audits/2026-09-18-illustrator-appearance-fidelity.md)。
+# 当前交接：J13a a2 批量完整/短报胜出者切片离线闭合、恢复 UI 待施工（2026-09-24）
 
-## 生图自然体态与 Edits 整幅重绘（2026-09-18 后续）
+- **最新切片**：`32a8379c` 使迟到批量回包遇到同周同目标完整报/短报已有完成内容时计为已满足，不覆盖、不重复通知或发布；未完成编辑仍失败。四授权目录复核后，原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `9650264CA89CEFC48FD5D7FA9C52A66FEAF3AFB8395FCCF402DF76EAC064D6BE` 的 Phase8、全文/短报/错误周界反例、入口 11/source 7、V1 119/四 DLL metadata 1060、459 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：不完整编辑的失败 popup 仍无正确“重新采集素材”入口；先闭合这条恢复语义，再核对独立 live 源变更、minute burst/部分失败与一次发布。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 不动。
 
-用户反馈 Edits 5 张中 3 张保留立绘站姿、2 张仅稍作变化，并要求提高导演下限。`6d5cb827` 移除强制反站姿/每次换姿势，给导演增加简单体态、稳定支撑与统一透视光照的质量要求；Chat/Edits 均附加整幅重绘说明，Edits 参考图明确分角色且不再自动附加全透明 mask。Edits 缓存提示词与实际 multipart 文本一致。双 API 子模块构建 0 warning / 0 error，两份 DLL 各 71 PASS / 0 FAIL。未付费生图、未部署、未推送，不能宣称已改善实际成图比例；同模型同参考图对照仍待实测。检查点 `b7fc2409`，只定向 revert `6d5cb827` 回滚本轮修复。代码坐标及限制见[本轮记录末节](docs/audits/2026-09-18-illustrator-prompt-routing-fixes.md#自然体态与-edits-重绘后续修正)。
+## 以下为手动重试防覆盖切片交接（历史）
 
-## 生图审查修复与导演提示词分工（2026-09-18）
+# 当前交接：J13a a2 手动重试旧素材防覆盖切片离线闭合、恢复 UI 待施工（2026-09-24）
 
-`ec0d13fb` 修复参考图误分类、周报被强制双人会面、百科回退补造盔甲、围城室内分支误判，并将会话硬事实与创作指导分离、移除生图端二次指定构图。正常链路维持“元指令＋硬事实＋参考图→导演→生图描述＋参考图”；失败时仍保留中性本地回退。双 API 子模块构建通过，两份 DLL 各 60 项离线回归通过。未部署/推送，实际出图与游戏未验收。当前构建还包含用户原有未提交更改，不能将单个修复提交视为完整发布版本。坐标、边界、日志与定向回滚见[本轮报告](docs/audits/2026-09-18-illustrator-prompt-routing-fixes.md)。
+- **最新切片**：`8b1f703d` 将批量失败的原目标状态传入显式手动重试；当前目标变化时发请求前拒绝旧素材，未变组可重试。四授权目录复核后，Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 SHA256 `231869AC9A7D7854B5066C08D0D350E14EE8B5DD0F6A10ACE02E8DB0CD448F05` 的 Phase8/重试准入反例、入口 11/source 7、V1 119/四 DLL metadata 1060、458 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**，其余 J13 不抢跑；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：目标变更后的失败 popup 仍沿 API 修复/重试 UI，无正确的重新采集材料恢复动作；先闭合该恢复语义，再核对独立 live 源状态、minute burst/部分失败和一次发布。详细证据见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。`.dotnet-cli-home/` 保持不动。
 
-## 当前生图部署：原生导出初始化修正（2026-09-16 06:21）
+## 以下为目标记录提交防覆盖切片交接（历史）
 
-用户要求继续修复后，生产 `77caa9f6` 已部署。只读反汇编同一原生故障 RVA `0x283860`：最终图像写出后函数还导出 final/depth/shadow，故障位于阴影数据访问；对应 passes 文件与崩溃时间相符。生图专用 Banner 控件现于原版 paint 后初始化完整渲染/shadow 路径，至少两次准备 callback 后才允许 save；完整 PNG 继续直接进入参考图链路。没有修改游戏 DLL。
+# 当前交接：J13a a2 批量目标记录防覆盖切片离线闭合、源/重试门禁待施工（2026-09-24）
 
-双构建通过，通用 180 / 0，两目标专项各 39 / 0；最终部署 DLL 178 / 0、39 / 0，hash 一致。**最终修正尚未实机验收，不宣称已消除崩溃**。源码和部署再次对齐，回滚备份 `20260916-062110`（原生替换前版）。已核实符号/行号/源码提交、反汇编证据、测试与限制见 [导出初始化报告](docs/audits/2026-09-16-illustrator-native-export-initialization.md)。下方撤回状态为历史。
+- **最新切片**：`d59848d1` 在 `MyBehavior.cs:42429–42464,45326–45397,45558–45742` 捕获目标事件记录原状态，pending commit 期间重验当前 owner、generation 和目标记录；编辑/已完成胜出者/保存素材变化不被迟到回包覆盖。Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 SHA256 `FCAB4573DD0A2DE6FC9524BF8A786C93D7AC1C9A35738C46ABFA47FC30FAA066` 的 Phase8、目标状态反例，入口 11/source 7、四实现 DLL metadata 1060、456 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**；实机/旧档/provider/音频/帧性能 NOT-RUN，未 Stage/部署/打包/推送。
+- **下一条具体动作**：继续核对批量请求捕获时点之外的 live 材料源和手动/自动重试：目标被用户编辑后显式重试不能重新捕获并覆盖；再处理 minute burst/部分失败/popup 恢复，之后才评估 a2 有限退出门。见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，保持不动。
 
-## 当前部署已撤回：原生纹章仍崩溃（2026-09-16 06:04 之后）
+## 以下为分块材料游标切片交接（历史）
 
-用户重启后再次崩溃，`rgl_log_32720.txt` 停于纹章 save 请求，没有新增退休日志；Windows 再次记录 `TaleWorlds.Native.dll / 0xc0000005 / +0x283860`。`c55334ed` 未修复崩溃，之前清理路径假设没有得到实机支持。没有转储，不能定位原生内部调用。
+# 当前交接：J13a a2 分块材料游标切片离线闭合、源重验待施工（2026-09-24）
 
-已将游戏 `Modules/AnimusForge_Illustrator` 的 DLL/PDB、清单和五个 prefab 共 8 文件恢复到 `artifacts/deploy-backups/AnimusForge_Illustrator/v1.4/20260916-054705`，逐文件 hash 一致；恢复 DLL SHA256 为 `2DAC0572BD0A79EB6E55DA530D75A37EF3009450012F6B856A64945D7A939896`。源码仍保留失败的原生方案及证据，**当前源码不是当前游戏部署；不能把 c55334ed 当作可交付修复再次覆盖**。旧纹章准确性问题未解决，回退后尚未实机验收。完整状态见 [崩溃跟进报告末节](docs/audits/2026-09-16-illustrator-native-crash-followup.md)。
+- **最新切片**：`bd972386` 将批量周报单 block 材料克隆下标/结果归 Weekly owner，主线程仍按预算逐项调用并保留原 Upsert。Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `01AB3C5A0069C223B3A06104BF45F8947E7B6CE09CA6DFAEC076239EB6867F99` 的 Phase8/游标回放、入口 11/source 7、453 锚点地图通过。**a1 有限 OFFLINE_VERIFIED，a2/J13a/J13 ACTIVE**。实机/旧档/provider/音频/帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：先复现活动批量 `MyBehavior.cs:45517–45667,44217–44261` 现有记录被迟到结果覆盖、源材料变化未重验的反例；审阅自动/手动重试的捕获时点和目标身份，再补主线程 owner/目标/源门禁。该缺口未过之前不报 a2 完成。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-## 当前生图崩溃跟进（2026-09-16 05:59）
+## 以下为 commit 队列切片交接（历史）
 
-生产最新 `c55334ed`（含 `0127816d` 场景延迟清理、`8a52d1b` 诊断日志），已按用户授权部署到游戏 1.4.8。`cf237202` 实机原生访问冲突，首次修正版又因程序集名称解析失败跳过纹章；用户截图背景旗帜仍错，不能当作成功验收。现改用 Gauntlet 实际注册类型、引擎延迟场景清理，双构建 0 警告/0 错误，最终部署 DLL 通用 178 / 0、专项 36 / 0。最终版本实机仍待重启复测，原生调用栈缺失，未宣称崩溃根因完全确认。责任坐标、真实输出及回滚边界见 [崩溃跟进报告](docs/audits/2026-09-16-illustrator-native-crash-followup.md)。
+# 当前交接：J13a a2 批量 commit 队列切片离线闭合、a2 继续（2026-09-24）
 
-## 最新纹章核心替换：离线管线通过，实机待验收（2026-09-16）
+- **最新切片**：`e4a78829` 将批量周报 worker→主线程 commit 队列的 FIFO、无工作快路径、队首隔离、读档清理等待者归 Weekly owner；原私有嵌套 DTO、generation 与主线程写入保留。Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `CF2279401002FABF2F140289AF834C7806836631F6E198783EFAF5129BDEAD86` 的 Phase8/新队列回放、入口 11/source 7、451 锚点地图通过。**a1 已有限 OFFLINE_VERIFIED，a2/J13a/J13 仍 ACTIVE**；请求发送/重试、分块提交/源重验、失败恢复、a3 和 J13b–g 未完。实机/旧档/provider/音频/帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：核对 `MyBehavior.cs:42876–42972,45302–45373,45513–45650,45668–45752` 请求与分块提交状态，先将有界分块提交的状态转换移交 Weekly owner，验证大积压、旧代、部分失败；之后继续 a2 其余模式。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-用户确认“做”后，生产/测试提交 `cf237202`，检查点 `75d116aa`。移除手工图集着色/描边/旋转，改用原版 BannerTableau 渲染完整旗面；导出控件不提交屏幕 Draw，缓存受存档代际/取消与容量约束。双 API 子模块 Release 构建均 0 警告/0 错误，通用 180 checks / 0 failures，两份目标 DLL 专项各 32 / 0。专项使用模拟 GPU 输出，不能代替真实纹章颜色、方向、多色背景、取消清理、人物共用舞台和最终生图验收。纯色/低覆盖图案仍可能被保守空图检测省略。未部署/推送；其他作者工作保留。
+## 以下为 a1 收口交接（历史）
 
-已核实源码行号、符号、源码提交、性能、证据及未覆盖责任见 [原生替换报告](docs/audits/2026-09-16-illustrator-native-emblem-replacement.md) 与 [生图交接第十三轮](docs/handoffs/2026-09-14-animusforge-illustrator-handoff.md)。生产回滚只定向 revert `cf237202`。
+# 当前交接：J13a a1 离线闭合、a2 请求生命周期待施工（2026-09-24）
 
-## 历史纹章 CPU 离线验收：未通过（2026-09-16）
+- **最新门禁**：`577f7cac` 用当前候选生产 owner 做同输入同步/分阶段材料顺序、模式、周界组合回放；结合调度/材料责任切片、schedule smoke、Weekly outcome contract、Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error、Phase8、四 DLL metadata 1060、449 锚点地图，**J13a 的 a1 有限 `OFFLINE_VERIFIED`**。它不代表 a2/a3 或 J13 全包。当前 Debug 1.4 候选 SHA256 `9FE600156D304C3E97B5682AFF1F720A8BFFA8A7DD7713E0A5B039354168349A`；实机/旧档/provider/音频/帧性能 NOT-RUN；初始 O(N) 快照及单组原子成本无帧耗时保证。未 Stage/部署/打包/推送。
+- **下一条具体动作**：按[J13 计划](docs/plans/j13-domain-owners-plan.md)的 a2，先核对 `MyBehavior.cs:42400–42800,43000–43700,45500–46900` 自动/手动、多模式、minute burst、批次重试、按需全文、pending commit/发布/失败的真实生命周期和 SaveRuntimeGuard/源重验，再做第一个请求责任切片。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-工具 `5de6e6c9`，生产源码仍为 `90a61c9f`。1.3 / 1.4 目标 DLL 各 30 checks / 7 failures：大面积掩码反相、配色契约矛盾、描边无效、90°/270°方向相反。已保留实测结果与对照图，建议重做纹章渲染核心。未改生产渲染、未部署/推送。源码定位与边界见 [离线验收报告](docs/audits/2026-09-16-illustrator-emblem-offline-audit.md)，此前通用回归通过不等于纹章保真通过。
+## 以下为材料游标切片交接（历史）
 
-## 生图未闭环问题审计（2026-09-16）
+# 当前交接：J13a Weekly 材料三阶段游标切片离线闭合、a1 待整体校验（2026-09-24）
 
-源码/测试 `90a61c9f`，检查点 `aedb8f0`：真实日志确认两次空 completion；旧纹章参考图实际近乎空白。已修复空图误判、原生 PNG 文件读取、现场模板污染、残留盾牌提示和响应解析/错误降级。双 API 构建与 185 检查通过，真实旧空图复验被拒绝；新原生导出及实际出图未验收，双色背景仍省略，未部署/推送。定位、证据、性能与未覆盖范围见 [生图交接第十一轮](docs/handoffs/2026-09-14-animusforge-illustrator-handoff.md)。可定向 revert `90a61c9f`。
+- **最新切片**：`cd37d2f2` 将聚合、PromptMaterials、Batch Prompt 三阶段游标与完成状态归 Weekly owner；宿主保留主线程操作和预算检查。Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `9FE600156D304C3E97B5682AFF1F720A8BFFA8A7DD7713E0A5B039354168349A` 的 Phase8/游标回放、schedule smoke、Weekly outcome contract、四 DLL metadata 1060、入口 11/source 7、449 锚点地图通过。**a1 仍 VERIFY，J13a/J13 ACTIVE**：同输入同步/延迟整体材料 parity 尚未断言，a2/a3 和 J13b–g 未完成。初始化 O(N) 快照及单组原子工作未证明帧耗时；实机/旧档/provider/音频/帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：补同步/延迟同一日期/材料下 eligibility、分组、顺序、全文短报及周界集成回放，并审阅 `MyBehavior.cs:6033–6065` 快照一致性；a1 退出门过后进 a2 请求完成。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-## 生图子模块最新设置修正（2026-09-16）
+## 以下为 PromptMaterials 组装切片交接（历史）
 
-生产/测试提交 `2f978705`：设置改为“随机”0–100，默认 0，不追加随机提示词，正值增强艺术表现变化。双 API 构建通过，160 checks / 0 failures；未部署、未推送、未实机验收。源码位置与边界见 [生图交接第十轮](docs/handoffs/2026-09-14-animusforge-illustrator-handoff.md)。检查点 `bfc1aea`，可定向 revert 生产提交。
+# 当前交接：J13a Weekly PromptMaterials 组装切片离线闭合、全包进行中（2026-09-24）
 
-## 当前续作入口
+- **最新切片**：`c2d8565b` 将全文/短报材料组装和劫掠归并归 Weekly owner，自动、同步和独立劫掠构造入口接通；原 host 保留 live 解析与专用素材文字 helper。Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `C319221CE7B0D9C523EA305DBFA315B71FE6EABC46D612A86540812B1C348DE1` 的 Phase8/新增材料回放、Weekly outcome contract、入口 11/source 7、447 锚点地图通过。**a1/J13a/J13 仍 ACTIVE**：自动三阶段游标与初始快照预算、a2/a3、J13b–g 未完成。实机/旧档/provider/音频/帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：处理 `MyBehavior.cs:6244–6315` 的聚合/Prompt/Batch 三阶段推进状态与预算重入，定向验证空组/预算边界；再有限关闭 a1，转入 a2。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-用户在全项目分析后明确要求“开目标模式做吧”，已恢复当前 `F:\AnimusForge-main`、`codex/af-main-refactor-continuation-20260831` 上的本地实现和验证。起点 `bd2ed35f`；执行顺序、边界及状态见 [本轮台账](docs/phase8/local-goal-continuation-20260912.md)。先重新建立当前源码的本机构建基线，再按独立切片推进压缩输入快照、Native、TTS 和 Courier。原有 75 个未跟踪图片/预览文件保留。没有本轮 push、游戏覆盖、真实存档操作或恢复定时自动化授权。
+## 以下为全文/短报选择切片交接（历史）
 
+# 当前交接：J13a Weekly 全文/短报材料选择切片离线闭合、全包进行中（2026-09-24）
 
-## 当前已验证小片：Native 未压缩历史（生产/测试 `54e07882`）
+- **最新切片**：`12f9e3d2` 将邻近前三王国全文、其余短报及空邻近回退规则统一归 Weekly owner；同步预览和延迟自动准备共用，后者缓存选择集合。Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `AD1E082F0DC73ADE5E17AD6D0B87BC1A85916309CAA620FF2A8954B196397E92` 的 Phase8/选择规则回放、入口 11/source 7、444 锚点地图通过。**a1/J13a/J13 仍 ACTIVE**：PromptMaterials 具体构造与阶段游标、a2/a3、J13b–g 未完。实机/旧档/provider/音频/帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：检查 `MyBehavior.cs:37171–37240,6266–6321` 的 Full/Short PromptMaterials 构造、分批阶段和预算游标，转移一段完整材料责任并验证负例，然后推进 a2 请求完成。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-`ShoutBehavior.cs:20270-20288` 的 `SubmitNativeConversationTextInternalAsync` 未压缩历史入口改为原主线程队列中校验 admission 后调用；失效/超时走原暂存输入回滚。原 Hero/普通人物 ID 解析、AFEF、当前会话排除与主动开场去重不变。编辑前 intent 为 `75a692ac`，可定向 revert `54e07882` 并复验。
+## 以下为 action 游标切片交接（历史）
 
-验证：69 PASS，真实旧源码失败 13，三个变异失败 4/4/3；pending-history 111、history 27、preparation 589、scheduler 132、admission 44、ports 308/3 mutation；六构建/两 Stage、四 DLL 532、存档身份 146/146 和 36/36 均 PASS。详见 [验证记录](docs/audits/2026-09-12-native-uncompressed-history-verification.md)。代码图已更新到 `54e07882`。
+# 当前交接：J13a Weekly action 材料游标切片离线闭合、全包进行中（2026-09-24）
 
-只覆盖这一个入口。Native 的角色上下文、persona、共享规则/lore、后处理 prepare/complete 仍需后续；TTS worker 查询、Courier 也未完成。LIVE/provider/旧存档/实机耗时均未验证。继续本地目标，不推送或覆盖游戏。
+- **最新切片**：`8d934447` 将 recent/major action 游标和当前 Hero 缓存归 Weekly owner，单次至多跨一个 owner 边界或消费一条 action；连续 1000 个失效 owner 的预算反例回放通过。Debug/Release × 1.3/1.4 + Bootstrap 原脚本六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `E169B058AF9653A908B4814126CE09CB83CBFE6C35B8EE17903A67E845593537` 的 Phase8 回放、入口 11/source 7、442 锚点地图通过。**J13a/J13 仍 ACTIVE**；初始化 O(N) 快照及单组聚合仍未严格预算化，a2/a3 和 J13b–g 未完成。实机/旧档/provider/音频/帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：核对 `MyBehavior.cs:6039–6151,6244–6321` 一次性 source/owner snapshot 与单组聚合/提示准备预算，确定不改变源状态语义的增量化边界，然后继续 a2 请求完成、a3 回执发布。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-## 当前已验证切片：压缩输入与来源拒收（生产/测试 `53ddb7d4`）
+## 以下为材料聚合切片交接（历史）
 
-`OFFLINE_COMPLETE / LIVE_SAVE_PENDING`。当前分支继续本地推进；检查点 `15c58d59`，生产/测试/架构证据提交 `53ddb7d4`。本轮原有 75 个未跟踪文件保持原样。
+# 当前交接：J13a Weekly 材料聚合切片离线闭合、全包进行中（2026-09-24）
 
-- `MyBehavior.MemorySummaryInputs.cs:121-231`：`CaptureDailyMemorySummaryInput` / `CaptureMajorActionSummaryInput` / `CaptureMemoryOverviewInput` 在主线程冻结三个任务的私有来源副本、prompt 和解析材料；`76-119` 的 `MemorySummarySourceStamp` / `IsMemorySummaryInputCurrent` 校验任务、来源和已有摘要的对象身份及完整内容。
-- `PlayerNotorietyBehavior.MemorySummarySnapshot.cs:10-33`：`CaptureMemorySummaryHistoryRenderer` 冻结实际姓名、公开称呼和文化年龄别名；后台只替换字符串。
-- `MyBehavior.cs:4960-5203`：`ProcessMemorySummaryQueueAsync` / `RunDailySummaryQueueItemsAsync` / `ExecuteDailySummaryQueueItemAsync` 传递原 save generation；首段准备与所有成功/失败接受走原主线程边界，来源改变的结果不能消费或标失败。
-- `MyBehavior.cs:5239-5392`：三个 Execute 仅消费独立输入进行网络/解析，重试前校验来源；`5475-5525`、`5644-5679`、`5838-5898` 的三个 parser 使用冻结的名字/cursor/metadata。
-- 原 prompt builders、正式 Apply/Mark、玩法/三渠道语义、存档键、公开 ABI 和默认入口未改；原 60 秒波次、三次重试及 EngineTick 两个动作上限保留。成本按当前任务来源规模增长，未测实机峰值及单动作耗时。
+- **最新切片**：`f54fbcf6` 将预览材料克隆、分类/事件键分桶和重排归 Weekly owner；自动/同步预览共用，live 渲染仍在 host。获准四目录核对后原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 候选 SHA256 `5FF0628720BA2D06A27F12C99096AC8D82A087A3134526CACFAF80F5727FF1C9` 的 Phase8、新增聚合回放、入口 11/source 7、440 锚点地图通过。**J13a/J13 仍 ACTIVE**；单组聚合 O(M log M) 未严格预算化，a2/a3、J13b–g 均未完成。实机/旧档/provider/音频/帧性能 NOT-RUN；未 Stage/部署/打包/推送。
+- **下一条具体动作**：读取 `MyBehavior.cs:6051–6389` 的一次性材料/action snapshot 与每组聚合/提示准备预算入口，构造单次工作量反例并迁移预算状态转换；之后才推进 a2 请求完成和 a3 回执发布。详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。仅 `.dotnet-cli-home/` 未跟踪，不触碰。
 
-验证：net8/net472 各 137；六个故障变异拒绝；history 852、Native 27、failure UI 85、main-thread 17、ports 308/3 mutation、recovery/weekly 合同 PASS；持久身份 146/146 与 36/36；六构建/两 Stage 和实际四 DLL 532 元数据断言 PASS。游戏对象/网络/写入副作用仍为 fixture，LIVE/真实 provider/旧存档未运行。
+## 以下为材料分组切片交接（历史）
 
-详细说明：[输入边界](docs/architecture/af-memory-summary-input-boundary.md)；[验证记录](docs/audits/2026-09-12-memory-summary-input-verification.md)；[本轮台账](docs/phase8/local-goal-continuation-20260912.md)。当前代码图已按 `53ddb7d4` 更新。回滚使用定向 revert `53ddb7d4` 并复验，禁止 reset/改写历史。
+# 当前交接：J13a Weekly 材料分组切片离线闭合、全包进行中（2026-09-24）
 
-接下来继续 Native 剩余实时读取，再做 TTS 与 Courier。上述边界不代表整个 memory owner 或阶段八已完成。
+- **最新切片**：`008a3f84` 将 Weekly 分组优先级及世界/全文/短报批次划分真实归新 owner；原 host 保留王国资格和邻近状态捕获。当前 Debug 1.4 候选 SHA256 `746E51D79EC3C7F4CBF5DF2114320BA9CCF1BD2281A22007D36078BFCA126655`，Debug/Release 双版本+Bootstrap 六构建 0 warning/error，Phase8 与新增批次身份/顺序回放、四 DLL API metadata 1060、source inventory、438 坐标地图通过。**仍为 J13a_ACTIVE**：预览聚合/游标、请求/完成、回执发布和 J13b–g 未完成；详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。未 Stage/部署/打包/推送；实机、旧档、provider、音频、帧性能仍 NOT-RUN。
+- **下一条具体动作**：从 `MyBehavior.cs:1494–1547,6144–6389,38550–38594` 核对预览/聚合游标与每日预算的单次工作量，再设计并接通 Weekly 材料 owner；保留主线程 Hero/Kingdom 捕获、同一 context 游标及同步/延迟生成一致性。不能直接把整个 private 嵌套状态改名或仅拆 partial。其后才进 a2/a3。当前 Git 仅 `.dotnet-cli-home/` 未跟踪，未触碰。
 
-以下暂停／转手文字是前一机器的历史记录，不再代表本轮开发暂停；其中一次性 push 授权也不沿用。
+## 以下为调度切片交接（历史）
 
-## 历史暂停／转手记录
+# 当前交接：J13a Weekly 调度切片离线闭合、全包进行中（2026-09-24）
 
-> **当前指令：停止继续重构，不得启动下一切片。** 专题转手文档见 [`docs/handoffs/2026-09-12-af-framework-pause-transfer-handoff.md`](docs/handoffs/2026-09-12-af-framework-pause-transfer-handoff.md)。交接写作前 `HEAD=f948f419`、detached、工作树干净；最后生产源码为 `9040d184`，相对目标远端 `e40c92d7` 为 3 ahead / 0 behind。自动化 `af` 已只读确认 `PAUSED`。用户只额外授权 docs-only 交接提交后、fetch/祖先核验通过时，精确 fast-forward push 当前历史到 `origin/codex/af-main-refactor-continuation-20260831`；不授权 force、其他 refspec、部署或继续开发。之后只有新的明确用户授权才可按专题文档的安全恢复步骤继续；不得据下方历史“下一切片/自动化继续”文字自行恢复。
+- **最新切片**：`d1697338` 已将自动调度与待处理周次真实归 Weekly owner，Schedule/Text helper 归位；同步/延迟/叛乱恢复真实消费者接通。定向 smoke、Phase8 inventory 11、source inventory 7、435 代码坐标、Debug/Release 双版本+Bootstrap 0 warning/error、当前 Debug 1.4 候选 SHA256 `D45D3320F3A7520FDF72F92220808D43A1BB641D3EC6897F40F1AE05E0F7F218` 的 Phase8/Weekly replay 均通过。**J13a 整包仍 ACTIVE**，材料/批量请求/回执未完，下一步按计划继续；详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
-## 最新本地切片：压缩记忆 post-await 主线程提交（生产/测试 `9040d184`）
+- **状态**：`J13a1_OFFLINE_VERIFIED / J13a_ACTIVE`，不是 J13a/J13 全包完成。`dd303847` 产品切片，`b240778f` 当前候选 replay 宿主。
+- **门禁**：经用户授权且复核四目录后，原脚本 Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 warning/error；当前 Debug 1.4 SHA256 `FEC1F04BB7F5B6BB4E4D025886A735FA44BE4A87E06331891FA377392F6E02F6`，Phase8 从该候选回放通过，错误 hash 负例拒绝；schedule smoke/outcome contract/source inventory/432 坐标地图通过。构建引用 1.3 `v1.3.15`、1.4 `v1.4.6`，不代表其他补丁版或实机。
+- **下一动作**：按 [J13 计划](docs/plans/j13-domain-owners-plan.md)继续 Weekly 调度/材料、生成生命周期、回执发布，再按 Kingdom 等顺序推进。`.dotnet-cli-home/` 未跟踪且未触碰；未 Stage/部署/打包/推送。实机、旧档、provider、音频、帧性能仍 NOT-RUN。详细记录见[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)。
 
-状态：`OFFLINE_COMPLETE / LIVE_SAVE_PENDING`。活动 worktree 为当前仓库；checkout 保持 detached，来源/预期远端目标仍是 `origin/codex/af-main-refactor-continuation-20260831` 的 `e40c92d7`。本轮在来源上创建 intent/checkpoint `909550d4` 和聚焦代码/测试提交 `9040d184`；没有 switch、pull、merge、rebase、reset、cherry-pick、stash、push、部署或覆盖游戏。
+## 以下为首切片验证前状态（历史）
 
-- `MyBehavior.MemorySummaryMainThread.cs:44-73` 的 `RunMemorySummaryMainThreadAsync`：主线程直达；后台发布前后双检 `MyBehavior.Instance` 与 save generation，避免 reset 后把等待者挂在不再 tick 的旧 owner。
-- `MyBehavior.MemorySummaryMainThread.cs:75-110` 的 `TryApplyMemorySummaryMainThreadAction` / `ProcessMemorySummaryMainThreadActions`：只在物理主线程接受，并复核当前 Campaign behavior；EngineTick 每次最多处理 2 个。
-- `MyBehavior.cs:4957-5129` 的 `ProcessMemorySummaryQueueAsync`：三类 post-await Apply/Mark、队列清理、玩家提示和 `_memorySummaryProcessing` 释放经新边界；`MyBehavior.cs:20311-20333` 的 `OnEngineTick` 是消费者。
-- `MyBehavior.cs:2415-2419` / `48278-48282`：loaded-save 瞬态重置和当前存档清理退休未开始工作。没有新增持久字段。
-- 原 prompt、三渠道 role/AFEF/动作、重试/RPM/成功失败文字、默认入口和公开 ABI 不变；`Api.V1` 仍只读。政策/宴会/GCCZ 业务未改。
-- 性能：低频日结 worker 每批等待接受，EngineTick 有 2 个动作硬上限；使用 ConcurrentQueue/CAS，不加热路径全量扫描、反射、锁等待或轮询。
+# 当前交接：J13a Weekly 首切片待完整门禁（2026-09-24）
 
-验证：专用 17/17；精确旧源码 `e40c92d7` 和 generation/owner/unbounded-drain 三个 mutation 均按预期失败；HistorySnapshot 852、Native 27、MemoryFailureUi 85、memory recovery、weekly material、团队端口 308/3 mutation 均通过。相对来源的持久化身份为 SyncData 146/146、CampaignBehavior 36/36，单一 AnimusForge/Bootstrap 不变。最终 Debug/Release × 1.3/1.4/Bootstrap 六项构建和两套项目内 Stage 通过，四份实现 DLL 532 个元数据断言通过；仅有无法联网读取漏洞元数据的 `NU1900`，0 error。
+- **状态**：`J13_ACTIVE / J13a_VERIFY`，J07–J12 仍 `OFFLINE_VERIFIED`。开工 `f3b79d4c`，产品切片 `83cc314b`，测试修正 `d12e8d65`；未标 J13a/J13 离线完成。
+- **已改**：按需全文完成队列的锁、状态、owner/generation 受理、每 tick 两次提交、异常和清理等待者归 `WeeklyFullReportCompletionOwner`；`MyBehavior` 保留真实 UI/引擎薄入口、源材料重验及 Campaign/存档身份。未动自动/批量周报、玩法、Stage/部署。
+- **已验**：相同 Program/生产源码的 net8 Weekly smoke（本机无 net6 targeting pack）、Weekly outcome contract、双 API Compile 集合、source inventory 与 432 锚点地图通过；均不能替代双版本构建/实机。
+- **门禁与下一步**：原构建脚本会清理并重建工作区内 `bin/Debug/single_module_artifacts`、`obj/single_module/Debug`、`bin/Release/single_module_artifacts`、`obj/single_module/Release`，已核实位置/链接/内容并请求**仅这四目录**的清理确认；确认前不运行。之后跑 Debug/Release × 1.3/1.4 + Bootstrap、当前候选 replay，再继续 Weekly 自动调度/材料及 a2/a3。详细证据见[主台账 J13a1](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)与[代码范围图](docs/architecture/af-framework-code-scope.md)。`.dotnet-cli-home/` 未跟踪且未触碰；实机、旧档、provider、音频、性能均 NOT-RUN。
 
-详细边界：[架构说明](docs/architecture/af-memory-summary-mainthread-boundary.md)；[验证 MD](docs/audits/2026-09-12-memory-summary-mainthread-verification.md) / [JSON](docs/audits/2026-09-12-memory-summary-mainthread-verification.json)；[本轮进度](docs/phase8/memory-summary-mainthread-progress-20260912.md)；[范围图](docs/architecture/af-framework-code-scope.md) / [机器定位图](docs/architecture/af-framework-code-map.json)。
+## 以下为规划交接（历史）
 
-明确未覆盖：首次 await 前的调度快照和三个 Execute job 的 live prompt/目标准备仍可能在异步 continuation 读 owner/game；逐任务 source revision/fingerprint 未实现。真实游戏、provider、旧存档和读档晚返回均未验收，不能宣称完整 memory 线程安全或阶段八完成。
+# 当前交接：J13 计划已就绪，尚未施工（2026-09-24）
 
-下一独立切片：只为 `ExecuteMemorySummaryJobAsync` / `ExecuteMajorActionSummaryJobAsync` / `ExecuteMemoryOverviewJobAsync` 在 Campaign 主线程捕获只读输入和精确 source fingerprint，后台只做 provider/解析，并在本轮接受边界拒绝来源已改变的结果。先建精确旧源码红例，不扩到 Courier、公共写 API 或默认切换。回滚只按用户指示定向 inverse/revert `9040d184`。
+- **状态**：J07–J12 保持 `OFFLINE_VERIFIED`；J13 为 `PLANNED`。本轮只有文档，没有新增产品验收结论。
+- **新对话入口**：[J13 可执行计划](docs/plans/j13-domain-owners-plan.md)，第 1 节可直接复制作为启动指令；先 G0，再 Weekly → Kingdom → Persona → Social/Issue/WorldEvents/WarStats → 场景领域 → UI/Onboarding → 离线收口。
+- **详细证据**：[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j13-plan-20260924)、[代码范围图](docs/architecture/af-framework-code-scope.md)。J12 产品终点 `5c3e7b0e`，保留责任和验证见 [J12 最终交接](docs/handoffs/2026-09-22-j12-final-closeout.md)。
+- **实际定位**：规划基线 `0624d502`；工作树 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`。新对话重新核实 Git；不使用历史 G: 工作树指令，保留未跟踪 `.dotnet-cli-home/`。
+- **首包重点**：Weekly 的真实调度/材料/生成完成/回执发布 owner，保留唯一 Actions 提交、主线程捕获/回写、generation 和存档身份。不能只搬文件或拆 partial 就报完成。
+- **已知前置**：核实本机 SDK/引用；处理测试旧路径和 Stage DLL 依赖。原构建脚本有产物目录清理，运行前需要精确范围确认；计划没有更改原构建流程。
+- **未验证/未授权**：本轮未跑产品测试或构建；真实 Campaign/Mission、旧 SAVE、provider、音频和帧性能仍 NOT-RUN。未 Stage/Deploy/Package/push，未修改自动化、游戏、存档或外部工作树；不提前执行 J14。
+# 当前交接：主体 J13e5 Exercise 有限离线收口（2026-09-25）
 
-## 前序交付：框架 Skill / 代码位置 / 新旧范围
+- **状态**：`J13e5_OFFLINE_VERIFIED / J13_ACTIVE`；仅此包完成离线门禁，J13f/g 与 J14 尚未开始。精确 MapEvent 排除真实战斗、两轮选择/延迟/迟到回调、活动及孤立事件一次 XP 回执分别归 Exercise owners，TaleWorlds PartyScreen/Mission/roster/角色/Hero/MapEvent/Encounter 实际副作用与原 Harmony/Terminal 适配保留。产品/回放 `ba645b29`、`def2b082`、`3d00d416`、`80e21be1`、`8654427a`；详见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)和[范围图](docs/architecture/af-framework-code-scope.md)。
+- **离线证据**：Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 警告/错误；最终 Debug 1.4 SHA256 `2F9D0E976A18CA4C28FDA20B4C6C728886EE770AF9769EBC825B5D8BEBFD02E8` 的完整 Phase8 含当前 DLL 身份/会话/结算回放，聚合接线另核对四 DLL 奖励参数。V1 119、四 DLL metadata 1128、PersistenceIdentity 142/36、迁移 10、source inventory 7、[代码地图](docs/architecture/af-framework-code-map.json) 708 锚点两模式通过。真实两版本 Mission/Harmony、旧档、MCM 实机、伤害/奖励/经济与帧性能 **NOT-RUN**；部分 XP 失败不重试以免双发，异常 TW 清理仍须实机观察。
+- **下一步**：按[原计划](docs/plans/j13-domain-owners-plan.md)仅继续 **J13f UI/Overlay/Onboarding**，再 J13g；不提前 J14。`.dotnet-cli-home/` 保留，无 push、Stage、部署、打包、游戏/外仓写入或自动化改动。
 
-**GitHub 交付已确认：`38c003ab` 已推到原重构分支（此前为 `a58c2191`）。本记录随后单独提交；确切最新末端以远端 ref 为准。指定制作组简明 HANDOFF 未进入上传文件树或新增提交历史。**
+## 以下为 e4 交接（历史）
 
-用户本轮授权把框架和维护要求写成仓库 Skill 并推送专门重构分支，**指定 Native history 制作组简明版只留本地**。本轮不改游戏运行代码，不恢复自动化；下面历史段落中的“未推送/自动化继续”等仅代表当时状态。
+# 主体 J13e4 Settlement/Inspection 有限离线收口（2026-09-25）
 
-- Skill：`.agents/skills/af-core-framework/SKILL.md`，根 `AGENTS.md` 已接入读取规则。允许批准的主体功能演进，不把当前算法、模块名单、只读 API 状态写成永久上限；稳定分层、公开兼容与唯一权威提交责任。
-- 新的可上传交接：[框架 Skill GitHub HANDOFF](docs/handoffs/2026-09-11-framework-skill-github-handoff.md)，包含逐项代码路径、行号、符号和责任注释。
-- 当前源码坐标：[范围图](docs/architecture/af-framework-code-scope.md) / [JSON](docs/architecture/af-framework-code-map.json)，核对源码 `8f1cd479`，25 个定位点；新接缝/混合 owner/仍运行旧入口/不处理业务分开标注，不搬动仍在用的旧源码。
-- 本地干净交付分支：`codex/af-framework-skill-delivery-20260911` → 获准远端 `origin/codex/af-main-refactor-continuation-20260831`；旧远端基线 `a58c2191`。原本地同名来源分支只保留历史，不能直接推送其中含本地专用文档的提交。
-- 发布校验/状态见 `docs/phase8/framework-skill-publish-progress-20260911.md`。运行代码仍为 `8f1cd479`；本轮为 Skill/文档/定位校验工具，未产生新游戏构建或实机证据。自动化仍 PAUSED，阶段 8 未 DONE。
+- **状态**：`J13e4_OFFLINE_VERIFIED / J13_ACTIVE`。入场 ticket、随行 Mission/Agent 身份和 Inspection 临时 session/清理分别归真实 owner，原 Campaign/Harmony/Terminal、存档与 GCCZ 薄接缝保留；产品/回放 `a946301a`、`cf162dd5`、`35daa7a6`，聚合 `ef6a83e1`。一基源码、保留/未验责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)。
+- **离线证据**：Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 警告/错误；Debug 1.4 SHA256 `877CE07F95D20F7DD82FEFAFA89D873CB3C831E0CC9240A5A5B5B39EAEA2BE39` 完整 Phase8 含三个当前 DLL owner 回放和 e4 聚合接线契约；V1 119/四 DLL metadata 1112、PersistenceIdentity 142/36、迁移 10、source inventory 7、[代码地图](docs/architecture/af-framework-code-map.json) 680 锚点两模式通过。实机入场/死亡/中止、旧档、GCCZ 副作用及帧性能 **NOT-RUN**。
+- **下一步**：依[原计划](docs/plans/j13-domain-owners-plan.md)进入 **e5 Exercise**；不提前 J14。`.dotnet-cli-home/` 保留，无 push、Stage、部署、打包、写游戏/外仓或改自动化。
 
-### 主体关键位置（源码 8f1cd479）
+## 以下为 e3 交接（历史）
 
-- `Refactor/Modules/TeamModulePorts.cs:7-10` — `internal interface IPolicyModulePort`：政策 typed 接缝，业务归原 owner。
-- `Refactor/Modules/ModuleFrameworkRuntime.cs:14-17` — `internal static class ModuleFrameworkRuntime`：装配与只读投影，不是第二套执行器。
-- `Api/V1/AfApi.cs:13-16` — `public static class AfApi`：当前只读；其他提交/写能力未开放。
-- `MyBehavior.HistoryPromptSnapshot.cs:35-38` — `internal static Func<string> CaptureHistoryContextWorkById`：召回用途投影，非全局记忆事务。
-- `ShoutBehavior.cs:16180-16183` — `private static Func<string> CaptureNativeConversationPersistedHistoryWork`：原身份解析在主线程捕获，非全 Shout 重写。
-- `MyBehavior.cs:28087-28090` — `public static string BuildHistoryContextForExternal(`：Scene/Courier 仍调用，共享兼容入口不能盲删。
+# 当前交接：主体 J13e3 Encounter 有限离线收口（2026-09-25）
 
-## 上一轮状态：记忆快照完成，自动化暂停
+- **状态**：`J13e3_OFFLINE_VERIFIED / J13_ACTIVE`。目标/会话优先级、释放授权及 pending 返回四个真实 owner 与原 Campaign/tick/三个会话 patch 连接；产品/回放 `0b0b32c0`、`dc2bbe03`、`86c11889`，聚合 `73bef755`。一基位置、保留 host 和未验责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)。
+- **离线证据**：源码链接提取 53/53；Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 警告/错误；Debug 1.4 SHA256 `8545757A9A8880F1E5D40E74E7F0727D967DD86C6675442E571232293B803ACD` 完整 Phase8 含四个当前 DLL owner 回放和 e3 聚合源码契约；V1 119/四 DLL metadata 1100、PersistenceIdentity 142/36、迁移 10、source inventory 7、[代码地图](docs/architecture/af-framework-code-map.json) 663 锚点两模式通过。原版事件顺序、实机会面/Harmony、旧档、native safe-passage 与帧性能 **NOT-RUN**。
+- **下一步**：按[原计划](docs/plans/j13-domain-owners-plan.md)进入 **e4 Settlement/Inspection**，随后 e5；不提前 J14。`.dotnet-cli-home/` 原未跟踪目录保留，无 push、Stage、部署、打包、写游戏/外仓或改自动化。
 
-**上一轮要求为“工作完成后暂停自动化，写两份 handoff”。Native 持久历史快照已验证并本地提交 `8f1cd479`，`af-7-8` 已设为 PAUSED 并回读确认；此刻只交接，不自动开始下一项。下面历史记录中的“自动化继续/下一轮”仅是当时状态，不构成恢复授权。整个阶段 8 未 DONE。**
+## 以下为 e2 交接（历史）
 
-上一轮的制作组简明版按新要求仅留本地，不作为 GitHub 交付文档或链接依赖；本轮可上传版本见顶部专题 HANDOFF。公共 Api.V1 仍只读。
+# 当前交接：主体 J13e2 Taunt 有限离线收口（2026-09-25）
 
-## 最新续作：Native 持久历史输入快照（生产/测试 8f1cd479）
+- **状态**：`J13e2_OFFLINE_VERIFIED / J13_ACTIVE`。和平场景/物理 MCM、延迟犯罪与信任小数、冲突升格/结束状态分别由 Taunt 三个真实 owner 承接；原 Campaign/Mission、五个 Harmony patch、保存键与原生处罚/队伍恢复适配保留。产品/行为 `e62e2a82`、`9ec814eb`、`5873d594`，聚合 `bee366a8`；一基坐标、Patch target/条件、覆盖和未验责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)及[代码范围图](docs/architecture/af-framework-code-scope.md)。
+- **离线证据**：Debug/Release × 1.3/1.4 + Bootstrap 六构建 0 警告/错误；Debug 1.4 SHA256 `4C8FDC5AF6BD57AFDBB380B639FB4340792FA08237A0F2515C40EB2434DAE0A9` 的完整 Phase8 含三个当前 DLL owner 回放和 e2 聚合契约；context 22/22、penalty 16/16、lifecycle 14/14、V1 119/四 DLL metadata 1080、PersistenceIdentity 142/36、迁移 fixture 10、source inventory 7、[代码地图](docs/architecture/af-framework-code-map.json) recorded/working-tree。实际游戏 Mission/Harmony/旧档/MCM 点击/原生副作用和帧性能均 **NOT-RUN**。
+- **下一条具体动作**：按[原计划](docs/plans/j13-domain-owners-plan.md)进入 **e3 Encounter**，先按军团会面目标案例审选中军团成员优先、合法 `_targetHero` 保留、释放授权/超时、pending 回调的换 party/Mission/save 失效和原 patch/注册，再逐切片迁 owner 与行为/聚合契约；随后 e4、e5，不提前 J14。`.dotnet-cli-home/` 保留；无 push、Stage、部署、打包、写游戏/外仓或改自动化。
 
-- 在原主线程队列核对 Native admission，捕获原 Hero/普通人物身份、owner、generation、总览、场景/日期/设置、召回查询和块/AFEF 投影；后台复用原召回/筛选/格式，结果使用前再验原 admission。
-- 保留原最新块、两种筛选模式、候选/填充/顺序、Summary 与 AFEF、主动开场输入语义和 history-only 失败空串 fallback。少量历史跳过不需要的草稿查询构造，ONNX/API 不整段搬到主线程。
-- 删除被替代的 `BuildNativeConversationPersistedHistoryContextForPrompt` 和原后台 identity/owner 接线。原 public 历史签名与 Scene/Courier 的共享默认入口仍有调用责任，未删除；存档身份/默认渠道/制作组业务均未改。
-- 新 memory 852 / 120 组合、Native 27 检查；旧实现分别 305 / 12 个断言失败，候选通过；10 个新变异被 runtime 拒绝。既有 UI/Native/ports 及 26 个旧变异复验通过。最终源码的六项 Stage、16 组相关回归、实际四 DLL 532 元数据检查均通过；无证据的发布门禁仍拒绝。
-- 技术边界：[记忆快照说明](docs/architecture/af-native-history-snapshot-boundary.md)；证据：[审计 MD](docs/audits/2026-09-11-native-history-snapshot-verification.md) / [JSON](docs/audits/2026-09-11-native-history-snapshot-verification.json)；台账：[本轮进度](docs/phase8/native-history-snapshot-progress-20260911.md)。原始日志在 `.tmp/native-history-snapshot-20260911/`，只留本地。
-- 代码文件：`MyBehavior.HistoryPromptSnapshot.cs`、`MyBehavior.cs`、`ShoutBehavior.cs`；真实旧代码对照 `659bb998`，本轮检查点 `e1a09954`。回滚需经用户指示定向反转 `8f1cd479` 并复跑测试；不 reset、不覆盖用户草稿。
-
-### 恢复后才做的工作
-
-1. 先核对实际 HEAD、工作树和新用户指示；两份 2026-09-06 草稿仍有用户改动，不纳入自己的提交。不能仅因定时提示或历史 handoff 就恢复自动化。
-2. 继续检查其他后台维护/压缩 writer；当前证明的是捕获后不再共享可变列表，**未证明与所有 writer 并发捕获的全局原子性**。此投影缺少本路径不读的字段，不能作为完整存档块写回。
-3. 再沿 Native persona/规则/独立周报绑定/剩余游戏对象读取与 TTS 直接回调检查；随后推进 Courier 双向早期 prepare。Scene/Courier 本轮尚未接入该快照入口。
-4. 实机核对英雄/普通人物、空/多历史、主动开场、换会话/读档晚返回、失败提示、AFEF 内容及主线程耗时，再考虑新公共提交/生命周期能力。已开始网络不可伪称取消，空历史 fallback 不可伪称严格读取成功。
-5. 整个阶段 8 的真实 Host、旧存档、新外部 DLL 加载/升级与最终清理仍需独立验收；不因本轮 PASS 自动切默认路径、删所有旧 facade 或推送/部署。
-
-## 前序续作：记忆失败提示（生产/测试 6f0bac67）
-
-- 深层记忆审查发现 9 处失败出口可从后台直接弹 UI；已改为有界待提示，由原 EngineTick 消费，核对 owner / 实际 Campaign / 操作 generation / 展示 revision。旧确认、显示失败重入、日志失败不再干扰新提示。
-- 原错误文字、按钮/暂停、召回/筛选/总结算法与重试策略保持。读档和现有数据清理的瞬态重置点只同步清理新提示；不执行或改变数据清理业务。
-- 85 检查 / 7 变异；原 Native 589/132/44/46/88/184/111、ports 308/3、最终六项 Stage、16 组相关回归、四 DLL 532 元数据通过。存档绑定仅刷新两处 -14 行号，168 个身份不变。
-- 简明版：`docs/handoffs/2026-09-11-memory-failure-ui-team-handoff.md`；技术说明：`docs/architecture/af-memory-failure-presentation-boundary.md`；审计：`docs/audits/2026-09-11-memory-failure-ui-verification.md`；台账：`docs/phase8/memory-failure-ui-progress-20260911.md`。
-- 检查点 `88777e45`；未推送/部署/真实存档访问。Api.V1 仍只读，真实游戏/旧存档未验收，阶段 8 未完成。
-- 下一项仍是记忆数据快照：原身份/owner、可变 blocks/drafts、总览、场景/日期和召回输入；保留原检索/格式，不整段主线程化。已确认召回不写块内 embedding，引擎缓存按原锁保留。本轮不是完整记忆线程安全；自动化继续。
-
-## 前序续作：Native 初始场景准备（生产/测试 0306beba）
-
-- NPC、文化/已有历史标记、挑衅规则、传唤/带路候选与规则排除表改在原 request_target_validation 消费中一次准备；先验证原 admission，删除被替代的后台读取片段。原 helper、参数/结果/顺序与默认业务链保留。
-- private 准备包仍有既有 LocationCharacter/Location 引用，不是公共 immutable DTO；没有把持久历史召回/前处理 Task 整段搬主线程。
-- 589 检查 / 5 变异；共用调度 132/7、准入 44/7、展示 46、动作 88、收尾 184、前置历史 111、ports 308/3；六项最终 Stage、16 组相关回归、四 DLL 532 元数据通过。原 7 个前置守卫仍为 6 + 1，未弱化门禁。
-- 简明版：`docs/handoffs/2026-09-11-native-preparation-team-handoff.md`；技术说明：`docs/architecture/af-native-initial-preparation-boundary.md`；审计：`docs/audits/2026-09-11-native-preparation-verification.md`；台账：`docs/phase8/native-preparation-progress-20260911.md`。
-- 检查点 `62468e7c`；未推送/部署/真实存档访问，Api.V1 仍只读。真实游戏/主线程耗时尚未验收，整个阶段 8 未完成。
-- 下一项：沿实际持久历史链拆游戏/owner 数据读取、可变记忆集合与召回/选择，不删记忆、不整段主线程化；之后继续 persona/周报绑定、TTS、Courier prepare。自动化继续。
-
-## 前序续作：共用主线程函数（生产/测试 5bf830f3）
-
-- Native/Scene 共用调度改为 queued/claimed/retired CAS：未开始才可过期，已开始等真实结果；失败发布不遗留晚到工作，日志/错误消息格式化不改变结果。direct/queued 前处理格式异常一致，普通 fallback 兼容责任保留。
-- 仅两个私有调度声明改变，25 个业务调用点保持原样；移除 bool timeout、wait 吞错和重复执行处理。未改制作组业务、存档键、默认路径或公共写 API。
-- 132 检查 / 7 变异；Native 44/46/88/184/111、ports 308/3、六项最终 Stage、16 组相关回归、实际四 DLL 532 元数据通过；不是实机。
-- 简明版：`docs/handoffs/2026-09-11-mainthread-function-team-handoff.md`；技术说明：`docs/architecture/af-mainthread-function-boundary.md`；审计：`docs/audits/2026-09-11-mainthread-function-verification.md`；台账：`docs/phase8/mainthread-function-progress-20260911.md`。
-- 检查点 `84d7097b`。未推送/部署/真实存档访问；Api.V1 仍只读。普通 fallback 仍不能证明没有部分副作用，已开始的同步 owner 不能强行取消。
-- 下一项：Native 更早 prepare（尤其后台 persisted history 与人设/规则构造的游戏读取）、TTS 直接回调，再处理 Courier prepare。现有 whole-host inverse 是本轮严格对照，后续其他 host 变更要补独立审查证据，不弱化断言。自动化继续。
-
-## 前序续作：Native 前置历史（生产/测试 128e9842）
-
-- 玩家显示名、tentative 输入、pending AFEF 与 Native 历史消息改在同一次主线程消费里准备；原 history key 只解析一次，私有 helper 默认行为不变。
-- 五个拒绝分支与 action discard 共用固定 key + 原 owner/generation/会话/revision 的清理，改为只删 player/user，不误删事实或新存档重用序号。未开始队列超时明确失败，晚到不补做；原 Action core 未改。
-- 111 检查 / 12 变异，原 184/15、88/9、44/7、46/6、ports 308/3，六项 Stage、四 DLL 532 元数据和 16 组相关回归通过；不是实机。
-- 简明版：`docs/handoffs/2026-09-11-native-pending-history-team-handoff.md`；技术说明：`docs/architecture/af-native-pending-history-boundary.md`；审计：`docs/audits/2026-09-11-native-pending-history-verification.md`；台账：`docs/phase8/native-pending-history-progress-20260911.md`。
-- 检查点 `1547460a`。未推送、未部署、未操作真实存档；公共 Api.V1 仍只读。
-- 下一项：更早 Native 人设/规则/持久记忆 prepare，以及通用 main-thread func 的 bool timeout 问题；保持网络在后台，随后继续 TTS 直接回调、Courier prepare。不要把本段完成当成全 Native 或最终阶段 8 DONE。
-
-## 前序续作：Native 记忆接受结果（生产/测试 18f48678）
-
-- Native 已从 void 历史外壳接到一个支持 sceneSessionId 的 internal strict owner，检查运行期接受结果；原 public 六参接口保留 -1 loose 与 ABI。原 Action core、底层 Append/AFEF/数值未改。
-- owner 缺失/false/失败不再按正常完成处理，提示记忆未确认，不重放动作或删除部分记录。必要关窗在记忆失败后也保留且仍绑定原会话；非持久 NPC/空 payload 不伪造写入请求。
-- 184 检查 / 15 变异，原 88/9、44/7、46/6、ports 308/3，六项 Stage 和实际四 DLL 532 元数据通过。存档契约仅修正两处 -34 的源码行号，168 绑定身份不变，复验 PASS。
-- 简明版：`docs/handoffs/2026-09-11-native-memory-acceptance-team-handoff.md`；技术说明沿用更新后的 `docs/architecture/af-native-completion-boundary.md`；审计：`docs/audits/2026-09-11-native-memory-acceptance-verification.md`；台账：`docs/phase8/native-memory-acceptance-progress-20260911.md`。
-- 检查点 `c5de2186`。Applied 仅为运行期接受，不是磁盘/SyncData/跨动作事务或恢复 receipt；新 Api.V1 仍只读。未推送、未部署、未实机验收。
-- 下一项：更早 Native prepare/失败 pending 清理，再做 TTS 直接回调、Courier prepare 和完整生命周期/恢复证据；不改制作组业务或直接开放新公共提交。
-
-## 前序续作：Native 主线程收尾（生产/测试 d7ab9610）
-
-- 动作后的历史派发、短期记录/显示标记和最终 TTS 改到同一次主线程消费；不再先检查目标再返回后台写游戏状态。原 Action core 未改。
-- 动作前捕获 scene session 与非 Hero party memory identity；动作合法结束会话时保留原目标历史派发，临时状态/延迟关窗仍绑定原 context/revision。动作 discard 清理也限定原上下文主线程。
-- 新 102 检查 / 9 变异，原动作 88 / 9、准入 44 / 7、展示 46 / 6、ports 308 / 3，最终六项 Stage 和 16 组回归通过；不是实机/旧存档验收。
-- 最新简明版：`docs/handoffs/2026-09-11-native-completion-team-handoff.md`；技术说明：`docs/architecture/af-native-completion-boundary.md`；审计：`docs/audits/2026-09-11-native-completion-verification.md`；台账：`docs/phase8/native-completion-progress-20260911.md`。
-- 本轮检查点 `e49aabbd`。未推送、未部署，公共 Api.V1 仍只读；旧 ForExternal 兼容入口不等于新公开 SDK。
-- 下一项：复用已有 MemoryCommitResult 严格接受边界并保留 Native scene session；随后处理更早 prepare/失败 pending 清理、TTS 直接回调、Courier prepare。旧 void 历史 owner 仍可能吞错/无 owner，不能宣称已实现可靠持久化或完整原子 AFEF receipt。
-
-## 前序续作：Native 动作派发边界（生产/测试 9a5335be）
-
-- 前半批 `8da4fbd7` 修复动作异常被当成功、日志异常让回复提前结束；本次 `9a5335be` 继续补齐未消费动作队列的等待期限。原业务 Core 未改。
-- 仅尚未 claim 的动作可在 30 秒后过期，晚到不补做；已开始动作等待真实结果，不按超时伪装取消或自动重试。两个 Overlay 失败分支仍在原展示 scope 内，目前共 16 个受保护异步 UI 消费点。
-- 88 检查 / 9 变异、原准入 44 / 7、展示 46 / 6、ports 308 / 3、六项 Stage 构建及 16 组相关回归通过；不是实机验收。
-- 简明交接：`docs/handoffs/2026-09-11-native-action-outcome-handoff.md`；技术边界：`docs/architecture/af-native-action-dispatch.md`；最终审计：`docs/audits/2026-09-11-native-action-timeout-verification.md`；台账：`docs/phase8/native-action-outcome-progress-20260911.md`。
-- 前半批审计保留在 `docs/audits/2026-09-11-native-action-outcome-verification.md`；检查点分别为 `861dd7a7`、`841e8751`。
-- 未推送、未部署、公共 API 仍只读。下一项：Native 成功路径的主线程事实/记忆收尾（须区分旧会话晚返回和 owner 合法结束会话），然后更早 prepare/TTS、Courier prepare。不要把本次派发取消当整个回合回滚。
-
-## 前序续作：Native 展示观察（生产/测试 32230a64）
-
-- 两个 Overlay 提交入口复用同一内部观察桥和完整旧 Native 流程；14 个 UI 异步消费位置在出队时核对捕获会话，而不是只看当前 NPC 可用。
-- 后端已释放时，合法最终结果仍能显示；换会话/读档/新 revision 后旧结果失效，并只释放本地旧 busy，不操作新显示。
-- 新 46 检查 / 6 变异、原准入 44 / 7、六项构建和相关回归通过。公共 V1 仍只读；没有推送或部署，实机未验收。
-- 最新短版：`docs/handoffs/2026-09-11-native-presentation-handoff.md`；技术边界：`docs/architecture/af-native-presentation-lifetime.md`；验证：`docs/audits/2026-09-11-native-presentation-verification.md`。
-- 前序准入生产 `77d4a940`，记录保留在 `docs/phase8/native-admission-progress-20260911.md`；本轮台账为 `docs/phase8/native-presentation-progress-20260911.md`。
-- 下一轮：继续 Native prepare/动作后事实回执及剩余 TTS 直接回调边界，然后处理 Courier 双向 prepare；不能把 Overlay 观察票据当成完整公共请求服务。
-
-## 1. 当前结论
-
-**已进入确认架构的初版实施；本轮新接口不是整个阶段 8 或完整 SDK 的最终完成。**
-
-```text
-AnimusForge.dll
-├─ AF 主体：对话、LLM、Prompt、标签、记忆、调度
-├─ internal 模块接口与薄桥 → 政策 / 宴会 / GCCZ
-└─ public Api.V1（首版只读） ← 独立子 MOD DLL
-```
-
-当前工作树：`G:\AFMOD\AF-REFACTOR`。
-分支：`codex/af-main-refactor-continuation-20260831`。
-初版实施前：`df6ab928`；本轮意图/回滚检查点：`6e0de826`。
-框架初版生产与测试提交：`a616958c`；最新生产见上方续作段。
-精确最终提交请运行 `git log -3 --oneline`；本文与本轮源码一起提交，不编造包含自身的未来 commit hash。
-
-给制作组直接看的最新短版见上方；框架初版说明保留在 `docs/handoffs/2026-09-11-framework-v1-team-handoff.md`。
-
-## 2. 框架初版真实变更（a616958c）
-
-- `Refactor/Modules/InternalModuleDirectory.cs`：内部定义、依赖/版本校验、冻结与只读目录。未初始化不报告可用，冲突不覆盖 provider。
-- `TeamModulePorts.cs / TeamModuleAdapters.cs / TeamModuleServices.cs`：3 组 internal 接口、13 个原样转接方法、单例薄桥。没有改额外模块业务实现。
-- `ShoutBehavior.cs / ShoutBehavior.ScenePostprocess.cs / MyBehavior.cs / CourierDeliveryBehavior.cs`：共 31 处 receiver 接入；既有默认流程、参数和权威提交顺序保留。
-- `ModuleFrameworkRuntime.cs / SubModule.cs`：加载时显式装配，卸载时发布停止状态；不是 Campaign/game ready 事件，也没有新增 Tick。
-- `Api/V1/AfApi.cs / AfApiContracts.cs`：稳定英文 ID、V1 能力查询、框架只读快照。内部能力 `IsExternallyCallable=false`。
-- 新增契约/外部编译/薄桥回归，更新受真实receiver迁移影响的旧测试接线。
-- 存档对照表只刷新因新增 using 引起的源码行号；168 个 key/ref/type/source 身份保持不变。
-
-### 不要夸大
-
-- 当前只登记 `af.team.policy/gathering/siege` 的选定 `dialogue` 接缝，不是所有模块功能完成迁移。
-- 目录的可用状态不是执行授权，也不拦截全部历史 ForExternal 调用；每个真实请求仍由原 owner 检查。
-- 新公共 API 只有 `CatalogRead`；Native/Scene/Courier 提交、动作、记忆和扩展注册明确 `NotSupported`。
-- 旧 `NpcRulerPolicyBehavior.BuildActivePolicyDialogueContextForExternal` 目前本就返回空上下文；新桥没有恢复/更改业务。
-
-## 3. 文档导航
-
-- 总体图及责任：`docs/architecture/af-framework-v1-overview.md`
-- 制作组接入步骤：`docs/architecture/af-internal-module-guide-v1.md`
-- 子 MOD 使用示例/兼容边界：`docs/architecture/af-public-api-guide-v1.md`
-- 本轮实施与验证台账：`docs/phase8/framework-v1-execution-20260911.md`
-- 原逐项清单：`docs/phase8/af-core-review-checklist-20260910.md`（历史审批快照；用户随后已授权本轮初版）
-- 上一生产修复：`docs/handoffs/2026-09-09-recovery-fixes-handoff.md`
-- Courier 深层线程缺口：`docs/audits/2026-09-09-courier-thread-boundary-plan.md`
-
-## 4. 框架初版验证（最新 Native 验证见上方）
-
-已完成：Debug/Release × 1.3/1.4/Bootstrap 六项构建全部通过；新目录 44、公共 API 119、薄桥 308 个断言通过，四份实际实现 DLL 的 472 个元数据断言通过；原 Scene/Courier/管线与所选生产回放通过。原始命令/日志在 `.tmp/framework-v1-20260911/`，可提交的摘要在 `docs/audits/2026-09-11-framework-v1-verification.md`。
-
-**离线回归/构建不能替代实机验收。** 前次制作组对旧候选的测试反馈，不会自动成为本轮新接口的 LIVE/SAVE 证据。
-
-## 5. 后续工作（待用户恢复后，按顺序，不重写额外模块业务）
-
-1. Native：准入、排队 epoch、共享后端 busy、Overlay 队列观察与动作派发失败/未开始超时和主线程收尾边界已落地；单次运行期记忆接受结果也已接入；前置历史与五个拒绝清理也已收敛；共用主线程函数的等待/诊断边界也已修复；初始场景准备与本轮 Native 持久历史输入也已捕获；继续更深 prepare、完整请求/恢复证据及 TTS 引擎直接回调边界，再评估有限公共普通文本提交。
-2. Courier 双向更早的 prepare：拆开游戏读取、网络/人设/记忆准备和主线程完成，避免把整段含网络的 builder 搬主线程。
-3. 保持 Scene 主体的接力、旁听、后处理、记忆/AFEF 和 TTS 回归；新接缝必须有原功能对照。
-4. 在稳定请求与事实回执上再扩充公共结果/生命周期通知、内部贡献协议、经过批准的制作组能力转接或子 MOD 扩展。
-5. 真实 1.3/1.4 Host、旧存档、新外部 DLL 加载/升级验收完成后，再单独确认默认迁移及有证据的旧路径删除。
-
-不要把旧 MOOD fallback 差异、同步 Action 网络不能真正取消、Courier 前置线程缺口写成“本轮已修”。
-
-## 6. 构建 / 回滚 / 协作边界
-
-使用既有 `一键编译覆盖推送/build_single_module.ps1 -Stage`，一套源码构建 1.3、1.4、Bootstrap；不改脚本、不拆 Contracts DLL、不改程序集/存档身份。准确本机构建参数保存在验证日志及实施台账中。
-
-当前自动化 `af-7-8` 已按用户最新要求暂停（PAUSED），需用户明确指示后才恢复。暂停前仅本地推进、验证和提交；没有推送、部署、安装 SDK 或操作真实存档。原两份 2026-09-06 用户草稿改动保留，未 stage 进本轮提交。
-
-回滚采用本轮实现提交的定向 `git revert <commit>` 并保留用户改动，不 hard reset，不 force-push。`6e0de826` 是框架初版检查点；最新两批检查点见顶部，需回滚时定向反转对应实现提交并保留用户改动。
-
-不要推原共享 `refactor/prepare-af-restructure` 或恢复其已改写历史；远端交付要使用经用户确认的专门重构分支。最新 fetch 时同名远端为 `a58c2191`，本地已有源码/测试/文档领先；新修改尚未推送。
+## 以下为 e1 交接（历史）

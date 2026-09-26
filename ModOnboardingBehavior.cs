@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Modules;
+using OnboardingOperationKind = AnimusForge.Refactor.Modules.OnboardingOperationVersionOwner.Kind;
 using MCM.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -125,23 +127,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private bool _setupDone;
 
-	private bool _welcomeShownThisSession;
+	private readonly OnboardingSessionOwner _onboardingSession = new OnboardingSessionOwner();
+	private readonly OnboardingDismissalOwner<OnboardingUiStage> _dismissalOwner = new OnboardingDismissalOwner<OnboardingUiStage>();
+	private readonly OnboardingOperationVersionOwner _operationVersions = new OnboardingOperationVersionOwner();
 
 	private bool _welcomeInProgress;
 
 	private long _suppressWelcomeUntilUtcTicks;
 
-	private bool _pendingWelcome;
-
-	private long _pendingWelcomeAfterUtcTicks;
-
 	private bool _apiValidationInProgress;
 
 	private CancellationTokenSource _apiValidationCancellation;
 
-	private int _apiValidationVersion;
-
-	private bool _pendingApiValidationResult;
+	private volatile bool _pendingApiValidationResult;
 
 	private int _pendingApiValidationVersion;
 
@@ -157,9 +155,8 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private CancellationTokenSource _baseUrlValidationCancellation;
 
-	private int _baseUrlValidationVersion;
-
-	private bool _pendingBaseUrlValidationResult;
+	private volatile bool _pendingBaseUrlValidationResult;
+	private int _pendingBaseUrlValidationVersion;
 
 	private bool _pendingBaseUrlValidationSuccess;
 
@@ -173,9 +170,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private CancellationTokenSource _modelFetchCancellation;
 
-	private int _modelFetchVersion;
-
-	private bool _pendingModelFetchResult;
+	private volatile bool _pendingModelFetchResult;
 
 	private int _pendingModelFetchVersion;
 
@@ -191,15 +186,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private OnboardingUiStage _activeOnboardingStage;
 
-	private OnboardingUiStage _pendingUnexpectedResumeStage;
-
-	private long _pendingUnexpectedResumeAfterUtcTicks;
-
-	private bool _startupNoticeShownThisSession;
-
-	private bool _pendingStartupNotice;
-
-	private long _pendingStartupNoticeAfterUtcTicks;
 
 	private ApiSetupTarget _currentApiSetupTarget;
 
@@ -219,11 +205,6 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 
 	private ApiValidationFlow _apiValidationFlow;
 
-	private bool _pendingActionPostprocessSetup;
-
-	private long _pendingActionPostprocessSetupAfterUtcTicks;
-
-	private bool _actionPostprocessSetupShownThisSession;
 
 	public static ModOnboardingBehavior Instance { get; private set; }
 
@@ -246,7 +227,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		dataStore.SyncData("_AnimusForge_setup_done_v1", ref _setupDone);
 		if (!_setupDone)
 		{
-			_welcomeShownThisSession = false;
+			_onboardingSession.ResetWelcomeShown();
 		}
 	}
 
@@ -267,8 +248,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_pendingWelcome = true;
-			_pendingWelcomeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(2.0).Ticks;
+			_onboardingSession.MarkWelcome(DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
@@ -279,8 +259,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_pendingStartupNotice = true;
-			_pendingStartupNoticeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(1.0).Ticks;
+			_onboardingSession.MarkStartupNotice(DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
@@ -308,8 +287,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_pendingActionPostprocessSetup = true;
-			_pendingActionPostprocessSetupAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromSeconds(3.0).Ticks;
+			_onboardingSession.MarkActionPostprocess(DateTime.UtcNow.Ticks);
 		}
 		catch
 		{
@@ -325,22 +303,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			ProcessPendingModelFetchResult();
 			ProcessPendingReturnToWelcome();
 			ProcessUnexpectedOnboardingDismissal();
-			if (_pendingStartupNotice && !_startupNoticeShownThisSession && DateTime.UtcNow.Ticks >= _pendingStartupNoticeAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			if (_onboardingSession.TryClaimStartupNotice(DateTime.UtcNow.Ticks, Campaign.Current != null && Campaign.Current.GameStarted))
 			{
-				_pendingStartupNotice = false;
-				_startupNoticeShownThisSession = true;
 				ShowStartupNotice();
 			}
-			if (!_setupDone && _pendingWelcome && !_welcomeShownThisSession && DateTime.UtcNow.Ticks >= _pendingWelcomeAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			if (_onboardingSession.TryClaimWelcome(DateTime.UtcNow.Ticks, Campaign.Current != null && Campaign.Current.GameStarted, _setupDone))
 			{
-				_pendingWelcome = false;
-				_welcomeShownThisSession = true;
 				ShowSetupModeChoicePopup(fromGate: false);
 			}
-			if (_setupDone && _pendingActionPostprocessSetup && !_actionPostprocessSetupShownThisSession && DateTime.UtcNow.Ticks >= _pendingActionPostprocessSetupAfterUtcTicks && Campaign.Current != null && Campaign.Current.GameStarted)
+			if (_onboardingSession.TryClaimActionPostprocess(DateTime.UtcNow.Ticks, Campaign.Current != null && Campaign.Current.GameStarted, _setupDone))
 			{
-				_pendingActionPostprocessSetup = false;
-				_actionPostprocessSetupShownThisSession = true;
 				ShowActionPostprocessApiSetupPopup(ignoreSuppress: true, allowWhenSetupDone: true);
 			}
 		}
@@ -784,36 +756,28 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		if (_saveAndExitStage != SaveAndExitStage.None)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
 		if ((_setupDone && !_apiOnlySetupFlowActive) || _pendingReturnToWelcome || _pendingBaseUrlValidationResult || _pendingApiValidationResult || _pendingModelFetchResult)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
 		if (_activeOnboardingStage != OnboardingUiStage.SetupModeChoice && _activeOnboardingStage != OnboardingUiStage.YjApiChoice && _activeOnboardingStage != OnboardingUiStage.YjApiKey && _activeOnboardingStage != OnboardingUiStage.Welcome && _activeOnboardingStage != OnboardingUiStage.DeepSeekApiKeyOwnership && _activeOnboardingStage != OnboardingUiStage.QuickPresetApiKey && _activeOnboardingStage != OnboardingUiStage.AuxiliaryChoice && _activeOnboardingStage != OnboardingUiStage.PostprocessChoice && _activeOnboardingStage != OnboardingUiStage.EventRebellionChoice && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidation && _activeOnboardingStage != OnboardingUiStage.BaseUrlValidationFailure && _activeOnboardingStage != OnboardingUiStage.ApiValidation && _activeOnboardingStage != OnboardingUiStage.ModelFetch && _activeOnboardingStage != OnboardingUiStage.ModelSelect && _activeOnboardingStage != OnboardingUiStage.Import)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
 		if (InformationManager.IsAnyInquiryActive() || AnimusForgeApiOnboardingPopup.IsOpen)
 		{
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			return;
 		}
-		if (_pendingUnexpectedResumeStage != _activeOnboardingStage)
-		{
-			_pendingUnexpectedResumeStage = _activeOnboardingStage;
-			_pendingUnexpectedResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
-			return;
-		}
-		if (DateTime.UtcNow.Ticks < _pendingUnexpectedResumeAfterUtcTicks)
+		if (!_dismissalOwner.TryClaim(_activeOnboardingStage, DateTime.UtcNow.Ticks, out OnboardingUiStage pendingUnexpectedResumeStage))
 		{
 			return;
 		}
-		OnboardingUiStage pendingUnexpectedResumeStage = _pendingUnexpectedResumeStage;
-		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
 		_welcomeInProgress = false;
 		switch (pendingUnexpectedResumeStage)
 		{
@@ -880,13 +844,19 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		int pendingBaseUrlValidationVersion = _pendingBaseUrlValidationVersion;
 		bool pendingBaseUrlValidationSuccess = _pendingBaseUrlValidationSuccess;
 		string pendingBaseUrlValidationMessage = _pendingBaseUrlValidationMessage ?? "";
 		string pendingValidatedBaseUrl = (_pendingValidatedBaseUrl ?? "").Trim();
 		_pendingBaseUrlValidationResult = false;
+		_pendingBaseUrlValidationVersion = 0;
 		_pendingBaseUrlValidationSuccess = false;
 		_pendingBaseUrlValidationMessage = "";
 		_pendingValidatedBaseUrl = "";
+		if (!_operationVersions.IsCurrent(OnboardingOperationKind.BaseUrlValidation, pendingBaseUrlValidationVersion))
+		{
+			return;
+		}
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
 		InformationManager.HideInquiry();
@@ -931,7 +901,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_pendingModelFetchSuccess = false;
 		_pendingModelFetchMessage = "";
 		_pendingModelFetchModels = new List<string>();
-		if (pendingModelFetchVersion != _modelFetchVersion)
+		if (!_operationVersions.IsCurrent(OnboardingOperationKind.ModelFetch, pendingModelFetchVersion))
 		{
 			return;
 		}
@@ -969,7 +939,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_pendingApiValidationSuccess = false;
 		_pendingApiValidationMessage = "";
 		_pendingApiValidationFailureHint = "";
-		if (pendingApiValidationVersion != _apiValidationVersion)
+		if (!_operationVersions.IsCurrent(OnboardingOperationKind.ApiValidation, pendingApiValidationVersion))
 		{
 			return;
 		}
@@ -1142,9 +1112,9 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			ResetYjApiSetup();
 			_apiOnlySetupFlowActive = true;
-			_pendingWelcome = false;
+			_onboardingSession.CancelWelcome();
 			_pendingReturnToWelcome = false;
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			_quickPresetFlowActive = false;
 			_selectedQuickApiPreset = QuickApiPreset.None;
 			SetApiRepairFlowActive(active: false);
@@ -1169,7 +1139,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		SetApiRepairFlowActive(active: false);
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
-		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+		_dismissalOwner.Reset();
 		InformationManager.HideInquiry();
 		InformationManager.DisplayMessage(new InformationMessage("已取消 API 重新配置。"));
 	}
@@ -1183,7 +1153,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		SetApiRepairFlowActive(active: false);
 		_welcomeInProgress = false;
 		_activeOnboardingStage = OnboardingUiStage.None;
-		_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+		_dismissalOwner.Reset();
 		TryPersistMcmSettings(DuelSettings.GetSettings());
 		InformationManager.HideInquiry();
 		InformationManager.DisplayMessage(new InformationMessage("API 重新配置已完成：配置已写入 MCM，已返回游戏，不会进入数据库导入或首次使用流程。"));
@@ -1851,18 +1821,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_apiValidationFlow = flow;
 		_apiValidationReturnToModelSelection = false;
 		_apiValidationInProgress = true;
-		int num = ++_apiValidationVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.ApiValidation);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_apiValidationCancellation = cancellationTokenSource;
 		ShowApiValidationProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string text = "";
 			string failureHint = "";
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_apiValidationCancellation = cancellationTokenSource;
 				ApiValidationTargetResult[] array = await Task.WhenAll(targets.Select((ApiValidationTargetInfo target) => ValidateApiTargetAsync(target, cancellationTokenSource.Token)));
 				List<ApiValidationTargetResult> failedResults = array.Where((ApiValidationTargetResult x) => x == null || !x.Success).ToList();
 				if (failedResults.Count == 0)
@@ -1888,7 +1857,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _apiValidationVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.ApiValidation, num))
 				{
 					if (ReferenceEquals(_apiValidationCancellation, cancellationTokenSource))
 					{
@@ -2381,17 +2350,16 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			return;
 		}
 		_baseUrlValidationInProgress = true;
-		int num = ++_baseUrlValidationVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.BaseUrlValidation);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_baseUrlValidationCancellation = cancellationTokenSource;
 		ShowBaseUrlValidationProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string message = "";
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_baseUrlValidationCancellation = cancellationTokenSource;
 				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().ProbeBaseUrlAsync(validatedBaseUrl, cancellationTokenSource.Token);
 				string text2 = exchange.ResponseBody;
 				if (exchange.Cancelled)
@@ -2422,13 +2390,14 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _baseUrlValidationVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.BaseUrlValidation, num))
 				{
 					if (ReferenceEquals(_baseUrlValidationCancellation, cancellationTokenSource))
 					{
 						_baseUrlValidationCancellation = null;
 					}
 					_baseUrlValidationInProgress = false;
+					_pendingBaseUrlValidationVersion = num;
 					_pendingBaseUrlValidationSuccess = flag;
 					_pendingBaseUrlValidationMessage = message ?? "";
 					_pendingValidatedBaseUrl = flag ? validatedBaseUrl : "";
@@ -2518,8 +2487,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_baseUrlValidationVersion++;
+			_operationVersions.Cancel(OnboardingOperationKind.BaseUrlValidation);
 			_baseUrlValidationInProgress = false;
+			_pendingBaseUrlValidationResult = false;
+			_pendingBaseUrlValidationVersion = 0;
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
 			try
@@ -2608,18 +2579,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			return;
 		}
 		_modelFetchInProgress = true;
-		int num = ++_modelFetchVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.ModelFetch);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_modelFetchCancellation = cancellationTokenSource;
 		ShowModelFetchProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string text = "";
 			List<string> list = new List<string>();
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_modelFetchCancellation = cancellationTokenSource;
 				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(apiUrl, apiKey, cancellationTokenSource.Token);
 				string text2 = exchange.ResponseBody;
 				if (exchange.Cancelled)
@@ -2658,7 +2628,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _modelFetchVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.ModelFetch, num))
 				{
 					if (ReferenceEquals(_modelFetchCancellation, cancellationTokenSource))
 					{
@@ -2699,7 +2669,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_modelFetchVersion++;
+			_operationVersions.Cancel(OnboardingOperationKind.ModelFetch);
 			_modelFetchInProgress = false;
 			_pendingModelFetchResult = false;
 			_pendingModelFetchVersion = 0;
@@ -2923,18 +2893,17 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		_apiValidationReturnToModelSelection = returnToModelSelection;
 		_apiValidationInProgress = true;
 		ApiSetupTarget validationTarget = _currentApiSetupTarget;
-		int num = ++_apiValidationVersion;
+		int num = _operationVersions.Begin(OnboardingOperationKind.ApiValidation);
+		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+		_apiValidationCancellation = cancellationTokenSource;
 		ShowApiValidationProgressPopup();
 		Task.Run(async delegate
 		{
 			bool flag = false;
 			string text = "";
 			string failureHint = "";
-			CancellationTokenSource cancellationTokenSource = null;
 			try
 			{
-				cancellationTokenSource = new CancellationTokenSource();
-				_apiValidationCancellation = cancellationTokenSource;
 				string effectiveApiUrl = DuelSettings.GetEffectiveApiUrl(apiUrl);
 				JObject requestPayload = new JObject
 				{
@@ -3009,7 +2978,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			}
 			finally
 			{
-				if (num == _apiValidationVersion)
+				if (_operationVersions.IsCurrent(OnboardingOperationKind.ApiValidation, num))
 				{
 					if (ReferenceEquals(_apiValidationCancellation, cancellationTokenSource))
 					{
@@ -3106,7 +3075,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			_apiValidationVersion++;
+			_operationVersions.Cancel(OnboardingOperationKind.ApiValidation);
 			_apiValidationInProgress = false;
 			_apiValidationFlow = ApiValidationFlow.Normal;
 			_apiValidationReturnToModelSelection = false;
@@ -3138,7 +3107,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			ResetYjApiSetup();
 			_saveAndExitStage = SaveAndExitStage.None;
-			_pendingWelcome = false;
+			_onboardingSession.CancelWelcome();
 			_pendingReturnToWelcome = false;
 			_pendingApiValidationResult = false;
 			_pendingApiValidationVersion = 0;
@@ -3148,6 +3117,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_apiValidationFlow = ApiValidationFlow.Normal;
 			_apiValidationReturnToModelSelection = false;
 			_pendingBaseUrlValidationResult = false;
+			_pendingBaseUrlValidationVersion = 0;
 			_pendingBaseUrlValidationSuccess = false;
 			_pendingBaseUrlValidationMessage = "";
 			_pendingValidatedBaseUrl = "";
@@ -3157,7 +3127,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 			_pendingModelFetchSuccess = false;
 			_pendingModelFetchMessage = "";
 			_pendingModelFetchModels = new List<string>();
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			_welcomeInProgress = false;
 			_apiRepairFlowActive = false;
 			_currentApiSetupTarget = ApiSetupTarget.Primary;
@@ -3193,7 +3163,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		{
 			_welcomeInProgress = false;
 			_activeOnboardingStage = OnboardingUiStage.None;
-			_pendingUnexpectedResumeStage = OnboardingUiStage.None;
+			_dismissalOwner.Reset();
 			InformationManager.HideInquiry();
 			SaveHandler saveHandler = Campaign.Current?.SaveHandler;
 			if (saveHandler == null)
@@ -3691,7 +3661,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				{
 				};
 			}
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			if (!Directory.Exists(playerExportsRootPath))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("找不到导出目录：" + playerExportsRootPath));
@@ -3940,46 +3910,11 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string GetModuleRootPath()
-	{
-		try
-		{
-			string location = typeof(SubModule).Assembly.Location;
-			string text = (string.IsNullOrEmpty(location) ? "" : Path.GetDirectoryName(Path.GetFullPath(location)));
-			DirectoryInfo directoryInfo = (string.IsNullOrEmpty(text) ? null : new DirectoryInfo(text));
-			while (directoryInfo != null && directoryInfo.Exists)
-			{
-				if (File.Exists(Path.Combine(directoryInfo.FullName, "SubModule.xml")))
-				{
-					return directoryInfo.FullName;
-				}
-				directoryInfo = directoryInfo.Parent;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			return Path.GetFullPath(Directory.GetCurrentDirectory());
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static string GetPlayerExportsRootPath()
-	{
-		string moduleRootPath = GetModuleRootPath();
-		return Path.Combine(moduleRootPath, "PlayerExports");
-	}
-
 	private static string GetModuleVersionText()
 	{
 		try
 		{
-			string path = Path.Combine(GetModuleRootPath(), "SubModule.xml");
+			string path = Path.Combine(PlayerExportsStore.GetModuleRootPath(), "SubModule.xml");
 			if (!File.Exists(path))
 			{
 				return "未知版本";
@@ -3997,25 +3932,10 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 		return "未知版本";
 	}
 
-	private static string SanitizeFolderName(string input)
-	{
-		string text = (input ?? "").Trim();
-		if (string.IsNullOrEmpty(text))
-		{
-			return "";
-		}
-		char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-		foreach (char oldChar in invalidFileNameChars)
-		{
-			text = text.Replace(oldChar, '_');
-		}
-		return text.Trim().TrimEnd('.');
-	}
-
 	private static string ResolveImportFolderPath(string folderName)
 	{
-		string playerExportsRootPath = GetPlayerExportsRootPath();
-		string text = SanitizeFolderName(folderName);
+		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
+		string text = PlayerExportsStore.SanitizeFolderName(folderName);
 		if (string.IsNullOrEmpty(text))
 		{
 			return null;

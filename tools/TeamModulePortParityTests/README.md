@@ -18,7 +18,7 @@ python tools/TeamModulePortParityTests/run.py
 
 ### 1. 原调用点没有改业务
 
-- 对 `MyBehavior.cs`、`ShoutBehavior.cs`、`ShoutBehavior.ScenePostprocess.cs`、`CourierDeliveryBehavior.cs` 四个业务 owner，将批准的 `TeamModuleServices.<port>.<method>` 接收者逆变换为原类名，并移除唯一新增 using。
+- 对 `MyBehavior.cs`、`ShoutBehavior.cs`、`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs`、`CourierDeliveryBehavior.cs` 四个业务 owner，将批准的 `TeamModuleServices.<port>.<method>` 接收者逆变换为原类名，并移除唯一新增 using；Scene 当前路径与历史基线旧路径分别读取。
 - 逆变换后的**整份文件**必须与 `df6ab928` 完全相等；这会抓到意外变动的参数、条件、调用顺序、异常处理、历史、事实与通知逻辑。
 - 首版共 **13 个方法、31 处实际调用点**，不是仅登记目录。
 - `SubModule.cs` 单独检查 load/unload 注入的精确差异及初始化顺序，不将它冒充业务 owner。
@@ -26,7 +26,7 @@ python tools/TeamModulePortParityTests/run.py
 
 ### 2. 实际 adapter 的委托行为没有变
 
-- 将真实 `TeamModulePorts.cs`、`TeamModuleAdapters.cs`、`TeamModuleServices.cs` 链接进 net8 测试程序。
+- 将 `src/AF.Contracts/Internal/TeamModules` 的三个真实 port、`src/bridges/{Policy,Gathering,Siege}` 的三个真实 adapter 和 `TeamModuleServices.cs` 链接进 net8 测试程序。
 - 游戏类型和原 owner 用只记录参数的 stub 替代，测试不模拟政策判定或攻城处置结果。
 - 验证每次调用只到原 owner 一次；Hero/Character/规则集合引用、各段文本、布尔/索引不串位；`ref` 正文、`out` 原因/事实/通知/handled 原样传回。
 - `handled` 与返回值可以不同；空目标、null 返回、false、默认参数与异常同实例均不得被“兼容兜底”吞掉。

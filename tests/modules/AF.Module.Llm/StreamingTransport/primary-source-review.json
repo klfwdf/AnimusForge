@@ -1,0 +1,5 @@
+{
+  "baseline": "5dc1794726fa18d1fe2a04abc97d165dd321d368",
+  "currentMethodSha256": "e5583431449e0efde1b04e51ad10db86cd7ef209c61e7c9e79409eb423a254cb",
+  "purpose": "J08 streaming actual-DLL replay plus transport suite; J01 projects only this reviewed consumer delta."
+}

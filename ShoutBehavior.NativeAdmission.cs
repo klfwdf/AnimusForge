@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Modules;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
 using TaleWorlds.MountAndBlade;
@@ -10,12 +11,12 @@ namespace AnimusForge;
 public partial class ShoutBehavior
 {
     // 后端票据只覆盖本次完整请求；不把 Task 完成解释成 TTS 播放完成。
-    private NativeConversationAdmission _nativeConversationAdmission;
-    private long _nativeConversationAdmissionEpoch;
-    private long _nativeConversationPresentationRevision;
+    private readonly NativeConversationAdmissionOwner<NativeConversationAdmission> _nativeAdmissionOwner =
+        new NativeConversationAdmissionOwner<NativeConversationAdmission>();
 
     internal sealed class NativeConversationAdmission
     {
+        internal CoreDialogueOperation ModuleOperation;
         internal long Generation;
         internal long ConversationEpoch;
         internal long PresentationRevision;
@@ -45,7 +46,7 @@ public partial class ShoutBehavior
     {
         ShoutBehavior owner = CurrentInstance;
         return owner != null && owner.IsNativeConversationAdmissionCurrent(
-            Volatile.Read(ref owner._nativeConversationAdmission), out _);
+            owner._nativeAdmissionOwner.Current, out _);
     }
 
     // 复用已注册的真实 ConversationEnded 事件，而不是 UI 关闭或可重用的 ActiveToken 推测会话结束。
@@ -55,20 +56,19 @@ public partial class ShoutBehavior
         if (owner != null)
         {
             // 同 token 重开也属于另一轮；尚未进入主线程的旧请求同样必须失效。
-            Interlocked.Increment(ref owner._nativeConversationAdmissionEpoch);
-            Interlocked.Exchange(ref owner._nativeConversationAdmission, null);
+            owner._nativeAdmissionOwner.EndConversation();
         }
     }
 
     private async Task<string> SubmitNativeConversationAdmittedAsync(string playerText,
         Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted,
         Action<string, Hero, CharacterObject> onMainReplyReady, bool npcInitiatedOpening,
-        NativeConversationPresentationScope presentationScope = null)
+        NativeConversationPresentationScope presentationScope = null, CoreDialogueOperation moduleOperation = null)
     {
         if (!npcInitiatedOpening && string.IsNullOrWhiteSpace(playerText))
             return "";
         long generation = SaveRuntimeGuard.CaptureGeneration();
-        long conversationEpoch = Interlocked.Read(ref _nativeConversationAdmissionEpoch);
+        long conversationEpoch = _nativeAdmissionOwner.ConversationEpoch;
         NativeConversationAdmission admission = await CaptureNativeConversationAdmissionAsync(
             generation, conversationEpoch, npcInitiatedOpening).ConfigureAwait(false);
         if (admission == null)
@@ -76,6 +76,8 @@ public partial class ShoutBehavior
         try
         {
             // Overlay calls admission on the main thread, before its first stream callback can run.
+            admission.ModuleOperation = moduleOperation;
+            moduleOperation?.MarkOwnerAdmitted();
             presentationScope?.Bind(admission);
             return await Task.Run(async delegate
             {
@@ -87,7 +89,7 @@ public partial class ShoutBehavior
         finally
         {
             // 旧请求晚完成只能释放自己的票据，不能清除换会话后新请求的 busy。
-            Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);
+            _nativeAdmissionOwner.Release(admission);
         }
     }
 
@@ -97,10 +99,10 @@ public partial class ShoutBehavior
             return Task.FromResult(CaptureNativeConversationAdmissionOnMainThread(generation, conversationEpoch, npcInitiatedOpening));
 
         var completion = new TaskCompletionSource<NativeConversationAdmission>(TaskCreationOptions.RunContinuationsAsynchronously);
-        int dispatchState = 0; // 0 queued; 1 started; 2 expired before start.
+        var dispatchClaim = new NativeConversationDispatchClaim();
         _mainThreadActions.Enqueue(() =>
         {
-            if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)
+            if (!dispatchClaim.TryStart())
                 return;
             try { completion.TrySetResult(CaptureNativeConversationAdmissionOnMainThread(generation, conversationEpoch, npcInitiatedOpening)); }
             catch (Exception ex) { completion.TrySetException(ex); }
@@ -111,7 +113,7 @@ public partial class ShoutBehavior
         {
             Task winner = await Task.WhenAny(completion.Task,
                 Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs)).ConfigureAwait(false);
-            if (winner != completion.Task && Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0)
+            if (winner != completion.Task && dispatchClaim.TryExpireBeforeStart())
                 throw new NativeConversationAdmissionException("native.admission_timeout", "对话请求尚未开始：主线程暂未处理，请稍后重试。");
             // 一旦捕获已开始，就必须接收它的结果；不放弃一个可能已占用后端票据的返回值。
             return await completion.Task.ConfigureAwait(false);
@@ -123,30 +125,30 @@ public partial class ShoutBehavior
         if (!IsBannerlordMainThreadForNativeActions())
             throw new InvalidOperationException("native.admission_requires_main_thread");
         if (!ReferenceEquals(CurrentInstance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation)
-            || conversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch)
+            || !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)
             || !CanSubmitNativeConversationForExternal())
             return null;
-        if (IsNativeConversationAdmissionCurrent(Volatile.Read(ref _nativeConversationAdmission), out _))
+        if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))
             throw new NativeConversationAdmissionException("native.busy", "上一轮对话仍在处理，请稍后再提交。");
         NativeConversationAdmission admission = CaptureNativeConversationContext(generation, conversationEpoch);
         if (admission == null)
             return null;
-        Interlocked.Exchange(ref _nativeConversationAdmission, admission);
+        _nativeAdmissionOwner.ReserveCaptured(admission);
         try
         {
             // 主动开场与普通输入共用准入；拒绝 busy 之前绝不消费待开场状态。
             if (npcInitiatedOpening && !NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(admission.Hero,
                 out admission.OpeningExtraFact, out admission.OpeningPrompt, out admission.OpeningSource))
             {
-                Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);
+                _nativeAdmissionOwner.Release(admission);
                 return null;
             }
-            admission.PresentationRevision = Interlocked.Increment(ref _nativeConversationPresentationRevision);
+            admission.PresentationRevision = _nativeAdmissionOwner.BeginPresentation();
             return admission;
         }
         catch
         {
-            Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);
+            _nativeAdmissionOwner.Release(admission);
             throw;
         }
     }
@@ -163,7 +165,7 @@ public partial class ShoutBehavior
         {
             Generation = generation,
             ConversationEpoch = conversationEpoch,
-            PresentationRevision = Interlocked.Read(ref _nativeConversationPresentationRevision),
+            PresentationRevision = _nativeAdmissionOwner.PresentationRevision,
             ConversationManager = manager,
             ConversationToken = manager.ActiveToken,
             Mission = Mission.Current,
@@ -180,7 +182,7 @@ public partial class ShoutBehavior
     private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission, out string reason)
     {
         reason = "native.admission_stale";
-        return admission != null && ReferenceEquals(Volatile.Read(ref _nativeConversationAdmission), admission)
+        return _nativeAdmissionOwner.Owns(admission)
             && IsNativeConversationContextCurrent(admission, out reason);
     }
 
@@ -190,7 +192,7 @@ public partial class ShoutBehavior
         if (admission == null || !IsBannerlordMainThreadForNativeActions()
             || !ReferenceEquals(CurrentInstance, this)
             || !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)
-            || admission.ConversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch))
+            || !_nativeAdmissionOwner.IsConversationEpochCurrent(admission.ConversationEpoch))
             return false;
         ConversationManager current = Campaign.Current?.ConversationManager;
         return ReferenceEquals(current, admission.ConversationManager) && current?.IsConversationInProgress == true
@@ -225,7 +227,7 @@ public partial class ShoutBehavior
         internal bool TryBeginSubmission() => Interlocked.CompareExchange(ref _submissionStarted, 1, 0) == 0;
         internal void Bind(NativeConversationAdmission admission) { _snapshot = admission; }
         internal bool HasCurrentContext()
-            => _snapshot != null && _snapshot.PresentationRevision == Interlocked.Read(ref _owner._nativeConversationPresentationRevision)
+            => _snapshot != null && _owner._nativeAdmissionOwner.IsPresentationCurrent(_snapshot.PresentationRevision)
                 && _owner.IsNativeConversationContextStampCurrent(_snapshot);
         internal bool IsCurrent()
             => HasCurrentContext() && _owner.IsNativeConversationContextCurrent(_snapshot, out _);
@@ -237,7 +239,7 @@ public partial class ShoutBehavior
         if (owner == null || !IsBannerlordMainThreadForNativeActions() || !CanSubmitNativeConversationForExternal())
             return null;
         NativeConversationAdmission snapshot = owner.CaptureNativeConversationContext(SaveRuntimeGuard.CaptureGeneration(),
-            Interlocked.Read(ref owner._nativeConversationAdmissionEpoch));
+            owner._nativeAdmissionOwner.ConversationEpoch);
         return snapshot == null ? null : new NativeConversationPresentationScope(owner, snapshot);
     }
 

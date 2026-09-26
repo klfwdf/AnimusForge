@@ -6,4 +6,14 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
+  <ItemGroup>
+    <Compile Include="..\ProductionOptInEntryReplayTests\WeeklyActionOutcomeProductionReplay.cs" Link="WeeklyActionOutcomeProductionReplay.cs" />
+    <Compile Include="..\ProductionOptInEntryReplayTests\NotorietyConversationOutcomeProductionReplay.cs" Link="NotorietyConversationOutcomeProductionReplay.cs" />
+  </ItemGroup>
+  <PropertyGroup>
+    <_ReplayImplementationPath Condition="'$(ReplayCandidateDll)' != ''">$(ReplayCandidateDll)</_ReplayImplementationPath>
+  </PropertyGroup>
+  <Target Name="RequirePhaseEightCandidate" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(ReplayCandidateDll)' == ''" Text="PhaseEight replay requires explicit -p:ReplayCandidateDll from the current single_module_artifacts build." />
+  </Target>
 </Project>

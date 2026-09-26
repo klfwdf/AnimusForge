@@ -1,0 +1,51 @@
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
+namespace TaleWorlds.Library {internal static class TWParallel {internal static int Main;internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==Main;}}
+namespace AnimusForge.Refactor.Runtime {internal sealed class DetachedDuelDispatchReceipt {internal DetachedDuelDispatchReceipt Clone()=>this;} }
+namespace AnimusForge {
+ public partial class CourierDeliveryBehavior {
+  private readonly PendingOperationRegistry _pendingOwnerPhases=new();
+  private static readonly ConcurrentQueue<Action> MainThreadActions=new();
+  internal static bool FailLog;
+  private static void Log(string m){if(FailLog)throw new Exception("log failure");}
+  private sealed class CourierSession {internal bool DeliveryApplied,ReplyGenerated;internal string InboundCompletionReceipt;}
+  private static CourierSession GetSessionById(string id)=>null;
+  private static bool IsInboundToPlayer(CourierSession s)=>false;
+  private static bool IsTerminalStage(CourierSession s)=>false;
+  private static void AbortCourierInboundCompletion(CourierSession s,string reason){}
+  internal Task<InteractionCommitResult> Submit(Func<InteractionCommitResult> f)=>DispatchCourierRefactorCommitAsync(f,"target","session");
+  internal bool Queued=>!MainThreadActions.IsEmpty;
+  internal Action Take(){MainThreadActions.TryDequeue(out var a);return a;}
+  internal void Reset()=>_pendingOwnerPhases.Reset();
+  internal void Seal()=>_pendingOwnerPhases.Seal();
+ }
+}
+internal static class Program {
+ static int checks;static void Check(bool b,string name){checks++;if(!b)throw new Exception("FAIL "+name);}
+ static void Until(Func<bool> done){if(!SpinWait.SpinUntil(done,2000))throw new Exception("FAIL pending past retirement bound");}
+ static InteractionCommitResult Receipt()=>new(InteractionStatus.Succeeded,true,true,"");
+ static void Main(){try {TaleWorlds.Library.TWParallel.Main=Environment.CurrentManagedThreadId;
+  var owner=new CourierDeliveryBehavior();int effects=0;var receipt=Receipt();
+  Check(ReferenceEquals(owner.Submit(()=>{effects++;return receipt;}).Result,receipt)&&effects==1,"inline receipt unchanged");
+  Check(owner.Submit(null).Result.ErrorCode=="missing_commit","missing callback unchanged");
+  Check(owner.Submit(()=>null).Result.ErrorCode=="missing_commit_result","missing result unchanged");
+  Check(owner.Submit(()=>throw new Exception("commit failed")).Result.ErrorCode=="main_thread_commit_exception","owner failure retained");
+  var t=Task.Run(()=>owner.Submit(()=>{effects++;return receipt;}));Until(()=>owner.Queued);var callback=owner.Take();callback();callback();Check(ReferenceEquals(t.Result,receipt)&&effects==2,"duplicate queued callback cannot commit twice");
+  t=Task.Run(()=>owner.Submit(()=>{effects++;return receipt;}));Until(()=>owner.Queued);callback=owner.Take();owner.Reset();Until(()=>t.IsCompleted);Check(t.Result.ErrorCode=="courier_owner_retired","reset settles pending final commit");callback();Check(effects==2,"late reset callback inert");Check(ReferenceEquals(owner.Submit(()=>receipt).Result,receipt),"next scope remains usable");
+  t=Task.Run(()=>owner.Submit(()=>{effects++;return receipt;}));Until(()=>owner.Queued);callback=owner.Take();owner.Seal();Until(()=>t.IsCompleted);Check(t.Result.ErrorCode=="courier_owner_retired","end settles pending commit");callback();Check(owner.Submit(()=>{effects++;return receipt;}).Result.ErrorCode=="courier_owner_retired"&&effects==2,"sealed owner cannot commit inline");
+  owner=new CourierDeliveryBehavior();t=Task.Run(()=>owner.Submit(()=>{effects++;return receipt;}));Until(()=>owner.Queued);callback=owner.Take();Until(()=>t.IsCompleted);Check(t.Result.ErrorCode=="main_thread_dispatch_timeout","unconsumed commit expires");callback();Check(effects==2,"expired final commit cannot run later");
+  foreach(bool throws in new[]{false,true}){
+   owner=new CourierDeliveryBehavior();using var started=new ManualResetEventSlim();using var release=new ManualResetEventSlim();
+   t=Task.Run(()=>owner.Submit(()=>{effects++;started.Set();release.Wait();if(throws)throw new Exception("partial");return receipt;}));Until(()=>owner.Queued);callback=owner.Take();var pump=Task.Run(()=>{TaleWorlds.Library.TWParallel.Main=Environment.CurrentManagedThreadId;callback();});
+   try{Check(started.Wait(2000),"real claimed callback started");owner.Seal();Thread.Sleep(250);Check(!t.IsCompleted,"retirement/deadline cannot override claimed commit");}finally{release.Set();pump.GetAwaiter().GetResult();TaleWorlds.Library.TWParallel.Main=Environment.CurrentManagedThreadId;}
+   Until(()=>t.IsCompleted);Check(throws?t.Result.ErrorCode=="main_thread_commit_exception":ReferenceEquals(t.Result,receipt),"claimed commit keeps its actual outcome");
+  }
+  owner=new CourierDeliveryBehavior();CourierDeliveryBehavior.FailLog=true;t=Task.Run(()=>owner.Submit(()=>throw new Exception("failure")));Until(()=>owner.Queued);owner.Take()();Until(()=>t.IsCompleted);Check(t.Result.ErrorCode=="main_thread_commit_exception","failed diagnostics cannot strand claimed commit");
+  Console.WriteLine($"CourierCommitLifetime checks={checks} failures=0; actual final dispatch/await/invoke + DTO; session is fixture, no game.");
+ }catch(Exception e){Console.WriteLine("FAIL "+e);Environment.ExitCode=1;} }
+}

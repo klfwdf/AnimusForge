@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Xml.Linq;
 
 const BindingFlags Members = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
@@ -19,13 +20,139 @@ static void Set(object value, string name, object fieldValue)
 static object Call(object value, string name, params object[] args) => value.GetType().GetMethod(name, Members).Invoke(value, args);
 
 string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
-string dll = Path.Combine(repo, "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll");
+if (args.Length != 2) throw new InvalidOperationException("Pass the current candidate DLL path and its expected SHA256 after --.");
+string dll = Path.GetFullPath(args[0]);
+string expectedDll = Path.GetFullPath(Path.Combine(repo, "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll"));
+Check(string.Equals(dll, expectedDll, StringComparison.OrdinalIgnoreCase), "PhaseEight candidate must be the current project-local Debug 1.4 artifact");
+string marker = Path.ChangeExtension(dll, ".build.json");
+Check(File.Exists(dll) && File.Exists(marker), "current candidate DLL/marker missing");
+using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))
+{
+    JsonElement record = build.RootElement;
+    string actualHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll)));
+    Check(string.Equals(actualHash, args[1], StringComparison.OrdinalIgnoreCase)
+        && string.Equals(actualHash, record.GetProperty("Sha256").GetString(), StringComparison.OrdinalIgnoreCase),
+        "candidate SHA256 differs from requested build marker");
+    Check(record.GetProperty("Role").GetString() == "Implementation"
+        && record.GetProperty("BannerlordApi").GetString() == "1.4"
+        && record.GetProperty("BuildFlavor").GetString() == "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "candidate build identity mismatch");
+    DateTime created = record.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
+    foreach (string source in new[] {
+        "WorldEvents/WorldEventInbox.cs", "src/modules/AF.Module.WorldEvents/WorldEventInboxOwner.cs",
+        "WarStats/AfWarStatsBehavior.cs", "src/modules/AF.Module.WarStats/WarStatsLedgerOwner.cs",
+        "DuelBehavior.cs", "DuelBehavior.Outcomes.cs", "src/modules/AF.Module.Duel/DuelBehavior.DispatchOwner.cs",
+        "src/modules/AF.Module.Duel/DuelSettlementEffectOwner.cs",
+        "SceneTauntBehavior.cs", "src/modules/AF.Module.Taunt/ScenePeaceConflictContextOwner.cs",
+        "LordEncounterBehavior.cs", "EncounterConversationTargetResolver.cs",
+        "SettlementEntryTroopSelectionBehavior.cs",
+        "src/modules/AF.Module.Settlement/SettlementMissionEntryOwner.cs",
+        "src/modules/AF.Module.Settlement/SettlementFollowerMissionOwner.cs",
+        "TroopInspectionBehavior.cs", "src/modules/AF.Module.Settlement/TroopInspectionSessionOwner.cs",
+        "MilitaryExerciseBehavior.cs", "src/modules/AF.Module.Exercise/ExerciseMapEventIdentityOwner.cs",
+        "src/modules/AF.Module.Exercise/MilitaryExerciseSessionOwner.cs",
+        "src/modules/AF.Module.Exercise/ExerciseSettlementOwner.cs",
+        "src/modules/AF.Module.Encounter/EncounterTargetOwner.cs",
+        "src/modules/AF.Module.Encounter/EncounterConversationTargetOwner.cs",
+        "src/modules/AF.Module.Encounter/EncounterReleaseOwner.cs",
+        "src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs",
+        "src/modules/AF.Module.Taunt/SceneTauntPenaltyLedgerOwner.cs",
+        "src/modules/AF.Module.Taunt/SceneTauntConflictLifecycleOwner.cs",
+        "RewardSystemBehavior.cs", "src/modules/AF.Module.Social/Recruitment/RecruitmentOwner.cs",
+        "ProactiveNpcRequestBehavior.cs", "src/modules/AF.Module.Social/Proactive/ProactiveOpeningOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveRequestCooldownOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveCandidateScanOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveRequestSessionOwner.cs",
+        "src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs",
+        "VanillaIssueOfferBridge.cs", "VanillaIssuePromptBehavior.cs", "src/modules/AF.Module.Issue/Dispatch/IssueAlternativeDispatchOwner.cs",
+        "src/modules/AF.Module.Issue/Completion/IssueCompletionReceiptOwner.cs",
+        "src/modules/AF.Module.Issue/Runtime/IssueRuntimeStateOwner.cs",
+        "src/modules/AF.Module.Issue/Runtime/IssueRuntimePromptOwner.cs",
+        "src/modules/AF.Module.Issue/Actions/IssueActionOwner.cs",
+        "src/modules/AF.Module.Issue/Actions/IssueTurnInDecisionOwner.cs",
+        "MyBehavior.PromotedPersonaGeneration.cs",
+        "RomanceSystemBehavior.cs", "src/modules/AF.Module.Social/Romance/RomanceRelationshipOwner.cs",
+        "PlayerNotorietyBehavior.cs", "src/modules/AF.Module.Social/Notoriety/NotorietyObservationOwner.cs",
+        "MyBehavior.PersonaGeneration.cs", "MyBehavior.PersonaReadiness.cs",
+        "DevWeeklyReportPopup.cs", "src/modules/AF.Module.UI/WeeklyReportPopupSessionOwner.cs",
+        "ModOnboardingBehavior.cs", "src/modules/AF.Module.Onboarding/OnboardingSessionOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingDismissalOwner.cs",
+        "src/modules/AF.Module.Onboarding/OnboardingOperationVersionOwner.cs",
+        "AnimusForgeApiOnboardingVM.cs", "src/modules/AF.Module.Onboarding/OnboardingUiDispatchOwner.cs",
+        "AnimusForgeApiOnboardingPopup.cs", "AnimusForgeNativeConversationOverlay.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs",
+        "src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs",
+        "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityOwner.cs",
+        "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs",
+        "src/modules/AF.Module.Kingdom/Scheduling/KingdomMaintenanceOwner.cs",
+        "src/modules/AF.Module.Kingdom/Scheduling/AutomaticKingdomRebellionOwner.cs" })
+        Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, source)), "candidate predates " + source);
+    Check(created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "MyBehavior.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyActionMaterialCursor.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialStageCursor.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitQueueOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportWaveCoordinator.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportBlockMaterialCursor.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportCommitTargetOwner.cs"))
+        && created >= File.GetLastWriteTimeUtc(Path.Combine(repo, "src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs")),
+        "candidate predates J13a production source");
+    Console.WriteLine("PhaseEight candidate SHA256=" + actualHash);
+}
 AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 {
     string candidate = Path.Combine(AppContext.BaseDirectory, new AssemblyName(args.Name).Name + ".dll");
     return File.Exists(candidate) ? Assembly.LoadFrom(candidate) : null;
 };
 Assembly af = Assembly.LoadFrom(dll);
+WeeklyActionOutcomeProductionReplay.Run(af);
+KingdomOwnerReplay.Run(af);
+NotorietyOwnerReplay.Run(af);
+RomanceOwnerReplay.Run(af);
+RecruitmentOwnerReplay.Run(af);
+ProactiveOpeningOwnerReplay.Run(af);
+ProactiveCooldownOwnerReplay.Run(af);
+ProactiveCandidateScanOwnerReplay.Run(af);
+ProactiveSessionOwnerReplay.Run(af);
+ProactiveQualificationReplay.Run(af, repo);
+IssueAlternativeDispatchOwnerReplay.Run(af);
+IssueCompletionReceiptOwnerReplay.Run(af, repo);
+IssueRuntimeStateOwnerReplay.Run(af, repo);
+IssueActionOwnerReplay.Run(af, repo);
+J13D2DomainOwnerContractReplay.Run(repo);
+WorldEventInboxOwnerReplay.Run(af);
+J13D3DomainOwnerContractReplay.Run(repo);
+J13D4DomainOwnerContractReplay.Run(repo);
+J13E1DomainOwnerContractReplay.Run(repo);
+DuelDispatchOwnerReplay.Run(af);
+ScenePeaceConflictOwnerReplay.Run(af, repo);
+SceneTauntPenaltyLedgerOwnerReplay.Run(af);
+SceneTauntConflictLifecycleOwnerReplay.Run(af);
+J13E2DomainOwnerContractReplay.Run(repo);
+EncounterTargetOwnerReplay.Run(af);
+EncounterConversationTargetOwnerReplay.Run(af);
+EncounterReleaseOwnerReplay.Run(af);
+EncounterPendingReturnOwnerReplay.Run(af);
+J13E3DomainOwnerContractReplay.Run(repo);
+SettlementMissionEntryOwnerReplay.Run(af);
+SettlementFollowerMissionOwnerReplay.Run(af);
+TroopInspectionSessionOwnerReplay.Run(af);
+J13E4DomainOwnerContractReplay.Run(repo);
+ExerciseMapEventIdentityOwnerReplay.Run(af);
+MilitaryExerciseSessionOwnerReplay.Run(af);
+ExerciseSettlementOwnerReplay.Run(af);
+J13E5DomainOwnerContractReplay.Run(repo);
+WeeklyReportPopupSessionOwnerReplay.Run(af);
+OnboardingSessionOwnerReplay.Run(af);
+OnboardingDismissalOwnerReplay.Run(af);
+OnboardingOperationVersionOwnerReplay.Run(af);
+OnboardingUiDispatchOwnerReplay.Run(af);
+J13FUiHostLifecycleContractReplay.Run(repo);
+NotorietyConversationOutcomeProductionReplay.Run(af);
 Type nodeType = af.GetType("AnimusForge.AnimusForgeTerminalNode", true);
 Type vmType = af.GetType("AnimusForge.AnimusForgeTerminalPopupVM", true);
 IList roots = (IList)Activator.CreateInstance(typeof(System.Collections.Generic.List<>).MakeGenericType(nodeType));
@@ -246,6 +373,15 @@ Console.WriteLine("PASS mergedTerminalSettings pagination/search/groups/hotkey-c
 Call(vm, "ExecuteClose"); Check(closed == 1, "close callback exactly once per command"); Call(vm, "OnFinalize");
 
 WeeklyReportOwnerReplay.Run(af);
+WeeklyMaterialBatchPlannerReplay.Run(af);
+WeeklyMaterialAggregationReplay.Run(af);
+WeeklyActionMaterialCursorReplay.Run(af);
+WeeklyPromptMaterialOwnerReplay.Run(af);
+WeeklyMaterialStageCursorReplay.Run(af);
+WeeklyMaterialPipelineParityReplay.Run(af);
+WeeklyReportCommitQueueReplay.Run(af);
+WeeklyReportBlockMaterialCursorReplay.Run(af);
+WeeklyReportMaterialRevisionReplay.Run(af);
 
 Type warType = af.GetType("AFWarStatsTerminal.Behaviors.AfWarStatsBehavior", true);
 Type recordType = warType.GetNestedType("WarStatsRecord", BindingFlags.NonPublic);
@@ -270,5 +406,126 @@ Set(loaded, "_dataVersion", 5); Call(loaded, "LoadSavedData");
 Check(((IDictionary)Get(loaded, "_activeWars")).Count == 1 && ((IList)Get(loaded, "_historicalWars")).Count == 1, "active/history list roundtrip");
 Check((int)Get(((IDictionary)Get(loaded, "_activeWars"))["|"], "KillsA") == 7, "new war survives owner load");
 Check((int)Get(((IList)Get(loaded, "_historicalWars"))[0], "KillsA") == 123, "old war survives owner load");
-Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=archive/idempotence/list-roundtrip live=NOT_RUN");
+Type ledgerType = warType.GetNestedType("WarStatsLedgerOwner", BindingFlags.NonPublic);
+Check(ledgerType != null, "WarStats has a dedicated ledger owner");
+object ledger = Get(owner, "_ledger");
+Check(ledger != null && ReferenceEquals(Get(ledger, "ActiveWars"), active)
+    && ReferenceEquals(Get(ledger, "HistoricalWars"), history), "host and terminal share the ledger-owned state");
+Call(ledger, "ArchiveAndRemove", "|", first, 0);
+Check(history.Count == 1 && active.Count == 1, "stale ended record cannot archive a reopened pair");
+Set(first, "KillsA", 999);
+Check((int)Get(history[0], "KillsA") == 123, "archived war is a snapshot, not the ended live record");
+Type historyEntryType = warType.GetNestedType("HistoricalWarEntry", BindingFlags.Public);
+object selectedHistory = Activator.CreateInstance(historyEntryType);
+Set(selectedHistory, "PairKey", "|"); Set(selectedHistory, "StartDay", 0); Set(selectedHistory, "EndDay", 0);
+Array selection = Array.CreateInstance(historyEntryType, 1); selection.SetValue(selectedHistory, 0);
+Check((int)Call(owner, "DeleteHistoricalWars", selection) == 1 && history.Count == 0 && active.Count == 1,
+    "terminal history deletion is identity-scoped and keeps reopened war");
+Check((int)Call(owner, "DeleteHistoricalWars", selection) == 0, "duplicate terminal deletion is harmless");
+Check(ledgerType.GetMethod("ApplyBattleStats", Members) != null, "ledger owns battle count decisions");
+Call(ledger, "ApplyBattleStats", second, true, 5, 6, 8, 9, true, true);
+Check((int)Get(second, "KillsA") == 12 && (int)Get(second, "CasualtiesA") == 6
+    && (int)Get(second, "KillsB") == 8 && (int)Get(second, "CasualtiesB") == 9
+    && (int)Get(second, "WinsA") == 1 && (int)Get(second, "LossesB") == 1,
+    "direct-order battle counts and winner apply once");
+Call(ledger, "ApplyBattleStats", second, false, -2, 3, 4, -5, true, false);
+Check((int)Get(second, "KillsA") == 16 && (int)Get(second, "CasualtiesA") == 6
+    && (int)Get(second, "KillsB") == 8 && (int)Get(second, "CasualtiesB") == 12
+    && (int)Get(second, "WinsA") == 2 && (int)Get(second, "LossesB") == 2,
+    "reverse-order battle counts clamp negatives and preserve winner polarity");
+Check(ledgerType.GetMethod("UpsertHeroDeath", Members) != null
+    && ledgerType.GetMethod("RecordRecentHeroBattle", Members) != null,
+    "ledger owns hero death and recent battle decisions");
+Call(ledger, "UpsertHeroDeath", second, "hero-a", "A", "Killer", 3, 10, "Battle", 0);
+Call(ledger, "UpsertHeroDeath", second, "hero-a", "A renamed", null, 4, 11, "", 1);
+IList deaths = (IList)Get(second, "HeroDeaths");
+Check(deaths.Count == 1 && (string)Get(deaths[0], "HeroName") == "A renamed"
+    && (string)Get(deaths[0], "KillerName") == "Killer"
+    && (string)Get(deaths[0], "BattleName") == "Battle"
+    && (int)Get(deaths[0], "Day") == 10 && (int)Get(deaths[0], "Side") == 1,
+    "duplicate death updates details without losing first day or known killer/battle");
+Check((bool)Call(ledger, "HasRecordedHeroDeath", "hero-a", "A renamed")
+    && !(bool)Call(ledger, "HasRecordedHeroDeath", "hero-b", "B"),
+    "death lookup distinguishes recorded and unknown hero");
+Call(ledger, "RecordRecentHeroBattle", second, "hero-a", "kingdom-a", 12, 1);
+Call(ledger, "RecordRecentHeroBattle", second, "hero-a", "kingdom-a", 13, 2);
+IDictionary recent = (IDictionary)Get(second, "RecentHeroBattles");
+Check(recent.Count == 1 && (int)Get(recent["hero-a"], "Day") == 13
+    && (int)Get(recent["hero-a"], "Sequence") == 2, "recent battle replaces only same hero");
+Call(ledger, "RecordRecentHeroBattle", second, "", "kingdom-a", 14, 3);
+Check(recent.Count == 1, "missing hero identity cannot pollute recent battle state");
+Call(ledger, "SetRecentBattleSequence", int.MaxValue - 1);
+Check((int)Call(ledger, "NextBattleSequence") == int.MaxValue
+    && (int)Call(ledger, "NextBattleSequence") == int.MaxValue, "recent battle sequence saturates without overflow");
+Call(ledger, "SetRecentBattleSequence", -1);
+Check((int)Get(ledger, "RecentBattleSequence") == 0, "loaded negative sequence is clamped");
+Call(ledger, "ArchiveAndRemove", "|", second, 14);
+IList archivedDeaths = (IList)Get(history[0], "HeroDeaths");
+Check(active.Count == 0 && history.Count == 1 && archivedDeaths.Count == 1
+    && !ReferenceEquals(archivedDeaths, deaths)
+    && (bool)Call(ledger, "HasRecordedHeroDeath", "hero-a", "A renamed"),
+    "ended war retains a cloned death history for later duplicate suppression");
+Check(ledgerType.GetMethod("PrepareSaveData", Members) != null
+    && ledgerType.GetMethod("RestoreSavedData", Members) != null,
+    "ledger owns v5 save projection and restore decisions");
+object malformed = Activator.CreateInstance(warType);
+Set(malformed, "_dataVersion", 5);
+Set(malformed, "_savedActiveKeysV2", new System.Collections.Generic.List<string> { "", "|" });
+Set(malformed, "_savedActiveKillsAV2", new System.Collections.Generic.List<int> { 4, -7 });
+Set(malformed, "_savedHistoryKeysV2", new System.Collections.Generic.List<string> { "", "|" });
+Set(malformed, "_savedHistoryEndDayV2", new System.Collections.Generic.List<int> { 0, 5 });
+Set(malformed, "_savedHistoryDurationV2", new System.Collections.Generic.List<int> { 0, 2 });
+Call(malformed, "LoadSavedData");
+IDictionary malformedActive = (IDictionary)Get(malformed, "_activeWars");
+IList malformedHistory = (IList)Get(malformed, "_historicalWars");
+Check(malformedActive.Count == 1 && (int)Get(malformedActive["|"], "KillsA") == 0
+    && malformedHistory.Count == 1 && (int)Get(malformedHistory[0], "StartDay") == 3,
+    "v5 restore skips blank keys, clamps bad counts, and recovers missing start day");
+object legacy = Activator.CreateInstance(warType);
+Set(legacy, "_dataVersion", 1);
+Set(legacy, "_savedPairKeys", new System.Collections.Generic.List<string> { "|", "" });
+Set(legacy, "_savedCasualtiesA", new System.Collections.Generic.List<int> { 8, 20 });
+Set(legacy, "_savedCasualtiesB", new System.Collections.Generic.List<int> { 5, 30 });
+Call(legacy, "LoadSavedData");
+IDictionary legacyRecords = (IDictionary)Get(legacy, "_legacyRecords");
+Check(legacyRecords.Count == 1 && (int)Get(legacyRecords["|"], "InflictedByA") == 8
+    && (int)Get(legacyRecords["|"], "InflictedByB") == 5
+    && (bool)Get(legacy, "_legacyMigrationPending"), "v1 restore queues only complete legacy pair rows");
+object legacyLedger = Get(legacy, "_ledger");
+object migratedCurrent = Activator.CreateInstance(recordType, true);
+Set(migratedCurrent, "CasualtiesA", 5);
+Call(legacyLedger, "ApplyMigratedLegacy", "|", migratedCurrent, true);
+Check(((IDictionary)Get(legacy, "_activeWars")).Count == 1
+    && ((IList)Get(legacy, "_historicalWars")).Count == 0,
+    "legacy current pair migrates only into active ledger");
+object migratedEnded = Activator.CreateInstance(recordType, true);
+Set(migratedEnded, "CasualtiesB", 8);
+Call(legacyLedger, "ApplyMigratedLegacy", "ended|pair", migratedEnded, false);
+Check(((IList)Get(legacy, "_historicalWars")).Count == 1
+    && (int)Get(((IList)Get(legacy, "_historicalWars"))[0], "CasualtiesB") == 8,
+    "legacy ended pair migrates only into history");
+Call(legacyLedger, "ClearLegacyRecords");
+Check(legacyRecords.Count == 0, "legacy migration consumes queued rows");
+Check(ledgerType.GetMethod("StartWar", Members) != null
+    && ledgerType.GetMethod("ResetActiveCountsAndIncidents", Members) != null,
+    "ledger owns declaration and terminal-clear state transitions");
+object lifecycle = Activator.CreateInstance(warType);
+object lifecycleLedger = Get(lifecycle, "_ledger");
+object currentWar = Activator.CreateInstance(recordType, true);
+Set(currentWar, "KillsA", 21); Set(currentWar, "CasualtiesB", 34);
+((IDictionary)Get(lifecycle, "_activeWars")).Add("|", currentWar);
+((IList)Get(lifecycle, "_historicalWars")).Add(history[0]);
+Call(lifecycleLedger, "RecordRecentHeroBattle", currentWar, "hero-a", "kingdom-a", 20, 1);
+Call(lifecycleLedger, "UpsertHeroDeath", currentWar, "hero-a", "A", null, 3, 20, "Battle", 0);
+Call(lifecycleLedger, "StartWar", currentWar, 1, 21);
+Check((int)Get(currentWar, "AttackerSide") == 1 && (int)Get(currentWar, "StartDay") == 21
+    && ((IDictionary)Get(currentWar, "RecentHeroBattles")).Count == 0,
+    "declaration resets only recent participation and records oriented start");
+Call(lifecycle, "ClearAllRecords");
+Check(((IDictionary)Get(lifecycle, "_activeWars")).Count == 1
+    && ((IList)Get(lifecycle, "_historicalWars")).Count == 0
+    && (int)Get(currentWar, "KillsA") == 0 && (int)Get(currentWar, "CasualtiesB") == 0
+    && ((IList)Get(currentWar, "HeroDeaths")).Count == 0,
+    "terminal clear preserves live pair while resetting counts, deaths and history");
+Console.WriteLine("PASS PhaseEightParityReplay terminal=paging/search/identity/details/back/empty/close tags=full-search/details/snapshot-export/refresh-back/empty weekly=country/date/full-body/tags/empty/back/completion-lifecycle/xml war=ledger/archive/stale/reverse-count/death/recent/v1-v5/terminal live=NOT_RUN");
 Console.WriteLine("implementationSha256=" + Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(dll))));

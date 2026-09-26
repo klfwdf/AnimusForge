@@ -1,6 +1,6 @@
 # Courier authoritative postprocess owner regression
 
-This tool executes the complete `CourierDeliveryBehavior.DetachedPostprocess.cs`, the actual Courier port factories, request-to-envelope mapping, domain qualification mapping, and Shout's real single-use `CourierActionPostprocessWorkItem`. Contracts, composition/coordinator, anonymous-message adapter, visible-letter/JSON cleaners, and `LegacyActionTagParser` compile directly from production sources.
+This tool executes the complete `src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs`, the actual Courier port factories, request-to-envelope mapping, domain qualification mapping, and Shout's real single-use `CourierActionPostprocessWorkItem`. Contracts, composition/coordinator, anonymous-message adapter, visible-letter/JSON cleaners, and `LegacyActionTagParser` compile directly from production sources.
 
 ## Run
 

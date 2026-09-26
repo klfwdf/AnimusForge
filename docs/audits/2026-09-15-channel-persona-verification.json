@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "807bc5b944907a10d2626f3936fa7109aa74422a",
+  "baseline": "4140bd04",
+  "mainBaseline": "437925b856fae76b4e9ee207e96ba048f35d5a67",
+  "scope": "Channel persona consumers, Courier admission and claimed-operation receipt; full closeout ACTIVE",
+  "sourceBinding": "Stage built the same working-tree C# as807bc5b9 while HEAD wasb6cdaa19; only test assertions/docs changed afterward.",
+  "verification": {
+    "channelPersonaAssertions": 169,
+    "oldConsumerAssertions": 98,
+    "oldConsumerFailures": 65,
+    "oldConsumerDeclarationsEqualMain": 3,
+    "channelPersonaMutations": 10,
+    "channelSourceGuards": 6,
+    "courierPhaseAssertions": 16,
+    "oldCourierPhaseFailures": 4,
+    "courierPhaseMutations": 3,
+    "teamPortAssertions": 308,
+    "teamPortMutations": 3,
+    "nativeMainThreadAssertions": 132,
+    "nativePreparationAssertions": 589,
+    "historyAssertions": 852,
+    "cutoverAssertions": 132,
+    "courierPostprocessAssertions": 39,
+    "courierPostprocessMutations": 8,
+    "courierHistoryAssertions": 122,
+    "heroGenerationAssertions": 125,
+    "apiAssertions": 119,
+    "snapshotAssertions": 32,
+    "actualDllMetadataAssertions": 700,
+    "actualCourierHostReplay": "PASS fixture ports",
+    "stageOutputs": 6,
+    "mainSyncDataKeys": 146,
+    "mainBehaviorTypes": 36,
+    "codeMapAnchors": 112
+  },
+  "notes": [
+    "Original3 consumers match fixed main; old98/65 is helper-level comparison, not proof that every outer request lacks guards.",
+    "One prior postprocess assertion deliberately changed: an already-started action now returns its definitive outcome after cancellation, still exactly once. Other38 assertions and8 mutants remain.",
+    "Game/generation/channel dispatch are fixtures in new consumer tests; original dispatcher suites separately passed. No live game/save test.",
+    "Cooperative waiting deadlines do not bound main-thread queue latency and do not cancel shared HTTP generation."
+  ],
+  "unverified": [
+    "preprocess/lore and remaining role/asset/message live reads",
+    "promoted companion flows",
+    "full GameEnd/queued work release and B1 budgets",
+    "internal bidirectional services and external3-channel SDK",
+    "main full feature/live game/old-save/Economy/AFEF acceptance"
+  ],
+  "sourceFiles": [
+    {
+      "path": "CourierDeliveryBehavior.DetachedPostprocess.cs",
+      "normalizedSha256": "6f9041dd6f2e217e98be1645f6942b15e0ad4d2b5d1a2b44f658def8b03aa075"
+    },
+    {
+      "path": "CourierDeliveryBehavior.PreparationAdmission.cs",
+      "normalizedSha256": "3b8a6ff955caeaf804613e2909481535f3ae963d35e36e087d1cd505b27e296d"
+    },
+    {
+      "path": "CourierDeliveryBehavior.cs",
+      "normalizedSha256": "0548b81116a352015d22470f8d6d353c1736cd17874401da1e0cd8d9a011b9e2"
+    },
+    {
+      "path": "MyBehavior.PersonaReadiness.cs",
+      "normalizedSha256": "f9747fc3b702f7aba92ae9aecd0335990e13ec4e098e414ad405e2092e53a910"
+    },
+    {
+      "path": "Refactor/Contracts/NpcPersonaReadinessSnapshot.cs",
+      "normalizedSha256": "2e807eacf0f196f84dd2af921021376526770366496cf4f14fd143378162685f"
+    },
+    {
+      "path": "Refactor/Runtime/PersonaGenerationWaiter.cs",
+      "normalizedSha256": "c63bd223ddac029ca8c00de6bd7d820a4b392dd1f600eaf3ccfc1fb4321b38e0"
+    },
+    {
+      "path": "ShoutBehavior.PersonaPreparation.cs",
+      "normalizedSha256": "6d082776e9decb666e4313b6ad541dc4d3e8ac9484912cc68165198cc7fe5ab8"
+    },
+    {
+      "path": "ShoutBehavior.cs",
+      "normalizedSha256": "a680ffea5952f356d9be9ba97d649066b4ccc57657240ed7687a4b6833d4cd74"
+    },
+    {
+      "path": "tools/ChannelPersonaPreparationTests/Extras.cs.txt",
+      "normalizedSha256": "e184c8db1b000b4cb8924abdf6709404500ed727ebe30584dd92130c6889d900"
+    },
+    {
+      "path": "tools/ChannelPersonaPreparationTests/Harness.cs.txt",
+      "normalizedSha256": "8e8d5da0dabfe9a167bea3eff0694abac6c5c7351d6bbd5061ab06061f014506"
+    },
+    {
+      "path": "tools/ChannelPersonaPreparationTests/run.py",
+      "normalizedSha256": "1c32b98443940b3a0cbbbc320a7d0764348c85cfba6ddfc32518b34a67e99e4c"
+    },
+    {
+      "path": "tools/ChannelPersonaPreparationTests/source-review.json",
+      "normalizedSha256": "967efd90b1386f0367550fe244eb4d787138b92b8793176846f7fe45ab28d9f1"
+    },
+    {
+      "path": "tools/ChannelPersonaPreparationTests/source_parity.py",
+      "normalizedSha256": "30cf3b2b750bd7b5d282b02d8f5802cba2712ca83c995bf31b47fe29463daba1"
+    },
+    {
+      "path": "tools/ChannelPersonaPreparationTests/test_source_parity.py",
+      "normalizedSha256": "d19a8aee9aad5918a9eb2d97dd67f9c31f64b25edf39dcc758d58ab2fcb837e7"
+    },
+    {
+      "path": "tools/CourierHistoryPreparationTests/source_parity.py",
+      "normalizedSha256": "45f77550541781f37a2a0dc7f1f073b43bae7356a5d8d50344effbaf1aa93207"
+    },
+    {
+      "path": "tools/CourierOwnerPhaseTests/Harness.cs.txt",
+      "normalizedSha256": "56b904a48bbc304dc9f083a3bbc0fb046396923b0830d193f2378a1d78e5e300"
+    },
+    {
+      "path": "tools/CourierOwnerPhaseTests/run.py",
+      "normalizedSha256": "3cf041d43cfd420d5ca7229f54b824d2a636b17e999add7a7bd6f2699d2a89cd"
+    },
+    {
+      "path": "tools/CourierOwnerPhaseTests/source-review.json",
+      "normalizedSha256": "9d95a34a2c7ab49c70633c28b2c8ef8a4e6d964dc364a48fafb1252a672fc1b5"
+    },
+    {
+      "path": "tools/CourierOwnerPhaseTests/source_parity.py",
+      "normalizedSha256": "1c663f8065d02793ae9b0b1872bc1dd2e018296a96d9141599c694654e317908"
+    },
+    {
+      "path": "tools/CourierPostprocessOwnerRegressionTests/Harness.cs.txt",
+      "normalizedSha256": "19d6a30cb21d60bbd316d064c1a283a3b72dfe75cbad7cd833c49f5010fd4fe7"
+    },
+    {
+      "path": "tools/MainThreadFunctionBoundaryTests/run.py",
+      "normalizedSha256": "633c0cb4e5404820bd9ded8ef96a5d0e5bfcd7afd0ca86988ca5d9c33007069f"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/ArtifactMetadata.cs",
+      "normalizedSha256": "6db7e2f7d43443ad020e3dea17f43952179a61a4defd5a4b4787cb246b9868ba"
+    },
+    {
+      "path": "tools/NativeHistorySnapshotTests/source_parity.py",
+      "normalizedSha256": "02b3929be2112927753c54d5f576fc7a1790b3ee8e7fb93082b070c8c541a686"
+    },
+    {
+      "path": "tools/TeamModulePortParityTests/run.py",
+      "normalizedSha256": "ab9cf9f341cf2a547fb08e9fbca76d738490c8b071223f69b683951e3a7c2411"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "0b84b2708d83c2da90666329790559fcd23c5d668eaccab439719623000c6128"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "882393bd21e90f8bc90fc7812466c39e2bb1c96ba55df2d18aa23b857d87ab0f"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "b550619b7062c1fd75f67abea9431b4e653a93b9e31ea49dd5671c7f850acde9"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "655e0f41b62dfc2801a067bfec340e81c177bc298ce2ad490355aec9977c7d7a"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "c0464e9ca6a1a7f4f19a3f0d1fa251f7fccd93e04900afdd91e30845e66957c4"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "d88b54dd924d92a6df2de2b3002e3b9c3b636b3dbae0f13d75429aaa8fbdce25"
+    }
+  ],
+  "localEvidence": [
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/current-final.log",
+      "sha256": "feb96f79b0b05569d6af27a8c616c579f795213236a189601b089fe7fc90b20a"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/original.log",
+      "sha256": "aec3d77cc56bae1135937d35dbaa9f60701715f93293c20d801ddc1884270319"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/source-guards-final.log",
+      "sha256": "60831fc5ce41271c4d4ff01a8e1fe3086c1c2943809e532b38afa50579e94103"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/owner-current-final.log",
+      "sha256": "f42e2497ca20f4886dd1401c76028d90ca43db9f4c582c3657d64ca35467abca"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/owner-original.log",
+      "sha256": "6180c128138ce059660a2fcbf61dbf76be7b1300d21284e94430f7f3bb19ebbe"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/team-ports.log",
+      "sha256": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/main-thread.log",
+      "sha256": "f405889c20a6c7b2ee369a506569bd5b9eb0386301f1b638dc5647bb82870d6d"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/native-preparation-final.log",
+      "sha256": "075b0f15df3860341876ab8bb218daaca9ad3540b86eee22b01ca0dfdc2af265"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/history.log",
+      "sha256": "38a6d306a12c1a73ff22545aaff24efc4e1427d894c58a5d5663aaaf3b39fd55"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/cutover.log",
+      "sha256": "83b947d4ea8970a6a8c63954a915c357367e2b02710ff3fc6958f4f433ad53af"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/courier-postprocess-final.log",
+      "sha256": "a00c9708fae500d401d380a7f58e75dfdadce0f9ec8b5146594acd3bece3a0a3"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/courier-postprocess-mutations.log",
+      "sha256": "95bff02a674e3ffd7d7112b60593d6ed6e0fe7b548d9dca9051e24a6598858fd"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/courier-history.log",
+      "sha256": "c7174feeecc51eaa4ba71e4bfac1a22969d994fd3d74e0064c141ac7286c3228"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/hero-generation.log",
+      "sha256": "10a2a7e4835b3b1efadea9eb1f1ee096b149d0280067c7d0c8ce5f2c6bf41668"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/history-source-guards.log",
+      "sha256": "2e81ccf6e2f95a82322184cfc1df82680996499e36193053227ecc8b8a444042"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/stage-debug.log",
+      "sha256": "16209a5b6ec7bdad019f6670e89294adc9e10bfb54a2353d4c06bebf37bec920"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/stage-release.log",
+      "sha256": "0d12e4255d9443472736f078819dbde3eec5bf2ef7c33b3ed645a16ad77ff654"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/api.log",
+      "sha256": "5a26758fe41dce6a2cca1afd8c269ca01e8661e554130b5effec862d0351be16"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/actual-courier-host.log",
+      "sha256": "5657cd5c61cdf3acd5f2259028b83beed125e63e8275681a19592d031e8f1e35"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/persistence.log",
+      "sha256": "86771f5079f80ccda3ec4e9320155cfc8c229438cbc5775f75a647c895698fe3"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-native_skip_admission.log",
+      "sha256": "3b7d8fe61712effb6030d083cf28a122b8bc19a989db9570de714ebefdeb6328"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-native_accept_failure.log",
+      "sha256": "ab7d0765f2ed54ba471f73d69e42e830adcd5a2bd941b27a9755d5652130387f"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-courier_drop_session.log",
+      "sha256": "aeb38c66f25ac463c76e72dd05be5b139c423f0b6de88df0754b26b1d8a2a89f"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-courier_reject_fallback.log",
+      "sha256": "c9509baec65373024ec74a499e50d6a59feef4f1da1e2f5ec14e4a0a11c7f3fd"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-scene_generate_partial.log",
+      "sha256": "dab70e21897ac3fda4ee551abeaa0d77fe997ddfff0eb3b2a8cff11241ee600a"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-scene_skip_scope.log",
+      "sha256": "487aa454b73d529b0537cdfc209401e790e72dbdc5331688530f73a538b8e036"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-scene_accept_replaced.log",
+      "sha256": "643848f8848e66327ad71065cbd14781d18dffa8baa9e841e6e898c7ed6ada66"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-invalid_target_cleanup.log",
+      "sha256": "ef2b8fa02e3b05ca61098ac66eb4e0b7ecae83d84c24ed6ec1ee34d10138e148"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-waiter_ignore_deadline.log",
+      "sha256": "14ab697d84beca74b8687bb8d8a50c93f54c4dc22d1dcf9476ee0e83413657ed"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/verified-mutation-waiter_ignore_scope.log",
+      "sha256": "c6187d68a178eb73f2f81add9c30793686bb19c3f94151fae0b3c2dc047b2c58"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/owner-mutation-cancel_claimed.log",
+      "sha256": "45b8dfa3af367cd5d4261c2ce576a99f0dfdd335bac099e47196e9b9ab32d1ea"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/owner-mutation-timeout_claimed.log",
+      "sha256": "f827336018c2abb48e1ac9b0e66df5c85ebc2ee3627dae34d8157ee94def1da8"
+    },
+    {
+      "path": ".tmp/channel-persona-20260915/final-evidence/owner-mutation-drop_claim.log",
+      "sha256": "b667427957d50759e4d3f902c8a8290e2a7be0c281a6b8eff2e357463d70537c"
+    }
+  ],
+  "pushed": false,
+  "deployed": false
+}

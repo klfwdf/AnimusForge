@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "af754ab603dfcb7d2141862ce8d8506b21d89f21",
+  "mainBaseline": "437925b856fae76b4e9ee207e96ba048f35d5a67",
+  "historyWiringBaseline": "73774a94fc1d2fcbebc69ea221e9a906a4e70b8e",
+  "scope": "Q1 Courier bidirectional history capture only; remaining prepare and all three external submit SDKs NOT complete",
+  "sourceBinding": "Final Debug/Release Stage built working-tree C# identical to sourceRevision while HEAD was intent de298e17. Build markers contain DLL hashes, not a Git revision. Initial stage-debug.log failed CS7036 and is not candidate evidence; stage-debug-final.log and stage-release.log succeeded.",
+  "verification": {
+    "courierHistoryAssertions": 122,
+    "directionalScenarios": 30,
+    "synchronousLegacyCases": 2,
+    "validHistoryMutations": 4,
+    "sourceGuards": 4,
+    "historyRenderAssertions": 852,
+    "nativeHistoryAssertions": 27,
+    "channelCutoverAssertions": 132,
+    "courierPostprocessAssertions": 39,
+    "teamPortAssertions": 308,
+    "teamPortMutations": 3,
+    "apiAssertions": 119,
+    "concurrentApiReads": 256,
+    "snapshotAssertions": 32,
+    "concurrentSnapshots": 128,
+    "snapshotMutations": 3,
+    "actualDllMetadataAssertions": 648,
+    "productionCourierHostReplay": "PASS actual Debug1.4 DLL; fixture ports, no live Campaign",
+    "stageOutputs": 6,
+    "mainSyncDataKeys": 146,
+    "mainCampaignBehaviorTypes": 36,
+    "codeMapAnchors": 100
+  },
+  "unverified": [
+    "remaining persona/preprocess/lore/message live preparation",
+    "full Campaign/Mission and memory-owner lifecycle",
+    "B1 deep-copy/writer/budget and frame time",
+    "versioned Native/Scene/Courier submit/result/cancel SDK; internal bidirectional services",
+    "all original main core outcomes, real game/old-save/live Economy/AFEF"
+  ],
+  "warnings": [
+    "Initial fixture compilation lacked TWParallel import; fixed before valid runtime mutations.",
+    "Initial full build omitted preparedHistory at two existing synchronous public Capture consumers; compatibility path added and final six Stage outputs passed.",
+    "Synchronous public Capture remains synchronous and may block; main-thread requirement preserved.",
+    "History projection still scales with history size; no bounded-frame-cost claim.",
+    "Existing private message formatters retain prior null-history fallback; current two builder callers supply nonnull prepared Text, including empty.",
+    "Historical ledger line endings were normalized in the source commit; no historical ledger content was intentionally rewritten."
+  ],
+  "sourceFiles": [
+    {
+      "path": "CourierDeliveryBehavior.HistoryPreparation.cs",
+      "normalizedSha256": "66e113d7ad075321561ec17f73b6cd18cf0a7cfd07bab7e2f2ca46411e469877"
+    },
+    {
+      "path": "CourierDeliveryBehavior.cs",
+      "normalizedSha256": "94da6c4fae29a756ca3f57ac7883c161b9df3379b9b4a6c32429a30b3105f7a1"
+    },
+    {
+      "path": "tools/CourierHistoryPreparationTests/Harness.cs.txt",
+      "normalizedSha256": "f8b44a1c5d7e1fed87ec8e5bc45d184b34bbded84b0a44c2ecc942a358b1e62c"
+    },
+    {
+      "path": "tools/CourierHistoryPreparationTests/run.py",
+      "normalizedSha256": "ba0f7928a84c3e238758ce5733d72f2c02c23265d6f3ba2be79d707f7742ee47"
+    },
+    {
+      "path": "tools/CourierHistoryPreparationTests/source-review.json",
+      "normalizedSha256": "c4a94b09c2a1b5347da597f0676fc7e8f8f58c2a9b81bc877ed6aafa1d907e9b"
+    },
+    {
+      "path": "tools/CourierHistoryPreparationTests/source_parity.py",
+      "normalizedSha256": "9ea7fd718482deb802e004623d3d942d357a76dc82ff359202ccec561831e650"
+    },
+    {
+      "path": "tools/CourierHistoryPreparationTests/test_source_parity.py",
+      "normalizedSha256": "c614c3d409a241a85c6922764fb4a2f4e71e57e5eb66fcd8028696a1ff574996"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/ArtifactMetadata.cs",
+      "normalizedSha256": "4bb1838674ce7c213c4c51cfdda334076b2c361b5ce2b9ff1c1a8fbfd7eafdab"
+    },
+    {
+      "path": "tools/TeamModulePortParityTests/run.py",
+      "normalizedSha256": "2dd65d7055d3d27b135425ad36e5ef06e5b0cf89455862264e520dc373d23d3b"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "88209229b6326e7d131fdf361cf256e3147cef7e5e67ff20123946424fd8fc39"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "8e1b2b050c13aaae3f385298994d9be6e0c3d1ed3c572ec1eda48a7ed4c98575"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "74197a7a8f5217b8049cab5c54ce5847bf079dc35ce3f9a612684c6cd09b36c3"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "2f0c57c74b037d1299b6a1576c44c70e5cd07613ce10b07920f8f0171ba5eb53"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "b437d551ddcadfe269ca6ee81214a1794d67cc956e9eecdf6ecdfe207740ef61"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "eceb65f36afc44ff6ec1f3eb331426afb66ea7a324f4f3ea81629d4a9cd2ad84"
+    }
+  ],
+  "localEvidence": [
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/history-verified.log",
+      "sha256": "c7174feeecc51eaa4ba71e4bfac1a22969d994fd3d74e0064c141ac7286c3228"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/source-guards.log",
+      "sha256": "5480786ba4aa7af59a8433b2c06ee76390c9b63678a6b3b78b1006c5378f7b99"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/history-render.log",
+      "sha256": "746ed5cdb6910d421a368940d7bd3cdc8c8007a66ac11c669a047d1cab7d2184"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/native-history.log",
+      "sha256": "e27cd1083fe4e83571300a46ee1034e830ac81ded88695e5d33b08408f3abfd1"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/channel-cutover.log",
+      "sha256": "83b947d4ea8970a6a8c63954a915c357367e2b02710ff3fc6958f4f433ad53af"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/courier-postprocess.log",
+      "sha256": "db3245c31bbd5cdd653b23f698f5bc0c42fbcde1378f73ca198b1dac25ea7715"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/team-final.log",
+      "sha256": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/api-final.log",
+      "sha256": "c383d7dc15995fc76d3e836d7d5c0e37f2e0d22888c2369a32dbcef28c16dcc2"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/actual-courier-host.log",
+      "sha256": "5657cd5c61cdf3acd5f2259028b83beed125e63e8275681a19592d031e8f1e35"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/persistence.log",
+      "sha256": "2ce4e4e7a7d061173eabab9480421109a1aa876bf0fb52f3cdba40e8377f0fc4"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/stage-debug-final.log",
+      "sha256": "7db6a0a7d626fdd57970f73ebc02097bb187102074caae7732c4447bd7d26f2f"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/stage-release.log",
+      "sha256": "516bfc8e1a190b8d2a4b8db32e986ea49dedfdd07fc783a037fb6d72176e3c24"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/final-mutation-worker_capture.log",
+      "sha256": "a2527829d0798081c5a253a1a2fb3d0039116495c4142e1e8d20acfe850ef819"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/final-mutation-main_resolve.log",
+      "sha256": "cb5ed88b26a350d0a60606d374b098e19aaf1a43b26cf498c4548d590515b6a4"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/final-mutation-skip_accept.log",
+      "sha256": "2ad565881e0f1668b81246c54b0de1322737ccebab9624125c5c2b0b9053e1a8"
+    },
+    {
+      "path": ".tmp/courier-history-20260915/final-evidence/final-mutation-wrong_input.log",
+      "sha256": "a3f9823eb887bee4112b07d02b54111c66aca4687e82dac55e1aef15ade28a77"
+    }
+  ],
+  "delivery": {
+    "pushed": false,
+    "deployed": false,
+    "automationRestarted": false,
+    "userProtectedFilesUnchanged": true
+  }
+}

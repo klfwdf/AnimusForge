@@ -1848,15 +1848,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 						typedStart?.DuelId,
 						out stakeEffect)
 					: "";
-				DuelOutcomeEffectState memoryEffect = _targetHero != null
-					? DuelOutcomeEffectState.AttemptedUnconfirmed
-					: DuelOutcomeEffectState.NotApplicable;
 				if (TryCreateDuelOutcomeEffects(
-					memoryEffect,
-					memoryEffect,
-					playerDefeated
-						? DuelOutcomeEffectState.AttemptedUnconfirmed
-						: DuelOutcomeEffectState.NotApplicable,
+					DuelSessionKind.Arena,
+					_targetHero != null,
+					false,
+					playerDefeated,
 					renownEffect,
 					stakeEffect,
 					out DuelOutcomeEffects effects))
@@ -4403,18 +4399,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 					runtime.DuelOutcomeStart?.DuelId,
 					out stakeEffect)
 				: "";
-			DuelOutcomeEffectState memoryEffect = targetHero != null
-				|| !string.IsNullOrWhiteSpace(runtime.NonHeroMemoryId)
-					? DuelOutcomeEffectState.AttemptedUnconfirmed
-					: DuelOutcomeEffectState.NotApplicable;
 			if (TryCreateDuelOutcomeEffects(
-				memoryEffect,
-				targetHero != null
-					? DuelOutcomeEffectState.AttemptedUnconfirmed
-					: DuelOutcomeEffectState.NotApplicable,
-				playerDefeated
-					? DuelOutcomeEffectState.AttemptedUnconfirmed
-					: DuelOutcomeEffectState.NotApplicable,
+				DuelSessionKind.Wilderness,
+				targetHero != null,
+				!string.IsNullOrWhiteSpace(runtime.NonHeroMemoryId),
+				playerDefeated,
 				renownEffect,
 				stakeEffect,
 				out DuelOutcomeEffects effects))
@@ -7553,15 +7542,11 @@ public partial class DuelBehavior : CampaignBehaviorBase
 				typedStart?.DuelId,
 				out stakeEffect)
 			: "";
-		DuelOutcomeEffectState memoryEffect = _targetHero != null
-			? DuelOutcomeEffectState.AttemptedUnconfirmed
-			: DuelOutcomeEffectState.NotApplicable;
 		if (TryCreateDuelOutcomeEffects(
-			memoryEffect,
-			memoryEffect,
-			playerDefeated
-				? DuelOutcomeEffectState.AttemptedUnconfirmed
-				: DuelOutcomeEffectState.NotApplicable,
+			_currentDuelIsArena ? DuelSessionKind.Arena : DuelSessionKind.Meeting,
+			_targetHero != null,
+			false,
+			playerDefeated,
 			renownEffect,
 			stakeEffect,
 			out DuelOutcomeEffects effects))

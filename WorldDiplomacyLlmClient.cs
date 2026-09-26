@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -152,39 +151,31 @@ internal static class WorldDiplomacyLlmClient
 				return result;
 			}
 
-			try
+			if (ShouldRetryWithoutThinkingControls(exchange.Response, exchange.ResponseBody, thinkingMode))
 			{
-				if (ShouldRetryWithoutThinkingControls(exchange.Response, exchange.ResponseBody, thinkingMode))
+				exchange = null;
+				JObject plainBody = (JObject)body.DeepClone();
+				DuelSettings.RemoveThinkingControls(plainBody);
+				result.ThinkingRetryPlain = true;
+				thinkingMode += "_retry_plain";
+				string plainRequestBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, plainBody);
+				exchange = await SendAndReadAsync(
+					apiUrl,
+					apiKey,
+					plainRequestBody,
+					hardTimeoutMilliseconds,
+					runtimeGeneration,
+					source + "_plain_retry_response",
+					result,
+					cancellationToken);
+				if (exchange == null)
 				{
-					exchange.Dispose();
-					exchange = null;
-					JObject plainBody = (JObject)body.DeepClone();
-					DuelSettings.RemoveThinkingControls(plainBody);
-					result.ThinkingRetryPlain = true;
-					thinkingMode += "_retry_plain";
-					string plainRequestBody = LlmApiCompat.PrepareChatRequestJson(apiUrl, plainBody);
-					exchange = await SendAndReadAsync(
-						apiUrl,
-						apiKey,
-						plainRequestBody,
-						hardTimeoutMilliseconds,
-						runtimeGeneration,
-						source + "_plain_retry_response",
-						result,
-						cancellationToken);
-					if (exchange == null)
-					{
-						return result;
-					}
+					return result;
 				}
+			}
 
-				cancellationToken.ThrowIfCancellationRequested();
-				return CompleteResult(exchange, result, messages, route, modelName, thinkingMode, source);
-			}
-			finally
-			{
-				exchange?.Dispose();
-			}
+			cancellationToken.ThrowIfCancellationRequested();
+			return CompleteResult(exchange, result, messages, route, modelName, thinkingMode, source);
 		}
 		catch (OperationCanceledException)
 		{
@@ -214,19 +205,19 @@ internal static class WorldDiplomacyLlmClient
 		WorldDiplomacyApiCallResult result,
 		CancellationToken cancellationToken)
 	{
-		using CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-		if (hardTimeoutMilliseconds > 0)
-		{
-			timeout.CancelAfter(hardTimeoutMilliseconds);
-		}
-		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
-		LlmApiCompat.ApplyAuthenticationHeaders(request, apiUrl, apiKey);
-		request.Content = new StringContent(requestBody ?? "", Encoding.UTF8, "application/json");
-
-		HttpResponseMessage response;
+		using CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(hardTimeoutMilliseconds, cancellationToken);
+		LlmNonStreamingResponse response;
 		try
 		{
-			response = await DuelSettings.GlobalClient.SendAsync(request, timeout.Token);
+			// Transport owns one attempt/resources; diplomacy still owns fallback and retry policy.
+			response = await LlmNonStreamingTransport.SendAsync(
+				apiUrl,
+				apiKey,
+				requestBody ?? "",
+				(request, token) => DuelSettings.GlobalClient.SendAsync(request, token),
+				timeout.Token,
+				_ => AcceptWorldDiplomacyStage(runtimeGeneration, staleSource, result),
+				() => AcceptWorldDiplomacyStage(runtimeGeneration, staleSource + "_body", result));
 		}
 		catch (OperationCanceledException)
 		{
@@ -239,33 +230,22 @@ internal static class WorldDiplomacyLlmClient
 			return null;
 		}
 
-		bool keepResponse = false;
-		try
+		if (response.Discarded)
 		{
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, staleSource))
-			{
-				result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-				return null;
-			}
-
-			string responseBody = await response.Content.ReadAsStringAsync();
-			cancellationToken.ThrowIfCancellationRequested();
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, staleSource + "_body"))
-			{
-				result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-				return null;
-			}
-
-			keepResponse = true;
-			return new WorldDiplomacyHttpExchange(response, responseBody, requestBody);
+			return null;
 		}
-		finally
+		cancellationToken.ThrowIfCancellationRequested();
+		return new WorldDiplomacyHttpExchange(response, requestBody);
+	}
+
+	private static bool AcceptWorldDiplomacyStage(long runtimeGeneration, string staleSource, WorldDiplomacyApiCallResult result)
+	{
+		if (!SaveRuntimeGuard.IsStale(runtimeGeneration, staleSource))
 		{
-			if (!keepResponse)
-			{
-				response.Dispose();
-			}
+			return true;
 		}
+		result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+		return false;
 	}
 
 	private static WorldDiplomacyApiCallResult CompleteResult(
@@ -277,7 +257,7 @@ internal static class WorldDiplomacyLlmClient
 		string thinkingMode,
 		string source)
 	{
-		HttpResponseMessage response = exchange.Response;
+		LlmNonStreamingResponse response = exchange.Response;
 		string responseBody = exchange.ResponseBody ?? "";
 		result.StatusCode = (int)response.StatusCode;
 		result.ResponseBody = responseBody;
@@ -413,7 +393,7 @@ internal static class WorldDiplomacyLlmClient
 		return null;
 	}
 
-	private static void ApplyHttpFailure(WorldDiplomacyApiCallResult result, HttpResponseMessage response, string responseBody)
+	private static void ApplyHttpFailure(WorldDiplomacyApiCallResult result, LlmNonStreamingResponse response, string responseBody)
 	{
 		int status = (int)response.StatusCode;
 		result.IsAuthFailure = response.StatusCode == HttpStatusCode.Unauthorized
@@ -423,29 +403,12 @@ internal static class WorldDiplomacyLlmClient
 		result.IsRateLimit = status == 429 || ContainsAny(responseBody, "rate limit", "too many requests");
 		result.IsRequestsPerMinuteLimit = result.IsRateLimit
 			&& ContainsAny(responseBody, "rpm", "requests per minute", "request per minute", "requests/min");
-		result.RetryAfterSeconds = ReadRetryAfterSeconds(response);
+		result.RetryAfterSeconds = response.RetryAfterSeconds.HasValue
+			? Math.Max(1, response.RetryAfterSeconds.Value)
+			: (int?)null;
 		result.ErrorMessage = "HTTP " + status.ToString(CultureInfo.InvariantCulture)
 			+ (string.IsNullOrWhiteSpace(response.ReasonPhrase) ? "" : " " + response.ReasonPhrase)
 			+ (string.IsNullOrWhiteSpace(responseBody) ? "" : ": " + Limit(responseBody, 1200));
-	}
-
-	private static int? ReadRetryAfterSeconds(HttpResponseMessage response)
-	{
-		try
-		{
-			if (response?.Headers?.RetryAfter?.Delta != null)
-			{
-				return Math.Max(1, (int)Math.Ceiling(response.Headers.RetryAfter.Delta.Value.TotalSeconds));
-			}
-			if (response?.Headers?.RetryAfter?.Date != null)
-			{
-				return Math.Max(1, (int)Math.Ceiling((response.Headers.RetryAfter.Date.Value - DateTimeOffset.UtcNow).TotalSeconds));
-			}
-		}
-		catch
-		{
-		}
-		return null;
 	}
 
 	private static JObject BuildRequestBody(string modelName, JArray messages, int maxTokens, float temperature)
@@ -525,7 +488,7 @@ internal static class WorldDiplomacyLlmClient
 		}
 	}
 
-	private static bool ShouldRetryWithoutThinkingControls(HttpResponseMessage response, string responseBody, string thinkingMode)
+	private static bool ShouldRetryWithoutThinkingControls(LlmNonStreamingResponse response, string responseBody, string thinkingMode)
 	{
 		return response != null
 			&& !response.IsSuccessStatusCode
@@ -662,22 +625,17 @@ internal static class WorldDiplomacyLlmClient
 		}
 	}
 
-	private sealed class WorldDiplomacyHttpExchange : IDisposable
+	private sealed class WorldDiplomacyHttpExchange
 	{
-		public HttpResponseMessage Response { get; }
+		public LlmNonStreamingResponse Response { get; }
 		public string ResponseBody { get; }
 		public string RequestBody { get; }
 
-		public WorldDiplomacyHttpExchange(HttpResponseMessage response, string responseBody, string requestBody)
+		public WorldDiplomacyHttpExchange(LlmNonStreamingResponse response, string requestBody)
 		{
 			Response = response;
-			ResponseBody = responseBody ?? "";
+			ResponseBody = response?.Body ?? "";
 			RequestBody = requestBody ?? "";
-		}
-
-		public void Dispose()
-		{
-			Response?.Dispose();
 		}
 	}
 }

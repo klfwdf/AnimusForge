@@ -1,0 +1,139 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Conversation;
+using TaleWorlds.MountAndBlade;
+namespace TaleWorlds.CampaignSystem {
+ public class Hero { public string StringId="hero"; }
+ public class CharacterObject { public string StringId="character"; }
+ public class Campaign { public static Campaign Current; public ConversationManager ConversationManager=new ConversationManager(); }
+}
+namespace TaleWorlds.CampaignSystem.Conversation { public class ConversationManager {public int ActiveToken=2; public bool IsConversationInProgress=true;} }
+namespace TaleWorlds.MountAndBlade { public class Mission {public static Mission Current;} }
+namespace AnimusForge {
+ public static class NativeHost {
+  public static int MainThread,Calls,Effects,Writes,WrongThread,Echo,Tts,Captures;
+  public static bool MemoryFails,ActionFails,Duplicate,TargetValid;
+  public static string Mode;
+  public static Hero Hero; public static CharacterObject Character;
+  public static TaskCompletionSource<bool> Release;
+  public static TaskCompletionSource<bool> SceneSecondRelease;
+  public static bool SceneFirstQueued;
+  public static void Reset() {MainThread=Thread.CurrentThread.ManagedThreadId;Calls=Effects=Writes=WrongThread=Echo=Tts=Captures=0;MemoryFails=ActionFails=Duplicate=false;TargetValid=true;Mode="normal";Hero=new Hero();Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation++;Release=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);SceneSecondRelease=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);SceneFirstQueued=false;ShoutBehavior.ResetOwner();}
+  public static void ReleaseSecondSceneTurn()=>SceneSecondRelease.SetResult(true);
+  public static void Game(){if(MainThread!=Thread.CurrentThread.ManagedThreadId)WrongThread++;}
+  public static void Pump()=>ShoutBehavior.Pump();
+  public static void Retire()=>ShoutBehavior.Retire();
+  public static void ReplaceOwner()=>ShoutBehavior.ResetOwner();
+  public static void Advance()=>SaveRuntimeGuard.Generation++;
+  public static void ChangeConversation(){ShoutBehavior.InvalidateNativeConversationAdmissionOnConversationEnd();Hero=new Hero{StringId="second"};Character=new CharacterObject{StringId="second-character"};Campaign.Current.ConversationManager.ActiveToken++;}
+  public static Task<string> SubmitLegacy()=>ShoutBehavior.SubmitLegacy();
+  public static bool[] CoreCases(){
+   var results=new List<bool>();
+   var core=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>{});var held=core.SubmitNative("held","text");results.Add(held.TryBegin()&&!held.TryBegin());held.MarkOwnerAdmitted();held.RecordOwnerCompletion("confirmed");held.RecordOwnerCompletion("overwrite");core.Dispose();held.Finish("late.error");results.Add(held.Snapshot.State==AnimusForge.Refactor.Modules.CoreDialogueState.Completed&&held.Snapshot.Reply=="confirmed");
+   using(var bounded=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel())){
+    for(int i=0;i<128;i++)bounded.SubmitNative("id"+i,"text");
+    results.Add(bounded.SubmitNative("overflow","text").Snapshot.ReasonCode=="dialogue.client_capacity");
+    results.Add(bounded.SubmitNative("id0","text").Snapshot.State==AnimusForge.Refactor.Modules.CoreDialogueState.Cancelled);
+    results.Add(bounded.SubmitNative("bad id","text").Snapshot.ReasonCode=="dialogue.invalid_request");
+    results.Add(bounded.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","overflow","text",op=>op.Cancel()).Snapshot.ReasonCode=="dialogue.client_capacity");
+   }
+   using(var scoped=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel())){
+    int dispatched=0;
+    Action<AnimusForge.Refactor.Modules.CoreDialogueOperation> send=op=>{dispatched++;op.Cancel();};
+    var scene=scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","shared","text",send);
+    var repeat=scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-a","shared","text",send);
+    results.Add(ReferenceEquals(scene,repeat)&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"ticket-b","shared","text",send).Snapshot.ReasonCode=="dialogue.request_id_conflict"&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Courier,"ticket-a","shared","text",send).Snapshot.ReasonCode=="dialogue.request_id_conflict"&&dispatched==1);
+    results.Add(scoped.SubmitNative("shared","text").Snapshot.ReasonCode=="dialogue.request_id_conflict");
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Scene,"","fresh","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
+    results.Add(scoped.SubmitForContext(AnimusForge.Refactor.Modules.CoreDialogueChannel.Native,"","spoof","text",send).Snapshot.ReasonCode=="dialogue.invalid_request"&&dispatched==1);
+   }
+   var ticketClient=new AnimusForge.Refactor.Modules.CoreDialogueClient(op=>op.Cancel());
+   string issued=ticketClient.CaptureSceneContextTicket();
+   results.Add(issued!=null&&ShoutBehavior.SceneTicketCount==1);
+   ticketClient.Dispose();
+   results.Add(ShoutBehavior.SceneTicketCount==0&&ticketClient.CaptureSceneContextTicket()==null);
+   return results.ToArray();
+  }
+ }
+ static class SaveRuntimeGuard {internal static long Generation=1;internal static long CaptureGeneration()=>Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
+ static class PlayerEncounterCompat {internal static bool IsInPostBattleResultFlow()=>false;}
+ static class NpcInitiatedOpeningRouter {internal static bool TryConsumePendingNativeOpening(Hero h,out string a,out string b,out string c){a=b=c="";return false;}}
+ static class Logger {internal static void Log(string a,string b){} }
+ static class FreezeWatchdog {internal static void Mark(string a,string b,bool immediate=false){} }
+ class PreprocessFormatException : Exception { }
+ static class WorldMapPartyCommandBehavior {internal sealed class WorldMapOrderApplyResult {internal bool NeedsChannelExit;}}
+ static class MyBehavior { internal static MemoryCommitResult CommitDialogueHistoryWithScene(string id,bool nonHero,string name,string player,string reply,string fact,int session){NativeHost.Game();NativeHost.Writes++;return new MemoryCommitResult(NativeHost.MemoryFails?MemoryCommitStatus.Failed:MemoryCommitStatus.Applied);} }
+ public partial class ShoutBehavior {
+  private readonly object _moduleSceneGroupGate=new();
+  private SceneGroupReceipt _activeModuleSceneGroup;
+  private static readonly Dictionary<string,string> SceneTickets=new();
+  internal static int SceneTicketCount=>SceneTickets.Count;
+  internal static string IssueModuleSceneTicket(string clientId){string id=Guid.NewGuid().ToString("N");SceneTickets.Add(id,clientId);return id;}
+  internal static void RevokeModuleSceneTickets(string clientId){foreach(string id in SceneTickets.Where(x=>x.Value==clientId).Select(x=>x.Key).ToArray())SceneTickets.Remove(id);}
+  private sealed class SceneTargetingContext { internal int PrimaryAgentIndex=7; }
+  private sealed class ScenePlayerShoutRequest { internal long RuntimeGeneration; internal int SceneSessionId; internal SceneTargetingContext TargetingContext=new(); }
+  private static bool TryClaimModuleSceneTicket(string clientId,string identity,out ScenePlayerShoutRequest request){
+   NativeHost.Game();request=null;
+   if(!SceneTickets.TryGetValue(identity,out string owner)||owner!=clientId)return false;
+   SceneTickets.Remove(identity);request=new ScenePlayerShoutRequest{RuntimeGeneration=SaveRuntimeGuard.Generation,SceneSessionId=CurrentInstance._sceneHistorySessionId};return true;
+  }
+  private int _sceneHistorySessionId=3,_sceneConversationEpoch;
+  private bool IsSceneConversationEpochCurrent(int epoch)=>epoch==_sceneConversationEpoch;
+  private async Task ProcessCapturedScenePlayerShoutAsync(string text,string extra,int? primary,ScenePlayerShoutRequest request,Action<Action> scope,SceneGroupReceipt receipt){
+   NativeHost.Game();receipt.Bind(Interlocked.Increment(ref _sceneConversationEpoch));
+   receipt.AddTurn(7,"Alice","first",Task.FromResult(true));
+   NativeHost.SceneFirstQueued=true;
+   await NativeHost.SceneSecondRelease.Task.ConfigureAwait(false);
+   receipt.AddTurn(8,"Bob","second",Task.FromResult(true));
+  }
+@@SCENE_DECLARATIONS@@
+  private static ShoutBehavior CurrentInstance;
+  private readonly ConcurrentQueue<Action> _mainThreadActions=new ConcurrentQueue<Action>();
+  private readonly AnimusForge.Refactor.Runtime.PendingOperationRegistry _pendingMainThreadFunctions=new AnimusForge.Refactor.Runtime.PendingOperationRegistry();
+  private const int NativeConversationMainThreadPreprocessTimeoutMs=100;
+  private const int ScenePostprocessGateWaitTimeoutMilliseconds=1000;
+  private sealed class NpcDataPacket { internal string Name="NPC"; internal int AgentIndex=1; }
+  private sealed class SceneSummonPromptTarget {} private sealed class SceneGuidePromptTarget {}
+  internal static void ResetOwner()=>CurrentInstance=new ShoutBehavior();
+  internal static void Retire(){SaveRuntimeGuard.Generation++;CurrentInstance.RetireModuleSceneGroup("scene.stale_context");CurrentInstance._pendingMainThreadFunctions.Seal();while(CurrentInstance._mainThreadActions.TryDequeue(out _)){};}
+  internal static void Pump(){while(CurrentInstance._mainThreadActions.TryDequeue(out var action)){action();if(NativeHost.Duplicate)action();}}
+  internal static Task<string> SubmitLegacy()=>CurrentInstance.SubmitNativeConversationAdmittedAsync("legacy",null,null,null,null,false);
+  private static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==NativeHost.MainThread;
+  private static bool CanSubmitNativeConversationForExternal(){NativeHost.Game();NativeHost.Captures++;return Campaign.Current!=null&&Campaign.Current.ConversationManager.IsConversationInProgress;}
+  private static bool TryResolveNativeConversationTarget(out Hero h,out CharacterObject c,out string n){NativeHost.Game();h=NativeHost.Hero;c=NativeHost.Character;n="NPC";return NativeHost.TargetValid;}
+  private static int TryResolveNativeConversationAgentIndex(Hero h,CharacterObject c){NativeHost.Game();return 1;}
+  private static bool IsNativeConversationResponseTargetAvailableForActionDispatch(int i,Hero h,CharacterObject c,out string reason){NativeHost.Game();reason="target";return NativeHost.TargetValid;}
+  private async Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission,string text,Action<string> stream,string overrideText,Action<string> post,Action<string,Hero,CharacterObject> ready,bool opening){
+   Interlocked.Increment(ref NativeHost.Calls);if(Thread.CurrentThread.ManagedThreadId==NativeHost.MainThread)Interlocked.Increment(ref NativeHost.WrongThread);
+   await NativeHost.Release.Task.ConfigureAwait(false);
+   if(NativeHost.Mode=="error")return "（API请求失败: fixture）";
+   if(NativeHost.Mode=="empty")return "";
+   var result=await ApplyNativeConversationGameActionsOnMainThreadAsync(admission.Hero,admission.Character,new NpcDataPacket(),null,null,null,"NPC answer [TAG]","NPC",1,text,admission.ConversationManager,admission.ConversationToken,admission,new NativeConversationCompletionRequest{PlayerText=text}).ConfigureAwait(false);
+   return result.FinalVisible??"";
+  }
+  private NativeConversationGameActionResult ApplyNativeConversationGameActionsCore(Hero h,CharacterObject c,NpcDataPacket npc,List<NpcDataPacket> all,List<SceneSummonPromptTarget> summon,List<SceneGuidePromptTarget> guide,string content,string input,ConversationManager manager,int token){NativeHost.Game();NativeHost.Effects++;if(NativeHost.ActionFails)throw new InvalidOperationException("secret fixture exception");return new NativeConversationGameActionResult{Content=content};}
+  private static string SanitizeSceneSpeechText(string text)=>text.Replace("[TAG]","").Trim();
+  private static string PrepareSceneHistorySpeechText(string text)=>SanitizeSceneSpeechText(text);
+  private static bool IsNativeConversationNoSpeechPlaceholder(string text)=>false;
+  private static int TryGetCurrentSceneHistorySessionIdForHistoryPersistence()=>3;
+  private static bool TryResolveWildernessNonHeroMemory(NpcDataPacket n,Hero h,CharacterObject c,int i,out string id,out string name){id=name="";return false;}
+  private static string GetSceneNpcHistoryNameForPrompt(NpcDataPacket n)=>n.Name;
+  private static void RecordNativeConversationNpcLineForExternal(Hero h,CharacterObject c,string name,string text,int i,NpcDataPacket n){NativeHost.Game();NativeHost.Echo++;}
+  private static void MarkNativeConversationCurrentDialogRecorded(Hero h,CharacterObject c,string name,string text,int i,NpcDataPacket n){NativeHost.Game();}
+  private static void TrySpeakNativeConversationReplyWithTts(Hero h,CharacterObject c,NpcDataPacket n,int i,string text){NativeHost.Game();NativeHost.Tts++;}
+  private static void CloseNativeConversationForSceneMechanism(string reason){NativeHost.Game();}
+  private static void RollbackNativeConversationPendingPlayerHistory(ShoutBehavior owner,NativeConversationAdmission admission,string key,long sequence,string reason){NativeHost.Game();}
+@@REAL_DECLARATIONS@@
+ }
+}

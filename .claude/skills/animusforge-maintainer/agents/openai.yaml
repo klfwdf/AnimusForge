@@ -2,7 +2,7 @@
 # Claude Code can safely ignore this file and uses SKILL.md as the shared authority.
 interface:
   display_name: "AnimusForge Maintainer"
-  short_description: "维护已确认 AFmod 的模块、双版本、存档与执行账本"
-  default_prompt: "Use $animusforge-maintainer only for verified AnimusForge/AFmod work: reconcile the execution ledger first, preserve Bootstrap and 1.3/1.4 compatibility, keep foundation/module/bridge ownership explicit, validate the changed surface, and record evidence in the ledger."
+  short_description: "AF Mod 制作与维护：功能、修复、资源、兼容及安全约束"
+  default_prompt: "Use $animusforge-maintainer only for verified AnimusForge/AFmod development and maintenance: choose the requested feature, bug, content, integration, validation or refactoring workflow; reconcile current scope and ownership, preserve Bootstrap, 1.3/1.4 and save compatibility, validate the changed surface and record evidence. Refactoring is one workflow, not a prerequisite for every mod change."
 policy:
   allow_implicit_invocation: true

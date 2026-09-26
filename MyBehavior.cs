@@ -1,4 +1,5 @@
-﻿using System;
+using AnimusForge.Refactor.Runtime;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		RetryProgress
 	}
 
-	private enum WeeklyReportOutputMode
+	internal enum WeeklyReportOutputMode
 	{
 		FullReport,
 		TitleShortTagsOnly
@@ -254,6 +255,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int MemoryCommitOriginGameDay = -1;
 
 		public string MemoryCommitOriginGameDate = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal DailyMemoryLine CopyForSummary()
+		{
+			var copy = (DailyMemoryLine)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class DailyMemoryDraft
@@ -277,6 +285,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<DailyMemoryLine> Lines = new List<DailyMemoryLine>();
 
 		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal DailyMemoryDraft CopyForSummary()
+		{
+			var copy = (DailyMemoryDraft)MemberwiseClone();
+			copy.Lines = Lines?.Select(x => x?.CopyForSummary()).ToList();
+			copy.WeeklyMaterialTriggers = WeeklyMaterialTriggers?.Select(x => x?.CopyForSummary()).ToList();
+			return copy;
+		}
 	}
 
 	private sealed class CompressedMemoryBlock
@@ -312,6 +329,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public long CreatedUtcTicks;
 
 		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal CompressedMemoryBlock CopyForSummary()
+		{
+			var copy = (CompressedMemoryBlock)MemberwiseClone();
+			copy.Scenes = Scenes?.ToList();
+			copy.AfefLines = AfefLines?.ToList();
+			copy.WeeklyMaterialTriggers = WeeklyMaterialTriggers?.Select(x => x?.CopyForSummary()).ToList();
+			return copy;
+		}
 	}
 
 	private sealed class WeeklyMemoryMaterialTrigger
@@ -358,6 +385,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string OutcomeTurnFingerprint = "";
 
 		public long CreatedUtcTicks;
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal WeeklyMemoryMaterialTrigger CopyForSummary()
+		{
+			var copy = (WeeklyMemoryMaterialTrigger)MemberwiseClone();
+			copy.Tags = Tags?.ToList();
+			return copy;
+		}
 	}
 
 	private sealed class WeeklyMemoryMaterialEvaluation
@@ -386,6 +421,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int RetryCount;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MemorySummaryJob CopyForSummary()
+		{
+			var copy = (MemorySummaryJob)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MemoryRecallCandidate
@@ -399,7 +441,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class MemorySummaryExecutionResult
 	{
-		public MemorySummaryInput Input;
+		public MemorySummaryInput Source;
+
 		public MemorySummaryJob Job;
 
 		public CompressedMemoryBlock Block;
@@ -409,7 +452,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
 
-		public bool Success => !IsObsolete && Block != null;
+		public bool Success => Block != null;
 	}
 
 	private sealed class MemoryOverviewState
@@ -425,6 +468,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public long UpdatedUtcTicks;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MemoryOverviewState CopyForSummary()
+		{
+			var copy = (MemoryOverviewState)MemberwiseClone();
+			copy.IncludedBlockIds = IncludedBlockIds?.ToList();
+			return copy;
+		}
 	}
 
 	private sealed class MemoryOverviewJob
@@ -440,11 +491,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int RetryCount;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MemoryOverviewJob CopyForSummary()
+		{
+			var copy = (MemoryOverviewJob)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MemoryOverviewExecutionResult
 	{
-		public MemorySummaryInput Input;
+		public MemorySummaryInput Source;
+
 		public MemoryOverviewJob Job;
 
 		public MemoryOverviewState State;
@@ -454,7 +513,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
 
-		public bool Success => !IsObsolete && State != null && !string.IsNullOrWhiteSpace(State.Summary);
+		public bool Success => State != null && !string.IsNullOrWhiteSpace(State.Summary);
 	}
 
 	private sealed class MajorActionSummaryState
@@ -472,6 +531,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public long UpdatedUtcTicks;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MajorActionSummaryState CopyForSummary()
+		{
+			var copy = (MajorActionSummaryState)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MajorActionSummaryJob
@@ -487,11 +553,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int RetryCount;
 
 		public string LastError = "";
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal MajorActionSummaryJob CopyForSummary()
+		{
+			var copy = (MajorActionSummaryJob)MemberwiseClone();
+			return copy;
+		}
 	}
 
 	private sealed class MajorActionSummaryExecutionResult
 	{
-		public MemorySummaryInput Input;
+		public MemorySummaryInput Source;
+
 		public MajorActionSummaryJob Job;
 
 		public MajorActionSummaryState State;
@@ -501,7 +575,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
 
-		public bool Success => !IsObsolete && State != null && !string.IsNullOrWhiteSpace(State.Summary);
+		public bool Success => State != null && !string.IsNullOrWhiteSpace(State.Summary);
 	}
 
 	private sealed class DailySummaryQueueResult
@@ -581,6 +655,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<string> RelatedClanIds = new List<string>();
 
 		public List<string> RelatedKingdomIds = new List<string>();
+
+		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
+		internal NpcActionEntry CopyForSummary()
+		{
+			var copy = (NpcActionEntry)MemberwiseClone();
+			copy.RelatedHeroIds = RelatedHeroIds?.ToList();
+			copy.RelatedClanIds = RelatedClanIds?.ToList();
+			copy.RelatedKingdomIds = RelatedKingdomIds?.ToList();
+			return copy;
+		}
 	}
 
 	private sealed class NpcActionFacts
@@ -648,7 +732,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string DisplayName;
 	}
 
-	private sealed class EventMaterialReference
+	internal sealed class EventMaterialReference
 	{
 		public string MaterialType;
 
@@ -1127,7 +1211,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string KingdomProfilesJson = "";
 	}
 
-	private sealed class WeeklyEventMaterialPreviewGroup
+	internal sealed class WeeklyEventMaterialPreviewGroup
 	{
 		public string GroupKind;
 
@@ -1184,7 +1268,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int? RetryAfterSeconds;
 	}
 
-	private sealed class WeeklyReportBatchRequest
+	internal sealed class WeeklyReportBatchRequest
 	{
 		public int WeekIndex;
 
@@ -1299,12 +1383,68 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public bool BlockedByFatalFailure;
 
+		public bool BlockedByChangedRecord;
+
 		public WeeklyReportRetryContext RetryContext;
+	}
+
+	private enum WeeklyPromptPreparationResult
+	{
+		Canceled,
+		Prepared,
+		Failed
+	}
+
+	private sealed class PendingWeeklyPromptPreparationContext
+	{
+		public long RuntimeGeneration;
+
+		public WeeklyMaterialStageCursor<WeeklyReportBatchRequest> Cursor;
+
+		public TaskCompletionSource<WeeklyPromptPreparationResult> CompletionSource;
+	}
+
+	private sealed class PendingWeeklyWaveLaunchContext
+	{
+		public long RuntimeGeneration;
+
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
+
+		public string DisplayLabel;
+
+		public int WaveIndex;
+
+		public int TotalWaves;
+
+		public int TotalTargets;
+
+		public int TotalBatches;
+
+		public int BurstSize;
+
+		public int FirstBatchIndex;
+
+		public List<WeeklyReportBatchRequest> Batches;
+
+		public TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>> CompletionSource;
+	}
+
+	private sealed class PendingWeeklyBatchApiAttemptContext
+	{
+		public long RuntimeGeneration;
+
+		public string SystemPrompt;
+
+		public string UserPrompt;
+
+		public TaskCompletionSource<Task<ApiCallResult>> CompletionSource;
 	}
 
 	private sealed class PendingWeeklyReportCommitContext
 	{
 		public long RuntimeGeneration;
+
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
 
 		public int WeekIndex;
 
@@ -1322,6 +1462,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public List<string> PopupCandidateKingdomIds = new List<string>();
 
+		public bool RequiresFreshMaterials;
+
 		public bool WeeklyReportNoticeNearestKingdomResolved;
 
 		public string WeeklyReportNoticeNearestKingdomId = "";
@@ -1329,6 +1471,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
 
 		public Dictionary<string, WeeklyEventMaterialPreviewGroup> GroupMap;
+
+		public Dictionary<string, string> CapturedRecordStates;
 
 		public List<WeeklyReportBatchExecutionResult> Executions = new List<WeeklyReportBatchExecutionResult>();
 
@@ -1338,9 +1482,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public PendingWeeklyReportBlockCommit CurrentBlockCommit;
 
+		public bool CurrentBlockRejected;
+
 		public bool CurrentPreviewCaptured;
 
 		public HashSet<string> CurrentParsedReportIds;
+
+		public WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup> Targets = new WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup>();
 
 		public List<string> FailureMessages = new List<string>();
 
@@ -1351,6 +1499,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public int FailureCount;
 
 		public HashSet<string> WeeklyReportNoticeEventIdsQueued = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+		public HashSet<string> AttemptedWriteReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		public TaskCompletionSource<WeeklyReportGenerationResult> CompletionSource;
 	}
@@ -1371,11 +1521,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string PromptText = "";
 
-		public List<EventMaterialReference> OrderedMaterials = new List<EventMaterialReference>();
-
-		public List<EventMaterialReference> ClonedMaterials = new List<EventMaterialReference>();
-
-		public int MaterialIndex;
+		public WeeklyReportBlockMaterialCursor<EventMaterialReference> MaterialCursor;
 	}
 
 	private enum DailyMaintenanceTaskKind
@@ -1409,6 +1555,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class PendingAutoWeeklyReportBuild
 	{
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
+
 		public int WeekIndex;
 
 		public int StartDay;
@@ -1421,37 +1569,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public int PreviewSourceMaterialIndex;
 
-		public List<KeyValuePair<string, List<NpcActionEntry>>> RecentActionOwners = new List<KeyValuePair<string, List<NpcActionEntry>>>();
+		public WeeklyActionMaterialCursor<NpcActionEntry, Hero> RecentActionCursor;
 
-		public int RecentActionOwnerIndex;
+		public WeeklyActionMaterialCursor<NpcActionEntry, Hero> MajorActionCursor;
 
-		public int RecentActionIndex;
+		public WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup> AggregationCursor;
 
-		public Hero CurrentRecentActionHero;
+		public HashSet<string> FullReportKingdomIds;
 
-		public List<KeyValuePair<string, List<NpcActionEntry>>> MajorActionOwners = new List<KeyValuePair<string, List<NpcActionEntry>>>();
-
-		public int MajorActionOwnerIndex;
-
-		public int MajorActionIndex;
-
-		public Hero CurrentMajorActionHero;
-
-		public int AggregationIndex;
-
-		public bool AggregationComplete;
-
-		public List<string> FullReportKingdomIds;
-
-		public int PromptMaterialIndex;
-
-		public bool PromptMaterialsComplete;
+		public WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup> PromptMaterialCursor;
 
 		public bool Ordered;
 
-		public int BatchPromptIndex;
-
-		public bool BatchPromptsComplete;
+		public WeeklyMaterialStageCursor<WeeklyReportBatchRequest> BatchPromptCursor;
 
 		public List<Kingdom> Kingdoms = new List<Kingdom>();
 
@@ -1464,9 +1594,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private sealed class WeeklyReportRetryContext
 	{
+		public WeeklyReportMaterialRevisionOwner.Snapshot SourceSnapshot;
+
 		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
 
+		public Dictionary<string, string> CapturedRecordStates;
+
 		public List<string> PopupCandidateKingdomIds = new List<string>();
+
+		public bool RequiresFreshMaterials;
 
 		public int WeekIndex;
 
@@ -1711,13 +1847,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _shownRecordStorage = new Dictionary<string, string>();
 
-	private string _ruleStickyTargetKey;
-
-	private int _ruleStickyDuelRoundsLeft;
-
-	private int _ruleStickyRewardRoundsLeft;
-
-	private int _ruleStickyLoanRoundsLeft;
+	private readonly BuiltInRuleStickyCarry _builtInRuleStickyCarry = new BuiltInRuleStickyCarry();
 
 	private bool _overlayQuickTalkDisableHooked;
 
@@ -1739,11 +1869,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private const int HistoryArchiveRecallMaxItems = 12;
 
-	private const int RecentNpcActionWindowDays = 10;
+	private const int RecentNpcActionWindowDays = NpcActionLedger.RecentWindowDays;
 
-	private const int MaxRecentNpcActionEntriesPerHero = 96;
+	private const int MaxRecentNpcActionEntriesPerHero = NpcActionLedger.MaxRecentEntriesPerHero;
 
-	private const int MaxMajorNpcActionEntriesPerHero = 160;
+	private const int MaxMajorNpcActionEntriesPerHero = NpcActionLedger.MaxMajorEntriesPerHero;
 
 	private const int MajorNpcBattleTroopThreshold = 500;
 
@@ -1785,7 +1915,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private string _memorySummaryQueueJsonStorage = "";
 
-	private bool _memorySummaryProcessing;
 
 	private bool _memorySummaryFailurePopupActive;
 
@@ -1846,14 +1975,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private HashSet<string> _dailyMemoryDraftSealQueuedMajor;
 
-	private readonly object _pendingWeeklyReportCommitLock = new object();
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult> _weeklyReportCommitQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyReportCommitContext, WeeklyReportGenerationResult>(CompletePendingWeeklyReportCommit, () => new WeeklyReportGenerationResult());
 
-	private readonly Queue<PendingWeeklyReportCommitContext> _pendingWeeklyReportCommits = new Queue<PendingWeeklyReportCommitContext>();
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext, WeeklyPromptPreparationResult> _weeklyPromptPreparationQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyPromptPreparationContext, WeeklyPromptPreparationResult>(CompletePendingWeeklyPromptPreparation, () => WeeklyPromptPreparationResult.Canceled);
 
-	// Weekly report commits can be enqueued by async request completions. Keep the no-work path lock-free.
-	private int _hasPendingWeeklyReportCommits;
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyWaveLaunchContext, List<Task<WeeklyReportBatchExecutionResult>>> _weeklyWaveLaunchQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyWaveLaunchContext, List<Task<WeeklyReportBatchExecutionResult>>>(CompletePendingWeeklyWaveLaunch, () => null);
 
-	private int _kingdomStabilityMaintenanceCursor;
+	private readonly WeeklyReportCommitQueueOwner<PendingWeeklyBatchApiAttemptContext, Task<ApiCallResult>> _weeklyBatchApiAttemptQueue =
+		new WeeklyReportCommitQueueOwner<PendingWeeklyBatchApiAttemptContext, Task<ApiCallResult>>(CompletePendingWeeklyBatchApiAttempt, () => null);
+
+	private KingdomMaintenanceOwner<Kingdom> _kingdomMaintenance = new KingdomMaintenanceOwner<Kingdom>();
+	private KingdomMaintenanceOwner<Kingdom> KingdomMaintenance => _kingdomMaintenance ??= new KingdomMaintenanceOwner<Kingdom>();
 
 	private bool _weekZeroOpeningSummaryMaintenanceWorldProcessed;
 
@@ -1908,19 +2043,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private List<EventSourceMaterialEntry> _eventSourceMaterials = new List<EventSourceMaterialEntry>();
 
+	private readonly WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions = new WeeklyReportMaterialRevisionOwner();
+
 	private string _eventSourceMaterialJsonStorage = "";
 
 	private Dictionary<string, EventSourceMaterialEntry> _eventSourceMaterialIndex = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
+	private readonly AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry> _eventSourceMaterialIndexBinding =
+		new AnimusForge.Refactor.Runtime.EventSourceMaterialIndex<EventSourceMaterialEntry>(item => item.Day, item => item.StableKey, BuildEventSourceMaterialIndexKey);
 
-	private Dictionary<string, int> _kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	private KingdomStabilityOwner _kingdomStability = new KingdomStabilityOwner();
+	private KingdomStabilityOwner KingdomStability => _kingdomStability ??= new KingdomStabilityOwner();
+
+	private Dictionary<string, int> _kingdomStabilityValues { get => KingdomStability.Values; set => KingdomStability.Values = value; }
 
 	private Dictionary<string, string> _kingdomStabilityStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-	private Dictionary<string, int> _kingdomStabilityRelationAppliedOffsets = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, int> _kingdomStabilityRelationAppliedOffsets { get => KingdomStability.RelationOffsets; set => KingdomStability.RelationOffsets = value; }
 
 	private Dictionary<string, string> _kingdomStabilityRelationOffsetStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-	private Dictionary<string, int> _weeklyReportAppliedStabilityDeltas = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	private Dictionary<string, int> _weeklyReportAppliedStabilityDeltas { get => KingdomStability.WeeklyDeltas; set => KingdomStability.WeeklyDeltas = value; }
 
 	private Dictionary<string, string> _weeklyReportAppliedStabilityDeltaStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -1931,12 +2073,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private int _lastAutoGeneratedWeeklyReportWeek = -1;
 
 	private int _lastProcessedKingdomRebellionWeek = -1;
-
-	private int _pendingKingdomRebellionMaintenanceWeek = -1;
-
-	private List<Kingdom> _pendingKingdomRebellionMaintenanceKingdoms = new List<Kingdom>();
-
-	private int _pendingKingdomRebellionMaintenanceIndex;
 
 	private const int WeeklyReportReadingXpBatchSize = 20;
 
@@ -2000,15 +2136,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private SaveAndExitReason _saveAndExitReason;
 
+	private AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext> _automaticKingdomRebellions = new AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>();
+	private AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext> AutomaticKingdomRebellions => _automaticKingdomRebellions ??= new AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>();
+
 	private bool _devForcedKingdomRebellionInProgress;
 
 	private bool _pendingDevForcedKingdomRebellionReady;
 
 	private PendingDevForcedKingdomRebellionContext _pendingDevForcedKingdomRebellionContext;
-
-	private bool _automaticKingdomRebellionFlowActive;
-
-	private bool _automaticKingdomRebellionInProgress;
 
 	private PendingAutomaticKingdomRebellionContext _blockedAutomaticKingdomRebellionContext;
 
@@ -2018,15 +2153,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private long _kingdomRebellionReopenAfterApiConfigUtcTicks;
 
-	private bool _pendingAutomaticKingdomRebellionReady;
-
-	private PendingAutomaticKingdomRebellionContext _pendingAutomaticKingdomRebellionContext;
-
-	private readonly List<PendingAutomaticKingdomRebellionContext> _queuedAutomaticKingdomRebellions = new List<PendingAutomaticKingdomRebellionContext>();
-
 	private readonly ConcurrentQueue<Action> _kingdomRebellionNamingMainThreadActions = new ConcurrentQueue<Action>();
 
-	private int _pendingAutoWeeklyReportWeek;
+	private readonly WeeklyAutoScheduleOwner _weeklyAutoSchedule = new WeeklyAutoScheduleOwner();
 
 	private readonly object _weekZeroShortSummaryQueueLock = new object();
 
@@ -2038,14 +2167,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private readonly ConcurrentQueue<Action> _weekZeroShortSummaryMainThreadActions = new ConcurrentQueue<Action>();
 
-	private readonly Queue<WeeklyFullReportCompletion> _weeklyFullReportCompletions = new Queue<WeeklyFullReportCompletion>();
-
-	private sealed class WeeklyFullReportCompletion
-	{
-		internal long RuntimeGeneration;
-		internal Func<bool> Apply;
-		internal readonly TaskCompletionSource<bool> Completion = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-	}
+	private readonly WeeklyFullReportCompletionOwner _weeklyFullReportCompletions;
 
 	private bool _weekZeroShortSummaryQueueProcessing;
 
@@ -2062,12 +2184,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, TownStatSnapshot> _townStatWeekBaselineSnapshots = new Dictionary<string, TownStatSnapshot>(StringComparer.OrdinalIgnoreCase);
 
 	private readonly Dictionary<string, int> _townStatWeekBaselineWeekIndexes = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-	private readonly object _npcPersonaAutoGenLock = new object();
-
-	private HashSet<string> _npcPersonaAutoGenInFlight = new HashSet<string>();
-
-	private readonly Dictionary<string, long> _npcPersonaAutoGenRetryAfterUtcTicks = new Dictionary<string, long>(StringComparer.OrdinalIgnoreCase);
 
 	private HashSet<string> _recentlyDefeatedByPlayer = new HashSet<string>();
 
@@ -2153,6 +2269,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public MyBehavior()
 	{
+		_weeklyFullReportCompletions = new WeeklyFullReportCompletionOwner(
+			() => ReferenceEquals(Instance, this), SaveRuntimeGuard.IsStale);
 		Instance = this;
 	}
 
@@ -2420,10 +2538,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			CancelWeeklyFullReportCompletions();
 			ResetMemorySummaryMainThreadActions();
 			ResetTailPersistenceTransientState(reason);
-			List<PendingWeeklyReportCommitContext> abandonedWeeklyReportCommits;
-			ClearRuleStickyCarry();
+			_builtInRuleStickyCarry.Clear();
 			_playerDefeatedHeroBattleFactKeys.Clear();
-			_memorySummaryProcessing = false;
+			_memorySummaryRunOwner.Reset();
 			ResetMemoryFailureNotices();
 			_lastMemoryMaintenanceObservedGameDay = -1;
 			_nativeConversationMemorySessionCounter = 0;
@@ -2431,18 +2548,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_pendingWeeklyMemoryMaterialTriggers.Clear();
 			_pendingAutoWeeklyReportBuild = null;
 			_weeklyReportGenerationInProgress = false;
-			_pendingAutoWeeklyReportWeek = 0;
+			_weeklyAutoSchedule.Clear();
 			ResetPendingWeeklyKingdomRebellionMaintenance();
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				abandonedWeeklyReportCommits = _pendingWeeklyReportCommits.ToList();
-				_pendingWeeklyReportCommits.Clear();
-				Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
-			}
-			foreach (PendingWeeklyReportCommitContext context in abandonedWeeklyReportCommits)
-			{
-				CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult());
-			}
+			_weeklyPromptPreparationQueue.CancelAll();
+			_weeklyWaveLaunchQueue.CancelAll();
+			_weeklyBatchApiAttemptQueue.CancelAll();
+			_weeklyReportCommitQueue.CancelAll();
 			_dailyMaintenanceQueue.Clear();
 			_dailyMaintenanceJobKeys.Clear();
 			ResetDailyMemoryDraftSealSliceState();
@@ -2450,11 +2561,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_dirtyMemoryOverviewIds.Clear();
 			_pendingMemoryOverviewCandidateScanIds.Clear();
 			_pendingMemoryOverviewCandidateScanIdSet.Clear();
-			lock (_npcPersonaAutoGenLock)
-			{
-				_npcPersonaAutoGenInFlight.Clear();
-				_npcPersonaAutoGenRetryAfterUtcTicks.Clear();
-			}
+			_npcPersonaGeneration.Reset();
 			Logger.Log("SaveRuntimeGuard", "local_transient_cleared reason=" + (reason ?? ""));
 		}
 		catch (Exception ex)
@@ -2613,6 +2720,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void RecordNpcActionForExternal(Hero actorHero, string text, string stableKey, string actionKind, bool isMajor, bool isRecent, Hero targetHero = null, Settlement settlement = null, string locationText = null, bool allowNonLordHero = false, bool? won = null)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.RecordExternalNpcAction(actorHero, text, stableKey, actionKind, isMajor, isRecent, targetHero, settlement, locationText, allowNonLordHero, won); }, nameof(RecordNpcActionForExternal))) return;
+
 		try
 		{
 			(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordExternalNpcAction(actorHero, text, stableKey, actionKind, isMajor, isRecent, targetHero, settlement, locationText, allowNonLordHero, won);
@@ -3876,6 +3985,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			string text = BuildClanChangedKingdomStableKey(clan, oldKingdom, newKingdom, detail);
@@ -3966,6 +4076,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanDefected(Clan clan, Kingdom oldKingdom, Kingdom newKingdom)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			string text = BuildClanChangedKingdomStableKey(clan, oldKingdom, newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail.JoinKingdomByDefection);
@@ -4047,6 +4158,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnRulingClanChanged(Kingdom kingdom, Clan eventRulingClan)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			// Bannerlord 1.3 passes the new ruling clan here, while 1.4.5 passes the old one.
@@ -4208,7 +4320,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string baseKey = "player_execution:" + NormalizeNpcActionStableKey(stablePrefix, GetHeroId(victim) + ":" + GetHeroId(killer) + ":" + detail);
+		string baseKey = "player_execution:" + NpcActionLedger.NormalizeStableKey(stablePrefix, GetHeroId(victim) + ":" + GetHeroId(killer) + ":" + detail);
 		string label = victim == player ? "玩家被处决 - " + GetHeroDisplayName(killer) : "玩家处决英雄 - " + GetHeroDisplayName(victim);
 		RecordEventSourceMaterial(
 			"player_execution",
@@ -4278,6 +4390,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanLeaderChanged(Hero oldLeader, Hero newLeader)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			Clan clan = newLeader?.Clan ?? oldLeader?.Clan;
@@ -4363,7 +4476,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					continue;
 				}
 				string kingdomId = GetKingdomId(kingdom);
-				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				string stableKey = NpcActionLedger.NormalizeStableKey("kingdom_destroyed:" + kingdomId, "");
 				if (string.IsNullOrWhiteSpace(kingdomId) || string.IsNullOrWhiteSpace(stableKey) || existingStableKeys.Contains(stableKey))
 				{
 					continue;
@@ -4380,7 +4493,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool HasEventSourceMaterialStableKey(string stableKey)
 	{
-		string text = NormalizeNpcActionStableKey(stableKey, "");
+		string text = NpcActionLedger.NormalizeStableKey(stableKey, "");
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return false;
@@ -4726,138 +4839,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return processed;
 	}
 
-	private bool TrySealPastDailyMemoryDrafts(long startTimestamp = 0L, double budgetMs = double.MaxValue)
+	private bool TrySealPastDailyMemoryDrafts(long startTimestamp = 0L, double budgetMs = double.MaxValue, bool requirePendingProbe = false)
 	{
 		try
 		{
-			if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0)
+			if (_dailyMemoryDrafts == null || (_dailyMemoryDrafts.Count <= 0 && _dailyMemorySealState == null))
 			{
 				ResetDailyMemoryDraftSealSliceState();
 				return true;
 			}
-			if (_memorySummaryQueue == null)
-			{
-				_memorySummaryQueue = new List<MemorySummaryJob>();
-			}
-			if (_npcMajorActionSummaryQueue == null)
-			{
-				_npcMajorActionSummaryQueue = new List<MajorActionSummaryJob>();
-			}
-			if (_dailyMemoryDraftSealOwnerKeys == null)
-			{
-				_dailyMemoryDraftSealOwnerKeys = _dailyMemoryDrafts.Keys.ToList();
-				_dailyMemoryDraftSealOwnerIndex = 0;
-				_dailyMemoryDraftSealDraftIndex = -1;
-				_dailyMemoryDraftSealTargetDay = (int)CampaignTime.Now.ToDays;
-				_dailyMemoryDraftSealQueued = new HashSet<string>(_memorySummaryQueue.Where((MemorySummaryJob x) => x != null).Select((MemorySummaryJob x) => NormalizeMemoryHeroId(x.HeroId) + "|" + x.GameDayIndex), StringComparer.OrdinalIgnoreCase);
-				_dailyMemoryDraftSealQueuedMajor = new HashSet<string>(_npcMajorActionSummaryQueue.Where((MajorActionSummaryJob x) => x != null).Select((MajorActionSummaryJob x) => NormalizeMemoryHeroId(x.HeroId)), StringComparer.OrdinalIgnoreCase);
-			}
-			while (_dailyMemoryDraftSealOwnerIndex < _dailyMemoryDraftSealOwnerKeys.Count)
-			{
-				if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-				{
-					return false;
-				}
-				string ownerKey = _dailyMemoryDraftSealOwnerKeys[_dailyMemoryDraftSealOwnerIndex];
-				if (!_dailyMemoryDrafts.TryGetValue(ownerKey, out var list) || list == null)
-				{
-					_dailyMemoryDraftSealOwnerIndex++;
-					_dailyMemoryDraftSealDraftIndex = -1;
-					continue;
-				}
-				string ownerMemoryId = NormalizeMemoryHeroId(ownerKey);
-				if (!IsMemoryEntityEligibleForCompressedMemory(ownerMemoryId))
-				{
-					// Cancel orphaned work, while preserving source drafts because they can carry weekly-report trigger facts.
-					CancelUnavailableHeroCompressionWorkById(ownerMemoryId, "seal_past_daily_drafts");
-					_dailyMemoryDraftSealOwnerIndex++;
-					_dailyMemoryDraftSealDraftIndex = -1;
-					continue;
-				}
-				if (_dailyMemoryDraftSealDraftIndex < 0)
-				{
-					_dailyMemoryDraftSealDraftIndex = list.Count - 1;
-				}
-				while (_dailyMemoryDraftSealDraftIndex >= 0)
-				{
-					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
-					{
-						return false;
-					}
-					int draftIndex = Math.Min(_dailyMemoryDraftSealDraftIndex, list.Count - 1);
-					_dailyMemoryDraftSealDraftIndex = draftIndex - 1;
-					if (draftIndex < 0)
-					{
-						break;
-					}
-					DailyMemoryDraft draft = list[draftIndex];
-					if (draft == null || draft.GameDayIndex >= _dailyMemoryDraftSealTargetDay)
-					{
-						continue;
-					}
-					if (!string.Equals(NormalizeMemoryHeroId(draft.HeroId), ownerMemoryId, StringComparison.OrdinalIgnoreCase))
-					{
-						// Never redirect memory by display name. Skip an untrusted mapping but retain its raw/weekly material.
-						draft.QueuedForSummary = false;
-						Logger.Log("CompressedMemory", "skipped mismatched daily memory draft owner=" + ownerMemoryId + " draftHero=" + NormalizeMemoryHeroId(draft.HeroId) + " day=" + draft.GameDayIndex);
-						continue;
-					}
-					draft.HeroId = ownerMemoryId;
-					bool hasSummarySource = CountDailyMemorySummarySourceChars(draft) > 0;
-					bool hasAfefLines = HasDailyMemoryDraftAfefLines(draft);
-					if (!draft.HasLlmDialogue || !hasSummarySource)
-					{
-						if (!hasAfefLines)
-						{
-							list.RemoveAt(draftIndex);
-						}
-						continue;
-					}
-					// The owner was validated once above, avoiding a repeated Hero registry lookup for each old daily draft.
-					TryEnqueueMajorActionSummaryForDraft(draft, _dailyMemoryDraftSealQueuedMajor, ownerAlreadyEligible: true);
-					if (draft.SummaryRetryCount >= 3)
-					{
-						// Three attempts are terminal for automatic work; preserve the draft and error for manual inspection.
-						draft.QueuedForSummary = false;
-						continue;
-					}
-					string text = ownerMemoryId;
-					string key = text + "|" + draft.GameDayIndex;
-					if (HasCompressedMemoryBlock(text, draft.GameDayIndex))
-					{
-						list.RemoveAt(draftIndex);
-						continue;
-					}
-					if (!_dailyMemoryDraftSealQueued.Contains(key))
-					{
-						_memorySummaryQueue.Add(new MemorySummaryJob
-						{
-							HeroId = text,
-							HeroName = draft.HeroName,
-							GameDayIndex = draft.GameDayIndex,
-							GameDate = draft.GameDate
-						});
-						_dailyMemoryDraftSealQueued.Add(key);
-					}
-					draft.QueuedForSummary = true;
-				}
-				list = SanitizeDailyMemoryDrafts(list);
-				if (list.Count > 0)
-				{
-					_dailyMemoryDrafts[ownerKey] = list;
-				}
-				else
-				{
-					_dailyMemoryDrafts.Remove(ownerKey);
-				}
-				_dailyMemoryDraftSealOwnerIndex++;
-				_dailyMemoryDraftSealDraftIndex = -1;
-			}
-			// Do not persist terminal retries or removed targets just because this sealing slice completed successfully.
-			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue.Where(HasMemorySummaryJobStillPending).ToList());
-			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue.Where(HasMajorActionSummaryJobStillPending).ToList());
-			ResetDailyMemoryDraftSealSliceState();
-			return true;
+			_memorySummaryQueue = _memorySummaryQueue ?? new List<MemorySummaryJob>();
+			_npcMajorActionSummaryQueue = _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>();
+			return ContinueDailyMemorySeal(startTimestamp, budgetMs, requirePendingProbe);
 		}
 		catch (Exception ex)
 		{
@@ -4875,6 +4868,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_dailyMemoryDraftSealTargetDay = -1;
 		_dailyMemoryDraftSealQueued = null;
 		_dailyMemoryDraftSealQueuedMajor = null;
+		_dailyMemorySealState = null;
+		_dailyMemorySealCompletedPass = false;
 	}
 
 	private bool HasCompressedMemoryBlock(string heroId, int dayIndex)
@@ -4891,20 +4886,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (_memorySummaryProcessing || IsDialogueOrLetterChainBusyForMemorySummary())
+			if (_memorySummaryRunOwner.IsRunning || IsDialogueOrLetterChainBusyForMemorySummary())
 			{
 				return;
 			}
-			// Validate only the bounded queues here; the full saved-memory owner scan is reserved for load finish.
-			CancelUnavailableHeroCompressionQueuedJobs("queue_start");
-			// Persist only runnable work so old terminal or malformed entries cannot survive until a later unrelated batch.
-			_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
-			_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where(HasMajorActionSummaryJobStillPending).ToList());
-			_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where(HasMemoryOverviewJobStillPending).ToList());
-			// The queues were just filtered, so raw counts avoid another Hero registry lookup on this hot scheduler path.
-			bool hasMemoryJobs = _memorySummaryQueue.Count > 0;
-			bool hasMajorActionJobs = _npcMajorActionSummaryQueue.Count > 0;
-			bool hasOverviewJobs = _memoryOverviewQueue.Count > 0;
+			// Admission is O(1): eligibility can inspect every source record, so do it
+			// only in the guarded planner, never again on each maintenance/entry call.
+			bool hasMemoryJobs = (_memorySummaryQueue?.Count ?? 0) > 0;
+			bool hasMajorActionJobs = (_npcMajorActionSummaryQueue?.Count ?? 0) > 0;
+			bool hasOverviewJobs = (_memoryOverviewQueue?.Count ?? 0) > 0;
 			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs && ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
 			{
 				using (PerfProbe.Scope("MyBehavior.TryStartMemorySummaryQueue.EnqueueMemoryOverviewForAllCandidates"))
@@ -4918,21 +4908,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 						QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 					}
 				}
-				// Candidate creation validates owners itself; use its filtered queue counts without repeating the bounded scan.
-				hasMemoryJobs = _memorySummaryQueue.Count > 0;
-				hasMajorActionJobs = _npcMajorActionSummaryQueue.Count > 0;
-				hasOverviewJobs = _memoryOverviewQueue.Count > 0;
+				// This only enqueues candidate IDs; the existing budgeted scanner creates jobs later.
 			}
 			if (!hasMemoryJobs && !hasMajorActionJobs && !hasOverviewJobs)
 			{
 				return;
 			}
-			_memorySummaryProcessing = true;
-			_ = ProcessMemorySummaryQueueAsync();
+			_ = ProcessMemorySummaryQueueAsync(forceOverviewCandidateScan);
 		}
 		catch (Exception ex)
 		{
-			_memorySummaryProcessing = false;
 			Logger.Log("CompressedMemory", "[ERROR] TryStartMemorySummaryQueue failed: " + ex.Message);
 		}
 	}
@@ -4957,200 +4942,148 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-	private async Task ProcessMemorySummaryQueueAsync()
+	private async Task ProcessMemorySummaryQueueAsync(bool forceOverviewCandidateScan = false)
 	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
+		var run = _memorySummaryRunOwner.TryBegin(runtimeGeneration);
+		if (run == null) return;
 		try
 		{
+			var plan = await BuildMemorySummaryPlanAsync(runtimeGeneration, run: run);
+			if (plan == null) return;
+			List<object> queueItems = plan.Items;
 			int burstSize = 1;
-			List<object> queueItems = null;
-			if (!await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+			var attemptedOverviewIds = plan.OverviewIds;
+			bool accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 			{
-				QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-				// A Hero can die or be removed after the scheduler's snapshot; discard those bounded queue entries first.
-				CancelUnavailableHeroCompressionQueuedJobs("queue_execute");
-				List<MemorySummaryJob> jobs = SanitizeMemorySummaryQueue(_memorySummaryQueue).Where(HasMemorySummaryJobStillPending).ToList();
-				List<MajorActionSummaryJob> majorJobs = SanitizeMajorActionSummaryQueue(_npcMajorActionSummaryQueue).Where(HasMajorActionSummaryJobStillPending).ToList();
-				HashSet<string> memoryJobHeroIds = new HashSet<string>(jobs.Where((MemorySummaryJob job) => job != null).Select((MemorySummaryJob job) => NormalizeMemoryHeroId(job.HeroId)), StringComparer.OrdinalIgnoreCase);
-				List<MemoryOverviewJob> pendingOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where(HasMemoryOverviewJobStillPending).ToList();
-				List<MemoryOverviewJob> overviewJobs = pendingOverviewJobs.Where((MemoryOverviewJob job) => !memoryJobHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
-				if (jobs.Count <= 0 && majorJobs.Count <= 0 && overviewJobs.Count <= 0)
+				if (queueItems.Count == 0)
 				{
-					// Persist the filtered snapshot so exhausted or obsolete jobs cannot wake maintenance every tick.
-					_memorySummaryQueue = jobs;
-					_npcMajorActionSummaryQueue = majorJobs;
-					_memoryOverviewQueue = pendingOverviewJobs;
-					return false;
+					if (ShouldScanMemoryOverviewCandidates(forceOverviewCandidateScan))
+					{
+						if (forceOverviewCandidateScan) QueueAllMemoryOverviewCandidatesForDeferredScan();
+						else QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+					}
 				}
+				else QueueDirtyMemoryOverviewCandidatesForDeferredScan();
 				burstSize = GetMemorySummaryRequestsPerMinuteFromSettings();
-				int totalJobCount = jobs.Count + majorJobs.Count + overviewJobs.Count;
-				InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + totalJobCount + " 个；对话记忆 " + jobs.Count + " 个，重大履历 " + majorJobs.Count + " 个，记忆总览 " + overviewJobs.Count + " 个；每分钟上限 " + burstSize + "。"));
-				queueItems = new List<object>();
-				queueItems.AddRange(jobs.Cast<object>());
-				queueItems.AddRange(majorJobs.Cast<object>());
-				queueItems.AddRange(overviewJobs.Cast<object>());
-				return true;
-			})) return;
-
-			List<MemorySummaryExecutionResult> results = new List<MemorySummaryExecutionResult>();
-			List<MajorActionSummaryExecutionResult> majorResults = new List<MajorActionSummaryExecutionResult>();
-			List<MemoryOverviewExecutionResult> overviewResults = new List<MemoryOverviewExecutionResult>();
-			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, runtimeGeneration, results, majorResults, overviewResults);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results"))
-			{
-				return;
-			}
-			List<string> failures = new List<string>();
-			List<MemoryOverviewJob> extraOverviewJobs = null;
-			bool accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
-			{
-				foreach (MemorySummaryExecutionResult result in results)
-				{
-					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Input))
-					{
-						if (result != null) result.IsObsolete = true;
-						continue;
-					}
-					if (result.Success)
-					{
-						ApplyMemorySummarySuccess(result.Job, result.Block);
-					}
-					else
-					{
-						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
-						MarkMemorySummaryFailure(result.Job, result.Error);
-					}
-				}
-				foreach (MajorActionSummaryExecutionResult result2 in majorResults)
-				{
-					if (result2 == null || result2.Job == null || result2.IsObsolete || !IsMemorySummaryInputCurrent(result2.Input))
-					{
-						if (result2 != null) result2.IsObsolete = true;
-						continue;
-					}
-					if (result2.Success)
-					{
-						ApplyMajorActionSummarySuccess(result2.Job, result2.State);
-					}
-					else
-					{
-						failures.Add((result2.Job.HeroName ?? result2.Job.HeroId) + " 重大履历：" + (result2.Error ?? "未知错误"));
-						MarkMajorActionSummaryFailure(result2.Job, result2.Error);
-					}
-				}
-				foreach (MemoryOverviewExecutionResult result3 in overviewResults)
-				{
-					if (result3 == null || result3.Job == null || result3.IsObsolete || !IsMemorySummaryInputCurrent(result3.Input))
-					{
-						if (result3 != null) result3.IsObsolete = true;
-						continue;
-					}
-					if (result3.Success)
-					{
-						ApplyMemoryOverviewSuccess(result3.Job, result3.State);
-					}
-					else
-					{
-						failures.Add((result3.Job.HeroName ?? result3.Job.HeroId) + " 记忆总览：" + (result3.Error ?? "未知错误"));
-						MarkMemoryOverviewFailure(result3.Job, result3.Error);
-					}
-				}
-				QueueDirtyMemoryOverviewCandidatesForDeferredScan();
-				HashSet<string> processedOverviewHeroIds = new HashSet<string>(overviewResults.Where((MemoryOverviewExecutionResult x) => x?.Job != null && !x.IsObsolete).Select((MemoryOverviewExecutionResult x) => NormalizeMemoryHeroId(x.Job.HeroId)), StringComparer.OrdinalIgnoreCase);
-				extraOverviewJobs = SanitizeMemoryOverviewQueue(_memoryOverviewQueue).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job) && !processedOverviewHeroIds.Contains(NormalizeMemoryHeroId(job.HeroId))).ToList();
+				if (queueItems.Count > 0)
+					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 开始日结压缩任务，共 " + queueItems.Count + " 个；对话记忆 " + plan.DailyCount + " 个，重大履历 " + plan.MajorCount + " 个，记忆总览 " + plan.OverviewCount + " 个；每分钟上限 " + burstSize + "。"));
 				return true;
 			});
-			if (!accepted)
+			if (!accepted || queueItems.Count == 0) return;
+			var results = new List<MemorySummaryExecutionResult>();
+			var majorResults = new List<MajorActionSummaryExecutionResult>();
+			var overviewResults = new List<MemoryOverviewExecutionResult>();
+			await RunDailySummaryQueueItemsAsync(queueItems, burstSize, results, majorResults, overviewResults, run);
+			if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_results")) return;
+			var failures = new List<string>();
+			int appliedDaily = 0, appliedMajor = 0, appliedOverview = 0;
+			// One accepted business result per dispatched operation; no whole-result foreach inside a callback.
+			foreach (var result in results)
 			{
-				return;
-			}
-			if (extraOverviewJobs.Count > 0)
-			{
-				if (queueItems.Count > 0)
+				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 				{
-					await Task.Delay(60000);
-				}
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay"))
-				{
-					return;
-				}
-				List<MemorySummaryExecutionResult> extraMemoryResults = new List<MemorySummaryExecutionResult>();
-				List<MajorActionSummaryExecutionResult> extraMajorResults = new List<MajorActionSummaryExecutionResult>();
-				List<MemoryOverviewExecutionResult> extraOverviewResults = new List<MemoryOverviewExecutionResult>();
-				await RunDailySummaryQueueItemsAsync(extraOverviewJobs.Cast<object>().ToList(), burstSize, runtimeGeneration, extraMemoryResults, extraMajorResults, extraOverviewResults);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results"))
-				{
-					return;
-				}
-				accepted = await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
-				{
-					foreach (MemoryOverviewExecutionResult result4 in extraOverviewResults)
+					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
+					if (result.Success) { if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++; }
+					else
 					{
-						if (result4 == null || result4.Job == null || result4.IsObsolete || !IsMemorySummaryInputCurrent(result4.Input))
-						{
-						if (result4 != null) result4.IsObsolete = true;
-							continue;
-						}
-						if (result4.Success)
-						{
-							ApplyMemoryOverviewSuccess(result4.Job, result4.State);
-						}
-						else
-						{
-							failures.Add((result4.Job.HeroName ?? result4.Job.HeroId) + " 记忆总览：" + (result4.Error ?? "未知错误"));
-							MarkMemoryOverviewFailure(result4.Job, result4.Error);
-						}
+						MarkMemorySummaryFailure(result.Job, result.Error);
+						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
 					}
-					overviewResults.AddRange(extraOverviewResults);
 					return true;
 				});
-				if (!accepted)
-				{
-					return;
-				}
+				if (!accepted) return;
 			}
-			await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
+			foreach (var result in majorResults)
 			{
-				// Keep only runnable work; terminal retries and invalid targets must not be serialized back into the save.
-				_memorySummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where(HasMemorySummaryJobStillPending).ToList());
-				_npcMajorActionSummaryQueue = SanitizeMajorActionSummaryQueue((_npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>()).Where((MajorActionSummaryJob job) => job != null && HasMajorActionSummaryJobStillPending(job)).ToList());
-				_memoryOverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob job) => job != null && HasMemoryOverviewJobStillPending(job)).ToList());
-				if (failures.Count > 0)
+				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 				{
-					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", "以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。", runtimeGeneration);
-				}
-				else if (results.Count > 0 || majorResults.Count > 0 || overviewResults.Count > 0)
+					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
+					if (result.Success) { if (ApplyMajorActionSummarySuccess(result.Job, result.State)) appliedMajor++; }
+					else
+					{
+						MarkMajorActionSummaryFailure(result.Job, result.Error);
+						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 重大履历：" + (result.Error ?? "未知错误"));
+					}
+					return true;
+				});
+				if (!accepted) return;
+			}
+			// Initial and extra overview waves share the same acceptance loop. Obsolete work is not re-requested in this run.
+			for (int wave = 0; wave < 2; wave++)
+			{
+				foreach (var result in overviewResults)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + results.Count((MemorySummaryExecutionResult x) => x != null && x.Success) + " 个，重大履历 " + majorResults.Count((MajorActionSummaryExecutionResult x) => x != null && x.Success) + " 个，记忆总览 " + overviewResults.Count((MemoryOverviewExecutionResult x) => x != null && x.Success) + " 个。"));
+					accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
+					{
+						if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
+						if (result.Success) { if (ApplyMemoryOverviewSuccess(result.Job, result.State)) appliedOverview++; }
+						else
+						{
+							MarkMemoryOverviewFailure(result.Job, result.Error);
+							failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 记忆总览：" + (result.Error ?? "未知错误"));
+						}
+						return true;
+					});
+					if (!accepted) return;
 				}
+				if (wave == 1) break;
+				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
+				{
+					QueueDirtyMemoryOverviewCandidatesForDeferredScan();
+					return true;
+				});
+				if (!accepted) return;
+				var extraPlan = await BuildMemorySummaryPlanAsync(runtimeGeneration, overviewOnly: true, excludedOverviewIds: attemptedOverviewIds, run: run);
+				if (extraPlan == null) return;
+				List<object> extra = extraPlan.Items;
+				if (extra.Count == 0) break;
+				await Task.Delay(60000);
+				if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_delay")) return;
+				overviewResults = new List<MemoryOverviewExecutionResult>();
+				await RunDailySummaryQueueItemsAsync(extra, burstSize, new List<MemorySummaryExecutionResult>(), new List<MajorActionSummaryExecutionResult>(), overviewResults, run);
+				if (!run.IsCurrent || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_extra_results")) return;
+			}
+			if (await BuildMemorySummaryPlanAsync(runtimeGeneration, cleanupOnly: true, run: run) == null) return;
+			// Failure text is detached queue-local data; joining a large backlog does
+			// not need to occupy the main-thread notification/acceptance operation.
+			string failureMessage = failures.Count == 0 ? null : await Task.Run(() =>
+				"以下日结压缩任务重试 3 次后仍失败：\n\n" + string.Join("\n", failures) + "\n\n请修复 API 或调低记忆总结 RPM 后重试。");
+			await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
+			{
+				if (failureMessage != null)
+					ShowCompressedMemoryBlockingPopup("日结压缩总结失败", failureMessage, runtimeGeneration);
+				else if (appliedDaily + appliedMajor + appliedOverview > 0)
+					InformationManager.DisplayMessage(new InformationMessage("AnimusForge 日结压缩完成：对话记忆 " + appliedDaily + " 个，重大履历 " + appliedMajor + " 个，记忆总览 " + appliedOverview + " 个。"));
 				return true;
 			});
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("CompressedMemory", "[ERROR] ProcessMemorySummaryQueueAsync failed: " + ex);
-			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
-			{
-				ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", ex.Message, runtimeGeneration);
-			}
+			if (run.IsCurrent && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
+				await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, () =>
+				{
+					ShowCompressedMemoryBlockingPopup("压缩记忆总结异常", "任务可能已有部分写入，本轮已停止；请查看日志后再重试。\n\n" + ex.Message, runtimeGeneration);
+					return true;
+				});
 		}
 		finally
 		{
-			await RunMemorySummaryMainThreadAsync(runtimeGeneration, delegate
-			{
-				_memorySummaryProcessing = false;
-				return true;
-			});
+			run.Dispose(); // An old completion cannot release a replacement run.
 		}
 	}
 
-	private async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, long runtimeGeneration, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults)
+	private async Task RunDailySummaryQueueItemsAsync(List<object> queueItems, int burstSize, List<MemorySummaryExecutionResult> results, List<MajorActionSummaryExecutionResult> majorResults, List<MemoryOverviewExecutionResult> overviewResults, MemorySummaryRunOwner.Lease run = null)
 	{
+		long runtimeGeneration = run?.Generation ?? SaveRuntimeGuard.CaptureGeneration();
 		int clampedBurstSize = Math.Max(1, burstSize);
 		for (int i = 0; i < (queueItems?.Count ?? 0); i += clampedBurstSize)
 		{
+			// A spacing delay must not rebind old work to a new save generation.
+			if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "memory_summary_queue_wave")) return;
 			List<object> wave = queueItems.Skip(i).Take(clampedBurstSize).ToList();
-			List<Task<DailySummaryQueueResult>> tasks = wave.Select(item => ExecuteDailySummaryQueueItemAsync(item, runtimeGeneration)).ToList();
+			List<Task<DailySummaryQueueResult>> tasks = wave.Select(item => ExecuteDailySummaryQueueItemAsync(item, run)).ToList();
 			DailySummaryQueueResult[] completed = await Task.WhenAll(tasks);
 			foreach (DailySummaryQueueResult completedResult in completed)
 			{
@@ -5178,25 +5111,31 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item, long runtimeGeneration)
+	private async Task<DailySummaryQueueResult> ExecuteDailySummaryQueueItemAsync(object item, MemorySummaryRunOwner.Lease run = null)
 	{
 		DailySummaryQueueResult result = new DailySummaryQueueResult();
+		string expectedJobFingerprint = null;
+		if (item is MemorySummaryPlanEntry planned)
+		{
+			expectedJobFingerprint = planned.JobFingerprint;
+			item = planned.Job;
+		}
 		MemorySummaryJob memoryJob = item as MemorySummaryJob;
 		if (memoryJob != null)
 		{
-			result.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3, runtimeGeneration);
+			result.MemoryResult = await ExecuteMemorySummaryJobAsync(memoryJob, 3, expectedJobFingerprint, run);
 			return result;
 		}
 		MajorActionSummaryJob majorJob = item as MajorActionSummaryJob;
 		if (majorJob != null)
 		{
-			result.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3, runtimeGeneration);
+			result.MajorActionResult = await ExecuteMajorActionSummaryJobAsync(majorJob, 3, expectedJobFingerprint, run);
 			return result;
 		}
 		MemoryOverviewJob overviewJob = item as MemoryOverviewJob;
 		if (overviewJob != null)
 		{
-			result.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3, runtimeGeneration);
+			result.MemoryOverviewResult = await ExecuteMemoryOverviewJobAsync(overviewJob, 3, expectedJobFingerprint, run);
 			return result;
 		}
 		return result;
@@ -5236,158 +5175,43 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, long runtimeGeneration)
+	private async Task<MemorySummaryExecutionResult> ExecuteMemorySummaryJobAsync(MemorySummaryJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
 	{
-		var result = new MemorySummaryExecutionResult();
-		try
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);
+		return new MemorySummaryExecutionResult
 		{
-			DailyMemorySummaryInput input = null;
-			if (!await RunMemorySummaryMainThreadAsync(runtimeGeneration, () => (input = CaptureDailyMemorySummaryInput(job)) != null))
-			{
-				result.IsObsolete = true;
-				return result;
-			}
-			result.Job = input.Job;
-			result.Input = input;
-			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-			{
-				if (!await RunMemorySummaryMainThreadAsync(runtimeGeneration, () => IsMemorySummaryInputCurrent(input)))
-				{
-					result.IsObsolete = true;
-					return result;
-				}
-				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(input.SystemPrompt, input.UserPrompt, "CompressedMemory", 0, forceThinkingDisabled: true);
-				if (apiCallResult.Success)
-				{
-					if (TryParseMemorySummaryResponse(apiCallResult.Content, input, out var block, out var error))
-					{
-						result.Block = block;
-						return result;
-					}
-					result.Error = BuildSummaryJsonParseFailureMessage("总结格式解析失败", error, apiCallResult.Content);
-				}
-				else
-				{
-					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
-				}
-				if (i < maxAttempts)
-				{
-					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
-				}
-			}
-			return result;
-		}
-		catch (Exception ex)
-		{
-			result.Error = ex.Message;
-			return result;
-		}
+			Job = job,
+			Source = captured.Source,
+			Block = captured.Value as CompressedMemoryBlock,
+			Error = captured.Error,
+			IsObsolete = captured.IsObsolete
+		};
 	}
 
-	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts, long runtimeGeneration)
+	private async Task<MajorActionSummaryExecutionResult> ExecuteMajorActionSummaryJobAsync(MajorActionSummaryJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
 	{
-		var result = new MajorActionSummaryExecutionResult();
-		try
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);
+		return new MajorActionSummaryExecutionResult
 		{
-			MajorActionSummaryInput input = null;
-			if (!await RunMemorySummaryMainThreadAsync(runtimeGeneration, () => (input = CaptureMajorActionSummaryInput(job)) != null))
-			{
-				result.IsObsolete = true;
-				return result;
-			}
-			result.Job = input.Job;
-			result.Input = input;
-			if (input.ReusableState != null)
-			{
-				result.State = input.ReusableState;
-				return result;
-			}
-			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-			{
-				if (!await RunMemorySummaryMainThreadAsync(runtimeGeneration, () => IsMemorySummaryInputCurrent(input)))
-				{
-					result.IsObsolete = true;
-					return result;
-				}
-				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(input.SystemPrompt, input.UserPrompt, "NpcMajorSummary", 0, forceThinkingDisabled: true);
-				if (apiCallResult.Success)
-				{
-					if (TryParseMajorActionSummaryResponse(apiCallResult.Content, input.HeroName, input.Job, input.AllActions, out var state, out var error))
-					{
-						result.State = state;
-						return result;
-					}
-					result.Error = BuildSummaryJsonParseFailureMessage("重大履历总结格式解析失败", error, apiCallResult.Content);
-				}
-				else
-				{
-					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
-				}
-				if (i < maxAttempts)
-				{
-					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
-				}
-			}
-			return result;
-		}
-		catch (Exception ex)
-		{
-			result.Error = ex.Message;
-			return result;
-		}
+			Job = job,
+			Source = captured.Source,
+			State = captured.Value as MajorActionSummaryState,
+			Error = captured.Error,
+			IsObsolete = captured.IsObsolete
+		};
 	}
 
-	private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts, long runtimeGeneration)
+	private async Task<MemoryOverviewExecutionResult> ExecuteMemoryOverviewJobAsync(MemoryOverviewJob job, int maxAttempts, string expectedJobFingerprint = null, MemorySummaryRunOwner.Lease run = null)
 	{
-		var result = new MemoryOverviewExecutionResult();
-		try
+		CapturedMemorySummaryResult captured = await ExecuteCapturedMemorySummaryJobAsync(job, maxAttempts, expectedJobFingerprint, run);
+		return new MemoryOverviewExecutionResult
 		{
-			MemoryOverviewInput input = null;
-			if (!await RunMemorySummaryMainThreadAsync(runtimeGeneration, () => (input = CaptureMemoryOverviewInput(job)) != null))
-			{
-				result.IsObsolete = true;
-				return result;
-			}
-			result.Job = input.Job;
-			result.Input = input;
-			if (input.ReusableState != null)
-			{
-				result.State = input.ReusableState;
-				return result;
-			}
-			for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
-			{
-				if (!await RunMemorySummaryMainThreadAsync(runtimeGeneration, () => IsMemorySummaryInputCurrent(input)))
-				{
-					result.IsObsolete = true;
-					return result;
-				}
-				ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(input.SystemPrompt, input.UserPrompt, "MemoryOverview", 0, forceThinkingDisabled: true);
-				if (apiCallResult.Success)
-				{
-					if (TryParseMemoryOverviewResponse(apiCallResult.Content, input.HeroName, input.Job, input.ExistingState, input.SourceBlocks, out var state, out var error))
-					{
-						result.State = state;
-						return result;
-					}
-					result.Error = BuildSummaryJsonParseFailureMessage("记忆总览格式解析失败", error, apiCallResult.Content);
-				}
-				else
-				{
-					result.Error = apiCallResult.ErrorMessage ?? "API请求失败";
-				}
-				if (i < maxAttempts)
-				{
-					await Task.Delay(apiCallResult.RetryAfterSeconds.HasValue ? Math.Max(1000, apiCallResult.RetryAfterSeconds.Value * 1000) : 1500);
-				}
-			}
-			return result;
-		}
-		catch (Exception ex)
-		{
-			result.Error = ex.Message;
-			return result;
-		}
+			Job = job,
+			Source = captured.Source,
+			State = captured.Value as MemoryOverviewState,
+			Error = captured.Error,
+			IsObsolete = captured.IsObsolete
+		};
 	}
 
 	private static string BuildMemoryOverviewSummarySystemPrompt(int targetChars)
@@ -5472,7 +5296,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().TrimEnd();
 	}
 
-	private static bool TryParseMemoryOverviewResponse(string content, string heroName, MemoryOverviewJob job, MemoryOverviewState existingState, List<CompressedMemoryBlock> sourceBlocks, out MemoryOverviewState state, out string error)
+	private static bool TryParseMemoryOverviewResponse(string content, Hero hero, MemoryOverviewJob job, MemoryOverviewState existingState, List<CompressedMemoryBlock> sourceBlocks, out MemoryOverviewState state, out string error)
 	{
 		state = null;
 		error = "";
@@ -5488,7 +5312,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				error = "SUMMARY 为空。";
 				return false;
 			}
-			string heroId = NormalizeMemoryHeroId(job?.HeroId);
+			string heroId = NormalizeMemoryHeroId(job?.HeroId ?? hero?.StringId);
 			List<string> includedBlockIds = new List<string>();
 			if (existingState != null && existingState.IncludedBlockIds != null)
 			{
@@ -5509,7 +5333,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			state = new MemoryOverviewState
 			{
 				HeroId = heroId,
-				HeroName = heroName ?? job?.HeroName ?? "NPC",
+				HeroName = hero?.Name?.ToString() ?? job?.HeroName ?? "NPC",
 				Summary = summary,
 				IncludedBlockIds = includedBlockIds.Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
 				UpdatedUtcTicks = DateTime.UtcNow.Ticks,
@@ -5524,23 +5348,23 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ApplyMemoryOverviewSuccess(MemoryOverviewJob job, MemoryOverviewState state)
+	private bool ApplyMemoryOverviewSuccess(MemoryOverviewJob job, MemoryOverviewState state)
 	{
 		if (job == null || state == null || string.IsNullOrWhiteSpace(state.Summary))
 		{
-			return;
+			return false;
 		}
 		string heroId = NormalizeMemoryHeroId(job.HeroId);
 		if (string.IsNullOrWhiteSpace(heroId))
 		{
-			return;
+			return false;
 		}
 		Hero hero = FindHeroById(heroId);
 		if (!IsNonHeroMemoryId(heroId) && !IsHeroNpcEligibleForCompressedMemory(hero))
 		{
 			// The target can disappear while the async API request is in flight; never write its stale result back.
 			CancelUnavailableHeroCompressionWorkById(heroId, "memory_overview_apply");
-			return;
+			return false;
 		}
 		if (_memoryOverviewStates == null)
 		{
@@ -5557,6 +5381,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
 		}
 		Logger.Log("MemoryOverview", "summary_success hero=" + heroId + " blocks=" + (state.IncludedBlockIds?.Count ?? 0));
+		return true;
 	}
 
 	private void MarkMemoryOverviewFailure(MemoryOverviewJob job, string error)
@@ -5641,7 +5466,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	private static bool TryParseMajorActionSummaryResponse(string content, string heroName, MajorActionSummaryJob job, List<NpcActionEntry> allActions, out MajorActionSummaryState state, out string error)
+	private static bool TryParseMajorActionSummaryResponse(string content, Hero hero, MajorActionSummaryJob job, List<NpcActionEntry> allActions, out MajorActionSummaryState state, out string error)
 	{
 		state = null;
 		error = "";
@@ -5658,11 +5483,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return false;
 			}
 			GetMajorActionMaxCursor(allActions, out var day, out var sequence);
-			string heroId = NormalizeMemoryHeroId(job?.HeroId);
+			string heroId = NormalizeMemoryHeroId(job?.HeroId ?? hero?.StringId);
 			state = new MajorActionSummaryState
 			{
 				HeroId = heroId,
-				HeroName = heroName ?? job?.HeroName ?? "NPC",
+				HeroName = hero?.Name?.ToString() ?? job?.HeroName ?? "NPC",
 				Summary = summary,
 				LastSummarizedDay = day,
 				LastSummarizedSequence = sequence,
@@ -5678,22 +5503,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ApplyMajorActionSummarySuccess(MajorActionSummaryJob job, MajorActionSummaryState state)
+	private bool ApplyMajorActionSummarySuccess(MajorActionSummaryJob job, MajorActionSummaryState state)
 	{
 		if (job == null || state == null || string.IsNullOrWhiteSpace(state.Summary))
 		{
-			return;
+			return false;
 		}
 		string heroId = NormalizeMemoryHeroId(job.HeroId);
 		if (string.IsNullOrWhiteSpace(heroId))
 		{
-			return;
+			return false;
 		}
 		if (!IsHeroNpcEligibleForCompressedMemory(FindHeroById(heroId)))
 		{
 			// Raw major actions remain for weekly reports, but an in-flight result cannot recreate derived memory for a removed Hero.
 			CancelUnavailableHeroCompressionWorkById(heroId, "major_action_summary_apply");
-			return;
+			return false;
 		}
 		if (_npcMajorActionSummaries == null)
 		{
@@ -5710,6 +5535,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_npcMajorActionSummaryQueue.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
 		}
 		Logger.Log("NpcMajorSummary", "summary_success hero=" + heroId + " day=" + state.LastSummarizedDay + " sequence=" + state.LastSummarizedSequence);
+		return true;
 	}
 
 	private void MarkMajorActionSummaryFailure(MajorActionSummaryJob job, string error)
@@ -5835,7 +5661,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return stringBuilder.ToString().Trim();
 	}
 
-	private static bool TryParseMemorySummaryResponse(string content, DailyMemorySummaryInput input, out CompressedMemoryBlock block, out string error)
+	private static bool TryParseMemorySummaryResponse(string content, Hero hero, DailyMemoryDraft draft, out CompressedMemoryBlock block, out string error)
 	{
 		block = null;
 		error = "";
@@ -5847,7 +5673,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string title = StripMemoryTitleDateTime(GetJsonStringIgnoreCase(jObject, "rich_title", "richTitle", "title"));
 			string summary = GetJsonStringIgnoreCase(jObject, "summary_content", "summaryContent", "summary", "content").Trim();
-			int effectiveTrust = input.EffectiveTrust;
+			int effectiveTrust = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
 			string playerPublicity = PlayerNotorietyBehavior.NormalizeMemoryPublicity(GetJsonStringIgnoreCase(jObject, "player_publicity", "playerPublicity", "publicity"), effectiveTrust);
 			string playerHistoryMaterial = GetJsonStringIgnoreCase(jObject, "player_history_material", "playerHistoryMaterial", "history_material", "historyMaterial").Trim();
 			string playerPublicityReason = GetJsonStringIgnoreCase(jObject, "publicity_reason", "publicityReason", "reason").Trim();
@@ -5861,31 +5687,37 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(playerHistoryMaterial))
 			{
-				playerHistoryMaterial = input.RenderPlayerHistory(playerHistoryMaterial);
+				playerHistoryMaterial = PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(playerHistoryMaterial);
 			}
 			if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(summary))
 			{
 				error = "TITLE 或 SUMMARY 为空。";
 				return false;
 			}
-			CompressedMemoryBlock metadata = input.Metadata;
+			List<DailyMemoryLine> allLines = draft.Lines ?? new List<DailyMemoryLine>();
+			List<DailyMemoryLine> ordered = allLines.Where((DailyMemoryLine x) => x != null).OrderBy((DailyMemoryLine x) => x.GameHour).ToList();
+			int startHour = ordered.Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Min();
+			int endHour = ordered.Select((DailyMemoryLine x) => MBMath.ClampInt(x.GameHour, 0, 23)).DefaultIfEmpty(0).Max();
+			List<string> scenes = ordered.Select((DailyMemoryLine x) => (x.Scene ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(16).ToList();
+			List<string> afefLines = ordered.Where((DailyMemoryLine x) => x.IsAfef).Select(BuildDailyMemoryLineForPrompt).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+			string heroId = NormalizeMemoryHeroId(draft.HeroId);
 			block = new CompressedMemoryBlock
 			{
-				Id = metadata.Id,
-				HeroId = metadata.HeroId,
-				HeroName = metadata.HeroName,
-				GameDayIndex = metadata.GameDayIndex,
-				GameDate = metadata.GameDate,
-				StartHour = metadata.StartHour,
-				EndHour = metadata.EndHour,
-				Scenes = metadata.Scenes,
+				Id = BuildCompressedMemoryBlockId(heroId, draft.GameDayIndex),
+				HeroId = heroId,
+				HeroName = hero?.Name?.ToString() ?? draft.HeroName ?? "NPC",
+				GameDayIndex = draft.GameDayIndex,
+				GameDate = draft.GameDate ?? "",
+				StartHour = startHour,
+				EndHour = endHour,
+				Scenes = scenes,
 				RichTitle = title,
 				Summary = summary,
-				AfefLines = metadata.AfefLines,
+				AfefLines = afefLines,
 				PlayerPublicity = playerPublicity,
 				PlayerHistoryMaterial = playerHistoryMaterial,
 				PlayerPublicityReason = playerPublicityReason,
-				WeeklyMaterialTriggers = metadata.WeeklyMaterialTriggers,
+				WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers),
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
 			return true;
@@ -5897,11 +5729,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void ApplyMemorySummarySuccess(MemorySummaryJob job, CompressedMemoryBlock block)
+	private bool ApplyMemorySummarySuccess(MemorySummaryJob job, CompressedMemoryBlock block)
 	{
 		if (job == null || block == null)
 		{
-			return;
+			return false;
 		}
 		string memoryId = NormalizeMemoryHeroId(job.HeroId);
 		Hero hero = FindHeroById(memoryId);
@@ -5909,7 +5741,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			// The target can disappear while the async API request is in flight; drop the result and stale derived state.
 			CancelUnavailableHeroCompressionWorkById(memoryId, "memory_summary_apply");
-			return;
+			return false;
 		}
 		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocksById(memoryId);
 		blocks.RemoveAll((CompressedMemoryBlock x) => x != null && x.GameDayIndex == job.GameDayIndex);
@@ -5935,6 +5767,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		RecordPublicDailyMemoryWeeklyMaterial(block);
 		RecordWeeklyMemoryMaterialForBlock(block);
 		TryEnqueueMemoryOverviewForMemoryId(memoryId, job.HeroName, blocks);
+		return true;
 	}
 
 	private void MarkMemorySummaryFailure(MemorySummaryJob job, string error)
@@ -6022,14 +5855,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
-		int missingWeek = WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(_lastAutoGeneratedWeeklyReportWeek, currentGameDayIndexSafe);
-		if (settings == null || !settings.AutoGenerateWeeklyReports || missingWeek <= 0)
+		int missingWeek = _weeklyAutoSchedule.SelectWeek(_lastAutoGeneratedWeeklyReportWeek,
+			currentGameDayIndexSafe, weekIndex, _weeklyReportGenerationInProgress,
+			settings != null && settings.AutoGenerateWeeklyReports, AutomaticKingdomRebellions.FlowActive);
+		if (missingWeek <= 0)
 		{
-			return;
-		}
-		if (_automaticKingdomRebellionFlowActive)
-		{
-			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
 			return;
 		}
 		StartAutoWeeklyReportsForWeek(missingWeek, currentGameDayIndexSafe);
@@ -6055,19 +5885,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void QueueDeferredAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe, string reason)
 	{
-		int missingWeek = WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(_lastAutoGeneratedWeeklyReportWeek, currentGameDayIndexSafe);
-		if (weekIndex <= 0 || missingWeek <= 0 || missingWeek > weekIndex || _weeklyReportGenerationInProgress)
-		{
-			return;
-		}
 		DuelSettings settings = DuelSettings.GetSettings();
-		if (settings == null || !settings.AutoGenerateWeeklyReports)
+		int missingWeek = _weeklyAutoSchedule.SelectWeek(_lastAutoGeneratedWeeklyReportWeek,
+			currentGameDayIndexSafe, weekIndex, _weeklyReportGenerationInProgress,
+			settings != null && settings.AutoGenerateWeeklyReports, AutomaticKingdomRebellions.FlowActive);
+		if (missingWeek <= 0)
 		{
-			return;
-		}
-		if (_automaticKingdomRebellionFlowActive)
-		{
-			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
 			return;
 		}
 		int startDay = WeeklyReportSchedulePolicy.GetStartDay(missingWeek);
@@ -6119,9 +5942,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
-		long startTimestamp = Stopwatch.GetTimestamp();
-		if (_pendingAutoWeeklyReportBuild != null && !_automaticKingdomRebellionFlowActive)
+		ResolveDailyMaintenanceBudget(out long startTimestamp, out double budgetMs);
+		if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)) return;
+		if (_pendingAutoWeeklyReportBuild != null && !AutomaticKingdomRebellions.FlowActive)
 		{
 			using (PerfProbe.Scope("MyBehavior.DeferredDailyMaintenance.ProcessPendingAutoWeeklyReportBuild"))
 			{
@@ -6168,7 +5991,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			processedScanCount += ProcessMemoryOverviewCandidateScanBudget(startTimestamp, budgetMs);
 		}
-		if (processedScanCount > 0 && !_memorySummaryProcessing && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (processedScanCount > 0 && !_memorySummaryRunOwner.IsRunning && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			TryStartMemorySummaryQueue();
 		}
@@ -6244,32 +6067,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
 			ClearKingdomStabilityRelationAdjustments();
-			_kingdomStabilityMaintenanceCursor = 0;
+			KingdomMaintenance.ResetRelations();
 			return true;
 		}
 		List<Kingdom> kingdoms = Kingdom.All?.Where((Kingdom x) => x != null).ToList() ?? new List<Kingdom>();
-		if (kingdoms.Count == 0)
-		{
-			_kingdomStabilityMaintenanceCursor = 0;
-			return true;
-		}
-		if (_kingdomStabilityMaintenanceCursor < 0 || _kingdomStabilityMaintenanceCursor >= kingdoms.Count)
-		{
-			_kingdomStabilityMaintenanceCursor = 0;
-		}
-		int processed = 0;
-		while (_kingdomStabilityMaintenanceCursor < kingdoms.Count && processed < 1)
-		{
-			ApplyKingdomStabilityRelationAdjustmentsForKingdom(kingdoms[_kingdomStabilityMaintenanceCursor]);
-			_kingdomStabilityMaintenanceCursor++;
-			processed++;
-		}
-		if (_kingdomStabilityMaintenanceCursor >= kingdoms.Count)
-		{
-			_kingdomStabilityMaintenanceCursor = 0;
-			return true;
-		}
-		return false;
+		return KingdomMaintenance.AdvanceRelations(kingdoms.Count, index => ApplyKingdomStabilityRelationAdjustmentsForKingdom(kingdoms[index]));
 	}
 
 	private void TryInitializePendingAutoWeeklyReportBuild(DailyMaintenanceJob job)
@@ -6282,13 +6084,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			if (_pendingAutoWeeklyReportBuild == null || _pendingAutoWeeklyReportBuild.WeekIndex != job.WeekIndex)
 			{
-				_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, job.WeekIndex);
+				_weeklyAutoSchedule.Defer(job.WeekIndex);
 			}
 			return;
 		}
-		if (_automaticKingdomRebellionFlowActive)
+		if (AutomaticKingdomRebellions.FlowActive)
 		{
-			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, job.WeekIndex);
+			_weeklyAutoSchedule.Defer(job.WeekIndex);
 			return;
 		}
 		DuelSettings settings = DuelSettings.GetSettings();
@@ -6298,6 +6100,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		_pendingAutoWeeklyReportBuild = new PendingAutoWeeklyReportBuild
 		{
+			SourceSnapshot = _weeklyReportMaterialRevisions.Capture(Math.Max(0, job.StartDay), Math.Max(job.StartDay, job.EndDay)),
 			WeekIndex = job.WeekIndex,
 			StartDay = Math.Max(0, job.StartDay),
 			EndDay = Math.Max(job.StartDay, job.EndDay),
@@ -6305,13 +6108,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			EventSourceMaterialSnapshot = SanitizeEventSourceMaterials(_eventSourceMaterials)
 		};
 		_weeklyReportGenerationInProgress = true;
-		_pendingAutoWeeklyReportWeek = 0;
+		_weeklyAutoSchedule.Clear();
 	}
 
 	private void ProcessPendingAutoWeeklyReportBuildBudget(long startTimestamp, double budgetMs)
 	{
 		PendingAutoWeeklyReportBuild context = _pendingAutoWeeklyReportBuild;
-		if (context == null || _automaticKingdomRebellionFlowActive)
+		if (context == null || AutomaticKingdomRebellions.FlowActive)
 		{
 			return;
 		}
@@ -6329,12 +6132,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			ProcessPendingWeeklyReportAggregationBudget(context, startTimestamp, budgetMs);
-			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.AggregationComplete)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || context.AggregationCursor?.Complete != true)
 			{
 				return;
 			}
 			ProcessPendingWeeklyReportPromptMaterialsBudget(context, startTimestamp, budgetMs);
-			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.PromptMaterialsComplete)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || context.PromptMaterialCursor?.Complete != true)
 			{
 				return;
 			}
@@ -6348,7 +6151,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			ProcessPendingWeeklyReportBatchPromptsBudget(context, startTimestamp, budgetMs);
-			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || !context.BatchPromptsComplete)
+			if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) || context.BatchPromptCursor?.Complete != true)
 			{
 				return;
 			}
@@ -6381,8 +6184,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				context.Groups.Add(CreateKingdomWeeklyEventMaterialPreviewGroup(kingdom));
 			}
-			context.RecentActionOwners = (_npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList();
-			context.MajorActionOwners = (_npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList();
+			context.RecentActionCursor = new WeeklyActionMaterialCursor<NpcActionEntry, Hero>((_npcRecentActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList());
+			context.MajorActionCursor = new WeeklyActionMaterialCursor<NpcActionEntry, Hero>((_npcMajorActions ?? new Dictionary<string, List<NpcActionEntry>>()).ToList());
 			context.PreviewGroupsInitialized = true;
 			return false;
 		}
@@ -6398,14 +6201,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) && !ProcessPendingAutoWeeklyReportActionSlice(context, recentOnly: true))
 		{
 		}
-		if (context.RecentActionOwnerIndex < (context.RecentActionOwners?.Count ?? 0))
+		if (context.RecentActionCursor != null && !context.RecentActionCursor.Complete)
 		{
 			return false;
 		}
 		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs) && !ProcessPendingAutoWeeklyReportActionSlice(context, recentOnly: false))
 		{
 		}
-		return context.MajorActionOwnerIndex >= (context.MajorActionOwners?.Count ?? 0);
+		return context.MajorActionCursor == null || context.MajorActionCursor.Complete;
 	}
 
 	private void ProcessPendingAutoWeeklyReportSourceMaterial(PendingAutoWeeklyReportBuild context, EventSourceMaterialEntry item)
@@ -6434,54 +6237,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		List<KeyValuePair<string, List<NpcActionEntry>>> owners = recentOnly ? context.RecentActionOwners : context.MajorActionOwners;
-		int ownerIndex = recentOnly ? context.RecentActionOwnerIndex : context.MajorActionOwnerIndex;
-		int actionIndex = recentOnly ? context.RecentActionIndex : context.MajorActionIndex;
-		Hero currentHero = recentOnly ? context.CurrentRecentActionHero : context.CurrentMajorActionHero;
-		while (ownerIndex < (owners?.Count ?? 0))
-		{
-			KeyValuePair<string, List<NpcActionEntry>> owner = owners[ownerIndex];
-			List<NpcActionEntry> actions = owner.Value;
-			if (actionIndex == 0)
-			{
-				currentHero = FindHeroById(owner.Key);
-			}
-			if (currentHero == null || actions == null || actionIndex >= actions.Count)
-			{
-				ownerIndex++;
-				actionIndex = 0;
-				currentHero = null;
-				continue;
-			}
-			NpcActionEntry action = actions[actionIndex++];
-			ProcessPendingAutoWeeklyReportNpcAction(context, currentHero, action, recentOnly);
-			if (recentOnly)
-			{
-				context.RecentActionOwnerIndex = ownerIndex;
-				context.RecentActionIndex = actionIndex;
-				context.CurrentRecentActionHero = currentHero;
-			}
-			else
-			{
-				context.MajorActionOwnerIndex = ownerIndex;
-				context.MajorActionIndex = actionIndex;
-				context.CurrentMajorActionHero = currentHero;
-			}
-			return false;
-		}
-		if (recentOnly)
-		{
-			context.RecentActionOwnerIndex = ownerIndex;
-			context.RecentActionIndex = 0;
-			context.CurrentRecentActionHero = null;
-		}
-		else
-		{
-			context.MajorActionOwnerIndex = ownerIndex;
-			context.MajorActionIndex = 0;
-			context.CurrentMajorActionHero = null;
-		}
-		return true;
+		WeeklyActionMaterialCursor<NpcActionEntry, Hero> cursor = recentOnly ? context.RecentActionCursor : context.MajorActionCursor;
+		return cursor == null || cursor.Advance(FindHeroById,
+			(hero, action) => ProcessPendingAutoWeeklyReportNpcAction(context, hero, action, recentOnly));
 	}
 
 	private void ProcessPendingAutoWeeklyReportNpcAction(PendingAutoWeeklyReportBuild context, Hero hero, NpcActionEntry action, bool recentOnly)
@@ -6524,64 +6282,48 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ProcessPendingWeeklyReportAggregationBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
 	{
-		if (context == null || context.AggregationComplete)
+		if (context == null || context.AggregationCursor?.Complete == true)
 		{
 			return;
 		}
-		List<WeeklyEventMaterialPreviewGroup> groups = context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>();
-		while (context.AggregationIndex < groups.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (context.AggregationCursor == null)
 		{
-			WeeklyEventMaterialPreviewGroup group = groups[context.AggregationIndex++];
-			if (group != null)
-			{
-				ApplyWeeklyPromptMaterialAggregation(group);
-			}
-			break;
+			context.AggregationCursor = new WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup>(context.Groups);
 		}
-		if (context.AggregationIndex >= groups.Count)
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)
+			&& context.AggregationCursor.TryTake(out WeeklyEventMaterialPreviewGroup group) && group != null)
 		{
-			context.AggregationComplete = true;
+			ApplyWeeklyPromptMaterialAggregation(group);
 		}
 	}
 
 	private void ProcessPendingWeeklyReportPromptMaterialsBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
 	{
-		if (context == null || context.PromptMaterialsComplete)
+		if (context == null || context.PromptMaterialCursor?.Complete == true)
 		{
 			return;
 		}
 		List<WeeklyEventMaterialPreviewGroup> groups = context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>();
 		if (context.FullReportKingdomIds == null)
 		{
-			List<string> nearestKingdomIds = GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-			if (nearestKingdomIds.Count == 0)
-			{
-				nearestKingdomIds = groups.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-			}
-			context.FullReportKingdomIds = nearestKingdomIds;
+			context.FullReportKingdomIds = WeeklyMaterialBatchPlanner.SelectFullReportKingdomIds(groups,
+				GetKingdomIdsByPlayerProximity(groups.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)));
 		}
-		HashSet<string> fullReportKingdomIds = new HashSet<string>(context.FullReportKingdomIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-		while (context.PromptMaterialIndex < groups.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (context.PromptMaterialCursor == null)
 		{
-			WeeklyEventMaterialPreviewGroup group = groups[context.PromptMaterialIndex++];
-			if (group == null)
-			{
-				continue;
-			}
-			bool isKingdom = string.Equals((group?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
-			bool shortOnly = isKingdom && !fullReportKingdomIds.Contains((group?.KingdomId ?? "").Trim());
-			PrepareWeeklyPromptMaterialsForGroup(group, shortOnly);
-			break;
+			context.PromptMaterialCursor = new WeeklyMaterialStageCursor<WeeklyEventMaterialPreviewGroup>(groups);
 		}
-		if (context.PromptMaterialIndex >= groups.Count)
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)
+			&& context.PromptMaterialCursor.TryTake(out WeeklyEventMaterialPreviewGroup group) && group != null)
 		{
-			context.PromptMaterialsComplete = true;
+			bool shortOnly = WeeklyMaterialBatchPlanner.IsShortOnly(group, context.FullReportKingdomIds);
+			WeeklyPromptMaterialOwner.Prepare(group, shortOnly);
 		}
 	}
 
 	private void ProcessPendingWeeklyReportBatchPromptsBudget(PendingAutoWeeklyReportBuild context, long startTimestamp, double budgetMs)
 	{
-		if (context == null || context.BatchPromptsComplete)
+		if (context == null || context.BatchPromptCursor?.Complete == true)
 		{
 			return;
 		}
@@ -6589,15 +6331,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			context.Batches = BuildWeeklyReportBatchRequests((context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList(), context.WeekIndex, context.StartDay, context.EndDay);
 		}
-		while (context.BatchPromptIndex < context.Batches.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		if (context.BatchPromptCursor == null)
 		{
-			PrepareWeeklyReportBatchPrompt(context.Batches[context.BatchPromptIndex]);
-			context.BatchPromptIndex++;
-			break;
+			context.BatchPromptCursor = new WeeklyMaterialStageCursor<WeeklyReportBatchRequest>(context.Batches);
 		}
-		if (context.BatchPromptIndex >= context.Batches.Count)
+		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)
+			&& context.BatchPromptCursor.TryTake(out WeeklyReportBatchRequest batch))
 		{
-			context.BatchPromptsComplete = true;
+			PrepareWeeklyReportBatchPrompt(batch);
 		}
 	}
 
@@ -6610,7 +6351,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		List<WeeklyEventMaterialPreviewGroup> groups = (context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
 		List<WeeklyReportBatchRequest> batches = (context.Batches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
 		_pendingAutoWeeklyReportBuild = null;
-		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay, batches);
+		_ = GenerateAutoWeeklyReportsAsync(groups, context.WeekIndex, context.StartDay, context.EndDay, batches, context.SourceSnapshot);
 	}
 
 	private void StartAutoWeeklyReportsForWeek(int weekIndex, int currentGameDayIndexSafe)
@@ -6619,22 +6360,23 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (_automaticKingdomRebellionFlowActive)
+		if (AutomaticKingdomRebellions.FlowActive)
 		{
-			_pendingAutoWeeklyReportWeek = Math.Max(_pendingAutoWeeklyReportWeek, weekIndex);
+			_weeklyAutoSchedule.Defer(weekIndex);
 			return;
 		}
 		int startDay = WeeklyReportSchedulePolicy.GetStartDay(weekIndex);
 		int endDay = WeeklyReportSchedulePolicy.GetEndDay(weekIndex);
+		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = _weeklyReportMaterialRevisions.Capture(startDay, endDay);
 		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups(startDay, endDay));
 		_weeklyReportGenerationInProgress = true;
-		_pendingAutoWeeklyReportWeek = 0;
-		_ = GenerateAutoWeeklyReportsAsync(list, weekIndex, startDay, endDay);
+		_weeklyAutoSchedule.Clear();
+		_ = GenerateAutoWeeklyReportsAsync(list, weekIndex, startDay, endDay, sourceSnapshotOverride: sourceSnapshot);
 	}
 
 	private void TryStartDeferredAutoWeeklyReports()
 	{
-		if (_pendingAutoWeeklyReportWeek <= 0 || _weeklyReportGenerationInProgress || _automaticKingdomRebellionFlowActive)
+		if (_weeklyAutoSchedule.PendingWeek <= 0 || _weeklyReportGenerationInProgress || AutomaticKingdomRebellions.FlowActive)
 		{
 			return;
 		}
@@ -6644,24 +6386,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
-		if (currentGameDayIndexSafe <= 0)
-		{
-			return;
-		}
-		int num = currentGameDayIndexSafe / 7;
-		if (num < _pendingAutoWeeklyReportWeek)
-		{
-			return;
-		}
-		int missingWeek = WeeklyReportSchedulePolicy.ResolveOldestMissingWeek(_lastAutoGeneratedWeeklyReportWeek, currentGameDayIndexSafe);
+		int missingWeek = _weeklyAutoSchedule.ResolvePendingWeek(_lastAutoGeneratedWeeklyReportWeek,
+			currentGameDayIndexSafe, _weeklyReportGenerationInProgress,
+			settings != null && settings.AutoGenerateWeeklyReports, AutomaticKingdomRebellions.FlowActive);
 		if (missingWeek <= 0)
 		{
-			_pendingAutoWeeklyReportWeek = 0;
 			return;
 		}
 		if (IsDeferredDailyMaintenanceEnabled())
 		{
-			QueueDeferredAutoWeeklyReportsForWeek(_pendingAutoWeeklyReportWeek, currentGameDayIndexSafe, "deferred_auto_weekly_resume");
+			QueueDeferredAutoWeeklyReportsForWeek(_weeklyAutoSchedule.PendingWeek, currentGameDayIndexSafe, "deferred_auto_weekly_resume");
 		}
 		else
 		{
@@ -6669,12 +6403,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, List<WeeklyReportBatchRequest> preparedBatches = null)
+	private async Task GenerateAutoWeeklyReportsAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, List<WeeklyReportBatchRequest> preparedBatches = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
 	{
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		try
 		{
-			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches, runtimeGeneration: runtimeGeneration);
+			WeeklyReportGenerationResult weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(groups, weekIndex, startDay, endDay, BuildWeeklyEpicWeekLabel(weekIndex) + "自动周报", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: true, popupCandidateKingdomIdsOverride: null, preparedBatches: preparedBatches, runtimeGeneration: runtimeGeneration, sourceSnapshotOverride: sourceSnapshotOverride);
 			if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "auto_weekly_report_complete") && weeklyReportGenerationResult != null && weeklyReportGenerationResult.Completed && !weeklyReportGenerationResult.BlockedByFatalFailure)
 			{
 				_lastAutoGeneratedWeeklyReportWeek = Math.Max(_lastAutoGeneratedWeeklyReportWeek, weekIndex);
@@ -6783,7 +6517,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				Kingdom kingdom = _missedStrategicWorldEventMaintenanceKingdoms[_missedStrategicWorldEventMaintenanceCursor++];
 				string kingdomId = GetKingdomId(kingdom);
-				string stableKey = NormalizeNpcActionStableKey("kingdom_destroyed:" + kingdomId, "");
+				string stableKey = NpcActionLedger.NormalizeStableKey("kingdom_destroyed:" + kingdomId, "");
 				if (kingdom != null && kingdom.IsEliminated && !string.IsNullOrWhiteSpace(stableKey) && !_missedStrategicWorldEventMaintenanceStableKeys.Contains(stableKey))
 				{
 					RecordKingdomDestroyedMaterial(kingdom, "daily_scan");
@@ -7371,6 +7105,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnKingdomDestroyed(Kingdom destroyedKingdom)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			RecordKingdomDestroyedMaterial(destroyedKingdom, "event");
@@ -7446,6 +7181,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OnClanDestroyed(Clan destroyedClan)
 	{
+		_weeklyReportMaterialRevisions.MarkAll();
 		try
 		{
 			string clanDisplayName = GetClanDisplayName(destroyedClan);
@@ -11102,17 +10838,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string NormalizeNpcActionStableKey(string stableKey, string fallbackText)
-	{
-		string text = (stableKey ?? fallbackText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "" : text.ToLowerInvariant();
-	}
-
 
 	private static string BuildPrefixedEventSourceStableKey(string prefix, string stableKey, string fallbackText)
 	{
-		string cleanPrefix = NormalizeNpcActionStableKey(prefix, "").TrimEnd(':');
-		string normalizedKey = NormalizeNpcActionStableKey(stableKey, fallbackText);
+		string cleanPrefix = NpcActionLedger.NormalizeStableKey(prefix, "").TrimEnd(':');
+		string normalizedKey = NpcActionLedger.NormalizeStableKey(stableKey, fallbackText);
 		if (string.IsNullOrWhiteSpace(cleanPrefix))
 		{
 			return normalizedKey;
@@ -11160,7 +10890,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static int ClampKingdomStabilityValue(int value)
 	{
-		return Math.Max(KingdomStabilityMinValue, Math.Min(KingdomStabilityMaxValue, value));
+		return KingdomStabilityPolicy.ClampKingdomStabilityValue(value);
 	}
 
 	private int GetKingdomStabilityValue(Kingdom kingdom)
@@ -11170,20 +10900,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private int GetKingdomStabilityValue(string kingdomId)
 	{
-		string text = (kingdomId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return KingdomStabilityDefaultValue;
-		}
-		if (_kingdomStabilityValues == null)
-		{
-			_kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_kingdomStabilityValues.TryGetValue(text, out var value))
-		{
-			return ClampKingdomStabilityValue(value);
-		}
-		return KingdomStabilityDefaultValue;
+		return KingdomStability.Get(kingdomId);
 	}
 
 	public static int GetKingdomStabilityValueForExternal(Kingdom kingdom)
@@ -11303,11 +11020,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (_kingdomStabilityValues == null)
-		{
-			_kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		}
-		_kingdomStabilityValues[text] = ClampKingdomStabilityValue(value);
+		KingdomStability.Set(text, value);
 		if (DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
 			ApplyKingdomStabilityRelationAdjustmentsForKingdom(kingdom);
@@ -11316,37 +11029,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static int GetKingdomStabilityRelationTargetOffset(int stabilityValue)
 	{
-		return MBMath.ClampInt((ClampKingdomStabilityValue(stabilityValue) - KingdomStabilityDefaultValue) / 2, -25, 25);
+		return KingdomStabilityPolicy.GetKingdomStabilityRelationTargetOffset(stabilityValue);
 	}
 
 	private static KingdomStabilityTier GetKingdomStabilityTier(int value)
 	{
-		int num = ClampKingdomStabilityValue(value);
-		if (num >= 90)
-		{
-			return KingdomStabilityTier.ExtremelyHigh;
-		}
-		if (num >= 75)
-		{
-			return KingdomStabilityTier.High;
-		}
-		if (num >= 60)
-		{
-			return KingdomStabilityTier.FairlyHigh;
-		}
-		if (num >= 40)
-		{
-			return KingdomStabilityTier.Average;
-		}
-		if (num >= 25)
-		{
-			return KingdomStabilityTier.Poor;
-		}
-		if (num >= 10)
-		{
-			return KingdomStabilityTier.VeryPoor;
-		}
-		return KingdomStabilityTier.ExtremelyPoor;
+		return (KingdomStabilityTier)KingdomStabilityPolicy.GetKingdomStabilityTier(value);
 	}
 
 	private static string GetKingdomStabilityTierText(int value)
@@ -11443,13 +11131,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return value;
 		}
 		int heroRelation = CharacterRelationManager.GetHeroRelation(sourceHero, targetHero);
-		int num = heroRelation - value;
-		int num2 = ClampHeroRelationValue(num + desiredOffset);
+		int num2 = KingdomStabilityOwner.ResolveRelation(heroRelation, value, desiredOffset, out int appliedOffset);
 		if (num2 != heroRelation)
 		{
 			sourceHero.SetPersonalRelation(targetHero, num2);
 		}
-		return num2 - num;
+		return appliedOffset;
 	}
 
 	private void ApplyKingdomStabilityRelationAdjustmentsForKingdom(Kingdom kingdom)
@@ -11496,50 +11183,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		List<string> list = _kingdomStabilityRelationAppliedOffsets.Keys.Where((string x) => !string.IsNullOrWhiteSpace(x) && x.StartsWith(kingdomId + "|", StringComparison.OrdinalIgnoreCase)).ToList();
-		HashSet<string> existingKeys = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
-		foreach (string item2 in list)
+		KingdomStability.Reconcile(kingdomId, dictionary, (key, desiredOffset) =>
 		{
-			int desiredOffset = 0;
-			dictionary.TryGetValue(item2, out desiredOffset);
 			Hero sourceHero = hero;
-			Hero targetHero = null;
-			bool hasCurrentPair = dictionary2.TryGetValue(item2, out targetHero) && sourceHero != null;
-			if (!hasCurrentPair && !TryResolveKingdomStabilityRelationOffsetKey(item2, out var _, out sourceHero, out targetHero))
-			{
-				_kingdomStabilityRelationAppliedOffsets.Remove(item2);
-				continue;
-			}
-			int num = ApplyKingdomStabilityRelationOffsetToPair(item2, sourceHero, targetHero, desiredOffset);
-			if (num == 0)
-			{
-				_kingdomStabilityRelationAppliedOffsets.Remove(item2);
-			}
-			else
-			{
-				_kingdomStabilityRelationAppliedOffsets[item2] = num;
-			}
-		}
-		foreach (KeyValuePair<string, int> item3 in dictionary)
-		{
-			if (existingKeys.Contains(item3.Key))
-			{
-				continue;
-			}
-			Hero sourceHero2 = hero;
-			if (!dictionary2.TryGetValue(item3.Key, out Hero targetHero2) || sourceHero2 == null)
-			{
-				if (!TryResolveKingdomStabilityRelationOffsetKey(item3.Key, out var _, out sourceHero2, out targetHero2))
-				{
-					continue;
-				}
-			}
-			int num2 = ApplyKingdomStabilityRelationOffsetToPair(item3.Key, sourceHero2, targetHero2, item3.Value);
-			if (num2 != 0)
-			{
-				_kingdomStabilityRelationAppliedOffsets[item3.Key] = num2;
-			}
-		}
+			bool hasCurrentPair = dictionary2.TryGetValue(key, out Hero targetHero) && sourceHero != null;
+			if (!hasCurrentPair && !TryResolveKingdomStabilityRelationOffsetKey(key, out _, out sourceHero, out targetHero))
+				return null;
+			return (int?)ApplyKingdomStabilityRelationOffsetToPair(key, sourceHero, targetHero, desiredOffset);
+		});
 	}
 
 	private void ClearKingdomStabilityRelationAdjustmentsForKingdom(string kingdomId)
@@ -11607,96 +11258,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static int GetLowClanCountRoyalDomainLoyaltyAdjustment(int stabilityValue, int activeClanCount)
 	{
-		int num = Math.Max(0, activeClanCount);
-		switch (GetKingdomStabilityTier(stabilityValue))
-		{
-		case KingdomStabilityTier.ExtremelyHigh:
-			switch (num)
-			{
-			case 0:
-				return 9;
-			case 1:
-				return 6;
-			case 2:
-				return 3;
-			case 3:
-				return 2;
-			case 4:
-				return 1;
-			default:
-				return 0;
-			}
-		case KingdomStabilityTier.High:
-			switch (num)
-			{
-			case 0:
-				return 6;
-			case 1:
-				return 4;
-			case 2:
-				return 2;
-			case 3:
-				return 1;
-			default:
-				return 0;
-			}
-		case KingdomStabilityTier.FairlyHigh:
-			switch (num)
-			{
-			case 0:
-				return 3;
-			case 1:
-				return 2;
-			case 2:
-				return 1;
-			default:
-				return 0;
-			}
-		case KingdomStabilityTier.Poor:
-			switch (num)
-			{
-			case 0:
-				return -3;
-			case 1:
-				return -2;
-			case 2:
-				return -1;
-			default:
-				return 0;
-			}
-		case KingdomStabilityTier.VeryPoor:
-			switch (num)
-			{
-			case 0:
-				return -6;
-			case 1:
-				return -4;
-			case 2:
-				return -2;
-			case 3:
-				return -1;
-			default:
-				return 0;
-			}
-		case KingdomStabilityTier.ExtremelyPoor:
-			switch (num)
-			{
-			case 0:
-				return -9;
-			case 1:
-				return -6;
-			case 2:
-				return -3;
-			case 3:
-				return -2;
-			case 4:
-				return -1;
-			default:
-				return 0;
-			}
-		default:
-			return 0;
-		}
+		return KingdomStabilityPolicy.GetLowClanCountRoyalDomainLoyaltyAdjustment(stabilityValue, activeClanCount);
 	}
 
 	private static int CountActiveKingdomClansForLowClanCountRule(Kingdom kingdom)
@@ -11796,17 +11358,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static float GetKingdomRebellionWeeklyChance(int stabilityValue)
 	{
-		switch (GetKingdomStabilityTier(stabilityValue))
-		{
-		case KingdomStabilityTier.Poor:
-			return 0.005f;
-		case KingdomStabilityTier.VeryPoor:
-			return 0.05f;
-		case KingdomStabilityTier.ExtremelyPoor:
-			return 0.25f;
-		default:
-			return 0f;
-		}
+		return KingdomStabilityPolicy.GetKingdomRebellionWeeklyChance(stabilityValue);
 	}
 
 	private static string FormatKingdomRebellionChance(float chance)
@@ -11817,19 +11369,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static int GetKingdomStabilityWeeklyBalancingDelta(int stabilityValue)
 	{
-		switch (GetKingdomStabilityTier(stabilityValue))
-		{
-		case KingdomStabilityTier.ExtremelyHigh:
-			return -5;
-		case KingdomStabilityTier.High:
-			return -3;
-		case KingdomStabilityTier.VeryPoor:
-			return 3;
-		case KingdomStabilityTier.ExtremelyPoor:
-			return 5;
-		default:
-			return 0;
-		}
+		return KingdomStabilityPolicy.GetKingdomStabilityWeeklyBalancingDelta(stabilityValue);
 	}
 
 	private static string BuildClanFortificationSummary(Clan clan)
@@ -13335,15 +12875,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (_pendingKingdomRebellionMaintenanceWeek != weekIndex)
+			KingdomMaintenance.BeginWeek(weekIndex, GetDevEditableKingdoms);
+			if (KingdomMaintenance.TryTake(out Kingdom devEditableKingdom))
 			{
-				_pendingKingdomRebellionMaintenanceWeek = weekIndex;
-				_pendingKingdomRebellionMaintenanceKingdoms = GetDevEditableKingdoms();
-				_pendingKingdomRebellionMaintenanceIndex = 0;
-			}
-			if (_pendingKingdomRebellionMaintenanceIndex < _pendingKingdomRebellionMaintenanceKingdoms.Count)
-			{
-				Kingdom devEditableKingdom = _pendingKingdomRebellionMaintenanceKingdoms[_pendingKingdomRebellionMaintenanceIndex++];
 				try
 				{
 					using (PerfProbe.Scope("MyBehavior.WeeklyKingdomRebellions.ResolveKingdom"))
@@ -13365,7 +12899,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					Logger.Log("KingdomRebellion", "[ERROR] Weekly resolution failed for kingdom " + GetKingdomId(devEditableKingdom) + ": " + ex.Message);
 				}
-				return _pendingKingdomRebellionMaintenanceIndex >= _pendingKingdomRebellionMaintenanceKingdoms.Count && CompleteWeeklyKingdomRebellionMaintenance(weekIndex);
+				return KingdomMaintenance.Complete && CompleteWeeklyKingdomRebellionMaintenance(weekIndex);
 			}
 			return CompleteWeeklyKingdomRebellionMaintenance(weekIndex);
 		}
@@ -13381,9 +12915,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		_lastProcessedKingdomRebellionWeek = Math.Max(_lastProcessedKingdomRebellionWeek, weekIndex);
 		ResetPendingWeeklyKingdomRebellionMaintenance();
-		if (_queuedAutomaticKingdomRebellions.Count > 0)
+		if (AutomaticKingdomRebellions.ActivateIfQueued())
 		{
-			_automaticKingdomRebellionFlowActive = true;
 			TryStartNextAutomaticKingdomRebellionAsync();
 		}
 		return true;
@@ -13391,9 +12924,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ResetPendingWeeklyKingdomRebellionMaintenance()
 	{
-		_pendingKingdomRebellionMaintenanceWeek = -1;
-		_pendingKingdomRebellionMaintenanceKingdoms = new List<Kingdom>();
-		_pendingKingdomRebellionMaintenanceIndex = 0;
+		KingdomMaintenance.ResetWeek();
 	}
 
 	private void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult result)
@@ -13424,16 +12955,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			CastleCount = kingdomRebellionCandidateInfo?.CastleCount ?? 0,
 			FollowerClanIds = (result.SelectedFollowerClans ?? new List<Clan>()).Where((Clan x) => x != null && x != result.SelectedClan).Select(GetClanId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 		};
-		_queuedAutomaticKingdomRebellions.Add(item);
+		AutomaticKingdomRebellions.Enqueue(item);
 	}
 
 	private void CancelPendingAutomaticKingdomRebellions(string reason)
 	{
-		_queuedAutomaticKingdomRebellions?.Clear();
-		_pendingAutomaticKingdomRebellionReady = false;
-		_pendingAutomaticKingdomRebellionContext = null;
-		_automaticKingdomRebellionInProgress = false;
-		_automaticKingdomRebellionFlowActive = false;
+		AutomaticKingdomRebellions.Cancel();
 		Logger.Log("KingdomRebellion", "[CANCEL] Pending automatic rebellions cleared. reason=" + (reason ?? ""));
 	}
 
@@ -13445,17 +12972,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			TryStartDeferredAutoWeeklyReports();
 			return;
 		}
-		if (_automaticKingdomRebellionInProgress || _pendingAutomaticKingdomRebellionReady)
+		if (!AutomaticKingdomRebellions.TryDequeue(out PendingAutomaticKingdomRebellionContext pendingAutomaticKingdomRebellionContext))
 		{
 			return;
 		}
-		PendingAutomaticKingdomRebellionContext pendingAutomaticKingdomRebellionContext = _queuedAutomaticKingdomRebellions.FirstOrDefault();
-		if (pendingAutomaticKingdomRebellionContext == null)
-		{
-			_automaticKingdomRebellionFlowActive = false;
-			return;
-		}
-		_queuedAutomaticKingdomRebellions.RemoveAt(0);
 		Kingdom kingdom = FindKingdomById(pendingAutomaticKingdomRebellionContext.KingdomId);
 		Clan clan = FindClanById(pendingAutomaticKingdomRebellionContext.ClanId);
 		List<Clan> list = (pendingAutomaticKingdomRebellionContext.FollowerClanIds ?? new List<string>()).Select(FindClanById).Where((Clan x) => x != null && x != clan).ToList();
@@ -13471,9 +12991,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt);
-		_automaticKingdomRebellionInProgress = true;
-		_pendingAutomaticKingdomRebellionReady = false;
-		_pendingAutomaticKingdomRebellionContext = null;
+		long namingRequestVersion = AutomaticKingdomRebellions.BeginNaming();
 		InformationManager.ShowInquiry(new InquiryData("正在生成叛乱建国命名", "系统正在为本周自动叛乱生成新王国的名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。\n请稍候，结果完成后会自动弹出。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string logTarget = "自动叛乱建国命名 - " + GetClanId(clan);
@@ -13490,23 +13008,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
 			{
-				pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
-				_pendingAutomaticKingdomRebellionContext = pendingAutomaticKingdomRebellionContext;
-				_pendingAutomaticKingdomRebellionReady = true;
+				if (AutomaticKingdomRebellions.CompleteNaming(namingRequestVersion, pendingAutomaticKingdomRebellionContext))
+					pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
 			}, "automatic_rebellion_naming");
 		});
 	}
 
 	private void ProcessPendingAutomaticKingdomRebellionResult()
 	{
-		if (!_pendingAutomaticKingdomRebellionReady)
+		if (!AutomaticKingdomRebellions.TryTakeReady(out PendingAutomaticKingdomRebellionContext pendingAutomaticKingdomRebellionContext))
 		{
 			return;
 		}
-		PendingAutomaticKingdomRebellionContext pendingAutomaticKingdomRebellionContext = _pendingAutomaticKingdomRebellionContext;
-		_pendingAutomaticKingdomRebellionReady = false;
-		_pendingAutomaticKingdomRebellionContext = null;
-		_automaticKingdomRebellionInProgress = false;
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
 			CancelPendingAutomaticKingdomRebellions("disabled_before_execute");
@@ -13577,10 +13090,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine("执行结果：");
 		stringBuilder.AppendLine((executionMessage ?? "").Trim());
-		if (_queuedAutomaticKingdomRebellions.Count > 0)
+		if (AutomaticKingdomRebellions.PendingCount > 0)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("后续仍有 " + _queuedAutomaticKingdomRebellions.Count + " 场自动叛乱待处理。点击“继续”后将进入下一场。");
+			stringBuilder.AppendLine("后续仍有 " + AutomaticKingdomRebellions.PendingCount + " 场自动叛乱待处理。点击“继续”后将进入下一场。");
 		}
 		InformationManager.HideInquiry();
 		InformationManager.ShowInquiry(new InquiryData(success ? "自动叛乱执行完成" : "自动叛乱执行失败", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "继续", "", delegate
@@ -13650,7 +13163,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			TryStartDeferredAutoWeeklyReports();
 			return;
 		}
-		if (_automaticKingdomRebellionInProgress || _pendingAutomaticKingdomRebellionReady)
+		if (!AutomaticKingdomRebellions.CanStart)
 		{
 			return;
 		}
@@ -13668,9 +13181,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return;
 		}
 		BuildRebelKingdomNamingRequest(clan, kingdom, context.WeekIndex, list, out var systemPrompt, out var userPrompt);
-		_automaticKingdomRebellionInProgress = true;
-		_pendingAutomaticKingdomRebellionReady = false;
-		_pendingAutomaticKingdomRebellionContext = null;
+		long namingRequestVersion = AutomaticKingdomRebellions.BeginNaming();
 		InformationManager.ShowInquiry(new InquiryData("正在重新生成叛乱建国命名", "系统正在按修正后的事件/叛乱API配置重新请求新王国名称与百科简介。\n\n这一步完成前不会继续本轮自动叛乱与周报流程。", isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string logTarget = "自动叛乱建国命名重试 - " + GetClanId(clan);
@@ -13687,9 +13198,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
 			{
-				context.NamingResult = namingResult;
-				_pendingAutomaticKingdomRebellionContext = context;
-				_pendingAutomaticKingdomRebellionReady = true;
+				if (AutomaticKingdomRebellions.CompleteNaming(namingRequestVersion, context))
+					context.NamingResult = namingResult;
 			}, "automatic_rebellion_naming_retry");
 		});
 	}
@@ -13702,12 +13212,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			TryStartDeferredAutoWeeklyReports();
 			return;
 		}
-		if (_queuedAutomaticKingdomRebellions.Count > 0)
+		if (AutomaticKingdomRebellions.PendingCount > 0)
 		{
 			TryStartNextAutomaticKingdomRebellionAsync();
 			return;
 		}
-		_automaticKingdomRebellionFlowActive = false;
+		AutomaticKingdomRebellions.FinishFlow();
 		TryStartDeferredAutoWeeklyReports();
 	}
 
@@ -13916,21 +13426,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 		}
 		int currentGameDayIndexSafe = dayOverride >= 0 ? dayOverride : GetCurrentGameDayIndexSafe();
-		string text2 = NormalizeNpcActionStableKey(stableKey, normalizedLabel + ":" + text);
-		if (_eventSourceMaterialIndex == null)
-		{
-			RebuildEventSourceMaterialIndex();
-		}
+		string text2 = NpcActionLedger.NormalizeStableKey(stableKey, normalizedLabel + ":" + text);
+		if (!_eventSourceMaterialIndexBinding.IsCurrent(_eventSourceMaterials, _eventSourceMaterialIndex)) RebuildEventSourceMaterialIndex();
 		string indexKey = BuildEventSourceMaterialIndexKey(currentGameDayIndexSafe, text2);
-		EventSourceMaterialEntry eventSourceMaterialEntry = null;
-		if (_eventSourceMaterialIndex != null)
-		{
-			_eventSourceMaterialIndex.TryGetValue(indexKey, out eventSourceMaterialEntry);
-		}
-		if (eventSourceMaterialEntry == null)
-		{
-			eventSourceMaterialEntry = _eventSourceMaterials.FirstOrDefault((EventSourceMaterialEntry x) => x != null && x.Day == currentGameDayIndexSafe && string.Equals((x.StableKey ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase));
-		}
+		// A complete index owns misses too; a new daily key must not rescan all history.
+		_eventSourceMaterialIndex.TryGetValue(indexKey, out var eventSourceMaterialEntry);
 		if (eventSourceMaterialEntry != null)
 		{
 			eventSourceMaterialEntry.Label = normalizedLabel;
@@ -13942,10 +13442,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			eventSourceMaterialEntry.ActorKingdomId = (actorKingdomId ?? "").Trim();
 			eventSourceMaterialEntry.IncludeInWorld = eventSourceMaterialEntry.IncludeInWorld || includeInWorld;
 			eventSourceMaterialEntry.IncludeInKingdom = eventSourceMaterialEntry.IncludeInKingdom || includeInKingdom;
-			if (_eventSourceMaterialIndex != null)
-			{
-				_eventSourceMaterialIndex[indexKey] = eventSourceMaterialEntry;
-			}
+			_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
 			return;
 		}
 		EventSourceMaterialEntry newEntry = new EventSourceMaterialEntry
@@ -13965,10 +13462,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			IncludeInKingdom = includeInKingdom
 		};
 		_eventSourceMaterials.Add(newEntry);
-		if (_eventSourceMaterialIndex != null)
-		{
-			_eventSourceMaterialIndex[indexKey] = newEntry;
-		}
+		_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
+		_eventSourceMaterialIndex[indexKey] = newEntry;
+		// Publish the new structural binding only after both authoritative append
+		// and index insertion succeed. A failed insert leaves the old probe stale.
+		_eventSourceMaterialIndexBinding.Bind(_eventSourceMaterials, _eventSourceMaterialIndex);
 	}
 
 	private static bool IsPlayerWeeklySourceMaterial(string materialKind, string actorHeroId, string stableKey)
@@ -14205,7 +13703,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string key = "player_kingdom_rename:" + NormalizeNpcActionStableKey(stableKey, cleanOldName + ":" + cleanNewName);
+		string key = "player_kingdom_rename:" + NpcActionLedger.NormalizeStableKey(stableKey, cleanOldName + ":" + cleanNewName);
 		RecordEventSourceMaterial(
 			"player_kingdom_rename",
 			"玩家王国更名 - " + cleanNewName,
@@ -14283,7 +13781,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		string place = resolvedSettlementName + (string.IsNullOrWhiteSpace(location) ? "" : "的" + location);
 		string snapshot = "玩家和平场景攻击/犯罪素材。地点：" + place + "。履历摘要：" + summary + " 周报约束：这是和平定居点场景内由玩家主动攻击和平单位或触发犯罪造成的事件，不按战场、攻城、竞技场或训练场战斗理解。";
-		string key = "player_peace_scene_crime:" + NormalizeNpcActionStableKey(stableKey, summary);
+		string key = "player_peace_scene_crime:" + NpcActionLedger.NormalizeStableKey(stableKey, summary);
 		RecordEventSourceMaterial(
 			"player_peace_scene_crime",
 			"玩家和平场景冲突 - " + resolvedSettlementName,
@@ -14302,6 +13800,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void MarkWeeklyMemoryMaterialTriggerForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, List<SettlementTransferPromptEntry> settlementTransferPlayerOptions = null, bool suppressImplicitDialogueSession = false)
 	{
+		if (!TWParallel.IsMainThread())
+		{
+			var rewards = CopyMemoryRewardOptions(rewardOptions);
+			var troops = CopyMemoryPartyOptions(partyTransferTroopOptions);
+			var prisoners = CopyMemoryPartyOptions(partyTransferPrisonerOptions);
+			var settlements = CopyMemorySettlementOptions(settlementTransferNpcOptions);
+			DeferMemorySourceWriteIfNeeded(owner => owner.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewards, troops, prisoners, settlements, suppressImplicitDialogueSession), nameof(MarkWeeklyMemoryMaterialTriggerForExternal));
+			return;
+		}
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession);
@@ -14313,6 +13821,18 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	internal static void MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal(Hero targetHero, string nonHeroMemoryId, string npcName, string normalizedTagText, int sceneSessionId = -1, int nativeDialogueSessionId = -1, int targetAgentIndex = -1, List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null, List<PartyTransferPromptEntry> partyTransferTroopOptions = null, List<PartyTransferPromptEntry> partyTransferPrisonerOptions = null, List<SettlementTransferPromptEntry> settlementTransferNpcOptions = null, bool suppressImplicitDialogueSession = false, List<PartyTransferPromptEntry> partyTransferAllTroopOptions = null, List<PartyTransferPromptEntry> partyTransferAllPrisonerOptions = null)
 	{
+		if (!TWParallel.IsMainThread())
+		{
+			var rewards = CopyMemoryRewardOptions(rewardOptions);
+			var troops = CopyMemoryPartyOptions(partyTransferTroopOptions);
+			var prisoners = CopyMemoryPartyOptions(partyTransferPrisonerOptions);
+			var settlements = CopyMemorySettlementOptions(settlementTransferNpcOptions);
+			var allTroops = CopyMemoryPartyOptions(partyTransferAllTroopOptions);
+			var allPrisoners = CopyMemoryPartyOptions(partyTransferAllPrisonerOptions);
+			DeferMemorySourceWriteIfNeeded(owner => owner.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewards, troops, prisoners, settlements, suppressImplicitDialogueSession, allTroops, allPrisoners), nameof(MarkWeeklyMemoryMaterialTriggerWithAllSnapshotsForExternal));
+			return;
+		}
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MarkWeeklyMemoryMaterialTriggerInternal(targetHero, nonHeroMemoryId, npcName, normalizedTagText, sceneSessionId, nativeDialogueSessionId, targetAgentIndex, rewardOptions, partyTransferTroopOptions, partyTransferPrisonerOptions, settlementTransferNpcOptions, suppressImplicitDialogueSession, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions);
@@ -15466,7 +14986,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Sequence = Math.Max(0, sequence),
 			GameDate = GetCurrentGameDateTextSafe(),
 			Text = (text ?? "").Trim(),
-			StableKey = NormalizeNpcActionStableKey(stableKey, text),
+			StableKey = NpcActionLedger.NormalizeStableKey(stableKey, text),
 			ActionKind = (npcActionFacts.ActionKind ?? "").Trim(),
 			ActorHeroId = (npcActionFacts.ActorHeroId ?? "").Trim(),
 			ActorClanId = (npcActionFacts.ActorClanId ?? "").Trim(),
@@ -15591,7 +15111,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				Sequence = ((item.Sequence > 0) ? item.Sequence : (++num4)),
 				GameDate = (item.GameDate ?? "").Trim(),
 				Text = text,
-				StableKey = NormalizeNpcActionStableKey(item.StableKey, text),
+				StableKey = NpcActionLedger.NormalizeStableKey(item.StableKey, text),
 				ActionKind = (item.ActionKind ?? "").Trim(),
 				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
 				ActorClanId = (item.ActorClanId ?? "").Trim(),
@@ -15724,46 +15244,47 @@ public partial class MyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string npcActionHeroKey = GetNpcActionHeroKey(hero);
-			string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			string text2 = NpcActionLedger.NormalizeText(text);
 			if (string.IsNullOrWhiteSpace(npcActionHeroKey) || string.IsNullOrWhiteSpace(text2))
 			{
 				return;
 			}
-			string text3 = NormalizeNpcActionStableKey(stableKey, text2);
+			string text3 = NpcActionLedger.NormalizeStableKey(stableKey, text2);
 			int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
 			if (!storage.TryGetValue(npcActionHeroKey, out var value) || value == null)
 			{
 				value = new List<NpcActionEntry>();
 				storage[npcActionHeroKey] = value;
 			}
-			bool entriesChanged = RemoveInvalidNpcActionEntries(value, keepOnlyRecentWindow ? currentGameDayIndexSafe - RecentNpcActionWindowDays + 1 : int.MinValue, keepOnlyRecentWindow);
+			bool entriesChanged = NpcActionLedger.RemoveInvalid(value, keepOnlyRecentWindow ? NpcActionLedger.RecentWindowMinimumDay(currentGameDayIndexSafe) : int.MinValue, keepOnlyRecentWindow, e => e.Text, e => e.Day);
+			if (entriesChanged)
+			{
+				_weeklyReportMaterialRevisions.MarkAll();
+			}
 			if (keepOnlyRecentWindow && entriesChanged)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
 			}
 			if (dedupeAcrossWindow)
 			{
-				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || ContainsNpcActionStableKey(value, text3))
+				if ((keepOnlyRecentWindow && IsNpcRecentActionStableKeyKnown(npcActionHeroKey, text3)) || NpcActionLedger.ContainsStableKey(value, text3, e => e.StableKey))
 				{
 					return;
 				}
 			}
-			else if (ContainsNpcActionForDay(value, currentGameDayIndexSafe, text3, text2))
+			else if (NpcActionLedger.ContainsForDay(value, currentGameDayIndexSafe, text3, text2, e => e.Day, e => e.StableKey, e => e.Text))
 			{
 				return;
 			}
-			int order = GetNextNpcActionOrder(value, currentGameDayIndexSafe);
+			int order = NpcActionLedger.NextOrder(value, currentGameDayIndexSafe, e => e.Day, e => e.Order);
 			int sequence = ++_npcActionGlobalOrderCounter;
 			NpcActionEntry npcActionEntry = CreateNpcActionEntry(hero, text2, text3, currentGameDayIndexSafe, order, sequence, facts, isMajor);
-			value.Add(npcActionEntry);
-			if (value.Count > 1 && CompareNpcActionTimeline(value[value.Count - 2], npcActionEntry) > 0)
+			if (maxEntries > 0 && value.Count >= maxEntries)
 			{
-				value.Sort(CompareNpcActionTimeline);
+				_weeklyReportMaterialRevisions.MarkAll();
 			}
-			if (maxEntries > 0 && value.Count > maxEntries)
-			{
-				value.RemoveRange(0, value.Count - maxEntries);
-			}
+			NpcActionLedger.Append(value, npcActionEntry, maxEntries, CompareNpcActionTimeline);
+			_weeklyReportMaterialRevisions.MarkDay(currentGameDayIndexSafe);
 			if (keepOnlyRecentWindow)
 			{
 				RefreshNpcRecentActionStableKeyIndexForHero(npcActionHeroKey, value);
@@ -15778,7 +15299,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private bool HasRecentNpcActionStableKeyWithinWindow(Hero hero, string stableKey, int currentDay)
 	{
 		string heroKey = GetNpcActionHeroKey(hero);
-		string normalizedStableKey = NormalizeNpcActionStableKey(stableKey, "");
+		string normalizedStableKey = NpcActionLedger.NormalizeStableKey(stableKey, "");
 		if (string.IsNullOrWhiteSpace(heroKey)
 			|| string.IsNullOrWhiteSpace(normalizedStableKey)
 			|| _npcRecentActions == null
@@ -15802,104 +15323,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static bool RemoveInvalidNpcActionEntries(List<NpcActionEntry> entries, int minimumDay, bool keepOnlyRecentWindow)
-	{
-		if (entries == null || entries.Count == 0)
-		{
-			return false;
-		}
-		bool removedAny = false;
-		for (int index = entries.Count - 1; index >= 0; index--)
-		{
-			NpcActionEntry entry = entries[index];
-			if (entry == null || string.IsNullOrWhiteSpace(entry.Text) || (keepOnlyRecentWindow && entry.Day < minimumDay))
-			{
-				entries.RemoveAt(index);
-				removedAny = true;
-			}
-		}
-		return removedAny;
-	}
-
-	private static bool ContainsNpcActionStableKey(List<NpcActionEntry> entries, string stableKey)
-	{
-		if (entries == null)
-		{
-			return false;
-		}
-		for (int index = 0; index < entries.Count; index++)
-		{
-			NpcActionEntry entry = entries[index];
-			if (entry != null && string.Equals(entry.StableKey ?? "", stableKey, StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static bool ContainsNpcActionForDay(List<NpcActionEntry> entries, int day, string stableKey, string text)
-	{
-		if (entries == null)
-		{
-			return false;
-		}
-		for (int index = 0; index < entries.Count; index++)
-		{
-			NpcActionEntry entry = entries[index];
-			if (entry != null
-				&& entry.Day == day
-				&& (string.Equals(entry.StableKey ?? "", stableKey, StringComparison.OrdinalIgnoreCase) || string.Equals((entry.Text ?? "").Trim(), text, StringComparison.Ordinal)))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static int GetNextNpcActionOrder(List<NpcActionEntry> entries, int day)
-	{
-		int highestOrder = 0;
-		if (entries != null)
-		{
-			for (int index = 0; index < entries.Count; index++)
-			{
-				NpcActionEntry entry = entries[index];
-				if (entry != null && entry.Day == day && entry.Order > highestOrder)
-				{
-					highestOrder = entry.Order;
-				}
-			}
-		}
-		return highestOrder + 1;
-	}
-
 	private static int CompareNpcActionTimeline(NpcActionEntry left, NpcActionEntry right)
 	{
-		if (ReferenceEquals(left, right))
-		{
-			return 0;
-		}
-		if (left == null)
-		{
-			return -1;
-		}
-		if (right == null)
-		{
-			return 1;
-		}
-		int result = left.Day.CompareTo(right.Day);
-		if (result != 0)
-		{
-			return result;
-		}
-		result = (left.Sequence > 0 ? left.Sequence : int.MaxValue).CompareTo(right.Sequence > 0 ? right.Sequence : int.MaxValue);
-		if (result != 0)
-		{
-			return result;
-		}
-		result = left.Order.CompareTo(right.Order);
-		return result != 0 ? result : string.Compare(left.GameDate ?? "", right.GameDate ?? "", StringComparison.Ordinal);
+		if (ReferenceEquals(left, right)) return 0;
+		if (left == null) return -1;
+		if (right == null) return 1;
+		return NpcActionLedger.CompareTimeline(left.Day, left.Sequence, left.Order, left.GameDate, right.Day, right.Sequence, right.Order, right.GameDate);
 	}
 
 	private static string GetArmyDisplayName(Army army)
@@ -16762,40 +16191,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return AppendPlayerCustomPromptRuleToSystemPrompt(systemPrompt);
 	}
 
-	private const string SceneHistorySessionMarkerPrefix = "[AF_SCENE_SESSION:";
-
-	private static string TagSceneSessionHistoryLine(string line, int sceneSessionId)
-	{
-		string text = (line ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || sceneSessionId < 0)
-		{
-			return text;
-		}
-		return $"{SceneHistorySessionMarkerPrefix}{sceneSessionId}] {text}";
-	}
-
-	private static bool TryStripSceneSessionHistoryMarker(string line, out string stripped, out int sceneSessionId)
-	{
-		stripped = (line ?? "").Trim();
-		sceneSessionId = -1;
-		if (string.IsNullOrWhiteSpace(stripped) || !stripped.StartsWith(SceneHistorySessionMarkerPrefix, StringComparison.Ordinal))
-		{
-			return false;
-		}
-		int num = stripped.IndexOf(']');
-		if (num <= SceneHistorySessionMarkerPrefix.Length)
-		{
-			return false;
-		}
-		string s = stripped.Substring(SceneHistorySessionMarkerPrefix.Length, num - SceneHistorySessionMarkerPrefix.Length).Trim();
-		if (!int.TryParse(s, out sceneSessionId))
-		{
-			sceneSessionId = -1;
-			return false;
-		}
-		stripped = stripped.Substring(num + 1).TrimStart();
-		return true;
-	}
+	private const string SceneHistorySessionMarkerPrefix = DialogueHistoryLedger.SceneSessionMarkerPrefix;
 
 	private static bool IsActiveSceneSessionHistoryLine(string line)
 	{
@@ -16803,7 +16199,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (!TryStripSceneSessionHistoryMarker(line, out var _, out var sceneSessionId))
+		if (!DialogueHistoryLedger.TryStripSceneSessionMarker(line, out var _, out var sceneSessionId))
 		{
 			return false;
 		}
@@ -17015,7 +16411,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		string firstMeetingFact = NormalizeFirstMeetingNpcFactForPrompt(text);
 		if (!string.IsNullOrWhiteSpace(firstMeetingFact))
 		{
@@ -17042,7 +16438,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("玩家:", StringComparison.Ordinal))
 		{
 			stripped = text.Substring("玩家:".Length).Trim();
@@ -17877,24 +17273,35 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				ProcessOneTailPersistenceRecoveryOnTick();
 				bool processedWeeklyReportCommits = false;
-			if (Volatile.Read(ref _hasPendingWeeklyReportCommits) != 0)
+			if (_weeklyPromptPreparationQueue.HasPending)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyPromptPreparations"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyPromptPreparations();
+				}
+			}
+			if (!processedWeeklyReportCommits && _weeklyWaveLaunchQueue.HasPending)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyWaveLaunches"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyWaveLaunches();
+				}
+			}
+			if (!processedWeeklyReportCommits && _weeklyBatchApiAttemptQueue.HasPending)
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyBatchApiAttempts"))
+				{
+					processedWeeklyReportCommits = ProcessPendingWeeklyBatchApiAttempts();
+				}
+			}
+			if (!processedWeeklyReportCommits && _weeklyReportCommitQueue.HasPending)
 			{
 				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessPendingWeeklyReportCommits"))
 				{
 					processedWeeklyReportCommits = ProcessPendingWeeklyReportCommits();
 				}
 			}
-			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
-			{
-				TryRunCampaignMemoryMaintenance();
-			}
-			if (!processedWeeklyReportCommits && HasPendingDeferredDailyMaintenanceWork())
-			{
-				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
-				{
-					ProcessDeferredDailyMaintenance();
-				}
-			}
+			RunCampaignMemoryMaintenanceCycle(processedWeeklyReportCommits);
 			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.CachePlayerClanTier"))
 			{
 				int num = 0;
@@ -17925,90 +17332,81 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
+	private void RunCampaignMemoryMaintenanceCycle(bool processedWeeklyReportCommits)
+	{
+		var previous = _campaignMemoryMaintenanceBudget;
+		bool previousActive = _campaignMemoryMaintenanceCycleActive;
+		_campaignMemoryMaintenanceCycleActive = true;
+		try
+		{
+			using (PerfProbe.Scope("MyBehavior.OnCampaignTick.TryRunCampaignMemoryMaintenance"))
+			{
+				TryRunCampaignMemoryMaintenance();
+			}
+			if (!processedWeeklyReportCommits && HasPendingDeferredDailyMaintenanceWork())
+			{
+				using (PerfProbe.Scope("MyBehavior.OnCampaignTick.ProcessDeferredDailyMaintenance"))
+				{
+					ProcessDeferredDailyMaintenance();
+				}
+			}
+		}
+		finally
+		{
+			_campaignMemoryMaintenanceBudget = previous;
+			_campaignMemoryMaintenanceCycleActive = previousActive;
+		}
+	}
+
 	private void TryRunCampaignMemoryMaintenance()
 	{
-		if (_memorySummaryProcessing)
+		long generation = SaveRuntimeGuard.CaptureGeneration();
+		if (_campaignMemorySummaryStartPending && _campaignMemorySummaryStartGeneration != generation)
+			_campaignMemorySummaryStartPending = false;
+		if (_memorySummaryRunOwner.IsRunning) return;
+		if (_campaignMemorySummaryStartPending)
 		{
+			ResolveDailyMaintenanceBudget(out long pendingStart, out double pendingBudget);
+			if (!IsDialogueOrLetterChainBusyForMemorySummary() && !IsDailyMaintenanceBudgetExceeded(pendingStart, pendingBudget))
+			{
+				// This is a deferred admission request, not a replay of accepted side effects.
+				_campaignMemorySummaryStartPending = false;
+				TryStartMemorySummaryQueue();
+			}
 			return;
 		}
 		int currentDay = 0;
-		try
+		try { currentDay = (int)CampaignTime.Now.ToDays; } catch { currentDay = 0; }
+		// A paused seal is work even before its first summary job exists. It must
+		// resume on the same day rather than depending on the raw queue counts.
+		bool hasQueuedWork = (_memorySummaryQueue?.Count ?? 0) > 0 || (_npcMajorActionSummaryQueue?.Count ?? 0) > 0 || (_memoryOverviewQueue?.Count ?? 0) > 0;
+		bool sealActive = _dailyMemorySealState != null;
+		if (!sealActive && !hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay) return;
+		if (IsDialogueOrLetterChainBusyForMemorySummary()) return;
+		ResolveDailyMaintenanceBudget(out long startTimestamp, out double budgetMs);
+		if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs)) return;
+		int observedDay = sealActive ? _dailyMemoryDraftSealTargetDay : currentDay;
+		using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
 		{
-			currentDay = (int)CampaignTime.Now.ToDays;
+			// The old whole-source HasPast predicate is now a non-mutating phase
+			// sharing this deadline. No sealing effects run when that probe is empty.
+			if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs, requirePendingProbe: true)) return;
 		}
-		catch
-		{
-			currentDay = 0;
-		}
-		// Queues are small and bounded; check runnable work so exhausted stale items cannot trigger per-tick maintenance.
-		bool hasQueuedWork = (_memorySummaryQueue != null && _memorySummaryQueue.Any(HasMemorySummaryJobStillPending)) || (_npcMajorActionSummaryQueue != null && _npcMajorActionSummaryQueue.Any(HasMajorActionSummaryJobStillPending)) || (_memoryOverviewQueue != null && _memoryOverviewQueue.Any(HasMemoryOverviewJobStillPending));
-		if (!hasQueuedWork && currentDay == _lastMemoryMaintenanceObservedGameDay)
-		{
-			return;
-		}
-		if (IsDialogueOrLetterChainBusyForMemorySummary())
-		{
-			return;
-		}
-		_lastMemoryMaintenanceObservedGameDay = currentDay;
-		bool hasPastDrafts = HasPastDailyMemoryDrafts(currentDay);
-		if (!hasPastDrafts && !hasQueuedWork)
-		{
-			return;
-		}
-		long startTimestamp = Stopwatch.GetTimestamp();
-		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
-		if (hasPastDrafts)
-		{
-			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TrySealPastDailyMemoryDrafts"))
-			{
-				TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs);
-			}
-		}
+		if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) return;
+		_lastMemoryMaintenanceObservedGameDay = observedDay;
+		if (!hasQueuedWork && !_dailyMemorySealCompletedPass) return;
+		// Sealing can consume the final raw job just as its window expires.
+		// Keep its one start request across ticks without running sealing again.
+		_campaignMemorySummaryStartPending = true;
+		_campaignMemorySummaryStartGeneration = generation;
 		if (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
+			_campaignMemorySummaryStartPending = false;
 			using (PerfProbe.Scope("MyBehavior.TryRunCampaignMemoryMaintenance.TryStartMemorySummaryQueue"))
 			{
 				TryStartMemorySummaryQueue();
 			}
 		}
-	}
-
-	private bool HasPastDailyMemoryDrafts(int currentDay)
-	{
-		if (_dailyMemoryDrafts == null || _dailyMemoryDrafts.Count <= 0 || currentDay <= 0)
-		{
-			return false;
-		}
-		try
-		{
-			foreach (KeyValuePair<string, List<DailyMemoryDraft>> item in _dailyMemoryDrafts)
-			{
-				string ownerMemoryId = NormalizeMemoryHeroId(item.Key);
-				if (!IsMemoryEntityEligibleForCompressedMemory(ownerMemoryId))
-				{
-					// Validate each owner once; a stale owner must not make every stored draft wake maintenance.
-					continue;
-				}
-				List<DailyMemoryDraft> drafts = item.Value;
-				if (drafts == null || drafts.Count <= 0)
-				{
-					continue;
-				}
-				for (int i = 0; i < drafts.Count; i++)
-				{
-					DailyMemoryDraft draft = drafts[i];
-					if (draft != null && string.Equals(NormalizeMemoryHeroId(draft.HeroId), ownerMemoryId, StringComparison.OrdinalIgnoreCase) && draft.SummaryRetryCount < 3 && draft.GameDayIndex < currentDay && draft.HasLlmDialogue && CountDailyMemorySummarySourceChars(draft) > 0 && !HasCompressedMemoryBlock(ownerMemoryId, draft.GameDayIndex))
-					{
-						return true;
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
 	}
 
 	public override void SyncData(IDataStore dataStore)
@@ -18243,58 +17641,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				Dictionary<string, string> dictionary = CampaignSaveChunkHelper.FlattenStringDictionary(_shownRecordStorage, "_shownRecords_v1", "TradeShown");
 				dataStore.SyncData("_shownRecords_v1", ref dictionary);
-				_dialogueHistoryStorage.Clear();
-				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
-				{
-					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
-					{
-						try
-						{
-							string value = JsonConvert.SerializeObject(item.Value);
-							_dialogueHistoryStorage[item.Key] = value;
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("DialogueHistory", "[ERROR] Serialize history for " + item.Key + ": " + ex.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_dialogueHistory, _dialogueHistoryStorage, skipWhitespaceKeys: false, skipEmptyLists: false, null, (key, ex) => Logger.Log("DialogueHistory", "[ERROR] Serialize history for " + key + ": " + ex.Message));
 				LogNonHeroMemoryTrace("stage=sync_save_dialogue_storage owners=" + _dialogueHistoryStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dialogueHistoryStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
 				Dictionary<string, string> dictionary2 = CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueHistoryStorage, "_dialogueHistory_v2", "DialogueHistory");
 				dataStore.SyncData("_dialogueHistory_v2", ref dictionary2);
-				_dailyMemoryDraftStorage.Clear();
-				foreach (KeyValuePair<string, List<DailyMemoryDraft>> itemMemoryDraft in _dailyMemoryDrafts)
-				{
-					if (!string.IsNullOrWhiteSpace(itemMemoryDraft.Key) && itemMemoryDraft.Value != null && itemMemoryDraft.Value.Count > 0)
-					{
-						try
-						{
-							_dailyMemoryDraftStorage[itemMemoryDraft.Key] = JsonConvert.SerializeObject(SanitizeDailyMemoryDrafts(itemMemoryDraft.Value));
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("CompressedMemory", "[ERROR] Serialize daily memory drafts for " + itemMemoryDraft.Key + ": " + ex.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_dailyMemoryDrafts, _dailyMemoryDraftStorage, skipWhitespaceKeys: true, skipEmptyLists: true, list => SanitizeDailyMemoryDrafts(list) ?? new List<DailyMemoryDraft>(), (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Serialize daily memory drafts for " + key + ": " + ex.Message));
 				LogNonHeroMemoryTrace("stage=sync_save_daily_storage owners=" + _dailyMemoryDraftStorage.Keys.Count(IsNonHeroMemoryId) + " storageBytes=" + _dailyMemoryDraftStorage.Where((KeyValuePair<string, string> item) => IsNonHeroMemoryId(item.Key)).Sum((KeyValuePair<string, string> item) => (item.Value ?? "").Length));
 				Dictionary<string, string> dictionaryMemoryDrafts = CampaignSaveChunkHelper.FlattenStringDictionary(_dailyMemoryDraftStorage, "_af_dailyMemoryDrafts_v1", "CompressedMemory");
 				dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDrafts);
-				_compressedMemoryBlockStorage.Clear();
-				foreach (KeyValuePair<string, List<CompressedMemoryBlock>> itemMemoryBlock in _compressedMemoryBlocks)
-				{
-					if (!string.IsNullOrWhiteSpace(itemMemoryBlock.Key) && itemMemoryBlock.Value != null && itemMemoryBlock.Value.Count > 0)
-					{
-						try
-						{
-							_compressedMemoryBlockStorage[itemMemoryBlock.Key] = JsonConvert.SerializeObject(SanitizeCompressedMemoryBlocks(itemMemoryBlock.Value));
-						}
-						catch (Exception ex)
-						{
-							Logger.Log("CompressedMemory", "[ERROR] Serialize memory blocks for " + itemMemoryBlock.Key + ": " + ex.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_compressedMemoryBlocks, _compressedMemoryBlockStorage, skipWhitespaceKeys: true, skipEmptyLists: true, list => SanitizeCompressedMemoryBlocks(list) ?? new List<CompressedMemoryBlock>(), (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Serialize memory blocks for " + key + ": " + ex.Message));
 				Dictionary<string, string> dictionaryMemoryBlocks = CampaignSaveChunkHelper.FlattenStringDictionary(_compressedMemoryBlockStorage, "_af_compressedMemoryBlocks_v1", "CompressedMemory");
 				dataStore.SyncData("_af_compressedMemoryBlocks_v1", ref dictionaryMemoryBlocks);
 				try
@@ -18369,44 +17724,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 					Logger.Log("NpcMajorSummary", "[ERROR] Serialize major action summary queue failed: " + ex.Message);
 				}
 				CampaignSaveChunkHelper.SaveChunkedString(dataStore, "_af_npcMajorActionSummaryQueue_v1", _npcMajorActionSummaryQueueJsonStorage ?? "[]", "NpcMajorSummary");
-				_npcMajorActionStorage.Clear();
-				foreach (KeyValuePair<string, List<NpcActionEntry>> npcMajorAction in _npcMajorActions)
-				{
-					if (!string.IsNullOrEmpty(npcMajorAction.Key) && npcMajorAction.Value != null && npcMajorAction.Value.Count > 0)
-					{
-						try
-						{
-							List<NpcActionEntry> list2 = SanitizeNpcActionEntries(npcMajorAction.Value, keepOnlyRecentWindow: false);
-							if (list2.Count > 0)
-							{
-								string value2 = JsonConvert.SerializeObject(list2);
-								_npcMajorActionStorage[npcMajorAction.Key] = value2;
-							}
-						}
-						catch (Exception ex2)
-						{
-							Logger.Log("NpcAction", "[ERROR] Serialize major actions for " + npcMajorAction.Key + ": " + ex2.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_npcMajorActions, _npcMajorActionStorage, skipWhitespaceKeys: false, skipEmptyLists: true, list => SanitizeNpcActionEntries(list, keepOnlyRecentWindow: false), (key, ex) => Logger.Log("NpcAction", "[ERROR] Serialize major actions for " + key + ": " + ex.Message));
 				Dictionary<string, string> dictionary3 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcMajorActionStorage, "_npcMajorActions_v1", "NpcAction");
 				dataStore.SyncData("_npcMajorActions_v1", ref dictionary3);
-				_npcRecentActionStorage.Clear();
-				foreach (KeyValuePair<string, List<NpcActionEntry>> npcRecentAction in _npcRecentActions)
-				{
-					if (!string.IsNullOrEmpty(npcRecentAction.Key) && npcRecentAction.Value != null && npcRecentAction.Value.Count > 0)
-					{
-						try
-						{
-							string value3 = JsonConvert.SerializeObject(npcRecentAction.Value);
-							_npcRecentActionStorage[npcRecentAction.Key] = value3;
-						}
-						catch (Exception ex3)
-						{
-							Logger.Log("NpcAction", "[ERROR] Serialize recent actions for " + npcRecentAction.Key + ": " + ex3.Message);
-						}
-					}
-				}
+				OwnerJsonStorageCodec.Serialize(_npcRecentActions, _npcRecentActionStorage, skipWhitespaceKeys: false, skipEmptyLists: true, null, (key, ex) => Logger.Log("NpcAction", "[ERROR] Serialize recent actions for " + key + ": " + ex.Message));
 				Dictionary<string, string> dictionary4 = CampaignSaveChunkHelper.FlattenStringDictionary(_npcRecentActionStorage, "_npcRecentActions_v1", "NpcAction");
 				dataStore.SyncData("_npcRecentActions_v1", ref dictionary4);
 				dataStore.SyncData("_npcActionGlobalOrderCounter_v1", ref _npcActionGlobalOrderCounter);
@@ -18607,57 +17928,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Dictionary<string, string> dictionary8 = new Dictionary<string, string>();
 			dataStore.SyncData("_dialogueHistory_v2", ref dictionary8);
 			_dialogueHistoryStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionary8, "DialogueHistory");
-			if (_dialogueHistoryStorage != null)
-			{
-				foreach (KeyValuePair<string, string> item2 in _dialogueHistoryStorage)
-				{
-					if (string.IsNullOrEmpty(item2.Key) || string.IsNullOrEmpty(item2.Value))
-					{
-						continue;
-					}
-					try
-					{
-						List<DialogueDay> list = JsonConvert.DeserializeObject<List<DialogueDay>>(item2.Value);
-						if (list != null)
-						{
-							_dialogueHistory[item2.Key] = list;
-						}
-					}
-					catch (Exception ex3)
-					{
-						Logger.Log("DialogueHistory", "[ERROR] Deserialize history for " + item2.Key + ": " + ex3.Message);
-					}
-				}
-			}
+			OwnerJsonStorageCodec.Deserialize(_dialogueHistoryStorage, _dialogueHistory, null, null, skipWhitespaceKeys: false, (key, ex) => Logger.Log("DialogueHistory", "[ERROR] Deserialize history for " + key + ": " + ex.Message));
 			LogNonHeroMemoryTrace("stage=sync_load_dialogue_restored owners=" + CountNonHeroDialogueHistoryOwners() + " lines=" + CountNonHeroDialogueHistoryLines() + " storageOwners=" + (_dialogueHistoryStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
 			_dailyMemoryDrafts.Clear();
 			_dailyMemoryDraftStorage.Clear();
 			Dictionary<string, string> dictionaryMemoryDraftsLoad = new Dictionary<string, string>();
 			dataStore.SyncData("_af_dailyMemoryDrafts_v1", ref dictionaryMemoryDraftsLoad);
 			_dailyMemoryDraftStorage = CampaignSaveChunkHelper.RestoreStringDictionary(dictionaryMemoryDraftsLoad, "CompressedMemory");
-			if (_dailyMemoryDraftStorage != null)
-			{
-				foreach (KeyValuePair<string, string> memoryDraftEntry in _dailyMemoryDraftStorage)
-				{
-					if (string.IsNullOrWhiteSpace(memoryDraftEntry.Key) || string.IsNullOrWhiteSpace(memoryDraftEntry.Value))
-					{
-						continue;
-					}
-					try
-					{
-						List<DailyMemoryDraft> listMemoryDrafts = JsonConvert.DeserializeObject<List<DailyMemoryDraft>>(memoryDraftEntry.Value) ?? new List<DailyMemoryDraft>();
-						listMemoryDrafts = SanitizeDailyMemoryDrafts(listMemoryDrafts);
-						if (listMemoryDrafts.Count > 0)
-						{
-							_dailyMemoryDrafts[NormalizeMemoryHeroId(memoryDraftEntry.Key)] = listMemoryDrafts;
-						}
-					}
-					catch (Exception ex)
-					{
-						Logger.Log("CompressedMemory", "[ERROR] Deserialize daily memory drafts for " + memoryDraftEntry.Key + ": " + ex.Message);
-					}
-				}
-			}
+			OwnerJsonStorageCodec.Deserialize(_dailyMemoryDraftStorage, _dailyMemoryDrafts, NormalizeMemoryHeroId, SanitizeDailyMemoryDrafts, skipWhitespaceKeys: true, (key, ex) => Logger.Log("CompressedMemory", "[ERROR] Deserialize daily memory drafts for " + key + ": " + ex.Message));
 			LogNonHeroMemoryTrace("stage=sync_load_daily_restored owners=" + CountNonHeroDailyDraftOwners() + " lines=" + CountNonHeroDailyDraftLines() + " storageOwners=" + (_dailyMemoryDraftStorage?.Keys.Count(IsNonHeroMemoryId) ?? 0) + " sample=" + BuildNonHeroMemorySampleIds());
 			_compressedMemoryBlocks.Clear();
 			_compressedMemoryBlockStorage.Clear();
@@ -18928,6 +18206,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			_eventSourceMaterialJsonStorage = "";
 			RebuildEventSourceMaterialIndex();
+			_weeklyReportMaterialRevisions.MarkAll();
+			_weeklyReportMaterialRevisions.MarkOpening();
 			dataStore.SyncData("_lastAutoGeneratedWeeklyReportWeek_v1", ref _lastAutoGeneratedWeeklyReportWeek);
 			_kingdomStabilityValues.Clear();
 			_kingdomStabilityStorage.Clear();
@@ -19378,53 +18658,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool IsNpcPersonaGenerationInFlight(Hero hero)
 	{
-		string text = (hero?.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		lock (_npcPersonaAutoGenLock)
-		{
-			if (_npcPersonaAutoGenInFlight.Contains(text))
-			{
-				return true;
-			}
-			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(text, out var value))
-			{
-				if (DateTime.UtcNow.Ticks < value)
-				{
-					return true;
-				}
-				_npcPersonaAutoGenRetryAfterUtcTicks.Remove(text);
-			}
-			return false;
-		}
+		_npcPersonaGeneration.GetState((hero?.StringId ?? "").Trim(), out bool active, out bool coolingDown);
+		return active || coolingDown;
 	}
 
 	private void GetNpcPersonaGenerationRuntimeState(Hero hero, out bool active, out bool coolingDown)
 	{
-		active = false;
-		coolingDown = false;
-		string text = (hero?.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return;
-		}
-		lock (_npcPersonaAutoGenLock)
-		{
-			active = _npcPersonaAutoGenInFlight.Contains(text);
-			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(text, out var value))
-			{
-				if (DateTime.UtcNow.Ticks < value)
-				{
-					coolingDown = true;
-				}
-				else
-				{
-					_npcPersonaAutoGenRetryAfterUtcTicks.Remove(text);
-				}
-			}
-		}
+		_npcPersonaGeneration.GetState((hero?.StringId ?? "").Trim(), out active, out coolingDown);
 	}
 
 	private string GetNpcVoiceId(Hero hero)
@@ -19482,11 +18722,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static string NormalizeGeneratedPersonaText(string text)
 	{
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		return (text ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+		return NpcPersonaProfilePolicy.NormalizeGenerated(text);
 	}
 
 	private static string NormalizePersonaPromptSourceText(string text, int maxLength = 1200)
@@ -20092,32 +19328,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
-	private static bool IsShortAckForRuleFollowup(string input)
-	{
-		string text = (input ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		if (text.Length > 20)
-		{
-			return false;
-		}
-		string[] array = new string[17]
-		{
-			"好", "好的", "行", "可以", "同意", "确认", "就这样", "继续", "嗯", "是",
-			"对", "我选雇佣兵", "雇佣兵", "我选封臣", "封臣", "那就按这个", "那就这么办"
-		};
-		for (int i = 0; i < array.Length; i++)
-		{
-			if (ContainsIgnoreCase(text, array[i]))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private static bool IsNpcAskingForConfirmation(string npcText)
 	{
 		string text = StripActionTags(npcText ?? "").Trim();
@@ -20144,120 +19354,84 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return false;
 	}
 
-	private static string ResolveRuleStickyTargetKey(Hero targetHero, CharacterObject targetCharacter)
+	/// <summary>Cached tier first; live Clan/MainHero read only when the cache is cold. Game-thread read.</summary>
+	private static int ResolvePlayerClanTierForPrompt()
 	{
-		string text = targetHero?.StringId ?? "";
-		if (string.IsNullOrWhiteSpace(text))
+		int tier = _cachedPlayerClanTier;
+		if (tier > 0)
 		{
-			text = targetCharacter?.StringId ?? "";
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = targetCharacter?.HeroObject?.StringId ?? "";
-		}
-		return (text ?? "").Trim().ToLowerInvariant();
-	}
-
-	private static int GetBuiltInRuleStickyTurnLimit(string ruleId)
-	{
-		switch ((ruleId ?? "").Trim().ToLowerInvariant())
-		{
-		case "duel":
-		case "reward":
-			return 2;
-		case "loan":
-			return 3;
-		default:
-			return 0;
-		}
-	}
-
-	private void ClearRuleStickyCarry()
-	{
-		_ruleStickyTargetKey = null;
-		_ruleStickyDuelRoundsLeft = 0;
-		_ruleStickyRewardRoundsLeft = 0;
-		_ruleStickyLoanRoundsLeft = 0;
-	}
-
-	private bool TryConsumeRuleStickyCarry(Hero targetHero, CharacterObject targetCharacter, string playerInput, out bool duel, out bool reward, out bool loan)
-	{
-		duel = false;
-		reward = false;
-		loan = false;
-		string text = ResolveRuleStickyTargetKey(targetHero, targetCharacter);
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(_ruleStickyTargetKey) || (_ruleStickyDuelRoundsLeft <= 0 && _ruleStickyRewardRoundsLeft <= 0 && _ruleStickyLoanRoundsLeft <= 0))
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (!string.Equals(_ruleStickyTargetKey, text, StringComparison.Ordinal))
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (!IsShortAckForRuleFollowup(playerInput))
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (_ruleStickyDuelRoundsLeft > 0)
-		{
-			duel = true;
-			_ruleStickyDuelRoundsLeft--;
-		}
-		if (_ruleStickyRewardRoundsLeft > 0)
-		{
-			reward = true;
-			_ruleStickyRewardRoundsLeft--;
-		}
-		if (_ruleStickyLoanRoundsLeft > 0)
-		{
-			loan = true;
-			_ruleStickyLoanRoundsLeft--;
-		}
-		if (!duel && !reward && !loan)
-		{
-			ClearRuleStickyCarry();
-			return false;
-		}
-		if (_ruleStickyDuelRoundsLeft <= 0 && _ruleStickyRewardRoundsLeft <= 0 && _ruleStickyLoanRoundsLeft <= 0)
-		{
-			ClearRuleStickyCarry();
+			return tier;
 		}
 		try
 		{
-			Logger.Log("GuardrailSemantic", $"builtin_rule_sticky_consume target={text} duel={duel} reward={reward} loan={loan} left=({_ruleStickyDuelRoundsLeft},{_ruleStickyRewardRoundsLeft},{_ruleStickyLoanRoundsLeft})");
+			tier = Clan.PlayerClan?.Tier ?? 0;
 		}
 		catch
 		{
 		}
-		return true;
+		if (tier <= 0)
+		{
+			try
+			{
+				tier = (Hero.MainHero?.Clan?.Tier).GetValueOrDefault();
+			}
+			catch
+			{
+			}
+		}
+		return tier;
 	}
 
-	private void UpdateRuleStickyCarryFromHits(Hero targetHero, CharacterObject targetCharacter, bool duel, bool reward, bool loan)
+	private PromptRoutingPorts CreatePromptRoutingPorts()
 	{
-		string text = ResolveRuleStickyTargetKey(targetHero, targetCharacter);
-		if (string.IsNullOrWhiteSpace(text))
+		return new PromptRoutingPorts
 		{
-			ClearRuleStickyCarry();
-			return;
-		}
-		if (!(duel || reward || loan))
+			AuxiliaryHits = (string text, string secondary, int cap, HashSet<string> excluded, MentionedWorldEntities mentions) =>
+			{
+				List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(text, secondary, cap, true, excluded, out var discovered);
+				mentions?.Merge(discovered);
+				return hits;
+			},
+			SemanticEvaluator = CreateBuiltInTopicSemanticEvaluator,
+			CanInjectGatedRule = AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal,
+			StickyCarry = _builtInRuleStickyCarry,
+			Log = (string category, string message) => { try { Logger.Log(category, message); } catch { } }
+		};
+	}
+
+	/// <summary>Built-in topics carry their own configured instruction/keywords; others resolve by rule tag.</summary>
+	private static PromptTopicSemanticEvaluator CreateBuiltInTopicSemanticEvaluator(string tag, string input, string secondaryInput, HashSet<string> excludedRuleIdSet)
+	{
+		return (string ruleTag, out string matchedKeyword, out float score) =>
 		{
-			return;
-		}
-		_ruleStickyTargetKey = text;
-		_ruleStickyDuelRoundsLeft = (duel ? GetBuiltInRuleStickyTurnLimit("duel") : 0);
-		_ruleStickyRewardRoundsLeft = (reward ? GetBuiltInRuleStickyTurnLimit("reward") : 0);
-		_ruleStickyLoanRoundsLeft = (loan ? GetBuiltInRuleStickyTurnLimit("loan") : 0);
-		try
-		{
-			Logger.Log("GuardrailSemantic", $"builtin_rule_sticky_prime target={text} duel={_ruleStickyDuelRoundsLeft} reward={_ruleStickyRewardRoundsLeft} loan={_ruleStickyLoanRoundsLeft}");
-		}
-		catch
-		{
-		}
+			string instruction;
+			List<string> keywords;
+			switch (ruleTag)
+			{
+			case "duel": instruction = AIConfigHandler.DuelInstruction; keywords = AIConfigHandler.DuelTriggerKeywords; break;
+			case "reward": instruction = AIConfigHandler.RewardInstruction; keywords = AIConfigHandler.RewardTriggerKeywords; break;
+			case "loan": instruction = AIConfigHandler.LoanInstruction; keywords = AIConfigHandler.LoanTriggerKeywords; break;
+			case "surroundings": instruction = AIConfigHandler.SurroundingsInstruction; keywords = AIConfigHandler.SurroundingsTriggerKeywords; break;
+			default: instruction = AIConfigHandler.GetGuardrailRuleInstruction(ruleTag); keywords = AIConfigHandler.GetGuardrailRuleKeywords(ruleTag); break;
+			}
+			return AIConfigHandler.IsGuardrailSemanticHit(input, secondaryInput, ruleTag, instruction, keywords, out matchedKeyword, out score, excludedRuleIdSet);
+		};
+	}
+
+	internal static PromptRuntimeTargetBinding CreatePromptRuntimeTargetBinding(string kingdomId, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
+	{
+		return PromptRuntimeTargetBinding.Create(kingdomId, targetHero?.StringId, targetCharacter?.StringId, targetCharacter?.HeroObject?.StringId, targetHero != null, targetCharacter != null && targetCharacter.IsSoldier, targetAgentIndex);
+	}
+
+	/// <summary>Game thread: binding + eligibility facts, so worker-side retrieval never resolves Hero/Mission live.</summary>
+	internal static PromptRuleEligibility CapturePromptRuleEligibility(Hero targetHero, CharacterObject targetCharacter, PromptRuntimeTargetBinding binding)
+	{
+		return AIConfigHandler.CapturePromptRuleEligibility(targetHero, targetCharacter, binding);
+	}
+
+	private static string ResolveBuiltInRuleStickyTargetKey(Hero targetHero, CharacterObject targetCharacter)
+	{
+		return BuiltInRuleStickyCarry.ResolveTargetKey(targetHero?.StringId, targetCharacter?.StringId, targetCharacter?.HeroObject?.StringId);
 	}
 
 	public void OnEngineTick()
@@ -20365,15 +19539,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void RebuildEventSourceMaterialIndex()
 	{
-		_eventSourceMaterialIndex = new Dictionary<string, EventSourceMaterialEntry>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventSourceMaterialEntry item in _eventSourceMaterials ?? new List<EventSourceMaterialEntry>())
-		{
-			string text = (item?.StableKey ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				_eventSourceMaterialIndex[BuildEventSourceMaterialIndexKey(item.Day, text)] = item;
-			}
-		}
+		var source = _eventSourceMaterials;
+		var rebuilt = _eventSourceMaterialIndexBinding.Build(source);
+		if (!ReferenceEquals(source, _eventSourceMaterials)) throw new InvalidOperationException("Event material source changed during index rebuild.");
+		_eventSourceMaterialIndex = rebuilt;
+		_eventSourceMaterialIndexBinding.Bind(source, rebuilt);
 	}
 
 	private void RebuildNpcRecentActionStableKeyIndex()
@@ -20546,7 +19716,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string moduleRootPath = GetModuleRootPath();
+			string moduleRootPath = PlayerExportsStore.GetModuleRootPath();
 			if (string.IsNullOrWhiteSpace(moduleRootPath))
 			{
 				return false;
@@ -22429,298 +21599,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return text3;
 		}
 		return text + "\n\n" + text3;
-	}
-
-	private async Task EnsureNpcPersonaGeneratedAsync(Hero hero, bool ignoreRetryCooldown = false)
-	{
-		string failureDetail = await GenerateNpcPersonaAsync(hero, ignoreRetryCooldown, overwriteExisting: false);
-		if (!string.IsNullOrWhiteSpace(failureDetail))
-		{
-			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", failureDetail);
-		}
-	}
-
-	private async Task<string> GenerateNpcPersonaAsync(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
-	{
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		if (hero == null)
-		{
-			return overwriteExisting ? "找不到要重新生成人设的 NPC。" : "";
-		}
-		string id = hero.StringId;
-		if (string.IsNullOrEmpty(id))
-		{
-			return overwriteExisting ? "该 NPC 没有有效的 HeroId，无法重新生成人设。" : "";
-		}
-		GetNpcPersonaStrings(hero, out var personality, out var background);
-		bool needP = string.IsNullOrWhiteSpace(personality);
-		bool needB = string.IsNullOrWhiteSpace(background);
-		if (!overwriteExisting && !needP && !needB)
-		{
-			return "";
-		}
-		lock (_npcPersonaAutoGenLock)
-		{
-			if (_npcPersonaAutoGenInFlight.Contains(id))
-			{
-				return overwriteExisting ? "该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" : "";
-			}
-			if (_npcPersonaAutoGenRetryAfterUtcTicks.TryGetValue(id, out var value))
-			{
-				if (!ignoreRetryCooldown && DateTime.UtcNow.Ticks < value)
-				{
-					return overwriteExisting ? "该 NPC 的上次生成请求刚刚失败，请稍后再试。" : "";
-				}
-				_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
-			}
-			_npcPersonaAutoGenInFlight.Add(id);
-		}
-		bool flag = false;
-		try
-		{
-			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。没有额外要求时，personality 和 background 各约 300 个中文字符；如果玩家自定义生成要求指定了篇幅、详略或文风，则以玩家自定义生成要求为准。每个字段都必须以完整句子结束，不要在半句话处停止。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系或身份；若事实中提供了势力/效忠信息，必须保持一致，禁止声称效忠于其他统治者或属于其他势力。";
-			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
-			string facts = BuildHeroFactsForPersonaGeneration(hero);
-			string user = "请基于以下信息生成该 NPC 的【个性】与【历史背景】。必须综合“人物百科背景”“家族背景”“所在家族百科背景”“王国百科背景”“家族族长背景”；这些素材是事实来源，不要复制成百科原文。\n" + facts;
-			if (overwriteExisting)
-			{
-				string oldPersonality = NormalizePersonaPromptSourceText(personality, 500);
-				string oldBackground = NormalizePersonaPromptSourceText(background, 500);
-				user += "\n这是重新生成人设请求：请生成一版不同但仍符合事实的人设，不要照搬旧文本。"
-					+ "\n旧个性（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldPersonality) ? "无" : oldPersonality)
-					+ "\n旧背景（仅用于避重）：" + (string.IsNullOrWhiteSpace(oldBackground) ? "无" : oldBackground);
-			}
-			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, user, "NpcPersona", 0, forceThinkingDisabled: false);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_autogen"))
-			{
-				return "";
-			}
-			string resp = apiCallResult.Content ?? "";
-			if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
-			{
-				genP = NormalizeGeneratedPersonaText(genP);
-				genB = NormalizeGeneratedPersonaText(genB);
-				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
-				{
-					genP = genB;
-				}
-				else if (string.IsNullOrWhiteSpace(genB) && !string.IsNullOrWhiteSpace(genP))
-				{
-					genB = genP;
-				}
-				GetNpcPersonaStrings(hero, out var curP, out var curB);
-				NpcPersonaProfile currentProfile = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-				NpcPersonaProfile prof = overwriteExisting
-					? new NpcPersonaProfile
-					{
-						VoiceId = (currentProfile.VoiceId ?? "").Trim()
-					}
-					: currentProfile;
-				prof.Personality = (overwriteExisting || string.IsNullOrWhiteSpace(curP)) ? genP : curP.Trim();
-				prof.Background = (overwriteExisting || string.IsNullOrWhiteSpace(curB)) ? genB : curB.Trim();
-				SaveNpcPersonaProfile(hero, prof);
-				flag = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
-				if (flag && overwriteExisting)
-				{
-					Logger.Log("NpcPersona", "[REROLL] Replaced personality and background for " + id + "; voiceId preserved=" + !string.IsNullOrWhiteSpace(prof.VoiceId) + ".");
-				}
-			}
-			if (!flag)
-			{
-				string failureDetail = apiCallResult.Success
-					? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景模型回复解析失败，未保存人设。", resp, apiCallResult.ResponseBody)
-					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景生成失败。", resp, apiCallResult.ResponseBody));
-				Logger.Log("NpcPersona", "[WARN] AutoGen did not save profile for " + id + ": " + failureDetail);
-				return failureDetail;
-			}
-		}
-		catch (Exception ex)
-		{
-			Exception ex2 = ex;
-			Logger.Log("NpcPersona", "[ERROR] AutoGen failed: " + ex2.Message);
-			return LlmRetryPrompt.BuildFailureDetail(ex2.Message, "");
-		}
-		finally
-		{
-			if (SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration))
-			{
-				lock (_npcPersonaAutoGenLock)
-				{
-					_npcPersonaAutoGenInFlight.Remove(id);
-					if (flag)
-					{
-						_npcPersonaAutoGenRetryAfterUtcTicks.Remove(id);
-					}
-					else
-					{
-						_npcPersonaAutoGenRetryAfterUtcTicks[id] = DateTime.UtcNow.AddMinutes(5.0).Ticks;
-					}
-				}
-			}
-		}
-		return "";
-	}
-
-	public static async Task GeneratePromotedNonHeroCompanionProfileForExternalAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)
-	{
-		try
-		{
-			MyBehavior inst = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-			if (inst != null && hero != null)
-			{
-				await inst.GeneratePromotedNonHeroCompanionProfileAsync(hero, personalName, originalFullName, originalTroopName, originalTroopId, cultureName, sceneLabel, joinEventFact, dialogueHistory, equipmentSummary);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcPersona", "[WARN] Promoted companion profile generation failed: " + ex.Message);
-			LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
-		}
-	}
-
-	private async Task GeneratePromotedNonHeroCompanionProfileAsync(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string dialogueHistory, string equipmentSummary)
-	{
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		if (hero == null)
-		{
-			return;
-		}
-		string heroId = (hero.StringId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(heroId))
-		{
-			return;
-		}
-		string name = string.IsNullOrWhiteSpace(personalName) ? (hero.Name?.ToString() ?? "新家族成员") : personalName.Trim();
-		string fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
-		string troopName = string.IsNullOrWhiteSpace(originalTroopName) ? "非英雄NPC" : originalTroopName.Trim();
-		string troopId = (originalTroopId ?? "").Trim();
-		string culture = string.IsNullOrWhiteSpace(cultureName) ? "未知文化" : cultureName.Trim();
-		string scene = string.IsNullOrWhiteSpace(sceneLabel) ? "当前场景" : sceneLabel.Trim();
-		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家，成为玩家家族成员并加入玩家队伍。") : joinEventFact.Trim();
-		string history = string.IsNullOrWhiteSpace(dialogueHistory) ? "（无可用加入前对话历史）" : dialogueHistory.Trim();
-		string equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? "（无装备）" : equipmentSummary.Trim();
-		bool personaSaved = false;
-		try
-		{
-			string sys = "你是《骑马与砍杀2：霸主》NPC的人设生成器。你只输出严格 JSON，不要输出任何额外文字。JSON 仅包含两个字段：personality 和 background。没有额外要求时，personality 和 background 各约 300 个中文字符；如果玩家自定义生成要求指定了篇幅、详略或文风，则以玩家自定义生成要求为准。每个字段都必须以完整句子结束，不要在半句话处停止。内容必须符合提供的事实，不要杜撰与事实冲突的家族关系、身份或势力。";
-			sys = AppendNpcPersonaGenerationRequirementsToSystemPrompt(sys);
-			StringBuilder userSb = new StringBuilder();
-			userSb.AppendLine("请基于信息生成该 NPC 升格为玩家家族成员后的【个性】与【历史背景】。");
-			userSb.AppendLine("写作风格沿用首次见到 Hero NPC 的人设格式：具体、可用于后续对话，不要写成系统说明。");
-			userSb.AppendLine("背景必须解释他/她为何愿意追随玩家，并吸收加入前对话中的关系、承诺、冲突、交易或共同经历；如果历史里没有相关内容，明确写成谨慎而合理的动机，不要凭空创造重大事件。");
-			userSb.AppendLine("个人名: " + name);
-			userSb.AppendLine("原完整称呼: " + fullName);
-			userSb.AppendLine("原兵种/职业: " + troopName + (string.IsNullOrWhiteSpace(troopId) ? "" : (" (StringId=" + troopId + ")")));
-			userSb.AppendLine("文化: " + culture);
-			userSb.AppendLine("当前场景: " + scene);
-			userSb.AppendLine("加入事件: " + joinFact);
-			userSb.AppendLine("升格后人物事实（只使用原非 Hero NPC/士兵事实、加入事件和对话历史；不要把玩家家族身份写成原生出身）:");
-			userSb.AppendLine(BuildPromotedNonHeroCompanionFactsForPersonaGeneration(hero, name, fullName, troopName, troopId, culture, scene, joinFact, equipment));
-			userSb.AppendLine("加入前该 NPC 与玩家的全部可用对话历史:");
-			userSb.AppendLine(history);
-			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, userSb.ToString().Trim(), "PromotedCompanionPersona", 0, forceThinkingDisabled: false);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_persona"))
-			{
-				return;
-			}
-			string resp = apiCallResult.Content ?? "";
-			if (apiCallResult.Success && !string.IsNullOrWhiteSpace(resp) && TryParsePersonaJson(resp, out var genP, out var genB))
-			{
-				genP = NormalizeGeneratedPersonaText(genP);
-				genB = NormalizeGeneratedPersonaText(genB);
-				if (string.IsNullOrWhiteSpace(genP) && !string.IsNullOrWhiteSpace(genB))
-				{
-					genP = genB;
-				}
-				if (string.IsNullOrWhiteSpace(genB) && !string.IsNullOrWhiteSpace(genP))
-				{
-					genB = genP;
-				}
-				NpcPersonaProfile prof = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-				prof.Personality = genP.Trim();
-				prof.Background = genB.Trim();
-				SaveNpcPersonaProfile(hero, prof);
-				personaSaved = !string.IsNullOrWhiteSpace(prof.Personality) || !string.IsNullOrWhiteSpace(prof.Background);
-				Logger.Log("NpcPersona", "Promoted companion persona generated hero=" + heroId + " name=" + name);
-			}
-			if (!personaSaved)
-			{
-				string failureDetail = apiCallResult.Success
-					? LlmRetryPrompt.BuildFailureDetail("升格同伴人设模型回复解析失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody)
-					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴人设生成失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody));
-				Logger.Log("NpcPersona", "[WARN] Promoted companion persona fallback hero=" + heroId + ": " + failureDetail);
-				LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", failureDetail);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcPersona", "[WARN] Promoted companion persona generation error hero=" + heroId + ": " + ex.Message);
-			LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
-		}
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_persona_fallback"))
-		{
-			return;
-		}
-		if (!personaSaved)
-		{
-			NpcPersonaProfile prof = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
-			if (string.IsNullOrWhiteSpace(prof.Personality))
-			{
-				prof.Personality = TrimToMaxChars(name + "曾是" + troopName + "，保留着原本职业养成的警觉、纪律和生存本能；面对玩家时，他会把加入前的承诺与利害放在心里，既愿意服从队伍安排，也会在危险或失信时变得谨慎。", 420);
-			}
-			if (string.IsNullOrWhiteSpace(prof.Background))
-			{
-				prof.Background = TrimToMaxChars(joinFact + "他原本以“" + fullName + "”的身份在" + scene + "活动，加入后只以个人名“" + name + "”示人。此前对话中可用的经历会成为他追随玩家的理由：" + TrimToMaxChars(history, 240), 520);
-			}
-			SaveNpcPersonaProfile(hero, prof);
-		}
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_skills_start"))
-		{
-			return;
-		}
-		await GeneratePromotedNonHeroCompanionSkillsAsync(hero, name, troopName, culture, equipment);
-	}
-
-	private async Task GeneratePromotedNonHeroCompanionSkillsAsync(Hero hero, string personalName, string originalTroopName, string cultureName, string equipmentSummary)
-	{
-		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		if (hero == null)
-		{
-			return;
-		}
-		try
-		{
-			GetNpcPersonaStrings(hero, out var personality, out var background);
-			string sys = "你是《骑马与砍杀2：霸主》的家族成员技能生成器。只输出严格 JSON，格式为 {\"skills\":{\"OneHanded\":数值,...}}。只使用给出的技能ID，数值为 0 到 330 的整数。";
-			StringBuilder userSb = new StringBuilder();
-			userSb.AppendLine("按原兵种、装备、文化与人设，为这个刚升格的玩家家族 Hero 生成合理技能。不要过强；主要强化实际武器、骑术/跑动和少量战术/领导。");
-			userSb.AppendLine("可用技能ID: OneHanded, TwoHanded, Polearm, Bow, Crossbow, Throwing, Riding, Athletics, Crafting, Scouting, Tactics, Roguery, Charm, Leadership, Trade, Steward, Medicine, Engineering");
-			userSb.AppendLine("个人名: " + personalName);
-			userSb.AppendLine("原兵种: " + originalTroopName);
-			userSb.AppendLine("文化: " + cultureName);
-			userSb.AppendLine("装备: " + equipmentSummary);
-			userSb.AppendLine("当前基础技能(来自原兵种模板，生成失败时保留这些值): " + BuildPromotedHeroSkillSummary(hero));
-			userSb.AppendLine("人设摘要: " + TrimToMaxChars((personality + " " + background).Trim(), 700));
-			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, userSb.ToString().Trim(), "PromotedCompanionSkills", 0, forceThinkingDisabled: false);
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "promoted_companion_skills"))
-			{
-				return;
-			}
-			string resp = apiCallResult.Content ?? "";
-			if (!apiCallResult.Success || !TryApplyPromotedHeroSkillJson(hero, resp))
-			{
-				Logger.Log("NpcPersona", "Promoted companion skill generation fallback hero=" + (hero.StringId ?? "") + ": keeping template skills.");
-				string failureDetail = apiCallResult.Success
-					? LlmRetryPrompt.BuildFailureDetail("升格同伴技能模型回复解析失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody)
-					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴技能生成失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody));
-				LlmRetryPrompt.ShowFailurePopup("升格同伴技能生成失败", failureDetail);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcPersona", "[WARN] Promoted companion skill generation error hero=" + (hero.StringId ?? "") + ": " + ex.Message);
-			LlmRetryPrompt.ShowFailurePopup("升格同伴技能生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
-		}
 	}
 
 	private static SkillObject[] GetPromotedCompanionSkillObjects()
@@ -25762,6 +24640,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void MigrateNonHeroPartyScopedMemoryForExternal(string canonicalMemoryId, string partyKey)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.MigrateNonHeroPartyScopedMemory(canonicalMemoryId, partyKey); }, nameof(MigrateNonHeroPartyScopedMemoryForExternal))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.MigrateNonHeroPartyScopedMemory(canonicalMemoryId, partyKey);
@@ -26296,6 +25176,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (merged.Count > 0)
 		{
 			storage[target] = merged;
+			_weeklyReportMaterialRevisions.MarkAll();
 		}
 		if (keepOnlyRecentWindow)
 		{
@@ -26526,31 +25407,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void CancelUnavailableHeroCompressionQueuedJobs(string reason)
-	{
-		// Queue sizes are bounded by pending daily work, so validate only queued owners between full load-time scans.
-		HashSet<string> candidateIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (MemorySummaryJob job in _memorySummaryQueue ?? new List<MemorySummaryJob>())
-		{
-			candidateIds.Add(NormalizeMemoryHeroId(job?.HeroId));
-		}
-		foreach (MemoryOverviewJob job2 in _memoryOverviewQueue ?? new List<MemoryOverviewJob>())
-		{
-			candidateIds.Add(NormalizeMemoryHeroId(job2?.HeroId));
-		}
-		foreach (MajorActionSummaryJob job3 in _npcMajorActionSummaryQueue ?? new List<MajorActionSummaryJob>())
-		{
-			candidateIds.Add(NormalizeMemoryHeroId(job3?.HeroId));
-		}
-		foreach (string id in candidateIds)
-		{
-			if (!string.IsNullOrWhiteSpace(id) && !IsNonHeroMemoryId(id) && !IsMemoryEntityEligibleForCompressedMemory(id))
-			{
-				CancelUnavailableHeroCompressionWorkById(id, reason);
-			}
-		}
-	}
-
 	private void RemoveMemoryEntityDataById(string memoryId)
 	{
 		string text = NormalizeMemoryHeroId(memoryId);
@@ -26573,10 +25429,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_npcMajorActionSummaries?.Remove(text);
 		_npcMajorActionSummaryStorage?.Remove(text);
 		_npcMajorActionSummaryQueue?.RemoveAll((MajorActionSummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-		_npcMajorActions?.Remove(text);
+		bool removedMajorActions = _npcMajorActions?.Remove(text) == true;
 		_npcMajorActionStorage?.Remove(text);
-		_npcRecentActions?.Remove(text);
+		bool removedRecentActions = _npcRecentActions?.Remove(text) == true;
 		_npcRecentActionStorage?.Remove(text);
+		if (removedMajorActions || removedRecentActions)
+		{
+			_weeklyReportMaterialRevisions.MarkAll();
+		}
 		_dirtyMemoryOverviewIds?.Remove(text);
 		_pendingMemoryOverviewCandidateScanIdSet?.Remove(text);
 		if (_pendingMemoryOverviewCandidateScanIds != null && _pendingMemoryOverviewCandidateScanIds.Count > 0)
@@ -26696,8 +25556,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<WeeklyMemoryMaterialTrigger> list = new List<WeeklyMemoryMaterialTrigger>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (WeeklyMemoryMaterialTrigger trigger in triggers ?? Enumerable.Empty<WeeklyMemoryMaterialTrigger>())
+		foreach (WeeklyMemoryMaterialTrigger sourceEntry in triggers ?? Enumerable.Empty<WeeklyMemoryMaterialTrigger>())
 		{
+			WeeklyMemoryMaterialTrigger trigger = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
 			if (trigger == null)
 			{
 				continue;
@@ -26804,88 +25665,117 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<DailyMemoryDraft> list = new List<DailyMemoryDraft>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (DailyMemoryDraft draft in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
+		foreach (DailyMemoryDraft sourceEntry in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
 		{
-			if (draft == null)
-			{
-				continue;
-			}
-			string text = NormalizeMemoryHeroId(draft.HeroId);
-			if (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)
-			{
-				continue;
-			}
-			string key = text + "|" + draft.GameDayIndex;
-			if (!seen.Add(key))
-			{
-				continue;
-			}
-			draft.HeroId = text;
-			draft.HeroName = (draft.HeroName ?? "").Trim();
-			draft.GameDate = (draft.GameDate ?? "").Trim();
-			draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
-			if (draft.WeeklyMaterialTriggers != null)
-			{
-				foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
-				{
-					if (trigger != null)
-					{
-						trigger.MemoryId = text;
-						trigger.GameDayIndex = draft.GameDayIndex;
-						trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? draft.GameDate : trigger.GameDate;
-					}
-				}
-			}
-			draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
-			draft.Lines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !string.IsNullOrWhiteSpace((x.Text ?? "").Trim())).Select(delegate(DailyMemoryLine x)
-			{
-				x.GameDayIndex = draft.GameDayIndex;
-				x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
-				x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
-				x.Scene = (x.Scene ?? "").Trim();
-				x.Speaker = (x.Speaker ?? "").Trim();
-				x.Text = (x.Text ?? "").Trim();
-				x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
-				x.TargetName = (x.TargetName ?? "").Trim();
-				x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
-				x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
-				x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
-				x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
-				x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
-				x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
-				if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
-				{
-					x.MemoryCommitId = "";
-					x.MemoryCommitPart = "";
-					x.MemoryCommitHash = "";
-					x.MemoryCommitOriginGameDay = -1;
-					x.MemoryCommitOriginGameDate = "";
-				}
-				if (x.SceneSessionId < -1)
-				{
-					x.SceneSessionId = -1;
-				}
-				if (x.DialogueSessionId < -1)
-				{
-					x.DialogueSessionId = -1;
-				}
-				return x;
-			}).ToList();
-			draft.HasLlmDialogue = draft.HasLlmDialogue || draft.Lines.Any((DailyMemoryLine x) => x != null && x.IsLlmDialogue && !x.IsAfef);
-			if (draft.Lines.Count > 0)
-			{
-				list.Add(draft);
-			}
+			DailyMemoryDraft draft = SanitizeDailyMemoryDraftEntry(sourceEntry, seen);
+			if (draft != null) list.Add(draft);
 		}
 		return list.OrderBy((DailyMemoryDraft x) => x.GameDayIndex).ToList();
+	}
+
+	private static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)
+	{
+		if (trigger == null)
+		{
+			return;
+		}
+		trigger.MemoryId = memoryId;
+		trigger.GameDayIndex = gameDayIndex;
+		trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? gameDate : trigger.GameDate;
+	}
+
+	private static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)
+	{
+		if (x == null || string.IsNullOrWhiteSpace((x.Text ?? "").Trim()))
+		{
+			return null;
+		}
+		x.GameDayIndex = draft.GameDayIndex;
+		x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
+		x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
+		x.Scene = (x.Scene ?? "").Trim();
+		x.Speaker = (x.Speaker ?? "").Trim();
+		x.Text = (x.Text ?? "").Trim();
+		x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
+		x.TargetName = (x.TargetName ?? "").Trim();
+		x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
+		x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
+		x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
+		x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
+		x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
+		x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
+		if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
+		{
+			x.MemoryCommitId = "";
+			x.MemoryCommitPart = "";
+			x.MemoryCommitHash = "";
+			x.MemoryCommitOriginGameDay = -1;
+			x.MemoryCommitOriginGameDate = "";
+		}
+		if (x.SceneSessionId < -1)
+		{
+			x.SceneSessionId = -1;
+		}
+		if (x.DialogueSessionId < -1)
+		{
+			x.DialogueSessionId = -1;
+		}
+		return x;
+	}
+
+	private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)
+	{
+		DailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
+		if (draft == null)
+		{
+			return null;
+		}
+		string text = NormalizeMemoryHeroId(draft.HeroId);
+		if (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)
+		{
+			return null;
+		}
+		string key = text + "|" + draft.GameDayIndex;
+		if (!seen.Add(key))
+		{
+			return null;
+		}
+		draft.HeroId = text;
+		draft.HeroName = (draft.HeroName ?? "").Trim();
+		draft.GameDate = (draft.GameDate ?? "").Trim();
+		draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
+		if (draft.WeeklyMaterialTriggers != null)
+		{
+			foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
+			{
+				BindDailyMemoryDraftWeeklyTrigger(trigger, text, draft.GameDayIndex, draft.GameDate);
+			}
+		}
+		draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
+		List<DailyMemoryLine> lines = new List<DailyMemoryLine>();
+		bool hasLlmDialogue = draft.HasLlmDialogue;
+		foreach (DailyMemoryLine sourceLine in draft.Lines ?? new List<DailyMemoryLine>())
+		{
+			DailyMemoryLine line = SanitizeDailyMemoryDraftLine(sourceLine, draft);
+			if (line == null)
+			{
+				continue;
+			}
+			lines.Add(line);
+			hasLlmDialogue = hasLlmDialogue || (line.IsLlmDialogue && !line.IsAfef);
+		}
+		draft.Lines = lines;
+		draft.HasLlmDialogue = hasLlmDialogue;
+		return draft.Lines.Count > 0 ? draft : null;
 	}
 
 	private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(IEnumerable<CompressedMemoryBlock> blocks)
 	{
 		List<CompressedMemoryBlock> list = new List<CompressedMemoryBlock>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
+		foreach (CompressedMemoryBlock sourceEntry in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
 		{
+			CompressedMemoryBlock block = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
 			if (block == null)
 			{
 				continue;
@@ -26934,6 +25824,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)
 	{
+		return NormalizeMemorySummaryQueue(jobs).OrderBy((MemorySummaryJob x) => x.GameDayIndex).ThenBy((MemorySummaryJob x) => x.HeroName).ToList();
+	}
+
+	private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)
+	{
 		List<MemorySummaryJob> list = new List<MemorySummaryJob>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (MemorySummaryJob job in jobs ?? Enumerable.Empty<MemorySummaryJob>())
@@ -26958,7 +25853,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
 			list.Add(job);
 		}
-		return list.OrderBy((MemorySummaryJob x) => x.GameDayIndex).ThenBy((MemorySummaryJob x) => x.HeroName).ToList();
+		return list;
 	}
 
 	private static MemoryOverviewState SanitizeMemoryOverviewState(MemoryOverviewState state)
@@ -27013,7 +25908,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (_memoryOverviewStates.TryGetValue(heroId, out var value))
 		{
-			return SanitizeMemoryOverviewState(value);
+			return SanitizeMemoryOverviewState(CloneMemorySummarySource(value));
 		}
 		return null;
 	}
@@ -27030,23 +25925,35 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool HasMemoryOverviewPendingBlocks(string heroId, List<CompressedMemoryBlock> blocks)
 	{
-		List<CompressedMemoryBlock> sanitizedBlocks = SanitizeCompressedMemoryBlocks(blocks);
-		if (sanitizedBlocks.Count < GetMemoryOverviewStartBlockCountFromSettings())
+		// This is a read-only eligibility query, not a publication/sanitization owner.
+		// Project exactly the fields used by Count/IsMemoryBlockIncludedInOverview
+		// after ONE SanitizeCompressedMemoryBlocks pass. Do not clone/sort unrelated
+		// scenes, AFEF text or weekly trigger graphs just to discard them here.
+		List<string> blockIds = new List<string>();
+		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (CompressedMemoryBlock block in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
 		{
-			return false;
+			if (block == null) continue;
+			string ownerId = NormalizeMemoryHeroId(block.HeroId);
+			if (string.IsNullOrWhiteSpace(ownerId) || block.GameDayIndex < 0) continue;
+			string blockId = string.IsNullOrWhiteSpace(block.Id) ? BuildCompressedMemoryBlockId(ownerId, block.GameDayIndex) : block.Id;
+			// The original sanitizer reserves an untrimmed ID even when its first
+			// block later fails content validation. Keep that ordering and identity.
+			if (!seen.Add(blockId)) continue;
+			string title = StripMemoryTitleDateTime((block.RichTitle ?? "").Trim());
+			bool hasContent = !string.IsNullOrWhiteSpace(block.Summary)
+				|| (block.AfefLines?.Any(line => !string.IsNullOrWhiteSpace(line)) ?? false)
+				|| !string.IsNullOrWhiteSpace(title);
+			if (hasContent) blockIds.Add(blockId.Trim());
 		}
+		// Do not deduplicate the trimmed list: raw IDs " x " and "x" count as two
+		// blocks, but both match the same IncludedBlockId in the original query.
+		if (blockIds.Count < GetMemoryOverviewStartBlockCountFromSettings()) return false;
 		MemoryOverviewState state = GetMemoryOverviewState(heroId);
-		if (state != null && !string.IsNullOrWhiteSpace(state.LastError))
-		{
-			// A completed three-attempt failure stays visible for manual repair, but must not auto-enqueue forever.
-			return false;
-		}
-		if (state == null || string.IsNullOrWhiteSpace(state.Summary))
-		{
-			return true;
-		}
+		if (state != null && !string.IsNullOrWhiteSpace(state.LastError)) return false;
+		if (state == null || string.IsNullOrWhiteSpace(state.Summary)) return true;
 		HashSet<string> included = new HashSet<string>(state.IncludedBlockIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-		return sanitizedBlocks.Any((CompressedMemoryBlock x) => !IsMemoryBlockIncludedInOverview(x, included));
+		return blockIds.Any(id => !included.Contains(id));
 	}
 
 	private bool HasMemoryOverviewJobStillPending(MemoryOverviewJob job)
@@ -27083,6 +25990,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)
 	{
+		return NormalizeMajorActionSummaryQueue(jobs).OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex).ThenBy((MajorActionSummaryJob x) => x.HeroName).ToList();
+	}
+
+	private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)
+	{
 		List<MajorActionSummaryJob> list = new List<MajorActionSummaryJob>();
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (MajorActionSummaryJob job in jobs ?? Enumerable.Empty<MajorActionSummaryJob>())
@@ -27107,7 +26019,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
 			list.Add(job);
 		}
-		return list.OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex).ThenBy((MajorActionSummaryJob x) => x.HeroName).ToList();
+		return list;
 	}
 
 	private MajorActionSummaryState GetMajorActionSummaryState(string heroId)
@@ -27119,7 +26031,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (_npcMajorActionSummaries.TryGetValue(heroId, out var value))
 		{
-			return SanitizeMajorActionSummaryState(value);
+			return SanitizeMajorActionSummaryState(CloneMemorySummarySource(value));
 		}
 		return null;
 	}
@@ -27653,7 +26565,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			foreach (string line in record.Lines)
 			{
 				string text2 = (line ?? "").Trim();
-				TryStripSceneSessionHistoryMarker(text2, out text2, out var _);
+				DialogueHistoryLedger.TryStripSceneSessionMarker(text2, out text2, out var _);
 				if (string.Equals(text2, text, StringComparison.Ordinal))
 				{
 					return true;
@@ -27744,6 +26656,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalDialogueHistory(Hero hero, string playerText, string aiText, string extraFact)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistory(hero, playerText, aiText, extraFact); }, nameof(AppendExternalDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistory(hero, playerText, aiText, extraFact);
@@ -27766,6 +26680,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalSceneDialogueHistory(Hero hero, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName); }, nameof(AppendExternalSceneDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistory(hero, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
@@ -27777,6 +26693,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalNonHeroDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact); }, nameof(AppendExternalNonHeroDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact);
@@ -27788,6 +26706,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	public static void AppendExternalNonHeroSceneDialogueHistory(string nonHeroMemoryId, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId, int playerTargetAgentIndex = -1, string playerTargetName = null)
 	{
+		if (DeferMemorySourceWriteIfNeeded(owner => { owner.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName); }, nameof(AppendExternalNonHeroSceneDialogueHistory))) return;
+
 		try
 		{
 			(Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.AppendDialogueHistoryById(nonHeroMemoryId, npcName, playerText, aiText, extraFact, sceneSessionId, playerTargetAgentIndex, playerTargetName);
@@ -27845,21 +26765,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
-				string memoryFact = extraFact.Trim();
-				if (!memoryFact.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) && !memoryFact.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-				{
-					memoryFact = "[AFEF玩家行为补充] " + memoryFact;
-				}
-				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, "AFEF", memoryFact, isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
+				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, "AFEF", DialogueHistoryLedger.NormalizeAfefFact(extraFact), isAfef: true, isLlmDialogue: false, sceneSessionId: sceneSessionId);
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
-				string memoryAiText = aiText.Trim();
-				if (!memoryAiText.StartsWith("[场景喊话]", StringComparison.Ordinal))
-				{
-					memoryAiText = npcNameForMemory + ": " + memoryAiText;
-				}
-				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, memoryAiText, isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
+				dailyAccepted &= AppendDailyMemoryLineById(normalizedMemoryId, npcNameForMemory, npcNameForMemory, DialogueHistoryLedger.NormalizeNpcLine(npcNameForMemory, aiText), isAfef: false, isLlmDialogue: true, sceneSessionId: sceneSessionId);
 			}
 			List<DialogueDay> list = LoadDialogueHistoryById(normalizedMemoryId);
 			int beforeLines = CountDialogueHistoryLines(list);
@@ -27879,72 +26789,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(playerText))
 			{
 				string text2 = BuildPlayerAddressedInputForName(npcNameForMemory, playerText, null, playerTargetName);
-				dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text2, sceneSessionId) : text2);
+				dialogueDay.Lines.Add((sceneSessionId >= 0) ? DialogueHistoryLedger.TagSceneSession(text2, sceneSessionId) : text2);
 			}
 			if (!string.IsNullOrWhiteSpace(extraFact))
 			{
-				string text3 = extraFact.Trim();
-				if (text3.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text3.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-				{
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text3, sceneSessionId) : text3);
-				}
-				else
-				{
-					string text4 = "[AFEF玩家行为补充] " + text3;
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text4, sceneSessionId) : text4);
-				}
+				dialogueDay.Lines.Add(DialogueHistoryLedger.TagSceneSession(DialogueHistoryLedger.NormalizeAfefFact(extraFact), sceneSessionId));
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
-				string text5 = aiText.Trim();
-				if (text5.StartsWith("[场景喊话]", StringComparison.Ordinal))
-				{
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text5, sceneSessionId) : text5);
-				}
-				else
-				{
-					string text6 = text + ": " + text5;
-					dialogueDay.Lines.Add((sceneSessionId >= 0) ? TagSceneSessionHistoryLine(text6, sceneSessionId) : text6);
-				}
+				dialogueDay.Lines.Add(DialogueHistoryLedger.TagSceneSession(DialogueHistoryLedger.NormalizeNpcLine(text, aiText), sceneSessionId));
 			}
 			if (!string.IsNullOrWhiteSpace(aiText))
 			{
 				RemoveExpiredSingleUseNpcFactLines(list);
 			}
-			List<(int, string, string)> list2 = new List<(int, string, string)>();
-			foreach (DialogueDay item in list)
-			{
-				if (item.Lines == null)
-				{
-					continue;
-				}
-				foreach (string line in item.Lines)
-				{
-					if (!string.IsNullOrWhiteSpace(line))
-					{
-						list2.Add((item.GameDayIndex, item.GameDate, line));
-					}
-				}
-			}
-			if (list2.Count > 260)
-			{
-				list2 = list2.Skip(list2.Count - 260).ToList();
-			}
-			List<DialogueDay> list3 = new List<DialogueDay>();
-			foreach (var entry in list2)
-			{
-				DialogueDay dialogueDay2 = list3.FirstOrDefault((DialogueDay x) => x.GameDayIndex == entry.Item1);
-				if (dialogueDay2 == null)
-				{
-					dialogueDay2 = new DialogueDay
-					{
-						GameDayIndex = entry.Item1,
-						GameDate = entry.Item2
-					};
-					list3.Add(dialogueDay2);
-				}
-				dialogueDay2.Lines.Add(entry.Item3);
-			}
+			var trimmed = DialogueHistoryLedger.TrimToNewest(DialogueHistoryLedger.Flatten(list, d => d.GameDayIndex, d => d.GameDate, d => d.Lines), DialogueHistoryLedger.MaxLines);
+			List<DialogueDay> list3 = DialogueHistoryLedger.Regroup(trimmed, (day, date) => new DialogueDay { GameDayIndex = day, GameDate = date }, d => d.GameDayIndex, d => d.Lines);
 			CopyMemoryCommitMarkers(list, list3);
 			SaveDialogueHistoryById(normalizedMemoryId, list3);
 			if (IsNonHeroMemoryId(normalizedMemoryId))
@@ -28026,7 +26886,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		return text.TrimStart().StartsWith("[场景喊话]", StringComparison.Ordinal);
 	}
 
@@ -28189,7 +27049,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					TryStripSceneSessionHistoryMarker(line, out line, out var _);
+					DialogueHistoryLedger.TryStripSceneSessionMarker(line, out line, out var _);
 					if (string.IsNullOrWhiteSpace(line))
 					{
 						continue;
@@ -28831,31 +27691,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return ResolveRuleTargetKey(targetHero, targetCharacter, targetAgentIndex);
 	}
 
-	private static HashSet<string> BuildPromptRuleIdSet(IEnumerable<string> ruleIds)
-	{
-		HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			foreach (string ruleId in ruleIds ?? Enumerable.Empty<string>())
-			{
-				string text = (ruleId ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					set.Add(text);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return set;
-	}
-
-	private static bool IsPromptRuleExcluded(HashSet<string> excludedRuleIds, string ruleId)
-	{
-		return excludedRuleIds != null && !string.IsNullOrWhiteSpace(ruleId) && excludedRuleIds.Contains(ruleId.Trim());
-	}
-
 	private static void AddPlayerCompanionOrFamilyRuleExclusionsForTarget(HashSet<string> excludedRuleIds, Hero targetHero, CharacterObject targetCharacter = null)
 	{
 		if (excludedRuleIds == null)
@@ -28865,11 +27700,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		Hero hero = targetHero ?? targetCharacter?.HeroObject;
 		if (AIConfigHandler.IsPlayerPartyTradeLimitedTarget(hero))
 		{
-			excludedRuleIds.Add("loan");
-			excludedRuleIds.Add("kingdom_agenda");
-			excludedRuleIds.Add("diplomacy");
-			excludedRuleIds.Add("party_transfer");
-			return;
+			PromptRuleIdPolicy.AddPlayerPartyTradeLimitedExclusions(excludedRuleIds);
 		}
 	}
 
@@ -28918,80 +27749,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			excludedRuleIds.Add("scene_mechanism_actions");
 		}
-	}
-
-	private static void AddPreprocessOnlyResidentRuleExclusions(HashSet<string> excludedRuleIds)
-	{
-		if (excludedRuleIds == null)
-		{
-			return;
-		}
-		excludedRuleIds.Add("noble_deference");
-	}
-
-	private static bool IsBuiltInPromptRuleIdForExtraInjection(string ruleId)
-	{
-		string id = (ruleId ?? "").Trim().ToLowerInvariant();
-		return id == "duel" || id == "reward" || id == "loan" || id == "surroundings";
-	}
-
-	private static List<string> NormalizePreselectedPromptRuleIds(IEnumerable<string> ruleIds)
-	{
-		List<string> result = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		try
-		{
-			foreach (string ruleId in ruleIds ?? Enumerable.Empty<string>())
-			{
-				string id = (ruleId ?? "").Trim().ToLowerInvariant();
-				if (!string.IsNullOrWhiteSpace(id) && seen.Add(id))
-				{
-					result.Add(id);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return result;
-	}
-
-	private static bool ShouldIncludeResidentKingdomEntities(bool kingdomServiceHit, IEnumerable<string> preselectedRuleIds)
-	{
-		if (kingdomServiceHit)
-		{
-			return true;
-		}
-		try
-		{
-			foreach (string ruleId in preselectedRuleIds ?? Enumerable.Empty<string>())
-			{
-				if (IsKingdomEntityPreprocessRuleId(ruleId))
-				{
-					return true;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
-	}
-
-	private static bool IsKingdomEntityPreprocessRuleId(string ruleId)
-	{
-		string id = (ruleId ?? "").Trim();
-		return string.Equals(id, "kingdom_service", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsRuntimeGatedPreprocessRuleId(string ruleId)
-	{
-		string id = (ruleId ?? "").Trim();
-		return string.Equals(id, "kingdom_vassalage", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "diplomacy", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "world_diplomacy_discussion", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(id, "kingdom_agenda", StringComparison.OrdinalIgnoreCase);
 	}
 
 	private string ResolvePreselectedRuleInstructionBody(string ruleId, string body, bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -29071,7 +27828,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			List<string> ruleIds = NormalizePreselectedPromptRuleIds(preselectedRuleIds);
+			List<string> ruleIds = PromptRuleIdPolicy.NormalizePreselectedRuleIds(preselectedRuleIds);
 			if (ruleIds.Count == 0)
 			{
 				return "";
@@ -29085,11 +27842,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					break;
 				}
-				if (IsBuiltInPromptRuleIdForExtraInjection(ruleId) || IsPromptRuleExcluded(excludedRuleIdSet, ruleId))
+				if (PromptRuleIdPolicy.IsBuiltInRuleIdForExtraInjection(ruleId) || PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, ruleId))
 				{
 					continue;
 				}
-				if (IsRuntimeGatedPreprocessRuleId(ruleId)
+				if (PromptRuleIdPolicy.IsRuntimeGatedPreprocessRuleId(ruleId)
 					&& !AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(ruleId, hasAnyHero))
 				{
 					continue;
@@ -29104,7 +27861,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				AppendRuleBlock(sb, ruleId, body);
+				PromptRuleBlockText.Append(sb, ruleId, body);
 				added++;
 			}
 			return sb.ToString().Trim();
@@ -29115,7 +27872,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private string BuildExtraRuleInstructions(string input, string npcLastUtterance, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null)
+	private string BuildExtraRuleInstructions(string input, string npcLastUtterance, Hero targetHero, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, List<GuardrailRuleHit> fallbackHits = null)
 	{
 		string text = "";
 		string text2 = "";
@@ -29123,54 +27880,52 @@ public partial class MyBehavior : CampaignBehaviorBase
 		string restrictedReferralHint = "";
 		bool encounterReleaseRuleSelected = false;
 		int num = AIConfigHandler.GuardrailRuleReturnCap;
-		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
+		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
 		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
 		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
 		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
 		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
-		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		string text3 = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(text3);
-		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
-		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
+		PromptRuntimeTargetBinding runtimeTargetBinding = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(runtimeTargetBinding, CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTargetBinding));
 		try
 		{
-			text = preselectedRuleIds == null
-				? AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet)
-				: BuildMatchedExtraRuleInstructionsFromPreselectedRules(preselectedRuleIds, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-			encounterReleaseRuleSelected = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0;
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
+			text = preselectedRuleIds != null
+				? BuildMatchedExtraRuleInstructionsFromPreselectedRules(preselectedRuleIds, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex)
+				: fallbackHits != null
+					? AIConfigHandler.FormatMatchedExtraRuleInstructions(input, npcLastUtterance, hasAnyHero, excludedRuleIdSet, fallbackHits)
+					: AIConfigHandler.BuildMatchedExtraRuleInstructions(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, hasAnyHero, excludedRuleIdSet);
+			encounterReleaseRuleSelected = PromptRuleBlockText.Has(text, "encounter_release_player");
+			if (PromptRuleBlockText.Has(text, "party_transfer"))
 			{
 				string partyTransferRuntimeInstructionForExternal = BuildPartyTransferRuntimeInstructionForExternal(targetHero, targetCharacter, targetAgentIndex);
 				if (!string.IsNullOrWhiteSpace(partyTransferRuntimeInstructionForExternal))
 				{
-					text = ReplaceSingleRuleBlockBody(text, "party_transfer", partyTransferRuntimeInstructionForExternal);
+					text = PromptRuleBlockText.ReplaceBody(text, "party_transfer", partyTransferRuntimeInstructionForExternal);
 				}
 			}
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (PromptRuleBlockText.Has(text, "vanilla_issue"))
 			{
 				string vanillaIssueRuntimeInstruction = VanillaIssueOfferBridge.BuildRuntimePromptBlockForExternal(targetHero ?? targetCharacter?.HeroObject);
 				if (!string.IsNullOrWhiteSpace(vanillaIssueRuntimeInstruction))
 				{
-					text = ReplaceSingleRuleBlockBody(text, "vanilla_issue", vanillaIssueRuntimeInstruction);
+					text = PromptRuleBlockText.ReplaceBody(text, "vanilla_issue", vanillaIssueRuntimeInstruction);
 				}
 			}
-			if (!string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase) >= 0)
+			if (PromptRuleBlockText.Has(text, "npc_major_actions"))
 			{
 				string npcMajorActionsRuntimeInstruction = BuildNpcMajorActionsRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
 				if (!string.IsNullOrWhiteSpace(npcMajorActionsRuntimeInstruction))
 				{
-					text = ReplaceSingleRuleBlockBody(text, "npc_major_actions", npcMajorActionsRuntimeInstruction);
+					text = PromptRuleBlockText.ReplaceBody(text, "npc_major_actions", npcMajorActionsRuntimeInstruction);
 				}
 			}
-			if (!IsPromptRuleExcluded(excludedRuleIdSet, "lords_hall_access"))
+			if (!PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "lords_hall_access"))
 			{
 				// Always keep this rule present for the lords-hall gate guard, regardless of semantic hits.
 				text2 = (AIConfigHandler.BuildRuntimeLordsHallAccessInstructionForExternal() ?? "").Trim();
 			}
-			if (!IsPromptRuleExcluded(excludedRuleIdSet, "encounter_release_player"))
+			if (!PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "encounter_release_player"))
 			{
 				encounterReleaseInstruction = (LordEncounterBehavior.BuildMeetingPlayerReleaseRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, encounterReleaseRuleSelected) ?? "").Trim();
 			}
@@ -29178,50 +27933,35 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
-		if (!string.IsNullOrWhiteSpace(text2) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:lords_hall_access】", StringComparison.OrdinalIgnoreCase) < 0) && CountInjectedRuleBlocks(text) < num)
-		{
-			string text4 = "【附加规则:lords_hall_access】" + Environment.NewLine + text2;
-			text = string.IsNullOrWhiteSpace(text) ? text4 : (text.TrimEnd() + Environment.NewLine + text4);
-		}
-		bool hasEncounterReleaseRuleBlock = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:encounter_release_player】", StringComparison.OrdinalIgnoreCase) >= 0;
+		text = PromptRuleBlockText.AppendIfMissing(text, "lords_hall_access", text2, num);
+		bool hasEncounterReleaseRuleBlock = PromptRuleBlockText.Has(text, "encounter_release_player");
 		if (hasEncounterReleaseRuleBlock)
 		{
 			if (!string.IsNullOrWhiteSpace(encounterReleaseInstruction))
 			{
-				text = ReplaceSingleRuleBlockBody(text, "encounter_release_player", encounterReleaseInstruction);
+				text = PromptRuleBlockText.ReplaceBody(text, "encounter_release_player", encounterReleaseInstruction);
 			}
 			else
 			{
-				text = RemoveSingleRuleBlock(text, "encounter_release_player");
+				text = PromptRuleBlockText.Remove(text, "encounter_release_player");
 			}
 		}
-		else if (!string.IsNullOrWhiteSpace(encounterReleaseInstruction))
+		else
 		{
-			string text5 = "【附加规则:encounter_release_player】" + Environment.NewLine + encounterReleaseInstruction;
-			text = string.IsNullOrWhiteSpace(text) ? text5 : (text.TrimEnd() + Environment.NewLine + text5);
+			text = PromptRuleBlockText.AppendIfMissing(text, "encounter_release_player", encounterReleaseInstruction, int.MaxValue);
 		}
-		string nobleDeferenceInstruction = BuildNobleDeferenceRuntimeInstruction(hasAnyHero);
-		if (!string.IsNullOrWhiteSpace(nobleDeferenceInstruction) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【附加规则:noble_deference】", StringComparison.OrdinalIgnoreCase) < 0))
-		{
-			string text6 = "【附加规则:noble_deference】" + Environment.NewLine + nobleDeferenceInstruction;
-			text = string.IsNullOrWhiteSpace(text) ? text6 : (text.TrimEnd() + Environment.NewLine + text6);
-		}
+		text = PromptRuleBlockText.AppendIfMissing(text, "noble_deference", BuildNobleDeferenceRuntimeInstruction(hasAnyHero), int.MaxValue);
 		if (!string.IsNullOrWhiteSpace(restrictedReferralHint) && (string.IsNullOrWhiteSpace(text) || text.IndexOf("【转介】", StringComparison.OrdinalIgnoreCase) < 0))
 		{
 			text = string.IsNullOrWhiteSpace(text) ? restrictedReferralHint : (text.TrimEnd() + Environment.NewLine + restrictedReferralHint);
 		}
-		if (!IsPromptRuleExcluded(excludedRuleIdSet, "scene_mechanism_actions") && IsSceneFollowingAgentForRules(targetAgentIndex))
+		if (!PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "scene_mechanism_actions") && IsSceneFollowingAgentForRules(targetAgentIndex))
 		{
 			text = ReplaceSceneMechanismRuleForFollowing(text);
 		}
-		return PrependExtraRuleDisclaimer(text);
+		return PromptRuleBlockText.PrependDisclaimer(text);
 	}
 
 	private static string BuildRestrictedRuleReferralHint(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, HashSet<string> excludedRuleIdSet)
@@ -29289,7 +28029,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (IsPromptRuleExcluded(excludedRuleIdSet, id))
+		if (PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, id))
 		{
 			return true;
 		}
@@ -29326,68 +28066,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private static string BuildNobleDeferenceRuntimeInstruction(bool hasAnyHero)
 	{
 		return "";
-	}
-
-	private static string ReplaceSingleRuleBlockBody(string text, string ruleId, string newBody)
-	{
-		string text2 = (text ?? "").Trim();
-		string text3 = (ruleId ?? "").Trim();
-		string text4 = (newBody ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3) || string.IsNullOrWhiteSpace(text4))
-		{
-			return text2;
-		}
-		string value = "【附加规则:" + text3 + "】";
-		int num = text2.IndexOf(value, StringComparison.OrdinalIgnoreCase);
-		if (num < 0)
-		{
-			return text2;
-		}
-		int num2 = text2.IndexOf("【附加规则:", num + value.Length, StringComparison.Ordinal);
-		string text5 = text2.Substring(0, num).TrimEnd();
-		string text6 = value;
-		string text7 = ((num2 >= 0) ? text2.Substring(num2).TrimStart() : "");
-		StringBuilder stringBuilder = new StringBuilder();
-		if (!string.IsNullOrWhiteSpace(text5))
-		{
-			stringBuilder.AppendLine(text5);
-		}
-		stringBuilder.AppendLine(text6);
-		stringBuilder.Append(text4.Trim());
-		if (!string.IsNullOrWhiteSpace(text7))
-		{
-			stringBuilder.AppendLine();
-			stringBuilder.Append(text7);
-		}
-		return stringBuilder.ToString().Trim();
-	}
-
-	private static string RemoveSingleRuleBlock(string text, string ruleId)
-	{
-		string text2 = (text ?? "").Trim();
-		string text3 = (ruleId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
-		{
-			return text2;
-		}
-		string value = "【附加规则:" + text3 + "】";
-		int num = text2.IndexOf(value, StringComparison.OrdinalIgnoreCase);
-		if (num < 0)
-		{
-			return text2;
-		}
-		int num2 = text2.IndexOf("【附加规则:", num + value.Length, StringComparison.Ordinal);
-		string text4 = text2.Substring(0, num).TrimEnd();
-		string text5 = ((num2 >= 0) ? text2.Substring(num2).TrimStart() : "");
-		if (string.IsNullOrWhiteSpace(text4))
-		{
-			return text5.Trim();
-		}
-		if (string.IsNullOrWhiteSpace(text5))
-		{
-			return text4.Trim();
-		}
-		return (text4 + Environment.NewLine + text5).Trim();
 	}
 
 	private static bool IsSceneFollowingAgentForRules(int targetAgentIndex)
@@ -29435,45 +28113,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text.Substring(0, num).TrimEnd() + Environment.NewLine + replacement + Environment.NewLine + text.Substring(num2).TrimStart();
 	}
 
-	private static int CountInjectedRuleBlocks(string text)
-	{
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return 0;
-		}
-		int num = 0;
-		int num2 = 0;
-		while (num2 >= 0 && num2 < text.Length)
-		{
-			num2 = text.IndexOf("【附加规则:", num2, StringComparison.Ordinal);
-			if (num2 < 0)
-			{
-				break;
-			}
-			num++;
-			num2 += 6;
-		}
-		return num;
-	}
-
-	private static string PrependExtraRuleDisclaimer(string text)
-	{
-		const string disclaimer = "【说明】你不必提到附加规则内的内容，除非有人问起。";
-		if (string.IsNullOrWhiteSpace(text) || CountInjectedRuleBlocks(text) <= 0)
-		{
-			return text;
-		}
-		if (text.IndexOf(disclaimer, StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return text;
-		}
-		return disclaimer + Environment.NewLine + text.TrimStart();
-	}
-
 	private static string AppendPlayerPartySharedResourcePrompt(string text, Hero targetHero, CharacterObject targetCharacter = null)
 	{
 		const string marker = "【队内资源共享限制】";
-		if (string.IsNullOrWhiteSpace(text) || CountInjectedRuleBlocks(text) <= 0)
+		if (string.IsNullOrWhiteSpace(text) || PromptRuleBlockText.Count(text) <= 0)
 		{
 			return text;
 		}
@@ -29493,20 +28136,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		string prompt = marker + "由于你是" + playerName + "的队内成员，你和" + playerName + "的大部分资源都共享，例如定居点、工坊、商队和部队。正文中不要把部队转移或固定资产转移当作你与" + playerName + "之间需要谈判或执行的交易；如果被问到，应自然说明队内资源共享，不要提出部队转移或固定资产转移。";
 		return text.TrimEnd() + Environment.NewLine + prompt;
-	}
-
-	private static void AppendRuleBlock(StringBuilder sb, string ruleId, string body)
-	{
-		if (sb != null)
-		{
-			string text = (ruleId ?? "").Trim();
-			string value = (body ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
-			{
-				sb.AppendLine("【附加规则:" + text + "】");
-				sb.AppendLine(value);
-			}
-		}
 	}
 
 	private static Agent ResolveDuelRuntimeTargetAgent(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
@@ -29583,147 +28212,110 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return baseInstruction;
 	}
 
-	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, bool suppressForcedMeetingTaunt = false)
+	private string BuildTriggeredRuleInstructions(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, string npcLastUtterance = null, bool includeDuelStakeContext = false, bool playerWonLastDuel = false, bool worldMapPartyCommandContext = false, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preselectedRuleIds = null, bool suppressForcedMeetingTaunt = false, List<GuardrailRuleHit> fallbackHits = null)
 	{
 		try
 		{
-			HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
-			AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-			AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-			AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
-			StringBuilder stringBuilder = new StringBuilder();
-			if (useDuelContext && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
-			{
-				if (isQualified)
-				{
-					string value = BuildDuelRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
-					if (!string.IsNullOrWhiteSpace(value))
-					{
-						AppendRuleBlock(stringBuilder, "duel", value);
-					}
-				}
-				else
-				{
-					string text10 = BuildPlayerPublicDisplayNameForPrompt(targetHero ?? targetCharacter?.HeroObject);
-					if (string.IsNullOrWhiteSpace(text10))
-					{
-						text10 = "玩家";
-					}
-					AppendRuleBlock(stringBuilder, "duel", $"{text10}触发了决斗相关话题，但等级({playerTier})过低。请拒绝决斗并羞辱其不自量力。严禁使用决斗标签，如果玩家执意要和你单挑，那么你可以在回复末尾输出[ACTION:MEETING_TAUNT_BATTLE]，这样可以让你率领的所有军队攻击他");
-				}
-			}
-			if (AIConfigHandler.RewardEnabled && useRewardContext && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
-			{
-				string text = "";
-				if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
-				{
-					string settlementMerchantRewardInstruction = RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter);
-					if (!string.IsNullOrWhiteSpace(settlementMerchantRewardInstruction))
-					{
-						string rewardInstruction = AIConfigHandler.BuildRuntimeRewardInstructionForExternal(null, targetCharacter);
-						text = (string.IsNullOrWhiteSpace(rewardInstruction) ? settlementMerchantRewardInstruction : (rewardInstruction.Trim() + "\n" + settlementMerchantRewardInstruction.Trim()));
-					}
-				}
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					text = (hasAnyHero ? AIConfigHandler.BuildRuntimeRewardInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.RewardNonHeroInstruction);
-				}
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					text = AIConfigHandler.RewardInstruction;
-				}
-				AppendRuleBlock(stringBuilder, "reward", text);
-				if (AIConfigHandler.DuelStakeEnabled && includeDuelStakeContext)
-				{
-					string body = (playerWonLastDuel ? AIConfigHandler.DuelStakePlayerWinInstruction : AIConfigHandler.DuelStakeNpcWinInstruction);
-					AppendRuleBlock(stringBuilder, "duel_stake", body);
-				}
-			}
-			if (AIConfigHandler.LoanEnabled && isLoanContext && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
-			{
-				bool flag11 = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
-				string text2 = ((hasAnyHero || flag11) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.LoanNonHeroInstruction);
-				if (string.IsNullOrWhiteSpace(text2))
-				{
-					text2 = AIConfigHandler.LoanInstruction;
-				}
-				AppendRuleBlock(stringBuilder, "loan", text2);
-			}
-			if (AIConfigHandler.SurroundingsEnabled && isSurroundingsContext && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
-			{
-				AppendRuleBlock(stringBuilder, "surroundings", AIConfigHandler.SurroundingsInstruction);
-			}
-			string text3 = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds);
-			if (worldMapPartyCommandContext && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command") && (string.IsNullOrWhiteSpace(text3) || text3.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0) && stringBuilder.ToString().IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase) < 0)
-			{
-				string worldMapInstruction = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : AIConfigHandler.GetGuardrailRuleNonHeroInstruction("worldmap_party_command");
-				if (string.IsNullOrWhiteSpace(worldMapInstruction))
-				{
-					worldMapInstruction = AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command");
-				}
-				AppendRuleBlock(stringBuilder, "worldmap_party_command", worldMapInstruction);
-			}
-			if (IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex) && !string.IsNullOrWhiteSpace(text3) && text3.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				bool flag12 = stringBuilder.ToString().IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase) >= 0;
-				bool flag13 = stringBuilder.ToString().IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase) >= 0;
-				if (AIConfigHandler.RewardEnabled && !flag12 && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
-				{
-					string rewardText = "";
-					if (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null)
-					{
-						string settlementMerchantRewardInstruction = RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter);
-						if (!string.IsNullOrWhiteSpace(settlementMerchantRewardInstruction))
-						{
-							string rewardInstruction = AIConfigHandler.BuildRuntimeRewardInstructionForExternal(null, targetCharacter);
-							rewardText = (string.IsNullOrWhiteSpace(rewardInstruction) ? settlementMerchantRewardInstruction : (rewardInstruction.Trim() + "\n" + settlementMerchantRewardInstruction.Trim()));
-						}
-					}
-					if (string.IsNullOrWhiteSpace(rewardText))
-					{
-						rewardText = (hasAnyHero ? AIConfigHandler.BuildRuntimeRewardInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.RewardNonHeroInstruction);
-					}
-					if (string.IsNullOrWhiteSpace(rewardText))
-					{
-						rewardText = AIConfigHandler.RewardInstruction;
-					}
-					if (!string.IsNullOrWhiteSpace(rewardText))
-					{
-						AppendRuleBlock(stringBuilder, "reward", rewardText);
-					}
-				}
-				if (AIConfigHandler.LoanEnabled && !flag13 && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
-				{
-					bool flag11 = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
-					string text5 = ((hasAnyHero || flag11) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : AIConfigHandler.LoanNonHeroInstruction);
-					if (string.IsNullOrWhiteSpace(text5))
-					{
-						text5 = AIConfigHandler.LoanInstruction;
-					}
-					if (!string.IsNullOrWhiteSpace(text5))
-					{
-						AppendRuleBlock(stringBuilder, "loan", text5);
-					}
-				}
-			}
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				stringBuilder.AppendLine(text3.Trim());
-			}
-			if (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MeetingTauntRuleId) && !suppressForcedMeetingTaunt && stringBuilder.ToString().IndexOf(AfGcczShoutBridge.MeetingTauntRuleBlockMarker, StringComparison.OrdinalIgnoreCase) < 0)
-			{
-				string text4 = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
-				if (!string.IsNullOrWhiteSpace(text4))
-				{
-					AppendRuleBlock(stringBuilder, "meeting_taunt", text4);
-				}
-			}
-			return stringBuilder.ToString().Trim();
+			return PromptRuleInstructionComposer.Compose(CaptureRuleInstructionSections(input, targetHero, useDuelContext, isQualified, playerTier, useRewardContext, isLoanContext, isSurroundingsContext, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuel, worldMapPartyCommandContext, excludedRuleIds, preselectedRuleIds, suppressForcedMeetingTaunt, fallbackHits));
 		}
 		catch
 		{
 			return "";
 		}
+	}
+
+	/// <summary>
+	/// Game-thread capture of every runtime rule body the triggered-rule block can contain. Bodies are
+	/// resolved only when their topic applies (legacy laziness), so no extra Reward/Duel reads happen.
+	/// Scheduled builds format worker-selected fallback hits here; synchronous compatibility callers
+	/// may still select their own hits before the same game-thread runtime instruction capture.
+	/// </summary>
+	private PromptRuleInstructionSections CaptureRuleInstructionSections(string input, Hero targetHero, bool useDuelContext, bool isQualified, int playerTier, bool useRewardContext, bool isLoanContext, bool isSurroundingsContext, bool hasAnyHero, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, string npcLastUtterance, bool includeDuelStakeContext, bool playerWonLastDuel, bool worldMapPartyCommandContext, IEnumerable<string> excludedRuleIds, IEnumerable<string> preselectedRuleIds, bool suppressForcedMeetingTaunt, List<GuardrailRuleHit> fallbackHits)
+	{
+		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
+		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
+		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
+		PromptRuleInstructionSections s = new PromptRuleInstructionSections
+		{
+			ExcludedRuleIds = excludedRuleIdSet,
+			UseDuelContext = useDuelContext,
+			IsQualified = isQualified,
+			PlayerTier = playerTier,
+			IsSurroundingsContext = AIConfigHandler.SurroundingsEnabled && isSurroundingsContext,
+			WorldMapPartyCommandContext = worldMapPartyCommandContext
+		};
+		if (useDuelContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "duel"))
+		{
+			if (isQualified)
+			{
+				s.DuelInstruction = BuildDuelRuntimeInstruction(targetHero, targetCharacter, targetAgentIndex);
+			}
+			else
+			{
+				s.PlayerDisplayName = BuildPlayerPublicDisplayNameForPrompt(targetHero ?? targetCharacter?.HeroObject);
+			}
+		}
+		bool rewardWanted = AIConfigHandler.RewardEnabled && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "reward");
+		bool loanWanted = AIConfigHandler.LoanEnabled && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "loan");
+		s.UseRewardContext = rewardWanted && useRewardContext;
+		s.IsLoanContext = loanWanted && isLoanContext;
+		if (s.UseRewardContext)
+		{
+			s.RewardInstruction = ResolveRewardInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+			s.IncludeDuelStake = AIConfigHandler.DuelStakeEnabled && includeDuelStakeContext;
+			s.DuelStakeInstruction = playerWonLastDuel ? AIConfigHandler.DuelStakePlayerWinInstruction : AIConfigHandler.DuelStakeNpcWinInstruction;
+		}
+		if (s.IsLoanContext)
+		{
+			s.LoanInstruction = ResolveLoanInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+		}
+		if (s.IsSurroundingsContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "surroundings"))
+		{
+			s.SurroundingsInstruction = AIConfigHandler.SurroundingsInstruction;
+		}
+		s.ExtraRuleInstructions = BuildExtraRuleInstructions(input, npcLastUtterance, targetHero, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIdSet, preselectedRuleIds, fallbackHits);
+		if (worldMapPartyCommandContext && !PromptRuleIdPolicy.IsExcluded(excludedRuleIdSet, "worldmap_party_command"))
+		{
+			string worldMapInstruction = hasAnyHero ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : AIConfigHandler.GetGuardrailRuleNonHeroInstruction("worldmap_party_command");
+			s.WorldMapInstruction = string.IsNullOrWhiteSpace(worldMapInstruction) ? AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command") : worldMapInstruction;
+		}
+		if (PromptRuleBlockText.Has(s.ExtraRuleInstructions, "party_transfer") && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex))
+		{
+			s.PartyTransferEligible = true;
+			if (rewardWanted && s.RewardInstruction == null)
+			{
+				s.RewardInstruction = ResolveRewardInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+			}
+			if (loanWanted && s.LoanInstruction == null)
+			{
+				s.LoanInstruction = ResolveLoanInstructionForPrompt(hasAnyHero, targetHero, targetCharacter);
+			}
+			if (!rewardWanted) s.RewardInstruction = null;
+			if (!loanWanted) s.LoanInstruction = null;
+		}
+		if (AfGcczShoutBridge.ShouldAllowAfRuleForCurrentStage(TownAfRuleRoutingPolicy.MeetingTauntRuleId) && !suppressForcedMeetingTaunt)
+		{
+			s.AllowMeetingTaunt = true;
+			s.MeetingTauntMarker = AfGcczShoutBridge.MeetingTauntRuleBlockMarker;
+			s.MeetingTauntInstruction = SceneTauntBehavior.BuildUnifiedTauntRuntimeInstructionForExternal(targetHero ?? targetCharacter?.HeroObject, targetCharacter, targetAgentIndex);
+		}
+		return s;
+	}
+
+	private static string ResolveRewardInstructionForPrompt(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter)
+	{
+		string merchant = (!hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null) ? RewardSystemBehavior.Instance.BuildSettlementMerchantRewardInstruction(targetCharacter) : null;
+		string runtimeForMerchant = string.IsNullOrWhiteSpace(merchant) ? null : AIConfigHandler.BuildRuntimeRewardInstructionForExternal(null, targetCharacter);
+		string runtime = hasAnyHero ? AIConfigHandler.BuildRuntimeRewardInstructionForExternal(targetHero, targetCharacter) : null;
+		return PromptRuleInstructionComposer.ResolveRewardInstruction(hasAnyHero, merchant, runtimeForMerchant, runtime, AIConfigHandler.RewardNonHeroInstruction, AIConfigHandler.RewardInstruction);
+	}
+
+	private static string ResolveLoanInstructionForPrompt(bool hasAnyHero, Hero targetHero, CharacterObject targetCharacter)
+	{
+		bool merchantKind = !hasAnyHero && targetCharacter != null && RewardSystemBehavior.Instance != null && RewardSystemBehavior.Instance.TryGetSettlementMerchantKind(targetCharacter, out var _);
+		string runtime = (hasAnyHero || merchantKind) ? AIConfigHandler.BuildRuntimeLoanInstructionForExternal(targetHero, targetCharacter) : null;
+		return PromptRuleInstructionComposer.ResolveLoanInstruction(hasAnyHero, merchantKind, runtime, AIConfigHandler.LoanNonHeroInstruction, AIConfigHandler.LoanInstruction);
 	}
 
 	public static List<Hero> GetDevEditableHeroListForExternal()
@@ -29957,23 +28549,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 			text = "该NPC";
 		}
 		return "正在生成" + text + "的个性与背景，请稍等......";
-	}
-
-	public static async Task EnsureNpcPersonaGeneratedForExternalAsync(Hero hero, bool ignoreRetryCooldown = false)
-	{
-		try
-		{
-			MyBehavior inst = Campaign.Current?.GetCampaignBehavior<MyBehavior>();
-			if (inst != null && hero != null)
-			{
-				await inst.EnsureNpcPersonaGeneratedAsync(hero, ignoreRetryCooldown);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("NpcPersona", "[ERROR] External persona generation failed: " + ex.Message);
-			LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
-		}
 	}
 
 	public static string BuildCurrentDateFactForExternal()
@@ -30638,13 +29213,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 				_npcRecentActions[ownerKey] = entries;
 			}
 			int day = GetCurrentGameDayIndexSafe();
-			RemoveInvalidNpcActionEntries(entries, day - RecentNpcActionWindowDays + 1, true);
-			string normalizedKey = NormalizeNpcActionStableKey(stableKey, cleanText);
-			if (ContainsNpcActionStableKey(entries, normalizedKey)) return;
+			if (NpcActionLedger.RemoveInvalid(entries, NpcActionLedger.RecentWindowMinimumDay(day), true, e => e.Text, e => e.Day))
+			{
+				_weeklyReportMaterialRevisions.MarkAll();
+			}
+			string normalizedKey = NpcActionLedger.NormalizeStableKey(stableKey, cleanText);
+			if (NpcActionLedger.ContainsStableKey(entries, normalizedKey, e => e.StableKey)) return;
 			entries.Add(new NpcActionEntry
 			{
 				Day = day,
-				Order = GetNextNpcActionOrder(entries, day),
+				Order = NpcActionLedger.NextOrder(entries, day, e => e.Day, e => e.Order),
 				Sequence = ++_npcActionGlobalOrderCounter,
 				GameDate = GetCurrentGameDateTextSafe(),
 				Text = cleanText,
@@ -30652,8 +29230,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 				ActionKind = (actionKind ?? "").Trim(),
 				IsMajor = false
 			});
+			_weeklyReportMaterialRevisions.MarkDay(day);
 			entries.Sort(CompareNpcActionTimeline);
-			if (entries.Count > MaxRecentNpcActionEntriesPerHero) entries.RemoveRange(0, entries.Count - MaxRecentNpcActionEntriesPerHero);
+			if (entries.Count > MaxRecentNpcActionEntriesPerHero)
+			{
+				entries.RemoveRange(0, entries.Count - MaxRecentNpcActionEntriesPerHero);
+				_weeklyReportMaterialRevisions.MarkAll();
+			}
 			RefreshNpcRecentActionStableKeyIndexForHero(ownerKey, entries);
 			LogNonHeroMemoryTrace("stage=recent_action_commit memoryId=" + ownerKey + " name=" + (npcName ?? "NPC") + " day=" + day + " key=" + normalizedKey);
 		}
@@ -30955,14 +29538,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string detail = null, bool immediate = true)
+	private static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, PromptBuildRequest request, string detail = null, bool immediate = true)
+	{
+		LogShoutPromptContextStage(stage, totalSw, stageSw, request?.TargetHeroId ?? request?.TargetCharacterId, request?.TargetAgentIndex ?? -1, detail, immediate);
+	}
+
+	private static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, string targetId, int targetAgentIndex, string detail, bool immediate)
 	{
 		try
 		{
 			string safeStage = string.IsNullOrWhiteSpace(stage) ? "unknown" : stage.Trim();
 			double stageMs = stageSw?.Elapsed.TotalMilliseconds ?? 0.0;
 			double totalMs = totalSw?.Elapsed.TotalMilliseconds ?? 0.0;
-			string target = targetHero?.StringId ?? targetCharacter?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "unknown";
+			string target = string.IsNullOrWhiteSpace(targetId) ? "unknown" : targetId;
 			string suffix = string.IsNullOrWhiteSpace(detail) ? "" : " " + detail.Trim();
 			string message = "[NativePerf] prompt_context_stage stage=" + safeStage + " target=" + target + " agent=" + targetAgentIndex + " stageMs=" + Math.Round(stageMs, 2) + " totalMs=" + Math.Round(totalMs, 2) + suffix;
 			Logger.Log("Logic", message);
@@ -30976,6 +29564,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
+	}
+
+	private static void LogShoutPromptContextStage(string stage, Stopwatch totalSw, Stopwatch stageSw, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string detail = null, bool immediate = true)
+	{
+		LogShoutPromptContextStage(stage, totalSw, stageSw, targetHero?.StringId ?? targetCharacter?.StringId ?? targetCharacter?.HeroObject?.StringId, targetAgentIndex, detail, immediate);
 	}
 
 	public static List<string> RunCourierRulePreprocessForExternal(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, IEnumerable<string> excludedRuleIds = null)
@@ -31017,50 +29610,74 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private List<string> RunCourierRulePreprocessInternal(Hero targetHero, string input, string extraFact, out MentionedWorldEntities mentionedEntities, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, IEnumerable<string> excludedRuleIds)
 	{
-		List<string> result = new List<string>();
-		mentionedEntities = new MentionedWorldEntities();
-		HashSet<string> excludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
-		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet, targetAgentIndex);
-		AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
-		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex))
+		CourierPreprocessRequest request = BeginCourierRulePreprocess(targetHero, input, extraFact, targetCharacter, kingdomIdOverride, targetAgentIndex, excludedRuleIds);
+		if (request == null)
 		{
-			Logger.Log("CourierDelivery", "[Preprocess] skipped: active GCCZ siege aftermath scene uses unconditional postprocess routing.");
-			return result;
+			mentionedEntities = new MentionedWorldEntities();
+			return new List<string>();
 		}
-		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
-		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
-		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(request.Target, request.Eligibility);
 		try
 		{
-			AIConfigHandler.SetGuardrailSemanticContext(BuildGuardrailSemanticContext(targetHero, extraFact));
-			string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
-			List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, excludedRuleIdSet, out mentionedEntities);
-			result = (hits ?? new List<GuardrailRuleHit>())
-				.Where(x => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
-				.OrderByDescending(x => x.Priority)
-				.ThenByDescending(x => x.Score)
-				.Select(x => x.RuleId.Trim().ToLowerInvariant())
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.ToList();
-			Logger.Log("CourierDelivery", "[Preprocess] targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " npcRecall=" + (string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on") + " hits=" + (result.Count == 0 ? "(none)" : string.Join(",", result)));
-			return result;
+			return RunCourierRulePreprocessRetrieval(request, out mentionedEntities);
 		}
 		finally
 		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 			AIConfigHandler.SetGuardrailSemanticContext("");
 		}
+	}
+
+	/// <summary>Detached input for the Courier preprocess retrieval; captured on the game thread.</summary>
+	internal sealed class CourierPreprocessRequest
+	{
+		internal string Input;
+		internal string TargetHeroId;
+		internal string TargetCharacterId;
+		internal PromptRuntimeTargetBinding Target;
+		internal PromptRuleEligibility Eligibility;
+		internal HashSet<string> ExcludedRuleIds;
+		internal string GuardrailSemanticContext;
+		internal string NpcLastUtterance;
+	}
+
+	/// <summary>Step 1 (game thread): exclusion set, target binding, history context. Null when the GCCZ scene bypasses preprocess.</summary>
+	internal CourierPreprocessRequest BeginCourierRulePreprocess(Hero targetHero, string input, string extraFact, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, IEnumerable<string> excludedRuleIds)
+	{
+		HashSet<string> excludedRuleIdSet = PromptRuleIdPolicy.BuildRuleIdSet(excludedRuleIds);
+		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
+		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
+		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet, targetAgentIndex);
+		PromptRuleIdPolicy.AddPreprocessOnlyResidentRuleExclusions(excludedRuleIdSet);
+		if (AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex))
+		{
+			Logger.Log("CourierDelivery", "[Preprocess] skipped: active GCCZ siege aftermath scene uses unconditional postprocess routing.");
+			return null;
+		}
+		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		PromptRuntimeTargetBinding runtimeTarget = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);
+		return new CourierPreprocessRequest
+		{
+			Input = input,
+			TargetHeroId = targetHero?.StringId,
+			TargetCharacterId = targetCharacter?.StringId,
+			Target = runtimeTarget,
+			Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget),
+			ExcludedRuleIds = excludedRuleIdSet,
+			GuardrailSemanticContext = BuildGuardrailSemanticContext(targetHero, extraFact),
+			NpcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex)
+		};
+	}
+
+	/// <summary>Step 2 (any thread): semantic rule retrieval on the detached request. Caller applies the target binding to the ambient context.</summary>
+	internal List<string> RunCourierRulePreprocessRetrieval(CourierPreprocessRequest request, out MentionedWorldEntities mentionedEntities)
+	{
+		AIConfigHandler.SetGuardrailSemanticContext(request.GuardrailSemanticContext);
+		List<GuardrailRuleHit> hits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(request.Input, request.NpcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, includeBuiltInRules: true, request.ExcludedRuleIds, out mentionedEntities);
+		List<string> result = PromptRuleIdPolicy.OrderPreprocessHitIds(hits);
+		Logger.Log("CourierDelivery", "[Preprocess] targetHero=" + (request.TargetHeroId ?? "null") + " targetCharacter=" + (request.TargetCharacterId ?? "null") + " npcRecall=" + (string.IsNullOrWhiteSpace(request.NpcLastUtterance) ? "off" : "on") + " hits=" + (result.Count == 0 ? "(none)" : string.Join(",", result)));
+		return result;
 	}
 
 	public static string BuildHeroPrisonerStatusPromptLineForExternal(Hero hero)
@@ -31157,9 +29774,35 @@ public partial class MyBehavior : CampaignBehaviorBase
 	}
 
 	// Primary runtime chat path: scene shout / non-native conversation UI.
+	// The build is five schedulable steps: Begin (game thread) -> Routing (any thread) ->
+	// Knowledge snapshot (game thread) -> Knowledge retrieval (any thread) -> Complete (game thread).
+	// Channels with their own schedulers (Native, Courier) call the steps directly and
+	// re-validate ownership between them; this method is the sequential composition for the rest.
 	private ShoutPromptContext BuildShoutPromptContextForExternalInternal(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero = true, CharacterObject targetCharacter = null, string kingdomIdOverride = null, int targetAgentIndex = -1, bool suppressDynamicRuleAndLore = false, bool usePrefetchedLoreContext = false, string prefetchedLoreContext = null, IEnumerable<string> excludedRuleIds = null, IEnumerable<string> preprocessExcludedRuleIds = null, IEnumerable<string> forcedPreprocessRuleIds = null, MentionedWorldEntities preprocessMentionedEntities = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
-		ShoutPromptContext shoutPromptContext = new ShoutPromptContext
+		PromptBuildPhases phases = BeginSharedPromptBuild(targetHero, input, extraFact, cultureIdOverride, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds, preprocessMentionedEntities);
+		if (phases == null)
+		{
+			return CreateEmptyShoutPromptContext();
+		}
+		using IDisposable guardrailScopeJ03 = AIConfigHandler.BeginGuardrailRuntimeScope();
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility);
+		try
+		{
+			RunSharedPromptRouting(phases);
+			CaptureSharedKnowledgeSnapshot(phases, targetHero ?? targetCharacter?.HeroObject);
+			RunSharedKnowledgeRetrieval(phases);
+			return CompleteSharedPromptBuild(phases, targetHero, targetCharacter, weeklyPromptSnapshot);
+		}
+		finally
+		{
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
+		}
+	}
+
+	internal static ShoutPromptContext CreateEmptyShoutPromptContext()
+	{
+		return new ShoutPromptContext
 		{
 			Extras = "",
 			EntityPostprocessContext = "",
@@ -31171,364 +29814,345 @@ public partial class MyBehavior : CampaignBehaviorBase
 			IsLoanContext = false,
 			IsQualified = true
 		};
+	}
+
+	/// <summary>
+	/// Step 1 (game thread): capture the detached request, publish the exclusion lists and the
+	/// preprocess-excluded block. Returns null for an empty input (legacy early return).
+	/// Callers own the guardrail runtime scope; this step does not touch ambient retrieval context.
+	/// </summary>
+	internal PromptBuildPhases BeginSharedPromptBuild(Hero targetHero, string input, string extraFact, string cultureIdOverride, bool hasAnyHero, CharacterObject targetCharacter, string kingdomIdOverride, int targetAgentIndex, bool suppressDynamicRuleAndLore, bool usePrefetchedLoreContext, string prefetchedLoreContext, IEnumerable<string> excludedRuleIds, IEnumerable<string> preprocessExcludedRuleIds, IEnumerable<string> forcedPreprocessRuleIds, MentionedWorldEntities preprocessMentionedEntities)
+	{
 		if (string.IsNullOrWhiteSpace(input) && string.IsNullOrWhiteSpace(extraFact))
 		{
-			return shoutPromptContext;
+			return null;
 		}
 		targetHero = targetHero ?? targetCharacter?.HeroObject;
-		MentionedWorldEntities directPreprocessMentionedEntities = preprocessMentionedEntities?.Clone() ?? new MentionedWorldEntities();
-		Stopwatch promptContextTotalSw = Stopwatch.StartNew();
-		Stopwatch promptContextStageSw = Stopwatch.StartNew();
-		using FreezeWatchdog.ScopeToken promptContextScope = FreezeWatchdog.Scope("ShoutPromptContext.Build");
-		LogShoutPromptContextStage("start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "inputLen=" + ((input ?? "").Length) + " extraLen=" + ((extraFact ?? "").Length) + " suppressDynamic=" + suppressDynamicRuleAndLore + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		HashSet<string> explicitExcludedRuleIdSet = BuildPromptRuleIdSet(excludedRuleIds);
-		HashSet<string> excludedRuleIdSet = new HashSet<string>(explicitExcludedRuleIdSet, StringComparer.OrdinalIgnoreCase);
-		AddPlayerCompanionOrFamilyRuleExclusionsForTarget(excludedRuleIdSet, targetHero, targetCharacter);
-		AddWorldMapCommandRuleExclusionForTarget(excludedRuleIdSet, targetHero, targetCharacter, targetAgentIndex);
-		AddSceneMoveRuleExclusionForCurrentMission(excludedRuleIdSet);
-		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(excludedRuleIdSet);
-		// These are topics removed from the candidate list before routing. They are
-		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
-		bool completeRuntimeExcludedRuleIds = preprocessExcludedRuleIds == null;
-		HashSet<string> preprocessExcludedRuleIdSet = preprocessExcludedRuleIds == null ? new HashSet<string>(excludedRuleIdSet, StringComparer.OrdinalIgnoreCase) : BuildPromptRuleIdSet(preprocessExcludedRuleIds);
-		foreach (string excludedRuleId in explicitExcludedRuleIdSet)
+		PromptBuildPhases phases = new PromptBuildPhases
 		{
-			if (!string.IsNullOrWhiteSpace(excludedRuleId))
-			{
-				preprocessExcludedRuleIdSet.Add(excludedRuleId.Trim());
-			}
+			DirectPreprocessMentions = preprocessMentionedEntities?.Clone() ?? new MentionedWorldEntities(),
+			TotalStopwatch = Stopwatch.StartNew(),
+			StageStopwatch = Stopwatch.StartNew()
+		};
+		LogShoutPromptContextStage("start", phases.TotalStopwatch, phases.StageStopwatch, targetHero, targetCharacter, targetAgentIndex, "inputLen=" + ((input ?? "").Length) + " extraLen=" + ((extraFact ?? "").Length) + " suppressDynamic=" + suppressDynamicRuleAndLore + " thread=" + Thread.CurrentThread.ManagedThreadId);
+		PromptBuildRequest request = CapturePromptBuildRequest(targetHero, targetCharacter, input, extraFact, cultureIdOverride, kingdomIdOverride, targetAgentIndex, hasAnyHero, suppressDynamicRuleAndLore, usePrefetchedLoreContext, prefetchedLoreContext, excludedRuleIds, preprocessExcludedRuleIds, forcedPreprocessRuleIds);
+		phases.Request = request;
+		if (!request.SuppressDynamicRuleAndLore && request.CompleteRuntimeExcludedRuleIds)
+		{
+			PromptExclusionSets.AddUnavailableConfiguredRules(request.PreprocessExcludedRuleIds, AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal(),
+				id => AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(id, request.HasAnyHero));
 		}
-		AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(preprocessExcludedRuleIdSet);
-		AddPreprocessOnlyResidentRuleExclusions(preprocessExcludedRuleIdSet);
-		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
-		AIConfigHandler.SetGuardrailRuntimeTargetKingdom(targetKingdomId);
-		string runtimeTargetHeroId = targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "";
-		AIConfigHandler.SetGuardrailRuntimeTargetHero(runtimeTargetHeroId);
-		AIConfigHandler.SetGuardrailRuntimeTargetCharacter(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetTroop(targetCharacter?.StringId ?? "");
-		AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank((targetHero == null && targetCharacter != null) ? (targetCharacter.IsSoldier ? "soldier" : "commoner") : "");
-		AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(targetAgentIndex);
+		if (!request.SuppressDynamicRuleAndLore)
+		{
+			phases.PreprocessExcludedRuleIds = PromptExclusionSets.ToOrderedList(request.PreprocessExcludedRuleIds);
+			phases.PreprocessExcludedRuleBlock = AIConfigHandler.BuildPreprocessExcludedRuleBlockForExternal(phases.PreprocessExcludedRuleIds);
+		}
+		LogShoutPromptContextStage("runtime_init_done", phases.TotalStopwatch, phases.StageStopwatch, targetHero, targetCharacter, targetAgentIndex, "semanticContextLen=" + ((request.GuardrailSemanticContext ?? "").Length) + " targetKingdom=" + (request.TargetKingdomId ?? ""));
+		return phases;
+	}
+
+	/// <summary>
+	/// Step 2 (any thread): topic routing plus mention retrieval. Reads only the detached request,
+	/// configuration and caches; may call the auxiliary router / ONNX. The caller must have applied
+	/// the request target to the ambient retrieval context on this thread (see ApplyGuardrailRuntimeTarget).
+	/// </summary>
+	internal void RunSharedPromptRouting(PromptBuildPhases phases)
+	{
+		PromptBuildRequest request = phases.Request;
+		if (!request.SuppressDynamicRuleAndLore)
+		{
+			AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
+		}
+		AIConfigHandler.SetGuardrailSemanticContext(request.GuardrailSemanticContext);
+		if (request.BypassRulePreprocess)
+		{
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess skipped=gccz_active targetHero=" + (request.TargetHeroId ?? "null") + " targetCharacter=" + (request.TargetCharacterId ?? "null"));
+		}
+		PromptRoutingInput routingInput = CreatePromptRoutingInput(request);
+		PromptRoutingResult routing = PromptTopicRoutingStage.Run(routingInput, CreatePromptRoutingPorts());
+		phases.Routing = routing;
+		phases.DirectPreprocessMentions.Merge(routing.AuxiliaryMentions);
+		LogPromptRoutingDiagnostics(request, routing, routingInput);
+		LogShoutPromptContextStage("aux_preprocess_done", phases.TotalStopwatch, phases.StageStopwatch, request, "auxHits=" + PromptTopicRoutingStage.DescribeHits(routing.AuxiliaryRuleHitIds) + " forcedHits=" + PromptTopicRoutingStage.DescribeHits(routing.ForcedRuleHitIds, "(none)"));
+		PromptRetrievalCapture retrieval = new PromptRetrievalCapture();
+		if (!request.SuppressDynamicRuleAndLore)
+		{
+			// Full mention set for this build: caller-supplied + router-discovered + mention store + latest.
+			// The capture phase uses this same detached mention set for Lore and entity candidates.
+			MentionedWorldEntities mentions = phases.DirectPreprocessMentions.Clone();
+			mentions.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(request.Input, request.NpcLastUtterance, request.GuardrailSemanticContext));
+			mentions.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
+			retrieval.AuxiliaryMentions = mentions;
+		}
+		phases.Retrieval = retrieval;
+	}
+
+	/// <summary>Game thread: prepare the Lore index and capture entity candidates after routing supplied all mentions.</summary>
+	internal void CaptureSharedKnowledgeSnapshot(PromptBuildPhases phases, Hero targetHero)
+	{
+		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore)
+		{
+			return;
+		}
+		if (!phases.Request.HasPrefetchedLore)
+		{
+			phases.Retrieval.LoreSettings = KnowledgeLibraryBehavior.CapturePromptLoreSettings();
+			phases.Retrieval.LoreRuleVersion = KnowledgeLibraryBehavior.PreparePromptLoreRetrieval(phases.Retrieval.AuxiliaryMentions);
+		}
 		try
 		{
-			if (!suppressDynamicRuleAndLore && completeRuntimeExcludedRuleIds)
-			{
-				foreach (string configuredRuleId in AIConfigHandler.GetConfiguredEnabledGuardrailRuleIdsForExternal())
-				{
-					if (!string.IsNullOrWhiteSpace(configuredRuleId)
-						&& !AIConfigHandler.IsGuardrailRuleAvailableToPreprocessForExternal(configuredRuleId, hasAnyHero))
-					{
-						preprocessExcludedRuleIdSet.Add(configuredRuleId.Trim());
-					}
-				}
-			}
-			if (!suppressDynamicRuleAndLore)
-			{
-				shoutPromptContext.PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet
-					.Where((string ruleId) => !string.IsNullOrWhiteSpace(ruleId))
-					.Select((string ruleId) => ruleId.Trim())
-					.Distinct(StringComparer.OrdinalIgnoreCase)
-					.ToList();
-				shoutPromptContext.PreprocessExcludedRuleBlock = AIConfigHandler.BuildPreprocessExcludedRuleBlockForExternal(shoutPromptContext.PreprocessExcludedRuleIds);
-			}
-			if (!suppressDynamicRuleAndLore)
-			{
-				AIConfigHandler.ClearLatestAuxiliaryMentionedEntitiesForExternal();
-			}
-			string guardrailSemanticContext = suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact);
-			AIConfigHandler.SetGuardrailSemanticContext(guardrailSemanticContext);
-			LogShoutPromptContextStage("runtime_init_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "semanticContextLen=" + ((guardrailSemanticContext ?? "").Length) + " targetKingdom=" + (targetKingdomId ?? ""));
-		string text = ((!string.IsNullOrEmpty(cultureIdOverride)) ? cultureIdOverride : (targetHero?.Culture?.StringId ?? "neutral"));
-		int num = _cachedPlayerClanTier;
-		if (num <= 0)
+			phases.Retrieval.EntityCapture = WorldEntityRetrievalService.CaptureEntityCandidates(phases.Retrieval.AuxiliaryMentions, phases.Request.Input, targetHero);
+			phases.Retrieval.EntityCandidates = phases.Retrieval.EntityCapture.Candidates;
+			phases.Retrieval.EntityMaxInjectedEntities = phases.Retrieval.EntityCapture.MaxInjectedEntities;
+		}
+		catch (Exception ex)
+		{
+			phases.Retrieval.EntityCapture = null;
+			phases.Retrieval.EntityCandidates = null;
+			Logger.Log("WorldEntityRetrieval", "candidate_capture_failed: " + ex.Message);
+		}
+	}
+
+	/// <summary>Game thread: detach only the fields needed by the Knowledge worker.</summary>
+	internal static PromptKnowledgeWorkInput CreateSharedKnowledgeWorkInput(PromptBuildPhases phases)
+	{
+		if (phases?.Retrieval == null || phases.Request.SuppressDynamicRuleAndLore)
+		{
+			return null;
+		}
+		bool needsFallbackExtraRules = phases.Request.AllowRulePreprocess && phases.Routing?.AuxiliaryRuleHitIds == null;
+		return new PromptKnowledgeWorkInput
+		{
+			Mentions = phases.Retrieval.AuxiliaryMentions?.Clone(),
+			Target = phases.Request.Target,
+			Eligibility = phases.Request.Eligibility,
+			LoreRuleVersion = phases.Retrieval.LoreRuleVersion,
+			LoreSettings = phases.Retrieval.LoreSettings,
+			HasPrefetchedLore = phases.Request.HasPrefetchedLore,
+			EntityCandidates = phases.Retrieval.EntityCandidates,
+			EntityMaxInjectedEntities = phases.Retrieval.EntityMaxInjectedEntities,
+			Input = phases.Request.Input,
+			NpcLastUtterance = phases.Request.NpcLastUtterance,
+			NeedsFallbackExtraRules = needsFallbackExtraRules,
+			ExtraRuleReturnCap = needsFallbackExtraRules ? AIConfigHandler.GuardrailRuleReturnCap : 0,
+			ExcludedRuleIds = phases.Request.ExcludedRuleIds == null ? null : new HashSet<string>(phases.Request.ExcludedRuleIds, StringComparer.OrdinalIgnoreCase),
+			GuardrailStickyTargetKey = phases.Request.GuardrailStickyTargetKey
+		};
+	}
+
+	/// <summary>Worker: select candidates from a detached input, never from the mixed game capture.</summary>
+	internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(PromptKnowledgeWorkInput input)
+	{
+		PromptKnowledgeWorkResult result = new PromptKnowledgeWorkResult();
+		if (input == null) return result;
+		using IDisposable scope = AIConfigHandler.BeginGuardrailRuntimeScope();
+		AIConfigHandler.ApplyGuardrailRuntimeTarget(input.Target, input.Eligibility);
+		try
+		{
+		if (!input.HasPrefetchedLore)
+		{
+			result.LoreCandidates = KnowledgeLibraryBehavior.CollectPromptLoreCandidates(input.Mentions, input.LoreRuleVersion, input.LoreSettings);
+		}
+		if (input.EntityCandidates != null)
 		{
 			try
 			{
-				num = Clan.PlayerClan?.Tier ?? 0;
-			}
-			catch
-			{
-			}
-			if (num <= 0)
-			{
-				try
-				{
-					num = (Hero.MainHero?.Clan?.Tier).GetValueOrDefault();
-				}
-				catch
-				{
-				}
-			}
-		}
-		int num2 = DuelSettings.GetSettings()?.MinimumClanTier ?? 0;
-		bool isQualified = num >= num2;
-		string npcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex);
-		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex);
-		bool allowRulePreprocess = !suppressDynamicRuleAndLore && !bypassRulePreprocess;
-		if (bypassRulePreprocess)
-		{
-			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess skipped=gccz_active targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null"));
-		}
-		List<string> auxiliaryRuleHitIds = null;
-		HashSet<string> auxiliaryRuleHitIdSet = null;
-		bool useAuxiliaryRuleHitSet = false;
-		if (allowRulePreprocess && AIConfigHandler.UseAuxiliaryRuleApiRetrieval)
-		{
-			try
-			{
-				List<GuardrailRuleHit> auxiliaryHits = AIConfigHandler.GetGuardrailSemanticRuleHitsForPreprocess(input, npcLastUtterance, AIConfigHandler.GuardrailRuleReturnCap, true, preprocessExcludedRuleIdSet, out var auxiliaryMentionedEntities);
-				directPreprocessMentionedEntities.Merge(auxiliaryMentionedEntities);
-				auxiliaryRuleHitIds = (auxiliaryHits ?? new List<GuardrailRuleHit>())
-					.Where((GuardrailRuleHit x) => x != null && !string.IsNullOrWhiteSpace(x.RuleId))
-					.Select((GuardrailRuleHit x) => x.RuleId.Trim().ToLowerInvariant())
-					.Where((string x) => !string.IsNullOrWhiteSpace(x) && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
-					.Distinct(StringComparer.OrdinalIgnoreCase)
-					.ToList();
-				auxiliaryRuleHitIdSet = new HashSet<string>(auxiliaryRuleHitIds, StringComparer.OrdinalIgnoreCase);
-				useAuxiliaryRuleHitSet = true;
-				Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)));
-			}
-			catch (PreprocessFormatException)
-			{
-				throw;
+				result.EntityMatches = WorldEntityRetrievalService.MatchDetachedCandidates(
+					input.EntityCandidates, input.Mentions, input.Input, input.EntityMaxInjectedEntities);
 			}
 			catch (Exception ex)
 			{
-				Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess failed=" + ex.Message);
-				auxiliaryRuleHitIds = null;
-				auxiliaryRuleHitIdSet = null;
-				useAuxiliaryRuleHitSet = false;
+				Logger.Log("WorldEntityRetrieval", "candidate_match_failed: " + ex.Message);
 			}
 		}
-		List<string> forcedRuleHitIds = bypassRulePreprocess
-			? new List<string>()
-			: NormalizePreselectedPromptRuleIds(forcedPreprocessRuleIds)
-				.Where((string x) => !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, x))
-				.Where((string x) => !IsRuntimeGatedPreprocessRuleId(x)
-					|| AIConfigHandler.CanInjectRuleTopicIntoPreprocessForExternal(x, hasAnyHero))
-				.ToList();
-		if (forcedRuleHitIds.Count > 0)
+		if (input.NeedsFallbackExtraRules)
 		{
-			if (auxiliaryRuleHitIds == null)
-			{
-				auxiliaryRuleHitIds = new List<string>();
-			}
-			foreach (string ruleId in forcedRuleHitIds)
-			{
-				if (!auxiliaryRuleHitIds.Any((string x) => string.Equals((x ?? "").Trim(), ruleId, StringComparison.OrdinalIgnoreCase)))
-				{
-					auxiliaryRuleHitIds.Add(ruleId);
-				}
-			}
-			auxiliaryRuleHitIdSet = new HashSet<string>(auxiliaryRuleHitIds, StringComparer.OrdinalIgnoreCase);
-			useAuxiliaryRuleHitSet = true;
-			Logger.Log("Logic", "[RuleInjectionDebug] stage=forced_preprocess targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " hits=" + string.Join(",", forcedRuleHitIds));
+			result.FallbackExtraRuleHits = AIConfigHandler.GetMatchedExtraRuleHitsForWorker(
+				input.Input, input.NpcLastUtterance, input.ExtraRuleReturnCap,
+				input.ExcludedRuleIds, input.GuardrailStickyTargetKey);
 		}
-		LogShoutPromptContextStage("aux_preprocess_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "auxHits=" + ((auxiliaryRuleHitIds == null) ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds))) + " forcedHits=" + ((forcedRuleHitIds == null || forcedRuleHitIds.Count == 0) ? "(none)" : string.Join(",", forcedRuleHitIds)));
-		List<string> duelTriggerKeywords = AIConfigHandler.DuelTriggerKeywords;
-		bool flag = false;
-		string matchedKeyword = "";
-		float score = 0f;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
+		return result;
+		}
+		finally
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag = auxiliaryRuleHitIdSet.Contains("duel");
-				if (flag)
-				{
-					matchedKeyword = "auxiliary_router";
-					score = 1f;
-				}
-			}
-			else
-			{
-				flag = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "duel", AIConfigHandler.DuelInstruction, duelTriggerKeywords, out matchedKeyword, out score, excludedRuleIdSet);
-			}
+			AIConfigHandler.ClearGuardrailRuntimeTarget();
 		}
-		bool liveDuelSemanticHit = flag;
-		bool flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
-		List<string> rewardTriggerKeywords = AIConfigHandler.RewardTriggerKeywords;
-		bool flag3 = false;
-		string matchedKeyword2 = "";
-		float score2 = 0f;
-		if (allowRulePreprocess && AIConfigHandler.RewardEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
+	}
+
+	internal static void ApplySharedKnowledgeRetrieval(PromptBuildPhases phases, PromptKnowledgeWorkResult result)
+	{
+		if (phases?.Retrieval == null || result == null) return;
+		phases.Retrieval.LoreCandidates = result.LoreCandidates;
+		phases.Retrieval.EntityMatches = result.EntityMatches;
+		phases.Retrieval.FallbackExtraRuleHits = result.FallbackExtraRuleHits;
+	}
+
+	// Compatibility for synchronous Scene and setter-only callers; scheduled channels use the detached overload.
+	internal void RunSharedKnowledgeRetrieval(PromptBuildPhases phases)
+	{
+		ApplySharedKnowledgeRetrieval(phases, RunSharedKnowledgeRetrieval(CreateSharedKnowledgeWorkInput(phases)));
+	}
+
+	/// <summary>
+	/// Step 3 (game thread): section capture, pure assembly and runtime appendices. The caller must
+	/// have re-validated ownership/generation before invoking it after a thread hop.
+	/// </summary>
+	internal ShoutPromptContext CompleteSharedPromptBuild(PromptBuildPhases phases, Hero targetHero, CharacterObject targetCharacter, WeeklyPromptSnapshot weeklyPromptSnapshot)
+	{
+		PromptBuildRequest request = phases.Request;
+		targetHero = targetHero ?? targetCharacter?.HeroObject;
+		int targetAgentIndex = request.TargetAgentIndex;
+		ShoutPromptContext shoutPromptContext = CreateEmptyShoutPromptContext();
+		shoutPromptContext.PreprocessExcludedRuleIds = phases.PreprocessExcludedRuleIds;
+		shoutPromptContext.PreprocessExcludedRuleBlock = phases.PreprocessExcludedRuleBlock;
+		using FreezeWatchdog.ScopeToken promptContextScope = FreezeWatchdog.Scope("ShoutPromptContext.Build");
+		PromptContextFlags contextFlags;
+		PromptExtrasSections extrasSections;
+		PromptEntityCapture entityCapture;
+		MentionedWorldEntities mentionedEntities;
+		CapturePromptSections(request, phases.Routing, phases.Retrieval, phases.DirectPreprocessMentions, targetHero, targetCharacter, weeklyPromptSnapshot, phases.TotalStopwatch, phases.StageStopwatch,
+			out contextFlags, out extrasSections, out entityCapture, out mentionedEntities);
+		shoutPromptContext.MentionedEntities = mentionedEntities.Clone();
+		PromptAssembly assembly = PromptAssemblyStage.Assemble(extrasSections, entityCapture, phases.Routing, contextFlags, request.IsQualified, request.SuppressDynamicRuleAndLore, request.PreprocessExcludedRuleIds);
+		shoutPromptContext.Extras = assembly.Extras;
+		shoutPromptContext.EntityPostprocessContext = assembly.EntityPostprocessContext;
+		shoutPromptContext.ExplicitMentionedKingdomIds = assembly.ExplicitMentionedKingdomIds;
+		shoutPromptContext.UseDuelContext = assembly.UseDuelContext;
+		shoutPromptContext.UseRewardContext = assembly.UseRewardContext;
+		shoutPromptContext.IsLoanContext = assembly.IsLoanContext;
+		shoutPromptContext.IsQualified = assembly.IsQualified;
+		shoutPromptContext.PreprocessRuleIds = assembly.PreprocessRuleIds;
+		LogShoutPromptContextStage("extras_assigned", phases.TotalStopwatch, phases.StageStopwatch, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length) + " useRewardContext=" + assembly.UseRewardContext + " useLoanContext=" + assembly.IsLoanContext);
+		LogShoutPromptContextStage("preprocess_ids_done", phases.TotalStopwatch, phases.StageStopwatch, targetHero, targetCharacter, targetAgentIndex,
+			"ids=" + PromptTopicRoutingStage.DescribeHits(shoutPromptContext.PreprocessRuleIds, "(none)")
+			+ " excluded=" + PromptTopicRoutingStage.DescribeHits(shoutPromptContext.PreprocessExcludedRuleIds, "(none)")
+			+ " excludedBlockLen=" + ((shoutPromptContext.PreprocessExcludedRuleBlock ?? "").Length));
+		ApplyPromptRuntimeAppendices(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, request.CultureId, phases.TotalStopwatch, phases.StageStopwatch);
+		LogShoutPromptContextStage("complete", phases.TotalStopwatch, phases.StageStopwatch, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length), immediate: true);
+		return shoutPromptContext;
+	}
+
+	/// <summary>Phase 1: identity, exclusion sets, qualification, history context. Game-thread reads only; no network.</summary>
+	private PromptBuildRequest CapturePromptBuildRequest(Hero targetHero, CharacterObject targetCharacter, string input, string extraFact, string cultureIdOverride, string kingdomIdOverride, int targetAgentIndex, bool hasAnyHero, bool suppressDynamicRuleAndLore, bool usePrefetchedLoreContext, string prefetchedLoreContext, IEnumerable<string> excludedRuleIds, IEnumerable<string> preprocessExcludedRuleIds, IEnumerable<string> forcedPreprocessRuleIds)
+	{
+		// These are topics removed from the candidate list before routing. They are
+		// intentionally unrelated to topics the preprocessing LLM saw but did not select.
+		PromptExclusionSets.Build(excludedRuleIds, preprocessExcludedRuleIds,
+			set =>
+			{
+				AddPlayerCompanionOrFamilyRuleExclusionsForTarget(set, targetHero, targetCharacter);
+				AddWorldMapCommandRuleExclusionForTarget(set, targetHero, targetCharacter, targetAgentIndex);
+				AddSceneMoveRuleExclusionForCurrentMission(set);
+				AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(set);
+			},
+			set => AfGcczShoutBridge.AddRuntimePreprocessRuleExclusions(set),
+			out HashSet<string> explicitExcludedRuleIdSet, out HashSet<string> excludedRuleIdSet, out HashSet<string> preprocessExcludedRuleIdSet, out bool completeRuntimeExcludedRuleIds);
+		string targetKingdomId = ResolveTargetKingdomIdForRules(targetHero, targetCharacter, kingdomIdOverride);
+		bool bypassRulePreprocess = AfGcczShoutBridge.ShouldBypassPreprocessForActiveScene(targetAgentIndex);
+		PromptRuntimeTargetBinding runtimeTarget = CreatePromptRuntimeTargetBinding(targetKingdomId, targetHero, targetCharacter, targetAgentIndex);
+		return new PromptBuildRequest
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag3 = auxiliaryRuleHitIdSet.Contains("reward");
-				if (flag3)
-				{
-					matchedKeyword2 = "auxiliary_router";
-					score2 = 1f;
-				}
-			}
-			else
-			{
-				flag3 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "reward", AIConfigHandler.RewardInstruction, rewardTriggerKeywords, out matchedKeyword2, out score2, excludedRuleIdSet);
-			}
-		}
-		bool liveRewardSemanticHit = flag3;
-		List<string> loanTriggerKeywords = AIConfigHandler.LoanTriggerKeywords;
-		bool flag4 = false;
-		string matchedKeyword3 = "";
-		float score3 = 0f;
-		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
+			Input = input,
+			ExtraFact = extraFact,
+			CultureId = cultureIdOverride,
+			KingdomIdOverride = kingdomIdOverride,
+			TargetKingdomId = targetKingdomId,
+			Target = runtimeTarget,
+			Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget),
+			TargetHeroId = targetHero?.StringId,
+			TargetCharacterId = targetCharacter?.StringId,
+			TargetDisplayName = targetHero?.Name?.ToString() ?? "某人",
+			TargetAgentIndex = targetAgentIndex,
+			HasAnyHero = hasAnyHero,
+			HasTargetHero = targetHero != null,
+			HasTargetCharacter = targetCharacter != null,
+			SuppressDynamicRuleAndLore = suppressDynamicRuleAndLore,
+			BypassRulePreprocess = bypassRulePreprocess,
+			PlayerClanTier = ResolvePlayerClanTierForPrompt(),
+			MinimumClanTier = DuelSettings.GetSettings()?.MinimumClanTier ?? 0,
+			NpcLastUtterance = GetLatestNpcDialogueUtterance(targetHero, targetCharacter, targetAgentIndex),
+			GuardrailSemanticContext = suppressDynamicRuleAndLore ? "" : BuildGuardrailSemanticContext(targetHero, extraFact),
+			UsePrefetchedLoreContext = usePrefetchedLoreContext,
+			PrefetchedLoreContext = prefetchedLoreContext,
+			ExplicitExcludedRuleIds = explicitExcludedRuleIdSet,
+			ExcludedRuleIds = excludedRuleIdSet,
+			PreprocessExcludedRuleIds = preprocessExcludedRuleIdSet,
+			CompleteRuntimeExcludedRuleIds = completeRuntimeExcludedRuleIds,
+			ForcedPreprocessRuleIds = forcedPreprocessRuleIds,
+			StickyTargetKey = ResolveBuiltInRuleStickyTargetKey(targetHero, targetCharacter),
+			GuardrailStickyTargetKey = AIConfigHandler.CaptureGuardrailStickyTargetKey(runtimeTarget)
+		};
+	}
+
+	private static PromptRoutingInput CreatePromptRoutingInput(PromptBuildRequest request)
+	{
+		return new PromptRoutingInput
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag4 = auxiliaryRuleHitIdSet.Contains("loan");
-				if (flag4)
-				{
-					matchedKeyword3 = "auxiliary_router";
-					score3 = 1f;
-				}
-			}
-			else
-			{
-				flag4 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "loan", AIConfigHandler.LoanInstruction, loanTriggerKeywords, out matchedKeyword3, out score3, excludedRuleIdSet);
-			}
-		}
-		bool liveLoanSemanticHit = flag4;
-		List<string> surroundingsTriggerKeywords = AIConfigHandler.SurroundingsTriggerKeywords;
-		bool flag5 = false;
-		string matchedKeyword4 = "";
-		float score4 = 0f;
-		if (allowRulePreprocess && AIConfigHandler.SurroundingsEnabled && !IsPromptRuleExcluded(excludedRuleIdSet, "surroundings"))
+			Input = request.Input,
+			NpcLastUtterance = request.NpcLastUtterance,
+			HasAnyHero = request.HasAnyHero,
+			AllowRulePreprocess = request.AllowRulePreprocess,
+			BypassRulePreprocess = request.BypassRulePreprocess,
+			UseAuxiliaryRuleApi = AIConfigHandler.UseAuxiliaryRuleApiRetrieval,
+			AuxiliaryReturnCap = AIConfigHandler.GuardrailRuleReturnCap,
+			RewardEnabled = AIConfigHandler.RewardEnabled,
+			LoanEnabled = AIConfigHandler.LoanEnabled,
+			SurroundingsEnabled = AIConfigHandler.SurroundingsEnabled,
+			ExcludedRuleIds = request.ExcludedRuleIds,
+			PreprocessExcludedRuleIds = request.PreprocessExcludedRuleIds,
+			ForcedPreprocessRuleIds = request.ForcedPreprocessRuleIds,
+			StickyTargetKey = request.StickyTargetKey
+		};
+	}
+
+	private static void LogPromptRoutingDiagnostics(PromptBuildRequest request, PromptRoutingResult routing, PromptRoutingInput routingInput)
+	{
+		string who = "targetHero=" + (request.TargetHeroId ?? "null") + " targetCharacter=" + (request.TargetCharacterId ?? "null");
+		if (routing.AuxiliaryFailure != null)
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag5 = auxiliaryRuleHitIdSet.Contains("surroundings");
-				if (flag5)
-				{
-					matchedKeyword4 = "auxiliary_router";
-					score4 = 1f;
-				}
-			}
-			else
-			{
-				flag5 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "surroundings", AIConfigHandler.SurroundingsInstruction, surroundingsTriggerKeywords, out matchedKeyword4, out score4, excludedRuleIdSet);
-			}
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess failed=" + routing.AuxiliaryFailure);
 		}
-		string guardrailRuleInstruction = AIConfigHandler.GetGuardrailRuleInstruction("kingdom_service");
-		List<string> guardrailRuleKeywords = AIConfigHandler.GetGuardrailRuleKeywords("kingdom_service");
-		string matchedKeyword5 = "";
-		float score5 = 0f;
-		bool flag6 = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "kingdom_service"))
+		else if (request.AllowRulePreprocess && routingInput.UseAuxiliaryRuleApi)
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				flag6 = auxiliaryRuleHitIdSet.Contains("kingdom_service");
-				if (flag6)
-				{
-					matchedKeyword5 = "auxiliary_router";
-					score5 = 1f;
-				}
-			}
-			else
-			{
-				flag6 = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "kingdom_service", guardrailRuleInstruction, guardrailRuleKeywords, out matchedKeyword5, out score5, excludedRuleIdSet);
-			}
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=single_aux_preprocess " + who + " hits=" + PromptTopicRoutingStage.DescribeHits(routing.AuxiliaryRuleHitIds, "(none)"));
 		}
-		string guardrailMarriageInstruction = AIConfigHandler.GetGuardrailRuleInstruction("marriage");
-		List<string> guardrailMarriageKeywords = AIConfigHandler.GetGuardrailRuleKeywords("marriage");
-		string matchedKeyword6 = "";
-		float score6 = 0f;
-		bool marriageHit = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "marriage"))
+		if (routing.ForcedRuleHitIds.Count > 0)
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				marriageHit = auxiliaryRuleHitIdSet.Contains("marriage");
-				if (marriageHit)
-				{
-					matchedKeyword6 = "auxiliary_router";
-					score6 = 1f;
-				}
-			}
-			else
-			{
-				marriageHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "marriage", guardrailMarriageInstruction, guardrailMarriageKeywords, out matchedKeyword6, out score6, excludedRuleIdSet);
-			}
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=forced_preprocess " + who + " hits=" + string.Join(",", routing.ForcedRuleHitIds));
 		}
-		string guardrailPartyTransferInstruction = AIConfigHandler.GetGuardrailRuleInstruction("party_transfer");
-		List<string> guardrailPartyTransferKeywords = AIConfigHandler.GetGuardrailRuleKeywords("party_transfer");
-		string matchedKeyword7 = "";
-		float score7 = 0f;
-		bool partyTransferHit = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "party_transfer"))
+		if (routing.StickySuppressed)
 		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				partyTransferHit = auxiliaryRuleHitIdSet.Contains("party_transfer");
-				if (partyTransferHit)
-				{
-					matchedKeyword7 = "auxiliary_router";
-					score7 = 1f;
-				}
-			}
-			else
-			{
-				partyTransferHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "party_transfer", guardrailPartyTransferInstruction, guardrailPartyTransferKeywords, out matchedKeyword7, out score7, excludedRuleIdSet);
-			}
+			Logger.Log("Logic", "[RuleInjectionDebug] stage=sticky_suppressed " + who + " carryDuel=" + routing.CarryDuel + " carryReward=" + routing.CarryReward + " carryLoan=" + routing.CarryLoan + " auxiliaryHits=" + PromptTopicRoutingStage.DescribeHits(routing.AuxiliaryRuleHitIds, "(none)"));
 		}
-		string guardrailWorldMapInstruction = AIConfigHandler.GetGuardrailRuleInstruction("worldmap_party_command");
-		List<string> guardrailWorldMapKeywords = AIConfigHandler.GetGuardrailRuleKeywords("worldmap_party_command");
-		string matchedKeyword8 = "";
-		float score8 = 0f;
-		bool worldMapPartyCommandHit = false;
-		if (allowRulePreprocess && !IsPromptRuleExcluded(excludedRuleIdSet, "worldmap_party_command"))
-		{
-			if (useAuxiliaryRuleHitSet)
-			{
-				worldMapPartyCommandHit = auxiliaryRuleHitIdSet.Contains("worldmap_party_command");
-				if (worldMapPartyCommandHit)
-				{
-					matchedKeyword8 = "auxiliary_router";
-					score8 = 1f;
-				}
-			}
-			else
-			{
-				worldMapPartyCommandHit = AIConfigHandler.IsGuardrailSemanticHit(input, npcLastUtterance, "worldmap_party_command", guardrailWorldMapInstruction, guardrailWorldMapKeywords, out matchedKeyword8, out score8, excludedRuleIdSet);
-			}
-		}
-		if (allowRulePreprocess && TryConsumeRuleStickyCarry(targetHero, targetCharacter, input, out var carryDuel, out var carryReward, out var carryLoan))
-		{
-			// A completed auxiliary/preselected routing result is authoritative for this turn.
-			// A generic short acknowledgement must not resurrect a stale topic that the router omitted.
-			bool allowStickyFallback = !useAuxiliaryRuleHitSet;
-			if (!allowStickyFallback && (carryDuel || carryReward || carryLoan))
-			{
-				Logger.Log("Logic", "[RuleInjectionDebug] stage=sticky_suppressed targetHero=" + (targetHero?.StringId ?? "null") + " targetCharacter=" + (targetCharacter?.StringId ?? "null") + " carryDuel=" + carryDuel + " carryReward=" + carryReward + " carryLoan=" + carryLoan + " auxiliaryHits=" + ((auxiliaryRuleHitIds == null || auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)));
-			}
-			if (allowStickyFallback && !flag && carryDuel && !IsPromptRuleExcluded(excludedRuleIdSet, "duel"))
-			{
-				flag = true;
-				matchedKeyword = "sticky";
-				score = Math.Max(score, 0.18f);
-			}
-			if (allowStickyFallback && !flag3 && carryReward && !IsPromptRuleExcluded(excludedRuleIdSet, "reward"))
-			{
-				flag3 = true;
-				matchedKeyword2 = "sticky";
-				score2 = Math.Max(score2, 0.18f);
-			}
-			if (allowStickyFallback && !flag4 && carryLoan && !IsPromptRuleExcluded(excludedRuleIdSet, "loan"))
-			{
-				flag4 = true;
-				matchedKeyword3 = "sticky";
-				score3 = Math.Max(score3, 0.18f);
-			}
-		}
-		if (allowRulePreprocess)
-		{
-			UpdateRuleStickyCarryFromHits(targetHero, targetCharacter, liveDuelSemanticHit, liveRewardSemanticHit, liveLoanSemanticHit);
-		}
-		flag2 = flag && HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex);
-		bool flag7 = flag3;
-		bool flag8 = flag4;
+	}
+
+	/// <summary>Phase 3: context flags, mentions, lore and every Extras section, captured in legacy order. Game-thread reads.</summary>
+	private void CapturePromptSections(PromptBuildRequest request, PromptRoutingResult routing, PromptRetrievalCapture retrieval, MentionedWorldEntities directPreprocessMentionedEntities, Hero targetHero, CharacterObject targetCharacter, WeeklyPromptSnapshot weeklyPromptSnapshot, Stopwatch promptContextTotalSw, Stopwatch promptContextStageSw,
+		out PromptContextFlags contextFlags, out PromptExtrasSections extrasSections, out PromptEntityCapture entityCapture, out MentionedWorldEntities mentionedEntities)
+	{
+		string input = request.Input;
+		string kingdomIdOverride = request.KingdomIdOverride;
+		int targetAgentIndex = request.TargetAgentIndex;
+		bool hasAnyHero = request.HasAnyHero;
+		bool suppressDynamicRuleAndLore = request.SuppressDynamicRuleAndLore;
+		bool allowRulePreprocess = request.AllowRulePreprocess;
+		string npcLastUtterance = request.NpcLastUtterance;
+		bool isQualified = request.IsQualified;
+		List<string> auxiliaryRuleHitIds = routing.AuxiliaryRuleHitIds;
+		bool flag = routing.Duel.Hit;
+		bool flag3 = routing.Reward.Hit;
+		bool flag4 = routing.Loan.Hit;
+		bool flag5 = routing.Surroundings.Hit;
+		bool flag6 = routing.KingdomService.Hit;
+		bool marriageHit = routing.Marriage.Hit;
+		bool partyTransferHit = routing.PartyTransfer.Hit;
+		bool worldMapPartyCommandHit = routing.WorldMapPartyCommand.Hit;
+		float score = routing.Duel.Score;
+		float score2 = routing.Reward.Score;
+		float score3 = routing.Loan.Score;
+		float score4 = routing.Surroundings.Score;
 		bool persistentAdpDebtPostprocess = false;
-		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan") && RewardSystemBehavior.Instance != null)
+		if (allowRulePreprocess && AIConfigHandler.LoanEnabled && !PromptRuleIdPolicy.IsExcluded(request.PreprocessExcludedRuleIds, "loan") && RewardSystemBehavior.Instance != null)
 		{
 			try
 			{
@@ -31539,54 +30163,42 @@ public partial class MyBehavior : CampaignBehaviorBase
 				persistentAdpDebtPostprocess = false;
 			}
 		}
-		if (partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex))
-		{
-			flag7 = flag7 || AIConfigHandler.RewardEnabled;
-			flag8 = flag8 || AIConfigHandler.LoanEnabled;
-		}
+		// Pre-duel flags: the duel result is consumed later at its legacy position so the Reward
+		// TrustPrompt decision still sees the un-promoted reward flag.
+		bool partyTransferEligible = partyTransferHit && IsPartyTransferRuleEligible(targetHero, targetCharacter, targetAgentIndex);
+		contextFlags = PromptContextDecisions.ResolveFlags(routing,
+			HasDuelRuntimeTarget(targetHero, targetCharacter, targetAgentIndex),
+			partyTransferEligible,
+			AIConfigHandler.RewardEnabled, AIConfigHandler.LoanEnabled, persistentAdpDebtPostprocess, hasDuelResult: false, playerWonLastDuel: false);
+		bool flag2 = contextFlags.UseDuelContext;
+		bool flag7 = contextFlags.UseRewardContext;
+		bool flag8 = contextFlags.IsLoanContext;
 		string value = "";
-		if (allowRulePreprocess && !flag2 && !flag7 && !flag8 && !flag5)
+		if (PromptContextDecisions.ShouldBuildClarificationHint(allowRulePreprocess, contextFlags, flag5))
 		{
 			value = AIConfigHandler.BuildGuardrailClarificationHint(input, flag, score, flag3, score2, flag4, score3, flag5, score4);
 		}
-		string text2 = (string.IsNullOrWhiteSpace(matchedKeyword) ? "" : $"{matchedKeyword}@{score:0.00}");
-		string text3 = (string.IsNullOrWhiteSpace(matchedKeyword2) ? "" : $"{matchedKeyword2}@{score2:0.00}");
-		string text4 = (string.IsNullOrWhiteSpace(matchedKeyword3) ? "" : $"{matchedKeyword3}@{score3:0.00}");
-		string text5 = (string.IsNullOrWhiteSpace(matchedKeyword4) ? "" : $"{matchedKeyword4}@{score4:0.00}");
-		string text6 = (string.IsNullOrWhiteSpace(matchedKeyword5) ? "" : $"{matchedKeyword5}@{score5:0.00}");
-		string text8 = (string.IsNullOrWhiteSpace(matchedKeyword6) ? "" : $"{matchedKeyword6}@{score6:0.00}");
-		string text9 = (string.IsNullOrWhiteSpace(matchedKeyword7) ? "" : $"{matchedKeyword7}@{score7:0.00}");
-		string text10 = (string.IsNullOrWhiteSpace(matchedKeyword8) ? "" : $"{matchedKeyword8}@{score8:0.00}");
-		string text7 = targetHero?.Name?.ToString() ?? "某人";
-		Logger.Log("Logic", $"[SemanticTrigger-Shout] DuelHit={flag} [{text2}] RewardHit={flag3} [{text3}] LoanHit={flag4} [{text4}] PartyTransferHit={partyTransferHit} [{text9}] WorldMapHit={worldMapPartyCommandHit} [{text10}] SurroundingsHit={flag5} [{text5}] KingdomServiceHit={flag6} [{text6}] MarriageHit={marriageHit} [{text8}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{text7}'");
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={liveDuelSemanticHit} liveReward={liveRewardSemanticHit} liveLoan={liveLoanSemanticHit} auxRuleHits={(auxiliaryRuleHitIds == null ? "(skip)" : ((auxiliaryRuleHitIds.Count == 0) ? "(none)" : string.Join(",", auxiliaryRuleHitIds)))} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
+		Logger.Log("Logic", PromptContextDecisions.DescribeSemanticTrigger(routing, npcLastUtterance, input, request.TargetDisplayName));
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=semantic targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} liveDuel={routing.LiveDuelSemanticHit} liveReward={routing.LiveRewardSemanticHit} liveLoan={routing.LiveLoanSemanticHit} auxRuleHits={PromptTopicRoutingStage.DescribeHits(auxiliaryRuleHitIds)} finalDuel={flag} finalReward={flag3} finalLoan={flag4} persistentAdpDebtPostprocess={persistentAdpDebtPostprocess} useDuelContext={flag2} qualified={isQualified} marriageHit={marriageHit} partyTransferHit={partyTransferHit} worldMapHit={worldMapPartyCommandHit}");
 		LogShoutPromptContextStage("semantic_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "duel=" + flag + " reward=" + flag3 + " loan=" + flag4 + " worldMap=" + worldMapPartyCommandHit + " partyTransfer=" + partyTransferHit);
-		StringBuilder stringBuilder = new StringBuilder();
-		MentionedWorldEntities mentionedEntities = directPreprocessMentionedEntities.Clone();
-		if (!suppressDynamicRuleAndLore)
-		{
-			mentionedEntities.Merge(AIConfigHandler.GetAuxiliaryMentionedEntitiesForExternal(input, npcLastUtterance, guardrailSemanticContext));
-			mentionedEntities.Merge(AIConfigHandler.GetLatestAuxiliaryMentionedEntitiesForExternal());
-		}
-		shoutPromptContext.MentionedEntities = mentionedEntities.Clone();
+		// Mentions were fully resolved in step 2 (routing); step 3 only clones the detached set.
+		mentionedEntities = (retrieval?.AuxiliaryMentions ?? directPreprocessMentionedEntities).Clone();
 		LogShoutPromptContextStage("mentions_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasMentions=" + (mentionedEntities != null && !mentionedEntities.IsEmpty) + " directCount=" + (directPreprocessMentionedEntities.Entities?.Count ?? 0));
 		string loreContext = "";
-		string loreCtxSource = "none";
-		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + (usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext)));
-		if (!suppressDynamicRuleAndLore && usePrefetchedLoreContext && !string.IsNullOrWhiteSpace(prefetchedLoreContext))
+		LogShoutPromptContextStage("lore_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "prefetched=" + request.HasPrefetchedLore);
+		PromptLoreSource loreSource = PromptContextDecisions.SelectLoreSource(suppressDynamicRuleAndLore, request.UsePrefetchedLoreContext, request.PrefetchedLoreContext, targetHero != null, targetCharacter != null);
+		string loreCtxSource = PromptContextDecisions.DescribeLoreSource(loreSource, request.UsePrefetchedLoreContext, request.PrefetchedLoreContext);
+		switch (loreSource)
 		{
-			loreContext = prefetchedLoreContext ?? "";
-			loreCtxSource = "prefetched";
-		}
-		else if (!suppressDynamicRuleAndLore && targetHero != null)
-		{
-			loreContext = AIConfigHandler.GetLoreContext(input, targetHero, npcLastUtterance, mentionedEntities);
-			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_hero" : "hero");
-		}
-		else if (!suppressDynamicRuleAndLore && targetCharacter != null)
-		{
-			loreContext = AIConfigHandler.GetLoreContext(input, targetCharacter, kingdomIdOverride, npcLastUtterance, mentionedEntities);
-			loreCtxSource = ((usePrefetchedLoreContext && string.IsNullOrWhiteSpace(prefetchedLoreContext)) ? "prefetch_empty_fallback_character" : "character");
+		case PromptLoreSource.Prefetched:
+			loreContext = request.PrefetchedLoreContext ?? "";
+			break;
+		case PromptLoreSource.Hero:
+			loreContext = AIConfigHandler.GetLoreContextWithCandidates(input, targetHero, npcLastUtterance, mentionedEntities, retrieval?.LoreCandidates, retrieval?.LoreRuleVersion ?? 0L);
+			break;
+		case PromptLoreSource.Character:
+			loreContext = AIConfigHandler.GetLoreContextWithCandidates(input, targetCharacter, kingdomIdOverride, npcLastUtterance, mentionedEntities, retrieval?.LoreCandidates, retrieval?.LoreRuleVersion ?? 0L);
+			break;
 		}
 		try
 		{
@@ -31596,112 +30208,53 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 		}
 		LogShoutPromptContextStage("lore_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "source=" + loreCtxSource + " loreLen=" + ((loreContext ?? "").Length));
+		extrasSections = new PromptExtrasSections();
 		if (RewardSystemBehavior.Instance != null && targetHero != null)
 		{
 			if (flag8)
 			{
-				string value4 = RewardSystemBehavior.Instance.BuildDueDateReferenceForAI();
-				if (!string.IsNullOrEmpty(value4))
-				{
-					stringBuilder.AppendLine(value4);
-				}
-				string value5 = RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero);
-				if (!string.IsNullOrEmpty(value5))
-				{
-					stringBuilder.AppendLine(value5);
-				}
+				extrasSections.LoanDueDateReference = RewardSystemBehavior.Instance.BuildDueDateReferenceForAI();
+				extrasSections.LoanDebtHint = RewardSystemBehavior.Instance.BuildDebtHintForAI(targetHero);
 			}
 			if (!flag8 && !flag7)
 			{
-				string value6 = RewardSystemBehavior.Instance.BuildTrustPromptForAI(targetHero);
-				if (!string.IsNullOrEmpty(value6))
-				{
-					stringBuilder.AppendLine(value6);
-				}
+				extrasSections.TrustPrompt = RewardSystemBehavior.Instance.BuildTrustPromptForAI(targetHero);
 			}
 		}
 		if (RewardSystemBehavior.Instance != null && flag7 && targetHero == null && targetCharacter != null)
 		{
-			string value6a = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
-			if (!string.IsNullOrWhiteSpace(value6a))
-			{
-				stringBuilder.AppendLine(value6a);
-			}
+			extrasSections.SettlementMerchantDebtHint = RewardSystemBehavior.Instance.BuildSettlementMerchantDebtHintForAI(targetCharacter);
 		}
-		bool includeDuelStakeContext = false;
-		bool playerWonLastDuelForRule = false;
-		if (targetHero != null && DuelBehavior.TryConsumeLastDuelResult(targetHero, out var playerWon))
+		bool playerWon = false;
+		bool hasDuelResult = targetHero != null && DuelBehavior.TryConsumeLastDuelResult(targetHero, out playerWon);
+		if (hasDuelResult)
 		{
-			includeDuelStakeContext = true;
-			playerWonLastDuelForRule = playerWon;
-			string playerDisplayName = BuildPlayerPublicDisplayNameForPrompt(targetHero);
-			if (string.IsNullOrWhiteSpace(playerDisplayName))
-			{
-				playerDisplayName = "玩家";
-			}
-			if (playerWon)
-			{
-				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中输给了" + playerDisplayName + "。无论失败来自倒地、低血量、逃跑或撤退，这都已经按决斗失败结算；你可以不甘、恼怒或嘴硬，但不能否认自己输了。请认真考虑履行你在决斗前约定的赌注或补偿。");
-				if (AIConfigHandler.RewardEnabled)
-				{
-					flag7 = true;
-				}
-			}
-			else
-			{
-				stringBuilder.AppendLine("【战斗结果】你刚刚在一场正式的决斗中打败了" + playerDisplayName + "。你可以据此调整对" + playerDisplayName + "的态度，或提醒" + playerDisplayName + "履行之前约定的赌注。");
-				if (AIConfigHandler.RewardEnabled)
-				{
-					flag7 = true;
-				}
-			}
+			contextFlags = PromptContextDecisions.ResolveFlags(routing, flag2, partyTransferEligible,
+				AIConfigHandler.RewardEnabled, AIConfigHandler.LoanEnabled, persistentAdpDebtPostprocess, hasDuelResult: true, playerWonLastDuel: playerWon);
+			flag7 = contextFlags.UseRewardContext;
+			extrasSections.DuelResultLine = PromptExtrasComposer.BuildDuelResultLine(playerWon, BuildPlayerPublicDisplayNameForPrompt(targetHero));
 		}
+		bool includeDuelStakeContext = contextFlags.IncludeDuelStakeContext;
+		bool playerWonLastDuelForRule = contextFlags.PlayerWonLastDuel;
 		if (targetHero != null && !string.IsNullOrEmpty(targetHero.StringId))
 		{
 			string playerDisplayName2 = BuildPlayerPublicDisplayNameForPrompt(targetHero);
-			if (string.IsNullOrWhiteSpace(playerDisplayName2))
-			{
-				playerDisplayName2 = "玩家";
-			}
 			if (_recentlyDefeatedByPlayer.Contains(targetHero.StringId))
 			{
-				stringBuilder.AppendLine("【原版战斗结果】你刚刚在一场战斗中被" + playerDisplayName2 + "击败了。你的军队溃败，你必须承认这个事实。根据你的性格，你可以表现得愤怒、不甘、恳求或傲慢，但不能否认战败的事实。");
+				extrasSections.VanillaBattleDefeatLine = PromptExtrasComposer.BuildVanillaBattleDefeatLine(playerDisplayName2);
 			}
 			if (_recentlyReleasedPrisoners.Contains(targetHero.StringId))
 			{
-				stringBuilder.AppendLine("【释放通知】你之前被" + playerDisplayName2 + "俘虏关押，现在刚刚获得了自由。你应该意识到自己曾经是囚犯这个事实，并根据你的性格做出适当反应（感激、愤恨、或不屑等）。");
+				extrasSections.ReleasedPrisonerLine = PromptExtrasComposer.BuildReleasedPrisonerLine(playerDisplayName2);
 			}
-			string activePrisonerStatusLine = BuildHeroPrisonerStatusPromptLineForExternal(targetHero);
-			if (!string.IsNullOrWhiteSpace(activePrisonerStatusLine))
-			{
-				stringBuilder.AppendLine(activePrisonerStatusLine);
-			}
+			extrasSections.ActivePrisonerStatusLine = BuildHeroPrisonerStatusPromptLineForExternal(targetHero);
 		}
-		LogShoutPromptContextStage("relationship_blocks_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
-		string feastContext = TeamModuleServices.Gathering.BuildFeastAttendanceContext(targetHero);
-		if (!string.IsNullOrWhiteSpace(feastContext))
-		{
-			stringBuilder.AppendLine(feastContext);
-		}
-		if (!string.IsNullOrWhiteSpace(value))
-		{
-			stringBuilder.AppendLine(value);
-		}
-		string armyRuntimeFact = BuildHeroArmyRuntimeFactForPrompt(targetHero);
-		if (!string.IsNullOrWhiteSpace(armyRuntimeFact))
-		{
-			stringBuilder.AppendLine(armyRuntimeFact);
-		}
-		string playerArmyRuntimeFact = BuildPlayerArmyRuntimeFactForPrompt(targetHero, targetCharacter, targetAgentIndex);
-		if (!string.IsNullOrWhiteSpace(playerArmyRuntimeFact))
-		{
-			stringBuilder.AppendLine(playerArmyRuntimeFact);
-		}
-		string residentRecentActionsPrompt = BuildResidentRecentActionsPrompt(targetHero, targetCharacter, targetAgentIndex);
-		if (!string.IsNullOrWhiteSpace(residentRecentActionsPrompt))
-		{
-			stringBuilder.AppendLine(residentRecentActionsPrompt);
-		}
+		LogShoutPromptContextStage("relationship_blocks_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
+		extrasSections.FeastAttendanceContext = TeamModuleServices.Gathering.BuildFeastAttendanceContext(targetHero);
+		extrasSections.ClarificationHint = value;
+		extrasSections.HeroArmyRuntimeFact = BuildHeroArmyRuntimeFactForPrompt(targetHero);
+		extrasSections.PlayerArmyRuntimeFact = BuildPlayerArmyRuntimeFactForPrompt(targetHero, targetCharacter, targetAgentIndex);
+		extrasSections.ResidentRecentActions = BuildResidentRecentActionsPrompt(targetHero, targetCharacter, targetAgentIndex);
 		if (flag5)
 		{
 			bool flag9 = false;
@@ -31725,207 +30278,75 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			if (flag9)
 			{
-				string value7 = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos, targetHero);
-				if (!string.IsNullOrWhiteSpace(value7))
-				{
-					stringBuilder.AppendLine(value7);
-				}
+				extrasSections.NearbySettlementsDetail = ShoutUtils.BuildNearbySettlementsDetailForPrompt(pos, targetHero);
 			}
 		}
-		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "chars=" + stringBuilder.Length);
+		LogShoutPromptContextStage("world_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		LogShoutPromptContextStage("triggered_rules_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "suppressDynamic=" + suppressDynamicRuleAndLore);
-		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, num, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, excludedRuleIdSet, auxiliaryRuleHitIds, IsPromptRuleExcluded(explicitExcludedRuleIdSet, "meeting_taunt")) : "";
+		string value8 = allowRulePreprocess ? BuildTriggeredRuleInstructions(input, targetHero, flag2, isQualified, request.PlayerClanTier, flag7, flag8, flag5, hasAnyHero, targetCharacter, kingdomIdOverride, targetAgentIndex, npcLastUtterance, includeDuelStakeContext, playerWonLastDuelForRule, worldMapPartyCommandHit, request.ExcludedRuleIds, auxiliaryRuleHitIds, PromptRuleIdPolicy.IsExcluded(request.ExplicitExcludedRuleIds, "meeting_taunt"), retrieval?.FallbackExtraRuleHits) : "";
 		LogShoutPromptContextStage("triggered_rules_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "ruleLen=" + ((value8 ?? "").Length));
 		LogShoutPromptContextStage("weekly_short_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
 		bool excludeNpcShortReport2 = ShouldExcludeNpcShortReportFromWeeklyShortLayer(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
 		FreezeWatchdog.Mark("ShoutPromptContext.weekly_short_exclusion_done", "excludeNpcKingdom=" + excludeNpcShortReport2 + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		string value8a = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2, weeklyPromptSnapshot);
-		if (!string.IsNullOrWhiteSpace(value8a))
-		{
-			stringBuilder.AppendLine(value8a);
-		}
-		LogShoutPromptContextStage("weekly_short_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "shortLen=" + ((value8a ?? "").Length));
+		extrasSections.WeeklyShortReports = BuildWeeklyShortReportsPromptBlock(targetHero, targetCharacter, kingdomIdOverride, excludeNpcShortReport2, weeklyPromptSnapshot);
+		LogShoutPromptContextStage("weekly_short_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "shortLen=" + ((extrasSections.WeeklyShortReports ?? "").Length));
 		LogShoutPromptContextStage("policy_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
-		string activePolicyContext = AfGcczShoutBridge.IsActive()
+		extrasSections.ActivePolicyContext = AfGcczShoutBridge.IsActive()
 			? string.Empty
 			: TeamModuleServices.Policy.BuildActivePolicyDialogueContextForExternal(targetHero, targetCharacter, kingdomIdOverride);
-		if (!string.IsNullOrWhiteSpace(activePolicyContext))
-		{
-			stringBuilder.AppendLine(activePolicyContext);
-		}
-		LogShoutPromptContextStage("policy_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "policyLen=" + ((activePolicyContext ?? "").Length));
-		if (!string.IsNullOrWhiteSpace(value8))
-		{
-			stringBuilder.AppendLine(value8);
-		}
+		LogShoutPromptContextStage("policy_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "policyLen=" + ((extrasSections.ActivePolicyContext ?? "").Length));
+		extrasSections.TriggeredRuleInstructions = value8;
 		LogShoutPromptContextStage("weekly_full_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "", immediate: false);
-		string value8b = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
-		if (!string.IsNullOrWhiteSpace(value8b))
-		{
-			stringBuilder.AppendLine(value8b);
-		}
-		if (!string.IsNullOrEmpty(loreContext))
-		{
-			stringBuilder.AppendLine(loreContext);
-		}
-		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((value8b ?? "").Length) + " chars=" + stringBuilder.Length);
+		extrasSections.WeeklyFullReports = BuildTriggeredWeeklyFullReportsPromptBlock(value8, targetHero, targetCharacter, kingdomIdOverride, weeklyPromptSnapshot);
+		extrasSections.LoreContext = loreContext;
+		LogShoutPromptContextStage("weekly_full_lore_append_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "fullLen=" + ((extrasSections.WeeklyFullReports ?? "").Length));
+		entityCapture = null;
 		if (!suppressDynamicRuleAndLore)
 		{
-			bool includeResidentKingdomEntities = ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
+			bool includeResidentKingdomEntities = PromptRuleIdPolicy.ShouldIncludeResidentKingdomEntities(flag6, auxiliaryRuleHitIds);
 			Hero entityContextHero = targetHero ?? targetCharacter?.HeroObject;
 			bool includeResidentPlayerEntities = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
-			HashSet<string> entityRetrievalRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			if (auxiliaryRuleHitIds != null)
-			{
-				foreach (string ruleId in auxiliaryRuleHitIds)
-				{
-					if (!string.IsNullOrWhiteSpace(ruleId))
-					{
-						entityRetrievalRuleIds.Add(ruleId.Trim());
-					}
-				}
-			}
-			if (flag7)
-			{
-				entityRetrievalRuleIds.Add("reward");
-			}
-			if (flag8)
-			{
-				entityRetrievalRuleIds.Add("loan");
-			}
-			if (partyTransferHit)
-			{
-				entityRetrievalRuleIds.Add("party_transfer");
-			}
-			if (worldMapPartyCommandHit)
-			{
-				entityRetrievalRuleIds.Add("worldmap_party_command");
-			}
+			HashSet<string> entityRetrievalRuleIds = PromptExtrasComposer.BuildEntityRetrievalRuleIds(auxiliaryRuleHitIds, flag7, flag8, partyTransferHit, worldMapPartyCommandHit);
 			LogShoutPromptContextStage("entity_context_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "rules=" + string.Join(",", entityRetrievalRuleIds));
-			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities);
-			shoutPromptContext.ExplicitMentionedKingdomIds = entityPromptContext?.ExplicitMentionedKingdomIds?
-				.Where(value => !string.IsNullOrWhiteSpace(value))
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.ToList() ?? new List<string>();
-			if (entityPromptContext != null && entityPromptContext.HasContent)
+			WorldEntityPromptContext entityPromptContext = WorldEntityRetrievalService.BuildPromptContext(mentionedEntities, BuildPlayerPublicDisplayNameForPrompt(entityContextHero, targetCharacter, targetAgentIndex), entityContextHero, includeResidentKingdomEntities, entityRetrievalRuleIds, input, includeResidentPlayerEntities, retrieval?.EntityCapture, retrieval?.EntityMatches);
+			entityCapture = new PromptEntityCapture
 			{
-				if (!string.IsNullOrWhiteSpace(entityPromptContext.MainPromptBlock))
-				{
-					stringBuilder.AppendLine(entityPromptContext.MainPromptBlock);
-				}
-				shoutPromptContext.EntityPostprocessContext = entityPromptContext.PostprocessPromptBlock ?? "";
+				MainPromptBlock = entityPromptContext?.MainPromptBlock,
+				PostprocessPromptBlock = entityPromptContext?.PostprocessPromptBlock,
+				ExplicitMentionedKingdomIds = entityPromptContext?.ExplicitMentionedKingdomIds,
+				HasContent = entityPromptContext != null && entityPromptContext.HasContent
+			};
+			if (entityCapture.HasContent)
+			{
 				Logger.Log("WorldEntityRetrieval", "entity_context matches=" + entityPromptContext.MatchCount + " residentKingdoms=" + includeResidentKingdomEntities + " residentPlayerEntities=" + includeResidentPlayerEntities + " mainLen=" + ((entityPromptContext.MainPromptBlock ?? "").Length) + " postLen=" + ((entityPromptContext.PostprocessPromptBlock ?? "").Length));
 			}
 			if (entityRetrievalRuleIds.Contains("kingdom_agenda"))
 			{
 				WorldEntityPromptContext agendaPromptContext = VoteDealBehavior.BuildUnifiedAgendaPromptContextForExternal(entityContextHero, mentionedEntities);
-				if (agendaPromptContext != null && agendaPromptContext.HasContent)
-				{
-					if (!string.IsNullOrWhiteSpace(agendaPromptContext.MainPromptBlock)) stringBuilder.AppendLine(agendaPromptContext.MainPromptBlock);
-					if (!string.IsNullOrWhiteSpace(agendaPromptContext.PostprocessPromptBlock))
-					{
-						shoutPromptContext.EntityPostprocessContext = string.IsNullOrWhiteSpace(shoutPromptContext.EntityPostprocessContext)
-							? agendaPromptContext.PostprocessPromptBlock
-							: (shoutPromptContext.EntityPostprocessContext.TrimEnd() + "\n" + agendaPromptContext.PostprocessPromptBlock);
-					}
-				}
+				entityCapture.AgendaHasContent = agendaPromptContext != null && agendaPromptContext.HasContent;
+				entityCapture.AgendaMainPromptBlock = agendaPromptContext?.MainPromptBlock;
+				entityCapture.AgendaPostprocessPromptBlock = agendaPromptContext?.PostprocessPromptBlock;
 			}
-			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + (entityPromptContext != null && entityPromptContext.HasContent) + " chars=" + stringBuilder.Length);
+			LogShoutPromptContextStage("entity_context_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "hasContent=" + entityCapture.HasContent);
 		}
-		bool includeTradePricing = flag7 || flag8;
 		bool includeMarriageCandidates = targetHero != null && marriageHit;
 		RomanceSystemBehavior.SetMarriagePostprocessContextEnabled(targetHero, includeMarriageCandidates);
-		bool includeRuleGatedFields = DoesPlayerNotorietyObserverKnowPlayer(targetHero, targetCharacter, targetAgentIndex);
-		shoutPromptContext.Extras = stringBuilder.ToString();
-		shoutPromptContext.UseDuelContext = flag2;
-		shoutPromptContext.UseRewardContext = flag7;
-		shoutPromptContext.IsLoanContext = flag8;
-		shoutPromptContext.IsQualified = isQualified;
-		LogShoutPromptContextStage("extras_assigned", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length) + " includeTradePricing=" + includeTradePricing + " includeMarriageCandidates=" + includeMarriageCandidates + " includeRuleGatedFields=" + includeRuleGatedFields);
-		HashSet<string> preprocessRuleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		if (auxiliaryRuleHitIds != null)
-		{
-			foreach (string ruleId in auxiliaryRuleHitIds)
-			{
-				if (!string.IsNullOrWhiteSpace(ruleId) && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, ruleId))
-				{
-					preprocessRuleIds.Add(ruleId.Trim());
-				}
-			}
-		}
-		if (flag && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "duel"))
-		{
-			preprocessRuleIds.Add("duel");
-		}
-		if (flag3 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "reward"))
-		{
-			preprocessRuleIds.Add("reward");
-		}
-		if (flag4 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
-		{
-			preprocessRuleIds.Add("loan");
-		}
-		if (persistentAdpDebtPostprocess && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "loan"))
-		{
-			preprocessRuleIds.Add(ShoutBehavior.PersistentAdpDebtPostprocessRuleId);
-		}
-		if (flag5 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "surroundings"))
-		{
-			preprocessRuleIds.Add("surroundings");
-		}
-		if (flag6 && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "kingdom_service"))
-		{
-			preprocessRuleIds.Add("kingdom_service");
-		}
-		if (marriageHit && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "marriage"))
-		{
-			preprocessRuleIds.Add("marriage");
-		}
-		if (partyTransferHit && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "party_transfer"))
-		{
-			preprocessRuleIds.Add("party_transfer");
-		}
-		if (worldMapPartyCommandHit && !IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "worldmap_party_command"))
-		{
-			preprocessRuleIds.Add("worldmap_party_command");
-		}
-		if (!IsPromptRuleExcluded(preprocessExcludedRuleIdSet, "noble_gathering") && (value8?.IndexOf("【附加规则:noble_gathering】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0)
-		{
-			preprocessRuleIds.Add("noble_gathering");
-		}
-		preprocessRuleIds.ExceptWith(preprocessExcludedRuleIdSet);
-		shoutPromptContext.PreprocessRuleIds = preprocessRuleIds.ToList();
-		LogShoutPromptContextStage("preprocess_ids_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex,
-			"ids=" + ((shoutPromptContext.PreprocessRuleIds == null || shoutPromptContext.PreprocessRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessRuleIds))
-			+ " excluded=" + ((shoutPromptContext.PreprocessExcludedRuleIds == null || shoutPromptContext.PreprocessExcludedRuleIds.Count == 0) ? "(none)" : string.Join(",", shoutPromptContext.PreprocessExcludedRuleIds))
-			+ " excludedBlockLen=" + ((shoutPromptContext.PreprocessExcludedRuleBlock ?? "").Length));
+		contextFlags.UseRewardContext = flag7;
+		contextFlags.IsLoanContext = flag8;
+		contextFlags.UseDuelContext = flag2;
+	}
+
+	/// <summary>Phase 5: team-module runtime prompt (GCCZ) and shared party resource appendices; diagnostics. Game-thread reads.</summary>
+	private void ApplyPromptRuntimeAppendices(ShoutPromptContext shoutPromptContext, Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string cultureIdOverride, Stopwatch promptContextTotalSw, Stopwatch promptContextStageSw)
+	{
 		LogShoutPromptContextStage("gccz_runtime_start", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex);
 		AfGcczShoutBridge.AppendRuntimePromptToShoutContext(shoutPromptContext, targetHero, targetCharacter, targetAgentIndex, cultureIdOverride);
 		LogShoutPromptContextStage("gccz_runtime_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
 		shoutPromptContext.Extras = AppendPlayerPartySharedResourcePrompt(shoutPromptContext.Extras, targetHero, targetCharacter);
 		LogShoutPromptContextStage("shared_resource_done", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length));
-		bool extrasHasDuelRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:duel】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasRewardRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:reward】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasLoanRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:loan】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasWorldMapRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:worldmap_party_command】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasNpcMajorRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:npc_major_actions】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasResidentRecentActions = (shoutPromptContext.Extras?.IndexOf("【NPC近期行动（近10天，常驻）】", StringComparison.Ordinal)).GetValueOrDefault() >= 0;
-		bool extrasHasVanillaIssueRule = (shoutPromptContext.Extras?.IndexOf("【附加规则:vanilla_issue】", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
-		bool extrasHasVanillaIssueRuntimeBlock = (shoutPromptContext.Extras?.IndexOf("【原版任务上下文", StringComparison.OrdinalIgnoreCase)).GetValueOrDefault() >= 0;
+		PromptExtrasMarkers extrasMarkers = PromptExtrasComposer.DetectMarkers(shoutPromptContext.Extras);
 		bool extrasHasSiegeInterventionRule = AfGcczShoutBridge.HasInjectedRuleBlock(shoutPromptContext.Extras);
-		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasHasDuelRule} extrasHasRewardRule={extrasHasRewardRule} extrasHasLoanRule={extrasHasLoanRule} extrasHasWorldMapRule={extrasHasWorldMapRule} extrasHasVanillaIssueRule={extrasHasVanillaIssueRule} extrasHasVanillaIssueRuntimeBlock={extrasHasVanillaIssueRuntimeBlock} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasHasNpcMajorRule={extrasHasNpcMajorRule} extrasHasResidentRecentActions={extrasHasResidentRecentActions} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
-		LogShoutPromptContextStage("complete", promptContextTotalSw, promptContextStageSw, targetHero, targetCharacter, targetAgentIndex, "extrasLen=" + ((shoutPromptContext.Extras ?? "").Length), immediate: true);
-		return shoutPromptContext;
-		}
-		finally
-		{
-			AIConfigHandler.SetGuardrailRuntimeTargetKingdom("");
-			AIConfigHandler.SetGuardrailRuntimeTargetHero("");
-			AIConfigHandler.SetGuardrailRuntimeTargetCharacter("");
-			AIConfigHandler.SetGuardrailRuntimeTargetTroop("");
-			AIConfigHandler.SetGuardrailRuntimeTargetUnnamedRank("");
-			AIConfigHandler.SetGuardrailRuntimeTargetAgentIndex(-1);
-		}
+		Logger.Log("Logic", $"[RuleInjectionDebug] stage=extras targetHero={(targetHero?.StringId ?? "null")} targetCharacter={(targetCharacter?.StringId ?? "null")} extrasHasDuelRule={extrasMarkers.Duel} extrasHasRewardRule={extrasMarkers.Reward} extrasHasLoanRule={extrasMarkers.Loan} extrasHasWorldMapRule={extrasMarkers.WorldMap} extrasHasVanillaIssueRule={extrasMarkers.VanillaIssue} extrasHasVanillaIssueRuntimeBlock={extrasMarkers.VanillaIssueRuntimeBlock} extrasHasSiegeInterventionRule={extrasHasSiegeInterventionRule} extrasHasNpcMajorRule={extrasMarkers.NpcMajor} extrasHasResidentRecentActions={extrasMarkers.ResidentRecentActions} extrasLen={(shoutPromptContext.Extras ?? "").Length} useDuelContext={shoutPromptContext.UseDuelContext} useRewardContext={shoutPromptContext.UseRewardContext} useLoanContext={shoutPromptContext.IsLoanContext}");
 	}
 
 	public static void AppendExternalLoreHistory(Hero hero, string loreText)
@@ -32043,36 +30464,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private static bool IsSystemFactLine(string line)
 	{
 		string text = (line ?? "").TrimStart();
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		return text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
 	}
 
 	private static bool IsSingleUseNpcFactLine(string line)
 	{
-		string text = (line ?? "").Trim();
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
-		if (!text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-		{
-			return false;
-		}
-		string text2 = text.Substring("[AFEF NPC行为补充]".Length).Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return false;
-		}
-		if (IsFirstMeetingNpcFactBody(text2))
-		{
-			return true;
-		}
-		if (text2.StartsWith("今天稍早时候刚与", StringComparison.Ordinal) && text2.EndsWith("见过面。", StringComparison.Ordinal))
-		{
-			return true;
-		}
-		if (text2.StartsWith("距离你上次与", StringComparison.Ordinal) && text2.Contains("见面，已有") && text2.EndsWith("天了。", StringComparison.Ordinal))
-		{
-			return true;
-		}
-		return false;
+		return DialogueHistoryLedger.IsSingleUseNpcFactLine(line, IsFirstMeetingNpcFactBody);
 	}
 
 	private static bool IsFirstMeetingNpcFactLine(string line)
@@ -32082,7 +30480,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
 		{
 			text = text.Substring("[AFEF NPC行为补充]".Length).Trim();
@@ -32125,64 +30523,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		List<(int Day, string Date, string Line)> list = new List<(int, string, string)>();
-		foreach (DialogueDay record in records)
-		{
-			if (record?.Lines == null)
-			{
-				continue;
-			}
-			foreach (string line in record.Lines)
-			{
-				string text = (line ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					list.Add((record.GameDayIndex, record.GameDate, text));
-				}
-			}
-		}
-		if (list.Count == 0)
+		var flat = DialogueHistoryLedger.Flatten(records, d => d.GameDayIndex, d => d.GameDate, d => d.Lines);
+		var kept = DialogueHistoryLedger.ExpireSingleUseFacts(flat, IsSingleUseNpcFactLine, IsMeaningfulDirectConversationLine);
+		if (kept == null)
 		{
 			return false;
 		}
-		bool flag = false;
-		bool flag2 = false;
-		List<(int Day, string Date, string Line)> list2 = new List<(int, string, string)>(list.Count);
-		for (int num = list.Count - 1; num >= 0; num--)
-		{
-			var item = list[num];
-			if (flag2 && IsSingleUseNpcFactLine(item.Line))
-			{
-				flag = true;
-				continue;
-			}
-			list2.Add(item);
-			if (IsMeaningfulDirectConversationLine(item.Line))
-			{
-				flag2 = true;
-			}
-		}
-		if (!flag)
-		{
-			return false;
-		}
-		list2.Reverse();
 		List<DialogueDay> memoryCommitMarkerSource = records.ToList();
 		records.Clear();
-		foreach (var item2 in list2)
-		{
-			DialogueDay dialogueDay = records.FirstOrDefault((DialogueDay x) => x.GameDayIndex == item2.Day);
-			if (dialogueDay == null)
-			{
-				dialogueDay = new DialogueDay
-				{
-					GameDayIndex = item2.Day,
-					GameDate = item2.Date
-				};
-				records.Add(dialogueDay);
-			}
-			dialogueDay.Lines.Add(item2.Line);
-		}
+		records.AddRange(DialogueHistoryLedger.Regroup(kept, (day, date) => new DialogueDay { GameDayIndex = day, GameDate = date }, d => d.GameDayIndex, d => d.Lines));
 		CopyMemoryCommitMarkers(memoryCommitMarkerSource, records);
 		return true;
 	}
@@ -32365,7 +30714,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("- ", StringComparison.Ordinal))
 		{
 			text = text.Substring(2).TrimStart();
@@ -32397,7 +30746,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		if (text.StartsWith("- ", StringComparison.Ordinal))
 		{
 			text = text.Substring(2).TrimStart();
@@ -36810,6 +35159,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		DevTextEditorHelper.ShowLongTextEditor("编辑世界开局概要", "这段文本会作为世界事件系统的初始背景底稿。", "请输入世界开局概要（留空=清空）。", _eventWorldOpeningSummary ?? "", delegate(string input)
 		{
 			_eventWorldOpeningSummary = (input ?? "").Trim();
+			_weeklyReportMaterialRevisions.MarkOpening();
 			InformationManager.DisplayMessage(new InformationMessage(string.IsNullOrWhiteSpace(_eventWorldOpeningSummary) ? "已清空世界开局概要。" : "世界开局概要已更新。"));
 			OpenDevEventEditorMenu();
 		}, delegate
@@ -36905,6 +35255,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		InformationManager.ShowInquiry(new InquiryData("确认清空事件概要", "这会清空世界开局概要，以及所有王国的开局概要。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清空", "取消", delegate
 		{
 			_eventWorldOpeningSummary = "";
+			_weeklyReportMaterialRevisions.MarkOpening();
 			if (_eventKingdomOpeningSummaries == null)
 			{
 				_eventKingdomOpeningSummaries = new Dictionary<string, string>();
@@ -37369,6 +35720,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			_eventKingdomOpeningSummaries[text] = text2;
 		}
+		_weeklyReportMaterialRevisions.MarkOpening();
 	}
 
 	private static Kingdom FindKingdomById(string kingdomId)
@@ -37622,7 +35974,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				MaterialKind = (item.MaterialKind ?? "").Trim(),
 				Label = (item.Label ?? "").Trim(),
 				SnapshotText = text,
-				StableKey = NormalizeNpcActionStableKey(item.StableKey, text),
+				StableKey = NpcActionLedger.NormalizeStableKey(item.StableKey, text),
 				KingdomId = (item.KingdomId ?? "").Trim(),
 				SettlementId = (item.SettlementId ?? "").Trim(),
 				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
@@ -38189,14 +36541,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			if (File.Exists(path))
 			{
 				payload.HasWorldSummaryFile = true;
-				EventWorldOpeningSummaryJson eventWorldOpeningSummaryJson = ReadJson<EventWorldOpeningSummaryJson>(path);
+				EventWorldOpeningSummaryJson eventWorldOpeningSummaryJson = PlayerExportsStore.ReadJson<EventWorldOpeningSummaryJson>(path);
 				payload.WorldSummary = (eventWorldOpeningSummaryJson?.Summary ?? "").Trim();
 			}
 			string path2 = Path.Combine(text2, "KingdomOpeningSummaries.json");
 			if (File.Exists(path2))
 			{
 				payload.HasKingdomSummariesFile = true;
-				Dictionary<string, string> dictionary = ReadJson<Dictionary<string, string>>(path2) ?? new Dictionary<string, string>();
+				Dictionary<string, string> dictionary = PlayerExportsStore.ReadJson<Dictionary<string, string>>(path2) ?? new Dictionary<string, string>();
 				foreach (KeyValuePair<string, string> item in dictionary)
 				{
 					string text3 = (item.Key ?? "").Trim();
@@ -38210,7 +36562,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			if (File.Exists(path3))
 			{
 				payload.HasEventRecordsFile = true;
-				List<EventRecordEntry> source = ReadJson<List<EventRecordEntry>>(path3) ?? new List<EventRecordEntry>();
+				List<EventRecordEntry> source = PlayerExportsStore.ReadJson<List<EventRecordEntry>>(path3) ?? new List<EventRecordEntry>();
 				payload.EventRecords = SanitizeEventRecordEntries(source);
 			}
 			if (!payload.HasWorldSummaryFile && !payload.HasKingdomSummariesFile && !payload.HasEventRecordsFile)
@@ -38267,6 +36619,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 					_eventKingdomOpeningSummaries[text] = text2;
 				}
 			}
+		}
+		if (payload.HasWorldSummaryFile || payload.HasKingdomSummariesFile)
+		{
+			_weeklyReportMaterialRevisions.MarkOpening();
 		}
 		if (payload.HasEventRecordsFile)
 		{
@@ -38504,78 +36860,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			ApplyWeeklyPromptMaterialAggregation(item2);
 		}
-		List<string> list2 = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-		if (list2.Count == 0)
-		{
-			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(3).ToList();
-		}
-		HashSet<string> hashSet = new HashSet<string>((list2 ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()), StringComparer.OrdinalIgnoreCase);
+		HashSet<string> fullReportKingdomIds = WeeklyMaterialBatchPlanner.SelectFullReportKingdomIds(list,
+			GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId)));
 		foreach (WeeklyEventMaterialPreviewGroup item2 in list)
 		{
-			bool flag = string.Equals((item2?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase);
-			bool flag2 = flag && !hashSet.Contains((item2?.KingdomId ?? "").Trim());
-			PrepareWeeklyPromptMaterialsForGroup(item2, flag2);
+			WeeklyPromptMaterialOwner.Prepare(item2, WeeklyMaterialBatchPlanner.IsShortOnly(item2, fullReportKingdomIds));
 		}
 		return list;
 	}
 
-	private static void PrepareWeeklyPromptMaterialsForGroup(WeeklyEventMaterialPreviewGroup group, bool shortOnly)
-	{
-		if (group == null)
-		{
-			return;
-		}
-		group.OutputMode = shortOnly ? WeeklyReportOutputMode.TitleShortTagsOnly : WeeklyReportOutputMode.FullReport;
-		group.IncludePreviousReportInPrompt = !shortOnly;
-		group.PromptMaterials = shortOnly ? BuildWeeklyPromptMaterialsShort(group) : BuildWeeklyPromptMaterialsFull(group);
-		if (group.PromptMaterials == null)
-		{
-			group.PromptMaterials = new List<EventMaterialReference>();
-		}
-	}
-
-	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsFull(WeeklyEventMaterialPreviewGroup group)
-	{
-		List<EventMaterialReference> source = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
-		return BuildWeeklyPromptMaterialsWithResolvedVillageRaids(source);
-	}
-
-	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsWithResolvedVillageRaids(List<EventMaterialReference> source)
-	{
-		List<EventMaterialReference> list = new List<EventMaterialReference>();
-		Dictionary<string, List<EventMaterialReference>> dictionary = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-		int num = 0;
-		foreach (EventMaterialReference item in OrderWeeklyPreviewMaterials(source).Where((EventMaterialReference x) => x != null))
-		{
-			if (!IsWeeklyPromptVillageRaidMaterial(item))
-			{
-				list.Add(item);
-				continue;
-			}
-			string text = ResolveWeeklyPromptVillageRaidKey(item);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "unknown_village_raid_" + num++;
-			}
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new List<EventMaterialReference>();
-				dictionary[text] = value;
-			}
-			value.Add(item);
-		}
-		foreach (List<EventMaterialReference> item2 in dictionary.Values.Where((List<EventMaterialReference> x) => x != null && x.Count > 0).OrderBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionDay ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionSequence ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => ResolveWeeklyPromptVillageRaidKey(x[0]), StringComparer.OrdinalIgnoreCase))
-		{
-			EventMaterialReference eventMaterialReference = BuildWeeklyPromptResolvedVillageRaidMaterial(item2);
-			if (eventMaterialReference != null)
-			{
-				list.Add(eventMaterialReference);
-			}
-		}
-		return OrderWeeklyPreviewMaterials(list).ToList();
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptResolvedVillageRaidMaterial(List<EventMaterialReference> source)
+	internal static EventMaterialReference BuildWeeklyPromptResolvedVillageRaidMaterial(List<EventMaterialReference> source)
 	{
 		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(source).Where((EventMaterialReference x) => x != null).ToList();
 		if (list.Count == 0)
@@ -38646,60 +36940,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsShort(WeeklyEventMaterialPreviewGroup group)
-	{
-		List<EventMaterialReference> list = new List<EventMaterialReference>();
-		List<EventMaterialReference> list2 = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList();
-		List<EventMaterialReference> settlementStatsMaterials = list2.Where(IsWeeklyPromptSettlementStatsMaterial).ToList();
-		List<EventMaterialReference> villageRaidMaterials = list2.Where(IsWeeklyPromptVillageRaidMaterial).ToList();
-		bool flag = false;
-		bool flag2 = false;
-		foreach (EventMaterialReference item in list2)
-		{
-			if (IsWeeklyPromptTournamentMaterial(item))
-			{
-				continue;
-			}
-			if (IsWeeklyPromptOpeningSummaryMaterial(item))
-			{
-				continue;
-			}
-			if (IsWeeklyPromptSettlementStatsMaterial(item))
-			{
-				if (!flag)
-				{
-					EventMaterialReference eventMaterialReference2 = BuildWeeklyPromptShortSettlementStatsMaterial(settlementStatsMaterials, group);
-					if (eventMaterialReference2 != null)
-					{
-						list.Add(eventMaterialReference2);
-					}
-					flag = true;
-				}
-				continue;
-			}
-			if (IsWeeklyPromptVillageRaidMaterial(item))
-			{
-				if (!flag2)
-				{
-					EventMaterialReference eventMaterialReference3 = BuildWeeklyPromptShortVillageRaidMaterial(villageRaidMaterials, group);
-					if (eventMaterialReference3 != null)
-					{
-						list.Add(eventMaterialReference3);
-					}
-					flag2 = true;
-				}
-				continue;
-			}
-			EventMaterialReference eventMaterialReference = BuildWeeklyPromptShortMaterial(item, group);
-			if (eventMaterialReference != null)
-			{
-				list.Add(eventMaterialReference);
-			}
-		}
-		return OrderWeeklyPreviewMaterials(list).ToList();
-	}
-
-	private static bool IsWeeklyPromptTournamentMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptTournamentMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -38711,7 +36952,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("tournament_finished:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("竞技大会结算", StringComparison.OrdinalIgnoreCase));
 	}
 
-	private static bool IsWeeklyPromptOpeningSummaryMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptOpeningSummaryMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -38721,7 +36962,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "world_opening_summary", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_opening_summary", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static EventMaterialReference BuildWeeklyPromptShortMaterial(EventMaterialReference item, WeeklyEventMaterialPreviewGroup group)
+	internal static EventMaterialReference BuildWeeklyPromptShortMaterial(EventMaterialReference item, WeeklyEventMaterialPreviewGroup group)
 	{
 		if (IsWeeklyPromptMovementAggregateMaterial(item))
 		{
@@ -38754,7 +36995,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return CloneEventMaterialReference(item);
 	}
 
-	private static bool IsWeeklyPromptSettlementStatsMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptSettlementStatsMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -38766,7 +37007,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("settlement_stats:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("定居点状态变化", StringComparison.OrdinalIgnoreCase));
 	}
 
-	private static bool IsWeeklyPromptVillageRaidMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptVillageRaidMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -39061,7 +37302,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return eventMaterialReference;
 	}
 
-	private static EventMaterialReference BuildWeeklyPromptShortSettlementStatsMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
+	internal static EventMaterialReference BuildWeeklyPromptShortSettlementStatsMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
 	{
 		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
 		if (list.Count == 0)
@@ -39178,7 +37419,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static EventMaterialReference BuildWeeklyPromptShortVillageRaidMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
+	internal static EventMaterialReference BuildWeeklyPromptShortVillageRaidMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
 	{
 		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
 		if (list.Count == 0)
@@ -39250,7 +37491,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return eventMaterialReference;
 	}
 
-	private static string ResolveWeeklyPromptVillageRaidKey(EventMaterialReference material)
+	internal static string ResolveWeeklyPromptVillageRaidKey(EventMaterialReference material)
 	{
 		string text = (material?.SettlementId ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
@@ -39829,48 +38070,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ApplyWeeklyPromptMaterialAggregation(WeeklyEventMaterialPreviewGroup group)
 	{
-		if (group?.Materials == null || group.Materials.Count == 0)
-		{
-			return;
-		}
-		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(group.Materials).Where((EventMaterialReference x) => x != null).Select(CloneEventMaterialReference).ToList();
-		List<EventMaterialReference> list2 = list.Where((EventMaterialReference x) => !IsWeeklyPromptAggregatableMaterial(x)).ToList();
-		List<EventMaterialReference> list3 = list.Where(IsWeeklyPromptAggregatableMaterial).ToList();
-		if (list3.Count == 0)
-		{
-			group.Materials = list2;
-			return;
-		}
-		Dictionary<string, Dictionary<string, List<EventMaterialReference>>> dictionary = new Dictionary<string, Dictionary<string, List<EventMaterialReference>>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item in list3)
-		{
-			string text = ResolveWeeklyPromptAggregateCategory(item);
-			string text2 = BuildWeeklyPromptAggregateEventKey(item);
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-				dictionary[text] = value;
-			}
-			if (!value.TryGetValue(text2, out var value2))
-			{
-				value2 = new List<EventMaterialReference>();
-				value[text2] = value2;
-			}
-			value2.Add(item);
-		}
-		List<EventMaterialReference> list4 = new List<EventMaterialReference>();
-		foreach (string item2 in GetWeeklyPromptAggregateCategoryOrder())
-		{
-			if (dictionary.TryGetValue(item2, out var value3))
-			{
-				EventMaterialReference eventMaterialReference = BuildWeeklyPromptAggregateCategoryMaterial(group, item2, value3);
-				if (eventMaterialReference != null)
-				{
-					list4.Add(eventMaterialReference);
-				}
-			}
-		}
-		group.Materials = OrderWeeklyPreviewMaterials(list2.Concat(list4).ToList()).ToList();
+		WeeklyMaterialAggregationOwner.Apply(group, BuildWeeklyPromptAggregateCategoryMaterial);
 	}
 
 	private static List<EventMaterialReference> BuildWeeklyPromptMaterialsFromAggregatedBuckets(WeeklyEventMaterialPreviewGroup group, List<EventMaterialReference> source, bool includeRawFallback)
@@ -40022,7 +38222,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return eventMaterialReference;
 	}
 
-	private static EventMaterialReference CloneEventMaterialReference(EventMaterialReference material)
+	internal static EventMaterialReference CloneEventMaterialReference(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -40065,7 +38265,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static bool IsWeeklyPromptAggregatableMaterial(EventMaterialReference material)
+	internal static bool IsWeeklyPromptAggregatableMaterial(EventMaterialReference material)
 	{
 		if (material == null)
 		{
@@ -40075,7 +38275,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return string.Equals(text, "npc_recent_action", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "npc_major_action", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static List<string> GetWeeklyPromptAggregateCategoryOrder()
+	internal static List<string> GetWeeklyPromptAggregateCategoryOrder()
 	{
 		return new List<string>
 		{
@@ -40093,7 +38293,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static string ResolveWeeklyPromptAggregateCategory(EventMaterialReference material)
+	internal static string ResolveWeeklyPromptAggregateCategory(EventMaterialReference material)
 	{
 		string text = (material?.ActionKind ?? "").Trim().ToLowerInvariant();
 		switch (text)
@@ -40144,7 +38344,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static string BuildWeeklyPromptAggregateEventKey(EventMaterialReference material)
+	internal static string BuildWeeklyPromptAggregateEventKey(EventMaterialReference material)
 	{
 		string text3 = BuildWeeklyPromptBattleEventKey(material);
 		if (!string.IsNullOrWhiteSpace(text3))
@@ -42899,51 +41099,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static List<WeeklyReportBatchRequest> BuildWeeklyReportBatchRequests(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay)
 	{
-		List<WeeklyReportBatchRequest> list = new List<WeeklyReportBatchRequest>();
 		List<WeeklyEventMaterialPreviewGroup> list2 = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
-		if (list2.Count == 0)
-		{
-			return list;
-		}
-		WeeklyEventMaterialPreviewGroup weeklyEventMaterialPreviewGroup = list2.FirstOrDefault((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase));
-		List<WeeklyEventMaterialPreviewGroup> list3 = list2.Where((WeeklyEventMaterialPreviewGroup x) => !string.Equals((x.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase)).ToList();
-		if (weeklyEventMaterialPreviewGroup != null)
-		{
-			list.Add(new WeeklyReportBatchRequest
-			{
-				WeekIndex = weekIndex,
-				StartDay = startDay,
-				EndDay = endDay,
-				OutputMode = WeeklyReportOutputMode.FullReport,
-				Groups = new List<WeeklyEventMaterialPreviewGroup> { weeklyEventMaterialPreviewGroup }
-			});
-		}
-		int weeklyReportBatchSize = Math.Max(1, GetWeeklyReportBatchSize());
-		List<WeeklyEventMaterialPreviewGroup> list4 = list3.Where((WeeklyEventMaterialPreviewGroup x) => (x?.OutputMode ?? WeeklyReportOutputMode.FullReport) != WeeklyReportOutputMode.TitleShortTagsOnly).ToList();
-		List<WeeklyEventMaterialPreviewGroup> list5 = list3.Where((WeeklyEventMaterialPreviewGroup x) => (x?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly).ToList();
-		for (int i = 0; i < list4.Count; i += weeklyReportBatchSize)
-		{
-			list.Add(new WeeklyReportBatchRequest
-			{
-				WeekIndex = weekIndex,
-				StartDay = startDay,
-				EndDay = endDay,
-				OutputMode = WeeklyReportOutputMode.FullReport,
-				Groups = list4.Skip(i).Take(weeklyReportBatchSize).ToList()
-			});
-		}
-		for (int j = 0; j < list5.Count; j += weeklyReportBatchSize)
-		{
-			list.Add(new WeeklyReportBatchRequest
-			{
-				WeekIndex = weekIndex,
-				StartDay = startDay,
-				EndDay = endDay,
-				OutputMode = WeeklyReportOutputMode.TitleShortTagsOnly,
-				Groups = list5.Skip(j).Take(weeklyReportBatchSize).ToList()
-			});
-		}
-		return list;
+		return WeeklyMaterialBatchPlanner.BuildBatches(list2, weekIndex, startDay, endDay, GetWeeklyReportBatchSize());
 	}
 
 #if false
@@ -42974,16 +41131,23 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void PrepareWeeklyReportBatchPrompt(WeeklyReportBatchRequest batch)
 	{
-		if (batch == null || IsWeeklyReportBatchPromptPrepared(batch))
+		if (batch == null)
 		{
 			return;
 		}
-		string systemPrompt = BuildWeeklyBatchReportSystemPrompt(batch);
-		string userPrompt = BuildWeeklyBatchReportUserPrompt(batch);
-		batch.SystemPrompt = systemPrompt ?? "";
-		batch.UserPrompt = userPrompt ?? "";
-		batch.PromptPreview = BuildWeeklyBatchPromptPreviewText(batch, systemPrompt, userPrompt);
-		batch.DisplayLabel = BuildWeeklyReportBatchDisplayLabel(batch);
+		if (!IsWeeklyReportBatchPromptPrepared(batch))
+		{
+			batch.SystemPrompt = BuildWeeklyBatchReportSystemPrompt(batch) ?? "";
+			batch.UserPrompt = BuildWeeklyBatchReportUserPrompt(batch) ?? "";
+		}
+		if (string.IsNullOrWhiteSpace(batch.PromptPreview))
+		{
+			batch.PromptPreview = BuildWeeklyBatchPromptPreviewText(batch, batch.SystemPrompt, batch.UserPrompt);
+		}
+		if (string.IsNullOrWhiteSpace(batch.DisplayLabel))
+		{
+			batch.DisplayLabel = BuildWeeklyReportBatchDisplayLabel(batch);
+		}
 	}
 
 	private static List<WeeklyEventMaterialPreviewGroup> BuildRemainingWeeklyReportGroupsForRetry(List<WeeklyReportBatchRequest> batches, int batchIndex, IEnumerable<WeeklyEventMaterialPreviewGroup> currentBatchRemainingGroups)
@@ -43235,17 +41399,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text2.Trim();
 	}
 
-	private static bool HasInjectedRuleBlock(string instructions, string ruleId)
-	{
-		string text = (instructions ?? "").Trim();
-		string text2 = (ruleId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
-		{
-			return false;
-		}
-		return text.IndexOf("【附加规则:" + text2 + "】", StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
 	private WeeklyPromptSnapshot CaptureWeeklyPromptSnapshot(Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride)
 	{
 		using FreezeWatchdog.ScopeToken scopeToken = FreezeWatchdog.Scope("WeeklyPrompt.Capture.mainthread");
@@ -43474,8 +41627,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildTriggeredWeeklyFullReportsPromptBlockFromSnapshot(string triggeredRuleInstructions, WeeklyPromptSnapshot weeklyPromptSnapshot)
 	{
-		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
-		bool flag2 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
+		bool flag = PromptRuleBlockText.Has(triggeredRuleInstructions, "npc_major_actions");
+		bool flag2 = PromptRuleBlockText.Has(triggeredRuleInstructions, "surroundings");
 		if (!flag && !flag2)
 		{
 			return "";
@@ -43906,7 +42059,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Title = (entry.Title ?? "").Trim(),
 			Summary = (entry.ShortSummary ?? "").Trim(),
 			Materials = list,
-			PromptMaterials = BuildWeeklyPromptMaterialsWithResolvedVillageRaids(list),
+			PromptMaterials = WeeklyPromptMaterialOwner.ResolveVillageRaids(list),
 			OutputMode = WeeklyReportOutputMode.FullReport,
 			IncludePreviousReportInPrompt = true
 		};
@@ -44008,54 +42161,79 @@ public partial class MyBehavior : CampaignBehaviorBase
 		});
 	}
 
+	private Dictionary<string, string> CaptureWeeklyReportCommitRecordStates(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, int weekIndex)
+	{
+		Dictionary<string, string> states = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, string> reportIdsByEventId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+		foreach (KeyValuePair<string, WeeklyEventMaterialPreviewGroup> pair in groups)
+		{
+			WeeklyEventMaterialPreviewGroup group = pair.Value;
+			string eventId = BuildWeeklyReportEventId(group.GroupKind, weekIndex, group.KingdomId);
+			reportIdsByEventId[eventId] = pair.Key;
+			states[pair.Key] = null;
+		}
+		foreach (EventRecordEntry entry in _eventRecordEntries ?? new List<EventRecordEntry>())
+		{
+			if (entry != null && reportIdsByEventId.TryGetValue((entry.EventId ?? "").Trim(), out string reportId) && states[reportId] == null)
+			{
+				states[reportId] = BuildWeeklyReportCommitRecordState(entry);
+			}
+		}
+		return states;
+	}
+
+	private static string BuildWeeklyReportCommitRecordState(EventRecordEntry entry)
+	{
+		return entry == null ? null : JsonConvert.SerializeObject(entry);
+	}
+
+	private bool IsWeeklyReportCommitRecordUnchanged(PendingWeeklyReportCommitContext context, string reportId, WeeklyEventMaterialPreviewGroup group)
+	{
+		if (context.CapturedRecordStates == null || !context.CapturedRecordStates.TryGetValue(reportId, out string captured))
+		{
+			return false;
+		}
+		string eventId = BuildWeeklyReportEventId(group.GroupKind, context.WeekIndex, group.KingdomId);
+		return string.Equals(captured, BuildWeeklyReportCommitRecordState(FindWeeklyReportRecordById(eventId)), StringComparison.Ordinal);
+	}
+
+	private bool HasWeeklyReportCommitWinner(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup group)
+	{
+		string eventId = BuildWeeklyReportEventId(group.GroupKind, context.WeekIndex, group.KingdomId);
+		return IsWeeklyReportCommitWinner(FindWeeklyReportRecordById(eventId), group, context.WeekIndex);
+	}
+
+	private static bool IsWeeklyReportCommitWinner(EventRecordEntry entry, WeeklyEventMaterialPreviewGroup group, int weekIndex)
+	{
+		if (entry == null || group == null || entry.WeekIndex != weekIndex
+			|| !string.Equals((entry.EventKind ?? "").Trim(), (group.GroupKind ?? "").Trim(), StringComparison.OrdinalIgnoreCase)
+			|| !string.Equals((entry.ScopeKingdomId ?? "").Trim(), (group.KingdomId ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+		{
+			return false;
+		}
+		return group.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly
+			? !string.IsNullOrWhiteSpace(entry.ShortSummary)
+			: !string.IsNullOrWhiteSpace(entry.Summary);
+	}
+
+	private static bool AreWeeklyReportCommitRecordStatesCurrent(Dictionary<string, WeeklyEventMaterialPreviewGroup> groups, Dictionary<string, string> captured, Dictionary<string, string> current)
+	{
+		return groups != null && captured != null && current != null && groups.Keys.All((string id) => captured.TryGetValue(id, out string original) && current.TryGetValue(id, out string now) && string.Equals(original, now, StringComparison.Ordinal));
+	}
+
 	private Task<bool> QueueWeeklyFullReportCompletionAsync(long runtimeGeneration, Func<bool> apply)
 	{
-		lock (_pendingWeeklyReportCommitLock)
-		{
-			if (!ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_full_report_enqueue"))
-			{
-				return Task.FromResult(false);
-			}
-			var pending = new WeeklyFullReportCompletion { RuntimeGeneration = runtimeGeneration, Apply = apply };
-			_weeklyFullReportCompletions.Enqueue(pending);
-			return pending.Completion.Task;
-		}
+		return _weeklyFullReportCompletions.Enqueue(runtimeGeneration, apply);
 	}
 
 	private void ProcessWeeklyFullReportCompletions()
 	{
-		// Only completed on-demand requests are queued; at most two commits per engine tick.
-		for (int processed = 0; processed < 2; processed++)
-		{
-			WeeklyFullReportCompletion pending;
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				if (_weeklyFullReportCompletions.Count == 0) return;
-				pending = _weeklyFullReportCompletions.Dequeue();
-			}
-			try
-			{
-				bool accepted = ReferenceEquals(Instance, this)
-					&& !SaveRuntimeGuard.IsStale(pending.RuntimeGeneration, "weekly_full_report_commit");
-				pending.Completion.TrySetResult(accepted && (pending.Apply?.Invoke() ?? false));
-			}
-			catch (Exception ex)
-			{
-				// Observe exceptions in the awaiting request so its failure UI is also queued.
-				pending.Completion.TrySetException(ex);
-			}
-		}
+		_weeklyFullReportCompletions.Process();
 	}
 
 	private void CancelWeeklyFullReportCompletions()
 	{
-		lock (_pendingWeeklyReportCommitLock)
-		{
-			while (_weeklyFullReportCompletions.Count > 0)
-			{
-				_weeklyFullReportCompletions.Dequeue().Completion.TrySetResult(false);
-			}
-		}
+		_weeklyFullReportCompletions.Cancel();
 	}
 
 	private static void ShowWeeklyFullOnDemandProgressPopup(EventRecordEntry entry)
@@ -44194,8 +42372,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		FreezeWatchdog.Mark("WeeklyPrompt.Full.start", "thread=" + Thread.CurrentThread.ManagedThreadId);
-		bool flag = HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions");
-		bool flag3 = HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings");
+		bool flag = PromptRuleBlockText.Has(triggeredRuleInstructions, "npc_major_actions");
+		bool flag3 = PromptRuleBlockText.Has(triggeredRuleInstructions, "surroundings");
 		if (!flag && !flag3)
 		{
 			FreezeWatchdog.Mark("WeeklyPrompt.Full.skip", "reason=no_triggered_weekly_rule");
@@ -44252,11 +42430,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private bool ShouldExcludeNpcShortReportFromWeeklyShortLayer(string triggeredRuleInstructions, Hero targetHero, CharacterObject targetCharacter, string kingdomIdOverride = null, WeeklyPromptSnapshot weeklyPromptSnapshot = null)
 	{
-		if (HasInjectedRuleBlock(triggeredRuleInstructions, "npc_major_actions"))
+		if (PromptRuleBlockText.Has(triggeredRuleInstructions, "npc_major_actions"))
 		{
 			return true;
 		}
-		if (HasInjectedRuleBlock(triggeredRuleInstructions, "surroundings"))
+		if (PromptRuleBlockText.Has(triggeredRuleInstructions, "surroundings"))
 		{
 			if (weeklyPromptSnapshot != null)
 			{
@@ -44478,30 +42656,72 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return weeklyReportRequestResult;
 	}
 
-	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts)
+	private async Task<ApiCallResult> CallWeeklyReportBatchApiAttemptAsync(string systemPrompt, string userPrompt, long runtimeGeneration, bool firstAttempt)
+	{
+		if (!ReferenceEquals(Instance, this) || (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_before_api_attempt")))
+		{
+			return new ApiCallResult { ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText() };
+		}
+		if (firstAttempt && TWParallel.IsMainThread())
+		{
+			return await CallWeeklyReportApiDetailed(systemPrompt, userPrompt).ConfigureAwait(false);
+		}
+		TaskCompletionSource<Task<ApiCallResult>> completionSource = new TaskCompletionSource<Task<ApiCallResult>>(TaskCreationOptions.RunContinuationsAsynchronously);
+		_weeklyBatchApiAttemptQueue.EnqueueIfCurrent(new PendingWeeklyBatchApiAttemptContext
+		{
+			RuntimeGeneration = runtimeGeneration,
+			SystemPrompt = systemPrompt,
+			UserPrompt = userPrompt,
+			CompletionSource = completionSource
+		}, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
+		Task<ApiCallResult> attempt = await completionSource.Task.ConfigureAwait(false);
+		if (attempt == null || !ReferenceEquals(Instance, this) || (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_api_launch")))
+		{
+			return new ApiCallResult { ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText() };
+		}
+		return await attempt.ConfigureAwait(false);
+	}
+
+	private async Task<WeeklyReportBatchRequestResult> GenerateWeeklyReportBatchWithRetriesAsync(WeeklyReportBatchRequest batch, int maxAttempts, long runtimeGeneration = 0L)
 	{
 		WeeklyReportBatchRequestResult weeklyReportBatchRequestResult = new WeeklyReportBatchRequestResult();
-		PrepareWeeklyReportBatchPrompt(batch);
-		string text = IsWeeklyReportBatchPromptPrepared(batch) ? (batch.SystemPrompt ?? "") : BuildWeeklyBatchReportSystemPrompt(batch);
-		string text2 = IsWeeklyReportBatchPromptPrepared(batch) ? (batch.UserPrompt ?? "") : BuildWeeklyBatchReportUserPrompt(batch);
-		string text3 = !string.IsNullOrWhiteSpace(batch?.PromptPreview) ? (batch.PromptPreview ?? "") : BuildWeeklyBatchPromptPreviewText(batch, text, text2);
+		if (!IsWeeklyReportBatchPromptPrepared(batch))
+		{
+			weeklyReportBatchRequestResult.FailureReason = "Weekly batch prompt was not prepared on the main thread.";
+			weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
+			return weeklyReportBatchRequestResult;
+		}
+		string text = batch.SystemPrompt;
+		string text2 = batch.UserPrompt;
+		string text3 = batch.PromptPreview ?? "";
 		string text4 = BuildWeeklyReportBatchDisplayLabel(batch);
 		weeklyReportBatchRequestResult.PromptPreview = text3;
 		for (int i = 1; i <= Math.Max(1, maxAttempts); i++)
 		{
-			ApiCallResult apiCallResult = await CallWeeklyReportApiDetailed(text, text2);
+			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_before_attempt"))
+			{
+				weeklyReportBatchRequestResult.Success = false;
+				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
+				return weeklyReportBatchRequestResult;
+			}
+			ApiCallResult apiCallResult = await CallWeeklyReportBatchApiAttemptAsync(text, text2, runtimeGeneration, i == 1);
+			if (runtimeGeneration > 0L && SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_batch_after_attempt"))
+			{
+				weeklyReportBatchRequestResult.Success = false;
+				weeklyReportBatchRequestResult.FailureReason = SaveRuntimeGuard.BuildStaleRequestErrorText();
+				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
+				return weeklyReportBatchRequestResult;
+			}
 			string text5 = apiCallResult.Success ? (apiCallResult.Content ?? "") : (apiCallResult.ErrorMessage ?? "未知错误");
 			weeklyReportBatchRequestResult.RawResponse = text5;
 			Logger.LogEventPromptExchange(text4 + " [灏濊瘯 " + i + "/" + maxAttempts + "]", text3, text5);
 			weeklyReportBatchRequestResult.AttemptsUsed = i;
+			CaptureWeeklyReportBatchAttemptFailureMetadata(weeklyReportBatchRequestResult, apiCallResult);
 			if (!apiCallResult.Success)
 			{
 				weeklyReportBatchRequestResult.Success = false;
 				weeklyReportBatchRequestResult.FailureReason = BuildWeeklyReportFailureReason(apiCallResult.ErrorMessage, parseFailed: false);
-				weeklyReportBatchRequestResult.IsRateLimit = apiCallResult.IsRateLimit;
-				weeklyReportBatchRequestResult.IsRequestsPerMinuteLimit = apiCallResult.IsRequestsPerMinuteLimit;
-				weeklyReportBatchRequestResult.IsQuotaLimit = apiCallResult.IsQuotaLimit;
-				weeklyReportBatchRequestResult.RetryAfterSeconds = apiCallResult.RetryAfterSeconds;
 				weeklyReportBatchRequestResult.Blocks = new List<WeeklyReportBatchBlockResult>();
 				weeklyReportBatchRequestResult.MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
 			}
@@ -44546,13 +42766,26 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return weeklyReportBatchRequestResult;
 	}
 
-	private async Task<WeeklyReportBatchExecutionResult> ExecuteWeeklyReportBatchAsync(WeeklyReportBatchRequest batch, int batchIndex, int maxAttempts)
+	private static void CaptureWeeklyReportBatchAttemptFailureMetadata(WeeklyReportBatchRequestResult result, ApiCallResult attempt)
+	{
+		if (result == null)
+		{
+			return;
+		}
+		bool failed = attempt != null && !attempt.Success;
+		result.IsRateLimit = failed && attempt.IsRateLimit;
+		result.IsRequestsPerMinuteLimit = failed && attempt.IsRequestsPerMinuteLimit;
+		result.IsQuotaLimit = failed && attempt.IsQuotaLimit;
+		result.RetryAfterSeconds = failed ? attempt.RetryAfterSeconds : null;
+	}
+
+	private async Task<WeeklyReportBatchExecutionResult> ExecuteWeeklyReportBatchAsync(WeeklyReportBatchRequest batch, int batchIndex, int maxAttempts, long runtimeGeneration)
 	{
 		Stopwatch stopwatch = Stopwatch.StartNew();
 		WeeklyReportBatchRequestResult result;
 		try
 		{
-			result = await GenerateWeeklyReportBatchWithRetriesAsync(batch, maxAttempts);
+			result = await GenerateWeeklyReportBatchWithRetriesAsync(batch, maxAttempts, runtimeGeneration);
 		}
 		catch (Exception ex)
 		{
@@ -44575,7 +42808,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 	}
 
-	private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null)
+	private static WeeklyReportRetryContext CreateWeeklyReportRetryContext(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool isAutoGeneration, WeeklyEventMaterialPreviewGroup failedGroup, WeeklyReportRequestResult requestResult, IEnumerable<string> popupCandidateKingdomIds = null, Dictionary<string, string> capturedRecordStates = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = null)
 	{
 		WeeklyReportRetryContext weeklyReportRetryContext = new WeeklyReportRetryContext
 		{
@@ -44585,6 +42818,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			DisplayLabel = (displayLabel ?? "").Trim(),
 			OpenViewerWhenDone = openViewerWhenDone,
 			IsAutoGeneration = isAutoGeneration,
+			CapturedRecordStates = capturedRecordStates,
+			SourceSnapshot = sourceSnapshot,
 			FailedGroupTitle = BuildWeeklyReportGroupDisplayLabel(failedGroup),
 			FailedReason = (requestResult?.FailureReason ?? "").Trim(),
 			AttemptsUsed = requestResult?.AttemptsUsed ?? 0,
@@ -44644,6 +42879,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (!weeklyReportRetryContext.IsAutoGeneration)
 		{
 			text = string.IsNullOrWhiteSpace(weeklyReportRetryContext.DisplayLabel) ? ("第" + weeklyReportRetryContext.WeekIndex + "周周报") : weeklyReportRetryContext.DisplayLabel;
+		}
+		if (weeklyReportRetryContext.RequiresFreshMaterials)
+		{
+			string changedMessage = text + "的目标记录或保存素材已变更，旧请求和旧素材重试均已取消。\n\n重新采集会按当前游戏状态重新构建失败分组，并可能替换这些分组尚未完成的手工编辑。其他已完成分组不会重跑。\n\n你可以明确选择重新采集并生成，或保存并退出；不会自动覆盖编辑。";
+			InformationManager.ShowInquiry(new InquiryData("周报目标已变更", changedMessage, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "重新采集并生成", "保存并退出", delegate
+			{
+				BeginFreshWeeklyReportRetry(weeklyReportRetryContext);
+			}, ExitCurrentGameFromWeeklyReportGate), pauseGameActiveState: true);
+			return;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(text + "在生成过程中遇到了无法自动恢复的 API/模型错误。");
@@ -44754,6 +42998,45 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_weeklyReportUiStage = WeeklyReportUiStage.RetryProgress;
 		ShowWeeklyReportRetryProgressPopup();
 		_ = RetryBlockedWeeklyReportsAsync(_weeklyReportRetryContext, num);
+	}
+
+	private static List<WeeklyEventMaterialPreviewGroup> SelectFreshWeeklyReportRetryGroups(List<WeeklyEventMaterialPreviewGroup> freshGroups, List<WeeklyEventMaterialPreviewGroup> failedGroups)
+	{
+		HashSet<string> requiredIds = new HashSet<string>((failedGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupReportId).Where((string id) => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
+		if (requiredIds.Count == 0)
+		{
+			return null;
+		}
+		List<WeeklyEventMaterialPreviewGroup> selected = (freshGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup group) => group != null && requiredIds.Contains(BuildWeeklyReportGroupReportId(group))).ToList();
+		return BuildWeeklyReportGroupMap(selected).Count == requiredIds.Count ? selected : null;
+	}
+
+	private void BeginFreshWeeklyReportRetry(WeeklyReportRetryContext staleContext)
+	{
+		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || !ReferenceEquals(_weeklyReportRetryContext, staleContext) || _weeklyReportManualRetryInProgress)
+		{
+			return;
+		}
+		try
+		{
+			List<WeeklyEventMaterialPreviewGroup> freshGroups = SelectFreshWeeklyReportRetryGroups(BuildWeeklyEventMaterialPreviewGroups(staleContext.StartDay, staleContext.EndDay), staleContext.Groups);
+			if (freshGroups == null || freshGroups.Count == 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("当前已无法找到全部失败的周报分组，未发送新请求；请保存退出后检查本周素材。"));
+				QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
+				return;
+			}
+			freshGroups = OrderWeeklyReportGenerationGroups(freshGroups);
+			WeeklyReportRetryContext freshContext = CreateWeeklyReportRetryContext(freshGroups, staleContext.WeekIndex, staleContext.StartDay, staleContext.EndDay, staleContext.DisplayLabel, staleContext.OpenViewerWhenDone, staleContext.IsAutoGeneration, freshGroups[0], new WeeklyReportRequestResult { Success = false }, staleContext.PopupCandidateKingdomIds);
+			_weeklyReportRetryContext = freshContext;
+			BeginRetryBlockedWeeklyReports();
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[ERROR] refresh changed weekly report materials failed: " + ex);
+			InformationManager.DisplayMessage(new InformationMessage("重新采集周报素材失败，未发送新请求。"));
+			QueueWeeklyReportFailurePopup(staleContext, showImmediate: true);
+		}
 	}
 
 	private void CancelWeeklyReportManualRetryAndReturn()
@@ -44875,7 +43158,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		WeeklyReportGenerationResult weeklyReportGenerationResult = null;
 		try
 		{
-			weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(context.Groups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, queueBlockingPopupOnFatalFailure: false, isAutoGeneration: context.IsAutoGeneration, popupCandidateKingdomIdsOverride: context.PopupCandidateKingdomIds);
+			weeklyReportGenerationResult = await GenerateWeeklyReportsBatchedAsyncInternal(context.Groups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, queueBlockingPopupOnFatalFailure: false, isAutoGeneration: context.IsAutoGeneration, popupCandidateKingdomIdsOverride: context.PopupCandidateKingdomIds, capturedRecordStatesOverride: context.CapturedRecordStates, sourceSnapshotOverride: context.SourceSnapshot);
 			if (retryVersion != _weeklyReportManualRetryVersion)
 			{
 				return;
@@ -44892,7 +43175,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				_pendingWeeklyReportManualRetryMessage = "周事件补跑仍未成功，请检查 API / 模型配置后再试。";
+				if (weeklyReportGenerationResult?.BlockedByChangedRecord == true)
+				{
+					context.RequiresFreshMaterials = true;
+					context.FailedReason = "周报目标在失败后已变更，旧素材不能重试。";
+				}
+				_pendingWeeklyReportManualRetryMessage = weeklyReportGenerationResult?.BlockedByChangedRecord == true
+					? "周报目标已被编辑或由其他请求完成，旧素材不能重试；请重新收集本周素材并生成。"
+					: "周事件补跑仍未成功，请检查 API / 模型配置后再试。";
 				_pendingWeeklyReportManualRetryContext = (weeklyReportGenerationResult?.RetryContext ?? context);
 			}
 		}
@@ -44991,32 +43281,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		List<WeeklyEventMaterialPreviewGroup> list = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList();
 		List<string> kingdomIdsByPlayerProximity = GetKingdomIdsByPlayerProximity(list.Where((WeeklyEventMaterialPreviewGroup x) => string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase)).Select((WeeklyEventMaterialPreviewGroup x) => x.KingdomId));
-		Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		for (int i = 0; i < kingdomIdsByPlayerProximity.Count; i++)
-		{
-			string text = (kingdomIdsByPlayerProximity[i] ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !dictionary.ContainsKey(text))
-			{
-				dictionary[text] = i;
-			}
-		}
-		return list.OrderBy(delegate(WeeklyEventMaterialPreviewGroup x)
-		{
-			if (string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
-			{
-				string text = (x.KingdomId ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text) && dictionary.TryGetValue(text, out var value))
-				{
-					return (value == 0) ? 0 : (value + 1);
-				}
-				return 1000;
-			}
-			if (string.Equals((x.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase))
-			{
-				return 1;
-			}
-			return 2000;
-		}).ThenBy((WeeklyEventMaterialPreviewGroup x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
+		return WeeklyMaterialBatchPlanner.OrderGroups(list, kingdomIdsByPlayerProximity);
 	}
 
 	private static void AppendWeeklyReportWritingRequirements(StringBuilder stringBuilder)
@@ -45841,15 +44106,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		SetKingdomStabilityValue(kingdom, GetKingdomStabilityValue(kingdom) - value + num);
-		if (num == 0)
-		{
-			_weeklyReportAppliedStabilityDeltas.Remove(text);
-		}
-		else
-		{
-			_weeklyReportAppliedStabilityDeltas[text] = num;
-		}
+		KingdomStability.ApplyWeeklyDelta(text, GetKingdomStabilityValue(kingdom), num,
+			updated => SetKingdomStabilityValue(kingdom, updated));
 	}
 
 	private void UpsertWeeklyReportEventRecord(WeeklyEventMaterialPreviewGroup group, int weekIndex, string title, string shortSummary, string report, string tagText, string promptText, bool sanitizeAfter = true)
@@ -46580,7 +44838,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		return text6 + "[" + text + "] " + (string.IsNullOrWhiteSpace(text5) ? "无预览" : text5);
 	}
 
-	private static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials)
+	internal static IEnumerable<EventMaterialReference> OrderWeeklyPreviewMaterials(List<EventMaterialReference> materials)
 	{
 		return (materials ?? new List<EventMaterialReference>()).OrderBy((EventMaterialReference x) => GetWeeklyPreviewMaterialSortBucket(x)).ThenBy((EventMaterialReference x) => x?.ActionDay ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue).ThenBy((EventMaterialReference x) => x?.ActionOrder ?? int.MinValue).ThenBy((EventMaterialReference x) => x?.Label ?? "", StringComparer.OrdinalIgnoreCase);
 	}
@@ -46922,16 +45180,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private async Task GenerateDevWeeklyReportsAsync()
 	{
-		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups());
 		int currentGameDayIndexSafe = GetCurrentGameDayIndexSafe();
 		int num = Math.Max(0, currentGameDayIndexSafe - currentGameDayIndexSafe % 7);
 		int num2 = Math.Max(1, currentGameDayIndexSafe / 7 + 1);
-		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false);
+		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = _weeklyReportMaterialRevisions.Capture(num, currentGameDayIndexSafe);
+		List<WeeklyEventMaterialPreviewGroup> list = OrderWeeklyReportGenerationGroups(BuildWeeklyEventMaterialPreviewGroups(num, currentGameDayIndexSafe));
+		await GenerateWeeklyReportsBatchedAsyncInternal(list, num2, num, currentGameDayIndexSafe, "本周周报草案", openViewerWhenDone: false, queueBlockingPopupOnFatalFailure: true, isAutoGeneration: false, sourceSnapshotOverride: sourceSnapshot);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsMinuteBurstAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
 	{
 		WeeklyReportGenerationResult generationResult = new WeeklyReportGenerationResult();
+		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this))
+		{
+			Logger.Log("EventWeeklyReport", "[BATCH] rejected non-current main-thread owner before capture");
+			return generationResult;
+		}
 		if (runtimeGeneration <= 0L)
 		{
 			runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -46958,49 +45222,58 @@ public partial class MyBehavior : CampaignBehaviorBase
 			list2 = list.Where((WeeklyEventMaterialPreviewGroup x) => x != null && string.Equals((x.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase) && x.OutputMode != WeeklyReportOutputMode.TitleShortTagsOnly).Select((WeeklyEventMaterialPreviewGroup x) => (x.KingdomId ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 		}
 		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = BuildWeeklyReportGroupMap(list);
+		WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot = sourceSnapshotOverride ?? _weeklyReportMaterialRevisions.Capture(startDay, endDay);
+		Dictionary<string, string> currentRecordStates = CaptureWeeklyReportCommitRecordStates(groupMap, weekIndex);
+		if (!_weeklyReportMaterialRevisions.IsCurrent(sourceSnapshot))
+		{
+			generationResult.FailureCount = groupMap.Count;
+			generationResult.BlockedByFatalFailure = true;
+			generationResult.BlockedByChangedRecord = true;
+			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly source materials changed before dispatch." }, list2, currentRecordStates, sourceSnapshot);
+			generationResult.RetryContext.RequiresFreshMaterials = true;
+			if (queueBlockingPopupOnFatalFailure)
+			{
+				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
+			}
+			return generationResult;
+		}
+		if (capturedRecordStatesOverride != null && !AreWeeklyReportCommitRecordStatesCurrent(groupMap, capturedRecordStatesOverride, currentRecordStates))
+		{
+			generationResult.BlockedByFatalFailure = true;
+			generationResult.BlockedByChangedRecord = true;
+			generationResult.FailureCount = groupMap.Count;
+			InformationManager.DisplayMessage(new InformationMessage("周报目标在失败后已变更，旧素材重试已取消；请重新生成本周周报。"));
+			return generationResult;
+		}
+		Dictionary<string, string> capturedRecordStates = capturedRecordStatesOverride ?? currentRecordStates;
 		List<WeeklyReportBatchRequest> batches = (preparedBatches ?? new List<WeeklyReportBatchRequest>()).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
 		if (batches.Count == 0)
 		{
 			batches = BuildWeeklyReportBatchRequests(list, weekIndex, startDay, endDay);
 		}
-		int burstSize = Math.Max(1, GetWeeklyReportRequestsPerMinute());
-		int totalWaves = Math.Max(1, (int)Math.Ceiling((double)batches.Count / (double)burstSize));
-		List<Task<WeeklyReportBatchExecutionResult>> runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>();
-		InformationManager.DisplayMessage(new InformationMessage("开始生成" + displayLabel + "，共 " + list.Count + " 条周报目标，" + batches.Count + " 个批次；将按分钟整批发送，每分钟同时发送 " + burstSize + " 个请求。"));
-		for (int i = 0; i < batches.Count; i += burstSize)
-		{
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_wave"))
-			{
-				return generationResult;
-			}
-			List<WeeklyReportBatchRequest> wave = batches.Skip(i).Take(burstSize).Where((WeeklyReportBatchRequest x) => x != null && x.Groups != null && x.Groups.Count > 0).ToList();
-			if (wave.Count == 0)
-			{
-				continue;
-			}
-			int waveIndex = i / burstSize + 1;
-			string waveLabel = string.Join(" | ", wave.Select(BuildWeeklyReportBatchDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)));
-			Logger.Log("EventWeeklyReport", "[BATCH-WAVE] " + displayLabel + " wave " + waveIndex + "/" + totalWaves + " launch count=" + wave.Count + " :: " + waveLabel);
-			InformationManager.DisplayMessage(new InformationMessage("周报批次 " + waveIndex + "/" + totalWaves + " 已发出，共 " + wave.Count + " 个请求。"));
-			for (int j = 0; j < wave.Count; j++)
-			{
-				runningTasks.Add(ExecuteWeeklyReportBatchAsync(wave[j], i + j, 3));
-			}
-			if (i + burstSize < batches.Count)
-			{
-				await Task.Delay(60000);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_wave_delay"))
-				{
-					return generationResult;
-				}
-			}
-		}
-		WeeklyReportBatchExecutionResult[] completed = await Task.WhenAll(runningTasks);
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_before_commit_enqueue"))
+		WeeklyPromptPreparationResult promptPreparation = await EnqueueWeeklyPromptPreparationAsync(batches, runtimeGeneration);
+		if (promptPreparation == WeeklyPromptPreparationResult.Canceled || SaveRuntimeGuard.IsStale(runtimeGeneration, "weekly_report_after_prompt_prepare"))
 		{
 			return generationResult;
 		}
-		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, completed, runtimeGeneration);
+		if (promptPreparation != WeeklyPromptPreparationResult.Prepared)
+		{
+			generationResult.FailureCount = list.Count;
+			generationResult.BlockedByFatalFailure = true;
+			generationResult.RetryContext = CreateWeeklyReportRetryContext(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, isAutoGeneration, list[0], new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly batch prompt preparation failed before dispatch." }, list2, capturedRecordStates, sourceSnapshot);
+			if (queueBlockingPopupOnFatalFailure)
+			{
+				QueueWeeklyReportFailurePopup(generationResult.RetryContext, showImmediate: true);
+			}
+			return generationResult;
+		}
+		int burstSize = Math.Max(1, GetWeeklyReportRequestsPerMinute());
+		WeeklyReportBatchExecutionResult[] completed = await CoordinateWeeklyReportWavesAsync(batches, burstSize, list.Count, displayLabel, runtimeGeneration, sourceSnapshot);
+		if (completed == null)
+		{
+			return generationResult;
+		}
+		return await EnqueueWeeklyReportCommitAsync(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, list2, groupMap, capturedRecordStates, sourceSnapshot, completed, runtimeGeneration);
 #if false
 		int successCount = 0;
 		int failureCount = 0;
@@ -47094,12 +45367,196 @@ public partial class MyBehavior : CampaignBehaviorBase
 #endif
 	}
 
-	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration)
+	private Task<WeeklyReportBatchExecutionResult[]> CoordinateWeeklyReportWavesAsync(List<WeeklyReportBatchRequest> batches, int burstSize, int totalTargets, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, Func<int, Task> delay = null)
+	{
+		return WeeklyReportWaveCoordinator.RunAsync<WeeklyReportBatchRequest, WeeklyReportBatchExecutionResult>(
+			batches, burstSize,
+			batch => batch != null && batch.Groups != null && batch.Groups.Count > 0,
+			phase => !SaveRuntimeGuard.IsStale(runtimeGeneration, phase) && ReferenceEquals(Instance, this),
+			(wave, first, index, total) => EnqueueWeeklyWaveLaunchAsync(wave, first, index, total, totalTargets, batches.Count, burstSize, displayLabel, runtimeGeneration, sourceSnapshot),
+			(batch, index) => new WeeklyReportBatchExecutionResult
+			{
+				BatchIndex = index,
+				Batch = batch,
+				Result = new WeeklyReportBatchRequestResult
+				{
+					FailureReason = "Weekly batch wave was not launched.",
+					MissingReportIds = BuildWeeklyBatchExpectedReportIds(batch)
+				}
+			}, delay);
+	}
+
+	private Task<List<Task<WeeklyReportBatchExecutionResult>>> EnqueueWeeklyWaveLaunchAsync(List<WeeklyReportBatchRequest> wave, int firstBatchIndex, int waveIndex, int totalWaves, int totalTargets, int totalBatches, int burstSize, string displayLabel, long runtimeGeneration, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot)
+	{
+		TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>> completionSource = new TaskCompletionSource<List<Task<WeeklyReportBatchExecutionResult>>>(TaskCreationOptions.RunContinuationsAsynchronously);
+		_weeklyWaveLaunchQueue.EnqueueIfCurrent(new PendingWeeklyWaveLaunchContext
+		{
+			RuntimeGeneration = runtimeGeneration,
+			SourceSnapshot = sourceSnapshot,
+			DisplayLabel = displayLabel,
+			WaveIndex = waveIndex,
+			TotalWaves = totalWaves,
+			TotalTargets = totalTargets,
+			TotalBatches = totalBatches,
+			BurstSize = burstSize,
+			FirstBatchIndex = firstBatchIndex,
+			Batches = wave,
+			CompletionSource = completionSource
+		}, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
+		return completionSource.Task;
+	}
+
+	private static void CompletePendingWeeklyWaveLaunch(PendingWeeklyWaveLaunchContext context, List<Task<WeeklyReportBatchExecutionResult>> result)
+	{
+		context?.CompletionSource?.TrySetResult(result);
+	}
+
+	private bool ProcessPendingWeeklyWaveLaunches()
+	{
+		PendingWeeklyWaveLaunchContext context = _weeklyWaveLaunchQueue.Peek();
+		if (context == null)
+		{
+			return false;
+		}
+		if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_wave_launch") || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
+		{
+			_weeklyWaveLaunchQueue.Complete(context, null);
+			_weeklyWaveLaunchQueue.CompleteProcessed(context);
+			return true;
+		}
+		List<Task<WeeklyReportBatchExecutionResult>> runningTasks = null;
+		try
+		{
+			if (context.WaveIndex == 1)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("开始生成" + context.DisplayLabel + "，共 " + context.TotalTargets + " 条周报目标，" + context.TotalBatches + " 个批次；将按分钟整批发送，每分钟同时发送 " + context.BurstSize + " 个请求。"));
+			}
+			string waveLabel = string.Join(" | ", context.Batches.Select(BuildWeeklyReportBatchDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)));
+			Logger.Log("EventWeeklyReport", "[BATCH-WAVE] " + context.DisplayLabel + " wave " + context.WaveIndex + "/" + context.TotalWaves + " launch count=" + context.Batches.Count + " :: " + waveLabel);
+			InformationManager.DisplayMessage(new InformationMessage("周报批次 " + context.WaveIndex + "/" + context.TotalWaves + " 已发出，共 " + context.Batches.Count + " 个请求。"));
+			runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>(context.Batches.Count);
+			for (int i = 0; i < context.Batches.Count; i++)
+			{
+				runningTasks.Add(ExecuteWeeklyReportBatchAsync(context.Batches[i], context.FirstBatchIndex + i, 3, context.RuntimeGeneration));
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[ERROR] weekly wave launch failed: " + ex);
+			runningTasks = null;
+		}
+		finally
+		{
+			_weeklyWaveLaunchQueue.Complete(context, runningTasks);
+			_weeklyWaveLaunchQueue.CompleteProcessed(context);
+		}
+		return true;
+	}
+
+	private static void CompletePendingWeeklyBatchApiAttempt(PendingWeeklyBatchApiAttemptContext context, Task<ApiCallResult> result)
+	{
+		context?.CompletionSource?.TrySetResult(result);
+	}
+
+	private bool ProcessPendingWeeklyBatchApiAttempts()
+	{
+		PendingWeeklyBatchApiAttemptContext context = _weeklyBatchApiAttemptQueue.Peek();
+		if (context == null)
+		{
+			return false;
+		}
+		Task<ApiCallResult> attempt = null;
+		try
+		{
+			if (TWParallel.IsMainThread() && ReferenceEquals(Instance, this) && !SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_batch_api_launch"))
+			{
+				attempt = CallWeeklyReportApiDetailed(context.SystemPrompt, context.UserPrompt);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("EventWeeklyReport", "[ERROR] weekly batch API attempt launch failed: " + ex);
+		}
+		finally
+		{
+			_weeklyBatchApiAttemptQueue.Complete(context, attempt);
+			_weeklyBatchApiAttemptQueue.CompleteProcessed(context);
+		}
+		return true;
+	}
+
+	private Task<WeeklyPromptPreparationResult> EnqueueWeeklyPromptPreparationAsync(List<WeeklyReportBatchRequest> batches, long runtimeGeneration)
+	{
+		TaskCompletionSource<WeeklyPromptPreparationResult> completionSource = new TaskCompletionSource<WeeklyPromptPreparationResult>();
+		_weeklyPromptPreparationQueue.EnqueueIfCurrent(new PendingWeeklyPromptPreparationContext
+		{
+			RuntimeGeneration = runtimeGeneration,
+			Cursor = new WeeklyMaterialStageCursor<WeeklyReportBatchRequest>(batches),
+			CompletionSource = completionSource
+		}, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
+		return completionSource.Task;
+	}
+
+	private static void CompletePendingWeeklyPromptPreparation(PendingWeeklyPromptPreparationContext context, WeeklyPromptPreparationResult result)
+	{
+		context?.CompletionSource?.TrySetResult(result);
+	}
+
+	private bool ProcessPendingWeeklyPromptPreparations()
+	{
+		if (!_weeklyPromptPreparationQueue.HasPending)
+		{
+			return false;
+		}
+		long startTimestamp = Stopwatch.GetTimestamp();
+		double budgetMs = GetDailyMaintenanceFrameBudgetMs();
+		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		{
+			PendingWeeklyPromptPreparationContext context = _weeklyPromptPreparationQueue.Peek();
+			if (context == null)
+			{
+				break;
+			}
+			if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_prompt_prepare"))
+			{
+				_weeklyPromptPreparationQueue.Complete(context, WeeklyPromptPreparationResult.Canceled);
+				_weeklyPromptPreparationQueue.CompleteProcessed(context);
+				continue;
+			}
+			if (context.Cursor.TryTake(out WeeklyReportBatchRequest batch))
+			{
+				try
+				{
+					PrepareWeeklyReportBatchPrompt(batch);
+					if (!IsWeeklyReportBatchPromptPrepared(batch))
+					{
+						throw new InvalidOperationException("Weekly batch prompt preparation returned an empty prompt.");
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.Log("EventWeeklyReport", "[ERROR] weekly batch prompt preparation failed before dispatch: " + ex);
+					_weeklyPromptPreparationQueue.Complete(context, WeeklyPromptPreparationResult.Failed);
+					_weeklyPromptPreparationQueue.CompleteProcessed(context);
+					continue;
+				}
+			}
+			if (context.Cursor.Complete)
+			{
+				_weeklyPromptPreparationQueue.Complete(context, WeeklyPromptPreparationResult.Prepared);
+				_weeklyPromptPreparationQueue.CompleteProcessed(context);
+			}
+		}
+		return true;
+	}
+
+	private Task<WeeklyReportGenerationResult> EnqueueWeeklyReportCommitAsync(List<WeeklyEventMaterialPreviewGroup> groups, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, List<string> popupCandidateKingdomIds, Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap, Dictionary<string, string> capturedRecordStates, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshot, IEnumerable<WeeklyReportBatchExecutionResult> executions, long runtimeGeneration)
 	{
 		TaskCompletionSource<WeeklyReportGenerationResult> completionSource = new TaskCompletionSource<WeeklyReportGenerationResult>();
 		PendingWeeklyReportCommitContext context = new PendingWeeklyReportCommitContext
 		{
 			RuntimeGeneration = runtimeGeneration,
+			SourceSnapshot = sourceSnapshot,
 			WeekIndex = weekIndex,
 			StartDay = startDay,
 			EndDay = endDay,
@@ -47110,20 +45567,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 			PopupCandidateKingdomIds = (popupCandidateKingdomIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
 			Groups = (groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).ToList(),
 			GroupMap = groupMap ?? BuildWeeklyReportGroupMap(groups),
+			CapturedRecordStates = capturedRecordStates,
 			Executions = (executions ?? Enumerable.Empty<WeeklyReportBatchExecutionResult>()).Where((WeeklyReportBatchExecutionResult x) => x != null).OrderBy((WeeklyReportBatchExecutionResult x) => x.BatchIndex).ToList(),
 			CompletionSource = completionSource
 		};
-		lock (_pendingWeeklyReportCommitLock)
-		{
-			_pendingWeeklyReportCommits.Enqueue(context);
-			Volatile.Write(ref _hasPendingWeeklyReportCommits, 1);
-		}
+		_weeklyReportCommitQueue.EnqueueIfCurrent(context, () => ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(runtimeGeneration));
 		return completionSource.Task;
 	}
 
 	private bool ProcessPendingWeeklyReportCommits()
 	{
-		if (Volatile.Read(ref _hasPendingWeeklyReportCommits) == 0)
+		if (!_weeklyReportCommitQueue.HasPending)
 		{
 			return false;
 		}
@@ -47132,18 +45586,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		long startTimestamp = Stopwatch.GetTimestamp();
 		while (!IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
-			PendingWeeklyReportCommitContext context = null;
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				if (_pendingWeeklyReportCommits.Count > 0)
-				{
-					context = _pendingWeeklyReportCommits.Peek();
-				}
-				else
-				{
-					Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
-				}
-			}
+			PendingWeeklyReportCommitContext context = _weeklyReportCommitQueue.Peek();
 			if (context == null)
 			{
 				return hadWork;
@@ -47153,19 +45596,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
-			lock (_pendingWeeklyReportCommitLock)
-			{
-				if (_pendingWeeklyReportCommits.Count > 0 && ReferenceEquals(_pendingWeeklyReportCommits.Peek(), context))
-				{
-					_pendingWeeklyReportCommits.Dequeue();
-				}
-				if (_pendingWeeklyReportCommits.Count == 0)
-				{
-					Volatile.Write(ref _hasPendingWeeklyReportCommits, 0);
-				}
-			}
+			_weeklyReportCommitQueue.CompleteProcessed(context);
 		}
 		return hadWork;
+	}
+
+	private static void CompletePendingWeeklyReportCommit(PendingWeeklyReportCommitContext context, WeeklyReportGenerationResult result)
+	{
+		try
+		{
+			context?.CompletionSource?.TrySetResult(result ?? new WeeklyReportGenerationResult());
+		}
+		catch
+		{
+		}
 	}
 
 	private bool ProcessPendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context, long startTimestamp, double budgetMs)
@@ -47176,10 +45620,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			if (context.RuntimeGeneration > 0L && SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_report_commit"))
+			if (!TWParallel.IsMainThread() || !ReferenceEquals(Instance, this) || (context.RuntimeGeneration > 0L && SaveRuntimeGuard.IsStale(context.RuntimeGeneration, "weekly_report_commit")))
 			{
-				CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult());
+				_weeklyReportCommitQueue.Complete(context, new WeeklyReportGenerationResult());
 				return true;
+			}
+			if (!_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
+			{
+				context.RequiresFreshMaterials = true;
 			}
 			if (context.GroupMap == null)
 			{
@@ -47220,8 +45668,30 @@ public partial class MyBehavior : CampaignBehaviorBase
 				while (context.BlockIndex < blocks.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 				{
 					WeeklyReportBatchBlockResult block = blocks[context.BlockIndex];
-					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
+					if (block != null && block.Parsed && !string.IsNullOrWhiteSpace(block.ReportId) && !context.CurrentParsedReportIds.Contains(block.ReportId) && !context.Targets.IsSettled(block.ReportId) && context.GroupMap.TryGetValue(block.ReportId, out var group) && group != null)
 					{
+						if (!IsWeeklyReportCommitRecordUnchanged(context, block.ReportId, group) || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
+						{
+							context.CurrentParsedReportIds.Add(block.ReportId);
+							context.Targets.Settle(block.ReportId);
+							if (HasWeeklyReportCommitWinner(context, group))
+							{
+								context.SuccessCount++;
+							}
+							else
+							{
+								context.RequiresFreshMaterials = true;
+								context.FailureCount++;
+								context.FailedGroups.Add(group);
+								context.FailureMessages.Add("周报目标或同周源素材在请求期间已变更，旧回包未覆盖：" + block.ReportId);
+							}
+							context.BlockIndex++;
+							if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+							{
+								return false;
+							}
+							continue;
+						}
 						if (context.CurrentBlockCommit == null)
 						{
 							using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.PrepareRecordMaterials"))
@@ -47234,8 +45704,27 @@ public partial class MyBehavior : CampaignBehaviorBase
 							return false;
 						}
 						context.CurrentParsedReportIds.Add(block.ReportId);
-						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, ResolveWeeklyReportNoticeNearestKingdomId(context), context.WeeklyReportNoticeEventIdsQueued);
-						context.SuccessCount++;
+						context.Targets.Settle(block.ReportId);
+						if (context.CurrentBlockRejected)
+						{
+							context.CurrentBlockRejected = false;
+							if (HasWeeklyReportCommitWinner(context, group))
+							{
+								context.SuccessCount++;
+							}
+							else
+							{
+								context.RequiresFreshMaterials = true;
+								context.FailureCount++;
+								context.FailedGroups.Add(group);
+								context.FailureMessages.Add("周报目标或同周源素材在提交期间已变更，旧回包未覆盖：" + block.ReportId);
+							}
+						}
+						else
+						{
+							TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, ResolveWeeklyReportNoticeNearestKingdomId(context), context.WeeklyReportNoticeEventIdsQueued);
+							context.SuccessCount++;
+						}
 					}
 					context.BlockIndex++;
 					if (IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
@@ -47270,13 +45759,87 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			Logger.Log("EventWeeklyReport", "[ERROR] deferred weekly report commit failed: " + ex);
-			CompletePendingWeeklyReportCommit(context, new WeeklyReportGenerationResult
+			WeeklyReportGenerationResult failure = new WeeklyReportGenerationResult
 			{
 				FailureCount = Math.Max(1, context.FailureCount),
 				BlockedByFatalFailure = true
-			});
+			};
+			try
+			{
+				failure = BuildWeeklyReportCommitExceptionResult(context);
+				if (context.QueueBlockingPopupOnFatalFailure && failure.RetryContext != null)
+				{
+					QueueWeeklyReportFailurePopup(failure.RetryContext, showImmediate: true);
+				}
+			}
+			catch (Exception recoveryException)
+			{
+				Logger.Log("EventWeeklyReport", "[ERROR] weekly report commit recovery failed: " + recoveryException);
+			}
+			_weeklyReportCommitQueue.Complete(context, failure);
 			return true;
 		}
+	}
+
+	private WeeklyReportGenerationResult BuildWeeklyReportCommitExceptionResult(PendingWeeklyReportCommitContext context)
+	{
+		List<WeeklyEventMaterialPreviewGroup> unfinished = new List<WeeklyEventMaterialPreviewGroup>();
+		HashSet<string> seenReportIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		int completed = 0;
+		foreach (WeeklyEventMaterialPreviewGroup group in context.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
+		{
+			string reportId = BuildWeeklyReportGroupReportId(group);
+			if (string.IsNullOrWhiteSpace(reportId) || !seenReportIds.Add(reportId))
+			{
+				continue;
+			}
+			bool hasWinner = false;
+			try
+			{
+				hasWinner = HasWeeklyReportCommitWinner(context, group);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("EventWeeklyReport", "[WARN] weekly report winner check failed during commit recovery: " + ex.Message);
+			}
+			if (hasWinner)
+			{
+				completed++;
+				if (context.AttemptedWriteReportIds?.Contains(reportId) == true)
+				{
+					try
+					{
+						TryQueueWeeklyReportMapNoticeForGeneratedReport(group, context.WeekIndex, ResolveWeeklyReportNoticeNearestKingdomId(context), context.WeeklyReportNoticeEventIdsQueued);
+					}
+					catch (Exception ex)
+					{
+						Logger.Log("EventWeeklyReport", "[WARN] weekly report notice recovery failed: " + ex.Message);
+					}
+				}
+			}
+			else
+			{
+				unfinished.Add(group);
+			}
+		}
+		if (seenReportIds.Count == 0)
+		{
+			return new WeeklyReportGenerationResult { BlockedByFatalFailure = true, FailureCount = Math.Max(1, context.FailureCount) };
+		}
+		WeeklyReportGenerationResult result = new WeeklyReportGenerationResult
+		{
+			SuccessCount = completed,
+			FailureCount = unfinished.Count,
+			BlockedByFatalFailure = unfinished.Count > 0,
+			Completed = unfinished.Count == 0
+		};
+		if (unfinished.Count > 0)
+		{
+			WeeklyReportRequestResult failure = new WeeklyReportRequestResult { Success = false, FailureReason = "Weekly commit failed; current materials must be collected again." };
+			result.RetryContext = CreateWeeklyReportRetryContext(unfinished, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, unfinished[0], failure, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
+			result.RetryContext.RequiresFreshMaterials = true;
+		}
+		return result;
 	}
 
 	private static PendingWeeklyReportBlockCommit CreatePendingWeeklyReportBlockCommit(WeeklyEventMaterialPreviewGroup group, WeeklyReportBatchBlockResult block, string promptText)
@@ -47290,8 +45853,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			Report = block?.Report ?? "",
 			TagText = block?.TagText ?? "",
 			PromptText = promptText ?? "",
-			OrderedMaterials = OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList(),
-			ClonedMaterials = new List<EventMaterialReference>()
+			MaterialCursor = new WeeklyReportBlockMaterialCursor<EventMaterialReference>(
+				OrderWeeklyPreviewMaterials(group?.Materials).Where((EventMaterialReference x) => x != null).ToList())
 		};
 	}
 
@@ -47302,19 +45865,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return true;
 		}
-		while (pending.MaterialIndex < pending.OrderedMaterials.Count && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
+		while (!pending.MaterialCursor.Complete && !IsDailyMaintenanceBudgetExceeded(startTimestamp, budgetMs))
 		{
 			using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.CloneMaterial"))
 			{
-				EventMaterialReference material = CloneEventMaterialReference(pending.OrderedMaterials[pending.MaterialIndex]);
-				if (material != null)
-				{
-					pending.ClonedMaterials.Add(material);
-				}
-				pending.MaterialIndex++;
+				pending.MaterialCursor.Advance(CloneEventMaterialReference);
 			}
 		}
-		if (pending.MaterialIndex < pending.OrderedMaterials.Count)
+		if (!pending.MaterialCursor.Complete)
 		{
 			return false;
 		}
@@ -47322,9 +45880,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
+		if (!IsWeeklyReportCommitRecordUnchanged(context, pending.ReportId, pending.Group) || !_weeklyReportMaterialRevisions.IsCurrent(context.SourceSnapshot))
+		{
+			context.CurrentBlockRejected = true;
+			context.CurrentBlockCommit = null;
+			return true;
+		}
 		using (PerfProbe.Scope("MyBehavior.WeeklyReportCommit.WriteRecord"))
 		{
-			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.ClonedMaterials, sanitizeAfter: false);
+			context.AttemptedWriteReportIds.Add(pending.ReportId);
+			UpsertWeeklyReportEventRecord(pending.Group, context.WeekIndex, pending.Title, pending.ShortSummary, pending.Report, pending.TagText, pending.PromptText, pending.MaterialCursor.Cloned, sanitizeAfter: false);
 		}
 		context.CurrentBlockCommit = null;
 		return true;
@@ -47338,32 +45903,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		HashSet<string> parsedReportIds = context.CurrentParsedReportIds ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		Dictionary<string, WeeklyEventMaterialPreviewGroup> groupMap = context.GroupMap ?? BuildWeeklyReportGroupMap(context.Groups);
-		List<WeeklyEventMaterialPreviewGroup> missingGroups = new List<WeeklyEventMaterialPreviewGroup>();
+		string reason = null;
+		bool hasReportedMissing = false;
 		foreach (string reportId in batchResult?.MissingReportIds ?? new List<string>())
 		{
-			if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
+			if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId) && groupMap.TryGetValue(reportId, out var missingGroup) && missingGroup != null)
 			{
-				missingGroups.Add(missingGroup);
+				hasReportedMissing = true;
+				reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
+				context.Targets.RecordMissing(reportId, missingGroup, reason);
 			}
 		}
-		if (batchResult != null && !batchResult.Success && missingGroups.Count == 0)
+		if (batchResult != null && !batchResult.Success && !hasReportedMissing)
 		{
 			foreach (WeeklyEventMaterialPreviewGroup group in batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>())
 			{
 				string reportId = BuildWeeklyReportGroupReportId(group);
-				if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId))
+				if (!string.IsNullOrWhiteSpace(reportId) && !parsedReportIds.Contains(reportId) && !context.Targets.IsSettled(reportId))
 				{
-					missingGroups.Add(group);
+					reason ??= BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误");
+					context.Targets.RecordMissing(reportId, group, reason);
 				}
 			}
 		}
-		if (missingGroups.Count <= 0)
-		{
-			return;
-		}
-		context.FailureCount += missingGroups.Count;
-		context.FailedGroups.AddRange(missingGroups.Where((WeeklyEventMaterialPreviewGroup x) => x != null));
-		context.FailureMessages.Add(BuildWeeklyReportBatchDisplayLabel(batch) + "：批量请求未恢复出可用周报区块 - " + (batchResult?.FailureReason ?? "未知错误"));
 	}
 
 	private void FinalizePendingWeeklyReportCommitContext(PendingWeeklyReportCommitContext context)
@@ -47371,6 +45933,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (context == null)
 		{
 			return;
+		}
+		foreach (WeeklyReportCommitTargetOwner<WeeklyEventMaterialPreviewGroup>.PendingMissing missing in context.Targets.PendingMissingTargets)
+		{
+			context.FailureCount++;
+			context.FailedGroups.Add(missing.Group);
+			context.FailureMessages.Add(missing.Reason + " [" + missing.ReportId + "]");
 		}
 		List<WeeklyEventMaterialPreviewGroup> failedGroups = (context.FailedGroups ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null).Distinct().ToList();
 		if (context.FailureMessages != null && context.FailureMessages.Count > 0)
@@ -47385,20 +45953,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (failedGroups.Count > 0)
 		{
 			WeeklyEventMaterialPreviewGroup firstFailedGroup = failedGroups.FirstOrDefault();
-			WeeklyReportRequestResult failedRequest = new WeeklyReportRequestResult
-			{
-				Success = false,
-				FailureReason = context.FailureMessages?.FirstOrDefault() ?? "Batch request failed.",
-				AttemptsUsed = 3
-			};
+			WeeklyReportRequestResult failedRequest = BuildWeeklyReportFailedRequest(context, firstFailedGroup);
 			result.BlockedByFatalFailure = true;
-			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds);
+			result.RetryContext = CreateWeeklyReportRetryContext(failedGroups, context.WeekIndex, context.StartDay, context.EndDay, context.DisplayLabel, context.OpenViewerWhenDone, context.IsAutoGeneration, firstFailedGroup, failedRequest, context.PopupCandidateKingdomIds, context.CapturedRecordStates, context.SourceSnapshot);
+			result.RetryContext.RequiresFreshMaterials = context.RequiresFreshMaterials;
 			InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation paused: " + context.FailureCount + " weekly report target(s) failed."));
 			if (context.QueueBlockingPopupOnFatalFailure)
 			{
 				QueueWeeklyReportFailurePopup(result.RetryContext, showImmediate: true);
 			}
-			CompletePendingWeeklyReportCommit(context, result);
+			_weeklyReportCommitQueue.Complete(context, result);
 			return;
 		}
 		InformationManager.DisplayMessage(new InformationMessage(context.DisplayLabel + " generation completed: success " + context.SuccessCount + ", failed " + context.FailureCount + "."));
@@ -47407,18 +45971,41 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevEventViewerMenu(0);
 		}
 		result.Completed = true;
-		CompletePendingWeeklyReportCommit(context, result);
+		_weeklyReportCommitQueue.Complete(context, result);
 	}
 
-	private static void CompletePendingWeeklyReportCommit(PendingWeeklyReportCommitContext context, WeeklyReportGenerationResult result)
+	private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup failedGroup)
 	{
-		try
+		string reportId = BuildWeeklyReportGroupReportId(failedGroup);
+		WeeklyReportBatchRequestResult failedBatch = null;
+		WeeklyReportBatchRequestResult fallback = null;
+		foreach (WeeklyReportBatchExecutionResult execution in context?.Executions ?? new List<WeeklyReportBatchExecutionResult>())
 		{
-			context?.CompletionSource?.TrySetResult(result ?? new WeeklyReportGenerationResult());
+			WeeklyReportBatchRequestResult candidate = execution?.Result;
+			if (candidate == null || candidate.Success)
+			{
+				continue;
+			}
+			if (candidate.MissingReportIds?.Contains(reportId, StringComparer.OrdinalIgnoreCase) == true)
+			{
+				failedBatch = candidate;
+			}
+			else if (execution.Batch?.Groups?.Any((WeeklyEventMaterialPreviewGroup group) => string.Equals(BuildWeeklyReportGroupReportId(group), reportId, StringComparison.OrdinalIgnoreCase)) == true)
+			{
+				fallback = candidate;
+			}
 		}
-		catch
+		failedBatch ??= fallback;
+		return new WeeklyReportRequestResult
 		{
-		}
+			Success = false,
+			FailureReason = context?.FailureMessages?.FirstOrDefault() ?? "Batch request failed.",
+			AttemptsUsed = failedBatch?.AttemptsUsed ?? 0,
+			IsRateLimit = failedBatch?.IsRateLimit ?? false,
+			IsRequestsPerMinuteLimit = failedBatch?.IsRequestsPerMinuteLimit ?? false,
+			IsQuotaLimit = failedBatch?.IsQuotaLimit ?? false,
+			RetryAfterSeconds = failedBatch?.RetryAfterSeconds
+		};
 	}
 
 	private static string ResolveNearestWeeklyReportKingdomId(IEnumerable<string> kingdomIds)
@@ -47908,13 +46495,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 		QueueWeeklyReportMapNotice(eventId);
 	}
 
-	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L)
+	private async Task<WeeklyReportGenerationResult> GenerateWeeklyReportsBatchedAsyncInternal(List<WeeklyEventMaterialPreviewGroup> list, int weekIndex, int startDay, int endDay, string displayLabel, bool openViewerWhenDone, bool queueBlockingPopupOnFatalFailure, bool isAutoGeneration, IEnumerable<string> popupCandidateKingdomIdsOverride = null, List<WeeklyReportBatchRequest> preparedBatches = null, long runtimeGeneration = 0L, Dictionary<string, string> capturedRecordStatesOverride = null, WeeklyReportMaterialRevisionOwner.Snapshot sourceSnapshotOverride = null)
 	{
 		if (runtimeGeneration <= 0L)
 		{
 			runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		}
-		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration);
+		return await GenerateWeeklyReportsMinuteBurstAsyncInternal(list, weekIndex, startDay, endDay, displayLabel, openViewerWhenDone, queueBlockingPopupOnFatalFailure, isAutoGeneration, popupCandidateKingdomIdsOverride, preparedBatches, runtimeGeneration, capturedRecordStatesOverride, sourceSnapshotOverride);
 #if false
 		WeeklyReportGenerationResult weeklyReportGenerationResult = new WeeklyReportGenerationResult();
 		list = (list ?? new List<WeeklyEventMaterialPreviewGroup>()).Where((WeeklyEventMaterialPreviewGroup x) => x != null && IsWeeklyReportGroupEligible(x)).ToList();
@@ -48229,6 +46816,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ClearAllDataForCurrentSave()
 	{
+		_npcPersonaGeneration.Reset();
 		CancelWeeklyFullReportCompletions();
 		ResetMemorySummaryMainThreadActions();
 		_shownRecords = new Dictionary<string, HeroShownRecord>();
@@ -48241,7 +46829,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_compressedMemoryBlockStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_memorySummaryQueue = new List<MemorySummaryJob>();
 		_memorySummaryQueueJsonStorage = "[]";
-		_memorySummaryProcessing = false;
+		_memorySummaryRunOwner.Reset();
 		ResetMemoryFailureNotices();
 		_nativeConversationMemorySessionCounter = 0;
 		_activeNativeConversationMemorySessionId = -1;
@@ -48267,6 +46855,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_eventRecordJsonStorage = "[]";
 		_eventSourceMaterials = new List<EventSourceMaterialEntry>();
 		_eventSourceMaterialJsonStorage = "[]";
+		_weeklyReportMaterialRevisions.MarkAll();
+		_weeklyReportMaterialRevisions.MarkOpening();
 		_kingdomStabilityValues = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		_kingdomStabilityStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		_kingdomStabilityRelationAppliedOffsets = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -48302,19 +46892,15 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_devForcedKingdomRebellionInProgress = false;
 		_pendingDevForcedKingdomRebellionReady = false;
 		_pendingDevForcedKingdomRebellionContext = null;
-		_automaticKingdomRebellionFlowActive = false;
-		_automaticKingdomRebellionInProgress = false;
+		AutomaticKingdomRebellions.Cancel();
 		_blockedAutomaticKingdomRebellionContext = null;
 		_blockedDevForcedKingdomRebellionContext = null;
 		_kingdomRebellionReopenAfterApiConfig = false;
 		_kingdomRebellionReopenAfterApiConfigUtcTicks = 0L;
-		_pendingAutomaticKingdomRebellionReady = false;
-		_pendingAutomaticKingdomRebellionContext = null;
-		_queuedAutomaticKingdomRebellions.Clear();
 		while (_kingdomRebellionNamingMainThreadActions.TryDequeue(out var _))
 		{
 		}
-		_pendingAutoWeeklyReportWeek = 0;
+		_weeklyAutoSchedule.Clear();
 		lock (_weekZeroShortSummaryQueueLock)
 		{
 			_weekZeroShortSummaryGenerationInFlight.Clear();
@@ -48341,7 +46927,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		_pendingMemoryOverviewCandidateScanIds.Clear();
 		_pendingMemoryOverviewCandidateScanIdSet.Clear();
 		_pendingAutoWeeklyReportBuild = null;
-		_kingdomStabilityMaintenanceCursor = 0;
+		KingdomMaintenance.ResetRelations();
 		ResetPendingWeeklyKingdomRebellionMaintenance();
 		RebuildRuntimeDerivedIndexes();
 		RewardSystemBehavior.Instance?.ImportDebtEntries(new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
@@ -49682,23 +48268,27 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			failureDetail = LlmRetryPrompt.BuildFailureDetail(ex.Message, "");
 		}
-		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_dev_reroll_ui"))
+		await RunMemorySummaryCompletionAsync(runtimeGeneration, () =>
 		{
-			return;
-		}
-		InformationManager.HideInquiry();
-		if (string.IsNullOrWhiteSpace(failureDetail))
-		{
-			EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
-			InformationManager.DisplayMessage(new InformationMessage(name + " 的个性与历史背景已重新生成；音色 ID 保持不变。"));
-			InvokePersonaRerollClosed(onClosed);
-			return;
-		}
-		Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
-		InformationManager.ShowInquiry(new InquiryData("重生个性背景失败", "旧个性、历史背景与音色 ID 均未改动。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? "关闭" : "返回编辑器", "", delegate
-		{
-			InvokePersonaRerollClosed(onClosed);
-		}, null), pauseGameActiveState: true);
+			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "npc_persona_dev_reroll_ui"))
+			{
+				return true;
+			}
+			InformationManager.HideInquiry();
+			if (string.IsNullOrWhiteSpace(failureDetail))
+			{
+				EncyclopediaHeroPersonaPatch.QueueRefreshForHero(npc.StringId);
+				InformationManager.DisplayMessage(new InformationMessage(name + " 的个性与历史背景已重新生成；音色 ID 保持不变。"));
+				InvokePersonaRerollClosed(onClosed);
+				return true;
+			}
+			Logger.Log("NpcPersona", "[REROLL][WARN] Request failed for " + (npc.StringId ?? "") + ": " + failureDetail);
+			InformationManager.ShowInquiry(new InquiryData("重生个性背景失败", "未保存本次生成结果，现有个性、历史背景与音色 ID 已保留。\n\n" + failureDetail.Trim(), isAffirmativeOptionShown: true, isNegativeOptionShown: false, onClosed == null ? "关闭" : "返回编辑器", "", delegate
+			{
+				InvokePersonaRerollClosed(onClosed);
+			}, null), pauseGameActiveState: true);
+			return true;
+		}).ConfigureAwait(false);
 	}
 
 	private static void InvokePersonaRerollClosed(Action onClosed)
@@ -50171,6 +48761,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevDailyMemoryLineEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
@@ -50178,6 +48770,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
 			new DevLargeSelectionPopup.Option("text", "编辑正文", "打开大文本编辑器修改正文；留空会删除该行。", isPrimary: true),
@@ -50193,6 +48786,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		string body = "正文：\n" + (string.IsNullOrWhiteSpace(line.Text) ? "（空）" : line.Text.Trim());
 		ShowDevLargeSelectionOrInquiry("未压缩记忆行 - " + name, BuildDevDailyMemoryLineSubtitle(line), body, options, delegate(string selectedId)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
@@ -50230,21 +48826,30 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 		});
 	}
 
 	private void OpenDevDailyMemoryLineTextEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑未压缩记忆正文 - " + name, BuildDevDailyMemoryLineSubtitle(line), "请输入新的正文；留空=删除该行。", line.Text ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryLineMutation(npc, dayIndex, lineIndex, returnPage, returnQuery, delegate(DailyMemoryDraft draft, DailyMemoryLine target)
 			{
 				string text = NormalizeDevCompressedMemoryMultilineInput(input);
@@ -50259,62 +48864,89 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}, "未压缩记忆正文已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevDailyMemoryLineSpeakerEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑未压缩记忆说话人 - " + name, BuildDevDailyMemoryLineSubtitle(line), "请输入说话人；留空=自动使用默认说话人。", line.Speaker ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryLineMutation(npc, dayIndex, lineIndex, returnPage, returnQuery, delegate(DailyMemoryDraft draft, DailyMemoryLine target)
 			{
 				target.Speaker = (input ?? "").Trim();
 			}, "未压缩记忆说话人已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevDailyMemoryLineSceneEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑未压缩记忆场景 - " + name, BuildDevDailyMemoryLineSubtitle(line), "请输入场景；留空=未知场景。", line.Scene ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryLineMutation(npc, dayIndex, lineIndex, returnPage, returnQuery, delegate(DailyMemoryDraft draft, DailyMemoryLine target)
 			{
 				target.Scene = (input ?? "").Trim();
 			}, "未压缩记忆场景已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevDailyMemoryLineHourEditor(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		InformationManager.ShowTextInquiry(new TextInquiryData("编辑未压缩记忆小时", BuildDevDailyMemoryLineSubtitle(line) + "\n请输入 0~23 的整数。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "保存", "返回", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			if (!int.TryParse((input ?? "").Trim(), out var hour) || hour < 0 || hour > 23)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("请输入 0~23 的整数。"));
@@ -50327,6 +48959,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}, "未压缩记忆小时已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		}, shouldInputBeObfuscated: false, null, line.GameHour.ToString()));
 	}
@@ -50368,15 +49003,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void OpenDevAddDailyMemoryLine(Hero npc, int dayIndex, bool isAfef, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryDraft draft = FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex);
 		if (draft == null)
 		{
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(draft);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor(isAfef ? ("新增AFEF行 - " + name) : ("新增普通记忆行 - " + name), BuildDevDailyMemoryDraftSubtitle(draft), "请输入新增行正文；留空=取消。", "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			string text = NormalizeDevCompressedMemoryMultilineInput(input);
 			if (string.IsNullOrWhiteSpace(text))
 			{
@@ -50414,20 +49055,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void ConfirmDevDeleteDailyMemoryLine(Hero npc, int dayIndex, int lineIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryLine line = FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex);
 		if (line == null)
 		{
 			OpenDevDailyMemoryLineList(npc, dayIndex, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(line);
 		ShowDevLargeConfirmOrInquiry("确认删除未压缩记忆行", BuildDevDailyMemoryLineSubtitle(line), "正文：\n" + (string.IsNullOrWhiteSpace(line.Text) ? "（空）" : line.Text.Trim()) + "\n\n此操作不可撤销，是否继续？", "确认删除", "取消", delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			ApplyDevDailyMemoryDraftMutation(npc, dayIndex, delegate(DailyMemoryDraft draft)
 			{
 				if (draft.Lines != null && lineIndex >= 0 && lineIndex < draft.Lines.Count)
@@ -50437,20 +49087,29 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}, "delete_line", "已删除未压缩记忆行。", returnPage, returnQuery, returnToDraftEditor: false);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(line, FindDevDailyMemoryLine(LoadDailyMemoryDrafts(npc), dayIndex, lineIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(line), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryLineEditor(npc, dayIndex, lineIndex, returnPage, returnQuery);
 		});
 	}
 
 	private void ConfirmDevDeleteDailyMemoryDraft(Hero npc, int dayIndex, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		DailyMemoryDraft draft = FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex);
 		if (draft == null)
 		{
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(draft);
 		ShowDevLargeConfirmOrInquiry("确认删除未压缩记忆", BuildDevDailyMemoryDraftSubtitle(draft), "将删除该日全部未压缩原始历史，并移除同日待总结队列。\n此操作不可撤销，是否继续？", "确认删除", "取消", delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(npc);
 			DailyMemoryDraft targetDraft = FindDevDailyMemoryDraft(drafts, dayIndex);
 			List<DailyMemoryLine> previousLines = CloneDevDailyMemoryLines(targetDraft?.Lines);
@@ -50460,6 +49119,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
 		});
 	}
@@ -50765,7 +49427,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		int sceneSessionId = line?.SceneSessionId ?? -1;
-		return sceneSessionId >= 0 ? TagSceneSessionHistoryLine(text, sceneSessionId) : text;
+		return sceneSessionId >= 0 ? DialogueHistoryLedger.TagSceneSession(text, sceneSessionId) : text;
 	}
 
 	private static string NormalizeDialogueHistoryLineForDailyMemorySync(string line)
@@ -50775,7 +49437,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		TryStripSceneSessionHistoryMarker(text, out text, out var _);
+		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
 		return (text ?? "").Replace("\r", "").Trim();
 	}
 
@@ -52645,7 +51307,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (string.IsNullOrEmpty(text2))
 		{
-			text2 = ResolveImportFolderPath(folderName);
+			text2 = PlayerExportsStore.ResolveImportFolderPath(folderName);
 		}
 		if (string.IsNullOrEmpty(text2) || !Directory.Exists(text2))
 		{
@@ -52671,7 +51333,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] files = Directory.GetFiles(item, "*.json", SearchOption.TopDirectoryOnly);
 				foreach (string text3 in files)
 				{
-					string text4 = TryParseHeroIdFromNpcFileName(text3);
+					string text4 = NpcDataFileName.TryParseHeroId(text3);
 					if (string.IsNullOrWhiteSpace(text4))
 					{
 						continue;
@@ -53229,7 +51891,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
+		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 		Directory.CreateDirectory(playerExportsRootPath);
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
@@ -53299,7 +51961,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		};
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			List<InquiryElement> list = new List<InquiryElement>
 			{
 				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null),
@@ -53413,7 +52075,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		error = "";
 		try
 		{
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
 			{
 				error = "找不到资料包文件夹。";
@@ -54087,6 +52749,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					_eventKingdomOpeningSummaries[summary.Key ?? ""] = summary.Value ?? "";
 				}
+				_weeklyReportMaterialRevisions.MarkOpening();
 				_eventRecordEntries = restoredRecords;
 				if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
 				{
@@ -54140,6 +52803,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				_eventKingdomOpeningSummaries[kingdomId] = summary;
 			}
 		}
+		_weeklyReportMaterialRevisions.MarkOpening();
 		if (_eventRecordEntries == null)
 		{
 			_eventRecordEntries = new List<EventRecordEntry>();
@@ -54311,7 +52975,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
+		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 		Directory.CreateDirectory(playerExportsRootPath);
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", "手动输入文件夹名…", null));
@@ -54437,12 +53101,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 					ExportVoiceMappingData(folderName);
 				}
 			};
-			string value = SanitizeFolderName(folderName);
+			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = GetPlayerExportsRootPath();
+				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 				Directory.CreateDirectory(playerExportsRootPath);
-				string path = ResolveExportFolderName(folderName);
+				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
 				{
@@ -54522,12 +53186,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 					ExportSingleNpcDebtData(folderName, id);
 				}
 			};
-			string value = SanitizeFolderName(folderName);
+			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = GetPlayerExportsRootPath();
+				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 				Directory.CreateDirectory(playerExportsRootPath);
-				string path = ResolveExportFolderName(folderName);
+				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
 				{
@@ -54563,9 +53227,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
@@ -54584,8 +53248,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				value = new NpcPersonaProfile();
 				StampNpcPersonaProfile(heroId, value);
 			}
-			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-			WriteJson(path2, value);
+			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+			PlayerExportsStore.WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -54598,16 +53262,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
 			CompressedMemoryExportBundle value = BuildCompressedMemoryExportBundle(heroId);
-			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-			WriteJson(path2, value);
+			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+			PlayerExportsStore.WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -54758,9 +53422,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "debt");
@@ -54771,8 +53435,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				value = new RewardSystemBehavior.DebtExportEntry();
 			}
-			string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-			WriteJson(path2, value);
+			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+			PlayerExportsStore.WriteJson(path2, value);
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
 		catch (Exception ex)
@@ -54809,7 +53473,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					importDir = ResolveImportFolderPath(folderName);
+					importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
@@ -54855,7 +53519,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 				return;
 			}
-			RewardSystemBehavior.DebtExportEntry entry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text3);
+			RewardSystemBehavior.DebtExportEntry entry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text3);
 			bool flag = entry != null;
 			bool flag2 = all.ContainsKey(heroId);
 			Action action = delegate
@@ -54920,7 +53584,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					importDir = ResolveImportFolderPath(folderName);
+					importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
@@ -54960,7 +53624,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				Logger.Log("NpcPersona", "[WARN] Skipped single persona import file " + Path.GetFileName(text3) + " for hero=" + heroId + ": " + (warning ?? ("resolvedHeroId=" + resolvedHeroId)));
 				return;
 			}
-			NpcPersonaProfile prof = ReadJson<NpcPersonaProfile>(text3);
+			NpcPersonaProfile prof = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text3);
 			if (_npcPersonaProfiles == null)
 			{
 				_npcPersonaProfiles = new Dictionary<string, NpcPersonaProfile>();
@@ -55011,6 +53675,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportSingleNpcDialogueHistoryData(string folderName, string heroId)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
 			string text = (folderName ?? "").Trim();
@@ -55037,7 +53703,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					importDir = ResolveImportFolderPath(folderName);
+					importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 				}
 				if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 				{
@@ -55071,7 +53737,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：该NPC没有对应的导出文件。"));
 				return;
 			}
-			CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text3);
+			CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text3);
 			bool flag = bundle != null;
 			bool flag2 = false;
 			try
@@ -55085,11 +53751,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: true);
 				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: false);
 				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + heroId));
 			};
@@ -55106,6 +53774,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}
@@ -55114,28 +53783,28 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
 					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
-						WriteJson(path2, npcPersonaProfile.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(npcPersonaProfile.Key, ResolveHeroNameForNpcDataFile(npcPersonaProfile.Key)));
+						PlayerExportsStore.WriteJson(path2, npcPersonaProfile.Value);
 					}
 				}
 			}
 			string text3 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text3);
-			ClearJsonFiles(text3);
+			PlayerExportsStore.ClearJsonFiles(text3);
 			HashSet<string> memoryHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -55174,12 +53843,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			foreach (string memoryHeroId in memoryHeroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)))
 			{
-				string path3 = Path.Combine(text3, BuildNpcDataFileName(memoryHeroId));
-				WriteJson(path3, BuildCompressedMemoryExportBundle(memoryHeroId));
+				string path3 = Path.Combine(text3, NpcDataFileName.Build(memoryHeroId, ResolveHeroNameForNpcDataFile(memoryHeroId)));
+				PlayerExportsStore.WriteJson(path3, BuildCompressedMemoryExportBundle(memoryHeroId));
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			ClearJsonFiles(text4);
+			PlayerExportsStore.ClearJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -55188,8 +53857,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
 					{
-						string path4 = Path.Combine(text4, BuildNpcDataFileName(item2.Key));
-						WriteJson(path4, item2.Value);
+						string path4 = Path.Combine(text4, NpcDataFileName.Build(item2.Key, ResolveHeroNameForNpcDataFile(item2.Key)));
+						PlayerExportsStore.WriteJson(path4, item2.Value);
 					}
 				}
 			}
@@ -55203,9 +53872,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportHeroNpcAllData(string folderName)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -55235,7 +53906,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
-						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
+						NpcPersonaProfile npcPersonaProfile = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
 							StampNpcPersonaProfile(text2, npcPersonaProfile);
@@ -55267,10 +53938,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array2 = files2;
 				foreach (string text3 in array2)
 				{
-					string text4 = TryParseHeroIdFromNpcFileName(text3);
+					string text4 = NpcDataFileName.TryParseHeroId(text3);
 					if (!string.IsNullOrEmpty(text4))
 					{
-						CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text3);
+						CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text3);
 						if (bundle != null)
 						{
 							dhNew[NormalizeMemoryHeroId(text4)] = bundle;
@@ -55297,10 +53968,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array3 = files3;
 				foreach (string text5 in array3)
 				{
-					string text6 = TryParseHeroIdFromNpcFileName(text5);
+					string text6 = NpcDataFileName.TryParseHeroId(text5);
 					if (!string.IsNullOrEmpty(text6))
 					{
-						RewardSystemBehavior.DebtExportEntry debtExportEntry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
+						RewardSystemBehavior.DebtExportEntry debtExportEntry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
 						if (debtExportEntry != null)
 						{
 							debtNew[text6] = debtExportEntry;
@@ -55322,6 +53993,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			bool flag = num + num3 + num5 > 0;
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (!ValidateKnowledgeKeywordsForImport(importDir, overwriteExisting: true, out var error2))
 				{
 					InformationManager.DisplayMessage(new InformationMessage(error2));
@@ -55371,6 +54043,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (!ValidateKnowledgeKeywordsForImport(importDir, overwriteExisting: false, out var error2))
 				{
 					InformationManager.DisplayMessage(new InformationMessage(error2));
@@ -55430,6 +54103,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}
@@ -55438,42 +54112,42 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
 					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
-						WriteJson(path2, npcPersonaProfile.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(npcPersonaProfile.Key, ResolveHeroNameForNpcDataFile(npcPersonaProfile.Key)));
+						PlayerExportsStore.WriteJson(path2, npcPersonaProfile.Value);
 					}
 				}
 			}
 			string text3 = Path.Combine(text, "dialogue_history");
 			Directory.CreateDirectory(text3);
-			ClearJsonFiles(text3);
+			PlayerExportsStore.ClearJsonFiles(text3);
 			if (_dialogueHistory != null)
 			{
 				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
 				{
 					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
 					{
-						string path3 = Path.Combine(text3, BuildNpcDataFileName(item.Key));
-						WriteJson(path3, item.Value);
+						string path3 = Path.Combine(text3, NpcDataFileName.Build(item.Key, ResolveHeroNameForNpcDataFile(item.Key)));
+						PlayerExportsStore.WriteJson(path3, item.Value);
 					}
 				}
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			ClearJsonFiles(text4);
+			PlayerExportsStore.ClearJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -55482,8 +54156,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
 					{
-						string path4 = Path.Combine(text4, BuildNpcDataFileName(item2.Key));
-						WriteJson(path4, item2.Value);
+						string path4 = Path.Combine(text4, NpcDataFileName.Build(item2.Key, ResolveHeroNameForNpcDataFile(item2.Key)));
+						PlayerExportsStore.WriteJson(path4, item2.Value);
 					}
 				}
 			}
@@ -55498,7 +54172,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
 			string text5 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text5);
-			ClearJsonFiles(text5);
+			PlayerExportsStore.ClearJsonFiles(text5);
 			string path5 = Path.Combine(text5, "VoiceMapping.json");
 			string text6 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text6))
@@ -55524,9 +54198,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
@@ -55542,22 +54216,22 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
 				{
 					if (!string.IsNullOrEmpty(npcPersonaProfile.Key) && TryPrepareNpcPersonaProfileForWrite(npcPersonaProfile.Key, npcPersonaProfile.Value))
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(npcPersonaProfile.Key));
-						WriteJson(path2, npcPersonaProfile.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(npcPersonaProfile.Key, ResolveHeroNameForNpcDataFile(npcPersonaProfile.Key)));
+						PlayerExportsStore.WriteJson(path2, npcPersonaProfile.Value);
 					}
 				}
 			}
@@ -55573,14 +54247,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			HashSet<string> heroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -55619,8 +54293,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			foreach (string heroId in heroIds.Where((string x) => !string.IsNullOrWhiteSpace(x)))
 			{
-				string path2 = Path.Combine(text2, BuildNpcDataFileName(heroId));
-				WriteJson(path2, BuildCompressedMemoryExportBundle(heroId));
+				string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
+				PlayerExportsStore.WriteJson(path2, BuildCompressedMemoryExportBundle(heroId));
 			}
 			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
 		}
@@ -55634,14 +54308,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -55650,8 +54324,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
 					{
-						string path2 = Path.Combine(text2, BuildNpcDataFileName(item.Key));
-						WriteJson(path2, item.Value);
+						string path2 = Path.Combine(text2, NpcDataFileName.Build(item.Key, ResolveHeroNameForNpcDataFile(item.Key)));
+						PlayerExportsStore.WriteJson(path2, item.Value);
 					}
 				}
 			}
@@ -55667,9 +54341,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			if (!TryExportKnowledgeToDir(text, out var exportedCount, out var error))
@@ -55691,9 +54365,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			ExportEventDataToDir(text);
@@ -55709,13 +54383,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		string text = Path.Combine(exportDir, "event_data");
 		Directory.CreateDirectory(text);
-		ClearJsonFiles(text);
-		WriteJson(Path.Combine(text, "WorldOpeningSummary.json"), new EventWorldOpeningSummaryJson
+		PlayerExportsStore.ClearJsonFiles(text);
+		PlayerExportsStore.WriteJson(Path.Combine(text, "WorldOpeningSummary.json"), new EventWorldOpeningSummaryJson
 		{
 			Summary = (_eventWorldOpeningSummary ?? "").Trim()
 		});
-		WriteJson(Path.Combine(text, "KingdomOpeningSummaries.json"), BuildEventKingdomSummaryExportMap());
-		WriteJson(Path.Combine(text, "EventRecords.json"), SanitizeEventRecordEntries(_eventRecordEntries));
+		PlayerExportsStore.WriteJson(Path.Combine(text, "KingdomOpeningSummaries.json"), BuildEventKingdomSummaryExportMap());
+		PlayerExportsStore.WriteJson(Path.Combine(text, "EventRecords.json"), SanitizeEventRecordEntries(_eventRecordEntries));
 	}
 
 	private Dictionary<string, string> BuildEventKingdomSummaryExportMap()
@@ -55767,7 +54441,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			string text = Path.Combine(exportDir, "knowledge", "rules");
 			Directory.CreateDirectory(text);
-			ClearJsonFiles(text);
+			PlayerExportsStore.ClearJsonFiles(text);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			foreach (KnowledgeLibraryBehavior.LoreRule rule in knowledgeFile.Rules)
 			{
@@ -55875,9 +54549,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导出失败：找不到该知识条目：" + text));
 				return;
 			}
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text3 = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text3);
 			string text4 = Path.Combine(text3, "knowledge", "rules");
@@ -55951,7 +54625,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：RuleId 为空。"));
 				return;
 			}
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -55966,14 +54640,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string dir = Path.Combine(importDir, "knowledge", "rules");
 			string dir2 = Path.Combine(importDir, "knowledge", "single_rules");
 			string dir3 = Path.Combine(importDir, "knowledge");
-			string text = FindKnowledgeRuleJsonById(dir, id);
+			string text = KnowledgeImportSupport.FindKnowledgeRuleJsonById(dir, id);
 			if (string.IsNullOrEmpty(text))
 			{
-				text = FindKnowledgeRuleJsonById(dir2, id);
+				text = KnowledgeImportSupport.FindKnowledgeRuleJsonById(dir2, id);
 			}
 			if (string.IsNullOrEmpty(text))
 			{
-				text = FindKnowledgeRuleJsonById(dir3, id);
+				text = KnowledgeImportSupport.FindKnowledgeRuleJsonById(dir3, id);
 			}
 			if (string.IsNullOrEmpty(text) || !File.Exists(text))
 			{
@@ -56097,79 +54771,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static IEnumerable<string> GetKnowledgeKeywordsForCompare(KnowledgeLibraryBehavior.LoreRule rule)
-	{
-		if (rule?.Keywords == null || rule.Keywords.Count <= 0)
-		{
-			yield break;
-		}
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (string k in rule.Keywords)
-		{
-			string kk = NormalizeKeywordForCompare(k);
-			if (!string.IsNullOrEmpty(kk) && seen.Add(kk))
-			{
-				yield return kk;
-			}
-		}
-	}
 
-	private static List<KnowledgeLibraryBehavior.LoreRule> LoadKnowledgeRulesFromImportDir(string importDir)
-	{
-		try
-		{
-			List<KnowledgeLibraryBehavior.LoreRule> list = new List<KnowledgeLibraryBehavior.LoreRule>();
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = TryLoadKnowledgeRulesFromRuleFiles(importDir);
-			if (knowledgeFile?.Rules != null)
-			{
-				foreach (KnowledgeLibraryBehavior.LoreRule rule in knowledgeFile.Rules)
-				{
-					string text = (rule?.Id ?? "").Trim();
-					if (!string.IsNullOrEmpty(text))
-					{
-						rule.Id = text;
-						if (hashSet.Add(text))
-						{
-							list.Add(rule);
-						}
-					}
-				}
-			}
-			string path = Path.Combine(importDir, "knowledge", "KnowledgeRules.json");
-			if (File.Exists(path))
-			{
-				try
-				{
-					string value = File.ReadAllText(path, Encoding.UTF8);
-					KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile2 = JsonConvert.DeserializeObject<KnowledgeLibraryBehavior.KnowledgeFile>(value);
-					if (knowledgeFile2?.Rules != null)
-					{
-						foreach (KnowledgeLibraryBehavior.LoreRule rule2 in knowledgeFile2.Rules)
-						{
-							string text2 = (rule2?.Id ?? "").Trim();
-							if (!string.IsNullOrEmpty(text2))
-							{
-								rule2.Id = text2;
-								if (hashSet.Add(text2))
-								{
-									list.Add(rule2);
-								}
-							}
-						}
-					}
-				}
-				catch
-				{
-				}
-			}
-			return list;
-		}
-		catch
-		{
-			return new List<KnowledgeLibraryBehavior.LoreRule>();
-		}
-	}
 
 	private static bool ValidateKnowledgeKeywordsForSingleRuleImport(KnowledgeLibraryBehavior kb, KnowledgeLibraryBehavior.LoreRule rule, bool overwriteExisting, out string error)
 	{
@@ -56232,7 +54834,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					foreach (string item in GetKnowledgeKeywordsForCompare(rule2))
+					foreach (string item in KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(rule2))
 					{
 						if (dictionary2.TryGetValue(item, out var value2) && !string.Equals(value2, text3, StringComparison.OrdinalIgnoreCase))
 						{
@@ -56271,7 +54873,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				error = "导入失败：KnowledgeLibraryBehavior 未初始化。";
 				return false;
 			}
-			List<KnowledgeLibraryBehavior.LoreRule> list = LoadKnowledgeRulesFromImportDir(importDir);
+			List<KnowledgeLibraryBehavior.LoreRule> list = KnowledgeImportSupport.LoadKnowledgeRulesFromImportDir(importDir);
 			if (list == null || list.Count <= 0)
 			{
 				error = "导入失败：导入目录中未找到可导入的知识规则文件。";
@@ -56285,7 +54887,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				foreach (string item2 in GetKnowledgeKeywordsForCompare(item))
+				foreach (string item2 in KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(item))
 				{
 					if (dictionary.TryGetValue(item2, out var value) && !string.Equals(value, text, StringComparison.OrdinalIgnoreCase))
 					{
@@ -56329,7 +54931,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 					{
 						continue;
 					}
-					foreach (string item3 in GetKnowledgeKeywordsForCompare(rule))
+					foreach (string item3 in KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(rule))
 					{
 						if (dictionary2.TryGetValue(item3, out var value3) && !string.Equals(value3, text2, StringComparison.OrdinalIgnoreCase))
 						{
@@ -56348,7 +54950,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				foreach (string item5 in GetKnowledgeKeywordsForCompare(item4))
+				foreach (string item5 in KnowledgeImportSupport.GetKnowledgeKeywordsForCompare(item4))
 				{
 					dictionary3[item5] = value4;
 				}
@@ -56370,169 +54972,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static KnowledgeLibraryBehavior.KnowledgeFile TryLoadKnowledgeRulesFromRuleFiles(string importDir)
-	{
-		try
-		{
-			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
-			{
-				return null;
-			}
-			List<string> source = new List<string>
-			{
-				Path.Combine(importDir, "knowledge", "rules"),
-				Path.Combine(importDir, "knowledge", "single_rules"),
-				Path.Combine(importDir, "knowledge")
-			};
-			List<KnowledgeLibraryBehavior.LoreRule> list = new List<KnowledgeLibraryBehavior.LoreRule>();
-			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			foreach (string item in source.Where((string d) => !string.IsNullOrEmpty(d)).Distinct(StringComparer.OrdinalIgnoreCase))
-			{
-				if (!Directory.Exists(item))
-				{
-					continue;
-				}
-				string[] array = null;
-				try
-				{
-					array = Directory.GetFiles(item, "*.json");
-				}
-				catch
-				{
-					array = null;
-				}
-				if (array == null)
-				{
-					continue;
-				}
-				string[] array2 = array;
-				foreach (string path in array2)
-				{
-					try
-					{
-						string a = Path.GetFileName(path) ?? "";
-						if (string.Equals(a, "AIConfig.json", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "KnowledgeRules.json", StringComparison.OrdinalIgnoreCase))
-						{
-							continue;
-						}
-						string value = File.ReadAllText(path, Encoding.UTF8);
-						if (string.IsNullOrWhiteSpace(value))
-						{
-							continue;
-						}
-						KnowledgeLibraryBehavior.LoreRule loreRule = JsonConvert.DeserializeObject<KnowledgeLibraryBehavior.LoreRule>(value);
-						string text = (loreRule?.Id ?? "").Trim();
-						if (!string.IsNullOrEmpty(text))
-						{
-							loreRule.Id = text;
-							if (hashSet.Add(text))
-							{
-								list.Add(loreRule);
-							}
-						}
-					}
-					catch
-					{
-					}
-				}
-			}
-			if (list.Count <= 0)
-			{
-				return null;
-			}
-			return new KnowledgeLibraryBehavior.KnowledgeFile
-			{
-				Version = 1,
-				Rules = list
-			};
-		}
-		catch
-		{
-			return null;
-		}
-	}
 
-	private static string FindKnowledgeRuleJsonById(string dir, string ruleId)
-	{
-		try
-		{
-			string text = (ruleId ?? "").Trim();
-			if (string.IsNullOrEmpty(text))
-			{
-				return null;
-			}
-			if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
-			{
-				return null;
-			}
-			string text2 = text;
-			char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-			foreach (char oldChar in invalidFileNameChars)
-			{
-				text2 = text2.Replace(oldChar, '_');
-			}
-			text2 = (text2 ?? "").Trim();
-			if (text2.Length > 120)
-			{
-				text2 = text2.Substring(0, 120);
-			}
-			if (!string.IsNullOrEmpty(text2))
-			{
-				string text3 = Path.Combine(dir, text2 + ".json");
-				if (File.Exists(text3))
-				{
-					return text3;
-				}
-				try
-				{
-					string[] files = Directory.GetFiles(dir, text2 + "__*.json");
-					if (files != null && files.Length != 0)
-					{
-						return files[0];
-					}
-				}
-				catch
-				{
-				}
-			}
-			string[] files2 = Directory.GetFiles(dir, "*.json");
-			string[] array = files2;
-			foreach (string text4 in array)
-			{
-				try
-				{
-					string value = File.ReadAllText(text4, Encoding.UTF8);
-					if (string.IsNullOrWhiteSpace(value))
-					{
-						continue;
-					}
-					KnowledgeLibraryBehavior.LoreRule loreRule = JsonConvert.DeserializeObject<KnowledgeLibraryBehavior.LoreRule>(value);
-					if (loreRule != null)
-					{
-						string a = (loreRule.Id ?? "").Trim();
-						if (string.Equals(a, text, StringComparison.OrdinalIgnoreCase))
-						{
-							return text4;
-						}
-					}
-				}
-				catch
-				{
-				}
-			}
-		}
-		catch
-		{
-		}
-		return null;
-	}
 
 	private string TryGetUnnamedPersonaKeyFromImportFile(string file)
 	{
 		string text = null;
 		try
 		{
-			text = (ReadJson<UnnamedPersonaSingleJson>(file)?.Key ?? "").Trim().ToLower();
+			text = (PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(file)?.Key ?? "").Trim().ToLower();
 		}
 		catch
 		{
@@ -56647,9 +55094,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导出失败：找不到该未命名NPC条目：" + text));
 				return;
 			}
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text2 = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text2);
 			string text3 = Path.Combine(text2, "unnamed_persona");
@@ -56675,7 +55122,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				text4 = "unnamed";
 			}
 			string path2 = Path.Combine(text3, text4 + ".json");
-			WriteJson(path2, new UnnamedPersonaSingleJson
+			PlayerExportsStore.WriteJson(path2, new UnnamedPersonaSingleJson
 			{
 				Key = text,
 				Personality = (personality ?? "").Trim(),
@@ -56699,7 +55146,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：Key 为空。"));
 				return;
 			}
-			string text2 = ResolveImportFolderPath(folderName);
+			string text2 = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text2) || !Directory.Exists(text2))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -56717,7 +55164,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到该未命名NPC条目的导出文件：" + text));
 				return;
 			}
-			UnnamedPersonaSingleJson unnamedPersonaSingleJson = ReadJson<UnnamedPersonaSingleJson>(text3);
+			UnnamedPersonaSingleJson unnamedPersonaSingleJson = PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(text3);
 			if (unnamedPersonaSingleJson == null)
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：JSON 解析失败。"));
@@ -56838,7 +55285,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				maxCount = 200;
 			}
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text) || !Directory.Exists(text))
 			{
 				return list;
@@ -56925,7 +55372,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				maxCount = 200;
 			}
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text) || !Directory.Exists(text))
 			{
 				return list;
@@ -57006,7 +55453,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57025,7 +55472,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 				{
-					NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
+					NpcPersonaProfile npcPersonaProfile = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text);
 					if (npcPersonaProfile != null)
 					{
 						StampNpcPersonaProfile(text2, npcPersonaProfile);
@@ -57106,9 +55553,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportDialogueHistoryData(string folderName)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57125,10 +55574,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text in array)
 			{
-				string text2 = TryParseHeroIdFromNpcFileName(text);
+				string text2 = NpcDataFileName.TryParseHeroId(text);
 				if (!string.IsNullOrEmpty(text2))
 				{
-					CompressedMemoryExportBundle bundle = ReadJson<CompressedMemoryExportBundle>(text);
+					CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text);
 					if (bundle != null)
 					{
 						dict[NormalizeMemoryHeroId(text2)] = bundle;
@@ -57154,6 +55603,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			}
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				foreach (KeyValuePair<string, CompressedMemoryExportBundle> item in dict)
 				{
 					if (!string.IsNullOrEmpty(item.Key) && item.Value != null)
@@ -57165,6 +55615,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				foreach (KeyValuePair<string, CompressedMemoryExportBundle> item2 in dict)
 				{
 					if (!string.IsNullOrEmpty(item2.Key) && item2.Value != null)
@@ -57187,6 +55638,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}
@@ -57195,7 +55647,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57218,10 +55670,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text in array)
 			{
-				string text2 = TryParseHeroIdFromNpcFileName(text);
+				string text2 = NpcDataFileName.TryParseHeroId(text);
 				if (!string.IsNullOrEmpty(text2))
 				{
-					RewardSystemBehavior.DebtExportEntry debtExportEntry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text);
+					RewardSystemBehavior.DebtExportEntry debtExportEntry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text);
 					if (debtExportEntry != null)
 					{
 						dict[text2] = debtExportEntry;
@@ -57293,7 +55745,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57385,7 +55837,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = ResolveImportFolderPath(folderName);
+			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(text) || !Directory.Exists(text))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57409,7 +55861,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57424,7 +55876,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					HashSet<string> hashSet = new HashSet<string>(knowledgeLibraryBehavior.GetRuleIdsForDev(100000) ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
 					HashSet<string> hashSet2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-					KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = TryLoadKnowledgeRulesFromRuleFiles(importDir);
+					KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = KnowledgeImportSupport.TryLoadKnowledgeRulesFromRuleFiles(importDir);
 					if (knowledgeFile?.Rules != null)
 					{
 						foreach (KnowledgeLibraryBehavior.LoreRule rule in knowledgeFile.Rules)
@@ -57527,14 +55979,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string playerExportsRootPath = GetPlayerExportsRootPath();
+			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
-			string path = ResolveExportFolderName(folderName);
+			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 			string text = Path.Combine(playerExportsRootPath, path);
 			Directory.CreateDirectory(text);
 			string text2 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text2);
-			ClearJsonFiles(text2);
+			PlayerExportsStore.ClearJsonFiles(text2);
 			string path2 = Path.Combine(text2, "VoiceMapping.json");
 			string text3 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -57555,7 +56007,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57629,9 +56081,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private void ImportAllData(string folderName)
 	{
+		long importGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 		try
 		{
-			string importDir = ResolveImportFolderPath(folderName);
+			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
@@ -57676,7 +56130,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					if (TryResolveNpcDataFileHeroIdForImport(text, out var text2, out var warning))
 					{
-						NpcPersonaProfile npcPersonaProfile = ReadJson<NpcPersonaProfile>(text);
+						NpcPersonaProfile npcPersonaProfile = PlayerExportsStore.ReadJson<NpcPersonaProfile>(text);
 						if (npcPersonaProfile != null)
 						{
 							StampNpcPersonaProfile(text2, npcPersonaProfile);
@@ -57708,10 +56162,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array2 = files2;
 				foreach (string text3 in array2)
 				{
-					string text4 = TryParseHeroIdFromNpcFileName(text3);
+					string text4 = NpcDataFileName.TryParseHeroId(text3);
 					if (!string.IsNullOrEmpty(text4))
 					{
-						List<DialogueDay> list = ReadJson<List<DialogueDay>>(text3);
+						List<DialogueDay> list = PlayerExportsStore.ReadJson<List<DialogueDay>>(text3);
 						if (list != null)
 						{
 							dhNew[text4] = list;
@@ -57740,10 +56194,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 				string[] array3 = files3;
 				foreach (string text5 in array3)
 				{
-					string text6 = TryParseHeroIdFromNpcFileName(text5);
+					string text6 = NpcDataFileName.TryParseHeroId(text5);
 					if (!string.IsNullOrEmpty(text6))
 					{
-						RewardSystemBehavior.DebtExportEntry debtExportEntry = ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
+						RewardSystemBehavior.DebtExportEntry debtExportEntry = PlayerExportsStore.ReadJson<RewardSystemBehavior.DebtExportEntry>(text5);
 						if (debtExportEntry != null)
 						{
 							debtNew[text6] = debtExportEntry;
@@ -57795,7 +56249,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 						string text7 = null;
 						try
 						{
-							text7 = (ReadJson<UnnamedPersonaSingleJson>(path4)?.Key ?? "").Trim().ToLower();
+							text7 = (PlayerExportsStore.ReadJson<UnnamedPersonaSingleJson>(path4)?.Key ?? "").Trim().ToLower();
 						}
 						catch
 						{
@@ -57834,7 +56288,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					HashSet<string> hashSet2 = new HashSet<string>(knowledgeLibraryBehavior.GetRuleIdsForDev(100000) ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
 					HashSet<string> hashSet3 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-					KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = TryLoadKnowledgeRulesFromRuleFiles(importDir);
+					KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = KnowledgeImportSupport.TryLoadKnowledgeRulesFromRuleFiles(importDir);
 					if (knowledgeFile?.Rules != null)
 					{
 						foreach (KnowledgeLibraryBehavior.LoreRule rule in knowledgeFile.Rules)
@@ -57986,6 +56440,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			bool flag2 = num + num3 + num5 + num7 + num9 + num11 + eventWorldDupCount + eventKingdomDupCount + eventRecordDupCount + kingdomProfileDupCount > 0;
 			Action action = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (pbNew != null)
 				{
 					if (_npcPersonaProfiles == null)
@@ -58068,6 +56523,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			};
 			Action onSkipDuplicates = delegate
 			{
+				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 				if (pbNew != null)
 				{
 					if (_npcPersonaProfiles == null)
@@ -58159,6 +56615,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			if (!IsMemorySourceEditorCurrent(importGeneration)) return;
 			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
 		}
 	}
@@ -58182,7 +56639,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string text = Path.Combine(importDir, "knowledge", "AIConfig.json");
 			if (File.Exists(text))
 			{
-				string moduleRootPath = GetModuleRootPath();
+				string moduleRootPath = PlayerExportsStore.GetModuleRootPath();
 				string text2 = Path.Combine(moduleRootPath, "ModuleData", "AIConfig.json");
 				string text3 = Path.Combine(moduleRootPath, "AIConfig.json");
 				try
@@ -58220,7 +56677,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 				KnowledgeLibraryBehavior knowledgeLibraryBehavior = KnowledgeLibraryBehavior.Instance ?? Campaign.Current?.GetCampaignBehavior<KnowledgeLibraryBehavior>();
 				if (knowledgeLibraryBehavior != null)
 				{
-					KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = TryLoadKnowledgeRulesFromRuleFiles(importDir);
+					KnowledgeLibraryBehavior.KnowledgeFile knowledgeFile = KnowledgeImportSupport.TryLoadKnowledgeRulesFromRuleFiles(importDir);
 					if (knowledgeFile != null)
 					{
 						if (TryImportKnowledgeFileWithFallback(knowledgeLibraryBehavior, knowledgeFile, overwriteExisting, out var importedCount, out var failedCount, out var firstFailedRuleId, out var firstFailedReason))
@@ -58359,7 +56816,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return error;
 			}
-			if (TryFindDuplicateKnowledgeVariantCondition(rule, out var firstIndex, out var secondIndex))
+			if (KnowledgeImportSupport.TryFindDuplicateKnowledgeVariantCondition(rule, out var firstIndex, out var secondIndex))
 			{
 				return "规则内部存在重复条件的提示词：第 " + (firstIndex + 1) + " 条与第 " + (secondIndex + 1) + " 条条件完全相同。";
 			}
@@ -58371,111 +56828,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool TryFindDuplicateKnowledgeVariantCondition(KnowledgeLibraryBehavior.LoreRule rule, out int firstIndex, out int secondIndex)
-	{
-		firstIndex = -1;
-		secondIndex = -1;
-		try
-		{
-			if (rule?.Variants == null || rule.Variants.Count <= 1)
-			{
-				return false;
-			}
-			Dictionary<string, int> dictionary = new Dictionary<string, int>(StringComparer.Ordinal);
-			for (int i = 0; i < rule.Variants.Count; i++)
-			{
-				KnowledgeLibraryBehavior.LoreVariant loreVariant = rule.Variants[i];
-				if (loreVariant == null)
-				{
-					continue;
-				}
-				string text = BuildKnowledgeWhenSignatureForImport(loreVariant.When);
-				if (dictionary.TryGetValue(text, out var value))
-				{
-					firstIndex = value;
-					secondIndex = i;
-					return true;
-				}
-				dictionary[text] = i;
-			}
-		}
-		catch
-		{
-		}
-		return false;
-	}
 
-	private static string BuildKnowledgeWhenSignatureForImport(KnowledgeLibraryBehavior.LoreWhen when)
-	{
-		try
-		{
-			string text = string.Join("|", NormalizeWhenStringListForImport(when?.HeroIds));
-			string text2 = string.Join("|", NormalizeWhenStringListForImport(when?.Cultures));
-			string text3 = string.Join("|", NormalizeWhenStringListForImport(when?.KingdomIds));
-			string text4 = string.Join("|", NormalizeWhenStringListForImport(when?.SettlementIds));
-			string text5 = string.Join("|", NormalizeWhenStringListForImport(when?.Roles));
-			string text6 = (when?.IsFemale).HasValue ? (when.IsFemale.Value ? "female" : "male") : "any";
-			string text7 = (when?.IsClanLeader).HasValue ? (when.IsClanLeader.Value ? "leader" : "not_leader") : "any";
-			string text8 = string.Join("|", NormalizeWhenSkillMinForImport(when?.SkillMin).Select((KeyValuePair<string, int> kv) => kv.Key + ":" + kv.Value));
-			if (string.IsNullOrEmpty(text) && string.IsNullOrEmpty(text2) && string.IsNullOrEmpty(text3) && string.IsNullOrEmpty(text4) && string.IsNullOrEmpty(text5) && text6 == "any" && text7 == "any" && string.IsNullOrEmpty(text8))
-			{
-				return "__generic__";
-			}
-			return $"hero={text};culture={text2};kingdom={text3};settlement={text4};role={text5};gender={text6};clan={text7};skill={text8}";
-		}
-		catch
-		{
-			return "__generic__";
-		}
-	}
 
-	private static List<string> NormalizeWhenStringListForImport(List<string> list)
-	{
-		List<string> list2 = new List<string>();
-		try
-		{
-			if (list != null)
-			{
-				foreach (string item in list)
-				{
-					string text = (item ?? "").Trim();
-					if (!string.IsNullOrEmpty(text) && !list2.Any((string x) => string.Equals(x, text, StringComparison.OrdinalIgnoreCase)))
-					{
-						list2.Add(text);
-					}
-				}
-			}
-			list2.Sort(StringComparer.OrdinalIgnoreCase);
-		}
-		catch
-		{
-		}
-		return list2;
-	}
 
-	private static List<KeyValuePair<string, int>> NormalizeWhenSkillMinForImport(Dictionary<string, int> skillMin)
-	{
-		List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
-		try
-		{
-			if (skillMin != null)
-			{
-				foreach (KeyValuePair<string, int> item in skillMin)
-				{
-					string text = (item.Key ?? "").Trim();
-					if (!string.IsNullOrEmpty(text) && item.Value >= 0)
-					{
-						list.Add(new KeyValuePair<string, int>(text, item.Value));
-					}
-				}
-			}
-			list = list.OrderBy((KeyValuePair<string, int> x) => x.Key, StringComparer.OrdinalIgnoreCase).ToList();
-		}
-		catch
-		{
-		}
-		return list;
-	}
 
 	private static string FindNpcJsonByHeroId(string dir, string heroId)
 	{
@@ -58499,13 +56854,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			string[] array = files;
 			foreach (string text2 in array)
 			{
-				if (!TryParseNpcFileNameParts(text2, out var text3, out var fileDisplayName))
+				if (!NpcDataFileName.TryParseParts(text2, out var text3, out var fileDisplayName))
 				{
 					continue;
 				}
 				if (!(text3 != text))
 				{
-					if (targetHero != null && !IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, IsAutoGeneratedNpcHeroId(text)))
+					if (targetHero != null && !NpcDataFileName.IsDisplayNameCompatible(fileDisplayName, targetHero?.Name?.ToString(), targetHero != null, NpcDataFileName.IsAutoGeneratedHeroId(text)))
 					{
 						continue;
 					}
@@ -58516,7 +56871,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 						dateTime = lastWriteTimeUtc;
 					}
 				}
-				else if (targetHero != null && IsNpcFileDisplayNameSpecified(fileDisplayName) && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, targetHero, strictWhenNameMissing: true))
+				else if (targetHero != null && NpcDataFileName.IsDisplayNameSpecified(fileDisplayName) && NpcDataFileName.IsDisplayNameCompatible(fileDisplayName, targetHero?.Name?.ToString(), targetHero != null, strictWhenNameMissing: true))
 				{
 					DateTime lastWriteTimeUtc2 = File.GetLastWriteTimeUtc(text2);
 					if (lastWriteTimeUtc2 > nameMatchedDateTime)
@@ -58531,6 +56886,23 @@ public partial class MyBehavior : CampaignBehaviorBase
 		catch
 		{
 			return null;
+		}
+	}
+
+	private static string ResolveHeroNameForNpcDataFile(string heroId)
+	{
+		string id = (heroId ?? "").Trim();
+		if (string.IsNullOrEmpty(id))
+		{
+			return "";
+		}
+		try
+		{
+			return Hero.FindFirst((Hero x) => x != null && x.StringId == id)?.Name?.ToString() ?? "";
+		}
+		catch
+		{
+			return "";
 		}
 	}
 
@@ -58551,94 +56923,17 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private static bool IsAutoGeneratedNpcHeroId(string heroId)
-	{
-		string text = (heroId ?? "").Trim();
-		return text.StartsWith("CharacterObject_", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool TryParseNpcFileNameParts(string filePath, out string heroId, out string displayName)
-	{
-		heroId = "";
-		displayName = "";
-		try
-		{
-			string text = Path.GetFileNameWithoutExtension(filePath) ?? "";
-			int num = text.IndexOf("__", StringComparison.Ordinal);
-			if (num <= 0)
-			{
-				return false;
-			}
-			heroId = (text.Substring(0, num) ?? "").Trim();
-			displayName = ((num + 2 < text.Length) ? text.Substring(num + 2) : "").Trim();
-			return !string.IsNullOrEmpty(heroId);
-		}
-		catch
-		{
-			heroId = "";
-			displayName = "";
-			return false;
-		}
-	}
-
-	private static string NormalizeNpcFileDisplayName(string value)
-	{
-		string text = (value ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		try
-		{
-			foreach (char oldChar in Path.GetInvalidFileNameChars())
-			{
-				text = text.Replace(oldChar, '_');
-			}
-		}
-		catch
-		{
-		}
-		while (text.Contains("  "))
-		{
-			text = text.Replace("  ", " ");
-		}
-		return text.Trim();
-	}
-
-	private static bool IsNpcFileDisplayNameSpecified(string displayName)
-	{
-		string text = NormalizeNpcFileDisplayName(displayName);
-		return !string.IsNullOrWhiteSpace(text)
-			&& !string.Equals(text, "NPC", StringComparison.OrdinalIgnoreCase)
-			&& !string.Equals(text, "unknown", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsNpcFileDisplayNameCompatibleWithHero(string fileDisplayName, Hero hero, bool strictWhenNameMissing)
-	{
-		if (hero == null)
-		{
-			return !strictWhenNameMissing;
-		}
-		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
-		{
-			return !strictWhenNameMissing;
-		}
-		string text = NormalizeNpcFileDisplayName(fileDisplayName);
-		string text2 = NormalizeNpcFileDisplayName(hero.Name?.ToString() ?? "");
-		return !string.IsNullOrWhiteSpace(text2) && string.Equals(text, text2, StringComparison.OrdinalIgnoreCase);
-	}
-
 	private static Hero ResolveUniqueHeroByNpcFileDisplayName(string fileDisplayName)
 	{
-		if (!IsNpcFileDisplayNameSpecified(fileDisplayName))
+		if (!NpcDataFileName.IsDisplayNameSpecified(fileDisplayName))
 		{
 			return null;
 		}
-		string text = NormalizeNpcFileDisplayName(fileDisplayName);
+		string text = NpcDataFileName.NormalizeDisplayName(fileDisplayName);
 		try
 		{
 			List<Hero> list = ((IEnumerable<Hero>)Hero.AllAliveHeroes ?? Enumerable.Empty<Hero>())
-				.Where((Hero x) => x != null && string.Equals(NormalizeNpcFileDisplayName(x.Name?.ToString() ?? ""), text, StringComparison.OrdinalIgnoreCase))
+				.Where((Hero x) => x != null && string.Equals(NpcDataFileName.NormalizeDisplayName(x.Name?.ToString() ?? ""), text, StringComparison.OrdinalIgnoreCase))
 				.Take(2)
 				.ToList();
 			return list.Count == 1 ? list[0] : null;
@@ -58653,14 +56948,14 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		resolvedHeroId = "";
 		warning = "";
-		if (!TryParseNpcFileNameParts(filePath, out var parsedHeroId, out var fileDisplayName))
+		if (!NpcDataFileName.TryParseParts(filePath, out var parsedHeroId, out var fileDisplayName))
 		{
 			warning = "文件名缺少 heroId__名字 格式。";
 			return false;
 		}
 		Hero currentHeroById = ResolveHeroByIdForNpcData(parsedHeroId);
-		bool autoGeneratedId = IsAutoGeneratedNpcHeroId(parsedHeroId);
-		if (currentHeroById != null && IsNpcFileDisplayNameCompatibleWithHero(fileDisplayName, currentHeroById, autoGeneratedId))
+		bool autoGeneratedId = NpcDataFileName.IsAutoGeneratedHeroId(parsedHeroId);
+		if (currentHeroById != null && NpcDataFileName.IsDisplayNameCompatible(fileDisplayName, currentHeroById?.Name?.ToString(), currentHeroById != null, autoGeneratedId))
 		{
 			resolvedHeroId = (currentHeroById.StringId ?? parsedHeroId).Trim();
 			return !string.IsNullOrWhiteSpace(resolvedHeroId);
@@ -58677,7 +56972,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		if (currentHeroById != null)
 		{
-			warning = "文件名人物名“" + NormalizeNpcFileDisplayName(fileDisplayName) + "”与当前同 ID 人物“" + (currentHeroById.Name?.ToString() ?? "") + "”不一致。";
+			warning = "文件名人物名“" + NpcDataFileName.NormalizeDisplayName(fileDisplayName) + "”与当前同 ID 人物“" + (currentHeroById.Name?.ToString() ?? "") + "”不一致。";
 			return false;
 		}
 		if (autoGeneratedId)
@@ -58715,210 +57010,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		StampNpcPersonaProfile(heroId, profile);
 		return true;
-	}
-
-	private static string BuildNpcDataFileName(string heroId)
-	{
-		string id = (heroId ?? "").Trim();
-		if (string.IsNullOrEmpty(id))
-		{
-			id = "unknown";
-		}
-		string text = "";
-		try
-		{
-			text = Hero.FindFirst((Hero x) => x != null && x.StringId == id)?.Name?.ToString() ?? "";
-		}
-		catch
-		{
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = "NPC";
-		}
-		string text2 = id + "__" + text;
-		char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-		foreach (char oldChar in invalidFileNameChars)
-		{
-			text2 = text2.Replace(oldChar, '_');
-		}
-		return text2 + ".json";
-	}
-
-	private static string TryParseHeroIdFromNpcFileName(string filePath)
-	{
-		return TryParseNpcFileNameParts(filePath, out var heroId, out var _) ? heroId : null;
-	}
-
-	private static string GetPlayerExportsRootPath()
-	{
-		string moduleRootPath = GetModuleRootPath();
-		return Path.Combine(moduleRootPath, "PlayerExports");
-	}
-
-	private static string GetModuleRootPath()
-	{
-		try
-		{
-			string location = typeof(SubModule).Assembly.Location;
-			string text = (string.IsNullOrEmpty(location) ? "" : Path.GetDirectoryName(Path.GetFullPath(location)));
-			DirectoryInfo directoryInfo = (string.IsNullOrEmpty(text) ? null : new DirectoryInfo(text));
-			while (directoryInfo != null && directoryInfo.Exists)
-			{
-				if (File.Exists(Path.Combine(directoryInfo.FullName, "SubModule.xml")))
-				{
-					return directoryInfo.FullName;
-				}
-				directoryInfo = directoryInfo.Parent;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			return Path.GetFullPath(Directory.GetCurrentDirectory());
-		}
-		catch
-		{
-			return "";
-		}
-	}
-
-	private static string SanitizeFolderName(string input)
-	{
-		string text = (input ?? "").Trim();
-		if (string.IsNullOrEmpty(text))
-		{
-			return "";
-		}
-		char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-		foreach (char oldChar in invalidFileNameChars)
-		{
-			text = text.Replace(oldChar, '_');
-		}
-		return text.Trim().TrimEnd('.');
-	}
-
-	private static void WriteJson(string path, object obj)
-	{
-		Directory.CreateDirectory(Path.GetDirectoryName(path));
-		try
-		{
-			if (File.Exists(path))
-			{
-				File.Delete(path);
-			}
-		}
-		catch
-		{
-		}
-		string contents = JsonConvert.SerializeObject(obj, Formatting.Indented);
-		File.WriteAllText(path, contents, Encoding.UTF8);
-	}
-
-	private static T ReadJson<T>(string path) where T : class
-	{
-		try
-		{
-			if (!File.Exists(path))
-			{
-				return null;
-			}
-			string value = File.ReadAllText(path, Encoding.UTF8);
-			if (string.IsNullOrWhiteSpace(value))
-			{
-				return null;
-			}
-			return JsonConvert.DeserializeObject<T>(value);
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private static string FindLatestExportFolder(string root)
-	{
-		try
-		{
-			if (!Directory.Exists(root))
-			{
-				return null;
-			}
-			DirectoryInfo directoryInfo = new DirectoryInfo(root);
-			return (from d in directoryInfo.GetDirectories()
-				orderby d.LastWriteTimeUtc descending
-				select d).FirstOrDefault()?.FullName;
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private static void ClearJsonFiles(string dir)
-	{
-		try
-		{
-			if (string.IsNullOrWhiteSpace(dir) || !Directory.Exists(dir))
-			{
-				return;
-			}
-			string[] files = Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly);
-			foreach (string path in files)
-			{
-				try
-				{
-					File.Delete(path);
-				}
-				catch
-				{
-				}
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	private string ResolveExportFolderName(string folderName)
-	{
-		string text = SanitizeFolderName(folderName);
-		if (string.IsNullOrEmpty(text))
-		{
-			text = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-		}
-		return text;
-	}
-
-	private string ResolveImportFolderPath(string folderName)
-	{
-		string text = (folderName ?? "").Trim();
-		if (!string.IsNullOrEmpty(text))
-		{
-			try
-			{
-				if (Path.IsPathRooted(text))
-				{
-					string fullPath = Path.GetFullPath(text);
-					if (Directory.Exists(fullPath))
-					{
-						return fullPath;
-					}
-				}
-			}
-			catch
-			{
-			}
-		}
-		string playerExportsRootPath = GetPlayerExportsRootPath();
-		string text2 = SanitizeFolderName(folderName);
-		if (string.IsNullOrEmpty(text2))
-		{
-			return FindLatestExportFolder(playerExportsRootPath);
-		}
-		return Path.Combine(playerExportsRootPath, text2);
 	}
 
 }

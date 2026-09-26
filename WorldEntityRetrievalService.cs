@@ -92,17 +92,7 @@ public static class WorldEntityRetrievalService
 
 	private const float NearTopDelta = 0.07f;
 
-	private const int DefaultMaxInjectedEntities = 6;
-
-	private const int MaxInjectedEntitiesHardCap = 20;
-
-	private const int MaxCandidatesPerMention = MaxInjectedEntitiesHardCap;
-
-	private const int MaxSecondaryMatchesPerMention = 3;
-
-	private const float MaxHeroProximityBonus = 0.15f;
-
-	private const float HeroProximityDecayDistance = 30f;
+	private const int MaxCandidatesPerMention = EntityInjectionAllocator.MaxInjectedEntitiesHardCap;
 
 	private const int MaxVisiblePartyCandidates = 10;
 
@@ -126,7 +116,7 @@ public static class WorldEntityRetrievalService
 
 	private const int EntityRetrievalBudgetCheckInterval = 64;
 
-	private sealed class EntityMatch<T>
+	internal sealed class EntityMatch<T>
 	{
 		public T Value;
 
@@ -143,60 +133,8 @@ public static class WorldEntityRetrievalService
 		public string RulerTitleKey;
 	}
 
-	private sealed class GlobalEntityCandidate
+	internal sealed class VisiblePartyCandidate
 	{
-		public string Type;
-
-		public string Key;
-
-		public string Name;
-
-		public string Mention;
-
-		public int MentionPriority;
-
-		public int TypePriority;
-
-		public float Score;
-
-		public float FinalScore;
-
-		public bool ExactNameMatch;
-
-		public string HeroClanId;
-
-		public string HeroKingdomId;
-
-		public string ScopeClanId;
-
-		public string ScopeKingdomId;
-
-		public int HeroScopeScore;
-
-		public string HeroScopeEvidence;
-
-		public float HeroDistance = float.MaxValue;
-
-		public float HeroDistanceBonus;
-
-		public object Match;
-	}
-
-	private sealed class EntityScopeConstraint
-	{
-		public string ClanId;
-
-		public string KingdomId;
-
-		public int MentionPriority;
-
-		public string Name;
-	}
-
-	private sealed class VisiblePartyCandidate
-	{
-		public MobileParty Party;
-
 		public string Id;
 
 		public string Name;
@@ -272,15 +210,6 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private sealed class FuzzyTextProfile
-	{
-		public string Raw;
-
-		public string Normalized;
-
-		public List<string> Tokens;
-	}
-
 	private sealed class EntityCandidateSnapshot<T> where T : class
 	{
 		public T Value;
@@ -292,11 +221,256 @@ public static class WorldEntityRetrievalService
 		public List<FuzzyTextProfile> Aliases;
 	}
 
-	private sealed class RulerTitleCandidate
+	// Only this detached half may cross to the retrieval worker. Live references remain
+	// on the game-thread half and are never dereferenced by the scorer.
+	internal sealed class DetachedEntityCandidates
 	{
-		public Kingdom Kingdom;
+		internal List<DetachedEntityCandidate> Heroes = new List<DetachedEntityCandidate>();
+		internal List<DetachedEntityCandidate> Settlements = new List<DetachedEntityCandidate>();
+		internal List<DetachedEntityCandidate> Clans = new List<DetachedEntityCandidate>();
+		internal List<DetachedEntityCandidate> Kingdoms = new List<DetachedEntityCandidate>();
+		internal List<RulerTitleCandidate> Rulers = new List<RulerTitleCandidate>();
+	}
 
-		public Hero Leader;
+	internal sealed class DetachedEntityCandidate
+	{
+		internal string Id;
+		internal string Name;
+		internal List<string> Aliases;
+		internal string SourceStringId;
+		internal string HeroClanId;
+		internal string HeroKingdomId;
+		internal string ScopeClanId;
+		internal string ScopeKingdomId;
+		internal float HeroDistance = float.MaxValue;
+		internal float HeroDistanceBonus;
+	}
+
+	internal sealed class EntityCapture
+	{
+		internal DetachedEntityCandidates Candidates = new DetachedEntityCandidates();
+		internal int MaxInjectedEntities;
+		internal List<VisiblePartyCandidate> VisibleParties;
+		internal Dictionary<DetachedEntityCandidate, Hero> Heroes = new Dictionary<DetachedEntityCandidate, Hero>();
+		internal Dictionary<DetachedEntityCandidate, Settlement> Settlements = new Dictionary<DetachedEntityCandidate, Settlement>();
+		internal Dictionary<DetachedEntityCandidate, Clan> Clans = new Dictionary<DetachedEntityCandidate, Clan>();
+		internal Dictionary<DetachedEntityCandidate, Kingdom> Kingdoms = new Dictionary<DetachedEntityCandidate, Kingdom>();
+	}
+
+	internal sealed class DetachedEntityMatches
+	{
+		internal List<EntityMatch<DetachedEntityCandidate>> Rulers;
+		internal List<EntityMatch<DetachedEntityCandidate>> Heroes;
+		internal List<EntityMatch<DetachedEntityCandidate>> Settlements;
+		internal List<EntityMatch<DetachedEntityCandidate>> Clans;
+		internal List<EntityMatch<DetachedEntityCandidate>> Kingdoms;
+		internal List<string> ExplicitMentionedKingdomIds;
+	}
+
+	internal static EntityCapture CaptureEntityCandidates(MentionedWorldEntities mentions, string latestInput, Hero contextHero)
+	{
+		EntityCapture capture = new EntityCapture { MaxInjectedEntities = GetMaxInjectedEntitiesFromSettings() };
+		WorldEntityRetrievalBudget budget = new WorldEntityRetrievalBudget(Stopwatch.StartNew());
+		if (Campaign.Current == null)
+		{
+			return capture;
+		}
+		capture.VisibleParties = BuildVisiblePartyCandidates(contextHero);
+		CampaignVec2 contextPosition;
+		bool hasContextPosition = TryResolveHeroCampaignPosition(contextHero, out contextPosition);
+		bool hasMentions = EntityMentionList.BuildUnified(mentions?.Entities).Count > 0;
+		if (hasMentions && CanContinueWorldEntityMatch("hero_capture", budget))
+		{
+			CaptureCandidates(GetHeroCandidates(), capture.Candidates.Heroes, capture.Heroes,
+				GetHeroAliases, x => "hero:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Hero"), budget,
+				(x, candidate) => CaptureDetachedMetadata(candidate, x, hasContextPosition ? contextPosition : (CampaignVec2?)null));
+		}
+		if (hasMentions && CanContinueWorldEntityMatch("settlement_capture", budget))
+		{
+			CaptureCandidates(GetSettlementCandidates(), capture.Candidates.Settlements, capture.Settlements,
+				GetSettlementAliases, x => "settlement:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Settlement"), budget);
+		}
+		if (hasMentions && CanContinueWorldEntityMatch("clan_capture", budget))
+		{
+			CaptureCandidates(GetClanCandidates(), capture.Candidates.Clans, capture.Clans,
+				GetClanAliases, x => "clan:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Clan"), budget,
+				(x, candidate) => CaptureDetachedMetadata(candidate, x));
+		}
+		if ((hasMentions || !string.IsNullOrWhiteSpace(latestInput)) && CanContinueWorldEntityMatch("kingdom_capture", budget))
+		{
+			CaptureCandidates(GetKingdomCandidates(), capture.Candidates.Kingdoms, capture.Kingdoms,
+				GetKingdomAliases, x => "kingdom:" + SafeStringId(x.StringId), x => SafeName(x.Name, x.StringId ?? "Kingdom"), budget,
+				(x, candidate) => CaptureDetachedMetadata(candidate, x));
+			capture.Candidates.Rulers = BuildRulerTitleCandidates(RestoreCandidates(capture.Candidates.Kingdoms, capture.Kingdoms), capture.Heroes);
+			foreach (RulerTitleCandidate ruler in capture.Candidates.Rulers)
+			{
+				if (ruler?.Leader != null && capture.Heroes.TryGetValue(ruler.Leader, out Hero leader))
+				{
+					CaptureDetachedMetadata(ruler.Leader, leader, hasContextPosition ? contextPosition : (CampaignVec2?)null);
+				}
+			}
+		}
+		return capture;
+	}
+
+	private static void CaptureCandidates<T>(IEnumerable<T> source, List<DetachedEntityCandidate> detached,
+		Dictionary<DetachedEntityCandidate, T> live, Func<T, IEnumerable<string>> aliases, Func<T, string> id, Func<T, string> name, WorldEntityRetrievalBudget budget,
+		Action<T, DetachedEntityCandidate> captureMetadata = null) where T : class
+	{
+		int scanned = 0;
+		foreach (T value in source ?? Enumerable.Empty<T>())
+		{
+			if (value == null)
+			{
+				continue;
+			}
+			DetachedEntityCandidate candidate = new DetachedEntityCandidate
+			{
+				Id = SafeSelectorValue(id, value),
+				Name = SafeSelectorValue(name, value),
+				Aliases = SafeAliases(aliases, value).ToList()
+			};
+			try { captureMetadata?.Invoke(value, candidate); } catch { }
+			detached.Add(candidate);
+			live.Add(candidate, value);
+			if (++scanned % EntityRetrievalBudgetCheckInterval == 0)
+			{
+				LogSoftBudgetOnceIfNeeded("candidate_capture", "", "", scanned, 0, detached.Count, budget);
+				if (IsHardBudgetExceeded(budget))
+				{
+					LogWorldEntityBudgetStop("candidate_capture", "", "", scanned, 0, detached.Count, budget);
+					break;
+				}
+			}
+		}
+	}
+
+	private static void CaptureDetachedMetadata(DetachedEntityCandidate candidate, object value, CampaignVec2? contextPosition = null)
+	{
+		if (candidate == null || value == null) return;
+		if (value is Hero hero)
+		{
+			Clan clan = hero.Clan;
+			candidate.HeroClanId = NormalizeScopeEntityId(clan?.StringId);
+			candidate.HeroKingdomId = NormalizeScopeEntityId(ResolveHeroKingdomForResidentEntity(hero, clan)?.StringId);
+			if (contextPosition.HasValue && contextPosition.Value.IsValid() && TryResolveHeroCampaignPosition(hero, out CampaignVec2 heroPosition))
+			{
+				float distance = heroPosition.Distance(contextPosition.Value);
+				float? bonus = EntityInjectionAllocator.ComputeDistanceBonus(distance);
+				if (bonus.HasValue) { candidate.HeroDistance = distance; candidate.HeroDistanceBonus = bonus.Value; }
+			}
+		}
+		else if (value is Clan clanScope)
+		{
+			candidate.ScopeClanId = NormalizeScopeEntityId(clanScope.StringId);
+		}
+		else if (value is Kingdom kingdomScope)
+		{
+			candidate.SourceStringId = (kingdomScope.StringId ?? "").Trim();
+			candidate.ScopeKingdomId = NormalizeScopeEntityId(kingdomScope.StringId);
+		}
+	}
+
+	internal static DetachedEntityMatches MatchDetachedCandidates(DetachedEntityCandidates candidates, MentionedWorldEntities mentions, string latestInput, int maxInjectedEntities)
+	{
+		if (candidates == null)
+		{
+			return null;
+		}
+		List<string> allMentions = EntityMentionList.BuildUnified(mentions?.Entities);
+		Dictionary<string, int> priority = EntityMentionList.BuildPriority(allMentions);
+		WorldEntityRetrievalBudget budget = new WorldEntityRetrievalBudget(Stopwatch.StartNew());
+		List<EntityMatch<DetachedEntityCandidate>> rulers = allMentions.Count > 0
+			? FindRulerTitleMatches(allMentions, priority, candidates.Rulers, "preprocess", budget)
+			: new List<EntityMatch<DetachedEntityCandidate>>();
+		if (!string.IsNullOrWhiteSpace(latestInput) && CanContinueWorldEntityMatch("ruler_title_raw", budget))
+		{
+			RawRulerTitleMatchResult raw = FindRawRulerTitleMatches(latestInput, candidates.Rulers, budget);
+			if (raw.OverrideTitleKeys.Count > 0)
+			{
+				rulers = rulers.Where(x => x == null || string.IsNullOrWhiteSpace(x.RulerTitleKey) || !raw.OverrideTitleKeys.Contains(x.RulerTitleKey)).ToList();
+			}
+			rulers = MergeEntityMatches(rulers, raw.Matches);
+		}
+		List<EntityMatch<DetachedEntityCandidate>> heroes = ConcatEntityMatchCandidates(
+			MergeEntityMatches(new List<EntityMatch<DetachedEntityCandidate>>(), rulers),
+			FindDetachedMatches("hero", allMentions, priority, candidates.Heroes, maxInjectedEntities, budget));
+		List<EntityMatch<DetachedEntityCandidate>> settlements = FindDetachedMatches("settlement", allMentions, priority, candidates.Settlements, maxInjectedEntities, budget);
+		List<EntityMatch<DetachedEntityCandidate>> clans = FindDetachedMatches("clan", allMentions, priority, candidates.Clans, maxInjectedEntities, budget);
+		List<EntityMatch<DetachedEntityCandidate>> kingdoms = FindDetachedMatches("kingdom", allMentions, priority, candidates.Kingdoms, maxInjectedEntities, budget);
+		List<string> explicitKingdomIds = kingdoms.Where(match => !string.IsNullOrWhiteSpace(match?.Value?.SourceStringId))
+			.Select(match => match.Value.SourceStringId).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		ApplyDetachedGlobalInjectionLimit(maxInjectedEntities, allMentions.Count, ref heroes, ref settlements, ref clans, ref kingdoms);
+		return new DetachedEntityMatches
+		{
+			Rulers = rulers,
+			Heroes = heroes,
+			Settlements = settlements,
+			Clans = clans,
+			Kingdoms = kingdoms,
+			ExplicitMentionedKingdomIds = explicitKingdomIds
+		};
+	}
+
+	private static void ApplyDetachedGlobalInjectionLimit(int maxCount, int mentionCount,
+		ref List<EntityMatch<DetachedEntityCandidate>> heroes, ref List<EntityMatch<DetachedEntityCandidate>> settlements,
+		ref List<EntityMatch<DetachedEntityCandidate>> clans, ref List<EntityMatch<DetachedEntityCandidate>> kingdoms)
+	{
+		List<GlobalEntityCandidate> candidates = new List<GlobalEntityCandidate>();
+		AddGlobalLimitItems(candidates, "hero", 0, heroes);
+		AddGlobalLimitItems(candidates, "settlement", 1, settlements);
+		AddGlobalLimitItems(candidates, "clan", 2, clans);
+		AddGlobalLimitItems(candidates, "kingdom", 3, kingdoms);
+		List<GlobalEntityCandidate> selected = EntityInjectionAllocator.Select(candidates,
+			EntityInjectionAllocator.ClampMaxInjectedEntities(maxCount), Math.Max(0, mentionCount), out string allocationSummary);
+		heroes = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "hero");
+		settlements = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "settlement");
+		clans = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "clan");
+		kingdoms = ExtractGlobalLimitMatches<DetachedEntityCandidate>(selected, "kingdom");
+		Logger.Log("WorldEntityRetrieval", allocationSummary);
+	}
+
+	private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches(string category, List<string> mentions,
+		Dictionary<string, int> priority, List<DetachedEntityCandidate> candidates, int maxInjectedEntities, WorldEntityRetrievalBudget budget)
+	{
+		return mentions.Count == 0 || candidates.Count == 0 || !CanContinueWorldEntityMatch(category, budget)
+			? new List<EntityMatch<DetachedEntityCandidate>>()
+			: FindMatches(category, mentions, priority, candidates, x => x.Aliases, x => x.Id, x => x.Name, maxInjectedEntities, budget);
+	}
+
+	private static List<T> RestoreCandidates<T>(IEnumerable<DetachedEntityCandidate> candidates, Dictionary<DetachedEntityCandidate, T> live) where T : class
+	{
+		List<T> result = new List<T>();
+		foreach (DetachedEntityCandidate candidate in candidates ?? Enumerable.Empty<DetachedEntityCandidate>())
+		{
+			if (candidate != null && live.TryGetValue(candidate, out T value))
+			{
+				result.Add(value);
+			}
+		}
+		return result;
+	}
+
+	private static List<EntityMatch<T>> RestoreMatches<T>(IEnumerable<EntityMatch<DetachedEntityCandidate>> matches, Dictionary<DetachedEntityCandidate, T> live) where T : class
+	{
+		List<EntityMatch<T>> result = new List<EntityMatch<T>>();
+		foreach (EntityMatch<DetachedEntityCandidate> match in matches ?? Enumerable.Empty<EntityMatch<DetachedEntityCandidate>>())
+		{
+			if (match?.Value != null && live.TryGetValue(match.Value, out T value))
+			{
+				result.Add(new EntityMatch<T>
+				{
+					Value = value, Id = match.Id, Name = match.Name, Mention = match.Mention,
+					Score = match.Score, MentionPriority = match.MentionPriority, RulerTitleKey = match.RulerTitleKey
+				});
+			}
+		}
+		return result;
+	}
+
+	internal sealed class RulerTitleCandidate
+	{
+		public DetachedEntityCandidate Leader;
 
 		public string KingdomId;
 
@@ -322,7 +496,7 @@ public static class WorldEntityRetrievalService
 
 	private sealed class RawRulerTitleMatchResult
 	{
-		public List<EntityMatch<Hero>> Matches = new List<EntityMatch<Hero>>();
+		public List<EntityMatch<DetachedEntityCandidate>> Matches = new List<EntityMatch<DetachedEntityCandidate>>();
 
 		public HashSet<string> OverrideTitleKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 	}
@@ -334,6 +508,12 @@ public static class WorldEntityRetrievalService
 
 	public static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities = false)
 	{
+		return BuildPromptContext(mentions, playerDisplayName, contextHero, includeResidentKingdoms, activeRuleIds, latestInput, includeResidentPlayerEntities, null, null);
+	}
+
+	internal static WorldEntityPromptContext BuildPromptContext(MentionedWorldEntities mentions, string playerDisplayName, Hero contextHero, bool includeResidentKingdoms, IEnumerable<string> activeRuleIds, string latestInput, bool includeResidentPlayerEntities, EntityCapture capture, DetachedEntityMatches detachedMatches)
+	{
+		if (capture == null) detachedMatches = null;
 		WorldEntityPromptContext result = new WorldEntityPromptContext();
 		Stopwatch totalSw = Stopwatch.StartNew();
 		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.BuildPromptContext");
@@ -344,14 +524,14 @@ public static class WorldEntityRetrievalService
 			{
 				return result;
 			}
-			List<VisiblePartyCandidate> visibleParties = BuildVisiblePartyCandidates(contextHero);
-			List<string> allMentions = BuildUnifiedMentionList(mentions);
-			HashSet<string> activeRuleIdSet = BuildActiveRuleIdSet(activeRuleIds);
+			List<VisiblePartyCandidate> visibleParties = capture?.VisibleParties ?? BuildVisiblePartyCandidates(contextHero);
+			List<string> allMentions = EntityMentionList.BuildUnified(mentions?.Entities);
+			HashSet<string> activeRuleIdSet = EntityMentionList.BuildActiveRuleIdSet(activeRuleIds);
 			string rawInput = (latestInput ?? "").Trim();
 			bool hasRawInput = !string.IsNullOrWhiteSpace(rawInput);
 			string startDetail = "entities=" + allMentions.Count + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "");
 			FreezeWatchdog.Mark("WorldEntityRetrieval.start", startDetail, immediate: true);
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start entities=" + CountList(mentions?.Entities) + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " includeResidentPlayerEntities=" + includeResidentPlayerEntities + " activeRules=" + FormatMentionsForLog(activeRuleIdSet) + " " + FormatBudgetForLog(budget));
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] start entities=" + EntityMentionList.CountNonBlank(mentions?.Entities) + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " contextHero=" + (contextHero?.StringId ?? "") + " includeResidentKingdoms=" + includeResidentKingdoms + " includeResidentPlayerEntities=" + includeResidentPlayerEntities + " activeRules=" + EntityMentionList.FormatForLog(activeRuleIdSet) + " " + FormatBudgetForLog(budget));
 			List<EntityMatch<Hero>> heroes = new List<EntityMatch<Hero>>();
 			List<EntityMatch<Settlement>> settlements = new List<EntityMatch<Settlement>>();
 			List<EntityMatch<Clan>> clans = new List<EntityMatch<Clan>>();
@@ -359,63 +539,79 @@ public static class WorldEntityRetrievalService
 			if (allMentions.Count > 0 || hasRawInput)
 			{
 				Stopwatch stageSw = Stopwatch.StartNew();
-				int maxInjectedEntities = GetMaxInjectedEntitiesFromSettings();
+				int maxInjectedEntities = capture?.MaxInjectedEntities ?? GetMaxInjectedEntitiesFromSettings();
 				List<Hero> heroCandidates = new List<Hero>();
 				List<Settlement> settlementCandidates = new List<Settlement>();
 				List<Clan> clanCandidates = new List<Clan>();
 				List<Kingdom> kingdomCandidates = new List<Kingdom>();
-				if (allMentions.Count > 0)
+				if (detachedMatches == null && allMentions.Count > 0)
 				{
-					heroCandidates = GetHeroCandidates().ToList();
-					settlementCandidates = GetSettlementCandidates().ToList();
-					clanCandidates = GetClanCandidates().ToList();
+					heroCandidates = capture == null ? GetHeroCandidates().ToList() : RestoreCandidates(capture.Candidates.Heroes, capture.Heroes);
+					settlementCandidates = capture == null ? GetSettlementCandidates().ToList() : RestoreCandidates(capture.Candidates.Settlements, capture.Settlements);
+					clanCandidates = capture == null ? GetClanCandidates().ToList() : RestoreCandidates(capture.Candidates.Clans, capture.Clans);
 				}
-				if (allMentions.Count > 0 || hasRawInput)
+				if (detachedMatches == null && (allMentions.Count > 0 || hasRawInput))
 				{
-					kingdomCandidates = GetKingdomCandidates().ToList();
+					kingdomCandidates = capture == null ? GetKingdomCandidates().ToList() : RestoreCandidates(capture.Candidates.Kingdoms, capture.Kingdoms);
 				}
-				Logger.Log("WorldEntityRetrieval", "entities total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " candidates hero=" + heroCandidates.Count + " settlement=" + settlementCandidates.Count + " clan=" + clanCandidates.Count + " kingdom=" + kingdomCandidates.Count + " names=" + FormatMentionsForLog(allMentions));
+				Logger.Log("WorldEntityRetrieval", "entities total=" + allMentions.Count + " maxInject=" + maxInjectedEntities + " rawInputLen=" + rawInput.Length + " visibleParties=" + visibleParties.Count + " candidates hero=" + (detachedMatches == null ? heroCandidates.Count : capture.Candidates.Heroes.Count) + " settlement=" + (detachedMatches == null ? settlementCandidates.Count : capture.Candidates.Settlements.Count) + " clan=" + (detachedMatches == null ? clanCandidates.Count : capture.Candidates.Clans.Count) + " kingdom=" + (detachedMatches == null ? kingdomCandidates.Count : capture.Candidates.Kingdoms.Count) + " names=" + EntityMentionList.FormatForLog(allMentions));
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] candidates_ready ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
-				Dictionary<string, int> mentionPriority = BuildMentionPriority(allMentions);
-				List<EntityMatch<Hero>> rulerTitleMatches = allMentions.Count > 0 ? FindRulerTitleMatches(allMentions, mentionPriority, kingdomCandidates, "preprocess", budget) : new List<EntityMatch<Hero>>();
-				if (hasRawInput && CanContinueWorldEntityMatch("ruler_title_raw", budget))
+				Dictionary<string, int> mentionPriority = EntityMentionList.BuildPriority(allMentions);
+				Dictionary<DetachedEntityCandidate, Hero> rulerLiveHeroes = capture?.Heroes ?? new Dictionary<DetachedEntityCandidate, Hero>();
+				List<RulerTitleCandidate> rulerCandidates = capture?.Candidates.Rulers ?? BuildRulerTitleCandidates(kingdomCandidates, rulerLiveHeroes);
+				List<EntityMatch<DetachedEntityCandidate>> detachedRulers = detachedMatches?.Rulers;
+				if (detachedRulers == null)
 				{
-					RawRulerTitleMatchResult rawRulerTitleMatches = FindRawRulerTitleMatches(rawInput, kingdomCandidates, budget);
-					if (rawRulerTitleMatches.OverrideTitleKeys.Count > 0)
+					detachedRulers = allMentions.Count > 0 ? FindRulerTitleMatches(allMentions, mentionPriority, rulerCandidates, "preprocess", budget) : new List<EntityMatch<DetachedEntityCandidate>>();
+					if (hasRawInput && CanContinueWorldEntityMatch("ruler_title_raw", budget))
 					{
-						rulerTitleMatches = rulerTitleMatches.Where((EntityMatch<Hero> x) => x == null || string.IsNullOrWhiteSpace(x.RulerTitleKey) || !rawRulerTitleMatches.OverrideTitleKeys.Contains(x.RulerTitleKey)).ToList();
+						RawRulerTitleMatchResult rawRulerTitleMatches = FindRawRulerTitleMatches(rawInput, rulerCandidates, budget);
+						if (rawRulerTitleMatches.OverrideTitleKeys.Count > 0)
+						{
+							detachedRulers = detachedRulers.Where(x => x == null || string.IsNullOrWhiteSpace(x.RulerTitleKey) || !rawRulerTitleMatches.OverrideTitleKeys.Contains(x.RulerTitleKey)).ToList();
+						}
+						detachedRulers = MergeEntityMatches(detachedRulers, rawRulerTitleMatches.Matches);
 					}
-					rulerTitleMatches = MergeEntityMatches(rulerTitleMatches, rawRulerTitleMatches.Matches);
 				}
-				heroes = MergeEntityMatches(heroes, rulerTitleMatches);
+				if (detachedMatches == null)
+				{
+					heroes = MergeEntityMatches(heroes, RestoreMatches(detachedRulers, rulerLiveHeroes));
+				}
+				else
+				{
+					heroes = RestoreMatches(detachedMatches.Heroes, capture.Heroes);
+				}
 				if (allMentions.Count > 0)
 				{
-					if (CanContinueWorldEntityMatch("hero", budget))
+					if (detachedMatches == null && CanContinueWorldEntityMatch("hero", budget))
 					{
 						List<EntityMatch<Hero>> directHeroMatches = FindMatches("hero", allMentions, mentionPriority, heroCandidates, GetHeroAliases, (Hero x) => "hero:" + SafeStringId(x?.StringId), (Hero x) => SafeName(x?.Name, x?.StringId ?? "Hero"), maxInjectedEntities, budget);
 						heroes = ConcatEntityMatchCandidates(heroes, directHeroMatches);
 					}
 					if (CanContinueWorldEntityMatch("settlement", budget))
 					{
-						settlements = FindMatches("settlement", allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"), maxInjectedEntities, budget);
+						settlements = detachedMatches == null ? FindMatches("settlement", allMentions, mentionPriority, settlementCandidates, GetSettlementAliases, (Settlement x) => "settlement:" + SafeStringId(x?.StringId), (Settlement x) => SafeName(x?.Name, x?.StringId ?? "Settlement"), maxInjectedEntities, budget) : RestoreMatches(detachedMatches.Settlements, capture.Settlements);
 					}
 					if (CanContinueWorldEntityMatch("clan", budget))
 					{
-						clans = FindMatches("clan", allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"), maxInjectedEntities, budget);
+						clans = detachedMatches == null ? FindMatches("clan", allMentions, mentionPriority, clanCandidates, GetClanAliases, (Clan x) => "clan:" + SafeStringId(x?.StringId), (Clan x) => SafeName(x?.Name, x?.StringId ?? "Clan"), maxInjectedEntities, budget) : RestoreMatches(detachedMatches.Clans, capture.Clans);
 					}
 					if (CanContinueWorldEntityMatch("kingdom", budget))
 					{
-						kingdoms = FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"), maxInjectedEntities, budget);
+						kingdoms = detachedMatches == null ? FindMatches("kingdom", allMentions, mentionPriority, kingdomCandidates, GetKingdomAliases, (Kingdom x) => "kingdom:" + SafeStringId(x?.StringId), (Kingdom x) => SafeName(x?.Name, x?.StringId ?? "Kingdom"), maxInjectedEntities, budget) : RestoreMatches(detachedMatches.Kingdoms, capture.Kingdoms);
 					}
 				}
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] all_match_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + budget.IsHardExceeded);
-				result.ExplicitMentionedKingdomIds = kingdoms
+				result.ExplicitMentionedKingdomIds = detachedMatches?.ExplicitMentionedKingdomIds ?? kingdoms
 					.Where(match => match?.Value != null && !string.IsNullOrWhiteSpace(match.Value.StringId))
 					.Select(match => match.Value.StringId.Trim())
 					.Distinct(StringComparer.OrdinalIgnoreCase)
 					.ToList();
 				stageSw.Restart();
-				ApplyGlobalInjectionLimit(maxInjectedEntities, allMentions.Count, contextHero, ref heroes, ref settlements, ref clans, ref kingdoms);
+				if (detachedMatches == null)
+				{
+					ApplyGlobalInjectionLimit(maxInjectedEntities, allMentions.Count, contextHero, ref heroes, ref settlements, ref clans, ref kingdoms);
+				}
 				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] global_limit_done heroMatches=" + heroes.Count + " settlementMatches=" + settlements.Count + " clanMatches=" + clans.Count + " kingdomMatches=" + kingdoms.Count + " ms=" + Math.Round(stageSw.Elapsed.TotalMilliseconds, 2));
 			}
 			else if (visibleParties.Count > 0)
@@ -433,7 +629,7 @@ public static class WorldEntityRetrievalService
 			int count = heroes.Count + settlements.Count + clans.Count + kingdoms.Count + visibleParties.Count;
 			if (count <= 0)
 			{
-				Logger.Log("WorldEntityRetrieval", "no_match mentions=" + FormatMentionsForLog(allMentions) + " rawInputLen=" + rawInput.Length);
+				Logger.Log("WorldEntityRetrieval", "no_match mentions=" + EntityMentionList.FormatForLog(allMentions) + " rawInputLen=" + rawInput.Length);
 				return result;
 			}
 			result.MatchCount = count;
@@ -459,97 +655,6 @@ public static class WorldEntityRetrievalService
 		}
 	}
 
-	private static List<string> BuildUnifiedMentionList(MentionedWorldEntities mentions)
-	{
-		List<string> result = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		AddMentionList(result, seen, mentions?.Entities);
-		return result;
-	}
-
-	private static HashSet<string> BuildActiveRuleIdSet(IEnumerable<string> activeRuleIds)
-	{
-		HashSet<string> result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (string ruleId in activeRuleIds ?? Enumerable.Empty<string>())
-		{
-			string text = (ruleId ?? "").Trim().ToLowerInvariant();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				result.Add(text);
-			}
-		}
-		return result;
-	}
-
-
-	private static void AddMentionList(List<string> result, HashSet<string> seen, IEnumerable<string> values)
-	{
-		if (result == null || seen == null || values == null)
-		{
-			return;
-		}
-		foreach (string value in values)
-		{
-			string text = (value ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			if (text.IndexOf('的') < 0 && text.IndexOf('之') < 0)
-			{
-				AddMention(result, seen, text);
-				continue;
-			}
-			int segmentStart = 0;
-			for (int i = 0; i <= text.Length; i++)
-			{
-				if (i < text.Length && text[i] != '的' && text[i] != '之')
-				{
-					continue;
-				}
-				AddMention(result, seen, text.Substring(segmentStart, i - segmentStart));
-				segmentStart = i + 1;
-			}
-		}
-	}
-
-	private static void AddMention(List<string> result, HashSet<string> seen, string value)
-	{
-		string text = (value ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
-		{
-			result.Add(text);
-		}
-	}
-
-	private static Dictionary<string, int> BuildMentionPriority(List<string> mentions)
-	{
-		Dictionary<string, int> result = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		if (mentions == null)
-		{
-			return result;
-		}
-		for (int i = 0; i < mentions.Count; i++)
-		{
-			string text = (mentions[i] ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !result.ContainsKey(text))
-			{
-				result[text] = i;
-			}
-		}
-		return result;
-	}
-
-	private static int CountList(List<string> values)
-	{
-		return values?.Count((string x) => !string.IsNullOrWhiteSpace(x)) ?? 0;
-	}
-
-	private static string FormatMentionsForLog(IEnumerable<string> values)
-	{
-		List<string> names = (values ?? Enumerable.Empty<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Take(12).ToList();
-		return names.Count == 0 ? "(none)" : string.Join("|", names);
-	}
 
 	private static int GetMaxInjectedEntitiesFromSettings()
 	{
@@ -558,31 +663,18 @@ public static class WorldEntityRetrievalService
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings != null)
 			{
-				return ClampMaxInjectedEntities(settings.WorldEntityInjectMaxCount);
+				return EntityInjectionAllocator.ClampMaxInjectedEntities(settings.WorldEntityInjectMaxCount);
 			}
 		}
 		catch
 		{
 		}
-		return DefaultMaxInjectedEntities;
-	}
-
-	private static int ClampMaxInjectedEntities(int value)
-	{
-		if (value < 1)
-		{
-			return 1;
-		}
-		if (value > MaxInjectedEntitiesHardCap)
-		{
-			return MaxInjectedEntitiesHardCap;
-		}
-		return value;
+		return EntityInjectionAllocator.DefaultMaxInjectedEntities;
 	}
 
 	private static void ApplyGlobalInjectionLimit(int maxCount, int mentionCount, Hero contextHero, ref List<EntityMatch<Hero>> heroes, ref List<EntityMatch<Settlement>> settlements, ref List<EntityMatch<Clan>> clans, ref List<EntityMatch<Kingdom>> kingdoms)
 	{
-		maxCount = ClampMaxInjectedEntities(maxCount);
+		maxCount = EntityInjectionAllocator.ClampMaxInjectedEntities(maxCount);
 		mentionCount = Math.Max(0, mentionCount);
 		CampaignVec2 contextPosition = CampaignVec2.Invalid;
 		bool hasContextPosition = TryResolveHeroCampaignPosition(contextHero, out contextPosition);
@@ -591,275 +683,12 @@ public static class WorldEntityRetrievalService
 		AddGlobalLimitItems(candidates, "settlement", 1, settlements);
 		AddGlobalLimitItems(candidates, "clan", 2, clans);
 		AddGlobalLimitItems(candidates, "kingdom", 3, kingdoms);
-		List<GlobalEntityCandidate> selected = SelectGlobalInjectionCandidates(candidates, maxCount, mentionCount, out var allocationSummary);
+		List<GlobalEntityCandidate> selected = EntityInjectionAllocator.Select(candidates, maxCount, mentionCount, out var allocationSummary);
 		heroes = ExtractGlobalLimitMatches<Hero>(selected, "hero");
 		settlements = ExtractGlobalLimitMatches<Settlement>(selected, "settlement");
 		clans = ExtractGlobalLimitMatches<Clan>(selected, "clan");
 		kingdoms = ExtractGlobalLimitMatches<Kingdom>(selected, "kingdom");
 		Logger.Log("WorldEntityRetrieval", allocationSummary);
-	}
-
-	private static List<GlobalEntityCandidate> SelectGlobalInjectionCandidates(List<GlobalEntityCandidate> candidates, int maxCount, int mentionCount, out string allocationSummary)
-	{
-		List<GlobalEntityCandidate> result = new List<GlobalEntityCandidate>();
-		HashSet<string> selectedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		List<GlobalEntityCandidate> candidateList = (candidates ?? new List<GlobalEntityCandidate>())
-			.Where((GlobalEntityCandidate x) => x != null && !string.IsNullOrWhiteSpace(x.Key))
-			.ToList();
-		HashSet<int> ambiguousPersonNamePriorities = FindAmbiguousPersonNamePriorities(candidateList);
-		List<EntityScopeConstraint> scopeConstraints = BuildEntityScopeConstraints(candidateList, ambiguousPersonNamePriorities);
-		int scopeBoostedHeroes = ApplyHeroScopePriorities(candidateList, ambiguousPersonNamePriorities, scopeConstraints);
-		int distanceBoostedHeroes = ApplyHeroDistanceBonuses(candidateList, ambiguousPersonNamePriorities);
-		Dictionary<int, List<GlobalEntityCandidate>> rankedByMention = candidateList
-			.GroupBy((GlobalEntityCandidate x) => x.MentionPriority)
-			.ToDictionary(
-				(IGrouping<int, GlobalEntityCandidate> x) => x.Key,
-				(IGrouping<int, GlobalEntityCandidate> x) => x
-					.OrderByDescending((GlobalEntityCandidate y) => y.HeroScopeScore)
-					.ThenByDescending((GlobalEntityCandidate y) => y.FinalScore)
-					.ThenByDescending((GlobalEntityCandidate y) => y.Score)
-					.ThenByDescending((GlobalEntityCandidate y) => y.ExactNameMatch)
-					.ThenBy((GlobalEntityCandidate y) => y.TypePriority)
-					.ThenBy((GlobalEntityCandidate y) => y.Name ?? "", StringComparer.OrdinalIgnoreCase)
-					.ThenBy((GlobalEntityCandidate y) => y.Key ?? "", StringComparer.OrdinalIgnoreCase)
-					.ToList());
-		List<int> mentionPriorities = new List<int>();
-		HashSet<int> knownPriorities = new HashSet<int>();
-		for (int i = 0; i < mentionCount; i++)
-		{
-			mentionPriorities.Add(i);
-			knownPriorities.Add(i);
-		}
-		foreach (int priority in rankedByMention.Keys.OrderBy((int x) => x))
-		{
-			if (knownPriorities.Add(priority))
-			{
-				mentionPriorities.Add(priority);
-			}
-		}
-		int primarySelected = 0;
-		int primaryCollisionFallbacks = 0;
-		List<string> assignments = new List<string>();
-		foreach (int priority in mentionPriorities)
-		{
-			if (result.Count >= maxCount)
-			{
-				break;
-			}
-			if (!rankedByMention.TryGetValue(priority, out var ranked) || ranked == null || ranked.Count == 0)
-			{
-				continue;
-			}
-			if (TryAddFirstUniqueGlobalCandidate(result, selectedKeys, ranked, out var selectedRank))
-			{
-				primarySelected++;
-				if (selectedRank > 0)
-				{
-					primaryCollisionFallbacks++;
-				}
-				GlobalEntityCandidate selected = result[result.Count - 1];
-				string scopeDetail = selected.HeroScopeScore > 0 ? ("#scope=" + selected.HeroScopeScore + ":" + PreviewWorldEntityLogValue(selected.HeroScopeEvidence, 40)) : "";
-				string distanceDetail = selected.HeroDistanceBonus > 0f ? ("#distance=" + selected.HeroDistance.ToString("0.0", CultureInfo.InvariantCulture) + ":+" + selected.HeroDistanceBonus.ToString("0.000", CultureInfo.InvariantCulture) + ":final=" + selected.FinalScore.ToString("0.000", CultureInfo.InvariantCulture)) : "";
-				assignments.Add((priority + 1) + ":" + PreviewWorldEntityLogValue(selected.Mention, 30) + "->" + selected.Type + ":" + PreviewWorldEntityLogValue(selected.Name, 30) + "@" + (selectedRank + 1) + scopeDetail + distanceDetail);
-			}
-		}
-		bool allowSecondary = maxCount > mentionCount;
-		int secondarySelected = 0;
-		if (allowSecondary && result.Count < maxCount)
-		{
-			foreach (int priority in mentionPriorities)
-			{
-				if (result.Count >= maxCount)
-				{
-					break;
-				}
-				if (!rankedByMention.TryGetValue(priority, out var ranked) || ranked == null || ranked.Count == 0)
-				{
-					continue;
-				}
-				int addedForMention = 0;
-				foreach (GlobalEntityCandidate candidate in ranked)
-				{
-					if (result.Count >= maxCount || addedForMention >= MaxSecondaryMatchesPerMention)
-					{
-						break;
-					}
-					if (candidate == null || string.IsNullOrWhiteSpace(candidate.Key) || !selectedKeys.Add(candidate.Key))
-					{
-						continue;
-					}
-					result.Add(candidate);
-					addedForMention++;
-					secondarySelected++;
-				}
-			}
-		}
-		allocationSummary = "[WorldEntityPerf] noun_allocation nouns=" + mentionCount + " maxInject=" + maxCount + " candidates=" + (candidates?.Count ?? 0) + " ambiguousPersonNouns=" + ambiguousPersonNamePriorities.Count + " scopeConstraints=" + scopeConstraints.Count + " scopeBoostedHeroes=" + scopeBoostedHeroes + " distanceBoostedHeroes=" + distanceBoostedHeroes + " primary=" + primarySelected + " collisionFallbacks=" + primaryCollisionFallbacks + " secondary=" + secondarySelected + " allowSecondary=" + allowSecondary + " selected=" + result.Count + " assignments=" + (assignments.Count == 0 ? "(none)" : string.Join("|", assignments));
-		return result;
-	}
-
-	private static HashSet<int> FindAmbiguousPersonNamePriorities(IEnumerable<GlobalEntityCandidate> candidates)
-	{
-		HashSet<int> result = new HashSet<int>();
-		foreach (IGrouping<int, GlobalEntityCandidate> group in (candidates ?? Enumerable.Empty<GlobalEntityCandidate>()).Where((GlobalEntityCandidate x) => x != null).GroupBy((GlobalEntityCandidate x) => x.MentionPriority))
-		{
-			List<GlobalEntityCandidate> heroCandidates = group
-				.Where((GlobalEntityCandidate x) => string.Equals(x.Type, "hero", StringComparison.OrdinalIgnoreCase))
-				.GroupBy((GlobalEntityCandidate x) => x.Key ?? "", StringComparer.OrdinalIgnoreCase)
-				.Select((IGrouping<string, GlobalEntityCandidate> x) => x.OrderByDescending((GlobalEntityCandidate y) => y.Score).First())
-				.ToList();
-			if (heroCandidates.Count < 2)
-			{
-				continue;
-			}
-			float bestHeroScore = heroCandidates.Max((GlobalEntityCandidate x) => x.Score);
-			bool hasExactHeroName = heroCandidates.Any((GlobalEntityCandidate x) => x.ExactNameMatch);
-			bool hasCompetingExactNonHero = group.Any((GlobalEntityCandidate x) => !string.Equals(x.Type, "hero", StringComparison.OrdinalIgnoreCase) && x.ExactNameMatch && x.Score >= bestHeroScore - 0.0001f);
-			float bestNonHeroScore = group.Where((GlobalEntityCandidate x) => !string.Equals(x.Type, "hero", StringComparison.OrdinalIgnoreCase)).Select((GlobalEntityCandidate x) => x.Score).DefaultIfEmpty(0f).Max();
-			bool stronglyHeroShaped = bestHeroScore >= 0.9f && bestHeroScore > bestNonHeroScore + 0.05f;
-			if (!hasCompetingExactNonHero && (hasExactHeroName || stronglyHeroShaped))
-			{
-				result.Add(group.Key);
-			}
-		}
-		return result;
-	}
-
-	private static List<EntityScopeConstraint> BuildEntityScopeConstraints(IEnumerable<GlobalEntityCandidate> candidates, HashSet<int> personNamePriorities)
-	{
-		List<EntityScopeConstraint> result = new List<EntityScopeConstraint>();
-		foreach (IGrouping<int, GlobalEntityCandidate> group in (candidates ?? Enumerable.Empty<GlobalEntityCandidate>())
-			.Where((GlobalEntityCandidate x) => x != null && (personNamePriorities == null || !personNamePriorities.Contains(x.MentionPriority)))
-			.GroupBy((GlobalEntityCandidate x) => x.MentionPriority))
-		{
-			GlobalEntityCandidate selected = group
-				.Where((GlobalEntityCandidate x) => (string.Equals(x.Type, "clan", StringComparison.OrdinalIgnoreCase) || string.Equals(x.Type, "kingdom", StringComparison.OrdinalIgnoreCase)) && (x.ExactNameMatch || x.Score >= 0.999f))
-				.OrderByDescending((GlobalEntityCandidate x) => x.Score)
-				.ThenByDescending((GlobalEntityCandidate x) => x.ExactNameMatch)
-				.ThenBy((GlobalEntityCandidate x) => x.TypePriority)
-				.ThenBy((GlobalEntityCandidate x) => x.Name ?? "", StringComparer.OrdinalIgnoreCase)
-				.FirstOrDefault();
-			if (selected == null)
-			{
-				continue;
-			}
-			if (string.Equals(selected.Type, "clan", StringComparison.OrdinalIgnoreCase))
-			{
-				if (!string.IsNullOrWhiteSpace(selected.ScopeClanId))
-				{
-					result.Add(new EntityScopeConstraint
-					{
-						ClanId = selected.ScopeClanId,
-						MentionPriority = selected.MentionPriority,
-						Name = selected.Name ?? ""
-					});
-				}
-				continue;
-			}
-			if (!string.IsNullOrWhiteSpace(selected.ScopeKingdomId))
-			{
-				result.Add(new EntityScopeConstraint
-				{
-					KingdomId = selected.ScopeKingdomId,
-					MentionPriority = selected.MentionPriority,
-					Name = selected.Name ?? ""
-				});
-			}
-		}
-		return result;
-	}
-
-	private static int ApplyHeroScopePriorities(IEnumerable<GlobalEntityCandidate> candidates, HashSet<int> personNamePriorities, IEnumerable<EntityScopeConstraint> scopeConstraints)
-	{
-		if (personNamePriorities == null || personNamePriorities.Count == 0)
-		{
-			return 0;
-		}
-		List<EntityScopeConstraint> scopes = (scopeConstraints ?? Enumerable.Empty<EntityScopeConstraint>()).Where((EntityScopeConstraint x) => x != null).ToList();
-		if (scopes.Count == 0)
-		{
-			return 0;
-		}
-		int boosted = 0;
-		foreach (GlobalEntityCandidate candidate in candidates ?? Enumerable.Empty<GlobalEntityCandidate>())
-		{
-			if (candidate == null || !personNamePriorities.Contains(candidate.MentionPriority) || !string.Equals(candidate.Type, "hero", StringComparison.OrdinalIgnoreCase))
-			{
-				continue;
-			}
-			int score = 0;
-			List<string> evidence = new List<string>();
-			foreach (EntityScopeConstraint scope in scopes)
-			{
-				if (scope.MentionPriority == candidate.MentionPriority)
-				{
-					continue;
-				}
-				int priorityBonus = Math.Max(0, 100 - Math.Min(100, Math.Max(0, scope.MentionPriority)));
-				if (!string.IsNullOrWhiteSpace(scope.ClanId) && string.Equals(candidate.HeroClanId, scope.ClanId, StringComparison.OrdinalIgnoreCase))
-				{
-					score += 10000 + priorityBonus;
-					evidence.Add("家族:" + scope.Name);
-					continue;
-				}
-				if (!string.IsNullOrWhiteSpace(scope.KingdomId) && string.Equals(candidate.HeroKingdomId, scope.KingdomId, StringComparison.OrdinalIgnoreCase))
-				{
-					score += 1000 + priorityBonus;
-					evidence.Add("王国:" + scope.Name);
-				}
-			}
-			if (score <= 0)
-			{
-				continue;
-			}
-			candidate.HeroScopeScore = score;
-			candidate.HeroScopeEvidence = string.Join("+", evidence.Distinct(StringComparer.OrdinalIgnoreCase));
-			boosted++;
-		}
-		return boosted;
-	}
-
-	private static int ApplyHeroDistanceBonuses(IEnumerable<GlobalEntityCandidate> candidates, HashSet<int> personNamePriorities)
-	{
-		int boosted = 0;
-		foreach (GlobalEntityCandidate candidate in candidates ?? Enumerable.Empty<GlobalEntityCandidate>())
-		{
-			if (candidate == null)
-			{
-				continue;
-			}
-			candidate.FinalScore = candidate.Score;
-			if (personNamePriorities == null || !personNamePriorities.Contains(candidate.MentionPriority) || !string.Equals(candidate.Type, "hero", StringComparison.OrdinalIgnoreCase) || candidate.HeroDistanceBonus <= 0f)
-			{
-				candidate.HeroDistanceBonus = 0f;
-				continue;
-			}
-			candidate.HeroDistanceBonus = Math.Min(MaxHeroProximityBonus, candidate.HeroDistanceBonus);
-			candidate.FinalScore = candidate.Score + candidate.HeroDistanceBonus;
-			boosted++;
-		}
-		return boosted;
-	}
-
-	private static bool TryAddFirstUniqueGlobalCandidate(List<GlobalEntityCandidate> result, HashSet<string> selectedKeys, List<GlobalEntityCandidate> ranked, out int selectedRank)
-	{
-		selectedRank = -1;
-		if (result == null || selectedKeys == null || ranked == null)
-		{
-			return false;
-		}
-		for (int i = 0; i < ranked.Count; i++)
-		{
-			GlobalEntityCandidate candidate = ranked[i];
-			if (candidate == null || string.IsNullOrWhiteSpace(candidate.Key) || !selectedKeys.Add(candidate.Key))
-			{
-				continue;
-			}
-			result.Add(candidate);
-			selectedRank = i;
-			return true;
-		}
-		return false;
 	}
 
 	private static void AddGlobalLimitItems<T>(List<GlobalEntityCandidate> target, string type, int typePriority, IEnumerable<EntityMatch<T>> matches, CampaignVec2? contextPosition = null) where T : class
@@ -889,11 +718,23 @@ public static class WorldEntityRetrievalService
 				TypePriority = typePriority,
 				Score = match.Score,
 				FinalScore = match.Score,
-				ExactNameMatch = IsExactEntityNameMatch(match.Mention, match.Name),
+				ExactNameMatch = EntityNameMatcher.IsExactNameMatch(match.Mention, match.Name),
 				Match = match
 			};
-			PopulateGlobalEntityScopeIds(candidate, match.Value);
-			PopulateGlobalEntityDistanceMetadata(candidate, match.Value as Hero, contextPosition);
+			if (match.Value is DetachedEntityCandidate detached)
+			{
+				candidate.HeroClanId = detached.HeroClanId;
+				candidate.HeroKingdomId = detached.HeroKingdomId;
+				candidate.ScopeClanId = detached.ScopeClanId;
+				candidate.ScopeKingdomId = detached.ScopeKingdomId;
+				candidate.HeroDistance = detached.HeroDistance;
+				candidate.HeroDistanceBonus = detached.HeroDistanceBonus;
+			}
+			else
+			{
+				PopulateGlobalEntityScopeIds(candidate, match.Value);
+				PopulateGlobalEntityDistanceMetadata(candidate, match.Value as Hero, contextPosition);
+			}
 			target.Add(candidate);
 		}
 	}
@@ -907,12 +748,13 @@ public static class WorldEntityRetrievalService
 		try
 		{
 			float distance = heroPosition.Distance(contextPosition.Value);
-			if (float.IsNaN(distance) || float.IsInfinity(distance) || distance < 0f || distance >= float.MaxValue * 0.5f)
+			float? bonus = EntityInjectionAllocator.ComputeDistanceBonus(distance);
+			if (!bonus.HasValue)
 			{
 				return;
 			}
 			candidate.HeroDistance = distance;
-			candidate.HeroDistanceBonus = MaxHeroProximityBonus * (float)Math.Exp(0f - distance / HeroProximityDecayDistance);
+			candidate.HeroDistanceBonus = bonus.Value;
 		}
 		catch
 		{
@@ -1013,12 +855,6 @@ public static class WorldEntityRetrievalService
 		return result;
 	}
 
-	private static bool IsExactEntityNameMatch(string mention, string name)
-	{
-		string normalizedMention = NormalizeFuzzyText(mention);
-		return !string.IsNullOrWhiteSpace(normalizedMention) && string.Equals(normalizedMention, NormalizeFuzzyText(name), StringComparison.OrdinalIgnoreCase);
-	}
-
 	private static List<EntityMatch<T>> ConcatEntityMatchCandidates<T>(IEnumerable<EntityMatch<T>> existingMatches, IEnumerable<EntityMatch<T>> additionalMatches) where T : class
 	{
 		List<EntityMatch<T>> result = new List<EntityMatch<T>>();
@@ -1086,12 +922,11 @@ public static class WorldEntityRetrievalService
 		existing.Mention = mergedMention;
 	}
 
-	private static List<EntityMatch<Hero>> FindRulerTitleMatches(IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, IEnumerable<Kingdom> kingdoms, string source, WorldEntityRetrievalBudget budget)
+	private static List<EntityMatch<DetachedEntityCandidate>> FindRulerTitleMatches(IEnumerable<string> mentions, Dictionary<string, int> mentionPriority, List<RulerTitleCandidate> candidates, string source, WorldEntityRetrievalBudget budget)
 	{
 		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.FindRulerTitleMatches");
 		Stopwatch sw = Stopwatch.StartNew();
-		List<RulerTitleCandidate> candidates = BuildRulerTitleCandidates(kingdoms);
-		List<EntityMatch<Hero>> result = new List<EntityMatch<Hero>>();
+		List<EntityMatch<DetachedEntityCandidate>> result = new List<EntityMatch<DetachedEntityCandidate>>();
 		List<string> mentionList = (mentions ?? Enumerable.Empty<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
 		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] ruler_title_start source=" + (source ?? "") + " mentions=" + mentionList.Count + " candidates=" + candidates.Count + " " + FormatBudgetForLog(budget));
 		foreach (string mention in mentionList)
@@ -1101,12 +936,12 @@ public static class WorldEntityRetrievalService
 				LogWorldEntityBudgetStop("ruler_title", "hero", mention, 0, candidates.Count, result.Count, budget);
 				break;
 			}
-			string normalizedMention = NormalizeFuzzyText(mention);
+			string normalizedMention = EntityNameMatcher.Normalize(mention);
 			int longestContainedTitleLength = GetLongestContainedRulerTitleLength(normalizedMention, candidates);
 			List<RulerTitleScoredMatch> scored = new List<RulerTitleScoredMatch>();
 			foreach (RulerTitleCandidate candidate in candidates)
 			{
-				string normalizedTitle = NormalizeFuzzyText(candidate?.Title);
+				string normalizedTitle = EntityNameMatcher.Normalize(candidate?.Title);
 				bool directlyContainsTitle = RawTextContainsEntityPhrase(mention, candidate?.Title);
 				if (directlyContainsTitle && IsRulerTitleShadowedByLongerContainedTitle(normalizedMention, normalizedTitle, longestContainedTitleLength, candidates))
 				{
@@ -1148,22 +983,22 @@ public static class WorldEntityRetrievalService
 			foreach (RulerTitleScoredMatch selectedMatch in selected)
 			{
 				RulerTitleCandidate candidate = selectedMatch.Candidate;
-				Hero leader = candidate?.Leader;
+				DetachedEntityCandidate leader = candidate?.Leader;
 				if (leader == null)
 				{
 					continue;
 				}
-				AddOrUpdateEntityMatch(result, new EntityMatch<Hero>
+				AddOrUpdateEntityMatch(result, new EntityMatch<DetachedEntityCandidate>
 				{
 					Value = leader,
-					Id = "hero:" + SafeStringId(leader.StringId),
-					Name = SafeName(leader.Name, leader.StringId ?? "Hero"),
+					Id = leader.Id,
+					Name = leader.Name,
 					Mention = mention,
 					Score = selectedMatch.Score,
-					MentionPriority = GetMentionPriority(mentionPriority, mention),
-					RulerTitleKey = NormalizeFuzzyText(candidate.Title)
+					MentionPriority = EntityMentionList.GetPriority(mentionPriority, mention),
+					RulerTitleKey = EntityNameMatcher.Normalize(candidate.Title)
 				});
-				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=" + (source ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 100) + " title=" + PreviewWorldEntityLogValue(candidate.Title, 60) + " matchedAlias=" + PreviewWorldEntityLogValue(selectedMatch.MatchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + (leader.StringId ?? "") + " score=" + selectedMatch.Score.ToString("0.###", CultureInfo.InvariantCulture) + " ambiguity=" + ambiguityCount);
+				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=" + (source ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 100) + " title=" + EntityInjectionAllocator.PreviewLogValue(candidate.Title, 60) + " matchedAlias=" + EntityInjectionAllocator.PreviewLogValue(selectedMatch.MatchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + leader.Id + " score=" + selectedMatch.Score.ToString("0.###", CultureInfo.InvariantCulture) + " ambiguity=" + ambiguityCount);
 			}
 		}
 		SortEntityMatches(result);
@@ -1171,7 +1006,7 @@ public static class WorldEntityRetrievalService
 		return result;
 	}
 
-	private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string rawInput, IEnumerable<Kingdom> kingdoms, WorldEntityRetrievalBudget budget)
+	private static RawRulerTitleMatchResult FindRawRulerTitleMatches(string rawInput, List<RulerTitleCandidate> candidates, WorldEntityRetrievalBudget budget)
 	{
 		using FreezeWatchdog.ScopeToken freezeScope = FreezeWatchdog.Scope("WorldEntityRetrieval.FindRawRulerTitleMatches");
 		Stopwatch sw = Stopwatch.StartNew();
@@ -1181,8 +1016,7 @@ public static class WorldEntityRetrievalService
 		{
 			return result;
 		}
-		List<RulerTitleCandidate> candidates = BuildRulerTitleCandidates(kingdoms);
-		Dictionary<string, List<RulerTitleCandidate>> titleGroups = candidates.Where((RulerTitleCandidate x) => x != null && !string.IsNullOrWhiteSpace(x.Title)).GroupBy((RulerTitleCandidate x) => NormalizeFuzzyText(x.Title), StringComparer.OrdinalIgnoreCase).Where((IGrouping<string, RulerTitleCandidate> x) => !string.IsNullOrWhiteSpace(x.Key)).ToDictionary((IGrouping<string, RulerTitleCandidate> x) => x.Key, (IGrouping<string, RulerTitleCandidate> x) => x.ToList(), StringComparer.OrdinalIgnoreCase);
+		Dictionary<string, List<RulerTitleCandidate>> titleGroups = candidates.Where((RulerTitleCandidate x) => x != null && !string.IsNullOrWhiteSpace(x.Title)).GroupBy((RulerTitleCandidate x) => EntityNameMatcher.Normalize(x.Title), StringComparer.OrdinalIgnoreCase).Where((IGrouping<string, RulerTitleCandidate> x) => !string.IsNullOrWhiteSpace(x.Key)).ToDictionary((IGrouping<string, RulerTitleCandidate> x) => x.Key, (IGrouping<string, RulerTitleCandidate> x) => x.ToList(), StringComparer.OrdinalIgnoreCase);
 		HashSet<string> matchedTitleKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (KeyValuePair<string, List<RulerTitleCandidate>> pair in titleGroups)
 		{
@@ -1225,23 +1059,23 @@ public static class WorldEntityRetrievalService
 			int ambiguityCount = selected.Count;
 			foreach (RulerTitleCandidate candidate in selected)
 			{
-				Hero leader = candidate?.Leader;
+				DetachedEntityCandidate leader = candidate?.Leader;
 				if (leader == null)
 				{
 					continue;
 				}
 				string matchedAlias = hasQualifiedCandidates && qualifiedAliases.TryGetValue(candidate, out var alias) ? alias : candidate.Title;
-				AddOrUpdateEntityMatch(result.Matches, new EntityMatch<Hero>
+				AddOrUpdateEntityMatch(result.Matches, new EntityMatch<DetachedEntityCandidate>
 				{
 					Value = leader,
-					Id = "hero:" + SafeStringId(leader.StringId),
-					Name = SafeName(leader.Name, leader.StringId ?? "Hero"),
+					Id = leader.Id,
+					Name = leader.Name,
 					Mention = matchedAlias,
 					Score = 1f,
 					MentionPriority = 0,
 					RulerTitleKey = titleKey
 				});
-				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=raw_input mention=" + PreviewWorldEntityLogValue(matchedAlias, 100) + " title=" + PreviewWorldEntityLogValue(candidate.Title, 60) + " matchedAlias=" + PreviewWorldEntityLogValue(matchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + (leader.StringId ?? "") + " score=1 ambiguity=" + ambiguityCount);
+				Logger.Log("WorldEntityRetrieval", "ruler_title_match source=raw_input mention=" + EntityInjectionAllocator.PreviewLogValue(matchedAlias, 100) + " title=" + EntityInjectionAllocator.PreviewLogValue(candidate.Title, 60) + " matchedAlias=" + EntityInjectionAllocator.PreviewLogValue(matchedAlias, 100) + " kingdom=" + candidate.KingdomId + " hero=" + leader.Id + " score=1 ambiguity=" + ambiguityCount);
 			}
 		}
 		SortEntityMatches(result.Matches);
@@ -1255,12 +1089,12 @@ public static class WorldEntityRetrievalService
 		{
 			return "";
 		}
-		string titleKey = NormalizeFuzzyText(candidate.Title);
+		string titleKey = EntityNameMatcher.Normalize(candidate.Title);
 		string bestAlias = "";
 		int bestLength = 0;
 		foreach (string alias in candidate.Aliases ?? new List<string>())
 		{
-			string aliasKey = NormalizeFuzzyText(alias);
+			string aliasKey = EntityNameMatcher.Normalize(alias);
 			if (string.IsNullOrWhiteSpace(aliasKey) || string.Equals(aliasKey, titleKey, StringComparison.OrdinalIgnoreCase) || !RawTextContainsEntityPhrase(rawInput, alias))
 			{
 				continue;
@@ -1287,7 +1121,7 @@ public static class WorldEntityRetrievalService
 		}
 		string shortTitle = shortGroup.FirstOrDefault()?.Title ?? "";
 		List<string> longerTitles = longerKeys.Select((string key) => titleGroups[key].FirstOrDefault()?.Title ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		if (shortTitle.Any(IsCjk) || longerTitles.Any((string x) => x.Any(IsCjk)))
+		if (shortTitle.Any(EntityNameMatcher.IsCjk) || longerTitles.Any((string x) => x.Any(EntityNameMatcher.IsCjk)))
 		{
 			return true;
 		}
@@ -1312,10 +1146,10 @@ public static class WorldEntityRetrievalService
 		{
 			return false;
 		}
-		if (value.Any(IsCjk))
+		if (value.Any(EntityNameMatcher.IsCjk))
 		{
-			string normalizedInput = NormalizeFuzzyText(input);
-			string normalizedValue = NormalizeFuzzyText(value);
+			string normalizedInput = EntityNameMatcher.Normalize(input);
+			string normalizedValue = EntityNameMatcher.Normalize(value);
 			return normalizedValue.Length >= 2 && normalizedInput.IndexOf(normalizedValue, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 		return FindRawEntityPhraseSpans(input, value).Count > 0;
@@ -1326,7 +1160,7 @@ public static class WorldEntityRetrievalService
 		List<Tuple<int, int>> result = new List<Tuple<int, int>>();
 		string input = rawInput ?? "";
 		string value = (phrase ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(value) || value.Any(IsCjk))
+		if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(value) || value.Any(EntityNameMatcher.IsCjk))
 		{
 			return result;
 		}
@@ -1352,7 +1186,7 @@ public static class WorldEntityRetrievalService
 		return result;
 	}
 
-	private static List<RulerTitleCandidate> BuildRulerTitleCandidates(IEnumerable<Kingdom> kingdoms)
+	private static List<RulerTitleCandidate> BuildRulerTitleCandidates(IEnumerable<Kingdom> kingdoms, Dictionary<DetachedEntityCandidate, Hero> liveHeroes)
 	{
 		List<RulerTitleCandidate> result = new List<RulerTitleCandidate>();
 		foreach (Kingdom kingdom in kingdoms ?? Enumerable.Empty<Kingdom>())
@@ -1388,16 +1222,24 @@ public static class WorldEntityRetrievalService
 					AddAlias(aliases, title + " " + qualifier);
 					AddAlias(aliases, title + " of " + qualifier);
 				}
+				DetachedEntityCandidate detachedLeader = new DetachedEntityCandidate
+				{
+					Id = "hero:" + SafeStringId(leader.StringId),
+					Name = SafeName(leader.Name, leader.StringId ?? "Hero")
+				};
 				result.Add(new RulerTitleCandidate
 				{
-					Kingdom = kingdom,
-					Leader = leader,
+					Leader = detachedLeader,
 					KingdomId = (kingdom.StringId ?? "").Trim(),
 					KingdomName = SafeTextOrEmpty(kingdom.Name),
 					Title = title,
 					Qualifiers = qualifiers,
 					Aliases = aliases
 				});
+				if (liveHeroes != null)
+				{
+					liveHeroes.Add(detachedLeader, leader);
+				}
 			}
 			catch
 			{
@@ -1415,7 +1257,7 @@ public static class WorldEntityRetrievalService
 		int longest = 0;
 		foreach (RulerTitleCandidate candidate in candidates ?? Enumerable.Empty<RulerTitleCandidate>())
 		{
-			string normalizedTitle = NormalizeFuzzyText(candidate?.Title);
+			string normalizedTitle = EntityNameMatcher.Normalize(candidate?.Title);
 			if (normalizedTitle.Length >= 2 && normalizedMention.IndexOf(normalizedTitle, StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				longest = Math.Max(longest, normalizedTitle.Length);
@@ -1432,7 +1274,7 @@ public static class WorldEntityRetrievalService
 		}
 		foreach (RulerTitleCandidate candidate in candidates ?? Enumerable.Empty<RulerTitleCandidate>())
 		{
-			string longerTitle = NormalizeFuzzyText(candidate?.Title);
+			string longerTitle = EntityNameMatcher.Normalize(candidate?.Title);
 			if (longerTitle.Length > normalizedTitle.Length && longerTitle.IndexOf(normalizedTitle, StringComparison.OrdinalIgnoreCase) >= 0 && normalizedMention.IndexOf(longerTitle, StringComparison.OrdinalIgnoreCase) >= 0)
 			{
 				return true;
@@ -1448,10 +1290,10 @@ public static class WorldEntityRetrievalService
 			return 0f;
 		}
 		float best = CalculateRulerTitlePhraseEvidenceScore(mention, candidate.Title);
-		string normalizedMention = NormalizeFuzzyText(mention);
+		string normalizedMention = EntityNameMatcher.Normalize(mention);
 		foreach (string qualifier in candidate.Qualifiers ?? new List<string>())
 		{
-			string normalizedQualifier = NormalizeFuzzyText(qualifier);
+			string normalizedQualifier = EntityNameMatcher.Normalize(qualifier);
 			if (normalizedQualifier.Length < 2 || !RawTextContainsEntityPhrase(mention, qualifier))
 			{
 				continue;
@@ -1468,17 +1310,17 @@ public static class WorldEntityRetrievalService
 		{
 			return 1f;
 		}
-		string normalizedValue = NormalizeFuzzyText(value);
-		string normalizedTitle = NormalizeFuzzyText(title);
+		string normalizedValue = EntityNameMatcher.Normalize(value);
+		string normalizedTitle = EntityNameMatcher.Normalize(title);
 		if (string.IsNullOrWhiteSpace(normalizedValue) || string.IsNullOrWhiteSpace(normalizedTitle))
 		{
 			return 0f;
 		}
-		if ((title ?? "").Any(IsCjk))
+		if ((title ?? "").Any(EntityNameMatcher.IsCjk))
 		{
-			return CalculateFuzzyScore(normalizedValue, normalizedTitle);
+			return EntityNameMatcher.Score(normalizedValue, normalizedTitle);
 		}
-		int distance = LevenshteinDistance(normalizedValue, normalizedTitle);
+		int distance = EntityNameMatcher.LevenshteinDistance(normalizedValue, normalizedTitle);
 		return Math.Max(0f, Math.Min(1f, 1f - ((float)distance / Math.Max(normalizedValue.Length, normalizedTitle.Length))));
 	}
 
@@ -1488,7 +1330,7 @@ public static class WorldEntityRetrievalService
 		float best = 0f;
 		foreach (string alias in candidate?.Aliases ?? new List<string>())
 		{
-			float score = CalculateFuzzyScore(mention, alias);
+			float score = EntityNameMatcher.Score(mention, alias);
 			if (score > best)
 			{
 				best = score;
@@ -1500,14 +1342,14 @@ public static class WorldEntityRetrievalService
 
 	private static bool MentionContainsRulerTitleQualifier(string mention, RulerTitleCandidate candidate)
 	{
-		string normalizedMention = NormalizeFuzzyText(mention);
+		string normalizedMention = EntityNameMatcher.Normalize(mention);
 		if (string.IsNullOrWhiteSpace(normalizedMention) || candidate == null)
 		{
 			return false;
 		}
 		foreach (string qualifier in candidate.Qualifiers ?? new List<string>())
 		{
-			string normalizedQualifier = NormalizeFuzzyText(qualifier);
+			string normalizedQualifier = EntityNameMatcher.Normalize(qualifier);
 			if (normalizedQualifier.Length >= 2 && RawTextContainsEntityPhrase(mention, qualifier))
 			{
 				return true;
@@ -1530,7 +1372,7 @@ public static class WorldEntityRetrievalService
 		if (IsHardBudgetExceeded(budget))
 		{
 			LogWorldEntityBudgetStop("match_category_before_scoring", category, "", 0, snapshots.Count, selected.Count, budget);
-			return selected.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenByDescending((EntityMatch<T> x) => IsExactEntityNameMatch(x.Mention, x.Name)).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+			return selected.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenByDescending((EntityMatch<T> x) => EntityNameMatcher.IsExactNameMatch(x.Mention, x.Name)).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
 		}
 		foreach (string mentionRaw in mentionList)
 		{
@@ -1545,16 +1387,16 @@ public static class WorldEntityRetrievalService
 			{
 				continue;
 			}
-			int priority = GetMentionPriority(mentionPriority, mention);
-			FuzzyTextProfile mentionProfile = BuildFuzzyTextProfile(mention);
+			int priority = EntityMentionList.GetPriority(mentionPriority, mention);
+			FuzzyTextProfile mentionProfile = EntityNameMatcher.BuildProfile(mention);
 			List<EntityMatch<T>> scored = new List<EntityMatch<T>>();
 			int scanned = 0;
 			bool budgetStopped = false;
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_start category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " candidates=" + snapshots.Count);
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_start category=" + (category ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 80) + " candidates=" + snapshots.Count);
 			foreach (EntityCandidateSnapshot<T> candidate in snapshots)
 			{
 				scanned++;
-				float score = CalculateBestScore(mentionProfile, candidate.Aliases);
+				float score = EntityNameMatcher.BestScore(mentionProfile, candidate.Aliases);
 				if (score >= MatchThreshold)
 				{
 					scored.Add(new EntityMatch<T>
@@ -1569,7 +1411,7 @@ public static class WorldEntityRetrievalService
 				}
 				if (snapshots.Count >= EntityRetrievalProgressLogInterval && scanned % EntityRetrievalProgressLogInterval == 0)
 				{
-					Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_scan_progress category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + snapshots.Count + " scored=" + scored.Count + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2) + " " + FormatBudgetForLog(budget));
+					Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_scan_progress category=" + (category ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 80) + " scanned=" + scanned + "/" + snapshots.Count + " scored=" + scored.Count + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2) + " " + FormatBudgetForLog(budget));
 				}
 				if (budget != null && scanned % EntityRetrievalBudgetCheckInterval == 0)
 				{
@@ -1584,7 +1426,7 @@ public static class WorldEntityRetrievalService
 			}
 			if (scored.Count == 0)
 			{
-				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=0 selectedTotal=" + selected.Count + " scanned=" + scanned + "/" + snapshots.Count + " budgetStopped=" + budgetStopped + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+				Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 80) + " scored=0 selectedTotal=" + selected.Count + " scanned=" + scanned + "/" + snapshots.Count + " budgetStopped=" + budgetStopped + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
 				if (budgetStopped)
 				{
 					break;
@@ -1592,7 +1434,7 @@ public static class WorldEntityRetrievalService
 				continue;
 			}
 			float best = scored.Max((EntityMatch<T> x) => x.Score);
-			foreach (EntityMatch<T> match in scored.OrderByDescending((EntityMatch<T> x) => x.Score).ThenByDescending((EntityMatch<T> x) => IsExactEntityNameMatch(x.Mention, x.Name)).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).Take(candidateLimit))
+			foreach (EntityMatch<T> match in scored.OrderByDescending((EntityMatch<T> x) => x.Score).ThenByDescending((EntityMatch<T> x) => EntityNameMatcher.IsExactNameMatch(x.Mention, x.Name)).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).Take(candidateLimit))
 			{
 				if (match == null || match.Value == null || string.IsNullOrWhiteSpace(string.IsNullOrWhiteSpace(match.Id) ? match.Name : match.Id))
 				{
@@ -1600,13 +1442,13 @@ public static class WorldEntityRetrievalService
 				}
 				selected.Add(match);
 			}
-			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scored=" + scored.Count + " selectedTotal=" + selected.Count + " best=" + best.ToString("0.###", CultureInfo.InvariantCulture) + " scanned=" + scanned + "/" + snapshots.Count + " budgetStopped=" + budgetStopped + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
+			Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_mention_done category=" + (category ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 80) + " scored=" + scored.Count + " selectedTotal=" + selected.Count + " best=" + best.ToString("0.###", CultureInfo.InvariantCulture) + " scanned=" + scanned + "/" + snapshots.Count + " budgetStopped=" + budgetStopped + " ms=" + Math.Round(mentionSw.Elapsed.TotalMilliseconds, 2));
 			if (budgetStopped)
 			{
 				break;
 			}
 		}
-		List<EntityMatch<T>> result = selected.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenByDescending((EntityMatch<T> x) => IsExactEntityNameMatch(x.Mention, x.Name)).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
+		List<EntityMatch<T>> result = selected.OrderBy((EntityMatch<T> x) => x.MentionPriority).ThenByDescending((EntityMatch<T> x) => x.Score).ThenByDescending((EntityMatch<T> x) => EntityNameMatcher.IsExactNameMatch(x.Mention, x.Name)).ThenBy((EntityMatch<T> x) => x.Name, StringComparer.OrdinalIgnoreCase).ToList();
 		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] match_category_done category=" + (category ?? "") + " result=" + result.Count + " ms=" + Math.Round(categorySw.Elapsed.TotalMilliseconds, 2) + " hardBudgetExceeded=" + (budget?.IsHardExceeded == true));
 		FreezeWatchdog.Mark("WorldEntityRetrieval.match_category_done", "category=" + (category ?? "") + " result=" + result.Count + " ms=" + Math.Round(categorySw.Elapsed.TotalMilliseconds, 2), immediate: true);
 		return result;
@@ -1634,11 +1476,11 @@ public static class WorldEntityRetrievalService
 				Value = candidate,
 				Id = SafeSelectorValue(idSelector, candidate),
 				Name = SafeSelectorValue(nameSelector, candidate),
-				Aliases = BuildAliasProfiles(SafeAliases(aliases, candidate))
+				Aliases = EntityNameMatcher.BuildAliasProfiles(SafeAliases(aliases, candidate))
 			};
 			if (snapshot.Aliases.Count == 0 && !string.IsNullOrWhiteSpace(snapshot.Name))
 			{
-				snapshot.Aliases.Add(BuildFuzzyTextProfile(snapshot.Name));
+				snapshot.Aliases.Add(EntityNameMatcher.BuildProfile(snapshot.Name));
 			}
 			aliasCount += snapshot.Aliases.Count;
 			snapshots.Add(snapshot);
@@ -1689,21 +1531,6 @@ public static class WorldEntityRetrievalService
 		return result;
 	}
 
-	private static List<FuzzyTextProfile> BuildAliasProfiles(IEnumerable<string> aliases)
-	{
-		List<FuzzyTextProfile> result = new List<FuzzyTextProfile>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (string alias in aliases ?? Enumerable.Empty<string>())
-		{
-			string text = (alias ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && seen.Add(text))
-			{
-				result.Add(BuildFuzzyTextProfile(text));
-			}
-		}
-		return result;
-	}
-
 	private static bool CanContinueWorldEntityMatch(string category, WorldEntityRetrievalBudget budget)
 	{
 		if (!IsHardBudgetExceeded(budget))
@@ -1725,13 +1552,13 @@ public static class WorldEntityRetrievalService
 		{
 			return;
 		}
-		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] soft_budget_exceeded phase=" + (phase ?? "") + " category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget));
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] soft_budget_exceeded phase=" + (phase ?? "") + " category=" + (category ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 80) + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget));
 		FreezeWatchdog.Mark("WorldEntityRetrieval.soft_budget_exceeded", "phase=" + (phase ?? "") + " category=" + (category ?? "") + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget), immediate: true);
 	}
 
 	private static void LogWorldEntityBudgetStop(string phase, string category, string mention, int scanned, int total, int selectedTotal, WorldEntityRetrievalBudget budget)
 	{
-		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] hard_budget_stop phase=" + (phase ?? "") + " category=" + (category ?? "") + " mention=" + PreviewWorldEntityLogValue(mention, 80) + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget));
+		Logger.Log("WorldEntityRetrieval", "[WorldEntityPerf] hard_budget_stop phase=" + (phase ?? "") + " category=" + (category ?? "") + " mention=" + EntityInjectionAllocator.PreviewLogValue(mention, 80) + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget));
 		if (budget == null || budget.TryMarkHardExceeded())
 		{
 			FreezeWatchdog.Mark("WorldEntityRetrieval.hard_budget_stop", "phase=" + (phase ?? "") + " category=" + (category ?? "") + " scanned=" + scanned + "/" + total + " selectedTotal=" + selectedTotal + " " + FormatBudgetForLog(budget), immediate: true);
@@ -1743,45 +1570,11 @@ public static class WorldEntityRetrievalService
 		return "budgetMs=" + (budget?.ElapsedMs ?? 0L) + "/" + EntityRetrievalHardBudgetMs + " softMs=" + EntityRetrievalSoftBudgetMs;
 	}
 
-	private static string PreviewWorldEntityLogValue(string value, int maxLen)
-	{
-		string text = (value ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (maxLen <= 0 || text.Length <= maxLen)
-		{
-			return text;
-		}
-		return text.Substring(0, maxLen) + "...";
-	}
-
-	private static int GetMentionPriority(Dictionary<string, int> mentionPriority, string mention)
-	{
-		if (mentionPriority != null && !string.IsNullOrWhiteSpace(mention) && mentionPriority.TryGetValue(mention.Trim(), out var value))
-		{
-			return value;
-		}
-		return int.MaxValue / 2;
-	}
-
-	private static float CalculateBestScore(string mention, IEnumerable<string> aliases)
-	{
-		return CalculateBestScore(BuildFuzzyTextProfile(mention), BuildAliasProfiles(aliases));
-	}
-
-	private static float CalculateBestScore(FuzzyTextProfile mention, IEnumerable<FuzzyTextProfile> aliases)
-	{
-		float best = 0f;
-		foreach (FuzzyTextProfile alias in aliases ?? Enumerable.Empty<FuzzyTextProfile>())
-		{
-			best = Math.Max(best, CalculateFuzzyScore(mention, alias));
-		}
-		return best;
-	}
-
 	public static float CalculateFuzzyScoreForExternal(string left, string right)
 	{
 		try
 		{
-			return CalculateFuzzyScore(left, right);
+			return EntityNameMatcher.Score(left, right);
 		}
 		catch
 		{
@@ -1796,7 +1589,7 @@ public static class WorldEntityRetrievalService
 			float best = 0f;
 			foreach (string alias in aliases ?? Enumerable.Empty<string>())
 			{
-				best = Math.Max(best, CalculateFuzzyScore(mention, alias));
+				best = Math.Max(best, EntityNameMatcher.Score(mention, alias));
 			}
 			return Math.Max(0f, Math.Min(1f, best));
 		}
@@ -1804,199 +1597,6 @@ public static class WorldEntityRetrievalService
 		{
 			return 0f;
 		}
-	}
-
-	private static float CalculateFuzzyScore(string left, string right)
-	{
-		return CalculateFuzzyScore(BuildFuzzyTextProfile(left), BuildFuzzyTextProfile(right));
-	}
-
-	private static float CalculateFuzzyScore(FuzzyTextProfile left, FuzzyTextProfile right)
-	{
-		string a = left?.Normalized ?? "";
-		string b = right?.Normalized ?? "";
-		if (string.IsNullOrWhiteSpace(a) || string.IsNullOrWhiteSpace(b))
-		{
-			return 0f;
-		}
-		if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase))
-		{
-			return 1f;
-		}
-		float best = 0f;
-		int minLen = Math.Min(a.Length, b.Length);
-		int maxLen = Math.Max(a.Length, b.Length);
-		if (minLen >= 2 && (a.Contains(b) || b.Contains(a)))
-		{
-			best = Math.Max(best, 0.86f + 0.12f * ((float)minLen / Math.Max(1, maxLen)));
-		}
-		if (minLen >= 3 && (a.StartsWith(b, StringComparison.OrdinalIgnoreCase) || b.StartsWith(a, StringComparison.OrdinalIgnoreCase)))
-		{
-			best = Math.Max(best, 0.82f + 0.1f * ((float)minLen / Math.Max(1, maxLen)));
-		}
-		int distance = LevenshteinDistance(a, b);
-		best = Math.Max(best, ShortCjkNearNameScore(a, b, distance));
-		float distanceScore = 1f - ((float)distance / Math.Max(1, maxLen));
-		best = Math.Max(best, distanceScore);
-		best = Math.Max(best, TokenOverlapScore(left, right));
-		return Math.Max(0f, Math.Min(1f, best));
-	}
-
-	private static FuzzyTextProfile BuildFuzzyTextProfile(string value)
-	{
-		string raw = (value ?? "").Trim();
-		return new FuzzyTextProfile
-		{
-			Raw = raw,
-			Normalized = NormalizeFuzzyText(raw),
-			Tokens = SplitTokens(raw)
-		};
-	}
-
-	private static string NormalizeFuzzyText(string value)
-	{
-		string text = (value ?? "").Trim().ToLowerInvariant();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		StringBuilder sb = new StringBuilder(text.Length);
-		foreach (char c in text)
-		{
-			if (char.IsLetterOrDigit(c) || IsCjk(c))
-			{
-				sb.Append(c);
-			}
-		}
-		return sb.ToString();
-	}
-
-	private static bool IsCjk(char c)
-	{
-		return (c >= 0x4e00 && c <= 0x9fff) || (c >= 0x3400 && c <= 0x4dbf) || (c >= 0xf900 && c <= 0xfaff);
-	}
-
-	private static float ShortCjkNearNameScore(string a, string b, int distance)
-	{
-		try
-		{
-			if (distance != 1 || string.IsNullOrWhiteSpace(a) || string.IsNullOrWhiteSpace(b))
-			{
-				return 0f;
-			}
-			int minLen = Math.Min(a.Length, b.Length);
-			int maxLen = Math.Max(a.Length, b.Length);
-			if (minLen < 3 || maxLen > 6 || !IsAllCjkText(a) || !IsAllCjkText(b))
-			{
-				return 0f;
-			}
-			if (a.Length == b.Length)
-			{
-				int same = 0;
-				for (int i = 0; i < a.Length; i++)
-				{
-					if (a[i] == b[i])
-					{
-						same++;
-					}
-				}
-				if (same >= minLen - 1)
-				{
-					return maxLen <= 3 ? 0.82f : 0.86f;
-				}
-			}
-			if (maxLen == minLen + 1 && IsOrderedSubsequence(a.Length <= b.Length ? a : b, a.Length <= b.Length ? b : a))
-			{
-				return 0.80f;
-			}
-		}
-		catch
-		{
-		}
-		return 0f;
-	}
-
-	private static bool IsAllCjkText(string value)
-	{
-		if (string.IsNullOrWhiteSpace(value))
-		{
-			return false;
-		}
-		foreach (char c in value)
-		{
-			if (!IsCjk(c))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private static bool IsOrderedSubsequence(string shortText, string longText)
-	{
-		if (string.IsNullOrWhiteSpace(shortText) || string.IsNullOrWhiteSpace(longText))
-		{
-			return false;
-		}
-		int j = 0;
-		for (int i = 0; i < longText.Length && j < shortText.Length; i++)
-		{
-			if (shortText[j] == longText[i])
-			{
-				j++;
-			}
-		}
-		return j == shortText.Length;
-	}
-
-	private static float TokenOverlapScore(string left, string right)
-	{
-		return TokenOverlapScore(BuildFuzzyTextProfile(left), BuildFuzzyTextProfile(right));
-	}
-
-	private static float TokenOverlapScore(FuzzyTextProfile left, FuzzyTextProfile right)
-	{
-		List<string> a = left?.Tokens ?? new List<string>();
-		List<string> b = right?.Tokens ?? new List<string>();
-		if (a.Count == 0 || b.Count == 0)
-		{
-			return 0f;
-		}
-		HashSet<string> setA = new HashSet<string>(a, StringComparer.OrdinalIgnoreCase);
-		HashSet<string> setB = new HashSet<string>(b, StringComparer.OrdinalIgnoreCase);
-		int intersection = setA.Count((string x) => setB.Contains(x));
-		int union = setA.Count + setB.Count - intersection;
-		return union <= 0 ? 0f : (0.65f + 0.25f * ((float)intersection / union));
-	}
-
-	private static List<string> SplitTokens(string value)
-	{
-		return Regex.Matches((value ?? "").ToLowerInvariant(), "[\\p{L}\\p{Nd}]+", RegexOptions.CultureInvariant).Cast<Match>().Select((Match x) => x.Value).Where((string x) => x.Length > 1).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
-
-	private static int LevenshteinDistance(string a, string b)
-	{
-		int n = a.Length;
-		int m = b.Length;
-		int[] previous = new int[m + 1];
-		int[] current = new int[m + 1];
-		for (int j = 0; j <= m; j++)
-		{
-			previous[j] = j;
-		}
-		for (int i = 1; i <= n; i++)
-		{
-			current[0] = i;
-			for (int j = 1; j <= m; j++)
-			{
-				int cost = a[i - 1] == b[j - 1] ? 0 : 1;
-				current[j] = Math.Min(Math.Min(current[j - 1] + 1, previous[j] + 1), previous[j - 1] + cost);
-			}
-			int[] temp = previous;
-			previous = current;
-			current = temp;
-		}
-		return previous[m];
 	}
 
 	private static IEnumerable<Hero> GetHeroCandidates()
@@ -3723,7 +3323,6 @@ public static class WorldEntityRetrievalService
 					}
 					VisiblePartyCandidate candidate = new VisiblePartyCandidate
 					{
-						Party = party,
 						Id = id,
 						Name = SafeName(party.Name, id),
 						Count = GetPartyMemberCount(party),

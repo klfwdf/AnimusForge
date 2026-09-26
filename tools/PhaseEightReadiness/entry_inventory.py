@@ -9,20 +9,31 @@ import sys
 from pathlib import Path
 
 RULES = {
-    "economy-reward-debt": ("RewardSystemBehavior*.cs",),
+    "knowledge-persona-profile": ("MyBehavior.Persona*.cs", "MyBehavior.PromotedPersonaGeneration.cs", "src/modules/AF.Module.Persona/**/*.cs"),
+    "economy-reward-debt": ("RewardSystemBehavior*.cs", "src/modules/AF.Module.Economy/**/*.cs"),
     "policy-political": ("PolicySystem/Core/CustomPolicyBehavior*.cs",),
     "settlement-siege-gccz-sets": ("SiegeAiInterventionBehavior*.cs",),
     "duel": ("DuelBehavior*.cs",),
-    "courier-proactive-issue": ("CourierDeliveryBehavior*.cs", "Refactor/Runtime/CourierInboundCompletion*.cs"),
-    "social-progression-reports": (
-        "PlayerNotorietyBehavior*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",
-        "AnimusForgeWeeklyReportMapNotification.cs", "WeeklyReportSchedulePolicy.cs",
-        "WeeklyReportTextHelper.cs", "TerminalWeeklyReportBrowserPopupVM.cs",
+    "courier-proactive-issue": (
+        "CourierDeliveryBehavior*.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior*.cs",
+        "Refactor/Runtime/CourierInboundCompletion*.cs",
     ),
-    "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
+    "social-progression-reports": (
+        "PlayerNotorietyBehavior*.cs", "src/modules/AF.Module.Social/**/*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",
+        "AnimusForgeWeeklyReportMapNotification.cs",
+        "src/modules/AF.Module.Weekly/**/*.cs", "TerminalWeeklyReportBrowserPopupVM.cs",
+    ),
+    "world-simulation-worldmap": (
+        "WarStats/AfWarStatsBehavior.cs",
+        "src/modules/AF.Module.Diplomacy/**/*.cs",
+        "src/modules/AF.Module.Kingdom/**/*.cs",
+        "src/modules/AF.Module.WorldMap/**/*.cs",
+    ),
     "ui-tts-external-integration": (
         "AnimusForgeTerminal*.cs", "Terminal*PopupVM.cs", "DevWeeklyReportPopup*.cs",
         "AnimusForgeApiOnboarding*.cs", "TerminalSettingsRegistry.cs", "DuelSettings.TerminalSave.cs",
+        "ModOnboardingBehavior.cs", "src/modules/AF.Module.UI/**/*.cs", "src/modules/AF.Module.Onboarding/**/*.cs",
         "WarStats/*VM.cs", "WarStats/AfWarStatsMapButtonLayer.cs",
         "WarStats/AfWarStatsEncyclopedia.cs", "WarStats/AfWarStatsSettings.cs", "WarStats/AfWarStatsTexts.cs",
         "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
@@ -31,16 +42,20 @@ RULES = {
         "AnimusForge/GUI/Prefabs/DevWeeklyReportPopup.xml",
     ),
     "game-adapter-compatibility": ("PlayerEncounterCompat.cs",),
-    "action-commit": ("Refactor/Runtime/DetachedInteractionHost.cs",),
+    "action-commit": ("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs",),
 }
 CATALOG_PATH = Path("docs/phase8/full-domain-readiness-catalog.json")
 EXCLUDED_PARTS = {
-    ".tmp", "_deps_auto", "artifacts", "bin", "modules", "obj", "terminal", "tools",
+    ".tmp", "_deps_auto", "artifacts", "bin", "obj", "terminal", "tools",
 }
 
 
 def _excluded(path: Path) -> bool:
-    lowered = {part.lower() for part in path.parts}
+    parts = tuple(part.lower() for part in path.parts)
+    # src/modules is production source; deployment Modules trees remain excluded.
+    if any(part == "modules" and not (index == 1 and parts[0] == "src") for index, part in enumerate(parts)):
+        return True
+    lowered = set(parts)
     if lowered & EXCLUDED_PARTS:
         return True
     if any("原版游戏" in part for part in path.parts):

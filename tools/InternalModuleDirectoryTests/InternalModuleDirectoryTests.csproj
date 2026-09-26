@@ -7,6 +7,6 @@
     <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../Refactor/Modules/InternalModuleDirectory.cs" Link="Production/InternalModuleDirectory.cs" />
+    <Compile Include="../../src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs" Link="Production/InternalModuleDirectory.cs" />
   </ItemGroup>
 </Project>

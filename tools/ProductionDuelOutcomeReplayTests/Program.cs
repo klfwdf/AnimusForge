@@ -33,34 +33,32 @@ internal static class Program
         suite.Run("source.exactDispatchProvenance", () => VerifyExactDispatchSourceGuard(options.ProjectRoot));
 
         List<VariantEvidence> evidence = new();
+        string artifactRoot = options.UseBuildArtifacts
+            ? Path.Combine(options.ProjectRoot, "bin", options.Configuration, "single_module_artifacts")
+            : Path.Combine(options.ProjectRoot, "bin", options.Configuration, "single_module_stage", "AnimusForge", "bin", "Win64_Shipping_Client");
+        string artifactLabel = options.UseBuildArtifacts ? "build" : "stage";
         foreach (string api in new[] { "1.3", "1.4" })
         {
             string implementationPath = Path.Combine(
-                options.ProjectRoot,
-                "bin",
-                options.Configuration,
-                "single_module_stage",
-                "AnimusForge",
-                "bin",
-                "Win64_Shipping_Client",
+                artifactRoot,
                 "versions",
                 api,
                 "AnimusForge.dll");
             string markerPath = Path.ChangeExtension(implementationPath, ".build.json");
 
             BuildMarker marker = null;
-            suite.Run(api + ".stage.integrity", () =>
+            suite.Run(api + "." + artifactLabel + ".integrity", () =>
             {
                 marker = VerifyBuildMarker(implementationPath, markerPath, api);
             });
             if (marker != null)
             {
-                suite.Run(api + ".stage.freshness", () =>
+                suite.Run(api + "." + artifactLabel + ".freshness", () =>
                     VerifyStageFreshness(options.ProjectRoot, marker, api));
             }
 
             MetadataAssembly assembly = null;
-            suite.Run(api + ".stage.metadataLoad", () =>
+            suite.Run(api + "." + artifactLabel + ".metadataLoad", () =>
             {
                 Require(File.Exists(implementationPath), "Production implementation is missing: " + implementationPath);
                 assembly = new MetadataAssembly(implementationPath);
@@ -161,6 +159,9 @@ internal static class Program
         string recordOutcome = ExtractMethod(host, "private static bool TryRecordDuelOutcome(");
         string finalizeOutcome = ExtractMethod(host, "private static bool TryFinalizeDuelOutcome(");
         string unknownOutcome = ExtractMethod(host, "private static void MarkDuelOutcomeUnknown(");
+        string settlementEffects = ExtractMethod(host, "private static bool TryCreateDuelOutcomeEffects(");
+        Require(settlementEffects.Contains("DuelSettlementEffectOwner.TryCreate(", StringComparison.Ordinal),
+            "Typed terminal effects do not use the Duel settlement projection owner.");
         Require(CountOccurrences(beginOutcome, "IndexDuelOutcome(normalizedSubject, exactDuelId);") == 1,
             "Duel start does not index exactly one subject/duel identity.");
         Require(recordOutcome.Contains("_duelOutcomeOwner.RecordOutcome(", StringComparison.Ordinal),
@@ -317,6 +318,9 @@ internal static class Program
             .Replace("\r\n", "\n", StringComparison.Ordinal);
         string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
         string shoutBehavior = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
+        string nativeCoordinator = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Native", "NativeConversationTurnCoordinator.cs"));
+        string nativeCommit = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.NativeTurnCommit.cs"));
+        string scenePostprocess = File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Scene", "ShoutBehavior.ScenePostprocess.cs"));
 
         foreach (string classMarker in new[]
         {
@@ -401,11 +405,23 @@ internal static class Program
             "_lastDuelAfterLines.Remove(stringId);",
             "lines.DuelOutcomeId");
 
-        // Native and Scene now reach the same live normalizer. Do not retain a
-        // disconnected MyBehavior duplicate merely to keep this test target alive.
-        Require(ExtractMethod(shoutBehavior, "private async Task<string> SubmitNativeConversationTextInternalAsync(")
-                .Contains("TryRunSceneUnifiedActionPostprocess(", StringComparison.Ordinal),
-            "Native conversation no longer reaches the shared action postprocessor.");
+        // Native's phase host now uses the split prepare/complete path; Scene's
+        // synchronous facade uses the same work item and normalizer.
+        Require(ExtractMethod(shoutBehavior, "private Task<string> SubmitNativeConversationTextInternalAsync(")
+                .Contains("NativeConversationTurnCoordinator.RunAsync(", StringComparison.Ordinal)
+                && ExtractMethod(nativeCoordinator, "internal static async Task<string> RunAsync(")
+                    .Contains("host.PostprocessAndCommitAsync()", StringComparison.Ordinal)
+                && ExtractMethod(nativeCommit, "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync(")
+                    .Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+                && ExtractMethod(nativeCommit, "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync(")
+                    .Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+                && ExtractMethod(scenePostprocess, "private static string TryRunSceneUnifiedActionPostprocess(")
+                    .Contains("PrepareSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+                && ExtractMethod(scenePostprocess, "private static string TryRunSceneUnifiedActionPostprocess(")
+                    .Contains("CompleteSceneUnifiedActionPostprocess(", StringComparison.Ordinal)
+                && ExtractMethod(scenePostprocess, "private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(")
+                    .Contains("NormalizeDuelPostprocessTagsForScene(", StringComparison.Ordinal),
+            "Native and Scene no longer reach the shared Duel action normalizer.");
         AssertDebtNormalizerClearsBeforeCache(
             ExtractMethod(shoutBehavior, "private static string NormalizeDuelPostprocessTagsForScene("),
             "ShoutBehavior.NormalizeDuelPostprocessTagsForScene");
@@ -438,13 +454,19 @@ internal static class Program
         string contracts = File.ReadAllText(Path.Combine(
             projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"));
         string committer = File.ReadAllText(Path.Combine(
-            projectRoot, "Refactor", "Runtime", "InteractionResultCommitter.cs"));
+            projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"));
+        string actionCommitter = File.ReadAllText(Path.Combine(
+            projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "ActionExecutionCommitter.cs"));
+        string channelCommitter = File.ReadAllText(Path.Combine(
+            projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyChannelActionCommitter.cs"));
         string executor = File.ReadAllText(Path.Combine(
-            projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs"));
-        string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"));
+            projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs"));
+        string host = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"))
+            + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"));
         string behavior = File.ReadAllText(Path.Combine(projectRoot, "DuelBehavior.cs"));
         string shout = File.ReadAllText(Path.Combine(projectRoot, "ShoutBehavior.cs"));
-        string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"));
+        string courier = File.ReadAllText(Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"))
+            + File.ReadAllText(Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"));
         string receipt = File.ReadAllText(Path.Combine(
             projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"));
         string snapshots = File.ReadAllText(Path.Combine(
@@ -454,8 +476,10 @@ internal static class Program
 
         Require(contracts.Contains("internal interface IRequestBoundActionPlanExecutor", StringComparison.Ordinal)
                 && committer.Contains("BuildCanonicalRequestId(envelope)", StringComparison.Ordinal)
-                && committer.Contains("BuildCanonicalActionPlanFingerprint(result.ActionPlan)", StringComparison.Ordinal)
-                && committer.Contains("requestBound.ValidateAndExecute(", StringComparison.Ordinal),
+                && committer.Contains("ChannelActionCommitter.Commit(", StringComparison.Ordinal)
+                && channelCommitter.Contains("BuildCanonicalRequestId(snapshot)", StringComparison.Ordinal)
+                && channelCommitter.Contains("BuildCanonicalActionPlanFingerprint(authorizedPlan)", StringComparison.Ordinal)
+                && actionCommitter.Contains("requestBound.ValidateAndExecute(", StringComparison.Ordinal),
             "Commit reservation does not hand its canonical request/action identity to the internal executor seam.");
 
         string executeCore = ExtractMethod(executor, "private InteractionStatus ValidateAndExecuteCore(");
@@ -736,7 +760,7 @@ internal static class Program
         Require(marker.ReferenceGameVersion.StartsWith("v" + api + ".", StringComparison.Ordinal),
             "Build marker reference line mismatch: " + marker.ReferenceGameVersion);
         Require(marker.Sha256 == ComputeSha256(implementationPath),
-            "Build marker SHA-256 does not match the staged implementation.");
+            "Build marker SHA-256 does not match the selected implementation.");
         return marker;
     }
 
@@ -747,14 +771,21 @@ internal static class Program
             Path.Combine(projectRoot, "AnimusForge.csproj"),
             Path.Combine(projectRoot, "DuelBehavior.cs"),
             Path.Combine(projectRoot, "DuelBehavior.Outcomes.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelBehavior.DispatchOwner.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Duel", "DuelSettlementEffectOwner.cs"),
             Path.Combine(projectRoot, "FourberieDuelCompatibility.cs"),
             Path.Combine(projectRoot, "MyBehavior.cs"),
             Path.Combine(projectRoot, "ShoutBehavior.cs"),
             Path.Combine(projectRoot, "CourierDeliveryBehavior.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.DomainCommit.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.ReplyWait.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Conversation", "Channels", "Courier", "CourierDeliveryBehavior.PromptMessages.cs"),
             Path.Combine(projectRoot, "Refactor", "Contracts", "InteractionContracts.cs"),
             Path.Combine(projectRoot, "Refactor", "Runtime", "DuelOutcomeReceipt.cs"),
-            Path.Combine(projectRoot, "Refactor", "Runtime", "InteractionResultCommitter.cs"),
-            Path.Combine(projectRoot, "Refactor", "Adapters", "LegacyNativeActionPlanExecutor.cs")
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "InteractionResultCommitter.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Receipts", "ActionExecutionCommitter.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyChannelActionCommitter.cs"),
+            Path.Combine(projectRoot, "src", "modules", "AF.Module.Actions", "Execute", "LegacyNativeActionPlanExecutor.cs")
         };
         DateTimeOffset markerTime = marker.CreatedUtc.ToUniversalTime();
         foreach (string source in relevantSources)
@@ -762,7 +793,7 @@ internal static class Program
             Require(File.Exists(source), "Freshness source is missing: " + source);
             DateTimeOffset sourceTime = File.GetLastWriteTimeUtc(source);
             Require(sourceTime <= markerTime.AddSeconds(2),
-                "Staged " + api + " implementation is stale; source is newer than its build marker: " + source);
+                "Selected " + api + " implementation is stale; source is newer than its build marker: " + source);
         }
     }
 
@@ -1116,6 +1147,12 @@ internal static class Program
         RequireCall(assembly, begin, DuelBehaviorType, "IndexDuelOutcome");
         RequireCall(assembly, finalize, DuelBehaviorType, "IndexDuelOutcome");
         RequireCall(assembly, markUnknown, DuelBehaviorType, "IndexDuelOutcome");
+        const string settlementOwnerType = "AnimusForge.Refactor.Modules.DuelSettlementEffectOwner";
+        MetadataAssembly.MethodView settlementProjection = assembly.RequireUniqueMethod(settlementOwnerType, "TryCreate");
+        RequireCall(assembly,
+            assembly.RequireUniqueMethod(DuelBehaviorType, "TryCreateDuelOutcomeEffects"),
+            settlementOwnerType, "TryCreate");
+        RequireCall(assembly, settlementProjection, RuntimeNamespace + "DuelOutcomeEffects", "TryCreate");
 
         MetadataAssembly.MethodView[] writers =
         {
@@ -1136,6 +1173,7 @@ internal static class Program
                     call => call.DeclaringType == DuelBehaviorType && call.Name == "TryRecordDuelOutcome",
                     out IReadOnlyList<string> recordPath),
                 "Terminal writer does not lock the typed result before effects: " + writer.DisplaySignature);
+            RequireCall(assembly, writer, DuelBehaviorType, "TryCreateDuelOutcomeEffects");
             Require(assembly.CallsTransitively(
                     writer,
                     call => call.DeclaringType == DuelBehaviorType && call.Name == "TryFinalizeDuelOutcome",
@@ -1981,20 +2019,23 @@ internal static class Program
 
     private sealed class ReplayOptions
     {
-        private ReplayOptions(string projectRoot, string configuration)
+        private ReplayOptions(string projectRoot, string configuration, bool useBuildArtifacts)
         {
             ProjectRoot = projectRoot;
             Configuration = configuration;
+            UseBuildArtifacts = useBuildArtifacts;
         }
 
         internal string ProjectRoot { get; }
         internal string Configuration { get; }
+        internal bool UseBuildArtifacts { get; }
 
         internal static ReplayOptions Parse(string[] args)
         {
             string projectRoot = Path.GetFullPath(Path.Combine(
                 AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
             string configuration = "Debug";
+            bool useBuildArtifacts = false;
             for (int index = 0; index < args.Length; index++)
             {
                 switch (args[index])
@@ -2004,6 +2045,9 @@ internal static class Program
                         break;
                     case "--configuration":
                         configuration = RequireOptionValue(args, ref index);
+                        break;
+                    case "--use-build-artifacts":
+                        useBuildArtifacts = true;
                         break;
                     default:
                         throw new ArgumentException("Unknown option: " + args[index]);
@@ -2015,7 +2059,7 @@ internal static class Program
             }
             Require(File.Exists(Path.Combine(projectRoot, "AnimusForge.csproj")),
                 "Project root does not contain AnimusForge.csproj: " + projectRoot);
-            return new ReplayOptions(projectRoot, configuration);
+            return new ReplayOptions(projectRoot, configuration, useBuildArtifacts);
         }
 
         private static string RequireOptionValue(string[] args, ref int index)

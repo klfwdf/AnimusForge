@@ -1,0 +1,66 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using TaleWorlds.CampaignSystem;
+
+namespace AnimusForge;
+
+public sealed class MentionedWorldEntities
+{
+    public List<string> Entities = new List<string>();
+}
+
+internal static partial class AIConfigHandler
+{
+    internal static MentionedWorldEntities Mentions = new MentionedWorldEntities();
+    internal static MentionedWorldEntities GetLatestAuxiliaryMentionedEntitiesForExternal() => Mentions;
+}
+
+public partial class RewardSystemBehavior
+{
+    public static RewardSystemBehavior Instance = new RewardSystemBehavior();
+    public List<MyBehavior.SettlementTransferPromptEntry> GetAllowedNpcSettlementTransferEntriesForPlayer(Hero hero, CharacterObject character)
+        => MyBehavior.Fixture.Where(entry => entry.Section == MyBehavior.SettlementTransferEntrySection.NpcFiefs).ToList();
+    public string BuildSettlementTransferPromptGuidanceForAI(Hero hero, CharacterObject character) => "guidance";
+}
+
+public static partial class MyBehavior
+{
+    internal static List<SettlementTransferPromptEntry> Fixture = new List<SettlementTransferPromptEntry>();
+    private static int Checks;
+    private static void Check(bool condition, string message) { Checks++; if (!condition) throw new Exception(message); }
+    private static string BuildPlayerPublicDisplayNameForPrompt(Hero hero) => "player";
+    private static bool IsSettlementTransferLeaderEligible(Hero hero, CharacterObject character) => true;
+    private static List<SettlementTransferPromptEntry> BuildSettlementTransferPromptEntriesInternal(Hero hero, CharacterObject character) => Fixture;
+    private static List<SettlementTransferPromptEntry> BuildDisplayIndexedSettlementTransferEntries(IEnumerable<SettlementTransferPromptEntry> entries) => entries.ToList();
+    private static void AppendSettlementTransferPromptSection(StringBuilder builder, string title, List<SettlementTransferPromptEntry> entries, bool showPromptIndex)
+    { builder.AppendLine(title + string.Join(",", entries.Select(entry => entry.DisplayName))); }
+    private static int CalculateSettlementTransferTotalValueForExternal(List<SettlementTransferPromptEntry> entries) => entries.Count;
+
+    @@METHOD@@
+
+    public static void Main()
+    {
+        var hero = new Hero { StringId = "hero-a", Name = "NPC", CharacterObject = new CharacterObject { StringId = "char-a" } };
+        Fixture = new List<SettlementTransferPromptEntry>
+        {
+            new SettlementTransferPromptEntry { DisplayName = "city", AssetId = "city", Section = SettlementTransferEntrySection.NpcFiefs },
+            new SettlementTransferPromptEntry { DisplayName = "castle", AssetId = "castle", Section = SettlementTransferEntrySection.NpcFiefs },
+            new SettlementTransferPromptEntry { DisplayName = "town", AssetId = "town", Section = SettlementTransferEntrySection.NpcFiefs },
+            new SettlementTransferPromptEntry { DisplayName = "player-town", AssetId = "player-town", Section = SettlementTransferEntrySection.PlayerFiefs }
+        };
+        AIConfigHandler.Mentions = new MentionedWorldEntities { Entities = new List<string> { "castle" } };
+        DuelSettings.Current.PromptListCandidateMaxCount = 1;
+        string text = BuildSettlementTransferRuntimeInstructionForExternal(hero, hero.CharacterObject);
+        Check(text.Contains("castle") && text.Contains("你全部可转固定资产: 3 项"), "My producer selects mention while retaining full authorized count");
+        Check(PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferNpcAssetsSnapshotScope, hero, hero.CharacterObject, -1, out var display)
+            && display.Count == 1 && display[0].AssetId == "castle", "My visible scope has ranked candidate");
+        Check(PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope, hero, hero.CharacterObject, -1, out var all)
+            && all.Select(entry => entry.AssetId).SequenceEqual(new[] { "city", "castle", "town" }), "My full scope retains original authorized order");
+        var other = new Hero { StringId = "hero-b", CharacterObject = new CharacterObject { StringId = "char-b" } };
+        Check(!PromptListRetrievalService.TryGetSettlementTransferSnapshot(PromptListRetrievalService.SettlementTransferAllNpcAssetsSnapshotScope, other, other.CharacterObject, -1, out _),
+            "other hero cannot borrow My full scope");
+        Console.WriteLine("PromptJ03 production My consumer checks=" + Checks);
+    }
+}

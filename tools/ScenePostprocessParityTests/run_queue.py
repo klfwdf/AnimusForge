@@ -18,9 +18,15 @@ def main():
     parser.add_argument('--output-name',default='queue-current')
     args=parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): parser.error('Invalid output name')
-    source=run.extractor.source('ShoutBehavior.ScenePostprocess.cs',args.source_ref)
+    scene_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
+    if args.source_ref:
+        try: source=run.extractor.source(scene_path,args.source_ref)
+        except (FileNotFoundError,subprocess.CalledProcessError): source=run.extractor.source('ShoutBehavior.ScenePostprocess.cs',args.source_ref)
+    else: source=run.extractor.source(scene_path,None)
     snippets={
-      'QUEUE':run.extractor.declaration(source,'private Task<int> QueueDeferredScenePostprocessActions('),
+      'QUEUE':run.extractor.declaration(source,'private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions('),
+      'OUTCOME':'\n'.join(run.extractor.declaration(source, signature) for signature in
+          ['private enum ScenePostprocessStatus', 'private sealed class ScenePostprocessOutcome']),
       'WORK':run.extractor.declaration(source,'private sealed class SceneActionPostprocessWorkItem'),
       'COMPLETE':run.extractor.declaration(source,'private static string CompleteSceneUnifiedActionPostprocess('),
       'REQUEST':run.extractor.declaration(source,'private static bool TryRequestSceneUnifiedActionPostprocess('),
@@ -32,7 +38,7 @@ def main():
           'ignore-generation':('QUEUE','&& SaveRuntimeGuard.IsCurrentGeneration(queuedRuntimeGeneration)','&& true'),
           'skip-dispatch-guard':('QUEUE','if (!ValidateCurrentTarget("before_dispatch"))','if (false)'),
           'lose-execution-context':('QUEUE','scope = requestExecutionContext?.CreateCopy();','scope = null;'),
-          'unguarded-speech':('QUEUE','canStillPublish: CanStillPublish','canStillPublish: () => true'),
+          'unguarded-speech':('QUEUE','CanStillPublish,\n\t\t\t\t\t\t\tout speechCompletion','() => true,\n\t\t\t\t\t\t\tout speechCompletion'),
           'off-thread-game-read':('REQUEST','return AIConfigHandler.TryCallAuxiliaryActionPostprocess','_ = Mission.Current; return AIConfigHandler.TryCallAuxiliaryActionPostprocess'),
         }
         key,a,b=changes[args.mutate]

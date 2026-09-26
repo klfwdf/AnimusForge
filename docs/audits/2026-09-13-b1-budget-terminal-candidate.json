@@ -1,0 +1,1205 @@
+{
+  "task": "B1",
+  "status": "IN_PROGRESS_NOT_BATCH_ACCEPTED",
+  "productionRevision": "7f89e18d39f7f59fe84a9254ea857661fceb28f2",
+  "checkpoint": "30cd916b",
+  "priorProduction": "aece8f3d",
+  "baseline": "90201155",
+  "changes": [
+    "typed clone of ten private data models and two list types; all mutable graph detached",
+    "complete-source streaming SHA256; no nested whole JSON string",
+    "O(1) raw queue admission; one guarded initial filter preserves dedupe/force/throttle",
+    "shared actual Stopwatch cooperative work allowance using existing setting",
+    "Process-only exception propagation: partial/unknown notice and stop without replay; not transactional recovery"
+  ],
+  "checks": {
+    "helper": 32,
+    "completion": 33,
+    "captured": 61,
+    "copyScalarChecks": 351,
+    "detachedMutableNodes": 49,
+    "sourceFieldMutations": 251,
+    "writerChecks": 238,
+    "terminalCases": 47,
+    "ui": 85,
+    "history": 852,
+    "api": 119,
+    "apiConcurrentReads": 256,
+    "actualDllMetadata": 532,
+    "stageBuilds": "Debug/Release x 1.3/1.4/Bootstrap PASS",
+    "artifactMarkersAndStageMatches": 6,
+    "syncKeys": [
+      146,
+      146
+    ],
+    "behaviors": [
+      36,
+      36
+    ],
+    "strictInverseDeclarations": 37,
+    "strictInverseNegativeControls": 3,
+    "oldBusiness": "e40c92d7 compiled and executed: 4 PASS / 29 FAIL"
+  },
+  "performance": {
+    "sourceRecords": 1000,
+    "capturedRecords": 1000,
+    "promptChars": 134016,
+    "previousAllocatedBytes": 9257688,
+    "allocatedBytes": 1579504,
+    "latestObservedAtomicMilliseconds": 9.591,
+    "meaning": "Machine-load/JIT dependent offline observation, not a game benchmark; atomic capture is still unsliced"
+  },
+  "gaps": [
+    "Single large source capture/check and planner/sort/extra/cleanup/Apply internals lack complete record budget; one operation can exceed time allowance",
+    "Empty-queue candidate ID scans and pre-budget past-draft probing still contain synchronous full scans",
+    "Normal DialogueHistoryCommit and editor/import/migration caller threading/owner responsibility remain unproven by terminal tests",
+    "Partial/unknown errors now notify and stop; no transaction rollback or complete tail recovery",
+    "No live provider/game/save/audio or external DLL loading acceptance; B2 not started"
+  ],
+  "controls": {
+    "completion": [
+      {
+        "name": "accept-obsolete",
+        "result": "BUSINESS_RESULT passed=31 failed=2",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/accept-obsolete/manifest.json",
+          "sha256": "9fdecdbb91bb92a87c32ef40c8cb070a449fbdfd31c340e21bd6829c9563b967"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/accept-obsolete/run.log",
+          "sha256": "7a55e00b752f5688a7a1d68817ee05c609ee3bf5731ceb6088782fcedf0db1c4"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "admission-rescan",
+        "result": "BUSINESS_RESULT passed=28 failed=5",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/admission-rescan/manifest.json",
+          "sha256": "92f85cba5488327cf65acf27ea321f4bfbc3d71a41205171805a60d3352344cd"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/admission-rescan/run.log",
+          "sha256": "af96c240db7b6b797d5a066e41f786665a11eba54316d32099ef33120d62b76e"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "bypass-completion-error-wrapper",
+        "result": "BUSINESS_RESULT passed=30 failed=3",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/bypass-completion-error-wrapper/manifest.json",
+          "sha256": "abf707d13e8652d32a0d1a6236a9a194c2c97f8f4ce133973aa27ce207a59608"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/bypass-completion-error-wrapper/run.log",
+          "sha256": "034da5a3b0361f21156895409ed509ccbc3564d282415b5a95d3e013e17185ef"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "count-rejected-apply",
+        "result": "BUSINESS_RESULT passed=32 failed=1",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/count-rejected-apply/manifest.json",
+          "sha256": "344e2c393846112c0bb13e0c0eae6a1ee1bbfc8e50ab5eb8f0941b3f89eb714d"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/count-rejected-apply/run.log",
+          "sha256": "a9ebdafdcd1c60a460042fbb8b0cdc2b9ebe0c05130a30ebbb43e1c3da989367"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "dedupe-before-filter",
+        "result": "BUSINESS_RESULT passed=30 failed=3",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/dedupe-before-filter/manifest.json",
+          "sha256": "ea5ce639e0c146f2acf4a7d3b263a7539ea218e5e30b84c086e15cf7c40387c6"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/dedupe-before-filter/run.log",
+          "sha256": "7b1546d06d5d72ffd3925df993d00c622c5b0a5c102323f5fae7430e5cf67fe2"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "drop-forced-rescan",
+        "result": "BUSINESS_RESULT passed=32 failed=1",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/drop-forced-rescan/manifest.json",
+          "sha256": "42dad89b0b5111cd4b694159b9151b4c09500fb7b5e42734daccceaccd3345aa"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/drop-forced-rescan/run.log",
+          "sha256": "ea04e8bb15dbe315156d6a2f72a6a4e520da54ffd270adc34fbec64b401ae862"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "duplicate-apply",
+        "result": "BUSINESS_RESULT passed=21 failed=12",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/duplicate-apply/manifest.json",
+          "sha256": "1d249590f7c25d20047134064908294b6b249af19cd8b0ab9474aee25f8ca810"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/duplicate-apply/run.log",
+          "sha256": "4df9745dcdf2cb16104ea60bbe89984226e8dfc439a04da32e2d5e99fb48d72c"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "ignore-draft-owner",
+        "result": "BUSINESS_RESULT passed=32 failed=1",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-draft-owner/manifest.json",
+          "sha256": "c157e8b168f7652b106f8c490ee21de8117a0a49f58e43b0dbe8f8b9022aadea"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-draft-owner/run.log",
+          "sha256": "df0f9663e3028015cd8f3868b63e68dc6772ce59424b0563bdee5d86cc0bd4e4"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "ignore-generation",
+        "result": "BUSINESS_RESULT passed=30 failed=3",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-generation/manifest.json",
+          "sha256": "8bc5a0bbb318fec93f983fb8ef4cc8a89263007bddef7f452dec00d7e781ed10"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-generation/run.log",
+          "sha256": "dc35695d9986e1b8bb2b95af586ce41ef1ff9d2d6b363e252e93e2e7f7b1b276"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "ignore-owner",
+        "result": "BUSINESS_RESULT passed=32 failed=1",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-owner/manifest.json",
+          "sha256": "0465828dc595a6b9802b670a234f1e16f319980e827f995d2336ea187be94600"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-owner/run.log",
+          "sha256": "4ef99e8ae3ad778b54e380a38b50d38fbe12cb7306fd91412144423a6cd2f4f7"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "ignore-source",
+        "result": "BUSINESS_RESULT passed=30 failed=3",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-source/manifest.json",
+          "sha256": "50fbfcf02c3f257272487c13c595ed2af72f4d2aae76a5b4e1da6b6004b849a6"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/ignore-source/run.log",
+          "sha256": "9c657d47fe1de7b461511f54d89d01648b6a5163aa12a597ffe691905d2cf287"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "keep-invalid-queue",
+        "result": "BUSINESS_RESULT passed=29 failed=4",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/keep-invalid-queue/manifest.json",
+          "sha256": "29cbabcf5822e46ac506f0f6944f37ff2dbe6f141eafc7d7f3c08185f58813c1"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/keep-invalid-queue/run.log",
+          "sha256": "2a3446324645f36031d0c3d366547818c88658bc8d5ad65706de12acf831f976"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "maintenance-rescan",
+        "result": "BUSINESS_RESULT passed=30 failed=3",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/maintenance-rescan/manifest.json",
+          "sha256": "9781bbfd706a2212f02f4bb623bf9a1dce8f7edfe10f60cadef476a70c78930c"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/maintenance-rescan/run.log",
+          "sha256": "b848afcfdbb227dc2d4a1d9727bb4a3a93ac3a4507574d4e45c40311df222af3"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "miscount-obsolete",
+        "result": "BUSINESS_RESULT passed=31 failed=2",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/miscount-obsolete/manifest.json",
+          "sha256": "b6104c241756eaa43869d4d8a42df4de5924473b95b0becd49339990d1950b6f"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/miscount-obsolete/run.log",
+          "sha256": "662af1fe37b30fd8e9be0861c37705353c4498c552575fa9e6e7db1f0947fb39"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "omit-cleanup",
+        "result": "BUSINESS_RESULT passed=30 failed=3",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-cleanup/manifest.json",
+          "sha256": "79a003dbbdda21588f78b0af93725929fe332c321f9654cc352e180331d16a2e"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-cleanup/run.log",
+          "sha256": "b402c5a1cafc7ba23cdcdeaf49327550a06cf9caa62cce73717e28a50b05a729"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "omit-mark-daily",
+        "result": "BUSINESS_RESULT passed=31 failed=2",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-mark-daily/manifest.json",
+          "sha256": "076a45a610738fbe8b59ca4d6a248d5a5130f81d492204c9c80877d71f4108f1"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-mark-daily/run.log",
+          "sha256": "eabca56e19b04bb2fd6a2b9e1ac2fd5fd0145dbac807ec6cf82d3b469aa9fb65"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "omit-mark-major",
+        "result": "BUSINESS_RESULT passed=32 failed=1",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-mark-major/manifest.json",
+          "sha256": "2930c042947aff0589e2961106778c36a1caeb15eeb092931f2c7be3b2022c44"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-mark-major/run.log",
+          "sha256": "e25930aa5a3596bd9fd5e4b98aa44d087346df66e8b6aa2bd2abfdede8a49943"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "omit-mark-overview",
+        "result": "BUSINESS_RESULT passed=31 failed=2",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-mark-overview/manifest.json",
+          "sha256": "02c8bd5e3ec79c496dbad01aa664579b97b70c136182d161df7a1946e63c9e8e"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-mark-overview/run.log",
+          "sha256": "6600a256dced1ab61c9bfbdf17007e01853fdd890be891d0d9030baed0dc2cdf"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "omit-release",
+        "result": "BUSINESS_RESULT passed=9 failed=24",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-release/manifest.json",
+          "sha256": "a7db58c60ce388c7f92e382baf172ff8d12681ea766cce2bf25b239b5954b7da"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/omit-release/run.log",
+          "sha256": "85b55dbb7ed1331168e2d92b02b93ccdc90ad52885d06aaa260e8156a1b6c0f2"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "swallow-completion-error",
+        "result": "BUSINESS_RESULT passed=30 failed=3",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/swallow-completion-error/manifest.json",
+          "sha256": "71f182964e08ffde3fbb8b7b6e3a28041d6fc29ff7653bc1a457fad8a3cdf73a"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/swallow-completion-error/run.log",
+          "sha256": "034da5a3b0361f21156895409ed509ccbc3564d282415b5a95d3e013e17185ef"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "worker-cleanup",
+        "result": "BUSINESS_RESULT passed=15 failed=18",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-cleanup/manifest.json",
+          "sha256": "790d3c2a9da44e419e35d5984bdbeadfdba44e636df659233aa5677888cc73e4"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-cleanup/run.log",
+          "sha256": "5580985da496fcd62882e2f2925ad10baa255e4e621cc12c576787a423e1fc08"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "worker-extra",
+        "result": "BUSINESS_RESULT passed=23 failed=10",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-extra/manifest.json",
+          "sha256": "09f8d46f1dbbf5d38bd1b918887d021d330a8a0cb7781767010e9facc694c4cd"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-extra/run.log",
+          "sha256": "0acc0dd9c6785b354145571936d4913f1c2af67a17ec79c2421a2e4170d3caac"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "worker-extra-plan",
+        "result": "BUSINESS_RESULT passed=24 failed=9",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-extra-plan/manifest.json",
+          "sha256": "1e8b2b56b7fd9c58542b7c04dfa5a88968f72aae40fde38a2f20ba6704665af4"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-extra-plan/run.log",
+          "sha256": "0f4500ead2bc3ede66e6044592fe9dbb4bc906ccbe5125a23792df581895bd4e"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "worker-initial",
+        "result": "BUSINESS_RESULT passed=1 failed=32",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-initial/manifest.json",
+          "sha256": "363b8b1f57338894a9d34dfe861ce4c6e9eef2c3623c3d7f6c19d7a7c8d2cde2"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-initial/run.log",
+          "sha256": "51a4d038f1b0c29e8126eb7fa3c86423123bfdead1dd2c34d53a38e4a9c6ed49"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "worker-major",
+        "result": "BUSINESS_RESULT passed=25 failed=8",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-major/manifest.json",
+          "sha256": "283c40cf72813144491a440384a23debde041c4198b0243389abd2ce365e79b9"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-major/run.log",
+          "sha256": "77642167d308849a06953feb4c395c69169e9d629aa78f051981796fe7f53cdf"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "worker-primary",
+        "result": "BUSINESS_RESULT passed=9 failed=24",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-primary/manifest.json",
+          "sha256": "c83545ccd29d70123207d3d369dcbf028db06aa609bf63f8c7d2dd627becb369"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-primary/run.log",
+          "sha256": "d4d26bb27c3eab1793acb38af776107e32d38ea97ad139143e5ab43dadebe6cd"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      },
+      {
+        "name": "worker-release",
+        "result": "BUSINESS_RESULT passed=1 failed=32",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-release/manifest.json",
+          "sha256": "c57f03a1e61df895961f0f651999aec9a16195c94e88e2b8d1c57f3591d62b15"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/worker-release/run.log",
+          "sha256": "006ed7375b86610cf89cea5fc0d30619dad0e806a5ed9fd02e94b94457ee480c"
+        },
+        "finalDeclarationMatches": 47,
+        "declarationsChecked": 47
+      }
+    ],
+    "captured": [
+      {
+        "name": "background-sanitize-alias",
+        "result": "CAPTURED_RESULT pass=58 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/background-sanitize-alias/manifest.json",
+          "sha256": "1d7bd6560c09b4d291cc2299ec63468b41c06e7e06c592c62b1c53cf7d1f4103"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/background-sanitize-alias/run.log",
+          "sha256": "ff470613dac54827852eb757fd3de187f8d61e5730df98100552cdcdcceefdfc"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "drop-afef",
+        "result": "CAPTURED_RESULT pass=60 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-afef/manifest.json",
+          "sha256": "fd5030fa6656b9f386393bce3e8e059959bf816b81244f6529c588e77b2087fa"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-afef/run.log",
+          "sha256": "176a7d75d3f35436e62b85f362fa41fd19320426a6024ade4dd45482a5c83f63"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "drop-major-cursor",
+        "result": "CAPTURED_RESULT pass=60 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-major-cursor/manifest.json",
+          "sha256": "2c119bcab99ac3eeea5ea2a3c64fc247e27f4c293b06a4d62d22791712f5929f"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-major-cursor/run.log",
+          "sha256": "6625be155fae724cc25ccae3989673a20887627fc87a7475e6a4433d4d71ae0a"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "drop-nested-copy",
+        "result": "CAPTURED_RESULT pass=59 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-nested-copy/manifest.json",
+          "sha256": "ff14920387a580fd05acf3828d62d525004144890443ca92ba9c8d05a22a5c22"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-nested-copy/run.log",
+          "sha256": "16d6d27da0690612c11759e948d9622357bb8dbc6b9b628ec4e14f02f1cf1555"
+        },
+        "finalDeclarationMatches": 82,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "drop-overview-ids",
+        "result": "CAPTURED_RESULT pass=60 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-overview-ids/manifest.json",
+          "sha256": "06e042a89d84da3f9d87a3cf52b44546559117a6e4a177a88652aad2d69549d3"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-overview-ids/run.log",
+          "sha256": "9f35cdd8b89b008ef13a879c174e778e7aa35e722862c78031de03f92c4c64f5"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "drop-scalar-copy",
+        "result": "CAPTURED_RESULT pass=60 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-scalar-copy/manifest.json",
+          "sha256": "243423de2fff5f95f23bfd6ed6c49bb36c48f9019d195958fe09c6bf6b7e3426"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-scalar-copy/run.log",
+          "sha256": "18e5c551e4fe94130bd872e2b2b2128aacb93c67739735f806dc36ac806c0c98"
+        },
+        "finalDeclarationMatches": 82,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "drop-source-receipt",
+        "result": "CAPTURED_RESULT pass=60 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-source-receipt/manifest.json",
+          "sha256": "b66a2e05882d23feb9997b303376c40f40dc4f39a83f2c815389f759f4a1a364"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/drop-source-receipt/run.log",
+          "sha256": "c7b9746dd35ac6dfd3d6cbd16a9f08d5ef6749afb052844d3bc90f920fa2a1ea"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "ignore-fingerprint",
+        "result": "CAPTURED_RESULT pass=26 fail=35 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/ignore-fingerprint/manifest.json",
+          "sha256": "b01ec61520862fcbb56e1ae2a85244332b4bb0498dfcc62361f9331e1bcde7cf"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/ignore-fingerprint/run.log",
+          "sha256": "f9a0a799fb4ea7eadcaf01823fb4db4c44fd781309d36dad278d93f8a32a8daa"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "ignore-wave-lifetime",
+        "result": "CAPTURED_RESULT pass=59 fail=2 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/ignore-wave-lifetime/manifest.json",
+          "sha256": "0032ccc7808c4daeda8a35ae571a671a47e9c3eaa04de9e55947aec4afaef6b1"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/ignore-wave-lifetime/run.log",
+          "sha256": "192d7ecf490601bbe8be86842c38c67cfe68faa43d4cd646f8f5f8085205524b"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "main-sanitize-detach",
+        "result": "CAPTURED_RESULT pass=58 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/main-sanitize-detach/manifest.json",
+          "sha256": "a5c1f4b71bf35b1eaf1a2e48b98ebd011604a1a637c68a470ac78cd7c07da06d"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/main-sanitize-detach/run.log",
+          "sha256": "90ff6285b7a79692167348a351eeea4a2a26376a379ca7095d6fb2ca22d88b05"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "omit-stream-source",
+        "result": "CAPTURED_RESULT pass=49 fail=12 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/omit-stream-source/manifest.json",
+          "sha256": "dc8f7d485125477d976a208f55212d622ebf8addf228175984c5619394080e5e"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/omit-stream-source/run.log",
+          "sha256": "0f4315a9134e9432d96be04e4d9ad36f02028dc2a8e1bfdf3a75e44852cbb8b0"
+        },
+        "finalDeclarationMatches": 82,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "retain-payload",
+        "result": "CAPTURED_RESULT pass=60 fail=1 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/retain-payload/manifest.json",
+          "sha256": "ad35bd155b7f2c987da77c7a0ef13764e9d5181a526ec101860efb24ce26c5c4"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/retain-payload/run.log",
+          "sha256": "b6515d8e1c7ae6f8297d1fb23198bb9031e7f96e2f74a8c2a6e1d256bb93bba7"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "reuse-source",
+        "result": "CAPTURED_RESULT pass=50 fail=11 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/reuse-source/manifest.json",
+          "sha256": "35ff777295e42116860294c529b3c0c69b1b8d346dec898e98f71f3463814713"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/reuse-source/run.log",
+          "sha256": "6fa3b5d07266d1a97fe6c60bc462cb1b98cde02da1cf5e265c1c6761484e1484"
+        },
+        "finalDeclarationMatches": 82,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "skip-retry-source",
+        "result": "CAPTURED_RESULT pass=58 fail=3 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/skip-retry-source/manifest.json",
+          "sha256": "211da5e460fd765b582368bba8641e5e0442f7516ecb2b6092ecf1817a917f44"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/skip-retry-source/run.log",
+          "sha256": "5225ec36bcd22b6f0eb83897a3f47709c14abe9709636c06dab92a14178c76f7"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      },
+      {
+        "name": "worker-parse",
+        "result": "CAPTURED_RESULT pass=47 fail=14 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/worker-parse/manifest.json",
+          "sha256": "891b0a1bebc3463a326e8d64d8c80196b2066af954abe05d186b9cfcc8cf1652"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/worker-parse/run.log",
+          "sha256": "8edb227a2cbfb0f0d4778a04ed8a3736914e6907ae30f4085b9630b36b02d8d2"
+        },
+        "finalDeclarationMatches": 72,
+        "declarationsChecked": 84
+      }
+    ],
+    "writers": [
+      {
+        "name": "omit-copy",
+        "result": "WRITER_RESULT checks=78 failures=10",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/omit-copy/manifest.json",
+          "sha256": "c3c34ca88ffb5f3dd99c5cd212478ed4ffa90d3e136560752fc0668f7cc4c93f"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/omit-copy/run.log",
+          "sha256": "83d57aa7e122003454842923cdce4dc9f155fe76dc042288777a25a763630583"
+        },
+        "finalDeclarationMatches": 14,
+        "declarationsChecked": 14
+      },
+      {
+        "name": "omit-volunteer-copy",
+        "result": "WRITER_RESULT checks=238 failures=6",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/omit-volunteer-copy/manifest.json",
+          "sha256": "b593e1241f419758f81421e352a9bf5e2c12fc1de18c9fc60ee00f419918366d"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/omit-volunteer-copy/run.log",
+          "sha256": "f7d7e81094f0fdf9a6ff6ea7598727fbd82c63c2b25ab332fe8bcbe7bc61e2d3"
+        },
+        "finalDeclarationMatches": 14,
+        "declarationsChecked": 14
+      },
+      {
+        "name": "worker-direct",
+        "result": "WRITER_RESULT checks=60 failures=14",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/worker-direct/manifest.json",
+          "sha256": "7699c629b446578e06e5871048443ee2b1acee04256222e9fae0dafe3f991560"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/worker-direct/run.log",
+          "sha256": "1004c808cae4366a87a25db1e1583e9401913c85dd0a86a34a8f1c8b7d5b1784"
+        },
+        "finalDeclarationMatches": 14,
+        "declarationsChecked": 14
+      }
+    ],
+    "helper": [
+      {
+        "name": "ignore-generation",
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/ignore-generation/run.log",
+          "sha256": "3b29e2f9e4678f8e5ea888275415c46313bebb1c83ec9db6af5e617d652a67d1"
+        }
+      },
+      {
+        "name": "ignore-owner",
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/ignore-owner/run.log",
+          "sha256": "43b4b83a813996d7c08e436364545d7458cb8c369a8e6a583637dd15bcec6734"
+        }
+      },
+      {
+        "name": "unbounded-drain",
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/unbounded-drain/run.log",
+          "sha256": "6114d1ccf5e7428d7c32e3bdf9eca13b4b449e234cb0df028cbdf3baeb4bcf4f"
+        }
+      },
+      {
+        "name": "unbounded-inline",
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/unbounded-inline/run.log",
+          "sha256": "c6ac1153ef4ee3a2261adafc518dc7bcaad884291fa8dc098523fd9d4701fbd0"
+        }
+      },
+      {
+        "name": "ignore-time-budget",
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/ignore-time-budget/run.log",
+          "sha256": "28b284e5a351fe4e826b60d532c8ed404fc329a6ab9ea391eeb75dfe87d222df"
+        }
+      },
+      {
+        "name": "omit-time-charge",
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/omit-time-charge/run.log",
+          "sha256": "28b284e5a351fe4e826b60d532c8ed404fc329a6ab9ea391eeb75dfe87d222df"
+        }
+      },
+      {
+        "name": "omit-time-reset",
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/omit-time-reset/run.log",
+          "sha256": "c785c0e8e9cb58e38b7a73f985c3c964e27bd9dc62a39496c4b13075193607aa"
+        }
+      }
+    ],
+    "terminal": [
+      {
+        "name": "drop-afef",
+        "result": "TERMINAL_RESULT scenarios=47 failures=6 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-afef/manifest.json",
+          "sha256": "414726a90e15a1f6b60771c74577a0dddf9dd3b8264f20bad40f63e7df3d89d0"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-afef/run.log",
+          "sha256": "6d1a0cb2879b5a5e3beb8409f61f444445ad3503e8a3a0600eabd6b48b07a2a0"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-afef/build.log",
+          "sha256": "eebb9506cba5beea9cfd9fcb10855883d3acafe3fd307e8de691f46985a9cb84"
+        }
+      },
+      {
+        "name": "drop-recent-marker",
+        "result": "TERMINAL_RESULT scenarios=47 failures=7 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-recent-marker/manifest.json",
+          "sha256": "6c948a1ffa1d4778d503404ed6c4e2907c6ca55eeef86e1e46b55bce32b31d1f"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-recent-marker/run.log",
+          "sha256": "cbbb063d2b60154322647cd0e081e2f07ec9ceffbf4a1a46bf6d184487c6c95b"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-recent-marker/build.log",
+          "sha256": "7fb7fc3ea0cb3af3cdadedebbee99431b9dcd433959689c212f861bf4afed105"
+        }
+      },
+      {
+        "name": "drop-recovery-marker",
+        "result": "TERMINAL_RESULT scenarios=47 failures=8 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-recovery-marker/manifest.json",
+          "sha256": "5f60d96c49335814eddf99ecb3ad5d01ad33ba4b9a3a95b97508e0bd12d9b0e2"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-recovery-marker/run.log",
+          "sha256": "20b67a2b1664c80190457fdab24bba82d5b893728615840199490bb29ab41064"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/drop-recovery-marker/build.log",
+          "sha256": "33890523d2c007b193b01057c1c09954c80019715abfe6e878f8a8158f335458"
+        }
+      },
+      {
+        "name": "ignore-final-source",
+        "result": "TERMINAL_RESULT scenarios=47 failures=8 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/ignore-final-source/manifest.json",
+          "sha256": "4bdfc7c39148507cc0e42ac7c793497e6065423a73a81a6c6a5d721570aae078"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/ignore-final-source/run.log",
+          "sha256": "3d990bbbc528e11d728da09238f77186240253bfa44b3ff078f7cd10d65cd1c0"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/ignore-final-source/build.log",
+          "sha256": "fd36146e33223a73d337fb11995c049c2f2991ed4fba0139b53b90758ef0bce6"
+        }
+      },
+      {
+        "name": "ignore-parse-source",
+        "result": "TERMINAL_RESULT scenarios=47 failures=16 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/ignore-parse-source/manifest.json",
+          "sha256": "a95d3f1b37e6673566828709b97284c115211dc0b510f746416c08f362549a24"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/ignore-parse-source/run.log",
+          "sha256": "19603a9df2baf477d43ae39f0c4e540de14a4e4a7f2497ebd623a454971914de"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/ignore-parse-source/build.log",
+          "sha256": "550482286ebd49389d8fa8a18b6a990d8ea6bfe7600531533a00e55c73b0d81a"
+        }
+      },
+      {
+        "name": "omit-block-publish",
+        "result": "TERMINAL_RESULT scenarios=47 failures=16 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-block-publish/manifest.json",
+          "sha256": "2cbbf6d51c1ca8e4ccdae7c89aa4a2425a3fd811c2cc10d8c410ff092bb58d92"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-block-publish/run.log",
+          "sha256": "cc87c334ddc7c01dba9b8d371fcf3be7f4c1bde5dee2c19f6fa591c5a6ddc7a8"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-block-publish/build.log",
+          "sha256": "6be1fb339b0db1e6da0864560638012f89917f1c55690c36df524f6e458f2e9e"
+        }
+      },
+      {
+        "name": "omit-daily-save",
+        "result": "TERMINAL_RESULT scenarios=47 failures=24 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-daily-save/manifest.json",
+          "sha256": "d0601a12f78c7214fcba598f223854c26179d52d779b2a264ec8e339ebffcad1"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-daily-save/run.log",
+          "sha256": "18d0663fc725a63fef8708dc1a6c8f79edf72118a66e21521604a0fd917fe422"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-daily-save/build.log",
+          "sha256": "896e9eaf67546089a2e280ba525d6a16c84815c01970b2c8e02276a6b71bf33f"
+        }
+      },
+      {
+        "name": "omit-line-add",
+        "result": "TERMINAL_RESULT scenarios=47 failures=13 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-line-add/manifest.json",
+          "sha256": "f591541070767d38c04066baff49b411cd2e3bdfdbe3e15435779ed507bf2ca4"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-line-add/run.log",
+          "sha256": "65497852c4a91cc1e98875c3e907a97d22f7b49d0bf1d12ef86612345bd95286"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-line-add/build.log",
+          "sha256": "0e7e4d78e2f32bb993a59915ac563f43b2696297b55174d24a446c8402698a78"
+        }
+      },
+      {
+        "name": "omit-major-entry",
+        "result": "TERMINAL_RESULT scenarios=47 failures=2 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-major-entry/manifest.json",
+          "sha256": "02363f71357dd2bbf1c0fc0f1717fbc88cd752156bf1aad40b81d076711b5cac"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-major-entry/run.log",
+          "sha256": "7e55c75b54e6866264fa53baf89aa7bc2732bf61ba986d5b60260d05a16de426"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-major-entry/build.log",
+          "sha256": "bc0d1a57d334768fd2c52d4f5ce7dbd4af439ef80a53a7aec973143ebb893c41"
+        }
+      },
+      {
+        "name": "omit-pending-consume",
+        "result": "TERMINAL_RESULT scenarios=47 failures=13 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-pending-consume/manifest.json",
+          "sha256": "f9738f5179d21262599b3b17b4d2d7d0cbf26338b37a939761fd61a0b1f5f013"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-pending-consume/run.log",
+          "sha256": "dabe5b8a4846074eea6e157f95b7c03e46e7c6c32e245c5446b94d3f3b7ebca1"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-pending-consume/build.log",
+          "sha256": "36ebf6cd600bdd486f171972cd005b382adc8e360d494aa1df54962694a0ea90"
+        }
+      },
+      {
+        "name": "omit-recent-save",
+        "result": "TERMINAL_RESULT scenarios=47 failures=7 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-recent-save/manifest.json",
+          "sha256": "8e4596adda965bc9fadc0b149a65d0378e6f672f1c66f40a2d82b72851f3eb2b"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-recent-save/run.log",
+          "sha256": "cbbb063d2b60154322647cd0e081e2f07ec9ceffbf4a1a46bf6d184487c6c95b"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/omit-recent-save/build.log",
+          "sha256": "4a12ac52e8f3fce781df118c6c009579b8c3ac0b33c3bcf0c4558fd2dc56fcd5"
+        }
+      },
+      {
+        "name": "reuse-recovery-source",
+        "result": "TERMINAL_RESULT scenarios=47 failures=3 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/reuse-recovery-source/manifest.json",
+          "sha256": "6010cf115d6326e03b9a8c42e1474bc699c9b905209cfe694f3e607347fea2ef"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/reuse-recovery-source/run.log",
+          "sha256": "5ef86899421a7fbaf5a3d9d535e743059bfee39788e002c92abb90aac67d5c56"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/reuse-recovery-source/build.log",
+          "sha256": "50ecd4be992a5686948fe9f7d38c216377636a0cb516a200477111c1e9a7a748"
+        }
+      },
+      {
+        "name": "swallow-completion-failure",
+        "result": "TERMINAL_RESULT scenarios=47 failures=2 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/swallow-completion-failure/manifest.json",
+          "sha256": "091b9a68b920bd56ab1b0a134f6edeaf8ebc3863f9fb7f823927dde85eb9b2ce"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/swallow-completion-failure/run.log",
+          "sha256": "73737fcf24beb43352f4e10c6ae25ec4acc35761e9ef462d991c4c326e7f011d"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/swallow-completion-failure/build.log",
+          "sha256": "fa9f6c7203da394ad3e3a2d00f5f10b0abfe1036e96ea86637be4d7fc6e06940"
+        }
+      },
+      {
+        "name": "weekly-drop-provenance",
+        "result": "TERMINAL_RESULT scenarios=47 failures=8 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/weekly-drop-provenance/manifest.json",
+          "sha256": "3dcd4bbe534b4782493af98738c835b7e470af0845fdb07540f3f467ba7cec64"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/weekly-drop-provenance/run.log",
+          "sha256": "a894215a1171417bf5139f7eaf86789e8d6d7ff5f8fef8149a71298203f9b658"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/weekly-drop-provenance/build.log",
+          "sha256": "c4f2a3f90284febfa449aa32a6ebee7b542009044955c0def4f66e8989541df7"
+        }
+      },
+      {
+        "name": "weekly-false-success",
+        "result": "TERMINAL_RESULT scenarios=47 failures=11 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED",
+        "manifest": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/weekly-false-success/manifest.json",
+          "sha256": "8280904be6707bd00c54720c111283bb88e60e7c4a3f22625f2288145d7804e6"
+        },
+        "runLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/weekly-false-success/run.log",
+          "sha256": "ad136d4cfedc6b72fad5365a7a926c95b13bc3fef051e41aa756b7c8c5836d19"
+        },
+        "buildLog": {
+          "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/terminal/weekly-false-success/build.log",
+          "sha256": "08f65bfec0c4f7fc2aeae61ceb528fbc43daa2f9fe41e1c006ac97ede5f786f8"
+        }
+      }
+    ]
+  },
+  "controlBinding": "Completion 27/helper 7/terminal 15 controls compiled then failed at runtime on final implementation. Captured 15/writer 3 retain exact frozen-input manifests, some from intermediate inputs; final normal suites rerun. Never claim all mutations had identical final input.",
+  "sourceHashNormalization": "utf8-no-bom-lf",
+  "productionSources": [
+    {
+      "path": "MyBehavior.cs",
+      "sha256": "028d0af68dab9f97f26af517b4528ff211cb73a9a2e682c782ac982c92f9dd83"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "sha256": "6f0a4a57627ca9d9d15fb015c84a1a7736353042b207882cdee5cf07245c8948"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "sha256": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598"
+    }
+  ],
+  "coordinates": [
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "start": 42,
+      "end": 62,
+      "symbol": "private static T CloneMemorySummarySource<T>(",
+      "responsibility": "typed图复制，10模型方法定义保留在MyBehavior对应私有数据模型"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "start": 64,
+      "end": 139,
+      "symbol": "private MemorySummaryInput CaptureMemorySummaryInput(",
+      "responsibility": "捕获完整来源/Prompt/解析依赖"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "start": 143,
+      "end": 156,
+      "symbol": "private static string ComputeMemorySummaryFingerprint(",
+      "responsibility": "流式SHA256，省去全量嵌套JSON"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryMainThread.cs",
+      "start": 88,
+      "end": 98,
+      "symbol": "private async Task<bool> RunMemorySummaryCompletionAsync(",
+      "responsibility": "部分异常回执转入原Process通知，不动旧void façade错误约定"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 4975,
+      "end": 5015,
+      "symbol": "private void TryStartMemorySummaryQueue(",
+      "responsibility": "raw入场，不重复扫描所有source"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 5037,
+      "end": 5177,
+      "symbol": "private async Task ProcessMemorySummaryQueueAsync(",
+      "responsibility": "初筛、强制扫描、完成/部分错误、清理和释放"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "start": 17879,
+      "end": 17927,
+      "symbol": "private void TryRunCampaignMemoryMaintenance(",
+      "responsibility": "maintenance去除重复来源探测"
+    }
+  ],
+  "sourceMap": "docs/architecture/af-framework-code-map.json",
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "31cf97b5e371e10cdeb142e6155638e61b66d7eae88d219d58e30efdd12f299e",
+      "marker": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.build.json",
+      "markerSha256": "d6bac36751a9d3f4728a46f62ff8e656d6a8d84c9e0027bb7e09c4c76e04b4f7",
+      "stagedPath": "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "71a4d69e403082a629b9fc7597b835b0e31d30aee9d39607c479e2b268b96d97",
+      "marker": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.build.json",
+      "markerSha256": "28c88aff65af56daaf524d30d4f4df702a79cb35bd8768cf9f49c7e275cf245f",
+      "stagedPath": "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "3ccbadba1eb7c6882802649d6488b94d83956772ad2afdb46e6e9fd79a8bc3cb",
+      "marker": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.build.json",
+      "markerSha256": "e41046331e885e10aa5c42fb7cb21da494a1db4dd532f1742bd763820a6f2c2b",
+      "stagedPath": "bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "0dfd2a4ef1d53fd161b5256704fb270300815cadb5dbb36551a43daa7600e26d",
+      "marker": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.build.json",
+      "markerSha256": "c4400b035d93548c4bb592bb56926a4e3faaa17bac58bbc0092d0a0d7d52ef9b",
+      "stagedPath": "bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "2e5abfdcd927ffa30a1e88611dc7b8ce6396b0624488bf05d233c1b3a5153c1f",
+      "marker": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.build.json",
+      "markerSha256": "f5b333c32ee30f624b18e671342d250bfdec606b3742f6480dca82df29151693",
+      "stagedPath": "bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "e714647e75cb3c9231c3b14f1e726054080991702bb615d728e00db41b1b7d7a",
+      "marker": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.build.json",
+      "markerSha256": "b246a5ba6717d5e5ac2dbd9480dae12c2216a69d785fb4fd7ccb6b93425330e8",
+      "stagedPath": "bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".tmp/b1-20260913/copy-budget-final-stage-Debug.log",
+      "sha256": "6672eda47ddedc9e8aa391a82f392ee67986ca7010c434619573c98035f20e5a"
+    },
+    {
+      "path": ".tmp/b1-20260913/copy-budget-final-stage-Release.log",
+      "sha256": "276a4402345a5503291a6fc3de9d60a67cba906dcf0af21e624156c3663d26b3"
+    },
+    {
+      "path": ".tmp/b1-20260913/copy-budget-final-api.log",
+      "sha256": "aaab88b86d59a02b3d6b7d28b21ed2fedd6df4f802aed59a1e81873b1e0e4c47"
+    },
+    {
+      "path": ".tmp/b1-20260913/copy-budget-persistence.log",
+      "sha256": "2d64c29c187f0eb139f1b40f8dfcb8058e22fdd52496ca3f3dd73142703fadc1"
+    },
+    {
+      "path": ".tmp/b1-20260913/copy-budget-final-terminal.log",
+      "sha256": "0a89da29dc8a604cf97eebb7384fba1fb1c389508a80e2a1e0ddcfed9e0e2c2f"
+    },
+    {
+      "path": "tools/MemoryFailureUiBoundaryTests/.generated/current/run.log",
+      "sha256": "c96dd7615e84aa9fbd2ea73e6880719458836d1bed579dd129ee0a82d7b5b874"
+    },
+    {
+      "path": "tools/NativeHistorySnapshotTests/.generated/current/run.log",
+      "sha256": "b95fde65a09856e6ae85735c7333d0e56e9b0946fee35d51d601aee8d3e74bd1"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/current/run.log",
+      "sha256": "d761f5cfa9fb13428dde55d94e541a162659f9db346165af1a67045ff3e10147"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/manifest.json",
+      "sha256": "5d0c354429aa546ebbbbc9879c24c97bf0a2720f3ba39fe40917ea83b3732e43"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/build.log",
+      "sha256": "45e01cad9680fada01a239c87fb3e8a4e54f3e7faa43a833bac952232c62259e"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/business/current/run.log",
+      "sha256": "aa7e87d45a03ecb1d707e983edd76ae8f9f6798acdb20e6b236ed76c7e4bbfe3"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/manifest.json",
+      "sha256": "23a27c1d3b64d429fc1923d56555ffd853b116a964fc014c5e1e908b2caf167b"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/build.log",
+      "sha256": "f26844a051dc4b93f93ddffbd2a1c72d5180e998c2d165e3c8076735484ed61d"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/captured/current/run.log",
+      "sha256": "a493551a61e9e578e93369dafa50cea6259682c4b91832fc5d3aa0069384fc5c"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/manifest.json",
+      "sha256": "ed925f3db5ee49f4de9c3cefc96acca5927482710e504b3eea0096893adb02e2"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/build.log",
+      "sha256": "57fefd747ef96b390217ec0c2a968f8ff45760d3f5070448d1b31a32d1e6d9ba"
+    },
+    {
+      "path": "tools/MemorySummaryMainThreadBoundaryTests/.generated/writers/current/run.log",
+      "sha256": "f0f160b460bc3afc66f52b2bb5a6f00b25a4a14516e0d065a89e0e3975be67dc"
+    }
+  ],
+  "strictInverse": {
+    "path": ".tmp/b1-strict-inverse-20260913.json",
+    "sha256": "65bf12b26f7a9cdb57c0a882c9926786701865776a33259b72c4d5661e5a99f7"
+  },
+  "originalControlSummary": {
+    "path": ".tmp/b1-business-final-controls.json",
+    "sha256": "634402f78244329e50bd8548852bd7e641c5583e779a4bbb91e880b2d0a927c1"
+  },
+  "protectedFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "delivery": {
+    "pushed": false,
+    "deployed": false,
+    "gameSaveTouched": false,
+    "remoteSnapshot": "bd2ed35f",
+    "remoteFreshlyFetched": false,
+    "automation": "af-7-8 ACTIVE HOURLY (read back)",
+    "localOnlyBrief": ".tmp/af-core-precloseout-team-handoff.md"
+  },
+  "sandbox": "Reviewed permission for unchanged official Stage SDK metadata reads; all output staged inside project; no build script modification",
+  "review": "Independent static review found no confirmed regressions in new copy/time/admission paths. Confirmed partial Apply swallowed exception was fixed and exercised by actual terminal faults. Scene fallback behind unconditional early return not treated as active."
+}

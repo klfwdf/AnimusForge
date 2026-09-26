@@ -11,7 +11,18 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-SOURCES = ["Refactor/Modules/TeamModulePorts.cs", "Refactor/Modules/TeamModuleAdapters.cs", "Refactor/Modules/TeamModuleServices.cs"]
+PORT_SOURCES = [
+    "src/AF.Contracts/Internal/TeamModules/IPolicyModulePort.cs",
+    "src/AF.Contracts/Internal/TeamModules/IGatheringModulePort.cs",
+    "src/AF.Contracts/Internal/TeamModules/ISiegeModulePort.cs",
+]
+ADAPTER_SOURCES = [
+    "src/bridges/Policy/PolicyModuleAdapter.cs",
+    "src/bridges/Gathering/GatheringModuleAdapter.cs",
+    "src/bridges/Siege/SiegeModuleAdapter.cs",
+]
+SERVICE_SOURCE = "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs"
+SOURCES = PORT_SOURCES + ADAPTER_SOURCES + [SERVICE_SOURCE]
 MAP = {
     "Policy": ("KingdomAgendaCustomPolicyBehavior", ["IsEligibleTargetForExternal", "BuildRuntimePostprocessRulesForExternal", "TryProcessAcceptedAgendaTag"]),
     "Gathering": ("NobleGatheringBehavior", ["BuildRuntimePostprocessRulesForExternal", "BuildPostprocessContextForExternal", "NormalizeNobleGatheringPostprocessTagsForExternal", "BuildFeastAttendanceContext", "TryApplyNobleGatheringTagsForExternal"]),
@@ -25,16 +36,23 @@ def read(path):
 
 
 def restore_reviewed_nonport_deltas(path, current, prior):
-    native_spec = importlib.util.spec_from_file_location('uncompressed_parity', ROOT / 'tools/NativeUncompressedHistoryBoundaryTests/source_parity.py')
-    native_parity = importlib.util.module_from_spec(native_spec); native_spec.loader.exec_module(native_parity)
-    current = native_parity.restore_uncompressed_source(path, current)
-    input_spec = importlib.util.spec_from_file_location('input_parity', ROOT / 'tools/MemorySummaryInputBoundaryTests/source_parity.py')
-    input_parity = importlib.util.module_from_spec(input_spec); input_spec.loader.exec_module(input_parity)
-    current = input_parity.restore_input_source(path, current)
     # Preserve the strict original whole-file proof without freezing unrelated Native evolution.
     # Only these hash-frozen, separately behavior-tested declarations can differ; a future edit fails.
     spec = importlib.util.spec_from_file_location("native_delta_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
+    # Restore only the separately reviewed B1 migration first. It verifies production and
+    # evidence sources and whole-file equivalence; no removed method is silently skipped.
+    spec = importlib.util.spec_from_file_location("port_memory_inverse", ROOT / "tools/MemorySummaryMainThreadBoundaryTests/source_parity.py")
+    memory = importlib.util.module_from_spec(spec); spec.loader.exec_module(memory)
+    current = memory.restore_memory_summary_source(path, current)
+    if path == "ShoutBehavior.cs":
+        spec = importlib.util.spec_from_file_location("channel_persona_inverse", ROOT / "tools/ChannelPersonaPreparationTests/source_parity.py")
+        persona = importlib.util.module_from_spec(spec); spec.loader.exec_module(persona)
+        current = persona.restore(path, current)
+    if path == "CourierDeliveryBehavior.cs":
+        spec = importlib.util.spec_from_file_location("courier_history_inverse", ROOT / "tools/CourierHistoryPreparationTests/source_parity.py")
+        courier_history = importlib.util.module_from_spec(spec); spec.loader.exec_module(courier_history)
+        current = courier_history.restore(current)
     review = json.loads((HERE / "reviewed-native-admission-deltas.json").read_text(encoding="utf-8"))
     for comment in review.get("commentRewrites", []):
         if comment["path"] == path:
@@ -60,32 +78,123 @@ def owner_parity(baseline):
     replacements = {f"TeamModuleServices.{port}.{method}": f"{owner}.{method}"
         for port, (owner, methods) in MAP.items() for method in methods}
     replacements["TeamModuleServices.Policy.BuildActivePolicyDialogueContextForExternal"] = "NpcRulerPolicyBehavior.BuildActivePolicyDialogueContextForExternal"
+    def extract_calls(source, qualified_name):
+        """Extract complete call expressions while respecting nested arguments."""
+        calls = []
+        cursor = 0
+        while True:
+            start = source.find(qualified_name, cursor)
+            if start < 0:
+                return calls
+            opening = start + len(qualified_name)
+            while opening < len(source) and source[opening].isspace():
+                opening += 1
+            if opening >= len(source) or source[opening] != "(":
+                cursor = start + 1
+                continue
+            depth = 0
+            quote = None
+            escaped = False
+            line_comment = False
+            block_comment = False
+            index = opening
+            while index < len(source):
+                char = source[index]
+                following = source[index + 1] if index + 1 < len(source) else ""
+                if line_comment:
+                    line_comment = char != "\n"
+                elif block_comment:
+                    if char == "*" and following == "/":
+                        block_comment = False
+                        index += 1
+                elif quote:
+                    if escaped:
+                        escaped = False
+                    elif char == "\\":
+                        escaped = True
+                    elif char == quote:
+                        quote = None
+                elif char == "/" and following == "/":
+                    line_comment = True
+                    index += 1
+                elif char == "/" and following == "*":
+                    block_comment = True
+                    index += 1
+                elif char in ('"', "'"):
+                    quote = char
+                elif char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                    if depth == 0:
+                        calls.append(source[start:index + 1])
+                        cursor = index + 1
+                        break
+                index += 1
+            else:
+                raise AssertionError("Unterminated owner call: " + qualified_name)
+
+    normalize = lambda value: re.sub(r"\s+", "", value)
+    current_paths = [ROOT / "MyBehavior.cs", ROOT / "ShoutBehavior.cs"]
+    current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene").glob("*.cs"))
+    current_paths += [ROOT / "CourierDeliveryBehavior.cs"]
+    current_paths += sorted((ROOT / "src/modules/AF.Module.Conversation/Channels/Courier").glob("*.cs"))
+    current = "\n".join(path.read_text(encoding="utf-8-sig") for path in current_paths)
+    baseline_paths = ["MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.ScenePostprocess.cs", "CourierDeliveryBehavior.cs"]
+    prior = "\n".join(
+        subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT)
+        .decode("utf-8-sig").replace("\r\n", "\n")
+        for path in baseline_paths)
+
     seen = {name: 0 for name in replacements}
-    for path in ["MyBehavior.cs", "ShoutBehavior.cs", "ShoutBehavior.ScenePostprocess.cs", "CourierDeliveryBehavior.cs"]:
-        current = read(path)
-        prior = subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
-        restored = restore_reviewed_nonport_deltas(path, current, prior).replace("using AnimusForge.Refactor.Modules;\n", "")
-        for new, old in replacements.items():
-            seen[new] += restored.count(new)
-            restored = restored.replace(new, old)
-        prior = subprocess.check_output(["git", "show", f"{baseline}:{path}"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
-        if restored != prior:
-            raise AssertionError(f"Owner parity failed: {path} differs beyond declared receiver/using changes")
-        print(f"PASS full-file reviewed-native/receiver inverse equals {baseline}: {path}")
+    # J09 renamed the Scene postprocess work-item locals without changing the
+    # ordered values passed to the Siege port. ScenePostprocessParityTests owns
+    # the complete old/new behavior proof; this single reviewed alias keeps the
+    # port test focused on receiver, argument order and call count.
+    reviewed_scene_alias = normalize(
+        "AfGcczShoutBridge.TryProcessActionTags(speakingHero, npcCharacter, "
+        "targetAgentIndex, ref remaining, out bool siegeActionHandled, "
+        "replyIsDirectPlayerResponse, replyIsDirectPlayerResponse ? playerText : string.Empty, replyText)")
+    reviewed_scene_original = normalize(
+        "AfGcczShoutBridge.TryProcessActionTags(speakingHero, npcCharacter, "
+        "runtimeTargetAgentIndex, ref text3, out siegeActionHandled, "
+        "replyIsDirectPlayerResponse, replyIsDirectPlayerResponse ? playerText : string.Empty, replySnapshot)")
+    alias_seen = 0
+    for new, old in replacements.items():
+        current_calls = []
+        for call in extract_calls(current, new):
+            restored = normalize(call.replace(new, old, 1))
+            if restored == reviewed_scene_alias:
+                restored = reviewed_scene_original
+                alias_seen += 1
+            current_calls.append(restored)
+        prior_calls = [normalize(call) for call in extract_calls(prior, old)]
+        if sorted(current_calls) != sorted(prior_calls):
+            raise AssertionError("Owner call parity failed: " + new)
+        if extract_calls(current, old):
+            raise AssertionError("Direct gameplay owner call bypasses typed port: " + old)
+        seen[new] = len(current_calls)
+        print(f"PASS scoped receiver/argument parity equals {baseline}: {new} calls={len(current_calls)}")
+    if alias_seen != 1:
+        raise AssertionError("Reviewed Scene postprocess alias count drifted")
     if len(seen) != 13 or any(count == 0 for count in seen.values()):
         raise AssertionError("Every declared method must have a live owner call, not only a descriptor")
     sub = read("SubModule.cs")
+    # Campaign composition has its own source/behavior suite.  This test owns
+    # only the framework lifetime seam and must not be blocked by unrelated
+    # GameLifetime fixture hashes.
     init_block = "\t\t// 只装配同 DLL 的内部接缝与只读 API 目录，不切换任何渠道的默认执行路径。\n\t\tModuleFrameworkRuntime.Initialize(out string moduleFrameworkReason);\n\t\tLogger.LogTrace(\"SubModule\", \">>> Module framework: \" + moduleFrameworkReason);\n"
     if sub.count(init_block) != 1 or sub.count("\t\tModuleFrameworkRuntime.Shutdown();\n") != 1:
         raise AssertionError("Unexpected lifecycle wiring")
-    restored = sub.replace("using AnimusForge.Refactor.Modules;\n", "").replace(init_block, "").replace("\t\tModuleFrameworkRuntime.Shutdown();\n", "")
-    prior = subprocess.check_output(["git", "show", f"{baseline}:SubModule.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
-    if restored != prior:
-        raise AssertionError("SubModule differs beyond the reviewed load/unload hooks")
+    if sub.count("ModuleFrameworkRuntime.") != 3:
+        raise AssertionError("Module framework lifecycle has an unreviewed extra call")
     assert sub.index("FeatureBridgeRuntime.Initialize") < sub.index("ModuleFrameworkRuntime.Initialize") < sub.index("SceneActionsIntegrationBoundary.InitializeRuntime") < sub.index("if (_uiExtenderInitialized)")
     unload = sub[sub.index("protected override void OnSubModuleUnloaded()"):sub.index("protected override void OnBeforeInitialModuleScreenSetAsRoot()")]
     assert unload.index("ModuleFrameworkRuntime.Shutdown") < unload.index("base.OnSubModuleUnloaded")
-    print(f"PASS full-file lifecycle inverse equals {baseline}: SubModule.cs")
+    campaign_start = sub.index("protected override void InitializeGameStarter(")
+    campaign = sub[campaign_start:sub.index("protected override void OnApplicationTick", campaign_start)]
+    assert campaign.index("AfCampaignRuntimeLifecycle.Begin") < campaign.index("ModuleFrameworkRuntime.RegisterCampaign") < campaign.index("AfCampaignRuntimeLifecycle.CaptureOwners")
+    print("PASS scoped module framework initialize/shutdown lifecycle and ordering")
     print(f"PASS 13 routed method names / {sum(seen.values())} live call sites")
     return seen
 
@@ -140,16 +249,20 @@ def main():
         (out/"run.log").write_text(log, encoding="utf-8"); return code
     mutation_log = []
     if not args.skip_mutations:
-        adapters = read("Refactor/Modules/TeamModuleAdapters.cs")
         mutations = {
             "invert_eligibility": ("=> KingdomAgendaCustomPolicyBehavior.IsEligibleTargetForExternal", "=> !KingdomAgendaCustomPolicyBehavior.IsEligibleTargetForExternal"),
             "invert_siege_selected": ("=> AfGcczShoutBridge.NormalizePostprocessTags(selected, raw, rules);", "=> AfGcczShoutBridge.NormalizePostprocessTags(!selected, raw, rules);"),
             "swap_siege_context_texts": ("ref text, out actionHandled, replyIsDirectPlayerResponse, playerText, speakerReplyText);", "ref text, out actionHandled, replyIsDirectPlayerResponse, speakerReplyText, playerText);")}
         for name, (old, new) in mutations.items():
-            if adapters.count(old) != 1: raise AssertionError("Mutation anchor drift: " + name)
+            matches = [(path, read(path)) for path in ADAPTER_SOURCES if old in read(path)]
+            if len(matches) != 1 or matches[0][1].count(old) != 1:
+                raise AssertionError("Mutation anchor drift: " + name)
+            adapter_path, adapters = matches[0]
             folder = out/name; folder.mkdir(exist_ok=True)
-            mutated = folder/"Adapters.cs"; mutated.write_text(adapters.replace(old, new), encoding="utf-8")
-            project = util.project(folder, "TeamModulePortParity", [ROOT/SOURCES[0], mutated, ROOT/SOURCES[2], HERE/"OwnerStubs.cs", HERE/"Program.cs"], executable=True)
+            mutated = folder/Path(adapter_path).name
+            mutated.write_text(adapters.replace(old, new), encoding="utf-8")
+            sources = [mutated if path == adapter_path else ROOT/path for path in SOURCES]
+            project = util.project(folder, "TeamModulePortParity", sources + [HERE/"OwnerStubs.cs", HERE/"Program.cs"], executable=True)
             result, text = util.run_dotnet(args.dotnet, ["run", "--project", str(project), "-c", "Release"], out)
             (folder/"run.log").write_text(text, encoding="utf-8")
             if result == 0 or "FAIL " not in text or "error CS" in text:

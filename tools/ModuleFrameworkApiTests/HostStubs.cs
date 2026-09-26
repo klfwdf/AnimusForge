@@ -42,3 +42,17 @@ namespace AnimusForge.Refactor.Runtime
         }
     }
 }
+
+// API tests cover assembly-directory state only; CampaignCompositionTests executes real registration.
+namespace TaleWorlds.Core
+{
+    public interface IGameStarter { }
+}
+namespace AnimusForge.Refactor.Modules
+{
+    internal static class CampaignComposition
+    {
+        internal static void Register(TaleWorlds.Core.IGameStarter starterObject)
+            => throw new System.InvalidOperationException("API-only host must not register Campaign behaviors");
+    }
+}

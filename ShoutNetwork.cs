@@ -248,101 +248,6 @@ public static class ShoutNetwork
 		}
 	}
 
-	private const string EmptyResponseRetryMarker = "[AF_EMPTY_RESPONSE_RETRY]";
-	private const string EmptyResponseRetryInstruction = EmptyResponseRetryMarker + " 上一次模型响应为空白。请严格按既有角色、格式和字数要求，直接输出NPC本轮回复；禁止只输出空白、换行或无内容。";
-
-	private static bool HasEmptyResponseRetryMarker(List<object> messages)
-	{
-		try
-		{
-			foreach (object message in messages ?? new List<object>())
-			{
-				if (TryReadMessage(message, out var _, out var content) && (content ?? "").IndexOf(EmptyResponseRetryMarker, StringComparison.Ordinal) >= 0)
-				{
-					return true;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return false;
-	}
-
-	private const string GenericContinuationInstruction =
-		"请继续完成当前请求，只输出最终结果。";
-
-	private const string BattleSpeechContinuationInstruction =
-		"请继续完成当前阵前演讲请求，只输出协议规定的最终结果，不要生成普通NPC回复。";
-
-	private static bool IsBattleSpeechRequest(IEnumerable<object> messages)
-	{
-		foreach (object message in messages ?? Enumerable.Empty<object>())
-		{
-			if (!TryReadMessage(message, out _, out string content))
-			{
-				continue;
-			}
-			string text = content ?? string.Empty;
-			if (text.IndexOf("【阵前演讲", StringComparison.Ordinal) >= 0 ||
-				text.IndexOf("SPEECH_BEGIN", StringComparison.Ordinal) >= 0)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private static string GetLastMessageRole(
-		IEnumerable<object> messages,
-		out string lastContent)
-	{
-		string lastRole = string.Empty;
-		lastContent = string.Empty;
-		foreach (object message in messages ?? Enumerable.Empty<object>())
-		{
-			if (!TryReadMessage(message, out string role, out string content))
-			{
-				continue;
-			}
-			if (string.IsNullOrWhiteSpace(role) && string.IsNullOrWhiteSpace(content))
-			{
-				continue;
-			}
-			lastRole = (role ?? string.Empty).Trim();
-			lastContent = content ?? string.Empty;
-		}
-		return lastRole;
-	}
-
-	private static List<object> EnsureFinalUserTurn(
-		IEnumerable<object> messages,
-		out string originalLastRole)
-	{
-		List<object> result = new List<object>();
-		foreach (object message in messages ?? Enumerable.Empty<object>())
-		{
-			result.Add(message);
-		}
-
-		string lastContent;
-		originalLastRole = GetLastMessageRole(result, out lastContent);
-		if (string.Equals(originalLastRole, "user", StringComparison.OrdinalIgnoreCase) &&
-			!string.IsNullOrWhiteSpace(lastContent))
-		{
-			return result;
-		}
-
-		result.Add(new
-		{
-			role = "user",
-			content = IsBattleSpeechRequest(result)
-				? BattleSpeechContinuationInstruction
-				: GenericContinuationInstruction
-		});
-		return result;
-	}
-
 	private static void LogNormalizedMessageTail(
 		string mode,
 		string originalLastRole,
@@ -352,7 +257,7 @@ public static class ShoutNetwork
 		{
 			return;
 		}
-		string finalRole = GetLastMessageRole(messages, out _);
+		string finalRole = PrimaryChatMessagePolicy.GetLastMessageRole(messages, out _);
 		int count = messages == null ? 0 : messages.Count();
 		Logger.Log(
 			"ShoutNetwork",
@@ -361,38 +266,6 @@ public static class ShoutNetwork
 			" finalRole=" + finalRole +
 			" messages=" + count);
 	}
-	private static List<object> BuildEmptyResponseRetryMessages(List<object> messages)
-	{
-		List<object> list = new List<object>();
-		bool flag = false;
-		foreach (object message in messages ?? new List<object>())
-		{
-			if (!flag && TryReadMessage(message, out var role, out var content) && string.Equals((role ?? "").Trim(), "system", StringComparison.OrdinalIgnoreCase))
-			{
-				string text = string.IsNullOrWhiteSpace(content) ? EmptyResponseRetryInstruction : (content.TrimEnd() + "\n\n" + EmptyResponseRetryInstruction);
-				list.Add(new
-				{
-					role = role,
-					content = text
-				});
-				flag = true;
-			}
-			else
-			{
-				list.Add(message);
-			}
-		}
-		if (!flag)
-		{
-			list.Insert(0, new
-			{
-				role = "system",
-				content = EmptyResponseRetryInstruction
-			});
-		}
-		return EnsureFinalUserTurn(list, out _);
-	}
-
 	private static string ExtractTextFromGeminiCandidateParts(JToken candidate)
 	{
 		try
@@ -448,24 +321,6 @@ public static class ShoutNetwork
 		return LlmApiCompat.ExtractStreamDeltaText(chunk);
 	}
 
-	private static bool ContainsAnyIgnoreCase(string text, params string[] patterns)
-	{
-		text = text ?? "";
-		if (patterns == null || patterns.Length == 0)
-		{
-			return false;
-		}
-		for (int i = 0; i < patterns.Length; i++)
-		{
-			string text2 = (patterns[i] ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text2) && text.IndexOf(text2, StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private static bool TryApplyPrimaryThinkingControls(JObject payload, DuelSettings settings, string apiUrl, string modelName, bool forceDisableThinking, out string thinkingMode)
 	{
 		if (forceDisableThinking)
@@ -481,18 +336,6 @@ public static class ShoutNetwork
 		bool thinkingEnabled = settings?.MainApiThinkingEnabled ?? true;
 		string effort = settings?.GetMainApiReasoningEffort() ?? DuelSettings.ReasoningEffortHigh;
 		return DuelSettings.ApplyThinkingControls(payload, apiUrl, modelName, thinkingEnabled, effort, out thinkingMode);
-	}
-
-	private static bool LooksLikeThinkingControlError(string responseBody)
-	{
-		string text = (responseBody ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		bool flag = ContainsAnyIgnoreCase(text, "thinking", "reasoning_effort", "output_config");
-		bool flag2 = ContainsAnyIgnoreCase(text, "unsupported", "unknown", "invalid", "unexpected", "not allowed", "not supported", "extra inputs are not permitted");
-		return flag && flag2;
 	}
 
 	private static bool TryResolvePrimaryModelByDropdownState(DuelSettings settings, out string modelName, out string selectedOption, out bool manualSelected)
@@ -535,7 +378,7 @@ public static class ShoutNetwork
 
 	private static JObject BuildPrimaryChatPayload(List<object> messages, DuelSettings settings, string apiUrl, string modelName, int actualMaxTokens, bool stream, out string thinkingMode, bool forceDisableThinking = false)
 	{
-		messages = EnsureFinalUserTurn(messages, out _);
+		messages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(messages, out _);
 		JObject jObject = new JObject
 		{
 			["model"] = modelName ?? "",
@@ -562,7 +405,7 @@ public static class ShoutNetwork
 			settings,
 			apiUrl,
 			modelName,
-			forceDisableThinking || IsBattleSpeechRequest(messages),
+			forceDisableThinking || PrimaryChatMessagePolicy.IsBattleSpeechRequest(messages),
 			out thinkingMode);
 		return jObject;
 	}
@@ -578,7 +421,7 @@ public static class ShoutNetwork
 			List<object> list = new List<object>(messages.Count);
 			foreach (object message in messages)
 			{
-				if (TryReadMessage(message, out var role, out var content))
+				if (PrimaryChatMessagePolicy.TryReadMessage(message, out var role, out var content))
 				{
 					list.Add(new
 					{
@@ -599,79 +442,12 @@ public static class ShoutNetwork
 		}
 	}
 
-	private static bool TryReadMessage(object message, out string role, out string content)
-	{
-		role = "";
-		content = "";
-		if (message == null)
-		{
-			return false;
-		}
-		try
-		{
-			if (message is JObject jObject)
-			{
-				role = (string)jObject["role"] ?? "";
-				content = (string)jObject["content"] ?? "";
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			if (message is IDictionary<string, object> dictionary)
-			{
-				if (dictionary.TryGetValue("role", out var value) && value != null)
-				{
-					role = value.ToString();
-				}
-				if (dictionary.TryGetValue("content", out var value2) && value2 != null)
-				{
-					content = value2.ToString();
-				}
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			Type type = message.GetType();
-			PropertyInfo propertyInfo = type.GetProperty("role") ?? type.GetProperty("Role");
-			PropertyInfo propertyInfo2 = type.GetProperty("content") ?? type.GetProperty("Content");
-			if (propertyInfo != null)
-			{
-				object value3 = propertyInfo.GetValue(message, null);
-				if (value3 != null)
-				{
-					role = value3.ToString();
-				}
-			}
-			if (propertyInfo2 != null)
-			{
-				object value4 = propertyInfo2.GetValue(message, null);
-				if (value4 != null)
-				{
-					content = value4.ToString();
-				}
-			}
-			return propertyInfo != null || propertyInfo2 != null;
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	public static void RecordPrimaryRequestBodyForTokenStats(List<object> messages, int maxTokens, string mode)
 	{
 		try
 		{
 			List<object> normalizedMessages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
-			normalizedMessages = EnsureFinalUserTurn(normalizedMessages, out string originalLastRole);
+			normalizedMessages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(normalizedMessages, out string originalLastRole);
 			LogNormalizedMessageTail("token_stats", originalLastRole, normalizedMessages);
 			int inputTokens = Logger.EstimateTokensFromMessages(normalizedMessages);
 			DuelSettings settings = DuelSettings.GetSettings();
@@ -891,7 +667,7 @@ public static class ShoutNetwork
 		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
-		messages = EnsureFinalUserTurn(messages, out string originalLastRole);
+		messages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(messages, out string originalLastRole);
 		LogNormalizedMessageTail("non_stream", originalLastRole, messages);
 		Stopwatch sw = Stopwatch.StartNew();
 		int msgCount = messages?.Count ?? 0;
@@ -952,30 +728,21 @@ public static class ShoutNetwork
 			}
 			string jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload);
 			string requestBodyForTokenStats = jsonBody;
-			HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-			try
-			{
-				LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
-				request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
-				FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
-				HttpResponseMessage response = await SendPrimaryNonStreamingRequestAsync(request, cancellationToken);
-				FreezeWatchdog.Mark("PrimaryChat.non_stream.response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response"))
-				{
-					response.Dispose();
-					return SaveRuntimeGuard.BuildStaleRequestErrorText();
-				}
-				string str = await response.Content.ReadAsStringAsync();
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_body"))
-				{
-					response.Dispose();
-					return SaveRuntimeGuard.BuildStaleRequestErrorText();
-				}
+            {
+                FreezeWatchdog.Mark("PrimaryChat.non_stream.send_begin", "model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
+                LlmNonStreamingResponse response = await LlmNonStreamingTransport.SendAsync(
+                    effectiveApiUrl, settings.ApiKey, jsonBody, SendPrimaryNonStreamingRequestAsync, cancellationToken,
+                    status =>
+                    {
+                        FreezeWatchdog.Mark("PrimaryChat.non_stream.response", "status=" + (int)status + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+                        return !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_response");
+                    }, () => !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_body"));
+                if (response.Discarded) return SaveRuntimeGuard.BuildStaleRequestErrorText();
+                string str = response.Body;
 				LogPrimaryRawResponse("non_stream_status_" + (int)response.StatusCode, str);
-				if (!response.IsSuccessStatusCode && response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeThinkingControlError(str))
+				if (!response.IsSuccessStatusCode && response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && PrimaryChatMessagePolicy.LooksLikeThinkingControlError(str))
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] thinking payload rejected; retrying without thinking controls.");
-					response.Dispose();
 					JObject payload2 = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: false, out var _);
 					if (overrideTemperature.HasValue)
 					{
@@ -984,23 +751,16 @@ public static class ShoutNetwork
 					DuelSettings.RemoveThinkingControls(payload2);
 					string jsonBody2 = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, payload2);
 					requestBodyForTokenStats = jsonBody2;
-					using HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					LlmApiCompat.ApplyAuthenticationHeaders(httpRequestMessage, effectiveApiUrl, settings.ApiKey);
-					httpRequestMessage.Content = (HttpContent)new StringContent(jsonBody2, Encoding.UTF8, "application/json");
-					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
-					response = await SendPrimaryNonStreamingRequestAsync(httpRequestMessage, cancellationToken);
-					FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_response", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response"))
-					{
-						response.Dispose();
-						return SaveRuntimeGuard.BuildStaleRequestErrorText();
-					}
-					str = await response.Content.ReadAsStringAsync();
-					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_body"))
-					{
-						response.Dispose();
-						return SaveRuntimeGuard.BuildStaleRequestErrorText();
-					}
+                    FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_send_begin", "model=" + effectiveModelName, immediate: true);
+                    response = await LlmNonStreamingTransport.SendAsync(
+                        effectiveApiUrl, settings.ApiKey, jsonBody2, SendPrimaryNonStreamingRequestAsync, cancellationToken,
+                        status =>
+                        {
+                            FreezeWatchdog.Mark("PrimaryChat.non_stream.retry_response", "status=" + (int)status + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+                            return !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_response");
+                        }, () => !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_retry_body"));
+                    if (response.Discarded) return SaveRuntimeGuard.BuildStaleRequestErrorText();
+                    str = response.Body;
 					LogPrimaryRawResponse("non_stream_retry_status_" + (int)response.StatusCode, str);
 					thinkingMode = "thinking_retry_plain";
 				}
@@ -1014,14 +774,14 @@ public static class ShoutNetwork
 						if (string.IsNullOrWhiteSpace(content))
 						{
 							LogPrimaryRawResponse("non_stream_empty_content", str);
-							if (!HasEmptyResponseRetryMarker(messages))
+							if (!PrimaryChatMessagePolicy.HasEmptyResponseRetryMarker(messages))
 							{
 								Logger.Log("ShoutNetwork", "[PrimaryChat] empty content; retrying once with explicit non-empty instruction and thinking disabled.");
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
 								}
-								string retryContent = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking: true, promptRetryOnError, cancellationToken, overrideTemperature);
+								string retryContent = await CallApiWithMessages(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking: true, promptRetryOnError, cancellationToken, overrideTemperature);
 								if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_empty_retry_complete"))
 								{
 									return SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -1097,10 +857,6 @@ public static class ShoutNetwork
 				}
 				return httpError;
 			}
-			finally
-			{
-				((IDisposable)request)?.Dispose();
-			}
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 		{
@@ -1132,7 +888,7 @@ public static class ShoutNetwork
 		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
-		messages = EnsureFinalUserTurn(messages, out string originalLastRole);
+		messages = PrimaryChatMessagePolicy.EnsureFinalUserTurn(messages, out string originalLastRole);
 		LogNormalizedMessageTail("stream", originalLastRole, messages);
 		PlayerReferenceStreamFilter outputFilter = new PlayerReferenceStreamFilter();
 		StringBuilder fullText = new StringBuilder();
@@ -1216,151 +972,105 @@ public static class ShoutNetwork
 				}
 				try
 				{
-					HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-					try
-					{
-						LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, settings.ApiKey);
-						request.Headers.ConnectionClose = true;
-						request.Content = (HttpContent)new StringContent(jsonBody, Encoding.UTF8, "application/json");
-						FreezeWatchdog.Mark("PrimaryChat.stream.send_begin", "attempt=" + attempt + " model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
-						HttpResponseMessage response = await SendPrimaryStreamingRequestAsync(request, cancellationToken);
-						FreezeWatchdog.Mark("PrimaryChat.stream.response", "attempt=" + attempt + " status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-						if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_response"))
-						{
-							response.Dispose();
-							return;
-						}
-						if (!response.IsSuccessStatusCode)
-						{
-							string errBody = await response.Content.ReadAsStringAsync();
-							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_error_body"))
-							{
-								response.Dispose();
-								return;
-							}
-							LogPrimaryRawResponse("stream_status_" + (int)response.StatusCode, errBody);
-							if (response.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && LooksLikeThinkingControlError(errBody) && attempt < 2)
-							{
-								Logger.Log("ShoutNetwork", "[PrimaryChat] stream thinking payload rejected; retrying without thinking controls.");
-								response.Dispose();
-								JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var _);
-								DuelSettings.RemoveThinkingControls(retryPayload);
-								jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload);
-								requestBodyForTokenStats = jsonBody;
-								thinkingMode += "_retry_plain";
-								continue;
-							}
-							sw.Stop();
-							Logger.Obs("Network", "request_complete", new Dictionary<string, object>
-							{
-								["mode"] = "stream",
-								["ok"] = false,
-								["status"] = (int)response.StatusCode,
-								["attempt"] = attempt,
-								["thinkingMode"] = thinkingMode,
-								["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
-							});
-							Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-							string httpError = LlmRetryPrompt.BuildFailureDetail($"（API请求失败: {response.StatusCode}）", "", errBody);
-							FreezeWatchdog.Mark("PrimaryChat.stream.http_error", "attempt=" + attempt + " status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-							if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
-							{
-								await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
-								return;
-							}
-							onError?.Invoke(httpError);
-							return;
-						}
-						FreezeWatchdog.Mark("PrimaryChat.stream.content_stream_wait_begin", "attempt=" + attempt + " thread=" + Thread.CurrentThread.ManagedThreadId);
-						using Stream stream = await response.Content.ReadAsStreamAsync();
-						FreezeWatchdog.Mark("PrimaryChat.stream.content_stream_wait_end", "attempt=" + attempt + " thread=" + Thread.CurrentThread.ManagedThreadId);
-						using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-						int readSequence = 0;
-						while (true)
-						{
-							string text;
-							readSequence++;
-							FreezeWatchdog.Mark("PrimaryChat.stream.read_line_begin", "attempt=" + attempt + " read=" + readSequence + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-							string line = (text = await reader.ReadLineAsync());
-							FreezeWatchdog.Mark("PrimaryChat.stream.read_line_end", "attempt=" + attempt + " read=" + readSequence + " null=" + (text == null) + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-							if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_read"))
-							{
-								return;
-							}
-							if (text == null || cancellationToken.IsCancellationRequested)
-							{
-								break;
-							}
-							line = line.Trim();
-							if (string.IsNullOrEmpty(line) || !line.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
-							{
-								continue;
-							}
-							string data = line.Substring(5).Trim();
-							if (data == "[DONE]")
-							{
-								break;
-							}
-							if (rawStreamResponse.Length > 0)
-							{
-								rawStreamResponse.AppendLine();
-							}
-							rawStreamResponse.Append(data);
-							try
-							{
-								JObject chunk = JObject.Parse(data);
-								string reasoningDelta = LlmApiCompat.ExtractStreamReasoningText(chunk);
-								if (!string.IsNullOrEmpty(reasoningDelta))
-								{
-									fullReasoning.Append(reasoningDelta);
-								}
-								string delta = ExtractPrimaryStreamDelta(chunk);
-								if (!string.IsNullOrEmpty(delta))
-								{
-									string text2 = outputFilter.Push(delta);
-									if (chunkCount == 0)
-									{
-										firstChunkMs = sw.Elapsed.TotalMilliseconds;
-										Logger.Obs("Network", "first_chunk", new Dictionary<string, object>
-										{
-											["mode"] = "stream",
-											["firstChunkMs"] = Math.Round(firstChunkMs, 2)
-										});
-										FreezeWatchdog.Mark("PrimaryChat.stream.first_chunk", "attempt=" + attempt + " firstChunkMs=" + Math.Round(firstChunkMs, 2), immediate: true);
-									}
-									chunkCount++;
-									if (!string.IsNullOrEmpty(text2))
-									{
-										fullText.Append(text2);
-										try
-										{
-											if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_chunk"))
-											{
-												FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_begin", "read=" + readSequence + " chunk=" + chunkCount + " deltaLen=" + text2.Length + " thread=" + Thread.CurrentThread.ManagedThreadId);
-												onChunk?.Invoke(text2);
-												FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_end", "read=" + readSequence + " chunk=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
-											}
-										}
-										catch
-										{
-										}
-									}
-								}
-								else if (chunkCount == 0 && fullText.Length == 0)
-								{
-									LogPrimaryRawResponse("stream_unparsed_chunk", data);
-								}
-							}
-							catch (Exception parseEx)
-							{
-								LogPrimaryRawResponse("stream_chunk_parse_error", parseEx.Message + "\n" + data);
-							}
-						}
-					}
-					finally
-					{
-						((IDisposable)request)?.Dispose();
-					}
+                    FreezeWatchdog.Mark("PrimaryChat.stream.send_begin", "attempt=" + attempt + " model=" + effectiveModelName + " maxTokens=" + actualMaxTokens, immediate: true);
+                    LlmStreamingResponse streamResult = await LlmStreamingTransport.SendAsync(
+                        effectiveApiUrl, settings.ApiKey, jsonBody, SendPrimaryStreamingRequestAsync, cancellationToken,
+                        acceptResponse: status =>
+                        {
+                            FreezeWatchdog.Mark("PrimaryChat.stream.response", "attempt=" + attempt + " status=" + (int)status + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+                            return !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_response");
+                        },
+                        acceptErrorBody: () => !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_error_body"),
+                        onReadStarted: readSequence =>
+                            FreezeWatchdog.Mark("PrimaryChat.stream.read_line_begin", "attempt=" + attempt + " read=" + readSequence + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId),
+                        acceptLine: (readSequence, line) =>
+                        {
+                            FreezeWatchdog.Mark("PrimaryChat.stream.read_line_end", "attempt=" + attempt + " read=" + readSequence + " null=" + (line == null) + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " thread=" + Thread.CurrentThread.ManagedThreadId);
+                            return !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_read");
+                        },
+                        onDelta: delta =>
+                        {
+                            if (!string.IsNullOrEmpty(delta.Reasoning)) fullReasoning.Append(delta.Reasoning);
+                            if (!string.IsNullOrEmpty(delta.Content))
+                            {
+                                string visibleDelta = outputFilter.Push(delta.Content);
+                                if (chunkCount == 0)
+                                {
+                                    firstChunkMs = sw.Elapsed.TotalMilliseconds;
+                                    Logger.Obs("Network", "first_chunk", new Dictionary<string, object>
+                                    {
+                                        ["mode"] = "stream",
+                                        ["firstChunkMs"] = Math.Round(firstChunkMs, 2)
+                                    });
+                                    FreezeWatchdog.Mark("PrimaryChat.stream.first_chunk", "attempt=" + attempt + " firstChunkMs=" + Math.Round(firstChunkMs, 2), immediate: true);
+                                }
+                                chunkCount++;
+                                if (!string.IsNullOrEmpty(visibleDelta))
+                                {
+                                    fullText.Append(visibleDelta);
+                                    try
+                                    {
+                                        if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_chunk"))
+                                        {
+                                            FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_begin", "read=" + delta.ReadSequence + " chunk=" + chunkCount + " deltaLen=" + visibleDelta.Length + " thread=" + Thread.CurrentThread.ManagedThreadId);
+                                            onChunk?.Invoke(visibleDelta);
+                                            FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_end", "read=" + delta.ReadSequence + " chunk=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
+                                        }
+                                    }
+                                    catch { }
+                                }
+                            }
+                            else if (chunkCount == 0 && fullText.Length == 0)
+                            {
+                                LogPrimaryRawResponse("stream_unparsed_chunk", delta.Data);
+                            }
+                        },
+                        onParseError: (message, data) => LogPrimaryRawResponse("stream_chunk_parse_error", message + "\n" + data),
+                        connectionClose: true,
+                        throwOnCancellationBeforeRead: false,
+                        rawSampleMaxChars: -1,
+                        includeDataPrefix: false).ConfigureAwait(false);
+                    if (streamResult.Discarded) return;
+                    if (!string.IsNullOrEmpty(streamResult.RawStreamSample))
+                    {
+                        if (rawStreamResponse.Length > 0) rawStreamResponse.AppendLine();
+                        rawStreamResponse.Append(streamResult.RawStreamSample);
+                    }
+                    if (!streamResult.IsSuccessStatusCode)
+                    {
+                        string errBody = streamResult.ErrorBody;
+                        LogPrimaryRawResponse("stream_status_" + (int)streamResult.StatusCode, errBody);
+                        if (streamResult.StatusCode == System.Net.HttpStatusCode.BadRequest && thinkingMode != "plain" && PrimaryChatMessagePolicy.LooksLikeThinkingControlError(errBody) && attempt < 2)
+                        {
+                            Logger.Log("ShoutNetwork", "[PrimaryChat] stream thinking payload rejected; retrying without thinking controls.");
+                            JObject retryPayload = BuildPrimaryChatPayload(messages, settings, effectiveApiUrl, effectiveModelName, actualMaxTokens, stream: true, out var _);
+                            DuelSettings.RemoveThinkingControls(retryPayload);
+                            jsonBody = LlmApiCompat.PrepareChatRequestJson(effectiveApiUrl, retryPayload);
+                            requestBodyForTokenStats = jsonBody;
+                            thinkingMode += "_retry_plain";
+                            continue;
+                        }
+                        sw.Stop();
+                        Logger.Obs("Network", "request_complete", new Dictionary<string, object>
+                        {
+                            ["mode"] = "stream",
+                            ["ok"] = false,
+                            ["status"] = (int)streamResult.StatusCode,
+                            ["attempt"] = attempt,
+                            ["thinkingMode"] = thinkingMode,
+                            ["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
+                        });
+                        Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
+                        string httpError = LlmRetryPrompt.BuildFailureDetail($"（API请求失败: {streamResult.StatusCode}）", "", errBody);
+                        FreezeWatchdog.Mark("PrimaryChat.stream.http_error", "attempt=" + attempt + " status=" + (int)streamResult.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+                        if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
+                        {
+                            await CallApiWithMessagesStream(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError);
+                            return;
+                        }
+                        onError?.Invoke(httpError);
+                        return;
+                    }
 					string text3 = outputFilter.Flush();
 					if (!string.IsNullOrEmpty(text3))
 					{
@@ -1380,42 +1090,18 @@ public static class ShoutNetwork
 				}
 				catch (Exception ex)
 				{
+                    if (ex.Data[LlmStreamingTransport.PartialRawDataKey] is string partialRaw && !string.IsNullOrEmpty(partialRaw))
+                    {
+                        if (rawStreamResponse.Length > 0) rawStreamResponse.AppendLine();
+                        rawStreamResponse.Append(partialRaw);
+                    }
 					lastStreamException = ex;
-					if (attempt < 2 && fullText.Length == 0)
-					{
-						await Task.Delay(500, cancellationToken);
-					}
+                    if (fullText.Length > 0) break;
+                    if (attempt < 2) await Task.Delay(500, cancellationToken);
 				}
 			}
 			if (!streamSucceeded)
 			{
-				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false, promptRetryOnError: false);
-				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback"))
-				{
-					return;
-				}
-				if (!string.IsNullOrWhiteSpace(fallback) && !fallback.StartsWith("（错误") && !LlmRetryPrompt.IsRetryableLlmError(fallback))
-				{
-					sw.Stop();
-					Logger.Obs("Network", "request_complete", new Dictionary<string, object>
-					{
-						["mode"] = "stream",
-						["ok"] = true,
-						["fallback"] = true,
-						["chunkCount"] = chunkCount,
-						["firstChunkMs"] = ((firstChunkMs >= 0.0) ? Math.Round(firstChunkMs, 2) : (-1.0)),
-						["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2),
-						["resultLen"] = fallback.Length
-					});
-					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
-					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
-					FreezeWatchdog.Mark("PrimaryChat.stream.fallback_complete", "resultLen=" + fallback.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))
-					{
-						onComplete?.Invoke(fallback.Trim());
-					}
-					return;
-				}
 				if (fullText.Length > 0)
 				{
 					string text4 = outputFilter.Flush();
@@ -1445,6 +1131,34 @@ public static class ShoutNetwork
 					}
 					return;
 				}
+				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false, promptRetryOnError: false);
+				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback"))
+				{
+					return;
+				}
+				if (!string.IsNullOrWhiteSpace(fallback) && !fallback.StartsWith("（错误") && !LlmRetryPrompt.IsRetryableLlmError(fallback))
+				{
+					sw.Stop();
+					Logger.Obs("Network", "request_complete", new Dictionary<string, object>
+					{
+						["mode"] = "stream",
+						["ok"] = true,
+						["fallback"] = true,
+						["chunkCount"] = chunkCount,
+						["firstChunkMs"] = ((firstChunkMs >= 0.0) ? Math.Round(firstChunkMs, 2) : (-1.0)),
+						["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2),
+						["resultLen"] = fallback.Length
+					});
+					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
+					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
+					FreezeWatchdog.Mark("PrimaryChat.stream.fallback_complete", "resultLen=" + fallback.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
+					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))
+					{
+						onComplete?.Invoke(fallback.Trim());
+					}
+					return;
+				}
+
 				if (lastStreamException != null)
 				{
 					sw.Stop();
@@ -1474,10 +1188,10 @@ public static class ShoutNetwork
 			{
 				LogPrimaryRawResponse("stream_empty_final", "chunkCount=" + chunkCount + "; no parsed text from response\n" + rawStreamResponse);
 				string retryFailure = "";
-				if (!HasEmptyResponseRetryMarker(messages))
+				if (!PrimaryChatMessagePolicy.HasEmptyResponseRetryMarker(messages))
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction and thinking disabled.");
-					string retry = await CallApiWithMessages(BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, forceDisableThinking: true, promptRetryOnError: false);
+					string retry = await CallApiWithMessages(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, forceDisableThinking: true, promptRetryOnError: false);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry"))
 					{
 						return;

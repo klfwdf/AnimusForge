@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "f07cb2a24d72446f547949ffb1c518f14b573532",
+  "baseline": "955a6be314840be8d20f1320d3c7f23c7a93fe77",
+  "scope": "Internal directory snapshot / public V1 projection + strict owner parity repair; not full lifecycle or B1 completion",
+  "sourceBinding": "Builds used working-tree production identical to f07cb2a2 at checkpoint aa3f3c07; no production edits after builds.",
+  "verification": {
+    "coreOnlyWithoutApi": "PASS",
+    "fullPortAssertions": 308,
+    "portMutations": 3,
+    "portOwnerSignatures": 13,
+    "portCallSites": 31,
+    "memoryInverseGuards": 15,
+    "snapshotBoundaryAssertions": 32,
+    "parallelCaptures": 128,
+    "snapshotMutations": 3,
+    "apiAssertions": 119,
+    "concurrentApiReads": 256,
+    "internalAccessRejection": "CS0122",
+    "campaignAssertions": 42,
+    "campaignMutations": 5,
+    "stageOutputs": 6,
+    "actualDllMetadataAssertions": 584,
+    "syncDataKeys": 146,
+    "campaignBehaviorTypes": 36
+  },
+  "resolvedFailures": [
+    "Historical port suite missed existing strict B1 inverse; connected without hash/whole-file waiver.",
+    "Expected exception caused stalled test executable and subsequent file lock; test Main now prints error and exits nonzero; only verified project test process terminated.",
+    "Test fixture initially lacked compiled new check class and an old mutation used the previous internal enum; corrected and final runtime mutation checks passed."
+  ],
+  "unverified": [
+    "live Campaign/Mission, end/reentry, old-save loading",
+    "real behavior/model constructor side effects",
+    "live Economy/AFEF and full original AF feature parity",
+    "complete Campaign/Mission lifecycle and memory deep-copy/budget closure",
+    "game frame-time performance"
+  ],
+  "sourceFiles": [
+    {
+      "path": "Api/Internal/AfV1SnapshotProjection.cs",
+      "normalizedSha256": "c16ec0ce0ef0c4ae4ae63d2505678dee2437970a66dbd7e3eeca700e949dd923"
+    },
+    {
+      "path": "Api/V1/AfApi.cs",
+      "normalizedSha256": "926a781ce1b6b2ebbd0b927896b26973cb1aef584eced5ac0474e9200ffc5b3c"
+    },
+    {
+      "path": "Refactor/Modules/ModuleFrameworkRuntime.cs",
+      "normalizedSha256": "556151bd23ae8d03004bc54807e692ba8f5da448be175c45b5b663f8424e90ff"
+    },
+    {
+      "path": "Refactor/Modules/ModuleFrameworkSnapshot.cs",
+      "normalizedSha256": "d76d26dbd25aec0fc26913f9c1e8cceaccba302eee0208c9a03b5acaff2cf24d"
+    },
+    {
+      "path": "tools/CampaignCompositionTests/run.py",
+      "normalizedSha256": "5ec3e8ea04a8e874ab0a58b2d9fd5ddf3c5a04cfb0a1a12090792f9dc89557d9"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/ArtifactMetadata.cs",
+      "normalizedSha256": "5a86368557513d624eae7a468f7a07bb08c7ea2d4cee53416f60dab6e2ae4b37"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/ExternalClient.cs",
+      "normalizedSha256": "7803d60e9402b6afd25a4b784f38bf23978ef8879b9afe84780e55b7bdb1173f"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/HostControl.cs",
+      "normalizedSha256": "419c34508bb96ec99a1da9f540f90cce3bbccab513c615b287305e76272df3e7"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/SnapshotBoundaryChecks.cs",
+      "normalizedSha256": "357333acbe92251e4659646815edcc094ff91e8978267511293065098e61a058"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/run.py",
+      "normalizedSha256": "e10390239a486c25f60670d56efeb20f382a78cf3e920eee4bd90beb7461f138"
+    },
+    {
+      "path": "tools/ModuleFrameworkApiTests/source_boundary.py",
+      "normalizedSha256": "f60b81f059a5d8b4aa2c3ac4ed5277527ad3e3034d54558e201c5b78a501b78e"
+    },
+    {
+      "path": "tools/TeamModulePortParityTests/Program.cs",
+      "normalizedSha256": "b5ee2b7d93631d2cda4cfbd1f085d457450aa0f1aeb1568bce68c62cea6f45ce"
+    },
+    {
+      "path": "tools/TeamModulePortParityTests/run.py",
+      "normalizedSha256": "85ffd60b9d2676bedb2d44ce827cb45997ce86a55c2ad8ff29898ca57bbcf093"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "a6e02761140cfb7b1f22c625bc3430a2eaac824347b747ff275e6d2fbe869500",
+      "bytes": 43008
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "a6dd467b70d60acd8e28535b4fddaf78b7726a9c997fc58d2f9dc4431d51f2fa",
+      "bytes": 12723712
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "e5bc8929ac2dd73fbf9127af7a94f951cf52bcf1d7fa955b4e83e2aa3167dccb",
+      "bytes": 12723200
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "a419593b7202d8bdaf6011af264dc98ea810a7359001f6fc304271eafe3e9332",
+      "bytes": 41472
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "d5543ba94d323adc8821cc1a1645e04034b45d338beffaeddab59df5f890093a",
+      "bytes": 11807232
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "ea245e8b0c00952aabecf473e60e454edaf2daca0654b2ff997dd4c37dff3ad4",
+      "bytes": 11806720
+    }
+  ],
+  "evidence": [
+    {
+      "original": ".tmp/snapshot-boundary-20260915/api-contracts.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/00-api-contracts.log",
+      "sha256": "524b646b55404033e6eec7b87d7cf461cb7cf3cc96df6a9e4bf90c01bab9375f"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/api-final.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/01-api-final.log",
+      "sha256": "fe61824d1cccd2ea5f18c58a641631d15e2a8c96bab06df6c902e974a6982942"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/api-initial.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/02-api-initial.log",
+      "sha256": "3de152f44bae7487b121a1504431e27e387ea4fc461858c5e6a4744fe790d89b"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/campaign-final.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/03-campaign-final.log",
+      "sha256": "deac309a0b28a95aeb3f29d5b95fd54df1aafebef7eed2ab391c4ea0d503382e"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/campaign.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/04-campaign.log",
+      "sha256": "12d742a06edfdf955bb93908dabc62eed7804aadc3901c695fd17bc31b866541"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/memory-inverse-tests.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/05-memory-inverse-tests.log",
+      "sha256": "5f2fb9544793bba284a3cc05d87c7c4ba0f11b5301a2a3126580a3e2fabfad84"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/persistence.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/06-persistence.log",
+      "sha256": "2143784708af496b6acb08582d1e30744a4855fa002b9cc90986c6e07bd86454"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/ports-diagnostic.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/07-ports-diagnostic.log",
+      "sha256": "7a7f9c7ce2e297329959087b9b25837381444f3b710e8fb8ffd6a7bf5b5e6b74"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/ports-final.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/08-ports-final.log",
+      "sha256": "532e23bbf7f5510927ccab5b547b1781ca0d8f4902c3ea90779922f2585383b0"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/ports-verified.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/09-ports-verified.log",
+      "sha256": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/ports.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/10-ports.log",
+      "sha256": "6cb3ad157f48d3c111a9d7032322cec768e0006a437bd31ed740854a44feef50"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/stage-debug.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/11-stage-debug.log",
+      "sha256": "a008340b46bb76393167a3f5dafad21c3b2f1d0aee32d82e5521b0999eb0979c"
+    },
+    {
+      "original": ".tmp/snapshot-boundary-20260915/stage-release.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/12-stage-release.log",
+      "sha256": "0a8907490cbfe8794bd7bfac235a0c5163c2b8f99c00f8dcecb7d6a0826c6679"
+    },
+    {
+      "original": "tools/ModuleFrameworkApiTests/.generated/current/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/13-run.log",
+      "sha256": "debbfb82676e445ae86ef86e0b2ad4adb4f5333b71c4c4813437683cd2451b71"
+    },
+    {
+      "original": "tools/ModuleFrameworkApiTests/.generated/current/map_ready_as_degraded/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/14-run.log",
+      "sha256": "8718f24b44738a1341989fc574d6b94a4138946b9d1e1a5c141529e5cd44d7ad"
+    },
+    {
+      "original": "tools/ModuleFrameworkApiTests/.generated/current/projection_rereads_live_directory/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/15-run.log",
+      "sha256": "0bc9b85fcffaffcc8c6d8c7c9f3489610cc65d7245935eb80fdcaabe9ac3ebaa"
+    },
+    {
+      "original": "tools/ModuleFrameworkApiTests/.generated/current/share_snapshot_container/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/16-run.log",
+      "sha256": "164914493d3035e81b8a312f172562ae6b37412ebb9eac21bbe198cbaf46e229"
+    },
+    {
+      "original": "tools/TeamModulePortParityTests/.generated/current/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/17-run.log",
+      "sha256": "01e9da3ec1dcb52a0a47d513ca4bc19c0abacaa3b7e5e71ff55f1378cf02ae5d"
+    },
+    {
+      "original": "tools/TeamModulePortParityTests/.generated/current/invert_eligibility/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/18-run.log",
+      "sha256": "3603e8a1644f0a5623112d59fdabf89ca5eeacb1635f59086b3dba212290b5cf"
+    },
+    {
+      "original": "tools/TeamModulePortParityTests/.generated/current/invert_siege_selected/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/19-run.log",
+      "sha256": "f279d61b2a73218d280cfdf3c8aadaebb975c2d6460912e6609b3a81ffac141d"
+    },
+    {
+      "original": "tools/TeamModulePortParityTests/.generated/current/swap_siege_context_texts/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/20-run.log",
+      "sha256": "ea46cacfc7617d7e05483fa42d405f401d9473ebd1831f963189b96f7db705bc"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/abort_model_failure/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/21-run.log",
+      "sha256": "ba4eeffa4e89f6fbf10978d5d670fa1b125f900d6f665438f0bfa17ac4f520b0"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/current/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/22-run.log",
+      "sha256": "6b1138c3b80804a7c8000efa2742289512e63e8b318eac2b026e943c7636ab34"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/discard_inner/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/23-run.log",
+      "sha256": "1e48c4d2cc07e8dc69f8fa9e60cc13f16cd46bea281a9104911fd34dbd8ba22e"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/drop_behavior/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/24-run.log",
+      "sha256": "2245bf2c93a09a7c9100a62e5788c372c1770880cc18447dd6807fbc640b9d2e"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/gate_on_directory/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/25-run.log",
+      "sha256": "2245bf2c93a09a7c9100a62e5788c372c1770880cc18447dd6807fbc640b9d2e"
+    },
+    {
+      "original": "tools/CampaignCompositionTests/.generated/current/reverse_models/run.log",
+      "frozen": ".tmp/snapshot-boundary-20260915/final-evidence/26-run.log",
+      "sha256": "2245bf2c93a09a7c9100a62e5788c372c1770880cc18447dd6807fbc640b9d2e"
+    }
+  ],
+  "push": false,
+  "deployment": false,
+  "automation": "PAUSED"
+}

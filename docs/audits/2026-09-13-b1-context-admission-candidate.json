@@ -1,0 +1,248 @@
+{
+  "task": "B1",
+  "status": "IN_PROGRESS_NOT_BATCH_ACCEPTED",
+  "productionRevision": "62abfdb3039b64660f6aebce6ebd4af2a60e719a",
+  "checkpoint": "c3ffdd25",
+  "previousProduction": "e77602f9",
+  "baseline": "90201155",
+  "changes": [
+    "One initial capture/clone/render for all three summary types; revalidation uses complete raw identity plus explicit effective context.",
+    "Raw major/overview state (including absent vs present-null dictionary entry) is fingerprinted before normalization; only detached processing copies are sanitized.",
+    "Initial pending checks reuse the actual detached render inputs; retry/final checks do not rebuild prompts or clone full payloads.",
+    "Daily effective target and ordered scene dependencies preserve unchanged rendering; major names use existing actual resolvers.",
+    "Context and dynamic threshold getters precede a fresh raw view/hash; retarget rejects before querying the old observer.",
+    "Overview pending eligibility projects the same single sanitizer pass; no whole block clone, irrelevant metadata cleanup or sort. Normal value equivalence only, not unrelated resource-failure equivalence."
+  ],
+  "checks": {
+    "helper": 32,
+    "captured": 109,
+    "capturedRuntimeControls": 28,
+    "rebuildObservation": 7,
+    "business": 36,
+    "planning": 24,
+    "writers": 238,
+    "terminal": 85,
+    "commitWriters": 51,
+    "admission": 54,
+    "admissionRuntimeControls": 5,
+    "relatedTerminalRuntimeControls": 2,
+    "oldInputRuntime": "e77602f9 Input-only: BUILD_PASS, 30 FAIL / 55 PASS",
+    "strictDeclarations": 50,
+    "strictDeletedDeclarations": 1,
+    "strictGuards": 5,
+    "ui": 85,
+    "history": 852,
+    "native": 27,
+    "syncKeys": 146,
+    "behaviors": 36,
+    "api": 119,
+    "concurrentReads": 256,
+    "actualDllMetadata": 532,
+    "stageBuilds": 6,
+    "dllMarkerStagePairs": 6
+  },
+  "revalidationCost": {
+    "oldCapturesByAttempts": {
+      "1": 3,
+      "3": 7
+    },
+    "currentCapturesByAttempts": {
+      "1": 1,
+      "3": 1
+    },
+    "currentEachPromptBuilds": 1,
+    "currentChecksByAttempts": {
+      "1": 3,
+      "3": 7
+    },
+    "currentCloneCalls": {
+      "daily": 2,
+      "major": 3,
+      "overview": 3
+    },
+    "largeRecords": 1000,
+    "initialObservedBytes": 1834552,
+    "initialObservedMs": 18.197,
+    "checkObservedBytes": 238912,
+    "checkObservedMsRange": [
+      10.326,
+      16.059
+    ],
+    "oldCheckObservedBytesApprox": 1573432,
+    "oldInitialObservedBytes": 1579704,
+    "oldInitialObservedMs": 13.69,
+    "notes": [
+      "Initial binding check adds cost; initial capture is not claimed faster or smaller.",
+      "Measurements include instrumentation/JIT/load, not real game timing or a hard record/frame budget.",
+      "Observation executes actual Execute/retry/final IsCurrent, not whole Process/Apply."
+    ]
+  },
+  "admissionCost": {
+    "blocks": 2000,
+    "oldWholeBlockCopies": 2000,
+    "currentWholeBlockCopies": 0,
+    "oldPredicateSanitizerPasses": 1,
+    "currentPredicateSanitizerPasses": 0,
+    "currentEnqueueSanitizerPasses": 1,
+    "stateCopyRetained": true
+  },
+  "locations": [
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "symbol": "private MemorySummarySourceView ReadMemorySummarySource(",
+      "start": 126,
+      "end": 163,
+      "responsibility": "主线程/owner/队列/目标资格，直接读取 raw 字典状态；不把 live view 留给异步请求"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "symbol": "private static void DescribeMemorySummaryDailyContext(",
+      "start": 88,
+      "end": 112,
+      "responsibility": "首次构建有序 header / 非空正文场景依赖；明确场景和无效设置变动不误退"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "symbol": "private string CaptureMemorySummaryContextFingerprint(",
+      "start": 205,
+      "end": 250,
+      "responsibility": "实际有效目标字数、写作要求、目标 observer、名字 resolver、解析身份"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "symbol": "private MemorySummaryInput CaptureMemorySummaryInput(",
+      "start": 252,
+      "end": 319,
+      "responsibility": "三类唯一复制/净化/原 Build，原始来源与上下文分开；初捕获末尾绑定检查"
+    },
+    {
+      "path": "MyBehavior.MemorySummaryInput.cs",
+      "symbol": "private bool IsMemorySummaryInputCurrent(",
+      "start": 338,
+      "end": 355,
+      "responsibility": "retarget先拒绝，context/门槛 getter 后重新读取raw；唯一完整raw摘要紧接解析/提交"
+    },
+    {
+      "path": "MyBehavior.cs",
+      "symbol": "private bool HasMemoryOverviewPendingBlocks(",
+      "start": 26957,
+      "end": 26988,
+      "responsibility": "一轮资格投影，保留原始ID占位、计数和非幂等标题；不复制/排序无关大图"
+    }
+  ],
+  "artifacts": {
+    "status": "PASS",
+    "build_source_sha256": [
+      {
+        "path": "MyBehavior.cs",
+        "sha256": "6f665e394073ed022878d9725c6d3da62a7c983b3927c33ee175d1e3d859ee35"
+      },
+      {
+        "path": "MyBehavior.MemorySummaryInput.cs",
+        "sha256": "eed1d0b35dbe8981f5bd5ed81fa3cbd0b85c01180b128fcb04d83827559702aa"
+      },
+      {
+        "path": "MyBehavior.MemorySummaryMainThread.cs",
+        "sha256": "5f3e84513b6a450adf575e9a26fb11ae5be7ee30bfd7546aacf1a7866499ac10"
+      },
+      {
+        "path": "MyBehavior.MemorySummaryPlanning.cs",
+        "sha256": "af7f32017845a8a505f3eb731680e03892e16b84cb893246a3cc43eeced601e0"
+      },
+      {
+        "path": "MyBehavior.MemorySourceWrites.cs",
+        "sha256": "d66743492bca356932d3372346b1f6d69a890670a135d4daa7d8d0e30bc15f1b"
+      }
+    ],
+    "artifacts": [
+      {
+        "configuration": "Debug",
+        "implementation": "versions/1.3",
+        "artifact": "bin\\Debug\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+        "marker": "bin\\Debug\\single_module_artifacts\\versions\\1.3\\AnimusForge.build.json",
+        "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+        "sha256": "a993ef638f3fc80978fb43c8f3d9e32f6256ccead441095900842c159f420e7e"
+      },
+      {
+        "configuration": "Debug",
+        "implementation": "versions/1.4",
+        "artifact": "bin\\Debug\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+        "marker": "bin\\Debug\\single_module_artifacts\\versions\\1.4\\AnimusForge.build.json",
+        "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+        "sha256": "56294b94cf3f730ae90d532efae1831160c8298e85eb8f1f29c5f4d02fe16be8"
+      },
+      {
+        "configuration": "Debug",
+        "implementation": "bootstrap",
+        "artifact": "bin\\Debug\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+        "marker": "bin\\Debug\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.build.json",
+        "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+        "sha256": "eb23001c7cdd904962c622119f72519d5dbac69fab0f30498404adb339cf5d03"
+      },
+      {
+        "configuration": "Release",
+        "implementation": "versions/1.3",
+        "artifact": "bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+        "marker": "bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.build.json",
+        "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+        "sha256": "6ce2ecb9ee3edd93566d86ece02b8ad68206c27049b5e5faf6a1b3fe36da1a51"
+      },
+      {
+        "configuration": "Release",
+        "implementation": "versions/1.4",
+        "artifact": "bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+        "marker": "bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.build.json",
+        "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+        "sha256": "4f8871a828f825324452b572244f53aad74e0fa87e9b380a007eed87f8c1f5f1"
+      },
+      {
+        "configuration": "Release",
+        "implementation": "bootstrap",
+        "artifact": "bin\\Release\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+        "marker": "bin\\Release\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.build.json",
+        "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+        "sha256": "447b5684952e859eafd8cc6c651a410b1a4191fb60f9ace3d171077e0cb9448b"
+      }
+    ],
+    "protected": [
+      {
+        "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+        "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+      },
+      {
+        "path": "docs/handoffs/2026-09-06-team-brief.md",
+        "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+      },
+      {
+        "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+        "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+      }
+    ]
+  },
+  "evidence": {
+    "frozenIndex": ".tmp/b1-20260913/context-admission-62abfdb3/index.json",
+    "indexSha256": "3bccf58aad873c61fa3f8820d30e0486ea7363b285e24f0f24b2d86f156bb5dd",
+    "files": 971,
+    "previousCaptureBaseline": ".tmp/b1-rebuild-baseline-e77602f9/baseline-summary.json",
+    "currentSummary": ".tmp/b1-raw-context-tests-final-summary.json",
+    "controls": ".tmp/b1-raw-context-controls-captured.json",
+    "strict": ".tmp/b1-raw-context-strict-inverse.json",
+    "additionalStrictGuards": ".tmp/b1-20260913/context-admission-test-source-guards.json"
+  },
+  "remaining": [
+    "Full raw hashing/first capture/parse and Apply still contain unbounded atomic record work.",
+    "Past-draft detection, sealing initial/final scans, candidate IDs and per-owner cleanup need continued B1 work.",
+    "Daily Apply public/weekly/index-miss scans remain; do not treat partial failure notification as transaction rollback.",
+    "B2/B3, LIVE/SAVE/provider/audio/external DLL loading and unchosen public API capabilities are not completed."
+  ],
+  "safety": {
+    "workspace": "G:\\AFMOD\\AF-REFACTOR",
+    "branch": "codex/af-framework-skill-delivery-20260911",
+    "automation": "af-7-8 ACTIVE HOURLY read-only confirmed",
+    "pushed": false,
+    "newRemoteFetch": false,
+    "gameDeployed": false,
+    "savesTouched": false,
+    "protectedDraftHashesUnchanged": true
+  }
+}

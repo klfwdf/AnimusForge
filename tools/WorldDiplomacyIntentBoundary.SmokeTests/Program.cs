@@ -24,8 +24,14 @@ internal static class Program
 
     private static int Main()
     {
-        string sourcePath = FindRepositoryFile("WorldDiplomacyBehavior.cs");
+        string sourcePath = FindRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string source = File.ReadAllText(sourcePath, Encoding.UTF8);
+        string jobRuntimeSource = File.ReadAllText(FindRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs")), Encoding.UTF8);
+        int jobRuntimeInsertion = source.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
+        Test.True(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
+        source = source.Insert(jobRuntimeInsertion, jobRuntimeSource + Environment.NewLine);
         string generatedValidation = ExtractSection(
             source,
             "private bool TryGetGeneratedIntentLegalityViolation(",
@@ -518,7 +524,8 @@ internal static class Program
 			&& roundPrompt.Contains("end_negotiation", StringComparison.Ordinal)
 			&& roundPrompt.Contains("declare_deadlock", StringComparison.Ordinal),
 			"the third no-action phase must force a concrete result, exit, or declared deadlock");
-		string resultRules = File.ReadAllText(FindRepositoryFile("WorldDiplomacyResultSettlementRules.cs"), Encoding.UTF8);
+		string resultRules = File.ReadAllText(FindRepositoryFile(Path.Combine(
+			"src", "modules", "AF.Module.Diplomacy", "Rules", "WorldDiplomacyResultSettlementRules.cs")), Encoding.UTF8);
 		Test.True(resultRules.Contains("kind != WorldDiplomacyConfirmedResultKind.OfferRejected", StringComparison.Ordinal),
 			"rejecting one proposal must not be a confirmed terminal result for the whole round");
 
@@ -561,7 +568,7 @@ internal static class Program
 			"all natural reputation bands must tick daily while long time skips remain batched instead of scanning every elapsed day");
 		string popup = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopup.cs"), Encoding.UTF8);
 		string popupVm = File.ReadAllText(FindRepositoryFile("CourierLetterReplyPopupVM.cs"), Encoding.UTF8);
-		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("WorldDiplomacyBehavior.cs"))!;
+		string repositoryRoot = Path.GetDirectoryName(FindRepositoryFile("DuelSettings.cs"))!;
 		string popupPrefab = File.ReadAllText(Path.Combine(repositoryRoot, "AnimusForge", "GUI", "Prefabs", "CourierLetterReplyPopup.xml"), Encoding.UTF8);
 		Test.True(popup.Contains("string impactText = null", StringComparison.Ordinal)
 			&& popupVm.Contains("public string ImpactText", StringComparison.Ordinal)
@@ -2419,7 +2426,7 @@ internal static class Program
             failedResultStart,
             ordinaryFailureContinue + "continue;".Length - failedResultStart);
         int generateGuard = failedResultBranch.IndexOf(
-            "string.Equals(job.Kind, \"generate\", StringComparison.OrdinalIgnoreCase)",
+            "route == WorldDiplomacyJobRoute.Generate",
             StringComparison.Ordinal);
         int truncationGuard = failedResultBranch.IndexOf("result.IsOutputTruncated", StringComparison.Ordinal);
         int partialContentGuard = failedResultBranch.IndexOf(
@@ -3172,13 +3179,13 @@ internal static class Program
 			FindRepositoryFile("PermanentAllianceGuard.cs"),
 			Encoding.UTF8);
 		string diplomacy = File.ReadAllText(
-			FindRepositoryFile("DiplomacyBehavior.cs"),
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Direct", "DiplomacyBehavior.Actions.cs")),
 			Encoding.UTF8);
 		string declareWarPatch = File.ReadAllText(
 			FindRepositoryFile("Patch_Meeting_SuppressDeclareWarAction.cs"),
 			Encoding.UTF8);
-		string subModule = File.ReadAllText(
-			FindRepositoryFile("SubModule.cs"),
+		string startupComposition = File.ReadAllText(
+			FindRepositoryFile(Path.Combine("src", "AF.GameAdapter.Bannerlord", "Composition", "StartupPatchComposition.cs")),
 			Encoding.UTF8);
 
 		Test.True(guard.Contains("AllianceCampaignBehavior", StringComparison.Ordinal)
@@ -3265,8 +3272,8 @@ internal static class Program
 		Test.True(CountOccurrences(worldDiplomacySource, "alliance.EndAlliance(") == 1,
 			"WorldDiplomacy must have no unscoped secondary path that can end a permanent alliance");
 
-		Test.True(subModule.Contains("PermanentAllianceGuard.RegisterHarmonyPatches(harmony)", StringComparison.Ordinal)
-			&& subModule.Contains("typeof(Patch_Meeting_SuppressDeclareWarAction)", StringComparison.Ordinal),
+		Test.True(startupComposition.Contains("PermanentAllianceGuard.RegisterHarmonyPatches(harmony)", StringComparison.Ordinal)
+			&& startupComposition.Contains("typeof(Patch_Meeting_SuppressDeclareWarAction)", StringComparison.Ordinal),
 			"the permanent-alliance guard must be registered during the existing Harmony bootstrap");
 	}
 

@@ -1,5 +1,6 @@
 """Source-boundary checks supplement executable Courier owner tests."""
 import unittest
+from pathlib import Path
 import run
 
 
@@ -7,10 +8,10 @@ class ExtractionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.blocks = run.extract()
-        cls.courier = run.ex.source("CourierDeliveryBehavior.cs", None)
+        cls.courier = run.ex.courier_source(None)
 
     def test_complete_production_owner_partial(self):
-        self.assertEqual(run.ex.source("CourierDeliveryBehavior.DetachedPostprocess.cs", None), self.blocks["PARTIAL"])
+        self.assertEqual(run.ex.source("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs", None), self.blocks["PARTIAL"])
         self.assertEqual(1, self.blocks["PARTIAL"].count("Task.Delay(30000)"))
 
     def test_factory_capture_and_mapping_are_verbatim(self):
@@ -21,9 +22,13 @@ class ExtractionTests(unittest.TestCase):
     def test_real_work_item_and_parser(self):
         shout = run.ex.source("ShoutBehavior.cs", None)
         self.assertIn(self.blocks["WORK_ITEM"], shout)
-        self.assertIn("Refactor/Adapters/LegacyActionTagParser.cs", run.LINKS)
-        self.assertIn("LlmVisibleReplyNormalizer.cs", run.LINKS)
+        self.assertIn("src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs", run.LINKS)
+        self.assertIn("src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs", run.LINKS)
         self.assertIn("CourierVisibleLetterSanitizer.cs", run.LINKS)
+
+    def test_newtonsoft_dependency_missing_fails_closed(self):
+        with self.assertRaises(FileNotFoundError):
+            run.resolve_newtonsoft(Path(__file__).parent / 'missing-newtonsoft.dll')
 
     def test_raw_reply_not_display_text_feeds_owner(self):
         prepare = run.ex.declaration(self.blocks["PARTIAL"], "private static async Task<PromptPackage> PrepareCourierDetachedPostprocessAsync(")

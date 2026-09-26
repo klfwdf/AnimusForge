@@ -224,7 +224,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
             streamResponse,
             out string controlMode);
         string body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
-        using (CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken))
+        using (CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(provider.TimeoutMilliseconds, cancellationToken))
         {
             try
             {
@@ -383,7 +383,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         }
 
         string body = LlmApiCompat.PrepareChatRequestJson(endpoint, payload);
-        using CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
+        using CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
         try
         {
             GatewayExchange exchange = await SendOnceAsync(endpoint, apiKey, body, timeout.Token).ConfigureAwait(false);
@@ -443,7 +443,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         }
 
         string body = string.IsNullOrWhiteSpace(preparedJson) ? "{}" : preparedJson;
-        using CancellationTokenSource timeout = CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
+        using CancellationTokenSource timeout = LlmNonStreamingTransport.CreateTimeout(provider.TimeoutMilliseconds, cancellationToken);
         try
         {
             GatewayExchange exchange = await SendOnceAsync(endpoint, apiKey, body, timeout.Token).ConfigureAwait(false);
@@ -502,134 +502,55 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         Action<string> onDelta,
         CancellationToken cancellationToken)
     {
-        using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint))
+        if (!streamResponse)
         {
-            LlmApiCompat.ApplyAuthenticationHeaders(request, endpoint, apiKey);
-            request.Content = new StringContent(body, Encoding.UTF8, "application/json");
-            HttpCompletionOption completion = streamResponse
-                ? HttpCompletionOption.ResponseHeadersRead
-                : HttpCompletionOption.ResponseContentRead;
-            using (HttpResponseMessage response = await DuelSettings.GlobalClient
-                .SendAsync(request, completion, cancellationToken).ConfigureAwait(false))
+            LlmNonStreamingResponse response = await LlmNonStreamingTransport.SendAsync(
+                endpoint, apiKey, body,
+                (request, token) => DuelSettings.GlobalClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, token),
+                cancellationToken).ConfigureAwait(false);
+            int status = (int)response.StatusCode;
+            string rawText = response.IsSuccessStatusCode ? ExtractAssistantText(response.Body) : string.Empty;
+            return new GatewayExchange
             {
-                int statusCode = (int)response.StatusCode;
-                if (!response.IsSuccessStatusCode)
-                {
-                    string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    return new GatewayExchange
-                    {
-                        StatusCode = statusCode,
-                        ResponseBody = responseBody ?? string.Empty,
-                        Result = new LlmGenerateResult(
-                            statusCode == 401 || statusCode == 403
-                                ? LlmResultStatus.NonRetryableFailure
-                                : statusCode == 429 || statusCode >= 500
-                                    ? LlmResultStatus.RetryableFailure
-                                    : LlmResultStatus.NonRetryableFailure,
-                            string.Empty,
-                            0,
-                            0,
-                            "http_" + statusCode,
-                            new LlmGenerateMetadata(
-                                statusCode: statusCode,
-                                isRateLimit: statusCode == 429,
-                                isAuthFailure: statusCode == 401 || statusCode == 403,
-                                isTimeout: statusCode == 408,
-                                retryAfterSeconds: TryGetRetryAfterSeconds(response)))
-                    };
-                }
-
-                if (!streamResponse)
-                {
-                    string responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    string rawText = ExtractAssistantText(responseBody);
-                    return new GatewayExchange
-                    {
-                        StatusCode = statusCode,
-                        ResponseBody = responseBody ?? string.Empty,
-                        Result = string.IsNullOrWhiteSpace(rawText)
-                            ? new LlmGenerateResult(LlmResultStatus.EmptyResponse, string.Empty, 0, 0, "empty_response", new LlmGenerateMetadata(statusCode: statusCode))
-                            : new LlmGenerateResult(LlmResultStatus.Succeeded, rawText, 0, 0, string.Empty, new LlmGenerateMetadata(statusCode: statusCode))
-                    };
-                }
-
-                StringBuilder fullContent = new StringBuilder();
-                StringBuilder rawStreamSample = new StringBuilder();
-                bool parseFailure = false;
-                using (Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    while (true)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        string line = await reader.ReadLineAsync().ConfigureAwait(false);
-                        if (line == null)
-                        {
-                            break;
-                        }
-                        string trimmed = line.Trim();
-                        if (!trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
-                        {
-                            continue;
-                        }
-                        string data = trimmed.Substring(5).Trim();
-                        if (string.Equals(data, "[DONE]", StringComparison.OrdinalIgnoreCase))
-                        {
-                            break;
-                        }
-                        if (string.IsNullOrWhiteSpace(data))
-                        {
-                            continue;
-                        }
-                        AppendBounded(rawStreamSample, "data: " + data, 12000);
-                        try
-                        {
-                            JObject json = JObject.Parse(data);
-                            string delta = LlmApiCompat.ExtractStreamDeltaText(json) ?? string.Empty;
-                            if (!string.IsNullOrEmpty(delta))
-                            {
-                                fullContent.Append(delta);
-                                try
-                                {
-                                    onDelta?.Invoke(delta);
-                                }
-                                catch
-                                {
-                                    // Delta observers are non-authoritative.
-                                }
-                            }
-                        }
-                        catch
-                        {
-                            parseFailure = true;
-                        }
-                    }
-                }
-
-                string raw = fullContent.ToString();
-                LlmGenerateResult result = string.IsNullOrWhiteSpace(raw)
-                    ? new LlmGenerateResult(
-                        parseFailure ? LlmResultStatus.InvalidResponse : LlmResultStatus.EmptyResponse,
-                        string.Empty,
-                        0,
-                        0,
-                        parseFailure ? "stream_parse_failed" : "empty_response",
-                        new LlmGenerateMetadata(statusCode: statusCode))
-                    : new LlmGenerateResult(
-                        LlmResultStatus.Succeeded,
-                        raw,
-                        0,
-                        0,
-                        string.Empty,
-                        new LlmGenerateMetadata(statusCode: statusCode));
-                return new GatewayExchange
-                {
-                    StatusCode = statusCode,
-                    RawStreamSample = rawStreamSample.ToString(),
-                    Result = result
-                };
-            }
+                StatusCode = status,
+                ResponseBody = response.Body ?? string.Empty,
+                Result = !response.IsSuccessStatusCode ? CreateHttpFailureResult(status, response.RetryAfterSeconds)
+                    : string.IsNullOrWhiteSpace(rawText)
+                        ? new LlmGenerateResult(LlmResultStatus.EmptyResponse, string.Empty, 0, 0, "empty_response", new LlmGenerateMetadata(statusCode: status))
+                        : new LlmGenerateResult(LlmResultStatus.Succeeded, rawText, 0, 0, string.Empty, new LlmGenerateMetadata(statusCode: status))
+            };
         }
+        LlmStreamingResponse streamResult = await LlmStreamingTransport.SendAsync(
+            endpoint, apiKey, body,
+            (request, token) => DuelSettings.GlobalClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token),
+            cancellationToken,
+            onDelta: delta =>
+            {
+                if (!string.IsNullOrEmpty(delta.Content)) onDelta?.Invoke(delta.Content);
+            },
+            throwOnCancellationBeforeRead: true,
+            rawSampleMaxChars: 12000,
+            includeDataPrefix: true).ConfigureAwait(false);
+        int statusCode = (int)streamResult.StatusCode;
+        string raw = streamResult.Content ?? string.Empty;
+        LlmGenerateResult result = !streamResult.IsSuccessStatusCode
+            ? CreateHttpFailureResult(statusCode, streamResult.RetryAfterSeconds)
+            : string.IsNullOrWhiteSpace(raw)
+                ? new LlmGenerateResult(
+                    streamResult.ParseFailure ? LlmResultStatus.InvalidResponse : LlmResultStatus.EmptyResponse,
+                    string.Empty, 0, 0,
+                    streamResult.ParseFailure ? "stream_parse_failed" : "empty_response",
+                    new LlmGenerateMetadata(statusCode: statusCode))
+                : new LlmGenerateResult(
+                    LlmResultStatus.Succeeded, raw, 0, 0, string.Empty,
+                    new LlmGenerateMetadata(statusCode: statusCode));
+        return new GatewayExchange
+        {
+            StatusCode = statusCode,
+            ResponseBody = streamResult.ErrorBody ?? string.Empty,
+            RawStreamSample = streamResult.RawStreamSample ?? string.Empty,
+            Result = result
+        };
     }
 
     private static string ExtractAssistantText(string responseBody)
@@ -644,40 +565,25 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         }
     }
 
-    private static void AppendBounded(StringBuilder builder, string value, int maxChars)
-    {
-        if (builder == null || string.IsNullOrEmpty(value) || builder.Length >= maxChars)
-        {
-            return;
-        }
-        int remaining = maxChars - builder.Length;
-        builder.Append(value.Length <= remaining ? value : value.Substring(0, remaining));
-        builder.AppendLine();
-    }
 
-    private static int? TryGetRetryAfterSeconds(HttpResponseMessage response)
+    private static LlmGenerateResult CreateHttpFailureResult(int statusCode, int? retryAfterSeconds)
     {
-        try
-        {
-            if (response?.Headers?.RetryAfter?.Delta != null)
-            {
-                return Math.Max(0, (int)Math.Ceiling(response.Headers.RetryAfter.Delta.Value.TotalSeconds));
-            }
-            if (response?.Headers != null && response.Headers.TryGetValues("Retry-After", out IEnumerable<string> values))
-            {
-                foreach (string value in values)
-                {
-                    if (int.TryParse((value ?? string.Empty).Trim(), out int seconds))
-                    {
-                        return Math.Max(0, seconds);
-                    }
-                }
-            }
-        }
-        catch
-        {
-        }
-        return null;
+        return new LlmGenerateResult(
+                            statusCode == 401 || statusCode == 403
+                                ? LlmResultStatus.NonRetryableFailure
+                                : statusCode == 429 || statusCode >= 500
+                                    ? LlmResultStatus.RetryableFailure
+                                    : LlmResultStatus.NonRetryableFailure,
+                            string.Empty,
+                            0,
+                            0,
+                            "http_" + statusCode,
+                            new LlmGenerateMetadata(
+                                statusCode: statusCode,
+                                isRateLimit: statusCode == 429,
+                                isAuthFailure: statusCode == 401 || statusCode == 403,
+                                isTimeout: statusCode == 408,
+                                retryAfterSeconds: retryAfterSeconds));
     }
 
     private static IReadOnlyList<object> ToJsonMessages(PromptPackage prompt)
@@ -713,13 +619,4 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
             string.IsNullOrWhiteSpace(model) ? "configured-chat" : model);
     }
 
-    private static CancellationTokenSource CreateTimeout(int timeoutMilliseconds, CancellationToken callerToken)
-    {
-        CancellationTokenSource linked = CancellationTokenSource.CreateLinkedTokenSource(callerToken);
-        if (timeoutMilliseconds > 0)
-        {
-            linked.CancelAfter(timeoutMilliseconds);
-        }
-        return linked;
-    }
 }

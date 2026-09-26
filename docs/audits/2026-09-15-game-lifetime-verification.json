@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "29448d1b7ec7bc7a92820c8b510aaad56c21ff37",
+  "baseline": "807bc5b944907a10d2626f3936fa7109aa74422a",
+  "mainBaseline": "437925b856fae76b4e9ee207e96ba048f35d5a67",
+  "scope": "Actual Game lifecycle + Native/Courier pending preparation/final commit retirement + My new-generation retirement admission race; full closeout ACTIVE",
+  "sourceBinding": "Final Stage built exactly these C# sources before commit while HEAD=e44f74b2; all source fingerprints match29448d1b. Original markers kept; no game deployment.",
+  "verification": {
+    "lifecycle": 36,
+    "lifecycleMutants": 12,
+    "bindings": 15,
+    "memoryRetirement": 7,
+    "memoryRetirementMutants": 1,
+    "courierCommit": 19,
+    "courierCommitMutants": 3,
+    "nativeAction": 91,
+    "nativeActionQueueMutants": 5,
+    "nativeCompletion": 184,
+    "nativePendingHistory": 111,
+    "history": 852,
+    "nativeHistory": 27,
+    "memoryWriters": 238,
+    "memoryDispatcher": 37,
+    "channelPersona": 169,
+    "channelCutover": 132,
+    "courierPhase": 16,
+    "courierPostprocess": 39,
+    "courierHistory": 122,
+    "teamPorts": 308,
+    "teamPortMutants": 3,
+    "campaignComposition": 42,
+    "campaignCompositionMutants": 5,
+    "api": 119,
+    "snapshot": 32,
+    "actualDllMetadata": 728,
+    "actualCourierHostReplay": "PASS with fixture ports",
+    "stageOutputs": 6,
+    "syncDataKeys": 146,
+    "behaviorTypes": 36,
+    "codeMapAnchors": 124
+  },
+  "oldRed": [
+    "Original807 Game callbacks lack lifecycle advance/retirement",
+    "Original807 Native final action remains pending after retirement",
+    "Original807 Courier duplicate queued callback invokes commit twice"
+  ],
+  "unverified": [
+    "Full core feature parity and symbol cleanup",
+    "preprocess/lore, role/asset/message live access, promoted companion generation",
+    "B1 first copy/whole backlog/terminal record cost budgets",
+    "Internal bidirectional core ports and external Native/Scene/Courier submit/result/cancel SDK",
+    "Actual Campaign/Mission/GameEnd order, all TTS/subscriptions, game/save/live Economy/AFEF and independent sub-MOD load"
+  ],
+  "sourceFiles": {
+    "AfCampaignRuntimeLifecycle.cs": "72619ceeac845b349f0bfba56a95e2116f53c7480fefa1f3b45196e6fbdfc5c6",
+    "MyBehavior.CampaignLifetime.cs": "b72a4875d1ad13a07ec56fd56abc5e030125098c40ebb2259b2fd7c587a4895f",
+    "MyBehavior.MemorySummaryMainThread.cs": "3e6116f172a56d7644cb0495cfe4611c246a9eba78c06ff738ddbef2cade45d5",
+    "ShoutBehavior.CampaignLifetime.cs": "09efc89fd83e38702b6034d9d51cd4edea3fe67728bc751fb81466921b80ad4f",
+    "ShoutBehavior.cs": "6c89b3c8e823467108e09f6a87bf728ef4d61d47ce4ae6b719e01bc9e2a9401a",
+    "CourierDeliveryBehavior.CampaignLifetime.cs": "29894b9d12d00bbf57729eeec3c1d31e3a0209084c509a32670980151136f28e",
+    "CourierDeliveryBehavior.CommitDispatch.cs": "87659a17f8426aefd23b2b879a9e3600ebc961cd3a400ef98e63a1dfe24b5200",
+    "CourierDeliveryBehavior.DetachedPostprocess.cs": "84fa27b203cd5f65725ae84fec5275a760f9f51758a38238d238e35888be3099",
+    "CourierDeliveryBehavior.cs": "5a730f9b91f8e5ac13f125ed9618bd840c1a2622d4bcd68bf4f7683058039752",
+    "SubModule.cs": "da98dbcc50d14f5daff9658561db5ccc177e0be983200abeee36d37159f3396d",
+    "Refactor/Runtime/PendingOperationRegistry.cs": "da2ce6f95a6abebfeeea426981dc8ba260e1e7195a94901203c7df289322d2d9",
+    "Refactor/Runtime/GameLifetimeCoordinator.cs": "ef95cd23825bef3eebd58703749006240670747c12ef97e8e80234454a7bc4a5"
+  },
+  "artifacts": [
+    {
+      "path": "bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "ced5f271f5a17537190ba52d129679c9a3ee674438c2451383bb5dd930b39a17"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "b53895fe3e9cd5073387dbb7a7e5dd98ec010d0eb8d78da0f0483a5b90d5ba41"
+    },
+    {
+      "path": "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "61ea5ac001efd39a33be5ce1889da5c607714b9508869eaf6d61c5587c56bb0b"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll",
+      "sha256": "1282a0a3c074b9f56467fdb9e350187e4a09c7a5218915cc2f2ccf6efbaa6e86"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll",
+      "sha256": "d9b117d2762853aad798624e58a1beb70aae155a6890416a8de8fb79dc9a8a4f"
+    },
+    {
+      "path": "bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll",
+      "sha256": "01719ec3688ef767212ad701d40d8ec8717a1ac8934ac92fbba6455df8585a9b"
+    }
+  ],
+  "logs": [
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/stage-debug-final.log",
+      "sha256": "8eb760cd9c53b3a970da2624c1eded1189d0e93a144032ed5c4c765bbc177e63"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/stage-release-final.log",
+      "sha256": "3fd0abcb1386314d116dbbf5411b7e303d2108520cb0fe60e5ee4ea97f8272e1"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/api-metadata-final.log",
+      "sha256": "374cfd33eaad934c0e3ada991cb7722253cc52581c2639d611de3b4d79ce72fd"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/actual-host-replay-final.log",
+      "sha256": "5657cd5c61cdf3acd5f2259028b83beed125e63e8275681a19592d031e8f1e35"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/persistence-main.log",
+      "sha256": "3c338b125ff2115f6f4d53a9b301da1df61bed13b5b2af5829009f64c5d8ed64"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/lifecycle-final-current.log",
+      "sha256": "1fd2dd061bfa7f6450447daf4ffa87ee33f9845aea6170a132c4d1c1ee013bcb"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/GameLifetimeTests-run.py.log",
+      "sha256": "a18de8f56f985781af8d35c4ae2ffbbb2ec2bed5588cb8b3bfae9cb4e5d51910"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/lifecycle-original.log",
+      "sha256": "15711a64a39699b287e1e5d1e971326cf2859e1a835b49622ad066858b5839e5"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final2-GameLifetimeTests-run_bindings.py.log",
+      "sha256": "02da4c129d0ce31bace6b554f904c033c5c6c9e884ec78bc7d78f072149fa7c8"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/memory-retirement-final.log",
+      "sha256": "42881b2b01d4a2d1d035f127a00124494b422a3dd6781a1fa5f7bfa7dd93793e"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/memory-retirement-mutant.log",
+      "sha256": "945026fb2814a65d1e49788d17a9899d4a017e879eb45bab936163fec0519bac"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/commit-current.log",
+      "sha256": "165c8b184888f80b355e97a1d5f5fdc66e166c0d487438ee2cf40deddd0dfbaf"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/commit-original.log",
+      "sha256": "8ab5d1a94ec06f09500e5a85a4e61cfca7962d932cfa5b6292d78e1c0304302b"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/native-final-current.log",
+      "sha256": "d1aad6b9e9edc7ae2582b2f035a37c186dc7189e9320fe4176260ecdfa683e60"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/native-old-final.log",
+      "sha256": "da92cccc7a8b3abda26baf8a9b2b85449d643292b6ce5fa098a25d5be95156b8"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/NativeCompletionBoundaryTests-run.py.log",
+      "sha256": "79d7849d5a77f59c4cebeb79faf58801707b510176cc44677054494d7c374c75"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final-NativePendingHistoryBoundaryTests.log",
+      "sha256": "5e945b042cb61311bcda68c270a4627d1d0c0e2687ba273ee464e2ce56059857"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/history-final.log",
+      "sha256": "cb06df5d6e5574f966103dda8b62469d22b18e6c6b1054ff016f8f382a986839"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/history-native-final.log",
+      "sha256": "4cbe73407cb4d7551c3503cdcde134b23535b18f68fab8ecefdf278464d58ed3"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/memory-writers-final.log",
+      "sha256": "d3908954e755c5cc6e29b2c69f27646ca609331b2a766cd15036840f45c58000"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final2-MemorySummaryMainThreadBoundaryTests-run.py.log",
+      "sha256": "c27d85b4e1c7b3bf7fa0a9b4995a7448882f7b9a6c07c8efb204ce260e0e59d8"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final2-ChannelPersonaPreparationTests-source_parity.py.log",
+      "sha256": "5778d6a741103a51d28d363d23a8dc5663c0161990dddee96c9d6a5ff6af78e7"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final2-CourierOwnerPhaseTests-source_parity.py.log",
+      "sha256": "0c6f276aacb92956728bdcc9bad2d6ba31d20a149b768317583e5cbb53f70e70"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final2-CourierHistoryPreparationTests-source_parity.py.log",
+      "sha256": "161fe4c5b9c3c505a3740518fa06f2bd6ff3ddfc9455e88c44668789a5832b41"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final2-GameLifetimeTests-source_parity.py.log",
+      "sha256": "066551af726d8380fc556b842d2503e2ba2f6aa2105496bd54df0a4d424b0cf4"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final2-TeamModulePortParityTests-run.py.log",
+      "sha256": "ac3b40f5dcb04dde8252d93aa04aff6c36e1604c7b89ef6a847a100db9ffd25f"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/CampaignCompositionTests-run.py.log",
+      "sha256": "deac309a0b28a95aeb3f29d5b95fd54df1aafebef7eed2ab391c4ea0d503382e"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final-ChannelPersonaPreparationTests.log",
+      "sha256": "feb96f79b0b05569d6af27a8c616c579f795213236a189601b089fe7fc90b20a"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final-CourierPostprocessOwnerRegressionTests.log",
+      "sha256": "3f5b1e392ee92aa1515a989fbfe722f0312e50a2ae3621d19779526c7816b9e3"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final-CourierHistoryPreparationTests.log",
+      "sha256": "c7174feeecc51eaa4ba71e4bfac1a22969d994fd3d74e0064c141ac7286c3228"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final-ChannelCutoverBoundaryTests.log",
+      "sha256": "83b947d4ea8970a6a8c63954a915c357367e2b02710ff3fc6958f4f433ad53af"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/final-MainThreadFunctionBoundaryTests.log",
+      "sha256": "f405889c20a6c7b2ee369a506569bd5b9eb0386301f1b638dc5647bb82870d6d"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/CourierOwnerPhaseTests.log",
+      "sha256": "f42e2497ca20f4886dd1401c76028d90ca43db9f4c582c3657d64ca35467abca"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/commit-drop_claim.log",
+      "sha256": "a7588e25d86015b347ddebeb9d13111d889c4576077c22bf6d61cd657167684d"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/commit-expire_claimed.log",
+      "sha256": "61f67cf5394ac6ae316304f4a43343946ec599ea4238d738ffd1f3cadb02f05f"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/commit-skip_retirement.log",
+      "sha256": "0ed7c27762c4d6f4eda7ed57eab64dd076cd64b18d21e0e626d77bcef31f6564"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/native-final-drop-queue-claim.log",
+      "sha256": "f94ffc631970b861de9b5c3f1b8bab64a0c421bf0cd50187b76eca56e016c1b0"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/native-final-keep-failed-queue-live.log",
+      "sha256": "c556830b9ac6deb61ff02b2eecd1c7d96b5896b68b390f2b1b74a81489109637"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/native-final-skip-dispatch-timeout.log",
+      "sha256": "337613ae7c3f4e3456656e5b36381f09801c3c243951c8142247824b9ce8d479"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/native-final-leave-expired-callback-live.log",
+      "sha256": "454b7556be61d330a3422da7ed58e678ea27f1f58a7215324fc33bd9920ee1ff"
+    },
+    {
+      "path": ".tmp/game-lifetime-20260915/final-evidence/native-final-expire-started-dispatch.log",
+      "sha256": "a6587314e236efd14632a8fe2b3d8aa13e2689451d607eaab45a26d45542ba04"
+    }
+  ]
+}

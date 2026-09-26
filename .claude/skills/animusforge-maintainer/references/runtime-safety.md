@@ -17,7 +17,7 @@ External bridge/process
 Save/load boundary
 ```
 
-Each module manifest declares which domains it touches.
+Document the runtime domains actually touched; use a manifest only when an implemented consumer requires it.
 
 ## Main-thread rule
 
@@ -31,9 +31,17 @@ Background operations receive detached immutable snapshots. Their completion ret
 4. execute once;
 5. publish facts/notifications after success.
 
+### Trace the whole asynchronous chain
+
+A method named `OnMainThread` is not a thread witness. Follow `Task.Run`, each await/retry/wave, callbacks and the actual dispatcher. Returning writes to the main thread does not make earlier background reads of Hero/session/owner dictionaries safe.
+
+Capture detached, immutable inputs on the owning thread. Besides owner/save/session generation, bind a source revision or fingerprint whenever the input can change within the same generation (for example, summary blocks or a draft/cursor). On acceptance revalidate the relevant source as well as the current owner. Define rejection, merge or requeue semantics explicitly; stale-result protection must not silently discard new authoritative data or duplicate effects.
+
+Tests should force a genuine asynchronous yield, source mutation during retry, owner replacement and load/reset. State exactly which captured inputs and commit paths are covered; a safe post-await commit is not proof that the entire worker is network-only or that all channels are thread-safe.
+
 ## Module lifecycle ownership
 
-Every module owns:
+For each contribution actually introduced or moved, identify the owner of applicable resources (not a requirement to create every resource):
 
 - cancellation source/generation;
 - event/listener registrations;
@@ -44,7 +52,7 @@ Every module owns:
 - health/invariant report;
 - Harmony patches it declares.
 
-The foundation can dispose reversible registrations. Module docs must name non-reversible or restart-required effects.
+The actual lifecycle owner disposes reversible registrations it owns; a directory or state enum alone provides no disposal guarantee. Module docs must name non-reversible or restart-required effects.
 
 Start is transactional for reversible contributions. A partial start failure disposes started contributions before state becomes `Failed`.
 
@@ -57,7 +65,7 @@ Business modules should not scatter `AccessTools`, `GetMethod`, `GetField` and p
 - Resolve/cache reflection outside hot paths.
 - Log an important missing member once with version/module/feature context.
 - Do not rely on patch application order as an undocumented arbitration system.
-- Profile resolution should detect known exclusive/conflicting hooks before campaign load.
+- Actual composition should detect known exclusive/conflicting hooks before campaign load; do not add a profile subsystem solely for this check.
 - Never promise safe runtime unpatch unless focused lifecycle and in-game tests prove it.
 
 ## Tick scheduler
@@ -77,6 +85,14 @@ Metric/trace name
 ```
 
 Prefer Bannerlord/Campaign events over polling. Measure before changing frequencies. Avoid full-world/hero/party scans, repeated reflection, repeated JSON parsing, unbounded allocations/queues and lock contention in hot paths.
+
+### Budget the real work, not only envelopes
+
+- Count jobs/records/effects executed inside each queued callback and bound elapsed work as appropriate. A limit of two callbacks is not a two-job limit when one callback loops over every accumulated result.
+- Trace upstream batching: provider RPM or a delay between network waves limits request rate, not the size of the later main-thread commit. A scan/enqueue budget does not bound a loaded backlog or its total completion work.
+- Specify queue/backpressure limits separately from per-tick drain limits. When a batch must remain atomic, define its maximum size and measured worst-case cost; do not silently split a transaction to satisfy a counter.
+- For resumable work, retain a cursor and revalidate owner/generation/source at safe chunk boundaries. Preserve ordering and completion semantics; cancellation cannot undo already executed effects.
+- Validate a large backlog, one callback containing many jobs, load/restored queues, and unrelated work progressing. A test of only the dequeue count cannot establish a frame budget. Report an unmeasured performance exposure as such, not as a reproduced freeze.
 
 ## Error policy
 
@@ -100,11 +116,11 @@ Health is not “method exists.” Check authoritative relationships:
 - scheduler tasks are owned by active module;
 - declared required provider is present and compatible;
 - no orphan listener/queue remains after safe toggle;
-- persistence namespace/schema matches manifest;
+- persistence namespace/schema matches the actual storage contract;
 - patch conflict/target status is known;
 - runtime queue/budget/stale counters remain within defined bounds.
 
-State includes `Discovered`, `Disabled`, `Blocked`, `Starting`, `Active`, `Degraded`, `Failed`, and `RestartRequired`.
+For a separately implemented module Host, these may be useful states: `Discovered`, `Disabled`, `Blocked`, `Starting`, `Active`, `Degraded`, `Failed`, `RestartRequired`. They are not a mandatory enum retrofit for existing components.
 
 ## Diagnostics
 
@@ -127,6 +143,6 @@ Do not log API keys, unrestricted player conversations/prompts/model responses, 
 
 Rate-limit repeated compatibility/tick/UI failures. Preserve the first full stack and aggregate repetitions.
 
-## SafeMode
+## SafeMode (separately scoped capability)
 
 SafeMode is a recovery profile, not a universal repair engine. It must preserve unknown module data, report failed/disabled modules and avoid optional gameplay. Any destructive repair requires a separate explicit action, backup and owner-specific migration.

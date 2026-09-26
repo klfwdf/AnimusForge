@@ -75,6 +75,13 @@ internal static class LlmApiCompat
             ?? response.SelectToken("content")?.ToString()
             ?? string.Empty;
     }
+
+    public static string ExtractStreamReasoningText(JObject response)
+    {
+        return response?.SelectToken("choices[0].delta.reasoning_content")?.ToString()
+            ?? response?.SelectToken("choices[0].delta.reasoning")?.ToString()
+            ?? string.Empty;
+    }
 }
 
 public static class AIConfigHandler

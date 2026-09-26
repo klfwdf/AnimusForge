@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import hashlib
+import importlib.util
 import os
 from pathlib import Path
 import subprocess
@@ -10,9 +11,22 @@ from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-SOURCES = ["Api/V1/AfApi.cs", "Api/V1/AfApiContracts.cs",
-    "Refactor/Modules/InternalModuleDirectory.cs", "Refactor/Modules/ModuleFrameworkRuntime.cs",
-    "Refactor/Contracts/FeatureBridgeContracts.cs"]
+API_SOURCES = {
+    "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
+    "src/modules/AF.Module.PublicApi/V1/AfApi.cs",
+    "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs",
+    "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs",
+    "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs",
+}
+SOURCES = ["src/modules/AF.Module.PublicApi/V1/AfApi.cs", "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
+    "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs", "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs", "Refactor/Modules/CoreDialogueContracts.cs",
+    "Refactor/Modules/CoreDialogueOperation.cs", "Refactor/Modules/CoreDialogueClient.cs",
+    "Refactor/Modules/CoreDialogueServices.cs", "tools/ModuleFrameworkApiTests/NativeOwnerStub.cs",
+    "src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs", "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
+    "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
+    "Refactor/Contracts/FeatureBridgeContracts.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",
+    "src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs", "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs"]
+assert API_SOURCES <= set(SOURCES)
 
 
 def environment(dotnet: str) -> dict[str, str]:
@@ -46,6 +60,30 @@ def run_dotnet(dotnet: str, args: list[str], cwd: Path):
     return result.returncode, result.stdout + result.stderr
 
 
+
+def snapshot_mutations(dotnet: str, out: Path):
+    mutations = {
+        "map_ready_as_degraded": ("src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Ready;", "case ModuleFrameworkLifecycleState.Ready: return AfFrameworkState.Degraded;"),
+        "share_snapshot_container": ("src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs", "new ReadOnlyCollection<ModuleBindingSnapshot>(modules.ToArray())", "new ReadOnlyCollection<ModuleBindingSnapshot>((IList<ModuleBindingSnapshot>)modules)"),
+        "projection_rereads_live_directory": ("src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs", "in snapshot.Modules)", "in ModuleFrameworkRuntime.CaptureSnapshot().Modules)"),
+        "skip_shutdown_forward": ("src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs", "ModuleDirectoryLifecycleOwner.Shutdown();", ";"),
+        "force_factory_rebuild": ("src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs", "if (_state != ModuleFrameworkLifecycleState.NotInitialized && _state != ModuleFrameworkLifecycleState.Stopped)", "if (false)")
+    }
+    for name, (path, before, after) in mutations.items():
+        folder = out / name; folder.mkdir(exist_ok=True)
+        text = (ROOT / path).read_text(encoding="utf-8-sig")
+        assert text.count(before) == 1, "Mutation anchor drift: " + name
+        mutated = folder / Path(path).name; mutated.write_text(text.replace(before, after), encoding="utf-8")
+        sources = [mutated if p == path else ROOT / p for p in SOURCES]
+        library = project(folder / "Library", "ModuleFrameworkUnderTest", sources + [HERE / "HostStubs.cs"])
+        control = project(folder / "Control", "ModuleFrameworkControl", [HERE / "HostControl.cs", HERE / "SnapshotBoundaryChecks.cs", out / "OriginalRuntime.cs"], [library])
+        client = project(folder / "Client", "ModuleFrameworkExternalClient", [HERE / "ExternalClient.cs"], [library, control], True)
+        code, log = run_dotnet(dotnet, ["run", "--project", str(client), "-c", "Release"], out)
+        (folder / "run.log").write_text(log, encoding="utf-8")
+        assert code != 0 and "FAIL " in log and "error CS" not in log, "Mutation not rejected by runtime assertions: " + name + "\n" + log
+        print("PASS snapshot mutation rejected: " + name)
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
@@ -55,12 +93,25 @@ def main():
     out = HERE / ".generated/current"
     out.mkdir(parents=True, exist_ok=True)
     (out / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
+    spec = importlib.util.spec_from_file_location("snapshot_source_inverse", HERE / "source_boundary.py")
+    boundary = importlib.util.module_from_spec(spec); spec.loader.exec_module(boundary); boundary.verify()
+    original = boundary.old("Refactor/Modules/ModuleFrameworkRuntime.cs")
+    original = original.replace("namespace AnimusForge.Refactor.Modules;", "namespace ModuleFramework.TestControl;\nusing AnimusForge.Refactor.Modules;")
+    original = original.replace("internal static class ModuleFrameworkRuntime", "internal static class OriginalFrameworkRuntime")
+    (out / "OriginalRuntime.cs").write_text(original, encoding="utf-8")
     library = project(out / "Library", "ModuleFrameworkUnderTest", [ROOT / p for p in SOURCES] + [HERE / "HostStubs.cs"])
-    control = project(out / "Control", "ModuleFrameworkControl", [HERE / "HostControl.cs"], [library])
+    control = project(out / "Control", "ModuleFrameworkControl", [HERE / "HostControl.cs", HERE / "SnapshotBoundaryChecks.cs", out / "OriginalRuntime.cs"], [library])
     client = project(out / "Client", "ModuleFrameworkExternalClient", [HERE / "ExternalClient.cs"], [library, control], True)
     denied = project(out / "Denied", "ModuleFrameworkDeniedClient", [HERE / "DeniedClient.cs"], [library], True)
+    core = project(out / "CoreOnly", "ModuleFrameworkCoreOnly", [ROOT / p for p in SOURCES if p not in API_SOURCES] + [HERE / "HostStubs.cs"])
+    core_status, core_log = run_dotnet(args.dotnet, ["build", str(core), "-c", "Release", "--nologo"], out)
+    (out / "core-only.log").write_text(core_log, encoding="utf-8")
+    if core_status: print(core_log); return core_status
+    print("PASS core-only build: no API sources or reference")
     status, log = run_dotnet(args.dotnet, ["run", "--project", str(client), "-c", "Release"], out)
     print(log, end="")
+    if status != 0: return status
+    snapshot_mutations(args.dotnet, out)
     code, denied_log = run_dotnet(args.dotnet, ["build", str(denied), "-c", "Release", "--nologo"], out)
     denial_ok = code != 0 and "CS0122" in denied_log and "InternalModuleDirectory" in denied_log
     print("PASS expected external internal-access compiler rejection (CS0122)" if denial_ok else "FAIL expected internal access rejection")

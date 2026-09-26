@@ -1,18 +1,21 @@
 # AnimusForge Codex Instructions
 
-## AF core framework skill
+## AF skill coordination
 
-- For AF core/framework/interface changes, reviews or handoffs, read `.agents/skills/af-core-framework/SKILL.md`. Internal team ports and the public sub-MOD API stay separate; the core implementation may evolve for approved requirements rather than being frozen to current behavior.
-- HANDOFF must include verified source paths, line ranges, symbols, source revisions and covered/uncovered responsibilities. Resolve the active checkout and delivery branch from current Git plus HANDOFF, not historical branch/directory labels.
+- For verified AF development/maintenance, read the single repository copy at `.claude/skills/animusforge-maintainer/SKILL.md`; select its workflow for the actual task, not a permanent whole-project refactor agenda.
+- The selected maintenance source is `D:/下载/af-skill/af-skill` (version 0.2.0). This repository reads its reviewed local copy, not that external path at runtime. Merge shared-file updates deliberately; preserve the local framework coordination adaptation and other authors' changes. Do not install or overwrite other copies implicitly.
+- For AF core/framework/internal-module/public-API work, also read `.agents/skills/af-core-framework/SKILL.md`. Reconcile them through `.claude/skills/animusforge-maintainer/references/framework-coordination.md`: same-DLL internal ports and versioned external public API remain separate; logical Foundation/Module/Bridge names do not mandate separate DLLs or expand the user's task scope.
+- Keep current state and detailed evidence in the existing main ledger; HANDOFF links a short summary to that entry and the verified code map. Code evidence includes source paths, one-based line ranges, symbols, revisions and covered/uncovered responsibilities without duplicating the full table. Resolve status from actual Git, the latest request and explicit supersession links.
+- Skill-only changes do not authorize product changes, global installation, push/deployment or automation recovery. Existing global safety/cleanup skills remain applicable; this routing does not install or mutate them.
 
 ## Local refactor continuation boundary
 
-- Use `G:\AFMOD\AF-REFACTOR` for this local continuation; the current HANDOFF records the active delivery branch and its approved remote target. The original local continuation history is retained separately and must not be pushed when it contains the excluded local-only handoff. Historical NEW-087 and F-drive labels below do not select this machine's worktree.
+- Resolve the current workspace and branch from `git rev-parse --show-toplevel` and `git branch --show-current`, together with the latest user request. Historical machine paths do not select this worktree. HANDOFF records delivery history, not new push authorization; histories containing excluded local-only handoffs must not be pushed.
 - Preserve existing NEW-10, GCCZ, other worktrees and authors' changes. Writes outside the task workspace require explicit approval for the exact change; keep proposals local otherwise.
 - Create local checkpoint/intent commits before substantial changes and commit each verified slice. Roll back with focused inverse commits, never hard reset or rewritten history.
 - Do not push, deploy to the game, install global skills, or change the default interaction entry points without explicit authorization. Keep contract/replay evidence separate from live-game acceptance.
 
-本仓库是 Mount & Blade II: Bannerlord 的 AnimusForge mod，当前目标分支/目录是 `animusforge-1.3.x`。
+本仓库是 Mount & Blade II: Bannerlord 的 AnimusForge mod；当前工作分支以实际 Git 状态为准，`animusforge-1.3.x` 是历史标签，不是切换分支或目录的指令。
 
 ## 必须遵循
 - 所有代码编写必须优先顾虑性能：识别并避免热路径中的全量扫描、重复计算、重复反射、无效分配、无意义锁竞争和空转轮询；新增功能必须说明其运行频率与缓存/分批策略，且不得以牺牲既有规则或功能为代价进行优化。

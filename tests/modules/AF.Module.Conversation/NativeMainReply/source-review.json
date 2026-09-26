@@ -1,0 +1,21 @@
+{
+  "baseline": "dabee763",
+  "files": {
+    "ShoutBehavior.cs": {
+      "beforeSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91",
+      "afterSha256": "063fe2d6ebd2b62455a20ebf7680faa7020a098467719adaaa1943af6e433c5b",
+      "edits": [
+        {
+          "before": "\t\tStopwatch nativeMainApiSw = Stopwatch.StartNew();\n\t\tFreezeWatchdog.Mark(\"NativeConversation.main_reply_start\", \"target=\" + (npcName ?? \"unknown\") + \" agent=\" + nativeTargetAgentIndex + \" messages=\" + messages.Count, immediate: true);\n\t\tstring output = await CallNativeConversationApiAsync(messages, onStreamText).ConfigureAwait(false);\n\t\toutput = LlmVisibleReplyNormalizer.NormalizeComplete(output);\n\t\tnativeMainApiSw.Stop();\n\t\tLogger.Log(\"Logic\", \"[NativePerf] main_reply_done target=\" + (npcName ?? \"unknown\") + \" agent=\" + nativeTargetAgentIndex + \" outputLen=\" + ((output ?? \"\").Length) + \" apiMs=\" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2) + \" elapsedMs=\" + Math.Round(nativeTurnSw.Elapsed.TotalMilliseconds, 2));\n\t\tFreezeWatchdog.Mark(\"NativeConversation.main_reply_done\", \"target=\" + (npcName ?? \"unknown\") + \" agent=\" + nativeTargetAgentIndex + \" outputLen=\" + ((output ?? \"\").Length) + \" apiMs=\" + Math.Round(nativeMainApiSw.Elapsed.TotalMilliseconds, 2), immediate: true);\n\t\tif (SaveRuntimeGuard.IsStale(runtimeGeneration, \"native_conversation_reply\"))\n\t\t{\n\t\t\treturn SaveRuntimeGuard.BuildStaleRequestErrorText();\n\t\t}\n\t\tstring nativeMainReplyTargetUnavailableBeforeDispatchReason = \"\";\n\t\tbool nativeMainReplyTargetAvailableBeforeDispatch = await RunNativeConversationMainThreadFuncAsync(\n\t\t\t\"main_reply_target_validation\",\n\t\t\tnativeTargetLog,\n\t\t\tnativeTargetAgentIndex,\n\t\t\t() => IsNativeConversationAdmissionCurrent(admission, out nativeMainReplyTargetUnavailableBeforeDispatchReason),\n\t\t\tfalse).ConfigureAwait(false);\n\t\tif (!nativeMainReplyTargetAvailableBeforeDispatch)\n\t\t{\n\t\t\tstring reason = string.IsNullOrWhiteSpace(nativeMainReplyTargetUnavailableBeforeDispatchReason) ? \"main_thread_validation_failed\" : nativeMainReplyTargetUnavailableBeforeDispatchReason;\n\t\t\tawait RollbackNativeConversationPendingPlayerHistoryAsync(admission, nativePendingAfefKey, nativePendingPlayerHistoryEventSequence, reason).ConfigureAwait(false);\n\t\t\tLogger.Log(\"ShoutBehavior\", \"[NativeConversation] dropped main reply because target is unavailable target=\" + nativeTargetLog + \" agentIndex=\" + nativeTargetAgentIndex + \" reason=\" + reason);\n\t\t\treturn \"\";\n\t\t}\n\t\tif (string.IsNullOrWhiteSpace(output))\n\t\t{\n\t\t\treturn \"\";\n\t\t}\n\t\tif (output.StartsWith(\"（错误\") || output.StartsWith(\"（程序错误\") || output.StartsWith(\"（API请求失败\") || output.StartsWith(\"（API响应格式错误\"))\n\t\t{\n\t\t\tLlmRetryPrompt.ShowFailurePopup(\"自由对话正文生成失败\", output.Trim());\n\t\t\treturn output.Trim();\n\t\t}\n\t\tstring postprocessReply = StripNpcNamePrefixSafely((output ?? \"\").Replace(\"\\r\", \"\").Trim(), 30);\n\t\tpostprocessReply = StripLeakedPromptContentForShout(postprocessReply);\n",
+          "after": "\t\tNativeConversationMainReplyResult nativeMainReply = await NativeConversationMainReplyStage.RunAsync(\n\t\t\tnew NativeConversationMainReplyHost(this, admission, nativeTargetLog,\n\t\t\t\tnativePendingAfefKey, nativePendingPlayerHistoryEventSequence),\n\t\t\tmessages, onStreamText, npcName, nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw).ConfigureAwait(false);\n\t\tif (!nativeMainReply.CanContinue) return nativeMainReply.StopText;\n\t\tstring postprocessReply = nativeMainReply.PostprocessReply;\n",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "addedFiles": {
+    "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyContracts.cs": "1d23da400b38722e12441a1ec3b0d61ab5ab6dd7b0c66eda95379dd74bdc6a9f",
+    "src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs": "8098698e093a4fc5d2996745216806a6939b5d7067d1fbe2b9e3678ebe200b21",
+    "ShoutBehavior.NativeMainReply.cs": "7a68ffa9340bb501b2bbcd3e330301dbf62f96db2916e2e93b48c74839061231"
+  }
+}

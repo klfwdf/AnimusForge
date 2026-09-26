@@ -34,7 +34,7 @@ out=HERE/'.generated'/args.output_name;out.mkdir(parents=True,exist_ok=True)
 (out/'Program.cs').write_text(code,encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-dotnet=ROOT.parent/'.dotnet-sdk/dotnet.exe';env=os.environ.copy();env['DOTNET_ROOT']=str(dotnet.parent);env['DOTNET_CLI_HOME']=str(out/'cli');env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_TELEMETRY_OPTOUT']='1'
+dotnet=Path(os.environ.get('AF_DOTNET') or ROOT.parent/'.dotnet-sdk/dotnet.exe');env=os.environ.copy();env['DOTNET_ROOT']=str(dotnet.parent);env['DOTNET_CLI_HOME']=str(out/'cli');env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_TELEMETRY_OPTOUT']='1'
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
 log='scheduleRef='+str(args.schedule_source_ref or 'working-tree')+' mutation='+str(args.mutate or 'none')+' scheduleSha256='+hashlib.sha256(schedule.encode()).hexdigest()+'\n'+r.stdout+r.stderr
 (out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

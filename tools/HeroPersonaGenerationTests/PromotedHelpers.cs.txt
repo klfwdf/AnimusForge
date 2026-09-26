@@ -1,0 +1,8 @@
+  internal int SkillCalls,SkillSaves,Skills=20;
+  private TaskCompletionSource<ApiCallResult> skillResponse=new(TaskCreationOptions.RunContinuationsAsynchronously);
+  internal Task Promote(Hero hero)=>GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero,"Name","FullName","Troop","troop_id","Culture","Scene","Joined","History","Equipment");
+  internal void ReleaseSkills(bool success=true,bool fail=false){if(fail)skillResponse.TrySetException(new Exception("skill transport"));else skillResponse.TrySetResult(new ApiCallResult{Success=success,Content=success?"skills":"bad",ErrorMessage="skills failed"});}
+  private string BuildPromotedHeroSkillSummary(Hero hero){Probe.Read();return "skill="+Skills;}
+  private bool TryApplyPromotedHeroSkillJson(Hero hero,string json){Probe.Read();if(json!="skills")return false;Skills=70;SkillSaves++;return true;}
+  private static string BuildPromotedNonHeroCompanionFactsForPersonaGeneration(Hero hero,string name,string fullName,string troopName,string troopId,string culture,string scene,string fact,string equipment){Probe.Read();return "promotion-facts:"+hero.StringId;}
+  private static string TrimToMaxChars(string s,int count)=>(s??"").Length<=count?(s??""):(s??"").Substring(0,count);

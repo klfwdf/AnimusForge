@@ -1,0 +1,33 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+namespace TaleWorlds.Core {internal static class MBInformationManager {internal static event Action OnRemoveMapNotice;}}
+namespace TaleWorlds.Library {internal static class TWParallel {internal static int Main;internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==Main;}}
+namespace TaleWorlds.CampaignSystem {public sealed class Campaign {public static Campaign Current=new();public T GetCampaignBehavior<T>()=>(T)(object)MyBehavior.Instance;}}
+namespace AnimusForge {
+ internal static class Logger {internal static void Log(string c,string m){} }
+ internal static class SaveRuntimeGuard {internal static long Generation=1;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
+ public partial class MyBehavior {
+  public static MyBehavior Instance;internal Action DuringRetirement;
+  private sealed class Persona {internal void Reset(){}}private Persona _npcPersonaGeneration=new();
+  private static double GetDailyMaintenanceFrameBudgetMs()=>1000;
+  private void ResetLocalTransientRuntimeForLoadedSave(string reason)=>DuringRetirement?.Invoke();
+  private void OnMapNoticeRemoved(){}
+  internal Task<bool> Submit(Func<bool> f)=>RunMemorySummaryMainThreadAsync(SaveRuntimeGuard.Generation,f);
+  internal void CleanupTest()=>ResetMemorySummaryMainThreadActions();
+ }
+}
+internal static class Program {
+ static int checks;static void Check(bool b,string name){checks++;if(!b)throw new Exception("FAIL "+name);}
+ static void Main(){TaleWorlds.Library.TWParallel.Main=Environment.CurrentManagedThreadId;try{
+  foreach(bool alreadyAllocated in new[]{false,true}){
+   var owner=new MyBehavior();MyBehavior.Instance=owner;int effects=0;Task<bool> pending=null;
+   if(alreadyAllocated)Check(owner.Submit(()=>true).Result,"existing dispatcher baseline");
+   owner.DuringRetirement=()=>{using var submitted=new ManualResetEventSlim();var publisher=Task.Run(()=>{pending=owner.Submit(()=>{effects++;return true;});submitted.Set();});Check(submitted.Wait(2000),"worker published while retiring singleton still current");publisher.GetAwaiter().GetResult();};
+   owner.RetireCampaignRuntime("end");try{Check(pending.IsCompleted&&!pending.Result&&effects==0,"new-generation submit during reset cannot strand or execute old owner; allocated="+alreadyAllocated);}finally{owner.CleanupTest();}
+   Check(owner.Submit(()=>{effects++;return true;}).Result==false&&effects==0,"retired instance rejects subsequent work");
+  }
+  Console.WriteLine($"MemoryRetirement checks={checks} failures=0; actual My dispatcher/retirement/host binding; Campaign and reset hook fixture.");
+ }catch(Exception e){Console.WriteLine(e);Environment.ExitCode=1;} }
+}

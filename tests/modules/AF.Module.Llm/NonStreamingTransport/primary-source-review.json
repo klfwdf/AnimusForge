@@ -1,0 +1,5 @@
+{
+  "baseline": "e5c14b8a3cb471a30a07783d7fe3700ac8d9cbe3",
+  "currentMethodSha256": "c6b3a623343882121abb6b8dbfc0bd0bffd50915bb1dfe2c2e71f4b643aea42a",
+  "purpose": "Exact J01 projection; actual old/current non-stream behavior is executed by run.py."
+}

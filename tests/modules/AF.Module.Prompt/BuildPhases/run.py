@@ -1,0 +1,172 @@
+"""Source-wiring contract for the shared main-chain prompt build phases (J04).
+
+Checks the real MyBehavior source: the orchestrator delegates to the five phases in order and
+the pure stages receive detached inputs; the game-reading phases are the only places that
+touch Reward/Duel/Team/Entity services. Not a runtime test; pair with the Composition contract.
+"""
+from __future__ import annotations
+import argparse, importlib.util, re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[4]
+spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+extract = importlib.util.module_from_spec(spec); spec.loader.exec_module(extract)
+parser = argparse.ArgumentParser()
+parser.add_argument("--mutate", choices=["assembly-reads-game", "routing-before-request", "drop-worker-eligibility", "drop-knowledge-worker", "drop-knowledge-eligibility", "drop-extra-worker", "drop-entity-worker", "entity-worker-live-read", "drop-native-knowledge-guard", "drop-courier-knowledge-guard", "drop-lore-publication", "drop-lore-invalidation", "drop-entity-allocation-worker"])
+args = parser.parse_args()
+
+source = (ROOT / "MyBehavior.cs").read_text(encoding="utf-8-sig")
+game_services = re.compile(r"\b(RewardSystemBehavior\.Instance|DuelBehavior\.|TeamModuleServices\.|WorldEntityRetrievalService\.|VoteDealBehavior\.|LordEncounterBehavior\.|MobileParty\.MainParty|Clan\.PlayerClan|Hero\.MainHero|RomanceSystemBehavior\.)")
+orchestrator = extract.declaration(source, "private ShoutPromptContext BuildShoutPromptContextForExternalInternal(")
+capture_request = extract.declaration(source, "private PromptBuildRequest CapturePromptBuildRequest(")
+capture_sections = extract.declaration(source, "private void CapturePromptSections(")
+appendices = extract.declaration(source, "private void ApplyPromptRuntimeAppendices(")
+
+def ordered(body, *fragments):
+    positions = [body.find(f) for f in fragments]
+    assert all(p >= 0 for p in positions), [f for f, p in zip(fragments, positions) if p < 0]
+    assert positions == sorted(positions), list(zip(fragments, positions))
+
+begin = extract.declaration(source, "internal PromptBuildPhases BeginSharedPromptBuild(")
+routing = extract.declaration(source, "internal void RunSharedPromptRouting(")
+knowledge_capture = extract.declaration(source, "internal void CaptureSharedKnowledgeSnapshot(")
+knowledge_input = extract.declaration(source, "internal static PromptKnowledgeWorkInput CreateSharedKnowledgeWorkInput(")
+knowledge_worker = extract.declaration(source, "internal static PromptKnowledgeWorkResult RunSharedKnowledgeRetrieval(")
+if args.mutate == "drop-knowledge-eligibility":
+    knowledge_worker = knowledge_worker.replace("AIConfigHandler.ApplyGuardrailRuntimeTarget(input.Target, input.Eligibility)", "AIConfigHandler.X(input.Target, input.Eligibility)", 1)
+knowledge_apply = extract.declaration(source, "internal static void ApplySharedKnowledgeRetrieval(")
+knowledge_types = (ROOT / "src/modules/AF.Module.Prompt/Composition/PromptRetrievalCapture.cs").read_text(encoding="utf-8-sig")
+knowledge_dto = extract.declaration(knowledge_types, "internal sealed class PromptKnowledgeWorkInput")
+if args.mutate == "drop-extra-worker":
+    knowledge_worker = knowledge_worker.replace("AIConfigHandler.GetMatchedExtraRuleHitsForWorker(", "AIConfigHandler.X(", 1)
+complete = extract.declaration(source, "internal ShoutPromptContext CompleteSharedPromptBuild(")
+if args.mutate == "routing-before-request":
+    orchestrator = orchestrator.replace("BeginSharedPromptBuild(", "X(", 1).replace("RunSharedPromptRouting(phases)", "BeginSharedPromptBuild(", 1).replace("X(", "RunSharedPromptRouting(", 1)
+ordered(orchestrator,
+        "BeginSharedPromptBuild(",
+        "AIConfigHandler.BeginGuardrailRuntimeScope()",
+        "AIConfigHandler.ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)",
+        "RunSharedPromptRouting(phases)",
+        "CaptureSharedKnowledgeSnapshot(phases,",
+        "RunSharedKnowledgeRetrieval(phases)",
+        "CompleteSharedPromptBuild(phases",
+        "AIConfigHandler.ClearGuardrailRuntimeTarget()")
+ordered(begin, "CapturePromptBuildRequest(", "PromptExclusionSets.AddUnavailableConfiguredRules(", "BuildPreprocessExcludedRuleBlockForExternal(")
+ordered(routing, "SetGuardrailSemanticContext(", "PromptTopicRoutingStage.Run(", "GetAuxiliaryMentionedEntitiesForExternal(")
+ordered(complete, "CapturePromptSections(", "PromptAssemblyStage.Assemble(", "ApplyPromptRuntimeAppendices(")
+assert not game_services.search(routing), "routing step must not read game services: " + (game_services.search(routing).group(0) if game_services.search(routing) else "")
+assert "PreparePromptLoreRetrieval(" in knowledge_capture and "CollectPromptLoreCandidates(" in knowledge_worker
+assert "CapturePromptLoreSettings(" in knowledge_capture and "input.LoreSettings" in knowledge_worker, "Lore MCM settings must be detached on game thread"
+assert "PreparePromptLoreRetrieval(" not in knowledge_worker and not re.search(r"\b(RewardSystemBehavior\.Instance|DuelBehavior\.|TeamModuleServices\.|VoteDealBehavior\.|LordEncounterBehavior\.|MobileParty\.|Clan\.|Hero\.|RomanceSystemBehavior\.)", knowledge_worker), "knowledge worker must not prepare indexes or read game services"
+assert not re.search(r"\b(?:Hero|Campaign|MobileParty|Settlement|Kingdom|Clan|PromptBuildPhases|EntityCapture)\b", knowledge_dto + knowledge_worker), "worker input and body must not carry live game objects"
+assert "phases.Retrieval.EntityCapture" not in knowledge_worker and "phases." not in knowledge_worker, "worker must not receive mixed game capture"
+assert "Eligibility = phases.Request.Eligibility" in knowledge_input and "Target = phases.Request.Target" in knowledge_input, "knowledge input must carry detached target eligibility"
+assert "AIConfigHandler.ApplyGuardrailRuntimeTarget(input.Target, input.Eligibility)" in knowledge_worker and "AIConfigHandler.ClearGuardrailRuntimeTarget()" in knowledge_worker, "fallback rule worker must use captured eligibility and restore ambient scope"
+assert "input.ExtraRuleReturnCap" in knowledge_worker and "AIConfigHandler.GuardrailRuleReturnCap" not in knowledge_worker, "worker must not read live MCM rule cap"
+assert "GetMatchedExtraRuleHitsForWorker(" in knowledge_worker and "input.NeedsFallbackExtraRules" in knowledge_worker and "phases.Routing?.AuxiliaryRuleHitIds == null" in knowledge_input, "legacy no-preselection rule retrieval must run on worker"
+
+# J06d: only game-thread capture may call the live eligibility functions. Both
+# worker entries must publish their request's detached facts before retrieval.
+ai = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
+capture_eligibility = extract.declaration(ai, "internal static PromptRuleEligibility CapturePromptRuleEligibility(")
+rag_gate = extract.declaration(ai, "private static bool IsRuleCurrentlyEligibleForRag(")
+preprocess_gate = extract.declaration(ai, "public static bool CanInjectRuleTopicIntoPreprocessForExternal(")
+for target_field in ("Kingdom", "Hero", "Character", "Troop", "UnnamedRank", "AgentIndex"):
+    setter = extract.declaration(ai, "public static void SetGuardrailRuntimeTarget" + target_field + "(")
+    assert "ClearCapturedEligibilityOnTargetMutation();" in setter, "setter-only consumers must not inherit stale captured eligibility: " + target_field
+apply_target = extract.declaration(ai, "internal static void ApplyGuardrailRuntimeTarget(PromptRuntimeTargetBinding binding, PromptRuleEligibility eligibility)")
+assert apply_target.index("binding.Apply(") < apply_target.index("_guardrailRuntimeEligibility.Value = eligibility"), "binding must invalidate old facts before publishing its new facts"
+assert "ApplyGuardrailRuntimeTarget(binding);" in capture_eligibility and "BeginGuardrailRuntimeScope()" in capture_eligibility, "capture must bind and restore the request target before ambient lords-hall read"
+assert "CanInjectVassalageRuleForPromptCapture(hero, targetCharacter)" in capture_eligibility and "CanInjectVassalageRuleForExternal(hero, targetCharacter)" not in capture_eligibility, "eager capture must not emit per-topic vassalage diagnostics"
+vassalage = (ROOT / "VassalageBehavior.cs").read_text(encoding="utf-8-sig")
+silent_vassalage = extract.declaration(vassalage, "internal static bool CanInjectVassalageRuleForPromptCapture(")
+assert "TryBuildVassalageRuntimeState(" in silent_vassalage and "VassalageDiagnosticLog.Event(" not in silent_vassalage, "capture predicate must be read-only"
+assert "captured.IsRuleEligibleForRag(text)" in rag_gate and rag_gate.index("captured.IsRuleEligibleForRag(text)") < rag_gate.index("ShouldExcludeRuntimeRuleForConversationTarget(text)"), "RAG must consult captured facts before live Hero/Mission fallback"
+assert "captured.CanInjectRuleTopicIntoPreprocess(text)" in preprocess_gate and preprocess_gate.index("captured.CanInjectRuleTopicIntoPreprocess(text)") < preprocess_gate.index("VassalageBehavior.CanInjectVassalageRuleForExternal("), "preprocess must consult captured facts before live module fallback"
+assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in capture_request, "shared request must capture eligibility on game thread"
+courier_begin = extract.declaration(source, "internal CourierPreprocessRequest BeginCourierRulePreprocess(")
+assert "Eligibility = CapturePromptRuleEligibility(targetHero, targetCharacter, runtimeTarget)" in courier_begin, "courier request must capture eligibility on game thread"
+native_schedule = (ROOT / "ShoutBehavior.NativePromptBuild.cs").read_text(encoding="utf-8-sig")
+courier_schedule = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs").read_text(encoding="utf-8-sig")
+if args.mutate == "drop-worker-eligibility":
+    native_schedule = native_schedule.replace("ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)", "ApplyGuardrailRuntimeTarget(phases.Request.Target)")
+if args.mutate == "drop-knowledge-worker":
+    native_schedule = native_schedule.replace("MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput);", "", 1)
+if args.mutate == "drop-native-knowledge-guard":
+    native_schedule = native_schedule.replace('SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval")', "false", 1)
+if args.mutate == "drop-courier-knowledge-guard":
+    courier_schedule = courier_schedule.replace("if (knowledgeInput == null) return null;", "", 1)
+if args.mutate == "drop-entity-worker":
+    knowledge_worker = knowledge_worker.replace("WorldEntityRetrievalService.MatchDetachedCandidates(", "WorldEntityRetrievalService.X(", 1)
+assert "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in native_schedule, "Native worker must publish detached eligibility"
+assert "ApplySharedKnowledgeRetrieval(phases, knowledgeResult)" in native_schedule and "ApplySharedKnowledgeRetrieval(phases, knowledgeResult)" in courier_schedule, "only final game-owner phases may publish worker results"
+assert "MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput);" in native_schedule, "Native must execute the knowledge worker"
+assert "ApplyGuardrailRuntimeTarget(begin.Preprocess.Target, begin.Preprocess.Eligibility)" in courier_schedule and "ApplyGuardrailRuntimeTarget(phases.Request.Target, phases.Request.Eligibility)" in courier_schedule, "Courier workers must publish detached eligibility"
+assert native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_begin"') < native_schedule.index('RunNativeConversationBackgroundPreprocessAsync(') < native_schedule.index('RunNativeConversationMainThreadFuncAsync("prompt_build_complete"'), "Native capture/routing/complete thread order"
+assert courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_begin"') < courier_schedule.index('Task.Run(() =>') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_capture"') < courier_schedule.index('RunCourierOwnerPhaseAsync(generation, source + "_prompt_complete"'), "Courier owner/worker thread order"
+assert native_schedule.index('"prompt_build_knowledge_capture"') < native_schedule.index('MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput);') < native_schedule.index('"prompt_build_complete"'), "Native knowledge capture/worker/complete order"
+assert courier_schedule.index('source + "_knowledge_capture"') < courier_schedule.index('MyBehavior.RunSharedKnowledgeRetrieval(knowledgeInput)') < courier_schedule.index('source + "_prompt_complete"'), "Courier knowledge capture/worker/complete order"
+assert 'SaveRuntimeGuard.IsStale(runtimeGeneration, "native_conversation_knowledge_retrieval")' in native_schedule and native_schedule.count("IsNativeConversationAdmissionCurrent(admission, out _)") == 3, "Native must reject stale or replaced knowledge results"
+assert 'if (knowledgeInput == null) return null;' in courier_schedule and courier_schedule.count("IsCourierPromptRunCurrent(promptRun) || !IsCourierPromptInputCurrent(input)") == 4, "Courier must reject stale owner/source after knowledge capture and before final use"
+assert "GetLoreContextWithCandidates(" in capture_sections and "AIConfigHandler.GetLoreContext(" not in capture_sections, "final section must consume worker Lore candidates"
+entity = (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
+knowledge_host = (ROOT / "KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
+if args.mutate == "drop-lore-publication":
+    knowledge_host = knowledge_host.replace("PublishPromptRules();", "", 1)
+if args.mutate == "drop-lore-invalidation":
+    knowledge_host = knowledge_host.replace("_publishedRulesVersion = -1L;\n\t\ttry", "try", 1)
+prepare_lore = extract.declaration(knowledge_host, "internal static long PreparePromptLoreRetrieval(")
+publish_lore = extract.declaration(knowledge_host, "private static void PublishPromptRules(")
+touch_lore = extract.declaration(knowledge_host, "private static void TouchRuleData(")
+assert prepare_lore.index("PublishPromptRules();") < prepare_lore.index("Index.EnsureVectorIndex()"), "Lore snapshot must publish before cold index build"
+assert "_publishedRulesVersion == version" in publish_lore and "new List<LoreRule>(source?.Count ?? 0)" in publish_lore, "Lore rules must be copied once per version, not per prompt"
+assert all(field in publish_lore for field in ("new List<string>(rule.Keywords)", "new List<string>(rule.RagShortTexts)", "new List<string>(rule.SemanticPrototypes)", "new Dictionary<string, int>(variant.When.SkillMin, variant.When.SkillMin.Comparer)", "new LoreTextMapping")), "Lore snapshot must detach mutable rule fields"
+assert "_publishedRulesVersion = -1L;" in touch_lore and "Index.Touch();" in touch_lore, "rule edit must invalidate published snapshot and index"
+lore_worker = extract.declaration(knowledge_host, "internal static LoreCandidateRules CollectPromptLoreCandidates(")
+assert "settings.Enabled" in lore_worker and "PromptLoreSettingsScope.Value = settings" in lore_worker and "KnowledgeRetrievalEnabledSafe()" not in lore_worker, "Lore worker must not read live MCM settings"
+entity_capture = extract.declaration(entity, "internal static EntityCapture CaptureEntityCandidates(")
+entity_worker = extract.declaration(entity, "internal static DetachedEntityMatches MatchDetachedCandidates(")
+if args.mutate == "entity-worker-live-read":
+    entity_worker += "\nHero.MainHero"
+if args.mutate == "drop-entity-allocation-worker":
+    entity_worker = entity_worker.replace("ApplyDetachedGlobalInjectionLimit(", "X(", 1)
+entity_final = extract.declaration(entity, "internal static WorldEntityPromptContext BuildPromptContext(")
+assert "CaptureEntityCandidates(" in knowledge_capture and "MatchDetachedCandidates(" in knowledge_worker, "entity capture/matching must cross game/worker boundary"
+assert "BuildVisiblePartyCandidates(contextHero)" in entity_capture and "GetHeroCandidates()" in entity_capture and "GetKingdomCandidates()" in entity_capture, "entity game capture must reuse existing enumerations"
+assert "WorldEntityRetrievalBudget budget" in entity_capture and "CanContinueWorldEntityMatch(" in entity_capture and "EntityRetrievalBudgetCheckInterval" in extract.declaration(entity, "private static void CaptureCandidates<T>("), "entity capture must preserve a bounded game-thread budget"
+assert "BuildPromptContext(" in capture_sections and "retrieval?.EntityMatches" in capture_sections, "final section must consume matched entities"
+assert "capture == null ? GetHeroCandidates().ToList() : RestoreCandidates(" in entity_final and "capture == null ? GetKingdomCandidates().ToList() : RestoreCandidates(" in entity_final, "successful capture must not repeat full candidate enumeration"
+assert "detachedMatches == null ? FindMatches(" in entity_final and "RestoreMatches(detachedMatches.Kingdoms, capture.Kingdoms)" in entity_final, "successful worker retrieval must not repeat entity scoring"
+assert "capture?.VisibleParties ?? BuildVisiblePartyCandidates(contextHero)" in entity_final, "successful capture must not repeat visible-party scan"
+for forbidden_live in ("Hero.", "Kingdom.", "Settlement.", "Clan.", "MobileParty.", "Campaign.Current", "GetHeroCandidates(", "GetKingdomCandidates(", "BuildVisiblePartyCandidates("):
+    assert forbidden_live not in entity_worker, "entity worker must not read live game object: " + forbidden_live
+assert "FindRulerTitleMatches(" in entity_worker and "FindRawRulerTitleMatches(" in entity_worker and "FindDetachedMatches(" in entity_worker, "ruler/direct matching must run on worker"
+assert "ApplyDetachedGlobalInjectionLimit(" in entity_worker and "EntityInjectionAllocator.Select(" in extract.declaration(entity, "private static void ApplyDetachedGlobalInjectionLimit("), "global entity allocation must run on worker"
+assert "CaptureDetachedMetadata(candidate, x" in entity_capture and "CaptureDetachedMetadata(ruler.Leader, leader" in entity_capture, "game capture must detach scope and distance for direct and ruler heroes"
+assert "if (detachedMatches == null)" in entity_final and "ApplyGlobalInjectionLimit(" in entity_final, "final game stage must allocate only for legacy synchronous fallback"
+for marker in ("private static List<EntityMatch<DetachedEntityCandidate>> FindRulerTitleMatches(", "private static RawRulerTitleMatchResult FindRawRulerTitleMatches(", "private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches(", "private static List<EntityMatch<T>> FindMatches<T>("):
+    body = extract.declaration(entity, marker)
+    assert not re.search(r"\b(?:Hero|Kingdom|Settlement|Clan|MobileParty|Campaign|Mission)\s*\.", body), "entity scorer reads game state: " + marker
+assert "FindMatches(category, mentions, priority, candidates, x => x.Aliases, x => x.Id, x => x.Name" in extract.declaration(entity, "private static List<EntityMatch<DetachedEntityCandidate>> FindDetachedMatches("), "worker must call the shared scorer with DTO fields only"
+extra_instructions = extract.declaration(source, "private string BuildExtraRuleInstructions(")
+assert "AIConfigHandler.FormatMatchedExtraRuleInstructions(" in extra_instructions and extra_instructions.index("fallbackHits != null") < extra_instructions.index("AIConfigHandler.BuildMatchedExtraRuleInstructions("), "captured fallback hits must format without a second retrieval"
+assert "GuardrailStickyTargetKey = AIConfigHandler.CaptureGuardrailStickyTargetKey(runtimeTarget)" in capture_request, "sticky identity must be captured on game thread"
+assert "GetMatchedExtraRuleHitsForWorker(" in ai and "capturedStickyTargetKey ?? \"\"" in ai, "worker fallback must not resolve target identity live"
+for label, body in (("Native", native_schedule), ("Courier", courier_schedule)):
+    for live_call in ("Hero.Find(", "Mission.Current", "CanInjectVassalageRuleForExternal(", "CanInjectDiplomacyRuleForExternal(", "CanDiscussWorldDiplomacyForExternal("):
+        assert live_call not in body, label + " worker schedule must not resolve live eligibility: " + live_call
+
+assert not game_services.search(orchestrator), "orchestrator must not read game services directly: " + game_services.search(orchestrator).group(0)
+assert game_services.search(capture_sections), "section capture is the game-reading phase"
+for name, body in (("CapturePromptBuildRequest", capture_request), ("CapturePromptSections", capture_sections), ("ApplyPromptRuntimeAppendices", appendices)):
+    assert "GetGuardrailSemanticRuleHitsForPreprocess" not in body and "IsGuardrailSemanticHit(" not in body, name + " must not run rule retrieval"
+
+composition = "".join(p.read_text(encoding="utf-8-sig") for p in sorted((ROOT / "src/modules/AF.Module.Prompt/Composition").glob("*.cs")))
+assert "PromptAssemblyStage" in composition and "PromptTopicRoutingStage" in composition, "expected Composition owners present"
+if args.mutate == "assembly-reads-game":
+    composition += "\nusing TaleWorlds.CampaignSystem;\n"
+forbidden = re.compile(r"\busing TaleWorlds\.|\bHero\b\s+\w+\s*[=;,)]|\bCampaign\.Current\b|\bMission\.Current\b|\bAIConfigHandler\.|\bLogger\.Log\(")
+m = forbidden.search(composition)
+assert not m, "Composition owners must stay detached from game/config/log: " + m.group(0)
+
+print("PASS prompt-build-phases orchestrator=5-phase knowledge=worker captureRequest=game sections=game assembly=pure appendices=game LIVE=NOT_RUN")

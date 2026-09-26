@@ -5,16 +5,24 @@ spec=importlib.util.spec_from_file_location('extractor',ROOT/'tools/ChannelCutov
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['drop-busy','release-new-slot','skip-timeout-cas','skip-queued-action-guard','skip-generation','old-overlay-finalizer','skip-queued-epoch']);args=p.parse_args()
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');partial=(ROOT/'ShoutBehavior.NativeAdmission.cs').read_text(encoding='utf-8-sig')
 selectors={'ENTRY':'public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','OPENING_ENTRY':'public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','ACTION_RESULT':'private sealed class NativeConversationGameActionResult','ACTION_QUEUE':'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('}
+# The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
+import sys
+sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+from turn_extraction import projected_source, NEW_SIGNATURE
+if NEW_SIGNATURE in s: s=projected_source(s)
 values={k:ex.declaration(s,v) for k,v in selectors.items()};body=ex.declaration(s,'private async Task<string> SubmitNativeConversationTextInternalAsync(')
 values['PREFIX']=body.split('\t\tLogger.Log("Logic", "[NativePerf] submit_start')[0];assert 'admission.ConversationToken' in values['PREFIX']
 # Independent wiring checks: unchanged UI existence condition, actual conversation-end invalidation,
-# no late target recapture and all ten pre-action guard sites, including the extracted capture.
+# no late target recapture and all nine pre-action guard sites, including the extracted capture.
 baseline=subprocess.check_output(['git','show','14dec2d7:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig')
 assert ex.declaration(s,'public static bool CanSubmitNativeConversationForExternal()')==ex.declaration(baseline,'public static bool CanSubmitNativeConversationForExternal()')
 pre=body.split('\t\tStopwatch nativeActionSw =')[0]
 capture=ex.declaration((ROOT/'ShoutBehavior.NativePreparation.cs').read_text(encoding='utf-8-sig'),'private NativeConversationPreparationSnapshot CaptureNativeConversationPreparation(')
-assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==9
-assert '"uncompressed_history_capture"' in pre
+reply_host=(ROOT/'ShoutBehavior.NativeMainReply.cs').read_text(encoding='utf-8-sig')
+assert pre.count('IsNativeConversationAdmissionCurrent(admission, out ')==7
+assert reply_host.count('IsNativeConversationAdmissionCurrent(_admission, out ')==1
+assert 'NativeConversationMainReplyStage.RunAsync(' in pre
+assert '"main_reply_target_validation"' in reply_host
 assert '"persisted_history_capture"' in pre and '"persisted_history_accept"' in pre
 assert capture.count('IsNativeConversationAdmissionCurrent(admission, out ')==1
 assert pre.count('() => CaptureNativeConversationPreparation(admission,')==1
@@ -27,11 +35,11 @@ overlay=(ROOT/'AnimusForgeNativeConversationOverlay.cs').read_text(encoding='utf
 assert overlay.count('catch (ShoutBehavior.NativeConversationAdmissionException ex)')==2
 assert 'ShoutBehavior.IsNativeConversationBackendBusy()' in ex.declaration(overlay,'private void HandleSubmitRequested(')
 opening=ex.declaration(overlay,'private void TryStartPendingNpcOpening(');assert opening.index('IsNativeConversationBackendBusy')<opening.index('_npcOpeningAutoStarted = true')
-if args.mutate=='drop-busy':partial=partial.replace('if (IsNativeConversationAdmissionCurrent(Volatile.Read(ref _nativeConversationAdmission), out _))','if (false)',1)
-if args.mutate=='release-new-slot':partial=partial.replace('Interlocked.CompareExchange(ref _nativeConversationAdmission, null, admission);','Interlocked.Exchange(ref _nativeConversationAdmission, null);',1)
-if args.mutate=='skip-timeout-cas':partial=partial.replace('if (Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0)','if (false)',1)
+if args.mutate=='drop-busy':partial=partial.replace('if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))','if (false)',1)
+if args.mutate=='release-new-slot':partial=partial.replace('_nativeAdmissionOwner.Release(admission);','_nativeAdmissionOwner.Release(_nativeAdmissionOwner.Current);',1)
+if args.mutate=='skip-timeout-cas':partial=partial.replace('if (!dispatchClaim.TryStart())','if (false)',1)
 if args.mutate=='skip-generation':partial=partial.replace('|| !SaveRuntimeGuard.IsCurrentGeneration(admission.Generation)','|| false',1)
-if args.mutate=='skip-queued-epoch':partial=partial.replace('|| conversationEpoch != Interlocked.Read(ref _nativeConversationAdmissionEpoch)', '|| false', 1)
+if args.mutate=='skip-queued-epoch':partial=partial.replace('|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)', '|| false', 1)
 overlay_source = subprocess.check_output(['git','show','14dec2d7:AnimusForgeNativeConversationOverlay.cs'],cwd=ROOT).decode('utf-8-sig') if args.mutate=='old-overlay-finalizer' else overlay
 finalizers=[]
 for signature,name in [('private async Task SubmitAsync(string text)', 'CompletePlayer'),('private async Task SubmitNpcInitiatedOpeningAsync(', 'CompleteOpening')]:
@@ -55,10 +63,13 @@ if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNat
 (out/'ActionDispatch.cs').write_text(dispatch,encoding='utf-8')
 (out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tools/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
+spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tools/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out);core_fixture.include_admission_owner(out)
+code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
+(out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-dotnet=os.environ.get('DOTNET_EXE',r'C:\Program Files\dotnet\dotnet.exe')
-env=os.environ.copy();env.update(DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
-r=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+dotnet=Path(os.environ.get('AF_DOTNET') or ROOT/'local/dotnet/8.0.425/dotnet.exe')
+env=os.environ.copy();env.update(DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log='sourceSha256='+hashlib.sha256(s.encode()).hexdigest()+' admissionSha256='+hashlib.sha256(partial.encode()).hexdigest()+' mutation='+str(args.mutate)+'\n'+r.stdout+r.stderr
 (out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

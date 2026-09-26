@@ -29,10 +29,11 @@ python -B tools/HeroAssetScopeRegressionTests/run.py --mutate force-all --output
 python -B tools/HeroAssetScopeRegressionTests/run.py --mutate drop-modifier --output-name mutant-drop-modifier
 python -B tools/HeroAssetScopeRegressionTests/run.py --mutate drop-observation --output-name mutant-drop-observation
 python -B tools/HeroAssetScopeRegressionTests/run.py --mutate drop-market-route --output-name mutant-drop-market-route
+python -B tools/HeroAssetScopeRegressionTests/run.py --mutate continue-unknown --output-name mutant-continue-unknown
 ```
 
 默认 SDK 为 `G:\AFMOD\.dotnet-sdk\dotnet.exe`，可用 `--dotnet` 覆盖。生成物和日志隔离在 `.generated/<output-name>/`，带源码摘要；不编译到游戏目录。
 
-当前修复应为 **67 PASS / 0 FAIL**；红基线为 **41 PASS / 26 FAIL**（exit 1）。四种 mutation 必须 exit 1：ALL 强制生成、丢 modifier、断开 mutation observation、丢 market owner 路由。预期拒绝不代表测试基础设施失败；应确认失败来自相应行为断言而非编译错误。
+当前修复应为 **67 PASS / 0 FAIL**；红基线为 **41 PASS / 26 FAIL**（exit 1）。五种 mutation 必须 exit 1：ALL 强制生成、丢 modifier、断开 mutation observation、丢 market owner 路由、unknown 后继续。预期拒绝不代表测试基础设施失败；应确认失败来自相应行为断言而非编译错误。
 
 构建通过与这些隔离回放 **不等于真实 Hero/Party/Merchant 库存、装备、市场职业筛选和存档实机验收**。

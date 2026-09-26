@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.SiegeAftermathIntervention;
 using HarmonyLib;
 using SandBox;
@@ -79,7 +80,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private readonly Dictionary<Hero, Hero> _pendingSceneNotableBattleDeaths = new Dictionary<Hero, Hero>();
 
-	private Dictionary<string, float> _pendingDeferredCrimeByFaction = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
+	private readonly SceneTauntPenaltyLedgerOwner _penaltyLedger = new SceneTauntPenaltyLedgerOwner();
 
 	private Dictionary<string, float> _pendingDeferredCrimeByFactionStorage = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 
@@ -90,8 +91,6 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	private Dictionary<string, float> _lastObservedNativeCrimeByFaction = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, float> _lastObservedNativeCrimeByFactionStorage = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-
-	private Dictionary<string, int> _criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, int> _criminalTrustRewardTenthBySettlementStorage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
@@ -163,10 +162,6 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		{
 			_pendingDeferredLordSceneReason = "";
 		}
-		if (_pendingDeferredCrimeByFaction == null)
-		{
-			_pendingDeferredCrimeByFaction = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-		}
 		if (_pendingDeferredCrimeByFactionStorage == null)
 		{
 			_pendingDeferredCrimeByFactionStorage = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
@@ -186,10 +181,6 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		if (_lastObservedNativeCrimeByFactionStorage == null)
 		{
 			_lastObservedNativeCrimeByFactionStorage = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_criminalTrustRewardTenthBySettlement == null)
-		{
-			_criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		}
 		if (_criminalTrustRewardTenthBySettlementStorage == null)
 		{
@@ -214,10 +205,10 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		if (dataStore.IsSaving)
 		{
 			_warnedSceneTargetKeysStorage = _warnedSceneTargetKeys.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			_pendingDeferredCrimeByFactionStorage = _pendingDeferredCrimeByFaction.Where((KeyValuePair<string, float> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0f).ToDictionary((KeyValuePair<string, float> x) => x.Key, (KeyValuePair<string, float> x) => x.Value, StringComparer.OrdinalIgnoreCase);
+			_pendingDeferredCrimeByFactionStorage = _penaltyLedger.CaptureDeferredCrime();
 			_crimeRefillReserveByFactionStorage = _crimeRefillReserveByFaction.Where((KeyValuePair<string, float> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0f).ToDictionary((KeyValuePair<string, float> x) => x.Key, (KeyValuePair<string, float> x) => x.Value, StringComparer.OrdinalIgnoreCase);
 			_lastObservedNativeCrimeByFactionStorage = _lastObservedNativeCrimeByFaction.Where((KeyValuePair<string, float> x) => !string.IsNullOrWhiteSpace(x.Key)).ToDictionary((KeyValuePair<string, float> x) => x.Key, (KeyValuePair<string, float> x) => MathF.Max(0f, x.Value), StringComparer.OrdinalIgnoreCase);
-			_criminalTrustRewardTenthBySettlementStorage = _criminalTrustRewardTenthBySettlement.Where((KeyValuePair<string, int> x) => !string.IsNullOrWhiteSpace(x.Key) && x.Value > 0).ToDictionary((KeyValuePair<string, int> x) => x.Key, (KeyValuePair<string, int> x) => x.Value, StringComparer.OrdinalIgnoreCase);
+			_criminalTrustRewardTenthBySettlementStorage = _penaltyLedger.CaptureTrustTenths();
 		}
 		dataStore.SyncData("_sceneTauntWarnedTargets_v1", ref _warnedSceneTargetKeysStorage);
 		dataStore.SyncData("_sceneTauntPendingTempWarPeace_v1", ref _pendingTemporaryDungeonWarPeace);
@@ -238,19 +229,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		if (!dataStore.IsSaving)
 		{
 			_warnedSceneTargetKeys = new HashSet<string>(_warnedSceneTargetKeysStorage ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-			_pendingDeferredCrimeByFaction = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-			if (_pendingDeferredCrimeByFactionStorage != null)
-			{
-				foreach (KeyValuePair<string, float> item in _pendingDeferredCrimeByFactionStorage)
-				{
-					string text = (item.Key ?? "").Trim();
-					float num = MathF.Max(0f, item.Value);
-					if (!string.IsNullOrWhiteSpace(text) && num > 0f)
-					{
-						_pendingDeferredCrimeByFaction[text] = num;
-					}
-				}
-			}
+			_penaltyLedger.RestoreDeferredCrime(_pendingDeferredCrimeByFactionStorage);
 			_crimeRefillReserveByFaction = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
 			// Deprecated: refill reserve caused duplicate scene-taunt crime accounting.
 			// Keep the field for save compatibility, but do not restore old values.
@@ -266,19 +245,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			_criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-			if (_criminalTrustRewardTenthBySettlementStorage != null)
-			{
-				foreach (KeyValuePair<string, int> item4 in _criminalTrustRewardTenthBySettlementStorage)
-				{
-					string text4 = (item4.Key ?? "").Trim();
-					int num2 = Math.Max(0, item4.Value);
-					if (!string.IsNullOrWhiteSpace(text4) && num2 > 0)
-					{
-						_criminalTrustRewardTenthBySettlement[text4] = num2;
-					}
-				}
-			}
+			_penaltyLedger.RestoreTrustTenths(_criminalTrustRewardTenthBySettlementStorage);
 			_pendingTemporaryDungeonWarPlayerFactionId = (_pendingTemporaryDungeonWarPlayerFactionId ?? "").Trim();
 			_pendingTemporaryDungeonWarEnemyFactionId = (_pendingTemporaryDungeonWarEnemyFactionId ?? "").Trim();
 			_pendingDeferredLordSceneTargetHeroId = (_pendingDeferredLordSceneTargetHeroId ?? "").Trim();
@@ -397,7 +364,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			_pendingDeferredCrimeByFaction?.Clear();
+			_penaltyLedger.ClearForMainHeroDeath();
 			_crimeRefillReserveByFaction?.Clear();
 			ClearPendingDeferredLordSceneDiplomacy("main_character_died");
 			ClearPendingMainHeroBattleDeath("main_character_died");
@@ -824,63 +791,47 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 
 	private void TryCommitDeferredCrimeWhenBackOnWorldMap()
 	{
-		if (_isCommittingDeferredCrime || _pendingDeferredCrimeByFaction == null || _pendingDeferredCrimeByFaction.Count == 0 || !IsReadyToCommitDeferredCrime())
+		if (_isCommittingDeferredCrime || !_penaltyLedger.HasDeferredCrime || !IsReadyToCommitDeferredCrime())
 		{
 			return;
 		}
 		_isCommittingDeferredCrime = true;
 		try
 		{
-			foreach (KeyValuePair<string, float> item in _pendingDeferredCrimeByFaction.ToList())
+			foreach (KeyValuePair<string, float> item in _penaltyLedger.PendingCrimeEntries())
 			{
 				string text = (item.Key ?? "").Trim();
 				float num = MathF.Max(0f, item.Value);
 				if (string.IsNullOrWhiteSpace(text) || num <= 0f)
 				{
-					_pendingDeferredCrimeByFaction.Remove(item.Key);
+					_penaltyLedger.ClearDeferredCrime(item.Key);
 					continue;
 				}
 				IFaction factionById = ResolveFactionById(text);
 				if (factionById == null)
 				{
 					Logger.Log("SceneTaunt", $"Deferred scene crime dropped because faction could not be resolved. FactionId={text}, Amount={num:0.##}");
-					_pendingDeferredCrimeByFaction.Remove(item.Key);
+					_penaltyLedger.ClearDeferredCrime(item.Key);
 					continue;
 				}
 				try
 				{
 					float num2 = MathF.Max(0f, factionById.MainHeroCrimeRating);
 					float num3 = Campaign.Current?.Models?.CrimeModel?.GetMaxCrimeRating() ?? 100f;
-					float num4 = MathF.Max(0f, num3 - num2);
-					if (num4 <= 0f)
-					{
-						Logger.Log("SceneTaunt", $"Deferred scene-taunt crime pool not injected because native crime is already at max. Faction={factionById.Name}, NativeCrime={num2:0.##}, Pool={num:0.##}, Max={num3:0.##}");
-						continue;
-					}
-					float num5 = MathF.Min(num, num4);
-					if (num5 <= 0f)
-					{
-						continue;
-					}
-					float num6 = MathF.Max(0f, num - num5);
-					if (num6 <= 0f)
-					{
-						_pendingDeferredCrimeByFaction.Remove(item.Key);
-					}
-					else
-					{
-						_pendingDeferredCrimeByFaction[text] = num6;
-					}
+				float num5 = _penaltyLedger.ReserveNativeCommit(text, num2, num3);
+				if (num5 <= 0f)
+				{
+					Logger.Log("SceneTaunt", $"Deferred scene-taunt crime pool not injected because native crime is already at max. Faction={factionById.Name}, NativeCrime={num2:0.##}, Pool={num:0.##}, Max={num3:0.##}");
+					continue;
+				}
+				float num6 = _penaltyLedger.GetDeferredCrime(text);
 					ChangeCrimeRatingAction.Apply(factionById, num5, true);
 					AnimusForgeQuickInfo.Show($"离开当前场景后，{factionById.Name} 的累计犯罪度 +{num5:0.#}。");
 					Logger.Log("SceneTaunt", $"Injected scene-taunt crime pool into native crime. Faction={factionById.Name}, NativeBefore={num2:0.##}, Added={num5:0.##}, RemainingPool={num6:0.##}, NativeAfter={MathF.Max(0f, factionById.MainHeroCrimeRating):0.##}");
 				}
 				catch (Exception ex)
 				{
-					if (num > 0f)
-					{
-						_pendingDeferredCrimeByFaction[text] = num;
-					}
+					_penaltyLedger.RestoreFailedNativeCommit(text, num);
 					Logger.Log("SceneTaunt", "Committing deferred scene crime on world map failed: " + ex.Message);
 				}
 			}
@@ -1081,13 +1032,8 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (Instance._pendingDeferredCrimeByFaction == null)
-			{
-				Instance._pendingDeferredCrimeByFaction = new Dictionary<string, float>(StringComparer.OrdinalIgnoreCase);
-			}
-			Instance._pendingDeferredCrimeByFaction.TryGetValue(text, out var value);
-			Instance._pendingDeferredCrimeByFaction[text] = value + num;
-			Logger.Log("SceneTaunt", $"Queued deferred scene-taunt crime. Faction={faction.Name}, Added={num:0.##}, Pending={Instance._pendingDeferredCrimeByFaction[text]:0.##}, Reason={reason ?? "N/A"}");
+			float pending = Instance._penaltyLedger.QueueDeferredCrime(text, num);
+			Logger.Log("SceneTaunt", $"Queued deferred scene-taunt crime. Faction={faction.Name}, Added={num:0.##}, Pending={pending:0.##}, Reason={reason ?? "N/A"}");
 		}
 		catch (Exception ex)
 		{
@@ -1100,11 +1046,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 		try
 		{
 			string text = (faction?.StringId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text) || _pendingDeferredCrimeByFaction == null)
-			{
-				return 0f;
-			}
-			return _pendingDeferredCrimeByFaction.TryGetValue(text, out var value) ? MathF.Max(0f, value) : 0f;
+			return _penaltyLedger.GetDeferredCrime(text);
 		}
 		catch
 		{
@@ -1178,22 +1120,7 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (Instance._criminalTrustRewardTenthBySettlement == null)
-			{
-				Instance._criminalTrustRewardTenthBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-			}
-			Instance._criminalTrustRewardTenthBySettlement.TryGetValue(text, out var value);
-			int num = Math.Max(0, value) + 13;
-			int num2 = num / 10;
-			int num3 = num % 10;
-			if (num3 > 0)
-			{
-				Instance._criminalTrustRewardTenthBySettlement[text] = num3;
-			}
-			else
-			{
-				Instance._criminalTrustRewardTenthBySettlement.Remove(text);
-			}
+			int num2 = Instance._penaltyLedger.AwardCriminalKnockdownTrust(text, out int num3);
 			if (num2 > 0)
 			{
 				RewardSystemBehavior.Instance.AdjustSettlementLocalPublicTrustForExternal(settlement, num2, "scene_taunt_criminal_knockdown_reward");
@@ -1332,17 +1259,20 @@ public class SceneTauntBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			if (Instance == null || faction == null || Instance._pendingDeferredCrimeByFaction == null)
+			if (Instance == null || faction == null)
 			{
 				return 0f;
 			}
 			string text = (faction.StringId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text) || !Instance._pendingDeferredCrimeByFaction.TryGetValue(text, out var value))
+			if (string.IsNullOrWhiteSpace(text))
 			{
 				return 0f;
 			}
-			float num = MathF.Max(0f, value);
-			Instance._pendingDeferredCrimeByFaction.Remove(text);
+			float num = Instance._penaltyLedger.ClearDeferredCrime(text);
+			if (num <= 0f)
+			{
+				return 0f;
+			}
 			Logger.Log("SceneTaunt", $"Cleared deferred scene-taunt crime. Faction={faction.Name}, Amount={num:0.##}, Reason={reason ?? "N/A"}");
 			return num;
 		}
@@ -2424,9 +2354,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private readonly HashSet<Hero> _sceneNotableDeferredBattleDeathCandidates = new HashSet<Hero>();
 
-	private bool _conflictActive;
+	private readonly SceneTauntConflictLifecycleOwner _conflictLifecycle = new SceneTauntConflictLifecycleOwner();
 
-	private bool _armedConflict;
+	private bool _conflictActive => _conflictLifecycle.Active;
+
+	private bool _armedConflict => _conflictLifecycle.Armed;
 
 	private float _nextSetsFollowerArmedReadinessMissionTime;
 
@@ -2468,7 +2400,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private readonly Dictionary<int, float> _recentNeutralizedFleeingCivilianUntilMissionTime = new Dictionary<int, float>();
 
-	private bool _armedConflictOccurredThisConflict;
+	private bool _armedConflictOccurredThisConflict => _conflictLifecycle.ArmedOccurred;
 
 	private bool _armedDefeatOutcomeHandled;
 
@@ -3118,75 +3050,53 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	private bool IsOwnedSettlementPassiveAttackPeaceLocationScene(Settlement settlement)
 	{
+		return CanInitializePeaceSceneConflict(settlement);
+	}
+
+	private static bool CanInitializePeaceSceneConflict(Settlement settlement, bool physicalAttack = false)
+	{
 		try
 		{
+			bool physicalEnabled = !physicalAttack || SceneTauntBehavior.IsPeaceSceneConflictEnabled();
+			if (!physicalEnabled)
+			{
+				return false;
+			}
 			Mission mission = Mission.Current;
 			if (mission == null || settlement == null)
 			{
 				return false;
 			}
-			if (IsCampaignBattleContextForOwnedSettlementPassiveAttack(mission, settlement))
+			var encounter = PlayerEncounter.LocationEncounter;
+			var location = CampaignMission.Current?.Location;
+			if (encounter == null || location == null)
 			{
 				return false;
 			}
-			if (PlayerEncounter.LocationEncounter == null || CampaignMission.Current?.Location == null)
-			{
-				return false;
-			}
-			Settlement encounterSettlement = PlayerEncounter.LocationEncounter.Settlement;
-			if (encounterSettlement != null && encounterSettlement != settlement)
-			{
-				return false;
-			}
-			string locationId = (CampaignMission.Current.Location.StringId ?? "").Trim().ToLowerInvariant();
-			if (locationId == "arena" || locationId == "training_field")
-			{
-				return false;
-			}
-			return true;
+			ScenePeaceConflictContext facts = new ScenePeaceConflictContext(
+				hasMission: true,
+				hasSettlement: true,
+				hasLocationEncounter: true,
+				hasCampaignLocation: true,
+				sameSettlement: encounter.Settlement == settlement,
+				hasBattle: PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null,
+				hasSiegeHandler: mission.GetMissionBehavior<CampaignSiegeStateHandler>() != null,
+				hasBattleTeamType: mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
+					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut
+					|| mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle,
+				hasBattleMode: mission.Mode == MissionMode.Deployment
+					|| mission.Mode == MissionMode.Stealth
+					|| mission.Mode == MissionMode.Duel,
+				settlementUnderSiege: settlement.IsUnderSiege,
+				locationId: location.StringId);
+			return physicalAttack
+				? ScenePeaceConflictContextOwner.CanInitializePhysical(physicalEnabled, in facts)
+				: ScenePeaceConflictContextOwner.CanInitialize(in facts);
 		}
 		catch
 		{
 			return false;
 		}
-	}
-
-	private bool IsCampaignBattleContextForOwnedSettlementPassiveAttack(Mission mission, Settlement settlement)
-	{
-		try
-		{
-			if (PlayerEncounter.Battle != null || PlayerEncounter.EncounteredBattle != null || MapEvent.PlayerMapEvent != null)
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			CampaignSiegeStateHandler siegeStateHandler = mission?.GetMissionBehavior<CampaignSiegeStateHandler>();
-			if (siegeStateHandler != null)
-			{
-				return true;
-			}
-			if (mission != null && (mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege || mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut || mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle))
-			{
-				return true;
-			}
-			if (mission != null && (mission.Mode == MissionMode.Deployment || mission.Mode == MissionMode.Stealth || mission.Mode == MissionMode.Duel))
-			{
-				return true;
-			}
-			if (settlement?.IsUnderSiege ?? false)
-			{
-				return true;
-			}
-		}
-		catch
-		{
-		}
-		return false;
 	}
 
 	private static Settlement GetCurrentSettlementForOwnedSettlementPassiveAttack()
@@ -5454,6 +5364,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	internal bool CanStartConflict(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex)
 	{
+		if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement))
+		{
+			return false;
+		}
 		_fightHandler = _fightHandler ?? Mission.Current?.GetMissionBehavior<MissionFightHandler>();
 		if (SettlementEntryTroopSelectionBehavior.IsSetsConflictProxyActiveForExternal(Mission.Current))
 		{
@@ -5590,9 +5504,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 				Logger.Log("SceneTaunt", $"Rejected conflict with ambiguous or missing active opponent. Target={agent.Name}, TargetIndex={agent.Index}");
 				return false;
 			}
-			_conflictActive = true;
-			_armedConflict = false;
-			_armedConflictOccurredThisConflict = false;
+			if (!_conflictLifecycle.TryBeginUnarmed())
+			{
+				return false;
+			}
 			_armedDefeatOutcomeHandled = false;
 			ResetArmedConflictReactionBudget();
 			_baseConsequencesApplied = false;
@@ -5680,7 +5595,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			long totalStart = StartPerfTimer();
-			if (!SceneTauntBehavior.IsPeaceSceneConflictEnabled())
+			if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement, physicalAttack: true))
 			{
 				return false;
 			}
@@ -6642,7 +6557,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			}
 			if (externalArmedConflict)
 			{
-				_armedConflictOccurredThisConflict = true;
+				_conflictLifecycle.MarkExternalArmedConflict();
 				_armedDefeatWasCriminalConflict = false;
 			}
 			if (!_pendingPlayerBattleDeathDecisionCaptured)
@@ -7542,6 +7457,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		{
 			return;
 		}
+		if (!CanInitializePeaceSceneConflict(Settlement.CurrentSettlement))
+		{
+			return;
+		}
 		if (Campaign.Current?.ConversationManager?.IsConversationInProgress ?? false)
 		{
 			return;
@@ -7577,9 +7496,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		try
 		{
 			LogPerfPoint("carryover.start", $"player={list.Count} opponents={list2.Count} guards={guardAgents.Count}");
-			_conflictActive = true;
-			_armedConflict = true;
-			_armedConflictOccurredThisConflict = true;
+			if (!_conflictLifecycle.TryBeginArmedCarryover())
+			{
+				return;
+			}
 			_armedDefeatOutcomeHandled = false;
 			InitializeArmedConflictReactionSchedule();
 			_baseConsequencesApplied = true;
@@ -8242,8 +8162,10 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		long totalStart = StartPerfTimer();
 		LogPerfPoint("escalate.start", $"reason={reason ?? "N/A"} suppressAnnouncement={suppressAnnouncement}");
 		ClearMissionFightHandlerPendingFinishTimer();
-		_armedConflict = true;
-		_armedConflictOccurredThisConflict = true;
+		if (!_conflictLifecycle.TryEscalate())
+		{
+			return;
+		}
 		_lastArmedEscalationAtMissionTime = Mission.Current?.CurrentTime ?? -1f;
 		InitializeArmedConflictReactionSchedule();
 		_armedCarryoverHandledInThisMission = true;
@@ -9871,8 +9793,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 		ReleaseAllArmedBystanderWatchers();
 		ResetArmedConflictReactionBudget();
 		RestoreAllCachedWeapons();
-		_conflictActive = false;
-		_armedConflict = false;
+		_conflictLifecycle.End(preserveArmedDefeatState);
 		_nextSetsFollowerArmedReadinessMissionTime = 0f;
 		_baseConsequencesApplied = false;
 		_appliedCrimeRatingAmount = 0f;
@@ -9908,7 +9829,6 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			_pendingPlayerBattleDeathAfterMission = false;
 			_pendingPlayerBattleDeathDecisionCaptured = false;
 			_pendingPlayerBattleDeathKiller = null;
-			_armedConflictOccurredThisConflict = false;
 			_armedDefeatOutcomeHandled = false;
 			_armedDefeatWasCriminalConflict = false;
 		}

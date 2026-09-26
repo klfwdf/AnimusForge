@@ -1,0 +1,426 @@
+{
+  "kind": "B1-inner-list-structure-fix",
+  "recordedUtc": "2026-09-14T19:09:27.318219+00:00",
+  "productionRevision": "9617f96af8d821bf6317db0e43b8b1fbf1ee7a4d",
+  "previousProduction": "4d6994bc7cf219a2f894377d7262a90b466f9cbe",
+  "pullHead": "af6189129403466aa06101ccc3c522ee797bff38",
+  "checkpoint": "b467179b",
+  "stage": "8/B1 VERIFY NOT_BATCH_ACCEPTED",
+  "automation": "PAUSED",
+  "pushed": false,
+  "deployed": false,
+  "sourceFiles": {
+    "MyBehavior.MemorySealing.cs": {
+      "rawSha256": "2a7366bb8f3bca93a7344ac9a0d590fb55c72e503560021fb4269eec1ac5dcb5",
+      "normalizedSha256": "50bf3dd1a181ea837af6bb698574451366736229df3568fd04fc2efd260a463a"
+    },
+    "MyBehavior.cs": {
+      "rawSha256": "320142ba0756430976607d8465f745a2a006da4697019ef60e58ce57eae23c3d",
+      "normalizedSha256": "574633b292cafcfe2633d2dd4ccf036fcc21a22547ee33f57933e321526235da"
+    }
+  },
+  "changes": [
+    "List<T>.Enumerator structure probes for active lines and pre-sanitize trigger input; existing invalidate/reseal path",
+    "Remove unreachable post-Done _linesPublished/_publishedLines state",
+    "No change to original entry/line/bind rules, DTO/save identity, defaults or module gameplay"
+  ],
+  "tests": {
+    "old-source": {
+      "log": ".tmp\\inner-structure-fix-20260915\\old-source.log",
+      "sha256": "fe184e1b78a4fbf9cddaba20e0f4ad7307146f423a62c455cb290dab3d0c13b9",
+      "result": [
+        "FAIL inner-structure-lines-slot: inner lines slot published stale data/order/bindings",
+        "FAIL inner-structure-lines-remove-add: inner lines remove-add published stale data/order/bindings",
+        "FAIL inner-structure-lines-swap: inner lines swap published stale data/order/bindings",
+        "FAIL inner-structure-lines-finalize-slot: inner lines finalize-slot published stale data/order/bindings",
+        "FAIL inner-structure-triggers-slot: inner triggers slot published stale data/order/bindings",
+        "FAIL inner-structure-triggers-remove-add: inner triggers remove-add published stale data/order/bindings",
+        "FAIL inner-structure-triggers-swap: inner triggers swap published stale data/order/bindings",
+        "FAIL inner-structure-triggers-finalize-slot: inner triggers finalize-slot published stale data/order/bindings",
+        "SEALING_RESULT pass=80 fail=8 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+      ]
+    },
+    "current": {
+      "log": ".tmp\\inner-structure-fix-20260915\\current.log",
+      "sha256": "6d46d7839ed69167a68d62eaa277590c24b6881ac3224bd27bf612b1e85b981c",
+      "result": [
+        "SEALING_RESULT pass=88 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+      ]
+    },
+    "ignore-line-structure": {
+      "log": ".tmp\\inner-structure-fix-20260915\\ignore-line-structure.log",
+      "sha256": "f0fcdec84110a45159c1a8bcd7407968ee2a1a70fcd8f8c169a8315930d9429c",
+      "result": [
+        "FAIL inner-structure-lines-slot: inner lines slot published stale data/order/bindings",
+        "FAIL inner-structure-lines-remove-add: inner lines remove-add published stale data/order/bindings",
+        "FAIL inner-structure-lines-swap: inner lines swap published stale data/order/bindings",
+        "FAIL inner-structure-lines-finalize-slot: inner lines finalize-slot published stale data/order/bindings",
+        "SEALING_RESULT pass=84 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+      ]
+    },
+    "ignore-trigger-structure": {
+      "log": ".tmp\\inner-structure-fix-20260915\\ignore-trigger-structure.log",
+      "sha256": "6805da1d354bc4a0f0eded44e6173628229419160d664a4c34a33d267f5df4d8",
+      "result": [
+        "FAIL inner-structure-triggers-slot: inner triggers slot published stale data/order/bindings",
+        "FAIL inner-structure-triggers-remove-add: inner triggers remove-add published stale data/order/bindings",
+        "FAIL inner-structure-triggers-swap: inner triggers swap published stale data/order/bindings",
+        "FAIL inner-structure-triggers-finalize-slot: inner triggers finalize-slot published stale data/order/bindings",
+        "SEALING_RESULT pass=84 fail=4 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+      ]
+    },
+    "ignore-line-source": {
+      "log": ".tmp\\inner-structure-fix-20260915\\ignore-line-source.log",
+      "sha256": "e43343fda398d5b80e9e5373120c6153c72a62d4473cb49c7ee7e9ae8857f95b",
+      "result": [
+        "FAIL owner-normalize-change-empty-grows: stale normalization overwrote changed key/source or pruned new facts",
+        "FAIL owner-normalize-change-kept-empties: stale normalization overwrote changed key/source or pruned new facts",
+        "FAIL owner-normalize-line-change: stale line cursor overwrote a grown source list",
+        "FAIL inner-structure-lines-append: inner lines append published stale data/order/bindings",
+        "FAIL inner-structure-lines-slot: inner lines slot published stale data/order/bindings",
+        "FAIL inner-structure-lines-remove-add: inner lines remove-add published stale data/order/bindings",
+        "FAIL inner-structure-lines-swap: inner lines swap published stale data/order/bindings",
+        "FAIL inner-structure-lines-finalize-slot: inner lines finalize-slot published stale data/order/bindings",
+        "SEALING_RESULT pass=80 fail=8 LIVE=NOT_RUN SAVE=NOT_RUN INNER_LINE_BUDGET=128 INNER_TRIGGER_SANITIZE=ATOMIC"
+      ]
+    },
+    "captured": {
+      "log": ".tmp\\inner-structure-fix-20260915\\captured.log",
+      "sha256": "d6e5bab19256d96e8ba56546d7f7cec186db06a2d2b6583ff28d744e37fad24a",
+      "result": [
+        "CAPTURED_RESULT pass=116 fail=0 LIVE=NOT_RUN SAVE=NOT_RUN HARD_BUDGET=NOT_PROVEN"
+      ]
+    },
+    "business": {
+      "log": ".tmp\\inner-structure-fix-20260915\\business.log",
+      "sha256": "20ba2d1610e1b164e5e980d5bd2c924f6a34f87ff21b538776ccf9d0f6b857f8",
+      "result": [
+        "BUSINESS_RESULT passed=36 failed=0"
+      ]
+    },
+    "terminal": {
+      "log": ".tmp\\inner-structure-fix-20260915\\terminal.log",
+      "sha256": "bb11f83bd32ab55981538e1e844b718ac4e271e0100d586ba785bc8d38f50e9a",
+      "result": [
+        "TERMINAL_RESULT scenarios=85 failures=0 actual_daily_append_save_readback=true actual_source_and_execute=true actual_process_apply_mark=true actual_recovery_daily_recent_terminal=true actual_weekly_outcome_terminal=true actual_major_block_writers=true partial_apply_notice=true game_provider=NOT_TESTED"
+      ]
+    },
+    "source-parity": {
+      "log": ".tmp\\inner-structure-fix-20260915\\source-parity.log",
+      "sha256": "6ce384ceb963bb1d7179c2a297c50383401ddf30ce70ec790cbcf5c33b625d84",
+      "result": [
+        "Ran 13 tests in 3.087s",
+        "OK"
+      ]
+    },
+    "api": {
+      "log": ".tmp\\inner-structure-fix-20260915\\api.log",
+      "sha256": "39ca905e089dac4becabc0355b27881204fd193b8e90fafae52672e323e88345",
+      "result": [
+        "PASS 119 public API assertions; 256 concurrent reads; actual source-linked V1 contracts/runtime.",
+        "PASS expected external internal-access compiler rejection (CS0122)",
+        "PASS 532 actual-DLL metadata assertions; 4 implementation DLLs; public V1/legacy memory signatures match; module ports and scene-aware memory owner remain internal."
+      ]
+    },
+    "persistence": {
+      "log": ".tmp\\inner-structure-fix-20260915\\persistence.log",
+      "sha256": "474c2df5bbcafbcd4a3382e54655e729f7bcc0531dfeec2becf08c1d9794714b",
+      "result": [
+        "{\"baseline\": \"4d6994bc\", \"behaviorAdded\": [], \"behaviorBaseline\": 36, \"behaviorCurrent\": 36, \"behaviorRemoved\": [], \"moduleAssemblies\": [\"AnimusForge.Bootstrap.dll\"], \"moduleId\": \"AnimusForge\", \"moduleName\": \"AnimusForge\", \"status\": \"PASS\", \"syncAdded\": [], \"syncBaseline\": 146, \"syncCurrent\": 146, \"syncRemoved\": []}"
+      ]
+    }
+  },
+  "builds": [
+    {
+      "configuration": "Debug",
+      "status": "PASS",
+      "roles": [
+        "1.3",
+        "1.4",
+        "Bootstrap"
+      ],
+      "mode": "Stage",
+      "logSha256": "cd2918b5baddc6dee677939866679519bf8a1b2302d3297560afbc15c56f0cf5"
+    },
+    {
+      "configuration": "Release",
+      "status": "PASS",
+      "roles": [
+        "1.3",
+        "1.4",
+        "Bootstrap"
+      ],
+      "mode": "Stage",
+      "logSha256": "d8e2972287afbe0a03e4e8dfe1cc6a38a85d5240d306583089906956995815c2"
+    }
+  ],
+  "artifacts": [
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "33b933842a7aff63f63d81c3228414cd19943e532fdefabe1943639657053248",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "33B933842A7AFF63F63D81C3228414CD19943E532FDEFABE1943639657053248",
+        "CreatedUtc": "2026-09-14T19:04:39.2210027Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "5916220eac6a97f728799f1c197ee41c8c0660561c2b10205c7935e3d9c7e99e",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "5916220EAC6A97F728799F1C197EE41C8C0660561C2B10205C7935E3D9C7E99E",
+        "CreatedUtc": "2026-09-14T19:04:08.7132154Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Debug",
+      "path": "bin\\Debug\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "staged": "bin\\Debug\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "240ab6afb4f8dd60e41837f0a10ae1b1c308ea4eb5e7fe799d6e9dbb5d06e13b",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "240AB6AFB4F8DD60E41837F0A10AE1B1C308EA4EB5E7FE799D6E9DBB5D06E13B",
+        "CreatedUtc": "2026-09-14T19:04:36.4051971Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\bootstrap\\AnimusForge.Bootstrap.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\AnimusForge.Bootstrap.dll",
+      "sha256": "f008763660854c5ffaa42abf10868d39a341200bb6634595fc43601550b950ff",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Bootstrap",
+        "FileName": "AnimusForge.Bootstrap.dll",
+        "AssemblyName": "AnimusForge.Bootstrap",
+        "BannerlordApi": "1.3-compatible baseline",
+        "BuildFlavor": "",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "F008763660854C5FFAA42ABF10868D39A341200BB6634595FC43601550B950FF",
+        "CreatedUtc": "2026-09-14T19:05:18.6243425Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.3\\AnimusForge.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.3\\AnimusForge.dll",
+      "sha256": "58e3cab61cb1482fd8deded1e6246f006724c8c0bf27688c1f89ad33c0040f7e",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.3",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_3",
+        "ReferenceGameVersion": "v1.3.15.110062",
+        "Sha256": "58E3CAB61CB1482FD8DEDED1E6246F006724C8C0BF27688C1F89AD33C0040F7E",
+        "CreatedUtc": "2026-09-14T19:05:02.8315630Z"
+      },
+      "stageMatches": true
+    },
+    {
+      "configuration": "Release",
+      "path": "bin\\Release\\single_module_artifacts\\versions\\1.4\\AnimusForge.dll",
+      "staged": "bin\\Release\\single_module_stage\\AnimusForge\\bin\\Win64_Shipping_Client\\versions\\1.4\\AnimusForge.dll",
+      "sha256": "748d0fad267619eda520dc8f8b7c1c4433122efa2e479c705ce5ca2e6db06137",
+      "marker": {
+        "SchemaVersion": 2,
+        "Role": "Implementation",
+        "FileName": "AnimusForge.dll",
+        "AssemblyName": "AnimusForge",
+        "BannerlordApi": "1.4",
+        "BuildFlavor": "ANIMUSFORGE_BANNERLORD_API_1_4",
+        "ReferenceGameVersion": "v1.4.6.115628",
+        "Sha256": "748D0FAD267619EDA520DC8F8B7C1C4433122EFA2E479C705CE5CA2E6DB06137",
+        "CreatedUtc": "2026-09-14T19:05:16.2472608Z"
+      },
+      "stageMatches": true
+    }
+  ],
+  "limits": [
+    "Inner List structural version is not an element field version or concurrent collection",
+    "Trigger list sanitization/raw/capture/final owner binding/Apply atomic work remains",
+    "Actual game writer reachability for each isolated source mutation not claimed; no live gameplay/save test",
+    "Future modularization plan not implemented by this fix"
+  ],
+  "buildEnvironmentCorrection": "First Stage used system runtime-only dotnet and failed SDK discovery; then process PATH/DOTNET_ROOT set to existing G:/AFMOD/.dotnet-sdk and both Stage configurations succeeded. Script unchanged; initial log retained.",
+  "frozenFiles": {
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\api.log": "39ca905e089dac4becabc0355b27881204fd193b8e90fafae52672e323e88345",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\business.log": "20ba2d1610e1b164e5e980d5bd2c924f6a34f87ff21b538776ccf9d0f6b857f8",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\captured.log": "d6e5bab19256d96e8ba56546d7f7cec186db06a2d2b6583ff28d744e37fad24a",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\current.log": "6d46d7839ed69167a68d62eaa277590c24b6881ac3224bd27bf612b1e85b981c",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\ignore-line-source.log": "e43343fda398d5b80e9e5373120c6153c72a62d4473cb49c7ee7e9ae8857f95b",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\ignore-line-structure.log": "f0fcdec84110a45159c1a8bcd7407968ee2a1a70fcd8f8c169a8315930d9429c",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\ignore-trigger-structure.log": "6805da1d354bc4a0f0eded44e6173628229419160d664a4c34a33d267f5df4d8",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\old-source.log": "fe184e1b78a4fbf9cddaba20e0f4ad7307146f423a62c455cb290dab3d0c13b9",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\persistence.log": "474c2df5bbcafbcd4a3382e54655e729f7bcc0531dfeec2becf08c1d9794714b",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\source-parity.log": "6ce384ceb963bb1d7179c2a297c50383401ddf30ce70ec790cbcf5c33b625d84",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\stage-Debug-sdk-unavailable.log": "69d0f26a0b94a0106dcecfdfc4b91e341e5469fffef9956b81a32022eece24eb",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\stage-Debug.log": "cd2918b5baddc6dee677939866679519bf8a1b2302d3297560afbc15c56f0cf5",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\stage-Release.log": "d8e2972287afbe0a03e4e8dfe1cc6a38a85d5240d306583089906956995815c2",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\terminal.log": "bb11f83bd32ab55981538e1e844b718ac4e271e0100d586ba785bc8d38f50e9a",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\Boundary.cs": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\BudgetBinding.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\BudgetRuntime.cs": "534a1e4e5517731766ebfec7eec99db175dae7223ee27a3ad95eaf00a967a358",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\build.log": "37376df893452eb6f73bf37f073871c94a909bbfa4b468f50690a2aed9df67d1",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\Fixture.cs": "88fce3b4a9191a7f8db0683db81171ab1e23e762a1e33e35e7a63923da58a818",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\manifest.json": "bc8b6032166b52e883fba2f10fa89c7aca6679b0e5792a097bb4bc8dcd63eb01",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\MemorySealing.cs": "1b8de2d80a78c5cf7306543af6c178147c839eed53c536d4a8106c820d3cb578",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\Product.cs": "e8666d7523e5bfd77c236b915e6663ca20129b91018e382b3a2205c847074f22",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\Proof.csproj": "4f08868e1c418ee302d89bfb03079e482182673a4631e6c9112e22808ff750fd",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\QueueSort.cs": "f4dc41fada77a2c51bbd5f49db38081c5c871af952055a020905fe191850c20f",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\run.log": "af15920469d94df2380cec412e8625b0dab3b03a5fdc0c88215335c27ff0b622",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-current\\Sealing.cs": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\Boundary.cs": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\BudgetBinding.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\BudgetRuntime.cs": "534a1e4e5517731766ebfec7eec99db175dae7223ee27a3ad95eaf00a967a358",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\build.log": "951ea1f0592203ff8dfe2e42a65da0cc2f6ca33a37cb8347fde22f92722fea4d",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\Fixture.cs": "88fce3b4a9191a7f8db0683db81171ab1e23e762a1e33e35e7a63923da58a818",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\manifest.json": "d57560b0f33a30f17c156267a1e106b8cbb6f42d25cabc25f96c7a373d607b26",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\MemorySealing.cs": "f5d0d215246dccf10be5ec36c8c7a7c06cd0bf805e0b3bd7fe2a4a3387edebf4",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\Product.cs": "e8666d7523e5bfd77c236b915e6663ca20129b91018e382b3a2205c847074f22",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\Proof.csproj": "4f08868e1c418ee302d89bfb03079e482182673a4631e6c9112e22808ff750fd",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\QueueSort.cs": "f4dc41fada77a2c51bbd5f49db38081c5c871af952055a020905fe191850c20f",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\run.log": "cb679364f49fc1adeafc3487df147cafbdb5462edaec7842c2fcd221038ae869",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-source\\Sealing.cs": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\Boundary.cs": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\BudgetBinding.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\BudgetRuntime.cs": "534a1e4e5517731766ebfec7eec99db175dae7223ee27a3ad95eaf00a967a358",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\build.log": "ffa85be663ce406cd19cc38b39f240774e8917cf2475e8e8825ee938703c37fc",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\Fixture.cs": "88fce3b4a9191a7f8db0683db81171ab1e23e762a1e33e35e7a63923da58a818",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\manifest.json": "98ee50b8bddf9bc7224cb70ae636fc36d5972d18e5afdeffddd11ac6d95e6820",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\MemorySealing.cs": "b2087bd8bbc5ef33a86e06380dc3309756daf286585a073c0af08629884ec298",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\Product.cs": "e8666d7523e5bfd77c236b915e6663ca20129b91018e382b3a2205c847074f22",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\Proof.csproj": "4f08868e1c418ee302d89bfb03079e482182673a4631e6c9112e22808ff750fd",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\QueueSort.cs": "f4dc41fada77a2c51bbd5f49db38081c5c871af952055a020905fe191850c20f",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\run.log": "ab9ae326657d8c044e9a4f26d98f72fee89c45ea08e54ca8b765e4d83baafed6",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-line-structure\\Sealing.cs": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\Boundary.cs": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\BudgetBinding.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\BudgetRuntime.cs": "534a1e4e5517731766ebfec7eec99db175dae7223ee27a3ad95eaf00a967a358",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\build.log": "7ad100596d5e23b9ff9eb7f74434abdf299d70a43bf94c1b53abef23812726fd",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\Fixture.cs": "88fce3b4a9191a7f8db0683db81171ab1e23e762a1e33e35e7a63923da58a818",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\manifest.json": "2dada7d856f7fe521847b1f257735f66d0f4c85297fe02699bd07df118e5d901",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\MemorySealing.cs": "9164d4ce050f7aedca77c9577431a635ffda471436ec7c325c9f0717866af878",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\Product.cs": "e8666d7523e5bfd77c236b915e6663ca20129b91018e382b3a2205c847074f22",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\Proof.csproj": "4f08868e1c418ee302d89bfb03079e482182673a4631e6c9112e22808ff750fd",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\QueueSort.cs": "f4dc41fada77a2c51bbd5f49db38081c5c871af952055a020905fe191850c20f",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\run.log": "1d707186d8ddac4412f55bf62c1528373dfdda6e6e94b408fe8ab3785a4b7624",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-ignore-trigger-structure\\Sealing.cs": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\Boundary.cs": "bacae1cc95c8ae4cabe4d446f14cdd0fa89886602d51c4a0e4ab82f4c3c6a598",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\BudgetBinding.cs": "8c2d9443de67fdd6be1410caa6d85b2c6b9fe1931c6794ce53a37c141abe87fc",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\BudgetRuntime.cs": "534a1e4e5517731766ebfec7eec99db175dae7223ee27a3ad95eaf00a967a358",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\build.log": "9af6b745985a4bc605a4c0c61bde65e5a86f951542e2817fd0923fa9e48e699e",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\Fixture.cs": "88fce3b4a9191a7f8db0683db81171ab1e23e762a1e33e35e7a63923da58a818",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\Guard.cs": "a38f84032fc411931c6d3b91b332d590c838f97960f8d302f670df8a9643c3f7",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\Input.cs": "0b830a2e4072848d7db47dc5c78d2b5b6f2bfde7ec6beb1f3a5abbd0ae605443",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\manifest.json": "83fead50b677e366d82be5cab7caf162a58a1032d5a51338023e905a11e645a2",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\MemorySealing.cs": "979769ddaf7ed17fb078cf4cc023c6c46c62728560bc6735edaaa1116674c509",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\MemorySourceFingerprintWriter.cs": "7421d0055540ba41ad4a97dc71e1725f56a992bcbc71c58068041565c876c684",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\MyBehavior.MemorySourceFingerprint.cs": "8c5932411023f0b53c03538b822c14f86e25a62bcdb67fe70c4f59f9a60621ad",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\Product.cs": "e8666d7523e5bfd77c236b915e6663ca20129b91018e382b3a2205c847074f22",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\Proof.csproj": "4f08868e1c418ee302d89bfb03079e482182673a4631e6c9112e22808ff750fd",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\QueueSort.cs": "f4dc41fada77a2c51bbd5f49db38081c5c871af952055a020905fe191850c20f",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\run.log": "e89a5023e9668caabe1fa7a327ae25e7e7ce1470cb24726d37540a149b05ae7d",
+    ".tmp\\inner-structure-fix-20260915\\final-evidence\\sealing-original-4d6994bc\\Sealing.cs": "90c5009f31ba792b023bfbceb20fb74fcb456368289ef0dc561cd4e11fb8b205"
+  },
+  "codeMap": {
+    "anchors": 78,
+    "sourceRevision": "9617f96af8d821bf6317db0e43b8b1fbf1ee7a4d",
+    "recordedRevision": "PASS",
+    "workingTree": "PASS"
+  },
+  "protectedFiles": [
+    {
+      "path": "docs/handoffs/2026-09-06-integrated-phase8-handoff.md",
+      "sha256": "84a5e715899e1c4b9138530513ebf39462d21e0ef56de8b9658c32619a6158d9"
+    },
+    {
+      "path": "docs/handoffs/2026-09-06-team-brief.md",
+      "sha256": "24694dd9173b4228bc8cf4b48e8f1fc6f11c48a3df9674b90ba323575e05e6eb"
+    },
+    {
+      "path": "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md",
+      "sha256": "ec870f4208f48bbe6f3a52c2f9460dc2f783e798b7ddee9abfe7e80ee7dceef8"
+    }
+  ],
+  "commands": {
+    "python": "G:/Python310/python.exe -X utf8 -B",
+    "dotnet": "G:/AFMOD/.dotnet-sdk/dotnet.exe",
+    "sealing": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
+    "oldSourceArgs": [
+      "--source-baseline",
+      "4d6994bc"
+    ],
+    "faultArgs": [
+      "--mutate",
+      "<name>"
+    ],
+    "adjacent": [
+      "run_captured.py",
+      "run_business.py",
+      "run_terminal.py",
+      "test_source_parity.py"
+    ],
+    "buildScript": "一键编译覆盖推送/build_single_module.ps1",
+    "buildArguments": {
+      "ProjectRoot": "G:/AFMOD/AF-REFACTOR",
+      "BannerlordRoot": "E:/steam/steamapps/common/Mount & Blade II Bannerlord",
+      "Bannerlord13ReferenceDir": "G:/AFMOD/NEW-10/_deps_auto",
+      "Bannerlord14ReferenceDir": "G:/AFMOD/NEW-10/.tmp/build_check/1.4",
+      "WorkshopContentDir": "E:/steam/steamapps/workshop/content/261550",
+      "RuntimeDependencyDir": "G:/AFMOD/NEW-10/AnimusForge/bin/Win64_Shipping_Client",
+      "Configuration": [
+        "Debug",
+        "Release"
+      ],
+      "Stage": true
+    },
+    "processEnvironment": "PATH prepends G:/AFMOD/.dotnet-sdk; DOTNET_ROOT same; no install/script change",
+    "api": "tools/ModuleFrameworkApiTests/run.py --dotnet G:/AFMOD/.dotnet-sdk/dotnet.exe --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts",
+    "persistence": "tools/PersistenceIdentityAudit.py --baseline 4d6994bc --json"
+  }
+}

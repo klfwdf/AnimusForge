@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -64,23 +63,16 @@ internal static class PolicyLlmClient
 
 	private static readonly Queue<string> CapabilityCacheOrder = new Queue<string>();
 
-	private sealed class NpcPolicyHttpExchange : IDisposable
+	private sealed class NpcPolicyHttpExchange
 	{
-		public HttpResponseMessage Response { get; private set; }
+		public LlmNonStreamingResponse Response { get; }
 
-		public string ResponseBody { get; private set; }
+		public string ResponseBody { get; }
 
-		public NpcPolicyHttpExchange(HttpResponseMessage response, string responseBody)
+		public NpcPolicyHttpExchange(LlmNonStreamingResponse response)
 		{
 			Response = response;
-			ResponseBody = responseBody ?? "";
-		}
-
-		public void Dispose()
-		{
-			HttpResponseMessage response = Response;
-			Response = null;
-			response?.Dispose();
+			ResponseBody = response?.Body ?? "";
 		}
 	}
 
@@ -99,9 +91,9 @@ internal static class PolicyLlmClient
 			Capped = capped;
 		}
 
-		public static RetryAfterInfo FromResponse(HttpResponseMessage response)
+		public static RetryAfterInfo FromResponse(LlmNonStreamingResponse response)
 		{
-			return new RetryAfterInfo(TryGetRetryAfterSeconds(response));
+			return new RetryAfterInfo(response?.RetryAfterSeconds);
 		}
 
 		public void ApplyTo(NpcPolicyApiCallResult result)
@@ -305,14 +297,7 @@ internal static class PolicyLlmClient
 			}
 			else
 			{
-				try
-				{
-					result = CompleteApiCallResult(exchange, result, profile.ResolvedRoute, thinkingMode, capabilities.OmitThinkingControls, source);
-				}
-				finally
-				{
-					exchange.Dispose();
-				}
+				result = CompleteApiCallResult(exchange, result, profile.ResolvedRoute, thinkingMode, capabilities.OmitThinkingControls, source);
 			}
 			result.AttemptsUsed = attempt;
 			requestStopwatch.Stop();
@@ -372,40 +357,31 @@ internal static class PolicyLlmClient
 
 	private static async Task<NpcPolicyHttpExchange> SendAndReadNpcPolicyExchangeAsync(string effectiveApiUrl, string apiKey, string jsonBody, int hardTimeoutMilliseconds, string source, long runtimeGeneration, string staleStagePrefix, NpcPolicyApiCallResult result, CancellationToken cancellationToken)
 	{
-		HttpResponseMessage response = await SendNpcPolicyRequestWithHardTimeoutAsync(effectiveApiUrl, apiKey, jsonBody, hardTimeoutMilliseconds, source, result, cancellationToken);
+		LlmNonStreamingResponse response = await SendNpcPolicyRequestWithHardTimeoutAsync(
+			effectiveApiUrl,
+			apiKey,
+			jsonBody,
+			hardTimeoutMilliseconds,
+			source,
+			result,
+			() => !SaveRuntimeGuard.IsStale(runtimeGeneration, staleStagePrefix + "_response"),
+			() => !SaveRuntimeGuard.IsStale(runtimeGeneration, staleStagePrefix + "_body"),
+			cancellationToken);
 		if (response == null)
 		{
 			return null;
 		}
-		bool keepResponse = false;
-		try
+		if (response.Discarded)
 		{
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, staleStagePrefix + "_response"))
-			{
-				result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-				return null;
-			}
-			string responseBody = await response.Content.ReadAsStringAsync();
-			if (SaveRuntimeGuard.IsStale(runtimeGeneration, staleStagePrefix + "_body"))
-			{
-				result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
-				return null;
-			}
-			keepResponse = true;
-			return new NpcPolicyHttpExchange(response, responseBody);
+			result.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
+			return null;
 		}
-		finally
-		{
-			if (!keepResponse)
-			{
-				response.Dispose();
-			}
-		}
+		return new NpcPolicyHttpExchange(response);
 	}
 
 	private static NpcPolicyApiCallResult CompleteApiCallResult(NpcPolicyHttpExchange exchange, NpcPolicyApiCallResult result, string resolvedRoute, string thinkingMode, bool thinkingRetriedPlain, string source)
 	{
-		HttpResponseMessage response = exchange.Response;
+		LlmNonStreamingResponse response = exchange.Response;
 		string responseBody = exchange.ResponseBody ?? "";
 		result.StatusCode = (int)response.StatusCode;
 		result.ResponseBody = responseBody;
@@ -570,7 +546,7 @@ internal static class PolicyLlmClient
 		result.ErrorMessage = "LLM returned non-stop finish_reason=" + finishReason + "; not treating response as successful JSON output";
 	}
 
-	private static void ApplyHttpFailureDetails(NpcPolicyApiCallResult result, HttpResponseMessage response, string responseBody)
+	private static void ApplyHttpFailureDetails(NpcPolicyApiCallResult result, LlmNonStreamingResponse response, string responseBody)
 	{
 		RetryAfterInfo.FromResponse(response).ApplyTo(result);
 		result.IsAuthFailure = IsAuthenticationFailureResponse(response.StatusCode, responseBody);
@@ -844,14 +820,29 @@ internal static class PolicyLlmClient
 		return result.StatusCode.HasValue ? "Http" : "Transport";
 	}
 
-	private static async Task<HttpResponseMessage> SendNpcPolicyRequestWithHardTimeoutAsync(string effectiveApiUrl, string apiKey, string jsonBody, int hardTimeoutMilliseconds, string source, NpcPolicyApiCallResult result, CancellationToken cancellationToken)
+	private static async Task<LlmNonStreamingResponse> SendNpcPolicyRequestWithHardTimeoutAsync(
+		string effectiveApiUrl,
+		string apiKey,
+		string jsonBody,
+		int hardTimeoutMilliseconds,
+		string source,
+		NpcPolicyApiCallResult result,
+		Func<bool> acceptResponse,
+		Func<bool> acceptBody,
+		CancellationToken cancellationToken)
 	{
-		using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, effectiveApiUrl);
-		LlmApiCompat.ApplyAuthenticationHeaders(request, effectiveApiUrl, apiKey);
-		request.Content = new StringContent(jsonBody ?? "{}", Encoding.UTF8, "application/json");
 		using CancellationTokenSource timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 		using CancellationTokenSource delayCts = new CancellationTokenSource();
-		Task<HttpResponseMessage> apiTask = DuelSettings.GlobalClient.SendAsync(request, timeoutCts.Token);
+		// The module transport owns one HTTP attempt and all response resources.
+		// Policy keeps its hard wall, compatibility downgrade and retry decisions here.
+		Task<LlmNonStreamingResponse> apiTask = LlmNonStreamingTransport.SendAsync(
+			effectiveApiUrl,
+			apiKey,
+			jsonBody ?? "{}",
+			(request, token) => DuelSettings.GlobalClient.SendAsync(request, token),
+			timeoutCts.Token,
+			_ => acceptResponse == null || acceptResponse(),
+			acceptBody);
 		Task completed = await Task.WhenAny(apiTask, Task.Delay(hardTimeoutMilliseconds, delayCts.Token));
 		if (completed != apiTask)
 		{
@@ -883,12 +874,12 @@ internal static class PolicyLlmClient
 		}
 	}
 
-	private static async Task ObserveTimedOutApiTaskAsync(Task<HttpResponseMessage> apiTask, string source)
+	private static async Task ObserveTimedOutApiTaskAsync(Task<LlmNonStreamingResponse> apiTask, string source)
 	{
 		try
 		{
-			using HttpResponseMessage lateResponse = await apiTask;
-			Log(source, "[HTTP] Timed-out NPC policy request eventually returned after cancellation; response disposed.");
+			await apiTask;
+			Log(source, "[HTTP] Timed-out NPC policy request eventually returned after cancellation; transport resources released.");
 		}
 		catch (TaskCanceledException)
 		{
@@ -1157,38 +1148,7 @@ internal static class PolicyLlmClient
 		return raw;
 	}
 
-	private static int? TryGetRetryAfterSeconds(HttpResponseMessage response)
-	{
-		if (response == null)
-		{
-			return null;
-		}
-		try
-		{
-			if (response.Headers?.RetryAfter?.Delta != null)
-			{
-				return Math.Max(0, (int)Math.Ceiling(response.Headers.RetryAfter.Delta.Value.TotalSeconds));
-			}
-			if (response.Headers != null && response.Headers.TryGetValues("Retry-After", out var values))
-			{
-				string text = values?.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
-				if (int.TryParse((text ?? "").Trim(), out int seconds))
-				{
-					return Math.Max(0, seconds);
-				}
-				if (DateTimeOffset.TryParse(text, out var retryAt))
-				{
-					return Math.Max(0, (int)Math.Ceiling((retryAt - DateTimeOffset.UtcNow).TotalSeconds));
-				}
-			}
-		}
-		catch
-		{
-		}
-		return null;
-	}
-
-	private static bool HasRequestsPerMinuteRateLimitHeaders(HttpResponseMessage response)
+	private static bool HasRequestsPerMinuteRateLimitHeaders(LlmNonStreamingResponse response)
 	{
 		if (response?.Headers == null)
 		{
@@ -1196,7 +1156,7 @@ internal static class PolicyLlmClient
 		}
 		try
 		{
-			foreach (KeyValuePair<string, IEnumerable<string>> item in response.Headers)
+			foreach (KeyValuePair<string, string[]> item in response.Headers)
 			{
 				string key = (item.Key ?? "").Trim();
 				if (ContainsAnyIgnoreCase(key, "ratelimit", "rate-limit", "limit-requests", "remaining-requests", "reset-requests"))

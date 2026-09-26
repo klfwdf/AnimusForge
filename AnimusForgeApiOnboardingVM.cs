@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Modules;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.InputSystem;
@@ -435,6 +436,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	private float _toastTimer;
 	private CancellationTokenSource _testCts;
+	private readonly OnboardingUiDispatchOwner _uiDispatch = new OnboardingUiDispatchOwner();
 
 	public AnimusForgeApiOnboardingVM(bool isApiOnlyFlow, Action onCompleted, Action onCancelled)
 	{
@@ -699,7 +701,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			PostprocessKey = key;
 			EventKey = key;
 
-			YjKeyMasked = key.Length > 8 ? (key.Substring(0, 4) + "..." + key.Substring(key.Length - 4)) : key;
+			YjKeyMasked = key.Length > 8 ? (key.Substring(0, 4) + "..." + key.Substring(key.Length - 4)) : "****";
 			SwitchView(OnboardingView.YjModels);
 
 			// 自动拉取一次模型
@@ -818,26 +820,31 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			return;
 		}
 
+		string endpoint = url.Trim();
+		string apiKey = key.Trim();
 		Task.Run(async () =>
 		{
 			try
 			{
-				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(url.Trim(), key.Trim(), CancellationToken.None);
+				ModelCatalogExchange exchange = await new LegacyModelCatalogGateway().FetchModelsAsync(endpoint, apiKey, CancellationToken.None);
 				if (exchange.IsSuccessStatusCode)
 				{
 					List<string> models = ModOnboardingBehavior.ExtractModelNamesFromResponse(exchange.ResponseBody);
 					if (models != null && models.Count > 0)
 					{
-						ShowToast("成功拉取 " + models.Count + " 个模型");
-						onListFetched?.Invoke(models);
+						_uiDispatch.Post(() =>
+						{
+							ShowToast("成功拉取 " + models.Count + " 个模型");
+							onListFetched?.Invoke(models);
+						});
 						return;
 					}
 				}
-				ShowToast("未能从接口解析出模型列表");
+				_uiDispatch.Post(() => ShowToast("未能从接口解析出模型列表"));
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				ShowToast("拉取模型失败: " + ex.Message);
+				_uiDispatch.Post(() => ShowToast("拉取模型失败，请检查网络和 API 配置"));
 			}
 		});
 	}
@@ -879,46 +886,18 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		_testCts?.Dispose();
 		_testCts = new CancellationTokenSource();
 		CancellationToken token = _testCts.Token;
+		int generation = _uiDispatch.BeginTest();
+		var targets = new List<ModOnboardingBehavior.ApiValidationTargetInfo>
+		{
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.Primary, DisplayName = "主 API（正文生成）", ApiUrl = PrimaryUrl.Trim(), ApiKey = PrimaryKey.Trim(), ModelName = PrimaryModel.Trim() },
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.Auxiliary, DisplayName = "前处理 API（意图路由）", ApiUrl = AuxiliaryUrl.Trim(), ApiKey = AuxiliaryKey.Trim(), ModelName = AuxiliaryModel.Trim() },
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.ActionPostprocess, DisplayName = "后处理 API（指令标签）", ApiUrl = PostprocessUrl.Trim(), ApiKey = PostprocessKey.Trim(), ModelName = PostprocessModel.Trim() },
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.EventAndRebellion, DisplayName = "每日与周报 API", ApiUrl = EventUrl.Trim(), ApiKey = EventKey.Trim(), ModelName = EventModel.Trim() }
+		};
 
 		Task.Run(async () =>
 		{
-			var targets = new List<ModOnboardingBehavior.ApiValidationTargetInfo>
-			{
-				new ModOnboardingBehavior.ApiValidationTargetInfo
-				{
-					Target = ModOnboardingBehavior.ApiSetupTarget.Primary,
-					DisplayName = "主 API（正文生成）",
-					ApiUrl = PrimaryUrl.Trim(),
-					ApiKey = PrimaryKey.Trim(),
-					ModelName = PrimaryModel.Trim()
-				},
-				new ModOnboardingBehavior.ApiValidationTargetInfo
-				{
-					Target = ModOnboardingBehavior.ApiSetupTarget.Auxiliary,
-					DisplayName = "前处理 API（意图路由）",
-					ApiUrl = AuxiliaryUrl.Trim(),
-					ApiKey = AuxiliaryKey.Trim(),
-					ModelName = AuxiliaryModel.Trim()
-				},
-				new ModOnboardingBehavior.ApiValidationTargetInfo
-				{
-					Target = ModOnboardingBehavior.ApiSetupTarget.ActionPostprocess,
-					DisplayName = "后处理 API（指令标签）",
-					ApiUrl = PostprocessUrl.Trim(),
-					ApiKey = PostprocessKey.Trim(),
-					ModelName = PostprocessModel.Trim()
-				},
-				new ModOnboardingBehavior.ApiValidationTargetInfo
-				{
-					Target = ModOnboardingBehavior.ApiSetupTarget.EventAndRebellion,
-					DisplayName = "每日与周报 API",
-					ApiUrl = EventUrl.Trim(),
-					ApiKey = EventKey.Trim(),
-					ModelName = EventModel.Trim()
-				}
-			};
-
-			var tasks = targets.Select(t => TestSingleTargetAsync(t, token)).ToArray();
+			var tasks = targets.Select(t => TestSingleTargetAsync(t, token, generation)).ToArray();
 			ModOnboardingBehavior.ApiValidationTargetResult[] results;
 			try
 			{
@@ -926,30 +905,36 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			}
 			catch (OperationCanceledException)
 			{
-				TestOverallNotice = "测试已由用户取消。";
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = "测试已由用户取消。");
 				return;
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				TestOverallNotice = "测试发生异常：" + ex.Message;
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = "测试发生异常，请检查网络和 API 配置。");
 				return;
 			}
 
 			bool allPassed = results.All(r => r != null && r.Success);
 			if (allPassed)
 			{
-				TestOverallNotice = "✔ 4 条 API 全部握手成功！即将进入确认界面...";
-				await Task.Delay(600);
-				SwitchView(OnboardingView.Success);
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = "✔ 4 条 API 全部握手成功！即将进入确认界面...");
+				try
+				{
+					await Task.Delay(600, token);
+					_uiDispatch.PostTest(generation, () => SwitchView(OnboardingView.Success));
+				}
+				catch (OperationCanceledException)
+				{
+				}
 			}
 			else
 			{
-				TestOverallNotice = "❌ 部分 API 连通性测试未通过，请检查错误提示并返回修改。";
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = "❌ 部分 API 连通性测试未通过，请检查错误提示并返回修改。");
 			}
 		});
 	}
 
-	private async Task<ModOnboardingBehavior.ApiValidationTargetResult> TestSingleTargetAsync(ModOnboardingBehavior.ApiValidationTargetInfo target, CancellationToken token)
+	private async Task<ModOnboardingBehavior.ApiValidationTargetResult> TestSingleTargetAsync(ModOnboardingBehavior.ApiValidationTargetInfo target, CancellationToken token, int generation)
 	{
 		var sw = Stopwatch.StartNew();
 		ModOnboardingBehavior.ApiValidationTargetResult res = await ModOnboardingBehavior.ValidateApiTargetAsync(target, token);
@@ -957,39 +942,45 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 		long ms = sw.ElapsedMilliseconds;
 
-		switch (target.Target)
+		_uiDispatch.PostTest(generation, () => ApplyTestTargetResult(target.Target, res, ms));
+		return res;
+	}
+
+	private void ApplyTestTargetResult(ModOnboardingBehavior.ApiSetupTarget target, ModOnboardingBehavior.ApiValidationTargetResult res, long ms)
+	{
+		string status = res.Success ? "✔ 握手成功" : ("❌ " + (res.FailureHint ?? "连接失败"));
+		switch (target)
 		{
 			case ModOnboardingBehavior.ApiSetupTarget.Primary:
 				IsPrimarySuccess = res.Success;
 				IsPrimaryFailed = !res.Success;
-				PrimaryStatusText = res.Success ? "✔ 握手成功" : ("❌ " + (res.Message ?? "连接失败"));
+				PrimaryStatusText = status;
 				PrimaryLatencyText = res.Success ? (ms + "ms") : "";
 				break;
 			case ModOnboardingBehavior.ApiSetupTarget.Auxiliary:
 				IsAuxiliarySuccess = res.Success;
 				IsAuxiliaryFailed = !res.Success;
-				AuxiliaryStatusText = res.Success ? "✔ 握手成功" : ("❌ " + (res.Message ?? "连接失败"));
+				AuxiliaryStatusText = status;
 				AuxiliaryLatencyText = res.Success ? (ms + "ms") : "";
 				break;
 			case ModOnboardingBehavior.ApiSetupTarget.ActionPostprocess:
 				IsPostprocessSuccess = res.Success;
 				IsPostprocessFailed = !res.Success;
-				PostprocessStatusText = res.Success ? "✔ 握手成功" : ("❌ " + (res.Message ?? "连接失败"));
+				PostprocessStatusText = status;
 				PostprocessLatencyText = res.Success ? (ms + "ms") : "";
 				break;
 			case ModOnboardingBehavior.ApiSetupTarget.EventAndRebellion:
 				IsEventSuccess = res.Success;
 				IsEventFailed = !res.Success;
-				EventStatusText = res.Success ? "✔ 握手成功" : ("❌ " + (res.Message ?? "连接失败"));
+				EventStatusText = status;
 				EventLatencyText = res.Success ? (ms + "ms") : "";
 				break;
 		}
-
-		return res;
 	}
 
 	public void ExecuteCancelTest()
 	{
+		_uiDispatch.CancelTest();
 		_testCts?.Cancel();
 		SwitchView(_currentView == OnboardingView.Testing ? (_isCustomMode ? OnboardingView.MultiApi : OnboardingView.YjModels) : OnboardingView.Main);
 	}
@@ -1110,6 +1101,14 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void OnTick()
 	{
+		try
+		{
+			_uiDispatch.Pump(32);
+		}
+		catch (Exception)
+		{
+			ShowToast("界面更新失败，请重试当前操作");
+		}
 		if (IsToastVisible)
 		{
 			_toastTimer -= 0.05f;
@@ -1122,6 +1121,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public override void OnFinalize()
 	{
+		_uiDispatch.Close();
 		base.OnFinalize();
 		_testCts?.Cancel();
 		_testCts?.Dispose();

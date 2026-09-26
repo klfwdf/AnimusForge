@@ -6,11 +6,14 @@
 
 源码入口：
 
-- `G:\AFMOD\AF-REFACTOR\Refactor\Modules\TeamModulePorts.cs`：专用方法签名及责任注释。
-- `G:\AFMOD\AF-REFACTOR\Refactor\Modules\TeamModuleAdapters.cs`：唯一转接原业务 owner 的薄实现。
-- `G:\AFMOD\AF-REFACTOR\Refactor\Modules\TeamModuleServices.cs`：类型确定的单例接线。
-- `G:\AFMOD\AF-REFACTOR\Refactor\Modules\InternalModuleDirectory.cs`：登记、冻结、依赖/版本校验和状态查询。
-- `G:\AFMOD\AF-REFACTOR\Refactor\Modules\ModuleFrameworkRuntime.cs`：显式装配和外部只读映射。
+- `src/AF.Contracts/Internal/TeamModules/{IPolicy,IGathering,ISiege}ModulePort.cs`：三组专用 internal 契约。
+- `src/bridges/{Policy,Gathering,Siege}/*ModuleAdapter.cs`：分别转接原业务 owner 的无状态薄实现。
+- `G:\AFMOD\AF-REFACTOR\src\AF.GameAdapter.Bannerlord\Composition\TeamModuleServices.cs`：类型确定的单例接线。
+- `src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs`：登记、冻结、依赖/版本校验和状态查询。
+- `src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs`：目录状态、加载/停止和冻结快照的唯一 owner。
+- `src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs`：选择制作组目录工厂、转接 Campaign 注册与保留旧查询入口，不再持有目录状态。
+
+J11 已按 [`docs/plans/j11-team-module-seams-plan.md`](../plans/j11-team-module-seams-plan.md) 完成必要离线验收；当前 owner/consumer/gate 见 [`af-team-module-seam-matrix.md`](af-team-module-seam-matrix.md)。
 
 ## 当前登记范围
 
@@ -57,3 +60,14 @@ new Directory → TryRegister(definition) → CompleteRegistration()
 ## 性能与兼容
 
 登记/依赖校验在冷启动；实际主体调用通过 typed 单例直达原 adapter，不逐次查字典。公共查询按需构造少量只读快照，不新增每帧扫描或网络请求。框架目录不持久化，不改变任何 SaveableTypeDefiner/SyncData 键。
+
+
+## 制作组 → AF 的 Native 服务（新增）
+
+制作组代码可通过 `CoreDialogueServices.CreateClient()` 取得 **internal** `CoreDialogueClient`，使用 `SubmitNative(requestId, playerText)`、operation 的 `Completion` / `Snapshot` / `Cancel()`；不依赖公共 `Api.V1`。
+
+- 实际链路：`CoreDialogueServices` → `ShoutBehavior.SubmitModuleNativeDialogue` → 原主线程 dispatcher → 原 `SubmitNativeConversationAdmittedAsync` → 唯一动作/记忆收尾。
+- 输入是当前 Native 对话的玩家文本，不接受 Hero、任意 handler、Prompt 或动作委托。业务模块不能借服务冒造 AFEF/改变原资格规则。
+- client 的128票据保留/相同ID去重/容量拒绝、仅开始前取消，与公共投影有相同 owner 语义。内部状态定义与公开enum通过显式映射隔离。
+- 公共 API 是这一真实内部服务的消费者；尚未把政策/宴会/GCCZ的业务调用全部改造成双向服务。此前主体→制作组13方法/31调用贡献port仍是原范围。
+- Scene/Courier 服务仍待完整owner回执，不声称内部双向全模块已完成。

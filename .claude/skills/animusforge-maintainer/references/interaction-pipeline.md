@@ -4,10 +4,10 @@ Use this reference for scene shout, native/free conversation, courier, preproces
 
 Read the repository's current channel-alignment and directive-tag case documents before editing. This reference defines the intended module seam, not every current method.
 
-## Ownership
+## Logical ownership (verify current implementation names)
 
 - `AF.Module.Conversation` owns the shared interaction pipeline and three channel adapters.
-- `AF.Module.Memory` provides public history/fact storage capability.
+- Memory owns the authoritative history/fact storage seam; same-DLL access may be internal, separate from a versioned external API.
 - LLM providers expose a stable `llm.generate` capability.
 - Action-owning modules register action handlers/capabilities.
 - Cross-module action effects use a bridge when the behavior belongs to more than one module.
@@ -28,6 +28,8 @@ Channel adapter
 ```
 
 Channel adapters own trigger/UI/timing only. They do not own private prompt grammars, tag regex copies, action execution or history semantics.
+
+The flow describes responsibilities, not proof that every named class or registry is implemented. Map the actual code and legacy callers before changing it; an internal extraction does not require introducing all these types.
 
 ## Core DTO intent
 

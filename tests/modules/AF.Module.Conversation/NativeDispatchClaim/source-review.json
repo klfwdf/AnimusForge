@@ -1,0 +1,58 @@
+{
+  "baseline": "42ac364d",
+  "files": {
+    "ShoutBehavior.NativeAdmission.cs": {
+      "beforeSha256": "7c326c416d628846a3424528e9b8da3a3e2d732142804d26232555ba4f366535",
+      "afterSha256": "d86a644980c75e30868599abd96f921552011f6cfcad18489d7ebda3a39ba12a",
+      "edits": [
+        {
+          "before": "int dispatchState = 0; // 0 queued; 1 started; 2 expired before start.",
+          "after": "var dispatchClaim = new NativeConversationDispatchClaim();",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0",
+          "after": "!dispatchClaim.TryStart()",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0",
+          "after": "dispatchClaim.TryExpireBeforeStart()",
+          "count": 1
+        }
+      ]
+    },
+    "ShoutBehavior.cs": {
+      "beforeSha256": "ae715fd1acc943fc4c6fb6201b183440a60e17172f1a6476fec24fbe94500975",
+      "afterSha256": "072f711dd4a92dc3ad84db4ed172abe563d74e605c9249decce9efff7074ed91",
+      "edits": [
+        {
+          "before": "int dispatchState = 0; // queued=0, claimed=1, cancelled before claim=2.",
+          "after": "var dispatchClaim = new NativeConversationDispatchClaim();",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.CompareExchange(ref dispatchState, 1, 0) != 0",
+          "after": "!dispatchClaim.TryStart()",
+          "count": 1
+        },
+        {
+          "before": "Interlocked.CompareExchange(ref dispatchState, 2, 0) == 0",
+          "after": "dispatchClaim.TryExpireBeforeStart()",
+          "count": 3
+        }
+      ]
+    },
+    "ShoutBehavior.NativeCompletion.cs": {
+      "beforeSha256": "2eda8bb2728c022af11e0d1f2eb116e06c5df8b656f19f0d90fa2162662b0329",
+      "afterSha256": "48a175fbda1354d76ff08bfa2a420f0266012db8f66f0ec2c96fcad03b9e968e",
+      "edits": [
+        {
+          "before": "using System.Threading;\n",
+          "after": "",
+          "count": 1
+        }
+      ]
+    }
+  }
+}

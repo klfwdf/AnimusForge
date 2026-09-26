@@ -341,7 +341,36 @@ AssertTrue((bool)hostResultType.GetProperty("UsedLegacyFallback").GetValue(fallb
     && fallbackCalls == 1, "Courier fallback isolation mismatch");
 AssertTrue(commitDispatches == committedBeforeTerminalCases, "Courier terminal/fallback cases dispatched an unexpected commit");
 
-Console.WriteLine("PASS productionCourierHostReplay courierPorts=1 replyMain=1 syntheticOwnerAbsent=1 unboundPostprocessDenied=1 postprocessTransportDenied=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1");
+// Exercise the actual private receipt classifier in the staged DLL, not a fixture enum.
+MethodInfo unconfirmed = courierType.GetMethod("CreateUnconfirmedCourierCommit", BindingFlags.NonPublic | BindingFlags.Static);
+AssertTrue(unconfirmed != null, "actual DLL is missing unconfirmed Courier receipt classifier");
+object uncertain = unconfirmed.Invoke(null, new object[] { "fixture_commit_uncertain" });
+AssertTrue(uncertain.GetType().GetProperty("Status").GetValue(uncertain).ToString() == "NonRetryableFailure", "actual Courier uncertain commit became retryable");
+AssertTrue(uncertain.GetType().GetProperty("EffectState").GetValue(uncertain).ToString() == "UnknownAfterStart", "actual Courier uncertain commit lost its effect classification");
+AssertTrue(!(bool)uncertain.GetType().GetProperty("HistoryWritten").GetValue(uncertain)
+    && !(bool)uncertain.GetType().GetProperty("ActionsExecuted").GetValue(uncertain), "unknown receipt fabricated confirmed side effects");
+AssertTrue((string)uncertain.GetType().GetProperty("ErrorCode").GetValue(uncertain) == "fixture_commit_uncertain", "actual uncertain receipt lost its reason");
+
+// The real host must keep this receipt terminal and never replay it through the legacy fallback.
+activeEnvelope = InvokeStatic(courierType, "CaptureCourierInboundRefactorEnvelopeForExternal", "replay-courier-uncertain", "uncertain seed");
+int uncertainCommits = 0;
+Delegate uncertainCommit = HandlerDelegate(facadeCommitDelegateType, _ => { uncertainCommits++; return uncertain; });
+object uncertainHost = New(hostType, capture, generate, uncertainCommit);
+int fallbackBeforeUncertain = fallbackCalls;
+Task uncertainTask = (Task)hostExecute.Invoke(uncertainHost, new object[]
+{
+    "uncertain seed", configuration, "fixture-module", "fixture-provider", actionExecutorFactory,
+    memoryFactory, dispatchCommit, countingFallback, CancellationToken.None, afterCommit, false
+});
+await uncertainTask.ConfigureAwait(false);
+object uncertainResult = uncertainTask.GetType().GetProperty("Result").GetValue(uncertainTask);
+object retainedReceipt = hostResultType.GetProperty("Commit").GetValue(uncertainResult);
+AssertTrue(uncertainCommits == 1 && fallbackCalls == fallbackBeforeUncertain
+    && !(bool)hostResultType.GetProperty("UsedLegacyFallback").GetValue(uncertainResult), "uncertain Courier commit was replayed or bypassed");
+AssertTrue(hostResultType.GetProperty("Status").GetValue(uncertainResult).ToString() == "NonRetryableFailure"
+    && retainedReceipt != null && retainedReceipt.GetType().GetProperty("EffectState").GetValue(retainedReceipt).ToString() == "UnknownAfterStart", "actual host lost the uncertain receipt");
+
+Console.WriteLine("PASS productionCourierHostReplay courierPorts=1 replyMain=1 syntheticOwnerAbsent=1 unboundPostprocessDenied=1 postprocessTransportDenied=1 replyCommit=1 inboundMain=1 inboundCommit=1 inboundNoUserSeed=1 cancellationBoundary=1 fallbackIsolation=1 unconfirmedReceipt=1 uncertainHostNoReplay=1");
 
 internal class ReplayProxy : DispatchProxy
 {

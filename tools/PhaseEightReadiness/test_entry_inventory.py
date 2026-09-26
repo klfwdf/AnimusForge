@@ -15,12 +15,45 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import entry_inventory  # noqa: E402
 
 EXPANDED_ENTRIES = {
+    # J12 Economy moved real owners into the module tree and added a detached
+    # projection; current owner review must be renewed before COMPLETE returns.
+    "economy-reward-debt": (
+        "src/modules/AF.Module.Economy/Authorization/RewardSystemBehavior.EconomyAssetAuthorization.cs",
+        "src/modules/AF.Module.Economy/Execution/Hero/RewardSystemBehavior.EconomyReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/Merchant/RewardSystemBehavior.EconomyMerchantReplay.cs",
+        "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs",
+        "src/modules/AF.Module.Economy/Projection/EconomyPromptProjection.cs",
+    ),
+    # Newly inventoried existing Courier boundaries require renewed J10 coverage review.
+    "courier-proactive-issue": (
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DeliveryLifetime.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.GenerationLifecycle.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ReplyWait.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.ProactiveLetters.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RouteTransport.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.RuntimeTick.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionCreation.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
+    ),
     "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
     "social-progression-reports": (
         "AnimusForgeWeeklyReportMapNotification.cs",
         "MyBehavior.WeeklyActionOutcomeReceipts.cs",
-        "WeeklyReportSchedulePolicy.cs",
-        "WeeklyReportTextHelper.cs",
+        "src/modules/AF.Module.Weekly/Generation/WeeklyFullReportCompletionOwner.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyReportSchedulePolicy.cs",
+        "src/modules/AF.Module.Weekly/Scheduling/WeeklyAutoScheduleOwner.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyReportTextHelper.cs",
+        "src/modules/AF.Module.Weekly/Materials/WeeklyMaterialBatchPlanner.cs",
         "TerminalWeeklyReportBrowserPopupVM.cs",
     ),
     "ui-tts-external-integration": (
@@ -57,24 +90,24 @@ class EntryInventoryTests(unittest.TestCase):
 
     def test_required_candidates_are_present(self) -> None:
         result = entry_inventory.build_inventory(ROOT)
-        self.assertIn("RewardSystemBehavior.EconomyPartyReplay.cs", result["economy-reward-debt"])
-        self.assertIn("CourierDeliveryBehavior.InboundCompletion.cs", result["courier-proactive-issue"])
+        self.assertIn("src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs", result["economy-reward-debt"])
+        self.assertIn("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.InboundCompletion.cs", result["courier-proactive-issue"])
         self.assertIn("Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs", result["courier-proactive-issue"])
         self.assertIn("Refactor/Runtime/CourierInboundCompletionReceipt.cs", result["courier-proactive-issue"])
         self.assertIn("PlayerNotorietyBehavior.ConversationOutcomes.cs", result["social-progression-reports"])
         self.assertIn("PlayerEncounterCompat.cs", result["game-adapter-compatibility"])
-        self.assertIn("Refactor/Runtime/DetachedInteractionHost.cs", result["action-commit"])
+        self.assertIn("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs", result["action-commit"])
 
     def test_report_includes_stable_source_reasons(self) -> None:
         result = entry_inventory.build_explained_inventory(ROOT)
         self.assertEqual(result, entry_inventory.build_explained_inventory(ROOT))
         economy = next(
             item for item in result["economy-reward-debt"]
-            if item["path"] == "RewardSystemBehavior.EconomyPartyReplay.cs"
+            if item["path"] == "src/modules/AF.Module.Economy/Execution/Party/RewardSystemBehavior.EconomyPartyReplay.cs"
         )
         self.assertEqual(
             economy["sourceReasons"],
-            ["reviewed-pattern:RewardSystemBehavior*.cs"],
+            ["reviewed-pattern:src/modules/AF.Module.Economy/**/*.cs"],
         )
 
     def test_exclusion_keeps_real_terminal_entries_and_rejects_generated_paths(self) -> None:
@@ -90,6 +123,16 @@ class EntryInventoryTests(unittest.TestCase):
             self.assertTrue(entry_inventory._excluded(value), str(value))
         for value in EXPANDED_ENTRIES["ui-tts-external-integration"]:
             self.assertFalse(entry_inventory._excluded(Path(value)), value)
+
+    def test_module_sources_do_not_unexclude_generated_or_deployed_files(self) -> None:
+        self.assertFalse(entry_inventory._excluded(Path("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs")))
+        for value in (
+            "Modules/AnimusForge/Foo.cs", "scratch/Modules/AnimusForge/Foo.cs",
+            "src/modules/AF.Module.Conversation/bin/Foo.cs",
+            "src/modules/AF.Module.Conversation/obj/Foo.cs",
+            "src/modules/AF.Module.Conversation/Modules/AnimusForge/Foo.cs",
+        ):
+            self.assertTrue(entry_inventory._excluded(Path(value)), value)
 
     def test_terminal_weekly_and_war_candidates_are_present(self) -> None:
         inventory = entry_inventory.build_inventory(ROOT)

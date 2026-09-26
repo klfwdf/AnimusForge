@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="../../../../AIConfigModel.cs" />
+    <Compile Include="../../../../DuelConfig.cs" />
+    <Compile Include="../../../../RewardConfig.cs" />
+    <Compile Include="../../../../LoanConfig.cs" />
+    <Compile Include="../../../../SurroundingsConfig.cs" />
+    <Compile Include="../../../../GuardrailConfigModel.cs" />
+    <Compile Include="../../../../GuardrailRulePromptConfig.cs" />
+    <Compile Include="../../../../DuelStakeConfig.cs" />
+    <Compile Include="../../../../KnowledgeRetrievalConfig.cs" />
+    <Compile Include="../../../../ActionPostprocessConfigModel.cs" />
+    <Compile Include="../../../../PostprocessRuleEntry.cs" />
+    <Compile Include="../../../../PreprocessPromptsConfigModel.cs" />
+    <Compile Include="../../../../ProactiveNpcRequestPromptsConfigModel.cs" />
+    <Compile Include="../../../../RpItemIntroductionPromptsConfigModel.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Configuration/PromptConfigurationSnapshot.cs" />
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

@@ -21,9 +21,13 @@
 同名 DLL”的策略。固定引用目录中即使有旧 MCM/Harmony，也不参与这些模块的选择。
 不会复制任意 `AnimusForge.dll`、`System.*`、游戏 native DLL、ONNX 模型到输出。
 
-`Program.cs` 仍加载项目本地固定的
+通常的 `Program.cs` 仍加载项目本地固定的
 `bin/Debug/single_module_stage/AnimusForge/bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll`。
 先用既有官方流程单独准备 Stage；此框架只读取它，不构建、不修改 Stage。
+`PhaseEightParityReplayTests` 是 J13 离线候选例外：必须显式传 `ReplayCandidateDll`
+指向本仓库刚构建的 `bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll`，
+并在 `--` 后传相同 DLL 绝对路径及其 SHA256。runner 校验 build marker、SHA256 和
+产物时间不早于本次生产源码；不读取旧 Stage，不改变其他 replay 的默认路径。
 自定义 runner 输出层级/RuntimeIdentifier 会被拒绝，避免验证与实际加载不同的 Stage。
 
 ## Fail-closed 与证据
