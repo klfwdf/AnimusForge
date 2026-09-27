@@ -572,6 +572,12 @@
       "source": "content/modules/AF.Module.Diplomacy/CustomPrompts/WorldDiplomacyPrompt.json",
       "target": "CustomPrompts/WorldDiplomacyPrompt.json",
       "sha256": "A447D0691F322388EDF27B9075DCA624414015964BE367D8A379BA78E3EC168A"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac",
+      "target": "AssetPackages/pack0.tpac",
+      "sha256": "95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2"
     }
   ]
 }
