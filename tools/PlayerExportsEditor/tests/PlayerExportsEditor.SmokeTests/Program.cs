@@ -3,6 +3,38 @@ using PlayerExportsEditor.Core;
 var service = new PlayerExportsService();
 var validator = new PlayerExportsValidator();
 
+if (args.Length == 2 && args[0] == "--backup-contract")
+{
+    var id = args[1];
+    var cwd = Directory.GetCurrentDirectory();
+    if (id.Length == 0 || !id.All(c => char.IsAsciiLetterOrDigit(c) || c == '-') ||
+        !File.Exists(Path.Combine(cwd, "AnimusForge.csproj")))
+        throw new InvalidOperationException("Backup contract requires a repository root and safe run id.");
+    var backupRoot = Path.Combine(cwd, "artifacts", "j15-content", "editor-backup-" + id);
+    if (Directory.Exists(backupRoot) || File.Exists(backupRoot))
+        throw new InvalidOperationException("Backup contract refuses to reuse an output root.");
+    Directory.CreateDirectory(backupRoot);
+    var file = Path.Combine(backupRoot, "sample.json");
+    var store = new JsonFileStore();
+    File.WriteAllText(file, "{\"value\":0}");
+    var backups = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    for (var value = 1; value <= 12; value++)
+    {
+        var previous = File.ReadAllText(file);
+        var backup = store.SaveUtf8WithBackup(file, "{\"value\":" + value + "}", backupRoot);
+        if (!File.Exists(backup) || File.ReadAllText(backup) != previous || !backups.Add(backup))
+            throw new InvalidOperationException("Consecutive edits did not preserve distinct previous bytes.");
+    }
+    var final = File.ReadAllText(file);
+    var invalidRejected = false;
+    try { store.SaveUtf8WithBackup(file, "{bad json", backupRoot); }
+    catch (System.Text.Json.JsonException) { invalidRejected = true; }
+    if (!invalidRejected || File.ReadAllText(file) != final || backups.Count != 12)
+        throw new InvalidOperationException("Invalid edit changed the active JSON or earlier backups.");
+    Console.WriteLine("PASS editor backup contract: consecutive=12 distinct=12 invalid_preserved=1");
+    return 0;
+}
+
 if (args.Contains("--path-contract", StringComparer.Ordinal))
 {
     var isolated = Path.Combine(Path.GetTempPath(), "af-editor-path-" + Guid.NewGuid().ToString("N"));
