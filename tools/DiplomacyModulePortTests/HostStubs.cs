@@ -1,6 +1,8 @@
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 
+namespace HarmonyLib { internal sealed class Harmony { } }
+
 // Recording boundaries only. Diplomatic rules/actions remain covered by the existing replay suites.
 namespace TaleWorlds.CampaignSystem
 {
@@ -12,6 +14,7 @@ namespace TaleWorlds.CampaignSystem
         public static Campaign Current { get; set; }
         public ObjectManager CampaignObjectManager { get; set; } = new ObjectManager();
     }
+    internal sealed class CampaignGameStarter { }
     internal sealed class ObjectManager
     {
         public Dictionary<string, object> Objects = new();
@@ -52,6 +55,11 @@ namespace AnimusForge
         public static bool TryBuildTributePowerContext(Kingdom payer, Kingdom receiver, out AfTributePowerContext value)
         { Recording.Call("tribute",payer,receiver);value=new AfTributePowerContext(1,2,3,4,5,6,7,8,9,10,11);return Recording.Result; }
     }
+    internal static class DiplomacyModuleComposition
+    {
+        internal static void Register(CampaignGameStarter starter) { }
+        internal static void RegisterPatches(HarmonyLib.Harmony harmony) { }
+    }
     internal sealed class WorldDiplomacyBehavior
     {
         public static WorldDiplomacyBehavior Instance;
@@ -63,7 +71,8 @@ namespace AnimusForge
         public static bool CanDiscussWorldDiplomacyForExternal(Hero h) { Recording.Call("discuss",h);return Recording.Result; }
         public static bool TryBuildProactiveDiscussionForExternal(Hero h, out string key, out string fact, out float urgency)
         { Recording.Call("proactive",h);key="key";fact="fact";urgency=0.75f;return Recording.Result; }
-        public static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision() => Instance == null ? WorldDiplomacyTimelineRevisionResult.Unavailable() : WorldDiplomacyTimelineRevisionResult.Available(Instance.Revision);
+        internal static bool TryGetTimelineRevisionSnapshot(out long revision)
+        { revision = Instance?.Revision ?? 0L; return Instance != null; }
         public static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount)
         { Recording.Call("documents",maxCount);return Available ? WorldDiplomacyTimelineDocumentsResult.Available(Array.Empty<WorldDiplomacyTimelineDocument>()) : WorldDiplomacyTimelineDocumentsResult.Unavailable(); }
         public static bool TryMarkDocumentReadForCommand(string id, out bool available)

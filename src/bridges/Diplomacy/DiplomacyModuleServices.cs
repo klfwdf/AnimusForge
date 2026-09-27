@@ -4,7 +4,10 @@ namespace AnimusForge;
 // Adapters resolve current campaign identities on demand; no cached live campaign objects.
 internal static class DiplomacyModuleServices
 {
-    internal static IDiplomacyConversationPort Conversation { get; } = new DiplomacyConversationModuleAdapter();
-    internal static IWorldDiplomacyModulePort World { get; } = new WorldDiplomacyModuleAdapter();
-    internal static IDiplomacyPolicyObservationPort Policy { get; } = new DiplomacyPolicyObservationBridge();
+    internal static DiplomacyModule Module { get; } = new DiplomacyModule(new DiplomacyPolicyObservationBridge());
+    internal static IDiplomacyConversationPort Conversation => Module.Conversation;
+    internal static IWorldDiplomacyModulePort World => Module.World;
+    internal static IDiplomacyPolicyObservationPort Policy => Module.Policy;
+    internal static void Register(TaleWorlds.CampaignSystem.CampaignGameStarter starter) => Module.Register(starter);
+    internal static void RegisterPatches(HarmonyLib.Harmony harmony) => Module.RegisterPatches(harmony);
 }

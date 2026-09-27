@@ -14,7 +14,12 @@ def main():
  retired=load('retired','tools/DiplomacyArchitectureTests/retired.py')
  declaration=load('decl','tools/ChannelCutoverBoundaryTests/run.py').declaration
  prior=old(retired.HOST)
- assert retired.remove_retired(prior,declaration)==read(retired.HOST),'Active behavior body changed beyond retired private declarations'
+ current=read(retired.HOST)
+ query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
+ snapshot='internal static bool TryGetTimelineRevisionSnapshot('
+ prior=prior.replace('\t'+declaration(prior,query)+'\n\n','')
+ current=current.replace('\t'+declaration(current,snapshot)+'\n\n','')
+ assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
  print('PASS 17 private method deletions; all surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)
  # Evaluation only: no game startup, restore, Stage or deployment.

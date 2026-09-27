@@ -12,7 +12,8 @@ util=load('port_util','tools/ModuleFrameworkApiTests/run.py')
 declaration=load('port_decl','tools/ChannelCutoverBoundaryTests/run.py').declaration
 SOURCES=['Refactor/Contracts/'+n+'.cs' for n in ['DiplomacyModulePorts','AfTributePowerContext','WorldDiplomacyPolicySignalSnapshot','WorldDiplomacyPresentationPort','WorldDiplomacyPresentationContracts','WorldDiplomacyTimelineQueryContracts','WorldDiplomacyTimelineDocumentQueryContracts','WorldDiplomacyDocumentReadCommandContracts']]
 SOURCES += ['src/bridges/Diplomacy/'+n+'.cs' for n in ['DiplomacyConversationBridge','DiplomacyPolicyObservationBridge','DiplomacyModuleServices']]
-SOURCES += ['src/modules/AF.Module.Diplomacy/Adapters/'+n+'.cs' for n in ['DiplomacyConversationModuleAdapter','WorldDiplomacyModuleAdapter','DiplomacyIdentityResolver']]
+SOURCES += ['src/modules/AF.Module.Diplomacy/Adapters/'+n+'.cs' for n in ['DiplomacyModule','DiplomacyConversationModuleAdapter','WorldDiplomacyModuleAdapter','DiplomacyIdentityResolver']]
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineRevisionApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  paths=['AIConfigHandler.cs','ShoutBehavior.cs','ShoutBehavior.NativeTurnCommit.cs','DiplomacyPeaceTermsService.cs','NpcTributeVassalageBehavior.cs','src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs']
@@ -29,7 +30,13 @@ def boundaries():
    prior=prior.replace(block+'\n\n','')
   assert current.strip()==prior.strip(), 'Caller guard/order/argument drift: '+p
  world='src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs'
- assert read(world).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(old(world),declaration),'Policy cadence/state owner changed'
+ current_world=read(world)
+ prior_world=old(world)
+ query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
+ snapshot='internal static bool TryGetTimelineRevisionSnapshot('
+ prior_world=prior_world.replace('\t'+declaration(prior_world,query)+'\n\n','')
+ current_world=current_world.replace('\t'+declaration(current_world,snapshot)+'\n\n','')
+ assert current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration),'Policy cadence/state owner changed'
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)
  ledger=declaration(before,'internal sealed class PublishedPolicyArtifactLedgerEntry')
@@ -47,7 +54,7 @@ def boundaries():
  for name,_ in fields:
   assert name+' = '+name[0].lower()+name[1:]+';' in value_type,'Snapshot value lost: '+name
  for p in ['src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs','src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs']:
-  restored=read(p).replace('DiplomacyModuleServices.World.OnEngineTick()', 'WorldDiplomacyBehavior.Instance?.OnEngineTick()').replace('DiplomacyModuleComposition.RegisterPatches(harmony)','WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony)')
+  restored=read(p).replace('DiplomacyModuleServices.World.OnEngineTick()', 'WorldDiplomacyBehavior.Instance?.OnEngineTick()').replace('DiplomacyModuleServices.RegisterPatches(harmony)','WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony)')
   assert restored==old(p),'Lifecycle order/guard drift: '+p
  for p in ['src/bridges/Diplomacy/DiplomacyConversationBridge.cs','src/bridges/Diplomacy/DiplomacyPolicyObservationBridge.cs']:
   assert not any(s in read(p) for s in ['foreach (','Regex','Campaign.Current','_af_world_diplomacy_v1','new Dictionary','lock (']), 'Bridge owns business/state: '+p

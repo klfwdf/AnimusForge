@@ -1,4 +1,5 @@
 using System.Text;
+using AnimusForge;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Modules;
 
@@ -49,6 +50,20 @@ sealed class CountingQuery : IWorldDiplomacyTimelineRevisionQuery
     }
 }
 
+sealed class StubRevisionSource : IWorldDiplomacyTimelineRevisionSource
+{
+    internal bool Available;
+    internal long Revision;
+    internal bool Throw;
+
+    public bool TryRead(out long revision)
+    {
+        if (Throw) throw new InvalidOperationException("source failure");
+        revision = Revision;
+        return Available;
+    }
+}
+
 sealed class StubDocumentQuery : IWorldDiplomacyTimelineDocumentQuery
 {
     private readonly Func<int, WorldDiplomacyTimelineDocumentsResult> _query;
@@ -91,6 +106,7 @@ internal static class Program
     {
         VerifyResultContract();
         VerifyFacadeMapping();
+        VerifyModuleApplicationQuery();
         VerifyHotPathAllocation();
         VerifyDocumentContract();
         VerifyDocumentFacadeMapping();
@@ -148,6 +164,26 @@ internal static class Program
             new StubQuery(() => throw new InvalidOperationException("fixture")));
         Test.Equal(0L, throwing.GetRevisionOrZero(), "throwing query fallback");
         Test.Equal(WorldDiplomacyTimelineRevisionStatus.Failed, throwing.Query().Status, "throwing query status");
+    }
+
+    private static void VerifyModuleApplicationQuery()
+    {
+        StubRevisionSource source = new() { Available = true, Revision = 73L };
+        Test.Equal(73L, WorldDiplomacyTimelineRevisionApplication.Query(source).Revision,
+            "module query reads the current scalar snapshot");
+        source.Available = false;
+        Test.Equal(WorldDiplomacyTimelineRevisionStatus.Unavailable,
+            WorldDiplomacyTimelineRevisionApplication.Query(source).Status, "missing owner remains unavailable");
+        source.Throw = true;
+        Test.Equal(WorldDiplomacyTimelineRevisionStatus.Failed,
+            WorldDiplomacyTimelineRevisionApplication.Query(source).Status, "source failure remains failed");
+        source.Throw = false;
+        source.Available = true;
+        for (int i = 0; i < 1000; i++) WorldDiplomacyTimelineRevisionApplication.Query(source);
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 100000; i++) WorldDiplomacyTimelineRevisionApplication.Query(source);
+        Test.Equal(0L, GC.GetAllocatedBytesForCurrentThread() - before,
+            "module revision query allocates nothing while polling");
     }
 
     private static void VerifyHotPathAllocation()
@@ -281,6 +317,11 @@ internal static class Program
         string hostPath = FindRepositoryFile("Refactor", "Modules", "WorldDiplomacyTimelineQueryHost.cs");
         string uiPath = FindRepositoryFile("WorldMessageTimelineUi.cs");
         string behaviorPath = FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs");
+        string moduleAdapterPath = FindRepositoryFile("src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs");
+        string modulePath = FindRepositoryFile("src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModule.cs");
+        string servicesPath = FindRepositoryFile("src/bridges/Diplomacy/DiplomacyModuleServices.cs");
+        string campaignPath = FindRepositoryFile("src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs");
+        string startupPath = FindRepositoryFile("src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs");
 
         string contract = File.ReadAllText(contractPath, Encoding.UTF8);
         string facade = File.ReadAllText(facadePath, Encoding.UTF8);
@@ -294,6 +335,11 @@ internal static class Program
         string host = File.ReadAllText(hostPath, Encoding.UTF8);
         string ui = File.ReadAllText(uiPath, Encoding.UTF8);
         string behavior = File.ReadAllText(behaviorPath, Encoding.UTF8);
+        string moduleAdapter = File.ReadAllText(moduleAdapterPath, Encoding.UTF8);
+        string module = File.ReadAllText(modulePath, Encoding.UTF8);
+        string services = File.ReadAllText(servicesPath, Encoding.UTF8);
+        string campaign = File.ReadAllText(campaignPath, Encoding.UTF8);
+        string startup = File.ReadAllText(startupPath, Encoding.UTF8);
         string queries = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs"));
         string inbox = File.ReadAllText(FindRepositoryFile("WorldEvents", "WorldEventInbox.cs"), Encoding.UTF8);
 
@@ -304,6 +350,18 @@ internal static class Program
         }
         Test.True(adapter.Contains("DiplomacyModuleServices.World.QueryTimelineRevision()", StringComparison.Ordinal),
             "legacy adapter must delegate to the current diplomacy owner");
+        Test.True(moduleAdapter.Contains("WorldDiplomacyTimelineRevisionApplication.Query(TimelineRevisionSource)", StringComparison.Ordinal)
+                  && moduleAdapter.Contains("WorldDiplomacyBehavior.TryGetTimelineRevisionSnapshot(out revision)", StringComparison.Ordinal)
+                  && !moduleAdapter.Contains("WorldDiplomacyBehavior.QueryWorldMessageTimelineRevision(", StringComparison.Ordinal)
+                  && !behavior.Contains("QueryWorldMessageTimelineRevision(", StringComparison.Ordinal),
+            "real revision caller must enter Application; legacy Behavior may only supply a scalar snapshot");
+        Test.True(services.Contains("DiplomacyModule Module { get; }", StringComparison.Ordinal)
+                  && module.Contains("internal IDiplomacyConversationPort Conversation", StringComparison.Ordinal)
+                  && module.Contains("internal IWorldDiplomacyModulePort World", StringComparison.Ordinal)
+                  && module.Contains("internal IDiplomacyPolicyObservationPort Policy", StringComparison.Ordinal)
+                  && campaign.Contains("DiplomacyModuleServices.Register(campaignGameStarter)", StringComparison.Ordinal)
+                  && startup.Contains("DiplomacyModuleServices.RegisterPatches(harmony)", StringComparison.Ordinal),
+            "AF lifecycle and capability callers must enter the single diplomacy module through the bridge");
         Test.True(host.Contains("new WorldDiplomacyTimelineRevisionQueryAdapter()", StringComparison.Ordinal)
                   && host.Contains("RevisionFacade.GetRevisionOrZero()", StringComparison.Ordinal),
             "query host must compose the legacy adapter behind the facade once");

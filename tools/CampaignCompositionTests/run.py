@@ -57,7 +57,7 @@ def verify_source():
     composition = read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs')
     registration = extract(composition, 'internal static void Register(')
     assert compact(registration[registration.index('{'):]) == compact('{ starter.AddBehavior(new WorldDiplomacyBehavior()); starter.AddBehavior(new DiplomacyBehavior()); }')
-    body = body.replace('DiplomacyModuleComposition.Register(campaignGameStarter);', 'campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior()); campaignGameStarter.AddBehavior(new DiplomacyBehavior());')
+    body = body.replace('DiplomacyModuleServices.Register(campaignGameStarter);', 'campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior()); campaignGameStarter.AddBehavior(new DiplomacyBehavior());')
     assert compact(body) == compact(original_body), 'Changed behavior construction/order'
     register = extract(models,'internal static void Register(')
     expected = '{'+''.join(name+'(campaignGameStarter);' for name in METHODS)+'}'
@@ -123,6 +123,8 @@ def main():
         behaviors+='namespace '+ns+' { internal class '+n+' : TaleWorlds.CampaignSystem.CampaignBehaviorBase { '+extra+'} }\n'
     (out/'Behaviors.cs').write_text(behaviors,encoding='utf-8')
     api_stubs=read('tools/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
+    api_stubs=api_stubs.replace('        internal static object Conversation { get; }',
+        '        internal static void Register(TaleWorlds.CampaignSystem.CampaignGameStarter starter) => DiplomacyModuleComposition.Register(starter);\n        internal static object Conversation { get; }')
     (out/'ApiHostStubs.cs').write_text(api_stubs,encoding='utf-8')
     common=[HERE/'HostStubs.cs',HERE/'Program.cs',current_hosts,out/'Behaviors.cs',out/'ApiHostStubs.cs']
     sources=[ROOT/s for s in SOURCES]
