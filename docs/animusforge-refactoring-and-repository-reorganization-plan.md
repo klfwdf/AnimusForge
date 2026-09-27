@@ -1,3 +1,9 @@
+<a id="j15-f45-continuation-20260927"></a>
+
+## J15 F4/F5 继续实施意图（2026-09-27）
+
+起点 `9c3f9735`，分支 `codex/af-main-refactor-continuation-20260831`；tracked clean，仅保留既有 `.dotnet-cli-home/`。按[J15 第 9 节](plans/j15-content-profile-plan.md#j15-f4-execution)继续，不重做 F1–F3 或已验证的 F4-M。先以未预热、初始化交错及耗时用例核实模型门禁风险；确认故障才做最小修复。随后逐组推进 F4-C/U/A/D，最后将 F5 O1–O7 绑定同一候选；批量文件处置、私有资料/游戏目录写入及实机旧档验收按 A1–A4 具名确认，未获准项继续做独立的仓内工程与离线验证。保持 ONNX 安装强制门禁、双版本/Bootstrap、真实用户数据和未决分发权边界，不 push、不部署、不改历史。本条是意图检查点，不代表 F4/F5 已完成。
+
 <a id="j15-onnx-f4m-implementation-20260927"></a>
 
 ## J15 F4-M 模块 ONNX 安装契约纠偏：代码及关联离线证据（2026-09-27）
