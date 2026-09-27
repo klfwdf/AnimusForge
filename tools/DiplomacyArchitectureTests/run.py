@@ -17,8 +17,14 @@ def main():
  current=read(retired.HOST)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
+ timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
+ timeline_state='internal static bool TryGetTimelineState('
+ mark_read='internal static bool TryMarkDocumentReadForCommand('
  prior=prior.replace('\t'+declaration(prior,query)+'\n\n','')
+ prior=prior.replace('    '+declaration(prior,timeline_query)+'\n\n','')
+ prior=prior.replace('\t'+declaration(prior,mark_read)+'\n','')
  current=current.replace('\t'+declaration(current,snapshot)+'\n\n','')
+ current=current.replace('    '+declaration(current,timeline_state)+'\n\n','')
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
  print('PASS 17 private method deletions; all surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)

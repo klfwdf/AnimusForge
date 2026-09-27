@@ -348,11 +348,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-    internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount)
+    internal static bool TryGetTimelineState(out WorldDiplomacyStorage storage)
     {
         WorldDiplomacyBehavior owner = ResolveInstance();
-        return owner == null ? WorldDiplomacyTimelineDocumentsResult.Unavailable()
-            : WorldDiplomacyPresentationQueries.Timeline(owner._storage, maxCount);
+        storage = owner?._storage;
+        return owner != null;
     }
 
 	public static long GetWorldMessageTimelineRevisionForExternal()
@@ -412,19 +412,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return WorldDiplomacyTimelineQueryHost.MarkDocumentRead(documentId);
 	}
 
-	internal static bool TryMarkDocumentReadForCommand(
-		string documentId,
-		out bool ownerAvailable)
-	{
-		WorldDiplomacyBehavior behavior = ResolveInstance();
-		ownerAvailable = behavior != null;
-		if (behavior == null)
-		{
-			return false;
-		}
-
-		return WorldDiplomacyPresentationQueries.MarkRead(behavior.ResolveDocument(documentId));
-	}
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		_storage = new WorldDiplomacyStorage();
