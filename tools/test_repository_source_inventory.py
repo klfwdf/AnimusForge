@@ -18,6 +18,8 @@ class RepositorySourceInventoryTests(unittest.TestCase):
             "AnimusForge/PlayerExports/private.cs": "HOLD:user-data",
             "原版游戏本体代码1.3.x/Foo.cs": "HOLD:reference-provenance",
             "AnimusForge/ONNX/model.json": "HOLD:model-provenance",
+            "content/models.lock.json": "HOLD:model-provenance",
+            "content/runtime-dependencies.lock.json": "HOLD:dependency-provenance",
             "_deps_auto/Some.dll": "HOLD:dependency-provenance",
             "tools/PlayerExportsEditor/dist/app.exe": "HOLD:tool-distribution",
             "docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md": "HOLD:local-only-handoff",
@@ -37,6 +39,7 @@ class RepositorySourceInventoryTests(unittest.TestCase):
     def test_known_planes_are_mutually_exclusive_and_unknown_fails_closed(self) -> None:
         examples = {
             "MyBehavior.cs": "source",
+            ".gitattributes": "source",
             "Refactor/Runtime/Host.cs": "source",
             "AnimusForge/GUI/Prefabs/Panel.xml": "content",
             "content/modules/AF.Module.Social/GUI/Prefabs/PlayerNotorietyPopup.xml": "content",

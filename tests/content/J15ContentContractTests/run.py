@@ -392,7 +392,17 @@ J15C_PROMPT_EXPECTED = {
 }
 J15C_EXPECTED.update(J15C_PROMPT_EXPECTED)
 
-CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys()
+F4D_ARCHIVED_PRIVATE_PATHS = {
+    "ModuleData/EarlyException_2026-06-28.html",
+    "ModuleData/UnnamedNpcProfiles.json",
+    "ModuleData/UnnamedNpcProfiles/troop_hidden_hand_tier_3_kingdom_empire_w__f1274041.json",
+    "ModuleData/UnnamedNpcProfiles/troop_imperial_veteran_archer_kingdom_empire_w__71cc7949.json",
+    "ModuleData/UnnamedNpcProfiles/troop_townsman_empire_kingdom_empire_w__a97b2802.json",
+    "ModuleData/UnnamedNpcProfiles/troop_townsman_vlandia_kingdom_vlandia__edca3492.json",
+    "ModuleData/UnnamedNpcProfiles/troop_townswoman_empire_kingdom_empire_s__365dece0.json",
+    "VoiceMapping.json",
+}
+CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys() - F4D_ARCHIVED_PRIVATE_PATHS
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED}
 
 
@@ -466,6 +476,10 @@ def verify_map_and_resources() -> None:
     for target in CURRENT_HOLD_PATHS:
         check((ROOT / "AnimusForge" / Path(target)).is_file(), f"HOLD path was moved or removed: {target}")
         check(target not in by_target, f"HOLD path entered content map: {target}")
+
+    for target in F4D_ARCHIVED_PRIVATE_PATHS:
+        check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired private source returned: {target}")
+        check(target not in by_target, f"retired private source entered content map: {target}")
 
     remaining = {
         path.relative_to(ROOT / "AnimusForge").as_posix()
