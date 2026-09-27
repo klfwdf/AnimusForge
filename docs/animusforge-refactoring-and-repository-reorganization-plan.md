@@ -2,6 +2,8 @@
 
 ## J15 F4/F5 当前续作证据（2026-09-27；未完成）
 
+**F4-A 本地续作意图检查点**：用户确认继续按计划，限本仓把 `origin/main` 已有、两份同 SHA 的 1,671,304 字节 `pack0.tpac` 以 Xihai 源映射到单模块 Stage，再重建已批准的 Debug/Release Stage 和本地测试 ZIP；保留两份原件、不部署游戏、不推送、不发布。先用内容契约锁住来源/字节/动作标识，再以正式双 Stage 的 StaticVerifier 和 ZIP 字节核验代替先前合成探针。11.2 MB 历史 manifest 与当前远端身份不一致、第三方来源及再分发权、三张 GUI atlas 和实机视觉仍为 HOLD；本条不是这些门禁的通过证明。
+
 **状态：`F4-C/D_OFFLINE_VERIFIED / F4-M_COLD_RACE_FIXED_OFFLINE / F5_PARTIAL / J15_NOT_COMPLETE`。** 分支 `codex/af-main-refactor-continuation-20260831`，意图 `967395e2`；产品/契约 `63138958`、`688ad6b8`，Xihai 桥接补片/安全验收入口 `4304397c`，素材说明 `c0f2d289`，存档坐标 fixture `acbfbb3c`，PlayerExports 契约接线 `19311574`，私人旧源退役 `6b2c4373`。本条取代下方 F4-C/冷启动仍待做、仅 28 项 ONNX 断言的当前状态；旧结果仍保留为历史。用户分别具名批准四个构建生成目录、两个 Stage 根和两个 ABI/API `.generated` 根的重建，以及精确八项私人旧源的仓内忽略归档；无游戏目录/玩家数据/外仓写入、Deploy 或推送。
 
 | 代码证据（一基行号） | 本轮责任与限制 |
