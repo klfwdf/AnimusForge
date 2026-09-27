@@ -55,6 +55,7 @@ class RepositorySourceInventoryTests(unittest.TestCase):
             "docs/architecture/map.md": "docs",
             "docs/fixtures/case.json": "tests",
             "AnimusForge/AssetSources/source.png": "design",
+            "content/modules/AF.Module.Economy/AssetSources/animusforge_denar_coin.obj": "design",
         }
         for path, expected in examples.items():
             self.assertEqual(inventory.classify_path(path), expected, path)
