@@ -502,8 +502,39 @@ function Write-DeploymentMarker {
     [System.IO.File]::Move($temporary, $final)
 }
 
+function Assert-FeatureBridgesDeploymentBaseline {
+    param([string]$StageModuleDir, [string]$TargetModuleDir, [string]$ModulesDir)
+
+    $relative = 'ModuleData\FeatureBridges.json'
+    $source = Join-Path $StageModuleDir $relative
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { return }
+    $target = Join-Path $TargetModuleDir $relative
+    Assert-DeploymentPath -Path $target -Root $ModulesDir
+    if (-not (Test-Path -LiteralPath $target)) { return }
+    if (-not (Test-Path -LiteralPath $target -PathType Leaf)) {
+        throw "FeatureBridges deployment conflict: target is not a regular file: $target"
+    }
+
+    $installedHash = Get-FileSha256 -LiteralPath $target
+    $newHash = Get-FileSha256 -LiteralPath $source
+    # Exact LF/CRLF bytes of the three checked-in defaults before content migration.
+    # Unknown differences, including malformed JSON, are never silently replaced.
+    $knownDefaults = @(
+        '70C3637714D3935F8854D487B38B52534D782F470AF83F29EC62EDCC556C7C46', # 231f6cb6 LF
+        'CCB8685E0928C179086D4392830B5423D1CE5D64BAD3340BBF6133EEF8AF9BD2', # 231f6cb6 CRLF
+        'C732B9034B1DEC21A81EBC5F74FDE19F4A9BF1DC05E98AAF3B4D875633A3F4E9', # d9f974ce LF
+        '808A4218BAAD803537F6EF472EC81BAAB1A6A858E380035651C584329FEC5A4A', # d9f974ce CRLF
+        '54612D3084A8C95CF1F170B788D9B2345ACE051838C1E5B9EFD8122068FFD276', # 9a4a26dc LF
+        '10C573B461EC148EF8478A0D4269F73A7CA106F5A8C6A50C9D37FACC4FF86896'  # 9a4a26dc CRLF
+    )
+    if ($installedHash -eq $newHash -or $knownDefaults -contains $installedHash) { return }
+    throw "FeatureBridges deployment conflict: installed ModuleData/FeatureBridges.json is not a known default (SHA256=$installedHash). No managed target was replaced; inspect and preserve the installed file before an explicitly approved override."
+}
+
 function Invoke-ManagedStageDeployment {
     param([string]$StageModuleDir, [string]$TargetModuleDir, [string]$ModulesDir)
+
+    Assert-FeatureBridgesDeploymentBaseline -StageModuleDir $StageModuleDir -TargetModuleDir $TargetModuleDir -ModulesDir $ModulesDir
 
     $localAppData = [Environment]::GetEnvironmentVariable('LOCALAPPDATA')
     if ([string]::IsNullOrWhiteSpace($localAppData) -or -not [System.IO.Path]::IsPathRooted($localAppData)) {
