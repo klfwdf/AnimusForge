@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "43e8bcf2688da0004d1aef6ca07a73d489aa3839",
+  "sourceRevision": "c0f2d2892916d70d2c7f49039b31727e090f50cc",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -8549,7 +8549,7 @@
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "only previously clean project Stage is reset",
-      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
     },
     {
       "id": "af2.stage.bin",
@@ -8560,7 +8560,7 @@
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "locked private runtime DLLs and captured dual build artifacts",
-      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
     },
     {
       "id": "af2.package.version",
@@ -8598,13 +8598,13 @@
     {
       "id": "af2.model.embedding",
       "path": "OnnxEmbeddingEngine.cs",
-      "start": 472,
-      "end": 472,
+      "start": 471,
+      "end": 471,
       "symbol": "AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveEmbedding();",
       "match": "exact",
       "status": "j15-f4m-module-onnx-offline-verified",
-      "note": "embedding initializes from the same active module candidate checked by the campaign gate",
-      "fileSha256": "7b677cf6bd8311e343acc5b76553cba3da617e70394e8529ecd8d056dcace2a6"
+      "note": "embedding consumes current module candidate; initialized is published after availability, so the campaign gate waits for concurrent warmup",
+      "fileSha256": "3d5bd64aef9c6a95fb86968ee4e43ff322814624053e32150c3b0b6ac6442a6a"
     },
     {
       "id": "af2.model.reranker",
@@ -8642,46 +8642,46 @@
     {
       "id": "af2.deploy.managed",
       "path": "一键编译覆盖推送/deploy_module.ps1",
-      "start": 505,
-      "end": 505,
+      "start": 534,
+      "end": 534,
       "symbol": "function Invoke-ManagedStageDeployment {",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "只覆盖已验证 Stage 白名单；私有备份、同卷候选、失败回滚与中断拒绝",
-      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
     },
     {
       "id": "af2.deploy.current-stage",
       "path": "一键编译覆盖推送/deploy_module.ps1",
-      "start": 710,
-      "end": 710,
+      "start": 741,
+      "end": 741,
       "symbol": "Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $projectStageDir -RequireCurrentArtifacts",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "部署前同时校验内容、依赖和当前九项构建产物",
-      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
     },
     {
       "id": "af2.deploy.execute",
       "path": "一键编译覆盖推送/deploy_module.ps1",
-      "start": 725,
-      "end": 725,
+      "start": 756,
+      "end": 756,
       "symbol": "Invoke-ManagedStageDeployment -StageModuleDir $projectStageDir -TargetModuleDir $targetModuleDir -ModulesDir $modulesDir",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "Stage-only 返回后才执行受管文件安装；不合并安装资料",
-      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
     },
     {
       "id": "af2.deploy.legacy-warning",
       "path": "一键编译覆盖推送/deploy_module.ps1",
-      "start": 723,
-      "end": 723,
+      "start": 754,
+      "end": 754,
       "symbol": "Write-Warning 'Legacy AnimusForge module folders were left untouched; disable them before launching the game to avoid duplicate module loading.'",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "旧双模块只读提示；不迁入 Stage 或修改旧安装目录",
-      "fileSha256": "cfa20403826c10045b613fa1f48a57af06b0ec2744b2292f8294101b5f421dc4"
+      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
     },
     {
       "id": "af2.model.gate",
@@ -8697,13 +8697,13 @@
     {
       "id": "af2.model.policy-probe",
       "path": "tools/PolicyEffectModule.ContractTests/Program.cs",
-      "start": 600,
-      "end": 600,
+      "start": 696,
+      "end": 696,
       "symbol": "private static void VerifyOnnxContractGate(Assembly assembly, string moduleRoot)",
       "match": "exact",
       "status": "j15-f4m-module-onnx-offline-verified",
       "note": "offline probe patches real module-root resolver and checks embedding/reranker inference plus gate positive/negative",
-      "fileSha256": "050ded8490f284db681d2ba5eb493a92648136f899a93223625bbd1876937da1"
+      "fileSha256": "1695b082bb6dbb429589d3d1ca6a70d100f89715087a4c3e338b762a3e4aca90"
     },
     {
       "id": "af2.model.redirect-guard",
@@ -8715,6 +8715,39 @@
       "status": "j15-f4m-module-onnx-offline-verified",
       "note": "reject nested ONNX and reranker directory redirects before considering fixed candidates",
       "fileSha256": "07c95629f91fbec82adb763279d369e6f7358d224204000b6746404b2b01f1f3"
+    },
+    {
+      "id": "af2.model.cold-init",
+      "path": "OnnxEmbeddingEngine.cs",
+      "start": 306,
+      "end": 306,
+      "symbol": "private volatile bool _initialized;",
+      "match": "exact",
+      "status": "j15-f4m-cold-gate-offline-verified",
+      "note": "Publish initialized only after session outcome; concurrent gate waits for init lock, not a transient false. Cold main-thread load measured offline; in-game frame cost unverified.",
+      "fileSha256": "3d5bd64aef9c6a95fb86968ee4e43ff322814624053e32150c3b0b6ac6442a6a"
+    },
+    {
+      "id": "af2.model.cold-gate-probe",
+      "path": "tools/PolicyEffectModule.ContractTests/Program.cs",
+      "start": 619,
+      "end": 619,
+      "symbol": "private static void VerifyOnnxContractColdMainGate(Assembly assembly, string moduleRoot)",
+      "match": "exact",
+      "status": "j15-f4m-cold-gate-offline-verified",
+      "note": "Real requested DLL cold-gate timing and controlled concurrent warmup/gate test; not a game lifecycle test.",
+      "fileSha256": "1695b082bb6dbb429589d3d1ca6a70d100f89715087a4c3e338b762a3e4aca90"
+    },
+    {
+      "id": "af2.deploy.feature-bridges-preflight",
+      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "start": 505,
+      "end": 505,
+      "symbol": "function Assert-FeatureBridgesDeploymentBaseline {",
+      "match": "exact",
+      "status": "j15-f4c-offline-verified",
+      "note": "Known old/current default hash allowlist; reject unknown installed bytes before any managed target replacement.",
+      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
     }
   ]
 }
