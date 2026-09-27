@@ -402,7 +402,13 @@ F4D_ARCHIVED_PRIVATE_PATHS = {
     "ModuleData/UnnamedNpcProfiles/troop_townswoman_empire_kingdom_empire_s__365dece0.json",
     "VoiceMapping.json",
 }
-CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys() - F4D_ARCHIVED_PRIVATE_PATHS
+F4U_ARCHIVED_LEGACY_GUI_PATHS = {
+    path for path in J15B_HOLD_PATHS
+    if path in {"GUI/SplitShadowsOnlyAISpriteData.xml", "GUI/SpriteParts/Config.xml"}
+    or path.startswith(("GUI/SpriteParts/ui_account/", "GUI/SpriteParts/ui_achievement/",
+                        "GUI/SpriteParts/ui_subscribe/"))
+}
+CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys() - F4D_ARCHIVED_PRIVATE_PATHS - F4U_ARCHIVED_LEGACY_GUI_PATHS
 F4A_EXPECTED = {
     "AssetPackages/pack0.tpac": {
         "owner": "AnimusForge.XihaiAction",
@@ -500,6 +506,11 @@ def verify_map_and_resources() -> None:
     for target in F4D_ARCHIVED_PRIVATE_PATHS:
         check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired private source returned: {target}")
         check(target not in by_target, f"retired private source entered content map: {target}")
+
+    check(len(F4U_ARCHIVED_LEGACY_GUI_PATHS) == 27, "legacy GUI retirement set must remain exact")
+    for target in F4U_ARCHIVED_LEGACY_GUI_PATHS:
+        check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired legacy GUI returned: {target}")
+        check(target not in by_target, f"retired legacy GUI entered content map: {target}")
 
     remaining = {
         path.relative_to(ROOT / "AnimusForge").as_posix()
