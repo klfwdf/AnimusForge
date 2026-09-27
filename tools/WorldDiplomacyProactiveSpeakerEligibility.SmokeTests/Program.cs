@@ -60,25 +60,28 @@ internal static class Program
             FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"),
             Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
-        string method = ExtractSection(
-            behavior,
-            "private bool TryBuildProactiveDiscussion(Hero hero",
-            "private bool ShouldInjectDiplomacyMemoryForInput(");
+        string method = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyProactiveDiscussionApplication.cs"), Encoding.UTF8);
+        string adapter = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs"), Encoding.UTF8);
 
         Test.True(!rules.Contains("using TaleWorlds", StringComparison.Ordinal)
                   && !rules.Contains("System.Collections", StringComparison.Ordinal)
                   && !rules.Contains("WorldDiplomacyDocument", StringComparison.Ordinal),
             "pure speaker rule must not reference TaleWorlds, collections, or persisted documents");
         Test.True(method.Contains("WorldDiplomacyProactiveSpeakerCandidate speaker", StringComparison.Ordinal)
-                  && method.Contains("WorldDiplomacyProactiveSpeakerEligibilityRules.IsEligible(speaker)", StringComparison.Ordinal),
-            "behavior must map a scalar snapshot and delegate to the pure rule");
+                  && method.Contains("WorldDiplomacyProactiveSpeakerEligibilityRules.IsEligible(speaker)", StringComparison.Ordinal)
+                  && behavior.Contains("internal static bool TryCaptureProactiveSpeaker(", StringComparison.Ordinal)
+                  && adapter.Contains("WorldDiplomacyProactiveDiscussionApplication.TryBuild(Proactive, heroId", StringComparison.Ordinal)
+                  && !behavior.Contains("private bool TryBuildProactiveDiscussion(Hero hero", StringComparison.Ordinal),
+            "Behavior captures scalar facts while Application owns speaker admission");
         Test.True(!method.Contains("hero == null || playerKingdom == null", StringComparison.Ordinal)
                   && !method.Contains("clan.IsUnderMercenaryService || clan.IsClanTypeMercenary", StringComparison.Ordinal),
             "replaced inline eligibility conjunction must be removed");
         int eligibility = method.IndexOf(
             "WorldDiplomacyProactiveSpeakerEligibilityRules.IsEligible(speaker)",
             StringComparison.Ordinal);
-        int knowledgeLookup = method.IndexOf("GetKnownDocumentIdsForHero", StringComparison.Ordinal);
+        int knowledgeLookup = method.IndexOf("source.TryCaptureDocuments", StringComparison.Ordinal);
         Test.True(eligibility >= 0 && knowledgeLookup > eligibility,
             "speaker eligibility must short-circuit before known-document lookup");
         Test.True(!rules.Contains("new ", StringComparison.Ordinal),

@@ -39,6 +39,25 @@ namespace AnimusForge
         public static bool MarkRead(WorldDiplomacyDocument document)
         { if (document == null) return false; document.IsRead = true; return true; }
     }
+    internal readonly struct WorldDiplomacyProactiveSpeakerCandidate { }
+    internal interface IWorldDiplomacyProactiveDiscussionSource
+    {
+        bool TryCaptureSpeaker(string heroId, out WorldDiplomacyProactiveSpeakerCandidate candidate, out string playerKingdomId);
+        bool TryCaptureDocuments(string heroId, string playerKingdomId,
+            out IReadOnlyList<WorldDiplomacyDocument> documents, out HashSet<string> knownIds, out int currentDay);
+        string GetPlayerKingdomName(string playerKingdomId);
+        string FormatDate(int day);
+    }
+    internal static class WorldDiplomacyProactiveDiscussionApplication
+    {
+        internal static bool TryBuild(IWorldDiplomacyProactiveDiscussionSource source, string heroId,
+            out string key, out string fact, out float urgency)
+        {
+            if (!source.TryCaptureSpeaker(heroId, out _, out _))
+            { key=""; fact=""; urgency=0f; return false; }
+            key="key"; fact="fact"; urgency=0.75f; return Recording.Result;
+        }
+    }
     internal static class Recording
     {
         public static string Method;
@@ -82,8 +101,14 @@ namespace AnimusForge
         { Recording.Call("discuss",h); candidate = new WorldDiplomacyDiscussionCandidate(true,true,false,true,false); kingdomId="kingdom"; return true; }
         internal static bool HasKnownDocumentForDiscussion(Hero h, string kingdomId)
         { Recording.Call("known",h,kingdomId); return Recording.Result; }
-        public static bool TryBuildProactiveDiscussionForExternal(Hero h, out string key, out string fact, out float urgency)
-        { Recording.Call("proactive",h);key="key";fact="fact";urgency=0.75f;return Recording.Result; }
+        internal static bool TryCaptureProactiveSpeaker(Hero h,
+            out WorldDiplomacyProactiveSpeakerCandidate candidate, out string playerKingdomId)
+        { Recording.Call("proactive",h); candidate=default; playerKingdomId="player"; return true; }
+        internal static bool TryCaptureProactiveDocuments(Hero h, string playerKingdomId,
+            out IReadOnlyList<WorldDiplomacyDocument> documents, out HashSet<string> knownIds, out int currentDay)
+        { documents=Array.Empty<WorldDiplomacyDocument>();knownIds=new();currentDay=0;return true; }
+        internal static string GetPlayerKingdomNameForProactive() => "player";
+        internal static string FormatDateForProactive(int day) => day.ToString();
         internal static bool TryGetTimelineRevisionSnapshot(out long revision)
         { revision = Instance?.Revision ?? 0L; return Instance != null; }
         internal static bool TryGetTimelineState(out WorldDiplomacyStorage storage)

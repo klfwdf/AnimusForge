@@ -23,13 +23,27 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
             WorldDiplomacyBehavior.HasKnownDocumentForDiscussion(ResolveHero(heroId), kingdomId);
     }
 
+    private sealed class ProactiveSource : IWorldDiplomacyProactiveDiscussionSource
+    {
+        public bool TryCaptureSpeaker(string heroId, out WorldDiplomacyProactiveSpeakerCandidate candidate, out string playerKingdomId) =>
+            WorldDiplomacyBehavior.TryCaptureProactiveSpeaker(ResolveHero(heroId), out candidate, out playerKingdomId);
+        public bool TryCaptureDocuments(string heroId, string playerKingdomId,
+            out System.Collections.Generic.IReadOnlyList<WorldDiplomacyDocument> documents,
+            out System.Collections.Generic.HashSet<string> knownIds, out int currentDay) =>
+            WorldDiplomacyBehavior.TryCaptureProactiveDocuments(ResolveHero(heroId), playerKingdomId,
+                out documents, out knownIds, out currentDay);
+        public string GetPlayerKingdomName(string playerKingdomId) => WorldDiplomacyBehavior.GetPlayerKingdomNameForProactive();
+        public string FormatDate(int day) => WorldDiplomacyBehavior.FormatDateForProactive(day);
+    }
+
     private static readonly IWorldDiplomacyTimelineRevisionSource TimelineRevisionSource = new RevisionSource();
     private static readonly IWorldDiplomacyTimelineStateSource TimelineSource = new TimelineStateSource();
     private static readonly IWorldDiplomacyDiscussionSource Discussion = new DiscussionSource();
+    private static readonly IWorldDiplomacyProactiveDiscussionSource Proactive = new ProactiveSource();
     private static Hero ResolveHero(string id) => DiplomacyIdentityResolver.Hero(id);
     public bool CanDiscuss(string heroId) => WorldDiplomacyDiscussionApplication.CanDiscuss(Discussion, heroId);
     public bool TryBuildProactiveDiscussion(string heroId, out string key, out string fact, out float urgency) =>
-        WorldDiplomacyBehavior.TryBuildProactiveDiscussionForExternal(ResolveHero(heroId), out key, out fact, out urgency);
+        WorldDiplomacyProactiveDiscussionApplication.TryBuild(Proactive, heroId, out key, out fact, out urgency);
     public WorldDiplomacyTimelineRevisionResult QueryTimelineRevision() => WorldDiplomacyTimelineRevisionApplication.Query(TimelineRevisionSource);
     public WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount) => WorldDiplomacyTimelineApplication.QueryDocuments(TimelineSource, maxCount);
     public bool TryMarkDocumentRead(string documentId, out bool ownerAvailable) => WorldDiplomacyTimelineApplication.MarkRead(TimelineSource, documentId, out ownerAvailable);
