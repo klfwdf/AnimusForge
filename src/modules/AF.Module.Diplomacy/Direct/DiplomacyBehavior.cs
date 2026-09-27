@@ -99,7 +99,7 @@ namespace AnimusForge
 
 		private const string IndependentClanPeaceActionName = "INDEPENDENT_CLAN_PEACE";
 
-		internal const string IndependentClanPeaceTag = "[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]";
+		internal const string IndependentClanPeaceTag = DiplomacyConversationEligibilityApplication.IndependentClanPeaceTag;
 
 		private void ProcessDiplomacyTags(Hero npc, ref string responseText)
 		{

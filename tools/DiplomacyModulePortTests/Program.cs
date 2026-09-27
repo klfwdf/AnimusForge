@@ -29,17 +29,18 @@ static class Program
         foreach(bool result in new[]{true,false})
         {
             Recording.Result=result;
-            Check(invoke(h,ch)==result,"return "+method);Call(method,h);
-            Check(invoke(null,ch)==result,"character return "+method);Call(method,other);
-            Check(invoke(null,new CharacterObject())==result,"nonhero return "+method);Call(method,(object)null);
-            Check(invoke(null,null)==result,"null return "+method);Call(method,(object)null);
+            var owner=method=="peace"?"peace":"eligibility";
+            Check(invoke(h,ch)==result,"return "+method);Call(owner,h);
+            Check(invoke(null,ch)==result,"character return "+method);Call(owner,other);
+            Check(invoke(null,new CharacterObject())==result,"nonhero return "+method);Call(owner,(object)null);
+            Check(invoke(null,null)==result,"null return "+method);Call(owner,(object)null);
         }
         Check(index.Lookups==20,"one indexed lookup per live target; null has no lookup");
         var replacement=new Hero{StringId="h"};index.Objects["h"]=replacement;
-        DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("inject",replacement);
-        index.Objects.Remove("h");DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("inject",(object)null);
+        DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("eligibility",replacement);
+        index.Objects.Remove("h");DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("eligibility",(object)null);
         index.Objects["h"]=h;index.Throw=true;
-        DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("inject",(object)null);
+        DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("eligibility",(object)null);
         index.Throw=false;Campaign.Current=null;
         string missing="tag";DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref missing);
         Call("execute",null,"tag");Check(missing=="tag","missing campaign does not execute stale hero");
@@ -48,11 +49,25 @@ static class Program
         foreach(var result in new[]{true,false})
         {
             Recording.Result=result;
-            Check(DiplomacyConversationBridge.IsIndependentClanPeacePostprocessTag(" exact ")==result,"tag result");Call("tag"," exact ");
+            Check(DiplomacyConversationBridge.IsIndependentClanPeacePostprocessTag(" [action:diplomacy:independent_clan_peace] "),"canonical tag");
+            Check(!DiplomacyConversationBridge.IsIndependentClanPeacePostprocessTag(" exact "),"reject unrelated tag");
             Check(DiplomacyConversationBridge.CanDiscussWorldDiplomacyForExternal(h)==result,"discussion result");Call("known",h,"kingdom");
             Check(DiplomacyConversationBridge.TryBuildProactiveDiscussionForExternal(h,out var key,out var fact,out var urgency)==result,"proactive result");
             Call("proactive",h);Check(key=="key"&&fact=="fact"&&urgency==0.75f,"all proactive outputs");
         }
+        static DiplomacyConversationEligibilitySnapshot Snapshot(bool dead=false,bool same=false,bool playerRuler=true,
+            bool npcIsPlayer=false,bool npcEliminated=false) =>
+            new(true,npcIsPlayer,dead,true,npcEliminated,true,true,false,!same,playerRuler);
+        Check(DiplomacyConversationEligibilityApplication.CanInject(Snapshot()),"eligible speaker");
+        Check(DiplomacyConversationEligibilityApplication.CanUseFull(Snapshot()),"full diplomacy eligible");
+        Check(!DiplomacyConversationEligibilityApplication.CanUseNpcDeclareWar(Snapshot(dead:true)),"dead speaker blocks war");
+        Check(DiplomacyConversationEligibilityApplication.CanUseFull(Snapshot(dead:true)),"full gate preserves historical dead-speaker behavior");
+        Check(!DiplomacyConversationEligibilityApplication.CanUseFull(Snapshot(same:true)),"same kingdom blocks full diplomacy");
+        Check(DiplomacyConversationEligibilityApplication.CanUseAction(Snapshot(same:true)),"war path remains when full path is blocked");
+        Check(!DiplomacyConversationEligibilityApplication.CanUseFull(Snapshot(playerRuler:false)),"nonruler player blocks full diplomacy");
+        Check(!DiplomacyConversationEligibilityApplication.CanInject(Snapshot(npcIsPlayer:true)),"player cannot be injected");
+        Check(!DiplomacyConversationEligibilityApplication.CanUseAction(Snapshot(npcEliminated:true)),"eliminated speaker kingdom blocks actions");
+        Check(!DiplomacyConversationEligibilityApplication.CanUseAction(default),"missing speaker blocks actions");
         string text="[ACTION:DIPLOMACY:MAKE_PEACE]";
         DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);Call("execute",h,"[ACTION:DIPLOMACY:MAKE_PEACE]");Check(text=="confirmed:[ACTION:DIPLOMACY:MAKE_PEACE]","ref result preserved");
         var failure=new InvalidOperationException("owner error");Recording.Failure=failure;
