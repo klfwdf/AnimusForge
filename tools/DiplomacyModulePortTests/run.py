@@ -14,6 +14,7 @@ SOURCES=['Refactor/Contracts/'+n+'.cs' for n in ['DiplomacyModulePorts','AfTribu
 SOURCES += ['src/bridges/Diplomacy/'+n+'.cs' for n in ['DiplomacyConversationBridge','DiplomacyPolicyObservationBridge','DiplomacyModuleServices']]
 SOURCES += ['src/modules/AF.Module.Diplomacy/Adapters/'+n+'.cs' for n in ['DiplomacyModule','DiplomacyConversationModuleAdapter','WorldDiplomacyModuleAdapter','DiplomacyIdentityResolver']]
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineRevisionApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  paths=['AIConfigHandler.cs','ShoutBehavior.cs','ShoutBehavior.NativeTurnCommit.cs','DiplomacyPeaceTermsService.cs','NpcTributeVassalageBehavior.cs','src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs']
@@ -34,8 +35,14 @@ def boundaries():
  prior_world=old(world)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
+ timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
+ timeline_state='internal static bool TryGetTimelineState('
+ mark_read='internal static bool TryMarkDocumentReadForCommand('
  prior_world=prior_world.replace('\t'+declaration(prior_world,query)+'\n\n','')
+ prior_world=prior_world.replace('    '+declaration(prior_world,timeline_query)+'\n\n','')
+ prior_world=prior_world.replace('\t'+declaration(prior_world,mark_read)+'\n','')
  current_world=current_world.replace('\t'+declaration(current_world,snapshot)+'\n\n','')
+ current_world=current_world.replace('    '+declaration(current_world,timeline_state)+'\n\n','')
  assert current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration),'Policy cadence/state owner changed'
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)

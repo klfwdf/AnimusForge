@@ -4,6 +4,17 @@ using AnimusForge.Refactor.Domain;
 
 internal static class Dpl090PresentationReplay
 {
+    private sealed class TimelineStateSource : IWorldDiplomacyTimelineStateSource
+    {
+        internal bool Available;
+        internal WorldDiplomacyStorage State;
+        public bool TryGetState(out WorldDiplomacyStorage storage)
+        {
+            storage = State;
+            return Available;
+        }
+    }
+
     private static void Equal<T>(T expected, T actual, string message) =>
         Test.True(EqualityComparer<T>.Default.Equals(expected, actual), message + $": expected={expected}, actual={actual}");
     internal static void Run()
@@ -52,6 +63,22 @@ internal static class Dpl090PresentationReplay
         Test.True(WorldDiplomacyPresentationQueries.MarkRead(second) && second.IsRead, "read command marks canonical record");
         Test.True(WorldDiplomacyPresentationQueries.MarkRead(second), "read command is idempotent");
         Test.True(!WorldDiplomacyPresentationQueries.MarkRead(null!), "missing read target fails");
+        first.IsRead = false;
+        var source = new TimelineStateSource { State = storage };
+        Equal(WorldDiplomacyTimelineDocumentsStatus.Unavailable,
+            WorldDiplomacyTimelineApplication.QueryDocuments(source, 2).Status,
+            "module query reports missing campaign owner");
+        Test.True(!WorldDiplomacyTimelineApplication.MarkRead(source, "first", out bool unavailable)
+            && !unavailable && !first.IsRead, "missing owner cannot mark canonical record");
+        source.Available = true;
+        Equal("second", WorldDiplomacyTimelineApplication.QueryDocuments(source, 2).Documents[0].DocumentId,
+            "real module query keeps take-before-visibility ordering");
+        Test.True(!WorldDiplomacyTimelineApplication.MarkRead(source, "missing", out bool foundOwner)
+            && foundOwner, "missing document differs from missing owner");
+        Test.True(WorldDiplomacyTimelineApplication.MarkRead(source, "first", out bool appliedOwner)
+            && appliedOwner && first.IsRead, "module command marks the canonical record");
+        Test.True(WorldDiplomacyTimelineApplication.MarkRead(source, "first", out _),
+            "module read command remains idempotent");
 
         storage.AnnualSummaries.Add(new WorldDiplomacyAnnualSummary { Year = 2, Summary = "年度", MajorEvents = new() { "事件" } });
         storage.CompressionSummaries.Add(new WorldDiplomacyCompressionSummary { BatchId = "batch", CreatedDay = 20, Summary = "压缩", ConfirmedResults = new() { "结果" } });

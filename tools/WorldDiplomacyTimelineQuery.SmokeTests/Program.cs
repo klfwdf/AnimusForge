@@ -337,6 +337,7 @@ internal static class Program
         string behavior = File.ReadAllText(behaviorPath, Encoding.UTF8);
         string moduleAdapter = File.ReadAllText(moduleAdapterPath, Encoding.UTF8);
         string module = File.ReadAllText(modulePath, Encoding.UTF8);
+        string timelineApplication = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs"), Encoding.UTF8);
         string services = File.ReadAllText(servicesPath, Encoding.UTF8);
         string campaign = File.ReadAllText(campaignPath, Encoding.UTF8);
         string startup = File.ReadAllText(startupPath, Encoding.UTF8);
@@ -368,7 +369,9 @@ internal static class Program
         Test.True(!documentContract.Contains("WorldDiplomacyDocument", StringComparison.Ordinal),
             "timeline document contract must not expose persisted document DTOs");
         Test.True(documentAdapter.Contains("DiplomacyModuleServices.World.QueryTimelineDocuments(maxCount)", StringComparison.Ordinal)
-                  && behavior.Contains("WorldDiplomacyPresentationQueries.Timeline(owner._storage, maxCount)", StringComparison.Ordinal)
+                  && moduleAdapter.Contains("WorldDiplomacyTimelineApplication.QueryDocuments(TimelineSource, maxCount)", StringComparison.Ordinal)
+                  && timelineApplication.Contains("WorldDiplomacyPresentationQueries.Timeline(storage, maxCount)", StringComparison.Ordinal)
+                  && !behavior.Contains("QueryTimelineDocuments(int maxCount)", StringComparison.Ordinal)
                   && queries.Contains("document.IsPlayerAuthored || document.IsReadyForPublication", StringComparison.Ordinal)
                   && queries.Contains("BuildImpactText(document)", StringComparison.Ordinal),
             "document adapter must preserve the bounded source, visibility filter, and standing impact formatter");
@@ -408,10 +411,11 @@ internal static class Program
             "legacy document surface must remain beside the explicit adapter query boundary");
         Test.True(behavior.Contains("public static bool MarkDocumentReadForExternal(string documentId)", StringComparison.Ordinal)
                   && behavior.Contains("return WorldDiplomacyTimelineQueryHost.MarkDocumentRead(documentId);", StringComparison.Ordinal)
-                  && behavior.Contains("internal static bool TryMarkDocumentReadForCommand", StringComparison.Ordinal)
-                  && behavior.Contains("WorldDiplomacyPresentationQueries.MarkRead(behavior.ResolveDocument(documentId))", StringComparison.Ordinal)
+                  && moduleAdapter.Contains("WorldDiplomacyTimelineApplication.MarkRead(TimelineSource, documentId, out ownerAvailable)", StringComparison.Ordinal)
+                  && timelineApplication.Contains("WorldDiplomacyPresentationQueries.MarkRead(", StringComparison.Ordinal)
+                  && !behavior.Contains("TryMarkDocumentReadForCommand", StringComparison.Ordinal)
                   && queries.Contains("document.IsRead = true;", StringComparison.Ordinal),
-            "legacy document-read surface must delegate while the current owner retains the mutation");
+            "legacy document-read surface must delegate while Application owns the mutation");
     }
 
     private static string FindRepositoryFile(params string[] relativeSegments)

@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs" Link="WorldDiplomacyPresentationQueries.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs" Link="WorldDiplomacyTimelineApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs" Link="WorldDiplomacyPlayerApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs" Link="WorldDiplomacyNotificationApplication.cs" />
     <Compile Include="../../Refactor/Contracts/WorldDiplomacyPresentationContracts.cs" Link="WorldDiplomacyPresentationContracts.cs" />

@@ -30,6 +30,15 @@ namespace TaleWorlds.CampaignSystem
 }
 namespace AnimusForge
 {
+    internal sealed class WorldDiplomacyDocument { public string DocumentId; public bool IsRead; }
+    internal sealed class WorldDiplomacyStorage { public List<WorldDiplomacyDocument> Documents = new(); }
+    internal static class WorldDiplomacyPresentationQueries
+    {
+        public static WorldDiplomacyTimelineDocumentsResult Timeline(WorldDiplomacyStorage storage, int maxCount)
+        { Recording.Call("documents",maxCount); return WorldDiplomacyTimelineDocumentsResult.Available(Array.Empty<WorldDiplomacyTimelineDocument>()); }
+        public static bool MarkRead(WorldDiplomacyDocument document)
+        { if (document == null) return false; document.IsRead = true; return true; }
+    }
     internal static class Recording
     {
         public static string Method;
@@ -67,16 +76,15 @@ namespace AnimusForge
         public long Revision;
         public static bool Available;
         public static bool Applied;
+        public static WorldDiplomacyStorage State = new();
         public static IWorldDiplomacyPresentationPort Port;
         public static bool CanDiscussWorldDiplomacyForExternal(Hero h) { Recording.Call("discuss",h);return Recording.Result; }
         public static bool TryBuildProactiveDiscussionForExternal(Hero h, out string key, out string fact, out float urgency)
         { Recording.Call("proactive",h);key="key";fact="fact";urgency=0.75f;return Recording.Result; }
         internal static bool TryGetTimelineRevisionSnapshot(out long revision)
         { revision = Instance?.Revision ?? 0L; return Instance != null; }
-        public static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount)
-        { Recording.Call("documents",maxCount);return Available ? WorldDiplomacyTimelineDocumentsResult.Available(Array.Empty<WorldDiplomacyTimelineDocument>()) : WorldDiplomacyTimelineDocumentsResult.Unavailable(); }
-        public static bool TryMarkDocumentReadForCommand(string id, out bool available)
-        { Recording.Call("read",id);available=Available;return Applied; }
+        internal static bool TryGetTimelineState(out WorldDiplomacyStorage storage)
+        { storage = State; return Available; }
         public static IWorldDiplomacyPresentationPort ResolvePresentationPort() => Port;
         public void OnEngineTick() { Ticks++; }
     }
@@ -104,5 +112,19 @@ namespace AnimusForge
         public string Submit(WorldDiplomacyPlayerDocumentCommand c) => c.Body;
         public bool MarkRead(string id) => true;
         public bool CanOpenReply(string id,string round,long generation) => false;
+    }
+}
+namespace AnimusForge.Refactor.Domain
+{
+    internal static class WorldDiplomacyRoundLifecycleRules
+    {
+        internal static AnimusForge.WorldDiplomacyDocument ResolveDocument(
+            List<AnimusForge.WorldDiplomacyDocument> documents, string documentId)
+        {
+            AnimusForge.Recording.Call("read", documentId);
+            return AnimusForge.WorldDiplomacyBehavior.Applied
+                ? new AnimusForge.WorldDiplomacyDocument { DocumentId = documentId }
+                : null;
+        }
     }
 }
