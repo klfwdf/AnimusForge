@@ -1,4 +1,10 @@
-# 当前交接：AF2.0 F3 单向产物链离线已验；按用户指令停在 F3（2026-09-27）
+# 当前交接：J15 F4/F5 计划已重构；产品仍停在 F3（2026-09-27）
+
+- **本轮仅文档**：用户要求先完善可执行计划，未授权恢复产品实施。新的唯一入口为[计划第 9.7–9.11 节](docs/plans/j15-content-profile-plan.md#j15-scope-decisions)，实际定位和验证记录见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-executable-plan-20260927)；[代码范围图](docs/architecture/af-framework-code-scope.md)未改，产品基线仍为 `f4280eed`。
+- **已定边界**：未来 AF 模块设置 UI 不挤进 J15 假迁移；当前 MCM 存储保留；FeatureBridges 按内部随版配置管理，不新增个人覆盖层，但旧手改冲突不能静默覆盖。F4 明确五组输入/动作/退出门，补模型无旧安装初始化、恢复与维护工具交付；F5 明确当前 8 资源、同候选离线矩阵、两版本实机/旧档矩阵和确认点。
+- **下一步**：用户明确开始实施后先执行 F4 的逐项冻结与已确认仓内切片；批量移动/真实资料/游戏覆盖按具名清单确认。没有改产品/测试/脚本、没有迁移/启动游戏/推送；F4/F5 与完整 AF2.0 仍未完成。
+
+## 以下为 F3 停点与历史切片（非新的执行授权）
 
 - **F3 产品/测试 `a8f69b57`、`82d8ce53`**：同一干净 Stage 装配服务 Stage-only 与部署；部署只更新 Stage 列出的受管文件，目标旧字节先入私有 Recovery 并做 hash，同卷候选替换，失败回滚，未完成记录拒绝重试。旧 `/MIR` 和安装资料合并函数已移除；旧双模块只读警告的虚构重跑未改旧模块且无新 Recovery。虚构游戏根 123 项 SHA 对齐 Stage，PlayerExports 未变；故障注入回滚、恢复、重复、中断、7 个未受管/旧模块哨兵与完整 J15 内容 runner PASS。Debug/Release Stage 各 123 项无输入重组稳定，两 ZIP 各 123 项集合及 122 个非 XML SHA 对齐；代码地图 **789** 锚点两模式通过。既有 C# 六构建产物未变，本切片未重编；**未写 D: 游戏目录、未实机部署/启动、未改原始 `.sav`、未推送**。详证见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)与[范围图](docs/architecture/af-framework-code-scope.md)。
 - **停点**：用户明确“F3做完就停下”。F3 为 **OFFLINE_VERIFIED**，不是 AF2.0 完成或可发布；33 项未映射 GUI/TPAC 及其权利、剩余旧资料属 F4，F5 同候选总验收与 1.3/1.4 实机/旧档均 **NOT-RUN**。当前 ZIP 仅装配/隐私工程候选。下方为早前修订历史，出现“部署失败关闭”不代表当前实现。
