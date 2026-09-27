@@ -1,4 +1,28 @@
-## AF2.0 F3 单向产物链离线验收完成；F4/F5 未开始本轮续作（2026-09-27）
+<a id="j15-f45-executable-plan-20260927"></a>
+
+## J15 F4/F5 可执行计划重构（2026-09-27；仅文档，产品仍停在 F3）
+
+**本轮目标/授权**：用户要求先把能自行决定的计划完善到可执行；仅修改本主台账、`docs/plans/j15-content-profile-plan.md` 和 HANDOFF，不实施 F4/F5、不修改产品/测试/构建脚本、不搬用户资料、不写游戏/外仓、不恢复其他任务或自动化。起点 `f4280eed`，工作分支 `codex/af-main-refactor-continuation-20260831`，tracked clean，仅已有 `.dotnet-cli-home/` 未跟踪；本地文档意图检查点 `5252c0ac`。
+
+**已确定的计划变更**：以[第 9.7–9.11 节](plans/j15-content-profile-plan.md#j15-scope-decisions)取代相冲突的旧执行说明。MCM 最终只展示 API / 其他模块设置进入 AF UI 是后续接入目标；当前普通设置仍由 MCM 保存，J15 不假迁移未来 UI。FeatureBridges 改为随版本管理的内部配置，撤销新增个人覆盖层要求；现有未知手改仍需部署前冲突识别与具名处理，不因分类变化静默丢弃。F4 按配置、GUI、TPAC/设计源、旧资料、模型五组列输入/动作/退出门；模型增加无旧安装的本地初始化、恢复/锁升级校验与可独立使用的维护工具交付规格，不隐式下载。F5 固定当前 8 资源口径、同候选 O1–O7 离线矩阵与两个版本的 LIVE/SAVE 矩阵；来源/外写/批量操作/实机输入集中列为 A1–A4 确认点。
+
+只读依据（生产代码仍为 `f4280eed`，本表是计划定位证据，不是新增运行验证）：
+
+| 实际源码 / 符号 | 已核实职责与未覆盖事项 |
+| --- | --- |
+| `TerminalSettingsRegistry.cs:33–36,115–118` 的 Getter/Setter、`SaveSettings`；`DuelSettings.TerminalSave.cs:10–25` 的 `SaveCurrentSettings`；`AnimusForgeTerminalSettings.cs:7–10,103–106` | 普通终端设置仍接 DuelSettings/MCM；独立 TerminalSettings 只有两个入口选项，不等于全部模块设置已迁移 |
+| `Refactor/Runtime/FeatureBridgeRuntime.cs:351–409` 的路径解析；`一键编译覆盖推送/deploy_module.ps1:544–557` 的受管差异计划 | 当前仍读取安装内部配置；F3 备份/替换不等于具名未知手改预检，F4-C 是待实现而非已修复 |
+| `src/AF.Persistence/AnimusForgeModelStore.cs:15–60` 的就绪检查；`tools/af2_migrate.py:627–629,838–880` 的旧布局/CLI | 需要 readiness 与 Recovery 完成记录；CLI 只有 installed/repo、缺 prepared 初始化与显式数据根；新模型接口/维护工具投影仅为计划，未实现 |
+| `AnimusForge.csproj:81–109`；`tests/content/J15ContentContractTests/run.py:466–496,656–687` | 当前 7 默认 + 模型锁 = 8 资源；原位 HOLD 断言必须被真实迁移/退役证据替代；内容 runner 已支持新 run-root 且不清旧 fixture |
+| `tests/AF.Persistence/PlayerExports/run.py:32–35`；`tests/AF.Persistence/DataPaths/Program.cs:138–150`；`tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs:42–57,155–159` | 既有测试有固定根清理、系统 Temp 写入、默认真实用户根访问，计划要求先隔离/确认再执行，不能无参盲跑或声称两个路径测试证明完整编辑 |
+
+**本轮验证**：仅三份预定文档有差异；新增/变更的 **10** 个本地链接及目标显式锚点、Markdown 围栏/锚点唯一性、**24** 个具名现存输入/入口路径检查 PASS；F4 五组、O1–O7、L/S 与 A1–A4 标识齐全。csproj 静态核验为 **8 个 EmbeddedResource Include**；首次检查误把 13 个 Remove 元素也计入而失败，诊断后修正检查口径，未改产品项目或断言基线。当前 F5 PowerShell 模板经 PowerShell Parser 解析 PASS，未执行其中命令；`git diff --check` PASS。这些是文档/语法静态检查，不是 MSBuild 求值、实际 DLL 或产品测试。未运行构建/测试 runner/迁移/游戏。产品状态继续 `F3_OFFLINE_VERIFIED`；F4 剩余项及 F5 尚未实施，未来 AF UI 工作包明确未实施，计划改动不提升任何 LIVE/SAVE/分发权状态。当前 Git 历史仍含私密资料，禁止据此推送。
+
+**下一动作**：获得开始产品实施的明确请求后，按[F4 执行清单](plans/j15-content-profile-plan.md#j15-f4-execution)先冻结逐项表，做 F4-C/M 具名最小代码与合成反例；批量搬迁/真实数据/游戏目标按 A1–A4 确认。无需重做已验证 F1–F3，不因未知第三方来源阻断无关工程；必需项未闭也不能宣称 J15 完成。
+
+## 以下为 F3 产品停点及更早切片证据（历史；仍有效的产品结果不因本轮计划重构改变）
+
+### AF2.0 F3 单向产物链离线验收完成；F4/F5 未开始本轮续作（2026-09-27）
 
 最新 F3 程序部署产品/测试 **`a8f69b57`、`82d8ce53`**：`一键编译覆盖推送/deploy_module.ps1:505–649,699–725` 让 Stage-only 和部署共享一次精确 `content` 投影、唯一 XML、已锁双实现/Bootstrap 与私有依赖装配，并在两路径共同要求 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts`。部署只枚举 Stage 白名单文件；旧目标受管文件先复制到 `%LOCALAPPDATA%/AnimusForge/Recovery/deploy` 并复核 SHA，同目录候选经 hash 后逐文件替换，失败逆序恢复且逐项核 hash；中断记录阻止无检查重试。未知安装文件/目录（包括旧导出、日志、模型、自定义配置）不镜像、不删除；旧双模块只作只读存在性警告，虚构旧模块重跑不改原件且无新 Recovery；旧 `robocopy /MIR`、安装 Prompt/PlayerExports 合并、回写源码的遗留函数/调用已退出。此事务是逐文件替换加可恢复回滚，**不是跨 123 文件原子提交**；若进程在激活中被杀，须检查私有记录与目标状态后再部署，不能宣称自动恢复。
 
