@@ -2,7 +2,7 @@
 
 ## J15 F4/F5 当前续作证据（2026-09-27；未完成）
 
-**状态：`F4-C_OFFLINE_VERIFIED / F4-M_COLD_RACE_FIXED_OFFLINE / F5_PARTIAL / J15_NOT_COMPLETE`。** 分支 `codex/af-main-refactor-continuation-20260831`，意图 `967395e2`；产品/契约 `63138958`、`688ad6b8`，素材说明 `c0f2d289`，存档坐标 fixture `acbfbb3c`，PlayerExports 契约接线 `19311574`。本条取代下方 F4-C/冷启动仍待做、仅 28 项 ONNX 断言的当前状态；旧结果仍保留为历史。仅用户具名批准的仓内四个 `single_module_artifacts`/`obj/single_module` 生成目录由原构建脚本重建；无 Stage/Deploy、游戏目录/玩家数据/外仓写入或推送。
+**状态：`F4-C/D_OFFLINE_VERIFIED / F4-M_COLD_RACE_FIXED_OFFLINE / F5_PARTIAL / J15_NOT_COMPLETE`。** 分支 `codex/af-main-refactor-continuation-20260831`，意图 `967395e2`；产品/契约 `63138958`、`688ad6b8`，素材说明 `c0f2d289`，存档坐标 fixture `acbfbb3c`，PlayerExports 契约接线 `19311574`，私人旧源退役 `6b2c4373`。本条取代下方 F4-C/冷启动仍待做、仅 28 项 ONNX 断言的当前状态；旧结果仍保留为历史。用户分别具名批准四个构建生成目录、两个 Stage 根和两个 ABI/API `.generated` 根的重建，以及精确八项私人旧源的仓内忽略归档；无游戏目录/玩家数据/外仓写入、Deploy 或推送。
 
 | 代码证据（一基行号） | 本轮责任与限制 |
 | --- | --- |
@@ -13,9 +13,13 @@
 
 **已执行的 F5 离线片段**：同一 ONNX/F4-C 产品候选由原 `build_single_module.ps1` 无 Stage/Deploy 构建 Debug、Release × 1.3、1.4 + Bootstrap，六构建各 0 warning/0 error；1.3 引用 v1.3.15.110062、1.4 引用 v1.4.7.117484。四 DLL 资源审计各 7 默认、ModelsLock 未嵌入。J15 内容 runner `107 mappings / 40 holds / GCCZ 4`、ManagedDeploy F4-C、个人数据合成迁移及模型外迁拒绝、DataPaths **66 checks** 均 PASS。DataPaths 首次人为改 TMP 到源码树被产品安全门禁拒绝，改回默认 Temp 后通过，不把失败冒充产品回归。`PersistenceIdentityAudit` 同步键 142/行为 36/模块身份 1/Bootstrap 1 PASS；`PersistenceProfileConfigContractTests` 起初仅 `_patienceStates_v1` 两行坐标因已删除代码漂移，修 fixture 两行后 **168 typed bindings** PASS，未放宽 key/type 断言。编辑器仅 `--path-contract` 与 `--path-contract-invalid` PASS；PlayerExports 生产源码契约及两项变异如上。代码地图 **795 锚点** recorded/working-tree PASS，`git diff --check` PASS。以上不能代替尚未跑的 Native ABI/API 全矩阵、双 Stage、StaticVerifier、ZIP 当前候选、完整编辑器或 LIVE/SAVE。
 
-**F4 只读盘点与未决项**：F4-U 的 33 项旧 GUI 中两个 XML 索引指向 25 张 `ui_account`/`ui_achievement`/`ui_subscribe` parts，但三个 atlas sheet 在仓库与现有 D: 安装均缺；另五旧图/一 vassalage sheet 的实际消费者不同，不凭 grep 无命中删改。F4-A 两份仓内 TPAC 同为 1,671,304 字节且 SHA 相同，却与扩展 manifest 的 11,205,263 字节身份不符；当前 Stage/主 ZIP 没有 TPAC。金币 runtime XML 实用原版 mesh/collision，旧 `AssetSources` 说明已纠正；第三方原始来源、完整资源与分发权未证实。F4-D 旧 profile 六项、`VoiceMapping.json` 和异常 HTML 共八项/39,960 字节只读盘点，未输出正文、未移走；待具名私有归档批准。来源/许可、批量资产处理、额外生成目录重建和外部合成数据根均未凭本轮四目录授权执行。历史 Git 仍含私人资料，禁止据此推送。
+**F4-D 已执行**：批准的旧 profile 六项、`VoiceMapping.json`、异常 HTML 共八项/39,960 字节，逐项复制到被 Git 忽略的 `local/j15-private-archive-20260927/legacy-module/`，原件与副本 SHA-256 双向复核、私有 manifest 记录恢复映射；随后仅这八个精确跟踪路径从活动源码退出，归档再复核。`tests/content/J15ContentContractTests/run.py:395–405,476–482` 要求八项不返回/不进入映射，HOLD 从 40 降至 33，完整内容 runner **107 mappings / 33 holds PASS**；inventory 补 `.gitattributes` 和两个已有开发锁的明确分类后 **tracked=19511 / unknown=0**，7 项单测 PASS。归档不自动导入；历史 Git 仍含私人字节，绝不据此推送。
 
-**硬停点**：F4-U/A/D、F5 O2 完整编辑与 O4–O7 全矩阵、M9 双实际版本和 F5-L/S 新装/旧档均未完成；Stage/ZIP 旧候选不可标为本轮最终候选，更不可发布。当前 D: 安装的 ONNX 只读用于离线 DLL 推理，不是实机验收或模型再分发许可。部署/游戏启动、原始存档、外部资料、全局配置和网络/provider 仍未触及；待具名授权与权利证据后继续，不能降低 J15 完成定义。
+**F4-U/A 未决**：F4-U 的 33 项旧 GUI 中两个 XML 索引指向 25 张 `ui_account`/`ui_achievement`/`ui_subscribe` parts，但三个 atlas sheet 在仓库与现有 D: 安装均缺；另五旧图/一 vassalage sheet 的实际消费者不同，不凭 grep 无命中删改。F4-A 两份仓内 TPAC 同为 1,671,304 字节且 SHA 相同，却与扩展 manifest 的 11,205,263 字节身份不符；当前 Stage/主 ZIP 没有 TPAC。manifest 所记 AF 修订 `ac65ec31` 无对应 TPAC，D: 旧独立模块包缺失、AF 安装仅有同一 1,671,304 字节文件，不能据此恢复 11 MB 资源。金币 runtime XML 实用原版 mesh/collision，旧 `AssetSources` 说明已纠正；第三方原始来源、完整资源与分发权未证实。批量资产操作及外部合成数据根仍待具名确认。
+
+**F5 同候选 Stage/ABI/API/ZIP 续验**：`6b2c4373` 源树上，原构建脚本带 `-Stage` 依次重建 Debug、Release 的 1.3/1.4/Bootstrap，各六构建 0 warning/0 error；精确引用仍为 1.3.15.110062 / 1.4.7.117484。两 Stage 各 123 文件，与各自当前三程序产物逐字节一致，ONNX/PlayerExports/Logs/AssetSources/AssetPackages 路径 0。Xihai Core **88 PASS**；Native 当前 fixture **55**、旧 V1 ABI **41+41**、ModuleFramework snapshot **36**、公开 API **158**、五项变异拒绝及四实际 DLL 元数据 **1620** 断言 PASS（Native fixture 有 5 个 CS0649 未赋值警告，不冒充零警告）。Release 两 API 在重建后复测 ONNX 各 **33+5**；首次执行遗漏 `ANIMUSFORGE_ONNX_RUNTIME_DIR` 导致 native DLL 初始化失败，按测试工具明确环境设置后通过，非模型路径回归。Debug/Release 本地测试 ZIP 各 123 条，与对应 Stage 122 个非 XML 条目逐字节一致，禁入路径 0；SHA-256 分别 `810c995158c19e2802d6af06c94452f262c505e4946bf4f851c895fe501c4af9` / `4800b1bd28c0b844b8d93564381aadecaa7315ad92c2f9e9bbcbdd30ab49d1bd`，仅在 `artifacts/j15-content/f5-o6-packages-20260927-a/`，**不是发布包**。存档身份 142/36 和配置 typed 168 再验 PASS；795 锚点两模式 PASS。StaticVerifier 会在系统 Temp 建删合成树，尚待隔离根确认；当前 TPAC/atlas 缺失仍会导致其资源闭包失败，不得屏蔽。
+
+**硬停点**：F4-U/A、F5 O2 完整编辑、O5 StaticVerifier/资源闭包、O6 当前全 Stage 虚构安装与 O7 完整签收、M9 双实际版本及 F5-L/S 新装/旧档均未完成；当前 Stage/ZIP 虽已重建并做隐私/字节验收，缺资源与许可，绝不可发布。当前 D: 安装的 ONNX 只读用于离线 DLL 推理，不是实机验收或模型再分发许可。部署/游戏启动、原始存档、外部资料、全局配置和网络/provider 仍未触及；待具名授权与权利证据后继续，不能降低 J15 完成定义。
 
 ## 以下为本次续作前的历史状态（较新证据以上段为准）
 
