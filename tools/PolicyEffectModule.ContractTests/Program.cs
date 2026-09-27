@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge;
 using AnimusForge.PolicyEffects;
@@ -98,7 +99,10 @@ internal static class Program
 		new DescriptorConflictDummyModule("contractDummy.second", 10001, Array.Empty<string>());
 	private const string OnnxRuntimeDirectoryEnvironmentVariable = "ANIMUSFORGE_ONNX_RUNTIME_DIR";
 	private const string OnnxModuleRootOption = "--onnx-module-root";
-	private static string _onnxContractModuleRoot;
+	[ThreadStatic] private static string _onnxContractModuleRoot;
+	private static int _onnxBlockedThreadId;
+	private static readonly ManualResetEventSlim OnnxInitEntered = new ManualResetEventSlim(false);
+	private static readonly ManualResetEventSlim OnnxInitRelease = new ManualResetEventSlim(false);
 
 	[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
 	private static extern bool SetDllDirectory(string lpPathName);
@@ -111,6 +115,14 @@ internal static class Program
 			ConfigureOnnxRuntimeSearchPath();
 			LoadAssemblies(args);
 			ConfigureOnnxModuleRootOverride(args);
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--onnx-cold-main-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				if (!(args ?? Array.Empty<string>()).Any(value => string.Equals(value, OnnxModuleRootOption, StringComparison.OrdinalIgnoreCase)))
+					throw new InvalidOperationException("--onnx-cold-main-only requires --onnx-module-root.");
+				Console.WriteLine("PASS onnxColdMainAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--onnx-contract-only", StringComparison.OrdinalIgnoreCase)))
 			{
 				if (!(args ?? Array.Empty<string>()).Any(value => string.Equals(value, OnnxModuleRootOption, StringComparison.OrdinalIgnoreCase)))
@@ -585,7 +597,14 @@ internal static class Program
 			patchedAssemblies);
 		foreach (Assembly assembly in patchedAssemblies)
 		{
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--onnx-cold-main-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				if (assembly == _sut) VerifyOnnxContractColdMainGate(assembly, moduleRoot);
+				continue;
+			}
 			VerifyOnnxContractPaths(assembly, moduleRoot, "ResolveEmbedding", "ONNX", true);
+			if (assembly == _sut)
+				VerifyOnnxContractGateDuringColdInitialization(assembly, moduleRoot, harmony, harmonyMethodType, patch);
 			InitializeOnnxContractEmbedding(
 				assembly.GetType("AnimusForge.OnnxEmbeddingEngine", throwOnError: true),
 				moduleRoot);
@@ -595,6 +614,83 @@ internal static class Program
 				moduleRoot);
 			VerifyOnnxContractGate(assembly, moduleRoot);
 		}
+	}
+
+	private static void VerifyOnnxContractColdMainGate(Assembly assembly, string moduleRoot)
+	{
+		Type behavior = assembly.GetType("AnimusForge.MyBehavior", throwOnError: true);
+		MethodInfo gate = behavior.GetMethod("HasCompleteRequiredOnnxFiles", All, null, Type.EmptyTypes, null)
+			?? throw new MissingMethodException(behavior.FullName, "HasCompleteRequiredOnnxFiles");
+		_onnxContractModuleRoot = moduleRoot;
+		Stopwatch cold = Stopwatch.StartNew();
+		bool available;
+		try { available = (bool)gate.Invoke(null, null); }
+		finally { _onnxContractModuleRoot = null; cold.Stop(); }
+		Check(available, "unwarmed main-thread gate rejected the installed model");
+		Console.WriteLine("ONNX unwarmed main-thread gate elapsedMs=" + cold.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static void VerifyOnnxContractGateDuringColdInitialization(Assembly assembly, string moduleRoot,
+		object harmony, Type harmonyMethodType, MethodInfo patch)
+	{
+		Type store = assembly.GetType("AnimusForge.AnimusForgeModelStore", throwOnError: true);
+		MethodInfo resolve = store.GetMethod("ResolveEmbedding", All, null, Type.EmptyTypes, null)
+			?? throw new MissingMethodException(store.FullName, "ResolveEmbedding");
+		MethodInfo prefix = typeof(Program).GetMethod(nameof(BlockOnnxColdInitialization), All)
+			?? throw new MissingMethodException(typeof(Program).FullName, nameof(BlockOnnxColdInitialization));
+		patch.Invoke(harmony, new[] { (object)resolve, Activator.CreateInstance(harmonyMethodType, prefix), null, null, null });
+		Type embeddingType = assembly.GetType("AnimusForge.OnnxEmbeddingEngine", throwOnError: true);
+		object embedding = embeddingType.GetProperty("Instance", All)?.GetValue(null, null)
+			?? throw new MissingMemberException(embeddingType.FullName, "Instance");
+		Type behavior = assembly.GetType("AnimusForge.MyBehavior", throwOnError: true);
+		MethodInfo gate = behavior.GetMethod("HasCompleteRequiredOnnxFiles", All, null, Type.EmptyTypes, null)
+			?? throw new MissingMethodException(behavior.FullName, "HasCompleteRequiredOnnxFiles");
+		OnnxInitEntered.Reset();
+		OnnxInitRelease.Reset();
+		Stopwatch cold = Stopwatch.StartNew();
+		Task<bool> initializer = Task.Run(() =>
+		{
+			_onnxContractModuleRoot = moduleRoot;
+			Volatile.Write(ref _onnxBlockedThreadId, Thread.CurrentThread.ManagedThreadId);
+			try { return (bool)embeddingType.GetProperty("IsAvailable", All).GetValue(embedding, null); }
+			finally { _onnxContractModuleRoot = null; }
+		});
+		Task<bool> gateTask = null;
+		ManualResetEventSlim gateStarted = new ManualResetEventSlim(false);
+		bool returnedBeforeInitializationFinished = false;
+		try
+		{
+			Check(OnnxInitEntered.Wait(TimeSpan.FromSeconds(10)), "embedding did not enter the controlled cold initialization window");
+			gateTask = Task.Run(() =>
+			{
+				_onnxContractModuleRoot = moduleRoot;
+				gateStarted.Set();
+				try { return (bool)gate.Invoke(null, null); }
+				finally { _onnxContractModuleRoot = null; }
+			});
+			Check(gateStarted.Wait(TimeSpan.FromSeconds(10)), "gate task did not start during model initialization");
+			returnedBeforeInitializationFinished = gateTask.Wait(TimeSpan.FromMilliseconds(250));
+		}
+		finally
+		{
+			OnnxInitRelease.Set();
+			Volatile.Write(ref _onnxBlockedThreadId, 0);
+		}
+		Check(initializer.Wait(TimeSpan.FromMinutes(2)) && initializer.Result,
+			"cold embedding initialization failed");
+		Check(!returnedBeforeInitializationFinished,
+			"gate returned during concurrent model initialization and can falsely report missing ONNX");
+		Check(gateTask != null && gateTask.Wait(TimeSpan.FromMinutes(2)) && gateTask.Result,
+			"gate rejected the model after cold initialization completed");
+		Console.WriteLine("ONNX controlled warmup+gate elapsedMs=" + cold.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+	}
+
+	private static void BlockOnnxColdInitialization()
+	{
+		if (Thread.CurrentThread.ManagedThreadId != Volatile.Read(ref _onnxBlockedThreadId)) return;
+		OnnxInitEntered.Set();
+		if (!OnnxInitRelease.Wait(TimeSpan.FromMinutes(2)))
+			throw new TimeoutException("Controlled ONNX initialization was not released.");
 	}
 
 	private static void VerifyOnnxContractGate(Assembly assembly, string moduleRoot)
@@ -730,7 +826,6 @@ internal static class Program
 		{
 			return true;
 		}
-		_onnxContractModuleRoot = null;
 		__result = moduleRoot;
 		return false;
 	}

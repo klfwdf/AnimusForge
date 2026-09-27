@@ -303,7 +303,7 @@ public sealed class OnnxEmbeddingEngine
 
 	private readonly object _initLock = new object();
 
-	private bool _initialized;
+	private volatile bool _initialized;
 
 	private bool _available;
 
@@ -466,7 +466,6 @@ public sealed class OnnxEmbeddingEngine
 			{
 				return;
 			}
-			_initialized = true;
 			try
 			{
 				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveEmbedding();
@@ -524,6 +523,10 @@ public sealed class OnnxEmbeddingEngine
 				catch
 				{
 				}
+			}
+			finally
+			{
+				_initialized = true;
 			}
 		}
 	}
