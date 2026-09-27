@@ -1,5 +1,7 @@
 # 当前交接：J15 F4-A 本地 TPAC 投影及正式双 Stage 13/0 已验，F4/F5 仍未闭（2026-09-27）
 
+- **续验**：当前 Release 正式 124 项 Stage 在全新仓内虚构安装根逐项 SHA 部署一致、三类未受管数据不变、重复执行 no-op；不是游戏部署或 124 项故障回滚验收。三张 GUI atlas 已由 `origin/main` 的 25 张源图按 XML 坐标在忽略目录重建为诊断 PNG，逐图保存后裁切像素一致；但画面涉及旧订阅/充值宣传，生产源码/当前 DLL 未发现直接消费者，未纳入正式 Stage/ZIP。详细尺寸、SHA、范围与 HOLD 见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。
+
 - **最新 F4-A 本地切片**：用户批准仅将 `origin/main` 同字节的 1,671,304 字节 TPAC 映射进本仓双 Stage/本地测试 ZIP；新增一条 Xihai content 映射及 hash 契约，J15 runner **108 映射/33 HOLD PASS**。原 Stage 入口重建 Debug/Release 各 124 项，正式 StaticVerifier **各 13/0**；原打包入口 `-NoBump` 的两个本地测试 ZIP 各 124 项、123 非 XML 字节与 Stage 一致，禁入路径 0。程序 DLL 未变、未重编；两份 TPAC 原件保留。此前 `11/2` 和 123 项 Stage/ZIP 均为较早候选，不再代表当前 Stage。详情见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。历史 11.2 MB manifest、两原件去重、来源/再分发权、三张 atlas、实机/旧档未闭；测试 ZIP 不可发布。无部署、推送或游戏/玩家数据写入。
 
 - **状态**：`F4-C/D_OFFLINE_VERIFIED / F4-M_COLD_RACE_FIXED_OFFLINE / F5_PARTIAL / J15_NOT_COMPLETE`。产品/测试 `63138958`、`688ad6b8`，八项私人旧源退役 `6b2c4373`。`OnnxEmbeddingEngine.cs:306,457–529` 完成初始化后才发布 volatile 状态，模块 ONNX 强制门禁不放松；`deploy_module.ps1:505–537` 在受管写入前拒绝未知手改/坏 `FeatureBridges.json`。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)及[范围图](docs/architecture/af-framework-code-scope.md)，[795 锚点地图](docs/architecture/af-framework-code-map.json)仅导航。
