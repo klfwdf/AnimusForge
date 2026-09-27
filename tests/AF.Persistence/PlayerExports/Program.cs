@@ -41,7 +41,8 @@ internal static class Program
         string root = PlayerExportsStore.GetPlayerExportsRootPath();
         Check(Path.IsPathRooted(root) && root.EndsWith(Path.DirectorySeparatorChar + PlayerExportsStore.FolderName) && PlayerExportsStore.GetModuleRootPath().Length > 0, "root path shape: " + root);
 
-        string temp = Path.Combine(Path.GetTempPath(), "af-player-exports-" + Guid.NewGuid().ToString("N"));
+        string tempRoot = Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP") ?? Path.GetTempPath();
+        string temp = Path.Combine(tempRoot, "af-player-exports-" + Guid.NewGuid().ToString("N"));
         try
         {
             Check(PlayerExportsStore.FindLatestExportFolder(temp) == null, "missing root → null");

@@ -17,6 +17,7 @@ HERE = Path(__file__).resolve().parent
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["name-mismatch-passes","latest-oldest"], help="apply a source mutation that must fail")
+parser.add_argument("--run-root", type=Path, help="new output directory; refuses to overwrite an existing path")
 args = parser.parse_args()
 
 
@@ -29,8 +30,11 @@ def resolve_dotnet() -> Path:
 
 
 dotnet = resolve_dotnet()
-output = ROOT / "artifacts/tests/persistence-player-exports" / (args.mutate or "current")
-if output.exists():
+output = args.run_root.resolve() if args.run_root else ROOT / "artifacts/tests/persistence-player-exports" / (args.mutate or "current")
+if args.run_root:
+    if output.exists() or not output.is_relative_to(ROOT):
+        raise SystemExit("--run-root must be a new directory inside the repository")
+elif output.exists():
     shutil.rmtree(output)
 output.mkdir(parents=True)
 for name in ("Program.cs", "PlayerExportsTests.csproj"):
@@ -55,7 +59,12 @@ if args.mutate:
     project = project.replace(str(ROOT).replace("\\", "/") + "/" + rel, str(mutated).replace("\\", "/"))
 (output / "PlayerExportsTests.csproj").write_text(project, encoding="utf-8")
 (output / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", DOTNET_MULTILEVEL_LOOKUP="0")
+temp = output / "temp"
+temp.mkdir()
+data_root = ROOT.parent / "AF-J15-PathOnly-PlayerExports"
+if data_root.exists():
+    raise SystemExit("synthetic path-only data root already exists; refusing to read it")
+env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", DOTNET_MULTILEVEL_LOOKUP="0", AF_PLAYER_EXPORTS_TEST_TEMP=str(temp), ANIMUSFORGE_DATA_ROOT=str(data_root))
 build = subprocess.run([str(dotnet), "build", str(output / "PlayerExportsTests.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 (output / "build.log").write_text(build.stdout + build.stderr, encoding="utf-8")
 if build.returncode != 0:
