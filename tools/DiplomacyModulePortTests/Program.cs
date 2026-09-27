@@ -49,7 +49,7 @@ static class Program
         {
             Recording.Result=result;
             Check(DiplomacyConversationBridge.IsIndependentClanPeacePostprocessTag(" exact ")==result,"tag result");Call("tag"," exact ");
-            Check(DiplomacyConversationBridge.CanDiscussWorldDiplomacyForExternal(h)==result,"discussion result");Call("discuss",h);
+            Check(DiplomacyConversationBridge.CanDiscussWorldDiplomacyForExternal(h)==result,"discussion result");Call("known",h,"kingdom");
             Check(DiplomacyConversationBridge.TryBuildProactiveDiscussionForExternal(h,out var key,out var fact,out var urgency)==result,"proactive result");
             Call("proactive",h);Check(key=="key"&&fact=="fact"&&urgency==0.75f,"all proactive outputs");
         }

@@ -15,6 +15,7 @@ SOURCES += ['src/bridges/Diplomacy/'+n+'.cs' for n in ['DiplomacyConversationBri
 SOURCES += ['src/modules/AF.Module.Diplomacy/Adapters/'+n+'.cs' for n in ['DiplomacyModule','DiplomacyConversationModuleAdapter','WorldDiplomacyModuleAdapter','DiplomacyIdentityResolver']]
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineRevisionApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDiscussionApplication.cs','WorldDiplomacyDiscussionEligibilityRules.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  paths=['AIConfigHandler.cs','ShoutBehavior.cs','ShoutBehavior.NativeTurnCommit.cs','DiplomacyPeaceTermsService.cs','NpcTributeVassalageBehavior.cs','src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs']
@@ -38,11 +39,19 @@ def boundaries():
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
  timeline_state='internal static bool TryGetTimelineState('
  mark_read='internal static bool TryMarkDocumentReadForCommand('
+ discussion='private bool CanDiscussWorldDiplomacy('
+ discussion_wrapper='public static bool CanDiscussWorldDiplomacyForExternal('
+ discussion_snapshot='internal static bool TryCaptureDiscussionCandidate('
  prior_world=prior_world.replace('\t'+declaration(prior_world,query)+'\n\n','')
  prior_world=prior_world.replace('    '+declaration(prior_world,timeline_query)+'\n\n','')
  prior_world=prior_world.replace('\t'+declaration(prior_world,mark_read)+'\n','')
+ prior_world=prior_world.replace('\t'+declaration(prior_world,discussion)+'\n','')
+ prior_world=prior_world.replace('\t'+declaration(prior_world,discussion_wrapper)+'\n\n','')
  current_world=current_world.replace('\t'+declaration(current_world,snapshot)+'\n\n','')
  current_world=current_world.replace('    '+declaration(current_world,timeline_state)+'\n\n','')
+ current_world=current_world.replace('\tpublic static bool CanDiscussWorldDiplomacyForExternal(Hero hero) =>\n\t\tDiplomacyModuleServices.World.CanDiscuss(hero?.StringId);\n\n','')
+ current_world=current_world.replace('\t'+declaration(current_world,discussion_snapshot)+'\n\n','')
+ current_world=current_world.replace('\tinternal static bool HasKnownDocumentForDiscussion(Hero hero, string kingdomId) =>\n\t\tResolveInstance()?.GetKnownDocumentIdsForHero(hero, kingdomId).Count > 0;\n\n','')
  assert current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration),'Policy cadence/state owner changed'
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)

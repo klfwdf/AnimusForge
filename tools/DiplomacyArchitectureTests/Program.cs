@@ -11,7 +11,7 @@ static class Program
     static bool IsPure(string p) =>
         (p.StartsWith("Refactor/Domain/") || p.StartsWith("Refactor/Persistence/") || p.StartsWith("Refactor/Contracts/")) && Path.GetFileName(p).StartsWith("WorldDiplomacy")
         || p.StartsWith("src/modules/AF.Module.Diplomacy/Application/") || p.StartsWith("src/modules/AF.Module.Diplomacy/Rules/")
-        || new[] { "Refactor/Contracts/DiplomacyModulePorts.cs", "Refactor/Contracts/AfTributePowerContext.cs", "Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs",
+        || new[] { "WorldDiplomacyDiscussionEligibilityRules.cs", "Refactor/Contracts/DiplomacyModulePorts.cs", "Refactor/Contracts/AfTributePowerContext.cs", "Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs",
             "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs", "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs" }.Contains(p);
     static readonly HashSet<string> Forbidden = new(StringComparer.Ordinal) {
         "TaleWorlds", "HarmonyLib", "SandBox", "GauntletUI", "MCM", "Hero", "Kingdom", "Clan", "Settlement", "MobileParty", "Agent", "Mission", "Campaign",

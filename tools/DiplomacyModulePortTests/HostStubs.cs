@@ -78,7 +78,10 @@ namespace AnimusForge
         public static bool Applied;
         public static WorldDiplomacyStorage State = new();
         public static IWorldDiplomacyPresentationPort Port;
-        public static bool CanDiscussWorldDiplomacyForExternal(Hero h) { Recording.Call("discuss",h);return Recording.Result; }
+        internal static bool TryCaptureDiscussionCandidate(Hero h, out WorldDiplomacyDiscussionCandidate candidate, out string kingdomId)
+        { Recording.Call("discuss",h); candidate = new WorldDiplomacyDiscussionCandidate(true,true,false,true,false); kingdomId="kingdom"; return true; }
+        internal static bool HasKnownDocumentForDiscussion(Hero h, string kingdomId)
+        { Recording.Call("known",h,kingdomId); return Recording.Result; }
         public static bool TryBuildProactiveDiscussionForExternal(Hero h, out string key, out string fact, out float urgency)
         { Recording.Call("proactive",h);key="key";fact="fact";urgency=0.75f;return Recording.Result; }
         internal static bool TryGetTimelineRevisionSnapshot(out long revision)

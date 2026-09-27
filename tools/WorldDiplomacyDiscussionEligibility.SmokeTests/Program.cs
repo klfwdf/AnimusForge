@@ -19,10 +19,32 @@ static class Test
 
 internal static class Program
 {
+    private sealed class Source : IWorldDiplomacyDiscussionSource
+    {
+        internal WorldDiplomacyDiscussionCandidate Candidate;
+        internal bool Available = true;
+        internal bool Known;
+        internal bool Throw;
+        internal int KnowledgeReads;
+        public bool TryCaptureRepresentative(string heroId, out WorldDiplomacyDiscussionCandidate candidate, out string kingdomId)
+        {
+            if (Throw) throw new InvalidOperationException("capture failed");
+            candidate = Candidate;
+            kingdomId = "kingdom";
+            return Available;
+        }
+        public bool HasKnownDocument(string heroId, string kingdomId)
+        {
+            KnowledgeReads++;
+            return Known;
+        }
+    }
+
     private static int Main()
     {
         VerifyRepresentativeEligibility();
         VerifyKnownDocumentEligibility();
+        VerifyApplicationAdmission();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy discussion eligibility smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -75,27 +97,48 @@ internal static class Program
             FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"),
             Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
-        string method = ExtractSection(
+        string snapshot = ExtractSection(
             behavior,
-            "private bool CanDiscussWorldDiplomacy(Hero hero)",
+            "internal static bool TryCaptureDiscussionCandidate(",
             "private bool TryBuildProactiveDiscussion(");
+        string application = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDiscussionApplication.cs"), Encoding.UTF8);
+        string adapter = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs"), Encoding.UTF8);
 
         Test.True(!rules.Contains("using TaleWorlds", StringComparison.Ordinal)
                   && !rules.Contains("TaleWorlds.CampaignSystem", StringComparison.Ordinal),
             "pure eligibility rules must not reference live TaleWorlds types");
-        Test.True(method.Contains("new WorldDiplomacyDiscussionCandidate(", StringComparison.Ordinal)
-                  && method.Contains("WorldDiplomacyDiscussionEligibilityRules.IsEligibleRepresentative(candidate)", StringComparison.Ordinal)
-                  && method.Contains("WorldDiplomacyDiscussionEligibilityRules.CanDiscuss(candidate, hasKnownDocument)", StringComparison.Ordinal),
-            "behavior must map live state and delegate both eligibility decisions");
-        Test.True(!method.Contains("if (hero == null || hero.Clan?.Kingdom == null", StringComparison.Ordinal)
-                  && !method.Contains("if (!hero.IsLord && hero != hero.Clan.Kingdom.RulingClan?.Leader)", StringComparison.Ordinal),
-            "replaced inline eligibility algorithm must be removed");
-        int representativeCheck = method.IndexOf(
+        Test.True(snapshot.Contains("new WorldDiplomacyDiscussionCandidate(", StringComparison.Ordinal)
+                  && !snapshot.Contains("WorldDiplomacyDiscussionEligibilityRules.IsEligibleRepresentative(", StringComparison.Ordinal)
+                  && adapter.Contains("WorldDiplomacyDiscussionApplication.CanDiscuss(Discussion, heroId)", StringComparison.Ordinal)
+                  && !adapter.Contains("WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(", StringComparison.Ordinal)
+                  && behavior.Contains("DiplomacyModuleServices.World.CanDiscuss(hero?.StringId)", StringComparison.Ordinal)
+                  && !behavior.Contains("private bool CanDiscussWorldDiplomacy(Hero hero)", StringComparison.Ordinal),
+            "Behavior captures facts while the real module caller enters Application");
+        int representativeCheck = application.IndexOf(
             "WorldDiplomacyDiscussionEligibilityRules.IsEligibleRepresentative(candidate)",
             StringComparison.Ordinal);
-        int knowledgeLookup = method.IndexOf("GetKnownDocumentIdsForHero(", StringComparison.Ordinal);
+        int knowledgeLookup = application.IndexOf("source.HasKnownDocument(heroId, kingdomId)", StringComparison.Ordinal);
         Test.True(representativeCheck >= 0 && knowledgeLookup > representativeCheck,
-            "representative eligibility must short-circuit before knowledge lookup");
+            "Application must short-circuit before the knowledge snapshot");
+    }
+
+    private static void VerifyApplicationAdmission()
+    {
+        Source source = new() { Candidate = Candidate(true, true, false, true, false), Known = true };
+        Test.True(WorldDiplomacyDiscussionApplication.CanDiscuss(source, "hero"), "known eligible lord can discuss");
+        Test.True(source.KnowledgeReads == 1, "eligible representative reads knowledge once");
+        source.Candidate = Candidate(true, true, false, false, false);
+        Test.True(!WorldDiplomacyDiscussionApplication.CanDiscuss(source, "hero") && source.KnowledgeReads == 1,
+            "ineligible representative skips knowledge query");
+        source.Available = false;
+        Test.True(!WorldDiplomacyDiscussionApplication.CanDiscuss(source, "hero") && source.KnowledgeReads == 1,
+            "missing campaign owner skips knowledge query");
+        source.Available = true;
+        source.Throw = true;
+        Test.True(!WorldDiplomacyDiscussionApplication.CanDiscuss(source, "hero"),
+            "capture failure retains false result");
     }
 
     private static WorldDiplomacyDiscussionCandidate Candidate(

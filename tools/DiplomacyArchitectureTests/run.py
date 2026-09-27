@@ -20,11 +20,19 @@ def main():
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
  timeline_state='internal static bool TryGetTimelineState('
  mark_read='internal static bool TryMarkDocumentReadForCommand('
+ discussion='private bool CanDiscussWorldDiplomacy('
+ discussion_wrapper='public static bool CanDiscussWorldDiplomacyForExternal('
+ discussion_snapshot='internal static bool TryCaptureDiscussionCandidate('
  prior=prior.replace('\t'+declaration(prior,query)+'\n\n','')
  prior=prior.replace('    '+declaration(prior,timeline_query)+'\n\n','')
  prior=prior.replace('\t'+declaration(prior,mark_read)+'\n','')
+ prior=prior.replace('\t'+declaration(prior,discussion)+'\n','')
+ prior=prior.replace('\t'+declaration(prior,discussion_wrapper)+'\n\n','')
  current=current.replace('\t'+declaration(current,snapshot)+'\n\n','')
  current=current.replace('    '+declaration(current,timeline_state)+'\n\n','')
+ current=current.replace('\tpublic static bool CanDiscussWorldDiplomacyForExternal(Hero hero) =>\n\t\tDiplomacyModuleServices.World.CanDiscuss(hero?.StringId);\n\n','')
+ current=current.replace('\t'+declaration(current,discussion_snapshot)+'\n\n','')
+ current=current.replace('\tinternal static bool HasKnownDocumentForDiscussion(Hero hero, string kingdomId) =>\n\t\tResolveInstance()?.GetKnownDocumentIdsForHero(hero, kingdomId).Count > 0;\n\n','')
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
  print('PASS 17 private method deletions; all surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)
