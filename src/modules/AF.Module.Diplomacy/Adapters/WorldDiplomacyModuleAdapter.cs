@@ -15,10 +15,19 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
         public bool TryGetState(out WorldDiplomacyStorage storage) => WorldDiplomacyBehavior.TryGetTimelineState(out storage);
     }
 
+    private sealed class DiscussionSource : IWorldDiplomacyDiscussionSource
+    {
+        public bool TryCaptureRepresentative(string heroId, out WorldDiplomacyDiscussionCandidate candidate, out string kingdomId) =>
+            WorldDiplomacyBehavior.TryCaptureDiscussionCandidate(ResolveHero(heroId), out candidate, out kingdomId);
+        public bool HasKnownDocument(string heroId, string kingdomId) =>
+            WorldDiplomacyBehavior.HasKnownDocumentForDiscussion(ResolveHero(heroId), kingdomId);
+    }
+
     private static readonly IWorldDiplomacyTimelineRevisionSource TimelineRevisionSource = new RevisionSource();
     private static readonly IWorldDiplomacyTimelineStateSource TimelineSource = new TimelineStateSource();
+    private static readonly IWorldDiplomacyDiscussionSource Discussion = new DiscussionSource();
     private static Hero ResolveHero(string id) => DiplomacyIdentityResolver.Hero(id);
-    public bool CanDiscuss(string heroId) => WorldDiplomacyBehavior.CanDiscussWorldDiplomacyForExternal(ResolveHero(heroId));
+    public bool CanDiscuss(string heroId) => WorldDiplomacyDiscussionApplication.CanDiscuss(Discussion, heroId);
     public bool TryBuildProactiveDiscussion(string heroId, out string key, out string fact, out float urgency) =>
         WorldDiplomacyBehavior.TryBuildProactiveDiscussionForExternal(ResolveHero(heroId), out key, out fact, out urgency);
     public WorldDiplomacyTimelineRevisionResult QueryTimelineRevision() => WorldDiplomacyTimelineRevisionApplication.Query(TimelineRevisionSource);

@@ -377,17 +377,29 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return WorldDiplomacyPresentationQueries.BuildImpactText(document);
 	}
 
-	public static bool CanDiscussWorldDiplomacyForExternal(Hero hero)
+	public static bool CanDiscussWorldDiplomacyForExternal(Hero hero) =>
+		DiplomacyModuleServices.World.CanDiscuss(hero?.StringId);
+
+	internal static bool TryCaptureDiscussionCandidate(
+		Hero hero, out WorldDiplomacyDiscussionCandidate candidate, out string kingdomId)
 	{
-		try
-		{
-			return ResolveInstance()?.CanDiscussWorldDiplomacy(hero) == true;
-		}
-		catch
-		{
-			return false;
-		}
+		candidate = default;
+		kingdomId = "";
+		if (ResolveInstance() == null) return false;
+		Clan clan = hero?.Clan;
+		Kingdom kingdom = clan?.Kingdom;
+		kingdomId = kingdom?.StringId ?? "";
+		candidate = new WorldDiplomacyDiscussionCandidate(
+			heroExists: hero != null,
+			kingdomExists: kingdom != null,
+			kingdomIsEliminated: kingdom?.IsEliminated == true,
+			isLord: hero?.IsLord == true,
+			isRulingLeader: hero != null && hero == kingdom?.RulingClan?.Leader);
+		return true;
 	}
+
+	internal static bool HasKnownDocumentForDiscussion(Hero hero, string kingdomId) =>
+		ResolveInstance()?.GetKnownDocumentIdsForHero(hero, kingdomId).Count > 0;
 
 	public static bool TryBuildProactiveDiscussionForExternal(Hero hero, out string stableKey, out string fact, out float urgency)
 	{
@@ -4552,24 +4564,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			Log("shared memory injection failed: " + ex.Message);
 		}
-	}
-	private bool CanDiscussWorldDiplomacy(Hero hero)
-	{
-		Clan clan = hero?.Clan;
-		Kingdom kingdom = clan?.Kingdom;
-		WorldDiplomacyDiscussionCandidate candidate = new WorldDiplomacyDiscussionCandidate(
-			heroExists: hero != null,
-			kingdomExists: kingdom != null,
-			kingdomIsEliminated: kingdom?.IsEliminated == true,
-			isLord: hero?.IsLord == true,
-			isRulingLeader: hero != null && hero == kingdom?.RulingClan?.Leader);
-		if (!WorldDiplomacyDiscussionEligibilityRules.IsEligibleRepresentative(candidate))
-		{
-			return false;
-		}
-
-		bool hasKnownDocument = GetKnownDocumentIdsForHero(hero, kingdom.StringId).Count > 0;
-		return WorldDiplomacyDiscussionEligibilityRules.CanDiscuss(candidate, hasKnownDocument);
 	}
 	private bool TryBuildProactiveDiscussion(Hero hero, out string stableKey, out string fact, out float urgency)
 	{

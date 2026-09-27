@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\WorldDiplomacyDiscussionEligibilityRules.cs" Link="WorldDiplomacyDiscussionEligibilityRules.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Application\WorldDiplomacyDiscussionApplication.cs" Link="WorldDiplomacyDiscussionApplication.cs" />
   </ItemGroup>
 </Project>
