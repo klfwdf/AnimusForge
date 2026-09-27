@@ -48,6 +48,10 @@ def classify_path(path: str) -> str | None:
         return "HOLD:user-data"
     if path.startswith("AnimusForge/ONNX/"):
         return "HOLD:model-provenance"
+    if path == "content/models.lock.json":
+        return "HOLD:model-provenance"
+    if path == "content/runtime-dependencies.lock.json":
+        return "HOLD:dependency-provenance"
     if top == "_deps_auto":
         return "HOLD:dependency-provenance"
     if top in CACHE_ROOTS:
@@ -144,7 +148,7 @@ def classify_path(path: str) -> str | None:
         return None
     if suffix == ".cs":
         return "source"
-    if suffix in {".csproj", ".sln"} or name in {".editorconfig", ".gitignore"}:
+    if suffix in {".csproj", ".sln"} or name in {".editorconfig", ".gitignore", ".gitattributes"}:
         return "source"
     if suffix == ".md":
         return "docs"
