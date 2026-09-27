@@ -403,7 +403,14 @@ F4D_ARCHIVED_PRIVATE_PATHS = {
     "VoiceMapping.json",
 }
 CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys() - F4D_ARCHIVED_PRIVATE_PATHS
-EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED}
+F4A_EXPECTED = {
+    "AssetPackages/pack0.tpac": {
+        "owner": "AnimusForge.XihaiAction",
+        "source": "extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac",
+        "sha256": "95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2",
+    },
+}
+EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED}
 
 
 def check(condition: bool, message: str) -> None:
@@ -472,6 +479,19 @@ def verify_map_and_resources() -> None:
         check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected["sha256"],
               f"source hash drift: {target}")
         check(not (ROOT / "AnimusForge" / target).exists(), f"old editable source remains: {target}")
+
+    for target, expected in F4A_EXPECTED.items():
+        entry = by_target[target]
+        for field in ("owner", "source", "sha256"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"binary content must not invent a LogicalName: {target}")
+        source = ROOT / expected["source"]
+        check(source.is_file() and source.stat().st_size == 1_671_304, f"authoritative TPAC missing or size drifted: {source}")
+        source_bytes = source.read_bytes()
+        check(hashlib.sha256(source_bytes).hexdigest().upper() == expected["sha256"], f"TPAC hash drift: {target}")
+        check(source_bytes.count(b"nacisword1") == 1, f"Xihai action marker missing or duplicated: {target}")
+        check((ROOT / "AnimusForge" / target).read_bytes() == source_bytes,
+              f"preserved legacy TPAC copy differs: {target}")
 
     for target in CURRENT_HOLD_PATHS:
         check((ROOT / "AnimusForge" / Path(target)).is_file(), f"HOLD path was moved or removed: {target}")
@@ -623,9 +643,11 @@ def verify_formats_and_references() -> None:
 def verify_inventory_and_overlay() -> None:
     inventory = load_module(ROOT / "tools" / "repository_source_inventory.py", "j15_inventory")
     check(inventory.classify_path("content/content-map.json") == "content", "map inventory class")
-    for expected in EXPECTED.values():
+    for expected in {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED}.values():
         check(inventory.classify_path(expected["source"]) == "content",
               f"migrated content inventory class: {expected['source']}")
+    check(inventory.classify_path(F4A_EXPECTED["AssetPackages/pack0.tpac"]["source"]) == "HOLD:asset-package-provenance",
+          "TPAC projection does not clear provenance HOLD")
     check(inventory.classify_path("content/modules/Unknown/ModuleData/file.json") is None, "unknown content owner must fail closed")
     check(inventory.classify_path("content/foundation/Unknown/GUI/file.xml") is None, "unknown foundation owner must fail closed")
     check(inventory.classify_path("content/PlayerExports/private.json") == "HOLD:user-data", "content user data hold")
