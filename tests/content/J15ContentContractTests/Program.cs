@@ -51,13 +51,6 @@ internal static class Program
                 Hash = SHA256.HashData(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(mapPath)) ?? "", entry.GetProperty("source").GetString() ?? "")))
             },
             StringComparer.Ordinal);
-        string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(mapPath)) ?? "";
-        expected.Add("AnimusForge.Dependencies.ModelsLock.json", new
-        {
-            Source = "content/models.lock.json",
-            Hash = SHA256.HashData(File.ReadAllBytes(Path.Combine(projectRoot, "content", "models.lock.json")))
-        });
-
         int assemblyCount = 0;
         foreach (string assemblyPath in assemblyPaths)
         {

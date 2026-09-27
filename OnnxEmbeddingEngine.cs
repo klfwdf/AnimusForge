@@ -469,22 +469,10 @@ public sealed class OnnxEmbeddingEngine
 			_initialized = true;
 			try
 			{
-				string text4 = AnimusForgeModelStore.GetReadyGroupDirectory("embedding");
-				string text5 = System.IO.Path.Combine(text4, "model.onnx");
-				if (string.IsNullOrEmpty(text5))
-				{
-					_available = false;
-					_lastError = "模型依赖未就绪：缺少 model.onnx。";
-					return;
-				}
-				string text6 = System.IO.Path.Combine(text4, "tokenizer.json");
-				if (string.IsNullOrEmpty(text6))
-				{
-					_available = false;
-					_lastError = "未找到 tokenizer.json。";
-					return;
-				}
-				string text7 = System.IO.Path.Combine(text4, "config.json");
+				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveEmbedding();
+				string text5 = files.ModelPath;
+				string text6 = files.TokenizerPath;
+				string text7 = files.ConfigPath;
 				if (!string.IsNullOrEmpty(text7))
 				{
 					TryReadMaxPosition(text7, out _maxLength);

@@ -553,28 +553,10 @@ public sealed class OnnxCrossEncoderReranker
 			_initialized = true;
 			try
 			{
-				string path = AnimusForgeModelStore.GetReadyGroupDirectory("reranker");
-				if (!Directory.Exists(path))
-				{
-					_available = false;
-					_lastError = "reranker 目录不存在。";
-					return;
-				}
-				string text = System.IO.Path.Combine(path, "model.onnx");
-				if (string.IsNullOrEmpty(text))
-				{
-					_available = false;
-					_lastError = "模型依赖未就绪：缺少 reranker model.onnx。";
-					return;
-				}
-				string text2 = FindFirstFile(System.IO.Path.Combine(path, "tokenizer.json"));
-				if (string.IsNullOrEmpty(text2))
-				{
-					_available = false;
-					_lastError = "未找到 reranker tokenizer.json。";
-					return;
-				}
-				string text3 = FindFirstFile(System.IO.Path.Combine(path, "config.json"));
+				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveReranker();
+				string text = files.ModelPath;
+				string text2 = files.TokenizerPath;
+				string text3 = files.ConfigPath;
 				if (!string.IsNullOrEmpty(text3))
 				{
 					TryReadMaxPosition(text3, out _maxLength);

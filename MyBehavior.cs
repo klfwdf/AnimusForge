@@ -19659,6 +19659,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
+			_missingOnnxGateActive = true;
+			_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks;
+			ShowMissingOnnxGatePopup();
 			try
 			{
 				Logger.Log("OnnxGate", "failed to evaluate ONNX gate: " + ex.Message);
@@ -19694,7 +19697,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(100.0).Ticks;
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData("缺少ONNX文件", "检测到你的mod缺乏ONNX文件，请前往群文件下载RAG专用模型，并将里面的onnx拖入Mount & Blade II Bannerlord\\Modules\\AnimusForge中", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "保存并退出", "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData("缺少ONNX文件", "请将单独获取的RAG模型包解压到当前游戏的 Modules\\AnimusForge\\ONNX，模型齐备后重新启动游戏。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "保存并退出", "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
 	}
 
 	private void ExitCurrentGameBecauseOnnxMissing()
@@ -19716,65 +19719,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string moduleRootPath = PlayerExportsStore.GetModuleRootPath();
-			if (string.IsNullOrWhiteSpace(moduleRootPath))
-			{
-				return false;
-			}
-			string text = Path.Combine(moduleRootPath, "ONNX");
-			string text2 = Path.Combine(text, "onnx");
-			if (!Directory.Exists(text) && !Directory.Exists(text2))
-			{
-				return false;
-			}
-			string text3 = FindFirstExistingFile(Path.Combine(text, "tokenizer.json"), Path.Combine(text2, "tokenizer.json"));
-			if (string.IsNullOrEmpty(text3))
-			{
-				return false;
-			}
-			string text4 = FindFirstExistingFile(Path.Combine(text, "config.json"), Path.Combine(text2, "config.json"));
-			if (string.IsNullOrEmpty(text4))
-			{
-				return false;
-			}
-			string text5 = FindFirstExistingFile(Path.Combine(text2, "model_quantized.onnx"), Path.Combine(text, "model_quantized.onnx"));
-			if (!string.IsNullOrEmpty(text5))
-			{
-				return true;
-			}
-			string text6 = FindFirstExistingFile(Path.Combine(text2, "model.onnx"), Path.Combine(text, "model.onnx"));
-			if (string.IsNullOrEmpty(text6))
-			{
-				return false;
-			}
-			return File.Exists(text6 + "_data");
+			AnimusForgeModelStore.ResolveEmbedding();
+			return OnnxEmbeddingEngine.Instance.IsAvailable;
 		}
 		catch
 		{
 			return false;
 		}
-	}
-
-	private static string FindFirstExistingFile(params string[] files)
-	{
-		try
-		{
-			if (files == null)
-			{
-				return null;
-			}
-			foreach (string text in files)
-			{
-				if (!string.IsNullOrWhiteSpace(text) && File.Exists(text))
-				{
-					return text;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return null;
 	}
 
 	private void ProcessPendingWeeklyReportManualRetryResult()
