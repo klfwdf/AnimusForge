@@ -10,6 +10,7 @@
     <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyTimelineDocumentQueryContracts.cs" Link="WorldDiplomacyTimelineDocumentQueryContracts.cs" />
     <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyDocumentReadCommandContracts.cs" Link="WorldDiplomacyDocumentReadCommandContracts.cs" />
     <Compile Include="..\..\Refactor\Modules\WorldDiplomacyTimelineRevisionFacade.cs" Link="WorldDiplomacyTimelineRevisionFacade.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Application\WorldDiplomacyTimelineRevisionApplication.cs" Link="WorldDiplomacyTimelineRevisionApplication.cs" />
     <Compile Include="..\..\Refactor\Modules\WorldDiplomacyTimelineDocumentQueryFacade.cs" Link="WorldDiplomacyTimelineDocumentQueryFacade.cs" />
     <Compile Include="..\..\Refactor\Modules\WorldDiplomacyDocumentReadCommandFacade.cs" Link="WorldDiplomacyDocumentReadCommandFacade.cs" />
   </ItemGroup>

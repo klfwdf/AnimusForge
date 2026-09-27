@@ -360,20 +360,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return WorldDiplomacyTimelineQueryHost.GetRevisionOrZero();
 	}
 
-	internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision()
+	internal static bool TryGetTimelineRevisionSnapshot(out long revision)
 	{
-		try
-		{
-			// A scalar revision avoids the JSON-cloning archive query unless the open timeline actually needs new data.
-			WorldDiplomacyBehavior behavior = ResolveInstance();
-			return behavior == null
-				? WorldDiplomacyTimelineRevisionResult.Unavailable()
-				: WorldDiplomacyTimelineRevisionResult.Available(behavior._worldMessageTimelineRevision);
-		}
-		catch
-		{
-			return WorldDiplomacyTimelineRevisionResult.Failed();
-		}
+		WorldDiplomacyBehavior behavior = ResolveInstance();
+		revision = behavior?._worldMessageTimelineRevision ?? 0L;
+		return behavior != null;
 	}
 
 	public static string BuildKingdomDiplomaticStandingEncyclopediaTextForExternal(Kingdom kingdom)
