@@ -2,9 +2,11 @@
 
 ## J15 F4/F5 可执行计划重构（2026-09-27；仅文档，产品仍停在 F3）
 
+**正式交付约束纠正（接用户质疑，取代 `fbd71c38` 的相关设计）**：把开发迁移脚本投影进客户端、要求玩家具备 Python 是本次规划错误，不是用户已接受的产品选择。计划已撤销该玩家脚本入口及拟增 prepared CLI 交付要求，改为 AF 产品侧承担模型初始化/迁移/恢复，沿现有 C# 责任边界及必要交互接入；玩家不装 Python/SDK、不取源码、不敲迁移命令，也不捆绑解释器绕过。开发 Python 测试/维护脚本继续保留。F5-L1 增加无开发环境的独立验收条件。仅改计划/台账/HANDOFF，未安装软件、改代码、改包或执行迁移；产品能力仍待实现，不能把文档纠正报成已交付。
+
 **本轮目标/授权**：用户要求先把能自行决定的计划完善到可执行；仅修改本主台账、`docs/plans/j15-content-profile-plan.md` 和 HANDOFF，不实施 F4/F5、不修改产品/测试/构建脚本、不搬用户资料、不写游戏/外仓、不恢复其他任务或自动化。起点 `f4280eed`，工作分支 `codex/af-main-refactor-continuation-20260831`，tracked clean，仅已有 `.dotnet-cli-home/` 未跟踪；本地文档意图检查点 `5252c0ac`。
 
-**已确定的计划变更**：以[第 9.7–9.11 节](plans/j15-content-profile-plan.md#j15-scope-decisions)取代相冲突的旧执行说明。MCM 最终只展示 API / 其他模块设置进入 AF UI 是后续接入目标；当前普通设置仍由 MCM 保存，J15 不假迁移未来 UI。FeatureBridges 改为随版本管理的内部配置，撤销新增个人覆盖层要求；现有未知手改仍需部署前冲突识别与具名处理，不因分类变化静默丢弃。F4 按配置、GUI、TPAC/设计源、旧资料、模型五组列输入/动作/退出门；模型增加无旧安装的本地初始化、恢复/锁升级校验与可独立使用的维护工具交付规格，不隐式下载。F5 固定当前 8 资源口径、同候选 O1–O7 离线矩阵与两个版本的 LIVE/SAVE 矩阵；来源/外写/批量操作/实机输入集中列为 A1–A4 确认点。
+**已确定的计划变更**：以[第 9.7–9.11 节](plans/j15-content-profile-plan.md#j15-scope-decisions)取代相冲突的旧执行说明。MCM 最终只展示 API / 其他模块设置进入 AF UI 是后续接入目标；当前普通设置仍由 MCM 保存，J15 不假迁移未来 UI。FeatureBridges 改为随版本管理的内部配置，撤销新增个人覆盖层要求；现有未知手改仍需部署前冲突识别与具名处理，不因分类变化静默丢弃。F4 按配置、GUI、TPAC/设计源、旧资料、模型五组列输入/动作/退出门；模型增加无旧安装的产品侧初始化、恢复/锁升级校验，不依赖玩家开发环境、不隐式下载。F5 固定当前 8 资源口径、同候选 O1–O7 离线矩阵与两个版本的 LIVE/SAVE 矩阵；来源/外写/批量操作/实机输入集中列为 A1–A4 确认点。
 
 只读依据（生产代码仍为 `f4280eed`，本表是计划定位证据，不是新增运行验证）：
 
@@ -12,7 +14,7 @@
 | --- | --- |
 | `TerminalSettingsRegistry.cs:33–36,115–118` 的 Getter/Setter、`SaveSettings`；`DuelSettings.TerminalSave.cs:10–25` 的 `SaveCurrentSettings`；`AnimusForgeTerminalSettings.cs:7–10,103–106` | 普通终端设置仍接 DuelSettings/MCM；独立 TerminalSettings 只有两个入口选项，不等于全部模块设置已迁移 |
 | `Refactor/Runtime/FeatureBridgeRuntime.cs:351–409` 的路径解析；`一键编译覆盖推送/deploy_module.ps1:544–557` 的受管差异计划 | 当前仍读取安装内部配置；F3 备份/替换不等于具名未知手改预检，F4-C 是待实现而非已修复 |
-| `src/AF.Persistence/AnimusForgeModelStore.cs:15–60` 的就绪检查；`tools/af2_migrate.py:627–629,838–880` 的旧布局/CLI | 需要 readiness 与 Recovery 完成记录；CLI 只有 installed/repo、缺 prepared 初始化与显式数据根；新模型接口/维护工具投影仅为计划，未实现 |
+| `src/AF.Persistence/AnimusForgeModelStore.cs:15–60` 的就绪检查；`tools/af2_migrate.py:627–629,838–880` 的旧布局/CLI | 需要 readiness 与 Recovery 完成记录；开发 CLI 只有 installed/repo，不能当作玩家产品入口。产品侧新装/迁移能力仅为计划，未实现；之前 proposed CLI/脚本投影已由上方纠正明确撤销 |
 | `AnimusForge.csproj:81–109`；`tests/content/J15ContentContractTests/run.py:466–496,656–687` | 当前 7 默认 + 模型锁 = 8 资源；原位 HOLD 断言必须被真实迁移/退役证据替代；内容 runner 已支持新 run-root 且不清旧 fixture |
 | `tests/AF.Persistence/PlayerExports/run.py:32–35`；`tests/AF.Persistence/DataPaths/Program.cs:138–150`；`tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs:42–57,155–159` | 既有测试有固定根清理、系统 Temp 写入、默认真实用户根访问，计划要求先隔离/确认再执行，不能无参盲跑或声称两个路径测试证明完整编辑 |
 

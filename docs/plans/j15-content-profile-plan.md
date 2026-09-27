@@ -6,6 +6,8 @@
 >
 > **阅读顺序**：第 9 节是当前施工规格，第 1–8 节保留早期设计及证据背景；与第 9 节冲突的旧复制、合并、回写、7 项资源计数及旧停点不得重新执行。F4/F5 是 J15 内部批次，不扩展成新 UI 开发、J16/J17 或全仓重构。
 >
+> **正式版硬约束**：玩家不需要安装 Python、SDK、开发仓库或手动执行迁移命令。Python 只用于开发/测试，不随客户端提供为必需运行入口，也不通过捆绑解释器规避这条要求。下方 F4-M 已撤销上一版把维护脚本作为玩家初始化工具的错误方案；正常初始化、升级迁移与恢复由 AF 产品侧承担。
+>
 > **以下为历史切片摘要，不是当前操作单**。2026-09-26：`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。用户要求直接按计划推进，产品 `9db8fa8b` 完成 30 份默认 Prompt 原样归位及安装覆盖接缝，测试修复 `a3fa77af`；映射 107，旧根 HOLD 40。完整投影/覆盖反例/Bridge/Policy/六构建/四 DLL 资源与 API/当前 DLL Phase8 已验，详细证据及额外重复清理被自动审查拒绝的边界见主台账。该时刻后续由第 9 节及主台账当前条目取代。
 > 最新补证 `2b61f1c5`：PlayerExports 独立合成保护 45 断言、四个行为变异拒绝通过；ONNX 五文件匹配固定上游版本。没有真实备份/迁移或分发决定，不解除 G0.3/G0.4，也没有重跑被拒的整体 runner 清理。证据见主台账当前条目“数据保护合成契约与模型来源补证”。
 > J15a/b 历史完成状态：`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`。J15a 七项 EmbeddedResource 在 `ade4f629` 完成；J15b 其余 69 个已确认静态 JSON/GUI/XML/语言文件在产品/测试提交 `04056ce7` 完成；J15c 默认源已按上方续接完成，完整 J15d 尚未关闭。
@@ -363,20 +365,20 @@ F4-C/U/A/D/M 是责任组标识，不是新主线、五套新框架或独立 age
 | F4-U GUI | 旧 `AnimusForge/GUI` 中 33 项：两个 XML 索引；`SpriteParts/ui_account`、`ui_achievement`、`ui_subscribe` 共 25 张图；五张备选/旧图；`SpriteSheets/af_vassalage_notifications/af_vassalage_notifications_1.png` | 逐组追到 movie/brush/sprite/atlas 与自动加载；有活动消费者且来源可用的内容按实际 owner 迁到既有 content；旧/废弃项证据充分后才按批准表归档；来源不明的分发项另报 | 保留 XML ID、sprite 名、尺寸/布局和活动引用；不能因 grep 无命中认定废弃；索引引用的三个缺 sheet 各自修复或经证据退役；新 Stage 必需资源闭包完整，实际视觉检查归 F5 |
 | F4-A TPAC / 设计源 | `AnimusForge/AssetPackages/pack0.tpac` 与 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac`；`AnimusForge/AssetSources` 六项 | TPAC 归 `AnimusForge.XihaiAction` 实际 owner，比较字节和内容依赖，明确唯一权威源；两消费者只消费明确生成投影，不保留第二份手改源。金币设计源归 `AF.Module.Economy` 的 content/AssetSources，不进客户端运行包；同步工具/mbproj/overlay 的真实源定位 | TPAC 不同不得选大/选新直接覆盖；动作、mesh、碰撞引用成立；依赖许可有证据；Core 与 StaticVerifier 的相关历史失败逐条复验，不屏蔽 TPAC 失败。无许可只停相关分发，不阻无关源码工作 |
 | F4-D 剩余旧资料 | `AnimusForge/ModuleData/UnnamedNpcProfiles` 六项、`AnimusForge/VoiceMapping.json`、旧根异常 HTML；执行前重验存在性，不输出正文 | 核对显式导入/export/save 消费者，默认视作私人历史资料而非 shipped defaults；列私有备份与归档清单；备份 hash/恢复通过且具名获准后退出活动输入/跟踪，不删除唯一副本、不改变自动读取行为 | 当前树不承载活动私密资料；原有显式导入仍可用，实际存档键不变；空新根不冒充迁移成功；当前树退出不代表 Git 历史已清除，禁止据此推送 |
-| F4-M 模型完整生命周期 | `content/models.lock.json`、`src/AF.Persistence/AnimusForgeModelStore.cs`、`tools/af2_migrate.py`、`tests/AF.Persistence/DataPaths`；既有活动组与备份只读 | 按下方模型规格补无旧安装初始化、恢复及锁变更复验；调查锁中未核实的 reranker 上游身份；不再迁一次已完成的本机模型，不改检索模型/维度凑通过 | 新装、旧装升级、损坏/冲突、中断/重复、备份恢复及锁版本变化均有正反例；没有来源证据不虚构获取链接或再分发权；真实推理/检索归 F5 |
+| F4-M 模型完整生命周期 | `content/models.lock.json`、`src/AF.Persistence/AnimusForgeModelStore.cs`、`tests/AF.Persistence/DataPaths`；`tools/af2_migrate.py` 仅作开发侧迁移契约参照；既有活动组与备份只读 | 按下方模型规格补产品侧无旧安装初始化、恢复及锁变更复验，不依赖玩家运行脚本；调查锁中未核实的 reranker 上游身份；不再迁一次已完成的本机模型，不改检索模型/维度凑通过 | 无 Python/SDK/源码 checkout 的玩家环境可走完整流程；新装、旧装升级、损坏/冲突、中断/重复、恢复与锁变化均有反例；真实推理/检索归 F5 |
 
 五张备选/旧图具体为 `af_courier/af_courier_scroll_version_a.png`、`af_player_notoriety/af_player_notoriety_background.png.tmp.png`、`af_player_notoriety/af_player_notoriety_culture_panel_patch.png`、`af_terminal/af_scroll_quill.png`、`af_world_diplomacy/af_world_diplomacy_notice.png`（相对旧 SpriteParts）；这只是定位，不是删除批准。六个设计源以当前 tracked 集合冻结；不遍历或清理无关外仓。
 
 #### F4-M：模型首次初始化与恢复的最小实现规格
 
-1. **只扩现有工具，不新增下载器/模型平台**。在 `tools/af2_migrate.py` 增加明确的本地准备目录输入：目录含 `embedding/`、`reranker/` 完整组，不要求伪造旧 `Modules/AnimusForge/ONNX`。输入路径由使用者明确给出；只读盘点默认，不隐式联网、不搬走源文件。
-2. **拟增接口，不是现有可执行命令**：模型分支增加 `--source-kind prepared`、`--prepared-models <absolute-directory>`；增加经生产路径规则校验的 `--data-root <absolute-directory>`，缺省遵循 `ANIMUSFORGE_DATA_ROOT`/系统用户目录同一约定。显式参数优先于环境变量；输入参数互斥冲突、数据目标落在源码/Stage/安装根、越界/reparse 必须拒绝。不得用生产开关跳过测试根限制。当前 CLI 仍只有 installed/repo 来源，实施并验证前不能声称 prepared 已可用。
-3. 准备目录与活动根分离；对每个完整组按锁识别允许的 variant，不用 source-kind 冒充模型身份。逐文件 SHA/集合匹配后复用既有候选、无覆盖激活、私有 manifest/completion/readiness 契约。已有不同字节不被替换；整组完整并复验后才标 ready，缺一项不产生成功状态。
+1. **产品承担初始化，不把开发脚本交给玩家执行**。在既有 AF C# 路径/模型责任边界补初始化与迁移能力，沿已实现的备份、校验、候选及完成记录契约接线；Python 只留开发维护/合成验证用途。不得以“已有 Python 脚本”为理由要求玩家安装解释器、SDK、取源码或敲命令，也不额外捆绑 Python。
+2. **产品输入与交互契约，尚待实现**：新安装按约定位置检测合法来源的完整模型组；已有用户保留旧安装/独立数据根的定位约定；需要选择来源、处理冲突或允许迁移时，通过 AF 既有可用入口提供必要的确认、进度和失败恢复提示，不让玩家手改 receipt/环境变量。实施前读实际入口，仅补必要的初始化交互，不借机开发整套未来模块设置 UI，也不新增安装器/通用模型平台。数据目标继续遵循现有 typed 根规则，拒绝源码/Stage/安装根、越界与 reparse；测试不可绕过生产边界。
+3. 首次盘点只读；需要跨目录迁移时来源与活动根分离，获得确认后再写入。已放入约定活动目录的完整模型也必须可由产品验证并生成真实完成记录，不要求先复制回伪造旧目录。对完整组按锁识别 variant，校验 SHA/集合后按既有候选、无覆盖激活与完成记录契约处理；已有不同字节不被替换。只在整组完整并复验后标 ready；大文件处理在明确维护操作分批执行，不阻塞游戏 UI、不进入 Tick/推理热路径。
 4. 首装、旧装迁移和恢复最终都能由同一运行时校验通过。当前 `AnimusForgeModelStore` 依赖 `.af-models-ready.json` 及关联 `Recovery/.../completed.json`；恢复规格须保留所需记录与模型字节，或从完整锁定的准备目录重验并重建**真实**完成记录。不能手写成功标记、删除 Recovery 依赖断言或把任意目录当就绪。恢复时重新核验 SHA，再记录实际大小/mtime，不要求用户手工伪造旧时间戳。
 5. 锁文件变化会使现有 readiness hash 失效：提供显式重新校验/升级完成记录路径；未改变组的活动字节仍保留，变更组需明确输入和冲突处理。不得让正常程序升级永久卡在旧 receipt，也不在启动/每次推理重算大文件 hash。
 6. 合成组先测：空根首装、已激活重复、未知/少/坏文件、source 期间变化、磁盘满、中断续作、目标优先、坏备份、丢完成记录、恢复后 mtime 变化、锁变化；现有两来源迁移反例仍保留。真实模型只在独立批准的测试根验完整 SHA 和加载；本机当前活动库不是 fixture。
-7. 初始化工具也必须可交付，不能要求新玩家拥有含私密历史的开发仓库。沿现有单模块 ZIP 白名单投影现有迁移脚本及其必要的只读清单/默认基线到具名维护工具目录（拟 `Tools/AF2Migration`），源码仍在 `tools/`；工具支持安装包布局，安装包中禁用仓库来源模式。逐项冻结所需文件/许可/运行时并验证脱离 checkout 可运行，不复制整个 tools/content 树、不增加第二个客户端模块或隐式安装 Python。说明实测支持的 Python 版本，缺少解释器就明确未就绪，不暗中安装全局依赖。若既有迁移工具不能直接复用包内默认路径，仅改窄定位接缝。
-8. 发布说明明确模型不在主 ZIP、合法获取来源/固定版本/完整文件组及初始化命令；模型源码/本地字节锁不等于获取许可。无法确认 reranker 来源时可以完成合成与获准的本地技术验证，发布交付仍未完成；更换模型需另行评估质量/索引兼容并确认，不能静默替换。
+7. 正式客户端只依赖既有游戏运行环境与已声明的 MOD/模型依赖；初始化实现随既有 AF 产品产物交付。**撤销 Python 脚本投影到 `Tools/AF2Migration` 的交付方案及为此新增的 prepared CLI 参数要求**，不创建这套玩家脚本入口；开发命令不是玩家使用说明。现有开发脚本保留，不因纠正计划删除或重写已验证工具。
+8. 发布说明明确模型不在主 ZIP、合法获取来源/固定版本/完整文件组，以及玩家可完成的安装位置/游戏内操作步骤，不能写成“先装 Python 再跑命令”。模型源码/本地字节锁不等于获取许可，不隐式下载。无法确认 reranker 来源时可以完成合成与获准的本地技术验证，发布交付仍未完成；更换模型需另行评估质量/索引兼容并确认，不能静默替换。
 
 #### 每组统一落地规则
 
@@ -410,7 +412,7 @@ F4-C/U/A/D/M 是责任组标识，不是新主线、五套新框架或独立 age
 
 O1/O2 的已知安全注意：DataPaths 测试含系统 Temp 写入；编辑器不带参数默认会解析真实用户根并有临时目录删除；PlayerExports runner 会清理固定 `artifacts/tests/persistence-player-exports/<mode>`。正式执行先隔离这些路径并取得需要的写入/清理批准，禁止对真实库无参跑完整 smoke。Policy 契约关联生产项目，不以直接 `BannerlordApi=1.3` 绕过统一构建的依赖验证。
 
-**可复用命令模板（不是本轮执行记录）**：在实际仓库根直接运行；`<...>` 变量须在 F5-0 固定并检查存在性/目标范围，未填写时不得运行。`$dotnet8`、`$dotnet10`、`$pwsh` 是已核实工具绝对路径，`$runRoot` 是仓内全新目录。
+**开发者验收命令模板（不是玩家操作，不是本轮执行记录）**：以下 Python/.NET SDK/PowerShell 命令仅在开发环境运行，不形成玩家安装依赖。在实际仓库根直接运行；`<...>` 变量须在 F5-0 固定并检查存在性/目标范围，未填写时不得运行。`$dotnet8`、`$dotnet10`、`$pwsh` 是已核实工具绝对路径，`$runRoot` 是仓内全新目录。
 
 ```powershell
 python -X utf8 -B tests/content/J15ContentContractTests/run.py --run-root $runRoot
@@ -441,7 +443,7 @@ git diff --check
 
 | 两版本分别执行 | 操作与最小通过标准 |
 | --- | --- |
-| L1 新安装启动 | 无旧模块/旧模型依赖的隔离环境，按发布说明准备并初始化合法模型；Bootstrap 只加载对应实现；缺模型时明确可恢复诊断，准备完成后实际推理/检索可用 |
+| L1 新安装启动 | 不安装 Python/SDK、不带开发源码、不手动运行迁移命令的隔离玩家环境；无旧模块/旧模型依赖，按发布说明由 AF 产品入口完成合法模型初始化；Bootstrap 只加载对应实现；缺模型时明确可恢复诊断，准备完成后实际推理/检索可用。不能在后台偷偷调用开发机 Python 后声称此格通过 |
 | L2 已有 UI 与配置 | 终端、信使输入/回信、周报、已受影响的政策/外交等 UI 显示/点击/输入/焦点正常；迁移图片/图集视觉不退化。修改现有 MCM 与两个终端入口设置后重启值仍在；不要求尚未接入的新模块设置 UI 出现 |
 | L3 实际内容使用 | 导入/导出与编辑器读写一致，个性/知识/语音/记忆/Policy/债务等代表性数据按原 owner 被使用；资源变更涉及的动作、mesh、碰撞实际可用；三渠道受影响的 Prompt/标签/AFEF 语义不串线 |
 | S1 旧档往返 | 从每条版本线的代表性旧档副本加载，核对预先记录的数据/关键功能，另存为新测试档并退出重载，再核对同一组状态；只看到加载界面不算通过，不覆盖原档 |
