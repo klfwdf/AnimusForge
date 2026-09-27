@@ -1,3 +1,24 @@
+<a id="j15-f45-current-20260927"></a>
+
+## J15 F4/F5 当前续作证据（2026-09-27；未完成）
+
+**状态：`F4-C_OFFLINE_VERIFIED / F4-M_COLD_RACE_FIXED_OFFLINE / F5_PARTIAL / J15_NOT_COMPLETE`。** 分支 `codex/af-main-refactor-continuation-20260831`，意图 `967395e2`；产品/契约 `63138958`、`688ad6b8`，素材说明 `c0f2d289`，存档坐标 fixture `acbfbb3c`，PlayerExports 契约接线 `19311574`。本条取代下方 F4-C/冷启动仍待做、仅 28 项 ONNX 断言的当前状态；旧结果仍保留为历史。仅用户具名批准的仓内四个 `single_module_artifacts`/`obj/single_module` 生成目录由原构建脚本重建；无 Stage/Deploy、游戏目录/玩家数据/外仓写入或推送。
+
+| 代码证据（一基行号） | 本轮责任与限制 |
+| --- | --- |
+| `OnnxEmbeddingEngine.cs:306,457–529` 的 `_initialized`、`EnsureInitialized`；`MyBehavior.cs:19639–19728` 的 `HasCompleteRequiredOnnxFiles` | 旧实现先发布初始化标志再加载实际模型，后台预热与战役门禁交错时可误报缺模。受控交错先对旧 DLL 得到预期红；修复只在加载/异常处理结束后以 volatile 标志发布结果，同锁竞争等待，不放松模块 `ONNX` 必需门禁、不增加 Tick 扫描。冷主线程首次加载本身有成本，未据单次离线计时承诺帧预算。 |
+| `tools/PolicyEffectModule.ContractTests/Program.cs:600–707` 的受控冷交错及主线程冷门禁 | 直接对指定当前生产 DLL 注入 `ResolveEmbedding` 阻断；Release 1.3/1.4 各 `--onnx-contract-only` **33 断言 PASS**，各 `--onnx-cold-main-only` **5 断言 PASS**。交错耗时约 357/360 ms 含人为 250 ms 屏障；主线程冷门禁约 149/150 ms。仅离线推理/线程契约，M9 游戏帧及两实际版本仍未跑。 |
+| `一键编译覆盖推送/deploy_module.ps1:505–537` 的 `Assert-FeatureBridgesDeploymentBaseline` | F4-C 在任何目标替换/Recovery 写入之前，将安装目标与当前 Stage 或三次 Git 已知旧默认（含 LF/CRLF）比对；缺失、同版、已知旧版可安装/升级，未知手改或坏 JSON 明确冲突并停止。仅显式部署冷路径，按固定六 hash 比较，不改运行时缺失/损坏语义。`ManagedDeployContractTests.ps1` 的新装、旧默认升级、手改/坏 JSON 前置拒绝及原回滚/中断/7 类未知哨兵合成 PASS；未真实部署。 |
+| `tests/AF.Persistence/PlayerExports/{PlayerExportsTests.csproj,run.py,Program.cs}` | O2 旧 runner 漏编 `PlayerExportsPackageExport` 导致首次 CS0246；补真实生产依赖并提供全新仓内输出根、仓内临时目录及不创建的外部“仅路径”数据根。正常 **25 断言 PASS**；姓名匹配和最新包两项变异均在对应业务断言失败，不是编译失败。独立编辑器完整编辑/恢复 smoke 仍待隔离合成根。 |
+
+**已执行的 F5 离线片段**：同一 ONNX/F4-C 产品候选由原 `build_single_module.ps1` 无 Stage/Deploy 构建 Debug、Release × 1.3、1.4 + Bootstrap，六构建各 0 warning/0 error；1.3 引用 v1.3.15.110062、1.4 引用 v1.4.7.117484。四 DLL 资源审计各 7 默认、ModelsLock 未嵌入。J15 内容 runner `107 mappings / 40 holds / GCCZ 4`、ManagedDeploy F4-C、个人数据合成迁移及模型外迁拒绝、DataPaths **66 checks** 均 PASS。DataPaths 首次人为改 TMP 到源码树被产品安全门禁拒绝，改回默认 Temp 后通过，不把失败冒充产品回归。`PersistenceIdentityAudit` 同步键 142/行为 36/模块身份 1/Bootstrap 1 PASS；`PersistenceProfileConfigContractTests` 起初仅 `_patienceStates_v1` 两行坐标因已删除代码漂移，修 fixture 两行后 **168 typed bindings** PASS，未放宽 key/type 断言。编辑器仅 `--path-contract` 与 `--path-contract-invalid` PASS；PlayerExports 生产源码契约及两项变异如上。代码地图 **795 锚点** recorded/working-tree PASS，`git diff --check` PASS。以上不能代替尚未跑的 Native ABI/API 全矩阵、双 Stage、StaticVerifier、ZIP 当前候选、完整编辑器或 LIVE/SAVE。
+
+**F4 只读盘点与未决项**：F4-U 的 33 项旧 GUI 中两个 XML 索引指向 25 张 `ui_account`/`ui_achievement`/`ui_subscribe` parts，但三个 atlas sheet 在仓库与现有 D: 安装均缺；另五旧图/一 vassalage sheet 的实际消费者不同，不凭 grep 无命中删改。F4-A 两份仓内 TPAC 同为 1,671,304 字节且 SHA 相同，却与扩展 manifest 的 11,205,263 字节身份不符；当前 Stage/主 ZIP 没有 TPAC。金币 runtime XML 实用原版 mesh/collision，旧 `AssetSources` 说明已纠正；第三方原始来源、完整资源与分发权未证实。F4-D 旧 profile 六项、`VoiceMapping.json` 和异常 HTML 共八项/39,960 字节只读盘点，未输出正文、未移走；待具名私有归档批准。来源/许可、批量资产处理、额外生成目录重建和外部合成数据根均未凭本轮四目录授权执行。历史 Git 仍含私人资料，禁止据此推送。
+
+**硬停点**：F4-U/A/D、F5 O2 完整编辑与 O4–O7 全矩阵、M9 双实际版本和 F5-L/S 新装/旧档均未完成；Stage/ZIP 旧候选不可标为本轮最终候选，更不可发布。当前 D: 安装的 ONNX 只读用于离线 DLL 推理，不是实机验收或模型再分发许可。部署/游戏启动、原始存档、外部资料、全局配置和网络/provider 仍未触及；待具名授权与权利证据后继续，不能降低 J15 完成定义。
+
+## 以下为本次续作前的历史状态（较新证据以上段为准）
+
 <a id="j15-f45-continuation-20260927"></a>
 
 ## J15 F4/F5 继续实施意图（2026-09-27）

@@ -1,3 +1,11 @@
+# 当前交接：J15 F4-C 与 ONNX 冷竞态已离线验证，F4/F5 仍未闭（2026-09-27）
+
+- **状态**：`F4-C_OFFLINE_VERIFIED / F4-M_COLD_RACE_FIXED_OFFLINE / F5_PARTIAL / J15_NOT_COMPLETE`。产品/测试 `63138958`、`688ad6b8`，素材说明 `c0f2d289`，存档 fixture `acbfbb3c`，PlayerExports 契约接线 `19311574`。`OnnxEmbeddingEngine.cs:306,457–529` 仅在初始化结束后发布 volatile 状态；`MyBehavior.cs:19639–19728` 的模块 ONNX 缺模门禁不放松。`deploy_module.ps1:505–537` 先拒绝未知手改/坏 `FeatureBridges.json`，再进入受管部署。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)及[范围图](docs/architecture/af-framework-code-scope.md)，[795 锚点地图](docs/architecture/af-framework-code-map.json)仅导航。
+- **已验**：原脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建各 0 warning/error；四 DLL 各 7 默认资源；当前 Release 两实现冷交错 ONNX 契约各 33、主线程冷门禁各 5 断言；J15 内容 107 映射/40 HOLD、F4-C 合成部署、DataPaths 66、个人迁移、PlayerExports 25 与两业务变异、PersistenceIdentity 142/36、PersistenceProfile 168 及编辑器两个路径模式通过。DataPaths 首次把 Temp 错指源码导致正确拒绝，PlayerExports 首次漏编生产依赖 CS0246，均诊断修正后才通过；非真实游戏证据。
+- **HOLD/下一步**：F4-U 33 GUI/缺三 atlas、F4-A TPAC manifest 身份与第三方来源/许可、F4-D 八项私人历史资料未闭。原先获准的四个 `single_module_artifacts`/`obj/single_module` 生成目录已使用；额外 Stage/ABI/API 固定生成目录和外部合成根、私人归档及批量素材仍按具名授权停。F5 完整编辑器、Native/API、当前双 Stage/ZIP、StaticVerifier、M9 两个实际游戏版本、L/S 新装/旧档均未完成；旧 Stage/ZIP 不是本轮最终包。未写游戏/玩家库/外仓、未推送、未发布、未启动游戏。历史 Git 含私密资料，切勿推送。
+
+## 以下为本轮之前的交接历史（相冲突状态以上段为准）
+
 # 当前交接：J15 F4-M 模块 ONNX 契约代码与关联离线验证已完成（2026-09-27）
 
 - **当前状态**：`F4-M_CODE_AND_OFFLINE_VERIFIED / F5_PARTIAL / J15_NOT_COMPLETE`。产品/测试 `df49d81a`、`7693bedc`、`43e8bcf2` 将门禁、embedding 与 reranker 统一到当前 `Modules/AnimusForge/ONNX`，退役模型外迁 CLI 的执行入口与 ModelsLock 运行资源；用户 Models/Recovery/仓内忽略副本保留但不再是运行来源。代码导航见[范围图](docs/architecture/af-framework-code-scope.md)与 792 锚点[地图](docs/architecture/af-framework-code-map.json)，一基坐标、证据和替代关系见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-onnx-f4m-implementation-20260927)，规格仍为[J15 第 9 节](docs/plans/j15-content-profile-plan.md#j15-onnx-install-contract)。
