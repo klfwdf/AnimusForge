@@ -1859,13 +1859,14 @@ namespace AnimusForge.XihaiAction
         {
             ParameterInfo[] parameters = method?.GetParameters();
             return method != null &&
-                   method.ReturnType == typeof(void) &&
-                   parameters.Length == 5 &&
+                   method.ReturnType == typeof(bool) &&
+                   parameters.Length == 6 &&
                    parameters[0].ParameterType == typeof(string) &&
                    IsListOf(parameters[1].ParameterType, npcType) &&
                    parameters[2].ParameterType == typeof(int) &&
                    parameters[3].ParameterType == typeof(string) &&
-                   IsDictionaryOfIntAgent(parameters[4].ParameterType);
+                   IsDictionaryOfIntAgent(parameters[4].ParameterType) &&
+                   parameters[5].ParameterType == typeof(bool);
         }
         private static bool IsExpectedQueuedReplyMethod(MethodInfo method, Type npcType)
         {
