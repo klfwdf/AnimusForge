@@ -487,7 +487,7 @@ namespace AnimusForge
 
 		internal static bool IsIndependentClanPeacePostprocessTag(string tag)
 		{
-			return string.Equals((tag ?? "").Trim(), IndependentClanPeaceTag, StringComparison.OrdinalIgnoreCase);
+			return DiplomacyConversationEligibilityApplication.IsIndependentClanPeaceTag(tag);
 		}
 
 		private static bool IsPlayerIndependentSettlementClan()
@@ -520,13 +520,8 @@ namespace AnimusForge
 		{
 			try
 			{
-				Hero npc = targetHero ?? targetCharacter?.HeroObject;
-				if (npc == null || npc == Hero.MainHero || npc.IsDead)
-				{
-					return false;
-				}
-				Kingdom npcKingdom = npc.Clan?.Kingdom;
-				return npcKingdom != null && !npcKingdom.IsEliminated && IsNpcKing(npc, npcKingdom);
+				return DiplomacyConversationEligibilityApplication.CanInject(
+					CaptureEligibilitySnapshot(targetHero ?? targetCharacter?.HeroObject));
 			}
 			catch
 			{
@@ -536,25 +531,20 @@ namespace AnimusForge
 
 		internal static bool CanUseDiplomacyActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 		{
-			return CanUseFullDiplomacyActionPostprocessForExternal(targetHero, targetCharacter)
-				|| CanUseNpcSovereignDeclareWarPostprocessForExternal(targetHero, targetCharacter);
+			try
+			{
+				return DiplomacyConversationEligibilityApplication.CanUseAction(
+					CaptureEligibilitySnapshot(targetHero ?? targetCharacter?.HeroObject));
+			}
+			catch { return false; }
 		}
 
 		internal static bool CanUseFullDiplomacyActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 		{
 			try
 			{
-				Hero npc = targetHero ?? targetCharacter?.HeroObject;
-				Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-				Kingdom npcKingdom = npc?.Clan?.Kingdom;
-				return npc != null
-					&& playerKingdom != null
-					&& npcKingdom != null
-					&& !playerKingdom.IsEliminated
-					&& !npcKingdom.IsEliminated
-					&& playerKingdom != npcKingdom
-					&& IsPlayerKing()
-					&& IsNpcKing(npc, npcKingdom);
+				return DiplomacyConversationEligibilityApplication.CanUseFull(
+					CaptureEligibilitySnapshot(targetHero ?? targetCharacter?.HeroObject));
 			}
 			catch
 			{
@@ -566,19 +556,37 @@ namespace AnimusForge
 		{
 			try
 			{
-				Hero npc = targetHero ?? targetCharacter?.HeroObject;
-				Kingdom npcKingdom = npc?.Clan?.Kingdom;
-				return npc != null
-					&& npc != Hero.MainHero
-					&& !npc.IsDead
-					&& npcKingdom != null
-					&& !npcKingdom.IsEliminated
-					&& IsNpcKing(npc, npcKingdom);
+				return DiplomacyConversationEligibilityApplication.CanUseNpcDeclareWar(
+					CaptureEligibilitySnapshot(targetHero ?? targetCharacter?.HeroObject));
 			}
 			catch
 			{
 				return false;
 			}
+		}
+
+		internal static DiplomacyConversationEligibilitySnapshot CaptureEligibilitySnapshot(Hero npc)
+		{
+			Kingdom npcKingdom = npc?.Clan?.Kingdom;
+			bool npcIsDead;
+			try { npcIsDead = npc?.IsDead == true; }
+			catch { npcIsDead = true; }
+			Kingdom playerKingdom = null;
+			bool playerEliminated = false;
+			bool playerIsRuler = false;
+			// Player context must not veto NPC-only rule and war gates.
+			try
+			{
+				playerKingdom = Clan.PlayerClan?.Kingdom;
+				playerEliminated = playerKingdom?.IsEliminated == true;
+				playerIsRuler = IsPlayerKing();
+			}
+			catch { playerKingdom = null; }
+			return new DiplomacyConversationEligibilitySnapshot(
+				npc != null, npc != null && npc == Hero.MainHero, npcIsDead,
+				npcKingdom != null, npcKingdom?.IsEliminated == true, IsNpcKing(npc, npcKingdom),
+				playerKingdom != null, playerEliminated,
+				playerKingdom != npcKingdom, playerIsRuler);
 		}
 
 		private static string GetKingdomDisplayName(Kingdom k)

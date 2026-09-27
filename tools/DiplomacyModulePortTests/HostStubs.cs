@@ -72,12 +72,14 @@ namespace AnimusForge
     }
     internal static class DiplomacyBehavior
     {
-        public static bool CanInjectDiplomacyRuleForExternal(Hero h) { Recording.Call("inject",h); return Recording.Result; }
-        public static bool CanUseDiplomacyActionPostprocessForExternal(Hero h) { Recording.Call("action",h); return Recording.Result; }
-        public static bool CanUseFullDiplomacyActionPostprocessForExternal(Hero h) { Recording.Call("full",h); return Recording.Result; }
-        public static bool CanUseNpcSovereignDeclareWarPostprocessForExternal(Hero h) { Recording.Call("war",h); return Recording.Result; }
+        public static DiplomacyConversationEligibilitySnapshot CaptureEligibilitySnapshot(Hero h)
+        {
+            Recording.Call("eligibility",h);
+            bool enabled=Recording.Result;
+            return new DiplomacyConversationEligibilitySnapshot(enabled,false,false,enabled,false,enabled,
+                enabled,false,enabled,enabled);
+        }
         public static bool CanUseIndependentClanPeaceForExternal(Hero h) { Recording.Call("peace",h); return Recording.Result; }
-        public static bool IsIndependentClanPeacePostprocessTag(string tag) { Recording.Call("tag",tag); return Recording.Result; }
         public static string BuildDiplomacyPostprocessContext(Hero h) { Recording.Call("context",h); return h?.StringId ?? ""; }
         public static void ProcessDiplomacyTagsDispatch(Hero h, ref string text) { Recording.Call("execute",h,text); if (h != null) text = "confirmed:"+text; }
         public static bool TryBuildTributePowerContext(Kingdom payer, Kingdom receiver, out AfTributePowerContext value)
