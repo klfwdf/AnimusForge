@@ -403,21 +403,49 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	public static bool TryBuildProactiveDiscussionForExternal(Hero hero, out string stableKey, out string fact, out float urgency)
 	{
-		stableKey = "";
-		fact = "";
-		urgency = 0f;
-		try
-		{
-			return ResolveInstance()?.TryBuildProactiveDiscussion(hero, out stableKey, out fact, out urgency) == true;
-		}
-		catch
-		{
-			stableKey = "";
-			fact = "";
-			urgency = 0f;
-			return false;
-		}
+		return DiplomacyModuleServices.World.TryBuildProactiveDiscussion(hero?.StringId,
+			out stableKey, out fact, out urgency);
 	}
+
+	internal static bool TryCaptureProactiveSpeaker(Hero hero,
+		out WorldDiplomacyProactiveSpeakerCandidate candidate, out string playerKingdomId)
+	{
+		candidate = default;
+		playerKingdomId = "";
+		if (ResolveInstance() == null) return false;
+		Clan playerClan = Clan.PlayerClan;
+		Kingdom playerKingdom = playerClan?.Kingdom;
+		Clan clan = hero?.Clan;
+		playerKingdomId = playerKingdom?.StringId ?? "";
+		candidate = new WorldDiplomacyProactiveSpeakerCandidate(
+			heroExists: hero != null,
+			playerKingdomExists: playerKingdom != null,
+			playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
+			clanExists: clan != null,
+			clanBelongsToPlayerKingdom: clan?.Kingdom == playerKingdom,
+			isPlayerClan: clan == playerClan,
+			isUnderMercenaryService: clan?.IsUnderMercenaryService == true,
+			isClanTypeMercenary: clan?.IsClanTypeMercenary == true,
+			isLord: hero?.IsLord == true);
+		return true;
+	}
+
+	internal static bool TryCaptureProactiveDocuments(Hero hero, string playerKingdomId,
+		out IReadOnlyList<WorldDiplomacyDocument> documents, out HashSet<string> knownIds, out int currentDay)
+	{
+		documents = null;
+		knownIds = null;
+		currentDay = 0;
+		WorldDiplomacyBehavior owner = ResolveInstance();
+		if (owner == null) return false;
+		knownIds = owner.GetKnownDocumentIdsForHero(hero, playerKingdomId);
+		currentDay = CurrentDay();
+		documents = owner._storage?.Documents;
+		return true;
+	}
+
+	internal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);
+	internal static string FormatDateForProactive(int day) => FormatCampaignDate(day);
 
 	public static bool MarkDocumentReadForExternal(string documentId)
 	{
@@ -4564,178 +4592,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			Log("shared memory injection failed: " + ex.Message);
 		}
-	}
-	private bool TryBuildProactiveDiscussion(Hero hero, out string stableKey, out string fact, out float urgency)
-	{
-		stableKey = "";
-		fact = "";
-		urgency = 0f;
-		Clan playerClan = Clan.PlayerClan;
-		Kingdom playerKingdom = playerClan?.Kingdom;
-		Clan clan = hero?.Clan;
-		WorldDiplomacyProactiveSpeakerCandidate speaker = new WorldDiplomacyProactiveSpeakerCandidate(
-			heroExists: hero != null,
-			playerKingdomExists: playerKingdom != null,
-			playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
-			clanExists: clan != null,
-			clanBelongsToPlayerKingdom: clan?.Kingdom == playerKingdom,
-			isPlayerClan: clan == playerClan,
-			isUnderMercenaryService: clan?.IsUnderMercenaryService == true,
-			isClanTypeMercenary: clan?.IsClanTypeMercenary == true,
-			isLord: hero?.IsLord == true);
-		if (!WorldDiplomacyProactiveSpeakerEligibilityRules.IsEligible(speaker))
-		{
-			return false;
-		}
-
-		HashSet<string> knownIds = GetKnownDocumentIdsForHero(hero, playerKingdom.StringId);
-		int earliestDay = Math.Max(0, CurrentDay() - 7);
-		WorldDiplomacyDocument selected = null;
-		WorldDiplomacyProactiveDocumentCandidate selectedCandidate = default;
-		foreach (WorldDiplomacyDocument document in _storage.Documents ?? Enumerable.Empty<WorldDiplomacyDocument>())
-		{
-			if (document == null)
-			{
-				continue;
-			}
-
-			WorldDiplomacyProactiveDocumentCandidate baseCandidate = new WorldDiplomacyProactiveDocumentCandidate(
-				isReadyForPublication: document.IsReadyForPublication,
-				isCompressed: document.IsCompressed,
-				day: document.Day,
-				createdUtcTicks: document.CreatedUtcTicks,
-				isKnown: knownIds.Contains(document.DocumentId ?? ""),
-				isAuthoredByPlayerKingdom: false,
-				isTargetingPlayerKingdom: false,
-				isAddressedToPlayerKingdom: false,
-				mentionsPlayerKingdom: false,
-				isMajor: false,
-				hasMechanicalResult: false);
-			if (!WorldDiplomacyProactiveDocumentSelectionRules.MeetsBaseEligibility(baseCandidate, earliestDay))
-			{
-				continue;
-			}
-
-			bool isAuthoredByPlayerKingdom = string.Equals(
-				document.AuthorKingdomId, playerKingdom.StringId, StringComparison.OrdinalIgnoreCase);
-			bool isTargetingPlayerKingdom = string.Equals(
-				document.TargetKingdomId, playerKingdom.StringId, StringComparison.OrdinalIgnoreCase);
-			bool isAddressedToPlayerKingdom = document.AddressedKingdomIds?.Contains(
-				playerKingdom.StringId, StringComparer.OrdinalIgnoreCase) == true;
-			bool mentionsPlayerKingdom = document.MentionedKingdomIds?.Contains(
-				playerKingdom.StringId, StringComparer.OrdinalIgnoreCase) == true;
-			bool isMajor = !isAuthoredByPlayerKingdom
-				&& !isTargetingPlayerKingdom
-				&& !isAddressedToPlayerKingdom
-				&& !mentionsPlayerKingdom
-				&& WorldDiplomacyDocumentFactRules.IsMajorDiplomaticDocument(document);
-			WorldDiplomacyProactiveDocumentCandidate candidate = new WorldDiplomacyProactiveDocumentCandidate(
-				isReadyForPublication: baseCandidate.IsReadyForPublication,
-				isCompressed: baseCandidate.IsCompressed,
-				day: baseCandidate.Day,
-				createdUtcTicks: baseCandidate.CreatedUtcTicks,
-				isKnown: baseCandidate.IsKnown,
-				isAuthoredByPlayerKingdom: isAuthoredByPlayerKingdom,
-				isTargetingPlayerKingdom: isTargetingPlayerKingdom,
-				isAddressedToPlayerKingdom: isAddressedToPlayerKingdom,
-				mentionsPlayerKingdom: mentionsPlayerKingdom,
-				isMajor: isMajor,
-				hasMechanicalResult: !string.IsNullOrWhiteSpace(document.MechanicalResult));
-			if (!WorldDiplomacyProactiveDocumentSelectionRules.IsEligible(candidate, earliestDay))
-			{
-				continue;
-			}
-			if (selected != null
-				&& !WorldDiplomacyProactiveDocumentSelectionRules.IsStrictlyBetter(candidate, selectedCandidate))
-			{
-				continue;
-			}
-
-			selected = document;
-			selectedCandidate = candidate;
-		}
-		if (selected == null)
-		{
-			return false;
-		}
-
-		stableKey = WorldDiplomacyProactiveDocumentSelectionRules.BuildDiscussionStableKey(
-			selected.RoundId,
-			selected.DocumentId);
-		bool selectedIsMajorForUrgency = !selectedCandidate.HasMechanicalResult
-			&& !selectedCandidate.IsTargetingPlayerKingdom
-			&& WorldDiplomacyDocumentFactRules.IsMajorDiplomaticDocument(selected);
-		urgency = WorldDiplomacyProactiveDocumentSelectionRules.CalculateUrgency(
-			selectedCandidate.HasMechanicalResult,
-			selectedCandidate.IsTargetingPlayerKingdom,
-			selectedIsMajorForUrgency);
-		WorldDiplomacyDocument relatedFirst = null;
-		WorldDiplomacyDocument relatedSecond = null;
-		WorldDiplomacyDocument relatedThird = null;
-		WorldDiplomacyProactiveRelatedDocumentCandidate relatedFirstCandidate = default;
-		WorldDiplomacyProactiveRelatedDocumentCandidate relatedSecondCandidate = default;
-		WorldDiplomacyProactiveRelatedDocumentCandidate relatedThirdCandidate = default;
-		int relatedCount = 0;
-		foreach (WorldDiplomacyDocument document in _storage.Documents ?? Enumerable.Empty<WorldDiplomacyDocument>())
-		{
-			if (document == null)
-			{
-				continue;
-			}
-			WorldDiplomacyProactiveRelatedDocumentCandidate candidate = new WorldDiplomacyProactiveRelatedDocumentCandidate(
-				isCompressed: document.IsCompressed,
-				isKnown: knownIds.Contains(document.DocumentId ?? ""),
-				isSameRound: WorldDiplomacyRoundLifecycleRules.IsRecordInRound(document.RoundId, selected.RoundId),
-				day: document.Day,
-				createdUtcTicks: document.CreatedUtcTicks);
-			if (!WorldDiplomacyProactiveDocumentSelectionRules.IsEligibleRelatedDocument(candidate))
-			{
-				continue;
-			}
-			int insertionIndex = WorldDiplomacyProactiveDocumentSelectionRules.GetRelatedDocumentInsertionIndex(
-				candidate,
-				relatedCount,
-				relatedFirstCandidate,
-				relatedSecondCandidate,
-				relatedThirdCandidate);
-			if (insertionIndex == 0)
-			{
-				relatedThird = relatedSecond;
-				relatedThirdCandidate = relatedSecondCandidate;
-				relatedSecond = relatedFirst;
-				relatedSecondCandidate = relatedFirstCandidate;
-				relatedFirst = document;
-				relatedFirstCandidate = candidate;
-			}
-			else if (insertionIndex == 1)
-			{
-				relatedThird = relatedSecond;
-				relatedThirdCandidate = relatedSecondCandidate;
-				relatedSecond = document;
-				relatedSecondCandidate = candidate;
-			}
-			else if (insertionIndex == 2)
-			{
-				relatedThird = document;
-				relatedThirdCandidate = candidate;
-			}
-			else
-			{
-				continue;
-			}
-			if (relatedCount < 3)
-			{
-				relatedCount++;
-			}
-		}
-		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【本国领主主动讨论的外交局势】");
-		sb.AppendLine("你与玩家同属" + KingdomName(playerKingdom) + "。你是来交换判断、讨论本国应如何看待和应对局势，不是代表王国擅自签订协议。");
-		WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedFirst, FormatCampaignDate);
-		WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedSecond, FormatCampaignDate);
-		WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(sb, relatedThird, FormatCampaignDate);
-		fact = sb.ToString().TrimEnd();
-		return true;
 	}
 	private bool ShouldInjectDiplomacyMemoryForInput(Hero hero, string kingdomIdOverride, string input)
 	{

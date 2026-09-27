@@ -8,6 +8,9 @@
   <ItemGroup>
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs" Link="WorldDiplomacyPresentationQueries.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs" Link="WorldDiplomacyTimelineApplication.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyProactiveDiscussionApplication.cs" Link="WorldDiplomacyProactiveDiscussionApplication.cs" />
+    <Compile Include="../../WorldDiplomacyProactiveSpeakerEligibilityRules.cs" Link="WorldDiplomacyProactiveSpeakerEligibilityRules.cs" />
+    <Compile Include="../../WorldDiplomacyProactiveDocumentSelectionRules.cs" Link="WorldDiplomacyProactiveDocumentSelectionRules.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs" Link="WorldDiplomacyPlayerApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs" Link="WorldDiplomacyNotificationApplication.cs" />
     <Compile Include="../../Refactor/Contracts/WorldDiplomacyPresentationContracts.cs" Link="WorldDiplomacyPresentationContracts.cs" />

@@ -27,6 +27,7 @@ internal static class Program
     private static int Main()
     {
         Dpl090PresentationReplay.Run();
+        ProactiveDiscussionApplicationReplay.Run();
         Dpl080PromptReplay.Run();
         VerifyReconcileAfterLoadDecisionTable();
         VerifyDeadlineRules();
@@ -14125,6 +14126,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string notificationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNotificationApplication.cs"));
         string presentationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Presentation/WorldDiplomacyPresentation.cs"));
         string behaviorSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string proactiveSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyProactiveDiscussionApplication.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         // Inspect the active host-to-application path after DPL-080 ownership transfer.
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
@@ -15296,7 +15298,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "document memory-line rendering must live in the text rules behind a day-formatter port");
         Test.True(behaviorSource.Contains("WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.BuildDetailedDocumentMemoryLine(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(", StringComparison.Ordinal)
+            && proactiveSource.Contains("WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("private bool TryBuildProactiveDiscussion(Hero hero", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyTextRules.BuildLocalRoundSummaryText(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildCompactDocumentMemoryLine(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string BuildLocalRoundSummaryText(", StringComparison.Ordinal),

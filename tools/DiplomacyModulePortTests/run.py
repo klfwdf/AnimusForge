@@ -42,16 +42,26 @@ def boundaries():
  discussion='private bool CanDiscussWorldDiplomacy('
  discussion_wrapper='public static bool CanDiscussWorldDiplomacyForExternal('
  discussion_snapshot='internal static bool TryCaptureDiscussionCandidate('
+ proactive='private bool TryBuildProactiveDiscussion('
+ proactive_wrapper='public static bool TryBuildProactiveDiscussionForExternal('
+ proactive_speaker='internal static bool TryCaptureProactiveSpeaker('
+ proactive_documents='internal static bool TryCaptureProactiveDocuments('
  prior_world=prior_world.replace('\t'+declaration(prior_world,query)+'\n\n','')
  prior_world=prior_world.replace('    '+declaration(prior_world,timeline_query)+'\n\n','')
  prior_world=prior_world.replace('\t'+declaration(prior_world,mark_read)+'\n','')
  prior_world=prior_world.replace('\t'+declaration(prior_world,discussion)+'\n','')
  prior_world=prior_world.replace('\t'+declaration(prior_world,discussion_wrapper)+'\n\n','')
+ prior_world=prior_world.replace('\t'+declaration(prior_world,proactive)+'\n','')
+ prior_world=prior_world.replace('\t'+declaration(prior_world,proactive_wrapper)+'\n\n','')
  current_world=current_world.replace('\t'+declaration(current_world,snapshot)+'\n\n','')
  current_world=current_world.replace('    '+declaration(current_world,timeline_state)+'\n\n','')
  current_world=current_world.replace('\tpublic static bool CanDiscussWorldDiplomacyForExternal(Hero hero) =>\n\t\tDiplomacyModuleServices.World.CanDiscuss(hero?.StringId);\n\n','')
  current_world=current_world.replace('\t'+declaration(current_world,discussion_snapshot)+'\n\n','')
  current_world=current_world.replace('\tinternal static bool HasKnownDocumentForDiscussion(Hero hero, string kingdomId) =>\n\t\tResolveInstance()?.GetKnownDocumentIdsForHero(hero, kingdomId).Count > 0;\n\n','')
+ current_world=current_world.replace('\t'+declaration(current_world,proactive_wrapper)+'\n\n','')
+ current_world=current_world.replace('\t'+declaration(current_world,proactive_speaker)+'\n\n','')
+ current_world=current_world.replace('\t'+declaration(current_world,proactive_documents)+'\n\n','')
+ current_world=current_world.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
  assert current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration),'Policy cadence/state owner changed'
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)

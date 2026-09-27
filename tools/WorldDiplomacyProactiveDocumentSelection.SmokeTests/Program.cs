@@ -182,10 +182,10 @@ internal static class Program
             FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"),
             Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
-        string method = ExtractSection(
-            behavior,
-            "private bool TryBuildProactiveDiscussion(Hero hero",
-            "private bool ShouldInjectDiplomacyMemoryForInput(");
+        string method = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyProactiveDiscussionApplication.cs"), Encoding.UTF8);
+        Test.True(!behavior.Contains("private bool TryBuildProactiveDiscussion(Hero hero", StringComparison.Ordinal),
+            "legacy Behavior must not retain the complete proactive use case");
         int selectionStart = method.IndexOf("int earliestDay", StringComparison.Ordinal);
         int selectionEnd = method.IndexOf("if (selected == null)", selectionStart, StringComparison.Ordinal);
         Test.True(selectionStart >= 0 && selectionEnd > selectionStart,
@@ -246,9 +246,9 @@ internal static class Program
                   && !relatedSelection.Contains("Take(3)", StringComparison.Ordinal)
                   && !relatedSelection.Contains("ToList", StringComparison.Ordinal),
             "replaced related-document sorting and list materialization must be removed");
-        Test.True(method.Contains("AppendProactiveDiscussionDocument(sb, relatedFirst, FormatCampaignDate)", StringComparison.Ordinal)
-                  && method.Contains("AppendProactiveDiscussionDocument(sb, relatedSecond, FormatCampaignDate)", StringComparison.Ordinal)
-                  && method.Contains("AppendProactiveDiscussionDocument(sb, relatedThird, FormatCampaignDate)", StringComparison.Ordinal),
+        Test.True(method.Contains("AppendProactiveDiscussionDocument(sb, relatedFirst, source.FormatDate)", StringComparison.Ordinal)
+                  && method.Contains("AppendProactiveDiscussionDocument(sb, relatedSecond, source.FormatDate)", StringComparison.Ordinal)
+                  && method.Contains("AppendProactiveDiscussionDocument(sb, relatedThird, source.FormatDate)", StringComparison.Ordinal),
             "retained documents must be appended in newest-first slot order");
     }
 
