@@ -1,6 +1,37 @@
+<a id="j15-onnx-contract-correction-20260927"></a>
+
+## J15 计划纠偏：ONNX 留在 AF 安装目录，先修 F2 路径回归（2026-09-27；仅文档）
+
+**最新要求与授权**：用户明确模型必须放在 AF 文件夹，缺少 ONNX 就不允许继续游戏，随后要求“重写计划”。本轮修改既有 J15 计划、主台账、HANDOFF 和单模块输出说明四份文档；不改 C#/测试/脚本/模型锁、不执行迁移/清理/构建/部署/游戏、不恢复其他任务、不写外仓/真实用户目录。文档起点 `95159efd`，分支 `codex/af-main-refactor-continuation-20260831`，tracked clean，保留原 `.dotnet-cli-home/`；本地意图检查点 `1fd0f934`。产品基线仍为 `f4280eed`。
+
+**撤销的错误前提**：`eb03ce28`/`44e91672` 的“用户 Models + 迁移凭证”已接入运行代码，但不符合安装契约；`fbd71c38` 要求玩家 Python 初始化、`95159efd` 改为产品自动初始化/外迁，都没有纠正模型位置，不能继续执行。不是单纯少做 UI，而是把安装依赖错误当成个人数据外迁。下方旧计划保留审计历史，其模型方案及“F1–F3 无需纠正”结论由本条和[新版第 9 节](plans/j15-content-profile-plan.md#j15-af2-final-state)替代。
+
+**计划终态**：玩家单独取得模型包并解压到 `Modules/AnimusForge/ONNX`；当前模块门禁与 embedding/reranker 共用同一安装根及原支持的候选规则。缺必需 ONNX 沿既有暂停/保存退出流程拦截，无忽略继续；模型只读原位加载，无 AppData fallback、readiness/Recovery 凭证或脚本依赖。主 ZIP 不含 ONNX、程序升级不动玩家安装的 ONNX；这与个人数据外置保护并不矛盾。当前门禁时点是战役加载/引导后，不宣称整个游戏进程在 Bootstrap 前就被拦截。既有门禁必需组与 reranker 回退策略不借本次修路径暗改。
+
+### 只读定位证据与缺口（源码 `f4280eed`，本轮没有运行验证）
+
+| 实际源码 / 一基行号 / 符号 | 已核实行为与受影响责任 |
+| --- | --- |
+| `MyBehavior.cs:19494–19498,19620–19755`，`OnGameLoadFinished`、`EvaluateMissingOnnxGate`、`ShowMissingOnnxGatePopup`、`HasCompleteRequiredOnnxFiles`；`ModOnboardingBehavior.cs:3336` | 开局/旧档门禁仍查模块 `ONNX`，提示玩家解压到 AF；缺失暂停，只给保存退出。当前文件门禁检查 embedding，不是已验证了 reranker 或真实推理 |
+| `src/AF.Persistence/PlayerExportsStore.cs:21–33`，`GetModuleRootPath`；`AnimusForgeModulePaths.cs:12–28,85–129`，`GetCurrentModuleRoot`/根解析 | 门禁仍定位含 SubModule 的安装祖先；标准模块 helper 可供统一路径使用。不得全局重定向为用户根 |
+| `OnnxEmbeddingEngine.cs:457–487`、`OnnxCrossEncoderReranker.cs:540–570`，两个 `EnsureInitialized`；对照 `eb03ce28^` | F2 已从模块读取改为 ModelStore，且由原候选列表收窄为 `model.onnx`；路径和原布局支持都须修复，不能只改提示文案 |
+| `src/AF.Persistence/AnimusForgeModelStore.cs:15–60`，`GetReadyGroupDirectory`/`ValidateReadyGroup`；`AnimusForgeDataPaths.cs:10–26,60–61` | 当前默认用户 Models + readiness + Recovery 完成记录是真实运行前置条件；造成“模块有模型能过门禁但引擎不读，用户有模型而模块无模型仍被拦”两种不一致 |
+| `tools/af2_migrate.py:627–629,698–723,838–880`，模型路径/记录生成/CLI；`tests/AF.Persistence/DataPaths/Program.cs:45,168–199` | 外迁工具和测试目前维护的是错误产品路径；必须退役模型 apply 写入入口，并用模块来源/凭证无关/缺失拦截测试替换，不删除个人数据迁移保护 |
+| `AnimusForge.csproj:81–83`；`tests/AF.Persistence/DataPaths/DataPathsTests.csproj:12,17`；`tests/content/J15ContentContractTests/Program.cs:57–58`、`run.py:492` | 当前 8 资源包含 ModelsLock；新版计划把锁留开发溯源并退出运行嵌入，目标恢复原 7 默认，须逐名/逐字节证明。当前代码和 DLL 仍是 8，不冒充已完成 |
+
+**可执行切片与验收**：[F4-M](plans/j15-content-profile-plan.md#j15-onnx-install-contract) 写明根/候选统一、错误凭证依赖退出、原门禁保留、模型外迁入口退役、旧副本保护、升级/说明同步及 M1–M9 正反例。优先修 M，再做 C/U/A/D；其他 Prompt、PlayerExports、终端设置及 F3 单向产物链保留。F5 的 O1/O4/O6 和 L1/S1/L4 重新绑定“安装原位使用、用户模型不可绕过、无开发环境、升级保留 ONNX”验收；两个版本真实加载/旧档仍必需。单模块输出说明同步澄清“主包排除模型 ≠ 安装目录排除模型”。不新增模型下载器/迁移 UI、解释器、第二条打包流程或全仓回退。
+
+**真实文件边界**：既有用户 Models、模型 Recovery、仓内忽略副本留原处，既不自动清理也不自动搬回；它们不是正式运行来源。源码纠偏无需重新跟踪模型大文件。游戏 ONNX 若缺失，实施前列具名源/目标、备份与冲突，只有得到相应写入批准才能恢复；规划本身不授予该权限。模型来源/分发权仍需真实证据，不能以本机 hash 或改路径代替；Git 历史私密风险仍在，禁止推送。
+
+**本轮文档验证**：PASS：仅上述四份文档有差异；12 个新增/变更本地链接及显式锚点有效，Markdown 围栏配对/锚点唯一；22 个具名源码/测试/脚本输入存在；当前 csproj 静态解析为 8 个 EmbeddedResource Include（7 默认 + 1 ModelsLock），与计划的当前/目标区分一致；F4 五组、M1–M9、O1–O7、A1–A4 齐全，当前规格已移除旧外迁/初始化要求。开发者 PowerShell 模板与起点逐字相同，未执行；`git diff --check` PASS。与产品基线 `f4280eed` 比较也只有四份文档差异。此为文档/源码静态核对，不是实际 DLL 或行为验证；构建、产品测试、迁移、模型加载、实机/旧档均 NOT-RUN。
+
+**当前状态与下一动作**：文档纠偏不修复产品。F3 组装 `OFFLINE_VERIFIED` 只保留原有证据；F2 模型回归 OPEN，F4/F5 和完整 J15 未完成。用户授权实施后先做 F4-M 的完整代码/测试切片并重建受影响产物，按 A1–A4 处理真实文件与游戏环境；不自动续跑任何其他任务。
+
+## 以下为被替代的计划及历史证据（模型设计以本页顶部纠偏为准）
+
 <a id="j15-f45-executable-plan-20260927"></a>
 
-## J15 F4/F5 可执行计划重构（2026-09-27；仅文档，产品仍停在 F3）
+### 历史：J15 F4/F5 可执行计划重构（2026-09-27；模型部分已被顶部纠偏替代）
 
 **正式交付约束纠正（接用户质疑，取代 `fbd71c38` 的相关设计）**：把开发迁移脚本投影进客户端、要求玩家具备 Python 是本次规划错误，不是用户已接受的产品选择。计划已撤销该玩家脚本入口及拟增 prepared CLI 交付要求，改为 AF 产品侧承担模型初始化/迁移/恢复，沿现有 C# 责任边界及必要交互接入；玩家不装 Python/SDK、不取源码、不敲迁移命令，也不捆绑解释器绕过。开发 Python 测试/维护脚本继续保留。F5-L1 增加无开发环境的独立验收条件。仅改计划/台账/HANDOFF，未安装软件、改代码、改包或执行迁移；产品能力仍待实现，不能把文档纠正报成已交付。
 

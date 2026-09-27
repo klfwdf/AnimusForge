@@ -73,7 +73,7 @@ Every function under `一键编译覆盖推送` must use the unified contract:
 
 Scripts must consume explicitly captured 1.3 and 1.4 build artifacts. A successful file-existence check is insufficient: validation should also reject identical/misrouted version artifacts when build metadata can identify them.
 
-Generated client output excludes `Logs`, `PlayerExports`, models and other user data; source/package assembly never recursively copies earlier generated module folders. Deployment leaves unlisted installed files untouched. One-time legacy data migration is separate and writes to `%LOCALAPPDATA%/AnimusForge`, not to the installed module or source tree.
+Generated client output excludes `Logs`, `PlayerExports`, user data, and the separately installed ONNX models; source/package assembly never recursively copies earlier generated module folders. Deployment leaves unlisted installed files untouched, including `Modules/AnimusForge/ONNX`. One-time personal-data migration writes to `%LOCALAPPDATA%/AnimusForge`; it does **not** relocate ONNX models. Models are installation dependencies, not personal settings or save data.
 
 ## Legacy Module Rules
 
@@ -109,6 +109,8 @@ Packaging bumps the module version once and writes the same version to the sourc
 The ZIP is first written to a temporary file in the package directory. It becomes the final ZIP only after validating the Bootstrap-only XML, strict DLL allowlist, both implementation markers, and marker-to-DLL hashes; failed temporary archives are removed.
 
 The client ZIP must not include the `ONNX` folder. Package validation must fail if any ONNX entry appears, if either implementation is missing, if more than one module root exists, or if `SubModule.xml` declares an implementation DLL directly.
+
+Players install the separate model package into `Modules/AnimusForge/ONNX`. The missing-model campaign gate and actual model loaders must use that same installed location; missing required models must block campaign continuation through the existing pause/exit flow. No AppData model fallback, migration receipt, Recovery completion record, Python installation, or player-run migration command is required. Program upgrades must preserve installed ONNX files. The current F2 loader violates this contract; the pending correction and acceptance cases are in [J15 F4-M](plans/j15-content-profile-plan.md#j15-onnx-install-contract). This documentation update does not implement that fix.
 
 ## Safety Rules
 

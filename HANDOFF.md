@@ -1,4 +1,14 @@
-# 当前交接：J15 F4/F5 计划已重构；产品仍停在 F3（2026-09-27）
+# 当前交接：J15 计划已纠正 ONNX 安装契约；F2 模型回归待修（2026-09-27）
+
+- **唯一当前入口**：[新版计划第 9 节](docs/plans/j15-content-profile-plan.md#j15-af2-final-state)，先做 [F4-M](docs/plans/j15-content-profile-plan.md#j15-onnx-install-contract)；实际代码坐标、替代关系与验证在[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-onnx-contract-correction-20260927)。[代码范围图](docs/architecture/af-framework-code-scope.md)未变，产品仍为 `f4280eed`。
+- **用户硬要求**：ONNX 放当前 `Modules/AnimusForge/ONNX`，门禁和实际加载使用这里，缺必需文件就暂停/退出。主 ZIP 不带模型，玩家另装；不迁 AppData、不依赖模型迁移凭证、不装 Python/SDK、不跑命令。
+- **明确纠偏而非补迁移入口**：F2 的用户模型根/Recovery 前置条件与保留的模块门禁冲突；`fbd71c38`、`95159efd` 的模型迁移/初始化方案撤销。计划已按此重写分类、F2 状态、F4-M 和 F5，并同步单模块说明；其他个人数据保护、内容归位和 F3 产物链不整体回滚。
+- **先做什么**：用户授权实施后，优先一次接通模块根/原候选、门禁、两个引擎、模型外迁入口退役及 M1–M9 验收；再完成其余 F4/F5。既有用户 Models、Recovery、忽略副本不删不搬回，游戏恢复另按具名范围确认。
+- **本轮只有四份文档**：未改代码/测试/构建脚本，未搬模型、未写游戏/用户库、未安装软件、未构建/迁移/运行游戏/推送。F3 原离线证据不等于 ONNX 正常；F2 模型回归仍 OPEN，F4/F5、实机/旧档未完成。后文均为历史，不能用“无需重做 F1–F3”跳过本次纠偏。
+
+## 以下为被替代的计划交接（非执行指令）
+
+### J15 F4/F5 计划重构历史（模型方案已撤销）
 
 - **本轮仅文档**：用户要求先完善可执行计划，未授权恢复产品实施。新的唯一入口为[计划第 9.7–9.11 节](docs/plans/j15-content-profile-plan.md#j15-scope-decisions)，实际定位和验证记录见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-executable-plan-20260927)；[代码范围图](docs/architecture/af-framework-code-scope.md)未改，产品基线仍为 `f4280eed`。
 - **纠正正式版要求**：撤销 `fbd71c38` 中将开发 Python 迁移脚本作为玩家初始化入口的错误方案。玩家不装 Python/SDK、不取源码、不敲迁移命令、不额外捆绑解释器；初始化/升级/恢复由 AF 产品侧承担，开发脚本只供开发维护。F5-L1 必须在无开发环境下验收；这仍是待实现规格，未改产品或安装任何软件。
