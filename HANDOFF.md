@@ -1,4 +1,14 @@
 # 当前交接：J14a Scene 有限离线收口（2026-09-26）
+# 外交重构补充交接：DPL-060/070 职责迁移缺口（2026-09-28）
+
+- **当前判断**：外交重构不能标记为整体完成。DPL-110/120/130 提交（f826705f、b28a47dc、c9f0de92）保留为行为与离线验收基线，但没有证明最终架构所有权收口。本交接不推送、不 Stage、不部署、不启动游戏、不写真实存档。
+- **偏差起点**：DPL-060 的回合状态机抽取有效，但 WorldDiplomacyBehavior 仍保留文书分析、多动作处理和结算编排。DPL-070H（a8e4e962）只迁移了 BeginAction、CaptureActionResult、SealActions 等局部状态操作；ProcessAnalyzedDocument、ProcessAnalyzedMultiActionDocument 仍决定多动作校验、目标容量、动作顺序和发布前拒绝。DPL-100（19e9bb22）完成外部 typed port 隔离，但模块适配器仍把完整调用转回 Behavior。
+- **为何旧验收漏过**：DPL-110 的依赖扫描禁止纯层/Bridge 泄漏，却允许外交模块内部调用 Behavior；删除后宿主文本不变只证明删除安全；DPL-120 的 smoke、回放、双版本构建和签名比较主要证明行为/ABI/兼容性，没有 predecessor ownership、callback closure、Application 完整用例回放门禁。因此此前只剩实机/真实存档的结论撤销。
+- **下一条工作包**：先做 DPL-060/070 ownership audit，不新增功能。对 WorldDiplomacyBehavior、DiplomacyBehavior 及 partial/adapter 做完整方法、调用者、状态写入、回调和副作用地图；选择文书分析、多动作处理或 round settlement 的真实消费者垂直切片，把输入、分支顺序、Domain 判定、Application 状态变迁、port receipt、事实/历史发布迁到 Application，再让 Behavior 只捕获 live identity、调用端口和转发结果。
+- **新的退出门**：每个切片必须同时有行为证明和所有权证明：predecessor method inventory、caller/state-write/callback map、one-to-one target-owner map、真实 caller 进入 Application 的 call-direction check、旧 Behavior 负向架构测试，以及由 fake ports/snapshots 驱动的完整 input→validation→effect receipt→state/publication Application replay。回调只能提供 snapshot、ID、clock、logger、port 或 receipt，不能隐藏旧状态机。任何残留 active orchestration 都保持 ACTIVE，不能进入 DPL-120/130 收尾。
+- **防止再犯**：不再以测试数量、构建成功、public signature parity、纯层编译或桥接无依赖作为结构完成证据；不把新 helper 已存在写成旧 owner 已迁移；不把模块 adapter 回调 Behavior 解释成唯一 Application owner；不以刷新 baseline 或保留宿主原文消除结构失败。DPL-130 必须逐项分类所有 retained Behavior 方法：lifecycle、identity/context、presentation、compatibility forwarder 或 main-thread effect adapter；若是用例编排、策略分支、结算/重试顺序或发布 owner，则阻塞收尾。
+- **skill 规则**：上述硬门已写入外交 skill 及其 architecture-and-parity、phases 参考；后续 agent 必须将 behavior preservation 与 ownership completion 分开验证。
+
 
 - **状态**：`J14_G0_BASELINE_VERIFIED / J14a_OFFLINE_VERIFIED / J14_ACTIVE`。产品/测试 `1740b338`, `79fa7c48` 已开放真实 Scene 公共票据→原群组/接力→speech/后处理/记忆/AFEF 回执→终态，Native 原签名与 UI 入口不变；Courier/J14c 尚未完成。具体 owner、消费者和未覆盖责任见[主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md)、[范围图](docs/architecture/af-framework-code-scope.md)及[代码地图](docs/architecture/af-framework-code-map.json)。
 - **离线证据与下一步**：Scene 群组 18、请求生命周期 34、后处理 37、独立外部消费者正常/枚举重排各 55、ChannelCutover 133、NativeCompletion 186、V1 142、四实际 DLL metadata 1252；原脚本在用户授权四个精确仓内产物目录、不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error；730 锚点地图 recorded/working-tree 通过。旧 MemorySummary terminal runner 的既存抽取锚失效，此次未通过，详细限制与 SHA 见主台账。下一包按[计划](docs/plans/j14-public-api-plan.md)做 J14b Courier，随后 J14c 最终候选；不能称整体 J14、实机或发布完成。真实游戏、旧档、provider、音频、帧性能 **NOT-RUN**；不 push、Stage、部署、打包、写游戏/外仓/存档或启动 J15。原未跟踪 `.dotnet-cli-home/` 保留。
