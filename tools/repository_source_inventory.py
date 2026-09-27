@@ -94,6 +94,8 @@ def classify_path(path: str) -> str | None:
     if top == "content":
         if path == "content/content-map.json":
             return "content"
+        if path.startswith("content/modules/AF.Module.Economy/AssetSources/"):
+            return "design"
         owned_roots = (
             "content/modules/AF.Module.Prompt/",
             "content/modules/AF.Module.Memory/",

@@ -1,5 +1,7 @@
 # 当前交接：J15 F4-U 旧 GUI 退役、F4-A TPAC 投影及双 Stage 13/0 已验，F4/F5 仍未闭（2026-09-27）
 
+- **F4-A 去重/归位续验**：经再次批准，重复的 `AnimusForge/AssetPackages/pack0.tpac` 已逐项 SHA 备份到忽略的 `local/j15-tpac-archive-20260927/legacy-module/` 后退出活动源码，Xihai 仍是正式投影唯一权威源；六项金币设计源原样迁到 `content/modules/AF.Module.Economy/AssetSources/`，每项 hash 相同，分类为 `design`、不进 Stage/ZIP。J15 完整内容 runner **108/6 PASS**、库存 7 单测、双正式 Stage 124 项白名单通过。来源/再分发权、11.2 MB 历史 manifest 与实机视觉仍未闭；未部署/推送。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。
+
 - **最新 F4-U**：用户确认旧账号/订阅/充值 UI 已废弃并批准归档；两个索引 XML + 25 张分图共 27 项/6,211,268 字节逐项 SHA 复制到忽略的 `local/j15-gui-archive-20260927/legacy-splitshadows/` 后，从活动源码退役，移后归档 27/27 再验。内容完整 runner **108 映射/6 HOLD PASS**；正式双 Stage 各 124 项仍符合原白名单/当前产物。另六项旧 GUI 保留，三张诊断 atlas 不进包；历史 Git 仍含旧图，不推送。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。
 
 - **续验**：当前 Release 正式 124 项 Stage 在全新仓内虚构安装根逐项 SHA 部署一致、三类未受管数据不变、重复执行 no-op；不是游戏部署或 124 项故障回滚验收。三张 GUI atlas 已由 `origin/main` 的 25 张源图按 XML 坐标在忽略目录重建为诊断 PNG，逐图保存后裁切像素一致；但画面涉及旧订阅/充值宣传，生产源码/当前 DLL 未发现直接消费者，未纳入正式 Stage/ZIP。详细尺寸、SHA、范围与 HOLD 见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。

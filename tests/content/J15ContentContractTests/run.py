@@ -416,6 +416,14 @@ F4A_EXPECTED = {
         "sha256": "95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2",
     },
 }
+F4A_DESIGN_EXPECTED = {
+    "README_scene_gold_coin.txt": "30AB90D092FB0F1A84735DE1CA73746E1E049E9914E175C7005B574C7639AEA4",
+    "SubModule_items_patch_example.xml": "89BBB6C02517BEE05F3EF89542A2E9C1522C498C6752C96F60A42FCC844F7CF5",
+    "animusforge_denar_coin.mtl": "26246FEFBA502301E4FAC17A4465E8D9F2D2A75718BD9A44858944A728243D4D",
+    "animusforge_denar_coin.obj": "5BCC214520F1BB0E42529E52A57319D9AD76A2E630F3FBEF0B43AACEEAC9088F",
+    "animusforge_denar_coin.prefab.xml": "7DC37374686CFBE0E6DBBEB50628809BADE5DA4877E39295A458235A233E9417",
+    "animusforge_scene_gold_items.xml": "22658A4FB51A65329E33AD29C6FD483DBF01ED9742C7C49821A80F122781EEE5",
+}
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED}
 
 
@@ -496,8 +504,20 @@ def verify_map_and_resources() -> None:
         source_bytes = source.read_bytes()
         check(hashlib.sha256(source_bytes).hexdigest().upper() == expected["sha256"], f"TPAC hash drift: {target}")
         check(source_bytes.count(b"nacisword1") == 1, f"Xihai action marker missing or duplicated: {target}")
-        check((ROOT / "AnimusForge" / target).read_bytes() == source_bytes,
-              f"preserved legacy TPAC copy differs: {target}")
+        check(not (ROOT / "AnimusForge" / target).exists(), f"retired duplicate TPAC returned: {target}")
+
+    design_root = ROOT / "content" / "modules" / "AF.Module.Economy" / "AssetSources"
+    check({path.name for path in design_root.iterdir()} == set(F4A_DESIGN_EXPECTED),
+          "Economy design source set drifted")
+    for name, expected_hash in F4A_DESIGN_EXPECTED.items():
+        source = design_root / name
+        check(source.is_file(), f"Economy design source missing: {name}")
+        check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected_hash,
+              f"Economy design source hash drift: {name}")
+        check(not (ROOT / "AnimusForge" / "AssetSources" / name).exists(),
+              f"old design source returned: {name}")
+    check(not any(entry["source"].startswith("content/modules/AF.Module.Economy/AssetSources/")
+                  for entry in entries), "design sources must not enter the runtime content map")
 
     for target in CURRENT_HOLD_PATHS:
         check((ROOT / "AnimusForge" / Path(target)).is_file(), f"HOLD path was moved or removed: {target}")
@@ -659,6 +679,8 @@ def verify_inventory_and_overlay() -> None:
               f"migrated content inventory class: {expected['source']}")
     check(inventory.classify_path(F4A_EXPECTED["AssetPackages/pack0.tpac"]["source"]) == "HOLD:asset-package-provenance",
           "TPAC projection does not clear provenance HOLD")
+    check(inventory.classify_path("content/modules/AF.Module.Economy/AssetSources/animusforge_denar_coin.obj") == "design",
+          "Economy AssetSources remain design-only")
     check(inventory.classify_path("content/modules/Unknown/ModuleData/file.json") is None, "unknown content owner must fail closed")
     check(inventory.classify_path("content/foundation/Unknown/GUI/file.xml") is None, "unknown foundation owner must fail closed")
     check(inventory.classify_path("content/PlayerExports/private.json") == "HOLD:user-data", "content user data hold")
