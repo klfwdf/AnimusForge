@@ -111,6 +111,14 @@ internal static class Program
 			ConfigureOnnxRuntimeSearchPath();
 			LoadAssemblies(args);
 			ConfigureOnnxModuleRootOverride(args);
+			if ((args ?? Array.Empty<string>()).Any(value => string.Equals(value, "--onnx-contract-only", StringComparison.OrdinalIgnoreCase)))
+			{
+				if (!(args ?? Array.Empty<string>()).Any(value => string.Equals(value, OnnxModuleRootOption, StringComparison.OrdinalIgnoreCase)))
+					throw new InvalidOperationException("--onnx-contract-only requires --onnx-module-root.");
+				Console.WriteLine("PASS onnxContractAssertions=" + _assertionCount.ToString(CultureInfo.InvariantCulture)
+					+ " elapsedMs=" + stopwatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture));
+				return 0;
+			}
 			if (TryDumpNpcPolicyApiProbeMessages(args))
 			{
 				return 0;
@@ -544,19 +552,13 @@ internal static class Program
 			return;
 		}
 
-		string onnxDirectory = Path.Combine(moduleRoot, "ONNX");
-		bool hasModel = File.Exists(Path.Combine(onnxDirectory, "model_quantized.onnx"))
-			|| File.Exists(Path.Combine(onnxDirectory, "model.onnx"));
 		if (!string.Equals(Path.GetFileName(moduleRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 				"AnimusForge", StringComparison.OrdinalIgnoreCase)
 			|| !File.Exists(Path.Combine(moduleRoot, "SubModule.xml"))
-			|| !Directory.Exists(Path.Combine(moduleRoot, "ModuleData"))
-			|| !Directory.Exists(onnxDirectory)
-			|| !hasModel
-			|| !File.Exists(Path.Combine(onnxDirectory, "tokenizer.json")))
+			|| !Directory.Exists(Path.Combine(moduleRoot, "ModuleData")))
 		{
 			throw new InvalidOperationException(OnnxModuleRootOption
-				+ " must point to an AnimusForge module containing SubModule.xml, ModuleData, and existing ONNX assets: "
+				+ " must point to an AnimusForge module containing SubModule.xml and ModuleData: "
 				+ moduleRoot);
 		}
 
@@ -583,9 +585,68 @@ internal static class Program
 			patchedAssemblies);
 		foreach (Assembly assembly in patchedAssemblies)
 		{
+			VerifyOnnxContractPaths(assembly, moduleRoot, "ResolveEmbedding", "ONNX", true);
 			InitializeOnnxContractEmbedding(
 				assembly.GetType("AnimusForge.OnnxEmbeddingEngine", throwOnError: true),
 				moduleRoot);
+			VerifyOnnxContractPaths(assembly, moduleRoot, "ResolveReranker", Path.Combine("ONNX", "reranker"), false);
+			InitializeOnnxContractReranker(
+				assembly.GetType("AnimusForge.OnnxCrossEncoderReranker", throwOnError: true),
+				moduleRoot);
+			VerifyOnnxContractGate(assembly, moduleRoot);
+		}
+	}
+
+	private static void VerifyOnnxContractGate(Assembly assembly, string moduleRoot)
+	{
+		Type behavior = assembly.GetType("AnimusForge.MyBehavior", throwOnError: true);
+		MethodInfo gate = behavior.GetMethod("HasCompleteRequiredOnnxFiles", All, null, Type.EmptyTypes, null)
+			?? throw new MissingMethodException(behavior.FullName, "HasCompleteRequiredOnnxFiles");
+		_onnxContractModuleRoot = moduleRoot;
+		try
+		{
+			Check((bool)gate.Invoke(null, null), "ONNX gate rejected the model used by the embedding engine");
+		}
+		finally
+		{
+			_onnxContractModuleRoot = null;
+		}
+		_onnxContractModuleRoot = Path.Combine(moduleRoot, "missing-onnx-fixture");
+		try
+		{
+			Check(!(bool)gate.Invoke(null, null), "ONNX gate accepted a module without ONNX");
+		}
+		finally
+		{
+			_onnxContractModuleRoot = null;
+		}
+	}
+
+	private static void VerifyOnnxContractPaths(Assembly assembly, string moduleRoot, string methodName,
+		string expectedSubdirectory, bool configRequired)
+	{
+		Type store = assembly.GetType("AnimusForge.AnimusForgeModelStore", throwOnError: true);
+		MethodInfo resolve = store.GetMethod(methodName, All, null, Type.EmptyTypes, null)
+			?? throw new MissingMethodException(store.FullName, methodName);
+		_onnxContractModuleRoot = moduleRoot;
+		object files;
+		try
+		{
+			files = resolve.Invoke(null, null);
+		}
+		finally
+		{
+			_onnxContractModuleRoot = null;
+		}
+		string onnx = Path.GetFullPath(Path.Combine(moduleRoot, expectedSubdirectory))
+			.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+		foreach (string property in new[] { "ModelPath", "TokenizerPath", "ConfigPath" })
+		{
+			string selected = (string)files.GetType().GetProperty(property, All)?.GetValue(files, null);
+			Check((property == "ConfigPath" && !configRequired && string.IsNullOrWhiteSpace(selected))
+				|| (!string.IsNullOrWhiteSpace(selected)
+				&& Path.GetFullPath(selected).StartsWith(onnx, StringComparison.OrdinalIgnoreCase)
+				&& File.Exists(selected)), methodName + " " + property + " must resolve from the requested module root");
 		}
 	}
 
@@ -625,6 +686,41 @@ internal static class Program
 			_onnxContractModuleRoot = null;
 		}
 		Check(available, "Existing ONNX embedding assets failed to initialize from the requested module root: " + lastError);
+		object[] inferenceArgs = { "测试文本", null };
+		MethodInfo inference = embeddingType.GetMethod("TryGetEmbedding", All, null,
+			new[] { typeof(string), typeof(float[]).MakeByRefType() }, null)
+			?? throw new MissingMethodException(embeddingType.FullName, "TryGetEmbedding");
+		Check((bool)inference.Invoke(embedding, inferenceArgs)
+			&& inferenceArgs[1] is float[] vector && vector.Length > 0
+			&& vector.All(value => !float.IsNaN(value) && !float.IsInfinity(value)),
+			"ONNX embedding inference did not produce a finite vector from the requested module");
+	}
+
+	private static void InitializeOnnxContractReranker(Type rerankerType, string moduleRoot)
+	{
+		object reranker = rerankerType.GetProperty("Instance", All)?.GetValue(null, null)
+			?? throw new MissingMemberException(rerankerType.FullName, "Instance");
+		_onnxContractModuleRoot = moduleRoot;
+		bool available;
+		string lastError;
+		try
+		{
+			available = (bool)(rerankerType.GetProperty("IsAvailable", All)?.GetValue(reranker, null)
+				?? throw new MissingMemberException(rerankerType.FullName, "IsAvailable"));
+			lastError = (string)(rerankerType.GetProperty("LastError", All)?.GetValue(reranker, null) ?? string.Empty);
+		}
+		finally
+		{
+			_onnxContractModuleRoot = null;
+		}
+		Check(available, "Existing ONNX reranker assets failed to initialize from the requested module root: " + lastError);
+		object[] inferenceArgs = { "测试", "测试文档", 0f };
+		MethodInfo inference = rerankerType.GetMethod("TryScore", All, null,
+			new[] { typeof(string), typeof(string), typeof(float).MakeByRefType() }, null)
+			?? throw new MissingMethodException(rerankerType.FullName, "TryScore");
+		Check((bool)inference.Invoke(reranker, inferenceArgs)
+			&& inferenceArgs[2] is float score && !float.IsNaN(score) && !float.IsInfinity(score),
+			"ONNX reranker inference did not produce a finite score from the requested module");
 	}
 
 	private static bool OverrideOnnxContractModuleRoot(ref string __result)
@@ -722,6 +818,8 @@ internal static class Program
 		string assemblyPath = requestedPath ?? Path.Combine(baseDirectory, "AnimusForge.dll");
 		Check(File.Exists(assemblyPath), "AnimusForge.dll not found: " + assemblyPath);
 		_sut = Assembly.LoadFrom(assemblyPath);
+		Check(string.Equals(Path.GetFullPath(_sut.Location), Path.GetFullPath(assemblyPath),
+			StringComparison.OrdinalIgnoreCase), "requested ONNX probe assembly was not loaded");
 		TryPreloadAssembly("Newtonsoft.Json", searchDirectories);
 		_jTokenType = RequireType("Newtonsoft.Json.Linq.JToken, Newtonsoft.Json");
 	}

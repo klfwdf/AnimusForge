@@ -42,7 +42,6 @@ internal static class Program
                 == Path.Combine(isolated, "UserData", "Overrides", "CustomPrompts", "Policy", "Effects", "_Common.json"), "override path");
             Check(AnimusForgeDataPaths.GetCacheDirectory(isolated) == Path.Combine(isolated, "Cache"), "cache ownership");
             Check(AnimusForgeDataPaths.GetLogsDirectory(isolated) == Path.Combine(isolated, "Logs"), "logs ownership");
-            Check(AnimusForgeDataPaths.GetModelsDirectory(isolated) == Path.Combine(isolated, "Models"), "models ownership");
             Check(AnimusForgeDataPaths.GetRecoveryDirectory(isolated) == Path.Combine(isolated, "Recovery"), "recovery ownership");
 
             Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, isolated);
@@ -165,39 +164,88 @@ internal static class Program
         Reject(() => AnimusForgeTerminalSettings.TrySaveSettingsFile(settingsPath, new AnimusForgeTerminalSettingsData()), "corrupt TerminalSettings cannot be overwritten");
         Check(File.ReadAllText(settingsPath) == "{broken", "corrupt TerminalSettings preserved");
 
-        string models = Path.Combine(workspace, "artifacts", "tests", "af2-model-store", Guid.NewGuid().ToString("N"), "Models");
-        string embedding = Path.Combine(models, "embedding");
-        Directory.CreateDirectory(embedding);
-        string modelFile = Path.Combine(embedding, "model.onnx");
-        File.WriteAllBytes(modelFile, Encoding.UTF8.GetBytes("model"));
-        string modelHash = BitConverter.ToString(SHA256.HashData(File.ReadAllBytes(modelFile))).Replace("-", "").ToLowerInvariant();
-        string lockJson = "{\"schemaVersion\":1,\"groups\":{\"embedding\":{\"variants\":{\"synthetic\":{\"model.onnx\":{\"size\":5,\"sha256\":\"" + modelHash + "\"}}}}}}";
-        byte[] lockBytes = Encoding.UTF8.GetBytes(lockJson);
-        string lockHash = BitConverter.ToString(SHA256.HashData(lockBytes)).Replace("-", "").ToLowerInvariant();
-        string modelManifest = new string('a', 64);
-        string modelCompleted = Path.Combine(Path.GetDirectoryName(models), "Recovery", "models-" + modelManifest.Substring(0, 24), "completed.json");
-        Directory.CreateDirectory(Path.GetDirectoryName(modelCompleted));
-        File.WriteAllText(modelCompleted, "{\"schema\":1,\"manifestSha256\":\"" + modelManifest + "\"}");
-        string ready = "{\"schema\":1,\"lockSha256\":\"" + lockHash + "\",\"completionManifestSha256\":\"" + modelManifest + "\",\"groups\":{\"embedding\":{\"variant\":\"synthetic\",\"files\":{\"model.onnx\":{\"size\":5,\"sha256\":\"" + modelHash + "\",\"mtimeUtcTicks\":" + File.GetLastWriteTimeUtc(modelFile).Ticks + "}}}}}";
-        Check(AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready) == embedding, "complete locked model group is ready");
-        File.Delete(modelCompleted);
-        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready), "missing completion record rejected");
-        File.WriteAllText(modelCompleted, "{\"schema\":1,\"manifestSha256\":\"" + modelManifest + "\"}");
-        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "reranker", lockBytes, ready), "missing model group rejected");
-        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready.Replace(lockHash, new string('0', 64))), "model lock drift rejected");
-        File.WriteAllBytes(modelFile, Encoding.UTF8.GetBytes("changed"));
-        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready), "model size drift rejected");
-        File.WriteAllBytes(modelFile, Encoding.UTF8.GetBytes("model"));
-        File.WriteAllText(Path.Combine(embedding, "unknown.txt"), "unknown");
-        Reject(() => AnimusForgeModelStore.ValidateReadyGroup(models, "embedding", lockBytes, ready), "unknown group file rejected");
-        if (Environment.GetEnvironmentVariable("AF2_PROBE_REAL_MODELS_READONLY") == "1")
+        string module = Path.Combine(workspace, "artifacts", "tests", "af2-model-store", Guid.NewGuid().ToString("N"), "AnimusForge");
+        string onnx = Path.Combine(module, "ONNX");
+        string nested = Path.Combine(onnx, "onnx");
+        string reranker = Path.Combine(onnx, "reranker");
+        string userRoot = Path.Combine(Path.GetDirectoryName(module), "user-root");
+        string userModels = Path.Combine(userRoot, "Models");
+        Directory.CreateDirectory(nested);
+        Directory.CreateDirectory(reranker);
+        Directory.CreateDirectory(userModels);
+        string userEmbedding = Path.Combine(userModels, "embedding");
+        Directory.CreateDirectory(userEmbedding);
+        File.WriteAllText(Path.Combine(userEmbedding, "model.onnx"), "user-only");
+        File.WriteAllText(Path.Combine(userEmbedding, "tokenizer.json"), "{}");
+        File.WriteAllText(Path.Combine(userEmbedding, "config.json"), "{}");
+        string userReceipt = Path.Combine(userModels, ".af-models-ready.json");
+        File.WriteAllText(userReceipt, "{\"schema\":1,\"groups\":{\"embedding\":{}}}");
+        string oldCompletion = Path.Combine(userRoot, "Recovery", "models-old", "completed.json");
+        Directory.CreateDirectory(Path.GetDirectoryName(oldCompletion));
+        File.WriteAllText(oldCompletion, "{\"schema\":1}");
+        Reject(() => AnimusForgeModelStore.ResolveEmbedding(module), "M2 user model and receipt cannot replace missing module model");
+        string tokenizer = Path.Combine(onnx, "tokenizer.json");
+        string config = Path.Combine(onnx, "config.json");
+        File.WriteAllText(tokenizer, "{}");
+        File.WriteAllText(config, "{}");
+        string rootQuantized = Path.Combine(onnx, "model_quantized.onnx");
+        string nestedQuantized = Path.Combine(nested, "model_quantized.onnx");
+        File.WriteAllText(rootQuantized, "root-quantized");
+        File.WriteAllText(nestedQuantized, "nested-quantized");
+        AnimusForgeModulePaths.TestModuleRoot = module;
+        var selected = AnimusForgeModelStore.ResolveEmbedding();
+        Check(selected.ModelPath == nestedQuantized && selected.TokenizerPath == tokenizer && selected.ConfigPath == config,
+            "M1/M4 active module nested quantized candidate wins");
+        string priorDataRoot = Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable);
+        try
         {
-            string actualModels = AnimusForgeDataPaths.GetModelsDirectory(AnimusForgeDataPaths.ResolveRoot());
-            byte[] actualLock = File.ReadAllBytes(Path.Combine(workspace, "content", "models.lock.json"));
-            string actualReady = File.ReadAllText(Path.Combine(actualModels, ".af-models-ready.json"), Encoding.UTF8);
-            Check(Directory.Exists(AnimusForgeModelStore.ValidateReadyGroup(actualModels, "embedding", actualLock, actualReady)), "real embedding group metadata ready");
-            Check(Directory.Exists(AnimusForgeModelStore.ValidateReadyGroup(actualModels, "reranker", actualLock, actualReady)), "real reranker group metadata ready");
+            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, userRoot);
+            Check(AnimusForgeModelStore.ResolveEmbedding().ModelPath == nestedQuantized,
+                "M3 data-root override cannot change model source");
         }
+        finally { Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, priorDataRoot); }
+        File.Delete(nestedQuantized);
+        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootQuantized, "M4 root quantized fallback");
+        File.Delete(rootQuantized);
+        string nestedModel = Path.Combine(nested, "model.onnx");
+        File.WriteAllText(nestedModel, "nested-unquantized");
+        Reject(() => AnimusForgeModelStore.ResolveEmbedding(module), "M4 nonquantized external data required");
+        File.WriteAllText(nestedModel + "_data", "external-data");
+        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == nestedModel, "M4 nested unquantized and sidecar");
+        File.Delete(nestedModel);
+        File.Delete(nestedModel + "_data");
+        string rootModel = Path.Combine(onnx, "model.onnx");
+        File.WriteAllText(rootModel, "root-unquantized");
+        File.WriteAllText(rootModel + "_data", "external-data");
+        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootModel, "M4 root unquantized candidate");
+        File.Delete(tokenizer);
+        Reject(() => AnimusForgeModelStore.ResolveEmbedding(module), "M5 missing tokenizer blocks required model");
+        File.WriteAllText(tokenizer, "{}");
+        File.WriteAllText(config, "{broken");
+        Reject(() => AnimusForgeModelStore.ResolveEmbedding(module), "M5 corrupt config blocks required model");
+        File.WriteAllText(config, "{}");
+        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootModel,
+            "M5 repaired module dependency is available after restart");
+        File.WriteAllText(Path.Combine(reranker, "tokenizer.json"), "{}");
+        string rerankerModel = Path.Combine(reranker, "model.onnx");
+        string rerankerQuantized = Path.Combine(reranker, "model_quantized.onnx");
+        File.WriteAllText(rerankerModel, "reranker-default");
+        File.WriteAllText(rerankerQuantized, "reranker-quantized");
+        Check(AnimusForgeModelStore.ResolveReranker(module).ModelPath == rerankerQuantized, "M4 reranker quantized candidate");
+        File.Delete(rerankerQuantized);
+        Check(AnimusForgeModelStore.ResolveReranker(module).ModelPath == rerankerModel, "M4 reranker regular candidate");
+        File.Delete(rerankerModel);
+        Reject(() => AnimusForgeModelStore.ResolveReranker(module), "M4 absent optional reranker is unavailable");
+        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootModel,
+            "M4 optional reranker absence does not change required embedding");
+        File.WriteAllText(userReceipt, "{broken");
+        File.Delete(oldCompletion);
+        File.SetLastWriteTimeUtc(rootModel, DateTime.UtcNow.AddDays(-7));
+        Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootModel,
+            "M6 corrupt receipt, absent Recovery and changed model mtime do not gate module model");
+        Check(File.ReadAllText(userReceipt) == "{broken",
+            "M6 corrupt legacy receipt remains untouched");
+        AnimusForgeModulePaths.TestModuleRoot = null;
 
         Console.WriteLine("PASS data-path checks=" + _checks);
     }
@@ -207,6 +255,12 @@ internal static class Program
 
 namespace AnimusForge
 {
+    internal static class AnimusForgeModulePaths
+    {
+        internal static string TestModuleRoot;
+        public static string GetCurrentModuleRoot() => TestModuleRoot;
+    }
+
     internal static class Logger
     {
         internal static void Log(string category, string message) { }

@@ -486,10 +486,7 @@ def verify_project_resources() -> None:
         if logical:
             resources[logical] = {"include": include, "culture": culture}
     expected_names = {item["logicalName"] for item in J15A_EXPECTED.values()}
-    expected_names.add("AnimusForge.Dependencies.ModelsLock.json")
-    check(set(resources) == expected_names, "EmbeddedResource LogicalName set must match defaults and model lock")
-    check(resources["AnimusForge.Dependencies.ModelsLock.json"] ==
-          {"include": "content/models.lock.json", "culture": None}, "model lock resource identity")
+    check(set(resources) == expected_names, "EmbeddedResource LogicalName set must match the seven defaults")
     for expected in J15A_EXPECTED.values():
         actual = resources[expected["logicalName"]]
         check(actual["include"] == expected["source"], f"include path: {expected['logicalName']}")

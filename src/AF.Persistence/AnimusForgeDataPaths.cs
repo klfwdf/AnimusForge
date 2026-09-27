@@ -57,7 +57,6 @@ internal static class AnimusForgeDataPaths
     internal static string GetOverridesDirectory(string root) => CombineUnderRoot(root, "UserData/Overrides");
     internal static string GetCacheDirectory(string root) => CombineUnderRoot(root, "Cache");
     internal static string GetLogsDirectory(string root) => CombineUnderRoot(root, "Logs");
-    internal static string GetModelsDirectory(string root) => CombineUnderRoot(root, "Models");
     internal static string GetRecoveryDirectory(string root) => CombineUnderRoot(root, "Recovery");
 
     internal static string GetOverridePath(string root, string relativePath)

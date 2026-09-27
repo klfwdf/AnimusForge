@@ -110,7 +110,7 @@ The ZIP is first written to a temporary file in the package directory. It become
 
 The client ZIP must not include the `ONNX` folder. Package validation must fail if any ONNX entry appears, if either implementation is missing, if more than one module root exists, or if `SubModule.xml` declares an implementation DLL directly.
 
-Players install the separate model package into `Modules/AnimusForge/ONNX`. The missing-model campaign gate and actual model loaders must use that same installed location; missing required models must block campaign continuation through the existing pause/exit flow. No AppData model fallback, migration receipt, Recovery completion record, Python installation, or player-run migration command is required. Program upgrades must preserve installed ONNX files. The current F2 loader violates this contract; the pending correction and acceptance cases are in [J15 F4-M](plans/j15-content-profile-plan.md#j15-onnx-install-contract). This documentation update does not implement that fix.
+Players install the separate model package into `Modules/AnimusForge/ONNX`. The missing-model campaign gate and actual model loaders use that same installed location; missing required models block campaign continuation through the existing pause/exit flow. No AppData model fallback, migration receipt, Recovery completion record, Python installation, or player-run migration command is required. Program upgrades preserve installed ONNX files. The corrected resolver and its acceptance cases are tracked in [J15 F4-M](plans/j15-content-profile-plan.md#j15-onnx-install-contract); offline verification does not replace two-version game and old-save acceptance.
 
 ## Safety Rules
 
