@@ -1,4 +1,10 @@
-# 当前交接：J15 计划已纠正 ONNX 安装契约；F2 模型回归待修（2026-09-27）
+# 当前交接：J15 F4-M 模块 ONNX 契约代码与关联离线验证已完成（2026-09-27）
+
+- **当前状态**：`F4-M_CODE_AND_OFFLINE_VERIFIED / F5_PARTIAL / J15_NOT_COMPLETE`。产品/测试 `df49d81a`、`7693bedc`、`43e8bcf2` 将门禁、embedding 与 reranker 统一到当前 `Modules/AnimusForge/ONNX`，退役模型外迁 CLI 的执行入口与 ModelsLock 运行资源；用户 Models/Recovery/仓内忽略副本保留但不再是运行来源。代码导航见[范围图](docs/architecture/af-framework-code-scope.md)与 792 锚点[地图](docs/architecture/af-framework-code-map.json)，一基坐标、证据和替代关系见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-onnx-f4m-implementation-20260927)，规格仍为[J15 第 9 节](docs/plans/j15-content-profile-plan.md#j15-onnx-install-contract)。
+- **已验/边界**：Debug/Release 的 1.3、1.4、Bootstrap 六构建均 0 警告/错误；四实现 DLL 各 7 默认资源；DataPaths 66 checks、旧模型迁移拒绝、J15 内容/ManagedDeploy 合成契约；当前 Release 双版本 DLL 对安装模块现有 ONNX 作只读离线真实推理，各 28 断言。Debug/Release Stage 各 123 项、本地测试 ZIP 与 Stage 集合及非 XML 字节对齐，均无 ONNX。没有部署、游戏启动、外仓或用户库/Recovery 写入、推送；测试 ZIP 不可发布。
+- **下一步**：F4-C/U/A/D 的手改配置、GUI/atlas、TPAC/设计源、旧资料与来源/许可分别闭合；F5 其余同候选矩阵后，另获具名游戏写入/实测授权才做 M9 双实际版本新战役、旧档、暂停/保存退出、补模重启和检索。LIVE/SAVE 均 `NOT-RUN`，不可把离线 DLL 推理当实机验收。保留玩家现有模型及历史副本，不自动搬回或清理。
+
+## 以下为本次实施取代的仅文档交接（历史，不再作为当前状态）
 
 - **唯一当前入口**：[新版计划第 9 节](docs/plans/j15-content-profile-plan.md#j15-af2-final-state)，先做 [F4-M](docs/plans/j15-content-profile-plan.md#j15-onnx-install-contract)；实际代码坐标、替代关系与验证在[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-onnx-contract-correction-20260927)。[代码范围图](docs/architecture/af-framework-code-scope.md)未变，产品仍为 `f4280eed`。
 - **用户硬要求**：ONNX 放当前 `Modules/AnimusForge/ONNX`，门禁和实际加载使用这里，缺必需文件就暂停/退出。主 ZIP 不带模型，玩家另装；不迁 AppData、不依赖模型迁移凭证、不装 Python/SDK、不跑命令。

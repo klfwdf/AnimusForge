@@ -1,3 +1,27 @@
+<a id="j15-onnx-f4m-implementation-20260927"></a>
+
+## J15 F4-M 模块 ONNX 安装契约纠偏：代码及关联离线证据（2026-09-27）
+
+**当前状态：`F4-M_CODE_AND_OFFLINE_VERIFIED / F5_PARTIAL / J15_NOT_COMPLETE`。** 唯一规格仍是[新版 J15 第 9 节](plans/j15-content-profile-plan.md#j15-onnx-install-contract)；本条明确取代下方“仅文档、产品仍为 `f4280eed`”的当前状态，不改写其历史。起点 `84e3c7d9`，本地意图检查点 `57e94481`；产品与契约 `df49d81a`，锁定文件拒读补测 `7693bedc`，重定向目录防护 `43e8bcf2`。分支 `codex/af-main-refactor-continuation-20260831`；无 push、部署、游戏启动、用户库/Recovery/忽略副本搬移或游戏目录写入，原有 `.dotnet-cli-home/` 保留。撤销的 `fbd71c38` / `95159efd` 模型外迁/初始化方案没有恢复。
+
+| 当前源码坐标（均为一基，`43e8bcf2`；契约工具以 `df49d81a` 为基线） | 真实责任及边界 |
+| --- | --- |
+| `src/AF.Persistence/AnimusForgeModelStore.cs:23–107` 的 `ResolveEmbedding`、`ResolveReranker`、`RejectRedirectedSubdirectory` | 经未改的 `AnimusForgeModulePaths.GetCurrentModuleRoot()` 限定当前模块 `ONNX`；embedding 按嵌套量化→根量化→嵌套普通→根普通顺序，普通图需同目录 `_data`，tokenizer/config 走原根/嵌套候选；reranker 仅 `ONNX/reranker`、量化优先、config 仍可选。只检查固定少量路径、可读性和 config JSON，不扫其他安装/用户根、不 hash 数 GiB 模型；首次初始化实际图和 tokenizer 解析仍由引擎负责。ONNX 根、嵌套目录及文件重定向拒绝。 |
+| `MyBehavior.cs:19639–19728` 的 `EvaluateMissingOnnxGate`、`ShowMissingOnnxGatePopup`、`HasCompleteRequiredOnnxFiles` | 新战役引导后/旧档战役加载的原门禁改用同一 embedding 解析，并要求 `OnnxEmbeddingEngine.Instance.IsAvailable`，缺失/解析异常不放行；仍由既有暂停弹窗、保存退出/失败恢复路径处理，不伪称 Bootstrap 前阻断整个进程。reranker 沿原可选回退，不改必需组。 |
+| `OnnxEmbeddingEngine.cs:457–529`、`OnnxCrossEncoderReranker.cs:541–596` | 两引擎首次初始化直接消费上述 ModelFiles；不读 AppData Models、`.af-models-ready.json`、Recovery/completed、迁移锁或 mtime，不重复创建 Session 于 Tick。实际检索消费者仍为 `MyBehavior.cs:31774,33559,33657` 等；玩法与存档身份未改。 |
+| `tools/af2_migrate.py:606–619`、`AnimusForge.csproj:81–106` | 旧 `--data-kind models`（含 `--apply`）在读取用户根前明确拒绝且无模型外迁函数；其他个人数据迁移保留。`content/models.lock.json` 留仓内开发溯源，不再运行嵌入；四实现原 7 默认资源逐名/逐字节审计通过。模型文件、旧 Models/Recovery 和忽略的 `local/` 副本均未删除或重新跟踪。 |
+| `tools/PolicyEffectModule.ContractTests/Program.cs:531–724` | `--onnx-module-root` Harmony 注入命中**生产** `GetCurrentModuleRoot()`，对实际请求 DLL 的解析文件、embedding 向量、reranker 评分及门禁正反例执行；断言实际加载的 DLL 路径，避免用户库或旧 DLL 误报 PASS。 |
+
+**F5-0/O1/O3/O4/O6 已执行的同候选离线证据**：开发锁 SHA-256 `c2955fc9d8e235a64563b432692e212436e6834fc4df8bdadc27ba5dd87e2f32`、内容映射 `cfabb6f4cbced856692950800a0bf7383e7560d35797da2b310ba48f994adcf8`、运行依赖锁 `14d11ec66f7c3ebe038e6cfca99c670d13312c1d6b7fd70ee0a5ca581691d50e`。原 `build_single_module.ps1` 无 `-Stage/-Deploy` 分别 Debug/Release；引用 `_deps_auto` **1.3.15.110062** 与 `local/bannerlord-refs/1.4.7.117484` **1.4.7.117484**，SDK 8.0.425，游戏/Harmony/runtime 仅只读；1.3、1.4、Bootstrap **六构建各 0 警告/0 错误**。四 DLL `resourceAudit assemblies=4 resourcesPerAssembly=7 PASS`，与 7 项默认源字节匹配，ModelsLock 不在资源表。`DataPathsTests` **66 checks PASS**；`test_migration.py` 个人数据迁移与旧模型 CLI 拒绝、零模型/Recovery 写入 PASS；J15 完整内容合成 runner `mappings=107 / holds=40 PASS`；ManagedDeploy 的失败回滚、成功、no-op、中断、7 类未受管哨兵（含 ONNX）PASS。以上测试的合成写入限仓内新 fixture；原构建四生成目录及两 Stage 目录的递归重建均经本轮逐项具名批准并预检无 reparse，未使用部署开关。
+
+`PolicyEffectModule.ContractTests --onnx-contract-only` 对**当前 Release 1.3、1.4 DLL**各 `28` 断言 PASS：从只读 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge/ONNX` 的现有普通 embedding 图+sidecar、reranker 普通图，实际产出有限向量/评分，门禁在该模块通过而在缺 ONNX 根时拒绝；将个人数据根指向禁止写入的仓内路径仍不影响模型读取。独立负例：模块无 ONNX 退出 1；合成无效图经 ONNX Runtime 报 `InvalidProtobuf`、退出 1；单测还覆盖布局/候选、缺 sidecar/tokenizer、坏 config、锁定不可读文件、坏旧凭证/缺 Recovery/mtime 改动及修复后重启可选。真实图测试是**离线 DLL 推理**，不是游戏 Host/战役/旧档验收。
+
+用这批最终 DLL 通过原 `deploy_module.ps1 -StageOnlyOutputDir` 重组 Debug/Release Stage，各 **123** 文件、无 ONNX；原 `package_mod.ps1 -NoBump` 仅由相应 Stage 产两份本地测试 ZIP。独立 ZIP/Stage 集合与 122 个非 XML SHA 一致、ONNX=0：Debug ZIP SHA-256 `b87efd3e49c149d21ac8da5e4ba03bfc98770b6d5edb627a6d69e68c99b65c51`，Release `6c839cbf037c8c04b53c265d4ba62f5b3bb364e97253eb1aa5f043878eb23948`；本地输出 `artifacts/j15-content/f4m-final-packages-0afff7ef7a554cb1a24cdbd3ad510955/`，**不可据此发布**。主 ZIP 排除模型与安装 `ONNX` 必需并存；程序更新保护只由合成受管部署/回滚证据支持，未在真实游戏安装执行。
+
+**仍未验证/下一步**：M9 两个**实际游戏版本**新战役、旧档、暂停弹窗/保存退出失败、补模型重启以及代表性检索均 `NOT-RUN`；只读 D: 安装现有 ONNX 不等于获准部署新 DLL 或旧档验收。F4-C/U/A/D（FeatureBridges 手改冲突、GUI 33/atlas、TPAC/设计源和旧资料/许可）未完成；F5 的编辑器完整 smoke、其余资源/扩展/存档矩阵与 LIVE/SAVE 未签收，F5/J15 及发布仍非完成。来源/再分发权尤其 reranker 未闭，不将测试 ZIP 上传。未来模块设置 UI、J16/J17 不在本包。若要修复真实安装缺模，先列精确源/目标/冲突并另获外写许可；不自动从用户 Models/Recovery/local 搬回。代码导航见[范围图](architecture/af-framework-code-scope.md)与[792 锚点代码地图](architecture/af-framework-code-map.json)；离线锚点验证不替代游戏行为。
+
+## 以下为被本次产品实施取代的计划状态（保留历史证据）
+
 <a id="j15-onnx-contract-correction-20260927"></a>
 
 ## J15 计划纠偏：ONNX 留在 AF 安装目录，先修 F2 路径回归（2026-09-27；仅文档）

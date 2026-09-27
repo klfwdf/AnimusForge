@@ -1,4 +1,8 @@
-# 当前范围：AF2.0 F3 单向 Stage/部署/ZIP 离线已验，F4/F5 未闭（2026-09-27）
+# 当前范围：J15 F4-M 模块 ONNX 契约代码与关联离线验证已完成；F4/F5 未闭（2026-09-27）
+
+产品/测试 `df49d81a`、`7693bedc`、`43e8bcf2`：`src/AF.Persistence/AnimusForgeModelStore.cs:23–107` 只解析当前模块 `ONNX` 的原 embedding/reranker 候选和配套文件，拒绝路径重定向，不再使用用户 Models、迁移凭证或 Recovery；`OnnxEmbeddingEngine.cs:457–529`、`OnnxCrossEncoderReranker.cs:541–596` 消费同一解析结果，`MyBehavior.cs:19639–19728` 的原开局/旧档门禁要求 embedding 文件完整且真实引擎可用，失败沿既有暂停/保存退出流程。`tools/af2_migrate.py:606–619` 在读取用户根前拒绝旧模型外迁命令；ModelsLock 只留开发文件，四实现 DLL 各保留原 7 项默认资源。路径解析仅在门禁或首次引擎初始化检查固定少量候选，实际模型 Session 不在 Tick 重建。DataPaths 66 checks、迁移拒绝/个人数据合成测试、当前 Release 1.3/1.4 DLL 离线真实 ONNX 向量/评分 probe 各 28 断言、双配置六构建、四 DLL 资源审计、J15 内容/ManagedDeploy 合成契约和两配置 Stage/本地测试 ZIP 核对通过；Stage/ZIP 不含 ONNX，D: 安装模型只读。代码地图 **792** 锚点绑定 `43e8bcf2`，记录修订与当前工作树两模式通过，**不是**游戏功能或旧档验收。详情见[主台账当前项](../animusforge-refactoring-and-repository-reorganization-plan.md#j15-onnx-f4m-implementation-20260927)及[J15 第 9 节](../plans/j15-content-profile-plan.md#j15-onnx-install-contract)。M9 两个实际游戏版本、旧档、LIVE/SAVE 未运行；F4-C/U/A/D、F5 其余矩阵及来源/许可未闭，ZIP 不可发布。未部署、未写游戏目录、未推送。
+
+## 以下为先前 F3 与模型外迁切片的历史范围（相冲突的运行状态已由上段取代）
 
 F3 产品/测试 **`a8f69b57`、`82d8ce53`**：`一键编译覆盖推送/deploy_module.ps1:103–123` 的 Stage reset 只处理精确项目内生成根；`:505–649` 的 `Invoke-ManagedStageDeployment` 是冷路径文件级 owner，按经验证 Stage 枚举受管文件、对已有目标做私有 SHA 备份、同卷候选替换、失败逆序恢复和中断记录拒绝，不扫/不合并安装用户资料，未知安装项保持，旧双模块仅只读告警。`:699–725` 由 Stage-only/部署共用一次静态装配和当前九项构建产物门禁；`package_mod.ps1` 仍仅从干净 Stage 生成 ZIP。旧 `/MIR`、安装 Prompt/PlayerExports merge 与死部署分支已移除。`tests/content/J15ContentContractTests/ManagedDeployContractTests.ps1:1–110` 的虚构故障、回滚/恢复、无变化重跑、中断与七类未受管哨兵是脚本行为证据；完整虚构游戏根部署 123 项 SHA 与 Stage 一致，Debug/Release Stage 重组稳定、两 ZIP 123 项集合及 122 个非 XML SHA 独立一致。部署不在游戏 Tick；仅显式构建/部署时按受管文件逐项 hash，非高频路径。当前六 DLL 来源是此前已验构建，本切片未重编 C#。代码地图 **789** 锚点绑定 `82d8ce53`，仅导航；D: 游戏目录/实机/旧档未执行。F3 仅离线闭合，F4 GUI/TPAC/权利与其余旧资料、F5 总验收仍阻断完整发布；按用户指令本轮到 F3 即停。
 
