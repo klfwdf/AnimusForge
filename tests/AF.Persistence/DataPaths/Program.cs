@@ -226,6 +226,13 @@ internal static class Program
         File.WriteAllText(config, "{}");
         Check(AnimusForgeModelStore.ResolveEmbedding(module).ModelPath == rootModel,
             "M5 repaired module dependency is available after restart");
+        bool lockedRejected = false;
+        using (new FileStream(rootModel, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            try { AnimusForgeModelStore.ResolveEmbedding(module); }
+            catch (IOException) { lockedRejected = true; }
+        }
+        Check(lockedRejected, "M5 locked model file cannot pass as readable");
         File.WriteAllText(Path.Combine(reranker, "tokenizer.json"), "{}");
         string rerankerModel = Path.Combine(reranker, "model.onnx");
         string rerankerQuantized = Path.Combine(reranker, "model_quantized.onnx");
