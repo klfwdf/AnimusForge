@@ -31,6 +31,7 @@ internal static class AnimusForgeModelStore
     {
         string onnx = GetOnnxDirectory(moduleRoot);
         string nested = Path.Combine(onnx, "onnx");
+        RejectRedirectedSubdirectory(nested);
         string model = FirstReadableFile(
             Path.Combine(nested, "model_quantized.onnx"), Path.Combine(onnx, "model_quantized.onnx"),
             Path.Combine(nested, "model.onnx"), Path.Combine(onnx, "model.onnx"));
@@ -49,6 +50,7 @@ internal static class AnimusForgeModelStore
     internal static ModelFiles ResolveReranker(string moduleRoot)
     {
         string reranker = Path.Combine(GetOnnxDirectory(moduleRoot), "reranker");
+        RejectRedirectedSubdirectory(reranker);
         string model = FirstReadableFile(Path.Combine(reranker, "model_quantized.onnx"), Path.Combine(reranker, "model.onnx"));
         string tokenizer = FirstReadableFile(Path.Combine(reranker, "tokenizer.json"));
         if (model == null || tokenizer == null)
@@ -80,6 +82,12 @@ internal static class AnimusForgeModelStore
             }
         }
         return null;
+    }
+
+    private static void RejectRedirectedSubdirectory(string path)
+    {
+        if (Directory.Exists(path) && (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
+            throw new InvalidOperationException("ONNX model directory is redirected: " + path);
     }
 
     private static void RequireReadableFile(string path, string name)
