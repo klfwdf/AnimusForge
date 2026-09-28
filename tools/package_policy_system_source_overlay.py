@@ -141,7 +141,6 @@ def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
         "AnimusForge/GUI/Prefabs/LocalPolicyComposePopup.xml",
         "AnimusForge/GUI/Prefabs/LocalPolicyHistoryPopup.xml",
         "AnimusForge/GUI/Prefabs/WorldDiplomacyComposePopup.xml",
-        "AnimusForge/GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice.png",
         "AnimusForge/GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice_v2.png",
     ]
     for relative in runtime_assets:
