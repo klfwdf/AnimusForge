@@ -7,7 +7,7 @@ import subprocess
 import uuid
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 BASE = "5c97bfb0"
 OUT = ROOT / "artifacts/tests/j02-diagnostics-a/oracle" / uuid.uuid4().hex
 OUT.mkdir(parents=True, exist_ok=False)

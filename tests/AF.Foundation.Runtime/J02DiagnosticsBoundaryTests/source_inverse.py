@@ -5,7 +5,7 @@ import re
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 BASE = "5c97bfb0"
 
 

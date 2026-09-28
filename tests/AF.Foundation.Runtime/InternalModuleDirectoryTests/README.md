@@ -13,7 +13,7 @@ $env:NUGET_PACKAGES = 'G:\AFMOD\AF-REFACTOR\.tmp\nuget-packages'
 $env:DOTNET_GENERATE_ASPNET_CERTIFICATE = 'false'
 $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = '1'
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
-& 'G:\AFMOD\.dotnet-sdk\dotnet.exe' run --project tools/InternalModuleDirectoryTests/InternalModuleDirectoryTests.csproj -c Release
+& 'G:\AFMOD\.dotnet-sdk\dotnet.exe' run --project tests/AF.Foundation.Runtime/InternalModuleDirectoryTests/InternalModuleDirectoryTests.csproj -c Release
 ```
 
 Target: `net8.0`, no package dependencies. The local test-only NuGet configuration has no remote sources. Production types remain `internal` inside the existing `AnimusForge.dll`; the test executable links them only to inspect and exercise their contract.

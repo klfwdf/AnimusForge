@@ -1128,9 +1128,13 @@
   },
   {
    "id": "tools/PersistenceIdentityAudit.py",
-   "exit": 1,
-   "status": "NEEDS_INPUT",
-   "last": "comparison complete"
+   "exit": 0,
+   "status": "PASS",
+   "last": "PASS with documented --baseline e58f3558 (default d4cb1467 predates WarStats keys): sync=142 behavior=36",
+   "args": [
+    "--baseline",
+    "e58f3558cddfe473f396bb7f11470b05e30afce9"
+   ]
   },
   {
    "id": "tools/PersistenceIdentityAuditContractTests/test_persistence_identity_audit.py",
@@ -1517,10 +1521,10 @@
   "ENV_STATE": "reports installed game module differs from Stage (expected before deployment)"
  },
  "counts": {
-  "PASS": 202,
+  "PASS": 203,
   "SUPERSEDED_BY_RUNNER": 3,
   "PREEXISTING_FAIL": 38,
   "ENV_STATE": 1,
-  "NEEDS_INPUT": 6
+  "NEEDS_INPUT": 5
  }
 }
