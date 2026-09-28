@@ -71,6 +71,59 @@ if (args.Contains("--path-contract-invalid", StringComparer.Ordinal))
     return 0;
 }
 
+if (args.Length == 2 && args[0] == "--isolated-full")
+{
+    if (!Path.IsPathFullyQualified(args[1]))
+        throw new InvalidOperationException("Isolated full smoke requires an absolute run root.");
+    var runRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(args[1]));
+    var tempRoot = Path.Combine(runRoot, "temp");
+    if (!Directory.Exists(runRoot) || !Directory.Exists(tempRoot))
+        throw new InvalidOperationException("Isolated full smoke requires an existing run root and temp directory.");
+
+    var dataRoot = Environment.GetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT");
+    if (string.IsNullOrWhiteSpace(dataRoot) || !Path.IsPathFullyQualified(dataRoot))
+        throw new InvalidOperationException("Isolated full smoke requires an absolute data-root override.");
+    dataRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(dataRoot));
+    if (!string.Equals(dataRoot, Path.Combine(runRoot, "data"), StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(Path.GetTempPath())), tempRoot, StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("TEMP") ?? "")), tempRoot, StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("TMP") ?? "")), tempRoot, StringComparison.OrdinalIgnoreCase))
+        throw new InvalidOperationException("Isolated full smoke requires data and temp under one run root.");
+
+    var playerExportsRoot = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
+    if (!string.Equals(playerExportsRoot, Path.Combine(dataRoot, "UserData", "PlayerExports"), StringComparison.OrdinalIgnoreCase) ||
+        Directory.Exists(playerExportsRoot) || File.Exists(playerExportsRoot))
+        throw new InvalidOperationException("Isolated full smoke refuses an existing PlayerExports root.");
+
+    RunDataTypeDeletionSmoke(service, preserveFixture: true);
+    var package = service.CreatePackage(playerExportsRoot, "IsolatedFullSmoke");
+    if (service.ListPackages(playerExportsRoot).Count != 1)
+        throw new InvalidOperationException("New synthetic package was not listed exactly once.");
+    var document = Path.Combine(package.FullPath, "event_data", "WorldOpeningSummary.json");
+    var original = File.ReadAllText(document);
+    var edited = "{\"Summary\":\"isolated-smoke\"}";
+    var firstBackup = service.SaveJsonDocument(package.FullPath, document, edited);
+    if (!File.Exists(firstBackup) || File.ReadAllText(firstBackup) != original || File.ReadAllText(document) != edited)
+        throw new InvalidOperationException("Editor save did not preserve original bytes in its backup.");
+    var invalidRejected = false;
+    try { service.SaveJsonDocument(package.FullPath, document, "{bad json"); }
+    catch (System.Text.Json.JsonException) { invalidRejected = true; }
+    if (!invalidRejected || File.ReadAllText(document) != edited)
+        throw new InvalidOperationException("Invalid JSON changed the active synthetic export.");
+    var secondBackup = service.SaveJsonDocument(package.FullPath, document, original);
+    if (!File.Exists(secondBackup) || secondBackup == firstBackup ||
+        File.ReadAllText(secondBackup) != edited || File.ReadAllText(document) != original)
+        throw new InvalidOperationException("Restoring saved bytes did not preserve the edited version.");
+
+    var loaded = service.LoadPackage(package.FullPath);
+    if (loaded.EventFiles.Count < 3 ||
+        validator.Validate(loaded).Any(issue => issue.Severity == ValidationSeverity.Error) ||
+        new ConditionCatalogBuilder().Build(loaded, AppContext.BaseDirectory).Roles.Count < 7)
+        throw new InvalidOperationException("Restored synthetic export did not reload and validate.");
+    Console.WriteLine("PASS isolated full editor smoke: package=1 edit=1 invalid-preserved=1 backup-restore=1 deletion-fixture-preserved=1");
+    return 0;
+}
+
 RunDataTypeDeletionSmoke(service);
 
 var root = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
@@ -150,13 +203,14 @@ static int CountLocalized(IEnumerable<ConditionCandidate> candidates)
     return candidates.Count(x => (x.Label ?? "").Any(c => c > 127));
 }
 
-static void RunDataTypeDeletionSmoke(PlayerExportsService service)
+static void RunDataTypeDeletionSmoke(PlayerExportsService service, bool preserveFixture = false)
 {
     var tempRoot = Path.Combine(Path.GetTempPath(), "af_playerexports_editor_" + Guid.NewGuid().ToString("N"));
+    var exportsRoot = Path.Combine(tempRoot, "UserData", "PlayerExports");
     Directory.CreateDirectory(tempRoot);
     try
     {
-        var package = service.CreatePackage(tempRoot, "DeletionSmoke");
+        var package = service.CreatePackage(exportsRoot, "DeletionSmoke");
         var eventFiles = service.ListDataTypeJsonFiles(package.FullPath, PlayerExportsDataType.EventData);
         if (eventFiles.Count < 3)
         {
@@ -186,7 +240,7 @@ static void RunDataTypeDeletionSmoke(PlayerExportsService service)
     }
     finally
     {
-        if (Directory.Exists(tempRoot))
+        if (!preserveFixture && Directory.Exists(tempRoot))
         {
             Directory.Delete(tempRoot, recursive: true);
         }

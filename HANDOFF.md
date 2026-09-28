@@ -1,3 +1,10 @@
+# 当前交接：J15 O2 隔离编辑器完整 smoke 已验，F4/F5 仍未闭（2026-09-28）
+
+- **当前进展**：仅在已批准的全新 `E:\AF-J15-editor-smoke-20260927-a\` 跑编辑器合成完整模式；.NET 10 定向构建 0 warning/error，两个路径拒写模式及完整 `package=1/edit=1/invalid-preserved=1/backup-restore=1/deletion-fixture-preserved=1` PASS。该根保留日志、两份备份和删除 fixture；未读写真实玩家包。入口仍在本地工作树，后续以本轮提交为准。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。
+- **下一门槛**：六项剩余旧 GUI 要逐项按真实消费者闭合，当前 124 项 Stage 的故障/中断恢复不能借旧 123 项结果；最后 O1–O7 同候选复验。TPAC 历史身份、第三方许可及双实际版本游戏/旧档仍 HOLD/NOT-RUN。已推送 `8af57b39` 取代下方历史“未推送”表述，但私人历史风险仍在；不得据此再次推送、部署或发布。
+
+## 以下为本轮之前的交接历史（相冲突状态以上段为准）
+
 # 当前交接：J15 F4-U 旧 GUI 退役、F4-A TPAC 投影及双 Stage 13/0 已验，F4/F5 仍未闭（2026-09-27）
 
 - **用户要求停下，待恢复**：截至本交接，最新已验证切片为 `b2b946d3`（F4-A 重复 TPAC 归档退役、六设计源 100% rename）；F4-U 退役为 `f26e4c2b`。两份忽略归档分别在 `local/j15-tpac-archive-20260927/legacy-module/`、`local/j15-gui-archive-20260927/legacy-splitshadows/`，**不随 Git 提交**，保留当前工作区才能直接恢复；Git 历史仍含旧私人资料/图，绝不据此推送。J15 内容契约最近 **108 映射/6 HOLD PASS**、双正式 Stage 各 124 项白名单、StaticVerifier 各 **13/0**、两个本地测试 ZIP 各 124 项；这些不是游戏/旧档或发布验收。
