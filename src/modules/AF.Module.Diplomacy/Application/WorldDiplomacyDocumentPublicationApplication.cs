@@ -8,6 +8,26 @@ namespace AnimusForge;
 // Publication ordering and retry policy, shared by compatibility and production callers.
 internal static class WorldDiplomacyDocumentPublicationApplication
 {
+    internal static void PublishPlayerImmediately(WorldDiplomacyDocument document, IWorldDiplomacyPublicationPort port)
+    {
+        if (document?.IsPlayerAuthored != true) return;
+        document.IsReadyForPublication = true;
+        document.AnalysisStatus = "pending_analysis";
+        string author = port.ResolveKingdomId(document.AuthorKingdomId);
+        if (author == null) return;
+        try
+        {
+            WorldDiplomacyPublicationRoutingApplication.Start(port, document, author);
+        }
+        catch (Exception ex)
+        {
+            // Visibility survives propagation failure; the bounded retry path repairs delivery.
+            document.PropagationCompleted = false;
+            port.Log("immediate player declaration propagation deferred document=" + document.DocumentId
+                + " error=" + ex.Message);
+        }
+    }
+
     internal static void FinalizePublishedDocumentAfterAnalysis(
         WorldDiplomacyDocument document,
         string authorKingdomId,

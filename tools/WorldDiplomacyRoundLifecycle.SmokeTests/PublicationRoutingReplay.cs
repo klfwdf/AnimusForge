@@ -9,6 +9,7 @@ internal static class PublicationRoutingReplay
         internal readonly List<string> Events = new();
         internal bool Allowed = true;
         internal int Captures;
+        internal bool FailCapture;
         public string ResolveKingdomId(string id) => id == "missing" ? null : id;
         public bool CanAiAuthor(string id, out string reason) { Events.Add("authority"); reason = "blocked"; return Allowed; }
         public bool HasAuthority(string id) => id != "vassal";
@@ -22,6 +23,7 @@ internal static class PublicationRoutingReplay
         public WorldDiplomacyPublicationSnapshot CaptureDestinations(string author, string origin)
         {
             Captures++; Events.Add("snapshot");
+            if (FailCapture) throw new InvalidOperationException("geography unavailable");
             return new WorldDiplomacyPublicationSnapshot(
                 new[] { new WorldDiplomacyPropagationApplication.SettlementTarget { Id = "village", Distance = 10 } },
                 new[] { new WorldDiplomacyPropagationApplication.CourtTarget { KingdomId = "b", SettlementId = "court", Distance = 5 } }, 10, 5);
@@ -37,6 +39,23 @@ internal static class PublicationRoutingReplay
     }
     internal static void Run()
     {
+        var immediate = new Port { FailCapture = true };
+        var player = new WorldDiplomacyDocument { DocumentId = "player", AuthorKingdomId = "a", TargetKingdomId = "b", IsPlayerAuthored = true };
+        WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(player, immediate);
+        Test.True(player.IsReadyForPublication && player.AnalysisStatus == "pending_analysis" && !player.PropagationCompleted
+            && immediate.Events.Last() == "log", "immediate player publication survives delivery failure while awaiting analysis");
+        immediate.FailCapture = false;
+        WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(player, immediate);
+        Test.True(player.PropagationCompleted && immediate.Storage.PropagationArrivals.Count == 2, "retry repairs propagation without hiding the document");
+        WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(player, immediate);
+        Test.True(immediate.Storage.PropagationArrivals.Count == 2 && immediate.Captures == 2, "duplicate immediate publication preserves completed delivery");
+        var missing = new WorldDiplomacyDocument { IsPlayerAuthored = true, AuthorKingdomId = "missing" };
+        WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(missing, immediate);
+        Test.True(missing.IsReadyForPublication && missing.AnalysisStatus == "pending_analysis" && immediate.Captures == 2,
+            "unresolved author remains visible without triggering world capture");
+        var ai = new WorldDiplomacyDocument();
+        WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(ai, immediate);
+        Test.True(!ai.IsReadyForPublication && immediate.Captures == 2, "player-only publication cannot publish an AI document");
         var p = new Port(); var doc = new WorldDiplomacyDocument { DocumentId = "d", AuthorKingdomId = "a", TargetKingdomId = "b" };
         WorldDiplomacyPublicationRoutingApplication.Start(p, doc, "a");
         Test.True(doc.PropagationCompleted && doc.HasReachedPlayerCourt && doc.IsReadyForPublication && p.Captures == 1

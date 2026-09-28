@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../Refactor/Contracts/WorldDiplomacyPolicySignalSnapshot.cs" Link="WorldDiplomacyPolicySignalSnapshot.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNoActionApplication.cs" Link="WorldDiplomacyNoActionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatBindingApplication.cs" Link="WorldDiplomacyThreatBindingApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs" Link="WorldDiplomacyHistoryCaptureApplication.cs" />
