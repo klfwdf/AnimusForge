@@ -5495,7 +5495,7 @@
     },
     {
       "id": "weekly.wave.coordination-replay",
-      "path": "tools/PhaseEightParityReplayTests/WeeklyReportWaveCoordinationReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/WeeklyReportWaveCoordinationReplay.cs",
       "start": 7,
       "end": 7,
       "symbol": "internal static class WeeklyReportWaveCoordinationReplay",
@@ -5506,7 +5506,7 @@
     },
     {
       "id": "weekly.queue.admission-replay",
-      "path": "tools/PhaseEightParityReplayTests/WeeklyReportQueueAdmissionReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/WeeklyReportQueueAdmissionReplay.cs",
       "start": 6,
       "end": 6,
       "symbol": "internal static class WeeklyReportQueueAdmissionReplay",
@@ -5517,7 +5517,7 @@
     },
     {
       "id": "weekly.queue.retired-host-replay",
-      "path": "tools/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/WeeklyReportCommitQueueReplay.cs",
       "start": 212,
       "end": 212,
       "symbol": "private static void RunRetiredQueueAdmissionReplay(",
@@ -5528,7 +5528,7 @@
     },
     {
       "id": "weekly.recovery.combined",
-      "path": "tools/PhaseEightParityReplayTests/WeeklyReportRecoveryReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/WeeklyReportRecoveryReplay.cs",
       "start": 13,
       "end": 13,
       "symbol": "internal static class WeeklyReportRecoveryReplay",
@@ -5671,7 +5671,7 @@
     },
     {
       "id": "kingdom.owner.replay",
-      "path": "tools/PhaseEightParityReplayTests/KingdomOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/KingdomOwnerReplay.cs",
       "start": 7,
       "end": 7,
       "symbol": "internal static class KingdomOwnerReplay",
@@ -5737,7 +5737,7 @@
     },
     {
       "id": "social.notoriety.replay",
-      "path": "tools/PhaseEightParityReplayTests/NotorietyOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/NotorietyOwnerReplay.cs",
       "start": 5,
       "end": 5,
       "symbol": "internal static class NotorietyOwnerReplay",
@@ -5748,7 +5748,7 @@
     },
     {
       "id": "social.romance.replay",
-      "path": "tools/PhaseEightParityReplayTests/RomanceOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/RomanceOwnerReplay.cs",
       "start": 7,
       "end": 7,
       "symbol": "internal static class RomanceOwnerReplay",
@@ -5781,7 +5781,7 @@
     },
     {
       "id": "social.recruitment.replay",
-      "path": "tools/PhaseEightParityReplayTests/RecruitmentOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/RecruitmentOwnerReplay.cs",
       "start": 7,
       "end": 7,
       "symbol": "internal static class RecruitmentOwnerReplay",
@@ -5869,7 +5869,7 @@
     },
     {
       "id": "social.proactive.opening.replay",
-      "path": "tools/PhaseEightParityReplayTests/ProactiveOpeningOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ProactiveOpeningOwnerReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class ProactiveOpeningOwnerReplay",
@@ -5880,7 +5880,7 @@
     },
     {
       "id": "issue.alternative.dispatch.replay",
-      "path": "tools/PhaseEightParityReplayTests/IssueAlternativeDispatchOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/IssueAlternativeDispatchOwnerReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class IssueAlternativeDispatchOwnerReplay",
@@ -5968,7 +5968,7 @@
     },
     {
       "id": "social.proactive.cooldown.replay",
-      "path": "tools/PhaseEightParityReplayTests/ProactiveCooldownOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ProactiveCooldownOwnerReplay.cs",
       "start": 5,
       "end": 5,
       "symbol": "internal static class ProactiveCooldownOwnerReplay",
@@ -6045,7 +6045,7 @@
     },
     {
       "id": "social.proactive.scan.replay",
-      "path": "tools/PhaseEightParityReplayTests/ProactiveCandidateScanOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ProactiveCandidateScanOwnerReplay.cs",
       "start": 5,
       "end": 5,
       "symbol": "internal static class ProactiveCandidateScanOwnerReplay",
@@ -6133,7 +6133,7 @@
     },
     {
       "id": "social.proactive.session.replay",
-      "path": "tools/PhaseEightParityReplayTests/ProactiveSessionOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ProactiveSessionOwnerReplay.cs",
       "start": 5,
       "end": 5,
       "symbol": "internal static class ProactiveSessionOwnerReplay",
@@ -6199,7 +6199,7 @@
     },
     {
       "id": "social.proactive.qualification.replay",
-      "path": "tools/PhaseEightParityReplayTests/ProactiveQualificationReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ProactiveQualificationReplay.cs",
       "start": 6,
       "end": 6,
       "symbol": "internal static class ProactiveQualificationReplay",
@@ -6364,7 +6364,7 @@
     },
     {
       "id": "issue.d2.contract",
-      "path": "tools/PhaseEightParityReplayTests/J13D2DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13D2DomainOwnerContractReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class J13D2DomainOwnerContractReplay",
@@ -6474,7 +6474,7 @@
     },
     {
       "id": "world.inbox.replay",
-      "path": "tools/PhaseEightParityReplayTests/WorldEventInboxOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/WorldEventInboxOwnerReplay.cs",
       "start": 7,
       "end": 7,
       "symbol": "internal static class WorldEventInboxOwnerReplay",
@@ -6485,7 +6485,7 @@
     },
     {
       "id": "world.inbox.contract",
-      "path": "tools/PhaseEightParityReplayTests/J13D3DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13D3DomainOwnerContractReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class J13D3DomainOwnerContractReplay",
@@ -6639,7 +6639,7 @@
     },
     {
       "id": "war.contract",
-      "path": "tools/PhaseEightParityReplayTests/J13D4DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13D4DomainOwnerContractReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class J13D4DomainOwnerContractReplay",
@@ -6815,7 +6815,7 @@
     },
     {
       "id": "duel.contract",
-      "path": "tools/PhaseEightParityReplayTests/J13E1DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13E1DomainOwnerContractReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class J13E1DomainOwnerContractReplay",
@@ -6826,7 +6826,7 @@
     },
     {
       "id": "duel.replay.dispatch",
-      "path": "tools/PhaseEightParityReplayTests/DuelDispatchOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/DuelDispatchOwnerReplay.cs",
       "start": 6,
       "end": 6,
       "symbol": "internal static class DuelDispatchOwnerReplay",
@@ -7123,7 +7123,7 @@
     },
     {
       "id": "taunt.contract",
-      "path": "tools/PhaseEightParityReplayTests/J13E2DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13E2DomainOwnerContractReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class J13E2DomainOwnerContractReplay",
@@ -7134,7 +7134,7 @@
     },
     {
       "id": "taunt.replay.context",
-      "path": "tools/PhaseEightParityReplayTests/ScenePeaceConflictOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ScenePeaceConflictOwnerReplay.cs",
       "start": 5,
       "end": 5,
       "symbol": "internal static class ScenePeaceConflictOwnerReplay",
@@ -7145,7 +7145,7 @@
     },
     {
       "id": "taunt.replay.penalty",
-      "path": "tools/PhaseEightParityReplayTests/SceneTauntPenaltyLedgerOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/SceneTauntPenaltyLedgerOwnerReplay.cs",
       "start": 5,
       "end": 5,
       "symbol": "internal static class SceneTauntPenaltyLedgerOwnerReplay",
@@ -7156,7 +7156,7 @@
     },
     {
       "id": "taunt.replay.lifecycle",
-      "path": "tools/PhaseEightParityReplayTests/SceneTauntConflictLifecycleOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/SceneTauntConflictLifecycleOwnerReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class SceneTauntConflictLifecycleOwnerReplay",
@@ -7332,7 +7332,7 @@
     },
     {
       "id": "encounter.replay.aggregate",
-      "path": "tools/PhaseEightParityReplayTests/J13E3DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13E3DomainOwnerContractReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class J13E3DomainOwnerContractReplay",
@@ -7519,7 +7519,7 @@
     },
     {
       "id": "settlement.replay.aggregate",
-      "path": "tools/PhaseEightParityReplayTests/J13E4DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13E4DomainOwnerContractReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class J13E4DomainOwnerContractReplay",
@@ -7772,7 +7772,7 @@
     },
     {
       "id": "exercise.identity.replay",
-      "path": "tools/PhaseEightParityReplayTests/ExerciseMapEventIdentityOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ExerciseMapEventIdentityOwnerReplay.cs",
       "start": 5,
       "end": 5,
       "symbol": "internal static class ExerciseMapEventIdentityOwnerReplay",
@@ -7783,7 +7783,7 @@
     },
     {
       "id": "exercise.session.replay",
-      "path": "tools/PhaseEightParityReplayTests/MilitaryExerciseSessionOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/MilitaryExerciseSessionOwnerReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class MilitaryExerciseSessionOwnerReplay",
@@ -7794,7 +7794,7 @@
     },
     {
       "id": "exercise.settlement.replay",
-      "path": "tools/PhaseEightParityReplayTests/ExerciseSettlementOwnerReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/ExerciseSettlementOwnerReplay.cs",
       "start": 4,
       "end": 4,
       "symbol": "internal static class ExerciseSettlementOwnerReplay",
@@ -7805,7 +7805,7 @@
     },
     {
       "id": "exercise.contract.replay",
-      "path": "tools/PhaseEightParityReplayTests/J13E5DomainOwnerContractReplay.cs",
+      "path": "tests/replay/PhaseEightParityReplayTests/J13E5DomainOwnerContractReplay.cs",
       "start": 8,
       "end": 8,
       "symbol": "internal static class J13E5DomainOwnerContractReplay",
