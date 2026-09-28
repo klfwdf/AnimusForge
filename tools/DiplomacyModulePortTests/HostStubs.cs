@@ -82,8 +82,18 @@ namespace AnimusForge
         }
         public static string BuildDiplomacyPostprocessContext(Hero h) { Recording.Call("context",h); return h?.StringId ?? ""; }
         public static void ProcessDiplomacyTagsDispatch(Hero h, ref string text) { Recording.Call("execute",h,text); if (h != null) text = "confirmed:"+text; }
-        public static bool TryBuildTributePowerContext(Kingdom payer, Kingdom receiver, out AfTributePowerContext value)
-        { Recording.Call("tribute",payer,receiver);value=new AfTributePowerContext(1,2,3,4,5,6,7,8,9,10,11);return Recording.Result; }
+    }
+    internal readonly struct DiplomacyTributePowerSource : IDiplomacyTributePowerSource
+    {
+        private readonly Kingdom payer;
+        private readonly Kingdom receiver;
+        public DiplomacyTributePowerSource(Kingdom p, Kingdom r) { payer=p;receiver=r; }
+        public bool TryCapture(out DiplomacyTributePowerSnapshot snapshot)
+        {
+            Recording.Call("tribute",payer,receiver);
+            snapshot=new DiplomacyTributePowerSnapshot(1,2,3,4,5,6,1000);
+            return Recording.Result;
+        }
     }
     internal struct DiplomacyIndependentPeaceSource : IDiplomacyIndependentPeaceSource
     {
