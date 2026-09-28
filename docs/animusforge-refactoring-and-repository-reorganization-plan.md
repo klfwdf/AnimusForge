@@ -9,7 +9,9 @@
 - 本分支对它做过的事：`b2b946d3`（远端）把重复的 `AnimusForge/AssetPackages/pack0.tpac` 同 SHA 备份到忽略的 `local/j15-tpac-archive-20260927/` 后退出活动树；本轮只读使用，未改字节。
 - 待该成员处理：`extensions/AnimusForge.XihaiAction/RELEASE_MANIFEST.json:42` 与 `MIGRATION_MANIFEST.json:19` 仍记旧 11,205,263 字节 / `22CDE3B0…` 身份，与当前包不符；来源/再分发说明；1.3/1.4 实机动作视觉。inventory 仍把该文件标 `HOLD:asset-package-provenance`，J15 内容 runner 锁当前 hash，换包时需同步这两处。
 
-**J16**：计划见 [j16-tests-tools-docs-plan.md](plans/j16-tests-tools-docs-plan.md)，施工未开始。
+**J16**：计划见 [j16-tests-tools-docs-plan.md](plans/j16-tests-tools-docs-plan.md)。
+
+**J16 意图检查点（2026-09-28，`J16_ACTIVE`）**：用户批准开工。本分支按计划 G0 → J16a → J16b → J16c → J16e 推进；J16d（一键脚本/Bootstrap）与 A1 去跟踪、A5 venv、A6 CLAUDE/AGENTS 段落仍需逐项确认。G0 先在原位置跑全部 runner（仓外 TEMP、只写忽略的 `artifacts/`），形成移动前结果表；只改测试/工具路径与定位，不改断言、产品代码、`pack0.tpac`、Stage 映射或 GCCZ；不推送、不部署。
 
 <a id="j15-f45-current-20260927"></a>
 
