@@ -74,6 +74,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert owner in after, signature
   prior=prior.replace(before,after)
+ for signature,owner in (('private void PublishPlayerAuthoredDocumentImmediately(', 'WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately'), ('private void RefreshPolicyDiplomacySignals(', 'WorldDiplomacyPolicyRoundApplication.RefreshSignals')):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert owner in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('

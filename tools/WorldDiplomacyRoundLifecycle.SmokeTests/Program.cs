@@ -162,6 +162,7 @@ RunRepairCorrectionAndJobDecisionTests();
         InitialPeaceReplay.Run();
         HistoryCaptureReplay.Run();
         AdmissionBindingReplay.Run();
+        PolicySignalRefreshReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14259,6 +14260,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "retired exchange reminder path stays absent; public reminder rule retains compatibility");
         Test.True(!behaviorSource.Contains("private void ProcessPlayerResponseTimeouts(", StringComparison.Ordinal) && rulesSource.Contains("public static bool IsExchangeCloseDue(", StringComparison.Ordinal),
             "retired exchange timeout path stays absent; public close rule retains compatibility");
+        string policyRoundApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPolicyRoundApplication.cs"));
         string noActionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNoActionApplication.cs"));
         string bindingSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatBindingApplication.cs"));
         string historyCaptureSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs"));
@@ -14778,7 +14780,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizePendingPolicySignals", StringComparison.Ordinal),
             "host must delegate pending policy signal normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedPolicySignals", StringComparison.Ordinal),
+        Test.True(policyRoundApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedPolicySignals", StringComparison.Ordinal),
             "host must delegate retained policy signal selection to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeProcessedSignalKeys", StringComparison.Ordinal),
             "host must delegate processed signal key normalization to the domain");

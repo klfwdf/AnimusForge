@@ -785,23 +785,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document)
 	{
-		if (document?.IsPlayerAuthored != true) return;
-		document.IsReadyForPublication = true;
-		document.AnalysisStatus = "pending_analysis";
-		Kingdom author = ResolveKingdom(document.AuthorKingdomId);
-		if (author == null) return;
-		try
-		{
-			StartDocumentPropagation(document, author);
-		}
-		catch (Exception ex)
-		{
-			// IsReadyForPublication remains true, so the bounded deferred retry path can
-			// rebuild geographic propagation without ever hiding the player's document.
-			document.PropagationCompleted = false;
-			Log("immediate player declaration propagation deferred document=" + document.DocumentId
-				+ " error=" + ex.Message);
-		}
+		WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately(document, new PublicationPort(this));
 	}
 	private void RestoreSuspendedExchangeIfAny()
 	{
@@ -810,41 +794,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void RefreshPolicyDiplomacySignals()
 	{
-		_storage.PendingPolicySignals ??= new List<WorldDiplomacyPolicySignal>();
-		_storage.ProcessedPolicySignalKeys ??= new List<string>();
-		_storage.RecentTopicUses ??= new List<WorldDiplomacyTopicUse>();
-		HashSet<string> known = new HashSet<string>(_storage.ProcessedPolicySignalKeys, StringComparer.OrdinalIgnoreCase);
-		foreach (WorldDiplomacyPolicySignal pending in _storage.PendingPolicySignals.Where(item => item != null))
-		{
-			known.Add(pending.SignalKey ?? "");
-		}
-
-		int day = CurrentDay();
-		foreach (WorldDiplomacyPolicySignalSnapshot snapshot in DiplomacyModuleServices.Policy.GetForeignPolicySignals())
-		{
-			if (snapshot == null || string.IsNullOrWhiteSpace(snapshot.SignalKey) || known.Contains(snapshot.SignalKey)
-				|| day - snapshot.PublishedDay > PolicySignalRetentionDays)
-			{
-				continue;
-			}
-			_storage.PendingPolicySignals.Add(new WorldDiplomacyPolicySignal
-			{
-				SignalKey = snapshot.SignalKey,
-				PolicyId = snapshot.PolicyId,
-				PolicyKind = snapshot.PolicyKind,
-				PolicyName = snapshot.PolicyName,
-				PolicySummary = snapshot.PolicySummary,
-				IssuerKingdomId = snapshot.IssuerKingdomId,
-				IssuerKingdomName = snapshot.IssuerKingdomName,
-				TargetKingdomId = snapshot.TargetKingdomId,
-				TargetKingdomName = snapshot.TargetKingdomName,
-				DirectEffect = snapshot.DirectEffect,
-				PublishedDay = snapshot.PublishedDay
-			});
-			known.Add(snapshot.SignalKey);
-		}
-		_storage.PendingPolicySignals = WorldDiplomacyRoundLifecycleRules.SelectRetainedPolicySignals(
-			_storage.PendingPolicySignals, day, PolicySignalRetentionDays, MaxPendingPolicySignals);
+		WorldDiplomacyPolicyRoundApplication.RefreshSignals(_storage, CurrentDay, DiplomacyModuleServices.Policy.GetForeignPolicySignals,
+			PolicySignalRetentionDays, MaxPendingPolicySignals);
 	}
 	private void TrySchedulePolicyTriggeredRound()
 	{
