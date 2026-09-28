@@ -409,7 +409,16 @@ F4U_ARCHIVED_LEGACY_GUI_PATHS = {
     or path.startswith(("GUI/SpriteParts/ui_account/", "GUI/SpriteParts/ui_achievement/",
                         "GUI/SpriteParts/ui_subscribe/"))
 }
-CURRENT_HOLD_PATHS = J15B_HOLD_PATHS - J15C_EXPECTED.keys() - F4D_ARCHIVED_PRIVATE_PATHS - F4U_ARCHIVED_LEGACY_GUI_PATHS
+F4U_ARCHIVED_UNUSED_GUI_PATHS = {
+    "GUI/SpriteParts/af_courier/af_courier_scroll_version_a.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png.tmp.png",
+    "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_culture_panel_patch.png",
+    "GUI/SpriteParts/af_terminal/af_scroll_quill.png",
+    "GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice.png",
+    "GUI/SpriteSheets/af_vassalage_notifications/af_vassalage_notifications_1.png",
+}
+CURRENT_HOLD_PATHS = (J15B_HOLD_PATHS - J15C_EXPECTED.keys() - F4D_ARCHIVED_PRIVATE_PATHS
+                      - F4U_ARCHIVED_LEGACY_GUI_PATHS - F4U_ARCHIVED_UNUSED_GUI_PATHS)
 F4A_EXPECTED = {
     "AssetPackages/pack0.tpac": {
         "owner": "AnimusForge.XihaiAction",
@@ -533,6 +542,11 @@ def verify_map_and_resources() -> None:
     for target in F4U_ARCHIVED_LEGACY_GUI_PATHS:
         check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired legacy GUI returned: {target}")
         check(target not in by_target, f"retired legacy GUI entered content map: {target}")
+
+    check(not F4U_ARCHIVED_UNUSED_GUI_PATHS - J15B_HOLD_PATHS, "unused GUI retirement must come from the J15b HOLD set")
+    for target in F4U_ARCHIVED_UNUSED_GUI_PATHS:
+        check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired unused GUI returned: {target}")
+        check(target not in by_target, f"retired unused GUI entered content map: {target}")
 
     remaining = {
         path.relative_to(ROOT / "AnimusForge").as_posix()
