@@ -1,12 +1,148 @@
 <a id="af2-closeout-plan-20260928"></a>
 
-# AF 2.0 完整重构结项计划复核（2026-09-28，规划中）
+# AF 2.0 完整重构结项计划（2026-09-28，当前执行口径）
 
-- **本轮授权**：用户要求重整重构计划，避免前期有限完成/兼容保留记录误导后续执行；本轮只改计划、源码范围说明和交接，不实施产品重构。
-- **只读基线**：`254581edca8e6f9264ed799239fc7f1924d23090`，分支 `codex/af-main-refactor-continuation-20260831`；原有未跟踪 `.dotnet-cli-home/` 保留，不纳入提交。
-- **意图**：沿用 J01–J17 及现有主台账；核实已有 owner/保留项/证据工具的适用范围，建立剩余职责的当前状态、目标 owner、适配边界和有限验收，明确全范围盘点尚未完成的部分，不把文档补齐当产品完成。
-- **拟改文件**：本台账、`docs/architecture/af-framework-code-scope.md`、`docs/animusforge-owner-matrix.md`、`HANDOFF.md`。保留历史正文及原证据，增加明确 supersession/当前路由；不新建竞争台账，不改产品源码、测试、配置、Skill 或一键流程。
-- **退出条件**：当前计划与历史范围区分清楚；已核实残余与待复核范围分列；每项有归属/退出条件/证据边界；文档链接和源码坐标核验、代码地图及产品零差异检查通过。只做本地文档提交，不 push、部署、打包、写游戏/玩家数据或外仓。
+**状态：`PLAN_READY / RESPONSIBILITY_AUDIT_PENDING / PRODUCT_REFACTOR_NOT_COMPLETE`。** 本轮只重整计划；没有迁移产品业务、改测试断言或提升游戏验收状态。用户要求“做彻底，避免前期误导”，本节是 J01–J17 的当前结项解释与 J16/J17 执行细化，不另立重构项目。J01–J15 已记录的具名离线成果按原范围保留；`J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD` 仍有效，绝不等于 AF 主体已拆净。
+
+- **源码基线**：`254581edca8e6f9264ed799239fc7f1924d23090`，`codex/af-main-refactor-continuation-20260831`；本地规划意图提交 `0fc82e15`。后续必须重新核实实际 Git，不能按此记录切换目录/分支。
+- **本轮范围**：本台账、[当前源码证据](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)、[旧 owner matrix 的当前路由](animusforge-owner-matrix.md)、[简短 HANDOFF](../HANDOFF.md)。不改产品、配置、测试、Skill、一键构建/覆盖/打包方式，不部署/推送、不操作真实玩家数据或外仓；原未跟踪 `.dotnet-cli-home/` 保留。
+- **唯一事实分工**：本节保存职责状态/目标/退出门；范围图保存基线符号/调用链证据；代码地图仅作定位；HANDOFF 只链接摘要。不要再维护一张竞争进度表。
+
+## 1. 纠正旧记录的读法，不推翻有效成果
+
+| 旧入口 / 容易误读的说法 | 当前解释与替代关系 |
+| --- | --- |
+| 下方“2026-09-19 总计划”里的 J12/J13 尚未施工、J14 Scene/Courier 尚为 NotSupported | 是规划时点，不是当前状态。J12/J13 已有有限离线回执；当前 `AfApi` 已声明 Native/Scene/Courier Available，其他三项仍不支持。以本节、具名后续回执及当前源码为准，不能重新实现已完成能力。 |
+| J05/J10/J13 的 OFFLINE_VERIFIED 或“整包闭合” | 仅关闭当时明确验收的责任单元；不自动关闭同文件剩余算法，也不把历史保留项批准为永久兼容。已证实的新 owner 不因此次重整全部返工。 |
+| J05 将五个记忆记录及 Sanitize 一并归为 SaveableTypeDefiner 身份保留 | 该概括不能作为所有算法原地保留的证据。当前 `MyBehaviorSaveableTypeDefiner` 直接注册的是 `Dictionary<MobileParty, string>`；日草稿等所查路径使用 JSON。必须分别核对 TaleWorlds 保存身份、JSON 字段/设置、公开 ABI 和算法；本轮不据此宣称类型可安全改名。 |
+| 旧 owner matrix 的“当前 J06 VERIFY”、历史 F:/G: 工作区及旧 HANDOFF 的施工命令 | 只保留历史导航，不作为当前状态或操作授权。当前工作区取 Git，当前计划取本节；禁止照抄历史清理/部署/推送命令。 |
+| inventory unknown=0、代码地图 PASS、entryCoverage=COMPLETE 或目录已归 src | 各自只证明文件分类、坐标或已登记入口覆盖；不是业务迁移完整证明。入口工具基于人工配置模式，不穷举每个方法/字段。 |
+| Phase8 cleanup-candidates / readiness 已存在 | 复用其候选和证据规则，但现有 18 个清理候选不是全仓剩余职责表，领域 ASSIGNED 也不等于内部算法已迁完。不得修改它们的状态凑本计划通过。 |
+
+**旧回执正文保留，不把当年的未完成改写为当年已完成。** 本节只取代冲突的“当前状态”和结项解释；相同源码、相同条件的有效证据仍可复用。旧源码坐标失效时按符号重定位，不能只刷新 hash 冒充行为复验。
+
+## 2. 最终目标与不扩大的边界
+
+1. **完成的含义**：AF 主体及已纳入 J01–J15 的 AF 领域业务，由明确模块承担算法、运行状态和资源生命周期；全部实际消费者使用其权威实现。游戏宿主只保留有证据的事件/线程/游戏对象接入、保存身份及必要兼容门面。不是把每一行重写，也不要求旧类消失。
+2. **保持运行结构**：同 DLL 逻辑模块，一套源码双 API 实现，一个 AnimusForge 模块、Bootstrap 唯一加载。内部 typed 接缝与版本化 public API 分开；不新增通用 ModuleHost、反射注册、热卸载或无消费者接口。
+3. **保持行为**：既有玩法、Prompt/标签、MCM、失败/部分成功、三渠道历史与 AFEF、默认交互入口保持。修复确认缺陷须单独写出复现与批准变化，不借重构改规则或缩减功能。
+4. **制作组边界**：政策、宴会、GCCZ 内部玩法/状态机不是本计划重写对象；AF 侧调用、薄桥和跨域权威边界在范围内。也不能将 AF 自己残留的经济、社交、场景等业务笼统划到制作组以逃避盘点。原版/外部依赖不计入 AF 待重构实现。
+5. **发行约定**：按用户确认的方式发 AFMOD，包内有默认提示词，玩家另行安装模块 ONNX，更新覆盖发行文件是预期行为。不要自动恢复已撤回的“保护旧默认提示词不被覆盖”修改；默认发行内容与真实用户个人数据分别管理。此计划不改变现有覆盖脚本，也不授予部署/发布权限。
+6. **兼容不是旧算法的豁免**：原 namespace、类型/字段 ID、SyncData 键、JSON 协议和必要公开签名按实际契约保留；算法可以在不破坏身份的前提下迁移。游戏对象留主线程，不等于领域规则必须永远留 CampaignBehavior。
+
+<a id="af2-responsibility-register-20260928"></a>
+
+## 3. 一份职责登记表，两层覆盖，禁止用样例冒充全量
+
+### 3.1 每个责任单元的必填信息
+
+每行按可独立验证的完整职责成组，不为每个 helper 新造任务；但组内方法、字段、嵌套类型和关键调用点必须能逐符号对账：
+
+- 稳定 ID、来自哪个 J 包/领域、当前源码修订和范围图证据 ID；当前实现和全部入口/调用者（含动态调用、反射、Harmony、保存入口）。
+- 尚在宿主的算法、权威状态、资源与线程责任；目标逻辑 owner，哪些引擎读写/身份适配保留以及具体理由。
+- 迁移顺序与依赖、保持行为、运行频率和真实工作量/缓存策略；替代实现、旧入口的去留条件。
+- 有限验收用例及对应现有 runner/生产实现、有效失败反例、源码/候选绑定；证据层级与未验项。
+- 当前状态、关闭修订与审查结论；转交只改变负责包，不自动变成完成。暂留项不能仅写“以后/J17处理”。
+
+| 职责状态 | 允许含义 | 是否可用于结构结项 |
+| --- | --- | --- |
+| `REVIEW_REQUIRED` | 未完成方法体/状态/消费者闭包复核；不是确认缺陷，也不是已完成 | 否 |
+| `OPEN` | 已确认仍需迁移或归位，有明确目标和退出门 | 否 |
+| `VERIFY` | 已实现，必要证据未齐 | 否 |
+| `CLOSED` | 算法/状态及实际消费者已闭合，替代/残留与必要离线验证有绑定证据 | 是，仅其具名范围 |
+| `RETAINED_BOUNDARY` | 已逐符号证明必须保留的保存/ABI/游戏适配；不包含被豁免的领域主体算法 | 是，仅其明确适配职责 |
+| `EXCLUDED_BY_SCOPE` | 第 2 节原有排除，仍标明 AF 接缝责任；新增排除须用户确认 | 不计入迁移完成量，不允许扩大豁免 |
+
+`STRUCTURE / RESPONSIBILITY / OFFLINE / LIVE / SAVE / RELEASE` 分轴记账。保存或发布未验不伪装成结构缺陷，反过来结构通过也不能提升实机/旧档状态。没有可信分母前不报“完成百分比”。
+
+### 3.2 当前已核实的初始登记（不是全量盘点通过）
+
+源码证据详见范围图 E01–E08；以下目标是逻辑职责，不强制创建同名新类。已有适合的 owner 优先扩展。
+
+| ID / 原包 | 当前结论、边界与依赖 | 目标归属 / 保留接线 | 必须达到的有限退出门 | 当前状态 |
+| --- | --- | --- | --- | --- |
+| R01 / J13a | E02：周报模块仍调回 MyBehavior 的掠夺结果转换/类别素材构造；排序分桶、游标和 wave 等已有独立职责不重做 | `AF.Module.Weekly/Materials` 负责规则和构造；宿主只捕获 Settlement/Hero 等游戏数据，DTO/保存身份单独审查 | 自动与同步入口、全文/短报、掠夺开始/成功/击退/中止/未知和多事件顺序回归；类别归并/关联 ID/来源计数保持；已迁算法不再由旧宿主实现；复用 PhaseEightParityReplayTests 的 Weekly 材料/周报回放并覆盖生产接线，记录组内工作量 | `OPEN` |
+| R02 / J05 | E03：摘要系统/用户规则仍在 MyBehavior，捕获、重试、解析编排仍在其 partial；dispatcher/run/账本成果保持 | `AF.Module.Memory/Summary` 承担摘要决策/编排；游戏事实捕获和保存接受留窄边界，不把摘要业务塞进通用 dispatcher；先处理 R04 类型约束 | daily/major/overview 同输入结果与格式、AFEF 原文/公开私密/自称语义保持；重试、同代来源变化、owner/generation 失效拒收和唯一提交；复用 MemorySummaryRunOwnerTests 等现有回归，游戏捕获与纯规则分界可审查 | `OPEN` |
+| R03 / J05、J15 接缝 | E07：压缩记忆导出/应用仍在宿主做过滤、覆盖/合并、队列及 overview 变更；J15 数据路径与编辑器成果不是该业务已迁出的证据 | Memory 负责业务快照/导入应用；`AF.Persistence` 保持通用文件/JSON；UI 只选择输入/显示结果。先核实 R04，保留导出格式与真实用户数据安全 | 单人/整组路径、覆盖与合并、空/坏内容、队列与 overview 状态保持；现有 PlayerExports 及记忆回归接真实业务，不能只验读写文件；实际玩家文件不作为破坏性 fixture | `OPEN` |
+| R04 / J05 保存边界 | E04：JSON 记录、Saveable 注册、算法必须分开；“嵌套存档类型不能搬所以全部算法不拆”的证据不足，但也不能直接改名 | 保留确需的保存/公开类型与薄映射，纯净化规则归 Memory；主线程原地/后台 clone 语义另审；先完成类型使用与序列化闭包 | 列出键/类型 ID、JSON 字段/serializer 设置、所有读写和动态引用；明确哪些类型必须原位、哪些算法无需原位；Profile/Chunk/Identity/旧格式回归，真实旧档另验，不通过则保持兼容而继续寻找不改身份的算法边界 | `REVIEW_REQUIRED` |
+| R05 / J04、J07、J10 | E05：Scene/Courier 生产链使用含完整业务的旧类型 partial；这不是单凭 partial 就判失败，需核定渠道 owner 与跨域规则的界线 | Conversation 渠道持有会话/队列/渠道编排，Prompt/Memory/Actions 各自负责共享语义；Bannerlord 捕获/表现留适配 | Native/Scene/Courier 真实入口逐条串到输出/后处理/执行/AFEF 回读；群聊接力、旁听、输入去重、预生成不提前提交、来信/retry/取消/迟到保持；只对确认混合责任建立待迁子项，复用既有三渠道 runner，不要求正文逐字相同 | `REVIEW_REQUIRED` |
+| R06 / J16、J17 | Git tracked 当前 `Refactor/` 尚有 30 个 C#；其中含活跃 façade/gateway/契约/receipt，不等于 30 个废弃实现 | 按实际 owner 归 `src/`；公共签名/命名空间可保留，纯 rename 与职责抽取分开验收；E01 已独立的 HTTP 实现不推倒 | 每个文件与符号有去向；所有 Compile、测试提取、反射/动态消费者改接；无重复编译/第二核心；Refactor 清空后仍需业务表通过。删除前验证替代与调用责任，遵守精确删除授权 | `OPEN`（结构）；职责须逐项复核 |
+| R07 / J01–J15 全覆盖 | 下表 20 个已有责任桶只是覆盖网；本轮没有逐方法审完所有大类，不能将未抽查部分标成薄壳 | 复用当前各模块；扫描根目录、全部 partial、src/Refactor 及显式编译的扩展，按真实责任而非 Weekly/Legacy 名称归类 | 覆盖表每行有实际编译输入与成员分区；每个未闭业务簇落为独立登记项；所有字段/方法/类型有归属且无遗漏，或对应已批准排除/保留；不得把本宽泛行直接勾 CLOSED | `REVIEW_REQUIRED` |
+| R08 / J05、J13 等性能 | dispatcher 的回调预算不等于每条 record 工作量；旧日志提到的 O(N) 快照不能直接当当前缺陷或已修复 | 各领域负责其实际工作量；Foundation 只承载通用预算机制 | 对本次变更逐项记录触发频率、snapshot/排序/循环大小、缓存与分批；保留顺序/事实/功能；现有预算/积压回放验证有限工作量，帧耗时须实机数据；不无依据重开已验证优化或强求所有冷路径 O(1) | `REVIEW_REQUIRED` |
+| R09 / J16、J17 验收收口 | 现有文件/入口/代码地图工具不能替代 R07；已有测试、源码提取路径和旧文档还需随最终 owner 对齐 | 测试跟真实生产 owner，主台账唯一当前进度；复用已有工具，不新建通用验收平台 | 测试真实参与且故障反例失败于业务断言；目录归位无漏编/双编；当前候选双 API/Bootstrap 和相关集成验证；文档无失效活动入口，LIVE/SAVE/发布另表，未完成不以填表强行通过 | `REVIEW_REQUIRED` |
+
+### 3.3 全范围覆盖网（J17-A 必须补完，不按代表性样本签收）
+
+沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。**本表各桶的全量成员审查当前均为待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
+
+| 现有责任桶 ID | 本轮/后续盘点范围与目标责任（不是确认未迁的清单） |
+| --- | --- |
+| bootstrap-build | Bootstrap/项目/XML/双实现选择；稳定装载身份与构建边界，只有另获授权才迁脚本/Bootstrap；不按行数重构加载器 |
+| host-composition | SubModule、Composition、LegacyInteractionPipelineComposition；装配/生命周期接线与领域决策分离 |
+| runtime-diagnostics | Logger、Tick/诊断及 Foundation owner；确认通用资源/队列与领域日志策略各自归属，不复制调度器 |
+| game-adapter-compatibility | BannerlordApiCompat、PlayerEncounterCompat、Harmony/版本适配；保留真实游戏接入，检查是否夹带可迁领域算法 |
+| persistence-config | 保存/chunk/JSON、DuelSettings 与配置捕获/落盘；业务状态归领域，键/类型/迁移入口单独保留；关联 R04 |
+| conversation-encounter | MyBehavior/ShoutBehavior、Native/Scene/Internal、LordEncounter；对话编排与目标/释放/返回职责分别归 Conversation/Encounter |
+| gateway-prompt-protocol | AIConfigHandler、ShoutNetwork、Refactor gateways、Prompt/LLM；传输 attempt 与调用方重试/领域 Prompt 分界，不强并成万能 gateway |
+| action-commit | 标签/ActionPlan、实际领域执行、结果/事实 receipt；Actions 编排与领域变更不双执行，检查仍留宿主的分派 |
+| memory-afef | MyBehavior 所有 Memory/History/Recovery/AFEF 入口和 partial；关联 R02–R04，保留唯一记录与接受路径 |
+| economy-reward-debt | RewardSystemBehavior 家族、交易/债务/资产与 RP crafting；按已批准 Economy 范围核实规则/状态/游戏 mutator；不能用 J12 有限完成跳过余项 |
+| policy-political | PolicySystem 内部按既有排除；AF 侧 Policy ports/调用、政治领域跨接缝必须分清，不能以“政策”名称扩大排除 |
+| world-simulation-worldmap | WorldMap/Diplomacy/Kingdom、Vassalage/Annexation、WarStats 等；沿 J12/J13 既定领域归属对账，不改世界 AI/战斗玩法 |
+| settlement-siege-gccz-sets | AF 定居点/城后宿主与 GCCZ 薄桥；GCCZ 内部业务排除，但 AF 侧规则与状态残留仍需归属；不写外仓 |
+| scene-mission-combat | Taunt/Exercise/Inspection/MeetingBattleLock/护送等 AF 场景路径；按机制责任核查主线程适配、伤害 allowlist 与生命周期，不全盘搬 Harmony |
+| duel | DuelBehavior/Outcomes/receipt 与渠道入口；决斗领域状态/规则、表现和引擎接口分开，保持同一执行事实 |
+| courier-proactive-issue | Courier、主动请求/同伴聊天、Issue；R05 之外的主动触发/任务接受/延迟回调不能遗漏，各自 owner 唯一 |
+| social-progression-reports | Weekly、Notoriety/Romance/Recruitment、WorldEvents 等；R01 外的社交/事件业务逐簇核实；宴会制作组内部仍排除 |
+| knowledge-persona-profile | KnowledgeLibraryBehavior、WorldEntityRetrievalService、ONNX、Persona 与战略档案；纯检索/匹配、游戏捕获、索引资源/人物状态分别归属 |
+| ui-tts-external-integration | Overlay/终端/百科/Onboarding、TtsEngine/音频、public API 与扩展消费者；UI 不代替业务 owner，协议 Available 不等于游戏资格通过 |
+| tools-content-package | tests/tools/content/脚本/文档及 J15 资源路径；归位随真实 loader/owner，分发约定不变，素材与发布 HOLD 不误阻无关离线抽取 |
+
+**覆盖分母来源**：实际双 API 工程 Compile/EmbeddedResource 与显式扩展包含项，加 Bootstrap、现有运行 loader 和动态入口；`git ls-files` 仅辅助，bin/local/参考源码不当生产业务。先读取 csproj 的 DefaultItemExcludes、Compile Remove/Include 和已有安全的求值方法；本轮已查项目配置但未执行新的 MSBuild 求值，不把文件枚举冒充完整编译清单。对两 API 差异条件分别核对，缺失环境记待验。
+
+## 4. 保留边界的判定规则
+
+- **允许**：读写具体 TaleWorlds 对象、原事件注册/回调、所属线程捕获/接受、必要 ABI/Harmony/序列化身份、纯 UI 呈现及引擎资源操作；必须限定符号与输入输出，不把整个大类列为理由。
+- **不允许借兼容保留**：文本/规则转换、领域选择与排序、业务状态转换、业务队列调度/重试策略等主体算法。若同一方法混合游戏读写和算法，先区分捕获→领域处理→接受，不直接移到后台。
+- **callback / partial 不是禁用语法**：窄游戏操作 delegate 可以保留；新模块把整个规则求解回调给旧宿主不算迁完。partial 可保存原类型身份或组织单一职责，但机械移文件不证明新 owner 已独立；必须说明剩余共享字段/跨域依赖。
+- **不为结构制造成本**：不要求每 Tick 深拷贝所有存档、额外反射访问私有字段、复制两套权威字典或新建总线；使用已有窄捕获/端口或同一状态实例的明确领域封装，并验证无双写。
+- **去除旧实现的前提**：替代已接通、静态/动态/保存/公开消费者闭合、必要回归通过，再按授权定向移除；没有“清空目录优先于功能”的例外。禁止 hard reset/历史改写或批量覆盖他人工作。
+
+## 5. J16/J17 执行顺序与有限退出门
+
+保留原 J16→J17 主线；**将 J17-A 的清单基线准备前置为 J16 开工输入**，避免把未知业务留到最后。现在只交付此计划，以下产品实施/全量审查尚未执行；后续用户授权继续时按阶段推进，不自动运行文档中的历史命令。
+
+| 步骤 | 做什么 | 有限退出门 / 下一步 |
+| --- | --- | --- |
+| J17-A 前置盘点 | 先核实 R04 与 R01/R02/R03 闭包，再对照 20 桶与实际编译成员补全 R07；将历史保留项标“已被后续替代/仍待迁/必要边界/排除” | 所有纳入范围的成员有责任分区；新增剩余单元都具名登记 owner/消费者/退出门，未知未分配为 0。此时 OPEN 可以大于 0，但必须报全量审查完成、业务迁移未完成，不能跳到结项 |
+| J16 工程归位 | 按已确认 owner 迁 tests/tools、收敛文档路由，复核 Refactor 去向；还会变化的测试与对应业务一起迁，避免先批量搬再反复改路径 | 当前真实生产引用/测试入口和 Compile/资源无遗漏重复；仅原样归位的职责不得升级 CLOSED；一键脚本/Bootstrap 迁移仍另获明确授权 |
+| J17-B 残余业务关闭 | 在原领域包下续作，不重开全部 J01–J15：先存档约束与 Memory，再 Weekly，再具名渠道/其他领域余项；跨域依赖先解决输入/唯一写者，稳定后按风险顺序 | 一次一个完整职责单元：迁算法/状态→接全部消费者→保持薄边界→必要回归→处理旧实现→绑定证据。达到有限门槛就关闭，不按每个 helper 无休止加测试；没有确认缺口的 owner 不返工 |
+| J17-C 同候选离线结项 | 最后重新核对覆盖表、旧业务回调/全量 partial 共享状态、Compile/动态入口、测试/文档与当前候选 | 范围内 REVIEW_REQUIRED/OPEN/VERIFY=0；RETAINED_BOUNDARY 全有证据；业务无重复权威实现；原入口双 API/Bootstrap 与相关契约/集成通过；此时最多记“主体职责重构及离线验收完成” |
+| J17-D 实机/旧档及交付 | 按授权在确切 1.3/1.4 游戏版本验证新战役、代表性旧档与三渠道/关键领域；内容/安装/发行按 J15 和用户 AFMOD 约定 | load→运行关键机制→save→reload、正常/失败/取消/重入及实际帧表现有记录；发布所需素材/包/许可门禁另外通过。缺任一必要证据维持 NOT-RUN/HOLD，不用离线绿灯报整体可发布 |
+
+每阶段先核对当前工作树与用户授权。实质改动前本地意图/检查点，按已验证责任单元提交；回退采用聚焦 inverse，不修改历史。独立的未知素材/发布 HOLD 不阻塞安全的离线职责抽取；但也不能因此清除最终发布门槛。
+
+## 6. 验证如何证明重构，而不是证明表格好看
+
+1. **每个责任单元**：直接验证真实生产实现，沿 caller→捕获→领域规则/状态→执行/提交→读回核对；列正常例和能暴露该风险的失败反例。优先复用 runner，不给每个 helper 复制 harness。测试替身、源码片段提取与实际 DLL 的覆盖盲区必须写出。
+2. **依赖方向**：审查语义而非只 grep 名称。检查 MyBehavior/ShoutBehavior 等保留调用实际做什么；给窄适配写明理由。反向调用完整旧算法、双份可变状态或只有测试入口接新实现时不能关闭。
+3. **状态/性能**：按涉及风险测来源变化、owner/generation、取消与迟到、重复副作用、实际 job/record 预算；无新增热路径全量扫描/重复反射/无界积压。单个冷路径 O(N) 不自动是 bug，也不自动满足帧预算。
+4. **兼容/集成**：受影响生产修改验证双 API；最终候选按原入口 Debug/Release 双实现加 Bootstrap。验证保存/公开 ABI、三渠道与相关领域接缝，保持现有断言；任何变异不得以编译失败冒充成功拒收。涉及的案例文档按 AGENTS 逐项套用。
+5. **工具复用边界**：source inventory 只分类路径；entry inventory 只校验配置模式候选；code map 只校验定位/hash；Identity audit 只覆盖其键/名称/模块检查；完整 Profile/Chunk 与实机 SaveSystem 另证。均不能替代 R07 的成员覆盖与人工职责审查。
+6. **不会新增的东西**：本次不改 CI/构建脚本、不造第二套 readiness 服务或自动清理器。后续若需要机械核对，先使用现有工具和普通只读查询；结构检查不能自行把业务状态设为 CLOSED。
+7. **最终报告必须分层**：计划完成、结构归位、职责迁移、离线行为、真实游戏、旧档和发布分别列结果与待办；只有全范围成员已核实才说“无遗漏”，不能以 795 锚点、30 个文件或测试断言数量代替完成比例。
+
+## 7. 当前实施入口与本轮验收
+
+**下一条具体动作（须在后续获准实施时）**：从 J17-A 开始，以 R04 的日草稿/压缩块/摘要队列读写及 R02 捕获→生成→接受链建立第一份完整成员分区；核实 R01 周报回调闭包；再补齐其余覆盖桶。不要重新开 J15 默认提示词保护、重写已独立 HTTP owner，或直接清空 Refactor。出现行为/范围/外部写入冲突，只暂停相关部分并询问，不扩大授权。
+
+本轮已执行的文档/只读验证：
+
+- 9 个初始责任 ID、现有 20 个领域 ID 和 8 组证据引用一一核对；新增链接/显式锚点可解析，历史正文保留（仅在旧总计划/J05 处插入明确复核提示）。28 个当前源码符号/行号核对通过；Refactor tracked C# 数量仍为 30，仅用于导航。
+- `python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py` 及 `--working-tree` 均 PASS，795 锚点，绑定 `c0f2d2892916d70d2c7f49039b31727e090f50cc`；不是功能验证。
+- `python -X utf8 -B tools/PhaseEightReadiness/entry_inventory.py --check` PASS，仅表明配置模式候选未遗漏；没有运行 `--update`，没有修改 catalog 或业务完成状态。
+- `git diff --check` 通过；相对源码基线只修改本轮四份文档，产品/项目/测试/配置/脚本零差异。仓库原有混合行尾产生 Git 的 LF→CRLF 提示，历史字节按原样追加保留，不做全文件格式化。
+- 未重跑构建、产品行为测试、真实 provider、游戏/旧档或发布验收；本轮文档不需要这些来证明已改内容。全量职责盘点与迁移仍待执行，不能因计划验证通过而关闭上表任何业务待办。
 
 ## 以下为已交付阶段的历史证据；J15 离线结论继续有效，不代表全主体职责迁移完成
 
@@ -1736,6 +1872,8 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 
 <a id="j05-offline-verified-20260919"></a>
 
+> **2026-09-28 复核更正**：本节有限离线成果保留；下文将记忆记录、Sanitize 算法统一归为 `MyBehaviorSaveableTypeDefiner` 身份约束的理由证据不足，不再作为永久保留依据。当前已核实的 JSON/注册边界与后续 R04/R02/R03 处理见[结项计划](#af2-responsibility-register-20260928)和[范围图 E04](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)；这不授权直接改名、删除保存类型或重写旧档。
+
 ## J05 离线回执：J05_OFFLINE_VERIFIED（2026-09-19）
 
 **仅限源码与离线验收；实机、旧档读写、真实 provider 均 `NOT-RUN`。** 分支 `codex/af-modularize-j04-20260918`，生产终点 `d903df67`，地图绑定同提交（262 锚点，无悬空路径）。基线 `25a89cea` 至今 25 个本地提交，未推送、未 Stage/Deploy/打包、未写游戏目录、未动存档。
@@ -1842,6 +1980,8 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 <a id="modularization-master-plan-20260919"></a>
 
 # AF 主体完整模块化总计划（2026-09-19，PLAN_READY / J04 继续 ACTIVE）
+
+> **历史规划快照，非当前施工状态**：J12/J13“尚未施工”、J14“NotSupported”及历史规模均只适用于当时。当前完成层级、剩余职责与 J16/J17 门槛由[2026-09-28 当前结项计划](#af2-closeout-plan-20260928)取代；本段保留原计划追溯，不授权重复施工。
 
 本节是用户要求的"一次大任务"总计划：按三份仓库 Skill（maintainer 0.2.0、af-core-framework、policy-effect-module）把 AF 主体拆完，最终交付 J17 全仓结项。它替代上方 2026-09-17 路线表的粗粒度描述，**不替代各包实施时的详细执行单**；每包开工前仍按 J03/J04 的做法写意图节、逐切片提交、逐切片回归。基线：分支 `codex/af-modularize-j04-20260918`，源码 `d6824d9d`，241 锚点地图两模式通过；原始基线 `25a89cea`。
 

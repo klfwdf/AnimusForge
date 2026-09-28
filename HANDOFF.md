@@ -1,3 +1,12 @@
+# 当前交接：AF 2.0 结项计划已重整，产品职责尚未全部迁完（2026-09-28）
+
+- **本轮仅文档**：`PLAN_READY / RESPONSIBILITY_AUDIT_PENDING / PRODUCT_REFACTOR_NOT_COMPLETE`。当前解释、历史 supersession、R01–R09 初始登记与 20 桶全量盘点要求见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)，源码核实见[范围图 E01–E08](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。这不是产品重构或全量审查已完成。
+- **保留成果，不沿误导续作**：J01–J15 的有限离线证据按原范围保持；J15 仍为 `J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD`。旧总计划“J12/J13 尚未施工”“J14 尚未开放”和旧 owner matrix 的时点状态不能当当前指令；存档身份与业务算法分开判定，不能把大类整体叫兼容壳。
+- **下一步**：后续获准继续时先按 J17-A 做 R04 保存/JSON 边界与 R02 Memory、R01 Weekly 的成员/消费者闭包，再补全全部责任桶；这是 J16 开工输入。之后 J16 归位、J17-B 残余业务、J17-C 同候选离线、J17-D 实机/旧档分层关闭。不清空目录冒充职责完成，不重做已独立 HTTP owner。
+- **授权与数据**：本轮不改产品、测试、配置、Skill 或一键流程，不构建/部署/打包/推送、不写游戏/玩家数据/外仓；`.dotnet-cli-home/` 和既有归档保持。沿用户 AFMOD 默认提示词包＋玩家另装模块 ONNX 的发行方式，不恢复已撤回的默认提示词覆盖保护。历史私人 Git/素材及发布 HOLD 不因文档重整解除。
+
+## 以下为历史交接；阶段证据仍有效，当前计划与下一步以上方入口为准
+
 # 当前交接：J15 有限离线验收已完成，实机/旧档/发布未签收（2026-09-28）
 
 - **状态**：`J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD`。F4 资源/个人数据/模块 ONNX 的功能离线范围已闭，F5 O1–O7 同一最终候选矩阵已复核；108 内容映射、0 旧根 HOLD、双 Stage 与本地测试 ZIP 各 124 项、正式 StaticVerifier 各 13/0。六构建不在本切片递归重做：`4304397c` 后产品 C#/项目/构建脚本未变，当前六 DLL marker SHA、Stage/ZIP 字节与原六构建日志同候选；最新内容、DataPaths 66、PlayerExports 25 加两变异、持久化/Bridge、库存/代码地图已重跑。完整证据和适用边界只见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)及[范围图](docs/architecture/af-framework-code-scope.md)；[J15 计划](docs/plans/j15-content-profile-plan.md)保留完整上线规格。
