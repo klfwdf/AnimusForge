@@ -700,7 +700,8 @@ internal static class Program
 			&& authorGate.Contains("player_controlled_realm_requires_player_authorization", StringComparison.Ordinal),
 			"AI diplomatic authorship must allow captive rulers while still rejecting player-ruled realms");
         string executionOwner = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
-        Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") + CountOccurrences(executionOwner, "CanAiAuthorDiplomaticDocument(") >= 8,
+        Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") + CountOccurrences(executionOwner, "CanAiAuthorDiplomaticDocument(")
+            + CountOccurrences(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PublicationPort.cs")), "CanAiAuthorDiplomaticDocument(") >= 8,
 			"AI author authority must be checked at scheduling, request, commit, propagation, and execution boundaries");
 		string mandatoryResponse = ExtractMethod(source, "private void TryScheduleMandatoryCourtResponse(");
 		string courtResponseApplication = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs")), Encoding.UTF8);
@@ -733,9 +734,11 @@ internal static class Program
 		string courtArrival = ExtractMethod(source, "private void ProcessCourtArrival(");
 		Test.True(courtArrival.Contains("IsPlayerAffiliatedKingdom(receiver)", StringComparison.Ordinal),
 			"formal court arrival must work for player rulers and player vassals");
-		string propagation = ExtractMethod(source, "private void StartDocumentPropagation(");
+        string propagation = ExtractMethod(source, "private void StartDocumentPropagation(");
+        Test.True(propagation.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal), "propagation enters Application admission");
+        propagation = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"));
 		string propagationOwner = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyPropagationApplication.cs")));
-		Test.True(propagation.Contains("IsPlayerAffiliatedKingdom(author)", StringComparison.Ordinal)
+        Test.True(propagation.Contains("port.IsPlayerAffiliated(authorId)", StringComparison.Ordinal)
 			&& propagation.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
 			&& propagationOwner.Contains("document.HasReachedPlayerCourt = true", StringComparison.Ordinal),
 			"a declaration authored at the player-affiliated sovereign court must be formally available immediately");

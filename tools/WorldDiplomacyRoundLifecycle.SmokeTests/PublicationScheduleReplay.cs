@@ -121,7 +121,9 @@ internal static class PublicationScheduleReplay
         int start = host.IndexOf("private void StartDocumentPropagation(", StringComparison.Ordinal);
         int end = host.IndexOf("private void RetryDeferredDocumentPropagation()", start, StringComparison.Ordinal);
         string adapter = host.Substring(start, end - start);
-        Test.True(adapter.Contains("WorldDiplomacyPropagationApplication.SchedulePublication(", StringComparison.Ordinal)
+        string routing = File.ReadAllText(Path.Combine(root.FullName, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"));
+        Test.True(adapter.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
+                && routing.Contains("WorldDiplomacyPropagationApplication.SchedulePublication(", StringComparison.Ordinal)
                 && !adapter.Contains("OrderPropagationArrivalsByDueDate", StringComparison.Ordinal)
                 && !adapter.Contains("new WorldDiplomacyPropagationArrival", StringComparison.Ordinal),
             "real publication caller delegates queue construction and replacement to the application");

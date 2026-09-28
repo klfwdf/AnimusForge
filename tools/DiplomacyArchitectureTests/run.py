@@ -26,6 +26,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyDocumentExecutionApplication.' in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private void StartDocumentPropagation(', 'private void ReconcileAnalyzedPlayerDeclarationWithReachedCourts('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyPublicationRoutingApplication.' in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('

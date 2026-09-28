@@ -149,6 +149,7 @@ RunRepairCorrectionAndJobDecisionTests();
         CourtResponseReplay.Run();
         DocumentApplicationReplay.Run();
         DocumentExecutionReplay.Run();
+        PublicationRoutingReplay.Run();
         PropagationLifecycleReplay.Run();
         ThreatApplicationReplay.Run();
         VerifySourceBoundary();

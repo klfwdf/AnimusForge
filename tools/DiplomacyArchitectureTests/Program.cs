@@ -21,10 +21,21 @@ static class Program
     static List<string> Violations(string path, SyntaxNode root)
     {
         var errors = new List<string>();
-        if (path.StartsWith("src/modules/AF.Module.Diplomacy/World/"))
+        if (path.Equals("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs", StringComparison.OrdinalIgnoreCase))
         {
             foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>())
             {
+                string routing = method.Identifier.ValueText switch {
+                    "StartDocumentPropagation" => "Start",
+                    "ReconcileAnalyzedPlayerDeclarationWithReachedCourts" => "ReconcileReachedCourts",
+                    _ => null };
+                if (routing != null)
+                {
+                    var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                    if (method.Body?.Statements.Count != 1 || calls.Length != 1
+                        || calls[0].Expression.ToString() != "WorldDiplomacyPublicationRoutingApplication." + routing)
+                        errors.Add("publication predecessor retains orchestration: " + method.Identifier.ValueText);
+                }
                 if (!new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument",
                     "FinalizePublishedDocumentAfterAnalysis", "TryIncludeResultSettlementTarget" }.Contains(method.Identifier.ValueText)) continue;
                 var invocations = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
