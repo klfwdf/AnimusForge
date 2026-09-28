@@ -63,44 +63,8 @@ namespace AnimusForge
 
 		private string TryExecuteMakeTrade(Hero npc, string payload)
 		{
-			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-			Kingdom npcKingdom = npc.Clan?.Kingdom;
-			WorldDiplomacyOralMakeTradeResolution resolution =
-				WorldDiplomacyOralMakeTradeRules.ResolveCommand(
-					payload,
-					playerKingdomExists: playerKingdom != null,
-					playerKingdomId: playerKingdom?.StringId,
-					playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
-					playerIsRuler: IsPlayerKing(),
-					npcKingdomExists: npcKingdom != null,
-					npcKingdomId: npcKingdom?.StringId,
-					npcSpeakerHeroId: npc?.StringId,
-					npcSpeakerIsRuler: IsNpcKing(npc, npcKingdom));
-			if (!resolution.IsReady)
-			{
-				Logger.Log("DiplomacyBehavior", "[MakeTrade] Rejected status=" + resolution.Status);
-				return "";
-			}
-
-			WorldDiplomacyMakeTradeExecutionReceipt receipt =
-				MakeTradeCommandFacade.Execute(resolution.Command);
-			if (!receipt.IsApplied)
-			{
-				Logger.Log("DiplomacyBehavior", "[MakeTrade] Rejected status=" + receipt.Status
-					+ " code=" + receipt.ErrorCode);
-				return "";
-			}
-
-			playerKingdom = ResolveKingdom(receipt.PlayerKingdomId);
-			npcKingdom = ResolveKingdom(receipt.NpcKingdomId);
-			if (playerKingdom == null || npcKingdom == null)
-			{
-				Logger.Log("DiplomacyBehavior", "[MakeTrade] Applied but receipt endpoints are unavailable");
-				return "";
-			}
-			Logger.Log("DiplomacyBehavior", $"[MakeTrade] {playerKingdom.StringId} <-> {npcKingdom.StringId} days={receipt.AppliedDurationDays}");
-			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("accept_trade", playerKingdom, npcKingdom, "面对面口头外交达成");
-			return "";
+			var source = new DiplomacyOralMakeTradeSource(npc);
+			return DiplomacyOralMakeTradeApplication.Execute(ref source, payload);
 		}
 
 		// ════════════════════════════════════════════════════════ CANCEL_TRADE
