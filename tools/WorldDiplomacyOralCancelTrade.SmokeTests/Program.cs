@@ -1,4 +1,5 @@
 using System.Text;
+using AnimusForge;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
 using AnimusForge.Refactor.Modules;
@@ -23,6 +24,7 @@ internal static class Program
         VerifyRejections();
         VerifyValidPairs();
         VerifyFacade();
+        VerifyApplicationReplay();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy oral cancel-trade smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -93,6 +95,57 @@ internal static class Program
             "a thrown port call must become one indeterminate receipt");
     }
 
+    private static void VerifyApplicationReplay()
+    {
+        var invalid = new FakeOralSource();
+        Test.True(DiplomacyOralCancelTradeApplication.Execute(ref invalid, "bad") == ""
+                  && invalid.Executions == 0 && invalid.Notifications == 0,
+            "invalid cancellation payload must not execute");
+        var applied = new FakeOralSource
+        {
+            Receipt = new WorldDiplomacyCancelTradeExecutionReceipt(
+                WorldDiplomacyCancelTradeExecutionStatus.Applied, "player", "npc", ""),
+            EndpointsAvailable = true
+        };
+        Test.True(DiplomacyOralCancelTradeApplication.Execute(ref applied, "player:npc") == ""
+                  && applied.Executions == 1 && applied.Notifications == 1,
+            "applied cancellation must publish once");
+        var refused = new FakeOralSource
+        {
+            Receipt = new WorldDiplomacyCancelTradeExecutionReceipt(
+                WorldDiplomacyCancelTradeExecutionStatus.NotTrading, "player", "npc", "not-trading"),
+            EndpointsAvailable = true
+        };
+        DiplomacyOralCancelTradeApplication.Execute(ref refused, "player:npc");
+        Test.True(refused.Executions == 1 && refused.EndpointLookups == 0 && refused.Notifications == 0,
+            "rejected cancellation receipt must not publish");
+        var missing = new FakeOralSource
+        {
+            Receipt = new WorldDiplomacyCancelTradeExecutionReceipt(
+                WorldDiplomacyCancelTradeExecutionStatus.Applied, "player", "npc", "")
+        };
+        DiplomacyOralCancelTradeApplication.Execute(ref missing, "player:npc");
+        Test.True(missing.EndpointLookups == 1 && missing.Notifications == 0,
+            "applied cancellation with missing endpoint must not publish");
+    }
+
+    private struct FakeOralSource : IDiplomacyOralCancelTradeSource
+    {
+        internal WorldDiplomacyCancelTradeExecutionReceipt Receipt;
+        internal bool EndpointsAvailable;
+        internal int Executions;
+        internal int EndpointLookups;
+        internal int Notifications;
+        public DiplomacyOralPairSnapshot Capture() => new(true, "player", false, true, "npc", "speaker");
+        public WorldDiplomacyCancelTradeExecutionReceipt Execute(WorldDiplomacyCancelTradeCommand command)
+        { Executions++; return Receipt; }
+        public bool TryResolveAppliedEndpoints(string playerId, string npcId,
+            out string resolvedPlayerId, out string resolvedNpcId)
+        { EndpointLookups++; resolvedPlayerId = playerId; resolvedNpcId = npcId; return EndpointsAvailable; }
+        public void NotifyResolved() { Notifications++; }
+        public void Log(string message) { }
+    }
+
     private static void VerifySourceBoundary()
     {
         string contracts = Read("Refactor", "Contracts", "WorldDiplomacyCancelTradeContracts.cs");
@@ -101,14 +154,17 @@ internal static class Program
         string adapter = Read("Refactor", "Adapters", "BannerlordWorldDiplomacyCancelTradeGameActionPort.cs");
         string behavior = (Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs") + Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs"));
         string method = ExtractMethod(behavior, "private string TryExecuteCancelTrade(");
+        string application = Read("src/modules/AF.Module.Diplomacy/Application/DiplomacyOralCancelTradeApplication.cs");
+        string oralSource = Read("src/modules/AF.Module.Diplomacy/Adapters/DiplomacyOralCancelTradeSource.cs");
 
         Test.True(!contracts.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !rules.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !facade.Contains("TaleWorlds", StringComparison.Ordinal),
             "contracts, rules, and facade must remain TaleWorlds-free");
-        Test.True(method.Contains("WorldDiplomacyOralCancelTradeRules.ResolveCommand", StringComparison.Ordinal)
-                  && method.Contains("CancelTradeCommandFacade.Execute(resolution.Command)", StringComparison.Ordinal),
-            "behavior must delegate trade cancellation resolution and execution");
+        Test.True(method.Contains("DiplomacyOralCancelTradeApplication.Execute(ref source, payload)", StringComparison.Ordinal)
+                  && application.Contains("WorldDiplomacyOralCancelTradeRules.ResolveCommand", StringComparison.Ordinal)
+                  && application.Contains("source.Execute(resolution.Command)", StringComparison.Ordinal),
+            "behavior must forward trade cancellation resolution and execution to Application");
         Test.True(!method.Contains("(payload ?? \"\").Split(':')", StringComparison.Ordinal)
                   && !method.Contains("EndTradeAgreement", StringComparison.Ordinal)
                   && !method.Contains("HasTradeAgreementCompat", StringComparison.Ordinal),
@@ -125,7 +181,9 @@ internal static class Program
             "unilateral cancellation must not add a ruler requirement");
         Test.True(!adapter.Contains("npcKingdom.IsEliminated", StringComparison.Ordinal),
             "cancellation must preserve the existing lack of an NPC elimination gate");
-        Test.True(method.Contains("ResolveKingdom(receipt.NpcKingdomId, includeEliminated: true)",
+        Test.True(oralSource.Contains("ResolveKingdom(npcId, includeEliminated: true)",
+                      StringComparison.Ordinal)
+                  && oralSource.Contains("ResolveKingdom(playerId, includeEliminated: true)",
                       StringComparison.Ordinal),
             "post-action publication must preserve cancellation for eliminated NPC kingdoms");
         Test.True(Count(adapter, "foreach (Kingdom kingdom in Kingdom.All)") == 1,
@@ -141,11 +199,10 @@ internal static class Program
             StringComparison.Ordinal);
         Test.True(action >= 0 && confirmation > action,
             "adapter must confirm the agreement ended after the action");
-        int appliedGuard = method.IndexOf("if (!receipt.IsApplied)", StringComparison.Ordinal);
-        int notification = method.IndexOf(
-            "WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved",
-            StringComparison.Ordinal);
-        Test.True(appliedGuard >= 0 && notification > appliedGuard,
+        int appliedGuard = application.IndexOf("if (!receipt.IsApplied)", StringComparison.Ordinal);
+        int notification = application.IndexOf("source.NotifyResolved()", StringComparison.Ordinal);
+        Test.True(appliedGuard >= 0 && notification > appliedGuard
+                  && oralSource.Contains("WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved", StringComparison.Ordinal),
             "confirmed fact must be published only after an Applied receipt");
     }
 
