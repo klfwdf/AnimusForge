@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -416,13 +417,14 @@ F4A_EXPECTED = {
         "sha256": "95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2",
     },
 }
+# SHA-256 of the committed LF text; the check normalizes CRLF so autocrlf checkouts compare equal.
 F4A_DESIGN_EXPECTED = {
-    "README_scene_gold_coin.txt": "30AB90D092FB0F1A84735DE1CA73746E1E049E9914E175C7005B574C7639AEA4",
-    "SubModule_items_patch_example.xml": "89BBB6C02517BEE05F3EF89542A2E9C1522C498C6752C96F60A42FCC844F7CF5",
-    "animusforge_denar_coin.mtl": "26246FEFBA502301E4FAC17A4465E8D9F2D2A75718BD9A44858944A728243D4D",
-    "animusforge_denar_coin.obj": "5BCC214520F1BB0E42529E52A57319D9AD76A2E630F3FBEF0B43AACEEAC9088F",
-    "animusforge_denar_coin.prefab.xml": "7DC37374686CFBE0E6DBBEB50628809BADE5DA4877E39295A458235A233E9417",
-    "animusforge_scene_gold_items.xml": "22658A4FB51A65329E33AD29C6FD483DBF01ED9742C7C49821A80F122781EEE5",
+    "README_scene_gold_coin.txt": "CED5590F7DE76EE7990FCFAC1A75048E08EB4EB17260D0859478D0D5A2B754FF",
+    "SubModule_items_patch_example.xml": "4EA952CE0F0FA0F834E61C028989979A824DAEAABCB4299C6C636F3DAF5DDB45",
+    "animusforge_denar_coin.mtl": "8AF8B844CBBB56F7E6A88D87FD015ADA790BFC23E6550A7B6333A518EC62EE29",
+    "animusforge_denar_coin.obj": "BA559C57E41E48A3B6D062CF3FA4F63815E3A1DCFCC2C5731B2DE5E49F2CDD6D",
+    "animusforge_denar_coin.prefab.xml": "0D0BF8DD651221BF95835204CBEC399099C715C4487FF61D01C3AA32DEEAE55B",
+    "animusforge_scene_gold_items.xml": "75028E1310479B368EEC743C878E12B1CB4B12292A9412C90750BCA833C68602",
 }
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED}
 
@@ -512,7 +514,7 @@ def verify_map_and_resources() -> None:
     for name, expected_hash in F4A_DESIGN_EXPECTED.items():
         source = design_root / name
         check(source.is_file(), f"Economy design source missing: {name}")
-        check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected_hash,
+        check(hashlib.sha256(source.read_bytes().replace(b"\r\n", b"\n")).hexdigest().upper() == expected_hash,
               f"Economy design source hash drift: {name}")
         check(not (ROOT / "AnimusForge" / "AssetSources" / name).exists(),
               f"old design source returned: {name}")
@@ -735,7 +737,8 @@ def main() -> int:
     verify_formats_and_references()
     verify_inventory_and_overlay()
 
-    pwsh = Path(r"C:\Program Files\PowerShell\7-preview\pwsh.exe")
+    # Toolchain paths default to the original dev machine; override per machine without editing the runner.
+    pwsh = Path(os.environ.get("AF_J15_PWSH", r"C:\Program Files\PowerShell\7-preview\pwsh.exe"))
     run_command([
         str(pwsh), "-NoLogo", "-NoProfile", "-File",
         str(Path(__file__).with_name("ContentLayoutContractTests.ps1")),
@@ -746,7 +749,7 @@ def main() -> int:
         str(Path(__file__).with_name("PlayerExportsContractTests.ps1")),
         "-ProjectRoot", str(ROOT), "-RunRoot", str(run_root / "playerexports"),
     ])
-    dotnet = ROOT / "local" / "dotnet" / "8.0.425" / "dotnet.exe"
+    dotnet = Path(os.environ.get("AF_J15_DOTNET8", str(ROOT / "local" / "dotnet" / "8.0.425" / "dotnet.exe")))
     run_command([
         str(dotnet), "run", "--project", str(Path(__file__).with_name("GcczLoaderHarness.csproj")),
         "-c", "Release", "--", str(run_root / "gccz"),
