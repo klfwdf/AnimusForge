@@ -26,6 +26,8 @@ internal interface IWorldDiplomacyModulePort
     bool TryMarkDocumentRead(string documentId, out bool ownerAvailable);
     IWorldDiplomacyPresentationPort Presentation { get; }
     void OnEngineTick();
+    void OnCampaignTick();
+    void OnDailyTick();
 }
 
 internal interface IDiplomacyPolicyObservationPort

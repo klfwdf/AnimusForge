@@ -53,4 +53,15 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
         var source = new WorldDiplomacyBehavior.TickSource(WorldDiplomacyBehavior.Instance);
         WorldDiplomacyTickApplication.Run(ref source);
     }
+    public void OnCampaignTick()
+    {
+        var source = new WorldDiplomacyBehavior.CampaignSource(WorldDiplomacyBehavior.Instance);
+        WorldDiplomacyCampaignApplication.CampaignTick(ref source);
+    }
+    public void OnDailyTick()
+    {
+        var source = new WorldDiplomacyBehavior.CampaignSource(WorldDiplomacyBehavior.Instance);
+        WorldDiplomacyCampaignApplication.DailyTick(ref source);
+    }
+
 }

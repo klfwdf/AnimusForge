@@ -62,6 +62,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert "WorldDiplomacyPrestigeApplication." in after, signature
   prior=prior.replace(before,after)
+ for signature,owner in (('private void OnCampaignTick(', 'DiplomacyModuleServices.World.OnCampaignTick'), ('private void OnDailyTick(', 'DiplomacyModuleServices.World.OnDailyTick'), ('private void TryApplyInitialNewGamePeace(', 'WorldDiplomacyInitialPeaceApplication.Apply')):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert owner in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
