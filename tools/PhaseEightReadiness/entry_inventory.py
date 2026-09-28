@@ -36,10 +36,10 @@ RULES = {
         "ModOnboardingBehavior.cs", "src/modules/AF.Module.UI/**/*.cs", "src/modules/AF.Module.Onboarding/**/*.cs",
         "WarStats/*VM.cs", "WarStats/AfWarStatsMapButtonLayer.cs",
         "WarStats/AfWarStatsEncyclopedia.cs", "WarStats/AfWarStatsSettings.cs", "WarStats/AfWarStatsTexts.cs",
-        "AnimusForge/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
-        "AnimusForge/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml",
-        "AnimusForge/GUI/Prefabs/AFWarStatsMapButton.xml",
-        "AnimusForge/GUI/Prefabs/DevWeeklyReportPopup.xml",
+        "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+        "content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml",
+        "content/modules/AF.Module.WarStats/GUI/Prefabs/AFWarStatsMapButton.xml",
+        "content/modules/AF.Module.Weekly/GUI/Prefabs/DevWeeklyReportPopup.xml",
     ),
     "game-adapter-compatibility": ("PlayerEncounterCompat.cs",),
     "action-commit": ("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs",),
@@ -52,8 +52,11 @@ EXCLUDED_PARTS = {
 
 def _excluded(path: Path) -> bool:
     parts = tuple(part.lower() for part in path.parts)
-    # src/modules is production source; deployment Modules trees remain excluded.
-    if any(part == "modules" and not (index == 1 and parts[0] == "src") for index, part in enumerate(parts)):
+    # src/modules and content/modules are reviewed source roots; deployment Modules trees remain excluded.
+    if any(
+        part == "modules" and not (index == 1 and parts[0] in {"src", "content"})
+        for index, part in enumerate(parts)
+    ):
         return True
     lowered = set(parts)
     if lowered & EXCLUDED_PARTS:

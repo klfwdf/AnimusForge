@@ -1,0 +1,60 @@
+from pathlib import Path
+import argparse, importlib.util, os
+ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
+p=argparse.ArgumentParser();p.add_argument('--old',action='store_true');p.add_argument('--mutate',choices=['drop-failure','ignore-run','old-fallback','keep-stale-tags']);a=p.parse_args()
+def load(n,p):
+ sp=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
+ex=load('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');util=load('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
+inverse=load('liveness_inverse',HERE/'liveness_review.py')
+def source(path):return inverse.old_source(path) if a.old else (ROOT/path).read_text(encoding='utf-8-sig')
+courier=source('CourierDeliveryBehavior.cs') if a.old else ex.courier_source(None);partial=source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs')
+phase=ex.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig'),'private async Task<T> RunCourierOwnerPhaseAsync<T>(').replace('Task.Delay(30000)','Task.Delay(180)')
+base=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').split('internal static class Program {')[0]
+message_markers=['private static List<object> BuildCourierReplyMessages(','private static List<object> BuildInboundNpcLetterMessages(',
+ 'private static object CreateCourierChatMessage(','private static void AppendCourierRawUserSection(',
+ 'private static void AppendCourierUserSection(','private static void AppendCourierPersistentMemoryRoleMessages(',
+ 'private static bool TryConvertCourierMemoryMessageToChatMessage(','private static bool IsCourierMemorySpeakerRecipient(',
+ 'private static string BuildCourierMemoryMetadataPrefix(','private static string StripCourierPromptScopeLabel(',
+ 'private static string StripCourierSpeakerPrefix(']
+message_source=ex.courier_source(None)
+message_builders='\n'.join(ex.declaration(message_source,marker) for marker in message_markers)
+for name in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
+ message_builders=message_builders.replace('private static List<object> '+name+'(', 'private static List<object> '+name+'Production(',1)
+base=base.replace('@@MESSAGE_BUILDERS@@',message_builders).replace('@@FINALIZE_REPLY@@','')
+base=base.replace('  private CourierPromptRun TestRun;\n  internal void ReserveTestRun()=>TestRun=BeginCourierPromptRun(Session,1);','')
+base=base.replace(ex.declaration(base,'internal async Task<string> Start('),'')
+base=base.replace('internal static long Generation=1;','internal static long Generation=1; internal static long CaptureGeneration()=>Generation;')
+base=base.replace('ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied;internal string ReplyText="",ReplyPostprocessedText="";','ReplyGenerationStarted=true,PostprocessConsumed,DeliveryApplied=true,ReplyWaitPopupShown=true;internal string Stage="GeneratingReply",ReplyText="",ReplyPostprocessedText="",RecipientWaitReason="";')
+base=base.replace('static ManualResetEventSlim Entered=new(),Release=new(true);','static ManualResetEventSlim Entered=new(),Release=new(true);')
+# The held provider snapshots its release event before a replacement Start can install the new test request.
+base=base.replace('Probe.Entered.Set();\n   if(!Probe.Release.Wait(5000))','var release=Probe.Release;Probe.Entered.Set();\n   if(!release.Wait(5000))')
+base=base.replace('if(Probe.ThrowRouting)throw new PreprocessFormatException();','if(Probe.ThrowRouting)throw new PreprocessFormatException();')
+reqs='\n'.join(ex.declaration(courier,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
+history=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs').read_text(encoding='utf-8-sig');historyDecl='\n'.join(ex.declaration(history,sig) for sig in ['private sealed class CourierPreparedHistory','private bool IsCourierHistoryOwnerCurrent('])
+base=base.replace('@@OWNER_PHASE@@',phase).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historyDecl).replace('@@BASELINE@@','')
+# Sync baseline comparison belongs to run.py; the liveness suite uses actual Start -> caller instead.
+base=base.replace(ex.declaration(base,'internal string Sync('),'')
+methods='\n'.join(ex.declaration(courier,sig) for sig in ['private void StartCourierReplyGeneration(','private void StartInboundLetterGeneration(','private void BeginCourierReplyGenerationOnMainThread(','private void BeginInboundLetterGenerationOnMainThread(','private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(','private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(','private void FailCourierReplyGenerationOnMainThread(','private void FailInboundLetterGenerationOnMainThread(','private void ProcessInboundToPlayerSession('])
+# Observability only: retain the actual background task handle, without replacing its delegate.
+methods=methods.replace('_ = Task.Run(() => PrepareAndGenerate','Liveness.Background = Task.Run(() => PrepareAndGenerate')
+process=ex.declaration(courier,'private void ProcessSessionCore(' if 'private void ProcessSessionCore(' in courier else 'private void ProcessSession(')
+replytick=ex.declaration(process,'if (stage == CourierStage.GeneratingReply)')
+deliver=ex.declaration(courier,'private void DeliverInboundLetterToPlayer(');cut=deliver.index('\n\t\tstring letter = (session.LetterText')
+inboundprefix=deliver[:cut]+'\n\t\tLiveness.Deliveries++;\n\t}\n'
+if a.mutate=='drop-failure':partial=partial.replace('CompleteCourierPromptSourceChanged(promptRun, input);',';')
+if a.mutate=='ignore-run':partial=partial.replace('&& _courierPromptRuns.TryGetValue(run.Session, out CourierPromptRun current) && ReferenceEquals(current, run)','')
+if a.mutate=='keep-stale-tags':
+ partial=partial.replace('input.Session.ReplyText = string.Empty;','').replace('input.Session.ReplyPostprocessedText = string.Empty;','').replace('input.Session.PostprocessConsumed = true;','')
+if a.mutate=='old-fallback':partial=partial.replace('input.Session.InboundFallbackLetter, "inbound_prompt_source_changed"','input.FallbackLetter, "inbound_prompt_source_changed"')
+commit=ex.declaration(courier,'private void CommitGeneratedReplyActionsAtRecipientCore(' if a.old else 'private bool CommitGeneratedReplyActionsAtRecipientCore(');commit=commit[:commit.index('\n\t\tif (recipient == null')]+'\n\t\tif (text.Contains("[ACTION:")) Liveness.StaleTagEffects++;\n'+('' if a.old else '\t\treturn true;\n')+'\t}\n'
+commit+='\n\tprivate void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient, bool persistHistory = true) => CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);\n'
+hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@REPLY_TICK@@',replytick).replace('@@INBOUND_PREFIX@@',inboundprefix).replace('@@COMMIT_GUARD@@',commit)
+out=HERE/'.generated'/('liveness-old' if a.old else 'liveness-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
+(out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
+(out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
+(out/'Program.cs').write_text((HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
+files=[out/'Prompt.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs']
+if not a.old:files.append(out/'Schedule.cs')
+project=util.project(out,'CourierPromptLiveness',files,executable=True)
+dotnet=os.environ.get('AF_DOTNET') or str(ROOT/'local/dotnet/8.0.425/dotnet.exe')
+code,log=util.run_dotnet(dotnet,['run','--project',str(project),'-c','Release'],out);(out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

@@ -1858,22 +1858,15 @@ namespace AnimusForge.XihaiAction
             Type npcType)
         {
             ParameterInfo[] parameters = method?.GetParameters();
-            if (method == null || parameters.Length < 5 ||
-                parameters[0].ParameterType != typeof(string) ||
-                !IsListOf(parameters[1].ParameterType, npcType) ||
-                parameters[2].ParameterType != typeof(int) ||
-                parameters[3].ParameterType != typeof(string) ||
-                !IsDictionaryOfIntAgent(parameters[4].ParameterType))
-            {
-                return false;
-            }
-            // The postfix only reads the first five arguments positionally.  AF
-            // later returned a memory-receipt bool and appended
-            // requireMemoryReceipt; both shapes publish the same accepted text.
-            return (method.ReturnType == typeof(void) && parameters.Length == 5) ||
-                   (method.ReturnType == typeof(bool) &&
-                    parameters.Length == 6 &&
-                    parameters[5].ParameterType == typeof(bool));
+            return method != null &&
+                   method.ReturnType == typeof(bool) &&
+                   parameters.Length == 6 &&
+                   parameters[0].ParameterType == typeof(string) &&
+                   IsListOf(parameters[1].ParameterType, npcType) &&
+                   parameters[2].ParameterType == typeof(int) &&
+                   parameters[3].ParameterType == typeof(string) &&
+                   IsDictionaryOfIntAgent(parameters[4].ParameterType) &&
+                   parameters[5].ParameterType == typeof(bool);
         }
         private static bool IsExpectedQueuedReplyMethod(MethodInfo method, Type npcType)
         {

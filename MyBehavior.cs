@@ -19740,6 +19740,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 		catch (Exception ex)
 		{
+			_missingOnnxGateActive = true;
+			_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks;
+			ShowMissingOnnxGatePopup();
 			try
 			{
 				Logger.Log("OnnxGate", "failed to evaluate ONNX gate: " + ex.Message);
@@ -19775,7 +19778,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(100.0).Ticks;
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData("缺少ONNX文件", "检测到你的mod缺乏ONNX文件，请前往群文件下载RAG专用模型，并将里面的onnx拖入Mount & Blade II Bannerlord\\Modules\\AnimusForge中", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "保存并退出", "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData("缺少ONNX文件", "请将单独获取的RAG模型包解压到当前游戏的 Modules\\AnimusForge\\ONNX，模型齐备后重新启动游戏。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "保存并退出", "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
 	}
 
 	private void ExitCurrentGameBecauseOnnxMissing()
@@ -19797,65 +19800,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		try
 		{
-			string moduleRootPath = PlayerExportsStore.GetModuleRootPath();
-			if (string.IsNullOrWhiteSpace(moduleRootPath))
-			{
-				return false;
-			}
-			string text = Path.Combine(moduleRootPath, "ONNX");
-			string text2 = Path.Combine(text, "onnx");
-			if (!Directory.Exists(text) && !Directory.Exists(text2))
-			{
-				return false;
-			}
-			string text3 = FindFirstExistingFile(Path.Combine(text, "tokenizer.json"), Path.Combine(text2, "tokenizer.json"));
-			if (string.IsNullOrEmpty(text3))
-			{
-				return false;
-			}
-			string text4 = FindFirstExistingFile(Path.Combine(text, "config.json"), Path.Combine(text2, "config.json"));
-			if (string.IsNullOrEmpty(text4))
-			{
-				return false;
-			}
-			string text5 = FindFirstExistingFile(Path.Combine(text2, "model_quantized.onnx"), Path.Combine(text, "model_quantized.onnx"));
-			if (!string.IsNullOrEmpty(text5))
-			{
-				return true;
-			}
-			string text6 = FindFirstExistingFile(Path.Combine(text2, "model.onnx"), Path.Combine(text, "model.onnx"));
-			if (string.IsNullOrEmpty(text6))
-			{
-				return false;
-			}
-			return File.Exists(text6 + "_data");
+			AnimusForgeModelStore.ResolveEmbedding();
+			return OnnxEmbeddingEngine.Instance.IsAvailable;
 		}
 		catch
 		{
 			return false;
 		}
-	}
-
-	private static string FindFirstExistingFile(params string[] files)
-	{
-		try
-		{
-			if (files == null)
-			{
-				return null;
-			}
-			foreach (string text in files)
-			{
-				if (!string.IsNullOrWhiteSpace(text) && File.Exists(text))
-				{
-					return text;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return null;
 	}
 
 	private void ProcessPendingWeeklyReportManualRetryResult()
@@ -51974,18 +51925,27 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-		Directory.CreateDirectory(playerExportsRootPath);
+		string playerExportsRootPath = null;
+		try
+		{
+			playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
+			if (isExport) Directory.CreateDirectory(playerExportsRootPath);
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			if (isExport) { onReturn(); return; }
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
-		if (!isExport)
+		if (!isExport && playerExportsRootPath != null)
 		{
 			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
 		}
 		try
 		{
-			DirectoryInfo directoryInfo = new DirectoryInfo(playerExportsRootPath);
-			List<DirectoryInfo> list2 = (from d in directoryInfo.GetDirectories()
+			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
+				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d).ToList();
 			foreach (DirectoryInfo item in list2)
@@ -51997,7 +51957,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		catch
 		{
 		}
-		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择来源文件夹。");
+		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -52044,15 +52004,21 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		};
 		try
 		{
-			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null),
-				new InquiryElement("__latest__", "使用最新导出（自动）", null)
+				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null)
 			};
+			string playerExportsRootPath = null;
+			try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
+			catch (Exception)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用；仍可用只读绝对路径导入。"));
+			}
+			if (playerExportsRootPath != null)
+				list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
 			if (!string.IsNullOrWhiteSpace(playerExportsRootPath) && Directory.Exists(playerExportsRootPath))
 			{
-				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
+				foreach (DirectoryInfo item in new DirectoryInfo(playerExportsRootPath).GetDirectories().Where((DirectoryInfo x) => !x.Name.StartsWith(".", StringComparison.Ordinal)).OrderByDescending((DirectoryInfo x) => x.LastWriteTimeUtc))
 				{
 					list.Add(new InquiryElement(item.Name, item.Name + "  (" + item.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 				}
@@ -52067,7 +52033,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				string text = selected[0].Identifier as string;
 				if (string.Equals(text, "__input__", StringComparison.Ordinal))
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", "留空会使用最新导出；也可输入完整资料包文件夹路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", playerExportsRootPath == null ? "请输入只读的完整资料包文件夹路径。" : "留空会使用最新导出；也可输入完整资料包文件夹路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
 					{
 						BeginDatabaseReloadPreflight(input, action);
 					}, delegate
@@ -52083,10 +52049,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}, "", isSeachAvailable: true);
 			MBInformationManager.ShowMultiSelectionInquiry(data, pauseGameActiveState: true);
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
-			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker: " + ex.Message);
-			InformationManager.DisplayMessage(new InformationMessage("无法打开资料包选择器：" + ex.Message));
+			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker.");
+			InformationManager.DisplayMessage(new InformationMessage("无法打开资料包选择器；请检查 PlayerExports 路径。"));
 			action();
 		}
 	}
@@ -53058,18 +53024,27 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			onReturn = ReturnToDevRootMenu;
 		}
-		string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-		Directory.CreateDirectory(playerExportsRootPath);
+		string playerExportsRootPath = null;
+		try
+		{
+			playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
+			if (isExport) Directory.CreateDirectory(playerExportsRootPath);
+		}
+		catch (Exception ex)
+		{
+			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+			if (isExport) { onReturn(); return; }
+		}
 		List<InquiryElement> list = new List<InquiryElement>();
 		list.Add(new InquiryElement("__input__", "手动输入文件夹名…", null));
-		if (!isExport)
+		if (!isExport && playerExportsRootPath != null)
 		{
 			list.Add(new InquiryElement("__latest__", "使用最新导出（自动）", null));
 		}
 		try
 		{
-			DirectoryInfo directoryInfo = new DirectoryInfo(playerExportsRootPath);
-			List<DirectoryInfo> list2 = (from d in directoryInfo.GetDirectories()
+			List<DirectoryInfo> list2 = (from d in (playerExportsRootPath == null ? Array.Empty<DirectoryInfo>() : new DirectoryInfo(playerExportsRootPath).GetDirectories())
+				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d).ToList();
 			foreach (DirectoryInfo item in list2)
@@ -53081,7 +53056,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		catch
 		{
 		}
-		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择要导入的来源文件夹。");
+		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择来源文件夹；迁移未完成时仍可手动输入只读绝对路径。");
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
 		{
 			if (selected == null || selected.Count == 0)
@@ -53187,8 +53162,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-				Directory.CreateDirectory(playerExportsRootPath);
+				string playerExportsRootPath;
+				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
+				catch (Exception ex)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+					return;
+				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
@@ -53272,8 +53252,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string value = PlayerExportsStore.SanitizeFolderName(folderName);
 			if (!string.IsNullOrEmpty(value))
 			{
-				string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
-				Directory.CreateDirectory(playerExportsRootPath);
+				string playerExportsRootPath;
+				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
+				catch (Exception ex)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 待迁移或路径不可用：" + ex.Message));
+					return;
+				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
@@ -53313,8 +53298,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
 			NpcPersonaProfile value = null;
@@ -53333,7 +53318,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -53348,14 +53334,15 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
 			CompressedMemoryExportBundle value = BuildCompressedMemoryExportBundle(heroId);
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -53508,8 +53495,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text2);
 			RewardSystemBehavior.DebtExportEntry value = null;
@@ -53520,7 +53507,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 			PlayerExportsStore.WriteJson(path2, value);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -53869,11 +53857,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
@@ -53887,7 +53875,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string text3 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text3);
-			PlayerExportsStore.ClearJsonFiles(text3);
+			PlayerExportsStore.ClearCandidateJsonFiles(text3);
 			HashSet<string> memoryHeroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -53931,7 +53919,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			PlayerExportsStore.ClearJsonFiles(text4);
+			PlayerExportsStore.ClearCandidateJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -53945,7 +53933,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					}
 				}
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54198,11 +54187,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
@@ -54216,7 +54205,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string text3 = Path.Combine(text, "dialogue_history");
 			Directory.CreateDirectory(text3);
-			PlayerExportsStore.ClearJsonFiles(text3);
+			PlayerExportsStore.ClearCandidateJsonFiles(text3);
 			if (_dialogueHistory != null)
 			{
 				foreach (KeyValuePair<string, List<DialogueDay>> item in _dialogueHistory)
@@ -54230,7 +54219,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string text4 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text4);
-			PlayerExportsStore.ClearJsonFiles(text4);
+			PlayerExportsStore.ClearCandidateJsonFiles(text4);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -54246,7 +54235,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			if (!TryExportKnowledgeToDir(text, out var exportedKnowledgeCount, out var knowledgeExportError))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("警告：Knowledge 导出失败，已跳过。原因：" + knowledgeExportError));
+				export.RestoreSubdirectory("knowledge");
+				InformationManager.DisplayMessage(new InformationMessage("警告：Knowledge 导出失败，已保留旧导出。原因：" + knowledgeExportError));
 			}
 			else
 			{
@@ -54255,7 +54245,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
 			string text5 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text5);
-			PlayerExportsStore.ClearJsonFiles(text5);
+			PlayerExportsStore.ClearCandidateJsonFiles(text5);
 			string path5 = Path.Combine(text5, "VoiceMapping.json");
 			string text6 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text6))
@@ -54266,10 +54256,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			ExportEventDataToDir(text);
 			if (KingdomStrategicProfileBehavior.Instance != null && !KingdomStrategicProfileBehavior.Instance.ExportAllToDirectory(text, out var kingdomProfileExportMessage))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导出失败，已跳过。原因：" + kingdomProfileExportMessage));
+				export.RestoreSubdirectory("kingdom_profiles");
+				InformationManager.DisplayMessage(new InformationMessage("警告：国家战略与性格导出失败，已保留旧导出。原因：" + kingdomProfileExportMessage));
 			}
-			VoiceMapper.SetPreferredExportFolder(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			VoiceMapper.SetPreferredExportFolder(export.FinalPath);
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54284,10 +54276,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			ShoutUtils.ExportUnnamedPersonaToDir(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54302,11 +54295,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "personality_background");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			if (_npcPersonaProfiles != null)
 			{
 				foreach (KeyValuePair<string, NpcPersonaProfile> npcPersonaProfile in _npcPersonaProfiles)
@@ -54318,7 +54311,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					}
 				}
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54333,11 +54327,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "compressed_memory");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			HashSet<string> heroIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			if (_dailyMemoryDrafts != null)
 			{
@@ -54379,7 +54373,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				string path2 = Path.Combine(text2, NpcDataFileName.Build(heroId, ResolveHeroNameForNpcDataFile(heroId)));
 				PlayerExportsStore.WriteJson(path2, BuildCompressedMemoryExportBundle(heroId));
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54394,11 +54389,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "debt");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			RewardSystemBehavior instance = RewardSystemBehavior.Instance;
 			Dictionary<string, RewardSystemBehavior.DebtExportEntry> dictionary = ((instance != null) ? instance.ExportDebtEntries() : new Dictionary<string, RewardSystemBehavior.DebtExportEntry>());
 			if (dictionary != null)
@@ -54412,7 +54407,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					}
 				}
 			}
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54427,15 +54423,16 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			if (!TryExportKnowledgeToDir(text, out var exportedCount, out var error))
 			{
 				InformationManager.DisplayMessage(new InformationMessage("导出失败：" + error));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text + "（Knowledge " + exportedCount + " 条）"));
+				export.Publish();
+				InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath + "（Knowledge " + exportedCount + " 条）"));
 			}
 		}
 		catch (Exception ex)
@@ -54451,10 +54448,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			ExportEventDataToDir(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -54466,7 +54464,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	{
 		string text = Path.Combine(exportDir, "event_data");
 		Directory.CreateDirectory(text);
-		PlayerExportsStore.ClearJsonFiles(text);
+		PlayerExportsStore.ClearCandidateJsonFiles(text);
 		PlayerExportsStore.WriteJson(Path.Combine(text, "WorldOpeningSummary.json"), new EventWorldOpeningSummaryJson
 		{
 			Summary = (_eventWorldOpeningSummary ?? "").Trim()
@@ -54524,7 +54522,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string text = Path.Combine(exportDir, "knowledge", "rules");
 			Directory.CreateDirectory(text);
-			PlayerExportsStore.ClearJsonFiles(text);
+			PlayerExportsStore.ClearCandidateJsonFiles(text);
 			HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			foreach (KnowledgeLibraryBehavior.LoreRule rule in knowledgeFile.Rules)
 			{
@@ -54635,8 +54633,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text3 = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text3);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text3 = export.CandidatePath;
 			string text4 = Path.Combine(text3, "knowledge", "rules");
 			Directory.CreateDirectory(text4);
 			KnowledgeLibraryBehavior.LoreRule loreRule = null;
@@ -54690,7 +54688,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 			string path2 = Path.Combine(text4, text8 + ".json");
 			File.WriteAllText(path2, text2, Encoding.UTF8);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text3));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -55180,8 +55179,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text2 = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text2);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text2 = export.CandidatePath;
 			string text3 = Path.Combine(text2, "unnamed_persona");
 			Directory.CreateDirectory(text3);
 			string text4 = text;
@@ -55211,7 +55210,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				Personality = (personality ?? "").Trim(),
 				Background = (background ?? "").Trim()
 			});
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text2));
+			export.Publish();
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{
@@ -56065,11 +56065,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			string playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath();
 			Directory.CreateDirectory(playerExportsRootPath);
 			string path = PlayerExportsStore.ResolveExportFolderName(folderName);
-			string text = Path.Combine(playerExportsRootPath, path);
-			Directory.CreateDirectory(text);
+			var export = PlayerExportsStore.BeginExportPackage(playerExportsRootPath, path);
+			string text = export.CandidatePath;
 			string text2 = Path.Combine(text, "voice_mapping");
 			Directory.CreateDirectory(text2);
-			PlayerExportsStore.ClearJsonFiles(text2);
+			PlayerExportsStore.ClearCandidateJsonFiles(text2);
 			string path2 = Path.Combine(text2, "VoiceMapping.json");
 			string text3 = VoiceMapper.ExportMappingJson();
 			if (string.IsNullOrWhiteSpace(text3))
@@ -56077,8 +56077,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				text3 = "{}";
 			}
 			File.WriteAllText(path2, text3, Encoding.UTF8);
-			VoiceMapper.SetPreferredExportFolder(text);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + text));
+			export.Publish();
+			VoiceMapper.SetPreferredExportFolder(export.FinalPath);
+			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
 		}
 		catch (Exception ex)
 		{

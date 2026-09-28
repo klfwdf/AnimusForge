@@ -27,8 +27,8 @@ Read the smallest matching implementation before proposing edits. Select an anal
 A normal new visible source module should change only:
 
 - `PolicySystem/Effects/Modules/<moduleId>/<PascalName>EffectModule.cs`
-- `AnimusForge/CustomPrompts/Policy/Effects/<moduleId>.json`
-- focused cases and expected module lists in `tools/PolicyEffectModule.ContractTests/`
+- `content/modules/PolicySystem/CustomPrompts/Policy/Effects/<moduleId>.json`
+- focused cases and expected module lists in `tests/bridges/Policy/PolicyEffectModule.ContractTests/`
 
 The module file owns its descriptor, typed payload, normalization, funding adaptation, and execution adapter. Assembly registration in that same file owns discovery.
 
@@ -165,7 +165,7 @@ A module must not bypass or rewrite those responsibilities. When increasing a pa
 
 For each visible source module, add:
 
-`AnimusForge/CustomPrompts/Policy/Effects/<moduleId>.json`
+`content/modules/PolicySystem/CustomPrompts/Policy/Effects/<moduleId>.json`
 
 with matching `Version`, `ModuleId`, `UnderstandingPrompt`, and `EvaluationPrompt`.
 

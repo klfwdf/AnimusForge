@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "purpose": "private-runtime-dlls-only; not an asset redistribution approval",
+  "files": {
+    "Microsoft.ML.OnnxRuntime.dll": "5b4f7af6077af2291b214d757954b2fba167947782ab459777cfa085fa7572b5",
+    "onnxruntime.dll": "b9021eb23a8594fc48e9ad8a02582c0cb19375722bfbbfc10171411a688ac062",
+    "onnxruntime_providers_shared.dll": "9a0b9ce93d00f9805d9fd972e8995d32d679a0b4a8fcc4f2b0dd5a4cbe4c119c",
+    "System.Buffers.dll": "accccfbe45d9f08ffeed9916e37b33e98c65be012cfff6e7fa7b67210ce1fefb",
+    "System.Memory.dll": "bf3fb84664f4097f1a8a9bc71a51dcf8cf1a905d4080a4d290da1730866e856f",
+    "System.Runtime.CompilerServices.Unsafe.dll": "66409f670315afe8610f17a4d3a1ee52d72b6a46c544cec97544e8385f90ad74"
+  }
+}

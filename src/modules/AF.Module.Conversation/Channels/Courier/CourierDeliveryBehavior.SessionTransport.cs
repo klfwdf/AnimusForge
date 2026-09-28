@@ -40,7 +40,18 @@ public sealed partial class CourierDeliveryBehavior
 {
 	private void ProcessSession(CourierSession session)
 	{
-		if (session == null || IsTerminalStage(session))
+		try { ProcessSessionCore(session); }
+		catch
+		{
+			FailModuleCourierSession(session, "courier.transport_processing_failed");
+			throw;
+		}
+	}
+
+	private void ProcessSessionCore(CourierSession session)
+	{
+		CheckModuleCourierSessionIdentity(session);
+		if (session == null || IsTerminalStage(session) || !ReferenceEquals(GetSessionById(session.Id), session))
 		{
 			return;
 		}
@@ -68,6 +79,7 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			if (session.DeliveryApplied && (recipient == null || recipient.IsDead))
 			{
+				FailModuleCourierSession(session, "courier.recipient_unavailable");
 				EndCourierReplyWaitPause(session, "recipient_invalid_after_delivery");
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
@@ -93,12 +105,14 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		if ((stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient) && recipient == null)
 		{
+			FailModuleCourierSession(session, "courier.recipient_unavailable");
 			LogCourierStatusVerbose("target_unresolved:" + session.Id, "target_unresolved session=" + session.Id + " reason=recipient_null " + BuildCourierStatusSnapshot(session, courier, recipient, "target_unresolved"), 5.0);
 			RouteToSafeSettlement(session, courier, "recipient_unresolved");
 			return;
 		}
 		if ((stage == CourierStage.Outbound || stage == CourierStage.WaitingRecipient) && recipient != null && recipient.IsDead)
 		{
+			FailModuleCourierSession(session, "courier.recipient_unavailable");
 			Log("recipient dead before delivery, returning and refunding session=" + session.Id + " recipient=" + SafeHeroId(recipient));
 			session.Stage = CourierStage.Returning.ToString();
 			session.DeliveryApplied = false;

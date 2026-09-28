@@ -65,7 +65,7 @@ The Bootstrap must be built independently from the implementation DLLs. Building
 Every function under `一键编译覆盖推送` must use the unified contract:
 
 - Build: build Bootstrap plus both implementation variants, then assemble one staged `AnimusForge` module.
-- Deploy/overwrite: assemble and validate a complete same-volume staging module, then transactionally replace only `Modules/AnimusForge`; restore the previous unified module if replacement fails.
+- Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Keep verified private Recovery backups and roll back touched files on a caught failure; an interrupted transaction blocks another deploy pending recovery inspection. Unlisted installed files are never mirrored or deleted.
 - Build and overwrite: run the unified build, deploy the one module, and retain the existing optional launch behavior.
 - Package: package the one staged module into one ZIP containing both implementation DLLs.
 - Push: publish the same unified source/output contract; no step may recreate or publish the legacy two modules.
@@ -73,7 +73,7 @@ Every function under `一键编译覆盖推送` must use the unified contract:
 
 Scripts must consume explicitly captured 1.3 and 1.4 build artifacts. A successful file-existence check is insufficient: validation should also reject identical/misrouted version artifacts when build metadata can identify them.
 
-Generated client output must exclude generated `Logs` from source/package content and must not recursively copy earlier generated module folders. Deployment preserves existing unified logs. `PlayerExports` are merged without deletion; retired module folders participate only during the first unified deployment, while later deployments use the source and existing unified module so stale legacy data cannot be re-imported indefinitely.
+Generated client output excludes `Logs`, `PlayerExports`, user data, and the separately installed ONNX models; source/package assembly never recursively copies earlier generated module folders. Deployment leaves unlisted installed files untouched, including `Modules/AnimusForge/ONNX`. One-time personal-data migration writes to `%LOCALAPPDATA%/AnimusForge`; it does **not** relocate ONNX models. Models are installation dependencies, not personal settings or save data.
 
 ## Legacy Module Rules
 
@@ -84,7 +84,7 @@ The retired folders are:
 
 They are never valid runtime roots, build outputs, deployment targets, package roots, or launcher modules after this migration. Code must not fall back to either folder when resolving the active module root.
 
-When preserving existing user data is necessary, a script or runtime migration may inspect the retired folders only as read-only, one-time migration candidates. Migrated data must be written to `Modules/AnimusForge`; the legacy folders must not be modified or refreshed. Prefer existing unified-module data when both unified and legacy copies exist, and record or mark completed migrations so stale legacy data is not repeatedly imported.
+When preserving existing user data is necessary, the explicit migration tool may inspect the retired folders only as read-only, one-time migration candidates. Migrated data belongs under `%LOCALAPPDATA%/AnimusForge`; the legacy folders must not be modified or refreshed. Existing active user files win conflicts, and private Recovery retains verified source bytes and completion records.
 
 The unified installer or script should warn when an enabled legacy launcher module is detected because loading a legacy copy together with the unified module can duplicate Harmony patches and campaign registrations. Automated cleanup must not delete user data without an explicit, scoped cleanup action.
 
@@ -109,6 +109,8 @@ Packaging bumps the module version once and writes the same version to the sourc
 The ZIP is first written to a temporary file in the package directory. It becomes the final ZIP only after validating the Bootstrap-only XML, strict DLL allowlist, both implementation markers, and marker-to-DLL hashes; failed temporary archives are removed.
 
 The client ZIP must not include the `ONNX` folder. Package validation must fail if any ONNX entry appears, if either implementation is missing, if more than one module root exists, or if `SubModule.xml` declares an implementation DLL directly.
+
+Players install the separate model package into `Modules/AnimusForge/ONNX`. The missing-model campaign gate and actual model loaders use that same installed location; missing required models block campaign continuation through the existing pause/exit flow. No AppData model fallback, migration receipt, Recovery completion record, Python installation, or player-run migration command is required. Program upgrades preserve installed ONNX files. The corrected resolver and its acceptance cases are tracked in [J15 F4-M](plans/j15-content-profile-plan.md#j15-onnx-install-contract); offline verification does not replace two-version game and old-save acceptance.
 
 ## Safety Rules
 

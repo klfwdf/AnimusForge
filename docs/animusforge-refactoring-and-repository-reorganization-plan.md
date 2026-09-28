@@ -1,4 +1,717 @@
-## J14 G0 与 J14a Scene 有限离线收口（2026-09-26）
+<a id="j15-remote-reconcile-20260928"></a>
+
+## J15 同源重复收尾的远端合并（2026-09-28，MERGE_OFFLINE_VERIFIED）
+
+- 用户先要求推送，再确认检查合并；本地 `d6dc17f8` 与远端 `e7936b04` 从 `8af57b39` 分叉，分别有 8/4 个独有提交。只做普通 merge，不 rebase/reset/强推；不重复执行旧 GUI 删除、归档或 J15 产品工作。
+- 三方预演仅冲突 `HANDOFF.md`、内容 runner `run.py`、编辑器 smoke `Program.cs`。六张 GUI 与 overlay 脚本最终字节/缺失状态相同。合并保留本地最新计划、恢复测试和额外断言，接纳远端工具路径/换行可移植性与更完整编辑器用例，保持已有路径安全约束；历史证据注明来源，不把远端运行当本机验证。
+- 不改产品 C#、项目、配置、构建覆盖方式或真实玩家数据。合并前意图作本地检查点；验证受影响脚本/测试与文档后再提交。完整编辑器测试需要全新仓外合成根，未获得本轮精确授权前不创建、不写入；不无参数运行旧全量 smoke，不清理任何既有根。
+- 远端 HANDOFF 新增 TPAC“用户声明自制/有授权”的记录应保留来源及待补出处，与当前实机/旧档/发布门槛分开；不照抄其外机路径、历史安装/部署指令或证据状态。
+
+### 本轮合并结果与复验证据
+
+- 普通 merge 以本地意图 `863386b4` 和远端 `e7936b04` 为父历史，未 rebase/强推/重写提交；重复 GUI 删除和 overlay 结果不重复操作。最终仅整合三处冲突及远端 README，本地 FullStageManagedDeployContractTests、DataPaths 改动、完整 AF 2.0 计划/owner matrix/范围图保留。
+- `run.py` 合并远端 LF/CRLF 归一和 `AF_J15_PWSH`/`AF_J15_DOTNET8`，保留本地六项精确数量、overlay 禁入断言，同时保留远端“六项来自旧 HOLD 集合”断言。不修改默认工具路径，不跳过内容断言。
+- 编辑器 smoke 使用远端九步完整用例，合并本地首次包列表唯一、恢复时独立备份/旧字节和路径拒绝约束：root/环境路径必须绝对、data 为 root/data、TEMP/TMP/进程临时根必须同一已存在目录；接受原 temp 和远端示例 tmp 目录名，安全边界不依赖名字。保留远端 reparse 拒绝、真实玩家根前后快照、无清理和全部额外测试。
+- 本轮用户明确批准新建 `E:/AF-J15-merge-smoke-20260928-a`；创建前确认不存在、祖先无 reparse。当前合并源码的编辑器 Core/SmokeTests 以系统 SDK 10.0.400 在仓内全新 `artifacts/j15-content/merge-verification-20260928-a/build` 构建，0 warning/error；NuGet/CLI home/TEMP 与空本地 restore 源均在该仓内根，未安装 SDK 或改游戏项目。构建日志为该根 `editor-build.log`。
+- 获准外部合成根保存 `full-smoke.log`：九步通过、`real_root_unchanged=1`；missing/relative root、TEMP 越界、TEMP/TMP 不一致、relative data、既有 exports 六个负例均按预期写入前拒绝；两个路径模式通过，`--backup-contract merge-20260928-a` 的连续 12 次独立备份及坏 JSON 保留通过。外部合成根和仓内新 fixture 全部保留，不清理，不打印玩家内容。
+- 内容 runner 五项静态核验通过（映射/资源、项目资源、脚本接线、格式/引用、inventory/overlay），六项设计源 LF/CRLF hash 一致；直接执行 main 的默认/覆盖路径两次路由核验，**子命令被拦截而非运行**。因此不把 main 打印的 PASS 计为本轮完整 PowerShell 部署故障矩阵或 GCCZ loader 重跑。该部分源码未改，旧证据仍按原候选记录。
+- 文档当前入口/链接、无冲突标记、差异白名单及 `git diff --check` 已核对。产品 C#/项目/配置/一键脚本未改变；没有本轮游戏构建、实际部署、provider、实机/旧档测试，不提升 J15 或全主体重构结项状态。
+- 远端 `e7936b04` 的 TPAC 授权声明、编辑器与构建记录作为带来源的历史补充收录在 HANDOFF；不将外机日志/路径或“未推送”等旧状态当作本机当前事实。用户原推送请求仍以普通快进推送执行，若远端再次分叉则停止并重新核对，不覆盖他人提交。
+
+<a id="j16a-relocation-current-20260928"></a>
+
+## J16a 测试归位分支进度并入（2026-09-28）
+
+**状态：`J16A_RELOCATION_VERIFIED / J16B_PARTIAL / J16C_E_NOT_STARTED`。** 本轮将本地分支 `codex/af-j15-closeout-20260928` 上 18 个 J16 相关提交与远端重构分支的 10 个并行 J15/AF2 计划提交保留为普通 merge 历史；不 rebase、不强推、不丢弃任一侧。J15 合并与复验结论仍以[上方 J15 回执](#j15-remote-reconcile-20260928)为准。
+
+- **J16a**：按实际编译/读取源 owner，将 `tools/` 下 99 个测试目录与 3 个散脚本归位 `tests/`；G0 基线记录 250 个入口，迁移后按基线复跑无回归。代码地图 32 个路径锚点重绑后 795 锚点 recorded/working-tree PASS。具体批次与命令见 [J16 实施计划](plans/j16-tests-tools-docs-plan.md) 和 [基线审计](audits/2026-09-28-j16-baseline.json)。
+- **J16b 已做**：overlay 本地 ZIP 输出改到忽略的 `artifacts/package_policy_system_source_overlay/`；已跟踪 `tools/__pycache__/*.pyc` 去跟踪且由 `.gitignore` 覆盖。其余已跟踪产物按 J16 A1 要求尚未逐组授权，不因“J16 在进行”自动批量删除/归档。
+- **本机合并后复验**：J15 内容 runner `108 mappings / 0 holds PASS`；新加入的 FullStage synthetic `Fault` 与 `Abrupt` 两模式分别通过 124 项回滚/中断拒绝/手工恢复/no-op 断言；DataPaths `66`、RepositorySourceInventory `7`、代码地图 recorded/working-tree `795` 均 PASS，`git diff --cached --check` PASS。合成 Stage 测试只写入两个全新 ignored artifacts 根，不是实际 Deploy。六张退出活动源码的旧 GUI 已复核本机忽略归档 manifest 中 6/6 SHA。
+- **验证边界**：J16e 全量 runner 清单/总入口未完成；J16c 文档权威入口未完成；J16d 一键脚本与 Bootstrap 未获授权，保持不动。编辑器真实用户库、游戏/旧档和发布仍未验。
+- **计划顺序**：AF2 责任结项总计划要求 J17-A 的存档/Memory/Weekly 成员闭包作为 J16 最终收口输入。现有 J16a 是已提交的并行进度，不自动豁免此依赖；下一执行轮按总计划与 [J16 计划](plans/j16-tests-tools-docs-plan.md)对齐，不能把部分结构归位称作 J16 完成。
+- **未验证/风险**：LIVE/SAVE/真实发布未因本次 merge 改变；本地 `.dotnet-cli-home/` 仍保留为未跟踪状态。J16d、A1 产物处置、A5/A6、J16c/J16e 和后续 J17 仍分别受计划与授权约束。
+
+<a id="af2-closeout-plan-20260928"></a>
+
+# AF 2.0 完整重构结项计划（2026-09-28，当前执行口径）
+
+**状态：`PLAN_READY / RESPONSIBILITY_AUDIT_PENDING / PRODUCT_REFACTOR_NOT_COMPLETE`。** 本轮只重整计划；没有迁移产品业务、改测试断言或提升游戏验收状态。用户要求“做彻底，避免前期误导”，本节是 J01–J17 的当前结项解释与 J16/J17 执行细化，不另立重构项目。J01–J15 已记录的具名离线成果按原范围保留；`J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD` 仍有效，绝不等于 AF 主体已拆净。
+
+- **源码基线**：`254581edca8e6f9264ed799239fc7f1924d23090`，`codex/af-main-refactor-continuation-20260831`；本地规划意图提交 `0fc82e15`。后续必须重新核实实际 Git，不能按此记录切换目录/分支。
+- **原规划范围与当前推送授权**：本台账、[当前源码证据](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)、[旧 owner matrix 的当前路由](animusforge-owner-matrix.md)、[简短 HANDOFF](../HANDOFF.md)。形成本计划时的“未推送”仅约束当时文档任务；用户现明确授权将 J16 合并候选普通更新到唯一指定的 `codex/af-main-refactor-continuation-20260831`。不强推、不改写历史、不部署/Stage/打包、不操作真实玩家数据或外仓；原未跟踪 `.dotnet-cli-home/` 保留。既有历史私密字节仍留在 Git 历史，本次推送不代表历史清洗。
+- **唯一事实分工**：本节保存职责状态/目标/退出门；范围图保存基线符号/调用链证据；代码地图仅作定位；HANDOFF 只链接摘要。不要再维护一张竞争进度表。
+
+## 1. 纠正旧记录的读法，不推翻有效成果
+
+| 旧入口 / 容易误读的说法 | 当前解释与替代关系 |
+| --- | --- |
+| 下方“2026-09-19 总计划”里的 J12/J13 尚未施工、J14 Scene/Courier 尚为 NotSupported | 是规划时点，不是当前状态。J12/J13 已有有限离线回执；当前 `AfApi` 已声明 Native/Scene/Courier Available，其他三项仍不支持。以本节、具名后续回执及当前源码为准，不能重新实现已完成能力。 |
+| J05/J10/J13 的 OFFLINE_VERIFIED 或“整包闭合” | 仅关闭当时明确验收的责任单元；不自动关闭同文件剩余算法，也不把历史保留项批准为永久兼容。已证实的新 owner 不因此次重整全部返工。 |
+| J05 将五个记忆记录及 Sanitize 一并归为 SaveableTypeDefiner 身份保留 | 该概括不能作为所有算法原地保留的证据。当前 `MyBehaviorSaveableTypeDefiner` 直接注册的是 `Dictionary<MobileParty, string>`；日草稿等所查路径使用 JSON。必须分别核对 TaleWorlds 保存身份、JSON 字段/设置、公开 ABI 和算法；本轮不据此宣称类型可安全改名。 |
+| 旧 owner matrix 的“当前 J06 VERIFY”、历史 F:/G: 工作区及旧 HANDOFF 的施工命令 | 只保留历史导航，不作为当前状态或操作授权。当前工作区取 Git，当前计划取本节；禁止照抄历史清理/部署/推送命令。 |
+| inventory unknown=0、代码地图 PASS、entryCoverage=COMPLETE 或目录已归 src | 各自只证明文件分类、坐标或已登记入口覆盖；不是业务迁移完整证明。入口工具基于人工配置模式，不穷举每个方法/字段。 |
+| Phase8 cleanup-candidates / readiness 已存在 | 复用其候选和证据规则，但现有 18 个清理候选不是全仓剩余职责表，领域 ASSIGNED 也不等于内部算法已迁完。不得修改它们的状态凑本计划通过。 |
+
+**旧回执正文保留，不把当年的未完成改写为当年已完成。** 本节只取代冲突的“当前状态”和结项解释；相同源码、相同条件的有效证据仍可复用。旧源码坐标失效时按符号重定位，不能只刷新 hash 冒充行为复验。
+
+## 2. 最终目标与不扩大的边界
+
+1. **完成的含义**：AF 主体及已纳入 J01–J15 的 AF 领域业务，由明确模块承担算法、运行状态和资源生命周期；全部实际消费者使用其权威实现。游戏宿主只保留有证据的事件/线程/游戏对象接入、保存身份及必要兼容门面。不是把每一行重写，也不要求旧类消失。
+2. **保持运行结构**：同 DLL 逻辑模块，一套源码双 API 实现，一个 AnimusForge 模块、Bootstrap 唯一加载。内部 typed 接缝与版本化 public API 分开；不新增通用 ModuleHost、反射注册、热卸载或无消费者接口。
+3. **保持行为**：既有玩法、Prompt/标签、MCM、失败/部分成功、三渠道历史与 AFEF、默认交互入口保持。修复确认缺陷须单独写出复现与批准变化，不借重构改规则或缩减功能。
+4. **制作组边界**：政策、宴会、GCCZ 内部玩法/状态机不是本计划重写对象；AF 侧调用、薄桥和跨域权威边界在范围内。也不能将 AF 自己残留的经济、社交、场景等业务笼统划到制作组以逃避盘点。原版/外部依赖不计入 AF 待重构实现。
+5. **发行约定**：按用户确认的方式发 AFMOD，包内有默认提示词，玩家另行安装模块 ONNX，更新覆盖发行文件是预期行为。不要自动恢复已撤回的“保护旧默认提示词不被覆盖”修改；默认发行内容与真实用户个人数据分别管理。此计划不改变现有覆盖脚本，也不授予部署/发布权限。
+6. **兼容不是旧算法的豁免**：原 namespace、类型/字段 ID、SyncData 键、JSON 协议和必要公开签名按实际契约保留；算法可以在不破坏身份的前提下迁移。游戏对象留主线程，不等于领域规则必须永远留 CampaignBehavior。
+
+<a id="af2-responsibility-register-20260928"></a>
+
+## 3. 一份职责登记表，两层覆盖，禁止用样例冒充全量
+
+### 3.1 每个责任单元的必填信息
+
+每行按可独立验证的完整职责成组，不为每个 helper 新造任务；但组内方法、字段、嵌套类型和关键调用点必须能逐符号对账：
+
+- 稳定 ID、来自哪个 J 包/领域、当前源码修订和范围图证据 ID；当前实现和全部入口/调用者（含动态调用、反射、Harmony、保存入口）。
+- 尚在宿主的算法、权威状态、资源与线程责任；目标逻辑 owner，哪些引擎读写/身份适配保留以及具体理由。
+- 迁移顺序与依赖、保持行为、运行频率和真实工作量/缓存策略；替代实现、旧入口的去留条件。
+- 有限验收用例及对应现有 runner/生产实现、有效失败反例、源码/候选绑定；证据层级与未验项。
+- 当前状态、关闭修订与审查结论；转交只改变负责包，不自动变成完成。暂留项不能仅写“以后/J17处理”。
+
+| 职责状态 | 允许含义 | 是否可用于结构结项 |
+| --- | --- | --- |
+| `REVIEW_REQUIRED` | 未完成方法体/状态/消费者闭包复核；不是确认缺陷，也不是已完成 | 否 |
+| `OPEN` | 已确认仍需迁移或归位，有明确目标和退出门 | 否 |
+| `VERIFY` | 已实现，必要证据未齐 | 否 |
+| `CLOSED` | 算法/状态及实际消费者已闭合，替代/残留与必要离线验证有绑定证据 | 是，仅其具名范围 |
+| `RETAINED_BOUNDARY` | 已逐符号证明必须保留的保存/ABI/游戏适配；不包含被豁免的领域主体算法 | 是，仅其明确适配职责 |
+| `EXCLUDED_BY_SCOPE` | 第 2 节原有排除，仍标明 AF 接缝责任；新增排除须用户确认 | 不计入迁移完成量，不允许扩大豁免 |
+
+`STRUCTURE / RESPONSIBILITY / OFFLINE / LIVE / SAVE / RELEASE` 分轴记账。保存或发布未验不伪装成结构缺陷，反过来结构通过也不能提升实机/旧档状态。没有可信分母前不报“完成百分比”。
+
+### 3.2 当前已核实的初始登记（不是全量盘点通过）
+
+源码证据详见范围图 E01–E08；以下目标是逻辑职责，不强制创建同名新类。已有适合的 owner 优先扩展。
+
+| ID / 原包 | 当前结论、边界与依赖 | 目标归属 / 保留接线 | 必须达到的有限退出门 | 当前状态 |
+| --- | --- | --- | --- | --- |
+| R01 / J13a | E02：周报模块仍调回 MyBehavior 的掠夺结果转换/类别素材构造；排序分桶、游标和 wave 等已有独立职责不重做 | `AF.Module.Weekly/Materials` 负责规则和构造；宿主只捕获 Settlement/Hero 等游戏数据，DTO/保存身份单独审查 | 自动与同步入口、全文/短报、掠夺开始/成功/击退/中止/未知和多事件顺序回归；类别归并/关联 ID/来源计数保持；已迁算法不再由旧宿主实现；复用 PhaseEightParityReplayTests 的 Weekly 材料/周报回放并覆盖生产接线，记录组内工作量 | `OPEN` |
+| R02 / J05 | E03：摘要系统/用户规则仍在 MyBehavior，捕获、重试、解析编排仍在其 partial；dispatcher/run/账本成果保持 | `AF.Module.Memory/Summary` 承担摘要决策/编排；游戏事实捕获和保存接受留窄边界，不把摘要业务塞进通用 dispatcher；先处理 R04 类型约束 | daily/major/overview 同输入结果与格式、AFEF 原文/公开私密/自称语义保持；重试、同代来源变化、owner/generation 失效拒收和唯一提交；复用 MemorySummaryRunOwnerTests 等现有回归，游戏捕获与纯规则分界可审查 | `OPEN` |
+| R03 / J05、J15 接缝 | E07：压缩记忆导出/应用仍在宿主做过滤、覆盖/合并、队列及 overview 变更；J15 数据路径与编辑器成果不是该业务已迁出的证据 | Memory 负责业务快照/导入应用；`AF.Persistence` 保持通用文件/JSON；UI 只选择输入/显示结果。先核实 R04，保留导出格式与真实用户数据安全 | 单人/整组路径、覆盖与合并、空/坏内容、队列与 overview 状态保持；现有 PlayerExports 及记忆回归接真实业务，不能只验读写文件；实际玩家文件不作为破坏性 fixture | `OPEN` |
+| R04 / J05 保存边界 | E04：JSON 记录、Saveable 注册、算法必须分开；“嵌套存档类型不能搬所以全部算法不拆”的证据不足，但也不能直接改名 | 保留确需的保存/公开类型与薄映射，纯净化规则归 Memory；主线程原地/后台 clone 语义另审；先完成类型使用与序列化闭包 | 列出键/类型 ID、JSON 字段/serializer 设置、所有读写和动态引用；明确哪些类型必须原位、哪些算法无需原位；Profile/Chunk/Identity/旧格式回归，真实旧档另验，不通过则保持兼容而继续寻找不改身份的算法边界 | `REVIEW_REQUIRED` |
+| R05 / J04、J07、J10 | E05：Scene/Courier 生产链使用含完整业务的旧类型 partial；这不是单凭 partial 就判失败，需核定渠道 owner 与跨域规则的界线 | Conversation 渠道持有会话/队列/渠道编排，Prompt/Memory/Actions 各自负责共享语义；Bannerlord 捕获/表现留适配 | Native/Scene/Courier 真实入口逐条串到输出/后处理/执行/AFEF 回读；群聊接力、旁听、输入去重、预生成不提前提交、来信/retry/取消/迟到保持；只对确认混合责任建立待迁子项，复用既有三渠道 runner，不要求正文逐字相同 | `REVIEW_REQUIRED` |
+| R06 / J16、J17 | Git tracked 当前 `Refactor/` 尚有 30 个 C#；其中含活跃 façade/gateway/契约/receipt，不等于 30 个废弃实现 | 按实际 owner 归 `src/`；公共签名/命名空间可保留，纯 rename 与职责抽取分开验收；E01 已独立的 HTTP 实现不推倒 | 每个文件与符号有去向；所有 Compile、测试提取、反射/动态消费者改接；无重复编译/第二核心；Refactor 清空后仍需业务表通过。删除前验证替代与调用责任，遵守精确删除授权 | `OPEN`（结构）；职责须逐项复核 |
+| R07 / J01–J15 全覆盖 | 下表 20 个已有责任桶只是覆盖网；本轮没有逐方法审完所有大类，不能将未抽查部分标成薄壳 | 复用当前各模块；扫描根目录、全部 partial、src/Refactor 及显式编译的扩展，按真实责任而非 Weekly/Legacy 名称归类 | 覆盖表每行有实际编译输入与成员分区；每个未闭业务簇落为独立登记项；所有字段/方法/类型有归属且无遗漏，或对应已批准排除/保留；不得把本宽泛行直接勾 CLOSED | `REVIEW_REQUIRED` |
+| R08 / J05、J13 等性能 | dispatcher 的回调预算不等于每条 record 工作量；旧日志提到的 O(N) 快照不能直接当当前缺陷或已修复 | 各领域负责其实际工作量；Foundation 只承载通用预算机制 | 对本次变更逐项记录触发频率、snapshot/排序/循环大小、缓存与分批；保留顺序/事实/功能；现有预算/积压回放验证有限工作量，帧耗时须实机数据；不无依据重开已验证优化或强求所有冷路径 O(1) | `REVIEW_REQUIRED` |
+| R09 / J16、J17 验收收口 | 现有文件/入口/代码地图工具不能替代 R07；已有测试、源码提取路径和旧文档还需随最终 owner 对齐 | 测试跟真实生产 owner，主台账唯一当前进度；复用已有工具，不新建通用验收平台 | 测试真实参与且故障反例失败于业务断言；目录归位无漏编/双编；当前候选双 API/Bootstrap 和相关集成验证；文档无失效活动入口，LIVE/SAVE/发布另表，未完成不以填表强行通过 | `REVIEW_REQUIRED` |
+
+### 3.3 全范围覆盖网（J17-A 必须补完，不按代表性样本签收）
+
+沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。**本表各桶的全量成员审查当前均为待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
+
+| 现有责任桶 ID | 本轮/后续盘点范围与目标责任（不是确认未迁的清单） |
+| --- | --- |
+| bootstrap-build | Bootstrap/项目/XML/双实现选择；稳定装载身份与构建边界，只有另获授权才迁脚本/Bootstrap；不按行数重构加载器 |
+| host-composition | SubModule、Composition、LegacyInteractionPipelineComposition；装配/生命周期接线与领域决策分离 |
+| runtime-diagnostics | Logger、Tick/诊断及 Foundation owner；确认通用资源/队列与领域日志策略各自归属，不复制调度器 |
+| game-adapter-compatibility | BannerlordApiCompat、PlayerEncounterCompat、Harmony/版本适配；保留真实游戏接入，检查是否夹带可迁领域算法 |
+| persistence-config | 保存/chunk/JSON、DuelSettings 与配置捕获/落盘；业务状态归领域，键/类型/迁移入口单独保留；关联 R04 |
+| conversation-encounter | MyBehavior/ShoutBehavior、Native/Scene/Internal、LordEncounter；对话编排与目标/释放/返回职责分别归 Conversation/Encounter |
+| gateway-prompt-protocol | AIConfigHandler、ShoutNetwork、Refactor gateways、Prompt/LLM；传输 attempt 与调用方重试/领域 Prompt 分界，不强并成万能 gateway |
+| action-commit | 标签/ActionPlan、实际领域执行、结果/事实 receipt；Actions 编排与领域变更不双执行，检查仍留宿主的分派 |
+| memory-afef | MyBehavior 所有 Memory/History/Recovery/AFEF 入口和 partial；关联 R02–R04，保留唯一记录与接受路径 |
+| economy-reward-debt | RewardSystemBehavior 家族、交易/债务/资产与 RP crafting；按已批准 Economy 范围核实规则/状态/游戏 mutator；不能用 J12 有限完成跳过余项 |
+| policy-political | PolicySystem 内部按既有排除；AF 侧 Policy ports/调用、政治领域跨接缝必须分清，不能以“政策”名称扩大排除 |
+| world-simulation-worldmap | WorldMap/Diplomacy/Kingdom、Vassalage/Annexation、WarStats 等；沿 J12/J13 既定领域归属对账，不改世界 AI/战斗玩法 |
+| settlement-siege-gccz-sets | AF 定居点/城后宿主与 GCCZ 薄桥；GCCZ 内部业务排除，但 AF 侧规则与状态残留仍需归属；不写外仓 |
+| scene-mission-combat | Taunt/Exercise/Inspection/MeetingBattleLock/护送等 AF 场景路径；按机制责任核查主线程适配、伤害 allowlist 与生命周期，不全盘搬 Harmony |
+| duel | DuelBehavior/Outcomes/receipt 与渠道入口；决斗领域状态/规则、表现和引擎接口分开，保持同一执行事实 |
+| courier-proactive-issue | Courier、主动请求/同伴聊天、Issue；R05 之外的主动触发/任务接受/延迟回调不能遗漏，各自 owner 唯一 |
+| social-progression-reports | Weekly、Notoriety/Romance/Recruitment、WorldEvents 等；R01 外的社交/事件业务逐簇核实；宴会制作组内部仍排除 |
+| knowledge-persona-profile | KnowledgeLibraryBehavior、WorldEntityRetrievalService、ONNX、Persona 与战略档案；纯检索/匹配、游戏捕获、索引资源/人物状态分别归属 |
+| ui-tts-external-integration | Overlay/终端/百科/Onboarding、TtsEngine/音频、public API 与扩展消费者；UI 不代替业务 owner，协议 Available 不等于游戏资格通过 |
+| tools-content-package | tests/tools/content/脚本/文档及 J15 资源路径；归位随真实 loader/owner，分发约定不变，素材与发布 HOLD 不误阻无关离线抽取 |
+
+**覆盖分母来源**：实际双 API 工程 Compile/EmbeddedResource 与显式扩展包含项，加 Bootstrap、现有运行 loader 和动态入口；`git ls-files` 仅辅助，bin/local/参考源码不当生产业务。先读取 csproj 的 DefaultItemExcludes、Compile Remove/Include 和已有安全的求值方法；本轮已查项目配置但未执行新的 MSBuild 求值，不把文件枚举冒充完整编译清单。对两 API 差异条件分别核对，缺失环境记待验。
+
+## 4. 保留边界的判定规则
+
+- **允许**：读写具体 TaleWorlds 对象、原事件注册/回调、所属线程捕获/接受、必要 ABI/Harmony/序列化身份、纯 UI 呈现及引擎资源操作；必须限定符号与输入输出，不把整个大类列为理由。
+- **不允许借兼容保留**：文本/规则转换、领域选择与排序、业务状态转换、业务队列调度/重试策略等主体算法。若同一方法混合游戏读写和算法，先区分捕获→领域处理→接受，不直接移到后台。
+- **callback / partial 不是禁用语法**：窄游戏操作 delegate 可以保留；新模块把整个规则求解回调给旧宿主不算迁完。partial 可保存原类型身份或组织单一职责，但机械移文件不证明新 owner 已独立；必须说明剩余共享字段/跨域依赖。
+- **不为结构制造成本**：不要求每 Tick 深拷贝所有存档、额外反射访问私有字段、复制两套权威字典或新建总线；使用已有窄捕获/端口或同一状态实例的明确领域封装，并验证无双写。
+- **去除旧实现的前提**：替代已接通、静态/动态/保存/公开消费者闭合、必要回归通过，再按授权定向移除；没有“清空目录优先于功能”的例外。禁止 hard reset/历史改写或批量覆盖他人工作。
+
+## 5. J16/J17 执行顺序与有限退出门
+
+保留原 J16→J17 主线；**将 J17-A 的清单基线准备前置为 J16 开工输入**，避免把未知业务留到最后。现在只交付此计划，以下产品实施/全量审查尚未执行；后续用户授权继续时按阶段推进，不自动运行文档中的历史命令。
+
+| 步骤 | 做什么 | 有限退出门 / 下一步 |
+| --- | --- | --- |
+| J17-A 前置盘点 | 先核实 R04 与 R01/R02/R03 闭包，再对照 20 桶与实际编译成员补全 R07；将历史保留项标“已被后续替代/仍待迁/必要边界/排除” | 所有纳入范围的成员有责任分区；新增剩余单元都具名登记 owner/消费者/退出门，未知未分配为 0。此时 OPEN 可以大于 0，但必须报全量审查完成、业务迁移未完成，不能跳到结项 |
+| J16 工程归位 | 按已确认 owner 迁 tests/tools、收敛文档路由，复核 Refactor 去向；还会变化的测试与对应业务一起迁，避免先批量搬再反复改路径 | 当前真实生产引用/测试入口和 Compile/资源无遗漏重复；仅原样归位的职责不得升级 CLOSED；一键脚本/Bootstrap 迁移仍另获明确授权 |
+| J17-B 残余业务关闭 | 在原领域包下续作，不重开全部 J01–J15：先存档约束与 Memory，再 Weekly，再具名渠道/其他领域余项；跨域依赖先解决输入/唯一写者，稳定后按风险顺序 | 一次一个完整职责单元：迁算法/状态→接全部消费者→保持薄边界→必要回归→处理旧实现→绑定证据。达到有限门槛就关闭，不按每个 helper 无休止加测试；没有确认缺口的 owner 不返工 |
+| J17-C 同候选离线结项 | 最后重新核对覆盖表、旧业务回调/全量 partial 共享状态、Compile/动态入口、测试/文档与当前候选 | 范围内 REVIEW_REQUIRED/OPEN/VERIFY=0；RETAINED_BOUNDARY 全有证据；业务无重复权威实现；原入口双 API/Bootstrap 与相关契约/集成通过；此时最多记“主体职责重构及离线验收完成” |
+| J17-D 实机/旧档及交付 | 按授权在确切 1.3/1.4 游戏版本验证新战役、代表性旧档与三渠道/关键领域；内容/安装/发行按 J15 和用户 AFMOD 约定 | load→运行关键机制→save→reload、正常/失败/取消/重入及实际帧表现有记录；发布所需素材/包/许可门禁另外通过。缺任一必要证据维持 NOT-RUN/HOLD，不用离线绿灯报整体可发布 |
+
+每阶段先核对当前工作树与用户授权。实质改动前本地意图/检查点，按已验证责任单元提交；回退采用聚焦 inverse，不修改历史。独立的未知素材/发布 HOLD 不阻塞安全的离线职责抽取；但也不能因此清除最终发布门槛。
+
+## 6. 验证如何证明重构，而不是证明表格好看
+
+1. **每个责任单元**：直接验证真实生产实现，沿 caller→捕获→领域规则/状态→执行/提交→读回核对；列正常例和能暴露该风险的失败反例。优先复用 runner，不给每个 helper 复制 harness。测试替身、源码片段提取与实际 DLL 的覆盖盲区必须写出。
+2. **依赖方向**：审查语义而非只 grep 名称。检查 MyBehavior/ShoutBehavior 等保留调用实际做什么；给窄适配写明理由。反向调用完整旧算法、双份可变状态或只有测试入口接新实现时不能关闭。
+3. **状态/性能**：按涉及风险测来源变化、owner/generation、取消与迟到、重复副作用、实际 job/record 预算；无新增热路径全量扫描/重复反射/无界积压。单个冷路径 O(N) 不自动是 bug，也不自动满足帧预算。
+4. **兼容/集成**：受影响生产修改验证双 API；最终候选按原入口 Debug/Release 双实现加 Bootstrap。验证保存/公开 ABI、三渠道与相关领域接缝，保持现有断言；任何变异不得以编译失败冒充成功拒收。涉及的案例文档按 AGENTS 逐项套用。
+5. **工具复用边界**：source inventory 只分类路径；entry inventory 只校验配置模式候选；code map 只校验定位/hash；Identity audit 只覆盖其键/名称/模块检查；完整 Profile/Chunk 与实机 SaveSystem 另证。均不能替代 R07 的成员覆盖与人工职责审查。
+6. **不会新增的东西**：本次不改 CI/构建脚本、不造第二套 readiness 服务或自动清理器。后续若需要机械核对，先使用现有工具和普通只读查询；结构检查不能自行把业务状态设为 CLOSED。
+7. **最终报告必须分层**：计划完成、结构归位、职责迁移、离线行为、真实游戏、旧档和发布分别列结果与待办；只有全范围成员已核实才说“无遗漏”，不能以 795 锚点、30 个文件或测试断言数量代替完成比例。
+
+## 7. 当前实施入口与本轮验收
+
+**下一条具体动作（须在后续获准实施时）**：从 J17-A 开始，以 R04 的日草稿/压缩块/摘要队列读写及 R02 捕获→生成→接受链建立第一份完整成员分区；核实 R01 周报回调闭包；再补齐其余覆盖桶。不要重新开 J15 默认提示词保护、重写已独立 HTTP owner，或直接清空 Refactor。出现行为/范围/外部写入冲突，只暂停相关部分并询问，不扩大授权。
+
+本轮已执行的文档/只读验证：
+
+- 9 个初始责任 ID、现有 20 个领域 ID 和 8 组证据引用一一核对；新增链接/显式锚点可解析，历史正文保留（仅在旧总计划/J05 处插入明确复核提示）。28 个当前源码符号/行号核对通过；Refactor tracked C# 数量仍为 30，仅用于导航。
+- `python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py` 及 `--working-tree` 均 PASS，795 锚点，绑定 `c0f2d2892916d70d2c7f49039b31727e090f50cc`；不是功能验证。
+- `python -X utf8 -B tools/PhaseEightReadiness/entry_inventory.py --check` PASS，仅表明配置模式候选未遗漏；没有运行 `--update`，没有修改 catalog 或业务完成状态。
+- `git diff --check` 通过；相对源码基线只修改本轮四份文档，产品/项目/测试/配置/脚本零差异。仓库原有混合行尾产生 Git 的 LF→CRLF 提示，历史字节按原样追加保留，不做全文件格式化。
+- 未重跑构建、产品行为测试、真实 provider、游戏/旧档或发布验收；本轮文档不需要这些来证明已改内容。全量职责盘点与迁移仍待执行，不能因计划验证通过而关闭上表任何业务待办。
+
+## 以下为已交付阶段的历史证据；J15 离线结论继续有效，不代表全主体职责迁移完成
+
+<a id="j15-f45-current-20260927"></a>
+
+## J15 F4/F5 当前续作证据（2026-09-28；离线完成，实机/发布未完成）
+
+**J15 最终候选离线收口（2026-09-28；状态 `J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD`）**：本状态仅指用户确认的 J15 离线验收层，**不是**两实际游戏版本、旧档、真实部署或可发布签收。F4 的活动旧资源已由 108 项唯一映射、显式设计源归位、模块 ONNX 原位只读、F4-C 冲突预检及已授权旧 GUI/私人源 SHA 归档退役闭合到功能离线范围；0 个旧根 HOLD 不等于素材权利已清。F5 O1–O7 按同一最终内容/程序候选复核如下：
+
+| 门禁 | 本轮最终复核与继承证据 |
+| --- | --- |
+| O1 内容/个人数据/模型 | 全新 `artifacts/j15-content/f5-final-content-20260928-a/` 的完整 runner：108 映射、0 旧根 HOLD、8 非法映射、4 GCCZ 回退、14 overlay alias，ManagedDeploy 配置冲突/回滚/中断及 PlayerExports 禁回写 PASS。个人迁移合成脚本重跑 PASS；DataPaths 初次把 TEMP 放仓内，产品正确拒绝“数据根在源码树”，不是回归。既有 `tests/AF.Persistence/DataPaths/Program.cs:38,260–267` 加显式 `AF_DATA_PATHS_TEST_ROOT`，只作未创建的 `E:\AF-J15-PathOnly-DataPaths-20260928-a` 路径验证，实际 TEMP/TMP 与所有测试写入留仓内；重跑 `66 checks` PASS，外部仅路径目标仍不存在。 |
+| O2 编辑器/导入导出 | 上述已获准的隔离完整编辑 smoke、路径正反例继续有效；本轮在三个全新仓内根重跑 PlayerExports 生产链接测试 `25` 项 PASS，姓名匹配、最新包两项变异各准确失败于对应业务断言，不是编译失败。未运行真实用户包。 |
+| O3 双版本程序构建 | `4304397c` 后至本候选没有产品 C#、csproj、Bootstrap 或构建脚本变更；继承原入口 Debug/Release × 1.3/1.4/Bootstrap 六构建日志 `artifacts/j15-content/f5-o5-bridge-build-20260927-a/{debug,release}-build.log`，各 0 warning/error。未重新执行会递归重置现有四个生成根的原构建脚本；本轮独立复核六 marker 的游戏版本及 DLL SHA、双 Stage 内三程序 DLL 与 artifacts 同字节。 |
+| O4 当前 DLL/行为/存档 | 同一六 DLL 的既有 Native 55、旧 ABI 41+41、公开 API 158/实际元数据 1620、Release 1.3/1.4 ONNX 各 33+5、四 DLL 7 默认资源、Xihai Core 88 结果因程序字节未变继续适用；本轮重跑 PersistenceIdentity `142/36/1/1`、PersistenceProfileConfig `168 typed / 142 keys`、BridgeBinding `16/12/4`、BridgeFixture `10/6` 均 PASS。这些仍是离线夹具/当前 DLL，不是游戏对象或旧档执行。 |
+| O5 正式 Stage/场景资源 | 当前 Debug/Release Stage 各精确 124 项，Stage TPAC 与唯一 Xihai 活动源同字节；两份正式 Stage 的原 StaticVerifier 日志各 `13 passed, 0 failed`。程序字节、TPAC 与当时验收候选未变；六项旧 GUI 本不在 Stage，退役不改变投影。未重新执行 Stage 递归重建、未做实际视觉验收。 |
+| O6 ZIP/恢复 | 本轮独立读回双本地测试 ZIP SHA：Debug `2907D3F5058930CF10B8AA69E37360072E8C7188240E126E6A95207ADB3145E8`，Release `FBA86E840356C515472F9F425A1E4D682769DC9B53E664256CF212828B8C214A`，各 124 名称与 Stage 相同、123 非 XML 逐字节相同；唯一 XML 仍只加载 Bootstrap，ONNX/PlayerExports/Logs/AssetSources/UserData 禁入项 0。当前 124 项完整 Stage 的第 61 项同步故障、前两项后进程骤退/写前拒绝/合成手工恢复、重试/no-op 和三哨兵证据见下；不等于产品自动恢复或真实游戏部署。 |
+| O7 库存/定位/越界 | 当前 inventory `tracked=19478 / unknown=0`（比先前记录多本轮新合同文件）、7 单测、795 锚点 recorded/working-tree 均 PASS；`git diff --check` PASS。测试 ZIP 和本地私有归档不推送、不发布。 |
+
+候选差异审计：从六构建修订 `4304397c` 到此处，内容映射增加 1 项 TPAC、旧活动图/设计源/重复 TPAC 退役、测试和工具合同变化；产品 C#、项目和原构建/部署/打包脚本未变。因而以上继承以**当前 DLL 标记哈希、Stage/ZIP 字节复核和新增受影响契约重跑**为条件，不冒充本轮重新构建。TPAC 历史 11.2 MB manifest 身份与当前 1.67 MB 包不一致、上游来源/再分发权、ONNX 模型来源许可及实机动作/GUI 视觉仍 HOLD；Release ZIP 是本地测试包。1.3/1.4 实机 M9、新装/旧档/升级 L/S 和真实 provider 均 NOT-RUN；原始存档、游戏安装、外仓未写。本轮首次 net10 SDK 调用报告安装 ASP.NET Core 开发 HTTPS 证书，未作系统清理；后续调用显式关闭自动生成。
+
+**F5-O6 当前 124 项 Stage 故障/中断补证（2026-09-28；本切片）**：`tests/content/J15ContentContractTests/FullStageManagedDeployContractTests.ps1:1–250` 是原 ManagedDeploy 契约旁的独立全 Stage 入口，只接收现有项目内 Release Stage 和全新 `artifacts/j15-content/` 虚构根，以 AST 载入未改的生产 `deploy_module.ps1` 受管函数，`LOCALAPPDATA` 仅指夹具内部；不走游戏 Deploy。当前 Stage 精确 **124 项**，同步测试在 `activating` 后第 61 项 Stage hash 注入异常：生产回滚恢复首项旧字节、其余受管目标不存在，三类未受管 ONNX/PlayerExports/Logs 不变，私有 manifest 124 项标 `rolled-back`；随后重试安装 124/124、重复调用 no-op。独立全新根的子进程在第三项 Stage hash 前 `Exit(77)`，留下前两项及 124 项 `activating` 记录；下次部署写前拒绝，开发者仅在该合成根逐项核验 manifest/hash 和私有备份后手工恢复旧状态、标 `rolled-back`，再重试 124/124 与 no-op。两根各保留 `summary.txt`、两份 124 项 manifest 和私有备份；独立读回核对各虚构目标文件集合恰为 Stage 124 项加三哨兵、124/124 SHA 相同、两记录状态分别 `rolled-back`/`complete`。这替代下方 123 项完整 Stage 故障/中断证据用于当前候选，但**不证明产品自动续传/恢复、实际游戏 L4 或真实旧档**；本切片未重编产品 DLL、重建 Stage/ZIP 或写真实游戏/玩家目录。
+
+**F5-O2 隔离编辑器完整 smoke（2026-09-28；本切片）**：`tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs:74–126,206–247` 的未提交入口经最小收紧，`--isolated-full <run-root>` 要求显式绝对运行根、现存 `temp/`、`ANIMUSFORGE_DATA_ROOT=<run-root>/data`、TEMP/TMP 与实际 `Path.GetTempPath()` 同指 `<run-root>/temp`，并拒绝已存在的 PlayerExports 目标；旧无参完整入口不作本轮执行。定向 .NET 10 Release `--no-restore` 构建 **0 warning/error**，`--path-contract` 与 `--path-contract-invalid` 均 PASS。按已具名批准，仅在此前不存在、父路径无 reparse 的 `E:\AF-J15-editor-smoke-20260927-a\` 建立合成根；完整模式退出码 0，输出 `package=1 edit=1 invalid-preserved=1 backup-restore=1 deletion-fixture-preserved=1`，删除测试另有 `moved=3`。独立读回复核该根保留两份备份、一个合成包、删除 fixture 与 `isolated-full.log`；未读取或编辑真实玩家包，未清理这些材料。此项关闭 O2 的完整编辑器合成 smoke 缺口，不代表真实游戏导入/旧档或 F4/F5 整体完成。当前工作树的 `.dotnet-cli-home/` 仍未跟踪且未触碰。
+
+**F4-U 剩余六项旧 GUI 离线归档退役（2026-09-28；本切片）**：按用户选定的“功能闭合、许可留 HOLD”和“备份后退役”，冻结 `tests/content/J15ContentContractTests/run.py` 的六项剩余旧 GUI 精确集合：courier `scroll_version_a`、notoriety `.tmp` 背景与 `culture_panel_patch`、terminal `scroll_quill`、diplomacy 旧 `notice`、vassalage 旧 sheet。生产 `AnimusForgePlayerNotorietyUiSprites`、`VassalageBehavior.AnimusForgeVassalageUiSprites` 和 `WorldDiplomacyBehavior` 均消费已映射的当前分图/`notice_v2`；XML/源码定向搜索没有这六项旧文件名的运行消费者，唯一显式旧 notice 工具引用在 `tools/package_policy_system_source_overlay.py:144`，本片去掉它并保留 v2。旧 sheet 不在当前 Stage，离线检查仍不能替代实机自动加载与视觉验收。六源均为普通已跟踪文件，大小合计 **5,152,346 字节**；逐项 SHA 冻结、复制到被忽略的 `local/j15-gui-archive-20260927/legacy-remaining/`，私有 manifest 记精确源/归档/字节/hash，独立二次复核 6/6 后仅这六项退出活动源码，移后归档 6/6 再验，未删除唯一副本或动其它 GUI。新增合同断言先红于旧源仍在，再于全新 `artifacts/j15-content/f4u-six-green-20260928-a/` 完整 runner **108 mappings / 0 legacy-root holds、8 坏映射、4 GCCZ 回退、14 overlay aliases PASS**；inventory 当前 **tracked=19477 / unknown=0**，7 单测 PASS。`0 legacy-root holds` 不解除 TPAC、模型来源/再分发权的独立 HOLD；本切片未重建 DLL/Stage/ZIP、未运行游戏或真实 UI。
+
+**F4-A TPAC 单一活动源与六项设计源归位（本切片）**：按另行批准，先核对 `AnimusForge/AssetPackages/pack0.tpac` 与 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac` 均 1,671,304 字节、SHA-256 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`；复制前者到忽略的 `local/j15-tpac-archive-20260927/legacy-module/AnimusForge/AssetPackages/pack0.tpac`，私有 manifest 记恢复映射，源/归档/权威源三方 SHA 相同才从活动源码退出，移后再次复核两剩余副本。现正式内容映射只有 Xihai 权威源，活动旧副本 0；Git 历史未改。`AnimusForge/AssetSources/` 六个设计文件共 5,701 字节，逐项 SHA 记录并原样移动至 `content/modules/AF.Module.Economy/AssetSources/`，每项移后大小/hash 相同、旧文件 0；真实源码/构建/打包无旧目录消费者，设计 README 现仍以同目录相对文件名和现行 runtime content 路径描述，故不改正文。库存分类在新精确路径仍为 `design`，不是运行内容；六项不入 `content-map.json` 或 Stage/ZIP。`tests/content/J15ContentContractTests/run.py` 锁唯一 TPAC 活动源、六设计文件名/hash、旧路径不存在且不入 runtime map；全新 `artifacts/j15-content/f4a-dedup-design-contracts-20260927-a/` 内容完整 runner **108 mappings / 6 holds PASS**，库存 7 单测 PASS；双正式 Stage 在原 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts` 下各 124 项 PASS。无 C# 重编、Stage/ZIP 重建、游戏部署或外部发布；旧 manifest 11.2 MB 身份、TPAC 上游来源/再分发权、真实动作视觉仍未签收。
+
+**F4-A 去重/设计源归位意图检查点**：用户另行批准把当前同 SHA 的 `AnimusForge/AssetPackages/pack0.tpac` 备份复验到忽略的 `local/j15-tpac-archive-20260927/legacy-module/` 后从活动源码退出，并将 `AnimusForge/AssetSources/` 六个设计源原样归位 `content/modules/AF.Module.Economy/AssetSources/`，不纳入 Stage/ZIP；另批准仅在新建 `E:\AF-J15-editor-smoke-20260927-a\` 跑完整编辑器合成 smoke、保留材料不清理。开工只读预检七个文件全跟踪、两 TPAC SHA 相同、两个去向未存在、相关路径无 reparse；三动作分别验证、分别记录，不改游戏/玩家库、不推送。
+
+**F4-U 27 项旧账号/订阅 GUI 已按批准归档退役（本切片）**：在 `36358771` 意图检查点后，复核精确 27 个已跟踪源（两个 XML、`ui_account` 5 图、`ui_achievement` 9 图、`ui_subscribe` 11 图），总 6,211,268 字节且源/祖先无 reparse；逐项复制至被 Git 忽略的 `local/j15-gui-archive-20260927/legacy-splitshadows/AnimusForge/GUI/`，私有 `manifest.json` 记录原相对路径、字节数、SHA-256 和归档相对路径。先复验原件及归档 27/27 相同，才逐文件从活动源码退出，移后又独立从 manifest 对归档 27/27 复验，活动源 0；没有删除唯一副本、没动其它六个旧 GUI HOLD、诊断 atlas、游戏或玩家数据。`tests/content/J15ContentContractTests/run.py` 锁退役集合恰为 27、不可返回或进入映射；全新 `artifacts/j15-content/f4u-legacy-retirement-contracts-20260927-a/` 的完整内容 runner **108 mappings / 6 holds PASS**，Debug/Release 正式 Stage 依原 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts` 复验各 124 项 PASS（27 旧源本来就不在映射/Stage）。本轮没有重新编 C#、重建 Stage/ZIP 或实机启动；Git 历史仍含旧图，绝不因此推送。此段取代下方“33 GUI HOLD/三张 atlas 缺失须补入”的旧状态；三张诊断 atlas 不纳入正式输出是经用户确认旧 UI 废弃后的有意退役，不是游戏视觉验收。
+
+**F4-U 旧账号/订阅 GUI 退役意图检查点**：用户确认旧 UI 已废弃，并具名批准仅 `AnimusForge/GUI/SplitShadowsOnlyAISpriteData.xml`、`AnimusForge/GUI/SpriteParts/Config.xml` 与 `SpriteParts/ui_account`、`ui_achievement`、`ui_subscribe` 三目录中的 25 张源图，共 27 个已跟踪文件，在本仓忽略的 `local/j15-gui-archive-20260927/legacy-splitshadows/` 逐项 SHA 备份复验后退出活动源码；不触游戏、玩家数据、Git 历史或推送。开工预检为 27/27 跟踪、6,211,268 字节、源及祖先无 reparse、归档根尚不存在且被 `/local/` 忽略；执行前仍须以此精确集合再次核对，不移动其他 GUI。
+
+**F4-U 三图集诊断（本轮继续）**：远端 `main` 与当前树都有 `ui_account`、`ui_achievement`、`ui_subscribe` 的 25 张源图和 `SplitShadowsOnlyAISpriteData.xml`/`SpriteParts/Config.xml`，但远端树、当前源码、现有 D: 安装均无对应 `SpriteSheets/<category>/<category>_1.png`。以 XML 尺寸与 25 个 `(SheetX,SheetY,Width,Height)` 在全新忽略 `artifacts/j15-content/f4u-atlas-probe-20260927-a/` 重建三张**诊断** PNG：`ui_account` 4096×2048/5 parts、`ui_achievement` 4096×4096/9、`ui_subscribe` 4096×4096/11；逐项边界/无重叠、源图尺寸、保存后 crop 的 RGBA 像素与各源图一致。SHA-256 分别 `F7F4169A890450C1875104398A8103DFAEF91790D43A2AF34947D14EF66BEF4B`、`E4A446DEF2358D9D8FA4F6F0F8D4ED6B17EC38234A87327BB1191EDB367CB1C4`、`8BA431276F05E591FDF0B03F6E7783545092E195115144261851062ECACF4FEF`。视觉查看可见旧订阅/充值宣传内容；定向搜索生产 C#/GUI/内容及当前 Release 1.4 DLL 的 ASCII/UTF-16 名称均无这些类别/特征 sprite 的直接消费者，**不能由此排除游戏引擎自动加载或其他旧 UI 路径**。不因远端有分图就把旧收费画面/QR 素材纳入正式 Stage/ZIP；三图仅为仓内忽略诊断输出，游戏 loader、实际使用、权利和视觉仍 HOLD。其他五旧图/一旧 sheet 未动。
+
+**F5-O6 当前 124 项完整 Stage 合成部署**：AST 提取未改的生产 `deploy_module.ps1` 受管部署函数，以当前 Release 正式 Stage 为只读输入，在全新忽略 `artifacts/j15-content/f4a-full-stage-deploy-20260927-a/` 的虚构 `game/Modules/AnimusForge` 和仓内 `LOCALAPPDATA` 首次安装 **124 项**；目标 124/124 SHA 与 Stage 相同，ONNX/PlayerExports/Logs 三个预置未受管哨兵原字节保留，完成记录 1 份；重复执行 no-op，Recovery 数仍 1。仅合成正常/重复路径，前候选 123 项故障回滚/突然退出结果不自动升级为 124 项故障验收；没有写 D: 游戏或真实玩家根。原库存只读报告 `tracked=19511 / unknown=0 / HOLD:asset-package-provenance=2`，7 项库存单测 PASS。
+
+**F4-A 本地投影已验 / F5-O5 当前正式 Stage 13/0（本切片）**：`content/content-map.json` 新增唯一 `AnimusForge.XihaiAction` 源 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac` → `AssetPackages/pack0.tpac`，SHA-256 锁 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`；内容契约锁 owner、源/目标、1,671,304 字节、hash、`nacisword1` 恰一次，并要求旧 `AnimusForge/AssetPackages/pack0.tpac` 保持同字节，不假称已去重或许可闭合。inventory 对权威源仍是 `HOLD:asset-package-provenance`。完整 J15 内容 runner 在全新 `artifacts/j15-content/f4a-contracts-20260927-a/` 得 **108 mappings / 33 holds PASS**，含 Stage 白名单和合成部署契约。原 Stage 重建器会先按新映射校验旧 Stage，因此在逐项核实已批准的两个旧 Stage 各仅含 123 项可重建产物、无 reparse/tracked 文件后，先各补一份同 SHA TPAC 至 124 项，再用未改的原 `deploy_module.ps1 -StageOnlyOutputDir` 重建 Debug/Release，均 `Stage Result: success`，未走 Deploy。原 StaticVerifier 对两个**正式** Stage 分别 **13 PASS/0 FAIL**；日志在 `artifacts/j15-content/f4a-formal-static-20260927-a/`，D: 游戏根只读，TEMP/TMP 在仓内。C# 未重编，沿用前候选已六构建/ABI/API/ONNX 验过的相同程序产物；新增的只是运行内容。原 `package_mod.ps1 -NoBump` 在全新 `artifacts/j15-content/f4a-formal-packages-20260927-a/` 生成 Debug/Release **本地测试** ZIP，独立核对每 Stage/ZIP 各 124 项、123 个非 XML 字节相同、TPAC SHA 相同，ONNX/PlayerExports/Logs/AssetSources/UserData 禁入项 0；ZIP SHA-256 为 Debug `2907D3F5058930CF10B8AA69E37360072E8C7188240E126E6A95207ADB3145E8`、Release `FBA86E840356C515472F9F425A1E4D682769DC9B53E664256CF212828B8C214A`。本段取代下方先前 O5 正式 Stage `11/2` 状态，但 11.2 MB 历史 manifest、两份手改源去重、来源/再分发权、三张 GUI atlas、游戏视觉及 LIVE/SAVE 仍为 HOLD；**ZIP 不可发布，J15 未完成**。
+
+**F4-A 本地续作意图检查点**：用户确认继续按计划，限本仓把 `origin/main` 已有、两份同 SHA 的 1,671,304 字节 `pack0.tpac` 以 Xihai 源映射到单模块 Stage，再重建已批准的 Debug/Release Stage 和本地测试 ZIP；保留两份原件、不部署游戏、不推送、不发布。先用内容契约锁住来源/字节/动作标识，再以正式双 Stage 的 StaticVerifier 和 ZIP 字节核验代替先前合成探针。11.2 MB 历史 manifest 与当前远端身份不一致、第三方来源及再分发权、三张 GUI atlas 和实机视觉仍为 HOLD；本条不是这些门禁的通过证明。
+
+**状态：`F4-C/D_OFFLINE_VERIFIED / F4-M_COLD_RACE_FIXED_OFFLINE / F5_PARTIAL / J15_NOT_COMPLETE`。** 分支 `codex/af-main-refactor-continuation-20260831`，意图 `967395e2`；产品/契约 `63138958`、`688ad6b8`，Xihai 桥接补片/安全验收入口 `4304397c`，素材说明 `c0f2d289`，存档坐标 fixture `acbfbb3c`，PlayerExports 契约接线 `19311574`，私人旧源退役 `6b2c4373`。本条取代下方 F4-C/冷启动仍待做、仅 28 项 ONNX 断言的当前状态；旧结果仍保留为历史。用户分别具名批准四个构建生成目录、两个 Stage 根和两个 ABI/API `.generated` 根的重建，以及精确八项私人旧源的仓内忽略归档；无游戏目录/玩家数据/外仓写入、Deploy 或推送。
+
+| 代码证据（一基行号） | 本轮责任与限制 |
+| --- | --- |
+| `OnnxEmbeddingEngine.cs:306,457–529` 的 `_initialized`、`EnsureInitialized`；`MyBehavior.cs:19639–19728` 的 `HasCompleteRequiredOnnxFiles` | 旧实现先发布初始化标志再加载实际模型，后台预热与战役门禁交错时可误报缺模。受控交错先对旧 DLL 得到预期红；修复只在加载/异常处理结束后以 volatile 标志发布结果，同锁竞争等待，不放松模块 `ONNX` 必需门禁、不增加 Tick 扫描。冷主线程首次加载本身有成本，未据单次离线计时承诺帧预算。 |
+| `tools/PolicyEffectModule.ContractTests/Program.cs:600–707` 的受控冷交错及主线程冷门禁 | 直接对指定当前生产 DLL 注入 `ResolveEmbedding` 阻断；Release 1.3/1.4 各 `--onnx-contract-only` **33 断言 PASS**，各 `--onnx-cold-main-only` **5 断言 PASS**。交错耗时约 357/360 ms 含人为 250 ms 屏障；主线程冷门禁约 149/150 ms。仅离线推理/线程契约，M9 游戏帧及两实际版本仍未跑。 |
+| `一键编译覆盖推送/deploy_module.ps1:505–537` 的 `Assert-FeatureBridgesDeploymentBaseline` | F4-C 在任何目标替换/Recovery 写入之前，将安装目标与当前 Stage 或三次 Git 已知旧默认（含 LF/CRLF）比对；缺失、同版、已知旧版可安装/升级，未知手改或坏 JSON 明确冲突并停止。仅显式部署冷路径，按固定六 hash 比较，不改运行时缺失/损坏语义。`ManagedDeployContractTests.ps1` 的新装、旧默认升级、手改/坏 JSON 前置拒绝及原回滚/中断/7 类未知哨兵合成 PASS；未真实部署。 |
+| `tests/AF.Persistence/PlayerExports/{PlayerExportsTests.csproj,run.py,Program.cs}` | O2 旧 runner 漏编 `PlayerExportsPackageExport` 导致首次 CS0246；补真实生产依赖并提供全新仓内输出根、仓内临时目录及不创建的外部“仅路径”数据根。正常 **25 断言 PASS**；姓名匹配和最新包两项变异均在对应业务断言失败，不是编译失败。独立编辑器完整编辑/恢复 smoke 仍待隔离合成根。 |
+| `extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs:1856–1871` 的 `IsExpectedRecordedPlayerMessageMethod`；`ShoutBehavior.cs:27621–27671` 的 `RecordPlayerMessage` | J14 后生产方法已为 `bool`/六参数（末项 `requireMemoryReceipt`），Xihai 启动反射仍要求 `void`/五参数，桥接安装因此 fail-closed。`4304397c` 只把精确签名校验对齐当前生产方法，保留其余类型检查与 Harmony postfix 的前五个位置参数；一次性安装反射，不进入 Tick。双 Stage 离线桥接安装/卸载通过，不等于两个实际游戏版本运行通过。 |
+
+**已执行的 F5 离线片段**：同一 ONNX/F4-C 产品候选由原 `build_single_module.ps1` 无 Stage/Deploy 构建 Debug、Release × 1.3、1.4 + Bootstrap，六构建各 0 warning/0 error；1.3 引用 v1.3.15.110062、1.4 引用 v1.4.7.117484。四 DLL 资源审计各 7 默认、ModelsLock 未嵌入。J15 内容 runner `107 mappings / 40 holds / GCCZ 4`、ManagedDeploy F4-C、个人数据合成迁移及模型外迁拒绝、DataPaths **66 checks** 均 PASS。DataPaths 首次人为改 TMP 到源码树被产品安全门禁拒绝，改回默认 Temp 后通过，不把失败冒充产品回归。`PersistenceIdentityAudit` 同步键 142/行为 36/模块身份 1/Bootstrap 1 PASS；`PersistenceProfileConfigContractTests` 起初仅 `_patienceStates_v1` 两行坐标因已删除代码漂移，修 fixture 两行后 **168 typed bindings** PASS，未放宽 key/type 断言。编辑器仅 `--path-contract` 与 `--path-contract-invalid` PASS；PlayerExports 生产源码契约及两项变异如上。代码地图 **795 锚点** recorded/working-tree PASS，`git diff --check` PASS。以上不能代替尚未跑的 Native ABI/API 全矩阵、双 Stage、StaticVerifier、ZIP 当前候选、完整编辑器或 LIVE/SAVE。
+
+**F4-D 已执行**：批准的旧 profile 六项、`VoiceMapping.json`、异常 HTML 共八项/39,960 字节，逐项复制到被 Git 忽略的 `local/j15-private-archive-20260927/legacy-module/`，原件与副本 SHA-256 双向复核、私有 manifest 记录恢复映射；随后仅这八个精确跟踪路径从活动源码退出，归档再复核。`tests/content/J15ContentContractTests/run.py:395–405,476–482` 要求八项不返回/不进入映射，HOLD 从 40 降至 33，完整内容 runner **107 mappings / 33 holds PASS**；inventory 补 `.gitattributes` 和两个已有开发锁的明确分类后 **tracked=19511 / unknown=0**，7 项单测 PASS。归档不自动导入；历史 Git 仍含私人字节，绝不据此推送。
+
+**F4-U/A 未决**：F4-U 的 33 项旧 GUI 中两个 XML 索引指向 25 张 `ui_account`/`ui_achievement`/`ui_subscribe` parts，但三个 atlas sheet 在仓库与现有 D: 安装均缺；另五旧图/一 vassalage sheet 的实际消费者不同，不凭 grep 无命中删改。F4-A 两份仓内 TPAC 同为 1,671,304 字节且 SHA 相同，却与扩展 manifest 的 11,205,263 字节身份不符；当前 Stage/主 ZIP 没有 TPAC。manifest 所记 AF 修订 `ac65ec31` 无对应 TPAC，D: 旧独立模块包缺失、AF 安装仅有同一 1,671,304 字节文件，不能据此恢复 11 MB 资源。再核实 manifest 指向的 `F:` 两个原始来源和约定 `G:` 两个外仓路径当前均不存在；`git log --all` 对两条精确 TPAC 路径仅见 `bd4d001c`，可达 TPAC blob `c763876d` 为 1,671,304 字节，不是 manifest 身份。金币 runtime XML 实用原版 mesh/collision，旧 `AssetSources` 说明已纠正；第三方原始来源、完整资源与分发权未证实。批量资产操作及外部合成数据根仍待具名确认。
+
+**F4-U 图集源只读核对**：从 `AnimusForge/GUI/SplitShadowsOnlyAISpriteData.xml` 的三类 sheet 尺寸、25 项坐标和 `AnimusForge/GUI/SpriteParts/<category>/<name>.png` 逐项读取文件头：25/25 文件存在、实际像素尺寸与 XML 相符、各自 sheet 内无越界或矩形重叠，源字节合计 6,200,623。21 项是 PNG；`ss_account_background`、`ss_deepseek`、`ss_tax`、`ss_x2` 虽扩展名为 `.png`，文件头和尺寸段实际为 JPEG。这个结果仅证明 XML 布局可由现有源图片技术性重建，**不证明**三份缺失 atlas 已生成、Bannerlord loader 可读、视觉一致或素材再分发权；未写入/纳入任何图集。
+
+**F4-A `origin/main` 纠偏核对**：远端 `refs/heads/main` 与本地 `origin/main` 同为 `0a641aab`；远端树的两份 `pack0.tpac` 都是 blob `c763876d`、1,671,304 字节、SHA-256 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`，没有 manifest 所记 11,205,263 字节版本，也没有三类 GUI 的 sheet，但有 25 项源图片。**关键纠正**：该 1.67 MB TPAC 的原始字节确含一次 ASCII `nacisword1`；正式 Stage 的先前 `11/2` 失败首先是它根本未被纳入 Stage，不能由失败推断小包缺该动作。在全新忽略 `artifacts/j15-content/f4a-origin-main-tpac-probe-20260927-a/` 复制当前 Release Stage 123 项，仅加远端同 SHA 的 TPAC 成 124 项，以仓内 TEMP/TMP 和 `--preserve-fixtures` 跑原 StaticVerifier，结果 **13 PASS/0 FAIL**。正式 Stage/ZIP 未改，旧 manifest 身份冲突、素材来源/分发权与两版本实际视觉动作仍待确认；合成静态全绿不等于 F4-A、O5 或 J15 签收。
+
+**F5-O2 编辑器显式保存补片 `3d5a37f8`**：`tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/JsonFileStore.cs:55–96` 原以秒级目录名备份，同一秒连续保存同一 JSON 的第二次 `File.Copy(overwrite:false)` 抛 `IOException`。先给现有 smoke 加 `--backup-contract <新运行 ID>`（`Program.cs:6–37`，只写仓内全新 `artifacts/j15-content/editor-backup-*`），首次测试代码有局部变量同名编译错误，修正后红例准确命中备份文件已存在；再仅在显式保存的备份目录名加 GUID，连续 12 次保存各留不同且内容正确的前一版，坏 JSON 不改活动文件，既有两个 `--path-contract*` 模式仍 PASS。编辑器 App `net10.0-windows` Release 构建 0 warning/0 error；旧仓内 3139 项快照最长相对路径 101 字符，以当前默认用户根估算新备份最长约 220 字符，不能据此保证所有玩家自定义路径。保存冷路径只增加一次 GUID，不进游戏 Tick；红例目录保留，不递归清理。此测试不读取或编辑真实玩家包，完整编辑/导出/恢复 smoke 仍待批准隔离根。
+
+**F5 前候选 Stage/ABI/API/ZIP 续验（`6b2c4373`，已由 `4304397c` 新候选取代）**：`6b2c4373` 源树上，原构建脚本带 `-Stage` 依次重建 Debug、Release 的 1.3/1.4/Bootstrap，各六构建 0 warning/0 error；精确引用仍为 1.3.15.110062 / 1.4.7.117484。两 Stage 各 123 文件，与各自当时三程序产物逐字节一致，ONNX/PlayerExports/Logs/AssetSources/AssetPackages 路径 0；四实际 DLL 各 7 默认资源。Xihai Core **88 PASS**；Native 当前 fixture **55**、旧 V1 ABI **41+41**、ModuleFramework snapshot **36**、公开 API **158**、五项变异拒绝及四实际 DLL 元数据 **1620** 断言 PASS（Native fixture 有 5 个 CS0649 未赋值警告，不冒充零警告）。Release 两 API 在重建后复测 ONNX 各 **33+5**；首次执行遗漏 `ANIMUSFORGE_ONNX_RUNTIME_DIR` 导致 native DLL 初始化失败，按测试工具明确环境设置后通过，非模型路径回归。Debug/Release 本地测试 ZIP 各 123 条，与对应 Stage 122 个非 XML 条目逐字节一致，禁入路径 0；SHA-256 分别 `810c995158c19e2802d6af06c94452f262c505e4946bf4f851c895fe501c4af9` / `4800b1bd28c0b844b8d93564381aadecaa7315ad92c2f9e9bbcbdd30ab49d1bd`，仅在 `artifacts/j15-content/f5-o6-packages-20260927-a/`，**不是发布包或当前候选 ZIP**。对当时完整 Release Stage 提取生产受管部署函数，在全新仓内虚构安装根安装 **123** 项并逐项 SHA 相同，三类未受管 ONNX/PlayerExports/Logs 哨兵不变，no-op 无新 Recovery；再用已知旧 FeatureBridges 默认验证一项升级及 SHA 私有备份，未知手改时在另一个受管文件待更新前拒绝且 Recovery 不增。此为虚构根，不是实际游戏部署。存档身份 142/36 和配置 typed 168 再验 PASS；795 锚点两模式 PASS。
+
+**F5-O5 `4304397c` 当前候选**：`extensions/AnimusForge.XihaiAction/tools/StaticVerifier/Program.cs:25–51,1214,1540,1678` 增加显式 `--preserve-fixtures`，仅跳过三处递归清理，原双参数清理语义不变；在全新仓内忽略 `artifacts/j15-content/f5-o5-static-20260927-{b,c,d}/temp` 下留存合成夹具，未删系统 Temp。工具以仓内 .NET 8 SDK 编译 net472 **0 warning/error**；先用系统 SDK 10 `--no-restore` 因既有 assets 为 `net472/win7-x86`、请求 `net472/win-x86` 报 NETSDK1047，按资产实际 SDK 修正执行，非产品编译失败。旧 Release Stage 红例 **10 PASS/3 FAIL**：缺 `nacisword1` 的 TPAC、其连带 composition、上述桥签名；补片后原入口 Debug/Release 各 1.3/1.4/Bootstrap 六构建 **0 warning/error**、两 Stage 各 **123 文件**，以只读 D: 游戏根运行两个当前 Stage 均 **11 PASS/2 FAIL**：桥 Harmony 安装/卸载已通过，剩余同一 TPAC/组合资源失败，**O5 仍不通过**。构建日志在 `artifacts/j15-content/f5-o5-bridge-build-20260927-a/`；四当前 DLL 的 Native **55**、旧 V1 ABI **41+41**、ModuleFramework snapshot **36**、公开 API **158**、五项变异拒绝及元数据 **1620** 再验 PASS；Release 1.3/1.4 ONNX 当前 DLL 各 **33+5** PASS（仅离线推理）。当前 Debug/Release 本地测试 ZIP 各 **123** 项、122 非 XML 项与 Stage 字节相等、禁入路径 0，SHA-256 分别 `14181f7c0d2634306ea1e4f8aa06e11ad6dd4be5a54c5658ea7cf18a66d05c21` / `ffa21c545a428518bb5703edac7f1d08eda58a166ad774002c0ef1ee715e461d`，位于 `artifacts/j15-content/f5-o6-packages-bridge-20260927-a/`，**不可发布**。新候选再跑原 `ManagedDeployContractTests.ps1` 于全新 `artifacts/j15-content/f5-o6-managed-contract-bridge-20260927-a/`，回滚/恢复、成功/no-op、中断、七哨兵、已知旧默认/新装/手改/坏 JSON 均 PASS。另从未改的生产 `deploy_module.ps1` AST 提取受管部署函数，以当前完整 Release Stage 在全新虚构 `artifacts/j15-content/f5-o6-full-stage-bridge-20260927-a/` 安装 123 项并逐项 SHA 相同；ONNX/PlayerExports/Logs 三哨兵不变，重复执行不增 Recovery，坏 FeatureBridges 在另一个待更新受管文件前拒绝且 Recovery 不增。只写仓内忽略夹具，不触真实游戏/玩家根；未宣称跨文件原子或实际中断后的全 Stage 恢复。
+
+**F5-O6 当前完整 Stage 同步故障回滚补证**：在全新仓内忽略 `artifacts/j15-content/f5-o6-full-stage-fault-20260927-a/` 中，以当前 Release Stage **123 项**为只读输入，AST 提取未改的生产受管部署函数；虚构目标预置一项旧受管文件及 ONNX/PlayerExports/Logs 三个未受管哨兵。第 61 项 Stage 源 hash 在 `activating` 后注入一次异常：生产同步回滚将旧文件恢复到原 SHA，余 122 项 Stage 路径均不存在；私有旧文件备份 SHA 相同、`rolled-back` 标记存在、三哨兵不变。随后同一 Stage 正常安装 123/123 逐项 SHA 相同，重复执行不增 Recovery；独立读取两份 manifest 均列 123 项，分别标记 `rolled-back` 与 `complete`，目标受管项数 123。此段仅证明捕获到的同步故障；下段另测子进程突然退出，均非 D: 游戏部署。
+
+**F5-O6 当前完整 Stage 突然退出/手工恢复合成补证**：全新忽略 `artifacts/j15-content/f5-o6-full-stage-abrupt-20260927-a/` 中，目标先有一项旧受管文件及相同三哨兵；未改的生产函数在 `activating` 后、第三项源 hash 前由测试子进程 `[Environment]::Exit(77)`，实际留下前两项新字节、其余 121 项未装，以及列全 123 项的私有 manifest/`activating`（无 `complete`/`rolled-back`）。下一次生产函数调用因 interrupted record **写入前拒绝**，目标两项 hash 和 Recovery 数不变。仅对这个虚构根，按 manifest `oldSha256/newSha256`、私有备份及受管路径逐项核对，将第一项旧字节恢复、删除第二项新生成合成 DLL，再确认 123 项全回到旧状态且三哨兵不变，才写 `rolled-back` 标记；重试安装 123/123 与 Stage SHA 相同，no-op 不增 Recovery。独立复读两份记录分别 `rolled-back`/`complete`，目标 123 受管项和三哨兵。此为**开发者手工合成恢复**，不是产品自动续传/自动恢复能力，更不能替代真实游戏 L4 或两个版本旧档。
+
+**F5-O4 当前候选只读复核**：`BridgeBindingContractTests/validate_bridge_bindings.py` 对当前源码/配置报 **16 bindings / 12 wired / 4 declared-only / 12 enabled / 33 source files PASS**；`BridgeFixtureContractTests/validate_bridge_fixtures.py` **10 cases / 6 invariants PASS**，两者均不加载 Bannerlord 或执行运行时 Bridge。`PersistenceIdentityAudit.py --baseline e58f3558cddfe473f396bb7f11470b05e30afce9` **142 sync / 36 behavior / module AnimusForge / Bootstrap 1 PASS**；`PersistenceProfileConfigContractTests/validate_persistence_profile_config.py` **168 typed bindings / 142 keys / 5 cases PASS**。`git diff 6b2c4373..HEAD` 对 Xihai `src/CoreProject` 与 `tests` 无文件差异，前候选 Core 88 项仍覆盖同一 Core 源；只有 `src/Runtime/AfCompatV130.cs` 变化，当前 Stage 的 StaticVerifier 已单独对其桥安装红绿验证。此段不宣称 Prompt/Policy 完整运行或实机结果，亦不替代 O5 的 TPAC 两项失败。
+
+**F5-O2 隔离根反例**：尝试为编辑器完整 smoke 建仓内全新合成根，`AnimusForgeDataPaths.ResolveRoot` 正确拒绝 `ANIMUSFORGE_DATA_ROOT` 位于含 `AnimusForge.csproj` 的源码树；未放松产品门禁，未读真实玩家库，未运行任何递归清理。未验证的测试入口改动已撤销，仅留忽略的 `artifacts/j15-content/editor-full-red-20260927-a/temp` 空目录。完整编辑/导出/恢复仍须获准独立外部合成数据根，不以备份/路径两个有限模式代替。
+
+**F5-O7 当前只读清单复核**：`repository_source_inventory.py` 报 `tracked=19511 / unknown=0`，7 项单测 PASS；代码地图 recorded/working-tree 各 795 锚点 PASS，`git diff --check` PASS。清单分类只证明仓内来源路径已归类，`HOLD:asset-package-provenance=2` 仍保留，不证明 TPAC 完整性或再分发权。
+
+**硬停点**：F4-U/A、F5 O2 完整编辑、O5 TPAC/atlas 资源闭包、O7 完整签收、M9 双实际版本及 F5-L/S 新装/旧档均未完成；StaticVerifier 已运行而且明确 **11/2 未通过**，不得写成未运行或全绿。O6 当前候选的合成部署契约、完整 Stage 虚构安装/no-op/坏配置预检及 ZIP 字节验收已做，未真实部署；真实升级/回退仍属于 L4 未验。Stage/ZIP 虽已重建并做隐私/字节验收，缺资源与许可，绝不可发布。当前 D: 安装的 ONNX 只读用于离线 DLL 推理，不是实机验收或模型再分发许可。实际游戏部署/启动、原始存档、外部资料、全局配置和网络/provider 仍未触及；待具名授权与权利证据后继续，不能降低 J15 完成定义。
+
+## 以下为本次续作前的历史状态（较新证据以上段为准）
+
+<a id="j15-f45-continuation-20260927"></a>
+
+## J15 F4/F5 继续实施意图（2026-09-27）
+
+起点 `9c3f9735`，分支 `codex/af-main-refactor-continuation-20260831`；tracked clean，仅保留既有 `.dotnet-cli-home/`。按[J15 第 9 节](plans/j15-content-profile-plan.md#j15-f4-execution)继续，不重做 F1–F3 或已验证的 F4-M。先以未预热、初始化交错及耗时用例核实模型门禁风险；确认故障才做最小修复。随后逐组推进 F4-C/U/A/D，最后将 F5 O1–O7 绑定同一候选；批量文件处置、私有资料/游戏目录写入及实机旧档验收按 A1–A4 具名确认，未获准项继续做独立的仓内工程与离线验证。保持 ONNX 安装强制门禁、双版本/Bootstrap、真实用户数据和未决分发权边界，不 push、不部署、不改历史。本条是意图检查点，不代表 F4/F5 已完成。
+
+<a id="j15-onnx-f4m-implementation-20260927"></a>
+
+## J15 F4-M 模块 ONNX 安装契约纠偏：代码及关联离线证据（2026-09-27）
+
+**当前状态：`F4-M_CODE_AND_OFFLINE_VERIFIED / F5_PARTIAL / J15_NOT_COMPLETE`。** 唯一规格仍是[新版 J15 第 9 节](plans/j15-content-profile-plan.md#j15-onnx-install-contract)；本条明确取代下方“仅文档、产品仍为 `f4280eed`”的当前状态，不改写其历史。起点 `84e3c7d9`，本地意图检查点 `57e94481`；产品与契约 `df49d81a`，锁定文件拒读补测 `7693bedc`，重定向目录防护 `43e8bcf2`。分支 `codex/af-main-refactor-continuation-20260831`；无 push、部署、游戏启动、用户库/Recovery/忽略副本搬移或游戏目录写入，原有 `.dotnet-cli-home/` 保留。撤销的 `fbd71c38` / `95159efd` 模型外迁/初始化方案没有恢复。
+
+| 当前源码坐标（均为一基，`43e8bcf2`；契约工具以 `df49d81a` 为基线） | 真实责任及边界 |
+| --- | --- |
+| `src/AF.Persistence/AnimusForgeModelStore.cs:23–107` 的 `ResolveEmbedding`、`ResolveReranker`、`RejectRedirectedSubdirectory` | 经未改的 `AnimusForgeModulePaths.GetCurrentModuleRoot()` 限定当前模块 `ONNX`；embedding 按嵌套量化→根量化→嵌套普通→根普通顺序，普通图需同目录 `_data`，tokenizer/config 走原根/嵌套候选；reranker 仅 `ONNX/reranker`、量化优先、config 仍可选。只检查固定少量路径、可读性和 config JSON，不扫其他安装/用户根、不 hash 数 GiB 模型；首次初始化实际图和 tokenizer 解析仍由引擎负责。ONNX 根、嵌套目录及文件重定向拒绝。 |
+| `MyBehavior.cs:19639–19728` 的 `EvaluateMissingOnnxGate`、`ShowMissingOnnxGatePopup`、`HasCompleteRequiredOnnxFiles` | 新战役引导后/旧档战役加载的原门禁改用同一 embedding 解析，并要求 `OnnxEmbeddingEngine.Instance.IsAvailable`，缺失/解析异常不放行；仍由既有暂停弹窗、保存退出/失败恢复路径处理，不伪称 Bootstrap 前阻断整个进程。reranker 沿原可选回退，不改必需组。 |
+| `OnnxEmbeddingEngine.cs:457–529`、`OnnxCrossEncoderReranker.cs:541–596` | 两引擎首次初始化直接消费上述 ModelFiles；不读 AppData Models、`.af-models-ready.json`、Recovery/completed、迁移锁或 mtime，不重复创建 Session 于 Tick。实际检索消费者仍为 `MyBehavior.cs:31774,33559,33657` 等；玩法与存档身份未改。 |
+| `tools/af2_migrate.py:606–619`、`AnimusForge.csproj:81–106` | 旧 `--data-kind models`（含 `--apply`）在读取用户根前明确拒绝且无模型外迁函数；其他个人数据迁移保留。`content/models.lock.json` 留仓内开发溯源，不再运行嵌入；四实现原 7 默认资源逐名/逐字节审计通过。模型文件、旧 Models/Recovery 和忽略的 `local/` 副本均未删除或重新跟踪。 |
+| `tools/PolicyEffectModule.ContractTests/Program.cs:531–724` | `--onnx-module-root` Harmony 注入命中**生产** `GetCurrentModuleRoot()`，对实际请求 DLL 的解析文件、embedding 向量、reranker 评分及门禁正反例执行；断言实际加载的 DLL 路径，避免用户库或旧 DLL 误报 PASS。 |
+
+**F5-0/O1/O3/O4/O6 已执行的同候选离线证据**：开发锁 SHA-256 `c2955fc9d8e235a64563b432692e212436e6834fc4df8bdadc27ba5dd87e2f32`、内容映射 `cfabb6f4cbced856692950800a0bf7383e7560d35797da2b310ba48f994adcf8`、运行依赖锁 `14d11ec66f7c3ebe038e6cfca99c670d13312c1d6b7fd70ee0a5ca581691d50e`。原 `build_single_module.ps1` 无 `-Stage/-Deploy` 分别 Debug/Release；引用 `_deps_auto` **1.3.15.110062** 与 `local/bannerlord-refs/1.4.7.117484` **1.4.7.117484**，SDK 8.0.425，游戏/Harmony/runtime 仅只读；1.3、1.4、Bootstrap **六构建各 0 警告/0 错误**。四 DLL `resourceAudit assemblies=4 resourcesPerAssembly=7 PASS`，与 7 项默认源字节匹配，ModelsLock 不在资源表。`DataPathsTests` **66 checks PASS**；`test_migration.py` 个人数据迁移与旧模型 CLI 拒绝、零模型/Recovery 写入 PASS；J15 完整内容合成 runner `mappings=107 / holds=40 PASS`；ManagedDeploy 的失败回滚、成功、no-op、中断、7 类未受管哨兵（含 ONNX）PASS。以上测试的合成写入限仓内新 fixture；原构建四生成目录及两 Stage 目录的递归重建均经本轮逐项具名批准并预检无 reparse，未使用部署开关。
+
+`PolicyEffectModule.ContractTests --onnx-contract-only` 对**当前 Release 1.3、1.4 DLL**各 `28` 断言 PASS：从只读 `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge/ONNX` 的现有普通 embedding 图+sidecar、reranker 普通图，实际产出有限向量/评分，门禁在该模块通过而在缺 ONNX 根时拒绝；将个人数据根指向禁止写入的仓内路径仍不影响模型读取。独立负例：模块无 ONNX 退出 1；合成无效图经 ONNX Runtime 报 `InvalidProtobuf`、退出 1；单测还覆盖布局/候选、缺 sidecar/tokenizer、坏 config、锁定不可读文件、坏旧凭证/缺 Recovery/mtime 改动及修复后重启可选。真实图测试是**离线 DLL 推理**，不是游戏 Host/战役/旧档验收。
+
+用这批最终 DLL 通过原 `deploy_module.ps1 -StageOnlyOutputDir` 重组 Debug/Release Stage，各 **123** 文件、无 ONNX；原 `package_mod.ps1 -NoBump` 仅由相应 Stage 产两份本地测试 ZIP。独立 ZIP/Stage 集合与 122 个非 XML SHA 一致、ONNX=0：Debug ZIP SHA-256 `b87efd3e49c149d21ac8da5e4ba03bfc98770b6d5edb627a6d69e68c99b65c51`，Release `6c839cbf037c8c04b53c265d4ba62f5b3bb364e97253eb1aa5f043878eb23948`；本地输出 `artifacts/j15-content/f4m-final-packages-0afff7ef7a554cb1a24cdbd3ad510955/`，**不可据此发布**。主 ZIP 排除模型与安装 `ONNX` 必需并存；程序更新保护只由合成受管部署/回滚证据支持，未在真实游戏安装执行。
+
+**仍未验证/下一步**：M9 两个**实际游戏版本**新战役、旧档、暂停弹窗/保存退出失败、补模型重启以及代表性检索均 `NOT-RUN`；只读 D: 安装现有 ONNX 不等于获准部署新 DLL 或旧档验收。F4-C/U/A/D（FeatureBridges 手改冲突、GUI 33/atlas、TPAC/设计源和旧资料/许可）未完成；F5 的编辑器完整 smoke、其余资源/扩展/存档矩阵与 LIVE/SAVE 未签收，F5/J15 及发布仍非完成。来源/再分发权尤其 reranker 未闭，不将测试 ZIP 上传。未来模块设置 UI、J16/J17 不在本包。若要修复真实安装缺模，先列精确源/目标/冲突并另获外写许可；不自动从用户 Models/Recovery/local 搬回。代码导航见[范围图](architecture/af-framework-code-scope.md)与[792 锚点代码地图](architecture/af-framework-code-map.json)；离线锚点验证不替代游戏行为。
+
+## 以下为被本次产品实施取代的计划状态（保留历史证据）
+
+<a id="j15-onnx-contract-correction-20260927"></a>
+
+## J15 计划纠偏：ONNX 留在 AF 安装目录，先修 F2 路径回归（2026-09-27；仅文档）
+
+**最新要求与授权**：用户明确模型必须放在 AF 文件夹，缺少 ONNX 就不允许继续游戏，随后要求“重写计划”。本轮修改既有 J15 计划、主台账、HANDOFF 和单模块输出说明四份文档；不改 C#/测试/脚本/模型锁、不执行迁移/清理/构建/部署/游戏、不恢复其他任务、不写外仓/真实用户目录。文档起点 `95159efd`，分支 `codex/af-main-refactor-continuation-20260831`，tracked clean，保留原 `.dotnet-cli-home/`；本地意图检查点 `1fd0f934`。产品基线仍为 `f4280eed`。
+
+**撤销的错误前提**：`eb03ce28`/`44e91672` 的“用户 Models + 迁移凭证”已接入运行代码，但不符合安装契约；`fbd71c38` 要求玩家 Python 初始化、`95159efd` 改为产品自动初始化/外迁，都没有纠正模型位置，不能继续执行。不是单纯少做 UI，而是把安装依赖错误当成个人数据外迁。下方旧计划保留审计历史，其模型方案及“F1–F3 无需纠正”结论由本条和[新版第 9 节](plans/j15-content-profile-plan.md#j15-af2-final-state)替代。
+
+**计划终态**：玩家单独取得模型包并解压到 `Modules/AnimusForge/ONNX`；当前模块门禁与 embedding/reranker 共用同一安装根及原支持的候选规则。缺必需 ONNX 沿既有暂停/保存退出流程拦截，无忽略继续；模型只读原位加载，无 AppData fallback、readiness/Recovery 凭证或脚本依赖。主 ZIP 不含 ONNX、程序升级不动玩家安装的 ONNX；这与个人数据外置保护并不矛盾。当前门禁时点是战役加载/引导后，不宣称整个游戏进程在 Bootstrap 前就被拦截。既有门禁必需组与 reranker 回退策略不借本次修路径暗改。
+
+### 只读定位证据与缺口（源码 `f4280eed`，本轮没有运行验证）
+
+| 实际源码 / 一基行号 / 符号 | 已核实行为与受影响责任 |
+| --- | --- |
+| `MyBehavior.cs:19494–19498,19620–19755`，`OnGameLoadFinished`、`EvaluateMissingOnnxGate`、`ShowMissingOnnxGatePopup`、`HasCompleteRequiredOnnxFiles`；`ModOnboardingBehavior.cs:3336` | 开局/旧档门禁仍查模块 `ONNX`，提示玩家解压到 AF；缺失暂停，只给保存退出。当前文件门禁检查 embedding，不是已验证了 reranker 或真实推理 |
+| `src/AF.Persistence/PlayerExportsStore.cs:21–33`，`GetModuleRootPath`；`AnimusForgeModulePaths.cs:12–28,85–129`，`GetCurrentModuleRoot`/根解析 | 门禁仍定位含 SubModule 的安装祖先；标准模块 helper 可供统一路径使用。不得全局重定向为用户根 |
+| `OnnxEmbeddingEngine.cs:457–487`、`OnnxCrossEncoderReranker.cs:540–570`，两个 `EnsureInitialized`；对照 `eb03ce28^` | F2 已从模块读取改为 ModelStore，且由原候选列表收窄为 `model.onnx`；路径和原布局支持都须修复，不能只改提示文案 |
+| `src/AF.Persistence/AnimusForgeModelStore.cs:15–60`，`GetReadyGroupDirectory`/`ValidateReadyGroup`；`AnimusForgeDataPaths.cs:10–26,60–61` | 当前默认用户 Models + readiness + Recovery 完成记录是真实运行前置条件；造成“模块有模型能过门禁但引擎不读，用户有模型而模块无模型仍被拦”两种不一致 |
+| `tools/af2_migrate.py:627–629,698–723,838–880`，模型路径/记录生成/CLI；`tests/AF.Persistence/DataPaths/Program.cs:45,168–199` | 外迁工具和测试目前维护的是错误产品路径；必须退役模型 apply 写入入口，并用模块来源/凭证无关/缺失拦截测试替换，不删除个人数据迁移保护 |
+| `AnimusForge.csproj:81–83`；`tests/AF.Persistence/DataPaths/DataPathsTests.csproj:12,17`；`tests/content/J15ContentContractTests/Program.cs:57–58`、`run.py:492` | 当前 8 资源包含 ModelsLock；新版计划把锁留开发溯源并退出运行嵌入，目标恢复原 7 默认，须逐名/逐字节证明。当前代码和 DLL 仍是 8，不冒充已完成 |
+
+**可执行切片与验收**：[F4-M](plans/j15-content-profile-plan.md#j15-onnx-install-contract) 写明根/候选统一、错误凭证依赖退出、原门禁保留、模型外迁入口退役、旧副本保护、升级/说明同步及 M1–M9 正反例。优先修 M，再做 C/U/A/D；其他 Prompt、PlayerExports、终端设置及 F3 单向产物链保留。F5 的 O1/O4/O6 和 L1/S1/L4 重新绑定“安装原位使用、用户模型不可绕过、无开发环境、升级保留 ONNX”验收；两个版本真实加载/旧档仍必需。单模块输出说明同步澄清“主包排除模型 ≠ 安装目录排除模型”。不新增模型下载器/迁移 UI、解释器、第二条打包流程或全仓回退。
+
+**真实文件边界**：既有用户 Models、模型 Recovery、仓内忽略副本留原处，既不自动清理也不自动搬回；它们不是正式运行来源。源码纠偏无需重新跟踪模型大文件。游戏 ONNX 若缺失，实施前列具名源/目标、备份与冲突，只有得到相应写入批准才能恢复；规划本身不授予该权限。模型来源/分发权仍需真实证据，不能以本机 hash 或改路径代替；Git 历史私密风险仍在，禁止推送。
+
+**本轮文档验证**：PASS：仅上述四份文档有差异；12 个新增/变更本地链接及显式锚点有效，Markdown 围栏配对/锚点唯一；22 个具名源码/测试/脚本输入存在；当前 csproj 静态解析为 8 个 EmbeddedResource Include（7 默认 + 1 ModelsLock），与计划的当前/目标区分一致；F4 五组、M1–M9、O1–O7、A1–A4 齐全，当前规格已移除旧外迁/初始化要求。开发者 PowerShell 模板与起点逐字相同，未执行；`git diff --check` PASS。与产品基线 `f4280eed` 比较也只有四份文档差异。此为文档/源码静态核对，不是实际 DLL 或行为验证；构建、产品测试、迁移、模型加载、实机/旧档均 NOT-RUN。
+
+**当前状态与下一动作**：文档纠偏不修复产品。F3 组装 `OFFLINE_VERIFIED` 只保留原有证据；F2 模型回归 OPEN，F4/F5 和完整 J15 未完成。用户授权实施后先做 F4-M 的完整代码/测试切片并重建受影响产物，按 A1–A4 处理真实文件与游戏环境；不自动续跑任何其他任务。
+
+## 以下为被替代的计划及历史证据（模型设计以本页顶部纠偏为准）
+
+<a id="j15-f45-executable-plan-20260927"></a>
+
+### 历史：J15 F4/F5 可执行计划重构（2026-09-27；模型部分已被顶部纠偏替代）
+
+**正式交付约束纠正（接用户质疑，取代 `fbd71c38` 的相关设计）**：把开发迁移脚本投影进客户端、要求玩家具备 Python 是本次规划错误，不是用户已接受的产品选择。计划已撤销该玩家脚本入口及拟增 prepared CLI 交付要求，改为 AF 产品侧承担模型初始化/迁移/恢复，沿现有 C# 责任边界及必要交互接入；玩家不装 Python/SDK、不取源码、不敲迁移命令，也不捆绑解释器绕过。开发 Python 测试/维护脚本继续保留。F5-L1 增加无开发环境的独立验收条件。仅改计划/台账/HANDOFF，未安装软件、改代码、改包或执行迁移；产品能力仍待实现，不能把文档纠正报成已交付。
+
+**本轮目标/授权**：用户要求先把能自行决定的计划完善到可执行；仅修改本主台账、`docs/plans/j15-content-profile-plan.md` 和 HANDOFF，不实施 F4/F5、不修改产品/测试/构建脚本、不搬用户资料、不写游戏/外仓、不恢复其他任务或自动化。起点 `f4280eed`，工作分支 `codex/af-main-refactor-continuation-20260831`，tracked clean，仅已有 `.dotnet-cli-home/` 未跟踪；本地文档意图检查点 `5252c0ac`。
+
+**已确定的计划变更**：以[第 9.7–9.11 节](plans/j15-content-profile-plan.md#j15-scope-decisions)取代相冲突的旧执行说明。MCM 最终只展示 API / 其他模块设置进入 AF UI 是后续接入目标；当前普通设置仍由 MCM 保存，J15 不假迁移未来 UI。FeatureBridges 改为随版本管理的内部配置，撤销新增个人覆盖层要求；现有未知手改仍需部署前冲突识别与具名处理，不因分类变化静默丢弃。F4 按配置、GUI、TPAC/设计源、旧资料、模型五组列输入/动作/退出门；模型增加无旧安装的产品侧初始化、恢复/锁升级校验，不依赖玩家开发环境、不隐式下载。F5 固定当前 8 资源口径、同候选 O1–O7 离线矩阵与两个版本的 LIVE/SAVE 矩阵；来源/外写/批量操作/实机输入集中列为 A1–A4 确认点。
+
+只读依据（生产代码仍为 `f4280eed`，本表是计划定位证据，不是新增运行验证）：
+
+| 实际源码 / 符号 | 已核实职责与未覆盖事项 |
+| --- | --- |
+| `TerminalSettingsRegistry.cs:33–36,115–118` 的 Getter/Setter、`SaveSettings`；`DuelSettings.TerminalSave.cs:10–25` 的 `SaveCurrentSettings`；`AnimusForgeTerminalSettings.cs:7–10,103–106` | 普通终端设置仍接 DuelSettings/MCM；独立 TerminalSettings 只有两个入口选项，不等于全部模块设置已迁移 |
+| `Refactor/Runtime/FeatureBridgeRuntime.cs:351–409` 的路径解析；`一键编译覆盖推送/deploy_module.ps1:544–557` 的受管差异计划 | 当前仍读取安装内部配置；F3 备份/替换不等于具名未知手改预检，F4-C 是待实现而非已修复 |
+| `src/AF.Persistence/AnimusForgeModelStore.cs:15–60` 的就绪检查；`tools/af2_migrate.py:627–629,838–880` 的旧布局/CLI | 需要 readiness 与 Recovery 完成记录；开发 CLI 只有 installed/repo，不能当作玩家产品入口。产品侧新装/迁移能力仅为计划，未实现；之前 proposed CLI/脚本投影已由上方纠正明确撤销 |
+| `AnimusForge.csproj:81–109`；`tests/content/J15ContentContractTests/run.py:466–496,656–687` | 当前 7 默认 + 模型锁 = 8 资源；原位 HOLD 断言必须被真实迁移/退役证据替代；内容 runner 已支持新 run-root 且不清旧 fixture |
+| `tests/AF.Persistence/PlayerExports/run.py:32–35`；`tests/AF.Persistence/DataPaths/Program.cs:138–150`；`tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs:42–57,155–159` | 既有测试有固定根清理、系统 Temp 写入、默认真实用户根访问，计划要求先隔离/确认再执行，不能无参盲跑或声称两个路径测试证明完整编辑 |
+
+**本轮验证**：仅三份预定文档有差异；新增/变更的 **10** 个本地链接及目标显式锚点、Markdown 围栏/锚点唯一性、**24** 个具名现存输入/入口路径检查 PASS；F4 五组、O1–O7、L/S 与 A1–A4 标识齐全。csproj 静态核验为 **8 个 EmbeddedResource Include**；首次检查误把 13 个 Remove 元素也计入而失败，诊断后修正检查口径，未改产品项目或断言基线。当前 F5 PowerShell 模板经 PowerShell Parser 解析 PASS，未执行其中命令；`git diff --check` PASS。这些是文档/语法静态检查，不是 MSBuild 求值、实际 DLL 或产品测试。未运行构建/测试 runner/迁移/游戏。产品状态继续 `F3_OFFLINE_VERIFIED`；F4 剩余项及 F5 尚未实施，未来 AF UI 工作包明确未实施，计划改动不提升任何 LIVE/SAVE/分发权状态。当前 Git 历史仍含私密资料，禁止据此推送。
+
+**下一动作**：获得开始产品实施的明确请求后，按[F4 执行清单](plans/j15-content-profile-plan.md#j15-f4-execution)先冻结逐项表，做 F4-C/M 具名最小代码与合成反例；批量搬迁/真实数据/游戏目标按 A1–A4 确认。无需重做已验证 F1–F3，不因未知第三方来源阻断无关工程；必需项未闭也不能宣称 J15 完成。
+
+## 以下为 F3 产品停点及更早切片证据（历史；仍有效的产品结果不因本轮计划重构改变）
+
+### AF2.0 F3 单向产物链离线验收完成；F4/F5 未开始本轮续作（2026-09-27）
+
+最新 F3 程序部署产品/测试 **`a8f69b57`、`82d8ce53`**：`一键编译覆盖推送/deploy_module.ps1:505–649,699–725` 让 Stage-only 和部署共享一次精确 `content` 投影、唯一 XML、已锁双实现/Bootstrap 与私有依赖装配，并在两路径共同要求 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts`。部署只枚举 Stage 白名单文件；旧目标受管文件先复制到 `%LOCALAPPDATA%/AnimusForge/Recovery/deploy` 并复核 SHA，同目录候选经 hash 后逐文件替换，失败逆序恢复且逐项核 hash；中断记录阻止无检查重试。未知安装文件/目录（包括旧导出、日志、模型、自定义配置）不镜像、不删除；旧双模块只作只读存在性警告，虚构旧模块重跑不改原件且无新 Recovery；旧 `robocopy /MIR`、安装 Prompt/PlayerExports 合并、回写源码的遗留函数/调用已退出。此事务是逐文件替换加可恢复回滚，**不是跨 123 文件原子提交**；若进程在激活中被杀，须检查私有记录与目标状态后再部署，不能宣称自动恢复。
+
+离线证据：工作区虚构游戏根完整部署 **123** 个受管文件，逐个与 Stage SHA 相同，合成 PlayerExports 未变；重复运行无新增 Recovery。`ManagedDeployContractTests.ps1:1–110` 的第二项激活故障注入验证首项回滚、私有备份与目标 hash 相同，正常重试、无变化重跑、中断记录拒绝及 **7** 个未受管/旧模块虚构哨兵不变。新版 J15 内容 runner 无递归清理现有 fixture，完整运行映射 **107**、坏映射 **8**、GCCZ 回退 **4** 及新部署契约 PASS；历史安装合并测试由新用户根/无合并行为替代，不把旧合并结果冒充现行部署。Debug/Release Stage 各 **123** 项在同一已构建程序候选下重组 hash 稳定；两份本地仅供离线检查的 ZIP 各 **123** 项，与对应 Stage 集合及 **122** 个非 XML 条目 SHA 一致，XML 版本仅在 ZIP 中，私有目录条目 0。首个独立隐私断言误将允许的 `onnxruntime.dll` 视为 `ONNX` 目录而失败，改按目录段判断后通过；非产品缺陷。代码地图 **789** 锚点绑定本产品修订，recorded/working-tree PASS。现有 C# 六构建结果仍属未改的同一源码/产物，**本切片未重跑构建**。未写 D: 游戏目录、启动游戏、改原始 `.sav`、推送或写 G:；实机部署/旧档 **NOT-RUN**。
+
+**F3_OFFLINE_VERIFIED，仅 F3 收口并按用户最新指令停下。**F4 的 33 项未映射 GUI、TPAC/设计源功能和分发权、`UnnamedNpcProfiles`/根 `VoiceMapping.json` 等资料，以及 F5 同候选总验收均未执行/未闭。现有 ZIP 是装配/隐私工程候选，**非功能完整包或发布就绪**；下方各段为更早修订的历史状态，不能以其中“部署仍失败关闭”覆盖本段。
+
+最新 F3 防陈旧候选 **`8b3f3b51`**：`一键编译覆盖推送/content_layout.ps1:226–321` 的 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts` 将 Stage 九项 Bootstrap/双实现 DLL、PDB、构建记录的 hash 与当前配置 `single_module_artifacts` 精确绑定并拒绝 reparse；打包入口三处均强制此门，旧干净 Stage 仍在创建 ZIP 目录前失败。Stage 重建调用保留无此开关的精确隐私/内容白名单，允许验证过的旧程序候选被替换；没有放松未知文件、模型、用户数据或内容 hash 断言。合成九产物比对、程序产物漂移拒绝及原白名单反例 PASS；以现有已验六构建产物在当前源码下重组 Debug/Release Stage 各 123 项，两次无输入重组的文件集合/hash 一致。Debug/Release ZIP 各 123 条，独立逐项核对与 Stage 相同（版本 XML 单列），PlayerExports/ONNX/Logs/设计源/未映射资产均为 0。旧 Stage 打包拒绝、当前 Stage 打包成功，均未读写游戏模块；代码地图 **785** 锚点 recorded/working-tree PASS。**仍非功能完整包**：部署程序文件事务未接通，33 GUI/TPAC/权利与剩余旧资料未闭，F5 最终同候选总验收未执行。
+
+最新 F4 仓内 PlayerExports 退役 **`7f30aaa6`**：`AnimusForge/PlayerExports` 3139 项与私有 `Recovery/player-exports-*` 完成清单、备份和 `UserData/PlayerExports` 活动副本逐项大小/SHA-256 一致，源码树无 reparse/额外文件，跟踪清单也恰好 3139。整目录同卷移至忽略的 `local/legacy-repo-player-exports`，移后 3139 项再次逐项 hash 复验；Git 当前索引该目录跟踪数为 0，未删除本地字节。编辑器 `--path-contract` 在旧源码目录不存在后仍 PASS，只用 typed 用户根并拒绝旧路径写入。D: 原件、用户活动副本和私有 Recovery 保留。**历史 Git 仍含私人文件名/数据，未改写历史、未推送；此前 `PlayerExports` 备份已验证不等于历史泄漏消除。**这不证明其他仓内数据退役或实机旧档。
+
+最新 F2/F4 模型切片 **`eb03ce28`、`2f589e6b`、`0188367a`、`44e91672`**：`content/models.lock.json` 固定 embedding 安装/仓内两个完整变体及安装 reranker 五件套的字节大小/SHA-256，内嵌 LogicalName `AnimusForge.Dependencies.ModelsLock.json`；`.gitattributes` 固定锁文件 LF，防止不同 Git checkout 使私有 readiness hash 漂移。`src/AF.Persistence/AnimusForgeModelStore.cs:15–106` 在两 ONNX 引擎一次性初始化时验证 typed 用户 Models 路径、锁/Recovery 完成记录、文件集合、大小/mtime 与 reparse；`OnnxEmbeddingEngine.cs:472`、`OnnxCrossEncoderReranker.cs:556` 不再读取模块 `ONNX` 或候选旧路径。模型大文件 SHA 仅在显式迁移/独立验收流式计算，不进入请求/Tick；首次初始化仅检查十项元数据。缺失/损坏显式显示依赖未就绪，不借旧安装回退。模型运行于真实 Bannerlord 的加载/检索 **NOT-RUN**。
+
+`tools/af2_migrate.py:605–836` 对安装/仓内来源分别只读盘点、严格完整组匹配、私有备份与 hash、隔离候选、冲突保留、同卷整组无覆盖激活和完成记录；`tests/AF.Persistence/DataPaths/test_migration.py:320–445` 合成覆盖两源冲突、目标优先、坏组、并发目标、中断续作、磁盘满、损坏备份、重复。真实 D: 安装 10 项/1,224,729,882 字节激活 10；仓内 5 项/95,170,721 字节激活 0、embedding 文本变体冲突 1；来源、私有备份和活动组分别经完整 SHA 复验，重复运行无二次激活。锁格式调整产生第二套私有 Recovery，均保留；当前模型活动库约 **1.14 GiB**、私有模型 Recovery 约 **5.09 GiB**。仓内已跟踪旧 `ONNX` 五文件在恢复集验证后移至忽略的 `local/models/legacy-repo-onnx` 并停止跟踪；该本地副本再核对五项 SHA，D: 原件和原始存档未动。旧 Git 历史中模型字节仍存留，未改历史/推送。reranker 来源版本仅是本机字节锁，不冒充 ONNX 转换仓身份或再分发批准。
+
+本切片 `DataPathsTests` **58 checks**（含只读真实模型元数据探针）、合成迁移 PASS、四个当前实现 DLL 各 **8** 资源的名称/hash 审计 PASS、J15 映射/剩余 HOLD 静态检查 PASS；原一键入口无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap **六构建均 0 warning/error**；代码范围图 **784** 锚点 recorded/working-tree PASS。模型退役后未再重建 Stage/ZIP，故旧 123 文件 Stage 不能代替最终同候选；F3 部署、GUI/TPAC 权利与功能、其他旧资料、F5 离线总验收仍未闭。实机 1.3/1.4 与旧档加载→另存→重载 **NOT-RUN**；无游戏覆盖/启动、原始 `.sav` 修改、推送或 G: 外仓写入。
+
+### 以下为 F3 Stage/ZIP 历史切片
+
+最新 F3 Stage/ZIP 片 **`d7c16c06`**：原一键打包入口保留，但 Stage 只由 `content/content-map.json` 的 107 项、唯一 `SubModule.xml`、已验证的 1.3/1.4/Bootstrap 和 `content/runtime-dependencies.lock.json` 六项私有 DLL 构成；`Assert-AnimusForgeCleanStage` 在重建和包装前检查精确文件/目录集合、源 hash、依赖锁、reparse 及未知物。打包只接受项目内干净 Stage，不再扫描安装目录后排除少数项，逐项验证 ZIP 和 Stage 字节；版本仅写 ZIP 中 XML，源码/Stage 不回写。旧 Stage 重建前只读比对：两配置各 3139 导出与仓内源、五项 ONNX 与仓内源、107 映射文件与 content 源逐文件相同，另 9 个额外/差异文件在私有 Recovery 备份并复验后才重建。Debug/Release 各 123 文件，两次保持构建 DLL 不变的无输入 Stage 重组文件集合/hash 稳定；Debug 与 Release ZIP 独立验证精确集合/hash，不含玩家数据、日志、模型、设计源或未映射素材。未知文件、安装路径和已废弃包参数均失败关闭。合成 Stage 白名单、旧 107 项投影/历史 merge 均通过；地图 780 锚点两模式 PASS。**但**实际部署仍显式失败关闭，程序文件事务替换未实现/验证；当前 Stage 缺 33 项未映射 GUI 和 TPAC，不能以隐去功能达成 F4，故 ZIP 仅为隐私/装配工程候选，不是功能完整或发布就绪。未写游戏/存档/G:，无推送；F1–F5 仍未闭合。下述 TerminalSettings/Prompt 段是更早切片证据。
+
+最新 F2 TerminalSettings 切片 **`7c39b200`**：`AnimusForgeTerminalSettings.cs:83–178` 活读写只接 typed `UserData/Settings`，不存在/损坏时用 owner 原有安全默认，不日常回读安装；有效文件先校验候选再同目录原子替换，损坏文件保留，保存失败时内存 UI 值回退。`tools/af2_migrate.py:490–605` 显式迁移单文件，旧安装与仓内分别标识，先私有备份/hash 核验，再仅对有效 JSON 无覆盖激活；无效 JSON 仅备份、冲突留存、中断可续。两真实来源只读盘点各 **0**，未执行无意义真实激活。合成迁移涵盖两来源冲突、目标优先、损坏备份来源、重复及激活后中断；DataPaths **50 checks PASS**、迁移 synthetic PASS，当前不带 Stage/Deploy 的六构建 **0 warning/error**，代码地图 775 锚点两模式 PASS。F2 ONNX/模型及其他数据、F3–F5 未完成。下方 Prompt 切片为前一候选证据。
+
+最新 F2 Prompt/日志/缓存切片 **`528031c5`**：普通及 Policy Prompt 读取按“用户覆盖→随包默认→owner 既有安全回退”，编辑保存只写 `UserData/Overrides/CustomPrompts` 且先生成并校验同目录候选；空覆盖回到随包默认，损坏用户文件保留并显式失败，不以读取/重置写回安装或源码。日志与模型下拉缓存转到 typed 用户根；30 份默认 Prompt 加入 content-map SHA 锁。显式 Prompt 迁移器对旧安装源 30 文件/88,472 字节只读盘点、私有备份和逐项独立 hash 验证，16 份基线不激活，14 份非基线 JSON 无覆盖激活并复验活动副本；重复执行激活 0。D: 原件未改，仓内旧 Prompt 来源为空。合成迁移覆盖基线、冲突、重复、中断、损坏备份等；普通/Policy 契约 **9055 assertions PASS**、DataPaths **44 PASS**、30 个映射 SHA 静态核验、原一键入口不带 Stage/Deploy 的 Debug/Release × 1.3/1.4＋Bootstrap **六构建 0 warning/error**。代码地图 772 锚点 recorded/working-tree PASS。完整 J15 runner 因其会递归清理非获准根未运行；TerminalSettings、ONNX、剩余数据、F3 Stage/ZIP、F4 资产来源/许可/退役与 F5 同候选总验收仍待完成。无游戏覆盖/启动、原始 `.sav` 修改、推送或 G: 外仓写入。下述旧切片“Prompt 尚未接通”文字仅记载当时候选，不代表当前状态。
+
+F2/F4 PlayerExports **真实迁移切片**（仅数据复制/恢复，不含退役）：执行前确认 Bannerlord/编辑器进程为零、默认用户根原不存在，安装与仓内两来源分别只读盘点各 **3139 文件 / 14,274,532 字节**。首次安装来源 `--apply` 在第 51 项私有备份处因临时名附加 GUID 触发 Windows 路径长度 `FileNotFoundError`；只读检查发现 Recovery 已有 50 份备份、活动根不存在、完成指针不存在，源仍可读。修复 **`d8acf666`** 将同目录临时候选改短名，增加能使旧命名越过 260 字符而最终路径仍合法的合成回归；测试通过后才按原恢复流程重跑，先逐项复核已存在备份而不覆盖。安装来源结果 **backed_up=3139 / activated=3139 / conflicts=0**；独立逐文件验证原件、私有备份、活动副本的大小/SHA-256 全一致，活动文件集合恰为 3139，无额外文件，完成记录/就绪指针存在。仓内来源作为独立标识再执行：**backed_up=3139 / activated=0 / conflicts=0**，独立逐文件验证仓内原件、第二份私有备份与活动副本一致；就绪指针含两个来源 key。两来源各重复运行一次均 **already_complete=True / activated=0 / conflicts=0**。正常输出和 Git 未记录玩家文件名/正文；含文件名的 manifest 仅位于私有 Recovery。D: 安装原件、仓内跟踪旧树和原始 `.sav` 均保留；没有游戏覆盖/启动、Stage/ZIP、推送或 G: 外仓写入。此证据只闭合 PlayerExports 的备份/激活，不含旧 profile/根 VoiceMapping、Prompt/设置/模型、仓内 3139 项退役或实机旧档；F1–F5 仍未完成。
+
+F2 PlayerExports 游戏/独立编辑器接线 **`38c5effd`**：`src/AF.Persistence/PlayerExportsStore.cs:50–111` 的 `GetPlayerExportsRootPath` 现在返回 `AnimusForgeDataPaths.GetPlayerExportsDirectory(GetCurrentRoot())`，不再指模块/源码；默认根检测到本模块旧 `PlayerExports` 非空时须有对应 source-key 的用户根就绪指针和私有 Recovery 完成记录，否则明确拒绝自动相对导入/导出。显式 `ANIMUSFORGE_DATA_ROOT` 作为隔离根不自动混入旧安装；原有绝对路径只读导入先于默认根解析。`tools/af2_migrate.py:154–175,254–304` 在全批完成后才写不含文件名的就绪指针，重复运行可补写，中断/损坏/磁盘满不写；仓内与安装来源各有独立 key。`tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:13–20,216–317` 编入同一纯 .NET 路径源码，默认不扫描 CWD/源码，旧目录可查看但全部八类编辑/删除入口只准对已验证的 `UserData/PlayerExports/<package>` JSON 工作；邻近旧来源待迁移时阻止默认根写入。MyBehavior/Kingdom 选择器在待迁移状态下显示原因且仍允许手动只读绝对路径导入，不因根异常直接越过 UI 错误边界。
+
+`38c5effd` 接线候选的离线验证：DataPaths **44 checks PASS**（含迁移指针与完成记录匹配/损坏反例）、Python 迁移 synthetic PASS（含安装与仓内来源 key、重跑、中断）、编辑器路径正反例 PASS，编辑器 Core/App Release 编译 **0 warning / 0 error**；执行前逐目录检查四个允许重建的仓内产物根，原一键入口不带 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap **六构建均 0 warning / 0 error**。代码地图 762 锚点 recorded/working-tree PASS。该当时候选尚未执行真实迁移；上段记录其后由 `d8acf666` 修复并完成的真实 PlayerExports 操作。普通/Policy Prompt、TerminalSettings、日志/缓存、ONNX、F3 Stage/ZIP、F4 资源权利与 F5 离线总验收仍待做，**不能把 F1/F2 或 AF2.0 标完成**。编辑器完整数据编辑 smoke 与实机/旧档均 NOT-RUN；现有编辑器 `JsonFileStore` 的私有备份策略还需在后续消费者/恢复门禁中验证。
+
+最新 F2 整组导出切片 **`d838145a`**：`src/AF.Persistence/PlayerExportsPackageExport.cs:13–245` 由开发菜单显式调用，克隆活动包到同目录隐藏候选，逐文件 hash 检查活动包未变、解析候选全部 JSON、复制旧包到独立 Recovery 并逐文件复验，再同卷改名发布；失败不预清空唯一活动包，已验证的旧包才从临时 retired 位置删除。`RestoreSubdirectory` 在 Knowledge/Kingdom 可选导出失败时把候选对应小节复原为旧字节，保持原有警告并跳过语义。`MyBehavior.cs:53232–56032` 的 14 个导出入口与 `KingdomStrategicProfileBehavior.DevUi.cs:326–396` 的导出委托已接候选；导入选择器过滤隐藏候选，显式绝对路径导入不变。`PlayerExportsStore.ClearCandidateJsonFiles` 拒绝活动包与 reparse，迁移器拒绝含未解决 `.af-export-` 暂存目录的来源，避免把失败候选迁入活动数据。完整组 hash 成本只在显式开发菜单导出发生，不进入 Tick。
+
+该前序切片当时的虚构数据 `DataPaths` **37 checks PASS**，覆盖旧包保留、整组替换/Recovery、可选小节恢复、坏 JSON、并发修改、不可用 Recovery、活动目录清理拒绝；迁移 synthetic 增加未解决候选拒绝。前序六构建和 758 锚点只证明当时的候选；本节首段的 `38c5effd` 路径接线与新验证取代“仍指模块根”的旧状态。失败候选仍保留以供人工恢复，迁移会拒绝它，不自动清理或吞掉。
+
+最新 F2 迁移工具切片：`tools/af2_migrate.py:25–324` 只在显式 CLI `--apply` 时触达默认 `%LOCALAPPDATA%/AnimusForge`，安装模块与仓内旧树是**分别标识**的只读来源，仓内不会自动混入安装迁移。工具按块 SHA-256/大小/mtime 盘点，拒绝 reparse、同源大小写碰撞、错误根、磁盘空间不足和并发操作；私有 `Recovery` 下按来源备份并复验、隔离候选；活动目标已有文件（包括损坏 JSON）绝不覆盖，不同来源版本均留私有备份；同卷逐文件不覆盖激活，完成标记仅在全批成功后写入。中断或备份损坏不写成功记录，重复运行可续作；包目录 mtime 恢复以维持“最新包”选择。完整文件名只在私有 Recovery 清单，CLI 仅输出计数。`tests/AF.Persistence/DataPaths/test_migration.py:1–166` 合成覆盖两来源/目标冲突、空、损坏、重复、中断、源变更、备份损坏、磁盘满、排他锁、错误根。实来源只读盘点：安装和仓内各 3139 文件、14,274,532 字节，上一轮逐文件 SHA-256 3139/3139 相同；未读玩家正文到报告、未运行真实 `--apply`。目前仅覆盖 PlayerExports；普通/Policy Prompt、TerminalSettings、模型及其他数据类别迁移和 runtime/编辑器接线仍待实现，所以 F2/F4 未完成。
+
+意图 `d2aca97f`。`src/AF.Persistence/AnimusForgeDataPaths.cs:1–108` 提供纯 .NET 内部定位，默认 `%LOCALAPPDATA%/AnimusForge`；显式绝对根/环境覆盖须拒绝相对、源码、模块、Stage、现存 reparse 或文件根，绝不回退 CWD。typed 子目录包括 `UserData/PlayerExports`、`Settings`、`Overrides`、`Cache`、`Logs`、`Models`、`Recovery`。路径缓存仅初始化一次，目录检查只在显式解析时运行，未进入 Tick。`tests/AF.Persistence/DataPaths/Program.cs:1–61` 独立编入同一生产源码，17 个定位/越界反例通过；源码新增前曾得到预期 CS2001 red。随后原一键脚本无 Stage/Deploy 的 Debug/Release × 1.3/1.4 + Bootstrap 六构建均零警告错误；清理前核实四个获准生成目录为工作区内、无 reparse、仅含构建产物。该类尚未接任何 reader/writer，因此**不是 F1 完成**，也不证明迁移、Stage/ZIP、真实数据或游戏验收。
+
+后续真实 owner/消费者边界（本片不宣称已改）：`src/AF.Persistence/PlayerExportsStore.cs:19–51,85–113,186–210` 模块根导出和清旧包；编辑器 `tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:9–24` 旧向上查找；`DuelSettings.cs:4280–4327,4358–4565,4681–4773,5013–5033` 与 `PolicySystem/Effects/PolicyEffectPromptService.cs:280–317,374–441,546–587,642–657` 的默认/覆盖策略；`AnimusForgeTerminalSettings.cs:77–129` 与 `AnimusForgeModulePaths.cs:30–62` 的设置/日志；`OnnxEmbeddingEngine.cs:472–515`、`OnnxCrossEncoderReranker.cs:556–591` 的模型定位；`Refactor/Runtime/FeatureBridgeRuntime.cs:225–275,385–400` 的损坏全关语义必须保留。F2 要以实际读写接线和合成恢复反例证明，不能只改路径字符串。
+
+F2 首个独立安全改进：`src/AF.Persistence/PlayerExportsStore.cs:137–162` 不再先删唯一旧 JSON，改为先序列化、同目录候选写入和解析复验，再 `File.Replace` 或 `File.Move`，失败保留旧文件。`tests/AF.Persistence/DataPaths/Program.cs:61–84` 用抛异常的虚构对象得到预期 red（旧实现删除旧文件），新实现 22 项 PASS；候选成功替换与不留临时文件也覆盖。最新 Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning/error。**仍未解决** `MyBehavior.cs` 等宿主在整组导出前调用 `ClearJsonFiles`、`GetPlayerExportsRootPath` 仍指模块，以及编辑器/Prompt/TerminalSettings/模型/迁移器/Stage/ZIP；本片只降低单文件失败丢失风险，不可启动真实数据迁移或声称 F1/F2 完成。
+
+F4 许可只读核查（2026-09-26）：[BAAI 原模型页面](https://huggingface.co/BAAI/bge-small-zh-v1.5)明确标示 MIT；[ONNX 转换仓页面](https://huggingface.co/onnx-community/bge-small-zh-v1.5-ONNX)只说明它是原模型的 ONNX 权重，本次页面未给出独立的许可证标识或可直接用于再分发的完整证明。故不能从原模型 MIT 标记推断转换仓文件可直接放入客户端 ZIP；模型依赖锁、固定 revision/全组 hash 与实际权利证据仍是 F4 发布阻断。本次未下载、搬运、打包模型。
+
+## AF2.0 资源与数据层完整终态方案（历史规划）
+
+用户明确否定“保护项原位保留、缩小范围结项”，要求 AF2.0 更完整的最终方案。本轮按此完成既有 [J15 计划第 9 节](plans/j15-content-profile-plan.md#j15-af2-final-state)，不新建竞争计划/台账。意图 `093e4d3a`；本轮只有规划文档，不修改产品、测试、脚本、用户资料或模型。**旧的二选一等待已被本次完整范围设计请求取代，不能再次要求用户在缩范围/继续原方案之间选择。**
+
+### 已读实现揭示的真实改造边界
+
+| 当前实现（一基行号，基于 `8df2d1f2` 产品树） | 完整方案必须改变的实际责任 |
+| --- | --- |
+| `src/AF.Persistence/PlayerExportsStore.cs:19–52,85–113,136–154,176–200`：模块根导出、显式路径/最新包选择、先删后写与清旧 JSON | 独立可写数据根、事务导出/迁移、原选择语义；原业务 owner 不转移到通用文件层 |
+| `tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:9–24`：向上找 `AnimusForge/PlayerExports` | 编辑器必须与游戏共用定位约定，不能只改游戏端 |
+| `DuelSettings.cs:5013–5050`、`PolicySystem/Effects/PolicyEffectPromptService.cs:652–657` | 分离随包默认与用户覆盖，改实际读写接缝；不改 Prompt 文本/Policy 语义 |
+| `AnimusForgeTerminalSettings.cs:77–127`、`AnimusForgeModulePaths.cs:45–62` | 设置、日志/缓存从可替换程序目录退出；不将整个模块根重定向到用户目录 |
+| `一键编译覆盖推送/deploy_module.ps1:244–256,726–739,791–831,461–481,991` | 退出整树复制、源码玩家资料入 Stage、用户资料回写源码；旧数据迁移与程序部署分事务 |
+| `一键编译覆盖推送/package_mod.ps1:730–770`；`一键编译覆盖推送/build_single_module.ps1:537–541` | 从现有 Stage 的明确文件白名单打包，不扫描安装目录减去少数黑名单；沿用单模块/双实现与既有入口 |
+
+完整终态为：唯一静态源 + 独立用户数据根 + 受版本/hash 约束的模型依赖 + 纯生成 Stage；部署/打包不能反向污染源码或吸入个人数据。其关键变化包括用户文件路径、覆盖读取、数据迁移、部署回写和打包输入，**不是原 J15“只动源目录”的承诺**。程序集/保存身份/V1 API/运行静态资源名继续保持；实机旧档要在新候选上验证，之前的六构建/合成测试不能替它验收。
+
+实施分 F1 路径与契约、F2 consumer/安全 writer/迁移器、F3 单向组装与白名单、F4 真实资源归位及旧树退役、F5 同候选总验收。阶段明细和硬退出门只维护在计划第 9 节。F1–F3 可先用虚构数据独立实现验证；来源许可缺口只阻塞相关资产分发，不应再把整个无关工程冻结。真实数据搬移、外部路径写入、去跟踪/删除、Stage/部署和发布仍按具名操作清单处理；本设计不代替这些安全边界。
+
+本轮只验证文档结构/本地链接/所引用路径与 Git 变更范围，没有运行新构建或测试。完整 J15/AF2.0 该层终态仍 **NOT_IMPLEMENTED**，没有开始 J16/J17。下一实际工程是 F1：从上表真实 consumer 列出读/写矩阵，补路径边界及默认/覆盖反例，再接入现有 owner；不再重复既有调查和拒绝过的清理。
+
+## 以下为 J15c 已验实现与当时阻塞的历史记录
+
+## J15c 默认 Prompt 已归位并完成候选离线门禁，完整 J15 仍有边界未闭合（2026-09-26）
+
+状态：**`J15c_DEFAULTS_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。最新用户指令为“做到 J15 收尾，按计划做完，不要找我要权限，直接做”，据此连续推进此前具名的仓内生成目录验证及 30 份默认 Prompt 迁移，不再重复索取这两项实施确认。意图提交 `27ca2e34`，产品/接线 **`9db8fa8b`**，测试消费者修复 **`a3fa77af`**；本条取代下方 FeatureBridges 待授权停点。未缩小完整 J15 定义，未把原位用户数据和来源不明素材自动改为完成。
+
+### 实际变更与保持项
+
+- `AnimusForge/CustomPrompts` 的 30 份已审计 JSON（普通 8、Policy 22）逐文件 **R100** 迁入 `content/modules/{AF.Module.Memory,AF.Module.Persona,AF.Module.Prompt,AF.Module.Kingdom,AF.Module.Weekly,AF.Module.Diplomacy,PolicySystem}/CustomPrompts/...`。`content/content-map.json:396–545` 增加明确映射，固定运行目标仍为 `CustomPrompts/...`；总映射 **107**（a=7、b=69、c=31）。所有文件保持迁前 checkout SHA，特别保留与内建常量不同的 PlayerCustomPromptRule 文案；不生成第二可编辑副本。
+- `deploy_module.ps1:172–220,802` 仅把旧 Policy 默认源改为通过唯一映射解析，并向 merge 传入已解析的 `$projectRootFull`。新旧安装目录分支、两次 `/MIR`、四个旧根 Policy 文件替换、安装目录只读和运行路径不变；没有擅改为“补齐所有缺失默认/永久保留所有未知 Policy 文件”。映射解析只发生在组装的旧 Policy 兼容分支，按 107 个条目有界处理，无新增游戏 Tick/请求 I/O。
+- `tests/content/J15ContentContractTests/run.py:241–393,419–554,615–654` 固定 30 份 SHA/owner/source/target，验证旧 CustomPrompts 源退出、七资源不变和 **14** 个真实 overlay alias。`ContentLayoutContractTests.ps1:106–205` 只提取生产 merge 及其依赖函数，不执行 deploy 顶层；用合成模块测试 fresh/empty/split/legacy 四场景，每场景重复组装，验证默认 hash、同名覆盖、未知文件、缺省缺失及安装源不变。
+- inventory 只增加 Memory/Persona/Kingdom 三个具名 owner；敏感 HOLD 优先规则保持。Policy 契约工具的默认源读取改到新 content，实际安装路径断言仍是旧 CustomPrompts/Policy。live probe 只改默认源定位，**未运行**，未读凭据或访问 provider。overlay 本已消费映射，无需改打包脚本。
+- 未改生产 C#、AnimusForge.csproj、Bootstrap、一键构建/打包入口或玩家数据；相对 J14 `e58f3558` 的生产 C#（排除 tools/tests）仍无差异。保存身份、默认入口、实际 ONNX/GUI loader 和 public API 不变。
+
+### 实际验证、候选与失败诊断
+
+| 门禁 | 本轮证据 |
+| --- | --- |
+| TDD 与内容契约 | 先红：映射数量、Policy 源接线、新 owner、PowerShell 默认数量断言分别失败；迁移后完整 runner **107 mappings / 31 J15c / 40 holds / 8 invalid / 4 GCCZ fallback / 14 aliases PASS**，107 项真实合成投影逐文件 SHA/集合通过，覆盖四种安装状态及四次重复组装。 |
+| Bridge / inventory | Bridge **24 unittest PASS**，隔离进程 **12 scenarios PASS**；inventory **7 tests PASS**，实际 Git 索引 `unknown_count=0`、tracked=22650。 |
+| Policy | 源码链接测试产物构建 0 warning/error；Prompt 管理 **216**、18 效果模块 **1406**、UI **387** 断言通过。不是当前四实现 DLL 的 Policy 行为回放。 |
+| 原流程六构建 | 复核四个精确生成根及祖先/后代无 reparse，原脚本不带 Stage/Deploy；Debug/Release × 1.3/1.4 + Bootstrap 均 **0 warning / 0 error**。引用 **1.3.15.110062 / 1.4.7.117484**，SDK 8.0.425。 |
+| DLL / API | 四实现各恰好七资源且名称/字节一致，卫星资源=0；当前 DLL 元数据 **1620 assertions**、V1 **158**、snapshot **36** 及五变异拒绝通过；Native/Scene **55**、固定旧 Native 消费者 **41+41** 和未改二进制绑定通过。源码链接 Native fixture 有既有 CS0649 警告，不能称所有测试构建零警告。 |
+| 当前 DLL 回放 / 定位 | 当前 Debug 1.4 候选的完整 Phase8 PASS；代码地图 recorded/working-tree 各 **755** 锚点 PASS，仍绑定 `e58f3558`。真实游戏/provider/UI/旧档等仍 NOT-RUN。 |
+| 持久化静态契约 | 当前候选重跑 profile/config PASS：142 literal keys、168 typed bindings、13 chunked/44 flattened keys、3 profiles/5 cases/10 legacy-first cases；对 J14 `e58f3558` 身份审计 PASS：142/142 保存绑定、36/36 行为、增删差集为空、模块名/Id/唯一 Bootstrap 不变。 |
+
+四实现 SHA256：Debug 1.3 `B451E460F3AF6B556BB9AFCFB38FB4C9BDA4C06D20BA34A9D542FE18F5278380`，Debug 1.4 `9324536D37F34FE53370977618A65441AB7841EA70FA4618D9A75F3F48678FB2`；Release 1.3 `81AA11ECFA64C83D4DFCFBF170D636FB656F3C169953856CBC20F179FDC9350E`，Release 1.4 `C431867BB9D063191D96368858CFD9DCA915285926D4906400EF9B130A99A805`。Bootstrap Debug `0447DCCFA5CA512BF83B605E7ABF125D1B93F895479311585F1580B2BC281965`，Release `1519D8F5D13B3815036AA7E1B3FE2C9158D3EA629460FAA46E43096C84913A8F`。全部与各自 `.build.json` 复核一致。日志位于仓内 `artifacts/j15-content/j15c-feature-bridges/`：`custom-prompts-contracts.log`、`build-{Debug,Release}-9db8fa8b.log`、`policy-*.log`、`native-legacy-abi.log`、`api-four-dll.log`、`phase8-9db8fa8b.log`；不是发布包。
+
+实际失败保持记录：Policy 首跑在第 48 断言找不到旧 `AnimusForge/GUI/Prefabs/CustomPolicyComposePopup.xml`，只修复六处 J15b 遗留 GUI 源消费者并加静态断言；随后第 86 断言找不到 `BuildPolicyRecordEffectSummary/1`，已读真实 `CustomPolicyBehavior.Management.cs:1409` 的二参数签名，仅给反射测试显式传默认 `true`，不改业务或删断言；重跑得到上述 216/1406/387。构建启动曾因 encoded helper stdin 编码报 UnicodeEncodeError，显式 UTF-8 后运行原脚本成功；资源审计曾误用默认 bin 路径，实际由 `tests/content/J15ContentContractTests/Directory.Build.props` 路由到 artifacts，读取真实 TargetPath 后审计通过。inventory 不支持 `--json`，改用其原无参入口通过。
+
+完整内容 runner 在产品 `9db8fa8b` 上已经通过；`a3fa77af` 仅改测试路径/反射调用和静态源检查，新增静态段亦已执行 PASS，产品/映射/资源和六 DLL 未变。额外重复全量运行时，自动安全审查拒绝了测试 junction 解链及 runner 递归清理，**该次命令未执行、未绕过**，不能冒充又跑了一次全量。首次验证前核实 junction 只指向同一 fixture 的 real-source，再仅解除该链接；没有清理 .dotnet-cli-home 或其他目录。
+
+### 数据保护合成契约与模型来源补证（2026-09-26）
+
+意图 `78e83c40`，测试切片 **`2b61f1c5`**；产品仍为 `9db8fa8b`，没有改生产部署函数、content 映射、资源字节或 DLL。此补证取代本条此前“ONNX 没有原始模型地址”的判断，不解除数据搬移或分发 gate。
+
+- `tests/content/J15ContentContractTests/PlayerExportsContractTests.ps1:17–52` 先验证新建运行根在仓内 `artifacts/j15-content` 且祖先无 reparse，拒绝已存在目录；AST 只提取生产 helper 和有界源选择块，命令白名单阻止误执行 deploy 顶层。`:87–165` 用虚构文件验证首次统一安装、空/已有统一目录、重复组装、目标已存在拒绝、源缺失；`:167–191` 实际调用原非删除回写 helper，双方均为 fixture。生产依据是 `一键编译覆盖推送/deploy_module.ps1:398–481,820–831` 的 `Merge-PlayerExports`、`Sync-PlayerExportsBackToSource` 及调用分支。
+- 独立运行 **45 assertions PASS**：较新时间优先，同时间 legacy-1.4 > legacy-1.3 > source、unified > source；统一模块目录一旦存在，即使为空也不再取 legacy；源/未知文件并集、mtime 保留、源 hash/mtime 不变和两次新目标组装一致；已有暂存目录拒绝且不写，缺源生成空暂存；实际 `/E /XO` 保留 source-only/较新源，复制未知/较新目标并可重复。fixture 为 `artifacts/j15-content/playerexports-contract-78e83c40`，**不含真实数据、没有清理**。
+- 四个隔离的生产函数变异分别因优先级颠倒、时间方向颠倒、错误引入 legacy、丢失 `/XO` 被预期断言拒绝；首个 legacy 变异先触发命令白名单，保留 `Test-Path` 后第二个变异才命中行为断言，未删除/放宽断言。反例日志保留在 `artifacts/j15-content/playerexports-negative-78e83c40`。另验相同 RunRoot 重入被拒且全部合成文件 hash/mtime 不变，越界 RunRoot 被拒且零输出。没有制造 `/MIR` 删除变异。
+- `run.py:681–685` 接入此子测试；五项无清理静态函数和 Python 语法再次通过。**新增子测试独立运行通过，不等于整体 runner 在该提交重跑**；先前被拒的额外递归清理未重试或换目录绕过。没有执行真实备份/恢复、读取导出正文、触发原 Stage/Deploy 或访问 provider；合成保护验收不能代替 G0.3 的真实数据决定。
+
+模型内容来源已由公开上游固定版本与本地文件身份比对确认，而非仅根据 Bert 结构推测：上游为 [onnx-community/bge-small-zh-v1.5-ONNX 固定提交](https://huggingface.co/onnx-community/bge-small-zh-v1.5-ONNX/tree/9507db33464b5da99a532ac26b2a251767cbc62b)，revision **`9507db33464b5da99a532ac26b2a251767cbc62b`**。只读取模型 API 的文件元数据，并流式计算本地大文件 SHA；没有下载权重或修改 ONNX 文件。
+
+| 本地 `AnimusForge/ONNX/` 文件 | 固定上游路径 / 已匹配身份 |
+| --- | --- |
+| `model.onnx`，41,689 bytes | `onnx/model.onnx`；原始 SHA256 `69b353bb2aa2d09ab606ddbbc35437b03c843615a6bff28216a37fee7309c2aa` 与 LFS 一致 |
+| `model.onnx_data`，94,765,056 bytes | `onnx/model.onnx_data`；原始 SHA256 `e72da961b03613124aa11317470c995ca197651a9d7f6be2b0e90aad92f71df0` 与 LFS 一致 |
+| `config.json`，checkout 943 / 上游 904 bytes | 根同名文件；仅 CRLF→LF 后 Git blob SHA1 `711d85d7eff21f51bd6181b547e66eef5a8fe6d2` 一致 |
+| `tokenizer.json`，362,603 bytes | 根同名文件；Git blob SHA1 `b8f4b05ae1e11a204d57040fc05fdde5c8c3b235` 一致 |
+| `tokenizer_config.json`，checkout 430 / 上游 414 bytes | 根同名文件；仅 CRLF→LF 后 Git blob SHA1 `965b029d8cf40c8e7397c1ee1d76847cba3b2990` 一致 |
+
+该转换仓库模型卡指向 [BAAI/bge-small-zh-v1.5](https://huggingface.co/BAAI/bge-small-zh-v1.5)，后者模型卡标 MIT；在固定转换版本 API 中 `cardData.license` 缺失且没有 LICENSE 命名文件。**这是已验证来源与许可证声明的记录，不是对转换文件再分发权的结论**。五个文件整体原位保留，Knowledge owner、graph→external data/tokenizer/config 依赖及原加载路径不变，不自动下载、不转 LFS、不入 ZIP。
+
+### 剩余 GUI / 素材的只读追溯
+
+- 33 项 GUI HOLD 的首次纳入历史已逐项查明：25 张 `ui_account` / `ui_achievement` / `ui_subscribe` 图及两个索引在 `767a9d70`；旧 courier/terminal 两图在 `33de401e`；notoriety 临时/patch 两图在 `e8829c8b`；旧 diplomacy 图在 `4cbf55f9`；vassalage sheet 在 `0af96671`。这是本仓历史来源，不是原作者或使用权证据；PNG 中仅六图有 `Software` 文本键，没有据此猜作者或授权。未改这些文件。
+- `AnimusForge/GUI/SpriteParts/Config.xml:4–17` 声明三个 AlwaysLoad 类别；`SplitShadowsOnlyAISpriteData.xml:3–352` 的 25 个 SpritePart 均能找到对应源 PNG（5/9/11），但三个声明的 sheet 在当前工作树均不存在。对根生产 C#、`src`、`Refactor`、`PolicySystem` 及 `content` XML/mbproj 的定向搜索未发现这三个类别或旧索引文件名的直接引用；**不能由此证明游戏自动资源加载器不使用它们**，也不补生成、迁移或删除该组。
+- `VassalageBehavior.cs:500–513,642–673,709–713` 实际按 SpriteParts 的五张 PNG 创建运行 sprite，不读那张历史 sheet；`src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:19694–19700,19766` 实际读取 `_v2.png`，但 `tools/package_policy_system_source_overlay.py:144` 仍把旧 diplomacy 图列入交付。因此旧图“无当前直接 loader”不等于可以删；不更改 overlay 既有集合。
+- 两份现存 TPAC（`AnimusForge/AssetPackages/pack0.tpac` 和 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac`）均 1,671,304 bytes，SHA256 同为 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`，同在 `bd4d001c` 纳入。真实消费者为后者源码 `src/Runtime/ActionProviders.cs:43–61,207–224` 的 Xihai/speech 静态资源 probe。相同字节和纳入提交仍不提供素材授权，不合并/去重这两个受保护路径，不重跑外部 TPAC 历史失败冒充通过。
+- AssetSources 六项在 `6997f1be` 纳入；OBJ 的 `mtllib` 对应现有 MTL，prefab 明确需要自定义 mesh/collision。README 关于 raw OBJ 不是运行素材的界限有效，但其第 5–6 行写 `ui_intentory_coin_a` 已与当前源 XML 不符：`content/modules/AF.Module.Economy/ModuleData/animusforge_scene_gold_items.xml:7–12` 的 body 是 `bo_sling_ammo`，mesh/flying/holster 是 **`boardpiece_sturgia_white`**。这里只纠正审计事实，没有改 README、运行 XML 或生成 TPAC。当前检查没有找到根或 AnimusForge 内 LICENSE/COPYING 文件；不把没有文件推定为没有权利，也不反向推定为允许分发。
+
+### 尚未闭合的完整范围与下一动作
+
+CustomPrompts 不再 HOLD；其余仍按下方逐类读写审计：PlayerExports 3139 项、旧 UnnamedNpcProfiles 6 项、根 VoiceMapping、ONNX 5 项、pack0.tpac、AssetSources 6 项、GUI 33 项和异常 HTML 原位未改。上方合成保护测试和五项模型来源比对已完成，但尚无具名真实数据备份/恢复验收或完整分发/素材来源决定；不能把“模型来源未知”继续当作已确认事实，也不能把来源比对当作发布许可。金币设计 README 明确 OBJ/MTL 非运行素材，当前 live XML 使用原版 mesh，不能自动导入资源包。
+
+上述可独立完成的合成保护、模型比对、GUI 索引/实际 loader 和 Git 首次纳入核查已完成。接续缺口是**保护项的处置决定和素材来源/使用凭据**，不是再批准已完成的 Prompt 迁移或六构建：已向用户请求二选一，明确批准这些保护项原位保留、排除本次迁移（范围调整），或保持原完整范围并提供真实数据备份/迁移要求与素材来源凭据。尚未获得答复，不能自行选择前者，也不能靠重复只读检查把 HOLD 计 DONE。随后才按最终约定范围作 J15d 退出审计。
+
+无 Stage/Deploy/Package/push/外仓同步/真实用户配置写入；原 Stage 会包含受保护数据，不能用合成投影冒充真实 Stage。在 `0815fb6b` 后复核 Git、计划及当前交接，工作树无新增产品改动，同一保护项处置/来源缺口连续三个目标轮次未解除；可独立执行的工作已完成，目标已标记 **blocked**，不是 J15 完成，也没有缩小原目标。待决定或凭据到位后恢复；期间不进入 J16/J17，不重复已通过的静态片、不重新扫描玩家内容、不重开 J15a/b 或再次尝试被拒的清理。
+
+## 以下为 FeatureBridges 最小片历史停点
+
+## J15c FeatureBridges 已归位，完整验证与其余范围待授权（2026-09-26）
+
+状态：**`J15c_FEATUREBRIDGES_VERIFY / J15_PARTIAL_HOLD`**。完整目标仍为按计划完成 J15，不能以本片替代整个 J15。用户选定先做 FeatureBridges 最小片；开工 HEAD `a251799e`，意图 `3e6fb1ad`，产品/测试提交 **`7bc2ffbf`**。本条取代下方 J15b 停点；J15a/b 已验成果保持，其余 J15c 和最终 J15d 尚未闭合。
+
+### 实际变更与真实消费者
+
+- 唯一默认源从 `AnimusForge/ModuleData/FeatureBridges.json` 以 `R100` 迁至 `content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json:1–18`。checkout SHA256 前后均为 `10c573b461ec148ef8478a0d4269f73a7ca106f5a8c6a50c9d37facc4ff86896`；没有配置正文、schema、contract 或默认开关变化。
+- `content/content-map.json:391–395` 新增 Foundation.Runtime 条目，运行 target 仍为 `ModuleData/FeatureBridges.json`，无 LogicalName。总映射 77，原 76 项保持，七项 EmbeddedResource 不变；组装仍用既有 helper，未改部署/构建脚本。`Refactor/Runtime/FeatureBridgeRuntime.cs:226–263,267–344,351–415` 的一次性加载、缺失内建默认、非法配置全关及模块根查找原样；没有新增 Tick、I/O、轮询或反射。
+- `tools/BridgeBindingContractTests/validate_bridge_bindings.py:24,675` 与 `test_validate_bridge_bindings.py:34–47,195` 改读新仓库源；新增唯一映射/owner/旧源退出断言，运行隔离 fixture 的 `ModuleData` 目标不变。`tools/repository_source_inventory.py:108` 仅增加具名 Foundation.Runtime owner 根，未知 owner 和敏感 HOLD 仍保留。
+- 开工现有 Bridge validator 实际失败为 `source file AnimusForge/ModuleData/RuleBehaviorPrompts.json does not exist`。定位为 J15b 后 `docs/phase8/bridge-binding-manifest.json:784,793` 的两处当前源坐标遗漏；仅改为既有 Prompt content 源，不改历史报告、Bridge wiring 或正文，随后 validator 通过。
+- `tests/content/J15ContentContractTests/run.py:233–242,265–320,360–368,451–484` 增加本片固定 SHA/owner/source/target，并从历史 41 HOLD 派生当前 40 HOLD；J15a/b 原基线与断言未削弱。
+
+### 已执行验证与明确未执行项
+
+- 测试先红后绿：迁移前新增 J15 映射断言报 `content map entry count`，Bridge 新测试报 `0 != 1`，inventory 新 owner 报 `None != 'content'`；迁移接线后相应检查通过。
+- 直接调用既有 J15 runner 的五个无写入函数：映射/源字节、项目七资源、脚本接线、格式/引用、inventory/真实 overlay file-set 均 PASS，结果 **77 mappings / 40 holds / 11 overlay aliases**。未执行 runner 的 `main()`，不能称为完整投影或 GCCZ harness 通过。
+- Bridge validator PASS：**16 bindings / 12 wired / 4 declared-only / 12 configEnabled / 33 sourceFiles**。Bridge unittest 中 **15 个不创建临时文件的用例** PASS，包括新唯一源、当前清单、全关、非法字段/版本/ID及安全 gate 反例；不是整个套件已跑。
+- repository inventory **7 tests PASS**；定向暂存后实际索引 inventory `unknown_count=0`。代码地图仍绑定未改 J14 C# `e58f3558`，recorded / working-tree 各 **755** 锚点 PASS；`git diff --check` PASS。定位和静态证据不代替运行验收。
+- 当前候选补跑只读持久化检查：`python -X utf8 -B tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --json` PASS，142 个 literal keys、168 个 typed bindings、13 个 chunked keys、44 个 flattened keys、3 profiles / 5 cases / 10 legacy-first cases。`PersistenceIdentityAudit.py --json` 的默认旧基线 `d4cb1467` 实际 FAIL：当前 142 对基线 95 个保存绑定、36 对 35 个行为，仅新增既有 WarStats 的 47 个绑定与 `AfWarStatsBehavior`，无删除，不能记该命令通过。诊断确认自计划指定的 J14 产品基线 `e58f3558` 起，生产 C# 无差异（只排除 `tests/**`、`tools/**`）；显式 `--baseline e58f3558cddfe473f396bb7f11470b05e30afce9 --json` 复核 PASS，142/142 保存绑定、36/36 行为、差集全空，模块 Id/Name 均 AnimusForge、唯一 Bootstrap 不变。未改审计脚本或基线断言，只修正 J15 计划示例命令以明确其 J14 回归范围；不是 DLL 元数据、真实旧档或整个持久化运行验收。
+- **本候选完整 J15 runner、真实合成投影、GCCZ harness、Bridge 进程隔离、Debug/Release 双 API + Bootstrap 六构建及新 DLL 审计均 NOT-RUN**：待明确清理/测试输出授权。不能借用 J15b 六构建结果标成本候选已验。
+
+### 剩余分类与接续门禁
+
+| 剩余范围 | 实际读写责任与保留决定 |
+| --- | --- |
+| CustomPrompts 30 项（普通 8、Policy 22） | `DuelSettings.cs:4358–4618,4970–5050` 与 `PolicySystem/Effects/PolicyEffectPromptService.cs:149–307,349–361,546–587` 真读写，分别归 Memory/Persona/Prompt/Kingdom/Weekly/Diplomacy/PolicySystem。待逐文件确认 curated 默认并批准源迁移/脚本接缝；运行实例、正文、缓存、缺省生成与隔离语义不改 |
+| PlayerExports 3139 项 | PlayerExportsStore 负责路径/文件层；MyBehavior、Knowledge、Persona、Kingdom、WorldEvents、ShoutUtils、VoiceMapper 负责业务，Onboarding 读取、Editor 写入，部署回写源。G0.3 尚缺具名数据/备份地点/恢复 hash/操作授权，不复制、搬移或去跟踪；curated 源必须先隔离回写 |
+| 旧 UnnamedNpcProfiles 6 项；根 VoiceMapping 1 项 | `ShoutUtils.cs:108–121` 不自动读旧文件、保存 helper 为空；`VoiceMapper.cs:322–343,388–415` 仅显式导入，初始化不自动读取外部 JSON；实际持久化在 MyBehavior save/导出。历史生成/用户内容继续 G0.3 HOLD，不能因无自动 reader 删除或改成自动加载 |
+| ONNX 5 项 | Knowledge 逻辑 owner，原 OnnxEmbeddingEngine / OnnxCrossEncoderReranker 加载。graph 内已核实含 `model.onnx_data` 文件名且 sidecar 存在，本地无 reranker 目录。来源/许可、模型+data+tokenizer/config 整体决定待 G0.4；不下载、不转 LFS、不入 ZIP |
+| AssetPackages/pack0.tpac；AssetSources 6 项 | 前者由 XihaiAction/SceneActions 消费，但内容/版权未闭合；后者为 Economy 场景金币设计源而非运行模型。待来源/许可和依赖核实及具名操作批准，不自动导入/生成素材包 |
+| GUI 33 项；异常 HTML 1 项 | 两项索引配置、25 张来源未确认 UI 图、五张旧/临时变体和一张生成 sheet；旧 diplomacy 图仍在 overlay 中。HTML 为诊断内容。逐项来源/消费者/atlas/隐私和处理方式未闭合，原位保留，不按名字删除 |
+
+补充只读核查（同一产品候选，文档 HEAD `038a26e7`）：30 份 CustomPrompts 均已比对 Prompt 文案字段与当前 C# 内建文案，**29 份一致，1 份不同**。普通及 Policy 根的 11 份 `Text` 对照 `DuelSettings.cs:71–89,186,325,514` 和 `PolicyEffectPromptService.cs:32`，10 份一致；`Policy/Effects/_Common.json` 对照同 service `:63–69`，另 18 份 Effects 的 `UnderstandingPrompt` / `EvaluationPrompt` 对照各自 `PolicySystem/Effects/Modules/<ModuleId>/*EffectModule.cs` 的具名 descriptor 参数，19 份均一致。核查只解析字符串常量及 JSON，不启动游戏/provider、不执行生成/保存函数。唯一差异为 `AnimusForge/CustomPrompts/PlayerCustomPromptRule.json`：仓库 Text 176 字符，`DefaultPlayerCustomPromptRule` 272 字符，换行与首尾空白归一后仍不同；文件 checkout SHA256 为 `a1634ce335855f66c209196b2581a2a85fe26a24392f69318f7aa71fdec38752`。WorldDiplomacy 为 Version 5，其余 29 份为 Version 1。文案相等不等于已确认来源或取得迁移授权；如批准当前仓库 30 份为 shipped defaults，仍须逐字节迁移并保留差异文案，不能以内建值覆盖。未改这些 JSON，未读取实际安装配置或 PlayerExports 正文。
+
+现有 `deploy_module.ps1:172–220` 的已安装 CustomPrompts `/MIR` 与旧 Policy 替换并非“所有未知文件永远保留/缺省始终补齐”；改变需另批。PlayerExports 按较新时间优先，同时间 source=10、legacy-1.3=20、legacy-1.4=30、unified=100，成功后 `/E /XO` 回写源，不能直接指向不可变默认树。**原位 HOLD 不等于交付排除**：Stage 会复制 ONNX、旧源内容及 PlayerExports，Package 也不排除所有 HOLD。Xihai 全量 verifier 的历史 10/13 和三个失败继续保留，不属于本片已修复范围。
+
+下一步先取得精确生成目录授权，再跑本片完整门禁。四个既有构建目录（`bin/{Debug,Release}/single_module_artifacts`、`obj/single_module/{Debug,Release}`）只读预检均在仓内且无 reparse；`artifacts/j15-content/j15-contracts` 含测试 junction `powershell/project/linked-source`，已解析只指向同一 fixture 内 `powershell/real-source`，未清理。待批准测试临时根为仓内 `artifacts/j15-content/j15c-feature-bridges`，不得默认写系统 temp，执行前重新预检。此后必须逐类完成原 J15c 或获得明确范围调整，再做同候选 J15d；不把 HOLD 记 DONE。`.dotnet-cli-home/` 保留，无 Stage/Deploy/Package/push/外仓同步/游戏或玩家数据写入；LIVE 1.3/1.4、旧档、provider、Gauntlet、音频和帧性能均 NOT-RUN，未开始 J16/J17。
+
+## 以下为 J15b 历史完成证据
+
+## J15b 其余已确认静态内容有限离线完成（2026-09-26）
+
+状态：**`J15a/b_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。用户明确要求按既有计划做到 J15b 结束；J15b 意图提交 `f54a8127`，产品/测试切片 **`04056ce7`**。本条取代下方 J15a 当前状态，但只完成已确认静态 JSON / GUI / XML / 语言批次，不启动 J15c/d，也不把整个 J15、实机或发布标为完成。
+
+### 实际迁移、映射与责任
+
+- 在 J15a 七项基础上，将 **69** 个已确认静态文件按真实 owner 从 `AnimusForge/ModuleData` / `AnimusForge/GUI` 逐文件 Git `R100` 迁入 `content/modules` 或 `content/foundation`：ModuleData **26** 项、GUI **43** 项。owner 为 Prompt、Social、Conversation、WarStats、SiegeAftermathIntervention、XihaiAction、Economy、Foundation.Localization/UI、UI、Onboarding、WorldEvents、Weekly、PolicySystem、Diplomacy；没有递归搬整个目录，也没有改 Prompt/JSON/XML/PNG 字节。
+- `content/content-map.json:1–392` 现有 **76** 个唯一 source/target（J15a 7 + J15b 69）；J15b 非嵌入项不伪造 `LogicalName`。运行时目标仍是原 `ModuleData/...` / `GUI/...`，`SubModule.xml`、movie 名、sprite 名、语言索引和 mbproj 相对目标不变。`一键编译覆盖推送/content_layout.ps1:87–224` 允许非嵌入项省略 `logicalName`，但 owner、路径边界、重复 target、已给出的重复 LogicalName、ADS、越界及 reparse 仍 fail-closed；`deploy_module.ps1:736,801,833–836` 的 Stage/Deploy 投影与 Rule/Preprocess hash 都从同一映射解析。
+- 源定位已同步到 `PromptLabService`、`PreprocessTopicLabService`、TownAmbient writer、GCCZ mirror verifier、Phase8 GUI 回放与 readiness catalog；`tools/package_policy_system_source_overlay.py:121–150` 从映射解析 11 个受影响源，同时保留原 `AnimusForge/...` 交付别名。`tools/repository_source_inventory.py:93–110` 只放行本批精确 owner 根，未知 module/foundation 继续返回 unknown，PlayerExports/ONNX/AssetPackages 的敏感 HOLD 仍优先。
+- 生产运行 loader、`LoadMovie` 调用、sprite consumer、`SubModule.xml`、程序集/public API/保存身份与 Bootstrap 均未改。投影只在组装时按 76 个映射线性校验/复制；没有新增 Tick、请求热路径 I/O、反射、缓存或轮询。
+
+### 当前候选与验证
+
+| 门禁 | 当前结果与证据边界 |
+| --- | --- |
+| J15 内容契约 | `tests/content/J15ContentContractTests/run.py:71–233,256–500` 固定 69 个 owner/source/target、基线 checkout 字节与 41 个 HOLD；结果 `mappings=76 / j15b=69 / holds=41 / invalidCases=8 / gcczFallbackCases=4 / overlayAliases=11` PASS。`ContentLayoutContractTests.ps1:89–103` 对真实 76 项投影逐文件 SHA 校验且无额外文件；无效映射仍零部分输出。 |
+| 引用与格式 | 69 个迁移源逐项 JSON/XML/mbproj/PNG 校验；两个 language index、两个 mbproj、两个 SubModule XML target、23 个 `LoadMovie`、所有 19 个活动 sprite、Courier brush/prefab 与 TownAmbient 唯一 writer 接线均 PASS。旧 `ModuleData`/`GUI` 根只剩精确 41 个 HOLD。 |
+| Prompt / Xihai / inventory | Prompt configuration **36**；ActionPostprocess PromptLab **18 rules / 5 mood / 15 cases**；Preprocess PromptLab **19 topics、recall=1、precision=1**；Xihai Core **88/0**；repository inventory **7**、Phase8 entry inventory **11** 且 catalog check、索引 inventory `unknown_count=0`，均 PASS。 |
+| 当前 DLL 回放 | 当前 Debug 1.4 `AnimusForge.dll` SHA256 `3E91D8893F862E693917D4107B6EA13FF09DA778F8436842858EBBE38F2CBA8E` 的完整 Phase8 回放 PASS，包含迁后 Terminal/Onboarding/Weekly GUI 源读取；输出中的真实游戏、provider、Gauntlet 等仍分别标 `NOT_RUN`。 |
+| 双版本单模块构建 | 事前复核四个精确仓内生成目录及所有祖先/后代无 reparse；原 `build_single_module.ps1` 不传 Stage/Deploy，Debug/Release × 1.3/1.4 + Bootstrap 六项均 **0 warning / 0 error**。引用为 1.3.15.110062、1.4.7.117484。 |
+| 实现资源与定位 | 四个实现 DLL 各恰好七个 J15a EmbeddedResource，逻辑名/源字节一致，`*.resources.dll=0`；J15b 文件经独立真实投影交付而非嵌入。代码地图仍绑定未改的 J14 C# 产品 `e58f3558`，recorded/working-tree 各 **755** 锚点 PASS，仅作定位；`git diff --check` PASS。 |
+
+候选 SHA256：Debug 1.3 `1B82FFC8E56EA7A054B29430E769D09F50EDAC71169ADA9C30D37D073D400387`、Debug 1.4 `3E91D8893F862E693917D4107B6EA13FF09DA778F8436842858EBBE38F2CBA8E`、Debug Bootstrap `635D4902AA063E6D2A09C091E69B37FA0E4878A9141582D303CFECC48D06304E`；Release 1.3 `38E88612E9642589EAA353AF563952372C961B0BFDA8CD935279DF3388124708`、Release 1.4 `088435310658E93ECBBAD96F3A83AE16B70C1CF765CCD98AD8A4D6EA58896BB2`、Release Bootstrap `592BA877FB7B078F4C3FF48FA2563E39683082C6C0421C7C618238B196828FDA`。
+
+### HOLD、失败信号与停点
+
+- 旧根保留 **8** 个 ModuleData HOLD：异常 HTML、留待 J15c 的 `FeatureBridges.json`、动态 `UnnamedNpcProfiles.json` 与五个生成 profile；保留 **33** 个 GUI HOLD：sprite 配置/索引、旧或临时变体、来源未确认的 account/achievement/subscribe 图和生成 sprite sheet。精确集合固定在 `run.py:189–231`；它们未进入映射，也未删除。CustomPrompts、PlayerExports、VoiceMapping、ONNX、AssetPackages 等 J15c 边界继续原位，不由本片授权。
+- 完整 Xihai StaticVerifier 实际运行结果为 **10 passed / 3 failed**：外部模块 TPAC 不含 `nacisword1`、其连带 composition 初始化失败、以及 AF bridge 的 accepted-player-message 签名漂移；这三项不由静态内容源搬迁产生，不能记为 J15b 通过。与本片资源直接相关的 deployed paths、settings、battle-speech 资源/语言及 MCM 契约通过，另有 88 项 Core 回归通过。首次 Phase8 调用缺必填 `GameRoot` 等参数而 fail-closed，补齐显式固定引用和三个模块根后当前候选完整回放通过；没有绕过依赖校验。
+- 没有执行 Stage、Deploy、Package、push、游戏目录/外仓/玩家数据写入或 GCCZ mirror；真实 1.3/1.4 加载、旧档、安装用户覆盖、Gauntlet 渲染/点击/焦点、provider、音频与帧性能均 **NOT-RUN**。`.dotnet-cli-home/` 保留。按用户要求停在 **J15b 结束**；若另行请求，下一项是 J15c 的 profile/可写默认项/模型与素材边界，不能由本轮自动继续。
+
+## 以下为 J15a 历史状态
+
+## J15a 七项 EmbeddedResource 有限离线完成（2026-09-26）
+
+状态：**`J15a_OFFLINE_VERIFIED / J15_PARTIAL_HOLD`**。用户授权执行到 J15a、四个具名构建目录清理及不带 Stage 的 Debug/Release 六构建；产品/测试切片为 **`ade4f629`**。本条取代下方“J15 尚未施工”当前状态，但不把 J15b/c/d、实机或发布标为完成。
+
+### 实际迁移与责任边界
+
+- 七个原 `AnimusForge/ModuleData` 可编辑默认文件以 Git `R100` 原样迁移：Preprocess 归 `content/modules/AF.Module.Prompt/ModuleData`，RP item introduction 归 `content/modules/AF.Module.Economy/ModuleData`，五个 `GcczTown*.zh-CN.json` 归 `content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData`。迁前固定 SHA256 由 `tests/content/J15ContentContractTests/run.py` 逐文件校验，旧可编辑路径必须不存在。
+- `content/content-map.json:1–47` 是唯一七项构建期映射；运行目标仍为原 `ModuleData/<file>`，七个 `LogicalName` 及五个 GCCZ `WithCulture=false` 不变。`AnimusForge.csproj:81–107` 只改源 Include；Prompt/GCCZ 生产 loader、fallback 次序、public API、保存键、程序集名和 Bootstrap 选择均未改。
+- `一键编译覆盖推送/content_layout.ps1:87–223` 在任何输出前校验 schema、缺源、重复 target/LogicalName、绝对/越界/ADS 和 reparse，并只向调用方指定目录投影/复核 SHA。`deploy_module.ps1:736,801,835` 的 Stage、Deploy 与源 hash 查询共用该映射；原复制顺序为 source copy → mapped defaults → installed CustomPrompts merge。没有新增游戏 Tick/请求期扫描、反射或缓存。
+- overlay 仍以 `AnimusForge/ModuleData/PreprocessPrompts.json` 为交付名，但源由映射解析；PromptLab、GiveAsset 压测与 GCCZ mirror verifier 改读唯一新源。inventory 只放行三个已知 content owner，未知 owner fail-closed，PlayerExports/ONNX/AssetPackages 的 HOLD 保留。
+
+### 当前候选与验证
+
+| 门禁 | 结果 |
+| --- | --- |
+| J15a 合成契约 | `mappings=7 / invalidCases=8 / gcczFallbackCases=4 / overlayAlias=1` PASS；无效映射零部分输出。 |
+| 既有定向回归 | Prompt configuration **36**；GiveAsset **80562 assertions**；repository inventory **7 tests**；PreprocessTopicPromptLab **19 topics、recall=1、precision=1**，均 PASS。首次用仓内 .NET 8 跑 net10 PromptLab 得到预期 `NETSDK1045`，改用已安装 .NET SDK `10.0.400` 后通过，未改目标框架。 |
+| 双版本单模块构建 | 原 `build_single_module.ps1` 不传 Stage/Deploy；Debug/Release × 1.3/1.4 + Bootstrap 六项均 **0 warning / 0 error**。实际引用仍为 1.3.15.110062、1.4.7.117484。 |
+| 实际实现资源 | 四个 `AnimusForge.dll` 的 ManifestResource 集合均恰好七项，逻辑名与源字节 SHA 全部一致；`*.resources.dll` 为 **0**。 |
+| 定位与静态检查 | PowerShell 两脚本语法、content JSON、Python compile、`git diff --check` 通过；代码地图仍绑定未改的 J14 C# 产品 `e58f3558`，recorded/working-tree 各 **755** 锚点 PASS，仅作定位。 |
+
+候选 SHA256：Debug 1.3 `97A589FF135591C9E3223DEA9777F8A39DFDF342B3A99EDB8EBE45FDA72B4DF7`、Debug 1.4 `7FFF471B3A8932FF4F3CBB9F2AE43A8343A04B22B6A81006CA2818E20FE7EE4F`、Debug Bootstrap `724785DCB2745DEA38C6EE7CB2AA5E3FA2DFE131CD21E354FF264D0AA9670A55`；Release 1.3 `8841C1587F3E58E6224DB2F86409B255B96121C4AE3FB02818B6EFDA488A2169`、Release 1.4 `45CCE7EE38208573E8FD283AD71E7398B9C5407C49AE307411DCA6BEF4A6C22E`、Release Bootstrap `69C9E3B8020DDE5E1DA6D48A472B4ECC0200F5812DB47F7DFC54FBF7872CB8E1`。
+
+### 停点与未验
+
+仅清理由用户具名授权、且事前确认无 reparse 的四个仓内生成目录；J15a 契约 runner 只清理 `artifacts/j15-content/j15a-contracts`。没有 Stage、Deploy、Package、游戏目录写入、push、外仓 GCCZ mirror、玩家数据/存档写入或 J15b/c/d。真实两版本游戏加载、旧档、安装用户覆盖、provider、音频与帧性能均 **NOT-RUN**；`.dotnet-cli-home/` 保留。后续如继续，下一项是按原计划重新取得对应范围后执行 **J15b**，不能由本次 J15a 授权推导。
+
+## 以下为 J15 计划就绪历史状态
+
+## J15 content / profile 计划就绪（2026-09-26）
+
+状态：**`J15_PLAN_READY / IMPLEMENTATION_NOT_STARTED`**。按本轮用户“准备做 J15，写执行计划，写到能开新对话执行”的要求完成[可接续执行计划](plans/j15-content-profile-plan.md)，不是产品施工授权或验收。基线 `fc445335b364859c1d5b87c122f51d7a46d1df57`，计划意图 `0d9bb898`；工作区和分支仍为本仓实际 Git 根 / `codex/af-main-refactor-continuation-20260831`，原未跟踪 `.dotnet-cli-home/` 保留。
+
+- **计划与下一动作**：新对话可直接使用计划第 1 节启动指令，从 G0 逐文件 owner/读写者/映射/授权清单开始，随后 a 七项 EmbeddedResource 与内容接线、b 其他静态 GUI/XML/JSON、c profile/用户数据/模型边界、d 同候选最终离线门禁。首次资源批量迁移、最小组装脚本接线、四个构建清理目录和可选 Stage 需按精确范围批准，不继承 J14 或历史授权。
+- **真实边界**：读取了项目 7 项资源声明、实际 Prompt/GCCZ/模块路径/UI/模型消费者、构建/Stage/部署/打包及 overlay/inventory 源路径引用。ModuleData 41、GUI 76、CustomPrompts 30、ONNX 5、PlayerExports 3139 为 tracked 计数，不是全部可迁。CustomPrompts 和 PlayerExports 存在运行写入/部署回写；Stage 也会复制 PlayerExports。计划禁止复制第二资源源树、移动未知用户数据、将模型放 ZIP 或借逻辑 owner 声称物理迁移完成；代码坐标及拟议映射入口集中于计划第 3–4 节，实施后的实际证据仍回写本台账/范围图。
+- **核验与未验**：本轮代码地图 recorded-revision / working-tree 各 755 锚点 PASS，仍绑定 J14 产品 `e58f3558`，仅定位核验。计划及当前交接/台账链接、25 项已有路径、坐标行号边界、Markdown 代码围栏、UTF-8、仓内 SDK/引用路径及 `git diff --check` 通过；差异限定三份文档。未改生产源码、资源、测试、项目、脚本或代码地图，未运行产品构建/行为回归/Stage/provider/游戏。J14 保持 `J14_OFFLINE_VERIFIED`，实机、旧档、音频和帧性能仍 NOT-RUN；J15 不提前标 ACTIVE 或完成。没有 push、部署、打包、外写、工具安装、自动化或 J16/J17。
+
+以下 J14 收口是有效前序产品证据；其中“J15 需新请求”不阻止本次已请求的规划，但不自动授权资源迁移。
+
+## J14 三渠道公共 API 最终离线验收（2026-09-26）
+
+状态：**`J14_OFFLINE_VERIFIED`**。按[既有 J14 计划](plans/j14-public-api-plan.md)完成 G0、Scene a、Courier b1–b3 和最终候选 c；本条明确取代下方 J14 历史 `ACTIVE` / “Courier 未开放” / “记忆 runner 失效” / “最终矩阵待验”状态，但不改写当时证据。工作区 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`。本轮开工基线 `fb4af2d8`、意图 `9e6e93ee`；最终产品 **`e58f3558cddfe473f396bb7f11470b05e30afce9`**，其后仅测试/证据变更，产品和最终四实现相同。未开始 J15，也不是全仓、实机或发布 READY。
+
+### 实际交付与有限责任
+
+- **Courier b1/b2/b3**：原 UI 先完成成员/模式/附件选择，主线程签发绑定 client、owner、generation、草稿实例/修订及目标的有界票据。UI/API 共用重验和一次派出；claim 先于队伍创建/资产转移，旧回调不能修改或清理新草稿，部分派出失败不自动重派。`CaptureCourierContextTicket()` / `SubmitCourier(contextTicket, requestId, playerText)` 只开放该范围，不允许任意目标/编组/附件构造。
+- **权威完成**：operation 绑定真实运输 session 实例。只读 detached `AfCourierReceipt` 独立记录派出、预生成、到达、附件接受、投递历史、动作、回信历史、回信交付、内容归还及运输结局。必要接受回执和实际回信入库/运输收尾齐备才成功；`PostprocessConsumed`、预生成、`Stage=Completed` 均不单独判成功。正文仅在实际交付确认后公开；失败保留已知阶段/已交付正文，不伪造回滚或承诺后续网络/游戏逻辑被中止。死亡、失踪、被毁、生成/提交失败、换档、退休及同 ID 对象替换均结算旧任务。
+- **共享与兼容**：沿原 Prompt、后处理、动作、历史/AFEF owner，无第二条缩水链。三渠道同一 client 共用 128-ID 去重空间；相同 ID/渠道/票据/原文复用原内部 operation，冲突不覆盖；开始前可取消，开始后 TooLate。Courier owner 的待领票据与活动/未排空关联分别有 128 上限，取消不能绕过物理队列背压。关联只在内存，不增保存键，不认领入站，不对读档恢复运输重新绑定旧 operation；原入站/回复例外和六种模式保留。
+- **开放次序**：`e58f3558` 在独立外部消费者、内部枚举重排、Debug 双实现/Bootstrap 及元数据验证后开放 `CourierSubmit=Available`。目录/Native/Scene/Courier Available；任意 `ActionExecute / MemoryWrite / ExtensionRegister` 保持 NotSupported。既有 V1 签名、默认参数和枚举值不变，内部状态按名字显式投影。实际 owner、消费者及一基坐标集中见[范围图](architecture/af-framework-code-scope.md)和[代码地图](architecture/af-framework-code-map.json)，使用语义见[V1 指南](architecture/af-public-api-guide-v1.md)。
+- **性能边界**：新增关联按既有事件 O(1) 查找/更新并在终态释放，不新增每帧全 client/operation 扫描、反射或轮询。显式发送重验选中成员/资产，到达聚合本信件附件，归还检查该运输队；Dispose 撤销扫描最多 128 张票据。Scene 主线程持久历史装配和这些单次成本仍存在，离线次数/容量断言不等于实机帧耗时通过。
+
+### 当前候选离线门禁与证据层级
+
+| 门禁 | 当前结果与可证明范围 |
+| --- | --- |
+| 外部 Courier 消费者 | `tools/CourierSessionCreationTests/run_admission.py --public-api` 正常 **264**、加 `--reorder-core-enums` **264**；均保留 internal 访问 CS0122 拒绝。测试独立程序集只调用 V1，执行实际准入/到达/动作接受/回信确认/归还 owner；游戏资产/provider/最低层 writer 明确 fixture。六模式、并发重复/UI 竞争、错 client/旧票据/共享容量/取消/Dispose、无提前正文/效果、重复到达、延迟回信、部分成功后失败、退休覆盖。日志 `.generated/public-current/public.log`、`public-reordered/public.log`。 |
+| Native/Scene 兼容消费者 | `tools/NativeModuleSubmissionTests/run.py` 与 `--reorder-core-enums` 各 **55**，外部 internal CS0122；原默认入口及 source-boundary 精确逆变换通过。Courier additive review 绑定 `fb4af2d8 → e58f3558` 的 7 文件逐 hunk 差异，再逆 Scene/Native 历史提取，恢复原依赖检查；不只刷新 hash，7 个未审源码修改反例被拒绝。 |
+| 旧 Native ABI | `--legacy-abi` 固定 `39cf9d4724cc372a33503da270fd0c0e9dc6e6af` 的 5 个 V1 源文件和旧 Native 消费者，先编旧 API/旧消费者 **41** 通过，再不重编消费者、替换当前 source-linked library **41** 通过。消费者 SHA256 `185a59740a7a29e0f553655558a6ae2efaf37a659afef37beaf46f90f7d24ed0` 前后相同。编译一次前仅适配追加的 fixture CoreCases 取原 5 项、能力状态随旧/新库由 NotSupported 变 Available；旧 Native ABI/行为断言保留。证明 CLR 成员绑定与所测行为，不是子 MOD 在游戏中的加载。manifest/log 位于该 runner `.generated/legacy-abi/`。 |
+| API/四 DLL 元数据 | `tools/ModuleFrameworkApiTests/run.py` 指定 Debug/Release 两 artifact-root 和上述基线 `NativeModuleUnderTest.dll` 的 `--legacy-v1`：**36 snapshot、158 API、5 编译成功故障反例、CS0122、1620 四实现 metadata** 通过。核旧 V1 全部成员/枚举常量/默认参数保留，当前四 DLL surface 一致、旧 memory/Courier/scene 签名不变、内部类型未泄漏。最终日志 `.tmp/j14c-final/module-api-final.log`；PE 证据不是游戏加载。 |
+| 三渠道完成/回归 | NativeCompletion **186**；SceneGroupReceipt **18**、SceneRequestLifetime **34**（另 J14 completion 2）、ScenePostprocessParity **71**、SpeechQueue **6**、ConversationScope **5**；ChannelCutover **134/0**。分别执行实际 host/群组/请求/后处理源码，游戏/domain 下层按各 fixture 声明隔离，不声称全量实机路径覆盖。 |
+| Courier owner/原模式 | 最终 lifecycle **179/0**（含准入）、postprocess **44**、Prompt **552 / 76 scenarios**、liveness **59 / 16 scenarios**、DomainCommit **32**，SessionCreation/DeliveryLifetime source-order、InboundCompletion 契约均通过；owner-phase 16 的 b2 同源码证据保留。准入 9 个和生命周期 5 个编译成功故障反例已在 b1/b2 验证，不重算成新增用例。 |
+| 真实记忆写入与回读 | `tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py` **85/0**；`run_commit_writers.py` **51/0**。前者真实 Daily/Recovery/Weekly/Major/Block writer 与 Process/Apply/Mark；后者真实普通 Commit→Daily/Recent 保存→精确回读、角色/标签/AFEF/部分写入、编辑闭包与导入 Apply。terminal 6 个和普通 writer 原 10 个故障变异均 BUILD_PASS 后具名失败。使用内存生产账本和显式游戏/文件系统 fixture，不证明真实磁盘存档或 provider。 |
+| 保存身份/格式 | PersistenceIdentity `--baseline 053ad485` **142 SyncData / 36 CampaignBehavior** 无增删；Profile **142 keys / 168 typed bindings / 9 types / 3 profiles / 5 cases / 10 legacy cases**，5 凭据字段排除。Chunk 的 UTF8 边界、缺块/坏数据/旧格式/字典 round-trip/isolation 通过；保存/Profile 工具单测 **6 + 2** 通过。无新增 API 保存键。 |
+| Bridge/入口/成员 | BridgeBindings **16（12 wired / 4 declared-only）**、契约单测 **23**；实际 source-linked BridgeRuntimeIsolation **12 process scenarios**。Readiness 单测 **73**、入口 inventory、source inventory unknown=0 及其 **7** 单测通过。Readiness 的 `entryCoverage=REPRESENTATIVE` 保留，未提升成全实机覆盖。 |
+| 当前实际 DLL | `ProductionCourierHostReplayTests` 与完整 `PhaseEightParityReplayTests` 均显式当前 Debug 1.4 路径与 SHA，通过候选 marker/依赖清单/新鲜度校验；前者新增错 SHA 反例确实拒绝。Courier 回放实际 detached host，provider/记忆底层 fixture；Phase8 的实际 owner 与源码接线证据按输出分层，不采用旧 Stage。日志 `.tmp/j14b-draft-ui/courier-current-dll.log`、`phase8-current-dll.log`。 |
+| 定位/差异 | JSON 地图绑定最终产品 `e58f3558`，**755 锚点 / 336 文件**，recorded-revision 与 `--working-tree` 均 PASS；仅定位。`git diff --check`、当前文档链接及具名文件差异检查通过，不以地图 hash 代替行为测试。 |
+
+### 失败信号及修复（保留原断言）
+
+1. `5067fbb4`：terminal 的旧 `TagSceneSessionHistoryLine`/NPC helper 抽取失败；实际已迁 `DialogueHistoryLedger` / `NpcActionLedger`，补真实 ledger 和 Weekly revision owner/字段，`omit-major-entry` 在真实 Append 调用点注入同义故障。6 变异具名失败数量为 **13/6/7/2/7/11**，没有删除写入/回读断言。
+2. `a90e1b45`：普通 writer 继续暴露旧文件名 helper 抽取失效；链接真实 `NpcDataFileName`，抽取实际 `PlayerExportsStore.ReadJson`，仅把原虚拟目录 fixture 移到对应 owner。**51/0** 且原 10 变异失败数 **1/8/1/2/6/12/11/1/1/8**；不是用 terminal 85 或更新 hash 掩盖普通对话入口未测。
+3. `38c22f24`：ChannelCutover 缺 B2 请求字段/当前 source helper，补实际身份/失败/可见文本净化方法；旧“stale”场景未真正切 generation，修正测试安排，保留其不回写断言，并加“当前 run + host stale 必须失败释放等待”的场景。保存 typed catalog 只改 Shout 两个既有绑定的行号（10813→10815、10816→10818），键/ref/类型/source 多重集完全不变；readiness inventory 仅补 DraftAdmission/ModuleSubmission 两路径，未删入口或提升覆盖状态。
+4. `.tmp/j14c-final/matrix.json` 保留最初 27 项的原始结果，其中 ChannelCutover、Profile、Readiness inventory/单测曾失败；对应修复后日志为 `channel-cutover-current.log`、`profile-current.log`、`readiness-current.log`，不能把原矩阵改成从未失败。独立 Scene 全生命周期、Bridge runtime 和普通记忆日志也保留在同目录。
+5. `e744f6cb`：Courier DLL runner 原依赖旧 Stage，改用既有 ReplayDependencies 与显式候选路径/SHA；依赖只读，解析只取已校验 runner 输出顶层。不修改原 Phase8 行为门禁。`b6386b60` 增旧 ABI/精确 additive inverse，`e58f3558` 的公共探针在接口增加前实际报 `FAIL public Courier surface missing`，随后外部消费者转绿。
+
+### 六构建与最终候选身份
+
+沿未修改的 `一键编译覆盖推送/build_single_module.ps1`，固定 SDK `local/dotnet/8.0.425/dotnet.exe`，实际引用 `_deps_auto` **1.3.15.110062**、`local/bannerlord-refs/1.4.7.117484` **1.4.7.117484**。GameRoot `D:/steam/steamapps/common/Mount & Blade II Bannerlord` 仅作原脚本只读依赖；Harmony/MCM/UIExtender/AF 私有 runtime 也仅只读。分别 `-Configuration Debug` / `Release`，不传 Stage/Deploy；**Debug/Release × 1.3/1.4 + Bootstrap 六构建均 0 warning / 0 error**。命令/完整输出保留 `.tmp/j14b-draft-ui/build-Debug-j14c-e58f3558.log` 与 `build-Release-j14c-e58f3558.log`。
+
+| 仓内候选 | SHA256 |
+| --- | --- |
+| `bin/Debug/single_module_artifacts/versions/1.3/AnimusForge.dll` | `6755c4e35b52345c11b1ada3bc0b839e6252eff4748a082e4f6eb67d137ff1cf` |
+| `bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll` | `a12440d2def0fd683c9b0b3cd1fc6bbc28f8dc51b17bc1b37053f0961876f91d` |
+| `bin/Release/single_module_artifacts/versions/1.3/AnimusForge.dll` | `69550e6e78aa5841fd3f478779586401e0dc4e62e8d5e5aeae5753fdb827f10e` |
+| `bin/Release/single_module_artifacts/versions/1.4/AnimusForge.dll` | `ada385d8c6c20d0380f85cc150361a21c864dab99600d2f54830e67e14fde24f` |
+| `bin/Debug/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll` | `ebe3d21a34953acbf38dd4df176b1876413cbcd29e7ebb6bb2cf918d5bbfbe40` |
+| `bin/Release/single_module_artifacts/bootstrap/AnimusForge.Bootstrap.dll` | `01f52e487ca99eb37d457582095f5d8ada01230dc2ca2e3f67ab0040cf25cbb7` |
+
+清理只发生在本轮已授权的四个精确仓内构建目录；每次原脚本执行前核过绝对路径、内容、tracked 与父/子 reparse，不扩大范围。工具自带临时目录清理的测试使用仓内 preserve-temp 模式；BridgeRuntimeIsolation 仅在生成副本把最终 `Directory.Delete(tempRoot, true)` 改为保留日志，其 12 场景/真实 runtime 源不变，manifest 记录该唯一 fixture 差异。未清理 `.dotnet-cli-home/`。
+
+### 可复核命令与运行边界
+
+下列为本轮已执行入口，工作目录均为实际仓库根。构建命令是证据记录，不是给后续任务新增清理授权；再跑仍须核对四个精确目录。固定 `DOTNET_EXE` / `DOTNET_ROOT` 指向仓内 8.0.425，CLI home/NuGet 缓存均在 `.tmp/`。
+
+```powershell
+$root = 'E:/AnimusForge-refactor-continuation-20260831'
+$dotnet = "$root/local/dotnet/8.0.425/dotnet.exe"
+$game = 'D:/steam/steamapps/common/Mount & Blade II Bannerlord'
+# 本轮分别执行 Debug / Release，无 Stage/Deploy。
+& 'C:/Program Files/PowerShell/7-preview/pwsh.exe' -NoProfile -File "$root/一键编译覆盖推送/build_single_module.ps1" -ProjectRoot $root -BannerlordRoot $game -Bannerlord13ReferenceDir "$root/_deps_auto" -Bannerlord14ReferenceDir "$root/local/bannerlord-refs/1.4.7.117484" -RuntimeDependencyDir "$game/Modules/AnimusForge/bin/Win64_Shipping_Client" -HarmonyCorePath "$game/Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/0Harmony.dll" -Configuration Debug
+python -X utf8 -B tools/CourierSessionCreationTests/run_admission.py --dotnet $dotnet --public-api
+python -X utf8 -B tools/CourierSessionCreationTests/run_admission.py --dotnet $dotnet --public-api --reorder-core-enums
+python -X utf8 -B tools/NativeModuleSubmissionTests/run.py --dotnet $dotnet --legacy-abi
+python -X utf8 -B tools/NativeModuleSubmissionTests/source_boundary.py
+python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet --artifact-root bin/Debug/single_module_artifacts --artifact-root bin/Release/single_module_artifacts --legacy-v1 tools/NativeModuleSubmissionTests/.generated/legacy-abi/Baseline/Consumer/bin/Release/net8.0/NativeModuleUnderTest.dll
+$env:DOTNET_EXE = $dotnet
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py
+python -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py
+python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py
+python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py --working-tree
+git diff --check
+```
+
+两个当前 DLL 回放均使用 `dotnet run --project tools/<runner>/<runner>.csproj -c Debug`（runner 为 `ProductionCourierHostReplayTests` / `PhaseEightParityReplayTests`），传入 `-p:GameRoot=$game`、`-p:Bannerlord14ReferencePath=$root/local/bannerlord-refs/1.4.7.117484`、`-p:ReplayHarmonyModulePath=$game/Modules/Bannerlord.Harmony`、`-p:ReplayMcmModulePath=$game/Modules/Bannerlord.MBOptionScreen`、`-p:ReplayUiExtenderModulePath=$game/Modules/Bannerlord.UIExtenderEx`、`-p:ReplayPrivateRuntimePath=$game/Modules/AnimusForge/bin/Win64_Shipping_Client`、`-p:ReplayCandidateDll=<上表 Debug 1.4 绝对路径>`，并在 `--` 后传同一 DLL 绝对路径及上表完整 SHA256。空格路径以单一参数传递；依赖解析清单与 marker 校验均通过，无 Stage。其余 27 项原始命令/退出码在 `.tmp/j14c-final/matrix.json`，失败后的 superseding 日志如上，不能丢弃原失败记录。
+
+### 停点、未验与回退
+
+本地验证切片：b1 `4bc855cd / 8fb16385 / b6daf65f`，b2 `b2572623`，b3 `e58f3558`，c `5067fbb4 / e744f6cb / b6386b60 / 38c22f24 / a90e1b45`。如需回退，按真实依赖做具名 inverse 提交，不能 hard reset/amend/rewrite。最终文档/地图提交不再修改产品。
+
+**两版本实机、真实旧档、真实 provider、音频、独立子 MOD 游戏加载、帧性能分别为 `NOT-RUN`。** 这是用户要求的全部 J14 离线门槛通过，不是发布完成，不代表对所有游戏版本或所有场景作无缺陷保证。未 push、Stage、部署、打包、安装工具、写游戏/外仓/玩家存档、修改默认入口或进入 J15；原 `.dotnet-cli-home/` 保留。后续实机/发布或 J15 须按新的明确请求执行。
+
+## 以下为 J14b2 及更早证据（历史切片）
+
+## J14b2 权威阶段与生命周期切片（2026-09-26）
+
+状态：**`J14b_ACTIVE / J14_ACTIVE`**；本地产品/测试提交 `b2572623`，接续 b1 的 `24ea6e05`。本片已接通内部 operation 的真实运输回执，但 **V1 Courier 尚未开放，J14_OFFLINE_VERIFIED 尚未达到**。本条取代下方 b1 的“下一动作=实现 b2”；后续为 b3 公共投影/外部消费者，再完成 c 的同候选最终矩阵。
+
+- **真实 owner 与边界**：仍使用原 UI 派出、运输、Prompt、后处理、领域动作和历史 owner，不增第二条链。operation 精确绑定实际 session 实例与 generation；记录派出、预生成、到达、完整附件接受、投递历史、动作接受、回信历史、回信入库、内容归还和运输结局。`ReplyGenerated`、`PostprocessConsumed`、`Stage=Completed` 都不能单独令 operation 成功；仅所有必要回执及确认停用的运输队伍共同完成。回信正文在实际物品写入并记录信件后才进入内部结果；已交付后清理失败仍保留正文/已确认阶段。失败立即结算当前已知回执，不承诺中止原运输、撤销后续游戏逻辑或自动重派。必要代码坐标/消费者集中在[范围图当前段](architecture/af-framework-code-scope.md)，避免重复全表。
+- **生命周期/线程**：缺失、被毁、目标死亡、生成/后处理/提交失败、换档/退休和同 ID 实例替换都会结算，不绑定恢复运输或入站来信。网络请求/重试/后处理/最终回写重验原 `CourierPromptRun`；prepared envelope 以弱键保存原 session/run，不能重新绑定替换对象。worker 使用捕获的投递状态和来信文本，配置捕获回到主线程。返程复用同一动作 owner，删除原重复动作尾巴；动作调用前 consumed claim、到达/返程短期重入保护防止重复效果及历史倒序。所有关联仅进程内，无新保存键；原入站/回复资格特例不改。
+- **行为证据**：`CourierSessionCreationTests/run_admission.py --lifecycle` **179/0（包含 b1 准入）**；source-link 实际到达、finalize、领域 reservation/历史接受、归还、信件记录/入库确认、销毁/失踪与内部回执，游戏转移/领域 handler/记忆底层/导航/provider 明确为 fixture。覆盖六种模式、预生成不提交或公开、重复及重入到达、延迟返程、历史/附件/动作失败、物品/信件记录/归还/清理失败、送达后返程损失、退休/代次/同 ID 替换、旧 run 回复。新增 payload 重入先暴露 **6 个历史顺序失败**，加实际到达重入保护后 179/0。五个编译成功 mutation（忽略完成回执、后置动作 claim、忽略历史接受、忽略信件记录、忽略 run 身份）均出现具名行为失败；不是用编译错误作红例。
+- **相关回归**：`CourierPostprocessOwnerRegressionTests` **44/0**（真实 parser、原 work item、实际 source 绑定/回写、真实 immutable commit result；包含同 ID session/new run 替换及部分历史接受）；`CourierPromptPreparationTests/run.py` **552/76 scenarios**，仍比较历史完整 Prompt 字段与生产消息构造，仅从比较 JSON 排除新增运行态身份字段；`run_liveness.py` **59/16 scenarios**，`CourierOwnerPhaseTests` **16/0**；`NativeModuleSubmissionTests` **55** 与外部 internal 拒绝 **CS0122**。DomainCommit/DeliveryLifetime/J09 三渠道 source-order 检查通过；旧 void/Scene Task<int>/finalizer fixture 锚随本次有意变化修正，保留原断言及 preflight/wiring 负例，不以更新 hash 代替行为。完整当前日志位于 `.tmp/j14b-draft-ui/`、各 runner `.generated/`，fixture CS0649 警告不算产品警告。
+- **构建候选**：再次核对四个获准目录的绝对范围、tracked、父/子 reparse 与内容后，原脚本不带 Stage/Deploy 完成当前 Debug 1.3/1.4 + Bootstrap，三次均 **0 warning / 0 error**。日志 `.tmp/j14b-draft-ui/build-Debug-b2-final.log`；Debug 1.3 SHA256 `CEF213F6319092C944871563B9C5682B4C541D363065ADB412CBD488868A9B3F`，Debug 1.4 `938EEF2CB61FCED182F47EC1A870F9705BAA9480BE83B8D427CD46C08268932B`。Release 尚未更新，不把历史产物作为本片候选。
+- **性能与未验**：阶段关联在已有事件/回调中 O(1) 查找，仍受每 owner 128 活动请求和每 client 128-ID 约束；到达只聚合该信件附件一次，归还只检查该运输队内容；弱键/终态释放与短期重入 set 不增每帧全请求扫描。仍需 b3 的 V1 detached DTO/显式枚举投影/独立消费者；c 的旧 Native ABI、四 DLL 元数据及枚举重排、同候选六构建、保存/Bridge 回归、修复记忆 runner 并真实写入/回读、显式候选 SHA 的 Courier/Phase8 回放、代码地图两模式。JSON 地图仍为历史 J14a，不是当前坐标验收。实际游戏两版本、旧档、真实 provider、音频、子 MOD 游戏加载和帧性能均 **NOT-RUN**。不 push、Stage、部署、打包、写游戏/外仓/存档或进入 J15；`.dotnet-cli-home/` 保留。
+
+## 以下为 J14b1 准入证据（历史切片）
+
+## J14b1 草稿及一次派出准入切片（2026-09-26）
+
+状态：**`J14b1_ADMISSION_VERIFIED / J14b_ACTIVE / J14_ACTIVE`**，不是 Courier 全链离线完成。开工 `9e6e93ee` 后，产品/测试分片为 `4bc855cd`（旧草稿 UI 回调）、`8fb16385`（票据及资格）、`b6daf65f`（内部提交及物理队列背压）。V1 Courier 仍 `NotSupported`，未增加公共方法；成功派出目前只保持 Running，必须等 b2 接齐真实运输回执后才能完成，再由 b3 开放。
+
+- **实际接线**：原各步骤 UI 闭包绑定 owner/generation/草稿引用/revision；`SessionCreation.cs:43–64,600–680` 的 `IsPendingCourierFlowCurrent`、`OnLetterConfirmed` 和 `DispatchCourierDraft` 共用主线程校验/claim，派出前及校验重入后再次确认身份。`DraftAdmission.cs:26–152` 主线程只签发已选好成员/模式/附件的草稿；client 绑定、目标引用、128 张待领票据，步骤变动/清空/读档/Dispose 释放。发送重验收件人、活动信使、成员数量/伤员/经验、原模式资格和按资产种类/ID/俘虏来源汇总的附件可用量；保留原回信信息资格例外。
+- **内部消费者与限额**：`Refactor/Modules/CoreDialogueClient.cs:34–47,97–111` 内部 Courier 沿 Native/Scene 同一 128-ID 字典去重；`ModuleSubmission.cs:29–140` 复用原 `RunCourierOwnerPhaseAsync` 与退休 registry，`TryBegin`/草稿 claim/MarkOwnerAdmitted 均先于创建队伍及物资转移，session 发布后绑定实际实例。每 owner 最多 128 个在途/待领 API 关联；已取消但未被主线程取走的物理回调也占此限额，直到出队或 owner reset，不能通过 cancel/新 client 灌满原队列。`DetachedPostprocess.cs:117–170` 只增可选出队通知，原其他调用保持原语义。无每帧 API 全扫描、保存键、第二套 Prompt/动作/记忆 writer。
+- **行为证据**：`tools/CourierSessionCreationTests/run_admission.py` 当前 **105/0**，实际链接 UI 回调、票据/资格/共用派出、Core client/operation、Courier 主线程 phase 和退休 registry；底层库存/队伍/运输仍为显式 fixture。覆盖 16 路并发同 ID、跨渠道冲突及共享容量、UI 竞争、错 client、旧草稿/修订/owner/代次、重入、开始前取消（含资格读取期间）、Dispose、部分派出失败 Unknown 且不重派、无后续 tick 的退休和取消洪泛背压。`--ref fb4af2d8` 旧生产抽取实际编译后 **48 项/33 个预期行为失败**；9 个具名 mutation 均编译且命中行为断言，未将编译失败当红例。`run.py` 原出站/入站发布及预写来信检查通过；`CourierOwnerPhaseTests` **16/0**；`NativeModuleSubmissionTests` **55** 与外部 internal 拒绝 `CS0122` 通过。
+- **构建证据**：原脚本不带 Stage/Deploy，限定四目录再次核对绝对路径、内容、tracked、父/子 reparse 后，当前 b1 Debug 1.3/1.4 + Bootstrap 均 **0 warning / 0 error**；日志 `.tmp/j14b-draft-ui/build-Debug-b1-final.log`。Debug 实现 SHA256：1.3 `B354DE9738A17522C46986A1C091322F49554FB411A35BC0F857F6D566A697A8`，1.4 `D57C56C43347B3BF27B3670C7F5970FBA47408619BB5111F3ADB2FC6CE6CD1B6`。本切片未重建 Release，也未跑最终四 DLL/旧 ABI/Phase8/保存/Bridge 全矩阵；历史 J14a SHA 不能当当前 Debug 候选。
+- **后续/边界**：b2 必须把 transient 绑定接到实际送达、动作与必要历史接受、回信入库及运输收尾，覆盖生成失败/死亡/失踪/被毁/session 替换/读档/退休；不能以现有 PostprocessConsumed、ReplyGenerated 或 Stage=Completed 推断成功。原生成尾部还需 exact session/run 校验与 worker 活对象读取复核。随后 b3 与 c，修旧 memory runner 和显式当前 DLL 回放，最终重绑代码地图和所有证据。所有路径前缀为 `src/modules/AF.Module.Conversation/Channels/Courier/`（Core 路径除外）；详细范围见[范围图](architecture/af-framework-code-scope.md)，JSON 地图暂保持历史 J14a 定位基线。无 push/Stage/部署/打包/游戏/外仓/存档写入；`.dotnet-cli-home/` 保留；实机两版本、旧档、provider、音频、子 MOD 游戏加载与帧性能 **NOT-RUN**。
+
+## J14b–c 接续开工意图（2026-09-26）
+
+状态：**`J14b_ACTIVE / J14_ACTIVE`**。本轮用户已明确要求实施 J14B → J14C 并完成整个 J14 的离线验收；只读准备结束，不把历史计划模式说明当作新的禁写指令。实际根 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`、基线 `fb4af2d81418febe7696963e2766801b683ad3ce`；已跟踪/暂存干净，原未跟踪 `.dotnet-cli-home/` 保留。上一目标轮因用户中断没有实施写入，本轮重新核实现场后开始。
+
+- **顺序与真实责任**：依[既有计划](plans/j14-public-api-plan.md)做 b1 已准备草稿的 client 票据、UI/API 共用一次派出与派出前资格重验；b2 真实 session 的派出/送达/动作与必要历史/回信交付/运输终止回执及退休；b3 只读 V1 投影与外部消费者通过后开放 Courier；c 同一最终候选三渠道/旧 ABI/六构建/保存/Bridge/实际 DLL 回放/地图完整门禁。原普通、给予、展示、转移及入站/回复例外保留，不用单个布尔或 Task 返回推断成功。
+- **现存证据限制**：J14a 仅有限离线完成；四实现 SHA 与其台账一致。Phase8 现存依赖清单仍绑定 J13 候选 `03D0FACF…`，ProductionCourierHostReplay 仍固定旧 Stage；MemorySummary terminal 抽取锚失效，NativeCompletion 底层 writer 是 fixture。c 必须修复相关测试接线并绑定新候选，不用旧产物、hash 刷新或删断言冒充通过。
+- **运行与保存边界**：游戏对象在主线程捕获/重验，后台只接 detached 输入；票据/关联 process-local、有界且事件驱动，沿现有每 client 128 请求 ID 规则，不新增每帧全请求扫描/保存键/第二条 LLM 或动作记忆 writer。开始前取消无效果，开始后保守未知，不自动重派；旧回调不能清理新草稿/session。
+- **授权及退出门**：仅本仓具名文件、测试产物与本地分片提交。用户本轮计划限定原构建脚本只重建 `E:/AnimusForge-refactor-continuation-20260831/bin/Debug/single_module_artifacts`、`bin/Release/single_module_artifacts`、`obj/single_module/Debug`、`obj/single_module/Release` 四个精确仓内目录；执行前重新核对绝对路径、内容及父/子 reparse。无 Stage/Deploy/push/打包/游戏或外仓/存档写入/工具安装/默认入口切换/J15。全部 J14 离线退出门满足后才标 `J14_OFFLINE_VERIFIED`；真实两版本游戏、旧档、provider、音频、子 MOD 游戏加载及帧耗时仍单列 NOT-RUN。
+
+## J14 G0 与 J14a Scene 有限离线收口（2026-09-26，历史基线）
 
 状态：**`J14_G0_BASELINE_VERIFIED / J14a_OFFLINE_VERIFIED / J14_ACTIVE`**。这只关闭[本轮 J14 计划](plans/j14-public-api-plan.md)的开工基线与 Scene 包，不表示 Courier/J14c、全仓 G0.7、实机或发布已完成。前置 `cbf874ac`、`40c0ccc5` 分别结算队列丢弃与 typed 后处理；本包产品/测试提交 **`1740b338`, `79fa7c48`**。保留原未跟踪 `.dotnet-cli-home/`，未 push、Stage、Deploy、打包、写游戏/外仓/存档或改自动化。
 
@@ -1192,6 +1905,8 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 
 <a id="j05-offline-verified-20260919"></a>
 
+> **2026-09-28 复核更正**：本节有限离线成果保留；下文将记忆记录、Sanitize 算法统一归为 `MyBehaviorSaveableTypeDefiner` 身份约束的理由证据不足，不再作为永久保留依据。当前已核实的 JSON/注册边界与后续 R04/R02/R03 处理见[结项计划](#af2-responsibility-register-20260928)和[范围图 E04](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)；这不授权直接改名、删除保存类型或重写旧档。
+
 ## J05 离线回执：J05_OFFLINE_VERIFIED（2026-09-19）
 
 **仅限源码与离线验收；实机、旧档读写、真实 provider 均 `NOT-RUN`。** 分支 `codex/af-modularize-j04-20260918`，生产终点 `d903df67`，地图绑定同提交（262 锚点，无悬空路径）。基线 `25a89cea` 至今 25 个本地提交，未推送、未 Stage/Deploy/打包、未写游戏目录、未动存档。
@@ -1298,6 +2013,8 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 <a id="modularization-master-plan-20260919"></a>
 
 # AF 主体完整模块化总计划（2026-09-19，PLAN_READY / J04 继续 ACTIVE）
+
+> **历史规划快照，非当前施工状态**：J12/J13“尚未施工”、J14“NotSupported”及历史规模均只适用于当时。当前完成层级、剩余职责与 J16/J17 门槛由[2026-09-28 当前结项计划](#af2-closeout-plan-20260928)取代；本段保留原计划追溯，不授权重复施工。
 
 本节是用户要求的"一次大任务"总计划：按三份仓库 Skill（maintainer 0.2.0、af-core-framework、policy-effect-module）把 AF 主体拆完，最终交付 J17 全仓结项。它替代上方 2026-09-17 路线表的粗粒度描述，**不替代各包实施时的详细执行单**；每包开工前仍按 J03/J04 的做法写意图节、逐切片提交、逐切片回归。基线：分支 `codex/af-modularize-j04-20260918`，源码 `d6824d9d`，241 锚点地图两模式通过；原始基线 `25a89cea`。
 

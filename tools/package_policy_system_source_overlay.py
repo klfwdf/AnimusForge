@@ -10,7 +10,7 @@ import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = ROOT / "dist"
+OUTPUT_DIR = ROOT / "artifacts" / "package_policy_system_source_overlay"
 
 
 def relative_path(path: Path) -> str:
@@ -33,17 +33,24 @@ def git_text(*arguments: str) -> str:
         return ""
 
 
-def build_file_set() -> tuple[set[Path], dict[str, str]]:
-    files: set[Path] = set()
+def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
+    files: dict[str, Path] = {}
     categories: dict[str, str] = {}
 
-    def add_file(relative: str, category: str) -> None:
+    def add_file(relative: str, category: str, delivery_relative: str | None = None) -> None:
         path = (ROOT / relative).resolve()
         if not path.is_file():
             raise FileNotFoundError(relative)
-        normalized = relative_path(path)
-        files.add(path)
-        categories[normalized] = category
+        source_relative = relative_path(path)
+        delivery = Path(delivery_relative or source_relative).as_posix()
+        delivery_parts = Path(delivery).parts
+        if (Path(delivery).is_absolute() or ":" in delivery or
+                not delivery_parts or any(part in {"", ".", ".."} for part in delivery_parts)):
+            raise RuntimeError(f"Delivery path escapes overlay: {delivery}")
+        if delivery in files and files[delivery] != path:
+            raise RuntimeError(f"Duplicate overlay delivery path: {delivery}")
+        files[delivery] = path
+        categories[delivery] = category
 
     def add_tree(
         relative: str,
@@ -64,9 +71,7 @@ def build_file_set() -> tuple[set[Path], dict[str, str]]:
                 continue
             if path.name.lower() in excluded_names:
                 continue
-            normalized = relative_path(path)
-            files.add(path)
-            categories[normalized] = category
+            add_file(relative_path(path), category)
 
     add_tree("PolicySystem", "policy_system")
 
@@ -113,6 +118,15 @@ def build_file_set() -> tuple[set[Path], dict[str, str]]:
     for relative in host_files:
         add_file(relative, "host_integration")
 
+    content_map = json.loads((ROOT / "content" / "content-map.json").read_text(encoding="utf-8"))
+    content_sources_by_target: dict[str, str] = {}
+    for entry in content_map.get("entries", []):
+        target = str(entry.get("target", ""))
+        source = str(entry.get("source", ""))
+        if not target or not source or target in content_sources_by_target:
+            raise RuntimeError("content-map entries must have unique non-empty source and target values")
+        content_sources_by_target[target] = source
+
     runtime_assets = [
         "AnimusForge/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
         "AnimusForge/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
@@ -127,13 +141,14 @@ def build_file_set() -> tuple[set[Path], dict[str, str]]:
         "AnimusForge/GUI/Prefabs/LocalPolicyComposePopup.xml",
         "AnimusForge/GUI/Prefabs/LocalPolicyHistoryPopup.xml",
         "AnimusForge/GUI/Prefabs/WorldDiplomacyComposePopup.xml",
-        "AnimusForge/GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice.png",
         "AnimusForge/GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice_v2.png",
     ]
     for relative in runtime_assets:
-        add_file(relative, "runtime_assets")
+        runtime_target = relative.removeprefix("AnimusForge/")
+        source = content_sources_by_target.get(runtime_target, relative)
+        add_file(source, "runtime_assets", relative)
 
-    add_tree("tools/PolicyEffectModule.ContractTests", "contract_tests")
+    add_tree("tests/bridges/Policy/PolicyEffectModule.ContractTests", "contract_tests")
     add_tree(
         "tools/ActionPostprocessPromptLab",
         "prompt_lab",
@@ -163,7 +178,7 @@ def build_file_set() -> tuple[set[Path], dict[str, str]]:
     return files, categories
 
 
-def validate_files(files: set[Path]) -> None:
+def validate_files(files: dict[str, Path]) -> None:
     blocked_suffixes = {".dll", ".exe", ".pdb", ".zip", ".onnx", ".onnx_data"}
     secret_patterns = {
         "openai_key": re.compile(r"sk-[A-Za-z0-9_-]{16,}"),
@@ -174,22 +189,22 @@ def validate_files(files: set[Path]) -> None:
     }
     secret_hits: list[dict[str, str]] = []
 
-    for path in files:
+    for delivery, path in files.items():
         relative = relative_path(path)
         lower = relative.lower()
         if lower.startswith("animusforge/onnx/") or path.suffix.lower() in blocked_suffixes:
-            raise RuntimeError(f"Blocked ONNX/binary asset selected: {relative}")
+            raise RuntimeError(f"Blocked ONNX/binary asset selected: {delivery}")
         if any(
             part.lower() in {"bin", "obj", "runs", ".tmp", ".git"}
             for part in path.relative_to(ROOT).parts
         ):
-            raise RuntimeError(f"Generated/private path selected: {relative}")
+            raise RuntimeError(f"Generated/private path selected: {delivery}")
         if path.suffix.lower() == ".png":
             continue
         text = path.read_bytes().decode("utf-8", errors="ignore")
         for rule, pattern in secret_patterns.items():
             if pattern.search(text):
-                secret_hits.append({"rule": rule, "path": relative})
+                secret_hits.append({"rule": rule, "path": delivery})
 
     if secret_hits:
         raise RuntimeError(
@@ -208,8 +223,7 @@ def create_package() -> dict[str, object]:
     zip_path = OUTPUT_DIR / f"{package_name}.zip"
 
     manifest_files: list[dict[str, object]] = []
-    for path in sorted(files, key=lambda item: relative_path(item).lower()):
-        relative = relative_path(path)
+    for relative, path in sorted(files.items(), key=lambda item: item[0].lower()):
         data = path.read_bytes()
         manifest_files.append(
             {
@@ -226,7 +240,7 @@ def create_package() -> dict[str, object]:
         "status",
         "--short",
         "--",
-        *[str(item["path"]) for item in manifest_files],
+        *[relative_path(path) for path in files.values()],
     )
     category_counts: dict[str, int] = {}
     for item in manifest_files:
@@ -334,10 +348,7 @@ OVERLAY 目录保留仓库相对路径，包含：
         archive.writestr(prefix + "FILES.sha256", hash_text.encode("utf-8"))
         archive.writestr(prefix + "SOURCE_STATUS.txt", status_text.encode("utf-8"))
         for item in manifest_files:
-            archive.write(
-                ROOT / str(item["path"]),
-                prefix + "OVERLAY/" + str(item["path"]),
-            )
+            archive.write(files[str(item["path"])], prefix + "OVERLAY/" + str(item["path"]))
 
     return {
         "zipPath": str(zip_path),

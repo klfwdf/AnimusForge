@@ -83,10 +83,10 @@ public partial class CourierDeliveryBehavior
             {
                 ownerInvoked = true;
                 session.ReplyPostprocessedText = plan.RawPostprocessId;
-                CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);
-                if (!session.PostprocessConsumed)
+                bool accepted = CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);
+                if (!accepted)
                 {
-                    return InteractionStatus.RejectedByValidation;
+                    return InteractionStatus.NonRetryableFailure;
                 }
                 LegacyChannelActionCommitResult remaining = actionCommitter.Prepare(
                     session.ReplyPostprocessedText);
@@ -121,8 +121,10 @@ public partial class CourierDeliveryBehavior
         session.PostprocessConsumed = true;
         if (persistHistory && recipient != null && !recipient.IsDead)
         {
-            PersistCourierReplyToHistories(session, recipient, visible);
+            if (PersistCourierReplyToHistories(session, recipient, visible))
+                RecordModuleCourierStep(session, AnimusForge.Refactor.Modules.CoreCourierAcceptedSteps.ReplyHistory);
         }
+        FailModuleCourierSession(session, "courier.actions_rejected");
         Log("courier action plan rejected without retry session=" + session.Id
             + " error=" + (errorCode ?? "action_not_executed"));
     }

@@ -781,7 +781,7 @@
       "owner": "Tools.ContentRelease",
       "entryPaths": [
         "tools/PhaseEightReadiness/readiness.py",
-        "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
+        "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json"
       ],
       "symbols": [
         {
@@ -790,7 +790,7 @@
           "kind": "function"
         },
         {
-          "path": "AnimusForge/ModuleData/RuleBehaviorPrompts.json",
+          "path": "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json",
           "symbol": "Duel",
           "kind": "asset"
         }

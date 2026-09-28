@@ -3669,6 +3669,7 @@ public class ModOnboardingBehavior : CampaignBehaviorBase
 				return;
 			}
 			List<string> list = (from d in new DirectoryInfo(playerExportsRootPath).GetDirectories()
+				where !d.Name.StartsWith(".", StringComparison.Ordinal)
 				orderby d.LastWriteTimeUtc descending
 				select d.Name).ToList();
 			List<InquiryElement> list2 = new List<InquiryElement>();

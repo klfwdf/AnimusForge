@@ -43,6 +43,26 @@ public partial class CourierDeliveryBehavior
             && run.Session.ReplyGenerationStarted && !run.Session.ReplyGenerated;
     }
 
+    private bool IsCourierReplyRequestCurrent(CourierReplyGenerationRequest request)
+    {
+        return request != null && IsCourierPromptRunCurrent(request.SourceRun)
+            && request.RuntimeGeneration == request.SourceRun.Generation
+            && string.Equals(request.SessionId, request.SourceRun.Session.Id, StringComparison.Ordinal);
+    }
+
+    private void FailCourierReplyRequest(CourierReplyGenerationRequest request, string reason)
+    {
+        if (IsCourierReplyRequestCurrent(request))
+            FailCourierReplyGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, reason);
+    }
+
+    private void QueueCourierPreparationFailure(CourierPromptRun run)
+        => EnqueueMainThreadActionForGeneration(run.Generation, () =>
+        {
+            if (IsCourierPromptRunCurrent(run))
+                FailCourierReplyGenerationOnMainThread(run.Session.Id, run.Generation, "reply_preparation_failed");
+        }, "reply_preparation_failed");
+
     private void CompleteCourierPromptSourceChanged(CourierPromptRun run, CourierPromptInput input)
     {
         // Do not release a new run on the same object, including one still in persona/history work.
@@ -228,8 +248,11 @@ public partial class CourierDeliveryBehavior
 		string npcRoleContext = ShoutBehavior.BuildHeroStableRoleContextForExternal(recipient);
 		List<object> messages = BuildCourierReplyMessages(recipient, session, extras, extraFact, historyText, persistentMemoryRoleMessages, npcRoleContext, ctx?.PreprocessExcludedRuleBlock);
 		LogCourierContextAlignment("reply", session.Id, recipient, npcRoleContext, extras, ctx?.EntityPostprocessContext, historyText, persistentMemoryRoleMessages);
+		_courierPromptRuns.TryGetValue(session, out CourierPromptRun sourceRun);
 		return new CourierReplyGenerationRequest
 		{
+			SourceRun = sourceRun,
+			DeliveryAppliedAtCapture = session.DeliveryApplied,
 			SessionId = session.Id,
 			RuntimeGeneration = runtimeGeneration,
 			RecipientHeroId = SafeHeroId(recipient),

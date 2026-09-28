@@ -89,7 +89,7 @@ public sealed class JsonFileStore
             relativePath = Path.GetFileName(filePath);
         }
 
-        var backupRoot = Path.Combine(safePackageRoot, ".backups", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+        var backupRoot = Path.Combine(safePackageRoot, ".backups", DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + Guid.NewGuid().ToString("N"));
         var backupPath = Path.Combine(backupRoot, relativePath);
         Directory.CreateDirectory(Path.GetDirectoryName(backupPath) ?? backupRoot);
         File.Copy(filePath, backupPath, overwrite: false);

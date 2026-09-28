@@ -11,6 +11,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$contentLayoutHelper = Join-Path $PSScriptRoot "content_layout.ps1"
+if (-not (Test-Path -LiteralPath $contentLayoutHelper -PathType Leaf)) {
+    throw "Content layout helper not found: $contentLayoutHelper"
+}
+. $contentLayoutHelper
+
 $ModuleId = "AnimusForge"
 $ModuleName = "AnimusForge"
 $BootstrapAssemblyName = "AnimusForge.Bootstrap"
@@ -19,12 +25,6 @@ $FlavorKey = "AnimusForge.BuildFlavor"
 $ApiKey = "AnimusForge.BannerlordApi"
 $Flavor13 = "ANIMUSFORGE_BANNERLORD_API_1_3"
 $Flavor14 = "ANIMUSFORGE_BANNERLORD_API_1_4"
-$LegacyRootPolicyPromptFileNames = @(
-    "CustomPolicyEvaluatorPrompt.json",
-    "NpcRulerPolicyPrompt.json",
-    "PlayerPolicyAutoDraftPrompt.json",
-    "PolicyEffectPrompts.v1.json"
-)
 $PrivateRuntimeDlls = @(
     "Microsoft.ML.OnnxRuntime.dll",
     "onnxruntime.dll",
@@ -75,24 +75,6 @@ function Assert-PathUnderRoot {
     }
 }
 
-function Assert-SafeModuleWorkingPath {
-    param(
-        [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string]$ModulesDir
-    )
-
-    $pathFull = Get-FullPathSafe -Path $Path
-    $modulesFull = Get-FullPathSafe -Path $ModulesDir
-    $parentFull = Get-FullPathSafe -Path (Split-Path -Parent $pathFull)
-    $leaf = Split-Path -Leaf $pathFull
-    $isExpectedName = $leaf.Equals($ModuleId, [System.StringComparison]::Ordinal) -or
-        $leaf -cmatch '^\.AnimusForge\.deploy\.(Debug|Release)\.[0-9a-f]{32}$' -or
-        $leaf -cmatch '^\.AnimusForge\.backup\.[0-9a-f]{32}$'
-    if (-not $parentFull.Equals($modulesFull, [System.StringComparison]::OrdinalIgnoreCase) -or -not $isExpectedName) {
-        throw "Unsafe module working path: $pathFull"
-    }
-}
-
 function Assert-NotReparsePoint {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -105,113 +87,17 @@ function Assert-NotReparsePoint {
     }
 }
 
-function New-SafeModuleWorkingDirectory {
-    param(
-        [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string]$ModulesDir
-    )
+function Assert-NoReparseAncestors {
+    param([Parameter(Mandatory = $true)][string]$Path)
 
-    Assert-SafeModuleWorkingPath -Path $Path -ModulesDir $ModulesDir
-    if (Test-Path -LiteralPath $Path) {
-        throw "Refusing to reuse an existing module working directory: $Path"
+    $full = Get-FullPathSafe -Path $Path
+    $current = [System.IO.Path]::GetPathRoot($full)
+    Assert-NotReparsePoint -Path $current
+    foreach ($part in ($full.Substring($current.Length) -split '[\\/]')) {
+        if ([string]::IsNullOrEmpty($part)) { continue }
+        $current = Join-Path $current $part
+        Assert-NotReparsePoint -Path $current
     }
-    New-Item -ItemType Directory -Path $Path | Out-Null
-}
-
-function Remove-SafeModuleWorkingDirectory {
-    param(
-        [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string]$ModulesDir
-    )
-
-    Assert-SafeModuleWorkingPath -Path $Path -ModulesDir $ModulesDir
-    if (Test-Path -LiteralPath $Path) {
-        Assert-NotReparsePoint -Path $Path
-        Remove-Item -LiteralPath $Path -Recurse -Force
-    }
-}
-
-function Invoke-Robocopy {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourceDir,
-        [Parameter(Mandatory = $true)][string]$TargetDir,
-        [Parameter(Mandatory = $true)][string[]]$ExtraArguments,
-        [ValidateRange(0, 60)][int]$RetryCount = 1,
-        [ValidateRange(0, 60)][int]$WaitSeconds = 1
-    )
-
-    New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
-    $arguments = @(
-        $SourceDir,
-        $TargetDir,
-        "/R:$RetryCount",
-        "/W:$WaitSeconds",
-        "/XJ",
-        "/NP",
-        "/NFL",
-        "/NDL",
-        "/NJH",
-        "/NJS"
-    ) + $ExtraArguments
-
-    $robocopyOutput = @(& robocopy @arguments 2>&1)
-    $exitCode = $LASTEXITCODE
-    if ($exitCode -ge 8) {
-        $details = @($robocopyOutput | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Last 12)
-        $detailText = if ($details.Count -gt 0) { "`n$($details -join "`n")" } else { "" }
-        throw "robocopy failed for '$SourceDir' -> '$TargetDir' with exit code $exitCode.$detailText"
-    }
-}
-
-function Merge-InstalledCustomPromptsIntoStaging {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
-        [Parameter(Mandatory = $true)][string]$TargetModuleDir,
-        [Parameter(Mandatory = $true)][string]$StagingModuleDir
-    )
-
-    $targetCustomPrompts = Join-Path $TargetModuleDir "CustomPrompts"
-    if (-not (Test-Path -LiteralPath $targetCustomPrompts -PathType Container)) {
-        return
-    }
-
-    $stagingCustomPrompts = Join-Path $StagingModuleDir "CustomPrompts"
-    Assert-PathUnderRoot -Path $stagingCustomPrompts -Root $StagingModuleDir
-    Assert-NotReparsePoint -Path $targetCustomPrompts
-    Assert-NotReparsePoint -Path $stagingCustomPrompts
-    Invoke-Robocopy -SourceDir $targetCustomPrompts -TargetDir $stagingCustomPrompts -ExtraArguments @(
-        "/MIR",
-        "/COPY:DAT",
-        "/DCOPY:DAT"
-    )
-
-    $targetEffectPrompts = Join-Path $targetCustomPrompts "Policy\Effects"
-    if (Test-Path -LiteralPath $targetEffectPrompts -PathType Container) {
-        Write-Host "Preserved CustomPrompts: installed split policy prompts and all non-policy prompts"
-        return
-    }
-
-    foreach ($fileName in $LegacyRootPolicyPromptFileNames) {
-        $legacyPromptPath = Join-Path $stagingCustomPrompts $fileName
-        Assert-PathUnderRoot -Path $legacyPromptPath -Root $StagingModuleDir
-        if (Test-Path -LiteralPath $legacyPromptPath -PathType Leaf) {
-            Remove-Item -LiteralPath $legacyPromptPath -Force
-        }
-    }
-
-    $sourcePolicyPrompts = Join-Path $SourceModuleDir "CustomPrompts\Policy"
-    $sourceEffectPrompts = Join-Path $sourcePolicyPrompts "Effects"
-    if (-not (Test-Path -LiteralPath $sourceEffectPrompts -PathType Container)) {
-        throw "Source split policy prompts are missing: $sourceEffectPrompts"
-    }
-    $stagingPolicyPrompts = Join-Path $stagingCustomPrompts "Policy"
-    Assert-PathUnderRoot -Path $stagingPolicyPrompts -Root $StagingModuleDir
-    Invoke-Robocopy -SourceDir $sourcePolicyPrompts -TargetDir $stagingPolicyPrompts -ExtraArguments @(
-        "/MIR",
-        "/COPY:DAT",
-        "/DCOPY:DAT"
-    )
-    Write-Host "Policy prompts: replaced legacy root files with split defaults; preserved all non-policy prompts"
 }
 
 function Reset-ProjectStageDirectory {
@@ -229,6 +115,7 @@ function Reset-ProjectStageDirectory {
     Assert-PathUnderRoot -Path $actual -Root $ProjectRoot
     if (Test-Path -LiteralPath $actual) {
         Assert-NotReparsePoint -Path $actual
+        Assert-AnimusForgeCleanStage -ProjectRoot $ProjectRoot -StageModuleDir $actual
         Remove-Item -LiteralPath $actual -Recurse -Force
     }
     New-Item -ItemType Directory -Path $actual -Force | Out-Null
@@ -241,7 +128,7 @@ function Test-SourceModuleDir {
     if (-not (Test-Path -LiteralPath $Path -PathType Container)) {
         throw "Source module directory not found: $Path"
     }
-    $missing = @("SubModule.xml", "ModuleData", "GUI", "ONNX", "PlayerExports") | Where-Object {
+    $missing = @("SubModule.xml") | Where-Object {
         -not (Test-Path -LiteralPath (Join-Path $Path $_))
     }
     if ($missing.Count -gt 0) {
@@ -294,6 +181,7 @@ function Get-BannerlordModulesDir {
     if (-not (Test-Path -LiteralPath $modulesDir -PathType Container)) {
         throw "Bannerlord Modules directory not found: $modulesDir"
     }
+    Assert-NoReparseAncestors -Path $modulesDir
     return (Get-FullPathSafe -Path $modulesDir)
 }
 
@@ -389,91 +277,6 @@ function Assert-BootstrapArtifact {
     Assert-BuildMarker -DllPath $DllPath -ExpectedRole "Bootstrap" -ExpectedReferenceMinor 3
 }
 
-function Get-RelativePathUnderRoot {
-    param(
-        [Parameter(Mandatory = $true)][string]$Path,
-        [Parameter(Mandatory = $true)][string]$Root
-    )
-
-    $pathFull = Get-FullPathSafe -Path $Path
-    $rootFull = (Get-FullPathSafe -Path $Root).TrimEnd('\', '/')
-    if (-not $pathFull.StartsWith($rootFull + "\", [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw "Path is outside the PlayerExports root: $pathFull"
-    }
-    return $pathFull.Substring($rootFull.Length + 1)
-}
-
-function Merge-PlayerExports {
-    param(
-        [Parameter(Mandatory = $true)][string]$DestinationDir,
-        [Parameter(Mandatory = $true)][object[]]$Sources
-    )
-
-    if (Test-Path -LiteralPath $DestinationDir) {
-        throw "PlayerExports staging destination must not already exist: $DestinationDir"
-    }
-    New-Item -ItemType Directory -Path $DestinationDir | Out-Null
-
-    $winners = @{}
-    foreach ($source in $Sources) {
-        $sourceDir = Get-FullPathSafe -Path ([string]$source.Path)
-        if (-not (Test-Path -LiteralPath $sourceDir -PathType Container)) {
-            continue
-        }
-
-        foreach ($file in Get-ChildItem -LiteralPath $sourceDir -Recurse -Force -File) {
-            $relativePath = Get-RelativePathUnderRoot -Path $file.FullName -Root $sourceDir
-            $candidate = [PSCustomObject]@{
-                SourcePath = $file.FullName
-                RelativePath = $relativePath
-                LastWriteTicks = $file.LastWriteTimeUtc.Ticks
-                Priority = [int]$source.Priority
-                Label = [string]$source.Label
-            }
-            $current = $winners[$relativePath]
-            if ($null -eq $current -or
-                $candidate.LastWriteTicks -gt $current.LastWriteTicks -or
-                ($candidate.LastWriteTicks -eq $current.LastWriteTicks -and $candidate.Priority -gt $current.Priority)) {
-                $winners[$relativePath] = $candidate
-            }
-        }
-    }
-
-    foreach ($relativePath in @($winners.Keys | Sort-Object)) {
-        $winner = $winners[$relativePath]
-        $targetPath = Join-Path $DestinationDir $relativePath
-        Assert-PathUnderRoot -Path $targetPath -Root $DestinationDir
-        $targetParent = Split-Path -Parent $targetPath
-        New-Item -ItemType Directory -Path $targetParent -Force | Out-Null
-        Copy-Item -LiteralPath $winner.SourcePath -Destination $targetPath -Force
-        [System.IO.File]::SetLastWriteTimeUtc($targetPath, [System.DateTime]::new($winner.LastWriteTicks, [System.DateTimeKind]::Utc))
-    }
-
-    Write-Host "Merged Data  : $($winners.Count) PlayerExports file(s) into staging"
-}
-
-function Sync-PlayerExportsBackToSource {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourceModuleDir,
-        [Parameter(Mandatory = $true)][string]$TargetModuleDir
-    )
-
-    $targetExports = Join-Path $TargetModuleDir "PlayerExports"
-    if (-not (Test-Path -LiteralPath $targetExports -PathType Container)) {
-        Write-Warning "PlayerExports source sync skipped because the deployed unified module has no PlayerExports directory."
-        return
-    }
-
-    $sourceExports = Join-Path $SourceModuleDir "PlayerExports"
-    try {
-        Invoke-Robocopy -SourceDir $targetExports -TargetDir $sourceExports -ExtraArguments @("/E", "/XO")
-        Write-Host "Synced Data  : $targetExports -> $sourceExports (non-deleting /E; newer source files preserved)"
-    }
-    catch {
-        Write-Warning "Deployment succeeded, but PlayerExports could not be synced back to the source with non-deleting /E: $($_.Exception.Message)"
-    }
-}
-
 function Copy-RequiredPdb {
     param(
         [Parameter(Mandatory = $true)][string]$SourceDll,
@@ -540,6 +343,17 @@ function Build-DesiredModuleBin {
         [Parameter(Mandatory = $true)][string]$Bootstrap
     )
 
+    $lockPath = Join-Path $projectRootFull "content\runtime-dependencies.lock.json"
+    $dependencyLock = Get-Content -LiteralPath $lockPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ([int]$dependencyLock.schemaVersion -ne 1 -or @($dependencyLock.files.PSObject.Properties).Count -ne $PrivateRuntimeDlls.Count) {
+        throw "Private runtime dependency lock is incomplete."
+    }
+    foreach ($runtimeDll in $PrivateRuntimeDlls) {
+        $hash = [string]$dependencyLock.files.$runtimeDll
+        if ($hash -cnotmatch '^[0-9a-f]{64}$' -or (Get-FileSha256 -LiteralPath (Join-Path $RuntimeDependencyDir $runtimeDll)) -ne $hash) {
+            throw "Private runtime dependency is not the locked build input: $runtimeDll"
+        }
+    }
     if (Test-Path -LiteralPath $StagingBinDir) {
         throw "Staging bin must not already exist: $StagingBinDir"
     }
@@ -550,6 +364,9 @@ function Build-DesiredModuleBin {
             throw "Required private runtime DLL not found: $runtimeSource"
         }
         Copy-Item -LiteralPath $runtimeSource -Destination (Join-Path $StagingBinDir $runtimeDll) -Force
+        if ((Get-FileSha256 -LiteralPath (Join-Path $StagingBinDir $runtimeDll)) -ne [string]$dependencyLock.files.$runtimeDll) {
+            throw "Private runtime dependency changed while staging: $runtimeDll"
+        }
     }
 
     $dir13 = Join-Path $StagingBinDir "versions\1.3"
@@ -614,21 +431,6 @@ function Set-SingleModuleIdentity {
     }
 }
 
-function Assert-SameHash {
-    param(
-        [Parameter(Mandatory = $true)][string]$SourcePath,
-        [Parameter(Mandatory = $true)][string]$TargetPath
-    )
-
-    if (-not (Test-Path -LiteralPath $TargetPath -PathType Leaf)) {
-        throw "Missing deployed file: $TargetPath"
-    }
-    if ((Get-FileSha256 -LiteralPath $SourcePath) -ne (Get-FileSha256 -LiteralPath $TargetPath)) {
-        throw "Hash mismatch after deploy: $TargetPath"
-    }
-    Write-Host "Verified     : $TargetPath"
-}
-
 function Assert-SingleModuleLayout {
     param([Parameter(Mandatory = $true)][string]$ModuleDir)
 
@@ -669,6 +471,214 @@ function Assert-SingleModuleLayout {
     }
 }
 
+function Assert-DeploymentPath {
+    param([string]$Path, [string]$Root)
+
+    $rootFull = Get-FullPathSafe -Path $Root
+    $pathFull = Get-FullPathSafe -Path $Path
+    Assert-PathUnderRoot -Path $pathFull -Root $rootFull
+    Assert-NotReparsePoint -Path $rootFull
+    $relative = $pathFull.Substring($rootFull.Length).TrimStart('\', '/')
+    $current = $rootFull
+    foreach ($part in ($relative -split '[\\/]')) {
+        if ([string]::IsNullOrEmpty($part)) { continue }
+        $current = Join-Path $current $part
+        Assert-NotReparsePoint -Path $current
+    }
+}
+
+function Write-DeploymentMarker {
+    param([string]$Directory, [string]$Name)
+
+    $temporary = Join-Path $Directory (".$Name.tmp")
+    $final = Join-Path $Directory $Name
+    $stream = [System.IO.File]::Open($temporary, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+    try {
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes("AF2 deployment`n")
+        $stream.Write($bytes, 0, $bytes.Length)
+        $stream.Flush($true)
+    }
+    finally { $stream.Dispose() }
+    [System.IO.File]::Move($temporary, $final)
+}
+
+function Assert-FeatureBridgesDeploymentBaseline {
+    param([string]$StageModuleDir, [string]$TargetModuleDir, [string]$ModulesDir)
+
+    $relative = 'ModuleData\FeatureBridges.json'
+    $source = Join-Path $StageModuleDir $relative
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { return }
+    $target = Join-Path $TargetModuleDir $relative
+    Assert-DeploymentPath -Path $target -Root $ModulesDir
+    if (-not (Test-Path -LiteralPath $target)) { return }
+    if (-not (Test-Path -LiteralPath $target -PathType Leaf)) {
+        throw "FeatureBridges deployment conflict: target is not a regular file: $target"
+    }
+
+    $installedHash = Get-FileSha256 -LiteralPath $target
+    $newHash = Get-FileSha256 -LiteralPath $source
+    # Exact LF/CRLF bytes of the three checked-in defaults before content migration.
+    # Unknown differences, including malformed JSON, are never silently replaced.
+    $knownDefaults = @(
+        '70C3637714D3935F8854D487B38B52534D782F470AF83F29EC62EDCC556C7C46', # 231f6cb6 LF
+        'CCB8685E0928C179086D4392830B5423D1CE5D64BAD3340BBF6133EEF8AF9BD2', # 231f6cb6 CRLF
+        'C732B9034B1DEC21A81EBC5F74FDE19F4A9BF1DC05E98AAF3B4D875633A3F4E9', # d9f974ce LF
+        '808A4218BAAD803537F6EF472EC81BAAB1A6A858E380035651C584329FEC5A4A', # d9f974ce CRLF
+        '54612D3084A8C95CF1F170B788D9B2345ACE051838C1E5B9EFD8122068FFD276', # 9a4a26dc LF
+        '10C573B461EC148EF8478A0D4269F73A7CA106F5A8C6A50C9D37FACC4FF86896'  # 9a4a26dc CRLF
+    )
+    if ($installedHash -eq $newHash -or $knownDefaults -contains $installedHash) { return }
+    throw "FeatureBridges deployment conflict: installed ModuleData/FeatureBridges.json is not a known default (SHA256=$installedHash). No managed target was replaced; inspect and preserve the installed file before an explicitly approved override."
+}
+
+function Invoke-ManagedStageDeployment {
+    param([string]$StageModuleDir, [string]$TargetModuleDir, [string]$ModulesDir)
+
+    Assert-FeatureBridgesDeploymentBaseline -StageModuleDir $StageModuleDir -TargetModuleDir $TargetModuleDir -ModulesDir $ModulesDir
+
+    $localAppData = [Environment]::GetEnvironmentVariable('LOCALAPPDATA')
+    if ([string]::IsNullOrWhiteSpace($localAppData) -or -not [System.IO.Path]::IsPathRooted($localAppData)) {
+        throw 'LOCALAPPDATA must be an absolute user-data root for deployment recovery.'
+    }
+    $localAppData = Get-FullPathSafe -Path $localAppData
+    if (-not (Test-Path -LiteralPath $localAppData -PathType Container)) {
+        throw 'LOCALAPPDATA is not an existing directory.'
+    }
+    Assert-NoReparseAncestors -Path $localAppData
+    $recoveryRoot = Join-Path $localAppData 'AnimusForge\Recovery\deploy'
+    $recoveryParent = $localAppData
+    foreach ($part in @('AnimusForge', 'Recovery', 'deploy')) {
+        $recoveryParent = Join-Path $recoveryParent $part
+        Assert-NotReparsePoint -Path $recoveryParent
+        if ((Test-Path -LiteralPath $recoveryParent) -and -not (Test-Path -LiteralPath $recoveryParent -PathType Container)) {
+            throw 'Deployment recovery path is not a directory.'
+        }
+    }
+    New-Item -ItemType Directory -Path $recoveryRoot -Force | Out-Null
+
+    foreach ($previous in @(Get-ChildItem -LiteralPath $recoveryRoot -Directory -Filter 'deploy-*' -Force)) {
+        Assert-NotReparsePoint -Path $previous.FullName
+        $recordPath = Join-Path $previous.FullName 'manifest.json'
+        if (-not (Test-Path -LiteralPath $recordPath -PathType Leaf)) {
+            throw 'Incomplete deployment recovery record requires inspection before another deploy.'
+        }
+        Assert-NotReparsePoint -Path $recordPath
+        $record = Get-Content -LiteralPath $recordPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ([string]$record.target -eq $TargetModuleDir -and
+            (Test-Path -LiteralPath (Join-Path $previous.FullName 'activating')) -and
+            -not (Test-Path -LiteralPath (Join-Path $previous.FullName 'complete')) -and
+            -not (Test-Path -LiteralPath (Join-Path $previous.FullName 'rolled-back'))) {
+            throw 'An interrupted deployment has a private recovery record; refusing another deploy.'
+        }
+    }
+
+    $planned = [System.Collections.Generic.List[object]]::new()
+    foreach ($source in @(Get-ChildItem -LiteralPath $StageModuleDir -File -Recurse -Force | Sort-Object FullName)) {
+        $relative = $source.FullName.Substring($StageModuleDir.Length).TrimStart('\', '/')
+        $target = Join-Path $TargetModuleDir $relative
+        Assert-DeploymentPath -Path $target -Root $ModulesDir
+        if ((Test-Path -LiteralPath $target) -and -not (Test-Path -LiteralPath $target -PathType Leaf)) {
+            throw 'A managed target path is not a regular file.'
+        }
+        $newHash = Get-FileSha256 -LiteralPath $source.FullName
+        $oldHash = if (Test-Path -LiteralPath $target -PathType Leaf) { Get-FileSha256 -LiteralPath $target } else { '' }
+        if ($newHash -ne $oldHash) {
+            $planned.Add([PSCustomObject]@{ Relative = $relative; Source = $source.FullName; Target = $target; OldHash = $oldHash; NewHash = $newHash })
+        }
+    }
+    if ($planned.Count -eq 0) {
+        Write-Host 'Deploy Result: already current; no managed file changed'
+        return
+    }
+
+    $operationId = [Guid]::NewGuid().ToString('N')
+    $recoveryDir = Join-Path $recoveryRoot "deploy-$operationId"
+    New-Item -ItemType Directory -Path $recoveryDir | Out-Null
+    $record = [ordered]@{
+        schemaVersion = 1
+        target = $TargetModuleDir
+        files = @($planned | ForEach-Object { [ordered]@{ relative = $_.Relative; oldSha256 = $_.OldHash; newSha256 = $_.NewHash } })
+    }
+    $manifest = Join-Path $recoveryDir 'manifest.json'
+    [System.IO.File]::WriteAllText($manifest, ($record | ConvertTo-Json -Depth 5), [System.Text.UTF8Encoding]::new($false))
+    $touched = [System.Collections.Generic.List[object]]::new()
+    try {
+        foreach ($item in $planned) {
+            if (-not $item.OldHash) { continue }
+            $backup = Join-Path (Join-Path $recoveryDir 'files') $item.Relative
+            Assert-DeploymentPath -Path $backup -Root $recoveryRoot
+            New-Item -ItemType Directory -Path (Split-Path -Parent $backup) -Force | Out-Null
+            Assert-DeploymentPath -Path $backup -Root $recoveryRoot
+            [System.IO.File]::Copy($item.Target, $backup, $false)
+            if ((Get-FileSha256 -LiteralPath $backup) -ne $item.OldHash -or
+                (Get-FileSha256 -LiteralPath $item.Target) -ne $item.OldHash) {
+                throw 'Managed target changed during private backup.'
+            }
+        }
+        Write-DeploymentMarker -Directory $recoveryDir -Name 'activating'
+        foreach ($item in $planned) {
+            Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
+            $currentHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
+            if ($currentHash -ne $item.OldHash) { throw 'Managed target changed during deployment.' }
+            if ((Get-FileSha256 -LiteralPath $item.Source) -ne $item.NewHash) { throw 'Stage changed during deployment.' }
+            $parent = Split-Path -Parent $item.Target
+            New-Item -ItemType Directory -Path $parent -Force | Out-Null
+            Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
+            $candidate = Join-Path $parent ('.af2-deploy-' + $operationId + '.tmp')
+            $replaceBackup = Join-Path $parent ('.af2-replaced-' + $operationId + '.tmp')
+            [System.IO.File]::Copy($item.Source, $candidate, $false)
+            try {
+                if ((Get-FileSha256 -LiteralPath $candidate) -ne $item.NewHash) { throw 'Same-volume deployment candidate changed.' }
+                $touched.Add($item)
+                if ($item.OldHash) { [System.IO.File]::Replace($candidate, $item.Target, $replaceBackup) }
+                else { [System.IO.File]::Move($candidate, $item.Target) }
+                if ((Get-FileSha256 -LiteralPath $item.Target) -ne $item.NewHash) { throw 'Managed target hash mismatch after replacement.' }
+            }
+            finally {
+                if (Test-Path -LiteralPath $candidate -PathType Leaf) { [System.IO.File]::Delete($candidate) }
+                if (Test-Path -LiteralPath $replaceBackup -PathType Leaf) { [System.IO.File]::Delete($replaceBackup) }
+            }
+        }
+        Write-DeploymentMarker -Directory $recoveryDir -Name 'complete'
+    }
+    catch {
+        $failure = $_.Exception.Message
+        $rollbackErrors = [System.Collections.Generic.List[string]]::new()
+        for ($index = $touched.Count - 1; $index -ge 0; $index--) {
+            $item = $touched[$index]
+            try {
+                Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
+                $currentHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
+                if ($currentHash -eq $item.OldHash) { continue }
+                if ($currentHash -ne $item.NewHash) { throw 'Target changed again; automatic rollback refused.' }
+                if ($item.OldHash) {
+                    $backup = Join-Path (Join-Path $recoveryDir 'files') $item.Relative
+                    Assert-DeploymentPath -Path $backup -Root $recoveryRoot
+                    if ((Get-FileSha256 -LiteralPath $backup) -ne $item.OldHash) { throw 'Private backup hash mismatch.' }
+                    $restore = Join-Path (Split-Path -Parent $item.Target) ('.af2-restore-' + $operationId + '.tmp')
+                    $replaced = Join-Path (Split-Path -Parent $item.Target) ('.af2-restore-replaced-' + $operationId + '.tmp')
+                    [System.IO.File]::Copy($backup, $restore, $false)
+                    try { [System.IO.File]::Replace($restore, $item.Target, $replaced) }
+                    finally {
+                        if (Test-Path -LiteralPath $restore -PathType Leaf) { [System.IO.File]::Delete($restore) }
+                        if (Test-Path -LiteralPath $replaced -PathType Leaf) { [System.IO.File]::Delete($replaced) }
+                    }
+                }
+                else { [System.IO.File]::Delete($item.Target) }
+                $restoredHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
+                if ($restoredHash -ne $item.OldHash) { throw 'Rollback hash mismatch.' }
+            }
+            catch { $rollbackErrors.Add($_.Exception.Message) }
+        }
+        if ($rollbackErrors.Count -eq 0) {
+            Write-DeploymentMarker -Directory $recoveryDir -Name 'rolled-back'
+            throw "Managed deployment failed; all touched files were restored: $failure"
+        }
+        throw "Managed deployment failed and rollback is incomplete; inspect private Recovery before retry: $failure; $($rollbackErrors -join '; ')"
+    }
+    Write-Host "Deploy Result: success; managed files updated: $($planned.Count)"
+}
+
 if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
     $ProjectRoot = Join-Path $PSScriptRoot ".."
 }
@@ -682,6 +692,7 @@ foreach ($argument in @($BuildDll13, $BuildDll14, $BootstrapDll)) {
 }
 
 $projectRootFull = Get-FullPathSafe -Path $ProjectRoot
+Assert-NoReparseAncestors -Path $projectRootFull
 $sourceModuleDir = Get-FullPathSafe -Path (Join-Path $projectRootFull "AnimusForge")
 $modulesDir = Get-BannerlordModulesDir -BannerlordRootPath $BannerlordRoot
 $targetModuleDir = Get-FullPathSafe -Path (Join-Path $modulesDir $ModuleId)
@@ -710,279 +721,38 @@ if ((Get-FileSha256 -LiteralPath $dll13Full) -eq (Get-FileSha256 -LiteralPath $d
 }
 
 # A caller may launch the BAT/PowerShell script with its current directory
-# inside Modules\AnimusForge.  Windows then refuses to rename that directory
-# even when the game has never started.  Resolve every input first, then move
-# both PowerShell's provider location and the native process CWD to the project.
+# inside Modules\AnimusForge. Resolve inputs first, then leave that directory
+# before creating same-volume candidates or replacing managed files.
 Set-Location -LiteralPath $projectRootFull
 [System.Environment]::CurrentDirectory = $projectRootFull
 Write-Host "Deploy CWD   : $projectRootFull"
 
-if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
-    $projectStageDir = Reset-ProjectStageDirectory -Path $StageOnlyOutputDir -ProjectRoot $projectRootFull -ConfigurationName $Configuration
-    try {
-        Invoke-Robocopy -SourceDir $sourceModuleDir -TargetDir $projectStageDir -ExtraArguments @(
-            "/E",
-            "/XD",
-            (Join-Path $sourceModuleDir "Logs"),
-            (Join-Path $sourceModuleDir "PlayerExports"),
-            (Join-Path $sourceModuleDir "bin")
-        )
-        Set-SingleModuleIdentity -ModuleDir $projectStageDir
-        Build-DesiredModuleBin -RuntimeDependencyDir $runtimeDependencyDirFull -StagingBinDir (Join-Path $projectStageDir "bin\Win64_Shipping_Client") -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
-        Invoke-Robocopy -SourceDir (Join-Path $sourceModuleDir "PlayerExports") -TargetDir (Join-Path $projectStageDir "PlayerExports") -ExtraArguments @("/E")
-        Assert-SingleModuleLayout -ModuleDir $projectStageDir
-        Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $projectStageDir "bin\Win64_Shipping_Client\AnimusForge.Bootstrap.dll")
-        Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $projectStageDir "bin\Win64_Shipping_Client\versions\1.3\AnimusForge.dll")
-        Assert-SameHash -SourcePath $dll14Full -TargetPath (Join-Path $projectStageDir "bin\Win64_Shipping_Client\versions\1.4\AnimusForge.dll")
-    }
-    catch {
-        $stageFailure = $_
-        if (Test-Path -LiteralPath $projectStageDir) {
-            try {
-                Assert-NotReparsePoint -Path $projectStageDir
-                Remove-Item -LiteralPath $projectStageDir -Recurse -Force
-            }
-            catch {
-                Write-Warning "Failed to clean project staging directory after an assembly error: $projectStageDir"
-            }
-        }
-        throw $stageFailure
-    }
+$projectStagePath = Join-Path $projectRootFull "bin\$Configuration\single_module_stage\AnimusForge"
+if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir) -and
+    -not (Get-FullPathSafe -Path $StageOnlyOutputDir).Equals((Get-FullPathSafe -Path $projectStagePath), [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw 'Stage-only output must be the exact project-local Stage path.'
+}
+$projectStageDir = Reset-ProjectStageDirectory -Path $projectStagePath -ProjectRoot $projectRootFull -ConfigurationName $Configuration
+Copy-Item -LiteralPath (Join-Path $sourceModuleDir "SubModule.xml") -Destination (Join-Path $projectStageDir "SubModule.xml")
+Invoke-AnimusForgeContentProjection -ProjectRoot $projectRootFull -DestinationModuleDir $projectStageDir | Out-Null
+Set-SingleModuleIdentity -ModuleDir $projectStageDir
+Build-DesiredModuleBin -RuntimeDependencyDir $runtimeDependencyDirFull -StagingBinDir (Join-Path $projectStageDir "bin\Win64_Shipping_Client") -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
+Assert-SingleModuleLayout -ModuleDir $projectStageDir
+Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $projectStageDir -RequireCurrentArtifacts
 
+if (-not [string]::IsNullOrWhiteSpace($StageOnlyOutputDir)) {
     Write-Host "Stage Mode   : project-local unified module; no game directory was modified"
     Write-Host "Stage Result : success"
     Write-Host "Output       : $projectStageDir"
     return
 }
 
-$legacy13ModuleDir = Get-FullPathSafe -Path (Join-Path $modulesDir "AnimusForge_1_3_x")
-$legacy14ModuleDir = Get-FullPathSafe -Path (Join-Path $modulesDir "AnimusForge_1_4_5")
-$existingLegacyModules = @($legacy13ModuleDir, $legacy14ModuleDir) | Where-Object {
-    Test-Path -LiteralPath $_ -PathType Container
+$legacyModules = @('AnimusForge_1_3_x', 'AnimusForge_1_4_5') | Where-Object {
+    Test-Path -LiteralPath (Join-Path $modulesDir $_) -PathType Container
 }
-Write-Warning "This script never deletes legacy AnimusForge_1_3_x / AnimusForge_1_4_5 modules. Disable or remove those legacy modules manually before launching the game."
-if ($existingLegacyModules.Count -gt 0) {
-    Write-Warning "Legacy module folder(s) detected and left untouched: $($existingLegacyModules -join ', ')"
+if ($legacyModules.Count -gt 0) {
+    Write-Warning 'Legacy AnimusForge module folders were left untouched; disable them before launching the game to avoid duplicate module loading.'
 }
-
-$operationId = [Guid]::NewGuid().ToString("N")
-$stagingModuleDir = Get-FullPathSafe -Path (Join-Path $modulesDir ".$ModuleId.deploy.$Configuration.$operationId")
-$backupModuleDir = Get-FullPathSafe -Path (Join-Path $modulesDir ".$ModuleId.backup.$operationId")
-Assert-SafeModuleWorkingPath -Path $stagingModuleDir -ModulesDir $modulesDir
-Assert-SafeModuleWorkingPath -Path $backupModuleDir -ModulesDir $modulesDir
-$modulesVolume = [System.IO.Path]::GetPathRoot($modulesDir)
-foreach ($workingPath in @($stagingModuleDir, $backupModuleDir)) {
-    if (-not ([System.IO.Path]::GetPathRoot($workingPath)).Equals($modulesVolume, [System.StringComparison]::OrdinalIgnoreCase)) {
-        throw "Transactional module path is not on the Bannerlord Modules volume: $workingPath"
-    }
-}
-
-$deploymentSucceeded = $false
-$backupCreated = $false
-$targetMutationStarted = $false
-try {
-    New-SafeModuleWorkingDirectory -Path $stagingModuleDir -ModulesDir $modulesDir
-
-    $sourceCopyArguments = @(
-        "/E",
-        "/XD",
-        (Join-Path $sourceModuleDir "Logs"),
-        (Join-Path $sourceModuleDir "PlayerExports"),
-        (Join-Path $sourceModuleDir "bin")
-    )
-    Invoke-Robocopy -SourceDir $sourceModuleDir -TargetDir $stagingModuleDir -ExtraArguments $sourceCopyArguments
-    Merge-InstalledCustomPromptsIntoStaging -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir -StagingModuleDir $stagingModuleDir
-    $targetTerminalSettings = Join-Path $targetModuleDir "ModuleData\TerminalSettings.json"
-    $stagingTerminalSettings = Join-Path $stagingModuleDir "ModuleData\TerminalSettings.json"
-    if (Test-Path -LiteralPath $targetTerminalSettings -PathType Leaf) {
-        Copy-Item -LiteralPath $targetTerminalSettings -Destination $stagingTerminalSettings -Force
-        Write-Host "Preserved TerminalSettings: $targetTerminalSettings"
-    }
-    Set-SingleModuleIdentity -ModuleDir $stagingModuleDir
-
-    $stagingBinDir = Join-Path $stagingModuleDir "bin\Win64_Shipping_Client"
-    Build-DesiredModuleBin -RuntimeDependencyDir $runtimeDependencyDirFull -StagingBinDir $stagingBinDir -Implementation13 $dll13Full -Implementation14 $dll14Full -Bootstrap $bootstrapFull
-
-    $targetLogsDir = Join-Path $targetModuleDir "Logs"
-    if (Test-Path -LiteralPath $targetLogsDir -PathType Container) {
-        Invoke-Robocopy -SourceDir $targetLogsDir -TargetDir (Join-Path $stagingModuleDir "Logs") -ExtraArguments @("/E")
-        Write-Host "Preserved Logs: $targetLogsDir"
-    }
-
-    $playerExportSources = @(
-        [PSCustomObject]@{ Path = (Join-Path $sourceModuleDir "PlayerExports"); Priority = 10; Label = "source" }
-    )
-    if (-not (Test-Path -LiteralPath $targetModuleDir -PathType Container)) {
-        $playerExportSources += @(
-            [PSCustomObject]@{ Path = (Join-Path $legacy13ModuleDir "PlayerExports"); Priority = 20; Label = "legacy-1.3" },
-            [PSCustomObject]@{ Path = (Join-Path $legacy14ModuleDir "PlayerExports"); Priority = 30; Label = "legacy-1.4" }
-        )
-        Write-Host "Migration    : first unified deployment; legacy PlayerExports are read-only merge candidates"
-    }
-    $playerExportSources += [PSCustomObject]@{ Path = (Join-Path $targetModuleDir "PlayerExports"); Priority = 100; Label = "unified-target" }
-    Merge-PlayerExports -DestinationDir (Join-Path $stagingModuleDir "PlayerExports") -Sources $playerExportSources
-
-    $sourceRules = Join-Path $sourceModuleDir "ModuleData\RuleBehaviorPrompts.json"
-    Assert-SameHash -SourcePath $sourceRules -TargetPath (Join-Path $stagingModuleDir "ModuleData\RuleBehaviorPrompts.json")
-    $sourcePreprocessPrompts = Join-Path $sourceModuleDir "ModuleData\PreprocessPrompts.json"
-    Assert-SameHash -SourcePath $sourcePreprocessPrompts -TargetPath (Join-Path $stagingModuleDir "ModuleData\PreprocessPrompts.json")
-    Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $stagingBinDir "AnimusForge.Bootstrap.dll")
-    Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $stagingBinDir "versions\1.3\AnimusForge.dll")
-    Assert-SameHash -SourcePath $dll14Full -TargetPath (Join-Path $stagingBinDir "versions\1.4\AnimusForge.dll")
-    Assert-SingleModuleLayout -ModuleDir $stagingModuleDir
-
-    Write-Host "Source Module: $sourceModuleDir"
-    Write-Host "Runtime DLLs : $runtimeDependencyDirFull"
-    Write-Host "Target Module: $targetModuleDir"
-    Write-Host "Staged Module: $stagingModuleDir"
-
-    $hadExistingTarget = Test-Path -LiteralPath $targetModuleDir -PathType Container
-    $preservedRuntimeDirectoryArguments = if ($hadExistingTarget) {
-        @("/XD", "Logs", "PlayerExports", "ONNX")
-    }
-    else {
-        @()
-    }
-    try {
-        if ($hadExistingTarget) {
-            # A process can keep the module root as its working directory without
-            # locking any file inside it.  Windows then rejects a directory rename
-            # even while every DLL/data file is replaceable. Logs and PlayerExports
-            # can also remain open while the launcher is alive, and the installed
-            # ONNX model must be preserved. Back up and replace only the mutable
-            # module subset; the three preserved directories are never touched by
-            # deployment or rollback.
-            New-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
-            Invoke-Robocopy -SourceDir $targetModuleDir -TargetDir $backupModuleDir -ExtraArguments (@(
-                "/MIR",
-                "/COPY:DAT",
-                "/DCOPY:DAT"
-            ) + $preservedRuntimeDirectoryArguments) -RetryCount 3 -WaitSeconds 1
-            $backupCreated = $true
-            Write-Host "Backup Module: $backupModuleDir"
-        }
-
-        # Robocopy may update some files before reporting a later failure, so set
-        # this flag before it starts.  Any exception after this point must restore
-        # the complete pre-deploy backup rather than merely reporting a copy error.
-        $targetMutationStarted = $true
-        Invoke-Robocopy -SourceDir $stagingModuleDir -TargetDir $targetModuleDir -ExtraArguments (@(
-            "/MIR",
-            "/COPY:DAT",
-            "/DCOPY:DAT"
-        ) + $preservedRuntimeDirectoryArguments) -RetryCount 15 -WaitSeconds 1
-        Assert-SingleModuleLayout -ModuleDir $targetModuleDir
-        Assert-SameHash -SourcePath $bootstrapFull -TargetPath (Join-Path $targetModuleDir "bin\Win64_Shipping_Client\AnimusForge.Bootstrap.dll")
-        Assert-SameHash -SourcePath $dll13Full -TargetPath (Join-Path $targetModuleDir "bin\Win64_Shipping_Client\versions\1.3\AnimusForge.dll")
-        Assert-SameHash -SourcePath $dll14Full -TargetPath (Join-Path $targetModuleDir "bin\Win64_Shipping_Client\versions\1.4\AnimusForge.dll")
-    }
-    catch {
-        $replacementFailure = $_.Exception.Message
-        $rollbackErrors = @()
-
-        if ($hadExistingTarget -and -not $targetMutationStarted) {
-            # Backup creation failed before the target was touched.  Never use a
-            # partial backup for rollback; remove it if possible and leave the
-            # existing module exactly where it is.
-            if (Test-Path -LiteralPath $backupModuleDir) {
-                try {
-                    Remove-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
-                }
-                catch {
-                    $rollbackErrors += "could not remove incomplete backup: $($_.Exception.Message)"
-                }
-            }
-
-            if ($rollbackErrors.Count -gt 0) {
-                throw "Unified module replacement could not begin; the previous module was left untouched: $replacementFailure`nCleanup also failed: $($rollbackErrors -join '; ')`nIncomplete backup (if present): $backupModuleDir"
-            }
-            throw "Unified module replacement could not begin; the previous module was left untouched: $replacementFailure"
-        }
-
-        if ($hadExistingTarget) {
-            $rollbackCompleted = $false
-            if ($backupCreated -and (Test-Path -LiteralPath $backupModuleDir -PathType Container)) {
-                try {
-                    Invoke-Robocopy -SourceDir $backupModuleDir -TargetDir $targetModuleDir -ExtraArguments (@(
-                        "/MIR",
-                        "/COPY:DAT",
-                        "/DCOPY:DAT"
-                    ) + $preservedRuntimeDirectoryArguments) -RetryCount 15 -WaitSeconds 1
-                    $rollbackCompleted = $true
-                }
-                catch {
-                    $rollbackErrors += "could not restore backup: $($_.Exception.Message)"
-                }
-            }
-            else {
-                $rollbackErrors += "complete backup directory is missing: $backupModuleDir"
-            }
-
-            if (-not $rollbackCompleted) {
-                $rollbackErrors += "the previous unified module was not confirmed restored; preserve this backup: $backupModuleDir"
-            }
-            elseif (Test-Path -LiteralPath $backupModuleDir) {
-                try {
-                    Remove-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
-                    $backupCreated = $false
-                }
-                catch {
-                    Write-Warning "The previous module was restored, but its recovery backup could not be cleaned: $backupModuleDir ($($_.Exception.Message))"
-                }
-            }
-        }
-        elseif (-not $hadExistingTarget -and (Test-Path -LiteralPath $targetModuleDir)) {
-            try {
-                Remove-SafeModuleWorkingDirectory -Path $targetModuleDir -ModulesDir $modulesDir
-            }
-            catch {
-                $rollbackErrors += "could not remove failed first-time deployment: $($_.Exception.Message)"
-            }
-        }
-
-        if ($rollbackErrors.Count -gt 0) {
-            throw "Unified module replacement failed: $replacementFailure`nRollback also failed: $($rollbackErrors -join '; ')`nRecovery backup (if present): $backupModuleDir"
-        }
-        if ($hadExistingTarget) {
-            throw "Unified module replacement failed and the previous module was restored from its complete backup: $replacementFailure"
-        }
-        throw "Unified module replacement failed; no previous unified module existed: $replacementFailure"
-    }
-
-    $deploymentSucceeded = $true
-}
-finally {
-    if (-not $deploymentSucceeded -and (Test-Path -LiteralPath $stagingModuleDir)) {
-        try {
-            Remove-SafeModuleWorkingDirectory -Path $stagingModuleDir -ModulesDir $modulesDir
-        }
-        catch {
-            Write-Warning "Failed to clean deployment staging directory: $stagingModuleDir ($($_.Exception.Message))"
-        }
-    }
-}
-
-if (Test-Path -LiteralPath $backupModuleDir) {
-    try {
-        Remove-SafeModuleWorkingDirectory -Path $backupModuleDir -ModulesDir $modulesDir
-        $backupCreated = $false
-    }
-    catch {
-        Write-Warning "Deployment succeeded, but the old-module backup could not be cleaned: $backupModuleDir ($($_.Exception.Message))"
-    }
-}
-if (Test-Path -LiteralPath $stagingModuleDir) {
-    try {
-        Remove-SafeModuleWorkingDirectory -Path $stagingModuleDir -ModulesDir $modulesDir
-    }
-    catch {
-        Write-Warning "Deployment succeeded, but the staging directory could not be cleaned: $stagingModuleDir ($($_.Exception.Message))"
-    }
-}
-
-Sync-PlayerExportsBackToSource -SourceModuleDir $sourceModuleDir -TargetModuleDir $targetModuleDir
-
-Write-Host "Deploy Mode  : one unified module with Bootstrap version selection"
-Write-Host "Deploy Result: success"
+Invoke-ManagedStageDeployment -StageModuleDir $projectStageDir -TargetModuleDir $targetModuleDir -ModulesDir $modulesDir
+Write-Host "Deploy Mode  : Stage-managed files only; unknown installed files untouched"
 Write-Host "Output       : $targetModuleDir"
-exit 0

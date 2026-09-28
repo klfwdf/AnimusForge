@@ -1,0 +1,1530 @@
+{
+ "candidate": "79df8ac0",
+ "python": "py 3.14",
+ "dotnet8": "local/dotnet/8.0.425",
+ "dotnet10": "G:/AFMOD/.dotnet-sdk10 10.0.400",
+ "entries": [
+  {
+   "id": "tests/AF.Persistence/DataPaths/DataPathsTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/AF.Persistence/DataPaths/test_migration.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "PASS AF2 migration synthetic (script mode; unittest-module import fails because tests/AF.Persistence is not a package name)"
+  },
+  {
+   "id": "tests/AF.Persistence/OwnerJsonStorageCodec/OwnerJsonStorageCodecTests.csproj",
+   "exit": 1,
+   "status": "SUPERSEDED_BY_RUNNER",
+   "last": "生成失败。请修复生成错误并重新运行。"
+  },
+  {
+   "id": "tests/AF.Persistence/OwnerJsonStorageCodec/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/AF.Persistence/PlayerExports/PlayerExportsTests.csproj",
+   "exit": 1,
+   "status": "SUPERSEDED_BY_RUNNER",
+   "last": "生成失败。请修复生成错误并重新运行。"
+  },
+  {
+   "id": "tests/AF.Persistence/PlayerExports/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/content/J15ContentContractTests/GcczLoaderHarness.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/content/J15ContentContractTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Actions/ActionProtocol/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Actions/ActionProtocol/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeDispatchClaim/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeDispatchClaim/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeDispatchClaim/test_source_review.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=1)"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeMainReply/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeMainReply/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeMainReply/test_source_review.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=1)"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeObservation/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeObservation/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeObservation/test_source_review.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=1)"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeTicket/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeTicket/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeTicket/test_source_review.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeTurn/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeTurn/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Conversation/NativeTurn/test_source_review.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tests/modules/AF.Module.Economy/DebtNormalization/DebtNormalizationTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Economy/DebtNormalization/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Economy/PromptProjection/PromptProjectionTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Economy/PromptProjection/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Kingdom/DomainOwners/DomainOwners.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/CapturePerformance/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/Entities/KnowledgeEntitiesTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/Entities/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/EntityAllocationParity/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/EntityTextDifferential/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/Index/KnowledgeIndexTests.csproj",
+   "exit": 1,
+   "status": "SUPERSEDED_BY_RUNNER",
+   "last": "生成失败。请修复生成错误并重新运行。"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/Index/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Knowledge/PublishedSnapshot/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Llm/NonStreamingTransport/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Llm/NonStreamingTransport/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Llm/Protocol/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Llm/StreamingTransport/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Llm/StreamingTransport/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Memory/Records/MemoryRecordsTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Memory/Records/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/BuildPhases/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/CaptureEligibility/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/Composition/PromptCompositionTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/Composition/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/Configuration/PromptConfigurationLoaderTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ExtraRuleFallback/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/KnowledgePhases/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/NativeFinalRequestDifferential/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/NativeKnowledgeSchedule/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ProductionConsumers/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "ValueError: Missing source declaration: public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ProductionEntry/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ProductionEvaluation/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ProductionModels/PromptProductionModelsTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ProductionMy/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ProductionReward/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/ProductionSceneNative/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/Retrieval/PromptCandidateSelectionTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Prompt/SharedCompletionDifferential/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tests/modules/AF.Module.Weekly/WaveCoordination/WaveCoordination.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/AFContractsContractTests/validate_af_contracts.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ActionPostprocessPromptLab/tests/ActionPostprocessPromptLab.SmokeTests/ActionPostprocessPromptLab.SmokeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/AgendaMapNotification.SmokeTests/AgendaMapNotification.SmokeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/BattleSpeechCapturedTriggerRegressionTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/BridgeBindingContractTests/test_validate_bridge_bindings.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/BridgeBindingContractTests/validate_bridge_bindings.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/BridgeFixtureContractTests/validate_bridge_fixtures.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/BridgeRuntimeIsolationTests/BridgeRuntimeIsolationTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CampaignCompositionTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Current composition execution failed"
+  },
+  {
+   "id": "tools/ChannelCutoverBoundaryTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ChannelCutoverBoundaryTests/test_extraction.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/ChannelPersonaPreparationTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ChannelPersonaPreparationTests/source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed game lifetime dependency: tools/GameLifetimeTests/run_bindings.py"
+  },
+  {
+   "id": "tools/ChannelPersonaPreparationTests/test_source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=2)"
+  },
+  {
+   "id": "tools/CompositionMatrixContractTests/validate_composition_matrix.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ConfiguredChatGatewayReplayTests/ConfiguredChatGatewayReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ConfiguredChatValidationReplayTests/ConfiguredChatValidationReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierCommitOutcomeTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierCommitOutcomeTests/source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "subprocess.CalledProcessError: Command '['git', 'show', '29448d1b7ec7bc7a92820c8b510aaad56c21ff37:src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs']' retur"
+  },
+  {
+   "id": "tools/CourierDeliveryLifetimeTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierDomainCommitTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierHistoryPreparationTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierHistoryPreparationTests/source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed Courier prompt source outside approved Start/Begin/Prepare/prompt boundaries"
+  },
+  {
+   "id": "tools/CourierHistoryPreparationTests/test_source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=4)"
+  },
+  {
+   "id": "tools/CourierInboundCompletionContractTests/CourierInboundCompletionContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierLetterInventoryTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "ValueError: Missing source declaration: private static void AddCourierLetterToPlayerInventory("
+  },
+  {
+   "id": "tools/CourierOwnerPhaseTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierOwnerPhaseTests/source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed owner phase dependency: tools/CourierOwnerPhaseTests/run.py"
+  },
+  {
+   "id": "tools/CourierPostprocessOwnerRegressionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierPostprocessOwnerRegressionTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierPostprocessOwnerRegressionTests/test_extraction.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (errors=4)"
+  },
+  {
+   "id": "tools/CourierProactiveLetterTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierPromptPreparationTests/liveness_review.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed liveness candidate: CourierDeliveryBehavior.cs"
+  },
+  {
+   "id": "tools/CourierPromptPreparationTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierPromptPreparationTests/run_liveness.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierPromptPreparationTests/source_review.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed Courier prompt source outside approved Start/Begin/Prepare/prompt boundaries"
+  },
+  {
+   "id": "tools/CourierRouteTransportTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: missing/out-of-order marker: TryGetRecipientTarget("
+  },
+  {
+   "id": "tools/CourierSessionCreationTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierSessionCreationTests/run_admission.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/CourierSessionRegistryTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/DuelDispatchContractTests/DuelDispatchContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/DuelOutcomeContractTests/DuelOutcomeContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/EconomyAwareActionPlanExecutorContractTests/EconomyAwareActionPlanExecutorContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/EconomyOwnerStateFixtureContractTests.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/EconomyRewardDebtPortContractTests/EconomyRewardDebtPortContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/EncounterLifecycleBoundaryTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/FoundationRuntimeContractTests/validate_foundation_runtime.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/GameAdapterContractTests/validate_game_adapter.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/GameLifetimeTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/GameLifetimeTests/run_bindings.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/GameLifetimeTests/run_commit.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/GameLifetimeTests/run_memory.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/GameLifetimeTests/source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed game lifetime dependency: tools/GameLifetimeTests/run_bindings.py"
+  },
+  {
+   "id": "tools/GameLifetimeTests/test_source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=4)"
+  },
+  {
+   "id": "tools/GiveAssetTagCodec.StressTests/GiveAssetTagCodec.StressTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/HeroAssetScopeRegressionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/HeroPersonaGenerationTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/HeroPersonaGenerationTests/source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed memory-run dependency: tools/MemorySummaryRunOwnerTests/fixture_support.py"
+  },
+  {
+   "id": "tools/HeroPersonaGenerationTests/test_source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=4)"
+  },
+  {
+   "id": "tools/HostCompositionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/HostCompositionTests/source_inverse.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/InteractionPipelineContractTests/InteractionPipelineContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/InteractionRequestLifetimeTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/InteractionRequestLifetimeTests/verify_compat.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/InternalModuleDirectoryTests/InternalModuleDirectoryTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/J02DiagnosticsBoundaryTests/J02DiagnosticsBoundaryTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/J02DiagnosticsBoundaryTests/source_inverse.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/J09DefaultChannelActionWiringTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/J12DomainLifecycleRegressionTests/J12DomainLifecycleRegressionTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/J12DomainOwnerSourceContractTests/test_j12_domain_owners.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/KnowledgeRagGatewayReplayTests/KnowledgeRagGatewayReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/LegacyShoutGatewayResultRegressionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/LegacyShoutGatewayResultRegressionTests/test_compatibility.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/LiveHostReadinessAudit/live_host_readiness_audit.py",
+   "exit": 1,
+   "status": "ENV_STATE",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/LiveHostReadinessAudit/test_live_host_readiness_audit.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/MainThreadFunctionBoundaryTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed game lifetime dependency: tools/GameLifetimeTests/run_bindings.py"
+  },
+  {
+   "id": "tools/MemoryCommitRecoveryContractTests/MemoryCommitRecoveryContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemoryFailureUiBoundaryTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed memory-run dependency: tools/MemorySummaryRunOwnerTests/fixture_support.py"
+  },
+  {
+   "id": "tools/MemorySummaryBudgetTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryBudgetTests/source_review.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "subprocess.CalledProcessError: Command '['git', 'show', '155f1b7a:src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs']' returned non-zero exit status 128."
+  },
+  {
+   "id": "tools/MemorySummaryBudgetTests/verify.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "subprocess.CalledProcessError: Command '['git', 'show', '155f1b7a:src/modules/AF.Module.Memory/Summary/MemorySourceFingerprintWriter.cs']' returned non-zero exit status 128."
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_business.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_captured.py",
+   "exit": 2,
+   "status": "PREEXISTING_FAIL",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_commit_writers.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_fingerprint.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_materials.py",
+   "exit": 2,
+   "status": "PREEXISTING_FAIL",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_planning.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_sealing.py",
+   "exit": 2,
+   "status": "PREEXISTING_FAIL",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_terminal.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/run_writers.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/source_parity.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryMainThreadBoundaryTests/test_source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (failures=25)"
+  },
+  {
+   "id": "tools/MemorySummaryRunOwnerTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/MemorySummaryRunOwnerTests/source_parity.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed memory-run dependency: tools/MemorySummaryRunOwnerTests/fixture_support.py"
+  },
+  {
+   "id": "tools/ModelCatalogGatewayReplayTests/ModelCatalogGatewayReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ModuleCatalogContractTests/validate_module_catalog.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ModuleFrameworkApiTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ModuleFrameworkApiTests/source_boundary.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeActionDispatchOutcomeTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeActionDispatchOutcomeTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeCompletionBoundaryTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeCompletionBoundaryTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/owner_extraction.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/run_original.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/run_presentation.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/run_presentation_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/run_presentation_original.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeConversationAdmissionTests/turn_extraction.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeHistorySnapshotTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeHistorySnapshotTests/source_parity.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeModuleSubmissionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativeModuleSubmissionTests/source_boundary.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativePendingHistoryBoundaryTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativePendingHistoryBoundaryTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NativePreparationBoundaryTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Unreviewed game lifetime dependency: tools/GameLifetimeTests/run_bindings.py"
+  },
+  {
+   "id": "tools/NativeTtsFallbackBoundaryTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/NotorietyConversationOutcomeContractTests/NotorietyConversationOutcomeContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PersistenceChunkReplayTests/PersistenceChunkReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PersistenceIdentityAudit.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "PASS with documented --baseline e58f3558 (default d4cb1467 predates WarStats keys): sync=142 behavior=36",
+   "args": [
+    "--baseline",
+    "e58f3558cddfe473f396bb7f11470b05e30afce9"
+   ]
+  },
+  {
+   "id": "tools/PersistenceIdentityAuditContractTests/test_persistence_identity_audit.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/PersistenceMigrationContractTests.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PersistenceProfileConfigContractTests/test_storage_call_parser.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PhaseEightParityReplayTests/PhaseEightParityReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PhaseEightReadiness/entry_inventory.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PhaseEightReadiness/readiness.py",
+   "exit": 2,
+   "status": "NEEDS_INPUT",
+   "last": "readiness.py: error: the following arguments are required: --manifest"
+  },
+  {
+   "id": "tools/PhaseEightReadiness/test_entry_inventory.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/PhaseEightReadiness/test_readiness.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (errors=62)"
+  },
+  {
+   "id": "tools/PhaseEightReadiness/verify_j13_recruitment.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: unreviewed ordinary persona/skill parser/host delta"
+  },
+  {
+   "id": "tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj",
+   "exit": 1,
+   "status": "NEEDS_INPUT",
+   "last": "No PlayerExports packages found."
+  },
+  {
+   "id": "tools/PolicyEffectModule.ContractTests/PolicyEffectModule.ContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PolicyGatewayReplayTests/PolicyGatewayReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PreprocessTopicPromptLab/tests/PreprocessTopicPromptLab.SmokeTests/PreprocessTopicPromptLab.SmokeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/PrimaryLlmGatewayReplayTests/PrimaryLlmGatewayReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionConfiguredHostReplayTests/ProductionConfiguredHostReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionCourierHostReplayTests/ProductionCourierHostReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionDetachedHostReplayTests/ProductionDetachedHostReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionDuelOutcomeReplayTests/ProductionDuelOutcomeReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionEconomyAwareCommitReplayTests/ProductionEconomyAwareCommitReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionEconomyOwnerReplayTests/ProductionEconomyOwnerReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionOptInEntryReplayTests/ProductionOptInEntryReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ProductionValidationProviderReplayTests/ProductionValidationProviderReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/SceneConversationScopeTests/SceneConversationScopeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/SceneConversationScopeTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/SceneGroupReceiptTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePendingAfefFactsOwnerTests/ScenePendingAfefFactsOwnerTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePendingAfefFactsOwnerTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePostprocessParityTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePostprocessParityTests/run_gate.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePostprocessParityTests/run_gate_red.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePostprocessParityTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePostprocessParityTests/run_queue.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePostprocessParityTests/run_queue_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ScenePostprocessParityTests/test_extraction.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/SceneRequestLifetimeRegressionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/SceneRequestLifetimeRegressionTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/SceneRequestLifetimeRegressionTests/test_extraction.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "FAILED (errors=1)"
+  },
+  {
+   "id": "tools/SceneSpeechQueueOwnerTests/SceneSpeechQueueOwnerTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/SceneSpeechQueueOwnerTests/run_mutations.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "RuntimeError: mutation anchor count for reset-keeps-queue: 0"
+  },
+  {
+   "id": "tools/SceneTauntContextContractTests/SceneTauntContextContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/ShoutNetworkSseReplayTests/ShoutNetworkSseReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/TeamModulePortParityTests/run.py",
+   "exit": 1,
+   "status": "PREEXISTING_FAIL",
+   "last": "AssertionError: Owner call parity failed: TeamModuleServices.Policy.TryProcessAcceptedAgendaTag"
+  },
+  {
+   "id": "tools/TtsGatewayReplayTests/TtsGatewayReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/TtsRequestLifetimeRegressionTests/run.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/TtsRequestLifetimeRegressionTests/run_mutations.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/TtsRequestLifetimeRegressionTests/test_wiring.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  },
+  {
+   "id": "tools/WeeklyMemoryMaterialOutcomeContractTests/WeeklyMemoryMaterialOutcomeContractTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/WeeklyReportSchedulePolicy.SmokeTests/WeeklyReportSchedulePolicy.SmokeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/WorldDiplomacyCompression.SmokeTests/WorldDiplomacyCompression.SmokeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/WorldDiplomacyGatewayReplayTests/WorldDiplomacyGatewayReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/WorldDiplomacyIntentBoundary.SmokeTests/WorldDiplomacyIntentBoundary.SmokeTests.csproj",
+   "exit": 3762504530,
+   "status": "PREEXISTING_FAIL",
+   "last": "   at Program.Main() in G:\\AFMOD\\AF-J15\\tools\\WorldDiplomacyIntentBoundary.SmokeTests\\Program.cs:line 454"
+  },
+  {
+   "id": "tools/WorldDiplomacyPolicyHistory.SmokeTests/WorldDiplomacyPolicyHistory.SmokeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/WorldDiplomacyResultSettlement.SmokeTests/WorldDiplomacyResultSettlement.SmokeTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/XihaiClassifierTransportReplayTests/XihaiClassifierTransportReplayTests.csproj",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/af2_migrate.py",
+   "exit": 1,
+   "status": "NEEDS_INPUT",
+   "last": "migration failed: ValueError: --installed-module must name the existing installed AnimusForge module"
+  },
+  {
+   "id": "tools/export_vanilla_text_index.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/generate_bannerlord_history_culture_study.py",
+   "exit": 1,
+   "status": "NEEDS_INPUT",
+   "last": "FileNotFoundError: [Errno 2] No such file or directory: 'docs\\\\vanilla_text_export\\\\Bannerlord_Official_EN_Text_Export.docx'"
+  },
+  {
+   "id": "tools/generate_bannerlord_research_grade_study.py",
+   "exit": 1,
+   "status": "NEEDS_INPUT",
+   "last": "FileNotFoundError: [Errno 2] No such file or directory: 'docs\\\\vanilla_text_export\\\\Bannerlord_Official_EN_Text_Export.docx'"
+  },
+  {
+   "id": "tools/package_policy_system_source_overlay.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/repository_source_inventory.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "--- stderr ---"
+  },
+  {
+   "id": "tools/test_repository_source_inventory.py",
+   "exit": 0,
+   "status": "PASS",
+   "last": "OK"
+  }
+ ],
+ "schemaVersion": 1,
+ "kind": "J16 G0 before-move baseline",
+ "sourceCommit": "79df8ac0",
+ "rule": "After each J16 move, every PASS must stay PASS; non-PASS entries keep their recorded status and are not fixed inside J16.",
+ "statusMeaning": {
+  "PASS": "exit 0",
+  "PREEXISTING_FAIL": "fails on unmodified remote 8af57b39 too (sampled 5/5); mostly stale hash-locked source reviews",
+  "NEEDS_INPUT": "needs explicit data/manifest/baseline not in repo",
+  "SUPERSEDED_BY_RUNNER": "csproj built directly; its sibling run.py supplies references and passes",
+  "ENV_STATE": "reports installed game module differs from Stage (expected before deployment)"
+ },
+ "counts": {
+  "PASS": 203,
+  "SUPERSEDED_BY_RUNNER": 3,
+  "PREEXISTING_FAIL": 38,
+  "ENV_STATE": 1,
+  "NEEDS_INPUT": 5
+ }
+}

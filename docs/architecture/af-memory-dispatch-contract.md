@@ -47,6 +47,6 @@
 
 ## 验证入口
 
-仓库 `tools/MemorySummaryMainThreadBoundaryTests/run.py` 编译实际Host+runtime+契约；`--source-baseline 9617f96a` 编译原Host，执行共同32项；当前执行37项。七类 `--mutate` 定向破坏实际host/runtime的档代、owner、额度和计时防护，必须BUILD_PASS后断言失败。
+仓库 `tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run.py` 编译实际Host+runtime+契约；`--source-baseline 9617f96a` 编译原Host，执行共同32项；当前执行37项。七类 `--mutate` 定向破坏实际host/runtime的档代、owner、额度和计时防护，必须BUILD_PASS后断言失败。
 
 相邻captured/business/planning/writers/sealing/terminal/commit-writers都编入真实dispatcher而不是替身。最终六项Stage、API/元数据和存档身份，以及源码依赖方向门禁另列在本轮HANDOFF。测试修改只是换真实状态的读取位置，不保留假的旧队列字段。

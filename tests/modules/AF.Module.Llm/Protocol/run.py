@@ -20,7 +20,7 @@ if ROOT is None:
     raise RuntimeError("AnimusForge Git root not found")
 BASE_REVISION = "99360142b9b4fa5ca309cadf2cf62b627b1cdda8"
 OUTPUT_ROOT = ROOT / "artifacts/tests/llm-protocol"
-spec = importlib.util.spec_from_file_location("boundary_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+spec = importlib.util.spec_from_file_location("boundary_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extractor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extractor)
 
