@@ -51,6 +51,15 @@ static class Program
                         || calls[0].Expression.ToString() != "WorldDiplomacyWarAdmissionApplication." + method.Identifier.ValueText)
                         errors.Add("war predecessor retains admission policy: " + method.Identifier.ValueText);
                 }
+                if (method.Identifier.ValueText is "HandleDisabledState" or "CommitEmbeddedRoundPlan")
+                {
+                    if (method.Body?.Statements.Count != 1
+                        || method.Body.Statements[0] is not ExpressionStatementSyntax statement
+                        || statement.Expression is not InvocationExpressionSyntax call
+                        || !call.Expression.ToString().StartsWith("WorldDiplomacyRoundApplication.")
+                        || method.DescendantNodes().Any(n => n is IfStatementSyntax or ForEachStatementSyntax or AssignmentExpressionSyntax))
+                        errors.Add("round predecessor retains orchestration: " + method.Identifier.ValueText);
+                }
                 if (!new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument",
                     "FinalizePublishedDocumentAfterAnalysis", "TryIncludeResultSettlementTarget" }.Contains(method.Identifier.ValueText)) continue;
                 var invocations = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
@@ -164,7 +173,7 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
-        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat" })
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan" })
         {
             string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";
             Check(Violations(host, CSharpSyntaxTree.ParseText(injected).GetRoot()).Count > 0, "reject callback-hidden predecessor orchestration: " + name);

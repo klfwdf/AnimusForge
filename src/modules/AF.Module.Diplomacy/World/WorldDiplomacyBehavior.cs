@@ -896,25 +896,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void HandleDisabledState()
 	{
-		_disabledStateApplied = true;
-		if (_storage.ActiveRound != null)
-		{
-			CloseActiveRound("closed_disabled");
-		}
-		if (_storage.ActiveExchange != null)
-		{
-			_storage.ActiveExchange.State = "closed_disabled";
-			_storage.ActiveExchange.CompletedDay = CurrentDay();
-			_storage.ActiveExchange = null;
-		}
-		_storage.SuspendedExchanges.Clear();
-		_storage.Jobs.Clear();
-		foreach (WarPressureEntry entry in _storage.WarPressure.Where(x => x != null)) entry.IsEscalationArmed = false;
-		_storage.ForcedWarToggleWasEnabled = false;
-		// An HTTP task may still be in flight. Keep the runtime request flag until its
-		// completion is dequeued, so re-enabling cannot start a second request.
-		ScheduleNextNormalRoundAfter(CurrentDay());
-		_nativeDiplomacyDecisionQueueSanitized = false;
+		WorldDiplomacyRoundApplication.Disable(_storage, ref _disabledStateApplied, ref _nativeDiplomacyDecisionQueueSanitized,
+			CurrentDay, CloseActiveRound, ScheduleNextNormalRoundAfter);
 	}
 
 	private void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document)
@@ -2809,27 +2792,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void CommitEmbeddedRoundPlan(WorldDiplomacyRound round, WorldDiplomacyDocument root)
 	{
-		if (round == null || root == null || round.RelayPlanned
-			|| !ReferenceEquals(_storage.ActiveRound, round)
-			|| !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
-		Kingdom author = ResolveKingdom(root.AuthorKingdomId);
-		List<string> candidates = GetRoundPlanActionableParticipants(author, round)
-			.Select(x => x.StringId).ToList();
-		WorldDiplomacyJob plan = new WorldDiplomacyJob
-		{
-			RoundId = round.RoundId,
-			DocumentId = root.DocumentId,
-			AuthorKingdomId = root.AuthorKingdomId,
-			CandidateKingdomIds = candidates
-		};
-		JObject json = new JObject
-		{
-			["topic"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(root.PlannedRoundTopic, root.Title, "外交交涉"),
-			["selected_kingdom_ids"] = new JArray(root.PlannedKingdomIds ?? new List<string>())
-		};
-		CommitRoundPlan(plan, json.ToString(Formatting.None));
-		Log("embedded round plan committed round=" + round.RoundId
-			+ " selected=" + string.Join(",", root.PlannedKingdomIds ?? new List<string>()));
+		WorldDiplomacyRoundApplication.CommitEmbeddedPlan(_storage, round, root,
+			(authorId, r) => GetRoundPlanActionableParticipants(ResolveKingdom(authorId), r).Select(x => x.StringId).ToList(),
+			CommitRoundPlan, Log);
 	}
 		private void EnqueueRoundPlanJob(WorldDiplomacyRound round, WorldDiplomacyDocument root)
 	{
