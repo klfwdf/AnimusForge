@@ -26,6 +26,7 @@ internal static class Program
 {
     private static int Main()
     {
+        LlmDispatchApplicationReplay.Run();
         CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
         ProactiveDiscussionApplicationReplay.Run();
@@ -14129,6 +14130,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string behaviorSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
         string proactiveSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyProactiveDiscussionApplication.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs"));
         // Inspect the active host-to-application path after DPL-080 ownership transfer.
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
@@ -15320,11 +15322,12 @@ RunRepairCorrectionAndJobDecisionTests();
             && promptContractSource.Contains("public static JArray BuildLlmMessageArray(", StringComparison.Ordinal)
             && promptContractSource.Contains("Func<long, string> buildCanonicalHistoryBlock", StringComparison.Ordinal),
             "LLM message assembly must live in the prompt contract rules behind a canonical-history port");
-        Test.True(behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(", StringComparison.Ordinal)
+        string dispatchSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
+        Test.True(dispatchSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildLlmMessageArray(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private JArray BuildLlmMessageArray(", StringComparison.Ordinal),
-            "host must delegate LLM message assembly to the prompt contract rules");
+            "LLM dispatch Application delegates message assembly to the prompt contract rules");
 
         Test.True(!behaviorSource.Contains("private static string NormalizeIntent(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string Limit(", StringComparison.Ordinal)
@@ -15602,7 +15605,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "the lifecycle rules must own the participant limit decision");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.GetRoundParticipantLimit(GetActivityLevel(), MaxRelayParticipants)", StringComparison.Ordinal),
             "the host must route the participant limit through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(j, BuildGenerationLegalActionSignature)", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(job, _owner.BuildGenerationLegalActionSignature)", StringComparison.Ordinal)
+            || behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(j, BuildGenerationLegalActionSignature)", StringComparison.Ordinal),
             "the host must route stale presentation checks through the lifecycle rules");
         Test.True(!behaviorSource.Contains("private bool HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildWarNegotiationContext(", StringComparison.Ordinal)
@@ -16175,15 +16179,15 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // R1: completion admission/dispatch now has one Application owner.
         string completionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", StringComparison.Ordinal)
+        Test.True(dispatchSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyCompletionApplication.Run(ref source)", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source)", StringComparison.Ordinal)
             && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", StringComparison.Ordinal),
             "host retains launch but forwards completion admission and dispatch to Application");
-        Test.True(behaviorSource.Contains("_llmRequestLease.IsRunning", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyLlmApplication.PrepareRequest(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyLlmApplication.PrepareRequest(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyLlmApplication.ExecuteAsync(", StringComparison.Ordinal)
             && behaviorSource.Contains("Task.Run(", StringComparison.Ordinal),
-            "async launch remains an explicit residual");
+            "transport launch remains a narrow main-thread adapter");
         Test.True(rulesSource.Contains("ServiceCooldownUntilHour > currentHour", StringComparison.Ordinal)
             && rulesSource.Contains("ResolveCacheAffinityKey(x)", StringComparison.Ordinal)
             && rulesSource.Contains("ThenBy(x => x.CreatedDay)", StringComparison.Ordinal)
@@ -16196,6 +16200,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && completionSource.Contains("unknown job kind", StringComparison.Ordinal),
             "Application owns completion routing and cooldown bookkeeping");
         Test.True(!behaviorSource.Contains("var runnable =", StringComparison.Ordinal)
+            && !behaviorSource.Contains("SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && !behaviorSource.Contains("unknown job kind", StringComparison.Ordinal)
             && !behaviorSource.Contains("truncated generated draft handling failed", StringComparison.Ordinal)
             && !behaviorSource.Contains("ConsecutiveServiceFailures++", StringComparison.Ordinal),

@@ -46,58 +46,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 {
 	private void TryStartNextLlmJob()
 	{
-		if (!IsWorldDiplomacyEnabled() || _llmRequestLease.IsRunning || _storage.Jobs.Count == 0)
-		{
-			return;
-		}
-		WorldDiplomacyJob job = WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(
-			_storage,
-			CurrentHour(),
-			_lastLlmCacheAffinityKey,
-			HasStaleDiplomaticThreatPresentation,
-			RefreshDiplomaticThreatPresentationAndPrompt,
-			j => WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(j, BuildGenerationLegalActionSignature),
-			RefreshDiplomaticActionPresentationAndPrompt,
-			TryRebuildPendingWorldDiplomacyJob,
-			j => { string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(j.AuthorKingdomId), out reason) ? null : reason; },
-			(j, reason) => AbandonRejectedGeneration(j, ResolveKingdom(j.AuthorKingdomId), ResolveKingdom(j.TargetKingdomId), reason),
-			EnsureGenerationJobHasKingdomStrategicProfile,
-			() => { string configError; return WorldDiplomacyLlmClient.IsConfigured(out configError) ? null : configError; },
-			consume => TryConsumeDiplomacyLlmRequestBudget(consume),
-			j => CaptureCanonicalHistoryForJob(j, syncSources: true),
-			j => WorldDiplomacyPromptContractRules.BuildLlmMessageArray(j, BuildCanonicalHistoryBlock),
-			out JArray requestMessages,
-			EnsureRequestFitsInputBudget,
-			CommitFailedJob,
-			RemoveJob,
-			Log);
-		if (job == null)
-		{
-			return;
-		}
-		long generation = _runtimeGeneration;
-		int requestTimeoutMilliseconds = WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "compress")
-			? DuelSettings.LlmRequestTimeoutMilliseconds
-			: DefaultApiTimeoutMilliseconds;
-		if (!_llmRequestLease.TryClaim(job.JobId, generation, job.MaxTokens, requestTimeoutMilliseconds, out WorldDiplomacyRequestSnapshot request))
-		{
-			job.IsRunning = false;
-			Log("world diplomacy request claim rejected job=" + (job.JobId ?? "") + " generation=" + generation);
-			return;
-		}
-		job.IsRunning = true;
-		job.CacheAffinityKey = WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(job);
-		_lastLlmCacheAffinityKey = job.CacheAffinityKey;
-		LogPromptCacheShape(job);
-		LlmGenerateRequest detachedRequest = WorldDiplomacyLlmApplication.PrepareRequest(
-			request, requestMessages);
-		ILlmGateway gateway = new LegacyWorldDiplomacyLlmGateway();
-		_ = Task.Run(async delegate
-		{
-			LlmJobResult result = await WorldDiplomacyLlmApplication.ExecuteAsync(
-				request.JobId, detachedRequest, gateway, CancellationToken.None).ConfigureAwait(false);
-			_completedJobs.Enqueue(result);
-		});
+		var source = new LlmDispatchSource(this);
+		WorldDiplomacyLlmDispatchApplication.Run(ref source);
 	}
 
 	private void ProcessCompletedJobs()

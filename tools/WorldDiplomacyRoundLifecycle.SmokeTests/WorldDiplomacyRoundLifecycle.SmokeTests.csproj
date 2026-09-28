@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs" Link="WorldDiplomacyLlmDispatchApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs" Link="WorldDiplomacyCompletionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionCallbacks.cs" Link="WorldDiplomacyCompletionCallbacks.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs" Link="WorldDiplomacyLlmResult.cs" />
