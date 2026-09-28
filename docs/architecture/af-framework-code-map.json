@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "280b8e2efdee69d7ac9883038f05200e52537844",
+  "sourceRevision": "803a09d33c8329677e091e3989033b2fadc16c7e",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
