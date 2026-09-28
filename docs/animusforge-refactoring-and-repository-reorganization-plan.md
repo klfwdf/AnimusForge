@@ -1,11 +1,22 @@
 <a id="j15-remote-reconcile-20260928"></a>
 
-## J15 同源重复收尾的远端合并（2026-09-28，MERGE_VERIFY）
+## J15 同源重复收尾的远端合并（2026-09-28，MERGE_OFFLINE_VERIFIED）
 
 - 用户先要求推送，再确认检查合并；本地 `d6dc17f8` 与远端 `e7936b04` 从 `8af57b39` 分叉，分别有 8/4 个独有提交。只做普通 merge，不 rebase/reset/强推；不重复执行旧 GUI 删除、归档或 J15 产品工作。
 - 三方预演仅冲突 `HANDOFF.md`、内容 runner `run.py`、编辑器 smoke `Program.cs`。六张 GUI 与 overlay 脚本最终字节/缺失状态相同。合并保留本地最新计划、恢复测试和额外断言，接纳远端工具路径/换行可移植性与更完整编辑器用例，保持已有路径安全约束；历史证据注明来源，不把远端运行当本机验证。
 - 不改产品 C#、项目、配置、构建覆盖方式或真实玩家数据。合并前意图作本地检查点；验证受影响脚本/测试与文档后再提交。完整编辑器测试需要全新仓外合成根，未获得本轮精确授权前不创建、不写入；不无参数运行旧全量 smoke，不清理任何既有根。
 - 远端 HANDOFF 新增 TPAC“用户声明自制/有授权”的记录应保留来源及待补出处，与当前实机/旧档/发布门槛分开；不照抄其外机路径、历史安装/部署指令或证据状态。
+
+### 本轮合并结果与复验证据
+
+- 普通 merge 以本地意图 `863386b4` 和远端 `e7936b04` 为父历史，未 rebase/强推/重写提交；重复 GUI 删除和 overlay 结果不重复操作。最终仅整合三处冲突及远端 README，本地 FullStageManagedDeployContractTests、DataPaths 改动、完整 AF 2.0 计划/owner matrix/范围图保留。
+- `run.py` 合并远端 LF/CRLF 归一和 `AF_J15_PWSH`/`AF_J15_DOTNET8`，保留本地六项精确数量、overlay 禁入断言，同时保留远端“六项来自旧 HOLD 集合”断言。不修改默认工具路径，不跳过内容断言。
+- 编辑器 smoke 使用远端九步完整用例，合并本地首次包列表唯一、恢复时独立备份/旧字节和路径拒绝约束：root/环境路径必须绝对、data 为 root/data、TEMP/TMP/进程临时根必须同一已存在目录；接受原 temp 和远端示例 tmp 目录名，安全边界不依赖名字。保留远端 reparse 拒绝、真实玩家根前后快照、无清理和全部额外测试。
+- 本轮用户明确批准新建 `E:/AF-J15-merge-smoke-20260928-a`；创建前确认不存在、祖先无 reparse。当前合并源码的编辑器 Core/SmokeTests 以系统 SDK 10.0.400 在仓内全新 `artifacts/j15-content/merge-verification-20260928-a/build` 构建，0 warning/error；NuGet/CLI home/TEMP 与空本地 restore 源均在该仓内根，未安装 SDK 或改游戏项目。构建日志为该根 `editor-build.log`。
+- 获准外部合成根保存 `full-smoke.log`：九步通过、`real_root_unchanged=1`；missing/relative root、TEMP 越界、TEMP/TMP 不一致、relative data、既有 exports 六个负例均按预期写入前拒绝；两个路径模式通过，`--backup-contract merge-20260928-a` 的连续 12 次独立备份及坏 JSON 保留通过。外部合成根和仓内新 fixture 全部保留，不清理，不打印玩家内容。
+- 内容 runner 五项静态核验通过（映射/资源、项目资源、脚本接线、格式/引用、inventory/overlay），六项设计源 LF/CRLF hash 一致；直接执行 main 的默认/覆盖路径两次路由核验，**子命令被拦截而非运行**。因此不把 main 打印的 PASS 计为本轮完整 PowerShell 部署故障矩阵或 GCCZ loader 重跑。该部分源码未改，旧证据仍按原候选记录。
+- 文档当前入口/链接、无冲突标记、差异白名单及 `git diff --check` 已核对。产品 C#/项目/配置/一键脚本未改变；没有本轮游戏构建、实际部署、provider、实机/旧档测试，不提升 J15 或全主体重构结项状态。
+- 远端 `e7936b04` 的 TPAC 授权声明、编辑器与构建记录作为带来源的历史补充收录在 HANDOFF；不将外机日志/路径或“未推送”等旧状态当作本机当前事实。用户原推送请求仍以普通快进推送执行，若远端再次分叉则停止并重新核对，不覆盖他人提交。
 
 <a id="af2-closeout-plan-20260928"></a>
 

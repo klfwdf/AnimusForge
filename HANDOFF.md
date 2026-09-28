@@ -1,3 +1,12 @@
+# 当前交接：J15 并行收尾已对齐，合并离线复验通过（2026-09-28）
+
+- **当前计划不变**：[AF 2.0 责任结项计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)仍为唯一执行口径；当前是普通 merge 核验，不是重复 J15 产品施工。范围、父提交和结果见[合并回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-remote-reconcile-20260928)。
+- **证据区分**：下方远端作者记录了 TPAC“用户声明自制/有授权”，作为有来源的补充保留，具体出处待补；不能继续仅因未读取远端记录就称“完全没有来源声明”，也不把该声明等同本机核验或所有模型/素材的再分发许可。远端六构建/Stage/编辑器运行只按其候选引用，不当成本机本轮测试。发布和真实游戏/旧档状态仍单列。
+- **本轮实测**：合并后的编辑器 Release 构建 0 warning/error；获准合成根九步完整 smoke、六安全反例、两路径模式及 12 次备份通过，真实玩家根不变。内容静态核验和 LF/CRLF 通过；CLI 路由的子命令被拦截，不宣称重跑完整部署矩阵。详证只见上述合并回执。
+- **合并约束**：保留双方有效测试和本地最新计划，不强推、不改历史、不写真实游戏/玩家包、不改默认覆盖方式；未跟踪 `.dotnet-cli-home/` 保持。完整测试只使用本轮获准的全新 `E:/AF-J15-merge-smoke-20260928-a`，不清理。
+
+## 以下为本地已交付计划与历史证据
+
 # 当前交接：AF 2.0 结项计划已重整，产品职责尚未全部迁完（2026-09-28）
 
 - **本轮仅文档**：`PLAN_READY / RESPONSIBILITY_AUDIT_PENDING / PRODUCT_REFACTOR_NOT_COMPLETE`。当前解释、历史 supersession、R01–R09 初始登记与 20 桶全量盘点要求见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)，源码核实见[范围图 E01–E08](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。这不是产品重构或全量审查已完成。
@@ -496,3 +505,17 @@
 - **下一条具体动作**：按[原计划](docs/plans/j13-domain-owners-plan.md)进入 **e3 Encounter**，先按军团会面目标案例审选中军团成员优先、合法 `_targetHero` 保留、释放授权/超时、pending 回调的换 party/Mission/save 失效和原 patch/注册，再逐切片迁 owner 与行为/聚合契约；随后 e4、e5，不提前 J14。`.dotnet-cli-home/` 保留；无 push、Stage、部署、打包、写游戏/外仓或改自动化。
 
 ## 以下为 e1 交接（历史）
+
+## 远端并行收尾的独有记录（来源 e7936b04；不覆盖当前状态或授权）
+
+# 远端时点交接：J15 离线收口（F4-U 0 HOLD、F4-A 许可由用户声明、F5 离线重验）；F5 实机待部署 1.4.7（2026-09-28）
+
+- **F4-U 完成**：经用户批准，最后 6 项旧 GUI（`af_courier_scroll_version_a`、notoriety `background.png.tmp` / `culture_panel_patch`、`af_scroll_quill`、旧 `af_world_diplomacy_notice`、`af_vassalage_notifications_1` SpriteSheet，共 5,152,346 字节）逐项 SHA 备份到忽略的 `local/j15-gui-archive-20260928/legacy-unused/`（含 manifest）后退出活动树，`e3140bb1`。无消费者依据：运行期 sprite 加载器按精确文件名读 `content/modules` 下的正式版；`af_terminal` 类无引用；vassalage 旧图集在 `e4b1079c` 删掉 Config.xml 类别后不再加载，原版 `SpriteData.LoadFromDepot` 只为 `*SpriteData.xml` 声明的类别加载 `SpriteSheets`（模块现无此类文件）。policy overlay 不再打包旧通知图。runner **HOLD 6 → 0**。
+- **F4-A 许可**：用户 2026-09-28 声明 `pack0.tpac`（1,671,304 字节，含 `nacisword1`）为“我们自制/有授权”；以此作为来源依据记录，具体出处文字待补。11.2 MB 历史 manifest 与当前包身份不符的问题保留为历史说明，不影响当前唯一权威源。实机动作视觉归 F5。
+- **可移植性修正** `3b4a905c`：六项 Economy 设计源锁的是作者机器的 CRLF 工作区字节（README 连作者当前字节都不符），新 checkout 必失败；改锁已提交 LF blob 并做 CRLF→LF 归一。runner 的 pwsh/dotnet8 路径可用 `AF_J15_PWSH`/`AF_J15_DOTNET8` 覆盖。
+- **F5 离线重验（候选 `e3140bb1`）**：六构建 Debug/Release × 1.3（v1.3.15.110062）/1.4（v1.4.7.117484，从 E: 游戏只读复制到忽略的 `.tmp/refs-1.4.7`）+ Bootstrap 全部 0 警告 0 错误；J15 内容 runner 全新根 `artifacts/j15-content/f4u-unused-retirement-20260928-a` **108 mappings / 0 holds PASS**（含内容布局、Prompt 投影、ManagedDeploy 回滚/中断/未知哨兵、PlayerExports 部署、GCCZ loader）；inventory `unknown=0` PASS；Release Stage 124 项；StaticVerifier 对该 Stage + E: 游戏根 **13/0**；编辑器隔离 smoke 见下。工具：pwsh 7.4.6 装到仓外 `G:\AFMOD\.pwsh7\`，dotnet8 用 `G:\AFMOD\.dotnet-sdk\`。
+- **F5 实机**：本机只有 1.4.7；1.3 线 LIVE/SAVE 在此机 NOT-RUN。1.4.7 部署待用户确认备份与写入清单。J15 完整完成仍取决于 F5 实机与旧档。未推送。
+
+- **O2 编辑器完整 smoke PASS（离线合成数据）**：远端作者未推送的 `--isolated-full` 改动不可得，已在 `tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs` 重新实现：要求合成根预先存在、无 reparse，且 `ANIMUSFORGE_DATA_ROOT`/`TEMP`/`TMP` 全在其内，否则写入前拒绝；覆盖建包、知识规则新建/编辑+备份、人设新建/编辑+备份、原始 JSON 编辑、坏 JSON 保留、从备份恢复、包列表新旧排序、单文件/数据类型/整包软删除、4 类越界写入拒绝、最终加载校验与条件目录，并比对真实 `%LOCALAPPDATA%\AnimusForge\UserData\PlayerExports` 前后不变；不清理，保留证据。旧删除 fixture 改为 `<root>/UserData/PlayerExports` 规范路径（旧写法在当前拒写校验下必然失败）。
+- 证据：用户批准的全新根 `E:\AF-J15-editor-smoke-20260927-a\`（运行前确认不存在），`smoke.log` 为 `steps=9 real_root_unchanged=1`，退出 0；所有写入仅在其 `data/` 下。SDK：系统 dotnet 无 SDK，新装官方 10.0.400 到仓外 `G:\AFMOD\.dotnet-sdk10\`；Release 构建 0 警告 0 错误；`--path-contract`、`--path-contract-invalid` 回归 PASS；缺根、TEMP 越界两个反例在写入前拒绝。
+- 仍然：只证明独立编辑器冷路径，不是游戏内导入导出或真实玩家库验收；F4-A 来源/再分发权与实机视觉、F4-U 六项 GUI + 三张 atlas HOLD、F5 两版本实机/旧档仍 NOT-RUN；J15 不标完成。未部署、未推送。
