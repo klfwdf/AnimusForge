@@ -7,7 +7,7 @@ import subprocess
 import uuid
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 SOURCES = ROOT / "src/AF.Foundation.Runtime/Diagnostics"
 OUTPUT = ROOT / "artifacts/tests/j02-diagnostics-a/mutations" / uuid.uuid4().hex
 OUTPUT.mkdir(parents=True, exist_ok=False)
@@ -29,7 +29,7 @@ MUTATIONS = (
 def run_case(label, mutation=None):
     case = OUTPUT / label
     case.mkdir()
-    (case / "Program.cs").write_bytes((ROOT / "tools/J02DiagnosticsBoundaryTests/Program.cs").read_bytes())
+    (case / "Program.cs").write_bytes((ROOT / "tests/AF.Foundation.Runtime/J02DiagnosticsBoundaryTests/Program.cs").read_bytes())
     for name in NAMES:
         source = (SOURCES / f"{name}.cs").read_text(encoding="utf-8-sig")
         if mutation and mutation[1] == name:
