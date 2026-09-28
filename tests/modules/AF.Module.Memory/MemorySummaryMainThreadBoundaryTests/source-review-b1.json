@@ -1508,7 +1508,7 @@
       ],
       "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
       "additionalTestSourceSha256": {
-        "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
+        "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a",
         "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_captured.py": "10fd314bb61a788bc55cc4f3816a007be3c75387cf14806f0f91aef8e9bcd99c",
         "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt": "1aee2605dd00c87e5e7cf7a2a92516d06f7b9daa177fb7acf964cb163b5ea8a1"
       },
@@ -1906,7 +1906,7 @@
       ],
       "inverseScope": "Only these exact reviewed source inputs; B1 budget, final combined build and LIVE/SAVE acceptance remain separate.",
       "additionalTestSourceSha256": {
-        "tools/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a"
+        "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py": "8eef5638eb7d19790325f6bfef28cd4f00e064fdbbdf62967d369af71d43231a"
       },
       "preExtraction": {
         "revision": "c21523f8",

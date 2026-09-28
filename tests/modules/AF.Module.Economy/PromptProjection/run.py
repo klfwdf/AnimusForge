@@ -17,7 +17,7 @@ DEBT_LEDGER = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavior.De
 
 
 def load_declaration():
-    path = ROOT / "tools/ChannelCutoverBoundaryTests/run.py"
+    path = ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py"
     spec = importlib.util.spec_from_file_location("economy_projection_decl", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

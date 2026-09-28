@@ -18,7 +18,7 @@ def main():
     args = ap.parse_args()
     if args.writer_baseline and args.mutate:
         raise ValueError('Baseline and mutation are exclusive')
-    spec = importlib.util.spec_from_file_location('extract', ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+    spec = importlib.util.spec_from_file_location('extract', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     ex = importlib.util.module_from_spec(spec); spec.loader.exec_module(ex)
     read = lambda path: (ROOT/path).read_text(encoding='utf-8-sig')
     root = read('MyBehavior.cs'); capture = read('MyBehavior.MemorySummaryInput.cs')

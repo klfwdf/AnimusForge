@@ -27,7 +27,7 @@ Hero / Character、场景与无 Agent 的会面、文化 neutral fallback、已�
 
 ## 对照证据
 
-`tools/NativePreparationBoundaryTests` 同时执行原始健康准备片段与候选实际片段，对比 48 组 Hero/NonHero × Scene/Map × 分支输入的全部返回字段和 helper 调用顺序/参数；589 检查 / 5 个行为变异。
+`tests/modules/AF.Module.Conversation/NativePreparationBoundaryTests` 同时执行原始健康准备片段与候选实际片段，对比 48 组 Hero/NonHero × Scene/Map × 分支输入的全部返回字段和 helper 调用顺序/参数；589 检查 / 5 个行为变异。
 
 实际共用 runner 被提取执行；游戏 helper 与 admission 判定是记录型 fixture。原 admission 的生命周期行为另由 44 检查验证，静态接线仍核对 6 个原位 + 1 个捕获内守卫，不能将 fixture 的 Current bool 冒充真实存档代际。
 

@@ -18,7 +18,7 @@ def main():
     if a.run_mutate and (not a.run_scope_cases or a.mutate or a.source_baseline):raise ValueError('Run mutations require isolated run-scope-cases mode')
     if a.admission_mutate and not a.admission_only:raise ValueError('Admission mutations require --admission-only')
     if a.admission_only and (a.mutate or a.source_baseline):raise ValueError('Admission observation is independent of source-check mutations and baselines')
-    capture=module('terminal_capture_inventory',HERE/'run_captured.py');business=module('terminal_business_inventory',HERE/'run_business.py');ex=module('terminal_extractor',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+    capture=module('terminal_capture_inventory',HERE/'run_captured.py');business=module('terminal_business_inventory',HERE/'run_business.py');ex=module('terminal_extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     manifest=[]
     def read(name):
         data=(ROOT/name).read_text(encoding='utf-8-sig');manifest.append(dict(file=name,sha256=hashlib.sha256(data.encode()).hexdigest()));return data

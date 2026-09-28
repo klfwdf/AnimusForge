@@ -2,7 +2,7 @@
 from pathlib import Path
 import importlib.util,subprocess,unittest
 ROOT=Path(__file__).resolve().parents[4]
-spec=importlib.util.spec_from_file_location('inverse',ROOT/'tools/NativeConversationAdmissionTests/owner_extraction.py');inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
+spec=importlib.util.spec_from_file_location('inverse',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py');inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
 class ClaimSourceTests(unittest.TestCase):
     def test_all_changes_restore_previous_source_exactly(self):
         for path in inverse.CLAIM_REVIEW['files']:

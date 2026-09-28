@@ -5,7 +5,7 @@ import argparse,importlib.util,os,subprocess,re
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['skip-stage-stop','duplicate-commit','skip-capture-guard','capture-on-worker','normalize-on-worker','swallow-capture-failure']);a=p.parse_args()
-spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(f):return (ROOT/f).read_text(encoding='utf-8-sig')
 owner=read('ShoutBehavior.NativeTurn.cs');capture=ex.declaration(owner,'private async Task<bool> CaptureOnGameThreadAsync(')
 commit=read('ShoutBehavior.NativeTurnCommit.cs')

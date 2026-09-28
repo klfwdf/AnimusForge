@@ -18,7 +18,7 @@ def load(name, path):
     return module
 
 
-extract = load('host_tick_declaration', 'tools/ChannelCutoverBoundaryTests/run.py').declaration
+extract = load('host_tick_declaration', 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py').declaration
 inverse = load('host_source_inverse', 'tests/AF.GameAdapter.Bannerlord/HostCompositionTests/source_inverse.py')
 util = load('host_dotnet', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 

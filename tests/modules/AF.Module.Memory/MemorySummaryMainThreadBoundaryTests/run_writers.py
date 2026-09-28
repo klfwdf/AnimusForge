@@ -37,7 +37,7 @@ def main():
     parser.add_argument("--mutate", choices=["worker-direct", "omit-copy", "omit-volunteer-copy"])
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
-    spec = importlib.util.spec_from_file_location("channel_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+    spec = importlib.util.spec_from_file_location("channel_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
     inventory = []

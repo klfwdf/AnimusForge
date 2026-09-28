@@ -6,7 +6,7 @@ import os
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
-SPEC = importlib.util.spec_from_file_location("boundary_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+SPEC = importlib.util.spec_from_file_location("boundary_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 EXTRACTOR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(EXTRACTOR)
 

@@ -20,8 +20,8 @@ python -X utf8 -B tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run.py
 python -X utf8 -B tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_bindings.py
 python -X utf8 -B tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_commit.py
 python -X utf8 -B tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_memory.py
-python -X utf8 -B tools/NativeActionDispatchOutcomeTests/run.py
-python -X utf8 -B tools/NativeCompletionBoundaryTests/run.py
+python -X utf8 -B tests/modules/AF.Module.Conversation/NativeActionDispatchOutcomeTests/run.py
+python -X utf8 -B tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/run.py
 ```
 
 `run.py` 默认还运行 12 个生产行为故障变体，必须是编译成功后断言失败，不能把编译错误计作反例。

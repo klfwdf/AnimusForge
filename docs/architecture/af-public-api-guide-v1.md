@@ -126,6 +126,6 @@ Scene 使用原 `ProcessCapturedScenePlayerShoutAsync` 与每 Hero 群组链，�
 
 ## 离线证据与未验证边界
 
-`tools/NativeModuleSubmissionTests/README.md` 记录真实入口、物理主/后台线程、重复、取消、会话切换与失败回执测试。Provider正文、游戏动作及记忆底层是显式 fixture；不是完整 LLM/真实 Bannerlord 验收。
+`tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/README.md` 记录真实入口、物理主/后台线程、重复、取消、会话切换与失败回执测试。Provider正文、游戏动作及记忆底层是显式 fixture；不是完整 LLM/真实 Bannerlord 验收。
 
 Scene 与 Courier 离线证据包括真实源码群组/运输/退休 owner、独立外部消费者、显式枚举重排和兼容构建；详见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)。Courier 消费者执行真实准入/到达/提交接受/信件确认/运输收尾方法，但底层游戏资产、provider 和最低层 writer 为 fixture。三渠道均不增加每帧全请求扫描，性能仍须实测。J14c 已通过最终四实现/旧 ABI/真实记忆回读/当前 DLL 回放及代码地图两模式。旧 Native 消费者先对基线 V1 编译，再以同一消费者二进制运行当前源码链接宿主；四游戏实现另验元数据，不把它们等同于游戏加载。独立子 MOD 实机加载、两版本 LIVE、真实旧 SAVE、provider、音频和帧性能分别 NOT-RUN，不是发布 READY。

@@ -38,7 +38,7 @@ def read(path):
 def restore_reviewed_nonport_deltas(path, current, prior):
     # Preserve the strict original whole-file proof without freezing unrelated Native evolution.
     # Only these hash-frozen, separately behavior-tested declarations can differ; a future edit fails.
-    spec = importlib.util.spec_from_file_location("native_delta_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+    spec = importlib.util.spec_from_file_location("native_delta_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec); spec.loader.exec_module(extractor)
     # Restore only the separately reviewed B1 migration first. It verifies production and
     # evidence sources and whole-file equivalence; no removed method is silently skipped.
@@ -46,11 +46,11 @@ def restore_reviewed_nonport_deltas(path, current, prior):
     memory = importlib.util.module_from_spec(spec); spec.loader.exec_module(memory)
     current = memory.restore_memory_summary_source(path, current)
     if path == "ShoutBehavior.cs":
-        spec = importlib.util.spec_from_file_location("channel_persona_inverse", ROOT / "tools/ChannelPersonaPreparationTests/source_parity.py")
+        spec = importlib.util.spec_from_file_location("channel_persona_inverse", ROOT / "tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/source_parity.py")
         persona = importlib.util.module_from_spec(spec); spec.loader.exec_module(persona)
         current = persona.restore(path, current)
     if path == "CourierDeliveryBehavior.cs":
-        spec = importlib.util.spec_from_file_location("courier_history_inverse", ROOT / "tools/CourierHistoryPreparationTests/source_parity.py")
+        spec = importlib.util.spec_from_file_location("courier_history_inverse", ROOT / "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/source_parity.py")
         courier_history = importlib.util.module_from_spec(spec); spec.loader.exec_module(courier_history)
         current = courier_history.restore(current)
     review = json.loads((HERE / "reviewed-native-admission-deltas.json").read_text(encoding="utf-8"))

@@ -4,7 +4,7 @@ import argparse, hashlib, importlib.util, os, re, subprocess, sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
-spec = importlib.util.spec_from_file_location('extraction', ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+spec = importlib.util.spec_from_file_location('extraction', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 extractor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extractor)
 

@@ -10,7 +10,7 @@ def load(name, path):
     return module
 
 util = load('util', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
-ex = load('ex', 'tools/ChannelCutoverBoundaryTests/run.py')
+ex = load('ex', 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--original-callbacks', action='store_true')
 p.add_argument('--skip-mutations', action='store_true')

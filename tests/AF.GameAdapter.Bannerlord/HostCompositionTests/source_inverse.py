@@ -8,7 +8,7 @@ BASELINE = '3706e87dfc4be2cf150b9f45f029e7f105a28fd3'
 DEST = ROOT / 'src/AF.GameAdapter.Bannerlord/Composition'
 MOVED = ('CampaignComposition.cs', 'CampaignModelComposition.cs',
          'ModuleFrameworkRuntime.cs', 'TeamModuleRegistration.cs', 'TeamModuleServices.cs')
-spec = importlib.util.spec_from_file_location('host_declaration', ROOT / 'tools/ChannelCutoverBoundaryTests/run.py')
+spec = importlib.util.spec_from_file_location('host_declaration', ROOT / 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 extractor = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extractor)
 declaration = extractor.declaration

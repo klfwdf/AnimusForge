@@ -27,7 +27,7 @@ class InverseGuards(unittest.TestCase):
         self.assertEqual(BASELINE, inverse.restore_memory_summary_source("MyBehavior.cs", SOURCE))
 
     def test_queue_normalization_body_is_exact_old_semantics(self):
-        spec = importlib.util.spec_from_file_location("normalizer_extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+        spec = importlib.util.spec_from_file_location("normalizer_extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(extractor)
         for model, suffix, day in [("MemorySummaryJob", "MemorySummaryQueue", "GameDayIndex"),
@@ -44,7 +44,7 @@ class InverseGuards(unittest.TestCase):
         review = REVIEW["rawSourceFingerprintReview"]
         text = (ROOT / review["inputPath"]).read_text(encoding="utf-8-sig")
         baseline = subprocess.check_output(["git", "show", review["baseline"] + ":" + review["inputPath"]], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
-        spec = importlib.util.spec_from_file_location("raw_input_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+        spec = importlib.util.spec_from_file_location("raw_input_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(extractor)
         for item in review["inputDeclarations"]:
@@ -56,7 +56,7 @@ class InverseGuards(unittest.TestCase):
         self.assertEqual(text, baseline)  # Includes unchanged generic JSON/editor/plan hash and async/parse/release bodies.
 
     def test_single_draft_line_and_bind_are_exact_previous_bodies(self):
-        spec = importlib.util.spec_from_file_location("draft_entry_extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+        spec = importlib.util.spec_from_file_location("draft_entry_extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         extractor = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(extractor)
         old = subprocess.check_output(["git", "show", "40b92e67:MyBehavior.cs"], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
@@ -120,7 +120,7 @@ class InverseGuards(unittest.TestCase):
 
     def test_deleted_original_cannot_return(self):
         extractor = importlib.util.spec_from_file_location(
-            "guard_extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+            "guard_extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
         module = importlib.util.module_from_spec(extractor)
         extractor.loader.exec_module(module)
         body = module.declaration(BASELINE, "private bool HasPastDailyMemoryDrafts(")

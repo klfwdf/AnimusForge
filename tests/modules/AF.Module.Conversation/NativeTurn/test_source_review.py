@@ -3,7 +3,7 @@ import hashlib, importlib.util, unittest
 from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[4]
-spec=importlib.util.spec_from_file_location('turn',ROOT/'tools/NativeConversationAdmissionTests/turn_extraction.py')
+spec=importlib.util.spec_from_file_location('turn',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/turn_extraction.py')
 turn=importlib.util.module_from_spec(spec);spec.loader.exec_module(turn)
 
 class TurnSourceTests(unittest.TestCase):

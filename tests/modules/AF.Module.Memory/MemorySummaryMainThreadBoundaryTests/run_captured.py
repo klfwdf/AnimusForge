@@ -15,7 +15,7 @@ MUTATIONS=['retain-payload','reuse-source','ignore-fingerprint','worker-parse','
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--source-baseline',choices=['8bcde78b']);ap.add_argument('--observe-rebuilds',action='store_true');a=ap.parse_args()
     sys.stdout.reconfigure(encoding='utf-8')
-    spec=importlib.util.spec_from_file_location('capture_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+    spec=importlib.util.spec_from_file_location('capture_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     def read(path):return subprocess.check_output(['git','show',a.source_baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if a.source_baseline else (ROOT/path).read_text(encoding='utf-8-sig')
     if a.source_baseline and a.mutate:raise ValueError('Baseline and mutation are exclusive')
     source=read('MyBehavior.cs');snippets=[];manifest=[]

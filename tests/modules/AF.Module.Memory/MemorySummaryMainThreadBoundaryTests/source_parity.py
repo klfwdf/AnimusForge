@@ -50,7 +50,7 @@ def restore_memory_summary_source(path, source):
     persona = importlib.util.module_from_spec(persona_spec); persona_spec.loader.exec_module(persona)
     source = persona.restore(source, strict=False)
     review = json.loads((HERE / 'source-review-b1.json').read_text(encoding='utf-8'))
-    spec = importlib.util.spec_from_file_location('b1_declaration_extractor', ROOT / 'tools/ChannelCutoverBoundaryTests/run.py')
+    spec = importlib.util.spec_from_file_location('b1_declaration_extractor', ROOT / 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
     # The inverse is permitted only for the exact separately tested harness/runner.

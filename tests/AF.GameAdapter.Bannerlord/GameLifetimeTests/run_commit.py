@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,importlib.util,os,subprocess
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).parent
 spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
-spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['drop_claim','expire_claimed','skip_retirement']);a=p.parse_args()
 out=HERE/'.generated'/('commit-original' if a.original else 'commit-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
 source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CommitDispatch.cs').read_text(encoding='utf-8-sig')
