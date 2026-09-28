@@ -9,5 +9,6 @@
     <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyDeclareWarContracts.cs" Link="WorldDiplomacyDeclareWarContracts.cs" />
     <Compile Include="..\..\Refactor\Domain\WorldDiplomacyOralDeclareWarRules.cs" Link="WorldDiplomacyOralDeclareWarRules.cs" />
     <Compile Include="..\..\Refactor\Modules\WorldDiplomacyDeclareWarCommandFacade.cs" Link="WorldDiplomacyDeclareWarCommandFacade.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Application\DiplomacyOralDeclareWarApplication.cs" Link="DiplomacyOralDeclareWarApplication.cs" />
   </ItemGroup>
 </Project>
