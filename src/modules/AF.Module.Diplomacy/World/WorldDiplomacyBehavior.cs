@@ -1729,18 +1729,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom target,
 		bool recordTargetDecisions = true)
 	{
-		WorldDiplomacyRoundLifecycleRules.ProcessDiplomaticThreatDocument(
-			document,
-			author?.StringId,
-			target?.StringId,
-			recordTargetDecisions,
-			_storage?.DiplomaticThreats,
-			CurrentDay(),
-			UltimatumWarPrestigeReward,
-			(d, a, t, intent) => RecordDiplomaticThreatTargetDecisions(d, ResolveKingdom(a), ResolveKingdom(t), intent),
-			(d, a, t, intent) => RegisterOrAdvanceDiplomaticThreat(d, ResolveKingdom(a), ResolveKingdom(t), intent),
-			(d, a, t) => ResolveDiplomaticThreatCompliance(d, ResolveKingdom(a), ResolveKingdom(t)),
-			(kid, delta, d, reason) => ApplyNationalPrestigeDelta(kid, delta, d, reason));
+		WorldDiplomacyThreatBindingApplication.Process(_storage, document, author?.StringId, target?.StringId, recordTargetDecisions, new ThreatBindingPort(this));
 	}
 	private bool DeferUnresolvedRequiredThreatAction(
 		WorldDiplomacyDocument document,
@@ -1767,37 +1756,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom threatTarget,
 		out WorldDiplomacyPolicySignal selected)
 	{
-		selected = null;
-		if (document == null || threatIssuer == null || threatTarget == null || threatIssuer == threatTarget)
-		{
-			return false;
-		}
-		WorldDiplomacyRound round = ResolveRound(document.RoundId);
-		List<WorldDiplomacyPolicySignal> matches = new List<WorldDiplomacyPolicySignal>();
-		foreach (WorldDiplomacyPolicySignal signal in round?.AttachedPolicySignals ?? new List<WorldDiplomacyPolicySignal>())
-		{
-			if (!WorldDiplomacyRoundLifecycleRules.IsPolicySignalEligibleForThreatBinding(signal)
-				|| !DiplomacyModuleServices.Policy.IsForeignPolicySignalActive(
-					signal.PolicyId,
-					signal.IssuerKingdomId,
-					signal.TargetKingdomId))
-			{
-				continue;
-			}
-			Kingdom policyOwner = ResolveKingdom(signal.IssuerKingdomId);
-			Kingdom affectedKingdom = ResolveKingdom(signal.TargetKingdomId);
-			Kingdom policyOwnerRepresentative = ResolveWorldDiplomacyRepresentative(policyOwner);
-			Kingdom affectedRepresentative = ResolveWorldDiplomacyRepresentative(affectedKingdom);
-			if (!WorldDiplomacyRoundLifecycleRules.IsThreatPolicyPartyMatch(
-				policyOwnerRepresentative?.StringId, affectedRepresentative?.StringId,
-				threatTarget.StringId, threatIssuer.StringId))
-			{
-				continue;
-			}
-			matches.Add(signal);
-		}
-		selected = WorldDiplomacyRoundLifecycleRules.SelectUniquePolicySignal(matches);
-		return selected != null;
+		return WorldDiplomacyThreatBindingApplication.TryResolvePolicyConditionForThreat(document, threatIssuer?.StringId, threatTarget?.StringId, new ThreatBindingPort(this), out selected);
 	}
 	private bool RegisterOrAdvanceDiplomaticThreat(
 		WorldDiplomacyDocument document,
@@ -1805,21 +1764,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom target,
 		string stage)
 	{
-		if (document == null || issuer == null || target == null || issuer == target) return false;
-		return WorldDiplomacyRoundLifecycleRules.RegisterOrAdvanceDiplomaticThreat(
-			document, issuer.StringId, target.StringId, stage,
-			() =>
-			{
-				_storage.DiplomaticThreats ??= new List<WorldDiplomacyThreat>();
-				return _storage.DiplomaticThreats;
-			},
-			CurrentDay(), WarningEscalationPrestigeReward, NewId,
-			() =>
-			{
-				TryResolvePolicyConditionForThreat(document, issuer, target, out WorldDiplomacyPolicySignal selected);
-				return selected;
-			},
-			(id, delta, doc, reason) => ApplyNationalPrestigeDelta(id, delta, doc, reason), Log);
+		return WorldDiplomacyThreatBindingApplication.Register(_storage, document, issuer?.StringId, target?.StringId, stage, new ThreatBindingPort(this));
 	}
 	private bool ResolveDiplomaticThreatCompliance(WorldDiplomacyDocument document, Kingdom compliantKingdom, Kingdom issuer)
 	{
@@ -1895,168 +1840,16 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		bool isExternalResponseOnly = false,
 		WorldDiplomacyDocument responseSource = null)
 	{
-		if (round == null || author == null || target == null) return false;
-		if (!WorldDiplomacyRoundLifecycleRules.IsNoActionAuthorizationEligible(
-			true,
-			true,
-			author == target,
-			IsPlayerKingdom(author),
-			author.IsEliminated,
-			target.IsEliminated,
-			HasIndependentWorldDiplomacyAuthority(author),
-			HasIndependentWorldDiplomacyAuthority(target),
-			WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))) return false;
-		WorldDiplomacyDocument root = ResolveDocument(round.RootDocumentId);
-		bool rootReady = root?.IsReadyForPublication == true;
-		bool rootActionable = rootReady && WorldDiplomacyIntentVocabulary.IsActionableDiplomacyIntent(root.Intent);
-		if (isExternalResponseOnly)
-		{
-			bool responseGatePassed = responseSource?.IsReadyForPublication == true
-				&& responseSource.IsPlayerAuthored
-				&& !string.IsNullOrWhiteSpace(responseSource.DocumentId)
-				&& WorldDiplomacyRoundLifecycleRules.IsRecordInRound(responseSource.RoundId, round.RoundId)
-				&& string.Equals(responseSource.AuthorKingdomId, target.StringId, StringComparison.OrdinalIgnoreCase);
-			bool isPrimaryTarget = responseGatePassed && string.Equals(
-				responseSource.TargetKingdomId,
-				author.StringId,
-				StringComparison.OrdinalIgnoreCase);
-			bool isRepresentativeTarget = responseGatePassed
-				&& IsDiplomaticRepresentativeForAddressedVassal(author, responseSource);
-			bool isInAddressedList = responseGatePassed
-				&& (responseSource.AddressedKingdomIds ?? new List<string>())
-					.Contains(author.StringId, StringComparer.OrdinalIgnoreCase);
-			WorldDiplomacyRoundParticipant requiredResponder = !responseGatePassed ? null
-				: (round.Participants ?? new List<WorldDiplomacyRoundParticipant>())
-					.FirstOrDefault(x => x != null
-						&& string.Equals(x.KingdomId, author.StringId, StringComparison.OrdinalIgnoreCase));
-			return WorldDiplomacyRoundLifecycleRules.EvaluateExternalNoActionAuthorization(
-				new WorldDiplomacyExternalNoActionInput
-				{
-					AuthorResolved = true,
-					TargetResolved = true,
-					SameParty = author == target,
-					AuthorIsPlayer = IsPlayerKingdom(author),
-					AuthorEliminated = author.IsEliminated,
-					TargetEliminated = target.IsEliminated,
-					AuthorHasAuthority = HasIndependentWorldDiplomacyAuthority(author),
-					TargetHasAuthority = HasIndependentWorldDiplomacyAuthority(target),
-					RoundActive = true,
-					RootReady = rootReady,
-					RootActionable = rootActionable,
-					ResponseReady = responseSource?.IsReadyForPublication == true,
-					ResponsePlayerAuthored = responseSource?.IsPlayerAuthored == true,
-					ResponseHasDocumentId = !string.IsNullOrWhiteSpace(responseSource?.DocumentId),
-					ResponseSameRound = responseSource != null
-						&& WorldDiplomacyRoundLifecycleRules.IsRecordInRound(responseSource.RoundId, round.RoundId),
-					ResponseAuthoredByTarget = responseSource != null
-						&& string.Equals(responseSource.AuthorKingdomId, target.StringId, StringComparison.OrdinalIgnoreCase),
-					IsPrimaryTarget = isPrimaryTarget,
-					IsRepresentativeTarget = isRepresentativeTarget,
-					IsInAddressedList = isInAddressedList,
-					ResponseRequiresResponse = responseSource?.RequiresResponse == true,
-					MandatoryReplyPending = requiredResponder?.MandatoryReplyPending == true,
-					LastTriggeredMatches = requiredResponder != null
-						&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(requiredResponder.LastTriggeredDocumentId, responseSource?.DocumentId),
-					SettlementPending = round.ResultSettlementPending,
-					RelayPlanned = round.RelayPlanned,
-					IsRelayTurn = isRelayTurn,
-					AuthorOnRoute = isRelayTurn && !round.ResultSettlementPending && round.RelayPlanned
-						&& WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, author.StringId),
-					TargetOnRoute = isRelayTurn && !round.ResultSettlementPending && round.RelayPlanned
-						&& WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target.StringId)
-				});
-		}
-		if (round.ResultSettlementPending)
-		{
-			string slotId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(resultSettlementSlotId, round.ResultSettlementCurrentSlotId);
-			bool hasSlotId = !string.IsNullOrWhiteSpace(slotId);
-			bool slotIdIsCurrent = hasSlotId
-				&& string.Equals(round.ResultSettlementCurrentSlotId, slotId, StringComparison.OrdinalIgnoreCase);
-			bool settlementTargetUsable = slotIdIsCurrent
-				&& CanUseResultSettlementTarget(round, author, target);
-			WorldDiplomacyResultSettlementSlot slot = settlementTargetUsable
-				? (round.ResultSettlementSlots ?? new List<WorldDiplomacyResultSettlementSlot>())
-					.FirstOrDefault(x => x != null
-						&& string.Equals(x.SlotId, slotId, StringComparison.OrdinalIgnoreCase)
-						&& string.Equals(x.KingdomId, author.StringId, StringComparison.OrdinalIgnoreCase))
-				: null;
-			bool slotHasRelatedKingdom = slot?.RelatedKingdomIds?.Any(x => !string.IsNullOrWhiteSpace(x)) == true;
-			return WorldDiplomacyRoundLifecycleRules.EvaluateRelayNoActionAuthorization(
-				new WorldDiplomacyRelayNoActionInput
-				{
-					AuthorResolved = true,
-					TargetResolved = true,
-					SameParty = author == target,
-					AuthorIsPlayer = IsPlayerKingdom(author),
-					AuthorEliminated = author.IsEliminated,
-					TargetEliminated = target.IsEliminated,
-					AuthorHasAuthority = HasIndependentWorldDiplomacyAuthority(author),
-					TargetHasAuthority = HasIndependentWorldDiplomacyAuthority(target),
-					RoundActive = true,
-					RootReady = rootReady,
-					RootActionable = rootActionable,
-					IsRelayTurn = isRelayTurn,
-					SettlementPending = true,
-					HasSlotId = hasSlotId,
-					SlotIdIsCurrent = slotIdIsCurrent,
-					SettlementTargetUsable = settlementTargetUsable,
-					SlotFound = slot != null,
-					SlotHasRelatedKingdom = slotHasRelatedKingdom,
-					TargetInRelatedKingdoms = slotHasRelatedKingdom
-						&& WorldDiplomacyRoundLifecycleRules.IsSettlementSlotRelatedTo(slot, target.StringId),
-					TargetOnRoute = slot != null && !slotHasRelatedKingdom
-						&& WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target.StringId)
-				});
-		}
-		List<string> route = round.RelayRouteKingdomIds ?? new List<string>();
-		bool relayGatePassed = round.RelayPlanned && round.RelayWaiting
-			&& string.IsNullOrWhiteSpace(resultSettlementSlotId) && isRelayTurn;
-		return WorldDiplomacyRoundLifecycleRules.EvaluateRelayNoActionAuthorization(
-			new WorldDiplomacyRelayNoActionInput
-			{
-				AuthorResolved = true,
-				TargetResolved = true,
-				SameParty = author == target,
-				AuthorIsPlayer = IsPlayerKingdom(author),
-				AuthorEliminated = author.IsEliminated,
-				TargetEliminated = target.IsEliminated,
-				AuthorHasAuthority = HasIndependentWorldDiplomacyAuthority(author),
-				TargetHasAuthority = HasIndependentWorldDiplomacyAuthority(target),
-				RoundActive = true,
-				RootReady = rootReady,
-				RootActionable = rootActionable,
-				IsRelayTurn = isRelayTurn,
-				SettlementPending = false,
-				HasSlotId = !string.IsNullOrWhiteSpace(resultSettlementSlotId),
-				SlotIdIsCurrent = false,
-				SettlementTargetUsable = false,
-				SlotFound = false,
-				SlotHasRelatedKingdom = false,
-				TargetInRelatedKingdoms = false,
-				RelayPlanned = round.RelayPlanned,
-				RelayWaiting = round.RelayWaiting,
-				AuthorOnRoute = relayGatePassed && WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, author.StringId),
-				TargetOnRoute = relayGatePassed && WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target.StringId),
-				AuthorIsCurrentCursor = relayGatePassed
-					&& round.RelayCursor >= 0 && round.RelayCursor < route.Count
-					&& string.Equals(route[round.RelayCursor], author.StringId, StringComparison.OrdinalIgnoreCase)
-			});
+		var port = new NoActionPort(this, author, target);
+		return WorldDiplomacyNoActionApplication.IsAllowed(round, resultSettlementSlotId, port, isRelayTurn, isExternalResponseOnly, responseSource);
 	}
 	private bool CanUseResultSettlementTarget(
 		WorldDiplomacyRound round,
 		Kingdom author,
 		Kingdom target)
 	{
-		if (round == null || author == null) return false;
-		return WorldDiplomacyRoundLifecycleRules.IsSettlementTargetUsable(
-			round.ResultSettlementPending,
-			target != null,
-			target == author,
-			target?.IsEliminated == true,
-			target != null && HasIndependentWorldDiplomacyAuthority(target),
-			WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target?.StringId),
-			round.RelayRouteKingdomIds?.Count ?? 0,
-			MaxRelayParticipants);
+		var port = new NoActionPort(this, author, target);
+		return WorldDiplomacyNoActionApplication.CanUseSettlementTarget(round, port);
 	}
 	private bool TryIncludeResultSettlementTarget(WorldDiplomacyRound round, string kingdomId)
 	{

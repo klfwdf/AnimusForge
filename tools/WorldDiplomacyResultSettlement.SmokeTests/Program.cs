@@ -593,10 +593,10 @@ internal static class Program
             "private bool TryIncludeResultSettlementTarget(");
         Test.True(targetGate.Contains("WorldDiplomacyRoundLifecycleRules.IsSettlementTargetUsable(", StringComparison.Ordinal)
                   && targetGate.Contains("round.ResultSettlementPending", StringComparison.Ordinal)
-                  && targetGate.Contains("target?.IsEliminated", StringComparison.Ordinal)
-                  && targetGate.Contains("HasIndependentWorldDiplomacyAuthority(target)", StringComparison.Ordinal)
-                  && targetGate.Contains("RoundRouteContainsKingdom(round, target?.StringId)", StringComparison.Ordinal)
-                  && targetGate.Contains("MaxRelayParticipants", StringComparison.Ordinal),
+                  && targetGate.Contains("port.TargetEliminated", StringComparison.Ordinal)
+                  && targetGate.Contains("port.TargetHasAuthority", StringComparison.Ordinal)
+                  && targetGate.Contains("RoundRouteContainsKingdom(round, port.TargetId)", StringComparison.Ordinal)
+                  && targetGate.Contains("port.MaxParticipants", StringComparison.Ordinal),
             "settlement target expansion must accept existing participants and cap only valid new independent kingdoms");
         string targetInclusion = ExtractSection(
             source,
@@ -1989,14 +1989,14 @@ internal static class Program
 			"private bool IsNonRootAiRelayNoActionAllowed(");
 		Test.True(relayAuthorization.Contains("resultSettlementSlotId", StringComparison.Ordinal)
 			&& relayAuthorization.Contains("round.ResultSettlementCurrentSlotId", StringComparison.Ordinal)
-			&& relayAuthorization.Contains("author.StringId", StringComparison.Ordinal)
-			&& relayAuthorization.Contains("target.StringId", StringComparison.Ordinal)
-			&& relayAuthorization.Contains("IsPlayerKingdom(author)", StringComparison.Ordinal),
+			&& relayAuthorization.Contains("port.AuthorId", StringComparison.Ordinal)
+			&& relayAuthorization.Contains("port.TargetId", StringComparison.Ordinal)
+			&& relayAuthorization.Contains("port.AuthorIsPlayer", StringComparison.Ordinal),
 			"result-settlement statement authorization must bind the exact current AI speaker and target");
 		Test.True(relayAuthorization.Contains("bool slotHasRelatedKingdom", StringComparison.Ordinal)
 			&& relayAuthorization.Contains(
-				"WorldDiplomacyRoundLifecycleRules.IsSettlementSlotRelatedTo(slot, target.StringId", StringComparison.Ordinal)
-			&& relayAuthorization.Contains("RoundRouteContainsKingdom(round, target.StringId)", StringComparison.Ordinal),
+				"WorldDiplomacyRoundLifecycleRules.IsSettlementSlotRelatedTo(slot, port.TargetId", StringComparison.Ordinal)
+			&& relayAuthorization.Contains("RoundRouteContainsKingdom(round, port.TargetId)", StringComparison.Ordinal),
 			"an offer/threat/war obligation slot may statement only toward a related kingdom; only a pure route slot may address another route member");
 
 		string consume = ExtractMethod(
@@ -2111,6 +2111,16 @@ internal static class Program
     }
 
     // Follow the actual DPL-080 owner while retaining host-routing checks.
+    private static string? ReadAdmissionOwner(string source, string marker)
+    {
+        if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        string? method = marker.Contains("IsNonRootAiRelayNoActionAllowed(") ? "IsAllowed<TPort>("
+            : marker.Contains("CanUseResultSettlementTarget(") ? "CanUseSettlementTarget<TPort>(" : null;
+        if (method == null) return null;
+        string application = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyNoActionApplication.cs")));
+        return ExtractMethod(application, "internal static bool " + method);
+    }
+
     private static string? ReadDpl080Owner(string source, string marker)
     {
         foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TryIncludeResultSettlementTarget" })
@@ -2156,7 +2166,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadDpl080Owner(source, startMarker);
+        string? moved = ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
@@ -2168,7 +2178,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadDpl080Owner(source, marker);
+		string? moved = ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

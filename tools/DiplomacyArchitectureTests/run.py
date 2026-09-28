@@ -70,6 +70,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert "WorldDiplomacyHistoryCaptureApplication." in after or "WorldDiplomacyRoundApplication." in after, signature
   prior=prior.replace(before,after)
+ for signature,owner in (('private bool IsNonRootAiRelayNoActionAllowed(', 'WorldDiplomacyNoActionApplication.'), ('private bool CanUseResultSettlementTarget(', 'WorldDiplomacyNoActionApplication.'), ('private bool TryResolvePolicyConditionForThreat(', 'WorldDiplomacyThreatBindingApplication.'), ('private bool RegisterOrAdvanceDiplomaticThreat(', 'WorldDiplomacyThreatBindingApplication.'), ('private void ProcessDiplomaticThreatDocument(', 'WorldDiplomacyThreatBindingApplication.')):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert owner in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('

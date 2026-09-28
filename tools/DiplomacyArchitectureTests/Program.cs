@@ -21,6 +21,9 @@ static class Program
     static List<string> Violations(string path, SyntaxNode root)
     {
         var errors = new List<string>();
+        if (path.Equals("Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs", StringComparison.OrdinalIgnoreCase)
+            && root.DescendantNodes().OfType<MethodDeclarationSyntax>().Any(m => m.Identifier.ValueText is "RegisterOrAdvanceDiplomaticThreat" or "ProcessDiplomaticThreatDocument"))
+            errors.Add("Domain must not own threat effect orchestration");
         if (path.Equals("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs", StringComparison.OrdinalIgnoreCase))
         {
             foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>())
@@ -77,6 +80,16 @@ static class Program
                         || !method.DescendantNodes().OfType<InvocationExpressionSyntax>().Any(c => c.Expression.ToString().StartsWith(owner))
                         || method.DescendantNodes().Any(n => n is IfStatementSyntax or ForEachStatementSyntax or AssignmentExpressionSyntax))
                         errors.Add("history/exchange predecessor retains orchestration: " + method.Identifier.ValueText);
+                }
+                if (method.Identifier.ValueText is "IsNonRootAiRelayNoActionAllowed" or "CanUseResultSettlementTarget"
+                    or "TryResolvePolicyConditionForThreat" or "RegisterOrAdvanceDiplomaticThreat" or "ProcessDiplomaticThreatDocument")
+                {
+                    bool admission = method.Identifier.ValueText is "IsNonRootAiRelayNoActionAllowed" or "CanUseResultSettlementTarget";
+                    var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                    if (method.Body?.Statements.Count != (admission ? 2 : 1) || calls.Length != 1
+                        || !calls[0].Expression.ToString().StartsWith(admission ? "WorldDiplomacyNoActionApplication." : "WorldDiplomacyThreatBindingApplication.")
+                        || method.DescendantNodes().Any(n => n is IfStatementSyntax or ForEachStatementSyntax or AssignmentExpressionSyntax))
+                        errors.Add("threat/admission predecessor retains orchestration: " + method.Identifier.ValueText);
                 }
                 if (method.Identifier.ValueText is "CanDeclareWar" or "CanIssueWarThreat")
                 {
@@ -223,7 +236,7 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
-        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults", "ApplyNationalPrestigeDelta", "SettleInternationalReputationForDocument", "RecoverUnsettledAiInternationalReputation", "ReconcileAllNationalPrestigeVassalRelations", "ReconcileNationalPrestigeVassalRelations", "ApplyZeroPrestigeBreachRelationPenalty", "AnchorInternationalReputationNaturalChangeDays", "ProcessInternationalReputationNaturalChange", "OnDailyTick", "OnCampaignTick", "TryApplyInitialNewGamePeace", "EnsureCanonicalHistoryInitialized", "SyncCanonicalHistorySources", "CaptureCanonicalHistoryForJob", "RestoreSuspendedExchangeIfAny", "CompleteExchange" })
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults", "ApplyNationalPrestigeDelta", "SettleInternationalReputationForDocument", "RecoverUnsettledAiInternationalReputation", "ReconcileAllNationalPrestigeVassalRelations", "ReconcileNationalPrestigeVassalRelations", "ApplyZeroPrestigeBreachRelationPenalty", "AnchorInternationalReputationNaturalChangeDays", "ProcessInternationalReputationNaturalChange", "OnDailyTick", "OnCampaignTick", "TryApplyInitialNewGamePeace", "EnsureCanonicalHistoryInitialized", "SyncCanonicalHistorySources", "CaptureCanonicalHistoryForJob", "RestoreSuspendedExchangeIfAny", "CompleteExchange", "IsNonRootAiRelayNoActionAllowed", "CanUseResultSettlementTarget", "TryResolvePolicyConditionForThreat", "RegisterOrAdvanceDiplomaticThreat", "ProcessDiplomaticThreatDocument" })
         {
             string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";
             Check(Violations(host, CSharpSyntaxTree.ParseText(injected).GetRoot()).Count > 0, "reject callback-hidden predecessor orchestration: " + name);

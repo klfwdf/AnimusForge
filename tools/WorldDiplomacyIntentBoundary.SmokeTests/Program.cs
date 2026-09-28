@@ -491,7 +491,7 @@ internal static class Program
         Test.True(File.ReadAllText(FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")), Encoding.UTF8)
                   .Contains("NonComplianceEvents", StringComparison.Ordinal),
             "each warning and ultimatum stage must retain an independent noncompliance history retry payload");
-        Test.True(threatViolationRules.Contains("Starting the war directly does not erase that broken promise", StringComparison.Ordinal),
+        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatBindingApplication.cs")).Contains("Starting the war directly does not erase that broken promise", StringComparison.Ordinal),
             "declaring war directly after a rejected warning must not bypass the required ultimatum");
 		Test.True(!source.Contains("threat_semantics_", StringComparison.Ordinal)
 				  && !source.Contains("WorldDiplomacyThreatSemantics", StringComparison.Ordinal),
@@ -2854,12 +2854,12 @@ internal static class Program
 			"isRelayTurn",
 			"round.RootDocumentId",
 			"round.State",
-			"IsPlayerKingdom(author)",
+			"port.AuthorIsPlayer",
 			"resultSettlementSlotId",
 			"round.ResultSettlementCurrentSlotId",
 			"RoundRouteContainsKingdom",
-			"author.StringId",
-			"target.StringId"
+			"port.AuthorId",
+			"port.TargetId"
 		})
 		{
 			Test.True(authorization.Contains(requiredBoundary, StringComparison.Ordinal),
@@ -2874,12 +2874,12 @@ internal static class Program
 			"responseSource?.IsReadyForPublication",
 			"responseSource.IsPlayerAuthored",
 			"responseSource.RoundId, round.RoundId",
-			"responseSource.AuthorKingdomId, target.StringId",
+			"responseSource.AuthorKingdomId, port.TargetId",
 			"requiredResponder?.MandatoryReplyPending",
 			"requiredResponder.LastTriggeredDocumentId, responseSource?.DocumentId",
 			"SettlementPending = round.ResultSettlementPending",
-			"RoundRouteContainsKingdom(round, author.StringId)",
-			"RoundRouteContainsKingdom(round, target.StringId)",
+			"RoundRouteContainsKingdom(round, port.AuthorId)",
+			"RoundRouteContainsKingdom(round, port.TargetId)",
 			"WorldDiplomacyRoundLifecycleRules.EvaluateExternalNoActionAuthorization(",
 			"WorldDiplomacyRoundLifecycleRules.EvaluateRelayNoActionAuthorization(",
 			"WorldDiplomacyRoundLifecycleRules.IsNoActionAuthorizationEligible("
@@ -2890,8 +2890,8 @@ internal static class Program
 		}
 		Test.True(authorization.Contains("bool slotHasRelatedKingdom", StringComparison.Ordinal)
 			&& authorization.Contains(
-				"WorldDiplomacyRoundLifecycleRules.IsSettlementSlotRelatedTo(slot, target.StringId", StringComparison.Ordinal)
-			&& authorization.Contains("RoundRouteContainsKingdom(round, target.StringId)", StringComparison.Ordinal),
+				"WorldDiplomacyRoundLifecycleRules.IsSettlementSlotRelatedTo(slot, port.TargetId", StringComparison.Ordinal)
+			&& authorization.Contains("RoundRouteContainsKingdom(round, port.TargetId)", StringComparison.Ordinal),
 			"an obligation settlement slot must bind statement to a related kingdom, while a pure route slot may address the route");
 
 		string enqueueGeneration = ExtractSection(
@@ -3863,7 +3863,7 @@ internal static class Program
                   && policyBindingEligibility.Contains("string.IsNullOrWhiteSpace(signal.PolicyKind)", StringComparison.Ordinal)
                   && policyBindingEligibility.Contains("signal.PolicyKind.Trim(), \"kingdom\"", StringComparison.Ordinal),
             "only a blank legacy kind or an explicit kingdom policy may become a threat cancellation condition");
-        Test.True(resolvePolicyCondition.Contains("DiplomacyModuleServices.Policy.IsForeignPolicySignalActive(", StringComparison.Ordinal)
+        Test.True(resolvePolicyCondition.Contains("port.IsPolicyActive(", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("signal.PolicyId", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("signal.IssuerKingdomId", StringComparison.Ordinal)
                   && resolvePolicyCondition.Contains("signal.TargetKingdomId", StringComparison.Ordinal),
@@ -3883,8 +3883,8 @@ internal static class Program
         string policyPartyMatch = ExtractMethod(
             lifecycleRules,
             "public static bool IsThreatPolicyPartyMatch(");
-        Test.True(resolvePolicyCondition.Contains("policyOwnerRepresentative?.StringId", StringComparison.Ordinal)
-                  && resolvePolicyCondition.Contains("affectedRepresentative?.StringId", StringComparison.Ordinal)
+        Test.True(resolvePolicyCondition.Contains("policyOwnerRepresentative", StringComparison.Ordinal)
+                  && resolvePolicyCondition.Contains("affectedRepresentative", StringComparison.Ordinal)
                   && policyPartyMatch.Contains("policyOwnerRepresentativeId, threatTargetId", StringComparison.Ordinal)
                   && policyPartyMatch.Contains("affectedRepresentativeId, threatIssuerId", StringComparison.Ordinal),
             "the threatened kingdom must own the policy and the threatening kingdom must be its affected party");
@@ -4291,6 +4291,10 @@ internal static class Program
     // Follow the actual DPL-080 owner while retaining host-routing checks.
     private static string? ReadThreatOwner(string source, string marker)
     {
+        if (source.Contains("class WorldDiplomacyRoundLifecycleRules", StringComparison.Ordinal)
+            && (marker.Contains("RegisterOrAdvanceDiplomaticThreat(") || marker.Contains("ProcessDiplomaticThreatDocument(")))
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatBindingApplication.cs"))), marker);
+
         if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
         if (marker.StartsWith("private void OnDailyTick(", StringComparison.Ordinal))
         {
@@ -4298,9 +4302,21 @@ internal static class Program
             string campaign = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCampaignApplication.cs")));
             return ExtractMethod(campaign, "internal static void DailyTick<TSource>(");
         }
+        if (marker.Contains("TryResolvePolicyConditionForThreat("))
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatBindingApplication.cs"))), "internal static bool TryResolvePolicyConditionForThreat(");
         string application = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatSettlementApplication.cs")));
         string newMarker = marker.Replace("private ", "internal static ").Replace("()", "(");
         return application.Contains(newMarker, StringComparison.Ordinal) ? ExtractMethod(application, newMarker) : null;
+    }
+
+    private static string? ReadAdmissionOwner(string source, string marker)
+    {
+        if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        string? method = marker.Contains("IsNonRootAiRelayNoActionAllowed(") ? "IsAllowed<TPort>("
+            : marker.Contains("CanUseResultSettlementTarget(") ? "CanUseSettlementTarget<TPort>(" : null;
+        if (method == null) return null;
+        string application = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyNoActionApplication.cs")));
+        return ExtractMethod(application, "internal static bool " + method);
     }
 
     private static string? ReadDpl080Owner(string source, string marker)
@@ -4353,7 +4369,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
         if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
@@ -4381,7 +4397,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);
