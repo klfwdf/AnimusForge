@@ -60,4 +60,3 @@ internal interface IWorldDiplomacyThreatSettlementPort
     void TryAppendDiplomaticThreatIssuerRewardHistoryResult(WorldDiplomacyThreat threat);
     void TryAppendDiplomaticThreatNonComplianceHistoryResult(WorldDiplomacyThreat threat, WorldDiplomacyThreatNonComplianceEvent decision);
 }
-

@@ -89,7 +89,7 @@ internal static class ThreatSettlementReplay
             RespondingToThreatDocumentId = "stage", RespondingToThreatActionId = "wrong" };
         storage.Documents.Add(doc);
         var port = new Port(storage);
-        
+
         Test.True(!WorldDiplomacyThreatSettlementApplication.ResolveDiplomaticThreatCompliance(storage, port, doc, "target", "issuer") && port.Events.Count == 0,
             "stale action cannot settle a threat or invoke an effect");
         doc.RespondingToThreatActionId = "action";
@@ -106,7 +106,7 @@ internal static class ThreatSettlementReplay
             "duplicate compliance skips every effect and scan");
         var restored = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(storage))!;
         var restoredPort = new Port(restored);
-        
+
         WorldDiplomacyThreatSettlementApplication.RetryDiplomaticThreatDomesticPenalties(restored, restoredPort); WorldDiplomacyThreatSettlementApplication.RetryDiplomaticThreatComplianceConsequences(restored, restoredPort);
         Test.True(restoredPort.Scans == 0 && restoredPort.Events.Count == 0, "save/load retains completed effect boundaries");
         WorldDiplomacyThreatSettlementApplication.RetryDiplomaticThreatHistoryResults(restored, restoredPort);
@@ -157,4 +157,3 @@ internal static class ThreatSettlementReplay
             "missing snapshotted ruling clan completes unresolved consequences as skipped");
     }
 }
-
