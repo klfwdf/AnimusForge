@@ -44,4 +44,4 @@
 
 下一步处理更早 Native prepare/失败清理，以及 TTS 直接回调、Courier 双向 prepare；需要进一步的稳定请求身份/恢复协议时复用既有 recovery 边界，不另造存档键或擅自打开公共提交。
 
-验证工具：`tools/NativeCompletionBoundaryTests`；结果与源/DLL SHA 见本轮 audit，总接续顺序见根 `HANDOFF.md`。
+验证工具：`tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests`；结果与源/DLL SHA 见本轮 audit，总接续顺序见根 `HANDOFF.md`。

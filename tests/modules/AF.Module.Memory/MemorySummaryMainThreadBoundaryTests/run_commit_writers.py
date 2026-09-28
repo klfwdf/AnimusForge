@@ -37,7 +37,7 @@ def main():
     inventory=[]
     def read(name):
         data=(ROOT/name).read_text(encoding='utf-8-sig');inventory.append(dict(file=name,sha256=sha(data)));return data
-    spec=importlib.util.spec_from_file_location('commit_extractor',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+    spec=importlib.util.spec_from_file_location('commit_extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     def replace(data,old,new,count=1):
         if data.count(old)!=count:raise ValueError('Commit anchor drift '+old)
         return data.replace(old,new)

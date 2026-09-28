@@ -18,7 +18,7 @@ def apply_product_mutation(product, mutation):
  if not mutation: return product
  if mutation=='ignore-campaign-scope':return exact(product,'_campaignMemoryMaintenanceCycleActive = true;','_campaignMemoryMaintenanceCycleActive = false;')
  if mutation=='renew-deferred-deadline':
-  ex=module('budget_mutation_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+  ex=module('budget_mutation_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
   body=ex.declaration(product,'private void ProcessDeferredDailyMaintenance(')
   changed=exact(body,'ResolveDailyMaintenanceBudget(out long startTimestamp, out double budgetMs);','long startTimestamp = Stopwatch.GetTimestamp(); double budgetMs = GetDailyMaintenanceFrameBudgetMs();')
   return exact(product,body,changed)
@@ -32,7 +32,7 @@ def apply_product_mutation(product, mutation):
 def apply_seal_mutation(seal, mutation):
  if not mutation: return seal
  if mutation=='ignore-sort-source':
-  ex=module('queue_sort_mutation',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+  ex=module('queue_sort_mutation',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
   body=ex.declaration(seal,'private sealed class DailyMemorySealQueueTail<T>')
   changed=exact(body,'!Current(current) || ', '')
   changed=exact(changed,'!Current(readCurrent()) || ', '')
@@ -44,7 +44,7 @@ def apply_seal_mutation(seal, mutation):
  if mutation=='ignore-owner-normalize-kept-empty':return exact(seal,'if (entry.Included && lines == 0) return false;','')
  if mutation=='skip-owner-normalize-reseal':return exact(seal,'state.ActiveOwner = null;\n                        state.Normalization = null;','state.Normalization = null;')
  if mutation=='ignore-owner-normalize-source':
-  ex=module('owner_normalize_mutation',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+  ex=module('owner_normalize_mutation',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
   body=ex.declaration(seal,'private bool Current(List<DailyMemoryDraft> current)')
   return exact(seal,body,'private bool Current(List<DailyMemoryDraft> current) { return true; }')
  if mutation=='unbudgeted-line-normalize':
@@ -72,7 +72,7 @@ def apply_seal_mutation(seal, mutation):
  return seal
 def main():
  ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67','4d6994bc']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
- ex=module('seal_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
+ ex=module('seal_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
  def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()
  if a.mutate and a.mutate not in ('abandon-incomplete-same-day',) and not new_sealing: raise ValueError('Sealing mutation requires MyBehavior.MemorySealing.cs')

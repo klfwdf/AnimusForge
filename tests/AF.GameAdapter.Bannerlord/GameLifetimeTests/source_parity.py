@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib,importlib.util,json,re,subprocess
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).parent;BASELINE='807bc5b9'
-spec=importlib.util.spec_from_file_location('life_decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
+spec=importlib.util.spec_from_file_location('life_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');e=importlib.util.module_from_spec(spec);spec.loader.exec_module(e)
 PATHS=('ShoutBehavior.cs','CourierDeliveryBehavior.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs','SubModule.cs','MyBehavior.MemorySummaryMainThread.cs')
 MOVED_DEPENDENCIES={
  'Refactor/Runtime/PendingOperationRegistry.cs':'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
@@ -18,7 +18,7 @@ RUNNER_PATH_EDITS={
  'AfCampaignRuntimeLifecycle.cs':'src/AF.GameAdapter.Bannerlord/Composition/AfCampaignRuntimeLifecycle.cs',
 }
 def restore_commit(source):
- spec=importlib.util.spec_from_file_location('courier_outcome_inverse',ROOT/'tools/CourierCommitOutcomeTests/source_parity.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+ spec=importlib.util.spec_from_file_location('courier_outcome_inverse',ROOT/'tests/modules/AF.Module.Conversation/CourierCommitOutcomeTests/source_parity.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
  return module.restore(source)
 
 def old(path):return subprocess.check_output(['git','show',BASELINE+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -105,7 +105,7 @@ def check_dependencies():
     source=source.replace(current,historical)
   assert hashlib.sha256(source.encode()).hexdigest()==h,'Unreviewed game lifetime dependency: '+p
 
-spec_owner=importlib.util.spec_from_file_location('j07b_admission_inverse',ROOT/'tools/NativeConversationAdmissionTests/owner_extraction.py');owner_inverse=importlib.util.module_from_spec(spec_owner);spec_owner.loader.exec_module(owner_inverse)
+spec_owner=importlib.util.spec_from_file_location('j07b_admission_inverse',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py');owner_inverse=importlib.util.module_from_spec(spec_owner);spec_owner.loader.exec_module(owner_inverse)
 
 def restore(path,source):
  source=owner_inverse.restore(path,source)
@@ -153,7 +153,7 @@ def restore(path,source):
    '\t\tMyBehavior.ShoutPromptContext ctx = await AwaitNativeConversationBackgroundPreprocessAsync(nativePreprocessTask, nativeTargetLog, nativeTargetAgentIndex, runtimeGeneration).ConfigureAwait(false);\n')
   assert source.count(j04f_new)==1,'Unreviewed J04f Native prompt build call';source=source.replace(j04f_new,j04f_old,1)
  if path=='CourierDeliveryBehavior.cs':
-  prompt_spec=importlib.util.spec_from_file_location('courier_prompt_inverse',ROOT/'tools/CourierPromptPreparationTests/source_review.py');prompt=importlib.util.module_from_spec(prompt_spec);prompt_spec.loader.exec_module(prompt)
+  prompt_spec=importlib.util.spec_from_file_location('courier_prompt_inverse',ROOT/'tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/source_review.py');prompt=importlib.util.module_from_spec(prompt_spec);prompt_spec.loader.exec_module(prompt)
   source=prompt.restore(source)
  if path=='SubModule.cs':
   spec=importlib.util.spec_from_file_location('j02_host_inverse',ROOT/'tests/AF.GameAdapter.Bannerlord/HostCompositionTests/source_inverse.py');host=importlib.util.module_from_spec(spec);spec.loader.exec_module(host)

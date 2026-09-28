@@ -8,7 +8,7 @@ BASELINE = '955a6be314840be8d20f1320d3c7f23c7a93fe77'
 J02_BASELINE = '60072f0741114ea1c85a021ad4ad510d837b5c10'
 FOUNDATION_OWNER = ROOT/'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs'
 FOUNDATION_DIRECTORY = ROOT/'src/AF.Foundation.Runtime/ModuleDirectory'
-spec=importlib.util.spec_from_file_location('snapshot_decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
+spec=importlib.util.spec_from_file_location('snapshot_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 declaration=m.declaration
 
@@ -62,7 +62,7 @@ def restore_runtime(current):
     expected=prior.replace(original,capture).replace('\n    '+mapper+'\n','').replace('using AnimusForge.Api.V1;\n','').replace('AfFrameworkState','ModuleFrameworkLifecycleState')
     assert current==expected, 'Unreviewed root lifecycle/registration delta'
     api=(ROOT/'src/modules/AF.Module.PublicApi/V1/AfApi.cs').read_text(encoding='utf-8-sig')
-    api_spec=importlib.util.spec_from_file_location('native_api_inverse',ROOT/'tools/NativeModuleSubmissionTests/source_boundary.py')
+    api_spec=importlib.util.spec_from_file_location('native_api_inverse',ROOT/'tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/source_boundary.py')
     api_inverse=importlib.util.module_from_spec(api_spec);api_spec.loader.exec_module(api_inverse)
     # Reviewed Scene/Courier inverses retain the original Native dependency hashes.
     api=api_inverse.restore('Api/V1/AfApi.cs',api,live_current=api)

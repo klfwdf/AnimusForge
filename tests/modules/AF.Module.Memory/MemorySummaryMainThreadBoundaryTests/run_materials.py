@@ -11,7 +11,7 @@ MUTATIONS=['ignore-structure','ignore-map-binding','ignore-source-binding','publ
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-baseline',choices=['62abfdb3','c21523f8']);ap.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
     if a.source_baseline and a.mutate:raise ValueError('Use either historical real source or one current mutation')
-    spec=importlib.util.spec_from_file_location('material_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+    spec=importlib.util.spec_from_file_location('material_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
     def read(name):return (ROOT/name).read_text(encoding='utf-8-sig')
     def digest(text):return hashlib.sha256(text.encode()).hexdigest()
     def change(text,old,new,count=1):

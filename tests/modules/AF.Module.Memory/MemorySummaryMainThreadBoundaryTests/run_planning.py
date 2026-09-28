@@ -11,7 +11,7 @@ MODELS=['MemorySummaryJob','MajorActionSummaryJob','MemoryOverviewJob','MajorAct
 METHODS=['private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(','private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(','private static string NormalizeMemoryHeroId(','private static bool IsNonHeroMemoryId(','private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(','private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(','private static List<MemoryOverviewJob> SanitizeMemoryOverviewQueue(','private bool CancelUnavailableHeroCompressionWorkById(','private static bool IsDailyMaintenanceBudgetExceeded(']
 def main():
  ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
- spec=importlib.util.spec_from_file_location('plan_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+ spec=importlib.util.spec_from_file_location('plan_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  source=(ROOT/'MyBehavior.cs').read_text(encoding='utf-8-sig');manifest=[];blocks=[]
  for sig in ['private sealed class '+x for x in MODELS]+METHODS:
   body=ex.declaration(source,sig);manifest.append(dict(file='MyBehavior.cs',signature=sig,line=source[:source.index(body)].count('\n')+1,sha256=hashlib.sha256(body.encode()).hexdigest()));blocks.append(body)

@@ -34,4 +34,4 @@
 
 ## 验证入口
 
-`tools/NativeActionDispatchOutcomeTests` 执行真实派发与失败消费代码；游戏业务由 fixture 代替。原 59 检查加上未消费等待、晚到 callback、跨期限真实线程及错误分类，共 88 检查 / 9 变异；结合原准入、展示、ports 和 Stage 回归使用，不能当成实机验收。
+`tests/modules/AF.Module.Conversation/NativeActionDispatchOutcomeTests` 执行真实派发与失败消费代码；游戏业务由 fixture 代替。原 59 检查加上未消费等待、晚到 callback、跨期限真实线程及错误分类，共 88 检查 / 9 变异；结合原准入、展示、ports 和 Stage 回归使用，不能当成实机验收。

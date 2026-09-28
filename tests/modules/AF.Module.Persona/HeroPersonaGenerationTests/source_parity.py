@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,importlib.util,json,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 BASELINE='10defeb4976f3ffa096a77e847fba254308f6aba'
-spec=importlib.util.spec_from_file_location('persona_decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+spec=importlib.util.spec_from_file_location('persona_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def prior():return subprocess.check_output(['git','show',BASELINE+':MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def restore(source,strict=True):
  run_spec=importlib.util.spec_from_file_location('persona_memory_run_inverse',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py');run_inverse=importlib.util.module_from_spec(run_spec);run_spec.loader.exec_module(run_inverse)

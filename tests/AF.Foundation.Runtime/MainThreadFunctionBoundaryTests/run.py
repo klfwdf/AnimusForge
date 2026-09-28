@@ -3,7 +3,7 @@ import argparse, importlib.util, subprocess, os, json, hashlib
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]; HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
-spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(name):return subprocess.check_output(['git','show','613ac245:'+name],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/name).read_text(encoding='utf-8-sig')
 s=read('ShoutBehavior.cs')
 assert 'private const int NativeConversationMainThreadPreprocessTimeoutMs = 30000;' in s
@@ -13,14 +13,14 @@ wait=ex.declaration(s,'private static async Task<T> AwaitNativeConversationMainT
 if not a.original:
  prior=subprocess.check_output(['git','show','613ac245:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
  restored=s
- snapshot_spec=importlib.util.spec_from_file_location('snapshot_parity',ROOT/'tools/NativeHistorySnapshotTests/source_parity.py');snapshot_parity=importlib.util.module_from_spec(snapshot_spec);snapshot_spec.loader.exec_module(snapshot_parity)
+ snapshot_spec=importlib.util.spec_from_file_location('snapshot_parity',ROOT/'tests/modules/AF.Module.Conversation/NativeHistorySnapshotTests/source_parity.py');snapshot_parity=importlib.util.module_from_spec(snapshot_spec);snapshot_spec.loader.exec_module(snapshot_parity)
  restored=snapshot_parity.restore_snapshot_source('ShoutBehavior.cs',restored)
  # Separately proven preparation capture: permit only the exact shared reviewed declaration SHA.
  signature='private async Task<string> SubmitNativeConversationTextInternalAsync('
  current=ex.declaration(restored,signature)
  review=json.loads((ROOT/'tests/bridges/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
  expected=next(x['sha256'] for x in review['methods'] if x['path']=='ShoutBehavior.cs' and x['signature']==signature)
- persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tools/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
+ persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
  live_submit=ex.declaration(persona.restore('ShoutBehavior.cs',s),signature)
  assert hashlib.sha256(live_submit.encode()).hexdigest()==expected and 'TeamModuleServices.' not in live_submit
  restored=restored.replace(current,ex.declaration(prior,signature),1)

@@ -23,7 +23,7 @@ evidence=review['files']['ShoutBehavior.cs'];assert hashlib.sha256(original.enco
 out=HERE/'.generated'/(args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 consumer=evidence['edits'][0]['after'];live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 import sys
-sys.path.insert(0,str(ROOT/'tools/NativeConversationAdmissionTests'))
+sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests'))
 from turn_extraction import projected_source
 live=projected_source(live);assert live.count(consumer)==1
 # Observe the typed status without replacing the actual caller's continuation/stop branch.

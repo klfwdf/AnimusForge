@@ -26,7 +26,7 @@ def load(name, path):
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     return module
 
-extract = load('campaign_decl', 'tools/ChannelCutoverBoundaryTests/run.py').declaration
+extract = load('campaign_decl', 'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py').declaration
 util = load('campaign_dotnet', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 
 def read(path): return (ROOT / path).read_text(encoding='utf-8-sig')

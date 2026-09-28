@@ -71,7 +71,7 @@ def replace_exact(text, old, new, count=1):
 
 
 def build_sources(original, mutation, run_owner_baseline=False):
-    spec = importlib.util.spec_from_file_location("channel_extractor", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+    spec = importlib.util.spec_from_file_location("channel_extractor", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
     source = extractor.source("MyBehavior.cs", "155f1b7a" if run_owner_baseline else BASELINE if original else None)

@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--emit-json", action="store_true")
 parser.add_argument("--mutate", choices=["ignore-stale-version", "drop-lore-output"])
 args = parser.parse_args()
-spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 
