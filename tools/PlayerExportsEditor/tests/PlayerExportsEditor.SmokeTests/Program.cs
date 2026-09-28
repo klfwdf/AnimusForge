@@ -214,11 +214,12 @@ static int RunIsolatedFullSmoke(PlayerExportsService service, PlayerExportsValid
     // 1. Shared locator resolves to the synthetic data root only.
     var exports = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
     Check(exports == Path.Combine(dataRoot, "UserData", "PlayerExports"), "locator did not resolve the synthetic data root");
-    Check(!Directory.Exists(exports), "synthetic PlayerExports already existed");
+    Check(!Directory.Exists(exports) && !File.Exists(exports), "synthetic PlayerExports already existed");
     Directory.CreateDirectory(exports);
 
     // 2. Create package with default files; it must validate without errors.
     var package = service.CreatePackage(exports, "J15Smoke");
+    Check(service.ListPackages(exports).Count == 1, "new synthetic package was not listed exactly once");
     var pkg = package.FullPath;
     var data = service.LoadPackage(pkg);
     Check(data.VoiceMapping != null && data.UnnamedPersona != null && data.EventFiles.Count == 3, "created package is missing default files");
@@ -262,7 +263,9 @@ static int RunIsolatedFullSmoke(PlayerExportsService service, PlayerExportsValid
     try { service.SaveJsonDocument(pkg, summaryPath, "{bad json"); }
     catch (System.Text.Json.JsonException) { invalidRejected = true; }
     Check(invalidRejected && File.ReadAllText(summaryPath) == summaryEdited && !File.Exists(summaryPath + ".tmp"), "invalid JSON changed the active file");
-    service.SaveJsonDocument(pkg, summaryPath, store.ReadUtf8(summaryBackup));
+    var restoreBackup = service.SaveJsonDocument(pkg, summaryPath, store.ReadUtf8(summaryBackup));
+    Check(File.Exists(restoreBackup) && restoreBackup != summaryBackup && File.ReadAllText(restoreBackup) == summaryEdited,
+        "restore did not preserve the edited version in a distinct backup");
     Check(File.ReadAllText(summaryPath) == summaryOriginal, "restore from backup did not return original bytes");
     Console.WriteLine("step json-edit: edited=1 invalid_preserved=1 restored=1");
 
@@ -309,7 +312,7 @@ static int RunIsolatedFullSmoke(PlayerExportsService service, PlayerExportsValid
 
 static string RequireIsolatedRoot(string arg)
 {
-    if (string.IsNullOrWhiteSpace(arg) || !Path.IsPathRooted(arg) || arg.StartsWith(@"\\", StringComparison.Ordinal))
+    if (string.IsNullOrWhiteSpace(arg) || !Path.IsPathFullyQualified(arg) || arg.StartsWith(@"\\", StringComparison.Ordinal))
         throw new InvalidOperationException("Isolated smoke requires an absolute local synthetic root.");
     var root = Path.GetFullPath(arg).TrimEnd('\\', '/');
     if (!Directory.Exists(root))
@@ -323,11 +326,18 @@ static string RequireIsolatedRoot(string arg)
     foreach (var name in new[] { "ANIMUSFORGE_DATA_ROOT", "TEMP", "TMP" })
     {
         var value = Environment.GetEnvironmentVariable(name);
-        if (string.IsNullOrWhiteSpace(value) || !Path.GetFullPath(value).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrWhiteSpace(value) || !Path.IsPathFullyQualified(value) || !Path.GetFullPath(value).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(name + " must point inside the isolated smoke root.");
     }
     if (!Path.GetFullPath(Path.GetTempPath()).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
         throw new InvalidOperationException("Process temp path is outside the isolated smoke root.");
+    var dataRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT")!));
+    var tempRoot = Path.TrimEndingDirectorySeparator(Path.GetFullPath(Path.GetTempPath()));
+    if (!string.Equals(dataRoot, Path.Combine(root, "data"), StringComparison.OrdinalIgnoreCase) ||
+        !Directory.Exists(tempRoot) ||
+        !string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("TEMP")!)), tempRoot, StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(Environment.GetEnvironmentVariable("TMP")!)), tempRoot, StringComparison.OrdinalIgnoreCase))
+        throw new InvalidOperationException("Isolated smoke requires canonical data and one existing temp directory under its root.");
     return root;
 }
 
