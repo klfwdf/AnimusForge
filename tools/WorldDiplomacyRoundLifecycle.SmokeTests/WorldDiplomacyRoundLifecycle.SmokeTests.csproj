@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatSettlementApplication.cs" Link="WorldDiplomacyThreatSettlementApplication.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyThreatSettlementPort.cs" Link="IWorldDiplomacyThreatSettlementPort.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyWarAdmissionApplication.cs" Link="WorldDiplomacyWarAdmissionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyImmediateActionApplication.cs" Link="WorldDiplomacyImmediateActionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyPublicationPort.cs" Link="IWorldDiplomacyPublicationPort.cs" />

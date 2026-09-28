@@ -42,6 +42,14 @@ static class Program
                         || calls[0].Expression.ToString() != owner + "." + routing)
                         errors.Add("publication predecessor retains orchestration: " + method.Identifier.ValueText);
                 }
+                if (new[] { "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults" }.Contains(method.Identifier.ValueText))
+                {
+                    var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                    if (method.Body?.Statements.Count != 1 || calls.Length != 1
+                        || !calls[0].Expression.ToString().StartsWith("WorldDiplomacyThreatSettlementApplication.")
+                        || method.DescendantNodes().Any(n => n is IfStatementSyntax or ForEachStatementSyntax or AssignmentExpressionSyntax))
+                        errors.Add("threat predecessor retains orchestration: " + method.Identifier.ValueText);
+                }
                 if (method.Identifier.ValueText is "CanDeclareWar" or "CanIssueWarThreat")
                 {
                     var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
@@ -80,6 +88,18 @@ static class Program
             foreach (var call in root.DescendantNodes().OfType<InvocationExpressionSyntax>())
                 if (call.Expression.ToString().Contains("ClearWarPressure") || call.Expression.ToString().Contains("ClonePeaceTerms"))
                     errors.Add("offer effect adapter owns settlement ordering: " + call.Expression);
+        }
+        if (path.EndsWith("WorldDiplomacyBehavior.ThreatSettlementPort.cs", StringComparison.Ordinal))
+        {
+            foreach (var assignment in root.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+                if (assignment.Left.ToString().Contains("threat.") || assignment.Left.ToString().Contains("_storage")
+                    || assignment.Left.ToString().Contains("document."))
+                    errors.Add("threat effect adapter writes canonical settlement: " + assignment.Left);
+            foreach (var call in root.DescendantNodes().OfType<InvocationExpressionSyntax>())
+                if (call.Expression.ToString().Contains("WorldDiplomacyRoundLifecycleRules")
+                    || call.Expression.ToString().Contains("RetryDiplomaticThreat")
+                    || call.Expression.ToString().Contains("ResolveDiplomaticThreatCompliance"))
+                    errors.Add("threat effect adapter hides settlement orchestration: " + call.Expression);
         }
         if (path.StartsWith("src/bridges/Diplomacy/"))
         {
@@ -165,6 +185,8 @@ static class Program
                 Check(!trees[path].GetRoot().DescendantNodes().OfType<FieldDeclarationSyntax>().Any(f => f.Declaration.Type.ToString() == "WorldDiplomacyStorage"), "second diplomacy state owner " + path);
         Check(texts.Where(x => x.Value.Contains("_af_world_diplomacy_v1")).Select(x => x.Key).SequenceEqual(new[] { "Refactor/Adapters/BannerlordWorldDiplomacyPersistenceAdapter.cs" }), "canonical save key remains adapter-owned");
         var mutations = new[] {
+            ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs", "class X { void F(dynamic threat) { threat.DomesticPenaltyCompleted = true; } }"),
+            ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs", "class X { void F() { _owner.RetryDiplomaticThreatHistoryResults(); } }"),
             ("Refactor/Domain/WorldDiplomacyInjectedRules.cs", "class X { object F() => TaleWorlds.CampaignSystem.Hero.MainHero; }"),
             ("Refactor/Contracts/WorldDiplomacyInjected.cs", "using H = TaleWorlds.CampaignSystem.Hero; class X { H H; }"),
             ("src/modules/AF.Module.Diplomacy/Application/Injected.cs", "class X { object F() => new System.Net.Http.HttpClient(); }"),
@@ -173,7 +195,7 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
-        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan" })
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults" })
         {
             string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";
             Check(Violations(host, CSharpSyntaxTree.ParseText(injected).GetRoot()).Count > 0, "reject callback-hidden predecessor orchestration: " + name);

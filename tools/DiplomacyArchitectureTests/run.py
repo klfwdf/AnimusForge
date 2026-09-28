@@ -54,6 +54,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyRoundApplication.' in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private bool TryApplyUltimatumComplianceDomesticPenalty(', 'private bool TryApplyDiplomaticThreatPolicyConditionCancellation(', 'private bool TryApplyDiplomaticThreatIssuerRelationReward(', 'private bool ResolveDiplomaticThreatCompliance(', 'private void ApplyDiplomaticThreatReputationPenalty(', 'private void RetryDiplomaticThreatDomesticPenalties(', 'private void RetryDiplomaticThreatComplianceConsequences(', 'private void RetryDiplomaticThreatHistoryResults('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert "WorldDiplomacyThreatSettlementApplication." in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('

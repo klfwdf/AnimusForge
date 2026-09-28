@@ -156,6 +156,7 @@ RunRepairCorrectionAndJobDecisionTests();
         ImmediateActionReplay.Run();
         PropagationLifecycleReplay.Run();
         ThreatApplicationReplay.Run();
+        ThreatSettlementReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14455,6 +14456,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw terminal-move reasons must not remain in the host");
         Test.True(rulesSource.Contains("EvaluateThreatDocumentDispatch(", StringComparison.Ordinal),
             "the host must route threat document dispatch through the lifecycle rules");
+        string threatSettlementSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatSettlementApplication.cs"));
         string threatApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatApplication.cs"));
         Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAction", StringComparison.Ordinal),
             "the host must route threat compliance matching through the lifecycle rules");
@@ -14493,17 +14495,17 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(rulesSource.Contains("IsThreatRegistrationIdentityMatch(", StringComparison.Ordinal)
             && rulesSource.Contains("EvaluateThreatRegistration(", StringComparison.Ordinal),
             "threat registration identity and dispatch must be composed inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectComplianceRecordedThreat", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectComplianceRecordedThreat", StringComparison.Ordinal),
             "the host must route compliance re-binding through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAlreadyRecorded", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAlreadyRecorded", StringComparison.Ordinal),
             "the host must route compliance idempotency through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceStageMatch", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceStageMatch", StringComparison.Ordinal),
             "the host must route compliance stage matching through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta", StringComparison.Ordinal),
             "the host must route compliance prestige through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatStage", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatStage", StringComparison.Ordinal),
             "the host must route stage labels through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween", StringComparison.Ordinal),
             "the host must route open-threat lookups through the lifecycle rules");
         Test.True(!behaviorSource.Contains("is not \"warning\" and not \"ultimatum\"", StringComparison.Ordinal),
             "raw stage gates must not remain in the host");
@@ -14517,7 +14519,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "threat history finalization must live in the lifecycle rules");
         Test.True(rulesSource.Contains("IsThreatNonComplianceLinkedToDocument(", StringComparison.Ordinal),
             "noncompliance linking must live in the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch", StringComparison.Ordinal),
             "the host must route history retry batching through the lifecycle rules");
         Test.True(rulesSource.Contains("CanCaptureNonComplianceEvent", StringComparison.Ordinal),
             "noncompliance capture gating must live in the lifecycle rules");
@@ -14543,15 +14545,15 @@ RunRepairCorrectionAndJobDecisionTests();
             "the canonical history rules must route follow-through labels through the lifecycle rules");
         Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatCommitmentLevel", StringComparison.Ordinal),
             "the canonical history rules must route threat commitment levels through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled", StringComparison.Ordinal),
             "the host must route cancellation status checks through the lifecycle rules");
         Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.IsIssuerRewardHistoryEmpty", StringComparison.Ordinal),
             "the canonical history rules must route issuer reward emptiness through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NeedsDomesticPenaltySettlementRetry", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.NeedsDomesticPenaltySettlementRetry", StringComparison.Ordinal),
             "the host must route domestic penalty settlement retry through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NeedsPolicyCancellationRetry", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.NeedsPolicyCancellationRetry", StringComparison.Ordinal),
             "the host must route policy cancellation retry through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardSettlementRetry", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardSettlementRetry", StringComparison.Ordinal),
             "the host must route issuer reward settlement retry through the lifecycle rules");
         Test.True(rulesSource.Contains("FindPriorityThreatRelayIndex(", StringComparison.Ordinal)
             && rulesSource.Contains("OrderThreatsByUpdatedDay(", StringComparison.Ordinal),
@@ -14602,11 +14604,11 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw retained-threat ordering must not remain in the host");
         Test.True(!behaviorSource.Contains("x.Key.Trim(), StringComparer.OrdinalIgnoreCase)", StringComparison.Ordinal),
             "raw kingdom dictionary normalization must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateThreatPolicyCancellationDispatch", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateThreatPolicyCancellationDispatch", StringComparison.Ordinal),
             "the host must route policy cancellation dispatch through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolvePolicyCancellationStatus", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolvePolicyCancellationStatus", StringComparison.Ordinal),
             "the host must route cancellation status normalization through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsPolicySignalBoundTo", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsPolicySignalBoundTo", StringComparison.Ordinal),
             "the host must route settled-signal matching through the lifecycle rules");
         Test.True(rulesSource.Contains("IsThreatBoundToPolicy(", StringComparison.Ordinal),
             "the host must route bound-threat matching through the lifecycle rules");
@@ -14632,52 +14634,53 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw cancellation status normalization must not remain in the host");
         Test.True(!behaviorSource.Contains("if (matches.Count != 1) return false;", StringComparison.Ordinal),
             "raw unique-signal gating must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatDomesticPenaltyEligible", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatDomesticPenaltyEligible", StringComparison.Ordinal),
             "the host must route domestic penalty eligibility through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatIssuerRewardEligible", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatIssuerRewardEligible", StringComparison.Ordinal),
             "the host must route issuer reward eligibility through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CountThreatConsequenceAppliedClans", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CountThreatConsequenceAppliedClans", StringComparison.Ordinal),
             "the host must route applied-clan counting through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatDomesticPenaltySnapshot", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatDomesticPenaltySnapshot", StringComparison.Ordinal),
             "the host must route penalty snapshot capture through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatIssuerRewardSnapshot", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CaptureThreatIssuerRewardSnapshot", StringComparison.Ordinal),
             "the host must route reward snapshot capture through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyWithoutEligible", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyWithoutEligible", StringComparison.Ordinal),
             "the host must route empty penalty completion through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutEligible", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutEligible", StringComparison.Ordinal),
             "the host must route empty reward completion through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutAmount", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutAmount", StringComparison.Ordinal),
             "the host must route zero-amount completion through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectUnresolvedClanIds", StringComparison.Ordinal),
             "the host must route unresolved-clan selection through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyAsSkipped", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatDomesticPenaltyAsSkipped", StringComparison.Ordinal),
             "the host must route skipped penalty completion through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardAsSkipped", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardAsSkipped", StringComparison.Ordinal),
             "the host must route skipped reward completion through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceClanSettled", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceClanSettled", StringComparison.Ordinal),
             "the host must route per-clan settlement checks through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceSettled", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceSettled", StringComparison.Ordinal),
             "the host must route consequence settlement through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderThreatConsequenceClanIds", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderThreatConsequenceClanIds", StringComparison.Ordinal),
             "the host must route settlement ordering through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ClampThreatIssuerRewardAmount", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ClampThreatIssuerRewardAmount", StringComparison.Ordinal),
             "the host must route reward clamping through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeThreatConsequenceRelationTarget", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeThreatConsequenceRelationTarget", StringComparison.Ordinal),
             "the host must route relation targets through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationPenalty", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationPenalty", StringComparison.Ordinal),
             "the host must route penalty apply gates through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationReward", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldApplyThreatRelationReward", StringComparison.Ordinal),
             "the host must route reward apply gates through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationPenaltyApplied", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationPenaltyApplied", StringComparison.Ordinal),
             "the host must route penalty applied checks through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationRewardApplied", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelationRewardApplied", StringComparison.Ordinal),
             "the host must route reward applied checks through the lifecycle rules");
         Test.True(rulesSource.Contains("FinalizeUnresolvedThreatDomesticPenalty(", StringComparison.Ordinal),
             "the host must route unresolved penalty finalization through the lifecycle rules");
         Test.True(rulesSource.Contains("FinalizeUnresolvedThreatIssuerReward(", StringComparison.Ordinal),
             "the host must route unresolved reward finalization through the lifecycle rules");
-        Test.True(behaviorSource.Contains("IsThreatConsequenceClanEligible(clan, compliantKingdom", StringComparison.Ordinal)
-                  && behaviorSource.Contains("IsThreatConsequenceClanEligible(clan, issuerKingdom", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(compliantKingdom)", StringComparison.Ordinal)
+                  && threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(issuerKingdom)", StringComparison.Ordinal)
+                  && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs")).Contains("IsThreatConsequenceClanEligible(clan, kingdom, ruler)", StringComparison.Ordinal),
             "penalty and reward snapshots must share one clan-eligibility adapter");
         Test.True(!behaviorSource.Contains("relationBefore > -100", StringComparison.Ordinal),
             "raw penalty apply gates must not remain in the host");
@@ -14709,7 +14712,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "war-response source validation must be composed inside the lifecycle rules");
         Test.True(threatMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatStageSourceDocument", StringComparison.Ordinal),
             "threat storage migration must delegate threat stage source validation to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CannotCaptureThreatConsequenceSnapshot", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.CannotCaptureThreatConsequenceSnapshot", StringComparison.Ordinal),
             "host must delegate the eliminated-kingdom snapshot fallback to the domain");
         Test.True(!behaviorSource.Contains("TargetDecision, \"noncomplied\"", StringComparison.Ordinal),
             "raw noncomplied comparisons must not remain in the host");
@@ -14727,15 +14730,15 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!behaviorSource.Contains("sourceMatchesThreat = source", StringComparison.Ordinal),
             "raw threat source matching must not remain in the host");
 
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatBreachPenaltyApplicable", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatBreachPenaltyApplicable", StringComparison.Ordinal),
             "host must delegate breach penalty applicability to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachPrestigePenalty", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachPrestigePenalty", StringComparison.Ordinal),
             "host must delegate breach prestige amount selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachRelationPenalty", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachRelationPenalty", StringComparison.Ordinal),
             "host must delegate breach relation amount selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachPrestigeReason", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachPrestigeReason", StringComparison.Ordinal),
             "host must delegate breach prestige reasons to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ApplyThreatBreachSettlement", StringComparison.Ordinal),
+        Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ApplyThreatBreachSettlement", StringComparison.Ordinal),
             "host must delegate the breach settlement record write to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectIssuerResolutionNotices", StringComparison.Ordinal),
             "host must delegate issuer notice selection to the domain");
@@ -14994,7 +14997,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadBool(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyEnvelopeJsonRules.IsJsonStringArray(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(", StringComparison.Ordinal),
+            && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(", StringComparison.Ordinal),
             "host must delegate generated-envelope json coercion to the domain");
         Test.True(!behaviorSource.Contains("private static bool TryParseJsonObject", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static JObject ParseJsonObject", StringComparison.Ordinal)
@@ -15352,9 +15355,9 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyIntentVocabulary.NormalizeIntent(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.Limit(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadString(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(", StringComparison.Ordinal)
+            && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(", StringComparison.Ordinal)
+            && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(", StringComparison.Ordinal),
             "host call sites must qualify the owning domain rule directly");
         Test.True(textRulesSource.Contains("public static string BuildDisplayedDocumentTitle(", StringComparison.Ordinal),
@@ -15471,7 +15474,7 @@ RunRepairCorrectionAndJobDecisionTests();
                 && validationSource.Contains("WorldDiplomacyRoundLifecycleRules.TryResolveOpenProposalFor(", StringComparison.Ordinal)
                 && documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(", StringComparison.Ordinal)
                 && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(", StringComparison.Ordinal)
-                && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(", StringComparison.Ordinal)
+                && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(", StringComparison.Ordinal)
                 && rulesSource.Contains("WorldDiplomacyPromptContractRules.BuildPolicySignalContext(", StringComparison.Ordinal)
                 && rulesSource.Contains("TryResolveUniqueOpenProposalForRound(", StringComparison.Ordinal)
                 && rulesSource.Contains("TryResolveUniqueOpenProposal(", StringComparison.Ordinal)
@@ -15994,7 +15997,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(rulesSource.Contains("MarkSettlementSlotWaitingForPlayer(", StringComparison.Ordinal)
             && rulesSource.Contains("ScheduleSettlementRelayArrival(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldCloseRoundAfterInvalidSuppression(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ApplyThreatComplianceResolution(", StringComparison.Ordinal),
+            && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ApplyThreatComplianceResolution(", StringComparison.Ordinal),
             "the host must route settlement bookkeeping, close gating, and compliance resolution through the lifecycle rules");
         Test.True(!behaviorSource.Contains("threat.ResolutionReason = \"target_explicitly_complied\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("slot.Status = \"waiting_player\"", StringComparison.Ordinal)
