@@ -71,42 +71,8 @@ namespace AnimusForge
 
 		private string TryExecuteCancelTrade(Hero npc, string payload)
 		{
-			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-			Kingdom npcKingdom = npc.Clan?.Kingdom;
-			WorldDiplomacyOralCancelTradeResolution resolution =
-				WorldDiplomacyOralCancelTradeRules.ResolveCommand(
-					payload,
-					playerKingdomExists: playerKingdom != null,
-					playerKingdomId: playerKingdom?.StringId,
-					playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
-					npcKingdomExists: npcKingdom != null,
-					npcKingdomId: npcKingdom?.StringId,
-					npcSpeakerHeroId: npc?.StringId);
-			if (!resolution.IsReady)
-			{
-				Logger.Log("DiplomacyBehavior", "[CancelTrade] Rejected status=" + resolution.Status);
-				return "";
-			}
-
-			WorldDiplomacyCancelTradeExecutionReceipt receipt =
-				CancelTradeCommandFacade.Execute(resolution.Command);
-			if (!receipt.IsApplied)
-			{
-				Logger.Log("DiplomacyBehavior", "[CancelTrade] Rejected status=" + receipt.Status
-					+ " code=" + receipt.ErrorCode);
-				return "";
-			}
-
-			playerKingdom = ResolveKingdom(receipt.PlayerKingdomId, includeEliminated: true);
-			npcKingdom = ResolveKingdom(receipt.NpcKingdomId, includeEliminated: true);
-			if (playerKingdom == null || npcKingdom == null)
-			{
-				Logger.Log("DiplomacyBehavior", "[CancelTrade] Applied but receipt endpoints are unavailable");
-				return "";
-			}
-			Logger.Log("DiplomacyBehavior", $"[CancelTrade] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
-			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("cancel_trade", playerKingdom, npcKingdom, "面对面口头外交达成");
-			return "";
+			var source = new DiplomacyOralCancelTradeSource(npc);
+			return DiplomacyOralCancelTradeApplication.Execute(ref source, payload);
 		}
 
 		// ════════════════════════════════════════════════════════════════════

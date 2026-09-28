@@ -212,10 +212,9 @@ internal static class Program
                   && oralSource.Contains("WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved", StringComparison.Ordinal),
             "confirmed fact must be published only after an Applied receipt");
         string cancelMethod = ExtractMethod(behavior, "private string TryExecuteCancelTrade(");
-        Test.True(cancelMethod.Contains("WorldDiplomacyOralCancelTradeRules.ResolveCommand", StringComparison.Ordinal)
-                  && cancelMethod.Contains("CancelTradeCommandFacade.Execute(resolution.Command)",
+        Test.True(cancelMethod.Contains("DiplomacyOralCancelTradeApplication.Execute(ref source, payload)",
                       StringComparison.Ordinal),
-            "cancel-trade must remain delegated after its follow-up slice");
+            "cancel-trade must forward to its Application owner");
     }
 
     private static WorldDiplomacyOralMakeTradeResolution Resolve(
