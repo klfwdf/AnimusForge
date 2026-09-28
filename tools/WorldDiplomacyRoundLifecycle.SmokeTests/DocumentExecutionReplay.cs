@@ -3,11 +3,12 @@ using AnimusForge.Refactor.Domain;
 
 internal static class DocumentExecutionReplay
 {
-    private sealed class Port : IWorldDiplomacyDocumentExecutionPort
+    internal sealed class Port : IWorldDiplomacyDocumentExecutionPort
     {
         internal readonly List<string> Events = new();
         internal readonly List<string> Legal = new() { "declare_war", "statement" };
         internal WorldDiplomacyRound Round;
+        internal WorldDiplomacyDocument StoredDocument;
         internal bool AuthorAllowed = true, NoAction, ThrowEffect, ThrowHistory, AfterFirstEffect;
         internal string InvalidTarget;
         internal int Effects, Id;
@@ -20,7 +21,7 @@ internal static class DocumentExecutionReplay
         public bool HasIndependentWorldDiplomacyAuthority(string id) { return id != "vassal"; }
         public bool CanAiAuthorDiplomaticDocument(string id, out string reason) { reason = "blocked_author"; return AuthorAllowed; }
         public WorldDiplomacyRound ResolveRound(string id) { return Round; }
-        public WorldDiplomacyDocument ResolveDocument(string id) { return null; }
+        public WorldDiplomacyDocument ResolveDocument(string id) { return StoredDocument?.DocumentId == id ? StoredDocument : null; }
         public void PruneInvalidOffers(WorldDiplomacyRound round) { Events.Add("PruneInvalidOffers"); }
         public bool IsNonRootAiRelayNoActionAllowed(WorldDiplomacyRound round, string slot, string author, string target, bool relay, bool external, WorldDiplomacyDocument source) { return NoAction; }
         public List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string author, string target) { return Legal; }

@@ -165,6 +165,7 @@ RunRepairCorrectionAndJobDecisionTests();
         PolicySignalRefreshReplay.Run();
         ActionSelectionReplay.Run();
         JobPreparationReplay.Run();
+        AnalysisApplicationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -11854,7 +11855,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string closeReason = null;
         var rounds = new Dictionary<string, WorldDiplomacyRound>();
         Action<WorldDiplomacyDocument, string> suppress = (doc, reason) =>
-            WorldDiplomacyRoundLifecycleRules.SuppressInvalidDocumentBeforePropagation(
+            WorldDiplomacyAnalysisApplication.SuppressInvalidDocumentBeforePropagation(
                 doc, reason, storage,
                 id => id != null && rounds.TryGetValue(id, out WorldDiplomacyRound r) ? r : null,
                 id => storage.Documents.FirstOrDefault(x => x != null && x.DocumentId == id),
@@ -12120,7 +12121,7 @@ RunRepairCorrectionAndJobDecisionTests();
             (values, excluded) => (values ?? Enumerable.Empty<string>())
                 .Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, excluded, StringComparison.OrdinalIgnoreCase))
                 .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-        Action<string> commit = raw => WorldDiplomacyRoundLifecycleRules.CommitAnalysis(
+        Action<string> commit = raw => WorldDiplomacyAnalysisApplication.CommitAnalysis(
             new WorldDiplomacyJob { JobId = "jA", DocumentId = doc?.DocumentId ?? "" },
             raw, 3, storage.DiplomaticThreats,
             resolveDocument, _ => null,
@@ -14264,6 +14265,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "retired exchange timeout path stays absent; public close rule retains compatibility");
         string policyRoundApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPolicyRoundApplication.cs"));
         string actionSelectionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyActionSelectionApplication.cs"));
+        string analysisSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs"));
         string noActionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNoActionApplication.cs"));
         string bindingSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatBindingApplication.cs"));
         string historyCaptureSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs"));
@@ -14359,7 +14361,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route intent normalization through the vocabulary");
         Test.True(offerApplicationSource.Contains("WorldDiplomacyIntentVocabulary.IsProposalIntent", StringComparison.Ordinal),
             "the offer application must route proposal checks through the vocabulary");
-        Test.True(rulesSource.Contains("WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation", StringComparison.Ordinal),
+        Test.True(analysisSource.Contains("WorldDiplomacyIntentVocabulary.ResolveValidatedResponseObligation", StringComparison.Ordinal),
             "the lifecycle rules must route response obligations through the vocabulary");
         Test.True(!behaviorSource.Contains("\"make_peace\" or \"peace\" or \"peace_proposal\"", StringComparison.Ordinal),
             "raw intent aliases must not remain in the host");
@@ -14998,7 +15000,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!envelopeSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "envelope json rules must not reference the host behavior");
         Test.True(rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.TryParseJsonObject(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(", StringComparison.Ordinal)
+            && analysisSource.Contains("WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.NormalizeGeneratedDiplomaticEnvelopeShape(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyEnvelopeJsonRules.MirrorFirstGeneratedActionEnvelope(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyEnvelopeJsonRules.BuildGeneratedSingleActionEnvelope(", StringComparison.Ordinal)
@@ -15007,10 +15009,10 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.RemoveRedundantStatementActions(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.BuildPeaceTermsJson(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadString(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadStringList(", StringComparison.Ordinal)
+            && analysisSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadStringList(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadTokenStringList(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadFloat(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadBool(", StringComparison.Ordinal)
+            && analysisSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadFloat(", StringComparison.Ordinal)
+            && analysisSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadBool(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyEnvelopeJsonRules.IsJsonStringArray(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.IsAutonomousOpeningJob(", StringComparison.Ordinal)
             && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(", StringComparison.Ordinal),
@@ -15139,7 +15141,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "offer contract rules must not reference the host behavior");
         Test.True(behaviorSource.Contains("WorldDiplomacyOfferContractRules.IsExclusivePeaceOfferResponseSet(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyOfferContractRules.GeneratedActionsContainRequiredPeaceOfferResponse(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(", StringComparison.Ordinal)
+            && analysisSource.Contains("WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(", StringComparison.Ordinal)
             && offerApplicationSource.Contains("WorldDiplomacyOfferContractRules.ProposalSuccessResult(", StringComparison.Ordinal)
             && factSource.Contains("WorldDiplomacyOfferContractRules.IsRequiredPeaceOfferResponse(", StringComparison.Ordinal),
             "host and document fact rules must delegate offer and commitment contract checks to the domain rules");
@@ -16013,7 +16015,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "settlement-turn bookkeeping, suppression close gating, and compliance records must live in the lifecycle rules");
         Test.True(rulesSource.Contains("MarkSettlementSlotWaitingForPlayer(", StringComparison.Ordinal)
             && rulesSource.Contains("ScheduleSettlementRelayArrival(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldCloseRoundAfterInvalidSuppression(", StringComparison.Ordinal)
+            && analysisSource.Contains("WorldDiplomacyRoundLifecycleRules.ShouldCloseRoundAfterInvalidSuppression(", StringComparison.Ordinal)
             && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.ApplyThreatComplianceResolution(", StringComparison.Ordinal),
             "the host must route settlement bookkeeping, close gating, and compliance resolution through the lifecycle rules");
         Test.True(!behaviorSource.Contains("threat.ResolutionReason = \"target_explicitly_complied\"", StringComparison.Ordinal)
@@ -16029,7 +16031,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("Func<WorldDiplomacyRound, string, bool> includeResultSettlementTarget", StringComparison.Ordinal)
             && rulesSource.Contains("Action<WorldDiplomacyRound> refreshActionSlots", StringComparison.Ordinal),
             "offer reconciliation and settlement-open bookkeeping must live in the lifecycle rules behind ports");
-        Test.True(rulesSource.Contains("ReconcilePlayerDeclarationWithOpenOffer(document, intent, resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);", StringComparison.Ordinal)
+        Test.True(analysisSource.Contains("ReconcilePlayerDeclarationWithOpenOffer(document, intent, resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
             && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"))
                 .Contains("port.ResolveRound(document?.RoundId)", StringComparison.Ordinal)
@@ -16076,12 +16078,12 @@ RunRepairCorrectionAndJobDecisionTests();
         // DPL-060CZ: weekly-material snapshots and invalid-document suppression
         // live in the lifecycle rules; the host binds storage and queue ports.
         Test.True(rulesSource.Contains("public static void RecordDiplomacyWeeklyMaterial(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void SuppressInvalidDocumentBeforePropagation(", StringComparison.Ordinal)
+            && analysisSource.Contains("public static void SuppressInvalidDocumentBeforePropagation(", StringComparison.Ordinal)
             && rulesSource.Contains("Action<string, string> completeExchange", StringComparison.Ordinal)
             && rulesSource.Contains("Func<string, string> resolveKingdomId", StringComparison.Ordinal),
             "document lifecycle bookkeeping must live in the lifecycle rules behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RecordDiplomacyWeeklyMaterial(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SuppressInvalidDocumentBeforePropagation(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyAnalysisApplication.Suppress(", StringComparison.Ordinal)
             && behaviorSource.Contains("MyBehavior.RecordWorldDiplomacyWeeklyMaterialForExternal", StringComparison.Ordinal),
             "the host must bind material recording and suppression through thin adapters");
         Test.True(!behaviorSource.Contains("invalid generated document suppressed before propagation", StringComparison.Ordinal)
@@ -16104,13 +16106,13 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("result_settlement_circuit_breaker", StringComparison.Ordinal)
             && !behaviorSource.Contains("technical_missing_root_after_load", StringComparison.Ordinal),
             "the host must not retain terminal-close reasons or reconcile bodies");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitAnalysis(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void CommitAnalysis(", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyAnalysisApplication.Commit(", StringComparison.Ordinal)
+            && analysisSource.Contains("public static void CommitAnalysis(", StringComparison.Ordinal),
             "the host must route analysis commits through the lifecycle rules");
         Test.True(!behaviorSource.Contains("analysis_status_has_no_publishable_action", StringComparison.Ordinal)
             && !behaviorSource.Contains("analysis_has_no_structured_intent", StringComparison.Ordinal)
             && !behaviorSource.Contains("analysis_has_no_actionable_intent", StringComparison.Ordinal)
-            && rulesSource.Contains("analysis_has_no_actionable_intent", StringComparison.Ordinal),
+            && analysisSource.Contains("analysis_has_no_actionable_intent", StringComparison.Ordinal),
             "analysis suppression reasons must live inside the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundPlan(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void CommitRoundPlan(", StringComparison.Ordinal),
