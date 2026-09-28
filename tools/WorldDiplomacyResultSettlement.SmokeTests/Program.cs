@@ -2111,6 +2111,16 @@ internal static class Program
     }
 
     // Follow the actual DPL-080 owner while retaining host-routing checks.
+    private static string? ReadJobPreparationOwner(string source, string marker)
+    {
+        bool rebuild = source.Contains("class WorldDiplomacyRoundLifecycleRules", StringComparison.Ordinal) && marker.Contains("RebuildPendingJob(");
+        bool profile = source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)
+            && new[] { "EnsureGenerationJobHasKingdomStrategicProfile(", "RefreshDiplomaticActionPresentationAndPrompt(", "RefreshDiplomaticThreatPresentationAndPrompt(" }.Any(marker.Contains);
+        if (!rebuild && !profile) return null;
+        return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs")),
+            rebuild ? marker : marker.Replace("private bool", "internal static bool"));
+    }
+
     private static string? ReadActionSelectionOwner(string source, string marker)
     {
         if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
@@ -2179,7 +2189,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
@@ -2191,7 +2201,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

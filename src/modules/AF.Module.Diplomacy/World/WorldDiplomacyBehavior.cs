@@ -950,43 +950,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job)
 	{
-		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return true;
-		string authorId = (job.AuthorKingdomId ?? "").Trim();
-		if (string.IsNullOrEmpty(authorId)) return false;
-		string marker = WorldDiplomacyPromptContractRules.BuildKingdomStrategicProfileMarker(authorId);
-		Kingdom author = ResolveKingdom(authorId);
-		if (!TryBuildKingdomStrategicProfilePrompt(author, marker, out string profilePrompt)) return false;
-		if (string.Equals(job.StrategicProfileKingdomId, authorId, StringComparison.OrdinalIgnoreCase)
-			&& WorldDiplomacyPromptContractRules.GenerationJobContainsKingdomStrategicProfile(job, authorId, marker, profilePrompt)) return true;
-		job.StrategicProfileKingdomId = "";
-		if (WorldDiplomacyPromptContractRules.GenerationJobContainsKingdomStrategicProfile(job, authorId, marker, profilePrompt))
-		{
-			job.StrategicProfileKingdomId = authorId;
-			return true;
-		}
-		if (job.LlmMessages?.Count > 0)
-		{
-			for (int index = job.LlmMessages.Count - 1; index >= 0; index--)
-			{
-				WorldDiplomacyLlmMessage message = job.LlmMessages[index];
-				if (message == null || !string.Equals(message.Role, "user", StringComparison.OrdinalIgnoreCase)) continue;
-				message.Content = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(message.Content, profilePrompt, authorId);
-				message.StrategicProfileKingdomId = authorId;
-				job.UserPrompt = message.Content;
-				job.StrategicProfileKingdomId = authorId;
-				LogKingdomStrategicProfileInjection(job, profilePrompt);
-				return true;
-			}
-			job.LlmMessages.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = profilePrompt, StrategicProfileKingdomId = authorId });
-			job.UserPrompt = profilePrompt;
-			job.StrategicProfileKingdomId = authorId;
-			LogKingdomStrategicProfileInjection(job, profilePrompt);
-			return true;
-		}
-		job.UserPrompt = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(job.UserPrompt, profilePrompt, authorId);
-		job.StrategicProfileKingdomId = authorId;
-		LogKingdomStrategicProfileInjection(job, profilePrompt);
-		return true;
+		return WorldDiplomacyJobPreparationApplication.EnsureGenerationJobHasKingdomStrategicProfile(new JobPreparationPort(this), job);
 	}
 	private static void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt)
 	{
@@ -2907,23 +2871,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job)
 	{
-		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
-		job.LlmMessages?.Clear();
-		job.SemanticRepairAttempts = 0;
-		job.HistoryPrefixHash = "";
-		job.IsRunning = false;
-		return TryRebuildPendingWorldDiplomacyJob(job);
+		return WorldDiplomacyJobPreparationApplication.RefreshDiplomaticActionPresentationAndPrompt(new JobPreparationPort(this), job);
 	}
 	private bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job)
 	{
-		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
-		job.PresentedThreatDocumentIds = WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(_storage?.DiplomaticThreats, job.AuthorKingdomId);
-		job.PresentedThreatFollowThroughDocumentIds = WorldDiplomacyRoundLifecycleRules.SelectNoncompliedThreatStageDocumentIds(_storage?.DiplomaticThreats, job.AuthorKingdomId);
-		job.LlmMessages?.Clear();
-		job.SemanticRepairAttempts = 0;
-		job.HistoryPrefixHash = "";
-		job.IsRunning = false;
-		return TryRebuildPendingWorldDiplomacyJob(job);
+		return WorldDiplomacyJobPreparationApplication.RefreshDiplomaticThreatPresentationAndPrompt(new JobPreparationPort(this), job);
 	}
 	private void AppendDiplomaticThreatDynamicContext(StringBuilder sb, Kingdom author, string roundId)
 	{
@@ -4241,23 +4193,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			() => _lastLlmCacheAffinityKey = "", Log);
 	}
 		private bool TryRebuildPendingWorldDiplomacyJob(WorldDiplomacyJob job)
-	{
-		return WorldDiplomacyRoundLifecycleRules.RebuildPendingJob(
-			job, _storage, GenerationMaxTokens, AnalysisMaxTokens,
-			() => { GetDiplomaticDeclarationCharacterRange(out int min, out int max); return (min, max); },
-			id => ResolveKingdom(id) != null,
-			(r, authorId) => GetResultSettlementActionableTargets(r, ResolveKingdom(authorId)).Select(x => x.StringId).ToList(),
-			ResolveRound,
-			GetCommonDiplomacyContract,
-			ResolveDocument,
-			(r, j, source) => BuildRelayConversationTurnPrompt(r, ResolveKingdom(j.AuthorKingdomId), ResolveKingdom(j.TargetKingdomId), prioritySource: source, priorityResponseOnly: j.IsExternalResponseOnly),
-			(j, exchange, source, candidates) => BuildGenerationPrompt(ResolveKingdom(j.AuthorKingdomId), ResolveKingdom(j.TargetKingdomId), exchange, j.IsResponse, source, j.IsReminder, j.RoundId, j.AllowUntargeted, candidates, j.IsExternalResponseOnly),
-			BuildGenerationLegalActionSignature,
-			j => CaptureCanonicalHistoryForJob(j, syncSources: false),
-			BuildAnalysisPrompt,
-			BuildRoundPlanSystemPrompt,
-			BuildRoundPlanPrompt);
-	}
+    {
+        return WorldDiplomacyJobPreparationApplication.Rebuild(new JobPreparationPort(this), job);
+    }
 	private void MigrateAutonomousDecisionArchitectureIfNeeded()
 	{
 		if (_storage == null) return;
