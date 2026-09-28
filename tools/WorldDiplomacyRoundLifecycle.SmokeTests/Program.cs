@@ -150,6 +150,7 @@ RunRepairCorrectionAndJobDecisionTests();
         DocumentApplicationReplay.Run();
         DocumentExecutionReplay.Run();
         PublicationRoutingReplay.Run();
+        ImmediateActionReplay.Run();
         PropagationLifecycleReplay.Run();
         ThreatApplicationReplay.Run();
         VerifySourceBoundary();
