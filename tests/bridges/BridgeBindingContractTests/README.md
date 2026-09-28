@@ -16,7 +16,7 @@
 ```powershell
 python -B .\tests\bridges\BridgeBindingContractTests\validate_bridge_bindings.py
 python -B .\tests\bridges\BridgeBindingContractTests\validate_bridge_bindings.py --json
-python -B -m unittest discover -s .\tools\BridgeBindingContractTests -p 'test_*.py' -v
+python -B -m unittest discover -s .\tests\bridges\BridgeBindingContractTests -p 'test_*.py' -v
 ```
 
 当前预期：`16` bindings、`12` wired、`4` declared-only、配置启用 `12`。
