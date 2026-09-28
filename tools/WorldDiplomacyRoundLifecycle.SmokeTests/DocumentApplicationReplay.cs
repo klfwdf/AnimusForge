@@ -93,11 +93,14 @@ internal static class DocumentApplicationReplay
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentApplication.cs"));
         string host = File.ReadAllText(Path.Combine(root.FullName,
             "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string executor = File.ReadAllText(Path.Combine(root.FullName,
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
         Test.True(!owner.Contains("TaleWorlds", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyDocumentApplication.Create(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyDocumentApplication.Add(", StringComparison.Ordinal)
-                && host.Contains("WorldDiplomacyDocumentApplication.BeginAction(", StringComparison.Ordinal)
-                && host.Contains("WorldDiplomacyDocumentApplication.SealActions(", StringComparison.Ordinal),
+                && host.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(", StringComparison.Ordinal)
+                && executor.Contains("WorldDiplomacyDocumentApplication.BeginAction(", StringComparison.Ordinal)
+                && executor.Contains("WorldDiplomacyDocumentApplication.SealActions(", StringComparison.Ordinal),
             "real document callers use one game-free canonical creation and write owner");
     }
 }

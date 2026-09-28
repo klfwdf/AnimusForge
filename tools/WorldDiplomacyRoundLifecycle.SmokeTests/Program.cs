@@ -148,6 +148,7 @@ RunRepairCorrectionAndJobDecisionTests();
         OfferApplicationReplay.Run();
         CourtResponseReplay.Run();
         DocumentApplicationReplay.Run();
+        DocumentExecutionReplay.Run();
         PropagationLifecycleReplay.Run();
         ThreatApplicationReplay.Run();
         VerifySourceBoundary();
@@ -14300,7 +14301,10 @@ RunRepairCorrectionAndJobDecisionTests();
             "war-response authorization and declaration detection must be composed inside the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsSettlementTargetUsable", StringComparison.Ordinal),
             "the host must route settlement-target usability through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateSettlementTargetAdmission", StringComparison.Ordinal),
+        string documentExecutor = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
+        string documentPublication = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentPublicationApplication.cs"));
+        Test.True(behaviorSource.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget", StringComparison.Ordinal)
+            && documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateSettlementTargetAdmission", StringComparison.Ordinal),
             "the host must route settlement-target admission through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsNoActionAuthorizationEligible", StringComparison.Ordinal),
             "the host must route no-action eligibility through the lifecycle rules");
@@ -15283,7 +15287,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(
             behaviorSource.Contains("WorldDiplomacyDocumentFactRules.BuildDocumentIndex(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(", StringComparison.Ordinal)
+            && documentExecutor.Contains("WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyDocumentFactRules.CloneDocument)", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt)", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static WorldDiplomacyDocument CloneDocument(", StringComparison.Ordinal)
@@ -15313,7 +15317,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && factSource.Contains("Func<string, WorldDiplomacyDocument> resolveDocument", StringComparison.Ordinal),
             "unsafe multiple peace-acceptance checks must live in the document fact rules behind a resolver port");
         Test.True(validationSource.Contains("WorldDiplomacyDocumentFactRules.GeneratedActionsHaveUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.DocumentHasUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal)
+            && documentExecutor.Contains("WorldDiplomacyDocumentFactRules.DocumentHasUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool GeneratedActionsHaveUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool DocumentHasUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal),
             "host must delegate unsafe peace-acceptance checks to the domain document fact rules");
@@ -15460,7 +15464,7 @@ RunRepairCorrectionAndJobDecisionTests();
         }
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.TryDeriveGeneratedDiplomaticStructure(", StringComparison.Ordinal)
                 && validationSource.Contains("WorldDiplomacyRoundLifecycleRules.TryResolveOpenProposalFor(", StringComparison.Ordinal)
-                && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(", StringComparison.Ordinal)
+                && documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(", StringComparison.Ordinal)
                 && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(", StringComparison.Ordinal)
                 && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(", StringComparison.Ordinal)
                 && rulesSource.Contains("WorldDiplomacyPromptContractRules.BuildPolicySignalContext(", StringComparison.Ordinal)
@@ -16119,7 +16123,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must keep binding the generated-document live-state adapters");
 
         // DPL-060DF: post-decision routing
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ProcessDiplomaticThreatDocument(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.AbandonRejectedGeneration(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
@@ -16135,12 +16139,12 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("enforced.Status = \"enforced\"", StringComparison.Ordinal)
             && rulesSource.Contains("enforced.Status = \"enforced\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("analyzed player declaration routing refresh deferred", StringComparison.Ordinal)
-            && rulesSource.Contains("analyzed player declaration routing refresh deferred", StringComparison.Ordinal),
+            && documentPublication.Contains("analyzed player declaration routing refresh deferred", StringComparison.Ordinal),
             "abandonment, enforcement, and finalization bookkeeping must live inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("ApplyDiplomaticThreatReputationPenalty,", StringComparison.Ordinal)
-            && behaviorSource.Contains("SettleInternationalReputationForDocument,", StringComparison.Ordinal)
+        Test.True(documentExecutor.Contains("port.ApplyDiplomaticThreatReputationPenalty,", StringComparison.Ordinal)
+            && documentExecutor.Contains("port.SettleInternationalReputationForDocument,", StringComparison.Ordinal)
             && behaviorSource.Contains("=> ApplyNationalPrestigeDelta(kid, delta, d, reason)", StringComparison.Ordinal)
-            && behaviorSource.Contains("(d, a) => StartDocumentPropagation(d, ResolveKingdom(a))", StringComparison.Ordinal),
+            && documentExecutor.Contains("port.StartDocumentPropagation,", StringComparison.Ordinal),
             "the host must keep binding post-decision live-state adapters");
 
         // DPL-060DG: relay-hop and result-settlement turn scheduling live inside

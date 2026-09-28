@@ -21,6 +21,18 @@ static class Program
     static List<string> Violations(string path, SyntaxNode root)
     {
         var errors = new List<string>();
+        if (path.StartsWith("src/modules/AF.Module.Diplomacy/World/"))
+        {
+            foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>())
+            {
+                if (!new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument",
+                    "FinalizePublishedDocumentAfterAnalysis", "TryIncludeResultSettlementTarget" }.Contains(method.Identifier.ValueText)) continue;
+                var invocations = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                if (method.Body?.Statements.Count != 1 || invocations.Length != 1
+                    || invocations[0].Expression.ToString() != "WorldDiplomacyDocumentExecutionApplication." + method.Identifier.ValueText)
+                    errors.Add("document predecessor retains orchestration: " + method.Identifier.ValueText);
+            }
+        }
         if (IsPure(path))
             foreach (SyntaxToken token in root.DescendantTokens().Where(t => t.IsKind(SyntaxKind.IdentifierToken)))
                 if (Forbidden.Contains(token.ValueText)) errors.Add("pure dependency " + token.ValueText);
@@ -116,6 +128,11 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument" })
+        {
+            string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";
+            Check(Violations(host, CSharpSyntaxTree.ParseText(injected).GetRoot()).Count > 0, "reject callback-hidden predecessor orchestration: " + name);
+        }
         Check(Violations("Refactor/Domain/WorldDiplomacyX.cs", CSharpSyntaxTree.ParseText("// Hero WorldDiplomacyBehavior\nclass X { string F() => \"TaleWorlds\"; }").GetRoot()).Count == 0, "comments/strings are not type references");
         string baseline = (string)manifest["baseline"], candidate = (string)manifest["candidate"];
         if (!string.IsNullOrEmpty(baseline) && !string.IsNullOrEmpty(candidate))

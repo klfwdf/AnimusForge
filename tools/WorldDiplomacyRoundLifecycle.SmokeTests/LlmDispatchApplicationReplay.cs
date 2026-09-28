@@ -1,5 +1,6 @@
 using AnimusForge;
 using Newtonsoft.Json.Linq;
+using AnimusForge.Refactor.Domain;
 
 internal static class LlmDispatchApplicationReplay
 {
@@ -53,12 +54,23 @@ internal static class LlmDispatchApplicationReplay
         var state = new State();
         state.Storage.Jobs.Add(new WorldDiplomacyJob { JobId = "j", Kind = kind, SystemPrompt = "sys", UserPrompt = "u", MaxTokens = 1000,
             LlmMessages = new List<WorldDiplomacyLlmMessage>() });
+        if (kind == "compress")
+        {
+            var job = state.Storage.Jobs[0];
+            job.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
+            job.SystemPrompt = string.Join("\n", WorldDiplomacyPromptContractRules.DiplomaticDeclarationWritingContractMarker,
+                WorldDiplomacyPromptContractRules.DiplomacyModeDispatchContractMarker,
+                WorldDiplomacyPromptContractRules.DiplomaticDeclarationModeContractMarker,
+                WorldDiplomacyPromptContractRules.CanonicalHistoryCompressionModeContractMarker,
+                WorldDiplomacyPromptContractRules.CanonicalHistoryContractMarker);
+            job.UserPrompt = "【MODE=COMPACT】";
+        }
         return state;
     }
     private static void Run(State state) { var source = new Source(state); WorldDiplomacyLlmDispatchApplication.Run(ref source); }
     internal static void Run()
     {
-        foreach (string kind in new[] { "analyze" })
+        foreach (string kind in new[] { "analyze", "compress" })
         {
             var s = New(kind); Run(s);
             Test.True(s.Events.SequenceEqual(new[] { "budget?", "messages", "fits", "consume", "claim", "running", "affinity", "shape", "start" })
@@ -79,9 +91,9 @@ internal static class LlmDispatchApplicationReplay
         }
         var config = New(); config.ConfigError = "missing"; Run(config);
         Test.True(config.Events.SequenceEqual(new[] { "failed:api not configured: missing" }), "configuration failure precedes request budget");
-        foreach (long generation in new[] { 7L })
+        foreach (long generation in new[] { 7L, 0L })
         {
-            var s = New(); s.Generation = generation; s.Claim = false; Run(s);
+            var s = New(); s.Generation = generation; s.Claim = generation == 0L; Run(s);
             Test.True(!s.Storage.Jobs[0].IsRunning && s.Events.Contains("consume") && s.Events.Any(e => e.StartsWith("log:")) && s.Request == null,
                 "claim rejection clears selection flag without refunding already consumed budget");
         }
