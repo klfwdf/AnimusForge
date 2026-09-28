@@ -409,7 +409,7 @@ F4U_ARCHIVED_LEGACY_GUI_PATHS = {
     or path.startswith(("GUI/SpriteParts/ui_account/", "GUI/SpriteParts/ui_achievement/",
                         "GUI/SpriteParts/ui_subscribe/"))
 }
-F4U_ARCHIVED_UNUSED_GUI_PATHS = {
+F4U_RETIRED_REMAINING_GUI_PATHS = {
     "GUI/SpriteParts/af_courier/af_courier_scroll_version_a.png",
     "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png.tmp.png",
     "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_culture_panel_patch.png",
@@ -418,7 +418,7 @@ F4U_ARCHIVED_UNUSED_GUI_PATHS = {
     "GUI/SpriteSheets/af_vassalage_notifications/af_vassalage_notifications_1.png",
 }
 CURRENT_HOLD_PATHS = (J15B_HOLD_PATHS - J15C_EXPECTED.keys() - F4D_ARCHIVED_PRIVATE_PATHS
-                      - F4U_ARCHIVED_LEGACY_GUI_PATHS - F4U_ARCHIVED_UNUSED_GUI_PATHS)
+                      - F4U_ARCHIVED_LEGACY_GUI_PATHS - F4U_RETIRED_REMAINING_GUI_PATHS)
 F4A_EXPECTED = {
     "AssetPackages/pack0.tpac": {
         "owner": "AnimusForge.XihaiAction",
@@ -543,10 +543,11 @@ def verify_map_and_resources() -> None:
         check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired legacy GUI returned: {target}")
         check(target not in by_target, f"retired legacy GUI entered content map: {target}")
 
-    check(not F4U_ARCHIVED_UNUSED_GUI_PATHS - J15B_HOLD_PATHS, "unused GUI retirement must come from the J15b HOLD set")
-    for target in F4U_ARCHIVED_UNUSED_GUI_PATHS:
-        check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired unused GUI returned: {target}")
-        check(target not in by_target, f"retired unused GUI entered content map: {target}")
+    check(len(F4U_RETIRED_REMAINING_GUI_PATHS) == 6, "remaining legacy GUI retirement set must remain exact")
+    check(not F4U_RETIRED_REMAINING_GUI_PATHS - J15B_HOLD_PATHS, "unused GUI retirement must come from the J15b HOLD set")
+    for target in F4U_RETIRED_REMAINING_GUI_PATHS:
+        check(not (ROOT / "AnimusForge" / Path(target)).exists(), f"retired remaining GUI returned: {target}")
+        check(target not in by_target, f"retired remaining GUI entered content map: {target}")
 
     remaining = {
         path.relative_to(ROOT / "AnimusForge").as_posix()
@@ -706,6 +707,8 @@ def verify_inventory_and_overlay() -> None:
 
     overlay = load_module(ROOT / "tools" / "package_policy_system_source_overlay.py", "j15_overlay")
     files, categories = overlay.build_file_set()
+    check("AnimusForge/GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice.png" not in files,
+          "retired diplomacy notice must not enter the source overlay")
     alias_targets = {
         "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
         "CustomPrompts/Policy/NpcRulerPolicyPrompt.json",

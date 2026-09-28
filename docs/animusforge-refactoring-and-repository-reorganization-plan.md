@@ -1,27 +1,207 @@
-<a id="j15-closeout-20260928"></a>
+<a id="j15-remote-reconcile-20260928"></a>
 
-## J15 离线收口与 J16 计划（2026-09-28）
+## J15 同源重复收尾的远端合并（2026-09-28，MERGE_OFFLINE_VERIFIED）
 
-**状态：`J15_OFFLINE_CLOSED / F5_LIVE_SAVE_NOT-RUN / J16_PLANNED`。** 分支 `codex/af-j15-closeout-20260928`（基于远端 `8af57b39`，未推送）。提交：`7834662f` 编辑器隔离完整 smoke；`3b4a905c` 内容 runner 可移植（设计源锁改为已提交 LF blob、pwsh/dotnet8 可覆盖）；`e3140bb1` F4-U 最后 6 项旧 GUI 归档退役（用户批准），HOLD 6→0；`e7936b04` 交接。候选验证：六构建 0/0（1.4 引用 v1.4.7.117484），内容 runner 108/0，inventory unknown=0，Release Stage 124 项，StaticVerifier 13/0，代码地图 795 锚点两模式 PASS。
+- 用户先要求推送，再确认检查合并；本地 `d6dc17f8` 与远端 `e7936b04` 从 `8af57b39` 分叉，分别有 8/4 个独有提交。只做普通 merge，不 rebase/reset/强推；不重复执行旧 GUI 删除、归档或 J15 产品工作。
+- 三方预演仅冲突 `HANDOFF.md`、内容 runner `run.py`、编辑器 smoke `Program.cs`。六张 GUI 与 overlay 脚本最终字节/缺失状态相同。合并保留本地最新计划、恢复测试和额外断言，接纳远端工具路径/换行可移植性与更完整编辑器用例，保持已有路径安全约束；历史证据注明来源，不把远端运行当本机验证。
+- 不改产品 C#、项目、配置、构建覆盖方式或真实玩家数据。合并前意图作本地检查点；验证受影响脚本/测试与文档后再提交。完整编辑器测试需要全新仓外合成根，未获得本轮精确授权前不创建、不写入；不无参数运行旧全量 smoke，不清理任何既有根。
+- 远端 HANDOFF 新增 TPAC“用户声明自制/有授权”的记录应保留来源及待补出处，与当前实机/旧档/发布门槛分开；不照抄其外机路径、历史安装/部署指令或证据状态。
 
-**F4-A 交接给制作组负责成员（本轮不处理）**：
-- 当前唯一活动源 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac`，1,671,304 字节，SHA-256 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`，含一次 `nacisword1`；经 `content/content-map.json` 投影为 Stage 的 `AssetPackages/pack0.tpac`。运行消费者：`extensions/AnimusForge.XihaiAction/src/Runtime/ActionProviders.cs:47,217`（只检查存在且非空）；StaticVerifier `extensions/AnimusForge.XihaiAction/tools/StaticVerifier/Program.cs:404–407`。
-- 本分支对它做过的事：`b2b946d3`（远端）把重复的 `AnimusForge/AssetPackages/pack0.tpac` 同 SHA 备份到忽略的 `local/j15-tpac-archive-20260927/` 后退出活动树；本轮只读使用，未改字节。
-- 待该成员处理：`extensions/AnimusForge.XihaiAction/RELEASE_MANIFEST.json:42` 与 `MIGRATION_MANIFEST.json:19` 仍记旧 11,205,263 字节 / `22CDE3B0…` 身份，与当前包不符；来源/再分发说明；1.3/1.4 实机动作视觉。inventory 仍把该文件标 `HOLD:asset-package-provenance`，J15 内容 runner 锁当前 hash，换包时需同步这两处。
+### 本轮合并结果与复验证据
 
-**J16**：计划见 [j16-tests-tools-docs-plan.md](plans/j16-tests-tools-docs-plan.md)。
+- 普通 merge 以本地意图 `863386b4` 和远端 `e7936b04` 为父历史，未 rebase/强推/重写提交；重复 GUI 删除和 overlay 结果不重复操作。最终仅整合三处冲突及远端 README，本地 FullStageManagedDeployContractTests、DataPaths 改动、完整 AF 2.0 计划/owner matrix/范围图保留。
+- `run.py` 合并远端 LF/CRLF 归一和 `AF_J15_PWSH`/`AF_J15_DOTNET8`，保留本地六项精确数量、overlay 禁入断言，同时保留远端“六项来自旧 HOLD 集合”断言。不修改默认工具路径，不跳过内容断言。
+- 编辑器 smoke 使用远端九步完整用例，合并本地首次包列表唯一、恢复时独立备份/旧字节和路径拒绝约束：root/环境路径必须绝对、data 为 root/data、TEMP/TMP/进程临时根必须同一已存在目录；接受原 temp 和远端示例 tmp 目录名，安全边界不依赖名字。保留远端 reparse 拒绝、真实玩家根前后快照、无清理和全部额外测试。
+- 本轮用户明确批准新建 `E:/AF-J15-merge-smoke-20260928-a`；创建前确认不存在、祖先无 reparse。当前合并源码的编辑器 Core/SmokeTests 以系统 SDK 10.0.400 在仓内全新 `artifacts/j15-content/merge-verification-20260928-a/build` 构建，0 warning/error；NuGet/CLI home/TEMP 与空本地 restore 源均在该仓内根，未安装 SDK 或改游戏项目。构建日志为该根 `editor-build.log`。
+- 获准外部合成根保存 `full-smoke.log`：九步通过、`real_root_unchanged=1`；missing/relative root、TEMP 越界、TEMP/TMP 不一致、relative data、既有 exports 六个负例均按预期写入前拒绝；两个路径模式通过，`--backup-contract merge-20260928-a` 的连续 12 次独立备份及坏 JSON 保留通过。外部合成根和仓内新 fixture 全部保留，不清理，不打印玩家内容。
+- 内容 runner 五项静态核验通过（映射/资源、项目资源、脚本接线、格式/引用、inventory/overlay），六项设计源 LF/CRLF hash 一致；直接执行 main 的默认/覆盖路径两次路由核验，**子命令被拦截而非运行**。因此不把 main 打印的 PASS 计为本轮完整 PowerShell 部署故障矩阵或 GCCZ loader 重跑。该部分源码未改，旧证据仍按原候选记录。
+- 文档当前入口/链接、无冲突标记、差异白名单及 `git diff --check` 已核对。产品 C#/项目/配置/一键脚本未改变；没有本轮游戏构建、实际部署、provider、实机/旧档测试，不提升 J15 或全主体重构结项状态。
+- 远端 `e7936b04` 的 TPAC 授权声明、编辑器与构建记录作为带来源的历史补充收录在 HANDOFF；不将外机日志/路径或“未推送”等旧状态当作本机当前事实。用户原推送请求仍以普通快进推送执行，若远端再次分叉则停止并重新核对，不覆盖他人提交。
 
-**J16 意图检查点（2026-09-28，`J16_ACTIVE`）**：用户批准开工。本分支按计划 G0 → J16a → J16b → J16c → J16e 推进；J16d（一键脚本/Bootstrap）与 A1 去跟踪、A5 venv、A6 CLAUDE/AGENTS 段落仍需逐项确认。G0 先在原位置跑全部 runner（仓外 TEMP、只写忽略的 `artifacts/`），形成移动前结果表；只改测试/工具路径与定位，不改断言、产品代码、`pack0.tpac`、Stage 映射或 GCCZ；不推送、不部署。
+<a id="j16a-relocation-current-20260928"></a>
 
-**J16 G0 移动前基线（`79df8ac0`）**：[docs/audits/2026-09-28-j16-baseline.json](audits/2026-09-28-j16-baseline.json)。自动枚举 `tools/`、`tests/` 下 250 个入口（run*/validate_*/verify*/source_*/test_* 与带 `__main__` 的 py、测试 csproj），默认参数运行，只对文档写明的必需参数补值（`--dotnet`/`--newtonsoft`/`--phase after --layout relocated`/`ReplayCandidateDll` 等）；replay 类用 Debug Stage 与 Workshop 精确模块路径；Policy 契约按 `build_single_module.ps1` 的 1.3 参数跑 `--policy-all-modules-contract-only`（1407 断言/18 模块 PASS）。结果：**PASS 202**、`PREEXISTING_FAIL` 38、`NEEDS_INPUT` 6（缺 manifest/安装模块/docx/真实 PlayerExports）、`SUPERSEDED_BY_RUNNER` 3（直接构建 csproj 缺 Newtonsoft，其同目录 `run.py` 已 PASS）、`ENV_STATE` 1（安装模块与 Stage 不一致，部署前属预期）。`PREEXISTING_FAIL` 抽 5 个在未改动的远端 `8af57b39` 独立 worktree 复跑同样失败，主因是锁死历史源码 hash 的 source review/parity（生产代码已演进）、引用不可达历史修订或 `AnimusForge/` 旧路径；**J16 不修，只要求移动后保持原状态**，每个 PASS 移动后必须仍 PASS。环境补充（均仓外或忽略）：官方 SDK 8.0.425 装到忽略的 `local/dotnet/8.0.425/`（多个既有 runner 的默认路径）；`~/.nuget` 中 Newtonsoft 13.0.3 复制到忽略的 `.tmp/nuget-packages/`；两次运行 `package_policy_system_source_overlay.py` 产生的 `dist/*.zip` 已删除。基线 harness 暂存 `artifacts/j16-baseline/baseline.py`（忽略），J16e 改为正式 `tests/run_all.py`。
+## J16a 测试归位分支进度并入（2026-09-28）
 
-**J16a 测试归位完成（`eb69c6fc`…`a762f88f`）**：`tools/` 下 99 个测试目录与 3 个散测试脚本全部 `git mv` 到 `tests/`，按实际编译/读取源定 owner：`AF.Foundation.Runtime` 7、`AF.Contracts` 2、`AF.Persistence` 4、`AF.GameAdapter.Bannerlord` 6、`bridges` 5（含 `bridges/Policy/PolicyEffectModule.ContractTests`）、`replay` 18（`ReplayDependencies` 共享 targets 与 17 个依赖它或读 Stage DLL 的回放项目同目录，相对 Import 不变）、`tools/RepositorySourceInventory` 1、`modules/AF.Module.*` 60（Conversation 33、Economy 6、Memory 5、Diplomacy 5、Duel 3、Llm 2、Kingdom 2、Weekly 2、Social/Persona/Encounter/Taunt 各 1）。只做机械改写：仓库根向上层数（py `parents[N]`、C# `AppContext.BaseDirectory` 与 `../` 序列、csproj/targets `..\`、ps1 `Join-Path $PSScriptRoot`），以及代码/README/Skill/`docs/architecture` 中的字面 `tools/<名>/` 路径；带日期的台账、计划、审计、交接保留原路径，不改写历史。断言、哈希值、产品代码未改；source-review JSON 只随文件改键名。代码地图 32 个锚点（PhaseEight 30、PolicyEffect 2）按符号重新定位，其余锚定文件自 `c0f2d289` 起逐字节未变，`sourceRevision` 改绑 `803a09d3`，两模式 795 PASS。policy-effect Skill 第 30/31/223 行改指新测试目录和 J15 后的 `content/modules/PolicySystem/CustomPrompts/Policy/Effects/`，草稿副本同步保持逐字节相同。每批移动后按 G0 全部 250 入口复跑，结果与基线一致（0 回归；并行构建两次文件锁偶发，串行复跑 PASS）；replay 项目边界 5/5 PASS；inventory unknown=0。`tools/` 现只剩工具：3 个 PromptLab/编辑器（各自 SmokeTests 随 slnx 留在工具内）、`PhaseEightReadiness`、迁移/盘点/审计/打包/导出脚本。
+**状态：`J16A_RELOCATION_VERIFIED / J16B_PARTIAL / J16C_E_NOT_STARTED`。** 本轮将本地分支 `codex/af-j15-closeout-20260928` 上 18 个 J16 相关提交与远端重构分支的 10 个并行 J15/AF2 计划提交保留为普通 merge 历史；不 rebase、不强推、不丢弃任一侧。J15 合并与复验结论仍以[上方 J15 回执](#j15-remote-reconcile-20260928)为准。
 
-**J16b 进行中（`99275c54`）**：`package_policy_system_source_overlay.py` 的本地 ZIP 改写到忽略的 `artifacts/package_policy_system_source_overlay/`，不再生成仓库根未跟踪的 `dist/`；唯一跟踪的 `tools/__pycache__/*.pyc` 去跟踪（已被 `.gitignore` 覆盖）。J15 内容 runner 108/0 PASS。其余已跟踪产物去跟踪待 A1 批准。
+- **J16a**：按实际编译/读取源 owner，将 `tools/` 下 99 个测试目录与 3 个散脚本归位 `tests/`；G0 基线记录 250 个入口，迁移后按基线复跑无回归。代码地图 32 个路径锚点重绑后 795 锚点 recorded/working-tree PASS。具体批次与命令见 [J16 实施计划](plans/j16-tests-tools-docs-plan.md) 和 [基线审计](audits/2026-09-28-j16-baseline.json)。
+- **J16b 已做**：overlay 本地 ZIP 输出改到忽略的 `artifacts/package_policy_system_source_overlay/`；已跟踪 `tools/__pycache__/*.pyc` 去跟踪且由 `.gitignore` 覆盖。其余已跟踪产物按 J16 A1 要求尚未逐组授权，不因“J16 在进行”自动批量删除/归档。
+- **本机合并后复验**：J15 内容 runner `108 mappings / 0 holds PASS`；新加入的 FullStage synthetic `Fault` 与 `Abrupt` 两模式分别通过 124 项回滚/中断拒绝/手工恢复/no-op 断言；DataPaths `66`、RepositorySourceInventory `7`、代码地图 recorded/working-tree `795` 均 PASS，`git diff --cached --check` PASS。合成 Stage 测试只写入两个全新 ignored artifacts 根，不是实际 Deploy。六张退出活动源码的旧 GUI 已复核本机忽略归档 manifest 中 6/6 SHA。
+- **验证边界**：J16e 全量 runner 清单/总入口未完成；J16c 文档权威入口未完成；J16d 一键脚本与 Bootstrap 未获授权，保持不动。编辑器真实用户库、游戏/旧档和发布仍未验。
+- **计划顺序**：AF2 责任结项总计划要求 J17-A 的存档/Memory/Weekly 成员闭包作为 J16 最终收口输入。现有 J16a 是已提交的并行进度，不自动豁免此依赖；下一执行轮按总计划与 [J16 计划](plans/j16-tests-tools-docs-plan.md)对齐，不能把部分结构归位称作 J16 完成。
+- **未验证/风险**：LIVE/SAVE/真实发布未因本次 merge 改变；本地 `.dotnet-cli-home/` 仍保留为未跟踪状态。J16d、A1 产物处置、A5/A6、J16c/J16e 和后续 J17 仍分别受计划与授权约束。
+
+<a id="af2-closeout-plan-20260928"></a>
+
+# AF 2.0 完整重构结项计划（2026-09-28，当前执行口径）
+
+**状态：`PLAN_READY / RESPONSIBILITY_AUDIT_PENDING / PRODUCT_REFACTOR_NOT_COMPLETE`。** 本轮只重整计划；没有迁移产品业务、改测试断言或提升游戏验收状态。用户要求“做彻底，避免前期误导”，本节是 J01–J17 的当前结项解释与 J16/J17 执行细化，不另立重构项目。J01–J15 已记录的具名离线成果按原范围保留；`J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD` 仍有效，绝不等于 AF 主体已拆净。
+
+- **源码基线**：`254581edca8e6f9264ed799239fc7f1924d23090`，`codex/af-main-refactor-continuation-20260831`；本地规划意图提交 `0fc82e15`。后续必须重新核实实际 Git，不能按此记录切换目录/分支。
+- **原规划范围与当前推送授权**：本台账、[当前源码证据](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)、[旧 owner matrix 的当前路由](animusforge-owner-matrix.md)、[简短 HANDOFF](../HANDOFF.md)。形成本计划时的“未推送”仅约束当时文档任务；用户现明确授权将 J16 合并候选普通更新到唯一指定的 `codex/af-main-refactor-continuation-20260831`。不强推、不改写历史、不部署/Stage/打包、不操作真实玩家数据或外仓；原未跟踪 `.dotnet-cli-home/` 保留。既有历史私密字节仍留在 Git 历史，本次推送不代表历史清洗。
+- **唯一事实分工**：本节保存职责状态/目标/退出门；范围图保存基线符号/调用链证据；代码地图仅作定位；HANDOFF 只链接摘要。不要再维护一张竞争进度表。
+
+## 1. 纠正旧记录的读法，不推翻有效成果
+
+| 旧入口 / 容易误读的说法 | 当前解释与替代关系 |
+| --- | --- |
+| 下方“2026-09-19 总计划”里的 J12/J13 尚未施工、J14 Scene/Courier 尚为 NotSupported | 是规划时点，不是当前状态。J12/J13 已有有限离线回执；当前 `AfApi` 已声明 Native/Scene/Courier Available，其他三项仍不支持。以本节、具名后续回执及当前源码为准，不能重新实现已完成能力。 |
+| J05/J10/J13 的 OFFLINE_VERIFIED 或“整包闭合” | 仅关闭当时明确验收的责任单元；不自动关闭同文件剩余算法，也不把历史保留项批准为永久兼容。已证实的新 owner 不因此次重整全部返工。 |
+| J05 将五个记忆记录及 Sanitize 一并归为 SaveableTypeDefiner 身份保留 | 该概括不能作为所有算法原地保留的证据。当前 `MyBehaviorSaveableTypeDefiner` 直接注册的是 `Dictionary<MobileParty, string>`；日草稿等所查路径使用 JSON。必须分别核对 TaleWorlds 保存身份、JSON 字段/设置、公开 ABI 和算法；本轮不据此宣称类型可安全改名。 |
+| 旧 owner matrix 的“当前 J06 VERIFY”、历史 F:/G: 工作区及旧 HANDOFF 的施工命令 | 只保留历史导航，不作为当前状态或操作授权。当前工作区取 Git，当前计划取本节；禁止照抄历史清理/部署/推送命令。 |
+| inventory unknown=0、代码地图 PASS、entryCoverage=COMPLETE 或目录已归 src | 各自只证明文件分类、坐标或已登记入口覆盖；不是业务迁移完整证明。入口工具基于人工配置模式，不穷举每个方法/字段。 |
+| Phase8 cleanup-candidates / readiness 已存在 | 复用其候选和证据规则，但现有 18 个清理候选不是全仓剩余职责表，领域 ASSIGNED 也不等于内部算法已迁完。不得修改它们的状态凑本计划通过。 |
+
+**旧回执正文保留，不把当年的未完成改写为当年已完成。** 本节只取代冲突的“当前状态”和结项解释；相同源码、相同条件的有效证据仍可复用。旧源码坐标失效时按符号重定位，不能只刷新 hash 冒充行为复验。
+
+## 2. 最终目标与不扩大的边界
+
+1. **完成的含义**：AF 主体及已纳入 J01–J15 的 AF 领域业务，由明确模块承担算法、运行状态和资源生命周期；全部实际消费者使用其权威实现。游戏宿主只保留有证据的事件/线程/游戏对象接入、保存身份及必要兼容门面。不是把每一行重写，也不要求旧类消失。
+2. **保持运行结构**：同 DLL 逻辑模块，一套源码双 API 实现，一个 AnimusForge 模块、Bootstrap 唯一加载。内部 typed 接缝与版本化 public API 分开；不新增通用 ModuleHost、反射注册、热卸载或无消费者接口。
+3. **保持行为**：既有玩法、Prompt/标签、MCM、失败/部分成功、三渠道历史与 AFEF、默认交互入口保持。修复确认缺陷须单独写出复现与批准变化，不借重构改规则或缩减功能。
+4. **制作组边界**：政策、宴会、GCCZ 内部玩法/状态机不是本计划重写对象；AF 侧调用、薄桥和跨域权威边界在范围内。也不能将 AF 自己残留的经济、社交、场景等业务笼统划到制作组以逃避盘点。原版/外部依赖不计入 AF 待重构实现。
+5. **发行约定**：按用户确认的方式发 AFMOD，包内有默认提示词，玩家另行安装模块 ONNX，更新覆盖发行文件是预期行为。不要自动恢复已撤回的“保护旧默认提示词不被覆盖”修改；默认发行内容与真实用户个人数据分别管理。此计划不改变现有覆盖脚本，也不授予部署/发布权限。
+6. **兼容不是旧算法的豁免**：原 namespace、类型/字段 ID、SyncData 键、JSON 协议和必要公开签名按实际契约保留；算法可以在不破坏身份的前提下迁移。游戏对象留主线程，不等于领域规则必须永远留 CampaignBehavior。
+
+<a id="af2-responsibility-register-20260928"></a>
+
+## 3. 一份职责登记表，两层覆盖，禁止用样例冒充全量
+
+### 3.1 每个责任单元的必填信息
+
+每行按可独立验证的完整职责成组，不为每个 helper 新造任务；但组内方法、字段、嵌套类型和关键调用点必须能逐符号对账：
+
+- 稳定 ID、来自哪个 J 包/领域、当前源码修订和范围图证据 ID；当前实现和全部入口/调用者（含动态调用、反射、Harmony、保存入口）。
+- 尚在宿主的算法、权威状态、资源与线程责任；目标逻辑 owner，哪些引擎读写/身份适配保留以及具体理由。
+- 迁移顺序与依赖、保持行为、运行频率和真实工作量/缓存策略；替代实现、旧入口的去留条件。
+- 有限验收用例及对应现有 runner/生产实现、有效失败反例、源码/候选绑定；证据层级与未验项。
+- 当前状态、关闭修订与审查结论；转交只改变负责包，不自动变成完成。暂留项不能仅写“以后/J17处理”。
+
+| 职责状态 | 允许含义 | 是否可用于结构结项 |
+| --- | --- | --- |
+| `REVIEW_REQUIRED` | 未完成方法体/状态/消费者闭包复核；不是确认缺陷，也不是已完成 | 否 |
+| `OPEN` | 已确认仍需迁移或归位，有明确目标和退出门 | 否 |
+| `VERIFY` | 已实现，必要证据未齐 | 否 |
+| `CLOSED` | 算法/状态及实际消费者已闭合，替代/残留与必要离线验证有绑定证据 | 是，仅其具名范围 |
+| `RETAINED_BOUNDARY` | 已逐符号证明必须保留的保存/ABI/游戏适配；不包含被豁免的领域主体算法 | 是，仅其明确适配职责 |
+| `EXCLUDED_BY_SCOPE` | 第 2 节原有排除，仍标明 AF 接缝责任；新增排除须用户确认 | 不计入迁移完成量，不允许扩大豁免 |
+
+`STRUCTURE / RESPONSIBILITY / OFFLINE / LIVE / SAVE / RELEASE` 分轴记账。保存或发布未验不伪装成结构缺陷，反过来结构通过也不能提升实机/旧档状态。没有可信分母前不报“完成百分比”。
+
+### 3.2 当前已核实的初始登记（不是全量盘点通过）
+
+源码证据详见范围图 E01–E08；以下目标是逻辑职责，不强制创建同名新类。已有适合的 owner 优先扩展。
+
+| ID / 原包 | 当前结论、边界与依赖 | 目标归属 / 保留接线 | 必须达到的有限退出门 | 当前状态 |
+| --- | --- | --- | --- | --- |
+| R01 / J13a | E02：周报模块仍调回 MyBehavior 的掠夺结果转换/类别素材构造；排序分桶、游标和 wave 等已有独立职责不重做 | `AF.Module.Weekly/Materials` 负责规则和构造；宿主只捕获 Settlement/Hero 等游戏数据，DTO/保存身份单独审查 | 自动与同步入口、全文/短报、掠夺开始/成功/击退/中止/未知和多事件顺序回归；类别归并/关联 ID/来源计数保持；已迁算法不再由旧宿主实现；复用 PhaseEightParityReplayTests 的 Weekly 材料/周报回放并覆盖生产接线，记录组内工作量 | `OPEN` |
+| R02 / J05 | E03：摘要系统/用户规则仍在 MyBehavior，捕获、重试、解析编排仍在其 partial；dispatcher/run/账本成果保持 | `AF.Module.Memory/Summary` 承担摘要决策/编排；游戏事实捕获和保存接受留窄边界，不把摘要业务塞进通用 dispatcher；先处理 R04 类型约束 | daily/major/overview 同输入结果与格式、AFEF 原文/公开私密/自称语义保持；重试、同代来源变化、owner/generation 失效拒收和唯一提交；复用 MemorySummaryRunOwnerTests 等现有回归，游戏捕获与纯规则分界可审查 | `OPEN` |
+| R03 / J05、J15 接缝 | E07：压缩记忆导出/应用仍在宿主做过滤、覆盖/合并、队列及 overview 变更；J15 数据路径与编辑器成果不是该业务已迁出的证据 | Memory 负责业务快照/导入应用；`AF.Persistence` 保持通用文件/JSON；UI 只选择输入/显示结果。先核实 R04，保留导出格式与真实用户数据安全 | 单人/整组路径、覆盖与合并、空/坏内容、队列与 overview 状态保持；现有 PlayerExports 及记忆回归接真实业务，不能只验读写文件；实际玩家文件不作为破坏性 fixture | `OPEN` |
+| R04 / J05 保存边界 | E04：JSON 记录、Saveable 注册、算法必须分开；“嵌套存档类型不能搬所以全部算法不拆”的证据不足，但也不能直接改名 | 保留确需的保存/公开类型与薄映射，纯净化规则归 Memory；主线程原地/后台 clone 语义另审；先完成类型使用与序列化闭包 | 列出键/类型 ID、JSON 字段/serializer 设置、所有读写和动态引用；明确哪些类型必须原位、哪些算法无需原位；Profile/Chunk/Identity/旧格式回归，真实旧档另验，不通过则保持兼容而继续寻找不改身份的算法边界 | `REVIEW_REQUIRED` |
+| R05 / J04、J07、J10 | E05：Scene/Courier 生产链使用含完整业务的旧类型 partial；这不是单凭 partial 就判失败，需核定渠道 owner 与跨域规则的界线 | Conversation 渠道持有会话/队列/渠道编排，Prompt/Memory/Actions 各自负责共享语义；Bannerlord 捕获/表现留适配 | Native/Scene/Courier 真实入口逐条串到输出/后处理/执行/AFEF 回读；群聊接力、旁听、输入去重、预生成不提前提交、来信/retry/取消/迟到保持；只对确认混合责任建立待迁子项，复用既有三渠道 runner，不要求正文逐字相同 | `REVIEW_REQUIRED` |
+| R06 / J16、J17 | Git tracked 当前 `Refactor/` 尚有 30 个 C#；其中含活跃 façade/gateway/契约/receipt，不等于 30 个废弃实现 | 按实际 owner 归 `src/`；公共签名/命名空间可保留，纯 rename 与职责抽取分开验收；E01 已独立的 HTTP 实现不推倒 | 每个文件与符号有去向；所有 Compile、测试提取、反射/动态消费者改接；无重复编译/第二核心；Refactor 清空后仍需业务表通过。删除前验证替代与调用责任，遵守精确删除授权 | `OPEN`（结构）；职责须逐项复核 |
+| R07 / J01–J15 全覆盖 | 下表 20 个已有责任桶只是覆盖网；本轮没有逐方法审完所有大类，不能将未抽查部分标成薄壳 | 复用当前各模块；扫描根目录、全部 partial、src/Refactor 及显式编译的扩展，按真实责任而非 Weekly/Legacy 名称归类 | 覆盖表每行有实际编译输入与成员分区；每个未闭业务簇落为独立登记项；所有字段/方法/类型有归属且无遗漏，或对应已批准排除/保留；不得把本宽泛行直接勾 CLOSED | `REVIEW_REQUIRED` |
+| R08 / J05、J13 等性能 | dispatcher 的回调预算不等于每条 record 工作量；旧日志提到的 O(N) 快照不能直接当当前缺陷或已修复 | 各领域负责其实际工作量；Foundation 只承载通用预算机制 | 对本次变更逐项记录触发频率、snapshot/排序/循环大小、缓存与分批；保留顺序/事实/功能；现有预算/积压回放验证有限工作量，帧耗时须实机数据；不无依据重开已验证优化或强求所有冷路径 O(1) | `REVIEW_REQUIRED` |
+| R09 / J16、J17 验收收口 | 现有文件/入口/代码地图工具不能替代 R07；已有测试、源码提取路径和旧文档还需随最终 owner 对齐 | 测试跟真实生产 owner，主台账唯一当前进度；复用已有工具，不新建通用验收平台 | 测试真实参与且故障反例失败于业务断言；目录归位无漏编/双编；当前候选双 API/Bootstrap 和相关集成验证；文档无失效活动入口，LIVE/SAVE/发布另表，未完成不以填表强行通过 | `REVIEW_REQUIRED` |
+
+### 3.3 全范围覆盖网（J17-A 必须补完，不按代表性样本签收）
+
+沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。**本表各桶的全量成员审查当前均为待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
+
+| 现有责任桶 ID | 本轮/后续盘点范围与目标责任（不是确认未迁的清单） |
+| --- | --- |
+| bootstrap-build | Bootstrap/项目/XML/双实现选择；稳定装载身份与构建边界，只有另获授权才迁脚本/Bootstrap；不按行数重构加载器 |
+| host-composition | SubModule、Composition、LegacyInteractionPipelineComposition；装配/生命周期接线与领域决策分离 |
+| runtime-diagnostics | Logger、Tick/诊断及 Foundation owner；确认通用资源/队列与领域日志策略各自归属，不复制调度器 |
+| game-adapter-compatibility | BannerlordApiCompat、PlayerEncounterCompat、Harmony/版本适配；保留真实游戏接入，检查是否夹带可迁领域算法 |
+| persistence-config | 保存/chunk/JSON、DuelSettings 与配置捕获/落盘；业务状态归领域，键/类型/迁移入口单独保留；关联 R04 |
+| conversation-encounter | MyBehavior/ShoutBehavior、Native/Scene/Internal、LordEncounter；对话编排与目标/释放/返回职责分别归 Conversation/Encounter |
+| gateway-prompt-protocol | AIConfigHandler、ShoutNetwork、Refactor gateways、Prompt/LLM；传输 attempt 与调用方重试/领域 Prompt 分界，不强并成万能 gateway |
+| action-commit | 标签/ActionPlan、实际领域执行、结果/事实 receipt；Actions 编排与领域变更不双执行，检查仍留宿主的分派 |
+| memory-afef | MyBehavior 所有 Memory/History/Recovery/AFEF 入口和 partial；关联 R02–R04，保留唯一记录与接受路径 |
+| economy-reward-debt | RewardSystemBehavior 家族、交易/债务/资产与 RP crafting；按已批准 Economy 范围核实规则/状态/游戏 mutator；不能用 J12 有限完成跳过余项 |
+| policy-political | PolicySystem 内部按既有排除；AF 侧 Policy ports/调用、政治领域跨接缝必须分清，不能以“政策”名称扩大排除 |
+| world-simulation-worldmap | WorldMap/Diplomacy/Kingdom、Vassalage/Annexation、WarStats 等；沿 J12/J13 既定领域归属对账，不改世界 AI/战斗玩法 |
+| settlement-siege-gccz-sets | AF 定居点/城后宿主与 GCCZ 薄桥；GCCZ 内部业务排除，但 AF 侧规则与状态残留仍需归属；不写外仓 |
+| scene-mission-combat | Taunt/Exercise/Inspection/MeetingBattleLock/护送等 AF 场景路径；按机制责任核查主线程适配、伤害 allowlist 与生命周期，不全盘搬 Harmony |
+| duel | DuelBehavior/Outcomes/receipt 与渠道入口；决斗领域状态/规则、表现和引擎接口分开，保持同一执行事实 |
+| courier-proactive-issue | Courier、主动请求/同伴聊天、Issue；R05 之外的主动触发/任务接受/延迟回调不能遗漏，各自 owner 唯一 |
+| social-progression-reports | Weekly、Notoriety/Romance/Recruitment、WorldEvents 等；R01 外的社交/事件业务逐簇核实；宴会制作组内部仍排除 |
+| knowledge-persona-profile | KnowledgeLibraryBehavior、WorldEntityRetrievalService、ONNX、Persona 与战略档案；纯检索/匹配、游戏捕获、索引资源/人物状态分别归属 |
+| ui-tts-external-integration | Overlay/终端/百科/Onboarding、TtsEngine/音频、public API 与扩展消费者；UI 不代替业务 owner，协议 Available 不等于游戏资格通过 |
+| tools-content-package | tests/tools/content/脚本/文档及 J15 资源路径；归位随真实 loader/owner，分发约定不变，素材与发布 HOLD 不误阻无关离线抽取 |
+
+**覆盖分母来源**：实际双 API 工程 Compile/EmbeddedResource 与显式扩展包含项，加 Bootstrap、现有运行 loader 和动态入口；`git ls-files` 仅辅助，bin/local/参考源码不当生产业务。先读取 csproj 的 DefaultItemExcludes、Compile Remove/Include 和已有安全的求值方法；本轮已查项目配置但未执行新的 MSBuild 求值，不把文件枚举冒充完整编译清单。对两 API 差异条件分别核对，缺失环境记待验。
+
+## 4. 保留边界的判定规则
+
+- **允许**：读写具体 TaleWorlds 对象、原事件注册/回调、所属线程捕获/接受、必要 ABI/Harmony/序列化身份、纯 UI 呈现及引擎资源操作；必须限定符号与输入输出，不把整个大类列为理由。
+- **不允许借兼容保留**：文本/规则转换、领域选择与排序、业务状态转换、业务队列调度/重试策略等主体算法。若同一方法混合游戏读写和算法，先区分捕获→领域处理→接受，不直接移到后台。
+- **callback / partial 不是禁用语法**：窄游戏操作 delegate 可以保留；新模块把整个规则求解回调给旧宿主不算迁完。partial 可保存原类型身份或组织单一职责，但机械移文件不证明新 owner 已独立；必须说明剩余共享字段/跨域依赖。
+- **不为结构制造成本**：不要求每 Tick 深拷贝所有存档、额外反射访问私有字段、复制两套权威字典或新建总线；使用已有窄捕获/端口或同一状态实例的明确领域封装，并验证无双写。
+- **去除旧实现的前提**：替代已接通、静态/动态/保存/公开消费者闭合、必要回归通过，再按授权定向移除；没有“清空目录优先于功能”的例外。禁止 hard reset/历史改写或批量覆盖他人工作。
+
+## 5. J16/J17 执行顺序与有限退出门
+
+保留原 J16→J17 主线；**将 J17-A 的清单基线准备前置为 J16 开工输入**，避免把未知业务留到最后。现在只交付此计划，以下产品实施/全量审查尚未执行；后续用户授权继续时按阶段推进，不自动运行文档中的历史命令。
+
+| 步骤 | 做什么 | 有限退出门 / 下一步 |
+| --- | --- | --- |
+| J17-A 前置盘点 | 先核实 R04 与 R01/R02/R03 闭包，再对照 20 桶与实际编译成员补全 R07；将历史保留项标“已被后续替代/仍待迁/必要边界/排除” | 所有纳入范围的成员有责任分区；新增剩余单元都具名登记 owner/消费者/退出门，未知未分配为 0。此时 OPEN 可以大于 0，但必须报全量审查完成、业务迁移未完成，不能跳到结项 |
+| J16 工程归位 | 按已确认 owner 迁 tests/tools、收敛文档路由，复核 Refactor 去向；还会变化的测试与对应业务一起迁，避免先批量搬再反复改路径 | 当前真实生产引用/测试入口和 Compile/资源无遗漏重复；仅原样归位的职责不得升级 CLOSED；一键脚本/Bootstrap 迁移仍另获明确授权 |
+| J17-B 残余业务关闭 | 在原领域包下续作，不重开全部 J01–J15：先存档约束与 Memory，再 Weekly，再具名渠道/其他领域余项；跨域依赖先解决输入/唯一写者，稳定后按风险顺序 | 一次一个完整职责单元：迁算法/状态→接全部消费者→保持薄边界→必要回归→处理旧实现→绑定证据。达到有限门槛就关闭，不按每个 helper 无休止加测试；没有确认缺口的 owner 不返工 |
+| J17-C 同候选离线结项 | 最后重新核对覆盖表、旧业务回调/全量 partial 共享状态、Compile/动态入口、测试/文档与当前候选 | 范围内 REVIEW_REQUIRED/OPEN/VERIFY=0；RETAINED_BOUNDARY 全有证据；业务无重复权威实现；原入口双 API/Bootstrap 与相关契约/集成通过；此时最多记“主体职责重构及离线验收完成” |
+| J17-D 实机/旧档及交付 | 按授权在确切 1.3/1.4 游戏版本验证新战役、代表性旧档与三渠道/关键领域；内容/安装/发行按 J15 和用户 AFMOD 约定 | load→运行关键机制→save→reload、正常/失败/取消/重入及实际帧表现有记录；发布所需素材/包/许可门禁另外通过。缺任一必要证据维持 NOT-RUN/HOLD，不用离线绿灯报整体可发布 |
+
+每阶段先核对当前工作树与用户授权。实质改动前本地意图/检查点，按已验证责任单元提交；回退采用聚焦 inverse，不修改历史。独立的未知素材/发布 HOLD 不阻塞安全的离线职责抽取；但也不能因此清除最终发布门槛。
+
+## 6. 验证如何证明重构，而不是证明表格好看
+
+1. **每个责任单元**：直接验证真实生产实现，沿 caller→捕获→领域规则/状态→执行/提交→读回核对；列正常例和能暴露该风险的失败反例。优先复用 runner，不给每个 helper 复制 harness。测试替身、源码片段提取与实际 DLL 的覆盖盲区必须写出。
+2. **依赖方向**：审查语义而非只 grep 名称。检查 MyBehavior/ShoutBehavior 等保留调用实际做什么；给窄适配写明理由。反向调用完整旧算法、双份可变状态或只有测试入口接新实现时不能关闭。
+3. **状态/性能**：按涉及风险测来源变化、owner/generation、取消与迟到、重复副作用、实际 job/record 预算；无新增热路径全量扫描/重复反射/无界积压。单个冷路径 O(N) 不自动是 bug，也不自动满足帧预算。
+4. **兼容/集成**：受影响生产修改验证双 API；最终候选按原入口 Debug/Release 双实现加 Bootstrap。验证保存/公开 ABI、三渠道与相关领域接缝，保持现有断言；任何变异不得以编译失败冒充成功拒收。涉及的案例文档按 AGENTS 逐项套用。
+5. **工具复用边界**：source inventory 只分类路径；entry inventory 只校验配置模式候选；code map 只校验定位/hash；Identity audit 只覆盖其键/名称/模块检查；完整 Profile/Chunk 与实机 SaveSystem 另证。均不能替代 R07 的成员覆盖与人工职责审查。
+6. **不会新增的东西**：本次不改 CI/构建脚本、不造第二套 readiness 服务或自动清理器。后续若需要机械核对，先使用现有工具和普通只读查询；结构检查不能自行把业务状态设为 CLOSED。
+7. **最终报告必须分层**：计划完成、结构归位、职责迁移、离线行为、真实游戏、旧档和发布分别列结果与待办；只有全范围成员已核实才说“无遗漏”，不能以 795 锚点、30 个文件或测试断言数量代替完成比例。
+
+## 7. 当前实施入口与本轮验收
+
+**下一条具体动作（须在后续获准实施时）**：从 J17-A 开始，以 R04 的日草稿/压缩块/摘要队列读写及 R02 捕获→生成→接受链建立第一份完整成员分区；核实 R01 周报回调闭包；再补齐其余覆盖桶。不要重新开 J15 默认提示词保护、重写已独立 HTTP owner，或直接清空 Refactor。出现行为/范围/外部写入冲突，只暂停相关部分并询问，不扩大授权。
+
+本轮已执行的文档/只读验证：
+
+- 9 个初始责任 ID、现有 20 个领域 ID 和 8 组证据引用一一核对；新增链接/显式锚点可解析，历史正文保留（仅在旧总计划/J05 处插入明确复核提示）。28 个当前源码符号/行号核对通过；Refactor tracked C# 数量仍为 30，仅用于导航。
+- `python -X utf8 -B .agents/skills/af-core-framework/scripts/verify_code_map.py` 及 `--working-tree` 均 PASS，795 锚点，绑定 `c0f2d2892916d70d2c7f49039b31727e090f50cc`；不是功能验证。
+- `python -X utf8 -B tools/PhaseEightReadiness/entry_inventory.py --check` PASS，仅表明配置模式候选未遗漏；没有运行 `--update`，没有修改 catalog 或业务完成状态。
+- `git diff --check` 通过；相对源码基线只修改本轮四份文档，产品/项目/测试/配置/脚本零差异。仓库原有混合行尾产生 Git 的 LF→CRLF 提示，历史字节按原样追加保留，不做全文件格式化。
+- 未重跑构建、产品行为测试、真实 provider、游戏/旧档或发布验收；本轮文档不需要这些来证明已改内容。全量职责盘点与迁移仍待执行，不能因计划验证通过而关闭上表任何业务待办。
+
+## 以下为已交付阶段的历史证据；J15 离线结论继续有效，不代表全主体职责迁移完成
 
 <a id="j15-f45-current-20260927"></a>
 
-## J15 F4/F5 当前续作证据（2026-09-27；未完成）
+## J15 F4/F5 当前续作证据（2026-09-28；离线完成，实机/发布未完成）
+
+**J15 最终候选离线收口（2026-09-28；状态 `J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD`）**：本状态仅指用户确认的 J15 离线验收层，**不是**两实际游戏版本、旧档、真实部署或可发布签收。F4 的活动旧资源已由 108 项唯一映射、显式设计源归位、模块 ONNX 原位只读、F4-C 冲突预检及已授权旧 GUI/私人源 SHA 归档退役闭合到功能离线范围；0 个旧根 HOLD 不等于素材权利已清。F5 O1–O7 按同一最终内容/程序候选复核如下：
+
+| 门禁 | 本轮最终复核与继承证据 |
+| --- | --- |
+| O1 内容/个人数据/模型 | 全新 `artifacts/j15-content/f5-final-content-20260928-a/` 的完整 runner：108 映射、0 旧根 HOLD、8 非法映射、4 GCCZ 回退、14 overlay alias，ManagedDeploy 配置冲突/回滚/中断及 PlayerExports 禁回写 PASS。个人迁移合成脚本重跑 PASS；DataPaths 初次把 TEMP 放仓内，产品正确拒绝“数据根在源码树”，不是回归。既有 `tests/AF.Persistence/DataPaths/Program.cs:38,260–267` 加显式 `AF_DATA_PATHS_TEST_ROOT`，只作未创建的 `E:\AF-J15-PathOnly-DataPaths-20260928-a` 路径验证，实际 TEMP/TMP 与所有测试写入留仓内；重跑 `66 checks` PASS，外部仅路径目标仍不存在。 |
+| O2 编辑器/导入导出 | 上述已获准的隔离完整编辑 smoke、路径正反例继续有效；本轮在三个全新仓内根重跑 PlayerExports 生产链接测试 `25` 项 PASS，姓名匹配、最新包两项变异各准确失败于对应业务断言，不是编译失败。未运行真实用户包。 |
+| O3 双版本程序构建 | `4304397c` 后至本候选没有产品 C#、csproj、Bootstrap 或构建脚本变更；继承原入口 Debug/Release × 1.3/1.4/Bootstrap 六构建日志 `artifacts/j15-content/f5-o5-bridge-build-20260927-a/{debug,release}-build.log`，各 0 warning/error。未重新执行会递归重置现有四个生成根的原构建脚本；本轮独立复核六 marker 的游戏版本及 DLL SHA、双 Stage 内三程序 DLL 与 artifacts 同字节。 |
+| O4 当前 DLL/行为/存档 | 同一六 DLL 的既有 Native 55、旧 ABI 41+41、公开 API 158/实际元数据 1620、Release 1.3/1.4 ONNX 各 33+5、四 DLL 7 默认资源、Xihai Core 88 结果因程序字节未变继续适用；本轮重跑 PersistenceIdentity `142/36/1/1`、PersistenceProfileConfig `168 typed / 142 keys`、BridgeBinding `16/12/4`、BridgeFixture `10/6` 均 PASS。这些仍是离线夹具/当前 DLL，不是游戏对象或旧档执行。 |
+| O5 正式 Stage/场景资源 | 当前 Debug/Release Stage 各精确 124 项，Stage TPAC 与唯一 Xihai 活动源同字节；两份正式 Stage 的原 StaticVerifier 日志各 `13 passed, 0 failed`。程序字节、TPAC 与当时验收候选未变；六项旧 GUI 本不在 Stage，退役不改变投影。未重新执行 Stage 递归重建、未做实际视觉验收。 |
+| O6 ZIP/恢复 | 本轮独立读回双本地测试 ZIP SHA：Debug `2907D3F5058930CF10B8AA69E37360072E8C7188240E126E6A95207ADB3145E8`，Release `FBA86E840356C515472F9F425A1E4D682769DC9B53E664256CF212828B8C214A`，各 124 名称与 Stage 相同、123 非 XML 逐字节相同；唯一 XML 仍只加载 Bootstrap，ONNX/PlayerExports/Logs/AssetSources/UserData 禁入项 0。当前 124 项完整 Stage 的第 61 项同步故障、前两项后进程骤退/写前拒绝/合成手工恢复、重试/no-op 和三哨兵证据见下；不等于产品自动恢复或真实游戏部署。 |
+| O7 库存/定位/越界 | 当前 inventory `tracked=19478 / unknown=0`（比先前记录多本轮新合同文件）、7 单测、795 锚点 recorded/working-tree 均 PASS；`git diff --check` PASS。测试 ZIP 和本地私有归档不推送、不发布。 |
+
+候选差异审计：从六构建修订 `4304397c` 到此处，内容映射增加 1 项 TPAC、旧活动图/设计源/重复 TPAC 退役、测试和工具合同变化；产品 C#、项目和原构建/部署/打包脚本未变。因而以上继承以**当前 DLL 标记哈希、Stage/ZIP 字节复核和新增受影响契约重跑**为条件，不冒充本轮重新构建。TPAC 历史 11.2 MB manifest 身份与当前 1.67 MB 包不一致、上游来源/再分发权、ONNX 模型来源许可及实机动作/GUI 视觉仍 HOLD；Release ZIP 是本地测试包。1.3/1.4 实机 M9、新装/旧档/升级 L/S 和真实 provider 均 NOT-RUN；原始存档、游戏安装、外仓未写。本轮首次 net10 SDK 调用报告安装 ASP.NET Core 开发 HTTPS 证书，未作系统清理；后续调用显式关闭自动生成。
+
+**F5-O6 当前 124 项 Stage 故障/中断补证（2026-09-28；本切片）**：`tests/content/J15ContentContractTests/FullStageManagedDeployContractTests.ps1:1–250` 是原 ManagedDeploy 契约旁的独立全 Stage 入口，只接收现有项目内 Release Stage 和全新 `artifacts/j15-content/` 虚构根，以 AST 载入未改的生产 `deploy_module.ps1` 受管函数，`LOCALAPPDATA` 仅指夹具内部；不走游戏 Deploy。当前 Stage 精确 **124 项**，同步测试在 `activating` 后第 61 项 Stage hash 注入异常：生产回滚恢复首项旧字节、其余受管目标不存在，三类未受管 ONNX/PlayerExports/Logs 不变，私有 manifest 124 项标 `rolled-back`；随后重试安装 124/124、重复调用 no-op。独立全新根的子进程在第三项 Stage hash 前 `Exit(77)`，留下前两项及 124 项 `activating` 记录；下次部署写前拒绝，开发者仅在该合成根逐项核验 manifest/hash 和私有备份后手工恢复旧状态、标 `rolled-back`，再重试 124/124 与 no-op。两根各保留 `summary.txt`、两份 124 项 manifest 和私有备份；独立读回核对各虚构目标文件集合恰为 Stage 124 项加三哨兵、124/124 SHA 相同、两记录状态分别 `rolled-back`/`complete`。这替代下方 123 项完整 Stage 故障/中断证据用于当前候选，但**不证明产品自动续传/恢复、实际游戏 L4 或真实旧档**；本切片未重编产品 DLL、重建 Stage/ZIP 或写真实游戏/玩家目录。
+
+**F5-O2 隔离编辑器完整 smoke（2026-09-28；本切片）**：`tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs:74–126,206–247` 的未提交入口经最小收紧，`--isolated-full <run-root>` 要求显式绝对运行根、现存 `temp/`、`ANIMUSFORGE_DATA_ROOT=<run-root>/data`、TEMP/TMP 与实际 `Path.GetTempPath()` 同指 `<run-root>/temp`，并拒绝已存在的 PlayerExports 目标；旧无参完整入口不作本轮执行。定向 .NET 10 Release `--no-restore` 构建 **0 warning/error**，`--path-contract` 与 `--path-contract-invalid` 均 PASS。按已具名批准，仅在此前不存在、父路径无 reparse 的 `E:\AF-J15-editor-smoke-20260927-a\` 建立合成根；完整模式退出码 0，输出 `package=1 edit=1 invalid-preserved=1 backup-restore=1 deletion-fixture-preserved=1`，删除测试另有 `moved=3`。独立读回复核该根保留两份备份、一个合成包、删除 fixture 与 `isolated-full.log`；未读取或编辑真实玩家包，未清理这些材料。此项关闭 O2 的完整编辑器合成 smoke 缺口，不代表真实游戏导入/旧档或 F4/F5 整体完成。当前工作树的 `.dotnet-cli-home/` 仍未跟踪且未触碰。
+
+**F4-U 剩余六项旧 GUI 离线归档退役（2026-09-28；本切片）**：按用户选定的“功能闭合、许可留 HOLD”和“备份后退役”，冻结 `tests/content/J15ContentContractTests/run.py` 的六项剩余旧 GUI 精确集合：courier `scroll_version_a`、notoriety `.tmp` 背景与 `culture_panel_patch`、terminal `scroll_quill`、diplomacy 旧 `notice`、vassalage 旧 sheet。生产 `AnimusForgePlayerNotorietyUiSprites`、`VassalageBehavior.AnimusForgeVassalageUiSprites` 和 `WorldDiplomacyBehavior` 均消费已映射的当前分图/`notice_v2`；XML/源码定向搜索没有这六项旧文件名的运行消费者，唯一显式旧 notice 工具引用在 `tools/package_policy_system_source_overlay.py:144`，本片去掉它并保留 v2。旧 sheet 不在当前 Stage，离线检查仍不能替代实机自动加载与视觉验收。六源均为普通已跟踪文件，大小合计 **5,152,346 字节**；逐项 SHA 冻结、复制到被忽略的 `local/j15-gui-archive-20260927/legacy-remaining/`，私有 manifest 记精确源/归档/字节/hash，独立二次复核 6/6 后仅这六项退出活动源码，移后归档 6/6 再验，未删除唯一副本或动其它 GUI。新增合同断言先红于旧源仍在，再于全新 `artifacts/j15-content/f4u-six-green-20260928-a/` 完整 runner **108 mappings / 0 legacy-root holds、8 坏映射、4 GCCZ 回退、14 overlay aliases PASS**；inventory 当前 **tracked=19477 / unknown=0**，7 单测 PASS。`0 legacy-root holds` 不解除 TPAC、模型来源/再分发权的独立 HOLD；本切片未重建 DLL/Stage/ZIP、未运行游戏或真实 UI。
 
 **F4-A TPAC 单一活动源与六项设计源归位（本切片）**：按另行批准，先核对 `AnimusForge/AssetPackages/pack0.tpac` 与 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac` 均 1,671,304 字节、SHA-256 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`；复制前者到忽略的 `local/j15-tpac-archive-20260927/legacy-module/AnimusForge/AssetPackages/pack0.tpac`，私有 manifest 记恢复映射，源/归档/权威源三方 SHA 相同才从活动源码退出，移后再次复核两剩余副本。现正式内容映射只有 Xihai 权威源，活动旧副本 0；Git 历史未改。`AnimusForge/AssetSources/` 六个设计文件共 5,701 字节，逐项 SHA 记录并原样移动至 `content/modules/AF.Module.Economy/AssetSources/`，每项移后大小/hash 相同、旧文件 0；真实源码/构建/打包无旧目录消费者，设计 README 现仍以同目录相对文件名和现行 runtime content 路径描述，故不改正文。库存分类在新精确路径仍为 `design`，不是运行内容；六项不入 `content-map.json` 或 Stage/ZIP。`tests/content/J15ContentContractTests/run.py` 锁唯一 TPAC 活动源、六设计文件名/hash、旧路径不存在且不入 runtime map；全新 `artifacts/j15-content/f4a-dedup-design-contracts-20260927-a/` 内容完整 runner **108 mappings / 6 holds PASS**，库存 7 单测 PASS；双正式 Stage 在原 `Assert-AnimusForgeCleanStage -RequireCurrentArtifacts` 下各 124 项 PASS。无 C# 重编、Stage/ZIP 重建、游戏部署或外部发布；旧 manifest 11.2 MB 身份、TPAC 上游来源/再分发权、真实动作视觉仍未签收。
 
@@ -1725,6 +1905,8 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 
 <a id="j05-offline-verified-20260919"></a>
 
+> **2026-09-28 复核更正**：本节有限离线成果保留；下文将记忆记录、Sanitize 算法统一归为 `MyBehaviorSaveableTypeDefiner` 身份约束的理由证据不足，不再作为永久保留依据。当前已核实的 JSON/注册边界与后续 R04/R02/R03 处理见[结项计划](#af2-responsibility-register-20260928)和[范围图 E04](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)；这不授权直接改名、删除保存类型或重写旧档。
+
 ## J05 离线回执：J05_OFFLINE_VERIFIED（2026-09-19）
 
 **仅限源码与离线验收；实机、旧档读写、真实 provider 均 `NOT-RUN`。** 分支 `codex/af-modularize-j04-20260918`，生产终点 `d903df67`，地图绑定同提交（262 锚点，无悬空路径）。基线 `25a89cea` 至今 25 个本地提交，未推送、未 Stage/Deploy/打包、未写游戏目录、未动存档。
@@ -1831,6 +2013,8 @@ Native 五组初跑为 Admission 44、Pending 111、ActionDispatch 91、Completi
 <a id="modularization-master-plan-20260919"></a>
 
 # AF 主体完整模块化总计划（2026-09-19，PLAN_READY / J04 继续 ACTIVE）
+
+> **历史规划快照，非当前施工状态**：J12/J13“尚未施工”、J14“NotSupported”及历史规模均只适用于当时。当前完成层级、剩余职责与 J16/J17 门槛由[2026-09-28 当前结项计划](#af2-closeout-plan-20260928)取代；本段保留原计划追溯，不授权重复施工。
 
 本节是用户要求的"一次大任务"总计划：按三份仓库 Skill（maintainer 0.2.0、af-core-framework、policy-effect-module）把 AF 主体拆完，最终交付 J17 全仓结项。它替代上方 2026-09-17 路线表的粗粒度描述，**不替代各包实施时的详细执行单**；每包开工前仍按 J03/J04 的做法写意图节、逐切片提交、逐切片回归。基线：分支 `codex/af-modularize-j04-20260918`，源码 `d6824d9d`，241 锚点地图两模式通过；原始基线 `25a89cea`。
 

@@ -1,6 +1,6 @@
 # J16 tests / tools / scripts / docs / Bootstrap 实施计划
 
-> 规划日期：2026-09-28。状态：**计划完成，施工未开始**。详细进度只记录在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)，[HANDOFF](../../HANDOFF.md)保留简短入口；本文不建立竞争台账。
+> 规划日期：2026-09-28。当前状态：**J16a 归位完成、J16b 部分进行中、J16c/J16e 未开始、J16d 未获授权**。本分支本地 18 个 J16 相关提交已与 GitHub 重构分支并行更新普通 merge；最终验收/提交号以主台账为准。详细进度只记录在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md)，[HANDOFF](../../HANDOFF.md)保留简短入口；本文不建立竞争台账。
 > 规划源码基线：`e7936b04`（分支 `codex/af-j15-closeout-20260928`，基于远端 `8af57b39`）。J15 离线部分已收口：内容 runner 108 映射 / 0 HOLD，六构建 0/0，StaticVerifier 13/0；F5 实机/旧档仍 NOT-RUN（见第 2.3 节）。
 > 本文细化主台账 “J16 tests / tools / scripts / docs / Bootstrap” 条目，不改变其授权边界：**一键脚本与 Bootstrap 只在另获授权时迁**。
 
@@ -12,7 +12,7 @@
 按仓库 Skill 执行：.claude/skills/animusforge-maintainer/SKILL.md（通用维护；本包用 repository-structure、validation、ledger-and-handoff、host-compatibility 四个参考）＋ .agents/skills/af-core-framework/SKILL.md（代码地图与交接）。移动测试会改 Skill 与代码地图里的路径，按第 3.7 节同步。
 按 G0 → J16a 测试归位 → J16b 工具与输出 → J16c 文档权威入口 → J16d 脚本/Bootstrap（仅获授权后）→ J16e 收口 执行。
 每个验证切片本地独立提交，只暂存自己的具名文件；移动用 git mv 保留历史，一个 runner 一组，移动后立即跑该 runner。
-不 push、不部署、不写游戏/存档/外仓；不改产品代码行为；不删除唯一副本；不改写 Git 历史（含私人数据，严禁推送）。
+不部署、不写游戏/存档/外仓；不改产品代码行为；不删除唯一副本；不改写 Git 历史。推送授权以用户最新明确指令为准：本轮仅允许普通更新指定的 `codex/af-main-refactor-continuation-20260831`，不强推、不改写历史、不额外发布产物。旧历史中含私人资料，推送新提交不会清除这些历史字节，不能宣称仓库历史已清洗。
 ```
 
 ## 2. 基线、范围与完成定义
@@ -161,7 +161,7 @@
 | A1 已跟踪产物去跟踪 | 每组精确路径、大小、SHA、消费者核查、恢复办法 | 可做测试迁移；不去跟踪 |
 | A2 一键脚本/Bootstrap 迁移 | J16d 只读映射表与验证计划 | 只读映射；不移动 |
 | A3 递归清理的测试 | 每个清理目标绝对路径与新输出根 | 在隔离根运行；不在默认根盲跑 |
-| A4 推送 | —— | Git 历史含私人数据，**严禁推送** |
+| A4 推送 | 用户 2026-09-28 明确要求整理后推送指定重构分支 | 仅普通更新指定分支；不强推/改写历史、不上传忽略归档或生成产物。历史私密字节仍在既有远端历史，不因本次推送消失 |
 
 | A5 仓外 Python venv（PyYAML） | venv 路径、包版本 | Skill 自校验记 NOT-RUN |
 | A6 `CLAUDE.md`/`AGENTS.md` 过期段落 | NEW-087 段原文与替代建议 | 保留原文，只在台账标注 |
@@ -173,7 +173,7 @@
 3. **移动前后结果必须对得上**。G0 的基线表是唯一对照；PASS 变 FAIL 的切片不提交。
 4. **环境缺口不算失败**。本机已补 SDK 10.0.400（`G:\AFMOD\.dotnet-sdk10`）和 pwsh 7.4.6（`G:\AFMOD\.pwsh7`）；仍缺 `G:\Python310`（用 `py` 3.14 代替）、`local/dotnet/8.0.425`（用 `G:\AFMOD\.dotnet-sdk` 8.0.422 代替）、PyYAML。统一走环境变量，找不到报 `BLOCKED_ENV`。
 5. **递归清理先核目标**。6 处带递归删除的测试，迁移时逐个确认只删自己的输出根；新位置跑之前先看一次实际路径。
-6. **去跟踪不是删除**。`git rm --cached` 前 SHA 归档到忽略的 `local/`；Git 历史里仍有这些文件和私人数据，**严禁推送**。
+6. **去跟踪不是删除**。`git rm --cached` 前 SHA 归档到忽略的 `local/`；历史中的旧文件/私人数据不会因当前树移除而消失。推送只按当前用户对指定分支的明确授权执行，不强推或改写历史，不宣称历史已清洗。
 7. **文档先修链接再移动**。案例文档（`CLAUDE.md`/`AGENTS.md` 引用的）不动；历史文档移动前所有入链改完，链接检查 0 断链。
 8. **一键脚本 / Bootstrap 默认不动**。未获 A2 前只做只读映射；`.tmp/build_check` 因构建脚本回退依赖暂留。
 9. **J15 遗留并行**：F5 实机（1.4.7 部署待你确认）和 F4-A（制作组成员处理）不阻塞 J16，但 J16 不能改 `pack0.tpac`、Xihai manifest 或 Stage 内容映射。
