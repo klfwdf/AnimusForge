@@ -18,7 +18,7 @@ if a.mutate=='lose_inbound_effect':source=source.replace('result.EffectState);',
 if a.mutate=='unguarded_diagnostic':
  edits=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))['edits'];before,after=next(x for x in edits if 'Diagnostics do not own' in x[1]);source=source.replace(after,before,1)
 source=source.replace('Task.Delay(30000','Task.Delay(120')
-harness=(ROOT/'tools/GameLifetimeTests/CourierCommit.cs.txt').read_text(encoding='utf-8-sig')
+harness=(ROOT/'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/CourierCommit.cs.txt').read_text(encoding='utf-8-sig')
 harness=harness.replace('internal static bool FailLog;','internal static bool FailLog,InboundForTests;internal static int AbortsForTests;',1).replace('GetSessionById(string id)=>null;','GetSessionById(string id)=>InboundForTests?new CourierSession():null;',1).replace('IsInboundToPlayer(CourierSession s)=>false;','IsInboundToPlayer(CourierSession s)=>InboundForTests;',1).replace('AbortCourierInboundCompletion(CourierSession s,string reason){}','AbortCourierInboundCompletion(CourierSession s,string reason){AbortsForTests++;}',1).replace('DispatchCourierRefactorCommitAsync(f,"target","session")','DispatchCourierRefactorCommitAsync(f,"target","session",InboundForTests)',1)
 needle='  Console.WriteLine($"CourierCommitLifetime';assert needle in harness;harness=harness.replace(needle,(HERE/'AdditionalChecks.cs.txt').read_text(encoding='utf-8-sig')+needle,1).replace('CourierCommitLifetime checks=','CourierCommitOutcome checks=')
 (out/'Dispatch.cs').write_text(source,encoding='utf-8');(out/'Program.cs').write_text(harness,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

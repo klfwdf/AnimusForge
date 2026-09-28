@@ -78,7 +78,7 @@ D: 安装 Prompt 来源 30 文件/88,472 字节已私有备份、逐文件大小
 
 产品/测试 **`7bc2ffbf`**；状态 **`J15c_FEATUREBRIDGES_VERIFY / J15_PARTIAL_HOLD`**。`content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json:1–18` 是唯一仓库源，`content/content-map.json:391–395` 仍投影到原模块 `ModuleData/FeatureBridges.json`，当前共 77 项。真实 runtime owner 仍为 `Refactor/Runtime/FeatureBridgeRuntime.cs:226–263,267–344,351–415`，一次性读取、缺失默认和错误全关语义未改；不增加 runtime I/O、Tick 或公开 API。
 
-`tools/BridgeBindingContractTests/validate_bridge_bindings.py:24,675`、`test_validate_bridge_bindings.py:34–47,195` 接新仓库源；`docs/phase8/bridge-binding-manifest.json:784,793` 修正 J15b 遗留 RuleBehavior 当前源坐标。`tests/content/J15ContentContractTests/run.py:233–242,265–320,360–368,451–484` 保留 a/b 基线并验证本片固定 SHA/owner/目标和当前 40 HOLD；`tools/repository_source_inventory.py:108` 增加具名 owner。
+`tests/bridges/BridgeBindingContractTests/validate_bridge_bindings.py:24,675`、`test_validate_bridge_bindings.py:34–47,195` 接新仓库源；`docs/phase8/bridge-binding-manifest.json:784,793` 修正 J15b 遗留 RuleBehavior 当前源坐标。`tests/content/J15ContentContractTests/run.py:233–242,265–320,360–368,451–484` 保留 a/b 基线并验证本片固定 SHA/owner/目标和当前 40 HOLD；`tools/repository_source_inventory.py:108` 增加具名 owner。
 
 五项 J15 静态函数、15 个无临时文件 Bridge 测试、Bridge validator、inventory、755 锚点两模式已验；完整投影/隔离进程/六构建/新候选 DLL 审计待清理授权，**NOT-RUN**。七资源声明和全部生产 C# 未改，代码地图仍绑定 `e58f3558`；未迁用户内容/模型/素材及完整 J15d 不能算完成。详细分类、原始失败及授权停点集中于[主台账当前条目](../animusforge-refactoring-and-repository-reorganization-plan.md)。
 

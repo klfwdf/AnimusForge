@@ -18,7 +18,7 @@ if not a.original:
  # Separately proven preparation capture: permit only the exact shared reviewed declaration SHA.
  signature='private async Task<string> SubmitNativeConversationTextInternalAsync('
  current=ex.declaration(restored,signature)
- review=json.loads((ROOT/'tools/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
+ review=json.loads((ROOT/'tests/bridges/TeamModulePortParityTests/reviewed-native-admission-deltas.json').read_text(encoding='utf-8'))
  expected=next(x['sha256'] for x in review['methods'] if x['path']=='ShoutBehavior.cs' and x['signature']==signature)
  persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tools/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
  live_submit=ex.declaration(persona.restore('ShoutBehavior.cs',s),signature)

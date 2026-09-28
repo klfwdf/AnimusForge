@@ -13,7 +13,7 @@ def verify():
    assert text.count(new)==1,'Owner phase runner path drift'
    text=text.replace(new,'Refactor/Runtime/PendingOperationRegistry.cs',1)
   assert hashlib.sha256(text.encode()).hexdigest()==h,'Unreviewed owner phase dependency: '+p
- life_spec=importlib.util.spec_from_file_location('lifetime_inverse',ROOT/'tools/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
+ life_spec=importlib.util.spec_from_file_location('lifetime_inverse',ROOT/'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
  actual=life.restore(PATH,(ROOT/PATH).read_text(encoding='utf-8-sig'));prior=old()
  for before,after in review['exactEdits']:
   assert prior.count(before)==1;prior=prior.replace(before,after,1)
@@ -21,7 +21,7 @@ def verify():
  return actual
 def restore_method(method):
  actual=verify();sig='private async Task<T> RunCourierOwnerPhaseAsync<T>('
- life_spec=importlib.util.spec_from_file_location('lifetime_method_inverse',ROOT/'tools/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
+ life_spec=importlib.util.spec_from_file_location('lifetime_method_inverse',ROOT/'tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py');life=importlib.util.module_from_spec(life_spec);life_spec.loader.exec_module(life)
  method=life.restore_method(PATH,sig,method)
  assert method==e.declaration(actual,sig),'Unreviewed owner phase declaration'
  return e.declaration(old(),sig)

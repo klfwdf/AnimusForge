@@ -44,7 +44,7 @@ integrated_tabs_settings_preview.html
 /docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md
 
 # Campaign composition test build output (never product source).
-/tools/CampaignCompositionTests/.generated/
-/tools/HostCompositionTests/.generated/
+/tests/AF.GameAdapter.Bannerlord/CampaignCompositionTests/.generated/
+/tests/AF.GameAdapter.Bannerlord/HostCompositionTests/.generated/
 /tests/modules/AF.Module.Economy/PromptProjection/.generated/
 /tests/modules/AF.Module.Economy/DebtNormalization/.generated/

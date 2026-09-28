@@ -6,7 +6,7 @@ def restore_snapshot_source(path,source):
  if path=='ShoutBehavior.cs':
   persona_spec=importlib.util.spec_from_file_location('channel_persona_inverse',ROOT/'tools/ChannelPersonaPreparationTests/source_parity.py');persona=importlib.util.module_from_spec(persona_spec);persona_spec.loader.exec_module(persona)
   source=persona.restore(path,source)
- b1_spec=importlib.util.spec_from_file_location('memory_summary_parity',ROOT/'tools/MemorySummaryMainThreadBoundaryTests/source_parity.py');b1=importlib.util.module_from_spec(b1_spec);b1_spec.loader.exec_module(b1)
+ b1_spec=importlib.util.spec_from_file_location('memory_summary_parity',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/source_parity.py');b1=importlib.util.module_from_spec(b1_spec);b1_spec.loader.exec_module(b1)
  source=b1.restore_memory_summary_source(path,source)
  spec=importlib.util.spec_from_file_location('snapshot_ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  review=json.loads((Path(__file__).parent/'source-review.json').read_text(encoding='utf-8'))
