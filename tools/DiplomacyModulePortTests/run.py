@@ -20,6 +20,7 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyConversationEl
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyIndependentPeaceApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyTributePowerApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  adapter=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs')
@@ -33,6 +34,8 @@ def boundaries():
  assert 'DiplomacyTributePowerApplication.TryBuild(' in adapter, 'Tribute calculation bypasses Application'
  assert 'DiplomacyBehavior.BuildDiplomacyPostprocessContext' not in adapter, 'Prompt context still delegates full use case to Behavior'
  assert 'DiplomacyPostprocessContextApplication.Build(' in adapter, 'Prompt context bypasses Application'
+ assert 'DiplomacyBehavior.ProcessDiplomacyTagsDispatch' not in adapter, 'Tag use case still delegates to Behavior'
+ assert 'DiplomacyOralTagApplication.Process(' in adapter, 'Tag dispatch bypasses Application'
  oral=read('src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs')
  for signature in ['internal static bool CanInjectDiplomacyRuleForExternal(',
                    'internal static bool CanUseDiplomacyActionPostprocessForExternal(',
@@ -43,6 +46,10 @@ def boundaries():
  assert 'DiplomacyIndependentPeaceApplication.CanUse(' in declaration(oral,'private static bool TryResolveIndependentClanPeaceContext('), 'Independent peace context retains old branch policy'
  assert 'DiplomacyTributePowerApplication.TryBuild(' in declaration(oral,'internal static bool TryBuildTributePowerContext('), 'Old tribute calculation retained in Behavior'
  context_owner=read('src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs')
+ tag_forwarder=declaration(context_owner,'public static void ProcessDiplomacyTagsDispatch(')
+ assert 'DiplomacyOralTagApplication.Process(' in tag_forwarder and not any(
+  token in tag_forwarder for token in ['Regex','switch (','ProcessSingleDiplomacyTag']), 'Tag Behavior retains dispatch algorithm'
+ assert 'private void ProcessDiplomacyTags(' not in context_owner and 'private string ProcessSingleDiplomacyTag(' not in context_owner, 'Tag Behavior retains old processor'
  context_forwarder=declaration(context_owner,'internal static string BuildDiplomacyPostprocessContext(')
  assert 'DiplomacyPostprocessContextApplication.Build(' in context_forwarder and not any(
   token in context_forwarder for token in ['StringBuilder','Kingdom.All','FactionManager.','[ACTION:DIPLOMACY:']), 'Old prompt context retained in Behavior'
@@ -126,7 +133,7 @@ def main():
   ('current',None),
   ('wrong_target',('src/bridges/Diplomacy/DiplomacyConversationBridge.cs','(hero ?? character?.HeroObject)?.StringId','character?.HeroObject?.StringId')),
   ('swap_tribute',('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs','ResolveKingdom(payerId), ResolveKingdom(receiverId)','ResolveKingdom(receiverId), ResolveKingdom(payerId)')),
-  ('wrong_executor',('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs','ProcessDiplomacyTagsDispatch(ResolveHero(heroId), ref text)','ProcessDiplomacyTagsDispatch(null, ref text)')),
+  ('wrong_executor',('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs','new DiplomacyOralTagSource(ResolveHero(heroId))','new DiplomacyOralTagSource(null)')),
   ('drop_tick',('src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs','WorldDiplomacyBehavior.Instance?.OnEngineTick()','System.GC.KeepAlive(null)'))]
  for name,mutation in variants:
   folder=out/name;folder.mkdir(exist_ok=True);sources=[ROOT/s for s in SOURCES]
