@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using AnimusForge.Refactor.Domain;
 using AnimusForge.Refactor.Contracts;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge;
 
@@ -11,6 +13,53 @@ namespace AnimusForge;
 // Called at existing day/event boundaries; selection stops at the first eligible candidate.
 internal static class WorldDiplomacyRoundApplication
 {
+    internal static void Disable(WorldDiplomacyStorage storage, ref bool disabledStateApplied,
+        ref bool nativeQueueSanitized, Func<int> currentDay, Action<string> closeRound, Action<int> scheduleNext)
+    {
+        disabledStateApplied = true;
+        if (storage.ActiveRound != null) closeRound("closed_disabled");
+        if (storage.ActiveExchange != null)
+        {
+            storage.ActiveExchange.State = "closed_disabled";
+            storage.ActiveExchange.CompletedDay = currentDay();
+            storage.ActiveExchange = null;
+        }
+        storage.SuspendedExchanges.Clear();
+        storage.Jobs.Clear();
+        foreach (WarPressureEntry entry in storage.WarPressure)
+            if (entry != null) entry.IsEscalationArmed = false;
+        storage.ForcedWarToggleWasEnabled = false;
+        // An in-flight transport still owns its lease until completion is dequeued.
+        scheduleNext(currentDay());
+        nativeQueueSanitized = false;
+    }
+
+    internal static void CommitEmbeddedPlan(WorldDiplomacyStorage storage,
+        WorldDiplomacyRound round, WorldDiplomacyDocument root,
+        Func<string, WorldDiplomacyRound, List<string>> actionableParticipants,
+        Action<WorldDiplomacyJob, string> commitPlan, Action<string> log)
+    {
+        if (round == null || root == null || round.RelayPlanned
+            || !ReferenceEquals(storage.ActiveRound, round)
+            || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
+        List<string> candidates = actionableParticipants(root.AuthorKingdomId, round);
+        WorldDiplomacyJob plan = new WorldDiplomacyJob
+        {
+            RoundId = round.RoundId,
+            DocumentId = root.DocumentId,
+            AuthorKingdomId = root.AuthorKingdomId,
+            CandidateKingdomIds = candidates
+        };
+        JObject json = new JObject
+        {
+            ["topic"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(root.PlannedRoundTopic, root.Title, "外交交涉"),
+            ["selected_kingdom_ids"] = new JArray(root.PlannedKingdomIds ?? new List<string>())
+        };
+        commitPlan(plan, json.ToString(Formatting.None));
+        log("embedded round plan committed round=" + round.RoundId
+            + " selected=" + string.Join(",", root.PlannedKingdomIds ?? new List<string>()));
+    }
+
     internal static void Close(
         WorldDiplomacyStorage storage,
         string reason,

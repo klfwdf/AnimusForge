@@ -50,6 +50,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyImmediateActionApplication.Execute(' in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private void HandleDisabledState(', 'private void CommitEmbeddedRoundPlan('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyRoundApplication.' in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('

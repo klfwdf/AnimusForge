@@ -28,6 +28,7 @@ internal static class Program
     {
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
+        RoundBoundaryReplay.Run();
         LlmDispatchApplicationReplay.Run();
         CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
