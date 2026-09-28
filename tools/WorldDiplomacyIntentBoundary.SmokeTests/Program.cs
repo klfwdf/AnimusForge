@@ -462,9 +462,10 @@ internal static class Program
             "post-issuance threat consequences must remain in the targeted dynamic context");
         Test.True(!source.Contains("下一份已发布公文必须", StringComparison.Ordinal),
             "canonical history must not turn a past noncompliance result into a global forward-looking instruction");
-        Test.True(source.Contains("HasStaleDiplomaticThreatPresentation,", StringComparison.Ordinal)
+        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"))
+                      .Contains("_owner.HasStaleDiplomaticThreatPresentation(job)", StringComparison.Ordinal)
                   && File.ReadAllText(
-                          FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                          FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"),
                           Encoding.UTF8)
                       .Contains("discarded completed generation from stale diplomatic threat stage", StringComparison.Ordinal),
             "queued and in-flight generated declarations must be rebuilt when the threat stage changes");
@@ -560,7 +561,8 @@ internal static class Program
 			&& storageRecord.Contains("[JsonProperty(\"internationalReputationNaturalChangeLastDayByKingdom\")]", StringComparison.Ordinal),
 			"old diplomatic-reputation saves must migrate in place to prestige while international reputation persists separately");
 		Test.True(repRules.Contains("MaximumInternationalReputationChangePerDocument = 10", StringComparison.Ordinal)
-			&& source.Contains("SettleInternationalReputationForDocument(document)", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"))
+                .Contains("port.SettleInternationalReputationForDocument(document)", StringComparison.Ordinal)
 			&& source.Contains("international_reputation_reason", StringComparison.Ordinal),
 			"every new declaration must carry one bounded retrospective international-reputation evaluation into publication settlement");
 		string generatedEnvelope = ExtractMethod(
@@ -697,7 +699,8 @@ internal static class Program
 		Test.True(!authorGate.Contains("ruler.IsPrisoner", StringComparison.Ordinal)
 			&& authorGate.Contains("player_controlled_realm_requires_player_authorization", StringComparison.Ordinal),
 			"AI diplomatic authorship must allow captive rulers while still rejecting player-ruled realms");
-		Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") >= 8,
+        string executionOwner = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
+        Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") + CountOccurrences(executionOwner, "CanAiAuthorDiplomaticDocument(") >= 8,
 			"AI author authority must be checked at scheduling, request, commit, propagation, and execution boundaries");
 		string mandatoryResponse = ExtractMethod(source, "private void TryScheduleMandatoryCourtResponse(");
 		string courtResponseApplication = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs")), Encoding.UTF8);
@@ -2121,14 +2124,14 @@ internal static class Program
             "queued generation must rebuild a stale legal-action presentation before request messages are materialized");
 
         string completedJobs = ExtractMethod(
-            lifecycleRulesSource,
-            "public static void CommitCompletedLlmJobResult(");
-        int completedStaleCheck = completedJobs.IndexOf("hasStaleActionPresentation?.Invoke(job)", StringComparison.Ordinal);
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs")),
+            "internal static void Complete<TEffects>(");
+        int completedStaleCheck = completedJobs.IndexOf("effects.HasStaleActionPresentation(job)", StringComparison.Ordinal);
         int completedRefresh = completedJobs.IndexOf(
-            "refreshActionPresentation?.Invoke(job)",
+            "effects.RefreshActionPresentation(job)",
             completedStaleCheck,
             StringComparison.Ordinal);
-        int commitGenerated = completedJobs.IndexOf("commitGeneratedDocument?.Invoke(job, resultContent)", StringComparison.Ordinal);
+        int commitGenerated = completedJobs.IndexOf("effects.CommitGeneratedDocument(job, resultContent)", StringComparison.Ordinal);
         Test.True(completedStaleCheck >= 0
                   && completedRefresh > completedStaleCheck
                   && commitGenerated > completedRefresh,
@@ -2211,7 +2214,7 @@ internal static class Program
                   && publishReady > liveGuardSuppression,
             "the executable-action path must apply the live-state guard before player-only mechanic checks; the player document itself may already be public");
         Test.True(publication.Contains(
-                "bool invalidLiveTarget = target == null || target == author || target.IsEliminated",
+                "bool invalidLiveTarget = target == null || target == author || port.IsEliminated(target)",
                 StringComparison.Ordinal)
                   && publication.Contains("diplomatic_action_has_no_live_target", StringComparison.Ordinal),
             "the final live-state guard must also reject a missing, self, eliminated, or controlled target");
@@ -2660,7 +2663,8 @@ internal static class Program
 
         string requestCompletionBridge = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs"));
         Test.True(requestCompletionBridge.Contains("result.IsOutputTruncated = metadata.IsOutputTruncated;", StringComparison.Ordinal)
-            && source.Contains("WorldDiplomacyLlmApplication.ExecuteAsync(", StringComparison.Ordinal),
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs"))
+                .Contains("WorldDiplomacyLlmApplication.ExecuteAsync(", StringComparison.Ordinal),
             "shared Gateway truncation must cross the application receipt into the real host queue");
         string llmJobResultDto = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs"));
         Test.True(llmJobResultDto.Contains("public bool IsOutputTruncated;", StringComparison.Ordinal),
@@ -2668,12 +2672,12 @@ internal static class Program
 
         string completedJobs = ExtractMethod(
             File.ReadAllText(
-                FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"),
                 Encoding.UTF8),
-            "public static void CommitCompletedLlmJobResult(");
+            "internal static void Complete<TEffects>(");
         int failedResultStart = completedJobs.IndexOf("if (!resultSuccess)", StringComparison.Ordinal);
         int ordinaryFailureCommit = completedJobs.IndexOf(
-            "commitFailedJob?.Invoke(job, resultError)",
+            "effects.CommitFailedJob(job, resultError)",
             failedResultStart,
             StringComparison.Ordinal);
         int ordinaryFailureContinue = completedJobs.IndexOf(
@@ -2695,9 +2699,9 @@ internal static class Program
             "!string.IsNullOrWhiteSpace(resultContent)",
             StringComparison.Ordinal);
         int unifiedRejection = failedResultBranch.IndexOf(
-            "handleTruncatedDraft?.Invoke(",
+            "effects.HandleTruncatedDraft(",
             StringComparison.Ordinal);
-        int removeOldJob = failedResultBranch.IndexOf("removeJob?.Invoke(job.JobId)", StringComparison.Ordinal);
+        int removeOldJob = failedResultBranch.IndexOf("effects.RemoveJob(job.JobId)", StringComparison.Ordinal);
         int truncationFailureReset = failedResultBranch.IndexOf(
             "storage.ConsecutiveServiceFailures = 0;",
             partialContentGuard,
@@ -2705,7 +2709,7 @@ internal static class Program
         int truncationTry = failedResultBranch.IndexOf("try", truncationFailureReset, StringComparison.Ordinal);
         int truncationCatch = failedResultBranch.IndexOf("catch (Exception ex)", removeOldJob, StringComparison.Ordinal);
         int truncationHandlingFailure = failedResultBranch.IndexOf(
-            "commitFailedJob?.Invoke(job, \"truncated generated draft handling failed: \" + ex.Message)",
+            "effects.CommitFailedJob(job, \"truncated generated draft handling failed: \" + ex.Message)",
             truncationCatch,
             StringComparison.Ordinal);
         int stopFailureFallthrough = failedResultBranch.IndexOf("return;", removeOldJob, StringComparison.Ordinal);
@@ -2722,17 +2726,19 @@ internal static class Program
             "a partial truncated generation must enter unified draft rejection, remove its old job, and not fall through to API failure handling");
         Test.True(truncationHandlingFailure < stopFailureFallthrough,
             "an exception while handling a truncated draft must use CommitFailedJob so the old job cannot be resent");
-        Test.True(CountOccurrences(failedResultBranch, "handleTruncatedDraft?.Invoke(") == 1
+        Test.True(CountOccurrences(failedResultBranch, "effects.HandleTruncatedDraft(") == 1
                   && failedResultBranch.Contains("if (resultIsServiceFailure", StringComparison.Ordinal)
                   && failedResultBranch.IndexOf("if (resultIsServiceFailure", StringComparison.Ordinal) > stopFailureFallthrough
-                  && failedResultBranch.Contains("commitFailedJob?.Invoke(job, resultError)", StringComparison.Ordinal),
+                  && failedResultBranch.Contains("effects.CommitFailedJob(job, resultError)", StringComparison.Ordinal),
             "content filtering, empty output, and API/service failures must continue through ordinary failure handling");
         string completedJobsAdapter = ExtractMethod(
             source,
             "private void ProcessCompletedJobs()");
-        Test.True(completedJobsAdapter.Contains("RejectGeneratedDraftBeforePublication(", StringComparison.Ordinal)
-                  && completedJobsAdapter.Contains("\"output_truncated\", null)", StringComparison.Ordinal)
-                  && completedJobsAdapter.Contains("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", StringComparison.Ordinal),
+        string completionPort = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"));
+        Test.True(completedJobsAdapter.Contains("WorldDiplomacyCompletionApplication.Run(ref source)", StringComparison.Ordinal)
+                  && completionPort.Contains("RejectGeneratedDraftBeforePublication(", StringComparison.Ordinal)
+                  && completionPort.Contains("\"output_truncated\", null)", StringComparison.Ordinal)
+                  && completionPort.Contains("IWorldDiplomacyCompletionSource", StringComparison.Ordinal),
             "the host must bind the truncated-draft rejection port with the unified reason");
 
         string rejectionGate = ExtractSection(
@@ -3032,7 +3038,7 @@ internal static class Program
 			&& analyzedPublication.Contains("ResolveDocument(document.SourceDocumentId)", StringComparison.Ordinal),
 			"final publication must revalidate the same external source-bound statement authorization");
 		int mechanicsGuard = analyzedPublication.IndexOf("if (!allowedNoAction)", StringComparison.Ordinal);
-		int historyPublication = analyzedPublication.IndexOf("AppendCanonicalDocumentEvents(document)", StringComparison.Ordinal);
+        int historyPublication = analyzedPublication.LastIndexOf("FinalizePublishedDocumentAfterAnalysis(port, document", StringComparison.Ordinal);
 		Test.True(mechanicsGuard >= 0 && historyPublication > mechanicsGuard,
 			"a valid statement must bypass action mechanics while remaining publishable");
 
@@ -3163,7 +3169,7 @@ internal static class Program
 			&& !analyzedPublication.Contains("document.IsAutonomousNoActionDeclaration", StringComparison.Ordinal),
 			"publication authorization must use the general non-root relay stamp rather than the war audit flag");
 		int noActionMechanicsGuard = analyzedPublication.IndexOf("if (!allowedNoAction)", StringComparison.Ordinal);
-		int historyPublication = analyzedPublication.IndexOf("AppendCanonicalDocumentEvents(document)", StringComparison.Ordinal);
+        int historyPublication = analyzedPublication.LastIndexOf("FinalizePublishedDocumentAfterAnalysis(port, document", StringComparison.Ordinal);
 		Test.True(noActionMechanicsGuard >= 0 && historyPublication > noActionMechanicsGuard,
 			"no-action declarations need one explicit mechanics guard before ordinary history publication");
 		foreach (string forbiddenMechanism in new[]
@@ -3185,7 +3191,7 @@ internal static class Program
 			StringComparison.Ordinal);
 		Test.True(targetDecision > noActionMechanicsGuard && targetDecision < historyPublication,
 			"a statement remains the target kingdom's next published declaration, so absent comply_ultimatum must still record noncompliance");
-		Test.True(analyzedPublication.Contains("DeferUnresolvedRequiredThreatAction(", StringComparison.Ordinal)
+        Test.True(analyzedPublication.Contains("FinalizePublishedDocumentAfterAnalysis(port, document", StringComparison.Ordinal)
 			&& ExtractMethod(lifecycleRules, "public static void FinalizePublishedDocumentAfterAnalysis(")
 				.Contains("deferUnresolvedThreatAction?.Invoke(document", StringComparison.Ordinal)
 			&& ExtractMethod(lifecycleRules, "public static void FinalizePublishedDocumentAfterAnalysis(")
@@ -3402,7 +3408,7 @@ internal static class Program
 		string documentApplication = File.ReadAllText(FindRepositoryFile(Path.Combine(
 			"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentApplication.cs")), Encoding.UTF8);
 		Test.True(analyzedPublication.Contains("document?.Actions", StringComparison.Ordinal)
-			&& analyzedPublication.Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, action)", StringComparison.Ordinal)
+            && ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(").Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, action)", StringComparison.Ordinal)
 			&& documentApplication.Contains("action.ChangedDiplomaticState = document.ChangedDiplomaticState", StringComparison.Ordinal)
 			&& documentApplication.Contains("action.MechanicalResult = document.MechanicalResult", StringComparison.Ordinal)
 			&& analyzedPublication.Contains("catch (Exception", StringComparison.Ordinal),
@@ -3432,13 +3438,13 @@ internal static class Program
 
 		string multiActionProcessing = ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(");
 		Test.True(multiActionProcessing.Contains("actions.Count < 1", StringComparison.Ordinal)
-			&& multiActionProcessing.Contains("actions.Count > MaxDiplomaticActionsPerDocument", StringComparison.Ordinal),
+            && multiActionProcessing.Contains("actions.Count > port.MaxDiplomaticActionsPerDocument", StringComparison.Ordinal),
 			"the publication boundary must re-enforce the one-to-four action cap after generation and save/load");
 		int actionLoop = multiActionProcessing.IndexOf(
 			"for (int index = 0; index < actions.Count; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = multiActionProcessing.IndexOf(
-			"WorldDiplomacyDocumentApplication.BeginAction(document, action, target.StringId)",
+            "WorldDiplomacyDocumentApplication.BeginAction(document, action, target)",
 			actionLoop,
 			StringComparison.Ordinal);
 		int applyPressure = multiActionProcessing.IndexOf(
@@ -3469,7 +3475,7 @@ internal static class Program
 			&& CountOccurrences(multiActionProcessing, "HandleRoundDocumentProcessed(document)") == 1
 			&& CountOccurrences(multiActionProcessing, "SettleInternationalReputationForDocument(document)") == 1,
 			"one multi-action document must settle reputation, publish history, propagate, and consume its round turn exactly once");
-		Test.True(multiActionProcessing.Contains("new List<Kingdom>(actions.Count)", StringComparison.Ordinal)
+        Test.True(multiActionProcessing.Contains("new List<string>(actions.Count)", StringComparison.Ordinal)
 			&& multiActionProcessing.Contains("new HashSet<string>(StringComparer.OrdinalIgnoreCase)", StringComparison.Ordinal)
 			&& !multiActionProcessing.Contains("Kingdom.All", StringComparison.Ordinal),
 			"the bounded four-action publication path must preallocate small collections and avoid a full-world scan per document");
@@ -4283,6 +4289,22 @@ internal static class Program
     // Follow the actual DPL-080 owner while retaining host-routing checks.
     private static string? ReadDpl080Owner(string source, string marker)
     {
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TryIncludeResultSettlementTarget" })
+        {
+            if (!marker.StartsWith("private ", StringComparison.Ordinal) || !marker.EndsWith(" " + name + "(", StringComparison.Ordinal)) continue;
+            Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication." + name + "(new DocumentExecutionPort(this),", StringComparison.Ordinal),
+                "legacy entry must call the real document Application owner: " + name);
+            string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
+            return ExtractMethod(text, marker.Replace("private ", "internal static "));
+        }
+        if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
+        {
+            Test.True(source.Contains("WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal),
+                "compatibility finalization must forward to Application");
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentPublicationApplication.cs")),
+                marker.Replace("public static", "internal static"));
+        }
+
         if (marker == "private void ReconcilePlayerDeclarationWithOpenOffer(" || marker == "private static void AppendOpenOfferResponseIntents(")
         {
             string rules = File.ReadAllText(FindRepositoryFile("Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));

@@ -604,7 +604,7 @@ internal static class Program
                   && targetInclusion.Contains("MaxRelayParticipants", StringComparison.Ordinal)
                   && targetInclusion.Contains("round.RelayRouteKingdomIds.Add(kingdomId)", StringComparison.Ordinal)
                   && targetInclusion.Contains(
-                      "round.HardEndDay = WorldDiplomacyRoundLifecycleRules.ExtendHardEndDay(round.HardEndDay, CurrentDay(), 3)",
+                      "round.HardEndDay = WorldDiplomacyRoundLifecycleRules.ExtendHardEndDay(round.HardEndDay, port.CurrentDay, 3)",
                       StringComparison.Ordinal)
                   && targetInclusion.Contains("EnsureRoundParticipant(round, kingdomId", StringComparison.Ordinal)
                   && targetInclusion.Contains("participant.SelectedForRelay = true", StringComparison.Ordinal)
@@ -768,7 +768,7 @@ internal static class Program
 			"private void ProcessAnalyzedMultiActionDocument(");
 		int finalStateGuard = analyzedPublication.IndexOf("TryGetDiplomaticStateViolation(", StringComparison.Ordinal);
 		int aggregateCapacity = analyzedPublication.IndexOf(
-			"newSettlementTargets.Count > MaxRelayParticipants",
+			"newSettlementTargets.Count > port.MaxRelayParticipants",
 			StringComparison.Ordinal);
 		int includeTarget = analyzedPublication.IndexOf("TryIncludeResultSettlementTarget(", aggregateCapacity, StringComparison.Ordinal);
 		int addTargetSlot = analyzedPublication.IndexOf("AddOrMergeResultSettlementSlot(", includeTarget, StringComparison.Ordinal);
@@ -894,7 +894,7 @@ internal static class Program
 			source,
 			"private void ProcessAnalyzedMultiActionDocument(");
 		int settlementCapacityPreflight = analyzedPublication.IndexOf(
-			"newSettlementTargets.Count > MaxRelayParticipants",
+			"newSettlementTargets.Count > port.MaxRelayParticipants",
 			StringComparison.Ordinal);
 		int firstSettlementTargetMutation = analyzedPublication.IndexOf(
 			"TryIncludeResultSettlementTarget(",
@@ -907,7 +907,7 @@ internal static class Program
 			"for (int index = 0; index < actions.Count; index++)",
 			StringComparison.Ordinal);
 		int setActionContext = analyzedPublication.IndexOf(
-			"WorldDiplomacyDocumentApplication.BeginAction(document, action, target.StringId)",
+            "WorldDiplomacyDocumentApplication.BeginAction(document, action, target)",
 			actionLoop,
 			StringComparison.Ordinal);
 		int registerOffer = analyzedPublication.IndexOf(
@@ -1573,7 +1573,7 @@ internal static class Program
 		})
 		{
 			int requiredOffer = method.IndexOf(
-				"WorldDiplomacyRoundOffer requiredPeaceOffer = FindRequiredPeaceOfferResponse(",
+                "WorldDiplomacyRoundOffer requiredPeaceOffer = port.FindRequiredPeaceOfferResponse(",
 				StringComparison.Ordinal);
 			int playerFallback = method.IndexOf(
 				"requireAnyOpenPeaceOffer: document.IsRelayTurn || document.IsPlayerAuthored",
@@ -1929,7 +1929,7 @@ internal static class Program
 
 		string multiPublication = ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(");
 		int finalGuard = multiPublication.IndexOf(
-			"DocumentHasUnsafeMultiplePeaceAcceptances(document, ResolveDocument)",
+            "DocumentHasUnsafeMultiplePeaceAcceptances(document, port.ResolveDocument)",
 			StringComparison.Ordinal);
 		int finalReason = multiPublication.IndexOf(
 			"SuppressInvalidDocumentBeforePropagation(document, \"multiple_peace_acceptances_have_cross_terms\")",
@@ -1948,7 +1948,7 @@ internal static class Program
 		string singlePublication = ExtractMethod(source, "private void ProcessAnalyzedDocument(");
 		int multiActionDispatch = singlePublication.IndexOf("document?.Actions?.Count > 0", StringComparison.Ordinal);
 		int callMultiPublication = singlePublication.IndexOf(
-			"ProcessAnalyzedMultiActionDocument(document)",
+			"ProcessAnalyzedMultiActionDocument(port, document)",
 			multiActionDispatch,
 			StringComparison.Ordinal);
 		int returnAfterDispatch = singlePublication.IndexOf("return;", callMultiPublication, StringComparison.Ordinal);
@@ -2111,6 +2111,22 @@ internal static class Program
     // Follow the actual DPL-080 owner while retaining host-routing checks.
     private static string? ReadDpl080Owner(string source, string marker)
     {
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TryIncludeResultSettlementTarget" })
+        {
+            if (!marker.StartsWith("private ", StringComparison.Ordinal) || !marker.EndsWith(" " + name + "(", StringComparison.Ordinal)) continue;
+            Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication." + name + "(new DocumentExecutionPort(this),", StringComparison.Ordinal),
+                "legacy entry must call the real document Application owner: " + name);
+            string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
+            return ExtractMethod(text, marker.Replace("private ", "internal static "));
+        }
+        if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
+        {
+            Test.True(source.Contains("WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal),
+                "compatibility finalization must forward to Application");
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentPublicationApplication.cs")),
+                marker.Replace("public static", "internal static"));
+        }
+
         if (marker == "private string BuildFallbackAnalysisJson(")
         {
             Test.True(source.Contains("WorldDiplomacyPromptComposer.BuildFallbackAnalysisJson(ResolveDocument(job?.DocumentId), job?.TargetKingdomId)", StringComparison.Ordinal), "host must pass current fallback document and target");

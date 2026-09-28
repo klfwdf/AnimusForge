@@ -7047,60 +7047,28 @@ List<string> ids = new List<string>();
         Action<WorldDiplomacyDocument> handleRoundDocumentProcessed,
         Action<string> log)
     {
-        if (document == null || string.IsNullOrWhiteSpace(authorKingdomId)) return;
-        document.IsReadyForPublication = true;
-        if (recordNoActionDecision)
-        {
-            recordThreatDecisions?.Invoke(document, authorKingdomId, targetKingdomId, normalizedIntent);
-        }
-        bool requiredThreatActionDeferred = deferUnresolvedThreatAction?.Invoke(document, authorKingdomId, targetKingdomId, normalizedIntent) == true;
-        if (!requiredThreatActionDeferred)
-        {
-            SettleDiplomaticThreatFollowThroughAfterDeclaration(
-            document, threats, authorKingdomId, applyThreatReputationPenalty);
-        }
-        settleReputation?.Invoke(document);
-        try
-        {
-            startPropagation?.Invoke(document, authorKingdomId);
-        }
-        catch (Exception ex)
-        {
-            document.PropagationCompleted = false;
-            log?.Invoke("valid declaration propagation deferred document=" + document.DocumentId + " error=" + ex.Message);
-        }
-        try
-        {
-            recordWeeklyMaterial?.Invoke(document);
-            reconcilePlayerDeclaration?.Invoke(document);
-        }
-        catch (Exception ex)
-        {
-            log?.Invoke("analyzed player declaration routing refresh deferred document=" + document.DocumentId + " error=" + ex.Message);
-        }
-        try
-        {
-            appendCanonicalEvents?.Invoke(document);
-            FinalizeDiplomaticThreatHistoryAfterDocument(document,
-            threats, appendThreatHistory,
+        WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(
+            document,
+            authorKingdomId,
+            targetKingdomId,
+            normalizedIntent,
+            recordNoActionDecision,
+            threats,
+            recordThreatDecisions,
+            deferUnresolvedThreatAction,
+            applyThreatReputationPenalty,
+            settleReputation,
+            startPropagation,
+            recordWeeklyMaterial,
+            reconcilePlayerDeclaration,
+            appendCanonicalEvents,
+            appendThreatHistory,
             appendThreatDomesticPenaltyHistory,
-            appendThreatIssuerRewardHistory);
-            FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
-            threats, appendThreatNonComplianceHistory);
-        }
-        catch (Exception ex)
-        {
-            scheduleDeferredHistoryRetry?.Invoke(document.DocumentId);
-            log?.Invoke("canonical history append deferred document=" + document.DocumentId + " error=" + ex.Message);
-        }
-        try
-        {
-            handleRoundDocumentProcessed?.Invoke(document);
-        }
-        catch (Exception ex)
-        {
-            log?.Invoke("valid declaration round progress deferred document=" + document.DocumentId + " error=" + ex.Message);
-        }
+            appendThreatIssuerRewardHistory,
+            appendThreatNonComplianceHistory,
+            scheduleDeferredHistoryRetry,
+            handleRoundDocumentProcessed,
+            log);
     }
 
     public static void ProcessDiplomaticThreatDocument(

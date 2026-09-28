@@ -19,6 +19,13 @@ def main():
  current_tick=declaration(current,'public void OnEngineTick(')
  assert 'WorldDiplomacyTickApplication.Run(ref source)' in current_tick and 'ProcessCompletedJobs()' not in current_tick, 'Tick predecessor still owns ordering'
  prior=prior.replace(prior_tick,current_tick)
+ # These production bodies have moved to a compiled, replayed Application owner.
+ # The Roslyn gate below requires each predecessor to be a single forwarder.
+ for signature in ('private void ProcessAnalyzedDocument(', 'private void ProcessAnalyzedMultiActionDocument(',
+                   'private void FinalizePublishedDocumentAfterAnalysis(', 'private bool TryIncludeResultSettlementTarget('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyDocumentExecutionApplication.' in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
