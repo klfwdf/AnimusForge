@@ -164,6 +164,7 @@ RunRepairCorrectionAndJobDecisionTests();
         AdmissionBindingReplay.Run();
         PolicySignalRefreshReplay.Run();
         ActionSelectionReplay.Run();
+        JobPreparationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -13878,7 +13879,7 @@ RunRepairCorrectionAndJobDecisionTests();
         {
             RoundId = "r1", State = "active", ResultSettlementPending = true
         };
-        Func<WorldDiplomacyJob, bool> rebuild = j => WorldDiplomacyRoundLifecycleRules.RebuildPendingJob(
+        Func<WorldDiplomacyJob, bool> rebuild = j => WorldDiplomacyJobPreparationApplication.RebuildPendingJob(
             j, storage, 1800, 900, () => (5, 40),
             id => !string.Equals(id, "ghost", StringComparison.OrdinalIgnoreCase),
             (r, id) => new List<string> { "x", "y" },
@@ -15174,7 +15175,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!promptContractSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "prompt contract rules must not reference the host behavior");
         Test.True(
-            behaviorSource.Contains("WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(", StringComparison.Ordinal)
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs")).Contains("WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.ResolveCacheAffinityKey(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.CloneLlmMessages(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.KingdomStrategicIntentRule", StringComparison.Ordinal)
@@ -16265,7 +16266,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "arrival and external-fact internals must not remain in the host");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.PrepareAnalysisJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.PrepareRoundPlanJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RebuildPendingJob(", StringComparison.Ordinal),
+            && behaviorSource.Contains("WorldDiplomacyJobPreparationApplication.Rebuild(", StringComparison.Ordinal),
             "the host must route analysis, round-plan, and rebuild job composition through the lifecycle rules");
         Test.True(rulesSource.Contains("Kind = \"analyze\"", StringComparison.Ordinal)
             && rulesSource.Contains("Kind = \"round_plan\"", StringComparison.Ordinal)

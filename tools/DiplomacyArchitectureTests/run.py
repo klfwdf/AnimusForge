@@ -82,6 +82,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyActionSelectionApplication' in after or 'WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots' in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private bool EnsureGenerationJobHasKingdomStrategicProfile(', 'private bool RefreshDiplomaticActionPresentationAndPrompt(', 'private bool RefreshDiplomaticThreatPresentationAndPrompt(', 'private bool TryRebuildPendingWorldDiplomacyJob('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyJobPreparationApplication.' in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
