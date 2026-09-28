@@ -1,4 +1,5 @@
 using System.Text;
+using AnimusForge;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
 using AnimusForge.Refactor.Modules;
@@ -24,6 +25,7 @@ internal static class Program
         VerifyPlayerPays();
         VerifyNpcPays();
         VerifyCommandFacade();
+        VerifyApplicationReplay();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy oral make-peace smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -127,6 +129,58 @@ internal static class Program
             "facade must map a thrown port call to an indeterminate receipt");
     }
 
+    private static void VerifyApplicationReplay()
+    {
+        var invalid=new FakeOralSource();
+        Test.True(DiplomacyOralMakePeaceApplication.Execute(ref invalid,"player:npc")==""
+                  && invalid.Executions==0 && invalid.Notifications==0,
+            "invalid peace payload must not execute or publish");
+        var applied=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyMakePeaceExecutionReceipt(
+                WorldDiplomacyMakePeaceExecutionStatus.Applied,"player","npc",20,100,"")
+        };
+        applied.EndpointsAvailable=true;
+        Test.True(DiplomacyOralMakePeaceApplication.Execute(ref applied,"player:npc:auto:100")==""
+                  && applied.Executions==1 && applied.Notifications==1
+                  && applied.LastLog.Contains("tribute=20 days=100"),
+            "applied peace receipt must publish once after endpoint resolution");
+        var refused=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyMakePeaceExecutionReceipt(
+                WorldDiplomacyMakePeaceExecutionStatus.NotAtWar,"player","npc",0,0,"not-war")
+        };
+        DiplomacyOralMakePeaceApplication.Execute(ref refused,"player:npc:0");
+        Test.True(refused.Executions==1 && refused.EndpointLookups==0 && refused.Notifications==0,
+            "rejected peace receipt must not resolve endpoints or publish");
+        var missing=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyMakePeaceExecutionReceipt(
+                WorldDiplomacyMakePeaceExecutionStatus.Applied,"player","npc",0,100,"")
+        };
+        DiplomacyOralMakePeaceApplication.Execute(ref missing,"player:npc:0");
+        Test.True(missing.Executions==1 && missing.EndpointLookups==1 && missing.Notifications==0,
+            "applied peace with missing endpoint must not publish");
+    }
+
+    private struct FakeOralSource : IDiplomacyOralMakePeaceSource
+    {
+        internal WorldDiplomacyMakePeaceExecutionReceipt Receipt;
+        internal bool EndpointsAvailable;
+        internal int Executions;
+        internal int EndpointLookups;
+        internal int Notifications;
+        internal string LastLog;
+        public DiplomacyOralRoyalSnapshot Capture() => new(true,"player",false,true,true,"npc","speaker",true);
+        public WorldDiplomacyMakePeaceExecutionReceipt Execute(WorldDiplomacyMakePeaceCommand command)
+        { Executions++;return Receipt; }
+        public bool TryResolveAppliedEndpoints(string payerId,string receiverId,
+            out string resolvedPayerId,out string resolvedReceiverId)
+        { EndpointLookups++;resolvedPayerId=payerId;resolvedReceiverId=receiverId;return EndpointsAvailable; }
+        public void NotifyResolved() { Notifications++; }
+        public void Log(string message) { LastLog=message; }
+    }
+
     private static void VerifySourceBoundary()
     {
         string contracts = File.ReadAllText(
@@ -147,14 +201,19 @@ internal static class Program
         string behavior = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs"), Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs"));
         string method = ExtractMethod(behavior, "private string TryExecuteMakePeace(");
+        string application = File.ReadAllText(
+            FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/DiplomacyOralMakePeaceApplication.cs"), Encoding.UTF8);
+        string oralSource = File.ReadAllText(
+            FindRepositoryFile("src/modules/AF.Module.Diplomacy/Adapters/DiplomacyOralMakePeaceSource.cs"), Encoding.UTF8);
 
         Test.True(!contracts.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !rules.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !facade.Contains("TaleWorlds", StringComparison.Ordinal),
             "make-peace contracts, rules, and facade must remain TaleWorlds-free");
-        Test.True(method.Contains("WorldDiplomacyOralMakePeaceRules.ResolveCommand", StringComparison.Ordinal)
-                  && method.Contains("MakePeaceCommandFacade.Execute(command)", StringComparison.Ordinal),
-            "the live behavior must delegate payload resolution and execution");
+        Test.True(method.Contains("DiplomacyOralMakePeaceApplication.Execute(ref source, payload)", StringComparison.Ordinal)
+                  && application.Contains("WorldDiplomacyOralMakePeaceRules.ResolveCommand", StringComparison.Ordinal)
+                  && application.Contains("source.Execute(resolution.Command)", StringComparison.Ordinal),
+            "the live behavior must forward peace resolution and execution to Application");
         Test.True(!method.Contains("(payload ?? \"\").Split(':')", StringComparison.Ordinal)
                   && !method.Contains("IsPlayerNpcPair(", StringComparison.Ordinal),
             "the replaced inline payload and pair algorithm must be removed");
@@ -172,19 +231,18 @@ internal static class Program
                   && adapter.Contains("DiplomacyPeaceTermsService.TryApplyPeace(", StringComparison.Ordinal),
             "game adapter must resolve and execute the established peace terms once");
         Test.True(!method.Contains("DiplomacyPeaceTermsService.TryApplyPeace(", StringComparison.Ordinal)
-                  && method.Contains("if (!receipt.IsApplied)", StringComparison.Ordinal),
-            "behavior must consume the execution receipt instead of applying peace directly");
+                  && application.Contains("if (!receipt.IsApplied)", StringComparison.Ordinal),
+            "Application must consume the execution receipt instead of applying peace directly");
         Test.True(peaceService.IndexOf("FactionManager.IsAtWarAgainstFaction(payer, receiver)",
                       peaceService.IndexOf("MakePeaceAction.ApplyByKingdomDecision", StringComparison.Ordinal),
                       StringComparison.Ordinal) >= 0
                   && peaceService.IndexOf("DiplomacyRecentPeaceGuard.RegisterPeace", StringComparison.Ordinal)
                       > peaceService.IndexOf("MakePeaceAction.ApplyByKingdomDecision", StringComparison.Ordinal),
             "peace service must confirm the action before registering recent peace");
-        int execution = method.IndexOf("MakePeaceCommandFacade.Execute(command)", StringComparison.Ordinal);
-        int notification = method.IndexOf(
-            "WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved",
-            StringComparison.Ordinal);
-        Test.True(execution >= 0 && notification > execution,
+        int execution = application.IndexOf("source.Execute(resolution.Command)", StringComparison.Ordinal);
+        int notification = application.IndexOf("source.NotifyResolved()", StringComparison.Ordinal);
+        Test.True(execution >= 0 && notification > execution
+                  && oralSource.Contains("WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved", StringComparison.Ordinal),
             "confirmed-fact notification must remain after successful peace execution");
     }
 

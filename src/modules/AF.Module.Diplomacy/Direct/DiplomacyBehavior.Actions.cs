@@ -39,42 +39,8 @@ namespace AnimusForge
 
 		private string TryExecuteMakePeace(Hero npc, string payload)
 		{
-			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-			Kingdom npcKingdom = npc.Clan?.Kingdom;
-			WorldDiplomacyOralMakePeaceResolution resolution = WorldDiplomacyOralMakePeaceRules.ResolveCommand(
-				payload,
-				playerKingdomExists: playerKingdom != null,
-				playerKingdomId: playerKingdom?.StringId,
-				playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
-				playerIsRuler: IsPlayerKing(),
-				npcKingdomExists: npcKingdom != null,
-				npcKingdomId: npcKingdom?.StringId,
-				npcSpeakerHeroId: npc?.StringId,
-				npcSpeakerIsRuler: IsNpcKing(npc, npcKingdom));
-			if (!resolution.IsReady)
-			{
-				Logger.Log("DiplomacyBehavior", $"[MakePeace] Rejected status={resolution.Status}");
-				return "";
-			}
-
-			WorldDiplomacyMakePeaceCommand command = resolution.Command;
-			WorldDiplomacyMakePeaceExecutionReceipt receipt = MakePeaceCommandFacade.Execute(command);
-			if (!receipt.IsApplied)
-			{
-				Logger.Log("DiplomacyBehavior", $"[MakePeace] Rejected status={receipt.Status} code={receipt.ErrorCode}");
-				return "";
-			}
-
-			Kingdom payer = ResolveKingdom(receipt.PayerKingdomId);
-			Kingdom receiver = ResolveKingdom(receipt.ReceiverKingdomId);
-			if (payer == null || receiver == null)
-			{
-				Logger.Log("DiplomacyBehavior", "[MakePeace] Applied but receipt endpoints are unavailable");
-				return "";
-			}
-			Logger.Log("DiplomacyBehavior", $"[MakePeace] {payer.StringId}->{receiver.StringId} tribute={receipt.AppliedDailyTribute} days={receipt.AppliedDurationDays}");
-			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("accept_peace", payer, receiver, "面对面口头外交达成");
-			return "";
+			var source = new DiplomacyOralMakePeaceSource(npc);
+			return DiplomacyOralMakePeaceApplication.Execute(ref source, payload);
 		}
 
 		// ════════════════════════════════════════════════════════ FORM_ALLIANCE
@@ -271,7 +237,7 @@ namespace AnimusForge
 			return null;
 		}
 
-		private static bool IsPlayerKing()
+		internal static bool IsPlayerKing()
 		{
 			Kingdom pk = Clan.PlayerClan?.Kingdom;
 			return pk != null && Hero.MainHero == pk.RulingClan?.Leader;
@@ -320,7 +286,7 @@ namespace AnimusForge
 			}
 		}
 
-		private static bool IsNpcKing(Hero npc, Kingdom npcKingdom)
+		internal static bool IsNpcKing(Hero npc, Kingdom npcKingdom)
 		{
 			return npc != null && npcKingdom != null && npc == npcKingdom.RulingClan?.Leader;
 		}
