@@ -166,6 +166,7 @@ RunRepairCorrectionAndJobDecisionTests();
         ActionSelectionReplay.Run();
         JobPreparationReplay.Run();
         AnalysisApplicationReplay.Run();
+        PeaceAdmissionReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;

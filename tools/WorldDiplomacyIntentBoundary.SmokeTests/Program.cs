@@ -4317,6 +4317,19 @@ internal static class Program
         return target == null ? null : ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs")), target);
     }
 
+    private static string? ReadPeaceAdmissionOwner(string source, string marker)
+    {
+        if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        foreach (string name in new[] { "ParseAndValidatePeaceTerms", "AreOfferedPeaceTermsCurrentlyExecutable", "IsCessionCurrentlyAllowed", "BuildCessionCandidates" })
+        {
+            if (!marker.Contains(name + "(")) continue;
+            string signature = name == "ParseAndValidatePeaceTerms" ? "internal static WorldDiplomacyPeaceTerms "
+                : name == "BuildCessionCandidates" ? "internal static List<string> " : "internal static bool ";
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs")), signature + name + "(");
+        }
+        return null;
+    }
+
     private static string? ReadJobPreparationOwner(string source, string marker)
     {
         bool rebuild = source.Contains("class WorldDiplomacyRoundLifecycleRules", StringComparison.Ordinal) && marker.Contains("RebuildPendingJob(");
@@ -4400,7 +4413,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadPeaceAdmissionOwner(source, startMarker) ?? ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
         if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
@@ -4428,7 +4441,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadPeaceAdmissionOwner(source, marker) ?? ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);
