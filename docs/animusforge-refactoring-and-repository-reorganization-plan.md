@@ -1,6 +1,20 @@
 <a id="j15-f45-current-20260927"></a>
 
-## J15 F4/F5 当前续作证据（2026-09-27；未完成）
+## J15 F4/F5 当前续作证据（2026-09-28；离线完成，实机/发布未完成）
+
+**J15 最终候选离线收口（2026-09-28；状态 `J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD`）**：本状态仅指用户确认的 J15 离线验收层，**不是**两实际游戏版本、旧档、真实部署或可发布签收。F4 的活动旧资源已由 108 项唯一映射、显式设计源归位、模块 ONNX 原位只读、F4-C 冲突预检及已授权旧 GUI/私人源 SHA 归档退役闭合到功能离线范围；0 个旧根 HOLD 不等于素材权利已清。F5 O1–O7 按同一最终内容/程序候选复核如下：
+
+| 门禁 | 本轮最终复核与继承证据 |
+| --- | --- |
+| O1 内容/个人数据/模型 | 全新 `artifacts/j15-content/f5-final-content-20260928-a/` 的完整 runner：108 映射、0 旧根 HOLD、8 非法映射、4 GCCZ 回退、14 overlay alias，ManagedDeploy 配置冲突/回滚/中断及 PlayerExports 禁回写 PASS。个人迁移合成脚本重跑 PASS；DataPaths 初次把 TEMP 放仓内，产品正确拒绝“数据根在源码树”，不是回归。既有 `tests/AF.Persistence/DataPaths/Program.cs:38,260–267` 加显式 `AF_DATA_PATHS_TEST_ROOT`，只作未创建的 `E:\AF-J15-PathOnly-DataPaths-20260928-a` 路径验证，实际 TEMP/TMP 与所有测试写入留仓内；重跑 `66 checks` PASS，外部仅路径目标仍不存在。 |
+| O2 编辑器/导入导出 | 上述已获准的隔离完整编辑 smoke、路径正反例继续有效；本轮在三个全新仓内根重跑 PlayerExports 生产链接测试 `25` 项 PASS，姓名匹配、最新包两项变异各准确失败于对应业务断言，不是编译失败。未运行真实用户包。 |
+| O3 双版本程序构建 | `4304397c` 后至本候选没有产品 C#、csproj、Bootstrap 或构建脚本变更；继承原入口 Debug/Release × 1.3/1.4/Bootstrap 六构建日志 `artifacts/j15-content/f5-o5-bridge-build-20260927-a/{debug,release}-build.log`，各 0 warning/error。未重新执行会递归重置现有四个生成根的原构建脚本；本轮独立复核六 marker 的游戏版本及 DLL SHA、双 Stage 内三程序 DLL 与 artifacts 同字节。 |
+| O4 当前 DLL/行为/存档 | 同一六 DLL 的既有 Native 55、旧 ABI 41+41、公开 API 158/实际元数据 1620、Release 1.3/1.4 ONNX 各 33+5、四 DLL 7 默认资源、Xihai Core 88 结果因程序字节未变继续适用；本轮重跑 PersistenceIdentity `142/36/1/1`、PersistenceProfileConfig `168 typed / 142 keys`、BridgeBinding `16/12/4`、BridgeFixture `10/6` 均 PASS。这些仍是离线夹具/当前 DLL，不是游戏对象或旧档执行。 |
+| O5 正式 Stage/场景资源 | 当前 Debug/Release Stage 各精确 124 项，Stage TPAC 与唯一 Xihai 活动源同字节；两份正式 Stage 的原 StaticVerifier 日志各 `13 passed, 0 failed`。程序字节、TPAC 与当时验收候选未变；六项旧 GUI 本不在 Stage，退役不改变投影。未重新执行 Stage 递归重建、未做实际视觉验收。 |
+| O6 ZIP/恢复 | 本轮独立读回双本地测试 ZIP SHA：Debug `2907D3F5058930CF10B8AA69E37360072E8C7188240E126E6A95207ADB3145E8`，Release `FBA86E840356C515472F9F425A1E4D682769DC9B53E664256CF212828B8C214A`，各 124 名称与 Stage 相同、123 非 XML 逐字节相同；唯一 XML 仍只加载 Bootstrap，ONNX/PlayerExports/Logs/AssetSources/UserData 禁入项 0。当前 124 项完整 Stage 的第 61 项同步故障、前两项后进程骤退/写前拒绝/合成手工恢复、重试/no-op 和三哨兵证据见下；不等于产品自动恢复或真实游戏部署。 |
+| O7 库存/定位/越界 | 当前 inventory `tracked=19478 / unknown=0`（比先前记录多本轮新合同文件）、7 单测、795 锚点 recorded/working-tree 均 PASS；`git diff --check` PASS。测试 ZIP 和本地私有归档不推送、不发布。 |
+
+候选差异审计：从六构建修订 `4304397c` 到此处，内容映射增加 1 项 TPAC、旧活动图/设计源/重复 TPAC 退役、测试和工具合同变化；产品 C#、项目和原构建/部署/打包脚本未变。因而以上继承以**当前 DLL 标记哈希、Stage/ZIP 字节复核和新增受影响契约重跑**为条件，不冒充本轮重新构建。TPAC 历史 11.2 MB manifest 身份与当前 1.67 MB 包不一致、上游来源/再分发权、ONNX 模型来源许可及实机动作/GUI 视觉仍 HOLD；Release ZIP 是本地测试包。1.3/1.4 实机 M9、新装/旧档/升级 L/S 和真实 provider 均 NOT-RUN；原始存档、游戏安装、外仓未写。本轮首次 net10 SDK 调用报告安装 ASP.NET Core 开发 HTTPS 证书，未作系统清理；后续调用显式关闭自动生成。
 
 **F5-O6 当前 124 项 Stage 故障/中断补证（2026-09-28；本切片）**：`tests/content/J15ContentContractTests/FullStageManagedDeployContractTests.ps1:1–250` 是原 ManagedDeploy 契约旁的独立全 Stage 入口，只接收现有项目内 Release Stage 和全新 `artifacts/j15-content/` 虚构根，以 AST 载入未改的生产 `deploy_module.ps1` 受管函数，`LOCALAPPDATA` 仅指夹具内部；不走游戏 Deploy。当前 Stage 精确 **124 项**，同步测试在 `activating` 后第 61 项 Stage hash 注入异常：生产回滚恢复首项旧字节、其余受管目标不存在，三类未受管 ONNX/PlayerExports/Logs 不变，私有 manifest 124 项标 `rolled-back`；随后重试安装 124/124、重复调用 no-op。独立全新根的子进程在第三项 Stage hash 前 `Exit(77)`，留下前两项及 124 项 `activating` 记录；下次部署写前拒绝，开发者仅在该合成根逐项核验 manifest/hash 和私有备份后手工恢复旧状态、标 `rolled-back`，再重试 124/124 与 no-op。两根各保留 `summary.txt`、两份 124 项 manifest 和私有备份；独立读回核对各虚构目标文件集合恰为 Stage 124 项加三哨兵、124/124 SHA 相同、两记录状态分别 `rolled-back`/`complete`。这替代下方 123 项完整 Stage 故障/中断证据用于当前候选，但**不证明产品自动续传/恢复、实际游戏 L4 或真实旧档**；本切片未重编产品 DLL、重建 Stage/ZIP 或写真实游戏/玩家目录。
 

@@ -1,4 +1,11 @@
-# 当前交接：J15 O2、F4-U 与当前 124 项 O6 故障合成已验，最终离线门禁未闭（2026-09-28）
+# 当前交接：J15 有限离线验收已完成，实机/旧档/发布未签收（2026-09-28）
+
+- **状态**：`J15_OFFLINE_VERIFIED / LIVE_SAVE_NOT_RUN / RELEASE_HOLD`。F4 资源/个人数据/模块 ONNX 的功能离线范围已闭，F5 O1–O7 同一最终候选矩阵已复核；108 内容映射、0 旧根 HOLD、双 Stage 与本地测试 ZIP 各 124 项、正式 StaticVerifier 各 13/0。六构建不在本切片递归重做：`4304397c` 后产品 C#/项目/构建脚本未变，当前六 DLL marker SHA、Stage/ZIP 字节与原六构建日志同候选；最新内容、DataPaths 66、PlayerExports 25 加两变异、持久化/Bridge、库存/代码地图已重跑。完整证据和适用边界只见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)及[范围图](docs/architecture/af-framework-code-scope.md)；[J15 计划](docs/plans/j15-content-profile-plan.md)保留完整上线规格。
+- **停点/下一步**：TPAC 历史 11.2 MB 身份与当前 1.67 MB 不符，上游素材/模型再分发权、两版本动作/UI 视觉仍 HOLD；1.3/1.4 实机 M9、新战役/旧档/升级、真实 Deploy、真实 provider 均 NOT-RUN。本地测试 ZIP 不可发布。没有本轮游戏/玩家库/外仓写入、推送或发布；历史私人 Git 字节仍在已推送的旧历史中，任何后续推送/历史治理另行决定。忽略的 SHA 归档与编辑器外部合成 smoke 材料保持原位，不作清理；`.dotnet-cli-home/` 原有未跟踪状态保持。
+
+## 以下为本轮离线收口前的交接历史（相冲突状态以上段为准）
+
+# J15 O2、F4-U 与当前 124 项 O6 故障合成已验，最终离线门禁未闭（2026-09-28）
 
 - **当前进展**：编辑器 O2 隔离合成完整模式已在批准的 `E:\AF-J15-editor-smoke-20260927-a\` PASS，材料保留；测试/交接本地提交 `a62ab001`。其后六项剩余旧 GUI 逐项 SHA 复制并二次复核到忽略的 `local/j15-gui-archive-20260927/legacy-remaining/` 后才退出活动源码；完整 J15 内容 runner **108 映射/0 旧根 HOLD PASS**，inventory **19477 tracked/0 unknown**、7 单测 PASS。归档不随 Git 提交；不等于实机视觉或素材许可签收。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。
 - **当前 O6 补证与下一门槛**：新全 Stage 契约以当前 Release 124 项分别做第 61 项同步故障回滚、前两项后突然退出/写前拒绝/合成手工恢复，重试与 no-op、124/124 SHA 和三哨兵均 PASS；只在全新仓内虚构根，非产品自动恢复或实际部署。随后须按最终同候选复验 O1–O7 并修正旧范围图/清单状态。TPAC 历史身份、第三方许可及双实际版本游戏/旧档仍 HOLD/NOT-RUN。已推送 `8af57b39` 取代下方历史“未推送”表述，但私人历史风险仍在；不得据此再次推送、部署或发布。
