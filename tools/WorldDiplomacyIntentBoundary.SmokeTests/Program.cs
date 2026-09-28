@@ -169,7 +169,7 @@ internal static class Program
                   && fallbackAnalysis.Contains("[\"intent\"] = \"statement\"", StringComparison.Ordinal)
                   && fallbackAnalysis.Contains("[\"status\"] = \"fallback\"", StringComparison.Ordinal),
             "no-action, malformed, and failed player analysis must preserve the public declaration as a statement");
-        Test.True(invalidSuppression.Contains("WorldDiplomacyRoundLifecycleRules.SuppressInvalidDocumentBeforePropagation(", StringComparison.Ordinal)
+        Test.True(invalidSuppression.Contains("SuppressInvalidDocumentBeforePropagation(", StringComparison.Ordinal)
                   && invalidSuppression.Contains("PreservePublishedPlayerDocumentAfterRejectedMechanic", StringComparison.Ordinal)
                   && ExtractMethod(
                           File.ReadAllText(
@@ -4308,6 +4308,15 @@ internal static class Program
         return application.Contains(newMarker, StringComparison.Ordinal) ? ExtractMethod(application, newMarker) : null;
     }
 
+    private static string? ReadAnalysisOwner(string source, string marker)
+    {
+        string? target = null;
+        if (source.Contains("class WorldDiplomacyRoundLifecycleRules", StringComparison.Ordinal)
+            && (marker.Contains("CommitAnalysis(") || marker.Contains("SuppressInvalidDocumentBeforePropagation("))) target = marker;
+        if (source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal) && marker.Contains("SuppressInvalidDocumentBeforePropagation(")) target = "internal static void Suppress(";
+        return target == null ? null : ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs")), target);
+    }
+
     private static string? ReadJobPreparationOwner(string source, string marker)
     {
         bool rebuild = source.Contains("class WorldDiplomacyRoundLifecycleRules", StringComparison.Ordinal) && marker.Contains("RebuildPendingJob(");
@@ -4391,7 +4400,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
         if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
@@ -4419,7 +4428,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

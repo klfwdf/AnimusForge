@@ -1407,14 +1407,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Log);
 	}
 	private void SuppressInvalidDocumentBeforePropagation(WorldDiplomacyDocument document, string reason)
-	{
-		WorldDiplomacyRoundLifecycleRules.SuppressInvalidDocumentBeforePropagation(
-			document, reason, _storage, ResolveRound, ResolveDocument,
-			id => ResolveKingdom(id)?.StringId, CurrentDay,
-			PreservePublishedPlayerDocumentAfterRejectedMechanic,
-			ScheduleNextResultSettlementTurn, r => AdvanceRelay(r),
-			CompleteExchange, CloseActiveRound, Log);
-	}
+    {
+        WorldDiplomacyAnalysisApplication.Suppress(new AnalysisPort(this), document, reason);
+    }
 	private bool TryApplyGeneratedSemanticEnvelope(
 		WorldDiplomacyDocument document,
 		JObject json,
@@ -1482,22 +1477,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			NormalizeKingdomIdList);
 	}
 	private void CommitAnalysis(WorldDiplomacyJob job, string raw)
-	{
-		WorldDiplomacyRoundLifecycleRules.CommitAnalysis(
-			job,
-			raw,
-			MaxAutomaticReplyDepth,
-			_storage?.DiplomaticThreats,
-			ResolveDocument,
-			ResolveRound,
-			id => ResolveKingdom(id)?.StringId,
-			id => { Kingdom kingdom = ResolveKingdom(id); return kingdom == null ? string.Empty : KingdomName(kingdom); },
-			(json, authorId, targetId) => ParseAndValidatePeaceTerms(json, ResolveKingdom(authorId), ResolveKingdom(targetId)),
-			NormalizeKingdomIdList,
-			SuppressInvalidDocumentBeforePropagation,
-			ProcessAnalyzedDocument,
-			Log);
-	}
+    {
+        WorldDiplomacyAnalysisApplication.Commit(new AnalysisPort(this), job, raw);
+    }
 
 	private void ProcessAnalyzedDocument(
 		WorldDiplomacyDocument document,
@@ -1509,37 +1491,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(new DocumentExecutionPort(this), document, intent, commitment, requiresResponse, tone, confidence);
 	}
-	private void PreservePublishedPlayerDocumentAfterRejectedMechanic(
-		WorldDiplomacyDocument document,
-		string reason)
-	{
-		if (document == null) return;
-		string normalizedIntent = WorldDiplomacyIntentVocabulary.NormalizeIntent(document.Intent);
-		if (!WorldDiplomacyIntentVocabulary.IsSupportedDiplomacyIntent(normalizedIntent))
-		{
-			normalizedIntent = "statement";
-			document.Intent = normalizedIntent;
-		}
-		if (!WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(normalizedIntent, document.Commitment))
-		{
-			document.Commitment = WorldDiplomacyIntentVocabulary.DefaultCommitmentForIntent(normalizedIntent);
-		}
-		document.AnalysisStatus = "published_action_rejected";
-		if (string.IsNullOrWhiteSpace(document.MechanicalResult))
-		{
-			document.MechanicalResult = "外交动作未执行：当前局势不支持解析出的动作。";
-		}
-		Log("published player declaration retained after mechanic rejection document=" + document.DocumentId
-			+ " intent=" + normalizedIntent + " reason=" + (reason ?? ""));
-		InformationManager.DisplayMessage(new InformationMessage(
-			"外交宣言已经发布，但其中解析出的外交动作因当前局势不成立而未执行。"));
-		FinalizePublishedDocumentAfterAnalysis(
-			document,
-			ResolveKingdom(document.AuthorKingdomId),
-			ResolveKingdom(document.TargetKingdomId),
-			normalizedIntent,
-			recordNoActionDecision: true);
-	}
+	private void PreservePublishedPlayerDocumentAfterRejectedMechanic(WorldDiplomacyDocument document, string reason)
+    {
+        WorldDiplomacyAnalysisApplication.PreservePublishedPlayerDocumentAfterRejectedMechanic(new DocumentExecutionPort(this), document, reason);
+    }
 	private void FinalizePublishedDocumentAfterAnalysis(
 		WorldDiplomacyDocument document,
 		Kingdom author,
