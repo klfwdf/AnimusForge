@@ -163,6 +163,7 @@ RunRepairCorrectionAndJobDecisionTests();
         HistoryCaptureReplay.Run();
         AdmissionBindingReplay.Run();
         PolicySignalRefreshReplay.Run();
+        ActionSelectionReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14261,6 +14262,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!behaviorSource.Contains("private void ProcessPlayerResponseTimeouts(", StringComparison.Ordinal) && rulesSource.Contains("public static bool IsExchangeCloseDue(", StringComparison.Ordinal),
             "retired exchange timeout path stays absent; public close rule retains compatibility");
         string policyRoundApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPolicyRoundApplication.cs"));
+        string actionSelectionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyActionSelectionApplication.cs"));
         string noActionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNoActionApplication.cs"));
         string bindingSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatBindingApplication.cs"));
         string historyCaptureSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs"));
@@ -14380,7 +14382,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "threat terminal closes must be evaluated inside the lifecycle rules");
         Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.TryGetConfirmedRoundResult(", StringComparison.Ordinal),
             "the host must route confirmed-result evaluation through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelevantToResultSettlement", StringComparison.Ordinal),
+        Test.True(documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatRelevantToResultSettlement", StringComparison.Ordinal),
             "the host must route threat-settlement relevance through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsOpenDiplomaticThreatStatus", StringComparison.Ordinal),
             "the host must route open-threat checks through the lifecycle rules");
@@ -14412,7 +14414,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw escalation-violation reasons must not remain in the host");
         Test.True(!behaviorSource.Contains(".GroupBy(x => (x.SourceDocumentId ?? \"\")", StringComparison.Ordinal),
             "raw offer dedup scans must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot", StringComparison.Ordinal)
+        Test.True(documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot", StringComparison.Ordinal)
             && rulesSource.Contains("AddWarResponseResultSettlementSlot(", StringComparison.Ordinal),
             "the host must route settlement-slot composition through the lifecycle rules");
         Test.True(rulesSource.Contains("MergeSettlementSlotKind(", StringComparison.Ordinal)
@@ -14420,10 +14422,10 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("MergeSettlementSlotKind(", StringComparison.Ordinal)
             && !behaviorSource.Contains("DefaultSettlementSlotKind(", StringComparison.Ordinal),
             "slot-kind merge and default algorithms must live only in the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots", StringComparison.Ordinal)
+        Test.True(documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots", StringComparison.Ordinal)
             && rulesSource.Contains("CollectSpokenAuthorIds(", StringComparison.Ordinal),
             "the host must route spoken-author collection through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot", StringComparison.Ordinal),
+        Test.True(documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot", StringComparison.Ordinal),
             "the host must route threat settlement slots through the lifecycle rules");
         Test.True(rulesSource.Contains("IsWarResponseSlotAction(", StringComparison.Ordinal)
             && rulesSource.Contains("ComposeWarResponseActionKey(", StringComparison.Ordinal)
@@ -14499,7 +14501,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw follow-through obligation matching must not remain in the host");
         Test.True(rulesSource.Contains("SelectUniquePresentedPendingThreat(", StringComparison.Ordinal),
             "unique-threat binding must be composed inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatIssuedBy", StringComparison.Ordinal),
+        Test.True(actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatIssuedBy", StringComparison.Ordinal),
             "the host must route open-threat lookups through the lifecycle rules");
         Test.True(!behaviorSource.Contains("\"\\n\" + (x.StageActionId", StringComparison.Ordinal),
             "raw stage-identity grouping must not remain in the host");
@@ -14706,14 +14708,14 @@ RunRepairCorrectionAndJobDecisionTests();
 
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatDecisionNoncomplied", StringComparison.Ordinal),
             "host must delegate threat noncompliance classification to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatDecisionPending", StringComparison.Ordinal),
+        Test.True(actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatDecisionPending", StringComparison.Ordinal),
             "host must delegate threat pending-decision classification to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPendingIncomingThreats", StringComparison.Ordinal),
             "host must delegate pending incoming threat selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum", StringComparison.Ordinal)
+        Test.True(actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum", StringComparison.Ordinal)
                 && rulesSource.Contains("IsRejectedUltimatumEnforceable(", StringComparison.Ordinal),
             "host must delegate rejected-ultimatum enforcement to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEscalatableWarningThreat", StringComparison.Ordinal),
+        Test.True(actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEscalatableWarningThreat", StringComparison.Ordinal),
             "host must delegate warning escalation matching to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectNoncompliedThreatStageDocumentIds", StringComparison.Ordinal),
             "host must delegate noncomplied stage document selection to the domain");
@@ -15487,7 +15489,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.TryDeriveGeneratedDiplomaticStructure(", StringComparison.Ordinal)
                 && validationSource.Contains("WorldDiplomacyRoundLifecycleRules.TryResolveOpenProposalFor(", StringComparison.Ordinal)
                 && documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(", StringComparison.Ordinal)
-                && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(", StringComparison.Ordinal)
+                && actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(", StringComparison.Ordinal)
                 && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(", StringComparison.Ordinal)
                 && rulesSource.Contains("WorldDiplomacyPromptContractRules.BuildPolicySignalContext(", StringComparison.Ordinal)
                 && rulesSource.Contains("TryResolveUniqueOpenProposalForRound(", StringComparison.Ordinal)
@@ -15873,8 +15875,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "legal action-intent orchestration must live in the lifecycle rules behind ports");
         Test.True(rulesSource.Contains("AppendOpenOfferResponseIntents(round, authorKingdomId, targetKingdomId, actions);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.FindRequiredPeaceOfferResponse(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(", StringComparison.Ordinal)
-            && behaviorSource.Contains("() => BuildPotentialDiplomaticActionIntents(author, target), ResolveDocument", StringComparison.Ordinal),
+            && actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(", StringComparison.Ordinal)
+            && actionSelectionSource.Contains("() => BuildPotentialDiplomaticActionIntents(author, target), _port.ResolveDocument", StringComparison.Ordinal),
             "the host must bind legal-intent ports through thin adapters");
         Test.True(!behaviorSource.Contains("ownOpenProposalIntents", StringComparison.Ordinal)
             && !behaviorSource.Contains("openPeaceOffers", StringComparison.Ordinal)
