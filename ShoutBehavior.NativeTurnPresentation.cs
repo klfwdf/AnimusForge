@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 using AnimusForge.SceneActions.Core;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
+using System.Linq;
+using RichExecutions.Core;
+using RichExecutions.Scene;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Conversation;
+using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge;
 
@@ -49,7 +53,9 @@ public partial class ShoutBehavior
                     }
                     // The observer reads Mission/Agents. Keep it with the validated raw actions on
                     // their owning thread, before this callback releases the worker continuation.
+                    RecordSceneActionReplyCapture(nativeTargetAgentIndex);
                     SubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);
+                    TryQueueCeremonyExecutionOrder(nativeTargetAgentIndex, playerText);
                     cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
                     nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
                     if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
@@ -106,6 +112,60 @@ public partial class ShoutBehavior
                 Logger.Log("ShoutBehavior", "[NativeConversation] postprocess-start callback failed: " + ex.Message);
             }
             return NativeConversationTurnStep.Continue();
+        }
+
+        // The ceremony cannot move its actors while this conversation still owns them.
+        // An explicit order is therefore kept until the conversation closes, then it
+        // uses the same executioner-start path as the scripted "Proceed" line.
+        private static void TryQueueCeremonyExecutionOrder(int agentIndex, string text)
+        {
+            if (agentIndex < 0 || !IsExplicitExecutionOrder(text)) return;
+            Mission mission = Mission.Current;
+            Agent speaker = null;
+            if (mission?.Agents != null)
+            {
+                for (int index = 0; index < mission.Agents.Count; index++)
+                {
+                    Agent candidate = mission.Agents[index];
+                    if (candidate != null && candidate.Index == agentIndex)
+                    {
+                        speaker = candidate;
+                        break;
+                    }
+                }
+            }
+            TownExecutionMissionBehavior ceremony = mission?.GetMissionBehavior<TownExecutionMissionBehavior>();
+            if (speaker == null || ceremony == null || !ceremony.IsCeremonyExecutioner(speaker) ||
+                ceremony.State != ExecutionSessionState.WaitingForPlayer)
+            {
+                return;
+            }
+
+            ConversationManager manager = Campaign.Current?.ConversationManager;
+            if (manager == null) return;
+            void StartWhenConversationCloses()
+            {
+                manager.ConversationEndOneShot -= StartWhenConversationCloses;
+                ExecutionSessionCoordinator.RequestExecutionerStart();
+            }
+            manager.ConversationEndOneShot -= StartWhenConversationCloses;
+            manager.ConversationEndOneShot += StartWhenConversationCloses;
+        }
+
+        private static bool IsExplicitExecutionOrder(string text)
+        {
+            string value = (text ?? string.Empty).Trim();
+            if (value.Length == 0 || value.Length > 40) return false;
+            string[] orders =
+            {
+                "行刑", "执行", "动手", "砍", "斩", "处决",
+                "proceed", "execute", "carry out", "do it"
+            };
+            foreach (string order in orders)
+            {
+                if (value.IndexOf(order, StringComparison.OrdinalIgnoreCase) >= 0) return true;
+            }
+            return false;
         }
     }
 }

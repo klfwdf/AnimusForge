@@ -1,6 +1,6 @@
 # Illustrator 持久维护规则
 
-遵循仓库根 AGENTS.md。颜色修改前必须先读 `docs/color-channel-contract.md`。
+颜色修改前必须先读 `docs/color-channel-contract.md`。
 
 ## 当前普通NPC年龄（2026-09-22）
 

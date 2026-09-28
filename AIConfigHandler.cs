@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Adapters;
+using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Contracts;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -670,6 +671,8 @@ public static class AIConfigHandler
 	public static List<PostprocessRuleEntry> RoyalPostprocessRules => CopyPostprocessRules(_actionPostprocess?.RoyalPostprocessRules);
 
 	public static List<PostprocessRuleEntry> IntimacyPostprocessRules => CopyPostprocessRules(_actionPostprocess?.IntimacyPostprocessRules);
+
+	public static List<PostprocessRuleEntry> SceneActionPostprocessRules => CopyPostprocessRules(_actionPostprocess?.SceneActionPostprocessRules);
 
 	public static List<PostprocessRuleEntry> ActionPostprocessMoodRules => CopyPostprocessRules(_actionPostprocess?.MoodRules);
 
@@ -6717,7 +6720,8 @@ public static class AIConfigHandler
 					Description = description
 				});
 			}
-			Logger.Log("AIConfig", "[KingdomServicePostprocessRules] state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " targetKingdomIdToken=" + text2 + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			list.AddRange(TeamModuleServices.CivilWar.BuildPostprocessRules());
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " targetKingdomIdToken=" + text2 + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{

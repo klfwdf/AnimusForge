@@ -178,9 +178,17 @@ public static class ReviewRegressionAudit
         string sceneLabel = (string)Call(capture, "SceneReferenceLabel");
         Confirm(sceneLabel.Contains("仅用于判断当前位置与环境定位") && !sceneLabel.Contains("校验现场采光、可见人物行动"),
             "screenshot-label-has-location-only-role", "standing pose in a screenshot cannot override narrated action");
-        string mapNote = (string)Call(capture, "MapConversationReferenceNote", true);
-        Confirm(mapNote.Contains("仅供当前位置与环境定位") && mapNote.Contains("不以截图里的待机姿势覆盖"),
-            "map-screenshot-has-location-only-role", "map conversation applies the same action precedence");
+        // Field conversations send no screenshot: portraits carry identity, terrain facts carry the environment.
+        Confirm(capture.GetMethod("MapConversationReferenceNote", All) == null,
+            "map-conversation-sends-no-screenshot", "the retired tableau screenshot note is gone");
+        string mapNote = (string)capture.GetField("MapConversationTerrainNote", All).GetRawConstantValue();
+        Confirm(mapNote.Contains("不提供现场截图") && mapNote.Contains("【地貌类型】") && mapNote.Contains("离屏身份立绘") && mapNote.Contains("对话中已发生的叙事"),
+            "map-terrain-facts-drive-environment", "field environment follows terrain facts and actions follow the dialogue");
+        var mapTask = (System.Threading.Tasks.Task)capture.GetMethod("CaptureMapConversationSceneReferencesAsync", All)
+            .Invoke(null, new object[] { null, System.Threading.CancellationToken.None });
+        object mapCapture = mapTask.GetType().GetProperty("Result").GetValue(mapTask, null);
+        Confirm(((System.Collections.ICollection)Property(mapCapture, "References")).Count == 0,
+            "map-capture-has-no-image-reference", "no presented pixels are sent for a field conversation");
         var popup = assembly.GetType("AnimusForge.Illustrator.UI.Overlays.IllustrationCardPopup", true);
         Confirm((string)Call(popup, "SelectOpeningSceneReference", png, "mission:1|player|npc", "mission:1|player|npc") == png,
             "opening-location-capture-survives-redraw", "a capture from before fullscreen is reused in the same conversation");

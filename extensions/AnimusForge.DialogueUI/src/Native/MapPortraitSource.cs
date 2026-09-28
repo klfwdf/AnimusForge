@@ -53,6 +53,8 @@ internal static class MapPortraitSource
     {
         if (____data == null) return;
         _appearances.Remove(____data);
+        // Nothing reads the capture when the skin is off; skip the visuals copy (once per map conversation).
+        if (!DialogueUiOptions.SkinEnabled) return;
         try
         {
             if (____agentVisuals == null || ____agentVisuals.Count <= __state) return;

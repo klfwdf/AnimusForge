@@ -30,13 +30,16 @@ namespace AnimusForge.Illustrator.Core
     public static class UniversalOpenAiImageClient
     {
         private static readonly HttpClient HttpClient;
+        // One budget covers the whole stage: an Edits attempt, the chat fallback and the
+        // result download. High-quality multi-reference redraws routinely exceed 120 s.
+        private static readonly TimeSpan GenerationBudget = TimeSpan.FromSeconds(240);
 
         static UniversalOpenAiImageClient()
         {
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             HttpClient = new HttpClient
             {
-                Timeout = TimeSpan.FromSeconds(120)
+                Timeout = GenerationBudget
             };
         }
 
@@ -62,7 +65,7 @@ namespace AnimusForge.Illustrator.Core
         {
             using (var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
-                deadline.CancelAfter(TimeSpan.FromSeconds(120));
+                deadline.CancelAfter(GenerationBudget);
                 cancellationToken = deadline.Token;
             var result = new ImageGenerationResult
             {
@@ -119,7 +122,9 @@ namespace AnimusForge.Illustrator.Core
                 bool isChatProtocol = !exactEditsEndpoint && (IsChatCompletionProtocol(model, baseUrl, settings.UseExactEndpointUrl)
                     || (settings.PreferChatImageProtocol && !settings.UseExactEndpointUrl));
                 string endpointUrl = ResolveEndpointUrl(baseUrl, isChatProtocol, settings.UseExactEndpointUrl);
-                string effectivePrompt = BuildEffectivePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness);
+                var composed = ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, isChatProtocol, settings.Randomness,
+                    ResolvePromptProfile(model, isChatProtocol));
+                string effectivePrompt = composed.Text;
                 if (exactEditsEndpoint && requestedRefImages == 0)
                 {
                     result.ErrorMessage = "精确 images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。";
@@ -144,7 +149,7 @@ namespace AnimusForge.Illustrator.Core
                 //    generations 端点没有参考图字段，之前日志打 refImages=N 但实际从未发送。
                 if (!isChatProtocol && requestedRefImages > 0 && (!settings.UseExactEndpointUrl || exactEditsEndpoint))
                 {
-                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint).ConfigureAwait(false);
+                    var edit = await AttemptImagesEditsAsync(baseUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, cancellationToken, customStyleHint, composed.NegativeField).ConfigureAwait(false);
                     result.ResolvedPrompt = edit.ResolvedPrompt;
                     if (edit.Success)
                     {
@@ -166,14 +171,10 @@ namespace AnimusForge.Illustrator.Core
                         stopAfterEditFailure = true;
                     }
                 }
-                else if (!isChatProtocol && requestedRefImages > 0 && settings.UseExactEndpointUrl)
-                {
-                    Log("[Illustrator] 启用了精确端点地址，/images/generations 无法携带参考图，参考图仅供导演识图 (ActualRefImages=0)。");
-                }
 
                 if (!success && !stopAfterEditFailure)
                 {
-                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint).ConfigureAwait(false);
+                    var attempt = await AttemptGenerateOnceAsync(endpointUrl, model, effectivePrompt, size, quality, style, referenceImages, apiKey, isChatProtocol, cancellationToken, customStyleHint, composed.NegativeField).ConfigureAwait(false);
                     success = attempt.Success;
                     imageBytes = attempt.ImageBytes;
                     imageUrl = attempt.ImageUrl;
@@ -318,7 +319,50 @@ namespace AnimusForge.Illustrator.Core
         /// 拼出实际发给生图服务的有效提示词：Chat 协议附加画幅/画质格式指令，Images 协议把画风写进正文，
         /// 两种协议都追加负面提示词。缓存与"查看提示词"展示的就是这个真实发送值。
         /// </summary>
-        private const string BuiltinNegativePrompt = "extra limbs, malformed hands, bad anatomy, unwanted text, watermark, UI overlay, reference image collage";
+        // The single channel for prohibited elements; the contract and local templates stay positive.
+        private const string BuiltinNegativePrompt = "extra limbs, malformed hands, bad anatomy, unwanted text, subtitles, speech bubbles, captions, watermark, UI overlay, picture-in-picture, inset thumbnails, reference image collage, character turnaround sheet, pasted cutout figure, floating figure";
+
+        /// <summary>
+        /// How the prompt text is consumed. Chat and gpt-image style endpoints read the whole
+        /// instruction text; diffusion text encoders (CLIP/T5) truncate early and read named
+        /// objects in negative sentences as objects to draw; DALL·E enforces a length limit.
+        /// </summary>
+        internal enum ImagePromptProfile { Full, Diffusion, DallE3, DallE2 }
+
+        internal sealed class ComposedImagePrompt
+        {
+            internal string Text = string.Empty;
+            /// <summary>Non-null only when negatives go to a separate negative_prompt field.</summary>
+            internal string NegativeField;
+        }
+
+        internal static ImagePromptProfile ResolvePromptProfile(string model, bool chatProtocol)
+        {
+            if (chatProtocol) return ImagePromptProfile.Full;
+            string m = (model ?? string.Empty).ToLowerInvariant();
+            if (m.Contains("dall-e-3")) return ImagePromptProfile.DallE3;
+            if (m.Contains("dall-e-2")) return ImagePromptProfile.DallE2;
+            if (m.Contains("flux") || m.Contains("stable-diffusion") || m.Contains("sdxl") || m.Contains("sd3") || m.Contains("kolors"))
+                return ImagePromptProfile.Diffusion;
+            return ImagePromptProfile.Full;
+        }
+
+        internal static int PromptCharLimit(ImagePromptProfile profile)
+        {
+            return profile == ImagePromptProfile.DallE3 ? 4000 : profile == ImagePromptProfile.DallE2 ? 1000 : 0;
+        }
+
+        /// <summary>Cuts at a sentence boundary when one lies in the last 40% of the budget.</summary>
+        internal static string TrimToBudget(string text, int maxChars)
+        {
+            text = text ?? string.Empty;
+            if (maxChars <= 0) return string.Empty;
+            if (text.Length <= maxChars) return text;
+            string cut = text.Substring(0, maxChars);
+            if (char.IsHighSurrogate(cut[cut.Length - 1])) cut = cut.Substring(0, cut.Length - 1);
+            int boundary = cut.LastIndexOfAny(new[] { '。', '！', '？', '；', '\n', '.', '!', '?' });
+            return (boundary >= maxChars * 3 / 5 ? cut.Substring(0, boundary + 1) : cut).TrimEnd();
+        }
 
         private static string BuildImageStyleAnchor(string customStyleHint, string style)
         {
@@ -397,6 +441,35 @@ namespace AnimusForge.Illustrator.Core
 
         public static string BuildEffectivePrompt(string prompt, string size, string quality, string style, string customStyleHint = null, string negativePrompt = null, bool chatProtocol = false, int randomness = 0)
         {
+            return ComposeImagePrompt(prompt, size, quality, style, customStyleHint, negativePrompt, chatProtocol, randomness, ImagePromptProfile.Full).Text;
+        }
+
+        internal static ComposedImagePrompt ComposeImagePrompt(string prompt, string size, string quality, string style, string customStyleHint, string negativePrompt, bool chatProtocol, int randomness, ImagePromptProfile profile)
+        {
+            // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
+            string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
+                ? BuiltinNegativePrompt
+                : BuiltinNegativePrompt + ", " + negativePrompt.Trim();
+            if (profile != ImagePromptProfile.Full)
+            {
+                // Compact form: a short style line, then the director body (positive by contract),
+                // facts and contract in priority order. Meta instructions such as the randomness
+                // guidance are omitted; a text encoder cannot follow them.
+                int limit = PromptCharLimit(profile);
+                string styleText = !string.IsNullOrWhiteSpace(customStyleHint) ? customStyleHint.Trim() : (style ?? string.Empty).Trim();
+                string head = styleText.Length == 0 ? string.Empty
+                    : "画风：" + TrimToBudget(styleText, limit > 0 ? Math.Min(600, limit / 3) : 600) + "\n";
+                bool separateNegative = profile == ImagePromptProfile.Diffusion;
+                string tail = separateNegative ? string.Empty : "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
+                string body = (prompt ?? string.Empty).Trim();
+                if (limit > 0) body = TrimToBudget(body, limit - head.Length - tail.Length);
+                return new ComposedImagePrompt
+                {
+                    Text = (head + body + tail).Trim(),
+                    NegativeField = separateNegative ? mergedNegative : null
+                };
+            }
+
             string effectivePrompt = chatProtocol
                 ? BuildChatImagePrompt(prompt, size, quality, string.Empty)
                 : (prompt ?? string.Empty);
@@ -406,10 +479,6 @@ namespace AnimusForge.Illustrator.Core
             {
                 effectivePrompt = styleAnchor + "\n" + effectivePrompt;
             }
-            // 通用负面词只覆盖成图缺陷；遮面/装备按人物事实与参考图处理。
-            string mergedNegative = string.IsNullOrWhiteSpace(negativePrompt)
-                ? BuiltinNegativePrompt
-                : BuiltinNegativePrompt + ", " + negativePrompt.Trim();
             effectivePrompt += "\n[画面中严禁出现的元素/Negative]: " + mergedNegative;
             // 0 完全沿用旧版，不追加本段；正数只增加艺术表现变化，不放松硬事实。
             if (randomness > 0)
@@ -420,7 +489,7 @@ namespace AnimusForge.Illustrator.Core
                     : $"艺术表现随机强度为 {strength}/100；数值越高，越主动探索不同取景、留白、景深与光影表现。低值仅作轻微变化";
                 effectivePrompt += "\n[艺术表现随机指导]: 人物五官、肤色、发型、体型、装备、家族纹章及所有已确认游戏事实始终保持一致。人物身份立绘只用于身份与装备，纹章标准图只用于徽记；不得把身份图的姿势、背景、构图或光影用作画面模板。场景按导演正文组织：已确认的现场空间关系严格保留，明确标记的非具名艺术布景可以围绕导演主题和空间设计丰富发挥，补充与时代文化一致的材质、装饰与光影细节。保留导演选择的环境内容，不以人物为主为由清空背景；真实现场不补造未知陈设，人物数量与事件结果不改写。取景与绘画表现可大胆变化，同时保持本次行动及空间关系成立。" + clause + "。";
             }
-            return effectivePrompt.Trim();
+            return new ComposedImagePrompt { Text = effectivePrompt.Trim() };
         }
 
         /// <summary>
@@ -460,7 +529,8 @@ namespace AnimusForge.Illustrator.Core
             System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage> referenceImages,
             string apiKey,
             CancellationToken cancellationToken,
-            string customStyleHint = null)
+            string customStyleHint = null,
+            string negativePromptField = null)
         {
             string editsUrl = ResolveEditsEndpointUrl(baseUrl);
             bool hadReferences = referenceImages != null && referenceImages.Count > 0;
@@ -495,7 +565,11 @@ namespace AnimusForge.Illustrator.Core
                     // Identity-reference redraw is not a masked local repair. Do not synthesize a mask:
                     // an all-transparent mask does not provide identity-only conditioning.
                     sentPrompt = labels.ToString();
+                    int limit = PromptCharLimit(ResolvePromptProfile(model, false));
+                    if (limit > 0) sentPrompt = TrimToBudget(sentPrompt, limit);
                     form.Add(new StringContent(sentPrompt, Encoding.UTF8), "prompt");
+                    if (!string.IsNullOrWhiteSpace(negativePromptField))
+                        form.Add(new StringContent(negativePromptField, Encoding.UTF8), "negative_prompt");
 
                     using (var request = new HttpRequestMessage(HttpMethod.Post, editsUrl) { Content = form })
                     {
@@ -544,7 +618,8 @@ namespace AnimusForge.Illustrator.Core
             string apiKey,
             bool isChatProtocol,
             CancellationToken cancellationToken,
-            string customStyleHint = null)
+            string customStyleHint = null,
+            string negativePromptField = null)
         {
             JObject payload;
             int actualRefImages = 0;
@@ -713,11 +788,17 @@ namespace AnimusForge.Illustrator.Core
                     payload["quality"] = quality;
                 }
 
-                if (!string.IsNullOrWhiteSpace(style))
+                // style (vivid/natural) is a dall-e-3-only enum; other models reject or ignore it,
+                // and the preset wording is already in the prompt text.
+                if (!string.IsNullOrWhiteSpace(style) && ResolvePromptProfile(model, false) == ImagePromptProfile.DallE3)
                 {
                     payload["style"] = style;
                 }
 
+                if (!string.IsNullOrWhiteSpace(negativePromptField))
+                {
+                    payload["negative_prompt"] = negativePromptField;
+                }
             }
 
             using (var request = new HttpRequestMessage(HttpMethod.Post, endpointUrl))
@@ -1114,7 +1195,10 @@ namespace AnimusForge.Illustrator.Core
             catch
             {
             }
-            return $"HTTP {statusCode}: {responseBody}";
+            // Gateways often answer with an HTML error page; keep the status line readable.
+            string plain = Regex.Replace(Regex.Replace(responseBody ?? string.Empty, @"<[^>]*>", " "), @"\s+", " ").Trim();
+            if (plain.Length > 300) plain = plain.Substring(0, 300) + "…";
+            return $"HTTP {statusCode}: {plain}";
         }
 
         public static string ResolveGeminiAspectRatio(string size)
@@ -1126,13 +1210,13 @@ namespace AnimusForge.Illustrator.Core
             if (parts.Length == 2 && int.TryParse(parts[0], out int w) && int.TryParse(parts[1], out int h) && h > 0)
             {
                 double ratio = (double)w / h;
-                // 常见官方比例映射: 1:1, 16:9, 9:16, 4:3, 3:4
+                // 常见官方比例映射: 1:1, 4:3, 3:2, 16:9, 3:4, 2:3, 9:16（区间首尾相接，不留空档）
                 if (ratio >= 0.95 && ratio <= 1.05) return "1:1";
-                if (ratio >= 1.55 && ratio <= 1.95) return "16:9";
-                if (ratio >= 0.50 && ratio <= 0.65) return "9:16";
-                if (ratio >= 1.25 && ratio <= 1.45) return "4:3";
-                if (ratio >= 0.68 && ratio <= 0.85) return "3:4";
-                if (ratio > 1.05) return "16:9";
+                if (ratio > 1.05 && ratio < 1.40) return "4:3";
+                if (ratio >= 1.40 && ratio < 1.60) return "3:2";
+                if (ratio >= 1.60) return "16:9";
+                if (ratio < 0.95 && ratio > 0.72) return "3:4";
+                if (ratio <= 0.72 && ratio > 0.62) return "2:3";
                 return "9:16";
             }
 
@@ -1150,7 +1234,9 @@ namespace AnimusForge.Illustrator.Core
                 if (ar == "16:9") directives.Add("panoramic widescreen landscape format");
                 else if (ar == "9:16") directives.Add("vertical portrait format");
                 else if (ar == "3:4") directives.Add("tall portrait format");
+                else if (ar == "2:3") directives.Add("tall portrait poster format");
                 else if (ar == "4:3") directives.Add("standard landscape format");
+                else if (ar == "3:2") directives.Add("classic landscape format");
                 else if (ar == "1:1") directives.Add("square format");
             }
             if (!string.IsNullOrWhiteSpace(size))

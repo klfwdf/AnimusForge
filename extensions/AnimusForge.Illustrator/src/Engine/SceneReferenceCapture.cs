@@ -54,7 +54,7 @@ namespace AnimusForge.Illustrator.Engine
             GenerationDiagnostics.Current?.RecordStage("scene_capture_route", new JObject
             { ["route"] = source.IsMapConversation ? "map-conversation" : "mission-panorama-30m" });
             if (source.IsMapConversation)
-                return await CaptureMapConversationSceneReferencesAsync(source, token, preCapturedScene).ConfigureAwait(false);
+                return await CaptureMapConversationSceneReferencesAsync(source, token).ConfigureAwait(false);
             return await CaptureMissionSceneReferencesAsync(source, token, preCapturedScene).ConfigureAwait(false);
         }
 

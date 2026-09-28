@@ -1,9 +1,13 @@
-param([Parameter(Mandatory=$true)][string]$BannerlordRoot,[ValidateSet('1.3','1.4')][string]$Api='1.4')
+param([Parameter(Mandatory=$true)][string]$BannerlordRoot,[ValidateSet('1.3','1.4')][string]$Api='1.4',
+      # Optional: verify a staged host / UI build before it is deployed (defaults: installed host, build.ps1 output).
+      [string]$HostDir='',[string]$UiDir='')
 $ErrorActionPreference='Stop'
 $module=Split-Path $PSScriptRoot -Parent
+if(!$HostDir){$HostDir=Join-Path $BannerlordRoot ('Modules/AnimusForge/bin/Win64_Shipping_Client/versions/'+$Api)}
+if(!$UiDir){$UiDir=Join-Path $module ('artifacts/'+$Api)}
 $script:dirs=@(
-    (Join-Path $module ('artifacts/'+$Api)),
-    (Join-Path $BannerlordRoot ('Modules/AnimusForge/bin/Win64_Shipping_Client/versions/'+$Api)),
+    $UiDir,
+    $HostDir,
     (Join-Path $BannerlordRoot 'bin/Win64_Shipping_Client'),
     (Join-Path $BannerlordRoot 'Modules/Native/bin/Win64_Shipping_Client'),
     (Join-Path $BannerlordRoot 'Modules/SandBox/bin/Win64_Shipping_Client'),
@@ -30,6 +34,7 @@ $hostAssembly=Load-Assembly 'AnimusForge'
 $ui=Load-Assembly 'AnimusForge.DialogueUI'
 $core=Load-Assembly 'TaleWorlds.Core'
 $gui=Load-Assembly 'TaleWorlds.GauntletUI'
+$mbWidgets=Load-Assembly 'TaleWorlds.MountAndBlade.GauntletUI.Widgets'
 $flags=[Reflection.BindingFlags]'Instance,Static,Public,NonPublic'
 $hostType=$hostAssembly.GetType('AnimusForge.ShoutBehavior',$true)
 foreach($name in @('_shoutTradeOptions','_shoutPendingTradeItems','_shoutPendingTradeItemIndex','_shoutTradeActionOnly','_shoutTradeActionOnlyFinished')){
@@ -80,6 +85,7 @@ function Check-Node($node,[Type]$scope){
     if($node.Name -notin @('Children','ItemTemplate')){
         $widget=$gui.GetType('TaleWorlds.GauntletUI.BaseTypes.'+$node.Name)
         if(!$widget){$widget=$hostAssembly.GetType('AnimusForge.'+$node.Name)}
+        if(!$widget){$widget=$mbWidgets.GetType('TaleWorlds.MountAndBlade.GauntletUI.Widgets.'+$node.Name)}
         if(!$widget){throw ('Unknown widget type '+$node.Name)}
         foreach($attr in $node.Attributes){
             if($attr.Name.StartsWith('Brush.')){
@@ -98,4 +104,18 @@ $xml.Load((Join-Path $module 'GUI/Prefabs/AFDialogueNativeOverlay.xml'))
 $panel=$xml.SelectSingleNode('//*[@Id="AFDialogueAuxiliaryPanel"]')
 if(!$panel){throw 'Panel missing'}
 Check-Node $panel ($ui.GetType('AnimusForge.DialogueUI.Native.NativeOverlayVM',$true))
+# Scene wheel and persistent-session panels: whole movie against its root VM.
+foreach($pair in @(@('AFSceneWheel','AnimusForge.DialogueUI.Scene.SceneWheelVM'),
+                   @('AFSceneSessionScroll','AnimusForge.DialogueUI.Scene.SceneSessionVM'),
+                   @('AFSceneSessionFolio','AnimusForge.DialogueUI.Scene.SceneSessionVM'))){
+    $scene=New-Object System.Xml.XmlDocument
+    $scene.Load((Join-Path $module ('GUI/Prefabs/'+$pair[0]+'.xml')))
+    Check-Node $scene.SelectSingleNode('/Prefab/Window/Widget') ($ui.GetType($pair[1],$true))
+}
+foreach($name in @('ScenePresentationSessionHook','ScenePresentationBlocksHotkeysHook')){if(!$hostType.GetField($name,$flags)){throw ('Missing host hook: '+$name)}}
+foreach($name in @('SubmitScenePresentationTextForExternal','GetScenePresentationParticipantsForExternal','GetScenePresentationHistoryForExternal',
+                   'SetScenePresentationAddresseeForExternal','CycleScenePresentationParticipantForExternal','LoadScenePresentationTradeOptionsForExternal',
+                   'StageScenePresentationTradeForExternal','CancelScenePresentationTradeForExternal','ConsumeScenePresentationTradeRequestForExternal')){
+    if(!$hostType.GetMethod($name,$flags)){throw ('Missing host session API: '+$name)}
+}
 Write-Output ('PASS '+$Api+': host reflection contract, '+$script:bindingCount+' data/command bindings, '+$script:widgetCount+' widget property contracts. No game engine initialized.')

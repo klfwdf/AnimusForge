@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
+using TaleWorlds.Core.ImageIdentifiers;
 using TaleWorlds.Library;
 
 namespace AnimusForge.DialogueUI.Native;
@@ -59,6 +61,8 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     [DataSourceProperty] public string TotalValue => SelectedItems.Sum(x => (decimal)x.Amount * x.Option.UnitValue).ToString("N0") + " 第纳尔";
     [DataSourceProperty] public string TradeNote => IsShow ? "仅展示，不转移资源；动作记入历史。" : "确认即移交；收起不提交，动作记入历史。";
     [DataSourceProperty] public string ResourcePageText => (_filteredResources.Count == 0 ? 0 : _resourcePage + 1) + " / " + Math.Max(1, (_filteredResources.Count + ResourcePageSize - 1) / ResourcePageSize) + " 页 · " + _filteredResources.Count + " 项";
+    [DataSourceProperty] public string ResourceCountText => "可用资源  " + _filteredResources.Count;
+    [DataSourceProperty] public bool IsSearchEmpty => string.IsNullOrEmpty(_search);
     [DataSourceProperty] public bool CanResourcePrevious => _resourcePage > 0;
     [DataSourceProperty] public bool CanResourceNext => (_resourcePage + 1) * ResourcePageSize < _filteredResources.Count;
     [DataSourceProperty] public bool IsResourceEmpty => ResourceItems.Count == 0;
@@ -70,7 +74,7 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     [DataSourceProperty] public string SearchText
     {
         get => _search;
-        set { string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value ?? "", 80); if (_search == text) return; _search = text; OnPropertyChanged(nameof(SearchText)); _searchDelay = 0; _searchPending = true; }
+        set { string text = AnimusForgeTextInputSanitizer.SanitizeSingleLine(value ?? "", 80); if (_search == text) return; _search = text; OnPropertyChanged(nameof(SearchText)); OnPropertyChanged(nameof(IsSearchEmpty)); _searchDelay = 0; _searchPending = true; }
     }
 
     internal void Open(bool history)
@@ -143,10 +147,37 @@ public sealed class DialogueAuxiliaryVM : ViewModel
             : !string.IsNullOrWhiteSpace(memoryId) ? MyBehavior.GetDialogueHistoryEntriesByIdForExternal(memoryId, 260) : new List<AnimusForgeDialogueHistoryEntry>();
         if (entries.Count == 0) entries = ShoutBehavior.GetNativeConversationSessionHistoryEntriesForExternal(260);
         _entries.AddRange(entries.Where(x => x != null));
-        HistoryDays.Add(new HistoryDayVM("全部日期", null, SelectDay, true));
-        foreach (var group in _entries.GroupBy(x => x.GameDayIndex).OrderByDescending(x => x.Key))
-            HistoryDays.Add(new HistoryDayVM((group.First().GameDate ?? "第 " + group.Key + " 日") + " · " + group.Count() + " 条", group.Key, SelectDay, false));
+        RefreshDayLabels();
         RebuildHistory();
+    }
+    private void RefreshDayLabels()
+    {
+        HistoryDays.Clear();
+        HistoryDays.Add(new HistoryDayVM("全部日期", null, SelectDay, !_day.HasValue));
+        foreach (var group in _entries.GroupBy(x => x.GameDayIndex).OrderByDescending(x => x.Key))
+            HistoryDays.Add(new HistoryDayVM((group.First().GameDate ?? "第 " + group.Key + " 日") + " · " + group.Count() + " 条", group.Key, SelectDay, _day == group.Key));
+        LayoutVersion++;
+    }
+    // Click-driven only. The history VM removes the row in place and keeps its page; here the master list
+    // is kept in sync so filters and day counts reflect the deletion without re-reading the store.
+    private bool DeleteHistoryEntry(AnimusForgeDialogueHistoryEntry entry)
+    {
+        if (!CanInteract || entry == null) return false;
+        if (!IsCurrentTarget()) { Close(); return false; }
+        bool deleted = MyBehavior.DeleteDialogueHistoryLineForExternal(entry.MemoryId, entry.GameDayIndex, entry.LineOrdinal, entry.Text, out string status);
+        _status = status ?? "";
+        if (deleted)
+        {
+            _entries.Remove(entry);
+            // Later lines of the same day moved up by one in the store; keep their ordinals addressable.
+            foreach (var other in _entries)
+                if (other.GameDayIndex == entry.GameDayIndex && other.LineOrdinal > entry.LineOrdinal
+                    && string.Equals(other.MemoryId, entry.MemoryId, StringComparison.Ordinal))
+                    other.LineOrdinal--;
+            RefreshDayLabels();
+        }
+        RefreshState();
+        return deleted;
     }
     private static bool IsFact(AnimusForgeDialogueHistoryEntry e) => (e.Kind ?? "").IndexOf("fact", StringComparison.OrdinalIgnoreCase) >= 0 || (e.Kind ?? "").StartsWith("afef", StringComparison.OrdinalIgnoreCase) || (e.Text ?? "").Contains("[AFEF");
     private void RebuildHistory()
@@ -155,7 +186,8 @@ public sealed class DialogueAuxiliaryVM : ViewModel
             && (_filter == "all" || (_filter == "action") == IsFact(e))
             && (string.IsNullOrEmpty(_search) || Contains(e.Text, _search) || Contains(e.Speaker, _search))).ToList();
         ReleaseHistory();
-        History = new AnimusForgeConversationHistoryLogVM(_targetName, entries, _hero, _character, Close, OpenEncyclopedia);
+        History = new AnimusForgeConversationHistoryLogVM(_targetName, entries, _hero, _character, Close, OpenEncyclopedia,
+            DialogueUiOptions.ShowHistoryDelete ? DeleteHistoryEntry : null);
         LayoutVersion++;
         OnPropertyChanged(nameof(History));
     }
@@ -256,7 +288,7 @@ public sealed class DialogueAuxiliaryVM : ViewModel
     {
         foreach (string property in StateProperties) OnPropertyChanged(property);
     }
-    private static readonly string[] StateProperties = { nameof(IsOpen), nameof(IsVisible), nameof(IsHistory), nameof(IsTrade), nameof(Title), nameof(TargetName), nameof(Status), nameof(CanInteract), nameof(CanSubmit), nameof(IsGive), nameof(IsShow), nameof(IsItems), nameof(IsTroops), nameof(IsPrisoners), nameof(IsAssets), nameof(CanShow), nameof(IsAllFilter), nameof(IsDialogueFilter), nameof(IsActionFilter), nameof(SelectionTitle), nameof(ConfirmText), nameof(SelectionCount), nameof(TotalValue), nameof(TradeNote), nameof(ResourcePageText), nameof(CanResourcePrevious), nameof(CanResourceNext), nameof(IsResourceEmpty), nameof(IsSelectionEmpty), nameof(SearchText) };
+    private static readonly string[] StateProperties = { nameof(IsOpen), nameof(IsVisible), nameof(IsHistory), nameof(IsTrade), nameof(Title), nameof(TargetName), nameof(Status), nameof(CanInteract), nameof(CanSubmit), nameof(IsGive), nameof(IsShow), nameof(IsItems), nameof(IsTroops), nameof(IsPrisoners), nameof(IsAssets), nameof(CanShow), nameof(IsAllFilter), nameof(IsDialogueFilter), nameof(IsActionFilter), nameof(SelectionTitle), nameof(ConfirmText), nameof(SelectionCount), nameof(TotalValue), nameof(TradeNote), nameof(ResourcePageText), nameof(CanResourcePrevious), nameof(CanResourceNext), nameof(IsResourceEmpty), nameof(IsSelectionEmpty), nameof(SearchText), nameof(IsSearchEmpty), nameof(ResourceCountText) };
     public override void OnFinalize() { if (_disposed) return; _busy = false; Close(); _trade.Dispose(); _disposed = true; base.OnFinalize(); }
 }
 
@@ -277,13 +309,20 @@ public sealed class ResourceRowVM : ViewModel
     internal readonly TradeOption Option;
     private readonly Action<ResourceRowVM> _changed;
     private readonly Action _startTyping, _stopTyping;
+    private readonly ImageIdentifier _image;
+    private readonly bool _gold;
     private bool _selected;
     private bool _disposed;
     private string _quantity = "1";
     internal ResourceRowVM(TradeOption option, Action<ResourceRowVM> changed, Action start, Action stop)
-    { Option = option; _changed = changed; _startTyping = start; _stopTyping = stop; }
+    { Option = option; _changed = changed; _startTyping = start; _stopTyping = stop; _image = ResourceVisuals.Create(option.HostOption, out _gold); }
     [DataSourceProperty] public string Name => Option.Name;
     [DataSourceProperty] public string Category => Option.Category;
+    [DataSourceProperty] public string ImageId => _image?.Id ?? "";
+    [DataSourceProperty] public string ImageArgs => _image?.AdditionalArgs ?? "";
+    [DataSourceProperty] public string ImageProvider => _image?.TextureProviderName ?? "";
+    [DataSourceProperty] public bool HasImage => _image != null;
+    [DataSourceProperty] public bool IsGold => _gold;
     [DataSourceProperty] public string AvailableText => Option.Available.ToString("N0");
     [DataSourceProperty] public string AvailableHint => "可用 " + AvailableText;
     [DataSourceProperty] public string ValueText => Option.UnitValue.ToString("N0");
@@ -291,7 +330,8 @@ public sealed class ResourceRowVM : ViewModel
     [DataSourceProperty] public bool CanSelect => !_disposed && Option.Available > 0 && Option.Element.IsEnabled;
     [DataSourceProperty] public string SelectText => _selected ? "已选" : "选择";
     [DataSourceProperty] public bool IsAmountValid => int.TryParse(_quantity, NumberStyles.None, CultureInfo.InvariantCulture, out int value) && value > 0 && value <= Option.Available;
-    [DataSourceProperty] public string QuantityColor => IsAmountValid ? "#3B281BFF" : "#AB2828FF";
+    // Pen quantity field: dark #25190F fill, so valid text is the light #EBD5A7.
+    [DataSourceProperty] public string QuantityColor => IsAmountValid ? "#EBD5A7FF" : "#E0826EFF";
     internal int Amount => IsAmountValid ? int.Parse(_quantity, CultureInfo.InvariantCulture) : 0;
     [DataSourceProperty] public string Quantity
     {
@@ -306,4 +346,35 @@ public sealed class ResourceRowVM : ViewModel
     public void StartTyping() => _startTyping();
     public void StopTyping() => _stopTyping();
     public override void OnFinalize() { _disposed = true; base.OnFinalize(); }
+}
+
+// Row thumbnails built once per resource snapshot (open, category switch, commit), never per frame.
+// Same ImageIdentifier constructors the AF host already uses on both the 1.3 and 1.4 lines.
+internal static class ResourceVisuals
+{
+    private static readonly Type OptionType = typeof(ShoutBehavior).GetNestedType("ShoutTradeResourceOption", BindingFlags.NonPublic);
+    private static readonly FieldInfo GoldField = AccessTools.Field(OptionType, "IsGold");
+    private static readonly FieldInfo ItemField = AccessTools.Field(OptionType, "Item");
+    private static readonly FieldInfo PartyField = AccessTools.Field(OptionType, "PartyEntry");
+    private static readonly FieldInfo SettlementField = AccessTools.Field(OptionType, "SettlementEntry");
+
+    internal static ImageIdentifier Create(object option, out bool gold)
+    {
+        gold = false;
+        if (option == null || OptionType == null || !OptionType.IsInstanceOfType(option)) return null;
+        try
+        {
+            if (GoldField?.GetValue(option) is true) { gold = true; return null; }
+            if (ItemField?.GetValue(option) is ItemObject item) return new ItemImageIdentifier(item);
+            if (PartyField?.GetValue(option) is MyBehavior.PartyTransferPromptEntry party && party.Character != null)
+                return new CharacterImageIdentifier(CharacterCode.CreateFrom(party.Character));
+            if (SettlementField?.GetValue(option) is MyBehavior.SettlementTransferPromptEntry asset)
+            {
+                Banner banner = asset.Settlement?.OwnerClan?.Banner ?? asset.OwnerHero?.Clan?.Banner;
+                if (banner != null) return new BannerImageIdentifier(banner);
+            }
+        }
+        catch (Exception ex) { DialogueUiRuntime.LogOnce("resource-visual", "Resource thumbnail unavailable: " + ex.GetType().Name + ": " + ex.Message); }
+        return null;
+    }
 }

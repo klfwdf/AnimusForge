@@ -49,6 +49,9 @@ namespace AnimusForge.DialogueUI
             IViewModel datasource, bool hotReloadEnabled, ref IGauntletMovie __result)
         {
             if (_loading || !DialogueUiRuntime.Enabled || FailedPresentations.Contains(movieName)) return true;
+            // MCM master switch, read once per movie load. Off = every movie loads its original prefab, and
+            // every other adapter stays idle because it only activates for movies this router replaced.
+            if (!DialogueUiOptions.SkinEnabled) return true;
             // MapConversation owns a MapConversationVM and can load without a current mission.
             // Keep the mission requirement on scene-only movies, not on the map overlay.
             if (Mission.Current == null && movieName != "MapConversation" && movieName != "AnimusForgeNativeConversationOverlay") return true;

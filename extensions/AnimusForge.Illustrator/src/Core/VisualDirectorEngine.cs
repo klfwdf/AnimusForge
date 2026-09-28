@@ -330,10 +330,12 @@ namespace AnimusForge.Illustrator.Core
                 TaleWorlds.Library.Debug.Print("[VisualDirector] Missing scene/light/spatial direction; using local scene fallback without retry.");
                 // Preserve a short usable visual paraphrase while supplying the missing scene sections.
                 // Do not retain equipment lists or long non-conforming output as the main direction.
+                // Open art direction is written for the director (redraw quotas, motifs to avoid,
+                // "the director decides" guidance); it never reaches the image endpoint.
                 if (output.Length <= 120 && System.Text.RegularExpressions.Regex.IsMatch(output, "远景|近景|中景|过肩|俯拍|仰拍") &&
                     !System.Text.RegularExpressions.Regex.IsMatch(output, "纯黑|漆黑|全黑|黑色背景|黑幕|black background", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
-                    return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output +
-                        "\n构图方向：" + IllustrationDirection.RemoveActionHistory(plan.ArtDirection), hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+                    return ComposeFinalPrompt(BuildLocalSceneDirection(plan) + "\n可保留的动作与镜头：" + output,
+                        hardFacts: plan.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
                 return SynthesizeRuleBasedPrompt(plan, options);
             }
             // The director is responsible for composition, but its prose can omit a visual
@@ -373,19 +375,21 @@ namespace AnimusForge.Illustrator.Core
             return true;
         }
 
+        // Sent directly to the image model: positive wording only, since text encoders
+        // read a named object as a request to draw it. Negatives travel separately.
         internal static string BuildLocalSceneDirection(IllustrationPromptPlan plan)
         {
             if (plan?.IsWeeklyReport == true)
             {
                 return "【人物与镜头】以本期一项已确认事件的行动为画面中心，参与方的活动与相互作用构成主体，人物形象按身份资料对应；多人事件采用中广角群像，核心参与方合计约占画面主体三分之一至一半，取景让事件本身清楚可读。" +
-                    "【场景空间】所选事件发生于与其时代文化相容的非具名艺术再现空间，保留前景、中景、后景层次；有群体证据时安排至少两到三组可辨认的自然活动或反应，环境构造、材质和使用痕迹服务于事件，不借用玩家当前所在地。" +
+                    "【场景空间】所选事件发生于与其时代文化相容的非具名艺术再现空间，保留前景、中景、后景层次；事件涉及军队、使团或民众时，按证据呈现可辨认的群体活动或反应；地貌、构造、材质和使用痕迹依据事件本身设计并服务于事件。" +
                     "【光线与色彩】参与方与环境处于统一照明和色彩关系中，受光、投影与环境反光连贯，暗部保留事件细节，已知时段保持。" +
                     "【空间关系】同一事件的参与方、行动对象与相关环境相互关联，前后遮挡和接触关系自然，保持事实中的高低、位置和事件结果。";
             }
             if (plan?.Mode == "人物百科纪事")
             {
-                return "【人物与镜头】人物容貌与现有衣着按事实和身份参考呈现，神情自然，体态与画面支撑关系一致。" +
-                    "【场景空间】非具名艺术布景：有细腻纹理的环境色面向后延伸，明暗交界与柔和转折形成可辨认的空间层次，不指代人物真实所在地。" +
+                return "【人物与镜头】人物容貌与现有衣着按事实和身份参考呈现，神情自然，体态与画面支撑关系一致，以中景或大半身取景。" +
+                    "【场景空间】非具名艺术布景：与人物身份和文化相称的厅堂、庭院或户外场所，有可辨认的建筑构造、陈设与材质层次，前景、中景、远景依次展开，作为艺术设计呈现。" +
                     "【光线与色彩】柔和环境光沿人物与背景连续铺展，受光面与反射填充形成自然过渡，暗部保留材质纹理、固有色与纵深，人物和背景处于统一曝光中。" +
                     "【空间关系】人物与周围空间通过遮挡、景深及色彩过渡自然衔接，近处纹理清楚，远处层次柔和退开。";
             }
@@ -394,12 +398,12 @@ namespace AnimusForge.Illustrator.Core
                 plan.HardFacts.IndexOf("【附近人群活动依据】", StringComparison.Ordinal) >= 0 &&
                 plan.HardFacts.IndexOf("未检测到其他活动角色", StringComparison.Ordinal) < 0;
             string crowdDirection = hasCrowdEvidence
-                ? "按附近扫描的去重人数安排背景人物，优先选择能容纳这些人的取景，只有明确遮挡证据时才减少可见人数，不为人群扩建空间；"
-                : "没有附近人群证据时不增加背景人物或活动；保留现场可见的空桌椅与建筑层次，不把未知补成热闹人群；";
-            return "【人物与镜头】按事实区人物数量与实际动作选择清楚的中广角关系，入镜范围服从真实空间和遮挡，装备只按真实快照概括，不列成展示目录。" +
-                "【场景空间】采用现场参考图或事实中已确认的环境形体，" + crowdDirection + "默认采用35mm等效自然透视，保留人物周围环境，不用85mm长焦把背景压扁；未知部分保持非地标化的有层次环境色面，不凭空添加建筑、陈设或事件。" +
-                "【光线与色彩】遵循已有时间与现场光源，用合理环境光和反射填充保留人物与背景细节；亮部不溢出、暗部可辨认材质，色彩不被整体黑影吞没。" +
-                "【空间关系】保留已确认的人物距离、朝向和地形关系，近景、中景与后景用遮挡和景深区分；未知位置不作具体地名或事件断言，背景仍应可辨。";
+                ? "按附近扫描的去重人数在既有建筑空间内安排可辨认的背景人物，选择能容纳这些人的取景；"
+                : "画面人物为参与会话的双方，周围保留现场可见的桌椅与建筑层次；";
+            return "【人物与镜头】按事实区人物数量与实际动作选择清楚的中广角关系，入镜范围服从真实空间和遮挡，衣着装备按真实快照简要概括。" +
+                "【场景空间】采用现场参考图或事实中已确认的环境形体，" + crowdDirection + "采用35mm等效自然透视，人物周围环境清晰展开并保持纵深；视野边缘以柔和的环境色调与层次过渡。" +
+                "【光线与色彩】遵循已有时间与现场光源，用合理环境光和反射填充保留人物与背景细节；亮部层次完整，暗部可辨认材质与色彩。" +
+                "【空间关系】保留已确认的人物距离、朝向和地形关系，近景、中景与后景用遮挡和景深区分，背景清晰可辨。";
         }
 
         internal static bool ViolatesShieldVisibility(string output, IllustrationPromptPlan plan)
@@ -413,10 +417,18 @@ namespace AnimusForge.Illustrator.Core
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                     return true;
             }
-            return System.Text.RegularExpressions.Regex.IsMatch(output,
-                @"(?<!(?:不|未|无|绝不|并未|禁止|严禁|不画)\s*)(?:背负|背着|背在|背后|背上|身后|肩后)[^。！？\r\n]{0,40}盾|(?<!(?:不|未|无|绝不|并未|禁止|严禁|不画)\s*)盾[^。！？\r\n]{0,40}(?:背负|背着|背在|背后|背上|身后|肩后)|shield[^.!?\r\n]{0,60}(?:back|behind|shoulders)|(?:back|behind|shoulders)[^.!?\r\n]{0,60}shield",
-                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            return BackShieldPattern.IsMatch(output);
         }
+
+        // A shield carried on someone's back. "身后/背后" are spatial words ("the guard behind
+        // the player holds a shield") and 盾 also occurs in 矛盾/后盾/盾徽, so only an explicit
+        // carrying verb within the same clause counts.
+        private static readonly System.Text.RegularExpressions.Regex BackShieldPattern = new System.Text.RegularExpressions.Regex(
+            @"(?<!(?:不|未|无|没|没有|绝不|并未|禁止|严禁|不画)\s*)(?<![马椅])(?:背负|背着|背在|背上|负在背|挂在背|挂于背|斜挎在背|绑在背)[^。！？；;，,\r\n]{0,12}(?<![矛后])盾(?![徽形章])" +
+            @"|(?<![矛后])盾(?![徽形章])[^。！？；;，,\r\n]{0,12}(?:背负|背着|背在|背上|挂在背|挂于背|负于背|负在背|绑在背|挂在身后|背于身后|负在身后)" +
+            @"|shield[^.!?;,\r\n]{0,30}(?:on (?:his|her|their|the) back|slung (?:over|across|on)|strapped to (?:his|her|their|the) back)" +
+            @"|(?:slung|strapped)[^.!?;,\r\n]{0,30}shield[^.!?;,\r\n]{0,20}back",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Compiled);
 
         internal static bool ViolatesPortraitComposition(string output, IllustrationPromptPlan plan)
         {
@@ -463,10 +475,11 @@ namespace AnimusForge.Illustrator.Core
                 apiKey = (settings.DirectorApiKey ?? string.Empty).Trim();
                 model = (settings.DirectorModelName ?? string.Empty).Trim();
 
-                // 若 Key 留空，尝试从主模块正文 API 借用
-                if (string.IsNullOrWhiteSpace(apiKey) && TryGetHostPrimaryChatConfig(out _, out string hostKey, out _))
+                // Key 留空时只在同一服务主机上借用主模块正文 API 的 Key，绝不把它发往第三方地址
+                if (string.IsNullOrWhiteSpace(apiKey) && TryGetHostPrimaryChatConfig(out string hostUrl, out string hostKey, out _))
                 {
-                    apiKey = hostKey;
+                    if (IsSameServiceHost(baseUrl, hostUrl)) apiKey = hostKey;
+                    else TaleWorlds.Library.Debug.Print("[VisualDirector] Director API key is empty and the custom director host differs from the host chat API; the host key is not forwarded.");
                 }
                 // 若 Model 留空，尝试从主模块正文 API 借用或使用默认轻量模型
                 if (string.IsNullOrWhiteSpace(model))
@@ -511,6 +524,14 @@ namespace AnimusForge.Illustrator.Core
             }
 
             return false;
+        }
+
+        internal static bool IsSameServiceHost(string first, string second)
+        {
+            return Uri.TryCreate((first ?? string.Empty).Trim(), UriKind.Absolute, out Uri a) &&
+                Uri.TryCreate((second ?? string.Empty).Trim(), UriKind.Absolute, out Uri b) &&
+                string.Equals(a.Scheme, b.Scheme, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(a.Host, b.Host, StringComparison.OrdinalIgnoreCase) && a.Port == b.Port;
         }
 
         private static bool TryGetHostPrimaryChatConfig(out string apiUrl, out string apiKey, out string modelName)
@@ -836,16 +857,11 @@ namespace AnimusForge.Illustrator.Core
 
         private static string SynthesizeRuleBasedPrompt(IllustrationPromptPlan plan, IllustrationOptions options)
         {
-            var sb = new StringBuilder();
-            sb.Append(BuildLocalSceneDirection(plan));
-            string localArtDirection = IllustrationDirection.RemoveActionHistory(plan?.ArtDirection);
-            if (!string.IsNullOrWhiteSpace(localArtDirection))
-            {
-                sb.AppendLine().Append("可参考但不必逐项照搬的构图方向：").Append(localArtDirection);
-            }
+            // Open art direction addresses the director (motifs to avoid, redraw variation,
+            // "the director chooses the camera"); an image model would draw those words.
             // The image client supplies the full selected style once for every route.
             bool isSingle = plan?.Mode?.Contains("百科") == true || plan?.Mode?.Contains("肖像") == true;
-            return ComposeFinalPrompt(sb.ToString(), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
+            return ComposeFinalPrompt(BuildLocalSceneDirection(plan), plan?.HardFacts, isSinglePortrait: isSingle, isConversation: plan?.IsConversation == true, isWeeklyReport: plan?.IsWeeklyReport == true);
         }
     }
 }

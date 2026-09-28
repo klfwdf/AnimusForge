@@ -44,6 +44,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private string _latestAutoReplyText;
         private string _openingSceneBase64;
         private string _openingSceneSessionKey;
+        // One location screenshot per conversation, taken when the player opens the scene
+        // illustration, before any Illustrator layer covers the scene; reused by every redraw.
+        private static string _sessionOpeningScene;
+        private static string _sessionOpeningSceneKey;
+        // Map conversations draw their 3D tableau inside the MapConversation layer itself,
+        // above our backdrop. These are hidden while an illustration is shown and restored on close.
+        private readonly List<Widget> _hiddenMapConversationWidgets = new List<Widget>();
 
         internal static Widget VisualRoot => _activeInstance?._layer?.UIContext?.Root;
         public static bool IsOpen => _activeInstance != null;
@@ -53,6 +60,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             internal string SessionKey;
             internal string StableHardFacts;
             internal string NearbyPropFacts;
+            internal string SceneDirectorNote;
             internal IReadOnlyList<IllustrationReferenceImage> SceneReferences;
             internal IReadOnlyList<IllustrationReferenceImage> CharacterReferences;
             internal IReadOnlyList<IllustrationReferenceImage> GenerationCharacterReferences;
@@ -101,7 +109,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
             if (!string.IsNullOrWhiteSpace(dynamicFacts)) hardFacts.AppendLine().Append(dynamicFacts);
             string props = !string.IsNullOrWhiteSpace(session.NearbyPropFacts) ? session.NearbyPropFacts : nearbyPropFacts;
             if (!string.IsNullOrWhiteSpace(props)) hardFacts.AppendLine().Append(props.Trim());
-            return new IllustrationPromptPlan(current.Mode, hardFacts.ToString(), current.ArtDirection, current.DirectorOnlyFacts);
+            return new IllustrationPromptPlan(current.Mode, hardFacts.ToString(), current.ArtDirection,
+                current.DirectorOnlyFacts + (session.SceneDirectorNote ?? string.Empty));
         }
 
         private IllustrationCardPopup(ScreenBase screen, string movieName, string category, Action onRegenerate, Action onSceneProbe = null, bool autoFullscreen = false)
@@ -235,6 +244,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     _conversationSessionEpoch++;
                     _conversationSession = null;
                 }
+                if (_sessionOpeningSceneKey != null && !string.Equals(_sessionOpeningSceneKey, conversationSessionKey, StringComparison.Ordinal))
+                {
+                    _sessionOpeningScene = null;
+                    _sessionOpeningSceneKey = null;
+                }
             }
             ScreenBase topScreen = ScreenManager.TopScreen;
             if (topScreen == null) return;
@@ -260,25 +274,44 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     catch (Exception ex) { Debug.Print("[Illustrator] Scene probe unavailable: " + ex.Message); }
                 }
                 var previousPopup = _activeInstance;
-                if (useFullscreen && previousPopup != null)
-                    preCapturedBase64 = SelectOpeningSceneReference(previousPopup._openingSceneBase64,
-                        previousPopup._openingSceneSessionKey, openingSceneSessionKey);
                 previousPopup?.Close();
-                if (useFullscreen)
+                // Capture the location when the player opens the scene illustration (card or
+                // fullscreen), once per conversation. Later generations reuse it instead of
+                // photographing a screen already covered by the loading panel or backdrop.
+                lock (typeof(IllustrationCardPopup))
+                    preCapturedBase64 = SelectOpeningSceneReference(_sessionOpeningScene, _sessionOpeningSceneKey, openingSceneSessionKey);
+                if (preCapturedBase64 != null)
                 {
+                    Debug.Print("[Illustrator] Conversation scene capture reused from this conversation session.");
+                }
+                else if (!(topScreen is TaleWorlds.MountAndBlade.View.Screens.MissionScreen))
+                {
+                    // Field (map) conversations use terrain facts and offscreen portraits; no screenshot.
+                    Debug.Print("[Illustrator] Conversation scene capture at open: skipped_map_terrain_facts");
+                }
+                else
+                {
+                    // Removing a previous layer does not immediately repaint desktop
+                    // pixels. Never capture its old painting as the actual environment.
+                    string calibrationReason = "previous_overlay_pending_redraw";
                     try
                     {
-                        // Removing a previous layer does not immediately repaint desktop
-                        // pixels. Never capture its old painting as the actual environment.
-                        string calibrationReason = "previous_overlay_pending_redraw";
                         if (previousPopup == null)
                             preCapturedBase64 = ScreenCaptureHelper.CaptureUnobstructedConversationSceneBase64(out calibrationReason);
-                        Debug.Print("[Illustrator] Auto conversation scene pre-capture: " + (string.IsNullOrWhiteSpace(preCapturedBase64) ? calibrationReason : "captured_before_fullscreen"));
                     }
                     catch (Exception ex)
                     {
-                        Debug.Print("[Illustrator] Auto conversation scene pre-capture failed: " + ex.GetType().Name);
+                        calibrationReason = "capture_exception_" + ex.GetType().Name;
                     }
+                    if (!string.IsNullOrWhiteSpace(preCapturedBase64))
+                    {
+                        lock (typeof(IllustrationCardPopup))
+                        {
+                            _sessionOpeningScene = preCapturedBase64;
+                            _sessionOpeningSceneKey = openingSceneSessionKey;
+                        }
+                    }
+                    Debug.Print("[Illustrator] Conversation scene capture at open: " + (string.IsNullOrWhiteSpace(preCapturedBase64) ? calibrationReason : "captured_before_overlay"));
                 }
                 popup = new IllustrationCardPopup(topScreen, useFullscreen ? "ConversationIllustrationFullscreenOverlay" : "ConversationIllustrationOverlay", "conversation", () =>
                 {
@@ -403,6 +436,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     priorVersions = priorItems?.Count ?? 0;
                     recentActions = IllustrationDirection.BuildActionHistory(priorItems);
                     foreach (string motif in (priorItems ?? new List<CachedIllustrationItem>())
+                        .Where(i => !IllustrationDirection.IsLocalFallback(i))
                         .Select(i => ExtractSceneMotif(i.Prompt))
                         .Where(m => !string.IsNullOrWhiteSpace(m))
                         .Distinct()
@@ -722,6 +756,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 ScreenCaptureHelper.ConversationSceneReferenceCapture sceneCapture = null;
                 string sceneStatus = "复用本次会话首次环境与人物参考";
                 IllustrationPromptPlan scenePromptPlan;
+                string sceneDirectorNote = string.Empty;
                 if (session != null)
                 {
                     directorRefs.AddRange(session.SceneReferences ?? Array.Empty<IllustrationReferenceImage>());
@@ -735,10 +770,10 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     sceneCapture = await ScreenCaptureHelper.CaptureConversationSceneReferencesAsync(sceneSource, token, preCapturedBase64).ConfigureAwait(false);
                     directorRefs.AddRange(sceneCapture.References);
-                    string unavailableSceneNote = sceneCapture.References == null || sceneCapture.References.Count == 0
-                        ? "\n【环境参考不可用】" + sceneCapture.DirectorNote : string.Empty;
+                    sceneDirectorNote = sceneCapture.References == null || sceneCapture.References.Count == 0
+                        ? (sceneSource.IsMapConversation ? "\n【野外环境依据】" : "\n【环境参考不可用】") + sceneCapture.DirectorNote : string.Empty;
                     scenePromptPlan = new IllustrationPromptPlan(promptPlan.Mode, promptPlan.HardFacts + sceneCapture.NearbyPropFacts, promptPlan.ArtDirection,
-                        promptPlan.DirectorOnlyFacts + unavailableSceneNote);
+                        promptPlan.DirectorOnlyFacts + sceneDirectorNote);
                     sceneStatus = sceneCapture.StatusText + "，正在整理人物参考...";
                 }
                 IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = sceneStatus; });
@@ -797,6 +832,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                                 SessionKey = conversationSessionKey,
                                 StableHardFacts = FreezeConversationHardFacts(promptPlan.HardFacts),
                                 NearbyPropFacts = sceneCapture?.NearbyPropFacts ?? string.Empty,
+                                SceneDirectorNote = sceneDirectorNote,
                                 SceneReferences = new List<IllustrationReferenceImage>(sceneCapture?.References ?? Array.Empty<IllustrationReferenceImage>()),
                                 CharacterReferences = new List<IllustrationReferenceImage>(characterRefs),
                                 GenerationCharacterReferences = new List<IllustrationReferenceImage>(generationCharacterRefs),
@@ -874,7 +910,56 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _activeSpriteName = spriteName;
             if (!string.IsNullOrWhiteSpace(item?.Title)) _dataSource.TitleText = item.Title;
             _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);
+            if (_backdropLayer != null) HideMapConversationSceneUnderIllustration();
             return true;
+        }
+
+        // The MapConversation layer (order 205) paints an opaque plate and the full-screen 3D
+        // tableau above our backdrop, so a map illustration would stay invisible. Hide the
+        // tableau branch and the plates beneath it; the dialogue branch after it stays visible.
+        // Runs once per published image, not per frame.
+        private void HideMapConversationSceneUnderIllustration()
+        {
+            if (_hiddenMapConversationWidgets.Count > 0 || _screen?.Layers == null) return;
+            foreach (var layer in _screen.Layers)
+            {
+                if (layer == null || layer.IsFinalized || layer.Name != "MapConversation") continue;
+                Widget root = (layer as GauntletLayer)?.UIContext?.Root;
+                Widget tableau = root == null ? null : ScreenCaptureHelper.FindChildRecursive(root,
+                    w => w.GetType().Name == "MapConversationTableauWidget");
+                if (tableau == null) continue;
+                Widget branch = tableau;
+                while (branch.ParentWidget != null && branch.ParentWidget.GetType().Name != "MapConversationScreenButtonWidget")
+                    branch = branch.ParentWidget;
+                Widget container = branch.ParentWidget;
+                if (container == null)
+                {
+                    HideMapConversationWidget(tableau);
+                    continue;
+                }
+                int branchIndex = container.GetChildIndex(branch);
+                for (int i = 0; i <= branchIndex && i < container.ChildCount; i++)
+                    HideMapConversationWidget(container.GetChild(i));
+            }
+            if (_hiddenMapConversationWidgets.Count > 0)
+                Debug.Print("[Illustrator] Map conversation tableau hidden under fullscreen illustration: " + _hiddenMapConversationWidgets.Count);
+        }
+
+        private void HideMapConversationWidget(Widget widget)
+        {
+            if (widget == null || !widget.IsVisible) return;
+            widget.IsVisible = false;
+            _hiddenMapConversationWidgets.Add(widget);
+        }
+
+        private void RestoreMapConversationScene()
+        {
+            foreach (var widget in _hiddenMapConversationWidgets)
+            {
+                try { widget.IsVisible = true; }
+                catch (Exception ex) { Debug.Print("[Illustrator] Map conversation restore failed: " + ex.GetType().Name); }
+            }
+            _hiddenMapConversationWidgets.Clear();
         }
 
         private void ReleaseActiveSprite()
@@ -918,6 +1003,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             {
                 // A failure finalizing one movie must not leave the fullscreen
                 // backdrop attached after the conversation or popup is closed.
+                try { RestoreMapConversationScene(); } catch { }
                 RemoveOwnedLayer(_layer);
                 RemoveOwnedLayer(_backdropLayer);
                 try { ReleaseActiveSprite(); } catch { }
@@ -1054,6 +1140,8 @@ namespace AnimusForge.Illustrator.UI.Overlays
             {
                 _conversationSessionEpoch++;
                 _conversationSession = null;
+                _sessionOpeningScene = null;
+                _sessionOpeningSceneKey = null;
             }
         }
     }

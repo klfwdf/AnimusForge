@@ -9,6 +9,7 @@ using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Runtime;
+using AnimusForge.SceneActions.Core;
 using AnimusForge.SiegeAftermathIntervention;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -345,7 +346,7 @@ public partial class ShoutBehavior
 								Logger.Log("ShoutBehavior", "[KingdomServicePostprocess] runtime_target hero=" + runtimeTargetHeroId + " character=" + runtimeTargetCharacterId + " troop=" + runtimeTargetTroopId + " kingdom=" + runtimeTargetKingdomId + " agentIndex=" + runtimeTargetAgentIndex);
 								Logger.Log("ShoutBehavior", "[KingdomServicePostprocess] precomputed_rules=" + ((kingdomServiceRules == null || kingdomServiceRules.Count == 0) ? "（无）" : string.Join(",", kingdomServiceRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 							}
-							return PrepareSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(speakerSnapshot), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, kingdomVassalageRuleInjected, kingdomAnnexationRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, voteDealRuleInjected, diplomacyRuleInjected, worldMapPartyCommandRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot, entityPostprocessContext, siegeInterventionRuleInjected: siegeInterventionRuleInjected, replyIsDirectPlayerResponse: replyIsDirectPlayerResponse, preprocessRuleHits: preprocessRuleSnapshot, chainName: scenePostprocessChainName, relayRuleInjected: relayRuleInjected, relayCandidates: relayCandidateSnapshot, relayPrimaryTargetAgentIndex: relayPrimaryTargetAgentIndex, relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaRuleInjected);
+							return PrepareSceneUnifiedActionPostprocess(speakingHero, npcCharacter, runtimeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(speakerSnapshot), playerText, historyForPostprocess, replySnapshot, duelRuleInjected, rewardRuleInjected, loanRuleInjected, kingdomServiceRuleInjected, kingdomVassalageRuleInjected, kingdomAnnexationRuleInjected, lordsHallRuleInjected, meetingReleaseRuleInjected, vanillaIssueRuleInjected, heroJoinPartyRuleInjected, sceneMechanismRuleInjected, partyTransferRuleInjected, voteDealRuleInjected, diplomacyRuleInjected, worldMapPartyCommandRuleInjected, marriageRuleInjected, duelStakeOptions, kingdomServiceRules, sceneMechanismRuleSnapshot, summonSnapshot, guideSnapshot, entityPostprocessContext, siegeInterventionRuleInjected: siegeInterventionRuleInjected, replyIsDirectPlayerResponse: replyIsDirectPlayerResponse, preprocessRuleHits: preprocessRuleSnapshot, chainName: scenePostprocessChainName, relayRuleInjected: relayRuleInjected, relayCandidates: relayCandidateSnapshot, relayPrimaryTargetAgentIndex: relayPrimaryTargetAgentIndex, relaySingleFramedNpc: relaySingleFramedNpc, customPolicyAgendaRuleInjected: customPolicyAgendaRuleInjected, offerSceneActionDirective: true);
 						});
 					}, (SceneActionPostprocessWorkItem)null).ConfigureAwait(false);
 				if (workItem == null || !IsRequestCurrent())
@@ -378,6 +379,7 @@ public partial class ShoutBehavior
 							return false;
 						}
 						string text = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error);
+						ConsumeSceneActionDirective(ref text, runtimeTargetAgentIndex, replySnapshot);
 						postprocessWatch.Stop();
 						Logger.Log("ShoutBehavior", "[DeferredPostprocess] call_done npc=" + targetLog + " elapsedMs=" + Math.Round(postprocessWatch.Elapsed.TotalMilliseconds, 2) + " textLen=" + (text?.Length ?? 0));
 						string relayTag = relayRuleInjected ? NormalizeAutoGroupRelayPostprocessTagsForScene(text, relayCandidateSnapshot, runtimeTargetAgentIndex) : "";
@@ -686,7 +688,7 @@ public partial class ShoutBehavior
 	}
 
 
-	private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, DetachedPromptSections detachedMainPromptSections = null)
+	private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, DetachedPromptSections detachedMainPromptSections = null, bool offerSceneActionDirective = false)
 	{
 		string text = StripActionTagsForSceneSpeech(replyText ?? "");
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? ResolveScenePostprocessChainName() : chainName.Trim();
@@ -878,9 +880,19 @@ public partial class ShoutBehavior
 			? SexualConceptionBehavior.BuildRuntimePostprocessRules(targetHero ?? targetCharacter?.HeroObject, resolvedChainName)
 			: new List<PostprocessRuleEntry>();
 		bool siegeInterventionExclusive = siegeInterventionPostprocessEnabled && AfGcczShoutBridge.ShouldUseExclusivePostprocessRuleRouting(targetAgentIndex);
+		// Global fact-detection rule (no topic): only when this request already
+		// runs and the reply has stage prose the local parser cannot resolve.
+		IReadOnlyList<string> sceneActionOfferedKeys = offerSceneActionDirective && !siegeInterventionExclusive
+			? TryOfferSceneActionDirective(targetAgentIndex, replyText)
+			: null;
+		List<PostprocessRuleEntry> sceneActionRules = BuildSceneActionDirectiveRules(sceneActionOfferedKeys);
+		if (sceneActionRules.Count == 0)
+		{
+			sceneActionOfferedKeys = null;
+		}
 		List<PostprocessRuleEntry> mergedRules = siegeInterventionExclusive
 			? MergePostprocessRulesForScene(siegeInterventionRules, nobleExecutionOrderRules)
-			: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules);
+			: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, siegeSurrenderRules, npcSurrenderRules, siegeInterventionRules, relayRules, intimacyRules, sceneActionRules);
 		bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
 		bool vassalagePostprocessRuleInjected = (vassalageRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:VASSALAGE:", StringComparison.OrdinalIgnoreCase));
 		int annexationRuleCount = (mergedRules ?? new List<PostprocessRuleEntry>()).Count((PostprocessRuleEntry x) => (x?.Tag ?? "").StartsWith("[ACTION:KINGDOM_ANNEX:", StringComparison.OrdinalIgnoreCase));
@@ -1211,9 +1223,15 @@ public partial class ShoutBehavior
 			string siegeInterventionTags = siegeInterventionPostprocessEnabled ? TeamModuleServices.Siege.NormalizePostprocessTags(siegeInterventionPostprocessEnabled, content, siegeInterventionRules) : "";
 			string relayTags = relayRuleInjected ? NormalizeAutoGroupRelayPostprocessTagsForScene(content, relayCandidates, targetAgentIndex) : "";
 			string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
+			string sceneActionTags = NormalizeSceneActionDirectiveTag(content, sceneActionOfferedKeys);
+			if (sceneActionOfferedKeys != null)
+			{
+				Logger.Log("ShoutBehavior", "[SceneActionDirective] chain=" + resolvedChainName + " agent=" + targetAgentIndex
+					+ " RAW_TAG=" + NpcReplyDirectiveTagV1.ContainsTag(content) + " FINAL_TAG=" + (string.IsNullOrWhiteSpace(sceneActionTags) ? "(none)" : sceneActionTags));
+			}
 			string text21 = siegeInterventionExclusive
 				? MergeNormalizedPostprocessBlocksForScene(siegeInterventionTags, nobleExecutionOrderTags)
-				: MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, nobleExecutionOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags);
+				: MergeNormalizedPostprocessBlocksForScene(text10, text11, text12, royalTags, vassalageTags, text13, text14, text15, text16, text17, nobleExecutionOrderTags, text18, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, siegeSurrenderTags, npcSurrenderTags, siegeInterventionTags, relayTags, intimacyTags, sceneActionTags);
 			text21 = AfGcczShoutBridge.ValidateTownPostprocessDecision(text21);
 			if (string.IsNullOrWhiteSpace(text21))
 			{

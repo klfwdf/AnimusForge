@@ -8,8 +8,10 @@ from prepare_portrait_background import aperture_mask
 
 ROOT = Path(__file__).resolve().parents[1]
 prefabs = {p.stem: ET.parse(p).getroot() for p in (ROOT / "GUI/Prefabs").glob("*.xml")}
-names = re.search(r"string\[\] Names = \{([^}]+)", (ROOT / "src/DialogueUiSprites.cs").read_text()).group(1)
-registered = set(re.findall(r'"([^"]+)"', names))
+sprites_source = (ROOT / "src/DialogueUiSprites.cs").read_text()
+registered = set()
+for group in ("Names", "SceneNames"):
+    registered |= set(re.findall(r'"([^"]+)"', re.search(rf"string\[\] {group} = \{{([^}}]+)", sprites_source).group(1)))
 for name in registered:
     assert (ROOT / "GUI/SpriteParts" / (name + ".png")).is_file(), name
 for name, prefab in prefabs.items():
@@ -85,6 +87,14 @@ for y in range(box[1] - 15, box[3] + 15):
             assert in_slot and distance <= radius - smooth, ("Portrait clipped inside frame", x, y)
         elif in_slot and distance <= radius + smooth:
             assert art.getpixel((x, y))[3] >= 128, ("Portrait may leak outside frame", x, y)
+
+# The C# wheel hit test and the hover-wedge art must describe the same ring and spokes.
+from wheel_geometry import INNER, OUTER, SECTORS
+sectors_cs = (ROOT / "src/Scene/WheelSectors.cs").read_text()
+assert f"InnerRatio = {INNER}f / 512f" in sectors_cs and f"OuterRatio = {OUTER}f / 512f" in sectors_cs, "wheel radii drift"
+for name, (start, end) in SECTORS.items():
+    if end < 360:
+        assert f"if (degrees < {end}) return \"{name}\";" in sectors_cs, ("wheel sector drift", name)
 
 for prefab in prefabs.values():
     assert not re.search(r"@(Option[0-5](Text|Visible)|DialogueText|SpeakerName)\b|ExecuteOption[0-5]", ET.tostring(prefab, encoding="unicode"))

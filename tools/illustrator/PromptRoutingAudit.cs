@@ -63,6 +63,12 @@ public static class PromptRoutingAudit
         Type director = assembly.GetType(core + "VisualDirectorEngine", true);
         Type planType = assembly.GetType(core + "IllustrationPromptPlan", true);
         string system = (string)director.GetField("SystemPrompt", Static).GetRawConstantValue();
+        FieldInfo conversationSystemField = director.GetField("ConversationSystemPrompt", Static);
+        Check(conversationSystemField != null, "conversation has a dedicated director system prompt");
+        string conversationSystem = conversationSystemField == null ? string.Empty : (string)conversationSystemField.GetRawConstantValue();
+        Check(conversationSystem.Contains("会话") && conversationSystem.Contains("成图质量底线") &&
+            !conversationSystem.Contains("百科创作空间") && !conversationSystem.Contains("非具名艺术布景"),
+            "conversation prompt keeps scene fidelity without encyclopedia-only rules");
         Check(system.Contains("成图质量底线") && system.Contains("每个人物只选择一个清楚的主要体态"), "director receives simple physically coherent pose constraint");
         Check(system.Contains("不能仅保留立绘轮廓再更换背景") && system.Contains("环境反光"), "director must reconstruct figure and scene together");
         Check(system.Contains("头部装备的盔壳轮廓") && system.Contains("面部实际覆盖范围") && system.Contains("披肩不能概括成内衬"), "director describes visible equipment landmarks instead of generic costume");
@@ -170,6 +176,42 @@ public static class PromptRoutingAudit
         string direction = (string)conversationType.GetMethod("BuildArtDirection").Invoke(conversation, new object[] { null });
         Check(conversationFacts.Contains("玩家未骑乘") && !conversationFacts.Contains("META_POSE_SENTINEL"), "conversation hard facts exclude pose guidance");
         Check(direction.Contains("META_POSE_SENTINEL"), "pose guidance retained for director");
+        Type heroProfileType = assembly.GetType("AnimusForge.Illustrator.Context.HeroVisualProfile", true);
+        object narrativeProfile = Activator.CreateInstance(heroProfileType);
+        heroProfileType.GetProperty("HeroName").SetValue(narrativeProfile, "背景测试人物");
+        heroProfileType.GetProperty("CultureLore").SetValue(narrativeProfile, "CULTURE_DUPLICATE_SENTINEL");
+        heroProfileType.GetProperty("FactionLore").SetValue(narrativeProfile, "FACTION_DUPLICATE_SENTINEL");
+        heroProfileType.GetProperty("BackgroundLore").SetValue(narrativeProfile, new string('传', 2400) + "。BACKGROUND_SENTINEL");
+        heroProfileType.GetProperty("TraitsSummary").SetValue(narrativeProfile, "TRAIT_SENTINEL");
+        heroProfileType.GetProperty("TopSkillsSummary").SetValue(narrativeProfile, "SKILL_SENTINEL");
+        conversationType.GetProperty("MainHeroProfile").SetValue(conversation, narrativeProfile);
+        Type narrativeEnvironmentType = assembly.GetType("AnimusForge.Illustrator.Context.EnvironmentVisualProfile", true);
+        object narrativeEnvironment = Activator.CreateInstance(narrativeEnvironmentType);
+        narrativeEnvironmentType.GetProperty("DateLabel").SetValue(narrativeEnvironment, "DATE_DUPLICATE_SENTINEL");
+        narrativeEnvironmentType.GetProperty("RealSceneName").SetValue(narrativeEnvironment, "SCENE_NAME_DUPLICATE_SENTINEL");
+        narrativeEnvironmentType.GetProperty("HostSceneDescription").SetValue(narrativeEnvironment, "HOST_SCENE_DUPLICATE_SENTINEL");
+        conversationType.GetProperty("EnvironmentProfile").SetValue(conversation, narrativeEnvironment);
+        conversationType.GetProperty("DialogueSentence").SetValue(conversation, "SAME_DIALOGUE_SENTINEL");
+        conversationType.GetProperty("RecentDialogueHistory").SetValue(conversation, "玩家：SAME_DIALOGUE_SENTINEL");
+        string deduplicatedDialogue = (string)conversationType.GetMethod("BuildDialogueBlock").Invoke(conversation, null);
+        Check(deduplicatedDialogue.Split(new[] { "SAME_DIALOGUE_SENTINEL" }, StringSplitOptions.None).Length - 1 == 1,
+            "focus line is not repeated when it already exists in recent dialogue");
+        // Distinct sentinels: neither may be a substring of the other. With host history the
+        // separately stored focus line can be stale (see DialogueHistoryAudit), so only the history counts.
+        conversationType.GetProperty("DialogueSentence").SetValue(conversation, "FOCUS_LINE_SENTINEL");
+        conversationType.GetProperty("RecentDialogueHistory").SetValue(conversation, "RECENT_HISTORY_SENTINEL");
+        string compactNarrative = (string)conversationType.GetMethod("BuildDirectorOnlyFacts").Invoke(conversation, null);
+        Check(compactNarrative.Contains("RECENT_HISTORY_SENTINEL") && !compactNarrative.Contains("FOCUS_LINE_SENTINEL") &&
+            compactNarrative.Contains("TRAIT_SENTINEL") && compactNarrative.Contains("SKILL_SENTINEL"),
+            "conversation compaction preserves recent dialogue plus useful character context");
+        conversationType.GetProperty("RecentDialogueHistory").SetValue(conversation, "");
+        Check(((string)conversationType.GetMethod("BuildDirectorOnlyFacts").Invoke(conversation, null)).Contains("FOCUS_LINE_SENTINEL"),
+            "conversation compaction keeps the focus line when no history exists");
+        conversationType.GetProperty("RecentDialogueHistory").SetValue(conversation, "RECENT_HISTORY_SENTINEL");
+        Check(!compactNarrative.Contains("CULTURE_DUPLICATE_SENTINEL") && !compactNarrative.Contains("FACTION_DUPLICATE_SENTINEL") &&
+            !compactNarrative.Contains("DATE_DUPLICATE_SENTINEL") && !compactNarrative.Contains("SCENE_NAME_DUPLICATE_SENTINEL") &&
+            !compactNarrative.Contains("HOST_SCENE_DUPLICATE_SENTINEL") && compactNarrative.Length <= 1400,
+            "conversation optional background is bounded and excludes identity/environment facts already present in hard facts and references");
         Type conversationExtractor = assembly.GetType("AnimusForge.Illustrator.Context.ConversationContextExtractor", true);
         Check(((string)Call(conversationExtractor, "DescribeMountState", "玩家", false, false)).Contains("未确认"), "absent agent is unknown, not walking");
         Check(((string)Call(conversationExtractor, "DescribeMountState", "玩家", true, false)).Contains("未骑乘"), "dismounted agent does not imply standing on ground");
@@ -191,6 +233,15 @@ public static class PromptRoutingAudit
             Check(((string)profileType.GetProperty("LightingAndAtmosphere").GetValue(timing) == "月光") == hasSceneTime, "unverified campaign lighting is removed: " + hasMission + "/" + hasSceneTime);
             Check(timingFacts.Contains(hasSceneTime ? "当前 Mission 场景时间" : "否则时段未确认"), "time source is explicit: " + hasMission + "/" + hasSceneTime);
         }
+        // Map conversations: the native tableau selects night/noon/sunset from the campaign clock.
+        Type environmentExtractor = profileType;
+        foreach (var bucket in new[] { Tuple.Create(1f, "夜晚"), Tuple.Create(3f, "夜晚"), Tuple.Create(5f, "清晨"), Tuple.Create(8f, "清晨"),
+            Tuple.Create(12f, "白昼"), Tuple.Create(16f, "黄昏"), Tuple.Create(20f, "黄昏"), Tuple.Create(21f, "夜晚") })
+            Check(((string)Call(environmentExtractor, "ResolveMapClockTimeOfDay", bucket.Item1)).StartsWith(bucket.Item2),
+                "map conversation clock follows native tableau buckets: " + bucket.Item1);
+        Check(((string)Call(environmentExtractor, "ResolveMapWeather", 2)).Contains("大雨") && ((string)Call(environmentExtractor, "ResolveMapWeather", 4)).Contains("暴风雪") &&
+            ((string)Call(environmentExtractor, "ResolveMapWeather", 0)).Contains("无降水") && !((string)Call(environmentExtractor, "ResolveMapWeather", 0)).Contains("晴") &&
+            (string)Call(environmentExtractor, "ResolveMapWeather", 9) == "", "map weather maps native events without asserting sunshine");
         object historical = Activator.CreateInstance(profileType);
         profileType.GetProperty("TimeOfDay").SetValue(historical, "事件记录中的夜晚");
         Check(((string)profileType.GetMethod("BuildHardFactsSummary").Invoke(historical, null)).Contains("事件记录中的夜晚"), "non-conversation historical time remains intact");
@@ -289,6 +340,77 @@ public static class PromptRoutingAudit
             }
             finally { httpField.SetValue(null, original); }
         }
+        RunReviewFixChecks(director, planType, client, assembly.GetType(core + "VisualFidelityRules", true), facts, modes);
         Console.WriteLine("TOTAL " + checks + " PASS / 0 FAIL");
+    }
+
+    // 2026-09-26 review fixes: back-shield detection, fallback isolation, positive image
+    // contract with a separate negative channel, per-model prompt shaping, aspect ratios
+    // and host-key forwarding.
+    private static void RunReviewFixChecks(Type director, Type planType, Type client, Type rules, string facts, string[] modes)
+    {
+        const BindingFlags Field = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        object anyPlan = Activator.CreateInstance(planType, new object[] { "最近2条对话联动的场景插画", facts, "", "" });
+        foreach (string legitimate in new[] {
+            "玩家站在酒馆门口，身后两名侍从神情矛盾地交换眼色。",
+            "领主身后的墙上悬挂着绣有家族盾徽的挂毯。",
+            "城门卫兵左手持圆盾立在玩家身后三步远处。",
+            "他是她身后最坚实的后盾。",
+            "玩家背着长弓，盾牌挂在马鞍侧面。",
+            "马背上的骑士手持圆盾缓缓前行。",
+            "A guard stands behind the lord, holding a round shield in front of him." })
+            Check(!(bool)Call(director, "ViolatesShieldVisibility", legitimate, anyPlan), "spatial or idiomatic shield wording is accepted: " + legitimate);
+        foreach (string backShield in new[] { "他背着一面圆盾走向城门。", "鸢盾背在身后，随步伐轻晃。", "身后背负着一面鸢盾。", "a round shield slung across his back" })
+            Check((bool)Call(director, "ViolatesShieldVisibility", backShield, anyPlan), "a shield carried on the back is still rejected: " + backShield);
+
+        string metaArt = "【已用过的场景母题·须避开】：MOTIF_SENTINEL\n【重绘变体 · 第 3 次绘制】REDRAW_SENTINEL\n【构图自由创作】：DIRECTOR_ONLY_SENTINEL";
+        foreach (string mode in modes)
+        {
+            object metaPlan = Activator.CreateInstance(planType, new object[] { mode, facts, metaArt, "" });
+            foreach (string unusable in new[] { "", "近景画面" })
+            {
+                string fallback = (string)Call(director, "ResolveDirectorOutput", unusable, metaPlan, null);
+                Check(fallback.Contains("FACT_SENTINEL") && !fallback.Contains("MOTIF_SENTINEL") && !fallback.Contains("REDRAW_SENTINEL") && !fallback.Contains("DIRECTOR_ONLY_SENTINEL"),
+                    mode + " local fallback keeps facts and drops director-only art direction: " + unusable.Length);
+            }
+            string local = (string)Call(director, "BuildLocalSceneDirection", Activator.CreateInstance(planType, new object[] { mode, facts, "", "" }));
+            Check(!local.Contains("85mm") && !local.Contains("不把") && !local.Contains("不凭空") && !local.Contains("至少两到三组") && !local.Contains("环境色面向后延伸"),
+                mode + " local template is phrased positively");
+        }
+
+        foreach (object[] flags in new[] { new object[] { true, false, false }, new object[] { false, true, false }, new object[] { false, false, true }, new object[] { false, false, false } })
+        {
+            string contract = (string)Call(rules, "GetEssentialContract", flags);
+            Check(!contract.Contains("马匹") && !contract.Contains("85mm") && !contract.Contains("画中画") && !contract.Contains("字幕") && !contract.Contains("严禁") && !contract.Contains("至少两到三组"),
+                "image contract names no prohibited object: " + string.Join("/", flags));
+        }
+        Check(((string)Call(rules, "GetEssentialContract", false, false, true)).Contains("按证据呈现可辨认的群体活动"), "weekly crowd activity requires event evidence");
+        string fullPrompt = (string)Call(client, "BuildEffectivePrompt", "主体", "1024x1024", "", "", "", null, false, 0);
+        Check(fullPrompt.Contains("speech bubbles") && fullPrompt.Contains("picture-in-picture") && fullPrompt.Contains("floating figure"),
+            "prohibitions removed from the contract live in the negative channel");
+
+        Check(Call(client, "ResolvePromptProfile", "black-forest-labs/FLUX.1-schnell", false).ToString() == "Diffusion" &&
+            Call(client, "ResolvePromptProfile", "dall-e-3", false).ToString() == "DallE3" &&
+            Call(client, "ResolvePromptProfile", "gpt-image-1", false).ToString() == "Full" &&
+            Call(client, "ResolvePromptProfile", "black-forest-labs/FLUX.1-schnell", true).ToString() == "Full", "prompt profile follows model family and protocol");
+        Type profileEnum = client.GetNestedType("ImagePromptProfile", BindingFlags.Public | BindingFlags.NonPublic);
+        object diffusion = Call(client, "ComposeImagePrompt", "DIRECTOR_BODY。", "1024x1024", "", "", "OIL_STYLE_SENTINEL", "USER_NEG", false, 50, Enum.Parse(profileEnum, "Diffusion"));
+        string diffusionText = (string)diffusion.GetType().GetField("Text", Field).GetValue(diffusion);
+        string diffusionNegative = (string)diffusion.GetType().GetField("NegativeField", Field).GetValue(diffusion);
+        Check(diffusionText.StartsWith("画风：OIL_STYLE_SENTINEL") && diffusionText.Contains("DIRECTOR_BODY") && !diffusionText.Contains("USER_NEG") &&
+            !diffusionText.Contains("extra limbs") && !diffusionText.Contains("艺术表现随机指导"), "diffusion text carries style and body only, never the negative list or meta guidance");
+        Check(diffusionNegative != null && diffusionNegative.Contains("extra limbs") && diffusionNegative.Contains("USER_NEG"), "diffusion negatives travel in a separate field");
+        object dalle = Call(client, "ComposeImagePrompt", new string('景', 9000), "1024x1024", "", "", "OIL_STYLE_SENTINEL", null, false, 0, Enum.Parse(profileEnum, "DallE3"));
+        string dalleText = (string)dalle.GetType().GetField("Text", Field).GetValue(dalle);
+        Check(dalleText.Length <= 4000 && dalleText.StartsWith("画风：OIL_STYLE_SENTINEL") && dalleText.Contains("extra limbs"), "dall-e-3 prompt fits 4000 characters and keeps style and negatives");
+
+        string[,] ratios = { { "1024x1024", "1:1" }, { "1280x720", "16:9" }, { "720x1280", "9:16" }, { "1344x768", "16:9" },
+            { "1024x1536", "2:3" }, { "1536x1024", "3:2" }, { "1024x768", "4:3" }, { "768x1024", "3:4" } };
+        for (int i = 0; i < ratios.GetLength(0); i++)
+            Check((string)Call(client, "ResolveGeminiAspectRatio", ratios[i, 0]) == ratios[i, 1], "aspect ratio mapping: " + ratios[i, 0]);
+
+        Check((bool)Call(director, "IsSameServiceHost", "https://api.example.com/v1", "https://api.example.com/v1/chat/completions") &&
+            !(bool)Call(director, "IsSameServiceHost", "https://other.example.net/v1", "https://api.example.com/v1") &&
+            !(bool)Call(director, "IsSameServiceHost", "", "https://api.example.com/v1"), "host chat key is only reused on the same service host");
     }
 }

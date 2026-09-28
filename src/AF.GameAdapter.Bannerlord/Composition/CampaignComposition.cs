@@ -18,6 +18,7 @@ internal static class CampaignComposition
             CampaignModelComposition.Register(campaignGameStarter);
             campaignGameStarter.AddBehavior(new ModOnboardingBehavior());
             campaignGameStarter.AddBehavior(new MyBehavior());
+            campaignGameStarter.AddBehavior(new CivilWarCampaignBehavior());
             campaignGameStarter.AddBehavior(new KingdomStrategicProfileBehavior());
             campaignGameStarter.AddBehavior(new ShoutBehavior());
             campaignGameStarter.AddBehavior(new CourierDeliveryBehavior());

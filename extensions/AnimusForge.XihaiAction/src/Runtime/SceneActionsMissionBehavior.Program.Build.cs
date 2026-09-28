@@ -16,6 +16,7 @@ namespace AnimusForge.XihaiAction
             ParseDecision decision,
             double now)
         {
+            RecordNpcReplyLocalResolution(captured, decision, now);
             if (decision?.ProgramV4 == null)
             {
                 FinishAcceptedRequestWithoutTargets(

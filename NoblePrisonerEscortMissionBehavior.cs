@@ -153,11 +153,15 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 		{
 			CharacterObject character = characters[i];
 			Hero hero = character?.HeroObject;
-			if (!IsStillMainPartyPrisoner(hero))
-			{
-				continue;
-			}
-			float lateral = (i - (characters.Count - 1) * 0.5f) * 1.35f;
+if (!IsStillMainPartyPrisoner(hero) || IsCurrentPublicExecutionVictim(hero))
+				{
+					if (IsCurrentPublicExecutionVictim(hero))
+					{
+						NoblePrisonerEscortLog.Log("Left the current condemned hero to the public execution. hero=" + (hero?.StringId ?? "N/A"));
+					}
+					continue;
+				}
+				float lateral = (i - (characters.Count - 1) * 0.5f) * 1.35f;
 			Vec3 spawnPosition = main.Position - forward * 2.6f + side * lateral;
 			spawnPosition = ResolveReachableSpawnPosition(spawnPosition, main.Position);
 			Agent agent = FindExistingHeroAgent(hero);
@@ -219,16 +223,25 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			{
 				continue;
 			}
-			if (runtime.CombatDespawnStarted)
-			{
-				continue;
-			}
-			if (NoblePrisonerExecutionRuntime.ControlsAgent(agent)
-				|| DuelBehavior.ControlsAgentForExternal(agent))
-			{
-				continue;
-			}
-			EnsureEscortFormation(agent);
+if (runtime.CombatDespawnStarted)
+				{
+					continue;
+				}
+				if (IsCurrentPublicExecutionVictim(runtime.Hero))
+				{
+					ReleaseEscortForPublicExecution(runtime);
+					continue;
+				}
+if (NoblePrisonerExecutionRuntime.ControlsAgent(agent)
+					|| DuelBehavior.ControlsAgentForExternal(agent))
+				{
+					continue;
+				}
+				if (TryHoldBoundPrisoner(agent, BoundPrisonerSlot(runtime)))
+				{
+					continue;
+				}
+				EnsureEscortFormation(agent);
 			ConfigureNonCombatEscort(agent);
 			PruneDuplicateHeroAgents(runtime);
 		}
@@ -253,6 +266,11 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 				|| (duplicate.Character as CharacterObject)?.HeroObject != hero)
 			{
 				continue;
+			}
+			if (IsPublicExecutionVictimAgent(duplicate))
+			{
+				ReleaseEscortForPublicExecution(runtime);
+				return;
 			}
 			try
 			{
@@ -347,6 +365,81 @@ internal sealed class NoblePrisonerEscortMissionBehavior : MissionLogic
 			NoblePrisonerEscortLog.Log("Place lords-hall escorted prisoner failed. agent="
 				+ (agent?.Index ?? -1) + ", error=" + ex.Message);
 		}
+	}
+
+	private void ReleaseEscortForPublicExecution(EscortedRuntimeAgent runtime)
+	{
+		Agent escort = runtime?.Agent;
+		if (escort == null || !_agents.Remove(escort.Index))
+		{
+			return;
+		}
+		NoblePrisonerEscortBehavior.UnregisterEscortedAgent(escort, "public_execution_victim");
+		try
+		{
+			if (escort.IsActive() && !escort.IsFadingOut() && !IsPublicExecutionVictimAgent(escort))
+			{
+				escort.FadeOut(hideInstantly: false, hideMount: true);
+			}
+		}
+		catch (Exception ex)
+		{
+			NoblePrisonerEscortLog.Log("Could not remove the escort copy of the condemned hero. agent=" + escort.Index + ", error=" + ex.Message);
+		}
+	}
+
+	private int BoundPrisonerSlot(EscortedRuntimeAgent runtime)
+	{
+		var ordered = _agents.Values
+			.Where(item => item?.Agent != null)
+			.OrderBy(item => item.Agent.Index)
+			.ToList();
+		return Math.Max(0, ordered.IndexOf(runtime));
+	}
+
+	private bool TryHoldBoundPrisoner(Agent agent, int slot)
+	{
+		var ceremony = Mission.Current?.GetMissionBehavior<RichExecutions.Scene.TownExecutionMissionBehavior>();
+		if (ceremony == null || agent == null) return false;
+		if (!ceremony.TryGetPrisonerHoldPosition(slot, Math.Max(1, _agents.Count), out var position, out var facing))
+		{
+			return false;
+		}
+		try
+		{
+			agent.Controller = AgentControllerType.None;
+			agent.SetIsAIPaused(true);
+			agent.DisableScriptedMovement();
+			agent.ClearTargetFrame();
+			if (agent.Position.DistanceSquared(position) > 0.35f) agent.TeleportToPosition(position);
+			agent.SetMovementDirection(facing);
+			agent.LookDirection = new Vec3(facing.X, facing.Y, 0f);
+			var bound = ActionIndexCache.Create("act_prisoner_conversation_idle_1");
+			if (bound != ActionIndexCache.act_none && agent.GetCurrentAction(0) != bound)
+			{
+				agent.SetActionChannel(0, in bound, ignorePriority: true);
+			}
+			return true;
+		}
+		catch (Exception ex)
+		{
+			NoblePrisonerEscortLog.Log("Could not hold an escorted prisoner beside the execution. agent=" + agent.Index + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static bool IsCurrentPublicExecutionVictim(Hero hero)
+	{
+		RichExecutions.Scene.TownExecutionMissionBehavior ceremony =
+			Mission.Current?.GetMissionBehavior<RichExecutions.Scene.TownExecutionMissionBehavior>();
+		return hero != null && ceremony?.Request?.Victim == hero;
+	}
+
+	private static bool IsPublicExecutionVictimAgent(Agent agent)
+	{
+		RichExecutions.Scene.TownExecutionMissionBehavior ceremony =
+			Mission.Current?.GetMissionBehavior<RichExecutions.Scene.TownExecutionMissionBehavior>();
+		return ceremony?.IsCeremonyVictim(agent) == true;
 	}
 
 	private static void DisableSettlementDailyBehavior(Agent agent)
