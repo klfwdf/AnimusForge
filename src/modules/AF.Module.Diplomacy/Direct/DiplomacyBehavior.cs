@@ -64,67 +64,11 @@ namespace AnimusForge
 
 		public static void ProcessDiplomacyTagsDispatch(Hero npc, ref string text)
 		{
-			if (npc == null || string.IsNullOrEmpty(text)) return;
-			if (text.IndexOf("DIPLOMACY", StringComparison.OrdinalIgnoreCase) < 0) return;
-
-			DiplomacyBehavior behavior = Instance
-				?? Campaign.Current?.GetCampaignBehavior<DiplomacyBehavior>();
-			if (behavior == null)
-			{
-				Logger.Log("DiplomacyBehavior", "[Dispatch] Instance is null, abort.");
-				return;
-			}
-			behavior.ProcessDiplomacyTags(npc, ref text);
+			var source = new DiplomacyOralTagSource(npc);
+			DiplomacyOralTagApplication.Process(source, ref text);
 		}
-
-		private static readonly Regex DiplomacyTagRegex = new Regex(
-			@"\[ACTION:DIPLOMACY:([A-Z_]+)(?::([^\]]+))?\]",
-			RegexOptions.IgnoreCase | RegexOptions.Compiled);
-
-		private const string IndependentClanPeaceActionName = "INDEPENDENT_CLAN_PEACE";
 
 		internal const string IndependentClanPeaceTag = DiplomacyConversationEligibilityApplication.IndependentClanPeaceTag;
-
-		private void ProcessDiplomacyTags(Hero npc, ref string responseText)
-		{
-			int matchCount = 0;
-			responseText = DiplomacyTagRegex.Replace(responseText, match =>
-			{
-				matchCount++;
-				return ProcessSingleDiplomacyTag(npc, match.Groups[1].Value, match.Groups[2].Value);
-			});
-			if (matchCount > 0)
-			{
-				responseText = DiplomacyTagRegex.Replace(responseText, "");
-				responseText = responseText.Trim();
-			}
-		}
-
-		private string ProcessSingleDiplomacyTag(Hero npc, string action, string payload)
-		{
-			try
-			{
-				Logger.Log("DiplomacyBehavior", $"[Tag] action={action} payload={payload} npc={npc.StringId}");
-				switch (action.ToUpperInvariant())
-				{
-					case "DECLARE_WAR":    return TryExecuteDeclareWar(npc, payload);
-					case "MAKE_PEACE":     return TryExecuteMakePeace(npc, payload);
-					case IndependentClanPeaceActionName: return TryExecuteIndependentClanPeace(npc, payload);
-					case "FORM_ALLIANCE":  return TryExecuteFormAlliance(npc, payload);
-					case "BREAK_ALLIANCE": return TryExecuteBreakAlliance(npc, payload);
-					case "MAKE_TRADE":     return TryExecuteMakeTrade(npc, payload);
-					case "CANCEL_TRADE":   return TryExecuteCancelTrade(npc, payload);
-					default:
-						Logger.Log("DiplomacyBehavior", $"[Tag] Unknown action: {action}");
-						return "";
-				}
-			}
-			catch (Exception ex)
-			{
-				Logger.Log("DiplomacyBehavior", $"[Tag Error] action={action}: {ex.Message}");
-				return "";
-			}
-		}
 
 		// ════════════════════════════════════════════════════════ LLM context
 

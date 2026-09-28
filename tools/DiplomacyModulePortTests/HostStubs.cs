@@ -65,6 +65,8 @@ namespace AnimusForge
         public static bool Result;
         public static int PeaceCaptures;
         public static Exception Failure;
+        public static string LastTagLog;
+        public static List<string> TagActions = new();
         public static void Call(string name, params object[] args)
         {
             Method = name; Args = args;
@@ -82,6 +84,24 @@ namespace AnimusForge
         }
         public static string BuildDiplomacyPostprocessContext(Hero h) { Recording.Call("context",h); return h?.StringId ?? ""; }
         public static void ProcessDiplomacyTagsDispatch(Hero h, ref string text) { Recording.Call("execute",h,text); if (h != null) text = "confirmed:"+text; }
+    }
+    internal readonly struct DiplomacyOralTagSource : IDiplomacyOralTagSource
+    {
+        private readonly Hero hero;
+        internal DiplomacyOralTagSource(Hero h) => hero=h;
+        public bool HasSpeaker => hero!=null;
+        public bool IsAvailable => true;
+        public string SpeakerHeroId => hero.StringId;
+        public string DeclareWar(string payload) => Execute("war",payload);
+        public string MakePeace(string payload) => Execute("peace",payload);
+        public string IndependentClanPeace(string payload) => Execute("independent",payload);
+        public string FormAlliance(string payload) => Execute("alliance",payload);
+        public string BreakAlliance(string payload) => Execute("break-alliance",payload);
+        public string MakeTrade(string payload) => Execute("trade",payload);
+        public string CancelTrade(string payload) => Execute("cancel-trade",payload);
+        private string Execute(string action,string payload)
+        { Recording.Call("execute",hero,action,payload); Recording.TagActions.Add(action+":"+payload); return "confirmed"; }
+        public void Log(string message) { Recording.LastTagLog=message; }
     }
     internal readonly struct DiplomacyTributePowerSource : IDiplomacyTributePowerSource
     {

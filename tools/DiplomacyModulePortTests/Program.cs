@@ -45,7 +45,7 @@ static class Program
         DiplomacyConversationBridge.CanInjectDiplomacyRuleForExternal(h);Call("eligibility",(object)null);
         index.Throw=false;Campaign.Current=null;
         string missing="tag";DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref missing);
-        Call("execute",null,"tag");Check(missing=="tag","missing campaign does not execute stale hero");
+        Check(missing=="tag","missing campaign does not execute stale hero");
         Campaign.Current=new Campaign{CampaignObjectManager=index};
         string postprocessContext=DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(h);
         Check(postprocessContext.Contains("你的王国ID：h（h）")&&postprocessContext.Contains("[ACTION:DIPLOMACY:MAKE_PEACE"),"context result");Call("context",h);
@@ -99,11 +99,25 @@ static class Program
         for(int i=0;i<10000;i++) DiplomacyIndependentPeaceApplication.CanUse(ref quietPeace);
         Check(GC.GetAllocatedBytesForCurrentThread()==peaceBytes,"10000 independent-peace Application decisions allocate zero bytes");
         string text="[ACTION:DIPLOMACY:MAKE_PEACE]";
-        DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);Call("execute",h,"[ACTION:DIPLOMACY:MAKE_PEACE]");Check(text=="confirmed:[ACTION:DIPLOMACY:MAKE_PEACE]","ref result preserved");
+        DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);Call("execute",h,"peace","");Check(text=="confirmed","ref result preserved");
         var failure=new InvalidOperationException("owner error");Recording.Failure=failure;
-        try { DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);Check(false,"owner exception must propagate"); }
-        catch(InvalidOperationException ex) { Check(ReferenceEquals(ex,failure),"original exception instance"); }
+        text="[ACTION:DIPLOMACY:MAKE_PEACE]";
+        DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);
+        Check(text==""&&Recording.LastTagLog.Contains("[Tag Error] action=MAKE_PEACE"),"tag effect failure consumed and logged");
         Recording.Failure=null;
+        Recording.TagActions.Clear();
+        text="  start [action:diplomacy:make_trade:p:n] middle [ACTION:DIPLOMACY:CANCEL_TRADE:n:p] end  ";
+        DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);
+        Check(text=="start confirmed middle confirmed end","multiple tags preserve text order and trim");
+        Check(Recording.TagActions.SequenceEqual(new[]{"trade:p:n","cancel-trade:n:p"}),"multiple actions execute in textual order");
+        Recording.TagActions.Clear();
+        text="plain diplomacy text [ACTION:DIPLOMACY:UNKNOWN]";
+        DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);
+        Check(text=="plain diplomacy text"&&Recording.LastTagLog.Contains("Unknown action: UNKNOWN")
+              &&Recording.TagActions.Count==0,"unknown tag is removed without effect");
+        text="plain text";
+        DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);
+        Check(text=="plain text"&&Recording.TagActions.Count==0,"ordinary text avoids tag execution");
         var payer=new Kingdom{StringId="payer"};var receiver=new Kingdom{StringId="receiver"};index.Objects["payer"]=payer;index.Objects["receiver"]=receiver;
         Recording.Result=true;
         Check(DiplomacyConversationBridge.TryBuildTributePowerContext(payer,receiver,out var tribute),"tribute result");Call("tribute",payer,receiver);

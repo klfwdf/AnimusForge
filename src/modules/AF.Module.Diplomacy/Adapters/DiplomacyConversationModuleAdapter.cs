@@ -29,7 +29,11 @@ internal sealed class DiplomacyConversationModuleAdapter : IDiplomacyConversatio
         var source = new DiplomacyPostprocessContextSource(ResolveHero(heroId));
         return DiplomacyPostprocessContextApplication.Build(ref source);
     }
-    public void ProcessDiplomacyTags(string heroId, ref string text) => DiplomacyBehavior.ProcessDiplomacyTagsDispatch(ResolveHero(heroId), ref text);
+    public void ProcessDiplomacyTags(string heroId, ref string text)
+    {
+        var source = new DiplomacyOralTagSource(ResolveHero(heroId));
+        DiplomacyOralTagApplication.Process(source, ref text);
+    }
     public bool TryBuildTributePowerContext(string payerId, string receiverId, out AfTributePowerContext context)
     {
         var source = new DiplomacyTributePowerSource(ResolveKingdom(payerId), ResolveKingdom(receiverId));
