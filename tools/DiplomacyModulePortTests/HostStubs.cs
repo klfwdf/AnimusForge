@@ -63,6 +63,7 @@ namespace AnimusForge
         public static string Method;
         public static object[] Args;
         public static bool Result;
+        public static int PeaceCaptures;
         public static Exception Failure;
         public static void Call(string name, params object[] args)
         {
@@ -79,11 +80,43 @@ namespace AnimusForge
             return new DiplomacyConversationEligibilitySnapshot(enabled,false,false,enabled,false,enabled,
                 enabled,false,enabled,enabled);
         }
-        public static bool CanUseIndependentClanPeaceForExternal(Hero h) { Recording.Call("peace",h); return Recording.Result; }
         public static string BuildDiplomacyPostprocessContext(Hero h) { Recording.Call("context",h); return h?.StringId ?? ""; }
         public static void ProcessDiplomacyTagsDispatch(Hero h, ref string text) { Recording.Call("execute",h,text); if (h != null) text = "confirmed:"+text; }
         public static bool TryBuildTributePowerContext(Kingdom payer, Kingdom receiver, out AfTributePowerContext value)
         { Recording.Call("tribute",payer,receiver);value=new AfTributePowerContext(1,2,3,4,5,6,7,8,9,10,11);return Recording.Result; }
+    }
+    internal struct DiplomacyIndependentPeaceSource : IDiplomacyIndependentPeaceSource
+    {
+        private readonly Hero hero;
+        public DiplomacyIndependentPeaceSource(Hero h) { hero=h; }
+        public DiplomacyIndependentPeacePlayerSnapshot CapturePlayer()
+        {
+            Recording.PeaceCaptures++;
+            Recording.Call("peace",hero);
+            bool ok=Recording.Result;
+            return new DiplomacyIndependentPeacePlayerSnapshot(ok,ok,ok,false,false,false,true);
+        }
+        public DiplomacyIndependentPeaceSpeakerSnapshot CaptureSpeaker()
+        {
+            Recording.PeaceCaptures++;
+            Recording.Call("peace",hero);
+            bool ok=Recording.Result;
+            return new DiplomacyIndependentPeaceSpeakerSnapshot(ok,false,false,ok,false,false,false,false);
+        }
+        public DiplomacyIndependentPeaceTargetSnapshot CaptureTarget()
+        {
+            Recording.PeaceCaptures++;
+            Recording.Call("peace",hero);
+            bool ok=Recording.Result;
+            return new DiplomacyIndependentPeaceTargetSnapshot(ok,ok);
+        }
+        public DiplomacyIndependentPeaceWarSnapshot CaptureWar()
+        {
+            Recording.PeaceCaptures++;
+            Recording.Call("peace",hero);
+            bool ok=Recording.Result;
+            return new DiplomacyIndependentPeaceWarSnapshot(ok,false,false,ok,false);
+        }
     }
     internal static class DiplomacyModuleComposition
     {

@@ -421,68 +421,21 @@ namespace AnimusForge
 			return pk != null && Hero.MainHero == pk.RulingClan?.Leader;
 		}
 
-		private static bool IsNegotiableWar(IFaction playerFaction, IFaction targetFaction)
-		{
-			return playerFaction != null
-				&& targetFaction != null
-				&& playerFaction != targetFaction
-				&& !playerFaction.IsEliminated
-				&& !targetFaction.IsEliminated
-				&& FactionManager.IsAtWarAgainstFaction(playerFaction, targetFaction)
-				&& !FactionManager.IsAtConstantWarAgainstFaction(playerFaction, targetFaction);
-		}
-
 		private static bool TryResolveIndependentClanPeaceContext(Hero npc, out Clan playerClan, out Kingdom targetKingdom)
 		{
 			playerClan = null;
 			targetKingdom = null;
-			try
-			{
-				Clan candidatePlayerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
-				if (Campaign.Current == null
-					|| Hero.MainHero == null
-					|| candidatePlayerClan == null
-					|| candidatePlayerClan.IsEliminated
-					|| candidatePlayerClan.Kingdom != null
-					|| candidatePlayerClan.IsUnderMercenaryService
-					|| (candidatePlayerClan.Leader != null && candidatePlayerClan.Leader != Hero.MainHero))
-				{
-					return false;
-				}
-
-				Clan targetClan = npc?.Clan;
-				if (npc == null
-					|| npc == Hero.MainHero
-					|| npc.IsDead
-					|| targetClan == null
-					|| targetClan == candidatePlayerClan
-					|| targetClan.IsEliminated
-					|| targetClan.IsBanditFaction
-					|| targetClan.IsOutlaw)
-				{
-					return false;
-				}
-
-				// Runs on every eligible prompt/postprocess turn. Resolve only the speaking hero's kingdom;
-				// requiring its current ruler avoids world scans and prevents ordinary lords from negotiating.
-				Kingdom candidateTargetKingdom = targetClan.Kingdom ?? npc.MapFaction as Kingdom;
-				if (candidateTargetKingdom?.RulingClan?.Leader == npc
-					&& IsNegotiableWar(candidatePlayerClan, candidateTargetKingdom))
-				{
-					playerClan = candidatePlayerClan;
-					targetKingdom = candidateTargetKingdom;
-					return true;
-				}
-			}
-			catch
-			{
-			}
-			return false;
+			var source = new DiplomacyIndependentPeaceSource(npc);
+			if (!DiplomacyIndependentPeaceApplication.CanUse(ref source)) return false;
+			playerClan = source.PlayerClan;
+			targetKingdom = source.TargetKingdom;
+			return true;
 		}
 
 		internal static bool CanUseIndependentClanPeaceForExternal(Hero targetHero, CharacterObject targetCharacter = null)
 		{
-			return TryResolveIndependentClanPeaceContext(targetHero ?? targetCharacter?.HeroObject, out _, out _);
+			var source = new DiplomacyIndependentPeaceSource(targetHero ?? targetCharacter?.HeroObject);
+			return DiplomacyIndependentPeaceApplication.CanUse(ref source);
 		}
 
 		internal static bool IsIndependentClanPeacePostprocessTag(string tag)
