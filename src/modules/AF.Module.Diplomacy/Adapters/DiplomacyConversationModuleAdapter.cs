@@ -18,7 +18,11 @@ internal sealed class DiplomacyConversationModuleAdapter : IDiplomacyConversatio
     public bool CanUseDiplomacyActionPostprocess(string heroId) => DiplomacyConversationEligibilityApplication.CanUseAction(Eligibility, heroId);
     public bool CanUseFullDiplomacyActionPostprocess(string heroId) => DiplomacyConversationEligibilityApplication.CanUseFull(Eligibility, heroId);
     public bool CanUseNpcSovereignDeclareWarPostprocess(string heroId) => DiplomacyConversationEligibilityApplication.CanUseNpcDeclareWar(Eligibility, heroId);
-    public bool CanUseIndependentClanPeace(string heroId) => DiplomacyBehavior.CanUseIndependentClanPeaceForExternal(ResolveHero(heroId));
+    public bool CanUseIndependentClanPeace(string heroId)
+    {
+        var source = new DiplomacyIndependentPeaceSource(ResolveHero(heroId));
+        return DiplomacyIndependentPeaceApplication.CanUse(ref source);
+    }
     public bool IsIndependentClanPeacePostprocessTag(string tag) => DiplomacyConversationEligibilityApplication.IsIndependentClanPeaceTag(tag);
     public string BuildDiplomacyPostprocessContext(string heroId) => DiplomacyBehavior.BuildDiplomacyPostprocessContext(ResolveHero(heroId));
     public void ProcessDiplomacyTags(string heroId, ref string text) => DiplomacyBehavior.ProcessDiplomacyTagsDispatch(ResolveHero(heroId), ref text);

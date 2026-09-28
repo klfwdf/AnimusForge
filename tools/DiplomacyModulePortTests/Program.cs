@@ -30,10 +30,12 @@ static class Program
         {
             Recording.Result=result;
             var owner=method=="peace"?"peace":"eligibility";
+            Recording.PeaceCaptures=0;
             Check(invoke(h,ch)==result,"return "+method);Call(owner,h);
             Check(invoke(null,ch)==result,"character return "+method);Call(owner,other);
             Check(invoke(null,new CharacterObject())==result,"nonhero return "+method);Call(owner,(object)null);
             Check(invoke(null,null)==result,"null return "+method);Call(owner,(object)null);
+            if(method=="peace") Check(Recording.PeaceCaptures==(result?16:4),"peace stage short circuit");
         }
         Check(index.Lookups==20,"one indexed lookup per live target; null has no lookup");
         var replacement=new Hero{StringId="h"};index.Objects["h"]=replacement;
@@ -68,6 +70,18 @@ static class Program
         Check(!DiplomacyConversationEligibilityApplication.CanInject(Snapshot(npcIsPlayer:true)),"player cannot be injected");
         Check(!DiplomacyConversationEligibilityApplication.CanUseAction(Snapshot(npcEliminated:true)),"eliminated speaker kingdom blocks actions");
         Check(!DiplomacyConversationEligibilityApplication.CanUseAction(default),"missing speaker blocks actions");
+        Check(DiplomacyIndependentPeaceApplication.IsEligible(new DiplomacyIndependentPeacePlayerSnapshot(true,true,true,false,false,false,true)),"independent player eligible");
+        Check(!DiplomacyIndependentPeaceApplication.IsEligible(new DiplomacyIndependentPeacePlayerSnapshot(true,true,true,false,true,false,true)),"kingdom player blocked");
+        Check(!DiplomacyIndependentPeaceApplication.IsEligible(new DiplomacyIndependentPeaceSpeakerSnapshot(true,false,true,true,false,false,false,false)),"dead peace speaker blocked");
+        Check(!DiplomacyIndependentPeaceApplication.IsEligible(new DiplomacyIndependentPeaceSpeakerSnapshot(true,false,false,true,false,false,true,false)),"bandit peace speaker blocked");
+        Check(!DiplomacyIndependentPeaceApplication.IsEligible(new DiplomacyIndependentPeaceTargetSnapshot(true,false)),"ordinary lord blocked");
+        Check(DiplomacyIndependentPeaceApplication.IsEligible(new DiplomacyIndependentPeaceWarSnapshot(true,false,false,true,false)),"ordinary war negotiable");
+        Check(!DiplomacyIndependentPeaceApplication.IsEligible(new DiplomacyIndependentPeaceWarSnapshot(true,false,false,true,true)),"constant war blocked");
+        var quietPeace=new QuietPeaceSource();
+        for(int i=0;i<100;i++) Check(DiplomacyIndependentPeaceApplication.CanUse(ref quietPeace),"peace source warmup");
+        long peaceBytes=GC.GetAllocatedBytesForCurrentThread();
+        for(int i=0;i<10000;i++) DiplomacyIndependentPeaceApplication.CanUse(ref quietPeace);
+        Check(GC.GetAllocatedBytesForCurrentThread()==peaceBytes,"10000 independent-peace Application decisions allocate zero bytes");
         string text="[ACTION:DIPLOMACY:MAKE_PEACE]";
         DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref text);Call("execute",h,"[ACTION:DIPLOMACY:MAKE_PEACE]");Check(text=="confirmed:[ACTION:DIPLOMACY:MAKE_PEACE]","ref result preserved");
         var failure=new InvalidOperationException("owner error");Recording.Failure=failure;
@@ -111,4 +125,12 @@ static class Program
         Console.WriteLine($"PASS {checks} source-linked diplomacy port assertions; current owner lookup, return/ref/out, unavailable lifecycle, immutable policy values and zero-allocation tick routing.");
         Console.WriteLine("NOT TESTED: game engine implementation, actual thread scheduling, LIVE/SAVE acceptance.");
     }
+}
+
+internal struct QuietPeaceSource : IDiplomacyIndependentPeaceSource
+{
+    public DiplomacyIndependentPeacePlayerSnapshot CapturePlayer() => new(true,true,true,false,false,false,true);
+    public DiplomacyIndependentPeaceSpeakerSnapshot CaptureSpeaker() => new(true,false,false,true,false,false,false,false);
+    public DiplomacyIndependentPeaceTargetSnapshot CaptureTarget() => new(true,true);
+    public DiplomacyIndependentPeaceWarSnapshot CaptureWar() => new(true,false,false,true,false);
 }

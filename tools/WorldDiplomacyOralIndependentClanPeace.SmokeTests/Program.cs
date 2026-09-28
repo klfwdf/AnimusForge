@@ -98,6 +98,7 @@ internal static class Program
         string adapter = Read("Refactor", "Adapters",
             "BannerlordWorldDiplomacyIndependentClanPeaceGameActionPort.cs");
         string behavior = (Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs") + Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs"));
+        string eligibility = Read("src/modules/AF.Module.Diplomacy/Application/DiplomacyIndependentPeaceApplication.cs");
         string method = ExtractMethod(behavior, "private string TryExecuteIndependentClanPeace(");
 
         Test.True(!contracts.Contains("TaleWorlds", StringComparison.Ordinal)
@@ -144,12 +145,13 @@ internal static class Program
         Test.True(action >= 0 && confirmation > action && register > confirmation,
             "recent peace may be registered only after the action is confirmed");
         Test.True(behavior.Contains(
-                      "internal const string IndependentClanPeaceTag = \"[ACTION:DIPLOMACY:INDEPENDENT_CLAN_PEACE]\"",
+                      "internal const string IndependentClanPeaceTag = DiplomacyConversationEligibilityApplication.IndependentClanPeaceTag",
                       StringComparison.Ordinal)
-                  && behavior.Contains(
-                      "return TryResolveIndependentClanPeaceContext(targetHero ?? targetCharacter?.HeroObject",
-                      StringComparison.Ordinal),
-            "the established tag and prompt eligibility path must remain unchanged");
+                  && behavior.Contains("DiplomacyIndependentPeaceApplication.CanUse(", StringComparison.Ordinal)
+                  && eligibility.Contains("!IsEligible(source.CapturePlayer())", StringComparison.Ordinal)
+                  && eligibility.Contains("!IsEligible(source.CaptureSpeaker())", StringComparison.Ordinal)
+                  && eligibility.Contains("!IsEligible(source.CaptureTarget())", StringComparison.Ordinal),
+            "tag identity and prompt eligibility must route through Application");
     }
 
     private sealed class FakePort : IWorldDiplomacyIndependentClanPeaceGameActionPort
