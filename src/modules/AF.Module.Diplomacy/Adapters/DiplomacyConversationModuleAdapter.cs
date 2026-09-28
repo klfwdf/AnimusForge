@@ -26,6 +26,9 @@ internal sealed class DiplomacyConversationModuleAdapter : IDiplomacyConversatio
     public bool IsIndependentClanPeacePostprocessTag(string tag) => DiplomacyConversationEligibilityApplication.IsIndependentClanPeaceTag(tag);
     public string BuildDiplomacyPostprocessContext(string heroId) => DiplomacyBehavior.BuildDiplomacyPostprocessContext(ResolveHero(heroId));
     public void ProcessDiplomacyTags(string heroId, ref string text) => DiplomacyBehavior.ProcessDiplomacyTagsDispatch(ResolveHero(heroId), ref text);
-    public bool TryBuildTributePowerContext(string payerId, string receiverId, out AfTributePowerContext context) =>
-        DiplomacyBehavior.TryBuildTributePowerContext(ResolveKingdom(payerId), ResolveKingdom(receiverId), out context);
+    public bool TryBuildTributePowerContext(string payerId, string receiverId, out AfTributePowerContext context)
+    {
+        var source = new DiplomacyTributePowerSource(ResolveKingdom(payerId), ResolveKingdom(receiverId));
+        return DiplomacyTributePowerApplication.TryBuild(ref source, out context);
+    }
 }

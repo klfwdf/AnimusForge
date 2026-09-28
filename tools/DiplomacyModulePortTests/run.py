@@ -18,6 +18,7 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineA
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDiscussionApplication.cs','WorldDiplomacyDiscussionEligibilityRules.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyConversationEligibilityApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyIndependentPeaceApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyTributePowerApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  adapter=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs')
@@ -27,6 +28,8 @@ def boundaries():
   assert 'DiplomacyBehavior.'+legacy not in adapter, 'Oral eligibility still delegates full use case to Behavior: '+legacy
  assert 'DiplomacyBehavior.CaptureEligibilitySnapshot' in adapter, 'Oral adapter lost its snapshot-only source'
  assert 'DiplomacyIndependentPeaceApplication.CanUse(' in adapter, 'Independent peace bypasses Application admission'
+ assert 'DiplomacyBehavior.TryBuildTributePowerContext' not in adapter, 'Tribute calculator still delegates full use case to Behavior'
+ assert 'DiplomacyTributePowerApplication.TryBuild(' in adapter, 'Tribute calculation bypasses Application'
  oral=read('src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs')
  for signature in ['internal static bool CanInjectDiplomacyRuleForExternal(',
                    'internal static bool CanUseDiplomacyActionPostprocessForExternal(',
@@ -35,6 +38,7 @@ def boundaries():
                    'internal static bool IsIndependentClanPeacePostprocessTag(']:
   assert 'DiplomacyConversationEligibilityApplication.' in declaration(oral,signature), 'Old oral eligibility branch retained: '+signature
  assert 'DiplomacyIndependentPeaceApplication.CanUse(' in declaration(oral,'private static bool TryResolveIndependentClanPeaceContext('), 'Independent peace context retains old branch policy'
+ assert 'DiplomacyTributePowerApplication.TryBuild(' in declaration(oral,'internal static bool TryBuildTributePowerContext('), 'Old tribute calculation retained in Behavior'
  paths=['AIConfigHandler.cs','ShoutBehavior.cs','ShoutBehavior.NativeTurnCommit.cs','DiplomacyPeaceTermsService.cs','NpcTributeVassalageBehavior.cs','src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs']
  paths += ['src/modules/AF.Module.Conversation/Channels/'+p for p in ['Scene/ShoutBehavior.ScenePostprocess.cs','Scene/ShoutBehavior.SceneConversationChains.cs','Courier/CourierDeliveryBehavior.DomainCommit.cs','Courier/CourierDeliveryBehavior.DeliveryLifetime.cs']]
  count=0
