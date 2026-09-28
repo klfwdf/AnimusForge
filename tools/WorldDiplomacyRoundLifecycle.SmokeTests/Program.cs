@@ -160,6 +160,7 @@ RunRepairCorrectionAndJobDecisionTests();
         PrestigeApplicationReplay.Run();
         CampaignApplicationReplay.Run();
         InitialPeaceReplay.Run();
+        HistoryCaptureReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14257,7 +14258,9 @@ RunRepairCorrectionAndJobDecisionTests();
             "retired exchange reminder path stays absent; public reminder rule retains compatibility");
         Test.True(!behaviorSource.Contains("private void ProcessPlayerResponseTimeouts(", StringComparison.Ordinal) && rulesSource.Contains("public static bool IsExchangeCloseDue(", StringComparison.Ordinal),
             "retired exchange timeout path stays absent; public close rule retains compatibility");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny", StringComparison.Ordinal),
+        string historyCaptureSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs"));
+        string exchangeApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundApplication.cs"));
+        Test.True(exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny", StringComparison.Ordinal),
             "the host must route suspended-pause day shifts through the lifecycle rules");
         Test.True(rulesSource.Contains("ComputeSuspendedPauseDays(currentDay, exchange.SuspendedDay)", StringComparison.Ordinal)
             && rulesSource.Contains("NormalizeRestoredExchangeState(exchange.StateBeforeSuspension)", StringComparison.Ordinal),
@@ -14459,6 +14462,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw terminal-move reasons must not remain in the host");
         Test.True(rulesSource.Contains("EvaluateThreatDocumentDispatch(", StringComparison.Ordinal),
             "the host must route threat document dispatch through the lifecycle rules");
+
         string campaignSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CampaignSource.cs"));
         string threatSettlementSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatSettlementApplication.cs"));
         string threatApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatApplication.cs"));
@@ -15642,8 +15646,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("public static void ClearBilateralOfferCooldowns(", StringComparison.Ordinal),
             "exchange lifecycle and cooldown index rules must live in the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveExchange(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteExchange(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny(", StringComparison.Ordinal)
+            && exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteExchange(", StringComparison.Ordinal)
+            && exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.UpsertOfferCooldown(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.RemoveOfferCooldown(", StringComparison.Ordinal)
@@ -15680,7 +15684,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "canonical-history state normalization must live in the persistence migrator");
         Test.True(rulesSource.Contains("public static List<WorldDiplomacyCanonicalProtectedFact> BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal),
             "protected-fact projection must live in the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyStorageMigration.NormalizeCanonicalHistoryState(", StringComparison.Ordinal)
+        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs")).Contains("WorldDiplomacyStorageMigration.NormalizeCanonicalHistoryState(", StringComparison.Ordinal)
             && canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal)
             && behaviorSource.Contains("_canonicalHistoryInitializedThisSession", StringComparison.Ordinal),
             "the host must keep the session guard and delegate normalization/projection through extracted ports");
@@ -15760,8 +15764,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && canonicalHistoryRulesSource.Contains("public static void StampCanonicalHistoryOnJob(", StringComparison.Ordinal),
             "history block rendering and job stamping must live in the canonical-history rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.RenderCanonicalHistoryBlock(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.ClampCanonicalHistoryThroughSequence(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.StampCanonicalHistoryOnJob(", StringComparison.Ordinal),
+            && historyCaptureSource.Contains("WorldDiplomacyCanonicalHistoryRules.ClampCanonicalHistoryThroughSequence(", StringComparison.Ordinal)
+            && historyCaptureSource.Contains("WorldDiplomacyCanonicalHistoryRules.StampCanonicalHistoryOnJob(", StringComparison.Ordinal),
             "the host must route block rendering and job stamping through the domain rules");
         Test.True(behaviorSource.Contains("_canonicalHistoryRenderCacheKey = cacheKey", StringComparison.Ordinal)
             && behaviorSource.Contains("return _canonicalHistoryRenderCache", StringComparison.Ordinal),
