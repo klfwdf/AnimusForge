@@ -17,7 +17,11 @@ RETIRED = [
  'private void MigrateDiplomaticThreatsToNextDeclarationRules(',
  'private void MigrateDiplomaticThreatComplianceConsequencesV3(',
  'private int ApplyInternationalReputationDelta(',
- 'private static Settlement ResolveMentionedSettlement('
+ 'private static Settlement ResolveMentionedSettlement(',
+ 'private void ExecuteMakePeace(',
+ 'private void ExecuteAlliance(',
+ 'private void ExecuteTradeAgreement(',
+ 'private static bool HasProposalTakenEffect('
 ]
 def remove_retired(source, declaration):
  for signature in RETIRED:

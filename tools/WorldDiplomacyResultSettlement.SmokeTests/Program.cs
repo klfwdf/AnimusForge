@@ -446,7 +446,9 @@ internal static class Program
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPropagationApplication.cs")),
             "internal static void BeginPublication(",
             "internal static ScheduleResult SchedulePublication(");
-        Test.True(source.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
+        Test.True(source.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
+                  && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"))
+                      .Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
                   && propagation.Contains("WorldDiplomacyRound round = resolveRound(document.RoundId)", StringComparison.Ordinal)
                   && propagation.Contains("document.AnalysisStatus, \"external_fact\"", StringComparison.Ordinal)
                   && propagation.Contains("round = ensureRound()", StringComparison.Ordinal),
@@ -1748,17 +1750,17 @@ internal static class Program
 				name + " analyzed publication must prune stale peace terms before rebuilding the final live legal set and before publication");
 		}
 
-		string settleOffer = ExtractMethod(source, "private void TrySettleRelayOffer(");
+        string settleOffer = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"), Encoding.UTF8);
 		int acceptExecutability = settleOffer.IndexOf(
-			"AreOfferedPeaceTermsCurrentlyExecutable(offer, source, proposer, target)",
+            "port.ArePeaceTermsExecutable(offer, source)",
 			StringComparison.Ordinal);
 		int cloneExactTerms = settleOffer.IndexOf(
 			"WorldDiplomacyOfferContractRules.ClonePeaceTerms(",
 			acceptExecutability,
 			StringComparison.Ordinal);
-		int executePeace = settleOffer.IndexOf("ExecuteMakePeace(proposer, target, response)", cloneExactTerms, StringComparison.Ordinal);
+        int executePeace = settleOffer.IndexOf("port.ExecutePeace(proposerId, targetId, response.PeaceTerms)", cloneExactTerms, StringComparison.Ordinal);
 		Test.True(acceptExecutability >= 0
-			&& settleOffer.Contains("if (!AreOfferedPeaceTermsCurrentlyExecutable(offer, source, proposer, target)) return false;", StringComparison.Ordinal)
+            && settleOffer.Contains("if (!port.ArePeaceTermsExecutable(offer, source)) return false;", StringComparison.Ordinal)
 			&& cloneExactTerms > acceptExecutability
 			&& executePeace > cloneExactTerms
 			&& File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"))
