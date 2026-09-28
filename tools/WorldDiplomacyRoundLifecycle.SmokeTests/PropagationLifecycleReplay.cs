@@ -127,7 +127,7 @@ internal static class PropagationLifecycleReplay
         Test.True(root != null, "repository located for propagation lifecycle boundary");
         string host = File.ReadAllText(Path.Combine(root.FullName,
             "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
-        Test.True(host.Contains("WorldDiplomacyPropagationApplication.BeginPublication(", StringComparison.Ordinal)
+        Test.True(host.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyPropagationApplication.ReceivePlayerRelay(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyPropagationApplication.RecoverPlayerCourtReceipts(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyPropagationApplication.RetryDeferred(", StringComparison.Ordinal),

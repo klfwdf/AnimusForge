@@ -1776,28 +1776,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void ReconcileAnalyzedPlayerDeclarationWithReachedCourts(WorldDiplomacyDocument document)
 	{
-		if (document?.IsPlayerAuthored != true) return;
-		WorldDiplomacyRound round = ResolveRound(document.RoundId);
-		if (round == null || !ReferenceEquals(_storage.ActiveRound, round)
-			|| !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
-		foreach (string kingdomId in WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(_storage.KingdomKnowledge, document.DocumentId))
-		{
-			Kingdom receiver = ResolveKingdom(kingdomId);
-			if (receiver == null || string.Equals(receiver.StringId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)
-				|| !HasIndependentWorldDiplomacyAuthority(receiver)) continue;
-			bool directlyAddressed = (document.AddressedKingdomIds ?? new List<string>())
-				.Contains(receiver.StringId, StringComparer.OrdinalIgnoreCase)
-				|| string.Equals(document.TargetKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase)
-				|| IsDiplomaticRepresentativeForAddressedVassal(receiver, document);
-			bool isPrimaryTarget = string.Equals(document.TargetKingdomId, receiver.StringId, StringComparison.OrdinalIgnoreCase);
-			if (!directlyAddressed || (!isPrimaryTarget && !WorldDiplomacyStructureRules.DocumentRequiresResponseFrom(document, receiver.StringId))) continue;
-			WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(
-				round,
-				receiver.StringId,
-				"active",
-				mandatoryReply: true);
-			TryScheduleMandatoryCourtResponse(round, participant, receiver, document);
-		}
+		WorldDiplomacyPublicationRoutingApplication.ReconcileReachedCourts(new PublicationPort(this), document);
 	}
 	private void ProcessAnalyzedMultiActionDocument(WorldDiplomacyDocument document)
 	{
@@ -3133,82 +3112,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void StartDocumentPropagation(WorldDiplomacyDocument document, Kingdom author)
 	{
-		if (document == null || document.PropagationCompleted || author == null)
-		{
-			return;
-		}
-		if (!document.IsPlayerAuthored && !CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
-		{
-			SuppressInvalidDocumentBeforePropagation(document, authorBlockReason);
-			return;
-		}
-		Settlement origin = null;
-		WorldDiplomacyPropagationApplication.BeginPublication(
-			_storage, document, author.StringId, ResolveRound,
-			() => EnsureActiveRound(author, ResolveKingdom(document.TargetKingdomId), document.IsPlayerAuthored),
-			() => { origin = ResolveCourtSettlement(author); return origin?.StringId; },
-			() => IsPlayerAffiliatedKingdom(author),
-			() => IsPlayerKingdom(author),
-			CurrentDay, GetRoundParticipantLimit, RecordDiplomacyWeeklyMaterial);
-		List<Settlement> settlements = Settlement.All
-			.Where(x => x != null && !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-		float maxCivilianDistance = origin == null || settlements.Count == 0
-			? 0f
-			: settlements.Max(x => origin.GatePosition.Distance(x.GatePosition));
-		int civilianSpreadDays = GetCivilianSpreadDays();
-		int courtDeliveryDays = GetCourtMaxDeliveryDays();
-		List<WorldDiplomacyPropagationApplication.SettlementTarget> settlementTargets =
-			new List<WorldDiplomacyPropagationApplication.SettlementTarget>(settlements.Count);
-		foreach (Settlement settlement in settlements)
-		{
-			bool isOrigin = origin != null && settlement == origin;
-			settlementTargets.Add(new WorldDiplomacyPropagationApplication.SettlementTarget
-			{
-				Id = settlement.StringId,
-				IsOrigin = isOrigin,
-				Distance = isOrigin || origin == null
-					? maxCivilianDistance
-					: origin.GatePosition.Distance(settlement.GatePosition)
-			});
-		}
-		List<Tuple<Kingdom, Settlement>> courtDestinations = Kingdom.All
-			.Where(x => x != null && !x.IsEliminated && x != author && !string.IsNullOrWhiteSpace(x.StringId))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.Select(x => Tuple.Create(x, ResolveCourtSettlement(x)))
-			.ToList();
-		float maxCourtDistance = origin == null
-			? 0f
-			: courtDestinations.Where(x => x.Item2 != null).Select(x => origin.GatePosition.Distance(x.Item2.GatePosition)).DefaultIfEmpty(0f).Max();
-		List<WorldDiplomacyPropagationApplication.CourtTarget> courtTargets =
-			new List<WorldDiplomacyPropagationApplication.CourtTarget>(courtDestinations.Count);
-		foreach (Tuple<Kingdom, Settlement> destination in courtDestinations)
-		{
-			courtTargets.Add(new WorldDiplomacyPropagationApplication.CourtTarget
-			{
-				KingdomId = destination.Item1.StringId,
-				SettlementId = destination.Item2?.StringId ?? "",
-				IsPlayerAffiliated = IsPlayerAffiliatedKingdom(destination.Item1),
-				Distance = origin == null || destination.Item2 == null
-					? maxCourtDistance
-					: origin.GatePosition.Distance(destination.Item2.GatePosition)
-			});
-		}
-		WorldDiplomacyPropagationApplication.ScheduleResult schedule =
-			WorldDiplomacyPropagationApplication.SchedulePublication(
-				_storage, document, CurrentDay(), civilianSpreadDays, courtDeliveryDays,
-				settlementTargets, maxCivilianDistance, courtTargets, maxCourtDistance);
-		Log("propagation started document=" + document.DocumentId
-			+ " round=" + document.RoundId
-			+ " origin=" + (origin?.StringId ?? "none")
-			+ " settlements=" + settlements.Count.ToString(CultureInfo.InvariantCulture)
-			+ " civilianDays=" + civilianSpreadDays.ToString(CultureInfo.InvariantCulture)
-			+ " latestCivilianDay=" + schedule.LatestCivilianDueDay.ToString(CultureInfo.InvariantCulture)
-			+ " courts=" + courtDestinations.Count.ToString(CultureInfo.InvariantCulture)
-			+ " courtDays=" + courtDeliveryDays.ToString(CultureInfo.InvariantCulture)
-			+ " latestCourtDay=" + schedule.LatestCourtDueDay.ToString(CultureInfo.InvariantCulture)
-			+ " addressed=" + string.Join(",", document.AddressedKingdomIds ?? new List<string>()));
+		WorldDiplomacyPublicationRoutingApplication.Start(new PublicationPort(this), document, author?.StringId);
 	}
 	private void RetryDeferredDocumentPropagation()
 	{
