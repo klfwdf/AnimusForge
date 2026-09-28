@@ -426,7 +426,7 @@ internal static class Program
         Test.True(roundPlanParticipants.Contains("BuildLegalDiplomaticActionIntents(round, x, author)", StringComparison.Ordinal)
                   && roundPlanParticipants.Contains("ResponseIntentToProposalIntent(intent)", StringComparison.Ordinal),
             "round planning must retain a kingdom that can answer the root author's open proposal");
-        Test.True(source.Contains("GetRoundPlanActionableParticipants(author, round)", StringComparison.Ordinal),
+        Test.True(source.Contains("GetRoundPlanActionableParticipants(ResolveKingdom(authorId), r)", StringComparison.Ordinal),
             "embedded and fallback round planning must use response-aware candidates");
         string canonicalEntryRenderer = ExtractMethod(
             File.ReadAllText(
@@ -3916,8 +3916,8 @@ internal static class Program
             "warning-to-ultimatum escalation must preserve the original threat's policy condition instead of replacing it");
 
         string compliance = ExtractMethod(source, "private bool ResolveDiplomaticThreatCompliance(");
-        Test.True(compliance.Contains("TryApplyDiplomaticThreatPolicyConditionCancellation(threat)", StringComparison.Ordinal)
-                  && compliance.Contains("TryApplyDiplomaticThreatIssuerRelationReward(threat, issuer", StringComparison.Ordinal),
+        Test.True(compliance.Contains("TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, threat)", StringComparison.Ordinal)
+                  && compliance.Contains("TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, threat, issuer", StringComparison.Ordinal),
             "an exact comply_ultimatum settlement must execute both the bound-policy cancellation and issuer reward");
 
         string policyCancellation = ExtractMethod(
@@ -3928,7 +3928,7 @@ internal static class Program
             "public static WorldDiplomacyPolicyCancellationDispatch EvaluateThreatPolicyCancellationDispatch(");
         Test.True(policyCancellation.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateThreatPolicyCancellationDispatch(threat)", StringComparison.Ordinal)
                   && policyCancellationDispatch.Contains("threat.PolicyConditionCancellationCompleted", StringComparison.Ordinal)
-                  && policyCancellation.Contains("CustomPolicyBehavior.TryCancelActiveKingdomPolicyForExternal(", StringComparison.Ordinal)
+                  && policyCancellation.Contains("_port.CancelPolicy(", StringComparison.Ordinal)
                   && policyCancellation.Contains("threat.PolicyConditionPolicyId", StringComparison.Ordinal)
                   && policyCancellation.Contains("threat.PolicyConditionOwnerKingdomId", StringComparison.Ordinal)
                   && policyCancellation.Contains("RemoveSettledPolicySignalContextFromActiveRound(", StringComparison.Ordinal)
@@ -4045,7 +4045,7 @@ internal static class Program
             Test.True(issuerReward.Contains(snapshotBoundary, StringComparison.Ordinal),
                 "issuer reward snapshot/idempotency boundary is missing: " + snapshotBoundary);
         }
-        Test.True(issuerReward.Contains("IsThreatConsequenceClanEligible(clan, issuerKingdom, currentRulingClan)", StringComparison.Ordinal)
+        Test.True(issuerReward.Contains("_port.CaptureConsequenceSnapshot(issuerKingdom)", StringComparison.Ordinal)
                   && consequenceClanEligibility.Contains("clan != rulingClan", StringComparison.Ordinal)
                   && consequenceClanEligibility.Contains("clan.Kingdom == kingdom", StringComparison.Ordinal)
                   && consequenceClanEligibility.Contains("clan.IsEliminated", StringComparison.Ordinal)
@@ -4058,7 +4058,7 @@ internal static class Program
                       .Contains("threat.IssuerRewardCompleted = true;", StringComparison.Ordinal),
             "MCM zero must settle the reward as a no-op without retrying or changing relations");
         Test.True(issuerReward.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceClanSettled(eligibleClanId, appliedIds, skippedIds)", StringComparison.Ordinal)
-                  && issuerReward.Contains("ChangeRelationAction.ApplyRelationChangeBetweenHeroes(", StringComparison.Ordinal)
+                  && issuerReward.Contains("_port.ChangeRelation(", StringComparison.Ordinal)
                   && issuerReward.Contains("appliedIds.Add(eligibleClanId)", StringComparison.Ordinal)
                   && issuerReward.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatConsequenceSettled(", StringComparison.Ordinal)
                   && ExtractMethod(lifecycleRules, "public static bool IsThreatConsequenceSettled(")
@@ -4095,7 +4095,7 @@ internal static class Program
                   && CountOccurrences(retryComplianceConsequences, "WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardSettlementRetry, 8") == 1
                   && lifecycleRules.Contains(".Take(take)", StringComparison.Ordinal),
             "each daily target-penalty, policy-cancellation, and issuer-reward batch must remain capped at eight threats");
-        Test.True(CountOccurrences(retryComplianceConsequences, "threat.UpdatedDay = CurrentDay();") == 2,
+        Test.True(CountOccurrences(retryComplianceConsequences, "threat.UpdatedDay = _port.CurrentDay();") == 2,
             "failed bounded retries must rotate by attempt day instead of letting poisoned records starve newer consequences");
 
         Test.True(File.ReadAllText(FindRepositoryFile(
@@ -4289,6 +4289,14 @@ internal static class Program
     }
 
     // Follow the actual DPL-080 owner while retaining host-routing checks.
+    private static string? ReadThreatOwner(string source, string marker)
+    {
+        if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        string application = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatSettlementApplication.cs")));
+        string newMarker = marker.Replace("private ", "internal static ").Replace("()", "(");
+        return application.Contains(newMarker, StringComparison.Ordinal) ? ExtractMethod(application, newMarker) : null;
+    }
+
     private static string? ReadDpl080Owner(string source, string marker)
     {
         foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TryIncludeResultSettlementTarget" })
@@ -4339,7 +4347,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadDpl080Owner(source, startMarker);
+        string? moved = ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
         if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
@@ -4367,7 +4375,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadDpl080Owner(source, marker);
+		string? moved = ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);
