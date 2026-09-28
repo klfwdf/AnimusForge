@@ -8696,14 +8696,14 @@
     },
     {
       "id": "af2.model.policy-probe",
-      "path": "tools/PolicyEffectModule.ContractTests/Program.cs",
+      "path": "tests/bridges/Policy/PolicyEffectModule.ContractTests/Program.cs",
       "start": 696,
       "end": 696,
       "symbol": "private static void VerifyOnnxContractGate(Assembly assembly, string moduleRoot)",
       "match": "exact",
       "status": "j15-f4m-module-onnx-offline-verified",
       "note": "offline probe patches real module-root resolver and checks embedding/reranker inference plus gate positive/negative",
-      "fileSha256": "1695b082bb6dbb429589d3d1ca6a70d100f89715087a4c3e338b762a3e4aca90"
+      "fileSha256": "a95c413a8eaefaa046e28a18c11e7337ba0f8c550cde3eeb4312d032668feb1a"
     },
     {
       "id": "af2.model.redirect-guard",
@@ -8729,14 +8729,14 @@
     },
     {
       "id": "af2.model.cold-gate-probe",
-      "path": "tools/PolicyEffectModule.ContractTests/Program.cs",
+      "path": "tests/bridges/Policy/PolicyEffectModule.ContractTests/Program.cs",
       "start": 619,
       "end": 619,
       "symbol": "private static void VerifyOnnxContractColdMainGate(Assembly assembly, string moduleRoot)",
       "match": "exact",
       "status": "j15-f4m-cold-gate-offline-verified",
       "note": "Real requested DLL cold-gate timing and controlled concurrent warmup/gate test; not a game lifecycle test.",
-      "fileSha256": "1695b082bb6dbb429589d3d1ca6a70d100f89715087a4c3e338b762a3e4aca90"
+      "fileSha256": "a95c413a8eaefaa046e28a18c11e7337ba0f8c550cde3eeb4312d032668feb1a"
     },
     {
       "id": "af2.deploy.feature-bridges-preflight",
