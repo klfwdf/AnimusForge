@@ -47,7 +47,23 @@ static class Program
         string missing="tag";DiplomacyConversationBridge.ProcessDiplomacyTagsDispatch(h,ref missing);
         Call("execute",null,"tag");Check(missing=="tag","missing campaign does not execute stale hero");
         Campaign.Current=new Campaign{CampaignObjectManager=index};
-        Check(DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(h)=="h","context result");Call("context",h);
+        string postprocessContext=DiplomacyConversationBridge.BuildDiplomacyPostprocessContext(h);
+        Check(postprocessContext.Contains("你的王国ID：h（h）")&&postprocessContext.Contains("[ACTION:DIPLOMACY:MAKE_PEACE"),"context result");Call("context",h);
+        Check(!postprocessContext.Contains("old = Old"),"eliminated kingdom omitted");
+        var independentContext=new ContextReplaySource(1);
+        string independentText=DiplomacyPostprocessContextApplication.Build(ref independentContext);
+        Check(independentText.Contains("独立家族议和运行时事实")&&independentText.Contains("定居点数：2"),"independent peace context");
+        Check(independentContext.KingdomCaptures==0,"independent branch skips kingdom table");
+        var warOnlyContext=new ContextReplaySource(2);
+        string warOnlyText=DiplomacyPostprocessContextApplication.Build(ref warOnlyContext);
+        Check(warOnlyText.Contains("DECLARE_WAR")&&!warOnlyText.Contains("MAKE_PEACE"),"war-only context excludes full tags");
+        Check(warOnlyContext.WarCalls==0&&warOnlyContext.TributeCalls==0,"war-only context skips tribute work");
+        var fullContext=new ContextReplaySource(3);
+        string fullText=DiplomacyPostprocessContextApplication.Build(ref fullContext);
+        Check(fullText.Contains("国家吞并约束")&&fullText.Contains("MAKE_PEACE")&&fullText.Contains("auto贡金：n付12/天，p付34/天"),"full context and tribute line");
+        Check(fullContext.WarCalls==1&&fullContext.TributeCalls==2,"both tribute directions queried once");
+        var blockedContext=new ContextReplaySource(4);
+        Check(DiplomacyPostprocessContextApplication.Build(ref blockedContext)==""&&blockedContext.KingdomCaptures==0,"ineligible context does not scan kingdoms");
         foreach(var result in new[]{true,false})
         {
             Recording.Result=result;
@@ -145,4 +161,29 @@ internal struct QuietPeaceSource : IDiplomacyIndependentPeaceSource
     public DiplomacyIndependentPeaceSpeakerSnapshot CaptureSpeaker() => new(true,false,false,true,false,false,false,false);
     public DiplomacyIndependentPeaceTargetSnapshot CaptureTarget() => new(true,true);
     public DiplomacyIndependentPeaceWarSnapshot CaptureWar() => new(true,false,false,true,false);
+}
+
+internal struct ContextReplaySource : IDiplomacyPostprocessContextSource
+{
+    private readonly int mode;
+    internal int KingdomCaptures;
+    internal int WarCalls;
+    internal int TributeCalls;
+    internal ContextReplaySource(int mode) { this.mode=mode;KingdomCaptures=0;WarCalls=0;TributeCalls=0; }
+    public bool HasSpeaker => true;
+    public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot)
+    { snapshot=new("Clan",2,"Target");return mode==1; }
+    public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => mode==4 ? default :
+        new(true,false,false,true,false,true,mode==3,false,true,mode==3);
+    public DiplomacyPostprocessKingdomSnapshot CaptureKingdoms()
+    {
+        KingdomCaptures++;
+        return new(true,"n","Npc",mode==3,false,"p","Player",mode==3,true,
+            new[]{new DiplomacyKingdomSummary("n","Npc",false)});
+    }
+    public string GetAnnexationHint() => "constraint";
+    public bool ArePlayerAndNpcAtWar() { WarCalls++;return true; }
+    public int CalculateDailyTribute(bool npcPays)
+    { TributeCalls++;return npcPays?12:34; }
+    public void LogFailure(string message) => throw new Exception("context failure: "+message);
 }

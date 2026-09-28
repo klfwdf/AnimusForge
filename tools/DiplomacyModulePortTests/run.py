@@ -19,6 +19,7 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDiscussio
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyConversationEligibilityApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyIndependentPeaceApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyTributePowerApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  adapter=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs')
@@ -30,6 +31,8 @@ def boundaries():
  assert 'DiplomacyIndependentPeaceApplication.CanUse(' in adapter, 'Independent peace bypasses Application admission'
  assert 'DiplomacyBehavior.TryBuildTributePowerContext' not in adapter, 'Tribute calculator still delegates full use case to Behavior'
  assert 'DiplomacyTributePowerApplication.TryBuild(' in adapter, 'Tribute calculation bypasses Application'
+ assert 'DiplomacyBehavior.BuildDiplomacyPostprocessContext' not in adapter, 'Prompt context still delegates full use case to Behavior'
+ assert 'DiplomacyPostprocessContextApplication.Build(' in adapter, 'Prompt context bypasses Application'
  oral=read('src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs')
  for signature in ['internal static bool CanInjectDiplomacyRuleForExternal(',
                    'internal static bool CanUseDiplomacyActionPostprocessForExternal(',
@@ -39,6 +42,10 @@ def boundaries():
   assert 'DiplomacyConversationEligibilityApplication.' in declaration(oral,signature), 'Old oral eligibility branch retained: '+signature
  assert 'DiplomacyIndependentPeaceApplication.CanUse(' in declaration(oral,'private static bool TryResolveIndependentClanPeaceContext('), 'Independent peace context retains old branch policy'
  assert 'DiplomacyTributePowerApplication.TryBuild(' in declaration(oral,'internal static bool TryBuildTributePowerContext('), 'Old tribute calculation retained in Behavior'
+ context_owner=read('src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs')
+ context_forwarder=declaration(context_owner,'internal static string BuildDiplomacyPostprocessContext(')
+ assert 'DiplomacyPostprocessContextApplication.Build(' in context_forwarder and not any(
+  token in context_forwarder for token in ['StringBuilder','Kingdom.All','FactionManager.','[ACTION:DIPLOMACY:']), 'Old prompt context retained in Behavior'
  paths=['AIConfigHandler.cs','ShoutBehavior.cs','ShoutBehavior.NativeTurnCommit.cs','DiplomacyPeaceTermsService.cs','NpcTributeVassalageBehavior.cs','src/modules/AF.Module.Social/Proactive/ProactiveCandidateQualification.cs']
  paths += ['src/modules/AF.Module.Conversation/Channels/'+p for p in ['Scene/ShoutBehavior.ScenePostprocess.cs','Scene/ShoutBehavior.SceneConversationChains.cs','Courier/CourierDeliveryBehavior.DomainCommit.cs','Courier/CourierDeliveryBehavior.DeliveryLifetime.cs']]
  count=0

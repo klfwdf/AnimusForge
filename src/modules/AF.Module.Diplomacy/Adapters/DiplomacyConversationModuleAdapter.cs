@@ -24,7 +24,11 @@ internal sealed class DiplomacyConversationModuleAdapter : IDiplomacyConversatio
         return DiplomacyIndependentPeaceApplication.CanUse(ref source);
     }
     public bool IsIndependentClanPeacePostprocessTag(string tag) => DiplomacyConversationEligibilityApplication.IsIndependentClanPeaceTag(tag);
-    public string BuildDiplomacyPostprocessContext(string heroId) => DiplomacyBehavior.BuildDiplomacyPostprocessContext(ResolveHero(heroId));
+    public string BuildDiplomacyPostprocessContext(string heroId)
+    {
+        var source = new DiplomacyPostprocessContextSource(ResolveHero(heroId));
+        return DiplomacyPostprocessContextApplication.Build(ref source);
+    }
     public void ProcessDiplomacyTags(string heroId, ref string text) => DiplomacyBehavior.ProcessDiplomacyTagsDispatch(ResolveHero(heroId), ref text);
     public bool TryBuildTributePowerContext(string payerId, string receiverId, out AfTributePowerContext context)
     {
