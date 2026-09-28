@@ -2066,7 +2066,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private Dictionary<string, string> _weeklyReportAppliedStabilityDeltaStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-	private HashSet<string> _modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+	private string _civilWarJsonStorage = "";
+
+		private HashSet<string> _modCreatedRebelKingdomIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	private Dictionary<string, string> _modCreatedRebelKingdomIdStorage = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -11321,7 +11323,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		SyncTownRebelliousStateFromCurrentLoyalty(town);
 	}
 
-	public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town town)
+public static int GetKingdomStabilityRoyalDomainLoyaltyAdjustmentForTown(Town town)
 	{
 		try
 		{
@@ -12888,7 +12890,16 @@ public partial class MyBehavior : CampaignBehaviorBase
 						{
 							SetKingdomStabilityValue(devEditableKingdom, kingdomStabilityValue + kingdomStabilityWeeklyBalancingDelta);
 						}
-						KingdomRebellionResolutionResult kingdomRebellionResolutionResult = ResolveKingdomRebellion(devEditableKingdom, weekIndex, executeAction: false, forceTrigger: false);
+TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdomStabilityValue(devEditableKingdom), (target, delta) =>
+								{
+									int before = GetKingdomStabilityValue(target);
+									SetKingdomStabilityValue(target, before + delta);
+								}, GetRecentKingdomEventFactsForExternal(GetKingdomId(devEditableKingdom), 8));
+								if (TeamModuleServices.CivilWar.HasTrackedKingdom(devEditableKingdom) || TeamModuleServices.CivilWar.BlocksNewOffensiveWar(devEditableKingdom))
+							{
+								return KingdomMaintenance.Complete && CompleteWeeklyKingdomRebellionMaintenance(weekIndex);
+							}
+							KingdomRebellionResolutionResult kingdomRebellionResolutionResult = ResolveKingdomRebellion(devEditableKingdom, weekIndex, executeAction: false, forceTrigger: false);
 						if (kingdomRebellionResolutionResult != null && kingdomRebellionResolutionResult.PassedChanceGate && kingdomRebellionResolutionResult.SelectedClan != null)
 						{
 							QueueAutomaticKingdomRebellion(kingdomRebellionResolutionResult);
@@ -12927,7 +12938,32 @@ public partial class MyBehavior : CampaignBehaviorBase
 		KingdomMaintenance.ResetWeek();
 	}
 
-	private void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult result)
+	public static void QueueCivilWarSplitForExternal(Kingdom kingdom, Clan clan)
+		{
+			try
+			{
+				MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+				if (behavior == null || kingdom == null || clan == null) return;
+				int week = Math.Max(1, GetCurrentGameDayIndexSafe() / 7);
+				var result = new KingdomRebellionResolutionResult
+				{
+					Kingdom = kingdom,
+					WeekIndex = week,
+					Forced = true,
+					SelectedClan = clan,
+					PassedChanceGate = true,
+					StabilityValue = behavior.GetKingdomStabilityValue(kingdom)
+				};
+				behavior.QueueAutomaticKingdomRebellion(result);
+				behavior.TryStartNextAutomaticKingdomRebellionAsync();
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("KingdomCivilWar", "[ERROR] split queue failed: " + ex.Message);
+			}
+		}
+
+		private void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult result)
 	{
 		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
 		{
@@ -13407,7 +13443,47 @@ public partial class MyBehavior : CampaignBehaviorBase
 		}
 	}
 
-	private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "", int dayOverride = -1, string gameDateOverride = "")
+	public static List<string> GetRecentKingdomEventFactsForExternal(string kingdomId, int limit)
+		{
+			List<string> facts = new List<string>();
+			try
+			{
+				MyBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
+				string id = (kingdomId ?? "").Trim();
+				if (behavior?._eventSourceMaterials == null || string.IsNullOrWhiteSpace(id)) return facts;
+				foreach (EventSourceMaterialEntry entry in behavior._eventSourceMaterials.Where(x => x != null && string.Equals((x.KingdomId ?? "").Trim(), id, StringComparison.OrdinalIgnoreCase)).Reverse().Take(Math.Max(1, limit)))
+				{
+					string kind = (entry.MaterialKind ?? "").Trim();
+					if (kind != "war_declared" && kind != "peace_made" && kind != "raid_completed" && kind != "kingdom_decision_support" && kind != "clan_destroyed" && kind != "player_execution" && kind != "siege_aftermath") continue;
+					facts.Add(kind + "\t" + (entry.StableKey ?? "") + "\t" + LimitEventFact((entry.Label ?? "") + " " + (entry.SnapshotText ?? "")));
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("KingdomCivilWar", "[WARN] recent event facts failed: " + ex.Message);
+			}
+			return facts;
+		}
+
+		private static string LimitEventFact(string text)
+		{
+			string value = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+			return value.Length <= 80 ? value : value.Substring(0, 80);
+		}
+
+		public static void RecordEventSourceMaterialForExternal(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, bool includeInWorld, bool includeInKingdom)
+		{
+			try
+			{
+				(Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>())?.RecordEventSourceMaterial(materialKind, label, snapshotText, stableKey, kingdomId, "", includeInWorld, includeInKingdom);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log("EventMaterial", "[ERROR] external material failed: " + ex.Message);
+			}
+		}
+
+		private void RecordEventSourceMaterial(string materialKind, string label, string snapshotText, string stableKey, string kingdomId, string settlementId, bool includeInWorld, bool includeInKingdom, string actorHeroId = "", string actorKingdomId = "", int dayOverride = -1, string gameDateOverride = "")
 	{
 		string normalizedMaterialKind = (materialKind ?? "").Trim();
 		string normalizedActorHeroId = (actorHeroId ?? "").Trim();
@@ -17855,10 +17931,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 				Dictionary<string, string> dictionary14d = CampaignSaveChunkHelper.FlattenStringDictionary(_modCreatedRebelKingdomIdStorage, "_modCreatedRebelKingdomIds_v1", "ModCreatedRebelKingdom");
 				dataStore.SyncData("_modCreatedRebelKingdomIds_v1", ref dictionary14d);
 				dataStore.SyncData("_lastAutoGeneratedWeeklyReportWeek_v1", ref _lastAutoGeneratedWeeklyReportWeek);
-				dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKingdomRebellionWeek);
-				try
-				{
-					_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
+dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKingdomRebellionWeek);
+					_civilWarJsonStorage = TeamModuleServices.CivilWar.Save();
+					dataStore.SyncData("_af_kingdom_civil_war_v1", ref _civilWarJsonStorage);
+					try
+					{
+						_voiceMappingJsonStorage = VoiceMapper.ExportMappingJson(pretty: false) ?? "";
 				}
 				catch (Exception ex7)
 				{
@@ -18273,8 +18351,11 @@ public partial class MyBehavior : CampaignBehaviorBase
 					}
 				}
 			}
-			dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKingdomRebellionWeek);
-			_voiceMappingExportFolderStorage = "";
+dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKingdomRebellionWeek);
+				_civilWarJsonStorage = "";
+				dataStore.SyncData("_af_kingdom_civil_war_v1", ref _civilWarJsonStorage);
+				TeamModuleServices.CivilWar.Load(_civilWarJsonStorage);
+				_voiceMappingExportFolderStorage = "";
 			dataStore.SyncData("_voiceMapping_export_folder_v1", ref _voiceMappingExportFolderStorage);
 			VoiceMapper.SetPreferredExportFolder(_voiceMappingExportFolderStorage);
 			_voiceMappingJsonStorage = CampaignSaveChunkHelper.LoadChunkedString(dataStore, "_voiceMapping_v1", "VoiceMapper");
@@ -27061,7 +27142,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 						GameDate = record.GameDate ?? "",
 						Speaker = speaker,
 						Text = text,
-						Kind = kind
+						Kind = kind,
+						MemoryId = normalizedMemoryId,
+						LineOrdinal = lineIndex
 					});
 				}
 			}

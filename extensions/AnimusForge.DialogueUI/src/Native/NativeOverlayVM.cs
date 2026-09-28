@@ -49,6 +49,10 @@ public sealed class NativeOverlayVM : ViewModel
     [DataSourceProperty] public bool IsCustomAnswerVisible => Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool IsOrdinaryMode => !Original.IsCustomAnswerVisible && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool IsToolbarVisible => !Auxiliary.IsOpen;
+    // Ordinary mode: the native answer list fills the right frame, so the toolbar moves onto the
+    // center frame's top border with its right edge at the answer frame's left gold edge (console
+    // x=1087, measured from the console art). AI mode keeps the Pen position (x=1105).
+    [DataSourceProperty] public float ToolbarOffsetX => IsOrdinaryMode ? -323f : 0f;
     [DataSourceProperty] public bool IsInputEnabled => Original.IsInputEnabled;
     [DataSourceProperty] public bool IsInteractionEnabled => !_disposed && !Auxiliary.IsOpen;
     [DataSourceProperty] public bool CanLeave => !_disposed;
@@ -78,7 +82,8 @@ public sealed class NativeOverlayVM : ViewModel
         }
         catch (Exception ex) { AnimusForge.DialogueUI.DialogueUiRuntime.Log("Leave conversation failed: " + ex.Message); }
     }
-    public void SwitchTalk() { if (_disposed) return; CloseMore(); Original.SwitchTalk(); OnPropertyChanged(nameof(IsOrdinaryMode)); }
+    public void SwitchTalk() { if (_disposed) return; CloseMore(); Original.SwitchTalk(); ModeChanged(); }
+    private void ModeChanged() { OnPropertyChanged(nameof(IsOrdinaryMode)); OnPropertyChanged(nameof(ToolbarOffsetX)); }
     public void ShowLogView() { if (!_disposed) { CloseMore(); Auxiliary.Open(true); } }
     public void ShowGiveShowMenu() { if (!_disposed) { CloseMore(); Auxiliary.Open(false); } }
     public void EditPersona() { if (!_disposed) { CloseMore(); Original.EditPersona(); } }
@@ -93,7 +98,7 @@ public sealed class NativeOverlayVM : ViewModel
         if (_disposed) return;
         OnPropertyChanged(nameof(IsToolbarVisible));
         OnPropertyChanged(nameof(IsCustomAnswerVisible));
-        OnPropertyChanged(nameof(IsOrdinaryMode));
+        ModeChanged();
         OnPropertyChanged(nameof(IsInteractionEnabled));
         NativeUiAdapter.AuxiliaryStateChanged(this);
         if (!Auxiliary.IsOpen && !_disposed) Original.RequestInputFocus();
@@ -111,7 +116,7 @@ public sealed class NativeOverlayVM : ViewModel
         }
         OnPropertyChanged(name);
         if (name == nameof(IsInputEnabled)) Auxiliary.RefreshInteraction();
-        if (name == nameof(IsCustomAnswerVisible)) OnPropertyChanged(nameof(IsOrdinaryMode));
+        if (name == nameof(IsCustomAnswerVisible)) ModeChanged();
         if (name == nameof(IsPersonaEditVisible) || name == nameof(IsTagTestVisible))
         { OnPropertyChanged(nameof(HasMoreActions)); OnPropertyChanged(nameof(IsMoreVisible)); }
     }

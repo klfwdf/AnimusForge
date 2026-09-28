@@ -56,7 +56,8 @@ public class SubModule : MBSubModuleBase
 		// 只装配同 DLL 的内部接缝与只读 API 目录，不切换任何渠道的默认执行路径。
 		ModuleFrameworkRuntime.Initialize(out string moduleFrameworkReason);
 		Logger.LogTrace("SubModule", ">>> Module framework: " + moduleFrameworkReason);
-		SceneActionsIntegrationBoundary.InitializeRuntime();
+			SceneActionsIntegrationBoundary.InitializeRuntime();
+			VengeanceRuntimeBridge.Initialize();
 		if (_uiExtenderInitialized)
 		{
 			return;
@@ -89,11 +90,12 @@ public class SubModule : MBSubModuleBase
 		SceneActionsIntegrationBoundary.RegisterBeforeMissionInitialization(mission);
 	}
 
-	public override void OnMissionBehaviorInitialize(Mission mission)
-	{
-		base.OnMissionBehaviorInitialize(mission);
-		SceneActionsIntegrationBoundary.VerifyMissionInitialization(mission);
-	}
+public override void OnMissionBehaviorInitialize(Mission mission)
+		{
+			base.OnMissionBehaviorInitialize(mission);
+			VengeanceRuntimeBridge.TryInjectMission(mission);
+			SceneActionsIntegrationBoundary.VerifyMissionInitialization(mission);
+		}
 
 	public override void OnGameEnd(Game game)
 	{
@@ -107,7 +109,8 @@ public class SubModule : MBSubModuleBase
 		RemoveMapButtonLayer();
 		AfCampaignRuntimeLifecycle.Stop();
 		ModuleFrameworkRuntime.Shutdown();
-		SceneActionsIntegrationBoundary.ShutdownRuntime();
+			SceneActionsIntegrationBoundary.ShutdownRuntime();
+			VengeanceRuntimeBridge.Shutdown();
 		base.OnSubModuleUnloaded();
 	}
 
@@ -123,7 +126,8 @@ public class SubModule : MBSubModuleBase
 		if (campaignStarter != null) AfCampaignRuntimeLifecycle.Begin(game);
 		try
 		{
-			ModuleFrameworkRuntime.RegisterCampaign(starterObject);
+				ModuleFrameworkRuntime.RegisterCampaign(starterObject);
+				VengeanceRuntimeBridge.RegisterCampaign(starterObject);
 			if (campaignStarter != null) AfCampaignRuntimeLifecycle.CaptureOwners(game, campaignStarter);
 		}
 		catch

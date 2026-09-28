@@ -73,10 +73,75 @@ namespace AnimusForge.Illustrator.Context
                 TimeEvidence = "当前 Mission 场景时间";
                 return;
             }
-            // Map conversation tableaus need not use the campaign clock's lighting.
+            // No Mission: a map conversation. Its native tableau picks night/noon/sunset from the
+            // campaign clock and shows rain/snow from the map weather at the player's position
+            // (GauntletMapConversationView.CreateConversationTableau, identical in 1.3 and 1.4),
+            // so the same inputs are valid day/night evidence here.
+            if (!HasLiveScene && ApplyMapConversationClock()) return;
+            // A Mission whose scene clock could not be read: the campaign clock is not its lighting.
             TimeOfDay = string.Empty;
             LightingAndAtmosphere = string.Empty;
-            TimeEvidence = "未读取到会话渲染场景时间；战役时钟不作为现场昼夜证据。时段仅采用已确认的文字事实，否则时段未确认；现场截图仅用于当前位置与环境定位。";
+            TimeEvidence = "未读取到会话渲染场景时间；战役时钟不作为现场昼夜证据。时段仅采用已确认的文字事实，否则时段未确认。";
+        }
+
+        // Runs once per conversation-context extraction on the game thread; two property reads.
+        private bool ApplyMapConversationClock()
+        {
+            float hour;
+            int weather = -1;
+            try
+            {
+                if (Campaign.Current == null) return false;
+                // Same expression the native tableau passes as MapConversationTableauData.TimeOfDay.
+                hour = CampaignTime.Now.CurrentHourInDay * (float)(24 / CampaignTime.HoursInDay);
+                var party = MobileParty.MainParty;
+                if (party != null && Campaign.Current.Models?.MapWeatherModel != null)
+                    weather = (int)Campaign.Current.Models.MapWeatherModel.GetWeatherEventInPosition(party.Position.ToVec2());
+            }
+            catch
+            {
+                return false;
+            }
+            if (float.IsNaN(hour) || float.IsInfinity(hour) || hour < 0f || hour > 24f) return false;
+            TimeOfDay = ResolveMapClockTimeOfDay(hour);
+            // Interior tableaus (tavern, lord's hall) use a fixed indoor atmosphere; keep that lighting.
+            if (!IsIndoor) LightingAndAtmosphere = ResolveMapClockLighting(hour);
+            TimeEvidence = IsIndoor
+                ? "战役时钟（大地图对话当前时刻）；室内采光按已确认的室内光源，不据时段添加窗外日光"
+                : "战役时钟（大地图对话当前时刻）；原生野外对话布景按此时刻选择夜晚、正午或晨昏光照";
+            string weatherText = ResolveMapWeather(weather);
+            if (!string.IsNullOrWhiteSpace(weatherText)) Weather = weatherText;
+            return true;
+        }
+
+        /// <summary>Native map-conversation buckets: ≤3 or ≥21 night, 8–16 noon, otherwise sunset light.</summary>
+        internal static string ResolveMapClockTimeOfDay(float hour)
+        {
+            if (hour <= 3f || hour >= 21f) return "夜晚 (Night)";
+            if (hour > 8f && hour < 16f) return "白昼 (Daytime)";
+            return hour < 12f ? "清晨，低角度晨光 (Dawn)" : "黄昏，低角度斜阳 (Dusk)";
+        }
+
+        // Neutral outdoor light for each bucket; no invented torches, fires or moon.
+        private static string ResolveMapClockLighting(float hour)
+        {
+            if (hour <= 3f || hour >= 21f) return "夜间低照度的自然环境光，暗部保留地形与人物轮廓";
+            if (hour > 8f && hour < 16f) return "白昼自然天光，人物与地面有清晰投影";
+            return "低角度的晨昏斜光，暖色受光面与拉长的投影";
+        }
+
+        /// <summary>MapWeatherModel.WeatherEvent order: Clear, LightRain, HeavyRain, Snowy, Blizzard (1.3 and 1.4).</summary>
+        internal static string ResolveMapWeather(int weatherEvent)
+        {
+            switch (weatherEvent)
+            {
+                case 0: return "大地图天气：无降水（云量未知）";
+                case 1: return "大地图天气：小雨";
+                case 2: return "大地图天气：大雨";
+                case 3: return "大地图天气：降雪，地面积雪";
+                case 4: return "大地图天气：暴风雪，地面积雪";
+                default: return string.Empty;
+            }
         }
 
         public string BuildDirectorOnlyFacts()

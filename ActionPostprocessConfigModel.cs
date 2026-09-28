@@ -20,5 +20,7 @@ public class ActionPostprocessConfigModel
 
 	public List<PostprocessRuleEntry> IntimacyPostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
 
+	public List<PostprocessRuleEntry> SceneActionPostprocessRules { get; set; } = new List<PostprocessRuleEntry>();
+
 	public List<PostprocessRuleEntry> MoodRules { get; set; } = new List<PostprocessRuleEntry>();
 }

@@ -9,6 +9,17 @@ internal static class HotkeyInputGuard
 {
 	public static bool IsTextInputFocused()
 	{
+		try
+		{
+			// Presentation UI (DialogueUI action wheel) that must suppress scene hotkeys.
+			if (ShoutBehavior.ScenePresentationBlocksHotkeysHook?.Invoke() == true)
+			{
+				return true;
+			}
+		}
+		catch
+		{
+		}
 		if (AnimusForgeApiOnboardingPopup.IsOpen)
 		{
 			return true;

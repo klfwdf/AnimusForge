@@ -37,6 +37,25 @@
    `PostprocessRules`/`ActionPostprocessPrompts.json`，不得泄露进主回复 prompt。
    场景喊话和面对面自由对话共享同一解析器；信使没有 Mission Agent，必须由
    显式 chain gate 排除动作执行，但历史和 AFEF 事实结构仍与其他渠道一致。
+   当前实现（NPC 回复动作）：
+   - 本地解析能确定的动作（`*动作*` 描写命中、多动作确定性程序、隐含情绪）
+     照旧立即播放，不发任何请求。
+   - 本地判不出时不再单独发 SceneActions 分类请求，而是把全局规则组
+     `SceneActionPostprocessRules` 的 `[ACTION:SCENE_ACT:<program>]` 并入**本来就要跑的**
+     统一后处理（自由对话每轮；场景喊话仅命中话题/常驻规则时）。后处理不跑的回复
+     只保留本地结果，不会为了动作额外触发后处理。
+   - 动作清单由 `SceneActionFrameworkV4` 在运行时生成，替换规则里的
+     `{scene_action_catalog}`；规则判断文本在 JSON 中。
+   - 标签在游戏线程上、任何通用标签目录之前被消费并提交给
+     `SceneActionsRuntimeHost.SubmitNpcReplyDirective`，复用分类器同一条校验链
+     （冻结白名单、本轮实体动作证据、同意流程）。同一回复已被本地解析的，按
+     回复提交时间丢弃后处理结果，避免重复播放。
+   - 回滚：把 `SceneActionsMissionBehavior.NpcReplyUsesPostprocessDirective` 改为
+     `false` 即恢复旧的独立分类请求；玩家侧自然语言分类请求不受影响。
+7. 动作自带人声：原版部分 taunt/cheer 动画片段内嵌人声（Yell/Fear/Debacle/Focus/
+   Grunt/victory）。`Playback.Engine.cs` 的 `VoicedNativeClipActionIds` 中的片段固定以
+   `startProgress = 0.5` 起播，跳过开头的人声触发（游戏内实测 0.5 无声）。其他动作不受影响；
+   每局只解析一次动作索引，播放时一次哈希查找。诊断日志仅在“详细诊断日志”开启时写 `[VOICE_SKIP]`。
 4. 阵前 NPC 演讲只在 Claim 创建时读取一次当前 Mission 的战场事实快照，并把
    同侧/敌侧有效人数、减员记录、近敌状态、战斗类型和阶段作为普通提示词上下文交给 AF；
    不新增主题协议、不额外调用 AF，也不在 Mission Tick 中持续扫描或替 AF 预先决定文风。

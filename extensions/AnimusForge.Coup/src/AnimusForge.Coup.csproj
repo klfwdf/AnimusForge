@@ -19,6 +19,7 @@
     <CoreRefs Condition="'$(BannerlordApi)' == '1.4'">$(GameBin)</CoreRefs>
     <SandboxRefs Condition="'$(BannerlordApi)' == '1.4'">$(GameSandbox)</SandboxRefs>
     <AfReferencePath>$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client\versions\$(BannerlordApi)\AnimusForge.dll</AfReferencePath>
+    <AfReferencePath Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\bin\Debug\net472\AnimusForge.dll')">$(MSBuildProjectDirectory)\..\..\..\bin\Debug\net472\AnimusForge.dll</AfReferencePath>
     <OutputPath>..\artifacts\$(BannerlordApi)\</OutputPath>
     <DefineConstants Condition="'$(BannerlordApi)' == '1.4'">$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
   </PropertyGroup>

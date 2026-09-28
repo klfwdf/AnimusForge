@@ -13,7 +13,8 @@ namespace AnimusForge.DialogueUI
     internal static class DialogueUiSprites
     {
         private static readonly Dictionary<string, RuntimeSprite> Sprites = new Dictionary<string, RuntimeSprite>(StringComparer.Ordinal);
-        private static readonly string[] Names = { "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", "afdui_parchment_panel", "afdui_input_panel", "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", "afdui_wax_seal", "afdui_console_base", "afdui_console_base_option_02_walnut_original_ratio", "afdui_tab_normal", "afdui_tab_hover", "afdui_tab_pressed", "afdui_button_plate_normal", "afdui_button_plate_hover", "afdui_button_plate_pressed", "afdui_nameplate", "afdui_scroll_handle", "afdui_persuasion_dot", "afdui_portrait_background", "afdui_aux_panel" };
+        private static readonly string[] Names = { "afdui_scroll_left", "afdui_scroll_body", "afdui_scroll_right", "afdui_parchment_panel", "afdui_input_panel", "afdui_button_normal", "afdui_button_hover", "afdui_button_pressed", "afdui_wax_seal", "afdui_console_base", "afdui_console_base_option_02_walnut_original_ratio", "afdui_tab_normal", "afdui_tab_hover", "afdui_tab_pressed", "afdui_button_plate_normal", "afdui_button_plate_hover", "afdui_button_plate_pressed", "afdui_nameplate", "afdui_scroll_handle", "afdui_persuasion_dot", "afdui_portrait_background", "afdui_aux_panel", "afdui_icon_search", "afdui_icon_coin", "afdui_row_normal", "afdui_row_hover", "afdui_row_selected" };
+        private static readonly string[] SceneNames = { "afdui_wheel_chassis_symmetric", "afdui_capsule_topic", "afdui_plaque_nameplate", "afdui_scroll_chassis_clean", "afdui_audience_docket_pure_clean", "afdui_3tier_console_chassis_clean", "afdui_seal_base_gold", "afdui_seal_base_green", "afdui_seal_base_red", "afdui_wheel_wedge_talk", "afdui_wheel_wedge_actions", "afdui_wheel_wedge_leave", "afdui_wheel_wedge_give" };
         private static bool _failed;
 
         internal static void Install(Harmony harmony)
@@ -26,14 +27,21 @@ namespace AnimusForge.DialogueUI
         {
             if (Sprites.Count == 0) return;
             EnsureLoaded();
+            // Re-register the scene group only if it was already loaded; never load it from a refresh.
+            if (Sprites.ContainsKey(SceneNames[0])) Load(SceneNames);
         }
 
-        internal static bool EnsureLoaded()
+        internal static bool EnsureLoaded() => Load(Names);
+
+        // Scene wheel / session artwork (several MB of textures): loaded once, only when first shown.
+        internal static bool EnsureSceneLoaded() => Load(Names) && Load(SceneNames);
+
+        private static bool Load(string[] names)
         {
             if (_failed || !DialogueUiRuntime.Enabled || UIResourceManager.SpriteData == null) return false;
             try
             {
-                foreach (string name in Names)
+                foreach (string name in names)
                 {
                     if (!Sprites.TryGetValue(name, out RuntimeSprite sprite))
                     {

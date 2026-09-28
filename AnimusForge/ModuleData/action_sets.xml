@@ -8,5 +8,20 @@
     <action type="act_af_speech_nacisword1" animation="nacisword1" />
     <action type="act_af_kneel_loop" animation="anim_main_story_conspirator_kneel_down_1_loop" />
     <action type="act_dance_norse" animation="anim_tavern_dance_norse" />
-  </action_set>
+        <action type="act_ver_cutscene_executioner_idle" animation="ver_cutscene_executioner_idle" />
+      <action type="act_ver_cutscene_executioner_action" animation="ver_cutscene_executioner_action" />
+      <action type="act_ver_hanging_struggle" animation="qiufan_zhengzha" />
+      <action type="act_ver_hanging_death" animation="qiufan_die" />
+      <action type="act_ver_burning_crucifix_idle" animation="qiufan_shizijia_idle" />
+      <action type="act_ver_burning_crucifix_death" animation="qiufan_shizijia_death" />
+      <action type="act_ver_impale_strike_normal_b" animation="anim_ver_impale_strike_normal_b" />
+      <action type="act_ver_impale_death_head_exaggerated" animation="anim_ver_impale_death_head_exaggerated" />
+      <action type="act_ver_impale_death_head_normal_a" animation="anim_ver_impale_death_head_normal_a" />
+      <action type="act_ver_impale_death_head_normal_b" animation="anim_ver_impale_death_head_normal_b" />
+      <action type="act_ver_impale_death_left_shoulder_exaggerated" animation="anim_ver_impale_death_left_shoulder_exaggerated" />
+      <action type="act_ver_impale_death_left_shoulder_normal_a" animation="anim_ver_impale_death_left_shoulder_normal_a" />
+      <action type="act_ver_impale_death_left_shoulder_normal_b" animation="anim_ver_impale_death_left_shoulder_normal_b" />
+      <action type="act_ver_impale_death_right_shoulder_normal_a" animation="anim_ver_impale_death_right_shoulder_normal_a" />
+      <action type="act_ver_impale_death_right_shoulder_normal_b" animation="anim_ver_impale_death_right_shoulder_normal_b" />
+    </action_set>
 </action_sets>

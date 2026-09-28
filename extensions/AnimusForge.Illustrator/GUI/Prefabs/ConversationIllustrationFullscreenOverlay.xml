@@ -4,9 +4,14 @@
       <Children>
         <Widget Id="TopPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="720" VerticalAlignment="Top" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
           <Children>
-            <Widget IsVisible="@IsLoading" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.7" DoNotAcceptEvents="true">
+            <!-- No full-panel shade while generating: only a narrow plate keeps the status readable. -->
+            <Widget IsVisible="@IsLoading" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
               <Children>
-                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="40" MarginRight="40" Brush="Popup.Description.Text" Brush.FontSize="24" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="900" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#00000073" DoNotAcceptEvents="true">
+                  <Children>
+                    <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="10" MarginBottom="10" MarginLeft="24" MarginRight="24" Brush="Popup.Description.Text" Brush.FontSize="24" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
+                  </Children>
+                </Widget>
               </Children>
             </Widget>
             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginTop="24" MarginLeft="80" MarginRight="80" Brush="Popup.Title.Text" Brush.FontSize="24" Brush.TextHorizontalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />

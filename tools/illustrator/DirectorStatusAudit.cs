@@ -43,7 +43,7 @@ public static class DirectorStatusAudit
         SetOption(value, "DirectorApiBaseUrl", "http://offline.invalid/v1");
         SetOption(value, "DirectorApiKey", "offline-secret-sentinel");
         SetOption(value, "DirectorModelName", "director-audit");
-        SetOption(value, "DirectorMaxTokens", 1600);
+        SetOption(value, "DirectorApproximateTokens", 2000);
         return value;
     }
     private static Array References()
@@ -86,12 +86,15 @@ public static class DirectorStatusAudit
     }
     private static object Generate(MemoryHandler handler, object options, Array references)
     { return Generate(handler, options, references, CancellationToken.None); }
-    private static void VerifyFallback(object result, string status, string reason)
+    private static string GenerateFailure(MemoryHandler handler, object options, Array references, string reason)
     {
-        Check(Property<string>(result, "DirectionStatus") == status && Property<bool>(result, "UsedLocalFallback"), reason + ": status identifies local fallback");
-        Check(Property<string>(result, "Title") == "" && !Property<string>(result, "Prompt").Contains("灯下裁决"), reason + ": discarded response metadata never leaks");
-        Check(!string.IsNullOrWhiteSpace(Property<string>(result, "FallbackReason")), reason + ": reason retained separately");
-        Check(!Property<string>(result, "Prompt").Contains(Property<string>(result, "StatusText")), reason + ": status never enters image prompt");
+        try { Generate(handler, options, references); }
+        catch (InvalidOperationException ex)
+        {
+            Check(!string.IsNullOrWhiteSpace(ex.Message), reason + ": failure has a bounded user-facing reason");
+            return ex.Message;
+        }
+        throw new Exception("FAIL " + reason + ": expected director failure");
     }
     public static void Run(string dllPath)
     {
@@ -114,27 +117,26 @@ public static class DirectorStatusAudit
         Check(Property<string>(result, "Prompt").Contains(Body) && Property<string>(result, "Title") == "灯下裁决", "completed direction keeps full body and separate title");
         Check(Property<string>(result, "FinishReason") == "stop" && Property<int?>(result, "PromptTokens") == 321 && Property<int?>(result, "CompletionTokens") == 123 && Property<int?>(result, "TotalTokens") == 444, "finish reason and provider usage preserved");
         Check(handler.Bodies.Count == 1 && handler.Bodies[0].Contains("image_url") && handler.Bodies[0].Contains("director-audit"), "production payload sends visual references and selected model");
+        Check(!handler.Bodies[0].Contains("\"max_tokens\"") && handler.Bodies[0].Contains("约 2000 tokens") && handler.Bodies[0].Contains("不是硬性限制"), "director payload uses an approximate length target without a hard token cap");
         Check(!Property<string>(result, "Prompt").Contains("画作标题") && !Property<string>(result, "Prompt").Contains("director-audit"), "metadata and API model never enter image body");
 
         foreach (string finish in new[] { "length", "max_tokens", "max_output_tokens" })
         {
             handler = new MemoryHandler();
             handler.Add(HttpStatusCode.OK, Reply(finish, NamedBody, null));
-            result = Generate(handler, Options(), References());
-            VerifyFallback(result, "truncated", finish);
-            Check(!Property<string>(result, "Prompt").Contains(Body) && Property<string>(result, "FinishReason") == finish && handler.Bodies.Count == 1, finish + ": even a four-section body is discarded without retry");
+            string failure = GenerateFailure(handler, Options(), References(), finish);
+            Check(failure.Contains("截断") && handler.Bodies.Count == 1, finish + ": partial body stops generation without retry");
         }
         foreach (string finish in new[] { "content_filter", "tool_calls", "unknown_provider_reason" })
         {
             handler = new MemoryHandler();
             handler.Add(HttpStatusCode.OK, Reply(finish, NamedBody, null));
-            result = Generate(handler, Options(), References());
-            VerifyFallback(result, "local_fallback", finish);
-            Check(handler.Bodies.Count == 1 && Property<string>(result, "FinishReason") == finish, finish + ": no retry and raw ending preserved");
+            GenerateFailure(handler, Options(), References(), finish);
+            Check(handler.Bodies.Count == 1, finish + ": abnormal ending stops without retry");
         }
         handler = new MemoryHandler();
         handler.Add(HttpStatusCode.OK, Reply("stop", NamedBody, "refused"));
-        VerifyFallback(Generate(handler, Options(), References()), "local_fallback", "refusal field");
+        Check(GenerateFailure(handler, Options(), References(), "refusal field").Contains("拒绝"), "refusal field stops generation");
 
         handler = new MemoryHandler();
         handler.Add(HttpStatusCode.OK, Reply(null, NamedBody, null));
@@ -144,14 +146,17 @@ public static class DirectorStatusAudit
         handler.Add(HttpStatusCode.OK, Reply("stop", new[] { new { type = "text", text = NamedBody } }, null));
         Check(Property<string>(Generate(handler, Options(), null), "DirectionStatus") == "complete", "text content parts parse through actual HTTP path");
 
-        foreach (string badBody in new[] { Reply(null, null, null), "{invalid-json", Reply("stop", "【画作标题】灯下裁决只有装备清单", null) })
+        foreach (string badBody in new[] { Reply(null, null, null), "{invalid-json" })
         {
             handler = new MemoryHandler();
             handler.Add(HttpStatusCode.OK, badBody);
-            result = Generate(handler, Options(), References());
-            VerifyFallback(result, "local_fallback", "empty malformed or rejected direction");
-            Check(handler.Bodies.Count == 1, "empty malformed or structurally rejected direction is not retried");
+            GenerateFailure(handler, Options(), References(), "empty or malformed direction");
+            Check(handler.Bodies.Count == 1, "empty or malformed direction stops without retry");
         }
+        handler = new MemoryHandler();
+        handler.Add(HttpStatusCode.OK, Reply("stop", "【画作标题】灯下裁决只有装备清单", null));
+        result = Generate(handler, Options(), References());
+        Check(Property<string>(result, "DirectionStatus") == "local_fallback" && Property<bool>(result, "UsedLocalFallback") && handler.Bodies.Count == 1, "usable but structurally rejected direction keeps the approved local composition fallback");
 
         handler = new MemoryHandler();
         handler.Add(HttpStatusCode.BadRequest, "model does not support image input");
@@ -165,9 +170,8 @@ public static class DirectorStatusAudit
         handler = new MemoryHandler();
         handler.Add(HttpStatusCode.BadRequest, "unsupported vision");
         handler.Add(HttpStatusCode.OK, Reply("length", NamedBody, null));
-        result = Generate(handler, Options(), References());
-        VerifyFallback(result, "truncated", "text-only retry truncated");
-        Check(Property<bool>(result, "VisionUnsupported") && Property<string>(result, "FallbackReason").Contains("截断") && handler.Bodies.Count == 2, "vision and truncation causes survive together without a third request");
+        string visionFailure = GenerateFailure(handler, Options(), References(), "text-only retry truncated");
+        Check(visionFailure.Contains("不支持图片输入") && visionFailure.Contains("截断") && handler.Bodies.Count == 2, "vision and truncation causes survive together without a third request");
 
         foreach (var error in new[] {
             new { Status = HttpStatusCode.ServiceUnavailable, Body = "vision upstream timeout offline-secret-sentinel" },
@@ -175,14 +179,13 @@ public static class DirectorStatusAudit
         {
             handler = new MemoryHandler();
             handler.Add(error.Status, error.Body);
-            result = Generate(handler, Options(), References());
-            VerifyFallback(result, "local_fallback", "HTTP " + (int)error.Status);
-            Check(handler.Bodies.Count == 1 && !Property<string>(result, "FallbackReason").Contains("offline-secret"), "generic HTTP errors do not retry or expose provider error secrets");
+            string httpFailure = GenerateFailure(handler, Options(), References(), "HTTP " + (int)error.Status);
+            Check(handler.Bodies.Count == 1 && !httpFailure.Contains("offline-secret"), "generic HTTP errors do not retry or expose provider error secrets");
         }
 
         handler = new MemoryHandler { Timeout = true };
-        result = Generate(handler, Options(), References());
-        Check(Property<string>(result, "DirectionStatus") == "local_fallback" && Property<string>(result, "FallbackReason").Contains("超时") && handler.Bodies.Count == 1, "transport timeout becomes identified local fallback without retry");
+        string timeoutFailure = GenerateFailure(handler, Options(), References(), "transport timeout");
+        Check(timeoutFailure.Contains("超时") && handler.Bodies.Count == 1, "transport timeout stops with an identified reason without retry");
         using (var cancellation = new CancellationTokenSource())
         {
             cancellation.Cancel();
@@ -195,7 +198,7 @@ public static class DirectorStatusAudit
         object options = Options();
         SetOption(options, "EnableLlmPromptExpansion", false);
         result = Generate(handler, options, References());
-        Check(handler.Bodies.Count == 0 && Property<string>(result, "DirectionStatus") == "local_fallback" && Property<string>(result, "FallbackReason").Contains("未启用"), "disabled director reports local route without HTTP");
+        Check(handler.Bodies.Count == 0 && Property<string>(result, "DirectionStatus") == "local_fallback" && Property<string>(result, "FallbackReason").Contains("已关闭"), "disabled director reports local route without HTTP");
         handler = new MemoryHandler();
         options = Options();
         SetOption(options, "EnableMultimodalVision", false);

@@ -128,7 +128,8 @@ namespace AnimusForge.Illustrator.Core
         internal static string BuildActionHistory(IEnumerable<CachedIllustrationItem> items, bool eventAnchored = false, bool weeklyReport = false)
         {
             var summaries = (items ?? Enumerable.Empty<CachedIllustrationItem>())
-                .Where(i => i != null && !i.Deleted).OrderByDescending(i => i.CreatedTime).Take(3)
+                // Local-fallback pictures carry the fixed template, not a designed action.
+                .Where(i => i != null && !i.Deleted && !IsLocalFallback(i)).OrderByDescending(i => i.CreatedTime).Take(3)
                 .Select(i => string.IsNullOrWhiteSpace(i.ActionSummary) ? ExtractActionSummary(i.Prompt) : i.ActionSummary)
                 .Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => CleanLabel(s, 360)).Distinct().ToArray();
             return summaries.Length == 0 ? string.Empty :
@@ -139,6 +140,11 @@ namespace AnimusForge.Illustrator.Core
                     ? "\n当前现场与事件事实优先，旧画行动不作为本次事实；在当前事实允许的叙事瞬间内推导手势、视线和机位，不能为动作去重改变事件或添加道具。"
                     : "\n本次先选择符合人物的新行动意图，再推导姿态、手部动作与视线；减少重复的双手下垂展示姿势，不能仅换背景。保留合理自然站姿，不强迫复杂动作。") +
                 "\n【近期人物行动参考结束】";
+        }
+
+        internal static bool IsLocalFallback(CachedIllustrationItem item)
+        {
+            return string.Equals(item?.DirectorStatus, "local_fallback", StringComparison.Ordinal);
         }
 
         internal static string RemoveActionHistory(string artDirection)

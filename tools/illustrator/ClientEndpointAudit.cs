@@ -226,7 +226,13 @@ public static class ClientEndpointAudit
             Check(Property<bool>(result, "Success") && handler.Requests.Count == 1, "preset generation succeeds in memory: " + names[i]);
             var payload = ParseJson(handler.Requests[0].Json);
             string prompt = (string)payload["prompt"];
-            Check(OptionalText(payload, "style") == (native ? names[i] : null), "actual JSON style enum follows selected preset: " + names[i]);
+            Check(OptionalText(payload, "style") == null, "style enum is withheld from non-dall-e-3 models: " + names[i]);
+            if (native)
+            {
+                handler.Reset(Success());
+                Generate(Options("http://offline.invalid/v1/images/generations", true, "dall-e-3", names[i]), null);
+                Check(OptionalText(ParseJson(handler.Requests[0].Json), "style") == names[i], "dall-e-3 JSON style enum follows selected preset: " + names[i]);
+            }
             Check(prompt.Contains(fullStyle) && (names[i] == "classic-oil" || !prompt.Contains("古典写实历史油画")), "actual image prompt contains the complete selected style: " + names[i]);
             Check(CountOccurrences(prompt, fullStyle) == 1, "Generations injects the full style exactly once: " + names[i]);
             Check(prompt.Contains("CUSTOM_NEGATIVE_SENTINEL") == (names[i] == "custom"), "custom negative text applies only to custom preset: " + names[i]);
@@ -242,6 +248,17 @@ public static class ClientEndpointAudit
                 Check(CountOccurrences(sentText, fullStyle) == 1, "reference request injects the full style exactly once: " + names[i] + "/" + edits);
             }
         }
+
+        // Diffusion text encoders read named objects as content: negatives use their own field.
+        handler.Reset(Success());
+        var diffusionResult = Generate(Options("http://offline.invalid/v1/images/generations", true, "black-forest-labs/FLUX.1-schnell", "custom"), null);
+        var diffusionPayload = ParseJson(handler.Requests[0].Json);
+        string diffusionPrompt = (string)diffusionPayload["prompt"];
+        Check(Property<bool>(diffusionResult, "Success") && (OptionalText(diffusionPayload, "negative_prompt") ?? "").Contains("CUSTOM_NEGATIVE_SENTINEL") &&
+            (OptionalText(diffusionPayload, "negative_prompt") ?? "").Contains("extra limbs"), "diffusion model receives negatives in negative_prompt");
+        Check(!diffusionPrompt.Contains("CUSTOM_NEGATIVE_SENTINEL") && !diffusionPrompt.Contains("extra limbs") && diffusionPrompt.Contains("DIRECTOR_BODY_SENTINEL") &&
+            diffusionPrompt.Contains("CUSTOM_STYLE_SENTINEL"), "diffusion prompt text keeps style and body without negative words");
+        Check(Property<string>(diffusionResult, "ResolvedPrompt") == diffusionPrompt, "diffusion displayed prompt matches sent text");
 
         var plan = Activator.CreateInstance(assembly.GetType("AnimusForge.Illustrator.Core.IllustrationPromptPlan", true),
             new object[] { "会话插画", "两人在街道阅读信件。", "中景，保留街道建筑。" });

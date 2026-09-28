@@ -15,9 +15,11 @@
         <NavigationScopeTargeter ScopeID="SPConversationClickToContinueButtonScope" ScopeParent="..\ContinueButton" IsDefaultNavigationScope="true" />
         <ButtonWidget Id="ContinueButton" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsDisabled="true" IsVisible="false" Command.Click="ExecuteContinue">
           <Children>
+            <!-- Label must not take the press: native wraps it in a DoNotAcceptEvents widget. Accepting it made
+                 clicks inside the right frame land on the text instead of ContinueButton. -->
             <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                 MarginRight="265" MarginBottom="51" Brush="Conversation.HeaderText" Brush.FontSize="26" Text="@ContinueText"
-                ExtendCursorAreaTop="-20" ExtendCursorAreaBottom="-20" GamepadNavigationIndex="0" />
+                DoNotAcceptEvents="true" GamepadNavigationIndex="0" />
           </Children>
         </ButtonWidget>
 
@@ -97,7 +99,10 @@
                     </Widget>
                     <NavigationScopeTargeter ScopeID="SPConversationItemsScope" ScopeParent="..\AnswerListContainer"
                         ScopeMovements="Vertical" HasCircularMovement="true" IsDefaultNavigationScope="true" />
-                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="305" SuggestedHeight="188"
+                    <!-- CoverChildren, as in native SPConversation: EventManager only descends into a child whose
+                         measured area contains the cursor, so a fixed 188px box left the 6th answer (overflowing
+                         above it) unclickable. Grows upward from the bottom; empty when there are no answers. -->
+                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="305"
                         HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="21" DoNotAcceptEvents="true">
                       <Children>
                         <NavigatableListPanel Id="AnswerList" DataSource="{AnswerList}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"

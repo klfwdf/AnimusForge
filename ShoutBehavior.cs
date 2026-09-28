@@ -17,6 +17,8 @@ using AnimusForge.Refactor.Adapters;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Modules;
 using AnimusForge.Refactor.Runtime;
+using RichExecutions.Core;
+using RichExecutions.Scene;
 using SandBox;
 using SandBox.Missions.AgentBehaviors;
 using SandBox.Missions.MissionLogics;
@@ -609,6 +611,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				{
 					_parent.DrainMainThreadActionsForMissionTick();
 				}
+				// Before the conversation early-return below so a native conversation ends the session.
+				_parent.TickPresentationSession(dt);
 				using (FreezeWatchdog.Scope("ShoutMissionBehavior.TryTriggerPendingProactiveSceneOpening"))
 				{
 					_parent.TryTriggerPendingProactiveSceneOpening();
@@ -636,7 +640,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					BannerlordExceptionSentinel.ReportObservedException("LipSync.TickLipSyncAnimations", ex3, "behavior=ShoutMissionBehavior");
 				}
 			}
-			bool flag = ShoutBehavior.ShouldSuppressSceneConversationControlForMeeting();
+			// A live presentation session has already passed its own (narrower) combat check this tick. The broad
+			// check also counts any team-hostile bystander in town, which would close the panel and keep
+			// releasing the addressee's movement hold, so it does not apply while a session is live.
+			bool flag = !_parent.IsPresentationSessionLive() && ShoutBehavior.ShouldSuppressSceneConversationControlForMeeting();
 			if (flag)
 			{
 				_parent.ClearMeetingSceneConversationControlState();
@@ -906,6 +913,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private void UpdateShoutHotkeyCharge(InputKey shoutKey, InputKey specialMenuKey)
 	{
+		if (UpdatePresentationHotkey(shoutKey, specialMenuKey))
+		{
+			return;
+		}
 		if (_shoutHotkeyChargeActive)
 		{
 			if (_isProcessingShout || _isWaitingForScenePostprocessGate)
@@ -976,6 +987,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 		_shoutHotkeyChargeActive = false;
 		_shoutHotkeyChargeOpenModeMenu = false;
+		_shoutHotkeyChargeMergesIntoSession = false;
 		_shoutHotkeyChargeKey = InputKey.Invalid;
 		_shoutHotkeyChargeStartedAt = -1f;
 		ClearShoutRangePreviewEntities();
@@ -1604,8 +1616,14 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		return agents.FirstOrDefault((Agent a) => a != null && a.Index == targetingContext.PrimaryAgentIndex);
 	}
 
-	private static bool TryBuildSceneShoutConversationScope(List<Agent> framedAgents, Agent primaryAgent, int conversationEpoch, out SceneShoutConversationScope scope, out List<Agent> audienceAgents)
+	// excludedAgentIndices: persistent-session 屏蔽 list; never contains the primary. Null outside a session.
+	private static bool TryBuildSceneShoutConversationScope(List<Agent> framedAgents, Agent primaryAgent, int conversationEpoch, out SceneShoutConversationScope scope, out List<Agent> audienceAgents, HashSet<int> excludedAgentIndices = null)
 	{
+		if (excludedAgentIndices != null && primaryAgent != null)
+		{
+			excludedAgentIndices.Remove(primaryAgent.Index);
+			framedAgents = framedAgents?.Where(agent => agent != null && !excludedAgentIndices.Contains(agent.Index)).ToList();
+		}
 		scope = null;
 		audienceAgents = new List<Agent>();
 		Mission mission = Mission.Current;
@@ -1621,7 +1639,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		List<Agent> playerAnchorAgents = new List<Agent>();
 		foreach (Agent agent in missionAgents)
 		{
-			if (agent == null || agent == playerAgent || !agent.IsActive() || !agent.IsHuman)
+			if (agent == null || agent == playerAgent || !agent.IsActive() || !agent.IsHuman
+				|| (excludedAgentIndices != null && excludedAgentIndices.Contains(agent.Index)))
 			{
 				continue;
 			}
@@ -1679,6 +1698,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		// Presentation session styles merge T and Y: both open the action wheel.
+		openModeMenu = openModeMenu || IsScenePresentationSessionEnabled();
 		_activeShoutTargetingContext = targetingContext;
 		LogShoutTargetingContextSnapshot(openModeMenu, targetingContext);
 		BeginShoutProcessing(openModeMenu ? "hotkey_special_menu" : "hotkey_shout_input");
@@ -5798,11 +5819,16 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			string partyRepresentativePrompt = BuildWildernessNonHeroPartyRepresentativePrompt(npc.AgentIndex);
 			if (!string.IsNullOrWhiteSpace(partyRepresentativePrompt))
 			{
-				stringBuilder.Append(partyRepresentativePrompt);
+stringBuilder.Append(partyRepresentativePrompt);
+				}
 			}
-		}
-		stringBuilder.AppendLine()
-			.Append("你身上穿着")
+			string ceremonyRole = BuildCeremonyRoleFactForPrompt(npc.AgentIndex);
+			if (!string.IsNullOrWhiteSpace(ceremonyRole))
+			{
+				stringBuilder.Append(ceremonyRole);
+			}
+			stringBuilder.AppendLine()
+				.Append("你身上穿着")
 			.Append(equipment)
 			.Append("。");
 		string npcCurrentMountLine = BuildNpcCurrentMountLineForPrompt(npc);
@@ -7073,7 +7099,63 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 	}
 
-private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
+private static string BuildCeremonyRoleFactForPrompt(int agentIndex)
+	{
+		try
+		{
+			TownExecutionMissionBehavior ceremony = Mission.Current?.GetMissionBehavior<TownExecutionMissionBehavior>();
+			if (ceremony?.Request == null || ceremony.State == ExecutionSessionState.Cancelled)
+			{
+				return string.Empty;
+			}
+			Agent speaker = Mission.Current.Agents?.FirstOrDefault(agent => agent != null && agent.Index == agentIndex);
+			if (speaker == null)
+			{
+				return string.Empty;
+			}
+			ExecutionRequest request = ceremony.Request;
+			string charge = (request.Charge?.GetName()?.ToString() ?? string.Empty).Trim();
+			string method = (request.Method?.GetName()?.ToString() ?? string.Empty).Trim();
+			string victim = (request.Victim?.Name?.ToString() ?? string.Empty).Trim();
+			string venue = (request.Venue?.Name?.ToString() ?? string.Empty).Trim();
+			if (string.IsNullOrWhiteSpace(charge)) charge = "未说明的罪名";
+			if (string.IsNullOrWhiteSpace(method)) method = "公开处决";
+			if (string.IsNullOrWhiteSpace(victim)) victim = "死刑犯";
+			if (string.IsNullOrWhiteSpace(venue)) venue = "这座城镇";
+			string fact;
+			if (ceremony.IsCeremonyExecutioner(speaker))
+			{
+				fact = "你是这场公开处决的刽子手，正在" + venue + "对" + victim + "执行" + charge + "的判决，处刑方式是" + method;
+			}
+			else if (ceremony.IsCeremonyVictim(speaker))
+			{
+				fact = "你是这场公开处决的死刑犯，因" + charge + "在" + venue + "等候" + method;
+			}
+			else if (ceremony.IsCeremonyGuard(speaker))
+			{
+				fact = "你是这场公开处决的卫兵，正在" + venue + "看押因" + charge + "等候" + method + "的" + victim;
+			}
+			else if (ceremony.IsCeremonyCrowd(speaker))
+			{
+				fact = "你是" + venue + "围观这场公开处决的平民，被处决的是因" + charge + "等候" + method + "的" + victim;
+			}
+			else
+			{
+				return string.Empty;
+			}
+			bool waiting = ceremony.State == ExecutionSessionState.WaitingForPlayer ||
+				ceremony.State == ExecutionSessionState.Preparing;
+			return waiting
+				? fact + "。判决已经宣布，但处刑还没有开始。"
+				: fact + "。处刑已经开始。";
+		}
+		catch
+		{
+			return string.Empty;
+		}
+	}
+
+	private static string BuildSceneSystemTopPromptIntroForSingle(NpcDataPacket npc, Hero hero, IEnumerable<NpcDataPacket> presentNpcs = null, bool includeInventorySummary = false, bool includeTradePricing = false, bool partyTransferTopicSelected = false, MentionedWorldEntities promptMentions = null)
 {
 	string fullIntro = BuildSceneNpcRoleIntroForPrompt(npc, hero, presentNpcs, includeInventorySummary, includeTradePricing, partyTransferTopicSelected, promptMentions);
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var stableIntro, out var _);
@@ -17250,6 +17332,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return RunNativeConversationMainThreadFuncAsync("scene_main_speech_enqueue", speaker.Name, speaker.AgentIndex, () =>
 		{
 			if (!CanStillPublish()) return false;
+			if (hasPostprocess)
+			{
+				// Lower bound for this reply's local natural-action resolution.
+				RecordSceneActionReplyCapture(speaker.AgentIndex);
+			}
 			EnqueueSpeechLineWithOptions(speaker, replyText, audience,
 				commitHistory: false, suppressStare: false, allowPlayerDirectedActions: true,
 				conversationEpoch, sceneSummonTargets, sceneGuideTargets,
@@ -20122,25 +20209,31 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 						battleSpeechFramedTargets,
 						_sceneConversationEpoch);
 				}
+				else if (text2 == "normal" && TryOpenPresentationSessionFromWheel())
+				{
+					// The persistent session panel owns input; the one-shot popup is not opened.
+				}
+				// With a session style the give/show choices open the session's own give panel;
+				// the old popup chain (resource list → amounts → one-shot input) is only the fallback.
 				else if (text2 == "give")
 				{
-					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.Give);
+					if (!TryOpenPresentationTradeFromWheel("give")) BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.Give);
 				}
 				else if (text2 == "show")
 				{
-					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.Show);
+					if (!TryOpenPresentationTradeFromWheel("show")) BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.Show);
 				}
 				else if (text2 == "give_troops")
 				{
-					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GiveTroops);
+					if (!TryOpenPresentationTradeFromWheel("give_troops")) BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GiveTroops);
 				}
 				else if (text2 == "give_prisoners")
 				{
-					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GivePrisoners);
+					if (!TryOpenPresentationTradeFromWheel("give_prisoners")) BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GivePrisoners);
 				}
 				else if (text2 == "give_settlements")
 				{
-					BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GiveSettlements);
+					if (!TryOpenPresentationTradeFromWheel("give_settlements")) BeginShoutTradeFlow(primaryDataPacket, ShoutChatMode.GiveSettlements);
 				}
 				else if (text2 == "tag_test")
 				{
@@ -20226,7 +20319,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			EndShoutProcessing("setup_not_ready");
 			return false;
 		}
-		PauseGame();
+		// The presentation wheel and session run unpaused; the one-shot flows keep pausing.
+		if (!IsScenePresentationSessionEnabled())
+		{
+			PauseGame();
+		}
 		ShoutTargetingContext targetingContext = _activeShoutTargetingContext;
 		List<Agent> nearbyNPCAgents = GetAgentsForShoutTargetingContext(targetingContext);
 		if (nearbyNPCAgents == null || nearbyNPCAgents.Count == 0)
@@ -20601,53 +20698,22 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			_shoutTradeTargetAgentSnapshot = null;
 		}
-		ResolveShoutTradeRuntimeTarget(out var resolvedHero, out var resolvedCharacter, out var _);
-		if (IsNativeConversationSelfTarget(resolvedHero, resolvedCharacter))
+		// Shared with the scene-session give panel (ShoutBehavior.ScenePresentationTrade.cs).
+		string ineligible = GetShoutTradeTargetIneligibility(mode);
+		if (ineligible != null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("不能把资源给予自己。"));
+			InformationManager.DisplayMessage(new InformationMessage(ineligible));
 			ResetShoutTradeState();
 			ResumeGame();
 			FinishShoutTradeActionOnlyIfNeeded();
 			return;
-		}
-		if (IsShoutPartyTransferMode(mode))
-		{
-			if (!MyBehavior.IsPartyTransferLordEligibleForExternal(resolvedHero, resolvedCharacter))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("只有领主才能谈部队与俘虏转移。"));
-				ResetShoutTradeState();
-				ResumeGame();
-				FinishShoutTradeActionOnlyIfNeeded();
-				return;
-			}
-			PartyBase counterparty = MyBehavior.ResolvePartyTransferCounterpartyForExternal(resolvedHero, resolvedCharacter, GetShoutTradeTargetAgentIndex());
-			if (counterparty == null)
-			{
-				InformationManager.DisplayMessage(new InformationMessage("当前目标没有可接收部队或俘虏的队伍。"));
-				Logger.Log("ShoutBehavior", "[ShoutTrade] party transfer blocked: no counterparty target=" + (resolvedHero?.StringId ?? resolvedCharacter?.StringId ?? targetNpc?.Name ?? "null") + " mode=" + mode);
-				ResetShoutTradeState();
-				ResumeGame();
-				FinishShoutTradeActionOnlyIfNeeded();
-				return;
-			}
-		}
-		if (IsShoutSettlementTransferMode(mode))
-		{
-			if (!MyBehavior.IsSettlementTransferLeaderEligibleForExternal(resolvedHero, resolvedCharacter))
-			{
-				InformationManager.DisplayMessage(new InformationMessage("当前目标没有可转移的固定资产。"));
-				ResetShoutTradeState();
-				ResumeGame();
-				FinishShoutTradeActionOnlyIfNeeded();
-				return;
-			}
 		}
 		_shoutTradeOptions = BuildShoutTradeOptions();
 		_shoutPendingTradeItems.Clear();
 		_shoutPendingTradeItemIndex = 0;
 		if (_shoutTradeOptions == null || _shoutTradeOptions.Count == 0)
 		{
-			string information = (mode == ShoutChatMode.GiveTroops) ? "你当前没有可转移给对方的部队。" : ((mode == ShoutChatMode.GivePrisoners) ? "你当前没有可转移给对方的俘虏。" : (IsShoutSettlementTransferMode(mode) ? "你当前没有可转移给对方的固定资产。" : "你没有可用的物品或第纳尔。"));
+			string information = GetNoShoutTradeOptionsMessage(mode);
 			InformationManager.DisplayMessage(new InformationMessage(information));
 			ResumeGame();
 			FinishShoutTradeActionOnlyIfNeeded();
@@ -25770,6 +25836,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			Interlocked.Increment(ref _sceneConversationEpoch);
 			Interlocked.Increment(ref _sceneHistorySessionId);
+			EndPresentationSession("mission_end:" + (reason ?? ""));
 			RetireModuleSceneGroup("scene.stale_context");
 			ForceClearScenePostprocessGate("mission_end:" + (reason ?? ""));
 			_isWaitingForScenePostprocessGate = false;
@@ -26242,6 +26309,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 			return startedGroup;
 		}, (Task)null);
+		NotePresentationRoundGroup(groupTask);
 		if (groupTask != null)
 		{
 			await groupTask.ConfigureAwait(false);
@@ -26296,7 +26364,12 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		}
 		int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();
 		receipt?.Bind(conversationEpoch);
-		if (!TryBuildSceneShoutConversationScope(framedAgents, primaryTarget, conversationEpoch, out var conversationScope, out var audienceAgents))
+		bool audienceBuilt = TryBuildSceneShoutConversationScope(framedAgents, primaryTarget, conversationEpoch, out var conversationScope, out var audienceAgents, GetPresentationExcludedAgentIndices());
+		if (audienceBuilt)
+		{
+			AbsorbPresentationAudience(audienceAgents);
+		}
+		if (!audienceBuilt)
 		{
 			receipt?.Fail("scene.audience_stale");
 			InformationManager.DisplayMessage(new InformationMessage("[场景喊话] 在场人物快照已失效，请重新框选。", new Color(1f, 0.5f, 0.3f)));

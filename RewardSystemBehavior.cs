@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using AnimusForge.Modules.Economy;
+using AnimusForge.Refactor.Modules;
 using Helpers;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -16159,7 +16160,18 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = regexPlayerJoinKingdomMercenary.Replace(responseText, "[ACTION:KINGDOM_SERVICE:MERCENARY:current]");
 			responseText = regexPlayerJoinKingdomVassal.Replace(responseText, "[ACTION:KINGDOM_SERVICE:VASSAL:current]");
 			responseText = regexPlayerLeaveKingdom.Replace(responseText, "[ACTION:KINGDOM_SERVICE:LEAVE:current]");
-			responseText = regex17.Replace(responseText, delegate(Match m)
+			responseText = Regex.Replace(responseText, "\\[A:CIVIL_FACTION:[^\\]]+\\]", match =>
+				{
+					string civilWarStatus = "";
+					if (receiver == Hero.MainHero && giver != Hero.MainHero && TeamModuleServices.CivilWar.TryApplyTag(giver, match.Value, out civilWarStatus) && !string.IsNullOrWhiteSpace(civilWarStatus))
+					{
+						giverFacts.Add(civilWarStatus);
+						receiverFacts.Add(civilWarStatus);
+						InformationManager.DisplayMessage(new InformationMessage("【内战派系】" + civilWarStatus, Color.FromUint(4278242559u)));
+					}
+					return string.Empty;
+				}, RegexOptions.IgnoreCase);
+				responseText = regex17.Replace(responseText, delegate(Match m)
 			{
 				string serviceType = (m.Groups[1].Value ?? "").Trim();
 				string kingdomToken = (m.Groups[2].Value ?? "").Trim();

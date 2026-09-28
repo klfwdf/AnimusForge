@@ -3,4 +3,5 @@
   <LanguageFile xml_path="sceneactions_strings.xml" />
   <LanguageFile xml_path="sets_hostile_meeting_strings.xml" />
   <LanguageFile xml_path="afwarstats_strings.xml" />
+  <LanguageFile xml_path="vengeance_strings-en.xml" />
 </LanguageData>

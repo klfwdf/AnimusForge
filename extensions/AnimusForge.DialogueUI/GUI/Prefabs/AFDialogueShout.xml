@@ -20,7 +20,7 @@
             </ScrollablePanel>
             <ScrollbarWidget Id="HistoryScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="8" HorizontalAlignment="Right" MarginRight="28" MarginTop="62" MarginBottom="30" AlignmentAxis="Vertical" Handle="HistoryHandle" MinValue="0" MaxValue="100">
               <Children>
-                <Widget Id="HistoryHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="8" SuggestedHeight="32" Sprite="BlankWhiteSquare_9" Color="#765632FF" />
+                <Widget Id="HistoryHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="8" SuggestedHeight="32" Sprite="afdui_scroll_handle" />
               </Children>
             </ScrollbarWidget>
           </Children>
@@ -43,7 +43,7 @@
                   </Children>
                 </ScrollablePanel>
                 <ScrollbarWidget Id="SummaryScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="6" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="SummaryHandle" MinValue="0" MaxValue="100">
-                  <Children><Widget Id="SummaryHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="24" Sprite="BlankWhiteSquare_9" Color="#765632FF" /></Children>
+                  <Children><Widget Id="SummaryHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="24" Sprite="afdui_scroll_handle" /></Children>
                 </ScrollbarWidget>
               </Children>
             </Widget>
@@ -80,7 +80,7 @@
                       </Children>
                     </ScrollablePanel>
                     <ScrollbarWidget Id="EditorScrollbar" WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="6" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="EditorHandle" MinValue="0" MaxValue="100">
-                      <Children><Widget Id="EditorHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="24" Sprite="BlankWhiteSquare_9" Color="#B69762FF" /></Children>
+                      <Children><Widget Id="EditorHandle" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="6" SuggestedHeight="24" Sprite="afdui_scroll_handle" /></Children>
                     </ScrollbarWidget>
                   </Children>
                 </Widget>

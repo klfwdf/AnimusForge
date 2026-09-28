@@ -16,6 +16,11 @@ namespace AnimusForge.XihaiAction
         public Agent PrimaryTarget { get; set; }
         public Agent[] FramedTargets { get; set; } = Array.Empty<Agent>();
         public double SubmittedAtMissionTime { get; set; }
+        // Non-null only for an AF postprocess [ACTION:SCENE_ACT:*] decision:
+        // NONE or a normalized V4 program expression.
+        public string DirectiveValue { get; set; }
+        // Mission time at which the reply was first handed to presentation.
+        public double ReplyCapturedAtMissionTime { get; set; }
     }
 
     internal sealed class SessionAgentHandle

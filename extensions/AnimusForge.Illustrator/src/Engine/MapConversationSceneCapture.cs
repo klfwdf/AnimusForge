@@ -31,8 +31,11 @@ namespace AnimusForge.Illustrator.Engine
             internal bool HasMapTableau => _tableau != null;
             internal Mission Mission => _mission;
             internal MissionScreen MissionScreen => _screen as MissionScreen;
+            // The Tableau is published a few frames after the view, so it is not part of the key:
+            // a capture taken when the player opens the illustration must match the later
+            // generation. EnsureCurrent still rejects a replaced Tableau.
             internal string SessionOwnerKey => IsMapConversation
-                ? "map:" + (_mapView?.GetHashCode() ?? 0) + ":" + (_mapMission?.GetHashCode() ?? 0) + ":" + (_tableau?.GetHashCode() ?? 0)
+                ? "map:" + (_mapView?.GetHashCode() ?? 0) + ":" + (_mapMission?.GetHashCode() ?? 0)
                 : "mission:" + (_mission?.GetHashCode() ?? 0) + ":" + (_mission?.Scene?.GetHashCode() ?? 0);
 
             internal ConversationSceneCaptureSource(MissionScreen screen, Mission mission)
@@ -99,64 +102,26 @@ namespace AnimusForge.Illustrator.Engine
             throw new InvalidOperationException("当前没有正在显示的任务场景或地图对话，请在会话中重新打开场景插画。");
         }
 
-        private static string MapConversationReferenceNote(bool captured) =>
-            "本次采用地图对话独立管线，不是已进入的Mission实景。" +
-            (captured
-                ? "环境参考只是一张当前地图对话画面的真实截图，仅供当前位置与环境定位，显示原生对话Tableau布景的可见部分；不是前后双镜头、30米环境重建、完整战斗地形或全景。保留可见地貌、植被、材质、颜色及环境空间关系；画外区域没有图像证据。"
-                : "本次未取得可用的当前对话环境截图，没有提供环境参考图；只能依据已给出的环境事实和人物参考设计画面，未知的具体地形、陈设与人物现场位置不能声称已经观测。") +
-            "对话展示人物的屏幕位置和镜头距离不是双方在野外的实际站位，不从单人特写推断双方距离、高低或朝向。人物动作优先采用拉取的最近2条对话中的已发生叙事，不以截图里的待机姿势覆盖。";
+        // Field conversations send no screenshot: identity comes from the offscreen portraits,
+        // and the tableau's staged close-up is neither the real terrain nor the real stances.
+        internal const string MapConversationTerrainNote =
+            "本次是野外地图对话，不提供现场截图：人物外观与穿戴以离屏身份立绘为准，环境依据【地貌类型】【当前季节】【现场天气】等地形事实设计。" +
+            "按该地貌与季节自主构思可信的野外环境——地形起伏、植被、岩石、水体与天空层次——作为依据地形事实的艺术再现，不指称具体地名或未确认的建筑、营地与人物。" +
+            "双方站位、距离、朝向与动作依对话中已发生的叙事决定。";
 
-        // Read presented pixels only: never access or mutate the tableau's private Scene/Camera,
-        // acquire its cached scene, create a second view over it, or hide visible UI.
-        private static async Task<ConversationSceneReferenceCapture> CaptureMapConversationSceneReferencesAsync(
-            ConversationSceneCaptureSource source, CancellationToken token, string preCapturedScene = null)
+        // No screen pixels, private Scene or Camera are read on this route.
+        private static Task<ConversationSceneReferenceCapture> CaptureMapConversationSceneReferencesAsync(
+            ConversationSceneCaptureSource source, CancellationToken token)
         {
-            await SceneCaptureLock.WaitAsync(token).ConfigureAwait(false);
-            var watch = Stopwatch.StartNew();
-            bool captured = false;
-            try
+            token.ThrowIfCancellationRequested();
+            GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject
             {
-                // Tableau initialization is asynchronous. Retry only during this capture,
-                // on game frames, and stop immediately if the conversation owner changes.
-                for (int attempt = 0; attempt < 15 && string.IsNullOrWhiteSpace(preCapturedScene); attempt++)
-                {
-                    Task pendingFrame = await RunOnGameThreadAsync(() =>
-                    {
-                        source.EnsureCurrent(token);
-                        return source.HasMapTableau ? null : IllustratorRuntime.AfterFramesAsync(2, token);
-                    }, token).ConfigureAwait(false);
-                    if (pendingFrame == null) break;
-                    await pendingFrame.ConfigureAwait(false);
-                }
-                var result = await RunOnGameThreadAsync(() =>
-                {
-                    source.EnsureCurrent(token);
-                    string image = !string.IsNullOrWhiteSpace(preCapturedScene)
-                        ? preCapturedScene
-                        : source.HasMapTableau ? CaptureUnobstructedConversationSceneBase64() : null;
-                    source.EnsureCurrent(token);
-                    captured = !string.IsNullOrWhiteSpace(image);
-                    string note = MapConversationReferenceNote(captured);
-                    IReadOnlyList<IllustrationReferenceImage> references = captured
-                        ? new[] { new IllustrationReferenceImage(image, note +
-                            "忽略对话UI、字幕、血条与名牌，不将界面内容画入作品。" + ScreenshotMaskReferenceNote, IllustrationReferenceKind.MapConversationScene) }
-                        : Array.Empty<IllustrationReferenceImage>();
-                    return new ConversationSceneReferenceCapture(references, note,
-                        captured ? "地图对话：仅当前单视角环境参考" : "地图对话：环境截图不可用，使用已知事实与人物参考");
-                }, token).ConfigureAwait(false);
-                if (result == null) throw new InvalidOperationException("地图对话参考采集调度已停止。");
-                return result;
-            }
-            finally
-            {
-                SceneCaptureLock.Release();
-                GenerationDiagnostics.Current?.RecordStage("scene_capture_end", new JObject
-                {
-                    ["route"] = "map-conversation", ["coverage"] = captured ? "presented-single-view" : "unavailable",
-                    ["environmentReferences"] = captured ? 1 : 0, ["sourceMissionViews"] = 0,
-                    ["referenceSheet"] = false, ["panorama"] = false, ["totalMs"] = watch.ElapsedMilliseconds
-                });
-            }
+                ["route"] = "map-conversation", ["coverage"] = "terrain-facts-only",
+                ["environmentReferences"] = 0, ["sourceMissionViews"] = 0,
+                ["referenceSheet"] = false, ["panorama"] = false, ["totalMs"] = 0
+            });
+            return Task.FromResult(new ConversationSceneReferenceCapture(Array.Empty<IllustrationReferenceImage>(),
+                MapConversationTerrainNote, "野外对话：按地形事实构图（不截图）"));
         }
     }
 }

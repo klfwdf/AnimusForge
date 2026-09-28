@@ -99,6 +99,59 @@ public sealed class AnimusForgeConversationHistoryLogItemVM : ViewModel
 		_onOpenEncyclopediaLink?.Invoke(link);
 	}
 
+	// Optional two-click delete, enabled only by a host that supplies a delete handler (DialogueUI panel).
+	// First click arms the row ("确认删除"), second click deletes; arming another row disarms this one.
+	private Action<AnimusForgeConversationHistoryLogItemVM> _onDeleteArmed;
+
+	private Action _onDeleteConfirmed;
+
+	private bool _isDeleteArmed;
+
+	[DataSourceProperty]
+	public bool CanDelete => _onDeleteConfirmed != null;
+
+	[DataSourceProperty]
+	public bool IsDeleteArmed => _isDeleteArmed;
+
+	[DataSourceProperty]
+	public string DeleteText => _isDeleteArmed ? "确认删除" : "删除";
+
+	internal void EnableDelete(Action<AnimusForgeConversationHistoryLogItemVM> onArmed, Action onConfirmed)
+	{
+		_onDeleteArmed = onArmed;
+		_onDeleteConfirmed = onConfirmed;
+		OnPropertyChanged(nameof(CanDelete));
+	}
+
+	internal void DisarmDelete()
+	{
+		if (!_isDeleteArmed)
+		{
+			return;
+		}
+		_isDeleteArmed = false;
+		OnPropertyChanged(nameof(IsDeleteArmed));
+		OnPropertyChanged(nameof(DeleteText));
+	}
+
+	public void ExecuteDelete()
+	{
+		if (_onDeleteConfirmed == null)
+		{
+			return;
+		}
+		if (!_isDeleteArmed)
+		{
+			_isDeleteArmed = true;
+			OnPropertyChanged(nameof(IsDeleteArmed));
+			OnPropertyChanged(nameof(DeleteText));
+			_onDeleteArmed?.Invoke(this);
+			return;
+		}
+		DisarmDelete();
+		_onDeleteConfirmed();
+	}
+
 	// Shared by the page-level cache so row colors remain identical whether the record is first formatted or restored from cache.
 	internal static string ResolveFontColor(string kind)
 	{

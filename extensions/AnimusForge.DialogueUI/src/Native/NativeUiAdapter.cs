@@ -414,7 +414,31 @@ public static class NativeUiAdapter
                 _defaultModeApplied = true;
                 if (!Original.IsCustomAnswerVisible) Original.SwitchTalk();
             }
+            // The host asks for input focus by bumping InputFocusVersion (its own prefab binds that to
+            // the editor's FocusRequestId). DevMultilineEditableTextWidget only has a one-shot AutoFocus,
+            // so after 普通模式 → AI 模式 the editor stayed unfocused and typing went nowhere.
+            // Mirror FocusRequestId here: one int compare per frame, refocus only on a new request.
+            int focusVersion = Original.InputFocusVersion;
+            if (focusVersion != _focusVersion)
+            {
+                _focusVersion = focusVersion;
+                _focusPendingFrames = 30; // the editor may only become visible on the next layout pass
+            }
+            if (_focusPendingFrames > 0)
+            {
+                _focusPendingFrames--;
+                if (!Original.IsCustomAnswerVisible || _wrapper?.Auxiliary.IsOpen == true || InputEditor == null || Root.EventManager == null)
+                    _focusPendingFrames = 0;
+                else if (InputEditor.IsRecursivelyVisible())
+                {
+                    if (Root.EventManager.FocusedWidget != InputEditor) Root.EventManager.FocusedWidget = InputEditor;
+                    _focusPendingFrames = 0;
+                }
+            }
         }
+
+        private int _focusVersion = int.MinValue;
+        private int _focusPendingFrames;
 
         internal bool HitTest()
         {
@@ -422,8 +446,10 @@ public static class NativeUiAdapter
             if (_wrapper?.Auxiliary.IsVisible == true) return true;
             var mouse = Input.MousePositionPixel;
 
-            // If mouse is within the whole right interaction column, retain input restrictions
-            if (_column != null && _column.IsRecursivelyVisible())
+            // The column is claimed only while the AI input occupies it. In ordinary mode the native
+            // answer list renders in this same area; claiming it there made every answer unclickable
+            // (the host re-evaluates this hit test each tick). Only the toolbar buttons count then.
+            if (Original.IsCustomAnswerVisible && _column != null && _column.IsRecursivelyVisible())
             {
                 var cp = _column.GlobalPosition; var cs = _column.Size;
                 if (mouse.x >= cp.X && mouse.x <= cp.X + cs.X && mouse.y >= cp.Y && mouse.y <= cp.Y + cs.Y)
@@ -450,7 +476,11 @@ public static class NativeUiAdapter
         {
             if (node == null) return;
             if (node is ButtonWidget button && !_styled.TryGetValue(button, out _))
-            { DialogueUiButtons.StyleParchmentTab(button); _styled.Add(button, new object()); }
+            {
+                if (button.Id == "AFAuxRow") DialogueUiButtons.StyleRow(button);
+                else DialogueUiButtons.StyleParchmentTab(button);
+                _styled.Add(button, new object());
+            }
             for (int i = 0; i < node.ChildCount; i++) StyleAuxiliary(node.GetChild(i));
         }
 

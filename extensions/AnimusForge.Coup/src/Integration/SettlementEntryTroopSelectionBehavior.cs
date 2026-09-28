@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Roster;
-using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -25,8 +25,9 @@ internal static class SettlementEntryTroopSelectionBehavior
     private static readonly List<FieldInfo> PendingObjects = new List<FieldInfo>();
     private static readonly List<FieldInfo> ActiveFlags = new List<FieldInfo>();
     private static FieldInfo _pendingRebellion;
+    private static MethodInfo _queueCoup, _clearCoup;
+    private static Type _setsLogicType;
     internal static bool IsAvailable { get; private set; }
-    internal static float CoupDefenderWaveInterval { get; private set; } = 30f;
 
     internal static void Register(Harmony harmony)
     {
@@ -53,11 +54,9 @@ internal static class SettlementEntryTroopSelectionBehavior
             ActiveFlags.Add(RequiredField(host, "_setsEntryMissionActive"));
             ActiveFlags.Add(RequiredField(host, "_setsActiveUsableProtection"));
             _pendingRebellion = RequiredField(host, "_pendingSameKingdomVassalRebellionKingdomId");
-            CoupDefenderWaveInterval = Convert.ToSingle(RequiredField(host, "DefenderReserveWaveIntervalSeconds").GetRawConstantValue());
-            if (CoupDefenderWaveInterval <= 0f) throw new InvalidOperationException("AF SETS wave interval is invalid");
-
-            Patch(harmony, host, "ShouldPrepareSettlementEntry", nameof(PreparePrefix));
-            Patch(harmony, host, "OnMissionStarted", nameof(MissionStartedPrefix));
+            _queueCoup = AccessTools.Method(host, "QueueArmedCoupEntry", new[] { typeof(string), typeof(TroopRoster) }) ?? throw new MissingMethodException(host.FullName, "QueueArmedCoupEntry");
+            _clearCoup = AccessTools.Method(host, "ClearArmedCoupEntry") ?? throw new MissingMethodException(host.FullName, "ClearArmedCoupEntry");
+            _setsLogicType = host.GetNestedType("SettlementEntryTroopSelectionMissionLogic", BindingFlags.NonPublic) ?? throw new MissingMemberException(host.FullName, "SettlementEntryTroopSelectionMissionLogic");
             Patch(harmony, host, "IsSetsCommandMissionCandidate", nameof(CommandCandidatePrefix));
             Patch(harmony, host, "ResolveSetsPlayerCommandTeamForExternal", nameof(CommandTeamPrefix));
             Patch(harmony, host, "EnsureSetsCommandUiReadyForExternal", nameof(CommandReadyPrefix));
@@ -117,6 +116,36 @@ internal static class SettlementEntryTroopSelectionBehavior
         { priority = Priority.First });
     }
 
+    internal static void QueueArmedCoup(string settlementId, TroopRoster roster)
+    {
+        if (!IsAvailable) throw new InvalidOperationException("AF SETS兼容桥未就绪。");
+        _queueCoup.Invoke(null, new object[] { settlementId, roster });
+    }
+
+    internal static void ClearArmedCoup() => _clearCoup?.Invoke(null, null);
+
+    private static MissionBehavior FindSetsLogic(Mission mission)
+    {
+        if (mission == null || _setsLogicType == null) return null;
+        return mission.MissionBehaviors.FirstOrDefault(behavior => behavior != null && _setsLogicType.IsInstanceOfType(behavior));
+    }
+
+    internal static bool HasSetsLogic(Mission mission) => FindSetsLogic(mission) != null;
+
+    internal static Agent SpawnCoupKing(Mission mission, CharacterObject character, MatrixFrame frame)
+    {
+        object logic = FindSetsLogic(mission) ?? throw new InvalidOperationException("SETS 进城逻辑不在当前场景。");
+        MethodInfo method = AccessTools.Method(_setsLogicType, "SpawnArmedCoupKing");
+        return method?.Invoke(logic, new object[] { character, frame }) as Agent;
+    }
+
+    internal static int CountCoupRole(Mission mission, string role)
+    {
+        object logic = FindSetsLogic(mission);
+        MethodInfo method = logic == null ? null : AccessTools.Method(_setsLogicType, "CountArmedCoupRole", new[] { typeof(string) });
+        return method?.Invoke(logic, new object[] { role }) is int count ? count : 0;
+    }
+
     internal static TroopRoster BuildCoupSelectableRoster(TroopRoster source)
     {
         if (!IsAvailable) throw new InvalidOperationException("AF SETS兼容桥未就绪。");
@@ -139,39 +168,6 @@ internal static class SettlementEntryTroopSelectionBehavior
             return true;
         }
     }
-
-    internal static FormationClass GetCoupFormationClass(CharacterObject troop) => _formationClass(troop);
-
-    internal static void BindCoupFormation(Agent agent, Team team, Agent player)
-    {
-        _assignFormation(agent, team, _formationClass(agent.Character as CharacterObject));
-        _bindOrderController(team, player);
-        _markCommandable(agent.Formation, player);
-    }
-
-    // Pure mission spawn primitive; accounting uses CoupAgentOrigin, never PartyAgentOrigin.
-    internal static Agent SpawnEntryCombatAgent(Mission mission, CharacterObject troop, Team team, IAgentOriginBase origin,
-        Vec3 position, Vec3 direction, FormationClass formationClass, int formationCount, int formationIndex, bool isPlayerAlly)
-    {
-        AgentBuildData data = new AgentBuildData(troop).Team(team)
-            .Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(troop.Race, "_settlement"))
-            .InitialPosition(in position).InitialDirection(direction.AsVec2.Normalized())
-            .Controller(AgentControllerType.AI).CivilianEquipment(false).NoHorses(true).TroopOrigin(origin);
-        Formation formation = team.GetFormation(formationClass);
-        if (formation != null)
-            data = data.Formation(formation).FormationTroopSpawnCount(formationCount).FormationTroopSpawnIndex(formationIndex)
-                .SpawnsIntoOwnFormation(true).SpawnsUsingOwnTroopClass(isPlayerAlly);
-        return mission.SpawnAgent(data, false);
-    }
-
-    private static bool PreparePrefix(Settlement settlement, ref bool __result)
-    {
-        if (!CoupCampaignBehavior.IsEntryPending(settlement)) return true;
-        __result = false;
-        return false;
-    }
-
-    private static bool MissionStartedPrefix(IMission mission) => !(mission is Mission concrete && CoupCampaignBehavior.IsMissionActive(concrete));
 
     private static bool CommandCandidatePrefix(Mission mission, ref bool __result)
     {

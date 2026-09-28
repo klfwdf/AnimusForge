@@ -42,14 +42,36 @@ def button(parent, label, command, x, y, w, h=36, selected=None, enabled=None, *
           'Brush.TextVerticalAlignment':'Center'})
     return b
 
-def input_box(parent, binding, x, y, w, h=32, maxlen=80, align='Left', color=DARK):
-    c = children(box(parent, x,y,w,h, Sprite='afdui_input_panel'))
+def editable(c, binding, maxlen, align, color, left, right, size):
     return el(c, 'AnimusForgeNativeConversationEditableTextWidget',
-        WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent', MarginLeft='8',MarginRight='8',
+        WidthSizePolicy='StretchToParent', HeightSizePolicy='StretchToParent', MarginLeft=left, MarginRight=right,
         Brush='Popup.Button.Text', RealText='@'+binding, MaxLength=maxlen, AutoFocus='false',
-        ClipContents='true', **{'Brush.FontSize':'15', 'Brush.FontColor':color,
+        ClipContents='true', **{'Brush.FontSize':size, 'Brush.FontColor':color,
         'Brush.TextHorizontalAlignment':align, 'Brush.TextVerticalAlignment':'Center',
         'Command.FocusGained':'StartTyping', 'Command.FocusLost':'StopTyping'})
+
+SOLID = 'BlankWhiteSquare_9'
+
+def rect(parent, x, y, w, h, color, **attrs):
+    return box(parent, x, y, w, h, Sprite=SOLID, Color=color, **attrs)
+
+def framed(parent, x, y, w, h, fill, stroke):
+    # Translucent Pen fill + 1px stroke; edges drawn separately so the stroke never shows through.
+    c = children(box(parent, x, y, w, h))
+    rect(c, 1, 1, w-2, h-2, fill)
+    for ex, ey, ew, eh in ((0,0,w,1), (0,h-1,w,1), (0,1,1,h-2), (w-1,1,1,h-2)):
+        rect(c, ex, ey, ew, eh, stroke)
+    return c
+
+def search_box(parent, x, y, w, h, fill, stroke, icon, icon_x, hint, hint_color, hint_size, right_text=None, right_w=0):
+    # Pen search bar: icon, placeholder shown only while empty, optional right-aligned count.
+    c = framed(parent, x, y, w, h, fill, stroke)
+    box(c, icon_x, (h-icon)//2, icon, icon, Sprite='afdui_icon_search')
+    right = 10 + right_w + (10 if right_w else 0)
+    text(c, hint, 36, 0, w-36-right, h, hint_size, hint_color, IsVisible='@IsSearchEmpty')
+    if right_text: text(c, right_text, w-10-right_w, 0, right_w, h, 13, '#8A6944FF', 'Right')
+    editable(c, 'SearchText', 80, 'Left', DARK, 36, right, 15)
+    return c
 
 def scroll(parent, name, source, x,y,w,h, history=False):
     host=children(box(parent,x,y,w,h))
@@ -95,12 +117,16 @@ button(day,'@Label','ExecuteSelect',0,0,166,40,'IsSelected')
 button(hv,'全部','FilterAll',296,160,76,36,'IsAllFilter','CanInteract')
 button(hv,'对话','FilterDialogue',380,160,76,36,'IsDialogueFilter','CanInteract')
 button(hv,'行动','FilterActions',464,160,76,36,'IsActionFilter','CanInteract')
-text(hv,'搜索记录',564,160,78,36,14,MUTED)
-input_box(hv,'SearchText',650,162,542)
+search_box(hv,882,162,310,32,'#FFF6DE55','#94704766',15,12,'搜索这位人物的记录','#967954FF',13)
 hist=children(box(hv,296,204,896,332,DataSource='{History}'))
 items=scroll(hist,'AFAuxHistory','Items',0,0,896,280,True)
-row=el(items,'ListPanel',WidthSizePolicy='StretchToParent',HeightSizePolicy='CoverChildren',
-       MarginBottom='10',**{'StackLayout.LayoutMethod':'VerticalTopToBottom'})
+cell=children(el(items,'Widget',WidthSizePolicy='StretchToParent',HeightSizePolicy='CoverChildren',
+                 MarginBottom='10',DoNotAcceptEvents='true'))
+row=el(cell,'ListPanel',WidthSizePolicy='StretchToParent',HeightSizePolicy='CoverChildren',
+       DoNotAcceptEvents='true',**{'StackLayout.LayoutMethod':'VerticalTopToBottom'})
+# Two-click delete on the time row (right-aligned, same 22px band), so it never covers the message text.
+db=button(cell,'@DeleteText','ExecuteDelete',0,0,84,22,'IsDeleteArmed',IsVisible='@CanDelete')
+db.set('HorizontalAlignment','Right')
 rc=children(row)
 el(rc,'TextWidget',WidthSizePolicy='StretchToParent',HeightSizePolicy='Fixed',SuggestedHeight='22',
    Text='@ChatItemTime',Brush='Popup.Description.Text',DoNotAcceptEvents='true',
@@ -122,17 +148,28 @@ for x,label,cmd,sel in [(88,'物品 / 第纳尔','SelectItems','IsItems'),(276,'
     button(tv,label,cmd,x,160,180,36,sel,'CanInteract')
 button(tv,'给予','SelectGive',868,160,158,36,'IsGive','CanInteract')
 button(tv,'展示','SelectShow',1034,160,158,36,'IsShow','CanShow')
-text(tv,'资源清单',88,204,108,32,16)
-text(tv,'名称 / 类型 / 可用 / 单价',204,204,220,32,13,MUTED)
-input_box(tv,'SearchText',450,204,382)
-ri=scroll(tv,'AFAuxResources','ResourceItems',88,244,752,240)
-r=children(box(ri,0,0,734,48))
-button(r,'@SelectText','Toggle',0,7,58,34,'IsSelected','CanSelect')
-text(r,'@Name',68,0,365,27,16)
-text(r,'@Category',68,26,365,20,13,MUTED)
-text(r,'@AvailableText',442,0,128,48,15,MUTED,'Center')
-text(r,'@ValueText',574,0,158,48,15,MUTED,'Right')
-text(tv,'没有符合条件的资源',120,302,670,52,16,MUTED,'Center',IsVisible='@IsResourceEmpty')
+search_box(tv,88,204,752,34,'#FFF7E24D','#AC895566',16,10,'搜索物品或第纳尔…','#947451FF',14,'@ResourceCountText',120)
+HEAD = '#8B693FFF'
+# Click anywhere on a row to select it; no separate checkbox column. 持有 is widened so
+# eight-digit denar totals stay on one line.
+for label,x,w,align in [('资源',100,460,'Left'),('持有',618,120,'Center'),('估值',738,95,'Center')]:
+    text(tv,label,x,238,w,26,13,HEAD,align)
+# Scrollbar sits in the gutter between the 752px list and the selection panel, as in Pen.
+ri=scroll(tv,'AFAuxResources','ResourceItems',88,264,766,220)
+rb=el(ri,'ButtonWidget',Id='AFAuxRow',WidthSizePolicy='Fixed',HeightSizePolicy='Fixed',SuggestedWidth='752',SuggestedHeight='44',
+      HorizontalAlignment='Left',VerticalAlignment='Top',DoNotAcceptEvents='false',DoNotPassEventsToChildren='true',
+      UpdateChildrenStates='true',IsSelected='@IsSelected',IsEnabled='@CanSelect',**{'Command.Click':'Toggle'})
+r=children(rb)
+rect(r,0,43,752,1,'#98764633')
+el(r,'ImageIdentifierWidget',WidthSizePolicy='Fixed',HeightSizePolicy='Fixed',SuggestedWidth='34',SuggestedHeight='26',
+   HorizontalAlignment='Left',VerticalAlignment='Top',MarginLeft='8',MarginTop='9',DoNotAcceptEvents='true',
+   ImageId='@ImageId',AdditionalArgs='@ImageArgs',TextureProviderName='@ImageProvider',IsVisible='@HasImage')
+box(r,12,10,24,24,Sprite='afdui_icon_coin',IsVisible='@IsGold')
+text(r,'@Name',48,4,472,20,15,'#412D1DFF')
+text(r,'@Category',48,24,472,16,11,'#987750FF')
+text(r,'@AvailableText',530,0,120,44,14,'#64482DFF','Center')
+text(r,'@ValueText',650,0,95,44,14,'#64482DFF','Center')
+text(tv,'没有符合条件的资源',88,330,752,52,16,MUTED,'Center',IsVisible='@IsResourceEmpty')
 text(tv,'@SelectionTitle',868,204,216,30,17)
 button(tv,'清空','ClearSelection',1124,204,68,30,enabled='CanInteract')
 si=scroll(tv,'AFAuxSelection','SelectedItems',868,238,324,206)
@@ -140,7 +177,9 @@ s=children(box(si,0,0,306,76))
 text(s,'@Name',0,0,264,27,15)
 button(s,'×','Remove',274,0,30,28)
 button(s,'−','Decrement',0,33,32,32)
-input_box(s,'Quantity',38,33,130,32,10,'Center','@QuantityColor')
+# Pen quantity field: #25190F fill, 1px #A78145 stroke, centered #EBD5A7 16px value.
+q=children(rect(s,38,33,130,32,'#A78145FF'))
+editable(children(rect(q,1,1,128,30,'#25190FFF')),'Quantity',10,'Center','@QuantityColor',6,6,16)
 button(s,'+','Increment',174,33,32,32)
 button(s,'全部','SelectAll',214,33,90,32)
 text(tv,'从左侧选择资源',884,294,276,52,15,MUTED,'Center',IsVisible='@IsSelectionEmpty')

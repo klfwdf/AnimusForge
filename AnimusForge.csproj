@@ -156,6 +156,7 @@
     <Compile Include="extensions\AnimusForge.XihaiAction\src\Runtime\*.cs">
       <Link>SceneActions\Runtime\%(Filename)%(Extension)</Link>
     </Compile>
+    <Compile Remove="Vengeance\Source\SubModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />

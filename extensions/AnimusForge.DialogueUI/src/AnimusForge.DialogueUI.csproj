@@ -26,6 +26,7 @@
     <PackageReference Include="Bannerlord.ReferenceAssemblies" Version="$(ReferenceVersion)" PrivateAssets="all" Condition="'$(BannerlordApi)' == '1.3'" />
     <Reference Include="AnimusForge"><HintPath>$(AfReferencePath)</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MCMv5"><HintPath>$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="System.Numerics.Vectors"><HintPath>$(GameBin)\System.Numerics.Vectors.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="TaleWorlds.CampaignSystem"><HintPath>$(CoreRefs)\TaleWorlds.CampaignSystem.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="TaleWorlds.Core"><HintPath>$(CoreRefs)\TaleWorlds.Core.dll</HintPath><Private>false</Private></Reference>
