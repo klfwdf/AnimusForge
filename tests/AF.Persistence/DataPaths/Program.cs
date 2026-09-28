@@ -35,7 +35,7 @@ internal static class Program
             string expected = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AnimusForge");
             Check(AnimusForgeDataPaths.ResolveRoot() == expected, "default LocalAppData root");
 
-            string isolated = Path.Combine(Path.GetTempPath(), "af-f1-isolated-root");
+            string isolated = isolatedRoot();
             Check(AnimusForgeDataPaths.ResolveRoot(isolated) == isolated, "explicit absolute root");
             Check(AnimusForgeDataPaths.GetPlayerExportsDirectory(isolated) == Path.Combine(isolated, "UserData", "PlayerExports"), "PlayerExports ownership");
             Check(AnimusForgeDataPaths.GetOverridePath(isolated, "CustomPrompts/Policy/Effects/_Common.json")
@@ -257,7 +257,14 @@ internal static class Program
         Console.WriteLine("PASS data-path checks=" + _checks);
     }
 
-    private static string isolatedRoot() => Path.Combine(Path.GetTempPath(), "af-f1-isolated-root");
+    private static string isolatedRoot()
+    {
+        string root = Environment.GetEnvironmentVariable("AF_DATA_PATHS_TEST_ROOT");
+        if (string.IsNullOrWhiteSpace(root)) return Path.Combine(Path.GetTempPath(), "af-f1-isolated-root");
+        if (!Path.IsPathRooted(root) || Directory.Exists(root) || File.Exists(root))
+            throw new InvalidOperationException("AF_DATA_PATHS_TEST_ROOT must be an unused absolute path.");
+        return Path.GetFullPath(root);
+    }
 }
 
 namespace AnimusForge
