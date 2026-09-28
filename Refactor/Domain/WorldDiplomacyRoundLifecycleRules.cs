@@ -7546,104 +7546,10 @@ List<string> ids = new List<string>();
         Action<string> removeJob,
         Action<string> log)
     {
-        if (job == null) return;
-        // Preserve runtime route classification without rewriting the persisted Kind.
-        string completionKind = (job.Kind ?? "").Trim();
-        bool IsCompletionKind(string kind) => string.Equals(completionKind, kind, StringComparison.OrdinalIgnoreCase);
-        if (resultSuccess
-            && IsCompletionKind("generate")
-            && hasStaleThreatPresentation?.Invoke(job) == true)
-        {
-            if (refreshThreatPresentation?.Invoke(job) != true)
-            {
-                commitFailedJob?.Invoke(job, "completed generation used a stale diplomatic threat stage and could not be rebuilt");
-            }
-            else
-            {
-                log?.Invoke("discarded completed generation from stale diplomatic threat stage and rebuilt job=" + job.JobId
-                    + " author=" + job.AuthorKingdomId);
-            }
-            return;
-        }
-        if (resultSuccess
-            && IsCompletionKind("generate")
-            && hasStaleActionPresentation?.Invoke(job) == true)
-        {
-            if (refreshActionPresentation?.Invoke(job) != true)
-            {
-                commitFailedJob?.Invoke(job, "completed generation used a stale diplomatic action list and could not be rebuilt");
-            }
-            else
-            {
-                log?.Invoke("discarded completed generation from stale diplomatic action list and rebuilt job=" + job.JobId
-                    + " author=" + job.AuthorKingdomId);
-            }
-            return;
-        }
-        if (!resultSuccess)
-        {
-            if (IsCompletionKind("generate")
-                && resultIsOutputTruncated
-                && !string.IsNullOrWhiteSpace(resultContent))
-            {
-                if (storage != null) storage.ConsecutiveServiceFailures = 0;
-                try
-                {
-                    handleTruncatedDraft?.Invoke(job, resultContent);
-                    removeJob?.Invoke(job.JobId);
-                }
-                catch (Exception ex)
-                {
-                    commitFailedJob?.Invoke(job, "truncated generated draft handling failed: " + ex.Message);
-                }
-                return;
-            }
-            if (resultIsServiceFailure && storage != null)
-            {
-                storage.ConsecutiveServiceFailures++;
-                if (storage.ConsecutiveServiceFailures >= 2)
-                {
-                    storage.ServiceCooldownUntilHour = currentHour + failedServiceCooldownHours;
-                    storage.ConsecutiveServiceFailures = 0;
-                }
-            }
-            commitFailedJob?.Invoke(job, resultError);
-            return;
-        }
-        if (storage != null) storage.ConsecutiveServiceFailures = 0;
-        try
-        {
-            if (IsCompletionKind("generate"))
-            {
-                commitGeneratedDocument?.Invoke(job, resultContent);
-            }
-            else if (IsCompletionKind("analyze"))
-            {
-                commitAnalysis?.Invoke(job, resultContent);
-            }
-            else if (IsCompletionKind("compress"))
-            {
-                commitCompression?.Invoke(job, resultContent);
-            }
-            else if (IsCompletionKind("round_plan"))
-            {
-                commitRoundPlan?.Invoke(job, resultContent);
-            }
-            else if (IsCompletionKind("round_compress"))
-            {
-                commitRoundCompression?.Invoke(job, resultContent);
-            }
-            else
-            {
-                commitFailedJob?.Invoke(job, "unknown job kind");
-                return;
-            }
-            removeJob?.Invoke(job.JobId);
-        }
-        catch (Exception ex)
-        {
-            commitFailedJob?.Invoke(job, ex.Message);
-        }
+        var effects = new WorldDiplomacyCompletionCallbacks(hasStaleThreatPresentation, refreshThreatPresentation, hasStaleActionPresentation, refreshActionPresentation, handleTruncatedDraft, commitGeneratedDocument, commitAnalysis, commitCompression, commitRoundPlan, commitRoundCompression, commitFailedJob, removeJob, log);
+        WorldDiplomacyCompletionApplication.Complete(job, resultContent, resultSuccess,
+            resultIsServiceFailure, resultIsOutputTruncated, resultError, storage,
+            currentHour, failedServiceCooldownHours, ref effects);
     }
 
 public static void ProcessDueRelayArrivals(

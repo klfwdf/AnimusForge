@@ -26,6 +26,7 @@ internal static class Program
 {
     private static int Main()
     {
+        CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
         ProactiveDiscussionApplicationReplay.Run();
         Dpl080PromptReplay.Run();
@@ -16172,33 +16173,29 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("relay_all_participants_withdrew", StringComparison.Ordinal),
             "relay and settlement scheduling internals must not remain in the host");
 
-        // DPL-060DH: LLM job dispatch selection/preflight and completed-result
-        // commit routing live inside the lifecycle rules; the host keeps the
-        // enable/running gates, runtime-generation guards, cache usage logging,
-        // and the async dispatch itself.
+        // R1: completion admission/dispatch now has one Application owner.
+        string completionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", StringComparison.Ordinal),
-            "the host must route LLM job selection and result commits through the lifecycle rules");
+            && behaviorSource.Contains("WorldDiplomacyCompletionApplication.Run(ref source)", StringComparison.Ordinal)
+            && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", StringComparison.Ordinal),
+            "host retains launch but forwards completion admission and dispatch to Application");
         Test.True(behaviorSource.Contains("_llmRequestLease.IsRunning", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyLlmApplication.PrepareRequest(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyLlmApplication.ExecuteAsync(", StringComparison.Ordinal)
-            && behaviorSource.Contains("_completedJobs.TryDequeue", StringComparison.Ordinal)
-            && behaviorSource.Contains("Task.Run(", StringComparison.Ordinal)
-            && behaviorSource.Contains("LogPromptCacheUsage(job, result)", StringComparison.Ordinal),
-            "the host must keep owning runtime dispatch state and the async request");
+            && behaviorSource.Contains("Task.Run(", StringComparison.Ordinal),
+            "async launch remains an explicit residual");
         Test.True(rulesSource.Contains("ServiceCooldownUntilHour > currentHour", StringComparison.Ordinal)
             && rulesSource.Contains("ResolveCacheAffinityKey(x)", StringComparison.Ordinal)
             && rulesSource.Contains("ThenBy(x => x.CreatedDay)", StringComparison.Ordinal)
             && rulesSource.Contains("IsValidSemanticRepairMessageChain(job)", StringComparison.Ordinal)
             && rulesSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
-            "job selection and preflight checks must live inside the lifecycle rules");
-        Test.True(rulesSource.Contains("completed generation used a stale diplomatic threat stage", StringComparison.Ordinal)
-            && rulesSource.Contains("truncated generated draft handling failed", StringComparison.Ordinal)
-            && rulesSource.Contains("ServiceCooldownUntilHour = currentHour + failedServiceCooldownHours", StringComparison.Ordinal)
-            && rulesSource.Contains("unknown job kind", StringComparison.Ordinal),
-            "completed-result routing and cooldown bookkeeping must live inside the lifecycle rules");
-        Test.True(!behaviorSource.Contains("private List<WorldDiplomacyJob> runnable", StringComparison.Ordinal)
-            && !behaviorSource.Contains("var runnable =", StringComparison.Ordinal)
+            "job selection and preflight checks remain unchanged");
+        Test.True(completionSource.Contains("completed generation used a stale diplomatic threat stage", StringComparison.Ordinal)
+            && completionSource.Contains("truncated generated draft handling failed", StringComparison.Ordinal)
+            && completionSource.Contains("ServiceCooldownUntilHour = currentHour + failedServiceCooldownHours", StringComparison.Ordinal)
+            && completionSource.Contains("unknown job kind", StringComparison.Ordinal),
+            "Application owns completion routing and cooldown bookkeeping");
+        Test.True(!behaviorSource.Contains("var runnable =", StringComparison.Ordinal)
             && !behaviorSource.Contains("unknown job kind", StringComparison.Ordinal)
             && !behaviorSource.Contains("truncated generated draft handling failed", StringComparison.Ordinal)
             && !behaviorSource.Contains("ConsecutiveServiceFailures++", StringComparison.Ordinal),
