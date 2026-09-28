@@ -148,7 +148,7 @@ def build_file_set() -> tuple[dict[str, Path], dict[str, str]]:
         source = content_sources_by_target.get(runtime_target, relative)
         add_file(source, "runtime_assets", relative)
 
-    add_tree("tools/PolicyEffectModule.ContractTests", "contract_tests")
+    add_tree("tests/bridges/Policy/PolicyEffectModule.ContractTests", "contract_tests")
     add_tree(
         "tools/ActionPostprocessPromptLab",
         "prompt_lab",

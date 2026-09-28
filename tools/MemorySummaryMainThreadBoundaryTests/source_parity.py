@@ -46,7 +46,7 @@ def restore_memory_summary_source(path, source):
     source = run_inverse.restore(path, source)
     # Undo only the separately tested persona changes; the B1 checks below still reject
     # every other unreviewed delta and verify full-owner equality with their own baseline.
-    persona_spec = importlib.util.spec_from_file_location('persona_inverse', ROOT / 'tools/HeroPersonaGenerationTests/source_parity.py')
+    persona_spec = importlib.util.spec_from_file_location('persona_inverse', ROOT / 'tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/source_parity.py')
     persona = importlib.util.module_from_spec(persona_spec); persona_spec.loader.exec_module(persona)
     source = persona.restore(source, strict=False)
     review = json.loads((HERE / 'source-review-b1.json').read_text(encoding='utf-8'))

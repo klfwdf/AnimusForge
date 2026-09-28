@@ -672,7 +672,7 @@ def verify_formats_and_references() -> None:
         text = (ROOT / matches[0]).read_text(encoding="utf-8-sig")
         check(Path(target).name in text, f"sprite consumer drift: {target}")
 
-    policy_tests = (ROOT / "tools/PolicyEffectModule.ContractTests/Program.cs").read_text(encoding="utf-8-sig")
+    policy_tests = (ROOT / "tests/bridges/Policy/PolicyEffectModule.ContractTests/Program.cs").read_text(encoding="utf-8-sig")
     for file_name in ('CustomPolicyComposePopup.xml', 'LocalPolicyComposePopup.xml', 'PolicyEffectModuleManagerPopup.xml', 'CustomPolicyHistoryPopup.xml', 'LocalPolicyHistoryPopup.xml', 'AnimusForgeWorldEventInboxPopup.xml'):
         parts = J15B_EXPECTED["GUI/Prefabs/" + file_name]["source"].split("/")
         expression = "Path.Combine(repositoryRoot, " + ", ".join(json.dumps(part) for part in parts) + ")"
