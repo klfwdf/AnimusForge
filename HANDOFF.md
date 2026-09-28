@@ -1,7 +1,7 @@
-# 当前交接：J15 O2 隔离编辑器完整 smoke 已验，F4/F5 仍未闭（2026-09-28）
+# 当前交接：J15 O2 完整 smoke 与 F4-U 剩余六 GUI 离线退役已验，F5 仍未闭（2026-09-28）
 
-- **当前进展**：仅在已批准的全新 `E:\AF-J15-editor-smoke-20260927-a\` 跑编辑器合成完整模式；.NET 10 定向构建 0 warning/error，两个路径拒写模式及完整 `package=1/edit=1/invalid-preserved=1/backup-restore=1/deletion-fixture-preserved=1` PASS。该根保留日志、两份备份和删除 fixture；未读写真实玩家包。入口仍在本地工作树，后续以本轮提交为准。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。
-- **下一门槛**：六项剩余旧 GUI 要逐项按真实消费者闭合，当前 124 项 Stage 的故障/中断恢复不能借旧 123 项结果；最后 O1–O7 同候选复验。TPAC 历史身份、第三方许可及双实际版本游戏/旧档仍 HOLD/NOT-RUN。已推送 `8af57b39` 取代下方历史“未推送”表述，但私人历史风险仍在；不得据此再次推送、部署或发布。
+- **当前进展**：编辑器 O2 隔离合成完整模式已在批准的 `E:\AF-J15-editor-smoke-20260927-a\` PASS，材料保留；测试/交接本地提交 `a62ab001`。其后六项剩余旧 GUI 逐项 SHA 复制并二次复核到忽略的 `local/j15-gui-archive-20260927/legacy-remaining/` 后才退出活动源码；完整 J15 内容 runner **108 映射/0 旧根 HOLD PASS**，inventory **19477 tracked/0 unknown**、7 单测 PASS。归档不随 Git 提交；不等于实机视觉或素材许可签收。详证见[主台账当前项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-f45-current-20260927)。
+- **下一门槛**：当前 124 项 Stage 的故障/中断恢复不能借旧 123 项结果；随后 O1–O7 对最终同候选复验。TPAC 历史身份、第三方许可及双实际版本游戏/旧档仍 HOLD/NOT-RUN。已推送 `8af57b39` 取代下方历史“未推送”表述，但私人历史风险仍在；不得据此再次推送、部署或发布。
 
 ## 以下为本轮之前的交接历史（相冲突状态以上段为准）
 
