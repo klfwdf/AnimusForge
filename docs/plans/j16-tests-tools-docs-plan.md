@@ -9,6 +9,7 @@
 ```text
 执行当前仓库 docs/plans/j16-tests-tools-docs-plan.md。
 先核实实际 Git 根、分支、HEAD、dirty，再读 AGENTS.md、HANDOFF.md 当前段、主台账 J15/J16 条目和本计划。不要按历史盘符切换副本。
+按仓库 Skill 执行：.claude/skills/animusforge-maintainer/SKILL.md（通用维护；本包用 repository-structure、validation、ledger-and-handoff、host-compatibility 四个参考）＋ .agents/skills/af-core-framework/SKILL.md（代码地图与交接）。移动测试会改 Skill 与代码地图里的路径，按第 3.7 节同步。
 按 G0 → J16a 测试归位 → J16b 工具与输出 → J16c 文档权威入口 → J16d 脚本/Bootstrap（仅获授权后）→ J16e 收口 执行。
 每个验证切片本地独立提交，只暂存自己的具名文件；移动用 git mv 保留历史，一个 runner 一组，移动后立即跑该 runner。
 不 push、不部署、不写游戏/存档/外仓；不改产品代码行为；不删除唯一副本；不改写 Git 历史（含私人数据，严禁推送）。
@@ -30,6 +31,18 @@
 | 已跟踪产物 | `tools/PlayerExportsEditor/dist` 291 MB（inventory `HOLD:tool-distribution`）、`.tmp/build_check` 80 MB（161 个 1.3/1.4 引用 DLL，构建脚本回退候选）、根目录 `Logs (10).zip`/`Logs (11).zip` 约 40 MB、31 个根级 `artifacts_*.png`、`EarlyException_2026-06-13.html`、`DuelSettings.cs.broken-backup-*` | 去跟踪 ≠ 删除；Git 历史不改 |
 | `docs/` | 346 个跟踪文件：根 63、handoffs 84、audits 58、gccz 35、phase8 32、fixtures 30、architecture 19、plans 8 等；104 个文档引用 `tools/` 路径 | `CLAUDE.md`/`AGENTS.md` 各引用 14 处 docs 案例文档 |
 | 脚本 / Bootstrap | `一键编译覆盖推送/`（5 个 ps1 + 7 个 bat）、`AnimusForge.Bootstrap/`（4 文件）、`myaimod.sln`（2 项目） | 授权边界见第 4 节 |
+| 代码地图 | `docs/architecture/af-framework-code-map.json` 795 锚点，`sourceRevision` 仍绑 `c0f2d289`；其中 38 个指向 `tools/`（`PhaseEightParityReplayTests` 30、`af2_migrate.py` 4、`PlayerExportsEditor` 2、`PolicyEffectModule.ContractTests` 2） | 移动这些文件必须同切片刷新锚点，否则 `verify_code_map.py` 失败 |
+| 编译排除 | `AnimusForge.csproj:20` 排除 `tests\**\*.cs`，`:113` 排除 `tools\**\*.cs`；`tools/` 下现有 169 个 `.cs` | 迁入 `tests/` 的 `.cs` 仍被排除；新增任何放测试 `.cs` 的目录都要先确认不会进入产品编译 |
+
+### 2.1a 仓库 Skill 核查（`e7936b04`）
+
+| Skill | 与 J16 的关系 | 核查结果 |
+| --- | --- | --- |
+| `.claude/skills/animusforge-maintainer`（v0.2.0，通用维护） | 本包按其 `repository-structure.md`（整理与数据安全、去跟踪需分类与授权）、`validation.md`（“原样迁移”须验内容保持、真实引用、完整 Compile 集合、双版本构建；不删断言/不刷 hash 凑 PASS）、`ledger-and-handoff.md`（沿用主台账，不建竞争台账）执行 | 自带校验 `verify-af-skill.sh` / `test-af-skill.py` 在本机 **NOT-RUN**：缺 PyYAML，且 Windows 下 `/usr/bin/env bash` 不可用（11 项中 7 项因此失败，不是 Skill 内容错误）。`AGENTS.md` 记的主源 `D:/下载/af-skill/af-skill` 本机不存在，只能以仓库副本为准 |
+| `.agents/skills/af-core-framework`（主体框架） | 规定代码地图校验 `verify_code_map.py`、证据格式与交接；J16 移动文件直接影响代码地图 | 所引 4 个 docs 路径都存在；脚本以 `parents[4]` 定位仓库根，**`.agents/` 不能移动**；两模式当前 795 锚点 PASS |
+| `.agents/skills/animusforge-policy-effect-module` | 第 31、223 行把 `tools/PolicyEffectModule.ContractTests/` 写成新增政策模块的必改测试目录；第 30 行写 `AnimusForge/CustomPrompts/Policy/Effects/<moduleId>.json`，而该路径 J15 后已在 `content/modules/PolicySystem/CustomPrompts/Policy/Effects/`（19 个） | **已过期一处（Prompt 路径）**；J16 移动该测试目录时要同步改第 30、31、223 行 |
+| `animusforge-policy-effect-module-skill-draft/` | 与上一份逐字节相同；inventory 标 `HOLD:skill-draft` | 重复副本，J16b 归档退役候选（需批准） |
+| `CLAUDE.md` / `AGENTS.md` | 案例文档入口；末尾 “Local NEW-087 AF/GCCZ Fusion Overlay” 一节描述的是另一个融合工作区（`G:\AFMOD\YM0.8.7`） | 引用的 docs 案例都存在；NEW-087 一节对本分支已过期，J16c 列入待确认，不擅自删 |
 
 ### 2.2 范围
 
@@ -100,6 +113,7 @@
 - **已跟踪产物去跟踪**（每组单独列清单并获批，`git rm --cached`，文件原地保留或移到忽略的 `local/`，附 SHA manifest）：
   - `tools/PlayerExportsEditor/dist`（291 MB）→ 以 `publish-win-x64.ps1` 重新生成；发布物不入库。
   - `tools/__pycache__/*.pyc` → 直接去跟踪并加忽略。
+  - `animusforge-policy-effect-module-skill-draft/`（与 `.agents/skills/animusforge-policy-effect-module/` 逐字节相同）→ 归档退役，inventory `HOLD:skill-draft` 清零。
   - 根级 `Logs (10).zip`、`Logs (11).zip`、`EarlyException_2026-06-13.html`、31 个 `artifacts_*.png`、`DuelSettings.cs.broken-backup-*`、`错误堆栈.lnk`、`_patch_diplomacy_proactive.py` → 逐项核实无消费者后去跟踪/归档。
   - `.tmp/build_check`（80 MB 引用 DLL）→ **暂留**：构建脚本仍把它作回退候选，改动属 J16d。
 - **退出门**：inventory `unknown=0`；`HOLD:tool-distribution`/`HOLD:run-log` 清零或逐项写明保留原因；六构建与编辑器 smoke 仍通过。
@@ -132,6 +146,14 @@
 - 在同一候选上全量运行；六构建；内容 runner；StaticVerifier；编辑器隔离 smoke；inventory；代码地图两模式；`git diff --check`。
 - 更新主台账 J16 条、HANDOFF、GCCZ 侧交接（GCCZ 源码不变时只记录）。
 
+### 3.7 Skill 与代码地图同步（贯穿各切片）
+
+- **代码地图**：移动任何被锚定的文件（首批是 `tools/PhaseEightParityReplayTests` 的 30 个锚点）时，同一切片更新 `af-framework-code-map.json` 的路径/行号与 `sourceRevision`，跑 `verify_code_map.py` 两模式。不能只改 `sourceRevision` 让校验变绿。
+- **policy-effect Skill**：`PolicyEffectModule.ContractTests` 移动的同一切片，更新 `.agents/skills/animusforge-policy-effect-module/SKILL.md` 第 30、31、223 行（Prompt 路径改为 `content/modules/PolicySystem/CustomPrompts/Policy/Effects/`，测试目录改为新位置）。草稿副本按 J16b 处理，不单独同步。
+- **maintainer Skill**：只改路径引用，不改规则；`metadata.version` 不动（它是维护规则版本，不是产品版本）。若需要改规则，另开 Skill 任务。
+- **Skill 自校验**：J16e 需要 PyYAML 和 bash 才能跑 `verify-af-skill.sh` / `test-af-skill.py`。按 host-compatibility 规则**不擅自安装依赖**；要跑就在仓外建 venv（需你同意），否则记 NOT-RUN。
+- **不移动** `.agents/`、`.claude/`：`verify_code_map.py` 靠目录深度定位仓库根，`AGENTS.md` 写死这两个入口。
+
 ## 4. 授权停点
 
 | 停点 | 执行者先准备 | 未确认时 |
@@ -140,6 +162,22 @@
 | A2 一键脚本/Bootstrap 迁移 | J16d 只读映射表与验证计划 | 只读映射；不移动 |
 | A3 递归清理的测试 | 每个清理目标绝对路径与新输出根 | 在隔离根运行；不在默认根盲跑 |
 | A4 推送 | —— | Git 历史含私人数据，**严禁推送** |
+
+| A5 仓外 Python venv（PyYAML） | venv 路径、包版本 | Skill 自校验记 NOT-RUN |
+| A6 `CLAUDE.md`/`AGENTS.md` 过期段落 | NEW-087 段原文与替代建议 | 保留原文，只在台账标注 |
+
+## 4a. 注意事项
+
+1. **J16 不是全仓最后一项**。主台账顺序是 J16 → J17；`Refactor/` 清空、UNASSIGNED=0、混合大类逐符号清零都在 J17。J16 只整理测试/工具/文档/脚本的归属和可运行性。
+2. **只改路径，不改断言**。移动后如果测试失败，先查路径/工具链；是真实产品缺陷就停下记录，不在 J16 里修产品代码。
+3. **移动前后结果必须对得上**。G0 的基线表是唯一对照；PASS 变 FAIL 的切片不提交。
+4. **环境缺口不算失败**。本机已补 SDK 10.0.400（`G:\AFMOD\.dotnet-sdk10`）和 pwsh 7.4.6（`G:\AFMOD\.pwsh7`）；仍缺 `G:\Python310`（用 `py` 3.14 代替）、`local/dotnet/8.0.425`（用 `G:\AFMOD\.dotnet-sdk` 8.0.422 代替）、PyYAML。统一走环境变量，找不到报 `BLOCKED_ENV`。
+5. **递归清理先核目标**。6 处带递归删除的测试，迁移时逐个确认只删自己的输出根；新位置跑之前先看一次实际路径。
+6. **去跟踪不是删除**。`git rm --cached` 前 SHA 归档到忽略的 `local/`；Git 历史里仍有这些文件和私人数据，**严禁推送**。
+7. **文档先修链接再移动**。案例文档（`CLAUDE.md`/`AGENTS.md` 引用的）不动；历史文档移动前所有入链改完，链接检查 0 断链。
+8. **一键脚本 / Bootstrap 默认不动**。未获 A2 前只做只读映射；`.tmp/build_check` 因构建脚本回退依赖暂留。
+9. **J15 遗留并行**：F5 实机（1.4.7 部署待你确认）和 F4-A（制作组成员处理）不阻塞 J16，但 J16 不能改 `pack0.tpac`、Xihai manifest 或 Stage 内容映射。
+10. **GCCZ**：J16 只动 AF 仓库的测试/工具/文档，不触 GCCZ 源码；`tests/content` 里的 GCCZ loader harness 跟着迁时只改路径。
 
 ## 5. 风险与对策
 
