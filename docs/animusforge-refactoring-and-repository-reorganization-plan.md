@@ -5,7 +5,7 @@
 **状态：`J15_OFFLINE_CLOSED / F5_LIVE_SAVE_NOT-RUN / J16_PLANNED`。** 分支 `codex/af-j15-closeout-20260928`（基于远端 `8af57b39`，未推送）。提交：`7834662f` 编辑器隔离完整 smoke；`3b4a905c` 内容 runner 可移植（设计源锁改为已提交 LF blob、pwsh/dotnet8 可覆盖）；`e3140bb1` F4-U 最后 6 项旧 GUI 归档退役（用户批准），HOLD 6→0；`e7936b04` 交接。候选验证：六构建 0/0（1.4 引用 v1.4.7.117484），内容 runner 108/0，inventory unknown=0，Release Stage 124 项，StaticVerifier 13/0，代码地图 795 锚点两模式 PASS。
 
 **F4-A 交接给制作组负责成员（本轮不处理）**：
-- 当前唯一活动源 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac`，1,671,304 字节，SHA-256 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`，含一次 `nacisword1`；经 `content/content-map.json` 投影为 Stage 的 `AssetPackages/pack0.tpac`。运行消费者：`extensions/AnimusForge.XihaiAction/src/Runtime/ActionProviders.cs:47,217`（只检查存在且非空）；StaticVerifier `tools/StaticVerifier/Program.cs:407`。
+- 当前唯一活动源 `extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac`，1,671,304 字节，SHA-256 `95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2`，含一次 `nacisword1`；经 `content/content-map.json` 投影为 Stage 的 `AssetPackages/pack0.tpac`。运行消费者：`extensions/AnimusForge.XihaiAction/src/Runtime/ActionProviders.cs:47,217`（只检查存在且非空）；StaticVerifier `extensions/AnimusForge.XihaiAction/tools/StaticVerifier/Program.cs:404–407`。
 - 本分支对它做过的事：`b2b946d3`（远端）把重复的 `AnimusForge/AssetPackages/pack0.tpac` 同 SHA 备份到忽略的 `local/j15-tpac-archive-20260927/` 后退出活动树；本轮只读使用，未改字节。
 - 待该成员处理：`extensions/AnimusForge.XihaiAction/RELEASE_MANIFEST.json:42` 与 `MIGRATION_MANIFEST.json:19` 仍记旧 11,205,263 字节 / `22CDE3B0…` 身份，与当前包不符；来源/再分发说明；1.3/1.4 实机动作视觉。inventory 仍把该文件标 `HOLD:asset-package-provenance`，J15 内容 runner 锁当前 hash，换包时需同步这两处。
 
