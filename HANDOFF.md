@@ -1,4 +1,10 @@
-# 当前交接：J15 F4-U 旧 GUI 退役、F4-A TPAC 投影及双 Stage 13/0 已验，F4/F5 仍未闭（2026-09-27）
+# 当前交接：J15 编辑器隔离完整 smoke 已验；F4-A 来源、F4-U 余项、F5 实机仍未闭（2026-09-28）
+
+- **O2 编辑器完整 smoke PASS（离线合成数据）**：远端作者未推送的 `--isolated-full` 改动不可得，已在 `tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs` 重新实现：要求合成根预先存在、无 reparse，且 `ANIMUSFORGE_DATA_ROOT`/`TEMP`/`TMP` 全在其内，否则写入前拒绝；覆盖建包、知识规则新建/编辑+备份、人设新建/编辑+备份、原始 JSON 编辑、坏 JSON 保留、从备份恢复、包列表新旧排序、单文件/数据类型/整包软删除、4 类越界写入拒绝、最终加载校验与条件目录，并比对真实 `%LOCALAPPDATA%\AnimusForge\UserData\PlayerExports` 前后不变；不清理，保留证据。旧删除 fixture 改为 `<root>/UserData/PlayerExports` 规范路径（旧写法在当前拒写校验下必然失败）。
+- 证据：用户批准的全新根 `E:\AF-J15-editor-smoke-20260927-a\`（运行前确认不存在），`smoke.log` 为 `steps=9 real_root_unchanged=1`，退出 0；所有写入仅在其 `data/` 下。SDK：系统 dotnet 无 SDK，新装官方 10.0.400 到仓外 `G:\AFMOD\.dotnet-sdk10\`；Release 构建 0 警告 0 错误；`--path-contract`、`--path-contract-invalid` 回归 PASS；缺根、TEMP 越界两个反例在写入前拒绝。
+- 仍然：只证明独立编辑器冷路径，不是游戏内导入导出或真实玩家库验收；F4-A 来源/再分发权与实机视觉、F4-U 六项 GUI + 三张 atlas HOLD、F5 两版本实机/旧档仍 NOT-RUN；J15 不标完成。未部署、未推送。
+
+## 上一段交接（2026-09-27）
 
 - **用户要求停下，待恢复**：截至本交接，最新已验证切片为 `b2b946d3`（F4-A 重复 TPAC 归档退役、六设计源 100% rename）；F4-U 退役为 `f26e4c2b`。两份忽略归档分别在 `local/j15-tpac-archive-20260927/legacy-module/`、`local/j15-gui-archive-20260927/legacy-splitshadows/`，**不随 Git 提交**，保留当前工作区才能直接恢复；Git 历史仍含旧私人资料/图，绝不据此推送。J15 内容契约最近 **108 映射/6 HOLD PASS**、双正式 Stage 各 124 项白名单、StaticVerifier 各 **13/0**、两个本地测试 ZIP 各 124 项；这些不是游戏/旧档或发布验收。
 - **未完成的编辑器 smoke 入口改动，不可报 PASS**：用户已批准仅写全新 `E:\AF-J15-editor-smoke-20260927-a\`，但该外部目录**尚未创建**、完整 smoke **NOT-RUN**。工作树目前只有我们未提交的 `tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/Program.cs` 测试改动：新增 `--isolated-full`，要求数据根与 TEMP 在同一指定合成根，保存删除 fixture；并把旧删除 fixture 改为产品要求的 `UserData/PlayerExports` 正规路径。**尚未编译、未运行、未验证**，恢复时先检查 `git status` 和改动，再以 .NET 10 定向构建/测试；只在再次确认该 E: 根仍不存在、无 reparse 且 TEMP/TMP/`ANIMUSFORGE_DATA_ROOT` 全指向其内部后执行。不要无参数运行旧 full smoke（它会递归清理临时 fixture 并可能解析真实用户根）。`.dotnet-cli-home/` 是先前未跟踪用户现状，原样保留。
