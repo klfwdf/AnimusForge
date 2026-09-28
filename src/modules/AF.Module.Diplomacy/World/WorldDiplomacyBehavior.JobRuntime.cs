@@ -102,54 +102,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void ProcessCompletedJobs()
 	{
-		while (_completedJobs.TryDequeue(out LlmJobResult result))
-		{
-			_llmRequestLease.TryRelease(result?.JobId, result?.RuntimeGeneration ?? 0L);
-			// A completion from a previous save/runtime may share the same persisted
-			// JobId with a rebuilt request. It must not inspect, mutate or remove the
-			// current runtime's job.
-			bool runtimeIsStale = result != null
-				&& result.RuntimeGeneration == _runtimeGeneration
-				&& SaveRuntimeGuard.IsStale(result.RuntimeGeneration, "world_diplomacy_commit");
-			if (!WorldDiplomacyJobRuntimeCoordinator.IsCurrentCompletion(
-				result?.JobId,
-				result?.RuntimeGeneration ?? 0L,
-				_runtimeGeneration,
-				runtimeIsStale))
-			{
-				continue;
-			}
-			WorldDiplomacyJob job = _storage.Jobs.FirstOrDefault(x => WorldDiplomacyRoundLifecycleRules.HasJobId(x, result.JobId));
-			if (job == null)
-			{
-				continue;
-			}
-			job.IsRunning = false;
-			LogPromptCacheUsage(job, result);
-			WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(
-				job,
-				result.Content,
-				result.Success,
-				result.IsServiceFailure,
-				result.IsOutputTruncated,
-				result.Error,
-				_storage,
-				CurrentHour(),
-				FailedServiceCooldownHours,
-				HasStaleDiplomaticThreatPresentation,
-				RefreshDiplomaticThreatPresentationAndPrompt,
-				j => WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(j, BuildGenerationLegalActionSignature),
-				RefreshDiplomaticActionPresentationAndPrompt,
-				(j, content) => RejectGeneratedDraftBeforePublication(
-					j, content, ResolveKingdom(j.AuthorKingdomId), ResolveKingdom(j.TargetKingdomId), "output_truncated", null),
-				CommitGeneratedDocument,
-				CommitAnalysis,
-				CommitCompression,
-				CommitRoundPlan,
-				CommitRoundCompression,
-				CommitFailedJob,
-				RemoveJob,
-				Log);
-		}
+		var source = new CompletionSource(this);
+		WorldDiplomacyCompletionApplication.Run(ref source);
 	}
 }
