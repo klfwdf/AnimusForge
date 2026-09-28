@@ -5,8 +5,8 @@
 ## 运行
 
 ```powershell
-python F:\AnimusForge-main\tools\FoundationRuntimeContractTests\validate_foundation_runtime.py
-python F:\AnimusForge-main\tools\FoundationRuntimeContractTests\validate_foundation_runtime.py --json
+python F:\AnimusForge-main\tests\AF.Foundation.Runtime\FoundationRuntimeContractTests\validate_foundation_runtime.py
+python F:\AnimusForge-main\tests\AF.Foundation.Runtime\FoundationRuntimeContractTests\validate_foundation_runtime.py --json
 ```
 
 默认读取：

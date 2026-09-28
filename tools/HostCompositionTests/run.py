@@ -20,7 +20,7 @@ def load(name, path):
 
 extract = load('host_tick_declaration', 'tools/ChannelCutoverBoundaryTests/run.py').declaration
 inverse = load('host_source_inverse', 'tools/HostCompositionTests/source_inverse.py')
-util = load('host_dotnet', 'tools/ModuleFrameworkApiTests/run.py')
+util = load('host_dotnet', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 
 
 def fixtures(source):

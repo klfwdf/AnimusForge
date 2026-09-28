@@ -9,7 +9,7 @@ import subprocess
 import sys
 from xml.sax.saxutils import escape
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 API_SOURCES = {
     "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
@@ -21,7 +21,7 @@ API_SOURCES = {
 SOURCES = ["src/modules/AF.Module.PublicApi/V1/AfApi.cs", "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
     "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs", "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs", "Refactor/Modules/CoreDialogueContracts.cs",
     "Refactor/Modules/CoreDialogueOperation.cs", "Refactor/Modules/CoreDialogueClient.cs",
-    "Refactor/Modules/CoreDialogueServices.cs", "tools/ModuleFrameworkApiTests/NativeOwnerStub.cs",
+    "Refactor/Modules/CoreDialogueServices.cs", "tests/AF.Contracts/ModuleFrameworkApiTests/NativeOwnerStub.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs", "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
     "Refactor/Contracts/FeatureBridgeContracts.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",

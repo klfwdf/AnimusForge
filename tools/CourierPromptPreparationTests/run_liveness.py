@@ -4,7 +4,7 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--old',action='store_true');p.add_argument('--mutate',choices=['drop-failure','ignore-run','old-fallback','keep-stale-tags']);a=p.parse_args()
 def load(n,p):
  sp=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
-ex=load('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
+ex=load('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');util=load('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 inverse=load('liveness_inverse',HERE/'liveness_review.py')
 def source(path):return inverse.old_source(path) if a.old else (ROOT/path).read_text(encoding='utf-8-sig')
 courier=source('CourierDeliveryBehavior.cs') if a.old else ex.courier_source(None);partial=source('src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs')

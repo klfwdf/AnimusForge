@@ -9,7 +9,7 @@ def load(name, path):
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     return module
 
-util = load('util', 'tools/ModuleFrameworkApiTests/run.py')
+util = load('util', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 ex = load('ex', 'tools/ChannelCutoverBoundaryTests/run.py')
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--original-callbacks', action='store_true')

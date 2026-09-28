@@ -3,7 +3,7 @@ import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--dotnet', default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
+spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 def read(p):return (ROOT/p).read_text(encoding='utf-8-sig')
 def old(p):return subprocess.check_output(['git','show','4140bd04:'+p],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 code=read('tools/ChannelPersonaPreparationTests/Harness.cs.txt')

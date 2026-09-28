@@ -246,7 +246,7 @@ def main() -> int:
     parser.add_argument(
         "--fixture-root",
         type=Path,
-        default=Path(__file__).resolve().parents[2] / "docs" / "fixtures" / "phase3-module-catalog",
+        default=Path(__file__).resolve().parents[3] / "docs" / "fixtures" / "phase3-module-catalog",
     )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()

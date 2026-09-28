@@ -1,7 +1,7 @@
 from pathlib import Path
 import argparse,importlib.util,os,subprocess
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
-spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
+spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['drop_claim','expire_claimed','skip_retirement']);a=p.parse_args()
 out=HERE/'.generated'/('commit-original' if a.original else 'commit-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)

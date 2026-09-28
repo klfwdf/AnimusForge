@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
 def load(name,path):
  spec=importlib.util.spec_from_file_location(name,path);result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result);return result
 ex=load('decl',ROOT/'tools/ChannelCutoverBoundaryTests/run.py')
-util=load('util',ROOT/'tools/ModuleFrameworkApiTests/run.py')
+util=load('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text','drop-entity-text','drop-rule-text','preflight-implies-delivery']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
 source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='drop-knowledge-text':

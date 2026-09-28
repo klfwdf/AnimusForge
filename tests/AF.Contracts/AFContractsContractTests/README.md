@@ -5,8 +5,8 @@
 ## 运行
 
 ```powershell
-python F:\AnimusForge-main\tools\AFContractsContractTests\validate_af_contracts.py
-python F:\AnimusForge-main\tools\AFContractsContractTests\validate_af_contracts.py --json
+python F:\AnimusForge-main\tests\AF.Contracts\AFContractsContractTests\validate_af_contracts.py
+python F:\AnimusForge-main\tests\AF.Contracts\AFContractsContractTests\validate_af_contracts.py --json
 ```
 
 默认读取：

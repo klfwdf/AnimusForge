@@ -237,7 +237,7 @@ def main():
     args = p.parse_args()
     seen = owner_parity(args.baseline)
     signatures = owner_signatures()
-    spec = importlib.util.spec_from_file_location("framework_test_util", ROOT / "tools/ModuleFrameworkApiTests/run.py")
+    spec = importlib.util.spec_from_file_location("framework_test_util", ROOT / "tests/AF.Contracts/ModuleFrameworkApiTests/run.py")
     util = importlib.util.module_from_spec(spec); spec.loader.exec_module(util)
     out = HERE / ".generated/current"; out.mkdir(parents=True, exist_ok=True)
     (out / "owner-signatures.json").write_text(json.dumps(signatures, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

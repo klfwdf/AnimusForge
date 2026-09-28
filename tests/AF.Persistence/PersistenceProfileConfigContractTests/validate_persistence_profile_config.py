@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 FIXTURE_DIR = ROOT / "docs" / "fixtures" / "phase4-persistence-profile-config"
 KEY_PATTERN = re.compile(r'SyncData\("([^"\r\n]+)"')
 SYMBOLIC_PATTERN = re.compile(r'SyncData\((?!")')

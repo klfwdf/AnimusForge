@@ -3,7 +3,7 @@ from pathlib import Path
 import importlib.util
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 BASELINE = '955a6be314840be8d20f1320d3c7f23c7a93fe77'
 J02_BASELINE = '60072f0741114ea1c85a021ad4ad510d837b5c10'
 FOUNDATION_OWNER = ROOT/'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs'

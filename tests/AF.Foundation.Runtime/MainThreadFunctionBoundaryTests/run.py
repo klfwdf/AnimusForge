@@ -1,7 +1,7 @@
 """Run the actual two shared scheduler declarations with a physical main-thread queue fixture."""
 import argparse, importlib.util, subprocess, os, json, hashlib
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[2]; HERE=Path(__file__).parent
+ROOT=Path(__file__).resolve().parents[3]; HERE=Path(__file__).parent
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(name):return subprocess.check_output(['git','show','613ac245:'+name],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/name).read_text(encoding='utf-8-sig')

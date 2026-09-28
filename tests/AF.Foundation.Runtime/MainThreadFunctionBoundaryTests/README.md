@@ -3,9 +3,9 @@
 This suite extracts both production declarations from `ShoutBehavior.cs` and compiles them with the real `PreprocessFormatException`. Only the queue, thread identity and optional diagnostics are fixtures; no Bannerlord gameplay is emulated.
 
 ```powershell
-G:\Python310\python.exe tools/MainThreadFunctionBoundaryTests/run.py
-G:\Python310\python.exe tools/MainThreadFunctionBoundaryTests/run.py --original
-G:\Python310\python.exe tools/MainThreadFunctionBoundaryTests/run.py --mutate expire-started
+G:\Python310\python.exe tests/AF.Foundation.Runtime/MainThreadFunctionBoundaryTests/run.py
+G:\Python310\python.exe tests/AF.Foundation.Runtime/MainThreadFunctionBoundaryTests/run.py --original
+G:\Python310\python.exe tests/AF.Foundation.Runtime/MainThreadFunctionBoundaryTests/run.py --mutate expire-started
 ```
 
 - Current: 132 checks. Baseline `613ac245`: exit 1 with actual runtime failures, not compilation failures.

@@ -27,7 +27,7 @@ def load(name, path):
     return module
 
 extract = load('campaign_decl', 'tools/ChannelCutoverBoundaryTests/run.py').declaration
-util = load('campaign_dotnet', 'tools/ModuleFrameworkApiTests/run.py')
+util = load('campaign_dotnet', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 
 def read(path): return (ROOT / path).read_text(encoding='utf-8-sig')
 def old(path): return subprocess.check_output(['git', 'show', f'{BASELINE}:{path}'], cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -59,7 +59,7 @@ def verify_source():
     expected = '{'+''.join(name+'(campaignGameStarter);' for name in METHODS)+'}'
     assert compact(register[register.index('{'):]) == expected, 'Changed model registration order'
     assert compact(extract(runtime, 'internal static void RegisterCampaign(')) == compact('''internal static void RegisterCampaign(IGameStarter starterObject) { CampaignComposition.Register(starterObject); }'''), 'Parallel campaign gate/cache/owner'
-    runtime = load('snapshot_inverse', 'tools/ModuleFrameworkApiTests/source_boundary.py').restore_runtime(runtime)
+    runtime = load('snapshot_inverse', 'tests/AF.Contracts/ModuleFrameworkApiTests/source_boundary.py').restore_runtime(runtime)
     before = old('Refactor/Modules/ModuleFrameworkRuntime.cs')
     for sig in ['private static void RegisterAdapter(', 'private static bool IsKnownBridge(', 'private static string GetBridgeRejectionReason(']:
         method = extract(before,sig)
@@ -113,7 +113,7 @@ def main():
         ns='AFWarStatsTerminal.Behaviors' if n=='AfWarStatsBehavior' else 'AnimusForge'
         behaviors+='namespace '+ns+' { internal class '+n+' : TaleWorlds.CampaignSystem.CampaignBehaviorBase { } }\n'
     (out/'Behaviors.cs').write_text(behaviors,encoding='utf-8')
-    api_stubs=read('tools/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
+    api_stubs=read('tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
     (out/'ApiHostStubs.cs').write_text(api_stubs,encoding='utf-8')
     common=[HERE/'HostStubs.cs',HERE/'Program.cs',current_hosts,out/'Behaviors.cs',out/'ApiHostStubs.cs']
     sources=[ROOT/s for s in SOURCES]

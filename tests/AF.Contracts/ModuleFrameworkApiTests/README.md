@@ -29,9 +29,9 @@ These are bounded directory/API checks, not actual Campaign/Mission or old-save 
 
 ```powershell
 $dotnet = (Resolve-Path .\local\dotnet\8.0.425\dotnet.exe).Path
-python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet
+python -X utf8 -B tests/AF.Contracts/ModuleFrameworkApiTests/run.py --dotnet $dotnet
 # 同时检查实际构建产物，不加载 DLL，只读 PE 元数据：
-python -X utf8 -B tools/ModuleFrameworkApiTests/run.py --dotnet $dotnet `
+python -X utf8 -B tests/AF.Contracts/ModuleFrameworkApiTests/run.py --dotnet $dotnet `
   --artifact-root bin/Debug/single_module_artifacts `
   --artifact-root bin/Release/single_module_artifacts
 ```
