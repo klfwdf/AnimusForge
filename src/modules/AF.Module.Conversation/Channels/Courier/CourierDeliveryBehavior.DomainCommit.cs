@@ -38,24 +38,29 @@ namespace AnimusForge;
 
 public sealed partial class CourierDeliveryBehavior
 {
-	private void CommitGeneratedReplyActionsAtRecipientCore(CourierSession session, Hero recipient, bool persistHistory = true)
+	private bool CommitGeneratedReplyActionsAtRecipientCore(CourierSession session, Hero recipient, bool persistHistory = true)
 	{
 		if (session == null || session.PostprocessConsumed)
 		{
-			return;
+			return false;
 		}
 		if (!session.DeliveryApplied)
 		{
-			return;
+			return false;
 		}
 		string text = session.ReplyPostprocessedText ?? session.ReplyText ?? "";
 		if (recipient == null || recipient.IsDead)
 		{
+			FailModuleCourierSession(session, "courier.recipient_unavailable");
 			session.PostprocessConsumed = true;
 			session.ReplyPostprocessedText = StripCourierActionTags(text);
 			Log("postprocess skipped recipient invalid session=" + session.Id);
-			return;
+			return false;
 		}
+		bool actionsAccepted = true;
+		bool historyAccepted = true;
+		// Consume before domain handlers: reentrant arrivals must not replay any accepted action.
+		session.PostprocessConsumed = true;
 		try
 		{
 			TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);
@@ -66,6 +71,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply kingdom agenda custom policy tag failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
@@ -75,6 +81,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply vote deal tags failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
@@ -83,6 +90,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply world map tags failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
@@ -91,7 +99,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				foreach (string fact in nobleFacts ?? new List<string>())
 				{
-					MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+					historyAccepted &= CommitCourierDialogueHistory(recipient, null, null, fact);
 				}
 				foreach (string note in nobleNotifications ?? new List<string>())
 				{
@@ -104,6 +112,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply noble gathering tags failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
@@ -112,7 +121,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				foreach (string fact in facts ?? new List<string>())
 				{
-					MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
+					historyAccepted &= CommitCourierDialogueHistory(recipient, null, null, fact);
 				}
 				foreach (string note in notifications ?? new List<string>())
 				{
@@ -122,6 +131,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply party transfer tags failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
@@ -137,6 +147,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply reward tags failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
@@ -145,6 +156,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply vanilla issue tags failed session=" + session.Id + " error=" + ex.Message);
 		}
 		try
@@ -153,15 +165,22 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		catch (Exception ex)
 		{
+			actionsAccepted = false;
 			Log("apply marriage tags failed session=" + session.Id + " error=" + ex.Message);
 		}
+		LegacyChannelActionCommitResult remaining = new LegacyChannelActionCommitter().Prepare(text);
+		actionsAccepted &= !remaining.HasActions && remaining.Execution.Status == InteractionStatus.Succeeded;
 		session.ReplyPostprocessedText = text;
-		session.PostprocessConsumed = true;
 		if (persistHistory)
 		{
-			PersistCourierReplyToHistories(session, recipient, text);
+			historyAccepted &= PersistCourierReplyToHistories(session, recipient, text);
 		}
+		if (actionsAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.Actions);
+		if (persistHistory && historyAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.ReplyHistory);
+		if (!actionsAccepted || !historyAccepted)
+			FailModuleCourierSession(session, actionsAccepted ? "courier.history_unconfirmed" : "courier.actions_unconfirmed");
 		Log("postprocess committed at recipient session=" + session.Id + " remainingLen=" + (text ?? "").Length);
+		return actionsAccepted && historyAccepted;
 	}
 
 	private InteractionStatus ExecuteCourierActionPlanForExternal(
@@ -200,10 +219,9 @@ public sealed partial class CourierDeliveryBehavior
 				return InteractionStatus.RejectedByValidation;
 			}
 			session.ReplyPostprocessedText = actionPlan.RawPostprocessId;
-			CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory: false);
-			return session.PostprocessConsumed
+			return CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory: false)
 				? InteractionStatus.Executed
-				: InteractionStatus.RejectedByValidation;
+				: InteractionStatus.NonRetryableFailure;
 		}
 		catch (Exception ex)
 		{
@@ -286,13 +304,19 @@ public sealed partial class CourierDeliveryBehavior
 		return true;
 	}
 
-	private void PersistCourierReplyToHistories(CourierSession session, Hero recipient, string processedReplyText)
+	private static bool CommitCourierDialogueHistory(Hero recipient, string player, string reply, string fact)
+	{
+		return recipient != null && MyBehavior.CommitExternalDialogueHistory(SafeHeroId(recipient), false,
+			recipient.Name?.ToString() ?? "NPC", player, reply, fact)?.HistoryWritten == true;
+	}
+
+	private bool PersistCourierReplyToHistories(CourierSession session, Hero recipient, string processedReplyText)
 	{
 		try
 		{
 			if (session == null || recipient == null)
 			{
-				return;
+				return false;
 			}
 			// Keep role-play action prose in the shared dialogue history for later
 			// postprocessing. The player-facing letter is still sanitized at display.
@@ -304,7 +328,7 @@ public sealed partial class CourierDeliveryBehavior
 			reply = (reply ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(reply))
 			{
-				return;
+				return false;
 			}
 			string historyLine = "【回信】" + reply;
 			string npcName = (recipient.Name?.ToString() ?? "NPC").Trim();
@@ -312,14 +336,16 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				npcName = "NPC";
 			}
-			MyBehavior.AppendExternalDialogueHistory(recipient, null, historyLine, "[AFEF NPC行为补充] " + npcName + "已通过信使写下回信，信使正在把回信带给玩家。");
+			bool accepted = CommitCourierDialogueHistory(recipient, null, historyLine, "[AFEF NPC行为补充] " + npcName + "已通过信使写下回信，信使正在把回信带给玩家。");
 			ShoutBehavior.RecordNativeConversationNpcLineForExternal(recipient, recipient.CharacterObject, npcName, historyLine);
 			PlayerNotorietyBehavior.NoteCourierReplyForExternal(recipient);
 			Log("reply history persisted session=" + session.Id + " recipient=" + SafeHeroId(recipient));
+			return accepted;
 		}
 		catch (Exception ex)
 		{
 			Log("persist reply history failed session=" + (session?.Id ?? "") + " error=" + ex.Message);
 		}
+		return false;
 	}
 }

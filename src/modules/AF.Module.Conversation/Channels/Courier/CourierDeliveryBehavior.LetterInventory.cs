@@ -84,7 +84,7 @@ public sealed partial class CourierDeliveryBehavior
 		return record;
 	}
 
-	private void RememberCourierLetterInventoryRecord(string itemStringId, string displayName, string letterBody, string templateStringId, uint objectId, Hero sender, string senderName, bool isReply, int amount)
+	private bool RememberCourierLetterInventoryRecord(string itemStringId, string displayName, string letterBody, string templateStringId, uint objectId, Hero sender, string senderName, bool isReply, int amount)
 	{
 		try
 		{
@@ -118,12 +118,14 @@ public sealed partial class CourierDeliveryBehavior
 			if (record != null)
 			{
 				_courierLetterInventoryRecords[record.Key] = record;
+				return true;
 			}
 		}
 		catch (Exception ex)
 		{
 			Log("remember courier letter inventory failed item=" + (itemStringId ?? "") + " error=" + ex.Message);
 		}
+		return false;
 	}
 
 	private void DiscoverCourierLetterInventoryRecordsFromPlayerRoster(string reason)
@@ -450,21 +452,21 @@ public sealed partial class CourierDeliveryBehavior
 		}
 	}
 
-	private static void AddCourierLetterToPlayerInventory(CourierSession session, Hero sender, string senderName, string letterText, bool isReply)
+	private static bool AddCourierLetterToPlayerInventory(CourierSession session, Hero sender, string senderName, string letterText, bool isReply)
 	{
 		try
 		{
 			string body = CourierVisibleLetterSanitizer.Clean(AnimusForgeTextInputSanitizer.SanitizeMultiline(StripCourierActionTags(letterText ?? ""), AnimusForgeTextInputSanitizer.MaxCourierLetterChars));
 			if (string.IsNullOrWhiteSpace(body))
 			{
-				return;
+				return false;
 			}
 			ItemRoster roster = PartyBase.MainParty?.ItemRoster ?? MobileParty.MainParty?.ItemRoster;
 			if (roster == null)
 			{
 				Log("courier letter inventory item skipped: player item roster missing session=" + (session?.Id ?? "") + " reply=" + isReply);
 				InformationManager.DisplayMessage(new InformationMessage("信件物品未加入库存：找不到玩家库存。", Colors.Red));
-				return;
+				return false;
 			}
 			string name = string.IsNullOrWhiteSpace(senderName) ? (sender?.Name?.ToString() ?? "NPC") : senderName.Trim();
 			string displayName = BuildCourierLetterInventoryTitle(name, isReply);
@@ -478,7 +480,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				Log("courier letter inventory item create failed session=" + (session?.Id ?? "") + " reply=" + isReply);
 				InformationManager.DisplayMessage(new InformationMessage("信件物品生成失败，未加入库存。", Colors.Red));
-				return;
+				return false;
 			}
 			uint objectId = 0u;
 			int after = CountItemInRoster(roster, itemStringId, out ItemObject generatedItem);
@@ -487,7 +489,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				Log("courier letter inventory item add not observed session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply);
 				InformationManager.DisplayMessage(new InformationMessage("信件物品生成了，但未能写入玩家库存。", Colors.Red));
-				return;
+				return false;
 			}
 			RewardSystemBehavior.TryPrimeGeneratedInventoryItemForExternal(itemStringId, displayName, templateItemId, objectId, out string normalizedItemStringId, out string templateStringId, out uint normalizedObjectId, "courier_letter_added_prime");
 			if (!string.IsNullOrWhiteSpace(normalizedItemStringId))
@@ -498,15 +500,17 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				objectId = normalizedObjectId;
 			}
-			Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, body, templateStringId, objectId, sender, name, isReply, after);
+			bool remembered = Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, body, templateStringId, objectId, sender, name, isReply, after) == true;
 			InformationManager.DisplayMessage(new InformationMessage("信件已放入玩家库存。", Colors.Green));
 			Log("courier letter inventory item added session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply + " clanTier=" + senderClanTier + " template=" + templateItemId + " nameLen=" + displayName.Length + " itemName=" + (itemName ?? ""));
+			return remembered;
 		}
 		catch (Exception ex)
 		{
 			Log("courier letter inventory item add failed session=" + (session?.Id ?? "") + " reply=" + isReply + " error=" + ex.Message);
 			InformationManager.DisplayMessage(new InformationMessage("信件物品加入库存失败：" + ex.Message, Colors.Red));
 		}
+		return false;
 	}
 
 	private static int CountItemInRoster(ItemRoster roster, string itemStringId)

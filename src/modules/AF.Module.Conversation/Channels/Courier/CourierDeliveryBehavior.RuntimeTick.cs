@@ -80,6 +80,7 @@ public sealed partial class CourierDeliveryBehavior
 
 	private void ResetTransientRuntimeForLoadedSave(string reason)
 	{
+		InvalidateCourierDraftTickets();
 		try
 		{
 			_pendingFlow = null;

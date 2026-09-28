@@ -5,7 +5,7 @@ from pathlib import Path
 import argparse,importlib.util,os,subprocess,json,hashlib
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['leak-response','skip-accept','drop-caller-token','thinking-still-enabled','lose-retry-after']);a=p.parse_args()
-spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(f):return (ROOT/f).read_text(encoding='utf-8-sig')
 for consumer in ['PolicySystem/Npc/PolicyLlmClient.cs','WorldDiplomacyLlmClient.cs']:
  domain=read(consumer)

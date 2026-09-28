@@ -1,0 +1,47 @@
+// Test-only control over the existing admission/lifecycle fixtures, never shipped in AF.
+// The unrelated consumer can operate the world, but cannot use internal Core API types.
+public static class CourierTestHost
+{
+    private static CourierDeliveryBehavior Owner;
+    public static int Sends => Owner.Sends;
+    public static int Actions => Life.Actions;
+    public static int HistoryWrites => Life.History.Count;
+    public static int Letters => Life.Letters;
+    public static int Associations => Owner.ModuleCount;
+    public static void Reset(string mode = "Normal")
+    {
+        TWParallel.MainThreadId = Environment.CurrentManagedThreadId;
+        CourierDeliveryBehavior.Pump();
+        Owner = CourierDeliveryBehavior.NewOwner();
+        Owner.Open("recipient");
+        Owner.SetMode(Enum.Parse<CourierPayloadMode>(mode));
+        Owner.ResetLifecycle();
+    }
+    public static void Pump() => CourierDeliveryBehavior.Pump();
+    public static void Prepare() => Owner.PrepareReply();
+    public static void Arrive() => Owner.Arrive();
+    public static void Return() => Owner.ReturnNow();
+    public static void UiSend() => CourierLetterInputPopup.Last.Send("ui letter");
+    public static void EditDraft() => Owner.Open("new draft");
+    public static void Retire() => Owner.Retire();
+    public static void Fault(string kind)
+    {
+        switch (kind)
+        {
+            case "history": Life.FailHistory = true; break;
+            case "action": Life.FailAction = true; break;
+            case "payload": Life.FailPayload = true; break;
+            case "inventory": Life.FailInventory = true; break;
+            case "record": Life.FailRecord = true; break;
+            case "contents": Life.FailContents = true; break;
+            case "cleanup": CourierFixture.FailCleanup = true; break;
+            case "destroyed": Owner.DestroyNow(); break;
+            case "missing": Owner.EndTransport(true); break;
+            case "recipient": Owner.KillRecipient(); break;
+            case "generation": SaveRuntimeGuard.Generation++; Owner.CheckIdentity(); break;
+            case "retire": Owner.Retire(); break;
+            case "replacement": Owner.ReplaceTransport(); break;
+            default: throw new ArgumentException(kind);
+        }
+    }
+}

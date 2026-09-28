@@ -25,14 +25,17 @@ internal static class Program
     private static Assembly _moduleAssembly;
     private static Assembly _coreAssembly;
     private static bool _unifiedModuleLayout;
+    private static bool _preserveFixtures;
 
     private static int Main(string[] args)
     {
-        if (args.Length != 2)
+        if (args.Length != 2 &&
+            !(args.Length == 3 && string.Equals(args[2], "--preserve-fixtures", StringComparison.Ordinal)))
         {
-            Console.Error.WriteLine("Usage: StaticVerifier <module-root> <game-root>");
+            Console.Error.WriteLine("Usage: StaticVerifier <module-root> <game-root> [--preserve-fixtures]");
             return 2;
         }
+        _preserveFixtures = args.Length == 3;
         string moduleRoot = Path.GetFullPath(args[0]);
         string gameRoot = Path.GetFullPath(args[1]);
         _verificationModuleRoot = moduleRoot;
@@ -1211,7 +1214,7 @@ internal static class Program
         }
         finally
         {
-            Directory.Delete(temporaryRoot, true);
+            if (!_preserveFixtures) Directory.Delete(temporaryRoot, true);
         }
     }
 
@@ -1537,7 +1540,7 @@ internal static class Program
         }
         finally
         {
-            Directory.Delete(temporaryRoot, true);
+            if (!_preserveFixtures) Directory.Delete(temporaryRoot, true);
         }
 
         string englishPath = Path.Combine(
@@ -1675,7 +1678,7 @@ internal static class Program
         }
         finally
         {
-            Directory.Delete(temporaryRoot, true);
+            if (!_preserveFixtures) Directory.Delete(temporaryRoot, true);
         }
 
         Type runtimeEffect = module.GetType(

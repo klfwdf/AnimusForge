@@ -1,0 +1,169 @@
+{
+  "baseline": "fb4af2d81418febe7696963e2766801b683ad3ce",
+  "candidate": "e58f3558",
+  "scope": "J14b additive Courier ticket/submit/receipt and shared client routing; no Native UI/admission/commit algorithm changes. Exact diff, not a replacement of historical Native hashes.",
+  "evidence": [
+    "Courier public consumer 264 current and reordered",
+    "Native/Scene current consumer 55",
+    "baseline 39cf9d47 Native consumer 41 against old and unchanged binary against current",
+    "four DLL metadata and six current builds"
+  ],
+  "files": {
+    "Refactor/Modules/CoreDialogueContracts.cs": {
+      "beforeSha256": "61fc4a9160941ede3ebb339f8cd62dff7b9d0fd8b1990330f2e664f110765668",
+      "afterSha256": "fd79f00a50e96f38faa9fa2e5364745c242b83c9b95c775d4d1e4d06d3b9a08e",
+      "hunks": [
+        {
+          "oldStart": 11,
+          "oldEnd": 11,
+          "before": "",
+          "after": "\n[Flags]\ninternal enum CoreCourierAcceptedSteps\n{\n    None = 0, Dispatched = 1, ReplyPrepared = 2, Arrived = 4, Payload = 8,\n    DeliveryHistory = 16, Actions = 32, ReplyHistory = 64, ReplyDelivered = 128, ContentsReturned = 256\n}\ninternal enum CoreCourierTransportOutcome { NotStarted, InTransit, Returned, Destroyed, Missing, Unconfirmed }\n\n// Independent stages: a reply may be prepared before arrival, but is not public until delivery.\ninternal sealed class CoreCourierReceipt\n{\n    internal CoreCourierReceipt(CoreCourierAcceptedSteps accepted, CoreCourierTransportOutcome transport)\n    { Accepted = accepted; Transport = transport; }\n    internal CoreCourierAcceptedSteps Accepted { get; }\n    internal CoreCourierTransportOutcome Transport { get; }\n    internal bool Has(CoreCourierAcceptedSteps step) => (Accepted & step) == step;\n    internal bool Complete => Transport == CoreCourierTransportOutcome.Returned\n        && Has(CoreCourierAcceptedSteps.Dispatched | CoreCourierAcceptedSteps.ReplyPrepared\n            | CoreCourierAcceptedSteps.Arrived | CoreCourierAcceptedSteps.Payload | CoreCourierAcceptedSteps.DeliveryHistory\n            | CoreCourierAcceptedSteps.Actions | CoreCourierAcceptedSteps.ReplyHistory\n            | CoreCourierAcceptedSteps.ReplyDelivered | CoreCourierAcceptedSteps.ContentsReturned);\n}\n"
+        },
+        {
+          "oldStart": 29,
+          "oldEnd": 30,
+          "before": "        IReadOnlyList<CoreSceneUtterance> sceneUtterances = null)\n",
+          "after": "        IReadOnlyList<CoreSceneUtterance> sceneUtterances = null, CoreCourierReceipt courier = null)\n"
+        },
+        {
+          "oldStart": 33,
+          "oldEnd": 33,
+          "before": "",
+          "after": "        Courier = courier;\n"
+        },
+        {
+          "oldStart": 43,
+          "oldEnd": 43,
+          "before": "",
+          "after": "    internal CoreCourierReceipt Courier { get; }\n"
+        }
+      ]
+    },
+    "Refactor/Modules/CoreDialogueOperation.cs": {
+      "beforeSha256": "5f1fcd17960a8389cbfa744701174200b425c6bf13cd9cc3d50869f4ec6bc013",
+      "afterSha256": "e5d0fa83b9ed54be9745d397c7484fa6f4061c23abbb161ebd2f51188ec8868d",
+      "hunks": [
+        {
+          "oldStart": 20,
+          "oldEnd": 20,
+          "before": "",
+          "after": "    private CoreCourierReceipt _courierReceipt;\n    private string _deliveredCourierReply = \"\";\n"
+        },
+        {
+          "oldStart": 26,
+          "oldEnd": 26,
+          "before": "",
+          "after": "        if (channel == CoreDialogueChannel.Courier)\n            _courierReceipt = new CoreCourierReceipt(CoreCourierAcceptedSteps.None, CoreCourierTransportOutcome.NotStarted);\n"
+        },
+        {
+          "oldStart": 95,
+          "oldEnd": 95,
+          "before": "",
+          "after": "    internal void RecordCourierProgress(CoreCourierReceipt receipt, string deliveredReply = null)\n    {\n        lock (_gate)\n        {\n            if (Channel != CoreDialogueChannel.Courier || _snapshot.State != CoreDialogueState.Running || receipt == null) return;\n            _courierReceipt = receipt;\n            if (receipt.Has(CoreCourierAcceptedSteps.ReplyDelivered) && deliveredReply != null)\n                _deliveredCourierReply = deliveredReply;\n            _snapshot = Result(CoreDialogueState.Running, _snapshot.Effects, _snapshot.ReasonCode);\n        }\n    }\n\n"
+        },
+        {
+          "oldStart": 110,
+          "oldEnd": 111,
+          "before": "        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason, reply, _sceneUtterances);\n",
+          "after": "        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason,\n            Channel == CoreDialogueChannel.Courier ? _deliveredCourierReply : reply, _sceneUtterances, _courierReceipt);\n"
+        }
+      ]
+    },
+    "Refactor/Modules/CoreDialogueClient.cs": {
+      "beforeSha256": "b453faa9557fb92d5d9969401a0f933e73b62f5334b9d946c88cdc7d73b453a1",
+      "afterSha256": "a59070fd9cc1b2c400830bc8f0f87f90360fe0beb961d22a08b70f61473d00f2",
+      "hunks": [
+        {
+          "oldStart": 32,
+          "oldEnd": 32,
+          "before": "",
+          "after": "\n    internal CoreDialogueOperation SubmitCourier(string contextTicket, string requestId, string playerText)\n        => SubmitForContext(CoreDialogueChannel.Courier, contextTicket, requestId, playerText,\n            CourierDeliveryBehavior.SubmitModuleCourierDialogue);\n\n    internal string CaptureCourierContextTicket()\n    {\n        lock (_gate) if (_disposed) return null;\n        string ticket = CourierDeliveryBehavior.IssueModuleCourierTicket(ClientId);\n        if (ticket == null) return null;\n        lock (_gate) if (!_disposed) return ticket;\n        CourierDeliveryBehavior.RevokeModuleCourierTickets(ClientId);\n        return null;\n    }\n"
+        },
+        {
+          "oldStart": 95,
+          "oldEnd": 95,
+          "before": "",
+          "after": "        CourierDeliveryBehavior.RevokeModuleCourierTickets(ClientId);\n"
+        }
+      ]
+    },
+    "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs": {
+      "beforeSha256": "49c0a3e170ea53da978b2895dfb16fa38b042a1cf051834c6279e9ca2e94229f",
+      "afterSha256": "95ccca5e1c70f87a1b4ae863d4bdd56716eb795ce4ea85daa2b09859a7767346",
+      "hunks": [
+        {
+          "oldStart": 31,
+          "oldEnd": 31,
+          "before": "",
+          "after": "}\n\n/// <summary>Courier transport outcome, independent of accepted dialogue effects.</summary>\npublic enum AfCourierTransportOutcome\n{\n    NotStarted = 0,\n    InTransit = 1,\n    Returned = 2,\n    Destroyed = 3,\n    Missing = 4,\n    Unconfirmed = 5\n}\n\n/// <summary>\n/// Immutable, game-object-free Courier observations. Stages need not occur in property order:\n/// a reply may be prepared before arrival. False means not confirmed, not proof of rollback.\n/// Overall success is reported only by AfDialogueResult.State after required return cleanup.\n/// </summary>\npublic sealed class AfCourierReceipt\n{\n    public AfCourierTransportOutcome Transport { get; }\n    public bool Dispatched { get; }\n    public bool ReplyPrepared { get; }\n    public bool Arrived { get; }\n    public bool PayloadAccepted { get; }\n    public bool DeliveryHistoryAccepted { get; }\n    public bool ActionsAccepted { get; }\n    public bool ReplyHistoryAccepted { get; }\n    public bool ReplyDelivered { get; }\n    public bool ContentsReturned { get; }\n\n    internal AfCourierReceipt(AfCourierTransportOutcome transport, bool dispatched, bool replyPrepared,\n        bool arrived, bool payloadAccepted, bool deliveryHistoryAccepted, bool actionsAccepted,\n        bool replyHistoryAccepted, bool replyDelivered, bool contentsReturned)\n    {\n        Transport = transport; Dispatched = dispatched; ReplyPrepared = replyPrepared;\n        Arrived = arrived; PayloadAccepted = payloadAccepted; DeliveryHistoryAccepted = deliveryHistoryAccepted;\n        ActionsAccepted = actionsAccepted; ReplyHistoryAccepted = replyHistoryAccepted;\n        ReplyDelivered = replyDelivered; ContentsReturned = contentsReturned;\n    }\n"
+        }
+      ]
+    },
+    "src/modules/AF.Module.PublicApi/V1/AfApi.cs": {
+      "beforeSha256": "ce3433e34f09277859f25b2c49b21328090b4a069f47488b2dee5bf3e8c8b375",
+      "afterSha256": "09d5f3329a2108603e87af433cf0c3f341aafebe36c10d2f044b2e92522db115",
+      "hunks": [
+        {
+          "oldStart": 10,
+          "oldEnd": 11,
+          "before": "/// V1 提供只读目录、Native 与 Scene 请求票据；Courier 仍未开放。\n",
+          "after": "/// V1 提供只读目录及 Native、Scene、Courier 请求票据；由各渠道真实 owner 校验准入。\n"
+        },
+        {
+          "oldStart": 23,
+          "oldEnd": 24,
+          "before": "            Unsupported(AfCapabilityIds.CourierSubmit),\n",
+          "after": "            new AfCapabilityInfo(AfCapabilityIds.CourierSubmit, AfCapabilityState.Available, \"api.available\"),\n"
+        }
+      ]
+    },
+    "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs": {
+      "beforeSha256": "09b00efcd70e3c24d7df6478e3102e209acc5e8e3f55f415f2c59b6109d2a33b",
+      "afterSha256": "117d10488aa28006d668d81b2a92992da35c88e435f1289a971a738a8b7d5957",
+      "hunks": [
+        {
+          "oldStart": 27,
+          "oldEnd": 28,
+          "before": "/// <summary>Detached receipt; Completed means the existing owner's action/history phase returned, not TTS finished.</summary>\n",
+          "after": "/// <summary>Detached owner receipt; Courier additionally waits for reply delivery and transport cleanup. Not a TTS playback receipt.</summary>\n"
+        },
+        {
+          "oldStart": 38,
+          "oldEnd": 38,
+          "before": "",
+          "after": "    /// <summary>Courier-only stages; null for other channels or rejection before a Courier operation was admitted.</summary>\n    public AfCourierReceipt Courier { get; }\n"
+        },
+        {
+          "oldStart": 46,
+          "oldEnd": 46,
+          "before": "",
+          "after": "        Courier = AfV1DialogueProjection.Courier(source.Courier);\n"
+        },
+        {
+          "oldStart": 69,
+          "oldEnd": 70,
+          "before": "/// One isolated consumer namespace. Native uses the active AF conversation; Scene claims an AF-issued UI context ticket.\n",
+          "after": "/// One isolated consumer namespace. Native uses the active AF conversation; Scene/Courier claim AF-issued UI context tickets.\n"
+        },
+        {
+          "oldStart": 87,
+          "oldEnd": 87,
+          "before": "",
+          "after": "    /// <summary>Main-thread capture of the existing fully prepared Courier UI draft; null means unavailable. Does not dispatch.</summary>\n    public string CaptureCourierContextTicket() => _client.CaptureCourierContextTicket();\n    /// <summary>\n    /// Claim a Courier draft from any thread. Completion may span many Campaign ticks and requires actual reply delivery.\n    /// Cancellation only wins before dispatch; disposal/load/retirement never promises network abort or effect rollback.\n    /// </summary>\n    public AfDialogueOperation SubmitCourier(string contextTicket, string requestId, string playerText)\n        => new AfDialogueOperation(_client.SubmitCourier(contextTicket, requestId, playerText));\n"
+        }
+      ]
+    },
+    "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs": {
+      "beforeSha256": "056c88e02fd05a89a8c6c763dccba303798c4c63653df03ef3cfd2ff19ea59a5",
+      "afterSha256": "db382122d4750925ac0a9fa88ce89c8d2d8db63b8614d08b35addb4ec96af5f8",
+      "hunks": [
+        {
+          "oldStart": 8,
+          "oldEnd": 8,
+          "before": "",
+          "after": "    internal static AfCourierReceipt Courier(CoreCourierReceipt source)\n    {\n        if (source == null) return null;\n        return new AfCourierReceipt(\n            transport: CourierTransport(source.Transport),\n            dispatched: source.Has(CoreCourierAcceptedSteps.Dispatched),\n            replyPrepared: source.Has(CoreCourierAcceptedSteps.ReplyPrepared),\n            arrived: source.Has(CoreCourierAcceptedSteps.Arrived),\n            payloadAccepted: source.Has(CoreCourierAcceptedSteps.Payload),\n            deliveryHistoryAccepted: source.Has(CoreCourierAcceptedSteps.DeliveryHistory),\n            actionsAccepted: source.Has(CoreCourierAcceptedSteps.Actions),\n            replyHistoryAccepted: source.Has(CoreCourierAcceptedSteps.ReplyHistory),\n            replyDelivered: source.Has(CoreCourierAcceptedSteps.ReplyDelivered),\n            contentsReturned: source.Has(CoreCourierAcceptedSteps.ContentsReturned));\n    }\n\n    private static AfCourierTransportOutcome CourierTransport(CoreCourierTransportOutcome value)\n    {\n        switch (value)\n        {\n            case CoreCourierTransportOutcome.NotStarted: return AfCourierTransportOutcome.NotStarted;\n            case CoreCourierTransportOutcome.InTransit: return AfCourierTransportOutcome.InTransit;\n            case CoreCourierTransportOutcome.Returned: return AfCourierTransportOutcome.Returned;\n            case CoreCourierTransportOutcome.Destroyed: return AfCourierTransportOutcome.Destroyed;\n            case CoreCourierTransportOutcome.Missing: return AfCourierTransportOutcome.Missing;\n            default: return AfCourierTransportOutcome.Unconfirmed;\n        }\n    }\n\n"
+        }
+      ]
+    }
+  }
+}

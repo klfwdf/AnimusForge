@@ -25,7 +25,7 @@ public sealed class AfSceneUtterance
     }
 }
 
-/// <summary>Detached receipt; Completed means the existing owner's action/history phase returned, not TTS finished.</summary>
+/// <summary>Detached owner receipt; Courier additionally waits for reply delivery and transport cleanup. Not a TTS playback receipt.</summary>
 public sealed class AfDialogueResult
 {
     public int ContractVersion => 1;
@@ -36,6 +36,8 @@ public sealed class AfDialogueResult
     public string ReasonCode { get; }
     public string Reply { get; }
     public IReadOnlyList<AfSceneUtterance> SceneUtterances { get; }
+    /// <summary>Courier-only stages; null for other channels or rejection before a Courier operation was admitted.</summary>
+    public AfCourierReceipt Courier { get; }
     // Even failed turns can have already executed raw actions. Retry only with the same client + ID.
     public bool CanRetryAutomatically => false;
 
@@ -44,6 +46,7 @@ public sealed class AfDialogueResult
         ClientId = source.ClientId; RequestId = source.RequestId;
         State = AfV1DialogueProjection.State(source.State); EffectState = AfV1DialogueProjection.Effects(source.Effects);
         ReasonCode = source.ReasonCode; Reply = source.Reply;
+        Courier = AfV1DialogueProjection.Courier(source.Courier);
         var utterances = new List<AfSceneUtterance>(source.SceneUtterances.Count);
         foreach (CoreSceneUtterance utterance in source.SceneUtterances) utterances.Add(new AfSceneUtterance(utterance));
         SceneUtterances = new ReadOnlyCollection<AfSceneUtterance>(utterances);
@@ -67,7 +70,7 @@ public sealed class AfDialogueOperation
 }
 
 /// <summary>
-/// One isolated consumer namespace. Native uses the active AF conversation; Scene claims an AF-issued UI context ticket.
+/// One isolated consumer namespace. Native uses the active AF conversation; Scene/Courier claim AF-issued UI context tickets.
 /// Keep this object and reuse a request ID for retries. A new client is a new namespace, not a retry.
 /// </summary>
 public sealed class AfDialogueClient : IDisposable
@@ -85,5 +88,13 @@ public sealed class AfDialogueClient : IDisposable
     /// <summary>Claim one opaque Scene ticket. Cancellation only wins before the host's main-thread claim.</summary>
     public AfDialogueOperation SubmitScene(string contextTicket, string requestId, string playerText)
         => new AfDialogueOperation(_client.SubmitScene(contextTicket, requestId, playerText));
+    /// <summary>Main-thread capture of the existing fully prepared Courier UI draft; null means unavailable. Does not dispatch.</summary>
+    public string CaptureCourierContextTicket() => _client.CaptureCourierContextTicket();
+    /// <summary>
+    /// Claim a Courier draft from any thread. Completion may span many Campaign ticks and requires actual reply delivery.
+    /// Cancellation only wins before dispatch; disposal/load/retirement never promises network abort or effect rollback.
+    /// </summary>
+    public AfDialogueOperation SubmitCourier(string contextTicket, string requestId, string playerText)
+        => new AfDialogueOperation(_client.SubmitCourier(contextTicket, requestId, playerText));
     public void Dispose() => _client.Dispose();
 }

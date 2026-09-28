@@ -4,7 +4,7 @@
 
 $ErrorActionPreference = "Stop"
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
-    $OutputPath = Join-Path (Split-Path -Parent $PSScriptRoot) "AnimusForge\ModuleData\TownAmbientDialogue.json"
+    $OutputPath = Join-Path (Split-Path -Parent $PSScriptRoot) "content\modules\AF.Module.Conversation\ModuleData\TownAmbientDialogue.json"
 }
 
 $script:lines = New-Object System.Collections.Generic.List[object]

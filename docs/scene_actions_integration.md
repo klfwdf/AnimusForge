@@ -10,8 +10,10 @@
   第二个运行时 DLL。
 - AF `SubModule` 在 Mission behavior 初始化前注册动作、阵前演讲和演讲表演三个
   behavior，并在初始化后核验会话状态。
-- MCM、严格 JSON、双语文本、动作 XML 与 TPAC 由单一 `Modules/AnimusForge`
-  发布。独立运行时只保留在 `extensions` 中作为源码边界和测试基线。
+- MCM、严格 JSON、双语文本与动作 XML 走单一 `Modules/AnimusForge`；TPAC
+  尚未进入当前受管 Stage/主 ZIP。两份仓内 `pack0.tpac` 虽字节相同，却与扩展
+  `MIGRATION_MANIFEST.json`/`RELEASE_MANIFEST.json` 中的 11,205,263 字节身份不符，
+  来源、完整资源与分发权仍须核实，不能将当前资源状态视为完整启用。
 - MCM 可见标题为“自然语言动作与阵前演讲”；其中“自然语言回复动作”只控制普通
   AF 对话/场景喊话回复的动作解析与播放，“启用阵前演讲”独立控制 T/Y 演讲、听众
   回应、战吼和演讲后发令。旧零散字段仅保留兼容读取，两个子系统不会互相关停。
@@ -23,7 +25,8 @@
 ## 权威边界
 
 迁移后以本仓库中的 `extensions/AnimusForge.XihaiAction` 为后续整合源码。
-游戏目录里的独立模块在部署时改名为禁用备份；运行时只加载 `AnimusForge`。
+当前受管部署不会改名或清理游戏目录里的独立模块；运行时只能启用 `AnimusForge`，
+旧独立模块须在启动前单独禁用。
 
 ## 直接整合路线
 

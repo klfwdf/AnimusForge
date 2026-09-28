@@ -1,0 +1,583 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PreprocessPrompts.json",
+      "target": "ModuleData/PreprocessPrompts.json",
+      "logicalName": "AnimusForge.Defaults.PreprocessPrompts.json"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/RpItemIntroductionPrompts.json",
+      "target": "ModuleData/RpItemIntroductionPrompts.json",
+      "logicalName": "AnimusForge.Defaults.RpItemIntroductionPrompts.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json",
+      "target": "ModuleData/GcczTownPrompt.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownPrompt.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownEntryPresentation.zh-CN.json",
+      "target": "ModuleData/GcczTownEntryPresentation.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownActionPresentation.zh-CN.json",
+      "target": "ModuleData/GcczTownActionPresentation.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownActionPresentation.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownHiddenResidents.zh-CN.json",
+      "target": "ModuleData/GcczTownHiddenResidents.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownHiddenResidents.zh-CN.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownManual.zh-CN.json",
+      "target": "ModuleData/GcczTownManual.zh-CN.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownManual.zh-CN.json"
+    },
+    {
+      "owner": "AF.Foundation.UI",
+      "source": "content/foundation/AF.Foundation.UI/GUI/Brushes/AFCourierLetterBrushes.xml",
+      "target": "GUI/Brushes/AFCourierLetterBrushes.xml"
+    },
+    {
+      "owner": "AF.Module.WarStats",
+      "source": "content/modules/AF.Module.WarStats/GUI/Prefabs/AFWarStatsMapButton.xml",
+      "target": "GUI/Prefabs/AFWarStatsMapButton.xml"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml",
+      "target": "GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeConversationHistoryLog.xml",
+      "target": "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml",
+      "target": "GUI/Prefabs/AnimusForgeNativeConversationOverlay.xml"
+    },
+    {
+      "owner": "AF.Module.UI",
+      "source": "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+      "target": "GUI/Prefabs/AnimusForgeTerminalPopup.xml"
+    },
+    {
+      "owner": "AF.Module.WorldEvents",
+      "source": "content/modules/AF.Module.WorldEvents/GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml",
+      "target": "GUI/Prefabs/AnimusForgeWorldEventInboxPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/Prefabs/AnimusForgeWorldMessageTimelinePopup.xml",
+      "target": "GUI/Prefabs/AnimusForgeWorldMessageTimelinePopup.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/Prefabs/CourierLetterInputPopup.xml",
+      "target": "GUI/Prefabs/CourierLetterInputPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/Prefabs/CourierLetterReplyPopup.xml",
+      "target": "GUI/Prefabs/CourierLetterReplyPopup.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/GUI/Prefabs/CustomPolicyComposePopup.xml",
+      "target": "GUI/Prefabs/CustomPolicyComposePopup.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/GUI/Prefabs/CustomPolicyHistoryPopup.xml",
+      "target": "GUI/Prefabs/CustomPolicyHistoryPopup.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/GUI/Prefabs/CustomPolicyResultPopup.xml",
+      "target": "GUI/Prefabs/CustomPolicyResultPopup.xml"
+    },
+    {
+      "owner": "AF.Module.UI",
+      "source": "content/modules/AF.Module.UI/GUI/Prefabs/DevHistoryEditPopup.xml",
+      "target": "GUI/Prefabs/DevHistoryEditPopup.xml"
+    },
+    {
+      "owner": "AF.Module.UI",
+      "source": "content/modules/AF.Module.UI/GUI/Prefabs/DevLargeSelectionPopup.xml",
+      "target": "GUI/Prefabs/DevLargeSelectionPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/Prefabs/DevWeeklyReportPopup.xml",
+      "target": "GUI/Prefabs/DevWeeklyReportPopup.xml"
+    },
+    {
+      "owner": "AF.Foundation.UI",
+      "source": "content/foundation/AF.Foundation.UI/GUI/Prefabs/FloatingTextLayer.xml",
+      "target": "GUI/Prefabs/FloatingTextLayer.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/GUI/Prefabs/LocalPolicyComposePopup.xml",
+      "target": "GUI/Prefabs/LocalPolicyComposePopup.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/GUI/Prefabs/LocalPolicyHistoryPopup.xml",
+      "target": "GUI/Prefabs/LocalPolicyHistoryPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/Prefabs/PlayerNotorietyPopup.xml",
+      "target": "GUI/Prefabs/PlayerNotorietyPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/GUI/Prefabs/PlayerRpForgePopup.xml",
+      "target": "GUI/Prefabs/PlayerRpForgePopup.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/GUI/Prefabs/PolicyEffectModuleManagerPopup.xml",
+      "target": "GUI/Prefabs/PolicyEffectModuleManagerPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/Prefabs/ShoutTextInputPopup.xml",
+      "target": "GUI/Prefabs/ShoutTextInputPopup.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/Prefabs/WorldDiplomacyComposePopup.xml",
+      "target": "GUI/Prefabs/WorldDiplomacyComposePopup.xml"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_reply_notice.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_reply_notice.png"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/GUI/SpriteParts/af_courier/af_courier_scroll.png",
+      "target": "GUI/SpriteParts/af_courier/af_courier_scroll.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_background.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_bar_frame.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_bar_frame.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_bar_frame_overlay.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_bar_frame_overlay.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_century_patch.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_century_patch.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_culture_patch.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_culture_patch.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_culture.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_culture.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_mask.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_mask.png"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_world.png",
+      "target": "GUI/SpriteParts/af_player_notoriety/af_player_notoriety_fill_world.png"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/GUI/SpriteParts/af_player_rp_forge/af_player_rp_forge_background.png",
+      "target": "GUI/SpriteParts/af_player_rp_forge/af_player_rp_forge_background.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_vassalage_notifications/af_npc_tributary_vassalage.png",
+      "target": "GUI/SpriteParts/af_vassalage_notifications/af_npc_tributary_vassalage.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_vassalage_notifications/af_vassalage_breach.png",
+      "target": "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_breach.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_vassalage_notifications/af_vassalage_contract.png",
+      "target": "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_contract.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_vassalage_notifications/af_vassalage_protection.png",
+      "target": "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_protection.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_vassalage_notifications/af_vassalage_tribute.png",
+      "target": "GUI/SpriteParts/af_vassalage_notifications/af_vassalage_tribute.png"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_weekly_chronicle/af_weekly_chronicle_clean.png",
+      "target": "GUI/SpriteParts/af_weekly_chronicle/af_weekly_chronicle_clean.png"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/GUI/SpriteParts/af_weekly_report/af_weekly_report.png",
+      "target": "GUI/SpriteParts/af_weekly_report/af_weekly_report.png"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice_v2.png",
+      "target": "GUI/SpriteParts/af_world_diplomacy/af_world_diplomacy_notice_v2.png"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/ActionPostprocessPrompts.json",
+      "target": "ModuleData/ActionPostprocessPrompts.json"
+    },
+    {
+      "owner": "AF.Module.WarStats",
+      "source": "content/modules/AF.Module.WarStats/ModuleData/Languages/CNs/afwarstats_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afwarstats_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/gccz_town_manual_strings.xml",
+      "target": "ModuleData/Languages/CNs/gccz_town_manual_strings.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/CNs/language_data.xml",
+      "target": "ModuleData/Languages/CNs/language_data.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_hostile_meeting_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/sets_hostile_meeting_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.WarStats",
+      "source": "content/modules/AF.Module.WarStats/ModuleData/Languages/afwarstats_strings.xml",
+      "target": "ModuleData/Languages/afwarstats_strings.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/language_data.xml",
+      "target": "ModuleData/Languages/language_data.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/sceneactions_strings.xml",
+      "target": "ModuleData/Languages/sceneactions_strings.xml"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_hostile_meeting_strings.xml",
+      "target": "ModuleData/Languages/sets_hostile_meeting_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Social",
+      "source": "content/modules/AF.Module.Social/ModuleData/ProactiveNpcRequestPrompts.json",
+      "target": "ModuleData/ProactiveNpcRequestPrompts.json"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json",
+      "target": "ModuleData/RuleBehaviorPrompts.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActions/battle-speech-performance.v1.json",
+      "target": "ModuleData/SceneActions/battle-speech-performance.v1.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActions/battle-speech.v1.json",
+      "target": "ModuleData/SceneActions/battle-speech.v1.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActions/settings.v1.json",
+      "target": "ModuleData/SceneActions/settings.v1.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActions/settings.v2.json",
+      "target": "ModuleData/SceneActions/settings.v2.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActions/settings.v3.json",
+      "target": "ModuleData/SceneActions/settings.v3.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActions/settings.v4.json",
+      "target": "ModuleData/SceneActions/settings.v4.json"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/TownAmbientDialogue.json",
+      "target": "ModuleData/TownAmbientDialogue.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/action_sets.xml",
+      "target": "ModuleData/action_sets.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/action_types.xml",
+      "target": "ModuleData/action_types.xml"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/animusforge_scene_gold_items.xml",
+      "target": "ModuleData/animusforge_scene_gold_items.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/combat_parameters.xml",
+      "target": "ModuleData/combat_parameters.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/project.mbproj",
+      "target": "ModuleData/project.mbproj"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/sceneactions.mbproj",
+      "target": "ModuleData/sceneactions.mbproj"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/sceneactions_items.xml",
+      "target": "ModuleData/sceneactions_items.xml"
+    },
+    {
+      "owner": "AF.Foundation.Runtime",
+      "source": "content/foundation/AF.Foundation.Runtime/ModuleData/FeatureBridges.json",
+      "target": "ModuleData/FeatureBridges.json"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+      "target": "CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+      "sha256": "F98FDE4FBC3B46AF28360F1878323BA4EC7933C10C2958694BAFC2A16483CDA8"
+    },
+    {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/CustomPrompts/KingdomRebellionSystemPrompt.json",
+      "target": "CustomPrompts/KingdomRebellionSystemPrompt.json",
+      "sha256": "3F09ABD7AEB0BCB6A79A381D5E108754F8C851030939C13E3D5183A15AA628A3"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/MajorActionCompressionWritingRequirements.json",
+      "target": "CustomPrompts/MajorActionCompressionWritingRequirements.json",
+      "sha256": "76FE731751575BDC20DA2E6D305F673E12E07F60884C85143E848D2B3C9770BB"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+      "target": "CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+      "sha256": "001E824BBE950960C46AAA8106BA4E77DE891111F602818A30CE9BAE5C92427C"
+    },
+    {
+      "owner": "AF.Module.Persona",
+      "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
+      "target": "CustomPrompts/NpcPersonaGenerationRequirements.json",
+      "sha256": "2D22EF667F1876FE5F9D034F53D4AC88E5252350ECA80DC5FD4315615DE23C46"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/CustomPrompts/PlayerCustomPromptRule.json",
+      "target": "CustomPrompts/PlayerCustomPromptRule.json",
+      "sha256": "A1634CE335855F66C209196B2581A2A85FE26A24392F69318F7AA71FDEC38752"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+      "target": "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+      "sha256": "A3E55780284E374399A5BDC341F04E0DA4B7F8BE3F7AD95DD59DFACFF2FA86C8"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/_Common.json",
+      "target": "CustomPrompts/Policy/Effects/_Common.json",
+      "sha256": "22DEB7EBB84EEE57759C6F928ADF8C030474AF585E28F464E54DD6FC343542DD"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
+      "target": "CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
+      "sha256": "06DF8D195219863004845E526E44AE2656CF5D5AC11CF6B5D9E30452B38948FD"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanInfluence.json",
+      "target": "CustomPrompts/Policy/Effects/clanInfluence.json",
+      "sha256": "4C81BD8FD757E5DD2F80DA1037806816415713DF8407EC2BBB092F2EFC70AC54"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
+      "target": "CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
+      "sha256": "BEA0F61625F44BE055B77653EABDC8115ED5ACBB7496852749A880A1859A021C"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/constructionPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/constructionPerDay.json",
+      "sha256": "25AB8E65C8A377DEA734BFC69F7DB67B08654643111A250B730763DF15561AE1"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/foodPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/foodPerDay.json",
+      "sha256": "E29DD6FCD5C0CB20CA6BE466DF7E848E3B4A0A14C9BCF78B12B17E69C500A3EB"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/hearthPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/hearthPerDay.json",
+      "sha256": "C5FDDA6DC400F49941B6BE29702B9E85CE19439F8D6CF310FCAB18C593426BDD"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/heroGold.json",
+      "target": "CustomPrompts/Policy/Effects/heroGold.json",
+      "sha256": "E0D279AC34F7541F904368BAE9C397D8049A3AB80BA368C7F54113BF4C06B4B6"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomStability.json",
+      "target": "CustomPrompts/Policy/Effects/kingdomStability.json",
+      "sha256": "CD227EF3658CC649C2B9AB5C00D2F2B8A8D5A51F3713D015750554746B6585C2"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
+      "target": "CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
+      "sha256": "577D9ECAD527CD254958D5329DE601B28671474D7656210381701DD91CA6CC2B"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/loyaltyPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/loyaltyPerDay.json",
+      "sha256": "48E1378098C69013E1CCFE35A63D3D2E2DBF35CB4A41CA2E88EA049A79D850DC"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/militiaPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/militiaPerDay.json",
+      "sha256": "8A3C7D56A49AFD63BCB85C9F64786FFBD6A00E406226FA6E2A89219D7FA6AF6F"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/partySizeLimit.json",
+      "target": "CustomPrompts/Policy/Effects/partySizeLimit.json",
+      "sha256": "2CBF42B52B0D7EF271E510B55A2C744923D0F82BC794BD79635E24FBE2ABF9B0"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/prosperityPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/prosperityPerDay.json",
+      "sha256": "8D078E4C87D85B30F56904FF9526E3116C9AA61BEE843892593D08C18254E39C"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/securityPerDay.json",
+      "target": "CustomPrompts/Policy/Effects/securityPerDay.json",
+      "sha256": "07EF750768E207510B8F2CA199AEF0B3DF3A20C8760C1A31442178EFB1DF3F52"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/soldierTroopXp.json",
+      "target": "CustomPrompts/Policy/Effects/soldierTroopXp.json",
+      "sha256": "3B29F8B387522E947F7E7F0B4BFFFB3B7158FB806C5FADE5C479557E1A5491F2"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/taxIncomePct.json",
+      "target": "CustomPrompts/Policy/Effects/taxIncomePct.json",
+      "sha256": "BED00201317CEF2E08261385B220D519435EC4FCFCB7314826C091ABDD0A3E0B"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/villageProductionPct.json",
+      "target": "CustomPrompts/Policy/Effects/villageProductionPct.json",
+      "sha256": "1417C3FF9D5A269955C019B3F01268FBADF0E55451BB13CA5C8696B5E1767389"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
+      "target": "CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
+      "sha256": "949822045EF6089CC3D19470F894811089F72A9B7AC490B77F78C713BF56E2AE"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+      "target": "CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+      "sha256": "9DEECA538F12E9F5A861D1A50554A9A2814FD2FBCF1179CC59B12E0AB28237C1"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
+      "target": "CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
+      "sha256": "25BA42E2DB584E644CA4C9E223DF27896FD54BBD4898F55EDAB22BE5919AB90D"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/CustomPrompts/WeeklyReportWritingRequirements.json",
+      "target": "CustomPrompts/WeeklyReportWritingRequirements.json",
+      "sha256": "8655B07FE203288E3F579A2CB6043EAF711BE263559185272DE224FF10C210DB"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/CustomPrompts/WorldDiplomacyPrompt.json",
+      "target": "CustomPrompts/WorldDiplomacyPrompt.json",
+      "sha256": "A447D0691F322388EDF27B9075DCA624414015964BE367D8A379BA78E3EC168A"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "extensions/AnimusForge.XihaiAction/AssetPackages/pack0.tpac",
+      "target": "AssetPackages/pack0.tpac",
+      "sha256": "95A97D81A78A3096B2A5B1D91F4C17444909028390AE108BE885B629ABF05BD2"
+    }
+  ]
+}

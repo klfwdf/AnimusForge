@@ -1545,14 +1545,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 34726,
+          "line": 34677,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 34735,
+          "line": 34686,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1748,14 +1748,14 @@
       "bindings": [
         {
           "source": "ShoutBehavior.cs",
-          "line": 10813,
+          "line": 10815,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "ShoutBehavior.cs",
-          "line": 10816,
+          "line": 10818,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"

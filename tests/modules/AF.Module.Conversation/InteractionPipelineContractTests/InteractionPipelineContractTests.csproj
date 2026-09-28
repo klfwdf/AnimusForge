@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="..\..\..\..\Refactor\Contracts\FeatureBridgeContracts.cs" Link="Contracts\FeatureBridgeContracts.cs" />
+    <Compile Include="..\..\..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
+    <Compile Include="..\..\..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Internal\Pipeline\InteractionPipeline.cs" Link="Contracts\InteractionPipeline.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Internal\Pipeline\FullInteractionPipeline.cs" Link="Contracts\FullInteractionPipeline.cs" />
+    <Compile Include="..\..\..\..\Refactor\Contracts\ProfileConfigContracts.cs" Link="Contracts\ProfileConfigContracts.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Internal\InteractionRequestCoordinator.cs" Link="Runtime\InteractionRequestCoordinator.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Internal\InteractionRequestLease.cs" Link="Runtime\InteractionRequestLease.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Receipts\InteractionResultCommitter.cs" Link="Runtime\InteractionResultCommitter.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Receipts\ActionExecutionCommitter.cs" Link="Runtime\ActionExecutionCommitter.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Execute\LegacyChannelActionCommitter.cs" Link="Runtime\LegacyChannelActionCommitter.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Execute\LegacyChannelActionPlanExecutor.cs" Link="Adapters\LegacyChannelActionPlanExecutor.cs" />
+    <Compile Include="..\..\..\..\Refactor\Runtime\DuelOutcomeReceipt.cs" Link="Runtime\DuelOutcomeReceipt.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Receipts\InteractionCommitReceiptCache.cs" Link="Runtime\InteractionCommitReceiptCache.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Weekly\Receipts\WeeklyMemoryMaterialOutcomeReceipt.cs" Link="Runtime\WeeklyMemoryMaterialOutcomeReceipt.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Internal\DetachedInteractionHost.cs" Link="Runtime\DetachedInteractionHost.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Internal\RuntimeConfigSnapshotStore.cs" Link="Runtime\RuntimeConfigSnapshotStore.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Memory\Recovery\MemoryCommitReceiptCache.cs" Link="Runtime\MemoryCommitReceiptCache.cs" />
+    <Compile Include="..\..\..\..\Refactor\Runtime\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyInteractionPipelineComposition.cs" Link="Adapters\LegacyInteractionPipelineComposition.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyDetachedRuleSelector.cs" Link="Adapters\LegacyDetachedRuleSelector.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyPromptPackageAdapter.cs" Link="Adapters\LegacyPromptPackageAdapter.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyDetachedPromptComposer.cs" Link="Adapters\LegacyDetachedPromptComposer.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyDetachedPostprocessPromptComposer.cs" Link="Adapters\LegacyDetachedPostprocessPromptComposer.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyNativePromptParity.cs" Link="Adapters\LegacyNativePromptParity.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagParser.cs" Link="Adapters\LegacyActionTagParser.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Tags\LegacyActionTagCatalog.cs" Link="Adapters\LegacyActionTagCatalog.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Plan\ActionPlanIntegrityPolicy.cs" Link="Adapters\ActionPlanIntegrityPolicy.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyChannelInteractionFacade.cs" Link="Adapters\LegacyChannelInteractionFacade.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyNativeConversationFacade.cs" Link="Adapters\LegacyNativeConversationFacade.cs" />
+    <Compile Include="..\..\..\..\Refactor\Adapters\LegacyNativeConversationOptInRunner.cs" Link="Adapters\LegacyNativeConversationOptInRunner.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Actions\Execute\LegacyNativeActionPlanExecutor.cs" Link="Adapters\LegacyNativeActionPlanExecutor.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Economy\Planning\LegacyEconomyRewardDebtAdapter.cs" Link="Adapters\LegacyEconomyRewardDebtAdapter.cs" />
+    <Compile Include="..\..\..\..\src\AF.Contracts\Compatibility\Economy\EconomyRewardDebtContracts.cs" Link="Contracts\EconomyRewardDebtContracts.cs" />
+    <Compile Include="..\..\..\..\Refactor\Contracts\TtsContracts.cs" Link="Contracts\TtsContracts.cs" />
+  </ItemGroup>
+</Project>

@@ -19,7 +19,7 @@ QUEST_LIFECYCLE = ROOT / "src/modules/AF.Module.Economy/Debt/RewardSystemBehavio
 
 
 def load_declaration():
-    path = ROOT / "tools/ChannelCutoverBoundaryTests/run.py"
+    path = ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py"
     spec = importlib.util.spec_from_file_location("debt_normalization_decl", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

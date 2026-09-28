@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "purpose": "local model migration and integrity; no redistribution approval",
+  "groups": {
+    "embedding": {
+      "version": "bge-small-zh-v1.5-ONNX@9507db33464b5da99a532ac26b2a251767cbc62b",
+      "variants": {
+        "installed": {
+          "config.json": { "size": 904, "sha256": "34fa1ea6278c257de3cc8ce7e9bdc48647b802145a9da0fc32e95db620efd04f" },
+          "model.onnx": { "size": 41689, "sha256": "69b353bb2aa2d09ab606ddbbc35437b03c843615a6bff28216a37fee7309c2aa" },
+          "model.onnx_data": { "size": 94765056, "sha256": "e72da961b03613124aa11317470c995ca197651a9d7f6be2b0e90aad92f71df0" },
+          "tokenizer.json": { "size": 362603, "sha256": "3d09c84ebd10306706a79a8276b3ab736a40d8ec03251c7639f4e52c3a1a4f8e" },
+          "tokenizer_config.json": { "size": 414, "sha256": "7e3bd6113f18c20975eaa8e8cc03c95b727fd83d6357f8e171e22b3736bf706d" }
+        },
+        "repo": {
+          "config.json": { "size": 943, "sha256": "df1cf4351d9e17cd7ee92ac3df83d840b767b80ea40ca8053efa79eda168615f" },
+          "model.onnx": { "size": 41689, "sha256": "69b353bb2aa2d09ab606ddbbc35437b03c843615a6bff28216a37fee7309c2aa" },
+          "model.onnx_data": { "size": 94765056, "sha256": "e72da961b03613124aa11317470c995ca197651a9d7f6be2b0e90aad92f71df0" },
+          "tokenizer.json": { "size": 362603, "sha256": "3d09c84ebd10306706a79a8276b3ab736a40d8ec03251c7639f4e52c3a1a4f8e" },
+          "tokenizer_config.json": { "size": 430, "sha256": "a3879d80ec8d0cfa66ac09bc2882d67d4634515183e2e3be5f4191ff068fd7c9" }
+        }
+      }
+    },
+    "reranker": {
+      "version": "unverified-local-snapshot-2026-09-27",
+      "provenance": "installed bytes only; upstream identity and redistribution rights unverified",
+      "variants": {
+        "installed": {
+          "config.json": { "size": 799, "sha256": "289adf7ada1eb6b4afa7589a48a032d45a076cf2e46dcdb3b4cabc33be14f708" },
+          "model.onnx": { "size": 1112459588, "sha256": "15b9a8c3da82eddf263df571281166e00e9308fe19d077084b642ebfcaf06d2b" },
+          "special_tokens_map.json": { "size": 279, "sha256": "d5469a60db23249c7f8945013d78df30b44b6bf686c6bb4740f4223f77b1b535" },
+          "tokenizer.json": { "size": 17098107, "sha256": "9eb652ac4e40cc093272bbbe0f55d521cf67570060227109b5cdc20945a4489e" },
+          "tokenizer_config.json": { "size": 443, "sha256": "a1d6bc8734a6f635dc158508bef000f8e2e5a759c7d92f984b2c86e5ff53425b" }
+        }
+      }
+    }
+  }
+}

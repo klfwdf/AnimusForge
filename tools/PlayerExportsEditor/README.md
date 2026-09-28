@@ -1,8 +1,8 @@
 # AnimusForge PlayerExports Editor
 
-Standalone Windows editor for `AnimusForge/PlayerExports` data packages.
+Standalone Windows editor for `%LOCALAPPDATA%/AnimusForge/UserData/PlayerExports` data packages. `ANIMUSFORGE_DATA_ROOT` selects a validated alternate AF data root for an isolated copy.
 
-This tool is intentionally independent from Bannerlord and the AnimusForge mod runtime. It does not reference `TaleWorlds.*`, does not load `AnimusForge.dll`, and only edits JSON files in a selected `PlayerExports/<package>` folder.
+This tool is intentionally independent from Bannerlord and the AnimusForge mod runtime. It does not reference `TaleWorlds.*` or load `AnimusForge.dll`; it compiles the same pure .NET path contract as the game. Legacy module/source folders may be browsed for inspection, but edits require a validated `AFDataRoot/UserData/PlayerExports/<package>` path. A nearby legacy source without a matching completed migration record blocks default-root editing.
 
 ## Projects
 
@@ -71,8 +71,19 @@ tools/PlayerExportsEditor/dist/win-x64-framework-dependent/AnimusForgePlayerExpo
 ## Run Smoke Test
 
 ```powershell
-dotnet run --project tools\PlayerExportsEditor\tests\PlayerExportsEditor.SmokeTests\PlayerExportsEditor.SmokeTests.csproj
+dotnet run --project tools\PlayerExportsEditor\tests\PlayerExportsEditor.SmokeTests\PlayerExportsEditor.SmokeTests.csproj -- --path-contract
+dotnet run --project tools\PlayerExportsEditor\tests\PlayerExportsEditor.SmokeTests\PlayerExportsEditor.SmokeTests.csproj -- --path-contract-invalid
 ```
+
+Full synthetic edit/save/backup/restore/soft-delete smoke. After explicit approval for the exact external test root, the runner pre-creates it with `data` and a temporary directory. `ANIMUSFORGE_DATA_ROOT` must be the absolute `<root>/data`; `TEMP`, `TMP` and the process temp path must agree on one existing directory inside the root. The test rejects reparse roots and existing exports, and leaves all fixtures as evidence:
+
+```powershell
+$r = 'E:\AF-editor-smoke-<new-id>'; New-Item -ItemType Directory "$r\data","$r\tmp" | Out-Null
+$env:ANIMUSFORGE_DATA_ROOT="$r\data"; $env:TEMP="$r\tmp"; $env:TMP="$r\tmp"
+dotnet run --project tools\PlayerExportsEditor\tests\PlayerExportsEditor.SmokeTests\PlayerExportsEditor.SmokeTests.csproj -c Release -- --isolated-full $r
+```
+
+The legacy full smoke without flags needs a populated user data root and performs a synthetic delete/move fixture; do not run it against real packages for a privacy-safe offline path check.
 
 ## Current Features
 

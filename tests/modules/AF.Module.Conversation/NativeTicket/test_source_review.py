@@ -2,7 +2,7 @@
 from pathlib import Path
 import importlib.util, subprocess, unittest
 ROOT=Path(__file__).resolve().parents[4]
-spec=importlib.util.spec_from_file_location('inverse', ROOT/'tools/NativeConversationAdmissionTests/owner_extraction.py')
+spec=importlib.util.spec_from_file_location('inverse', ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py')
 inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
 class SourceReviewTests(unittest.TestCase):
     def test_four_live_files_restore_exact_before_source(self):

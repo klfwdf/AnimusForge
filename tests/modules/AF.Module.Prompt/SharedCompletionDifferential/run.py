@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-lore", "drop-entity", "drop-rule"])
 parser.add_argument("--world-only", action="store_true", help="Exercise the common-input non-Hero final-request family, including mutations")
 args = parser.parse_args()
-spec = importlib.util.spec_from_file_location("extract", ROOT / "tools/ChannelCutoverBoundaryTests/run.py")
+spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 dotnet = Path(os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
@@ -83,11 +83,11 @@ common_world = {
 }
 world_lore = component("tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py", common_world)
 world_rule = component("tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential/run.py", common_world)
-courier_build = subprocess.run(["python", str(ROOT / "tools/CourierPromptPreparationTests/run.py")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
+courier_build = subprocess.run(["python", str(ROOT / "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/run.py")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 if courier_build.returncode:
     print(courier_build.stdout, courier_build.stderr, sep="\n")
     raise SystemExit(courier_build.returncode)
-courier_dll = ROOT / "tools/CourierPromptPreparationTests/.generated/current/bin/Release/net8.0/CourierPromptChecks.dll"
+courier_dll = ROOT / "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/.generated/current/bin/Release/net8.0/CourierPromptChecks.dll"
 assert courier_dll.exists(), "Courier production final request runner missing"
 native_build = subprocess.run(["python", str(ROOT / "tests/modules/AF.Module.Prompt/NativeFinalRequestDifferential/run.py")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 if native_build.returncode:

@@ -18,12 +18,16 @@ internal sealed class CoreDialogueOperation
     private string _confirmedReply;
     private bool _ownerCompleted;
     private IReadOnlyList<CoreSceneUtterance> _sceneUtterances = Array.Empty<CoreSceneUtterance>();
+    private CoreCourierReceipt _courierReceipt;
+    private string _deliveredCourierReply = "";
 
     internal CoreDialogueOperation(string clientId, string requestId, string playerText,
         CoreDialogueChannel channel = CoreDialogueChannel.Native, string contextIdentity = "")
     {
         ClientId = clientId; RequestId = requestId; PlayerText = playerText;
         Channel = channel; ContextIdentity = contextIdentity;
+        if (channel == CoreDialogueChannel.Courier)
+            _courierReceipt = new CoreCourierReceipt(CoreCourierAcceptedSteps.None, CoreCourierTransportOutcome.NotStarted);
         _snapshot = Result(CoreDialogueState.Queued, CoreDialogueEffectState.NoConfirmedEffect, "dialogue.queued");
     }
     internal string ClientId { get; }
@@ -93,6 +97,18 @@ internal sealed class CoreDialogueOperation
         }
     }
 
+    internal void RecordCourierProgress(CoreCourierReceipt receipt, string deliveredReply = null)
+    {
+        lock (_gate)
+        {
+            if (Channel != CoreDialogueChannel.Courier || _snapshot.State != CoreDialogueState.Running || receipt == null) return;
+            _courierReceipt = receipt;
+            if (receipt.Has(CoreCourierAcceptedSteps.ReplyDelivered) && deliveredReply != null)
+                _deliveredCourierReply = deliveredReply;
+            _snapshot = Result(CoreDialogueState.Running, _snapshot.Effects, _snapshot.ReasonCode);
+        }
+    }
+
     internal CoreDialogueCancelResult Cancel()
     {
         lock (_gate)
@@ -108,7 +124,8 @@ internal sealed class CoreDialogueOperation
     private static bool IsTerminal(CoreDialogueState state)
         => state != CoreDialogueState.Queued && state != CoreDialogueState.Running;
     private CoreDialogueResult Result(CoreDialogueState state, CoreDialogueEffectState effects, string reason, string reply = "")
-        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason, reply, _sceneUtterances);
+        => new CoreDialogueResult(ClientId, RequestId, state, effects, reason,
+            Channel == CoreDialogueChannel.Courier ? _deliveredCourierReply : reply, _sceneUtterances, _courierReceipt);
     private void SetTerminal(CoreDialogueResult result)
     {
         _snapshot = result;

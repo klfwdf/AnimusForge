@@ -224,12 +224,14 @@ public sealed class MainForm : Form
 
     private void LoadDefaultRoot()
     {
-        var defaultRoot = _service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory) ??
-                          _service.FindDefaultPlayerExportsRoot(Directory.GetCurrentDirectory());
-        if (!string.IsNullOrWhiteSpace(defaultRoot))
+        try
         {
-            _rootBox.Text = defaultRoot;
+            _rootBox.Text = _service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
             LoadPackages();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "PlayerExports 路径无效", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 

@@ -303,7 +303,7 @@ public sealed class OnnxEmbeddingEngine
 
 	private readonly object _initLock = new object();
 
-	private bool _initialized;
+	private volatile bool _initialized;
 
 	private bool _available;
 
@@ -466,39 +466,12 @@ public sealed class OnnxEmbeddingEngine
 			{
 				return;
 			}
-			_initialized = true;
 			try
 			{
-				string text3 = AnimusForgeModulePaths.GetCurrentModuleRoot();
-				if (!Directory.Exists(text3))
-				{
-					_available = false;
-					_lastError = "模块目录不存在。";
-					return;
-				}
-				string text4 = System.IO.Path.Combine(text3, "ONNX");
-				if (!Directory.Exists(text4))
-				{
-					_available = false;
-					_lastError = "ONNX 目录不存在。";
-					return;
-				}
-				string path = System.IO.Path.Combine(text4, "onnx");
-				string text5 = FindFirstFile(System.IO.Path.Combine(path, "model_quantized.onnx"), System.IO.Path.Combine(text4, "model_quantized.onnx"), System.IO.Path.Combine(path, "model.onnx"), System.IO.Path.Combine(text4, "model.onnx"));
-				if (string.IsNullOrEmpty(text5))
-				{
-					_available = false;
-					_lastError = "未找到 model.onnx 或 model_quantized.onnx。";
-					return;
-				}
-				string text6 = FindFirstFile(System.IO.Path.Combine(text4, "tokenizer.json"), System.IO.Path.Combine(path, "tokenizer.json"));
-				if (string.IsNullOrEmpty(text6))
-				{
-					_available = false;
-					_lastError = "未找到 tokenizer.json。";
-					return;
-				}
-				string text7 = FindFirstFile(System.IO.Path.Combine(text4, "config.json"), System.IO.Path.Combine(path, "config.json"));
+				AnimusForgeModelStore.ModelFiles files = AnimusForgeModelStore.ResolveEmbedding();
+				string text5 = files.ModelPath;
+				string text6 = files.TokenizerPath;
+				string text7 = files.ConfigPath;
 				if (!string.IsNullOrEmpty(text7))
 				{
 					TryReadMaxPosition(text7, out _maxLength);
@@ -550,6 +523,10 @@ public sealed class OnnxEmbeddingEngine
 				catch
 				{
 				}
+			}
+			finally
+			{
+				_initialized = true;
 			}
 		}
 	}
