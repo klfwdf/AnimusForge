@@ -95,6 +95,28 @@ namespace AnimusForge
             return Recording.Result;
         }
     }
+    internal struct DiplomacyPostprocessContextSource : IDiplomacyPostprocessContextSource
+    {
+        private readonly Hero hero;
+        public DiplomacyPostprocessContextSource(Hero h) { hero=h; }
+        public bool HasSpeaker => hero!=null;
+        public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot)
+        { snapshot=default; return false; }
+        public DiplomacyConversationEligibilitySnapshot CaptureEligibility() =>
+            new(true,false,false,true,false,true,true,false,true,true);
+        public DiplomacyPostprocessKingdomSnapshot CaptureKingdoms()
+        {
+            Recording.Call("context",hero);
+            return new DiplomacyPostprocessKingdomSnapshot(true,hero.StringId,hero.StringId,
+                true,false,"player","Player",true,true,
+                new[]{new DiplomacyKingdomSummary(hero.StringId,hero.StringId,false),
+                      new DiplomacyKingdomSummary("old","Old",true)});
+        }
+        public string GetAnnexationHint() => "";
+        public bool ArePlayerAndNpcAtWar() => false;
+        public int CalculateDailyTribute(bool npcPays) => 0;
+        public void LogFailure(string message) { Recording.Call("context-error",message); }
+    }
     internal struct DiplomacyIndependentPeaceSource : IDiplomacyIndependentPeaceSource
     {
         private readonly Hero hero;
