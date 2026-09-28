@@ -147,6 +147,18 @@ static class Program
         long bytes=GC.GetAllocatedBytesForCurrentThread();for(int i=0;i<10000;i++)DiplomacyModuleServices.World.OnEngineTick();
         Check(GC.GetAllocatedBytesForCurrentThread()==bytes,"10000 tick forwards allocate zero bytes");
         WorldDiplomacyBehavior.Instance=null;DiplomacyModuleServices.World.OnEngineTick();Check(next.Ticks==10101,"null owner tick no-op");
+        var enabledTick=new TickReplaySource { Owner=true, Enabled=true, Steps=new() };
+        WorldDiplomacyTickApplication.Run(ref enabledTick);
+        Check(enabledTick.Steps.SequenceEqual(new[]{"popup","clear","completed","compress","start","publish"}),"enabled tick order");
+        var disabledTick=new TickReplaySource { Owner=true, Enabled=false, Steps=new() };
+        WorldDiplomacyTickApplication.Run(ref disabledTick);
+        Check(disabledTick.Steps.SequenceEqual(new[]{"popup","disable","completed"}),"disabled tick drains completion after one cleanup");
+        var disabledAgain=new TickReplaySource { Owner=true, Enabled=false, Disabled=true, Steps=new() };
+        WorldDiplomacyTickApplication.Run(ref disabledAgain);
+        Check(disabledAgain.Steps.SequenceEqual(new[]{"popup","completed"}),"disabled tick does not repeat cleanup");
+        var noOwner=new TickReplaySource { Steps=new() };
+        WorldDiplomacyTickApplication.Run(ref noOwner);
+        Check(noOwner.Steps.Count==0,"missing tick owner has no effects");
         var documents=new WorldDiplomacyTimelineDocumentQueryAdapter();Check(documents.Query(-7).IsAvailable,"document availability");Call("documents",-7);
         var presentation=new Presentation();WorldDiplomacyBehavior.Port=presentation;Check(ReferenceEquals(DiplomacyModuleServices.World.Presentation,presentation),"current presentation owner");
         WorldDiplomacyBehavior.Port=null;Check(DiplomacyModuleServices.World.Presentation==null,"presentation not cached");
@@ -175,6 +187,24 @@ internal struct QuietPeaceSource : IDiplomacyIndependentPeaceSource
     public DiplomacyIndependentPeaceSpeakerSnapshot CaptureSpeaker() => new(true,false,false,true,false,false,false,false);
     public DiplomacyIndependentPeaceTargetSnapshot CaptureTarget() => new(true,true);
     public DiplomacyIndependentPeaceWarSnapshot CaptureWar() => new(true,false,false,true,false);
+}
+
+internal struct TickReplaySource : IWorldDiplomacyTickSource
+{
+    internal bool Owner;
+    internal bool Enabled;
+    internal bool Disabled;
+    internal List<string> Steps;
+    public bool HasOwner => Owner;
+    public bool IsEnabled => Enabled;
+    public bool DisabledStateApplied => Disabled;
+    public void ProcessComposePopup() => Steps.Add("popup");
+    public void ApplyDisabledState() => Steps.Add("disable");
+    public void ClearDisabledState() => Steps.Add("clear");
+    public void ProcessCompletedJobs() => Steps.Add("completed");
+    public void TryScheduleTokenCompression() => Steps.Add("compress");
+    public void TryStartNextLlmJob() => Steps.Add("start");
+    public void TryPublishPendingNotifications() => Steps.Add("publish");
 }
 
 internal struct ContextReplaySource : IDiplomacyPostprocessContextSource

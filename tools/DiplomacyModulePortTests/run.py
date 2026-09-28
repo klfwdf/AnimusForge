@@ -21,6 +21,7 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyIndependentPea
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyTributePowerApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTickApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  adapter=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs')
@@ -50,6 +51,11 @@ def boundaries():
  assert 'DiplomacyOralTagApplication.Process(' in tag_forwarder and not any(
   token in tag_forwarder for token in ['Regex','switch (','ProcessSingleDiplomacyTag']), 'Tag Behavior retains dispatch algorithm'
  assert 'private void ProcessDiplomacyTags(' not in context_owner and 'private string ProcessSingleDiplomacyTag(' not in context_owner, 'Tag Behavior retains old processor'
+ world_adapter=read('src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs')
+ assert 'WorldDiplomacyTickApplication.Run(' in world_adapter and 'WorldDiplomacyBehavior.Instance?.OnEngineTick()' not in world_adapter, 'Module tick delegates whole workflow to Behavior'
+ world_owner=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs')
+ tick_forwarder=declaration(world_owner,'public void OnEngineTick(')
+ assert 'WorldDiplomacyTickApplication.Run(' in tick_forwarder and 'ProcessCompletedJobs()' not in tick_forwarder, 'Old tick ordering retained in Behavior'
  context_forwarder=declaration(context_owner,'internal static string BuildDiplomacyPostprocessContext(')
  assert 'DiplomacyPostprocessContextApplication.Build(' in context_forwarder and not any(
   token in context_forwarder for token in ['StringBuilder','Kingdom.All','FactionManager.','[ACTION:DIPLOMACY:']), 'Old prompt context retained in Behavior'
@@ -69,6 +75,10 @@ def boundaries():
  world='src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs'
  current_world=read(world)
  prior_world=old(world)
+ prior_tick=declaration(prior_world,'public void OnEngineTick(')
+ current_tick=declaration(current_world,'public void OnEngineTick(')
+ assert 'WorldDiplomacyTickApplication.Run(ref source)' in current_tick and 'ProcessCompletedJobs()' not in current_tick, 'Tick predecessor still owns ordering'
+ prior_world=prior_world.replace(prior_tick,current_tick)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
@@ -119,7 +129,7 @@ def boundaries():
   assert restored==old(p),'Lifecycle order/guard drift: '+p
  for p in ['src/bridges/Diplomacy/DiplomacyConversationBridge.cs','src/bridges/Diplomacy/DiplomacyPolicyObservationBridge.cs']:
   assert not any(s in read(p) for s in ['foreach (','Regex','Campaign.Current','_af_world_diplomacy_v1','new Dictionary','lock (']), 'Bridge owns business/state: '+p
- print(f'PASS exact inverse: {len(paths)} caller files / {count} routes; channel guards/ref/out/order unchanged; policy cadence and tick/patch guards unchanged')
+ print(f'PASS exact inverse: {len(paths)} caller files / {count} routes; channel guards/ref/out/order unchanged; policy cadence and tick entry guards preserved')
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--dotnet',default='dotnet');a=p.parse_args();boundaries()
@@ -134,7 +144,7 @@ def main():
   ('wrong_target',('src/bridges/Diplomacy/DiplomacyConversationBridge.cs','(hero ?? character?.HeroObject)?.StringId','character?.HeroObject?.StringId')),
   ('swap_tribute',('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs','ResolveKingdom(payerId), ResolveKingdom(receiverId)','ResolveKingdom(receiverId), ResolveKingdom(payerId)')),
   ('wrong_executor',('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs','new DiplomacyOralTagSource(ResolveHero(heroId))','new DiplomacyOralTagSource(null)')),
-  ('drop_tick',('src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs','WorldDiplomacyBehavior.Instance?.OnEngineTick()','System.GC.KeepAlive(null)'))]
+  ('drop_tick',('src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs','new WorldDiplomacyBehavior.TickSource(WorldDiplomacyBehavior.Instance)','new WorldDiplomacyBehavior.TickSource(null)'))]
  for name,mutation in variants:
   folder=out/name;folder.mkdir(exist_ok=True);sources=[ROOT/s for s in SOURCES]
   if mutation:

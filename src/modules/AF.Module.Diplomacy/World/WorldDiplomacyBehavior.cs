@@ -203,18 +203,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	public void OnEngineTick()
 	{
-		ProcessComposePopup();
-		if (!IsWorldDiplomacyEnabled())
-		{
-			if (!_disabledStateApplied) HandleDisabledState();
-			ProcessCompletedJobs();
-			return;
-		}
-		_disabledStateApplied = false;
-		ProcessCompletedJobs();
-		TryScheduleTokenCompression();
-		TryStartNextLlmJob();
-		TryPublishPendingNotifications();
+		var source = new TickSource(this);
+		WorldDiplomacyTickApplication.Run(ref source);
 	}
 
 	public static void RegisterHarmonyPatches(Harmony harmony)

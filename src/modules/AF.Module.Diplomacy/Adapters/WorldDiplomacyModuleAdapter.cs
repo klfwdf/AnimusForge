@@ -48,5 +48,9 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
     public WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount) => WorldDiplomacyTimelineApplication.QueryDocuments(TimelineSource, maxCount);
     public bool TryMarkDocumentRead(string documentId, out bool ownerAvailable) => WorldDiplomacyTimelineApplication.MarkRead(TimelineSource, documentId, out ownerAvailable);
     public IWorldDiplomacyPresentationPort Presentation => WorldDiplomacyBehavior.ResolvePresentationPort();
-    public void OnEngineTick() => WorldDiplomacyBehavior.Instance?.OnEngineTick();
+    public void OnEngineTick()
+    {
+        var source = new WorldDiplomacyBehavior.TickSource(WorldDiplomacyBehavior.Instance);
+        WorldDiplomacyTickApplication.Run(ref source);
+    }
 }
