@@ -47,42 +47,8 @@ namespace AnimusForge
 
 		private string TryExecuteFormAlliance(Hero npc, string payload)
 		{
-			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-			Kingdom npcKingdom = npc.Clan?.Kingdom;
-			WorldDiplomacyOralFormAllianceResolution resolution = WorldDiplomacyOralFormAllianceRules.ResolveCommand(
-				payload,
-				playerKingdomExists: playerKingdom != null,
-				playerKingdomId: playerKingdom?.StringId,
-				playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
-				playerIsRuler: IsPlayerKing(),
-				npcKingdomExists: npcKingdom != null,
-				npcKingdomId: npcKingdom?.StringId,
-				npcSpeakerHeroId: npc?.StringId,
-				npcSpeakerIsRuler: IsNpcKing(npc, npcKingdom));
-			if (!resolution.IsReady)
-			{
-				Logger.Log("DiplomacyBehavior", $"[FormAlliance] Rejected status={resolution.Status}");
-				return "";
-			}
-
-			WorldDiplomacyFormAllianceExecutionReceipt receipt =
-				FormAllianceCommandFacade.Execute(resolution.Command);
-			if (!receipt.IsApplied)
-			{
-				Logger.Log("DiplomacyBehavior", $"[FormAlliance] Rejected status={receipt.Status} code={receipt.ErrorCode}");
-				return "";
-			}
-
-			playerKingdom = ResolveKingdom(receipt.PlayerKingdomId);
-			npcKingdom = ResolveKingdom(receipt.NpcKingdomId);
-			if (playerKingdom == null || npcKingdom == null)
-			{
-				Logger.Log("DiplomacyBehavior", "[FormAlliance] Applied but receipt endpoints are unavailable");
-				return "";
-			}
-			Logger.Log("DiplomacyBehavior", $"[FormAlliance] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
-			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("accept_alliance", playerKingdom, npcKingdom, "面对面口头外交达成");
-			return "";
+			var source = new DiplomacyOralFormAllianceSource(npc);
+			return DiplomacyOralFormAllianceApplication.Execute(ref source, payload);
 		}
 
 		// ════════════════════════════════════════════════════════ BREAK_ALLIANCE

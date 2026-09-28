@@ -1,4 +1,5 @@
 using System.Text;
+using AnimusForge;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
 using AnimusForge.Refactor.Modules;
@@ -23,6 +24,7 @@ internal static class Program
         VerifyRejections();
         VerifyValidPairs();
         VerifyFacade();
+        VerifyApplicationReplay();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy oral form-alliance smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -101,6 +103,57 @@ internal static class Program
             "thrown port call must map to one indeterminate receipt");
     }
 
+    private static void VerifyApplicationReplay()
+    {
+        var invalid=new FakeOralSource();
+        Test.True(DiplomacyOralFormAllianceApplication.Execute(ref invalid,"bad")==""
+                  && invalid.Executions==0 && invalid.Notifications==0,
+            "invalid alliance payload must not execute");
+        var applied=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyFormAllianceExecutionReceipt(
+                WorldDiplomacyFormAllianceExecutionStatus.Applied,"player","npc", ""),
+            EndpointsAvailable=true
+        };
+        Test.True(DiplomacyOralFormAllianceApplication.Execute(ref applied,"player:npc:84")==""
+                  && applied.Executions==1 && applied.Notifications==1,
+            "applied alliance must publish once");
+        var refused=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyFormAllianceExecutionReceipt(
+                WorldDiplomacyFormAllianceExecutionStatus.AlreadyAllied,"player","npc","allied"),
+            EndpointsAvailable=true
+        };
+        DiplomacyOralFormAllianceApplication.Execute(ref refused,"player:npc");
+        Test.True(refused.Executions==1 && refused.EndpointLookups==0 && refused.Notifications==0,
+            "rejected alliance receipt must not publish");
+        var missing=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyFormAllianceExecutionReceipt(
+                WorldDiplomacyFormAllianceExecutionStatus.Applied,"player","npc","")
+        };
+        DiplomacyOralFormAllianceApplication.Execute(ref missing,"player:npc");
+        Test.True(missing.EndpointLookups==1 && missing.Notifications==0,
+            "applied alliance with missing endpoint must not publish");
+    }
+
+    private struct FakeOralSource : IDiplomacyOralFormAllianceSource
+    {
+        internal WorldDiplomacyFormAllianceExecutionReceipt Receipt;
+        internal bool EndpointsAvailable;
+        internal int Executions;
+        internal int EndpointLookups;
+        internal int Notifications;
+        public DiplomacyOralRoyalSnapshot Capture() => new(true,"player",false,true,true,"npc","speaker",true);
+        public WorldDiplomacyFormAllianceExecutionReceipt Execute(WorldDiplomacyFormAllianceCommand command)
+        { Executions++;return Receipt; }
+        public bool TryResolveAppliedEndpoints(string playerId,string npcId,
+            out string resolvedPlayerId,out string resolvedNpcId)
+        { EndpointLookups++;resolvedPlayerId=playerId;resolvedNpcId=npcId;return EndpointsAvailable; }
+        public void NotifyResolved() { Notifications++; }
+        public void Log(string message) { }
+    }
+
     private static void VerifySourceBoundary()
     {
         string contracts = Read("Refactor", "Contracts", "WorldDiplomacyFormAllianceContracts.cs");
@@ -109,14 +162,17 @@ internal static class Program
         string adapter = Read("Refactor", "Adapters", "BannerlordWorldDiplomacyFormAllianceGameActionPort.cs");
         string behavior = (Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs") + Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs"));
         string method = ExtractMethod(behavior, "private string TryExecuteFormAlliance(");
+        string application = Read("src/modules/AF.Module.Diplomacy/Application/DiplomacyOralFormAllianceApplication.cs");
+        string oralSource = Read("src/modules/AF.Module.Diplomacy/Adapters/DiplomacyOralFormAllianceSource.cs");
 
         Test.True(!contracts.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !rules.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !facade.Contains("TaleWorlds", StringComparison.Ordinal),
             "contracts, rules, and facade must remain TaleWorlds-free");
-        Test.True(method.Contains("WorldDiplomacyOralFormAllianceRules.ResolveCommand", StringComparison.Ordinal)
-                  && method.Contains("FormAllianceCommandFacade.Execute(resolution.Command)", StringComparison.Ordinal),
-            "behavior must delegate alliance resolution and execution");
+        Test.True(method.Contains("DiplomacyOralFormAllianceApplication.Execute(ref source, payload)", StringComparison.Ordinal)
+                  && application.Contains("WorldDiplomacyOralFormAllianceRules.ResolveCommand", StringComparison.Ordinal)
+                  && application.Contains("source.Execute(resolution.Command)", StringComparison.Ordinal),
+            "behavior must forward alliance resolution and execution to Application");
         Test.True(!method.Contains("(payload ?? \"\").Split(':')", StringComparison.Ordinal)
                   && !method.Contains("StartAlliance", StringComparison.Ordinal)
                   && !method.Contains("foreach (Kingdom", StringComparison.Ordinal),
@@ -134,9 +190,10 @@ internal static class Program
             StringComparison.Ordinal);
         Test.True(action >= 0 && confirmation > action,
             "adapter must confirm the alliance after the action");
-        int appliedGuard = method.IndexOf("if (!receipt.IsApplied)", StringComparison.Ordinal);
-        int notification = method.IndexOf("WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved", StringComparison.Ordinal);
-        Test.True(appliedGuard >= 0 && notification > appliedGuard,
+        int appliedGuard = application.IndexOf("if (!receipt.IsApplied)", StringComparison.Ordinal);
+        int notification = application.IndexOf("source.NotifyResolved()", StringComparison.Ordinal);
+        Test.True(appliedGuard >= 0 && notification > appliedGuard
+                  && oralSource.Contains("WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved", StringComparison.Ordinal),
             "confirmed fact must be published only after an Applied receipt");
     }
 
