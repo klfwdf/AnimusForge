@@ -74,4 +74,3 @@ public sealed partial class WorldDiplomacyBehavior
         public void TryAppendDiplomaticThreatNonComplianceHistoryResult(WorldDiplomacyThreat threat, WorldDiplomacyThreatNonComplianceEvent decision) => _owner.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, decision);
     }
 }
-
