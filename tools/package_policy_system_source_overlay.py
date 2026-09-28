@@ -10,7 +10,7 @@ import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = ROOT / "dist"
+OUTPUT_DIR = ROOT / "artifacts" / "package_policy_system_source_overlay"
 
 
 def relative_path(path: Path) -> str:
