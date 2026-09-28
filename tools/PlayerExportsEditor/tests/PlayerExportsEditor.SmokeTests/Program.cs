@@ -71,7 +71,23 @@ if (args.Contains("--path-contract-invalid", StringComparer.Ordinal))
     return 0;
 }
 
-RunDataTypeDeletionSmoke(service);
+if (args.Length == 2 && args[0] == "--isolated-full")
+{
+    return RunIsolatedFullSmoke(service, validator, args[1]);
+}
+
+var fixtureRoot = Path.Combine(Path.GetTempPath(), "af_playerexports_editor_" + Guid.NewGuid().ToString("N"));
+try
+{
+    RunDataTypeDeletionSmoke(service, Path.Combine(fixtureRoot, "UserData", "PlayerExports"));
+}
+finally
+{
+    if (Directory.Exists(fixtureRoot))
+    {
+        Directory.Delete(fixtureRoot, recursive: true);
+    }
+}
 
 var root = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
 
@@ -150,13 +166,12 @@ static int CountLocalized(IEnumerable<ConditionCandidate> candidates)
     return candidates.Count(x => (x.Label ?? "").Any(c => c > 127));
 }
 
-static void RunDataTypeDeletionSmoke(PlayerExportsService service)
+// Deletion fixture must live under a canonical <data-root>/UserData/PlayerExports; the caller owns cleanup.
+static void RunDataTypeDeletionSmoke(PlayerExportsService service, string playerExportsRoot)
 {
-    var tempRoot = Path.Combine(Path.GetTempPath(), "af_playerexports_editor_" + Guid.NewGuid().ToString("N"));
-    Directory.CreateDirectory(tempRoot);
-    try
+    Directory.CreateDirectory(playerExportsRoot);
     {
-        var package = service.CreatePackage(tempRoot, "DeletionSmoke");
+        var package = service.CreatePackage(playerExportsRoot, "DeletionSmoke");
         var eventFiles = service.ListDataTypeJsonFiles(package.FullPath, PlayerExportsDataType.EventData);
         if (eventFiles.Count < 3)
         {
@@ -184,11 +199,153 @@ static void RunDataTypeDeletionSmoke(PlayerExportsService service)
 
         Console.WriteLine("data-type-delete-smoke: moved=" + deleted.MovedFiles.Count);
     }
-    finally
+}
+
+// Full synthetic edit/save/backup/restore/delete smoke. Every write stays under the approved synthetic root;
+// nothing is cleaned up so the root remains as evidence.
+static int RunIsolatedFullSmoke(PlayerExportsService service, PlayerExportsValidator validator, string syntheticRootArg)
+{
+    var syntheticRoot = RequireIsolatedRoot(syntheticRootArg);
+    var dataRoot = Path.GetFullPath(Environment.GetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT")!).TrimEnd('\\', '/');
+    var realExports = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AnimusForge", "UserData", "PlayerExports");
+    var realBefore = SnapshotDirectory(realExports);
+    var store = new JsonFileStore();
+
+    // 1. Shared locator resolves to the synthetic data root only.
+    var exports = service.FindDefaultPlayerExportsRoot(AppContext.BaseDirectory);
+    Check(exports == Path.Combine(dataRoot, "UserData", "PlayerExports"), "locator did not resolve the synthetic data root");
+    Check(!Directory.Exists(exports), "synthetic PlayerExports already existed");
+    Directory.CreateDirectory(exports);
+
+    // 2. Create package with default files; it must validate without errors.
+    var package = service.CreatePackage(exports, "J15Smoke");
+    var pkg = package.FullPath;
+    var data = service.LoadPackage(pkg);
+    Check(data.VoiceMapping != null && data.UnnamedPersona != null && data.EventFiles.Count == 3, "created package is missing default files");
+    Check(ErrorCount(validator, data) == 0, "fresh package has validation errors");
+    Console.WriteLine("step create-package: events=" + data.EventFiles.Count);
+
+    // 3. Knowledge rule create + edit keeps a byte-exact backup.
+    var rule = new LoreRule
     {
-        if (Directory.Exists(tempRoot))
-        {
-            Directory.Delete(tempRoot, recursive: true);
-        }
+        Id = "j15_smoke_rule",
+        Keywords = new List<string> { " smoke ", "smoke" },
+        RagShortTexts = new List<string> { "J15 synthetic smoke rule." },
+        Variants = new List<LoreVariant> { new() { Priority = 0, Content = "Generic synthetic content." } }
+    };
+    var rulePath = service.CreateKnowledgeRule(pkg, rule);
+    Check(File.Exists(rulePath) && rulePath.StartsWith(Path.Combine(pkg, "knowledge", "rules"), StringComparison.OrdinalIgnoreCase), "knowledge rule not created in package");
+    var ruleBefore = File.ReadAllText(rulePath);
+    rule.Variants.Add(new LoreVariant { Priority = 1, When = new LoreWhen { Cultures = new List<string> { "empire" } }, Content = "Empire variant." });
+    var ruleBackup = service.SaveKnowledgeRule(pkg, rulePath, rule);
+    Check(File.Exists(ruleBackup) && File.ReadAllText(ruleBackup) == ruleBefore, "knowledge edit backup does not hold previous bytes");
+    var reloadedRule = service.LoadPackage(pkg).KnowledgeRules.Single();
+    Check(reloadedRule.Rule?.Variants?.Count == 2 && reloadedRule.Rule.Keywords?.Count == 1, "knowledge edit not persisted or not normalized");
+    Console.WriteLine("step knowledge: created=1 edited=1 backup=1");
+
+    // 4. Persona create + edit.
+    var personaPath = Path.Combine(pkg, "personality_background", "lord_synthetic__Smoke.json");
+    service.SavePersonaProfile(pkg, personaPath, new NpcPersonaProfile { Personality = " calm ", Background = "Synthetic background." });
+    var personaBefore = File.ReadAllText(personaPath);
+    var personaBackup = service.SavePersonaProfile(pkg, personaPath, new NpcPersonaProfile { Personality = "bold", Background = "Edited." });
+    Check(File.ReadAllText(personaBackup) == personaBefore, "persona edit backup does not hold previous bytes");
+    Check(service.LoadPackage(pkg).Personas.Single().Profile?.Personality == "bold", "persona edit not persisted");
+    Console.WriteLine("step persona: created=1 edited=1 backup=1");
+
+    // 5. Raw JSON edit, invalid edit rejection, and restore from backup.
+    var summaryPath = Path.Combine(pkg, "event_data", "WorldOpeningSummary.json");
+    var summaryOriginal = File.ReadAllText(summaryPath);
+    var summaryBackup = service.SaveJsonDocument(pkg, summaryPath, "{\"Summary\":\"Synthetic world summary.\"}");
+    Check(File.ReadAllText(summaryBackup) == summaryOriginal, "summary backup does not hold previous bytes");
+    var summaryEdited = File.ReadAllText(summaryPath);
+    var invalidRejected = false;
+    try { service.SaveJsonDocument(pkg, summaryPath, "{bad json"); }
+    catch (System.Text.Json.JsonException) { invalidRejected = true; }
+    Check(invalidRejected && File.ReadAllText(summaryPath) == summaryEdited && !File.Exists(summaryPath + ".tmp"), "invalid JSON changed the active file");
+    service.SaveJsonDocument(pkg, summaryPath, store.ReadUtf8(summaryBackup));
+    Check(File.ReadAllText(summaryPath) == summaryOriginal, "restore from backup did not return original bytes");
+    Console.WriteLine("step json-edit: edited=1 invalid_preserved=1 restored=1");
+
+    // 6. Package list ordering (newest first) with explicit timestamps.
+    var second = service.CreatePackage(exports, "J15SmokeSecond");
+    Directory.SetLastWriteTime(pkg, new DateTime(2026, 1, 1));
+    Directory.SetLastWriteTime(second.FullPath, new DateTime(2026, 1, 2));
+    var listed = service.ListPackages(exports);
+    Check(listed.Count == 2 && listed[0].FullPath == second.FullPath, "package list is not newest-first");
+    Console.WriteLine("step list-packages: count=2 newest_first=1");
+
+    // 7. Soft deletes: single file, data type, whole package.
+    var personaEdited = File.ReadAllText(personaPath);
+    var movedPersona = service.MoveJsonFileToDeleted(pkg, personaPath);
+    Check(!File.Exists(personaPath) && File.ReadAllText(movedPersona) == personaEdited, "persona soft delete failed");
+    Check(movedPersona.StartsWith(Path.Combine(pkg, ".deleted_files"), StringComparison.OrdinalIgnoreCase), "persona moved outside package deleted root");
+    RunDataTypeDeletionSmoke(service, exports);
+    var movedPackage = service.MovePackageToDeleted(exports, second.FullPath);
+    Check(!Directory.Exists(second.FullPath) && Directory.Exists(movedPackage)
+        && movedPackage.StartsWith(Path.Combine(exports, ".deleted_packages"), StringComparison.OrdinalIgnoreCase), "package soft delete failed");
+    Check(service.ListPackages(exports).All(p => p.FullPath != second.FullPath), "deleted package still listed");
+    Console.WriteLine("step soft-delete: file=1 datatype=1 package=1");
+
+    // 8. Escapes and hidden roots are rejected before writing.
+    RejectWrite(() => service.SaveJsonDocument(pkg, Path.Combine(exports, "escape.json"), "{}"));
+    RejectWrite(() => service.SaveJsonDocument(pkg, Path.Combine(pkg, "knowledge", "note.txt"), "{}"));
+    RejectWrite(() => service.SaveJsonDocument(movedPackage, Path.Combine(movedPackage, "voice_mapping", "VoiceMapping.json"), "{}"));
+    RejectWrite(() => service.CreatePackage(exports, ".hidden"));
+    Check(!File.Exists(Path.Combine(exports, "escape.json")), "escape write reached disk");
+    Console.WriteLine("step reject-writes: 4");
+
+    // 9. Final reload, validation and condition catalog on the edited package.
+    var final = service.LoadPackage(pkg);
+    Check(ErrorCount(validator, final) == 0 && final.LoadIssues.Count == 0, "edited package has validation errors");
+    var catalog = new ConditionCatalogBuilder().Build(final, AppContext.BaseDirectory);
+    Check(catalog.Roles.Count >= 7, "condition catalog missing built-in roles");
+    Console.WriteLine("step final-validate: knowledge=" + final.KnowledgeRules.Count + " personas=" + final.Personas.Count + " errors=0");
+
+    Check(SnapshotDirectory(realExports) == realBefore, "real user PlayerExports root changed during smoke");
+    Check(Path.GetFullPath(Path.GetTempPath()).StartsWith(syntheticRoot, StringComparison.OrdinalIgnoreCase), "TEMP drifted outside synthetic root");
+    Console.WriteLine("PASS editor isolated full smoke: steps=9 real_root_unchanged=1");
+    return 0;
+}
+
+static string RequireIsolatedRoot(string arg)
+{
+    if (string.IsNullOrWhiteSpace(arg) || !Path.IsPathRooted(arg) || arg.StartsWith(@"\\", StringComparison.Ordinal))
+        throw new InvalidOperationException("Isolated smoke requires an absolute local synthetic root.");
+    var root = Path.GetFullPath(arg).TrimEnd('\\', '/');
+    if (!Directory.Exists(root))
+        throw new InvalidOperationException("Isolated smoke root must be pre-created by the runner.");
+    for (DirectoryInfo? d = new(root); d != null; d = d.Parent)
+    {
+        if ((d.Attributes & FileAttributes.ReparsePoint) != 0)
+            throw new InvalidOperationException("Isolated smoke root crosses a reparse point.");
     }
+    var prefix = root + Path.DirectorySeparatorChar;
+    foreach (var name in new[] { "ANIMUSFORGE_DATA_ROOT", "TEMP", "TMP" })
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        if (string.IsNullOrWhiteSpace(value) || !Path.GetFullPath(value).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(name + " must point inside the isolated smoke root.");
+    }
+    if (!Path.GetFullPath(Path.GetTempPath()).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        throw new InvalidOperationException("Process temp path is outside the isolated smoke root.");
+    return root;
+}
+
+static string SnapshotDirectory(string path)
+{
+    if (!Directory.Exists(path)) return "absent";
+    var entries = Directory.EnumerateFileSystemEntries(path, "*", SearchOption.AllDirectories)
+        .Select(p => p + "|" + File.GetLastWriteTimeUtc(p).Ticks)
+        .OrderBy(x => x, StringComparer.OrdinalIgnoreCase);
+    return string.Join("\n", entries);
+}
+
+static int ErrorCount(PlayerExportsValidator validator, PlayerExportsPackageData data)
+{
+    return validator.Validate(data).Count(x => x.Severity == ValidationSeverity.Error);
+}
+
+static void Check(bool condition, string message)
+{
+    if (!condition) throw new InvalidOperationException("FAIL editor isolated full smoke: " + message);
 }
