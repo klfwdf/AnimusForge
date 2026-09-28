@@ -1,7 +1,7 @@
 from pathlib import Path
 import importlib.util
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
-spec=importlib.util.spec_from_file_location('util',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
+spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 out=HERE/'.generated/bindings';out.mkdir(parents=True,exist_ok=True)
 shout=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');courier=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DetachedPostprocess.cs').read_text(encoding='utf-8-sig')

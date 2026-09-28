@@ -38,7 +38,7 @@ mutations={
  'skip-generation':('ShoutBehavior.ModuleNativeSubmission.cs','|| !SaveRuntimeGuard.IsCurrentGeneration(generation)','|| false'),
  'skip-conversation':('ShoutBehavior.ModuleNativeSubmission.cs','|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)','|| false'),
  'skip-revision':('ShoutBehavior.ModuleNativeSubmission.cs','|| !_nativeAdmissionOwner.IsPresentationCurrent(presentationRevision)','|| false')}
-sources=[out/'Host.cs',out/'Contracts.cs',ROOT/'tools/ModuleFrameworkApiTests/HostStubs.cs']
+sources=[out/'Host.cs',out/'Contracts.cs',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs']
 for path in paths:
  text=(ROOT/path).read_text(encoding='utf-8-sig')
  if a.reorder_core_enums and path=='Refactor/Modules/CoreDialogueContracts.cs':

@@ -12,8 +12,8 @@
 运行：
 
 ```powershell
-python tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py
-python tools/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --json
+python tests/AF.Persistence/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py
+python tests/AF.Persistence/PersistenceProfileConfigContractTests/validate_persistence_profile_config.py --json
 ```
 
 第二条路径仅在 runner 目录名称被重命名后适用；标准命令使用第一条路径。

@@ -48,7 +48,7 @@ class RepositorySourceInventoryTests(unittest.TestCase):
             "content/modules/AF.Module.Memory/CustomPrompts/default.json": "content",
             "content/modules/AF.Module.Persona/CustomPrompts/default.json": "content",
             "content/modules/AF.Module.Kingdom/CustomPrompts/default.json": "content",
-            "tools/ModuleFrameworkApiTests/Program.cs": "tests",
+            "tests/AF.Contracts/ModuleFrameworkApiTests/Program.cs": "tests",
             "tools/PlayerExportsEditor/src/Program.cs": "tools",
             "tools/test_repository_source_inventory.py": "tests",
             "一键编译覆盖推送/build.ps1": "scripts",

@@ -2,7 +2,7 @@ from pathlib import Path
 import importlib.util,subprocess,shutil,hashlib
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[2];HERE=Path(__file__).parent
-spec=importlib.util.spec_from_file_location('build',ROOT/'tools/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
+spec=importlib.util.spec_from_file_location('build',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 base=[r'G:\Python310\python.exe','-X','utf8','-B',str(HERE/'run.py')]
 surfaces=[]
 for flag in [['--main'],[]]:

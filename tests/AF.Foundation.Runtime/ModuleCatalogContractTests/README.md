@@ -5,8 +5,8 @@
 ## 运行
 
 ```powershell
-python F:\AnimusForge-main\tools\ModuleCatalogContractTests\validate_module_catalog.py
-python F:\AnimusForge-main\tools\ModuleCatalogContractTests\validate_module_catalog.py --json
+python F:\AnimusForge-main\tests\AF.Foundation.Runtime\ModuleCatalogContractTests\validate_module_catalog.py
+python F:\AnimusForge-main\tests\AF.Foundation.Runtime\ModuleCatalogContractTests\validate_module_catalog.py --json
 ```
 
 默认读取：

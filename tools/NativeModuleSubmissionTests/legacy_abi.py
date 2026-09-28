@@ -17,7 +17,7 @@ BASELINE = '39cf9d4724cc372a33503da270fd0c0e9dc6e6af'
 
 
 def verify(dotnet, out, current_sources):
-    spec = importlib.util.spec_from_file_location('abi_projects', ROOT/'tools/ModuleFrameworkApiTests/run.py')
+    spec = importlib.util.spec_from_file_location('abi_projects', ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
     projects = importlib.util.module_from_spec(spec); spec.loader.exec_module(projects)
     base = out/'Baseline'; base.mkdir(parents=True, exist_ok=True)
     sources = list(current_sources)

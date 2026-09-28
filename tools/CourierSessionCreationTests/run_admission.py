@@ -145,14 +145,14 @@ def main():
 def run_public_consumer(args, output, extract, defines):
     # Reuse exactly the preceding production-owner extraction and existing lifecycle fixtures.
     # Only the control assembly's surface manipulates fixture game state; the consumer is unrelated.
-    spec = importlib.util.spec_from_file_location('api_suite', ROOT / 'tools/ModuleFrameworkApiTests/run.py')
+    spec = importlib.util.spec_from_file_location('api_suite', ROOT / 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
     api = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(api)
-    host = (ROOT / 'tools/ModuleFrameworkApiTests/HostStubs.cs').read_text(encoding='utf-8-sig')
+    host = (ROOT / 'tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs').read_text(encoding='utf-8-sig')
     courier_stub = extract.declaration(host, 'internal static class CourierDeliveryBehavior')
     host = host.replace(courier_stub, '') # Never let the directory-only stub shadow the actual owner.
     (output / 'DirectoryStubs.cs').write_text(host, encoding='utf-8')
-    paths = [p for p in api.SOURCES if p != 'tools/ModuleFrameworkApiTests/NativeOwnerStub.cs']
+    paths = [p for p in api.SOURCES if p != 'tests/AF.Contracts/ModuleFrameworkApiTests/NativeOwnerStub.cs']
     paths += ['src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs']
     sources = [output / 'Program.cs', output / 'DirectoryStubs.cs', HERE / 'PublicControl.cs.txt']
     for path in paths:
