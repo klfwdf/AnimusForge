@@ -26,6 +26,8 @@ internal static class Program
 {
     private static int Main()
     {
+        OfferActionReplay.Run();
+        WarAdmissionReplay.Run();
         LlmDispatchApplicationReplay.Run();
         CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
@@ -16008,7 +16010,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "offer reconciliation and settlement-open bookkeeping must live in the lifecycle rules behind ports");
         Test.True(rulesSource.Contains("ReconcilePlayerDeclarationWithOpenOffer(document, intent, resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
-            && behaviorSource.Contains("ResolveRound(document?.RoundId)", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"))
+                .Contains("port.ResolveRound(document?.RoundId)", StringComparison.Ordinal)
             && behaviorSource.Contains("RefreshResultSettlementActionSlots", StringComparison.Ordinal),
             "the host must bind round resolution and slot refresh through thin adapters");
         Test.True(!behaviorSource.Contains("ResultSettlementTriggerDocumentId = document.DocumentId", StringComparison.Ordinal)

@@ -404,12 +404,11 @@ internal static class Program
         Test.True(potentialActions.Contains("if (atWar)", StringComparison.Ordinal)
                   && potentialActions.Contains("actions.Add(\"propose_peace\")", StringComparison.Ordinal),
             "a pair already at war must retain a substantive peace action");
-        string declareWarBoundary = ExtractSection(
-            source,
-            "private bool CanDeclareWar(",
-            "private void CompleteActiveExchange(");
-        Test.True(declareWarBoundary.Contains(
-                    "WorldDiplomacyRoundLifecycleRules.IsThreatDecisionPending(pendingThreatDecision)", StringComparison.Ordinal)
+		string declareWarBoundary = File.ReadAllText(
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyWarAdmissionApplication.cs")),
+			Encoding.UTF8);
+		Test.True(declareWarBoundary.Contains(
+                    "port.PendingThreatDecision", StringComparison.Ordinal)
                   && declareWarBoundary.Contains("等待对象国一次性决定", StringComparison.Ordinal),
             "an issuer must not declare war before the threatened kingdom publishes its one-time decision");
         string threatDocumentProcessing = ExtractMethod(
@@ -2236,10 +2235,9 @@ internal static class Program
                   && analyzedCommitPath.Contains("processAnalyzedDocument(document", StringComparison.Ordinal),
             "both generated and analyzed declarations must converge on the final live-state publication guard");
 
-        string liveResultReader = ExtractSection(
-            source,
-            "private static bool HasProposalTakenEffect(",
-            "private void ExecuteImmediateIntent(");
+		string liveResultReader = File.ReadAllText(
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.OfferActionPort.cs")),
+			Encoding.UTF8);
         Test.True(liveResultReader.Contains(
                 "\"propose_alliance\" => Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>()?.IsAllyWithKingdom(proposer, target) == true",
                 StringComparison.Ordinal)
@@ -3006,7 +3004,7 @@ internal static class Program
                   && admission.IndexOf("return true;", StringComparison.Ordinal) > admission.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal),
             "mandatory admission binds the source before granting enqueue permission");
 		int bindRequiredSource = mandatoryOwner.IndexOf("WorldDiplomacyRoundApplication.AdmitMandatoryReply(", StringComparison.Ordinal);
-		int enqueueRequiredResponse = mandatoryOwner.IndexOf("enqueueResponse(round, trigger)", StringComparison.Ordinal);
+		int enqueueRequiredResponse = mandatoryOwner.IndexOf("enqueueResponse(round, receiverId, trigger)", StringComparison.Ordinal);
 		Test.True(mandatoryResponse.Contains("EnqueueGenerationJob(receiver, target", StringComparison.Ordinal)
 			&& bindRequiredSource >= 0 && enqueueRequiredResponse > bindRequiredSource,
 			"mandatory source identity must be bound before shared preflight evaluates external statement eligibility");
@@ -3682,14 +3680,15 @@ internal static class Program
 			&& CountOccurrences(breakAllianceAdapter, "alliance.EndAlliance(playerKingdom, npcKingdom)") == 1,
 			"the break-alliance adapter must own the single exact authorized EndAlliance scope");
 
-		string immediateIntent = ExtractMethod(
-			worldDiplomacySource,
-			"private void ExecuteImmediateIntent(");
+		string immediateIntent = File.ReadAllText(
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.ImmediateActionPort.cs")),
+			Encoding.UTF8);
 		Test.True(immediateIntent.Contains("PermanentAllianceGuard.RunAuthorizedBreak(", StringComparison.Ordinal)
 			&& immediateIntent.Contains("\"world_diplomacy_break_alliance\"", StringComparison.Ordinal)
 			&& immediateIntent.Contains("alliance.EndAlliance(author, target)", StringComparison.Ordinal),
 			"WorldDiplomacy break_alliance must use its exact explicit authorization scope");
-		Test.True(CountOccurrences(worldDiplomacySource, "alliance.EndAlliance(") == 1,
+        Test.True(CountOccurrences(immediateIntent, "alliance.EndAlliance(") == 1
+            && CountOccurrences(worldDiplomacySource, "alliance.EndAlliance(") == 0,
 			"WorldDiplomacy must have no unscoped secondary path that can end a permanent alliance");
 
 		Test.True(startupComposition.Contains("PermanentAllianceGuard.RegisterHarmonyPatches(harmony)", StringComparison.Ordinal)

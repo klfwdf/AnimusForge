@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -3328,92 +3328,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void TrySettleRelayOffer(WorldDiplomacyDocument document)
 	{
-		Kingdom proposer = null;
-		Kingdom target = null;
-		WorldDiplomacyOfferApplication.Settle(
-			ResolveRound(document?.RoundId), document, PruneInvalidOffers,
-			(intent, proposal) =>
-			{
-				Kingdom author = ResolveKingdom(proposal.AuthorKingdomId);
-				Kingdom recipient = ResolveKingdom(proposal.TargetKingdomId);
-				bool blocked = TryGetDiplomaticStateViolation(intent, author, recipient, out string reason);
-				return (blocked, reason);
-			},
-			ResolveDocument,
-			offer =>
-			{
-				proposer = ResolveKingdom(offer.ProposerKingdomId);
-				target = ResolveKingdom(offer.TargetKingdomId);
-				return proposer != null && target != null;
-			},
-			(intent, offer, source, response) =>
-			{
-				if (intent == "propose_peace")
-				{
-					if (!AreOfferedPeaceTermsCurrentlyExecutable(offer, source, proposer, target)) return false;
-					response.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(
-						WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId));
-					ExecuteMakePeace(proposer, target, response);
-				}
-				else if (intent == "propose_alliance") ExecuteAlliance(proposer, target, response);
-				else if (intent == "propose_trade") ExecuteTradeAgreement(proposer, target, response);
-				return true;
-			},
-			(intent, offer) => HasProposalTakenEffect(intent, proposer, target),
-			Log);
-	}
-	private static bool HasProposalTakenEffect(string proposalIntent, Kingdom proposer, Kingdom target)
-	{
-		if (proposer == null || target == null) return false;
-		return WorldDiplomacyIntentVocabulary.NormalizeIntent(proposalIntent) switch
-		{
-			"propose_peace" => !FactionManager.IsAtWarAgainstFaction(proposer, target),
-			"propose_alliance" => Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>()?.IsAllyWithKingdom(proposer, target) == true,
-			"propose_trade" => Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>() is ITradeAgreementsCampaignBehavior trade
-				&& BannerlordApiCompat.HasTradeAgreement(trade, proposer, target),
-			_ => false
-		};
+		WorldDiplomacyOfferApplication.Settle(document, new OfferActionPort(this));
 	}
 	private void ExecuteImmediateIntent(Kingdom author, Kingdom target, string intent, WorldDiplomacyDocument document)
 	{
 		WorldDiplomacyImmediateActionApplication.Execute(new ImmediateActionPort(this), author?.StringId, target?.StringId, intent, document);
-	}
-	private void ExecuteMakePeace(Kingdom initiator, Kingdom target, WorldDiplomacyDocument document)
-	{
-		if (!FactionManager.IsAtWarAgainstFaction(initiator, target))
-		{
-			if (document != null) document.MechanicalResult = "议和未执行：双方当前没有战争";
-			return;
-		}
-		WorldDiplomacyPeaceTerms terms = document?.PeaceTerms;
-		Kingdom payer = ResolveKingdom(terms?.TributePayerKingdomId) ?? initiator;
-		Kingdom receiver = ResolveKingdom(terms?.TributeReceiverKingdomId) ?? target;
-		if (payer == receiver || (payer != initiator && payer != target) || (receiver != initiator && receiver != target))
-		{
-			payer = initiator;
-			receiver = target;
-		}
-		int requestedTribute = Math.Max(0, terms?.DailyTribute ?? 0);
-		int requestedDuration = Math.Max(0, terms?.DurationDays ?? 0);
-		if (!DiplomacyPeaceTermsService.TryApplyPeace(payer, receiver, requestedTribute, requestedDuration, "world_diplomacy_make_peace", out int appliedTribute, out int appliedDays, out string failureReason))
-		{
-			document.MechanicalResult = "议和未执行：" + failureReason;
-			return;
-		}
-		if (FactionManager.IsAtWarAgainstFaction(initiator, target))
-		{
-			document.MechanicalResult = "议和未执行：游戏状态未发生变化";
-			return;
-		}
-		string pairKey = WorldDiplomacyRoundLifecycleRules.PairKey(initiator.StringId, target.StringId);
-		_storage.LastPeaceDayByPair[pairKey] = CurrentDay();
-		WorldDiplomacyWarPressureRules.ClearWarPressure(_storage?.WarPressure, initiator.StringId, target.StringId, CurrentDay());
-		WorldDiplomacyWarPressureRules.ClearWarPressure(_storage?.WarPressure, target.StringId, initiator.StringId, CurrentDay());
-		string cessionResult = TryApplyValidatedCession(terms, initiator, target);
-		document.MechanicalResult = "双方已达成和平"
-			+ (appliedTribute > 0 ? "；" + KingdomName(payer) + "每日向" + KingdomName(receiver) + "支付" + appliedTribute.ToString(CultureInfo.InvariantCulture) + "第纳尔，共" + appliedDays.ToString(CultureInfo.InvariantCulture) + "天" : "")
-			+ cessionResult;
-		document.ChangedDiplomaticState = true;
 	}
 	private WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(JObject json, Kingdom author, Kingdom target)
 	{
@@ -3479,59 +3398,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return "；领地交割失败";
 		}
 	}
-	private void ExecuteAlliance(Kingdom initiator, Kingdom target, WorldDiplomacyDocument document)
-	{
-		if (FactionManager.IsAtWarAgainstFaction(initiator, target))
-		{
-			if (document != null) document.MechanicalResult = "结盟未执行：双方仍处于战争状态";
-			return;
-		}
-		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
-		if (alliance == null || alliance.IsAllyWithKingdom(initiator, target))
-		{
-			if (document != null) document.MechanicalResult = alliance == null
-				? "结盟未执行：同盟系统不可用"
-				: "结盟未执行：双方已经结盟";
-			return;
-		}
-		RunDiplomaticAction("world_diplomacy_alliance", () => alliance.StartAlliance(initiator, target));
-		if (alliance.IsAllyWithKingdom(initiator, target))
-		{
-			document.MechanicalResult = "双方已缔结同盟";
-			document.ChangedDiplomaticState = true;
-		}
-		else
-		{
-			document.MechanicalResult = "结盟未执行：游戏状态未发生变化";
-		}
-	}
-	private void ExecuteTradeAgreement(Kingdom initiator, Kingdom target, WorldDiplomacyDocument document)
-	{
-		if (FactionManager.IsAtWarAgainstFaction(initiator, target))
-		{
-			if (document != null) document.MechanicalResult = "贸易协定未执行：双方仍处于战争状态";
-			return;
-		}
-		ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-		if (trade == null || BannerlordApiCompat.HasTradeAgreement(trade, initiator, target))
-		{
-			if (document != null) document.MechanicalResult = trade == null
-				? "贸易协定未执行：贸易系统不可用"
-				: "贸易协定未执行：双方已经有贸易协定";
-			return;
-		}
-		CampaignTime duration = Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(initiator, target);
-		RunDiplomaticAction("world_diplomacy_trade", () => trade.MakeTradeAgreement(initiator, target, duration));
-		if (BannerlordApiCompat.HasTradeAgreement(trade, initiator, target))
-		{
-			document.MechanicalResult = "双方已缔结贸易协定";
-			document.ChangedDiplomaticState = true;
-		}
-		else
-		{
-			document.MechanicalResult = "贸易协定未执行：游戏状态未发生变化";
-		}
-	}
 	private static void RunDiplomaticAction(string source, Action action)
 	{
 		if (action == null)
@@ -3550,75 +3416,13 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private bool CanIssueWarThreat(Kingdom initiator, Kingdom target, out string reason)
 	{
-		reason = "";
-		if (initiator == null || target == null || initiator == target || initiator.IsEliminated || target.IsEliminated)
-		{
-			reason = "王国目标无效";
-			return false;
-		}
-		if (!HasIndependentWorldDiplomacyAuthority(initiator) || !HasIndependentWorldDiplomacyAuthority(target))
-		{
-			reason = "附庸国没有独立外交权，应由宗主国处理";
-			return false;
-		}
-		if (FactionManager.IsAtWarAgainstFaction(initiator, target))
-		{
-			reason = "双方已经处于战争状态";
-			return false;
-		}
-		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
-		if (alliance?.IsAllyWithKingdom(initiator, target) == true)
-		{
-			reason = "双方仍有同盟，必须先正式解除同盟";
-			return false;
-		}
-		int day = CurrentDay();
-		int peaceProtectionDays = GetPeaceProtectionDays();
-		if (peaceProtectionDays > 0
-			&& _storage.LastPeaceDayByPair.TryGetValue(WorldDiplomacyRoundLifecycleRules.PairKey(initiator.StringId, target.StringId), out int peaceDay)
-			&& day - peaceDay < peaceProtectionDays)
-		{
-			reason = "仍处于和平保护期";
-			return false;
-		}
-		return true;
+		var port = new WarAdmissionPort(this, initiator, target);
+		return WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(ref port, out reason);
 	}
 	private bool CanDeclareWar(Kingdom initiator, Kingdom target, out string reason, bool enforceRejectedUltimatum = false)
 	{
-		if (!CanIssueWarThreat(initiator, target, out reason))
-		{
-			return false;
-		}
-		WorldDiplomacyThreat pendingThreatDecision = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(_storage?.DiplomaticThreats, initiator.StringId, target.StringId);
-		if (WorldDiplomacyRoundLifecycleRules.IsThreatDecisionPending(pendingThreatDecision))
-		{
-			reason = "已发出的谴责或最后通牒仍在等待对象国一次性决定";
-			return false;
-		}
-		if (enforceRejectedUltimatum)
-		{
-			// A publicly rejected ultimatum overrides AI pacing limits. It does not override
-			// hard world facts such as peace protection, alliance, vassalage or an existing war.
-			return true;
-		}
-		int day = CurrentDay();
-		int cooldownDays = GetOffensiveWarCooldownDays();
-		if (_storage.LastOffensiveWarDayByKingdom.TryGetValue(initiator.StringId, out int lastWarDay)
-			&& day - lastWarDay < cooldownDays)
-		{
-			reason = "主动战争冷却尚未结束";
-			return false;
-		}
-		int activeWars = Kingdom.All.Count(x => x != null
-			&& !x.IsEliminated
-			&& x != initiator
-			&& FactionManager.IsAtWarAgainstFaction(initiator, x));
-		if (activeWars >= FixedMaxConcurrentOffensiveWars)
-		{
-			reason = "当前同时战争数量过多";
-			return false;
-		}
-		return true;
+		var port = new WarAdmissionPort(this, initiator, target);
+		return WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref port, out reason, enforceRejectedUltimatum);
 	}
 	private void CompleteExchange(string exchangeId, string reason)
 	{
@@ -3642,7 +3446,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
 			action, initiator.StringId, target.StringId, reason,
 			IsPlayerKingdom(initiator), _storage, CurrentDay(),
-			intent => HasProposalTakenEffect(intent, initiator, target),
+			intent => new OfferActionPort(this).HasTakenEffect(intent, initiator?.StringId, target?.StringId),
 			domain => ClearBilateralOfferCooldowns(initiator, target, domain),
 			(title, factBody, origin, playerAuthored) => CreateDocument(initiator, target, title, factBody, origin, playerAuthored, false, ""),
 			normalized => BuildExternalFactBody(normalized, initiator, target, reason),

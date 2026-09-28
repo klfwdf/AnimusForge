@@ -34,6 +34,18 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyCourtResponseApplication.TryScheduleMandatory(' in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private void TrySettleRelayOffer(',):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyOfferApplication.Settle(document, new OfferActionPort(this))' in after, signature
+  prior=prior.replace(before,after)
+ for signature in ('private void NotifyExternalDiplomacyResolvedInternal(',):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert before.replace('HasProposalTakenEffect(intent, initiator, target)', 'new OfferActionPort(this).HasTakenEffect(intent, initiator?.StringId, target?.StringId)') == after, signature
+  prior=prior.replace(before,after)
+ for signature in ('private bool CanIssueWarThreat(', 'private bool CanDeclareWar('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyWarAdmissionApplication.' in after, signature
+  prior=prior.replace(before,after)
  for signature in ('private void ExecuteImmediateIntent(',):
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyImmediateActionApplication.Execute(' in after, signature
@@ -67,7 +79,7 @@ def main():
  current=current.replace('\t'+declaration(current,proactive_documents)+'\n\n','')
  current=current.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
- print('PASS 17 private method deletions; tick is an Application forwarder; other surviving host text unchanged')
+ print('PASS 21 private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)
  # Evaluation only: no game startup, restore, Stage or deployment.
  result=subprocess.run([a.dotnet,'msbuild',str(ROOT/'AnimusForge.csproj'),'-getItem:Compile'],cwd=ROOT,capture_output=True,encoding='utf-8',check=True)

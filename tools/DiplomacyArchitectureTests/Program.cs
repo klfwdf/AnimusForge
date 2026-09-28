@@ -29,16 +29,27 @@ static class Program
                     "StartDocumentPropagation" => "Start",
                     "ReconcileAnalyzedPlayerDeclarationWithReachedCourts" => "ReconcileReachedCourts",
                     "ExecuteImmediateIntent" => "Execute",
+                    "TrySettleRelayOffer" => "Settle",
                     _ => null };
                 if (routing != null)
                 {
                     var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
                     string owner = method.Identifier.ValueText == "ExecuteImmediateIntent"
                         ? "WorldDiplomacyImmediateActionApplication"
+                        : method.Identifier.ValueText == "TrySettleRelayOffer" ? "WorldDiplomacyOfferApplication"
                         : "WorldDiplomacyPublicationRoutingApplication";
                     if (method.Body?.Statements.Count != 1 || calls.Length != 1
                         || calls[0].Expression.ToString() != owner + "." + routing)
                         errors.Add("publication predecessor retains orchestration: " + method.Identifier.ValueText);
+                }
+                if (method.Identifier.ValueText is "CanDeclareWar" or "CanIssueWarThreat")
+                {
+                    var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                    if (method.Body?.Statements.Count != 2 || calls.Length != 1
+                        || method.Body.Statements[0] is not LocalDeclarationStatementSyntax
+                        || method.Body.Statements[1] is not ReturnStatementSyntax
+                        || calls[0].Expression.ToString() != "WorldDiplomacyWarAdmissionApplication." + method.Identifier.ValueText)
+                        errors.Add("war predecessor retains admission policy: " + method.Identifier.ValueText);
                 }
                 if (!new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument",
                     "FinalizePublishedDocumentAfterAnalysis", "TryIncludeResultSettlementTarget" }.Contains(method.Identifier.ValueText)) continue;
@@ -51,6 +62,16 @@ static class Program
         if (IsPure(path))
             foreach (SyntaxToken token in root.DescendantTokens().Where(t => t.IsKind(SyntaxKind.IdentifierToken)))
                 if (Forbidden.Contains(token.ValueText)) errors.Add("pure dependency " + token.ValueText);
+        if (path.EndsWith("WorldDiplomacyBehavior.OfferActionPort.cs", StringComparison.Ordinal))
+        {
+            foreach (var assignment in root.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+                if (assignment.Left.ToString().Contains("_storage") || assignment.Left.ToString().Contains(".PeaceTerms")
+                    || assignment.Left.ToString().Contains(".MechanicalResult") || assignment.Left.ToString().Contains(".ChangedDiplomaticState"))
+                    errors.Add("offer effect adapter owns application state: " + assignment.Left);
+            foreach (var call in root.DescendantNodes().OfType<InvocationExpressionSyntax>())
+                if (call.Expression.ToString().Contains("ClearWarPressure") || call.Expression.ToString().Contains("ClonePeaceTerms"))
+                    errors.Add("offer effect adapter owns settlement ordering: " + call.Expression);
+        }
         if (path.StartsWith("src/bridges/Diplomacy/"))
         {
             foreach (var node in root.DescendantNodes())
@@ -114,7 +135,7 @@ static class Program
         var retired = manifest["retired"].Values<string>().ToHashSet();
         var prior = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(Path.GetDirectoryName(manifestPath), "prior-host.cs.txt"))).GetRoot();
         var retiredMethods = prior.DescendantNodes().OfType<MethodDeclarationSyntax>().Where(m => retired.Contains(m.Identifier.ValueText)).ToArray();
-        Check(retiredMethods.Length == 17 && retiredMethods.All(m => m.Modifiers.Any(SyntaxKind.PrivateKeyword) && m.AttributeLists.Count == 0), "only private non-callback declarations retired");
+        Check(retiredMethods.Length == 21 && retiredMethods.All(m => m.Modifiers.Any(SyntaxKind.PrivateKeyword) && m.AttributeLists.Count == 0), "only private non-callback declarations retired");
         Check(!trees[host].GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().Any(m => retired.Contains(m.Identifier.ValueText)), "retired host wrappers absent");
         // All surviving same-name references must be qualified calls to the extracted owner, never a bare/self/owner dispatch.
         foreach (var (path, tree) in trees)
@@ -143,7 +164,7 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
-        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument" })
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat" })
         {
             string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";
             Check(Violations(host, CSharpSyntaxTree.ParseText(injected).GetRoot()).Count > 0, "reject callback-hidden predecessor orchestration: " + name);
