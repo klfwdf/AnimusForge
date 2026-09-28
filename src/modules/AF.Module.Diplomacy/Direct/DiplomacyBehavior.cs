@@ -26,9 +26,6 @@ namespace AnimusForge
 		public static DiplomacyBehavior Instance { get; private set; }
 
 		private static bool s_globalPatchesApplied;
-		private static readonly WorldDiplomacyIndependentClanPeaceCommandFacade IndependentClanPeaceCommandFacade =
-			new WorldDiplomacyIndependentClanPeaceCommandFacade(
-				new BannerlordWorldDiplomacyIndependentClanPeaceGameActionPort());
 		private static readonly WorldDiplomacyMakePeaceCommandFacade MakePeaceCommandFacade =
 			new WorldDiplomacyMakePeaceCommandFacade(new BannerlordWorldDiplomacyMakePeaceGameActionPort());
 		private static readonly WorldDiplomacyFormAllianceCommandFacade FormAllianceCommandFacade =
