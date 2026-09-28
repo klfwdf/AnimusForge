@@ -1,4 +1,5 @@
 using System.Text;
+using AnimusForge;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
 using AnimusForge.Refactor.Modules;
@@ -27,6 +28,7 @@ internal static class Program
         VerifyPlayerDeclaration();
         VerifyNpcDeclaration();
         VerifyCommandFacade();
+        VerifyApplicationReplay();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy oral declare-war smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -128,6 +130,61 @@ internal static class Program
             "facade must map a thrown port call to an indeterminate post-start receipt");
     }
 
+    private static void VerifyApplicationReplay()
+    {
+        var rejected=new FakeOralSource();
+        Test.True(DiplomacyOralDeclareWarApplication.Execute(ref rejected,"bad")==""
+                  && rejected.Executions==0 && rejected.Notifications==0,
+            "invalid payload must not execute or publish");
+        var applied=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyDeclareWarExecutionReceipt(
+                WorldDiplomacyDeclareWarExecutionStatus.Applied,"player","npc",""),
+            EndpointsAvailable=true
+        };
+        Test.True(DiplomacyOralDeclareWarApplication.Execute(ref applied,"player:npc")==""
+                  && applied.Executions==1 && applied.Notifications==1
+                  && applied.LastCommand.DeclarerKind==WorldDiplomacyDeclareWarDeclarerKind.PlayerKingdom,
+            "applied player declaration must publish once after receipt and endpoint resolution");
+        var refused=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyDeclareWarExecutionReceipt(
+                WorldDiplomacyDeclareWarExecutionStatus.AlreadyAtWar,"player","npc","already"),
+            EndpointsAvailable=true
+        };
+        DiplomacyOralDeclareWarApplication.Execute(ref refused,"player:npc");
+        Test.True(refused.Executions==1 && refused.Notifications==0 && refused.EndpointLookups==0,
+            "rejected receipt must not resolve or publish endpoints");
+        var missing=new FakeOralSource
+        {
+            Receipt=new WorldDiplomacyDeclareWarExecutionReceipt(
+                WorldDiplomacyDeclareWarExecutionStatus.Applied,"player","npc",""),
+            EndpointsAvailable=false
+        };
+        DiplomacyOralDeclareWarApplication.Execute(ref missing,"player:npc");
+        Test.True(missing.Executions==1 && missing.EndpointLookups==1 && missing.Notifications==0,
+            "applied receipt with unavailable endpoints must not publish");
+    }
+
+    private struct FakeOralSource : IDiplomacyOralDeclareWarSource
+    {
+        internal WorldDiplomacyDeclareWarExecutionReceipt Receipt;
+        internal WorldDiplomacyDeclareWarCommand LastCommand;
+        internal bool EndpointsAvailable;
+        internal int Executions;
+        internal int EndpointLookups;
+        internal int Notifications;
+        public DiplomacyOralDeclareWarSnapshot Capture() =>
+            new(true,"npc","npc-speaker",true,"player",false,true);
+        public WorldDiplomacyDeclareWarExecutionReceipt Execute(WorldDiplomacyDeclareWarCommand command)
+        { Executions++;LastCommand=command;return Receipt; }
+        public bool TryResolveAppliedEndpoints(string declarerId,string targetId,
+            out string resolvedDeclarerId,out string resolvedTargetId)
+        { EndpointLookups++;resolvedDeclarerId=declarerId;resolvedTargetId=targetId;return EndpointsAvailable; }
+        public void NotifyResolved() { Notifications++; }
+        public void Log(string message) { }
+    }
+
     private static void VerifySourceBoundary()
     {
         string contracts = File.ReadAllText(
@@ -147,14 +204,19 @@ internal static class Program
             Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs"));
         string method = ExtractMethod(behavior, "private string TryExecuteDeclareWar(");
+        string application = File.ReadAllText(
+            FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/DiplomacyOralDeclareWarApplication.cs"), Encoding.UTF8);
+        string oralSource = File.ReadAllText(
+            FindRepositoryFile("src/modules/AF.Module.Diplomacy/Adapters/DiplomacyOralDeclareWarSource.cs"), Encoding.UTF8);
 
         Test.True(!contracts.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !rules.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !facade.Contains("TaleWorlds", StringComparison.Ordinal),
             "declare-war contracts, rules, and command facade must remain TaleWorlds-free");
-        Test.True(method.Contains("WorldDiplomacyOralDeclareWarRules.ResolveCommand", StringComparison.Ordinal)
-                  && method.Contains("DeclareWarCommandFacade.Execute(resolution.Command)", StringComparison.Ordinal),
-            "legacy behavior must delegate command resolution and execution");
+        Test.True(method.Contains("DiplomacyOralDeclareWarApplication.Execute(ref source, payload)", StringComparison.Ordinal)
+                  && application.Contains("WorldDiplomacyOralDeclareWarRules.ResolveCommand", StringComparison.Ordinal)
+                  && application.Contains("source.Execute(resolution.Command)", StringComparison.Ordinal),
+            "legacy behavior must forward the full oral use case to Application");
         Test.True(!method.Contains("(payload ?? \"\").Split(':')", StringComparison.Ordinal)
                   && !method.Contains("string.Equals(id2, npcKingdomId", StringComparison.Ordinal)
                   && !method.Contains("string.Equals(id1, npcKingdomId", StringComparison.Ordinal),
@@ -185,11 +247,10 @@ internal static class Program
             StringComparison.Ordinal);
         Test.True(actionIndex >= 0 && confirmationIndex > actionIndex,
             "game adapter must confirm the live war state after the action");
-        int appliedGuardIndex = method.IndexOf("if (!receipt.IsApplied)", StringComparison.Ordinal);
-        int notificationIndex = method.IndexOf(
-            "WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved",
-            StringComparison.Ordinal);
-        Test.True(appliedGuardIndex >= 0 && notificationIndex > appliedGuardIndex,
+        int appliedGuardIndex = application.IndexOf("if (!receipt.IsApplied)", StringComparison.Ordinal);
+        int notificationIndex = application.IndexOf("source.NotifyResolved()", StringComparison.Ordinal);
+        Test.True(appliedGuardIndex >= 0 && notificationIndex > appliedGuardIndex
+                  && oralSource.Contains("WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved", StringComparison.Ordinal),
             "confirmed-fact notification must run only after an Applied receipt");
     }
 

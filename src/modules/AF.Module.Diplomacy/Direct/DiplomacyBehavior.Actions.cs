@@ -25,63 +25,8 @@ namespace AnimusForge
 	{
 		private string TryExecuteDeclareWar(Hero npc, string payload)
 		{
-			Kingdom npcKingdom = npc.Clan?.Kingdom;
-			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-			WorldDiplomacyOralDeclareWarResolution resolution = WorldDiplomacyOralDeclareWarRules.ResolveCommand(
-				payload,
-				npcKingdomExists: npcKingdom != null,
-				npcKingdomId: npcKingdom?.StringId,
-				npcSpeakerHeroId: npc?.StringId,
-				playerKingdomExists: playerKingdom != null,
-				playerKingdomId: playerKingdom?.StringId,
-				playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
-				npcSpeakerIsRuler: npc != null && npc == npcKingdom?.RulingClan?.Leader);
-			if (!resolution.IsReady)
-			{
-				switch (resolution.Status)
-				{
-					case WorldDiplomacyOralDeclareWarResolutionStatus.BadPayloadFormat:
-						Logger.Log("DiplomacyBehavior", "[DeclareWar] Bad format");
-						break;
-					case WorldDiplomacyOralDeclareWarResolutionStatus.EmptyKingdomId:
-						Logger.Log("DiplomacyBehavior", "[DeclareWar] Empty id(s)");
-						break;
-					case WorldDiplomacyOralDeclareWarResolutionStatus.NpcKingdomUnavailable:
-						Logger.Log("DiplomacyBehavior", "[DeclareWar] NPC has no kingdom");
-						break;
-					case WorldDiplomacyOralDeclareWarResolutionStatus.PlayerKingdomUnavailable:
-						Logger.Log("DiplomacyBehavior", "[DeclareWar] Player has no kingdom");
-						break;
-					case WorldDiplomacyOralDeclareWarResolutionStatus.PlayerDeclarerMismatch:
-						Logger.Log("DiplomacyBehavior", $"[DeclareWar] Declarer {resolution.FirstKingdomId} != player kingdom");
-						break;
-					case WorldDiplomacyOralDeclareWarResolutionStatus.NpcSpeakerNotRuler:
-						Logger.Log("DiplomacyBehavior", "[DeclareWar] NPC not king");
-						break;
-					default:
-						Logger.Log("DiplomacyBehavior", $"[DeclareWar] Neither id matches NPC kingdom {npcKingdom?.StringId}");
-						break;
-				}
-				return "";
-			}
-
-			WorldDiplomacyDeclareWarExecutionReceipt receipt = DeclareWarCommandFacade.Execute(resolution.Command);
-			if (!receipt.IsApplied)
-			{
-				Logger.Log("DiplomacyBehavior", $"[DeclareWar] Rejected status={receipt.Status} code={receipt.ErrorCode}");
-				return "";
-			}
-
-			Kingdom declarer = ResolveKingdom(receipt.DeclarerKingdomId);
-			Kingdom target = ResolveKingdom(receipt.TargetKingdomId);
-			if (declarer == null || target == null)
-			{
-				Logger.Log("DiplomacyBehavior", "[DeclareWar] Applied but receipt endpoints are unavailable");
-				return "";
-			}
-			Logger.Log("DiplomacyBehavior", $"[DeclareWar] {declarer.StringId} -> {target.StringId}");
-			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("declare_war", declarer, target, "面对面口头外交达成");
-			return "";
+			var source = new DiplomacyOralDeclareWarSource(npc);
+			return DiplomacyOralDeclareWarApplication.Execute(ref source, payload);
 		}
 
 		private string TryExecuteIndependentClanPeace(Hero npc, string payload)
@@ -346,7 +291,7 @@ namespace AnimusForge
 				: 0;
 		}
 
-		private static Kingdom ResolveKingdom(string id, bool includeEliminated = false)
+		internal static Kingdom ResolveKingdom(string id, bool includeEliminated = false)
 		{
 			if (string.IsNullOrWhiteSpace(id)) return null;
 			foreach (Kingdom k in Kingdom.All)
