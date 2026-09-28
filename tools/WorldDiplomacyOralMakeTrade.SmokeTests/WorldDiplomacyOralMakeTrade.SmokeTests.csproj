@@ -9,5 +9,7 @@
     <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyMakeTradeContracts.cs" Link="WorldDiplomacyMakeTradeContracts.cs" />
     <Compile Include="..\..\Refactor\Domain\WorldDiplomacyOralMakeTradeRules.cs" Link="WorldDiplomacyOralMakeTradeRules.cs" />
     <Compile Include="..\..\Refactor\Modules\WorldDiplomacyMakeTradeCommandFacade.cs" Link="WorldDiplomacyMakeTradeCommandFacade.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Application\DiplomacyOralRoyalSnapshot.cs" Link="DiplomacyOralRoyalSnapshot.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Application\DiplomacyOralMakeTradeApplication.cs" Link="DiplomacyOralMakeTradeApplication.cs" />
   </ItemGroup>
 </Project>
