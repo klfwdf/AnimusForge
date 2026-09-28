@@ -32,7 +32,7 @@ internal static class CourtResponseReplay
                     storage, current, participant, "npc", playerDeclaration,
                     () => false, () => true, () => false,
                     () => (false, (string)null),
-                    (r, d) => { trace.Add("enqueue"); return "player"; },
+                    (r, receiver, d) => { trace.Add("enqueue"); return "player"; },
                     message => trace.Add("log:" + message), 4);
             },
             () => 10, message => trace.Add("log:" + message));
@@ -74,7 +74,7 @@ internal static class CourtResponseReplay
             storage, round, playerParticipant, "player", playerDeclaration,
             () => true, () => true, () => false,
             () => { effects++; return (false, (string)null); },
-            (_, __) => { effects++; return "npc"; }, _ => effects++, 4);
+            (_, ___, __) => { effects++; return "npc"; }, _ => effects++, 4);
         Test.True(effects == 0 && !playerParticipant.MandatoryReplyPending,
             "AI cannot author or enqueue a mandatory reply for the player ruler");
 
@@ -85,7 +85,7 @@ internal static class CourtResponseReplay
             storage, round, blockedParticipant, "npc", playerDeclaration,
             () => false, () => true, () => false,
             () => { blockedTrace.Add("author-check"); return (true, "no authority"); },
-            (_, __) => { blockedTrace.Add("enqueue"); return "player"; },
+            (_, ___, __) => { blockedTrace.Add("enqueue"); return "player"; },
             message => blockedTrace.Add(message), 4);
         Test.True(!blockedParticipant.MandatoryReplyPending && blockedParticipant.State == "observer"
                 && blockedTrace.Count == 2 && blockedTrace[0] == "author-check"

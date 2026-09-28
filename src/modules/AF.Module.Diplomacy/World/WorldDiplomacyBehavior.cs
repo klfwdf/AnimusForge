@@ -3279,9 +3279,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				bool allowed = CanAiAuthorDiplomaticDocument(receiver, out string reason);
 				return (!allowed, reason);
 			},
-			(r, source) =>
-			{
-				Kingdom target = ResolveKingdom(source.AuthorKingdomId);
+            (r, receiverId, source) =>
+            {
+                Kingdom receiver = ResolveKingdom(receiverId);
+                Kingdom target = ResolveKingdom(source.AuthorKingdomId);
 				bool reuseRelayTranscript = r.RelayPlanned;
 				EnqueueGenerationJob(receiver, target, null, isResponse: true, sourceDocument: source,
 					priority: 95, externalResponseOnly: true, roundId: r.RoundId, isRelayTurn: reuseRelayTranscript,
