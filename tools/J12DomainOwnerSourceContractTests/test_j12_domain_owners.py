@@ -45,7 +45,8 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         self.assertEqual(runtime.count("private void TryStartNextLlmJob()"), 1)
         self.assertEqual(runtime.count("private void ProcessCompletedJobs()"), 1)
         lifecycle = read("Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs")
-        self.assertIn("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", runtime)
+        dispatch = read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs")
+        self.assertIn("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", dispatch)
         self.assertIn("!string.IsNullOrWhiteSpace(x.JobId)", lifecycle)
         self.assertIn('(lastCacheAffinityKey ?? "").Trim()', lifecycle)
         completion = read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs")
@@ -56,13 +57,16 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         self.assertIn("effects.CommitGeneratedDocument(job, resultContent)", completion)
         self.assertIn("WorldDiplomacyCompletionApplication.Complete(", lifecycle)
         self.assertNotIn("commitGeneratedDocument?.Invoke(job, resultContent)", lifecycle)
-        task = runtime[runtime.index("_ = Task.Run(async delegate") : runtime.index("_completedJobs.Enqueue(result);")]
+        self.assertIn("WorldDiplomacyLlmDispatchApplication.Run(ref source)", runtime)
+        self.assertNotIn("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", runtime)
+        transport = read("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs")
+        task = transport[transport.index("_ = Task.Run(async delegate") : transport.index("completedJobs.Enqueue(result);")]
         self.assertNotIn("job.", task)
         self.assertIn("request.JobId", task)
         application = read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs")
         self.assertIn("WorldDiplomacyLlmApplication.ExecuteAsync(", task)
         self.assertIn("detachedRequest, gateway, CancellationToken.None", task)
-        self.assertLess(runtime.index("WorldDiplomacyLlmApplication.PrepareRequest("), runtime.index("_ = Task.Run"))
+        self.assertLess(transport.index("WorldDiplomacyLlmApplication.PrepareRequest("), transport.index("_ = Task.Run"))
         self.assertNotIn("requestMessages", task)
         self.assertIn("RuntimeGeneration = request.Trace.RuntimeGeneration", application)
         self.assertIn("gateway.GenerateAsync(", application)
@@ -70,7 +74,7 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         # DPL-110 retired the unused selector; the live state machine owns selection.
         self.assertNotIn("SelectNextJobId(", coordinator)
         self.assertNotIn("WorldDiplomacyJobQueueItem", coordinator)
-        self.assertEqual(runtime.count("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob("), 1)
+        self.assertEqual(dispatch.count("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob("), 1)
         self.assertEqual(lifecycle.count("public static WorldDiplomacyJob SelectAndPrepareLlmJob("), 1)
 
     def test_worldmap_protocol_admission_lifecycle_and_delay_are_split(self) -> None:
