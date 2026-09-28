@@ -13,6 +13,8 @@
 
 **J16 意图检查点（2026-09-28，`J16_ACTIVE`）**：用户批准开工。本分支按计划 G0 → J16a → J16b → J16c → J16e 推进；J16d（一键脚本/Bootstrap）与 A1 去跟踪、A5 venv、A6 CLAUDE/AGENTS 段落仍需逐项确认。G0 先在原位置跑全部 runner（仓外 TEMP、只写忽略的 `artifacts/`），形成移动前结果表；只改测试/工具路径与定位，不改断言、产品代码、`pack0.tpac`、Stage 映射或 GCCZ；不推送、不部署。
 
+**J16 G0 移动前基线（`79df8ac0`）**：[docs/audits/2026-09-28-j16-baseline.json](audits/2026-09-28-j16-baseline.json)。自动枚举 `tools/`、`tests/` 下 250 个入口（run*/validate_*/verify*/source_*/test_* 与带 `__main__` 的 py、测试 csproj），默认参数运行，只对文档写明的必需参数补值（`--dotnet`/`--newtonsoft`/`--phase after --layout relocated`/`ReplayCandidateDll` 等）；replay 类用 Debug Stage 与 Workshop 精确模块路径；Policy 契约按 `build_single_module.ps1` 的 1.3 参数跑 `--policy-all-modules-contract-only`（1407 断言/18 模块 PASS）。结果：**PASS 202**、`PREEXISTING_FAIL` 38、`NEEDS_INPUT` 6（缺 manifest/安装模块/docx/真实 PlayerExports）、`SUPERSEDED_BY_RUNNER` 3（直接构建 csproj 缺 Newtonsoft，其同目录 `run.py` 已 PASS）、`ENV_STATE` 1（安装模块与 Stage 不一致，部署前属预期）。`PREEXISTING_FAIL` 抽 5 个在未改动的远端 `8af57b39` 独立 worktree 复跑同样失败，主因是锁死历史源码 hash 的 source review/parity（生产代码已演进）、引用不可达历史修订或 `AnimusForge/` 旧路径；**J16 不修，只要求移动后保持原状态**，每个 PASS 移动后必须仍 PASS。环境补充（均仓外或忽略）：官方 SDK 8.0.425 装到忽略的 `local/dotnet/8.0.425/`（多个既有 runner 的默认路径）；`~/.nuget` 中 Newtonsoft 13.0.3 复制到忽略的 `.tmp/nuget-packages/`；两次运行 `package_policy_system_source_overlay.py` 产生的 `dist/*.zip` 已删除。基线 harness 暂存 `artifacts/j16-baseline/baseline.py`（忽略），J16e 改为正式 `tests/run_all.py`。
+
 <a id="j15-f45-current-20260927"></a>
 
 ## J15 F4/F5 当前续作证据（2026-09-27；未完成）
