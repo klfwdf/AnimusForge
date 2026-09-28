@@ -622,7 +622,7 @@ internal static class Program
                   && slotMutation.Contains("if (prioritize)", StringComparison.Ordinal)
                   && slotMutation.Contains("Insert(0, slot)", StringComparison.Ordinal),
             "settlement obligations must deduplicate by kingdom and allow urgent obligations to be promoted");
-        Test.True(source.Contains("WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(", StringComparison.Ordinal)
+        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs")).Contains("WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(", StringComparison.Ordinal)
                   && !source.Contains("private void AddOrMergeResultSettlementSlot(", StringComparison.Ordinal)
                   && !source.Contains("private void AddWarResponseResultSettlementSlot(", StringComparison.Ordinal),
             "settlement-slot composition must be delegated to the lifecycle rules");
@@ -632,7 +632,7 @@ internal static class Program
             "private void RefreshResultSettlementActionSlots(",
             "private void BeginOrExtendRoundResultSettlement(");
         Test.True(actionRefresh.Contains("WorldDiplomacyRoundLifecycleRules.IsOfferOfStatus(", StringComparison.Ordinal)
-                  && actionRefresh.Contains("!TryIncludeResultSettlementTarget(round, target.StringId)", StringComparison.Ordinal)
+                  && actionRefresh.Contains("!TryIncludeResultSettlementTarget(port, round, target)", StringComparison.Ordinal)
                   && actionRefresh.Contains("\"offer_response\"", StringComparison.Ordinal)
                   && actionRefresh.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(", StringComparison.Ordinal)
                   && actionRefresh.Contains("prioritize: true", StringComparison.Ordinal),
@@ -645,12 +645,12 @@ internal static class Program
             source,
             "private List<Kingdom> GetResultSettlementActionableTargets(",
             "private void ScheduleNextResultSettlementTurn(");
-        Test.True(actionableTargets.Contains("return Kingdom.All", StringComparison.Ordinal)
+        Test.True(actionableTargets.Contains("return _port.KingdomIds()", StringComparison.Ordinal)
                   && actionableTargets.Contains("CanUseResultSettlementTarget(round, author, x)", StringComparison.Ordinal)
 				  && actionableTargets.Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal)
 				  && actionableTargets.Contains("isRelayTurn: true", StringComparison.Ordinal)
 				  && actionableTargets.Contains("round.ResultSettlementCurrentSlotId", StringComparison.Ordinal)
-                  && actionableTargets.Contains("OrderBy(x => x.StringId", StringComparison.Ordinal),
+                  && actionableTargets.Contains("OrderBy(x => x", StringComparison.Ordinal),
             "settlement generation must consider all currently executable independent targets, not only the original relay route");
 
         string warResponse = ExtractMethod(
@@ -1327,7 +1327,7 @@ internal static class Program
 		int mustAnswerPeace = declarationActions.IndexOf("bool mustAnswerPeaceOffer", StringComparison.Ordinal);
 		int exactPeaceResponses = declarationActions.IndexOf("IsExclusivePeaceOfferResponseSet(intents)", StringComparison.Ordinal);
 		int statementGate = declarationActions.IndexOf(
-			"if (!mustAnswerPeaceOffer && IsNonRootAiRelayNoActionAllowed(",
+			"if (!mustAnswerPeaceOffer && _port.IsNonRootAiRelayNoActionAllowed(",
 			exactPeaceResponses,
 			StringComparison.Ordinal);
 		int addStatement = declarationActions.IndexOf("intents.Add(\"statement\")", statementGate, StringComparison.Ordinal);
@@ -2111,6 +2111,19 @@ internal static class Program
     }
 
     // Follow the actual DPL-080 owner while retaining host-routing checks.
+    private static string? ReadActionSelectionOwner(string source, string marker)
+    {
+        if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        foreach (string name in new[] { "BuildPotentialDiplomaticActionIntents", "BuildLegalDiplomaticActionIntents", "BuildLegalDiplomaticDeclarationIntents", "GetActionableDiplomaticTargets", "GetRoundPlanActionableParticipants", "GetResultSettlementActionableTargets", "RefreshResultSettlementActionSlots" })
+        {
+            if (!marker.Contains(name + "(")) continue;
+            bool slots = name == "RefreshResultSettlementActionSlots";
+            string path = "src/modules/AF.Module.Diplomacy/Application/" + (slots ? "WorldDiplomacyDocumentExecutionApplication.cs" : "WorldDiplomacyActionSelectionApplication.cs");
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile(path)), (slots ? "internal static void " : "internal List<string> ") + name + "(");
+        }
+        return null;
+    }
+
     private static string? ReadAdmissionOwner(string source, string marker)
     {
         if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
@@ -2166,7 +2179,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
@@ -2178,7 +2191,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

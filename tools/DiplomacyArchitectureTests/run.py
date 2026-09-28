@@ -78,6 +78,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert owner in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private List<string> BuildPotentialDiplomaticActionIntents(', 'private List<string> BuildLegalDiplomaticActionIntents(', 'private List<string> BuildLegalDiplomaticDeclarationIntents(', 'private List<Kingdom> GetActionableDiplomaticTargets(', 'private List<Kingdom> GetRoundPlanActionableParticipants(', 'private List<Kingdom> GetResultSettlementActionableTargets(', 'private void RefreshResultSettlementActionSlots('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyActionSelectionApplication' in after or 'WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots' in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('

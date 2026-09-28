@@ -1808,33 +1808,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 
 	private void RefreshResultSettlementActionSlots(WorldDiplomacyRound round)
-	{
-		if (round == null || !round.ResultSettlementPending || !round.RelayPlanned) return;
-		WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots(round, _storage?.Documents, TryIncludeResultSettlementTarget, NewId);
-		PruneInvalidOffers(round);
-		foreach (WorldDiplomacyRoundOffer offer in (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
-			.Where(x => WorldDiplomacyRoundLifecycleRules.IsOfferOfStatus(x, "open")))
-		{
-			Kingdom target = ResolveKingdom(offer.TargetKingdomId);
-			if (target == null || !HasIndependentWorldDiplomacyAuthority(target)
-				|| !TryIncludeResultSettlementTarget(round, target.StringId))
-			{
-				offer.Status = "invalidated";
-				continue;
-			}
-			WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(round, target.StringId, "offer_response",
-				offer.SourceDocumentId, offer.ProposerKingdomId, prioritize: true, TryIncludeResultSettlementTarget, NewId);
-		}
-		foreach (WorldDiplomacyThreat threat in (_storage.DiplomaticThreats ?? new List<WorldDiplomacyThreat>())
-			.Where(x => WorldDiplomacyRoundLifecycleRules.IsThreatRelevantToResultSettlement(x, round?.RoundId)))
-		{
-			WorldDiplomacyThreatSettlementSlotDecision threatSlot =
-				WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(threat);
-			if (!threatSlot.Applies) continue;
-			WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(round, threatSlot.KingdomId, threatSlot.Kind,
-				threatSlot.SourceDocumentId, threatSlot.RelatedKingdomId, prioritize: true, TryIncludeResultSettlementTarget, NewId);
-		}
-	}
+    {
+        WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots(new DocumentExecutionPort(this), _storage, round);
+    }
 
 	private void BeginOrExtendRoundResultSettlement(
 		WorldDiplomacyRound round,
@@ -1849,15 +1825,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private List<Kingdom> GetResultSettlementActionableTargets(WorldDiplomacyRound round, Kingdom author)
 	{
-		if (round == null || author == null) return new List<Kingdom>();
-		return Kingdom.All
-			.Where(x => CanUseResultSettlementTarget(round, author, x))
-			.Where(x => BuildLegalDiplomaticDeclarationIntents(
-				round, author, x, isRelayTurn: true,
-				resultSettlementSlotId: round.ResultSettlementCurrentSlotId).Count > 0)
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-	}
+        var port = new ActionSelectionPort(this, author);
+        return port.ResolveSelected(new WorldDiplomacyActionSelectionApplication(port).GetResultSettlementActionableTargets(round, author?.StringId));
+    }
 
 	private void ScheduleNextResultSettlementTurn(WorldDiplomacyRound round)
 	{
@@ -3682,56 +3652,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private List<string> BuildPotentialDiplomaticActionIntents(Kingdom first, Kingdom second)
 	{
-		List<string> actions = new List<string>();
-		if (first == null || second == null || first == second) return actions;
-		bool atWar = FactionManager.IsAtWarAgainstFaction(first, second);
-		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
-		ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-		bool allied = alliance != null && alliance.IsAllyWithKingdom(first, second);
-		bool trading = trade != null && BannerlordApiCompat.HasTradeAgreement(trade, first, second);
-		if (atWar)
-		{
-			actions.Add("propose_peace");
-			return actions;
-		}
-		WorldDiplomacyThreat incoming = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(_storage?.DiplomaticThreats, second.StringId, first.StringId);
-		if (WorldDiplomacyRoundLifecycleRules.IsThreatDecisionPending(incoming)) actions.Add("comply_ultimatum");
-		WorldDiplomacyThreat outbound = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatIssuedBy(_storage?.DiplomaticThreats, first.StringId);
-		bool canIssueWarThreat = CanIssueWarThreat(first, second, out _);
-		if (canIssueWarThreat && outbound == null)
-		{
-			actions.Add("warning");
-			actions.Add("ultimatum");
-		}
-		else if (canIssueWarThreat
-			&& WorldDiplomacyRoundLifecycleRules.IsEscalatableWarningThreat(outbound, second.StringId))
-		{
-			actions.Add("ultimatum");
-		}
-		bool enforcingRejectedUltimatum = WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(_storage?.DiplomaticThreats, first?.StringId, second?.StringId);
-		bool canDeclareWar = CanDeclareWar(first, second, out _, enforcingRejectedUltimatum);
-		if (canDeclareWar) actions.Add("declare_war");
-		if (alliance != null)
-		{
-			if (allied) actions.Add("break_alliance");
-			else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(GetOfferCooldownLastFailedRoundDay, first?.StringId, second?.StringId, "propose_alliance", GetTradeAllianceFailedProposalCooldownDays(), CurrentDay())) actions.Add("propose_alliance");
-		}
-		if (trade != null)
-		{
-			if (trading) actions.Add("cancel_trade");
-			else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(GetOfferCooldownLastFailedRoundDay, first?.StringId, second?.StringId, "propose_trade", GetTradeAllianceFailedProposalCooldownDays(), CurrentDay())) actions.Add("propose_trade");
-		}
-		return WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(actions);
-	}
+        return new WorldDiplomacyActionSelectionApplication(new ActionSelectionPort(this, first, second)).BuildPotentialDiplomaticActionIntents(first?.StringId, second?.StringId);
+    }
 	private List<string> BuildLegalDiplomaticActionIntents(
 		WorldDiplomacyRound round,
 		Kingdom author,
 		Kingdom target)
 	{
-		return WorldDiplomacyRoundLifecycleRules.BuildLegalDiplomaticActionIntents(
-			round, author?.StringId, target?.StringId,
-			() => BuildPotentialDiplomaticActionIntents(author, target), ResolveDocument);
-	}
+        return new WorldDiplomacyActionSelectionApplication(new ActionSelectionPort(this, author, target)).BuildLegalDiplomaticActionIntents(round, author?.StringId, target?.StringId);
+    }
 	private static WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(
 		WorldDiplomacyRound round,
 		Kingdom author,
@@ -3774,42 +3703,18 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		bool isExternalResponseOnly = false,
 		WorldDiplomacyDocument responseSource = null)
 	{
-		List<string> intents = BuildLegalDiplomaticActionIntents(round, author, target);
-		bool mustAnswerPeaceOffer = WorldDiplomacyOfferContractRules.IsExclusivePeaceOfferResponseSet(intents);
-		if (!mustAnswerPeaceOffer && IsNonRootAiRelayNoActionAllowed(
-			round,
-			resultSettlementSlotId,
-			author,
-			target,
-			isRelayTurn,
-			isExternalResponseOnly,
-			responseSource))
-		{
-			intents.Add("statement");
-		}
-		return WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(intents);
-	}
+        return new WorldDiplomacyActionSelectionApplication(new ActionSelectionPort(this, author, target)).BuildLegalDiplomaticDeclarationIntents(round, author?.StringId, target?.StringId, isRelayTurn, resultSettlementSlotId, isExternalResponseOnly, responseSource);
+    }
 	private List<Kingdom> GetActionableDiplomaticTargets(Kingdom author, WorldDiplomacyRound round = null)
 	{
-		if (author == null) return new List<Kingdom>();
-		return Kingdom.All
-			.Where(x => x != null && x != author && !x.IsEliminated && HasIndependentWorldDiplomacyAuthority(x))
-			.Where(x => BuildLegalDiplomaticActionIntents(round, author, x).Count > 0)
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-	}
+        var port = new ActionSelectionPort(this, author);
+        return port.ResolveSelected(new WorldDiplomacyActionSelectionApplication(port).GetActionableDiplomaticTargets(author?.StringId, round));
+    }
 	private List<Kingdom> GetRoundPlanActionableParticipants(Kingdom author, WorldDiplomacyRound round)
 	{
-		if (author == null) return new List<Kingdom>();
-		return Kingdom.All
-			.Where(x => x != null && x != author && !x.IsEliminated && HasIndependentWorldDiplomacyAuthority(x))
-			.Where(x => BuildLegalDiplomaticActionIntents(round, author, x).Count > 0
-				|| BuildLegalDiplomaticActionIntents(round, x, author).Any(intent =>
-					string.Equals(intent, "comply_ultimatum", StringComparison.OrdinalIgnoreCase)
-					|| !string.IsNullOrWhiteSpace(WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent))))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-	}
+        var port = new ActionSelectionPort(this, author);
+        return port.ResolveSelected(new WorldDiplomacyActionSelectionApplication(port).GetRoundPlanActionableParticipants(author?.StringId, round));
+    }
 	private string BuildCurrentLegalDiplomaticOptions(
 		WorldDiplomacyRound round,
 		Kingdom author,

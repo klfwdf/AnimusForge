@@ -1531,11 +1531,11 @@ internal static class Program
         Test.True(CountOccurrences(potentialActions, "IsTradeAllianceProposalCoolingDown(") == 2,
             "potential-action construction must apply cooldown exactly to the two proposal domains");
         Test.True(potentialActions.Contains(
-                "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(GetOfferCooldownLastFailedRoundDay, first?.StringId, second?.StringId, \"propose_alliance\", GetTradeAllianceFailedProposalCooldownDays(), CurrentDay())) actions.Add(\"propose_alliance\");",
+                "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(_port.LastFailedRoundDay, first, second, \"propose_alliance\", _port.CooldownDays(), _port.CurrentDay())) actions.Add(\"propose_alliance\");",
                 StringComparison.Ordinal),
             "propose_alliance must be omitted while its directed proposal key is cooling down");
         Test.True(potentialActions.Contains(
-                "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(GetOfferCooldownLastFailedRoundDay, first?.StringId, second?.StringId, \"propose_trade\", GetTradeAllianceFailedProposalCooldownDays(), CurrentDay())) actions.Add(\"propose_trade\");",
+                "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(_port.LastFailedRoundDay, first, second, \"propose_trade\", _port.CooldownDays(), _port.CurrentDay())) actions.Add(\"propose_trade\");",
                 StringComparison.Ordinal),
             "propose_trade must be omitted while its directed proposal key is cooling down");
         Test.True(potentialActions.Contains(
@@ -1547,24 +1547,24 @@ internal static class Program
             "break_alliance and cancel_trade must remain available from current state without a cooldown gate");
         string alliancePotential = ExtractSection(
             potentialActions,
-            "if (alliance != null)",
-            "if (trade != null)");
+            "if (facts.HasAlliance)",
+            "if (facts.HasTrade)");
         string tradePotential = ExtractSection(
             potentialActions,
-            "if (trade != null)",
+            "if (facts.HasTrade)",
             "return WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(actions);");
         Test.True(alliancePotential.Contains(
                 "if (allied) actions.Add(\"break_alliance\");",
                 StringComparison.Ordinal)
                   && alliancePotential.Contains(
-                      "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(GetOfferCooldownLastFailedRoundDay, first?.StringId, second?.StringId, \"propose_alliance\", GetTradeAllianceFailedProposalCooldownDays(), CurrentDay())) actions.Add(\"propose_alliance\");",
+                      "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(_port.LastFailedRoundDay, first, second, \"propose_alliance\", _port.CooldownDays(), _port.CurrentDay())) actions.Add(\"propose_alliance\");",
                       StringComparison.Ordinal),
             "an existing alliance must expose break_alliance instead of propose_alliance");
         Test.True(tradePotential.Contains(
                 "if (trading) actions.Add(\"cancel_trade\");",
                 StringComparison.Ordinal)
                   && tradePotential.Contains(
-                      "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(GetOfferCooldownLastFailedRoundDay, first?.StringId, second?.StringId, \"propose_trade\", GetTradeAllianceFailedProposalCooldownDays(), CurrentDay())) actions.Add(\"propose_trade\");",
+                      "else if (!WorldDiplomacyOfferCooldownRules.IsTradeAllianceProposalCoolingDown(_port.LastFailedRoundDay, first, second, \"propose_trade\", _port.CooldownDays(), _port.CurrentDay())) actions.Add(\"propose_trade\");",
                       StringComparison.Ordinal),
             "an existing trade agreement must expose cancel_trade instead of propose_trade");
 
@@ -4309,6 +4309,19 @@ internal static class Program
         return application.Contains(newMarker, StringComparison.Ordinal) ? ExtractMethod(application, newMarker) : null;
     }
 
+    private static string? ReadActionSelectionOwner(string source, string marker)
+    {
+        if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        foreach (string name in new[] { "BuildPotentialDiplomaticActionIntents", "BuildLegalDiplomaticActionIntents", "BuildLegalDiplomaticDeclarationIntents", "GetActionableDiplomaticTargets", "GetRoundPlanActionableParticipants", "GetResultSettlementActionableTargets", "RefreshResultSettlementActionSlots" })
+        {
+            if (!marker.Contains(name + "(")) continue;
+            bool slots = name == "RefreshResultSettlementActionSlots";
+            string path = "src/modules/AF.Module.Diplomacy/Application/" + (slots ? "WorldDiplomacyDocumentExecutionApplication.cs" : "WorldDiplomacyActionSelectionApplication.cs");
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile(path)), (slots ? "internal static void " : "internal List<string> ") + name + "(");
+        }
+        return null;
+    }
+
     private static string? ReadAdmissionOwner(string source, string marker)
     {
         if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
@@ -4369,7 +4382,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
         if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
@@ -4397,7 +4410,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

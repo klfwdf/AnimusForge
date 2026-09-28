@@ -67,6 +67,30 @@ internal static class DocumentExecutionReplay
         p, doc, doc.Intent, doc.Commitment, false, "", 1);
     internal static void Run()
     {
+        var slotPort = new Port();
+        var slotStorage = new WorldDiplomacyStorage();
+        var slotRound = new WorldDiplomacyRound { RoundId = "r", ResultSettlementPending = true, RelayPlanned = true,
+            RelayRouteKingdomIds = new() { "a", "b" } };
+        slotStorage.Documents.Add(new WorldDiplomacyDocument { RoundId = "r", AuthorKingdomId = "a", IsReadyForPublication = true });
+        slotRound.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", ProposerKingdomId = "a", TargetKingdomId = "c", SourceDocumentId = "offer" });
+        slotRound.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", ProposerKingdomId = "a", TargetKingdomId = "d", SourceDocumentId = "excess" });
+        slotRound.PendingOffers.Add(new WorldDiplomacyRoundOffer { Status = "open", ProposerKingdomId = "a", TargetKingdomId = "vassal" });
+        slotStorage.DiplomaticThreats.Add(new WorldDiplomacyThreat { Status = "open", TargetDecision = "pending", StageRoundId = "r",
+            IssuerKingdomId = "a", TargetKingdomId = "b", StageDocumentId = "threat" });
+        WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots(slotPort, slotStorage, slotRound);
+        Test.True(slotRound.RelayRouteKingdomIds.SequenceEqual(new[] { "a", "b", "c" })
+            && slotRound.PendingOffers[1].Status == "invalidated" && slotRound.PendingOffers[2].Status == "invalidated",
+            "slot refresh admits valid new offer targets before rejecting capacity and authority failures");
+        Test.True(slotRound.ResultSettlementSlots.Select(s => s.KingdomId).SequenceEqual(new[] { "b", "c" })
+            && slotRound.ResultSettlementSlots[0].Kind.Contains("threat_response") && slotRound.ResultSettlementSlots[1].Kind.Contains("offer_response")
+            && slotRound.ResultSettlementSlots[0].SourceDocumentIds.Contains("threat") && slotRound.ResultSettlementSlots[1].SourceDocumentIds.Contains("offer"),
+            "slot refresh skips already-spoken route authors and prioritizes threat duty after offer duty");
+        int slotIds = slotPort.Id;
+        WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots(slotPort, slotStorage, slotRound);
+        Test.True(slotPort.Id == slotIds && slotRound.ResultSettlementSlots.Count == 2, "repeated slot refresh merges existing obligations without duplicate slots");
+        slotRound.ResultSettlementPending = false; slotPort.Events.Clear();
+        WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots(slotPort, slotStorage, slotRound);
+        Test.True(slotPort.Events.Count == 0, "non-settling round does not prune or scan slots");
         var p = new Port(); var doc = Document("b", "c"); Run(p, doc);
         Test.True(p.Effects == 2 && p.Events.IndexOf("validate:c") < p.Events.IndexOf("effect:b")
             && p.Events.IndexOf("effect:b") < p.Events.IndexOf("effect:c") && p.Events.IndexOf("history") < p.Events.IndexOf("propagation")
