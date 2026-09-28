@@ -31,36 +31,8 @@ namespace AnimusForge
 
 		private string TryExecuteIndependentClanPeace(Hero npc, string payload)
 		{
-			bool contextAvailable = TryResolveIndependentClanPeaceContext(
-				npc,
-				out Clan playerClan,
-				out Kingdom targetKingdom);
-			WorldDiplomacyOralIndependentClanPeaceResolution resolution =
-				WorldDiplomacyOralIndependentClanPeaceRules.ResolveCommand(
-					payload,
-					contextAvailable,
-					playerClan?.StringId,
-					targetKingdom?.StringId,
-					npc?.StringId);
-			if (!resolution.IsReady)
-			{
-				Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] Rejected status=" + resolution.Status);
-				return "";
-			}
-
-			WorldDiplomacyIndependentClanPeaceExecutionReceipt receipt =
-				IndependentClanPeaceCommandFacade.Execute(resolution.Command);
-			if (!receipt.IsApplied)
-			{
-				Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] Rejected status=" + receipt.Status
-					+ " code=" + receipt.ErrorCode);
-				return "";
-			}
-
-			Logger.Log("DiplomacyBehavior", "[IndependentClanPeace] success playerClan="
-				+ receipt.PlayerClanId + " targetKingdom=" + receipt.TargetKingdomId
-				+ " king=" + receipt.SpeakerHeroId);
-			return "";
+			var source = new DiplomacyOralIndependentPeaceSource(npc);
+			return DiplomacyOralIndependentPeaceApplication.Execute(ref source, payload);
 		}
 
 		// ════════════════════════════════════════════════════════ MAKE_PEACE

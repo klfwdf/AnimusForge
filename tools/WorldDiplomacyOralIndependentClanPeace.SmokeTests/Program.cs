@@ -1,4 +1,5 @@
 using System.Text;
+using AnimusForge;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
 using AnimusForge.Refactor.Modules;
@@ -22,6 +23,7 @@ internal static class Program
     {
         VerifyResolution();
         VerifyFacade();
+        VerifyApplicationReplay();
         VerifySourceBoundary();
         Console.WriteLine(
             $"World diplomacy oral independent-clan peace smoke tests passed: {Test.Assertions} assertions.");
@@ -87,6 +89,47 @@ internal static class Program
             "a thrown port call must become one indeterminate receipt");
     }
 
+    private static void VerifyApplicationReplay()
+    {
+        var unavailable=new FakeOralSource{ContextAvailable=false};
+        Test.True(DiplomacyOralIndependentPeaceApplication.Execute(ref unavailable,"")==""
+                  && unavailable.Executions==0 && unavailable.LastLog.Contains("Rejected status="),
+            "stale independent peace context must reject before effect");
+        var applied=new FakeOralSource
+        {
+            ContextAvailable=true,
+            Receipt=new WorldDiplomacyIndependentClanPeaceExecutionReceipt(
+                WorldDiplomacyIndependentClanPeaceExecutionStatus.Applied,"player","target","speaker","")
+        };
+        Test.True(DiplomacyOralIndependentPeaceApplication.Execute(ref applied,"")==""
+                  && applied.Executions==1 && applied.LastCommand.PlayerClanId=="player"
+                  && applied.LastLog.Contains("success playerClan=player"),
+            "applied independent peace receipt must be logged after one effect");
+        var refused=new FakeOralSource
+        {
+            ContextAvailable=true,
+            Receipt=new WorldDiplomacyIndependentClanPeaceExecutionReceipt(
+                WorldDiplomacyIndependentClanPeaceExecutionStatus.ConstantWar,"player","target","speaker","constant")
+        };
+        DiplomacyOralIndependentPeaceApplication.Execute(ref refused,"");
+        Test.True(refused.Executions==1 && refused.LastLog.Contains("Rejected status=ConstantWar"),
+            "failed effect receipt must remain rejected");
+    }
+
+    private struct FakeOralSource : IDiplomacyOralIndependentPeaceSource
+    {
+        internal bool ContextAvailable;
+        internal int Executions;
+        internal string LastLog;
+        internal WorldDiplomacyIndependentClanPeaceCommand LastCommand;
+        internal WorldDiplomacyIndependentClanPeaceExecutionReceipt Receipt;
+        public DiplomacyOralIndependentPeaceSnapshot Capture() =>
+            new(ContextAvailable,"player","target","speaker");
+        public WorldDiplomacyIndependentClanPeaceExecutionReceipt Execute(WorldDiplomacyIndependentClanPeaceCommand command)
+        { Executions++;LastCommand=command;return Receipt; }
+        public void Log(string message) { LastLog=message; }
+    }
+
     private static void VerifySourceBoundary()
     {
         string contracts = Read("Refactor", "Contracts",
@@ -99,19 +142,19 @@ internal static class Program
             "BannerlordWorldDiplomacyIndependentClanPeaceGameActionPort.cs");
         string behavior = (Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs") + Read("src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.Actions.cs"));
         string eligibility = Read("src/modules/AF.Module.Diplomacy/Application/DiplomacyIndependentPeaceApplication.cs");
+        string application = Read("src/modules/AF.Module.Diplomacy/Application/DiplomacyOralIndependentPeaceApplication.cs");
+        string oralSource = Read("src/modules/AF.Module.Diplomacy/Adapters/DiplomacyOralIndependentPeaceSource.cs");
         string method = ExtractMethod(behavior, "private string TryExecuteIndependentClanPeace(");
 
         Test.True(!contracts.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !rules.Contains("TaleWorlds", StringComparison.Ordinal)
                   && !facade.Contains("TaleWorlds", StringComparison.Ordinal),
             "contracts, rules, and facade must remain TaleWorlds-free");
-        Test.True(method.Contains(
-                      "WorldDiplomacyOralIndependentClanPeaceRules.ResolveCommand",
-                      StringComparison.Ordinal)
-                  && method.Contains(
-                      "IndependentClanPeaceCommandFacade.Execute(resolution.Command)",
-                      StringComparison.Ordinal),
-            "behavior must delegate command resolution and execution");
+        Test.True(method.Contains("DiplomacyOralIndependentPeaceApplication.Execute(ref source, payload)", StringComparison.Ordinal)
+                  && application.Contains("WorldDiplomacyOralIndependentClanPeaceRules.ResolveCommand", StringComparison.Ordinal)
+                  && application.Contains("source.Execute(resolution.Command)", StringComparison.Ordinal)
+                  && oralSource.Contains("CommandFacade.Execute(command)", StringComparison.Ordinal),
+            "behavior must forward independent peace command and receipt ordering to Application");
         Test.True(!method.Contains("MakePeaceAction.Apply", StringComparison.Ordinal)
                   && !method.Contains("DiplomacyRecentPeaceGuard.RegisterPeace", StringComparison.Ordinal)
                   && !method.Contains("RunWithDiplomaticSideEffectsUnlocked", StringComparison.Ordinal),
