@@ -720,16 +720,16 @@ internal static class Program
     {
         Test.Equal(480_000, ReadIntConstant(settings, "LlmRequestTimeoutMilliseconds"),
             "long-context compression timeout must be eight minutes");
-        string dispatch = ExtractSection(
-            behavior,
-            "private void TryStartNextLlmJob()",
-            "private void ProcessCompletedJobs()");
+        string dispatch = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyLlmDispatchApplication.cs")));
+        string source = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.LlmDispatchSource.cs")));
         Test.True(dispatch.Contains("WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, \"compress\")", StringComparison.Ordinal)
-                  && dispatch.Contains("? DuelSettings.LlmRequestTimeoutMilliseconds", StringComparison.Ordinal)
-                  && dispatch.Contains(": DefaultApiTimeoutMilliseconds", StringComparison.Ordinal),
+                  && dispatch.Contains("? source.CompressionTimeoutMilliseconds", StringComparison.Ordinal)
+                  && dispatch.Contains(": source.DefaultApiTimeoutMilliseconds", StringComparison.Ordinal)
+                  && source.Contains("CompressionTimeoutMilliseconds => DuelSettings.LlmRequestTimeoutMilliseconds", StringComparison.Ordinal),
             "only compression requests must receive the long 480000ms timeout");
-        Test.True(dispatch.Contains("requestTimeoutMilliseconds,", StringComparison.Ordinal),
-            "the selected timeout must be passed to the API client");
+        Test.True(dispatch.Contains("job.MaxTokens, timeout, out WorldDiplomacyRequestSnapshot request", StringComparison.Ordinal)
+                  && dispatch.Contains("source.StartRequest(request, requestMessages)", StringComparison.Ordinal),
+            "the selected timeout must be captured in the request lease passed to dispatch");
     }
 
     private static void VerifyTokenStatsDiagnosticTruncation(string client)

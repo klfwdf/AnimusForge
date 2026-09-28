@@ -93,7 +93,7 @@ Check(budgetGuard >= 0 && budgetGuard < lifecycleRules.IndexOf("job.IsRunning = 
 Check(behavior.Contains("CaptureCanonicalHistoryForJob(job, syncSources: false, throughSequence: seq)")
     && canonicalHistoryRules.Contains("captureHistory(job, throughSequence);"), "compression request must match its frozen commit cutoff");
 Check(canonicalHistoryRules.Contains("pending.AwaitingHistoryCompression = false;"), "successful compression must release waiting generation instead of scheduling an endless compaction loop");
-Check(lifecycleRules.Contains("tryConsumeRequestBudget?.Invoke(false)") && behavior.Contains("consume => TryConsumeDiplomacyLlmRequestBudget(consume)"), "exhausted daily budgets must exit before assembling large prompts");
+Check(lifecycleRules.Contains("tryConsumeRequestBudget?.Invoke(false)") && File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs")).Contains("_owner.TryConsumeDiplomacyLlmRequestBudget(consume)"), "exhausted daily budgets must exit before assembling large prompts");
 
 if (args.Length > 0)
 {

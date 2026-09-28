@@ -13,6 +13,27 @@ namespace AnimusForge;
 // Called at existing day/event boundaries; selection stops at the first eligible candidate.
 internal static class WorldDiplomacyRoundApplication
 {
+    internal static void RestoreExchange(WorldDiplomacyStorage storage, Func<int> currentDay)
+    {
+        WorldDiplomacyExchange restored = WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny(
+            storage?.ActiveExchange, storage?.SuspendedExchanges, currentDay());
+        if (restored != null) storage.ActiveExchange = restored;
+    }
+
+    internal static void CompleteExchange(WorldDiplomacyStorage storage, string exchangeId, string reason,
+        Func<int> currentDay, Action<int> scheduleNext)
+    {
+        WorldDiplomacyExchange exchange = WorldDiplomacyRoundLifecycleRules.ResolveExchange(
+            storage?.ActiveExchange, storage?.SuspendedExchanges, exchangeId);
+        if (WorldDiplomacyRoundLifecycleRules.CompleteExchange(exchange, storage?.ActiveExchange,
+            storage?.SuspendedExchanges, reason, currentDay()))
+        {
+            storage.ActiveExchange = null;
+            scheduleNext(currentDay());
+            RestoreExchange(storage, currentDay);
+        }
+    }
+
     internal static void Disable(WorldDiplomacyStorage storage, ref bool disabledStateApplied,
         ref bool nativeQueueSanitized, Func<int> currentDay, Action<string> closeRound, Action<int> scheduleNext)
     {

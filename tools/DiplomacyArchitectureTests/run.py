@@ -66,6 +66,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert owner in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private void EnsureCanonicalHistoryInitialized(', 'private void SyncCanonicalHistorySources(', 'private void CaptureCanonicalHistoryForJob(', 'private void RestoreSuspendedExchangeIfAny(', 'private void CompleteExchange('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert "WorldDiplomacyHistoryCaptureApplication." in after or "WorldDiplomacyRoundApplication." in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('

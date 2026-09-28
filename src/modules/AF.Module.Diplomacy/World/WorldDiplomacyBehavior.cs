@@ -805,12 +805,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void RestoreSuspendedExchangeIfAny()
 	{
-		WorldDiplomacyExchange restored = WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny(
-			_storage?.ActiveExchange, _storage?.SuspendedExchanges, CurrentDay());
-		if (restored != null)
-		{
-			_storage.ActiveExchange = restored;
-		}
+		WorldDiplomacyRoundApplication.RestoreExchange(_storage, CurrentDay);
 	}
 
 	private void RefreshPolicyDiplomacySignals()
@@ -2746,15 +2741,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void CompleteExchange(string exchangeId, string reason)
 	{
-		WorldDiplomacyExchange exchange = WorldDiplomacyRoundLifecycleRules.ResolveExchange(
-			_storage?.ActiveExchange, _storage?.SuspendedExchanges, exchangeId);
-		if (WorldDiplomacyRoundLifecycleRules.CompleteExchange(
-			exchange, _storage?.ActiveExchange, _storage?.SuspendedExchanges, reason, CurrentDay()))
-		{
-			_storage.ActiveExchange = null;
-			ScheduleNextNormalRoundAfter(CurrentDay());
-			RestoreSuspendedExchangeIfAny();
-		}
+		WorldDiplomacyRoundApplication.CompleteExchange(_storage, exchangeId, reason, CurrentDay, ScheduleNextNormalRoundAfter);
 	}
 
 		private void NotifyExternalDiplomacyResolvedInternal(string action, Kingdom initiator, Kingdom target, string reason)
@@ -4204,11 +4191,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void EnsureCanonicalHistoryInitialized()
 	{
-		if (_canonicalHistoryInitializedThisSession && _storage?.CanonicalHistory?.Snapshot != null && _storage.CanonicalHistory.DeltaEntries != null) return;
-		WorldDiplomacyStorageMigration.NormalizeCanonicalHistoryState(
-			_storage, _canonicalHistorySourceKeys, GetHistoryCompressionTriggerTokens(),
-			Logger.EstimateTokens, InvalidateCanonicalHistoryRenderCache, Log);
-		_canonicalHistoryInitializedThisSession = true;
+		WorldDiplomacyHistoryCaptureApplication.EnsureInitialized(_storage, ref _canonicalHistoryInitializedThisSession,
+			_canonicalHistorySourceKeys, GetHistoryCompressionTriggerTokens(), Logger.EstimateTokens, InvalidateCanonicalHistoryRenderCache, Log);
 	}
 
 	private static string BuildRulerCaptivityTargetHint(Kingdom author, Kingdom target)
@@ -4296,20 +4280,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void SyncCanonicalHistorySources(bool force = false)
 	{
-		EnsureCanonicalHistoryInitialized();
-		int currentHour = CurrentHour();
-		if (!force && _lastCanonicalSourceSyncHour == currentHour) return;
-		long weeklyRevision = MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
-		if (_lastObservedWorldWeeklyHistoryRevision != weeklyRevision)
-		{
-			foreach (MyBehavior.WorldWeeklyReportHistoryEntry report in MyBehavior.GetPublishedWorldWeeklyReportHistoryForExternal())
-			{
-				AppendPublishedWorldWeeklyReportArtifact(report);
-			}
-			_lastObservedWorldWeeklyHistoryRevision = weeklyRevision;
-		}
-		SyncPublishedPolicyArtifacts(force ? PolicyHistoryForceSyncMaxBatches : 1);
-		_lastCanonicalSourceSyncHour = currentHour;
+		var port = new HistoryCapturePort(this);
+		WorldDiplomacyHistoryCaptureApplication.SyncSources(ref port, force, ref _lastCanonicalSourceSyncHour, ref _lastObservedWorldWeeklyHistoryRevision, PolicyHistoryForceSyncMaxBatches);
 	}
 	private void AppendPublishedWorldWeeklyReportArtifact(MyBehavior.WorldWeeklyReportHistoryEntry report)
 	{
@@ -4375,16 +4347,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void CaptureCanonicalHistoryForJob(WorldDiplomacyJob job, bool syncSources, long throughSequence = long.MaxValue)
 	{
-		if (job == null) return;
-		if (syncSources)
-		{
-			RetryDeferredCanonicalHistoryEntries();
-			SyncCanonicalHistorySources(force: true);
-		}
-		EnsureCanonicalHistoryInitialized();
-		WorldDiplomacyCanonicalHistoryState history = _storage.CanonicalHistory;
-		job.HistoryThroughSequence = WorldDiplomacyCanonicalHistoryRules.ClampCanonicalHistoryThroughSequence(history, throughSequence);
-		WorldDiplomacyCanonicalHistoryRules.StampCanonicalHistoryOnJob(job, history, BuildCanonicalHistoryBlock(job.HistoryThroughSequence));
+		var port = new HistoryCapturePort(this);
+		WorldDiplomacyHistoryCaptureApplication.Capture(_storage, job, syncSources, throughSequence, ref port);
 	}
 
 	private static List<PublishedPolicyArtifactLedgerEntry> ReadAllPublishedPolicyArtifactsForMigration()

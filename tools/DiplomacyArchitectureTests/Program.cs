@@ -67,6 +67,17 @@ static class Program
                         || (count == 2 && method.Body.Statements[0] is not LocalDeclarationStatementSyntax))
                         errors.Add("campaign hook retains orchestration: " + method.Identifier.ValueText);
                 }
+                if (method.Identifier.ValueText is "EnsureCanonicalHistoryInitialized" or "SyncCanonicalHistorySources" or "CaptureCanonicalHistoryForJob"
+                    or "RestoreSuspendedExchangeIfAny" or "CompleteExchange")
+                {
+                    int count = method.Identifier.ValueText is "SyncCanonicalHistorySources" or "CaptureCanonicalHistoryForJob" ? 2 : 1;
+                    string owner = method.Identifier.ValueText is "RestoreSuspendedExchangeIfAny" or "CompleteExchange"
+                        ? "WorldDiplomacyRoundApplication." : "WorldDiplomacyHistoryCaptureApplication.";
+                    if (method.Body?.Statements.Count != count
+                        || !method.DescendantNodes().OfType<InvocationExpressionSyntax>().Any(c => c.Expression.ToString().StartsWith(owner))
+                        || method.DescendantNodes().Any(n => n is IfStatementSyntax or ForEachStatementSyntax or AssignmentExpressionSyntax))
+                        errors.Add("history/exchange predecessor retains orchestration: " + method.Identifier.ValueText);
+                }
                 if (method.Identifier.ValueText is "CanDeclareWar" or "CanIssueWarThreat")
                 {
                     var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
@@ -212,7 +223,7 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
-        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults", "ApplyNationalPrestigeDelta", "SettleInternationalReputationForDocument", "RecoverUnsettledAiInternationalReputation", "ReconcileAllNationalPrestigeVassalRelations", "ReconcileNationalPrestigeVassalRelations", "ApplyZeroPrestigeBreachRelationPenalty", "AnchorInternationalReputationNaturalChangeDays", "ProcessInternationalReputationNaturalChange", "OnDailyTick", "OnCampaignTick", "TryApplyInitialNewGamePeace" })
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults", "ApplyNationalPrestigeDelta", "SettleInternationalReputationForDocument", "RecoverUnsettledAiInternationalReputation", "ReconcileAllNationalPrestigeVassalRelations", "ReconcileNationalPrestigeVassalRelations", "ApplyZeroPrestigeBreachRelationPenalty", "AnchorInternationalReputationNaturalChangeDays", "ProcessInternationalReputationNaturalChange", "OnDailyTick", "OnCampaignTick", "TryApplyInitialNewGamePeace", "EnsureCanonicalHistoryInitialized", "SyncCanonicalHistorySources", "CaptureCanonicalHistoryForJob", "RestoreSuspendedExchangeIfAny", "CompleteExchange" })
         {
             string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";
             Check(Violations(host, CSharpSyntaxTree.ParseText(injected).GetRoot()).Count > 0, "reject callback-hidden predecessor orchestration: " + name);
