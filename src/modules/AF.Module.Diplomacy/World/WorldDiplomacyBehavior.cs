@@ -2284,49 +2284,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(JObject json, Kingdom author, Kingdom target)
 	{
-		if (json == null || author == null || target == null || !FactionManager.IsAtWarAgainstFaction(author, target)) return null;
-		if (json.SelectToken("peace_terms") is not JObject token) return null;
-		string payerId = token["tribute_payer_kingdom_id"]?.ToString()?.Trim() ?? "";
-		string receiverId = token["tribute_receiver_kingdom_id"]?.ToString()?.Trim() ?? "";
-		Kingdom payer = ResolveKingdom(payerId);
-		Kingdom receiver = ResolveKingdom(receiverId);
-		if ((payer != author && payer != target) || (receiver != author && receiver != target) || payer == receiver)
-		{
-			payer = null;
-			receiver = null;
-		}
-		int.TryParse(token["daily_tribute"]?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int tribute);
-		int.TryParse(token["duration_days"]?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int duration);
-		string cessionFromId = token["cession_from_kingdom_id"]?.ToString()?.Trim() ?? "";
-		string cessionToId = token["cession_to_kingdom_id"]?.ToString()?.Trim() ?? "";
-		Kingdom cessionFrom = ResolveKingdom(cessionFromId);
-		Kingdom cessionTo = ResolveKingdom(cessionToId);
-		Settlement cession = ResolveSettlementById(token["cession_settlement_id"]?.ToString());
-		if (!IsCessionCurrentlyAllowed(cessionFrom, cessionTo, cession, author, target))
-		{
-			cessionFrom = null;
-			cessionTo = null;
-			cession = null;
-		}
-		if (payer == null && cession == null && tribute <= 0) return null;
-		return new WorldDiplomacyPeaceTerms
-		{
-			TributePayerKingdomId = payer?.StringId ?? "",
-			TributeReceiverKingdomId = receiver?.StringId ?? "",
-			DailyTribute = payer == null ? 0 : DiplomacyPeaceTermsService.ClampTributeAmount(payer, Math.Max(0, tribute)),
-			DurationDays = DiplomacyPeaceTermsService.ResolveDurationDays(duration.ToString(CultureInfo.InvariantCulture), payer != null && tribute > 0),
-			CessionFromKingdomId = cessionFrom?.StringId ?? "",
-			CessionToKingdomId = cessionTo?.StringId ?? "",
-			CessionSettlementId = cession?.StringId ?? ""
-		};
-	}
+        return WorldDiplomacyPeaceAdmissionApplication.ParseAndValidatePeaceTerms(new PeaceAdmissionPort(this), json, author?.StringId, target?.StringId);
+    }
 	private bool IsCessionCurrentlyAllowed(Kingdom from, Kingdom to, Settlement settlement, Kingdom first, Kingdom second)
 	{
-		if (from == null || to == null || settlement == null || from == to || (from != first && from != second) || (to != first && to != second) || settlement.OwnerClan?.Kingdom != from) return false;
-		WarSituationSnapshot snapshot = GetWarSituation(first, second);
-		float score = from == first ? snapshot.AuthorCessionScore : snapshot.TargetCessionScore;
-		return BuildCessionCandidates(from, to, score).Contains(settlement);
-	}
+        return WorldDiplomacyPeaceAdmissionApplication.IsCessionCurrentlyAllowed(new PeaceAdmissionPort(this), from?.StringId, to?.StringId, settlement?.StringId, first?.StringId, second?.StringId);
+    }
 	private string TryApplyValidatedCession(WorldDiplomacyPeaceTerms terms, Kingdom first, Kingdom second)
 	{
 		Kingdom from = ResolveKingdom(terms?.CessionFromKingdomId);
@@ -4446,45 +4409,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom proposer,
 		Kingdom target)
 	{
-		if (offer == null || source == null || proposer == null || target == null
-			|| proposer == target || !source.IsReadyForPublication
-			|| !string.Equals(source.AuthorKingdomId, proposer.StringId, StringComparison.OrdinalIgnoreCase)) return false;
-		WorldDiplomacyPeaceTerms terms = WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId);
-		if (source.Actions?.Count > 0 && WorldDiplomacyDocumentFactRules.ResolveDocumentAction(source, offer.SourceActionId) == null) return false;
-		if (terms == null) return true;
-
-		int promisedTribute = Math.Max(0, terms.DailyTribute);
-		int promisedDuration = Math.Max(0, terms.DurationDays);
-		if (promisedTribute > 0)
-		{
-			Kingdom payer = ResolveKingdom(terms.TributePayerKingdomId);
-			Kingdom receiver = ResolveKingdom(terms.TributeReceiverKingdomId);
-			if (payer == null || receiver == null || payer == receiver
-				|| (payer != proposer && payer != target)
-				|| (receiver != proposer && receiver != target)
-				|| DiplomacyPeaceTermsService.ClampTributeAmount(payer, promisedTribute) != promisedTribute
-				|| DiplomacyPeaceTermsService.ResolveDurationDays(
-					promisedDuration.ToString(CultureInfo.InvariantCulture),
-					hasTribute: true) != promisedDuration) return false;
-		}
-		else if (promisedDuration != 0)
-		{
-			return false;
-		}
-
-		bool hasAnyCession = !string.IsNullOrWhiteSpace(terms.CessionFromKingdomId)
-			|| !string.IsNullOrWhiteSpace(terms.CessionToKingdomId)
-			|| !string.IsNullOrWhiteSpace(terms.CessionSettlementId);
-		if (!hasAnyCession) return true;
-		Kingdom from = ResolveKingdom(terms.CessionFromKingdomId);
-		Kingdom to = ResolveKingdom(terms.CessionToKingdomId);
-		Settlement settlement = ResolveSettlementById(terms.CessionSettlementId);
-		return from != null && to != null && settlement != null && from != to
-			&& (from == proposer || from == target)
-			&& (to == proposer || to == target)
-			&& settlement.OwnerClan?.Kingdom == from
-			&& to.RulingClan?.Leader != null;
-	}
+        return WorldDiplomacyPeaceAdmissionApplication.AreOfferedPeaceTermsCurrentlyExecutable(new PeaceAdmissionPort(null), offer, source, proposer?.StringId, target?.StringId);
+    }
 
 	private void EnsureActiveWarLedgersAndRemoveEndedWars()
 	{
@@ -4643,27 +4569,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			.ToList();
 	}
 	private List<Settlement> BuildCessionCandidates(Kingdom cedingKingdom, Kingdom receivingKingdom, float cessionScore)
-	{
-		if (cedingKingdom == null || receivingKingdom == null || cessionScore < CessionCastleUnlockThreshold)
-		{
-			return new List<Settlement>();
-		}
-		List<Settlement> priority = GetUnrecoveredLostSettlements(receivingKingdom, cedingKingdom);
-		IEnumerable<Settlement> owned = cedingKingdom.Fiefs
-			.Select(x => x?.Settlement)
-			.Where(x => x != null && (x.IsCastle || x.IsTown));
-		return priority
-			.Concat(owned.Where(x => x.Culture == receivingKingdom.Culture))
-			.Concat(owned)
-			.Where(x => x != null
-				&& x.OwnerClan?.Kingdom == cedingKingdom
-				&& !x.IsUnderSiege
-				&& (!x.IsTown || cessionScore >= CessionTownUnlockThreshold)
-				&& cedingKingdom.Fiefs.Count() > 1)
-			.Distinct()
-			.Take(MaxPeaceCessionCandidates)
-			.ToList();
-	}
+    {
+        var port = new PeaceAdmissionPort(this);
+        return port.ResolveSelected(WorldDiplomacyPeaceAdmissionApplication.BuildCessionCandidates(port, cedingKingdom?.StringId, receivingKingdom?.StringId, cessionScore));
+    }
 	private static Settlement ResolveSettlementById(string settlementId)
 	{
 		if (string.IsNullOrWhiteSpace(settlementId))

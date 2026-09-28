@@ -1664,7 +1664,7 @@ internal static class Program
 			promisedTribute,
 			StringComparison.Ordinal);
 		int exactTribute = executable.IndexOf(
-			"DiplomacyPeaceTermsService.ClampTributeAmount(payer, promisedTribute) != promisedTribute",
+			"port.ClampTribute(payer, promisedTribute) != promisedTribute",
 			promisedDuration,
 			StringComparison.Ordinal);
 		int exactDuration = executable.IndexOf(
@@ -1690,15 +1690,15 @@ internal static class Program
 
 		int anyCession = executable.IndexOf("bool hasAnyCession", noTributeDuration, StringComparison.Ordinal);
 		int resolveCession = executable.IndexOf(
-			"Settlement settlement = ResolveSettlementById(terms.CessionSettlementId)",
+			"string settlement = port.SettlementId(terms.CessionSettlementId)",
 			anyCession,
 			StringComparison.Ordinal);
 		int ownerStillFrom = executable.IndexOf(
-			"settlement.OwnerClan?.Kingdom == from",
+			"port.SettlementOwner(settlement) == from",
 			resolveCession,
 			StringComparison.Ordinal);
 		int receiverHasRuler = executable.IndexOf(
-			"to.RulingClan?.Leader != null",
+			"port.HasRuler(to)",
 			ownerStillFrom,
 			StringComparison.Ordinal);
 		Test.True(anyCession >= 0
@@ -2111,6 +2111,28 @@ internal static class Program
     }
 
     // Follow the actual DPL-080 owner while retaining host-routing checks.
+    private static string? ReadAnalysisOwner(string source, string marker)
+    {
+        string? target = null;
+        if (source.Contains("class WorldDiplomacyRoundLifecycleRules", StringComparison.Ordinal)
+            && (marker.Contains("CommitAnalysis(") || marker.Contains("SuppressInvalidDocumentBeforePropagation("))) target = marker;
+        if (source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal) && marker.Contains("SuppressInvalidDocumentBeforePropagation(")) target = "internal static void Suppress(";
+        return target == null ? null : ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs")), target);
+    }
+
+    private static string? ReadPeaceAdmissionOwner(string source, string marker)
+    {
+        if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        foreach (string name in new[] { "ParseAndValidatePeaceTerms", "AreOfferedPeaceTermsCurrentlyExecutable", "IsCessionCurrentlyAllowed", "BuildCessionCandidates" })
+        {
+            if (!marker.Contains(name + "(")) continue;
+            string signature = name == "ParseAndValidatePeaceTerms" ? "internal static WorldDiplomacyPeaceTerms "
+                : name == "BuildCessionCandidates" ? "internal static List<string> " : "internal static bool ";
+            return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs")), signature + name + "(");
+        }
+        return null;
+    }
+
     private static string? ReadJobPreparationOwner(string source, string marker)
     {
         bool rebuild = source.Contains("class WorldDiplomacyRoundLifecycleRules", StringComparison.Ordinal) && marker.Contains("RebuildPendingJob(");
@@ -2189,7 +2211,7 @@ internal static class Program
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadPeaceAdmissionOwner(source, startMarker) ?? ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
@@ -2201,7 +2223,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadPeaceAdmissionOwner(source, marker) ?? ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

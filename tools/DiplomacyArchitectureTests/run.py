@@ -90,6 +90,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyAnalysisApplication.' in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(', 'private static bool AreOfferedPeaceTermsCurrentlyExecutable(', 'private bool IsCessionCurrentlyAllowed(', 'private List<Settlement> BuildCessionCandidates('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert 'WorldDiplomacyPeaceAdmissionApplication.' in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
