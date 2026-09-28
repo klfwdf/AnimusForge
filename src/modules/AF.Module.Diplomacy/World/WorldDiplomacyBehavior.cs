@@ -488,68 +488,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void OnCampaignTick(float dt)
 	{
-		TryApplyInitialNewGamePeace();
-		if (!IsWorldDiplomacyEnabled())
-		{
-			if (!_disabledStateApplied) HandleDisabledState();
-			return;
-		}
-		_disabledStateApplied = false;
-		if (!_nativeDiplomacyDecisionQueueSanitized)
-		{
-			RemoveQueuedNativeDiplomacyDecisions();
-			_nativeDiplomacyDecisionQueueSanitized = true;
-		}
-		int day = CurrentDay();
-		if (_lastSchedulerDay != day)
-		{
-			_lastSchedulerDay = day;
-			RefreshPolicyDiplomacySignals();
-			ProcessRelayArrivals();
-			ProcessRoundLifecycle();
-			TrySchedulePolicyTriggeredRound();
-			TryScheduleNormalRound();
-		}
+		DiplomacyModuleServices.World.OnCampaignTick();
 	}
 	private void OnDailyTick()
 	{
-		NormalizeStorage(allowWorldValidation: true);
-		ReconcileAllNationalPrestigeVassalRelations();
-		RetryDeferredCanonicalHistoryEntries();
-		RetryDiplomaticThreatDomesticPenalties();
-		RetryDiplomaticThreatComplianceConsequences();
-		RetryDiplomaticThreatHistoryResults();
-		RefreshRoundIntervalScheduleIfNeeded();
-		_warSituationCache.Clear();
-		_realmRelationProfileCache.Clear();
-		_courtSettlementCache.Clear();
-		_kingdomBorderCache.Clear();
-		_kingdomBorderCacheDay = -1;
-		WorldDiplomacyRoundLifecycleRules.ResetDailyGenerationBudget(ref _aiDocumentsStartedDay, ref _aiDocumentsStartedToday, CurrentDay());
-		RecalculatePendingPropagationIfNeeded();
-		_lastSchedulerDay = CurrentDay();
-		EnsureActiveWarLedgersAndRemoveEndedWars();
-		TrimRecentBattleFacts();
-		if (!IsWorldDiplomacyEnabled())
-		{
-			AnchorInternationalReputationNaturalChangeDays();
-			if (!_disabledStateApplied) HandleDisabledState();
-			return;
-		}
-		_disabledStateApplied = false;
-		RemoveQueuedNativeDiplomacyDecisions();
-		_nativeDiplomacyDecisionQueueSanitized = true;
-		ProcessInternationalReputationNaturalChange();
-		WorldDiplomacyWarPressureRules.DecayWarPressure(_storage?.WarPressure, CurrentDay());
-		RefreshPolicyDiplomacySignals();
-		RetryDeferredDocumentPropagation();
-		ProcessPropagationArrivals();
-		ProcessRelayArrivals();
-		WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(_storage, HandleRoundDocumentProcessed, Log);
-		ProcessRoundLifecycle();
-		TryScheduleTokenCompression();
-		TrySchedulePolicyTriggeredRound();
-		TryScheduleNormalRound();
+		DiplomacyModuleServices.World.OnDailyTick();
 	}
 	private void AnchorInternationalReputationNaturalChangeDays()
 	{
@@ -831,52 +774,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void TryApplyInitialNewGamePeace()
 	{
-		if (_initialPeaceApplicationAttempted || !_storage.InitialPeacePending || Campaign.Current == null || !IsWorldDiplomacyEnabled())
-		{
-			return;
-		}
-		List<Kingdom> kingdoms = Kingdom.All
-			.Where(x => x != null && !x.IsEliminated)
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-		if (kingdoms.Count < 2)
-		{
-			return;
-		}
-		_initialPeaceApplicationAttempted = true;
-		int day = CurrentDay();
-		int endedWars = 0;
-		for (int firstIndex = 0; firstIndex < kingdoms.Count; firstIndex++)
-		{
-			for (int secondIndex = firstIndex + 1; secondIndex < kingdoms.Count; secondIndex++)
-			{
-				Kingdom first = kingdoms[firstIndex];
-				Kingdom second = kingdoms[secondIndex];
-				if (!FactionManager.IsAtWarAgainstFaction(first, second)) continue;
-				try
-				{
-					RunDiplomaticAction("world_diplomacy_initial_peace", () => MakePeaceAction.Apply(first, second));
-					_storage.LastPeaceDayByPair[WorldDiplomacyRoundLifecycleRules.PairKey(first.StringId, second.StringId)] = day;
-					WorldDiplomacyWarPressureRules.ClearWarPressure(_storage?.WarPressure, first.StringId, second.StringId, CurrentDay());
-					WorldDiplomacyWarPressureRules.ClearWarPressure(_storage?.WarPressure, second.StringId, first.StringId, CurrentDay());
-					endedWars++;
-				}
-				catch (Exception ex)
-				{
-					Log("initial peace failed pair=" + first.StringId + "|" + second.StringId + " error=" + ex.Message);
-				}
-			}
-		}
-		_storage.InitialPeacePending = false;
-		_storage.InitialPeaceApplied = true;
-		_storage.ActiveWarLedgers.Clear();
-		_storage.NativeSignals.Clear();
-		RemoveQueuedNativeDiplomacyDecisions();
-		_storage.NativeSignals.Clear();
-		_storage.WarPressure.Clear();
-		_nativeDiplomacyDecisionQueueSanitized = true;
-		_warSituationCache.Clear();
-		Log("new-game initial peace applied endedWars=" + endedWars.ToString(CultureInfo.InvariantCulture));
+		var port = new InitialPeacePort(this);
+		WorldDiplomacyInitialPeaceApplication.Apply(_storage, ref _initialPeaceApplicationAttempted, ref _nativeDiplomacyDecisionQueueSanitized, ref port);
 	}
 	private void HandleDisabledState()
 	{

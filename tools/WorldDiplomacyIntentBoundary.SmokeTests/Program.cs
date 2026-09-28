@@ -4292,6 +4292,12 @@ internal static class Program
     private static string? ReadThreatOwner(string source, string marker)
     {
         if (!source.Contains("class WorldDiplomacyBehavior", StringComparison.Ordinal)) return null;
+        if (marker.StartsWith("private void OnDailyTick(", StringComparison.Ordinal))
+        {
+            Test.True(source.Contains("DiplomacyModuleServices.World.OnDailyTick()", StringComparison.Ordinal), "daily hook must route through the module");
+            string campaign = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCampaignApplication.cs")));
+            return ExtractMethod(campaign, "internal static void DailyTick<TSource>(");
+        }
         string application = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatSettlementApplication.cs")));
         string newMarker = marker.Replace("private ", "internal static ").Replace("()", "(");
         return application.Contains(newMarker, StringComparison.Ordinal) ? ExtractMethod(application, newMarker) : null;

@@ -158,6 +158,8 @@ RunRepairCorrectionAndJobDecisionTests();
         ThreatApplicationReplay.Run();
         ThreatSettlementReplay.Run();
         PrestigeApplicationReplay.Run();
+        CampaignApplicationReplay.Run();
+        InitialPeaceReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -14457,6 +14459,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw terminal-move reasons must not remain in the host");
         Test.True(rulesSource.Contains("EvaluateThreatDocumentDispatch(", StringComparison.Ordinal),
             "the host must route threat document dispatch through the lifecycle rules");
+        string campaignSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CampaignSource.cs"));
         string threatSettlementSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatSettlementApplication.cs"));
         string threatApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatApplication.cs"));
         Test.True(threatApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAction", StringComparison.Ordinal),
@@ -15564,7 +15567,7 @@ RunRepairCorrectionAndJobDecisionTests();
                   && !behaviorSource.Contains("private void InvalidateOtherThreatsBoundToSettledPolicy("),
             "threat resolution must not remain in the host");
 
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(", StringComparison.Ordinal),
+        Test.True(campaignSource.Contains("WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(", StringComparison.Ordinal),
             "the host must route deferred round-progress retries through the lifecycle rules");
         Test.True(rulesSource.Contains("TripAutomaticRoundCircuitBreaker(storage, owningRound, \"automatic_document_limit\", log)", StringComparison.Ordinal),
             "the host must route circuit-breaker trips through the lifecycle rules");
@@ -15573,7 +15576,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(rulesSource.Contains("RecordPlayerOpportunity(", StringComparison.Ordinal),
             "player-opportunity recording must be composed inside the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.TryConsumeAiDocumentBudget(ref _aiDocumentsStartedDay", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResetDailyGenerationBudget(ref _aiDocumentsStartedDay", StringComparison.Ordinal),
+            && campaignSource.Contains("ref _owner._aiDocumentsStartedDay", StringComparison.Ordinal),
             "the host must route the daily AI document budget through the lifecycle rules");
         Test.True(rulesSource.Contains("public static int FindPriorityThreatRelayIndex(", StringComparison.Ordinal)
             && rulesSource.Contains("public static bool TryConsumeAiDocumentBudget(", StringComparison.Ordinal)
