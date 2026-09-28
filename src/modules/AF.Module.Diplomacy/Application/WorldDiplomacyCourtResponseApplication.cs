@@ -61,7 +61,7 @@ internal static class WorldDiplomacyCourtResponseApplication
         Func<bool> hasIndependentAuthority,
         Func<bool> representsAddressedVassal,
         Func<(bool Blocked, string Reason)> canAiAuthor,
-        Func<WorldDiplomacyRound, WorldDiplomacyDocument, string> enqueueResponse,
+        Func<WorldDiplomacyRound, string, WorldDiplomacyDocument, string> enqueueResponse,
         Action<string> log,
         int maxPriorityResponses)
     {
@@ -119,7 +119,7 @@ internal static class WorldDiplomacyCourtResponseApplication
             });
         if (!WorldDiplomacyRoundApplication.AdmitMandatoryReply(
             action, round, participant, receiverId, authorBlockReason, trigger, log)) return;
-        string targetId = enqueueResponse(round, trigger);
+        string targetId = enqueueResponse(round, receiverId, trigger);
         log("mandatory response queued round=" + round.RoundId + " author=" + receiverId
             + " target=" + (targetId ?? "") + " source=" + trigger.DocumentId);
     }
