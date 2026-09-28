@@ -55,41 +55,8 @@ namespace AnimusForge
 
 		private string TryExecuteBreakAlliance(Hero npc, string payload)
 		{
-			Kingdom playerKingdom = Clan.PlayerClan?.Kingdom;
-			Kingdom npcKingdom = npc.Clan?.Kingdom;
-			WorldDiplomacyOralBreakAllianceResolution resolution =
-				WorldDiplomacyOralBreakAllianceRules.ResolveCommand(
-					payload,
-					playerKingdomExists: playerKingdom != null,
-					playerKingdomId: playerKingdom?.StringId,
-					playerKingdomIsEliminated: playerKingdom?.IsEliminated == true,
-					npcKingdomExists: npcKingdom != null,
-					npcKingdomId: npcKingdom?.StringId,
-					npcSpeakerHeroId: npc?.StringId);
-			if (!resolution.IsReady)
-			{
-				Logger.Log("DiplomacyBehavior", $"[BreakAlliance] Rejected status={resolution.Status}");
-				return "";
-			}
-
-			WorldDiplomacyBreakAllianceExecutionReceipt receipt =
-				BreakAllianceCommandFacade.Execute(resolution.Command);
-			if (!receipt.IsApplied)
-			{
-				Logger.Log("DiplomacyBehavior", $"[BreakAlliance] Rejected status={receipt.Status} code={receipt.ErrorCode}");
-				return "";
-			}
-
-			playerKingdom = ResolveKingdom(receipt.PlayerKingdomId);
-			npcKingdom = ResolveKingdom(receipt.NpcKingdomId);
-			if (playerKingdom == null || npcKingdom == null)
-			{
-				Logger.Log("DiplomacyBehavior", "[BreakAlliance] Applied but receipt endpoints are unavailable");
-				return "";
-			}
-			Logger.Log("DiplomacyBehavior", $"[BreakAlliance] {playerKingdom.StringId} <-> {npcKingdom.StringId}");
-			WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved("break_alliance", playerKingdom, npcKingdom, "面对面口头外交达成");
-			return "";
+			var source = new DiplomacyOralBreakAllianceSource(npc);
+			return DiplomacyOralBreakAllianceApplication.Execute(ref source, payload);
 		}
 
 		// ════════════════════════════════════════════════════════ MAKE_TRADE
