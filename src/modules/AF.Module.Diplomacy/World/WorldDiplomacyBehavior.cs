@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -3376,121 +3376,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void ExecuteImmediateIntent(Kingdom author, Kingdom target, string intent, WorldDiplomacyDocument document)
 	{
-		if (document != null && !document.IsPlayerAuthored
-			&& !CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
-		{
-			document.MechanicalResult = "外交行动未执行：发文者当前没有有效的自主发文权限。";
-			Log("AI diplomatic action blocked author=" + (author?.StringId ?? "") + " document=" + (document.DocumentId ?? "")
-				+ " reason=" + authorBlockReason);
-			return;
-		}
-		if (intent == "declare_war")
-		{
-			if (!CanDeclareWar(author, target, out string blockReason, WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(_storage?.DiplomaticThreats, author?.StringId, target?.StringId)))
-			{
-				document.MechanicalResult = "宣战未执行：" + blockReason;
-				return;
-			}
-			Exception actionError = null;
-			try
-			{
-				RunDiplomaticAction("world_diplomacy_declare_war", () => DeclareWarAction.ApplyByKingdomDecision(author, target));
-			}
-			catch (Exception ex)
-			{
-				actionError = ex;
-			}
-			if (FactionManager.IsAtWarAgainstFaction(author, target))
-			{
-				document.MechanicalResult = "已宣战";
-				document.ChangedDiplomaticState = true;
-				WorldDiplomacyWarPressureRules.ClearWarPressure(_storage?.WarPressure, author.StringId, target.StringId, CurrentDay());
-				_storage.LastOffensiveWarDayByKingdom[author.StringId] = CurrentDay();
-			}
-			else
-			{
-				document.MechanicalResult = actionError == null
-					? "宣战未执行：游戏状态未发生变化"
-					: "宣战未执行：" + WorldDiplomacyTextRules.Limit(actionError.Message, 180);
-			}
-			if (actionError != null) Log("declare war action raised after live-state check author=" + author.StringId + " target=" + target.StringId + " error=" + actionError.Message);
-			return;
-		}
-		if (intent == "break_alliance")
-		{
-			IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
-			if (alliance == null)
-			{
-				document.MechanicalResult = "解盟未执行：同盟系统不可用";
-				return;
-			}
-			if (!alliance.IsAllyWithKingdom(author, target))
-			{
-				document.MechanicalResult = "解盟未执行：双方当前没有同盟";
-				return;
-			}
-			Exception actionError = null;
-			try
-			{
-				RunDiplomaticAction("world_diplomacy_break_alliance", () =>
-					PermanentAllianceGuard.RunAuthorizedBreak("world_diplomacy_break_alliance",
-						author,
-						target,
-						() => alliance.EndAlliance(author, target)));
-			}
-			catch (Exception ex)
-			{
-				actionError = ex;
-			}
-			if (!alliance.IsAllyWithKingdom(author, target))
-			{
-				document.MechanicalResult = "已解除同盟";
-				document.ChangedDiplomaticState = true;
-			}
-			else
-			{
-				document.MechanicalResult = actionError == null
-					? "解盟未执行：游戏状态未发生变化"
-					: "解盟未执行：" + WorldDiplomacyTextRules.Limit(actionError.Message, 180);
-			}
-			if (actionError != null) Log("break alliance action raised after live-state check author=" + author.StringId + " target=" + target.StringId + " error=" + actionError.Message);
-			return;
-		}
-		if (intent == "cancel_trade")
-		{
-			ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-			if (trade == null)
-			{
-				document.MechanicalResult = "终止贸易未执行：贸易系统不可用";
-				return;
-			}
-			if (!BannerlordApiCompat.HasTradeAgreement(trade, author, target))
-			{
-				document.MechanicalResult = "终止贸易未执行：双方当前没有贸易协定";
-				return;
-			}
-			Exception actionError = null;
-			try
-			{
-				RunDiplomaticAction("world_diplomacy_cancel_trade", () => trade.EndTradeAgreement(author, target));
-			}
-			catch (Exception ex)
-			{
-				actionError = ex;
-			}
-			if (!BannerlordApiCompat.HasTradeAgreement(trade, author, target))
-			{
-				document.MechanicalResult = "已终止贸易协定";
-				document.ChangedDiplomaticState = true;
-			}
-			else
-			{
-				document.MechanicalResult = actionError == null
-					? "终止贸易未执行：游戏状态未发生变化"
-					: "终止贸易未执行：" + WorldDiplomacyTextRules.Limit(actionError.Message, 180);
-			}
-			if (actionError != null) Log("cancel trade action raised after live-state check author=" + author.StringId + " target=" + target.StringId + " error=" + actionError.Message);
-		}
+		WorldDiplomacyImmediateActionApplication.Execute(new ImmediateActionPort(this), author?.StringId, target?.StringId, intent, document);
 	}
 	private void ExecuteMakePeace(Kingdom initiator, Kingdom target, WorldDiplomacyDocument document)
 	{

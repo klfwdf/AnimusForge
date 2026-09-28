@@ -28,12 +28,16 @@ static class Program
                 string routing = method.Identifier.ValueText switch {
                     "StartDocumentPropagation" => "Start",
                     "ReconcileAnalyzedPlayerDeclarationWithReachedCourts" => "ReconcileReachedCourts",
+                    "ExecuteImmediateIntent" => "Execute",
                     _ => null };
                 if (routing != null)
                 {
                     var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                    string owner = method.Identifier.ValueText == "ExecuteImmediateIntent"
+                        ? "WorldDiplomacyImmediateActionApplication"
+                        : "WorldDiplomacyPublicationRoutingApplication";
                     if (method.Body?.Statements.Count != 1 || calls.Length != 1
-                        || calls[0].Expression.ToString() != "WorldDiplomacyPublicationRoutingApplication." + routing)
+                        || calls[0].Expression.ToString() != owner + "." + routing)
                         errors.Add("publication predecessor retains orchestration: " + method.Identifier.ValueText);
                 }
                 if (!new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument",
