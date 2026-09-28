@@ -1,3 +1,12 @@
+# 当前交接：J17-A 前置盘点进行中（2026-09-28，分支 `codex/af-j17a-inventory-20260928`）
+
+- **范围**：用户要求绕过 J16（已推送他人接手）先做 J17，且不影响 J16。独立 worktree `G:\AFMOD\AF-J17`，基于远端 `99ca85ae`；只读审查 + 文档，未改产品/测试/tools/tests 布局，未构建部署推送。详见[主台账 J17-A 意图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)与[结项计划登记表](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-responsibility-register-20260928)。
+- **已完成**：R04 保存边界审查（E09）→ 拆 R04a `OPEN`（11 个记忆记录类型 + 7 个 static Sanitize 可迁出，只须冻结 SyncData 键与 JSON 字段名；3 个回放测试按嵌套类型名反射）/ R04b `RETAINED_BOUNDARY`（SyncData 键表、711100 容器）。R02 摘要链分区（E10，244 方法；规则 101 个可随 R04a 迁；开发者记忆编辑器拆 R02-dev）。R01 周报最小迁移单元（E11：4 个嵌套类型 + 6 个 static 规则 + 36 个 aggregate 构造器）。R03 导入导出闭包（E12：Build/Apply 纯状态变换，依赖 R04a）。R07 文件级（E13：MSBuild 求值 1.3/1.4 Compile 各 940 个且相同，940/940 入 20 桶）。
+- **未完成**：R07 成员级——16 个混合宿主 10,704 成员中 3,332 个（59,174 行）仍 `HOST-RESIDUAL`，需逐宿主人工判定；R05/R06/R08/R09 未开始。J17-A 未闭合，不能进 J17-B。
+- **工具**：`artifacts/j17a/`（忽略）下 `members.py`（成员提取）、`r02.py`、`buckets.py`、`split_hosts.py` 及生成的 JSON；启发式，不是编译器。
+
+## 以下为上一段交接
+
 # 当前交接：J16a 测试归位已完成，J16b 进行中；J15 离线收口（2026-09-28）
 
 - **当前计划不变**：[AF 2.0 责任结项计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)仍为唯一执行口径；当前是普通 merge 核验，不是重复 J15 产品施工。范围、父提交和结果见[合并回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-remote-reconcile-20260928)。
