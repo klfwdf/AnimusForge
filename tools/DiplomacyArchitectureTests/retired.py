@@ -1,6 +1,7 @@
 """Retired private migration wrappers; referenced by deletion and caller-parity tests."""
 HOST='src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs'
 RETIRED = [
+    "private static void ApplyNationalPrestigeRelationDifference(",
  'private bool EnsureCurrentCanonicalPromptContractBeforeSend(',
  'private bool EnqueueGeneratedDeclarationRepair(',
  'private void ReconcilePlayerDeclarationWithOpenOffer(',

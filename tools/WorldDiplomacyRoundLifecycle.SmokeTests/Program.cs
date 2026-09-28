@@ -157,6 +157,7 @@ RunRepairCorrectionAndJobDecisionTests();
         PropagationLifecycleReplay.Run();
         ThreatApplicationReplay.Run();
         ThreatSettlementReplay.Run();
+        PrestigeApplicationReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -15053,23 +15054,24 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("private static string Limit(string value, int maxChars)\n\t{\n\t\tstring text", StringComparison.Ordinal),
             "public-text normalization implementations must not remain in the host");
 
+        string prestigeApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPrestigeApplication.cs"));
         string reputationRulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyReputationRules.cs"));
         Test.True(!reputationRulesSource.Contains("TaleWorlds", StringComparison.Ordinal),
             "reputation rules must stay free of TaleWorlds references");
         Test.True(!reputationRulesSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "reputation rules must not reference the host behavior");
-        Test.True(behaviorSource.Contains("WorldDiplomacyReputationRules.ProcessInternationalReputationNaturalChange(", StringComparison.Ordinal)
+        Test.True(prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.ProcessInternationalReputationNaturalChange(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyReputationRules.ApplyInternationalReputationEvaluation(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.AnchorInternationalReputationNaturalChangeDays(", StringComparison.Ordinal)
+            && prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(", StringComparison.Ordinal)
+            && prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.AnchorInternationalReputationNaturalChangeDays(", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyReputationRules.FormatSignedStandingDelta(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.FormatSignedDelta(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeNationalPrestige(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeInternationalReputation(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(", StringComparison.Ordinal)
+            && prestigeApplicationSource.Contains("WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(", StringComparison.Ordinal)
             && storageMigrationSource.Contains("WorldDiplomacyReputationRules.MaximumInternationalReputationChangePerDocument", StringComparison.Ordinal)
             && reputationRulesSource.Contains("InternationalReputationNaturalAnchor", StringComparison.Ordinal),
             "host must delegate reputation calculation, evaluation, and describe text to the domain rules");

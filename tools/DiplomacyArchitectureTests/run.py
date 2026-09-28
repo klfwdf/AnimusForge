@@ -58,6 +58,10 @@ def main():
   before=declaration(prior,signature);after=declaration(current,signature)
   assert "WorldDiplomacyThreatSettlementApplication." in after, signature
   prior=prior.replace(before,after)
+ for signature in ('private int ApplyNationalPrestigeDelta(', 'private void SettleInternationalReputationForDocument(', 'private void RecoverUnsettledAiInternationalReputation(', 'private void ReconcileAllNationalPrestigeVassalRelations(', 'private void ReconcileNationalPrestigeVassalRelations(', 'private void ApplyZeroPrestigeBreachRelationPenalty(', 'private void AnchorInternationalReputationNaturalChangeDays(', 'private void ProcessInternationalReputationNaturalChange('):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert "WorldDiplomacyPrestigeApplication." in after, signature
+  prior=prior.replace(before,after)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
@@ -87,7 +91,7 @@ def main():
  current=current.replace('\t'+declaration(current,proactive_documents)+'\n\n','')
  current=current.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
- print('PASS 21 private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
+ print('PASS 22 private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)
  # Evaluation only: no game startup, restore, Stage or deployment.
  result=subprocess.run([a.dotnet,'msbuild',str(ROOT/'AnimusForge.csproj'),'-getItem:Compile'],cwd=ROOT,capture_output=True,encoding='utf-8',check=True)

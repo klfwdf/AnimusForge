@@ -553,28 +553,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void AnchorInternationalReputationNaturalChangeDays()
 	{
-		if (_storage == null || Campaign.Current == null) return;
-		_storage.InternationalReputationNaturalChangeLastDayByKingdom ??=
-			new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		WorldDiplomacyReputationRules.AnchorInternationalReputationNaturalChangeDays(
-			_storage.InternationalReputationNaturalChangeLastDayByKingdom,
-			Kingdom.All.Where(x => x != null && !x.IsEliminated && !string.IsNullOrWhiteSpace(x.StringId))
-				.Select(x => x.StringId),
-			CurrentDay());
+		WorldDiplomacyPrestigeApplication.NaturalChange(_storage, new PrestigePort(), true);
 	}
 
 	private void ProcessInternationalReputationNaturalChange()
 	{
-		if (_storage == null || Campaign.Current == null) return;
-		_storage.InternationalReputationByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		_storage.InternationalReputationNaturalChangeLastDayByKingdom ??=
-			new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		WorldDiplomacyReputationRules.ProcessInternationalReputationNaturalChange(
-			_storage.InternationalReputationByKingdom,
-			_storage.InternationalReputationNaturalChangeLastDayByKingdom,
-			Kingdom.All.Where(x => x != null && !x.IsEliminated && !string.IsNullOrWhiteSpace(x.StringId))
-				.Select(x => x.StringId),
-			CurrentDay(), Log);
+		WorldDiplomacyPrestigeApplication.NaturalChange(_storage, new PrestigePort(), false);
 	}
 	private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
 	{
@@ -4824,106 +4808,26 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyDocument sourceDocument,
 		string reason)
 	{
-		string normalizedId = (kingdomId ?? "").Trim();
-		if (normalizedId.Length == 0) return WorldDiplomacyReputationRules.DefaultNationalPrestige;
-		_storage ??= new WorldDiplomacyStorage();
-		_storage.NationalPrestigeByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		return WorldDiplomacyReputationRules.ApplyNationalPrestigeDelta(
-			_storage.NationalPrestigeByKingdom, normalizedId, delta, sourceDocument, reason,
-			id => KingdomName(ResolveKingdomIncludingEliminated(id)),
-			id => ReconcileNationalPrestigeVassalRelations(ResolveKingdomIncludingEliminated(id)));
+		return WorldDiplomacyPrestigeApplication.Apply(ref _storage, new PrestigePort(), kingdomId, delta, sourceDocument, reason);
 	}
 
 	private void SettleInternationalReputationForDocument(WorldDiplomacyDocument document)
 	{
-		_storage ??= new WorldDiplomacyStorage();
-		_storage.InternationalReputationByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-		WorldDiplomacyReputationRules.SettleInternationalReputationForDocument(
-			_storage.InternationalReputationByKingdom, document,
-			id => KingdomName(ResolveKingdomIncludingEliminated(id)), Log);
+		WorldDiplomacyPrestigeApplication.SettleDocument(ref _storage, new PrestigePort(), document);
 	}
 
 	private void RecoverUnsettledAiInternationalReputation()
 	{
-		WorldDiplomacyReputationRules.RecoverUnsettledAiInternationalReputation(
-			_storage?.Documents, SettleInternationalReputationForDocument, Log);
+		WorldDiplomacyPrestigeApplication.RecoverDocuments(ref _storage, new PrestigePort());
 	}
 
 	private void ReconcileAllNationalPrestigeVassalRelations()
 	{
-		if (Campaign.Current == null) return;
-		foreach (Kingdom kingdom in Kingdom.All.Where(x => x != null))
-		{
-			ReconcileNationalPrestigeVassalRelations(kingdom);
-		}
+		WorldDiplomacyPrestigeApplication.ReconcileAll(_storage, new PrestigePort());
 	}
 	private void ReconcileNationalPrestigeVassalRelations(Kingdom kingdom)
 	{
-		if (kingdom == null || string.IsNullOrWhiteSpace(kingdom.StringId)) return;
-		_storage.NationalPrestigeRelationModifiers ??= new List<WorldDiplomacyPrestigeRelationModifier>();
-		Hero ruler = kingdom.RulingClan?.Leader;
-		int desired = kingdom.IsEliminated || ruler == null ? 0 : WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(WorldDiplomacyReputationRules.GetNationalPrestige(_storage?.NationalPrestigeByKingdom, kingdom.StringId));
-		HashSet<string> activeKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		if (ruler != null && kingdom.Clans != null)
-		{
-			for (int index = 0; index < kingdom.Clans.Count; index++)
-			{
-				Clan clan = kingdom.Clans[index];
-				Hero vassalLeader = clan?.Leader;
-				if (clan == null || clan == kingdom.RulingClan || clan.Kingdom != kingdom || clan.IsEliminated
-					|| clan.IsUnderMercenaryService || clan.IsClanTypeMercenary || vassalLeader == null || vassalLeader == ruler) continue;
-				string key = kingdom.StringId + "|" + ruler.StringId + "|" + vassalLeader.StringId;
-				activeKeys.Add(key);
-				WorldDiplomacyPrestigeRelationModifier modifier = _storage.NationalPrestigeRelationModifiers.FirstOrDefault(x => x != null
-					&& string.Equals(x.KingdomId, kingdom.StringId, StringComparison.OrdinalIgnoreCase)
-					&& string.Equals(x.RulerHeroId, ruler.StringId, StringComparison.OrdinalIgnoreCase)
-					&& string.Equals(x.VassalLeaderHeroId, vassalLeader.StringId, StringComparison.OrdinalIgnoreCase));
-				if (modifier == null)
-				{
-					modifier = new WorldDiplomacyPrestigeRelationModifier
-					{
-						KingdomId = kingdom.StringId,
-						RulerHeroId = ruler.StringId,
-						VassalLeaderHeroId = vassalLeader.StringId
-					};
-					_storage.NationalPrestigeRelationModifiers.Add(modifier);
-				}
-				ApplyNationalPrestigeRelationDifference(modifier, vassalLeader, ruler, desired);
-			}
-		}
-
-		foreach (WorldDiplomacyPrestigeRelationModifier stale in _storage.NationalPrestigeRelationModifiers
-			.Where(x => x != null && string.Equals(x.KingdomId, kingdom.StringId, StringComparison.OrdinalIgnoreCase)
-				&& !activeKeys.Contains(x.KingdomId + "|" + x.RulerHeroId + "|" + x.VassalLeaderHeroId)).ToList())
-		{
-			Hero oldRuler = ResolveHeroById(stale.RulerHeroId);
-			Hero oldVassal = ResolveHeroById(stale.VassalLeaderHeroId);
-			if (oldRuler != null && oldVassal != null) ApplyNationalPrestigeRelationDifference(stale, oldVassal, oldRuler, 0);
-			if (stale.AppliedAmount == 0 || oldRuler == null || oldVassal == null)
-			{
-				_storage.NationalPrestigeRelationModifiers.Remove(stale);
-			}
-		}
-	}
-	private static void ApplyNationalPrestigeRelationDifference(
-		WorldDiplomacyPrestigeRelationModifier modifier,
-		Hero vassalLeader,
-		Hero ruler,
-		int desired)
-	{
-		if (modifier == null || vassalLeader == null || ruler == null) return;
-		int difference = desired - modifier.AppliedAmount;
-		if (difference == 0) return;
-		try
-		{
-			int before = CharacterRelationManager.GetHeroRelation(vassalLeader, ruler);
-			ChangeRelationAction.ApplyRelationChangeBetweenHeroes(vassalLeader, ruler, difference, showQuickNotification: false);
-			int after = CharacterRelationManager.GetHeroRelation(vassalLeader, ruler);
-			modifier.AppliedAmount += after - before;
-		}
-		catch
-		{
-		}
+		WorldDiplomacyPrestigeApplication.Reconcile(_storage, new PrestigePort(), kingdom?.StringId);
 	}
 	private static Hero ResolveHeroById(string heroId)
 	{
@@ -4942,21 +4846,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void ApplyZeroPrestigeBreachRelationPenalty(Kingdom kingdom, int amount)
 	{
-		if (kingdom?.RulingClan?.Leader == null || amount >= 0 || kingdom.Clans == null) return;
-		Hero ruler = kingdom.RulingClan.Leader;
-		for (int index = 0; index < kingdom.Clans.Count; index++)
-		{
-			Clan clan = kingdom.Clans[index];
-			if (clan == null || clan == kingdom.RulingClan || clan.Kingdom != kingdom || clan.IsEliminated
-				|| clan.IsUnderMercenaryService || clan.IsClanTypeMercenary || clan.Leader == null || clan.Leader == ruler) continue;
-			try
-			{
-				ChangeRelationAction.ApplyRelationChangeBetweenHeroes(clan.Leader, ruler, amount, showQuickNotification: false);
-			}
-			catch
-			{
-			}
-		}
+		WorldDiplomacyPrestigeApplication.ApplyZeroPrestigePenalty(new PrestigePort(), kingdom?.StringId, amount);
 	}
 	private void NormalizeOfferCooldownStorage()
 	{

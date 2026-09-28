@@ -50,6 +50,13 @@ static class Program
                         || method.DescendantNodes().Any(n => n is IfStatementSyntax or ForEachStatementSyntax or AssignmentExpressionSyntax))
                         errors.Add("threat predecessor retains orchestration: " + method.Identifier.ValueText);
                 }
+                if (new[] { "ApplyNationalPrestigeDelta", "SettleInternationalReputationForDocument", "RecoverUnsettledAiInternationalReputation", "ReconcileAllNationalPrestigeVassalRelations", "ReconcileNationalPrestigeVassalRelations", "ApplyZeroPrestigeBreachRelationPenalty", "AnchorInternationalReputationNaturalChangeDays", "ProcessInternationalReputationNaturalChange" }.Contains(method.Identifier.ValueText))
+                {
+                    var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
+                    if (method.Body?.Statements.Count != 1 || calls.Length != 1
+                        || !calls[0].Expression.ToString().StartsWith("WorldDiplomacyPrestigeApplication."))
+                        errors.Add("prestige predecessor retains orchestration: " + method.Identifier.ValueText);
+                }
                 if (method.Identifier.ValueText is "CanDeclareWar" or "CanIssueWarThreat")
                 {
                     var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
@@ -164,7 +171,7 @@ static class Program
         var retired = manifest["retired"].Values<string>().ToHashSet();
         var prior = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(Path.GetDirectoryName(manifestPath), "prior-host.cs.txt"))).GetRoot();
         var retiredMethods = prior.DescendantNodes().OfType<MethodDeclarationSyntax>().Where(m => retired.Contains(m.Identifier.ValueText)).ToArray();
-        Check(retiredMethods.Length == 21 && retiredMethods.All(m => m.Modifiers.Any(SyntaxKind.PrivateKeyword) && m.AttributeLists.Count == 0), "only private non-callback declarations retired");
+        Check(retiredMethods.Length == 22 && retiredMethods.All(m => m.Modifiers.Any(SyntaxKind.PrivateKeyword) && m.AttributeLists.Count == 0), "only private non-callback declarations retired");
         Check(!trees[host].GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().Any(m => retired.Contains(m.Identifier.ValueText)), "retired host wrappers absent");
         // All surviving same-name references must be qualified calls to the extracted owner, never a bare/self/owner dispatch.
         foreach (var (path, tree) in trees)
@@ -195,7 +202,7 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
-        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults" })
+        foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults", "ApplyNationalPrestigeDelta", "SettleInternationalReputationForDocument", "RecoverUnsettledAiInternationalReputation", "ReconcileAllNationalPrestigeVassalRelations", "ReconcileNationalPrestigeVassalRelations", "ApplyZeroPrestigeBreachRelationPenalty", "AnchorInternationalReputationNaturalChangeDays", "ProcessInternationalReputationNaturalChange" })
         {
             string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";
             Check(Violations(host, CSharpSyntaxTree.ParseText(injected).GetRoot()).Count > 0, "reject callback-hidden predecessor orchestration: " + name);
@@ -227,6 +234,6 @@ static class Program
             Check(before.Length > 100 && before.SequenceEqual(after), "public diplomacy ABI differs: " + string.Join("; ", before.Except(after)));
             Console.WriteLine($"PASS {before.Length} public diplomacy type/member signatures preserved against DPL-100 DLL");
         }
-        Console.WriteLine($"PASS {checks} architecture/caller assertions, 6 rejected dependency mutations; LIVE/SAVE not tested");
+        Console.WriteLine($"PASS {checks} architecture/caller assertions, 8 rejected dependency mutations; LIVE/SAVE not tested");
     }
 }
