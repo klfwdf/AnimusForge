@@ -202,6 +202,21 @@ namespace AnimusForge
         { storage = State; return Available; }
         public static IWorldDiplomacyPresentationPort ResolvePresentationPort() => Port;
         public void OnEngineTick() { Ticks++; }
+        internal struct TickSource : IWorldDiplomacyTickSource
+        {
+            private readonly WorldDiplomacyBehavior owner;
+            internal TickSource(WorldDiplomacyBehavior value) => owner=value;
+            public bool HasOwner => owner!=null;
+            public bool IsEnabled => true;
+            public bool DisabledStateApplied => false;
+            public void ProcessComposePopup() { owner.Ticks++; }
+            public void ApplyDisabledState() { }
+            public void ClearDisabledState() { }
+            public void ProcessCompletedJobs() { }
+            public void TryScheduleTokenCompression() { }
+            public void TryStartNextLlmJob() { }
+            public void TryPublishPendingNotifications() { }
+        }
     }
     internal static class WorldDiplomacyPolicyContext
     {

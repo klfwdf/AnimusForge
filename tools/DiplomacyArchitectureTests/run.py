@@ -15,6 +15,10 @@ def main():
  declaration=load('decl','tools/ChannelCutoverBoundaryTests/run.py').declaration
  prior=old(retired.HOST)
  current=read(retired.HOST)
+ prior_tick=declaration(prior,'public void OnEngineTick(')
+ current_tick=declaration(current,'public void OnEngineTick(')
+ assert 'WorldDiplomacyTickApplication.Run(ref source)' in current_tick and 'ProcessCompletedJobs()' not in current_tick, 'Tick predecessor still owns ordering'
+ prior=prior.replace(prior_tick,current_tick)
  query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
  snapshot='internal static bool TryGetTimelineRevisionSnapshot('
  timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
@@ -44,7 +48,7 @@ def main():
  current=current.replace('\t'+declaration(current,proactive_documents)+'\n\n','')
  current=current.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
- print('PASS 17 private method deletions; all surviving host text unchanged')
+ print('PASS 17 private method deletions; tick is an Application forwarder; other surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)
  # Evaluation only: no game startup, restore, Stage or deployment.
  result=subprocess.run([a.dotnet,'msbuild',str(ROOT/'AnimusForge.csproj'),'-getItem:Compile'],cwd=ROOT,capture_output=True,encoding='utf-8',check=True)
