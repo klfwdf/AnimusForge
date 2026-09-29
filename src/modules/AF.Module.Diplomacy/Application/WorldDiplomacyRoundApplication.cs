@@ -335,4 +335,151 @@ internal static class WorldDiplomacyRoundApplication
         participant.LastTriggeredDocumentId = trigger.DocumentId;
         return true;
     }
+
+    internal static void ProcessRoundLifecycle(
+        WorldDiplomacyStorage storage,
+        Func<int> currentDay,
+        Func<string, WorldDiplomacyDocument> resolveDocument,
+        Action<WorldDiplomacyRound, WorldDiplomacyDocument> enqueueRoundPlanJob,
+        Action<WorldDiplomacyRound> scheduleResultSettlementTurn,
+        Action<WorldDiplomacyRound> scheduleRelayHop,
+        Action<string> closeActiveRound,
+        Action<string> log)
+    {
+        WorldDiplomacyRound round = storage.ActiveRound;
+        if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
+        if (round.AutomaticCircuitBreakerTripped)
+        {
+            bool hasRunningRoundJob = storage.Jobs.Any(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
+            switch (WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(
+                hasRunningRoundJob, round.ResultSettlementPending))
+            {
+                case WorldDiplomacyRoundTerminalAction.CloseResultSettlement:
+                    round.ResultSettlementSlots?.Clear();
+                    round.RoundStatus = WorldDiplomacyRoundLifecycleRules.NormalizeResultSettlementStatus(
+                        round.ResultSettlementRoundStatus);
+                    closeActiveRound("result_settlement_circuit_breaker");
+                    break;
+                case WorldDiplomacyRoundTerminalAction.CloseRelay:
+                    closeActiveRound("automatic_request_circuit_breaker");
+                    break;
+            }
+            return;
+        }
+        bool pendingRoundJob = storage.Jobs.Any(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
+        int day = currentDay();
+        if (WorldDiplomacyRoundLifecycleRules.IsHardEndReached(day, round.HardEndDay))
+        {
+            switch (WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose(
+                pendingRoundJob, round.ResultSettlementPending))
+            {
+                case WorldDiplomacyRoundTerminalAction.WaitForRunningJob:
+                    // Game time may continue while the background request is running. Let the
+                    // already-started final turn finish instead of closing the round underneath it.
+                    return;
+                case WorldDiplomacyRoundTerminalAction.CloseResultSettlement:
+                    round.ResultSettlementSlots?.Clear();
+                    round.RoundStatus = WorldDiplomacyRoundLifecycleRules.NormalizeResultSettlementStatus(
+                        round.ResultSettlementRoundStatus);
+                    closeActiveRound("result_settlement_hard_end");
+                    return;
+                default:
+                    closeActiveRound("relay_hard_end");
+                    return;
+            }
+        }
+        if (!round.RelayPlanned)
+        {
+            WorldDiplomacyDocument root = resolveDocument(round.RootDocumentId);
+            if (root != null && root.IsReadyForPublication) enqueueRoundPlanJob(round, root);
+            return;
+        }
+        if (round.ResultSettlementPending)
+        {
+            WorldDiplomacyResultSettlementSlot currentSlot = (round.ResultSettlementSlots ?? new List<WorldDiplomacyResultSettlementSlot>())
+                .FirstOrDefault(x => x != null
+                    && string.Equals(x.SlotId, round.ResultSettlementCurrentSlotId, StringComparison.OrdinalIgnoreCase));
+            if (currentSlot != null && WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired(
+                currentSlot.Status, round.ResultSettlementPlayerWaitingSinceDay, day))
+            {
+                WorldDiplomacyRoundLifecycleRules.SkipResultSettlementSlot(round, currentSlot.SlotId, currentSlot.KingdomId, "player_timeout", storage?.DiplomaticThreats, currentDay(), log);
+                currentSlot = null;
+            }
+            if (!pendingRoundJob && !storage.RelayArrivals.Any(x => x != null
+                && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)))
+            {
+                round.RelayWaiting = currentSlot != null
+                    && WorldDiplomacyRoundLifecycleRules.IsWaitingPlayerSlot(currentSlot.Status);
+                if (!round.RelayWaiting) scheduleResultSettlementTurn(round);
+            }
+            return;
+        }
+        int activeAi = (round.Participants ?? new List<WorldDiplomacyRoundParticipant>()).Count(x => x != null
+            && WorldDiplomacyRoundLifecycleRules.IsActiveRelayParticipant(
+                x.SelectedForRelay, x.IsPlayerAsync, x.State));
+        if (activeAi <= 0)
+        {
+            closeActiveRound("relay_all_ai_withdrew");
+            return;
+        }
+        if (!pendingRoundJob && !storage.RelayArrivals.Any(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)))
+        {
+            round.RelayWaiting = false;
+            scheduleRelayHop(round);
+        }
+    }
+
+    internal static void ReconcileActiveDiplomacyAfterLoad(
+        WorldDiplomacyStorage storage,
+        Func<int> currentDay,
+        Action<WorldDiplomacyRound> scheduleResultSettlementTurn,
+        Action<WorldDiplomacyRound> scheduleRelayHopImmediately,
+        Action<string> closeActiveRound,
+        Action<string> log)
+    {
+        WorldDiplomacyRound round = storage?.ActiveRound;
+        if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
+        if (WorldDiplomacyRoundLifecycleRules.IsHardEndReached(currentDay(), round.HardEndDay))
+        {
+            closeActiveRound("relay_hard_end_after_load");
+            return;
+        }
+        bool hasPersistedWork = (storage.Jobs ?? new List<WorldDiplomacyJob>()).Any(x => x != null
+            && string.Equals(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.RoundId, x.ExchangeId), round.RoundId, StringComparison.OrdinalIgnoreCase))
+            || (storage.RelayArrivals ?? new List<WorldDiplomacyRelayArrival>()).Any(x => x != null
+                && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId));
+        bool playerWaiting = (storage.PlayerOpportunities ?? new List<WorldDiplomacyPlayerOpportunity>()).Any(x => x != null
+            && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)
+            && WorldDiplomacyRoundLifecycleRules.IsPlayerOpportunityOfStatus(x, "open"));
+        WorldDiplomacyRoundReconcileDecision decision = WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad(
+            new WorldDiplomacyRoundReconcileInput
+            {
+                RoundActive = true,
+                CurrentDay = currentDay(),
+                HardEndDay = round.HardEndDay,
+                HasPersistedWork = hasPersistedWork,
+                PlayerWaiting = playerWaiting,
+                RelayWaiting = round.RelayWaiting,
+                ResultSettlementPending = round.ResultSettlementPending,
+                RelayPlanned = round.RelayPlanned,
+                HasRootDocument = !string.IsNullOrWhiteSpace(round.RootDocumentId)
+            });
+        if (decision.ClearOrphanedRelayWait && round.RelayWaiting)
+        {
+            round.RelayWaiting = false;
+            log("reconciled orphaned diplomacy wait after load round=" + round.RoundId);
+        }
+        switch (decision.Action)
+        {
+            case WorldDiplomacyRoundReconcileAction.ScheduleResultSettlementTurn:
+                scheduleResultSettlementTurn(round);
+                break;
+            case WorldDiplomacyRoundReconcileAction.ScheduleRelayImmediately:
+                scheduleRelayHopImmediately(round);
+                break;
+            case WorldDiplomacyRoundReconcileAction.CloseMissingRootDocument:
+                closeActiveRound("technical_missing_root_after_load");
+                break;
+        }
+    }
 }

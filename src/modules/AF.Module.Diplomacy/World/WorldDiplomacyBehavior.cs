@@ -481,7 +481,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void ReconcileActiveDiplomacyAfterLoad()
 	{
-		WorldDiplomacyRoundLifecycleRules.ReconcileActiveDiplomacyAfterLoad(
+		WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(
 			_storage, CurrentDay, ScheduleNextResultSettlementTurn,
 			r => ScheduleNextRelayHop(r, scheduleImmediately: true),
 			CloseActiveRound, Log);
@@ -2241,7 +2241,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void ProcessRoundLifecycle()
 	{
-		WorldDiplomacyRoundLifecycleRules.ProcessRoundLifecycle(
+		WorldDiplomacyRoundApplication.ProcessRoundLifecycle(
 			_storage, CurrentDay, ResolveDocument, EnqueueRoundPlanJob,
 			ScheduleNextResultSettlementTurn, r => ScheduleNextRelayHop(r),
 			CloseActiveRound, Log);

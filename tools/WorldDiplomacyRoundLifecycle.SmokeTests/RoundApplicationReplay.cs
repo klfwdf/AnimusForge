@@ -123,13 +123,13 @@ internal static class RoundApplicationReplay
         active.HardEndDay = 15; delayed.Jobs.Add(new WorldDiplomacyJob { JobId = "inflight", RoundId = "r" });
         int closes = 0;
         void CloseDelayed(string reason) { closes++; WorldDiplomacyRoundApplication.Close(delayed, reason, () => 20, _ => { }, _ => { }, (_, _) => { }, () => { }, _ => { }); }
-        void Tick() => WorldDiplomacyRoundLifecycleRules.ProcessRoundLifecycle(delayed, () => 20, _ => null, (_, _) => { }, _ => { }, _ => { }, CloseDelayed, _ => { });
+        void Tick() => WorldDiplomacyRoundApplication.ProcessRoundLifecycle(delayed, () => 20, _ => null, (_, _) => { }, _ => { }, _ => { }, CloseDelayed, _ => { });
         Tick(); Test.True(closes == 0 && delayed.ActiveRound == active, "delayed in-flight work defers hard-end closure");
         delayed.Jobs.Clear(); Tick(); Tick();
         Test.True(closes == 1 && active.CloseReason == "relay_hard_end", "drained hard-end closes once through application");
         active = Open(delayed, "orphan"); active.RelayWaiting = true;
         delayed = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(delayed))!;
-        WorldDiplomacyRoundLifecycleRules.ReconcileActiveDiplomacyAfterLoad(delayed, () => 12, _ => { }, _ => { }, CloseDelayed, _ => { });
+        WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(delayed, () => 12, _ => { }, _ => { }, CloseDelayed, _ => { });
         Test.True(delayed.ActiveRound == null && closes == 2
                   && delayed.CompletedRounds.Last().CloseReason == "technical_missing_root_after_load", "orphaned reloaded rounds take the technical close path");
     }
