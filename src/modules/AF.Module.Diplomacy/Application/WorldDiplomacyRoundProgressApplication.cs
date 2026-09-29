@@ -309,4 +309,23 @@ internal static class WorldDiplomacyRoundProgressApplication
         }
     }
 
+    internal static void RetryDeferredRoundProgress(WorldDiplomacyStorage storage, Action<WorldDiplomacyDocument> processDocument, Action<string> log)
+    {
+        WorldDiplomacyRound round = storage?.ActiveRound;
+        if (round == null || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
+        foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically((storage.Documents ?? new List<WorldDiplomacyDocument>())
+            .Where(x => x != null && x.IsReadyForPublication && !x.RoundProgressHandled
+                && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId))).Take(8))
+        {
+            try
+            {
+                processDocument(document);
+            }
+            catch (Exception ex)
+            {
+                log?.Invoke("deferred round progress retry failed document=" + document.DocumentId + " error=" + ex.Message);
+            }
+        }
+    }
+
 }

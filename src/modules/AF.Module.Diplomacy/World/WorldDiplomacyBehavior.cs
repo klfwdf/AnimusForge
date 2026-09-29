@@ -1802,7 +1802,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void RetryDeferredCanonicalHistoryEntries(int maxAttempts = 16)
 	{
-		WorldDiplomacyRoundLifecycleRules.RetryDeferredCanonicalHistoryEntries(
+		WorldDiplomacyHistoryCaptureApplication.RetryDeferredCanonicalHistoryEntries(
 			_deferredCanonicalHistoryDocumentIds, _deferredCanonicalHistoryDocumentIdSet,
 			_deferredCanonicalHistoryRetryAttempts, _deferredCanonicalHistoryRetryAfterHour,
 			_storage?.DiplomaticThreats, CurrentHour(),

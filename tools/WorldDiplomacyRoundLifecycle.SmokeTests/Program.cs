@@ -7752,17 +7752,17 @@ RunRepairCorrectionAndJobDecisionTests();
 		retryStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "other", RoundId = "other-round", IsReadyForPublication = true });
 		retryStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "handled", RoundId = "r9", IsReadyForPublication = true, RoundProgressHandled = true });
 		retryStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "draft", RoundId = "r9" });
-		WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(retryStorage, processed.Add, retryLogs.Add);
+		WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(retryStorage, processed.Add, retryLogs.Add);
 		Test.True(processed.Count == 8 && retryLogs.Count == 0
 			&& processed.All(d => d.RoundId == "r9" && d.IsReadyForPublication && !d.RoundProgressHandled),
 			"deferred retry must process at most eight ready unhandled in-round documents");
 		retryStorage.ActiveRound.State = "closed";
 		processed.Clear();
-		WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(retryStorage, processed.Add, retryLogs.Add);
+		WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(retryStorage, processed.Add, retryLogs.Add);
 		Test.True(processed.Count == 0, "a non-active round must not retry deferred progress");
 		retryStorage.ActiveRound = new WorldDiplomacyRound { RoundId = "r9", State = "active" };
 		int calls = 0;
-		WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(retryStorage,
+		WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(retryStorage,
 			doc => { calls++; throw new InvalidOperationException("boom"); }, retryLogs.Add);
 		Test.True(calls == 8 && retryLogs.Count == 8 && retryLogs[0].Contains("boom"),
 			"a failing deferred document must be logged without stopping the batch");
@@ -8024,7 +8024,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(dropSet, dropQueue, "doc-done");
         dropAttempts["doc-done"] = 3;
         dropHours["doc-done"] = 1;
-        WorldDiplomacyRoundLifecycleRules.RetryDeferredCanonicalHistoryEntries(
+        WorldDiplomacyHistoryCaptureApplication.RetryDeferredCanonicalHistoryEntries(
             dropQueue, dropSet, dropAttempts, dropHours,
             new List<WorldDiplomacyThreat>(), 200,
             id => new WorldDiplomacyDocument
@@ -8042,7 +8042,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(dropSet, dropQueue, "doc-wait");
         dropAttempts["doc-wait"] = 1;
         dropHours["doc-wait"] = 300;
-        WorldDiplomacyRoundLifecycleRules.RetryDeferredCanonicalHistoryEntries(
+        WorldDiplomacyHistoryCaptureApplication.RetryDeferredCanonicalHistoryEntries(
             dropQueue, dropSet, dropAttempts, dropHours,
             new List<WorldDiplomacyThreat>(), 200,
             id => new WorldDiplomacyDocument { DocumentId = id, IsReadyForPublication = true, Body = "pending" },
@@ -8057,7 +8057,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Dictionary<string, int> dueAttempts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         Dictionary<string, int> dueHours = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(dueSet, dueQueue, "doc-pend");
-        WorldDiplomacyRoundLifecycleRules.RetryDeferredCanonicalHistoryEntries(
+        WorldDiplomacyHistoryCaptureApplication.RetryDeferredCanonicalHistoryEntries(
             dueQueue, dueSet, dueAttempts, dueHours,
             new List<WorldDiplomacyThreat>(), 400,
             id => new WorldDiplomacyDocument { DocumentId = id, IsReadyForPublication = true, Body = "pending" },
@@ -8075,7 +8075,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Dictionary<string, int> failAttempts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         Dictionary<string, int> failHours = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(failSet, failQueue, "doc-fail");
-        WorldDiplomacyRoundLifecycleRules.RetryDeferredCanonicalHistoryEntries(
+        WorldDiplomacyHistoryCaptureApplication.RetryDeferredCanonicalHistoryEntries(
             failQueue, failSet, failAttempts, failHours,
             new List<WorldDiplomacyThreat>(), 400,
             id => new WorldDiplomacyDocument { DocumentId = id, IsReadyForPublication = true, Body = "pending" },
@@ -14590,8 +14590,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "the lifecycle rules must own retry-attempt increments");
         Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeDeferredRetryDelayHours", StringComparison.Ordinal),
             "the lifecycle rules must own retry backoff");
-        Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeDeferredRetryBatchSize", StringComparison.Ordinal),
-            "the lifecycle rules must own retry batch sizing");
+        Test.True(historyCaptureSource.Contains("WorldDiplomacyRoundLifecycleRules.ComputeDeferredRetryBatchSize", StringComparison.Ordinal),
+            "the history-capture Application must route retry batch sizing through the lifecycle rules");
         Test.True(!behaviorSource.Contains("Math.Min(30, attempts + 1)", StringComparison.Ordinal),
             "raw retry-attempt math must not remain in the host");
         Test.True(!behaviorSource.Contains("Math.Min(24, 1 << Math.Min(4", StringComparison.Ordinal),
@@ -15795,8 +15795,8 @@ RunRepairCorrectionAndJobDecisionTests();
                   && !behaviorSource.Contains("private void InvalidateOtherThreatsBoundToSettledPolicy("),
             "threat resolution must not remain in the host");
 
-        Test.True(campaignSource.Contains("WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(", StringComparison.Ordinal),
-            "the host must route deferred round-progress retries through the lifecycle rules");
+        Test.True(campaignSource.Contains("WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(", StringComparison.Ordinal),
+            "the host must route deferred round-progress retries through the round-progress Application");
         Test.True(generationTaskSource.Contains("TripAutomaticRoundCircuitBreaker(storage, owningRound, \"automatic_document_limit\", log)", StringComparison.Ordinal),
             "the generation task application must route circuit-breaker trips through the lifecycle rules");
         Test.True(rulesSource.Contains("CompleteRelayPassProgressAccounting(", StringComparison.Ordinal),
@@ -15810,8 +15810,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("public static bool TryConsumeAiDocumentBudget(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void RecordPlayerOpportunity(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void TripAutomaticRoundCircuitBreaker(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void RetryDeferredRoundProgress(", StringComparison.Ordinal),
-            "relay and budget orchestration must live in the lifecycle rules");
+            && progressSource.Contains("internal static void RetryDeferredRoundProgress(", StringComparison.Ordinal),
+            "relay and budget orchestration must live in the lifecycle rules or their owning Application");
         Test.True(!behaviorSource.Contains("private int FindPriorityThreatRelayIndex(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private void CompleteRelayPassProgressAccounting(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private void TripAutomaticRoundCircuitBreaker(", StringComparison.Ordinal)
@@ -15829,11 +15829,11 @@ RunRepairCorrectionAndJobDecisionTests();
             "the lifecycle rules must own deferred retry enqueueing");
         Test.True(rulesSource.Contains("public static void ScheduleDeferredCanonicalHistoryRetry(", StringComparison.Ordinal),
             "the lifecycle rules must own deferred retry scheduling");
-        Test.True(rulesSource.Contains("public static void RetryDeferredCanonicalHistoryEntries(", StringComparison.Ordinal),
-            "the lifecycle rules must own deferred retry processing");
+        Test.True(historyCaptureSource.Contains("internal static void RetryDeferredCanonicalHistoryEntries(", StringComparison.Ordinal),
+            "the history-capture Application must own deferred retry processing");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ScheduleDeferredCanonicalHistoryRetry(", StringComparison.Ordinal),
             "the host must route deferred retry scheduling through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RetryDeferredCanonicalHistoryEntries(", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyHistoryCaptureApplication.RetryDeferredCanonicalHistoryEntries(", StringComparison.Ordinal),
             "the host must route deferred retry processing through the lifecycle rules");
         Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.CanonicalDeltaContainsSourceKey(sourceKeys, ", StringComparison.Ordinal),
             "the canonical history rules must route delta source-key lookup through the lifecycle rules");
@@ -16481,7 +16481,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("EnsureActiveRound(initiator, target, playerInsertion)", StringComparison.Ordinal)
             && behaviorSource.Contains("CanExternalDiplomacyFactJoinRound(candidate, initiator, target)", StringComparison.Ordinal),
             "the host must keep Kingdom resolution, enqueue, and fact construction as adapter ports");
-        Test.True(rulesSource.Contains("Take(8)", StringComparison.Ordinal)
+        Test.True(progressSource.Contains("Take(8)", StringComparison.Ordinal)
             && progressSource.Contains("storage.RelayArrivals.Remove(arrival)", StringComparison.Ordinal)
             && progressSource.Contains("WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn", StringComparison.Ordinal)
             && progressSource.Contains("enqueueRelayTurn?.Invoke(arrival, source, round, null)", StringComparison.Ordinal)
