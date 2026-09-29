@@ -14405,11 +14405,12 @@ RunRepairCorrectionAndJobDecisionTests();
             "Refactor", "Persistence", "WorldDiplomacyStorageMigration.cs"));
         string canonicalHistoryRulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
+        string normalizationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"));
         Test.True(!storageMigrationSource.Contains("TaleWorlds", StringComparison.Ordinal)
             && !storageMigrationSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "storage migration must stay free of TaleWorlds and host references");
-        Test.True(behaviorSource.Contains("WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyStorageMigration.MigrateAutonomousDecisionArchitectureIfNeeded(", StringComparison.Ordinal),
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.MigrateAutonomousDecisionArchitectureIfNeeded(", StringComparison.Ordinal),
             "host must delegate prompt-contract and autonomous-architecture migrations to persistence");
         string validationSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyGenerationValidationRules.cs"));
@@ -14424,11 +14425,11 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!threatMigrationSource.Contains("TaleWorlds", StringComparison.Ordinal)
             && !threatMigrationSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "threat storage migration must stay free of TaleWorlds and host references");
-        Test.True(behaviorSource.Contains("WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(", StringComparison.Ordinal)
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(", StringComparison.Ordinal)
             && threatMigrationSource.Contains("MigrateDiplomaticThreatsToNextDeclarationRules(storage, currentDay, resolveDocument, log);", StringComparison.Ordinal)
             && threatMigrationSource.Contains("MigrateThreatComplianceConsequencesV3(storage);", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion", StringComparison.Ordinal),
-            "the host must route threat storage migration through the persistence migrator");
+            && normalizationApplicationSource.Contains("source.ValidateThreatWorldEligibility", StringComparison.Ordinal),
+            "the normalization Application must route threat storage migration through the persistence migrator");
         Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad", StringComparison.Ordinal),
             "the round Application must route after-load reconcile through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
@@ -14508,7 +14509,6 @@ RunRepairCorrectionAndJobDecisionTests();
         string generationTaskSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs"));
         string jobPreparationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs"));
         string dispatchSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
-        string normalizationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"));
         string migrationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCanonicalHistoryMigrationApplication.cs"));
         string roundCompressionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs"));
         Test.True(exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny", StringComparison.Ordinal),
@@ -15920,7 +15920,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "canonical token accounting must live in the lifecycle rules");
         Test.True(storageMigrationSource.Contains("MigratePolicyCountdownHistory(history, storage.Jobs,", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyStorageMigration.BackfillCanonicalResponseLinksV2(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(", StringComparison.Ordinal)
             && normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(", StringComparison.Ordinal),
             "the host must route canonical-history maintenance through extracted ports");
         Test.True(!storageMigrationSource.Contains("TaleWorlds", StringComparison.Ordinal)

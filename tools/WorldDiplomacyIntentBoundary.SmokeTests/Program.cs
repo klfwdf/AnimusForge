@@ -4460,8 +4460,8 @@ internal static class Program
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         if (endMarker == "private void MigratePolicyCountdownHistory(") endMarker = "private bool AppendCanonicalHistoryEntry(";
         if (endMarker == "private List<WorldDiplomacyCanonicalProtectedFact> BuildCanonicalProtectedFactsThrough(") endMarker = "private string BuildCanonicalHistoryBlock(";
-        if (endMarker == "private void MigrateDiplomaticThreatsToNextDeclarationRules(") endMarker = "private void NormalizeDiplomaticThreats(";
-        if (endMarker == "private void MigrateDiplomaticThreatComplianceConsequencesV3(") endMarker = "private void NormalizeDiplomaticThreats(";
+        if (endMarker == "private void MigrateDiplomaticThreatsToNextDeclarationRules(") endMarker = "private string ValidateOpenThreatWorldEligibility(";
+        if (endMarker == "private void MigrateDiplomaticThreatComplianceConsequencesV3(") endMarker = "private string ValidateOpenThreatWorldEligibility(";
         if (endMarker == "private int ApplyInternationalReputationDelta(") endMarker = "private void SettleInternationalReputationForDocument(";
         if (endMarker == "private static Settlement ResolveMentionedSettlement(") endMarker = "private static string BuildBilateralState(";
         if (endMarker == "private void CompleteActiveExchange(") endMarker = "private void CompleteExchange(";

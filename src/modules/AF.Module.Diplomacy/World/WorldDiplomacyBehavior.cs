@@ -3905,11 +3905,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		return result;
 	}
-	private void MigrateCanonicalHistoryIfNeeded()
-	{
-		var source = new CanonicalHistoryMigrationSource(this);
-		WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(_storage, ref source);
-	}
 	private void BackfillCanonicalResponseLinksV2()
 	{
 		WorldDiplomacyStorageMigration.BackfillCanonicalResponseLinksV2(_storage,
@@ -3919,28 +3914,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				targets, document.Intent, document.Commitment, document.Body,
 				verified: true, respondingToOfferDocumentId: document.RespondingToOfferDocumentId));
 	}
-	private void MigrateDiplomacyPromptContractIfNeeded()
-	{
-		if (_storage == null) return;
-		WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(
-			_storage, DiplomacyPromptContractVersion,
-			Campaign.Current != null && Kingdom.All.Any(),
-			TryRebuildPendingWorldDiplomacyJob, CompleteExchange,
-			() => _lastLlmCacheAffinityKey = "", Log);
-	}
 		private bool TryRebuildPendingWorldDiplomacyJob(WorldDiplomacyJob job)
     {
         return WorldDiplomacyJobPreparationApplication.Rebuild(new JobPreparationPort(this), job);
     }
-	private void MigrateAutonomousDecisionArchitectureIfNeeded()
-	{
-		if (_storage == null) return;
-		WorldDiplomacyStorageMigration.MigrateAutonomousDecisionArchitectureIfNeeded(
-			_storage, DecisionArchitectureVersion, RelaySchemaVersion, CurrentDay(),
-			Campaign.Current != null && Kingdom.All.Any(),
-			ResolveDocument, ResolveEligibleDiplomacyKingdomId, IsAtWarByKingdomIds,
-			CloseActiveRound, Log);
-	}
 	private string ResolveEligibleDiplomacyKingdomId(string kingdomId)
 	{
 		Kingdom kingdom = ResolveKingdom(kingdomId);
@@ -3953,19 +3930,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Kingdom issuer = ResolveKingdom(issuerKingdomId);
 		Kingdom target = ResolveKingdom(targetKingdomId);
 		return issuer != null && target != null && FactionManager.IsAtWarAgainstFaction(issuer, target);
-	}
-	private void NormalizeDiplomaticThreats(bool allowWorldValidation)
-	{
-		Func<WorldDiplomacyThreat, string> validateWorld = null;
-		if (allowWorldValidation && Campaign.Current != null)
-		{
-			IAllianceCampaignBehavior alliance = Campaign.Current.GetCampaignBehavior<IAllianceCampaignBehavior>();
-			validateWorld = threat => ValidateOpenThreatWorldEligibility(threat, alliance);
-		}
-		WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(
-			_storage, validateWorld, CurrentDay(), ResolveDocument,
-			() => NewId("diplomacy_threat"),
-			DuelSettings.WorldDiplomacyThreatComplianceIssuerRelationRewardMax, Log);
 	}
 	private string ValidateOpenThreatWorldEligibility(WorldDiplomacyThreat threat, IAllianceCampaignBehavior alliance)
 	{
@@ -4055,15 +4019,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(
 			round, _storage?.OfferCooldowns, _offerCooldownByKey, NormalizeOfferCooldownStorage, Log);
 	}
-	private void MigrateResultSettlementStateIfNeeded()
-	{
-		WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(
-			_storage, ResultSettlementStateSchemaVersion, BeginOrExtendRoundResultSettlement, Log);
-	}
 	private void NormalizeStorage(bool allowWorldValidation = false)
 	{
 		var source = new StorageNormalizationSource(this);
-		WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source);
+		var migration = new CanonicalHistoryMigrationSource(this);
+		WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source, ref migration);
 	}
 	private void TrimRecentBattleFacts()
 	{

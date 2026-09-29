@@ -39,7 +39,10 @@ public sealed partial class WorldDiplomacyBehavior
     private readonly struct StorageNormalizationSource : IWorldDiplomacyStorageNormalizationSource
     {
         private readonly WorldDiplomacyBehavior _owner;
-        internal StorageNormalizationSource(WorldDiplomacyBehavior owner) { _owner = owner; }
+        internal StorageNormalizationSource(WorldDiplomacyBehavior owner)
+        {
+            _owner = owner;
+        }
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
         public int CivilianSpreadDays => GetCivilianSpreadDays();
         public int CourtMaxDeliveryDays => GetCourtMaxDeliveryDays();
@@ -61,11 +64,23 @@ public sealed partial class WorldDiplomacyBehavior
         public bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document) => _owner.HasCompleteLegacyPropagationCoverage(document);
         public void PruneInvalidOffers(WorldDiplomacyRound round) => _owner.PruneInvalidOffers(round);
         public void NormalizeOfferCooldownStorage() => _owner.NormalizeOfferCooldownStorage();
-        public void NormalizeDiplomaticThreats(bool allowWorldValidation) => _owner.NormalizeDiplomaticThreats(allowWorldValidation);
-        public void MigrateAutonomousDecisionArchitecture() => _owner.MigrateAutonomousDecisionArchitectureIfNeeded();
-        public void MigrateCanonicalHistory() => _owner.MigrateCanonicalHistoryIfNeeded();
-        public void MigrateResultSettlementState() => _owner.MigrateResultSettlementStateIfNeeded();
-        public void MigrateDiplomacyPromptContract() => _owner.MigrateDiplomacyPromptContractIfNeeded();
+        public bool HasCampaignWorld => Campaign.Current != null && Kingdom.All.Any();
+        public int DiplomacyPromptContractVersion => WorldDiplomacyBehavior.DiplomacyPromptContractVersion;
+        public int ResultSettlementStateSchemaVersion => WorldDiplomacyBehavior.ResultSettlementStateSchemaVersion;
+        public string ValidateThreatWorldEligibility(WorldDiplomacyThreat threat) =>
+            _owner.ValidateOpenThreatWorldEligibility(threat,
+                Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>());
+        public string NewThreatId() => WorldDiplomacyBehavior.NewId("diplomacy_threat");
+        public int ThreatComplianceIssuerRewardMax => DuelSettings.WorldDiplomacyThreatComplianceIssuerRelationRewardMax;
+        public WorldDiplomacyDocument ResolveDocument(string documentId) => _owner.ResolveDocument(documentId);
+        public string ResolveEligibleKingdomId(string kingdomId) => _owner.ResolveEligibleDiplomacyKingdomId(kingdomId);
+        public bool IsAtWarByKingdomIds(string firstKingdomId, string secondKingdomId) => _owner.IsAtWarByKingdomIds(firstKingdomId, secondKingdomId);
+        public void CloseActiveRound(string reason) => _owner.CloseActiveRound(reason);
+        public bool RebuildPendingJob(WorldDiplomacyJob job) => _owner.TryRebuildPendingWorldDiplomacyJob(job);
+        public void CompleteExchange(string exchangeId, string reason) => _owner.CompleteExchange(exchangeId, reason);
+        public void ClearLlmCacheAffinityKey() => _owner._lastLlmCacheAffinityKey = "";
+        public void BeginOrExtendResultSettlement(WorldDiplomacyRound round, WorldDiplomacyDocument document, string closeReason, string roundStatus) =>
+            _owner.BeginOrExtendRoundResultSettlement(round, document, closeReason, roundStatus);
         public WorldDiplomacyRound ResolveRound(string roundId) => _owner.ResolveRound(roundId);
         public void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents) => _owner.CommitLocalRoundSummary(round, documents);
         public void UpgradeRoundSummaryToStructuredArchive(WorldDiplomacyRoundSummary summary) => _owner.UpgradeRoundSummaryToStructuredArchive(summary);

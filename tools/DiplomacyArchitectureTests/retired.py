@@ -25,7 +25,12 @@ RETIRED = [
  'private static bool HasProposalTakenEffect(',
  'private bool EnsureRequestFitsInputBudget(',
  'private void AppendPublishedWorldWeeklyReportArtifact(',
- 'private sealed class CanonicalHistoryMigrationWorkItem'
+ 'private sealed class CanonicalHistoryMigrationWorkItem',
+ 'private void MigrateCanonicalHistoryIfNeeded(',
+ 'private void MigrateDiplomacyPromptContractIfNeeded(',
+ 'private void MigrateAutonomousDecisionArchitectureIfNeeded(',
+ 'private void NormalizeDiplomaticThreats(',
+ 'private void MigrateResultSettlementStateIfNeeded('
 ]
 def remove_retired(source, declaration):
  for signature in RETIRED:

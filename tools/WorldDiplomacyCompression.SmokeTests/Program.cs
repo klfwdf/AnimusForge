@@ -537,8 +537,9 @@ internal static class Program
             storageMigration,
             "public static void MigrateDiplomacyPromptContractIfNeeded(",
             "public static void MigrateAutonomousDecisionArchitectureIfNeeded(");
-        Test.True(behavior.Contains("WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(", StringComparison.Ordinal),
-            "host must delegate prompt-contract migration to persistence");
+        Test.True(ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyStorageNormalizationApplication.cs"))
+                .Contains("WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(", StringComparison.Ordinal),
+            "the normalization Application must delegate prompt-contract migration to persistence");
         Test.True(migration.Contains(
                 "storage.PromptContractVersion >= targetVersion",
                 StringComparison.Ordinal),
