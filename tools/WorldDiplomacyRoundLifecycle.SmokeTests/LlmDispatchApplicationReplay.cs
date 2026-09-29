@@ -36,7 +36,11 @@ internal static class LlmDispatchApplicationReplay
         public bool TryConsumeRequestBudget(bool consume) { s.Events.Add(consume ? "consume" : "budget?"); return s.Budget; }
         public void CaptureCanonicalHistory(WorldDiplomacyJob job) => s.Events.Add("history");
         public JArray BuildMessageArray(WorldDiplomacyJob job) { s.Events.Add("messages"); return new JArray(); }
-        public bool EnsureFitsInputBudget(WorldDiplomacyJob job, JArray messages) { s.Events.Add("fits"); return s.Fits; }
+        public long InputTokenLimit => s.Fits ? long.MaxValue : -1L;
+        public int HistoryCompressionTargetTokens => 200;
+        public int EstimateTokens(string text) => 0;
+        public string BuildHistoryBlock(long throughSequence) => "";
+        public void ScheduleTokenCompression() => s.Events.Add("compress");
         public void CommitFailedJob(WorldDiplomacyJob job, string error) => s.Events.Add("failed:" + error);
         public void RemoveJob(string jobId) => s.Storage.Jobs.RemoveAll(j => j.JobId == jobId);
         public void Log(string message) => s.Events.Add("log:" + message);
@@ -73,7 +77,7 @@ internal static class LlmDispatchApplicationReplay
         foreach (string kind in new[] { "analyze", "compress" })
         {
             var s = New(kind); Run(s);
-            Test.True(s.Events.SequenceEqual(new[] { "budget?", "messages", "fits", "consume", "claim", "running", "affinity", "shape", "start" })
+            Test.True(s.Events.SequenceEqual(new[] { "budget?", "messages", "consume", "claim", "running", "affinity", "shape", "start" })
                 && s.Request.JobId == "j" && s.Request.RuntimeGeneration == 7
                 && s.Request.MaxTokens == 1000 && s.Request.TimeoutMilliseconds == (kind == "compress" ? 200000 : 90000),
                 "launch keeps budget/claim/cache/start order and timeout selection: " + string.Join(",", s.Events));

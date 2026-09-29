@@ -73,7 +73,7 @@ Check(WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(11, 10, 100, 200), 
 string root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../.."));
 string behavior = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
 string jobRuntime = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
-int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
+int jobRuntimeInsertion = behavior.IndexOf("private void CommitFailedJob(WorldDiplomacyJob job, string error)", StringComparison.Ordinal);
 Check(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
 behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
 string context = File.ReadAllText(Path.Combine(root, "PolicySystem/Context/WorldDiplomacyPolicyContext.cs"));
@@ -88,12 +88,13 @@ string canonicalHistoryRules = File.ReadAllText(Path.Combine(root, "Refactor/Dom
 Check(canonicalHistoryRules.Contains("WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature("), "consumer must delegate policy signatures to the tested rules");
 Check(canonicalHistoryRules.Contains("WorldDiplomacyPolicyHistoryRules.NextEventRevision("), "consumer must use tested durable revision logic");
 string lifecycleRules = File.ReadAllText(Path.Combine(root, "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
-int budgetGuard = lifecycleRules.IndexOf("ensureFitsInputBudget?.Invoke(job, requestMessages)", StringComparison.Ordinal);
-Check(budgetGuard >= 0 && budgetGuard < lifecycleRules.IndexOf("job.IsRunning = true;", budgetGuard, StringComparison.Ordinal), "input budget must be checked before network dispatch");
+string llmDispatch = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
+int budgetGuard = llmDispatch.IndexOf("EnsureRequestFitsInputBudget(job, requestMessages", StringComparison.Ordinal);
+Check(budgetGuard >= 0 && budgetGuard < llmDispatch.IndexOf("job.IsRunning = true;", budgetGuard, StringComparison.Ordinal), "input budget must be checked before network dispatch");
 Check(behavior.Contains("CaptureCanonicalHistoryForJob(job, syncSources: false, throughSequence: seq)")
     && canonicalHistoryRules.Contains("captureHistory(job, throughSequence);"), "compression request must match its frozen commit cutoff");
 Check(canonicalHistoryRules.Contains("pending.AwaitingHistoryCompression = false;"), "successful compression must release waiting generation instead of scheduling an endless compaction loop");
-Check(lifecycleRules.Contains("tryConsumeRequestBudget?.Invoke(false)") && File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs")).Contains("_owner.TryConsumeDiplomacyLlmRequestBudget(consume)"), "exhausted daily budgets must exit before assembling large prompts");
+Check(llmDispatch.Contains("tryConsumeRequestBudget?.Invoke(false)") && File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs")).Contains("_owner.TryConsumeDiplomacyLlmRequestBudget(consume)"), "exhausted daily budgets must exit before assembling large prompts");
 
 if (args.Length > 0)
 {
