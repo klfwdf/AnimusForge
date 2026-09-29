@@ -1,6 +1,6 @@
 # 当前交接：J15 按用户决定结项，J16 离线关闭，J17-A 盘点继续（2026-09-29）
 
-- **J17 当前接续**：[J17 执行计划](docs/plans/j17-responsibility-closeout-plan.md)；本工作区 A0 双 API Compile/语法清单各 1,123 文件、49,509/49,508 声明；A1 已复核 R04/R02/R03/R01 关键路径并更正旧“纯净化/纯状态变换/仅 DeathLine 读游戏”结论，A2 已定向复核 `Refactor/` 及四功能 Tick 接缝，详见[主台账当前段](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)与[范围图 E14–E20](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。`OwnerJsonStorageCodec` 8 项、Memory RunOwner 47 项、修复夹具编译依赖后的 captured 116 项通过；别名语义两个变异按具名断言失败。旧 source-parity 因搬迁 hash 与当前源码差异未通过。A1/A2 逐符号语义及动态消费者仍未闭，B 未启动；没有产品构建、游戏或旧档验收。
+- **J17 当前接续**：[J17 执行计划](docs/plans/j17-responsibility-closeout-plan.md)；本工作区 A0 双 API Compile/语法清单各 1,123 文件、49,509/49,508 声明；A1 已复核 R04/R02/R03/R01 关键路径并更正旧“纯净化/纯状态变换/仅 DeathLine 读游戏”结论，A2 已定向复核 `Refactor/` 及四功能 Tick 接缝，详见[主台账当前段](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)与[范围图 E14–E20](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。`OwnerJsonStorageCodec` 8 项、Memory RunOwner 47 项、修复夹具编译依赖后的 captured 116 项、terminal 85 场景通过；别名语义两个变异按具名断言失败。旧 source-parity 因搬迁 hash 与当前源码差异未通过。A1/A2 逐符号语义及动态消费者仍未闭，B 未启动；没有产品构建、游戏或旧档验收。
 
 - **交付**：J16 15 个提交与 J17-A 盘点文档通过普通 merge 整合；目标分支 `codex/af-main-refactor-continuation-20260831` 已成功快进推送至 `3f7b9018`（GitHub 回执：`ada9894a..3f7b9018`，未强推）。
 - **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`；实机/旧档、F4-A 来源与视觉遗留继续保留，发布 HOLD 不变。
