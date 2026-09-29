@@ -455,7 +455,7 @@ function Invoke-DotNetBuild {
 }
 
 if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
-    $ProjectRoot = Join-Path $PSScriptRoot ".."
+    $ProjectRoot = Join-Path $PSScriptRoot "..\.."
 }
 $projectRootFull = Get-FullPathSafe -Path $ProjectRoot
 $implementationProject = Join-Path $projectRootFull $ImplementationProjectName

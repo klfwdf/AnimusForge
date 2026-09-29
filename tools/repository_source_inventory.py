@@ -130,7 +130,7 @@ def classify_path(path: str) -> str | None:
         return "tests" if len(parts) > 2 and parts[1] == "fixtures" else "docs"
     if top in {".agents", ".claude"}:
         return "docs"
-    if top == "一键编译覆盖推送":
+    if top in {"一键编译覆盖推送", "scripts"}:
         return "scripts"
     if top == "PNG":
         return "design"
