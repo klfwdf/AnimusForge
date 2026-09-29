@@ -727,8 +727,9 @@ internal static class Program
             "ordinary relay scheduling must immediately delegate an active result-settlement round");
 
         string arrivals = ExtractMethod(
-            lifecycleRules,
-            "public static void ProcessDueRelayArrivals(");
+            File.ReadAllText(FindRepositoryFile(Path.Combine(
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")), Encoding.UTF8),
+            "internal static void ProcessDueRelayArrivals(");
         string arrivalsAdapter = ExtractSection(
             source,
             "private void ProcessRelayArrivals(",
@@ -743,7 +744,10 @@ internal static class Program
             source,
             "private void EnqueueGenerationJob(",
             "private bool EnsureGenerationJobHasKingdomStrategicProfile(");
-        enqueue += ExtractMethod(lifecycleRules, "public static void PrepareGenerationJob(");
+        enqueue += ExtractMethod(
+            File.ReadAllText(FindRepositoryFile(Path.Combine(
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyGenerationTaskApplication.cs")), Encoding.UTF8),
+            "internal static void PrepareGenerationJob(");
         Test.True(enqueue.Contains("string resultSettlementSlotId = null", StringComparison.Ordinal)
                   && enqueue.Contains("ResultSettlementSlotId = resultSettlementSlotId", StringComparison.Ordinal),
             "generation jobs must persist their settlement slot id");
@@ -793,8 +797,11 @@ internal static class Program
         Test.True(repairJobBuild.Contains("ResultSettlementSlotId = source.ResultSettlementSlotId", StringComparison.Ordinal),
             "semantic/format repair must retain the original settlement slot id");
         string abandon = ExtractMethod(
-            lifecycleRules,
-            "public static void AbandonRejectedGeneration(");
+            File.ReadAllText(
+                FindRepositoryFile(Path.Combine(
+                    "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyGenerationTaskApplication.cs")),
+                Encoding.UTF8),
+            "internal static void AbandonRejectedGeneration(");
         Test.True(abandon.Contains("SkipResultSettlementSlot(round, job.ResultSettlementSlotId", StringComparison.Ordinal)
                   && abandon.Contains("scheduleResultSettlement?.Invoke(round)", StringComparison.Ordinal),
             "a final repair failure must skip rather than consume or strand its settlement slot");
@@ -830,8 +837,11 @@ internal static class Program
             "a war target may answer once but cannot re-declare war on the existing aggressor");
 
         string lifecycle = ExtractMethod(
-            intentRules,
-            "public static void ProcessRoundLifecycle(");
+            File.ReadAllText(
+                FindRepositoryFile(Path.Combine(
+                    "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs")),
+                Encoding.UTF8),
+            "internal static void ProcessRoundLifecycle(");
         Test.True(lifecycle.Contains("WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired(", StringComparison.Ordinal)
                   && lifecycle.Contains("currentSlot.Status", StringComparison.Ordinal)
                   && lifecycle.Contains("round.ResultSettlementPlayerWaitingSinceDay", StringComparison.Ordinal)
