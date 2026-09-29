@@ -49,6 +49,13 @@ internal static class Program
             Console.WriteLine($"R1 round plan replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--r1-generated")
+        {
+            RunGeneratedDocumentCommitDecisionTests();
+            VerifyGeneratedCompletionOwnership();
+            Console.WriteLine($"R1 generated completion replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -245,6 +252,23 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundPlan(", StringComparison.Ordinal)
             && !rules.Contains("public static void CommitRoundPlan(", StringComparison.Ordinal),
             "real plan caller enters Application route owner; Domain and Behavior contain no second plan algorithm");
+    }
+
+    private static void VerifyGeneratedCompletionOwnership()
+    {
+        string app = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"));
+        string behavior = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string rules = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        Test.True(app.Contains("stale result-settlement generation discarded", StringComparison.Ordinal)
+            && app.Contains("processAnalyzedDocument?.Invoke(document", StringComparison.Ordinal)
+            && app.Contains("exchange.State = \"analyzing_response\"", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyGeneratedCompletionApplication.Commit(", StringComparison.Ordinal)
+            && !rules.Contains("public static void CommitGeneratedDocument(", StringComparison.Ordinal)
+            && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitGeneratedDocument(", StringComparison.Ordinal),
+            "real generated completion enters Application for admission, exchange state and analysis dispatch");
     }
 
     private static WorldDiplomacyRoundReconcileInput BaseInput()
@@ -12504,7 +12528,7 @@ RunRepairCorrectionAndJobDecisionTests();
         var analyzed = new List<WorldDiplomacyDocument>();
         int scheduled = 0, pruned = 0;
         bool legalityFails = false, envelopeFails = false, authorBlocked = false;
-        Action<WorldDiplomacyJob, string> commit = (job, raw) => WorldDiplomacyRoundLifecycleRules.CommitGeneratedDocument(
+        Action<WorldDiplomacyJob, string> commit = (job, raw) => WorldDiplomacyGeneratedCompletionApplication.Commit(
             job, raw, storage,
             id => string.Equals(id, "r1", StringComparison.Ordinal) ? round : null,
             id => string.Equals(id, "src1", StringComparison.Ordinal) ? sourceDoc : null,
@@ -16226,19 +16250,22 @@ RunRepairCorrectionAndJobDecisionTests();
             "failed-job kind routing and compression backoff must live inside Application");
 
         // DPL-060DE: generated-document commit orchestration
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitGeneratedDocument(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void CommitGeneratedDocument(", StringComparison.Ordinal),
-            "the host must route generated-document commits through the lifecycle rules");
+        string generatedCompletionSource = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"));
+        Test.True(behaviorSource.Contains("WorldDiplomacyGeneratedCompletionApplication.Commit(", StringComparison.Ordinal)
+            && generatedCompletionSource.Contains("internal static void Commit(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void CommitGeneratedDocument(", StringComparison.Ordinal),
+            "the host must route generated-document commits through Application");
         Test.True(!behaviorSource.Contains("empty_public_document", StringComparison.Ordinal)
-            && rulesSource.Contains("empty_public_document", StringComparison.Ordinal)
+            && generatedCompletionSource.Contains("empty_public_document", StringComparison.Ordinal)
             && !behaviorSource.Contains("stale result-settlement generation discarded", StringComparison.Ordinal)
-            && rulesSource.Contains("stale result-settlement generation discarded", StringComparison.Ordinal)
+            && generatedCompletionSource.Contains("stale result-settlement generation discarded", StringComparison.Ordinal)
             && !behaviorSource.Contains("generated declaration discarded at commit", StringComparison.Ordinal)
-            && rulesSource.Contains("generated declaration discarded at commit", StringComparison.Ordinal)
+            && generatedCompletionSource.Contains("generated declaration discarded at commit", StringComparison.Ordinal)
             && !behaviorSource.Contains("\"analyzing_response\"", StringComparison.Ordinal)
-            && rulesSource.Contains("\"analyzing_response\"", StringComparison.Ordinal)
-            && rulesSource.Contains("IsAutonomousNoActionDeclaration = false", StringComparison.Ordinal),
-            "generated-document rejection, exchange bookkeeping, and round metadata must live inside the lifecycle rules");
+            && generatedCompletionSource.Contains("\"analyzing_response\"", StringComparison.Ordinal)
+            && generatedCompletionSource.Contains("IsAutonomousNoActionDeclaration = false", StringComparison.Ordinal),
+            "generated-document rejection, exchange bookkeeping, and round metadata must live inside Application");
         Test.True(behaviorSource.Contains("(j, a, t, reason) => AbandonRejectedGeneration(", StringComparison.Ordinal)
             && behaviorSource.Contains("ScheduleNextResultSettlementTurn,", StringComparison.Ordinal)
             && behaviorSource.Contains("AddDocument,", StringComparison.Ordinal)

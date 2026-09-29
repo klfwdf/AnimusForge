@@ -760,8 +760,8 @@ internal static class Program
             "generation preflight failure or no-action must skip the owned slot and continue draining");
 
         string generatedCommit = ExtractMethod(
-            lifecycleRules,
-            "public static void CommitGeneratedDocument(");
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs")),
+            "internal static void Commit(");
         Test.True(generatedCommit.Contains("document.ResultSettlementSlotId = job.ResultSettlementSlotId", StringComparison.Ordinal),
             "a validated generated document must retain the slot id until publication consumes it");
 
