@@ -43,7 +43,7 @@ python run_sealing.py --mutate ignore-trigger-structure
 - sealing：当前76/0；`--source-baseline 40b92e67` 同76例61绿15红；新反例`unbudgeted-line-normalize`（inner-cost红）与`ignore-line-source`（empty-grows/kept-empties/line-change）均BUILD_PASS后EXIT=1。
 - 同步`SanitizeDailyMemoryDraftEntry`与cooperative路径共用`BindDailyMemoryDraftWeeklyTrigger`/`SanitizeDailyMemoryDraftLine`；未完成draft的line/trigger列表保持私有，列表引用/count变化失效重封。
 - `test_source_parity.py` 12/0，含原Where+Select体与bind体精确还原。代码图77锚点绑定生产`4d6994bc`。
-- 本轮完整交接：[深line/trigger HANDOFF](../../docs/handoffs/2026-09-14-b1-deep-line-trigger-handoff.md)。首次capture/copy、全owner绑定、Apply与LIVE/SAVE仍未完成。
+- 本轮完整交接：[深line/trigger HANDOFF](../../../../docs/handoffs/2026-09-14-b1-deep-line-trigger-handoff.md)。首次capture/copy、全owner绑定、Apply与LIVE/SAVE仍未完成。
 
 ```powershell
 $env:DOTNET_EXE = 'C:\Program Files\dotnet\dotnet.exe'
@@ -64,7 +64,7 @@ C:\Users\klfwdf\AppData\Local\Programs\Python\Python312\python.exe -X utf8 -B te
 - 原 `same-tick-multiple-callers` 明确更名为 `standalone-multiple-callers-compatibility`：它直接调用私有helper，是原独立调用语义，不是新的实际Campaign周期。新限额证明在 `campaign-shared-*`。
 - 预算运行时组件及接缝单独编入测试；sealing/business runner采用显式Compile输入，旧生成文件不参与当次编译。
 - source inverse当前为56声明、2删除、2新增精确跨度、4个完整组件锁；9个防误放测试。一次更新hash前必须具备本候选实际证据，不能仅依据方法存在。
-- 本轮完整交接：[共享预算HANDOFF](../../docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md)。B1深来源/原子尾步与LIVE/SAVE仍未完成。
+- 本轮完整交接：[共享预算HANDOFF](../../../../docs/handoffs/2026-09-14-b1-campaign-budget-handoff.md)。B1深来源/原子尾步与LIVE/SAVE仍未完成。
 
 ```powershell
 $env:DOTNET_EXE = 'G:\AFMOD\.dotnet-sdk\dotnet.exe'
@@ -84,7 +84,7 @@ G:\Python310\python.exe -X utf8 -B tests/modules/AF.Module.Memory/MemorySummaryM
 - `run_materials.py` 当前 23/0；`--source-baseline c21523f8` 23/0；`--source-baseline 62abfdb3` 8 个有效旧版红例；七个故障注入仍可检出。只编译本次 manifest 的显式源文件，复用输出目录不会混入旧 Index.cs。
 - `test_source_parity.py` 8 个测试（含 5 个依赖变体），检验完整基线恢复、正文/新增字段漂移、重复字段、未列源改动、恢复已删代码、组件/测试输入篡改和旧 partial 回流。
 - 原 `unreviewedWip` 保存在 `previousUnreviewedWip`，是收到的历史清单；不得把历史的“未审”段落当成本候选状态。当前接受以精确声明/文件 hash、有效对照与最终交接为准，不只把 acceptedInverse 改为 true。
-- 正常/故障验证层级与回滚见[本轮 HANDOFF](../../docs/handoffs/2026-09-14-b1-index-owner-integration-handoff.md)。原旧版结果保留于 Git，不修改为当时已通过。
+- 正常/故障验证层级与回滚见[本轮 HANDOFF](../../../../docs/handoffs/2026-09-14-b1-index-owner-integration-handoff.md)。原旧版结果保留于 Git，不修改为当时已通过。
 
 ```powershell
 $env:DOTNET_EXE = 'G:\AFMOD\.dotnet-sdk\dotnet.exe'
