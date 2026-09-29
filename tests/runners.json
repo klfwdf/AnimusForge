@@ -16,7 +16,7 @@
    "expect": "PREEXISTING_FAIL"
   },
   "tests/AF.GameAdapter.Bannerlord/CampaignCompositionTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_commit.py": {
    "expect": "PREEXISTING_FAIL"
