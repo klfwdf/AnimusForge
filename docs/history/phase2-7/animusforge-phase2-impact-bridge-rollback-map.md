@@ -3,7 +3,7 @@
 - 状态：只读设计完成；未移动生产源码；未接入运行时
 - 日期：2026-08-30
 - owner：Host/Composition（与各目标域 owner 共同维护）
-- 依据：`docs/animusforge-owner-matrix.md`、`docs/animusforge-phase2-root-llm-owner-slice.md`、`docs/animusforge-phase2-submodule-registration-catalog.md`、`docs/animusforge-phase2-registry-dto-design.md`
+- 依据：`docs/animusforge-owner-matrix.md`、`docs/history/phase2-7/animusforge-phase2-root-llm-owner-slice.md`、`docs/history/phase2-7/animusforge-phase2-submodule-registration-catalog.md`、`docs/history/phase2-7/animusforge-phase2-registry-dto-design.md`
 - 目的：在任何生产 C# 抽取之前，固定每个切片的影响面、跨模块协作边界、非目标和可逆入口
 
 > 本文是阶段 2 的设计地图，不是迁移授权。当前 `SubModule.cs`、旧 facade、注册顺序、存档类型、SyncData key、三渠道链路和单一模块发布结构保持不变。

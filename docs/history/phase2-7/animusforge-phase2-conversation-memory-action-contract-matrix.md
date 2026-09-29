@@ -3,7 +3,7 @@
 - 状态：纯 contract 设计完成；未实现 contract 类型；未运行测试
 - 日期：2026-08-29
 - owner：Conversation/AI、Memory/Persistence 与各动作域 owner 共同维护
-- 依据：`docs/animusforge-phase2-root-llm-owner-slice.md`、`docs/animusforge-phase2-impact-bridge-rollback-map.md`、`docs/free_conversation_scene_shout_alignment.md`
+- 依据：`docs/history/phase2-7/animusforge-phase2-root-llm-owner-slice.md`、`docs/history/phase2-7/animusforge-phase2-impact-bridge-rollback-map.md`、`docs/free_conversation_scene_shout_alignment.md`
 
 > 本文只定义逐文件影响、DTO 方向、纯 fixture 和验证矩阵。它不授权移动 `MyBehavior.cs`、`ShoutBehavior.cs` 或任何生产 C#，也不替换三渠道现有链路。
 
