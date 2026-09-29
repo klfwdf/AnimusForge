@@ -1,4 +1,6 @@
-# 当前交接：J16 离线收口完成，J17-A 盘点进行中（2026-09-29）
+# 当前交接：J15 按用户决定结项；J16 离线收口已合入，J17-A 盘点继续（2026-09-29）
+
+- **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`——离线成果保持；F5 实机/旧档、F4-A 出处文字与实机视觉转为已知遗留，发布 HOLD 继续有效。见[主台账 J15 结项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-closed-by-user-20260929)。
 
 - **整合范围**：以普通 merge 保留 J16 与 J17 两侧提交。J16 分支基于 `ada9894a`，包含 15 个提交；J17-A 为独立分支的 5 个盘点提交。J16 包含测试/工具/文档/Bootstrap 归位及两项有测试保护的 Scene 提交顺序修复；J17 新增内容限于本 HANDOFF、主计划台账和代码范围图的盘点证据，不代表 J17 产品迁移完成。
 - **J16 状态**：`J16_OFFLINE_CLOSED`，J16a/b/c/d/e 按离线范围完成。全量 runner 记录为 257 项 `PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。真实游戏、旧存档、三渠道针对新增修复的回放为 `NOT-RUN`；`_af_xihai_legacy_equipment_cleanup_v1` 旧档兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留仍见主台账，不将离线关闭扩大为全项目完成。
