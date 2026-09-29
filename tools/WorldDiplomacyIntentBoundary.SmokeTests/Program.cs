@@ -3108,6 +3108,9 @@ internal static class Program
 	{
 		string lifecycleRules = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")));
+		string publicationApplication = File.ReadAllText(
+			FindRepositoryFile(Path.Combine(
+				"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentPublicationApplication.cs")));
 		string authorization = ExtractMethod(
 			lifecycleRules,
 			"public static bool IsWarResponseNoActionAllowed(");
@@ -3203,9 +3206,9 @@ internal static class Program
 		Test.True(targetDecision > noActionMechanicsGuard && targetDecision < historyPublication,
 			"a statement remains the target kingdom's next published declaration, so absent comply_ultimatum must still record noncompliance");
         Test.True(analyzedPublication.Contains("FinalizePublishedDocumentAfterAnalysis(port, document", StringComparison.Ordinal)
-			&& ExtractMethod(lifecycleRules, "public static void FinalizePublishedDocumentAfterAnalysis(")
+			&& ExtractMethod(publicationApplication, "internal static void FinalizePublishedDocumentAfterAnalysis(")
 				.Contains("deferUnresolvedThreatAction?.Invoke(document", StringComparison.Ordinal)
-			&& ExtractMethod(lifecycleRules, "public static void FinalizePublishedDocumentAfterAnalysis(")
+			&& ExtractMethod(publicationApplication, "internal static void FinalizePublishedDocumentAfterAnalysis(")
 				.Contains("SettleDiplomaticThreatFollowThroughAfterDeclaration(", StringComparison.Ordinal),
 			"existing next-declaration threat consequences must not be bypassed by the war-response no-action exception");
 
@@ -4386,8 +4389,8 @@ internal static class Program
         }
         if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
         {
-            Test.True(source.Contains("WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal),
-                "compatibility finalization must forward to Application");
+            Test.True(!source.Contains("public static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal),
+                "the retired compatibility forwarder must not remain in the domain rules");
             return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentPublicationApplication.cs")),
                 marker.Replace("public static", "internal static"));
         }

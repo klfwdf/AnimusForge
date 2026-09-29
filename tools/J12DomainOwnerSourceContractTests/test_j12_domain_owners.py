@@ -55,7 +55,7 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         self.assertNotIn("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", runtime)
         self.assertIn("WorldDiplomacyJobRuntimeCoordinator.IsCurrentCompletion(", completion)
         self.assertIn("effects.CommitGeneratedDocument(job, resultContent)", completion)
-        self.assertIn("WorldDiplomacyCompletionApplication.Complete(", lifecycle)
+        self.assertNotIn("CommitCompletedLlmJobResult(", lifecycle)
         self.assertNotIn("commitGeneratedDocument?.Invoke(job, resultContent)", lifecycle)
         self.assertIn("WorldDiplomacyLlmDispatchApplication.Run(ref source)", runtime)
         self.assertNotIn("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", runtime)
