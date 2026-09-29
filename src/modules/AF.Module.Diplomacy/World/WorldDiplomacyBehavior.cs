@@ -1094,7 +1094,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void CommitFailedJob(WorldDiplomacyJob job, string error)
 	{
-		WorldDiplomacyRoundLifecycleRules.CommitFailedJob(
+		WorldDiplomacyFailureApplication.Commit(
 			job,
 			error,
 			_storage,

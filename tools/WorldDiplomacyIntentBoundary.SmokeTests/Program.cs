@@ -513,9 +513,9 @@ internal static class Program
             "threat registration must use the validated structured stage instead of re-reading public prose");
         string failedJob = ExtractMethod(
             File.ReadAllText(
-                FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyFailureApplication.cs")),
                 Encoding.UTF8),
-            "public static void CommitFailedJob(");
+            "internal static void Commit(");
         Test.True(failedJob.Contains("commitAnalysis?.Invoke(job, buildFallbackAnalysisJson?.Invoke(job))", StringComparison.Ordinal),
             "a published analysis fallback must enter the ordinary analysis/publication pipeline");
 

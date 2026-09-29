@@ -34,6 +34,14 @@ internal static class Program
             Console.WriteLine($"R1 round compression replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--r1-failure")
+        {
+            CompletionApplicationReplay.Run();
+            RunFailedJobCommitDecisionTests();
+            VerifyFailedJobOwnership();
+            Console.WriteLine($"R1 failure recovery replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -197,6 +205,22 @@ RunRepairCorrectionAndJobDecisionTests();
             && !rules.Contains("public static void CommitRoundCompression(", StringComparison.Ordinal)
             && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(", StringComparison.Ordinal),
             "real completion caller reaches one Application archive owner; predecessor has no second algorithm");
+    }
+
+    private static void VerifyFailedJobOwnership()
+    {
+        string app = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyFailureApplication.cs"));
+        string behavior = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string rules = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        Test.True(app.Contains("compressionRetryInitialHours << Math.Max(0", StringComparison.Ordinal)
+            && app.Contains("commitAnalysis?.Invoke(job, buildFallbackAnalysisJson?.Invoke(job))", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyFailureApplication.Commit(", StringComparison.Ordinal)
+            && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitFailedJob(", StringComparison.Ordinal)
+            && !rules.Contains("public static void CommitFailedJob(", StringComparison.Ordinal),
+            "completion and dispatch failures must enter one Application owner with no predecessor algorithm");
     }
 
     private static WorldDiplomacyRoundReconcileInput BaseInput()
@@ -12373,7 +12397,7 @@ RunRepairCorrectionAndJobDecisionTests();
         var compressed = new List<string>();
         var removed = new List<string>();
         int threatFallbackLogs = 0;
-        Action<WorldDiplomacyJob> commit = job => WorldDiplomacyRoundLifecycleRules.CommitFailedJob(
+        Action<WorldDiplomacyJob> commit = job => WorldDiplomacyFailureApplication.Commit(
             job, "boom", storage, 96, 6, () => 200,
             (j, a, t, reason) => abandons.Add(a + ">" + t + ">" + reason),
             j => "{fallback-analysis}",
@@ -16163,13 +16187,16 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("mandatoryIds", StringComparison.Ordinal)
             && rulesSource.Contains("RelayRouteKingdomIds = route", StringComparison.Ordinal),
             "relay route planning must live inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitFailedJob(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void CommitFailedJob(", StringComparison.Ordinal),
-            "the host must route failed-job commits through the lifecycle rules");
+        string failureApplicationSource = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyFailureApplication.cs"));
+        Test.True(behaviorSource.Contains("WorldDiplomacyFailureApplication.Commit(", StringComparison.Ordinal)
+            && failureApplicationSource.Contains("internal static void Commit(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void CommitFailedJob(", StringComparison.Ordinal),
+            "the host must route failed-job commits through Application");
         Test.True(!behaviorSource.Contains("autonomous_generation_failed", StringComparison.Ordinal)
-            && rulesSource.Contains("autonomous_generation_failed", StringComparison.Ordinal)
-            && rulesSource.Contains("compressionRetryInitialHours << Math.Max(0", StringComparison.Ordinal),
-            "failed-job kind routing and compression backoff must live inside the lifecycle rules");
+            && failureApplicationSource.Contains("autonomous_generation_failed", StringComparison.Ordinal)
+            && failureApplicationSource.Contains("compressionRetryInitialHours << Math.Max(0", StringComparison.Ordinal),
+            "failed-job kind routing and compression backoff must live inside Application");
 
         // DPL-060DE: generated-document commit orchestration
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitGeneratedDocument(", StringComparison.Ordinal)
