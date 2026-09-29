@@ -1625,9 +1625,9 @@ internal static class Program
 
         string generatedCommit = ExtractMethod(
             File.ReadAllText(
-                FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"),
                 Encoding.UTF8),
-            "public static void CommitGeneratedDocument(");
+            "internal static void Commit(");
         int generatedLegalityCheck = generatedCommit.IndexOf(
             "tryGetLegalityViolation(job, json, authorId, fallbackTargetId",
             StringComparison.Ordinal);
@@ -2222,9 +2222,9 @@ internal static class Program
 
         string generatedCommitPath = ExtractMethod(
             File.ReadAllText(
-                FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"),
                 Encoding.UTF8),
-            "public static void CommitGeneratedDocument(");
+            "internal static void Commit(");
         string analyzedCommitPath = ExtractMethod(
             File.ReadAllText(
                 FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
@@ -2297,9 +2297,9 @@ internal static class Program
             "generated drafts must receive exactly one bounded semantic repair attempt");
         string generatedCommit = ExtractMethod(
             File.ReadAllText(
-                FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"),
                 Encoding.UTF8),
-            "public static void CommitGeneratedDocument(");
+            "internal static void Commit(");
         Test.True(CountOccurrences(generatedCommit, "rejectDraft?.Invoke(") == 4,
             "parse, legality, sanitized-body, and second-stage envelope failures must share one draft-rejection exit");
         Test.True(!generatedCommit.Contains("EnqueueGeneratedDeclarationRepair(", StringComparison.Ordinal)
@@ -2772,9 +2772,9 @@ internal static class Program
 
         string generatedCommit = ExtractMethod(
             File.ReadAllText(
-                FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"),
                 Encoding.UTF8),
-            "public static void CommitGeneratedDocument(");
+            "internal static void Commit(");
         string missingAuthorCommit = ExtractSection(
             generatedCommit,
             "if (string.IsNullOrWhiteSpace(authorId))",
@@ -2932,9 +2932,9 @@ internal static class Program
 
 		string generatedCommit = ExtractMethod(
 			File.ReadAllText(
-			    FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+			    FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"),
 			    Encoding.UTF8),
-			"public static void CommitGeneratedDocument(");
+			"internal static void Commit(");
 		Test.True(!generatedCommit.Contains("document.IsAutonomousNoActionDeclaration = job.AllowAutonomousNoAction", StringComparison.Ordinal)
 			&& generatedCommit.Contains("tryApplySemanticEnvelope?.Invoke(", StringComparison.Ordinal),
 			"new documents must obtain their no-action stamp only from the live semantic envelope");
@@ -3138,8 +3138,8 @@ internal static class Program
 			&& warResponseSource.Contains("document.AuthorKingdomId, authorKingdomId", StringComparison.Ordinal),
 			"war-response audit must stay bound to the exact slot kingdom, readiness, and source author");
 		string generatedCommit = ExtractMethod(
-			lifecycleRules,
-			"public static void CommitGeneratedDocument(");
+			File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs")),
+			"internal static void Commit(");
 		Test.True(generatedCommit.Contains("tryApplySemanticEnvelope?.Invoke(", StringComparison.Ordinal)
 			&& generatedCommit.Contains("document.ResultSettlementSlotId = job.ResultSettlementSlotId", StringComparison.Ordinal),
 			"the generated document must carry its exact persisted slot into the secondary live authorization");

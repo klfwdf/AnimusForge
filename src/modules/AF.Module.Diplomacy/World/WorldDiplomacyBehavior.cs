@@ -1113,7 +1113,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void CommitGeneratedDocument(WorldDiplomacyJob job, string raw)
 	{
-		WorldDiplomacyRoundLifecycleRules.CommitGeneratedDocument(
+		WorldDiplomacyGeneratedCompletionApplication.Commit(
 			job,
 			raw,
 			_storage,
