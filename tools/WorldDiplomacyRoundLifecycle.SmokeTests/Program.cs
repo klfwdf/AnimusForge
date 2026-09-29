@@ -13861,7 +13861,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         Action<string, WorldDiplomacyStorage, WorldDiplomacyRound, bool, bool> notify =
             (act, store, active, joinOk, includeOk) =>
-                WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+                WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
                     act, "a", "b", "test", false, store, 40,
                     intent => true,
                     domain => cooldowns.Add(domain.ToString()),
@@ -13884,7 +13884,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         int before = created;
         WorldDiplomacyStorage s2 = new WorldDiplomacyStorage();
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "accept_trade", "a", "b", "r", false, s2, 40,
             intent => false, domain => cooldowns.Add("x"), makeDoc, n => "b",
             p => joinRound, c => true, (r, k) => true, p => "i",
@@ -13905,7 +13905,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         s3.ActiveRound = offerRound;
         WorldDiplomacyDocument captured = null;
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "accept_trade", "a", "b", "r", false, s3, 40,
             intent => true, domain => cooldowns.Add(domain.ToString()), makeDoc, n => "b",
             p => joinRound, c => true, (r, k) => true, p => "i",
@@ -13924,7 +13924,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // declare_war clears war pressure.
         WorldDiplomacyStorage s4 = new WorldDiplomacyStorage();
         s4.WarPressure.Add(new WarPressureEntry { SourceKingdomId = "a", TargetKingdomId = "b", Value = 9, IsEscalationArmed = true });
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "declare_war", "a", "b", "r", false, s4, 40,
             intent => true, domain => { }, makeDoc, n => "b",
             p => joinRound, c => true, (r, k) => true, p => "i",
@@ -13937,7 +13937,7 @@ RunRepairCorrectionAndJobDecisionTests();
         int ensuredBefore = ensured;
         WorldDiplomacyDocument outsideDoc = null;
         int handledBefore = handled;
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "cancel_trade", "a", "b", "r", false, s5, 40,
             intent => true, domain => { }, makeDoc, n => "b",
             p => { ensured++; return joinRound; }, c => true, (r, k) => true, p => "i",
@@ -13951,7 +13951,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound alienRound = new WorldDiplomacyRound { RoundId = "alien", State = "active" };
         s6.ActiveRound = alienRound;
         WorldDiplomacyDocument keptOut = null;
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "break_alliance", "a", "b", "r", false, s6, 40,
             intent => true, domain => { }, makeDoc, n => "b",
             p => joinRound, c => false, (r, k) => true, p => "i",
@@ -13969,7 +13969,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         s7.ActiveRound = pendingRound;
         WorldDiplomacyDocument dropped = null;
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "break_alliance", "a", "b", "r", false, s7, 40,
             intent => true, domain => { }, makeDoc, n => "b",
             p => joinRound, c => true, (r, k) => false, p => "i",
@@ -13988,7 +13988,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         s8.ActiveRound = mergeRound;
         WorldDiplomacyDocument merged = null;
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "break_alliance", "a", "b", "r", false, s8, 40,
             intent => true, domain => { }, makeDoc, n => "b",
             p => joinRound, c => true, (r, k) => true, p => "slot_id",
@@ -14001,7 +14001,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // Failure containment: propagation and canonical append failures stay bounded.
         WorldDiplomacyStorage s9 = new WorldDiplomacyStorage();
         int retryCount = 0, failLogs = 0;
-        WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
             "break_alliance", "a", "b", "r", false, s9, 40,
             intent => true, domain => { }, makeDoc, n => "b",
             p => joinRound, c => true, (r, k) => true, p => "i",
@@ -16479,8 +16479,8 @@ RunRepairCorrectionAndJobDecisionTests();
         // court marking, job enqueue, and live document/fact construction as
         // adapter ports.
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(", StringComparison.Ordinal),
-            "the host must route relay arrivals through the round-progress Application and external facts through the lifecycle rules");
+            && behaviorSource.Contains("WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(", StringComparison.Ordinal),
+            "the host must route relay arrivals through the round-progress Application and external facts through the publication Application");
         Test.True(behaviorSource.Contains("id => ResolveKingdom(id)?.StringId", StringComparison.Ordinal)
             && behaviorSource.Contains("MarkPlayerCourtReachedByRelay(ResolveKingdom(id), document)", StringComparison.Ordinal)
             && behaviorSource.Contains("resultSettlementSlotId: settlementSlotId", StringComparison.Ordinal)
@@ -16492,11 +16492,12 @@ RunRepairCorrectionAndJobDecisionTests();
             && progressSource.Contains("storage.RelayArrivals.Remove(arrival)", StringComparison.Ordinal)
             && progressSource.Contains("WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn", StringComparison.Ordinal)
             && progressSource.Contains("enqueueRelayTurn?.Invoke(arrival, source, round, null)", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyIntentVocabulary.IsExternallyResolvedDiplomaticIntent", StringComparison.Ordinal)
-            && rulesSource.Contains("MarkOpenBilateralOffersAccepted(storage?.ActiveRound", StringComparison.Ordinal)
-            && rulesSource.Contains("AddOrMergeResultSettlementSlot(round, targetId, \"route\",", StringComparison.Ordinal)
-            && rulesSource.Contains("external diplomacy fact kept outside unrelated active round", StringComparison.Ordinal),
-            "arrival dispatch lives in the round-progress Application; external-fact bookkeeping stays in the lifecycle rules");
+            && documentPublication.Contains("WorldDiplomacyIntentVocabulary.IsExternallyResolvedDiplomaticIntent", StringComparison.Ordinal)
+            && documentPublication.Contains("MarkOpenBilateralOffersAccepted(storage?.ActiveRound", StringComparison.Ordinal)
+            && documentPublication.Contains("AddOrMergeResultSettlementSlot(round, targetId, \"route\",", StringComparison.Ordinal)
+            && documentPublication.Contains("external diplomacy fact kept outside unrelated active round", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void NotifyExternalDiplomacyResolved(", StringComparison.Ordinal),
+            "arrival dispatch lives in the round-progress Application; external-fact intake lives in the publication Application");
         Test.True(!behaviorSource.Contains("IsArrivalStale(", StringComparison.Ordinal)
             && !behaviorSource.Contains("EvaluateArrivalAction(", StringComparison.Ordinal)
             && !behaviorSource.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal)

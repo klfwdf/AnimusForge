@@ -275,9 +275,9 @@ internal static class Program
             "public static bool IsSupportedCommitment(");
         string externalResolvedDomain = ExtractMethod(
             File.ReadAllText(FindRepositoryFile(Path.Combine(
-                "Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")), Encoding.UTF8),
-            "public static void NotifyExternalDiplomacyResolved(");
-        Test.True(externalResolvedPublication.Contains("WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(", StringComparison.Ordinal)
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentPublicationApplication.cs")), Encoding.UTF8),
+            "internal static void NotifyExternalDiplomacyResolved(");
+        Test.True(externalResolvedPublication.Contains("WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(", StringComparison.Ordinal)
             && externalResolvedDomain.Contains("IsExternallyResolvedDiplomaticIntent(normalizedAction)", StringComparison.Ordinal),
             "the public external-result bridge must not bypass the action-only publication boundary");
         foreach (string resolvedIntent in new[]
@@ -2255,8 +2255,8 @@ internal static class Program
 
         string externalResolution = ExtractMethod(
             File.ReadAllText(FindRepositoryFile(Path.Combine(
-                "Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")), Encoding.UTF8),
-            "public static void NotifyExternalDiplomacyResolved(");
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentPublicationApplication.cs")), Encoding.UTF8),
+            "internal static void NotifyExternalDiplomacyResolved(");
         string externalTradeAccept = ExtractSection(
             externalResolution,
             "if (string.Equals(normalizedAction, \"accept_trade\"",

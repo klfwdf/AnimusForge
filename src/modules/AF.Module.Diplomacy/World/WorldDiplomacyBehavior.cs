@@ -2339,7 +2339,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(
+		WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
 			action, initiator.StringId, target.StringId, reason,
 			IsPlayerKingdom(initiator), _storage, CurrentDay(),
 			intent => new OfferActionPort(this).HasTakenEffect(intent, initiator?.StringId, target?.StringId),
