@@ -11,7 +11,7 @@ internal static class CompletionApplicationReplay
         internal readonly WorldDiplomacyRequestLeaseCoordinator Lease = new();
         internal readonly List<string> Events = new();
         internal long Generation = 7;
-        internal bool Stale, Threat, Action, Refresh = true, ThrowCommit, ThrowRemove, ThrowTruncated, RealRoundCompression;
+        internal bool Stale, Threat, Action, Refresh = true, ThrowCommit, ThrowRemove, ThrowTruncated, RealRoundCompression, RealFailure;
         internal int Reads;
     }
 
@@ -47,7 +47,20 @@ internal static class CompletionApplicationReplay
             if (s.RealRoundCompression)
                 WorldDiplomacyRoundCompressionApplication.Commit(s.Storage, job, content, 30, day => "day " + day);
         }
-        public void CommitFailedJob(WorldDiplomacyJob job, string error) => s.Events.Add("failed:" + error);
+        public void CommitFailedJob(WorldDiplomacyJob job, string error)
+        {
+            s.Events.Add("failed:" + error);
+            if (s.RealFailure)
+            {
+                State state = s;
+                WorldDiplomacyFailureApplication.Commit(job, error, state.Storage, 96, 6, () => 100,
+                    (j, a, t, reason) => state.Events.Add("abandon:" + reason),
+                    j => "{}", (j, raw) => state.Events.Add("analysis-fallback"),
+                    j => state.Events.Add("threat-fallback"), (j, raw) => state.Events.Add("plan-fallback"),
+                    j => "{}", (j, raw) => state.Events.Add("archive-fallback"),
+                    RemoveJob, Log);
+            }
+        }
         public void RemoveJob(string id)
         {
             s.Events.Add("remove");
@@ -124,6 +137,22 @@ internal static class CompletionApplicationReplay
         Test.True(lateArchive.Storage.RoundSummaries[0].Summary == "current"
             && !lateArchive.Events.Any(x => x.StartsWith("round_compress:")),
             "late completion cannot overwrite the current archive");
+        var failedCompression = new State { RealFailure = true };
+        Enqueue(failedCompression, "compress", success: false, service: true);
+        Run(failedCompression);
+        Test.True(failedCompression.Storage.Jobs.Count == 0
+            && failedCompression.Storage.DiplomacyCompressionPending
+            && failedCompression.Storage.CompressionRetryAttempts == 1
+            && failedCompression.Storage.CompressionRetryAfterHour == 106
+            && failedCompression.Events.IndexOf("failed:failure") < failedCompression.Events.IndexOf("remove"),
+            "admitted transport failure schedules bounded compression retry before removing the dead job");
+        var lateFailure = new State { RealFailure = true };
+        Enqueue(lateFailure, "compress", success: false, generation: 6);
+        Run(lateFailure);
+        Test.True(!lateFailure.Storage.DiplomacyCompressionPending
+            && lateFailure.Storage.CompressionRetryAttempts == 0
+            && lateFailure.Storage.Jobs.Count == 1,
+            "late failure cannot schedule retry or remove a current job");
         foreach (bool threat in new[] { true, false })
         foreach (bool refresh in new[] { true, false })
         {
