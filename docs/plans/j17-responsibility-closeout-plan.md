@@ -97,6 +97,50 @@ R08 性能随每个切片验，不压到最后：区分请求/事件/每帧/批�
 - SceneActions/仪式处决的已接受回复门控：保留 J16 修复，后续渠道迁移必须回归 stale/discard 不产生副作用；未跑的三渠道回放不能沿用“已修”代替。
 - 移除的西海旧键、net472 AuxiliaryTests、历史非 PASS 和发布素材遗留分别保留。与当前切片相关的必要失败先诊断；无关遗留不强行扩成 B 的全部返工。
 
+<a id="j17-continuation-20260930"></a>
+
+## 5a. 接续计划（2026-09-30，基线 `bd199b4e`）
+
+> 用户 2026-09-30：拉取最新远端，检查 Skill 与注意事项，写后续计划并开始。本节细化剩余 A 与 B 的执行方式，不替代上方规格或主台账状态。
+
+### 5a.1 现场与 Skill 核对结果
+
+- **源码**：本地 J17 分支快进至远端 `bd199b4e`（E14–E67 的 58 个盘点提交）。远端已有 J17 规格（本文）与大量逐文件 E 证据；本轮之前在旧坐标上做的本地审查（R05/R06/R07/R08/R09 汇总、170 簇登记）保存在忽略的 `artifacts/j17a/local-pending/`，**不直接提交覆盖远端结论**，只作为 A2 剩余桶的导航输入，逐项与 E 证据对账后吸收。
+- **他人改动**：工作区有 5 个未跟踪 `AnimusForge.SiegeAftermathIntervention/SiegeCouncil*.cs`（09-29 22:03 生成，未入库、无引用）——属他人/GCCZ 在制作业，**不读写、不纳入提交、不计入 Compile 分母变化**，直至作者入库。
+- **Skill 要点（maintainer 0.2.0 + af-core-framework）**：有限责任包推进，退出门通过即前进，不为每个 helper 复制 harness；真实 owner 必须接通消费者，禁止转发壳/目录清空冒充完成；游戏对象只在主线程读写，后台只持有脱离对象的数据；三渠道同类语义不可简化；性能按实际 job/record 量；证据写主台账/范围图，HANDOFF 只链接；不推送、不部署、不改一键入口、不写仓外。
+- **网络**：本机 git 默认代理 `127.0.0.1:7892` 不可用，fetch 需绕过代理直连；推送仍需另行授权与可用凭据。
+
+### 5a.2 剩余 J17-A（A2 签桶）
+
+远端已签 `bootstrap-build`、`host-composition`、`action-commit` 共享层；其余 17 桶有定向证据但**未签**。按当前 1,123 Compile 对照范围图 E 证据，**622 个文件尚无 E 条目**（按旧导航桶：GCCZ 项目 214、scene-mission-combat 162、UI 83、PolicySystem 73、world 38、其余 52）。执行方式：
+
+| 组 | 范围 | 处理 | 出口 |
+| --- | --- | --- | --- |
+| A2-1 排除确认 | `AnimusForge.SiegeAftermathIntervention/` 214、`PolicySystem/` 73 | 按规格 §2.4 只审 AF 接缝：列出被 AF 宿主调用/调用 AF 的入口与跨界状态；内部业务标 `EXCLUDED` 并注明依据 | 两桶接缝清单入范围图，内部文件整体标排除且可对账 |
+| A2-2 场景/战斗 | 162 文件（含 Vengeance 75） | 按 Mission 线程、伤害 allowlist、生命周期分区；四功能内部玩法按 E35 标范围 | `scene-mission-combat` 签桶 |
+| A2-3 UI/外部集成 | 83 文件（含 DialogueUI/Illustrator 77） | VM/视图与业务读写分界；反射合同登记 | `ui-tts-external-integration` 签桶 |
+| A2-4 领域残余 | world 38、conversation 14、social 12、economy 8、courier 7、其余 12 | 逐文件归属，复用本地 R07 簇登记作导航 | 对应桶签收 |
+| A2-5 混合宿主成员 | 16 个宿主的 10,826 成员 | 用本地逐成员判定（3,380 残余 + 7,446 名称初分）与远端 E57/E58/E67 对账；只把远端未覆盖的段落补审 | R07 成员级无匿名大包 |
+| A2-6 R05/R06/R08/R09 汇总 | — | 远端 E29–E34/E40/E53–E56 已覆盖大部分；本地 R05 子项 a–i、R06 B0–B8 批次、R08 MED a–f、R09 改接清单与之对账后登记具名余项 | 登记表 R05–R09 全部具名 |
+
+每组完成即提交一次台账/范围图更新；A2 全部完成后按规格 §4 判 A 出口。
+
+### 5a.3 J17-B 施工顺序（A 出口后连续执行，用户已授权“J17-A 后连续做 J17-B”）
+
+保持规格 §5 顺序，补充由 A 证据得出的精确约束：
+
+1. **B0（R06 前置，最低风险）**：删除确认无生产/反射/测试消费者的死代码（Native opt-in facade/runner 链等），每项先 grep 字符串反射与测试。
+2. **B1 / R04a**：按 E42 结论**不整体搬 11 类**。拆三个子包：(a) daily/block/queue/state 记录 + 对应 `Sanitize*`（保持主线程原地/worker clone 双语义，写别名回归）；(b) `NpcActionEntry` 随行动记录 owner（与 Weekly 游标、major 摘要共同消费者一起改接）；(c) `CompressedMemoryExportBundle` 随 B4/R03。R04b 九个存档键、chunk 与坏 JSON 跳过策略原位。类型名/命名空间可变、**公有字段名/类型/默认值冻结**；新增字段形状冻结测试。
+3. **B2 → B3 → B4 → B5**：按规格表；B3 前先解决 R02 三套 Prompt 中的 `Hero`/`DuelSettings` 读取（移到主线程捕获）。
+4. **B6**：按 R05 子项与 A 新增余项排序；先 R05-c（统一后处理移出 Scene 文件，纯位置）再 R05-a/b（Courier 对齐，行为敏感）。
+5. **B7 / R06**：B1–B8 批次（合同→运行时→网关→适配→CoreDialogue→Courier→回执），命名空间 `AnimusForge.Refactor.*` 不改。
+
+**每个切片的固定成本（R09 得出）**：按路径/字面文本读取被迁生产源的测试须同批改接——`MyBehavior.` 85 文件、`ShoutBehavior.` 92 文件、`Refactor/` 46 文件、测试 csproj 直链根 `.cs` 8 项目；反射按嵌套类型名查找的回放改接到新 owner。改接只能换路径/提取点，断言与变异不减；每片双 API + Bootstrap 构建（`scripts/build/build_single_module.ps1 -Stage`）+ `tests/run_all.py` 全量 FAIL=0 后提交。
+
+### 5a.4 本轮起点
+
+从 A2-1 开始（GCCZ/Policy 接缝确认：文件多但多为整体排除，可快速把未审分母从 622 降到约 335），随后 A2-2、A2-3。
+
 ## 6. 测试复用与执行安全
 
 以下路径在编制时已核实存在；执行前阅读实际 runner、依赖与副作用，不表示本轮已运行：
