@@ -535,7 +535,8 @@ internal static class Program
 
 		Test.True(ExtractMethod(lifecycleRules, "public static bool TryGetConfirmedRoundResult(")
                 .Contains("WorldDiplomacyRoundLifecycleRules.EvaluateConfirmedRoundResult(", StringComparison.Ordinal)
-            && lifecycleRules.Contains("WorldDiplomacyRoundLifecycleRules.TryGetConfirmedRoundResult(document, round", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")), Encoding.UTF8)
+                .Contains("WorldDiplomacyRoundLifecycleRules.TryGetConfirmedRoundResult(document, round", StringComparison.Ordinal)
             && !source.Contains("private bool TryGetConfirmedRoundResult(", StringComparison.Ordinal),
             "confirmed-result evaluation must be delegated to the lifecycle rules");
         string confirmedResult = ExtractMethod(
@@ -561,8 +562,8 @@ internal static class Program
         }
 
         string roundProgress = ExtractMethod(
-            lifecycleRules,
-            "public static void HandleRoundDocumentProcessed(");
+            File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")), Encoding.UTF8),
+            "internal static void HandleRoundDocumentProcessed(");
         int confirmedGate = roundProgress.IndexOf("TryGetConfirmedRoundResult(document, round", StringComparison.Ordinal);
         int beginSettlement = roundProgress.IndexOf("beginOrExtendResultSettlement(round, document", StringComparison.Ordinal);
         int rootBranch = roundProgress.IndexOf("if (isRootDocument)", StringComparison.Ordinal);
@@ -2028,8 +2029,8 @@ internal static class Program
 		}
 
 		string roundProgress = ExtractMethod(
-			lifecycleRules,
-			"public static void HandleRoundDocumentProcessed(");
+			File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")), Encoding.UTF8),
+			"internal static void HandleRoundDocumentProcessed(");
 		int expireOffers = roundProgress.IndexOf(
 			"ExpireUnansweredSettlementOffersForNoActionDeclaration(round, document,",
 			StringComparison.Ordinal);

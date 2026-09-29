@@ -1765,7 +1765,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void HandleRoundDocumentProcessed(WorldDiplomacyDocument document)
 	{
-		WorldDiplomacyRoundLifecycleRules.HandleRoundDocumentProcessed(
+		WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(
 			document, _storage, ResolveRound, ResolveDocument, CurrentDay,
 			BeginOrExtendRoundResultSettlement, CommitEmbeddedRoundPlan,
 			EnqueueRoundPlanJob, ScheduleNextResultSettlementTurn,
