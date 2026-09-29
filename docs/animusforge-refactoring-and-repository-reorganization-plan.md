@@ -18,6 +18,22 @@
 - 文档当前入口/链接、无冲突标记、差异白名单及 `git diff --check` 已核对。产品 C#/项目/配置/一键脚本未改变；没有本轮游戏构建、实际部署、provider、实机/旧档测试，不提升 J15 或全主体重构结项状态。
 - 远端 `e7936b04` 的 TPAC 授权声明、编辑器与构建记录作为带来源的历史补充收录在 HANDOFF；不将外机日志/路径或“未推送”等旧状态当作本机当前事实。用户原推送请求仍以普通快进推送执行，若远端再次分叉则停止并重新核对，不覆盖他人提交。
 
+<a id="j16-continue-20260929"></a>
+
+## J16b/J16c 续作（2026-09-29，分支 `codex/af-j16-continue-20260929`，基于远端 `ada9894a`）
+
+**状态：`J16B_A1_DONE / J16C_LINKCHECK_DONE / J16A_REGRESSED_BY_REMOTE / J16D_NOT_AUTHORIZED / J16E_NOT_STARTED`。** 远端 09-29 四功能整合（267 提交，含已并入的 J16a）后在 AF-J15 快进，新建本分支。用户指示本轮只续 J16b/J16c，远端新增测试暂不归位。
+
+- **J16b inventory**：远端新增 79 个无分类路径（`Vengeance/Source` 76、`Vengeance/AGENTS.md`、两个扩展 `.gitignore`）使 `repository_source_inventory` FAIL；`Vengeance` 加入源码根、源码根 `.gitignore` 归 source，并补 3 条测试样例。现 `PASS / unknown=0`。
+- **J16b A1 去跟踪（用户 2026-09-29 批准“无消费者的全部组”）**：411 个路径 `git rm --cached`，文件原地保留，SHA manifest 在忽略的 `artifacts/j16b/a1-untrack-manifest.sha256`，消费者核查在同目录 `a1-consumers.md`。组：`tools/PlayerExportsEditor/dist`（9，304.6 MB，可用 `publish-win-x64.ps1` 重建）、skill-draft（2，与 `.agents/skills/animusforge-policy-effect-module/` 逐文件 SHA 相同；随之删除 inventory 死规则 `HOLD:skill-draft`）、根级诊断 35（两个 Logs zip、EarlyException html、broken-backup、`.lnk`、`_patch_diplomacy_proactive.py`、29 张 `artifacts_*.png`，计划原写 31 张）、跟踪缓存 365（`.codex_tmp`、`.dotnet`、`.dotnet_cli`、`tmp`、`.tmp` 非 build_check、`.lscache`）。`.gitignore` 补齐覆盖，去跟踪后无路径重新出现为未跟踪。
+  - **保留**：`.tmp/build_check`（`build_single_module.ps1:230` 回退候选，J16d）；PromptLab `sample_cases.jsonl`/`training_*.manual.jsonl`（lab/runner/smoke 读取）；`Phase0_Local_Archive`（PolicyEffect ContractTests 与 overlay 打包读取）；`_DeveloperPatch`（J15 content runner 读取）。PromptLab 其余 `_tmp_v44_*`、运行衍生素材与含本机路径的汇总未处理，需另行确认。
+  - **隐私风险（用户选择“去跟踪 + 记录”）**：`.codex_tmp/pdf_render_20260727/edge_profile` 曾跟踪 Edge 配置（Login Data、Cookies、History、Web Data 等），两个约 20 MB 的 Logs zip 可能含本机路径与 LLM 文本。去跟踪只阻止后续提交；这些字节仍在 Git 历史及已推送远端。历史清洗（filter-repo + 强推）另行决定，本轮未做。
+- **J16c**：新增 `tests/docs/LinkCheck/check_links.py`（已跟踪 Markdown 的相对路径与 `#` 锚点，标题 slug + `<a id>`，只读，新断链退出 1）。首跑 8 处断链全部是 J16a 移动导致的相对深度错误（7 个 tests README、1 个 handoff），仅改路径后 `files=414 breaks=0`。
+- **代码地图**：远端改动 14 个被锚定文件使 working-tree 模式 FAIL；140 个锚点按原 symbol 规则各唯一命中重新定位（行号/sha 同步），`sourceRevision=e4a748d0`；recorded 与 working-tree 两模式 `795` PASS。未用只改 hash 的方式。
+- **远端引入、非本轮回归**：`validate_persistence_profile_config.py`（缺 `_af_xihai_legacy_equipment_cleanup_v1`、多 `_af_kingdom_civil_war_v1`）与 `PersistenceIdentityAudit`（新增 36 个 SyncData 键/6 个 behavior，移除西海清理键）在干净 `ada9894a` 上同样 FAIL，由四功能整合的存档键变更引起；按 J16 “只改路径不改断言”不在此修，需产品作者确认新存档键后更新期望。
+- **J16a 退出门被远端打破（本轮按用户指示不处理）**：`tools/Coup.ContractTests`、`tools/ScenePresentationPolicyTests` 回到 `tools/`；`tests/ExecutionSpeechLineParserTests` 未按 owner 分层；`extensions/AnimusForge.DialogueUI/tools/{auxiliary,portrait}-tests` 与 `tools/illustrator` 27 个审计脚本待按扩展约定核定。
+- **未做/边界**：J16a 回退项归位、J16c 历史文档归档与 `docs/README.md` 索引、J16d（未授权）、J16e 总入口/全量同候选验证均未做。本轮未构建、未部署、未推送，未写游戏/玩家数据。
+
 <a id="j16a-relocation-current-20260928"></a>
 
 ## J16a 测试归位分支进度并入（2026-09-28）
