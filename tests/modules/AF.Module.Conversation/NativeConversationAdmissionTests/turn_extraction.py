@@ -64,6 +64,17 @@ def projected_source(source):
     commit = commit[:start]+'postprocessed = TryRunSceneUnifiedActionPostprocess('+call+');'+commit[end:]
     parts['PostprocessAndCommitAsync'] = commit
     current = ''.join(parts[name] for name in ['PrepareAsync','BuildPromptAsync','ReceiveAndPresentAsync','PostprocessAndCommitAsync'])
+    # ada9894a scene-action / ceremony additions (plus the working-tree deferral of
+    # their side effects to AcceptedReplySideEffects). They are new behavior covered
+    # by NativeTurn/ScenePostprocess suites; project exactly these reviewed tokens away.
+    # The postprocess_complete lambda body (incl. ExtractSceneActionDirective) is
+    # already replaced wholesale by the TryRunSceneUnifiedActionPostprocess projection.
+    for added in [', offerSceneActionDirective: true',
+                  'RecordSceneActionReplyCapture(nativeTargetAgentIndex);',
+                  'nativeCeremonyExecutionOrderRequested = nativeTargetAgentIndex >= 0 && IsExplicitExecutionOrder(playerText);',
+                  ',\n                    AcceptedReplySideEffects = BuildNativeAcceptedReplySideEffects()']:
+        assert current.count(added) == 1, 'Unreviewed scene-action addition drift: ' + added
+        current = current.replace(added, '')
     # The weekly capture gains the same admission guard as the adjacent captures.
     current = current.replace('() => IsNativeConversationAdmissionCurrent(admission, out _)\n                ? MyBehavior.CaptureWeeklyPromptSnapshotForExternal(targetHero, targetCharacter)\n                : MyBehavior.WeeklyPromptSnapshot.Empty,','() => MyBehavior.CaptureWeeklyPromptSnapshotForExternal(targetHero, targetCharacter),')
     # Name resolution is captured once on the game thread instead of consulting a

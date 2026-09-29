@@ -27,7 +27,38 @@ def restore_main_reply(path,source):
     for file, digest in MAIN_REPLY_REVIEW.get('addedFiles',{}).items():
         assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==digest, 'Unreviewed main-reply dependency: '+file
     return restore_packet(MAIN_REPLY_REVIEW,path,restore_observation(path,source))
+# Accepted-reply deferral: the completion request carries game-thread side effects that
+# run only for a non-discarded dispatch (NativeTurn/run.py executes that). Project exactly
+# these two reviewed additions away; everything else must still match byte-for-byte.
+ACCEPTED_REPLY_ADDITIONS={'ShoutBehavior.NativeCompletion.cs':[
+    '        // Game-thread side effects that must only follow an accepted (not stale, not\n'
+    '        // discarded) reply: scene-action directive submit and ceremony execution order.\n'
+    '        internal Action AcceptedReplySideEffects;\n',
+    '    // Runs once, on the game thread, only after the reply passed stale/target checks and the\n'
+    '    // action dispatch did not discard it. Failures are logged and never block memory commit.\n'
+    '    private static void RunNativeAcceptedReplySideEffects(NativeConversationCompletionRequest request)\n'
+    '    {\n'
+    '        Action effects = request?.AcceptedReplySideEffects;\n'
+    '        if (effects == null)\n'
+    '            return;\n'
+    '        request.AcceptedReplySideEffects = null;\n'
+    '        try\n'
+    '        {\n'
+    '            effects();\n'
+    '        }\n'
+    '        catch (Exception ex)\n'
+    '        {\n'
+    '            Logger.Log("ShoutBehavior", "[NativeConversation] accepted-reply side effect failed open: " + ex.Message);\n'
+    '        }\n'
+    '    }\n'
+    '\n']}
+def restore_accepted_reply(path,source):
+    for block in ACCEPTED_REPLY_ADDITIONS.get(path,[]):
+        assert source.count(block)==1, 'Unreviewed accepted-reply drift: '+path
+        source=source.replace(block,'')
+    return source
 def restore_observation(path,source):
+    source=restore_accepted_reply(path,source)
     if path == "ShoutBehavior.cs":
         import importlib.util
         spec=importlib.util.spec_from_file_location("turn_projection",ROOT/"tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/turn_extraction.py")

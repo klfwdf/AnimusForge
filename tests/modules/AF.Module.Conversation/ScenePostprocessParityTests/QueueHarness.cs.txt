@@ -56,6 +56,9 @@ public sealed class QueueHost
     }
     private static string NormalizeAutoGroupRelayPostprocessTagsForScene(string text,List<NpcDataPacket> candidates,int current){Q.AssertMain("relay-normalize");return text?.Contains("[RELAY:22]")==true?"[RELAY:22]":"";}
     private static bool TryParseAutoGroupRelayTargetAgentIndex(string tag,out int id){id=22;return true;}
+    // Scene-action directive: stripped right after completion, submitted only past before_dispatch.
+    private static string ExtractSceneActionDirective(ref string text,int agent){Q.AssertMain("directive-extract");Q.Check(agent==11,"directive-extract agent");const string tag="[ACTION:SCENE_ACT:wave]";if(text?.Contains(tag)!=true)return null;text=text.Replace(tag,"").Trim();return "wave";}
+    private static void SubmitSceneActionDirective(string value,int agent,string raw){Q.AssertMain("directive-submit");if(string.IsNullOrEmpty(value))return;Q.Check(value=="wave"&&agent==11&&raw=="real-npc-reply","directive-submit payload");Q.DirectiveSubmits++;}
     private static string ExtractDeferredSceneActionTags(string text)=>text?.Contains("[ACTION:SPEECH]")==true?"[ACTION:SPEECH]":text?.Contains("[ACTION:DIRECT]")==true?"[ACTION:DIRECT]":"";
     private static bool TryApplyDeferredSceneMoodTag(NpcDataPacket speaker,string text){Q.AssertMain("mood");return false;}
     private static string StripDeferredSceneMoodTags(string text)=>text;
@@ -142,7 +145,7 @@ public sealed class QueueFixture
     public string CompletedText="[ACTION:SPEECH]\n[RELAY:22]";
     public bool Direct=true,NetworkSuccess=true,SpeechSuccess=true;
     public bool SpeechTimeout,NormalizeThrows,Immediate,NullSpeaker,EmptyReply,NoSelected,MutateInputs,BlockNetwork,NetworkThrows,PrepareThrows;
-    public int Expected=22,ExpectedActions=1,ExpectedSession=-1;
+    public int Expected=22,ExpectedActions=1,ExpectedSession=-1,ExpectedDirectiveSubmits;
     public long ExpectedGeneration;
     public string ExpectedStatus => NullSpeaker || EmptyReply || DropMainPhase!=null || NetworkThrows || PrepareThrows || NormalizeThrows || !NetworkSuccess || !SpeechSuccess
         ? "Failed" : SpeechTimeout || BlockNetwork ? "TimedOut" : Change=="target" ? "TargetUnavailable"
@@ -163,7 +166,7 @@ public static class Q
     public static int OffMainReads;
     public static string TargetContext()=>string.Join("|",Kingdom.Value,HeroTarget.Value,CharacterTarget.Value,Troop.Value,Rank.Value);
     public static bool TargetAvailable=true;
-    public static int Generation=1,PrepareCalls,NormalizeCalls,NetworkCalls,ActionEffects,DirectCalls,SpeechEnqueues,TargetChecks,GateRegistrations;
+    public static int Generation=1,PrepareCalls,NormalizeCalls,NetworkCalls,ActionEffects,DirectCalls,SpeechEnqueues,TargetChecks,GateRegistrations,DirectiveSubmits;
     public static Dictionary<string,object> Prepared;
     public static object[] DirectParameters,SpeechParameters;
     public static Func<bool> LastSpeechGuard;
@@ -204,7 +207,7 @@ public static class Q
     public static void Reset(QueueFixture fixture)
     {
         Current=fixture;Host=new();Generation=1;TargetAvailable=true;OffMainReads=0;NetworkResume.Reset();NetworkExited.Reset();
-        PrepareCalls=NormalizeCalls=NetworkCalls=ActionEffects=DirectCalls=SpeechEnqueues=TargetChecks=GateRegistrations=0;
+        PrepareCalls=NormalizeCalls=NetworkCalls=ActionEffects=DirectCalls=SpeechEnqueues=TargetChecks=GateRegistrations=DirectiveSubmits=0;
         Prepared=null;DirectParameters=SpeechParameters=null;LastSpeechGuard=null;LastSpeechCompletion=null;
         Speaker=new(){AgentIndex=11,Name="Speaker-A"};Npcs=new(){new(){AgentIndex=11,Name="Speaker-A"}};Relay=new(){new(){AgentIndex=22,Name="Relay-A"}};
         Hits=new(){" kingdom_agenda ","kingdom_agenda",""};SceneRules=new(){new(){Tag="scene-rule-A",Description="description-A"}};Summon=new(){new(){Id=33}};Guide=new(){new(){Id=44}};
@@ -302,6 +305,8 @@ public static class Program
         yield return new("relay-speech-success"){Direct=false};
         yield return new("direct-action-success"){CompletedText="[ACTION:DIRECT]\n[RELAY:22]"};
         yield return new("relay-only-success"){CompletedText="[RELAY:22]",ExpectedActions=0};
+        yield return new("scene-act-directive-submitted"){CompletedText="[ACTION:SCENE_ACT:wave]\n[ACTION:SPEECH]\n[RELAY:22]",ExpectedDirectiveSubmits=1};
+        foreach(string change in new[]{"generation","target"})yield return new("scene-act-directive-before-dispatch-"+change){CompletedText="[ACTION:SCENE_ACT:wave]\n[ACTION:SPEECH]\n[RELAY:22]",At="before-dispatch",Change=change,Expected=change=="target"?-2:-1,ExpectedActions=0};
         foreach(string stage in new[]{"before-prepare","after-network","before-dispatch"})
         foreach(string change in new[]{"generation","session","epoch"})yield return new(stage+"-"+change){At=stage,Change=change,Expected=-1,ExpectedActions=0};
         foreach(string stage in new[]{"before-prepare","after-network","before-dispatch"})yield return new(stage+"-target"){At=stage,Change="target",Expected=-2,ExpectedActions=0};
@@ -337,6 +342,7 @@ public static class Program
                 Q.Check(result==fixture.Expected,fixture.Name+" result expected "+fixture.Expected+" actual "+result);
                 Q.Check(Q.LastPostprocessStatus==fixture.ExpectedStatus,fixture.Name+" typed status expected "+fixture.ExpectedStatus+" actual "+Q.LastPostprocessStatus);
                 Q.Check(Q.ActionEffects==fixture.ExpectedActions,fixture.Name+" unexpected action effects "+Q.ActionEffects);
+                Q.Check(Q.DirectiveSubmits==fixture.ExpectedDirectiveSubmits,fixture.Name+" scene-action directive submits expected "+fixture.ExpectedDirectiveSubmits+" actual "+Q.DirectiveSubmits);
                 Q.Check(Q.NetworkCalls<=1&&Q.NormalizeCalls<=1&&Q.SpeechEnqueues<=1,fixture.Name+" repeated pipeline");
                 Q.Check(Q.Ambient.Value=="caller-restored",fixture.Name+" caller AsyncLocal contaminated");
                 if(Q.Prepared!=null)
@@ -370,6 +376,8 @@ public static class Program
 
 // Unused module ports fail loudly; only the real queued Siege adapter may reach its existing action stub.
 namespace TaleWorlds.CampaignSystem { }
+// TeamModuleServices also exposes CivilWar; postprocess never reaches it, so an empty port suffices.
+namespace AnimusForge.Refactor.Modules { internal interface ICivilWarModulePort { } internal sealed class CivilWarModuleAdapter : ICivilWarModulePort { } }
 public static class KingdomAgendaCustomPolicyBehavior
 {
     public static bool IsEligibleTargetForExternal(Hero ruler,out string failureReason) => throw new InvalidOperationException("Unexpected policy eligibility in Queue fixture");

@@ -14,7 +14,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
     parser.add_argument('--source-ref')
-    parser.add_argument('--mutate', choices=['ignore-generation','skip-dispatch-guard','lose-execution-context','unguarded-speech','off-thread-game-read','recapture-generation','recapture-session'])
+    parser.add_argument('--mutate', choices=['ignore-generation','skip-dispatch-guard','lose-execution-context','unguarded-speech','off-thread-game-read','recapture-generation','recapture-session','submit-directive-before-guard'])
     parser.add_argument('--output-name',default='queue-current')
     args=parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): parser.error('Invalid output name')
@@ -37,6 +37,7 @@ def main():
           'recapture-session':('QUEUE','expectedSceneSessionId >= 0 ? expectedSceneSessionId : Volatile.Read(ref _sceneHistorySessionId)','Volatile.Read(ref _sceneHistorySessionId)'),
           'ignore-generation':('QUEUE','&& SaveRuntimeGuard.IsCurrentGeneration(queuedRuntimeGeneration)','&& true'),
           'skip-dispatch-guard':('QUEUE','if (!ValidateCurrentTarget("before_dispatch"))','if (false)'),
+          'submit-directive-before-guard':('QUEUE','string sceneActionDirective = ExtractSceneActionDirective(ref text, runtimeTargetAgentIndex);','string sceneActionDirective = ExtractSceneActionDirective(ref text, runtimeTargetAgentIndex); SubmitSceneActionDirective(sceneActionDirective, runtimeTargetAgentIndex, replySnapshot); sceneActionDirective = null;'),
           'lose-execution-context':('QUEUE','scope = requestExecutionContext?.CreateCopy();','scope = null;'),
           'unguarded-speech':('QUEUE','CanStillPublish,\n\t\t\t\t\t\t\tout speechCompletion','() => true,\n\t\t\t\t\t\t\tout speechCompletion'),
           'off-thread-game-read':('REQUEST','return AIConfigHandler.TryCallAuxiliaryActionPostprocess','_ = Mission.Current; return AIConfigHandler.TryCallAuxiliaryActionPostprocess'),
