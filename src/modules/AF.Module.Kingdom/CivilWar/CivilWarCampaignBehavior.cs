@@ -44,5 +44,6 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 	{
 		if (kingdom == null || string.IsNullOrWhiteSpace(text)) return;
 		MyBehavior.RecordEventSourceMaterialForExternal("civil_war", "内战 - " + (kingdom.Name?.ToString() ?? "王国"), text, "civil_war:" + (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex), kingdom.StringId ?? "", true, true);
+		MyBehavior.Instance?.CaptureWorldBulletinCivilWar(kingdom.StringId, (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex));
 	}
 }
