@@ -19,7 +19,7 @@ When a future change touches TaleWorlds APIs, first check whether the member exi
 Always keep the verified unified build passing for both implementations plus Bootstrap:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\一键编译覆盖推送\build_single_module.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build\build_single_module.ps1 `
   -ProjectRoot . `
   -BannerlordRoot "<Bannerlord root>" `
   -Configuration Debug `

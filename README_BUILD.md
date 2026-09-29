@@ -9,7 +9,7 @@ Run `一键编译覆盖推送\一键编译.bat` to build both implementations pl
 For the repository's complete compile-only pipeline, which never deploys without `-Deploy`:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\一键编译覆盖推送\build_single_module.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build\build_single_module.ps1 `
   -ProjectRoot . `
   -BannerlordRoot "F:\SteamLibrary\steamapps\common\Mount & Blade II Bannerlord" `
   -Bannerlord14ReferenceDir ".\.tmp\build_check\1.4" `

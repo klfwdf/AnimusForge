@@ -680,7 +680,7 @@ function Invoke-ManagedStageDeployment {
 }
 
 if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
-    $ProjectRoot = Join-Path $PSScriptRoot ".."
+    $ProjectRoot = Join-Path $PSScriptRoot "..\.."
 }
 if ([string]::IsNullOrWhiteSpace($BannerlordRoot)) {
     throw "-BannerlordRoot is required."

@@ -8531,7 +8531,7 @@
     },
     {
       "id": "af2.stage.whitelist",
-      "path": "一键编译覆盖推送/content_layout.ps1",
+      "path": "scripts/build/content_layout.ps1",
       "start": 226,
       "end": 226,
       "symbol": "function Assert-AnimusForgeCleanStage {",
@@ -8542,47 +8542,47 @@
     },
     {
       "id": "af2.stage.reset",
-      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "path": "scripts/build/deploy_module.ps1",
       "start": 103,
       "end": 103,
       "symbol": "function Reset-ProjectStageDirectory {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "only previously clean project Stage is reset",
-      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
+      "fileSha256": "bedfe454862634e8150cb189a60f343a6324cc67fc8d763d291061851eb041de"
     },
     {
       "id": "af2.stage.bin",
-      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "path": "scripts/build/deploy_module.ps1",
       "start": 337,
       "end": 337,
       "symbol": "function Build-DesiredModuleBin {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "locked private runtime DLLs and captured dual build artifacts",
-      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
+      "fileSha256": "bedfe454862634e8150cb189a60f343a6324cc67fc8d763d291061851eb041de"
     },
     {
       "id": "af2.package.version",
-      "path": "一键编译覆盖推送/package_mod.ps1",
+      "path": "scripts/build/package_mod.ps1",
       "start": 163,
       "end": 163,
       "symbol": "function Get-VersionedSubModuleBytes {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "ZIP-only XML version without source or Stage mutation",
-      "fileSha256": "e09aa6edaffc61f7c81735fe35168a77d36adee74b837d7b07153c4b191be8df"
+      "fileSha256": "c4a7cc917a7d88f17c564e98b9d9985a414ad94c78849672f69df73c3d5fa070"
     },
     {
       "id": "af2.package.whitelist",
-      "path": "一键编译覆盖推送/package_mod.ps1",
+      "path": "scripts/build/package_mod.ps1",
       "start": 730,
       "end": 730,
       "symbol": "function Assert-ZipMatchesCleanStage {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "ZIP byte/hash equality to clean Stage",
-      "fileSha256": "e09aa6edaffc61f7c81735fe35168a77d36adee74b837d7b07153c4b191be8df"
+      "fileSha256": "c4a7cc917a7d88f17c564e98b9d9985a414ad94c78849672f69df73c3d5fa070"
     },
     {
       "id": "af2.model.store",
@@ -8630,7 +8630,7 @@
     },
     {
       "id": "af2.stage.current-artifacts",
-      "path": "一键编译覆盖推送/content_layout.ps1",
+      "path": "scripts/build/content_layout.ps1",
       "start": 269,
       "end": 269,
       "symbol": "if ($RequireCurrentArtifacts) {",
@@ -8641,47 +8641,47 @@
     },
     {
       "id": "af2.deploy.managed",
-      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "path": "scripts/build/deploy_module.ps1",
       "start": 534,
       "end": 534,
       "symbol": "function Invoke-ManagedStageDeployment {",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "只覆盖已验证 Stage 白名单；私有备份、同卷候选、失败回滚与中断拒绝",
-      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
+      "fileSha256": "bedfe454862634e8150cb189a60f343a6324cc67fc8d763d291061851eb041de"
     },
     {
       "id": "af2.deploy.current-stage",
-      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "path": "scripts/build/deploy_module.ps1",
       "start": 741,
       "end": 741,
       "symbol": "Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $projectStageDir -RequireCurrentArtifacts",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "部署前同时校验内容、依赖和当前九项构建产物",
-      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
+      "fileSha256": "bedfe454862634e8150cb189a60f343a6324cc67fc8d763d291061851eb041de"
     },
     {
       "id": "af2.deploy.execute",
-      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "path": "scripts/build/deploy_module.ps1",
       "start": 756,
       "end": 756,
       "symbol": "Invoke-ManagedStageDeployment -StageModuleDir $projectStageDir -TargetModuleDir $targetModuleDir -ModulesDir $modulesDir",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "Stage-only 返回后才执行受管文件安装；不合并安装资料",
-      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
+      "fileSha256": "bedfe454862634e8150cb189a60f343a6324cc67fc8d763d291061851eb041de"
     },
     {
       "id": "af2.deploy.legacy-warning",
-      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "path": "scripts/build/deploy_module.ps1",
       "start": 754,
       "end": 754,
       "symbol": "Write-Warning 'Legacy AnimusForge module folders were left untouched; disable them before launching the game to avoid duplicate module loading.'",
       "match": "exact",
       "status": "wired-f3-offline-verified",
       "note": "旧双模块只读提示；不迁入 Stage 或修改旧安装目录",
-      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
+      "fileSha256": "bedfe454862634e8150cb189a60f343a6324cc67fc8d763d291061851eb041de"
     },
     {
       "id": "af2.model.gate",
@@ -8740,14 +8740,14 @@
     },
     {
       "id": "af2.deploy.feature-bridges-preflight",
-      "path": "一键编译覆盖推送/deploy_module.ps1",
+      "path": "scripts/build/deploy_module.ps1",
       "start": 505,
       "end": 505,
       "symbol": "function Assert-FeatureBridgesDeploymentBaseline {",
       "match": "exact",
       "status": "j15-f4c-offline-verified",
       "note": "Known old/current default hash allowlist; reject unknown installed bytes before any managed target replacement.",
-      "fileSha256": "80720db4e97745259a07ff6d583818af22bf4f2cc46d2f2e847150d0a6de666d"
+      "fileSha256": "bedfe454862634e8150cb189a60f343a6324cc67fc8d763d291061851eb041de"
     }
   ]
 }

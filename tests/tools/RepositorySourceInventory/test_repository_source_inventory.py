@@ -55,6 +55,7 @@ class RepositorySourceInventoryTests(unittest.TestCase):
             "tools/PlayerExportsEditor/src/Program.cs": "tools",
             "tools/test_repository_source_inventory.py": "tests",
             "一键编译覆盖推送/build.ps1": "scripts",
+            "scripts/build/build_single_module.ps1": "scripts",
             "docs/architecture/map.md": "docs",
             "docs/fixtures/case.json": "tests",
             "AnimusForge/AssetSources/source.png": "design",

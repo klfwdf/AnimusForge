@@ -576,7 +576,7 @@ def verify_project_resources() -> None:
 
 
 def verify_script_wiring() -> None:
-    deploy = (ROOT / "一键编译覆盖推送" / "deploy_module.ps1").read_text(encoding="utf-8-sig")
+    deploy = (ROOT / "scripts" / "build" / "deploy_module.ps1").read_text(encoding="utf-8-sig")
     call = "Invoke-AnimusForgeContentProjection"
     check(deploy.count(call) == 1, "Stage and Deploy must share one content projection")
     stage = deploy[deploy.index('$projectStagePath = Join-Path $projectRootFull'):]

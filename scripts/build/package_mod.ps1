@@ -1,7 +1,9 @@
 param(
     [string]$ModuleDir = "",
     [string]$BannerlordRoot = "",
-    [string]$OutputDir = "$PSScriptRoot\packages",
+    # Default ZIP output stays beside the one-click .bat entry points. The folder name is built from
+    # code points so this BOM-less script stays ASCII-only under Windows PowerShell 5.1 (ANSI decoding).
+    [string]$OutputDir = (Join-Path (Join-Path (Join-Path $PSScriptRoot "..\..") (-join ([char[]](0x4E00, 0x952E, 0x7F16, 0x8BD1, 0x8986, 0x76D6, 0x63A8, 0x9001)))) "packages"),
     [string]$SourceModuleDir = "",
     [string]$Version,
     [string]$PackageLabel,
@@ -783,7 +785,7 @@ function Write-ZipFromModule {
     if ($outputFull.StartsWith($moduleFull + "\", [System.StringComparison]::OrdinalIgnoreCase)) {
         throw "OutputDir must not be inside the Stage: $outputFull"
     }
-    Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
+    Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..\..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
     New-Item -ItemType Directory -Path $outputFull -Force | Out-Null
 
     $versionForName = $PackageVersion -replace "[^\w\.\-]", "_"
@@ -832,7 +834,7 @@ function Write-ZipFromModule {
 
         Assert-ZipLayout -ZipPath $temporaryZipPath -ExpectedVersion $PackageVersion -OnnxMustBeAbsent:$true -CustomPromptsMustBeAbsent:$false
         Assert-ZipMatchesCleanStage -ZipPath $temporaryZipPath -StageModuleDir $moduleFull -PackageVersion $PackageVersion
-        Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
+        Assert-AnimusForgeCleanStage -ProjectRoot (Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..\..")) -StageModuleDir $moduleFull -RequireCurrentArtifacts
         [System.IO.File]::Move($temporaryZipPath, $zipPath)
         $finalZipCreated = $true
 
@@ -881,7 +883,7 @@ function Write-ZipFromModule {
 if ([string]::IsNullOrWhiteSpace($ModuleDir)) {
     throw "AF2 packaging requires an explicit project-local -ModuleDir Stage path."
 }
-$projectRootFull = Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..")
+$projectRootFull = Get-FullPathSafe -Path (Join-Path $PSScriptRoot "..\..")
 Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $ModuleDir -RequireCurrentArtifacts
 $resolved = Resolve-AnimusForgeModuleDir -RequestedPath $ModuleDir -BannerlordRootPath $BannerlordRoot -AllowFirstMatch:$UseFirstMatch
 $moduleFull = $resolved.Path

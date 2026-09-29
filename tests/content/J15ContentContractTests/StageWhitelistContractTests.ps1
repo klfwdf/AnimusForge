@@ -6,7 +6,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
-. (Join-Path $ProjectRoot "一键编译覆盖推送\content_layout.ps1")
+. (Join-Path $ProjectRoot "scripts\build\content_layout.ps1")
 
 function Check([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw $Message }
