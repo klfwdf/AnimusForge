@@ -87,6 +87,8 @@
 
 **A2/R07 诊断到世界 AI 混合接缝（仍 `REVIEW_REQUIRED`）**：[范围图 E41](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)`CampaignTickDiagnosticsPatch` 不只记录 checkpoint：默认启用的 host-runtime bridge 可从上次未 EXIT 的队伍 ID 装载 18 次跳过额度，`AnimusForgeMobilePartyAiSafetyPatch` 在原版 hourly AI 前消费并返回 false。当前源码提取/桩回放证实同 ID 新对象 18 次跳过、第 19 次恢复；忽略跳过的编译变异在具名断言失败。R07/B6 需把诊断状态与世界 AI 安全策略的权威责任分开，R08 量测 checkpoint/通用同步日志频率；静态 ID 字典未见 Campaign 退役清理，跨档 ID 重用仍待复现。未读真实日志、运行 Harmony、游戏或旧档，也未审完根级诊断全部成员，故不签诊断桶，不启动 B。
 
+**A2/R07 `AIConfigHandler` 混合职责续审（20 桶仍未签收）**：[范围图 E64](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)按两 API 实际 Compile 的 429 声明清单逐段读完 `AIConfigHandler.cs:1–7900`，确认 E47 的 `persistence-config` 文件级候选不可整体采用：配置发布、规则检索/跨轮 sticky、Conversation 前后处理与 AFEF、辅助 LLM 请求、游戏资格投影、Knowledge Lore 门面分属不同 owner；保存/执行权威不因此移入 Prompt。Native/Scene/Courier 的已捕获资格 worker 接线有具名生产调用，但 legacy null 资格回退仍会读活对象，完整线程/消费者矩阵未闭。R08 新列野外后处理 `Settlement.All.Where(...).OrderBy(...)` 全表成本及目标 ID fallback 查找；跨 Campaign 静态 sticky/单项评估缓存隔离待生命周期回放；R09 列辅助路由错误与 message/token 诊断可能包含正文。现仅源码/部分消费者逻辑初分，不将 429 声明或 20 桶标为逐成员、动态消费者完成；旧导航 JSON 仍为 280 null/全 `PENDING`，其余 223 个 null 文件也未审。无产品改动、双 API 产品构建、provider/旧档/游戏验收；**A 未闭，B 不启动**。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
