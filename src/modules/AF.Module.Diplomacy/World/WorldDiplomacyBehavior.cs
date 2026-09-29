@@ -877,7 +877,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		int scheduledDay = -1,
 		string resultSettlementSlotId = null)
 	{
-		WorldDiplomacyRoundLifecycleRules.PrepareGenerationJob(
+		WorldDiplomacyGenerationTaskApplication.PrepareGenerationJob(
 			author?.StringId,
 			target?.StringId,
 			exchange,
@@ -1391,7 +1391,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void AbandonRejectedGeneration(WorldDiplomacyJob job, Kingdom author, Kingdom target, string reason)
 	{
-		WorldDiplomacyRoundLifecycleRules.AbandonRejectedGeneration(
+		WorldDiplomacyGenerationTaskApplication.AbandonRejectedGeneration(
 			job,
 			author?.StringId,
 			target?.StringId,
