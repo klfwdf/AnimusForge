@@ -72,7 +72,11 @@ internal static class Program
     {
         string behavior = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"), Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
-        string normalizeStorage = ExtractMethod(behavior, "private void NormalizeStorage(");
+        string normalizeStorage = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"), Encoding.UTF8),
+            "internal static void Normalize<TSource>(");
+        Test.True(behavior.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source)", StringComparison.Ordinal),
+            "behavior normalization must call the real storage-normalization Application owner");
         string normalizeThreats = ExtractMethod(behavior, "private void NormalizeDiplomaticThreats(");
         string normalizer = File.ReadAllText(
             FindRepositoryFile("Refactor", "Persistence", "WorldDiplomacyStorageShapeNormalizer.cs"),
@@ -82,10 +86,10 @@ internal static class Program
             Encoding.UTF8);
 
         int shapeRepair = normalizeStorage.IndexOf(
-            "WorldDiplomacyStorageShapeNormalizer.EnsureInitialized(_storage)",
+            "WorldDiplomacyStorageShapeNormalizer.EnsureInitialized(storage)",
             StringComparison.Ordinal);
         int notificationMigration = normalizeStorage.IndexOf(
-            "WorldDiplomacyNotificationStateMigration.Migrate(_storage)",
+            "WorldDiplomacyNotificationStateMigration.Migrate(storage)",
             StringComparison.Ordinal);
         Test.True(shapeRepair >= 0 && notificationMigration > shapeRepair,
             "root shape repair must run before migrations consume persisted collections");

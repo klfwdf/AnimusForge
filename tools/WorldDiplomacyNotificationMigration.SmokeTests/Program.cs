@@ -92,7 +92,11 @@ internal static class Program
     {
         string behavior = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"), Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
-        string normalizeStorage = ExtractMethod(behavior, "private void NormalizeStorage(");
+        string normalizeStorage = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"), Encoding.UTF8),
+            "internal static void Normalize<TSource>(");
+        Test.True(behavior.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source)", StringComparison.Ordinal),
+            "behavior normalization must call the real storage-normalization Application owner");
         string newGame = ExtractMethod(behavior, "private void OnNewGameCreated(");
         string migration = File.ReadAllText(
             FindRepositoryFile("Refactor", "Persistence", "WorldDiplomacyNotificationStateMigration.cs"),
@@ -102,7 +106,7 @@ internal static class Program
             Encoding.UTF8);
 
         Test.True(normalizeStorage.Contains(
-                      "WorldDiplomacyNotificationStateMigration.Migrate(_storage)",
+                      "WorldDiplomacyNotificationStateMigration.Migrate(storage)",
                       StringComparison.Ordinal)
                   && !normalizeStorage.Contains("document.RumorNotified", StringComparison.Ordinal)
                   && !normalizeStorage.Contains("document.FormalNoticeShown", StringComparison.Ordinal),

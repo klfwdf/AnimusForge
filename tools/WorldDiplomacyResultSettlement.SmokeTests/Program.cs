@@ -503,7 +503,7 @@ internal static class Program
             "private void NormalizeStorage(",
             "private void TrimRecentBattleFacts(");
         Test.True(normalization.Contains("if (allowWorldValidation)", StringComparison.Ordinal)
-                  && normalization.Contains("MigrateResultSettlementStateIfNeeded();", StringComparison.Ordinal),
+                  && normalization.Contains("MigrateResultSettlementState();", StringComparison.Ordinal),
             "result-settlement migration must run during validated save loading, not on hot-path ticks");
         Test.True(normalization.Contains("WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(", StringComparison.Ordinal),
             "stored round record normalization must delegate to the migration rules");
@@ -976,7 +976,7 @@ internal static class Program
 			Encoding.UTF8);
 		string normalization = ExtractMethod(source, "private void NormalizeStorage(");
 		int buildDocumentIndex = normalization.IndexOf(
-			"Dictionary<string, WorldDiplomacyDocument> normalizedDocumentsById = WorldDiplomacyDocumentFactRules.BuildDocumentIndex(_storage.Documents)",
+			"Dictionary<string, WorldDiplomacyDocument> normalizedDocumentsById = WorldDiplomacyDocumentFactRules.BuildDocumentIndex(storage.Documents)",
 			StringComparison.Ordinal);
 		int normalizeStoredRound = normalization.IndexOf(
 			"WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(",
@@ -2226,9 +2226,21 @@ internal static class Program
         return null;
     }
 
+    private static string? ReadStorageOwner(string source, string marker)
+    {
+        if (marker.StartsWith("private void NormalizeStorage(", StringComparison.Ordinal))
+        {
+            Test.True(source.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source)", StringComparison.Ordinal),
+                "storage normalization must call the real storage-normalization Application owner");
+            string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"));
+            return ExtractMethod(text, "internal static void Normalize<TSource>(");
+        }
+        return null;
+    }
+
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadPeaceAdmissionOwner(source, startMarker) ?? ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker);
+        string? moved = ReadPeaceAdmissionOwner(source, startMarker) ?? ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker) ?? ReadStorageOwner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
@@ -2240,7 +2252,7 @@ internal static class Program
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadPeaceAdmissionOwner(source, marker) ?? ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker);
+		string? moved = ReadPeaceAdmissionOwner(source, marker) ?? ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadDpl080Owner(source, marker) ?? ReadStorageOwner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

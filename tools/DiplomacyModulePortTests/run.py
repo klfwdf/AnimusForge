@@ -190,7 +190,9 @@ def boundaries():
   ('private void ProcessRelayArrivals(', 'WorldDiplomacyRoundProgressApplication.'),
   ('private void RecordDiplomacyWeeklyMaterial(', 'WorldDiplomacyHistoryCaptureApplication.'),
   ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
-  ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.')]:
+  ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.'),
+  ('private void NormalizeStorage(', 'WorldDiplomacyStorageNormalizationApplication.'),
+  ('private void MigrateCanonicalHistoryIfNeeded(', 'WorldDiplomacyCanonicalHistoryMigrationApplication.')]:
   if signature not in prior_world or signature not in current_world: continue
   before=declaration(prior_world,signature);after=declaration(current_world,signature).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')
   assert any(o in after for o in owner.split('|')), signature
