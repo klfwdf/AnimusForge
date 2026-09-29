@@ -123,7 +123,7 @@ def boundaries():
                    'private void CaptureCanonicalHistoryForQueuedJob(',
                    'private void AbandonRejectedGenerationForIds('):
   leaf=declaration(current_world,signature)
-  assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf,'leaf helper regrew orchestration: '+signature
+  assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf and 'Application.' not in leaf,'leaf helper regrew orchestration or app chaining: '+signature
   current_world=current_world.replace('\t'+leaf+'\n','',1)
  # Every use-case owner moved to a compiled Application; each surviving predecessor must be a
  # single forwarder to its owner. Baseline substitution mirrors DiplomacyArchitectureTests.
@@ -309,6 +309,32 @@ def boundaries():
  port_impl=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DocumentExecutionPort.cs')
  for name,body in method_bodies(port_impl):
   assert body.count(';')<=6,'Execution port member regrew orchestration: '+name
+ # Callback-hiding guards on the three generation-admission forwarders: the host body must be a
+ # single Application call with leaf/method-group arguments. Any control flow or block lambda
+ # re-hides orchestration behind one call.
+ fresh_world=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs')
+ flow=re.compile(r'\b(?:if|foreach|while|switch|for)\s*\(')
+ for sig in ('private void EnqueueGenerationJob(','private void ProcessRelayArrivals(','private void TryScheduleMandatoryCourtResponse('):
+  fwd=declaration(fresh_world,sig)
+  assert not flow.search(fwd),'callback orchestration regrew inside '+sig
+  assert fwd.count('Application.')==1,sig+' must remain one Application call'
+ # A slot/target state progression reintroduced into the relay marshal shows up as control flow or
+ # as a second dispatch beside the single leaf marshal.
+ relay_fwd=declaration(fresh_world,'private void ProcessRelayArrivals(')
+ assert relay_fwd.count('EnqueueGenerationJob(')==1,'relay arrival adapter regrew a second dispatch'
+ prog_app=read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs')
+ assert 'settlementSlot.SlotId' in prog_app,'settlement-slot dispatch left the RoundProgress Application'
+ assert 'resolveKingdomId?.Invoke(round.InitiatorKingdomId)' in prog_app,'initiator fallback target selection left the RoundProgress Application'
+ # The mandatory-reply adapter must not see the relay-transcript decision; the app owns it.
+ assert 'RelayPlanned' not in declaration(fresh_world,'private void TryScheduleMandatoryCourtResponse('),'mandatory adapter regrew relay reuse decision'
+ assert 'round?.RelayPlanned == true' in read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCourtResponseApplication.cs'),'mandatory reply must map RelayPlanned to transcript reuse in the Application'
+ # App-side ownership pins: candidate composition and route filtering live in the Application.
+ gen_app=read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs')
+ assert 'legalDeclarationIntents?.Invoke(' in gen_app and '.Distinct()' in gen_app,'generation app lost candidate composition ownership'
+ assert 'Action<string, string, WorldDiplomacyDocument, string, string, int, int, string> enqueueRelayTurn' in prog_app,'relay enqueue delegate signature drifted'
+ # NormalizeStorage stays a pure two-source forwarder.
+ fwd=declaration(fresh_world,'private void NormalizeStorage(')
+ assert not flow.search(fwd),'load sequencer regrew orchestration'
  print(f'PASS exact inverse: {len(paths)} caller files / {count} routes; channel guards/ref/out/order unchanged; policy cadence and tick entry guards preserved')
 
 def main():

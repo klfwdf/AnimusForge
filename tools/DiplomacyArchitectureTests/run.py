@@ -160,7 +160,7 @@ def main():
                    'private void CaptureCanonicalHistoryForQueuedJob(',
                    'private void AbandonRejectedGenerationForIds('):
   leaf=declaration(current,signature)
-  assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf,'leaf helper regrew orchestration: '+signature
+  assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf and 'Application.' not in leaf,'leaf helper regrew orchestration or app chaining: '+signature
   current=current.replace('\t'+leaf+'\n','',1)
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
  print('PASS '+str(len(retired.RETIRED))+' private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
