@@ -14190,9 +14190,8 @@ RunRepairCorrectionAndJobDecisionTests();
         int skippedSlots = 0;
         string blockReason = null;
         bool authority = true;
-        string priorityTarget = null;
+        List<string> legalTargets = new List<string>();
         List<string> settleTargets = new List<string>();
-        List<string> routeTargets = new List<string>();
         bool singleActionable = false;
         List<string> defaultTargets = new List<string>();
         bool profileOk = true;
@@ -14210,9 +14209,11 @@ RunRepairCorrectionAndJobDecisionTests();
                     r => { },
                     id => blockReason,
                     id => authority,
-                    (r, a, t, rl, s, d) => priorityTarget,
+                    id => id,
+                    id => false,
+                    (r, a, t, rl, s, e, d) => legalTargets.Contains(t)
+                        ? new List<string> { "intent" } : new List<string>(),
                     (r, a) => settleTargets,
-                    (r, a, s, e, d) => routeTargets,
                     (r, a, t) => singleActionable,
                     (a, r) => defaultTargets,
                     (id, reason) => completed.Add(reason),
@@ -14294,13 +14295,22 @@ RunRepairCorrectionAndJobDecisionTests();
         completed.Clear();
         WorldDiplomacyDocument playerSrc = new WorldDiplomacyDocument
         { DocumentId = "psrc", AuthorKingdomId = "c", IsPlayerAuthored = true };
-        priorityTarget = "c";
+        legalTargets = new List<string> { "c" };
         WorldDiplomacyJob pr = gen("a", "b", null, true, playerSrc, 5, true, false, "", false, false, null, -1, null, tripped);
         Test.True(pr != null && pr.TargetKingdomId == "b" && tripped.AutomaticDocumentsStarted == 12,
             "a priority player response must compose a job without counting against the automatic limit");
 
+        // relay route candidates are composed by the Application from leaf facts.
+        legalTargets = new List<string> { "b" };
+        enqueuedIds.Clear();
+        WorldDiplomacyJob relayJob = gen("a", "b", null, true, null, 5, false, false, "", true, false, "a", -1, null, relay2);
+        relay2.State = "active";
+        Test.True(relayJob != null && relayJob.IsRelayTurn && relayJob.PreviousKingdomId == "a"
+                && relayJob.CandidateKingdomIds.Count == 0,
+            "a relay turn with a legal route target must enqueue through Application-composed candidates");
+        enqueuedIds.Clear(); legalTargets = new List<string>();
+
         // happy path: non-relay non-response without a root embeds the sorted round-plan candidates.
-        priorityTarget = null;
         defaultTargets = new List<string> { "z", "b" };
         WorldDiplomacyRound rootless = new WorldDiplomacyRound { RoundId = "rl", State = "active" };
         WorldDiplomacyExchange ex = new WorldDiplomacyExchange { ExchangeId = "ex1" };

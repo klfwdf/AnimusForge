@@ -898,55 +898,99 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			MaxAutomaticDocumentsPerRound,
 			ResolveRound,
 			PruneInvalidOffers,
-			id => { string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(id), out reason) ? null : reason; },
-			id => ResolveKingdom(id) is Kingdom authority && HasIndependentWorldDiplomacyAuthority(authority),
-			(r, aId, tId, relay, slotId, src) =>
-			{
-				Kingdom relayAuthor = ResolveKingdom(aId);
-				Kingdom priorityTarget = ResolveKingdom(src?.AuthorKingdomId) ?? ResolveKingdom(tId);
-				return priorityTarget != null
-					&& BuildLegalDiplomaticDeclarationIntents(r, relayAuthor, priorityTarget, relay, slotId,
-						isExternalResponseOnly: true, responseSource: src).Count > 0
-					? priorityTarget.StringId
-					: null;
-			},
-			(r, aId) => GetResultSettlementActionableTargets(r, ResolveKingdom(aId)).Select(x => x.StringId).ToList(),
-			(r, aId, slotId, extOnly, src) => (r.RelayRouteKingdomIds ?? new List<string>())
-				.Select(ResolveKingdom)
-				.Where(x => x != null && !string.Equals(x.StringId, aId, StringComparison.Ordinal)
-					&& !x.IsEliminated && HasIndependentWorldDiplomacyAuthority(x))
-				.Where(x => BuildLegalDiplomaticDeclarationIntents(r, ResolveKingdom(aId), x,
-					isRelayTurn: true, resultSettlementSlotId: slotId,
-					isExternalResponseOnly: extOnly, responseSource: src).Count > 0)
-				.Select(x => x.StringId)
-				.Distinct()
-				.ToList(),
-			(r, aId, tId) => BuildLegalDiplomaticActionIntents(r, ResolveKingdom(aId), ResolveKingdom(tId)).Count > 0,
-			(aId, r) => GetActionableDiplomaticTargets(ResolveKingdom(aId), r).Select(x => x.StringId).ToList(),
+			GetAuthorDiplomacyBlockReason,
+			HasIndependentWorldDiplomacyAuthorityById,
+			ResolveKingdomIdOrNull,
+			IsEliminatedKingdomId,
+			LegalDiplomaticDeclarationIntents,
+			GetResultSettlementActionableTargetIds,
+			HasAnyLegalDiplomaticActionIntent,
+			GetActionableDiplomaticTargetIds,
 			CompleteExchange,
 			ScheduleNextResultSettlementTurn,
-			round => AdvanceRelay(round),
+			AdvanceRelay,
 			CloseActiveRound,
 			GetCommonDiplomacyContract,
-			() => { GetDiplomaticDeclarationCharacterRange(out int min, out int max); return (min, max); },
-			() => SyncCanonicalHistorySources(),
-			(r, aId, tId, src, prioOnly) => BuildRelayConversationTurnPrompt(
-				r, ResolveKingdom(aId), ResolveKingdom(tId), prioritySource: src, priorityResponseOnly: prioOnly),
-			(aId, tId, ex, isResp, src, reminder, rId, untargeted, planCandidates, extOnly) => BuildGenerationPrompt(
-				ResolveKingdom(aId), ResolveKingdom(tId), ex, isResp, src, reminder, rId, untargeted, planCandidates, extOnly),
-			prefix => NewId(prefix),
+			GetDeclarationCharacterRange,
+			SyncCanonicalHistorySources,
+			BuildRelayTurnGenerationPrompt,
+			BuildGenerationPromptForJob,
+			NewId,
 			BuildGenerationLegalActionSignature,
 			EnsureGenerationJobHasKingdomStrategicProfile,
-			j => CaptureCanonicalHistoryForJob(j, syncSources: false),
-			(j, aId, tId, reason) => AbandonRejectedGeneration(j, ResolveKingdom(aId), ResolveKingdom(tId), reason),
-			(aId, tId) =>
-			{
-				Kingdom a = ResolveKingdom(aId);
-				Kingdom b = ResolveKingdom(tId);
-				return a != null && b != null && FactionManager.IsAtWarAgainstFaction(a, b);
-			},
+			CaptureCanonicalHistoryForQueuedJob,
+			AbandonRejectedGenerationForIds,
+			IsAtWarByKingdomIds,
 			EnqueueJob,
 			Log);
+	}
+	private string GetAuthorDiplomacyBlockReason(string kingdomId)
+	{
+		string reason;
+		return CanAiAuthorDiplomaticDocument(ResolveKingdom(kingdomId), out reason) ? null : reason;
+	}
+	private bool HasIndependentWorldDiplomacyAuthorityById(string kingdomId)
+	{
+		return ResolveKingdom(kingdomId) is Kingdom authority && HasIndependentWorldDiplomacyAuthority(authority);
+	}
+	private string ResolveKingdomIdOrNull(string kingdomId)
+	{
+		return ResolveKingdom(kingdomId)?.StringId;
+	}
+	private bool IsEliminatedKingdomId(string kingdomId)
+	{
+		return ResolveKingdom(kingdomId)?.IsEliminated == true;
+	}
+	private List<string> LegalDiplomaticDeclarationIntents(
+		WorldDiplomacyRound round, string authorId, string targetId, bool isRelayTurn,
+		string resultSettlementSlotId, bool isExternalResponseOnly, WorldDiplomacyDocument responseSource)
+	{
+		return BuildLegalDiplomaticDeclarationIntents(
+			round, ResolveKingdom(authorId), ResolveKingdom(targetId), isRelayTurn,
+			resultSettlementSlotId, isExternalResponseOnly, responseSource);
+	}
+	private List<string> GetResultSettlementActionableTargetIds(WorldDiplomacyRound round, string authorId)
+	{
+		return GetResultSettlementActionableTargets(round, ResolveKingdom(authorId))
+			.Select(x => x.StringId).ToList();
+	}
+	private bool HasAnyLegalDiplomaticActionIntent(WorldDiplomacyRound round, string authorId, string targetId)
+	{
+		return BuildLegalDiplomaticActionIntents(round, ResolveKingdom(authorId), ResolveKingdom(targetId)).Count > 0;
+	}
+	private List<string> GetActionableDiplomaticTargetIds(string authorId, WorldDiplomacyRound round)
+	{
+		return GetActionableDiplomaticTargets(ResolveKingdom(authorId), round)
+			.Select(x => x.StringId).ToList();
+	}
+	private (int, int) GetDeclarationCharacterRange()
+	{
+		GetDiplomaticDeclarationCharacterRange(out int minimum, out int maximum);
+		return (minimum, maximum);
+	}
+	private string BuildRelayTurnGenerationPrompt(
+		WorldDiplomacyRound round, string authorId, string targetId,
+		WorldDiplomacyDocument prioritySource, bool priorityResponseOnly)
+	{
+		return BuildRelayConversationTurnPrompt(
+			round, ResolveKingdom(authorId), ResolveKingdom(targetId),
+			prioritySource: prioritySource, priorityResponseOnly: priorityResponseOnly);
+	}
+	private string BuildGenerationPromptForJob(
+		string authorId, string targetId, WorldDiplomacyExchange exchange, bool isResponse,
+		WorldDiplomacyDocument source, bool isReminder, string roundId, bool allowUntargeted,
+		List<string> planCandidates, bool externalResponseOnly)
+	{
+		return BuildGenerationPrompt(ResolveKingdom(authorId), ResolveKingdom(targetId), exchange,
+			isResponse, source, isReminder, roundId, allowUntargeted, planCandidates, externalResponseOnly);
+	}
+	private void CaptureCanonicalHistoryForQueuedJob(WorldDiplomacyJob job)
+	{
+		CaptureCanonicalHistoryForJob(job, syncSources: false);
+	}
+	private void AbandonRejectedGenerationForIds(WorldDiplomacyJob job, string authorId, string targetId, string reason)
+	{
+		AbandonRejectedGeneration(job, ResolveKingdom(authorId), ResolveKingdom(targetId), reason);
 	}
 	private bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job)
 	{
