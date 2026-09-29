@@ -128,16 +128,18 @@ public partial class ShoutBehavior
 	}
 
 	/// <summary>
-	/// Removes every [ACTION:SCENE_ACT:*] tag from <paramref name="text"/> and
-	/// forwards the first valid one to SceneActions.  Game thread only.  The
-	/// runtime re-checks the frozen allow-list, evidence, consent and speaker.
+	/// Removes every [ACTION:SCENE_ACT:*] tag from <paramref name="text"/> right
+	/// after postprocess completion, so no detached tag catalog sees an unknown
+	/// family.  Returns the first valid directive value (or null).  Nothing is
+	/// submitted here: the caller forwards it via <see cref="SubmitSceneActionDirective"/>
+	/// only after its stale/target/discard checks pass.  Pure string work.
 	/// </summary>
-	private static void ConsumeSceneActionDirective(ref string text, int targetAgentIndex, string rawReply)
+	private static string ExtractSceneActionDirective(ref string text, int targetAgentIndex)
 	{
 		string source = text ?? "";
 		if (!NpcReplyDirectiveTagV1.ContainsTag(source))
 		{
-			return;
+			return null;
 		}
 		bool valid = NpcReplyDirectiveTagV1.TryExtract(
 			source,
@@ -146,15 +148,36 @@ public partial class ShoutBehavior
 			out string remaining,
 			out string error);
 		text = (remaining ?? "").Trim();
+		if (!valid)
+		{
+			Logger.Log("ShoutBehavior", "[SceneActionDirective] dropped agent=" + targetAgentIndex
+				+ " valid=False error=" + (error ?? ""));
+			return null;
+		}
+		return value;
+	}
+
+	/// <summary>
+	/// Forwards an extracted directive to SceneActions.  Game thread only, and
+	/// only once the reply has survived the channel's final stale/target/discard
+	/// checks.  The runtime re-checks the frozen allow-list, evidence, consent
+	/// and speaker.
+	/// </summary>
+	private static void SubmitSceneActionDirective(string value, int targetAgentIndex, string rawReply)
+	{
+		if (string.IsNullOrEmpty(value))
+		{
+			return;
+		}
 		try
 		{
 			Mission mission = Mission.Current;
 			Agent speaker = FindSceneActionAgent(mission, targetAgentIndex);
-			if (!valid || speaker == null
+			if (speaker == null
 				|| !TryGetSceneActionReplyCapture(mission, targetAgentIndex, out double capturedAt))
 			{
 				Logger.Log("ShoutBehavior", "[SceneActionDirective] dropped agent=" + targetAgentIndex
-					+ " valid=" + valid + " speaker=" + (speaker != null) + " error=" + (error ?? ""));
+					+ " valid=True speaker=" + (speaker != null) + " error=no_capture");
 				return;
 			}
 			bool submitted = SceneActionsRuntimeHost.SubmitNpcReplyDirective(

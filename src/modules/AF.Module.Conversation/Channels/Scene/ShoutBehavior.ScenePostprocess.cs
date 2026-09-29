@@ -379,7 +379,8 @@ public partial class ShoutBehavior
 							return false;
 						}
 						string text = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error);
-						ConsumeSceneActionDirective(ref text, runtimeTargetAgentIndex, replySnapshot);
+						// Strip now; submit only after the before_dispatch target check below.
+						string sceneActionDirective = ExtractSceneActionDirective(ref text, runtimeTargetAgentIndex);
 						postprocessWatch.Stop();
 						Logger.Log("ShoutBehavior", "[DeferredPostprocess] call_done npc=" + targetLog + " elapsedMs=" + Math.Round(postprocessWatch.Elapsed.TotalMilliseconds, 2) + " textLen=" + (text?.Length ?? 0));
 						string relayTag = relayRuleInjected ? NormalizeAutoGroupRelayPostprocessTagsForScene(text, relayCandidateSnapshot, runtimeTargetAgentIndex) : "";
@@ -404,6 +405,7 @@ public partial class ShoutBehavior
 						{
 							return false;
 						}
+						SubmitSceneActionDirective(sceneActionDirective, runtimeTargetAgentIndex, replySnapshot);
 						if (string.IsNullOrWhiteSpace(text2))
 						{
 							Complete(succeeded ? ScenePostprocessStatus.Completed : ScenePostprocessStatus.Failed, relayTargetAgentIndex);
