@@ -1,5 +1,7 @@
 # 当前交接：J15 按用户决定结项，J16 离线关闭，J17-A 盘点继续（2026-09-29）
 
+- **J17 当前接续**：[J17 执行计划](docs/plans/j17-responsibility-closeout-plan.md)；本工作区 `944712f8` 的 A0 双 API Compile/语法清单已刷新为各 1,123 文件、49,509/49,508 声明，详见[主台账当前段](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)与[范围图 E14](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。A1/A2 语义及动态消费者仍待完成，B 未启动；没有产品构建、游戏或旧档验收。
+
 - **交付**：J16 15 个提交与 J17-A 盘点文档通过普通 merge 整合；目标分支 `codex/af-main-refactor-continuation-20260831` 已成功快进推送至 `3f7b9018`（GitHub 回执：`ada9894a..3f7b9018`，未强推）。
 - **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`；实机/旧档、F4-A 来源与视觉遗留继续保留，发布 HOLD 不变。
 - **J16**：`J16_OFFLINE_CLOSED`（a/b/c/d/e）。全量 runner 记录 257 项：`PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。LIVE、旧 SAVE、三渠道修复回放未运行；旧档键兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留见主台账。
