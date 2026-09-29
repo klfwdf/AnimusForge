@@ -12,8 +12,8 @@
         "build-owner"
       ],
       "entryPaths": [
-        "AnimusForge.Bootstrap/BootstrapSubModule.cs",
-        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "src/AF.Bootstrap/BootstrapSubModule.cs",
+        "src/AF.Bootstrap/BootstrapRuntime.cs",
         "AnimusForge/SubModule.xml"
       ],
       "promptAction": {
@@ -140,10 +140,10 @@
         "adapter-owner"
       ],
       "entryPaths": [
-        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
         "BannerlordApiCompat.cs",
         "InteractionComponentSafePatch.cs",
-        "PlayerEncounterCompat.cs"
+        "PlayerEncounterCompat.cs",
+        "src/AF.Bootstrap/BootstrapRuntime.cs"
       ],
       "promptAction": {
         "prompt": "NOT_APPLICABLE",
@@ -581,6 +581,10 @@
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs",
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs",
         "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/CivilWarModuleAdapter.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarOwner.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/KingdomCivilWarState.cs",
         "src/modules/AF.Module.Kingdom/Scheduling/AutomaticKingdomRebellionOwner.cs",
         "src/modules/AF.Module.Kingdom/Scheduling/KingdomMaintenanceOwner.cs",
         "src/modules/AF.Module.Kingdom/Stability/KingdomStabilityOwner.cs",
@@ -1030,10 +1034,6 @@
         "tts-owner"
       ],
       "entryPaths": [
-        "content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml",
-        "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
-        "content/modules/AF.Module.WarStats/GUI/Prefabs/AFWarStatsMapButton.xml",
-        "content/modules/AF.Module.Weekly/GUI/Prefabs/DevWeeklyReportPopup.xml",
         "AnimusForgeApiOnboardingPopup.cs",
         "AnimusForgeApiOnboardingVM.cs",
         "AnimusForgeNativeConversationOverlay.cs",
@@ -1052,6 +1052,7 @@
         "TtsEngine.cs",
         "WarStats/AfWarStatsDeathItemVM.cs",
         "WarStats/AfWarStatsEncyclopedia.cs",
+        "WarStats/AfWarStatsFactionKingdomVM.cs",
         "WarStats/AfWarStatsHistoryItemVM.cs",
         "WarStats/AfWarStatsMapButtonLayer.cs",
         "WarStats/AfWarStatsMapButtonVM.cs",
@@ -1059,6 +1060,10 @@
         "WarStats/AfWarStatsRowVM.cs",
         "WarStats/AfWarStatsSettings.cs",
         "WarStats/AfWarStatsTexts.cs",
+        "content/modules/AF.Module.Onboarding/GUI/Prefabs/AnimusForgeApiOnboardingPopup.xml",
+        "content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml",
+        "content/modules/AF.Module.WarStats/GUI/Prefabs/AFWarStatsMapButton.xml",
+        "content/modules/AF.Module.Weekly/GUI/Prefabs/DevWeeklyReportPopup.xml",
         "src/modules/AF.Module.Onboarding/OnboardingDismissalOwner.cs",
         "src/modules/AF.Module.Onboarding/OnboardingOperationVersionOwner.cs",
         "src/modules/AF.Module.Onboarding/OnboardingSessionOwner.cs",
@@ -1162,7 +1167,7 @@
       "owner": "Build.Composition",
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
-        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "src/AF.Bootstrap/BootstrapRuntime.cs",
         "SubModule.cs"
       ],
       "requiredCases": [

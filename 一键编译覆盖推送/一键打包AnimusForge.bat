@@ -4,9 +4,9 @@ chcp 65001 >nul
 
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "PROJECT_ROOT=%%~fI"
-set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
-set "BUILD_SCRIPT=%SCRIPT_DIR%build_single_module.ps1"
-set "PACKAGE_SCRIPT=%SCRIPT_DIR%package_mod.ps1"
+set "PATH_SCRIPT=%SCRIPT_DIR%..\scripts\build\resolve_bannerlord_paths.ps1"
+set "BUILD_SCRIPT=%SCRIPT_DIR%..\scripts\build\build_single_module.ps1"
+set "PACKAGE_SCRIPT=%SCRIPT_DIR%..\scripts\build\package_mod.ps1"
 set "CONFIG=Debug"
 set "STAGE_MODULE=%PROJECT_ROOT%\bin\%CONFIG%\single_module_stage\AnimusForge"
 set "BANNERLORD_ROOT="

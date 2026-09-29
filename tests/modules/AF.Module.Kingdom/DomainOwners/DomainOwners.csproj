@@ -2,6 +2,9 @@
   <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Kingdom/**/*.cs" />
+    <!-- CivilWar is a game-bound campaign behavior/adapter (TaleWorlds, Harmony, Newtonsoft);
+         no pure Kingdom domain owner references it. -->
+    <Compile Remove="../../../../src/modules/AF.Module.Kingdom/CivilWar/**" />
     <Compile Include="../../../../tests/replay/PhaseEightParityReplayTests/KingdomOwnerReplay.cs" Link="KingdomOwnerReplay.cs" />
   </ItemGroup>
 </Project>

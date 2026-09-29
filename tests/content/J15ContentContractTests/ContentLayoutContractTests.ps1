@@ -30,7 +30,7 @@ function Assert-ThrowsWithoutOutput {
     Assert-Contract ($files.Count -eq 0) "$Label wrote partial output"
 }
 
-$helper = Join-Path $ProjectRoot "一键编译覆盖推送\content_layout.ps1"
+$helper = Join-Path $ProjectRoot "scripts\build\content_layout.ps1"
 Assert-Contract (Test-Path -LiteralPath $helper -PathType Leaf) "content layout helper is missing"
 . $helper
 
@@ -103,7 +103,7 @@ Assert-Contract ($realFiles.Count -eq $realMap.entries.Count) "real projection c
 Write-Output "contentLayoutContract valid=1 real=$($realMap.entries.Count) invalid=8 PASS"
 
 # AF2 deploy consumes only the content projection and the verified Stage.
-$deploy = Get-Content -LiteralPath (Join-Path $ProjectRoot '一键编译覆盖推送\deploy_module.ps1') -Raw -Encoding UTF8
+$deploy = Get-Content -LiteralPath (Join-Path $ProjectRoot 'scripts\build\deploy_module.ps1') -Raw -Encoding UTF8
 Assert-Contract ($deploy.Contains('Invoke-AnimusForgeContentProjection -ProjectRoot $projectRootFull -DestinationModuleDir $projectStageDir')) 'deploy does not project mapped defaults into Stage'
 Assert-Contract ($deploy.Contains('Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $projectStageDir -RequireCurrentArtifacts')) 'deploy does not validate current Stage artifacts'
 Assert-Contract (-not $deploy.Contains('Invoke-Robocopy') -and -not $deploy.Contains('/MIR')) 'deploy still contains broad installed-directory copying'
