@@ -20,9 +20,31 @@
 
 <a id="j16-continue-20260929"></a>
 
-## J16b/J16c 续作（2026-09-29，分支 `codex/af-j16-continue-20260929`，基于远端 `ada9894a`）
+## J16 续作与收口（2026-09-29，分支 `codex/af-j16-continue-20260929`，基于远端 `ada9894a`）
 
-**状态：`J16B_A1_DONE / J16C_LINKCHECK_DONE / J16A_REGRESSED_BY_REMOTE / J16D_NOT_AUTHORIZED / J16E_NOT_STARTED`。** 远端 09-29 四功能整合（267 提交，含已并入的 J16a）后在 AF-J15 快进，新建本分支。用户指示本轮只续 J16b/J16c，远端新增测试暂不归位。
+**状态：`J16_OFFLINE_CLOSED / J16A_DONE / J16B_DONE / J16C_DONE / J16D_DONE / J16E_DONE / LIVE_SAVE_REPLAY_NOT_RUN / NOT_PUSHED`。** 远端 09-29 四功能整合（267 提交，含已并入的 J16a）后在 AF-J15 快进，新建本分支。先续 J16b/J16c；随后用户指示“继续完成 J16”，并授权 A2（J16d 迁移）、按当前源码更新存档测试期望、在 J16 内修复两处远端回归。J16 只证明测试/工具/文档/脚本的归属与可运行性，不代表 J17 主体职责迁移。
+
+### 收口结果（候选 `c7e5dff5` + 代码地图重绑 `321675aa`）
+
+- **全量 `tests/run_all.py`**：257 项，`PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0 / BLOCKED_ENV=0`（`artifacts/tests/run_all/20260929-152327/`）。对照 J16a 末尾 `v-batch5`（99ca85ae）与本轮 `g1-20260929`（ada9894a 原样）两份基线：**PASS→非 PASS 为 0**；g1 中远端引入的 34 项失败全部恢复 PASS。非 PASS 状态沿用 `docs/audits/2026-09-28-j16-baseline.json` 且逐项登记在 `tests/runners.json`；新增仅 DialogueUI `AuxiliaryTests` 记 `NEEDS_INPUT`。
+- **J16a**：远端新增测试按实际编译源归位——`tests/modules/AF.Module.Conversation/ScenePresentationPolicyTests`、`tests/Vengeance/ExecutionSpeechLineParserTests`、`extensions/AnimusForge.Coup/tests/Coup.ContractTests`、`extensions/AnimusForge.DialogueUI/tests/{auxiliary,portrait}-tests`、`extensions/AnimusForge.Illustrator/tests/audits`（27 脚本 + fixtures）。`tools/` 下不再有测试项目（仅工具自带 `tools/<工具>/tests/` 冒烟与 PhaseEightReadiness 自测，按 J16b 保留规则留在工具旁）。
+- **J16b**：inventory `PASS / unknown=0`；A1 去跟踪 411 路径（下节）；`scripts` 平面纳入分类。
+- **J16c**：链接检查 `tests/docs/LinkCheck` 415 文件 0 断链；阶段 2–7 共 29 份文档移入 `docs/history/phase2-7/`（74 处路径先改后移）；新增 `docs/README.md` 索引；`docs/phase8/`、`docs/handoffs/` 因被工具/测试读取或广泛链接而原位保留。
+- **J16d（A2）**：Bootstrap → `src/AF.Bootstrap`（程序集/命名空间/`SubModule.xml` 类型不变）；一键 PowerShell → `scripts/build/`，7 个 `.bat` 留在 `一键编译覆盖推送/` 作用户入口；ZIP 默认输出仍为 `一键编译覆盖推送\packages`。实跑 `一键编译.bat`：1.3/1.4 各 336 警告 0 错误、Bootstrap 0/0、Stage 211 文件；Bootstrap 与两实现 DLL 元数据级（类型/方法/IL SHA/字符串）与移动前 **SAME**，Stage 非二进制逐字节相同；`package_mod.ps1 -NoBump` 生成 211 项 ZIP。`.tmp/build_check` 仍为回退候选未迁（构建脚本与多个回放测试读取）。
+- **J16e**：`tests/run_all.py` + `tests/runners.json` 总入口；每项独立进程/退出码、不短路、工具链缺失记 `BLOCKED_ENV`；TEMP 置于仓外（DataPaths 正确拒绝仓内数据根，首跑唯一 FAIL 即此，已修）。
+- **两处远端回归修复（用户授权，`6659bff5`）**：① Native/Scene 后处理在 stale/目标/丢弃判定前向 SceneActions 提交 `[ACTION:SCENE_ACT:*]`——拆为完成时 `ExtractSceneActionDirective`（仅剥标签）与通过判定后 `SubmitSceneActionDirective`（Scene 在 `before_dispatch` 之后；Native 在主线程动作派发、未丢弃、提交记忆前）；② 仪式处决由玩家原文子串在后处理前挂上且 `-=` 去重无效——改为只记录意图、接受回复后挂上单一存储处理器。新增断言与变异：NativeCompletion 接受回复副作用 1 次/丢弃与 stale 0 次（`accepted-effects-on-discard`）、Scene 队列指令仅在 `before_dispatch` 后提交（`submit-directive-before-guard`）、宿主组合帧 `dt` 到达 `IntegratedModuleHost.Tick`（`drop_fast_dt`，tick 相位 36→37）。
+- **34 项远端漂移刷新（`202c4e78`）**：只改测试侧——哈希/计数/提取按当前源码、harness 补新类型桩、J15 内容 +87 项含 SHA、8 个被 ada9894a 修改的 J15b 源须等于 99ca85ae 基线且当前等于复核哈希；不削弱断言、不删变异用例，10 个变异 runner 均因具名行为断言拒绝变异。
+- **存档期望（用户授权“按当前源码更新”）**：phase4 目录 142→177 键；`PersistenceIdentityAudit` 在 `runners.json` 中基线由 `e58f3558` 移至 `ada9894a`（对当前 PASS：sync 177、behavior 42）。四功能新增 36 个 SyncData 键与 6 个 CampaignBehavior，移除 `_af_xihai_legacy_equipment_cleanup_v1`。
+- **其他核对**：代码地图 recorded/working-tree 795 PASS（`sourceRevision=c7e5dff5`，锚点均按 symbol 唯一命中重定位）；`git diff --check ada9894a..HEAD` 通过。
+
+### 未验证 / 遗留（不因 J16 离线收口而提升）
+
+- **LIVE / SAVE / 回放**：未进游戏；三渠道（Native/Scene/Courier）实机与回放未针对回归修复运行；新战役与旧档 load→save→reload 未跑；**被移除的西海清理键对旧档的兼容性未验**。
+- **`IntegratedModuleHost.Tick`**（`IntegratedModuleHost.cs:37`）每帧运行无 try/catch，Register/Shutdown 有；登记为 J17/四功能作者待修，未在 J16 改。
+- **DialogueUI `AuxiliaryTests`**：缺 net472 引用程序集（及 BannerlordRoot 下 0Harmony HintPath），在干净 `ada9894a` 上同样编译失败，记 `NEEDS_INPUT`。
+- **PromptLab 其余 cases**（`_tmp_v44_*`、运行衍生素材、含本机路径汇总）未处理，需另行确认。
+- **隐私**：见下方 A1 条；历史清洗未做。
+- **未推送**；本轮未部署到游戏目录，未写游戏/玩家数据。
 
 - **J16b inventory**：远端新增 79 个无分类路径（`Vengeance/Source` 76、`Vengeance/AGENTS.md`、两个扩展 `.gitignore`）使 `repository_source_inventory` FAIL；`Vengeance` 加入源码根、源码根 `.gitignore` 归 source，并补 3 条测试样例。现 `PASS / unknown=0`。
 - **J16b A1 去跟踪（用户 2026-09-29 批准“无消费者的全部组”）**：411 个路径 `git rm --cached`，文件原地保留，SHA manifest 在忽略的 `artifacts/j16b/a1-untrack-manifest.sha256`，消费者核查在同目录 `a1-consumers.md`。组：`tools/PlayerExportsEditor/dist`（9，304.6 MB，可用 `publish-win-x64.ps1` 重建）、skill-draft（2，与 `.agents/skills/animusforge-policy-effect-module/` 逐文件 SHA 相同；随之删除 inventory 死规则 `HOLD:skill-draft`）、根级诊断 35（两个 Logs zip、EarlyException html、broken-backup、`.lnk`、`_patch_diplomacy_proactive.py`、29 张 `artifacts_*.png`，计划原写 31 张）、跟踪缓存 365（`.codex_tmp`、`.dotnet`、`.dotnet_cli`、`tmp`、`.tmp` 非 build_check、`.lscache`）。`.gitignore` 补齐覆盖，去跟踪后无路径重新出现为未跟踪。
@@ -30,9 +52,7 @@
   - **隐私风险（用户选择“去跟踪 + 记录”）**：`.codex_tmp/pdf_render_20260727/edge_profile` 曾跟踪 Edge 配置（Login Data、Cookies、History、Web Data 等），两个约 20 MB 的 Logs zip 可能含本机路径与 LLM 文本。去跟踪只阻止后续提交；这些字节仍在 Git 历史及已推送远端。历史清洗（filter-repo + 强推）另行决定，本轮未做。
 - **J16c**：新增 `tests/docs/LinkCheck/check_links.py`（已跟踪 Markdown 的相对路径与 `#` 锚点，标题 slug + `<a id>`，只读，新断链退出 1）。首跑 8 处断链全部是 J16a 移动导致的相对深度错误（7 个 tests README、1 个 handoff），仅改路径后 `files=414 breaks=0`。
 - **代码地图**：远端改动 14 个被锚定文件使 working-tree 模式 FAIL；140 个锚点按原 symbol 规则各唯一命中重新定位（行号/sha 同步），`sourceRevision=e4a748d0`；recorded 与 working-tree 两模式 `795` PASS。未用只改 hash 的方式。
-- **远端引入、非本轮回归**：`validate_persistence_profile_config.py`（缺 `_af_xihai_legacy_equipment_cleanup_v1`、多 `_af_kingdom_civil_war_v1`）与 `PersistenceIdentityAudit`（新增 36 个 SyncData 键/6 个 behavior，移除西海清理键）在干净 `ada9894a` 上同样 FAIL，由四功能整合的存档键变更引起；按 J16 “只改路径不改断言”不在此修，需产品作者确认新存档键后更新期望。
-- **J16a 退出门被远端打破（本轮按用户指示不处理）**：`tools/Coup.ContractTests`、`tools/ScenePresentationPolicyTests` 回到 `tools/`；`tests/ExecutionSpeechLineParserTests` 未按 owner 分层；`extensions/AnimusForge.DialogueUI/tools/{auxiliary,portrait}-tests` 与 `tools/illustrator` 27 个审计脚本待按扩展约定核定。
-- **未做/边界**：J16a 回退项归位、J16c 历史文档归档与 `docs/README.md` 索引、J16d（未授权）、J16e 总入口/全量同候选验证均未做。本轮未构建、未部署、未推送，未写游戏/玩家数据。
+- **（前半段记录，已被上方收口结果取代）**：存档测试失败与 J16a 回退项在前半段曾记为“远端引入、暂不处理”；后经用户授权分别按当前源码更新期望、按 owner 归位，结果见上方。
 
 <a id="j16a-relocation-current-20260928"></a>
 

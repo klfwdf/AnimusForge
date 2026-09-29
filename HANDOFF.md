@@ -1,11 +1,21 @@
-# 当前交接：J16b A1 去跟踪与 J16c 链接检查完成（2026-09-29，分支 `codex/af-j16-continue-20260929`）
+# 当前交接：J16 离线收口完成（2026-09-29，分支 `codex/af-j16-continue-20260929`，未推送）
 
-- **范围**：AF-J15 快进到远端 `ada9894a` 后新建分支，只续 J16b/J16c（用户指示远端新增测试暂不归位）。详见[主台账 J16 续作](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j16-continue-20260929)。
-- **已完成**：inventory 恢复 `PASS / unknown=0`（Vengeance 源码根）；A1 经批准去跟踪 411 个无消费者路径（dist 304.6 MB、skill-draft、根级诊断、跟踪缓存），文件原地保留，SHA manifest 在 `artifacts/j16b/`；新增 `tests/docs/LinkCheck`，修 8 处 J16a 移动断链后 0 断链；代码地图 140 锚点按 symbol 重定位，两模式 795 PASS。
-- **风险**：`.codex_tmp` 曾跟踪 Edge 登录/Cookie 数据、Logs zip 可能含本机路径，仍在历史和远端；历史清洗另行决定。
-- **待办**：远端新增测试 J16a 归位；PersistenceProfileConfig/IdentityAudit 因四功能整合新存档键 FAIL（干净 `ada9894a` 同样失败，需产品作者确认后更新期望）；J16c 历史文档归档/索引；J16d 需授权；J16e。未推送。
+- **状态**：`J16_OFFLINE_CLOSED`——J16a/b/c/d/e 全部完成；`LIVE / SAVE / 三渠道回放 NOT-RUN`。详见[主台账 J16 续作与收口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j16-continue-20260929)。基于远端 `ada9894a`，本分支 15 个提交。
+- **全量验证**：`py -3 tests/run_all.py` 257 项 `PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；对照 99ca85ae 与 ada9894a 两份基线 PASS→非 PASS 为 0，远端引入的 34 项失败全部恢复。inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS、`git diff --check` 通过。
+- **结构**：远端新增测试按 owner 归位；阶段 2–7 文档入 `docs/history/phase2-7/` 并新增 `docs/README.md`；A1 去跟踪 411 路径；Bootstrap → `src/AF.Bootstrap`，一键 PowerShell → `scripts/build/`（`.bat` 入口不变，实跑一键编译与打包，DLL 元数据与移动前一致）；新增 `tests/run_all.py` + `tests/runners.json` 总入口。
+- **产品修复（用户授权）**：SceneActions 指令改在 stale/目标/丢弃判定通过后提交（Scene、Native）；仪式处决改为接受回复后挂上单一处理器。配套新增 3 条断言与 3 个变异用例。
+- **存档期望**：按当前源码更新（177 键）；`PersistenceIdentityAudit` 基线移至 `ada9894a`。
+- **未验 / 遗留**：实机与旧档未跑，**被移除的 `_af_xihai_legacy_equipment_cleanup_v1` 对旧档的兼容未验**；三渠道回放未针对修复运行；`IntegratedModuleHost.Tick` 每帧无异常保护（未修）；DialogueUI `AuxiliaryTests` 缺 net472 引用（NEEDS_INPUT）；PromptLab 其余 cases 未处理；`.codex_tmp` Edge 配置与 Logs zip 仍在 Git 历史和远端，历史清洗未做。
+- **下一步**：推送需用户确认（按规则推到新分支）；之后回到 J17（`G:\AFMOD\AF-J17`，J17-A R05/R06/R07 残余审查，5 组中断待续）。
 
 ## 以下为上一段交接
+
+# 当前交接：J16b A1 去跟踪与 J16c 链接检查完成（2026-09-29，分支 `codex/af-j16-continue-20260929`）
+
+- **范围**：AF-J15 快进到远端 `ada9894a` 后新建分支，先续 J16b/J16c。详见[主台账 J16 续作](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j16-continue-20260929)。
+- **已完成**：inventory 恢复 `PASS / unknown=0`；A1 去跟踪 411 个无消费者路径；新增 `tests/docs/LinkCheck`；代码地图重定位。该段待办已在上方收口中完成。
+
+## 以下为更早交接
 
 # 当前交接：未推送提交与四功能整合工作树说明已整理（2026-09-29）
 
