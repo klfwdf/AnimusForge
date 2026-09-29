@@ -14018,7 +14018,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyStorage storage = new WorldDiplomacyStorage();
         int enqueued = 0;
         WorldDiplomacyJob captured = null;
-        WorldDiplomacyRoundLifecycleRules.PrepareAnalysisJob(null, 5, storage, 10, 900,
+        WorldDiplomacyJobPreparationApplication.PrepareAnalysisJob(null, 5, storage, 10, 900,
             p => p + "_x", id => null, r => "contract", d => "up", j => { enqueued++; captured = j; });
         Test.True(enqueued == 0, "a null document must not produce an analysis job");
 
@@ -14028,7 +14028,7 @@ RunRepairCorrectionAndJobDecisionTests();
             TargetKingdomId = "b", IsResponse = true, RoundId = "rr"
         };
         string contractArg = null;
-        WorldDiplomacyRoundLifecycleRules.PrepareAnalysisJob(doc, 5, storage, 10, 900,
+        WorldDiplomacyJobPreparationApplication.PrepareAnalysisJob(doc, 5, storage, 10, 900,
             p => "jid1", id => new WorldDiplomacyRound { RoundId = id },
             r => contractArg = "frozen:" + r.RoundId,
             d => "user:" + d.DocumentId, j => { enqueued++; captured = j; });
@@ -14046,7 +14046,7 @@ RunRepairCorrectionAndJobDecisionTests();
         int closed = 0; string closeReason = null;
         enqueued = 0; captured = null;
         Action<WorldDiplomacyRound, WorldDiplomacyDocument, WorldDiplomacyStorage, List<string>> plan =
-            (r, root, s, candidates) => WorldDiplomacyRoundLifecycleRules.PrepareRoundPlanJob(
+            (r, root, s, candidates) => WorldDiplomacyJobPreparationApplication.PrepareRoundPlanJob(
                 r, root, s, 10, 900, p => "pid",
                 (rr, authorId) => candidates,
                 rr => "sys:" + rr.RoundId, (d, c) => "usr:" + d.DocumentId,
@@ -14483,6 +14483,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string progressSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")), Encoding.UTF8);
         string generatedCompletionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs"));
         string generationTaskSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs"));
+        string jobPreparationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs"));
         string dispatchSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
         string roundCompressionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs"));
         Test.True(exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny", StringComparison.Ordinal),
@@ -15417,7 +15418,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && generationTaskSource.Contains("BuildRelayGenerationSystemPrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(", StringComparison.Ordinal)
-            && rulesSource.Contains("BuildAnalysisSystemPrompt(", StringComparison.Ordinal)
+            && jobPreparationSource.Contains("BuildAnalysisSystemPrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildAnalysisModeContract(", StringComparison.Ordinal)
             && canonicalHistoryRulesSource.Contains("WorldDiplomacyPromptContractRules.BuildTokenCompressionPrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(", StringComparison.Ordinal)
@@ -16492,16 +16493,21 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal)
             && !behaviorSource.Contains("external diplomacy fact kept outside unrelated active round", StringComparison.Ordinal),
             "arrival and external-fact internals must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.PrepareAnalysisJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.PrepareRoundPlanJob(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyJobPreparationApplication.PrepareAnalysisJob(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyJobPreparationApplication.PrepareRoundPlanJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyJobPreparationApplication.Rebuild(", StringComparison.Ordinal),
-            "the host must route analysis, round-plan, and rebuild job composition through the lifecycle rules");
-        Test.True(rulesSource.Contains("Kind = \"analyze\"", StringComparison.Ordinal)
-            && rulesSource.Contains("Kind = \"round_plan\"", StringComparison.Ordinal)
-            && rulesSource.Contains("CacheAffinityKey = \"diplomacy-round-plan:v6\"", StringComparison.Ordinal)
-            && rulesSource.Contains("round_plan_no_actionable_participants", StringComparison.Ordinal)
-            && rulesSource.Contains("AllowAutonomousNoAction = false", StringComparison.Ordinal),
-            "job-composition stamping must live inside the lifecycle rules");
+            "the host must route analysis, round-plan, and rebuild job composition through the job-preparation Application");
+        Test.True(jobPreparationSource.Contains("public static void PrepareAnalysisJob(", StringComparison.Ordinal)
+            && jobPreparationSource.Contains("public static void PrepareRoundPlanJob(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void PrepareAnalysisJob(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void PrepareRoundPlanJob(", StringComparison.Ordinal),
+            "analysis and round-plan job composition must be owned by the Application, not the lifecycle rules");
+        Test.True(jobPreparationSource.Contains("Kind = \"analyze\"", StringComparison.Ordinal)
+            && jobPreparationSource.Contains("Kind = \"round_plan\"", StringComparison.Ordinal)
+            && jobPreparationSource.Contains("CacheAffinityKey = \"diplomacy-round-plan:v6\"", StringComparison.Ordinal)
+            && jobPreparationSource.Contains("round_plan_no_actionable_participants", StringComparison.Ordinal)
+            && jobPreparationSource.Contains("AllowAutonomousNoAction = false", StringComparison.Ordinal),
+            "job-composition stamping must live inside the job-preparation Application");
         Test.True(!behaviorSource.Contains("Kind = \"round_plan\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("Kind = \"analyze\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("diplomacy-round-plan:v6", StringComparison.Ordinal)

@@ -979,7 +979,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 		private void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority)
 	{
-		WorldDiplomacyRoundLifecycleRules.PrepareAnalysisJob(
+		WorldDiplomacyJobPreparationApplication.PrepareAnalysisJob(
 			document, priority, _storage, CurrentDay(), AnalysisMaxTokens,
 			NewId, ResolveRound, GetCommonDiplomacyContract, BuildAnalysisPrompt, EnqueueJob);
 	}
@@ -1781,7 +1781,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 		private void EnqueueRoundPlanJob(WorldDiplomacyRound round, WorldDiplomacyDocument root)
 	{
-		WorldDiplomacyRoundLifecycleRules.PrepareRoundPlanJob(
+		WorldDiplomacyJobPreparationApplication.PrepareRoundPlanJob(
 			round, root, _storage, CurrentDay(), AnalysisMaxTokens,
 			NewId,
 			(r, authorId) => GetRoundPlanActionableParticipants(ResolveKingdom(authorId), r).Select(x => x.StringId).ToList(),

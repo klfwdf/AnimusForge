@@ -171,4 +171,87 @@ internal static class WorldDiplomacyJobPreparationApplication
 	}
 	return false;
 }
+
+// Owns analysis and round-plan job composition: admission gates, prompt binding,
+// cache affinity, and queue admission stay behind the supplied ports.
+public static void PrepareAnalysisJob(
+        WorldDiplomacyDocument document,
+        int priority,
+        WorldDiplomacyStorage storage,
+        int currentDay,
+        int analysisMaxTokens,
+        Func<string, string> createId,
+        Func<string, WorldDiplomacyRound> resolveRound,
+        Func<WorldDiplomacyRound, string> getCommonContract,
+        Func<WorldDiplomacyDocument, string> buildAnalysisPrompt,
+        Action<WorldDiplomacyJob> enqueueJob)
+{
+	if (document == null)
+	{
+		return;
+	}
+	WorldDiplomacyRound owningRound = resolveRound?.Invoke(FirstNonEmpty(document.RoundId, document.ExchangeId));
+	string frozenCommonContract = getCommonContract?.Invoke(owningRound);
+	WorldDiplomacyJob job = new WorldDiplomacyJob
+	{
+		JobId = createId?.Invoke("diplomacy_analyze"),
+		Kind = "analyze",
+		Priority = priority,
+		CreatedDay = currentDay,
+		ExchangeId = document.ExchangeId ?? "",
+		DocumentId = document.DocumentId ?? "",
+		AuthorKingdomId = document.AuthorKingdomId ?? "",
+		TargetKingdomId = document.TargetKingdomId ?? "",
+		PresentedThreatDocumentIds = SelectPresentedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId),
+		PresentedThreatFollowThroughDocumentIds = SelectNoncompliedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId),
+		IsResponse = document.IsResponse,
+		SystemPrompt = WorldDiplomacyPromptContractRules.BuildAnalysisSystemPrompt(frozenCommonContract),
+		UserPrompt = buildAnalysisPrompt?.Invoke(document),
+		CacheAffinityKey = "analyze",
+		MaxTokens = analysisMaxTokens
+	};
+	enqueueJob?.Invoke(job);
+}
+
+public static void PrepareRoundPlanJob(
+        WorldDiplomacyRound round,
+        WorldDiplomacyDocument root,
+        WorldDiplomacyStorage storage,
+        int currentDay,
+        int analysisMaxTokens,
+        Func<string, string> createId,
+        Func<WorldDiplomacyRound, string, List<string>> getPlanCandidates,
+        Func<WorldDiplomacyRound, string> buildSystemPrompt,
+        Func<WorldDiplomacyDocument, List<string>, string> buildUserPrompt,
+        Action<WorldDiplomacyJob> enqueueJob,
+        Action<string> closeActiveRound)
+{
+	if (round == null || root == null || round.RelayPlanned
+		|| !ReferenceEquals(storage?.ActiveRound, round)
+		|| !IsActiveRoundState(round.State)
+		|| storage.Jobs.Any(x => IsJobOfKind(x, "round_plan")
+			&& IsRecordInRound(x.RoundId, round.RoundId))) return;
+	List<string> candidates = getPlanCandidates?.Invoke(round, root.AuthorKingdomId) ?? new List<string>();
+	if (candidates.Count == 0)
+	{
+		closeActiveRound?.Invoke("round_plan_no_actionable_participants");
+		return;
+	}
+	WorldDiplomacyJob job = new WorldDiplomacyJob
+	{
+		JobId = createId?.Invoke("diplomacy_round_plan"),
+		Kind = "round_plan",
+		Priority = 85,
+		CreatedDay = currentDay,
+		RoundId = round.RoundId,
+		DocumentId = root.DocumentId,
+		AuthorKingdomId = root.AuthorKingdomId,
+		CandidateKingdomIds = candidates,
+		SystemPrompt = buildSystemPrompt?.Invoke(round),
+		UserPrompt = buildUserPrompt?.Invoke(root, candidates),
+		CacheAffinityKey = "diplomacy-round-plan:v6",
+		MaxTokens = analysisMaxTokens
+	};
+	enqueueJob?.Invoke(job);
+}
 }
