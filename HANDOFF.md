@@ -1,3 +1,12 @@
+# 当前交接：J16b A1 去跟踪与 J16c 链接检查完成（2026-09-29，分支 `codex/af-j16-continue-20260929`）
+
+- **范围**：AF-J15 快进到远端 `ada9894a` 后新建分支，只续 J16b/J16c（用户指示远端新增测试暂不归位）。详见[主台账 J16 续作](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j16-continue-20260929)。
+- **已完成**：inventory 恢复 `PASS / unknown=0`（Vengeance 源码根）；A1 经批准去跟踪 411 个无消费者路径（dist 304.6 MB、skill-draft、根级诊断、跟踪缓存），文件原地保留，SHA manifest 在 `artifacts/j16b/`；新增 `tests/docs/LinkCheck`，修 8 处 J16a 移动断链后 0 断链；代码地图 140 锚点按 symbol 重定位，两模式 795 PASS。
+- **风险**：`.codex_tmp` 曾跟踪 Edge 登录/Cookie 数据、Logs zip 可能含本机路径，仍在历史和远端；历史清洗另行决定。
+- **待办**：远端新增测试 J16a 归位；PersistenceProfileConfig/IdentityAudit 因四功能整合新存档键 FAIL（干净 `ada9894a` 同样失败，需产品作者确认后更新期望）；J16c 历史文档归档/索引；J16d 需授权；J16e。未推送。
+
+## 以下为上一段交接
+
 # 当前交接：未推送提交与四功能整合工作树说明已整理（2026-09-29）
 
 - **范围**：本地 `codex/af-main-refactor-continuation-20260831` 领先远端同名分支 **266 个提交**（2026-09-12→09-29，主体为 Illustrator 迭代，另有 DialogueUI、Coup 与两次远端 J15/J16 合并）；其上还有一层**未提交**的四功能整合与审查修复工作树，本次提交涉及内容见[提交说明](docs/handoffs/2026-09-29-four-feature-integration-commit.md)。
