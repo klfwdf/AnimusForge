@@ -7,6 +7,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\src\modules\AF.Module.Conversation\Channels\Scene\ScenePresentationPolicy.cs" Link="Production\ScenePresentationPolicy.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Channels\Scene\ScenePresentationPolicy.cs" Link="Production\ScenePresentationPolicy.cs" />
   </ItemGroup>
 </Project>

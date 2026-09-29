@@ -4,7 +4,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 # The audit injects this isolated root into the private diagnostics constructor. No player files.
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\..')).Path
 $artifactRoot = Join-Path $repoRoot 'artifacts\illustrator-optimization\diagnostics'
 New-Item -ItemType Directory -Path $artifactRoot -Force | Out-Null
 Add-Type -Path (Join-Path $PSScriptRoot 'OfflineAssemblyResolver.cs')

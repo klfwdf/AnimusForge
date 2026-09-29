@@ -4,7 +4,7 @@ param(
     [string]$RepoRoot
 )
 $ErrorActionPreference = 'Stop'
-if ([string]::IsNullOrWhiteSpace($RepoRoot)) { $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path }
+if ([string]::IsNullOrWhiteSpace($RepoRoot)) { $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\..')).Path }
 # Windows PowerShell / .NET Framework; launch one fresh process per target DLL.
 Add-Type -Path (Join-Path $PSScriptRoot 'OfflineAssemblyResolver.cs')
 $dirs = @(

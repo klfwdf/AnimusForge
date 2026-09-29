@@ -6,6 +6,6 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../extensions/AnimusForge.Coup/src/CoupSystem/CoupSession.cs" Link="CoupSession.cs" />
+    <Compile Include="../../src/CoupSystem/CoupSession.cs" Link="CoupSession.cs" />
   </ItemGroup>
 </Project>
