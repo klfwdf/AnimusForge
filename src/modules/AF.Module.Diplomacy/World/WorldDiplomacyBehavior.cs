@@ -2265,8 +2265,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void CommitRoundCompression(WorldDiplomacyJob job, string raw)
 	{
-		WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(_storage, job, raw,
-			CurrentDay, FormatCampaignDate);
+		WorldDiplomacyRoundCompressionApplication.Commit(_storage, job, raw,
+			CurrentDay(), FormatCampaignDate);
 	}
 
 	private WorldDiplomacyRound ResolveRound(string roundId)

@@ -28,6 +28,7 @@
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs" Link="WorldDiplomacyDocumentExecutionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs" Link="WorldDiplomacyLlmDispatchApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs" Link="WorldDiplomacyCompletionApplication.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs" Link="WorldDiplomacyRoundCompressionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionCallbacks.cs" Link="WorldDiplomacyCompletionCallbacks.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs" Link="WorldDiplomacyLlmResult.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs" Link="WorldDiplomacyJobRuntimeCoordinator.cs" />

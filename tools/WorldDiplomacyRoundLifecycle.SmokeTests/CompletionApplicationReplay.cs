@@ -11,7 +11,7 @@ internal static class CompletionApplicationReplay
         internal readonly WorldDiplomacyRequestLeaseCoordinator Lease = new();
         internal readonly List<string> Events = new();
         internal long Generation = 7;
-        internal bool Stale, Threat, Action, Refresh = true, ThrowCommit, ThrowRemove, ThrowTruncated;
+        internal bool Stale, Threat, Action, Refresh = true, ThrowCommit, ThrowRemove, ThrowTruncated, RealRoundCompression;
         internal int Reads;
     }
 
@@ -41,7 +41,12 @@ internal static class CompletionApplicationReplay
         public void CommitAnalysis(WorldDiplomacyJob job, string content) => Commit("analyze", content);
         public void CommitCompression(WorldDiplomacyJob job, string content) => Commit("compress", content);
         public void CommitRoundPlan(WorldDiplomacyJob job, string content) => Commit("round_plan", content);
-        public void CommitRoundCompression(WorldDiplomacyJob job, string content) => Commit("round_compress", content);
+        public void CommitRoundCompression(WorldDiplomacyJob job, string content)
+        {
+            Commit("round_compress", content);
+            if (s.RealRoundCompression)
+                WorldDiplomacyRoundCompressionApplication.Commit(s.Storage, job, content, 30, day => "day " + day);
+        }
         public void CommitFailedJob(WorldDiplomacyJob job, string error) => s.Events.Add("failed:" + error);
         public void RemoveJob(string id)
         {
@@ -98,6 +103,27 @@ internal static class CompletionApplicationReplay
         var duplicate = new State(); Enqueue(duplicate); duplicate.Queue.Enqueue(duplicate.Queue.Peek()); Run(duplicate);
         Test.True(duplicate.Events.Count(e => e == "analyze:raw") == 1 && duplicate.Storage.Jobs.Count == 0,
             "duplicate completion cannot dispatch a removed job again");
+        var archive = new State { RealRoundCompression = true };
+        archive.Storage.RoundSummaries.Add(new WorldDiplomacyRoundSummary { RoundId = "r", Summary = "old" });
+        archive.Storage.RoundSummaries.Add(new WorldDiplomacyRoundSummary { RoundId = "other", Summary = "keep" });
+        var archiveJob = Enqueue(archive, "round_compress", content: "{\"summary\":\"new\",\"facts\":[{\"text\":\"confirmed\"}]}");
+        archiveJob.RoundId = "r";
+        archive.Queue.Enqueue(archive.Queue.Peek());
+        Run(archive);
+        Test.True(archive.Storage.Jobs.Count == 0
+            && archive.Storage.RoundSummaries.Count == 2
+            && archive.Storage.RoundSummaries.Single(x => x.RoundId == "r").Summary == "new"
+            && archive.Storage.RoundSummaries.Single(x => x.RoundId == "r").Facts[0].Text == "confirmed"
+            && archive.Storage.RoundSummaries.Single(x => x.RoundId == "other").Summary == "keep"
+            && archive.Events.Count(x => x.StartsWith("round_compress:")) == 1,
+            "admitted completion replaces only its round archive once; duplicate result does not replay it");
+        var lateArchive = new State { RealRoundCompression = true };
+        lateArchive.Storage.RoundSummaries.Add(new WorldDiplomacyRoundSummary { RoundId = "r", Summary = "current" });
+        Enqueue(lateArchive, "round_compress", generation: 6, content: "{\"summary\":\"stale\"}").RoundId = "r";
+        Run(lateArchive);
+        Test.True(lateArchive.Storage.RoundSummaries[0].Summary == "current"
+            && !lateArchive.Events.Any(x => x.StartsWith("round_compress:")),
+            "late completion cannot overwrite the current archive");
         foreach (bool threat in new[] { true, false })
         foreach (bool refresh in new[] { true, false })
         {

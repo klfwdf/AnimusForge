@@ -24,8 +24,16 @@ static class Test
 
 internal static class Program
 {
-    private static int Main()
+    private static int Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--r1-round-compression")
+        {
+            CompletionApplicationReplay.Run();
+            RunCompressionCommitDecisionTests();
+            VerifyRoundCompressionOwnership();
+            Console.WriteLine($"R1 round compression replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -170,6 +178,25 @@ RunRepairCorrectionAndJobDecisionTests();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
+    }
+
+    private static void VerifyRoundCompressionOwnership()
+    {
+        string app = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs"));
+        string behavior = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string rules = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        string completion = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"));
+        Test.True(app.Contains("storage.RoundSummaries.RemoveAll(", StringComparison.Ordinal)
+            && app.Contains("storage.RoundSummaries.Add(summary)", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyRoundCompressionApplication.Commit(_storage, job, raw,", StringComparison.Ordinal)
+            && completion.Contains("_owner.CommitRoundCompression(job, content)", StringComparison.Ordinal)
+            && !rules.Contains("public static void CommitRoundCompression(", StringComparison.Ordinal)
+            && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(", StringComparison.Ordinal),
+            "real completion caller reaches one Application archive owner; predecessor has no second algorithm");
     }
 
     private static WorldDiplomacyRoundReconcileInput BaseInput()
@@ -9374,10 +9401,10 @@ RunRepairCorrectionAndJobDecisionTests();
             RoundId = "r1",
             CompressionDocumentIds = new List<string> { "d1" }
         };
-        WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(
+        WorldDiplomacyRoundCompressionApplication.Commit(
             roundStorage, roundJob,
             "{\"summary\":\"round digest\",\"facts\":[{\"text\":\"f1\",\"source_document_ids\":[\"d1\"],\"kingdom_ids\":[\"kA\"]}]}",
-            () => 30, d => "d" + d);
+            30, d => "d" + d);
         Test.True(roundStorage.RoundSummaries.Count == 1,
             "round compression must replace the prior summary for the same round");
         WorldDiplomacyRoundSummary committed = roundStorage.RoundSummaries[0];
@@ -9387,6 +9414,15 @@ RunRepairCorrectionAndJobDecisionTests();
             && committed.Facts[0].SourceDocumentIds[0] == "d1"
             && committed.Facts[0].KingdomIds[0] == "kA",
             "round compression must carry summary, facts, and source ids into the record");
+        roundStorage.Documents.Add(new WorldDiplomacyDocument { DocumentId = "d1", Day = 29, Title = "fallback declaration" });
+        var manyFacts = new JArray();
+        for (int i = 0; i < 40; i++) manyFacts.Add(new JObject { ["text"] = "fact " + i });
+        WorldDiplomacyRoundCompressionApplication.Commit(roundStorage, roundJob,
+            new JObject { ["summary"] = "", ["facts"] = manyFacts }.ToString(), 31, d => "d" + d);
+        Test.True(roundStorage.RoundSummaries.Count == 1
+            && roundStorage.RoundSummaries[0].Summary.Contains("fallback declaration", StringComparison.Ordinal)
+            && roundStorage.RoundSummaries[0].Facts.Count == 32,
+            "empty generated summary uses bounded document fallback and caps parsed facts");
 
         // CommitCompression: validation order then storage commit effects.
         var history = new WorldDiplomacyCanonicalHistoryState
@@ -15755,16 +15791,20 @@ RunRepairCorrectionAndJobDecisionTests();
                 || canonicalHistoryRulesSource.Contains("appendEntry(", StringComparison.Ordinal),
             "threat history appenders must write through the injected canonical appender port");
 
-        // DPL-060CE: compression commit and queue insertion live in domain rules;
-        // the host keeps thin adapters only.
+        // DPL-R1: round archive replacement belongs to Application; bounded
+        // queue insertion and canonical history compression retain their owners.
+        string roundCompressionSource = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs"));
         Test.True(canonicalHistoryRulesSource.Contains("public static void CommitCompression(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void EnqueueJob(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void CommitRoundCompression(", StringComparison.Ordinal),
-            "compression commit and queue insertion must live in the domain rules");
+            && roundCompressionSource.Contains("internal static void Commit(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void CommitRoundCompression(", StringComparison.Ordinal),
+            "round archive completion must have one Application owner");
         Test.True(behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.CommitCompression(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EnqueueJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(", StringComparison.Ordinal),
-            "the host must route compression commits through the domain rules");
+            && behaviorSource.Contains("WorldDiplomacyRoundCompressionApplication.Commit(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(", StringComparison.Ordinal),
+            "the host must route round archive completion through Application");
         Test.True(!behaviorSource.Contains("private static int ParseCompressionSequence(", StringComparison.Ordinal),
             "compression internals must not leak raw persistence details into the host");
 
