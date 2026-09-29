@@ -32,6 +32,7 @@
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyFailureApplication.cs" Link="WorldDiplomacyFailureApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundPlanApplication.cs" Link="WorldDiplomacyRoundPlanApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs" Link="WorldDiplomacyRoundProgressApplication.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTurnSchedulingApplication.cs" Link="WorldDiplomacyTurnSchedulingApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeneratedCompletionApplication.cs" Link="WorldDiplomacyGeneratedCompletionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionCallbacks.cs" Link="WorldDiplomacyCompletionCallbacks.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs" Link="WorldDiplomacyLlmResult.cs" />

@@ -1750,7 +1750,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void ScheduleNextResultSettlementTurn(WorldDiplomacyRound round)
 	{
-		WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+		WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
 			round,
 			_storage,
 			CurrentDay(),
@@ -1989,7 +1989,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void ScheduleNextRelayHop(WorldDiplomacyRound round, bool scheduleImmediately = false)
 	{
-		WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+		WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
 			round,
 			scheduleImmediately,
 			_storage,

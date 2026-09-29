@@ -692,8 +692,8 @@ internal static class Program
             "opening settlement must extend the old relay deadline by a route-bounded window");
 
         string scheduler = ExtractMethod(
-            lifecycleRules,
-            "public static void ScheduleNextResultSettlementTurn(");
+            File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyTurnSchedulingApplication.cs")), Encoding.UTF8),
+            "internal static void ScheduleNextResultSettlementTurn(");
         string schedulerAdapter = ExtractSection(
             source,
             "private void ScheduleNextResultSettlementTurn(",
@@ -701,7 +701,7 @@ internal static class Program
         Test.True(!scheduler.Contains("FindNextRelayIndex", StringComparison.Ordinal)
                   && scheduler.Contains("round.ResultSettlementSlots", StringComparison.Ordinal)
                   && scheduler.Contains("FirstOrDefault(x => x != null)", StringComparison.Ordinal)
-                  && schedulerAdapter.Contains("WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(", StringComparison.Ordinal),
+                  && schedulerAdapter.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(", StringComparison.Ordinal),
             "settlement scheduling must drain its persisted slot queue instead of re-entering ordinary relay rotation");
         Test.True(scheduler.Contains("EvaluateSettlementSlotAction(", StringComparison.Ordinal)
                   && scheduler.Contains("ActionableTargetCount = receiverEligible", StringComparison.Ordinal)
@@ -714,8 +714,8 @@ internal static class Program
             "ordinary result settlement may close only after the refreshed slot queue is empty");
 
         string relayScheduler = ExtractMethod(
-            lifecycleRules,
-            "public static void ScheduleNextRelayHop(");
+            File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyTurnSchedulingApplication.cs")), Encoding.UTF8),
+            "internal static void ScheduleNextRelayHop(");
         string relaySchedulerAdapter = ExtractSection(
             source,
             "private void ScheduleNextRelayHop(",
@@ -2068,8 +2068,8 @@ internal static class Program
 			"a response statement must not close the round while any selected or directed obligation remains");
 
 		string scheduler = ExtractMethod(
-			lifecycleRules,
-			"public static void ScheduleNextResultSettlementTurn(");
+			File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyTurnSchedulingApplication.cs")), Encoding.UTF8),
+			"internal static void ScheduleNextResultSettlementTurn(");
 		int schedulerRefresh = scheduler.IndexOf("refreshActionSlots?.Invoke(round)", StringComparison.Ordinal);
 		int emptyQueue = scheduler.IndexOf("if (slot == null)", schedulerRefresh, StringComparison.Ordinal);
 		int close = scheduler.IndexOf("closeActiveRound?.Invoke(", emptyQueue, StringComparison.Ordinal);
