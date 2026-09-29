@@ -11738,7 +11738,7 @@ RunRepairCorrectionAndJobDecisionTests();
         openStorage.Jobs.Add(new WorldDiplomacyJob { Kind = "generate", RoundId = "other" });
         var triggerDoc = new WorldDiplomacyDocument { DocumentId = "dTrig", RoundId = "r2" };
         int refreshCalls = 0, openLogs = 0;
-        WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(
+        WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(
             openRound, triggerDoc, "", "resolved", openStorage, 8,
             (r, id) => false, p => "id-" + p, _ => refreshCalls++, _ => openLogs++);
         int expectedEnd = WorldDiplomacyRoundLifecycleRules.ExtendHardEndDay(
@@ -11755,13 +11755,13 @@ RunRepairCorrectionAndJobDecisionTests();
             && refreshCalls == 1 && openLogs == 1,
             "opening settlement must stamp trigger state, drop queued round work, and refresh slots");
         openRound.ResultSettlementRoundStatus = "deadlocked";
-        WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(
+        WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(
             openRound, triggerDoc, "x", "resolved", openStorage, 9,
             (r, id) => false, p => "id-" + p, _ => refreshCalls++, _ => openLogs++);
         Test.True(openRound.ResultSettlementRoundStatus == "resolved" && refreshCalls == 2 && openLogs == 1,
             "an already-pending round must only adopt resolved status and still refresh slots");
         var nullRoundStorage = new WorldDiplomacyStorage();
-        WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(
+        WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(
             null, triggerDoc, "", "resolved", nullRoundStorage, 9,
             (r, id) => false, p => "id-" + p, _ => refreshCalls++, _ => openLogs++);
         Test.True(refreshCalls == 2 && nullRoundStorage.RelayArrivals.Count == 0,
@@ -14411,7 +14411,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route threat storage migration through the persistence migrator");
         Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad", StringComparison.Ordinal),
             "the round Application must route after-load reconcile through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
             && rulesSource.Contains("ComputeSettlementWindowDays(", StringComparison.Ordinal),
             "the host must route settlement windows through the lifecycle rules");
         Test.True(rulesSource.Contains("ShouldForceTerminalMove(", StringComparison.Ordinal),
@@ -16243,16 +16243,16 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("round.ResultSettlementPlayerWaitingSinceDay = ", StringComparison.Ordinal),
             "the host must not retain settlement-wait or compliance record fields");
 
-        // DPL-060CW: player-declaration offer reconciliation and result-settlement
-        // open bookkeeping live in the lifecycle rules; the host resolves the round
-        // and binds storage/current-day/slot ports.
+        // DPL-060CW: player-declaration offer reconciliation stays a decision rule;
+        // result-settlement open bookkeeping moved to the round Application.
         Test.True(rulesSource.Contains("public static void ReconcilePlayerDeclarationWithOpenOffer(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
-            && rulesSource.Contains("Func<WorldDiplomacyRound, string, bool> includeResultSettlementTarget", StringComparison.Ordinal)
-            && rulesSource.Contains("Action<WorldDiplomacyRound> refreshActionSlots", StringComparison.Ordinal),
-            "offer reconciliation and settlement-open bookkeeping must live in the lifecycle rules behind ports");
+            && applicationSource.Contains("internal static void BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
+            && applicationSource.Contains("Func<WorldDiplomacyRound, string, bool> includeResultSettlementTarget", StringComparison.Ordinal)
+            && applicationSource.Contains("Action<WorldDiplomacyRound> refreshActionSlots", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal),
+            "offer reconciliation must stay a domain rule; settlement-open bookkeeping must live in the round Application behind ports");
         Test.True(analysisSource.Contains("ReconcilePlayerDeclarationWithOpenOffer(document, intent, resolveRound?.Invoke(document.RoundId), ref targetId, ref respondingToOfferDocumentId, log);", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
             && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferApplication.cs"))
                 .Contains("port.ResolveRound(document?.RoundId)", StringComparison.Ordinal)
             && behaviorSource.Contains("RefreshResultSettlementActionSlots", StringComparison.Ordinal),

@@ -1730,7 +1730,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		string closeReason,
 		string roundStatus)
 	{
-		WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(
+		WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(
 			round, document, closeReason, roundStatus, _storage, CurrentDay(),
 			TryIncludeResultSettlementTarget, NewId, RefreshResultSettlementActionSlots, Log);
 	}
