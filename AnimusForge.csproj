@@ -115,7 +115,7 @@
     <Compile Remove="extensions\AnimusForge.XihaiAction\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*.cs" />
     <Compile Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*.cs" />
-    <Compile Remove="AnimusForge.Bootstrap\**\*.cs" />
+    <Compile Remove="src\AF.Bootstrap\**\*.cs" />
     <Compile Remove="FUYONG\**\*.cs" />
     <Compile Remove="analysis\**\*.cs" />
     <Compile Remove="TrueAutoBlock\**\*.cs" />
@@ -129,7 +129,7 @@
     <EmbeddedResource Remove="tools\**\*" />
     <EmbeddedResource Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*" />
     <EmbeddedResource Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
-    <EmbeddedResource Remove="AnimusForge.Bootstrap\**\*" />
+    <EmbeddedResource Remove="src\AF.Bootstrap\**\*" />
     <EmbeddedResource Remove="FUYONG\**\*" />
     <EmbeddedResource Remove="analysis\**\*" />
     <EmbeddedResource Remove="TrueAutoBlock\**\*" />
@@ -142,7 +142,7 @@
     <None Remove="tools\**\*" />
     <None Remove="AnimusForge.SiegeAftermathIntervention\bin\**\*" />
     <None Remove="AnimusForge.SiegeAftermathIntervention\obj\**\*" />
-    <None Remove="AnimusForge.Bootstrap\**\*" />
+    <None Remove="src\AF.Bootstrap\**\*" />
     <None Remove="FUYONG\**\*" />
     <None Remove="analysis\**\*" />
     <None Remove="TrueAutoBlock\**\*" />

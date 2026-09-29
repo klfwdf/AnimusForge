@@ -28,6 +28,10 @@ namespace AnimusForge.Refactor.Modules {
 }
 namespace AnimusForge {
  internal static class SceneActionsIntegrationBoundary {internal static void ShutdownRuntime(){} }
+ // Integrated feature seams: registration runs inside the lifecycle try before CaptureOwners;
+ // shutdown is after Stop. These no-op substitutes keep the real callbacks compilable.
+ internal static class VengeanceRuntimeBridge {internal static void RegisterCampaign(IGameStarter starter){} internal static void Shutdown(){} }
+ internal static class IntegratedModuleHost {internal static void RegisterCampaign(IGameStarter starter){} internal static void Shutdown(){} }
  internal class StubSubModule {
   protected virtual void InitializeGameStarter(Game game,IGameStarter starter){}
   public virtual void OnGameEnd(Game game){} protected virtual void OnSubModuleUnloaded(){}

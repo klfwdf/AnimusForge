@@ -14,7 +14,7 @@
   OpenAI-compatible chat 的请求、鉴权、超时、取消和 assistant text extraction。
 - `TownAmbientAiClient.cs` 已接入该 Gateway；Town 专用开关、缓存、速率/预算、
   多人 JSON 解析和失败降级保持在原 owner。具体边界见
-  `docs/animusforge-phase7-domain-gateway-boundary.md`。
+  `docs/history/phase2-7/animusforge-phase7-domain-gateway-boundary.md`。
 - 共享 Gateway 接入后仍未进行真实 Town Ambient HTTP 或游戏内回放；默认三渠道
   路径未切换，未部署。
 - `LegacyWorldDiplomacyLlmGateway` 已建立并接入 `WorldDiplomacyBehavior` 的
@@ -52,7 +52,7 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - Native opt-in facade 新增 Prompt sections provider overload；SceneShout/Courier 新增共用 `LegacyChannelInteractionFacade` 工厂，三渠道现在可在不改默认入口的情况下接入同一 coordinator/committer lifecycle。
 - Native opt-in 另增 `DetachedInteractionPromptSections` atomic bundle overload，一次 capture 同时冻结主 Prompt 与后处理 Prompt sections，防止两阶段使用不同轮次的规则/事实。
 - 已新增 `LegacyNativePromptParity`：在 Native 现有 `BuildStrictSceneMessagesForNpc` 和后处理最终 system/user 组装点之后，复制最终字符串/role-content 结果生成 detached sections，比较顺序与内容摘要，并汇合 atomic main/postprocess bundle；显式诊断失败时 fail-open 到旧 Native。
-- Native parity fixture 为 `docs/fixtures/phase5-native-prompt-parity/native-message-order.json`，诊断说明为 `docs/animusforge-phase5-native-prompt-parity.md`；默认 parity 日志关闭，不改变默认 Native、SceneShout、Courier。
+- Native parity fixture 为 `docs/fixtures/phase5-native-prompt-parity/native-message-order.json`，诊断说明为 `docs/history/phase2-7/animusforge-phase5-native-prompt-parity.md`；默认 parity 日志关闭，不改变默认 Native、SceneShout、Courier。
 - 已新增 `LegacyNativeConversationOptInRunner` 与 `CreateNativeConversationOptInRunnerForExternal`：显式旁路现在具备 detached Generate、宿主主线程 commit 回调、基础设施失败回退旧 Native，以及 stale/cancel 不重试隔离；仍不自动接管 `SubmitNativeConversationTextInternalAsync`。
 - 已新增 `LegacyNativeActionPlanExecutor` 与 `CreateNativeConversationActionPlanExecutorForExternal`：对 detached raw 后处理标签做严格 ordered plan 校验后，在主线程复用现有 `ApplyNativeConversationGameActionsCore`，保留现有领域动作、通知和 AFEF 权威入口；raw 中多出的动作标签会被拒绝。
 - 当前切片：补齐 `CaptureSceneShout` 的交互边界记忆快照，使 Hero 与非 Hero 都通过稳定 memory id/namespace 复制已有历史进入共享 detached envelope；默认场景喊话入口不变。
@@ -98,22 +98,22 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
 - 已确认后续 owner map 至少应区分 Host/Composition、Conversation/AI、World Simulation、Settlement/Siege、Mission/Combat、Policy、Progression/Social、UI/Diagnostics 与 Compatibility/Safety；这些目前只是逻辑所有权，不代表立即拆 DLL。
 - 阶段 1 首轮审计报告：`docs/animusforge-repository-boundary-audit.md`；未清理 tracked 参考/用户/生成物，未修改脚本。
 - 阶段 1 初版决策表：`docs/animusforge-repository-boundary-decision-table.md`；采用保守“不发布未确认来源/许可证内容”原则，未执行清理或移动。
-- 阶段 2 根 AF 基础 LLM owner 映射报告：`docs/animusforge-phase2-root-llm-owner-slice.md`；只读完成，未移动源码或改变运行行为。
-- 阶段 2 SubModule 注册/调度分组清单报告：`docs/animusforge-phase2-submodule-registration-catalog.md`；只读完成，未改变注册顺序或运行行为。
-- 阶段 2 registry DTO 设计报告：`docs/animusforge-phase2-registry-dto-design.md`；只读完成，未新增运行时类型或改变行为。
-- 阶段 2 registry validator fixture：`docs/animusforge-phase2-registry-validator-fixtures.md`；覆盖有效快照、无效输入、依赖/顺序/owner/profile/线程/失败隔离输出；未实现 validator，未接入运行时。
-- 阶段 2 影响面、候选 Bridge 与回滚地图：`docs/animusforge-phase2-impact-bridge-rollback-map.md`；首轮覆盖 Save、Prompt/Rule/Tag、Harmony、Tick、UI、线程、API、用户数据、Bridge、非目标和回滚模板；未移动源码或改变运行行为。
-- 阶段 2 Conversation/Memory/Action contract matrix：`docs/animusforge-phase2-conversation-memory-action-contract-matrix.md`；定义不可变 snapshot、记忆/AFEF、授权动作结果、逐文件影响、三渠道一致性和纯 fixture；未实现 DTO/测试，测试 NOT-RUN。
-- 阶段 2 Conversation/Memory/Action 方法级映射与纯 fixture：`docs/animusforge-phase2-conversation-memory-action-method-map.md`、`docs/fixtures/phase2-conversation-memory-action/`；已核对真实方法行号并建立纯输入/预期输出样例；`git diff --check` PASS，YAML parser NOT-RUN（环境无 parser）。
-- 阶段 2 Settlement/Siege 与 Policy/Diplomacy Bridge contract：`docs/animusforge-phase2-settlement-siege-policy-diplomacy-bridge-contracts.md`、`docs/fixtures/phase2-settlement-policy-bridges/`；已定义现有边界、五种组合、失败/回滚语义；3 个 JSON fixture 已通过 `ConvertFrom-Json`；未实现 Bridge 或 runner。
+- 阶段 2 根 AF 基础 LLM owner 映射报告：`docs/history/phase2-7/animusforge-phase2-root-llm-owner-slice.md`；只读完成，未移动源码或改变运行行为。
+- 阶段 2 SubModule 注册/调度分组清单报告：`docs/history/phase2-7/animusforge-phase2-submodule-registration-catalog.md`；只读完成，未改变注册顺序或运行行为。
+- 阶段 2 registry DTO 设计报告：`docs/history/phase2-7/animusforge-phase2-registry-dto-design.md`；只读完成，未新增运行时类型或改变行为。
+- 阶段 2 registry validator fixture：`docs/history/phase2-7/animusforge-phase2-registry-validator-fixtures.md`；覆盖有效快照、无效输入、依赖/顺序/owner/profile/线程/失败隔离输出；未实现 validator，未接入运行时。
+- 阶段 2 影响面、候选 Bridge 与回滚地图：`docs/history/phase2-7/animusforge-phase2-impact-bridge-rollback-map.md`；首轮覆盖 Save、Prompt/Rule/Tag、Harmony、Tick、UI、线程、API、用户数据、Bridge、非目标和回滚模板；未移动源码或改变运行行为。
+- 阶段 2 Conversation/Memory/Action contract matrix：`docs/history/phase2-7/animusforge-phase2-conversation-memory-action-contract-matrix.md`；定义不可变 snapshot、记忆/AFEF、授权动作结果、逐文件影响、三渠道一致性和纯 fixture；未实现 DTO/测试，测试 NOT-RUN。
+- 阶段 2 Conversation/Memory/Action 方法级映射与纯 fixture：`docs/history/phase2-7/animusforge-phase2-conversation-memory-action-method-map.md`、`docs/fixtures/phase2-conversation-memory-action/`；已核对真实方法行号并建立纯输入/预期输出样例；`git diff --check` PASS，YAML parser NOT-RUN（环境无 parser）。
+- 阶段 2 Settlement/Siege 与 Policy/Diplomacy Bridge contract：`docs/history/phase2-7/animusforge-phase2-settlement-siege-policy-diplomacy-bridge-contracts.md`、`docs/fixtures/phase2-settlement-policy-bridges/`；已定义现有边界、五种组合、失败/回滚语义；3 个 JSON fixture 已通过 `ConvertFrom-Json`；未实现 Bridge 或 runner。
 - 阶段 2 Bridge fixture runner：`tools/BridgeFixtureContractTests/validate_bridge_fixtures.py`；普通输出和 `--json` 输出均 PASS，10 个组合案例、6 项不变量；独立运行，不引用 Bannerlord/生产程序集。
-- 阶段 3 module catalog：`docs/animusforge-phase3-module-manifest-profile-health-catalog.md`、`docs/fixtures/phase3-module-catalog/`、`tools/ModuleCatalogContractTests/validate_module_catalog.py`；普通输出和 `--json` 输出均 PASS，8 modules、3 profiles、16 invalid cases、8 health states；未实现 Foundation/Registry。
-- 阶段 3 AF.Contracts：`docs/animusforge-phase3-af-contracts-design.md`、`docs/fixtures/phase3-af-contracts/`、`tools/AFContractsContractTests/validate_af_contracts.py`；普通输出和 `--json` 输出均 PASS，9 contracts、3 events、6 capabilities、18 invalid cases；未创建生产 contract 项目。
-- 阶段 3 Foundation runtime：`docs/animusforge-phase3-foundation-runtime-contracts.md`、`docs/fixtures/phase3-foundation-runtime/`、`tools/FoundationRuntimeContractTests/validate_foundation_runtime.py`；普通输出和 `--json` 输出均 PASS，6 contracts、8 health states、16 invalid cases；未创建生产 Foundation 项目。
+- 阶段 3 module catalog：`docs/history/phase2-7/animusforge-phase3-module-manifest-profile-health-catalog.md`、`docs/fixtures/phase3-module-catalog/`、`tools/ModuleCatalogContractTests/validate_module_catalog.py`；普通输出和 `--json` 输出均 PASS，8 modules、3 profiles、16 invalid cases、8 health states；未实现 Foundation/Registry。
+- 阶段 3 AF.Contracts：`docs/history/phase2-7/animusforge-phase3-af-contracts-design.md`、`docs/fixtures/phase3-af-contracts/`、`tools/AFContractsContractTests/validate_af_contracts.py`；普通输出和 `--json` 输出均 PASS，9 contracts、3 events、6 capabilities、18 invalid cases；未创建生产 contract 项目。
+- 阶段 3 Foundation runtime：`docs/history/phase2-7/animusforge-phase3-foundation-runtime-contracts.md`、`docs/fixtures/phase3-foundation-runtime/`、`tools/FoundationRuntimeContractTests/validate_foundation_runtime.py`；普通输出和 `--json` 输出均 PASS，6 contracts、8 health states、16 invalid cases；未创建生产 Foundation 项目。
 - 本轮审查：修正公共台账中阶段 3 条目误放阶段 2及陈旧验证记录；四个独立 runner 均重新运行通过，未发现生产/脚本/配置路径变化。
-- 阶段 3 纯组合矩阵：`docs/animusforge-phase3-composition-matrix.md`、`docs/fixtures/phase3-composition-matrix/`、`tools/CompositionMatrixContractTests/validate_composition_matrix.py`；普通输出和 `--json` 输出均 PASS，18 cases、24 invariants；未实现 Module Host。
-- 阶段 3 GameAdapter API boundary：`docs/animusforge-phase3-game-adapter-api-boundary.md`、`docs/fixtures/phase3-game-adapter-api/`、`tools/GameAdapterContractTests/validate_game_adapter.py`；普通输出和 `--json` 输出均 PASS，14 cases、2 API lines、7 helper boundaries；未修改生产 helper，未重新构建/部署。
-- 阶段 3 最终设计审查：`docs/animusforge-phase3-final-review.md`；确认阶段 3 设计清单闭合、6 个 runner 和 14 个 JSON fixture 通过；结论 PASS WITH LIMITATIONS；生产实现、双版本运行时、旧存档和游戏内验收仍未完成。
+- 阶段 3 纯组合矩阵：`docs/history/phase2-7/animusforge-phase3-composition-matrix.md`、`docs/fixtures/phase3-composition-matrix/`、`tools/CompositionMatrixContractTests/validate_composition_matrix.py`；普通输出和 `--json` 输出均 PASS，18 cases、24 invariants；未实现 Module Host。
+- 阶段 3 GameAdapter API boundary：`docs/history/phase2-7/animusforge-phase3-game-adapter-api-boundary.md`、`docs/fixtures/phase3-game-adapter-api/`、`tools/GameAdapterContractTests/validate_game_adapter.py`；普通输出和 `--json` 输出均 PASS，14 cases、2 API lines、7 helper boundaries；未修改生产 helper，未重新构建/部署。
+- 阶段 3 最终设计审查：`docs/history/phase2-7/animusforge-phase3-final-review.md`；确认阶段 3 设计清单闭合、6 个 runner 和 14 个 JSON fixture 通过；结论 PASS WITH LIMITATIONS；生产实现、双版本运行时、旧存档和游戏内验收仍未完成。
 - 提交/推送状态：已创建本地提交（当前 HEAD，包含阶段 2/3 架构准备材料）；两次推送均失败，错误分别为 `Recv failure: Connection was reset` 和 `Failed to connect to github.com port 443`；当前分支领先远端 1 个提交，远端尚未更新。
 - 用户决定先保持仓库现状：参考源码、生成物、用户数据、第三方依赖、工具发行物和归档均不删除、不移动、不取消跟踪；不修改 `.gitignore`。
 - 用户已明确：`原版游戏本体代码1.3.x/` 与 `原版游戏本体代码1.4.5/` 是游戏源码参考仓库，应保留在 tracked reference plane；它们不属于 AF 生产源码，也不进入客户端 ZIP。
@@ -173,7 +173,7 @@ Policy 各自 profile/JSON/重试 authority 保留；NPC ruler、玩家政策和
   均 `0 warning / 0 error`，stage 位于 `F:\AF测试重构\bin\Debug\single_module_stage\AnimusForge`，
   未部署到游戏目录。
 - Economy/Reward/Debt detached capability 与 replay contract 已完成，见
-  `docs/animusforge-phase6-economy-reward-debt-replay-boundary.md`；合法动作目录
+  `docs/history/phase2-7/animusforge-phase6-economy-reward-debt-replay-boundary.md`；合法动作目录
   另已修正 `ACTION:DUEL_STAKE_*` 变体覆盖。
 - 下一项：对真实 opt-in HTTP 做最小三渠道回放与旧存档运行时写入验收；仍不切换默认
   运行路径。动作协议切片已进一步完成平衡括号解析、冒号资产 token 和有限

@@ -11,8 +11,8 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-set "PATH_SCRIPT=%SCRIPT_DIR%resolve_bannerlord_paths.ps1"
-set "BUILD_SCRIPT=%SCRIPT_DIR%build_single_module.ps1"
+set "PATH_SCRIPT=%SCRIPT_DIR%..\scripts\build\resolve_bannerlord_paths.ps1"
+set "BUILD_SCRIPT=%SCRIPT_DIR%..\scripts\build\build_single_module.ps1"
 set "CONFIG=Debug"
 set "BANNERLORD_ROOT="
 set "WORKSHOP_CONTENT_DIR="

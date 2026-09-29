@@ -12,7 +12,7 @@ if (-not $root.StartsWith($allowed + [System.IO.Path]::DirectorySeparatorChar, [
 
 $astErrors = $null
 $ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    (Join-Path $ProjectRoot '一键编译覆盖推送\deploy_module.ps1'), [ref]$null, [ref]$astErrors)
+    (Join-Path $ProjectRoot 'scripts\build\deploy_module.ps1'), [ref]$null, [ref]$astErrors)
 if ($astErrors.Count -ne 0) { throw 'Deploy script has parse errors.' }
 foreach ($name in @('Get-FullPathSafe', 'Assert-PathUnderRoot', 'Assert-NotReparsePoint',
         'Assert-NoReparseAncestors', 'Assert-DeploymentPath', 'Write-DeploymentMarker',

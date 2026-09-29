@@ -15,7 +15,7 @@ namespace TaleWorlds.MountAndBlade { public class Mission { public static Missio
 namespace TaleWorlds.Library { public static class TWParallel { public static bool IsMainThread()=>Thread.CurrentThread.ManagedThreadId==AnimusForge.Host.MainThread; } }
 namespace AnimusForge {
 static class Host {
- internal static int MainThread,WrongThread,Session,Effects,Echo,Marker,Tts,Closed,CaptureCount,Rollbacks,OwnerQueries,PlayerTargetAgentIndex;
+ internal static int MainThread,WrongThread,Session,Effects,Echo,Marker,Tts,Closed,CaptureCount,Rollbacks,OwnerQueries,PlayerTargetAgentIndex,Accepted;
  internal static string PlayerTargetName;
  internal static bool TargetAvailable=true,MemoryThrows,CaptureThrows,DuplicateCallback,OwnerPresent,OwnerAccept;
  internal static string Mode,NonHeroId="af_nonhero:party-a";
@@ -23,7 +23,7 @@ static class Host {
  internal static Action AfterValidation,AfterWrite;
  internal static readonly List<string> History=new List<string>();
  internal static void Game(){if(Thread.CurrentThread.ManagedThreadId!=MainThread)Interlocked.Increment(ref WrongThread);}
- internal static void Reset(bool nonHero=false){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Effects=Echo=Marker=Tts=Closed=CaptureCount=Rollbacks=OwnerQueries=PlayerTargetAgentIndex=0;PlayerTargetName=null;Session=3;TargetAvailable=true;MemoryThrows=CaptureThrows=DuplicateCallback=false;OwnerPresent=OwnerAccept=true;Mode="normal";NonHeroId="af_nonhero:party-a";AfterValidation=AfterWrite=null;History.Clear();Hero=nonHero?null:new Hero();RegisteredHero=Hero;TaleWorlds.CampaignSystem.Hero.MainHero=null;Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
+ internal static void Reset(bool nonHero=false){MainThread=Thread.CurrentThread.ManagedThreadId;WrongThread=Effects=Echo=Marker=Tts=Closed=CaptureCount=Rollbacks=OwnerQueries=PlayerTargetAgentIndex=Accepted=0;PlayerTargetName=null;Session=3;TargetAvailable=true;MemoryThrows=CaptureThrows=DuplicateCallback=false;OwnerPresent=OwnerAccept=true;Mode="normal";NonHeroId="af_nonhero:party-a";AfterValidation=AfterWrite=null;History.Clear();Hero=nonHero?null:new Hero();RegisteredHero=Hero;TaleWorlds.CampaignSystem.Hero.MainHero=null;Character=new CharacterObject();Campaign.Current=new Campaign();Mission.Current=new Mission();SaveRuntimeGuard.Generation=1;}
  internal static void Write(string key,string player,string reply,string fact,int session,int target=0,string targetName=null){Game();if(MemoryThrows)throw new InvalidOperationException("memory fixture failed");PlayerTargetAgentIndex=target;PlayerTargetName=targetName;History.Add(key+"|"+session+"|"+(player??"<null>")+"|"+(reply??"<null>")+"|"+(fact??"<null>"));AfterWrite?.Invoke();AfterWrite=null;}
 }
 static class SaveRuntimeGuard {internal static long Generation;internal static bool IsCurrentGeneration(long g)=>g==Generation;}
@@ -141,6 +141,7 @@ static class Program {
    Check(Host.History.Count==1&&Host.History[0]==expected,"exact player/reply/opening/session payload");
    Check(Host.WrongThread==0&&Host.Effects==1,"action and all completion game work stay on physical main thread");
    Check(Host.Echo==1&&Host.Marker==1&&Host.Tts==1,"normal echo marker and fallback TTS preserved");
+   Check(Host.Accepted==1,"accepted-reply side effects run once on the main thread for a non-discarded dispatch");
   }
   foreach(bool nonHero in new[]{false,true}) {
    Host.Reset(nonHero);Host.Session=-1;var owner=new ShoutBehavior();Finish(owner,owner.Start());Check(Host.History[0].Contains("|-1|"),"loose history route preserved nonHero="+nonHero);
@@ -154,10 +155,11 @@ static class Program {
   Host.Reset(true);Host.NonHeroId="";var o=new ShoutBehavior();Finish(o,o.Start());Check(Host.History.Count==0&&Host.Echo==1,"nonpersistent scene NPC retains transient history without fabricated long-term identity");
   Host.Reset();o=new ShoutBehavior();Finish(o,o.Start(earlyTts:false,reply:"（没说话）"));Check(Host.History[0]=="A|3|input|<null>|<null>"&&Host.Echo==0&&Host.Marker==0&&Host.Tts==0,"no-speech keeps player input but suppresses NPC speech side effects");
   Host.Reset();Host.Mode="load";o=new ShoutBehavior();Check(Finish(o,o.Start())==""&&Host.History.Count==0&&Host.Echo==0&&Host.Tts==0&&Host.Effects==1,"reentrant load after actions cannot write new campaign history or deny earlier action");
-  Host.Reset();o=new ShoutBehavior();var queued=o.Start();SaveRuntimeGuard.Generation++;Check(Finish(o,queued)==""&&Host.Effects==0&&Host.History.Count==0&&Host.CaptureCount==0&&Host.Rollbacks==0&&Host.WrongThread==0,"stale before action cannot capture/execute/complete");
+  Host.Reset();o=new ShoutBehavior();var queued=o.Start();SaveRuntimeGuard.Generation++;Check(Finish(o,queued)==""&&Host.Effects==0&&Host.History.Count==0&&Host.CaptureCount==0&&Host.Rollbacks==0&&Host.WrongThread==0&&Host.Accepted==0,"stale before action cannot capture/execute/complete");
   Host.Reset();o=new ShoutBehavior();var retired=o.Start();o.NewRevision();Campaign.Current.ConversationManager.ActiveToken++;Check(Finish(o,retired)==""&&Host.Rollbacks==0&&Host.WrongThread==0,"retired request cannot roll back current history after queue discard");
   Host.Reset();Host.Mode="discard";o=new ShoutBehavior();Check(Finish(o,o.Start())==""&&Host.History.Count==0&&Host.Echo==0&&Host.Rollbacks==1&&Host.WrongThread==0,"owner discarded result never completes history");
-  Host.Reset();Host.DuplicateCallback=true;o=new ShoutBehavior();Finish(o,o.Start());Check(Host.Effects==1&&Host.History.Count==1&&Host.Echo==1,"duplicate callback cannot repeat actions or completion");
+  Check(Host.Accepted==0,"discarded dispatch never runs accepted-reply side effects");
+  Host.Reset();Host.DuplicateCallback=true;o=new ShoutBehavior();Finish(o,o.Start());Check(Host.Effects==1&&Host.History.Count==1&&Host.Echo==1&&Host.Accepted==1,"duplicate callback cannot repeat actions or completion");
   Host.Reset();Host.MemoryThrows=true;o=new ShoutBehavior();Fault(o,o.Start(),AnimusForge.Refactor.Contracts.ActionExecutionEffectState.UnknownAfterStart);Check(Host.Effects==1&&Host.Echo==0&&Host.Tts==0,"propagated history failure does not run normal transient completion");
   Host.Reset(true);Host.CaptureThrows=true;o=new ShoutBehavior();Fault(o,o.Start(),AnimusForge.Refactor.Contracts.ActionExecutionEffectState.NoConfirmedEffect);Check(Host.Effects==0&&Host.History.Count==0,"snapshot failure stays before actual action owner");
   Host.Reset();o=new ShoutBehavior();Host.AfterWrite=()=>SaveRuntimeGuard.Generation++;Finish(o,o.Start(earlyTts:false));Check(Host.History.Count==1&&Host.Echo==0&&Host.Marker==0&&Host.Tts==0,"reentrant generation change after persistent dispatch blocks later transient work");

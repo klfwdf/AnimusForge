@@ -23,6 +23,22 @@ for signature,name in [('private async Task SubmitAsync(string text)','Normal'),
  handlers.append('private bool '+name+'(ShoutBehavior.NativeConversationActionDispatchException failure) { bool suppressReadyNotice=false;int generation=1;try { throw failure; } '+handler+' return suppressReadyNotice; }')
 values['UI_HANDLERS']='\n'.join(handlers)+'\ninternal bool Report(ShoutBehavior.NativeConversationActionDispatchException e,bool opening)=>opening?Opening(e):Normal(e);'
 values['ROLLBACK']='' if baseline else ex.declaration(s,'private static void RollbackNativeConversationPendingPlayerHistory(')
+if not baseline:
+ # The accepted-reply gate lives in the CURRENT dispatch lambda (the projection returns the
+ # pre-extraction file). Use the live declaration, and require it to differ from the projected
+ # one only by that gate so no other dispatch drift slips in unreviewed.
+ live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig').replace('\r\n','\n')
+ dispatch=ex.declaration(live,'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(')
+ gate_old='\t\t\t\tif (completionScope != null && result != null && !result.ResponseDiscarded)\n\t\t\t\t\tresult.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);\n'
+ gate_new='\t\t\t\tif (completionScope != null && result != null && !result.ResponseDiscarded)\n\t\t\t\t{\n\t\t\t\t\tRunNativeAcceptedReplySideEffects(completion);\n\t\t\t\t\tresult.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);\n\t\t\t\t}\n'
+ assert dispatch.count(gate_new)==1 and dispatch.replace(gate_new,gate_old)==values['DISPATCH'].replace('\r\n','\n'), 'Unreviewed Native dispatch drift'
+ if a.mutate=='accepted-effects-on-discard':dispatch=dispatch.replace(gate_new,'\t\t\t\tRunNativeAcceptedReplySideEffects(completion);\n'+gate_old,1)
+ values['DISPATCH']=dispatch
+ # Production NativeTurnCommit supplies AcceptedReplySideEffects; the projected tail predates it,
+ # so the fixture attaches a counting delegate to observe the real dispatch/completion gate.
+ hook='PendingPlayerHistoryKey = nativePendingAfefKey\n'
+ assert values['TAIL'].count(hook)==1,'completion request shape changed'
+ values['TAIL']=values['TAIL'].replace(hook,'PendingPlayerHistoryKey = nativePendingAfefKey,\n\t\t\t\tAcceptedReplySideEffects = () => { Host.Game(); Host.Accepted++; }\n',1)
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for k,v in values.items():code=code.replace('@@'+k+'@@',v)
 assert '@@' not in code

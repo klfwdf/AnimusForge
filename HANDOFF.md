@@ -1,12 +1,12 @@
-# 当前交接：J17-A 盘点结果并入重构分支（2026-09-29）
+# 当前交接：J16 离线收口完成，J17-A 盘点进行中（2026-09-29）
 
-- **交付范围**：将独立分支 `codex/af-j17a-inventory-20260928` 的 J17-A 盘点文档整合到最新 `origin/codex/af-main-refactor-continuation-20260831`。以普通 merge 保留双方历史；新增的 J17 内容限于本 HANDOFF、主计划台账和代码范围图，不包含 J17 产品代码迁移或 J16 工作区内容。
-- **证据基线提醒**：E09–E13 的源码坐标/Compile 清单来自 `99ca85ae`；整合前远端已到 `ada9894a`，期间有 267 个远端独有提交。因此这些是有明确来源的盘点快照，不等同于最新 HEAD 的当前成员映射；J17-B 开工前必须对变更文件/符号做差异核对并刷新受影响证据，不能直接照旧路径施工。
-- **已完成盘点**：R04 存档/JSON 边界（E09）；R02 摘要职责分区（E10）；R01 Weekly 最小闭包（E11）；R03 导入/导出闭包（E12）；R07 MSBuild Compile 文件级覆盖（E13：1.3/1.4 各 940 项，20 桶、UNASSIGNED=0）。详见[主台账 J17-A 意图与责任登记](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)及[源码证据 E09–E13](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。
-- **仍未完成**：R07 还有 3,332/10,704 个混合宿主成员（59,174 行）待人工职责映射；R05/R06/R08/R09 尚未完成；J17-A 仍 OPEN，不得开始宣称 J17-B 或全仓结项。存档旧档实测、LIVE/游戏内验证也不在本轮证明范围。
-- **验证与边界**：本轮仅合并/核对文档，`git diff --check` 为提交前门禁；未改产品 C#、测试、项目、配置、游戏/玩家数据，未运行构建/部署/打包。保留未跟踪 `.dotnet-cli-home/` 与本地 `artifacts/j17a/` 状态，不把启发式盘点脚本称为编译器证明。
+- **整合范围**：以普通 merge 保留 J16 与 J17 两侧提交。J16 分支基于 `ada9894a`，包含 15 个提交；J17-A 为独立分支的 5 个盘点提交。J16 包含测试/工具/文档/Bootstrap 归位及两项有测试保护的 Scene 提交顺序修复；J17 新增内容限于本 HANDOFF、主计划台账和代码范围图的盘点证据，不代表 J17 产品迁移完成。
+- **J16 状态**：`J16_OFFLINE_CLOSED`，J16a/b/c/d/e 按离线范围完成。全量 runner 记录为 257 项 `PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。真实游戏、旧存档、三渠道针对新增修复的回放为 `NOT-RUN`；`_af_xihai_legacy_equipment_cleanup_v1` 旧档兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留仍见主台账，不将离线关闭扩大为全项目完成。
+- **J17-A 状态**：已盘点 R04（E09）、R02（E10）、R01（E11）、R03（E12）、R07 文件级覆盖（E13：各版本 940 项/20 桶/UNASSIGNED=0）。E09–E13 源码坐标来自 `99ca85ae`；后续到 `ada9894a` 有 267 个远端独有提交，故必须在 J17-B 开工前按符号与变更文件刷新相关证据。R07 仍有 3,332/10,704 个成员待人工映射；R05/R06/R08/R09 未完，J17-A 仍 OPEN。
+- **推送状态**：本机 `origin/codex/af-main-refactor-continuation-20260831` 跟踪点为 `ada9894a`。本轮 fetch 因 GitHub HTTPS 无可用凭据失败；此前 HTTPS push 与 `gh auth status` 也确认凭据无效。重新认证后需先刷新远端再普通快进推送；不强推、不覆写远端。
+- **验证与保留**：J16 的全量验证数据来自 `codex/af-j16-continue-20260929` 交接记录，本轮未重跑该套件；本轮仅做文档冲突整合与 `git diff --check`。未运行游戏/旧档/provider，未部署/打包；未跟踪 `.dotnet-cli-home/` 和 J17 的忽略盘点材料保持原样。
 
-## 以下为上一份交接（历史状态，当前以本节为准）
+## 以下为上一份交接历史（当前以本节为准）
 
 # 当前交接：未推送提交与四功能整合工作树说明已整理（2026-09-29）
 

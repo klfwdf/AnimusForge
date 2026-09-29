@@ -336,6 +336,8 @@ public sealed class ProductionBlockHost
         }
         return true;
     }
+    // Scene-action reply capture lower bound (ada9894a); recorded only when a postprocess follows.
+    private static void RecordSceneActionReplyCapture(int agentIndex) => Scenario.Current.HistoryEvents.Add("scene-action-capture:" + agentIndex);
     private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> audience,
         bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch,
         List<SceneSummonPromptTarget> summonTargets = null, List<SceneGuidePromptTarget> guideTargets = null,

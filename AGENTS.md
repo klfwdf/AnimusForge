@@ -27,7 +27,7 @@
 
 当任务涉及以下内容时，先阅读并套用 `docs/bannerlord_dual_module_output.md`：
 
-- 修改 `一键编译覆盖推送` 下的一键编译、覆盖、推送或打包脚本。
+- 修改 `一键编译覆盖推送` 下的一键编译、覆盖、推送或打包入口（`.bat`），或 `scripts/build` 下它们调用的 PowerShell 脚本。
 - 修改 1.3.x / 1.4.x 双实现构建流程（当前源码差异基线为 1.4.5）。
 - 调整输出到 Bannerlord `Modules` 目录的模块文件夹。
 - 修改 `SubModule.xml` 的模块 `Id`、`Name` 或 DLL 加载方式。
