@@ -13,6 +13,7 @@ Toolchain (override by environment; missing tools make the affected entries BLOC
   AF_PWSH      PowerShell 7             default G:/AFMOD/.pwsh7/pwsh.exe
   AF_BANNERLORD_ROOT / AF_WORKSHOP_DIR  game + workshop roots for replay/policy entries
   AF_REPLAY_14_REFS                     1.4 reference dir (default <repo>/.tmp/build_check/1.4)
+  AF_TEST_TEMP_ROOT                     TEMP parent, outside the repo (default <repo>/../tmp/af-run-all)
 
 Usage: py -3 tests/run_all.py [--only PREFIX] [--ids FILE] [--jobs N] [--out DIR] [--list]
 Writes logs and results.json under artifacts/tests/run_all/<run>/ (ignored). Read-only
@@ -162,8 +163,10 @@ def main(argv: list[str]) -> int:
     run_name = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     out = Path(args.out) if args.out else ROOT / "artifacts" / "tests" / "run_all" / run_name
     out.mkdir(parents=True, exist_ok=False)
-    tmp = out / "tmp"
-    tmp.mkdir()
+    # TEMP must live outside the repository: data-root guards (AnimusForgeDataPaths) correctly
+    # reject any root below a directory containing AnimusForge.csproj.
+    tmp = env_path("AF_TEST_TEMP_ROOT", ROOT.parent / "tmp" / "af-run-all") / (ROOT.name + "-" + run_name)
+    tmp.mkdir(parents=True, exist_ok=False)
     env = os.environ.copy()
     env.update({
         "TMP": str(tmp), "TEMP": str(tmp), "PYTHONUTF8": "1",
