@@ -1,38 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
-using TaleWorlds.Localization;
 using AnimusForge.Refactor.Modules;
 
 namespace AnimusForge;
 
-// Weekly main-thread owner. Hot paths only read the dictionaries written here.
+// Main-thread owner for the v2 civil-war state machine. Event handlers only add points;
+// all rolls, membership changes and game actions happen in the weekly maintenance slice.
 internal sealed class KingdomCivilWarOwner
 {
-	internal const int TensionStability = 40;
-	internal const int GrievanceDetonation = 100;
 	internal const int PanelPageSize = 8;
-	private const int MaterialCharCap = 400;
-	private const int SummaryCharCap = 240;
-
+	private const int MaxHistory = 8;
+	private const int MaxClanGrievance = 100;
+	private const string FactionPrefix = "civilwar-faction-";
 	private readonly KingdomCivilWarStorage _storage = new KingdomCivilWarStorage();
 	private readonly Dictionary<string, int> _oppositionLoyaltyBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _openWarKingdoms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-	internal KingdomCivilWarStorage Storage => _storage;
+	internal KingdomCivilWarStorage Storage { get { return _storage; } }
 
 	internal void Replace(KingdomCivilWarStorage loaded)
 	{
 		_storage.Kingdoms.Clear();
 		_oppositionLoyaltyBySettlement.Clear();
 		_openWarKingdoms.Clear();
-		if (loaded?.Kingdoms == null) return;
+		if (loaded == null || loaded.Kingdoms == null) return;
 		foreach (KeyValuePair<string, KingdomCivilWarKingdomState> pair in loaded.Kingdoms)
 		{
 			KingdomCivilWarKingdomState state = Sanitize(pair.Value);
@@ -46,6 +42,13 @@ internal sealed class KingdomCivilWarOwner
 		}
 	}
 
+	internal bool HasTrackedKingdom(Kingdom kingdom)
+	{
+		KingdomCivilWarKingdomState state;
+		return kingdom != null && _storage.Kingdoms.TryGetValue(kingdom.StringId ?? "", out state) && state != null && state.Faction != null
+			&& (state.Stage == KingdomCivilWarStage.FactionFormed || state.Stage == KingdomCivilWarStage.Ultimatum || state.Stage == KingdomCivilWarStage.OpenWar);
+	}
+
 	internal bool IsInOpenCivilWar(string kingdomId)
 	{
 		return !string.IsNullOrWhiteSpace(kingdomId) && _openWarKingdoms.Contains(kingdomId.Trim());
@@ -53,707 +56,525 @@ internal sealed class KingdomCivilWarOwner
 
 	internal int GetOppositionLoyaltyDelta(Settlement settlement)
 	{
-		string id = settlement?.StringId;
-		if (string.IsNullOrWhiteSpace(id)) return 0;
-		return _oppositionLoyaltyBySettlement.TryGetValue(id, out int delta) ? delta : 0;
+		string id = settlement == null ? "" : settlement.StringId;
+		int value;
+		return !string.IsNullOrWhiteSpace(id) && _oppositionLoyaltyBySettlement.TryGetValue(id, out value) ? value : 0;
 	}
 
-	internal bool TryGet(string kingdomId, out KingdomCivilWarKingdomState state)
+	// Called by CampaignEvents. Points are keyed by source, so the same event cannot be
+	// counted twice by a replayed callback. This method never scans campaign history.
+	internal void AddGrievance(Kingdom kingdom, string sourceId, IEnumerable<Clan> clans, float points, int week, string text)
 	{
-		state = null;
-		if (string.IsNullOrWhiteSpace(kingdomId)) return false;
-		return _storage.Kingdoms.TryGetValue(kingdomId.Trim(), out state) && state != null;
+		if (kingdom == null || !DuelSettings.IsCivilWarFactionsEnabled() || (CivilWarWorld.IsPlayerRuled(kingdom) && !DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed())) return;
+		CivilWarGrievanceSourceDef source = CivilWarCatalog.FindSource(sourceId);
+		if (source == null || points <= 0f) return;
+		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, week);
+		foreach (Clan clan in (clans ?? Enumerable.Empty<Clan>()).Where(x => x != null && x.Kingdom == kingdom && IsPoliticalClan(x)))
+		{
+			KingdomCivilWarClanState record = GetOrCreateClan(state, clan, week);
+			float current;
+			if (!record.Grievance.TryGetValue(source.Id, out current)) current = 0f;
+			record.Grievance[source.Id] = CivilWarRules.Clamp(current + points, 0f, MaxClanGrievance);
+		}
+		if (!string.IsNullOrWhiteSpace(text)) AddHistory(state, week, text);
 	}
 
-	internal IReadOnlyList<KingdomCivilWarKingdomState> ListForPanel()
+	internal void RecordPolicyImposed(Kingdom kingdom, string policyId, int week, string text)
 	{
-		return _storage.Kingdoms.Values
-			.Where(x => x != null && x.Stage != KingdomCivilWarStage.None && x.Stage != KingdomCivilWarStage.Reconciled)
-			.Where(x => !PlayerKingdomRebellionImmunity.ShouldProtectKingdom(FindKingdom(x.KingdomId)))
-			.OrderBy(x => x.KingdomId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
+		if (kingdom == null || string.IsNullOrWhiteSpace(policyId)) return;
+		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, week);
+		state.LastImposedPolicyId = policyId.Trim();
+		AddGrievance(kingdom, "policy_imposed", CivilWarWorld.Vassals(kingdom), 8f, week, text);
 	}
 
-	internal bool HasTrackedKingdom(Kingdom kingdom)
+	internal void AdvanceWeek(Kingdom kingdom, int weekIndex, int stability, Action<Kingdom, int> adjustStability, IReadOnlyList<string> ignoredRecentEvents)
 	{
-		return kingdom != null && _storage.Kingdoms.ContainsKey(kingdom.StringId ?? "");
+		if (kingdom == null || kingdom.IsEliminated || weekIndex <= 0 || !DuelSettings.IsCivilWarFactionsEnabled()) return;
+		if (CivilWarWorld.IsPlayerRuled(kingdom) && !DuelSettings.IsCivilWarPlayerKingdomFactionsAllowed()) return;
+		CivilWarTuning tuning = DuelSettings.BuildCivilWarTuning();
+		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, weekIndex);
+		if (state.LastAdvancedWeek >= weekIndex) return;
+		DecayAndRefresh(kingdom, state, weekIndex);
+		state.LastAdvancedWeek = weekIndex;
+		if (state.Stage == KingdomCivilWarStage.Cooldown)
+		{
+			if (weekIndex < state.CooldownUntilWeek) { SaveSummary(state, kingdom); return; }
+			state.Stage = KingdomCivilWarStage.Discontent;
+			state.Faction = null;
+			state.StageWeek = weekIndex;
+		}
+		try
+		{
+			if (state.Faction == null)
+				TryFormFaction(kingdom, state, weekIndex, stability, tuning);
+			else if (state.Stage == KingdomCivilWarStage.FactionFormed || state.Stage == KingdomCivilWarStage.Ultimatum)
+				AdvanceUltimatum(kingdom, state, weekIndex, stability, tuning, adjustStability);
+			else if (state.Stage == KingdomCivilWarStage.OpenWar)
+				AdvanceOpenWar(kingdom, state, weekIndex, tuning, adjustStability);
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("KingdomCivilWar", "[ERROR] weekly owner failed kingdom=" + kingdom.StringId + " error=" + ex);
+		}
+		SaveSummary(state, kingdom);
 	}
 
-	internal void AdvanceWeek(Kingdom kingdom, int weekIndex, int stability, Action<Kingdom, int> adjustStability, IReadOnlyList<string> recentEvents)
+	private void TryFormFaction(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, int stability, CivilWarTuning tuning)
 	{
-		if (kingdom == null || kingdom.IsEliminated || weekIndex <= 0) return;
-		if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled()) return;
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom)) return;
-		string kingdomId = kingdom.StringId ?? "";
-		if (string.IsNullOrWhiteSpace(kingdomId)) return;
-		if (!_storage.Kingdoms.TryGetValue(kingdomId, out KingdomCivilWarKingdomState state))
+		if (week < state.CooldownUntilWeek) return;
+		Clan leader = CivilWarWorld.Vassals(kingdom).OrderByDescending(x => TotalGrievance(GetOrCreateClan(state, x, week))).FirstOrDefault();
+		if (leader == null) return;
+		KingdomCivilWarClanState leaderState = GetOrCreateClan(state, leader, week);
+		float grievance = TotalGrievance(leaderState);
+		if (grievance < tuning.DiscontentThreshold) { state.Stage = KingdomCivilWarStage.Discontent; return; }
+		CivilWarRoll roll = CivilWarRules.Roll("form_faction", CivilWarCatalog.FormFaction, BuildFeatures(kingdom, state, leader, stability), 1f, tuning, RandomFloat);
+		state.LastMaxGrievance = grievance;
+		if (!roll.Passed) { AddHistory(state, week, "不满达到阈值，但成派判定未通过（" + roll.Chance.ToString("0.00") + "）"); return; }
+		List<CivilWarDemandDef> eligible = CivilWarCatalog.ValidDemands.Where(x => IsDemandEligible(x, kingdom, leader, leaderState, state)).ToList();
+		CivilWarDemandDef demand = CivilWarDecisions.PickDemand(eligible, leaderState.Grievance, tuning, RandomFloat);
+		if (demand == null) return;
+		KingdomCivilWarFactionState faction = new KingdomCivilWarFactionState
 		{
-			state = new KingdomCivilWarKingdomState { KingdomId = kingdomId, Stage = KingdomCivilWarStage.FactionsFormed, StageWeek = weekIndex };
-			EnsureLoyalists(kingdom, state);
-			_storage.Kingdoms[kingdomId] = state;
-			state.Summary = BuildSummary(kingdom, state);
+			Id = FactionPrefix + kingdom.StringId + "-" + (++state.FactionSerial), DemandId = demand.Id,
+			LeaderClanId = leader.StringId ?? "", CreatedWeek = week, UltimatumWeek = week + tuning.UltimatumDelayWeeks,
+			TargetId = ResolveTargetId(demand, kingdom, state), TargetName = ResolveTargetName(demand, kingdom, state), WarGoal = (int)CivilWarCatalog.EffectiveWarGoal(demand)
+		};
+		if (demand.Target != CivilWarDemandTarget.None && string.IsNullOrWhiteSpace(faction.TargetId)) return;
+		state.Faction = faction;
+		state.Stage = KingdomCivilWarStage.FactionFormed;
+		leaderState.Side = KingdomCivilWarSide.Opposition;
+		leaderState.SideSinceWeek = week;
+		AddHistory(state, week, CivilWarWorld.ClanName(leader) + "成立“" + FormatDemand(demand, faction.TargetName) + "”");
+		WriteMaterial(kingdom, week, "反对派成立：" + FormatDemand(demand, faction.TargetName));
+		WriteFact(kingdom, leader.Leader, "civil_war:faction:" + faction.Id, "成立" + FormatDemand(demand, faction.TargetName));
+	}
+
+	private void AdvanceUltimatum(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, int stability, CivilWarTuning tuning, Action<Kingdom, int> adjustStability)
+	{
+		KingdomCivilWarFactionState faction = state.Faction;
+		CivilWarDemandDef demand = CivilWarCatalog.FindDemand(faction == null ? "" : faction.DemandId);
+		Clan leader = CivilWarWorld.FindClan(faction == null ? "" : faction.LeaderClanId);
+		if (faction == null || demand == null || leader == null || leader.Kingdom != kingdom || leader.Leader == null || !leader.Leader.IsAlive)
+		{
+			Dissolve(kingdom, state, week, tuning, "诉求目标或领袖已失效");
 			return;
 		}
-		if (state.Stage == KingdomCivilWarStage.Reconciled || state.Stage == KingdomCivilWarStage.OpenWar && state.OpenWarConsequencesApplied && weekIndex >= state.StageWeek + 2)
+		RefreshMembership(kingdom, state, week, tuning, stability);
+		if (week < faction.UltimatumWeek) return;
+		state.Stage = KingdomCivilWarStage.Ultimatum;
+		bool playerKing = CivilWarWorld.IsPlayerRuled(kingdom);
+		if (playerKing && !faction.PlayerAnswerPending)
 		{
-			ResolveWar(kingdom, state, weekIndex, adjustStability);
+			faction.PlayerAnswerPending = true;
+			faction.PlayerPrompted = false;
+			faction.PlayerAnswerDeadlineWeek = week + tuning.PlayerAnswerWeeks;
+			AddHistory(state, week, "最后通牒已送达玩家国王，等待明确答复");
 			return;
 		}
-		if (!state.LoyalistsReady) EnsureLoyalists(kingdom, state);
-		if (state.Stage == KingdomCivilWarStage.OpenWar) return;
-		KingdomCivilWarFactionState active = ActiveFaction(state);
-		if (active == null)
+		if (playerKing && faction.PlayerAnswerPending && week < faction.PlayerAnswerDeadlineWeek) return;
+		CivilWarUltimatumResult ruling = playerKing
+			? CivilWarDecisions.RollRefusal(demand, BuildFeatures(kingdom, state, leader, stability), faction.Refusals, tuning, RandomFloat)
+			: CivilWarDecisions.RuleOnUltimatum(demand, BuildFeatures(kingdom, state, leader, stability), faction.Refusals, tuning, RandomFloat);
+		ApplyRuling(kingdom, state, faction, demand, leader, week, stability, tuning, adjustStability, ruling);
+	}
+
+	private void ApplyRuling(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, CivilWarDemandDef demand, Clan leader, int week, int stability, CivilWarTuning tuning, Action<Kingdom, int> adjustStability, CivilWarUltimatumResult ruling)
+	{
+		faction.LastRuling = ruling.Ruling.ToString() + " " + CivilWarWorld.Limit(ruling.Log, 220);
+		faction.LastEscalateChance = ruling.EscalateRoll.Chance;
+		faction.PlayerAnswerPending = false;
+		if (ruling.Ruling == CivilWarRuling.Accept)
 		{
-			if (stability < TensionStability) TryCreateFaction(kingdom, state, weekIndex, recentEvents);
-			state.Summary = BuildSummary(kingdom, state);
+			CivilWarEffectContext ctx = BuildContext(kingdom, state, faction, demand, leader, week);
+			if (CivilWarEffects.TryApply(demand.AcceptEffectId, ctx, out string reason))
+			{
+				AddHistory(state, week, "国王接受诉求：" + string.Join("；", ctx.Notes));
+				FinishFaction(kingdom, state, week, tuning, adjustStability, 4);
+			}
+			else { AddHistory(state, week, "接受诉求失败：" + reason); RefuseAndReschedule(state, faction, week, tuning); }
 			return;
 		}
-		if (active.CreatedWeek == weekIndex)
+		if (ruling.Ruling == CivilWarRuling.Defer)
 		{
-			state.Summary = BuildSummary(kingdom, state);
+			faction.UltimatumWeek = week + tuning.UltimatumDelayWeeks;
+			AddHistory(state, week, "国王暂缓答复，最后通牒延后");
 			return;
 		}
-		AnswerDemand(kingdom, state, active, weekIndex, adjustStability);
-		state.Summary = BuildSummary(kingdom, state);
+		faction.Refusals++;
+		AddGrievanceToFaction(state, faction, "demand_refused", 20f);
+		if (ruling.ConvertToUsurp)
+		{
+			CivilWarDemandDef usurp = CivilWarCatalog.FindDemand(CivilWarCatalog.UsurpDemandId);
+			if (usurp != null) { faction.DemandId = usurp.Id; faction.WarGoal = (int)CivilWarWarGoal.Usurp; faction.TargetId = ""; faction.TargetName = "王位"; demand = usurp; }
+		}
+		if (ruling.Escalate || (demand.WarGoal != CivilWarWarGoal.None && faction.Refusals >= 1))
+		{
+			OpenWar(kingdom, state, faction, leader, week, stability, tuning, adjustStability);
+			return;
+		}
+		RefuseAndReschedule(state, faction, week, tuning);
+		AddHistory(state, week, "国王拒绝诉求，但升级判定未通过");
+	}
+
+	private void OpenWar(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, Clan leader, int week, int stability, CivilWarTuning tuning, Action<Kingdom, int> adjustStability)
+	{
+		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
+		{
+			RefuseAndReschedule(state, faction, week, tuning);
+			AddHistory(state, week, "玩家王国的稳定度叛乱免疫阻止了内战升级");
+			return;
+		}
+		state.Stage = KingdomCivilWarStage.OpenWar;
+		state.StageWeek = week;
+		_openWarKingdoms.Add(kingdom.StringId);
+		adjustStability?.Invoke(kingdom, -8);
+		TeamModuleServices.CivilWar.ApplyPrestigeDelta(kingdom.StringId, -10, "内战爆发");
+		List<Clan> followers = state.Clans.Values.Where(x => x.Side == KingdomCivilWarSide.Opposition).Select(x => CivilWarWorld.FindClan(x.ClanId)).Where(x => x != null && x != leader && x != Clan.PlayerClan).ToList();
+		faction.WarClanIds = followers.Select(x => x.StringId).Concat(new[] { leader.StringId }).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+		faction.WarRequestWeek = week;
+		faction.LastFactionPower = FactionPower(kingdom, faction);
+		if (CivilWarWorld.IsPlayerRuled(kingdom) && string.Equals(state.PlayerSide, "opposition", StringComparison.OrdinalIgnoreCase)) faction.PlayerFollowPending = true;
+		Host.QueueRebellion(kingdom, leader, followers, faction.Id, true);
+		IndexOppositionSettlements(state);
+		AddHistory(state, week, "内战爆发，已请求建立临时叛军王国");
+		WriteMaterial(kingdom, week, "内战爆发：" + CivilWarWorld.ClanName(leader) + "领导反对派起兵");
+	}
+
+	private void AdvanceOpenWar(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, CivilWarTuning tuning, Action<Kingdom, int> adjustStability)
+	{
+		KingdomCivilWarFactionState faction = state.Faction;
+		Clan leader = CivilWarWorld.FindClan(faction == null ? "" : faction.LeaderClanId);
+		if (faction == null || leader == null) { EndCooldown(kingdom, state, week, tuning); return; }
+		Kingdom rebel = CivilWarWorld.FindKingdom(faction.RebelKingdomId);
+		float crownPower = CivilWarWorld.Strength(kingdom);
+		float rebelPower = CivilWarWorld.Strength(rebel);
+		faction.LastFactionPower = crownPower <= 0f ? 0f : CivilWarRules.Clamp(rebelPower / Math.Max(1f, crownPower + rebelPower), 0f, 1f);
+		faction.LastWarScore = rebelPower <= 0f && crownPower <= 0f ? 0f : CivilWarRules.Clamp((rebelPower - crownPower) / Math.Max(1f, rebelPower + crownPower), -1f, 1f);
+		int elapsed = Math.Max(0, week - faction.WarStartWeek);
+		if (!CivilWarWorld.IsAlive(rebel) && faction.WarRequestWeek > 0 && week <= faction.WarRequestWeek + tuning.WarRequestTimeoutWeeks)
+		{
+			AddHistory(state, week, "叛军王国尚未完成建立，等待宿主回调");
+			return;
+		}
+		if (elapsed < tuning.MinWarWeeks) return;
+		Dictionary<string, float> features = BuildFeatures(kingdom, state, leader, 50);
+		features[ CivilWarFeature.WarScore ] = faction.LastWarScore;
+		features[ CivilWarFeature.WarScoreAbs ] = Math.Abs(faction.LastWarScore);
+		features[ CivilWarFeature.WarProgress ] = elapsed / (float)Math.Max(1, tuning.MaxWarWeeks);
+		CivilWarRoll endRoll = CivilWarRules.Roll("war_end", CivilWarCatalog.WarEnds, features, elapsed >= tuning.MaxWarWeeks ? 2f : 1f, tuning, RandomFloat);
+		if (elapsed >= tuning.MaxWarWeeks || endRoll.Passed) ResolveWar(kingdom, state, week, tuning, adjustStability);
+	}
+
+	// Called by MyBehavior after a real temporary rebel kingdom is created.
+	internal void OnRebelKingdomCreated(string factionId, Kingdom rebelKingdom, int week)
+	{
+		if (!DuelSettings.IsCivilWarFactionsEnabled() || string.IsNullOrWhiteSpace(factionId) || rebelKingdom == null) return;
+		foreach (KingdomCivilWarKingdomState state in _storage.Kingdoms.Values)
+		{
+			KingdomCivilWarFactionState faction = state.Faction;
+			if (faction == null || !string.Equals(faction.Id, factionId, StringComparison.OrdinalIgnoreCase) || state.Stage != KingdomCivilWarStage.OpenWar) continue;
+			if (!string.IsNullOrWhiteSpace(faction.RebelKingdomId)) return;
+			faction.RebelKingdomId = rebelKingdom.StringId ?? "";
+			faction.WarStartWeek = Math.Max(week, faction.WarRequestWeek);
+			faction.RebelFortShareAtStart = CivilWarWorld.FortificationCount(rebelKingdom) / (float)Math.Max(1, CivilWarWorld.FortificationCount(CivilWarWorld.FindKingdom(state.KingdomId)));
+			AddHistory(state, week, "叛军王国建立：" + CivilWarWorld.KingdomName(rebelKingdom));
+			return;
+		}
 	}
 
 	internal bool TryJoinPlayer(Kingdom kingdom, KingdomCivilWarSide side, out string message)
 	{
 		message = "";
-		Clan player = Clan.PlayerClan;
-		if (kingdom == null || player == null || player.Kingdom != kingdom)
-		{
-			message = "你不属于这个王国，不能加入它的派系。";
-			return false;
-		}
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			message = "玩家统治的王国不进入这套派系。";
-			return false;
-		}
-		if (!TryGet(kingdom.StringId, out KingdomCivilWarKingdomState state) || state.Stage < KingdomCivilWarStage.FactionsFormed)
-		{
-			message = "这个王国的派系尚未成形。";
-			return false;
-		}
-		if (side == KingdomCivilWarSide.Middle)
-		{
-			message = "中间派不能作为玩家加入的派系。";
-			return false;
-		}
-		state.PlayerSide = side == KingdomCivilWarSide.Crown ? "crown" : "opposition";
-		UpsertClan(state, player.StringId, side, leans: false, bloodShy: false, grievance: 0);
-		if (side == KingdomCivilWarSide.Crown && string.IsNullOrWhiteSpace(state.CrownLeaderClanId)) state.CrownLeaderClanId = player.StringId;
-		state.Summary = BuildSummary(kingdom, state);
-		message = "你的家族已加入" + SideName(side) + "。";
-		WriteLeaderMemory(kingdom, state, "玩家家族加入" + SideName(side));
+		if (kingdom == null || Clan.PlayerClan == null || Clan.PlayerClan.Kingdom != kingdom) { message = "你不属于这个王国。"; return false; }
+		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom)) { message = "该王国受稳定度叛乱免疫保护。"; return false; }
+		KingdomCivilWarKingdomState state;
+		if (!_storage.Kingdoms.TryGetValue(kingdom.StringId ?? "", out state) || state.Faction == null) { message = "派系尚未成形。"; return false; }
+		if (side == KingdomCivilWarSide.Middle) { message = "玩家只能加入王室派或反对派。"; return false; }
+		state.PlayerSide = side == KingdomCivilWarSide.Opposition ? "opposition" : "crown";
+		KingdomCivilWarClanState player = GetOrCreateClan(state, Clan.PlayerClan, CivilWarWorld.CurrentWeek());
+		player.Side = side; player.SideSinceWeek = CivilWarWorld.CurrentWeek();
+		message = "玩家家族已加入" + (side == KingdomCivilWarSide.Opposition ? "反对派" : "王室派") + "。";
+		AddHistory(state, CivilWarWorld.CurrentWeek(), message);
 		return true;
 	}
 
 	internal bool TryRecruitClan(Hero recruiter, Clan target, Kingdom kingdom, out string message)
 	{
 		message = "";
-		if (recruiter == null || target == null || kingdom == null || target.Kingdom != kingdom || recruiter.Clan?.Kingdom != kingdom)
-		{
-			message = "说服对象必须与你属于同一个王国。";
-			return false;
-		}
-		if (target == Clan.PlayerClan || target == kingdom.RulingClan)
-		{
-			message = "不能用这个动作改变玩家家族或执政家族的派系。";
-			return false;
-		}
-		if (!TryGet(kingdom.StringId, out KingdomCivilWarKingdomState state) || state.Stage < KingdomCivilWarStage.FactionsFormed)
-		{
-			message = "派系尚未成形，无从劝入。";
-			return false;
-		}
-		if (!TrySideOf(state, recruiter.Clan?.StringId, out KingdomCivilWarSide recruiterSide) || recruiterSide == KingdomCivilWarSide.Middle)
-		{
-			message = "你还没有明确的派系，不能替它拉人。";
-			return false;
-		}
-		Hero leader = target.Leader;
-		int towardRecruiter = Relation(leader, recruiter);
-		int towardKing = Relation(leader, kingdom.Leader);
-		bool accepts = recruiterSide == KingdomCivilWarSide.Opposition
-			? towardKing < -5 || towardRecruiter - towardKing >= 15
-			: towardKing >= 10 || towardRecruiter >= 20;
-		if (!accepts)
-		{
-			message = GetClanName(target) + "没有被说服。";
-			return false;
-		}
-		UpsertClan(state, target.StringId, recruiterSide, leans: false, bloodShy: false, grievance: recruiterSide == KingdomCivilWarSide.Opposition ? 20 : 0);
-		if (recruiterSide == KingdomCivilWarSide.Opposition && string.IsNullOrWhiteSpace(state.OppositionLeaderClanId)) state.OppositionLeaderClanId = target.StringId;
-		state.Summary = BuildSummary(kingdom, state);
-		message = GetClanName(target) + "加入了" + SideName(recruiterSide) + "。";
-		WriteLeaderMemory(kingdom, state, message);
+		KingdomCivilWarKingdomState state;
+		if (recruiter == null || target == null || kingdom == null || target.Kingdom != kingdom || recruiter.Clan == null || recruiter.Clan.Kingdom != kingdom || target == Clan.PlayerClan || target == kingdom.RulingClan || !_storage.Kingdoms.TryGetValue(kingdom.StringId ?? "", out state) || state.Faction == null) { message = "当前对象不满足派系招募条件。"; return false; }
+		KingdomCivilWarClanState source;
+		if (!state.Clans.TryGetValue(recruiter.Clan.StringId ?? "", out source) || source.Side == KingdomCivilWarSide.Middle) { message = "招募者没有明确派系。"; return false; }
+		KingdomCivilWarClanState record = GetOrCreateClan(state, target, CivilWarWorld.CurrentWeek());
+		record.Side = source.Side; record.SideSinceWeek = CivilWarWorld.CurrentWeek();
+		if (source.Side == KingdomCivilWarSide.Opposition) AddGrievanceToFaction(state, state.Faction, "demand_refused", 8f);
+		message = CivilWarWorld.ClanName(target) + "加入了" + (source.Side == KingdomCivilWarSide.Opposition ? "反对派" : "王室派") + "。";
+		AddHistory(state, CivilWarWorld.CurrentWeek(), message);
 		return true;
 	}
 
-	internal bool TryDetonate(Kingdom kingdom, int weekIndex, bool manual, Func<Kingdom, int, int> adjustStability, out string message)
+	internal bool TryDetonate(Kingdom kingdom, int week, bool manual, Func<Kingdom, int, int> adjustStability, out string message)
 	{
 		message = "";
-		if (kingdom == null || PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			message = "这个王国不能引爆内战。";
-			return false;
-		}
-		if (!TryGet(kingdom.StringId, out KingdomCivilWarKingdomState state) || state.Stage < KingdomCivilWarStage.FactionsFormed)
-		{
-			message = "派系尚未成形，不能引爆。";
-			return false;
-		}
-		if (!manual && state.OppositionGrievance < GrievanceDetonation)
-		{
-			message = "不满尚未满。";
-			return false;
-		}
-		if (state.Stage == KingdomCivilWarStage.OpenWar)
-		{
-			message = "内战已经爆发。";
-			return false;
-		}
-		KingdomCivilWarStage before = state.Stage;
-		state.Stage = KingdomCivilWarStage.OpenWar;
-		state.StageWeek = Math.Max(1, weekIndex);
-		state.OppositionGrievance = GrievanceDetonation;
-		ApplyStageConsequences(kingdom, state, before, state.StageWeek, adjustStability);
-		state.Summary = BuildSummary(kingdom, state);
-		message = manual ? "你手动引爆了内战。" : "不满达到满值，内战爆发。";
-		WriteLeaderMemory(kingdom, state, message);
+		KingdomCivilWarKingdomState state;
+		if (kingdom == null || PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom) || !_storage.Kingdoms.TryGetValue(kingdom.StringId ?? "", out state) || state.Faction == null) { message = "当前王国不能引爆内战。"; return false; }
+		if (!manual && state.LastMaxGrievance < DuelSettings.BuildCivilWarTuning().DiscontentThreshold) { message = "不满未达到引爆阈值。"; return false; }
+		Clan leader = CivilWarWorld.FindClan(state.Faction.LeaderClanId);
+		if (leader == null) { message = "反对派领袖已失效。"; return false; }
+		OpenWar(kingdom, state, state.Faction, leader, week, MyBehavior.GetKingdomStabilityValueForExternal(kingdom), DuelSettings.BuildCivilWarTuning(), (k, d) => adjustStability?.Invoke(k, d));
+		message = "内战已引爆。";
 		return true;
 	}
 
-	private static void EnsureLoyalists(Kingdom kingdom, KingdomCivilWarKingdomState state)
+	internal bool TryAnswerPlayerUltimatum(Kingdom kingdom, bool accept, out string message)
 	{
-		Clan crown = kingdom.RulingClan;
-		if (crown == null) return;
-		state.LoyalistsReady = true;
-		state.CrownLeaderClanId = crown.StringId ?? "";
-		state.Stage = KingdomCivilWarStage.FactionsFormed;
-		KingdomCivilWarFactionState loyalists = state.Factions.FirstOrDefault(x => x.Kind == KingdomCivilWarDemandKind.None);
-		if (loyalists == null)
+		message = "";
+		KingdomCivilWarKingdomState state;
+		if (kingdom == null || !_storage.Kingdoms.TryGetValue(kingdom.StringId ?? "", out state) || state.Faction == null || !state.Faction.PlayerAnswerPending) { message = "当前没有待答复的最后通牒。"; return false; }
+		CivilWarDemandDef demand = CivilWarCatalog.FindDemand(state.Faction.DemandId);
+		Clan leader = CivilWarWorld.FindClan(state.Faction.LeaderClanId);
+		if (accept && demand != null && leader != null)
 		{
-			loyalists = new KingdomCivilWarFactionState { Id = "loyalist", Name = GetClanName(crown) + "为首的保皇派", Kind = KingdomCivilWarDemandKind.None, LeaderClanId = crown.StringId ?? "", CreatedWeek = state.StageWeek };
-			state.Factions.Add(loyalists);
+			CivilWarEffectContext ctx = BuildContext(kingdom, state, state.Faction, demand, leader, CivilWarWorld.CurrentWeek());
+			if (CivilWarEffects.TryApply(demand.AcceptEffectId, ctx, out string reason)) { FinishFaction(kingdom, state, CivilWarWorld.CurrentWeek(), DuelSettings.BuildCivilWarTuning(), null, 4); message = "已接受最后通牒。"; return true; }
+			message = "接受诉求失败：" + reason; return false;
 		}
-		loyalists.ClanIds.Clear();
-		loyalists.ClanIds.Add(crown.StringId ?? "");
-		UpsertClan(state, crown.StringId, KingdomCivilWarSide.Crown, false, false, 0);
-		foreach (Clan clan in LandedClans(kingdom))
-		{
-			if (clan == crown || clan == Clan.PlayerClan) continue;
-			if (Relation(clan.Leader, kingdom.Leader) < 10) continue;
-			loyalists.ClanIds.Add(clan.StringId);
-			UpsertClan(state, clan.StringId, KingdomCivilWarSide.Crown, false, false, 0);
-		}
+		state.Faction.PlayerAnswerDeadlineWeek = CivilWarWorld.CurrentWeek();
+		message = "已拒绝最后通牒，系统将在周推进中判定是否升级。";
+		return true;
 	}
 
-	private static void TryCreateFaction(Kingdom kingdom, KingdomCivilWarKingdomState state, int weekIndex, IReadOnlyList<string> recentEvents)
+	internal IReadOnlyList<KingdomCivilWarKingdomState> ListForPanel()
 	{
-		if (state.Factions.Count >= 3) return;
-		foreach (string fact in recentEvents ?? Array.Empty<string>())
+		return _storage.Kingdoms.Values.Where(x => x != null && x.Stage != KingdomCivilWarStage.None && x.Stage != KingdomCivilWarStage.Cooldown).OrderBy(x => x.KingdomId, StringComparer.OrdinalIgnoreCase).ToList();
+	}
+
+	internal static CivilWarPanelKingdom ToPanel(KingdomCivilWarKingdomState state)
+	{
+		Kingdom kingdom = CivilWarWorld.FindKingdom(state == null ? "" : state.KingdomId);
+		CivilWarPanelKingdom panel = new CivilWarPanelKingdom { Name = CivilWarWorld.KingdomName(kingdom), Stage = StageName(state == null ? KingdomCivilWarStage.None : state.Stage), GrievanceText = (state == null ? 0f : state.LastMaxGrievance).ToString("0") + "/100", GrievanceBar = Math.Max(0, Math.Min(220, (int)((state == null ? 0f : state.LastMaxGrievance) * 220f / 100f))) };
+		if (state == null || state.Faction == null) return panel;
+		CivilWarDemandDef demand = CivilWarCatalog.FindDemand(state.Faction.DemandId);
+		panel.Factions.Add(new CivilWarPanelFaction { Name = CivilWarWorld.ClanName(CivilWarWorld.FindClan(state.Faction.LeaderClanId)), Demand = demand == null ? state.Faction.DemandId : FormatDemand(demand, state.Faction.TargetName), Members = string.Join("、", state.Faction.WarClanIds.Take(6).Select(x => CivilWarWorld.ClanName(CivilWarWorld.FindClan(x)))), Color = demand == null ? "#6B3A78FF" : demand.Color, GrievanceBar = Math.Max(8, Math.Min(180, (int)(state.LastMaxGrievance * 180f / 100f))), Satisfied = state.Stage == KingdomCivilWarStage.Cooldown });
+		return panel;
+	}
+
+	private void RefreshMembership(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, CivilWarTuning tuning, int stability)
+	{
+		foreach (Clan clan in CivilWarWorld.Vassals(kingdom))
 		{
-			string[] parts = (fact ?? "").Split('\t');
-			if (parts.Length < 3) continue;
-			string key = parts[1];
-			if (string.IsNullOrWhiteSpace(key) || state.ConsumedEventKeys.Contains(key)) continue;
-			state.ConsumedEventKeys.Add(key);
-			KingdomCivilWarDemandKind kind = KindFor(kingdom, parts[0]);
-			if (kind == KingdomCivilWarDemandKind.None) return;
-			Clan leader = Candidate(kingdom, kind);
-			if (leader == null) return;
-			bool separatist = kind == KingdomCivilWarDemandKind.Autonomy;
-			var faction = new KingdomCivilWarFactionState
+			KingdomCivilWarClanState record = GetOrCreateClan(state, clan, week);
+			if (record.Side == KingdomCivilWarSide.Middle)
 			{
-				Id = "faction_" + state.Factions.Count,
-				Name = NameFor(leader, kind),
-				Demand = DemandFor(kind, parts[2]),
-				Kind = kind,
-				LeaderClanId = leader.StringId ?? "",
-				EventKey = key,
-				CreatedWeek = weekIndex,
-				Separatist = separatist,
-				Grievance = 25
-			};
-			faction.ClanIds.Add(leader.StringId ?? "");
-			state.Factions.Add(faction);
-			state.ActiveFactionId = faction.Id;
-			state.OppositionLeaderClanId = leader.StringId ?? "";
-			state.OppositionGrievance = 25;
-			state.Reasons.Clear();
-			state.Reasons.Add(faction.Name + "因“" + Limit(parts[2], 30) + "”提出：" + faction.Demand);
-			UpsertClan(state, leader.StringId, KingdomCivilWarSide.Opposition, false, false, 25);
-			WriteMaterial(kingdom, weekIndex, faction.Name + "提出诉求：" + faction.Demand);
-			return;
-		}
-	}
-
-	private static KingdomCivilWarDemandKind KindFor(Kingdom kingdom, string materialKind)
-	{
-		bool tyrant = Trait(kingdom.Leader, DefaultTraits.Authoritarian) > 0;
-		if (tyrant && (materialKind == "player_execution" || materialKind == "clan_destroyed" || materialKind == "siege_aftermath" || materialKind == "kingdom_decision_support")) return KingdomCivilWarDemandKind.Usurpation;
-		if (materialKind == "war_declared" || materialKind == "raid_completed" || materialKind == "siege_aftermath")
-			return Trait(kingdom.Leader, DefaultTraits.Mercy) > 0 ? KingdomCivilWarDemandKind.MakePeace : KingdomCivilWarDemandKind.ContinueWar;
-		if (materialKind == "kingdom_decision_support") return tyrant ? KingdomCivilWarDemandKind.RevokeDecision : KingdomCivilWarDemandKind.KeepDecision;
-		if (materialKind == "player_execution" || materialKind == "clan_destroyed") return KingdomCivilWarDemandKind.Redress;
-		return KingdomCivilWarDemandKind.None;
-	}
-
-	private static Clan Candidate(Kingdom kingdom, KingdomCivilWarDemandKind kind)
-	{
-		Clan crown = kingdom.RulingClan;
-		Clan best = null;
-		float bestScore = float.MinValue;
-		foreach (Clan clan in LandedClans(kingdom))
-		{
-			if (clan == crown || clan == Clan.PlayerClan || FortificationCount(clan) <= 0) continue;
-			int relation = Relation(clan.Leader, kingdom.Leader);
-			if (kind == KingdomCivilWarDemandKind.Autonomy && relation >= -5) continue;
-			if (kind == KingdomCivilWarDemandKind.Usurpation && relation >= 0) continue;
-			float score = Score(clan, relation);
-			if (score > bestScore)
-			{
-				bestScore = score;
-				best = clan;
+				Dictionary<string, float> f = BuildFeatures(kingdom, state, clan, stability);
+				if (CivilWarRules.Roll("join:" + clan.StringId, CivilWarCatalog.JoinOpposition, f, 1f, tuning, RandomFloat).Passed) { record.Side = KingdomCivilWarSide.Opposition; record.SideSinceWeek = week; }
 			}
-		}
-		if (best == null && kind == KingdomCivilWarDemandKind.Autonomy)
-		{
-			foreach (Clan clan in LandedClans(kingdom))
-			{
-				if (clan == crown || clan == Clan.PlayerClan || Relation(clan.Leader, kingdom.Leader) >= -5 || FortificationCount(clan) <= 0) continue;
-				return clan;
-			}
-		}
-		return best;
-	}
-
-	private void AnswerDemand(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, int weekIndex, Action<Kingdom, int> adjustStability)
-	{
-		bool merciful = Trait(kingdom.Leader, DefaultTraits.Mercy) > 0 || Trait(kingdom.Leader, DefaultTraits.Egalitarian) > 0;
-		bool accept = merciful && faction.Grievance < 60 && faction.Kind != KingdomCivilWarDemandKind.Usurpation;
-		if (accept)
-		{
-			faction.Satisfied = true;
-			faction.Grievance = 0;
-			state.OppositionGrievance = 0;
-			state.ActiveFactionId = "";
-			adjustStability?.Invoke(kingdom, 4);
-			ChangeRelationAction.ApplyRelationChangeBetweenHeroes(FindClan(faction.LeaderClanId)?.Leader, kingdom.Leader, 10, true);
-			WriteMaterial(kingdom, weekIndex, "国王接受了" + faction.Name + "的诉求：" + faction.Demand);
-			return;
-		}
-		faction.Grievance = Math.Min(GrievanceDetonation, faction.Grievance + 25);
-		state.OppositionGrievance = faction.Grievance;
-		WriteMaterial(kingdom, weekIndex, "国王拒绝了" + faction.Name + "的诉求：" + faction.Demand);
-		if (faction.Grievance >= GrievanceDetonation)
-		{
-			state.Stage = KingdomCivilWarStage.OpenWar;
-			state.StageWeek = weekIndex;
-			ApplyStageConsequences(kingdom, state, KingdomCivilWarStage.Standoff, weekIndex, (target, delta) => { adjustStability?.Invoke(target, delta); return 0; });
+			else if (record.Side == KingdomCivilWarSide.Opposition && week - record.SideSinceWeek >= tuning.SideLockWeeks && CivilWarRules.Roll("leave:" + clan.StringId, CivilWarCatalog.LeaveOpposition, BuildFeatures(kingdom, state, clan, stability), 1f, tuning, RandomFloat).Passed) record.Side = KingdomCivilWarSide.Middle;
 		}
 	}
 
-	private void ResolveWar(Kingdom kingdom, KingdomCivilWarKingdomState state, int weekIndex, Action<Kingdom, int> adjustStability)
+	private void ResolveWar(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, CivilWarTuning tuning, Action<Kingdom, int> adjustStability)
 	{
-		KingdomCivilWarFactionState faction = ActiveFaction(state);
-		Clan leader = FindClan(faction?.LeaderClanId);
-		bool canSplit = faction?.Separatist == true && FortificationCount(leader) > 0;
-		bool suppress = !canSplit && (FortificationCount(leader) <= 0 || Trait(kingdom.Leader, DefaultTraits.Authoritarian) > 0);
-		if (faction?.Kind == KingdomCivilWarDemandKind.Usurpation && leader != null && !suppress)
-		{
-			kingdom.RulingClan = leader;
-			state.CrownLeaderClanId = leader.StringId ?? "";
-			state.Stage = KingdomCivilWarStage.FactionsFormed;
-			state.ActiveFactionId = "";
-			faction.Satisfied = true;
-			ClearWarMarks(kingdom.StringId);
-			adjustStability?.Invoke(kingdom, -6);
-			WriteMaterial(kingdom, weekIndex, GetClanName(leader) + "迫使国王让出统治权。");
-			return;
-		}
-		if (suppress || leader == null)
-		{
-			if (faction != null) state.Factions.Remove(faction);
-			state.ActiveFactionId = "";
-			state.OppositionGrievance = 0;
-			state.Stage = KingdomCivilWarStage.FactionsFormed;
-			ClearWarMarks(kingdom.StringId);
-			adjustStability?.Invoke(kingdom, 5);
-			ChangeRelationAction.ApplyRelationChangeBetweenHeroes(leader?.Leader, kingdom.Leader, -20, true);
-			WriteMaterial(kingdom, weekIndex, "保皇派镇压了" + (faction?.Name ?? "反对派") + "。");
-			return;
-		}
-		WriteMaterial(kingdom, weekIndex, GetClanName(leader) + "仍控制封地，分离诉求转入现有分裂建国。");
-		MyBehavior.QueueCivilWarSplitForExternal(kingdom, leader);
+		KingdomCivilWarFactionState faction = state.Faction;
+		CivilWarDemandDef demand = CivilWarCatalog.FindDemand(faction.DemandId);
+		Clan leader = CivilWarWorld.FindClan(faction.LeaderClanId);
+		Dictionary<string, float> features = BuildFeatures(kingdom, state, leader, 50);
+		features[CivilWarFeature.WarScore] = faction.LastWarScore;
+		features[CivilWarFeature.WarScoreAbs] = Math.Abs(faction.LastWarScore);
+		features[CivilWarFeature.WarProgress] = CivilWarRules.Clamp((week - faction.WarStartWeek) / (float)Math.Max(1, tuning.MaxWarWeeks), 0f, 1f);
+		string log;
+		CivilWarOutcomeDef outcome = CivilWarDecisions.PickOutcome(CivilWarCatalog.EffectiveWarGoal(demand), features, tuning, RandomFloat, out log);
+		CivilWarEffectContext ctx = BuildContext(kingdom, state, faction, demand, leader, week);
+		string reason = "无可用结局";
+		bool applied = outcome != null && CivilWarEffects.TryApply(outcome.EffectId, ctx, out reason);
+		AddHistory(state, week, applied ? outcome.Name + "：" + string.Join("；", ctx.Notes) : "内战结算失败：" + (reason ?? "无可用结局"));
+		WriteMaterial(kingdom, week, applied ? string.Join("；", ctx.Notes) : "内战结算失败：" + reason);
+		adjustStability?.Invoke(kingdom, applied && outcome.RebelsWon ? -4 : 6);
+		FinishFaction(kingdom, state, week, tuning, adjustStability, 0);
 	}
 
-	private static KingdomCivilWarFactionState ActiveFaction(KingdomCivilWarKingdomState state)
+	private void FinishFaction(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, CivilWarTuning tuning, Action<Kingdom, int> adjustStability, int stabilityDelta)
 	{
-		return state.Factions.FirstOrDefault(x => string.Equals(x.Id, state.ActiveFactionId, StringComparison.OrdinalIgnoreCase) && !x.Satisfied);
+		if (stabilityDelta != 0) adjustStability?.Invoke(kingdom, stabilityDelta);
+		state.Stage = KingdomCivilWarStage.Cooldown;
+		state.StageWeek = week;
+		state.CooldownUntilWeek = week + tuning.CooldownWeeks;
+		state.Faction = null;
+		state.PlayerSide = "";
+		_openWarKingdoms.Remove(kingdom.StringId);
+		ClearWarMarks(kingdom.StringId);
 	}
 
-	private static string NameFor(Clan leader, KingdomCivilWarDemandKind kind)
+	private void EndCooldown(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, CivilWarTuning tuning)
 	{
-		if (kind == KingdomCivilWarDemandKind.Usurpation) return GetClanName(leader) + "为首的宣权派";
-		if (kind == KingdomCivilWarDemandKind.Autonomy) return GetClanName(leader) + "为首的分离派";
-		if (kind == KingdomCivilWarDemandKind.MakePeace) return GetClanName(leader) + "为首的反战派";
-		if (kind == KingdomCivilWarDemandKind.ContinueWar) return GetClanName(leader) + "为首的主战派";
-		if (kind == KingdomCivilWarDemandKind.Redress) return GetClanName(leader) + "为首的复仇派";
-		return GetClanName(leader) + "为首的改革派";
+		if (state.Faction != null && week <= state.Faction.WarRequestWeek + tuning.WarRequestTimeoutWeeks) return;
+		FinishFaction(kingdom, state, week, tuning, null, 0);
 	}
 
-	private static string DemandFor(KingdomCivilWarDemandKind kind, string fact)
+	private void RefuseAndReschedule(KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, int week, CivilWarTuning tuning)
 	{
-		string source = Limit(fact, 24);
-		if (kind == KingdomCivilWarDemandKind.Usurpation) return "限制王权，并由本派领袖取代暴君。起因：" + source;
-		if (kind == KingdomCivilWarDemandKind.Autonomy) return "给予封地自治。起因：" + source;
-		if (kind == KingdomCivilWarDemandKind.MakePeace) return "停止战争并议和。起因：" + source;
-		if (kind == KingdomCivilWarDemandKind.ContinueWar) return "继续战争，不许议和。起因：" + source;
-		if (kind == KingdomCivilWarDemandKind.Redress) return "赔偿并追究责任。起因：" + source;
-		if (kind == KingdomCivilWarDemandKind.RevokeDecision) return "撤销这项决定。起因：" + source;
-		return "维持这项决定。起因：" + source;
+		faction.UltimatumWeek = week + tuning.UltimatumDelayWeeks;
+		state.Stage = KingdomCivilWarStage.FactionFormed;
 	}
 
-	private void Crystallize(Kingdom kingdom, KingdomCivilWarKingdomState state)
+	private void Dissolve(Kingdom kingdom, KingdomCivilWarKingdomState state, int week, CivilWarTuning tuning, string reason)
 	{
-		state.Clans.Clear();
-		state.Reasons.Clear();
-		Clan crown = kingdom.RulingClan;
-		Hero king = kingdom.Leader;
-		List<Clan> landed = LandedClans(kingdom).ToList();
-		Clan oppositionLeader = null;
-		float best = float.MinValue;
-		foreach (Clan clan in landed)
+		AddHistory(state, week, reason);
+		FinishFaction(kingdom, state, week, tuning, null, 0);
+	}
+
+	private CivilWarEffectContext BuildContext(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, CivilWarDemandDef demand, Clan leader, int week)
+	{
+		return new CivilWarEffectContext { Kingdom = kingdom, State = state, Faction = faction, Demand = demand, LeaderClan = leader, RebelKingdom = CivilWarWorld.FindKingdom(faction == null ? "" : faction.RebelKingdomId), Week = week, Host = Host };
+	}
+
+	private Dictionary<string, float> BuildFeatures(Kingdom kingdom, KingdomCivilWarKingdomState state, Clan clan, int stability)
+	{
+		KingdomCivilWarFactionState faction = state == null ? null : state.Faction;
+		Clan leader = CivilWarWorld.FindClan(faction == null ? "" : faction.LeaderClanId) ?? clan;
+		float total = state == null ? 0f : state.Clans.Values.Sum(TotalGrievance);
+		float clanGrievance = clan == null || state == null ? 0f : TotalGrievance(GetOrCreateClan(state, clan, CivilWarWorld.CurrentWeek())) / 100f;
+		float relationKing = CivilWarWorld.Relation(clan == null ? null : clan.Leader, kingdom == null ? null : kingdom.Leader) / 100f;
+		float relationLeader = CivilWarWorld.Relation(clan == null ? null : clan.Leader, leader == null ? null : leader.Leader) / 100f;
+		Dictionary<string, float> result = new Dictionary<string, float>(StringComparer.Ordinal)
 		{
-			if (clan == crown || clan == Clan.PlayerClan) continue;
-			int relation = Relation(clan.Leader, king);
-			if (relation >= -5 || FortificationCount(clan) <= 0) continue;
-			float score = Score(clan, relation);
-			if (score > best)
-			{
-				best = score;
-				oppositionLeader = clan;
-			}
-		}
-		state.CrownLeaderClanId = crown?.StringId ?? "";
-		state.OppositionLeaderClanId = oppositionLeader?.StringId ?? "";
-		if (crown != null) UpsertClan(state, crown.StringId, KingdomCivilWarSide.Crown, false, false, 0);
-		foreach (Clan clan in landed)
-		{
-			if (clan == crown || clan == Clan.PlayerClan) continue;
-			int relation = Relation(clan.Leader, king);
-			int leaderGap = oppositionLeader == null ? 0 : Relation(clan.Leader, oppositionLeader.Leader) - relation;
-			bool bloodShy = Trait(clan.Leader, DefaultTraits.Honor) > 0 || Trait(clan.Leader, DefaultTraits.Mercy) > 0;
-			KingdomCivilWarSide side = KingdomCivilWarSide.Middle;
-			if (relation >= 10) side = KingdomCivilWarSide.Crown;
-			else if (relation < -5 && FortificationCount(clan) > 0 && !bloodShy) side = KingdomCivilWarSide.Opposition;
-			else if (Trait(clan.Leader, DefaultTraits.Calculating) > 0 && FortificationCount(clan) >= 2 && relation < 0 && !bloodShy) side = KingdomCivilWarSide.Opposition;
-			UpsertClan(state, clan.StringId, side, side == KingdomCivilWarSide.Middle && leaderGap >= 15, bloodShy, side == KingdomCivilWarSide.Opposition ? Math.Max(0, -relation) : 0);
-		}
-		if (oppositionLeader != null) state.Reasons.Add(GetClanName(oppositionLeader) + "与国王交恶且握有封地。");
-		if (state.Clans.Any(x => x.LeansOpposition)) state.Reasons.Add("部分中间家族与反对派领袖的私交明显高于国王。");
-		if (state.Clans.Any(x => x.BloodShy && x.Side == KingdomCivilWarSide.Middle)) state.Reasons.Add("荣誉或仁慈的族长暂不加入流血派系。");
-		state.OppositionGrievance = state.Clans.Where(x => x.Side == KingdomCivilWarSide.Opposition).Select(x => x.Grievance).DefaultIfEmpty(0).Max();
+			[ CivilWarFeature.KingMercy ] = CivilWarWorld.Trait(kingdom == null ? null : kingdom.Leader, DefaultTraits.Mercy), [ CivilWarFeature.KingAuthoritarian ] = CivilWarWorld.Trait(kingdom == null ? null : kingdom.Leader, DefaultTraits.Authoritarian), [ CivilWarFeature.KingEgalitarian ] = CivilWarWorld.Trait(kingdom == null ? null : kingdom.Leader, DefaultTraits.Egalitarian), [ CivilWarFeature.KingValor ] = CivilWarWorld.Trait(kingdom == null ? null : kingdom.Leader, DefaultTraits.Valor), [ CivilWarFeature.KingGenerosity ] = CivilWarWorld.Trait(kingdom == null ? null : kingdom.Leader, DefaultTraits.Generosity), [ CivilWarFeature.KingHonor ] = CivilWarWorld.Trait(kingdom == null ? null : kingdom.Leader, DefaultTraits.Honor),
+			[ CivilWarFeature.LeaderValor ] = CivilWarWorld.Trait(leader == null ? null : leader.Leader, DefaultTraits.Valor), [ CivilWarFeature.LeaderCalculating ] = CivilWarWorld.Trait(leader == null ? null : leader.Leader, DefaultTraits.Calculating), [ CivilWarFeature.LeaderHonor ] = CivilWarWorld.Trait(leader == null ? null : leader.Leader, DefaultTraits.Honor), [ CivilWarFeature.LeaderMercy ] = CivilWarWorld.Trait(leader == null ? null : leader.Leader, DefaultTraits.Mercy),
+			[ CivilWarFeature.Instability ] = CivilWarRules.Clamp((50f - stability) / 50f, 0f, 1f), [ CivilWarFeature.WarLoad ] = CivilWarRules.Clamp(CivilWarWorld.KingdomWarCount(kingdom) / 5f, 0f, 1f), [ CivilWarFeature.KingdomGrievance ] = CivilWarRules.Clamp(total / 100f, 0f, 1f), [ CivilWarFeature.FactionPower ] = FactionPower(kingdom, faction), [ CivilWarFeature.FactionGrievance ] = faction == null || state == null ? 0f : CivilWarRules.Clamp(TotalFactionGrievance(state, faction) / 100f, 0f, 1f), [ CivilWarFeature.Refusals ] = faction == null ? 0f : CivilWarRules.Clamp(faction.Refusals / 4f, 0f, 1f),
+			[ CivilWarFeature.ClanGrievance ] = clanGrievance, [ CivilWarFeature.RelationGap ] = CivilWarRules.Clamp(relationLeader - relationKing, -1f, 1f), [ CivilWarFeature.RelationToKing ] = CivilWarRules.Clamp(relationKing, -1f, 1f), [ CivilWarFeature.BloodShy ] = CivilWarRules.Clamp(Math.Max(CivilWarWorld.Trait(clan == null ? null : clan.Leader, DefaultTraits.Honor), CivilWarWorld.Trait(clan == null ? null : clan.Leader, DefaultTraits.Mercy)), 0f, 1f), [ CivilWarFeature.One ] = 1f
+		};
+		return result;
 	}
 
-	private void RefreshMembership(Kingdom kingdom, KingdomCivilWarKingdomState state)
+	private static bool IsDemandEligible(CivilWarDemandDef demand, Kingdom kingdom, Clan leader, KingdomCivilWarClanState leaderState, KingdomCivilWarKingdomState state)
 	{
-		HashSet<string> live = new HashSet<string>(LandedClans(kingdom).Select(x => x.StringId ?? ""), StringComparer.OrdinalIgnoreCase);
-		if (!string.IsNullOrWhiteSpace(state.CrownLeaderClanId)) live.Add(state.CrownLeaderClanId);
-		state.Clans.RemoveAll(x => x == null || string.IsNullOrWhiteSpace(x.ClanId) || !live.Contains(x.ClanId));
-		if (!string.IsNullOrWhiteSpace(state.PlayerSide))
-		{
-			KingdomCivilWarSide side = string.Equals(state.PlayerSide, "opposition", StringComparison.OrdinalIgnoreCase) ? KingdomCivilWarSide.Opposition : KingdomCivilWarSide.Crown;
-			UpsertClan(state, Clan.PlayerClan?.StringId, side, false, false, 0);
-		}
+		if (demand == null || leader == null || leaderState == null || CivilWarWorld.FortificationCount(leader) < demand.MinFortifications || CivilWarWorld.Relation(leader.Leader, kingdom.Leader) > demand.MaxLeaderRelationToKing) return false;
+		return demand.Target == CivilWarDemandTarget.None || !string.IsNullOrWhiteSpace(ResolveTargetId(demand, kingdom, state));
 	}
 
-	private static int GrievanceGain(Kingdom kingdom, KingdomCivilWarKingdomState state)
+	private static string ResolveTargetId(CivilWarDemandDef demand, Kingdom kingdom, KingdomCivilWarKingdomState state)
 	{
-		int opposition = state.Clans.Count(x => x.Side == KingdomCivilWarSide.Opposition);
-		if (opposition <= 0) return 0;
-		int gain = 8 + Math.Min(12, opposition * 4);
-		if (Trait(kingdom.Leader, DefaultTraits.Authoritarian) > 0) gain += 6;
-		return gain;
+		if (demand == null || kingdom == null) return "";
+		if (demand.Target == CivilWarDemandTarget.EnemyKingdom) return CivilWarWorld.StrongestEnemy(kingdom, "")?.StringId ?? "";
+		if (demand.Target == CivilWarDemandTarget.ImposedPolicy) return state?.LastImposedPolicyId ?? "";
+		return "";
 	}
 
-	private static bool CanReconcile(Kingdom kingdom, KingdomCivilWarKingdomState state)
+	private static string ResolveTargetName(CivilWarDemandDef demand, Kingdom kingdom, KingdomCivilWarKingdomState state)
 	{
-		Hero king = kingdom.Leader;
-		if (king == null) return false;
-		if (Trait(king, DefaultTraits.Mercy) <= 0 && Trait(king, DefaultTraits.Egalitarian) <= 0) return false;
-		return state.OppositionGrievance < 60 && state.Clans.Count(x => x.Side == KingdomCivilWarSide.Opposition) <= 1;
+		if (demand == null) return "";
+		if (demand.Target == CivilWarDemandTarget.EnemyKingdom) return CivilWarWorld.KingdomName(CivilWarWorld.StrongestEnemy(kingdom, ""));
+		if (demand.Target == CivilWarDemandTarget.ImposedPolicy) return state == null ? "现行政策" : "现行政策";
+		return "";
 	}
 
-	private void DefectFenceSitters(Kingdom kingdom, KingdomCivilWarKingdomState state, int weekIndex)
+	private static string FormatDemand(CivilWarDemandDef demand, string target)
 	{
-		if (state.OpenWarConsequencesApplied) return;
-		foreach (KingdomCivilWarClanState clanState in state.Clans.Where(x => x.LeansOpposition && x.Side == KingdomCivilWarSide.Middle).ToList())
-		{
-			Clan clan = FindClan(clanState.ClanId);
-			if (clan == null || clan == Clan.PlayerClan) continue;
-			clanState.Side = KingdomCivilWarSide.Opposition;
-			clanState.LeansOpposition = false;
-			clanState.Grievance = Math.Max(clanState.Grievance, 20);
-			ChangeRelationAction.ApplyRelationChangeBetweenHeroes(clan.Leader, kingdom.Leader, -10, true);
-			WriteFact(kingdom, clan.Leader, "civil_war_defect:" + kingdom.StringId + ":" + clan.StringId + ":" + weekIndex, GetClanName(clan) + "在内战爆发当周倒向反对派。");
-		}
+		return (demand == null ? "未命名诉求" : demand.Text).Replace("{target}", string.IsNullOrWhiteSpace(target) ? "目标" : target);
 	}
 
-	private void ApplyStageConsequences(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarStage before, int weekIndex, Func<Kingdom, int, int> adjustStability)
+	private KingdomCivilWarKingdomState GetOrCreate(Kingdom kingdom, int week)
 	{
-		bool entered = state.Stage != before;
-		if (entered && state.Stage == KingdomCivilWarStage.OpenWar)
-		{
-			adjustStability?.Invoke(kingdom, -8);
-			AdjustPrestige(kingdom, -10);
-			_openWarKingdoms.Add(kingdom.StringId);
-			IndexOppositionSettlements(state);
-			WriteMaterial(kingdom, weekIndex, "内战爆发：" + Limit(state.Summary, MaterialCharCap));
-			WriteLeaderMemory(kingdom, state, "内战爆发");
-			state.OpenWarConsequencesApplied = true;
-		}
-		else if (entered && state.Stage == KingdomCivilWarStage.Reconciled)
-		{
-			adjustStability?.Invoke(kingdom, 4);
-			ClearWarMarks(kingdom.StringId);
-			WriteMaterial(kingdom, weekIndex, "内战和解：" + GetKingdomName(kingdom) + "的派系暂时散去。");
-		}
-		else if (state.Stage == KingdomCivilWarStage.Standoff && weekIndex != state.StageWeek)
-		{
-			adjustStability?.Invoke(kingdom, -2);
-		}
+		string id = kingdom.StringId ?? "";
+		KingdomCivilWarKingdomState state;
+		if (!_storage.Kingdoms.TryGetValue(id, out state)) { state = new KingdomCivilWarKingdomState { KingdomId = id, Stage = KingdomCivilWarStage.Discontent, StageWeek = week }; _storage.Kingdoms[id] = state; }
+		if (state.Clans == null) state.Clans = new Dictionary<string, KingdomCivilWarClanState>(StringComparer.OrdinalIgnoreCase);
+		if (state.History == null) state.History = new List<KingdomCivilWarHistoryEntry>();
+		return state;
 	}
+
+	private static KingdomCivilWarClanState GetOrCreateClan(KingdomCivilWarKingdomState state, Clan clan, int week)
+	{
+		if (state == null || clan == null || string.IsNullOrWhiteSpace(clan.StringId)) return new KingdomCivilWarClanState();
+		KingdomCivilWarClanState record;
+		if (!state.Clans.TryGetValue(clan.StringId, out record) || record == null) { record = new KingdomCivilWarClanState { ClanId = clan.StringId, Side = KingdomCivilWarSide.Middle, SideSinceWeek = week }; state.Clans[clan.StringId] = record; }
+		if (record.Grievance == null) record.Grievance = new Dictionary<string, float>(StringComparer.Ordinal);
+		return record;
+	}
+
+	private static void AddGrievanceToFaction(KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, string sourceId, float points)
+	{
+		if (state == null || faction == null) return;
+		KingdomCivilWarClanState record;
+		if (state.Clans.TryGetValue(faction.LeaderClanId, out record)) { float current; if (!record.Grievance.TryGetValue(sourceId, out current)) current = 0f; record.Grievance[sourceId] = CivilWarRules.Clamp(current + points, 0f, MaxClanGrievance); }
+	}
+
+	private static float TotalGrievance(KingdomCivilWarClanState state) { return state == null || state.Grievance == null ? 0f : state.Grievance.Values.Sum(x => CivilWarRules.Clamp(x, 0f, MaxClanGrievance)); }
+	private static float TotalFactionGrievance(KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction) { KingdomCivilWarClanState x; return state != null && faction != null && state.Clans.TryGetValue(faction.LeaderClanId, out x) ? TotalGrievance(x) : 0f; }
+	private static float FactionPower(Kingdom kingdom, KingdomCivilWarFactionState faction)
+	{
+		if (kingdom == null || faction == null) return 0f;
+		float rebel = 0f;
+		foreach (string id in faction.WarClanIds ?? new List<string>()) rebel += CivilWarWorld.Strength(CivilWarWorld.FindClan(id));
+		return CivilWarRules.Clamp(rebel / Math.Max(1f, CivilWarWorld.Strength(kingdom)), 0f, 1f);
+	}
+
+	private static void DecayAndRefresh(Kingdom kingdom, KingdomCivilWarKingdomState state, int week)
+	{
+		foreach (KingdomCivilWarClanState clan in state.Clans.Values)
+			foreach (string sourceId in clan.Grievance.Keys.ToList()) { CivilWarGrievanceSourceDef source = CivilWarCatalog.FindSource(sourceId); clan.Grievance[sourceId] = CivilWarRules.Clamp(clan.Grievance[sourceId] * (1f - (source == null ? 0.15f : source.DecayPerWeek)), 0f, MaxClanGrievance); }
+		foreach (Clan clan in CivilWarWorld.LandedClans(kingdom)) GetOrCreateClan(state, clan, week);
+		state.LastMaxGrievance = state.Clans.Values.Select(TotalGrievance).DefaultIfEmpty(0f).Max();
+	}
+
+	private static void SaveSummary(KingdomCivilWarKingdomState state, Kingdom kingdom)
+	{
+		if (state == null) return;
+		state.LastMaxGrievance = state.Clans.Values.Select(TotalGrievance).DefaultIfEmpty(0f).Max();
+	}
+
+	private static void AddHistory(KingdomCivilWarKingdomState state, int week, string text)
+	{
+		if (state == null || string.IsNullOrWhiteSpace(text)) return;
+		if (state.History == null) state.History = new List<KingdomCivilWarHistoryEntry>();
+		state.History.Add(new KingdomCivilWarHistoryEntry { Week = week, Text = CivilWarWorld.Limit(text, 240) });
+		while (state.History.Count > MaxHistory) state.History.RemoveAt(0);
+	}
+
+	private static void WriteMaterial(Kingdom kingdom, int week, string text) { CivilWarCampaignBehavior.RecordMaterial(kingdom, week, CivilWarWorld.Limit(text, 400)); }
+	private static void WriteFact(Kingdom kingdom, Hero hero, string key, string text) { if (hero != null) MyBehavior.RecordNpcActionForExternal(hero, text, key, "civil_war", true, true, kingdom == null ? null : kingdom.Leader, null, CivilWarWorld.KingdomName(kingdom), false, null); }
 
 	private void IndexOppositionSettlements(KingdomCivilWarKingdomState state)
 	{
-		foreach (KingdomCivilWarClanState clanState in state.Clans.Where(x => x.Side == KingdomCivilWarSide.Opposition))
+		Kingdom kingdom = CivilWarWorld.FindKingdom(state.KingdomId);
+		if (kingdom == null || state.Clans == null) return;
+		foreach (KingdomCivilWarClanState clanState in state.Clans.Values.Where(x => x.Side == KingdomCivilWarSide.Opposition))
 		{
-			Clan clan = FindClan(clanState.ClanId);
-			if (clan?.Settlements == null) continue;
-			foreach (Settlement settlement in clan.Settlements)
-			{
-				if (settlement != null && (settlement.IsTown || settlement.IsCastle))
-					_oppositionLoyaltyBySettlement[settlement.StringId] = -1;
-			}
+			Clan clan = CivilWarWorld.FindClan(clanState.ClanId);
+			if (clan == null || clan.Settlements == null) continue;
+			foreach (Settlement settlement in clan.Settlements.Where(x => x != null && (x.IsTown || x.IsCastle))) _oppositionLoyaltyBySettlement[settlement.StringId] = -1;
 		}
 	}
 
 	private void ClearWarMarks(string kingdomId)
 	{
-		_openWarKingdoms.Remove(kingdomId);
-		List<string> stale = _oppositionLoyaltyBySettlement.Where(x => FindSettlementOwnerKingdom(x.Key) == kingdomId).Select(x => x.Key).ToList();
-		foreach (string id in stale) _oppositionLoyaltyBySettlement.Remove(id);
+		foreach (string id in _oppositionLoyaltyBySettlement.Keys.ToList()) if (CivilWarWorld.FindClanOwnerKingdom(id) == kingdomId) _oppositionLoyaltyBySettlement.Remove(id);
 	}
 
-	private void Remove(string kingdomId)
-	{
-		_storage.Kingdoms.Remove(kingdomId);
-		ClearWarMarks(kingdomId);
-	}
-
-	private static void UpsertClan(KingdomCivilWarKingdomState state, string clanId, KingdomCivilWarSide side, bool leans, bool bloodShy, int grievance)
-	{
-		if (string.IsNullOrWhiteSpace(clanId)) return;
-		KingdomCivilWarClanState existing = state.Clans.FirstOrDefault(x => string.Equals(x.ClanId, clanId, StringComparison.OrdinalIgnoreCase));
-		if (existing == null)
-		{
-			state.Clans.Add(new KingdomCivilWarClanState { ClanId = clanId, Side = side, LeansOpposition = leans, BloodShy = bloodShy, Grievance = grievance });
-			return;
-		}
-		existing.Side = side;
-		existing.LeansOpposition = leans;
-		existing.BloodShy = bloodShy;
-		existing.Grievance = Math.Max(existing.Grievance, grievance);
-	}
-
-	private static bool TrySideOf(KingdomCivilWarKingdomState state, string clanId, out KingdomCivilWarSide side)
-	{
-		side = KingdomCivilWarSide.Middle;
-		KingdomCivilWarClanState clan = state.Clans.FirstOrDefault(x => string.Equals(x.ClanId, clanId, StringComparison.OrdinalIgnoreCase));
-		if (clan == null) return false;
-		side = clan.Side;
-		return true;
-	}
-
-	private static IEnumerable<Clan> LandedClans(Kingdom kingdom)
-	{
-		return (kingdom?.Clans ?? Enumerable.Empty<Clan>()).Where(x => x != null && !x.IsEliminated && !x.IsBanditFaction && !x.IsMinorFaction && !x.IsUnderMercenaryService && !x.IsClanTypeMercenary && x.Leader != null && x.Leader.IsAlive);
-	}
-
-	private static int FortificationCount(Clan clan)
-	{
-		return clan?.Settlements?.Count(x => x != null && (x.IsTown || x.IsCastle)) ?? 0;
-	}
-
-	private static float Score(Clan clan, int relationToKing)
-	{
-		return Math.Max(0, clan?.Tier ?? 0) * 140f + FortificationCount(clan) * 100f + Math.Max(0, -relationToKing) * 1.5f;
-	}
-
-	private static int Relation(Hero left, Hero right)
-	{
-		if (left == null || right == null || left == right) return 0;
-		try { return left.GetRelation(right); }
-		catch { return 0; }
-	}
-
-	private static int Trait(Hero hero, TraitObject trait)
-	{
-		if (hero == null || trait == null) return 0;
-		try { return hero.GetTraitLevel(trait); }
-		catch { return 0; }
-	}
-
-	private static void AdjustPrestige(Kingdom kingdom, int delta)
-	{
-		TeamModuleServices.CivilWar.ApplyPrestigeDelta(kingdom?.StringId, delta, "内战");
-	}
-
-	private static void WriteMaterial(Kingdom kingdom, int weekIndex, string text)
-	{
-		CivilWarCampaignBehavior.RecordMaterial(kingdom, weekIndex, Limit(text, MaterialCharCap));
-	}
-
-	private static void WriteLeaderMemory(Kingdom kingdom, KingdomCivilWarKingdomState state, string text)
-	{
-		WriteFact(kingdom, FindClan(state.OppositionLeaderClanId)?.Leader, "civil_war:" + kingdom.StringId + ":" + state.Stage + ":" + state.StageWeek, text);
-		WriteFact(kingdom, kingdom.Leader, "civil_war_crown:" + kingdom.StringId + ":" + state.Stage + ":" + state.StageWeek, text);
-	}
-
-	private static void WriteFact(Kingdom kingdom, Hero hero, string key, string text)
-	{
-		if (hero == null || string.IsNullOrWhiteSpace(text)) return;
-		MyBehavior.RecordNpcActionForExternal(hero, text, key, "civil_war", true, true, kingdom?.Leader, null, GetKingdomName(kingdom), false, null);
-	}
-
-	internal static CivilWarPanelKingdom ToPanel(KingdomCivilWarKingdomState state)
-	{
-		Kingdom kingdom = FindKingdom(state?.KingdomId);
-		var panel = new CivilWarPanelKingdom
-		{
-			Name = GetKingdomName(kingdom),
-			Stage = StageName(state?.Stage ?? KingdomCivilWarStage.None),
-			GrievanceText = (state?.OppositionGrievance ?? 0) + "/100",
-			GrievanceBar = Math.Max(0, Math.Min(220, (state?.OppositionGrievance ?? 0) * 220 / 100))
-		};
-		foreach (KingdomCivilWarFactionState faction in state?.Factions?.Take(3) ?? Enumerable.Empty<KingdomCivilWarFactionState>())
-		{
-			panel.Factions.Add(new CivilWarPanelFaction
-			{
-				Name = faction.Name ?? "",
-				Demand = string.IsNullOrWhiteSpace(faction.Demand) ? "维持王权" : faction.Demand,
-				Members = string.Join("、", faction.ClanIds.Take(4).Select(id => GetClanName(FindClan(id)))),
-				Color = ColorFor(faction.Kind),
-				GrievanceBar = Math.Max(8, Math.Min(180, faction.Grievance * 180 / 100)),
-				Satisfied = faction.Satisfied
-			});
-		}
-		return panel;
-	}
-
-	private static string ColorFor(KingdomCivilWarDemandKind kind)
-	{
-		if (kind == KingdomCivilWarDemandKind.None) return "#1E4C8CFF";
-		if (kind == KingdomCivilWarDemandKind.Usurpation) return "#8C1E1EFF";
-		if (kind == KingdomCivilWarDemandKind.Autonomy) return "#8C5A12FF";
-		if (kind == KingdomCivilWarDemandKind.MakePeace) return "#1E6B4AFF";
-		return "#6B3A78FF";
-	}
-
-	internal static string FormatPanel(KingdomCivilWarKingdomState state)
-	{
-		Kingdom kingdom = FindKingdom(state?.KingdomId);
-		StringBuilder builder = new StringBuilder();
-		builder.Append(GetKingdomName(kingdom));
-		builder.Append(" | ").Append(StageName(state.Stage));
-		builder.Append(" | 不满 ").Append(state.OppositionGrievance).Append('/').Append(GrievanceDetonation);
-		if (!string.IsNullOrWhiteSpace(state.PlayerSide)) builder.Append(" | 玩家在").Append(state.PlayerSide == "opposition" ? "反对派" : "王室派");
-		builder.Append('\n').Append(Limit(state.Summary, SummaryCharCap));
-		foreach (KingdomCivilWarFactionState faction in state.Factions.Take(3))
-		{
-			builder.Append('\n').Append(faction.Name);
-			if (!string.IsNullOrWhiteSpace(faction.Demand)) builder.Append(" | 诉求：").Append(Limit(faction.Demand, 50));
-			if (faction.Satisfied) builder.Append(" | 已满足");
-		}
-		foreach (KingdomCivilWarSide side in new[] { KingdomCivilWarSide.Crown, KingdomCivilWarSide.Opposition, KingdomCivilWarSide.Middle })
-		{
-			List<KingdomCivilWarClanState> clans = state.Clans.Where(x => x.Side == side).Take(6).ToList();
-			if (clans.Count == 0) continue;
-			builder.Append('\n').Append(SideName(side)).Append("：");
-			builder.Append(string.Join("、", clans.Select(x => GetClanName(FindClan(x.ClanId)) + (x.LeansOpposition ? "(骑墙)" : ""))));
-		}
-		if (state.Reasons.Count > 0) builder.Append('\n').Append(string.Join("", state.Reasons.Take(3)));
-		return builder.ToString();
-	}
-
-	private static string BuildSummary(Kingdom kingdom, KingdomCivilWarKingdomState state)
-	{
-		int crown = state.Clans.Count(x => x.Side == KingdomCivilWarSide.Crown);
-		int opposition = state.Clans.Count(x => x.Side == KingdomCivilWarSide.Opposition);
-		int middle = state.Clans.Count(x => x.Side == KingdomCivilWarSide.Middle);
-		return GetKingdomName(kingdom) + "现为" + StageName(state.Stage) + "。王室 " + crown + " 家，反对派 " + opposition + " 家，中间派 " + middle + " 家。";
-	}
+	private static bool IsPoliticalClan(Clan clan) { return clan != null && !clan.IsEliminated && !clan.IsBanditFaction && !clan.IsMinorFaction && !clan.IsUnderMercenaryService && !clan.IsClanTypeMercenary; }
+	private static float RandomFloat() { return MBRandom.RandomFloat; }
+	private static string StageName(KingdomCivilWarStage stage) { switch (stage) { case KingdomCivilWarStage.Discontent: return "不满积累"; case KingdomCivilWarStage.FactionFormed: return "派系成形"; case KingdomCivilWarStage.Ultimatum: return "最后通牒"; case KingdomCivilWarStage.OpenWar: return "内战"; case KingdomCivilWarStage.Cooldown: return "冷却"; default: return "无"; } }
 
 	private static KingdomCivilWarKingdomState Sanitize(KingdomCivilWarKingdomState state)
 	{
 		if (state == null || string.IsNullOrWhiteSpace(state.KingdomId)) return null;
-		if (state.Stage == KingdomCivilWarStage.None || state.Stage == KingdomCivilWarStage.Reconciled) return null;
 		state.KingdomId = state.KingdomId.Trim();
-		state.Clans ??= new List<KingdomCivilWarClanState>();
-		state.Reasons ??= new List<string>();
-		state.Clans = state.Clans.Where(x => x != null && !string.IsNullOrWhiteSpace(x.ClanId)).Take(32).ToList();
-		state.Reasons = state.Reasons.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => Limit(x, 40)).Take(3).ToList();
-		state.OppositionGrievance = Math.Max(0, Math.Min(GrievanceDetonation, state.OppositionGrievance));
-		state.Summary = Limit(state.Summary, SummaryCharCap);
+		if (state.Clans == null) state.Clans = new Dictionary<string, KingdomCivilWarClanState>(StringComparer.OrdinalIgnoreCase);
+		if (state.History == null) state.History = new List<KingdomCivilWarHistoryEntry>();
+		foreach (KingdomCivilWarClanState clan in state.Clans.Values) { if (clan.Grievance == null) clan.Grievance = new Dictionary<string, float>(StringComparer.Ordinal); foreach (string key in clan.Grievance.Keys.ToList()) clan.Grievance[key] = CivilWarRules.Clamp(clan.Grievance[key], 0f, MaxClanGrievance); }
+		if (state.Faction != null && CivilWarCatalog.FindDemand(state.Faction.DemandId) == null) { Logger.Log("KingdomCivilWar", "[WARN] dropped unknown demand " + state.Faction.DemandId); state.Faction = null; state.Stage = KingdomCivilWarStage.Discontent; }
 		return state;
 	}
 
-	private static string FindSettlementOwnerKingdom(string settlementId)
+	private static readonly ICivilWarHost Host = new CivilWarHost();
+	private sealed class CivilWarHost : ICivilWarHost
 	{
-		Settlement settlement = Settlement.Find(settlementId);
-		return settlement?.OwnerClan?.Kingdom?.StringId ?? "";
-	}
-
-	private static Kingdom FindKingdom(string kingdomId)
-	{
-		return Kingdom.All?.FirstOrDefault(x => x != null && string.Equals(x.StringId, kingdomId, StringComparison.OrdinalIgnoreCase));
-	}
-
-	private static Clan FindClan(string clanId)
-	{
-		return Clan.All?.FirstOrDefault(x => x != null && string.Equals(x.StringId, clanId, StringComparison.OrdinalIgnoreCase));
-	}
-
-	private static string SideName(KingdomCivilWarSide side)
-	{
-		if (side == KingdomCivilWarSide.Crown) return "王室派";
-		if (side == KingdomCivilWarSide.Opposition) return "反对派";
-		return "中间派";
-	}
-
-	private static string StageName(KingdomCivilWarStage stage)
-	{
-		switch (stage)
-		{
-		case KingdomCivilWarStage.Tension: return "紧张";
-		case KingdomCivilWarStage.FactionsFormed: return "派系成形";
-		case KingdomCivilWarStage.Standoff: return "对峙";
-		case KingdomCivilWarStage.OpenWar: return "内战";
-		case KingdomCivilWarStage.Reconciled: return "和解";
-		default: return "无";
-		}
-	}
-
-	private static string GetKingdomName(Kingdom kingdom) => kingdom?.Name?.ToString() ?? "王国";
-	private static string GetClanName(Clan clan) => clan?.Name?.ToString() ?? "家族";
-	private static string Limit(string text, int max)
-	{
-		string value = (text ?? "").Trim();
-		return value.Length <= max ? value : value.Substring(0, max);
+		public void AdjustStability(Kingdom kingdom, int delta, string reason) { MyBehavior.TryAdjustKingdomStabilityForExternal(kingdom, delta, reason, out _, out _); }
+		public int GetStability(Kingdom kingdom) { return MyBehavior.GetKingdomStabilityValueForExternal(kingdom); }
+		public bool DiscontinueLandlessKingdom(Kingdom kingdom, string reason) { return MyBehavior.TryDiscontinueLandlessKingdomForExternal(kingdom, reason); }
+		public void QueueRebellion(Kingdom kingdom, Clan leader, List<Clan> followers, string factionId, bool startNow) { MyBehavior.QueueCivilWarRebellionForExternal(kingdom, leader, followers, factionId, startNow); }
+		public void ApplyPrestige(Kingdom kingdom, int delta, string reason) { TeamModuleServices.CivilWar.ApplyPrestigeDelta(kingdom == null ? "" : kingdom.StringId, delta, reason); }
+		public void RecordMaterial(Kingdom kingdom, int week, string text) { WriteMaterial(kingdom, week, text); }
+		public void RecordFact(Kingdom kingdom, Hero hero, string key, string text) { WriteFact(kingdom, hero, key, text); }
 	}
 }
