@@ -1,0 +1,231 @@
+{
+ "schemaVersion": 1,
+ "meaning": "Per-entry extra arguments and expected non-PASS states for tests/run_all.py. Entries not listed must PASS. expect values: PASS, PREEXISTING_FAIL, NEEDS_INPUT, SUPERSEDED_BY_RUNNER, ENV_STATE (see docs/audits/2026-09-28-j16-baseline.json statusMeaning).",
+ "entries": {
+  "extensions/AnimusForge.DialogueUI/tests/auxiliary-tests/AuxiliaryTests.csproj": {
+   "expect": "NEEDS_INPUT",
+   "note": "net472 reference assemblies + BannerlordRoot HintPath for 0Harmony; fails identically on ada9894a"
+  },
+  "extensions/AnimusForge.DialogueUI/tests/portrait-tests/PortraitTests.csproj": {
+   "msbuild": [
+    "-p:BaseIntermediateOutputPath={ROOT}/extensions/AnimusForge.DialogueUI/artifacts/portrait-tests/obj/",
+    "-p:MSBuildProjectExtensionsPath={ROOT}/extensions/AnimusForge.DialogueUI/artifacts/portrait-tests/obj/"
+   ]
+  },
+  "tests/AF.Foundation.Runtime/MainThreadFunctionBoundaryTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/AF.GameAdapter.Bannerlord/CampaignCompositionTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_commit.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/test_source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/AF.GameAdapter.Bannerlord/LiveHostReadinessAudit/live_host_readiness_audit.py": {
+   "expect": "ENV_STATE",
+   "args": [
+    "--game-root",
+    "{GAME}"
+   ]
+  },
+  "tests/AF.Persistence/OwnerJsonStorageCodec/OwnerJsonStorageCodecTests.csproj": {
+   "expect": "SUPERSEDED_BY_RUNNER"
+  },
+  "tests/AF.Persistence/PlayerExports/PlayerExportsTests.csproj": {
+   "expect": "SUPERSEDED_BY_RUNNER"
+  },
+  "tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyEffectModule.ContractTests.csproj": {
+   "msbuild": [
+    "-p:BannerlordApi=1.3",
+    "-p:BannerlordApiCompatibility=1.3",
+    "-p:VersionedDepsDir={ROOT}/_deps_auto",
+    "-p:Bannerlord13ReferencesVerified=true",
+    "-p:BannerlordRoot={GAME}",
+    "-p:WorkshopContentDir={WORKSHOP}",
+    "-p:AnimusForgeBinDir={GAME}/Modules/AnimusForge/bin/Win64_Shipping_Client",
+    "-p:HarmonyCorePath={WORKSHOP}/2859188632/bin/Win64_Shipping_Client/0Harmony.dll"
+   ],
+   "args": [
+    "--",
+    "--policy-all-modules-contract-only"
+   ]
+  },
+  "tests/bridges/TeamModulePortParityTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/content/J15ContentContractTests/GcczLoaderHarness.csproj": {
+   "args": [
+    "--",
+    "{ROOT}/artifacts/tests/run_all/{RUN}/gccz-harness-root"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/BattleSpeechCapturedTriggerRegressionTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py": {
+   "args": [
+    "--dotnet",
+    "{DOTNET8}",
+    "--newtonsoft",
+    "{NEWTONSOFT}",
+    "--output-name",
+    "run-all-{RUN}"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/test_source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierCommitOutcomeTests/source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/test_source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierLetterInventoryTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierPostprocessOwnerRegressionTests/test_extraction.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/liveness_review.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/source_review.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierRouteTransportTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/CourierSessionCreationTests/run_admission.py": {
+   "args": [
+    "--dotnet",
+    "{DOTNET8}"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/NativeDispatchClaim/test_source_review.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/NativeMainReply/test_source_review.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/NativeObservation/test_source_review.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/NativePreparationBoundaryTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/SceneGroupReceiptTests/run.py": {
+   "args": [
+    "--dotnet",
+    "{DOTNET8}"
+   ]
+  },
+  "tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/test_extraction.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Conversation/SceneSpeechQueueOwnerTests/run_mutations.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Diplomacy/WorldDiplomacyIntentBoundary.SmokeTests/WorldDiplomacyIntentBoundary.SmokeTests.csproj": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Knowledge/Index/KnowledgeIndexTests.csproj": {
+   "expect": "SUPERSEDED_BY_RUNNER"
+  },
+  "tests/modules/AF.Module.Llm/Protocol/run.py": {
+   "args": [
+    "--dotnet",
+    "{DOTNET8}",
+    "--newtonsoft",
+    "{NEWTONSOFT}",
+    "--phase",
+    "after",
+    "--layout",
+    "relocated",
+    "--output-name",
+    "run-all-{RUN}"
+   ]
+  },
+  "tests/modules/AF.Module.Memory/MemoryFailureUiBoundaryTests/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/source_review.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/verify.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_captured.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_materials.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_sealing.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/test_source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Persona/HeroPersonaGenerationTests/test_source_parity.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/modules/AF.Module.Prompt/ProductionConsumers/run.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tests/replay/PhaseEightParityReplayTests/PhaseEightParityReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/ProductionCourierHostReplayTests/ProductionCourierHostReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tools/PersistenceIdentityAudit.py": {
+   "args": [
+    "--baseline",
+    "e58f3558cddfe473f396bb7f11470b05e30afce9"
+   ]
+  },
+  "tools/PhaseEightReadiness/readiness.py": {
+   "expect": "NEEDS_INPUT"
+  },
+  "tools/PhaseEightReadiness/test_readiness.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tools/PhaseEightReadiness/verify_j13_recruitment.py": {
+   "expect": "PREEXISTING_FAIL"
+  },
+  "tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj": {
+   "expect": "NEEDS_INPUT"
+  },
+  "tools/af2_migrate.py": {
+   "expect": "NEEDS_INPUT"
+  },
+  "tools/generate_bannerlord_history_culture_study.py": {
+   "expect": "NEEDS_INPUT"
+  },
+  "tools/generate_bannerlord_research_grade_study.py": {
+   "expect": "NEEDS_INPUT"
+  }
+ }
+}
