@@ -2,12 +2,13 @@
 
 # 当前范围：AF 2.0 结项计划的源码复核（2026-09-28；非全量审查完成）
 
-本轮只重整文档。职责状态、目标 owner、退出条件唯一维护在[当前主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)；本表仅保存源码事实与覆盖边界，不复制进度表。源码基线为 `254581edca8e6f9264ed799239fc7f1924d23090`，本轮未改产品 C#、项目、配置、测试或脚本。已具名抽查不等于所有大类逐符号审完；J17-A 全量成员覆盖仍待执行。
+当前 J17-A 只增补审查证据与文档。职责状态、目标 owner、退出条件唯一维护在[当前主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)；本表仅保存源码事实与覆盖边界，不复制进度表。E14–E24 当前产品源码基线为 `944712f8c7e8b02057abc91cfefe02f1aade517f`；本阶段未改产品 C#、项目、配置、测试或脚本。已具名抽查不等于所有大类逐符号审完；J17-A 全量成员覆盖仍待执行。
 
 ## 当前核实证据（一基行号；后续按符号与修订重定位）
 
 | ID | 源码路径 / 行范围 / 符号与真实消费者 | 能证明与不能证明的责任边界 |
 | --- | --- | --- |
+| E24（J17-A A2/R06 逐文件入口，源 `944712f8`） | 下方 [R06 当前 30 文件责任导航](#j17a-r06-file-map-20260929)逐一列出两 API 的实际 Compile 路径、1.3 语法声明数、具名生产消费者和逻辑目标 owner；忽略材料 `artifacts/j17a/build_r06_consumers.py`/`r06-file-consumers.json` 记录 top-level 类型与文本消费者。30 文件合计 1,115 声明；源码搜索得到 242 个按文件累计的 top-type 文本命中消费者（同一消费者可跨文件重复）。 | 这些是**当前活文件的目标导航，不是 A2/R06 签收**：文本搜索不穷尽反射、测试的精确路径、保存/ABI 或委托调用；文件级目标也不能代替 1,115 声明逐项语义分区。`LegacyInteractionSnapshotAdapters` 有渠道游戏捕获、运行配置和 Memory/Weekly commit 混合职责，不能整文件单 owner；`LegacyShoutNetworkGateway` 虽在 Contracts 目录却是实现。B7 不可依目录名或本表直接批量移动。 |
 | E23（J17-A A1/R04 保存记录复核，源 `944712f8`） | `MyBehavior.cs:221–668` 的 11 个候选嵌套记录类型在当前 1.3/1.4 实际 Compile 中共 **127 个公有字段**，逐型为 `DailyMemoryLine` 18、`DailyMemoryDraft` 10、`CompressedMemoryBlock` 16、`WeeklyMemoryMaterialTrigger` 20、`MemorySummaryJob` 6、`MemoryOverviewState` 6、`MemoryOverviewJob` 6、`MajorActionSummaryState` 7、`MajorActionSummaryJob` 6、`NpcActionEntry` 27、`CompressedMemoryExportBundle` 5；忽略材料 `artifacts/j17a/build_r04_shape.py`/`r04-record-shape.json` 逐字段记录声明类型、显式/CLR 默认值（78/49）和一基行号，双 API 清单逐字一致。`:17722–17808,18007–18161` 的十组记忆 JSON/分块保存键仍直接在 SyncData；`:57101–57111` definer 只注册 711100 `Dictionary<MobileParty,string>`。`src/AF.Persistence/OwnerJsonStorageCodec.cs:20–96` 使用无显式 settings 的 `JsonConvert`，当前生产源码未见 `JsonConvert.DefaultSettings` 赋值。`tests/replay/ProductionOptInEntryReplayTests/{MemoryOwnerReadbackReplay,MemoryRecoveryProductionReplay,WeeklyActionOutcomeProductionReplay}.cs` 对 `DailyMemoryDraft`/`DailyMemoryLine`/`WeeklyMemoryMaterialTrigger` 用嵌套类型反射；`tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_business.py:22–25` 还按这些源码类型名提取夹具。 | JSON 公有字段名/类型/默认值与十组 SyncData 键均须在 B1 冻结，不能从“类型名不在存档”推导可任意改字段。`SanitizeWeeklyMemoryMaterialTriggers :25587–25694`、`SanitizeDailyMemoryDraftEntry :25758–25802`、`SanitizeCompressedMemoryBlocks :25804–25858` 用 `TWParallel.IsMainThread()` 选原对象或深拷贝；Weekly trigger 的无时间戳旧值在 `:25687–25689` 写入 `DateTime.UtcNow.Ticks`，也非引用透明。`NormalizeMemorySummaryQueue :25862–25889`、`SanitizeMemoryOverviewState :25891–25902`、`SanitizeMemoryOverviewQueue :25905–25929`、`SanitizeMajorActionSummaryState :26008–26021`、`NormalizeMajorActionSummaryQueue :26028–26062` 则直接改写传入 job/state，并未按线程克隆。B1 不能统一套“后台 clone、主线程原地”的单一规则，须逐 sanitizer 保持别名/时间/去重/排序契约。此为当前源码与测试消费者审计，不代表旧 SaveSystem/PlayerExports 真实旧包通过，也未穷尽运行时外部 serializer settings。 |
 | E22（J17-A A2 六个跨桶接缝，源 `944712f8`） | `SubModule.cs:39–150,155–297` 的模块生命周期、`CommandReloadConfig`、首次 API 提示与 WarStats 图层；`src/AF.GameAdapter.Bannerlord/Composition/ApplicationTickComposition.cs:24,61,103` 消费后两者。`MyBehavior.WeeklyActionOutcomeReceipts.cs:16–155,302–557` 的 Prepare/Complete/Publish、receipt 保存/恢复和单条 tick 发布，由 `Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs:782–801`、`MyBehavior.MemoryRecovery.cs:1411` 消费。`TerminalWeeklyReportBrowserPopupVM.cs:233–390` 的 UI 选择/异步完整周报完成，由 `AnimusForgeTerminalUiModels.cs:154,693–694` 消费。`src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs:27–200,585–740` 的 ActionPlan 执行、Economy/Weekly 候选及 Duel request-bound receipt，由 `ShoutBehavior.cs:16857–16959,17360–17422` 与 `CourierDeliveryBehavior.cs:371–390` 创建。`src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs:27–230` 的 request receipt、动作/历史提交与可选 Weekly sidecar，由 `Refactor/Adapters/LegacyChannelInteractionFacade.cs:28` 创建。`src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs:72–110,110–507,507–693,693–1221` 的场景后处理准备、限时/失效、主线程动作提交；`ShoutBehavior.SceneConversationChains.cs:1364,2022` 是两入口。 | 这六个 catalog 多桶文件不能各自整体归为两个权威 owner。`SubModule` 保留游戏宿主组合，欢迎提示/WarStats 是 UI 适配；Weekly partial 的持久 receipt 与 draft 写者属 Weekly/Memory 接缝，`WeeklyActionOutcomePublicationOwner` 与 ledger 已在 `AF.Module.Weekly`，迁移不得复制 `_af_weeklyActionOutcomeReceipts_v1` 状态；Terminal VM 是 UI 消费 Weekly 而非周报规则 owner；executor/committer 是 Action 执行/提交边界，通过接口消费 Duel/Economy/Weekly owner，不应因标签而整体搬进 Duel；Scene 后处理是 Conversation 场景生命周期及动作提交接缝，Duel/GCCZ/Policy 等仅作按资格注入。频率：`SubModule`/Terminal `Tick` 每帧但各以 pending/delay/`IsCompleted` 门控；Weekly tick 一次取一个 due receipt，发布时扫描目标 draft trigger；Scene 每回复启动一次含 deadline 的任务，按 generation/session/epoch/目标重验。**仍未证明**六文件全部声明逐项归属或动态消费者穷尽，尤其 `ScenePostprocess` 长异步 lambda、反射回放、Policy/GCCZ 接口；不作为 A2 签收。 |
 | E21（J17-A A2 当前导航索引，源 `944712f8`） | 仓内忽略 `artifacts/j17a/build_bucket_candidates.py` 只读消费当前两 API Compile/语法清单及 `docs/phase8/full-domain-readiness-catalog.json`，输出 `current-bucket-candidates.json`：1,123 文件中 843 个有**候选**桶，280 个 `UNRESOLVED`（1.3 语法声明 12,675 个），九个 catalog 多桶文件；每行 `semanticReview=PENDING`。`AnimusForge.SiegeAftermathIntervention/` 184 个实际 Compile 文件均声明独立命名空间；`AfGcczShoutBridge.cs:14–120` 和 `src/bridges/Siege/SiegeModuleAdapter.cs:7–31` 是必须审的 AF 侧接缝。 | 索引只用于锁定当前分母和待审集合，未将目录/命名空间推断变成权威归属。GCCZ 内部规则可按维护边界排除主体搬迁，但 AF 桥/保存/场景调用不豁免；`PolicySystem/` 77 文件跨 `AnimusForge`/`PolicyEffects`/`PolicyTargets` 命名空间，不能仅凭目录整体排除。20 桶中的 `tools-content-package` 是非 Compile 工具/内容责任，当前 Compile 文件数为 0，并非遗漏。九个 overlap 中 `MyBehavior.cs`、`ShoutBehavior.cs`、`CourierDeliveryBehavior.cs` 尚未完成逐成员切分。索引**不是 A 出口**：未知成员不为零，其余候选也均待语义复核。 |
@@ -34,6 +35,47 @@
 
 - **当前验证层级**：795 锚点地图只作独立定位工具，E01–E08 的新增人工审查不假装已全纳入该地图。核对结果与命令统一记[本轮主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)。
 - **尚未覆盖**：20 个领域的全编译成员/动态入口分区、剩余大类完整调用与状态闭包、双实际游戏版本/旧档/帧性能。下方各历史保留项必须结合后续 supersession 与当前代码核实，不能整体继承为未完成或永久豁免。
+
+<a id="j17a-r06-file-map-20260929"></a>
+
+### J17-A / R06：`Refactor/` 当前 30 文件责任导航（非迁移签收）
+
+源码版本 `944712f8`；下表的数字是 1.3 语法声明（1.4 对这 30 文件相同），消费者是**具名样例**，逻辑 owner 是 B7 候选而非已经迁移的路径。所有文件当前仍以原 namespace 和路径进入两 API Compile。测试也有源码路径、反射类型和独立项目链接，不能只替换生产 `using`。完整文本导航在忽略的 `artifacts/j17a/r06-file-consumers.json`，不把搜索命中当完整调用图。
+
+| 当前文件及一基范围 | 声明 | 活跃职责、具名生产消费者 | 候选逻辑 owner / 迁移前保留条件 |
+| --- | ---: | --- | --- |
+| `Refactor/Adapters/LegacyChannelInteractionFacade.cs:1–85` | 12 | Scene/Courier/Native 的中性交互入口；`ShoutBehavior.cs`、`CourierDeliveryBehavior.cs` 调用 | Conversation/Interaction；保持一个请求的捕获→生成→提交语义 |
+| `Refactor/Adapters/LegacyConfiguredChatGateway.cs:1–622` | 47 | 配置化生成/校验并调用真实 HTTP/SSE transport；`AIConfigHandler.cs`、`TownAmbientAiClient.cs`、Scene 调用 | Llm/Transport 适配；凭据在发送边界读取，不能误并成第二 transport；测试有精确源码路径和反射全名 |
+| `Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs:1–89` | 8 | detached 后处理 Prompt；`ShoutBehavior.cs` 使用 | Prompt/Interaction；保留主/后处理成对捕获 |
+| `Refactor/Adapters/LegacyDetachedPromptComposer.cs:1–92` | 8 | detached 主 Prompt；Scene/Courier 使用 | Prompt/Interaction；不在 worker 重新读取游戏对象 |
+| `Refactor/Adapters/LegacyDetachedRuleSelector.cs:1–85` | 11 | detached 规则选择；`ShoutBehavior.cs` 使用 | Prompt/Rules；保留渠道资格与规则顺序 |
+| `Refactor/Adapters/LegacyInteractionPipelineComposition.cs:1–171` | 42 | 端口装配与 pipeline 协调；Scene/Courier 建立 ports | Conversation/Pipeline；只装配真实 owner，不复制核心 |
+| `Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs:1–852` | 48 | `:38–112` 运行配置、`:195–574` Native/Scene/Courier 游戏捕获、`:677–807` `MyBehaviorMemoryFacade` 记忆/AFEF commit 与 Weekly sidecar；Scene/Courier/Native 消费 | **混合**：GameAdapter/Conversation 捕获 + Memory/Weekly 主线程适配；先逐符号拆责任，保留 `MyBehavior` 唯一写者及反射 `MyBehaviorMemoryFacade` 全名 |
+| `Refactor/Adapters/LegacyKnowledgeRagGateway.cs:1–58` | 4 | `KnowledgeLibraryBehavior.cs` 的 RAG 网关 | Knowledge ↔ Llm 薄适配；保持 profile/阶段边界 |
+| `Refactor/Adapters/LegacyNativeConversationFacade.cs:1–74` | 8 | Native facade；SnapshotAdapters 与 `ShoutBehavior.cs` 使用 | Conversation/Native；保留现有会话/提交 owner |
+| `Refactor/Adapters/LegacyNativeConversationOptInRunner.cs:1–223` | 14 | Native opt-in 运行结果；`ShoutBehavior.cs` 使用 | Conversation/Native；保留 opt-in、取消和迟到结果语义 |
+| `Refactor/Adapters/LegacyNativePromptParity.cs:1–232` | 20 | Native Prompt 对齐/诊断；`ShoutBehavior.NativeTurnPrompt.cs` 使用 | Prompt/Parity；不得以诊断路径取代真实三渠道 Prompt |
+| `Refactor/Adapters/LegacyPolicyLlmGateway.cs:1–224` | 12 | Policy profile 的 LLM 适配；`KingdomStrategicProfileBehavior.cs`、Policy 生成代码使用 | AF 侧 Policy ↔ Llm bridge；制作组业务不随文件搬入主体 |
+| `Refactor/Adapters/LegacyPromptPackageAdapter.cs:1–110` | 11 | legacy role/content 反射包装；Scene/Courier 与 Shout gateway 使用 | Prompt/LegacyAdapter；保留缓存访问器、格式与反射兼容 |
+| `Refactor/Adapters/LegacyWorldDiplomacyLlmGateway.cs:1–107` | 5 | WorldDiplomacy gateway；`WorldDiplomacyBehavior.JobRuntime.cs` 使用 | Diplomacy ↔ Llm bridge；保留领域请求/失败边界 |
+| `Refactor/Contracts/FeatureBridgeContracts.cs:1–177` | 60 | bridge ID/决策/目录数据；`AfGcczShoutBridge.cs`、`TeamModuleRegistration.cs` 使用 | AF.Contracts/Internal/Bridges；ID/版本/默认 fallback 与 Runtime 成对验证 |
+| `Refactor/Contracts/InteractionContracts.cs:1–605` | 184 | 跨渠道 DTO/接口；Scene/Courier/Actions/Memory 等多方使用 | AF.Contracts/Internal/Interaction；为同 DLL 端口，不能等同独立子 MOD V1 public API |
+| `Refactor/Contracts/LegacyShoutNetworkGateway.cs:1–323` | 10 | **实现** Shout network gateway；`ShoutBehavior.cs`、`ExecutionAddressLlm.cs` 使用 | Llm/Conversation transport 适配，不因现目录名留在 Contracts；保留重试/流式调用责任 |
+| `Refactor/Contracts/LlmContracts.cs:1–182` | 56 | 生成请求/结果及 gateway 接口；Scene/Courier/配置调用 | AF.Contracts/Internal/Llm；DTO 与 transport 策略分开 |
+| `Refactor/Contracts/NpcPersonaReadinessSnapshot.cs:1–26` | 10 | Persona readiness 快照；`MyBehavior.PersonaReadiness.cs`、Scene/Courier 准备使用 | Persona/Contracts；保持快照不含 live 对象 |
+| `Refactor/Contracts/ProfileConfigContracts.cs:1–73` | 10 | `RuntimeConfigSnapshot`；渠道捕获与 `RuntimeConfigSnapshotStore` 使用 | Conversation/Config 契约；保留一次请求配置快照 |
+| `Refactor/Contracts/TtsContracts.cs:1–57` | 20 | TTS 请求/结果/gateway；`TtsEngine.cs`、`LegacyVolcTtsGateway.cs` 使用 | AF.Contracts/Internal/Tts；与真实 TTS 网络/音频 owner 分界 |
+| `Refactor/Modules/CoreDialogueClient.cs:1–129` | 19 | 按渠道委派 Scene/Courier 的内部 client；`AfDialogueClient.cs` 使用 | Conversation/CoreDialogue；保留 V1 仅为外部投影，不建第二会话核心 |
+| `Refactor/Modules/CoreDialogueContracts.cs:1–69` | 58 | CoreDialogue 状态/回执；`CoreDialogueClient.cs`、Courier commit 使用 | Conversation/CoreDialogue 内部契约；与公开 V1 DTO 分离 |
+| `Refactor/Modules/CoreDialogueOperation.cs:1–134` | 28 | request 生命周期及 cancel-before-start；`ShoutBehavior.NativeAdmission.cs` 使用 | Conversation/CoreDialogue；不把取消映射为已执行成功 |
+| `Refactor/Modules/CoreDialogueServices.cs:1–11` | 2 | 内部服务入口；`AfApi.cs` 使用 | Conversation/CoreDialogue；保持公开 API 调用同一真实 client |
+| `Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs:1–71` | 3 | inbound intent→记忆 commit→ready/quarantine；`CourierDeliveryBehavior.InboundCompletion.cs` 使用 | Conversation/Courier；唯一结算顺序不得重排 |
+| `Refactor/Runtime/CourierInboundCompletionReceipt.cs:1–411` | 48 | `AFCI1:` 持久回执；Courier inbound 消费 | Conversation/Courier/Receipts；旧 wire、长度/校验与坏输入拒绝保持 |
+| `Refactor/Runtime/DuelOutcomeReceipt.cs:1–1514` | 186 | request-bound Duel dispatch/context、结果 owner、指纹；`DuelBehavior.Outcomes.cs` 与 Actions 消费 | Duel/Outcomes；状态机/重复/部分效果与 exact-dispatch 语义保持，测试存在源码路径和反射全名 |
+| `Refactor/Runtime/FeatureBridgeRuntime.cs:1–421` | 30 | 启动读取 `FeatureBridges.json`、缓存目录、`IsEnabled` 判定；`SubModule.cs`、TeamModuleRegistration/桥调用 | Foundation/Runtime/FeatureBridges；保留一次配置加载、失败关闭、热路径字典查找 |
+| `Refactor/Runtime/NotorietyConversationOutcomeReceipt.cs:1–1634` | 141 | `AFNR1:` receipt/ledger、Export/Import；`PlayerNotorietyBehavior.ConversationOutcomes.cs`、`MyBehavior.MemoryRecovery.cs` 使用 | Social/Notoriety；wire、恢复/隔离及唯一状态写者保持，测试有精确源码路径和反射全名 |
+
+**尚须逐文件再查的非文本入口**：`tests/replay/ProductionOptInEntryReplayTests`、`ProductionConfiguredHostReplayTests`、`ProductionValidationProviderReplayTests` 通过 CLR 全名反射；`tests/modules/AF.Module.Duel/ProductionDuelOutcomeReplayTests` 和 `tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests` 等按旧路径抽取源码；多个独立 `.csproj` 用 `Compile Include="...Refactor\..."` 链接源文件。B7 应先输出精确的旧→新路径/测试/反射映射，并复核保存 wire、资源路径及 public API ABI；目前**没有**获准从本表直接执行一批 30 文件移动，也未完成 R06 的逐声明/动态消费者签收。
 
 ## 以下为历史范围与阶段证据；其局部结果保留，当前职责结项解释以上方入口为准
 
