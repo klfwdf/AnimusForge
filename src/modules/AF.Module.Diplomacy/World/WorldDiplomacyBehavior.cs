@@ -2209,17 +2209,17 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				bool allowed = CanAiAuthorDiplomaticDocument(receiver, out string reason);
 				return (!allowed, reason);
 			},
-            (r, receiverId, source) =>
-            {
-                Kingdom receiver = ResolveKingdom(receiverId);
-                Kingdom target = ResolveKingdom(source.AuthorKingdomId);
-				bool reuseRelayTranscript = r.RelayPlanned;
-				EnqueueGenerationJob(receiver, target, null, isResponse: true, sourceDocument: source,
-					priority: 95, externalResponseOnly: true, roundId: r.RoundId, isRelayTurn: reuseRelayTranscript,
-					previousKingdomId: source.AuthorKingdomId, scheduledDay: CurrentDay());
-				return target?.StringId;
-			},
+            EnqueueMandatoryCourtReplyJob,
 			Log, MaxPriorityPlayerResponsesPerDocument);
+	}
+	private string EnqueueMandatoryCourtReplyJob(
+		string receiverId, string targetId, WorldDiplomacyDocument source, string roundId, bool isRelayTurn)
+	{
+		Kingdom target = ResolveKingdom(targetId);
+		EnqueueGenerationJob(ResolveKingdom(receiverId), target, null, isResponse: true, sourceDocument: source,
+			priority: 95, externalResponseOnly: true, roundId: roundId, isRelayTurn: isRelayTurn,
+			previousKingdomId: source?.AuthorKingdomId, scheduledDay: CurrentDay());
+		return target?.StringId;
 	}
 	private void ProcessRoundLifecycle()
 	{
