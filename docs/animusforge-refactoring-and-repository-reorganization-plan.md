@@ -263,7 +263,7 @@
 | economy-reward-debt | RewardSystemBehavior 家族、交易/债务/资产与 RP crafting；按已批准 Economy 范围核实规则/状态/游戏 mutator；不能用 J12 有限完成跳过余项 |
 | policy-political | **A AF 侧 `LegacyPolicyLlmGateway` 12 声明已按 E52 分区，未签桶**：Policy NPC/event/rebellion 与 KingdomStrategicProfile 的请求/结果桥保留领域 profile、现有 retry client、metadata 映射；PolicySystem 内部仍按既有排除，AF 侧其他 ports/调用、政治领域跨接缝必须分清，不能以“政策”名称扩大排除。 |
 | world-simulation-worldmap | **A WorldDiplomacy LLM 薄桥 5 声明已按 E52 分区，未签桶**：其 client 持有原有 route/retry/结果保存；WorldMap/Diplomacy/Kingdom、Vassalage/Annexation、WarStats 其余按 J12/J13 既定领域归属对账，不改世界 AI/战斗玩法。 |
-| settlement-siege-gccz-sets | AF 定居点/城后宿主与 GCCZ 薄桥；GCCZ 内部业务排除，但 AF 侧规则与状态残留仍需归属；不写外仓 |
+| settlement-siege-gccz-sets | AF 定居点/城后宿主与 GCCZ 薄桥；GCCZ 内部业务排除，但 AF 侧规则与状态残留仍需归属；不写外仓 **A2-1 GCCZ 项目部分已审 [E68](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)**：`AnimusForge.SiegeAftermathIntervention/` 184 文件全为纯 BCL 的 GCCZ/SETS 内部规则，182 排除、2 死代码候选、0 待迁；AF 接缝（`TownAfRuleRoutingPolicy` 镜像 29 个 AF 规则 id、标签目录、城镇 Prompt/语音、共享救济捕获、Task.Run 辅助 LLM）已列出。宿主侧适配器 `SiegeAiInterventionBehavior*` 等未在本组审，**总桶未签**。 |
 | scene-mission-combat | Taunt/Exercise/Inspection/MeetingBattleLock/护送等 AF 场景路径；按机制责任核查主线程适配、伤害 allowlist 与生命周期，不全盘搬 Harmony |
 | duel | **A 进程内 Outcome/Dispatch 回执 E55 已审，未签总桶**：`DuelOutcomeOwner` 按唯一身份保留请求→开始→结果→五效果状态，宿主满载且无活动项才 rollover；读回不能作为保存恢复或二次执行授权。DuelBehavior/Outcomes 的实际 Mission、死亡、Economy、Memory/AFEF 与渠道入口仍须逐成员核对，决斗领域状态/规则、表现和引擎接口分开，保持同一执行事实；静态 owner 跨 Campaign 残留留 R08。 |
 | courier-proactive-issue | **A Courier 入站 `AFCI1:` 收据/Memory 协调 E54 已审，未签总桶**：Pending 先于 Memory owner 写入，Ready/Applied 需确认恢复并保留原收件/投递资格；wire 含可见信正文，非加密/认证。其余 Courier、主动请求/同伴聊天、Issue 及 R05 之外的主动触发/任务接受/延迟回调仍须逐成员核对，各自 owner 唯一；0.75 秒 tick 全 session 排序留 R08。 |
