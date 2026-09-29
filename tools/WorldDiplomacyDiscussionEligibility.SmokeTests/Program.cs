@@ -100,7 +100,7 @@ internal static class Program
         string snapshot = ExtractSection(
             behavior,
             "internal static bool TryCaptureDiscussionCandidate(",
-            "private bool TryBuildProactiveDiscussion(");
+            "public static bool TryBuildProactiveDiscussionForExternal(");
         string application = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDiscussionApplication.cs"), Encoding.UTF8);
         string adapter = File.ReadAllText(FindRepositoryFile(
