@@ -48,10 +48,9 @@ def boundaries():
  assert 'DiplomacyIndependentPeaceApplication.CanUse(' in declaration(oral,'private static bool TryResolveIndependentClanPeaceContext('), 'Independent peace context retains old branch policy'
  assert 'DiplomacyTributePowerApplication.TryBuild(' in declaration(oral,'internal static bool TryBuildTributePowerContext('), 'Old tribute calculation retained in Behavior'
  context_owner=read('src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs')
- tag_forwarder=declaration(context_owner,'public static void ProcessDiplomacyTagsDispatch(')
- assert 'DiplomacyOralTagApplication.Process(' in tag_forwarder and not any(
-  token in tag_forwarder for token in ['Regex','switch (','ProcessSingleDiplomacyTag']), 'Tag Behavior retains dispatch algorithm'
+ assert 'ProcessDiplomacyTagsDispatch' not in context_owner, 'Duplicate command entry retained on Behavior: ProcessDiplomacyTagsDispatch'
  assert 'private void ProcessDiplomacyTags(' not in context_owner and 'private string ProcessSingleDiplomacyTag(' not in context_owner, 'Tag Behavior retains old processor'
+ assert 'DiplomacyOralTagApplication.Process(' in adapter and 'DiplomacyOralTagApplication.Process(' not in context_owner, 'Tag dispatch must have one module-boundary entry only'
  world_adapter=read('src/modules/AF.Module.Diplomacy/Adapters/WorldDiplomacyModuleAdapter.cs')
  assert 'WorldDiplomacyTickApplication.Run(' in world_adapter and 'WorldDiplomacyBehavior.Instance?.OnEngineTick()' not in world_adapter, 'Module tick delegates whole workflow to Behavior'
  world_owner=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs')
@@ -219,6 +218,68 @@ def boundaries():
   assert restored==old(p),'Lifecycle order/guard drift: '+p
  for p in ['src/bridges/Diplomacy/DiplomacyConversationBridge.cs','src/bridges/Diplomacy/DiplomacyPolicyObservationBridge.cs']:
   assert not any(s in read(p) for s in ['foreach (','Regex','Campaign.Current','_af_world_diplomacy_v1','new Dictionary','lock (']), 'Bridge owns business/state: '+p
+ # --- R1 closeout negative guards ---
+ # Composition is lifecycle registration only; any extra wiring or a second registration fails.
+ composition=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs')
+ comp_body=composition[composition.index('internal static void Register('):]
+ invoked=set(re.findall(r'([A-Za-z_][\w.]*)\s*\(',comp_body))
+ assert invoked=={'Register','RegisterPatches','starter.AddBehavior','WorldDiplomacyBehavior','DiplomacyBehavior',
+                  'WorldDiplomacyBehavior.RegisterHarmonyPatches'},'Composition gained non-lifecycle wiring: '+str(invoked)
+ # Module port covers commands, queries, lifecycle, presentation and receipts; dropping an entry fails.
+ port_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IWorldDiplomacyModulePort')
+ assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',port_decl))=={'CanDiscuss','TryBuildProactiveDiscussion','QueryTimelineRevision',
+   'QueryTimelineDocuments','TryMarkDocumentRead','OnEngineTick','OnCampaignTick','OnDailyTick'},'ModulePort surface drift'
+ assert set(re.findall(r'(\w+)\s*\{\s*get;',port_decl))=={'Presentation'},'ModulePort read-model surface drift'
+ conv_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IDiplomacyConversationPort')
+ assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',conv_decl))=={'CanInjectDiplomacyRule','CanUseDiplomacyActionPostprocess',
+   'CanUseFullDiplomacyActionPostprocess','CanUseNpcSovereignDeclareWarPostprocess','CanUseIndependentClanPeace',
+   'IsIndependentClanPeacePostprocessTag','BuildDiplomacyPostprocessContext','ProcessDiplomacyTags',
+   'TryBuildTributePowerContext'},'Conversation port surface drift'
+ # Module adapter may bind only narrow snapshot/leaves, never a whole use-case Behavior method.
+ allowed_wdb={'Instance','TickSource','CampaignSource','TryGetTimelineRevisionSnapshot','TryGetTimelineState',
+   'TryCaptureDiscussionCandidate','HasKnownDocumentForDiscussion','TryCaptureProactiveSpeaker','TryCaptureProactiveDocuments',
+   'GetPlayerKingdomNameForProactive','FormatDateForProactive','ResolvePresentationPort'}
+ for call in set(re.findall(r'WorldDiplomacyBehavior\.(\w+)',world_adapter)):
+  assert call in allowed_wdb,'Module adapter gained a non-snapshot Behavior coupling: '+call
+ assert 'WorldDiplomacyBehavior.Instance.' not in world_adapter
+ # Application layer stays free of host/game types.
+ for app_file in sorted((ROOT/'src/modules/AF.Module.Diplomacy/Application').glob('*.cs')):
+  app_text=app_file.read_text(encoding='utf-8-sig')
+  for bad in ['WorldDiplomacyBehavior','TaleWorlds.','MyBehavior','Campaign.Current','Task.Run(']:
+   assert bad not in app_text,'Application layer coupled to host/game: '+app_file.name+' '+bad
+ # Callback-hiding guard: no host method may sequence >=2 use-case owners or loop over owner calls.
+ tok=re.compile(r'@"(?:[^"]|"")*"|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|//[^\n]*|/\*[\s\S]*?\*/|[{}]')
+ def method_bodies(t):
+  out=[]
+  for m in re.finditer(r'(?m)^[ \t]*(?:private|internal|public)\s+(?:static\s+|readonly\s+|sealed\s+|override\s+|new\s+)*[\w<>\[\],.?()\[\]= ]+?\b(\w+)\s*\(',t):
+   brace=t.find('{',m.end());depth=0
+   if brace<0: continue
+   for mm in tok.finditer(t,brace):
+    v=mm.group()
+    if v=='{':depth+=1
+    elif v=='}':
+     depth-=1
+     if depth==0:out.append((m.group(1),t[m.start():mm.end()]));break
+  return out
+ for wf in sorted((ROOT/'src/modules/AF.Module.Diplomacy/World').glob('WorldDiplomacyBehavior*.cs')):
+  for name,body in method_bodies(wf.read_text(encoding='utf-8-sig')):
+   apps=set(re.findall(r'WorldDiplomacy\w+Application\.',body))
+   flow=len(re.findall(r'\b(?:if|foreach|while|for)\s*\(',body))
+   assert not (len(apps)>=2 and flow>=1),'host method re-hides multi-owner orchestration: '+wf.name+'::'+name
+   assert len(apps)<3,'host method sequences multiple use-case owners: '+wf.name+'::'+name
+ # Load-time sequencers must stay thin forwarders to their Application owners.
+ for sig in ['private void NormalizeStorage(','private void MigrateCanonicalHistoryIfNeeded(']:
+  fwd=declaration(current_world,sig)
+  assert fwd.count(';')<=3 and re.search(r'WorldDiplomacy\w+Application\.',fwd),'load sequencer regrew orchestration: '+sig
+ # Execution port stays a leaf surface: no writable storage, fixed width, leaf member bodies.
+ exec_decl=declaration(read('src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyDocumentExecutionPort.cs'),
+   'internal interface IWorldDiplomacyDocumentExecutionPort')
+ assert 'WorldDiplomacyStorage' not in exec_decl and ' set;' not in exec_decl,'Execution port exposed writable storage state'
+ assert len([l for l in exec_decl.splitlines() if l.strip() and not l.strip().startswith(('//','{','}')) and 'interface' not in l])==45,'Execution port width changed without review'
+ assert 'List<WorldDiplomacyThreat> Threats' in exec_decl,'mutable Threats exposure pin lost'
+ port_impl=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DocumentExecutionPort.cs')
+ for name,body in method_bodies(port_impl):
+  assert body.count(';')<=6,'Execution port member regrew orchestration: '+name
  print(f'PASS exact inverse: {len(paths)} caller files / {count} routes; channel guards/ref/out/order unchanged; policy cadence and tick entry guards preserved')
 
 def main():

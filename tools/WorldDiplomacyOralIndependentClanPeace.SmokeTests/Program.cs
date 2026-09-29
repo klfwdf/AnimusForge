@@ -187,9 +187,8 @@ internal static class Program
             StringComparison.Ordinal);
         Test.True(action >= 0 && confirmation > action && register > confirmation,
             "recent peace may be registered only after the action is confirmed");
-        Test.True(behavior.Contains(
-                      "internal const string IndependentClanPeaceTag = DiplomacyConversationEligibilityApplication.IndependentClanPeaceTag",
-                      StringComparison.Ordinal)
+        Test.True(!behavior.Contains("IndependentClanPeaceTag =", StringComparison.Ordinal)
+                  && behavior.Contains("DiplomacyConversationEligibilityApplication.IsIndependentClanPeaceTag(", StringComparison.Ordinal)
                   && behavior.Contains("DiplomacyIndependentPeaceApplication.CanUse(", StringComparison.Ordinal)
                   && eligibility.Contains("!IsEligible(source.CapturePlayer())", StringComparison.Ordinal)
                   && eligibility.Contains("!IsEligible(source.CaptureSpeaker())", StringComparison.Ordinal)

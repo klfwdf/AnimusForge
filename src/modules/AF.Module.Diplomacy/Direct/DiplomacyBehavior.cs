@@ -62,14 +62,6 @@ namespace AnimusForge
 		{
 		}
 
-		public static void ProcessDiplomacyTagsDispatch(Hero npc, ref string text)
-		{
-			var source = new DiplomacyOralTagSource(npc);
-			DiplomacyOralTagApplication.Process(source, ref text);
-		}
-
-		internal const string IndependentClanPeaceTag = DiplomacyConversationEligibilityApplication.IndependentClanPeaceTag;
-
 		// ════════════════════════════════════════════════════════ LLM context
 
 		internal static string BuildDiplomacyInstructionContext(Hero npc)
