@@ -37,6 +37,8 @@
 
 **A2/R07 四功能内置接缝（仍 `REVIEW_REQUIRED`）**：[范围图 E35](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)核对两 API 实际 Compile 中 Vengeance、Illustrator、DialogueUI、Coup 共 164 文件/6,210 声明及 AF 宿主入口，确认 Vengeance 独立 `SubModule` 未编入内置程序集，扩展独立入口以 `HostOwnsModule`/claim 互斥。AF 宿主只装配，四功能各保留既有规则和存档 owner；尤其 Coup bridge 自持 `_afCoupRebellionBridge_v1`/`_afCoupOutcomeBridge_v1` 请求与一次提交收据，并反射 `MyBehavior` 私有成员，不能标为无状态薄桥。DialogueUI 交易桥、Illustrator Overlay/历史亦反射 Native 私有签名；B6/B7 必须逐个核对动态合同和旧档。R08 继续保留每帧 `IntegratedModuleHost.Tick` 异常传播及 Coup 活跃时每 0.25 秒扫描请求的规模风险。宿主 37 相位与五变异 source-linked 回放通过，但不是实机、旧档、互斥或 6,210 声明逐项语义签收；20 桶、A 出口仍未闭，B 未启动。
 
+**A2/R07 诊断宿主接缝（仍 `REVIEW_REQUIRED`）**：[范围图 E36](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)把四个根级诊断/UI/Harmony 文件 267 声明与 Foundation 已拆五文件 144 声明分开审；J02 基础 owner 的源码链接、旧/新 oracle、逆向检查和六个变异均通过，不等于根级业务/动态接缝全部已审。R08 具名新增：可选 Token Stats 的 `ConcurrentQueue` 没有普通日志 4,096/8,192 容量门，开启后原文消息复制、积压和写盘要按负载量测；启动 UTF-8 BOM 修正还会整文件读取旧日志。隐私风险是 Token Stats 可落盘请求/消息/回复原文，错误 AI 分析仅精确替换四个当前配置 key 后发送堆栈，并非通用脱敏；B6/R09 如触及此界须单独保留用户开关、同意和数据边界，不能拿真实玩家日志做测试。A 未闭，B 未启动。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
