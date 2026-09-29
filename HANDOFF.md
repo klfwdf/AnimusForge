@@ -3,7 +3,7 @@
 - **整合范围**：以普通 merge 保留 J16 与 J17 两侧提交。J16 分支基于 `ada9894a`，包含 15 个提交；J17-A 为独立分支的 5 个盘点提交。J16 包含测试/工具/文档/Bootstrap 归位及两项有测试保护的 Scene 提交顺序修复；J17 新增内容限于本 HANDOFF、主计划台账和代码范围图的盘点证据，不代表 J17 产品迁移完成。
 - **J16 状态**：`J16_OFFLINE_CLOSED`，J16a/b/c/d/e 按离线范围完成。全量 runner 记录为 257 项 `PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。真实游戏、旧存档、三渠道针对新增修复的回放为 `NOT-RUN`；`_af_xihai_legacy_equipment_cleanup_v1` 旧档兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留仍见主台账，不将离线关闭扩大为全项目完成。
 - **J17-A 状态**：已盘点 R04（E09）、R02（E10）、R01（E11）、R03（E12）、R07 文件级覆盖（E13：各版本 940 项/20 桶/UNASSIGNED=0）。E09–E13 源码坐标来自 `99ca85ae`；后续到 `ada9894a` 有 267 个远端独有提交，故必须在 J17-B 开工前按符号与变更文件刷新相关证据。R07 仍有 3,332/10,704 个成员待人工映射；R05/R06/R08/R09 未完，J17-A 仍 OPEN。
-- **推送状态**：本机 `origin/codex/af-main-refactor-continuation-20260831` 跟踪点为 `ada9894a`。本轮 fetch 因 GitHub HTTPS 无可用凭据失败；此前 HTTPS push 与 `gh auth status` 也确认凭据无效。重新认证后需先刷新远端再普通快进推送；不强推、不覆写远端。
+- **推送状态**：本地合并提交 `2bc0b843` 已包含 J16 + J17；GitHub 目标引用本机缓存仍为 `ada9894a`。终端 fetch/push 因 GitHub HTTPS 无可用凭据失败，GitHub 分支更新 API 又返回 403（当前集成无 ref 写权限）。重新认证/恢复写权限后，先刷新远端再普通快进推送；不强推、不覆写远端。
 - **验证与保留**：J16 的全量验证数据来自 `codex/af-j16-continue-20260929` 交接记录，本轮未重跑该套件；本轮仅做文档冲突整合与 `git diff --check`。未运行游戏/旧档/provider，未部署/打包；未跟踪 `.dotnet-cli-home/` 和 J17 的忽略盘点材料保持原样。
 
 ## 以下为上一份交接历史（当前以本节为准）
