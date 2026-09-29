@@ -106,7 +106,9 @@ def main():
                    ('private void ProcessRelayArrivals(', 'WorldDiplomacyRoundProgressApplication.'),
                    ('private void RecordDiplomacyWeeklyMaterial(', 'WorldDiplomacyHistoryCaptureApplication.'),
                    ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
-                   ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.')):
+                   ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.'),
+                   ('private void NormalizeStorage(', 'WorldDiplomacyStorageNormalizationApplication.'),
+                   ('private void MigrateCanonicalHistoryIfNeeded(', 'WorldDiplomacyCanonicalHistoryMigrationApplication.')):
   before=declaration(prior,signature);after=declaration(current,signature)
   assert owner in after, signature
   prior=prior.replace(before,after)
@@ -143,7 +145,7 @@ def main():
  current=current.replace('\t'+declaration(current,proactive_documents)+'\n\n','')
  current=current.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
- print('PASS 23 private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
+ print('PASS 24 private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)
  # Evaluation only: no game startup, restore, Stage or deployment.
  result=subprocess.run([a.dotnet,'msbuild',str(ROOT/'AnimusForge.csproj'),'-getItem:Compile'],cwd=ROOT,capture_output=True,encoding='utf-8',check=True)

@@ -240,7 +240,7 @@ static class Program
         var retired = manifest["retired"].Values<string>().ToHashSet();
         var prior = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(Path.GetDirectoryName(manifestPath), "prior-host.cs.txt"))).GetRoot();
         var retiredMethods = prior.DescendantNodes().OfType<MethodDeclarationSyntax>().Where(m => retired.Contains(m.Identifier.ValueText)).ToArray();
-        Check(retiredMethods.Length == 23 && retiredMethods.All(m => m.Modifiers.Any(SyntaxKind.PrivateKeyword) && m.AttributeLists.Count == 0), "only private non-callback declarations retired");
+        Check(retiredMethods.Length == 24 && retiredMethods.All(m => m.Modifiers.Any(SyntaxKind.PrivateKeyword) && m.AttributeLists.Count == 0), "only private non-callback declarations retired");
         Check(!trees[host].GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().Any(m => retired.Contains(m.Identifier.ValueText)), "retired host wrappers absent");
         // All surviving same-name references must be qualified calls to the extracted owner, never a bare/self/owner dispatch.
         foreach (var (path, tree) in trees)

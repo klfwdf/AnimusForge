@@ -14361,6 +14361,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string proactiveSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyProactiveDiscussionApplication.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs"));
+        behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.HistoryCapturePort.cs"));
         // Inspect the active host-to-application path after DPL-080 ownership transfer.
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
@@ -14489,6 +14490,8 @@ RunRepairCorrectionAndJobDecisionTests();
         string generationTaskSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs"));
         string jobPreparationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs"));
         string dispatchSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
+        string normalizationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"));
+        string migrationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCanonicalHistoryMigrationApplication.cs"));
         string roundCompressionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs"));
         Test.True(exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny", StringComparison.Ordinal),
             "the host must route suspended-pause day shifts through the lifecycle rules");
@@ -15003,27 +15006,27 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("SequenceEqual(currentFollowThrough", StringComparison.Ordinal),
             "raw presentation drift comparisons must not remain in the host");
 
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizePendingPolicySignals", StringComparison.Ordinal),
-            "host must delegate pending policy signal normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizePendingPolicySignals", StringComparison.Ordinal),
+            "normalization owner must delegate pending policy signal normalization to the domain");
         Test.True(policyRoundApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedPolicySignals", StringComparison.Ordinal),
             "host must delegate retained policy signal selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeProcessedSignalKeys", StringComparison.Ordinal),
-            "host must delegate processed signal key normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeProcessedSignalKeys", StringComparison.Ordinal),
+            "normalization owner must delegate processed signal key normalization to the domain");
         Test.True(rulesSource.Contains("CapToMostRecentEntries(", StringComparison.Ordinal),
             "most-recent capping must live in the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizePropagationArrivalList", StringComparison.Ordinal),
-            "host must delegate propagation arrival normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeWarLedgerList", StringComparison.Ordinal),
-            "host must delegate war ledger normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeBattleRecords", StringComparison.Ordinal),
-            "host must delegate battle record normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeJobRecord", StringComparison.Ordinal),
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizePropagationArrivalList", StringComparison.Ordinal),
+            "normalization owner must delegate propagation arrival normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeWarLedgerList", StringComparison.Ordinal),
+            "normalization owner must delegate war ledger normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeBattleRecords", StringComparison.Ordinal),
+            "normalization owner must delegate battle record normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeJobRecord", StringComparison.Ordinal),
             "host must delegate job record normalization to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsJobOfKind", StringComparison.Ordinal),
             "host must delegate job kind classification to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsRetiredJob", StringComparison.Ordinal),
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsRetiredJob", StringComparison.Ordinal),
             "host must delegate retired-job filtering to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRoundCompressionDocuments", StringComparison.Ordinal),
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRoundCompressionDocuments", StringComparison.Ordinal),
             "host must delegate compression document selection to the domain");
         Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPublishedRoundDocuments", StringComparison.Ordinal),
             "host must delegate published round document selection to the domain");
@@ -15078,28 +15081,28 @@ RunRepairCorrectionAndJobDecisionTests();
             "storage migration must delegate retired architecture job selection to the domain");
         Test.True(storageMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRoundJobsOfKinds", StringComparison.Ordinal),
             "host must delegate round job selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeSettlementKnowledgeRecords", StringComparison.Ordinal),
-            "host must delegate settlement knowledge normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeKingdomKnowledgeRecords", StringComparison.Ordinal),
-            "host must delegate kingdom knowledge normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeParticipationRequestRecords", StringComparison.Ordinal),
-            "host must delegate participation request normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList", StringComparison.Ordinal),
-            "host must delegate relay arrival normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizePlayerOpportunityList", StringComparison.Ordinal),
-            "host must delegate player opportunity normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeRoundSummaryRecord", StringComparison.Ordinal),
-            "host must delegate round summary normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeCompressionSummaryRecord", StringComparison.Ordinal),
-            "host must delegate compression summary normalization to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedCompletedRounds", StringComparison.Ordinal),
-            "host must delegate completed-round retention to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedRoundSummaries", StringComparison.Ordinal),
-            "host must delegate round summary retention to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedAnnualSummaries", StringComparison.Ordinal),
-            "host must delegate annual summary retention to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedCompressionSummaries", StringComparison.Ordinal),
-            "host must delegate compression summary retention to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeSettlementKnowledgeRecords", StringComparison.Ordinal),
+            "normalization owner must delegate settlement knowledge normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeKingdomKnowledgeRecords", StringComparison.Ordinal),
+            "normalization owner must delegate kingdom knowledge normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeParticipationRequestRecords", StringComparison.Ordinal),
+            "normalization owner must delegate participation request normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList", StringComparison.Ordinal),
+            "normalization owner must delegate relay arrival normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizePlayerOpportunityList", StringComparison.Ordinal),
+            "normalization owner must delegate player opportunity normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeRoundSummaryRecord", StringComparison.Ordinal),
+            "normalization owner must delegate round summary normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeCompressionSummaryRecord", StringComparison.Ordinal),
+            "normalization owner must delegate compression summary normalization to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedCompletedRounds", StringComparison.Ordinal),
+            "normalization owner must delegate completed-round retention to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedRoundSummaries", StringComparison.Ordinal),
+            "normalization owner must delegate round summary retention to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedAnnualSummaries", StringComparison.Ordinal),
+            "normalization owner must delegate annual summary retention to the domain");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectRetainedCompressionSummaries", StringComparison.Ordinal),
+            "normalization owner must delegate compression summary retention to the domain");
         Test.True(rulesSource.Contains("ClonePolicySignalRecord(", StringComparison.Ordinal),
             "policy signal cloning must live in the domain");
         Test.True(!behaviorSource.Contains("originalCurrentSettlementSlotId", StringComparison.Ordinal),
@@ -15139,11 +15142,11 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!behaviorSource.Contains("x.Status, \"open\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("offer.Status, \"open\"", StringComparison.Ordinal),
             "raw open-offer status comparisons must not remain in the host");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsRecordInRound(", StringComparison.Ordinal),
+        Test.True(migrationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsRecordInRound(", StringComparison.Ordinal),
             "host must delegate round-membership checks to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasJobId(", StringComparison.Ordinal),
             "host must delegate job-id checks to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasJobIdInSet(", StringComparison.Ordinal),
+        Test.True(migrationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.HasJobIdInSet(", StringComparison.Ordinal),
             "host must delegate job-id set membership to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(", StringComparison.Ordinal),
             "host must delegate document-id matching to the domain");
@@ -15262,7 +15265,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(!textRulesSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
             "text rules must not reference the host behavior");
         Test.True(playerApplicationSource.Contains("WorldDiplomacyTextRules.NormalizeBody(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.NormalizeCanonicalHistoryText(", StringComparison.Ordinal)
+            && migrationApplicationSource.Contains("WorldDiplomacyTextRules.NormalizeCanonicalHistoryText(", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyTextRules.SanitizePublicDiplomacyText(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTextRules.CompactPromptFact(", StringComparison.Ordinal)
@@ -15525,7 +15528,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && canonicalRenderSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderProtectedFactsBySequenceDescending(", StringComparison.Ordinal),
             "canonical render rules must own entry/protected/snapshot rendering with a token-estimate port"
             + " and route newest-first protected-fact ordering through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyCanonicalRenderRules.RenderCanonicalProtectedFacts(", StringComparison.Ordinal)
+        Test.True(migrationApplicationSource.Contains("WorldDiplomacyCanonicalRenderRules.RenderCanonicalProtectedFacts(", StringComparison.Ordinal)
             && canonicalHistoryRulesSource.Contains("WorldDiplomacyCanonicalRenderRules.SelectCanonicalProtectedFactsWithinTokenBudget(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string RenderCanonicalHistoryEntry(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string RenderCanonicalProtectedFacts(", StringComparison.Ordinal),
@@ -15842,7 +15845,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route deferred retry processing through the lifecycle rules");
         Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.CanonicalDeltaContainsSourceKey(sourceKeys, ", StringComparison.Ordinal),
             "the canonical history rules must route delta source-key lookup through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(", StringComparison.Ordinal),
+        Test.True(migrationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(", StringComparison.Ordinal),
             "the host must route history token estimation through the lifecycle rules");
         Test.True(!behaviorSource.Contains("private bool CanonicalDeltaContainsSourceKey(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static long EstimateHistoryTokens(", StringComparison.Ordinal)
@@ -15874,7 +15877,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("public static void RemoveOfferCooldown(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void ClearBilateralOfferCooldowns(", StringComparison.Ordinal),
             "exchange lifecycle and cooldown index rules must live in the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveExchange(", StringComparison.Ordinal)
+        Test.True(migrationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveExchange(", StringComparison.Ordinal)
             && exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteExchange(", StringComparison.Ordinal)
             && exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(", StringComparison.Ordinal)
@@ -15900,7 +15903,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(storageMigrationSource.Contains("MigratePolicyCountdownHistory(history, storage.Jobs,", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyStorageMigration.BackfillCanonicalResponseLinksV2(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(", StringComparison.Ordinal),
+            && normalizationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(", StringComparison.Ordinal),
             "the host must route canonical-history maintenance through extracted ports");
         Test.True(!storageMigrationSource.Contains("TaleWorlds", StringComparison.Ordinal)
             && !storageMigrationSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal)
@@ -16060,11 +16063,11 @@ RunRepairCorrectionAndJobDecisionTests();
             && storageMigrationSource.Contains("public static void NormalizeStoredRoundRecord(", StringComparison.Ordinal)
             && storageMigrationSource.Contains("pruneInvalidOffers?.Invoke(round)", StringComparison.Ordinal),
             "stored record normalization must live in the storage migration rules behind ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(", StringComparison.Ordinal)
-            && behaviorSource.Contains("ResolveKingdomNameOrEmpty", StringComparison.Ordinal)
-            && behaviorSource.Contains("GetRoundHardDurationDays, PruneInvalidOffers, Log", StringComparison.Ordinal),
-            "the host must bind storage normalization ports through thin adapters");
+        Test.True(normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("source.ResolveKingdomNameOrEmpty", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("source.RoundHardDurationDays, source.PruneInvalidOffers, source.Log", StringComparison.Ordinal),
+            "the normalization owner must bind storage normalization ports through thin adapters");
         Test.True(!behaviorSource.Contains("normalizedOfferSourceBindings", StringComparison.Ordinal)
             && !behaviorSource.Contains("Kingdom actionTarget = ResolveKingdom(action.TargetKingdomId)", StringComparison.Ordinal),
             "the host must not retain the per-record normalization bodies");
