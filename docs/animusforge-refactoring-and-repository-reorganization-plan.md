@@ -39,7 +39,9 @@
 
 **A2/R07 诊断宿主接缝（仍 `REVIEW_REQUIRED`）**：[范围图 E36](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)把四个根级诊断/UI/Harmony 文件 267 声明与 Foundation 已拆五文件 144 声明分开审；J02 基础 owner 的源码链接、旧/新 oracle、逆向检查和六个变异均通过，不等于根级业务/动态接缝全部已审。R08 具名新增：可选 Token Stats 的 `ConcurrentQueue` 没有普通日志 4,096/8,192 容量门，开启后原文消息复制、积压和写盘要按负载量测；启动 UTF-8 BOM 修正还会整文件读取旧日志。隐私风险是 Token Stats 可落盘请求/消息/回复原文，错误 AI 分析仅精确替换四个当前配置 key 后发送堆栈，并非通用脱敏；B6/R09 如触及此界须单独保留用户开关、同意和数据边界，不能拿真实玩家日志做测试。A 未闭，B 未启动。
 
-**A2 `bootstrap-build` 桶责任归属已复核（其余 A 仍 `REVIEW_REQUIRED`）**：[范围图 E37](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)当前 Bootstrap 独立项目实际只编三文件，主实现项目排除它们；XML 唯一 Bootstrap 入口、实现双版本标记/失败关闭、内存程序集登记、限定依赖解析及生命周期转发均有当前源码闭包。逻辑 owner 保留为 Bootstrap 加载边界，离线构建/Stage/包仍由既有脚本承担，不因已审而重复迁移。R08 留名每帧 `OnApplicationTick` 的 `params` 数组和缓存 MethodInfo 的 `Invoke` 成本；当前仅做只读 Compile/XML 断言，未执行含递归重置的一键脚本、实机或旧档，不提升 J17-C/D。余下 19 桶和 R05/R06/R08 继续审，J17-A 总出口未达，B 不启动。
+**A2 `bootstrap-build` 桶责任归属已复核（其余 A 仍 `REVIEW_REQUIRED`）**：[范围图 E37](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)当前 Bootstrap 独立项目实际只编三文件，主实现项目排除它们；XML 唯一 Bootstrap 入口、实现双版本标记/失败关闭、内存程序集登记、限定依赖解析及生命周期转发均有当前源码闭包。逻辑 owner 保留为 Bootstrap 加载边界，离线构建/Stage/包仍由既有脚本承担，不因已审而重复迁移。R08 留名每帧 `OnApplicationTick` 的 `params` 数组和缓存 MethodInfo 的 `Invoke` 成本；当前仅做只读 Compile/XML 断言，未执行含递归重置的一键脚本、实机或旧档，不提升 J17-C/D。其余桶另见 E38 与下表；J17-A 总出口未达，B 不启动。
+
+**A2 `host-composition` 桶责任归属已复核（其余 A 仍 `REVIEW_REQUIRED`）**：[范围图 E38](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)核对引擎入口、八个 `Composition` 文件、内置四功能/SceneActions 薄宿主与 typed 目录；`SubModule` 的首次 API 指引和 WarStats 地图按钮仍是 UI/配置接缝，不能整文件标为纯装配。旧候选的 `LegacyInteractionPipelineComposition` 实际是 Scene/Native/Courier 请求期 pipeline 工厂，应归 Conversation；候选中的 Economy 合同、四个 team port 和 V1 公共合同也不归 host。保留 `IntegratedModuleHost.Tick` 异常传播与地图按钮每帧检查的 R08 实机量测。旧 Campaign oracle 漏掉已注册的 CivilWar，测试已按已审插入修复，当前全 runner 46 断言/6 个变异及 Host source inverse 通过。仅签 A 责任归属，不宣称 patch/内置功能业务、真实游戏、旧档已验；剩余 18 桶、R05/R06/R08 继续审，J17-A 总出口未达，B 不启动。
 
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
@@ -193,12 +195,12 @@
 
 ### 3.3 全范围覆盖网（J17-A 必须补完，不按代表性样本签收）
 
-沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。`bootstrap-build` 的责任归属已按 E37 复核；**其余 19 桶的全量成员审查仍待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
+沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。`bootstrap-build`、`host-composition` 的责任归属已按 E37–E38 复核；**其余 18 桶的全量成员审查仍待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
 
 | 现有责任桶 ID | 本轮/后续盘点范围与目标责任（不是确认未迁的清单） |
 | --- | --- |
 | bootstrap-build | **A 责任归属已审，E37**：Bootstrap 三个实际 Compile 文件与实现项目排除、XML 唯一入口、双版本选择/依赖/生命周期和脚本构建接缝已核对。保留独立加载边界；R08 每帧反射成本待真实量测，J17-C/D 构建/游戏未验。只有另获授权才改一键脚本或 Bootstrap；不按行数重构加载器。 |
-| host-composition | SubModule、Composition、LegacyInteractionPipelineComposition；装配/生命周期接线与领域决策分离 |
+| host-composition | **A 责任归属已审，E38**：`SubModule` 引擎入口、八个 `Composition` 装配文件、typed 目录及内置功能薄桥保留宿主接线；同文件首次 API 指引/WarStats 地图按钮归 UI/配置，`LegacyInteractionPipelineComposition` 归 Conversation 请求期工厂，六个粗候选合同归各自领域/API。R08 异常传播/帧成本与真实游戏仍待验；不把领域 patch 和内置规则整体签收。 |
 | runtime-diagnostics | Logger、Tick/诊断及 Foundation owner；确认通用资源/队列与领域日志策略各自归属，不复制调度器 |
 | game-adapter-compatibility | BannerlordApiCompat、PlayerEncounterCompat、Harmony/版本适配；保留真实游戏接入，检查是否夹带可迁领域算法 |
 | persistence-config | 保存/chunk/JSON、DuelSettings 与配置捕获/落盘；业务状态归领域，键/类型/迁移入口单独保留；关联 R04 |
