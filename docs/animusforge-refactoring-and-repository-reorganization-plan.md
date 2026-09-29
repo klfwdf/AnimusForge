@@ -89,6 +89,8 @@
 
 **A2/R07 `AIConfigHandler` 混合职责续审（20 桶仍未签收）**：[范围图 E64](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)按两 API 实际 Compile 的 429 声明清单逐段读完 `AIConfigHandler.cs:1–7900`，确认 E47 的 `persistence-config` 文件级候选不可整体采用：配置发布、规则检索/跨轮 sticky、Conversation 前后处理与 AFEF、辅助 LLM 请求、游戏资格投影、Knowledge Lore 门面分属不同 owner；保存/执行权威不因此移入 Prompt。Native/Scene/Courier 的已捕获资格 worker 接线有具名生产调用，但 legacy null 资格回退仍会读活对象，完整线程/消费者矩阵未闭。R08 新列野外后处理 `Settlement.All.Where(...).OrderBy(...)` 全表成本及目标 ID fallback 查找；跨 Campaign 静态 sticky/单项评估缓存隔离待生命周期回放；R09 列辅助路由错误与 message/token 诊断可能包含正文。现仅源码/部分消费者逻辑初分，不将 429 声明或 20 桶标为逐成员、动态消费者完成；旧导航 JSON 仍为 280 null/全 `PENDING`，其余 223 个 null 文件也未审。无产品改动、双 API 产品构建、provider/旧档/游戏验收；**A 未闭，B 不启动**。
 
+**A2/R05/R07 主回复 `ShoutNetwork` 责任续审（20 桶仍未签收）**：[范围图 E65](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)逐段读两 API 各 50 声明的原 null 导航文件及 Native、Scene 群聊、Vengeance 演说和 typed gateway 消费者：真实 HTTP/SSE 单 attempt 在 Llm owner，主回复配置、thinking/空回复/交互重试与可见文本在兼容 facade，渠道最终提交和 Social/Knowledge 事实不由它夺权。R08 新列每流请求 `rawSampleMaxChars:-1` 关闭默认 raw sample 12,000 字符上限、复制原始流且同时累计内容/推理，需按请求频率与峰值量测；R05 列取消时部分正文完成回调与调用方后续失效 gate；R09 列 raw response/TokenStats 可含正文。已读代码不等于实测泄漏、越权提交或真实 provider 故障，不能暗改既有可见/部分回复规则。E59–E63 的 57 文件/577 声明加本片为 58/627 个原 null 文件/声明，仍余 222 个 null 文件，候选 JSON 不改写、全部保持 `PENDING`；未跑该文件旧测试、双 API 产品构建、游戏/旧档。**A 未闭，B 不启动**。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
