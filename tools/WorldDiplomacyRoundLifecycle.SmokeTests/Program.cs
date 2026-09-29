@@ -12030,7 +12030,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // live in the lifecycle rules behind narrow ports.
         var recorded = new List<(string key, string label, string snapshot, string kingdom,
             string hero, string actorKingdom, bool world, int day, string date)>();
-        WorldDiplomacyRoundLifecycleRules.RecordDiplomacyWeeklyMaterial(
+        WorldDiplomacyHistoryCaptureApplication.RecordDiplomacyWeeklyMaterial(
             null, new List<WorldDiplomacyDocument>(), (a, b, c, d, e, f, g, h, i2) =>
                 recorded.Add((a, b, c, d, e, f, g, h, i2)));
         var weekly = new WorldDiplomacyDocument
@@ -12048,7 +12048,7 @@ RunRepairCorrectionAndJobDecisionTests();
             AuthorKingdomId = "K3", Title = "Earlier", CreatedUtcTicks = 1,
             AddressedKingdomIds = new List<string> { "K4" }
         };
-        WorldDiplomacyRoundLifecycleRules.RecordDiplomacyWeeklyMaterial(
+        WorldDiplomacyHistoryCaptureApplication.RecordDiplomacyWeeklyMaterial(
             weekly, new List<WorldDiplomacyDocument> { sameDay }, (a, b, c, d, e, f, g, h, i2) =>
                 recorded.Add((a, b, c, d, e, f, g, h, i2)));
         Test.True(recorded.Count == 4
@@ -15194,7 +15194,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("x.Sequence <= cutoff).OrderBy(", StringComparison.Ordinal),
             "raw record orderings must not remain in the host");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeTrimmedIdListPreserveOrder(", StringComparison.Ordinal)
+            && historyCaptureSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeTrimmedIdListPreserveOrder(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeOrderedIdList(", StringComparison.Ordinal),
             "host must delegate identifier-list normalization to the domain");
         Test.True(storageMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.NormalizeRevisionMapLong(", StringComparison.Ordinal)
@@ -16298,14 +16298,15 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("priority player declaration response completed", StringComparison.Ordinal),
             "the host must not retain progress bookkeeping or relay-routing bodies");
 
-        // DPL-060CZ: weekly-material snapshots and invalid-document suppression
-        // live in the lifecycle rules; the host binds storage and queue ports.
-        Test.True(rulesSource.Contains("public static void RecordDiplomacyWeeklyMaterial(", StringComparison.Ordinal)
+        // DPL-060CZ/R1: weekly-material snapshots live with the history-capture
+        // Application; invalid-document suppression stays in analysis rules.
+        Test.True(historyCaptureSource.Contains("internal static void RecordDiplomacyWeeklyMaterial(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void RecordDiplomacyWeeklyMaterial(", StringComparison.Ordinal)
             && analysisSource.Contains("public static void SuppressInvalidDocumentBeforePropagation(", StringComparison.Ordinal)
             && analysisSource.Contains("Action<string, string> completeExchange", StringComparison.Ordinal)
             && analysisSource.Contains("Func<string, string> resolveKingdomId", StringComparison.Ordinal),
             "document lifecycle bookkeeping must live in the owning services behind ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RecordDiplomacyWeeklyMaterial(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyHistoryCaptureApplication.RecordDiplomacyWeeklyMaterial(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyAnalysisApplication.Suppress(", StringComparison.Ordinal)
             && behaviorSource.Contains("MyBehavior.RecordWorldDiplomacyWeeklyMaterialForExternal", StringComparison.Ordinal),
             "the host must bind material recording and suppression through thin adapters");
