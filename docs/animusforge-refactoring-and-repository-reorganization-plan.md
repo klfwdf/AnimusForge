@@ -39,6 +39,8 @@
 
 **A2/R07 诊断宿主接缝（仍 `REVIEW_REQUIRED`）**：[范围图 E36](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)把四个根级诊断/UI/Harmony 文件 267 声明与 Foundation 已拆五文件 144 声明分开审；J02 基础 owner 的源码链接、旧/新 oracle、逆向检查和六个变异均通过，不等于根级业务/动态接缝全部已审。R08 具名新增：可选 Token Stats 的 `ConcurrentQueue` 没有普通日志 4,096/8,192 容量门，开启后原文消息复制、积压和写盘要按负载量测；启动 UTF-8 BOM 修正还会整文件读取旧日志。隐私风险是 Token Stats 可落盘请求/消息/回复原文，错误 AI 分析仅精确替换四个当前配置 key 后发送堆栈，并非通用脱敏；B6/R09 如触及此界须单独保留用户开关、同意和数据边界，不能拿真实玩家日志做测试。A 未闭，B 未启动。
 
+**A2 `bootstrap-build` 桶责任归属已复核（其余 A 仍 `REVIEW_REQUIRED`）**：[范围图 E37](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)当前 Bootstrap 独立项目实际只编三文件，主实现项目排除它们；XML 唯一 Bootstrap 入口、实现双版本标记/失败关闭、内存程序集登记、限定依赖解析及生命周期转发均有当前源码闭包。逻辑 owner 保留为 Bootstrap 加载边界，离线构建/Stage/包仍由既有脚本承担，不因已审而重复迁移。R08 留名每帧 `OnApplicationTick` 的 `params` 数组和缓存 MethodInfo 的 `Invoke` 成本；当前仅做只读 Compile/XML 断言，未执行含递归重置的一键脚本、实机或旧档，不提升 J17-C/D。余下 19 桶和 R05/R06/R08 继续审，J17-A 总出口未达，B 不启动。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
@@ -191,11 +193,11 @@
 
 ### 3.3 全范围覆盖网（J17-A 必须补完，不按代表性样本签收）
 
-沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。**本表各桶的全量成员审查当前均为待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
+沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。`bootstrap-build` 的责任归属已按 E37 复核；**其余 19 桶的全量成员审查仍待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
 
 | 现有责任桶 ID | 本轮/后续盘点范围与目标责任（不是确认未迁的清单） |
 | --- | --- |
-| bootstrap-build | Bootstrap/项目/XML/双实现选择；稳定装载身份与构建边界，只有另获授权才迁脚本/Bootstrap；不按行数重构加载器 |
+| bootstrap-build | **A 责任归属已审，E37**：Bootstrap 三个实际 Compile 文件与实现项目排除、XML 唯一入口、双版本选择/依赖/生命周期和脚本构建接缝已核对。保留独立加载边界；R08 每帧反射成本待真实量测，J17-C/D 构建/游戏未验。只有另获授权才改一键脚本或 Bootstrap；不按行数重构加载器。 |
 | host-composition | SubModule、Composition、LegacyInteractionPipelineComposition；装配/生命周期接线与领域决策分离 |
 | runtime-diagnostics | Logger、Tick/诊断及 Foundation owner；确认通用资源/队列与领域日志策略各自归属，不复制调度器 |
 | game-adapter-compatibility | BannerlordApiCompat、PlayerEncounterCompat、Harmony/版本适配；保留真实游戏接入，检查是否夹带可迁领域算法 |
