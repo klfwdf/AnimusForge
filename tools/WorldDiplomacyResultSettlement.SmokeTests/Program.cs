@@ -668,8 +668,11 @@ internal static class Program
 			"each successful, previously unregistered war action must grant and prioritize its own target response using docId#actionId");
 
         string begin = ExtractMethod(
-            lifecycleRules,
-            "public static void BeginOrExtendRoundResultSettlement(");
+            File.ReadAllText(
+                FindRepositoryFile(Path.Combine(
+                    "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs")),
+                Encoding.UTF8),
+            "internal static void BeginOrExtendRoundResultSettlement(");
         string beginAdapter = ExtractSection(
             source,
             "private void BeginOrExtendRoundResultSettlement(",
@@ -679,14 +682,14 @@ internal static class Program
                   && begin.Contains("AddWarResponseResultSettlementSlot(round, document,", StringComparison.Ordinal)
                   && begin.Contains("refreshActionSlots?.Invoke(round)", StringComparison.Ordinal),
             "confirmed results must freeze unspoken route obligations and then add directed/war obligations");
-        Test.True(beginAdapter.Contains("WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
+        Test.True(beginAdapter.Contains("WorldDiplomacyRoundApplication.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
                   && beginAdapter.Contains("RefreshResultSettlementActionSlots", StringComparison.Ordinal)
                   && beginAdapter.Contains("TryIncludeResultSettlementTarget", StringComparison.Ordinal),
             "the host must bind settlement-open ports through a thin adapter");
-        Test.True(begin.Contains("int settlementWindowDays = ComputeSettlementWindowDays(", StringComparison.Ordinal)
+        Test.True(begin.Contains("int settlementWindowDays = WorldDiplomacyRoundLifecycleRules.ComputeSettlementWindowDays(", StringComparison.Ordinal)
                   && begin.Contains("round.RelayRouteKingdomIds?.Count ?? 0", StringComparison.Ordinal)
                   && begin.Contains(
-                      "round.HardEndDay = ExtendHardEndDay(",
+                      "round.HardEndDay = WorldDiplomacyRoundLifecycleRules.ExtendHardEndDay(",
                       StringComparison.Ordinal)
                   && begin.Contains("currentDay, settlementWindowDays)", StringComparison.Ordinal),
             "opening settlement must extend the old relay deadline by a route-bounded window");

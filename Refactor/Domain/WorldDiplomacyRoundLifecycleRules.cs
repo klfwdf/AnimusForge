@@ -5696,51 +5696,6 @@ List<string> ids = new List<string>();
             + " offer=" + offer.SourceDocumentId + " intent=" + intent + " proposer=" + offer.ProposerKingdomId);
     }
 
-    public static void BeginOrExtendRoundResultSettlement(
-        WorldDiplomacyRound round,
-        WorldDiplomacyDocument document,
-        string closeReason,
-        string roundStatus,
-        WorldDiplomacyStorage storage,
-        int currentDay,
-        Func<WorldDiplomacyRound, string, bool> includeResultSettlementTarget,
-        Func<string, string> createId,
-        Action<WorldDiplomacyRound> refreshActionSlots,
-        Action<string> log)
-    {
-        if (round == null || document == null) return;
-        if (!round.ResultSettlementPending)
-        {
-            round.ResultSettlementPending = true;
-            round.ResultSettlementTriggerDocumentId = document.DocumentId;
-            round.ResultSettlementCloseReason = string.IsNullOrWhiteSpace(closeReason) ? "result_settled" : closeReason;
-            round.ResultSettlementRoundStatus = NormalizeResultSettlementStatus(roundStatus);
-            round.ResultSettlementSlots ??= new List<WorldDiplomacyResultSettlementSlot>();
-            round.ResultSettlementWarDocumentIds ??= new List<string>();
-            round.RelayWaiting = false;
-            // A result near the old relay deadline must still leave enough bounded time for
-            // every selected speaker and every newly addressed action target to answer.
-            int settlementWindowDays = ComputeSettlementWindowDays(
-                round.RelayRouteKingdomIds?.Count ?? 0);
-            round.HardEndDay = ExtendHardEndDay(
-                round.HardEndDay, currentDay, settlementWindowDays);
-            storage?.RelayArrivals.RemoveAll(x => x != null
-                && IsRecordInRound(x.RoundId, round.RoundId));
-            storage?.Jobs.RemoveAll(x => x != null
-                && IsJobOfKind(x, "generate")
-                && string.Equals(FirstNonEmpty(x.RoundId, x.ExchangeId), round.RoundId, StringComparison.OrdinalIgnoreCase));
-            log?.Invoke("round result settlement opened round=" + round.RoundId
-                + " trigger=" + document.DocumentId + " reason=" + round.ResultSettlementCloseReason);
-        }
-        else if (IsResolvedRoundStatus(roundStatus))
-        {
-            round.ResultSettlementRoundStatus = "resolved";
-        }
-        InitializeResultSettlementRouteSlots(round, storage?.Documents, includeResultSettlementTarget, createId);
-        AddWarResponseResultSettlementSlot(round, document, includeResultSettlementTarget, createId);
-        refreshActionSlots?.Invoke(round);
-    }
-
     public static void RecordDiplomacyWeeklyMaterial(
         WorldDiplomacyDocument document,
         List<WorldDiplomacyDocument> documents,
