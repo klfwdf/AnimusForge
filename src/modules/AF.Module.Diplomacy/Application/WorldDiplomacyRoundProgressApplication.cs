@@ -199,7 +199,7 @@ internal static class WorldDiplomacyRoundProgressApplication
         Action<string, WorldDiplomacyDocument> markPlayerCourtReached,
         Action<WorldDiplomacyRound> scheduleSettlement,
         Action<WorldDiplomacyRound> advanceRelay,
-        Action<WorldDiplomacyRelayArrival, WorldDiplomacyDocument, WorldDiplomacyRound, string> enqueueRelayTurn,
+        Action<string, string, WorldDiplomacyDocument, string, string, int, int, string> enqueueRelayTurn,
         Action<string> log)
     {
         // The persisted queue is sorted on load and at both insertion sites. Snapshot
@@ -266,7 +266,10 @@ internal static class WorldDiplomacyRoundProgressApplication
                 }
                 settlementSlot.Status = "inflight";
                 WorldDiplomacyDocument settlementSource = settlementRoundDocuments.FirstOrDefault();
-                enqueueRelayTurn?.Invoke(arrival, settlementSource, round, settlementSlot.SlotId);
+                enqueueRelayTurn?.Invoke(arrival.ToKingdomId,
+                    resolveKingdomId?.Invoke(arrival.FromKingdomId),
+                    settlementSource, round.RoundId, arrival.FromKingdomId, arrival.DueDay,
+                    90, settlementSlot.SlotId);
                 continue;
             }
             int index = (round.RelayRouteKingdomIds ?? new List<string>()).FindIndex(x => string.Equals(x, arrival.ToKingdomId, StringComparison.OrdinalIgnoreCase));
@@ -305,7 +308,10 @@ internal static class WorldDiplomacyRoundProgressApplication
                 continue;
             }
             WorldDiplomacyDocument source = relayRoundDocuments.FirstOrDefault();
-            enqueueRelayTurn?.Invoke(arrival, source, round, null);
+            enqueueRelayTurn?.Invoke(arrival.ToKingdomId,
+                resolveKingdomId?.Invoke(arrival.FromKingdomId) ?? resolveKingdomId?.Invoke(round.InitiatorKingdomId),
+                source, round.RoundId, arrival.FromKingdomId, arrival.DueDay,
+                75, null);
         }
     }
 
