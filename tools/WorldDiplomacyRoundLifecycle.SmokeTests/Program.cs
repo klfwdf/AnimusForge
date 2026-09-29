@@ -12165,7 +12165,7 @@ RunRepairCorrectionAndJobDecisionTests();
         int planEnqueue = 0, settleSched = 0, hopSched = 0, logs = 0;
         string closeReason = null;
         WorldDiplomacyDocument planDoc = null;
-        Action tick = () => WorldDiplomacyRoundLifecycleRules.ProcessRoundLifecycle(
+        Action tick = () => WorldDiplomacyRoundApplication.ProcessRoundLifecycle(
             storage, () => 42,
             id => storage.Documents.FirstOrDefault(x => x != null && x.DocumentId == id),
             (r, d) => { planEnqueue++; planDoc = d; },
@@ -12273,7 +12273,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         int settleSched2 = 0, hopImm = 0, closes2 = 0, logs2 = 0;
         string closeReason2 = null;
-        Action reconcile = () => WorldDiplomacyRoundLifecycleRules.ReconcileActiveDiplomacyAfterLoad(
+        Action reconcile = () => WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(
             storage, () => 42, r => settleSched2++, r => hopImm++,
             r => { closes2++; closeReason2 = r; }, _ => logs2++);
 
@@ -14406,8 +14406,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && threatMigrationSource.Contains("MigrateThreatComplianceConsequencesV3(storage);", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion", StringComparison.Ordinal),
             "the host must route threat storage migration through the persistence migrator");
-        Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad", StringComparison.Ordinal),
-            "the host must route after-load reconcile through the lifecycle rules");
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateReconcileAfterLoad", StringComparison.Ordinal),
+            "the round Application must route after-load reconcile through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BeginOrExtendRoundResultSettlement(", StringComparison.Ordinal)
             && rulesSource.Contains("ComputeSettlementWindowDays(", StringComparison.Ordinal),
             "the host must route settlement windows through the lifecycle rules");
@@ -14429,12 +14429,12 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route settlement slot dispatch through the lifecycle rules");
         Test.True(rulesSource.Contains("previousKingdomId = ResolveSettlementPreviousSpeaker(", StringComparison.Ordinal),
             "the previous-speaker chain must be composed inside the lifecycle rules");
-        Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose", StringComparison.Ordinal),
-            "the host must route circuit-breaker and hard-end closes through the lifecycle rules");
-        Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired", StringComparison.Ordinal),
-            "the host must route player-slot timeouts through the lifecycle rules");
-        Test.True(rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.IsActiveRelayParticipant", StringComparison.Ordinal),
-            "the host must route relay participant eligibility through the lifecycle rules");
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateRoundTerminalClose", StringComparison.Ordinal),
+            "the round Application must route circuit-breaker and hard-end closes through the lifecycle rules");
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsPlayerSlotWaitingExpired", StringComparison.Ordinal),
+            "the round Application must route player-slot timeouts through the lifecycle rules");
+        Test.True(applicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsActiveRelayParticipant", StringComparison.Ordinal),
+            "the round Application must route relay participant eligibility through the lifecycle rules");
         Test.True(rulesSource.Contains("IsArrivalStale(", StringComparison.Ordinal),
             "stale-arrival detection must be composed inside the lifecycle rules");
         Test.True(rulesSource.Contains("EvaluateArrivalAction(", StringComparison.Ordinal),
@@ -16310,14 +16310,16 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must not retain snapshot text or suppression bookkeeping bodies");
 
         // DPL-060DA: tick-time lifecycle and after-load reconcile routing live
-        // in the lifecycle rules; the host binds storage and scheduling ports.
-        Test.True(rulesSource.Contains("public static void ProcessRoundLifecycle(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void ReconcileActiveDiplomacyAfterLoad(", StringComparison.Ordinal)
-            && rulesSource.Contains("Action<WorldDiplomacyRound> scheduleRelayHop", StringComparison.Ordinal)
-            && rulesSource.Contains("Action<WorldDiplomacyRound> scheduleRelayHopImmediately", StringComparison.Ordinal),
-            "round lifecycle maintenance must live in the lifecycle rules behind ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ProcessRoundLifecycle(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ReconcileActiveDiplomacyAfterLoad(", StringComparison.Ordinal)
+        // in the round Application; the host binds storage and scheduling ports.
+        Test.True(exchangeApplicationSource.Contains("internal static void ProcessRoundLifecycle(", StringComparison.Ordinal)
+            && exchangeApplicationSource.Contains("internal static void ReconcileActiveDiplomacyAfterLoad(", StringComparison.Ordinal)
+            && exchangeApplicationSource.Contains("Action<WorldDiplomacyRound> scheduleRelayHop", StringComparison.Ordinal)
+            && exchangeApplicationSource.Contains("Action<WorldDiplomacyRound> scheduleRelayHopImmediately", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void ProcessRoundLifecycle(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void ReconcileActiveDiplomacyAfterLoad(", StringComparison.Ordinal),
+            "round lifecycle maintenance must live in the round Application behind ports");
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundApplication.ProcessRoundLifecycle(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyRoundApplication.ReconcileActiveDiplomacyAfterLoad(", StringComparison.Ordinal)
             && behaviorSource.Contains("r => ScheduleNextRelayHop(r, scheduleImmediately: true)", StringComparison.Ordinal),
             "the host must bind lifecycle maintenance through thin adapters");
         Test.True(!behaviorSource.Contains("relay_all_ai_withdrew", StringComparison.Ordinal)
