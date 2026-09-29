@@ -5,7 +5,7 @@
 
 ## 2026-09-19 原生场景导出反例
 
-`1c92decf` 实机记录 `20260918T203953_a098443ab2634860955703ce0cb42c3e` 中，实际送出的五张原生 SceneView PNG 已整体发蓝，人物 JPEG 正常；用户现场截图是暖棕色。对同一原生 PNG 做 R/B 对照后墙体、帷幕和火光恢复到对应暖色。证据位于 `artifacts/illustrator-scene-regression-20260919/evidence/`，生成脚本 `tools/illustrator/inspect_scene_reference_regression.py` 只写对照，不修改原图。
+`1c92decf` 实机记录 `20260918T203953_a098443ab2634860955703ce0cb42c3e` 中，实际送出的五张原生 SceneView PNG 已整体发蓝，人物 JPEG 正常；用户现场截图是暖棕色。对同一原生 PNG 做 R/B 对照后墙体、帷幕和火光恢复到对应暖色。证据位于 `artifacts/illustrator-scene-regression-20260919/evidence/`，生成脚本 `extensions/AnimusForge.Illustrator/tests/audits/inspect_scene_reference_regression.py` 只写对照，不修改原图。
 
 这是新原生场景导出生产者没有经过通道适配，不能通过修改 UI 或对整张已生成成图交换通道解决。新 `PanoramaProjection.Compose` 只接收六张原生场景导出 PNG，在投影合成前一次 R/B 适配；标准截图、HTTP结果、缓存图、UI准备函数和人物导出链保持原有契约。全景合成后的 PNG 已是标准RGBA，后续禁止再换色。
 

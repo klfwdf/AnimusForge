@@ -31,12 +31,12 @@
       "topology": "PAIR",
       "owner": "Build.Composition",
       "entryPaths": [
-        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "src/AF.Bootstrap/BootstrapRuntime.cs",
         "SubModule.cs"
       ],
       "symbols": [
         {
-          "path": "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+          "path": "src/AF.Bootstrap/BootstrapRuntime.cs",
           "symbol": "BootstrapRuntime",
           "kind": "type"
         },

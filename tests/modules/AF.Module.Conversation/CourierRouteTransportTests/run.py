@@ -48,7 +48,12 @@ ordered(recipient_route,
         "IsCourierRouteTargetMismatched(",
         "ShouldRefreshRouteWithProgress(")
 
-process = extract.declaration(session, "private void ProcessSession(")
+process_wrapper = extract.declaration(session, "private void ProcessSession(")
+require("ProcessSessionCore(session);" in process_wrapper,
+        "session wrapper must still enter the routed core")
+require("FailModuleCourierSession(session, \"courier.transport_processing_failed\");" in process_wrapper,
+        "session wrapper must still fail on transport exceptions")
+process = extract.declaration(session, "private void ProcessSessionCore(")
 ordered(process,
         "TryGetRecipientTarget(",
         "IsAtRecipient(",
@@ -56,9 +61,15 @@ ordered(process,
 
 delivery = extract.declaration(generation, "private void DeliverToRecipient(")
 ordered(delivery,
-        "ApplyDeliveryPayload(session, courier, recipient);",
+        "_activeCourierDeliveries.Add(session)",
         "session.DeliveryApplied = true;",
+        "ApplyDeliveryPayload(session, courier, recipient);",
+        "ConfirmModuleCourierPayload(session);",
+        "CommitCourierDialogueHistory(recipient,",
+        "if (!payloadAccepted || !historyAccepted)",
         "if (!session.ReplyGenerated)",
         "CommitGeneratedReplyAtRecipient(session, recipient);")
+require("finally { _activeCourierDeliveries.Remove(session); }" in delivery,
+        "arrival reentry guard must be released")
 
-print("PASS CourierRouteTransport routeRefresh=1 targetMismatch=1 arrivalBeforeDelivery=1 deliveryBeforeCommit=1 live=NOT_RUN")
+print("PASS CourierRouteTransport routeRefresh=1 targetMismatch=1 arrivalBeforeDelivery=1 reservationBeforePayload=1 receiptBeforeCommit=1 live=NOT_RUN")

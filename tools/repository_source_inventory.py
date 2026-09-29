@@ -16,8 +16,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 PLANES = frozenset({"source", "content", "tests", "tools", "scripts", "docs", "references", "design"})
 SOURCE_ROOTS = frozenset({
-    "AnimusForge.Bootstrap", "AnimusForge.SiegeAftermathIntervention", "PolicySystem",
-    "Properties", "Refactor", "UI", "WarStats", "WorldEvents", "extensions", "src",
+    "AnimusForge.SiegeAftermathIntervention", "PolicySystem",
+    "Properties", "Refactor", "UI", "Vengeance", "WarStats", "WorldEvents", "extensions", "src",
 })
 CACHE_ROOTS = frozenset({".codex_tmp", ".dotnet", ".dotnet_cli", ".tmp", "tmp"})
 REFERENCE_ROOTS = frozenset({"原版游戏本体代码1.3.x", "原版游戏本体代码1.4.5"})
@@ -60,8 +60,6 @@ def classify_path(path: str) -> str | None:
         return "HOLD:archive"
     if top == "_DeveloperPatch":
         return "HOLD:local-patch"
-    if top == "animusforge-policy-effect-module-skill-draft":
-        return "HOLD:skill-draft"
     if path.startswith("AnimusForge/AssetPackages/"):
         return "HOLD:asset-package-provenance"
     if top == "content" and len(parts) > 1 and parts[1].lower() == "playerexports":
@@ -132,7 +130,7 @@ def classify_path(path: str) -> str | None:
         return "tests" if len(parts) > 2 and parts[1] == "fixtures" else "docs"
     if top in {".agents", ".claude"}:
         return "docs"
-    if top == "一键编译覆盖推送":
+    if top in {"一键编译覆盖推送", "scripts"}:
         return "scripts"
     if top == "PNG":
         return "design"
@@ -141,7 +139,7 @@ def classify_path(path: str) -> str | None:
             return "docs"
         if suffix in {".json", ".xml", ".png", ".mbproj"}:
             return "content"
-        if suffix in {".cs", ".csproj", ".sln", ".slnx", ".props", ".targets"}:
+        if suffix in {".cs", ".csproj", ".sln", ".slnx", ".props", ".targets"} or name == ".gitignore":
             return "source"
         if suffix in {".py", ".ps1", ".cmd", ".bat"}:
             return "scripts"

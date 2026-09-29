@@ -39,6 +39,7 @@ public partial class ShoutBehavior
         private bool directNoblePrisonerConversation;
         private List<RewardSystemBehavior.DuelStakeOption> nativeDuelStakeOptions;
         private List<PostprocessRuleEntry> nativeSceneMechanismPostprocessRules;
+        private string nativeSceneActionDirective;
         private string runtimeTargetKingdomId;
         private string runtimeTargetHeroId;
         private string runtimeTargetCharacterId;
@@ -97,8 +98,9 @@ public partial class ShoutBehavior
                 if (!await CaptureOnGameThreadAsync("postprocess_complete", () =>
                 {
                     postprocessed = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error);
-                    // Consume before any detached tag catalog sees an unknown family.
-                    ConsumeSceneActionDirective(ref postprocessed, nativeTargetAgentIndex, postprocessReply);
+                    // Strip before any detached tag catalog sees an unknown family; submit only
+                    // after stale/target/discard checks (AcceptedReplySideEffects below).
+                    nativeSceneActionDirective = ExtractSceneActionDirective(ref postprocessed, nativeTargetAgentIndex);
                 }).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
 
             }
@@ -150,7 +152,8 @@ public partial class ShoutBehavior
                     OpeningFact = npcOpeningConsumed ? npcOpeningPersistentFactText : null,
                     TtsAlreadyDispatched = nativeTtsDispatchedBeforePostprocess,
                     PendingPlayerHistorySequence = nativePendingPlayerHistoryEventSequence,
-                    PendingPlayerHistoryKey = nativePendingAfefKey
+                    PendingPlayerHistoryKey = nativePendingAfefKey,
+                    AcceptedReplySideEffects = BuildNativeAcceptedReplySideEffects()
                 }).ConfigureAwait(false);
             if (nativeActionResult?.ResponseDiscarded == true)
             {
@@ -160,6 +163,24 @@ public partial class ShoutBehavior
             nativeTurnSw.Stop();
             ObserveNativeActionDispatch("completion_returned", nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw);
             return NativeConversationTurnStep.Stop(nativeActionResult?.FinalVisible ?? "");
+        }
+
+        // Captured values only; the delegate runs on the game thread inside the action dispatch,
+        // after admission is re-checked and only if the reply was not discarded.
+        private Action BuildNativeAcceptedReplySideEffects()
+        {
+            string directive = nativeSceneActionDirective;
+            string reply = postprocessReply;
+            int agentIndex = nativeTargetAgentIndex;
+            bool ceremonyOrder = nativeCeremonyExecutionOrderRequested;
+            if (string.IsNullOrEmpty(directive) && !ceremonyOrder)
+                return null;
+            return () =>
+            {
+                SubmitSceneActionDirective(directive, agentIndex, reply);
+                if (ceremonyOrder)
+                    TryQueueCeremonyExecutionOrder(agentIndex);
+            };
         }
 
         private void CapturePostprocessRules()

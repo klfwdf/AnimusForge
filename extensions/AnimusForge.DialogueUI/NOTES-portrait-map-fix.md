@@ -50,7 +50,7 @@
 
 - 通过现有 `build.ps1` 构建 `BannerlordApi=1.3`（引用 1.3.15.110062）和 `1.4`（本机 1.4.8）：各 0 警告、0 错误；脚本确认 AF 宿主 DLL 哈希未变。
 - `python tools/verify_presentation.py`：4 个 XML、21 个已注册素材、地图交易/继续/控制器绑定、原版答案列表路径、不透明圆形背景层及已删除 VM 属性的无引用检查通过。
-- `dotnet run --project tools/portrait-tests/PortraitTests.csproj -p:BaseIntermediateOutputPath=../../artifacts/portrait-tests/obj/ -p:MSBuildProjectExtensionsPath=../../artifacts/portrait-tests/obj/`：130 项断言通过。测试直接链接生产肖像更新器，用替身统计编码调用；不调用游戏渲染器。
+- `dotnet run --project tests/portrait-tests/PortraitTests.csproj -p:BaseIntermediateOutputPath=../../artifacts/portrait-tests/obj/ -p:MSBuildProjectExtensionsPath=../../artifacts/portrait-tests/obj/`：130 项断言通过。测试直接链接生产肖像更新器，用替身统计编码调用；不调用游戏渲染器。
 - 连续 120 次不变外观刷新，身体/装备/旗帜各只编码 1 次；装备原地修改、等值装备替换、身体变化、种族/性别变化、旗帜变化和无 Agent 普通 NPC 切换均覆盖。
 
 ## 尚未验证与产物

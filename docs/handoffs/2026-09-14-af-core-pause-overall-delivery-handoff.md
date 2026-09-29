@@ -207,7 +207,7 @@ $env:DOTNET_GENERATE_ASPNET_CERTIFICATE = 'false'
 & G:\Python310\python.exe -X utf8 -B tools/MemorySummaryMainThreadBoundaryTests/run_captured.py
 ```
 
-后两种旧版/故障场景的 EXIT=1 必须来自 BUILD_PASS 后明确断言失败；编译或提取失败不算有效反例。各相邻 runner、guards、完整 Stage 命令/依赖在验证 JSON 与 [测试 README](../../tools/MemorySummaryMainThreadBoundaryTests/README.md)。保持原 `一键编译覆盖推送/build_single_module.ps1 -Stage`；**不要改成 -Deploy**。本机 1.3/1.4 参考与运行依赖来自 NEW-10、游戏/workshop 指定目录，不能把另一机器路径当通用前提。
+后两种旧版/故障场景的 EXIT=1 必须来自 BUILD_PASS 后明确断言失败；编译或提取失败不算有效反例。各相邻 runner、guards、完整 Stage 命令/依赖在验证 JSON 与 [测试 README](../../tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/README.md)。保持原 `一键编译覆盖推送/build_single_module.ps1 -Stage`；**不要改成 -Deploy**。本机 1.3/1.4 参考与运行依赖来自 NEW-10、游戏/workshop 指定目录，不能把另一机器路径当通用前提。
 
 183 份冻结日志保留在本地 `.tmp/b1-owner-normalize-20260914/final-evidence/`，不入 GitHub；GitHub 提交源码、runner、hash 清单和汇总，成员需要自己的依赖重新运行。项目 Stage 产物在 `bin/{Debug,Release}/single_module_stage/`，不是已覆盖游戏的证明。
 

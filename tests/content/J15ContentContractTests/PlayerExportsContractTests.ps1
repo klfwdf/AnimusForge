@@ -5,7 +5,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$deploy = Get-Content -LiteralPath (Join-Path $ProjectRoot '一键编译覆盖推送\deploy_module.ps1') -Raw -Encoding UTF8
+$deploy = Get-Content -LiteralPath (Join-Path $ProjectRoot 'scripts\build\deploy_module.ps1') -Raw -Encoding UTF8
 if ($deploy.Contains('Merge-PlayerExports') -or $deploy.Contains('Sync-PlayerExportsBackToSource') -or
     $deploy.Contains('PlayerExports') -or $deploy.Contains('/MIR')) {
     throw 'AF2 deployment still contains legacy PlayerExports or broad-copy behavior.'

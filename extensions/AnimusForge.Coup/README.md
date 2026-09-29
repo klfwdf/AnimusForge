@@ -22,7 +22,7 @@
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\extensions\AnimusForge.Coup\build.ps1 -BannerlordRoot '<游戏目录>'
 # 用户授权覆盖后，显式添加 -Deploy；脚本只写 Modules/AnimusForge_Coup。
-dotnet run --project .\tools\Coup.ContractTests\Coup.ContractTests.csproj -c Release
+dotnet run --project .\extensions\AnimusForge.Coup\tests\Coup.ContractTests\Coup.ContractTests.csproj -c Release
 ```
 
 构建不重编 AF；部署前备份同名模块，逐文件核对哈希，并检查原 AF 两个实现的哈希未变。`artifacts/deployment.json` 记录本机部署路径、版本及备份。

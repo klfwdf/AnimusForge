@@ -12,4 +12,6 @@ public partial class ShoutBehavior
         => throw new System.InvalidOperationException("FAIL completion not part of this fixture");
     private string CompleteNativeConversationReplyOnMainThread(NativeConversationCompletionScope scope, NativeConversationGameActionResult result)
         => throw new System.InvalidOperationException("FAIL completion not part of this fixture");
+    private static void RunNativeAcceptedReplySideEffects(NativeConversationCompletionRequest request)
+        => throw new System.InvalidOperationException("FAIL completion not part of this fixture");
 }

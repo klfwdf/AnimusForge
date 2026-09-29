@@ -21,7 +21,7 @@ SubModule.cs
 
 ### 已有的良好边界
 
-- `AnimusForge.Bootstrap/*`：版本选择、程序集加载、生命周期转发；应保持最小稳定。
+- `src/AF.Bootstrap/*`：版本选择、程序集加载、生命周期转发；应保持最小稳定。
 - `AnimusForge.SiegeAftermathIntervention/*`：可复用 GCCZ/攻城后规则和 profile；AF 根目录代码尽量作为薄适配器。
 - `SceneActionsIntegrationBoundary.cs`：外部 SceneActions/BattleSpeech 的初始化、MCM 覆盖、MissionBehavior 注册和验证；是现有薄适配器范例。
 - `tools/PlayerExportsEditor/*`：外部编辑器，不编译进主运行程序集。
@@ -48,7 +48,7 @@ SubModule.cs
 
 | 目标模块 | 当前主要 owner/入口 | 主要职责 | 主要风险 |
 |---|---|---|---|
-| Bootstrap | `AnimusForge.Bootstrap/*`, `AnimusForge/SubModule.xml` | API 线检测、单实现加载、生命周期转发 | 加载两套实现、版本误判 |
+| Bootstrap | `src/AF.Bootstrap/*`, `AnimusForge/SubModule.xml` | API 线检测、单实现加载、生命周期转发 | 加载两套实现、版本误判 |
 | Host/Composition | `SubModule.cs`, `CompatibilityAudit.cs`, `Logger.cs`, `PerfProbe.cs`, `FreezeWatchdog.cs` | 启动组合、注册表、调度、诊断 | 注册顺序和失败隔离变化 |
 | Contracts | 当前尚未集中存在；由外部 Facade/模型逐步归纳 | DTO、能力、事件、结果和版本 | 过早暴露私有类或 raw dictionary |
 | Foundation/Runtime | `Logger.cs`, `PerfProbe.cs`, `FreezeWatchdog.cs`, `BannerlordExceptionSentinel.cs`, `SaveRuntimeGuard.cs` | 主线程、后台队列、缓存、generation、SafeMode、诊断 | 热路径分配、线程越界、静默失败 |

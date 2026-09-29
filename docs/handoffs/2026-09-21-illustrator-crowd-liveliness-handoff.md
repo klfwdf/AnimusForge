@@ -95,13 +95,13 @@ dotnet build extensions\AnimusForge.Illustrator\src\AnimusForge.Illustrator.cspr
 dotnet build extensions\AnimusForge.Illustrator\src\AnimusForge.Illustrator.csproj -c Release -p:BannerlordApi=1.3 -p:OutputPath=bin\<tag>\1.3\ -p:BaseIntermediateOutputPath=obj\<tag>\1.3\
 
 # 审计（对构建产物 DLL，基线：42+142+61+35=280）
-.\tools\illustrator\run_director_status_audit.ps1 -AssemblyPath <dll>
-.\tools\illustrator\run_prompt_routing_audit.ps1 -AssemblyPath <dll>
-.\tools\illustrator\run_reference_routing_audit.ps1 -AssemblyPath <dll>
-.\tools\illustrator\run_module_review_audit.ps1 -AssemblyPath <dll>
+.\extensions\AnimusForge.Illustrator\tests\audits\run_director_status_audit.ps1 -AssemblyPath <dll>
+.\extensions\AnimusForge.Illustrator\tests\audits\run_prompt_routing_audit.ps1 -AssemblyPath <dll>
+.\extensions\AnimusForge.Illustrator\tests\audits\run_reference_routing_audit.ps1 -AssemblyPath <dll>
+.\extensions\AnimusForge.Illustrator\tests\audits\run_module_review_audit.ps1 -AssemblyPath <dll>
 # 触及 PanoramaSceneSnapshot/SceneReferenceCapture 的 F 项另跑：
-.\tools\illustrator\run_panorama_snapshot_audit.ps1 -AssemblyPath <dll>
-.\tools\illustrator\run_scene_capture_audit.ps1 -AssemblyPath <dll>
+.\extensions\AnimusForge.Illustrator\tests\audits\run_panorama_snapshot_audit.ps1 -AssemblyPath <dll>
+.\extensions\AnimusForge.Illustrator\tests\audits\run_scene_capture_audit.ps1 -AssemblyPath <dll>
 ```
 
 - `PromptRoutingAudit` 断言系统提示内容，提示词刻意改动后需同步更新断言（保留"无证据不新增人物"等安全断言）。
