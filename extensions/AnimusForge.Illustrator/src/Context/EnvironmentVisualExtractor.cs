@@ -293,7 +293,7 @@ namespace AnimusForge.Illustrator.Context
             locId = (locId ?? string.Empty).ToLowerInvariant();
             if (outdoorMission)
             {
-                profile.SpecificLocation = "围城相关场景（未读取到子场景位置，具体地形与双方高低关系未确认）";
+                profile.SpecificLocation = "围城相关场景（未读取到子场景位置，具体地形未确认；双方高低以【双方实测高差】为准）";
                 profile.IndoorOutdoorDetails = "被围城池之外的开阔旷野谈判场：远景是被围城堡的巍峨剪影与森严城堞轮廓，中景按已确认人物呈现交涉，不凭会面类型补造仪仗或随从，更远处围城军营连绵的牛皮帐篷、拒马鹿角与星星点点的营火铺展到地平线。";
                 profile.LightingAndAtmosphere = "暗沉肃杀的天光/夜色，双方仪仗火把与远处围城营地的连绵篝火在黑暗中明灭闪烁 (Parley Torches & Distant Siege Campfires)";
                 profile.ConflictStatus = "相关定居点正被围困；当前人物活动、骑乘及空间关系以现场记录为准。";
@@ -341,7 +341,7 @@ namespace AnimusForge.Illustrator.Context
                 : "围城中的室外空间（具体地点未确认）";
             profile.IndoorOutdoorDetails = string.Empty;
             profile.LightingAndAtmosphere = string.Empty;
-            profile.ConflictStatus = "所在定居点正被围困；当前人物活动及双方高低关系须依据现场记录和实景参考，围城状态本身不能证明正在谈判。";
+            profile.ConflictStatus = "所在定居点正被围困；当前人物活动依据现场记录和实景参考，双方高低以【双方实测高差】为准，围城状态本身不能证明正在谈判。";
             return;
         }
 

@@ -104,7 +104,7 @@ public static class PromptRoutingAudit
         string pose = (string)Call(popup, "GenerateDiversePoseDirective");
         Check(pose.Contains("站立、坐姿") && !pose.Contains("未经思考") && !pose.Contains("严禁与上一版重复"), "portrait input permits natural standing without compulsory pose change");
         string variation = (string)Call(director, "BuildRedrawVariationDirective", 3);
-        Check(variation.Contains("行动意图") && variation.Contains("不强迫复杂动作") && variation.Contains("保持该事实"), "redraw varies activity without contortion or overriding event facts");
+        Check(variation.Contains("行动意图") && variation.Contains("不扭曲肢体") && variation.Contains("保持该事实"), "redraw varies activity without contortion or overriding event facts");
         Check(system.Contains("先决定人物此刻正在做什么，再推导姿态、手部动作和视线") && pose.Contains("不把双手下垂展示装备作为默认"), "director chooses activity before pose instead of default display stance");
         string facts = "青年女性平民，裸头，无甲，穿布衣。FACT_SENTINEL";
         string[] modes = { "人物百科纪事", "周报历史纪事插画", "最近三轮对话联动的场景插画", "通用插画" };

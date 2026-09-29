@@ -3999,7 +3999,8 @@ public class SceneTauntMissionBehavior : MissionBehavior
 
 	public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
 	{
-		if (affectorAgent == Agent.Main && IsPlayerProtectedSceneAttackAgent(affectedAgent))
+		// 复仇处决的受刑犯人由处决流程结算，玩家亲手攻击也不算场景冲突。
+		if (affectorAgent == Agent.Main && (IsPlayerProtectedSceneAttackAgent(affectedAgent) || RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent)))
 		{
 			return;
 		}
@@ -4046,7 +4047,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	public override void OnScoreHit(Agent affectedAgent, Agent affectorAgent, WeaponComponentData attackerWeapon, bool isBlocked, bool isSiegeEngineHit, in Blow blow, in AttackCollisionData collisionData, float damagedHp, float hitDistance, float shotDifficulty)
 	{
 		base.OnScoreHit(affectedAgent, affectorAgent, attackerWeapon, isBlocked, isSiegeEngineHit, in blow, in collisionData, damagedHp, hitDistance, shotDifficulty);
-		if (affectorAgent == Agent.Main && IsPlayerProtectedSceneAttackAgent(affectedAgent))
+		if (affectorAgent == Agent.Main && (IsPlayerProtectedSceneAttackAgent(affectedAgent) || RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent)))
 		{
 			return;
 		}
@@ -4103,6 +4104,11 @@ public class SceneTauntMissionBehavior : MissionBehavior
 			if (affectedAgent != null && affectedAgent.IsHuman)
 			{
 				ShoutBehavior.CancelAgentSpeechForRemovalExternal(affectedAgent.Index, "scene_taunt_agent_removed_" + agentState);
+			}
+			// 受刑犯人的死亡由复仇处决在离场时结算；不掉金币、不记犯罪、不计入冲突击倒。
+			if (RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent))
+			{
+				return;
 			}
 			TryHandleOwnedSettlementPassiveAttackKnockdown(affectedAgent, affectorAgent, agentState);
 			TryQueuePendingPlayerBattleDeathOutcome(affectedAgent, affectorAgent, agentState);

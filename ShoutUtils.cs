@@ -2246,7 +2246,7 @@ public static class ShoutUtils
 		Vec3 lookDirection = mainAgent.LookDirection;
 		foreach (Agent agent in agents)
 		{
-			if (agent == mainAgent || !agent.IsActive() || !agent.IsHuman)
+			if (agent == mainAgent || !agent.IsActive() || !agent.IsHuman || RichExecutions.Core.VengeanceIntegration.IsExecutedVictim(agent))
 			{
 				continue;
 			}
@@ -2287,7 +2287,7 @@ public static class ShoutUtils
 		lookDirection.Normalize();
 		foreach (Agent agent in agents)
 		{
-			if (agent == mainAgent || !agent.IsActive() || !agent.IsHuman)
+			if (agent == mainAgent || !agent.IsActive() || !agent.IsHuman || RichExecutions.Core.VengeanceIntegration.IsExecutedVictim(agent))
 			{
 				continue;
 			}

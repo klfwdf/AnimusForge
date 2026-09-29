@@ -10,17 +10,36 @@ namespace AnimusForge.Illustrator.Core
 {
     internal static class IllustrationReferenceRouting
     {
+        // Every full-body capture uses the same native idle stance (StanceIndex 0). Name it,
+        // so the image model treats the pose as a render artefact rather than a composition.
+        internal const string IdleStanceFullBodyNote =
+            "【全身图用途】此图是游戏引擎统一的待机展示站姿（正面直立、双臂自然下垂），仅作服装装备形制、配色、覆盖范围与体型的对照；" +
+            "人物的身体朝向、重心、四肢位置、手势与取景按正文【此刻动作】（如有）与【人物与镜头】绘制。";
+
+        // Stable reorder for the image endpoint only: idle-stance full-body renders go last,
+        // so /images/edits and chat image models do not take the first image's silhouette as
+        // the canvas. Director payloads keep the original order. Runs once per request.
+        internal static IReadOnlyList<IllustrationReferenceImage> SendIdleStanceFullBodyLast(IReadOnlyList<IllustrationReferenceImage> references)
+        {
+            if (references == null || !references.Any(r => r != null && r.IsIdleStanceFullBody)) return references;
+            var ordered = new List<IllustrationReferenceImage>(references.Count);
+            ordered.AddRange(references.Where(r => r == null || !r.IsIdleStanceFullBody));
+            ordered.AddRange(references.Where(r => r != null && r.IsIdleStanceFullBody));
+            return ordered;
+        }
+
         internal static void AddCharacter(List<IllustrationReferenceImage> director, List<IllustrationReferenceImage> image,
             CharacterPortraitReferences portraits, string name, string fullBodyLabel, bool eventReference = false)
         {
             if (portraits == null || string.IsNullOrWhiteSpace(portraits.FullBody)) return;
-            var full = new IllustrationReferenceImage(portraits.FullBody, fullBodyLabel,
-                eventReference ? IllustrationReferenceKind.EventCharacter : IllustrationReferenceKind.Character);
+            var full = new IllustrationReferenceImage(portraits.FullBody, (fullBodyLabel ?? string.Empty) + IdleStanceFullBodyNote,
+                eventReference ? IllustrationReferenceKind.EventCharacter : IllustrationReferenceKind.Character)
+            { IsIdleStanceFullBody = true };
             director.Add(full);
             if (image != null && !ReferenceEquals(director, image)) image.Add(full);
             if (string.IsNullOrWhiteSpace(portraits.HeadDetail)) return;
             var head = new IllustrationReferenceImage(portraits.HeadDetail,
-                "人物【" + name + "】头肩细节：与前一张全身图是同一个人，不是新增人物。" +
+                "人物【" + name + "】头肩细节：与同名全身图是同一个人，不是新增人物。" +
                 "仅补充可见五官、须发与头部装备，保留装备遮挡；不指定姿态、取景或照明。" +
                 (eventReference ? "仅在所选事件涉及此人时使用。" : string.Empty),
                 eventReference ? IllustrationReferenceKind.EventCharacter : IllustrationReferenceKind.CharacterDetail);
