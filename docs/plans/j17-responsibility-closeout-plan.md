@@ -112,7 +112,7 @@ R08 性能随每个切片验，不压到最后：区分请求/事件/每帧/批�
 
 ### 5a.2 剩余 J17-A（A2 签桶）
 
-远端已签 `bootstrap-build`、`host-composition`、`action-commit` 共享层；其余 17 桶有定向证据但**未签**。按当前 1,123 Compile 对照范围图 E 证据，**622 个文件尚无 E 条目**（按旧导航桶：GCCZ 项目 214、scene-mission-combat 162、UI 83、PolicySystem 73、world 38、其余 52）。执行方式：
+远端对 `bootstrap-build`（E37）、`host-composition`（E38）写的是“A 责任归属已审”，`action-commit`（E43）仅共享层已审且明言不签 A 总出口——**20 桶均未签桶**，三桶只是 A 归属已审（A2-6 更正）。编制时按当前 1,123 Compile 对照范围图，622 个文件尚无 E 条目；其后 E68（GCCZ 184，排除）、E69（UI 83）、E70（根级领域 120）已覆盖，剩 A2-2 场景 162 与 A2-5 宿主成员。执行方式：
 
 | 组 | 范围 | 处理 | 出口 |
 | --- | --- | --- | --- |
