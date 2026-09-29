@@ -43,6 +43,8 @@
 
 **A2 `host-composition` 桶责任归属已复核（其余 A 仍 `REVIEW_REQUIRED`）**：[范围图 E38](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)核对引擎入口、八个 `Composition` 文件、内置四功能/SceneActions 薄宿主与 typed 目录；`SubModule` 的首次 API 指引和 WarStats 地图按钮仍是 UI/配置接缝，不能整文件标为纯装配。旧候选的 `LegacyInteractionPipelineComposition` 实际是 Scene/Native/Courier 请求期 pipeline 工厂，应归 Conversation；候选中的 Economy 合同、四个 team port 和 V1 公共合同也不归 host。保留 `IntegratedModuleHost.Tick` 异常传播与地图按钮每帧检查的 R08 实机量测。旧 Campaign oracle 漏掉已注册的 CivilWar，测试已按已审插入修复，当前全 runner 46 断言/6 个变异及 Host source inverse 通过。仅签 A 责任归属，不宣称 patch/内置功能业务、真实游戏、旧档已验；剩余 18 桶、R05/R06/R08 继续审，J17-A 总出口未达，B 不启动。
 
+**A2 兼容层定向复核（仍 `REVIEW_REQUIRED`）**：[范围图 E39](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)旧候选仅列 `BannerlordApiCompat`、`PlayerEncounterCompat`、`InteractionComponentSafePatch`；当前 Compile 另有 Mission view 异常守卫和 Coup 私有遭遇安全门。版本签名适配、Encounter 战后资格、Mission view NRE 防护并非同一责任，Coup 缺字段时 fail-closed 也不能按根级读适配器改写。R08 记录贸易/raid/SpawnTroop 反射在相应请求中重新查找签名，频率尚未量测。未覆盖全部版本分支/Harmony/启动 audit，亦未重跑双 API 产品构建或游戏；不签兼容桶，不因已审 Bootstrap/Host 提前启动 B。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
@@ -202,7 +204,7 @@
 | bootstrap-build | **A 责任归属已审，E37**：Bootstrap 三个实际 Compile 文件与实现项目排除、XML 唯一入口、双版本选择/依赖/生命周期和脚本构建接缝已核对。保留独立加载边界；R08 每帧反射成本待真实量测，J17-C/D 构建/游戏未验。只有另获授权才改一键脚本或 Bootstrap；不按行数重构加载器。 |
 | host-composition | **A 责任归属已审，E38**：`SubModule` 引擎入口、八个 `Composition` 装配文件、typed 目录及内置功能薄桥保留宿主接线；同文件首次 API 指引/WarStats 地图按钮归 UI/配置，`LegacyInteractionPipelineComposition` 归 Conversation 请求期工厂，六个粗候选合同归各自领域/API。R08 异常传播/帧成本与真实游戏仍待验；不把领域 patch 和内置规则整体签收。 |
 | runtime-diagnostics | Logger、Tick/诊断及 Foundation owner；确认通用资源/队列与领域日志策略各自归属，不复制调度器 |
-| game-adapter-compatibility | BannerlordApiCompat、PlayerEncounterCompat、Harmony/版本适配；保留真实游戏接入，检查是否夹带可迁领域算法 |
+| game-adapter-compatibility | **A 定向复核 E39，未签桶**：`BannerlordApiCompat` 主要是版本签名适配；`PlayerEncounterCompat.IsInPostBattleResultFlow` 混有 Encounter 战后准入；`InteractionComponentSafePatch`/Mission view 守卫归场景安全防线，Coup 私有同名 helper 保留自身 fail-closed 语义。还须审全量 `#if`、Harmony/启动 audit 与动态消费者；R08 测请求期反射频率。 |
 | persistence-config | 保存/chunk/JSON、DuelSettings 与配置捕获/落盘；业务状态归领域，键/类型/迁移入口单独保留；关联 R04 |
 | conversation-encounter | MyBehavior/ShoutBehavior、Native/Scene/Internal、LordEncounter；对话编排与目标/释放/返回职责分别归 Conversation/Encounter |
 | gateway-prompt-protocol | AIConfigHandler、ShoutNetwork、Refactor gateways、Prompt/LLM；传输 attempt 与调用方重试/领域 Prompt 分界，不强并成万能 gateway |
