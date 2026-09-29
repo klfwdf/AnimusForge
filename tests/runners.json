@@ -109,7 +109,7 @@
    "expect": "PREEXISTING_FAIL"
   },
   "tests/modules/AF.Module.Conversation/CourierRouteTransportTests/run.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "PASS"
   },
   "tests/modules/AF.Module.Conversation/CourierSessionCreationTests/run_admission.py": {
    "args": [
