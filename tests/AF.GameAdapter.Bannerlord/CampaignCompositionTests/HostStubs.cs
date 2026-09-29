@@ -76,6 +76,16 @@ namespace AnimusForge
         internal static void CaptureOwners(Game game, CampaignGameStarter starter) { }
         internal static void End(Game game) { }
     }
+    // Current host also registers embedded features. Their ordering and behavior
+    // are checked by HostCompositionTests; this suite isolates AF Campaign owners.
+    internal static class VengeanceRuntimeBridge
+    {
+        internal static void RegisterCampaign(IGameStarter starter) { }
+    }
+    internal static class IntegratedModuleHost
+    {
+        internal static void RegisterCampaign(IGameStarter starter) { }
+    }
     internal static class Logger
     {
         internal static void LogTrace(string category, string message)
