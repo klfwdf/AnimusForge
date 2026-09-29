@@ -1,0 +1,26 @@
+<Module>
+  <Name value="AnimusForge - 羊皮纸对话界面" />
+  <Id value="AnimusForge_DialogueUI" />
+  <Version value="v0.1.0" />
+  <SingleplayerModule value="true" />
+  <MultiplayerModule value="false" />
+  <DependedModules>
+    <DependedModule Id="Bannerlord.Harmony" />
+    <DependedModule Id="Bannerlord.MBOptionScreen" />
+    <DependedModule Id="Native" />
+    <DependedModule Id="SandBoxCore" />
+    <DependedModule Id="Sandbox" />
+    <DependedModule Id="AnimusForge" />
+  </DependedModules>
+  <SubModules>
+    <SubModule>
+      <Name value="AnimusForge Dialogue UI" />
+      <DLLName value="AnimusForge.DialogueUI.dll" />
+      <SubModuleClassType value="AnimusForge.DialogueUI.SubModule" />
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+  </SubModules>
+</Module>

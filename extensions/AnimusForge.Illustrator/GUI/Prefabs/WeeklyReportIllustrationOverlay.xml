@@ -1,0 +1,75 @@
+<Prefab>
+  <Window>
+    <Widget Id="CardPanel" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="420" SuggestedHeight="640" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="36" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
+      <Children>
+        <!-- 背景底板 -->
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" AlphaFactor="0.95" DoNotAcceptEvents="true" />
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" AlphaFactor="0.6" DoNotAcceptEvents="true" />
+
+        <!-- 标题栏 (拖拽手柄) -->
+        <Widget Id="TitleBar" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="50" VerticalAlignment="Top" MarginTop="10" MarginLeft="14" MarginRight="14" DoNotAcceptEvents="false">
+          <Children>
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.FontSize="22" Brush.TextHorizontalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />
+          </Children>
+        </Widget>
+
+        <!-- 图像展示区域 -->
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="380" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="66" DoNotAcceptEvents="true">
+          <Children>
+            <!-- 画框边框 -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="6" ExtendTop="6" ExtendRight="6" ExtendBottom="6" AlphaFactor="0.8" DoNotAcceptEvents="true" />
+            
+            <!-- 插画材质 -->
+            <Widget IsVisible="@HasIllustration" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="@SpriteName" ImageFit.Type="Contain" DoNotAcceptEvents="true" />
+
+            <!-- 加载状态与占位提示 -->
+            <Widget IsVisible="@IsLoading" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.5" DoNotAcceptEvents="true">
+              <Children>
+                <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+
+        <!-- 提示词与状态信息 -->
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="80" VerticalAlignment="Top" MarginTop="456" MarginLeft="16" MarginRight="16" DoNotAcceptEvents="true">
+          <Children>
+            <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
+            <RichTextWidget IsVisible="@ShowPrompt" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Bottom" Brush="Popup.Description.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Left" Text="@PromptText" DoNotAcceptEvents="true" />
+          </Children>
+        </Widget>
+
+        <!-- 底部功能按钮条 -->
+        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="50" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="14" LayoutImp.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
+          <Children>
+            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="86" SuggestedHeight="42" MarginRight="8" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerate" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="重新绘制" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="76" SuggestedHeight="42" MarginRight="8" Brush="Popup.Done.Button" Command.Click="ExecuteTogglePrompt" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="提示词" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="76" SuggestedHeight="42" MarginRight="8" Brush="Popup.Done.Button" Command.Click="ExecuteCopyPrompt" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="复制" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="86" SuggestedHeight="42" MarginRight="8" Brush="Popup.Done.Button" Command.Click="ExecuteOpenGallery" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="纪事画廊" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="54" SuggestedHeight="42" Brush="Popup.Done.Button" Command.Click="ExecuteClose" UpdateChildrenStates="true">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Center" Brush="Popup.Button.Text" Brush.FontSize="16" Text="关闭" DoNotAcceptEvents="true" />
+              </Children>
+            </ButtonWidget>
+          </Children>
+        </ListPanel>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

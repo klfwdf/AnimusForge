@@ -1,0 +1,4 @@
+artifacts/
+src/obj/
+src/bin/
+work/__pycache__/

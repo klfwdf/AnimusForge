@@ -1,11 +1,21 @@
-# 当前交接：J17-A 前置盘点进行中（2026-09-28，分支 `codex/af-j17a-inventory-20260928`）
+# 当前交接：J17-A 盘点结果并入重构分支（2026-09-29）
 
-- **范围**：用户要求绕过 J16（已推送他人接手）先做 J17，且不影响 J16。独立 worktree `G:\AFMOD\AF-J17`，基于远端 `99ca85ae`；只读审查 + 文档，未改产品/测试/tools/tests 布局，未构建部署推送。详见[主台账 J17-A 意图](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)与[结项计划登记表](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-responsibility-register-20260928)。
-- **已完成**：R04 保存边界审查（E09）→ 拆 R04a `OPEN`（11 个记忆记录类型 + 7 个 static Sanitize 可迁出，只须冻结 SyncData 键与 JSON 字段名；3 个回放测试按嵌套类型名反射）/ R04b `RETAINED_BOUNDARY`（SyncData 键表、711100 容器）。R02 摘要链分区（E10，244 方法；规则 101 个可随 R04a 迁；开发者记忆编辑器拆 R02-dev）。R01 周报最小迁移单元（E11：4 个嵌套类型 + 6 个 static 规则 + 36 个 aggregate 构造器）。R03 导入导出闭包（E12：Build/Apply 纯状态变换，依赖 R04a）。R07 文件级（E13：MSBuild 求值 1.3/1.4 Compile 各 940 个且相同，940/940 入 20 桶）。
-- **未完成**：R07 成员级——16 个混合宿主 10,704 成员中 3,332 个（59,174 行）仍 `HOST-RESIDUAL`，需逐宿主人工判定；R05/R06/R08/R09 未开始。J17-A 未闭合，不能进 J17-B。
-- **工具**：`artifacts/j17a/`（忽略）下 `members.py`（成员提取）、`r02.py`、`buckets.py`、`split_hosts.py` 及生成的 JSON；启发式，不是编译器。
+- **交付范围**：将独立分支 `codex/af-j17a-inventory-20260928` 的 J17-A 盘点文档整合到最新 `origin/codex/af-main-refactor-continuation-20260831`。以普通 merge 保留双方历史；新增的 J17 内容限于本 HANDOFF、主计划台账和代码范围图，不包含 J17 产品代码迁移或 J16 工作区内容。
+- **证据基线提醒**：E09–E13 的源码坐标/Compile 清单来自 `99ca85ae`；整合前远端已到 `ada9894a`，期间有 267 个远端独有提交。因此这些是有明确来源的盘点快照，不等同于最新 HEAD 的当前成员映射；J17-B 开工前必须对变更文件/符号做差异核对并刷新受影响证据，不能直接照旧路径施工。
+- **已完成盘点**：R04 存档/JSON 边界（E09）；R02 摘要职责分区（E10）；R01 Weekly 最小闭包（E11）；R03 导入/导出闭包（E12）；R07 MSBuild Compile 文件级覆盖（E13：1.3/1.4 各 940 项，20 桶、UNASSIGNED=0）。详见[主台账 J17-A 意图与责任登记](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)及[源码证据 E09–E13](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。
+- **仍未完成**：R07 还有 3,332/10,704 个混合宿主成员（59,174 行）待人工职责映射；R05/R06/R08/R09 尚未完成；J17-A 仍 OPEN，不得开始宣称 J17-B 或全仓结项。存档旧档实测、LIVE/游戏内验证也不在本轮证明范围。
+- **验证与边界**：本轮仅合并/核对文档，`git diff --check` 为提交前门禁；未改产品 C#、测试、项目、配置、游戏/玩家数据，未运行构建/部署/打包。保留未跟踪 `.dotnet-cli-home/` 与本地 `artifacts/j17a/` 状态，不把启发式盘点脚本称为编译器证明。
 
-## 以下为上一段交接
+## 以下为上一份交接（历史状态，当前以本节为准）
+
+# 当前交接：未推送提交与四功能整合工作树说明已整理（2026-09-29）
+
+- **范围**：本地 `codex/af-main-refactor-continuation-20260831` 领先远端同名分支 **266 个提交**（2026-09-12→09-29，主体为 Illustrator 迭代，另有 DialogueUI、Coup 与两次远端 J15/J16 合并）；其上还有一层**未提交**的四功能整合与审查修复工作树，本次提交涉及内容见[提交说明](docs/handoffs/2026-09-29-four-feature-integration-commit.md)。
+- **本轮新增修复**：复仇双模块互斥（独立版反射探测 AF 宿主 + 三入口拦截）、共享源码去 AF 硬依赖（`EscortedHeroesProvider` 回调 + ID 延迟重解析）、连续行刑换受刑者重建请求、处决 7 项资源入 `content-map.json`（195 项齐）、生图缓存取消自动搬迁（根回文档目录）、政变坏存档不覆盖与补丁生命周期复位、西海衣服自动删除机制整体移除。
+- **验证**：官方双版本 Debug 构建 1.3/1.4 各 336 警告 0 错误、Bootstrap 0/0；独立 RichExecutions 15 警告 0 错误；内容清单 195 项/0 缺失/0 重复；`git diff --check` 与 code-map PASS。**未验**：实机、旧存档、双模块运行时互斥、Stage/部署/打包。
+- **未推送/未提交**：全部成果只在本地；`Vengeance/`、`AnimusForge/GUI`、`AssetPackages`、`ModuleData`、DialogueUI 素材等仍为未跟踪文件，干净检出不可复现。复仇处决由用户稍后自行提交推送；历史 Git 含私密资料的既有警示仍然有效，推送需另行明确决定。
+
+## 以下为此前交接历史（相冲突状态以上方最新为准）
 
 # 当前交接：J16a 测试归位已完成，J16b 进行中；J15 离线收口（2026-09-28）
 

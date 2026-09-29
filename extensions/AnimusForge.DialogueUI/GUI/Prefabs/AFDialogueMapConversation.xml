@@ -1,0 +1,17 @@
+<Prefab>
+  <Window>
+    <!-- Preserve the native map tableau, continue callback and barter visibility contract. -->
+    <MapConversationScreenButtonWidget Id="MapConversationParent" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+        ConversationParent="ConversationParent" IsBarterActive="@IsBarterActive" Command.Click="ExecuteContinue" FrictionEnabled="false">
+      <Children>
+        <Widget DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000FF" />
+        <Widget DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+          <Children>
+            <MapConversationTableauWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Data="@TableauData" IsEnabled="false" />
+          </Children>
+        </Widget>
+        <AFDialogueConversation Id="ConversationParent" DataSource="{DialogController}" />
+      </Children>
+    </MapConversationScreenButtonWidget>
+  </Window>
+</Prefab>

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AnimusForge.Refactor.Runtime;
+using AnimusForge.Refactor.Modules;
 using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9860,10 +9861,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private bool CanDeclareWar(Kingdom initiator, Kingdom target, out string reason, bool enforceRejectedUltimatum = false)
 	{
-		if (!CanIssueWarThreat(initiator, target, out reason))
-		{
-			return false;
-		}
+if (!CanIssueWarThreat(initiator, target, out reason))
+			{
+				return false;
+			}
+			if (TeamModuleServices.CivilWar.BlocksNewOffensiveWar(initiator))
+			{
+				reason = "该国正在内战，不能新开主动战争";
+				return false;
+			}
 		WorldDiplomacyThreat pendingThreatDecision = FindOpenDiplomaticThreat(initiator.StringId, target.StringId);
 		if (pendingThreatDecision != null
 			&& string.Equals(pendingThreatDecision.TargetDecision, "pending", StringComparison.OrdinalIgnoreCase))
@@ -15261,6 +15267,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& _storage.InternationalReputationByKingdom.TryGetValue(normalizedId, out int value)
 			? Math.Max(0, Math.Min(100, value))
 			: DefaultInternationalReputation;
+	}
+
+	internal static void ApplyExternalPrestigeDelta(string kingdomId, int delta, string reason)
+	{
+		WorldDiplomacyBehavior behavior = Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>();
+		behavior?.ApplyNationalPrestigeDelta(kingdomId, delta, null, reason ?? "");
 	}
 
 	private int ApplyNationalPrestigeDelta(

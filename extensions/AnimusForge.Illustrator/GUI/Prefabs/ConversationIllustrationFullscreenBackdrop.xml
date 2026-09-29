@@ -1,0 +1,9 @@
+<Prefab>
+  <Window>
+    <Widget Id="BackdropPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#FF000000" ClipContents="true" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true">
+      <Children>
+        <Widget IsVisible="@HasIllustration" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="@SpriteName" ImageFit.Type="Cover" ImageFit.HorizontalAlignment="Center" ImageFit.VerticalAlignment="Center" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" />
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

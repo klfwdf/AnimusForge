@@ -83,7 +83,7 @@ public partial class ShoutBehavior
                 SceneActionPostprocessWorkItem workItem = null;
                 if (!await CaptureOnGameThreadAsync("postprocess_prepare", () =>
                 {
-                    workItem = PrepareSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, postprocessReply, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, detachedMainPromptSections: nativeDetachedMainPromptSections);
+                    workItem = PrepareSceneUnifiedActionPostprocess(targetHero, targetCharacter, nativeTargetAgentIndex, GetSceneNpcHistoryNameForPrompt(npc), shouldRecordPlayerInput ? promptPlayerText : "", historyForPostprocess, postprocessReply, duelPostprocessSelected, rewardPostprocessSelected, loanPostprocessSelected, kingdomServicePostprocessSelected, kingdomVassalagePostprocessSelected, kingdomAnnexationPostprocessSelected, lordsHallPostprocessSelected, meetingReleasePostprocessSelected, vanillaIssuePostprocessSelected, heroJoinPartyPostprocessSelected, sceneMechanismPostprocessSelected, partyTransferPostprocessSelected, voteDealPostprocessSelected, diplomacyPostprocessSelected, worldMapPartyCommandPostprocessSelected, marriagePostprocessSelected, nativeDuelStakeOptions, null, nativeSceneMechanismPostprocessRules, nativeSceneSummonTargets, nativeSceneGuideTargets, postprocessEntityContext, siegeInterventionRuleInjected: siegeInterventionPostprocessSelected, replyIsDirectPlayerResponse: shouldRecordPlayerInput, preprocessRuleHits: postprocessPreprocessHits, chainName: nativePostprocessChainName, customPolicyAgendaRuleInjected: customPolicyAgendaPostprocessSelected, detachedMainPromptSections: nativeDetachedMainPromptSections, offerSceneActionDirective: true);
                 }).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
                 // Only detached prompt strings cross the network boundary. Do not put the
                 // synchronous provider call on the game thread or normalize on the worker.
@@ -95,8 +95,11 @@ public partial class ShoutBehavior
                         workItem.UserPrompt, out content, out error);
                 postprocessed = null;
                 if (!await CaptureOnGameThreadAsync("postprocess_complete", () =>
-                    postprocessed = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error)
-                    ).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
+                {
+                    postprocessed = CompleteSceneUnifiedActionPostprocess(workItem, succeeded, content, error);
+                    // Consume before any detached tag catalog sees an unknown family.
+                    ConsumeSceneActionDirective(ref postprocessed, nativeTargetAgentIndex, postprocessReply);
+                }).ConfigureAwait(false)) return NativeConversationTurnStep.Stop("");
 
             }
             finally

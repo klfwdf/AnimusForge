@@ -3306,7 +3306,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if (damagedHp <= 0f || !IsOwnedSettlementPassiveAttackScene() || !IsValidOwnedSettlementPassiveAttackTarget(targetAgent))
+			if (damagedHp <= 0f || !IsOwnedSettlementPassiveAttackScene() || !IsValidOwnedSettlementPassiveAttackTarget(targetAgent) || RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(targetAgent))
 			{
 				return false;
 			}
@@ -3333,7 +3333,7 @@ public class SceneTauntMissionBehavior : MissionBehavior
 	{
 		try
 		{
-			if ((agentState != AgentState.Unconscious && agentState != AgentState.Killed) || affectorAgent != Agent.Main || !IsOwnedSettlementPassiveAttackScene() || affectedAgent == null || !affectedAgent.IsHuman || affectedAgent == Agent.Main)
+				if ((agentState != AgentState.Unconscious && agentState != AgentState.Killed) || affectorAgent != Agent.Main || !IsOwnedSettlementPassiveAttackScene() || affectedAgent == null || !affectedAgent.IsHuman || affectedAgent == Agent.Main || RichExecutions.Core.VengeanceIntegration.IsProtectedVictim(affectedAgent))
 			{
 				return;
 			}

@@ -1,0 +1,183 @@
+<Prefab>
+  <Window>
+    <!--
+      This is a replacement presentation for the native SPConversation movie.
+      It owns a new widget tree, but keeps the MissionConversationVM contract:
+      AnswerList/ConversationItem, ExecuteContinue, persuasion, encyclopedia,
+      and the native option disabled/tooltip state all remain data-bound.
+    -->
+    <ConversationScreenButtonWidget Id="AFDialogueConversationRoot"
+        DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+        AnswerList="AFDialogueConsoleFrame\VerticalContainer\BottomPanelsContainer\AnswerListContainer\AnswerList"
+        ContinueButton="ContinueButton" Command.OnFinalSelection="ExecuteFinalizeSelection"
+        IsPersuasionActive="@IsPersuading" FrictionEnabled="false">
+      <Children>
+        <NavigationScopeTargeter ScopeID="SPConversationClickToContinueButtonScope" ScopeParent="..\ContinueButton" IsDefaultNavigationScope="true" />
+        <ButtonWidget Id="ContinueButton" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsDisabled="true" IsVisible="false" Command.Click="ExecuteContinue">
+          <Children>
+            <!-- Label must not take the press: native wraps it in a DoNotAcceptEvents widget. Accepting it made
+                 clicks inside the right frame land on the text instead of ContinueButton. -->
+            <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                MarginRight="265" MarginBottom="51" Brush="Conversation.HeaderText" Brush.FontSize="26" Text="@ContinueText"
+                DoNotAcceptEvents="true" GamepadNavigationIndex="0" />
+          </Children>
+        </ButtonWidget>
+
+        <!-- Generated artwork is a background only. Main container follows the current Pen layout: 1440x283 centered, floating 43px above the bottom edge. -->
+        <Widget Id="AFDialogueConsoleFrame" WidthSizePolicy="Fixed" SuggestedWidth="1440" HeightSizePolicy="Fixed" SuggestedHeight="283"
+            HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="43" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+          <Children>
+            <!-- Fitted to the artwork's oval opening, with overlap UNDER the gold rim. -->
+            <Widget Id="AFDialoguePortraitBackground" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                SuggestedWidth="166.125194" SuggestedHeight="177.992105" HorizontalAlignment="Left" VerticalAlignment="Top"
+                MarginLeft="125.152612" MarginTop="40.960526" Sprite="afdui_portrait_background"
+                DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" />
+            <!-- Native 3D speaker tableau is inserted here by NativeSession. -->
+            <Widget Id="AFDialoguePortraitSlot" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="212"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="124" MarginBottom="28" ClipContents="true" DoNotAcceptEvents="true">
+              <Children>
+                <!-- Overscan beneath the foreground gold rim; preserve the aperture center. -->
+                <Widget Id="AFDialoguePortraitViewport" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="169"
+                    HorizontalAlignment="Left" VerticalAlignment="Top" MarginTop="2" CircularClipEnabled="true" CircularClipRadius="89"
+                    CircularClipSmoothingRadius="1" DoNotAcceptEvents="true">
+                  <Children>
+                    <CharacterTableauWidget Id="AFDialogueLiveSpeakerPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="507" SuggestedHeight="630" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-169" PositionYOffset="-134"
+                        StanceIndex="1" CustomRenderScale="1.35" IsVisible="false" DoNotAcceptEvents="true" />
+                  </Children>
+                </Widget>
+                <!-- A narrow wood nameplate sits above the lower frame edge and masks the tableau torso. -->
+                <Widget Id="AFDialoguePortraitBottomMask" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="169" SuggestedHeight="23"
+                    HorizontalAlignment="Left" VerticalAlignment="Bottom" Sprite="afdui_nameplate" DoNotAcceptEvents="true" />
+              </Children>
+            </Widget>
+
+            <!-- Artwork masks the overscanned shoulders instead of the circle cutting them short. -->
+            <Widget Id="AFDialogueBackdrop" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                Sprite="afdui_console_base_option_02_walnut_original_ratio" DoNotAcceptEvents="true" />
+
+            <ListPanel Id="VerticalContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                StackLayout.LayoutMethod="VerticalBottomToTop" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true">
+              <Children>
+                <ListPanel Id="BottomPanelsContainer" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="20" DoNotAcceptEvents="true">
+                  <Children>
+                    <!-- Central text sheet follows the Pen frame: 650x209 at the widened center panel. -->
+                    <Widget Id="DialogueContainer" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="650" SuggestedHeight="209"
+                        HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="420" MarginBottom="0" DoNotAcceptEvents="true">
+                      <Children>
+                        <Widget Id="AFDialogueTextPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            DoNotAcceptEvents="true">
+                          <Children>
+                            <ScrollablePanel Id="AFDialogueTextScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                MarginLeft="12" MarginRight="15" MarginTop="10" MarginBottom="10" ClipRect="AFDialogueTextClip"
+                                InnerPanel="AFDialogueTextClip\AFDialogueTextContent" AutoHideScrollBars="false" VerticalScrollbar="..\AFDialogueTextScrollbar" MouseScrollAxis="Vertical">
+                              <Children>
+                                <Widget Id="AFDialogueTextClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                                  <Children>
+                                    <Widget Id="AFDialogueTextContent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+                                      <Children>
+                                        <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top"
+                                            Brush="Conversation.ConversedPartyLine.Text" Brush.FontSize="18" Brush.FontColor="#3B281BFF"
+                                            Command.LinkAlternateClick="ExecuteLink" Command.LinkClick="ExecuteLink"
+                                            Text="@DialogText" />
+                                      </Children>
+                                    </Widget>
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </ScrollablePanel>
+                            <ScrollbarWidget Id="AFDialogueTextScrollbar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent"
+                                HorizontalAlignment="Right" MarginRight="3" MarginTop="10" MarginBottom="10" AlignmentAxis="Vertical"
+                                Handle="AFDialogueTextHandle" MinValue="0" MaxValue="100">
+                              <Children><Widget Id="AFDialogueTextHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" /></Children>
+                            </ScrollbarWidget>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </Widget>
+                    <NavigationScopeTargeter ScopeID="SPConversationItemsScope" ScopeParent="..\AnswerListContainer"
+                        ScopeMovements="Vertical" HasCircularMovement="true" IsDefaultNavigationScope="true" />
+                    <!-- CoverChildren, as in native SPConversation: EventManager only descends into a child whose
+                         measured area contains the cursor, so a fixed 188px box left the 6th answer (overflowing
+                         above it) unclickable. Grows upward from the bottom; empty when there are no answers. -->
+                    <Widget Id="AnswerListContainer" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="305"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="21" DoNotAcceptEvents="true">
+                      <Children>
+                        <NavigatableListPanel Id="AnswerList" DataSource="{AnswerList}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                            HorizontalAlignment="Center" VerticalAlignment="Bottom" StackLayout.LayoutMethod="VerticalTopToBottom">
+                          <ItemTemplate><ConversationItem /></ItemTemplate>
+                        </NavigatableListPanel>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ListPanel>
+                <ListPanel Id="PersuationExtensionListPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" DoNotAcceptEvents="true">
+                  <Children>
+                    <Widget Id="PersuationExtensionParent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                        IsVisible="@IsPersuading" DoNotAcceptEvents="true">
+                      <Children>
+                        <Widget Id="PersuationExtension" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                            HorizontalAlignment="Right" VerticalAlignment="Bottom" IsVisible="@IsPersuading" DoNotAcceptEvents="true">
+                          <Children>
+                            <Widget DataSource="{Persuasion}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                              <Children>
+                                <ListPanel DataSource="{PersuasionProgress}" Id="ProgressClipWidget" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren">
+                                  <ItemTemplate>
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="22" SuggestedHeight="22" MarginLeft="5" MarginRight="5">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="afdui_persuasion_dot" IsVisible="@IsActive" />
+                                      </Children>
+                                    </Widget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ListPanel>
+              </Children>
+            </ListPanel>
+
+            <Widget Id="AFDialogueSpeakerInfo" DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                SuggestedWidth="224" SuggestedHeight="32" VerticalAlignment="Bottom" HorizontalAlignment="Left" MarginLeft="100" MarginBottom="31">
+              <Children>
+                <Widget Id="CharacterNameContainer" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    VerticalAlignment="Center" Sprite="afdui_nameplate">
+                  <Children>
+                    <ButtonWidget Id="CharacterNameIdParent" DoNotPassEventsToChildren="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Command.AlternateClick="ExecuteConversedHeroLink" Command.Click="ExecuteConversedHeroLink"
+                        Command.HoverBegin="ExecuteHeroTooltip" Command.HoverEnd="ExecuteCloseTooltip" UpdateChildrenStates="true"
+                        IsEnabled="@IsCurrentCharacterValidInEncyclopedia">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" DoNotAcceptEvents="true" HeightSizePolicy="StretchToParent"
+                            MarginLeft="35" MarginRight="6" Brush="Conversation.HeaderText" Brush.FontSize="17" Brush.FontColor="#D7A343FF"
+                            Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center"
+                            Text="@CurrentCharacterNameLbl" HoveredCursorState="RightClickLink" ExtendCursorAreaTop="-20" ExtendCursorAreaBottom="-20" GamepadNavigationIndex="0" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </Widget>
+                <Widget Id="ConversedHeroBannerHost" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24"
+                    HorizontalAlignment="Left" PositionXOffset="6" VerticalAlignment="Center" IsVisible="@IsBannerEnabled" DoNotAcceptEvents="true">
+                  <Children>
+                    <ImageIdentifierWidget Id="ConversedHeroBanner" DoNotAcceptEvents="true" DataSource="{ConversedHeroBanner}"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        MarginLeft="4" MarginRight="4" MarginTop="4" MarginBottom="4" AdditionalArgs="@AdditionalArgs" HideWhenNull="true"
+                        ImageId="@Id" TextureProviderName="@TextureProviderName" />
+                    <HintWidget DataSource="{FactionHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" />
+                  </Children>
+                </Widget>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+      </Children>
+    </ConversationScreenButtonWidget>
+  </Window>
+</Prefab>

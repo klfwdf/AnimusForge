@@ -53,6 +53,10 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 
 	private bool _isFinalized;
 
+	private readonly Func<AnimusForgeDialogueHistoryEntry, bool> _tryDeleteEntry;
+
+	private AnimusForgeConversationHistoryLogItemVM _armedDeleteItem;
+
 	[DataSourceProperty]
 	public MBBindingList<AnimusForgeConversationHistoryLogItemVM> Items
 	{
@@ -166,7 +170,15 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 	}
 
 	public AnimusForgeConversationHistoryLogVM(string targetName, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Hero conversationTargetHero, CharacterObject conversationTargetCharacter, Action onClose, Action<string> onOpenEncyclopediaLink)
+		: this(targetName, entries, conversationTargetHero, conversationTargetCharacter, onClose, onOpenEncyclopediaLink, null)
 	{
+	}
+
+	// tryDeleteEntry: optional; returns true when the persisted line was deleted. Only entries that carry a
+	// MemoryId and LineOrdinal (persisted history, not the session-only fallback) get a delete control.
+	public AnimusForgeConversationHistoryLogVM(string targetName, IReadOnlyList<AnimusForgeDialogueHistoryEntry> entries, Hero conversationTargetHero, CharacterObject conversationTargetCharacter, Action onClose, Action<string> onOpenEncyclopediaLink, Func<AnimusForgeDialogueHistoryEntry, bool> tryDeleteEntry)
+	{
+		_tryDeleteEntry = tryDeleteEntry;
 		_onClose = onClose;
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		_conversationTargetHero = conversationTargetHero;
@@ -247,6 +259,7 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 
 	private void RefreshCurrentPage(bool requestBottomScroll, bool requestTopScroll)
 	{
+		_armedDeleteItem = null;
 		Items.Clear();
 		int pageCount = GetPageCount();
 		if (_historyEntries.Count == 0)
@@ -264,7 +277,13 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 		for (int entryIndex = firstEntryIndex; entryIndex < lastEntryIndexExclusive; entryIndex++)
 		{
 			CachedHistoryDisplayEntry displayEntry = GetOrCreateFormattedEntry(entryIndex);
-			Items.Add(new AnimusForgeConversationHistoryLogItemVM(displayEntry.GameDate, displayEntry.Speaker, displayEntry.FormattedText, displayEntry.FontColor, _onOpenEncyclopediaLink));
+			AnimusForgeConversationHistoryLogItemVM item = new AnimusForgeConversationHistoryLogItemVM(displayEntry.GameDate, displayEntry.Speaker, displayEntry.FormattedText, displayEntry.FontColor, _onOpenEncyclopediaLink);
+			AnimusForgeDialogueHistoryEntry entry = _historyEntries[entryIndex];
+			if (_tryDeleteEntry != null && !string.IsNullOrWhiteSpace(entry.MemoryId) && entry.LineOrdinal >= 0)
+			{
+				item.EnableDelete(ArmDelete, () => DeleteEntry(entry));
+			}
+			Items.Add(item);
 		}
 
 		PageStatusText = "第 " + (_currentPageIndex + 1) + " / " + pageCount + " 页（" + _historyEntries.Count + " 条）";
@@ -310,6 +329,33 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 			AnimusForgeConversationHistoryLogItemVM.ResolveFontColor(entry.Kind));
 		_formattedEntriesByIndex.Add(entryIndex, cachedEntry);
 		return cachedEntry;
+	}
+
+	private void ArmDelete(AnimusForgeConversationHistoryLogItemVM item)
+	{
+		if (!ReferenceEquals(_armedDeleteItem, item))
+		{
+			_armedDeleteItem?.DisarmDelete();
+		}
+		_armedDeleteItem = item;
+	}
+
+	// Removes in place and stays on the current page (clamped if it became empty). The index-keyed format
+	// cache is dropped because indices shift; one page is at most HistoryPageSize rows to reformat.
+	private void DeleteEntry(AnimusForgeDialogueHistoryEntry entry)
+	{
+		if (_isFinalized || entry == null || _tryDeleteEntry == null || !_tryDeleteEntry(entry))
+		{
+			return;
+		}
+		if (_isFinalized || !_historyEntries.Remove(entry))
+		{
+			return;
+		}
+		_formattedEntriesByIndex.Clear();
+		_nextCacheWarmIndex = -1;
+		_currentPageIndex = Math.Max(0, Math.Min(_currentPageIndex, GetPageCount() - 1));
+		RefreshCurrentPage(requestBottomScroll: false, requestTopScroll: false);
 	}
 
 	private int GetPageCount()

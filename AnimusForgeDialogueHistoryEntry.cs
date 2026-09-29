@@ -21,4 +21,10 @@ public sealed class AnimusForgeDialogueHistoryEntry
 	public string Text { get; set; } = "";
 
 	public string Kind { get; set; } = "";
+
+	// Set only for entries read from persisted history; identifies the line for deletion.
+	// Session-only entries keep the defaults and are not deletable.
+	public string MemoryId { get; set; } = "";
+
+	public int LineOrdinal { get; set; } = -1;
 }

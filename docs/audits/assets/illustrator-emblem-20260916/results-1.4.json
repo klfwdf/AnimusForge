@@ -1,0 +1,160 @@
+﻿{
+    "Assembly":  "F:\\AnimusForge-main\\extensions\\AnimusForge.Illustrator\\bin\\test\\1.4\\AnimusForge.Illustrator.dll",
+    "SHA256":  "F59E11E604BF184D32E1CE5486B305979BABB5D9A7D632F4DFDA38B9AD8C8AFB",
+    "Api":  "1.4",
+    "Checks":  30,
+    "Failures":  7,
+    "Boundary":  "CPU composition only. No native GPU export, shader golden comparison, live game or image API.",
+    "Results":  [
+                    {
+                        "Name":  "atlas_cell_0",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_1",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_2",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_3",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_4",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_5",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_6",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_7",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_8",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_9",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_10",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_11",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_12",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_13",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_14",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "atlas_cell_15",
+                        "Passed":  true,
+                        "Evidence":  "4x4 CPU PNG indexing"
+                    },
+                    {
+                        "Name":  "small_alpha_mask",
+                        "Passed":  true,
+                        "Evidence":  "different pixels=0/4096; actual center alpha=255"
+                    },
+                    {
+                        "Name":  "large_alpha_mask",
+                        "Passed":  false,
+                        "Evidence":  "different pixels=4096/4096; actual center alpha=0"
+                    },
+                    {
+                        "Name":  "inverse_alpha_mask",
+                        "Passed":  true,
+                        "Evidence":  "different pixels=0; inverse mask fixture"
+                    },
+                    {
+                        "Name":  "documented_red_priority",
+                        "Passed":  false,
+                        "Evidence":  "documented R-priority contract; actual center=Color [A=255, R=127, G=107, B=127]"
+                    },
+                    {
+                        "Name":  "stroke_adds_coverage",
+                        "Passed":  false,
+                        "Evidence":  "without=1024; with=1024; synthetic dilation, not native shader golden"
+                    },
+                    {
+                        "Name":  "native_rotation_0_mirror_False",
+                        "Passed":  true,
+                        "Evidence":  "red landmark distance=0.00; expected=63.5,47.5; actual={X=63.5, Y=47.5}"
+                    },
+                    {
+                        "Name":  "native_rotation_0_mirror_True",
+                        "Passed":  true,
+                        "Evidence":  "red landmark distance=0.00; expected=31.5,47.5; actual={X=31.5, Y=47.5}"
+                    },
+                    {
+                        "Name":  "native_rotation_90_mirror_False",
+                        "Passed":  false,
+                        "Evidence":  "red landmark distance=32.00; expected=47.5,31.5; actual={X=47.5, Y=63.5}"
+                    },
+                    {
+                        "Name":  "native_rotation_90_mirror_True",
+                        "Passed":  false,
+                        "Evidence":  "red landmark distance=32.00; expected=47.5,63.5; actual={X=47.5, Y=31.5}"
+                    },
+                    {
+                        "Name":  "native_rotation_180_mirror_False",
+                        "Passed":  true,
+                        "Evidence":  "red landmark distance=1.41; expected=31.5,47.5; actual={X=32.5, Y=48.5}"
+                    },
+                    {
+                        "Name":  "native_rotation_180_mirror_True",
+                        "Passed":  true,
+                        "Evidence":  "red landmark distance=1.00; expected=63.5,47.5; actual={X=63.5, Y=48.5}"
+                    },
+                    {
+                        "Name":  "native_rotation_270_mirror_False",
+                        "Passed":  false,
+                        "Evidence":  "red landmark distance=31.00; expected=47.5,63.5; actual={X=47.5, Y=32.5}"
+                    },
+                    {
+                        "Name":  "native_rotation_270_mirror_True",
+                        "Passed":  false,
+                        "Evidence":  "red landmark distance=32.00; expected=47.5,31.5; actual={X=47.5, Y=63.5}"
+                    },
+                    {
+                        "Name":  "historical_empty_cell_162_rejected",
+                        "Passed":  true,
+                        "Evidence":  "visible=False"
+                    }
+                ]
+}

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <OutputPath>../../artifacts/portrait-tests/bin/</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Stubs.cs" />
+    <Compile Include="CameraStubs.cs" />
+    <Compile Include="CameraTests.cs" />
+    <Compile Include="../../src/Native/LiveSpeakerPortrait.cs" Link="LiveSpeakerPortrait.cs" />
+    <Compile Include="../../src/Native/MapPortraitAppearance.cs" Link="MapPortraitAppearance.cs" />
+    <Compile Include="../../src/Native/PortraitFraming.cs" Link="PortraitFraming.cs" />
+    <Compile Include="../../src/Native/PortraitCamera.cs" Link="PortraitCamera.cs" />
+  </ItemGroup>
+</Project>

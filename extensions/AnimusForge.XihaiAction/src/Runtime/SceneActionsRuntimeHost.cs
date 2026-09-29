@@ -437,6 +437,66 @@ namespace AnimusForge.XihaiAction
             });
         }
 
+        /// <summary>
+        /// Game-thread check made while AF prepares one postprocess request.
+        /// Returns the allowed logical keys when this NPC reply should let the
+        /// postprocess decide its action, otherwise null.
+        /// </summary>
+        internal static IReadOnlyList<string> TryBuildNpcReplyDirectiveOffer(
+            Mission mission,
+            Agent speaker,
+            string rawReply)
+        {
+            if (!SceneActionsMissionBehavior.NpcReplyUsesPostprocessDirective)
+            {
+                return null;
+            }
+            SceneActionsMissionBehavior session;
+            lock (Sync)
+            {
+                if (!_initialized || !ConfigurationValid || Settings == null ||
+                    !Settings.Enabled || !Settings.NpcSceneShoutReplyEnabled)
+                {
+                    return null;
+                }
+                session = _activeSession;
+            }
+            if (session == null || mission == null ||
+                !ReferenceEquals(session.Mission, mission) ||
+                speaker == null || ReferenceEquals(speaker, Agent.Main) ||
+                BattleSpeechRuntimeHost.IsClaimedNpcReply(mission, speaker, rawReply))
+            {
+                return null;
+            }
+            return session.BuildNpcReplyDirectiveOffer(speaker, rawReply);
+        }
+
+        internal static bool SubmitNpcReplyDirective(
+            Mission mission,
+            Agent speaker,
+            string rawReply,
+            string normalizedValue,
+            double replyCapturedAtMissionTime,
+            double submittedAtMissionTime)
+        {
+            if (string.IsNullOrEmpty(normalizedValue))
+            {
+                return false;
+            }
+            return Submit(new CapturedSceneActionEvent
+            {
+                EventId = Guid.NewGuid(),
+                InputSource = SceneInputSource.NpcSceneShoutReply,
+                SourceMission = mission,
+                RawText = rawReply ?? string.Empty,
+                Speaker = speaker,
+                FramedTargets = Array.Empty<Agent>(),
+                SubmittedAtMissionTime = submittedAtMissionTime,
+                DirectiveValue = normalizedValue,
+                ReplyCapturedAtMissionTime = replyCapturedAtMissionTime
+            });
+        }
+
         internal static bool TrySubmitTrustedOneShot(
             Guid requestId,
             Guid ownerToken,

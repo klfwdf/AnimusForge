@@ -1,0 +1,63 @@
+[05:48:26.007] [GAME MENU] town_wait_menus
+
+[05:48:26.090] VisualShipFactory.CreateVisualShip: dhow_ship_nested
+
+[05:48:26.275] AddGlobalLayer
+
+[05:48:26.838] Bake Terrain
+[05:48:26.892] Bake Terrain
+[05:48:26.915] Bake Terrain
+[05:48:26.931] Bake Terrain
+[05:48:30.070] OnGameWindowFocusChange: True
+
+[05:48:30.070] TopScreen: NavalMapScreen
+
+[05:48:33.305] [Illustrator] Found character tableau by type: EncyclopediaCharacterTableauWidget, size=<493.3333, 1009.333>
+
+[05:48:33.307] [ScreenCaptureHelper] Capturing widget (EncyclopediaCharacterTableauWidget): pos=(404,424), size=(657x1345), scale=1.333333
+
+[05:48:33.370] [ScreenCaptureHelper] Successfully captured cropped widget base64 (length=95780)
+
+[05:48:33.371] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[05:48:33.376] [OffscreenRenderer] Triggering native TableauView save to: C:\Users\29310\AppData\Local\Temp\AnimusForgeIllustrator\af_offscreen_915eef8972fe4ba585ec6617b76a9c30.png
+
+[05:48:33.376] [OffscreenRenderer] save path set
+
+[05:48:33.376] [OffscreenRenderer] save name set
+
+[05:48:33.376] [OffscreenRenderer] save type set
+
+[05:48:33.376] [OffscreenRenderer] save flag set
+
+[05:48:33.412] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[05:48:33.500] [Illustrator] Successfully loaded dynamic sprite: de7087fb76fcf32fbd64cbcd8b1e4523_20260915201935490_d348ce_1565a2e3 (1024x1024, colorFixed=True)
+
+[05:48:34.377] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[05:48:34.378] [OffscreenRenderer] Triggering native TableauView save to: C:\Users\29310\AppData\Local\Temp\AnimusForgeIllustrator\af_offscreen_0a2e9cfcbe4e4a40abd890bd53c61cb7.png
+
+[05:48:34.378] [OffscreenRenderer] save path set
+
+[05:48:34.378] [OffscreenRenderer] save name set
+
+[05:48:34.378] [OffscreenRenderer] save type set
+
+[05:48:34.378] [OffscreenRenderer] save flag set
+
+[05:48:34.412] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[05:48:34.568] [OffscreenRenderer] Native TableauView offscreen render SUCCESS (493x1009) in 75ms!
+
+[05:48:34.656] [OffscreenRenderer] Triggering native TableauView save to: C:\Users\29310\AppData\Local\Temp\AnimusForgeIllustrator\af_offscreen_22e4a40739824759beced1c5d4006787.png
+
+[05:48:34.656] [OffscreenRenderer] save path set
+
+[05:48:34.656] [OffscreenRenderer] save name set
+
+[05:48:34.656] [OffscreenRenderer] save type set
+
+[05:48:34.656] [OffscreenRenderer] save flag set
+
+[05:48:34.656] [OffscreenRenderer] Stage save requested at tick=13, waiting for file...

@@ -7,4 +7,5 @@ internal static class TeamModuleServices
     internal static IPolicyModulePort Policy { get; } = new PolicyModuleAdapter();
     internal static IGatheringModulePort Gathering { get; } = new GatheringModuleAdapter();
     internal static ISiegeModulePort Siege { get; } = new SiegeModuleAdapter();
+	    internal static ICivilWarModulePort CivilWar { get; } = new CivilWarModuleAdapter();
 }
