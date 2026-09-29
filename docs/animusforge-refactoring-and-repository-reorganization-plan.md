@@ -93,6 +93,8 @@
 
 **A2/R07 GCCZ 本地化/城镇记忆薄桥续审（20 桶仍未签收）**：[范围图 E66](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)再审原 null 导航的 12 个双 API Compile 文件/各 72 声明：五份 `GcczTown*.zh-CN.json` 经单模块磁盘→程序集内置→英文 fallback、每进程 Lazy 缓存；MCM 手册 inquiry、ruler/speaker 活游戏事实、开发者菜单与 GCCZ 诊断分属内容/UI/游戏适配/日志，复用规则与记录权威仍在 GCCZ core/runtime bridge。开发者回调可写手工 narrative 或要求再生成，不能按“UI 文件”略过；缓存不自动热重载是现行资源语义。R08 需量测请求期 Agent 线性查找、开发者记录列表及启用日志的逐事件 I/O；旧弹窗跨 Campaign/关窗的迟到写入须按 ruler/start-day 校验再回放，未证实故障。E59–E63 加 E65–E66 共 70 原 null 文件/699 声明初分，仍余 210 文件；导航 JSON 保持 280 null/全部 `PENDING`，20 桶未签。无仓外 GCCZ 镜像写入、日志导出/清空、双 API 产品构建或实机/旧档验收；**A 未闭，B 不启动**。
 
+**A2/R07 `MyBehavior` 战斗事件入口小段（20 桶仍未签收）**：[范围图 E67](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)仅补审双 API 各 3 个方法 `MyBehavior.cs:2617–2721`，覆盖两个 Campaign 结束事件到玩家击败领主事实的共用去重入口，并定位 History/AFEF 与 NPC 行动记录的实际转交。去重键先加入、旧 `void` History 门面后写且不回报接受，故拒收时另一个事件可能不再补写；这是待合成回放的静态风险，不是实机故障结论。该小段按事件败方 party 遍历；四个下游分派、其余 `MyBehavior` 方法和动态消费者未闭，导航候选仍 `PENDING`。本片只读、不改产品；**J17-A 未闭，B 不启动**。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
