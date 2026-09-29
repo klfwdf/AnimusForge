@@ -12824,7 +12824,7 @@ RunRepairCorrectionAndJobDecisionTests();
         var finCalls = new List<string>();
         bool deferThreat = false, propagationFails = false, eventsFail = false, roundFails = false;
         Action<WorldDiplomacyDocument, string, string> finalize = (doc, a, tgt) =>
-            WorldDiplomacyRoundLifecycleRules.FinalizePublishedDocumentAfterAnalysis(
+            WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(
                 doc, a, tgt, "declare_war", true, threats,
                 (d, x, y, intent) => finCalls.Add("decisions"),
                 (d, x, y, intent) => { finCalls.Add("defer"); return deferThreat; },
@@ -13590,9 +13590,7 @@ RunRepairCorrectionAndJobDecisionTests();
             List<string> removed2 = null,
             List<string> logs2 = null)
         {
-            WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(
-                job, content, success, serviceFailure, truncated, error,
-                storage, 100, 12,
+            var effects = new WorldDiplomacyCompletionCallbacks(
                 staleThreat ?? (j => false), refreshThreat ?? (j => true),
                 staleAction ?? (j => false), refreshAction ?? (j => true),
                 truncatedHandler ?? ((j, c) => { }),
@@ -13604,6 +13602,9 @@ RunRepairCorrectionAndJobDecisionTests();
                 (j, e) => failures2?.Add(e),
                 id => removed2?.Add(id),
                 line => logs2?.Add(line));
+            WorldDiplomacyCompletionApplication.Complete(
+                job, content, success, serviceFailure, truncated, error,
+                storage, 100, 12, ref effects);
         }
 
         WorldDiplomacyStorage done = Store();
@@ -16383,12 +16384,13 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("ProcessAnalyzedDocument,", StringComparison.Ordinal),
             "the host must keep binding the generated-document live-state adapters");
 
-        // DPL-060DF: post-decision routing; generation abandonment is owned by
-        // WorldDiplomacyGenerationTaskApplication while finalization stays in the rules.
+        // DPL-060DF/R1: post-decision routing; generation abandonment is owned by
+        // WorldDiplomacyGenerationTaskApplication and finalization by the publication Application.
         Test.True(behaviorSource.Contains("WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
             && bindingSource.Contains("ProcessDiplomaticThreatDocument(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyGenerationTaskApplication.AbandonRejectedGeneration(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
+            && documentPublication.Contains("internal static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
             && bindingSource.Contains("public static void ProcessDiplomaticThreatDocument(", StringComparison.Ordinal)
             && generationTaskSource.Contains("internal static void AbandonRejectedGeneration(", StringComparison.Ordinal),
             "the host must route post-decision finalization, threat dispatch, and abandonment through the owning services");

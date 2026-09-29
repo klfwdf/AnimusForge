@@ -2195,8 +2195,8 @@ internal static class Program
         }
         if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
         {
-            Test.True(source.Contains("WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal),
-                "compatibility finalization must forward to Application");
+            Test.True(!source.Contains("public static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal),
+                "the retired compatibility forwarder must not remain in the domain rules");
             return ExtractMethod(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentPublicationApplication.cs")),
                 marker.Replace("public static", "internal static"));
         }
