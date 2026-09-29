@@ -1,4 +1,9 @@
-# 当前交接：J16 离线收口完成（2026-09-29，分支 `codex/af-j16-continue-20260929`，未推送）
+# 当前交接：J15 按用户决定结项，转入 J17（2026-09-29）
+
+- **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`——离线成果保持；F5 实机/旧档、F4-A 出处文字与实机视觉转为已知遗留，发布 HOLD 继续有效。见[主台账 J15 结项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-closed-by-user-20260929)。
+- **下一步**：J17 在 `G:\AFMOD\AF-J17` 续作，先合入本分支 J16 成果。
+
+# 上一段交接：J16 离线收口完成（2026-09-29，分支 `codex/af-j16-continue-20260929`，未推送）
 
 - **状态**：`J16_OFFLINE_CLOSED`——J16a/b/c/d/e 全部完成；`LIVE / SAVE / 三渠道回放 NOT-RUN`。详见[主台账 J16 续作与收口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j16-continue-20260929)。基于远端 `ada9894a`，本分支 15 个提交。
 - **全量验证**：`py -3 tests/run_all.py` 257 项 `PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；对照 99ca85ae 与 ada9894a 两份基线 PASS→非 PASS 为 0，远端引入的 34 项失败全部恢复。inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS、`git diff --check` 通过。
