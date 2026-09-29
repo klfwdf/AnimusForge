@@ -1,7 +1,7 @@
 # J17 主体职责收尾与分层验收执行计划
 
 > 编制日期：2026-09-29；编制基线 `944712f8`。本文是执行规格，不是完成回执，也不授予产品实施、外仓写入、部署或推送权限。恢复任务时重新核实 Git，不按历史盘符切换工作区。
-> 当前进度与责任状态唯一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)及其 R01–R09 登记表；源码证据见[范围图 E01–E46](../architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。本文不建立第二份状态表。
+> 当前进度与责任状态唯一见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)及其 R01–R09 登记表；源码证据见[范围图 E01–E47](../architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。本文不建立第二份状态表。
 
 **当前执行顺序（2026-09-29 用户更正）**：用户已授权执行仓内 J17，必须先满足第 4 节的 **J17-A 出口**，再进入第 5 节 J17-B 并收尾；下方编制时“待授权再进入产品迁移”的可复制提示不再代表当前授权状态。此授权不扩展为仓外写入、游戏部署、真实玩家资料改写、推送或高风险清理许可。
 
