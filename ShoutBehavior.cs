@@ -19472,7 +19472,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 				NativeConversationGameActionResult result = ApplyNativeConversationGameActionsCore(targetHero, targetCharacter, npc, allNpcData,
 					sceneSummonTargets, sceneGuideTargets, initial, playerText, expectedConversationManager, expectedConversationToken);
 				if (completionScope != null && result != null && !result.ResponseDiscarded)
+				{
+					RunNativeAcceptedReplySideEffects(completion);
 					result.FinalVisible = CompleteNativeConversationReplyOnMainThread(completionScope, result);
+				}
 				return result;
 			}, targetLog, targetAgentIndex,
 			beforeOwner: completion == null ? null : () => completionScope = CaptureNativeConversationCompletionOnMainThread(

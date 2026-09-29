@@ -32,7 +32,9 @@ def generate(source_ref=None):
  module_scene_thread='\n'.join(ex.declaration(module_submission_source,x) for x in ['private sealed class SceneMainThreadSynchronizationContext','private Task RunSceneGroupOnMainThreadAsync('])
  awaited_group=current and 'private Task ProcessCurrentScenePlayerShout(' in s
  sig=('private Task ProcessCurrentScenePlayerShout(' if awaited_group else 'private void ProcessCurrentScenePlayerShout(') if current else 'private async Task ProcessShoutConfirmedInternal('
- full=ex.declaration(s,sig);marker='\t\tif (!TryBuildSceneShoutConversationScope('
+ full=ex.declaration(s,sig)
+ # ada9894a stores the scope result (presentation-session audience exclusion) before the same guard.
+ marker='\t\tbool audienceBuilt = TryBuildSceneShoutConversationScope(' if '\t\tbool audienceBuilt = TryBuildSceneShoutConversationScope(' in full else '\t\tif (!TryBuildSceneShoutConversationScope('
  assert full.count(marker)==1
  assert ('return receipt == null ? Task.Run(RunGroupAsync) : RunSceneGroupOnMainThreadAsync(RunGroupAsync);' if awaited_group else '_ = Task.Run(async delegate') in full, 'Scene group kickoff seam changed; review completion fixture'
  kickoff=('return Program.PendingGroup==null?Task.CompletedTask:Task.Run(async ()=>await Program.PendingGroup.Task);' if awaited_group else 'if(Program.PendingGroup!=null)_ = Task.Run(async ()=>await Program.PendingGroup.Task);')

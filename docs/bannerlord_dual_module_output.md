@@ -43,7 +43,7 @@ The Bootstrap must stay minimal and compile against API surface shared by both g
 Both implementation DLLs are still required and must be built sequentially through the verified unified build entry:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\一键编译覆盖推送\build_single_module.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build\build_single_module.ps1 `
   -ProjectRoot . `
   -BannerlordRoot "<Bannerlord root>" `
   -Configuration Debug `
@@ -62,7 +62,7 @@ The Bootstrap must be built independently from the implementation DLLs. Building
 
 ## One-click Script Rules
 
-Every function under `一键编译覆盖推送` must use the unified contract:
+Every function under `一键编译覆盖推送` (the `.bat` entry points) and `scripts/build` (the PowerShell implementations they call) must use the unified contract:
 
 - Build: build Bootstrap plus both implementation variants, then assemble one staged `AnimusForge` module.
 - Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Keep verified private Recovery backups and roll back touched files on a caught failure; an interrupted transaction blocks another deploy pending recovery inspection. Unlisted installed files are never mirrored or deleted.

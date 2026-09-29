@@ -24,8 +24,9 @@ util = load('host_dotnet', 'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
 
 
 def fixtures(source):
-    fast = extract(source, 'private static void RunFastApplicationTickPhases(SubModule host)')
-    watched = extract(source, 'private static void RunWatchedApplicationTickPhases(SubModule host)')
+    fast = extract(source, 'private static void RunFastApplicationTickPhases(SubModule host, float dt)')
+    watched = extract(source, 'private static void RunWatchedApplicationTickPhases(SubModule host, float dt)')
+    dt_phases = set()
     static = {}
     instance = {}
     order = []
@@ -40,23 +41,28 @@ def fixtures(source):
             instance.setdefault(owner, set()).add(method)
             order.append(owner + '.' + method)
             continue
-        match = re.fullmatch(r'([A-Za-z]\w*)\.([A-Za-z]\w*)\(\);', line)
+        match = re.fullmatch(r'([A-Za-z]\w*)\.([A-Za-z]\w*)\((dt)?\);', line)
         if match:
-            owner, method = match.groups()
+            owner, method, dt_arg = match.groups()
             static.setdefault(owner, set()).add(method)
+            if dt_arg:
+                dt_phases.add(owner + '.' + method)
             order.append(owner + '.' + method)
             continue
-    assert len(order) == 36 and len(set(order)) == 36, 'Tick fixture failed to cover every original phase'
+    assert len(order) == 37 and len(set(order)) == 37, 'Tick fixture failed to cover every phase'
+    assert order[-1] == 'IntegratedModuleHost.Tick' and dt_phases == {'IntegratedModuleHost.Tick'}, \
+        'IntegratedModuleHost.Tick(dt) must be the only dt phase and run last'
     scope_names = re.findall(r'RunWatchedTickPhase\("([^"]+)"', watched)
-    assert len(scope_names) == 36 and len(set(scope_names)) == 36, 'Watched fixture failed to cover every phase'
+    assert len(scope_names) == 37 and len(set(scope_names)) == 37, 'Watched fixture failed to cover every phase'
     assert not (set(static) & set(instance)), 'Unexpected mixed static/instance tick owner'
     stubs = ['using System;\nusing System.Collections.Generic;\nnamespace AnimusForge {',
         '''internal static class TickTrace {
  internal static readonly List<string> Events = new();
  internal static bool Freeze, Perf;
+ internal static float Dt;
  internal static string ThrowOn, DisableScopesOn;
  internal static void Reset(bool freeze, bool perf, string throwOn = null, string disableOn = null) {
-   Events.Clear(); Freeze = freeze; Perf = perf; ThrowOn = throwOn; DisableScopesOn = disableOn;
+   Events.Clear(); Dt = -1f; Freeze = freeze; Perf = perf; ThrowOn = throwOn; DisableScopesOn = disableOn;
  }
  internal static void Hit(string name) {
    Events.Add("hit:" + name);
@@ -93,8 +99,11 @@ internal static class CampaignTickDiagnosticsPatch {
  internal static void RefreshCheckpointWriteBudget() => TickTrace.Events.Add("checkpoint");
 }''']
     for owner, methods in sorted(static.items()):
-        members = ''.join(f' internal static void {method}() => TickTrace.Hit("{owner}.{method}");\n'
-                          for method in sorted(methods))
+        members = ''.join(
+            (f' internal static void {method}(float dt) {{ TickTrace.Dt = dt; TickTrace.Hit("{owner}.{method}"); }}\n'
+             if owner + '.' + method in dt_phases else
+             f' internal static void {method}() => TickTrace.Hit("{owner}.{method}");\n')
+            for method in sorted(methods))
         namespace = 'AnimusForge.PolicyEffects' if owner == 'PolicyEffectModuleManagerPopup' else 'AnimusForge'
         if namespace != 'AnimusForge':
             stubs.append('}\nnamespace AnimusForge.PolicyEffects {')
@@ -136,9 +145,10 @@ internal static class Program {
  static void Normal(bool freeze, bool perf) {
    TickTrace.Reset(freeze,perf); ApplicationTickComposition.Run(Host,0.1f);
    HitOrder(true); FrameEnd();
+   Check(TickTrace.Dt==0.1f, "frame dt forwarded to IntegratedModuleHost.Tick");
    int count=TickTrace.Events.Count(x=>x.StartsWith("freeze+:SubModule.") && x!="freeze+:SubModule.PerfProbe.EndFrame");
    int perfCount=TickTrace.Events.Count(x=>x.StartsWith("perf+:SubModule."));
-   Check(count==(freeze||perf?36:0) && perfCount==count, "phase scope count");
+   Check(count==(freeze||perf?37:0) && perfCount==count, "phase scope count");
    if(freeze||perf) {
      foreach(var name in ScopeNames) {
        Check(TickTrace.Events.Count(x=>x=="freeze+:"+name)==1 &&
@@ -164,7 +174,7 @@ internal static class Program {
  }
  static int Main() {
    try { Normal(false,false); Normal(true,false); Normal(false,true); DynamicFallback(); Failure(false); Failure(true);
-     Console.WriteLine("PASS source-linked 36-phase fast/watched/scope fallback/exception/finally/WarStats replay"); return 0; }
+     Console.WriteLine("PASS source-linked 37-phase fast/watched/scope fallback/exception/finally/WarStats replay"); return 0; }
    catch(Exception ex) { Console.WriteLine(ex.Message.StartsWith("FAIL ")?ex.Message:"FAIL "+ex); return 1; }
  }
 }
@@ -190,6 +200,7 @@ def main():
         'skip_warstats': ('host.TickWarStatsMapButton(dt);', ';'),
         'skip_mark': ('FreezeWatchdog.Mark("SubModule.OnApplicationTick.exception", ex.GetType().Name + ": " + ex.Message, immediate: true);', ';'),
         'skip_perf_end': ('PerfProbe.EndFrame(perfFrame, "SubModule.OnApplicationTick.total");', ';'),
+        'drop_fast_dt': ('\t\tIntegratedModuleHost.Tick(dt);', '\t\tIntegratedModuleHost.Tick(0f);'),
     }
     results = []
     variants = [('current', source)]

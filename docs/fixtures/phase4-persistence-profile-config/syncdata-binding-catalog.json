@@ -2,8 +2,8 @@
   "fixtureVersion": 1,
   "kind": "syncdata-binding-catalog",
   "assemblyIdentity": "AnimusForge",
-  "bindingCount": 168,
-  "uniqueKeyCount": 142,
+  "bindingCount": 204,
+  "uniqueKeyCount": 177,
   "entries": [
     {
       "key": "_AnimusForge_setup_done_v1",
@@ -15,6 +15,48 @@
           "line": 227,
           "ref": "_setupDone",
           "type": "bool",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_afCoupOutcomeBridge_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs",
+          "line": 227,
+          "ref": "_outcomesJson",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_afCoupRebellionBridge_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "extensions/AnimusForge.Coup/src/Integration/CoupRebellionBridge.cs",
+          "line": 226,
+          "ref": "_requestsJson",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_afCoupSession_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "extensions/AnimusForge.Coup/src/CoupSystem/CoupCampaignBehavior.cs",
+          "line": 50,
+          "ref": "_saveJson",
+          "type": "string",
           "kind": "scalar"
         }
       ]
@@ -82,14 +124,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17654,
+          "line": 17730,
           "ref": "dictionaryMemoryBlocks",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 17943,
+          "line": 18021,
           "ref": "dictionaryMemoryBlocksLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -103,14 +145,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17651,
+          "line": 17727,
           "ref": "dictionaryMemoryDrafts",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 17936,
+          "line": 18014,
           "ref": "dictionaryMemoryDraftsLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -124,7 +166,7 @@
       "bindings": [
         {
           "source": "AnimusForgeUniqueCosmeticItemBehavior.cs",
-          "line": 43,
+          "line": 32,
           "ref": "_spawnResolved",
           "type": "bool",
           "kind": "scalar"
@@ -138,8 +180,29 @@
       "bindings": [
         {
           "source": "AnimusForgeUniqueCosmeticItemBehavior.cs",
-          "line": 44,
+          "line": 33,
           "ref": "_spawnSettlementId",
+          "type": "string",
+          "kind": "scalar"
+        }
+      ]
+    },
+    {
+      "key": "_af_kingdom_civil_war_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "MyBehavior.cs",
+          "line": 17936,
+          "ref": "_civilWarJsonStorage",
+          "type": "string",
+          "kind": "scalar"
+        },
+        {
+          "source": "MyBehavior.cs",
+          "line": 18356,
+          "ref": "_civilWarJsonStorage",
           "type": "string",
           "kind": "scalar"
         }
@@ -152,14 +215,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17685,
+          "line": 17761,
           "ref": "dictionaryMemoryOverviewStates",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 17981,
+          "line": 18059,
           "ref": "dictionaryMemoryOverviewStatesLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -173,14 +236,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17716,
+          "line": 17792,
           "ref": "dictionaryMajorActionSummaries",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18018,
+          "line": 18096,
           "ref": "dictionaryMajorActionSummariesLoad",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -208,14 +271,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17782,
+          "line": 17858,
           "ref": "unreadWeeklyReportNoticeEventIds",
           "type": "List<string>",
           "kind": "list"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18179,
+          "line": 18257,
           "ref": "unreadWeeklyReportNoticeEventIdsLoad",
           "type": "List<string>",
           "kind": "list"
@@ -887,14 +950,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17786,
+          "line": 17862,
           "ref": "weeklyReportReadingXpClaimedEventIds",
           "type": "List<string>",
           "kind": "list"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18182,
+          "line": 18260,
           "ref": "weeklyReportReadingXpClaimedEventIdsLoad",
           "type": "List<string>",
           "kind": "list"
@@ -908,14 +971,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17794,
+          "line": 17870,
           "ref": "weeklyReportReadingXpPendingCharm",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18185,
+          "line": 18263,
           "ref": "_weeklyReportReadingXpPendingCharm",
           "type": "int",
           "kind": "scalar"
@@ -929,14 +992,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17793,
+          "line": 17869,
           "ref": "weeklyReportReadingXpPendingCount",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18184,
+          "line": 18262,
           "ref": "_weeklyReportReadingXpPendingCount",
           "type": "int",
           "kind": "scalar"
@@ -950,14 +1013,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17795,
+          "line": 17871,
           "ref": "weeklyReportReadingXpPendingLeadership",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18186,
+          "line": 18264,
           "ref": "_weeklyReportReadingXpPendingLeadership",
           "type": "int",
           "kind": "scalar"
@@ -971,30 +1034,16 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17796,
+          "line": 17872,
           "ref": "weeklyReportReadingXpPendingSteward",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18187,
+          "line": 18265,
           "ref": "_weeklyReportReadingXpPendingSteward",
           "type": "int",
-          "kind": "scalar"
-        }
-      ]
-    },
-    {
-      "key": "_af_xihai_legacy_equipment_cleanup_v1",
-      "type": "bool",
-      "kind": "scalar",
-      "bindings": [
-        {
-          "source": "AnimusForgeUniqueCosmeticItemBehavior.cs",
-          "line": 45,
-          "ref": "_legacyCleanupCompleted",
-          "type": "bool",
           "kind": "scalar"
         }
       ]
@@ -1006,14 +1055,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17647,
+          "line": 17723,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 17929,
+          "line": 18007,
           "ref": "dictionary8",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1041,14 +1090,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17763,
+          "line": 17839,
           "ref": "dictionary6",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18143,
+          "line": 18221,
           "ref": "dictionary12",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1356,14 +1405,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17834,
+          "line": 17910,
           "ref": "dictionary14b",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18231,
+          "line": 18309,
           "ref": "dictionary15",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1377,14 +1426,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17823,
+          "line": 17899,
           "ref": "dictionary13",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18215,
+          "line": 18293,
           "ref": "dictionary14",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1398,14 +1447,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17857,
+          "line": 17933,
           "ref": "_lastAutoGeneratedWeeklyReportWeek",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18211,
+          "line": 18289,
           "ref": "_lastAutoGeneratedWeeklyReportWeek",
           "type": "int",
           "kind": "scalar"
@@ -1419,14 +1468,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17858,
+          "line": 17934,
           "ref": "_lastProcessedKingdomRebellionWeek",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18276,
+          "line": 18354,
           "ref": "_lastProcessedKingdomRebellionWeek",
           "type": "int",
           "kind": "scalar"
@@ -1440,14 +1489,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17856,
+          "line": 17932,
           "ref": "dictionary14d",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18263,
+          "line": 18341,
           "ref": "dictionary17",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1461,14 +1510,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17733,
+          "line": 17809,
           "ref": "_npcActionGlobalOrderCounter",
           "type": "int",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18136,
+          "line": 18214,
           "ref": "_npcActionGlobalOrderCounter",
           "type": "int",
           "kind": "scalar"
@@ -1482,14 +1531,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17729,
+          "line": 17805,
           "ref": "dictionary3",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18055,
+          "line": 18133,
           "ref": "dictionary9",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1503,14 +1552,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17751,
+          "line": 17827,
           "ref": "dictionary5",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18111,
+          "line": 18189,
           "ref": "dictionary11",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1524,14 +1573,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17732,
+          "line": 17808,
           "ref": "dictionary4",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18083,
+          "line": 18161,
           "ref": "dictionary10",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1545,14 +1594,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 34677,
+          "line": 34760,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 34686,
+          "line": 34769,
           "ref": "dictionary2",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1566,7 +1615,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 1220,
+          "line": 1221,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1580,7 +1629,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3269,
+          "line": 3270,
           "ref": "_directTrustProgressCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1594,7 +1643,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 1505,
+          "line": 1506,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1608,7 +1657,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 1313,
+          "line": 1314,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1622,7 +1671,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3072,
+          "line": 3073,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1636,7 +1685,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3157,
+          "line": 3158,
           "ref": "_npcTrustStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1650,7 +1699,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3385,
+          "line": 3386,
           "ref": "_publicTrustProgressCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1664,7 +1713,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3158,
+          "line": 3159,
           "ref": "_publicTrustStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1678,7 +1727,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3329,
+          "line": 3330,
           "ref": "_settlementTrustCentiCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1692,7 +1741,7 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3330,
+          "line": 3331,
           "ref": "_settlementTrustSharedPublicCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
@@ -1706,10 +1755,444 @@
       "bindings": [
         {
           "source": "RewardSystemBehavior.cs",
-          "line": 3221,
+          "line": 3222,
           "ref": "_tradeTrustValueCarryStorage",
           "type": "Dictionary<string, int>",
           "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_evidence_campaign_days",
+      "type": "List<float>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 225,
+          "ref": "_evidenceCampaignDays",
+          "type": "List<float>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_evidence_charge_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 222,
+          "ref": "_evidenceChargeIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_evidence_settlement_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 224,
+          "ref": "_evidenceSettlementIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_evidence_strengths",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 223,
+          "ref": "_evidenceStrengths",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_evidence_victim_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 221,
+          "ref": "_evidenceVictimIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_actors",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 218,
+          "ref": "_historyActors",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_campaign_days",
+      "type": "List<float>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 219,
+          "ref": "_historyCampaignDays",
+          "type": "List<float>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_charge_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 215,
+          "ref": "_historyChargeIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_legitimacy_tiers",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 217,
+          "ref": "_historyLegitimacyTiers",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_method_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 214,
+          "ref": "_historyMethodIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_session_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 210,
+          "ref": "_historySessionIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_settlement_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 213,
+          "ref": "_historySettlementIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_tones",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 216,
+          "ref": "_historyTones",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_victim_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 211,
+          "ref": "_historyVictimIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v2_history_victim_names",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 212,
+          "ref": "_historyVictimNames",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v3_evidence_target_realm_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 226,
+          "ref": "_evidenceTargetRealmIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_action_names",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 239,
+          "ref": "_impaledActionNames",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_action_progresses",
+      "type": "List<float>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 240,
+          "ref": "_impaledActionProgresses",
+          "type": "List<float>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_ages",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 235,
+          "ref": "_impaledAges",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_body_properties",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 232,
+          "ref": "_impaledBodyProperties",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_captured_utc",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 241,
+          "ref": "_impaledCapturedUtc",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_clothing_color_1",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 237,
+          "ref": "_impaledClothingColor1",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_clothing_color_2",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 238,
+          "ref": "_impaledClothingColor2",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_display_names",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 231,
+          "ref": "_impaledDisplayNames",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_equipment_codes",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 233,
+          "ref": "_impaledEquipmentCodes",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_hero_character_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 230,
+          "ref": "_impaledHeroCharacterIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 229,
+          "ref": "_impaledDisplayIds",
+          "type": "List<string>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_is_female",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 234,
+          "ref": "_impaledIsFemale",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_races",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 236,
+          "ref": "_impaledRaces",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v4_impaled_schema_versions",
+      "type": "List<int>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 228,
+          "ref": "_impaledDisplaySchemaVersions",
+          "type": "List<int>",
+          "kind": "list"
+        }
+      ]
+    },
+    {
+      "key": "_rex_v5_recently_rebellious_town_ids",
+      "type": "List<string>",
+      "kind": "list",
+      "bindings": [
+        {
+          "source": "Vengeance/Source/Campaign/RichExecutionCampaignBehavior.cs",
+          "line": 251,
+          "ref": "_recentlyRebelliousTownIds",
+          "type": "List<string>",
+          "kind": "list"
         }
       ]
     },
@@ -1748,14 +2231,14 @@
       "bindings": [
         {
           "source": "ShoutBehavior.cs",
-          "line": 10815,
+          "line": 10897,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "ShoutBehavior.cs",
-          "line": 10818,
+          "line": 10900,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -1993,7 +2476,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 148,
+          "line": 201,
           "ref": "_otherSettlementProfile",
           "type": "TroopRoster",
           "kind": "native-save-type"
@@ -2007,7 +2490,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 147,
+          "line": 200,
           "ref": "_ownSettlementProfile",
           "type": "TroopRoster",
           "kind": "native-save-type"
@@ -2021,7 +2504,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 149,
+          "line": 202,
           "ref": "_pendingSameKingdomVassalRebellionKingdomId",
           "type": "string",
           "kind": "scalar"
@@ -2035,7 +2518,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 151,
+          "line": 204,
           "ref": "_pendingSameKingdomVassalRebellionOwnerClanId",
           "type": "string",
           "kind": "scalar"
@@ -2049,7 +2532,7 @@
       "bindings": [
         {
           "source": "SettlementEntryTroopSelectionBehavior.cs",
-          "line": 150,
+          "line": 203,
           "ref": "_pendingSameKingdomVassalRebellionSettlementId",
           "type": "string",
           "kind": "scalar"
@@ -2063,14 +2546,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17643,
+          "line": 17719,
           "ref": "dictionary",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 17890,
+          "line": 17968,
           "ref": "dictionary7",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
@@ -2140,14 +2623,14 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17870,
+          "line": 17948,
           "ref": "_voiceMappingExportFolderStorage",
           "type": "string",
           "kind": "scalar"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18278,
+          "line": 18359,
           "ref": "_voiceMappingExportFolderStorage",
           "type": "string",
           "kind": "scalar"
@@ -2161,17 +2644,31 @@
       "bindings": [
         {
           "source": "MyBehavior.cs",
-          "line": 17845,
+          "line": 17921,
           "ref": "dictionary14c",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
         },
         {
           "source": "MyBehavior.cs",
-          "line": 18247,
+          "line": 18325,
           "ref": "dictionary16",
           "type": "Dictionary<string, string>",
           "kind": "flattened-dictionary"
+        }
+      ]
+    },
+    {
+      "key": "af_coup_detentions_v1",
+      "type": "string",
+      "kind": "scalar",
+      "bindings": [
+        {
+          "source": "extensions/AnimusForge.Coup/src/CoupSystem/CoupCaptivityBehavior.cs",
+          "line": 43,
+          "ref": "_detentionsJson",
+          "type": "string",
+          "kind": "scalar"
         }
       ]
     }

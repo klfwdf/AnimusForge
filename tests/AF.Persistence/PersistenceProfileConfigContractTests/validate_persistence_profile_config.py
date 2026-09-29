@@ -217,7 +217,8 @@ def validate_persistence(catalog: dict) -> dict:
     assert_true(catalog["assemblyIdentity"] == "AnimusForge", "assembly identity changed")
     assert_true(catalog["saveTypePolicy"].startswith("preserve"), "save identity policy is not conservative")
     assert_true(len(keys) == len(set(keys)), "duplicate literal SyncData key in catalog")
-    assert_true(len(keys) == 142, f"expected 142 unique literal keys, got {len(keys)}")
+    # ada9894a: +Coup(4) +CivilWar(1) +RichExecutions(_rex_*, 30) keys, -one-shot Xihai legacy cleanup key.
+    assert_true(len(keys) == 177, f"expected 177 unique literal keys, got {len(keys)}")
 
     discovered: set[str] = set()
     for relative in catalog["sourceFiles"]:

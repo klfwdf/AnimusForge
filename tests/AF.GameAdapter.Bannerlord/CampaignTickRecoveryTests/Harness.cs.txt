@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using TaleWorlds.CampaignSystem.Party;
+
+namespace TaleWorlds.CampaignSystem.Party
+{
+    public sealed class MobileParty
+    {
+        public string StringId;
+    }
+}
+
+namespace AnimusForge
+{
+    internal static class CampaignTickDiagnosticsPatch
+    {
+        private static readonly object StateLock = new object();
+        private static readonly Dictionary<string, int> PriorCrashSuspectPartySkips =
+            new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        internal static void SeedForTest(string partyId, int count) => PriorCrashSuspectPartySkips[partyId] = count;
+
+@@CONSUME@@
+    }
+
+    internal static class AnimusForgeMobilePartyAiSafetyPatch
+    {
+        internal static int Delays;
+        private static MobileParty ExtractParty(object[] args) => args.Length > 0 ? args[0] as MobileParty : null;
+        private static bool IsPartyInNativeNavalTransition(MobileParty party) => false;
+        private static bool ShouldSkipNativeAiForUtilityParty(MobileParty party, out string reason)
+        {
+            reason = "";
+            return false;
+        }
+        private static bool IsUnsafeForNativeHourlyAiParty(MobileParty party, out string reason)
+        {
+            reason = "";
+            return false;
+        }
+        private static void TryDelayNativeAiDecisionOneTick(MobileParty party, string reason) => Delays++;
+        private static void LogGuard(string category, MobileParty party, string reason) { }
+        private static void TryLockNativeAiDecisions(MobileParty party, string reason) { }
+
+@@PREFIX@@
+    }
+
+    public static class Program
+    {
+        private static void Require(bool condition, string message)
+        {
+            if (!condition) throw new Exception("FAIL " + message);
+        }
+
+        public static void Main()
+        {
+            const string partyId = "suspect-party";
+            CampaignTickDiagnosticsPatch.SeedForTest(partyId, 18);
+            for (int i = 0; i < 18; i++)
+            {
+                var party = new MobileParty { StringId = partyId };
+                Require(!AnimusForgeMobilePartyAiSafetyPatch.PartyHourlyAiTickPrefix(new object[] { party }),
+                    "prior-crash party AI must be skipped on tick " + i);
+            }
+            Require(AnimusForgeMobilePartyAiSafetyPatch.Delays == 18, "expected 18 native AI delays");
+            Require(AnimusForgeMobilePartyAiSafetyPatch.PartyHourlyAiTickPrefix(
+                new object[] { new MobileParty { StringId = partyId } }), "19th tick must proceed");
+            Require(AnimusForgeMobilePartyAiSafetyPatch.PartyHourlyAiTickPrefix(
+                new object[] { new MobileParty { StringId = "other-party" } }), "unrelated party must proceed");
+            Console.WriteLine("PASS CampaignTickRecovery source-derived skip=18 same-id-new-object=1 next-proceeds=1 live=NOT_RUN");
+        }
+    }
+}

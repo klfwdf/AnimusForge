@@ -31,7 +31,7 @@
 
 | 路径/对象 | 当前证据 | 角色 | 初步处置 | 发布结论 | 后续责任 |
 |---|---|---|---|---|---|
-| `AnimusForge.csproj`、根级 AF C#、`PolicySystem/`、`AnimusForge.Bootstrap/` | AF 工作树、项目引用和构建 marker 可核验 | AF 生产源码与组合边界 | **保留** | 仅构建产物进入客户端包；源码是否公开按仓库发布策略处理 | 对应 owner matrix；不得在本阶段大搬家 |
+| `AnimusForge.csproj`、根级 AF C#、`PolicySystem/`、`src/AF.Bootstrap/` | AF 工作树、项目引用和构建 marker 可核验 | AF 生产源码与组合边界 | **保留** | 仅构建产物进入客户端包；源码是否公开按仓库发布策略处理 | 对应 owner matrix；不得在本阶段大搬家 |
 | `AnimusForge.SiegeAftermathIntervention/` | AF/GCCZ 融合边界已有文档约束 | 可复用领域源码/适配器 | **保留** | 仅被构建闭包实际引用的结果进入包；不发布参考依赖 | Siege/Settlement owner；保持 AF 薄适配器 |
 | `extensions/AnimusForge.XihaiAction/src/` | 扩展源码被主项目 source-link 编译 | SceneActions/BattleSpeech 扩展源码 | **保留** | 仅 AF unified 包实际需要的内容进入包；第三方许可未确认前不发布依赖 | External/Scene owner |
 | `AnimusForge/ModuleData/`、`AnimusForge/GUI/` | 38 个 ModuleData 文件、74 个 GUI 文件 | AF 模块内容与 UI 资源 | **保留** | 逐项确认资源来源后进入包；不得把用户导出和模型混入 | Content/UI owner |
