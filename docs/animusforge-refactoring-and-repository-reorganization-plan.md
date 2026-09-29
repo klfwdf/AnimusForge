@@ -13,6 +13,8 @@
 
 **A1/R02、R03、R01 当前复核（均 `OPEN`）**：范围图 E16–E18 已按当前源码重追真实调用链。R02 的摘要路径由分片扫描/计划、主线程输入捕获、网络等待、重试前及接受前指纹与代际复核、逐结果写入组成；daily 接受同时清 Native 会话历史、发布 public/Weekly 素材和入队 overview，不能按旧 E10 的名称统计直接迁“纯规则”。R03 旧 E12 的“Build/Apply 是纯状态变换”错误：Build 主线程净化可能修改原记录，Apply 写五组权威容器并标记 dirty 索引。R01 旧 E11 的“仅 DeathLine 有游戏读取”错误：各类别文本构造经名称/地点解析读 Hero/Clan/Kingdom/Settlement，death relation 还读亲属关系；现有 `ResolveHeroName` 等扫描游戏集合的工作量须入 R08。**这不是 A1 闭合**：当前仅核实关键路径，逐成员消费者/动态入口、相关行为基线和 A2 20 桶均待完成；A 出口前不批量启动 B。
 
+**A2 定向入口（仍 `REVIEW_REQUIRED`）**：范围图 E19–E20 记录当前 `Refactor/` 30 个实际 Compile 文件/1,115 个语法声明及若干生产消费者，并复核四功能集成 Tick 接缝。`Refactor` 包含正在被 Scene/Courier/PublicApi/Duel/Notoriety 使用的不同职责，不能按目录批量移动；B7 的逐文件目标/动态引用仍未判完。`IntegratedModuleHost.Tick` 每帧直调三模块，watched scope 无异常隔离，前一调用抛错会跳过后续调用；这是具名 host/R08 风险，不在无复现/批准策略时改为吞异常。20 桶其余成员语义仍未逐项完成，旧 E13 的 940/10,704/3,332 分母不适用于当前候选。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
