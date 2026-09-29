@@ -13703,7 +13703,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Action<WorldDiplomacyStorage, int> runArrivals = (store, day) =>
         {
             store.RelayArrivals = WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList(store.RelayArrivals);
-            WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(
+            WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(
                 store, day, id => id == "r1" ? round : null,
                 id => id,
                 id => !string.Equals(id, "bad", StringComparison.OrdinalIgnoreCase),
@@ -13771,7 +13771,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Action<WorldDiplomacyStorage, int> runSettlement = (store, day) =>
         {
             store.RelayArrivals = WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList(store.RelayArrivals);
-            WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(
+            WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(
                 store, day, id => id == "r1" ? settlementRound : null,
                 id => id,
                 id => !string.Equals(id, "bad", StringComparison.OrdinalIgnoreCase),
@@ -13813,7 +13813,7 @@ RunRepairCorrectionAndJobDecisionTests();
         for (int i = 0; i < 10000; i++) futureOnly.RelayArrivals.Add(new WorldDiplomacyRelayArrival
             { RoundId = "r1", ToKingdomId = "b", DueDay = 100 + i, Sequence = i });
         int futureResolves = 0;
-        WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(futureOnly, 10,
+        WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(futureOnly, 10,
             id => { futureResolves++; return round; }, id => id, id => true, id => false,
             (id, doc) => { }, r => { }, r => { }, (arrival, source, r, slot) => { }, m => { });
         Test.True(futureOnly.RelayArrivals.Count == 10000 && futureResolves == 0,
@@ -13822,7 +13822,7 @@ RunRepairCorrectionAndJobDecisionTests();
         reentrant.RelayArrivals.Add(new WorldDiplomacyRelayArrival
             { RoundId = "r1", ToKingdomId = "b", DueDay = 1, Sequence = 7 });
         int reentrantDispatches = 0;
-        WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(reentrant, 10,
+        WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(reentrant, 10,
             id => round, id => id, id => true, id => false,
             (id, doc) => { }, r => { }, r => { },
             (arrival, source, r, slot) =>
@@ -13833,13 +13833,12 @@ RunRepairCorrectionAndJobDecisionTests();
             }, m => { });
         Test.True(reentrantDispatches == 1 && reentrant.RelayArrivals.Count == 1,
             "arrival enqueued during dispatch waits for the next bounded batch");
-        string lifecycleSource = File.ReadAllText(FindRepositoryFile(
-            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
-        int relayStart = lifecycleSource.IndexOf("public static void ProcessDueRelayArrivals(", StringComparison.Ordinal);
-        int relayEnd = lifecycleSource.IndexOf("public static void NotifyExternalDiplomacyResolved(", relayStart, StringComparison.Ordinal);
-        string relayProcessor = lifecycleSource.Substring(relayStart, relayEnd - relayStart);
-        Test.True(relayProcessor.Contains("arrivals[0]?.DueDay > currentDay", StringComparison.Ordinal)
-            && !relayProcessor.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal),
+        string relayProgressSource = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs"));
+        int relayStart = relayProgressSource.IndexOf("internal static void ProcessDueRelayArrivals(", StringComparison.Ordinal);
+        Test.True(relayStart >= 0
+            && relayProgressSource.Substring(relayStart).Contains("arrivals[0]?.DueDay > currentDay", StringComparison.Ordinal)
+            && !relayProgressSource.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal),
             "daily relay consumption must use the sorted due prefix without sorting the whole queue");
 
         // DPL-060DI: external resolved-fact intake.
@@ -14439,8 +14438,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "stale-arrival detection must be composed inside the lifecycle rules");
         Test.True(rulesSource.Contains("EvaluateArrivalAction(", StringComparison.Ordinal),
             "arrival dispatch must be composed inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(", StringComparison.Ordinal),
-            "the host must route due relay arrivals through the lifecycle rules");
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(", StringComparison.Ordinal),
+            "the host must route due relay arrivals through the round-progress Application");
         Test.True(rulesSource.Contains("EvaluateRejectedGenerationAction(", StringComparison.Ordinal),
             "the host must route rejected-generation dispatch through the lifecycle rules");
         Test.True(rulesSource.Contains("NextTechnicalFailureCount(", StringComparison.Ordinal),
@@ -16467,13 +16466,14 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("ConsecutiveServiceFailures++", StringComparison.Ordinal),
             "job routing internals must not remain in the host");
 
-        // DPL-060DI: due relay arrival dispatch and external resolved-fact
-        // intake live inside the lifecycle rules; the host keeps Kingdom
-        // resolution, authority/player checks, court marking, job enqueue, and
-        // live document/fact construction as adapter ports.
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(", StringComparison.Ordinal)
+        // DPL-060DI: due relay arrival dispatch lives in the round-progress
+        // Application; external resolved-fact intake stays in the lifecycle
+        // rules. The host keeps Kingdom resolution, authority/player checks,
+        // court marking, job enqueue, and live document/fact construction as
+        // adapter ports.
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(", StringComparison.Ordinal),
-            "the host must route relay arrivals and external facts through the lifecycle rules");
+            "the host must route relay arrivals through the round-progress Application and external facts through the lifecycle rules");
         Test.True(behaviorSource.Contains("id => ResolveKingdom(id)?.StringId", StringComparison.Ordinal)
             && behaviorSource.Contains("MarkPlayerCourtReachedByRelay(ResolveKingdom(id), document)", StringComparison.Ordinal)
             && behaviorSource.Contains("resultSettlementSlotId: settlementSlotId", StringComparison.Ordinal)
@@ -16482,14 +16482,14 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("CanExternalDiplomacyFactJoinRound(candidate, initiator, target)", StringComparison.Ordinal),
             "the host must keep Kingdom resolution, enqueue, and fact construction as adapter ports");
         Test.True(rulesSource.Contains("Take(8)", StringComparison.Ordinal)
-            && rulesSource.Contains("storage.RelayArrivals.Remove(arrival)", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn", StringComparison.Ordinal)
-            && rulesSource.Contains("enqueueRelayTurn?.Invoke(arrival, source, round, null)", StringComparison.Ordinal)
+            && progressSource.Contains("storage.RelayArrivals.Remove(arrival)", StringComparison.Ordinal)
+            && progressSource.Contains("WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn", StringComparison.Ordinal)
+            && progressSource.Contains("enqueueRelayTurn?.Invoke(arrival, source, round, null)", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyIntentVocabulary.IsExternallyResolvedDiplomaticIntent", StringComparison.Ordinal)
             && rulesSource.Contains("MarkOpenBilateralOffersAccepted(storage?.ActiveRound", StringComparison.Ordinal)
             && rulesSource.Contains("AddOrMergeResultSettlementSlot(round, targetId, \"route\",", StringComparison.Ordinal)
             && rulesSource.Contains("external diplomacy fact kept outside unrelated active round", StringComparison.Ordinal),
-            "arrival dispatch and external-fact bookkeeping must live inside the lifecycle rules");
+            "arrival dispatch lives in the round-progress Application; external-fact bookkeeping stays in the lifecycle rules");
         Test.True(!behaviorSource.Contains("IsArrivalStale(", StringComparison.Ordinal)
             && !behaviorSource.Contains("EvaluateArrivalAction(", StringComparison.Ordinal)
             && !behaviorSource.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal)

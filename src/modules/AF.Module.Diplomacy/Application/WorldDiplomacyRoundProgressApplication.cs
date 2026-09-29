@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
@@ -185,6 +187,126 @@ internal static class WorldDiplomacyRoundProgressApplication
         }
         advanceRelay(round);
         document.RoundProgressHandled = true;
+    }
+
+    internal static void ProcessDueRelayArrivals(
+        WorldDiplomacyStorage storage,
+        int currentDay,
+        Func<string, WorldDiplomacyRound> resolveRound,
+        Func<string, string> resolveKingdomId,
+        Func<string, bool> hasAuthority,
+        Func<string, bool> isPlayerKingdom,
+        Action<string, WorldDiplomacyDocument> markPlayerCourtReached,
+        Action<WorldDiplomacyRound> scheduleSettlement,
+        Action<WorldDiplomacyRound> advanceRelay,
+        Action<WorldDiplomacyRelayArrival, WorldDiplomacyDocument, WorldDiplomacyRound, string> enqueueRelayTurn,
+        Action<string> log)
+    {
+        // The persisted queue is sorted on load and at both insertion sites. Snapshot
+        // only the due prefix so a callback that enqueues another arrival cannot make
+        // it part of this daily batch.
+        List<WorldDiplomacyRelayArrival> arrivals = storage?.RelayArrivals;
+        if (arrivals == null || arrivals.Count == 0 || arrivals[0]?.DueDay > currentDay) return;
+        List<WorldDiplomacyRelayArrival> due = new List<WorldDiplomacyRelayArrival>(Math.Min(8, arrivals.Count));
+        for (int index = 0; index < arrivals.Count && due.Count < 8; index++)
+        {
+            WorldDiplomacyRelayArrival candidate = arrivals[index];
+            if (candidate == null) continue;
+            if (candidate.DueDay > currentDay) break;
+            due.Add(candidate);
+        }
+        foreach (WorldDiplomacyRelayArrival arrival in due)
+        {
+            storage.RelayArrivals.Remove(arrival);
+            WorldDiplomacyRound round = resolveRound?.Invoke(arrival.RoundId);
+            if (round == null) continue;
+            if (WorldDiplomacyRoundLifecycleRules.IsArrivalStale(
+                WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State),
+                arrival.Sequence, round.RelaySequence)) continue;
+            if (round.ResultSettlementPending)
+            {
+                WorldDiplomacyResultSettlementSlot settlementSlot = (round.ResultSettlementSlots ?? new List<WorldDiplomacyResultSettlementSlot>())
+                    .FirstOrDefault(x => x != null
+                        && string.Equals(x.SlotId, arrival.ResultSettlementSlotId, StringComparison.OrdinalIgnoreCase)
+                        && string.Equals(x.KingdomId, arrival.ToKingdomId, StringComparison.OrdinalIgnoreCase));
+                string settlementReceiverId = resolveKingdomId?.Invoke(arrival.ToKingdomId);
+                WorldDiplomacyRelayArrivalAction settlementAction =
+                    WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(
+                        new WorldDiplomacyArrivalEvaluationInput
+                        {
+                            SettlementPending = true,
+                            SettlementSlotFound = settlementSlot != null,
+                            CurrentSlotMatches = settlementSlot != null && string.Equals(
+                                round.ResultSettlementCurrentSlotId, arrival.ResultSettlementSlotId,
+                                StringComparison.OrdinalIgnoreCase),
+                            ReceiverEligible = settlementReceiverId != null
+                                && hasAuthority?.Invoke(settlementReceiverId) == true
+                        });
+                if (settlementAction == WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn)
+                {
+                    round.RelayWaiting = false;
+                    scheduleSettlement?.Invoke(round);
+                    continue;
+                }
+                if (settlementAction == WorldDiplomacyRelayArrivalAction.SkipSettlementSlotAndReschedule)
+                {
+                    WorldDiplomacyRoundLifecycleRules.SkipResultSettlementSlot(round, settlementSlot.SlotId, settlementSlot.KingdomId, "receiver_ineligible", storage?.DiplomaticThreats, currentDay, log);
+                    scheduleSettlement?.Invoke(round);
+                    continue;
+                }
+                List<WorldDiplomacyDocument> settlementRoundDocuments = WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(storage.Documents
+                        .Where(x => x != null && x.IsReadyForPublication
+                            && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)))
+                    .ToList();
+                foreach (WorldDiplomacyDocument known in settlementRoundDocuments)
+                {
+                    WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(storage?.KingdomKnowledge, settlementReceiverId, known.DocumentId, currentDay);
+                    WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(storage?.NobleKnowledge, settlementReceiverId, known.DocumentId, currentDay);
+                    markPlayerCourtReached?.Invoke(settlementReceiverId, known);
+                }
+                settlementSlot.Status = "inflight";
+                WorldDiplomacyDocument settlementSource = settlementRoundDocuments.FirstOrDefault();
+                enqueueRelayTurn?.Invoke(arrival, settlementSource, round, settlementSlot.SlotId);
+                continue;
+            }
+            int index = (round.RelayRouteKingdomIds ?? new List<string>()).FindIndex(x => string.Equals(x, arrival.ToKingdomId, StringComparison.OrdinalIgnoreCase));
+            string receiverId = resolveKingdomId?.Invoke(arrival.ToKingdomId);
+            WorldDiplomacyRelayArrivalAction relayAction =
+                WorldDiplomacyRoundLifecycleRules.EvaluateArrivalAction(
+                    new WorldDiplomacyArrivalEvaluationInput
+                    {
+                        RouteIndexFound = index >= 0,
+                        ReceiverEligible = receiverId != null
+                            && hasAuthority?.Invoke(receiverId) == true,
+                        ReceiverIsPlayer = receiverId != null && isPlayerKingdom?.Invoke(receiverId) == true
+                    });
+            if (relayAction == WorldDiplomacyRelayArrivalAction.AdvanceRelay)
+            {
+                round.RelayWaiting = false;
+                advanceRelay?.Invoke(round);
+                continue;
+            }
+            round.RelayCursor = index;
+            List<WorldDiplomacyDocument> relayRoundDocuments = WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(storage.Documents
+                    .Where(x => x != null && x.IsReadyForPublication
+                        && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, round.RoundId)))
+                .ToList();
+            foreach (WorldDiplomacyDocument document in relayRoundDocuments)
+            {
+                WorldDiplomacyDocumentFactRules.RecordKingdomKnowledge(storage?.KingdomKnowledge, receiverId, document.DocumentId, currentDay);
+                WorldDiplomacyDocumentFactRules.RecordNobleKnowledge(storage?.NobleKnowledge, receiverId, document.DocumentId, currentDay);
+                markPlayerCourtReached?.Invoke(receiverId, document);
+            }
+            if (relayAction == WorldDiplomacyRelayArrivalAction.AdvanceRelayAfterPlayerOpportunity)
+            {
+                WorldDiplomacyRoundLifecycleRules.RecordPlayerOpportunity(round, receiverId, storage?.PlayerOpportunities, storage?.Documents, currentDay);
+                round.RelayWaiting = false;
+                advanceRelay?.Invoke(round);
+                continue;
+            }
+            WorldDiplomacyDocument source = relayRoundDocuments.FirstOrDefault();
+            enqueueRelayTurn?.Invoke(arrival, source, round, null);
+        }
     }
 
 }

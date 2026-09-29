@@ -2003,7 +2003,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 		private void ProcessRelayArrivals()
 	{
-		WorldDiplomacyRoundLifecycleRules.ProcessDueRelayArrivals(
+		WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(
 			_storage, CurrentDay(), ResolveRound,
 			id => ResolveKingdom(id)?.StringId,
 			id => ResolveKingdom(id) != null && HasIndependentWorldDiplomacyAuthority(ResolveKingdom(id)),

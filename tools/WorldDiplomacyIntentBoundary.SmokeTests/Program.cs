@@ -469,7 +469,7 @@ internal static class Program
                       .Contains("discarded completed generation from stale diplomatic threat stage", StringComparison.Ordinal),
             "queued and in-flight generated declarations must be rebuilt when the threat stage changes");
         Test.True(File.ReadAllText(
-                      FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                      FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyJobPreparationApplication.cs")),
                       Encoding.UTF8)
                   .Contains("SelectNoncompliedThreatStageDocumentIds(storage?.DiplomaticThreats, document.AuthorKingdomId)", StringComparison.Ordinal),
             "a queued player declaration must still be judged against the issuer obligation current at publication");
@@ -754,8 +754,8 @@ internal static class Program
             "an already-known declaration must still complete its formal player-court receipt");
 		string relayArrivals = ExtractMethod(
 			File.ReadAllText(FindRepositoryFile(Path.Combine(
-				"Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")), Encoding.UTF8),
-			"public static void ProcessDueRelayArrivals(");
+				"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")), Encoding.UTF8),
+			"internal static void ProcessDueRelayArrivals(");
 		Test.True(CountOccurrences(relayArrivals, "markPlayerCourtReached?.Invoke") == 2,
 			"both ordinary and result-settlement relays must mark formal delivery when they reach the player court");
 		string receiptRecovery = ExtractMethod(source, "private void RecoverPlayerCourtReceiptsFromKnowledge(");
@@ -2046,8 +2046,12 @@ internal static class Program
             source,
             "private void EnqueueGenerationJob(",
             "private bool EnsureGenerationJobHasKingdomStrategicProfile(");
-        string prepareGeneration = ExtractMethod(lifecycleRulesSource, "public static void PrepareGenerationJob(");
-        Test.True(enqueueGeneration.Contains("WorldDiplomacyRoundLifecycleRules.PrepareGenerationJob(", StringComparison.Ordinal)
+        string prepareGeneration = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile(Path.Combine(
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyGenerationTaskApplication.cs")),
+                Encoding.UTF8),
+            "internal static void PrepareGenerationJob(");
+        Test.True(enqueueGeneration.Contains("WorldDiplomacyGenerationTaskApplication.PrepareGenerationJob(", StringComparison.Ordinal)
                   && enqueueGeneration.Contains("BuildGenerationLegalActionSignature,", StringComparison.Ordinal)
                   && enqueueGeneration.Contains("j => CaptureCanonicalHistoryForJob(j, syncSources: false)", StringComparison.Ordinal)
                   && enqueueGeneration.Contains("EnqueueJob,", StringComparison.Ordinal),
@@ -2147,7 +2151,11 @@ internal static class Program
                       StringComparison.Ordinal),
             "a stale completion must never fall through into generated-document commit");
 
-        string rebuildPending = ExtractMethod(lifecycleRulesSource, "public static bool RebuildPendingJob(");
+        string rebuildPending = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile(Path.Combine(
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyJobPreparationApplication.cs")),
+                Encoding.UTF8),
+            "public static bool RebuildPendingJob(");
         int rebuiltPrompt = rebuildPending.IndexOf("job.UserPrompt = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(dynamicPrompt);", StringComparison.Ordinal);
         int rebuiltSignature = rebuildPending.IndexOf(
             "job.PresentedLegalActionSignature = buildLegalActionSignature?.Invoke(job);",
@@ -2791,9 +2799,9 @@ internal static class Program
             "unified rejection must also abandon safely if the author disappears before repair handling");
         string abandonGeneration = ExtractMethod(
             File.ReadAllText(
-                FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+                FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyGenerationTaskApplication.cs")),
                 Encoding.UTF8),
-            "public static void AbandonRejectedGeneration(");
+            "internal static void AbandonRejectedGeneration(");
 		Test.True(abandonGeneration.Contains("round.RelayWaiting = false;", StringComparison.Ordinal)
 				  && abandonGeneration.Contains("advanceRelay?.Invoke(round);", StringComparison.Ordinal)
 				  && abandonGeneration.Contains("maxTechnicalFailures", StringComparison.Ordinal)
@@ -2804,15 +2812,15 @@ internal static class Program
 			"generated-draft abandonment must immediately advance a relay, break repeated technical failures, or close an unpublished root round");
 		string relayScheduling = ExtractMethod(
 			File.ReadAllText(
-				FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
+				FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyTurnSchedulingApplication.cs")),
 				Encoding.UTF8),
-			"public static void ScheduleNextRelayHop(");
+			"internal static void ScheduleNextRelayHop(");
 		string relaySchedulingAdapter = ExtractMethod(
 			source,
 			"private void ScheduleNextRelayHop(");
 		Test.True(relayScheduling.Contains("ScheduleImmediately = scheduleImmediately", StringComparison.Ordinal)
 			&& relayScheduling.Contains("CurrentDay = currentDay", StringComparison.Ordinal)
-			&& relaySchedulingAdapter.Contains("WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(", StringComparison.Ordinal)
+			&& relaySchedulingAdapter.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(", StringComparison.Ordinal)
 			&& relaySchedulingAdapter.Contains("CurrentDay()", StringComparison.Ordinal),
 			"a technical generation rejection must be able to schedule the next relay speaker on the current day");
 		Test.True(roundRecords.Contains("[JsonProperty(\"consecutiveTechnicalGenerationFailures\")]", StringComparison.Ordinal),
