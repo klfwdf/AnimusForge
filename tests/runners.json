@@ -18,6 +18,12 @@
   "tests/AF.GameAdapter.Bannerlord/CampaignCompositionTests/run.py": {
    "expect": "PASS"
   },
+  "tests/AF.GameAdapter.Bannerlord/CampaignTickRecoveryTests/run.py": {
+   "args": [
+    "--dotnet",
+    "{DOTNET8}"
+   ]
+  },
   "tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_commit.py": {
    "expect": "PREEXISTING_FAIL"
   },
