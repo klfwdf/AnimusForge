@@ -32,12 +32,12 @@ internal static class CourtResponseReplay
                     storage, current, participant, "npc", playerDeclaration,
                     () => false, () => true, () => false,
                     () => (false, (string)null),
-                    (r, receiver, d) => { trace.Add("enqueue"); return "player"; },
+                    (receiver, target, d, rId, relayTurn) => { trace.Add("enqueue:" + target); return target; },
                     message => trace.Add("log:" + message), 4);
             },
             () => 10, message => trace.Add("log:" + message));
         Test.True(trace.SequenceEqual(new[]
-            { "player-affiliation", "authority", "round:r", "display", "mandatory", "enqueue",
+            { "player-affiliation", "authority", "round:r", "display", "mandatory", "enqueue:player",
               "log:mandatory response queued round=r author=npc target=player source=player-d",
               "log:court received document=player-d receiver=npc direct=True day=10" }),
             "formal player declaration shows delivery before one source-bound priority response is enqueued");
@@ -74,7 +74,7 @@ internal static class CourtResponseReplay
             storage, round, playerParticipant, "player", playerDeclaration,
             () => true, () => true, () => false,
             () => { effects++; return (false, (string)null); },
-            (_, ___, __) => { effects++; return "npc"; }, _ => effects++, 4);
+            (_, __, ___, ____, _____) => { effects++; return "npc"; }, _ => effects++, 4);
         Test.True(effects == 0 && !playerParticipant.MandatoryReplyPending,
             "AI cannot author or enqueue a mandatory reply for the player ruler");
 
@@ -85,7 +85,7 @@ internal static class CourtResponseReplay
             storage, round, blockedParticipant, "npc", playerDeclaration,
             () => false, () => true, () => false,
             () => { blockedTrace.Add("author-check"); return (true, "no authority"); },
-            (_, ___, __) => { blockedTrace.Add("enqueue"); return "player"; },
+            (_, __, ___, ____, _____) => { blockedTrace.Add("enqueue"); return "player"; },
             message => blockedTrace.Add(message), 4);
         Test.True(!blockedParticipant.MandatoryReplyPending && blockedParticipant.State == "observer"
                 && blockedTrace.Count == 2 && blockedTrace[0] == "author-check"
