@@ -46,6 +46,6 @@ public sealed partial class WorldDiplomacyBehavior
         public void ResetDailyGenerationBudget() => WorldDiplomacyRoundLifecycleRules.ResetDailyGenerationBudget(
             ref _owner._aiDocumentsStartedDay, ref _owner._aiDocumentsStartedToday, CurrentDay);
         public void DecayWarPressure() => WorldDiplomacyWarPressureRules.DecayWarPressure(_owner._storage?.WarPressure, CurrentDay);
-        public void RetryDeferredRoundProgress() => WorldDiplomacyRoundLifecycleRules.RetryDeferredRoundProgress(_owner._storage, _owner.HandleRoundDocumentProcessed, Log);
+        public void RetryDeferredRoundProgress() => WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(_owner._storage, _owner.HandleRoundDocumentProcessed, Log);
     }
 }

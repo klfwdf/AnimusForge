@@ -983,72 +983,6 @@ public static class WorldDiplomacyRoundLifecycleRules
         WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(documentIdSet, documentIds, normalizedId);
     }
 
-    public static void RetryDeferredCanonicalHistoryEntries(
-        Queue<string> documentIds,
-        HashSet<string> documentIdSet,
-        Dictionary<string, int> retryAttempts,
-        Dictionary<string, int> retryAfterHours,
-        List<WorldDiplomacyThreat> threats,
-        int currentHour,
-        Func<string, WorldDiplomacyDocument> resolveDocument,
-        Action<WorldDiplomacyDocument> appendDocumentEvents,
-        Action<WorldDiplomacyThreat> appendThreatHistoryResult,
-        Action<WorldDiplomacyThreat> appendThreatDomesticPenaltyResult,
-        Action<WorldDiplomacyThreat> appendThreatIssuerRewardResult,
-        Action<WorldDiplomacyThreat, WorldDiplomacyThreatNonComplianceEvent> appendNonComplianceResult,
-        Action<string> log,
-        int maxAttempts = 16)
-    {
-        if (documentIds == null || documentIdSet == null) return;
-        int attempts = WorldDiplomacyRoundLifecycleRules.ComputeDeferredRetryBatchSize(maxAttempts, documentIds.Count);
-        for (int i = 0; i < attempts; i++)
-        {
-            string documentId = documentIds.Dequeue();
-            documentIdSet.Remove(documentId);
-            WorldDiplomacyDocument document = resolveDocument?.Invoke(documentId);
-            if (!WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry(document))
-            {
-                retryAttempts?.Remove(documentId);
-                retryAfterHours?.Remove(documentId);
-                continue;
-            }
-            if (retryAfterHours != null
-                && retryAfterHours.TryGetValue(documentId, out int retryAfterHour)
-                && !WorldDiplomacyRoundLifecycleRules.IsDeferredRetryDue(currentHour, retryAfterHour))
-            {
-                WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(documentIdSet, documentIds, documentId);
-                continue;
-            }
-            try
-            {
-                appendDocumentEvents?.Invoke(document);
-                WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(document, threats,
-                    appendThreatHistoryResult, appendThreatDomesticPenaltyResult, appendThreatIssuerRewardResult);
-                WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
-                    threats, appendNonComplianceResult);
-            }
-            catch (Exception ex)
-            {
-                WorldDiplomacyRoundLifecycleRules.ScheduleDeferredCanonicalHistoryRetry(
-                    retryAttempts, retryAfterHours, documentIdSet, documentIds, documentId, currentHour);
-                log?.Invoke("deferred canonical history retry failed document=" + documentId + " error=" + ex.Message);
-                continue;
-            }
-            if (WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry(document))
-            {
-                WorldDiplomacyRoundLifecycleRules.ScheduleDeferredCanonicalHistoryRetry(
-                    retryAttempts, retryAfterHours, documentIdSet, documentIds, documentId, currentHour);
-            }
-            else
-            {
-                retryAttempts?.Remove(documentId);
-                retryAfterHours?.Remove(documentId);
-            }
-        }
-    }
-
-
-
     public static bool HasStaleDiplomaticActionPresentation(
         WorldDiplomacyJob job, Func<WorldDiplomacyJob, string> buildLegalActionSignature)
     {
@@ -4430,25 +4364,6 @@ public static class WorldDiplomacyRoundLifecycleRules
 		log?.Invoke("round circuit breaker tripped round=" + round.RoundId
 			+ " documents=" + round.AutomaticDocumentsStarted.ToString(CultureInfo.InvariantCulture)
 			+ " reason=" + (reason ?? ""));
-	}
-
-	public static void RetryDeferredRoundProgress(WorldDiplomacyStorage storage, Action<WorldDiplomacyDocument> processDocument, Action<string> log)
-	{
-		WorldDiplomacyRound round = storage?.ActiveRound;
-		if (round == null || !IsActiveRoundState(round.State)) return;
-		foreach (WorldDiplomacyDocument document in OrderDocumentsChronologically((storage.Documents ?? new List<WorldDiplomacyDocument>())
-			.Where(x => x != null && x.IsReadyForPublication && !x.RoundProgressHandled
-				&& IsRecordInRound(x.RoundId, round.RoundId))).Take(8))
-		{
-			try
-			{
-				processDocument(document);
-			}
-			catch (Exception ex)
-			{
-				log?.Invoke("deferred round progress retry failed document=" + document.DocumentId + " error=" + ex.Message);
-			}
-		}
 	}
 
 	public static void RecordPlayerOpportunity(WorldDiplomacyRound round, string playerKingdomId, List<WorldDiplomacyPlayerOpportunity> opportunities, List<WorldDiplomacyDocument> documents, int currentDay)
