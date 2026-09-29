@@ -33,6 +33,12 @@ def read(path): return (ROOT / path).read_text(encoding='utf-8-sig')
 def old(path): return subprocess.check_output(['git', 'show', f'{BASELINE}:{path}'], cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 def compact(s): return re.sub(r'\s+', '', s)
 
+def with_reviewed_civil_war(method):
+    """Apply the one reviewed post-extraction registration to the frozen oracle."""
+    anchor = 'campaignGameStarter.AddBehavior(new MyBehavior());'
+    assert method.count(anchor) == 1, 'Frozen Campaign oracle lost the MyBehavior anchor'
+    return method.replace(anchor, anchor + '\n            campaignGameStarter.AddBehavior(new CivilWarCampaignBehavior());', 1)
+
 def restore_submodule(current):
     """Verify the live engine entry delegates once without freezing unrelated lifecycle work."""
     prior = old('SubModule.cs')
@@ -50,7 +56,7 @@ def verify_source():
     for name in METHODS:
         sig = 'private static void ' + name + '('
         assert compact(extract(models,sig)) == compact(extract(prior,sig)), 'Changed model wrapper behavior: '+name
-    init = extract(prior, INIT); original_body = init[init.index('{'):]
+    init = with_reviewed_civil_war(extract(prior, INIT)); original_body = init[init.index('{'):]
     current = extract(campaign,'internal static void Register(')
     body = current[current.index('{'):].replace('CampaignModelComposition.Register(campaignGameStarter);',
             '\n'.join(name+'(campaignGameStarter);' for name in METHODS))
@@ -98,11 +104,14 @@ def main():
     prior=old('SubModule.cs'); current_submodule=read('SubModule.cs')
     names=re.findall(r'AddBehavior\(new (\w+)\(\)\)',extract(prior,INIT))
     assert len(names)==36 and len(set(names))==36
+    names.insert(names.index('MyBehavior') + 1, 'CivilWarCampaignBehavior')
+    assert len(names)==37 and len(set(names))==37
     usings='using System; using AnimusForge; using AnimusForge.PolicyEffects; using AnimusForge.Refactor.Modules; using TaleWorlds.Core; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.ComponentInterfaces; using TaleWorlds.CampaignSystem.GameComponents; using AFWarStatsTerminal.Behaviors;\n'
     def build_hosts(current_text):
         hosts=usings
         for kind,text in [('Current',current_text),('Original',prior)]:
-            hosts+='internal class '+kind+'SubModule : StubSubModule {\n'+extract(text,INIT)+'\n'
+            init=extract(text,INIT)
+            hosts+='internal class '+kind+'SubModule : StubSubModule {\n'+(with_reviewed_civil_war(init) if kind=='Original' else init)+'\n'
             if kind=='Original': hosts+='\n'.join(extract(text,'private static void '+n+'(') for n in METHODS)
             hosts+='\n}\n'
         return hosts+'internal static class Expected { internal static readonly string[] Behaviors = new[] {'+','.join('"'+n+'"' for n in names)+'}; }\n'
@@ -114,6 +123,12 @@ def main():
         behaviors+='namespace '+ns+' { internal class '+n+' : TaleWorlds.CampaignSystem.CampaignBehaviorBase { } }\n'
     (out/'Behaviors.cs').write_text(behaviors,encoding='utf-8')
     api_stubs=read('tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs').split('// API tests cover assembly-directory state only;')[0]
+    # This suite creates a real constructor-probed Courier behavior. The API suite's
+    # newer static Courier admission double would duplicate that type and pull in
+    # CoreDialogueOperation, which Campaign composition does not exercise.
+    courier_start=api_stubs.index('// Directory/Native/Scene suites do not pretend to exercise the Courier transport owner.')
+    runtime_start=api_stubs.index('namespace AnimusForge.Refactor.Runtime',courier_start)
+    api_stubs=api_stubs[:courier_start]+api_stubs[runtime_start:]
     (out/'ApiHostStubs.cs').write_text(api_stubs,encoding='utf-8')
     common=[HERE/'HostStubs.cs',HERE/'Program.cs',current_hosts,out/'Behaviors.cs',out/'ApiHostStubs.cs']
     sources=[ROOT/s for s in SOURCES]

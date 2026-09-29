@@ -58,14 +58,14 @@ internal static class Program
         Check(HostProbe.Events.Count == 0, "null/non-Campaign no side effects");
         Check(AfApi.GetSnapshot().State == AfFrameworkState.NotInitialized, "registration does not initialize catalog or claim save ready");
         var first = new CampaignGameStarter(); host.Run(first);
-        Check(first.Behaviors.Select(x=>x.GetType().Name).SequenceEqual(Expected.Behaviors), "all 36 behaviors in pinned order");
+        Check(first.Behaviors.Select(x=>x.GetType().Name).SequenceEqual(Expected.Behaviors), "all 37 behaviors in pinned order");
         Check(first.ModelList.Count==4 && HostProbe.Events.Take(8).All(x=>!x.StartsWith("construct:")), "4 models before behavior constructors");
         var second = new CampaignGameStarter(); host.Run(second);
         Check(first.Behaviors.Zip(second.Behaviors).All(pair=>!ReferenceEquals(pair.First,pair.Second)), "separate Campaign owners");
         Check(first.ModelList.Zip(second.ModelList).All(pair=>!ReferenceEquals(pair.First,pair.Second)), "separate Campaign wrappers");
         host.Run(first);
-        Check(first.Behaviors.Count==72 && first.ModelList.Count==8, "no invented callback deduplication");
-        Check(first.Behaviors.Take(36).Zip(first.Behaviors.Skip(36)).All(pair=>!ReferenceEquals(pair.First,pair.Second)), "repeated callback never caches behavior");
+        Check(first.Behaviors.Count==74 && first.ModelList.Count==8, "no invented callback deduplication");
+        Check(first.Behaviors.Take(37).Zip(first.Behaviors.Skip(37)).All(pair=>!ReferenceEquals(pair.First,pair.Second)), "repeated callback never caches behavior");
         var custom = new CampaignGameStarter(); var last = SeedCustomModels(custom); host.Run(custom);
         Check(custom.ModelList.Skip(12).Cast<IWrapped>().Select(x=>x.Inner).SequenceEqual(last), "last non-AF inners retained by reference");
         Compare("custom/AF-wrapper exclusion parity", s=>SeedCustomModels(s));
@@ -73,7 +73,7 @@ internal static class Program
         for(int i=0;i<4;i++) { int slot=i; Compare("model Add failure "+i, s=>s.FailModel=slot); }
         foreach(string wrapper in new[]{"CourierFoodConsumptionModel","CourierMobilePartyAIModel","AnimusForgeSettlementAccessModel","AnimusForgeSettlementLoyaltyModel"})
             Compare("wrapper constructor failure "+wrapper, s=>HostProbe.FailWrapper=wrapper);
-        foreach(int slot in new[]{0,1,3,20,35})
+        foreach(int slot in new[]{0,1,2,3,20,35,36})
         {
             Compare("behavior constructor failure "+slot, s=>HostProbe.FailConstructor=slot);
             Compare("behavior Add failure "+slot, s=>s.FailBehavior=slot);
