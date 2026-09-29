@@ -2004,22 +2004,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			(id, document) => MarkPlayerCourtReachedByRelay(ResolveKingdom(id), document),
 			ScheduleNextResultSettlementTurn,
 			round => AdvanceRelay(round),
-			(arrival, source, round, settlementSlotId) =>
-			{
-				if (settlementSlotId != null)
-				{
-					EnqueueGenerationJob(ResolveKingdom(arrival.ToKingdomId), ResolveKingdom(arrival.FromKingdomId), null, isResponse: true,
-						sourceDocument: source, priority: 90, roundId: round.RoundId, allowUntargeted: true,
-						isRelayTurn: true, previousKingdomId: arrival.FromKingdomId, scheduledDay: arrival.DueDay,
-						resultSettlementSlotId: settlementSlotId);
-				}
-				else
-				{
-					EnqueueGenerationJob(ResolveKingdom(arrival.ToKingdomId), ResolveKingdom(arrival.FromKingdomId) ?? ResolveKingdom(round.InitiatorKingdomId), null, isResponse: true,
-						sourceDocument: source, priority: 75, roundId: round.RoundId, allowUntargeted: true,
-						isRelayTurn: true, previousKingdomId: arrival.FromKingdomId, scheduledDay: arrival.DueDay);
-				}
-			},
+			(authorId, targetId, source, roundId, previousKingdomId, scheduledDay, priority, settlementSlotId) =>
+				EnqueueGenerationJob(ResolveKingdom(authorId), ResolveKingdom(targetId), null, isResponse: true,
+					sourceDocument: source, priority: priority, roundId: roundId, allowUntargeted: true,
+					isRelayTurn: true, previousKingdomId: previousKingdomId, scheduledDay: scheduledDay,
+					resultSettlementSlotId: settlementSlotId),
 			Log);
 	}
 	private void MarkPlayerCourtReachedByRelay(Kingdom receiver, WorldDiplomacyDocument document)

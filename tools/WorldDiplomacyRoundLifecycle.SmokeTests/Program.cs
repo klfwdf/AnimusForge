@@ -13705,6 +13705,8 @@ RunRepairCorrectionAndJobDecisionTests();
         });
         int enqueues = 0, advances = 0, settlementSchedules = 0, courtMarks = 0;
         string lastSlotArg = "unset";
+        int lastPriority = -1;
+        string lastEnqueueTarget = null;
         Action<WorldDiplomacyStorage, int> runArrivals = (store, day) =>
         {
             store.RelayArrivals = WorldDiplomacyRoundLifecycleRules.NormalizeRelayArrivalList(store.RelayArrivals);
@@ -13714,7 +13716,9 @@ RunRepairCorrectionAndJobDecisionTests();
                 id => !string.Equals(id, "bad", StringComparison.OrdinalIgnoreCase),
                 id => string.Equals(id, "c", StringComparison.OrdinalIgnoreCase),
                 (id, doc) => courtMarks++, r => settlementSchedules++, r => advances++,
-                (arrival, source, r, slotId) => { enqueues++; lastSlotArg = slotId ?? "null"; }, m => { });
+                (authorId, targetId, source, roundId, prevId, dueDay, priority, slotId) =>
+                { enqueues++; lastSlotArg = slotId ?? "null"; lastPriority = priority; lastEnqueueTarget = targetId; },
+                m => { });
         };
 
         WorldDiplomacyRelayArrival late = new WorldDiplomacyRelayArrival
@@ -13738,7 +13742,8 @@ RunRepairCorrectionAndJobDecisionTests();
         storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
         { RoundId = "r1", Sequence = 7, DueDay = 6, FromKingdomId = "a", ToKingdomId = "b" });
         runArrivals(storage, 10);
-        Test.True(enqueues == 1 && lastSlotArg == "null" && advances == 0 && settlementSchedules == 0,
+        Test.True(enqueues == 1 && lastSlotArg == "null" && advances == 0 && settlementSchedules == 0
+                && lastPriority == 75 && lastEnqueueTarget == "a",
             "an eligible NPC arrival must enqueue a relay turn with no settlement slot");
         Test.True(courtMarks == 1 && storage.KingdomKnowledge.Any(x => x != null
                 && x.KingdomId == "b" && x.DocumentIds.Contains("d1")),
@@ -13782,7 +13787,9 @@ RunRepairCorrectionAndJobDecisionTests();
                 id => !string.Equals(id, "bad", StringComparison.OrdinalIgnoreCase),
                 id => false,
                 (id, doc) => courtMarks++, r => settlementSchedules++, r => advances++,
-                (arrival, source, r, slotId) => { enqueues++; lastSlotArg = slotId ?? "null"; }, m => { });
+                (authorId, targetId, source, roundId, prevId, dueDay, priority, slotId) =>
+                { enqueues++; lastSlotArg = slotId ?? "null"; lastPriority = priority; lastEnqueueTarget = targetId; },
+                m => { });
         };
         storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival
         { RoundId = "r1", Sequence = 9, DueDay = 6, FromKingdomId = "a", ToKingdomId = "b", ResultSettlementSlotId = "sX" });
@@ -13801,7 +13808,8 @@ RunRepairCorrectionAndJobDecisionTests();
         { RoundId = "r1", Sequence = 9, DueDay = 6, FromKingdomId = "a", ToKingdomId = "b", ResultSettlementSlotId = "s1" });
         runSettlement(storage, 10);
         Test.True(enqueues == 2 && lastSlotArg == "s1" && settlementSchedules == 2
-                && settlementRound.ResultSettlementSlots[0].Status == "inflight",
+                && settlementRound.ResultSettlementSlots[0].Status == "inflight"
+                && lastPriority == 90 && lastEnqueueTarget == "a",
             "a valid settlement arrival must mark the slot inflight and enqueue against it");
 
         // Due processing is capped at eight arrivals per pass.
@@ -13820,7 +13828,7 @@ RunRepairCorrectionAndJobDecisionTests();
         int futureResolves = 0;
         WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(futureOnly, 10,
             id => { futureResolves++; return round; }, id => id, id => true, id => false,
-            (id, doc) => { }, r => { }, r => { }, (arrival, source, r, slot) => { }, m => { });
+            (id, doc) => { }, r => { }, r => { }, (a, t, s, rId, p, d, prio, slot) => { }, m => { });
         Test.True(futureOnly.RelayArrivals.Count == 10000 && futureResolves == 0,
             "future-only relay queue must return without resolving rounds or consuming arrivals");
         var reentrant = new WorldDiplomacyStorage();
@@ -13830,7 +13838,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(reentrant, 10,
             id => round, id => id, id => true, id => false,
             (id, doc) => { }, r => { }, r => { },
-            (arrival, source, r, slot) =>
+            (a, t, s, rId, p, d, prio, slot) =>
             {
                 reentrantDispatches++;
                 reentrant.RelayArrivals.Add(new WorldDiplomacyRelayArrival
@@ -16496,7 +16504,8 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(progressSource.Contains("Take(8)", StringComparison.Ordinal)
             && progressSource.Contains("storage.RelayArrivals.Remove(arrival)", StringComparison.Ordinal)
             && progressSource.Contains("WorldDiplomacyRelayArrivalAction.RescheduleSettlementTurn", StringComparison.Ordinal)
-            && progressSource.Contains("enqueueRelayTurn?.Invoke(arrival, source, round, null)", StringComparison.Ordinal)
+            && progressSource.Contains("enqueueRelayTurn?.Invoke(arrival.ToKingdomId,", StringComparison.Ordinal)
+            && progressSource.Contains("resolveKingdomId?.Invoke(arrival.FromKingdomId) ?? resolveKingdomId?.Invoke(round.InitiatorKingdomId)", StringComparison.Ordinal)
             && documentPublication.Contains("WorldDiplomacyIntentVocabulary.IsExternallyResolvedDiplomaticIntent", StringComparison.Ordinal)
             && documentPublication.Contains("MarkOpenBilateralOffersAccepted(storage?.ActiveRound", StringComparison.Ordinal)
             && documentPublication.Contains("AddOrMergeResultSettlementSlot(round, targetId, \"route\",", StringComparison.Ordinal)

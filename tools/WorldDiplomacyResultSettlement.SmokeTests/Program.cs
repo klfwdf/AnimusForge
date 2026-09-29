@@ -742,7 +742,8 @@ internal static class Program
             "private void NotifyExternalDiplomacyResolvedInternal(");
         Test.True(arrivals.Contains("if (round.ResultSettlementPending)", StringComparison.Ordinal)
                   && arrivals.Contains("arrival.ResultSettlementSlotId", StringComparison.Ordinal)
-                  && arrivals.Contains("enqueueRelayTurn?.Invoke(arrival, settlementSource, round, settlementSlot.SlotId)", StringComparison.Ordinal)
+                  && arrivals.Contains("enqueueRelayTurn?.Invoke(arrival.ToKingdomId,", StringComparison.Ordinal)
+                  && arrivals.Contains("90, settlementSlot.SlotId)", StringComparison.Ordinal)
                   && arrivalsAdapter.Contains("resultSettlementSlotId: settlementSlotId", StringComparison.Ordinal),
             "settlement relay arrival must claim the matching slot and pass its id into generation");
 
