@@ -45,6 +45,8 @@
 
 **A2 兼容层定向复核（仍 `REVIEW_REQUIRED`）**：[范围图 E39](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)旧候选仅列 `BannerlordApiCompat`、`PlayerEncounterCompat`、`InteractionComponentSafePatch`；当前 Compile 另有 Mission view 异常守卫和 Coup 私有遭遇安全门。版本签名适配、Encounter 战后资格、Mission view NRE 防护并非同一责任，Coup 缺字段时 fail-closed 也不能按根级读适配器改写。R08 记录贸易/raid/SpawnTroop 反射在相应请求中重新查找签名，频率尚未量测。未覆盖全部版本分支/Harmony/启动 audit，亦未重跑双 API 产品构建或游戏；不签兼容桶，不因已审 Bootstrap/Host 提前启动 B。
 
+**A2/R05 默认入站信失败边界已合成复现（仍 `REVIEW_REQUIRED`）**：[范围图 E40](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)以提取的当前 `DeliverInboundLetterToPlayer` 和旧 void `AppendExternalDialogueHistory` 在桩中验证：Memory 拒收、抛异常或 owner 缺失时，交付标志、信件物品、通知及会话结束仍继续；正常接受对照通过，删去 History 调用的编译变异被具名断言拒绝。此结果取代 E31“需先合成复现”的停点，但**不证明实机已丢事实**。B6 前置改为确定失败/部分写入语义与一次性交付的恢复合同，再做最小修复及三渠道事实回读；不可盲目重试或把 `DeliveryApplied` 后移造成物资重放。顺带修复 Courier route 旧 oracle 并将该 runner、此前修复的 CampaignComposition runner 从 PREEXISTING_FAIL 改为当前 PASS；未运行全量 runner、双 API 产品构建或游戏。A 的其他分支/18 桶仍未闭，B 不启动。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
