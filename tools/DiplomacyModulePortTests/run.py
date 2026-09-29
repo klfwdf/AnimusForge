@@ -304,7 +304,8 @@ def boundaries():
    'internal interface IWorldDiplomacyDocumentExecutionPort')
  assert 'WorldDiplomacyStorage' not in exec_decl and ' set;' not in exec_decl,'Execution port exposed writable storage state'
  assert len([l for l in exec_decl.splitlines() if l.strip() and not l.strip().startswith(('//','{','}')) and 'interface' not in l])==45,'Execution port width changed without review'
- assert 'List<WorldDiplomacyThreat> Threats' in exec_decl,'mutable Threats exposure pin lost'
+ assert 'IReadOnlyList<WorldDiplomacyThreat> Threats' in exec_decl,'read-only Threats snapshot pin lost'
+ assert not re.search(r'(?<!ReadOnly)\bList<WorldDiplomacyThreat>',exec_decl),'mutable Threats list exposure reintroduced'
  port_impl=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DocumentExecutionPort.cs')
  for name,body in method_bodies(port_impl):
   assert body.count(';')<=6,'Execution port member regrew orchestration: '+name

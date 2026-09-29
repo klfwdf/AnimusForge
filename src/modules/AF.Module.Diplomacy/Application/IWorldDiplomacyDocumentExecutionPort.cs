@@ -51,5 +51,5 @@ internal interface IWorldDiplomacyDocumentExecutionPort
     int MaxDiplomaticActionsPerDocument { get; }
     int MaxRelayParticipants { get; }
     int CurrentDay { get; }
-    List<WorldDiplomacyThreat> Threats { get; }
+    IReadOnlyList<WorldDiplomacyThreat> Threats { get; }
 }

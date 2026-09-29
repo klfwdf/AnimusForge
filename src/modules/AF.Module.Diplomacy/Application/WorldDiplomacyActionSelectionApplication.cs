@@ -16,7 +16,7 @@ internal interface IWorldDiplomacyActionSelectionPort
     bool HasAuthority(string id);
     bool IsEliminated(string id);
     WorldDiplomacyPairFacts CapturePair(string first, string second);
-    List<WorldDiplomacyThreat> Threats { get; }
+    IReadOnlyList<WorldDiplomacyThreat> Threats { get; }
     bool CanIssueWarThreat(string first, string second);
     bool CanDeclareWar(string first, string second, bool enforcing);
     int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key);

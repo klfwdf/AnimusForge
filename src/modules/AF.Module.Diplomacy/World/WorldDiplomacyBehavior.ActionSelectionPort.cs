@@ -45,7 +45,7 @@ public sealed partial class WorldDiplomacyBehavior
                 alliance != null && alliance.IsAllyWithKingdom(first, second),
                 trade != null && BannerlordApiCompat.HasTradeAgreement(trade, first, second));
         }
-        public List<WorldDiplomacyThreat> Threats => _owner._storage?.DiplomaticThreats;
+        public IReadOnlyList<WorldDiplomacyThreat> Threats => _owner._storage?.DiplomaticThreats;
         public bool CanIssueWarThreat(string first, string second) => _owner.CanIssueWarThreat(Party(first), Party(second), out _);
         public bool CanDeclareWar(string first, string second, bool enforcing) => _owner.CanDeclareWar(Party(first), Party(second), out _, enforcing);
         public int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key) => _owner.GetOfferCooldownLastFailedRoundDay(key);
