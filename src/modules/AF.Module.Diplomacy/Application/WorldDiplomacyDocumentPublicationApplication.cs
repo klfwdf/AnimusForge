@@ -106,4 +106,133 @@ internal static class WorldDiplomacyDocumentPublicationApplication
             log?.Invoke("valid declaration round progress deferred document=" + document.DocumentId + " error=" + ex.Message);
         }
     }
+
+    internal static void NotifyExternalDiplomacyResolved(
+        string action,
+        string initiatorId,
+        string targetId,
+        string reason,
+        bool initiatorIsPlayer,
+        WorldDiplomacyStorage storage,
+        int currentDay,
+        Func<string, bool> proposalTakenEffect,
+        Action<WorldDiplomacyOfferDomain> clearBilateralCooldowns,
+        Func<string, string, string, bool, WorldDiplomacyDocument> createDocument,
+        Func<string, string> buildFactBody,
+        Func<bool, WorldDiplomacyRound> ensureActiveRound,
+        Func<WorldDiplomacyRound, bool> canFactJoinRound,
+        Func<WorldDiplomacyRound, string, bool> tryIncludeSettlementTarget,
+        Func<string, string> createId,
+        Action<WorldDiplomacyDocument> addDocument,
+        Action<WorldDiplomacyDocument> startPropagation,
+        Action<WorldDiplomacyDocument> appendCanonicalEvents,
+        Action<string> scheduleDeferredRetry,
+        Action<WorldDiplomacyDocument> handleRoundDocumentProcessed,
+        Action<string> log)
+    {
+        if (string.IsNullOrWhiteSpace(initiatorId) || string.IsNullOrWhiteSpace(targetId)
+            || string.Equals(initiatorId, targetId, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+        string normalizedAction = WorldDiplomacyIntentVocabulary.NormalizeIntent(action);
+        if (!WorldDiplomacyIntentVocabulary.IsExternallyResolvedDiplomaticIntent(normalizedAction))
+        {
+            log?.Invoke("external resolved diplomacy ignored because action is not an executed result action="
+                + (normalizedAction ?? "") + " initiator=" + (initiatorId ?? "")
+                + " target=" + (targetId ?? ""));
+            return;
+        }
+        if (string.Equals(normalizedAction, "accept_trade", StringComparison.OrdinalIgnoreCase))
+        {
+            if (proposalTakenEffect?.Invoke("propose_trade") != true)
+            {
+                log?.Invoke("external trade acceptance ignored because the live trade agreement was not created initiator="
+                    + initiatorId + " target=" + targetId);
+                return;
+            }
+            MarkOpenBilateralOffersAccepted(storage?.ActiveRound, initiatorId, targetId, WorldDiplomacyOfferDomain.Trade);
+            clearBilateralCooldowns?.Invoke(WorldDiplomacyOfferDomain.Trade);
+        }
+        else if (string.Equals(normalizedAction, "accept_alliance", StringComparison.OrdinalIgnoreCase))
+        {
+            if (proposalTakenEffect?.Invoke("propose_alliance") != true)
+            {
+                log?.Invoke("external alliance acceptance ignored because the live alliance was not created initiator="
+                    + initiatorId + " target=" + targetId);
+                return;
+            }
+            MarkOpenBilateralOffersAccepted(storage?.ActiveRound, initiatorId, targetId, WorldDiplomacyOfferDomain.Alliance);
+            clearBilateralCooldowns?.Invoke(WorldDiplomacyOfferDomain.Alliance);
+        }
+        WorldDiplomacyDocument fact = createDocument?.Invoke(
+            "口头外交结果",
+            buildFactBody?.Invoke(normalizedAction) ?? "",
+            "oral_diplomacy",
+            initiatorIsPlayer);
+        if (fact == null) return;
+        fact.Intent = normalizedAction;
+        fact.Commitment = "binding";
+        fact.AnalysisStatus = "external_fact";
+        fact.MechanicalResult = "已由口头外交执行";
+        fact.ChangedDiplomaticState = true;
+        fact.HistoryDeclarationRecorded = true;
+        WorldDiplomacyRound activeRound = storage?.ActiveRound;
+        WorldDiplomacyRound round = activeRound == null
+            ? ensureActiveRound?.Invoke(initiatorIsPlayer)
+            : canFactJoinRound?.Invoke(activeRound) == true
+                ? activeRound
+                : null;
+        bool appendedExternalSettlementTarget = round?.ResultSettlementPending == true
+            && !WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, targetId);
+        if (appendedExternalSettlementTarget
+            && tryIncludeSettlementTarget?.Invoke(round, targetId) != true) round = null;
+        else if (appendedExternalSettlementTarget)
+        {
+            AddOrMergeResultSettlementSlot(round, targetId, "route",
+                fact.DocumentId, initiatorId, prioritize: false, tryIncludeSettlementTarget, createId);
+        }
+        fact.RoundId = round?.RoundId ?? "";
+        fact.ExchangeId = fact.RoundId;
+        fact.AddressedKingdomIds = new List<string> { targetId };
+        // This document records a diplomacy action that has already resolved elsewhere; it must not start a reply chain.
+        fact.RequiresResponse = false;
+        addDocument?.Invoke(fact);
+        if (normalizedAction == "declare_war")
+        {
+            WorldDiplomacyWarPressureRules.ClearWarPressure(storage?.WarPressure, initiatorId, targetId, currentDay);
+        }
+        try
+        {
+            startPropagation?.Invoke(fact);
+        }
+        catch (Exception ex)
+        {
+            log?.Invoke("external diplomacy propagation failed document=" + fact.DocumentId + " error=" + ex.Message);
+        }
+        try
+        {
+            appendCanonicalEvents?.Invoke(fact);
+        }
+        catch (Exception ex)
+        {
+            scheduleDeferredRetry?.Invoke(fact.DocumentId);
+            log?.Invoke("external diplomacy canonical history append deferred document=" + fact.DocumentId + " error=" + ex.Message);
+        }
+        if (round == null)
+        {
+            fact.RoundProgressHandled = true;
+            log?.Invoke("external diplomacy fact kept outside unrelated active round document=" + fact.DocumentId
+                + " activeRound=" + (activeRound?.RoundId ?? ""));
+            return;
+        }
+        try
+        {
+            handleRoundDocumentProcessed?.Invoke(fact);
+        }
+        catch (Exception ex)
+        {
+            log?.Invoke("external diplomacy round progress deferred document=" + fact.DocumentId + " error=" + ex.Message);
+        }
+    }
 }

@@ -390,8 +390,11 @@ internal static class Program
             "war and peace persistence records must retain their AnimusForge identities without game dependencies");
 
         string externalFactPublication = ExtractMethod(
-            lifecycleRules,
-            "public static void NotifyExternalDiplomacyResolved(");
+            File.ReadAllText(
+                FindRepositoryFile(Path.Combine(
+                    "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentPublicationApplication.cs")),
+                Encoding.UTF8),
+            "internal static void NotifyExternalDiplomacyResolved(");
         Test.True(externalFactPublication.Contains("fact.AnalysisStatus = \"external_fact\"", StringComparison.Ordinal)
                   && externalFactPublication.Contains("WorldDiplomacyRound activeRound = storage?.ActiveRound", StringComparison.Ordinal)
                   && externalFactPublication.Contains("canFactJoinRound?.Invoke(activeRound)", StringComparison.Ordinal)
