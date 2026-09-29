@@ -1,0 +1,139 @@
+using System;
+using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
+
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class Campaign
+    {
+        public static Campaign Current;
+        public AnimusForge.MyBehavior Owner;
+        public T GetCampaignBehavior<T>() where T : class => Owner as T;
+    }
+}
+
+namespace AnimusForge
+{
+    public sealed class Hero
+    {
+        public string Id = "npc";
+        public string Name = "NPC";
+        public object CharacterObject = new object();
+    }
+
+    public sealed class MobileParty { }
+    public enum CourierStage { GeneratingReply }
+    public static class CourierVisibleLetterSanitizer
+    {
+        public static string Clean(string value) => value;
+    }
+    public static class ShoutBehavior
+    {
+        public static void RecordNativeConversationNpcLineForExternal(Hero hero, object character, string name, string line) { }
+    }
+    public static class ProactiveNpcRequestBehavior
+    {
+        public static void RecordLetterNeedDeliveredForExternal(string need) { }
+    }
+    public static class MainThreadActions
+    {
+        public static void Enqueue(Action action) => action();
+    }
+
+    public partial class MyBehavior
+    {
+        public int Attempts;
+        public int Accepted;
+        public bool Accept;
+        public bool Throw;
+
+        private static bool DeferMemorySourceWriteIfNeeded(Action<MyBehavior> write, string source) => false;
+        private bool AppendDialogueHistory(Hero hero, string playerText, string aiText, string extraFact)
+        {
+            Attempts++;
+            if (Throw) throw new InvalidOperationException("synthetic history failure");
+            if (Accept) Accepted++;
+            return Accept;
+        }
+
+@@MEMORY@@
+    }
+
+    public sealed partial class CourierDeliveryBehavior
+    {
+        public sealed class CourierSession
+        {
+            public Hero Sender = new Hero();
+            public string Id = "inbound-1";
+            public string SenderName = "NPC";
+            public string LetterText = "visible letter";
+            public string DeliveryFactText;
+            public string InboundNeedType;
+            public string InboundEventKey;
+            public string Stage;
+            public bool ReplyGenerated = true;
+            public bool ReplyGenerationStarted;
+            public bool ReplyWaitPopupShown;
+            public bool DeliveryApplied;
+            public bool IsNpcInitiated;
+        }
+
+        private bool _courierReplyWaitTimeLocked = false;
+        private readonly Dictionary<string, string> _npcLetterLastDeliveredEventKeyBySender = new Dictionary<string, string>();
+        public int LettersAdded;
+        public int Completed;
+        public int Notices;
+
+        public void RunForTest(CourierSession session) => DeliverInboundLetterToPlayer(session, new MobileParty());
+        private static Hero ResolveSender(CourierSession session) => session.Sender;
+        private static bool IsCourierInboundCompletionReadyForDelivery(CourierSession session) => true;
+        private static string GetInboundLetterKindDisplayText(CourierSession session) => "letter";
+        private static string StripCourierActionTags(string value) => value;
+        private static string BuildInboundDeliveryFactText(CourierSession session, bool delivered, Hero sender) => "[AFEF NPC行为补充] delivered";
+        private static string SafeHeroId(Hero hero) => hero?.Id ?? "";
+        private static void Log(string value) { }
+        private void HoldInboundCourierAtPlayer(CourierSession session, MobileParty courier) { }
+        private void ShowCourierReplyWaitPopupAndPause(CourierSession session, Hero sender) { }
+        private void StartInboundLetterGeneration(CourierSession session, string reason) { }
+        private void EndCourierReplyWaitPause(CourierSession session, string reason) { }
+        private bool AddCourierLetterToPlayerInventory(CourierSession session, Hero sender, string name, string text, bool isReply)
+        {
+            LettersAdded++;
+            return true;
+        }
+        private void ShowInboundCourierLetterNotice(string senderId, string senderName, string letter, string kind) => Notices++;
+        private void CompleteAndDestroyCourier(CourierSession session, MobileParty courier) => Completed++;
+
+@@DELIVERY@@
+    }
+
+    public static class Program
+    {
+        private static void Require(bool condition, string message)
+        {
+            if (!condition) throw new Exception("FAIL " + message);
+        }
+
+        private static void Check(string label, MyBehavior owner, int attempts, int accepted)
+        {
+            Campaign.Current = new Campaign { Owner = owner };
+            var courier = new CourierDeliveryBehavior();
+            var session = new CourierDeliveryBehavior.CourierSession();
+            courier.RunForTest(session);
+            Require(session.DeliveryApplied, label + " delivery flag");
+            Require(courier.LettersAdded == 1 && courier.Notices == 1 && courier.Completed == 1,
+                label + " visible delivery must continue");
+            Require((owner?.Attempts ?? 0) == attempts, label + " history call must be attempted");
+            Require((owner?.Accepted ?? 0) == accepted, label + " accepted history count");
+        }
+
+        public static void Main()
+        {
+            Check("accepted", new MyBehavior { Accept = true }, 1, 1);
+            Check("rejected", new MyBehavior { Accept = false }, 1, 0);
+            Check("exception", new MyBehavior { Throw = true }, 1, 0);
+            Check("no-owner", null, 0, 0);
+            Console.WriteLine("PASS CourierInboundDelivery source-derived accepted=1 rejectedStillDelivered=1 exceptionStillDelivered=1 noOwnerStillDelivered=1 live=NOT_RUN");
+        }
+    }
+}
