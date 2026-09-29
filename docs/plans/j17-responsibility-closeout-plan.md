@@ -116,7 +116,7 @@ R08 性能随每个切片验，不压到最后：区分请求/事件/每帧/批�
 
 | 组 | 范围 | 处理 | 出口 |
 | --- | --- | --- | --- |
-| A2-1 排除确认 | `AnimusForge.SiegeAftermathIntervention/` 214、`PolicySystem/` 73 | 按规格 §2.4 只审 AF 接缝：列出被 AF 宿主调用/调用 AF 的入口与跨界状态；内部业务标 `EXCLUDED` 并注明依据 | 两桶接缝清单入范围图，内部文件整体标排除且可对账 |
+| A2-1 排除确认 | `AnimusForge.SiegeAftermathIntervention/` 184、`PolicySystem/` 73 | **用户 2026-09-30 更正：J17 是 AF 主体重构，GCCZ/Policy 不在范围**。两目录整体按 §2.4 标 `EXCLUDED`，不做内部审查、不迁移；E68 仅作为“排除依据与 AF 侧接缝清单”留存（已做部分不回退），Policy 不再单独审。AF 主体中调用它们的宿主适配代码仍归 A2-5/B6 按 AF 责任处理 | 两目录从未审分母中扣除，排除理由见 E68 与本行 |
 | A2-2 场景/战斗 | 162 文件（含 Vengeance 75） | 按 Mission 线程、伤害 allowlist、生命周期分区；四功能内部玩法按 E35 标范围 | `scene-mission-combat` 签桶 |
 | A2-3 UI/外部集成 | 83 文件（含 DialogueUI/Illustrator 77） | VM/视图与业务读写分界；反射合同登记 | `ui-tts-external-integration` 签桶 |
 | A2-4 领域残余 | world 38、conversation 14、social 12、economy 8、courier 7、其余 12 | 逐文件归属，复用本地 R07 簇登记作导航 | 对应桶签收 |
