@@ -1,14 +1,34 @@
-# 当前交接：J15 按用户决定结项；J16 离线收口已合入，J17-A 盘点继续（2026-09-29）
+# 当前交接：J15 按用户决定结项，J16 离线关闭，J17-A 盘点继续（2026-09-29）
+
+- **交付**：J16 15 个提交与 J17-A 盘点文档通过普通 merge 整合；目标分支 `codex/af-main-refactor-continuation-20260831` 已成功快进推送至 `3f7b9018`（GitHub 回执：`ada9894a..3f7b9018`，未强推）。
+- **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`；实机/旧档、F4-A 来源与视觉遗留继续保留，发布 HOLD 不变。
+- **J16**：`J16_OFFLINE_CLOSED`（a/b/c/d/e）。全量 runner 记录 257 项：`PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。LIVE、旧 SAVE、三渠道修复回放未运行；旧档键兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留见主台账。
+- **J17-A**：R04/E09、R02/E10、R01/E11、R03/E12、R07 文件级/E13 已盘点；R07 尚有 3,332/10,704 个成员待人工映射，R05/R06/R08/R09 未完成。E09–E13 的源码坐标以 `99ca85ae` 为基线，J17-B 开工前需按后续代码变化刷新证据。
+- **验证边界**：J16 的全量测试数据来自其交接记录，本轮未重跑全套；本轮完成文档整合与普通推送。未运行游戏/旧档/provider，未部署或打包；保留 `.dotnet-cli-home/` 和忽略的 J17 盘点材料。
+## J16/J17 整合前的 J16 交接（保留历史，以上方状态为准）
+# 当前交接：J15 按用户决定结项，转入 J17（2026-09-29）
 
 - **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`——离线成果保持；F5 实机/旧档、F4-A 出处文字与实机视觉转为已知遗留，发布 HOLD 继续有效。见[主台账 J15 结项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-closed-by-user-20260929)。
+- **下一步**：J17 在 `G:\AFMOD\AF-J17` 续作，先合入本分支 J16 成果。
 
-- **整合范围**：以普通 merge 保留 J16 与 J17 两侧提交。J16 分支基于 `ada9894a`，包含 15 个提交；J17-A 为独立分支的 5 个盘点提交。J16 包含测试/工具/文档/Bootstrap 归位及两项有测试保护的 Scene 提交顺序修复；J17 新增内容限于本 HANDOFF、主计划台账和代码范围图的盘点证据，不代表 J17 产品迁移完成。
-- **J16 状态**：`J16_OFFLINE_CLOSED`，J16a/b/c/d/e 按离线范围完成。全量 runner 记录为 257 项 `PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。真实游戏、旧存档、三渠道针对新增修复的回放为 `NOT-RUN`；`_af_xihai_legacy_equipment_cleanup_v1` 旧档兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留仍见主台账，不将离线关闭扩大为全项目完成。
-- **J17-A 状态**：已盘点 R04（E09）、R02（E10）、R01（E11）、R03（E12）、R07 文件级覆盖（E13：各版本 940 项/20 桶/UNASSIGNED=0）。E09–E13 源码坐标来自 `99ca85ae`；后续到 `ada9894a` 有 267 个远端独有提交，故必须在 J17-B 开工前按符号与变更文件刷新相关证据。R07 仍有 3,332/10,704 个成员待人工映射；R05/R06/R08/R09 未完，J17-A 仍 OPEN。
-- **推送状态**：本地合并提交 `2bc0b843` 已包含 J16 + J17；GitHub 目标引用本机缓存仍为 `ada9894a`。终端 fetch/push 因 GitHub HTTPS 无可用凭据失败，GitHub 分支更新 API 又返回 403（当前集成无 ref 写权限）。重新认证/恢复写权限后，先刷新远端再普通快进推送；不强推、不覆写远端。
-- **验证与保留**：J16 的全量验证数据来自 `codex/af-j16-continue-20260929` 交接记录，本轮未重跑该套件；本轮仅做文档冲突整合与 `git diff --check`。未运行游戏/旧档/provider，未部署/打包；未跟踪 `.dotnet-cli-home/` 和 J17 的忽略盘点材料保持原样。
+# 上一段交接：J16 离线收口完成（2026-09-29，分支 `codex/af-j16-continue-20260929`，未推送）
 
-## 以下为上一份交接历史（当前以本节为准）
+- **状态**：`J16_OFFLINE_CLOSED`——J16a/b/c/d/e 全部完成；`LIVE / SAVE / 三渠道回放 NOT-RUN`。详见[主台账 J16 续作与收口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j16-continue-20260929)。基于远端 `ada9894a`，本分支 15 个提交。
+- **全量验证**：`py -3 tests/run_all.py` 257 项 `PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；对照 99ca85ae 与 ada9894a 两份基线 PASS→非 PASS 为 0，远端引入的 34 项失败全部恢复。inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS、`git diff --check` 通过。
+- **结构**：远端新增测试按 owner 归位；阶段 2–7 文档入 `docs/history/phase2-7/` 并新增 `docs/README.md`；A1 去跟踪 411 路径；Bootstrap → `src/AF.Bootstrap`，一键 PowerShell → `scripts/build/`（`.bat` 入口不变，实跑一键编译与打包，DLL 元数据与移动前一致）；新增 `tests/run_all.py` + `tests/runners.json` 总入口。
+- **产品修复（用户授权）**：SceneActions 指令改在 stale/目标/丢弃判定通过后提交（Scene、Native）；仪式处决改为接受回复后挂上单一处理器。配套新增 3 条断言与 3 个变异用例。
+- **存档期望**：按当前源码更新（177 键）；`PersistenceIdentityAudit` 基线移至 `ada9894a`。
+- **未验 / 遗留**：实机与旧档未跑，**被移除的 `_af_xihai_legacy_equipment_cleanup_v1` 对旧档的兼容未验**；三渠道回放未针对修复运行；`IntegratedModuleHost.Tick` 每帧无异常保护（未修）；DialogueUI `AuxiliaryTests` 缺 net472 引用（NEEDS_INPUT）；PromptLab 其余 cases 未处理；`.codex_tmp` Edge 配置与 Logs zip 仍在 Git 历史和远端，历史清洗未做。
+- **下一步**：推送需用户确认（按规则推到新分支）；之后回到 J17（`G:\AFMOD\AF-J17`，J17-A R05/R06/R07 残余审查，5 组中断待续）。
+
+## 以下为上一段交接
+
+# 当前交接：J16b A1 去跟踪与 J16c 链接检查完成（2026-09-29，分支 `codex/af-j16-continue-20260929`）
+
+- **范围**：AF-J15 快进到远端 `ada9894a` 后新建分支，先续 J16b/J16c。详见[主台账 J16 续作](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j16-continue-20260929)。
+- **已完成**：inventory 恢复 `PASS / unknown=0`；A1 去跟踪 411 个无消费者路径；新增 `tests/docs/LinkCheck`；代码地图重定位。该段待办已在上方收口中完成。
+
+## 以下为更早交接
 
 # 当前交接：未推送提交与四功能整合工作树说明已整理（2026-09-29）
 
