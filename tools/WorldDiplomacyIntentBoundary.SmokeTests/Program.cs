@@ -3045,9 +3045,12 @@ internal static class Program
 		string lifecycleRulesSource = File.ReadAllText(
 			FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
 			Encoding.UTF8);
+		string roundProgressSource = File.ReadAllText(
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")),
+			Encoding.UTF8);
 		string roundProgress = ExtractMethod(
-			lifecycleRulesSource,
-			"public static void HandleRoundDocumentProcessed(");
+			roundProgressSource,
+			"internal static void HandleRoundDocumentProcessed(");
 		Test.True(!roundProgress.Contains("closeActiveRound(\"autonomous_no_action_declaration\")", StringComparison.Ordinal)
 			&& !roundProgress.Contains("if (document.IsAutonomousNoActionDeclaration)", StringComparison.Ordinal),
 			"a relay statement must not use the retired root-close shortcut");

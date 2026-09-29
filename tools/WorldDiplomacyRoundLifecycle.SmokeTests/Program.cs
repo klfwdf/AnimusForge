@@ -65,6 +65,13 @@ internal static class Program
             Console.WriteLine($"R1 job launch replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--r1-round-progress")
+        {
+            RunRoundDocumentProcessedDecisionTests();
+            VerifyRoundProgressOwnership();
+            Console.WriteLine($"R1 round progress replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -296,6 +303,22 @@ RunRepairCorrectionAndJobDecisionTests();
             && !rules.Contains("public static WorldDiplomacyJob SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && !rules.Contains("public static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
             "real launch caller enters Application for selection, preflight, budget and claim");
+    }
+
+    private static void VerifyRoundProgressOwnership()
+    {
+        string app = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs"));
+        string behavior = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string rules = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        Test.True(app.Contains("document.RoundAccountingHandled = true", StringComparison.Ordinal)
+            && app.Contains("document.RoundProgressHandled = true", StringComparison.Ordinal)
+            && app.Contains("advanceRelay(round)", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(", StringComparison.Ordinal)
+            && !rules.Contains("public static void HandleRoundDocumentProcessed(", StringComparison.Ordinal),
+            "real document publication must enter Application for round accounting and route completion");
     }
 
     private static WorldDiplomacyRoundReconcileInput BaseInput()
@@ -11793,7 +11816,7 @@ RunRepairCorrectionAndJobDecisionTests();
             integrate = 0, slotRefresh = 0, closes = 0, advances = 0, logs = 0;
         string closeReason = null;
         Action<WorldDiplomacyDocument, WorldDiplomacyRound> run = (doc, round) =>
-            WorldDiplomacyRoundLifecycleRules.HandleRoundDocumentProcessed(
+            WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(
                 doc, storage,
                 id => string.Equals(id, round?.RoundId, StringComparison.OrdinalIgnoreCase) ? round : null,
                 _ => null,
@@ -16200,16 +16223,18 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("CompressionRetryAttempts = 0", StringComparison.Ordinal),
             "the host must not retain budget-math or contract-retirement bodies");
 
-        // DPL-060CY: the document-processed routing table lives in the lifecycle
-        // rules; the host binds round/document resolution and queue ports.
-        Test.True(rulesSource.Contains("public static void HandleRoundDocumentProcessed(", StringComparison.Ordinal)
-            && rulesSource.Contains("Func<string, WorldDiplomacyRound> resolveRound", StringComparison.Ordinal)
-            && rulesSource.Contains("Action<WorldDiplomacyRound> advanceRelay", StringComparison.Ordinal)
-            && rulesSource.Contains("Action<string> closeActiveRound", StringComparison.Ordinal),
-            "the document-processed routing table must live in the lifecycle rules behind ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HandleRoundDocumentProcessed(", StringComparison.Ordinal)
+        // Round progress routing is owned by Application; the host binds live ports.
+        string progressSource = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundProgressApplication.cs")), Encoding.UTF8);
+        Test.True(progressSource.Contains("internal static void HandleRoundDocumentProcessed(", StringComparison.Ordinal)
+            && progressSource.Contains("Func<string, WorldDiplomacyRound> resolveRound", StringComparison.Ordinal)
+            && progressSource.Contains("Action<WorldDiplomacyRound> advanceRelay", StringComparison.Ordinal)
+            && progressSource.Contains("Action<string> closeActiveRound", StringComparison.Ordinal),
+            "the document-processed routing table must live in Application behind ports");
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(", StringComparison.Ordinal)
             && behaviorSource.Contains("round => AdvanceRelay(round)", StringComparison.Ordinal),
             "the host must bind round processing through a thin adapter");
+        Test.True(!rulesSource.Contains("public static void HandleRoundDocumentProcessed(", StringComparison.Ordinal),
+            "the former Domain owner must not retain round progress orchestration");
         Test.True(!behaviorSource.Contains("RoundAccountingHandled = true", StringComparison.Ordinal)
             && !behaviorSource.Contains("substantive diplomacy progress accepted", StringComparison.Ordinal)
             && !behaviorSource.Contains("priority player declaration response completed", StringComparison.Ordinal),
