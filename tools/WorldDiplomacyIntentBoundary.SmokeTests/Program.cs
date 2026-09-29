@@ -2053,7 +2053,7 @@ internal static class Program
             "internal static void PrepareGenerationJob(");
         Test.True(enqueueGeneration.Contains("WorldDiplomacyGenerationTaskApplication.PrepareGenerationJob(", StringComparison.Ordinal)
                   && enqueueGeneration.Contains("BuildGenerationLegalActionSignature,", StringComparison.Ordinal)
-                  && enqueueGeneration.Contains("j => CaptureCanonicalHistoryForJob(j, syncSources: false)", StringComparison.Ordinal)
+                  && enqueueGeneration.Contains("CaptureCanonicalHistoryForQueuedJob,", StringComparison.Ordinal)
                   && enqueueGeneration.Contains("EnqueueJob,", StringComparison.Ordinal),
             "generation adapter must supply the live signature, canonical capture, and queue ports");
         int initialSignature = prepareGeneration.IndexOf(
@@ -2910,9 +2910,15 @@ internal static class Program
 			&& !enqueueGeneration.Contains("AllowAutonomousNoAction = true", StringComparison.Ordinal)
 			&& !enqueueGeneration.Contains("allowAutonomousNoAction = includeEmbeddedRoundPlan", StringComparison.Ordinal),
 			"a new root generation job must never receive the legacy statement escape hatch");
-		Test.True(enqueueGeneration.Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal)
-			&& enqueueGeneration.Contains("isExternalResponseOnly: true", StringComparison.Ordinal)
-			&& enqueueGeneration.Contains("responseSource: src", StringComparison.Ordinal),
+		string preparePriority = ExtractMethod(
+			File.ReadAllText(FindRepositoryFile(Path.Combine(
+				"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyGenerationTaskApplication.cs")),
+				Encoding.UTF8),
+			"internal static void PrepareGenerationJob(");
+		Test.True(enqueueGeneration.Contains("LegalDiplomaticDeclarationIntents,", StringComparison.Ordinal)
+			&& enqueueGeneration.Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal)
+			&& preparePriority.Contains("resolvePartyId?.Invoke(sourceDocument?.AuthorKingdomId)", StringComparison.Ordinal)
+			&& preparePriority.Contains("isRelayTurn, resultSettlementSlotId, true, sourceDocument)", StringComparison.Ordinal),
 			"player-priority preflight must use the same source-bound statement gate as validation and publication");
 
 		string generatedValidation = ExtractSection(
@@ -3011,8 +3017,9 @@ internal static class Program
                   && admission.IndexOf("return true;", StringComparison.Ordinal) > admission.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal),
             "mandatory admission binds the source before granting enqueue permission");
 		int bindRequiredSource = mandatoryOwner.IndexOf("WorldDiplomacyRoundApplication.AdmitMandatoryReply(", StringComparison.Ordinal);
-		int enqueueRequiredResponse = mandatoryOwner.IndexOf("enqueueResponse(round, receiverId, trigger)", StringComparison.Ordinal);
-		Test.True(mandatoryResponse.Contains("EnqueueGenerationJob(receiver, target", StringComparison.Ordinal)
+		int enqueueRequiredResponse = mandatoryOwner.IndexOf("enqueueResponse?.Invoke(", StringComparison.Ordinal);
+		Test.True(mandatoryResponse.Contains("EnqueueMandatoryCourtReplyJob,", StringComparison.Ordinal)
+			&& mandatoryResponse.Contains("priority: 95", StringComparison.Ordinal)
 			&& bindRequiredSource >= 0 && enqueueRequiredResponse > bindRequiredSource,
 			"mandatory source identity must be bound before shared preflight evaluates external statement eligibility");
 		string fixedDeclarationContract = ExtractSection(

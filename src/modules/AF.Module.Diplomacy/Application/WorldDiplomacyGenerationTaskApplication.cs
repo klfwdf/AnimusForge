@@ -96,9 +96,10 @@ internal static class WorldDiplomacyGenerationTaskApplication
         Action<WorldDiplomacyRound> pruneInvalidOffers,
         Func<string, string> getAuthorBlockReason,
         Func<string, bool> hasIndependentAuthority,
-        Func<WorldDiplomacyRound, string, string, bool, string, WorldDiplomacyDocument, string> getPriorityResponseTargetId,
+        Func<string, string> resolvePartyId,
+        Func<string, bool> isEliminatedParty,
+        Func<WorldDiplomacyRound, string, string, bool, string, bool, WorldDiplomacyDocument, List<string>> legalDeclarationIntents,
         Func<WorldDiplomacyRound, string, List<string>> getSettlementTargetIds,
-        Func<WorldDiplomacyRound, string, string, bool, WorldDiplomacyDocument, List<string>> getRelayRouteTargetIds,
         Func<WorldDiplomacyRound, string, string, bool> isSingleTargetActionable,
         Func<string, WorldDiplomacyRound, List<string>> getDefaultTargetIds,
         Action<string, string> completeExchange,
@@ -173,17 +174,28 @@ internal static class WorldDiplomacyGenerationTaskApplication
 		List<string> actionableTargetIds;
 		if (playerPriorityResponse)
 		{
-			string priorityTargetId = getPriorityResponseTargetId?.Invoke(
-				owningRound, authorId, targetId, isRelayTurn, resultSettlementSlotId, sourceDocument);
-			actionableTargetIds = string.IsNullOrWhiteSpace(priorityTargetId)
-				? new List<string>()
-				: new List<string> { priorityTargetId };
+			string priorityTargetId = resolvePartyId?.Invoke(sourceDocument?.AuthorKingdomId)
+				?? resolvePartyId?.Invoke(targetId);
+			actionableTargetIds = !string.IsNullOrWhiteSpace(priorityTargetId)
+				&& (legalDeclarationIntents?.Invoke(owningRound, authorId, priorityTargetId,
+						isRelayTurn, resultSettlementSlotId, true, sourceDocument)?.Count ?? 0) > 0
+					? new List<string> { priorityTargetId }
+					: new List<string>();
 		}
 		else if (isRelayTurn && owningRound != null)
 		{
 			actionableTargetIds = isResultSettlementTurn
 				? getSettlementTargetIds?.Invoke(owningRound, authorId) ?? new List<string>()
-				: getRelayRouteTargetIds?.Invoke(owningRound, authorId, resultSettlementSlotId, externalResponseOnly, sourceDocument) ?? new List<string>();
+				: (owningRound.RelayRouteKingdomIds ?? new List<string>())
+					.Select(id => resolvePartyId?.Invoke(id))
+					.Where(id => !string.IsNullOrWhiteSpace(id)
+						&& !string.Equals(id, authorId, StringComparison.Ordinal)
+						&& isEliminatedParty?.Invoke(id) == false
+						&& hasIndependentAuthority?.Invoke(id) == true
+						&& (legalDeclarationIntents?.Invoke(owningRound, authorId, id,
+								true, resultSettlementSlotId, externalResponseOnly, sourceDocument)?.Count ?? 0) > 0)
+					.Distinct()
+					.ToList();
 		}
 		else if (!string.IsNullOrWhiteSpace(targetId))
 		{
