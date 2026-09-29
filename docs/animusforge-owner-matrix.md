@@ -71,9 +71,9 @@ Lore 生产方法差分新增一条确定性假 Hero/Praven 规则回放：旧�
 | `src/AF.Foundation.Runtime/ModuleDirectory/{InternalModuleDirectory,ModuleFrameworkSnapshot}.cs` | 原注册/依赖/能力状态与冻结快照 | Foundation / ModuleDirectory | Git 100%归位，声明/程序集身份保持；原工作树字节hash无迁前对照 | 目录44、API及实际DLL元数据；不声明完整模块生命周期Host |
 | `src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs:11-36` | Team工厂选择、旧静态门面、原Campaign注册转接 | GameAdapter / Composition facade | 目录状态与算法已退出；注册壳保留且不受目录门控 | 原API签名/注册顺序/无第二状态owner；Startup/Tick已迁，UI/Mission等必要引擎适配保留 |
 | `AnimusForge/SubModule.xml` | 统一模块声明、Bootstrap-only 加载、Items XML | Bootstrap / Host | 保持不变；只允许 Bootstrap DLL | Id/Name/版本/资源路径；不得声明实现 DLL |
-| `AnimusForge.Bootstrap/BootstrapSubModule.cs` | 生命周期转发、启动失败处理 | Bootstrap | 保持独立 | 启动、卸载、类型注册、1.3/1.4 |
-| `AnimusForge.Bootstrap/BootstrapRuntime.cs` | API 线检测、实现 DLL 选择/加载、resolver | Bootstrap | 保持最小 | 只加载一个实现；版本歧义 fail-closed |
-| `AnimusForge.Bootstrap/BootstrapLog.cs` | Bootstrap 诊断 | Bootstrap | 保持独立 | 输出实际版本、路径、实现版本 |
+| `src/AF.Bootstrap/BootstrapSubModule.cs` | 生命周期转发、启动失败处理 | Bootstrap | 保持独立 | 启动、卸载、类型注册、1.3/1.4 |
+| `src/AF.Bootstrap/BootstrapRuntime.cs` | API 线检测、实现 DLL 选择/加载、resolver | Bootstrap | 保持最小 | 只加载一个实现；版本歧义 fail-closed |
+| `src/AF.Bootstrap/BootstrapLog.cs` | Bootstrap 诊断 | Bootstrap | 保持独立 | 输出实际版本、路径、实现版本 |
 | `SubModule.cs`、`src/AF.GameAdapter.Bannerlord/Composition/` | 薄引擎override；Startup/Tick与已有Campaign/Team装配独立owner | GameAdapter/Composition | J02源码离线完成，原注册/catch/tick顺序与ABI保留 | 整SubModule逆向、故障变异、双版Stage；LIVE未验 |
 | `AnimusForge.csproj` | 单实现项目、1.3/1.4 条件编译、依赖解析、资源嵌入 | Host/Build boundary | 暂不重排；先建立包含/资源/依赖清单 | 两 API 线、资源嵌入、链接源码 |
 | `AnimusForgeModulePaths.cs` | 活动模块根、legacy 只读迁移路径 | Foundation/GameAdapter | 提取路径端口，保留迁移规则 | 不把 legacy 目录当活动输出 |

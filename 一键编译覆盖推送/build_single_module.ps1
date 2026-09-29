@@ -17,7 +17,7 @@ if ($Stage -and $Deploy) {
     throw "-Stage and -Deploy are mutually exclusive. Use -Stage for project-local output or -Deploy for Modules\\AnimusForge."
 }
 $ImplementationProjectName = "AnimusForge.csproj"
-$BootstrapProjectRelativePath = "AnimusForge.Bootstrap\AnimusForge.Bootstrap.csproj"
+$BootstrapProjectRelativePath = "src\AF.Bootstrap\AnimusForge.Bootstrap.csproj"
 $FlavorKey = "AnimusForge.BuildFlavor"
 $ApiKey = "AnimusForge.BannerlordApi"
 $PrivateRuntimeDlls = @(

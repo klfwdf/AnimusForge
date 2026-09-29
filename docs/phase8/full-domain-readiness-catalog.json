@@ -12,8 +12,8 @@
         "build-owner"
       ],
       "entryPaths": [
-        "AnimusForge.Bootstrap/BootstrapSubModule.cs",
-        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "src/AF.Bootstrap/BootstrapSubModule.cs",
+        "src/AF.Bootstrap/BootstrapRuntime.cs",
         "AnimusForge/SubModule.xml"
       ],
       "promptAction": {
@@ -140,7 +140,7 @@
         "adapter-owner"
       ],
       "entryPaths": [
-        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "src/AF.Bootstrap/BootstrapRuntime.cs",
         "BannerlordApiCompat.cs",
         "InteractionComponentSafePatch.cs",
         "PlayerEncounterCompat.cs"
@@ -1162,7 +1162,7 @@
       "owner": "Build.Composition",
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
-        "AnimusForge.Bootstrap/BootstrapRuntime.cs",
+        "src/AF.Bootstrap/BootstrapRuntime.cs",
         "SubModule.cs"
       ],
       "requiredCases": [

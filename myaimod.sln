@@ -4,7 +4,7 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimusForge", "AnimusForge.csproj", "{9D001857-00F8-27CE-0601-E04DAAAB66B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimusForge.Bootstrap", "AnimusForge.Bootstrap\AnimusForge.Bootstrap.csproj", "{70CD5A13-7D94-4C84-B42C-E88DA120B64C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimusForge.Bootstrap", "src\AF.Bootstrap\AnimusForge.Bootstrap.csproj", "{70CD5A13-7D94-4C84-B42C-E88DA120B64C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,7 +14,7 @@
     <BannerlordRoot Condition="'$(BannerlordRoot)' == '' and '$(BANNERLORD_ROOT)' != ''">$(BANNERLORD_ROOT)</BannerlordRoot>
     <BannerlordRoot Condition="'$(BannerlordRoot)' == ''">F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord</BannerlordRoot>
     <BannerlordBinDir Condition="'$(BannerlordBinDir)' == ''">$(BannerlordRoot)\bin\Win64_Shipping_Client</BannerlordBinDir>
-    <BootstrapReferenceDir Condition="'$(BootstrapReferenceDir)' == '' and Exists('$(MSBuildProjectDirectory)\..\_deps_auto\TaleWorlds.MountAndBlade.dll')">$(MSBuildProjectDirectory)\..\_deps_auto</BootstrapReferenceDir>
+    <BootstrapReferenceDir Condition="'$(BootstrapReferenceDir)' == '' and Exists('$(MSBuildProjectDirectory)\..\..\_deps_auto\TaleWorlds.MountAndBlade.dll')">$(MSBuildProjectDirectory)\..\..\_deps_auto</BootstrapReferenceDir>
     <BootstrapReferenceDir Condition="'$(BootstrapReferenceDir)' == ''">$(BannerlordBinDir)</BootstrapReferenceDir>
   </PropertyGroup>
 
