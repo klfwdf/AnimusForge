@@ -21,6 +21,18 @@ internal static class CoupGuards
     internal static bool MissionProtectionAvailable { get; private set; }
     internal static bool CaptivityProtectionAvailable => CoupCaptivityBehavior.AutomaticReleaseProtectionAvailable;
 
+    internal static void Reset()
+    {
+        _registered = false;
+        _interruptSpeech = null;
+        _cancelSpeech = null;
+        _hasPendingAftermath = null;
+        _hasArmedCarryover = null;
+        _hostFlowProbeFailed = false;
+        MissionProtectionAvailable = false;
+        CoupCaptivityBehavior.ResetPatches();
+    }
+
     internal static bool HasBlockingHostFlow()
     {
         if (_hostFlowProbeFailed || _hasPendingAftermath == null || _hasArmedCarryover == null) return true;

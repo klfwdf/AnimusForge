@@ -1,3 +1,12 @@
+# 当前交接：未推送提交与四功能整合工作树说明已整理（2026-09-29）
+
+- **范围**：本地 `codex/af-main-refactor-continuation-20260831` 领先远端同名分支 **266 个提交**（2026-09-12→09-29，主体为 Illustrator 迭代，另有 DialogueUI、Coup 与两次远端 J15/J16 合并）；其上还有一层**未提交**的四功能整合与审查修复工作树，本次提交涉及内容见[提交说明](docs/handoffs/2026-09-29-four-feature-integration-commit.md)。
+- **本轮新增修复**：复仇双模块互斥（独立版反射探测 AF 宿主 + 三入口拦截）、共享源码去 AF 硬依赖（`EscortedHeroesProvider` 回调 + ID 延迟重解析）、连续行刑换受刑者重建请求、处决 7 项资源入 `content-map.json`（195 项齐）、生图缓存取消自动搬迁（根回文档目录）、政变坏存档不覆盖与补丁生命周期复位、西海衣服自动删除机制整体移除。
+- **验证**：官方双版本 Debug 构建 1.3/1.4 各 336 警告 0 错误、Bootstrap 0/0；独立 RichExecutions 15 警告 0 错误；内容清单 195 项/0 缺失/0 重复；`git diff --check` 与 code-map PASS。**未验**：实机、旧存档、双模块运行时互斥、Stage/部署/打包。
+- **未推送/未提交**：全部成果只在本地；`Vengeance/`、`AnimusForge/GUI`、`AssetPackages`、`ModuleData`、DialogueUI 素材等仍为未跟踪文件，干净检出不可复现。复仇处决由用户稍后自行提交推送；历史 Git 含私密资料的既有警示仍然有效，推送需另行明确决定。
+
+## 以下为此前交接历史（相冲突状态以上方最新为准）
+
 # 当前交接：J16a 测试归位已完成，J16b 进行中；J15 离线收口（2026-09-28）
 
 - **当前计划不变**：[AF 2.0 责任结项计划](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)仍为唯一执行口径；当前是普通 merge 核验，不是重复 J15 产品施工。范围、父提交和结果见[合并回执](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j15-remote-reconcile-20260928)。

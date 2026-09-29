@@ -1,0 +1,63 @@
+<Prefab>
+  <Window>
+    <!--
+      Non-interactive floating speech-label overlay for the public execution
+      ceremony.
+
+      Visual target: a bare line of outlined text pinned beside the speaker's
+      head, exactly like the reference floating-conversation label. There is
+      deliberately NO background panel and NO border — the text itself carries
+      a dark outline so it stays readable against grass, walls and sky.
+
+      Structure mirrors AnimusForge's proven FloatingTextLayer prefab
+      (mechanism only, no code copied): a stretch-to-parent Widget holding a
+      ListPanel bound to the label list, whose item template is a zero-size
+      anchor moved to the speaker's projected screen position through
+      PositionXOffset/PositionYOffset. Because the anchor is per item, several
+      labels can sit at their own speakers at the same time.
+
+      IMPORTANT — binding type contract: every [DataSourceProperty] bound to a
+      Widget numeric attribute (PositionXOffset, PositionYOffset,
+      SuggestedWidth, AlphaFactor) MUST be declared as float in the view model.
+      Gauntlet's reflection bridge cannot widen an Int32 boxed value into the
+      Single-typed setter and throws "Object of type 'System.Single' cannot be
+      converted to type 'System.Int32'", which aborts the entire binding frame.
+
+      Every widget sets DoNotAcceptEvents so the ceremony keeps accepting F,
+      dialogue and camera input while the address streams; the owning layer is
+      also registered without input restrictions.
+    -->
+    <Widget IsVisible="@IsVisible" AlphaFactor="@Alpha" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" ClipContents="false">
+      <Children>
+        <ListPanel DataSource="{Bubbles}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" ClipContents="false" LayoutImp="VerticalPanel">
+          <ItemTemplate>
+            <Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="@ScreenX" PositionYOffset="@ScreenY" ClipContents="false">
+              <Children>
+                <!-- One bare, outlined text block. Text is left-aligned and
+                     wrapped by @BubbleWidth; there is no panel behind it.
+                     Font size 16 keeps the label compact so it reads as a
+                     conversation label beside the head rather than a panel
+                     over the scene; the outline keeps it legible. -->
+                <TextWidget
+                  Text="@Text"
+                  IsVisible="@IsVisible"
+                  AlphaFactor="@Alpha"
+                  WidthSizePolicy="Fixed"
+                  SuggestedWidth="@BubbleWidth"
+                  HeightSizePolicy="CoverChildren"
+                  Brush.FontSize="16"
+                  Brush.FontColor="#FFFFFFFF"
+                  Brush.TextOutlineColor="#000000FF"
+                  Brush.TextOutlineAmount="2"
+                  Brush.TextHorizontalAlignment="Left"
+                  Brush.TextVerticalAlignment="Top"
+                  ClipContents="false"
+                  DoNotAcceptEvents="true" />
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

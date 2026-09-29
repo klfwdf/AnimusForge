@@ -13,15 +13,24 @@ namespace AnimusForge.DialogueUI
 
         internal static void Initialize()
         {
-            // Locate only our own assembly's module tree; no dependence on the host's checkout path.
-            var directory = new DirectoryInfo(Path.GetDirectoryName(typeof(DialogueUiRuntime).Assembly.Location));
-            for (int i = 0; directory != null && i < 5; i++, directory = directory.Parent)
+            ModuleRoot = null;
+            string hostRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
+            if (!string.IsNullOrWhiteSpace(hostRoot) &&
+                File.Exists(Path.Combine(hostRoot, "GUI", "SpriteParts", "afdui_parchment_panel.png")))
             {
-                string manifest = Path.Combine(directory.FullName, "SubModule.xml");
-                if (File.Exists(manifest) && File.ReadAllText(manifest).Contains("AnimusForge_DialogueUI"))
+                ModuleRoot = hostRoot;
+            }
+            else
+            {
+                var directory = new DirectoryInfo(Path.GetDirectoryName(typeof(DialogueUiRuntime).Assembly.Location));
+                for (int i = 0; directory != null && i < 5; i++, directory = directory.Parent)
                 {
-                    ModuleRoot = directory.FullName;
-                    break;
+                    string manifest = Path.Combine(directory.FullName, "SubModule.xml");
+                    if (File.Exists(manifest) && File.ReadAllText(manifest).Contains("AnimusForge_DialogueUI"))
+                    {
+                        ModuleRoot = directory.FullName;
+                        break;
+                    }
                 }
             }
             Enabled = ModuleRoot != null;

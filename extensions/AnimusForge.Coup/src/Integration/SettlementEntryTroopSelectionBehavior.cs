@@ -29,6 +29,23 @@ internal static class SettlementEntryTroopSelectionBehavior
     private static Type _setsLogicType;
     internal static bool IsAvailable { get; private set; }
 
+    internal static void Reset()
+    {
+        _registered = false;
+        IsAvailable = false;
+        _buildSelectable = null;
+        _formationClass = null;
+        _assignFormation = null;
+        _bindOrderController = null;
+        _markCommandable = null;
+        _interruptSpeech = _cancelSpeech = null;
+        PendingObjects.Clear();
+        ActiveFlags.Clear();
+        _pendingRebellion = null;
+        _queueCoup = _clearCoup = null;
+        _setsLogicType = null;
+    }
+
     internal static void Register(Harmony harmony)
     {
         if (_registered || harmony == null) return;

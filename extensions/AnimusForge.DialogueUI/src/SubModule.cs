@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.MountAndBlade;
 using AnimusForge.DialogueUI.Native;
@@ -10,10 +11,17 @@ namespace AnimusForge.DialogueUI
     public sealed class SubModule : MBSubModuleBase
     {
         private const string HarmonyId = "AnimusForge.DialogueUI";
-        private Harmony _harmony;
+        private static Harmony _harmony;
+
         protected override void OnSubModuleLoad()
         {
             base.OnSubModuleLoad();
+            if (HostOwnsModule()) return;
+            Start();
+        }
+
+        internal static void Start()
+        {
             try { DialogueUiRuntime.Initialize(); }
             catch (Exception ex)
             {
@@ -31,6 +39,12 @@ namespace AnimusForge.DialogueUI
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             base.OnBeforeInitialModuleScreenSetAsRoot();
+            if (HostOwnsModule()) return;
+            InstallPresentation();
+        }
+
+        internal static void InstallPresentation()
+        {
             if (_harmony != null || !DialogueUiRuntime.Enabled) return;
             try
             {
@@ -46,12 +60,13 @@ namespace AnimusForge.DialogueUI
             {
                 DialogueUiRuntime.Disable();
                 _harmony?.UnpatchAll(HarmonyId);
+                _harmony = null;
                 DialogueUiRuntime.Log("UI integration unavailable; original interfaces retained: " + ex);
             }
         }
 
         // Wheel + persistent session are optional: on failure the host keeps its original T/Y flow.
-        private void InstallSceneSession()
+        private static void InstallSceneSession()
         {
             try
             {
@@ -71,12 +86,24 @@ namespace AnimusForge.DialogueUI
         protected override void OnApplicationTick(float dt)
         {
             base.OnApplicationTick(dt);
+            if (HostOwnsModule()) return;
+            Tick(dt);
+        }
+
+        internal static void Tick(float dt)
+        {
             if (!DialogueUiRuntime.Enabled) return;
             try { ShoutUiAdapter.Tick(); NativeUiAdapter.Tick(dt); SceneWheel.Tick(); SceneSessionPanel.Tick(dt); }
             catch (Exception ex) { DialogueUiRuntime.LogOnce("tick-error", "Presentation update: " + ex.Message); }
         }
 
         protected override void OnSubModuleUnloaded()
+        {
+            if (!HostOwnsModule()) Shutdown();
+            base.OnSubModuleUnloaded();
+        }
+
+        internal static void Shutdown()
         {
             DialogueUiRuntime.Disable();
             ShoutBehavior.ScenePresentationSessionHook = null;
@@ -86,9 +113,27 @@ namespace AnimusForge.DialogueUI
             finally
             {
                 _harmony?.UnpatchAll(HarmonyId);
+                _harmony = null;
                 DialogueUiSprites.Shutdown();
-                base.OnSubModuleUnloaded();
             }
+        }
+
+        private static bool HostOwnsModule()
+        {
+            try
+            {
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (!string.Equals(assembly.GetName().Name, "AnimusForge", StringComparison.Ordinal)) continue;
+                    Type host = assembly.GetType("AnimusForge.IntegratedModuleHost");
+                    PropertyInfo property = host?.GetProperty("OwnsDialogueUi", BindingFlags.Public | BindingFlags.Static);
+                    return property?.GetValue(null) is bool owned && owned;
+                }
+            }
+            catch
+            {
+            }
+            return false;
         }
     }
 }

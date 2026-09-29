@@ -15,8 +15,8 @@
     <AssemblySearchPaths>{HintPathFromItem};{CandidateAssemblyFiles};{TargetFrameworkDirectory};{RawFileName}</AssemblySearchPaths>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Standalone extension projects, focused tests and rollback artifacts live under the repo root,
-         but they are not part of either AnimusForge implementation assembly. -->
+    <!-- Extension trees are excluded, then Illustrator, Dialogue UI, Coup, and the
+         XihaiAction core/runtime sources are linked back into this implementation assembly. -->
     <Compile Remove="extensions\**\*.cs;artifacts\**\*.cs;tests\**\*.cs" />
   </ItemGroup>
   <PropertyGroup Condition="$([System.String]::Copy('$(BannerlordApi)').StartsWith('1.4'))">
@@ -156,10 +156,14 @@
     <Compile Include="extensions\AnimusForge.XihaiAction\src\Runtime\*.cs">
       <Link>SceneActions\Runtime\%(Filename)%(Extension)</Link>
     </Compile>
+    <Compile Include="extensions\AnimusForge.Illustrator\src\**\*.cs" Exclude="extensions\AnimusForge.Illustrator\src\obj\**\*.cs;extensions\AnimusForge.Illustrator\src\bin\**\*.cs" />
+    <Compile Include="extensions\AnimusForge.DialogueUI\src\**\*.cs" Exclude="extensions\AnimusForge.DialogueUI\src\obj\**\*.cs;extensions\AnimusForge.DialogueUI\src\bin\**\*.cs" />
+    <Compile Include="extensions\AnimusForge.Coup\src\**\*.cs" Exclude="extensions\AnimusForge.Coup\src\obj\**\*.cs;extensions\AnimusForge.Coup\src\bin\**\*.cs" />
     <Compile Remove="Vengeance\Source\SubModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="TaleWorlds.CampaignSystem">
       <HintPath>$(TaleWorldsCampaignSystemPath)</HintPath>

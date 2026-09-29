@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="REX_Builder_Judgement_Warrant_Suffix" text="之公审定谳令" />
+    <string id="REX_Builder_Layout_Anchors_Header" text="刑场阵型与锚点" />
+    <string id="REX_Name" text="复仇" />
+    <string id="REX_Item_Execution_Torch" text="行刑火把" />
+    <string id="REX_Menu_Public_Execution" text="举行公开审判与处决……" />
+
+    <string id="REX_UI_Title" text="公开审判与处决" />
+    <string id="REX_UI_Subtitle" text="{TOWN} 法庭 · 选择犯人、罪名与刑罚" />
+    <string id="REX_UI_Prisoners_Header" text="俘虏领主" />
+    <string id="REX_UI_Crimes_Header" text="罪行记录与指控" />
+    <string id="REX_UI_Crime_History_Header" text="具体罪行记录" />
+    <string id="REX_UI_Crime_History_Empty" text="没有可显示的具体事件记录" />
+    <string id="REX_UI_Methods_Header" text="处决方式" />
+    <string id="REX_UI_Tone_Header" text="仪式基调" />
+    <string id="REX_UI_Execute" text="立即举行处决" />
+    <string id="REX_UI_Close_Hint" text="按 Esc 关闭；不会扣费，也不会杀死犯人" />
+    <string id="REX_UI_Relation" text="与你的关系：{VALUE}" />
+    <string id="REX_UI_Select_All" text="请在三栏中完成选择以复核判决" />
+    <string id="REX_UI_Legitimacy" text="合法性：{TIER} · 证据：{EVIDENCE}" />
+    <string id="REX_UI_Consequences" text="治安 {SECURITY} · 忠诚 {LOYALTY} · 影响力 {INFLUENCE} · 荣誉 {HONOR} · 仁慈 {MERCY} · 当地关系 {RELATION}" />
+    <string id="REX_UI_Consequences_A" text="治安 {SECURITY} · 忠诚 {LOYALTY} · 影响力 {INFLUENCE}" />
+    <string id="REX_UI_Consequences_B" text="荣誉 {HONOR} · 仁慈 {MERCY} · 当地关系 {RELATION}" />
+    <string id="REX_UI_Authority_Cost" text="场地费用：{COST}" />
+    <string id="REX_Error_UI_Open" text="无法安全打开公开审判界面。" />
+
+    <string id="REX_UI_Unknown_Place" text="未知聚落" />
+    <string id="REX_UI_Crime_Raid_Ours" text="劫掠我国村庄 {PLACE}" />
+    <string id="REX_UI_Crime_Raid" text="劫掠村庄 {PLACE}" />
+    <string id="REX_UI_Crime_Siege_Ours" text="攻占我国聚落 {PLACE} 后实施暴行" />
+    <string id="REX_UI_Crime_Siege" text="在 {PLACE} 实施围城暴行" />
+    <string id="REX_UI_Crime_Rebellion" text="参与 {PLACE} 的叛乱" />
+    <string id="REX_UI_Crime_Defection" text="背弃效忠并叛逃" />
+    <string id="REX_UI_Crime_Rebel_Status" text="领导或隶属于叛军氏族" />
+    <string id="REX_UI_Crime_Bandit_Status" text="以盗匪与法外暴力为生" />
+    <string id="REX_UI_Crime_Public_Enemy" text="目前正与我国交战" />
+    <string id="REX_UI_Crime_Personal_Revenge" text="私人恩怨，没有公共罪证" />
+    <string id="REX_UI_Crime_No_Record" text="没有可核实的事件记录" />
+    <string id="REX_UI_Crime_No_Record_For_Charge" text="没有可核实的“{CHARGE}”记录" />
+    <string id="REX_UI_Crime_Record_Detail" text="{EVIDENCE} · 记录于战役第 {DAY} 天" />
+    <string id="REX_UI_Crime_Derived_Detail" text="{EVIDENCE} · 根据当前身份与阵营关系判断" />
+    <string id="REX_UI_Crime_Unsupported_Detail" text="{EVIDENCE} · 仍指控此罪会被视为栽赃" />
+
+    <string id="REX_Tooltip_Player_Prisoner" text="你身为俘虏时无法主持公开审判。" />
+    <string id="REX_Tooltip_Disguised" text="伪装状态下无法主持公开审判。" />
+    <string id="REX_Tooltip_Under_Siege" text="城镇被围攻期间暂停公开处决。" />
+    <string id="REX_Tooltip_No_Jurisdiction" text="你只能在自有城镇或当前王国的城镇举行公开处决。" />
+    <string id="REX_Tooltip_No_Prisoners" text="允许的羁押范围内没有符合条件的成年英雄犯人。" />
+    <string id="REX_Tooltip_Relation_Low" text="你与城主关系低于 0，城主拒绝借出广场。" />
+    <string id="REX_Tooltip_Influence_Low" text="你的氏族没有足够影响力使用盟友城镇的广场。" />
+    <string id="REX_Tooltip_Influence_Low_Detail" text="在盟友城镇举行本次仪式需要 {COST} 影响力。" />
+
+    <string id="REX_Title_Unavailable" text="无法举行处决" />
+    <string id="REX_Select_Prisoner_Title" text="选择犯人" />
+    <string id="REX_Select_Prisoner_Description" text="选择一名存活、成年且不受任务保护的英雄犯人。" />
+    <string id="REX_Prisoner_Hint" text="羁押地：{SOURCE}&#xA;氏族：{CLAN}" />
+    <string id="REX_Source_Party" text="玩家队伍" />
+    <string id="REX_Source_Dungeon" text="当前城镇地牢" />
+    <string id="REX_No_Clan" text="无氏族" />
+
+    <string id="REX_Select_Method_Title" text="选择刑罚" />
+    <string id="REX_Select_Method_Description" text="选择公开处决方式。没有专用原版资产的方法会使用安全的占位演出。" />
+    <string id="REX_Method_Beheading" text="斩首" />
+    <string id="REX_Method_Beheading_Hint" text="对贵族而言较合乎身份；迅速、醒目而致命。" />
+    <string id="REX_Method_Hanging" text="绞刑" />
+    <string id="REX_Method_Hanging_Hint" text="常见的平民刑罚和公开警告；用于贵族会被视为羞辱。" />
+    <string id="REX_Method_Burning" text="火刑" />
+    <string id="REX_Method_Burning_Hint" text="最严酷的刑罚。它能制造恐惧，也会带来沉重的道德代价。" />
+    <string id="REX_Method_Breaking_Wheel" text="轮刑" />
+    <string id="REX_Method_Breaking_Wheel_Hint" text="以行刑轮持续折磨犯人的公开刑罚；极其残酷，也很难获得正当性。" />
+    <string id="REX_Method_Impalement" text="穿刺刑" />
+    <string id="REX_Method_Impalement_Hint" text="以木桩贯穿犯人的恐怖刑罚，用来震慑敌人与臣民。" />
+    <string id="REX_Method_Stoning" text="石刑" />
+    <string id="REX_Method_Stoning_Hint" text="由公开投石完成的羞辱性刑罚，更接近民众裁决而非贵族惯例。" />
+    <string id="REX_Method_Crossbow_Execution" text="弩决" />
+    <string id="REX_Method_Crossbow_Execution_Hint" text="以弩箭迅速处死犯人；高效而醒目，但不如刀斧处决体面。" />
+
+    <string id="REX_Select_Charge_Title" text="选择罪名" />
+    <string id="REX_Select_Charge_Description" text="所有罪名都可以指控，但没有证据的栽赃会降低合法性。" />
+    <string id="REX_Charge_Hint" text="{DESCRIPTION}&#xA;证据：{EVIDENCE}" />
+    <string id="REX_Charge_Treason" text="叛乱或叛国" />
+    <string id="REX_Charge_Treason_Hint" text="背弃效忠、叛逃或参与叛乱。" />
+    <string id="REX_Charge_Raiding" text="劫掠平民" />
+    <string id="REX_Charge_Raiding_Hint" text="洗劫村庄并伤害当地居民。" />
+    <string id="REX_Charge_Siege" text="围城暴行" />
+    <string id="REX_Charge_Siege_Hint" text="在攻占聚落后实施洗劫或破坏。" />
+    <string id="REX_Charge_Banditry" text="盗匪罪" />
+    <string id="REX_Charge_Banditry_Hint" text="依靠抢劫、勒索和法外暴力为生。" />
+    <string id="REX_Charge_Public_Enemy" text="王国公敌" />
+    <string id="REX_Charge_Public_Enemy_Hint" text="向本国及其人民发动战争。" />
+    <string id="REX_Charge_Revenge" text="私人复仇" />
+    <string id="REX_Charge_Revenge_Hint" text="把私人恩怨包装成公共司法。" />
+    <string id="REX_Evidence_Strong" text="证据充分" />
+    <string id="REX_Evidence_Circumstantial" text="有旁证" />
+    <string id="REX_Evidence_None" text="无证" />
+
+    <string id="REX_Select_Tone_Title" text="设定仪式基调" />
+    <string id="REX_Select_Tone_Description" text="仪式基调会改变合法性、公开后果和群众反应。" />
+    <string id="REX_Tone_Judicial" text="司法宣判" />
+    <string id="REX_Tone_Judicial_Hint" text="克制地把仪式呈现为依法裁决。" />
+    <string id="REX_Tone_Spectacle" text="盛大示众" />
+    <string id="REX_Tone_Spectacle_Hint" text="面向群众、旨在让全城铭记的公开表演。" />
+    <string id="REX_Tone_Terror" text="恐怖威慑" />
+    <string id="REX_Tone_Terror_Hint" text="以恐惧进行统治，会严重损害忠诚和声望。" />
+
+    <string id="REX_Tier_Legal" text="合法" />
+    <string id="REX_Tier_Disputed" text="争议" />
+    <string id="REX_Tier_Illegal" text="非法" />
+    <string id="REX_Confirm_Title" text="复核公开判决" />
+    <string id="REX_Confirm_Text" text="犯人：{VICTIM}&#xA;城镇：{TOWN}&#xA;刑罚：{METHOD}&#xA;罪名：{CHARGE}（{EVIDENCE}）&#xA;基调：{TONE}&#xA;合法性：{TIER}&#xA;&#xA;预计公开后果&#xA;治安：{SECURITY}&#xA;忠诚：{LOYALTY}&#xA;影响力：{INFLUENCE}&#xA;荣誉：{HONOR}&#xA;仁慈：{MERCY}&#xA;当地关系：{RELATION}&#xA;场地费用：{COST}&#xA;&#xA;进入广场后可与刽子手交谈下令，或在标记处按 F 亲自执行。致命时刻之前不会杀死犯人，也不会扣除费用。" />
+    <string id="REX_Cost_Free" text="自有城镇免费" />
+
+    <string id="REX_Button_Continue" text="继续" />
+    <string id="REX_Button_Cancel" text="取消" />
+    <string id="REX_Button_Hold_Now" text="立即举行" />
+    <string id="REX_Button_OK" text="确定" />
+
+    <string id="REX_Executioner_Name" text="刽子手" />
+    <string id="REX_Executioner_Intro" text="犯人已经准备好了。只要你下令，我就执行判决。" />
+    <string id="REX_Executioner_Proceed" text="执行吧。" />
+    <string id="REX_Executioner_Wait" text="先等等，我稍后再下令。" />
+  <string id="REX_Executioner_Judicial_Address" text="{VICTIM}，所列罪名是{CHARGE}。" />
+  <string id="REX_Executioner_Spectacle_Address" text="诸位听清：{VICTIM}，所列罪名是{CHARGE}。" />
+  <string id="REX_Executioner_Terror_Address" text="听清针对{VICTIM}的命令。所列罪名：{CHARGE}。" />
+  <string id="REX_Victim_Judicial_Response" text="判决我听见了。容我片刻。" />
+  <string id="REX_Victim_Spectacle_Response" text="你的话已说完。让我自己选择最后的话。" />
+    <string id="REX_Victim_Terror_Response" text="命令我已听清。它不能替我说话。" />
+  <string id="REX_Crowd_Judicial_Response_1" text="这样就足够取人性命吗？" />
+  <string id="REX_Crowd_Judicial_Response_2" text="罪名说出口，倒是容易。" />
+  <string id="REX_Crowd_Judicial_Response_3" text="这究竟算不算公道……" />
+  <string id="REX_Crowd_Judicial_Response_4" text="一定要走到这一步吗？" />
+  <string id="REX_Crowd_Judicial_Response_5" text="到此为止吧。" />
+  <string id="REX_Crowd_Spectacle_Response_1" text="换作站在那里的人，我也怕。" />
+  <string id="REX_Crowd_Spectacle_Response_2" text="给犯人留片刻吧。" />
+  <string id="REX_Crowd_Spectacle_Response_3" text="把声音放低些。" />
+  <string id="REX_Crowd_Spectacle_Response_4" text="这没什么值得欢呼的。" />
+  <string id="REX_Crowd_Spectacle_Response_5" text="把路让开。" />
+  <string id="REX_Crowd_Terror_Response_1" text="我看不下去。" />
+  <string id="REX_Crowd_Terror_Response_2" text="别出声。我不想看。" />
+  <string id="REX_Crowd_Terror_Response_3" text="这样的死法，太可怕了。" />
+  <string id="REX_Crowd_Terror_Response_4" text="让我再往后站些。" />
+  <string id="REX_Crowd_Terror_Response_5" text="这没什么值得欢呼的。" />
+    <string id="REX_Speech_Victim_Unknown" text="这名犯人" />
+    <string id="REX_Speech_Speaker_Crowd" text="人群中有人" />
+    <string id="REX_Speech_Speaker_Executioner" text="行刑官" />
+    <string id="REX_Action_Talk_Executioner" text="与刽子手交谈" />
+    <string id="REX_Action_Behead" text="亲自执行斩首" />
+    <string id="REX_Action_Use_Gallows" text="释放绞架机关" />
+    <string id="REX_Action_Light_Pyre" text="点燃柴堆" />
+    <string id="REX_Action_Carry_Out" text="执行判决" />
+    <string id="REX_Use_Block" text="行刑木台" />
+    <string id="REX_Use_Gallows" text="绞架机关" />
+    <string id="REX_Use_Pyre" text="准备好的柴堆" />
+    <string id="REX_Use_Execution_Point" text="执行点" />
+    <string id="REX_Use_Breaking_Wheel" text="行刑轮" />
+    <string id="REX_Action_Break_On_Wheel" text="对犯人执行轮刑" />
+    <string id="REX_Use_Impalement_Stake" text="穿刺木桩" />
+    <string id="REX_Action_Impale" text="执行穿刺刑" />
+    <string id="REX_Use_Stoning_Ground" text="石刑场" />
+    <string id="REX_Action_Stone" text="投出第一块石头" />
+    <string id="REX_Use_Crossbow_Execution" text="上弦的行刑弩" />
+    <string id="REX_Action_Fire_Crossbow" text="射出行刑弩矢" />
+
+    <string id="REX_Scene_Ready" text="你已被带到城门外的公开刑台旁。" />
+    <string id="REX_Scene_Ground_Fallback" text="广场过于狭窄，无法安全搭建完整刑台；现场已降级为地面仪式。" />
+    <string id="REX_Cancelled_Left_Mission" text="仪式在致命时刻前结束。没有扣除费用，犯人仍然存活。" />
+
+    <string id="REX_Result_Failed_Title" text="处决已取消" />
+    <string id="REX_Result_Success" text="公开判决已经执行。" />
+    <string id="REX_Execution_Relation_Kingdom_Label" text="{NAME}王国" />
+    <string id="REX_Execution_Relation_Clan_Label" text="{NAME}家族" />
+    <string id="REX_Execution_Relation_Summary" text="{SCOPE}：关系降低涉及 {LORDS} 位领主、{CLANS} 个家族。" />
+    <string id="REX_Error_Invalid_Request" text="处决请求不完整。" />
+    <string id="REX_Error_Invalid_Executor" text="只有玩家可以批准本次公开判决。" />
+    <string id="REX_Error_Victim_Unavailable" text="所选犯人已不在要求的羁押地点。" />
+    <string id="REX_Error_Victim_Ineligible" text="所选犯人不是存活的成年人。" />
+    <string id="REX_Error_Venue_Unavailable" text="该城镇目前无法举行处决。" />
+    <string id="REX_Error_Authority_Changed" text="准备判决后，该城镇的管辖权已经发生变化。" />
+    <string id="REX_Error_Protected_Victim" text="当前战役状态或任务保护了这名英雄。" />
+    <string id="REX_Error_Cancelled" text="另一扩展模组取消了本次处决。" />
+    <string id="REX_Error_Duplicate_Session" text="本次处决会话已经结束。" />
+    <string id="REX_Error_Another_Session" text="已有另一场公开处决正在进行。" />
+    <string id="REX_Error_Session_Not_Active" text="本次处决会话已经失效。" />
+    <string id="REX_Error_Commit_In_Progress" text="致命时刻正在结算。" />
+    <string id="REX_Error_Vanilla_Rejected" text="战役系统拒绝处决，因此没有应用公开后果。" />
+    <string id="REX_Error_Unexpected" text="游戏或模组发生异常，本次处决失败。" />
+    <string id="REX_Error_Mission_Open" text="无法安全打开城镇中心。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_Mission_Inject" text="无法安全初始化处决现场。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_No_Safe_Position" text="城镇中心找不到安全且可寻路的刑场位置。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_Scene_Act_Missing" text="所选刑罚没有注册场景演出。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_Animation_Playback" text="处决动作无法安全播放。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_Ignition_Playback" text="必要的火焰效果无法安全启动。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_Scene_Build" text="无法安全搭建刑场。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_Conversation_Fallback" text="刽子手暂时无法交谈。你仍可使用标记的执行点亲自执行。" />
+    <string id="REX_Error_Player_Execution_Distance" text="请进入犯人周围较宽的行刑区域再亲自执行；触发后你会站到犯人右侧的独立行刑点，刽子手会留在左侧。" />
+    <string id="REX_Error_Player_Ignition_Distance" text="请靠近杂树火堆的外沿，然后按下处决键点燃火堆。" />
+    <string id="REX_Error_Executioner_Retreat" text="刽子手无法安全移动到刑台旁侧的让位点。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Error_Player_Unavailable" text="玩家角色已不可用。没有扣除费用，犯人仍然存活。" />
+    <string id="REX_Unknown" text="未知" />
+    <string id="REX_Executioner_Crossbow_Personal" text="让开，我要亲自用弩执行。" />
+    <string id="REX_Wheel_Use_Left_Leg" text="左腿锤击点" />
+    <string id="REX_Wheel_Action_Left_Leg" text="锤击左腿" />
+    <string id="REX_Wheel_Use_Right_Leg" text="右腿锤击点" />
+    <string id="REX_Wheel_Action_Right_Leg" text="锤击右腿" />
+    <string id="REX_Wheel_Use_Left_Arm" text="左臂锤击点" />
+    <string id="REX_Wheel_Action_Left_Arm" text="锤击左臂" />
+    <string id="REX_Wheel_Use_Right_Arm" text="右臂锤击点" />
+    <string id="REX_Wheel_Action_Right_Arm" text="锤击右臂" />
+    <string id="REX_Wheel_Use_Chest" text="胸口锤击点" />
+    <string id="REX_Wheel_Action_Chest" text="完成致命胸口锤击" />
+    <string id="REX_Wheel_Use_Raise" text="立轮控制点" />
+    <string id="REX_Wheel_Action_Raise" text="命令卫兵立起行刑轮" />
+    <string id="REX_Impalement_Use_Pole" text="穿刺刑木桩" />
+    <string id="REX_Impalement_Action_Pelvis" text="将木桩锤入骨盆" />
+    <string id="REX_Impalement_Action_Abdomen" text="将木桩锤入腹部" />
+    <string id="REX_Impalement_Action_Chest" text="将木桩锤入胸腔" />
+    <string id="REX_Impalement_Action_Head" text="完成头部穿刺" />
+    <string id="REX_Builder_Apparatus_Cross_Beam" text="火刑十字架横梁" />
+    <string id="REX_Builder_Apparatus_Cross_Upright" text="火刑十字架立柱" />
+    <string id="REX_Builder_Apparatus_Crossbow_Beam" text="弩决十字架横梁" />
+    <string id="REX_Builder_Apparatus_Crossbow_Upright" text="弩决十字架立柱" />
+    <string id="REX_Builder_Apparatus_Impalement_Base" text="穿刺刑底座" />
+    <string id="REX_Builder_Apparatus_Impalement_Spike" text="穿刺刑尖桩" />
+    <string id="REX_Builder_Apparatus_Neck_Rope" text="绞刑套索" />
+    <string id="REX_Builder_Apparatus_Scaffold" text="处刑台" />
+    <string id="REX_Builder_Apparatus_Stones" text="石刑弹药堆" />
+    <string id="REX_Builder_Apparatus_Wheel" text="行刑轮" />
+    <string id="REX_Builder_Apparatus_Wheel_Axle" text="行刑轮转轴" />
+    <string id="REX_Builder_Category_Apparatus" text="刑具" />
+    <string id="REX_Builder_Category_Beams" text="柱梁" />
+    <string id="REX_Builder_Category_Decoration" text="装饰" />
+    <string id="REX_Builder_Category_Functional" text="功能刑具" />
+    <string id="REX_Builder_Category_Planks" text="木板" />
+    <string id="REX_Builder_Category_Platform" text="平台" />
+    <string id="REX_Builder_Category_Rope_Chain" text="绳索与链条" />
+    <string id="REX_Builder_Category_Supplies" text="杂物" />
+    <string id="REX_Builder_Category_Weapons" text="武器" />
+    <string id="REX_Builder_Category_Wood" text="木料" />
+    <string id="REX_Builder_Ceremony_Ready" text="自定义刑场已就绪，犯人和行刑人员现已进入场景。" />
+    <string id="REX_Builder_Confirm_Failed" text="无法初始化该布局，搭建模式保持开启。" />
+    <string id="REX_Builder_Core_Pieces_Missing" text="该预设缺少固定核心刑具：{ROLES}。请选择其他有效预设。" />
+    <string id="REX_Builder_Core_Markers_Missing" text="该预设缺少固定演员或交互标记：{MARKERS}。请选择其他有效预设。" />
+    <string id="REX_Builder_Create_First" text="请先部署内置或已保存预设，再使用此选项。" />
+    <string id="REX_Builder_Deleted" text="已删除选中的部件。" />
+    <string id="REX_Builder_Enter" text="请在城内选择位置，然后按 B 键打开自定义刑场部署工作室。" />
+    <string id="REX_Builder_Executioner" text="刽子手" />
+    <string id="REX_Builder_Functional_Apparatus" text="功能刑具" />
+    <string id="REX_Builder_Hold_B" text="按 B 键打开部署工作室。" />
+    <string id="REX_Builder_Local_Culture" text="当地文化兜底" />
+    <string id="REX_Builder_Local_Culture_Desc" text="保存的兵种模板不可用时，改用定居点文化中的合适兵种。" />
+    <string id="REX_Builder_Marker_Optional" text="可选演员或人群标记" />
+    <string id="REX_Builder_Marker_Required" text="必需功能标记" />
+    <string id="REX_Builder_Markers" text="演员与功能标记" />
+    <string id="REX_Builder_Melee_Guard" text="近战卫兵" />
+    <string id="REX_Builder_Missing_Apparatus" text="缺少必需的功能刑具：{ROLES}" />
+    <string id="REX_Builder_Missing_Core_Resource" text="必需的功能资源不可用：{RESOURCE}" />
+    <string id="REX_Builder_Missing_Markers" text="缺少必需标记：{MARKERS}" />
+    <string id="REX_Builder_Name_Automatic" text="自动布局" />
+    <string id="REX_Builder_Name_Empty" text="空白布局" />
+    <string id="REX_Builder_No_Presets" text="该刑法尚无已保存预设，请先新建或克隆一套。" />
+    <string id="REX_Builder_No_Redo" text="没有可重做的操作。" />
+    <string id="REX_Builder_No_Undo" text="没有可撤销的操作。" />
+    <string id="REX_Builder_Nothing_To_Edit" text="当前没有可编辑的部件或标记。" />
+    <string id="REX_Builder_Outside_Bounds" text="所选位置超出任务边界。" />
+    <string id="REX_Builder_Panel_Close" text="Esc：关闭" />
+    <string id="REX_Builder_Panel_Failed" text="无法打开选择面板。" />
+    <string id="REX_Builder_Part_Placed" text="部件已放置，按 B 键继续操作。" />
+    <string id="REX_Builder_Place_Functional" text="放置功能刑具；其稳定角色会保留给处决状态机使用。" />
+    <string id="REX_Builder_Place_Marker" text="移动鼠标放置标记；旋转和高度操作相同，左键确认。" />
+    <string id="REX_Builder_Place_Piece" text="移动鼠标放置；滚轮：偏航；Shift+滚轮：高度；Ctrl+滚轮：缩放；Q/E：俯仰；Z/C：翻滚；左键确认。" />
+    <string id="REX_Builder_Place_Root" text="放置整套幽灵预览；鼠标：X/Y；滚轮：根朝向；Shift+滚轮：根高度；左键确认。" />
+    <string id="REX_Builder_Placement_Cancelled" text="已取消当前放置，不会结算任何处决后果。" />
+    <string id="REX_Builder_Preset_Counts" text="{PIECES} 个部件 · {MARKERS} 个标记" />
+    <string id="REX_Builder_Preset_Invalid" text="预设校验失败：{ERROR}" />
+    <string id="REX_Builder_Decoration_Crucifix" text="十字架" />
+    <string id="REX_Builder_Impaled_Remains_Decoration" text="穿刺遗体：{VICTIM}" />
+    <string id="REX_Builder_Preset_Missing" text="该预设已不可用。" />
+    <string id="REX_Builder_Presets" text="已保存预设" />
+    <string id="REX_Builder_Ranged_Guard" text="远程卫兵" />
+    <string id="REX_Builder_Ready" text="自定义刑场部署已就绪，按 B 键打开部署工作室。" />
+    <string id="REX_Builder_Redone" text="已恢复被撤销的修改。" />
+    <string id="REX_Builder_Reset_Part" text="已重置选中部件的旋转和缩放。" />
+    <string id="REX_Builder_Resource_Entry" text="将此装饰放入刑场。" />
+    <string id="REX_Builder_Resources" text="装饰" />
+    <string id="REX_Builder_Root_Placed" text="根锚点已放置，按 B 键配置人员、添加装饰或完成部署。" />
+    <string id="REX_Builder_Save_Failed" text="预设保存失败，当前布局仍保留在内存中。" />
+    <string id="REX_Builder_Saved" text="预设已保存：{PATH}" />
+    <string id="REX_Builder_Search" text="搜索资源" />
+    <string id="REX_Builder_Selected" text="已选中：{ITEM}。移动鼠标调整 X/Y；使用滚轮/Q/E/Z/C/R/Delete；左键确认，右键取消。" />
+    <string id="REX_Builder_Selection_Failed" text="无法应用该选择，搭建器保持开启。" />
+    <string id="REX_Builder_Troop_Saved" text="人员兵种模板已更新，未扣除玩家队伍人数。" />
+    <string id="REX_Builder_Troop_Slots" text="人员角色" />
+    <string id="REX_Builder_Troops" text="玩家队伍兵种模板" />
+    <string id="REX_Builder_Undone" text="已撤销上一步修改。" />
+    <string id="REX_Builder_Wheel_Add" text="添加装饰" />
+    <string id="REX_Builder_Wheel_Add_Desc" text="添加十字架或已保存的穿刺遗体；核心刑具保持固定。" />
+    <string id="REX_Builder_Wheel_Apparatus" text="添加功能刑具" />
+    <string id="REX_Builder_Wheel_Apparatus_Desc" text="添加该刑法使用的稳定角色刑具。" />
+    <string id="REX_Builder_Wheel_Clone" text="克隆自动刑场" />
+    <string id="REX_Builder_Wheel_Clone_Desc" text="以当前自动刑场布局为起点。" />
+    <string id="REX_Builder_Wheel_Default" text="移动鼠标高亮命令卡，再按一次 B 键确认。" />
+    <string id="REX_Builder_Wheel_Deploy" text="部署刑场" />
+    <string id="REX_Builder_Wheel_Deploy_Desc" text="选择已保存刑场预设并放置根锚点。" />
+    <string id="REX_Builder_Wheel_Edit" text="编辑下一个部件" />
+    <string id="REX_Builder_Wheel_Edit_Desc" text="轮换选中部件，并用放置按键进行调整。" />
+    <string id="REX_Builder_Wheel_Failed" text="命令选择器无法打开，请再次按 B 键。" />
+    <string id="REX_Builder_Wheel_Finish" text="完成部署" />
+    <string id="REX_Builder_Wheel_Finish_Desc" text="保存调整后的布局并初始化处决仪式。" />
+    <string id="REX_Builder_Wheel_Footer" text="按 B · 移动高亮 · Esc 取消" />
+    <string id="REX_Builder_Wheel_Marker" text="添加标记" />
+    <string id="REX_Builder_Wheel_Marker_Desc" text="放置演员、交互或功能标记。" />
+    <string id="REX_Builder_Wheel_New" text="新建空白预设" />
+    <string id="REX_Builder_Wheel_New_Desc" text="为当前刑法创建一套空白预设。" />
+    <string id="REX_Builder_Wheel_Save" text="保存预设" />
+    <string id="REX_Builder_Wheel_Save_Desc" text="原子保存预设，覆盖时保留 .bak 备份。" />
+    <string id="REX_Builder_Wheel_Title" text="搭建刑场" />
+    <string id="REX_Builder_Wheel_Troops" text="配置刑场人员" />
+    <string id="REX_Builder_Wheel_Troops_Desc" text="选择玩家队伍兵种模板或当地文化兜底。" />
+    <string id="REX_Builder_Builtin_Standard" text="内置标准布局" />
+    <string id="REX_Builder_Builtin_Automatic" text="普通处刑现用刑场" />
+    <string id="REX_Builder_Builtin_Compact" text="内置精简布局" />
+    <string id="REX_Builder_Builtin_Ceremonial" text="内置仪仗布局" />
+    <string id="REX_Builder_Main_Title" text="自定义刑场部署" />
+    <string id="REX_Builder_Main_Hint" text="完成部署前选择刑罚、布局和行刑人员。" />
+    <string id="REX_Builder_Main_Close" text="Esc：关闭且不部署" />
+    <string id="REX_Builder_Main_Ready" text="就绪" />
+    <string id="REX_Builder_Main_Need_Preset" text="必需" />
+    <string id="REX_Builder_Main_Setup" text="待设置" />
+    <string id="REX_Builder_Main_Locked" text="已锁定" />
+    <string id="REX_Builder_Main_Navigation" text="部署工作室分区" />
+    <string id="REX_Builder_Main_Summary" text="当前部署" />
+    <string id="REX_Builder_Main_Personnel" text="仪式人员" />
+    <string id="REX_Builder_Main_Status" text="部署状态" />
+    <string id="REX_Builder_NoIncident_Title" text="战时平民庇护与定谳法度" />
+    <string id="REX_Builder_NoIncident_Desc" text="该犯人无附加宗族仇杀或背誓反叛记录。依据帝国刑律条例，以当众宣读定谳罪名处置，由刑场执刑官正式宣判执行。" />
+    <string id="REX_Builder_Main_Finish_Button" text="完成部署" />
+    <string id="REX_Builder_Main_Finish_Ready" text="当前草案已通过全部检查。" />
+    <string id="REX_Builder_Main_Finish_Hint" text="请先选择有效布局，再完成部署。" />
+    <string id="REX_Builder_Panel_Hint" text="选择一个选项以继续配置本次部署。" />
+    <string id="REX_Builder_Summary_No_Layout" text="尚未选择布局" />
+    <string id="REX_Builder_Summary_Ready" text="可以完成部署" />
+    <string id="REX_Builder_Summary_Incomplete" text="请选择布局并放置根锚点" />
+    <string id="REX_Builder_Summary_No_Personnel" text="尚未分配人员" />
+    <string id="REX_Builder_Summary_Personnel" text="刽子手：{EXECUTIONER}&#10;近战：{MELEE}&#10;远程：{RANGED}" />
+    <string id="REX_Builder_Troop_Details" text="{TIER} 阶 · {CULTURE} · 可用 {COUNT} 人" />
+    <string id="REX_Builder_Nav_Method" text="刑罚" />
+    <string id="REX_Builder_Nav_Method_Category" text="仪式" />
+    <string id="REX_Builder_Nav_Layout" text="布局" />
+    <string id="REX_Builder_Nav_Layout_Desc" text="选择匹配的预设并放置根锚点。" />
+    <string id="REX_Builder_Nav_Personnel" text="人员" />
+    <string id="REX_Builder_Nav_Personnel_Desc" text="指定刽子手、近战卫兵和远程卫兵模板。" />
+    <string id="REX_Builder_Nav_Details" text="细节" />
+    <string id="REX_Builder_Nav_Details_Desc" text="添加装饰并编辑已部署的场景部件。" />
+    <string id="REX_Builder_Nav_Prisoner" text="犯人" />
+    <string id="REX_Builder_Nav_Prisoner_Desc" text="查看犯人信息，并选择本次刑场宣读的罪名。" />
+    <string id="REX_Builder_Back_Button" text="返回" />
+    <string id="REX_Builder_Prisoner_Header" text="待决犯人" />
+    <string id="REX_Builder_Prisoner_Charge_Label" text="罪名" />
+    <string id="REX_Action_Crossbow_Execution" text="射杀犯人" />
+    <string id="REX_Builder_Nav_Charge" text="罪名" />
+    <string id="REX_Builder_Nav_Charge_Desc" text="选择当众宣读的罪名。" />
+    <string id="REX_Builder_No_Prisoners" text="没有可用于本刑场的合格犯人。" />
+    <string id="REX_Builder_Prisoner_Entry" text="{CLAN} · 关系 {RELATION}" />
+    <string id="REX_Builder_Prisoner_Invalid" text="该犯人已不可用。" />
+    <string id="REX_Builder_Prisoner_Selected" text="本刑场将处决 {NAME}。" />
+    <string id="REX_Builder_Commit_Failed" text="无法提交本次部署；未扣除任何费用，犯人仍然存活。" />
+    <string id="REX_Builder_Prisoner_Title" text="待决犯人" />
+    <string id="REX_Builder_Prisoner_Rank" text="{CULTURE} · {RANK}" />
+    <string id="REX_Builder_Prisoner_Origin" text="{CUSTODY} · 关押于 {VENUE}" />
+    <string id="REX_Builder_Rank_Ruler" text="君主" />
+    <string id="REX_Builder_Rank_Clan_Leader" text="家族族长" />
+    <string id="REX_Builder_Rank_Lord" text="领主" />
+    <string id="REX_Builder_Rank_Notable" text="显要" />
+    <string id="REX_Builder_Incidents_Header" text="所犯罪行" />
+    <string id="REX_Builder_Incidents_Empty" text="没有关于该犯人的具体罪行记录。" />
+    <string id="REX_Builder_Prisoner_Charge" text="宣读罪名" />
+    <string id="REX_Builder_Prisoner_Name" text="姓名" />
+    <string id="REX_Builder_Prisoner_Venue" text="行刑地点" />
+    <string id="REX_Builder_Prisoner_No_Clan" text="无家族" />
+    <string id="REX_Builder_Charges_Title" text="宣读罪名" />
+    <string id="REX_Builder_Charge_Invalid" text="该罪名已不可用。" />
+    <string id="REX_Builder_Charge_Selected" text="刑场将宣读：{CHARGE}" />
+    <string id="REX_Builder_Wheel_Method" text="选择刑罚" />
+    <string id="REX_Builder_Wheel_Method_Desc" text="为本次自定义仪式选择处决方式。" />
+    <string id="REX_Builder_Method_Current" text="当前刑罚" />
+    <string id="REX_Builder_Methods" text="处决方式" />
+    <string id="REX_Builder_Method_Invalid" text="所选处决方式已不可用。" />
+    <string id="REX_Builder_Method_Unchanged" text="仍然使用当前处决方式。" />
+    <string id="REX_Builder_Method_Changed" text="刑罚已更改，请选择匹配的预设；之前的布局已重置。" />
+    <string id="REX_Builder_Method_Desc" text="为本次自定义仪式选择处决方式。" />
+    <string id="REX_Menu_Public_Execution_Custom" text="举行公开审判与处决（自定义刑场）……" />
+      <!-- Short scene speech: legacy address keys above remain for compatibility. -->
+    <string id="REX_Speech2_Address_Alleged_1" text="{VICTIM}，所列罪名是{CHARGE}。" />
+    <string id="REX_Speech2_Address_Alleged_2" text="{VICTIM}，听清罪名：{CHARGE}。" />
+    <string id="REX_Speech2_Address_Alleged_3" text="判决所指之人，{VICTIM}；罪名，{CHARGE}。" />
+    <string id="REX_Speech2_Address_Alleged_4" text="{VICTIM}，以{CHARGE}之名受刑。" />
+    <string id="REX_Speech2_Address_Recorded_1" text="{VICTIM}，{CHARGE}一案，事发{EVIDENCE_PLACE}。" />
+    <string id="REX_Speech2_Address_Recorded_2" text="{VICTIM}，{CHARGE}已记在案，事发{EVIDENCE_PLACE}。" />
+    <string id="REX_Speech2_Address_Recorded_3" text="{VICTIM}，此判决针对{CHARGE}一案，事发{EVIDENCE_PLACE}。" />
+    <string id="REX_Speech2_Address_Recorded_4" text="案中所记：{VICTIM}，罪名{CHARGE}，事发{EVIDENCE_PLACE}。" />
+    <string id="REX_Speech2_Verdict_Judicial_1" text="奉{EXECUTOR}之令，处以{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Judicial_2" text="{EXECUTOR}已下令，判处{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Judicial_3" text="刑罚为{METHOD}，由{EXECUTOR}下令执行。" />
+    <string id="REX_Speech2_Verdict_Judicial_4" text="宣读{EXECUTOR}之令：执行{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Spectacle_1" text="在场诸位作证：奉{EXECUTOR}之令，处以{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Spectacle_2" text="听清这道公开判决：{EXECUTOR}下令，处以{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Spectacle_3" text="当着诸位的面，宣读{EXECUTOR}之令：{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Spectacle_4" text="让在场的人都听见：{EXECUTOR}下令，处以{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Terror_1" text="记住这道判决。奉{EXECUTOR}之令，处以{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Terror_2" text="听清{EXECUTOR}的告诫。刑罚是{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Terror_3" text="以此为戒：奉{EXECUTOR}之令，处以{METHOD}。" />
+    <string id="REX_Speech2_Verdict_Terror_4" text="{EXECUTOR}下令，处以{METHOD}。记住眼前之事。" />
+    <string id="REX_Speech2_Victim_Bold_Honorable_1" text="判词我听见了。我不会乞求。" />
+    <string id="REX_Speech2_Victim_Bold_Honorable_2" text="不能让恐惧替我说出最后的话。" />
+    <string id="REX_Speech2_Victim_Bold_Honorable_3" text="你尽可执行判决。我自会端正以对。" />
+    <string id="REX_Speech2_Victim_Bold_Honorable_4" text="性命在你手里。话还是我自己说。" />
+    <string id="REX_Speech2_Victim_Bold_1" text="判词我听见了。动手时，把手放稳。" />
+    <string id="REX_Speech2_Victim_Bold_2" text="你的判词尽管念。我不会求饶。" />
+    <string id="REX_Speech2_Victim_Bold_3" text="你有你的命令。我不会低头。" />
+    <string id="REX_Speech2_Victim_Bold_4" text="那就看清楚。我不求怜悯。" />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_1" text="我的声音或许在抖。仍请听我说完。" />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_2" text="容我喘口气。我想尽量镇定些。" />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_3" text="我怕死。这一点，我不打算掩饰。" />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_4" text="请稍等。让我在最后镇定下来。" />
+    <string id="REX_Speech2_Victim_Fearful_1" text="等一等。求你，再给我片刻。" />
+    <string id="REX_Speech2_Victim_Fearful_2" text="一定要现在吗？我还没准备好。" />
+    <string id="REX_Speech2_Victim_Fearful_3" text="别急，求你。我得缓一口气。" />
+    <string id="REX_Speech2_Victim_Fearful_4" text="我听见了。只是……让我喘口气。" />
+    <string id="REX_Speech2_Victim_Steady_Honorable_1" text="判决我已听清。没有多少话可说了。" />
+    <string id="REX_Speech2_Victim_Steady_Honorable_2" text="让我自己说完最后的话。我只求这一点。" />
+    <string id="REX_Speech2_Victim_Steady_Honorable_3" text="趁我还能说话，让我自己作答。" />
+    <string id="REX_Speech2_Victim_Steady_Honorable_4" text="命令我听明白了。我会守住自己的体面。" />
+    <string id="REX_Speech2_Victim_Steady_1" text="这些话已足够清楚。我听到了。" />
+    <string id="REX_Speech2_Victim_Steady_2" text="不必再念第二遍。" />
+    <string id="REX_Speech2_Victim_Steady_3" text="判决原来如此。我没什么要补充的。" />
+    <string id="REX_Speech2_Victim_Steady_4" text="所下的命令，我已经听清。" />
+    <string id="REX_Speech2_Victim_Neutral_1" text="判决我听见了。" />
+    <string id="REX_Speech2_Victim_Neutral_2" text="容我片刻。" />
+    <string id="REX_Speech2_Victim_Neutral_3" text="还有什么要宣读的吗？" />
+    <string id="REX_Speech2_Victim_Neutral_4" text="那就没有多少话可说了。" />
+    <string id="REX_Speech2_Victim_NoEvidence_1" text="指控不能就算凭据。" />
+    <string id="REX_Speech2_Victim_NoEvidence_2" text="念出罪名，不等于证明。" />
+    <string id="REX_Speech2_Victim_NoEvidence_3" text="我不会因为命令就认罪。" />
+    <string id="REX_Speech2_Victim_NoEvidence_4" text="沉默不代表认同。" />
+    <string id="REX_Speech2_Victim_WeakEvidence_1" text="疑点不能算作证据。" />
+    <string id="REX_Speech2_Victim_WeakEvidence_2" text="疑心还不足以定罪。" />
+    <string id="REX_Speech2_Victim_WeakEvidence_3" text="疑问尚未说清。" />
+    <string id="REX_Speech2_Victim_WeakEvidence_4" text="指控总得有凭据。" />
+    <string id="REX_Speech2_Victim_StrongEvidence_1" text="我这一生，不止这些。" />
+    <string id="REX_Speech2_Victim_StrongEvidence_2" text="判词我已听见。" />
+    <string id="REX_Speech2_Victim_StrongEvidence_3" text="你念出的，不是我的全部。" />
+    <string id="REX_Speech2_Victim_StrongEvidence_4" text="最后这点时间，我不想再争论。" />
+    <string id="REX_Speech2_Victim_Friendly_1" text="{EXECUTOR}，听我说。" />
+    <string id="REX_Speech2_Victim_Friendly_2" text="{EXECUTOR}，容我片刻。" />
+    <string id="REX_Speech2_Victim_Friendly_3" text="{EXECUTOR}，请听我说完。" />
+    <string id="REX_Speech2_Victim_Friendly_4" text="{EXECUTOR}，看看我。" />
+    <string id="REX_Speech2_Victim_Hostile_1" text="{EXECUTOR}，我不接受。" />
+    <string id="REX_Speech2_Victim_Hostile_2" text="{EXECUTOR}，我不会称赞你。" />
+    <string id="REX_Speech2_Victim_Hostile_3" text="{EXECUTOR}，我不服。" />
+    <string id="REX_Speech2_Victim_Hostile_4" text="{EXECUTOR}，记住这一刻。" />
+    <string id="REX_Speech2_Crowd_Support_1" text="到此为止吧。" />
+    <string id="REX_Speech2_Crowd_Support_2" text="判决已宣读。把路让开。" />
+    <string id="REX_Speech2_Crowd_Support_3" text="那就执行判决吧。" />
+    <string id="REX_Speech2_Crowd_Support_4" text="够了，就依判决吧。" />
+    <string id="REX_Speech2_Crowd_Doubt_1" text="这样就足够取人性命吗？" />
+    <string id="REX_Speech2_Crowd_Doubt_2" text="罪名说出口，倒是容易。" />
+    <string id="REX_Speech2_Crowd_Doubt_3" text="这究竟算不算公道……" />
+    <string id="REX_Speech2_Crowd_Doubt_4" text="一定要走到这一步吗？" />
+    <string id="REX_Speech2_Crowd_Sympathy_1" text="换作站在那里的人，我也怕。" />
+    <string id="REX_Speech2_Crowd_Sympathy_2" text="给犯人留片刻吧。" />
+    <string id="REX_Speech2_Crowd_Sympathy_3" text="把声音放低些。" />
+    <string id="REX_Speech2_Crowd_Sympathy_4" text="这没什么值得欢呼的。" />
+    <string id="REX_Speech2_Crowd_Fear_1" text="我看不下去。" />
+    <string id="REX_Speech2_Crowd_Fear_2" text="别出声。我不想看。" />
+    <string id="REX_Speech2_Crowd_Fear_3" text="这样的死法，太可怕了。" />
+    <string id="REX_Speech2_Crowd_Fear_4" text="让我再往后站些。" />
+    <string id="REX_Speech2_Close_Judicial_1" text="等候您的命令。" />
+    <string id="REX_Speech2_Close_Judicial_2" text="判决已宣读，等候下令。" />
+    <string id="REX_Speech2_Close_Judicial_3" text="您一声令下，我便执行。" />
+    <string id="REX_Speech2_Close_Judicial_4" text="准备好后，请您下令。" />
+    <string id="REX_Speech2_Close_Spectacle_1" text="在场的人已听清。等候您的命令。" />
+    <string id="REX_Speech2_Close_Spectacle_2" text="判决已公示。静候您下令。" />
+    <string id="REX_Speech2_Close_Spectacle_3" text="宣告完毕。静候下令。" />
+    <string id="REX_Speech2_Close_Spectacle_4" text="判决已宣读。等候您的示意。" />
+    <string id="REX_Speech2_Close_Terror_1" text="静候您的号令。" />
+    <string id="REX_Speech2_Close_Terror_2" text="告诫已传达。等候您下令。" />
+    <string id="REX_Speech2_Close_Terror_3" text="听候您的命令。" />
+    <string id="REX_Speech2_Close_Terror_4" text="请您下令。" />
+</strings>
+</base>

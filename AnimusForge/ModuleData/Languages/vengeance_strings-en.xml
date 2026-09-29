@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="REX_Builder_Judgement_Warrant_Suffix" text="'s public judgement warrant" />
+    <string id="REX_Builder_Layout_Anchors_Header" text="Execution layout and anchors" />
+    <string id="REX_Action_Behead" text="carry out the beheading" />
+    <string id="REX_Action_Break_On_Wheel" text="break the condemned on the wheel" />
+    <string id="REX_Action_Carry_Out" text="carry out the sentence" />
+    <string id="REX_Action_Crossbow_Execution" text="shoot the condemned" />
+    <string id="REX_Action_Fire_Crossbow" text="fire the execution bolt" />
+    <string id="REX_Action_Impale" text="carry out the impalement" />
+    <string id="REX_Action_Light_Pyre" text="light the pyre" />
+    <string id="REX_Action_Stone" text="cast the first stone" />
+    <string id="REX_Action_Talk_Executioner" text="talk to the executioner" />
+    <string id="REX_Action_Use_Gallows" text="release the gallows" />
+    <string id="REX_Builder_Apparatus_Cross_Beam" text="Burning cross beam" />
+    <string id="REX_Builder_Apparatus_Cross_Upright" text="Burning cross upright" />
+    <string id="REX_Builder_Apparatus_Crossbow_Beam" text="Crossbow execution beam" />
+    <string id="REX_Builder_Apparatus_Crossbow_Upright" text="Crossbow execution upright" />
+    <string id="REX_Builder_Apparatus_Impalement_Base" text="Impalement base" />
+    <string id="REX_Builder_Apparatus_Impalement_Spike" text="Impalement spike" />
+    <string id="REX_Builder_Apparatus_Neck_Rope" text="Hanging noose" />
+    <string id="REX_Builder_Apparatus_Scaffold" text="Execution scaffold" />
+    <string id="REX_Builder_Apparatus_Stones" text="Stoning ammunition pile" />
+    <string id="REX_Builder_Apparatus_Wheel" text="Breaking wheel" />
+    <string id="REX_Builder_Apparatus_Wheel_Axle" text="Wheel axle" />
+    <string id="REX_Builder_Back_Button" text="Back" />
+    <string id="REX_Builder_Builtin_Automatic" text="Current ordinary execution site" />
+    <string id="REX_Builder_Builtin_Ceremonial" text="Built-in ceremonial layout" />
+    <string id="REX_Builder_Builtin_Compact" text="Built-in compact layout" />
+    <string id="REX_Builder_Builtin_Standard" text="Built-in standard layout" />
+    <string id="REX_Builder_Category_Apparatus" text="apparatus" />
+    <string id="REX_Builder_Category_Beams" text="beams" />
+    <string id="REX_Builder_Category_Decoration" text="decoration" />
+    <string id="REX_Builder_Category_Functional" text="functional" />
+    <string id="REX_Builder_Category_Planks" text="planks" />
+    <string id="REX_Builder_Category_Platform" text="platform" />
+    <string id="REX_Builder_Category_Rope_Chain" text="rope and chain" />
+    <string id="REX_Builder_Category_Supplies" text="supplies" />
+    <string id="REX_Builder_Category_Weapons" text="weapons" />
+    <string id="REX_Builder_Category_Wood" text="wood" />
+    <string id="REX_Builder_Ceremony_Ready" text="The custom execution site is ready. The prisoner and ceremony personnel have now entered the scene." />
+    <string id="REX_Builder_Charge_Invalid" text="That charge is no longer available." />
+    <string id="REX_Builder_Charge_Selected" text="The site will announce: {CHARGE}" />
+    <string id="REX_Builder_Charges_Title" text="Announced charge" />
+    <string id="REX_Builder_Commit_Failed" text="The deployment could not be committed; nothing was spent and the prisoner lives." />
+    <string id="REX_Builder_Confirm_Failed" text="The layout could not be initialized; the builder remains open." />
+    <string id="REX_Builder_Core_Markers_Missing" text="This preset is missing fixed actor or interaction markers: {MARKERS}. Choose another valid preset." />
+    <string id="REX_Builder_Core_Pieces_Missing" text="This preset is missing fixed core apparatus: {ROLES}. Choose another valid preset." />
+    <string id="REX_Builder_Create_First" text="Deploy a built-in or saved preset before using this option." />
+    <string id="REX_Builder_Decoration_Crucifix" text="Crucifix" />
+    <string id="REX_Builder_Deleted" text="Selected part deleted." />
+    <string id="REX_Builder_Enter" text="Choose a place in town, then press B to open the custom execution-site deployment studio." />
+    <string id="REX_Builder_Executioner" text="Executioner" />
+    <string id="REX_Builder_Functional_Apparatus" text="Functional apparatus" />
+    <string id="REX_Builder_Hold_B" text="Press B to open the deployment studio." />
+    <string id="REX_Builder_Impaled_Remains_Decoration" text="Impaled remains: {VICTIM}" />
+    <string id="REX_Builder_Incidents_Empty" text="No specific incident is recorded against this prisoner." />
+    <string id="REX_Builder_Incidents_Header" text="Recorded crimes" />
+    <string id="REX_Builder_Local_Culture" text="Local culture fallback" />
+    <string id="REX_Builder_Local_Culture_Desc" text="Use a suitable troop from the settlement culture if the saved template is unavailable." />
+    <string id="REX_Builder_Main_Close" text="Esc: close without deploying" />
+    <string id="REX_Builder_Main_Finish_Button" text="Finish deployment" />
+    <string id="REX_Builder_Main_Finish_Hint" text="Choose a valid layout before finishing deployment." />
+    <string id="REX_Builder_Main_Finish_Ready" text="The draft passed all checks." />
+    <string id="REX_Builder_Main_Hint" text="Choose the punishment, layout and personnel before finishing deployment." />
+    <string id="REX_Builder_Main_Locked" text="Locked" />
+    <string id="REX_Builder_Main_Navigation" text="STUDIO SECTIONS" />
+    <string id="REX_Builder_Main_Need_Preset" text="Required" />
+    <string id="REX_Builder_Main_Personnel" text="CEREMONY PERSONNEL" />
+    <string id="REX_Builder_Main_Ready" text="Ready" />
+    <string id="REX_Builder_Main_Setup" text="Setup" />
+    <string id="REX_Builder_Main_Status" text="Deployment status" />
+    <string id="REX_Builder_Main_Summary" text="CURRENT DEPLOYMENT" />
+    <string id="REX_Builder_Main_Title" text="Custom execution-site deployment" />
+    <string id="REX_Builder_Marker_Optional" text="Optional actor or crowd marker" />
+    <string id="REX_Builder_Marker_Required" text="Required functional marker" />
+    <string id="REX_Builder_Markers" text="Actor and function markers" />
+    <string id="REX_Builder_Melee_Guard" text="Melee guard" />
+    <string id="REX_Builder_Method_Changed" text="Punishment changed. Choose a matching preset; the previous layout was reset." />
+    <string id="REX_Builder_Method_Current" text="Current method" />
+    <string id="REX_Builder_Method_Desc" text="Choose the execution method for this custom ceremony." />
+    <string id="REX_Builder_Method_Invalid" text="The selected execution method is no longer available." />
+    <string id="REX_Builder_Method_Unchanged" text="The current execution method remains selected." />
+    <string id="REX_Builder_Methods" text="Execution methods" />
+    <string id="REX_Builder_Missing_Apparatus" text="Required functional apparatus is missing: {ROLES}" />
+    <string id="REX_Builder_Missing_Core_Resource" text="Required functional resource is unavailable: {RESOURCE}" />
+    <string id="REX_Builder_Missing_Markers" text="Required markers are missing: {MARKERS}" />
+    <string id="REX_Builder_Name_Automatic" text="Automatic" />
+    <string id="REX_Builder_Name_Empty" text="Empty" />
+    <string id="REX_Builder_Nav_Charge" text="Charge" />
+    <string id="REX_Builder_Nav_Charge_Desc" text="Choose the charge announced before the crowd." />
+    <string id="REX_Builder_Nav_Details" text="Details" />
+    <string id="REX_Builder_Nav_Details_Desc" text="Add decorations and edit the deployed scene pieces." />
+    <string id="REX_Builder_Nav_Layout" text="Layout" />
+    <string id="REX_Builder_Nav_Layout_Desc" text="Select a matching preset and place the root anchor." />
+    <string id="REX_Builder_Nav_Method" text="Punishment" />
+    <string id="REX_Builder_Nav_Method_Category" text="Ritual" />
+    <string id="REX_Builder_Nav_Personnel" text="Personnel" />
+    <string id="REX_Builder_Nav_Personnel_Desc" text="Assign executioner, melee guard and ranged guard templates." />
+    <string id="REX_Builder_Nav_Prisoner" text="Condemned" />
+    <string id="REX_Builder_Nav_Prisoner_Desc" text="Review the prisoner and choose the charge announced at this site." />
+    <string id="REX_Builder_NoIncident_Desc" text="The prisoner has no recorded blood feuds or rebellion pacts. Under imperial statutes, the execution proceeds upon the publicly announced indictment by the presiding officer." />
+    <string id="REX_Builder_NoIncident_Title" text="Wartime Law &amp; Final Verdict" />
+    <string id="REX_Builder_No_Presets" text="No saved preset exists for this execution method. Create or clone one first." />
+    <string id="REX_Builder_No_Prisoners" text="No eligible prisoner is available for this site." />
+    <string id="REX_Builder_No_Redo" text="Nothing to redo." />
+    <string id="REX_Builder_No_Undo" text="Nothing to undo." />
+    <string id="REX_Builder_Nothing_To_Edit" text="There are no parts or markers to edit." />
+    <string id="REX_Builder_Outside_Bounds" text="The selected point is outside the mission boundary." />
+    <string id="REX_Builder_Panel_Close" text="Esc: close" />
+    <string id="REX_Builder_Panel_Failed" text="The selection panel could not open." />
+    <string id="REX_Builder_Panel_Hint" text="Select an option to continue configuring this deployment." />
+    <string id="REX_Builder_Part_Placed" text="Part placed. Press B for more actions." />
+    <string id="REX_Builder_Place_Functional" text="Place the functional apparatus. Its stable role will be preserved for the execution state machine." />
+    <string id="REX_Builder_Place_Marker" text="Move the marker with the mouse; use the same rotation and height controls and left click to confirm." />
+    <string id="REX_Builder_Place_Piece" text="Move the mouse to place. Wheel: yaw; Shift+wheel: height; Ctrl+wheel: scale; Q/E: pitch; Z/C: roll; left click confirms." />
+    <string id="REX_Builder_Place_Root" text="Place the complete ghost layout. Mouse: X/Y; wheel: root yaw; Shift+wheel: root height; left click confirms." />
+    <string id="REX_Builder_Placement_Cancelled" text="Current placement cancelled. No execution consequences were committed." />
+    <string id="REX_Builder_Preset_Counts" text="{PIECES} pieces · {MARKERS} markers" />
+    <string id="REX_Builder_Preset_Invalid" text="Preset validation failed: {ERROR}" />
+    <string id="REX_Builder_Preset_Missing" text="That preset is no longer available." />
+    <string id="REX_Builder_Presets" text="Saved presets" />
+    <string id="REX_Builder_Prisoner_Charge" text="Announced charge" />
+    <string id="REX_Builder_Prisoner_Charge_Label" text="Charge" />
+    <string id="REX_Builder_Prisoner_Entry" text="{CLAN} · relation {RELATION}" />
+    <string id="REX_Builder_Prisoner_Header" text="CONDEMNED" />
+    <string id="REX_Builder_Prisoner_Invalid" text="That prisoner is no longer available." />
+    <string id="REX_Builder_Prisoner_Name" text="Name" />
+    <string id="REX_Builder_Prisoner_No_Clan" text="No clan" />
+    <string id="REX_Builder_Prisoner_Origin" text="{CUSTODY} · held at {VENUE}" />
+    <string id="REX_Builder_Prisoner_Rank" text="{CULTURE} · {RANK}" />
+    <string id="REX_Builder_Prisoner_Selected" text="The site will condemn {NAME}." />
+    <string id="REX_Builder_Prisoner_Title" text="Condemned prisoner" />
+    <string id="REX_Builder_Prisoner_Venue" text="Venue" />
+    <string id="REX_Builder_Ranged_Guard" text="Ranged guard" />
+    <string id="REX_Builder_Rank_Clan_Leader" text="Clan leader" />
+    <string id="REX_Builder_Rank_Lord" text="Lord" />
+    <string id="REX_Builder_Rank_Notable" text="Notable" />
+    <string id="REX_Builder_Rank_Ruler" text="Ruler" />
+    <string id="REX_Builder_Ready" text="Custom execution-site deployment is ready. Press B to open the deployment studio." />
+    <string id="REX_Builder_Redone" text="Change restored." />
+    <string id="REX_Builder_Reset_Part" text="Selected part rotation and scale reset." />
+    <string id="REX_Builder_Resource_Entry" text="Place this decoration in the execution site." />
+    <string id="REX_Builder_Resources" text="Decorations" />
+    <string id="REX_Builder_Root_Placed" text="Root placed. Press B to configure personnel, add decoration or finish deployment." />
+    <string id="REX_Builder_Save_Failed" text="Preset save failed; the current layout remains in memory." />
+    <string id="REX_Builder_Saved" text="Preset saved: {PATH}" />
+    <string id="REX_Builder_Search" text="Search resources" />
+    <string id="REX_Builder_Selected" text="Selected: {ITEM}. Move the mouse for X/Y; use wheel/Q/E/Z/C/R/Delete, left click confirms, right click cancels." />
+    <string id="REX_Builder_Selection_Failed" text="That selection could not be applied. The builder remains open." />
+    <string id="REX_Builder_Summary_Incomplete" text="Choose a layout and place its root anchor" />
+    <string id="REX_Builder_Summary_No_Layout" text="No layout selected" />
+    <string id="REX_Builder_Summary_No_Personnel" text="No personnel assigned" />
+    <string id="REX_Builder_Summary_Personnel" text="Executioner: {EXECUTIONER}&#10;Melee: {MELEE}&#10;Ranged: {RANGED}" />
+    <string id="REX_Builder_Summary_Ready" text="Ready to finish deployment" />
+    <string id="REX_Builder_Troop_Details" text="Tier {TIER} · {CULTURE} · {COUNT} available" />
+    <string id="REX_Builder_Troop_Saved" text="Personnel template updated. No party troops were consumed." />
+    <string id="REX_Builder_Troop_Slots" text="Personnel role" />
+    <string id="REX_Builder_Troops" text="Player-party troop templates" />
+    <string id="REX_Builder_Undone" text="Last change undone." />
+    <string id="REX_Builder_Wheel_Add" text="Add decoration" />
+    <string id="REX_Builder_Wheel_Add_Desc" text="Add a crucifix or saved impaled remains; core apparatus stays fixed." />
+    <string id="REX_Builder_Wheel_Apparatus" text="Add functional apparatus" />
+    <string id="REX_Builder_Wheel_Apparatus_Desc" text="Add a stable role-bound apparatus used by this punishment." />
+    <string id="REX_Builder_Wheel_Clone" text="Clone automatic site" />
+    <string id="REX_Builder_Wheel_Clone_Desc" text="Start from the current automatic execution-site layout." />
+    <string id="REX_Builder_Wheel_Default" text="Move across the command cards; press B again to confirm." />
+    <string id="REX_Builder_Wheel_Deploy" text="Deploy execution site" />
+    <string id="REX_Builder_Wheel_Deploy_Desc" text="Choose a saved execution-site preset and place its root anchor." />
+    <string id="REX_Builder_Wheel_Edit" text="Edit next part" />
+    <string id="REX_Builder_Wheel_Edit_Desc" text="Cycle the selected part and adjust it with the placement keys." />
+    <string id="REX_Builder_Wheel_Failed" text="The command selector could not open. Press B again." />
+    <string id="REX_Builder_Wheel_Finish" text="Finish deployment" />
+    <string id="REX_Builder_Wheel_Finish_Desc" text="Save the adjusted layout and initialize the ceremony." />
+    <string id="REX_Builder_Wheel_Footer" text="Press B · move to highlight · Esc to cancel" />
+    <string id="REX_Builder_Wheel_Marker" text="Add marker" />
+    <string id="REX_Builder_Wheel_Marker_Desc" text="Place an actor, interaction or functional marker." />
+    <string id="REX_Builder_Wheel_Method" text="Choose punishment" />
+    <string id="REX_Builder_Wheel_Method_Desc" text="Choose the execution method for this custom ceremony." />
+    <string id="REX_Builder_Wheel_New" text="New empty" />
+    <string id="REX_Builder_Wheel_New_Desc" text="Create an empty preset for this execution method." />
+    <string id="REX_Builder_Wheel_Save" text="Save preset" />
+    <string id="REX_Builder_Wheel_Save_Desc" text="Atomically save this preset and keep a .bak when overwriting." />
+    <string id="REX_Builder_Wheel_Title" text="Build execution site" />
+    <string id="REX_Builder_Wheel_Troops" text="Configure personnel" />
+    <string id="REX_Builder_Wheel_Troops_Desc" text="Choose player-party troop templates or local-culture fallback." />
+    <string id="REX_Button_OK" text="OK" />
+    <string id="REX_Cancelled_Left_Mission" text="The ceremony ended before the lethal moment. Nothing was spent and the prisoner lives." />
+    <string id="REX_Charge_Raiding" text="Raiding civilians" />
+    <string id="REX_Charge_Raiding_Hint" text="Looting villages and bringing violence against their inhabitants." />
+    <string id="REX_Charge_Revenge" text="Personal revenge" />
+    <string id="REX_Charge_Revenge_Hint" text="A private grievance presented as public justice." />
+    <string id="REX_Charge_Siege" text="Siege atrocities" />
+    <string id="REX_Charge_Siege_Hint" text="Pillaging or devastating a captured settlement." />
+    <string id="REX_Charge_Treason" text="Rebellion or high treason" />
+    <string id="REX_Charge_Treason_Hint" text="Breaking allegiance, defecting, or taking part in a rebellion." />
+    <string id="REX_Cost_Free" text="Free in your own town" />
+    <string id="REX_Crowd_Judicial_Response_1" text="Is that enough to take a life?" />
+    <string id="REX_Crowd_Judicial_Response_2" text="A charge is easy to speak." />
+    <string id="REX_Crowd_Judicial_Response_3" text="I am not sure this is justice." />
+    <string id="REX_Crowd_Judicial_Response_4" text="Must it end like this?" />
+    <string id="REX_Crowd_Judicial_Response_5" text="Let it end here." />
+    <string id="REX_Crowd_Spectacle_Response_1" text="I would not want to stand there." />
+    <string id="REX_Crowd_Spectacle_Response_2" text="Give the prisoner a moment." />
+    <string id="REX_Crowd_Spectacle_Response_3" text="Keep your voice down." />
+    <string id="REX_Crowd_Spectacle_Response_4" text="There is nothing to cheer for." />
+    <string id="REX_Crowd_Spectacle_Response_5" text="Keep the way clear." />
+    <string id="REX_Crowd_Terror_Response_1" text="I cannot bear to watch." />
+    <string id="REX_Crowd_Terror_Response_2" text="Quiet. I do not want to see this." />
+    <string id="REX_Crowd_Terror_Response_3" text="That is a terrible way to die." />
+    <string id="REX_Crowd_Terror_Response_4" text="Let me stand farther back." />
+    <string id="REX_Crowd_Terror_Response_5" text="There is nothing to cheer for." />
+    <string id="REX_Error_Animation_Playback" text="The execution animation could not be played safely. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_Another_Session" text="Another public execution session is already active." />
+    <string id="REX_Error_Authority_Changed" text="Authority over this town has changed since the sentence was prepared." />
+    <string id="REX_Error_Cancelled" text="Another module cancelled this execution." />
+    <string id="REX_Error_Commit_In_Progress" text="The lethal moment is already being resolved." />
+    <string id="REX_Error_Conversation_Fallback" text="The executioner cannot speak right now. Use the marked execution point to carry out the sentence yourself." />
+    <string id="REX_Error_Duplicate_Session" text="This execution session has already finished." />
+    <string id="REX_Error_Executioner_Retreat" text="The executioner could not move to the nearby side position safely. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_Invalid_Executor" text="Only the player may authorize this public sentence." />
+    <string id="REX_Error_Invalid_Request" text="The execution request is incomplete." />
+    <string id="REX_Error_Mission_Inject" text="The execution scene could not be initialized safely. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_Mission_Open" text="The town center could not be opened safely. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_No_Safe_Position" text="No safe navigable execution site could be found in this town center. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_Player_Execution_Distance" text="Move within the wider execution area around the condemned before carrying out the sentence. You will take the executioner" />
+    <string id="REX_Error_Player_Ignition_Distance" text="Move beside the outer edge of the kindling pile, then press the execution key to light it." />
+    <string id="REX_Error_Player_Unavailable" text="The player character is no longer available. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_Protected_Victim" text="The selected hero is protected by the campaign or an active quest." />
+    <string id="REX_Error_Scene_Act_Missing" text="The selected punishment has no registered scene act. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_Scene_Build" text="The execution site could not be built safely. Nothing was spent and the prisoner lives." />
+    <string id="REX_Error_Session_Not_Active" text="This execution session is no longer active." />
+    <string id="REX_Error_UI_Open" text="The public court interface could not be opened safely." />
+    <string id="REX_Error_Unexpected" text="The execution failed because of an unexpected game or module error." />
+    <string id="REX_Error_Vanilla_Rejected" text="The campaign rejected the execution; no public consequences were applied." />
+    <string id="REX_Error_Venue_Unavailable" text="This town cannot host an execution right now." />
+    <string id="REX_Error_Victim_Ineligible" text="The selected prisoner is not a living adult." />
+    <string id="REX_Error_Victim_Unavailable" text="The selected prisoner is no longer in the required custody." />
+    <string id="REX_Evidence_Circumstantial" text="Circumstantial evidence" />
+    <string id="REX_Evidence_None" text="No evidence" />
+    <string id="REX_Evidence_Strong" text="Conclusive evidence" />
+    <string id="REX_Execution_Relation_Clan_Label" text="the {NAME} clan" />
+    <string id="REX_Execution_Relation_Kingdom_Label" text="Kingdom of {NAME}" />
+    <string id="REX_Execution_Relation_Summary" text="{SCOPE}: relations decreased with {LORDS} lords across {CLANS} clans." />
+    <string id="REX_Executioner_Crossbow_Personal" text="Stand aside. I will fire the execution bolt myself." />
+    <string id="REX_Executioner_Intro" text="The prisoner is ready. Give the word and I will carry out the sentence." />
+    <string id="REX_Executioner_Judicial_Address" text="{VICTIM}, the listed charge is {CHARGE}." />
+    <string id="REX_Executioner_Name" text="Executioner" />
+    <string id="REX_Executioner_Proceed" text="Proceed with the execution." />
+    <string id="REX_Executioner_Spectacle_Address" text="Hear the sentence concerning {VICTIM}: the charge is {CHARGE}." />
+    <string id="REX_Executioner_Terror_Address" text="Hear the order concerning {VICTIM}. The charge: {CHARGE}." />
+    <string id="REX_Executioner_Wait" text="Wait. I will give the word later." />
+    <string id="REX_Impalement_Action_Abdomen" text="drive the pole through the abdomen" />
+    <string id="REX_Impalement_Action_Chest" text="drive the pole through the chest" />
+    <string id="REX_Impalement_Action_Head" text="complete the head penetration" />
+    <string id="REX_Impalement_Action_Pelvis" text="drive the pole through the pelvis" />
+    <string id="REX_Impalement_Use_Pole" text="Impalement pole" />
+    <string id="REX_Item_Execution_Torch" text="Execution Torch" />
+    <string id="REX_Menu_Public_Execution" text="Hold a public trial and execution..." />
+    <string id="REX_Menu_Public_Execution_Custom" text="Hold a public trial and execution (custom site)..." />
+    <string id="REX_Method_Beheading" text="Beheading" />
+    <string id="REX_Method_Beheading_Hint" text="A noble death when granted to a lord; swift, visible and final." />
+    <string id="REX_Method_Breaking_Wheel" text="Breaking on the wheel" />
+    <string id="REX_Method_Breaking_Wheel_Hint" text="A prolonged public punishment built around the execution wheel; brutal and difficult to justify." />
+    <string id="REX_Method_Burning" text="Burning at the stake" />
+    <string id="REX_Method_Burning_Hint" text="The harshest sentence. It inspires fear but carries a heavy moral cost." />
+    <string id="REX_Method_Crossbow_Execution" text="Crossbow execution" />
+    <string id="REX_Method_Crossbow_Execution_Hint" text="A swift ranged execution: efficient, public, and less honorable than the sword or axe." />
+    <string id="REX_Method_Hanging" text="Hanging" />
+    <string id="REX_Method_Hanging_Hint" text="A public warning associated with common justice; degrading for a noble." />
+    <string id="REX_Method_Impalement" text="Impalement" />
+    <string id="REX_Method_Impalement_Hint" text="A terrifying stake execution intended to intimidate enemies and subjects alike." />
+    <string id="REX_Method_Stoning" text="Stoning" />
+    <string id="REX_Method_Stoning_Hint" text="A collective and degrading sentence associated with popular judgement rather than noble custom." />
+    <string id="REX_No_Clan" text="No clan" />
+    <string id="REX_Result_Failed_Title" text="Execution cancelled" />
+    <string id="REX_Result_Success" text="The public sentence has been carried out." />
+    <string id="REX_Scene_Ready" text="You have been escorted beside the public execution scaffold outside the main gate." />
+    <string id="REX_Source_Dungeon" text="Town dungeon" />
+    <string id="REX_Source_Party" text="Player party" />
+    <string id="REX_Speech_Speaker_Crowd" text="A voice in the crowd" />
+    <string id="REX_Speech_Speaker_Executioner" text="Executioner" />
+    <string id="REX_Speech_Victim_Unknown" text="the condemned" />
+    <string id="REX_Tier_Disputed" text="disputed" />
+    <string id="REX_Tier_Illegal" text="illegal" />
+    <string id="REX_Tier_Legal" text="legal" />
+    <string id="REX_Title_Unavailable" text="Execution unavailable" />
+    <string id="REX_Tone_Judicial" text="Judicial sentence" />
+    <string id="REX_Tone_Spectacle" text="Grand spectacle" />
+    <string id="REX_Tone_Terror" text="Terror and intimidation" />
+    <string id="REX_Tooltip_Disguised" text="You cannot organize a public sentence while disguised." />
+    <string id="REX_Tooltip_Influence_Low" text="Your clan lacks the influence required to use an allied town" />
+    <string id="REX_Tooltip_Influence_Low_Detail" text="This ceremony requires {COST} influence in an allied town." />
+    <string id="REX_Tooltip_No_Jurisdiction" text="You may only hold a public execution in your own town or a town of your current kingdom." />
+    <string id="REX_Tooltip_No_Prisoners" text="No eligible adult hero prisoner is available in the permitted custody." />
+    <string id="REX_Tooltip_Player_Prisoner" text="You cannot organize a sentence while you are a prisoner." />
+    <string id="REX_Tooltip_Relation_Low" text="The town" />
+    <string id="REX_Tooltip_Under_Siege" text="Public executions are suspended while the town is under siege." />
+    <string id="REX_UI_Authority_Cost" text="Authority cost: {COST}" />
+    <string id="REX_UI_Close_Hint" text="Esc closes this court without cost or death" />
+    <string id="REX_UI_Consequences_A" text="Security {SECURITY} · Loyalty {LOYALTY} · Influence {INFLUENCE}" />
+    <string id="REX_UI_Consequences_B" text="Honor {HONOR} · Mercy {MERCY} · Local relations {RELATION}" />
+    <string id="REX_UI_Crime_Bandit_Status" text="Lives by banditry and outlaw violence" />
+    <string id="REX_UI_Crime_Defection" text="Broke sworn allegiance and defected" />
+    <string id="REX_UI_Crime_Derived_Detail" text="{EVIDENCE} · judged from current identity and political status" />
+    <string id="REX_UI_Crime_History_Empty" text="No specific incident is recorded" />
+    <string id="REX_UI_Crime_History_Header" text="Recorded incidents" />
+    <string id="REX_UI_Crime_No_Record" text="No verified incident is recorded" />
+    <string id="REX_UI_Crime_No_Record_For_Charge" text="No verified record for {CHARGE}" />
+    <string id="REX_UI_Crime_Personal_Revenge" text="Private grievance without a public criminal record" />
+    <string id="REX_UI_Crime_Public_Enemy" text="Is presently at war with our realm" />
+    <string id="REX_UI_Crime_Raid" text="Raided the village {PLACE}" />
+    <string id="REX_UI_Crime_Raid_Ours" text="Raided our village {PLACE}" />
+    <string id="REX_UI_Crime_Rebel_Status" text="Leads or belongs to a rebel clan" />
+    <string id="REX_UI_Crime_Rebellion" text="Took part in the rebellion at {PLACE}" />
+    <string id="REX_UI_Crime_Record_Detail" text="{EVIDENCE} · recorded on campaign day {DAY}" />
+    <string id="REX_UI_Crime_Siege" text="Committed siege atrocities at {PLACE}" />
+    <string id="REX_UI_Crime_Siege_Ours" text="Committed atrocities after taking our settlement {PLACE}" />
+    <string id="REX_UI_Crime_Unsupported_Detail" text="{EVIDENCE} · alleging this charge counts as fabrication" />
+    <string id="REX_UI_Crimes_Header" text="Recorded crimes and charge" />
+    <string id="REX_UI_Execute" text="Hold the execution" />
+    <string id="REX_UI_Legitimacy" text="Legitimacy: {TIER} · Evidence: {EVIDENCE}" />
+    <string id="REX_UI_Methods_Header" text="Method of execution" />
+    <string id="REX_UI_Prisoners_Header" text="Condemned lords" />
+    <string id="REX_UI_Relation" text="Relation: {VALUE}" />
+    <string id="REX_UI_Select_All" text="Complete all three columns to review the sentence" />
+    <string id="REX_UI_Subtitle" text="Court of {TOWN} · choose the condemned, the charge, and the sentence" />
+    <string id="REX_UI_Title" text="Public trial and execution" />
+    <string id="REX_UI_Tone_Header" text="Ceremonial tone" />
+    <string id="REX_UI_Unknown_Place" text="an unknown settlement" />
+    <string id="REX_Unknown" text="Unknown" />
+    <string id="REX_Use_Block" text="Execution block" />
+    <string id="REX_Use_Breaking_Wheel" text="Execution wheel" />
+    <string id="REX_Use_Crossbow_Execution" text="Loaded execution crossbow" />
+    <string id="REX_Use_Execution_Point" text="Execution point" />
+    <string id="REX_Use_Gallows" text="Gallows release" />
+    <string id="REX_Use_Impalement_Stake" text="Impalement stake" />
+    <string id="REX_Use_Pyre" text="Prepared pyre" />
+    <string id="REX_Use_Stoning_Ground" text="Stoning ground" />
+    <string id="REX_Victim_Judicial_Response" text="I have heard the sentence. Give me a moment." />
+    <string id="REX_Victim_Spectacle_Response" text="You have spoken. Let me choose my own last words." />
+    <string id="REX_Victim_Terror_Response" text="I hear the order. It does not speak for me." />
+    <string id="REX_Wheel_Action_Chest" text="deliver the fatal chest blow" />
+    <string id="REX_Wheel_Action_Left_Arm" text="strike the left arm" />
+    <string id="REX_Wheel_Action_Left_Leg" text="strike the left leg" />
+    <string id="REX_Wheel_Action_Raise" text="order the guards to raise the wheel" />
+    <string id="REX_Wheel_Action_Right_Arm" text="strike the right arm" />
+    <string id="REX_Wheel_Action_Right_Leg" text="strike the right leg" />
+    <string id="REX_Wheel_Use_Chest" text="Chest strike point" />
+    <string id="REX_Wheel_Use_Left_Arm" text="Left arm strike point" />
+    <string id="REX_Wheel_Use_Left_Leg" text="Left leg strike point" />
+    <string id="REX_Wheel_Use_Raise" text="Wheel raising control" />
+    <string id="REX_Wheel_Use_Right_Arm" text="Right arm strike point" />
+    <string id="REX_Wheel_Use_Right_Leg" text="Right leg strike point" />
+      <!-- Short scene speech: legacy address keys above remain for compatibility. -->
+    <string id="REX_Speech2_Address_Alleged_1" text="{VICTIM}, the charge is {CHARGE}." />
+    <string id="REX_Speech2_Address_Alleged_2" text="{VICTIM}, hear the charge: {CHARGE}." />
+    <string id="REX_Speech2_Address_Alleged_3" text="The sentence names {VICTIM}. The charge: {CHARGE}." />
+    <string id="REX_Speech2_Address_Alleged_4" text="{VICTIM} stands condemned on the charge of {CHARGE}." />
+    <string id="REX_Speech2_Address_Recorded_1" text="{VICTIM}: {CHARGE}, recorded at {EVIDENCE_PLACE}." />
+    <string id="REX_Speech2_Address_Recorded_2" text="{VICTIM}, the record at {EVIDENCE_PLACE} concerns {CHARGE}." />
+    <string id="REX_Speech2_Address_Recorded_3" text="{VICTIM}, this sentence concerns {CHARGE} at {EVIDENCE_PLACE}." />
+    <string id="REX_Speech2_Address_Recorded_4" text="The record names {VICTIM}: {CHARGE}, at {EVIDENCE_PLACE}." />
+    <string id="REX_Speech2_Verdict_Judicial_1" text="By order of {EXECUTOR}: {METHOD}." />
+    <string id="REX_Speech2_Verdict_Judicial_2" text="{EXECUTOR} has ordered the sentence: {METHOD}." />
+    <string id="REX_Speech2_Verdict_Judicial_3" text="The sentence is {METHOD}, by order of {EXECUTOR}." />
+    <string id="REX_Speech2_Verdict_Judicial_4" text="The order of {EXECUTOR} is read: {METHOD}." />
+    <string id="REX_Speech2_Verdict_Spectacle_1" text="All here shall witness {EXECUTOR}&apos;s sentence: {METHOD}." />
+    <string id="REX_Speech2_Verdict_Spectacle_2" text="Hear the public sentence of {EXECUTOR}: {METHOD}." />
+    <string id="REX_Speech2_Verdict_Spectacle_3" text="Before those gathered, {EXECUTOR} orders {METHOD}." />
+    <string id="REX_Speech2_Verdict_Spectacle_4" text="Let the sentence be heard: {METHOD}, ordered by {EXECUTOR}." />
+    <string id="REX_Speech2_Verdict_Terror_1" text="Remember this sentence. By {EXECUTOR}&apos;s order: {METHOD}." />
+    <string id="REX_Speech2_Verdict_Terror_2" text="Hear {EXECUTOR}&apos;s warning. The sentence is {METHOD}." />
+    <string id="REX_Speech2_Verdict_Terror_3" text="Let this be a warning: {METHOD}, ordered by {EXECUTOR}." />
+    <string id="REX_Speech2_Verdict_Terror_4" text="{EXECUTOR} orders {METHOD}. Remember what you see." />
+    <string id="REX_Speech2_Victim_Bold_Honorable_1" text="I heard the sentence. I will not beg." />
+    <string id="REX_Speech2_Victim_Bold_Honorable_2" text="Fear will not choose my last words." />
+    <string id="REX_Speech2_Victim_Bold_Honorable_3" text="Carry out the sentence. I will keep my composure." />
+    <string id="REX_Speech2_Victim_Bold_Honorable_4" text="My life is yours. My words remain my own." />
+    <string id="REX_Speech2_Victim_Bold_1" text="I heard you. Keep your hands steady." />
+    <string id="REX_Speech2_Victim_Bold_2" text="Read your sentence. I will not beg." />
+    <string id="REX_Speech2_Victim_Bold_3" text="You have your order. I will not bow." />
+    <string id="REX_Speech2_Victim_Bold_4" text="Look closely. I will not beg for pity." />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_1" text="My voice may shake. I would still have you hear it." />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_2" text="Give me a breath. I would face this as steadily as I can." />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_3" text="I am afraid. I will not pretend otherwise." />
+    <string id="REX_Speech2_Victim_Fearful_Honorable_4" text="A moment, please. Let me gather myself before the end." />
+    <string id="REX_Speech2_Victim_Fearful_1" text="Wait. Please, give me another moment." />
+    <string id="REX_Speech2_Victim_Fearful_2" text="Must it be now? I am not ready." />
+    <string id="REX_Speech2_Victim_Fearful_3" text="Please do not rush. I need to catch my breath." />
+    <string id="REX_Speech2_Victim_Fearful_4" text="I hear you. Just... let me breathe." />
+    <string id="REX_Speech2_Victim_Steady_Honorable_1" text="I have heard the judgement. There is little more to say." />
+    <string id="REX_Speech2_Victim_Steady_Honorable_2" text="Let my final words be my own. That is all I ask." />
+    <string id="REX_Speech2_Victim_Steady_Honorable_3" text="I will answer in my own words, while I still can." />
+    <string id="REX_Speech2_Victim_Steady_Honorable_4" text="I understand the order. I will keep my dignity." />
+    <string id="REX_Speech2_Victim_Steady_1" text="The words are clear enough. I have heard them." />
+    <string id="REX_Speech2_Victim_Steady_2" text="There is no need to read it twice." />
+    <string id="REX_Speech2_Victim_Steady_3" text="So that is the sentence. I have nothing to add." />
+    <string id="REX_Speech2_Victim_Steady_4" text="I hear what has been ordered." />
+    <string id="REX_Speech2_Victim_Neutral_1" text="I have heard the sentence." />
+    <string id="REX_Speech2_Victim_Neutral_2" text="Give me a moment." />
+    <string id="REX_Speech2_Victim_Neutral_3" text="Is there anything more to read?" />
+    <string id="REX_Speech2_Victim_Neutral_4" text="Then there is little left to say." />
+    <string id="REX_Speech2_Victim_NoEvidence_1" text="An accusation is not proof." />
+    <string id="REX_Speech2_Victim_NoEvidence_2" text="Naming a charge proves nothing." />
+    <string id="REX_Speech2_Victim_NoEvidence_3" text="I will not confess on command." />
+    <string id="REX_Speech2_Victim_NoEvidence_4" text="My silence is not consent." />
+    <string id="REX_Speech2_Victim_WeakEvidence_1" text="Doubt is not proof." />
+    <string id="REX_Speech2_Victim_WeakEvidence_2" text="Suspicions are not enough." />
+    <string id="REX_Speech2_Victim_WeakEvidence_3" text="Your doubts are not settled." />
+    <string id="REX_Speech2_Victim_WeakEvidence_4" text="An accusation needs proof." />
+    <string id="REX_Speech2_Victim_StrongEvidence_1" text="I am more than this." />
+    <string id="REX_Speech2_Victim_StrongEvidence_2" text="I have heard the sentence." />
+    <string id="REX_Speech2_Victim_StrongEvidence_3" text="These words are not everything." />
+    <string id="REX_Speech2_Victim_StrongEvidence_4" text="I will not argue now." />
+    <string id="REX_Speech2_Victim_Friendly_1" text="{EXECUTOR}, hear me." />
+    <string id="REX_Speech2_Victim_Friendly_2" text="{EXECUTOR}, a moment." />
+    <string id="REX_Speech2_Victim_Friendly_3" text="{EXECUTOR}, please listen." />
+    <string id="REX_Speech2_Victim_Friendly_4" text="{EXECUTOR}, look here." />
+    <string id="REX_Speech2_Victim_Hostile_1" text="{EXECUTOR}, I refuse." />
+    <string id="REX_Speech2_Victim_Hostile_2" text="No praise, {EXECUTOR}." />
+    <string id="REX_Speech2_Victim_Hostile_3" text="{EXECUTOR}, I object." />
+    <string id="REX_Speech2_Victim_Hostile_4" text="{EXECUTOR}, remember this." />
+    <string id="REX_Speech2_Crowd_Support_1" text="Let it end here." />
+    <string id="REX_Speech2_Crowd_Support_2" text="The sentence has been read. Keep the way clear." />
+    <string id="REX_Speech2_Crowd_Support_3" text="Carry out the sentence, then." />
+    <string id="REX_Speech2_Crowd_Support_4" text="Enough. Let the sentence stand." />
+    <string id="REX_Speech2_Crowd_Doubt_1" text="Is that enough to take a life?" />
+    <string id="REX_Speech2_Crowd_Doubt_2" text="A charge is easy to speak." />
+    <string id="REX_Speech2_Crowd_Doubt_3" text="I am not sure this is justice." />
+    <string id="REX_Speech2_Crowd_Doubt_4" text="Must it end like this?" />
+    <string id="REX_Speech2_Crowd_Sympathy_1" text="I would not want to stand there." />
+    <string id="REX_Speech2_Crowd_Sympathy_2" text="Give the prisoner a moment." />
+    <string id="REX_Speech2_Crowd_Sympathy_3" text="Keep your voice down." />
+    <string id="REX_Speech2_Crowd_Sympathy_4" text="There is nothing to cheer for." />
+    <string id="REX_Speech2_Crowd_Fear_1" text="I cannot bear to watch." />
+    <string id="REX_Speech2_Crowd_Fear_2" text="Quiet. I do not want to see this." />
+    <string id="REX_Speech2_Crowd_Fear_3" text="That is a terrible way to die." />
+    <string id="REX_Speech2_Crowd_Fear_4" text="Let me stand farther back." />
+    <string id="REX_Speech2_Close_Judicial_1" text="Awaiting your order." />
+    <string id="REX_Speech2_Close_Judicial_2" text="The sentence is read. I await the word." />
+    <string id="REX_Speech2_Close_Judicial_3" text="Ready when you give the word." />
+    <string id="REX_Speech2_Close_Judicial_4" text="Give the word when you are ready." />
+    <string id="REX_Speech2_Close_Spectacle_1" text="All have heard. I await your order." />
+    <string id="REX_Speech2_Close_Spectacle_2" text="The sentence is proclaimed. Your order?" />
+    <string id="REX_Speech2_Close_Spectacle_3" text="The proclamation is complete. I await the word." />
+    <string id="REX_Speech2_Close_Spectacle_4" text="We have heard the sentence. I await your signal." />
+    <string id="REX_Speech2_Close_Terror_1" text="Awaiting your command." />
+    <string id="REX_Speech2_Close_Terror_2" text="The warning is given. I await your word." />
+    <string id="REX_Speech2_Close_Terror_3" text="Your command will be carried out." />
+    <string id="REX_Speech2_Close_Terror_4" text="Give the word." />
+</strings>
+</base>

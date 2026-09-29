@@ -58,6 +58,7 @@ public class SubModule : MBSubModuleBase
 		Logger.LogTrace("SubModule", ">>> Module framework: " + moduleFrameworkReason);
 			SceneActionsIntegrationBoundary.InitializeRuntime();
 			VengeanceRuntimeBridge.Initialize();
+			IntegratedModuleHost.Start();
 		if (_uiExtenderInitialized)
 		{
 			return;
@@ -106,6 +107,7 @@ public override void OnMissionBehaviorInitialize(Mission mission)
 
 	protected override void OnSubModuleUnloaded()
 	{
+		IntegratedModuleHost.Shutdown();
 		RemoveMapButtonLayer();
 		AfCampaignRuntimeLifecycle.Stop();
 		ModuleFrameworkRuntime.Shutdown();
@@ -118,6 +120,7 @@ public override void OnMissionBehaviorInitialize(Mission mission)
 	{
 		base.OnBeforeInitialModuleScreenSetAsRoot();
 		StartupPatchComposition.Register();
+		IntegratedModuleHost.InstallDialoguePresentation();
 	}
 
 	protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
@@ -128,6 +131,7 @@ public override void OnMissionBehaviorInitialize(Mission mission)
 		{
 				ModuleFrameworkRuntime.RegisterCampaign(starterObject);
 				VengeanceRuntimeBridge.RegisterCampaign(starterObject);
+				IntegratedModuleHost.RegisterCampaign(starterObject);
 			if (campaignStarter != null) AfCampaignRuntimeLifecycle.CaptureOwners(game, campaignStarter);
 		}
 		catch

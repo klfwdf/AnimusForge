@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.GameMenus;
@@ -16,17 +16,23 @@ namespace AnimusForge.Illustrator
 {
     public sealed class SubModule : MBSubModuleBase
     {
+        private const string HarmonyId = "AnimusForge.Illustrator";
         private static Harmony _harmony;
         public const string ModuleId = "AnimusForge_Illustrator";
 
         protected override void OnSubModuleLoad()
         {
             base.OnSubModuleLoad();
+            if (HostOwnsModule()) return;
+            Start();
+        }
 
+        internal static void Start()
+        {
             try
             {
                 IllustratorRuntime.Initialize();
-                _harmony = new Harmony("AnimusForge.Illustrator");
+                _harmony = new Harmony(HarmonyId);
                 WeeklyReportPopupIllustrationPatch.Patch(_harmony);
                 EncyclopediaHeroIllustrationPatch.EnsurePatched(_harmony);
                 ConversationIllustrationPatch.EnsurePatched(_harmony);
@@ -43,6 +49,12 @@ namespace AnimusForge.Illustrator
         protected override void OnApplicationTick(float dt)
         {
             base.OnApplicationTick(dt);
+            if (HostOwnsModule()) return;
+            Tick(dt);
+        }
+
+        internal static void Tick(float dt)
+        {
             try
             {
                 IllustratorRuntime.Tick();
@@ -55,9 +67,18 @@ namespace AnimusForge.Illustrator
 
         protected override void OnSubModuleUnloaded()
         {
+            if (!HostOwnsModule()) Shutdown();
+            base.OnSubModuleUnloaded();
+        }
+
+        internal static void Shutdown()
+        {
             try
             {
-                _harmony?.UnpatchAll("AnimusForge.Illustrator");
+                _harmony?.UnpatchAll(HarmonyId);
+                _harmony = null;
+                ConversationIllustrationPatch.Reset();
+                EncyclopediaHeroIllustrationPatch.Reset();
                 IllustrationCardPopup.ClearConversationSessionCache();
                 WeeklyReportPopupIllustrationPatch.CloseOverlay();
                 IllustratorRuntime.Shutdown();
@@ -65,16 +86,39 @@ namespace AnimusForge.Illustrator
             catch
             {
             }
-            base.OnSubModuleUnloaded();
         }
 
         protected override void InitializeGameStarter(Game game, IGameStarter starterObject)
         {
             base.InitializeGameStarter(game, starterObject);
+            if (HostOwnsModule()) return;
+            RegisterCampaign(starterObject);
+        }
+
+        internal static void RegisterCampaign(IGameStarter starterObject)
+        {
             if (starterObject is CampaignGameStarter campaignStarter)
             {
                 campaignStarter.AddBehavior(new IllustratorCampaignBehavior());
             }
+        }
+
+        private static bool HostOwnsModule()
+        {
+            try
+            {
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (!string.Equals(assembly.GetName().Name, "AnimusForge", StringComparison.Ordinal)) continue;
+                    Type host = assembly.GetType("AnimusForge.IntegratedModuleHost");
+                    PropertyInfo property = host?.GetProperty("OwnsIllustrator", BindingFlags.Public | BindingFlags.Static);
+                    return property?.GetValue(null) is bool owned && owned;
+                }
+            }
+            catch
+            {
+            }
+            return false;
         }
     }
 

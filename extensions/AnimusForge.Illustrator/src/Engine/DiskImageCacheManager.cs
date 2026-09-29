@@ -65,17 +65,22 @@ namespace AnimusForge.Illustrator.Engine
             try
             {
                 string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                CacheBaseDir = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "AnimusForge", "IllustratorCache");
-                Directory.CreateDirectory(CacheBaseDir);
+                if (string.IsNullOrWhiteSpace(docsDir)) throw new IOException("Documents directory is unavailable.");
+                string path = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "AnimusForge", "IllustratorCache");
+                Directory.CreateDirectory(path);
+                CacheBaseDir = path;
             }
             catch (Exception ex)
             {
                 Debug.Print($"[Illustrator] Failed to init cache dir: {ex.Message}");
-                CacheBaseDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "IllustratorCache");
+                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                CacheBaseDir = string.IsNullOrWhiteSpace(localAppData)
+                    ? string.Empty : Path.Combine(localAppData, "AnimusForge", "Cache", "Illustrator");
             }
         }
 
-        public static string CacheRoot => CacheBaseDir;
+        public static string CacheRoot => string.IsNullOrWhiteSpace(CacheBaseDir)
+            ? throw new IOException("No writable illustration cache root is available.") : CacheBaseDir;
 
         public static string SanitizeKey(string value)
         {
