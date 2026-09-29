@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceRevision": "e4a748d05eeeb42e3d6aaaa26b514f3c1dda5363",
+  "sourceRevision": "c7e5dff507e481f38938e9ccbbf09270a362a4d4",
   "remoteBaseline": "10defeb4976f3ffa096a77e847fba254308f6aba",
   "meaning": "Navigation only, not whole-file completion or a permanent feature allowlist. Refresh the current map when symbols change.",
   "anchors": [
@@ -167,7 +167,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "原身份解析在主线程捕获，非全 Shout 重写",
-      "fileSha256": "fdca911ddcee503a0f25db76e23d7bf54060298acdeb903752084eca8f2ec09c"
+      "fileSha256": "32a335ebff64110877837327120c5d96f3b5f793db7a96f3e3b4ed715d74d37e"
     },
     {
       "id": "native.history.dispatch",
@@ -200,7 +200,7 @@
       "match": "contains",
       "status": "mixed-host",
       "note": "排队/开始/退休，不假称网络已取消",
-      "fileSha256": "fdca911ddcee503a0f25db76e23d7bf54060298acdeb903752084eca8f2ec09c"
+      "fileSha256": "32a335ebff64110877837327120c5d96f3b5f793db7a96f3e3b4ed715d74d37e"
     },
     {
       "id": "memory.acceptance",
@@ -381,24 +381,24 @@
     {
       "id": "scene.player-group.dispatch-await",
       "path": "ShoutBehavior.cs",
-      "start": 26289,
-      "end": 26289,
+      "start": 26292,
+      "end": 26292,
       "symbol": "private async Task ProcessCapturedScenePlayerShoutAsync(",
       "match": "contains",
       "status": "j14a-offline-verified",
       "note": "input dispatch awaits the actual group; API completion additionally requires typed group receipts",
-      "fileSha256": "fdca911ddcee503a0f25db76e23d7bf54060298acdeb903752084eca8f2ec09c"
+      "fileSha256": "32a335ebff64110877837327120c5d96f3b5f793db7a96f3e3b4ed715d74d37e"
     },
     {
       "id": "scene.player-group.kickoff",
       "path": "ShoutBehavior.cs",
-      "start": 26320,
-      "end": 26320,
+      "start": 26323,
+      "end": 26323,
       "symbol": "private Task ProcessCurrentScenePlayerShout(",
       "match": "contains",
       "status": "j14a-offline-verified",
       "note": "returns actual group Task; API path gathers failure and dependency receipts, UI path remains unchanged",
-      "fileSha256": "fdca911ddcee503a0f25db76e23d7bf54060298acdeb903752084eca8f2ec09c"
+      "fileSha256": "32a335ebff64110877837327120c5d96f3b5f793db7a96f3e3b4ed715d74d37e"
     },
     {
       "id": "scene.audience.scope",
@@ -420,7 +420,7 @@
       "match": "exact",
       "status": "wired-j10-candidate",
       "note": "live Scene postprocess/queue/completion partial relocated under the channel owner path; behavior unchanged",
-      "fileSha256": "f3116451b2fc159a582058c7ca174a79f0541285fb858dabb3ca14ec0eeabb11"
+      "fileSha256": "0e386939d2b9dcbd3b61a9948ffe18e11dd8043b17efc26e6c9a767d5b2300d0"
     },
     {
       "id": "courier.prepare.reply",
@@ -3362,13 +3362,13 @@
     {
       "id": "native.completion.context",
       "path": "ShoutBehavior.NativeCompletion.cs",
-      "start": 68,
-      "end": 68,
+      "start": 71,
+      "end": 71,
       "symbol": "private bool IsNativeConversationCompletionContextCurrent(NativeConversationCompletionScope scope)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "完成与关窗仍检查捕获上下文/revision，不依赖已释放的后端票据槽",
-      "fileSha256": "48a175fbda1354d76ff08bfa2a420f0266012db8f66f0ec2c96fcad03b9e968e"
+      "fileSha256": "d05d0caa8143d034a5a951ef82f2fa0584b4a21f79f7425492e681f6b6aa9c36"
     },
     {
       "id": "native.mainreply.port",
@@ -3406,24 +3406,24 @@
     {
       "id": "native.raw.observation",
       "path": "ShoutBehavior.cs",
-      "start": 19997,
-      "end": 19997,
+      "start": 20000,
+      "end": 20000,
       "symbol": "private static void SubmitNativeConversationSceneActionObservation(string replyText, int agentIndex)",
       "match": "exact",
       "status": "wired-boundary",
       "note": "原观察器实现不变，调用已移入现有主线程 raw-action 校验回调；同回调也捕获提前 TTS",
-      "fileSha256": "fdca911ddcee503a0f25db76e23d7bf54060298acdeb903752084eca8f2ec09c"
+      "fileSha256": "32a335ebff64110877837327120c5d96f3b5f793db7a96f3e3b4ed715d74d37e"
     },
     {
       "id": "native.turn.entry",
       "path": "ShoutBehavior.cs",
-      "start": 19991,
-      "end": 19991,
+      "start": 19994,
+      "end": 19994,
       "symbol": "private Task<string> SubmitNativeConversationTextInternalAsync(NativeConversationAdmission admission, string playerText, Action<string> onStreamText = null, string currentDialogTextOverride = null, Action<string> onPostprocessStarted = null, Action<string, Hero, CharacterObject> onMainReplyReady = null, bool npcInitiatedOpening = false)",
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一 Native 实际入口，交给模块协调器，不新增第二条请求链",
-      "fileSha256": "fdca911ddcee503a0f25db76e23d7bf54060298acdeb903752084eca8f2ec09c"
+      "fileSha256": "32a335ebff64110877837327120c5d96f3b5f793db7a96f3e3b4ed715d74d37e"
     },
     {
       "id": "native.turn.coordinator",
@@ -3494,57 +3494,57 @@
     {
       "id": "native.turn.presentation",
       "path": "ShoutBehavior.NativeTurnPresentation.cs",
-      "start": 27,
-      "end": 27,
+      "start": 33,
+      "end": 33,
       "symbol": "public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()",
       "match": "exact",
       "status": "offline-verified",
       "note": "唯一正文 stage、raw/观察/提前 TTS 与显示通知；失败停止",
-      "fileSha256": "52acd2cb6edd9347702fd659a5458a01b60c7dcf9f9d2ab2beedbc25a704d361"
+      "fileSha256": "eb89f8809e1f3dbcb5ebe6b5995825e7fdec790980e00756105dd2ab95ad29dc"
     },
     {
       "id": "native.turn.commit",
       "path": "ShoutBehavior.NativeTurnCommit.cs",
-      "start": 48,
-      "end": 48,
+      "start": 49,
+      "end": 49,
       "symbol": "public async Task<NativeConversationTurnStep> PostprocessAndCommitAsync()",
       "match": "exact",
       "status": "offline-verified",
       "note": "共享后处理 prepare/game→request/worker→complete/game，原权威动作/终态",
-      "fileSha256": "b02cbb0719da712bfb55bfd7120ba38da0ae6332074e8afb965689370c3654c1"
+      "fileSha256": "a129d97b0195f1b697fe26a54d4a96bd58b417eb39f542ecd4fb72b48e9d5d9a"
     },
     {
       "id": "native.turn.postprocess-rules",
       "path": "ShoutBehavior.NativeTurnCommit.cs",
-      "start": 165,
-      "end": 165,
+      "start": 186,
+      "end": 186,
       "symbol": "private void CapturePostprocessRules()",
       "match": "exact",
       "status": "offline-verified",
       "note": "后处理历史与领域资格留在所属线程",
-      "fileSha256": "b02cbb0719da712bfb55bfd7120ba38da0ae6332074e8afb965689370c3654c1"
+      "fileSha256": "a129d97b0195f1b697fe26a54d4a96bd58b417eb39f542ecd4fb72b48e9d5d9a"
     },
     {
       "id": "native.turn.postprocess-targets",
       "path": "ShoutBehavior.NativeTurnCommit.cs",
-      "start": 207,
-      "end": 207,
+      "start": 228,
+      "end": 228,
       "symbol": "private void CapturePostprocessTargets()",
       "match": "exact",
       "status": "offline-verified",
       "note": "决斗筹码、场景规则、运行期目标 metadata 捕获",
-      "fileSha256": "b02cbb0719da712bfb55bfd7120ba38da0ae6332074e8afb965689370c3654c1"
+      "fileSha256": "a129d97b0195f1b697fe26a54d4a96bd58b417eb39f542ecd4fb72b48e9d5d9a"
     },
     {
       "id": "native.turn.direct-scene",
       "path": "ShoutBehavior.NativeTurnCommit.cs",
-      "start": 228,
-      "end": 228,
+      "start": 249,
+      "end": 249,
       "symbol": "private void CaptureDirectSceneCommand()",
       "match": "exact",
       "status": "offline-verified",
       "note": "保留 GCCZ 早期命令次序，AF 桥调用在校验后的游戏线程；不改玩法",
-      "fileSha256": "b02cbb0719da712bfb55bfd7120ba38da0ae6332074e8afb965689370c3654c1"
+      "fileSha256": "a129d97b0195f1b697fe26a54d4a96bd58b417eb39f542ecd4fb72b48e9d5d9a"
     },
     {
       "id": "llm.http.nonstream",
@@ -3791,13 +3791,13 @@
     {
       "id": "actions.default.scene",
       "path": "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
-      "start": 505,
-      "end": 505,
+      "start": 507,
+      "end": 507,
       "symbol": "private bool CommitDeferredSceneActionPlan(",
       "match": "exact",
       "status": "wired-j09-candidate",
       "note": "default Scene action wrapper preserving mood/GCCZ/direct/speech/relay order",
-      "fileSha256": "f3116451b2fc159a582058c7ca174a79f0541285fb858dabb3ca14ec0eeabb11"
+      "fileSha256": "0e386939d2b9dcbd3b61a9948ffe18e11dd8043b17efc26e6c9a767d5b2300d0"
     },
     {
       "id": "actions.default.courier",
@@ -8565,24 +8565,24 @@
     {
       "id": "af2.package.version",
       "path": "scripts/build/package_mod.ps1",
-      "start": 163,
-      "end": 163,
+      "start": 165,
+      "end": 165,
       "symbol": "function Get-VersionedSubModuleBytes {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "ZIP-only XML version without source or Stage mutation",
-      "fileSha256": "c4a7cc917a7d88f17c564e98b9d9985a414ad94c78849672f69df73c3d5fa070"
+      "fileSha256": "31bf2a31f99f90d006ac7858237df13ea1f78e3a69e7cc14315b9dec6eb0e98c"
     },
     {
       "id": "af2.package.whitelist",
       "path": "scripts/build/package_mod.ps1",
-      "start": 730,
-      "end": 730,
+      "start": 732,
+      "end": 732,
       "symbol": "function Assert-ZipMatchesCleanStage {",
       "match": "exact",
       "status": "af2-f3-stage-zip-verified-deploy-blocked",
       "note": "ZIP byte/hash equality to clean Stage",
-      "fileSha256": "c4a7cc917a7d88f17c564e98b9d9985a414ad94c78849672f69df73c3d5fa070"
+      "fileSha256": "31bf2a31f99f90d006ac7858237df13ea1f78e3a69e7cc14315b9dec6eb0e98c"
     },
     {
       "id": "af2.model.store",
