@@ -56,6 +56,15 @@ internal static class Program
             Console.WriteLine($"R1 generated completion replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--r1-job-launch")
+        {
+            LlmDispatchApplicationReplay.Run();
+            RunPreSendGateDecisionTests();
+            RunLlmJobRoutingDecisionTests();
+            VerifyJobLaunchOwnership();
+            Console.WriteLine($"R1 job launch replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -269,6 +278,24 @@ RunRepairCorrectionAndJobDecisionTests();
             && !rules.Contains("public static void CommitGeneratedDocument(", StringComparison.Ordinal)
             && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitGeneratedDocument(", StringComparison.Ordinal),
             "real generated completion enters Application for admission, exchange state and analysis dispatch");
+    }
+
+    private static void VerifyJobLaunchOwnership()
+    {
+        string app = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
+        string behavior = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        string rules = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        Test.True(app.Contains("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", StringComparison.Ordinal)
+            && app.Contains("internal static WorldDiplomacyJob SelectAndPrepareLlmJob(", StringComparison.Ordinal)
+            && app.Contains("internal static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
+            && app.Contains("tryConsumeRequestBudget?.Invoke(true)", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source)", StringComparison.Ordinal)
+            && !rules.Contains("public static WorldDiplomacyJob SelectAndPrepareLlmJob(", StringComparison.Ordinal)
+            && !rules.Contains("public static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
+            "real launch caller enters Application for selection, preflight, budget and claim");
     }
 
     private static WorldDiplomacyRoundReconcileInput BaseInput()
@@ -11725,12 +11752,12 @@ RunRepairCorrectionAndJobDecisionTests();
         // DPL-060CX: the canonical-contract gate passes current/absent contracts,
         // rebuilds stale generation contracts, and retires stale non-generation jobs.
         var contractJob = new WorldDiplomacyJob { Kind = "generate", JobId = "jc" };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EnsureCurrentCanonicalPromptContractBeforeSend(
+        Test.True(WorldDiplomacyLlmDispatchApplication.EnsureCurrentCanonicalPromptContractBeforeSend(
                 contractJob, new WorldDiplomacyStorage(), _ => true, (j, e) => { }, _ => { }, _ => { }),
             "jobs without a canonical contract must pass the gate");
         contractJob.CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey;
         int contractRebuilds = 0, contractFails = 0;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EnsureCurrentCanonicalPromptContractBeforeSend(
+        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureCurrentCanonicalPromptContractBeforeSend(
                 contractJob, new WorldDiplomacyStorage(), _ => { contractRebuilds++; return false; },
                 (j, e) => contractFails++, _ => { }, _ => { })
             && contractRebuilds == 1 && contractFails == 1,
@@ -11747,7 +11774,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         var gateStorage = new WorldDiplomacyStorage();
         int removedJobs = 0;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EnsureCurrentCanonicalPromptContractBeforeSend(
+        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureCurrentCanonicalPromptContractBeforeSend(
                 staleAnalyze, gateStorage, _ => true, (j, e) => { }, _ => removedJobs++, _ => { })
             && gateStorage.DiplomacyCompressionPending
             && gateStorage.CompressionRetryAfterHour == 0
@@ -13260,7 +13287,7 @@ RunRepairCorrectionAndJobDecisionTests();
                 b.RemoveAt(0);
                 return v;
             }
-            return WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(
+            return WorldDiplomacyLlmDispatchApplication.SelectAndPrepareLlmJob(
                 storage, 100, affinity,
                 staleThreat ?? (j => false), refreshThreat ?? (j => true),
                 staleAction ?? (j => false), refreshAction ?? (j => true),
@@ -15463,7 +15490,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && promptContractSource.Contains("Func<long, string> buildCanonicalHistoryBlock", StringComparison.Ordinal),
             "LLM message assembly must live in the prompt contract rules behind a canonical-history port");
         string dispatchSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
-        Test.True(dispatchSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", StringComparison.Ordinal)
+        Test.True(dispatchSource.Contains("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildLlmMessageArray(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private JArray BuildLlmMessageArray(", StringComparison.Ordinal),
@@ -16154,16 +16181,16 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("claimedOfferDocumentId", StringComparison.Ordinal),
             "the host must not retain offer-matching or settlement-open bodies");
 
-        // DPL-060CX: the pre-send input-budget and canonical-contract gates live in
-        // the lifecycle rules; the host binds token limits and job-queue ports.
+        // DPL-R1: the canonical pre-send migration belongs to the launch owner;
+        // input-budget math remains a bounded domain helper.
         Test.True(rulesSource.Contains("public static bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
-            && rulesSource.Contains("Func<WorldDiplomacyJob, bool> rebuildPendingJob", StringComparison.Ordinal)
+            && dispatchSource.Contains("internal static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
+            && dispatchSource.Contains("Func<WorldDiplomacyJob, bool> rebuildPendingJob", StringComparison.Ordinal)
             && rulesSource.Contains("Func<long, string> buildHistoryBlock", StringComparison.Ordinal)
-            && rulesSource.Contains("Action<string> removeJob", StringComparison.Ordinal),
-            "pre-send gates must live in the lifecycle rules behind ports");
+            && dispatchSource.Contains("Action<string> removeJob", StringComparison.Ordinal),
+            "pre-send migration must live with Application dispatch behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(", StringComparison.Ordinal)
-            && rulesSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
+            && dispatchSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
             && behaviorSource.Contains("GetHistoryCompressionTriggerTokens()", StringComparison.Ordinal)
             && behaviorSource.Contains("Logger.EstimateTokens", StringComparison.Ordinal),
             "the host must bind token limits and job ports through thin adapters");
@@ -16333,7 +16360,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // R1: completion admission/dispatch now has one Application owner.
         string completionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
-        Test.True(dispatchSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", StringComparison.Ordinal)
+        Test.True(dispatchSource.Contains("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyCompletionApplication.Run(ref source)", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source)", StringComparison.Ordinal)
             && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", StringComparison.Ordinal),
@@ -16342,11 +16369,11 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("WorldDiplomacyLlmApplication.ExecuteAsync(", StringComparison.Ordinal)
             && behaviorSource.Contains("Task.Run(", StringComparison.Ordinal),
             "transport launch remains a narrow main-thread adapter");
-        Test.True(rulesSource.Contains("ServiceCooldownUntilHour > currentHour", StringComparison.Ordinal)
-            && rulesSource.Contains("ResolveCacheAffinityKey(x)", StringComparison.Ordinal)
-            && rulesSource.Contains("ThenBy(x => x.CreatedDay)", StringComparison.Ordinal)
-            && rulesSource.Contains("IsValidSemanticRepairMessageChain(job)", StringComparison.Ordinal)
-            && rulesSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
+        Test.True(dispatchSource.Contains("ServiceCooldownUntilHour > currentHour", StringComparison.Ordinal)
+            && dispatchSource.Contains("ResolveCacheAffinityKey(x)", StringComparison.Ordinal)
+            && dispatchSource.Contains("ThenBy(x => x.CreatedDay)", StringComparison.Ordinal)
+            && dispatchSource.Contains("IsValidSemanticRepairMessageChain(job)", StringComparison.Ordinal)
+            && dispatchSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal),
             "job selection and preflight checks remain unchanged");
         Test.True(completionSource.Contains("completed generation used a stale diplomatic threat stage", StringComparison.Ordinal)
             && completionSource.Contains("truncated generated draft handling failed", StringComparison.Ordinal)

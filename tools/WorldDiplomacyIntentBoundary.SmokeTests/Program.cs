@@ -2115,8 +2115,8 @@ internal static class Program
             "a stale action presentation must discard its request/repair chain and rebuild the prompt");
 
         string beforeSend = ExtractMethod(
-            lifecycleRulesSource,
-            "public static WorldDiplomacyJob SelectAndPrepareLlmJob(");
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs")),
+            "internal static WorldDiplomacyJob SelectAndPrepareLlmJob(");
         int beforeSendStaleCheck = beforeSend.IndexOf("hasStaleActionPresentation?.Invoke(job)", StringComparison.Ordinal);
         int beforeSendRefresh = beforeSend.IndexOf("refreshActionPresentation?.Invoke(job)", StringComparison.Ordinal);
         int requestMaterialization = beforeSend.IndexOf("buildMessageArray?.Invoke(job)", StringComparison.Ordinal);

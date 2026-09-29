@@ -46,9 +46,9 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         self.assertEqual(runtime.count("private void ProcessCompletedJobs()"), 1)
         lifecycle = read("Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs")
         dispatch = read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs")
-        self.assertIn("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob(", dispatch)
-        self.assertIn("!string.IsNullOrWhiteSpace(x.JobId)", lifecycle)
-        self.assertIn('(lastCacheAffinityKey ?? "").Trim()', lifecycle)
+        self.assertIn("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", dispatch)
+        self.assertIn("!string.IsNullOrWhiteSpace(x.JobId)", dispatch)
+        self.assertIn('(lastCacheAffinityKey ?? "").Trim()', dispatch)
         completion = read("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs")
         self.assertIn("WorldDiplomacyCompletionApplication.Run(ref source)", runtime)
         self.assertNotIn("WorldDiplomacyJobRuntimeCoordinator.IsCurrentCompletion(", runtime)
@@ -74,8 +74,8 @@ class J12DomainOwnerSourceContracts(unittest.TestCase):
         # DPL-110 retired the unused selector; the live state machine owns selection.
         self.assertNotIn("SelectNextJobId(", coordinator)
         self.assertNotIn("WorldDiplomacyJobQueueItem", coordinator)
-        self.assertEqual(dispatch.count("WorldDiplomacyRoundLifecycleRules.SelectAndPrepareLlmJob("), 1)
-        self.assertEqual(lifecycle.count("public static WorldDiplomacyJob SelectAndPrepareLlmJob("), 1)
+        self.assertEqual(dispatch.count("internal static WorldDiplomacyJob SelectAndPrepareLlmJob("), 1)
+        self.assertNotIn("public static WorldDiplomacyJob SelectAndPrepareLlmJob(", lifecycle)
 
     def test_worldmap_protocol_admission_lifecycle_and_delay_are_split(self) -> None:
         host = read("src/modules/AF.Module.WorldMap/Runtime/WorldMapPartyCommandBehavior.cs")
