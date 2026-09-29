@@ -1,5 +1,18 @@
 <a id="j17a-intent-20260928"></a>
 
+## J17-A 当前基线刷新（2026-09-29，`A0_INVENTORY_READY / A_NOT_CLOSED / B_NOT_STARTED`）
+
+在实际分支 `codex/af-main-refactor-continuation-20260831`、源码 `944712f8c7e8b02057abc91cfefe02f1aade517f` 上，按[执行规格](plans/j17-responsibility-closeout-plan.md)完成 G0 的 Git/脏区保护与 A0 的**编译输入和语法成员清单**，尚未完成 A1/A2 的逐符号语义、消费者和动态边界复核。证据见[范围图 E14](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)及仓内忽略材料 `artifacts/j17a/current-compile-inventory.json`、`current-member-inventory.json`、`current-host-member-counts.json`。
+
+- 当前 `AnimusForge.csproj` 以本机 .NET 8 SDK `-getItem:Compile` 分别求值 `BannerlordApi=1.3`（`_deps_auto`）与 `1.4`（`.tmp/build_check/1.4`）：各 **1,123** 个 Compile 路径、无重复、两集合无差异、全部为已跟踪文件。相对旧 E13 的 940，净增 183；旧 940/3,332 不再是当前分母。两套 `DefineConstants` 分别为 `TRACE;DEBUG;NETFRAMEWORK;NET472` 与另加 `BANNERLORD_1_4_OR_GREATER`。
+- 仓内隔离审计工具用 SDK 自带 Roslyn 仅解析上述实际文件，两个 API 分别得 **49,509 / 49,508** 个声明、解析错误 0；1.3 专属 7、1.4 专属 6 个声明。声明清单含类型、字段、属性、方法、事件、枚举成员、各 partial 和一基行号；它是覆盖导航，**未证明语义归属、动态消费者或产品编译通过**。旧 `artifacts/j17a/host-member-buckets.json` 等材料不在本工作区；当前清单不冒充恢复旧结果。
+- 新增编译输入包括 Vengeance 75、Illustrator 52、DialogueUI 25、Coup 12 个文件；`IntegratedModuleHost.Tick`、CivilWar 存档/AF 接缝和 Native 已接受回复副作用均须进入 A2。政策、宴会、GCCZ 内部玩法仍按原范围排除，其 AF 接缝不豁免。R04/E09 至 R07/E13 的旧调用链须按当前源码重验；R05/R06/R08/R09 仍未闭。
+- 本切片仅执行只读 MSBuild 求值及隔离审计工具构建/运行；**未构建 AnimusForge 双实现或 Bootstrap、未运行产品/旧档/全量测试、未执行 Stage/部署/打包/推送**。下一步从 R04 JSON/保存/反射闭包及 R02 输入→接受链继续 A1，然后完成 20 桶 A2；A 出口前不批量启动 B。
+
+## J17 执行规格补齐（2026-09-29，仅文档）
+
+按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
+
 ## J17-A 前置盘点意图检查点（2026-09-28，`J17A_ACTIVE`）
 
 用户要求绕过 J16（已推送交他人接手）先做 J17，且不影响 J16。本工作在独立 worktree `G:\AFMOD\AF-J17`、分支 `codex/af-j17a-inventory-20260928`（基于远端 `99ca85ae`）。范围只取[结项计划](#af2-closeout-plan-20260928)第 5 节 J17-A：先 R04 保存/JSON 边界，再 R02 摘要捕获→生成→接受，R01 周报回调与 R03 导入导出闭包，然后按 20 桶补全 R07 成员分区。**只读审查 + 文档**：不改产品 C#、测试、tools/tests 布局（J16 归他人）、配置、Skill、一键流程；不构建部署推送、不写游戏/玩家数据。证据写范围图 E09+，状态只在本台账登记表更新。

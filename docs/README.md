@@ -4,7 +4,7 @@
 
 - [主台账](animusforge-refactoring-and-repository-reorganization-plan.md)：进度、证据、登记表（R01–R09）与执行顺序。
 - [`HANDOFF.md`](../HANDOFF.md)：当前段与下一步。
-- [`plans/`](plans/)：每阶段实施计划（J07–J16）。
+- [`plans/`](plans/)：每阶段实施计划（J07–J17）；[J17 执行规格](plans/j17-responsibility-closeout-plan.md)。
 
 ## 案例（被 `CLAUDE.md` / `AGENTS.md` 引用，路径不动）
 
