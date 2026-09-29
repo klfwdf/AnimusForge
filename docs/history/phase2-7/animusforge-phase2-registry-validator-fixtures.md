@@ -3,8 +3,8 @@
 - 状态：fixture 设计完成；未实现 validator；未接入运行时
 - 日期：2026-08-30
 - owner：Host/Composition
-- 输入契约来源：`docs/animusforge-phase2-registry-dto-design.md`
-- 现状清单来源：`docs/animusforge-phase2-submodule-registration-catalog.md`
+- 输入契约来源：`docs/history/phase2-7/animusforge-phase2-registry-dto-design.md`
+- 现状清单来源：`docs/history/phase2-7/animusforge-phase2-submodule-registration-catalog.md`
 - 目的：为后续 manifest/schema、依赖图、owner、profile、线程边界和失败隔离检查提供稳定的纯数据样例
 
 > 本文件是设计期 fixture，不是生产 C#、不是实际 `SubModule.cs` 注册器，也不是要求当前仓库立即生成的 JSON 文件。示例中的 `HostRegistrySnapshot`、`HostContributionGroupDescriptor` 和 `HostContributionDescriptor` 均为逻辑 DTO 名称。

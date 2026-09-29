@@ -25,11 +25,11 @@
 
 | 项目 | 证据 | 结果 |
 |---|---|---|
-| Module manifest/profile/dependency/health | `docs/animusforge-phase3-module-manifest-profile-health-catalog.md`、`docs/fixtures/phase3-module-catalog/`、`tools/ModuleCatalogContractTests/` | PASS |
-| AF.Contracts capability/event/DTO/version | `docs/animusforge-phase3-af-contracts-design.md`、`docs/fixtures/phase3-af-contracts/`、`tools/AFContractsContractTests/` | PASS |
-| Foundation dispatch/background/diagnostics/SafeMode | `docs/animusforge-phase3-foundation-runtime-contracts.md`、`docs/fixtures/phase3-foundation-runtime/`、`tools/FoundationRuntimeContractTests/` | PASS |
-| No-op/dependency/optional/SafeMode/failure isolation | `docs/animusforge-phase3-composition-matrix.md`、`docs/fixtures/phase3-composition-matrix/`、`tools/CompositionMatrixContractTests/` | PASS |
-| GameAdapter 1.3/1.4 boundary | `docs/animusforge-phase3-game-adapter-api-boundary.md`、`docs/fixtures/phase3-game-adapter-api/`、`tools/GameAdapterContractTests/` | PASS |
+| Module manifest/profile/dependency/health | `docs/history/phase2-7/animusforge-phase3-module-manifest-profile-health-catalog.md`、`docs/fixtures/phase3-module-catalog/`、`tools/ModuleCatalogContractTests/` | PASS |
+| AF.Contracts capability/event/DTO/version | `docs/history/phase2-7/animusforge-phase3-af-contracts-design.md`、`docs/fixtures/phase3-af-contracts/`、`tools/AFContractsContractTests/` | PASS |
+| Foundation dispatch/background/diagnostics/SafeMode | `docs/history/phase2-7/animusforge-phase3-foundation-runtime-contracts.md`、`docs/fixtures/phase3-foundation-runtime/`、`tools/FoundationRuntimeContractTests/` | PASS |
+| No-op/dependency/optional/SafeMode/failure isolation | `docs/history/phase2-7/animusforge-phase3-composition-matrix.md`、`docs/fixtures/phase3-composition-matrix/`、`tools/CompositionMatrixContractTests/` | PASS |
+| GameAdapter 1.3/1.4 boundary | `docs/history/phase2-7/animusforge-phase3-game-adapter-api-boundary.md`、`docs/fixtures/phase3-game-adapter-api/`、`tools/GameAdapterContractTests/` | PASS |
 | Stage ownership and cross-cutting constraints | phase 2 maps, owner matrix, SubModule catalog, handoff | PASS |
 
 ## 3. 纯验证证据

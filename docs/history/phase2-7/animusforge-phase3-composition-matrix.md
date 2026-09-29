@@ -3,7 +3,7 @@
 - 状态：纯组合设计与 fixture 完成；未实现 Module Host/Registry；未修改生产 C#
 - 日期：2026-08-30
 - owner：Foundation/Host/Composition；参与模块 owner 共同审阅
-- 依据：`docs/animusforge-phase3-module-manifest-profile-health-catalog.md`、`docs/animusforge-phase3-foundation-runtime-contracts.md`、`.claude/skills/animusforge-maintainer/references/module-and-bridge-workflow.md`、`validation.md`
+- 依据：`docs/history/phase2-7/animusforge-phase3-module-manifest-profile-health-catalog.md`、`docs/history/phase2-7/animusforge-phase3-foundation-runtime-contracts.md`、`.claude/skills/animusforge-maintainer/references/module-and-bridge-workflow.md`、`validation.md`
 - fixture：`F:\AnimusForge-main\docs\fixtures\phase3-composition-matrix\`
 - runner：`F:\AnimusForge-main\tools\CompositionMatrixContractTests\validate_composition_matrix.py`
 
