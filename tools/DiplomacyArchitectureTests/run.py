@@ -107,8 +107,7 @@ def main():
                    ('private void RecordDiplomacyWeeklyMaterial(', 'WorldDiplomacyHistoryCaptureApplication.'),
                    ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
                    ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.'),
-                   ('private void NormalizeStorage(', 'WorldDiplomacyStorageNormalizationApplication.'),
-                   ('private void MigrateCanonicalHistoryIfNeeded(', 'WorldDiplomacyCanonicalHistoryMigrationApplication.')):
+                   ('private void NormalizeStorage(', 'WorldDiplomacyStorageNormalizationApplication.')):
   before=declaration(prior,signature);after=declaration(current,signature)
   assert owner in after, signature
   prior=prior.replace(before,after)
@@ -144,8 +143,27 @@ def main():
  current=current.replace('\t'+declaration(current,proactive_speaker)+'\n\n','')
  current=current.replace('\t'+declaration(current,proactive_documents)+'\n\n','')
  current=current.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
+ # Leaf marshal helpers introduced by callback-narrowing slices: identity resolution and
+ # single-leaf adapters only. Each is removed from the current side after asserting it is thin.
+ for signature in ('private string EnqueueMandatoryCourtReplyJob(',
+                   'private string GetAuthorDiplomacyBlockReason(',
+                   'private bool HasIndependentWorldDiplomacyAuthorityById(',
+                   'private string ResolveKingdomIdOrNull(',
+                   'private bool IsEliminatedKingdomId(',
+                   'private List<string> LegalDiplomaticDeclarationIntents(',
+                   'private List<string> GetResultSettlementActionableTargetIds(',
+                   'private bool HasAnyLegalDiplomaticActionIntent(',
+                   'private List<string> GetActionableDiplomaticTargetIds(',
+                   'private (int, int) GetDeclarationCharacterRange(',
+                   'private string BuildRelayTurnGenerationPrompt(',
+                   'private string BuildGenerationPromptForJob(',
+                   'private void CaptureCanonicalHistoryForQueuedJob(',
+                   'private void AbandonRejectedGenerationForIds('):
+  leaf=declaration(current,signature)
+  assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf,'leaf helper regrew orchestration: '+signature
+  current=current.replace('\t'+leaf+'\n','',1)
  assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
- print('PASS 24 private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
+ print('PASS '+str(len(retired.RETIRED))+' private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
  out=HERE/'.generated';out.mkdir(exist_ok=True)
  # Evaluation only: no game startup, restore, Stage or deployment.
  result=subprocess.run([a.dotnet,'msbuild',str(ROOT/'AnimusForge.csproj'),'-getItem:Compile'],cwd=ROOT,capture_output=True,encoding='utf-8',check=True)

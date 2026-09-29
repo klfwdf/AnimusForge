@@ -498,12 +498,12 @@ internal static class Program
                   && lifecycleRules.Contains("SelectSlotKindsExcept(slot.Kind, \"war_response\")", StringComparison.Ordinal)
                   && lifecycleRules.Contains("slot.Kind = string.Join(\"+\", remainingKinds)", StringComparison.Ordinal),
             "migration must remove a pure obsolete war slot or strip only its war-response kind from a mixed obligation");
-        string normalization = ExtractSection(
-            source,
-            "private void NormalizeStorage(",
-            "private void TrimRecentBattleFacts(");
+        string normalization = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile(Path.Combine(
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyStorageNormalizationApplication.cs")), Encoding.UTF8),
+            "internal static void Normalize<TSource, TMigration>(");
         Test.True(normalization.Contains("if (allowWorldValidation)", StringComparison.Ordinal)
-                  && normalization.Contains("MigrateResultSettlementState();", StringComparison.Ordinal),
+                  && normalization.Contains("MigrateResultSettlementStateIfNeeded(", StringComparison.Ordinal),
             "result-settlement migration must run during validated save loading, not on hot-path ticks");
         Test.True(normalization.Contains("WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(", StringComparison.Ordinal),
             "stored round record normalization must delegate to the migration rules");

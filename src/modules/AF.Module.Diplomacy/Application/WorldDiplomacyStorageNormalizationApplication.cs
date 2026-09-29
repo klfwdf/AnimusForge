@@ -29,11 +29,20 @@ internal interface IWorldDiplomacyStorageNormalizationSource
     bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document);
     void PruneInvalidOffers(WorldDiplomacyRound round);
     void NormalizeOfferCooldownStorage();
-    void NormalizeDiplomaticThreats(bool allowWorldValidation);
-    void MigrateAutonomousDecisionArchitecture();
-    void MigrateCanonicalHistory();
-    void MigrateResultSettlementState();
-    void MigrateDiplomacyPromptContract();
+    bool HasCampaignWorld { get; }
+    int DiplomacyPromptContractVersion { get; }
+    int ResultSettlementStateSchemaVersion { get; }
+    string ValidateThreatWorldEligibility(WorldDiplomacyThreat threat);
+    string NewThreatId();
+    int ThreatComplianceIssuerRewardMax { get; }
+    WorldDiplomacyDocument ResolveDocument(string documentId);
+    string ResolveEligibleKingdomId(string kingdomId);
+    bool IsAtWarByKingdomIds(string firstKingdomId, string secondKingdomId);
+    void CloseActiveRound(string reason);
+    bool RebuildPendingJob(WorldDiplomacyJob job);
+    void CompleteExchange(string exchangeId, string reason);
+    void ClearLlmCacheAffinityKey();
+    void BeginOrExtendResultSettlement(WorldDiplomacyRound round, WorldDiplomacyDocument document, string closeReason, string roundStatus);
     WorldDiplomacyRound ResolveRound(string roundId);
     void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents);
     void UpgradeRoundSummaryToStructuredArchive(WorldDiplomacyRoundSummary summary);
@@ -45,20 +54,31 @@ internal interface IWorldDiplomacyStorageNormalizationSource
 
 internal static class WorldDiplomacyStorageNormalizationApplication
 {
-    internal static void Normalize<TSource>(ref WorldDiplomacyStorage storage, bool allowWorldValidation, ref TSource source)
+    internal static void Normalize<TSource, TMigration>(ref WorldDiplomacyStorage storage, bool allowWorldValidation,
+        ref TSource source, ref TMigration migration)
         where TSource : struct, IWorldDiplomacyStorageNormalizationSource
+        where TMigration : struct, IWorldDiplomacyCanonicalHistoryMigrationSource
     {
         storage = WorldDiplomacyStorageShapeNormalizer.EnsureInitialized(storage);
         WorldDiplomacyNotificationStateMigration.Migrate(storage);
         source.NormalizeOfferCooldownStorage();
         storage.CompressionRetryAfterHour = Math.Max(0, storage.CompressionRetryAfterHour);
         storage.CompressionRetryAttempts = Math.Max(0, Math.Min(31, storage.CompressionRetryAttempts));
-        source.NormalizeDiplomaticThreats(allowWorldValidation);
+        WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(
+            storage,
+            allowWorldValidation && source.HasCampaignWorld
+                ? (Func<WorldDiplomacyThreat, string>)source.ValidateThreatWorldEligibility
+                : null,
+            source.CurrentDay, source.ResolveDocument, source.NewThreatId,
+            source.ThreatComplianceIssuerRewardMax, source.Log);
         if (allowWorldValidation)
         {
             try
             {
-                source.MigrateAutonomousDecisionArchitecture();
+                WorldDiplomacyStorageMigration.MigrateAutonomousDecisionArchitectureIfNeeded(
+                    storage, source.DecisionArchitectureVersion, source.RelaySchemaVersion, source.CurrentDay,
+                    source.HasCampaignWorld, source.ResolveDocument, source.ResolveEligibleKingdomId,
+                    source.IsAtWarByKingdomIds, source.CloseActiveRound, source.Log);
             }
             catch (Exception ex)
             {
@@ -97,7 +117,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
         {
             try
             {
-                source.MigrateCanonicalHistory();
+                WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(storage, ref migration);
             }
             catch (Exception ex)
             {
@@ -131,7 +151,9 @@ internal static class WorldDiplomacyStorageNormalizationApplication
         {
             try
             {
-                source.MigrateResultSettlementState();
+                WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(
+                    storage, source.ResultSettlementStateSchemaVersion,
+                    source.BeginOrExtendResultSettlement, source.Log);
             }
             catch (Exception ex)
             {
@@ -139,7 +161,10 @@ internal static class WorldDiplomacyStorageNormalizationApplication
             }
             try
             {
-                source.MigrateDiplomacyPromptContract();
+                WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(
+                    storage, source.DiplomacyPromptContractVersion, source.HasCampaignWorld,
+                    source.RebuildPendingJob, source.CompleteExchange,
+                    source.ClearLlmCacheAffinityKey, source.Log);
             }
             catch (Exception ex)
             {

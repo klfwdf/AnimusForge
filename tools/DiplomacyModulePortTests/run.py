@@ -107,6 +107,24 @@ def boundaries():
  current_world=current_world.replace('\t'+declaration(current_world,proactive_speaker)+'\n\n','')
  current_world=current_world.replace('\t'+declaration(current_world,proactive_documents)+'\n\n','')
  current_world=current_world.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
+ # Leaf marshal helpers introduced by callback-narrowing slices; strip only after a thin check.
+ for signature in ('private string EnqueueMandatoryCourtReplyJob(',
+                   'private string GetAuthorDiplomacyBlockReason(',
+                   'private bool HasIndependentWorldDiplomacyAuthorityById(',
+                   'private string ResolveKingdomIdOrNull(',
+                   'private bool IsEliminatedKingdomId(',
+                   'private List<string> LegalDiplomaticDeclarationIntents(',
+                   'private List<string> GetResultSettlementActionableTargetIds(',
+                   'private bool HasAnyLegalDiplomaticActionIntent(',
+                   'private List<string> GetActionableDiplomaticTargetIds(',
+                   'private (int, int) GetDeclarationCharacterRange(',
+                   'private string BuildRelayTurnGenerationPrompt(',
+                   'private string BuildGenerationPromptForJob(',
+                   'private void CaptureCanonicalHistoryForQueuedJob(',
+                   'private void AbandonRejectedGenerationForIds('):
+  leaf=declaration(current_world,signature)
+  assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf,'leaf helper regrew orchestration: '+signature
+  current_world=current_world.replace('\t'+leaf+'\n','',1)
  # Every use-case owner moved to a compiled Application; each surviving predecessor must be a
  # single forwarder to its owner. Baseline substitution mirrors DiplomacyArchitectureTests.
  for signature,owner in [
@@ -190,8 +208,7 @@ def boundaries():
   ('private void RecordDiplomacyWeeklyMaterial(', 'WorldDiplomacyHistoryCaptureApplication.'),
   ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
   ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.'),
-  ('private void NormalizeStorage(', 'WorldDiplomacyStorageNormalizationApplication.'),
-  ('private void MigrateCanonicalHistoryIfNeeded(', 'WorldDiplomacyCanonicalHistoryMigrationApplication.')]:
+  ('private void NormalizeStorage(', 'WorldDiplomacyStorageNormalizationApplication.')]:
   if signature not in prior_world or signature not in current_world: continue
   before=declaration(prior_world,signature);after=declaration(current_world,signature).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')
   assert any(o in after for o in owner.split('|')), signature
@@ -268,9 +285,20 @@ def boundaries():
    assert not (len(apps)>=2 and flow>=1),'host method re-hides multi-owner orchestration: '+wf.name+'::'+name
    assert len(apps)<3,'host method sequences multiple use-case owners: '+wf.name+'::'+name
  # Load-time sequencers must stay thin forwarders to their Application owners.
- for sig in ['private void NormalizeStorage(','private void MigrateCanonicalHistoryIfNeeded(']:
-  fwd=declaration(current_world,sig)
-  assert fwd.count(';')<=3 and re.search(r'WorldDiplomacy\w+Application\.',fwd),'load sequencer regrew orchestration: '+sig
+ fwd=declaration(current_world,'private void NormalizeStorage(')
+ assert fwd.count(';')<=3 and re.search(r'WorldDiplomacy\w+Application\.',fwd),'load sequencer regrew orchestration: NormalizeStorage'
+ # Migration ordering lives in the normalization Application, not in host wrappers.
+ norm_app=read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs')
+ for owner in ('WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(',
+   'WorldDiplomacyStorageMigration.MigrateAutonomousDecisionArchitectureIfNeeded(',
+   'WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(',
+   'WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(',
+   'WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats('):
+  assert owner in norm_app,'migration ordering left the Application: '+owner
+ norm_source=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.StorageNormalizationSource.cs')
+ assert not re.search(r'void Migrate\w+\(',norm_source),'normalization source regrew a migration-ordering op'
+ norm_iface=declaration(norm_app,'internal interface IWorldDiplomacyStorageNormalizationSource')
+ assert not re.search(r'void Migrate\w+\(',norm_iface) and 'NormalizeDiplomaticThreats' not in norm_iface,'normalization source exposes an ordered migration op'
  # Execution port stays a leaf surface: no writable storage, fixed width, leaf member bodies.
  exec_decl=declaration(read('src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyDocumentExecutionPort.cs'),
    'internal interface IWorldDiplomacyDocumentExecutionPort')
