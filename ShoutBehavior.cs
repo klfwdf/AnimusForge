@@ -1591,7 +1591,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		Dictionary<int, Agent> liveAgents = new Dictionary<int, Agent>();
 		foreach (Agent agent in agents)
 		{
-			if (agent != null && wanted.Contains(agent.Index) && agent != Agent.Main && agent.IsActive() && agent.IsHuman && (!snapshotAgents.TryGetValue(agent.Index, out var snapshotAgent2) || ReferenceEquals(snapshotAgent2, agent)))
+			if (agent != null && wanted.Contains(agent.Index) && agent != Agent.Main && agent.IsActive() && agent.IsHuman && !RichExecutions.Core.VengeanceIntegration.IsExecutedVictim(agent) && (!snapshotAgents.TryGetValue(agent.Index, out var snapshotAgent2) || ReferenceEquals(snapshotAgent2, agent)))
 			{
 				liveAgents[agent.Index] = agent;
 			}
@@ -1640,6 +1640,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		foreach (Agent agent in missionAgents)
 		{
 			if (agent == null || agent == playerAgent || !agent.IsActive() || !agent.IsHuman
+				|| RichExecutions.Core.VengeanceIntegration.IsExecutedVictim(agent)
 				|| (excludedAgentIndices != null && excludedAgentIndices.Contains(agent.Index)))
 			{
 				continue;
@@ -6694,7 +6695,8 @@ stringBuilder.Append(partyRepresentativePrompt);
 	{
 		try
 		{
-			return agent != null && agent.IsActive() && agent.State == AgentState.Active && agent.Health > 0f;
+			return agent != null && agent.IsActive() && agent.State == AgentState.Active && agent.Health > 0f
+				&& !RichExecutions.Core.VengeanceIntegration.IsExecutedVictim(agent);
 		}
 		catch
 		{

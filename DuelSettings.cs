@@ -2353,6 +2353,16 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("12. 事件系统（开发）")]
 	public bool EnablePlayerKingdomRebellionImmunity { get; set; } = false;
 
+	[SettingPropertyBool("启用即时快报（替代旧周报）", Order = 10, RequireRestart = false, HintText = "开启后停用每周自动生成的世界/王国长周报：大事件发生后收集 1 天，为玩家王国和世界各发一份“大事件 + 几条小事件”快报（每份 3 天冷却，每期只调用 1 次 LLM；开启插画扩展时自动配图）。其他王国的 NPC 局势摘要改为本地模板，每周合并润色一次；王国稳定度改由事件本地计算（每国每周上限 ±15）。关闭后回到旧周报流程。默认开启。")]
+	[SettingPropertyGroup("12. 事件系统（开发）")]
+	public bool UseWorldBulletin { get; set; } = true;
+
+	// Legacy weekly batches only run when the bulletin mode is off.
+	internal bool IsLegacyWeeklyAutoGenerationActive()
+	{
+		return AutoGenerateWeeklyReports && !UseWorldBulletin;
+	}
+
 	[SettingPropertyBool("{=gccz_npc_response_unlimited_name}NPC Response Unlimited", Order = 0, RequireRestart = false, HintText = "{=gccz_npc_response_unlimited_hint}Removes the configured numeric cap in active GCCZ town scenes while retaining event deduplication and queue safety.")]
 	[SettingPropertyGroup(SiegeNpcResponseLimitProfile.McmGroupName)]
 	public bool GcczNpcResponseUnlimited { get; set; } = SiegeNpcResponseLimitProfile.DefaultUnlimited;

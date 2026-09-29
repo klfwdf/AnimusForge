@@ -13,6 +13,9 @@ public static class VengeanceIntegration
 {
     private static readonly object Sync = new();
     private static readonly HashSet<int> ProtectedVictimAgentIndexes = new();
+    // Victims past the lethal frame. Some methods keep the Agent active in a
+    // frozen death pose, so hosts must not treat it as a living speaker.
+    private static readonly HashSet<int> ExecutedVictimAgentIndexes = new();
     private static bool _embeddedHostActive;
 
     public static bool IsEnabled { get; private set; } = true;
@@ -53,6 +56,33 @@ public static class VengeanceIntegration
         {
             _embeddedHostActive = false;
             ProtectedVictimAgentIndexes.Clear();
+            ExecutedVictimAgentIndexes.Clear();
+        }
+    }
+
+    public static void MarkExecutedVictim(Agent? victim)
+    {
+        if (victim is null)
+        {
+            return;
+        }
+
+        lock (Sync)
+        {
+            ExecutedVictimAgentIndexes.Add(victim.Index);
+        }
+    }
+
+    public static bool IsExecutedVictim(Agent? victim)
+    {
+        if (victim is null)
+        {
+            return false;
+        }
+
+        lock (Sync)
+        {
+            return ExecutedVictimAgentIndexes.Count > 0 && ExecutedVictimAgentIndexes.Contains(victim.Index);
         }
     }
 
@@ -79,6 +109,7 @@ public static class VengeanceIntegration
         lock (Sync)
         {
             ProtectedVictimAgentIndexes.Remove(victim.Index);
+            ExecutedVictimAgentIndexes.Remove(victim.Index);
         }
     }
 

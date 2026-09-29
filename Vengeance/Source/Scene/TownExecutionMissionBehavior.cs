@@ -526,6 +526,7 @@ public sealed partial class TownExecutionMissionBehavior : MissionLogic, IExecut
     private bool _victimConversationBlockAttempted;
     private bool _victimConversationBlockApplied;
     private bool _aftermathSessionReleased;
+    private bool _aftermathSpeechPlayed;
     private EquipmentIndex _playerPrimaryWieldedBeforeCeremony = EquipmentIndex.None;
     private EquipmentIndex _playerOffhandWieldedBeforeCeremony = EquipmentIndex.None;
     private readonly MissionWeapon[] _playerWeaponsBeforeCeremony =

@@ -90,6 +90,28 @@ internal static class Program
         session.Troops[0].HallSelected = false;
         session.Troops[0].Wounded = true;
         Assert(!session.IsValid(), "wounded combatant must be removed from active pool");
+        // Defender roles have a single owner: the session record list the host spawns from.
+        session = NewSession();
+        session.Troops.Add(Troop("a"));
+        session.Troops.Add(Troop("g", CoupTroopRole.GateGuard));
+        session.Troops.Add(Troop("s", CoupTroopRole.StreetDefender));
+        session.Troops.Add(Troop("h", CoupTroopRole.HallGuard));
+        Assert(session.PendingDefenders(false).Count == 2 && session.PendingDefenders(true).Count == 1, "street and hall spawn disjoint defender sets");
+        Assert(!session.IsGateCleared, "unspawned gate guard keeps the door shut");
+        session.Troops[1].TryRecordCasualty(true);
+        Assert(session.IsGateCleared && session.PendingDefenders(false).Count == 1, "fallen gate guard opens door and is not respawned");
+        Assert(session.SceneLocationId == "center", "street arms town center");
+        session.Phase = CoupPhase.Hall;
+        Assert(session.SceneLocationId == "lordshall", "hall arms lord's hall only");
+
+        // A suspended victory must resume, never settle neutrally.
+        session = NewSession(); session.KingSubdued = true; session.CasualtiesCommitted = true;
+        session.ResumePhase = CoupPhase.AwaitingResolution; session.Phase = CoupPhase.Suspended;
+        Assert(session.IsResumable && !session.IsSettled, "suspended victory stays pending until retried");
+        session.ResumePhase = CoupPhase.Street;
+        Assert(!session.IsResumable && session.IsSettled, "mid-fight technical stop settles after casualties");
+        session.CasualtiesCommitted = false;
+        Assert(!session.IsSettled, "technical stop waits for casualty commit");
         Console.WriteLine("Coup contracts: " + _assertions + " PASS");
     }
 }
