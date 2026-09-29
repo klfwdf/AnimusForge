@@ -93,6 +93,12 @@
   "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/test_source_parity.py": {
    "expect": "PREEXISTING_FAIL"
   },
+  "tests/modules/AF.Module.Conversation/CourierInboundDeliveryFailureTests/run.py": {
+   "args": [
+    "--dotnet",
+    "{DOTNET8}"
+   ]
+  },
   "tests/modules/AF.Module.Conversation/CourierLetterInventoryTests/run.py": {
    "expect": "PREEXISTING_FAIL"
   },
