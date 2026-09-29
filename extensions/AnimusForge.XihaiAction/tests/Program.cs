@@ -144,6 +144,8 @@ internal static class Program
             TestPendingConsentExpiryAndSession);
         Run("NPC action descriptions override commands to third parties safely",
             TestNpcActualActionAndSubjectSafety);
+        Run("Postprocess SCENE_ACT directive tag is closed, allow-listed, and strippable",
+            TestNpcReplyDirectiveTag);
 
         Console.WriteLine($"Core tests: {_passed} passed, {_failed} failed.");
         return _failed == 0 ? 0 : 1;
@@ -4524,6 +4526,54 @@ internal static class Program
             "act_main_story_conspirator_kneel_down_1_continue",
             StringComparer.Ordinal));
     }
+    private static void TestNpcReplyDirectiveTag()
+    {
+        string[] all = SceneActionFrameworkV4.LogicalActions
+            .Select(entry => entry.IntentKey)
+            .ToArray();
+
+        True(NpcReplyDirectiveTagV1.TryExtract(
+            "[ACTION:MOOD:JOY]\n[ACTION:SCENE_ACT:kneel]",
+            all,
+            out string single,
+            out string remaining,
+            out _));
+        Equal("kneel", single);
+        Equal("[ACTION:MOOD:JOY]", remaining.Trim());
+        Equal("PLAY_ACTION kneel", NpcReplyDirectiveTagV1.ToClassifierProtocolLine(single));
+
+        True(NpcReplyDirectiveTagV1.TryExtract(
+            "[ACTION:SCENE_ACT: Laugh>point ]", all, out string program, out _, out _));
+        Equal("laugh>point", program);
+        Equal("PLAY_PROGRAM laugh>point", NpcReplyDirectiveTagV1.ToClassifierProtocolLine(program));
+
+        True(NpcReplyDirectiveTagV1.TryExtract(
+            "[ACTION:SCENE_ACT:none]", all, out string none, out _, out _));
+        Equal(NpcReplyDirectiveTagV1.NoneValue, none);
+        Equal("NONE", NpcReplyDirectiveTagV1.ToClassifierProtocolLine(none));
+
+        // Raw ids, unknown keys, keys outside the frozen allow-list, the rule
+        // template itself, and over-long programs are all rejected.
+        True(!NpcReplyDirectiveTagV1.TryExtract("[ACTION:SCENE_ACT:act_taunt_18]", all, out _, out _, out _));
+        True(!NpcReplyDirectiveTagV1.TryExtract("[ACTION:SCENE_ACT:fly]", all, out _, out _, out _));
+        True(!NpcReplyDirectiveTagV1.TryExtract(
+            "[ACTION:SCENE_ACT:rage]", new[] { "kneel" }, out _, out _, out string outsideError));
+        True(outsideError.Contains("allow-list"));
+        True(!NpcReplyDirectiveTagV1.TryExtract(NpcReplyDirectiveTagV1.RuleTemplateTag, all, out _, out _, out _));
+        True(!NpcReplyDirectiveTagV1.TryExtract(
+            "[ACTION:SCENE_ACT:laugh>point>rage>fear>cheer]", all, out _, out _, out _));
+        True(!NpcReplyDirectiveTagV1.TryExtract("no tag here", all, out _, out _, out _));
+
+        // Every tag is removed from visible text even when invalid.
+        Equal("hello", NpcReplyDirectiveTagV1.StripTags("[ACTION:SCENE_ACT:fly]hello[ACTION:SCENE_ACT:kneel]"));
+
+        string catalog = NpcReplyDirectiveTagV1.BuildCatalogText(new[] { "kneel", "laugh" });
+        True(catalog.StartsWith("kneel（", StringComparison.Ordinal));
+        True(catalog.Contains("\nlaugh（"));
+        True(!catalog.Contains("rage（"));
+        Equal(string.Empty, NpcReplyDirectiveTagV1.BuildCatalogText(null));
+    }
+
     private static void Run(string name, Action test)
     {
         try

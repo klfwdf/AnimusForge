@@ -1,0 +1,202 @@
+﻿{
+    "Assembly":  "F:\\AnimusForge-main\\extensions\\AnimusForge.Illustrator\\bin\\test\\1.3\\AnimusForge.Illustrator.dll",
+    "SHA256":  "7AC990372F78E3E1B4063225354EEA97746D3024A5E1C5F3484E969F9CC142E3",
+    "Api":  "1.3",
+    "Checks":  32,
+    "Failures":  0,
+    "Boundary":  "Native adapter with simulated GPU output: image preservation, cache, cancellation and no-blit widget. Not live native rendering or shader fidelity acceptance.",
+    "RuntimeDependencies":  [
+                                {
+                                    "Name":  "TaleWorlds.MountAndBlade.GauntletUI.Widgets",
+                                    "Version":  "1.0.0.0",
+                                    "Path":  "F:\\AnimusForge-main\\bin\\Debug\\net472\\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll"
+                                },
+                                {
+                                    "Name":  "TaleWorlds.GauntletUI",
+                                    "Version":  "1.0.0.0",
+                                    "Path":  "F:\\AnimusForge-main\\bin\\Debug\\net472\\TaleWorlds.GauntletUI.dll"
+                                },
+                                {
+                                    "Name":  "TaleWorlds.Library",
+                                    "Version":  "1.0.0.0",
+                                    "Path":  "F:\\AnimusForge-main\\bin\\Debug\\net472\\TaleWorlds.Library.dll"
+                                },
+                                {
+                                    "Name":  "TaleWorlds.TwoDimension",
+                                    "Version":  "1.0.0.0",
+                                    "Path":  "F:\\AnimusForge-main\\bin\\Debug\\net472\\TaleWorlds.TwoDimension.dll"
+                                },
+                                {
+                                    "Name":  "TaleWorlds.Engine.GauntletUI",
+                                    "Version":  "1.0.0.0",
+                                    "Path":  "F:\\AnimusForge-main\\bin\\Debug\\net472\\TaleWorlds.Engine.GauntletUI.dll"
+                                },
+                                {
+                                    "Name":  "TaleWorlds.ScreenSystem",
+                                    "Version":  "1.0.0.0",
+                                    "Path":  "F:\\AnimusForge-main\\bin\\Debug\\net472\\TaleWorlds.ScreenSystem.dll"
+                                }
+                            ],
+    "Results":  [
+                    {
+                        "Name":  "rendered_pixels_preserved_0",
+                        "Passed":  true,
+                        "Evidence":  "Synthetic native-format PNG; full background/outline/rotation/mirror remain pixel-identical after one channel normalization"
+                    },
+                    {
+                        "Name":  "lossless_png_0",
+                        "Passed":  true,
+                        "Evidence":  "PNG, not JPEG"
+                    },
+                    {
+                        "Name":  "rendered_pixels_preserved_1",
+                        "Passed":  true,
+                        "Evidence":  "Synthetic native-format PNG; full background/outline/rotation/mirror remain pixel-identical after one channel normalization"
+                    },
+                    {
+                        "Name":  "lossless_png_1",
+                        "Passed":  true,
+                        "Evidence":  "PNG, not JPEG"
+                    },
+                    {
+                        "Name":  "rendered_pixels_preserved_2",
+                        "Passed":  true,
+                        "Evidence":  "Synthetic native-format PNG; full background/outline/rotation/mirror remain pixel-identical after one channel normalization"
+                    },
+                    {
+                        "Name":  "lossless_png_2",
+                        "Passed":  true,
+                        "Evidence":  "PNG, not JPEG"
+                    },
+                    {
+                        "Name":  "truncated_file_rejected",
+                        "Passed":  true,
+                        "Evidence":  "No reference from incomplete output"
+                    },
+                    {
+                        "Name":  "transparent_rejected",
+                        "Passed":  true,
+                        "Evidence":  "No opaque render content"
+                    },
+                    {
+                        "Name":  "flat_export_rejected",
+                        "Passed":  true,
+                        "Evidence":  "Conservative gate also omits deliberately uniform banners"
+                    },
+                    {
+                        "Name":  "wrong_dimensions_rejected",
+                        "Passed":  true,
+                        "Evidence":  "Native full banner must be square"
+                    },
+                    {
+                        "Name":  "historical_blank_rejected",
+                        "Passed":  true,
+                        "Evidence":  "Actual old failed export fixture"
+                    },
+                    {
+                        "Name":  "cache_hit",
+                        "Passed":  true,
+                        "Evidence":  "Same full banner code and size rendered once"
+                    },
+                    {
+                        "Name":  "cache_identity",
+                        "Passed":  true,
+                        "Evidence":  "Different banner or size never aliases"
+                    },
+                    {
+                        "Name":  "cancelled_cached_request_rejected",
+                        "Passed":  true,
+                        "Evidence":  "Even a cached reference cannot escape caller cancellation"
+                    },
+                    {
+                        "Name":  "campaign_cache_reset",
+                        "Passed":  true,
+                        "Evidence":  "Reset invalidates prior results"
+                    },
+                    {
+                        "Name":  "failure_not_cached",
+                        "Passed":  true,
+                        "Evidence":  "Later explicit request may recover"
+                    },
+                    {
+                        "Name":  "queued_identical_requests_coalesce",
+                        "Passed":  true,
+                        "Evidence":  "One native export; second caller consumes cache"
+                    },
+                    {
+                        "Name":  "late_campaign_result_dropped",
+                        "Passed":  true,
+                        "Evidence":  "Renderer ignored cancellation, yet obsolete result cannot populate cache"
+                    },
+                    {
+                        "Name":  "cancel_before_admission",
+                        "Passed":  true,
+                        "Evidence":  "Waiting cancelled request never starts native rendering"
+                    },
+                    {
+                        "Name":  "cancel_active_request",
+                        "Passed":  true,
+                        "Evidence":  "Cancellation is passed into native adapter"
+                    },
+                    {
+                        "Name":  "bounded_cache",
+                        "Passed":  true,
+                        "Evidence":  "32-entry ceiling"
+                    },
+                    {
+                        "Name":  "evicted_banner_renders_again",
+                        "Passed":  true,
+                        "Evidence":  "Oldest entry evicted"
+                    },
+                    {
+                        "Name":  "cache_byte_budget",
+                        "Passed":  true,
+                        "Evidence":  "High-entropy PNGs evict by bytes before reaching entry limit"
+                    },
+                    {
+                        "Name":  "no_screen_blit",
+                        "Passed":  true,
+                        "Evidence":  "OnRender drives next provider update without touching draw context"
+                    },
+                    {
+                        "Name":  "late_stage_cleanup_keeps_replacement",
+                        "Passed":  true,
+                        "Evidence":  "Old export cannot retire the new active stage"
+                    },
+                    {
+                        "Name":  "stage_cleanup_idempotent",
+                        "Passed":  true,
+                        "Evidence":  "Current stage retired exactly once"
+                    },
+                    {
+                        "Name":  "dispatch_cancel_without_tick",
+                        "Passed":  true,
+                        "Evidence":  "Queued request completes cancellation even if game stops ticking"
+                    },
+                    {
+                        "Name":  "dispatch_cancelled_work_skipped",
+                        "Passed":  true,
+                        "Evidence":  "Late queue drain cannot create a cancelled stage"
+                    },
+                    {
+                        "Name":  "admitted_dispatch_preserves_ownership",
+                        "Passed":  true,
+                        "Evidence":  "Cancellation inside admitted work cannot release its caller before stage creation returns"
+                    },
+                    {
+                        "Name":  "full_queue_keeps_stage_lock",
+                        "Passed":  true,
+                        "Evidence":  "Rejected cleanup post cannot pretend native stage is retired"
+                    },
+                    {
+                        "Name":  "reset_unblocks_stage_retirement",
+                        "Passed":  true,
+                        "Evidence":  "Main-thread reset completes retirement even without another queued tick"
+                    },
+                    {
+                        "Name":  "cpu_shader_removed",
+                        "Passed":  true,
+                        "Evidence":  "No fallback to the known incorrect shader reconstruction"
+                    }
+                ]
+}

@@ -1,0 +1,371 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false" IsVisible="@IsVisible">
+      <Children>
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="false" IsVisible="@IsExpanded" />
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" IsVisible="@IsExpanded">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" IsVisible="@IsChromeVisible">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1380" SuggestedHeight="285" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true" MarginBottom="10">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1380" SuggestedHeight="285" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="afdui_scroll_chassis_clean" DoNotAcceptEvents="true" />
+                    <ButtonWidget Id="AFRowCollapse" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="572" MarginTop="28" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteCollapse">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="收起界面" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#3B1802FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="400" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="80" Text="@AddresseeText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#E2C38AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="270" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="680" MarginTop="80" Text="@StatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="698" SuggestedHeight="98" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="263" MarginTop="100" DoNotAcceptEvents="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="12" MarginTop="10" Text="输入你想对周围人说的话…… (Enter 发送 · Shift+Enter 换行)" Brush="ConversationItem.Text" DoNotAcceptEvents="true" IsVisible="@IsInputEmpty" Brush.FontSize="15" Brush.FontColor="#E2C38AAA" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                        <DevMultilineEditableTextWidget Id="AFSessionInput" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="12" MarginRight="12" MarginTop="10" MarginBottom="10" VerticalAlignment="Top" Command.TextEntered="ExecuteSubmit" Brush="ConversationItem.Text" Brush.FontSize="16" Brush.FontColor="#F0DFBEFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" EditorFontSize="16" RealText="@InputText" AutoFocus="false" SubmitOnEnter="true" UseBlackCaret="false" MaxLength="6000" />
+                      </Children>
+                    </Widget>
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="566" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="275" MarginTop="200" Text="@StagedTradeText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#8A4A12FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" IsVisible="@HasStagedTrade" />
+                    <ButtonWidget Id="AFTabCancelTrade" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="847" MarginTop="200" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteCancelStagedTrade" IsVisible="@HasStagedTrade">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="取消给予" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="12" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget Id="AFPlateHistory" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="94" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="991" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleHistory">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="历史记录" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget Id="AFPlateGift" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="94" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1094" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteGift" IsEnabled="@CanSend">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="赠送物品" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget Id="AFPlateCodex" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="94" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1198" MarginTop="82" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteEncyclopedia">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="人物图鉴" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget Id="AFPlaqueSend" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="991" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSubmit" IsEnabled="@CanSend">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@SendText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#FFDF95FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget Id="AFPlaqueInterrupt" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="991" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteInterrupt" IsVisible="@CanInterrupt">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="打断 · 插话" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#FFB08AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget Id="AFPlateLeave" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="102" SuggestedHeight="41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1189" MarginTop="125" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteLeave">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="退出交谈" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#361F0EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </Widget>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="460" SuggestedHeight="640" HorizontalAlignment="Right" VerticalAlignment="Top" DoNotAcceptEvents="true" MarginRight="50" MarginTop="35" IsVisible="@IsDocketOpen">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="460" SuggestedHeight="640" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="afdui_audience_docket_pure_clean" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="320" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="70" MarginTop="110" Text="@AudienceTitle" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#2E1A0CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="320" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="70" MarginTop="136" Text="@AudienceStats" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#6E4A2AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="320" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="70" MarginTop="158" Text="点名片 = 选为对话对象 · 点印章 = 参与 / 屏蔽 / 锁定" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="12" Brush.FontColor="#8C6540FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Top" />
+                    <ButtonWidget Id="AFTabIncludeAll" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="110" MarginTop="196" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteIncludeAll">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="全部参与" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget Id="AFTabKeepLocked" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="240" MarginTop="196" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteKeepLocked">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="只留锁定" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="322" SuggestedHeight="326" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="75" MarginTop="234" DoNotAcceptEvents="true">
+                      <Children>
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipRect="AFSessionDocketClip" InnerPanel="AFSessionDocketClip\AFSessionDocketList" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFSessionDocketBar" AutoHideScrollBars="true">
+                          <Children>
+                            <Widget Id="AFSessionDocketClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <ListPanel Id="AFSessionDocketList" DataSource="{Participants}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="310" SuggestedHeight="72" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" MarginBottom="6" DoNotAcceptEvents="true">
+                                      <Children>
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="310" SuggestedHeight="72" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="BlankWhiteSquare_9" Color="#B88E4FFF" DoNotAcceptEvents="true" />
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="308" SuggestedHeight="70" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#FAF3E3D9" DoNotAcceptEvents="true" />
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="308" SuggestedHeight="70" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#E8C77A55" IsVisible="@IsAddressee" DoNotAcceptEvents="true" />
+                                        <ButtonWidget Id="AFRowSelect" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="218" SuggestedHeight="72" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelect">
+                                          <Children>
+                                            <ImageIdentifierWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="44" SuggestedHeight="44" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginTop="14" DoNotAcceptEvents="true" IsVisible="@HasImage" ImageId="@ImageId" AdditionalArgs="@ImageArgs" TextureProviderName="@ImageProvider" CircularClipEnabled="true" CircularClipRadius="22" CircularClipSmoothingRadius="2" />
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="158" SuggestedHeight="22" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="58" MarginTop="6" Text="@Name" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="40" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="58" MarginTop="28" Text="@Detail" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="12" Brush.FontColor="#5E432AFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                                          </Children>
+                                        </ButtonWidget>
+                                        <ButtonWidget Id="AFRowSeal" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="86" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="222" MarginTop="19" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteCycle">
+                                          <Children>
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="22" SuggestedHeight="22" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginTop="6" Sprite="afdui_seal_base_green" IsVisible="@IsParticipating" DoNotAcceptEvents="true" />
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="22" SuggestedHeight="22" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginTop="6" Sprite="afdui_seal_base_red" IsVisible="@IsExcluded" DoNotAcceptEvents="true" />
+                                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="22" SuggestedHeight="22" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginTop="6" Sprite="afdui_seal_base_gold" IsVisible="@IsLocked" DoNotAcceptEvents="true" />
+                                            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="54" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="32" MarginTop="0" Text="@StateText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="12" Brush.FontColor="#5C3E14FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                          </Children>
+                                        </ButtonWidget>
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="310" SuggestedHeight="72" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="BlankWhiteSquare_9" Color="#F5EDDE88" IsVisible="@IsDimmed" DoNotAcceptEvents="true" />
+                                      </Children>
+                                    </Widget>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <ScrollbarWidget Id="AFSessionDocketBar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFSessionDocketHandle" MinValue="0" MaxValue="100">
+                          <Children>
+                            <Widget Id="AFSessionDocketHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" />
+                          </Children>
+                        </ScrollbarWidget>
+                      </Children>
+                    </Widget>
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="310" SuggestedHeight="18" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="75" MarginTop="566" Text="滚轮查看更多" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="12" Brush.FontColor="#5C3A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                    <ButtonWidget Id="AFTabRollDocket" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="88" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="186" MarginTop="588" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleDocket">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="卷起名录" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="12" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </Widget>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="330" SuggestedHeight="36" HorizontalAlignment="Right" VerticalAlignment="Top" DoNotAcceptEvents="true" MarginRight="115" MarginTop="35" IsVisible="@IsDocketRolled">
+                  <Children>
+                    <ButtonWidget Id="AFCapDocketTag" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="330" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleDocket">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@DocketTagText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#F0D9AEFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </Widget>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="960" SuggestedHeight="520" HorizontalAlignment="Center" VerticalAlignment="Top" DoNotAcceptEvents="true" IsVisible="@IsHistoryOpen" Sprite="afdui_parchment_panel" MarginTop="130">
+                  <Children>
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="400" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="44" MarginTop="26" Text="场景对话记录" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="19" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                    <ButtonWidget Id="AFTabCloseHistory" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="100" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="816" MarginTop="26" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteToggleHistory">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="关闭" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                      </Children>
+                    </ButtonWidget>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="872" SuggestedHeight="420" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="44" MarginTop="70" DoNotAcceptEvents="true">
+                      <Children>
+                        <AnimusForgeConversationHistoryAutoScrollPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipRect="AFHistoryDrawerClip" InnerPanel="AFHistoryDrawerClip\AFHistoryDrawerList" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFHistoryDrawerBar" AutoHideScrollBars="true" AutoScrollRequestVersion="@HistoryScrollVersion">
+                          <Children>
+                            <Widget Id="AFHistoryDrawerClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <ListPanel Id="AFHistoryDrawerList" DataSource="{HistoryLines}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8" DoNotAcceptEvents="true" StackLayout.LayoutMethod="VerticalTopToBottom">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" DoNotAcceptEvents="true">
+                                          <Children>
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@Speaker" IsVisible="@IsPlayer" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#8A6220FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@Speaker" IsVisible="@IsNpc" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#4A321EFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@Speaker" IsVisible="@IsFact" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#2F5E78FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                          </Children>
+                                        </Widget>
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Text="@Text" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Top" />
+                                      </Children>
+                                    </ListPanel>
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </AnimusForgeConversationHistoryAutoScrollPanel>
+                        <ScrollbarWidget Id="AFHistoryDrawerBar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFHistoryDrawerHandle" MinValue="0" MaxValue="100">
+                          <Children>
+                            <Widget Id="AFHistoryDrawerHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" />
+                          </Children>
+                        </ScrollbarWidget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </Widget>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1280" SuggestedHeight="610" HorizontalAlignment="Center" VerticalAlignment="Top" DoNotAcceptEvents="true" MarginTop="150" DataSource="{Trade}" IsVisible="@IsOpen" Sprite="afdui_aux_panel">
+              <Children>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="88" MarginTop="100" Text="@Title" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="22" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                <ButtonWidget Id="AFTabTradeClose" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="136" SuggestedHeight="40" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1056" MarginTop="104" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="Close">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="返回对话" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget Id="AFTabTradeMode" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="88" MarginTop="160" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="SelectItems" IsSelected="@IsItems" IsEnabled="@CanInteract">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="物品 / 第纳尔" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget Id="AFTabTradeMode" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="276" MarginTop="160" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="SelectTroops" IsSelected="@IsTroops" IsEnabled="@CanInteract">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="部队" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget Id="AFTabTradeMode" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="464" MarginTop="160" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="SelectPrisoners" IsSelected="@IsPrisoners" IsEnabled="@CanInteract">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="俘虏" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget Id="AFTabTradeMode" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="652" MarginTop="160" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="SelectAssets" IsSelected="@IsAssets" IsEnabled="@CanInteract">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="固定资产" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget Id="AFTabTradeGive" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="158" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="868" MarginTop="160" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="SelectGive" IsSelected="@IsGive" IsEnabled="@CanInteract">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="给予" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget Id="AFTabTradeShow" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="158" SuggestedHeight="36" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1034" MarginTop="160" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="SelectShow" IsSelected="@IsShow" IsEnabled="@CanShow">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="展示" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="752" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="88" MarginTop="204" DoNotAcceptEvents="true">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="750" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#FFF7E24D" DoNotAcceptEvents="true" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="752" SuggestedHeight="1" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="BlankWhiteSquare_9" Color="#AC895566" DoNotAcceptEvents="true" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="752" SuggestedHeight="1" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="33" Sprite="BlankWhiteSquare_9" Color="#AC895566" DoNotAcceptEvents="true" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#AC895566" DoNotAcceptEvents="true" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="751" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#AC895566" DoNotAcceptEvents="true" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="16" SuggestedHeight="16" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginTop="9" Sprite="afdui_icon_search" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="576" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="36" MarginTop="0" Text="搜索物品或第纳尔…" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#947451FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" IsVisible="@IsSearchEmpty" />
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="622" MarginTop="0" Text="@ResourceCountText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#8A6944FF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+                    <AnimusForgeNativeConversationEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="36" MarginRight="140" Brush="Popup.Button.Text" RealText="@SearchText" MaxLength="80" AutoFocus="false" ClipContents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                  </Children>
+                </Widget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="460" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="100" MarginTop="238" Text="资源" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#8B693FFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="618" MarginTop="238" Text="持有" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#8B693FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="95" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="738" MarginTop="238" Text="估值" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#8B693FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="766" SuggestedHeight="220" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="88" MarginTop="264" DoNotAcceptEvents="true">
+                  <Children>
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipRect="AFTradeResourcesClip" InnerPanel="AFTradeResourcesClip\AFTradeResourcesList" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFTradeResourcesBar" AutoHideScrollBars="true">
+                      <Children>
+                        <Widget Id="AFTradeResourcesClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                          <Children>
+                            <ListPanel Id="AFTradeResourcesList" DataSource="{ResourceItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+                              <ItemTemplate>
+                                <ButtonWidget Id="AFRowResource" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="752" SuggestedHeight="44" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="Toggle" IsSelected="@IsSelected" IsEnabled="@CanSelect">
+                                  <Children>
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="752" SuggestedHeight="1" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="43" Sprite="BlankWhiteSquare_9" Color="#98764633" DoNotAcceptEvents="true" />
+                                    <ImageIdentifierWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="34" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="8" MarginTop="9" DoNotAcceptEvents="true" IsVisible="@HasImage" ImageId="@ImageId" AdditionalArgs="@ImageArgs" TextureProviderName="@ImageProvider" />
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="12" MarginTop="10" Sprite="afdui_icon_coin" IsVisible="@IsGold" DoNotAcceptEvents="true" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="472" SuggestedHeight="20" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="4" Text="@Name" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#412D1DFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="472" SuggestedHeight="16" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="24" Text="@Category" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="11" Brush.FontColor="#987750FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="120" SuggestedHeight="44" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="530" MarginTop="0" Text="@AvailableText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#64482DFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="95" SuggestedHeight="44" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="650" MarginTop="0" Text="@ValueText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#64482DFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                  </Children>
+                                </ButtonWidget>
+                              </ItemTemplate>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="AFTradeResourcesBar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFTradeResourcesHandle" MinValue="0" MaxValue="100">
+                      <Children>
+                        <Widget Id="AFTradeResourcesHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="752" SuggestedHeight="52" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="88" MarginTop="330" Text="没有符合条件的资源" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#6E5033FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" IsVisible="@IsResourceEmpty" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="216" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="868" MarginTop="204" Text="@SelectionTitle" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="17" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                <ButtonWidget Id="AFTabTradeClear" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="68" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1124" MarginTop="204" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ClearSelection" IsEnabled="@CanInteract">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="清空" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="324" SuggestedHeight="206" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="868" MarginTop="238" DoNotAcceptEvents="true">
+                  <Children>
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipRect="AFTradeSelectionClip" InnerPanel="AFTradeSelectionClip\AFTradeSelectionList" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFTradeSelectionBar" AutoHideScrollBars="true">
+                      <Children>
+                        <Widget Id="AFTradeSelectionClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                          <Children>
+                            <ListPanel Id="AFTradeSelectionList" DataSource="{SelectedItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+                              <ItemTemplate>
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="306" SuggestedHeight="76" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" DoNotAcceptEvents="true">
+                                  <Children>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="264" SuggestedHeight="27" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Text="@Name" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#29180CFF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                                    <ButtonWidget Id="AFTabQty" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="30" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="274" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="Remove">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="×" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <ButtonWidget Id="AFTabQty" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="33" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="Decrement">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="−" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="130" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="38" MarginTop="33" Sprite="BlankWhiteSquare_9" Color="#A78145FF" DoNotAcceptEvents="true">
+                                      <Children>
+                                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="128" SuggestedHeight="30" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#25190FFF" DoNotAcceptEvents="true">
+                                          <Children>
+                                            <AnimusForgeNativeConversationEditableTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="6" MarginRight="6" Brush="Popup.Button.Text" RealText="@Quantity" MaxLength="10" AutoFocus="false" ClipContents="true" Brush.FontSize="16" Brush.FontColor="@QuantityColor" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Command.FocusGained="StartTyping" Command.FocusLost="StopTyping" />
+                                          </Children>
+                                        </Widget>
+                                      </Children>
+                                    </Widget>
+                                    <ButtonWidget Id="AFTabQty" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="174" MarginTop="33" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="Increment">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="+" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <ButtonWidget Id="AFTabQty" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="214" MarginTop="33" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="SelectAll">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="全部" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                      </Children>
+                                    </ButtonWidget>
+                                  </Children>
+                                </Widget>
+                              </ItemTemplate>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="AFTradeSelectionBar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFTradeSelectionHandle" MinValue="0" MaxValue="100">
+                      <Children>
+                        <Widget Id="AFTradeSelectionHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="276" SuggestedHeight="52" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="884" MarginTop="294" Text="从左侧选择资源" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#6E5033FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" IsVisible="@IsSelectionEmpty" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="94" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="868" MarginTop="452" Text="估值合计" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#6E5033FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="224" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="968" MarginTop="452" Text="@TotalValue" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+                <ButtonWidget Id="AFTabTradePage" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="88" MarginTop="498" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="PreviousResources" IsEnabled="@CanResourcePrevious">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="上一页" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="184" MarginTop="498" Text="@ResourcePageText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#6E5033FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                <ButtonWidget Id="AFTabTradePage" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="378" MarginTop="498" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="NextResources" IsEnabled="@CanResourceNext">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="下一页" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="354" SuggestedHeight="46" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="486" MarginTop="493" Text="@TradeNote" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#6E5033FF" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+                <ButtonWidget Id="AFTabTradeConfirm" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="324" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="868" MarginTop="498" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="Confirm" IsEnabled="@CanSubmit">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@ConfirmText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </ButtonWidget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1104" SuggestedHeight="26" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="88" MarginTop="542" Text="@StatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#7B3D2FFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Bottom" DoNotAcceptEvents="true" MarginBottom="26" IsVisible="@IsCollapsed">
+          <Children>
+            <ButtonWidget Id="AFCapExpand" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="44" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteExpand">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@CollapsedText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#F0D9AEFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+              </Children>
+            </ButtonWidget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

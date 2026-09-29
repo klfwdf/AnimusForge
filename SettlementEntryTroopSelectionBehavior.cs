@@ -100,6 +100,59 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 	private static bool _setsEntryMissionActive => _followerOwner.Active;
 	private static bool _setsOrderControllerPrimed;
 	private static float _nextSetsOrderControllerPrimeTime;
+	private static string _armedCoupSettlementId;
+	private static TroopRoster _armedCoupRoster;
+
+	internal static void QueueArmedCoupEntry(string settlementId, TroopRoster roster)
+	{
+		_armedCoupSettlementId = string.IsNullOrWhiteSpace(settlementId) ? null : settlementId;
+		_armedCoupRoster = roster;
+	}
+
+	internal static void ClearArmedCoupEntry()
+	{
+		_armedCoupSettlementId = null;
+		_armedCoupRoster = null;
+	}
+
+	internal static bool IsArmedCoupEntry(string settlementId)
+	{
+		return !string.IsNullOrEmpty(_armedCoupSettlementId)
+			&& string.Equals(_armedCoupSettlementId, settlementId, StringComparison.Ordinal);
+	}
+
+	private static bool InvokeCoupBool(string methodName)
+	{
+		try
+		{
+			Type owner = AccessTools.TypeByName("AnimusForge.CoupSystem.CoupCampaignBehavior");
+			return owner != null && AccessTools.Method(owner, methodName)?.Invoke(null, null) is bool value && value;
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("Armed coup query failed. method=" + methodName + ", error=" + ex.Message);
+			return false;
+		}
+	}
+
+	private static void InvokeCoupCasualty(string methodName, CharacterObject character, bool killed, string role)
+	{
+		try
+		{
+			Type owner = AccessTools.TypeByName("AnimusForge.CoupSystem.CoupCampaignBehavior");
+			AccessTools.Method(owner, methodName)?.Invoke(null, new object[] { character, killed, role });
+		}
+		catch (Exception ex)
+		{
+			SettlementEntryTroopSelectionLog.Log("Armed coup casualty callback failed. method=" + methodName + ", error=" + ex.Message);
+		}
+	}
+
+	private static IAgentOriginBase CreateCoupOrigin(CharacterObject character, bool ally)
+	{
+		Type originType = AccessTools.TypeByName("AnimusForge.CoupSystem.CoupAgentOrigin");
+		return originType?.GetConstructor(new[] { typeof(CharacterObject), typeof(bool) })?.Invoke(new object[] { character, ally }) as IAgentOriginBase;
+	}
 
 	private enum EntryProfileKind
 	{
@@ -245,6 +298,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
+		_armedCoupRoster = null;
 		ClearRuntime("new_game");
 		TroopInspectionBehavior.ResetForCampaignTransition();
 		ClearPendingSameKingdomVassalRebellion("new_game");
@@ -260,6 +314,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private static void ClearRuntime(string source)
 	{
+		_armedCoupRoster = null;
+		_armedCoupSettlementId = null;
 		_pendingProfileSelection = null;
 		_pendingMissionEntry = null;
 		_pendingVictoryMenuEntry = null;
@@ -1442,7 +1498,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private static bool TownCreateAndOpenMissionControllerPrefix(TownEncounter __instance, Location nextLocation, Location previousLocation, CharacterObject talkToChar, string playerSpecialSpawnTag)
 	{
-		TryPrepareSettlementEntryMission(__instance?.Settlement, nextLocation, SetsSettlementEntryProfile.TownCenterLocationId, SetsSettlementSceneKind.Town);
+		Settlement town = __instance?.Settlement;
+		string locationId = IsArmedCoupEntry(town?.StringId) && nextLocation?.StringId == "lordshall"
+			? "lordshall" : SetsSettlementEntryProfile.TownCenterLocationId;
+		TryPrepareSettlementEntryMission(town, nextLocation, locationId, SetsSettlementSceneKind.Town);
 		return true;
 	}
 
@@ -1467,24 +1526,42 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				return;
 			}
 			EnsureProfileRosters();
-			EntryProfileKind profileKind = IsOwnEntrySettlement(settlement) ? EntryProfileKind.OwnSettlement : EntryProfileKind.OtherSettlement;
-			int limit = GetProfileLimit(profileKind);
-			TroopRoster profile = GetProfileRoster(profileKind);
-			TroopRoster selected = ResolveProfileRosterForEntry(profile, MobileParty.MainParty?.MemberRoster, limit, out int configuredCount, out int unavailableCount);
-			bool activateVillageAftermath = sceneKind == SetsSettlementSceneKind.Village
+			bool armedCoup = IsArmedCoupEntry(settlement.StringId);
+			EntryProfileKind profileKind = armedCoup || IsOwnEntrySettlement(settlement) ? EntryProfileKind.OwnSettlement : EntryProfileKind.OtherSettlement;
+			int limit = armedCoup ? (nextLocation?.StringId == "lordshall" ? 20 : 60) : GetProfileLimit(profileKind);
+			int configuredCount;
+			int unavailableCount;
+			TroopRoster selected;
+			if (armedCoup)
+			{
+				selected = CloneRoster(_armedCoupRoster, limit);
+				configuredCount = selected.TotalManCount;
+				unavailableCount = 0;
+				if (selected.TotalManCount < 1)
+				{
+					SettlementEntryTroopSelectionLog.Log("Armed coup entry has no eligible soldier. settlement=" + SafeSettlementId(settlement));
+					_pendingMissionEntry = null;
+					return;
+				}
+			}
+			else
+			{
+				selected = ResolveProfileRosterForEntry(GetProfileRoster(profileKind), MobileParty.MainParty?.MemberRoster, limit, out configuredCount, out unavailableCount);
+			}
+			bool activateVillageAftermath = !armedCoup && sceneKind == SetsSettlementSceneKind.Village
 				&& VillageAftermathBehavior.TryConsumeQueuedIncidentDisposition(settlement, "sets_prepare_village_entry");
 			_pendingMissionEntry = new PendingMissionEntry
 			{
 				SettlementId = settlement?.StringId ?? "",
 				SelectedRoster = selected,
 				Limit = limit,
-				IsOwnSettlement = profileKind == EntryProfileKind.OwnSettlement,
+				IsOwnSettlement = !armedCoup && profileKind == EntryProfileKind.OwnSettlement,
 				SceneKind = sceneKind,
 				ActivateVillageAftermath = activateVillageAftermath,
 				CreatedUtc = DateTime.UtcNow
 			};
-			ShowEntryReminder(settlement, profileKind, limit, selected.TotalManCount, configuredCount, unavailableCount);
-			SettlementEntryTroopSelectionLog.Log("Prepared settlement entry followers. settlement=" + SafeSettlementId(settlement) + ", scene=" + _pendingMissionEntry.SceneKind + ", profile=" + profileKind + ", selected=" + selected.TotalManCount + ", configured=" + configuredCount + ", unavailable=" + unavailableCount);
+			if (!armedCoup) ShowEntryReminder(settlement, profileKind, limit, selected.TotalManCount, configuredCount, unavailableCount);
+			SettlementEntryTroopSelectionLog.Log("Prepared settlement entry followers. settlement=" + SafeSettlementId(settlement) + ", scene=" + _pendingMissionEntry.SceneKind + ", profile=" + (armedCoup ? "armed_coup" : profileKind.ToString()) + ", selected=" + selected.TotalManCount + ", configured=" + configuredCount + ", unavailable=" + unavailableCount);
 		}
 		catch (Exception ex)
 		{
@@ -2304,6 +2381,19 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		return resolved;
 	}
 
+	private static int CountHealthyRegulars(TroopRoster roster)
+	{
+		if (roster == null) return 0;
+		int total = 0;
+		for (int i = 0; i < roster.Count; i++)
+		{
+			TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+			if (element.Character == null || element.Character.IsHero) continue;
+			total += Math.Max(0, element.Number - element.WoundedNumber);
+		}
+		return total;
+	}
+
 	private static bool IsConfigurableEntryCharacter(CharacterObject character)
 	{
 		try
@@ -2504,6 +2594,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		public TroopRoster SourceRoster;
 		public PartyBase SourceParty;
 		public string SourceKind;
+		public string ArmedCoupRole;
 	}
 
 	private sealed class SettlementEntryTroopSelectionMissionLogic : MissionLogic
@@ -2519,6 +2610,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly TroopRoster _survivingRoster;
 		private readonly SetsUrbanCaptureSession _shadowCaptureSession;
 		private readonly List<DefenderReserveEntry> _remainingDefenderReserve;
+		private readonly bool _armedCoup;
 		private readonly HashSet<int> _alliedAgentIndexes = new HashSet<int>();
 		private readonly Dictionary<int, Agent> _alliedAgentsByIndex = new Dictionary<int, Agent>();
 		private readonly Dictionary<int, Agent> _pendingScatteredPlayerHeroAgentsByIndex = new Dictionary<int, Agent>();
@@ -2533,6 +2625,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private readonly HashSet<int> _settledCasualtyAgentIndexes = new HashSet<int>();
 		private readonly HashSet<int> _settledDefenderReserveAgentIndexes = new HashSet<int>();
 		private readonly Dictionary<int, TroopRoster> _defenderReserveAgentSourceRosters = new Dictionary<int, TroopRoster>();
+		private readonly Dictionary<int, string> _armedCoupAgentRoles = new Dictionary<int, string>();
 		private readonly Dictionary<int, int> _defenderReserveAgentWaveNumbers = new Dictionary<int, int>();
 		private readonly Dictionary<int, float> _lastProtectedFollowerHealth = new Dictionary<int, float>();
 		private readonly Dictionary<int, ProtectedFollowerFriendlyFireHitRecord> _recentProtectedFollowerFriendlyFireHits = new Dictionary<int, ProtectedFollowerFriendlyFireHitRecord>();
@@ -2555,6 +2648,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		private int _settlementCivilianGatherSkippedCount;
 		private int _settlementCivilianGatherSpeakerAgentIndex = -1;
 		private bool _spawnedAllies;
+			private bool _publicExecutionEscortsHeld;
 		private bool _alliedSpawnPrepared;
 		private bool _settlementCivilianGatherAssignmentActive;
 		private bool _settlementCivilianGatherOrderFinalizePending;
@@ -2606,7 +2700,9 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_defenderConflictEnabled = _conflictFeaturesEnabled && !_isOwnSettlement;
 			_selectedRoster = CloneRoster(entry?.SelectedRoster, _limit);
 			_survivingRoster = CloneRoster(_selectedRoster, int.MaxValue);
+			_armedCoup = SettlementEntryTroopSelectionBehavior.IsArmedCoupEntry(_settlementId);
 			_remainingDefenderReserve = _defenderConflictEnabled ? BuildCurrentDefenderReserve(_settlementId, _sceneKind) : new List<DefenderReserveEntry>();
+			if (_armedCoup) AssignArmedCoupRoles(_remainingDefenderReserve);
 			_shadowCaptureSession = CreateShadowCaptureSession(entry);
 		}
 
@@ -2682,6 +2778,42 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			return _alliedAgentsByIndex.Values
 				.Where(agent => agent != null && agent.IsHuman && agent.IsActive())
 				.ToList();
+		}
+
+		internal int CountArmedCoupRole(string role)
+		{
+			int count = 0;
+			foreach (Agent agent in _enemyAgentsByIndex.Values)
+			{
+				if (agent?.IsActive() != true) continue;
+				if (_armedCoupAgentRoles.TryGetValue(agent.Index, out string armedRole) && armedRole == role) count++;
+			}
+			return count;
+		}
+
+		internal Agent SpawnArmedCoupKing(CharacterObject character, MatrixFrame frame)
+		{
+			EnsureEnemyTeam(base.Mission);
+			Mission mission = base.Mission;
+			if (character == null || _enemyTeam == null || mission == null) return null;
+			Vec3 position = frame.origin;
+			if (mission.Scene != null) position.z = mission.Scene.GetGroundHeightAtPosition(position);
+			Vec3 direction = frame.rotation.f;
+			direction.z = 0f;
+			if (direction.LengthSquared < 0.01f) direction = Vec3.Forward;
+			direction.Normalize();
+			Type originType = AccessTools.TypeByName("AnimusForge.CoupSystem.CoupAgentOrigin");
+			IAgentOriginBase origin = originType?.GetConstructor(new[] { typeof(CharacterObject), typeof(bool) })?.Invoke(new object[] { character, false }) as IAgentOriginBase;
+			if (origin == null) return null;
+			AgentBuildData buildData = new AgentBuildData(character).Team(_enemyTeam)
+				.Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(character.Race, "_settlement"))
+				.InitialPosition(in position).InitialDirection(direction.AsVec2.Normalized())
+				.Controller(AgentControllerType.AI).CivilianEquipment(false).NoHorses(true)
+				.TroopOrigin(origin);
+			Agent agent = mission.SpawnAgent(buildData, false);
+			if (agent == null) return null;
+			MarkEnemyAgent(agent);
+			return agent;
 		}
 
 		internal bool IsDefenderConflictCombatActive()
@@ -2951,6 +3083,18 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 		}
 
+		private static void AssignArmedCoupRoles(List<DefenderReserveEntry> entries)
+		{
+			int hall = 0, gate = 0;
+			foreach (DefenderReserveEntry entry in entries.OrderByDescending(entry => entry?.Character?.Tier ?? 0))
+			{
+				if (entry?.Character == null || entry.Character.IsHero) continue;
+				entry.ArmedCoupRole = hall < 20 ? "HallGuard" : gate < 10 ? "GateGuard" : "StreetDefender";
+				if (entry.ArmedCoupRole == "HallGuard") hall++;
+				else if (entry.ArmedCoupRole == "GateGuard") gate++;
+			}
+		}
+
 		private static void PrepareSettlementCivilianForCommandFormation(Agent agent)
 		{
 			try
@@ -2989,7 +3133,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				VillageAftermathBehavior.TryActivateForSetsVillage(Settlement.Find(_settlementId), base.Mission, "sets_village_after_start");
 			}
 			_settlementCivilianGatherRuntimeGeneration = BeginSettlementCivilianGatherRuntime(
-				_isOwnSettlement && (_sceneKind == SetsSettlementSceneKind.Town || _sceneKind == SetsSettlementSceneKind.Village));
+				!_armedCoup && _isOwnSettlement && (_sceneKind == SetsSettlementSceneKind.Town || _sceneKind == SetsSettlementSceneKind.Village));
 			TrySpawnSelectedAllies("AfterStart");
 		}
 
@@ -3003,13 +3147,20 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			UpdatePendingSettlementCivilianGather();
 			VillageAftermathBehavior.TickForSetsMission(base.Mission);
 			MaintainProtectedFollowersFriendlyState();
-			if (_spawnedAllies
-				&& !_ownedSettlementMassacreActive
-				&& !_settlementCivilianGatherAssignmentActive
-				&& !_settlementCivilianGatherOrderFinalizePending)
-			{
-				EnsureSetsCommandUiReadyForExternal(base.Mission, _conflictActive ? "tick_conflict" : "tick", force: false, preserveSelection: true);
-			}
+if (_spawnedAllies
+						&& !_ownedSettlementMassacreActive
+						&& !_settlementCivilianGatherAssignmentActive
+						&& !_settlementCivilianGatherOrderFinalizePending)
+					{
+						if (Mission.Current?.GetMissionBehavior<RichExecutions.Scene.TownExecutionMissionBehavior>() != null)
+						{
+							if (!_publicExecutionEscortsHeld) _publicExecutionEscortsHeld = TryHoldAlliesForPublicExecution();
+						}
+						else
+						{
+							EnsureSetsCommandUiReadyForExternal(base.Mission, _conflictActive ? "tick_conflict" : "tick", force: false, preserveSelection: true);
+						}
+					}
 			ReleaseEnemyNavigationRescuesForCombatActions();
 			if (_conflictFeaturesEnabled && _ownedSettlementIncidentTriggered && base.Mission != null && base.Mission.CurrentTime >= _nextOwnedSettlementPanicTickTime)
 			{
@@ -3089,7 +3240,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			if (_conflictFeaturesEnabled && _isOwnSettlement)
+			if (_conflictFeaturesEnabled && _isOwnSettlement && !_armedCoup)
 			{
 				if (!_ownedSettlementIncidentTriggered
 					&& IsPlayerSideAgent(affectorAgent)
@@ -3136,6 +3287,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			if (damagedHp <= 0f
 				|| !_conflictFeaturesEnabled
 				|| !_isOwnSettlement
+				|| _armedCoup
 				|| _ownedSettlementIncidentTriggered
 				|| nativeAlleyFight)
 			{
@@ -3188,18 +3340,30 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					agentState,
 					"sets_internal_riot_knockdown");
 			}
-			if (_alliedAgentIndexes.Contains(affectedAgent.Index) && agentState == AgentState.Killed)
+			bool armedCoup = _armedCoup;
+			bool coupCasualty = agentState == AgentState.Killed || agentState == AgentState.Unconscious;
+			if (_alliedAgentIndexes.Contains(affectedAgent.Index) && (armedCoup ? coupCasualty : agentState == AgentState.Killed))
 			{
-				if (IsPlayerSideAgent(affectorAgent))
+				if (armedCoup)
+				{
+					InvokeCoupCasualty("NotifyFollowerCasualty", affectedAgent.Character as CharacterObject, agentState == AgentState.Killed, null);
+				}
+				else if (IsPlayerSideAgent(affectorAgent))
 				{
 					SettlementEntryTroopSelectionLog.Log("Suppressed SETS follower roster casualty caused by player-side friendly fire. troop=" + SafeCharacterId(affectedAgent.Character as CharacterObject));
 					return;
 				}
-				SettleAlliedCasualty(affectedAgent);
+				else SettleAlliedCasualty(affectedAgent);
 			}
 			if (_defenderConflictEnabled && _enemyAgentIndexes.Contains(affectedAgent.Index) && (agentState == AgentState.Killed || agentState == AgentState.Unconscious))
 			{
-				if (_spawnedDefenderReserveAgentIndexes.Contains(affectedAgent.Index))
+				if (armedCoup)
+				{
+					_armedCoupAgentRoles.TryGetValue(affectedAgent.Index, out string armedCoupRole);
+					InvokeCoupCasualty("NotifyDefenderCasualty", affectedAgent.Character as CharacterObject, agentState == AgentState.Killed, armedCoupRole);
+					_armedCoupAgentRoles.Remove(affectedAgent.Index);
+				}
+				else if (_spawnedDefenderReserveAgentIndexes.Contains(affectedAgent.Index))
 				{
 					SettleDefenderReserveDefeat(affectedAgent, "agent_removed_" + agentState);
 				}
@@ -3299,11 +3463,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				_spawnedAllies = true;
 				_pendingAlliedSpawnTroops = null;
-				if (_spawnedAlliedCount > 0)
-				{
-					TrySetFollowerFormationFollowOrder(mission, main, ensurePlayerCommandable: false);
-					EnsureSetsCommandUiReadyForExternal(mission, "finalize_selected_allies", force: true, preserveSelection: false);
-					string message = "【SETS】随行人员已进入场景，可按原版指挥调整。";
+if (_spawnedAlliedCount > 0)
+					{
+						_publicExecutionEscortsHeld = TryHoldAlliesForPublicExecution();
+						if (!_publicExecutionEscortsHeld)
+						{
+							TrySetFollowerFormationFollowOrder(mission, main, ensurePlayerCommandable: false);
+							EnsureSetsCommandUiReadyForExternal(mission, "finalize_selected_allies", force: true, preserveSelection: false);
+						}
+						string message = "【SETS】随行人员已进入场景，可按原版指挥调整。";
 					if (_defenderConflictEnabled)
 					{
 						message += " 冲突爆发时他们会协助你。";
@@ -3383,12 +3551,15 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				_conflictActive = true;
 				ShadowApply(SetsUrbanCaptureEvent.StartConflict, legacyAllowed: true, site: "StartConflict");
-				SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
-					Settlement.CurrentSettlement?.MapFaction,
-					"sets_internal_riot_start");
-				SettlementEntryTroopSelectionBehavior.QueueSameKingdomVassalRebellionAfterRiot(
-					Settlement.CurrentSettlement,
-					"sets_internal_riot_start");
+				if (!SettlementEntryTroopSelectionBehavior.IsArmedCoupEntry(_settlementId))
+				{
+					SceneTauntMissionBehavior.ApplyArmedConflictStartCrimeForExternal(
+						Settlement.CurrentSettlement?.MapFaction,
+						"sets_internal_riot_start");
+					SettlementEntryTroopSelectionBehavior.QueueSameKingdomVassalRebellionAfterRiot(
+						Settlement.CurrentSettlement,
+						"sets_internal_riot_start");
+				}
 				EnsurePlayerTeam(mission, main, requireCommandTeam: true);
 				KeepPlayerEntryFollowersCommandable(refreshFormation: true);
 				EnsureEnemyTeam(mission);
@@ -6104,7 +6275,10 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 					{
 						position.z = mission.Scene.GetGroundHeightAtPosition(position);
 					}
-					IAgentOriginBase origin = originParty != null ? new PartyAgentOrigin(originParty, troop) : null;
+					bool armedCoup = SettlementEntryTroopSelectionBehavior.IsArmedCoupEntry(_settlementId);
+					IAgentOriginBase origin = armedCoup
+						? CreateCoupOrigin(troop, !asEnemy)
+						: originParty != null ? new PartyAgentOrigin(originParty, troop) : null;
 					AgentBuildData buildData = new AgentBuildData(troop)
 						.Team(team)
 						.Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(troop.Race, "_settlement"))
@@ -6147,6 +6321,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 						{
 							_defenderReserveAgentSourceRosters[spawnedAgent.Index] = defenderEntry.SourceRoster;
 						}
+						if (!string.IsNullOrEmpty(defenderEntry?.ArmedCoupRole)) _armedCoupAgentRoles[spawnedAgent.Index] = defenderEntry.ArmedCoupRole;
 						if (defenderEntry != null && defenderReserveWaveNumber > 0)
 						{
 							_defenderReserveAgentWaveNumbers[spawnedAgent.Index] = defenderReserveWaveNumber;
@@ -6263,6 +6438,42 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			catch
 			{
 			}
+		}
+
+		private bool TryHoldAlliesForPublicExecution()
+		{
+			var ceremony = Mission.Current?.GetMissionBehavior<RichExecutions.Scene.TownExecutionMissionBehavior>();
+			if (ceremony == null || _alliedAgentsByIndex.Count == 0) return false;
+			var index = 0;
+			var held = 0;
+			foreach (var agent in _alliedAgentsByIndex.Values.ToList())
+			{
+				var current = index++;
+				if (agent == null || !agent.IsActive()) continue;
+				if (!ceremony.TryGetEscortHoldPosition(current, _alliedAgentsByIndex.Count, out var position, out var facing))
+				{
+					return false;
+				}
+				try
+				{
+					agent.TeleportToPosition(position);
+					agent.SetMovementDirection(facing);
+					agent.LookDirection = new Vec3(facing.X, facing.Y, 0f);
+agent.Controller = AgentControllerType.None;
+						agent.SetIsAIPaused(true);
+						agent.SetMaximumSpeedLimit(0f, true);
+						agent.DisableScriptedMovement();
+						agent.ClearTargetFrame();
+					held++;
+				}
+				catch (Exception ex)
+				{
+					SettlementEntryTroopSelectionLog.Log("Could not hold a SETS escort outside the execution. agent=" + agent.Index + ", error=" + ex.Message);
+				}
+			}
+			if (held == 0) return false;
+			SettlementEntryTroopSelectionLog.Log("Held " + held + " SETS escorts behind the public execution.");
+			return true;
 		}
 
 		private void TrySetFollowerFormationFollowOrder(Mission mission, Agent main, bool ensurePlayerCommandable = true)
@@ -6808,7 +7019,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				}
 				return;
 			}
-			if (SetsSettlementEntryProfile.UsesNativeSiegeVictoryMenu(_sceneKind))
+			if (SetsSettlementEntryProfile.UsesNativeSiegeVictoryMenu(_sceneKind)
+				&& !SettlementEntryTroopSelectionBehavior.IsArmedCoupEntry(_settlementId))
 			{
 				QueueSettlementTakenMenuAfterVictory(_settlementId, _survivingRoster, queueSource, skipOwnershipTransfer: _isOwnSettlement || _ownedSettlementIncidentTriggered, setsOwnedIncident: _ownedSettlementIncidentTriggered, setsTownRiotKilledNotable: _townRiotKilledNotable);
 			}

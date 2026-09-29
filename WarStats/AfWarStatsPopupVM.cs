@@ -9,6 +9,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
 using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.Library;
+using AnimusForge.Refactor.Modules;
 
 namespace AFWarStatsTerminal.UI;
 
@@ -17,7 +18,8 @@ public sealed class AfWarStatsPopupVM : ViewModel
     private enum TabKind
     {
         CurrentWars,
-        HistoricalWars
+        HistoricalWars,
+        Factions
     }
 
     private const int CurrentRowsPerPage = 6;
@@ -55,6 +57,18 @@ public sealed class AfWarStatsPopupVM : ViewModel
     private string _currentTabText = string.Empty;
 
     private string _historyTabText = string.Empty;
+
+    private string _factionTabText = "派系";
+
+    private string _factionBodyText = "";
+
+    private MBBindingList<AfWarStatsFactionKingdomVM> _factionKingdoms = new MBBindingList<AfWarStatsFactionKingdomVM>();
+
+    private bool _factionTabSelected;
+
+    private bool _showFactionPanel;
+
+    private int _factionPageIndex;
 
     private string _clearAllText = string.Empty;
 
@@ -262,6 +276,41 @@ public sealed class AfWarStatsPopupVM : ViewModel
     {
         get => _historyTabText;
         set => SetField(ref _historyTabText, value, nameof(HistoryTabText));
+    }
+
+    [DataSourceProperty]
+    public string FactionTabText
+    {
+        get => _factionTabText;
+        set => SetField(ref _factionTabText, value, nameof(FactionTabText));
+    }
+
+    [DataSourceProperty]
+    public string FactionBodyText
+    {
+        get => _factionBodyText;
+        set => SetField(ref _factionBodyText, value, nameof(FactionBodyText));
+    }
+
+    [DataSourceProperty]
+    public bool FactionTabSelected
+    {
+        get => _factionTabSelected;
+        set => SetField(ref _factionTabSelected, value, nameof(FactionTabSelected));
+    }
+
+    [DataSourceProperty]
+    public bool ShowFactionPanel
+    {
+        get => _showFactionPanel;
+        set => SetField(ref _showFactionPanel, value, nameof(ShowFactionPanel));
+    }
+
+    [DataSourceProperty]
+    public MBBindingList<AfWarStatsFactionKingdomVM> FactionKingdoms
+    {
+        get => _factionKingdoms;
+        set => SetField(ref _factionKingdoms, value, nameof(FactionKingdoms));
     }
 
     [DataSourceProperty]
@@ -950,6 +999,26 @@ public sealed class AfWarStatsPopupVM : ViewModel
         RefreshContent();
     }
 
+    public void ExecuteSelectFactions()
+    {
+        if (_activeTab == TabKind.Factions) return;
+        _activeTab = TabKind.Factions;
+        RefreshContent();
+    }
+
+    public void ExecuteFactionPrevious()
+    {
+        if (_factionPageIndex <= 0) return;
+        _factionPageIndex--;
+        RefreshFactions();
+    }
+
+    public void ExecuteFactionNext()
+    {
+        _factionPageIndex++;
+        RefreshFactions();
+    }
+
     public void ExecuteToggleDisplayMode()
     {
         bool currentlyScrollable = CurrentTabSelected
@@ -1195,8 +1264,11 @@ public sealed class AfWarStatsPopupVM : ViewModel
     {
         CurrentTabSelected = _activeTab == TabKind.CurrentWars;
         HistoryTabSelected = _activeTab == TabKind.HistoricalWars;
+        FactionTabSelected = _activeTab == TabKind.Factions;
         ShowCurrentPanel = CurrentTabSelected;
         ShowHistoryPanel = HistoryTabSelected;
+        ShowFactionPanel = FactionTabSelected;
+        if (FactionTabSelected) RefreshFactions();
         UpdateDisplayModeButtonText();
 
         if (CurrentTabSelected)
@@ -1218,6 +1290,14 @@ public sealed class AfWarStatsPopupVM : ViewModel
         DisplayModeButtonText = isScrollable
             ? AfWarStatsTexts.ModeScrollable
             : AfWarStatsTexts.ModePaged;
+    }
+
+    private void RefreshFactions()
+    {
+        IReadOnlyList<CivilWarPanelKingdom> kingdoms = TeamModuleServices.CivilWar.GetPanelKingdoms(_factionPageIndex, 4, out int pages);
+        FactionKingdoms.Clear();
+        foreach (CivilWarPanelKingdom kingdom in kingdoms) FactionKingdoms.Add(new AfWarStatsFactionKingdomVM(kingdom));
+        FactionBodyText = kingdoms.Count == 0 ? "尚无成形派系" : "第 " + (_factionPageIndex + 1) + " / " + pages + " 页";
     }
 
     private void RefreshCurrentWars()

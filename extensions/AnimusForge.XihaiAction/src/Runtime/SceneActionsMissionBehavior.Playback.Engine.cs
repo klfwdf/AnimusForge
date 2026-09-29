@@ -94,6 +94,11 @@ namespace AnimusForge.XihaiAction
                 {
                     blend = actionOverride.BlendInSeconds.Value;
                 }
+                // Voiced native clips start past their embedded voice trigger
+                // (in-game tested: 0.5 removes the yell).
+                float startProgress = IsVoicedNativeClip(action)
+                    ? VoicedNativeClipStartProgress
+                    : 0f;
                 bool accepted = agent.SetActionChannel(
                     channel,
                     in action,
@@ -101,7 +106,17 @@ namespace AnimusForge.XihaiAction
                     additionalFlags: additionalFlags,
                     blendWithNextActionFactor: 0f,
                     actionSpeed: variant.ActionSpeed,
-                    blendInPeriod: blend);
+                    blendInPeriod: blend,
+                    startProgress: startProgress);
+                if (startProgress > 0f &&
+                    SceneActionsRuntimeHost.Settings?.DeveloperDiagnosticsEnabled == true)
+                {
+                    SceneActionsLog.Info(
+                        "VOICE_SKIP",
+                        "Agent=" + agent.Index + " ActionIndex=" + action.Index +
+                        " StartProgress=" + startProgress.ToString("0.00") +
+                        " Accepted=" + accepted);
+                }
                 if (!accepted)
                 {
                     reason = "SetActionChannel returned false with ignorePriority=false.";
@@ -114,6 +129,53 @@ namespace AnimusForge.XihaiAction
                 return false;
             }
         }
+        // Native clips whose animation data embeds a voice type (scanned from
+        // Native animation_clips.tpac): taunt_afraid/scared=Fear,
+        // taunt_dissapointed*=Debacle, taunt_invite_mad/taunt_rage=Yell,
+        // taunt_laugh=Focus, taunt_respect=Grunt, cheer_1/taunt_cheer_1=victory.
+        // taunt_bow (deep_bow) has only a foley event; kept for salute parity.
+        private const float VoicedNativeClipStartProgress = 0.5f;
+
+        private static readonly string[] VoicedNativeClipActionIds =
+        {
+            "act_taunt_01", "act_taunt_02", "act_taunt_04", "act_taunt_05",
+            "act_taunt_06", "act_taunt_07", "act_taunt_14", "act_taunt_15",
+            "act_taunt_18", "act_taunt_20", "act_taunt_21", "act_cheer_1",
+            "act_taunt_cheer_1"
+        };
+
+        private static HashSet<int> _voicedNativeClipIndices;
+        private static Mission _voicedNativeClipMission;
+
+        // Resolved once per Mission (action indices are Mission-scoped) on the
+        // Mission thread; afterwards a hash lookup per play.
+        private static bool IsVoicedNativeClip(ActionIndexCache action)
+        {
+            Mission mission = Mission.Current;
+            HashSet<int> indices = _voicedNativeClipIndices;
+            if (indices == null || !ReferenceEquals(_voicedNativeClipMission, mission))
+            {
+                indices = new HashSet<int>();
+                foreach (string actionId in VoicedNativeClipActionIds)
+                {
+                    int index = ActionIndexCache.Create(actionId).Index;
+                    if (index >= 0)
+                    {
+                        indices.Add(index);
+                    }
+                }
+                _voicedNativeClipIndices = indices;
+                _voicedNativeClipMission = mission;
+            }
+            return indices.Contains(action.Index);
+        }
+
+        private static void ResetVoicedNativeClipCache()
+        {
+            _voicedNativeClipIndices = null;
+            _voicedNativeClipMission = null;
+        }
+
         private static string FindActionKeyForVariant(ActionVariant variant)
         {
             foreach (ActionDefinition definition in SceneActionsRuntimeHost.Catalog.Actions.Values)

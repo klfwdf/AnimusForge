@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Items>
+  <Item
+    id="rex_execution_torch"
+    name="{=REX_Item_Execution_Torch}Execution Torch"
+    is_merchandise="false"
+    body_name="bo_mace_a"
+    recalculate_body="true"
+    mesh="torch_g"
+    prefab="torch_a_wm_only_flame"
+    culture="Culture.empire"
+    value="4"
+    weight="0.2"
+    Type="OneHandedWeapon"
+    item_holsters="abdomen_left">
+    <ItemComponent>
+      <Weapon
+        weapon_class="OneHandedAxe"
+        weapon_balance="100"
+        thrust_speed="78"
+        speed_rating="97"
+        missile_speed="0"
+        weapon_length="65"
+        swing_damage="6"
+        swing_damage_type="Blunt"
+        item_usage="onehanded_block_shield_swing"
+        physics_material="metal_weapon">
+        <WeaponFlags MeleeWeapon="true" />
+      </Weapon>
+    </ItemComponent>
+    <Flags
+      Stealth="true"
+      DropOnWeaponChange="true"
+      HasToBeHeldUp="true" />
+  </Item>
+</Items>

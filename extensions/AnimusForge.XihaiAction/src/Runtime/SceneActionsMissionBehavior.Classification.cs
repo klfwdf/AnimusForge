@@ -64,72 +64,90 @@ namespace AnimusForge.XihaiAction
                     continue;
                 }
 
-                ParseDecision decision = pending.Captured.InputSource ==
-                                         SceneInputSource.NpcSceneShoutReply
-                    ? SceneActionsRuntimeHost.Parser.ParseNpcReplyClassifierOutput(
-                        completion.Output)
-                    : SceneActionsRuntimeHost.Parser.ParseClassifierOutput(completion.Output);
-                if (decision.Status == ParseStatus.NoAction)
-                {
-                    if (pending.FallbackToConsent &&
-                        ResolvePendingNpcConsent(pending.Captured, now))
-                    {
-                        continue;
-                    }
-                    FinishNoAction(
-                        completion.RequestId,
-                        "Classifier returned NONE.");
-                    continue;
-                }
-                if (decision.Status != ParseStatus.Matched ||
-                    decision.ProgramV4 == null ||
-                    decision.ProgramV4.Steps.SelectMany(step => step.IntentKeys)
-                        .Any(key => !pending.AllowedIntentKeys.Contains(
-                            key,
-                            StringComparer.Ordinal)))
-                {
-                    FinishAcceptedRequestWithoutTargets(
-                        completion.RequestId,
-                        ExecutionResultCode.InvalidClassifierOutput,
-                        decision.Error ?? "Classifier selected a key outside the frozen allow-list.");
-                    continue;
-                }
-                if (pending.Captured.InputSource == SceneInputSource.NpcSceneShoutReply &&
-                    !SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
-                        pending.ClassifierText,
-                        decision.ProgramV4,
-                        out string evidenceError))
-                {
-                    SceneActionsLog.Warning(
-                        "CLASSIFIER",
-                        "NPC classifier action rejected because current reply lacked " +
-                        "performed-action evidence. RequestId=" +
-                        completion.RequestId.ToString("N") +
-                        " Program=" + decision.ProgramV4.ProtocolExpression +
-                        " Reason=" + (evidenceError ?? "unknown"));
-                    FinishAcceptedRequestWithoutTargets(
-                        completion.RequestId,
-                        ExecutionResultCode.InvalidClassifierOutput,
-                        evidenceError);
-                    continue;
-                }
-                ParseDecision targetedDecision = ParseDecision.MatchProgramV4(
-                    decision.ProgramV4,
-                    pending.TargetOverride,
+                ApplyClassifierOutput(
+                    pending,
+                    completion.Output,
                     ResolverSource.AiClassifier,
-                    pending.BypassNpcConsent);
-                if (pending.Captured.InputSource == SceneInputSource.PlayerSceneShout)
+                    now,
+                    "Classifier returned NONE.");
+            }
+        }
+
+        /// <summary>
+        /// Shared closed-set result path for the classifier request and the AF
+        /// postprocess directive: protocol parse, frozen allow-list, NPC
+        /// performed-action evidence, then routing.
+        /// </summary>
+        private void ApplyClassifierOutput(
+            PendingClassification pending,
+            string output,
+            ResolverSource resolver,
+            double now,
+            string noActionReason)
+        {
+            Guid requestId = pending.Captured.EventId;
+            ParseDecision decision = pending.Captured.InputSource ==
+                                     SceneInputSource.NpcSceneShoutReply
+                ? SceneActionsRuntimeHost.Parser.ParseNpcReplyClassifierOutput(output)
+                : SceneActionsRuntimeHost.Parser.ParseClassifierOutput(output);
+            if (decision.Status == ParseStatus.NoAction)
+            {
+                if (pending.FallbackToConsent &&
+                    ResolvePendingNpcConsent(pending.Captured, now))
                 {
-                    RouteResolvedPlayerIntent(pending.Captured, targetedDecision, now);
+                    return;
                 }
-                else
-                {
-                    ConsumePendingConsentForSpeaker(
-                        pending.Captured.Speaker,
-                        now,
-                        "AI resolved an actual NPC action description.");
-                    BuildAndQueuePlans(pending.Captured, targetedDecision, now);
-                }
+                FinishNoAction(requestId, noActionReason);
+                return;
+            }
+            if (decision.Status != ParseStatus.Matched ||
+                decision.ProgramV4 == null ||
+                decision.ProgramV4.Steps.SelectMany(step => step.IntentKeys)
+                    .Any(key => !pending.AllowedIntentKeys.Contains(
+                        key,
+                        StringComparer.Ordinal)))
+            {
+                FinishAcceptedRequestWithoutTargets(
+                    requestId,
+                    ExecutionResultCode.InvalidClassifierOutput,
+                    decision.Error ?? "Classifier selected a key outside the frozen allow-list.");
+                return;
+            }
+            if (pending.Captured.InputSource == SceneInputSource.NpcSceneShoutReply &&
+                !SceneActionFrameworkV4.ValidateNpcClassifierProgramEvidence(
+                    pending.ClassifierText,
+                    decision.ProgramV4,
+                    out string evidenceError))
+            {
+                SceneActionsLog.Warning(
+                    "CLASSIFIER",
+                    "NPC " + resolver + " action rejected because current reply lacked " +
+                    "performed-action evidence. RequestId=" +
+                    requestId.ToString("N") +
+                    " Program=" + decision.ProgramV4.ProtocolExpression +
+                    " Reason=" + (evidenceError ?? "unknown"));
+                FinishAcceptedRequestWithoutTargets(
+                    requestId,
+                    ExecutionResultCode.InvalidClassifierOutput,
+                    evidenceError);
+                return;
+            }
+            ParseDecision targetedDecision = ParseDecision.MatchProgramV4(
+                decision.ProgramV4,
+                pending.TargetOverride,
+                resolver,
+                pending.BypassNpcConsent);
+            if (pending.Captured.InputSource == SceneInputSource.PlayerSceneShout)
+            {
+                RouteResolvedPlayerIntent(pending.Captured, targetedDecision, now);
+            }
+            else
+            {
+                ConsumePendingConsentForSpeaker(
+                    pending.Captured.Speaker,
+                    now,
+                    "AI resolved an actual NPC action description.");
+                BuildAndQueuePlans(pending.Captured, targetedDecision, now);
             }
         }
 

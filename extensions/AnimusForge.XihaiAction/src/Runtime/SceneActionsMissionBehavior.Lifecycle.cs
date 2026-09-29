@@ -279,6 +279,8 @@ namespace AnimusForge.XihaiAction
             _providerSession.Clear();
             _cooldowns.Clear();
             _recentPlayerContexts.Clear();
+            ClearNpcReplyDirectiveLedgers();
+            ResetVoicedNativeClipCache();
             _cancelledTrustedOwners.Clear();
             _sessionCancellation?.Dispose();
             _sessionCancellation = null;
@@ -492,6 +494,7 @@ namespace AnimusForge.XihaiAction
             // ordinary subsystem cannot change speech pacing; ordinary input is
             // already gated off by Settings.Enabled.
             _recentPlayerContexts.Clear();
+            ClearNpcReplyDirectiveLedgers();
             SceneActionsLog.Info(
                 "MCM",
                 "Ordinary SceneActions queues, classifiers, programs and owned channels " +

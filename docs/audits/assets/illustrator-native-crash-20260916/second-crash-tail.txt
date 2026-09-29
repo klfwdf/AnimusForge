@@ -1,0 +1,59 @@
+[06:03:54.304] [GAME MENU] town_wait_menus
+
+[06:03:54.383] VisualShipFactory.CreateVisualShip: dhow_ship_nested
+
+[06:03:54.550] AddGlobalLayer
+
+[06:03:55.118] Bake Terrain
+[06:03:55.269] Bake Terrain
+[06:03:55.292] Bake Terrain
+[06:03:55.308] Bake Terrain
+[06:03:58.461] [Illustrator] Found character tableau by type: EncyclopediaCharacterTableauWidget, size=<493.3333, 1009.333>
+
+[06:03:58.463] [ScreenCaptureHelper] Capturing widget (EncyclopediaCharacterTableauWidget): pos=(404,424), size=(657x1345), scale=1.333333
+
+[06:03:58.543] [ScreenCaptureHelper] Successfully captured cropped widget base64 (length=95352)
+
+[06:03:58.545] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[06:03:58.550] [OffscreenRenderer] Triggering native TableauView save to: C:\Users\29310\AppData\Local\Temp\AnimusForgeIllustrator\af_offscreen_2ad4ee73cbfc49e69e8931163f2a99e8.png
+
+[06:03:58.550] [OffscreenRenderer] save path set
+
+[06:03:58.550] [OffscreenRenderer] save name set
+
+[06:03:58.550] [OffscreenRenderer] save type set
+
+[06:03:58.550] [OffscreenRenderer] save flag set
+
+[06:03:58.583] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[06:03:58.672] [Illustrator] Successfully loaded dynamic sprite: de7087fb76fcf32fbd64cbcd8b1e4523_20260915215911869_63f41b_d13465df (1024x1024, colorFixed=True)
+
+[06:03:59.359] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[06:03:59.359] [OffscreenRenderer] Triggering native TableauView save to: C:\Users\29310\AppData\Local\Temp\AnimusForgeIllustrator\af_offscreen_60328c2e536a4fd1918a87850b6d165e.png
+
+[06:03:59.359] [OffscreenRenderer] save path set
+
+[06:03:59.359] [OffscreenRenderer] save name set
+
+[06:03:59.359] [OffscreenRenderer] save type set
+
+[06:03:59.359] [OffscreenRenderer] save flag set
+
+[06:03:59.393] [VisualDirector] Auto-reused AnimusForge host primary chat API (model=gemini-3.8-flash-high).
+
+[06:03:59.533] [OffscreenRenderer] Native TableauView offscreen render SUCCESS (493x1009) in 75ms!
+
+[06:03:59.632] [OffscreenRenderer] Triggering native TableauView save to: C:\Users\29310\AppData\Local\Temp\AnimusForgeIllustrator\af_offscreen_f239478ca3eb45e4af386d90f50b7d18.png
+
+[06:03:59.632] [OffscreenRenderer] save path set
+
+[06:03:59.632] [OffscreenRenderer] save name set
+
+[06:03:59.632] [OffscreenRenderer] save type set
+
+[06:03:59.632] [OffscreenRenderer] save flag set
+
+[06:03:59.632] [OffscreenRenderer] Stage save requested at tick=13, waiting for file...

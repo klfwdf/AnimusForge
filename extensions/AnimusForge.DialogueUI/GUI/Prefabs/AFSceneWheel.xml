@@ -1,0 +1,74 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+      <Children>
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="false" Sprite="BlankWhiteSquare_9" Color="#00000059" />
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1920" SuggestedHeight="1080" HorizontalAlignment="Center" VerticalAlignment="Center" DoNotAcceptEvents="true">
+          <Children>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="480" SuggestedHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="720" MarginTop="300" Sprite="afdui_wheel_chassis_symmetric" DoNotAcceptEvents="true" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="209.06" SuggestedHeight="209.06" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="752.34" MarginTop="332.34" Sprite="afdui_wheel_wedge_talk" IsVisible="@IsHoverTalk" DoNotAcceptEvents="true" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="209.06" SuggestedHeight="209.06" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="958.59" MarginTop="332.34" Sprite="afdui_wheel_wedge_actions" IsVisible="@IsHoverActions" DoNotAcceptEvents="true" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="209.06" SuggestedHeight="139.69" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="855.47" MarginTop="607.97" Sprite="afdui_wheel_wedge_leave" IsVisible="@IsHoverLeave" DoNotAcceptEvents="true" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="168.75" SuggestedHeight="181.41" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="998.91" MarginTop="538.59" Sprite="afdui_wheel_wedge_give" IsVisible="@IsHoverGive" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="766" MarginTop="399" Text="对 话" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#3B2A1AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1011" MarginTop="400" Text="@ActionsText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#3B2A1AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" IsVisible="@HasActions" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="905" MarginTop="630" Text="离 开" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#3B2A1AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="28" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1061" MarginTop="586" Text="给 予" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="16" Brush.FontColor="#3B2A1AFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="84.5" SuggestedHeight="84.5" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="917.75" MarginTop="497.75" CircularClipEnabled="true" CircularClipRadius="42" CircularClipSmoothingRadius="1" DoNotAcceptEvents="true">
+              <Children>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#1E1510FF" DoNotAcceptEvents="true" />
+                <CharacterTableauWidget Id="AFWheelPortrait" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="253.5" SuggestedHeight="315" HorizontalAlignment="Left" VerticalAlignment="Top" PositionXOffset="-84.5" PositionYOffset="-67" StanceIndex="1" CustomRenderScale="2.7" IsVisible="false" DoNotAcceptEvents="true" />
+              </Children>
+            </Widget>
+            <ButtonWidget Id="AFBareWheelHit" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="480" SuggestedHeight="480" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="720" MarginTop="300" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSector" />
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="860" MarginTop="596" Id="AFWheelPlate" Sprite="afdui_plaque_nameplate" DoNotAcceptEvents="false">
+              <Children>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="168" SuggestedHeight="32" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="16" MarginTop="0" Text="@TargetName" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FCE5B8FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+              </Children>
+            </Widget>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="440" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1215" MarginTop="320" IsVisible="@IsDrawerOpen" DoNotAcceptEvents="true">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="198" SuggestedHeight="438" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="1" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#16110DEE" DoNotAcceptEvents="true" />
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="1" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Sprite="BlankWhiteSquare_9" Color="#C8A050FF" DoNotAcceptEvents="true" />
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="1" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="439" Sprite="BlankWhiteSquare_9" Color="#C8A050FF" DoNotAcceptEvents="true" />
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="438" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#C8A050FF" DoNotAcceptEvents="true" />
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="438" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="199" MarginTop="1" Sprite="BlankWhiteSquare_9" Color="#C8A050FF" DoNotAcceptEvents="true" />
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginTop="10" Sprite="afdui_plaque_nameplate" DoNotAcceptEvents="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="34" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Text="@DrawerHeader" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="13" Brush.FontColor="#FFDF95FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                  </Children>
+                </Widget>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="380" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="10" MarginTop="54" DoNotAcceptEvents="true">
+                  <Children>
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="12" ClipRect="AFWheelDrawerClip" InnerPanel="AFWheelDrawerClip\AFWheelDrawerList" MouseScrollAxis="Vertical" VerticalScrollbar="..\AFWheelDrawerBar" AutoHideScrollBars="true">
+                      <Children>
+                        <Widget Id="AFWheelDrawerClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                          <Children>
+                            <ListPanel Id="AFWheelDrawerList" DataSource="{DrawerItems}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+                              <ItemTemplate>
+                                <ButtonWidget Id="AFCapItem" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="44" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="0" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="ExecuteSelect" IsEnabled="@IsEnabled" MarginBottom="8">
+                                  <Children>
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@Label" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#FCE5B8FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                                  </Children>
+                                </ButtonWidget>
+                              </ItemTemplate>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="AFWheelDrawerBar" WidthSizePolicy="Fixed" SuggestedWidth="5" HeightSizePolicy="StretchToParent" HorizontalAlignment="Right" AlignmentAxis="Vertical" Handle="AFWheelDrawerHandle" MinValue="0" MaxValue="100">
+                      <Children>
+                        <Widget Id="AFWheelDrawerHandle" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26" Sprite="afdui_scroll_handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

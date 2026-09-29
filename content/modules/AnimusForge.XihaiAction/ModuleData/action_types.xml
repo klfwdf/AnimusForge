@@ -3,4 +3,19 @@
   <action name="act_af_xihai" />
   <action name="act_af_kneel_loop" />
   <action name="act_af_speech_nacisword1" />
+  <action name="act_ver_cutscene_executioner_idle" />
+  <action name="act_ver_cutscene_executioner_action" />
+  <action name="act_ver_hanging_struggle" />
+  <action name="act_ver_hanging_death" />
+  <action name="act_ver_burning_crucifix_idle" />
+  <action name="act_ver_burning_crucifix_death" />
+  <action name="act_ver_impale_strike_normal_b" />
+  <action name="act_ver_impale_death_head_exaggerated" />
+  <action name="act_ver_impale_death_head_normal_a" />
+  <action name="act_ver_impale_death_head_normal_b" />
+  <action name="act_ver_impale_death_left_shoulder_exaggerated" />
+  <action name="act_ver_impale_death_left_shoulder_normal_a" />
+  <action name="act_ver_impale_death_left_shoulder_normal_b" />
+  <action name="act_ver_impale_death_right_shoulder_normal_a" />
+  <action name="act_ver_impale_death_right_shoulder_normal_b" />
 </action_types>

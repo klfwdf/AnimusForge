@@ -22,7 +22,8 @@ namespace AnimusForge.SceneActions.Core
         NpcConsentLocal,
         NpcConsentClassifier,
         ImplicitEmotionInference,
-        BattleSpeechSemantic
+        BattleSpeechSemantic,
+        NpcPostprocessDirective
     }
 
     public enum ParseStatus

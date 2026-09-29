@@ -100,6 +100,11 @@ namespace AnimusForge.XihaiAction
             SceneActionSettings settings,
             double now)
         {
+            if (captured.DirectiveValue != null)
+            {
+                ProcessNpcDirectiveEvent(captured, now);
+                return;
+            }
             string previousPlayerText = ConsumeRecentPlayerContext(
                 captured.Speaker,
                 now);
@@ -155,7 +160,9 @@ namespace AnimusForge.XihaiAction
                     now,
                     out _,
                     out _);
-                if (TryResolveImplicitEmotion(
+                bool directiveEcho = NpcReplyUsesPostprocessDirective &&
+                                     IsDirectiveEcho(captured.Speaker, now);
+                if (!directiveEcho && TryResolveImplicitEmotion(
                     captured,
                     decision,
                     previousPlayerText,
@@ -166,6 +173,20 @@ namespace AnimusForge.XihaiAction
                         now,
                         "NPC reply resolved to a context-inferred emotion expression.");
                     BuildAndQueuePlans(captured, inferredEmotion, now);
+                    return;
+                }
+                if (NpcReplyUsesPostprocessDirective)
+                {
+                    // AF's unified postprocess decides this reply's action; no
+                    // separate classifier request is sent.  Without a postprocess
+                    // run the reply keeps only the local result above.
+                    if (hasPendingConsent && ResolvePendingNpcConsent(captured, now))
+                    {
+                        return;
+                    }
+                    FinishNoAction(
+                        captured.EventId,
+                        "Ambiguous NPC action deferred to AF postprocess directive.");
                     return;
                 }
                 if (settings.AiClassifierEnabled)

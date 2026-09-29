@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>AnimusForge.DialogueUI</AssemblyName>
+    <RootNamespace>AnimusForge.DialogueUI</RootNamespace>
+    <Version>0.1.0</Version>
+    <Deterministic>true</Deterministic>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj\**;bin\**;..\artifacts\**</DefaultItemExcludes>
+    <BannerlordApi Condition="'$(BannerlordApi)' == ''">1.4</BannerlordApi>
+    <ReferenceVersion>1.3.15.110062</ReferenceVersion>
+    <GameBin>$(BannerlordRoot)\bin\Win64_Shipping_Client</GameBin>
+    <CoreRefs Condition="'$(BannerlordApi)' == '1.3'">$(NuGetPackageRoot)bannerlord.referenceassemblies.core\$(ReferenceVersion)\ref\net472</CoreRefs>
+    <NativeRefs Condition="'$(BannerlordApi)' == '1.3'">$(NuGetPackageRoot)bannerlord.referenceassemblies.native\$(ReferenceVersion)\ref\net472</NativeRefs>
+    <CoreRefs Condition="'$(BannerlordApi)' == '1.4'">$(GameBin)</CoreRefs>
+    <NativeRefs Condition="'$(BannerlordApi)' == '1.4'">$(BannerlordRoot)\Modules\Native\bin\Win64_Shipping_Client</NativeRefs>
+    <AfReferencePath Condition="'$(AfReferencePath)' == ''">$(BannerlordRoot)\Modules\AnimusForge\bin\Win64_Shipping_Client\versions\$(BannerlordApi)\AnimusForge.dll</AfReferencePath>
+    <OutputPath>..\artifacts\$(BannerlordApi)\</OutputPath>
+    <DefineConstants Condition="'$(BannerlordApi)' == '1.4'">$(DefineConstants);BANNERLORD_1_4_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Bannerlord.ReferenceAssemblies" Version="$(ReferenceVersion)" PrivateAssets="all" Condition="'$(BannerlordApi)' == '1.3'" />
+    <Reference Include="AnimusForge"><HintPath>$(AfReferencePath)</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(BannerlordRoot)\Modules\Bannerlord.Harmony\bin\Win64_Shipping_Client\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MCMv5"><HintPath>$(BannerlordRoot)\Modules\Bannerlord.MBOptionScreen\bin\Win64_Shipping_Client\MCMv5.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="System.Numerics.Vectors"><HintPath>$(GameBin)\System.Numerics.Vectors.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.CampaignSystem"><HintPath>$(CoreRefs)\TaleWorlds.CampaignSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Core"><HintPath>$(CoreRefs)\TaleWorlds.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Core.ViewModelCollection"><HintPath>$(CoreRefs)\TaleWorlds.Core.ViewModelCollection.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Library"><HintPath>$(CoreRefs)\TaleWorlds.Library.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.ObjectSystem"><HintPath>$(CoreRefs)\TaleWorlds.ObjectSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Localization"><HintPath>$(CoreRefs)\TaleWorlds.Localization.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.MountAndBlade"><HintPath>$(CoreRefs)\TaleWorlds.MountAndBlade.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.View"><HintPath>$(NativeRefs)\TaleWorlds.MountAndBlade.View.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.GauntletUI.Widgets"><HintPath>$(CoreRefs)\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Engine"><HintPath>$(CoreRefs)\TaleWorlds.Engine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.InputSystem"><HintPath>$(CoreRefs)\TaleWorlds.InputSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.DotNet"><HintPath>$(CoreRefs)\TaleWorlds.DotNet.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.Engine.GauntletUI"><HintPath>$(CoreRefs)\TaleWorlds.Engine.GauntletUI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.GauntletUI"><HintPath>$(CoreRefs)\TaleWorlds.GauntletUI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.GauntletUI.Data"><HintPath>$(CoreRefs)\TaleWorlds.GauntletUI.Data.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.GauntletUI.PrefabSystem"><HintPath>$(CoreRefs)\TaleWorlds.GauntletUI.PrefabSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.TwoDimension"><HintPath>$(CoreRefs)\TaleWorlds.TwoDimension.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.ScreenSystem"><HintPath>$(CoreRefs)\TaleWorlds.ScreenSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="TaleWorlds.CampaignSystem.ViewModelCollection"><HintPath>$(CoreRefs)\TaleWorlds.CampaignSystem.ViewModelCollection.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <ItemGroup><AssemblyMetadata Include="AnimusForge.DialogueUI.BannerlordApi" Value="$(BannerlordApi)" /></ItemGroup>
+  <Target Name="ValidateDialogueUiReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(BannerlordApi)' != '1.3' and '$(BannerlordApi)' != '1.4'" Text="Unsupported BannerlordApi." />
+    <Error Condition="!Exists('$(AfReferencePath)')" Text="A matching AF implementation is required; this project never builds or deploys AF." />
+    <Error Condition="!Exists('$(CoreRefs)\TaleWorlds.GauntletUI.PrefabSystem.dll') or !Exists('$(NativeRefs)\TaleWorlds.MountAndBlade.View.dll')" Text="Complete matching game-line UI reference assemblies are required." />
+  </Target>
+</Project>

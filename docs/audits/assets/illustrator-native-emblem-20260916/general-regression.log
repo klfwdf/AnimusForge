@@ -1,0 +1,199 @@
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+  AnimusForge.Illustrator -> F:\AnimusForge-main\extensions\AnimusForge.Illustrator\bin\test\1.3\AnimusForge.Illustrator.dll
+
+已成功生成。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:01.48
+PASS build BannerlordApi=1.3
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+  AnimusForge.Illustrator -> F:\AnimusForge-main\extensions\AnimusForge.Illustrator\bin\test\1.4\AnimusForge.Illustrator.dll
+
+已成功生成。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:01.44
+PASS build BannerlordApi=1.4
+PASS rule-based prompt method is available
+PASS male identity is not inferred from Lady in bilingual role
+PASS identity and actual equipment survive offline fallback
+PASS Chinese conjunction does not classify Japanese culture
+PASS weekly event and location survive fallback
+PASS weekly fallback does not become a generic portrait
+PASS aserai monarch facts survive fallback
+PASS aserai monarch fallback does not invent western crown
+PASS legacy banner/emblem stage entry points removed
+PASS banner reference uses native renderer without CPU shader reconstruction
+PASS hero portrait offscreen extraction exists
+PASS conversation scene band capture exists
+PASS stage-layer widgets used for banner/portrait offscreen render
+PASS render-target textures are never pixel-read directly
+PASS no render-target transform call (crash-prone on shared textures)
+PASS no self-created tableau scenes (render-thread race crash)
+PASS engine access is dispatched to main thread
+PASS weekly report resolves protagonist from text
+PASS weekly report scans campaign heroes
+PASS weekly report environment is event-anchored
+PASS weekly report scene fields anchored by theme
+PASS director accepts labeled reference image list
+PASS system prompt enforces banner-reference fidelity
+PASS system prompt enforces culture-specific crowns
+PASS image client accepts reference image list
+PASS image client honors reference-image toggle
+PASS image client injects negative prompt
+PASS conversation pose covers mounted-player vs on-foot partner
+PASS environment reads full calendar year and day-of-season
+PASS calendar date is included in prompt context summary
+PASS style dropdown offers dark-epic/cinematic/custom prompt options
+PASS custom style prompt text setting exists
+PASS prompt settings use button-opened long-text editors
+PASS prompt editors reuse main-mod long text editor
+PASS image client injects prompt-level style hints
+PASS director separates hard facts from open art direction
+PASS director programmatically preserves hard facts after LLM expansion
+PASS global director prompt no longer hard-locks one artist blend
+PASS classic oil style available as optional preset branch
+PASS image client exposes the actual final prompt sent to providers
+PASS Images protocol can actually send reference images through edits
+PASS generation diagnostics distinguish requested and actually sent references
+PASS offscreen requests do not delete concurrent request files
+PASS offscreen stage supports scope cancellation
+PASS conversation illustration includes recent dialogue history
+PASS conversation illustration is limited to the most recent three rounds
+PASS weekly report uses the host structured event snapshot
+PASS weekly report never invents retrospective location from current positions
+PASS GenerateImageAsync multi-reference overload exists
+PASS ExpandToDetailedPromptAsync multi-reference overload exists
+PASS BuildChatImagePrompt available
+PASS chat prompt injects custom style hint and high quality directive
+PASS command method ExecuteRegenerate
+PASS command method ExecuteTogglePrompt
+PASS command method ExecuteCopyPrompt
+PASS command method ExecuteOpenGallery
+PASS command method ExecuteClose
+PASS command method ExecuteSetDefault
+PASS command method ExecuteDelete
+PASS command method ExecuteOpenFolder
+PASS command method ExecuteSelect
+PASS XML SubModule.xml
+PASS XML ConversationIllustrationOverlay.xml
+PASS XML EncyclopediaIllustrationOverlay.xml
+PASS XML IllustratorGalleryPopup.xml
+PASS XML IllustratorOffscreenStage.xml
+PASS XML WeeklyReportIllustrationOverlay.xml
+PASS prefab binding ConversationIllustrationOverlay.xml:ExecuteRegenerate
+PASS prefab binding ConversationIllustrationOverlay.xml:ExecuteTogglePrompt
+PASS prefab binding ConversationIllustrationOverlay.xml:ExecuteCopyPrompt
+PASS prefab binding ConversationIllustrationOverlay.xml:ExecuteOpenGallery
+PASS prefab binding ConversationIllustrationOverlay.xml:ExecuteClose
+PASS prefab binding EncyclopediaIllustrationOverlay.xml:ExecuteRegenerate
+PASS prefab binding EncyclopediaIllustrationOverlay.xml:ExecuteTogglePrompt
+PASS prefab binding EncyclopediaIllustrationOverlay.xml:ExecuteCopyPrompt
+PASS prefab binding EncyclopediaIllustrationOverlay.xml:ExecuteOpenGallery
+PASS prefab binding EncyclopediaIllustrationOverlay.xml:ExecuteClose
+PASS prefab binding IllustratorGalleryPopup.xml:ExecuteSelect
+PASS prefab binding IllustratorGalleryPopup.xml:ExecuteCopyPrompt
+PASS prefab binding IllustratorGalleryPopup.xml:ExecuteSetDefault
+PASS prefab binding IllustratorGalleryPopup.xml:ExecuteDelete
+PASS prefab binding IllustratorGalleryPopup.xml:ExecuteOpenFolder
+PASS prefab binding IllustratorGalleryPopup.xml:ExecuteClose
+PASS prefab binding WeeklyReportIllustrationOverlay.xml:ExecuteRegenerate
+PASS prefab binding WeeklyReportIllustrationOverlay.xml:ExecuteTogglePrompt
+PASS prefab binding WeeklyReportIllustrationOverlay.xml:ExecuteCopyPrompt
+PASS prefab binding WeeklyReportIllustrationOverlay.xml:ExecuteOpenGallery
+PASS prefab binding WeeklyReportIllustrationOverlay.xml:ExecuteClose
+PASS randomness integer slider defaults to legacy zero
+PASS randomness slider uses 0-100 plain integer display
+PASS randomness -1 is captured and clamped (chat=False)
+PASS zero preserves legacy prompt without extra clause (chat=False)
+PASS randomness 0 is captured and clamped (chat=False)
+PASS zero preserves legacy prompt without extra clause (chat=False)
+PASS randomness 1 is captured and clamped (chat=False)
+PASS randomness 1 preserves facts and redraw (chat=False)
+PASS randomness 1 respects reference roles (chat=False)
+PASS randomness 1 increases variation instead of similarity (chat=False)
+PASS randomness 50 is captured and clamped (chat=False)
+PASS randomness 50 preserves facts and redraw (chat=False)
+PASS randomness 50 respects reference roles (chat=False)
+PASS randomness 50 increases variation instead of similarity (chat=False)
+PASS randomness 100 is captured and clamped (chat=False)
+PASS randomness 100 preserves facts and redraw (chat=False)
+PASS randomness 100 respects reference roles (chat=False)
+PASS randomness 100 increases variation instead of similarity (chat=False)
+PASS randomness 150 is captured and clamped (chat=False)
+PASS randomness 150 preserves facts and redraw (chat=False)
+PASS randomness 150 respects reference roles (chat=False)
+PASS randomness 150 increases variation instead of similarity (chat=False)
+PASS randomness -1 is captured and clamped (chat=True)
+PASS zero preserves legacy prompt without extra clause (chat=True)
+PASS randomness 0 is captured and clamped (chat=True)
+PASS zero preserves legacy prompt without extra clause (chat=True)
+PASS randomness 1 is captured and clamped (chat=True)
+PASS randomness 1 preserves facts and redraw (chat=True)
+PASS randomness 1 respects reference roles (chat=True)
+PASS randomness 1 increases variation instead of similarity (chat=True)
+PASS randomness 50 is captured and clamped (chat=True)
+PASS randomness 50 preserves facts and redraw (chat=True)
+PASS randomness 50 respects reference roles (chat=True)
+PASS randomness 50 increases variation instead of similarity (chat=True)
+PASS randomness 100 is captured and clamped (chat=True)
+PASS randomness 100 preserves facts and redraw (chat=True)
+PASS randomness 100 respects reference roles (chat=True)
+PASS randomness 100 increases variation instead of similarity (chat=True)
+PASS randomness 150 is captured and clamped (chat=True)
+PASS randomness 150 preserves facts and redraw (chat=True)
+PASS randomness 150 respects reference roles (chat=True)
+PASS randomness 150 increases variation instead of similarity (chat=True)
+PASS late old weekly scope cannot close replacement
+PASS current weekly scope still closes and cancels normally
+PASS late weekly close remains idempotent
+PASS cleanup A preserves another request awaiting image read
+PASS cleanup rejects broad prefix []
+PASS cleanup rejects broad prefix [af_offscreen_*]
+PASS cleanup rejects broad prefix [af_offscreen_]
+PASS weekly evidence preserves actors location and negative outcome beyond 400 characters
+PASS weekly decorative title is director-only and hyperlink internals are removed from facts
+PASS quoted victory claim is not promoted to confirmed event
+PASS quoted place names and negation remain intact
+PASS empty event evidence stays unknown
+PASS release and ceasefire keep their negative outcomes
+PASS custom species visual identity and current equipment imprisonment survive background split
+PASS abstract traits skills and nonvisual biography remain director-only
+PASS season lighting weather and unique host scene details survive routing
+PASS exact date and engine resource name move to director-only context
+PASS conversation routes dialogue and biography to director while preserving visual identity
+PASS offline weekly preserves visual facts and excludes narrative
+PASS director weekly still receives complete narrative in separate block
+PASS offline encyclopedia preserves visual facts and excludes narrative
+PASS director encyclopedia still receives complete narrative in separate block
+PASS offline conversation preserves visual facts and excludes narrative
+PASS director conversation still receives complete narrative in separate block
+PASS verbatim dialogue echo falls back locally without losing facts
+PASS visual paraphrase from director is retained
+PASS weekly title echo falls back without losing event outcome
+PASS live scene retains real objects without template props or people
+PASS unnamed live scene does not invent template objects
+PASS non-mission scene keeps existing artistic fallback
+PASS remaining unsupported shields removed
+PASS response parser accepts later data item
+PASS response parser accepts content image block
+PASS response parser accepts string image_url
+PASS response parser accepts later choice
+PASS response parser accepts markdown
+PASS response parser accepts bad image before valid
+PASS actual empty completion cannot fabricate image bytes
+PASS empty completion is distinguished from parser failure
+PASS provider refusal has separate diagnosis
+PASS edit failure 200 cannot silently retry without reference images
+PASS edit failure 401 cannot silently retry without reference images
+PASS edit failure 429 cannot silently retry without reference images
+PASS edit failure 500 cannot silently retry without reference images
+PASS unsupported edit endpoint retains compatibility fallback
+PASS native exporter rejects incomplete PNG
+PASS native exporter rejects transparent render
+PASS native banner uses full canvas and lifecycle cleanup
+180 checks, 0 failures

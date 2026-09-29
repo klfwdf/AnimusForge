@@ -37,6 +37,13 @@
             </IncludedGameTypes>
         </XmlNode>
         <XmlNode>
+            <XmlName id="Items" path="vengeance_items" />
+            <IncludedGameTypes>
+                <GameType value="Campaign" />
+                <GameType value="CampaignStoryMode" />
+            </IncludedGameTypes>
+        </XmlNode>
+        <XmlNode>
             <XmlName id="Items" path="sceneactions_items" />
             <IncludedGameTypes>
                 <GameType value="Campaign" />
