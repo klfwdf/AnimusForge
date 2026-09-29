@@ -151,6 +151,16 @@ internal static class CivilWarWorld
 
 	internal static string KingdomName(Kingdom kingdom) => kingdom?.Name?.ToString() ?? "某王国";
 
+	internal static string FindClanOwnerKingdom(string settlementId)
+	{
+		try
+		{
+			Settlement settlement = Settlement.Find(settlementId);
+			return settlement?.OwnerClan?.Kingdom?.StringId ?? "";
+		}
+		catch { return ""; }
+	}
+
 	internal static string Limit(string text, int max)
 	{
 		string value = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();

@@ -59,7 +59,7 @@ public partial class DuelSettings
 			tuning.Randomness = CivilWarRules.Clamp(settings.CivilWarRandomness, 0f, 1f);
 			tuning.DiscontentThreshold = System.Math.Max(10, settings.CivilWarDiscontentThreshold);
 			tuning.UltimatumDelayWeeks = System.Math.Max(1, settings.CivilWarUltimatumDelayWeeks);
-			tuning.MaxWarWeeks = System.Math.Max(tuning.MinWarWeeks + 1, settings.CivilWarMaxWarWeeks);
+			tuning.MaxWarWeeks = System.Math.Min(30, System.Math.Max(tuning.MinWarWeeks + 1, settings.CivilWarMaxWarWeeks));
 			tuning.CooldownWeeks = System.Math.Max(0, settings.CivilWarCooldownWeeks);
 		}
 		catch
