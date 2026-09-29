@@ -1502,7 +1502,7 @@ public static class WorldDiplomacyRoundLifecycleRules
     }
 
     public static WorldDiplomacyThreat SelectOpenThreatIssuedBy(
-        List<WorldDiplomacyThreat> threats,
+        IReadOnlyList<WorldDiplomacyThreat> threats,
         string issuerKingdomId)
     {
         string issuerId = (issuerKingdomId ?? "").Trim();
@@ -1578,7 +1578,7 @@ public static class WorldDiplomacyRoundLifecycleRules
     }
 
     public static WorldDiplomacyThreat SelectOpenThreatBetween(
-        List<WorldDiplomacyThreat> threats,
+        IReadOnlyList<WorldDiplomacyThreat> threats,
         string issuerKingdomId,
         string targetKingdomId)
     {
@@ -3880,7 +3880,7 @@ public static class WorldDiplomacyRoundLifecycleRules
     }
 
     public static bool IsEnforcingRejectedUltimatum(
-        List<WorldDiplomacyThreat> threats, string authorId, string targetId)
+        IReadOnlyList<WorldDiplomacyThreat> threats, string authorId, string targetId)
     {
         return !string.IsNullOrWhiteSpace(authorId) && !string.IsNullOrWhiteSpace(targetId)
             && IsRejectedUltimatumEnforceable(SelectOpenThreatBetween(threats, authorId, targetId));
@@ -4121,7 +4121,7 @@ public static class WorldDiplomacyRoundLifecycleRules
 	}
 
 	public static void FinalizeDiplomaticThreatHistoryAfterDocument(WorldDiplomacyDocument document,
-		List<WorldDiplomacyThreat> threats,
+		IReadOnlyList<WorldDiplomacyThreat> threats,
 		Action<WorldDiplomacyThreat> appendBreachResult,
 		Action<WorldDiplomacyThreat> appendDomesticPenaltyResult,
 		Action<WorldDiplomacyThreat> appendIssuerRewardResult)
@@ -4153,7 +4153,7 @@ public static class WorldDiplomacyRoundLifecycleRules
 	}
 
 	public static void FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(WorldDiplomacyDocument document,
-		List<WorldDiplomacyThreat> threats,
+		IReadOnlyList<WorldDiplomacyThreat> threats,
 		Action<WorldDiplomacyThreat, WorldDiplomacyThreatNonComplianceEvent> appendNonComplianceEvent)
 	{
 		if (document?.HistoryDeclarationRecorded != true || string.IsNullOrWhiteSpace(document.DocumentId)) return;
@@ -4208,7 +4208,7 @@ public static class WorldDiplomacyRoundLifecycleRules
 
 	public static void SettleDiplomaticThreatFollowThroughAfterDeclaration(
 		WorldDiplomacyDocument document,
-		List<WorldDiplomacyThreat> threats, string authorKingdomId,
+		IReadOnlyList<WorldDiplomacyThreat> threats, string authorKingdomId,
 		Action<WorldDiplomacyThreat, WorldDiplomacyDocument> applyReputationPenalty)
 	{
 		if (document == null || string.IsNullOrWhiteSpace(authorKingdomId)) return;

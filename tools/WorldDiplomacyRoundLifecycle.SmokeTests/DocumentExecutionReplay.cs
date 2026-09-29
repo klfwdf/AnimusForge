@@ -15,7 +15,7 @@ internal static class DocumentExecutionReplay
         public int MaxDiplomaticActionsPerDocument => 4;
         public int MaxRelayParticipants => 3;
         public int CurrentDay => 12;
-        public List<WorldDiplomacyThreat> Threats { get; } = new();
+        public IReadOnlyList<WorldDiplomacyThreat> Threats { get; } = new List<WorldDiplomacyThreat>();
         public string ResolveKingdomId(string id) { return id == "missing" || string.IsNullOrEmpty(id) ? null : id; }
         public bool IsEliminated(string id) { return false; }
         public bool HasIndependentWorldDiplomacyAuthority(string id) { return id != "vassal"; }

@@ -4436,10 +4436,10 @@ internal static class Program
     {
         if (marker.StartsWith("private void NormalizeStorage(", StringComparison.Ordinal))
         {
-            Test.True(source.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source)", StringComparison.Ordinal),
+            Test.True(source.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source, ref migration)", StringComparison.Ordinal),
                 "storage normalization must call the real storage-normalization Application owner");
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"));
-            return ExtractMethod(text, "internal static void Normalize<TSource>(");
+            return ExtractMethod(text, "internal static void Normalize<TSource, TMigration>(");
         }
         return null;
     }

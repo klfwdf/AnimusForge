@@ -94,8 +94,8 @@ internal static class Program
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         string normalizeStorage = ExtractMethod(
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"), Encoding.UTF8),
-            "internal static void Normalize<TSource>(");
-        Test.True(behavior.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source)", StringComparison.Ordinal),
+            "internal static void Normalize<TSource, TMigration>(");
+        Test.True(behavior.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source, ref migration)", StringComparison.Ordinal),
             "behavior normalization must call the real storage-normalization Application owner");
         string newGame = ExtractMethod(behavior, "private void OnNewGameCreated(");
         string migration = File.ReadAllText(

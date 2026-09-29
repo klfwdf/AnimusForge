@@ -11,7 +11,7 @@ internal static class ActionSelectionReplay
         public bool HasAuthority(string id) => id != "vassal";
         public bool IsEliminated(string id) => id == "dead";
         public WorldDiplomacyPairFacts CapturePair(string a, string b) { Captures++; return new(War, true, true, Allied, Trading); }
-        public List<WorldDiplomacyThreat> Threats { get { ThreatReads++; return Items; } }
+        public IReadOnlyList<WorldDiplomacyThreat> Threats { get { ThreatReads++; return Items; } }
         public bool CanIssueWarThreat(string a, string b) => PermitWar;
         public bool CanDeclareWar(string a, string b, bool enforcing) => PermitWar;
         public int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key) => Cooldown ? 9 : -1;

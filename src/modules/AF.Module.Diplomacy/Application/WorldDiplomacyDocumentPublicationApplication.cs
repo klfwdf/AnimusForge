@@ -34,7 +34,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         string targetKingdomId,
         string normalizedIntent,
         bool recordNoActionDecision,
-        List<WorldDiplomacyThreat> threats,
+        IReadOnlyList<WorldDiplomacyThreat> threats,
         Action<WorldDiplomacyDocument, string, string, string> recordThreatDecisions,
         Func<WorldDiplomacyDocument, string, string, string, bool> deferUnresolvedThreatAction,
         Action<WorldDiplomacyThreat, WorldDiplomacyDocument> applyThreatReputationPenalty,

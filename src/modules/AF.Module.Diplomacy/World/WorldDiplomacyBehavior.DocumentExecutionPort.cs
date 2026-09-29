@@ -69,6 +69,6 @@ public sealed partial class WorldDiplomacyBehavior
         public int MaxDiplomaticActionsPerDocument => WorldDiplomacyBehavior.MaxDiplomaticActionsPerDocument;
         public int MaxRelayParticipants => WorldDiplomacyBehavior.MaxRelayParticipants;
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
-        public List<WorldDiplomacyThreat> Threats => _owner._storage?.DiplomaticThreats;
+        public IReadOnlyList<WorldDiplomacyThreat> Threats => _owner._storage?.DiplomaticThreats;
     }
 }
