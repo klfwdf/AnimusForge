@@ -570,7 +570,7 @@ internal static class Program
         string queue = ExtractSection(
             ReadRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")),
             "public static void EnqueueJob(",
-            "public static void CommitRoundCompression(");
+            "public static void CommitLocalRoundSummary(");
         Test.True(queue.Contains("int queueCapacity = maxPendingJobs +", StringComparison.Ordinal)
                   && queue.Contains("IsJobOfKind(x, \"compress\")", StringComparison.Ordinal),
             "a queued compression job must open one dedicated maintenance slot");
