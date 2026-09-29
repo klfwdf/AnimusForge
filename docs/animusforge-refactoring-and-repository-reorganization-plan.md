@@ -15,6 +15,8 @@
 
 **A2 定向入口（仍 `REVIEW_REQUIRED`）**：范围图 E19–E20 记录当前 `Refactor/` 30 个实际 Compile 文件/1,115 个语法声明及若干生产消费者，并复核四功能集成 Tick 接缝。`Refactor` 包含正在被 Scene/Courier/PublicApi/Duel/Notoriety 使用的不同职责，不能按目录批量移动；B7 的逐文件目标/动态引用仍未判完。`IntegratedModuleHost.Tick` 每帧直调三模块，watched scope 无异常隔离，前一调用抛错会跳过后续调用；这是具名 host/R08 风险，不在无复现/批准策略时改为吞异常。20 桶其余成员语义仍未逐项完成，旧 E13 的 940/10,704/3,332 分母不适用于当前候选。
 
+**A2 续查（仍 `A_NOT_CLOSED / B_NOT_STARTED`）**：当前候选索引见范围图 E21，实际 1,123 个 Compile 文件中 843 个可导航至候选桶，280 个（1.3 语法声明 12,675 个）尚无候选；全部 1,123 行均标 `semanticReview=PENDING`，不能以“已分桶”冒充 20 桶完成。E22 已重读六个 catalog 跨桶文件的生产消费者与运行频率：`SubModule` 是组合入口兼 UI 适配；Weekly outcome partial 的保存/恢复和 draft 写入不能与既有 Weekly ledger 形成双权威；Terminal VM 只消费 Weekly；Action executor/committer 通过接口接 Duel/Economy/Weekly；Scene 后处理归 Conversation 场景生命周期并按资格调用跨域动作。九个 overlap 尚有 `MyBehavior.cs`、`ShoutBehavior.cs`、`CourierDeliveryBehavior.cs` 三个大宿主未审完，六个已抽样文件也尚未逐声明/动态入口验收。GCCZ 184 个内部 Compile 可依范围排除主体迁移，AF 侧 `AfGcczShoutBridge`/Siege adapter 必审；PolicySystem 77 个跨命名空间文件不按路径全排。**当前不启动 B**；下一步继续 R04→R02→R03→R01 的 A1 精确闭包与 A2 全量成员/消费者审查，直到未知成员为 0、20 桶语义和具名余项退出门齐备。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
