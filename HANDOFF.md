@@ -5,7 +5,7 @@
 - **交付**：J16 15 个提交与 J17-A 盘点文档通过普通 merge 整合；目标分支 `codex/af-main-refactor-continuation-20260831` 已成功快进推送至 `3f7b9018`（GitHub 回执：`ada9894a..3f7b9018`，未强推）。
 - **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`；实机/旧档、F4-A 来源与视觉遗留继续保留，发布 HOLD 不变。
 - **J16**：`J16_OFFLINE_CLOSED`（a/b/c/d/e）。全量 runner 记录 257 项：`PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。LIVE、旧 SAVE、三渠道修复回放未运行；旧档键兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留见主台账。
-- **J17-A**：旧 E09–E13 与 940/3,332 分母仅为 `99ca85ae` 历史导航；当前实际编译基线及 A1/A2 开放项以上述 E14–E22 和主台账为准。R05/R06/R07/R08/R09、动态消费者及 20 桶语义仍未闭，不满足 A 出口。
+- **J17-A**：旧 E09–E13 与 940/3,332 分母仅为 `99ca85ae` 历史导航；当前实际编译基线及 A1/A2 开放项以上述 E14–E24 和主台账为准。R06 新增 `Refactor/` 30 文件逐文件责任**导航**（1,115 声明），指出混合 SnapshotAdapters、错误目录的 Shout gateway、保存 wire 与反射/源码路径消费者；不是逐声明或动态调用闭合。R05/R06/R07/R08/R09 及 20 桶语义仍未闭，不满足 A 出口；依用户顺序 B 不启动。
 - **验证边界**：J16 的全量测试数据来自其交接记录，本轮未重跑全套；本轮完成文档整合与普通推送。未运行游戏/旧档/provider，未部署或打包；保留 `.dotnet-cli-home/` 和忽略的 J17 盘点材料。
 ## J16/J17 整合前的 J16 交接（保留历史，以上方状态为准）
 # 当前交接：J15 按用户决定结项，转入 J17（2026-09-29）
