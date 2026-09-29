@@ -435,7 +435,112 @@ F4A_DESIGN_EXPECTED = {
     "animusforge_denar_coin.prefab.xml": "0D0BF8DD651221BF95835204CBEC399099C715C4487FF61D01C3AA32DEEAE55B",
     "animusforge_scene_gold_items.xml": "75028E1310479B368EEC743C878E12B1CB4B12292A9412C90750BCA833C68602",
 }
-EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED}
+# ada9894a four-feature integration content (DialogueUI, Illustrator, RichExecutions/Vengeance).
+# SHA-256 of the checked-out source bytes, like J15A/F4A.
+INTEGRATION_EXPECTED = {
+    "GUI/Prefabs/AFDialogueConversation.xml": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueConversation.xml", "sha256": "676414590946FD91E0E0ECFB22DDF18FAE2FA7B626912DC97F1190E82170F696"},
+    "GUI/Prefabs/AFDialogueMapConversation.xml": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueMapConversation.xml", "sha256": "30A2BA529106F15BBF49D682C2180576AD8F985F224CFF9FBF69145856648911"},
+    "GUI/Prefabs/AFDialogueNativeOverlay.xml": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueNativeOverlay.xml", "sha256": "0A97DE1528CBD6A0E7BB7BDA6B37120FAEDF232AA53C99D250B7EF8032CED968"},
+    "GUI/Prefabs/AFDialogueShout.xml": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFDialogueShout.xml", "sha256": "EA62F5D09727EDC43EA000583AEF9DB593C19EFA71D34551E363AE41468A6E31"},
+    "GUI/Prefabs/AFSceneSessionFolio.xml": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFSceneSessionFolio.xml", "sha256": "A1DCE3AFB46ABCF10F9CED7E0CDBF387714E54615A9B77882071B4BF368B6DD7"},
+    "GUI/Prefabs/AFSceneSessionScroll.xml": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFSceneSessionScroll.xml", "sha256": "6EEDF5885A9C277D333C483CAA61D5D7E06C982DDC22B1412FA13D1D171505AB"},
+    "GUI/Prefabs/AFSceneWheel.xml": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/Prefabs/AFSceneWheel.xml", "sha256": "7643BACADE9D9E8521DA90C3FEF877FC7B58754C7A6AE703E2EEE15822CC6C0D"},
+    "GUI/SpriteParts/afdui_3tier_console_chassis_clean.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_3tier_console_chassis_clean.png", "sha256": "65ABE47320063E6B9FFD7D13C8635C35BE4382FB0DE9F9D429016198A0B3AE54"},
+    "GUI/SpriteParts/afdui_audience_docket_base.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_audience_docket_base.png", "sha256": "B18B5CDAB7AEB06D7C331D194E83E0F7655E9AA2F871E83ECB84D0C3A09AA9FD"},
+    "GUI/SpriteParts/afdui_audience_docket_base_clean.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_audience_docket_base_clean.png", "sha256": "B18B5CDAB7AEB06D7C331D194E83E0F7655E9AA2F871E83ECB84D0C3A09AA9FD"},
+    "GUI/SpriteParts/afdui_audience_docket_pure_clean.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_audience_docket_pure_clean.png", "sha256": "B3CC2798474DF58F1F0EF395370B4C5729930ACCFF8DB53B7B454193D2588F13"},
+    "GUI/SpriteParts/afdui_aux_panel.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_aux_panel.png", "sha256": "25AB57E4EB595A672BECDF5FFB0C3D91B178F877F1CB57D9DC395793AAF20D1B"},
+    "GUI/SpriteParts/afdui_btn_medallion.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_btn_medallion.png", "sha256": "7D49A849C41C911781A8B5CEA1761CE6710C18013DAE35BAB9E64EBC10D1CAC7"},
+    "GUI/SpriteParts/afdui_btn_wax_seal.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_btn_wax_seal.png", "sha256": "25D883B867A66A0E9A68F8E3368AEE69F3E8DEE596BDD113539E25062FE540F7"},
+    "GUI/SpriteParts/afdui_button_hover.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_button_hover.png", "sha256": "829485936B218AC289102EF69E2CB34CD10D597807CA0135892594F27D205498"},
+    "GUI/SpriteParts/afdui_button_normal.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_button_normal.png", "sha256": "19258B33E38160245D39FFEA8469B229A1E9794ED6442C8F585F6575A6B50C56"},
+    "GUI/SpriteParts/afdui_button_plate_hover.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_button_plate_hover.png", "sha256": "A669C0F7FB6CE4B15E7A03A2C53534563A6B4E25DC3E104C29C6945C2B087D1E"},
+    "GUI/SpriteParts/afdui_button_plate_normal.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_button_plate_normal.png", "sha256": "091EB753ABFEF045AE9F39A4B59D4651A3451748985AD3601B7D8846F228A15B"},
+    "GUI/SpriteParts/afdui_button_plate_pressed.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_button_plate_pressed.png", "sha256": "E6503D6C6ABD5DD1E8D9E6C50E182FD0B54FA65B67F060BF35E78A4A045AD1D3"},
+    "GUI/SpriteParts/afdui_button_pressed.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_button_pressed.png", "sha256": "D2F7463D6D21D65363AA87FD7917D1433613C831CD2AFEDB40E2D45942451A2D"},
+    "GUI/SpriteParts/afdui_capsule_topic.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_capsule_topic.png", "sha256": "73AB0FF47FA5906F15A64CEED88391B58FE1EEF1B41C29236A879FECAAAC0E11"},
+    "GUI/SpriteParts/afdui_console_base.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base.png", "sha256": "4FB5335A2666E4AC648CD2729ADB2BD3040AE94F1693F1D70ABADF1C86C44956"},
+    "GUI/SpriteParts/afdui_console_base_option_01.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_01.png", "sha256": "E311251A70673249938614EA2020203C420F84D7E729B9B5207EA476C80E6E05"},
+    "GUI/SpriteParts/afdui_console_base_option_02.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_02.png", "sha256": "EAD2B7ABDD3AED354B3648583CC659C23B0E07FB5EA869F57C4F7C2A4938D60D"},
+    "GUI/SpriteParts/afdui_console_base_option_02_walnut.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_02_walnut.png", "sha256": "5DB51DC00DCDA9AB58DAC8420B506EACA143A811AFE107B7B2DC6D9C05CFF2CA"},
+    "GUI/SpriteParts/afdui_console_base_option_02_walnut_original_ratio.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_02_walnut_original_ratio.png", "sha256": "1D58A92E7478889A8B0D3DA0BF5D3E192BB06DDA90DE0CB9BD80390609C2468D"},
+    "GUI/SpriteParts/afdui_console_base_option_03.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_console_base_option_03.png", "sha256": "52260714B42AF9E6BF86B202833410E1F43E93756C227C1B3BC9949427604271"},
+    "GUI/SpriteParts/afdui_dual_codex_base_clean.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_dual_codex_base_clean.png", "sha256": "E1829A8FBC5A073DD786E308D3530CB9C6E83E260C2416DF06B96ADBC41905B2"},
+    "GUI/SpriteParts/afdui_icon_coin.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_icon_coin.png", "sha256": "595AA6B595405B1A94D4E3C67A974F638C8C41A2873FFF7EFCECBF500FA61489"},
+    "GUI/SpriteParts/afdui_icon_search.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_icon_search.png", "sha256": "7300AB7828555D7BF3DACFAF4AB003C4BB8663FB1A6BAD42C10FA141AB9DFAAB"},
+    "GUI/SpriteParts/afdui_input_panel.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_input_panel.png", "sha256": "3FFC459E39E984DEB2F30B1676BAA74F82B92872E73E5B7589054B6ED3C77B65"},
+    "GUI/SpriteParts/afdui_nameplate.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_nameplate.png", "sha256": "7AD0917119540229D4D58A38664DF676E8277B8CA8A86B396540A4FCE5012717"},
+    "GUI/SpriteParts/afdui_parchment_panel.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_parchment_panel.png", "sha256": "CB742A355EACDA1A16ABF3CEEDCF475BBD33F4F9FCB032CE70339B4623D10387"},
+    "GUI/SpriteParts/afdui_persuasion_dot.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_persuasion_dot.png", "sha256": "3D4166FEDAC3BA0D68C1601F586749573358938215E8724080B918DA1765B0B3"},
+    "GUI/SpriteParts/afdui_plaque_nameplate.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_plaque_nameplate.png", "sha256": "5CCE9004AF187E0A4A0C7E6121BD20595A4ECE1B85524C5D05DB5C754AB80097"},
+    "GUI/SpriteParts/afdui_portrait_background.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_background.png", "sha256": "3628AA725561512C6426EB279E94F9208B8F46A21C64C58B80BE64661C1A3ED5"},
+    "GUI/SpriteParts/afdui_portrait_frame_redesign.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_frame_redesign.png", "sha256": "EA6B52DE0C0617D7B16C96A0928315B2CEC4BFC1F4A0690526F06885ACADCDFD"},
+    "GUI/SpriteParts/afdui_portrait_option_01.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_option_01.png", "sha256": "F3DDEB2E0DEE0920420A8F3F912E298A453090886906FEBE9DAA6D511D995CFB"},
+    "GUI/SpriteParts/afdui_portrait_option_02.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_option_02.png", "sha256": "A2B0C3FA274F322BD0D59FB4EE813F73FB34C17BF8D7AB62183A14330092902B"},
+    "GUI/SpriteParts/afdui_portrait_option_03.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_portrait_option_03.png", "sha256": "92AEB2E4EA54AA652D91E2D2CF46C701E72EA8F3739CFD78299E634B42DD8FD8"},
+    "GUI/SpriteParts/afdui_radial_wheel_base.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_radial_wheel_base.png", "sha256": "2554979CFF343A206BCA6F86425AD03375A4538F540C7D31988F1F2C046C457C"},
+    "GUI/SpriteParts/afdui_ribbon_tab.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_ribbon_tab.png", "sha256": "DF62A1E1EDF84D48B5B874B50D89E293A17C8589C9DF32C976ECFC5766A5BEDF"},
+    "GUI/SpriteParts/afdui_row_hover.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_row_hover.png", "sha256": "7C6198C3790E26C3DF4D0C3DF717DCAB417B8E573616A82BE617140D569A819E"},
+    "GUI/SpriteParts/afdui_row_normal.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_row_normal.png", "sha256": "E0F89DC98BC3CD5E36FE43AFBF3D9CE142F69BE881931E0A9733700E0DF30628"},
+    "GUI/SpriteParts/afdui_row_selected.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_row_selected.png", "sha256": "1108982B112996FB4CBAC8AE9E789B8A13510217C7460C6F24E518D76B06DD14"},
+    "GUI/SpriteParts/afdui_scroll_body.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_scroll_body.png", "sha256": "2868AB1C15B466D424A77C54E7C61F3ABC22370A7AD84C2BFDF29977000E2703"},
+    "GUI/SpriteParts/afdui_scroll_chassis_clean.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_scroll_chassis_clean.png", "sha256": "648E32D5B55637F5C1179F0DC92DC7D17907C229920447746404BE25BC890B85"},
+    "GUI/SpriteParts/afdui_scroll_handle.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_scroll_handle.png", "sha256": "432D73F60CAADDCC1EA200DB8BF87481E63D756A4EB8C2D36668A02A44D823FB"},
+    "GUI/SpriteParts/afdui_scroll_left.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_scroll_left.png", "sha256": "1BD84143C8EB2ADC05597B22832B5B12E54023076D034B5C3F9DB3CF37487B48"},
+    "GUI/SpriteParts/afdui_scroll_right.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_scroll_right.png", "sha256": "69AA7B1C2744EE4409233F6E4DFD3096C43A4C67514B480E6687FFE051580FCE"},
+    "GUI/SpriteParts/afdui_seal_base_gold.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_base_gold.png", "sha256": "C09D5F49D420FDB21AC125D0BCA9B3B12E7AE1B82B174BFEE5E71A543D08F93F"},
+    "GUI/SpriteParts/afdui_seal_base_green.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_base_green.png", "sha256": "37DD6E867068C099BE1DB2D3EDF7A9EBF1595DA31A38365E1084704B0CCE668B"},
+    "GUI/SpriteParts/afdui_seal_base_red.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_base_red.png", "sha256": "71AE677EB7101E14AE60C571FAE30F1FFF7FC8EDB7158DAC1AFCBA857ACC2668"},
+    "GUI/SpriteParts/afdui_seal_exclude.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_exclude.png", "sha256": "71A1E010B748305E4FEDD6550E88E8E22F88B1BAA0AB4573F8C744E6054A65E3"},
+    "GUI/SpriteParts/afdui_seal_locked.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_locked.png", "sha256": "49F185A6815F300A85D68DB739E254FF1D92E0A06B731F59268693D19E0FD413"},
+    "GUI/SpriteParts/afdui_seal_participate.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_seal_participate.png", "sha256": "DB88AA3655287661603C61232496B96C613283D8E367C296B644E3ACB8864C5F"},
+    "GUI/SpriteParts/afdui_shout_dialog.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_shout_dialog.png", "sha256": "2FBAFC69C491BE5814BAAA9FA61CFC72886EF3197F2CB5992EF540C23CC171FE"},
+    "GUI/SpriteParts/afdui_shout_scroll_base.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_shout_scroll_base.png", "sha256": "4D16DA99C9BB0A38FB7BBD19EA2ACF62697D00CAB41348B616FAB200916E238D"},
+    "GUI/SpriteParts/afdui_side_console_base.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_side_console_base.png", "sha256": "9DE2CD66BC2BDF3F655529B4C7DC470E471A86DC8EAB02F64A90160D4B51F6EA"},
+    "GUI/SpriteParts/afdui_side_parchment_console_base.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_side_parchment_console_base.png", "sha256": "D75884BA5CC04FF0FEF9FAF759AEDA32297B51613877F021CE7EE64CCE91B8E1"},
+    "GUI/SpriteParts/afdui_side_parchment_folio_clean.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_side_parchment_folio_clean.png", "sha256": "AF41DD307AEE0E7889B1872513BB5D475DC5CDEB41F925195A2D80DE69FC0A47"},
+    "GUI/SpriteParts/afdui_tab_hover.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_tab_hover.png", "sha256": "2CACC0E6FE7CEF52D1F1DC54E64A6178380E9D4ADE864F854ECA680EFE4CE274"},
+    "GUI/SpriteParts/afdui_tab_normal.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_tab_normal.png", "sha256": "1DF7591583C6AEDB044910C2F0A69DDCDA128AFDEFB71DE13E4A8481601C9AE4"},
+    "GUI/SpriteParts/afdui_tab_pressed.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_tab_pressed.png", "sha256": "4C524F0A7A5E563F58C58BD724BC8F08240A2CA2ECAA37171835E48A32AC4D6F"},
+    "GUI/SpriteParts/afdui_topic_capsule.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_topic_capsule.png", "sha256": "74B41B79E05B1727A35C40521FD925680DB91B96415E1A04200A6953026EEACB"},
+    "GUI/SpriteParts/afdui_wax_seal.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wax_seal.png", "sha256": "5E46D3EB77C6C2F8F6CDB4C8A4E3351C1F3211E9D5DD9C094E6C209E24C7FF13"},
+    "GUI/SpriteParts/afdui_wheel_chassis_clean.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_chassis_clean.png", "sha256": "CB29C56F5B74340D57D05D4E36DDAAA595DF7351C20BE935EA7D9AB6B4089B05"},
+    "GUI/SpriteParts/afdui_wheel_chassis_symmetric.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_chassis_symmetric.png", "sha256": "C679974D4C0EE67CFB37AF02A497D9037CAD96BD8E086A28B8CADCABCD052427"},
+    "GUI/SpriteParts/afdui_wheel_chassis_symmetric_hollow.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_chassis_symmetric_hollow.png", "sha256": "CA434174D3F8657C94649F4F4797345C9598A89E5660D3C19E66875C90A324D5"},
+    "GUI/SpriteParts/afdui_wheel_wedge_actions.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_wedge_actions.png", "sha256": "50B2B7F142AD30ECCBAAEAFC09311A723EE5702218FEB32B3CAEF7FA9A440FD4"},
+    "GUI/SpriteParts/afdui_wheel_wedge_give.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_wedge_give.png", "sha256": "E91A14F4133237CF5FFF461D254FBA59BA0CD15B06E5613A58B5413DDE3C65BA"},
+    "GUI/SpriteParts/afdui_wheel_wedge_leave.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_wedge_leave.png", "sha256": "90D698A40F216866DCF018CC769014EA2C8F676297055B920DB037454F5C8234"},
+    "GUI/SpriteParts/afdui_wheel_wedge_talk.png": {"owner": "AnimusForge.DialogueUI", "source": "extensions/AnimusForge.DialogueUI/GUI/SpriteParts/afdui_wheel_wedge_talk.png", "sha256": "A4BCFC5B7145C761A5BFDC9A01B29D1380791422DCF80C913D5E93C9CE952C0D"},
+    "GUI/Prefabs/ConversationIllustrationFullscreenBackdrop.xml": {"owner": "AnimusForge.Illustrator", "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/ConversationIllustrationFullscreenBackdrop.xml", "sha256": "E68BBFC3548BDB8D0B4BC04E9C493E80C9CC6F1146FECAC2A04F5A7CA778E568"},
+    "GUI/Prefabs/ConversationIllustrationFullscreenOverlay.xml": {"owner": "AnimusForge.Illustrator", "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/ConversationIllustrationFullscreenOverlay.xml", "sha256": "9683ED43A827AEC32BEC356FD78FEC630E5BE0DBAEEB6DD96149A4E2C901579E"},
+    "GUI/Prefabs/ConversationIllustrationOverlay.xml": {"owner": "AnimusForge.Illustrator", "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/ConversationIllustrationOverlay.xml", "sha256": "FD2BE51832D99E74A629B4CF2DA015155773723A54A790D089B62794A0A4679D"},
+    "GUI/Prefabs/EncyclopediaIllustrationOverlay.xml": {"owner": "AnimusForge.Illustrator", "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/EncyclopediaIllustrationOverlay.xml", "sha256": "83A7BB907308A5C56B0E79C757DB589A07E1EAE416F0121886E87630C4307E6B"},
+    "GUI/Prefabs/IllustratorGalleryPopup.xml": {"owner": "AnimusForge.Illustrator", "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/IllustratorGalleryPopup.xml", "sha256": "C2D01FF3301696EB6C3B680D930CB644F030A5143F2D47CD9A1E002554891920"},
+    "GUI/Prefabs/IllustratorOffscreenStage.xml": {"owner": "AnimusForge.Illustrator", "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/IllustratorOffscreenStage.xml", "sha256": "6E12733C511A75D195EDB6B65FDA2BB4FAC9BD7D10F16229A983378CAD64C454"},
+    "GUI/Prefabs/WeeklyReportIllustrationOverlay.xml": {"owner": "AnimusForge.Illustrator", "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/WeeklyReportIllustrationOverlay.xml", "sha256": "FF6AAF77572D9B0768DDD2274BB7DF0938F3B5624ACFB0D218E721EF12E42EED"},
+    "AssetPackages/vengeance_pack0.tpac": {"owner": "RichExecutions", "source": "AnimusForge/AssetPackages/vengeance_pack0.tpac", "sha256": "B7CE1AB8751375BBB03046459C46702F07606CF5023F93EE894BA02C0DCA3A92"},
+    "GUI/Prefabs/RichExecutionJudgement.xml": {"owner": "RichExecutions", "source": "AnimusForge/GUI/Prefabs/RichExecutionJudgement.xml", "sha256": "0E5D14CF8528FF06BD2D12E094E32261FB460B83F5C6F0C2FD655CD8DC90FEE8"},
+    "GUI/Prefabs/RichExecutionSiteBuilder.xml": {"owner": "RichExecutions", "source": "AnimusForge/GUI/Prefabs/RichExecutionSiteBuilder.xml", "sha256": "5D147A30517346F9A6A094EB440FD872F6209CBCA50E1DCEC06FA0EC5A7CD849"},
+    "GUI/Prefabs/rex_speech_bubble.xml": {"owner": "RichExecutions", "source": "AnimusForge/GUI/Prefabs/rex_speech_bubble.xml", "sha256": "80C0A2D433DB7E4317866FD2728B8B8752AABD83D6D5323774689FD886FEFE78"},
+    "ModuleData/vengeance_items.xml": {"owner": "RichExecutions", "source": "AnimusForge/ModuleData/vengeance_items.xml", "sha256": "B7EFED97CFD42A96F2F1F450AC8193E18287599CC040DE0E5AC94C8E41D4B1DA"},
+    "ModuleData/Languages/vengeance_strings-en.xml": {"owner": "RichExecutions", "source": "AnimusForge/ModuleData/Languages/vengeance_strings-en.xml", "sha256": "21E0D9CBBBF81B3260942FF751491429D3CB6BF4222E005698C551F011092501"},
+    "ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml": {"owner": "RichExecutions", "source": "AnimusForge/ModuleData/Languages/CNs/vengeance_strings-zh-CN.xml", "sha256": "FBE0D80B6114D5DECD239F4CA42AE83FD42187385CB3BCD9C7ABECE5F94F3386"},
+}
+EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED}
+# ada9894a edited these J15b-migrated sources (SceneActions postprocess rule, Vengeance language
+# index entries, DialogueUI history/terminal prefabs, Xihai action sets). They must equal the J15b
+# baseline at the integration parent and the reviewed SHA-256 of the checked-out bytes now.
+J15B_REVIEWED_EDIT_PARENT = "99ca85ae"
+J15B_REVIEWED_EDITS = {
+    "ModuleData/ActionPostprocessPrompts.json": "509EE9248F938042CCF7338AE4ED2401631224DA8DCB95D7ED26C7553D8F0C38",
+    "ModuleData/RuleBehaviorPrompts.json": "3396D30D95CCB808A8C798023467FC1EB2AEF9DFAA984EAAEA2C661EBC679CCF",
+    "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "59DF887251BC46F09ED5CB4DB8116F2D3AACBD404624A76A45B4CCD364F6026C",
+    "ModuleData/action_sets.xml": "DD52422AC7F6B5D0BF7049964CD64E1A79E109E62414B0235CF7F7432966DB2B",
+    "ModuleData/action_types.xml": "75DBD6F57B01D544EAABC5AA0165403A3AC8080985E340B00FB18A22FBCE91AD",
+    "ModuleData/Languages/language_data.xml": "C552D3CC00DB957E729AECA07034C0D297733D71D4F7501D4B4AB0737D1AED6F",
+    "ModuleData/Languages/CNs/language_data.xml": "B8DBB6C8F0A6CF6EF66B70ADF79F6CC8F6B57E1887151111DFB6DFD4A0CE5C65",
+    "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "96BE1920D43ED6F0A3B822F46B582D75E2187F7B3F01370ED77A764FB1D43EED",
+}
 
 
 def check(condition: bool, message: str) -> None:
@@ -488,7 +593,14 @@ def verify_map_and_resources() -> None:
         source = ROOT / expected["source"]
         check(source.is_file(), f"missing migrated source: {source}")
         baseline = git_worktree_blob(J15B_BASELINE_REVISION, f"AnimusForge/{target}")
-        check(source.read_bytes() == baseline, f"source bytes drifted from J15b baseline: {target}")
+        if target in J15B_REVIEWED_EDITS:
+            # Unchanged up to the pre-integration commit, then exactly the reviewed edit.
+            check(git_worktree_blob(J15B_REVIEWED_EDIT_PARENT, expected["source"]) == baseline,
+                  f"source bytes drifted from J15b baseline before reviewed edit: {target}")
+            check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == J15B_REVIEWED_EDITS[target],
+                  f"source hash drift after reviewed edit: {target}")
+        else:
+            check(source.read_bytes() == baseline, f"source bytes drifted from J15b baseline: {target}")
         old = ROOT / "AnimusForge" / Path(target)
         check(not old.exists(), f"old editable source remains: {old}")
 
@@ -516,6 +628,16 @@ def verify_map_and_resources() -> None:
         check(hashlib.sha256(source_bytes).hexdigest().upper() == expected["sha256"], f"TPAC hash drift: {target}")
         check(source_bytes.count(b"nacisword1") == 1, f"Xihai action marker missing or duplicated: {target}")
         check(not (ROOT / "AnimusForge" / target).exists(), f"retired duplicate TPAC returned: {target}")
+
+    for target, expected in INTEGRATION_EXPECTED.items():
+        entry = by_target[target]
+        for field in ("owner", "source"):
+            check(entry.get(field) == expected[field], f"{target} {field}")
+        check(not entry.get("logicalName"), f"non-embedded content must not invent a LogicalName: {target}")
+        source = ROOT / expected["source"]
+        check(source.is_file(), f"missing integration source: {source}")
+        check(hashlib.sha256(source.read_bytes()).hexdigest().upper() == expected["sha256"],
+              f"source hash drift: {target}")
 
     design_root = ROOT / "content" / "modules" / "AF.Module.Economy" / "AssetSources"
     check({path.name for path in design_root.iterdir()} == set(F4A_DESIGN_EXPECTED),
@@ -555,7 +677,17 @@ def verify_map_and_resources() -> None:
         for path in (ROOT / "AnimusForge" / root_name).rglob("*")
         if path.is_file()
     }
-    check(remaining == CURRENT_HOLD_PATHS, "legacy resource roots must contain only explicit HOLD files")
+    # ada9894a placed six mapped Vengeance sources in the legacy root; they are explicit, hashed
+    # INTEGRATION_EXPECTED entries (not HOLD). The count is pinned so no new legacy file slips in.
+    legacy_integration = {
+        expected["source"][len("AnimusForge/"):]
+        for expected in INTEGRATION_EXPECTED.values()
+        if expected["source"].startswith("AnimusForge/") and expected["source"].split("/")[1] in ("ModuleData", "GUI", "CustomPrompts")
+    }
+    check(len(legacy_integration) == 6 and not legacy_integration & CURRENT_HOLD_PATHS,
+          "legacy-root integration source set must remain exact")
+    check(remaining == CURRENT_HOLD_PATHS | legacy_integration,
+          "legacy resource roots must contain only explicit HOLD files or mapped integration sources")
 
 
 def verify_project_resources() -> None:
@@ -610,7 +742,7 @@ def verify_formats_and_references() -> None:
         tree = ET.parse(ROOT / J15B_EXPECTED[target]["source"])
         for item in tree.getroot().iter("LanguageFile"):
             referenced = "ModuleData/Languages/" + item.attrib["xml_path"].replace("\\", "/")
-            check(referenced in J15B_EXPECTED, f"language index target not mapped: {referenced}")
+            check(referenced in J15B_EXPECTED or referenced in INTEGRATION_EXPECTED, f"language index target not mapped: {referenced}")
 
     for target in ("ModuleData/project.mbproj", "ModuleData/sceneactions.mbproj"):
         tree = ET.parse(ROOT / J15B_EXPECTED[target]["source"])
@@ -626,8 +758,9 @@ def verify_formats_and_references() -> None:
     check(xml_targets == {
         "ModuleData/animusforge_scene_gold_items.xml",
         "ModuleData/sceneactions_items.xml",
+        "ModuleData/vengeance_items.xml",
     }, "SubModule XML targets")
-    check(xml_targets <= set(J15B_EXPECTED), "SubModule XML targets must be mapped")
+    check(xml_targets <= set(J15B_EXPECTED) | set(INTEGRATION_EXPECTED), "SubModule XML targets must be mapped")
 
     movie_consumers = {
         "GUI/Prefabs/AFWarStatsMapButton.xml": "WarStats/AfWarStatsMapButtonLayer.cs",

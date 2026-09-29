@@ -203,8 +203,9 @@
   "tools/PersistenceIdentityAudit.py": {
    "args": [
     "--baseline",
-    "e58f3558cddfe473f396bb7f11470b05e30afce9"
-   ]
+    "ada9894a7c840036cbf27caaea87e37df657f29c"
+   ],
+   "note": "Baseline moved e58f3558 -> ada9894a (user-authorized 2026-09-29): four-feature integration adds 36 SyncData keys (_af_kingdom_civil_war_v1, Coup, _rex_*) and 6 CampaignBehaviors, removes _af_xihai_legacy_equipment_cleanup_v1. Old-save compatibility for the removed key is NOT verified."
   },
   "tools/PhaseEightReadiness/readiness.py": {
    "expect": "NEEDS_INPUT"

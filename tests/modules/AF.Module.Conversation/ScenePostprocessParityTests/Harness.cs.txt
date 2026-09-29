@@ -18,6 +18,12 @@ public class StubHost
     protected static readonly Regex CustomPolicyAgendaActionTagRegex = new("CUSTOM_POLICY");
     protected static bool NativeConversationDetachedPromptParityLoggingEnabled => false;
     protected static PostprocessRuleEntry MergeSharedDeferredDebtPostprocessRule(PostprocessRuleEntry a, PostprocessRuleEntry b) => new() {Tag=a.Tag,Description=a.Description+"|"+b.Description};
+    // Scene-action directive offer (post-baseline additive rule): parity fixtures run with no
+    // offer, so the candidate must reproduce the baseline rules/tags exactly (empty offer path).
+    protected static IReadOnlyList<string> TryOfferSceneActionDirective(int targetAgentIndex, string rawReply) => null;
+    protected static List<PostprocessRuleEntry> BuildSceneActionDirectiveRules(IReadOnlyList<string> offeredKeys) => offeredKeys == null ? new() : throw new InvalidOperationException("unexpected scene-action offer");
+    protected static string NormalizeSceneActionDirectiveTag(string raw, IReadOnlyList<string> offeredKeys) => offeredKeys == null ? "" : throw new InvalidOperationException("unexpected scene-action offer");
+    protected static class NpcReplyDirectiveTagV1 { internal static bool ContainsTag(string text) => throw new InvalidOperationException("scene-action log reached without offer"); }
     @@HELPERS@@
 }
 
@@ -397,6 +403,8 @@ public static class Program
 
 // Assembly-local module files use these namespaces; live game objects remain the original fixture types.
 namespace TaleWorlds.CampaignSystem { }
+// TeamModuleServices also exposes CivilWar; postprocess never reaches it, so an empty port suffices.
+namespace AnimusForge.Refactor.Modules { internal interface ICivilWarModulePort { } internal sealed class CivilWarModuleAdapter : ICivilWarModulePort { } }
 public static class NpcRulerPolicyBehavior
 {
     public static string BuildActivePolicyDialogueContextForExternal(Hero hero,CharacterObject character,string kingdomIdOverride=null)
