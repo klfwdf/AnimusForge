@@ -138,6 +138,10 @@ def main():
             files[Path(relative).name]=(ROOT/relative).read_text(encoding='utf-8-sig')
     run_scope_spec=importlib.util.spec_from_file_location('memory_run_fixture',ROOT/'tests/modules/AF.Module.Memory/MemorySummaryRunOwnerTests/fixture_support.py');run_scope=importlib.util.module_from_spec(run_scope_spec);run_scope_spec.loader.exec_module(run_scope)
     run_scope.include(files, original=bool(a.source_baseline))
+    if not a.source_baseline:
+        ledger='src/modules/AF.Module.Memory/Records/NpcActionLedger.cs'
+        files[Path(ledger).name]=read(ledger)
+        manifest.append(dict(file=ledger,sha256=hashlib.sha256(files[Path(ledger).name].encode()).hexdigest(),whole_component=True))
     files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     for name,data in files.items():(out/name).write_bytes(data.encode())
     metadata=dict(source_baseline=a.source_baseline,mutation=a.mutate,observe_rebuilds=a.observe_rebuilds,declarations=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},production_hash_normalization="utf8-no-bom-lf",production_sha256={n:hashlib.sha256(read(n).encode()).hexdigest() for n in ['MyBehavior.cs','MyBehavior.MemorySummaryInput.cs','MyBehavior.MemorySummaryMainThread.cs','MyBehavior.MemorySummaryPlanning.cs']},seams=['Capture/check/clone/hash and six Build entry call counters without changed business conditions','Queue dispatcher entry count probe without changed conditions','Gateway HTTP boundary scripted TCS','Task.Delay -> controlled clock','TaleWorlds/game rendering/settings lookups are instrumented fixtures','legacy action repair/suppression and public material normalization are fixtures'],limits=['No live provider/game/save or hard frame-time/record budget proof','Does not execute Apply/Mark/final queue Process (separate business suite)'])
