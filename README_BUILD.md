@@ -21,7 +21,7 @@ Direct project checks are available for the current 1.4 implementation and Boots
 
 ```powershell
 dotnet build AnimusForge.csproj -c Debug /p:BannerlordApi=1.4
-dotnet build AnimusForge.Bootstrap\AnimusForge.Bootstrap.csproj -c Debug
+dotnet build src\AF.Bootstrap\AnimusForge.Bootstrap.csproj -c Debug
 ```
 
 The 1.3 implementation intentionally fails closed when built directly. Use `build_single_module.ps1`; it verifies that the pinned reference overlay reports a 1.3.x `BuildInfo` before enabling the 1.3 compile. If the installed game is currently on 1.3.x, pass `-Bannerlord14ReferenceDir` (or keep the repository's verified `.tmp\build_check\1.4` overlay) so the 1.4 implementation does not mix 1.3 assemblies into its build.

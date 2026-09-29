@@ -16,7 +16,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 PLANES = frozenset({"source", "content", "tests", "tools", "scripts", "docs", "references", "design"})
 SOURCE_ROOTS = frozenset({
-    "AnimusForge.Bootstrap", "AnimusForge.SiegeAftermathIntervention", "PolicySystem",
+    "AnimusForge.SiegeAftermathIntervention", "PolicySystem",
     "Properties", "Refactor", "UI", "Vengeance", "WarStats", "WorldEvents", "extensions", "src",
 })
 CACHE_ROOTS = frozenset({".codex_tmp", ".dotnet", ".dotnet_cli", ".tmp", "tmp"})
