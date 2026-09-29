@@ -1818,7 +1818,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void CommitRoundPlan(WorldDiplomacyJob job, string raw)
 	{
-		WorldDiplomacyRoundLifecycleRules.CommitRoundPlan(
+		WorldDiplomacyRoundPlanApplication.Commit(
 			job,
 			raw,
 			_storage,

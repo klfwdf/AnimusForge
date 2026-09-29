@@ -42,6 +42,13 @@ internal static class Program
             Console.WriteLine($"R1 failure recovery replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--r1-round-plan")
+        {
+            RunRoundPlanCommitDecisionTests();
+            VerifyRoundPlanOwnership();
+            Console.WriteLine($"R1 round plan replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -221,6 +228,23 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitFailedJob(", StringComparison.Ordinal)
             && !rules.Contains("public static void CommitFailedJob(", StringComparison.Ordinal),
             "completion and dispatch failures must enter one Application owner with no predecessor algorithm");
+    }
+
+    private static void VerifyRoundPlanOwnership()
+    {
+        string app = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundPlanApplication.cs"));
+        string behavior = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string rules = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        Test.True(app.Contains("round.RelayRouteKingdomIds = route", StringComparison.Ordinal)
+            && app.Contains("round_plan_no_participants", StringComparison.Ordinal)
+            && app.Contains("scheduleResultSettlement?.Invoke(round)", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyRoundPlanApplication.Commit(", StringComparison.Ordinal)
+            && !behavior.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundPlan(", StringComparison.Ordinal)
+            && !rules.Contains("public static void CommitRoundPlan(", StringComparison.Ordinal),
+            "real plan caller enters Application route owner; Domain and Behavior contain no second plan algorithm");
     }
 
     private static WorldDiplomacyRoundReconcileInput BaseInput()
@@ -12295,7 +12319,7 @@ RunRepairCorrectionAndJobDecisionTests();
         float Dist(string x, string y)
             => distances.TryGetValue(x + "|" + y, out float v) ? v
                 : distances.TryGetValue(y + "|" + x, out v) ? v : 9f;
-        Action<string> commit = raw => WorldDiplomacyRoundLifecycleRules.CommitRoundPlan(
+        Action<string> commit = raw => WorldDiplomacyRoundPlanApplication.Commit(
             new WorldDiplomacyJob { JobId = "jP", RoundId = "r1", DocumentId = "d1",
                 CandidateKingdomIds = new List<string> { "b", "c", "dead", "vassal" } },
             raw, storage, 7, 6,
@@ -16179,14 +16203,17 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("analysis_has_no_actionable_intent", StringComparison.Ordinal)
             && analysisSource.Contains("analysis_has_no_actionable_intent", StringComparison.Ordinal),
             "analysis suppression reasons must live inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundPlan(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void CommitRoundPlan(", StringComparison.Ordinal),
-            "the host must route round-plan commits through the lifecycle rules");
+        string roundPlanApplicationSource = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundPlanApplication.cs"));
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundPlanApplication.Commit(", StringComparison.Ordinal)
+            && roundPlanApplicationSource.Contains("internal static void Commit(", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static void CommitRoundPlan(", StringComparison.Ordinal),
+            "the host must route round-plan commits through Application");
         Test.True(!behaviorSource.Contains("round_plan_no_participants", StringComparison.Ordinal)
-            && rulesSource.Contains("round_plan_no_participants", StringComparison.Ordinal)
+            && roundPlanApplicationSource.Contains("round_plan_no_participants", StringComparison.Ordinal)
             && !behaviorSource.Contains("mandatoryIds", StringComparison.Ordinal)
-            && rulesSource.Contains("RelayRouteKingdomIds = route", StringComparison.Ordinal),
-            "relay route planning must live inside the lifecycle rules");
+            && roundPlanApplicationSource.Contains("RelayRouteKingdomIds = route", StringComparison.Ordinal),
+            "relay route planning must live inside Application");
         string failureApplicationSource = File.ReadAllText(FindRepositoryFile(
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyFailureApplication.cs"));
         Test.True(behaviorSource.Contains("WorldDiplomacyFailureApplication.Commit(", StringComparison.Ordinal)
