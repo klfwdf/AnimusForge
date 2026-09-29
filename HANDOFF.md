@@ -1,11 +1,11 @@
 # 当前交接：J15 按用户决定结项，J16 离线关闭，J17-A 盘点继续（2026-09-29）
 
-- **J17 当前接续**：[J17 执行计划](docs/plans/j17-responsibility-closeout-plan.md)；本工作区 A0 双 API Compile/语法清单各 1,123 文件、49,509/49,508 声明；A1 已复核 R04/R02/R03/R01 关键路径并更正旧“纯净化/纯状态变换/仅 DeathLine 读游戏”结论，A2 已定向复核 `Refactor/` 及四功能 Tick 接缝，详见[主台账当前段](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)与[范围图 E14–E20](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。`OwnerJsonStorageCodec` 8 项、Memory RunOwner 47 项、修复夹具编译依赖后的 captured 116 项、terminal 85 场景通过；别名语义两个变异按具名断言失败。旧 source-parity 因搬迁 hash 与当前源码差异未通过。A1/A2 逐符号语义及动态消费者仍未闭，B 未启动；没有产品构建、游戏或旧档验收。
+- **J17 当前接续**：[J17 执行计划](docs/plans/j17-responsibility-closeout-plan.md)；本工作区 A0 双 API Compile/语法清单各 1,123 文件、49,509/49,508 声明；A1 已复核 R04/R02/R03/R01 关键路径并更正旧“纯净化/纯状态变换/仅 DeathLine 读游戏”结论。A2 已定向复核 `Refactor/`、四功能 Tick、GCCZ/Policy 范围及六个跨桶接缝；候选索引 843 文件有导航桶、280 文件/12,675 声明仍无候选，**全部语义审查未签收**，详见[主台账当前段](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)与[范围图 E14–E22](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。`OwnerJsonStorageCodec` 8 项、Memory RunOwner 47 项、修复夹具编译依赖后的 captured 116 项、terminal 85 场景通过；别名语义两个变异按具名断言失败。旧 source-parity 因搬迁 hash 与当前源码差异未通过。**按用户更正，先完成 A 再做 B；B 未启动**，没有产品构建、游戏或旧档验收。
 
 - **交付**：J16 15 个提交与 J17-A 盘点文档通过普通 merge 整合；目标分支 `codex/af-main-refactor-continuation-20260831` 已成功快进推送至 `3f7b9018`（GitHub 回执：`ada9894a..3f7b9018`，未强推）。
 - **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`；实机/旧档、F4-A 来源与视觉遗留继续保留，发布 HOLD 不变。
 - **J16**：`J16_OFFLINE_CLOSED`（a/b/c/d/e）。全量 runner 记录 257 项：`PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。LIVE、旧 SAVE、三渠道修复回放未运行；旧档键兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留见主台账。
-- **J17-A**：R04/E09、R02/E10、R01/E11、R03/E12、R07 文件级/E13 已盘点；R07 尚有 3,332/10,704 个成员待人工映射，R05/R06/R08/R09 未完成。E09–E13 的源码坐标以 `99ca85ae` 为基线，J17-B 开工前需按后续代码变化刷新证据。
+- **J17-A**：旧 E09–E13 与 940/3,332 分母仅为 `99ca85ae` 历史导航；当前实际编译基线及 A1/A2 开放项以上述 E14–E22 和主台账为准。R05/R06/R07/R08/R09、动态消费者及 20 桶语义仍未闭，不满足 A 出口。
 - **验证边界**：J16 的全量测试数据来自其交接记录，本轮未重跑全套；本轮完成文档整合与普通推送。未运行游戏/旧档/provider，未部署或打包；保留 `.dotnet-cli-home/` 和忽略的 J17 盘点材料。
 ## J16/J17 整合前的 J16 交接（保留历史，以上方状态为准）
 # 当前交接：J15 按用户决定结项，转入 J17（2026-09-29）
