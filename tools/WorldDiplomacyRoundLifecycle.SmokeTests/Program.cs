@@ -11775,7 +11775,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // generation behind a bounded history-compression target.
         JArray small = new JArray(new JObject { ["role"] = "user", ["content"] = "abc" });
         var underJob = new WorldDiplomacyJob { Kind = "generate" };
-        Test.True(WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(
+        Test.True(WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 underJob, small, 1000, 200, t => t?.Length ?? 0, _ => "", _ => true,
                 (j, e) => { }, () => { }, _ => { })
             && !underJob.AwaitingHistoryCompression,
@@ -11784,7 +11784,7 @@ RunRepairCorrectionAndJobDecisionTests();
         JArray big = new JArray(new JObject { ["role"] = "user", ["content"] = new string('x', 5000) });
         int failedCalls = 0;
         var analyzeJob = new WorldDiplomacyJob { Kind = "analyze" };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(
+        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 analyzeJob, big, 1000, 200, t => t?.Length ?? 0, _ => "", _ => true,
                 (j, e) => failedCalls++, () => { }, _ => { })
             && failedCalls == 1,
@@ -11805,7 +11805,7 @@ RunRepairCorrectionAndJobDecisionTests();
             new WorldDiplomacyLlmMessage { Role = "user", Content = "【MODE=DECLARE】u" }
         };
         int rebuildCalls = 0;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(
+        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 repairJob, big, 1000, 200, t => t?.Length ?? 0, _ => "", _ => { rebuildCalls++; return true; },
                 (j, e) => failedCalls++, () => { }, _ => { })
             && rebuildCalls == 1 && repairJob.LlmMessages.Count == 0
@@ -11814,7 +11814,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         var genJob = new WorldDiplomacyJob { Kind = "generate", JobId = "jg", HistoryThroughSequence = 3 };
         int scheduleCalls = 0, genLogs = 0;
-        Test.True(!WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(
+        Test.True(!WorldDiplomacyLlmDispatchApplication.EnsureRequestFitsInputBudget(
                 genJob, big, 5000, 200, t => t?.Length ?? 0, _ => new string('h', 2000),
                 _ => true, (j, e) => failedCalls++, () => scheduleCalls++, _ => genLogs++)
             && genJob.AwaitingHistoryCompression
@@ -13348,7 +13348,7 @@ RunRepairCorrectionAndJobDecisionTests();
             Func<string> configError = null,
             List<bool> budget = null,
             Action<WorldDiplomacyJob> captureHistory = null,
-            Func<WorldDiplomacyJob, Newtonsoft.Json.Linq.JArray, bool> fitsBudget = null,
+            long inputLimit = long.MaxValue,
             List<string> failures = null,
             List<string> removed = null,
             List<string> logs = null,
@@ -13374,7 +13374,11 @@ RunRepairCorrectionAndJobDecisionTests();
                 captureHistory,
                 j => new Newtonsoft.Json.Linq.JArray(),
                 out Newtonsoft.Json.Linq.JArray prepared,
-                fitsBudget ?? ((j, m) => true),
+                inputLimit,
+                200,
+                t => t?.Length ?? 0,
+                _ => "",
+                () => { },
                 (j, e) => failures?.Add(e),
                 id => removed?.Add(id),
                 line => logs?.Add(line));
@@ -13548,7 +13552,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         WorldDiplomacyStorage fitsBlocked = Store();
         fitsBlocked.Jobs.Add(Job("j1"));
-        Test.True(Select(fitsBlocked, fitsBudget: (j, m) => false) == null,
+        Test.True(Select(fitsBlocked, inputLimit: -1) == null,
             "an over-budget request must stop dispatch before consuming the budget");
 
         WorldDiplomacyStorage consumeBlocked = Store();
@@ -15409,7 +15413,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "prompt contract rules must not read MCM settings");
         Test.True(behaviorSource.Contains("WorldDiplomacyPromptContractRules.StablePromptHash(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.StablePromptHashMessagePrefix(", StringComparison.Ordinal)
-            && rulesSource.Contains("IsValidSemanticRepairMessageChain(", StringComparison.Ordinal)
+            && dispatchSource.Contains("IsValidSemanticRepairMessageChain(", StringComparison.Ordinal)
             && dispatchSource.Contains("WorldDiplomacyPromptContractRules.HasCurrentCanonicalPromptContract(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.TryExtractCommonContractFromJob(", StringComparison.Ordinal)
             && canonicalHistoryRulesSource.Contains("WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(", StringComparison.Ordinal)
@@ -16257,18 +16261,20 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("claimedOfferDocumentId", StringComparison.Ordinal),
             "the host must not retain offer-matching or settlement-open bodies");
 
-        // DPL-R1: the canonical pre-send migration belongs to the launch owner;
-        // input-budget math remains a bounded domain helper.
-        Test.True(rulesSource.Contains("public static bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal)
+        // DPL-R1: the canonical pre-send migration and input-budget admission
+        // belong to the launch owner; the host binds token limits and effects.
+        Test.True(dispatchSource.Contains("internal static bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal)
             && dispatchSource.Contains("internal static bool EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
             && dispatchSource.Contains("Func<WorldDiplomacyJob, bool> rebuildPendingJob", StringComparison.Ordinal)
-            && rulesSource.Contains("Func<long, string> buildHistoryBlock", StringComparison.Ordinal)
-            && dispatchSource.Contains("Action<string> removeJob", StringComparison.Ordinal),
-            "pre-send migration must live with Application dispatch behind ports");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(", StringComparison.Ordinal)
+            && dispatchSource.Contains("Func<long, string> buildHistoryBlock", StringComparison.Ordinal)
+            && dispatchSource.Contains("Action<string> removeJob", StringComparison.Ordinal)
+            && !rulesSource.Contains("public static bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal),
+            "pre-send migration and budget admission must live with Application dispatch behind ports");
+        Test.True(dispatchSource.Contains("EnsureRequestFitsInputBudget(job, requestMessages", StringComparison.Ordinal)
             && dispatchSource.Contains("if (!EnsureCurrentCanonicalPromptContractBeforeSend(", StringComparison.Ordinal)
             && behaviorSource.Contains("GetHistoryCompressionTriggerTokens()", StringComparison.Ordinal)
-            && behaviorSource.Contains("Logger.EstimateTokens", StringComparison.Ordinal),
+            && behaviorSource.Contains("Logger.EstimateTokens", StringComparison.Ordinal)
+            && behaviorSource.Contains("TryScheduleTokenCompression()", StringComparison.Ordinal),
             "the host must bind token limits and job ports through thin adapters");
         Test.True(!behaviorSource.Contains("input budget exceeded before send:", StringComparison.Ordinal)
             && !behaviorSource.Contains("AwaitingHistoryCompression = true", StringComparison.Ordinal)

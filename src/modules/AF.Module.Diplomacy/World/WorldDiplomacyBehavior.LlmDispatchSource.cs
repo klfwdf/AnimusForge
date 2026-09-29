@@ -33,7 +33,11 @@ public sealed partial class WorldDiplomacyBehavior
         public bool TryConsumeRequestBudget(bool consume) => _owner.TryConsumeDiplomacyLlmRequestBudget(consume);
         public void CaptureCanonicalHistory(WorldDiplomacyJob job) => _owner.CaptureCanonicalHistoryForJob(job, syncSources: true);
         public JArray BuildMessageArray(WorldDiplomacyJob job) => WorldDiplomacyPromptContractRules.BuildLlmMessageArray(job, _owner.BuildCanonicalHistoryBlock);
-        public bool EnsureFitsInputBudget(WorldDiplomacyJob job, JArray messages) => _owner.EnsureRequestFitsInputBudget(job, messages);
+        public long InputTokenLimit => GetHistoryCompressionTriggerTokens();
+        public int HistoryCompressionTargetTokens => GetHistoryCompressionTargetTokens();
+        public int EstimateTokens(string text) => Logger.EstimateTokens(text);
+        public string BuildHistoryBlock(long throughSequence) => _owner.BuildCanonicalHistoryBlock(throughSequence);
+        public void ScheduleTokenCompression() => _owner.TryScheduleTokenCompression();
         public void CommitFailedJob(WorldDiplomacyJob job, string error) => _owner.CommitFailedJob(job, error);
         public void RemoveJob(string jobId) => _owner.RemoveJob(jobId);
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);

@@ -40,7 +40,7 @@ internal static class Program
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string jobRuntime = ReadRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
-        int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);
+        int jobRuntimeInsertion = behavior.IndexOf("private void CommitFailedJob(WorldDiplomacyJob job, string error)", StringComparison.Ordinal);
         Test.True(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
         behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
         string client = ReadRepositoryFile("WorldDiplomacyLlmClient.cs");
@@ -125,12 +125,14 @@ internal static class Program
             "public static void AppendDiplomaticDeclarationWritingContract(StringBuilder sb, int minimumCharacters, int maximumCharacters)",
             "public static string BuildDiplomaticDeclarationModeContract()");
         string lifecycleRules = ReadRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"));
+        string generationTask = ReadRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyJobPreparationApplication.cs"));
         Test.True(writingContract.Contains("minimumCharacters", StringComparison.Ordinal)
                 && writingContract.Contains("maximumCharacters", StringComparison.Ordinal)
                 && behavior.Contains(
                     "GetDiplomaticDeclarationCharacterRange(out int min, out int max); return (min, max);",
                     StringComparison.Ordinal)
-                && lifecycleRules.Contains(
+                && generationTask.Contains(
                     "WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(commonContract, minimumCharacters, maximumCharacters)",
                     StringComparison.Ordinal),
             "the declaration writing contract must consume the live MCM character range resolved by the host");

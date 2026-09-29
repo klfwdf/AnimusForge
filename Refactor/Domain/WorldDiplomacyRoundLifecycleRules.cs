@@ -5741,57 +5741,6 @@ List<string> ids = new List<string>();
         refreshActionSlots?.Invoke(round);
     }
 
-    public static bool EnsureRequestFitsInputBudget(
-        WorldDiplomacyJob job,
-        JArray messages,
-        long inputTokenLimit,
-        int historyCompressionTargetTokens,
-        Func<string, int> estimateTokens,
-        Func<long, string> buildHistoryBlock,
-        Func<WorldDiplomacyJob, bool> rebuildPendingJob,
-        Action<WorldDiplomacyJob, string> commitFailedJob,
-        Action scheduleTokenCompression,
-        Action<string> log)
-    {
-        long inputTokens = 0L;
-        foreach (JToken message in messages)
-            inputTokens += EstimateHistoryTokens((string)message["content"], estimateTokens) + EstimateHistoryTokens((string)message["role"], estimateTokens) + 4L;
-        long limit = inputTokenLimit;
-        if (inputTokens <= limit)
-        {
-            job.AwaitingHistoryCompression = false;
-            return true;
-        }
-        if (!IsJobOfKind(job, "generate"))
-        {
-            commitFailedJob?.Invoke(job, "input budget exceeded before send: " + inputTokens + "/" + limit
-                + "; single archive entry/snapshot or non-history prompt requires reduction");
-            return false;
-        }
-        if (WorldDiplomacyPromptContractRules.IsValidSemanticRepairMessageChain(job))
-        {
-            // A repair owns a frozen rejected prompt. Rebuild the declaration from current
-            // authoritative state before compressing, rather than silently editing that chain.
-            job.LlmMessages.Clear();
-            job.SemanticRepairAttempts = 0;
-            if (rebuildPendingJob?.Invoke(job) != true) commitFailedJob?.Invoke(job, "oversized repair could not be rebuilt");
-            return false;
-        }
-        long historyTokens = EstimateHistoryTokens(buildHistoryBlock?.Invoke(job.HistoryThroughSequence) ?? "", estimateTokens);
-        long availableHistoryTokens = limit - (inputTokens - historyTokens) - 1024L;
-        if (availableHistoryTokens < 512L)
-        {
-            commitFailedJob?.Invoke(job, "non-history prompt alone exceeds input budget; history was retained");
-            return false;
-        }
-        job.AwaitingHistoryCompression = true;
-        job.InputBudgetHistoryTargetTokens = (int)Math.Min(historyCompressionTargetTokens, availableHistoryTokens / 2L);
-        scheduleTokenCompression?.Invoke();
-        log?.Invoke("generation deferred for history compression job=" + job.JobId + " input_tokens=" + inputTokens
-            + " input_limit=" + limit + " history_target=" + job.InputBudgetHistoryTargetTokens);
-        return false;
-    }
-
     public static void RecordDiplomacyWeeklyMaterial(
         WorldDiplomacyDocument document,
         List<WorldDiplomacyDocument> documents,

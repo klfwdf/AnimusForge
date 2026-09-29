@@ -1085,13 +1085,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " relay_hit_rate=" + (relay <= 0 ? "n/a" : (100d * _relayCacheHitTokensThisSession / relay).ToString("F1", CultureInfo.InvariantCulture) + "%"));
 	}
 
-	private bool EnsureRequestFitsInputBudget(WorldDiplomacyJob job, JArray messages)
-	{
-		return WorldDiplomacyRoundLifecycleRules.EnsureRequestFitsInputBudget(
-			job, messages, GetHistoryCompressionTriggerTokens(), GetHistoryCompressionTargetTokens(),
-			Logger.EstimateTokens, BuildCanonicalHistoryBlock,
-			TryRebuildPendingWorldDiplomacyJob, CommitFailedJob, TryScheduleTokenCompression, Log);
-	}
 	private void CommitFailedJob(WorldDiplomacyJob job, string error)
 	{
 		WorldDiplomacyFailureApplication.Commit(
