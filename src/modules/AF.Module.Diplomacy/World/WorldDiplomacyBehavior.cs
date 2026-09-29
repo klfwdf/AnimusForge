@@ -2091,7 +2091,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private void RecordDiplomacyWeeklyMaterial(WorldDiplomacyDocument document)
 	{
-		WorldDiplomacyRoundLifecycleRules.RecordDiplomacyWeeklyMaterial(
+		WorldDiplomacyHistoryCaptureApplication.RecordDiplomacyWeeklyMaterial(
 			document, _storage?.Documents, MyBehavior.RecordWorldDiplomacyWeeklyMaterialForExternal);
 	}
 	private Settlement ResolveCourtSettlement(Kingdom kingdom)
