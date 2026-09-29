@@ -72,6 +72,13 @@ internal static class Program
             Console.WriteLine($"R1 round progress replay passed: {Test.Assertions} assertions.");
             return 0;
         }
+        if (args.Length == 1 && args[0] == "--r1-turn-scheduling")
+        {
+            RunRelayAndSettlementTurnSchedulingDecisionTests();
+            VerifyTurnSchedulingOwnership();
+            Console.WriteLine($"R1 turn scheduling replay passed: {Test.Assertions} assertions.");
+            return 0;
+        }
         OfferActionReplay.Run();
         WarAdmissionReplay.Run();
         RoundBoundaryReplay.Run();
@@ -319,6 +326,23 @@ RunRepairCorrectionAndJobDecisionTests();
             && behavior.Contains("WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(", StringComparison.Ordinal)
             && !rules.Contains("public static void HandleRoundDocumentProcessed(", StringComparison.Ordinal),
             "real document publication must enter Application for round accounting and route completion");
+    }
+
+    private static void VerifyTurnSchedulingOwnership()
+    {
+        string app = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTurnSchedulingApplication.cs"));
+        string behavior = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+        string rules = File.ReadAllText(FindRepositoryFile(
+            "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
+        Test.True(app.Contains("storage.RelayArrivals.Add(new WorldDiplomacyRelayArrival", StringComparison.Ordinal)
+            && app.Contains("ScheduleSettlementRelayArrival(", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(", StringComparison.Ordinal)
+            && behavior.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(", StringComparison.Ordinal)
+            && !rules.Contains("public static void ScheduleNextRelayHop(", StringComparison.Ordinal)
+            && !rules.Contains("public static void ScheduleNextResultSettlementTurn(", StringComparison.Ordinal),
+            "real round caller must enter Application for relay and settlement scheduling");
     }
 
     private static WorldDiplomacyRoundReconcileInput BaseInput()
@@ -12999,7 +13023,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound settlementRedirect = RelayRound();
         settlementRedirect.ResultSettlementPending = true;
         bool redirected = false;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             settlementRedirect, false, Store(), 30, 4, id => true,
             r => redirected = true, reason => { }, line => { });
         Test.True(redirected,
@@ -13009,7 +13033,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound unplanned = RelayRound();
         unplanned.RelayPlanned = false;
         WorldDiplomacyStorage unplannedStore = Store();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             unplanned, false, unplannedStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(unplannedStore.RelayArrivals.Count == 0 && !unplanned.RelayWaiting,
@@ -13018,7 +13042,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound withArrival = RelayRound();
         WorldDiplomacyStorage withArrivalStore = Store();
         withArrivalStore.RelayArrivals.Add(new WorldDiplomacyRelayArrival { RoundId = "r1", ToKingdomId = "kB", DueDay = 31 });
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             withArrival, false, withArrivalStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(withArrivalStore.RelayArrivals.Count == 1 && !withArrival.RelayWaiting,
@@ -13027,7 +13051,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound withJob = RelayRound();
         WorldDiplomacyStorage withJobStore = Store();
         withJobStore.Jobs.Add(new WorldDiplomacyJob { RoundId = "r1", IsRelayTurn = true });
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             withJob, false, withJobStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(withJobStore.RelayArrivals.Count == 0 && !withJob.RelayWaiting,
@@ -13037,7 +13061,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound noRoute = RelayRound();
         noRoute.RelayRouteKingdomIds = new List<string> { "kA" };
         string noRouteClose = null;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             noRoute, false, Store(), 30, 4, id => true,
             r => { }, reason => noRouteClose = reason, line => { });
         Test.True(noRouteClose == "relay_has_no_participants",
@@ -13047,7 +13071,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // the arrival lands at pass-start plus the per-edge duration share.
         WorldDiplomacyRound happy = RelayRound();
         WorldDiplomacyStorage happyStore = Store();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             happy, false, happyStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(happyStore.RelayArrivals.Count == 1
@@ -13060,7 +13084,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         WorldDiplomacyRound immediate = RelayRound();
         WorldDiplomacyStorage immediateStore = Store();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             immediate, true, immediateStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(immediateStore.RelayArrivals.Count == 1
@@ -13079,7 +13103,7 @@ RunRepairCorrectionAndJobDecisionTests();
             TargetKingdomId = "kC",
             UpdatedDay = 5
         });
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             threatRound, false, threatStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(threatStore.RelayArrivals.Count == 1
@@ -13093,7 +13117,7 @@ RunRepairCorrectionAndJobDecisionTests();
         exhausted.ConsecutiveNoActionPasses = 1;
         string exhaustedClose = null;
         List<string> exhaustedLogs = new List<string>();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             exhausted, false, Store(), 30, 4, id => false,
             r => { }, reason => exhaustedClose = reason, line => exhaustedLogs.Add(line));
         Test.True(exhaustedClose == "relay_all_participants_withdrew"
@@ -13111,7 +13135,7 @@ RunRepairCorrectionAndJobDecisionTests();
         hardEnd.FinalActionOpportunityIssued = true;
         hardEnd.HardEndDay = 8;
         WorldDiplomacyStorage hardEndStore = Store();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             hardEnd, false, hardEndStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(hardEndStore.RelayArrivals.Count == 1
@@ -13119,7 +13143,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "a final-resolution round must clamp the arrival to the hard end day");
 
         WorldDiplomacyStorage nullStore = Store();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(
             null, false, nullStore, 30, 4, id => true,
             r => { }, reason => { }, line => { });
         Test.True(nullStore.RelayArrivals.Count == 0,
@@ -13143,7 +13167,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound notPending = SettlementRound();
         notPending.ResultSettlementPending = false;
         int refreshCalls = 0;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             notPending, Store(), 40, 8,
             id => id, id => true, id => false,
             (r, id) => 1, r => refreshCalls++,
@@ -13155,7 +13179,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyStorage blockedStore = Store();
         blockedStore.RelayArrivals.Add(new WorldDiplomacyRelayArrival { RoundId = "r1", ToKingdomId = "kB", DueDay = 41 });
         refreshCalls = 0;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             blockedByArrival, blockedStore, 40, 8,
             id => id, id => true, id => false,
             (r, id) => 1, r => refreshCalls++,
@@ -13166,7 +13190,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // An empty slot queue resolves the round with the normalized status.
         WorldDiplomacyRound emptySlots = SettlementRound();
         string emptyClose = null;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             emptySlots, Store(), 40, 8,
             id => id, id => true, id => false,
             (r, id) => 1, r => { },
@@ -13178,7 +13202,7 @@ RunRepairCorrectionAndJobDecisionTests();
         deadlocked.ResultSettlementRoundStatus = "deadlocked";
         deadlocked.ResultSettlementCloseReason = "settlement_deadlocked";
         string deadClose = null;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             deadlocked, Store(), 40, 8,
             id => id, id => true, id => false,
             (r, id) => 1, r => { },
@@ -13192,7 +13216,7 @@ RunRepairCorrectionAndJobDecisionTests();
         ineligible.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "kB" });
         refreshCalls = 0;
         string ineligibleClose = null;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             ineligible, Store(), 40, 8,
             id => null, id => true, id => false,
             (r, id) => 1, r => refreshCalls++,
@@ -13205,7 +13229,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound noAction = SettlementRound();
         noAction.ResultSettlementSlots.Add(new WorldDiplomacyResultSettlementSlot { SlotId = "s1", KingdomId = "kB" });
         string noActionClose = null;
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             noAction, Store(), 40, 8,
             id => id, id => true, id => false,
             (r, id) => 0, r => { },
@@ -13223,7 +13247,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         playerWait.ResultSettlementSlots.Add(playerSlot);
         WorldDiplomacyStorage playerStore = Store();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             playerWait, playerStore, 40, 8,
             id => id, id => true, id => id == "kB",
             (r, id) => 2, r => { },
@@ -13247,7 +13271,7 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         aiTurn.ResultSettlementSlots.Add(aiSlot);
         WorldDiplomacyStorage aiStore = Store();
-        WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(
+        WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(
             aiTurn, aiStore, 40, 8,
             id => id, id => true, id => false,
             (r, id) => 2, r => { },
@@ -16349,12 +16373,13 @@ RunRepairCorrectionAndJobDecisionTests();
             && documentExecutor.Contains("port.StartDocumentPropagation,", StringComparison.Ordinal),
             "the host must keep binding post-decision live-state adapters");
 
-        // DPL-060DG: relay-hop and result-settlement turn scheduling live inside
-        // the lifecycle rules; the host only binds kingdom resolution, authority,
-        // player, actionable-target, slot-refresh, close, and log ports.
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ScheduleNextRelayHop(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ScheduleNextResultSettlementTurn(", StringComparison.Ordinal),
-            "the host must route relay and settlement scheduling through the lifecycle rules");
+        // Application schedules the next turn; the host binds kingdom resolution,
+        // authority, player, actionable-target, slot-refresh, close, and log ports.
+        string turnSchedulingSource = File.ReadAllText(FindRepositoryFile(
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTurnSchedulingApplication.cs"));
+        Test.True(behaviorSource.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(", StringComparison.Ordinal),
+            "the host must route relay and settlement scheduling through Application");
         Test.True(behaviorSource.Contains("id => HasIndependentWorldDiplomacyAuthority(ResolveKingdom(id))", StringComparison.Ordinal)
             && behaviorSource.Contains("id => ResolveKingdom(id)?.StringId", StringComparison.Ordinal)
             && behaviorSource.Contains("(r, id) => GetResultSettlementActionableTargets(r, ResolveKingdom(id)).Count", StringComparison.Ordinal)
@@ -16365,8 +16390,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("FindPriorityThreatRelayIndex(", StringComparison.Ordinal)
             && rulesSource.Contains("ComputeRelayArrivalDay(", StringComparison.Ordinal)
             && rulesSource.Contains("OrderRelayArrivalsByDueDate(", StringComparison.Ordinal)
-            && rulesSource.Contains("new WorldDiplomacyRelayArrival", StringComparison.Ordinal),
-            "relay scheduling internals must live inside the lifecycle rules");
+            && turnSchedulingSource.Contains("new WorldDiplomacyRelayArrival", StringComparison.Ordinal),
+            "relay scheduling must compose Domain decisions inside Application");
         Test.True(rulesSource.Contains("CanScheduleResultSettlementTurn(", StringComparison.Ordinal)
             && rulesSource.Contains("EvaluateSettlementSlotAction(", StringComparison.Ordinal)
             && rulesSource.Contains("MarkSettlementSlotWaitingForPlayer(", StringComparison.Ordinal)
@@ -16374,7 +16399,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("SkipResultSettlementSlot(", StringComparison.Ordinal)
             && rulesSource.Contains("ResolveSettlementCloseReason(", StringComparison.Ordinal)
             && rulesSource.Contains("NormalizeResultSettlementStatus(", StringComparison.Ordinal),
-            "settlement scheduling internals must live inside the lifecycle rules");
+            "settlement scheduling must compose Domain decisions inside Application");
         Test.True(!behaviorSource.Contains("FindPriorityThreatRelayIndex(", StringComparison.Ordinal)
             && !behaviorSource.Contains("new WorldDiplomacyRelayArrival", StringComparison.Ordinal)
             && !behaviorSource.Contains("EvaluateSettlementSlotAction(", StringComparison.Ordinal)
