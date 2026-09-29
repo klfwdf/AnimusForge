@@ -4,6 +4,7 @@
 
 - **J17-A 本次 R05 回放**：[范围图 E29–E30](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)；Native completion 191/0、Scene postprocess 差分 71 fixture、Courier detached postprocess owner 44/0、Courier domain commit 静态 32 检查。均非真实游戏/完整三渠道端到端，R05 与 A 仍未闭；下一步审群聊/入站/失败、规则与 AFEF 回读，再补 20 桶，先 A 后 B。
 - **J17-A 入站新余项**：[E31](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)默认入站 History/AFEF 经无回执旧门面，交付置位后无法静态确认写入失败的处理；`AFCI1:` 是未见默认调用者的 detached opt-in 契约。须先复现并确定失败语义，非已证实丢失。回执 tick 每 0.75 秒全量过滤排序 session 需 R08 规模测量；Courier Prompt 552/76、入站回执契约、Scene group receipt 18 离线检查通过。仍先 A 后 B，不改产品。
+- **J17-A 检索续查**：[E32–E33](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)根级 Prompt 列表服务 58 声明完成文件级语义审查；世界实体服务 267 声明只审捕获/匹配/投影关键链，未逐项签收。R08 具名项为请求期全候选别名/最多两轮 `MobileParty.All` 扫描及 live 对象静态快照的跨 Campaign 失效核查。Prompt 定向 150 检查、Knowledge 提取/桩性能和分配回放通过；未运行实机、双 API 产品构建。旧候选 JSON 的 280 未分桶仍是导航快照；A 未闭，B 未启动。
 - **交付**：J16 15 个提交与 J17-A 盘点文档通过普通 merge 整合；目标分支 `codex/af-main-refactor-continuation-20260831` 已成功快进推送至 `3f7b9018`（GitHub 回执：`ada9894a..3f7b9018`，未强推）。
 - **J15**：`J15_CLOSED_BY_USER / LIVE_SAVE_NOT_RUN / RELEASE_HOLD_CARRIED`；实机/旧档、F4-A 来源与视觉遗留继续保留，发布 HOLD 不变。
 - **J16**：`J16_OFFLINE_CLOSED`（a/b/c/d/e）。全量 runner 记录 257 项：`PASS=209 / PREEXISTING_FAIL=38 / NEEDS_INPUT=6 / SUPERSEDED_BY_RUNNER=3 / ENV_STATE=1 / FAIL=0`；inventory `unknown=0`、链接检查 0 断链、代码地图两模式 795 PASS。LIVE、旧 SAVE、三渠道修复回放未运行；旧档键兼容、`IntegratedModuleHost.Tick` 保护、AuxiliaryTests/net472 等遗留见主台账。

@@ -31,6 +31,8 @@
 
 **A2/R05 入站及 R08 新具名风险（仍 `REVIEW_REQUIRED`）**：[范围图 E31](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)核实默认 NPC 入站信和 detached opt-in 不是一条相同的交付链。默认来信主线程成功/备用文本后在玩家处将 `DeliveryApplied` 置位，再通过会吞异常且无回执的旧 `AppendExternalDialogueHistory` 写 NPC 发言与 AFEF；静态上无法确认失败时的事实接受，**不是已证实丢失**。`AFCI1:` 回执、恢复/隔离只在 detached opt-in 路径，当前 C# 生产调用搜索未见该 opt-in 的调用者，不能拿回执测试代替默认交付。具名 B6 前置为合成复现默认 History 失败/排队未受理时的交付状态、明确允许的失败/重试语义，再决定是否修正；不借迁移改变信件/UI/物资。R08 另登记 `ProcessOneCourierInboundCompletionReceipt` 每 0.75 秒过滤排序全部活动 session、只处理一个回执的规模与积压测量。Courier Prompt 准备 552/76、入站回执契约和 Scene group receipt 18 的仓内离线检查通过；均非真实游戏或完整三渠道回放。A 未闭，B 未启动。
 
+**A2/R07 检索根文件及 R08 请求成本（仍 `REVIEW_REQUIRED`）**：[范围图 E32–E33](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)把旧候选 `UNRESOLVED` 的 `PromptListRetrievalService.cs`（双 API 各 58 声明）按快照/选择/别名/摘要全文件审为 `gateway-prompt-protocol` 的 Prompt 检索适配，资产/投票资格和执行仍归各领域；`WorldEntityRetrievalService.cs`（各 267 声明）仅审了捕获→detached 匹配→主线程事实投影及主要消费者，目标跨 `knowledge-persona-profile` 与 Prompt 组装，**其余声明未签收**。Prompt 候选显示 cap 不限制全候选别名构建；静态快照含 live 游戏对象、键无 Campaign/generation 且未见显式清空，须复现跨战役失效而非断言已使用旧对象。世界实体可每请求对全部 `MobileParty.All` 最多扫描两遍，`Take(10)` 在投影/排序之后；最近地点也可全量枚举 `Settlement.All`。这些是 R08 具名频率/规模/缓存退役测量项，不在 A 阶段擅改语义。仓内 `PromptCandidateSelectionTests` 150 检查、Knowledge capture 2,000 候选/9 次/64 批检查、allocation parity 4 项通过；后两者使用桩，不是实机场景性能。旧候选 JSON 仍保留 280 未分桶/12,675 声明的导航快照，未拿本次行数冲抵未知数。A 未闭、B 未启动。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
