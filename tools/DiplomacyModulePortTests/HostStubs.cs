@@ -217,6 +217,43 @@ namespace AnimusForge
             public void TryStartNextLlmJob() { }
             public void TryPublishPendingNotifications() { }
         }
+        internal struct CampaignSource : IWorldDiplomacyCampaignSource
+        {
+            private readonly WorldDiplomacyBehavior owner;
+            internal CampaignSource(WorldDiplomacyBehavior value) => owner=value;
+            public bool IsEnabled => owner != null;
+            public int CurrentDay => 0;
+            public bool DisabledStateApplied { get; set; }
+            public bool NativeQueueSanitized { get; set; }
+            public int LastSchedulerDay { get; set; }
+            public void TryApplyInitialNewGamePeace() { }
+            public void HandleDisabledState() { }
+            public void RemoveQueuedNativeDiplomacyDecisions() { }
+            public void RefreshPolicyDiplomacySignals() { }
+            public void ProcessRelayArrivals() { }
+            public void ProcessRoundLifecycle() { }
+            public void TrySchedulePolicyTriggeredRound() { }
+            public void TryScheduleNormalRound() { }
+            public void ReconcileAllNationalPrestigeVassalRelations() { }
+            public void RetryDeferredCanonicalHistoryEntries() { }
+            public void RetryDiplomaticThreatDomesticPenalties() { }
+            public void RetryDiplomaticThreatComplianceConsequences() { }
+            public void RetryDiplomaticThreatHistoryResults() { }
+            public void RefreshRoundIntervalScheduleIfNeeded() { }
+            public void RecalculatePendingPropagationIfNeeded() { }
+            public void EnsureActiveWarLedgersAndRemoveEndedWars() { }
+            public void TrimRecentBattleFacts() { }
+            public void AnchorInternationalReputationNaturalChangeDays() { }
+            public void ProcessInternationalReputationNaturalChange() { }
+            public void RetryDeferredDocumentPropagation() { }
+            public void ProcessPropagationArrivals() { }
+            public void TryScheduleTokenCompression() { }
+            public void NormalizeStorage() { }
+            public void ClearDailyCaches() { }
+            public void ResetDailyGenerationBudget() { }
+            public void DecayWarPressure() { }
+            public void RetryDeferredRoundProgress() { }
+        }
     }
     internal static class WorldDiplomacyPolicyContext
     {

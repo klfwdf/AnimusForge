@@ -22,6 +22,7 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyTributePowerAp
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTickApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCampaignApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  adapter=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs')
@@ -107,6 +108,93 @@ def boundaries():
  current_world=current_world.replace('\t'+declaration(current_world,proactive_speaker)+'\n\n','')
  current_world=current_world.replace('\t'+declaration(current_world,proactive_documents)+'\n\n','')
  current_world=current_world.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
+ # Every use-case owner moved to a compiled Application; each surviving predecessor must be a
+ # single forwarder to its owner. Baseline substitution mirrors DiplomacyArchitectureTests.
+ for signature,owner in [
+  ('private void ProcessAnalyzedDocument(', 'WorldDiplomacyDocumentExecutionApplication.'),
+  ('private void ProcessAnalyzedMultiActionDocument(', 'WorldDiplomacyDocumentExecutionApplication.'),
+  ('private void FinalizePublishedDocumentAfterAnalysis(', 'WorldDiplomacyDocumentExecutionApplication.'),
+  ('private bool TryIncludeResultSettlementTarget(', 'WorldDiplomacyDocumentExecutionApplication.'),
+  ('private void StartDocumentPropagation(', 'WorldDiplomacyPublicationRoutingApplication.'),
+  ('private void ReconcileAnalyzedPlayerDeclarationWithReachedCourts(', 'WorldDiplomacyPublicationRoutingApplication.'),
+  ('private void TryScheduleMandatoryCourtResponse(', 'WorldDiplomacyCourtResponseApplication.'),
+  ('private void TrySettleRelayOffer(', 'WorldDiplomacyOfferApplication.'),
+  ('private void NotifyExternalDiplomacyResolvedInternal(', 'WorldDiplomacyDocumentPublicationApplication.'),
+  ('private bool CanIssueWarThreat(', 'WorldDiplomacyWarAdmissionApplication.'),
+  ('private bool CanDeclareWar(', 'WorldDiplomacyWarAdmissionApplication.'),
+  ('private void ExecuteImmediateIntent(', 'WorldDiplomacyImmediateActionApplication.'),
+  ('private void HandleDisabledState(', 'WorldDiplomacyRoundApplication.'),
+  ('private void CommitEmbeddedRoundPlan(', 'WorldDiplomacyRoundApplication.'),
+  ('private bool TryApplyUltimatumComplianceDomesticPenalty(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private bool TryApplyDiplomaticThreatPolicyConditionCancellation(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private bool TryApplyDiplomaticThreatIssuerRelationReward(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private bool ResolveDiplomaticThreatCompliance(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private void ApplyDiplomaticThreatReputationPenalty(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private void RetryDiplomaticThreatDomesticPenalties(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private void RetryDiplomaticThreatComplianceConsequences(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private void RetryDiplomaticThreatHistoryResults(', 'WorldDiplomacyThreatSettlementApplication.'),
+  ('private int ApplyNationalPrestigeDelta(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void SettleInternationalReputationForDocument(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void RecoverUnsettledAiInternationalReputation(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void ReconcileAllNationalPrestigeVassalRelations(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void ReconcileNationalPrestigeVassalRelations(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void ApplyZeroPrestigeBreachRelationPenalty(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void AnchorInternationalReputationNaturalChangeDays(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void ProcessInternationalReputationNaturalChange(', 'WorldDiplomacyPrestigeApplication.'),
+  ('private void OnCampaignTick(', 'DiplomacyModuleServices.World.OnCampaignTick'),
+  ('private void OnDailyTick(', 'DiplomacyModuleServices.World.OnDailyTick'),
+  ('private void TryApplyInitialNewGamePeace(', 'WorldDiplomacyInitialPeaceApplication.'),
+  ('private void EnsureCanonicalHistoryInitialized(', 'WorldDiplomacyHistoryCaptureApplication.|WorldDiplomacyRoundApplication.'),
+  ('private void SyncCanonicalHistorySources(', 'WorldDiplomacyHistoryCaptureApplication.|WorldDiplomacyRoundApplication.'),
+  ('private void CaptureCanonicalHistoryForJob(', 'WorldDiplomacyHistoryCaptureApplication.|WorldDiplomacyRoundApplication.'),
+  ('private void RestoreSuspendedExchangeIfAny(', 'WorldDiplomacyHistoryCaptureApplication.|WorldDiplomacyRoundApplication.'),
+  ('private void CompleteExchange(', 'WorldDiplomacyHistoryCaptureApplication.|WorldDiplomacyRoundApplication.'),
+  ('private bool IsNonRootAiRelayNoActionAllowed(', 'WorldDiplomacyNoActionApplication.'),
+  ('private bool CanUseResultSettlementTarget(', 'WorldDiplomacyNoActionApplication.'),
+  ('private bool TryResolvePolicyConditionForThreat(', 'WorldDiplomacyThreatBindingApplication.'),
+  ('private bool RegisterOrAdvanceDiplomaticThreat(', 'WorldDiplomacyThreatBindingApplication.'),
+  ('private void ProcessDiplomaticThreatDocument(', 'WorldDiplomacyThreatBindingApplication.'),
+  ('private void PublishPlayerAuthoredDocumentImmediately(', 'WorldDiplomacyDocumentPublicationApplication.'),
+  ('private void RefreshPolicyDiplomacySignals(', 'WorldDiplomacyPolicyRoundApplication.'),
+  ('private List<string> BuildPotentialDiplomaticActionIntents(', 'WorldDiplomacyActionSelectionApplication|WorldDiplomacyDocumentExecutionApplication.'),
+  ('private List<string> BuildLegalDiplomaticActionIntents(', 'WorldDiplomacyActionSelectionApplication|WorldDiplomacyDocumentExecutionApplication.'),
+  ('private List<string> BuildLegalDiplomaticDeclarationIntents(', 'WorldDiplomacyActionSelectionApplication|WorldDiplomacyDocumentExecutionApplication.'),
+  ('private List<Kingdom> GetActionableDiplomaticTargets(', 'WorldDiplomacyActionSelectionApplication|WorldDiplomacyDocumentExecutionApplication.'),
+  ('private List<Kingdom> GetRoundPlanActionableParticipants(', 'WorldDiplomacyActionSelectionApplication|WorldDiplomacyDocumentExecutionApplication.'),
+  ('private List<Kingdom> GetResultSettlementActionableTargets(', 'WorldDiplomacyActionSelectionApplication|WorldDiplomacyDocumentExecutionApplication.'),
+  ('private void RefreshResultSettlementActionSlots(', 'WorldDiplomacyActionSelectionApplication|WorldDiplomacyDocumentExecutionApplication.'),
+  ('private bool EnsureGenerationJobHasKingdomStrategicProfile(', 'WorldDiplomacyJobPreparationApplication.'),
+  ('private bool RefreshDiplomaticActionPresentationAndPrompt(', 'WorldDiplomacyJobPreparationApplication.'),
+  ('private bool RefreshDiplomaticThreatPresentationAndPrompt(', 'WorldDiplomacyJobPreparationApplication.'),
+  ('private bool TryRebuildPendingWorldDiplomacyJob(', 'WorldDiplomacyJobPreparationApplication.'),
+  ('private void CommitAnalysis(', 'WorldDiplomacyAnalysisApplication.'),
+  ('private void SuppressInvalidDocumentBeforePropagation(', 'WorldDiplomacyAnalysisApplication.'),
+  ('private void PreservePublishedPlayerDocumentAfterRejectedMechanic(', 'WorldDiplomacyAnalysisApplication.'),
+  ('private WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(', 'WorldDiplomacyPeaceAdmissionApplication.'),
+  ('private static bool AreOfferedPeaceTermsCurrentlyExecutable(', 'WorldDiplomacyPeaceAdmissionApplication.'),
+  ('private bool IsCessionCurrentlyAllowed(', 'WorldDiplomacyPeaceAdmissionApplication.'),
+  ('private List<Settlement> BuildCessionCandidates(', 'WorldDiplomacyPeaceAdmissionApplication.'),
+  ('private void ReconcileActiveDiplomacyAfterLoad(', 'WorldDiplomacyRoundApplication.'),
+  ('private void EnqueueGenerationJob(', 'WorldDiplomacyGenerationTaskApplication.'),
+  ('private void EnqueueAnalysisJob(', 'WorldDiplomacyJobPreparationApplication.'),
+  ('private void CommitFailedJob(', 'WorldDiplomacyFailureApplication.'),
+  ('private void CommitGeneratedDocument(', 'WorldDiplomacyGeneratedCompletionApplication.'),
+  ('private void AbandonRejectedGeneration(', 'WorldDiplomacyGenerationTaskApplication.'),
+  ('private void BeginOrExtendRoundResultSettlement(', 'WorldDiplomacyRoundApplication.'),
+  ('private void ScheduleNextResultSettlementTurn(', 'WorldDiplomacyTurnSchedulingApplication.'),
+  ('private void HandleRoundDocumentProcessed(', 'WorldDiplomacyRoundProgressApplication.'),
+  ('private void EnqueueRoundPlanJob(', 'WorldDiplomacyJobPreparationApplication.'),
+  ('private void RetryDeferredCanonicalHistoryEntries(', 'WorldDiplomacyHistoryCaptureApplication.'),
+  ('private void CommitRoundPlan(', 'WorldDiplomacyRoundPlanApplication.'),
+  ('private void ScheduleNextRelayHop(', 'WorldDiplomacyTurnSchedulingApplication.'),
+  ('private void ProcessRelayArrivals(', 'WorldDiplomacyRoundProgressApplication.'),
+  ('private void RecordDiplomacyWeeklyMaterial(', 'WorldDiplomacyHistoryCaptureApplication.'),
+  ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
+  ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.')]:
+  if signature not in prior_world or signature not in current_world: continue
+  before=declaration(prior_world,signature);after=declaration(current_world,signature).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')
+  assert any(o in after for o in owner.split('|')), signature
+  prior_world=prior_world.replace(before,after)
  assert current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration),'Policy cadence/state owner changed'
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)

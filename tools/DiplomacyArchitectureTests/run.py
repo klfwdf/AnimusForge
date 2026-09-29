@@ -40,7 +40,7 @@ def main():
   prior=prior.replace(before,after)
  for signature in ('private void NotifyExternalDiplomacyResolvedInternal(',):
   before=declaration(prior,signature);after=declaration(current,signature)
-  assert before.replace('HasProposalTakenEffect(intent, initiator, target)', 'new OfferActionPort(this).HasTakenEffect(intent, initiator?.StringId, target?.StringId)') == after, signature
+  assert before.replace('HasProposalTakenEffect(intent, initiator, target)', 'new OfferActionPort(this).HasTakenEffect(intent, initiator?.StringId, target?.StringId)').replace('WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(', 'WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(') == after, signature
   prior=prior.replace(before,after)
  for signature in ('private bool CanIssueWarThreat(', 'private bool CanDeclareWar('):
   before=declaration(prior,signature);after=declaration(current,signature)
@@ -89,6 +89,26 @@ def main():
  for signature in ('private void CommitAnalysis(', 'private void SuppressInvalidDocumentBeforePropagation(', 'private void PreservePublishedPlayerDocumentAfterRejectedMechanic('):
   before=declaration(prior,signature);after=declaration(current,signature)
   assert 'WorldDiplomacyAnalysisApplication.' in after, signature
+  prior=prior.replace(before,after)
+ for signature,owner in (('private void ReconcileActiveDiplomacyAfterLoad(', 'WorldDiplomacyRoundApplication.'),
+                   ('private void EnqueueGenerationJob(', 'WorldDiplomacyGenerationTaskApplication.'),
+                   ('private void EnqueueAnalysisJob(', 'WorldDiplomacyJobPreparationApplication.'),
+                   ('private void CommitFailedJob(', 'WorldDiplomacyFailureApplication.'),
+                   ('private void CommitGeneratedDocument(', 'WorldDiplomacyGeneratedCompletionApplication.'),
+                   ('private void AbandonRejectedGeneration(', 'WorldDiplomacyGenerationTaskApplication.'),
+                   ('private void BeginOrExtendRoundResultSettlement(', 'WorldDiplomacyRoundApplication.'),
+                   ('private void ScheduleNextResultSettlementTurn(', 'WorldDiplomacyTurnSchedulingApplication.'),
+                   ('private void HandleRoundDocumentProcessed(', 'WorldDiplomacyRoundProgressApplication.'),
+                   ('private void EnqueueRoundPlanJob(', 'WorldDiplomacyJobPreparationApplication.'),
+                   ('private void RetryDeferredCanonicalHistoryEntries(', 'WorldDiplomacyHistoryCaptureApplication.'),
+                   ('private void CommitRoundPlan(', 'WorldDiplomacyRoundPlanApplication.'),
+                   ('private void ScheduleNextRelayHop(', 'WorldDiplomacyTurnSchedulingApplication.'),
+                   ('private void ProcessRelayArrivals(', 'WorldDiplomacyRoundProgressApplication.'),
+                   ('private void RecordDiplomacyWeeklyMaterial(', 'WorldDiplomacyHistoryCaptureApplication.'),
+                   ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
+                   ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.')):
+  before=declaration(prior,signature);after=declaration(current,signature)
+  assert owner in after, signature
   prior=prior.replace(before,after)
  for signature in ('private WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(', 'private static bool AreOfferedPeaceTermsCurrentlyExecutable(', 'private bool IsCessionCurrentlyAllowed(', 'private List<Settlement> BuildCessionCandidates('):
   before=declaration(prior,signature);after=declaration(current,signature)
