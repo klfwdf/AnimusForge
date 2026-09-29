@@ -212,7 +212,7 @@
 | persistence-config | 保存/chunk/JSON、DuelSettings 与配置捕获/落盘；业务状态归领域，键/类型/迁移入口单独保留；关联 R04 |
 | conversation-encounter | MyBehavior/ShoutBehavior、Native/Scene/Internal、LordEncounter；对话编排与目标/释放/返回职责分别归 Conversation/Encounter |
 | gateway-prompt-protocol | AIConfigHandler、ShoutNetwork、Refactor gateways、Prompt/LLM；传输 attempt 与调用方重试/领域 Prompt 分界，不强并成万能 gateway |
-| action-commit | **A 文件级复核 E43，未签桶**：Actions 模块 9 文件/167 声明中，旧候选只列 7 文件/92 声明；标签/ActionPlan、RAW 授权、一次执行及结果 receipt 归 Actions，`LegacyNativeActionPlanExecutor` 混合 Economy/Duel 专业适配，`InteractionResultCommitter` 合成 Memory/Weekly 接收，真实领域变更不由 Actions 重复执行。旧候选误入的 `DetachedInteractionHost` 归 Conversation 生命周期。静态 512 容量回执缓存跨 Campaign 清理未见，须核实身份重用/积压；根级分派与完整三渠道仍未审，故不签 20 桶。 |
+| action-commit | **A 共享层责任归属已审 E43；渠道/领域余项留 R05/R07**：Actions 模块 9 文件/167 声明中，旧候选只列 7 文件/92 声明；标签/ActionPlan、RAW 授权、一次执行及结果 receipt 归 Actions，`LegacyNativeActionPlanExecutor` 混合 Economy/Duel 专业适配，`InteractionResultCommitter` 合成 Memory/Weekly 接收，真实领域变更不由 Actions 重复执行。旧候选误入的 `DetachedInteractionHost` 归 Conversation 生命周期。静态 512 容量回执缓存跨 Campaign 清理未见，须核实身份重用/积压；根级具体效果分派与完整三渠道在 R05/对应领域具名未审，**不签 J17-A 总出口或产品迁移**。 |
 | memory-afef | MyBehavior 所有 Memory/History/Recovery/AFEF 入口和 partial；关联 R02–R04，保留唯一记录与接受路径 |
 | economy-reward-debt | RewardSystemBehavior 家族、交易/债务/资产与 RP crafting；按已批准 Economy 范围核实规则/状态/游戏 mutator；不能用 J12 有限完成跳过余项 |
 | policy-political | PolicySystem 内部按既有排除；AF 侧 Policy ports/调用、政治领域跨接缝必须分清，不能以“政策”名称扩大排除 |
