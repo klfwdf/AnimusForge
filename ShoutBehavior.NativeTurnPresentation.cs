@@ -23,6 +23,12 @@ public partial class ShoutBehavior
         private string postprocessReply;
         private string cleaned;
         private bool nativeTtsDispatchedBeforePostprocess;
+        private bool nativeCeremonyExecutionOrderRequested;
+
+        // One armed "start when the conversation closes" handler at most; a stored delegate
+        // lets a repeated order replace (not stack) the subscription. Game thread only.
+        private static ConversationManager _ceremonyOrderManager;
+        private static Action _ceremonyOrderHandler;
 
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
         {
@@ -55,7 +61,8 @@ public partial class ShoutBehavior
                     // their owning thread, before this callback releases the worker continuation.
                     RecordSceneActionReplyCapture(nativeTargetAgentIndex);
                     SubmitNativeConversationSceneActionObservation(postprocessReply, nativeTargetAgentIndex);
-                    TryQueueCeremonyExecutionOrder(nativeTargetAgentIndex, playerText);
+                    // Only record the intent here; the order is armed after the reply is accepted.
+                    nativeCeremonyExecutionOrderRequested = nativeTargetAgentIndex >= 0 && IsExplicitExecutionOrder(playerText);
                     cleaned = StripStageDirectionsForPassiveShout(postprocessReply);
                     nativeMainVisibleForTts = SanitizeSceneSpeechText(cleaned);
                     if (nativeTargetAgentIndex < 0 && !string.IsNullOrWhiteSpace(nativeMainVisibleForTts) && !IsNativeConversationNoSpeechPlaceholder(nativeMainVisibleForTts))
@@ -117,9 +124,9 @@ public partial class ShoutBehavior
         // The ceremony cannot move its actors while this conversation still owns them.
         // An explicit order is therefore kept until the conversation closes, then it
         // uses the same executioner-start path as the scripted "Proceed" line.
-        private static void TryQueueCeremonyExecutionOrder(int agentIndex, string text)
+        private static void TryQueueCeremonyExecutionOrder(int agentIndex)
         {
-            if (agentIndex < 0 || !IsExplicitExecutionOrder(text)) return;
+            if (agentIndex < 0) return;
             Mission mission = Mission.Current;
             Agent speaker = null;
             if (mission?.Agents != null)
@@ -143,13 +150,24 @@ public partial class ShoutBehavior
 
             ConversationManager manager = Campaign.Current?.ConversationManager;
             if (manager == null) return;
-            void StartWhenConversationCloses()
+            ClearCeremonyExecutionOrder();
+            Action handler = null;
+            handler = () =>
             {
-                manager.ConversationEndOneShot -= StartWhenConversationCloses;
+                if (ReferenceEquals(_ceremonyOrderHandler, handler)) ClearCeremonyExecutionOrder();
                 ExecutionSessionCoordinator.RequestExecutionerStart();
-            }
-            manager.ConversationEndOneShot -= StartWhenConversationCloses;
-            manager.ConversationEndOneShot += StartWhenConversationCloses;
+            };
+            _ceremonyOrderManager = manager;
+            _ceremonyOrderHandler = handler;
+            manager.ConversationEndOneShot += handler;
+        }
+
+        private static void ClearCeremonyExecutionOrder()
+        {
+            if (_ceremonyOrderManager != null && _ceremonyOrderHandler != null)
+                _ceremonyOrderManager.ConversationEndOneShot -= _ceremonyOrderHandler;
+            _ceremonyOrderManager = null;
+            _ceremonyOrderHandler = null;
         }
 
         private static bool IsExplicitExecutionOrder(string text)

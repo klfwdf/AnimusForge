@@ -24,6 +24,9 @@ public partial class ShoutBehavior
         internal bool TtsAlreadyDispatched;
         internal long PendingPlayerHistorySequence;
         internal string PendingPlayerHistoryKey;
+        // Game-thread side effects that must only follow an accepted (not stale, not
+        // discarded) reply: scene-action directive submit and ceremony execution order.
+        internal Action AcceptedReplySideEffects;
     }
 
     // Captured after admission validation and before actions can change the scene/party.
@@ -118,6 +121,24 @@ public partial class ShoutBehavior
         string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
         scope.Admission.ModuleOperation?.RecordOwnerCompletion(finalVisible);
         return finalVisible;
+    }
+
+    // Runs once, on the game thread, only after the reply passed stale/target checks and the
+    // action dispatch did not discard it. Failures are logged and never block memory commit.
+    private static void RunNativeAcceptedReplySideEffects(NativeConversationCompletionRequest request)
+    {
+        Action effects = request?.AcceptedReplySideEffects;
+        if (effects == null)
+            return;
+        request.AcceptedReplySideEffects = null;
+        try
+        {
+            effects();
+        }
+        catch (Exception ex)
+        {
+            Logger.Log("ShoutBehavior", "[NativeConversation] accepted-reply side effect failed open: " + ex.Message);
+        }
     }
 
     private void QueueNativeConversationCompletionExit(NativeConversationCompletionScope scope, NativeConversationGameActionResult result)
