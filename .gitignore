@@ -36,6 +36,21 @@ artifacts/
 AnimusForge/PlayerExports/
 FUYONG/
 
+# J16b A1 (2026-09-29): untracked local caches, tool publish output and root diagnostics.
+# SHA manifest of the untracked files: artifacts/j16b/a1-untrack-manifest.sha256 (local only).
+/.dotnet/
+/.dotnet-cli-home/
+/tmp/
+*.lscache
+tools/*/dist/
+/Logs*.zip
+/EarlyException_*.html
+*.broken-backup-*
+/*.lnk
+/artifacts_*.png
+/_patch_diplomacy_proactive.py
+/animusforge-policy-effect-module-skill-draft/
+
 # Local debug preview files
 api_wizard_interactive_preview.html
 integrated_tabs_settings_preview.html

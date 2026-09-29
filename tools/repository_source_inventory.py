@@ -60,8 +60,6 @@ def classify_path(path: str) -> str | None:
         return "HOLD:archive"
     if top == "_DeveloperPatch":
         return "HOLD:local-patch"
-    if top == "animusforge-policy-effect-module-skill-draft":
-        return "HOLD:skill-draft"
     if path.startswith("AnimusForge/AssetPackages/"):
         return "HOLD:asset-package-provenance"
     if top == "content" and len(parts) > 1 and parts[1].lower() == "playerexports":
