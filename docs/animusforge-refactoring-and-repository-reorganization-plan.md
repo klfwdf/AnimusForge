@@ -7,7 +7,11 @@
 - 当前 `AnimusForge.csproj` 以本机 .NET 8 SDK `-getItem:Compile` 分别求值 `BannerlordApi=1.3`（`_deps_auto`）与 `1.4`（`.tmp/build_check/1.4`）：各 **1,123** 个 Compile 路径、无重复、两集合无差异、全部为已跟踪文件。相对旧 E13 的 940，净增 183；旧 940/3,332 不再是当前分母。两套 `DefineConstants` 分别为 `TRACE;DEBUG;NETFRAMEWORK;NET472` 与另加 `BANNERLORD_1_4_OR_GREATER`。
 - 仓内隔离审计工具用 SDK 自带 Roslyn 仅解析上述实际文件，两个 API 分别得 **49,509 / 49,508** 个声明、解析错误 0；1.3 专属 7、1.4 专属 6 个声明。声明清单含类型、字段、属性、方法、事件、枚举成员、各 partial 和一基行号；它是覆盖导航，**未证明语义归属、动态消费者或产品编译通过**。旧 `artifacts/j17a/host-member-buckets.json` 等材料不在本工作区；当前清单不冒充恢复旧结果。
 - 新增编译输入包括 Vengeance 75、Illustrator 52、DialogueUI 25、Coup 12 个文件；`IntegratedModuleHost.Tick`、CivilWar 存档/AF 接缝和 Native 已接受回复副作用均须进入 A2。政策、宴会、GCCZ 内部玩法仍按原范围排除，其 AF 接缝不豁免。R04/E09 至 R07/E13 的旧调用链须按当前源码重验；R05/R06/R08/R09 仍未闭。
-- 本切片仅执行只读 MSBuild 求值及隔离审计工具构建/运行；**未构建 AnimusForge 双实现或 Bootstrap、未运行产品/旧档/全量测试、未执行 Stage/部署/打包/推送**。下一步从 R04 JSON/保存/反射闭包及 R02 输入→接受链继续 A1，然后完成 20 桶 A2；A 出口前不批量启动 B。
+- A0 切片仅执行只读 MSBuild 求值及隔离审计工具构建/运行；**未构建 AnimusForge 双实现或 Bootstrap、未运行产品/旧档/全量测试、未执行 Stage/部署/打包/推送**。A1 已另跑上述两项有限 Memory/Persistence 测试。下一步继续 A1 的精确闭包，然后完成 20 桶 A2；A 出口前不批量启动 B。
+
+**A1/R04 当前复核（仍 `OPEN`）**：当前源码证据见范围图 E15。11 个类型与原 JSON/SyncData 边界仍可定位，`OwnerJsonStorageCodec` 的现有 8 项契约在本候选通过；但旧 E09 将七个 `static Sanitize*` 称为“纯函数”不准确。`SanitizeDailyMemoryDraftEntry`、`SanitizeCompressedMemoryBlocks` 及其 Weekly trigger 分支会按 `TWParallel.IsMainThread()` 在原地改写与克隆之间选择，其他队列/overview sanitizer 也可改写传入记录。R04a 的实际出口必须保持这层线程/别名语义，且迁出嵌套类型时同步改接三个反射回放；只有保存注册未涉及类型名的静态证据，旧档轴仍 `NOT-RUN`。R02 captured runner 的基线缺 `NpcActionLedger` 编译依赖，现已定向补齐并运行 source-derived 116 项通过；后台 alias/主线程 detach 两个变异均编译成功且各在具名 3 项断言失败。RunOwner 独立 47 项通过。其旧 source-parity 仍因 J16 路径 hash 漂移与当前 MyBehavior 差异失败，不能仅刷新 hash 冒充完整重审；上述夹具运行也不是产品 DLL、旧档或硬帧预算证据。
+
+**A1/R02、R03、R01 当前复核（均 `OPEN`）**：范围图 E16–E18 已按当前源码重追真实调用链。R02 的摘要路径由分片扫描/计划、主线程输入捕获、网络等待、重试前及接受前指纹与代际复核、逐结果写入组成；daily 接受同时清 Native 会话历史、发布 public/Weekly 素材和入队 overview，不能按旧 E10 的名称统计直接迁“纯规则”。R03 旧 E12 的“Build/Apply 是纯状态变换”错误：Build 主线程净化可能修改原记录，Apply 写五组权威容器并标记 dirty 索引。R01 旧 E11 的“仅 DeathLine 有游戏读取”错误：各类别文本构造经名称/地点解析读 Hero/Clan/Kingdom/Settlement，death relation 还读亲属关系；现有 `ResolveHeroName` 等扫描游戏集合的工作量须入 R08。**这不是 A1 闭合**：当前仅核实关键路径，逐成员消费者/动态入口、相关行为基线和 A2 20 桶均待完成；A 出口前不批量启动 B。
 
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
