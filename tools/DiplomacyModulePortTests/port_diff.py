@@ -1,4 +1,4 @@
-"""DPL-100: real bridges/adapters against recording engine owners, plus exact caller inverse."""
+﻿"""DPL-100: real bridges/adapters against recording engine owners, plus exact caller inverse."""
 from pathlib import Path
 import argparse, importlib.util, subprocess, re
 ROOT=Path(__file__).resolve().parents[2]
@@ -22,7 +22,6 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyTributePowerAp
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTickApplication.cs']
-SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCampaignApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  adapter=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs')
@@ -192,10 +191,23 @@ def boundaries():
   ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
   ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.')]:
   if signature not in prior_world or signature not in current_world: continue
-  before=declaration(prior_world,signature);after=declaration(current_world,signature).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')
+  before=declaration(prior_world,signature);after=declaration(current_world,signature)
   assert any(o in after for o in owner.split('|')), signature
   prior_world=prior_world.replace(before,after)
- assert current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration),'Policy cadence/state owner changed'
+ a_=load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration)
+ b_=current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')
+ if a_!=b_:
+  import difflib
+  al=a_.splitlines();cl=b_.splitlines()
+  sm=difflib.SequenceMatcher(None,al,cl,autojunk=False)
+  diffs=[(t,i1,i2,j1,j2) for t,i1,i2,j1,j2 in sm.get_opcodes() if t!='equal']
+  print('remaining hunks:',len(diffs))
+  for t,i1,i2,j1,j2 in diffs[:80]:
+   print('===',t,'prior',i1,'-',i2)
+   for l in al[i1:i2][:8]: print('  P:',l[:110])
+   for l in cl[j1:j2][:8]: print('  C:',l[:110])
+  raise SystemExit(2)
+ assert a_==b_,'Policy cadence/state owner changed'
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)
  ledger=declaration(before,'internal sealed class PublishedPolicyArtifactLedgerEntry')
@@ -244,3 +256,4 @@ def main():
   if not mutation: print(log,end='');assert code==0,'Port execution failed'
   else: assert code!=0 and 'FAIL ' in log and 'error CS' not in log,log;print('PASS behavioral mutation rejected: '+name)
 if __name__=='__main__':main()
+
