@@ -15,11 +15,11 @@ internal static class ApplicationTickComposition
 		{
 			if (!FreezeWatchdog.IsScopeRecordingActive() && !PerfProbe.IsDetailedScopeRecordingActive())
 			{
-				RunFastApplicationTickPhases(host);
+				RunFastApplicationTickPhases(host, dt);
 			}
 			else
 			{
-				RunWatchedApplicationTickPhases(host);
+				RunWatchedApplicationTickPhases(host, dt);
 			}
 			host.TickWarStatsMapButton(dt);
 		}
@@ -39,7 +39,7 @@ internal static class ApplicationTickComposition
 		}
 	}
 
-	private static void RunFastApplicationTickPhases(SubModule host)
+	private static void RunFastApplicationTickPhases(SubModule host, float dt)
 	{
 		ShoutTextInputPopup.ProcessDeferredCloseIfNeeded();
 		ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded();
@@ -78,9 +78,10 @@ internal static class ApplicationTickComposition
 		PolicySystemUi.OnApplicationTick();
 		NobleGatheringBehavior.Instance?.OnEngineTick();
 		VassalageBehavior.Instance?.OnEngineTick();
+		IntegratedModuleHost.Tick(dt);
 	}
 
-	private static void RunWatchedApplicationTickPhases(SubModule host)
+	private static void RunWatchedApplicationTickPhases(SubModule host, float dt)
 	{
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.ProcessDeferredCloseIfNeeded", () => ShoutTextInputPopup.ProcessDeferredCloseIfNeeded());
 			RunWatchedTickPhase("SubModule.ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded", () => ShoutTextInputPopup.CloseForSystemInterruptionIfNeeded());
@@ -119,6 +120,7 @@ internal static class ApplicationTickComposition
 			RunWatchedTickPhase("SubModule.PolicySystemUi.OnApplicationTick", () => PolicySystemUi.OnApplicationTick());
 			RunWatchedTickPhase("SubModule.NobleGatheringBehavior.OnEngineTick", () => NobleGatheringBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.VassalageBehavior.OnEngineTick", () => VassalageBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.IntegratedModuleHost.Tick", () => IntegratedModuleHost.Tick(dt));
 	}
 
 	private static void RunWatchedTickPhase(string name, Action action)

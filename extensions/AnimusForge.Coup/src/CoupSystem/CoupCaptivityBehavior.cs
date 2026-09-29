@@ -18,10 +18,13 @@ internal sealed class CoupCaptivityBehavior : CampaignBehaviorBase
 {
     private static CoupCaptivityBehavior _instance;
     private readonly Dictionary<string, string> _detentions = new Dictionary<string, string>(StringComparer.Ordinal);
+    private string _detentionsJson;
+    private bool _saveValid = true;
     private static readonly MethodInfo IsHeroGetter = AccessTools.PropertyGetter(typeof(BasicCharacterObject), nameof(BasicCharacterObject.IsHero));
     private static readonly MethodInfo CharacterIsHeroGetter = AccessTools.PropertyGetter(typeof(CharacterObject), nameof(CharacterObject.IsHero));
     private static readonly MethodInfo ReleaseCandidateMethod = AccessTools.Method(typeof(CoupCaptivityBehavior), nameof(IsAutomaticPeaceReleaseCandidate));
-    internal static bool AutomaticReleaseProtectionAvailable { get; private set; }
+    private static bool _patchesInstalled;
+    internal static bool AutomaticReleaseProtectionAvailable => _patchesInstalled && _instance?._saveValid == true;
 
     public CoupCaptivityBehavior() { _instance = this; }
 
@@ -36,24 +39,34 @@ internal sealed class CoupCaptivityBehavior : CampaignBehaviorBase
 
     public override void SyncData(IDataStore dataStore)
     {
-        string state = dataStore.IsSaving ? JsonConvert.SerializeObject(_detentions) : "";
-        dataStore.SyncData("af_coup_detentions_v1", ref state);
+        if (dataStore.IsSaving && _saveValid) _detentionsJson = JsonConvert.SerializeObject(_detentions);
+        dataStore.SyncData("af_coup_detentions_v1", ref _detentionsJson);
         if (!dataStore.IsLoading) return;
         _detentions.Clear();
-        if (string.IsNullOrEmpty(state)) return;
+        _saveValid = true;
+        if (string.IsNullOrEmpty(_detentionsJson)) return;
         try
         {
-            Dictionary<string, string> saved = JsonConvert.DeserializeObject<Dictionary<string, string>>(state);
-            if (saved == null) return;
+            Dictionary<string, string> saved = JsonConvert.DeserializeObject<Dictionary<string, string>>(_detentionsJson)
+                ?? throw new InvalidOperationException("Empty detention state.");
             foreach (KeyValuePair<string, string> item in saved)
-                if (!string.IsNullOrWhiteSpace(item.Key) && !string.IsNullOrWhiteSpace(item.Value)) _detentions[item.Key] = item.Value;
+            {
+                if (string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value))
+                    throw new InvalidOperationException("Invalid detention entry.");
+            }
+            foreach (KeyValuePair<string, string> item in saved) _detentions[item.Key] = item.Value;
         }
-        catch (Exception ex) { Logger.Log("Coup", "Detention state could not be restored: " + ex.Message); }
+        catch (Exception ex)
+        {
+            _detentions.Clear();
+            _saveValid = false;
+            Logger.Log("Coup", "Detention state could not be restored; original save retained: " + ex.Message);
+        }
     }
 
     internal static void RegisterDetention(string coupId, Hero king)
     {
-        if (_instance == null || !AutomaticReleaseProtectionAvailable || string.IsNullOrWhiteSpace(coupId) || king == null || !IsInPlayerCustody(king))
+        if (_instance == null || !_instance._saveValid || !AutomaticReleaseProtectionAvailable || string.IsNullOrWhiteSpace(coupId) || king == null || !IsInPlayerCustody(king))
             throw new InvalidOperationException("政变拘押保护不可用，或目标尚未由玩家拘押。");
         _instance._detentions[king.StringId] = coupId;
         Logger.Log("Coup", "Detention registered. coup=" + coupId + ", hero=" + king.StringId);
@@ -117,9 +130,15 @@ internal sealed class CoupCaptivityBehavior : CampaignBehaviorBase
         if (stale != null) foreach (string id in stale) _detentions.Remove(id);
     }
 
+    internal static void ResetPatches()
+    {
+        _patchesInstalled = false;
+        _instance = null;
+    }
+
     internal static void RegisterPatches(Harmony harmony)
     {
-        AutomaticReleaseProtectionAvailable = false;
+        _patchesInstalled = false;
         try
         {
             MethodInfo settlementRelease = AccessTools.Method(typeof(PrisonerReleaseCampaignBehavior), "ReleasePrisonersInternal", new[] { typeof(IFaction) });
@@ -131,7 +150,7 @@ internal sealed class CoupCaptivityBehavior : CampaignBehaviorBase
             harmony.Patch(settlementRelease, transpiler: transpiler);
             harmony.Patch(partyRelease, transpiler: transpiler);
             harmony.Patch(custodyChanged, postfix: new HarmonyMethod(AccessTools.Method(typeof(CoupCaptivityBehavior), nameof(PrisonerCustodyChangedPostfix))));
-            AutomaticReleaseProtectionAvailable = true;
+            _patchesInstalled = true;
         }
         catch (Exception ex) { Logger.Log("Coup", "Automatic detention protection unavailable; capture disabled: " + ex.Message); }
     }

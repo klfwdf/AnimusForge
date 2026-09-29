@@ -8,7 +8,9 @@
       "Skill(update-config:*)",
       "Bash(python -m json.tool .claude/settings.local.json)",
       "Bash(git check-ignore *)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__pencil__execute",
+      "Bash(python -)"
     ],
     "defaultMode": "bypassPermissions",
     "additionalDirectories": [

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Vengeance\Source\Scene\Speech\ExecutionSpeechLineParser.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

@@ -30,6 +30,15 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static TaleWorlds.CampaignSystem.Conversation.ConversationManager _conversationManagerSubscription;
         private static string _lastAutoRedrawSentence = string.Empty;
 
+        internal static void Reset()
+        {
+            DetachConversationContinuedHandler();
+            _patched = false;
+            _nativeConversationReplyPatchInstalled = false;
+            _lastAutoRedrawSentence = string.Empty;
+            InjectedButtons.Clear();
+        }
+
         public static void EnsurePatched(Harmony harmony)
         {
             if (_patched) return;

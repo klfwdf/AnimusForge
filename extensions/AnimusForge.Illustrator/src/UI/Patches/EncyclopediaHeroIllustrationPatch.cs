@@ -30,6 +30,12 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static readonly List<WeakReference<ButtonWidget>> InjectedButtons = new List<WeakReference<ButtonWidget>>();
         private static bool _patched;
 
+        internal static void Reset()
+        {
+            _patched = false;
+            InjectedButtons.Clear();
+        }
+
         public static void EnsurePatched(Harmony harmony)
         {
             if (_patched) return;
