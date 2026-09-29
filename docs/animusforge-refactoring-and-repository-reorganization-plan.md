@@ -47,6 +47,8 @@
 
 **A2/R05 默认入站信失败边界已合成复现（仍 `REVIEW_REQUIRED`）**：[范围图 E40](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)以提取的当前 `DeliverInboundLetterToPlayer` 和旧 void `AppendExternalDialogueHistory` 在桩中验证：Memory 拒收、抛异常或 owner 缺失时，交付标志、信件物品、通知及会话结束仍继续；正常接受对照通过，删去 History 调用的编译变异被具名断言拒绝。此结果取代 E31“需先合成复现”的停点，但**不证明实机已丢事实**。B6 前置改为确定失败/部分写入语义与一次性交付的恢复合同，再做最小修复及三渠道事实回读；不可盲目重试或把 `DeliveryApplied` 后移造成物资重放。顺带修复 Courier route 旧 oracle 并将该 runner、此前修复的 CampaignComposition runner 从 PREEXISTING_FAIL 改为当前 PASS；未运行全量 runner、双 API 产品构建或游戏。A 的其他分支/18 桶仍未闭，B 不启动。
 
+**A2/R07 诊断到世界 AI 混合接缝（仍 `REVIEW_REQUIRED`）**：[范围图 E41](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)`CampaignTickDiagnosticsPatch` 不只记录 checkpoint：默认启用的 host-runtime bridge 可从上次未 EXIT 的队伍 ID 装载 18 次跳过额度，`AnimusForgeMobilePartyAiSafetyPatch` 在原版 hourly AI 前消费并返回 false。当前源码提取/桩回放证实同 ID 新对象 18 次跳过、第 19 次恢复；忽略跳过的编译变异在具名断言失败。R07/B6 需把诊断状态与世界 AI 安全策略的权威责任分开，R08 量测 checkpoint/通用同步日志频率；静态 ID 字典未见 Campaign 退役清理，跨档 ID 重用仍待复现。未读真实日志、运行 Harmony、游戏或旧档，也未审完根级诊断全部成员，故不签诊断桶，不启动 B。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
@@ -205,7 +207,7 @@
 | --- | --- |
 | bootstrap-build | **A 责任归属已审，E37**：Bootstrap 三个实际 Compile 文件与实现项目排除、XML 唯一入口、双版本选择/依赖/生命周期和脚本构建接缝已核对。保留独立加载边界；R08 每帧反射成本待真实量测，J17-C/D 构建/游戏未验。只有另获授权才改一键脚本或 Bootstrap；不按行数重构加载器。 |
 | host-composition | **A 责任归属已审，E38**：`SubModule` 引擎入口、八个 `Composition` 装配文件、typed 目录及内置功能薄桥保留宿主接线；同文件首次 API 指引/WarStats 地图按钮归 UI/配置，`LegacyInteractionPipelineComposition` 归 Conversation 请求期工厂，六个粗候选合同归各自领域/API。R08 异常传播/帧成本与真实游戏仍待验；不把领域 patch 和内置规则整体签收。 |
-| runtime-diagnostics | Logger、Tick/诊断及 Foundation owner；确认通用资源/队列与领域日志策略各自归属，不复制调度器 |
+| runtime-diagnostics | **A 定向复核 E36/E41，未签桶**：Foundation 性能窗/有界队列归通用诊断；Logger/Watchdog/Sentinel/UI 分析仍混游戏与隐私接缝。`CampaignTickDiagnosticsPatch` 的 checkpoint 是诊断，但 18 次原版 hourly AI 跳过接 `AnimusForgeMobilePartyAiSafetyPatch`，属世界 AI 安全策略，不能整类视为纯日志；`FeatureDiagnosticLogFile` 只提供通用文件机制，领域包装决定内容。余下成员/生命周期/真实负载待审。 |
 | game-adapter-compatibility | **A 定向复核 E39，未签桶**：`BannerlordApiCompat` 主要是版本签名适配；`PlayerEncounterCompat.IsInPostBattleResultFlow` 混有 Encounter 战后准入；`InteractionComponentSafePatch`/Mission view 守卫归场景安全防线，Coup 私有同名 helper 保留自身 fail-closed 语义。还须审全量 `#if`、Harmony/启动 audit 与动态消费者；R08 测请求期反射频率。 |
 | persistence-config | 保存/chunk/JSON、DuelSettings 与配置捕获/落盘；业务状态归领域，键/类型/迁移入口单独保留；关联 R04 |
 | conversation-encounter | MyBehavior/ShoutBehavior、Native/Scene/Internal、LordEncounter；对话编排与目标/释放/返回职责分别归 Conversation/Encounter |
