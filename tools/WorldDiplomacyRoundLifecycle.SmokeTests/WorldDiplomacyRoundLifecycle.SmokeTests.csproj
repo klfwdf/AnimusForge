@@ -123,4 +123,11 @@
   <ItemGroup>
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferActionPort.cs" Link="WorldDiplomacyOfferActionPort.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../Refactor/Domain/WorldDiplomacyWorldProfileRules.cs" Link="WorldDiplomacyWorldProfileRules.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLifecycleApplication.cs" Link="WorldDiplomacyLifecycleApplication.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../Refactor/Contracts/WorldDiplomacyLifecycleEvent.cs" Link="WorldDiplomacyLifecycleEvent.cs" />
+  </ItemGroup>
 </Project>

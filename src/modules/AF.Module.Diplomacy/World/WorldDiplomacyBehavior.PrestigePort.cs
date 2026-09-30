@@ -1,5 +1,6 @@
 using System;
 using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Domain;
 using AnimusForge.Refactor.Adapters;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
@@ -29,7 +30,7 @@ public sealed partial class WorldDiplomacyBehavior
                 ? _enumeratedKingdom : ResolveKingdomIncludingEliminated(kingdomId);
             if (kingdom == null || string.IsNullOrWhiteSpace(kingdom.StringId)) return null;
             Hero ruler = kingdom.RulingClan?.Leader;
-            var vassals = new List<string>();
+            var clans = new List<WorldDiplomacyClanSnapshot>();
             if (ruler != null && kingdom.Clans != null)
             {
                 _heroes[ruler.StringId] = ruler;
@@ -37,13 +38,11 @@ public sealed partial class WorldDiplomacyBehavior
                 {
                     Clan clan = kingdom.Clans[index];
                     Hero vassal = clan?.Leader;
-                    if (clan == null || clan == kingdom.RulingClan || clan.Kingdom != kingdom || clan.IsEliminated
-                        || clan.IsUnderMercenaryService || clan.IsClanTypeMercenary || vassal == null || vassal == ruler) continue;
-                    _heroes[vassal.StringId] = vassal;
-                    vassals.Add(vassal.StringId);
+                    if (vassal != null) _heroes[vassal.StringId] = vassal;
+                    clans.Add(CaptureClanSnapshot(clan, kingdom, kingdom.RulingClan));
                 }
             }
-            return new WorldDiplomacyPrestigeCourt(kingdom.StringId, kingdom.IsEliminated, ruler?.StringId, vassals);
+            return new WorldDiplomacyPrestigeCourt(kingdom.StringId, kingdom.IsEliminated, ruler?.StringId, clans);
         }
         public bool HasHero(string id)
         {

@@ -21,6 +21,18 @@ static class Program
     static List<string> Violations(string path, SyntaxNode root)
     {
         var errors = new List<string>();
+        if (path.EndsWith("WorldDiplomacyBehavior.PrestigePort.cs") || path.EndsWith("WorldDiplomacyBehavior.ThreatSettlementPort.cs"))
+        {
+            foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                .Where(m => m.Identifier.ValueText is "CaptureCourt" or "CaptureConsequenceSnapshot"))
+            {
+                if (method.DescendantNodes().OfType<IfStatementSyntax>().Any(statement =>
+                    new[] { "IsUnderMercenaryService", "IsClanTypeMercenary", "clan.IsEliminated", "clan.Kingdom", "vassal == ruler" }
+                        .Any(statement.Condition.ToString().Contains))
+                    || method.ToString().Contains(".Where("))
+                    errors.Add("effect snapshot adapter regained clan qualification policy: " + path);
+            }
+        }
         if (path.Equals("Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs", StringComparison.OrdinalIgnoreCase)
             && root.DescendantNodes().OfType<MethodDeclarationSyntax>().Any(m => m.Identifier.ValueText is "RegisterOrAdvanceDiplomaticThreat" or "ProcessDiplomaticThreatDocument" or "RebuildPendingJob" or "CommitAnalysis" or "SuppressInvalidDocumentBeforePropagation"))
             errors.Add("Domain must not own threat effect orchestration");
@@ -28,6 +40,17 @@ static class Program
         {
             foreach (var method in root.DescendantNodes().OfType<MethodDeclarationSyntax>())
             {
+                string methodName = method.Identifier.ValueText;
+                if (methodName == "IsThreatConsequenceClanEligible") errors.Add("clan qualification still owned by Behavior");
+                if (new[] { "EnsureKingdomBorderCache", "GetRealmRelationProfile", "ResolveCourtSettlement" }.Contains(methodName))
+                {
+                    string text = method.ToString();
+                    if (!text.Contains("WorldDiplomacyWorldProfileRules.") || new[] { ".OrderBy", ".Take(", "Math.Sqrt", "weightedSum", "nearestDistances" }.Any(text.Contains))
+                        errors.Add("world profile policy still owned by Behavior: " + methodName);
+                }
+                if (new[] { "OnNewGameCreated", "OnGameLoaded", "OnSessionLaunched" }.Contains(methodName)
+                    && (method.Body?.Statements.Count != 1 || !method.ToString().Contains("DiplomacyModuleServices.World.OnLifecycle(")))
+                    errors.Add("lifecycle recovery ordering still owned by Behavior: " + methodName);
                 string routing = method.Identifier.ValueText switch {
                     "StartDocumentPropagation" => "Start",
                     "ReconcileAnalyzedPlayerDeclarationWithReachedCourts" => "ReconcileReachedCourts",

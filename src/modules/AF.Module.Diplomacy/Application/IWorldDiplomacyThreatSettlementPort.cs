@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
@@ -14,9 +15,9 @@ internal sealed class WorldDiplomacyConsequenceParty
 internal sealed class WorldDiplomacyConsequenceSnapshot
 {
     internal string RulingClanId { get; }
-    internal IReadOnlyCollection<string> EligibleClanIds { get; }
-    internal WorldDiplomacyConsequenceSnapshot(string rulingClanId, IReadOnlyCollection<string> eligibleClanIds)
-    { RulingClanId = rulingClanId; EligibleClanIds = eligibleClanIds; }
+    internal IReadOnlyList<WorldDiplomacyClanSnapshot> Clans { get; }
+    internal WorldDiplomacyConsequenceSnapshot(string rulingClanId, IReadOnlyList<WorldDiplomacyClanSnapshot> clans)
+    { RulingClanId = rulingClanId; Clans = clans; }
 }
 
 internal sealed class WorldDiplomacyConsequenceClan

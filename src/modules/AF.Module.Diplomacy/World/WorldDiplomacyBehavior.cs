@@ -100,11 +100,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int RelayTargetDurationDays = 21;
 	private const int RelayHardDurationDays = 24;
 	private const int MaxRelayParticipants = 12;
-	private const int BorderForeignNeighborCount = 2;
 	private const int RecentNegativeReputationFactRetentionDays = DaysPerYear;
-	private const float BorderDistanceMedianMultiplier = 3.5f;
-	private const float MinimumBorderDistance = 24f;
-	private const float MaximumBorderDistance = 72f;
 
 	private static bool _patchesApplied;
 	private static int _internalDiplomaticActionDepth;
@@ -122,7 +118,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private readonly Dictionary<string, WorldDiplomacyBorderRelation> _kingdomBorderCache = new Dictionary<string, WorldDiplomacyBorderRelation>(StringComparer.OrdinalIgnoreCase);
 	private readonly WorldDiplomacyRequestLeaseCoordinator _llmRequestLease = new WorldDiplomacyRequestLeaseCoordinator();
 	private int _kingdomBorderCacheDay = -1;
-	private float _kingdomBorderDistanceThreshold = MinimumBorderDistance;
+	private float _kingdomBorderDistanceThreshold = WorldDiplomacyWorldProfileRules.MinimumBorderDistance;
 	private long _realmInstitutionalVoiceRuleVersion = -1L;
 
 	// Canonical state is owned by the application-side store inside the
@@ -424,29 +420,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
-	{
-		_orchestration.ResetStorageForNewGame(IsWorldDiplomacyEnabled() && ShouldStartNewGameAtPeace());
-		_orchestration.EnsureScheduleInitialized();
-		ResetTransientRuntime("new-game");
-	}
+        { DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.NewGame); }
 	private void OnGameLoaded(CampaignGameStarter starter)
-	{
-		_orchestration.NormalizeStorage(allowWorldValidation: true);
-		_orchestration.RecoverUnsettledAiInternationalReputation();
-		_orchestration.RecoverPlayerCourtReceiptsFromKnowledge();
-		_orchestration.EnsureScheduleInitialized();
-		ResetTransientRuntime("game-loaded");
-		_orchestration.ReconcileActiveDiplomacyAfterLoad();
-	}
+        { DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.Loaded); }
 	private void OnSessionLaunched(CampaignGameStarter starter)
-	{
-		_orchestration.NormalizeStorage(allowWorldValidation: true);
-		_orchestration.RecoverUnsettledAiInternationalReputation();
-		_orchestration.RecoverPlayerCourtReceiptsFromKnowledge();
-		_orchestration.EnsureScheduleInitialized();
-		ResetTransientRuntime("session-launched");
-		_orchestration.ReconcileActiveDiplomacyAfterLoad();
-	}
+        { DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.Session); }
 
 	private void OnCampaignTick(float dt)
 	{
@@ -745,16 +723,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return ResolveSettlementById(settlementId) is Settlement settlement ? settlement.Name?.ToString() ?? "" : null;
 	}
 
-	private static bool IsThreatConsequenceClanEligible(Clan clan, Kingdom kingdom, Clan rulingClan)
-	{
-		return clan != null
-			&& clan != rulingClan
-			&& clan.Kingdom == kingdom
-			&& !clan.IsEliminated
-			&& !clan.IsUnderMercenaryService
-			&& !clan.IsClanTypeMercenary
-			&& !string.IsNullOrWhiteSpace(clan.StringId);
-	}
+	private static WorldDiplomacyClanSnapshot CaptureClanSnapshot(Clan clan, Kingdom kingdom, Clan ruler)
+        => new WorldDiplomacyClanSnapshot(clan?.StringId, clan?.Leader?.StringId, clan != null,
+            clan?.Kingdom == kingdom, clan == ruler, clan?.IsEliminated == true,
+            clan?.IsUnderMercenaryService == true, clan?.IsClanTypeMercenary == true,
+            clan?.Leader == ruler?.Leader, clan?.Tier ?? 0, clan?.Influence ?? 0f, clan?.Fiefs?.Count ?? 0);
 
 	private void LogDiplomaticThreatFallbackAnalysisPublished(WorldDiplomacyJob job)
 	{
@@ -789,122 +762,66 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			: new WorldDiplomacyBorderRelation();
 	}
 	private void EnsureKingdomBorderCache()
-	{
-		int day = CurrentDay();
-		if (_kingdomBorderCacheDay == day)
-		{
-			return;
-		}
-		_kingdomBorderCacheDay = day;
-		_kingdomBorderCache.Clear();
-		_kingdomBorderDistanceThreshold = MinimumBorderDistance;
-		List<(Kingdom Kingdom, Settlement Settlement)> forts = Kingdom.All
-			.Where(x => x != null && !x.IsEliminated)
-			.SelectMany(kingdom => kingdom.Fiefs
-				.Select(x => x?.Settlement)
-				.Where(x => x != null && (x.IsTown || x.IsCastle))
-				.Select(settlement => (kingdom, settlement)))
-			.GroupBy(x => x.settlement.StringId, StringComparer.OrdinalIgnoreCase)
-			.Select(x => x.First())
-			.ToList();
-		if (forts.Count < 2)
-		{
-			return;
-		}
-		List<float> nearestDistances = new List<float>(forts.Count);
-		for (int i = 0; i < forts.Count; i++)
-		{
-			float nearest = float.MaxValue;
-			for (int j = 0; j < forts.Count; j++)
-			{
-				if (i == j) continue;
-				float distance = forts[i].Settlement.GatePosition.Distance(forts[j].Settlement.GatePosition);
-				if (distance < nearest) nearest = distance;
-			}
-			if (nearest < float.MaxValue) nearestDistances.Add(nearest);
-		}
-		nearestDistances.Sort();
-		float median = nearestDistances.Count == 0 ? MinimumBorderDistance
-			: nearestDistances[nearestDistances.Count / 2];
-		float maximumBorderDistance = Math.Max(MinimumBorderDistance,
-			Math.Min(MaximumBorderDistance, median * BorderDistanceMedianMultiplier));
-		_kingdomBorderDistanceThreshold = maximumBorderDistance;
-		foreach ((Kingdom kingdom, Settlement settlement) in forts)
-		{
-			foreach ((Kingdom otherKingdom, Settlement otherSettlement, float distance) in forts
-				.Where(x => x.Kingdom != kingdom)
-				.Select(x => (x.Kingdom, x.Settlement, settlement.GatePosition.Distance(x.Settlement.GatePosition)))
-				.OrderBy(x => x.Item3)
-				.Take(BorderForeignNeighborCount))
-			{
-				if (distance > maximumBorderDistance) continue;
-				string key = WorldDiplomacyRoundLifecycleRules.PairKey(kingdom.StringId, otherKingdom.StringId);
-				if (_kingdomBorderCache.TryGetValue(key, out WorldDiplomacyBorderRelation existing)
-					&& existing.Distance <= distance)
-				{
-					continue;
-				}
-				_kingdomBorderCache[key] = new WorldDiplomacyBorderRelation
-				{
-					SharesBorder = true,
-					FirstSettlementId = settlement.StringId ?? "",
-					FirstSettlementName = settlement.Name?.ToString() ?? "",
-					SecondSettlementId = otherSettlement.StringId ?? "",
-					SecondSettlementName = otherSettlement.Name?.ToString() ?? "",
-					Distance = distance
-				};
-			}
-		}
-		Log("kingdom border cache rebuilt day=" + day.ToString(CultureInfo.InvariantCulture)
-			+ " forts=" + forts.Count.ToString(CultureInfo.InvariantCulture)
-			+ " threshold=" + maximumBorderDistance.ToString("0.0", CultureInfo.InvariantCulture)
-			+ " pairs=" + _kingdomBorderCache.Count.ToString(CultureInfo.InvariantCulture));
-	}
+    {
+        int day = CurrentDay();
+        if (_kingdomBorderCacheDay == day) return;
+        _kingdomBorderCacheDay = day;
+        _kingdomBorderCache.Clear();
+        var raw = new List<WorldDiplomacyFortSnapshot>();
+        var live = new List<Settlement>();
+        int kingdomIndex = 0;
+        foreach (Kingdom kingdom in Kingdom.All)
+        {
+            if (kingdom == null) continue;
+            foreach (var fief in kingdom.Fiefs)
+            {
+                Settlement fort = fief?.Settlement;
+                if (fort == null) continue;
+                live.Add(fort);
+                raw.Add(new WorldDiplomacyFortSnapshot(fort.StringId, fort.Name?.ToString(), kingdom.StringId,
+                    kingdomIndex, !kingdom.IsEliminated, fort.IsTown || fort.IsCastle,
+                    fort.OwnerClan == kingdom.RulingClan, GetSettlementProsperity(fort)));
+            }
+            kingdomIndex++;
+        }
+        List<int> selected = WorldDiplomacyWorldProfileRules.SelectBorderFortIndices(raw);
+        var distances = new float[selected.Count, selected.Count];
+        // Native float distance is captured once per unordered pair on a daily
+        // cache miss. No game object enters the pure neighbor calculation.
+        for (int i = 0; i < selected.Count; i++)
+            for (int j = i + 1; j < selected.Count; j++)
+                distances[j, i] = distances[i, j] = live[selected[i]].GatePosition.Distance(live[selected[j]].GatePosition);
+        foreach (var pair in WorldDiplomacyWorldProfileRules.BuildBorders(
+            selected.Select(i => raw[i]).ToList(), distances, out _kingdomBorderDistanceThreshold))
+            _kingdomBorderCache[pair.Key] = pair.Value;
+        Log("kingdom border cache rebuilt day=" + day.ToString(CultureInfo.InvariantCulture)
+            + " forts=" + selected.Count.ToString(CultureInfo.InvariantCulture)
+            + " threshold=" + _kingdomBorderDistanceThreshold.ToString("0.0", CultureInfo.InvariantCulture)
+            + " pairs=" + _kingdomBorderCache.Count.ToString(CultureInfo.InvariantCulture));
+    }
 	private WorldDiplomacyRealmRelationProfile GetRealmRelationProfile(Kingdom source, Kingdom target)
-	{
-		if (source == null || target == null) return new WorldDiplomacyRealmRelationProfile();
-		string key = source.StringId + ">" + target.StringId + ":" + CurrentDay().ToString(CultureInfo.InvariantCulture);
-		if (_realmRelationProfileCache.TryGetValue(key, out WorldDiplomacyRealmRelationProfile cached)) return cached;
-		List<Clan> sourceClans = source.Clans.Where(x => x != null && !x.IsEliminated)
-			.OrderByDescending(x => x == source.RulingClan).ThenByDescending(x => x.Tier).ThenByDescending(x => x.Influence).Take(8).ToList();
-		List<Clan> targetClans = target.Clans.Where(x => x != null && !x.IsEliminated)
-			.OrderByDescending(x => x == target.RulingClan).ThenByDescending(x => x.Tier).ThenByDescending(x => x.Influence).Take(8).ToList();
-		double weightedSum = 0d;
-		double weightSum = 0d;
-		double positiveWeight = 0d;
-		double hostileWeight = 0d;
-		List<(double Value, double Weight)> values = new List<(double, double)>();
-		foreach (Clan first in sourceClans)
-		{
-			foreach (Clan second in targetClans)
-			{
-				int relation;
-				try { relation = FactionManager.GetRelationBetweenClans(first, second); }
-				catch { relation = 0; }
-				double weight = Math.Sqrt(Math.Max(1d, 1d + first.Tier * 0.5d + first.Fiefs.Count * 0.25d)
-					* Math.Max(1d, 1d + second.Tier * 0.5d + second.Fiefs.Count * 0.25d));
-				weightedSum += relation * weight;
-				weightSum += weight;
-				if (relation >= 10) positiveWeight += weight;
-				if (relation <= -10) hostileWeight += weight;
-				values.Add((relation, weight));
-			}
-		}
-		float average = weightSum <= 0d ? GetRulerRelation(source, target) : (float)(weightedSum / weightSum);
-		double variance = weightSum <= 0d ? 0d : values.Sum(x => x.Weight * Math.Pow(x.Value - average, 2d)) / weightSum;
-		WorldDiplomacyRealmRelationProfile profile = new WorldDiplomacyRealmRelationProfile
-		{
-			AverageRelation = average,
-			PositiveRatio = weightSum <= 0d ? 0f : (float)(positiveWeight / weightSum),
-			HostileRatio = weightSum <= 0d ? 0f : (float)(hostileWeight / weightSum),
-			Polarization = (float)Math.Sqrt(Math.Max(0d, variance)),
-			RulerRelation = GetRulerRelation(source, target),
-			SamplePairCount = values.Count
-		};
-		profile.RulerEliteGap = profile.RulerRelation - profile.AverageRelation;
-		_realmRelationProfileCache[key] = profile;
-		return profile;
-	}
+    {
+        if (source == null || target == null) return new WorldDiplomacyRealmRelationProfile();
+        string key = source.StringId + ">" + target.StringId + ":" + CurrentDay().ToString(CultureInfo.InvariantCulture);
+        if (_realmRelationProfileCache.TryGetValue(key, out WorldDiplomacyRealmRelationProfile cached)) return cached;
+        List<Clan> sourceClans = source.Clans.ToList(), targetClans = target.Clans.ToList();
+        var sourceValues = sourceClans.Select(c => CaptureClanSnapshot(c, source, source.RulingClan)).ToList();
+        var targetValues = targetClans.Select(c => CaptureClanSnapshot(c, target, target.RulingClan)).ToList();
+        List<int> sourceIndices = WorldDiplomacyWorldProfileRules.SelectRealmClanIndices(sourceValues);
+        List<int> targetIndices = WorldDiplomacyWorldProfileRules.SelectRealmClanIndices(targetValues);
+        var relations = new int[sourceIndices.Count, targetIndices.Count];
+        for (int i = 0; i < sourceIndices.Count; i++)
+            for (int j = 0; j < targetIndices.Count; j++)
+            {
+                try { relations[i, j] = FactionManager.GetRelationBetweenClans(sourceClans[sourceIndices[i]], targetClans[targetIndices[j]]); }
+                catch { relations[i, j] = 0; }
+            }
+        WorldDiplomacyRealmRelationProfile profile = WorldDiplomacyWorldProfileRules.BuildRealmProfile(
+            sourceIndices.Select(i => sourceValues[i]).ToList(), targetIndices.Select(i => targetValues[i]).ToList(),
+            relations, GetRulerRelation(source, target));
+        _realmRelationProfileCache[key] = profile;
+        return profile;
+    }
 
 	private bool TryConsumeDiplomacyLlmRequestBudget(bool consume = true)
 	{
@@ -912,26 +829,24 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 
 	private Settlement ResolveCourtSettlement(Kingdom kingdom)
-	{
-		if (kingdom == null)
-		{
-			return null;
-		}
-		if (_courtSettlementCache.TryGetValue(kingdom.StringId ?? "", out string cachedId))
-		{
-			return ResolveSettlementById(cachedId);
-		}
-		Clan rulingClan = kingdom.RulingClan;
-		IEnumerable<Settlement> forts = kingdom.Fiefs.Select(x => x?.Settlement).Where(x => x != null && (x.IsTown || x.IsCastle));
-		Settlement court = forts
-			.Where(x => x.OwnerClan == rulingClan)
-			.OrderByDescending(GetSettlementProsperity)
-			.ThenBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.FirstOrDefault()
-			?? forts.OrderByDescending(GetSettlementProsperity).ThenBy(x => x.StringId, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
-		_courtSettlementCache[kingdom.StringId ?? ""] = court?.StringId ?? "";
-		return court;
-	}
+    {
+        if (kingdom == null) return null;
+        if (_courtSettlementCache.TryGetValue(kingdom.StringId ?? "", out string cachedId)) return ResolveSettlementById(cachedId);
+        var forts = new List<WorldDiplomacyFortSnapshot>();
+        var live = new List<Settlement>();
+        foreach (var fief in kingdom.Fiefs)
+        {
+            Settlement fort = fief?.Settlement;
+            if (fort == null) continue;
+            live.Add(fort);
+            forts.Add(new WorldDiplomacyFortSnapshot(fort.StringId, null, kingdom.StringId, 0,
+                !kingdom.IsEliminated, fort.IsTown || fort.IsCastle, fort.OwnerClan == kingdom.RulingClan, GetSettlementProsperity(fort)));
+        }
+        int selected = WorldDiplomacyWorldProfileRules.SelectCourtIndex(forts);
+        Settlement court = selected < 0 ? null : live[selected];
+        _courtSettlementCache[kingdom.StringId ?? ""] = court?.StringId ?? "";
+        return court;
+    }
 	private static float GetSettlementProsperity(Settlement settlement)
 	{
 		return settlement?.Town?.Prosperity ?? 0f;

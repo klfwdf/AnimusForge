@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AnimusForge.Refactor.Domain;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 
@@ -36,14 +37,14 @@ public sealed partial class WorldDiplomacyBehavior
             Kingdom kingdom = ResolveKingdomIncludingEliminated(id);
             Clan ruler = kingdom?.RulingClan;
             if (ruler == null || string.IsNullOrWhiteSpace(ruler.StringId)) return null;
-            var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var clans = new List<WorldDiplomacyClanSnapshot>();
             if (kingdom.Clans != null)
                 for (int index = 0; index < kingdom.Clans.Count; index++)
                 {
                     Clan clan = kingdom.Clans[index];
-                    if (IsThreatConsequenceClanEligible(clan, kingdom, ruler)) ids.Add(clan.StringId);
+                    clans.Add(CaptureClanSnapshot(clan, kingdom, ruler));
                 }
-            return new WorldDiplomacyConsequenceSnapshot(ruler.StringId, ids);
+            return new WorldDiplomacyConsequenceSnapshot(ruler.StringId, clans);
         }
         public void PrepareClans(HashSet<string> requiredClanIds)
         {

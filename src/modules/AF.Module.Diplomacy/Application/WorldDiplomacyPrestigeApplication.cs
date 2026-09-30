@@ -12,9 +12,9 @@ internal sealed class WorldDiplomacyPrestigeCourt
     internal string KingdomId { get; }
     internal bool Eliminated { get; }
     internal string RulerId { get; }
-    internal IReadOnlyList<string> VassalLeaderIds { get; }
-    internal WorldDiplomacyPrestigeCourt(string kingdomId, bool eliminated, string rulerId, IReadOnlyList<string> vassals)
-    { KingdomId = kingdomId; Eliminated = eliminated; RulerId = rulerId; VassalLeaderIds = vassals; }
+    internal IReadOnlyList<WorldDiplomacyClanSnapshot> Clans { get; }
+    internal WorldDiplomacyPrestigeCourt(string kingdomId, bool eliminated, string rulerId, IReadOnlyList<WorldDiplomacyClanSnapshot> clans)
+    { KingdomId = kingdomId; Eliminated = eliminated; RulerId = rulerId; Clans = clans; }
 }
 
 internal interface IWorldDiplomacyPrestigePort
@@ -113,7 +113,7 @@ internal static class WorldDiplomacyPrestigeApplication
             WorldDiplomacyReputationRules.GetNationalPrestige(storage.NationalPrestigeByKingdom, court.KingdomId));
         var activeKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         if (ruler != null)
-            foreach (string vassal in court.VassalLeaderIds)
+            foreach (string vassal in WorldDiplomacyWorldProfileRules.SelectPrestigeLeaders(court.Clans))
             {
                 string key = court.KingdomId + "|" + ruler + "|" + vassal;
                 activeKeys.Add(key);
@@ -179,13 +179,14 @@ internal static class WorldDiplomacyPrestigeApplication
         WorldDiplomacyPrestigeCourt court = port.CaptureCourt(kingdomId);
         if (court?.RulerId == null) return;
         int confirmed = 0, unknown = 0;
-        foreach (string vassal in court.VassalLeaderIds)
+        List<string> vassals = WorldDiplomacyWorldProfileRules.SelectPrestigeLeaders(court.Clans);
+        foreach (string vassal in vassals)
         {
             WorldDiplomacyRelationEffectReceipt receipt = port.ChangeRelationAndMeasure(vassal, court.RulerId, amount);
             if (!receipt.IsKnown) unknown++;
             else if (receipt.AppliedDelta != 0) confirmed++;
             if (!string.IsNullOrEmpty(receipt.Diagnostic)) port.Log("zero-prestige relation receipt: " + receipt.Diagnostic);
         }
-        port.Log("zero-prestige penalty confirmed=" + confirmed + " unknown=" + unknown + " attempted=" + court.VassalLeaderIds.Count);
+        port.Log("zero-prestige penalty confirmed=" + confirmed + " unknown=" + unknown + " attempted=" + vassals.Count);
     }
 }

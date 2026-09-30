@@ -180,6 +180,12 @@ namespace AnimusForge
     // interface is wider; this stub is intentionally minimal and orchestration-agnostic.
     internal interface IWorldDiplomacyOrchestration
     {
+        void ResetStorageForNewGame(bool initialPeacePending);
+        void EnsureScheduleInitialized();
+        void RecoverUnsettledAiInternationalReputation();
+        void RecoverPlayerCourtReceiptsFromKnowledge();
+        void ReconcileActiveDiplomacyAfterLoad();
+
         void HandleDisabledState();
         void ProcessCompletedJobs();
         void TryScheduleTokenCompression();
@@ -210,6 +216,12 @@ namespace AnimusForge
     }
     internal sealed class NoopOrchestration : IWorldDiplomacyOrchestration
     {
+        public void ResetStorageForNewGame(bool initialPeacePending) { }
+        public void EnsureScheduleInitialized() { }
+        public void RecoverUnsettledAiInternationalReputation() { }
+        public void RecoverPlayerCourtReceiptsFromKnowledge() { }
+        public void ReconcileActiveDiplomacyAfterLoad() { }
+
         public void HandleDisabledState() { }
         public void ProcessCompletedJobs() { }
         public void TryScheduleTokenCompression() { }
@@ -278,6 +290,12 @@ namespace AnimusForge
             public bool DisabledStateApplied => false;
             public void ProcessComposePopup() { owner.Ticks++; }
             public void ClearDisabledState() { }
+        }
+        internal readonly struct LifecycleSource : IWorldDiplomacyLifecycleSource
+        {
+            internal LifecycleSource(WorldDiplomacyBehavior owner) { }
+            public bool StartAtPeace => true;
+            public void ResetTransientRuntime(string reason) => Recording.Call("lifecycle-reset", reason);
         }
         internal struct CampaignSource : IWorldDiplomacyCampaignSource
         {

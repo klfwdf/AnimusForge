@@ -609,7 +609,8 @@ internal static class Program
 			&& reputationRecovery.Contains("!x.InternationalReputationSettled", StringComparison.Ordinal)
 			&& reputationRecovery.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(", StringComparison.Ordinal)
 			&& reputationRecovery.Contains("settleReputation(document)", StringComparison.Ordinal)
-			&& CountOccurrences(source, "_orchestration.RecoverUnsettledAiInternationalReputation();") == 2,
+			&& CountOccurrences(source, "_orchestration.RecoverUnsettledAiInternationalReputation();") == 0
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLifecycleApplication.cs")).Contains("orchestration.RecoverUnsettledAiInternationalReputation();", StringComparison.Ordinal),
 			"load/session migration must replay each persisted missed AI evaluation once in chronological order");
 		Test.True(source.Contains("WarningCompliancePrestigeChange = 5", StringComparison.Ordinal)
 			&& source.Contains("UltimatumCompliancePrestigeChange = 10", StringComparison.Ordinal)
@@ -4086,9 +4087,7 @@ internal static class Program
             "the live reward getter must clamp the MCM value and retain the safe default");
 
         string issuerReward = ExtractMethod(source, "private bool TryApplyDiplomaticThreatIssuerRelationReward(");
-        string consequenceClanEligibility = ExtractMethod(
-            source,
-            "private static bool IsThreatConsequenceClanEligible(");
+        string consequenceClanEligibility = File.ReadAllText(FindRepositoryFile("Refactor/Domain/WorldDiplomacyWorldProfileRules.cs"));
         foreach (string snapshotBoundary in new[]
         {
             "if (threat.IssuerRewardCompleted)",
@@ -4102,11 +4101,11 @@ internal static class Program
                 "issuer reward snapshot/idempotency boundary is missing: " + snapshotBoundary);
         }
         Test.True(issuerReward.Contains("_port.CaptureConsequenceSnapshot(issuerKingdom)", StringComparison.Ordinal)
-                  && consequenceClanEligibility.Contains("clan != rulingClan", StringComparison.Ordinal)
-                  && consequenceClanEligibility.Contains("clan.Kingdom == kingdom", StringComparison.Ordinal)
-                  && consequenceClanEligibility.Contains("clan.IsEliminated", StringComparison.Ordinal)
-                  && consequenceClanEligibility.Contains("clan.IsUnderMercenaryService", StringComparison.Ordinal)
-                  && consequenceClanEligibility.Contains("clan.IsClanTypeMercenary", StringComparison.Ordinal),
+                  && consequenceClanEligibility.Contains("!clan.Ruling", StringComparison.Ordinal)
+                  && consequenceClanEligibility.Contains("clan.Belongs", StringComparison.Ordinal)
+                  && consequenceClanEligibility.Contains("clan.Eliminated", StringComparison.Ordinal)
+                  && consequenceClanEligibility.Contains("clan.MercenaryService", StringComparison.Ordinal)
+                  && consequenceClanEligibility.Contains("clan.MercenaryType", StringComparison.Ordinal),
             "issuer reward snapshot must exclude the ruling clan, foreign, eliminated, and mercenary clans through the shared adapter");
         Test.True(issuerReward.Contains("if (rewardAmount <= 0)", StringComparison.Ordinal)
                   && issuerReward.Contains("WorldDiplomacyRoundLifecycleRules.CompleteThreatIssuerRewardWithoutAmount(threat)", StringComparison.Ordinal)

@@ -27,6 +27,7 @@ internal interface IWorldDiplomacyModulePort
     WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount);
     bool TryMarkDocumentRead(string documentId, out bool ownerAvailable);
     IWorldDiplomacyPresentationPort Presentation { get; }
+    void OnLifecycle(WorldDiplomacyLifecycleEvent lifecycle);
     void OnEngineTick();
     void OnCampaignTick();
     void OnDailyTick();

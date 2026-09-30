@@ -10,7 +10,7 @@ internal static class PrestigeApplicationReplay
 {
     private sealed class Port : IWorldDiplomacyPrestigePort
     {
-        internal WorldDiplomacyPrestigeCourt Court = new("k", false, "r", new[] { "v" });
+        internal WorldDiplomacyPrestigeCourt Court = new("k", false, "r", new[] { WorldProfileReplay.Clan("v-clan", leader: "v") });
         internal readonly Dictionary<string, int> Relations = new() { ["v|r"] = 0 };
         internal readonly HashSet<string> Heroes = new() { "r", "v", "new-r" };
         internal int Calls, Scans, Day = 12;
@@ -57,12 +57,12 @@ internal static class PrestigeApplicationReplay
         var restored = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(storage))!;
         WorldDiplomacyPrestigeApplication.Reconcile(restored, port, "k");
         Test.True(port.Calls == calls, "reload preserves applied modifier and avoids duplicate relation changes");
-        port.Court = new("k", false, "new-r", new[] { "v" });
+        port.Court = new("k", false, "new-r", new[] { WorldProfileReplay.Clan("v-clan", leader: "v") });
         WorldDiplomacyPrestigeApplication.Reconcile(restored, port, "k");
         Test.True(port.Relations["v|r"] == 0 && port.Relations["v|new-r"] == desired
             && restored.NationalPrestigeRelationModifiers.Count == 1 && restored.NationalPrestigeRelationModifiers[0].RulerHeroId == "new-r",
             "ruler replacement applies new modifier and reverses old modifier before removing stale state");
-        port.Court = new("k", false, null!, Array.Empty<string>()); port.Fail = true;
+        port.Court = new("k", false, null!, Array.Empty<WorldDiplomacyClanSnapshot>()); port.Fail = true;
         WorldDiplomacyPrestigeApplication.Reconcile(restored, port, "k");
         Test.True(restored.NationalPrestigeRelationModifiers.Count == 1,
             "failed stale reversal preserves nonzero recovery record");
@@ -84,7 +84,7 @@ internal static class PrestigeApplicationReplay
         WorldDiplomacyPrestigeApplication.NaturalChange(restored, port, false);
         Test.True(restored.InternationalReputationByKingdom["k"] < 80,
             "enabled daily drift resumes from the anchor");
-        port.Court = new("k", false, "r", new[] { "v" });
+        port.Court = new("k", false, "r", new[] { WorldProfileReplay.Clan("v-clan", leader: "v") });
         calls = port.Calls;
         WorldDiplomacyPrestigeApplication.ApplyZeroPrestigePenalty(port, "k", 0);
         Test.True(port.Calls == calls, "nonnegative breach penalty causes no relation effect");
@@ -132,7 +132,7 @@ internal static class PrestigeApplicationReplay
         recovery.NationalPrestigeRelationModifiers = WorldDiplomacyRoundLifecycleRules.SelectRetainedPrestigeRelationModifiers(recovery.NationalPrestigeRelationModifiers);
         Test.True(ReferenceEquals(recovery.NationalPrestigeRelationModifiers.Single(), pending),
             "duplicate normalizer cannot discard unknown effect evidence");
-        recoveryPort.Court = new("k", false, null!, Array.Empty<string>());
+        recoveryPort.Court = new("k", false, null!, Array.Empty<WorldDiplomacyClanSnapshot>());
         recoveryPort.Heroes.Remove("r");
         WorldDiplomacyPrestigeApplication.Reconcile(recovery, recoveryPort, "k");
         Test.True(recovery.NationalPrestigeRelationModifiers.Count == 1 && pending.PendingEffect != null,
