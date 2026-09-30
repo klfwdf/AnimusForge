@@ -2,7 +2,16 @@
 
 ## J17 本轮执行意图与现场（2026-09-30）
 
-### 当前结论：J17-A已闭，20/20责任桶；B/C未执行，D NOT-RUN
+### 当前结论：J17-A已闭，20/20责任桶；B1a已启动，C未执行，D NOT-RUN
+
+**2026-09-30 B/C 多智能体接续意图（现场 HEAD `84c4c0ff`）**：用户授权直接继续 B/C；采用当前对话内三个 `gpt-6-sol / medium` 执行者，总控集中集成。实际工作区 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831` 已核对；22 个既有未跟踪 tools 目录保留。A 的责任审查结论复用，不重新全仓 A；旧只读 readiness 的未授权/旧 runner 风险结论由最新授权与 `84c4c0ff` 的已审入口隔离结果按覆盖范围取代，未审 runner 仍须先查副作用。
+
+- **B1a 产品唯一写者 `memory_impl`**：`MyBehavior.cs`、`MyBehavior.DialogueHistoryDelete.cs`、`MyBehavior.HistoryPromptSnapshot.cs`、`MyBehavior.MemoryRecovery.cs`、`MyBehavior.MemorySealing.cs`、`MyBehavior.MemorySourceFingerprint.cs`、`MyBehavior.MemorySummaryInput.cs`、`MyBehavior.MemorySummaryPlanning.cs`、`MyBehavior.WeeklyActionOutcomeReceipts.cs` 与 `src/modules/AF.Module.Memory/Records/` 必要代码。一次性迁九类/95 字段及唯一 Sanitize/clone 规则并接消费者；NpcAction 留 B1b、export bundle 留 B4。先等迁前基线与窄接口冻结，不保留第二套算法/状态。
+- **B1a 测试唯一写者 `memory_tests`**：Memory 相关字段/JSON/默认值/别名与坏输入基线、MainThreadBoundary/Budget/Record 测试、NativeHistorySnapshot 交叉测试及三个具名 Memory 生产反射回放；实际挂载点扩充先具名协调。冻结迁前结果后立即释放产品依赖，随后改接新 owner，不降断言、不把编译失败算有效变异。
+- **B6 前置测试唯一写者 `channel_tests`**：限定 SceneGroupReceipt、SceneRequestLifetimeRegression、ScenePostprocessParity 的现状回归，先核实精确测试路径；只补群聊/旁听/输入去重/顺序/取消/迟到，不改产品，不碰 B1 交叉测试。已有有效证据直接复用。
+- **总控唯一写者**：Git 索引与本地检查点/切片提交、主台账/HANDOFF/代码地图；统一串行双 API 构建。每个文件同时一写者，固定 bin/obj/.generated 资源不并发。仅明确隔离新输出的测试并行。
+- **有限出口与依赖**：B1a 新 owner 接通全部实际消费者、95 字段/保存键/默认值/主线程原地与 worker clone/别名/坏项来源语义保持、受影响回归和双 API 构建通过后提交。随后 B1b→B2→B3→B4→B5→按具名包 B6→B7；C 最终冻结同一候选验 Debug/Release×双 API、Bootstrap 与全量 runner，不拼接不同候选绿灯。实机/旧档/发布 D 保持 NOT-RUN。
+- **安全**：只写当前仓与 `E:/tmp/af-j17-20260930` 合成测试树；不清旧产物，不 push/Stage/部署/安装/改全局配置或真实资料。runner 逐项先读副作用，mock 最小环境 `clear=True`；不读取/输出凭据。先前凭据日志事件的轮换尚未确认，代码修正不代表风险解除。
 
 **2026-09-30 测试入口隔离切片（检查点 `7a47ed9b` 后）**：用户两项批准已落实。总入口要求显式 `AF_TEST_TEMP_ROOT`，先拒绝仓内/包含仓库/卷根/UNC/父级跳转/reparse 根，结果目录必须为仓内新目录；每入口独立 TEMP，NuGet 缓存留本轮仓内输出。三个业务工具以 `execution=manual` 保留 NEEDS_INPUT、不创建子进程；编辑器明确执行已有 `--isolated-full`，没有改其九步断言或产品代码。六 Python runner 改为 UUID 新输出，`--run-root` 拒绝复用/越界/重解析，不再递归删除既有 current；原 mutation、Program、csproj 和 expect 基线均保留。`tests/output_isolation.py` 仅为共用路径分配，名称避免被当作 runner 自动发现。
 
