@@ -1,4 +1,6 @@
-# 当前交接：J15 按用户决定结项，J16 离线关闭，J17-A 盘点继续（2026-09-29）
+# 当前交接：J15 按用户决定结项，J16 离线关闭，J17-A 盘点继续（2026-09-30）
+
+- **J17-A 最新接续（2026-09-30）**：[范围图 E101](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)与[主台账 §3.3](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)将非 Compile `tools-content-package` 签为第 **3/20** 桶：195 条内容源/目标唯一、22 个原资源 owner、两版 7 个内嵌资源、Stage/ZIP 精确交付边界与 tests/tools/content/scripts/docs 跟踪路径已核；五个 J15 只读契约和实际 layout 195 条 PASS。未运行会写/清理的完整 J15 runner、Stage、ZIP、部署、产品双构建或游戏；模型/TPAC/私有依赖来源与再分发、旧档/发布仍 HOLD/NOT-RUN，资源业务归原 loader，不因本桶签收转归 Tools。**其余 17 桶、全局 Compile 成员和动态消费者仍未全签，未知不为 0，J17-A 未达出口、B 未启动。**此前 E100/E99 条的“2/20”是当时状态，以本条/主台账为准。22 个原有未跟踪 `tools/` 目录未动，未推送/部署。
 
 - **J17-A 最新接续（2026-09-30）**：[范围图 E100](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)把 `WorldEntityRetrievalService.cs` 双 API **267 成员**按九段首轮归责，接续 E33 的关键链；[主台账 A2-5](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17a-intent-20260928)具名保留捕获 live 引用跨 worker 到最终拼装的身份重验，以及无 mention 也枚举可见队伍、四类全集别名/每 mention 评分与分段预算非单请求硬 3 秒。E99 的 Knowledge 宿主 531 成员分区仍有效，但两者不构成 Knowledge 桶闭包；仅静态源码/成员/消费者，未跑双产品构建、三渠道时序、旧档/实机。仍 **2/20 桶，J17-A 未达出口、B 未启动**；22 个原有未跟踪 `tools/` 目录未动，未推送/部署。
 
