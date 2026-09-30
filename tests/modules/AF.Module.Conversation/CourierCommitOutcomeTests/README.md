@@ -12,3 +12,5 @@
 这不承诺事务回滚，也不允许自动重试整轮。送达、会话和资产业务仍归原owner；本套Session为fixture，不是实机。测试生成副本将30秒deadline缩为120毫秒，生产时限不变。
 
 `source_parity.py` 使用固定29448d1b及逐段精确差异还原整文件；GameLifetime旧证明先消费这个逆变换，原生产hash不刷新。配套同候选双版本Stage/API元数据/实际Host回放单列在HANDOFF。
+
+2026-10-01 修正迁前 `baselinePath` 为真实根路径，保留原归一化 hash。审查差异精确补入既有 J09 arrival wrapper 和两条 using；其送达后提交、三处消费者、单动作/不重复 Memory 由 `J09DefaultChannelActionWiringTests/run.py` 与 `CourierDomainCommitTests/run.py` 定向检查。原四个结果变异与旧版对照都编译后行为失败，当前 34/0。运行器新增 `--dotnet` 与 `--run-root`，默认隔离到 `artifacts` 并向 dotnet 传最小环境，不再写固定 `.generated`。

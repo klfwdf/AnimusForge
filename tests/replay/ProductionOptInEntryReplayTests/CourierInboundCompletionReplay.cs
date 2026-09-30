@@ -42,10 +42,62 @@ internal static class CourierInboundCompletionReplay
         VerifyCompletionFailClosed(courier, session, receipt, receiptField);
         VerifyOneReceiptPerTick(courier, session, receipt, receiptField);
         VerifyOwnerAndTickSeams(production, courier, recoveryStatus);
+        VerifyDeliveredMemoryIntentPersistence(courier);
 
         Console.WriteLine(
             "PASS courierInboundCompletionReplay receipt=1 checksum=1 payloadConflict=1 sessionJson=1 loadGate=1 completion=1 stateIdempotent=1 ownerQuerySeam=1 tickOne=1 isolated=1 assertions="
             + _assertions);
+    }
+
+    private static void VerifyDeliveredMemoryIntentPersistence(Type courier)
+    {
+        Type intentType = courier.GetNestedType("CourierInboundDeliveredMemoryIntent", BindingFlags.NonPublic);
+        Require(intentType != null, "delivered-memory persisted intent type missing");
+        foreach (FieldInfo field in intentType.GetFields(AnyInstance))
+        {
+            Require(field.FieldType == typeof(string) || field.FieldType == typeof(int)
+                || field.FieldType == typeof(bool), "delivered-memory intent acquired a live/action payload");
+        }
+        object intent = Activator.CreateInstance(intentType, nonPublic: true);
+        void Set(string name, object value) => intentType.GetField(name, AnyInstance).SetValue(intent, value);
+        Set("SessionId", "delivered-session");
+        Set("SenderHeroId", "delivered-sender");
+        Set("HistoryLine", "frozen synthetic letter history");
+        Set("DeliveryFactText", "[AFEF NPC行为补充] synthetic confirmed delivery");
+        Set("OriginGameDay", 84);
+        Set("OriginGameHour", 7);
+        Set("OriginLocationId", "synthetic-origin-scene");
+        Set("RecoveryId", new string('A', 64));
+        Set("MemoryPayloadHash", new string('E', 64));
+        Set("Attempted", true);
+
+        Type dictionaryType = typeof(System.Collections.Generic.Dictionary<,>).MakeGenericType(typeof(string), intentType);
+        IDictionary intents = (IDictionary)Activator.CreateInstance(dictionaryType);
+        intents.Add("delivered-session", intent);
+        object owner = Activator.CreateInstance(courier, nonPublic: true);
+        MethodInfo restore = courier.GetMethod("RestorePendingInboundDeliveredMemoryIntents", AnyInstance);
+        MethodInfo capture = courier.GetMethod("CapturePendingInboundDeliveredMemoryIntents", AnyInstance);
+        Require(restore != null && capture != null, "delivered-memory save/load seams missing");
+        restore.Invoke(owner, new object[] { intents });
+        string wire = SerializeJson(capture.Invoke(owner, null));
+        object loadedDictionary = DeserializeJson(wire, dictionaryType);
+        object loadedOwner = Activator.CreateInstance(courier, nonPublic: true);
+        restore.Invoke(loadedOwner, new[] { loadedDictionary });
+        IDictionary captured = (IDictionary)capture.Invoke(loadedOwner, null);
+        Require(captured.Count == 1, "delivered-memory JSON round-trip lost intent");
+        object loaded = captured["delivered-session"];
+        foreach (FieldInfo field in intentType.GetFields(AnyInstance))
+            Require(Equals(field.GetValue(intent), field.GetValue(loaded)), "delivered-memory JSON lost " + field.Name);
+        Require(!ReferenceEquals(intent, loaded), "delivered-memory load reused old object identity");
+
+        restore.Invoke(loadedOwner, new object[] { null });
+        Require(((IDictionary)capture.Invoke(loadedOwner, null)).Count == 0, "old-save absent intent field must default empty");
+        intents.Clear();
+        intents.Add("wrong-session-key", intent);
+        restore.Invoke(loadedOwner, new object[] { intents });
+        captured = (IDictionary)capture.Invoke(loadedOwner, null);
+        Require(captured.Count == 1 && (bool)intentType.GetField("Quarantined", AnyInstance)
+            .GetValue(captured["wrong-session-key"]), "corrupt delivered-memory key was not preserved/quarantined");
     }
 
     private static void VerifyReceiptIsolation(Type receipt)

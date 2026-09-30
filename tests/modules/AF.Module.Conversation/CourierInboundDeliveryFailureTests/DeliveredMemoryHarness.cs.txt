@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Newtonsoft.Json;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Runtime;
@@ -9,6 +10,12 @@ namespace TaleWorlds.CampaignSystem {
     public sealed class CampaignTime {
         public static CampaignTime Now=new();
         public double ToDays=100, ToHours=2400;
+        public static bool FailDate, EmptyDate;
+        public static CampaignTime Days(float day) => new() { ToDays=day, ToHours=day*24 };
+        public override string ToString() {
+            if (FailDate) throw new InvalidOperationException("synthetic calendar unavailable");
+            return EmptyDate ? " " : "synthetic-campaign-date:"+ToDays;
+        }
     }
 }
 namespace TaleWorlds.Library { public static class TWParallel { public static bool IsMainThread() => true; } }
@@ -34,10 +41,10 @@ namespace AnimusForge.Refactor.Contracts {
             int gameDay, int gameHour, string locationId, int sceneSessionId,
             int targetAgentIndex, string targetName) {
             CommitId=commitId; SessionId=sessionId; SubjectId=subjectId; AssistantText=assistantText;
-            GameDay=gameDay; GameHour=gameHour; LocationId=locationId;
+            GameDay=gameDay; GameHour=gameHour; LocationId=locationId; ConfirmedFacts=facts;
         }
         public string CommitId, SessionId, SubjectId, AssistantText, LocationId;
-        public int GameDay, GameHour;
+        public int GameDay, GameHour; public IEnumerable<FactRecord> ConfirmedFacts;
     }
 }
 namespace AnimusForge {
@@ -48,9 +55,12 @@ namespace AnimusForge {
     public static class ShoutBehavior { public static void RecordNativeConversationNpcLineForExternal(Hero hero, object character, string name, string line) { } }
     public static class ProactiveNpcRequestBehavior { public static void RecordLetterNeedDeliveredForExternal(string need) { } }
     public static class MainThreadActions { public static void Enqueue(Action action) => action(); }
-    public sealed class MemoryProbe { public bool Ready=true, Accept, Completed, Missing, RejectPermanent; public int Attempts, LastDay=-1; public string LastLocation; }
+    public sealed class MemoryProbe { public bool Ready=true, Accept, Completed, Missing, RejectPermanent; public int Attempts, LastDay=-1; public string LastLocation, LastHistory, LastFact, LastDate; public int LastHour; public List<string> Sessions=new(); }
     public static class MyBehavior {
         public static MemoryProbe Owner;
+        private static string GetCurrentGameDateTextSafe() => TaleWorlds.CampaignSystem.CampaignTime.Now.ToString();
+        public static string DateForTests(int originDay, int currentDay) => ResolveInteractionMemoryOriginGameDate(originDay, currentDay);
+@@MEMORYDATE@@
         public static string ResolveCurrentMemorySceneLabelForExternal() => "delivery-scene";
         public static bool TryPrepareExternalDialogueHistoryRecoveryIdentity(InteractionMemoryCommit commit, bool isNonHero,
             string npcName, out string recoveryId, out string payloadHash, out string error) {
@@ -67,6 +77,11 @@ namespace AnimusForge {
             Owner.Attempts++;
             Owner.LastDay=commit.GameDay;
             Owner.LastLocation=commit.LocationId;
+            Owner.LastHour=commit.GameHour;
+            Owner.LastDate=DateForTests(commit.GameDay,(int)TaleWorlds.CampaignSystem.CampaignTime.Now.ToDays);
+            Owner.LastHistory=commit.AssistantText;
+            foreach (FactRecord fact in commit.ConfirmedFacts) Owner.LastFact=fact.Text;
+            Owner.Sessions.Add(commit.SessionId);
             if (Owner.Accept) { Owner.Completed=true; return new MemoryCommitResult(MemoryCommitStatus.Applied); }
             return new MemoryCommitResult(MemoryCommitStatus.Failed);
         }
@@ -134,6 +149,14 @@ namespace AnimusForge {
         private static void Require(bool yes, string why) { if (!yes) throw new Exception("FAIL " + why); }
         private static CourierDeliveryBehavior.CourierSession Session(string id) => new() { Id=id };
         public static void Main() {
+            Require(MyBehavior.DateForTests(100,100)=="synthetic-campaign-date:100", "same-day calendar");
+            Require(MyBehavior.DateForTests(84,100)=="synthetic-campaign-date:84", "cross-day uses origin calendar");
+            TaleWorlds.CampaignSystem.CampaignTime.EmptyDate=true;
+            Require(MyBehavior.DateForTests(84,100)=="第 84 日", "empty calendar conservative origin day");
+            TaleWorlds.CampaignSystem.CampaignTime.EmptyDate=false;
+            TaleWorlds.CampaignSystem.CampaignTime.FailDate=true;
+            Require(MyBehavior.DateForTests(84,100)=="第 84 日", "failed calendar conservative origin day");
+            TaleWorlds.CampaignSystem.CampaignTime.FailDate=false;
             MyBehavior.Owner=new MemoryProbe { Accept=true };
             var accepted=new CourierDeliveryBehavior(); var a=Session("accepted"); accepted.Deliver(a);
             Require(a.DeliveryApplied && accepted.LettersAdded==1 && accepted.Notices==1 && accepted.Completed==1, "accepted visible delivery");
@@ -171,7 +194,11 @@ namespace AnimusForge {
             MyBehavior.Owner=new MemoryProbe { Accept=true };
             missing.Tick(); Require(MyBehavior.Owner.Attempts==0, "retired instance cannot write");
             loaded.Tick(); Require(MyBehavior.Owner.Attempts==1 && loaded.PendingCount==0 && MyBehavior.Owner.LastDay==100
-                && MyBehavior.Owner.LastLocation=="delivery-scene",
+                && MyBehavior.Owner.LastLocation=="delivery-scene"
+                && MyBehavior.Owner.LastHour==0
+                && MyBehavior.Owner.LastDate=="synthetic-campaign-date:100"
+                && MyBehavior.Owner.LastHistory.Contains("visible letter")
+                && MyBehavior.Owner.LastFact=="[AFEF NPC行为补充] delivered",
                 "loaded intent writes memory once at original delivery day and scene");
             Require(loaded.LettersAdded==0 && loaded.Completed==0 && loaded.Notices==0, "loaded intent is memory-only");
             loaded.Tick(); Require(MyBehavior.Owner.Attempts==1, "loaded completed tick duplicate");
@@ -193,7 +220,19 @@ namespace AnimusForge {
             var capped=new CourierDeliveryBehavior();
             for (int i=0; i<129; i++) capped.Deliver(Session("cap-"+i));
             Require(capped.PendingCount==128 && capped.LettersAdded==128 && capped.Held==1, "bounded pending backpressure before physical delivery");
-            Console.WriteLine("PASS Courier delivered memory accepted/pending/load/missing/retired/old-save/corrupt/bounded/no-redelivery");
+            MyBehavior.Owner=null;
+            var roundRobin=new CourierDeliveryBehavior();
+            roundRobin.Deliver(Session("c")); roundRobin.Deliver(Session("a")); roundRobin.Deliver(Session("b"));
+            var roundRobinLoaded=new CourierDeliveryBehavior(); roundRobinLoaded.LoadJson(roundRobin.SnapshotJson());
+            MyBehavior.Owner=new MemoryProbe { Accept=true };
+            roundRobinLoaded.Tick();
+            Require(MyBehavior.Owner.Attempts==1 && roundRobinLoaded.PendingCount==2, "one pending intent per tick");
+            roundRobinLoaded.Tick(); roundRobinLoaded.Tick(); roundRobinLoaded.Tick();
+            Require(string.Join(",",MyBehavior.Owner.Sessions)=="a,b,c" && roundRobinLoaded.PendingCount==0,
+                "round robin stable order and completed intents removed");
+            Require(roundRobinLoaded.LettersAdded==0 && roundRobinLoaded.Notices==0 && roundRobinLoaded.Completed==0,
+                "batched recovery never replays physical effects");
+            Console.WriteLine("PASS Courier delivered memory accepted/pending/load/missing/retired/old-save/corrupt/bounded/no-redelivery/calendar/frozen-facts-history/one-intent-round-robin");
         }
     }
 }
