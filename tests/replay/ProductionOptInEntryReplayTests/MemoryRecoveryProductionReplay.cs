@@ -1229,7 +1229,8 @@ internal static class MemoryRecoveryProductionReplay
 
     private static Type RequireNestedType(Type owner, string name)
         => owner.GetNestedType(name, BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException("missing nested type " + name);
+            ?? owner.Assembly.GetType("AnimusForge." + name, false)
+            ?? throw new InvalidOperationException("missing memory type " + name);
 
     private sealed class LedgerFixture
     {

@@ -962,7 +962,7 @@ public partial class MyBehavior
         return sanitized;
     }
 
-    private static bool IsValidMemoryCommitMarker(string recoveryId, string part, string payloadHash)
+    internal static bool IsValidMemoryCommitMarker(string recoveryId, string part, string payloadHash)
         => IsMemoryRecoveryHexDigest((recoveryId ?? string.Empty).Trim())
             && ((part ?? string.Empty).Trim() == "user"
                 || (part ?? string.Empty).Trim() == "fact"
@@ -990,7 +990,7 @@ public partial class MyBehavior
         return true;
     }
 
-    private static bool IsMemoryRecoveryHexDigest(string value)
+    internal static bool IsMemoryRecoveryHexDigest(string value)
         => value != null && value.Length == 64 && value.All(character =>
             (character >= '0' && character <= '9') || (character >= 'A' && character <= 'F'));
 

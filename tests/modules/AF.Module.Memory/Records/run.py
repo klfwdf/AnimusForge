@@ -53,7 +53,10 @@ if args.mutate:
         project = project.replace(str(ROOT).replace("\\", "/") + "/src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs", str(src_dir / "DialogueHistoryLedger.cs").replace("\\", "/"))
 (output / "MemoryRecordsTests.csproj").write_text(project, encoding="utf-8")
 (output / "NuGet.Config").write_text("<configuration><packageSources><clear /></packageSources></configuration>", encoding="utf-8")
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", DOTNET_MULTILEVEL_LOOKUP="0")
+(output / "home").mkdir()
+(output / "appdata").mkdir()
+env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ProgramData", "HOMEDRIVE", "HOMEPATH", "OS", "USERNAME", "USERDOMAIN", "ProgramFiles", "ProgramFiles(x86)", "CommonProgramFiles", "CommonProgramFiles(x86)", "PROCESSOR_ARCHITECTURE") if key in os.environ}
+env.update(PATH=str(dotnet.parent), DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(output / "home"), USERPROFILE=str(output / "home"), HOME=str(output / "home"), LOCALAPPDATA=str(output / "appdata"), APPDATA=str(output / "appdata"), NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), TEMP="E:/tmp/af-j17-20260930", TMP="E:/tmp/af-j17-20260930", DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_NOLOGO="1", DOTNET_MULTILEVEL_LOOKUP="0")
 build = subprocess.run([str(dotnet), "build", str(output / "MemoryRecordsTests.csproj"), "-c", "Release", "--nologo", "-p:RestoreConfigFile=" + str(output / "NuGet.Config")], cwd=output, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 (output / "build.log").write_text(build.stdout + build.stderr, encoding="utf-8")
 if build.returncode != 0:

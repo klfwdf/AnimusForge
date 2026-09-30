@@ -235,6 +235,8 @@ public partial class MyBehavior
         private bool _hasLlm;
         private bool _triggersPublished;
         private List<WeeklyMemoryMaterialTrigger> _publishedTriggers;
+        private int _publishedTriggerCount;
+        private List<WeeklyMemoryMaterialTrigger>.Enumerator _publishedTriggerStructureProbe;
         internal bool Invalidated { get; private set; }
         internal DailyMemoryDraft Result { get; private set; }
 
@@ -304,6 +306,10 @@ public partial class MyBehavior
                 _draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(_draft.WeeklyMaterialTriggers);
                 _triggersPublished = true;
                 _publishedTriggers = _draft.WeeklyMaterialTriggers;
+                _publishedTriggerCount = _publishedTriggers?.Count ?? 0;
+                _publishedTriggerStructureProbe = _publishedTriggers == null
+                    ? default(List<WeeklyMemoryMaterialTrigger>.Enumerator)
+                    : _publishedTriggers.GetEnumerator();
                 _phase = DailyMemoryDraftEntryPhase.SanitizeLines;
             }
             if (_phase == DailyMemoryDraftEntryPhase.SanitizeLines)
@@ -350,7 +356,8 @@ public partial class MyBehavior
                     return false;
                 }
             }
-            else if (!ReferenceEquals(_draft.WeeklyMaterialTriggers, _publishedTriggers))
+            else if (!ReferenceEquals(_draft.WeeklyMaterialTriggers, _publishedTriggers)
+                || (_draft.WeeklyMaterialTriggers?.Count ?? 0) != _publishedTriggerCount)
             {
                 Invalidated = true;
                 return false;
@@ -366,9 +373,8 @@ public partial class MyBehavior
             try
             {
                 if (_lineSource != null) _lineStructureProbe.MoveNext();
-                // Sanitization legitimately replaces the trigger list. Once published,
-                // it is no longer an input cursor and must not check that obsolete list.
                 if (!_triggersPublished && _triggerSource != null) _triggerStructureProbe.MoveNext();
+                if (_triggersPublished && _publishedTriggers != null) _publishedTriggerStructureProbe.MoveNext();
             }
             catch (InvalidOperationException)
             {

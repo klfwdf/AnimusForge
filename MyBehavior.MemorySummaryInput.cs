@@ -50,18 +50,18 @@ public partial class MyBehavior
         if (ReferenceEquals(value, null)) return default(T);
         object copy = value switch
         {
-            DailyMemoryLine item => item.CopyForSummary(),
-            DailyMemoryDraft item => item.CopyForSummary(),
-            CompressedMemoryBlock item => item.CopyForSummary(),
-            WeeklyMemoryMaterialTrigger item => item.CopyForSummary(),
-            MemorySummaryJob item => item.CopyForSummary(),
-            MemoryOverviewJob item => item.CopyForSummary(),
-            MajorActionSummaryJob item => item.CopyForSummary(),
-            MemoryOverviewState item => item.CopyForSummary(),
-            MajorActionSummaryState item => item.CopyForSummary(),
+            DailyMemoryLine item => MemoryRecordRules.Clone(item),
+            DailyMemoryDraft item => MemoryRecordRules.Clone(item),
+            CompressedMemoryBlock item => MemoryRecordRules.Clone(item),
+            WeeklyMemoryMaterialTrigger item => MemoryRecordRules.Clone(item),
+            MemorySummaryJob item => MemoryRecordRules.Clone(item),
+            MemoryOverviewJob item => MemoryRecordRules.Clone(item),
+            MajorActionSummaryJob item => MemoryRecordRules.Clone(item),
+            MemoryOverviewState item => MemoryRecordRules.Clone(item),
+            MajorActionSummaryState item => MemoryRecordRules.Clone(item),
             NpcActionEntry item => item.CopyForSummary(),
             List<NpcActionEntry> items => items.Select(x => x?.CopyForSummary()).ToList(),
-            List<CompressedMemoryBlock> items => items.Select(x => x?.CopyForSummary()).ToList(),
+            List<CompressedMemoryBlock> items => MemoryRecordRules.Clone(items),
             _ => throw new ArgumentException("Unsupported memory summary data model: " + typeof(T).Name)
         };
         return (T)copy;
@@ -367,53 +367,48 @@ public partial class MyBehavior
                 return result.Source != null;
             });
             if (!accepted) { result.IsObsolete = true; return result; }
-            for (int attempt = 1; attempt <= Math.Max(1, maxAttempts); attempt++)
-            {
-                if (attempt > 1 && !await RunMemorySummaryRunCaptureAsync(run, generation,
-                    () => IsMemorySummaryInputCurrent(result.Source)))
-                { result.IsObsolete = true; return result; }
-                // The dispatcher continuation may resume after another load/owner swap.
-                // Do not renew a retired request merely because its capture used to be valid.
-                if ((run != null && !run.IsCurrent) || !ReferenceEquals(Instance, this) || !SaveRuntimeGuard.IsCurrentGeneration(generation))
-                { result.IsObsolete = true; return result; }
-                var input = result.Source;
-                string area = job is MemorySummaryJob ? "CompressedMemory" : job is MajorActionSummaryJob ? "NpcMajorSummary" : "MemoryOverview";
-                var api = await CallAuxiliaryGatewayDetailed(input.SystemPrompt, input.UserPrompt, area, 0, forceThinkingDisabled: true).ConfigureAwait(false);
-                bool parsed = false;
-                accepted = await RunMemorySummaryRunCaptureAsync(run, generation, delegate
+            var outcome = await MemorySummaryAttemptRunner.RunAsync(maxAttempts,
+                () => RunMemorySummaryRunCaptureAsync(run, generation, () => IsMemorySummaryInputCurrent(result.Source)),
+                () => (run == null || run.IsCurrent) && ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(generation),
+                async () =>
                 {
-                    if (!IsMemorySummaryInputCurrent(input)) return false;
-                    if (!api.Success) { result.Error = api.ErrorMessage ?? "API请求失败"; return true; }
-                    // Keep the authoritative parser (including game-derived rendering) on its owner.
-                    // Parse reads detached data; the source check and parse have no intervening await.
-                    var hero = FindHeroById(input.HeroId);
-                    string error;
-                    if (input.Job is MemorySummaryJob)
+                    var input = result.Source;
+                    string area = job is MemorySummaryJob ? "CompressedMemory" : job is MajorActionSummaryJob ? "NpcMajorSummary" : "MemoryOverview";
+                    var api = await CallAuxiliaryGatewayDetailed(input.SystemPrompt, input.UserPrompt, area, 0, forceThinkingDisabled: true).ConfigureAwait(false);
+                    bool parsed = false;
+                    bool current = await RunMemorySummaryRunCaptureAsync(run, generation, delegate
                     {
-                        parsed = TryParseMemorySummaryResponse(api.Content, hero, input.Draft, out var block, out error);
-                        result.Value = block;
-                        if (!parsed) result.Error = BuildSummaryJsonParseFailureMessage("总结格式解析失败", error, api.Content);
-                    }
-                    else if (input.Job is MajorActionSummaryJob major)
-                    {
-                        parsed = TryParseMajorActionSummaryResponse(api.Content, hero, major, input.Actions, out var state, out error);
-                        result.Value = state;
-                        if (!parsed) result.Error = BuildSummaryJsonParseFailureMessage("重大履历总结格式解析失败", error, api.Content);
-                    }
-                    else
-                    {
-                        parsed = TryParseMemoryOverviewResponse(api.Content, hero, (MemoryOverviewJob)input.Job,
-                            input.Overview, input.Blocks, out var state, out error);
-                        result.Value = state;
-                        if (!parsed) result.Error = BuildSummaryJsonParseFailureMessage("记忆总览格式解析失败", error, api.Content);
-                    }
-                    return true;
-                });
-                if (!accepted) { result.IsObsolete = true; result.Value = null; return result; }
-                if (parsed) return result;
-                if (attempt < maxAttempts)
-                    await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500).ConfigureAwait(false);
-            }
+                        if (!IsMemorySummaryInputCurrent(input)) return false;
+                        if (!api.Success) { result.Error = api.ErrorMessage ?? "API请求失败"; return true; }
+                        var hero = FindHeroById(input.HeroId);
+                        string error;
+                        if (input.Job is MemorySummaryJob)
+                        {
+                            parsed = TryParseMemorySummaryResponse(api.Content, hero, input.Draft, out var block, out error);
+                            result.Value = block;
+                            if (!parsed) result.Error = BuildSummaryJsonParseFailureMessage("总结格式解析失败", error, api.Content);
+                        }
+                        else if (input.Job is MajorActionSummaryJob major)
+                        {
+                            parsed = TryParseMajorActionSummaryResponse(api.Content, hero, major, input.Actions, out var state, out error);
+                            result.Value = state;
+                            if (!parsed) result.Error = BuildSummaryJsonParseFailureMessage("重大履历总结格式解析失败", error, api.Content);
+                        }
+                        else
+                        {
+                            parsed = TryParseMemoryOverviewResponse(api.Content, hero, (MemoryOverviewJob)input.Job,
+                                input.Overview, input.Blocks, out var state, out error);
+                            result.Value = state;
+                            if (!parsed) result.Error = BuildSummaryJsonParseFailureMessage("记忆总览格式解析失败", error, api.Content);
+                        }
+                        return true;
+                    });
+                    if (!current) result.Value = null;
+                    return new MemorySummaryAttemptRunner.Receipt(current, parsed, api.RetryAfterSeconds);
+                }, milliseconds => Task.Delay(milliseconds));
+            if (outcome == MemorySummaryAttemptRunner.Outcome.Obsolete)
+            { result.IsObsolete = true; result.Value = null; return result; }
+            if (outcome == MemorySummaryAttemptRunner.Outcome.Completed) return result;
         }
         catch (Exception ex) { result.Error = ex.Message; }
         finally

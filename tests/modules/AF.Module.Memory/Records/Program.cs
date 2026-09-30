@@ -15,6 +15,7 @@ internal static class Program
     private static void Main()
     {
         ActionLedger();
+        ActionRecordContract();
         HistoryLedger();
         Console.WriteLine("PASS memory-records checks=" + _checks);
     }
@@ -50,6 +51,60 @@ internal static class Program
         Check(timeline.Select(e => e.Day).SequenceEqual(new[] { 0, 1, 2, 3 }), "out-of-order append sorts");
         NpcActionLedger.Append(timeline, new Entry { Day = 4, Sequence = 4 }, 3, Cmp);
         Check(timeline.Select(e => e.Day).SequenceEqual(new[] { 2, 3, 4 }), "cap removes oldest from front");
+    }
+
+    private static void ActionRecordContract()
+    {
+        var fields = typeof(NpcActionEntry).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        Check(fields.Length == 27, "NPC action persisted field count");
+        var shape = fields.ToDictionary(f => f.Name, f => f.FieldType, StringComparer.Ordinal);
+        var intFields = new[] { "Day", "Order", "Sequence" };
+        var stringFields = new[] { "GameDate", "Text", "StableKey", "ActionKind", "ActorHeroId", "ActorClanId", "ActorKingdomId", "TargetHeroId", "TargetClanId", "TargetKingdomId", "SettlementId", "SettlementName", "SettlementOwnerHeroId", "SettlementOwnerClanId", "SettlementOwnerKingdomId", "PreviousSettlementOwnerHeroId", "PreviousSettlementOwnerClanId", "PreviousSettlementOwnerKingdomId", "LocationText" };
+        var listFields = new[] { "RelatedHeroIds", "RelatedClanIds", "RelatedKingdomIds" };
+        Check(intFields.All(name => shape.TryGetValue(name, out var type) && type == typeof(int)) &&
+            stringFields.All(name => shape.TryGetValue(name, out var type) && type == typeof(string)) &&
+            listFields.All(name => shape.TryGetValue(name, out var type) && type == typeof(List<string>)) &&
+            shape.TryGetValue("Won", out var wonType) && wonType == typeof(bool?) &&
+            shape.TryGetValue("IsMajor", out var majorType) && majorType == typeof(bool),
+            "NPC action persisted field names and types");
+        var defaultEntry = new NpcActionEntry();
+        Check(defaultEntry.GameDate == null && defaultEntry.StableKey == null && defaultEntry.Won == null &&
+            defaultEntry.RelatedHeroIds.Count == 0 && defaultEntry.RelatedClanIds.Count == 0 && defaultEntry.RelatedKingdomIds.Count == 0,
+            "NPC action legacy defaults");
+        var source = new NpcActionEntry
+        {
+            Day = 12, Text = "  kept  ", StableKey = " KEY ", GameDate = " Day 12 ",
+            RelatedHeroIds = new List<string> { " Hero ", "hero", "Other" },
+            RelatedClanIds = new List<string> { " Clan " },
+            RelatedKingdomIds = new List<string> { " Kingdom " }
+        };
+        var detached = source.CopyForSummary();
+        Check(!ReferenceEquals(detached, source) && !ReferenceEquals(detached.RelatedHeroIds, source.RelatedHeroIds) &&
+            !ReferenceEquals(detached.RelatedClanIds, source.RelatedClanIds) && !ReferenceEquals(detached.RelatedKingdomIds, source.RelatedKingdomIds),
+            "NPC action summary clone detaches mutable ID lists");
+        var recent = NpcActionLedger.SanitizeNpcActionEntries(new List<NpcActionEntry>
+        {
+            null, new NpcActionEntry { Day = 10, Text = "old" }, source,
+            new NpcActionEntry { Day = 14, Text = " " }
+        }, true, 21);
+        Check(recent.Count == 1 && recent[0].Text == "kept" && recent[0].StableKey == "key" &&
+            recent[0].GameDate == "Day 12" && recent[0].Order == 1 && recent[0].Sequence == 1,
+            "recent action window and first fallback sequence");
+        Check(recent[0].RelatedHeroIds.SequenceEqual(new[] { "Hero", "Other" }) &&
+            recent[0].RelatedClanIds.SequenceEqual(new[] { "Clan" }) && recent[0].RelatedKingdomIds.SequenceEqual(new[] { "Kingdom" }) &&
+            source.Text == "  kept  " && source.RelatedHeroIds[0] == " Hero ",
+            "NPC action normalization copies IDs without mutating source");
+        Check(NpcActionLedger.ShouldSuppressNpcMajorAction("army_join", "x", "ok") &&
+            NpcActionLedger.ShouldSuppressNpcMajorAction("", "prisoner_taken:x", "ok") &&
+            !NpcActionLedger.ShouldSuppressNpcMajorAction("", "other", "quiet"),
+            "major action suppression preserved");
+        var major = NpcActionLedger.SanitizeNpcActionEntries(new List<NpcActionEntry>
+        {
+            source, new NpcActionEntry { Day = 13, Text = "army", ActionKind = "army_join" },
+            new NpcActionEntry { Day = 11, Text = "你在Village发动的袭掠中失利。", StableKey = "mapevent:x:side:defender:hero:y", ActionKind = "map_event", LocationText = "Village", Won = true }
+        }, false, 21);
+        Check(major.Count == 2 && major[0].Text == "你在Village参与村庄保卫战，击退了袭掠者。" && major[1].Text == "kept",
+            "major legacy raid repair, suppression and timeline order");
     }
 
     private static void HistoryLedger()
