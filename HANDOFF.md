@@ -1,6 +1,8 @@
 # 当前交接：J15 按用户决定结项，J16 离线关闭，J17-A 盘点继续（2026-09-29）
 
-- **J17-A 最新接续（2026-09-30）**：[范围图 E93](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)将实际 Compile 路径的 77 个 Harmony 属性点对账为 69 声明类型 + 8 方法目标属性：2 父标记不单装、3 类仅见定义无仓内注册、余 64 类有启动可达安装路径（1.4 明确跳过其中一个，故最多 63）；见[主台账 A2](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)。这是静态入口，不等于成功安装；无属性动态 patch、目标签名/失败、外部补丁与实机仍未验。原 22 个未跟踪 `tools/` 目录未动，未推送/部署；**兼容桶及 J17-A 未签，B 未启动**。
+- **J17-A 最新接续（2026-09-30）**：[主台账 20 桶](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)将 `bootstrap-build` 基于[范围图 E37](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)及当前只读 MSBuild 输入正式签为 **A 责任桶 1/20**：独立 Bootstrap 编译 3 文件，两套实现各 1,123 文件且不含其源码，共用 AssemblyInfo 为 0 成员；XML/相关源码与脚本相对 `944712f8` 未变。只签语义归属，不等于构建/实机/发布；另外 19 桶、全 Compile 成员与动态消费者仍须对账，**J17-A 总出口未达、B 未启动**。原 22 个未跟踪 `tools/` 目录未动，未推送/部署。
+
+- **J17-A 前次接续（2026-09-30）**：[范围图 E93](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)将实际 Compile 路径的 77 个 Harmony 属性点对账为 69 声明类型 + 8 方法目标属性：2 父标记不单装、3 类仅见定义无仓内注册、余 64 类有启动可达安装路径（1.4 明确跳过其中一个，故最多 63）；见[主台账 A2](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)。这是静态入口，不等于成功安装；无属性动态 patch、目标签名/失败、外部补丁与实机仍未验。原 22 个未跟踪 `tools/` 目录未动，未推送/部署；**兼容桶及 J17-A 未签，B 未启动**。
 
 - **J17-A 前次接续（2026-09-30）**：[范围图 E92](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)把七个版本适配/Mission 防护/启动 audit 文件 **89 成员**按双 API 对账，并对当前实际 Compile 的 **49 处 `#if`/25 文件**分域；见[主台账 A2](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)。新具名余项是 1.4 场景主线程队列每 Tick 全量排空（1.3 有数量/毫秒预算）、Mission Finalizer 误吞异常反例、一次性兼容 audit 只有日志信号；贸易/raid/SpawnTroop 请求期重复反射沿 E39。完整 Harmony 安装（当前 77 属性点）/动态消费者、产品双构建和真实 Mission/Encounter 未验，**兼容桶及 J17-A 仍未签，B 未启动**。原有 22 个未跟踪 `tools/` 目录未动，未推送/部署。
 

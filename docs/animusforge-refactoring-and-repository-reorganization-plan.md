@@ -313,11 +313,11 @@
 
 ### 3.3 全范围覆盖网（J17-A 必须补完，不按代表性样本签收）
 
-沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。`bootstrap-build`、`host-composition` 的责任归属已按 E37–E38 复核；**其余 18 桶的全量成员审查仍待复核**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
+沿用 [Phase8 现有 20 桶](phase8/full-domain-readiness-catalog.json) 防止漏域，不增加 20 个模块/DLL。`bootstrap-build` 已据 E37 与本轮 A2 复核正式签 A 桶；`host-composition` 的责任归属已按 E38 复核但未签，**其余 19 桶尚待签收**，不改已有 catalog 的 ASSIGNED/COMPLETE 历史含义。检查“所有入口能到 owner”和“所有编译成员都有责任归属”两个方向；没有入口的成员也须判断动态调用/兼容/死代码，不直接删除。每个实际字段/属性/方法/嵌套类型只能有一个权威责任，可有多个消费者；分组登记附成员范围，不能整文件打包成兼容壳。
 
 | 现有责任桶 ID | 本轮/后续盘点范围与目标责任（不是确认未迁的清单） |
 | --- | --- |
-| bootstrap-build | **A 责任归属已审，E37**：Bootstrap 三个实际 Compile 文件与实现项目排除、XML 唯一入口、双版本选择/依赖/生命周期和脚本构建接缝已核对。保留独立加载边界；R08 每帧反射成本待真实量测，J17-C/D 构建/游戏未验。只有另获授权才改一键脚本或 Bootstrap；不按行数重构加载器。 |
+| bootstrap-build | **A 桶签收，E37 + 本轮当前输入复核（1/20）**：`dotnet msbuild -getItem:Compile` 显示 Bootstrap 独立项目恰编 `BootstrapLog.cs`、`BootstrapRuntime.cs`、`BootstrapSubModule.cs`，两个实现 API 各 1,123 编译文件、Bootstrap 源均 0，唯一共用 `Properties/AssemblyInfo.cs` 在成员清单中两版均 0；本桶没有未分配的实现成员。Bootstrap 三文件双版本选择/依赖/生命周期和脚本构建接缝按 E37 已逐职责复核，XML 仍仅加载 Bootstrap，相关产品/构建文件相对 `944712f8` 无差异。保留独立加载边界；R08 每帧反射成本待真实量测，J17-C/D 构建/游戏未验。签收只指 A 的语义归属，不授权改一键脚本/部署，不等于 J17-A 总出口。 |
 | host-composition | **A 责任归属已审，E38**：`SubModule` 引擎入口、八个 `Composition` 装配文件、typed 目录及内置功能薄桥保留宿主接线；同文件首次 API 指引/WarStats 地图按钮归 UI/配置，`LegacyInteractionPipelineComposition` 归 Conversation 请求期工厂，六个粗候选合同归各自领域/API。R08 异常传播/帧成本与真实游戏仍待验；不把领域 patch 和内置规则整体签收。 |
 | runtime-diagnostics | **A 定向复核 E36/E41，未签桶**：Foundation 性能窗/有界队列归通用诊断；Logger/Watchdog/Sentinel/UI 分析仍混游戏与隐私接缝。`CampaignTickDiagnosticsPatch` 的 checkpoint 是诊断，但 18 次原版 hourly AI 跳过接 `AnimusForgeMobilePartyAiSafetyPatch`，属世界 AI 安全策略，不能整类视为纯日志；`FeatureDiagnosticLogFile` 只提供通用文件机制，领域包装决定内容。余下成员/生命周期/真实负载待审。 |
 | game-adapter-compatibility | **A 定向复核 E39，未签桶**：`BannerlordApiCompat` 主要是版本签名适配；`PlayerEncounterCompat.IsInPostBattleResultFlow` 混有 Encounter 战后准入；`InteractionComponentSafePatch`/Mission view 守卫归场景安全防线，Coup 私有同名 helper 保留自身 fail-closed 语义。E92 已按实际 Compile 复核七文件 89 成员和 49 处 `#if`/25 文件；E93 将 77 个 Harmony 属性点的声明类型与仓内静态安装链对账，保留三个孤儿候选及无属性的动态安装/反射消费者；R08-Scene14MainThreadDrain 与反射频率、R07-MissionViewExceptionFilter、R09-CompatibilityAuditSignal 均具名。双构建/真实 Harmony 未验，故未签桶。 |
