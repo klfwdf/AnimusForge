@@ -16,4 +16,7 @@
   <Target Name="RequirePhaseEightCandidate" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(ReplayCandidateDll)' == ''" Text="PhaseEight replay requires explicit -p:ReplayCandidateDll from the current single_module_artifacts build." />
   </Target>
+  <ItemGroup>
+    <Compile Include="..\ReplayDependencies\ReplayCandidateInput.cs" Link="ReplayCandidateInput.cs" />
+  </ItemGroup>
 </Project>

@@ -1,8 +1,11 @@
 import argparse,importlib.util,os,subprocess,hashlib,json
 from pathlib import Path
+import sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['drop-busy','release-new-slot','skip-timeout-cas','skip-queued-action-guard','skip-generation','old-overlay-finalizer','skip-queued-epoch']);args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['drop-busy','release-new-slot','skip-timeout-cas','skip-queued-action-guard','skip-generation','old-overlay-finalizer','skip-queued-epoch']);p.add_argument('--run-root',type=Path);args=p.parse_args()
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig');partial=(ROOT/'ShoutBehavior.NativeAdmission.cs').read_text(encoding='utf-8-sig')
 selectors={'ENTRY':'public static Task<string> SubmitNativeConversationTextForExternalAsync(string playerText, Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','OPENING_ENTRY':'public static Task<string> SubmitNativeConversationNpcInitiatedOpeningForExternalAsync(Action<string> onStreamText, string currentDialogTextOverride, Action<string> onPostprocessStarted, Action<string, Hero, CharacterObject> onMainReplyReady)','ACTION_RESULT':'private sealed class NativeConversationGameActionResult','ACTION_QUEUE':'private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync('}
 # The unchanged boundary is source-projected from verified current phases; NativeTurn executes the new schedule.
@@ -56,7 +59,7 @@ values['OVERLAY_FINALIZERS']='\n'.join(finalizers)+'\ninternal void Complete(int
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for key,value in values.items():code=code.replace('@@'+key+'@@',value)
 assert '@@' not in code
-out=HERE/'.generated'/(args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'NativeConversationAdmissionTests',args.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Admission.cs').write_text(partial,encoding='utf-8')
 dispatch=(ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='skip-queued-action-guard':dispatch=dispatch.replace('if (!IsNativeConversationAdmissionCurrent(admission, out _))','if (false)',1)
@@ -68,8 +71,7 @@ code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-dotnet=Path(os.environ.get('AF_DOTNET') or ROOT/'local/dotnet/8.0.425/dotnet.exe')
-env=os.environ.copy();env.update(DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log='sourceSha256='+hashlib.sha256(s.encode()).hexdigest()+' admissionSha256='+hashlib.sha256(partial.encode()).hexdigest()+' mutation='+str(args.mutate)+'\n'+r.stdout+r.stderr
 (out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

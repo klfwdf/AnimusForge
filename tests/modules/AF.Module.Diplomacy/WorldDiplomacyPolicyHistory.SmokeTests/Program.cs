@@ -70,7 +70,9 @@ Check(!WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(10, 10, 100, 200),
 Check(WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(10, 10, 300, 200), "a reducible snapshot can make progress even without a new delta");
 Check(WorldDiplomacyPolicyHistoryRules.CanAdvanceCompression(11, 10, 100, 200), "consuming the next delta makes progress");
 
-string root = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../.."));
+string root = Path.GetFullPath(Environment.GetEnvironmentVariable("AF_REPLAY_REPO_ROOT")
+    ?? Path.Combine(AppContext.BaseDirectory, "../../../../../../.."));
+Check(File.Exists(Path.Combine(root, "AnimusForge.csproj")), "explicit repository root must contain the current project");
 string behavior = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
 string jobRuntime = File.ReadAllText(Path.Combine(root, "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
 int jobRuntimeInsertion = behavior.IndexOf("private bool EnsureRequestFitsInputBudget(", StringComparison.Ordinal);

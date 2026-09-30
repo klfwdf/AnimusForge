@@ -6,20 +6,28 @@ import argparse
 import base64
 import json
 import os
+import sys
+import shutil
 from pathlib import Path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-lore", "drop-entity", "drop-rule"])
 parser.add_argument("--world-only", action="store_true", help="Exercise the common-input non-Hero final-request family, including mutations")
+parser.add_argument("--run-root",type=Path)
 args = parser.parse_args()
+output=new_run_root(ROOT,"j06-shared-completion",args.run_root)
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
-dotnet = Path(os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_NOLOGO="1", DOTNET_CLI_TELEMETRY_OPTOUT="1")
+dotnet = resolve_dotnet(ROOT)
+env = minimal_test_environment(dotnet,output)
+env["AF_DOTNET"]=str(dotnet)
+env["PATH"]+=os.pathsep+str(Path(shutil.which("git")).parent)
 composition = [
     "PromptTopicRoutingStage.cs", "PromptBuildRequest.cs", "PromptContextDecisions.cs",
     "PromptAssemblyStage.cs", "PromptRetrievalCapture.cs", "PromptRuleIdPolicy.cs",
@@ -33,7 +41,7 @@ markers = (
     "private void ApplyPromptRuntimeAppendices(",
 )
 for revision in ("old", "current"):
-    out = ROOT / "artifacts/tests/j06-shared-completion" / revision
+    out = output / revision
     out.mkdir(parents=True, exist_ok=True)
     def read(path: str) -> str:
         if revision == "old":
@@ -66,13 +74,16 @@ for revision in ("old", "current"):
     print("BUILD", revision, "production CompleteSharedPromptBuild/CapturePromptSections")
 
 def component(path: str, extra_env: dict | None = None) -> dict:
-    result = subprocess.run(["python", str(ROOT / path), "--emit-json"], cwd=ROOT, env=dict(env, **(extra_env or {})), capture_output=True, text=True, encoding="utf-8", errors="replace")
+    component.counter += 1
+    result = subprocess.run([sys.executable, str(ROOT / path), "--emit-json", "--run-root", str(output/(Path(path).parent.name+"-"+str(component.counter)))], cwd=ROOT, env=dict(env, **(extra_env or {})), capture_output=True, text=True, encoding="utf-8", errors="replace")
     if result.returncode:
         print(result.stdout, result.stderr, sep="\n")
         raise SystemExit(result.returncode)
     lines = [line[len("EXPORT_JSON="):] for line in result.stdout.splitlines() if line.startswith("EXPORT_JSON=")]
     assert len(lines) == 1, "missing production component export: " + path
     return json.loads(lines[0])
+
+component.counter = 0
 
 lore = component("tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py")
 entity = component("tests/modules/AF.Module.Knowledge/EntityTextDifferential/run.py")
@@ -83,16 +94,17 @@ common_world = {
 }
 world_lore = component("tests/modules/AF.Module.Knowledge/LoreTextDifferential/run.py", common_world)
 world_rule = component("tests/modules/AF.Module.Prompt/ExtraRuleTextDifferential/run.py", common_world)
-courier_build = subprocess.run(["python", str(ROOT / "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/run.py")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
+courier_build = subprocess.run([sys.executable, str(ROOT / "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/run.py"), "--run-root", str(output/"courier-final")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 if courier_build.returncode:
     print(courier_build.stdout, courier_build.stderr, sep="\n")
     raise SystemExit(courier_build.returncode)
-courier_dll = ROOT / "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/.generated/current/bin/Release/net8.0/CourierPromptChecks.dll"
+courier_dll = Path(json.loads((output/"courier-final/outputs.json").read_text(encoding="utf-8"))["courierDll"])
 assert courier_dll.exists(), "Courier production final request runner missing"
-native_build = subprocess.run(["python", str(ROOT / "tests/modules/AF.Module.Prompt/NativeFinalRequestDifferential/run.py")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
+native_build = subprocess.run([sys.executable, str(ROOT / "tests/modules/AF.Module.Prompt/NativeFinalRequestDifferential/run.py"), "--run-root", str(output/"native-final")], cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
 if native_build.returncode:
     print(native_build.stdout, native_build.stderr, sep="\n")
     raise SystemExit(native_build.returncode)
+native_outputs=json.loads((output/"native-final/outputs.json").read_text(encoding="utf-8"))
 checked = 0
 for lore_case in ("hit", "stale"):
     for entity_case in (("world_shared",) if args.world_only else ("direct", "title", "fallback", "world_shared")):
@@ -118,7 +130,7 @@ for lore_case in ("hit", "stale"):
                 })
                 if revision == "current" and args.mutate:
                     component_env["AF_J06_ALLOW_LOSS"] = "1"
-                dll = ROOT / "artifacts/tests/j06-shared-completion" / revision / "bin/Release/net8.0/Proof.dll"
+                dll = output / revision / "bin/Release/net8.0/Proof.dll"
                 result = subprocess.run([str(dotnet), str(dll)], cwd=ROOT, env=component_env, capture_output=True, text=True, encoding="utf-8", errors="replace")
                 if result.returncode:
                     print(revision, lore_case, entity_case, rule_case, result.stdout, result.stderr, sep="\n")
@@ -134,7 +146,7 @@ for lore_case in ("hit", "stale"):
                 requests[revision] = {label: base64.b64decode(encoded, validate=True) for label, encoded in
                     (line.split("=", 1) for line in courier.stdout.splitlines() if line.startswith("REQUEST_"))}
                 assert set(requests[revision]) == {"REQUEST_outbound", "REQUEST_inbound"}, "Courier directions missing"
-                native_dll = ROOT / "artifacts/tests/j06-native-final" / revision / "bin/Release/net8.0/Proof.dll"
+                native_dll = Path(native_outputs[revision])
                 native = subprocess.run([str(dotnet), str(native_dll)], cwd=ROOT, env=courier_env, capture_output=True, text=True, encoding="utf-8", errors="replace")
                 if native.returncode:
                     print("Native", revision, lore_case, entity_case, rule_case, native.stdout, native.stderr, sep="\n")

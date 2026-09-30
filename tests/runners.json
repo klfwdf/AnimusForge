@@ -6,12 +6,7 @@
    "expect": "NEEDS_INPUT",
    "note": "net472 reference assemblies + BannerlordRoot HintPath for 0Harmony; fails identically on ada9894a"
   },
-  "extensions/AnimusForge.DialogueUI/tests/portrait-tests/PortraitTests.csproj": {
-   "msbuild": [
-    "-p:BaseIntermediateOutputPath={ROOT}/extensions/AnimusForge.DialogueUI/artifacts/portrait-tests/obj/",
-    "-p:MSBuildProjectExtensionsPath={ROOT}/extensions/AnimusForge.DialogueUI/artifacts/portrait-tests/obj/"
-   ]
-  },
+  "extensions/AnimusForge.DialogueUI/tests/portrait-tests/PortraitTests.csproj": {},
   "tests/AF.Foundation.Runtime/MainThreadFunctionBoundaryTests/run.py": {
    "expect": "PREEXISTING_FAIL"
   },
@@ -55,7 +50,7 @@
     "-p:BannerlordRoot={GAME}",
     "-p:WorkshopContentDir={WORKSHOP}",
     "-p:AnimusForgeBinDir={GAME}/Modules/AnimusForge/bin/Win64_Shipping_Client",
-    "-p:HarmonyCorePath={WORKSHOP}/2859188632/bin/Win64_Shipping_Client/0Harmony.dll"
+    "-p:HarmonyCorePath={HARMONY_MODULE}/bin/Win64_Shipping_Client/0Harmony.dll"
    ],
    "args": [
     "--",
@@ -222,9 +217,10 @@
   "tools/PersistenceIdentityAudit.py": {
    "args": [
     "--baseline",
-    "ada9894a7c840036cbf27caaea87e37df657f29c"
+    "ada9894a7c840036cbf27caaea87e37df657f29c",
+    "--review-civilwar-v2"
    ],
-   "note": "Baseline moved e58f3558 -> ada9894a (user-authorized 2026-09-29): four-feature integration adds 36 SyncData keys (_af_kingdom_civil_war_v1, Coup, _rex_*) and 6 CampaignBehaviors, removes _af_xihai_legacy_equipment_cleanup_v1. Old-save compatibility for the removed key is NOT verified."
+   "note": "Approved remote CivilWar v2 key replaces v1 string key only; baseline/raw diff retained, all other key/type/behavior deltas fail. This is not old-save acceptance."
   },
   "tools/PhaseEightReadiness/readiness.py": {
    "expect": "NEEDS_INPUT"
@@ -250,6 +246,47 @@
   "tools/generate_bannerlord_research_grade_study.py": {
    "execution": "manual",
    "expect": "NEEDS_INPUT"
+  },
+  "tests/replay/ProductionConfiguredHostReplayTests/ProductionConfiguredHostReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/ProductionDetachedHostReplayTests/ProductionDetachedHostReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/ProductionValidationProviderReplayTests/ProductionValidationProviderReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/TtsGatewayReplayTests/TtsGatewayReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/WorldDiplomacyGatewayReplayTests/WorldDiplomacyGatewayReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/PolicyGatewayReplayTests/PolicyGatewayReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/ShoutNetworkSseReplayTests/ShoutNetworkSseReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/ProductionOptInEntryReplayTests/ProductionOptInEntryReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/PrimaryLlmGatewayReplayTests/PrimaryLlmGatewayReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/replay/ProductionEconomyAwareCommitReplayTests/ProductionEconomyAwareCommitReplayTests.csproj": {
+   "candidateDll": true
+  },
+  "tests/modules/AF.Module.Duel/ProductionDuelOutcomeReplayTests/ProductionDuelOutcomeReplayTests.csproj": {
+   "args": [
+    "--project-root",
+    "{ROOT}",
+    "--artifact-root",
+    "{CANDIDATE_ARTIFACT_ROOT}"
+   ]
+  },
+  "tests/modules/AF.Module.Economy/ProductionEconomyOwnerReplayTests/ProductionEconomyOwnerReplayTests.csproj": {
+   "candidateDll": true
   }
  }
 }

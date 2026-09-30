@@ -1,8 +1,10 @@
 """Run real main-reply stage + real adapter against the original source-linked phase."""
-import argparse,hashlib,json,os,subprocess
+import argparse,hashlib,json,os,subprocess,sys
 from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
 STAGE='src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyStage.cs'
 CONTRACTS='src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyContracts.cs'
 HOST='ShoutBehavior.NativeMainReply.cs'
@@ -16,11 +18,11 @@ MUTATIONS={
  'wrong-target-port':(HOST,'() => _owner.IsNativeConversationAdmissionCurrent(_admission, out reason)','() => _owner.IsNativeConversationAdmissionCurrent(_admission, out reason) || true'),
  'wrong-failure-text':(HOST,'"自由对话正文生成失败"','"错误的失败提示"'),
 }
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=[*MUTATIONS,'empty-before-validation','skip-consumer-stop']);args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=[*MUTATIONS,'empty-before-validation','skip-consumer-stop']);p.add_argument('--run-root',type=Path);args=p.parse_args()
 review=json.loads((HERE/'source-review.json').read_text(encoding='utf-8'))
 original=subprocess.check_output(['git','show',review['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
 evidence=review['files']['ShoutBehavior.cs'];assert hashlib.sha256(original.encode()).hexdigest()==evidence['beforeSha256'];old=evidence['edits'][0]['before'];assert original.count(old)==1
-out=HERE/'.generated'/(args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'native-main-reply',args.run_root)
 consumer=evidence['edits'][0]['after'];live=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 import sys
 sys.path.insert(0,str(ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests'))
@@ -29,7 +31,11 @@ live=projected_source(live);assert live.count(consumer)==1
 # Observe the typed status without replacing the actual caller's continuation/stop branch.
 consumer=consumer.replace('if (!nativeMainReply.CanContinue)', 'Fixture.LastStatus=nativeMainReply.Status;\n        if (!nativeMainReply.CanContinue)',1)
 if args.mutate=='skip-consumer-stop':consumer=consumer.replace('if (!nativeMainReply.CanContinue)','if (false)',1)
-code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@ORIGINAL_STAGE@@',old).replace('@@CURRENT_CONSUMER@@',consumer);assert '@@' not in code;(out/'Program.cs').write_text(code,encoding='utf-8')
+code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@ORIGINAL_STAGE@@',old).replace('@@CURRENT_CONSUMER@@',consumer);assert '@@' not in code
+# The provider remains a deterministic boundary; preserve the real adapter token parameter.
+code=code.replace('internal long Generation=1,Epoch=1,Revision=1;', 'internal AnimusForge.Refactor.Runtime.ConversationRequestLifetime Lifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime(); internal long Generation=1,Epoch=1,Revision=1;').replace('Action<string> onStreamText)', 'Action<string> onStreamText, System.Threading.CancellationToken cancellationToken=default)')
+for name in ['ConversationRequestLifetime','InteractionRequestLease']:(out/(name+'.cs')).write_text((ROOT/('src/modules/AF.Module.Conversation/Internal/'+name+'.cs')).read_text(encoding='utf-8-sig'),encoding='utf-8')
+(out/'Program.cs').write_text(code,encoding='utf-8')
 for path in [STAGE,CONTRACTS,HOST,'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs']:
  s=(ROOT/path).read_text(encoding='utf-8-sig')
  if args.mutate in MUTATIONS and path==MUTATIONS[args.mutate][0]:
@@ -42,6 +48,6 @@ for path in [STAGE,CONTRACTS,HOST,'src/modules/AF.Module.Llm/Protocol/LlmVisible
 newton=Path(os.environ.get('AF_NEWTONSOFT') or ROOT/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll');assert newton.is_file(),newton
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(newton))+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-dotnet=Path(os.environ.get('AF_DOTNET') or ROOT/'local/dotnet/8.0.425/dotnet.exe');env=os.environ.copy();env.update(DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

@@ -1,10 +1,12 @@
 """Current sequencer + current game-capture adapter + current postprocess call slice.
 Game/provider ports are deterministic substitutes, not real Host or audio acceptance.
 """
-import argparse,importlib.util,os,subprocess,re
+import argparse,importlib.util,os,subprocess,re,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['skip-stage-stop','duplicate-commit','skip-capture-guard','capture-on-worker','normalize-on-worker','swallow-capture-failure']);a=p.parse_args()
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['skip-stage-stop','duplicate-commit','skip-capture-guard','capture-on-worker','normalize-on-worker','swallow-capture-failure']);p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(f):return (ROOT/f).read_text(encoding='utf-8-sig')
 owner=read('ShoutBehavior.NativeTurn.cs');capture=ex.declaration(owner,'private async Task<bool> CaptureOnGameThreadAsync(')
@@ -32,10 +34,10 @@ if a.mutate=='normalize-on-worker':slice=slice.replace('postprocessed = Complete
 if a.mutate=='swallow-capture-failure':capture=capture.replace('failure?.Throw();',';',1)
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8').replace('@@CAPTURE@@',capture).replace('@@SLICE@@',slice).replace('@@FIELDS@@','\n'.join(fields)).replace('@@PREPARE@@',prepare_signature)
 assert '@@' not in code
-out=HERE/'.generated'/(a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'native-turn',a.run_root)
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Coordinator.cs').write_text(coordinator,encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0169;CS0649;CS0414</NoWarn></PropertyGroup></Project>')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-dotnet=Path(os.environ.get('AF_DOTNET') or 'G:/AFMOD/.dotnet-sdk/dotnet.exe');env=os.environ.copy();env.update(DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'))
+dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

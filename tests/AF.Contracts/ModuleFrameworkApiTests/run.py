@@ -10,6 +10,8 @@ import sys
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 HERE = Path(__file__).resolve().parent
 API_SOURCES = {
     "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
@@ -29,15 +31,8 @@ SOURCES = ["src/modules/AF.Module.PublicApi/V1/AfApi.cs", "src/AF.Contracts/Publ
 assert API_SOURCES <= set(SOURCES)
 
 
-def environment(dotnet: str) -> dict[str, str]:
-    env = os.environ.copy()
-    env.update(DOTNET_ROOT=str(Path(dotnet).parent),
-        DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
-        NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"),
-        DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_GENERATE_ASPNET_CERTIFICATE="false",
-        DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1", DOTNET_NOLOGO="1",
-        DOTNET_CLI_UI_LANGUAGE="en", PYTHONIOENCODING="utf-8")
-    return env
+def environment(dotnet: str, output: Path) -> dict[str, str]:
+    return minimal_test_environment(Path(dotnet), output)
 
 
 def project(path: Path, name: str, sources: list[Path], references: list[Path] = (), executable=False):
@@ -55,7 +50,7 @@ def project(path: Path, name: str, sources: list[Path], references: list[Path] =
 
 
 def run_dotnet(dotnet: str, args: list[str], cwd: Path):
-    result = subprocess.run([dotnet] + args, cwd=cwd, env=environment(dotnet),
+    result = subprocess.run([dotnet] + args, cwd=cwd, env=environment(dotnet, cwd),
         capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=180)
     return result.returncode, result.stdout + result.stderr
 
@@ -87,12 +82,13 @@ def snapshot_mutations(dotnet: str, out: Path):
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dotnet", default=r"G:\AFMOD\.dotnet-sdk\dotnet.exe")
+    parser.add_argument("--dotnet")
+    parser.add_argument("--run-root", type=Path)
     parser.add_argument("--artifact-root", action="append", default=[], help="Optional actual single_module_artifacts directory; repeat for Debug/Release")
     parser.add_argument("--legacy-v1", help="Pinned pre-J14 V1 reference library produced by NativeModuleSubmissionTests --legacy-abi")
     args = parser.parse_args()
-    out = HERE / ".generated/current"
-    out.mkdir(parents=True, exist_ok=True)
+    args.dotnet = str(resolve_dotnet(ROOT, args.dotnet))
+    out = new_run_root(ROOT, "module-framework-api", args.run_root)
     (out / "NuGet.Config").write_text('<configuration><packageSources><clear /></packageSources></configuration>', encoding="utf-8")
     spec = importlib.util.spec_from_file_location("snapshot_source_inverse", HERE / "source_boundary.py")
     boundary = importlib.util.module_from_spec(spec); spec.loader.exec_module(boundary); boundary.verify()

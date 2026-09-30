@@ -21,6 +21,9 @@ def current_path(old_path):
 
 def restore_scene_additions(path,current):
     path=str(path).replace('\\','/')
+    # Additive packets were recorded after the V1 relocation; callers retain
+    # historical Native names for its older packet, not for git-show lookups.
+    path=current_path(path) if path.startswith('Api/') else path
     courier=COURIER_REVIEW['files'].get(path)
     if courier is not None:
         old=subprocess.check_output(['git','show',COURIER_REVIEW['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')

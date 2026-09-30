@@ -18,22 +18,12 @@ static void AssertTrue(bool condition, string message)
     }
 }
 
-string artifactDirectory = Path.GetFullPath(Path.Combine(
-    AppContext.BaseDirectory,
-    "..", "..", "..", "..", "..", "..",
-    "bin", "Debug", "single_module_artifacts"));
-string projectRoot = Path.GetFullPath(Path.Combine(
-    AppContext.BaseDirectory,
-    "..", "..", "..", "..", "..", ".."));
-string referenceDirectory = Path.Combine(projectRoot, ".tmp", "build_check", "1.4");
-string implementationPath = Path.Combine(artifactDirectory, "versions", "1.4", "AnimusForge.dll");
-AssertTrue(File.Exists(implementationPath), "project-local 1.4 AnimusForge.dll is missing");
+string implementationPath = ReplayCandidateInput.Read(args);
 
 AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 {
     string name = new AssemblyName(arguments.Name).Name;
-    foreach (string root in new[] { AppContext.BaseDirectory, artifactDirectory, referenceDirectory,
-        Path.Combine(projectRoot, "..", "..", ".dotnet-sdk", "sdk", "8.0.422") })
+    foreach (string root in new[] { AppContext.BaseDirectory })
     {
         if (!Directory.Exists(root))
         {

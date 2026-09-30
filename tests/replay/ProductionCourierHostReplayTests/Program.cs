@@ -20,12 +20,8 @@ static void AssertTrue(bool condition, string message)
 
 try
 {
-string projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", ".."));
-AssertTrue(args.Length == 2, "Pass the current candidate DLL path and expected SHA256 after --.");
-string implementationPath = Path.GetFullPath(args[0]);
-AssertTrue(new[] { "Debug", "Release" }.Any(configuration => string.Equals(implementationPath,
-    Path.GetFullPath(Path.Combine(projectRoot, "bin", configuration, "single_module_artifacts", "versions", "1.4", "AnimusForge.dll")),
-    StringComparison.OrdinalIgnoreCase)), "Courier candidate must be a current project-local 1.4 artifact, never Stage");
+string projectRoot = ReplayCandidateInput.RepositoryRoot();
+string implementationPath = ReplayCandidateInput.Read(args);
 string markerPath = Path.ChangeExtension(implementationPath, ".build.json");
 AssertTrue(File.Exists(implementationPath) && File.Exists(markerPath), "current candidate DLL/marker is missing");
 string actualHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(implementationPath)));

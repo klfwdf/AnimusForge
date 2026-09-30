@@ -19,13 +19,41 @@ def restore_packet(review,path,source):
     assert hashlib.sha256(expected.encode()).hexdigest()==evidence['afterSha256'], 'J07b candidate digest: '+path
     assert source==expected, 'Unreviewed J07b source drift: '+path
     return original
+def restore_request_lifetime(path,source):
+    # Approved J17 request cancellation is tested by the real transport suite.
+    # Keep the original admission/main-reply hashes; reverse exact additions only.
+    if path == 'ShoutBehavior.NativeMainReply.cs':
+        after='CallNativeConversationApiAsync(messages, onStreamText, _admission.Lifetime.Token)'
+        assert source.count(after)==1, 'Unreviewed J17 Native lifetime delta: main reply token'
+        return source.replace(after,'CallNativeConversationApiAsync(messages, onStreamText)',1)
+    if path != 'ShoutBehavior.NativeAdmission.cs':return source
+    edits=[
+        ('        internal AnimusForge.Refactor.Runtime.ConversationRequestLifetime Lifetime;\n','',1),
+        ('            owner._nativeAdmissionOwner.Current?.Lifetime?.Retire();\n','',1),
+        ('                using IDisposable requestWorker = admission.Lifetime.Enter();\n'
+         '                using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(admission.Lifetime.Token);\n','',1),
+        ('\n            admission.Lifetime.Retire();\n','\n',1),
+        ('        _nativeAdmissionOwner.Current?.Lifetime?.Retire();\n'
+         '        admission.Lifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();\n','',1),
+        ('\n                admission.Lifetime.Retire();\n','\n',1),
+        ('\n            admission.Lifetime.Retire();\n','\n',1),
+        ('return admission != null && admission.Lifetime?.Token.IsCancellationRequested != true\n'
+         '            && _nativeAdmissionOwner.Owns(admission)', 'return _nativeAdmissionOwner.Owns(admission)',1),
+    ]
+    # Two identically indented cleanup additions belong to finally and catch.
+    for index,(after,before,count) in enumerate(edits):
+        if index==3:count=2
+        assert source.count(after)==count, 'Unreviewed J17 Native lifetime delta: '+after
+        source=source.replace(after,before,1)
+    return source
+
 def restore(path,source):
-    return restore_packet(REVIEW,path,restore_claim(path,source))
+    return restore_packet(REVIEW,path,restore_claim(path,restore_request_lifetime(path,source)))
 def restore_claim(path,source):
     return restore_packet(CLAIM_REVIEW,path,restore_main_reply(path,source))
 def restore_main_reply(path,source):
     for file, digest in MAIN_REPLY_REVIEW.get('addedFiles',{}).items():
-        assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==digest, 'Unreviewed main-reply dependency: '+file
+        assert hashlib.sha256(restore_request_lifetime(file,(ROOT/file).read_text(encoding='utf-8-sig')).encode()).hexdigest()==digest, 'Unreviewed main-reply dependency: '+file
     return restore_packet(MAIN_REPLY_REVIEW,path,restore_observation(path,source))
 # Accepted-reply deferral: the completion request carries game-thread side effects that
 # run only for a non-discarded dispatch (NativeTurn/run.py executes that). Project exactly
