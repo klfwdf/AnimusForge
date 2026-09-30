@@ -17,6 +17,23 @@
 - 原始求值/源码 SHA256/完整成员清单保留 `artifacts/j17a/session-20260930/`；旧 artifacts 不覆盖。A 按真实源/消费者增量复用 E 证据；各包完整责任覆盖后一次验收，不设常驻复审。A 出口满足后依授权连续 B/C；在 A 未闭时不启动产品迁移。
 - 不推送/部署/写仓外/真实玩家数据/批量删除/修改一键脚本；构建固定输出串行。业务 OPEN 与未审范围分别列出，不能把未审更名为 OPEN 冒充覆盖。D 实机/旧档保持 NOT-RUN。
 
+### E120–E121 聚合基线与已保存证据
+
+已将上轮仅在 ignored 包中的覆盖口径落入正式记录；[范围图 E120/E121](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)保存去重裁决及总控 32/API 漏项的真实符号/消费者。十份旧表联合仍有 938/API 无主张、109/API 多主张；输入不存在非法五元键或单表重复。1,128 源码 hash 全匹配。**这些不是业务 unknown 数，也不作为 A 出口通过。**
+
+| 上轮包 | 已有证据及严格限制（每 API，除非另写） | 续审/实施出口 |
+| --- | --- | --- |
+| UI/Knowledge | 163 文件，6315/6313 声明；19 Knowledge/1163，77 扩展内部授权排除。另 MyBehavior 导入声明起点 51939–53339、53538–57144，各80。 | 活 UI/反射/Persona/TTS 接缝已具名，TTS worker 间接读 Mission/Agents、UI晚回调、全资料导入复制AIConfig等保留 B OPEN；不称扩展内部已审。 |
+| Weekly/events | MyBehavior 声明起点 6068–10099、13306–17534、42149–46822，各529；完整 body/consumer 分区。 | B5 实际 Weekly 算法/状态与主线程事实捕获；Week0 缺当前 owner/generation、阅读XP部分效果和每callback内部量具名保留。 |
+| Scene/Economy | 196 文件/9795：3357 当前归责、675 旧E复用、5763 排除内部/AF接缝；MyBehavior 21852–24393 各97包含其中。 | Reward/roster/金币部分提交、Taunt死亡/惩罚 once 前置、Inspection伤亡与恢复均有有限失败注入出口；不得将排除数当业务已审/已迁。根级补漏另由续审处理。 |
+| Memory/Prompt | 主表115文件/5465，其中4459自有、1006仅依赖；补充245正文已读待消费者、221真实未审。 | B1逐字段形状/别名、B2/B3三摘要与provider捕获、B4编辑/导入同一权威、B5 Weekly规则；补充由Memory续审，不把主表或callNames当完整动态调用图。 |
+| Conversation | 130文件/5893：1313真实未审、3322 source责任投影、465 source owner、793旧E；旧C08全覆盖结论撤回。 | 六续审包拆开主动/同伴/环境对话；Shout/Native/Courier继续消费者/动态入口核对，不能用projection直接签桶。 |
+| Domains | 已并world-map/外交；2501已审、1592复用、266闭包待验、4048未审、4063/4064排除。 | 外交19原文件+遗漏client独占；其余world/settlement/social/CivilWar另包，Policy/GCCZ内部排除、AF适配必须覆盖。 |
+| Infrastructure | 150文件/8894，含5542 Policy排除及旧E；MyBehavior 17535–21851各124另列18组。 | 源hash与旧E有效性核对；SyncData保存异常可能重置多域是具名源码风险，CivilWar v1/v2真实合同失败不得刷fixture。 |
+
+实际仅重新执行清单/源hash/文档空白检查，未重跑上轮测试、产品构建或真实玩家流程；正式仍7/20，A未闭，B/C未启动。后续须将续审增量合并后重算，不沿用本表停点数作为最终数。
+
+
 <a id="j17a-intent-20260928"></a>
 
 <a id="optional-agent-plan-20260930"></a>
