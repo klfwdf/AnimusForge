@@ -135,13 +135,6 @@ internal static class CivilWarCatalog
 		W(CivilWarFeature.KingAuthoritarian, 0.10f),
 		W(CivilWarFeature.LeaderCalculating, 0.06f));
 
-	// Middle clan defects to the rebels in the week war breaks out.
-	internal static readonly CivilWarChance DefectOnWar = new CivilWarChance(0.05f,
-		W(CivilWarFeature.RelationGap, 0.40f),
-		W(CivilWarFeature.ClanGrievance, 0.20f),
-		W(CivilWarFeature.FactionPower, 0.15f),
-		W(CivilWarFeature.BloodShy, -0.25f));
-
 	// Open war ends this week (checked after the minimum war length).
 	internal static readonly CivilWarChance WarEnds = new CivilWarChance(0.05f,
 		W(CivilWarFeature.WarScoreAbs, 0.45f),
@@ -342,7 +335,7 @@ internal static class CivilWarCatalog
 		{
 			if (!coveredGoals.Contains(goal)) errors.Add("outcome/*: no outcome closes war goal " + goal);
 		}
-		foreach (CivilWarChance global in new[] { FormFaction, JoinOpposition, LeaveOpposition, KingDefers, ConvertToUsurp, DefectOnWar, WarEnds })
+		foreach (CivilWarChance global in new[] { FormFaction, JoinOpposition, LeaveOpposition, KingDefers, ConvertToUsurp, WarEnds })
 		{
 			CheckChance(errors, "global/*", global);
 		}

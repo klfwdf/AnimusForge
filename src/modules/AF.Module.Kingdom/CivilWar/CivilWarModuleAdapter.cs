@@ -117,4 +117,23 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 	{
 		_owner.OnRebelKingdomCreated(factionId, rebelKingdom, week);
 	}
+
+	public void RecordPeace(Kingdom kingdom, IFaction other, int week) => _owner.RecordPeace(kingdom, other, week);
+
+	public bool IsCivilWarPair(Kingdom a, Kingdom b) => _owner.IsCivilWarPair(a, b);
+
+	public bool HasPendingPlayerUltimatumPrompt => _owner.HasUnpromptedPlayerUltimatum && DuelSettings.IsCivilWarFactionsEnabled();
+
+	public bool TryTakePlayerUltimatumPrompt(out string kingdomId, out string text)
+	{
+		KingdomCivilWarKingdomState state = _owner.TakeUnpromptedPlayerUltimatum();
+		kingdomId = state?.KingdomId ?? "";
+		text = KingdomCivilWarOwner.DescribeUltimatum(state);
+		return state != null;
+	}
+
+	public bool AnswerPlayerUltimatum(string kingdomId, bool accept, out string message)
+	{
+		return _owner.TryAnswerPlayerUltimatum(CivilWarWorld.FindKingdom(kingdomId), accept, out message);
+	}
 }
