@@ -125,7 +125,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private float _kingdomBorderDistanceThreshold = MinimumBorderDistance;
 	private long _realmInstitutionalVoiceRuleVersion = -1L;
 
-	private WorldDiplomacyStorage _storage = new WorldDiplomacyStorage();
+	private readonly WorldDiplomacyStateStore _stateStore = new WorldDiplomacyStateStore();
+	// Canonical state is owned by the application-side store; this alias only
+	// projects the current snapshot for leaf reads. No site may assign fields
+	// on it or replace it outside SyncData/orchestration persistence lanes.
+	private WorldDiplomacyStorage _storage => _stateStore.Current;
 	private MapNotificationView _registeredMapNotificationView;
 	private long _runtimeGeneration;
 	// Runtime-only revision lets the world-message timeline detect a published document without cloning the archive every tick.
@@ -145,7 +149,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	public WorldDiplomacyBehavior()
 	{
 		Instance = this;
-		_orchestration = new WorldDiplomacyOrchestration(new OrchestrationHost(this), _runtime);
+		_orchestration = new WorldDiplomacyOrchestration(new OrchestrationHost(this), _runtime, _stateStore);
 	}
 
 	public override void RegisterEvents()
@@ -172,14 +176,14 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		if (dataStore.IsSaving)
 		{
 			_orchestration.NormalizeStorage(allowWorldValidation: false);
-			PersistenceAdapter.Save(dataStore, _storage);
+			PersistenceAdapter.Save(dataStore, _stateStore.Current);
 			return;
 		}
 		if (!dataStore.IsLoading)
 		{
 			return;
 		}
-		_storage = PersistenceAdapter.Load(dataStore, out string loadError);
+		_stateStore.Replace(PersistenceAdapter.Load(dataStore, out string loadError));
 		if (!string.IsNullOrWhiteSpace(loadError))
 		{
 			Log("load failed: " + loadError);
@@ -431,21 +435,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
-		_storage = new WorldDiplomacyStorage();
-		_storage.HistoryMemorySchemaVersion = HistoryMemorySchemaVersion;
-		_storage.PromptContractVersion = DiplomacyPromptContractVersion;
-		_storage.DiplomaticThreatStateSchemaVersion =
-			WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion;
-		_storage.OfferCooldownStateSchemaVersion =
-			WorldDiplomacyOfferCooldownStorageNormalizer.CurrentSchemaVersion;
-		_storage.ResultSettlementStateSchemaVersion = ResultSettlementStateSchemaVersion;
-		_storage.DiplomacyNotificationStateSchemaVersion =
-			WorldDiplomacyNotificationStateMigration.CurrentSchemaVersion;
-		_storage.CanonicalHistory = new WorldDiplomacyCanonicalHistoryState();
-		_storage.DecisionArchitectureVersion = DecisionArchitectureVersion;
-		_storage.PropagationReliabilityVersion = 1;
-		_storage.InitialPeacePending = IsWorldDiplomacyEnabled() && ShouldStartNewGameAtPeace();
-		InitializeSchedule();
+		_orchestration.ResetStorageForNewGame(IsWorldDiplomacyEnabled() && ShouldStartNewGameAtPeace());
+		_orchestration.EnsureScheduleInitialized();
 		ResetTransientRuntime("new-game");
 	}
 	private void OnGameLoaded(CampaignGameStarter starter)
@@ -453,7 +444,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_orchestration.NormalizeStorage(allowWorldValidation: true);
 		_orchestration.RecoverUnsettledAiInternationalReputation();
 		_orchestration.RecoverPlayerCourtReceiptsFromKnowledge();
-		InitializeSchedule();
+		_orchestration.EnsureScheduleInitialized();
 		ResetTransientRuntime("game-loaded");
 		_orchestration.ReconcileActiveDiplomacyAfterLoad();
 	}
@@ -462,7 +453,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_orchestration.NormalizeStorage(allowWorldValidation: true);
 		_orchestration.RecoverUnsettledAiInternationalReputation();
 		_orchestration.RecoverPlayerCourtReceiptsFromKnowledge();
-		InitializeSchedule();
+		_orchestration.EnsureScheduleInitialized();
 		ResetTransientRuntime("session-launched");
 		_orchestration.ReconcileActiveDiplomacyAfterLoad();
 	}
@@ -498,9 +489,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		EnsureWarLedger(first, second);
-		WorldDiplomacyRoundLifecycleRules.ResolveDiplomaticThreatsAfterWarStarted(
-			_storage?.DiplomaticThreats, first?.StringId, second?.StringId, CurrentDay(), _internalDiplomaticActionDepth > 0);
+		_orchestration.HandleWarDeclared(first.StringId, second.StringId);
 		InvalidateWarSituation(first, second);
 	}
 	private void OnMakePeace(IFaction faction1, IFaction faction2, MakePeaceAction.MakePeaceDetail detail)
@@ -511,9 +500,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		WorldDiplomacyWarPressureRules.RemoveWarLedger(_storage?.ActiveWarLedgers, first.StringId, second.StringId);
-		WorldDiplomacyWarPressureRules.ClearWarPressure(_storage?.WarPressure, first.StringId, second.StringId, CurrentDay());
-		WorldDiplomacyWarPressureRules.ClearWarPressure(_storage?.WarPressure, second.StringId, first.StringId, CurrentDay());
+		_orchestration.HandlePeaceMade(first.StringId, second.StringId);
 		InvalidateWarSituation(first, second);
 	}
 	private void OnSettlementOwnerChanged(
@@ -536,30 +523,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		WorldDiplomacyWarLedger ledger = WorldDiplomacyWarPressureRules.ResolveWarLedger(_storage?.ActiveWarLedgers, oldKingdom.StringId, newKingdom.StringId);
-		if (ledger == null && FactionManager.IsAtWarAgainstFaction(oldKingdom, newKingdom))
-		{
-			ledger = EnsureWarLedger(oldKingdom, newKingdom);
-		}
-		if (ledger == null)
-		{
-			return;
-		}
-		WorldDiplomacySettlementChange change = ledger.SettlementChanges.FirstOrDefault(x => x != null
-			&& string.Equals(x.SettlementId, settlement.StringId, StringComparison.OrdinalIgnoreCase));
-		if (change == null)
-		{
-			change = new WorldDiplomacySettlementChange
-			{
-				SettlementId = settlement.StringId ?? "",
-				SettlementName = settlement.Name?.ToString() ?? settlement.StringId ?? "",
-				OriginalKingdomId = oldKingdom.StringId ?? ""
-			};
-			ledger.SettlementChanges.Add(change);
-		}
-		change.CurrentKingdomId = newKingdom.StringId ?? "";
-		change.LastChangedDay = CurrentDay();
-		change.CaptureCount++;
+		_orchestration.HandleSettlementOwnerChanged(settlement.StringId, settlement.Name?.ToString(),
+			oldKingdom.StringId, newKingdom.StringId);
 		InvalidateWarSituation(oldKingdom, newKingdom);
 	}
 	private void OnMapEventEnded(MapEvent mapEvent)
@@ -583,12 +548,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				+ ":" + (mapEvent.StringId ?? "")
 				+ ":" + string.Join(",", attackerKingdomIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase))
 				+ ":" + string.Join(",", defenderKingdomIds.OrderBy(x => x, StringComparer.OrdinalIgnoreCase));
-			_storage.RecentBattles ??= new List<WorldDiplomacyBattleFact>();
-			if (_storage.RecentBattles.Any(x => x != null && string.Equals(x.BattleId, stableKey, StringComparison.OrdinalIgnoreCase)))
-			{
-				return;
-			}
-			_storage.RecentBattles.Add(new WorldDiplomacyBattleFact
+			_orchestration.RecordBattleFact(new WorldDiplomacyBattleFact
 			{
 				BattleId = stableKey,
 				Day = day,
@@ -602,7 +562,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				WinnerSide = mapEvent.WinningSide == BattleSideEnum.Attacker ? "attacker" : "defender",
 				IsPlayerInvolved = mapEvent.IsPlayerMapEvent
 			});
-			TrimRecentBattleFacts();
 		}
 		catch (Exception ex)
 		{
@@ -649,17 +608,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		return "野外战斗";
 	}
-	private void InitializeSchedule()
-	{
-		int day = CurrentDay();
-		int intervalDays = GetRoundIntervalDays();
-		if (_storage.NextNormalRoundDay <= 0)
-		{
-			_storage.NextNormalRoundDay = WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(day, intervalDays);
-		}
-		if (_storage.LastAppliedRoundIntervalDays <= 0) _storage.LastAppliedRoundIntervalDays = intervalDays;
-		if (_storage.LastCompressedYear < 0) _storage.LastCompressedYear = WorldDiplomacyRoundLifecycleRules.ComputeInitialCompressedYear(day, DaysPerYear);
-	}
+
 
 
 
@@ -699,7 +648,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		_runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		_llmRequestLease.Reset();
-		_runtime.DisabledStateApplied = false;
 		while (_completedJobs.TryDequeue(out _))
 		{
 		}
@@ -709,43 +657,16 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_realmInstitutionalVoiceCache.Clear();
 		_realmRelationProfileCache.Clear();
 		_kingdomBorderCache.Clear();
-		WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(_storage?.OfferCooldowns, _runtime.OfferCooldownByKey);
 		_kingdomBorderCacheDay = -1;
 		_realmInstitutionalVoiceRuleVersion = -1L;
 		DiplomacyModuleServices.Policy.Clear();
-		_runtime.LastLlmCacheAffinityKey = "";
-		_runtime.NativeQueueSanitized = false;
-		_runtime.LastSchedulerDay = -1;
-		_runtime.AiDocumentsStartedDay = -1;
-		_runtime.AiDocumentsStartedToday = 0;
 		_llmBudget.Reset();
 		_cacheHitTokensThisSession = 0;
 		_cacheMissTokensThisSession = 0;
 		_relayCacheHitTokensThisSession = 0;
 		_relayCacheMissTokensThisSession = 0;
 		_notifications.Reset();
-		_runtime.InitialPeaceApplicationAttempted = false;
-		_runtime.CanonicalHistorySourceKeys.Clear();
-		_runtime.DeferredCanonicalHistoryDocumentIds.Clear();
-		_runtime.DeferredCanonicalHistoryDocumentIdSet.Clear();
-		_runtime.DeferredCanonicalHistoryRetryAttempts.Clear();
-		_runtime.DeferredCanonicalHistoryRetryAfterHour.Clear();
-		foreach (WorldDiplomacyDocument document in _storage.Documents ?? new List<WorldDiplomacyDocument>())
-		{
-			if (WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry(document)) WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(_runtime.DeferredCanonicalHistoryDocumentIdSet, _runtime.DeferredCanonicalHistoryDocumentIds, document.DocumentId);
-		}
-		_runtime.CanonicalHistoryRenderCacheKey = "";
-		_runtime.CanonicalHistoryRenderCache = "";
-		_runtime.LastCanonicalSourceSyncHour = int.MinValue;
-		_runtime.LastObservedWorldWeeklyHistoryRevision = -1L;
-		_runtime.CanonicalHistoryInitializedThisSession = false;
-		foreach (WorldDiplomacyJob job in _storage.Jobs)
-		{
-			if (job != null)
-			{
-				job.IsRunning = false;
-			}
-		}
+		_orchestration.ResetRuntimeState();
 		Log("runtime reset reason=" + reason);
 	}
 	private static bool ShouldStartNewGameAtPeace()
@@ -805,20 +726,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 
 
-	private void AttachPolicySignalToRound(WorldDiplomacyRound round, WorldDiplomacyPolicySignal signal, Kingdom issuer, Kingdom affected)
-	{
-		if (round == null || signal == null || issuer == null || affected == null)
-		{
-			return;
-		}
-		WorldDiplomacyRoundLifecycleRules.AttachPolicySignalToRound(round, signal);
-		foreach (Kingdom kingdom in new[] { ResolveWorldDiplomacyRepresentative(issuer), ResolveWorldDiplomacyRepresentative(affected) }
-			.Where(x => x != null).Distinct())
-		{
-			WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, kingdom.StringId, "observer", mandatoryReply: false);
-			participant.IsPlayerAsync = IsPlayerKingdom(kingdom);
-		}
-	}
+
 
 
 
@@ -2179,16 +2087,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 
 
-	private void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents)
-	{
-		WorldDiplomacyRoundLifecycleRules.CommitLocalRoundSummary(_storage, round, documents,
-			CurrentDay, FormatCampaignDate, Log);
-	}
-	private void UpgradeRoundSummaryToStructuredArchive(WorldDiplomacyRoundSummary summary)
-	{
-		WorldDiplomacyRoundLifecycleRules.UpgradeRoundSummaryToStructuredArchive(_storage, summary,
-			ResolveRound, FormatCampaignDate);
-	}
+
 
 
 
@@ -2401,26 +2300,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		int baseValue = action == "declare_war" ? NativeWarSignalBase : NativeOtherSignalBase;
-		int scaledValue = baseValue;
 		string reason = BuildNativeDecisionReason(sourceKingdom, target, decision, action);
-		_storage.NativeSignals.Add(new NativeDiplomacySignal
-		{
-			SignalId = NewId("native_signal"),
-			SourceKingdomId = sourceKingdom.StringId,
-			TargetKingdomId = target.StringId,
-			Action = action,
-			Reason = reason,
-			Day = CurrentDay(),
-			Value = scaledValue
-		});
-		TrimNativeSignals();
-		if (action == "declare_war")
-		{
-			AddWarPressure(sourceKingdom.StringId, target.StringId, scaledValue, "原版宣战决议信号：" + reason);
-		}
-		Log("captured native diplomacy decision action=" + action + " source=" + sourceKingdom.StringId + " target=" + target.StringId + " value=" + scaledValue);
-		return true;
+		return _orchestration.RecordNativeSignal(sourceKingdom.StringId, target.StringId, action, reason);
 	}
 	private void RemoveQueuedNativeDiplomacyDecisions()
 	{
@@ -2591,15 +2472,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return sb.ToString().TrimEnd();
 	}
 
-	private void AddWarPressure(string sourceId, string targetId, int delta, string reason, string intent = "")
-	{
-		WorldDiplomacyWarPressureRules.AddWarPressure(_storage?.WarPressure, sourceId, targetId, delta, reason, CurrentDay(), intent);
-	}
 
-	private WarPressureEntry FindWarPressure(string sourceId, string targetId)
-	{
-		return _storage.WarPressure.FirstOrDefault(x => x != null && string.Equals(x.SourceKingdomId, sourceId, StringComparison.OrdinalIgnoreCase) && string.Equals(x.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase));
-	}
 
 
 
@@ -3907,22 +3780,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 
 
-	private void TrimRecentBattleFacts()
-	{
-		_storage.RecentBattles = WorldDiplomacyRoundLifecycleRules.TrimRecentBattleFacts(
-			_storage?.RecentBattles, CurrentDay(), RecentBattleRetentionDays);
-	}
 
-	private void TrimNativeSignals()
-	{
-		_storage.NativeSignals = WorldDiplomacyRoundLifecycleRules.TrimNativeSignals(
-			_storage?.NativeSignals, CurrentDay() - DaysPerYear * 2);
-	}
-
-	private void RemoveJob(string jobId)
-	{
-		_storage.Jobs.RemoveAll(x => WorldDiplomacyRoundLifecycleRules.HasJobId(x, jobId));
-	}
 	private WorldDiplomacyDocument ResolveDocument(string documentId)
 	{
 		return WorldDiplomacyRoundLifecycleRules.ResolveDocument(_storage?.Documents, documentId);
@@ -3937,40 +3795,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 
 
-	private void EnsureActiveWarLedgersAndRemoveEndedWars()
-	{
-		_storage.ActiveWarLedgers.RemoveAll(x => x == null
-			|| !AreKingdomsAtWar(x.FirstKingdomId, x.SecondKingdomId));
-		List<Kingdom> kingdoms = Kingdom.All
-			.Where(x => x != null && !x.IsEliminated)
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-		for (int i = 0; i < kingdoms.Count; i++)
-		{
-			for (int j = i + 1; j < kingdoms.Count; j++)
-			{
-				if (FactionManager.IsAtWarAgainstFaction(kingdoms[i], kingdoms[j]))
-				{
-					EnsureWarLedger(kingdoms[i], kingdoms[j]);
-				}
-			}
-		}
-	}
-	private WorldDiplomacyWarLedger EnsureWarLedger(Kingdom first, Kingdom second)
-	{
-		if (first == null || second == null || first == second)
-		{
-			return null;
-		}
-		return WorldDiplomacyWarPressureRules.EnsureWarLedger(_storage?.ActiveWarLedgers, first.StringId, second.StringId, CurrentDay());
-	}
-
-	private static bool AreKingdomsAtWar(string firstId, string secondId)
-	{
-		Kingdom first = ResolveKingdom(firstId);
-		Kingdom second = ResolveKingdom(secondId);
-		return first != null && second != null && FactionManager.IsAtWarAgainstFaction(first, second);
-	}
 	private void InvalidateWarSituation(Kingdom first, Kingdom second)
 	{
 		if (first == null || second == null)

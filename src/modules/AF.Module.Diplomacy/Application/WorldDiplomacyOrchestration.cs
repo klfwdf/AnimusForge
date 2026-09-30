@@ -39,7 +39,6 @@ internal sealed class WorldDiplomacyRuntimeState
 // Application.
 internal interface IWorldDiplomacyOrchestrationHost
 {
-    WorldDiplomacyStorage Storage { get; }
     int CurrentDay();
     int CurrentHour();
     string NewId(string prefix);
@@ -127,7 +126,6 @@ internal interface IWorldDiplomacyOrchestrationHost
     string ValidateOpenThreatWorldEligibility(WorldDiplomacyThreat threat);
     bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document);
     WorldDiplomacyPolicyRoundApplication.Parties ResolvePolicyParties(WorldDiplomacyPolicySignal signal);
-    void AttachPolicySignalToRound(WorldDiplomacyRound round, WorldDiplomacyPolicySignal signal);
     string ResolvePropagationReceiverId(string kingdomId, string settlementId);
     int OfferCooldownLastFailedRoundDay(WorldDiplomacyOfferCooldownKey key);
     string BuildExternalFactBody(string action, string initiatorId, string targetId, string reason);
@@ -138,13 +136,15 @@ internal interface IWorldDiplomacyOrchestrationHost
     List<WorldDiplomacyPropagationApplication.CourtTarget> CaptureCourtTargets();
     WorldDiplomacyPropagationApplication.DistanceSnapshot CapturePropagationDistances(WorldDiplomacyDocument document);
 
-    // Presentation / effect leafs.
+    // Presentation / effect leafs and world snapshots.
     void ShowPlayerCourtDelivery(string receiverName);
     void RemoveQueuedNativeDiplomacyDecisions();
-    void EnsureActiveWarLedgersAndRemoveEndedWars();
-    void TrimRecentBattleFacts();
-    void TrimNativeSignals();
-    void DecayWarPressure();
+    List<(string firstId, string secondId)> ActiveWarKingdomPairs();
+    void InvalidateWarSituationCache(string firstId, string secondId);
+    bool InternalActionDepthActive();
+    int DaysPerYear();
+    int RecentBattleRetentionDays();
+    int NativeSignalBaseValue(string action);
 
     // Module/service leafs.
     IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> ForeignPolicySignals();
@@ -159,7 +159,6 @@ internal interface IWorldDiplomacyOrchestrationHost
         string authorKingdomId, string authorRulerId, string relatedKingdomId, bool isWorldLevel, int day, string gameDate);
     bool TryBuildKingdomStrategicProfilePrompt(string kingdomId, string marker, out string prompt);
     void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt);
-    void ClearLlmCacheAffinityKey();
 
 // Leaf port factories - bounded snapshots, no Application calls behind them.
     IWorldDiplomacyActionSelectionPort ActionSelection();
@@ -184,7 +183,6 @@ internal interface IWorldDiplomacyOrchestrationHost
     IWorldDiplomacyLlmDispatchSource LlmDispatchSource();
     IWorldDiplomacyCompletionSource CompletionSource();
     void PollNotifications();
-    void ReplaceStorage(WorldDiplomacyStorage storage);
     string ResolveSettlementPartyId(string settlementId);
     string PartyNameIncludingEliminated(string id);
     string PlayerKingdomId();
@@ -196,9 +194,6 @@ internal interface IWorldDiplomacyOrchestrationHost
     int GetRoundParticipantLimit();
     string CanAiAuthorDocumentBlockReason(string id);
     void LogDiplomaticThreatFallbackAnalysisPublished(WorldDiplomacyJob job);
-    void RemoveJob(string jobId);
-    void AddWarPressure(string sourceId, string targetId, int delta, string reason, string intent);
-    WarPressureEntry FindWarPressure(string sourceId, string targetId);
     void Notify(string message);
 }
 
@@ -281,6 +276,23 @@ internal interface IWorldDiplomacyOrchestration
     void CompletePolicySignal(WorldDiplomacyPolicySignal signal, string reason);
     void TryApplyInitialNewGamePeace();
     void NormalizeStorage(bool allowWorldValidation);
+    void ReplaceStorage(WorldDiplomacyStorage storage);
+    void ResetStorageForNewGame(bool initialPeacePending);
+    void EnsureScheduleInitialized();
+    void ResetRuntimeState();
+    void HandleWarDeclared(string firstId, string secondId);
+    void HandlePeaceMade(string firstId, string secondId);
+    void HandleSettlementOwnerChanged(string settlementId, string settlementName, string oldKingdomId, string newKingdomId);
+    void RecordBattleFact(WorldDiplomacyBattleFact fact);
+    bool RecordNativeSignal(string sourceId, string targetId, string action, string reason);
+    void EnsureActiveWarLedgers();
+    void TrimRecentBattleFacts();
+    void TrimNativeSignals();
+    void DecayWarPressure();
+    void RemoveJob(string jobId);
+    void AddWarPressure(string sourceId, string targetId, int delta, string reason, string intent);
+    WarPressureEntry FindWarPressure(string sourceId, string targetId);
+    void ClearLlmCacheAffinityKey();
 
     void StartDocumentPropagation(WorldDiplomacyDocument document, string authorId);
     void RetryDeferredDocumentPropagation();
@@ -406,15 +418,19 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 {
     private readonly IWorldDiplomacyOrchestrationHost _host;
     private readonly WorldDiplomacyRuntimeState _runtime;
+    private readonly WorldDiplomacyStateStore _stateStore;
 
-    internal WorldDiplomacyOrchestration(IWorldDiplomacyOrchestrationHost host, WorldDiplomacyRuntimeState runtime)
+    internal WorldDiplomacyOrchestration(IWorldDiplomacyOrchestrationHost host, WorldDiplomacyRuntimeState runtime,
+        WorldDiplomacyStateStore stateStore)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
         _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+        _stateStore = stateStore ?? throw new ArgumentNullException(nameof(stateStore));
     }
 
     internal WorldDiplomacyRuntimeState Runtime => _runtime;
-    private WorldDiplomacyStorage Storage => _host.Storage;
+    private WorldDiplomacyStorage Storage => _stateStore.Current;
+    public void ReplaceStorage(WorldDiplomacyStorage storage) => _stateStore.Replace(storage);
 
     // ---------- leaf helpers shared by orchestration methods ----------
 
@@ -1169,7 +1185,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
             j => WorldDiplomacyDocumentFactRules.BuildFallbackRoundCompressionJson(
                 Storage?.Documents, j?.CompressionDocumentIds, _host.FormatCampaignDate),
             CommitRoundCompression,
-            _host.RemoveJob,
+            RemoveJob,
             _host.Log);
     }
 
@@ -1585,7 +1601,6 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
             _host.LlmRequestRunning,
             ConsumeDailyAiDocumentBudget,
             _host.CurrentDay, id => EnsureActiveRound(id, null, isPlayerInsertion: false),
-            _host.AttachPolicySignalToRound,
             CompletePolicySignal, ScheduleNextNormalRoundAfter,
             (id, round) => EnqueueGeneration(id, null, null, isResponse: false,
                 sourceDocument: null, priority: 70, roundId: round?.RoundId, allowUntargeted: true));
@@ -1620,8 +1635,220 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
         WorldDiplomacyStorage storage = Storage;
         WorldDiplomacyStorageNormalizationApplication.Normalize(ref storage, allowWorldValidation,
             _host.StorageNormalizationSource(), _host.CanonicalHistoryMigrationSource(), this);
-        if (!ReferenceEquals(storage, Storage)) _host.ReplaceStorage(storage);
+        if (!ReferenceEquals(storage, Storage)) _stateStore.Replace(storage);
     }
+
+    // ---------- canonical state owner lane (storage + runtime writes) ----------
+
+    public void ResetStorageForNewGame(bool initialPeacePending)
+    {
+        _stateStore.Replace(new WorldDiplomacyStorage
+        {
+            HistoryMemorySchemaVersion = _host.TargetHistoryMemorySchemaVersion(),
+            PromptContractVersion = _host.DiplomacyPromptContractVersion(),
+            DiplomaticThreatStateSchemaVersion =
+                WorldDiplomacyThreatStorageMigration.DiplomaticThreatStateSchemaVersion,
+            OfferCooldownStateSchemaVersion =
+                WorldDiplomacyOfferCooldownStorageNormalizer.CurrentSchemaVersion,
+            ResultSettlementStateSchemaVersion = _host.ResultSettlementStateSchemaVersion(),
+            DiplomacyNotificationStateSchemaVersion =
+                WorldDiplomacyNotificationStateMigration.CurrentSchemaVersion,
+            CanonicalHistory = new WorldDiplomacyCanonicalHistoryState(),
+            DecisionArchitectureVersion = _host.DecisionArchitectureVersion(),
+            PropagationReliabilityVersion = 1,
+            InitialPeacePending = initialPeacePending
+        });
+    }
+
+    public void EnsureScheduleInitialized()
+    {
+        WorldDiplomacyStorage storage = Storage;
+        if (storage == null) return;
+        int day = _host.CurrentDay();
+        int intervalDays = _host.RoundIntervalDays();
+        if (storage.NextNormalRoundDay <= 0)
+        {
+            storage.NextNormalRoundDay = WorldDiplomacyRoundLifecycleRules.ComputeNextRoundDay(day, intervalDays);
+        }
+        if (storage.LastAppliedRoundIntervalDays <= 0) storage.LastAppliedRoundIntervalDays = intervalDays;
+        if (storage.LastCompressedYear < 0)
+            storage.LastCompressedYear = WorldDiplomacyRoundLifecycleRules.ComputeInitialCompressedYear(day, _host.DaysPerYear());
+    }
+
+    public void ResetRuntimeState()
+    {
+        _runtime.DisabledStateApplied = false;
+        _runtime.NativeQueueSanitized = false;
+        _runtime.LastSchedulerDay = -1;
+        _runtime.AiDocumentsStartedDay = -1;
+        _runtime.AiDocumentsStartedToday = 0;
+        _runtime.LastLlmCacheAffinityKey = "";
+        _runtime.InitialPeaceApplicationAttempted = false;
+        _runtime.CanonicalHistorySourceKeys.Clear();
+        _runtime.DeferredCanonicalHistoryDocumentIds.Clear();
+        _runtime.DeferredCanonicalHistoryDocumentIdSet.Clear();
+        _runtime.DeferredCanonicalHistoryRetryAttempts.Clear();
+        _runtime.DeferredCanonicalHistoryRetryAfterHour.Clear();
+        _runtime.CanonicalHistoryRenderCacheKey = "";
+        _runtime.CanonicalHistoryRenderCache = "";
+        _runtime.LastCanonicalSourceSyncHour = int.MinValue;
+        _runtime.LastObservedWorldWeeklyHistoryRevision = -1L;
+        _runtime.CanonicalHistoryInitializedThisSession = false;
+        WorldDiplomacyStorage storage = Storage;
+        if (storage == null) return;
+        WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(storage.OfferCooldowns, _runtime.OfferCooldownByKey);
+        foreach (WorldDiplomacyDocument document in storage.Documents ?? new List<WorldDiplomacyDocument>())
+        {
+            if (WorldDiplomacyStructureRules.NeedsCanonicalHistoryRetry(document))
+                WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(
+                    _runtime.DeferredCanonicalHistoryDocumentIdSet,
+                    _runtime.DeferredCanonicalHistoryDocumentIds, document.DocumentId);
+        }
+        foreach (WorldDiplomacyJob job in storage.Jobs ?? new List<WorldDiplomacyJob>())
+        {
+            if (job != null) job.IsRunning = false;
+        }
+    }
+
+    public void HandleWarDeclared(string firstId, string secondId)
+    {
+        if (string.IsNullOrWhiteSpace(firstId) || string.IsNullOrWhiteSpace(secondId)
+            || string.Equals(firstId, secondId, StringComparison.OrdinalIgnoreCase)) return;
+        WorldDiplomacyWarPressureRules.EnsureWarLedger(Storage?.ActiveWarLedgers, firstId, secondId, _host.CurrentDay());
+        WorldDiplomacyRoundLifecycleRules.ResolveDiplomaticThreatsAfterWarStarted(
+            Storage?.DiplomaticThreats, firstId, secondId, _host.CurrentDay(), _host.InternalActionDepthActive());
+    }
+
+    public void HandlePeaceMade(string firstId, string secondId)
+    {
+        if (string.IsNullOrWhiteSpace(firstId) || string.IsNullOrWhiteSpace(secondId)) return;
+        WorldDiplomacyWarPressureRules.RemoveWarLedger(Storage?.ActiveWarLedgers, firstId, secondId);
+        WorldDiplomacyWarPressureRules.ClearWarPressure(Storage?.WarPressure, firstId, secondId, _host.CurrentDay());
+        WorldDiplomacyWarPressureRules.ClearWarPressure(Storage?.WarPressure, secondId, firstId, _host.CurrentDay());
+    }
+
+    public void HandleSettlementOwnerChanged(string settlementId, string settlementName,
+        string oldKingdomId, string newKingdomId)
+    {
+        if (string.IsNullOrWhiteSpace(settlementId) || string.IsNullOrWhiteSpace(oldKingdomId)
+            || string.IsNullOrWhiteSpace(newKingdomId)
+            || string.Equals(oldKingdomId, newKingdomId, StringComparison.OrdinalIgnoreCase)) return;
+        WorldDiplomacyStorage storage = Storage;
+        WorldDiplomacyWarLedger ledger = WorldDiplomacyWarPressureRules.ResolveWarLedger(
+            storage?.ActiveWarLedgers, oldKingdomId, newKingdomId);
+        if (ledger == null && _host.IsAtWarByKingdomIds(oldKingdomId, newKingdomId))
+        {
+            ledger = WorldDiplomacyWarPressureRules.EnsureWarLedger(
+                storage?.ActiveWarLedgers, oldKingdomId, newKingdomId, _host.CurrentDay());
+        }
+        if (ledger == null) return;
+        ledger.SettlementChanges ??= new List<WorldDiplomacySettlementChange>();
+        WorldDiplomacySettlementChange change = ledger.SettlementChanges.FirstOrDefault(x => x != null
+            && string.Equals(x.SettlementId, settlementId, StringComparison.OrdinalIgnoreCase));
+        if (change == null)
+        {
+            change = new WorldDiplomacySettlementChange
+            {
+                SettlementId = settlementId ?? "",
+                SettlementName = settlementName ?? settlementId ?? "",
+                OriginalKingdomId = oldKingdomId ?? ""
+            };
+            ledger.SettlementChanges.Add(change);
+        }
+        change.CurrentKingdomId = newKingdomId ?? "";
+        change.LastChangedDay = _host.CurrentDay();
+        change.CaptureCount++;
+        _host.InvalidateWarSituationCache(oldKingdomId, newKingdomId);
+    }
+
+    public void RecordBattleFact(WorldDiplomacyBattleFact fact)
+    {
+        if (fact == null) return;
+        WorldDiplomacyStorage storage = Storage;
+        if (storage == null) return;
+        storage.RecentBattles ??= new List<WorldDiplomacyBattleFact>();
+        if (storage.RecentBattles.Any(x => x != null
+            && string.Equals(x.BattleId, fact.BattleId, StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+        storage.RecentBattles.Add(fact);
+        TrimRecentBattleFacts();
+    }
+
+    public bool RecordNativeSignal(string sourceId, string targetId, string action, string reason)
+    {
+        WorldDiplomacyStorage storage = Storage;
+        if (storage == null || string.IsNullOrWhiteSpace(sourceId) || string.IsNullOrWhiteSpace(targetId)) return false;
+        int value = _host.NativeSignalBaseValue(action);
+        storage.NativeSignals ??= new List<NativeDiplomacySignal>();
+        storage.NativeSignals.Add(new NativeDiplomacySignal
+        {
+            SignalId = _host.NewId("native_signal"),
+            SourceKingdomId = sourceId,
+            TargetKingdomId = targetId,
+            Action = action,
+            Reason = reason,
+            Day = _host.CurrentDay(),
+            Value = value
+        });
+        TrimNativeSignals();
+        if (action == "declare_war")
+        {
+            AddWarPressure(sourceId, targetId, value, "原版宣战决议信号：" + reason, "");
+        }
+        _host.Log("captured native diplomacy decision action=" + action + " source=" + sourceId
+            + " target=" + targetId + " value=" + value.ToString(CultureInfo.InvariantCulture));
+        return true;
+    }
+
+    public void EnsureActiveWarLedgers()
+    {
+        WorldDiplomacyStorage storage = Storage;
+        if (storage?.ActiveWarLedgers == null) return;
+        storage.ActiveWarLedgers.RemoveAll(x => x == null
+            || !_host.IsAtWarByKingdomIds(x.FirstKingdomId, x.SecondKingdomId));
+        foreach ((string firstId, string secondId) in _host.ActiveWarKingdomPairs())
+        {
+            WorldDiplomacyWarPressureRules.EnsureWarLedger(storage.ActiveWarLedgers, firstId, secondId, _host.CurrentDay());
+        }
+    }
+
+    public void TrimRecentBattleFacts()
+    {
+        WorldDiplomacyStorage storage = Storage;
+        if (storage == null) return;
+        storage.RecentBattles = WorldDiplomacyRoundLifecycleRules.TrimRecentBattleFacts(
+            storage.RecentBattles, _host.CurrentDay(), _host.RecentBattleRetentionDays());
+    }
+
+    public void TrimNativeSignals()
+    {
+        WorldDiplomacyStorage storage = Storage;
+        if (storage == null) return;
+        storage.NativeSignals = WorldDiplomacyRoundLifecycleRules.TrimNativeSignals(
+            storage.NativeSignals, _host.CurrentDay() - _host.DaysPerYear() * 2);
+    }
+
+    public void DecayWarPressure() =>
+        WorldDiplomacyWarPressureRules.DecayWarPressure(Storage?.WarPressure, _host.CurrentDay());
+
+    public void RemoveJob(string jobId)
+    {
+        WorldDiplomacyStorage storage = Storage;
+        storage?.Jobs?.RemoveAll(x => WorldDiplomacyRoundLifecycleRules.HasJobId(x, jobId));
+    }
+
+    public void AddWarPressure(string sourceId, string targetId, int delta, string reason, string intent) =>
+        WorldDiplomacyWarPressureRules.AddWarPressure(Storage?.WarPressure, sourceId, targetId, delta, reason,
+            _host.CurrentDay(), intent);
+
+    public WarPressureEntry FindWarPressure(string sourceId, string targetId) =>
+        (Storage?.WarPressure ?? new List<WarPressureEntry>()).FirstOrDefault(x => x != null
+            && string.Equals(x.SourceKingdomId, sourceId, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(x.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase));
+
+    public void ClearLlmCacheAffinityKey() => _runtime.LastLlmCacheAffinityKey = "";
 
     // ---------- publication / propagation ----------
 
@@ -1815,7 +2042,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
             string author = _host.ResolvePartyId(document?.AuthorKingdomId);
             string target = _host.ResolvePartyId(document?.TargetKingdomId);
             return (author != null && target != null && !_host.PartiesShareIdentity(author, target), author, target);
-        }, _host.AddWarPressure);
+        }, AddWarPressure);
     }
 
     public void ProcessDiplomaticThreatDocument(
@@ -1902,7 +2129,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
         WorldDiplomacyStorage storage = Storage;
         int applied = WorldDiplomacyPrestigeApplication.Apply(ref storage, _host.Prestige(), kingdomId, delta,
             sourceDocument, reason);
-        if (!ReferenceEquals(storage, Storage)) _host.ReplaceStorage(storage);
+        if (!ReferenceEquals(storage, Storage)) _stateStore.Replace(storage);
         return applied;
     }
 
@@ -1910,14 +2137,14 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
     {
         WorldDiplomacyStorage storage = Storage;
         WorldDiplomacyPrestigeApplication.SettleDocument(ref storage, _host.Prestige(), document);
-        if (!ReferenceEquals(storage, Storage)) _host.ReplaceStorage(storage);
+        if (!ReferenceEquals(storage, Storage)) _stateStore.Replace(storage);
     }
 
     public void RecoverUnsettledAiInternationalReputation()
     {
         WorldDiplomacyStorage storage = Storage;
         WorldDiplomacyPrestigeApplication.RecoverDocuments(ref storage, _host.Prestige());
-        if (!ReferenceEquals(storage, Storage)) _host.ReplaceStorage(storage);
+        if (!ReferenceEquals(storage, Storage)) _stateStore.Replace(storage);
     }
 
     public void ReconcileAllNationalPrestigeVassalRelations()

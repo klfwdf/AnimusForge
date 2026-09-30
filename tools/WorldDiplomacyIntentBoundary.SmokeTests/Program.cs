@@ -771,7 +771,13 @@ internal static class Program
 			&& propagationOwner.Contains("knownDocumentIds", StringComparison.Ordinal)
 			&& source.Contains("RecoverPlayerCourtReceiptsFromKnowledge();", StringComparison.Ordinal),
 			"old saves whose player court already knows a declaration must recover the missing formal receipt flag");
-		Test.True(ExtractMethod(source, "private void TryPublishPendingNotifications(").Contains("_notifications.Poll(_storage, DateTime.UtcNow, NotificationSink)"), "host binds notification owner");
+		string orchestrationHost = File.ReadAllText(
+			FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"),
+			Encoding.UTF8);
+		Test.True(orchestrationHost.Contains("public void PollNotifications()", StringComparison.Ordinal)
+			&& orchestrationHost.Contains("_notifications.Poll(", StringComparison.Ordinal)
+			&& orchestrationHost.Contains("NotificationSink", StringComparison.Ordinal),
+			"host binds notification owner");
         string notifications = ExtractMethod(source, "internal void Poll(");
 		Test.True(notifications.Contains("WorldDiplomacyPropagationApplication.SelectPendingRumors(storage, 3)", StringComparison.Ordinal)
 			&& notifications.Contains("WorldDiplomacyPropagationApplication.MarkRumorNotified(rumor)", StringComparison.Ordinal)

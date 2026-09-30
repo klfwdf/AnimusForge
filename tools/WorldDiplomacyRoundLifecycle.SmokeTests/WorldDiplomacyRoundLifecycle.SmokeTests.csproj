@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs" Link="WorldDiplomacyOrchestration.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStateStore.cs" Link="WorldDiplomacyStateStore.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs" Link="WorldDiplomacyStorageNormalizationApplication.cs" />
     <Compile Include="../../Refactor/Persistence/WorldDiplomacyStorageShapeNormalizer.cs" Link="WorldDiplomacyStorageShapeNormalizer.cs" />
     <Compile Include="../../Refactor/Persistence/WorldDiplomacyNotificationStateMigration.cs" Link="WorldDiplomacyNotificationStateMigration.cs" />

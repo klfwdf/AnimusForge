@@ -230,6 +230,9 @@ internal sealed class RecordingOrchestration : IWorldDiplomacyOrchestration
     public void ProcessRoundLifecycle() { }
     public void TrySchedulePolicyTriggeredRound() { }
     public void TryScheduleNormalRound() { }
+    public void EnsureActiveWarLedgers() { }
+    public void TrimRecentBattleFacts() { }
+    public void DecayWarPressure() { }
 }
 
 internal struct ContextReplaySource : IDiplomacyPostprocessContextSource

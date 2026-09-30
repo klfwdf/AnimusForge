@@ -98,7 +98,7 @@ internal static class Program
             "internal static void Normalize(ref WorldDiplomacyStorage storage,");
         Test.True(behavior.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref storage, allowWorldValidation,", StringComparison.Ordinal),
             "behavior normalization must call the real storage-normalization Application owner");
-        string newGame = ExtractMethod(behavior, "private void OnNewGameCreated(");
+        string newGame = ExtractMethod(behavior, "public void ResetStorageForNewGame(");
         string migration = File.ReadAllText(
             FindRepositoryFile("Refactor", "Persistence", "WorldDiplomacyNotificationStateMigration.cs"),
             Encoding.UTF8);

@@ -8,11 +8,8 @@ internal interface IWorldDiplomacyCampaignSource
     bool NativeQueueSanitized { get; set; }
     int LastSchedulerDay { get; set; }
     void RemoveQueuedNativeDiplomacyDecisions();
-    void EnsureActiveWarLedgersAndRemoveEndedWars();
-    void TrimRecentBattleFacts();
     void ClearDailyCaches();
     void ResetDailyGenerationBudget();
-    void DecayWarPressure();
 }
 
 internal static class WorldDiplomacyCampaignApplication
@@ -60,8 +57,8 @@ internal static class WorldDiplomacyCampaignApplication
 		source.ResetDailyGenerationBudget();
 		orchestration.RecalculatePendingPropagationIfNeeded();
 		source.LastSchedulerDay = source.CurrentDay;
-		source.EnsureActiveWarLedgersAndRemoveEndedWars();
-		source.TrimRecentBattleFacts();
+		orchestration.EnsureActiveWarLedgers();
+		orchestration.TrimRecentBattleFacts();
 		if (!source.IsEnabled)
 		{
 			orchestration.AnchorInternationalReputationNaturalChangeDays();
@@ -72,7 +69,7 @@ internal static class WorldDiplomacyCampaignApplication
 		source.RemoveQueuedNativeDiplomacyDecisions();
 		source.NativeQueueSanitized = true;
 		orchestration.ProcessInternationalReputationNaturalChange();
-		source.DecayWarPressure();
+		orchestration.DecayWarPressure();
 		orchestration.RefreshPolicyDiplomacySignals();
 		orchestration.RetryDeferredDocumentPropagation();
 		orchestration.ProcessPropagationArrivals();

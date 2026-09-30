@@ -20,11 +20,8 @@ internal static class CampaignApplicationReplay
         public bool NativeQueueSanitized { get; set; }
         public int LastSchedulerDay { get; set; }
         public void RemoveQueuedNativeDiplomacyDecisions() { _f.Events.Add("RemoveQueuedNativeDiplomacyDecisions"); }
-        public void EnsureActiveWarLedgersAndRemoveEndedWars() { _f.Events.Add("EnsureActiveWarLedgersAndRemoveEndedWars"); }
-        public void TrimRecentBattleFacts() { _f.Events.Add("TrimRecentBattleFacts"); }
         public void ClearDailyCaches() { _f.Events.Add("ClearDailyCaches"); }
         public void ResetDailyGenerationBudget() { _f.Events.Add("ResetDailyGenerationBudget"); }
-        public void DecayWarPressure() { _f.Events.Add("DecayWarPressure"); }
     }
     private sealed class Orch : FakeOrchestration
     {
@@ -51,6 +48,9 @@ internal static class CampaignApplicationReplay
         public override void TryScheduleTokenCompression() { _f.Events.Add("TryScheduleTokenCompression"); }
         public override void NormalizeStorage(bool allowWorldValidation) { _f.Events.Add("NormalizeStorage"); }
         public override void RetryDeferredRoundProgress() { _f.Events.Add("RetryDeferredRoundProgress"); }
+        public override void EnsureActiveWarLedgers() { _f.Events.Add("EnsureActiveWarLedgers"); }
+        public override void TrimRecentBattleFacts() { _f.Events.Add("TrimRecentBattleFacts"); }
+        public override void DecayWarPressure() { _f.Events.Add("DecayWarPressure"); }
     }
     internal static void Run()
     {
@@ -68,7 +68,7 @@ internal static class CampaignApplicationReplay
         Test.True(string.Join(",", flags.Events) == "TryApplyInitialNewGamePeace,HandleDisabledState", "disabled campaign applies closure once");
         flags.Events.Clear();
         WorldDiplomacyCampaignApplication.DailyTick(ref source, orch);
-        const string maintenance = "NormalizeStorage,ReconcileAllNationalPrestigeVassalRelations,RetryDeferredCanonicalHistoryEntries,RetryDiplomaticThreatDomesticPenalties,RetryDiplomaticThreatComplianceConsequences,RetryDiplomaticThreatHistoryResults,RefreshRoundIntervalScheduleIfNeeded,ClearDailyCaches,ResetDailyGenerationBudget,RecalculatePendingPropagationIfNeeded,EnsureActiveWarLedgersAndRemoveEndedWars,TrimRecentBattleFacts";
+        const string maintenance = "NormalizeStorage,ReconcileAllNationalPrestigeVassalRelations,RetryDeferredCanonicalHistoryEntries,RetryDiplomaticThreatDomesticPenalties,RetryDiplomaticThreatComplianceConsequences,RetryDiplomaticThreatHistoryResults,RefreshRoundIntervalScheduleIfNeeded,ClearDailyCaches,ResetDailyGenerationBudget,RecalculatePendingPropagationIfNeeded,EnsureActiveWarLedgers,TrimRecentBattleFacts";
         Test.True(string.Join(",", flags.Events) == maintenance + ",AnchorInternationalReputationNaturalChangeDays", "disabled daily tick still performs recovery and pins the reputation anchor");
         source.IsEnabled = true; flags.Events.Clear(); source.CurrentDay = 8;
         WorldDiplomacyCampaignApplication.DailyTick(ref source, orch);

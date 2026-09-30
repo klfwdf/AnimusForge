@@ -255,9 +255,15 @@ static class Program
             .Any(l => l.IsKind(SyntaxKind.StringLiteralExpression) && retired.Contains(l.Token.ValueText)), "no reflection string references retired members");
         Check(!texts.Values.Any(t => t.Contains("WorldDiplomacyJobQueueItem") || t.Contains("SelectNextJobId(")), "retired queue DTO/selector absent from production");
         var hostRoot = trees[host].GetRoot();
-        Check(hostRoot.DescendantNodes().OfType<FieldDeclarationSyntax>().Count(f => f.Declaration.Type.ToString() == "WorldDiplomacyStorage") == 1, "one canonical storage field");
+        Check(hostRoot.DescendantNodes().OfType<FieldDeclarationSyntax>().All(f => f.Declaration.Type.ToString() != "WorldDiplomacyStorage"),
+            "the host must not own a canonical storage field");
+        Check(trees.ContainsKey("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStateStore.cs")
+            && trees["src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStateStore.cs"].GetRoot()
+                .DescendantNodes().OfType<FieldDeclarationSyntax>()
+                .Count(f => f.Declaration.Type.ToString() == "WorldDiplomacyStorage") == 1,
+            "the application state store must own the single canonical storage field");
         foreach (string path in texts.Keys.Where(p => p.Contains("Diplomacy")))
-            if (path != host)
+            if (path != "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStateStore.cs")
                 Check(!trees[path].GetRoot().DescendantNodes().OfType<FieldDeclarationSyntax>().Any(f => f.Declaration.Type.ToString() == "WorldDiplomacyStorage"), "second diplomacy state owner " + path);
         Check(texts.Where(x => x.Value.Contains("_af_world_diplomacy_v1")).Select(x => x.Key).SequenceEqual(new[] { "Refactor/Adapters/BannerlordWorldDiplomacyPersistenceAdapter.cs" }), "canonical save key remains adapter-owned");
         var mutations = new[] {

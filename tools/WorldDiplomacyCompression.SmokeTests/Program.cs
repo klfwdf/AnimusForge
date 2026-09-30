@@ -40,9 +40,11 @@ internal static class Program
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string jobRuntime = ReadRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.JobRuntime.cs"));
-        int jobRuntimeInsertion = behavior.IndexOf("private void CommitFailedJob(WorldDiplomacyJob job, string error)", StringComparison.Ordinal);
-        Test.True(jobRuntimeInsertion >= 0, "world diplomacy job runtime insertion marker must exist");
-        behavior = behavior.Insert(jobRuntimeInsertion, jobRuntime + Environment.NewLine);
+        string orchestration = ReadRepositoryFile(Path.Combine(
+            "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyOrchestration.cs"));
+        Test.True(orchestration.Contains("public void CommitFailedJob(WorldDiplomacyJob job, string error)", StringComparison.Ordinal),
+            "job commit ownership must stay in the application orchestration");
+        behavior = behavior + Environment.NewLine + jobRuntime + Environment.NewLine + orchestration;
         string client = ReadRepositoryFile("WorldDiplomacyLlmClient.cs");
 
         VerifyDefaultsAndRanges(settings);
