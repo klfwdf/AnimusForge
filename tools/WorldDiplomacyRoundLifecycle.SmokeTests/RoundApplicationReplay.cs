@@ -25,6 +25,13 @@ internal static class RoundApplicationReplay
 
     private static void SelectionAndOpening()
     {
+        foreach (var duration in new[] { (15, 18), (21, 24), (28, 32) })
+        {
+            var configured = WorldDiplomacyRoundApplication.EnsureOpen(new WorldDiplomacyStorage(), () =>
+                new WorldDiplomacyRoundApplication.RoundOpening(3, "configured", "a", "b", 100, duration.Item1, duration.Item2, 2, false));
+            Test.True(configured.SoftEndDay == 100 + duration.Item1 && configured.HardEndDay == 100 + duration.Item2,
+                "all configured round durations survive application opening");
+        }
         var storage = new WorldDiplomacyStorage { NextNormalRoundDay = 10, RotationIndex = 1 };
         var visited = new List<string>();
         int worldReads = 0, next = 0, queued = 0, budgets = 0;
