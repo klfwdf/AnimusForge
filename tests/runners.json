@@ -99,6 +99,12 @@
   "tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/test_source_parity.py": {
    "expect": "PREEXISTING_FAIL"
   },
+  "tests/modules/AF.Module.Conversation/CourierInboundCompletionContractTests/run_selection.py": {
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/j17b/session-20260930/p6-integration/selection-{RUN}"
+   ]
+  },
   "tests/modules/AF.Module.Conversation/CourierInboundDeliveryFailureTests/run.py": {
    "args": [
     "--dotnet",

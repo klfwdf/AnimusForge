@@ -85,10 +85,10 @@
     }
   },
   "dependencies": {
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs": "fe79f283606dc0365e6bf9e23bd7d4d411fef870f034ac375f3532df225773e7",
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a",
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3",
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs": "e3f746979d34a037131f95ef2de6f0eff7068e41c97948c979ce686a7ce51490",
+    "Refactor/Modules/CoreDialogueContracts.cs": "fe79f283606dc0365e6bf9e23bd7d4d411fef870f034ac375f3532df225773e7",
+    "Refactor/Modules/CoreDialogueOperation.cs": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a",
+    "Refactor/Modules/CoreDialogueClient.cs": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3",
+    "Refactor/Modules/CoreDialogueServices.cs": "e3f746979d34a037131f95ef2de6f0eff7068e41c97948c979ce686a7ce51490",
     "ShoutBehavior.ModuleNativeSubmission.cs": "26538e78762ca3f8aba96abfc6cb9bc5c1a43c5c452de9cdbcb8b6f7046fe9ca",
     "Api/V1/AfDialogueClient.cs": "1fcba904516830e56da5aa4a58c013a335088f1c31c3bff40f7c586ffe685fbe",
     "Api/Internal/AfV1DialogueProjection.cs": "056c88e02fd05a89a8c6c763dccba303798c4c63653df03ef3cfd2ff19ea59a5"

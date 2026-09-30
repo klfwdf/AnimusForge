@@ -9,7 +9,7 @@
     "four DLL metadata and six current builds"
   ],
   "files": {
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs": {
+    "Refactor/Modules/CoreDialogueContracts.cs": {
       "beforeSha256": "61fc4a9160941ede3ebb339f8cd62dff7b9d0fd8b1990330f2e664f110765668",
       "afterSha256": "fd79f00a50e96f38faa9fa2e5364745c242b83c9b95c775d4d1e4d06d3b9a08e",
       "hunks": [
@@ -39,7 +39,7 @@
         }
       ]
     },
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs": {
+    "Refactor/Modules/CoreDialogueOperation.cs": {
       "beforeSha256": "5f1fcd17960a8389cbfa744701174200b425c6bf13cd9cc3d50869f4ec6bc013",
       "afterSha256": "e5d0fa83b9ed54be9745d397c7484fa6f4061c23abbb161ebd2f51188ec8868d",
       "hunks": [
@@ -69,7 +69,7 @@
         }
       ]
     },
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs": {
+    "Refactor/Modules/CoreDialogueClient.cs": {
       "beforeSha256": "b453faa9557fb92d5d9969401a0f933e73b62f5334b9d946c88cdc7d73b453a1",
       "afterSha256": "a59070fd9cc1b2c400830bc8f0f87f90360fe0beb961d22a08b70f61473d00f2",
       "hunks": [

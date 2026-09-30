@@ -38,6 +38,20 @@ COURIER_REPLY_WAIT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/C
 def source(path: str, ref: str | None) -> str:
     if ref:
         # Historical cutover references predate the byte-identical J07a/J09a moves.
+        j17_old = {
+            "src/AF.Contracts/Internal/InteractionContracts.cs": "Refactor/Contracts/InteractionContracts.cs",
+            "src/AF.Contracts/Internal/LlmContracts.cs": "Refactor/Contracts/LlmContracts.cs",
+            "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs": "Refactor/Adapters/LegacyInteractionPipelineComposition.cs",
+            "src/modules/AF.Module.Prompt/Composition/LegacyDetachedPromptComposer.cs": "Refactor/Adapters/LegacyDetachedPromptComposer.cs",
+            "src/modules/AF.Module.Prompt/Composition/LegacyDetachedPostprocessPromptComposer.cs": "Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs",
+            "src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs": "Refactor/Adapters/LegacyPromptPackageAdapter.cs",
+            "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        }
+        if path in j17_old:
+            exists = subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT,
+                                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+            if not exists:
+                path = j17_old[path]
         if path == "src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs":
             exists = subprocess.run(["git", "cat-file", "-e", f"{ref}:{path}"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
             if not exists:
