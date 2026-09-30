@@ -429,7 +429,7 @@ internal static class Program
             "public static string BuildRelayGenerationSystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)",
             "public static string BuildDeclareModePrompt(string dynamicPrompt)");
         string compressionEnqueue = ReadRepositoryFile(
-            Path.Combine("Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
         Test.True(generationSystem.Contains("return BuildCanonicalHistorySystemPrompt(commonContract, minimumCharacters, maximumCharacters)", StringComparison.Ordinal),
             "ordinary declaration generation must use the shared first system message");
         Test.True(relaySystem.Contains("return BuildCanonicalHistorySystemPrompt(commonContract, minimumCharacters, maximumCharacters)", StringComparison.Ordinal),
@@ -568,7 +568,7 @@ internal static class Program
         Test.Equal(1000, ReadIntConstant(behavior, "CompressionJobPriority"),
             "compression jobs must outrank ordinary diplomacy jobs");
 
-        string enqueue = ReadRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
+        string enqueue = ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
         Test.True(enqueue.Contains("Priority = compressionJobPriority", StringComparison.Ordinal),
             "queued compression jobs must use the dedicated high priority");
 
@@ -583,7 +583,7 @@ internal static class Program
             "queue trimming must honor the compression maintenance slot");
 
         string scheduler = ExtractSection(
-            ReadRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")),
+            ReadRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs")),
             "public static void TryScheduleTokenCompression(",
             "public static void EnqueueCompressionJob(");
         Test.True(scheduler.Contains("compressionTriggerTokens", StringComparison.Ordinal),
@@ -601,14 +601,14 @@ internal static class Program
     private static void VerifyFrozenOverallTarget(string behavior)
     {
         string enqueue = ReadRepositoryFile(
-            Path.Combine("Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
         Test.True(enqueue.Contains("int overallTargetTokens = Math.Max(1, targetTokens)", StringComparison.Ordinal),
             "queue time must freeze the selected overall target");
         Test.True(enqueue.Contains("CompressionOverallTargetTokens = overallTargetTokens", StringComparison.Ordinal),
             "frozen overall target must be stored on the job");
 
         string commit = ReadRepositoryFile(
-            Path.Combine("Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
         Test.True(commit.Contains("job.CompressionOverallTargetTokens > 0", StringComparison.Ordinal)
                   && commit.Contains("? job.CompressionOverallTargetTokens", StringComparison.Ordinal),
             "commit must prefer the job's frozen overall target over live MCM state");
@@ -675,7 +675,7 @@ internal static class Program
             "the capped value, not the requested value, must enter the request body");
 
         string enqueue = ReadRepositoryFile(
-            Path.Combine("Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
+            Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryCompressionApplication.cs"));
         Test.True(enqueue.Contains("resolveOutputTokenLimit()", StringComparison.Ordinal),
             "compression target construction must account for the current route output cap");
         Test.True(enqueue.Contains(

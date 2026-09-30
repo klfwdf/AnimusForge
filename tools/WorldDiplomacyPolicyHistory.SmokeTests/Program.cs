@@ -85,16 +85,17 @@ Check(context.Contains("_publishedHistoryLedgerId = UnifiedPolicyHistoryLedgerId
 Check(context.Contains("AppendHash(ref contentSignature, entry.DiplomacyRevisionKey)"), "renewal/application identity must participate in semantic revision");
 string historyRules = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Rules/WorldDiplomacyPolicyHistoryRules.cs"));
 Check(historyRules.Contains("fingerprint = policy.ContentHash;"), "consumer must honor the complete semantic revision");
-string canonicalHistoryRules = File.ReadAllText(Path.Combine(root, "Refactor/Domain/WorldDiplomacyCanonicalHistoryRules.cs"));
+string canonicalHistoryRules = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryPublicationApplication.cs"));
 Check(canonicalHistoryRules.Contains("WorldDiplomacyPolicyHistoryRules.TryBuildPublishedPolicySignature("), "consumer must delegate policy signatures to the tested rules");
 Check(canonicalHistoryRules.Contains("WorldDiplomacyPolicyHistoryRules.NextEventRevision("), "consumer must use tested durable revision logic");
+string compressionApplication = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCompressionApplication.cs"));
 string lifecycleRules = File.ReadAllText(Path.Combine(root, "Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs"));
 string llmDispatch = File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
 int budgetGuard = llmDispatch.IndexOf("EnsureRequestFitsInputBudget(job, requestMessages", StringComparison.Ordinal);
 Check(budgetGuard >= 0 && budgetGuard < llmDispatch.IndexOf("job.IsRunning = true;", budgetGuard, StringComparison.Ordinal), "input budget must be checked before network dispatch");
 Check(behavior.Contains("CaptureCanonicalHistoryForJob(job, syncSources: false, throughSequence: seq)")
-    && canonicalHistoryRules.Contains("captureHistory(job, throughSequence);"), "compression request must match its frozen commit cutoff");
-Check(canonicalHistoryRules.Contains("pending.AwaitingHistoryCompression = false;"), "successful compression must release waiting generation instead of scheduling an endless compaction loop");
+    && compressionApplication.Contains("captureHistory(job, throughSequence);"), "compression request must match its frozen commit cutoff");
+Check(compressionApplication.Contains("pending.AwaitingHistoryCompression = false;"), "successful compression must release waiting generation instead of scheduling an endless compaction loop");
 Check(llmDispatch.Contains("tryConsumeRequestBudget?.Invoke(false)") && File.ReadAllText(Path.Combine(root, "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs")).Contains("_owner.TryConsumeDiplomacyLlmRequestBudget(consume)"), "exhausted daily budgets must exit before assembling large prompts");
 
 if (args.Length > 0)

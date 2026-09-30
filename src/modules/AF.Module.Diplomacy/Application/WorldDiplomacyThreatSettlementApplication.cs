@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -460,7 +460,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 				try
 				{
 					_orchestration.AppendCanonicalDocumentEvents(document);
-					WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(document,
+					WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(document,
 			_storage?.DiplomaticThreats, _orchestration.TryAppendDiplomaticThreatHistoryResult,
 			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
 			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
@@ -508,7 +508,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsNonComplianceHistoryRetry, 8))
 		{
-			WorldDiplomacyRoundLifecycleRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, _orchestration.TryAppendDiplomaticThreatNonComplianceHistoryResult);
+			WorldDiplomacyThreatHistoryApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, _orchestration.TryAppendDiplomaticThreatNonComplianceHistoryResult);
 		}
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsThreatResultHistoryRetry, 8))
@@ -524,7 +524,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			try
 			{
 				_orchestration.AppendCanonicalDocumentEvents(source);
-				WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(source,
+				WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(source,
 			_storage?.DiplomaticThreats, _orchestration.TryAppendDiplomaticThreatHistoryResult,
 			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
 			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult);

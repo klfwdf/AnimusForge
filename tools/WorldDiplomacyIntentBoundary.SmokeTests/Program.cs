@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using AnimusForge;
 
@@ -36,7 +36,7 @@ internal static class Program
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPresentationQueries.cs"));
         string canonicalHistoryFile = File.ReadAllText(
             FindRepositoryFile(Path.Combine(
-                "Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")),
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryPublicationApplication.cs")),
             Encoding.UTF8);
         string documentTextRules = File.ReadAllText(
             FindRepositoryFile(Path.Combine(
@@ -700,7 +700,7 @@ internal static class Program
 
 	private static void RunRecoveredDiplomacyRegressionContractTests(string source, string documentTextRules)
 	{
-		string authorGate = ExtractMethod(source, "private static bool CanAiAuthorDiplomaticDocument(");
+		string authorGate = File.ReadAllText(FindRepositoryFile("Refactor/Domain/WorldDiplomacyAuthorityRules.cs"));
 		Test.True(!authorGate.Contains("ruler.IsPrisoner", StringComparison.Ordinal)
 			&& authorGate.Contains("player_controlled_realm_requires_player_authorization", StringComparison.Ordinal),
 			"AI diplomatic authorship must allow captive rulers while still rejecting player-ruled realms");
@@ -713,6 +713,7 @@ internal static class Program
             + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ImmediateActionPort.cs"));
         Test.True(CountOccurrences(authorityProbeComposite, "CanAiAuthorDiplomaticDocument(")
             + CountOccurrences(authorityProbeComposite, "CanAiAuthorParty(")
+            + CountOccurrences(authorityProbeComposite, "WorldDiplomacyAuthorityRules.CanAiAuthor(")
             + CountOccurrences(authorityProbeComposite, "canAiAuthor(") >= 8,
 			"AI author authority must be checked at scheduling, request, commit, propagation, and execution boundaries");
 		string mandatoryResponse = ExtractMethod(source, "private void TryScheduleMandatoryCourtResponse(");
@@ -1284,7 +1285,7 @@ internal static class Program
 			"public static void UpdateDiplomaticThreatComplianceDocumentResult(");
 		string canonicalHistoryFile = File.ReadAllText(
 			FindRepositoryFile(Path.Combine(
-				"Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")),
+				"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryPublicationApplication.cs")),
 			Encoding.UTF8);
 		string nonComplianceHistoryResult = ExtractMethod(
 			canonicalHistoryFile,
@@ -3578,7 +3579,7 @@ internal static class Program
 			"a threat noncompliance event must copy both stage and decision action ids");
 
 		string canonicalHistoryRules = File.ReadAllText(FindRepositoryFile(Path.Combine(
-			"Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")), Encoding.UTF8);
+			"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryPublicationApplication.cs")), Encoding.UTF8);
 		string canonicalEvents = ExtractMethod(canonicalHistoryRules, "public static void AppendCanonicalDocumentEvents(");
 		Test.True(canonicalEvents.Contains("document.Actions", StringComparison.Ordinal)
 			&& canonicalEvents.Contains("action.ActionId", StringComparison.Ordinal)

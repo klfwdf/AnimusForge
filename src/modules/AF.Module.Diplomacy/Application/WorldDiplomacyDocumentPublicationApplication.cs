@@ -86,11 +86,11 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         try
         {
             appendCanonicalEvents?.Invoke(document);
-            FinalizeDiplomaticThreatHistoryAfterDocument(document,
+            WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(document,
             threats, appendThreatHistory,
             appendThreatDomesticPenaltyHistory,
             appendThreatIssuerRewardHistory);
-            FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
+            WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
             threats, appendThreatNonComplianceHistory);
         }
         catch (Exception ex)
