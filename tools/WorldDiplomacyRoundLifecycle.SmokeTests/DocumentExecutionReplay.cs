@@ -18,8 +18,7 @@ internal static class DocumentExecutionReplay
         public IReadOnlyList<WorldDiplomacyThreat> Threats { get; } = new List<WorldDiplomacyThreat>();
         public string ResolveKingdomId(string id) { return id == "missing" || string.IsNullOrEmpty(id) ? null : id; }
         public bool IsEliminated(string id) { return false; }
-        public bool HasIndependentWorldDiplomacyAuthority(string id) { return id != "vassal"; }
-        public bool CanAiAuthorDiplomaticDocument(string id, out string reason) { reason = "blocked_author"; return AuthorAllowed; }
+        public WorldDiplomacyAuthoritySnapshot CaptureAuthority(string id) => new(id, id != null, false, id == "vassal", "suzerain", !AuthorAllowed, true);
         public WorldDiplomacyRound ResolveRound(string id) { return Round; }
         public WorldDiplomacyDocument ResolveDocument(string id) { return StoredDocument?.DocumentId == id ? StoredDocument : null; }
         public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer) { return null; }
@@ -130,7 +129,7 @@ internal static class DocumentExecutionReplay
         Test.True(p.Effects == 1 && p.Events.IndexOf("propagation") < p.Events.IndexOf("history") && p.Events.Contains("round"),
             "legacy single action keeps its existing propagation-before-history ordering");
         (p, orch) = Fixture(x => x.AuthorAllowed = false); doc = Document("b"); Run(p, orch, doc);
-        Test.True(p.Effects == 0 && p.Events.Contains("reject:blocked_author"), "AI author authority checked before target work");
+        Test.True(p.Effects == 0 && p.Events.Contains("reject:player_controlled_realm_requires_player_authorization"), "AI author authority checked before target work");
         (p, orch) = Fixture(); doc = Document("b"); doc.Actions.Clear(); doc.IsPlayerAuthored = true; doc.Intent = "statement"; Run(p, orch, doc);
         Test.True(p.Effects == 0 && doc.IsReadyForPublication && p.Events.Contains("history"), "player public statement remains publishable without mechanical action");
     }
