@@ -44,15 +44,4 @@ namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 {
-	private void TryStartNextLlmJob()
-	{
-		var source = new LlmDispatchSource(this);
-		WorldDiplomacyLlmDispatchApplication.Run(ref source, _orchestration);
-	}
-
-	private void ProcessCompletedJobs()
-	{
-		var source = new CompletionSource(this);
-		WorldDiplomacyCompletionApplication.Run(ref source, _orchestration);
-	}
 }

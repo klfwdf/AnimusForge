@@ -1116,22 +1116,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " relay_hit_rate=" + (relay <= 0 ? "n/a" : (100d * _relayCacheHitTokensThisSession / relay).ToString("F1", CultureInfo.InvariantCulture) + "%"));
 	}
 
-	private void CommitFailedJob(WorldDiplomacyJob job, string error)
-	{
-		_orchestration.CommitFailedJob(job, error);
-	}
-	private void CommitGeneratedDocument(WorldDiplomacyJob job, string raw)
-	{
-		_orchestration.CommitGeneratedDocument(job, raw);
-	}
-
-
-
-
-
-
-
-
 
 
 
@@ -2633,10 +2617,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 
 
-	private void TryPublishPendingNotifications()
-	{
-		_notifications.Poll(_storage, DateTime.UtcNow, NotificationSink);
-	}
 	private bool TryEnsureMapNotificationRegistered()
 	{
 		try
