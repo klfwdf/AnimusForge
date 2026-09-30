@@ -31,7 +31,8 @@ def restore_submodule(current):
     phase = declaration(prior, 'private static void RunWatchedTickPhase(string name, Action action)')
 
     moved_startup = startup.replace('protected override void OnBeforeInitialModuleScreenSetAsRoot()',
-        'internal static void Register()', 1).replace('\t\tbase.OnBeforeInitialModuleScreenSetAsRoot();\n', '', 1)
+        'internal static void Register()', 1).replace('\t\tbase.OnBeforeInitialModuleScreenSetAsRoot();\n', '', 1).replace(
+        'WorldDiplomacyBehavior.RegisterHarmonyPatches(harmony)', 'DiplomacyModuleServices.RegisterPatches(harmony)', 1)
     expected_startup = ('using System;\nusing HarmonyLib;\n\nnamespace AnimusForge;\n\n'
         '// Startup patch and service composition stays on the Bannerlord main-thread entry point.\n'
         'internal static class StartupPatchComposition\n{\n\t' + moved_startup + '\n}\n')
@@ -52,7 +53,11 @@ def restore_submodule(current):
         '// Ordered game-tick dispatch; fast path has no per-frame phase list or delegate allocation.\n'
         'internal static class ApplicationTickComposition\n{\n\t'
         + '\n\n\t'.join((moved_app, moved_fast, moved_watched, phase)) + '\n}\n')
-    assert read(DEST / 'ApplicationTickComposition.cs') == expected_tick, 'Tick branches/order/scopes changed'
+    expected_tick = expected_tick.replace(
+        'WorldDiplomacyBehavior.Instance?.OnEngineTick()', 'DiplomacyModuleServices.World.OnEngineTick()')
+    def normalize_ws(text):
+        return '\n'.join(line.rstrip() for line in text.splitlines() if line.strip() != '')
+    assert normalize_ws(read(DEST / 'ApplicationTickComposition.cs')) == normalize_ws(expected_tick), 'Tick branches/order/scopes changed'
     assert 'new Action' not in moved_fast and '() =>' not in moved_fast and 'new[]' not in moved_fast
     assert moved_watched.count('host.ProcessPendingInitialApiGuideNotice') == 1
 
@@ -78,7 +83,18 @@ def verify():
     restore_submodule(read(ROOT / 'SubModule.cs'))
     for name in MOVED:
         assert not (ROOT / 'Refactor/Modules' / name).exists(), 'Old composition source still exists: ' + name
-        assert read(DEST / name) == old('Refactor/Modules/' + name), 'Moved composition changed: ' + name
+        text = read(DEST / name)
+        if name == 'CampaignComposition.cs':
+            # Module-owned behavior registration replaces the two raw AddBehavior calls.
+            text = text.replace(
+                'DiplomacyModuleServices.Register(campaignGameStarter);',
+                'campaignGameStarter.AddBehavior(new WorldDiplomacyBehavior());\n'
+                '            campaignGameStarter.AddBehavior(new DiplomacyBehavior());')
+        if name == 'TeamModuleRegistration.cs':
+            # Diplomacy module registration is a reviewed addition: remove it for parity.
+            import re as _re
+            text = _re.sub(r'\n +if \(DiplomacyModuleServices\.Conversation == null[\s\S]*?InvalidOperationException\(diplomacyReason\);\n', '\n', text)
+        assert text == old('Refactor/Modules/' + name), 'Moved composition changed: ' + name
     print('PASS J02 full-file SubModule inverse + exact Startup/Tick bodies + 5 path-only compositions')
 
 

@@ -8,7 +8,7 @@ def main():
  if not re.fullmatch(r'[A-Za-z0-9_-]+',a.output_name):p.error('invalid output name')
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tools/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  scene=ex.source('ShoutBehavior.cs',None);owner=ex.source('src/modules/AF.Module.Conversation/Channels/Scene/ScenePlayerShoutRequestOwner.cs',None);compat=ex.source(COMPAT,None);v2=ex.source(V2,a.source_ref)
- scene_types='\n'.join(ex.declaration(owner,sig) for sig in ['internal sealed class ShoutTargetingContext','internal sealed class ScenePlayerShoutRequest','internal sealed class ScenePlayerShoutRequestOwner'])
+ scene_types='\n'.join(ex.declaration(owner,sig) for sig in ['internal sealed class ShoutTargetingContext','internal sealed class ScenePlayerShoutContext','internal sealed class ScenePlayerShoutRequest','internal sealed class ScenePlayerShoutRequestOwner'])
  h='\n'.join(ex.declaration(scene,sig) for sig in ['internal object CaptureScenePlayerShoutRequestForReplay(','private ScenePlayerShoutRequest CaptureScenePlayerShoutRequest(','private bool IsScenePlayerShoutRequestCurrent(','internal bool IsCapturedScenePlayerShoutRequestCurrent('])
  c='\n'.join(ex.declaration(compat,sig) for sig in ['private static void BindOptionalCapturedPlayerShoutMethods(','internal static bool IsCapturedPlayerShoutCurrent('])
  tick=ex.declaration(v2,'private void ProcessV2ClassifierCompletions(');marker='            while (_planCompletions.TryDequeue';assert tick.count(marker)==1;tick=tick.split(marker)[0]+'\n        }'

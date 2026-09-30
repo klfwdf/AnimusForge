@@ -175,6 +175,63 @@ namespace AnimusForge
         internal static void Register(CampaignGameStarter starter) { }
         internal static void RegisterPatches(HarmonyLib.Harmony harmony) { }
     }
+    // Generated-project orchestration surface: the union of members invoked by the
+    // source-linked Tick and Campaign applications under test. The production
+    // interface is wider; this stub is intentionally minimal and orchestration-agnostic.
+    internal interface IWorldDiplomacyOrchestration
+    {
+        void HandleDisabledState();
+        void ProcessCompletedJobs();
+        void TryScheduleTokenCompression();
+        void TryStartNextLlmJob();
+        void PollNotifications();
+        void TryApplyInitialNewGamePeace();
+        void NormalizeStorage(bool allowWorldValidation);
+        void ReconcileAllNationalPrestigeVassalRelations();
+        void RetryDeferredCanonicalHistoryEntries();
+        void RetryDiplomaticThreatDomesticPenalties();
+        void RetryDiplomaticThreatComplianceConsequences();
+        void RetryDiplomaticThreatHistoryResults();
+        void RefreshRoundIntervalScheduleIfNeeded();
+        void RecalculatePendingPropagationIfNeeded();
+        void AnchorInternationalReputationNaturalChangeDays();
+        void ProcessInternationalReputationNaturalChange();
+        void RefreshPolicyDiplomacySignals();
+        void RetryDeferredDocumentPropagation();
+        void ProcessPropagationArrivals();
+        void ProcessRelayArrivals();
+        void RetryDeferredRoundProgress();
+        void ProcessRoundLifecycle();
+        void TrySchedulePolicyTriggeredRound();
+        void TryScheduleNormalRound();
+    }
+    internal sealed class NoopOrchestration : IWorldDiplomacyOrchestration
+    {
+        public void HandleDisabledState() { }
+        public void ProcessCompletedJobs() { }
+        public void TryScheduleTokenCompression() { }
+        public void TryStartNextLlmJob() { }
+        public void PollNotifications() { }
+        public void TryApplyInitialNewGamePeace() { }
+        public void NormalizeStorage(bool allowWorldValidation) { }
+        public void ReconcileAllNationalPrestigeVassalRelations() { }
+        public void RetryDeferredCanonicalHistoryEntries() { }
+        public void RetryDiplomaticThreatDomesticPenalties() { }
+        public void RetryDiplomaticThreatComplianceConsequences() { }
+        public void RetryDiplomaticThreatHistoryResults() { }
+        public void RefreshRoundIntervalScheduleIfNeeded() { }
+        public void RecalculatePendingPropagationIfNeeded() { }
+        public void AnchorInternationalReputationNaturalChangeDays() { }
+        public void ProcessInternationalReputationNaturalChange() { }
+        public void RefreshPolicyDiplomacySignals() { }
+        public void RetryDeferredDocumentPropagation() { }
+        public void ProcessPropagationArrivals() { }
+        public void ProcessRelayArrivals() { }
+        public void RetryDeferredRoundProgress() { }
+        public void ProcessRoundLifecycle() { }
+        public void TrySchedulePolicyTriggeredRound() { }
+        public void TryScheduleNormalRound() { }
+    }
     internal sealed class WorldDiplomacyBehavior
     {
         public static WorldDiplomacyBehavior Instance;
@@ -184,6 +241,7 @@ namespace AnimusForge
         public static bool Applied;
         public static WorldDiplomacyStorage State = new();
         public static IWorldDiplomacyPresentationPort Port;
+        public IWorldDiplomacyOrchestration Orchestration { get; internal set; } = new NoopOrchestration();
         internal static bool TryCaptureDiscussionCandidate(Hero h, out WorldDiplomacyDiscussionCandidate candidate, out string kingdomId)
         { Recording.Call("discuss",h); candidate = new WorldDiplomacyDiscussionCandidate(true,true,false,true,false); kingdomId="kingdom"; return true; }
         internal static bool HasKnownDocumentForDiscussion(Hero h, string kingdomId)
@@ -210,12 +268,7 @@ namespace AnimusForge
             public bool IsEnabled => true;
             public bool DisabledStateApplied => false;
             public void ProcessComposePopup() { owner.Ticks++; }
-            public void ApplyDisabledState() { }
             public void ClearDisabledState() { }
-            public void ProcessCompletedJobs() { }
-            public void TryScheduleTokenCompression() { }
-            public void TryStartNextLlmJob() { }
-            public void TryPublishPendingNotifications() { }
         }
         internal struct CampaignSource : IWorldDiplomacyCampaignSource
         {
@@ -226,33 +279,12 @@ namespace AnimusForge
             public bool DisabledStateApplied { get; set; }
             public bool NativeQueueSanitized { get; set; }
             public int LastSchedulerDay { get; set; }
-            public void TryApplyInitialNewGamePeace() { }
-            public void HandleDisabledState() { }
             public void RemoveQueuedNativeDiplomacyDecisions() { }
-            public void RefreshPolicyDiplomacySignals() { }
-            public void ProcessRelayArrivals() { }
-            public void ProcessRoundLifecycle() { }
-            public void TrySchedulePolicyTriggeredRound() { }
-            public void TryScheduleNormalRound() { }
-            public void ReconcileAllNationalPrestigeVassalRelations() { }
-            public void RetryDeferredCanonicalHistoryEntries() { }
-            public void RetryDiplomaticThreatDomesticPenalties() { }
-            public void RetryDiplomaticThreatComplianceConsequences() { }
-            public void RetryDiplomaticThreatHistoryResults() { }
-            public void RefreshRoundIntervalScheduleIfNeeded() { }
-            public void RecalculatePendingPropagationIfNeeded() { }
             public void EnsureActiveWarLedgersAndRemoveEndedWars() { }
             public void TrimRecentBattleFacts() { }
-            public void AnchorInternationalReputationNaturalChangeDays() { }
-            public void ProcessInternationalReputationNaturalChange() { }
-            public void RetryDeferredDocumentPropagation() { }
-            public void ProcessPropagationArrivals() { }
-            public void TryScheduleTokenCompression() { }
-            public void NormalizeStorage() { }
             public void ClearDailyCaches() { }
             public void ResetDailyGenerationBudget() { }
             public void DecayWarPressure() { }
-            public void RetryDeferredRoundProgress() { }
         }
     }
     internal static class WorldDiplomacyPolicyContext
