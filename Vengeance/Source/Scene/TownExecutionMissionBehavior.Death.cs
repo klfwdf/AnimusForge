@@ -792,6 +792,9 @@ public sealed partial class TownExecutionMissionBehavior
 
         _victimConversationBlockAttempted = true;
         var victim = _victimAgent;
+        // Frozen-pose methods leave the Agent active; hosts use this mark to
+        // stop treating the executed prisoner as a living shout target.
+        VengeanceIntegration.MarkExecutedVictim(victim);
         if (_conversationLogic is null || victim is null)
         {
             RexLog.Error(
@@ -1753,10 +1756,17 @@ public sealed partial class TownExecutionMissionBehavior
         {
             try
             {
+                // Every step here is idempotent, so the flag is set only after
+                // all of them ran; a failure retries on the next tick.
                 ExecutionSessionCoordinator.Release(Request.SessionId);
-                _aftermathSessionReleased = true;
-                ExecutionAddressLlmBridge.Play(Request.SessionId, ExecutionSpeechPhase.Aftermath);
+                if (!_aftermathSpeechPlayed)
+                {
+                    // Replaying the phase would repeat its lines, so it runs once.
+                    _aftermathSpeechPlayed = true;
+                    ExecutionAddressLlmBridge.Play(Request.SessionId, ExecutionSpeechPhase.Aftermath);
+                }
                 ExecutionContinuation.Queue(Request);
+                _aftermathSessionReleased = true;
             }
             catch (Exception exception)
             {

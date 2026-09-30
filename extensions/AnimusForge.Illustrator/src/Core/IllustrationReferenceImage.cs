@@ -24,6 +24,9 @@ namespace AnimusForge.Illustrator.Core
         public string Base64Image { get; }
         public string Label { get; }
         public IllustrationReferenceKind Kind { get; }
+        // Native full-body tableau render in the fixed idle stance. The image client sends
+        // these last so the endpoint does not adopt the idle silhouette as its canvas.
+        internal bool IsIdleStanceFullBody { get; set; }
 
         public IllustrationReferenceImage(string base64Image, string label)
             : this(base64Image, label, IllustrationReferenceKind.Unspecified)

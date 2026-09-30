@@ -110,6 +110,8 @@ namespace AnimusForge.Illustrator.Core
                 {
                     referenceImages = null;
                 }
+                // Before preparation: prepared copies do not carry the idle-stance marker.
+                referenceImages = IllustrationReferenceRouting.SendIdleStanceFullBodyLast(referenceImages);
                 // 用户自定义负面词仅在选“提示词(自定义画风)”预设时生效，追加在预设负面词之后
                 string userNegative = isCustomPreset ? (settings.NegativePrompt ?? string.Empty).Trim() : string.Empty;
                 string negativePrompt;
@@ -427,7 +429,8 @@ namespace AnimusForge.Illustrator.Core
                         throw new InvalidDataException();
                     }
                     totalBytes += normalized.Length;
-                    prepared.Add(new IllustrationReferenceImage(Convert.ToBase64String(normalized), reference.Label, reference.Kind));
+                    prepared.Add(new IllustrationReferenceImage(Convert.ToBase64String(normalized), reference.Label, reference.Kind)
+                        { IsIdleStanceFullBody = reference.IsIdleStanceFullBody });
                 }
                 catch (Exception ex)
                 {
