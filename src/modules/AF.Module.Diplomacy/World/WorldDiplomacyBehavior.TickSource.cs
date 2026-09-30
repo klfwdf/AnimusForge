@@ -8,13 +8,8 @@ public sealed partial class WorldDiplomacyBehavior
         internal TickSource(WorldDiplomacyBehavior owner) => _owner = owner;
         public bool HasOwner => _owner != null;
         public bool IsEnabled => IsWorldDiplomacyEnabled();
-        public bool DisabledStateApplied => _owner._disabledStateApplied;
+        public bool DisabledStateApplied => _owner._runtime.DisabledStateApplied;
+        public void ClearDisabledState() => _owner._runtime.DisabledStateApplied = false;
         public void ProcessComposePopup() => WorldDiplomacyBehavior.ProcessComposePopup();
-        public void ApplyDisabledState() => _owner.HandleDisabledState();
-        public void ClearDisabledState() => _owner._disabledStateApplied = false;
-        public void ProcessCompletedJobs() => _owner.ProcessCompletedJobs();
-        public void TryScheduleTokenCompression() => _owner.TryScheduleTokenCompression();
-        public void TryStartNextLlmJob() => _owner.TryStartNextLlmJob();
-        public void TryPublishPendingNotifications() => _owner.TryPublishPendingNotifications();
     }
 }

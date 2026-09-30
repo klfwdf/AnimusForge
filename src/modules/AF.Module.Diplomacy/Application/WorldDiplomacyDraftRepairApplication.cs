@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,6 +13,7 @@ namespace AnimusForge;
 internal static class WorldDiplomacyDraftRepairApplication
 {
 	internal static void RejectGeneratedDraftBeforePublication(IWorldDiplomacyDraftRepairWorld world,
+		IWorldDiplomacyOrchestration orchestration,
 		WorldDiplomacyJob job,
 		string rejectedRaw,
 		string author,
@@ -23,7 +24,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 		if (job == null) return;
 		if (author == null)
 		{
-			world.AbandonRejectedGeneration(job, null, target, string.IsNullOrWhiteSpace(reason) ? "generated_party_missing" : reason);
+			orchestration.AbandonRejectedGeneration(job, null, target, string.IsNullOrWhiteSpace(reason) ? "generated_party_missing" : reason);
 			return;
 		}
 		string normalizedReason = string.IsNullOrWhiteSpace(reason) ? "generated_draft_invalid" : reason.Trim();
@@ -42,14 +43,15 @@ internal static class WorldDiplomacyDraftRepairApplication
 			+ " reason=" + logReason
 			+ " repair_attempt=" + Math.Max(0, job.SemanticRepairAttempts).ToString(CultureInfo.InvariantCulture));
 		if (job.SemanticRepairAttempts < WorldDiplomacyPromptContractRules.MaxGeneratedDraftRepairAttempts
-			&& EnqueueGeneratedDeclarationRepair(world, job, rejectedRaw, author, target, normalizedReason, parsedJson))
+			&& EnqueueGeneratedDeclarationRepair(world, orchestration, job, rejectedRaw, author, target, normalizedReason, parsedJson))
 		{
 			return;
 		}
-		world.AbandonRejectedGeneration(job, author, target, normalizedReason);
+		orchestration.AbandonRejectedGeneration(job, author, target, normalizedReason);
 	}
 
 	internal static bool EnqueueGeneratedDeclarationRepair(IWorldDiplomacyDraftRepairWorld world,
+		IWorldDiplomacyOrchestration orchestration,
 		WorldDiplomacyJob source,
 		string rejectedRaw,
 		string author,
@@ -60,7 +62,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 		if (source == null || author == null) return false;
 		reason = WorldDiplomacyTextRules.StripGeneratedActionReasonPrefix(reason, out int rejectedActionIndex);
 		WorldDiplomacyRound repairRound = world.ResolveRound(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(source.RoundId, source.ExchangeId));
-		List<string> authorizedTargetIds = world.GetAuthorizedGenerationTargetIds(source, repairRound, author);
+		List<string> authorizedTargetIds = orchestration.GetAuthorizedGenerationTargetIds(source, repairRound, author);
 		if (authorizedTargetIds.Count == 0)
 		{
 			world.Log("generated declaration repair skipped because no legal action remains sourceJob=" + source.JobId
@@ -90,7 +92,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 			repairTarget == null ? "" : world.BuildBilateralState(author, repairTarget),
 			requiredPeaceOffer,
 			() => world.BuildGovernmentHardFact(author));
-		correctionBuilder.AppendLine(world.BuildCurrentLegalDiplomaticOptions(
+		correctionBuilder.AppendLine(orchestration.BuildCurrentLegalDiplomaticOptions(
 			repairRound,
 			author,
 			authorizedTargetIds,
@@ -99,7 +101,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 			source.IsExternalResponseOnly,
 			world.ResolveDocument(source.SourceDocumentId)));
 		string correction = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(correctionBuilder.ToString());
-		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyPromptContractRules.CloneLlmMessages(WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(source, world.BuildCanonicalHistoryBlock));
+		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyPromptContractRules.CloneLlmMessages(WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(source, orchestration.BuildCanonicalHistoryBlock));
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "assistant", Content = rejectedRaw ?? "" });
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = correction });
 		WorldDiplomacyJob repair = WorldDiplomacyRoundLifecycleRules.BuildGeneratedDeclarationRepairJob(
@@ -109,8 +111,8 @@ internal static class WorldDiplomacyDraftRepairApplication
 			messages,
 			authorizedTargetIds,
 			world.NewId("diplomacy_generate_repair"));
-		repair.PresentedLegalActionSignature = world.BuildGenerationLegalActionSignature(repair);
-		world.EnqueueJob(repair);
+		repair.PresentedLegalActionSignature = orchestration.BuildGenerationLegalActionSignature(repair);
+		orchestration.EnqueueJob(repair);
 		world.Log("generated declaration repair queued sourceJob=" + source.JobId + " repairJob=" + repair.JobId + " reason=" + reason);
 		return true;
 	}

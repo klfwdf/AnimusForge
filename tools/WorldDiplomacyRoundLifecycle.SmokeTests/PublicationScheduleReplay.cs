@@ -117,9 +117,9 @@ internal static class PublicationScheduleReplay
         while (root != null && !File.Exists(Path.Combine(root.FullName, "AnimusForge.csproj"))) root = root.Parent;
         Test.True(root != null, "repository located for publication source boundary");
         string host = File.ReadAllText(Path.Combine(root.FullName,
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
-        int start = host.IndexOf("private void StartDocumentPropagation(", StringComparison.Ordinal);
-        int end = host.IndexOf("private void RetryDeferredDocumentPropagation()", start, StringComparison.Ordinal);
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
+        int start = host.IndexOf("public void StartDocumentPropagation(", StringComparison.Ordinal);
+        int end = host.IndexOf("public void RetryDeferredDocumentPropagation(", start, StringComparison.Ordinal);
         string adapter = host.Substring(start, end - start);
         string routing = File.ReadAllText(Path.Combine(root.FullName, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPublicationRoutingApplication.cs"));
         Test.True(adapter.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
@@ -127,8 +127,8 @@ internal static class PublicationScheduleReplay
                 && !adapter.Contains("OrderPropagationArrivalsByDueDate", StringComparison.Ordinal)
                 && !adapter.Contains("new WorldDiplomacyPropagationArrival", StringComparison.Ordinal),
             "real publication caller delegates queue construction and replacement to the application");
-        int recalculateStart = host.IndexOf("private void RecalculatePendingPropagationIfNeeded()", StringComparison.Ordinal);
-        int recalculateEnd = host.IndexOf("private void ProcessCourtArrival(", recalculateStart, StringComparison.Ordinal);
+        int recalculateStart = host.IndexOf("public void RecalculatePendingPropagationIfNeeded()", StringComparison.Ordinal);
+        int recalculateEnd = host.IndexOf("public bool CanExternalDiplomacyFactJoinRound(", recalculateStart, StringComparison.Ordinal);
         string recalculateAdapter = host.Substring(recalculateStart, recalculateEnd - recalculateStart);
         Test.True(recalculateAdapter.Contains("WorldDiplomacyPropagationApplication.RecalculatePending(", StringComparison.Ordinal)
                 && !recalculateAdapter.Contains("new WorldDiplomacyPropagationArrival", StringComparison.Ordinal),

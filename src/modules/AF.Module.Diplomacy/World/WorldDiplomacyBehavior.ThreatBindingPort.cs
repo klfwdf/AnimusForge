@@ -12,8 +12,6 @@ public sealed partial class WorldDiplomacyBehavior
         public string NewId(string kind) => WorldDiplomacyBehavior.NewId(kind);
         public int EscalationPrestigeReward => WarningEscalationPrestigeReward;
         public int WarPrestigeReward => UltimatumWarPrestigeReward;
-        public void ApplyPrestige(string id, int delta, WorldDiplomacyDocument doc, string reason) => _owner.ApplyNationalPrestigeDelta(id, delta, doc, reason);
-        public void ResolveCompliance(WorldDiplomacyDocument doc, string targetId, string issuerId) => _owner.ResolveDiplomaticThreatCompliance(doc, ResolveKingdom(targetId), ResolveKingdom(issuerId));
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
     }
 }

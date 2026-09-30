@@ -25,23 +25,14 @@ internal static class LlmDispatchApplicationReplay
         public string LastCacheAffinityKey => s.Affinity;
         public void SetLastCacheAffinityKey(string value) { s.Affinity = value; s.Events.Add("affinity"); }
         public bool HasStaleThreatPresentation(WorldDiplomacyJob job) => false;
-        public bool RefreshThreatPresentation(WorldDiplomacyJob job) => true;
         public bool HasStaleActionPresentation(WorldDiplomacyJob job) => false;
-        public bool RefreshActionPresentation(WorldDiplomacyJob job) => true;
-        public bool RebuildPendingJob(WorldDiplomacyJob job) => true;
         public string GetAuthorBlockReason(WorldDiplomacyJob job) => null;
-        public void AbandonGeneration(WorldDiplomacyJob job, string reason) => s.Events.Add("abandon");
-        public bool EnsureStrategicProfile(WorldDiplomacyJob job) => true;
         public string GetLlmConfigError() => s.ConfigError;
         public bool TryConsumeRequestBudget(bool consume) { s.Events.Add(consume ? "consume" : "budget?"); return s.Budget; }
-        public void CaptureCanonicalHistory(WorldDiplomacyJob job) => s.Events.Add("history");
         public JArray BuildMessageArray(WorldDiplomacyJob job) { s.Events.Add("messages"); return new JArray(); }
         public long InputTokenLimit => s.Fits ? long.MaxValue : -1L;
         public int HistoryCompressionTargetTokens => 200;
         public int EstimateTokens(string text) => 0;
-        public string BuildHistoryBlock(long throughSequence) => "";
-        public void ScheduleTokenCompression() => s.Events.Add("compress");
-        public void CommitFailedJob(WorldDiplomacyJob job, string error) => s.Events.Add("failed:" + error);
         public void RemoveJob(string jobId) => s.Storage.Jobs.RemoveAll(j => j.JobId == jobId);
         public void Log(string message) => s.Events.Add("log:" + message);
         public bool TryClaim(string id, long generation, int maxTokens, int timeout, out WorldDiplomacyRequestSnapshot request)
@@ -71,7 +62,21 @@ internal static class LlmDispatchApplicationReplay
         }
         return state;
     }
-    private static void Run(State state) { var source = new Source(state); WorldDiplomacyLlmDispatchApplication.Run(ref source); }
+    private sealed class Orch : FakeOrchestration
+    {
+        private readonly State s;
+        internal Orch(State state) => s = state;
+        public override bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job) => true;
+        public override bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job) => true;
+        public override bool TryRebuildPendingJob(WorldDiplomacyJob job) => true;
+        public override void AbandonRejectedGeneration(WorldDiplomacyJob job, string authorId, string targetId, string reason) => s.Events.Add("abandon");
+        public override bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job) => true;
+        public override void CaptureCanonicalHistoryForJob(WorldDiplomacyJob job, bool syncSources, long throughSequence) => s.Events.Add("history");
+        public override string BuildCanonicalHistoryBlock(long throughSequence) => "";
+        public override void TryScheduleTokenCompression() => s.Events.Add("compress");
+        public override void CommitFailedJob(WorldDiplomacyJob job, string error) => s.Events.Add("failed:" + error);
+    }
+    private static void Run(State state) { var source = new Source(state); var orch = new Orch(state); WorldDiplomacyLlmDispatchApplication.Run(ref source, orch); }
     internal static void Run()
     {
         foreach (string kind in new[] { "analyze", "compress" })

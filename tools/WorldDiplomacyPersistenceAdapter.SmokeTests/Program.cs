@@ -136,12 +136,12 @@ internal static class Program
         Test.True(Count(adapter, "_af_world_diplomacy_v1") == 1,
             "the canonical diplomacy save key must have one persistence owner");
 
-        int normalizeBeforeSave = syncData.IndexOf("NormalizeStorage();", StringComparison.Ordinal);
+        int normalizeBeforeSave = syncData.IndexOf("_orchestration.NormalizeStorage(allowWorldValidation: false);", StringComparison.Ordinal);
         int save = syncData.IndexOf("PersistenceAdapter.Save(dataStore, _storage)", StringComparison.Ordinal);
         int load = syncData.IndexOf("PersistenceAdapter.Load(dataStore, out string loadError)",
             StringComparison.Ordinal);
         int resetAfterLoad = syncData.IndexOf("ResetTransientRuntime(\"load\")", StringComparison.Ordinal);
-        int normalizeAfterLoad = syncData.LastIndexOf("NormalizeStorage();", StringComparison.Ordinal);
+        int normalizeAfterLoad = syncData.LastIndexOf("_orchestration.NormalizeStorage(allowWorldValidation: false);", StringComparison.Ordinal);
         Test.True(normalizeBeforeSave >= 0 && normalizeBeforeSave < save,
             "storage normalization must still precede saving");
         Test.True(load >= 0 && resetAfterLoad > load && normalizeAfterLoad > resetAfterLoad,

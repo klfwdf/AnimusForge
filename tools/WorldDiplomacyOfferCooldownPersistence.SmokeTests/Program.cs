@@ -105,6 +105,7 @@ internal static class Program
     {
         string behavior = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"), Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string persistence = File.ReadAllText(
             FindRepositoryFile("Refactor", "Persistence", "WorldDiplomacyOfferCooldownStorageNormalizer.cs"),
             Encoding.UTF8);
@@ -114,11 +115,11 @@ internal static class Program
         string lifecycleRules = File.ReadAllText(
             FindRepositoryFile("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs"),
             Encoding.UTF8);
-        string normalizeMethod = ExtractMethod(behavior, "private void NormalizeOfferCooldownStorage()");
+        string normalizeMethod = ExtractMethod(behavior, "public void NormalizeOfferCooldownStorage()");
         string rebuildMethod = ExtractMethod(lifecycleRules, "public static void RebuildOfferCooldownIndex(");
 
         Test.True(normalizeMethod.Contains(
-                      "WorldDiplomacyOfferCooldownStorageNormalizer.Normalize(_storage)",
+                      "WorldDiplomacyOfferCooldownStorageNormalizer.Normalize(Storage)",
                       StringComparison.Ordinal)
                   && normalizeMethod.Contains("WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(", StringComparison.Ordinal)
                   && !normalizeMethod.Contains("new Dictionary", StringComparison.Ordinal),

@@ -170,9 +170,9 @@ public partial class RewardSystemBehavior
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
 			RecordHeroJoinedPlayerClanForExternal(joiningHero, preservePlayerFamilyIdentity ? "hero_join_party_family_preserved" : (asCompanion ? "hero_join_party_companion" : "hero_join_party_lord"), asCompanion, preservePlayerFamilyIdentity, joinedWildernessParty, joinedWildernessMembers, joinedWildernessPrisoners);
 			statusText = preservePlayerFamilyIdentity
-				? $"执行成功：{joiningHero.Name} 已保留{(preservePlayerSpouseIdentity ? "配偶" : "玩家家族成员")}身份，并加入玩家队伍{transitionSummary}。"
+				? $"执行成功：{joiningHero.Name} 已保留{(preservePlayerSpouseIdentity ? "配偶" : "玩家家族成员")}身份，并加入玩家队伍{transitionSummary}"
 				: (asCompanion
-					? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}。"
+					? $"执行成功：{joiningHero.Name} 已成为玩家同伴，并加入玩家队伍{transitionSummary}"
 					: $"执行成功：{joiningHero.Name} 已成为玩家家族成员，并加入玩家队伍{transitionSummary}。");
 			if (shouldCleanupOriginalMapParty && IsEmptyMapPartyAfterHeroJoin(originalMobileParty))
 			{
@@ -343,7 +343,7 @@ public partial class RewardSystemBehavior
 			string equipmentSummary = BuildEquipmentSummaryForPrompt(capturedEquipment);
 			_ = MyBehavior.GeneratePromotedNonHeroCompanionProfileForExternalAsync(hero, personalName, originalFullName, originalTroopName, template.StringId ?? "", cultureName, sceneLabel, joinFact, BuildDialogueHistoryForPrompt(dialogueHistory), equipmentSummary);
 			statusText = asCompanion
-				? $"执行成功：{originalFullName} 已升格为玩家同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。"
+				? $"执行成功：{originalFullName} 已升格为玩家同伴“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}"
 				: $"执行成功：{originalFullName} 已升格为玩家家族 Hero“{hero.Name}”，并加入玩家队伍{(sceneFollowStarted ? "，当前场景中已开始跟随玩家" : "")}。";
 			return true;
 		}

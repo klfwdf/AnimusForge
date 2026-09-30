@@ -12,15 +12,49 @@ internal static class ActionSelectionReplay
         public bool IsEliminated(string id) => id == "dead";
         public WorldDiplomacyPairFacts CapturePair(string a, string b) { Captures++; return new(War, true, true, Allied, Trading); }
         public IReadOnlyList<WorldDiplomacyThreat> Threats { get { ThreatReads++; return Items; } }
-        public bool CanIssueWarThreat(string a, string b) => PermitWar;
-        public bool CanDeclareWar(string a, string b, bool enforcing) => PermitWar;
+        public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second) => new Admission(PermitWar);
+        public IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target)
+        { NoActionCalls++; return new NoActionPort(author, target); }
         public int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key) => Cooldown ? 9 : -1;
         public int CooldownDays() => 5;
         public int CurrentDay() => 10;
         public WorldDiplomacyDocument ResolveDocument(string id) => null;
-        public bool IsNonRootAiRelayNoActionAllowed(WorldDiplomacyRound round, string slot, string author, string target, bool relay, bool external, WorldDiplomacyDocument source)
-        { NoActionCalls++; return NoAction; }
         public bool CanUseResultSettlementTarget(WorldDiplomacyRound round, string a, string b) => b == "c";
+    }
+    private sealed class Admission : IWorldDiplomacyWarAdmissionPort
+    {
+        private readonly bool _permit;
+        internal Admission(bool permit) => _permit = permit;
+        public bool ValidPair => true;
+        public bool HasIndependentAuthority => _permit;
+        public bool AtWar => false;
+        public bool Allied => false;
+        public bool PendingThreatDecision => false;
+        public int CurrentDay => 10;
+        public int PeaceProtectionDays => 0;
+        public bool TryGetLastPeaceDay(out int day) { day = -1; return false; }
+        public int OffensiveWarCooldownDays => 0;
+        public bool TryGetLastOffensiveWarDay(out int day) { day = -1; return false; }
+        public int ActiveWars => 0;
+        public int MaxConcurrentOffensiveWars => 3;
+    }
+    private sealed class NoActionPort : IWorldDiplomacyNoActionPort
+    {
+        internal NoActionPort(string author, string target) { AuthorId = author; TargetId = target; }
+        public bool AuthorResolved => true;
+        public bool TargetResolved => true;
+        public bool SameParty => false;
+        public bool AuthorIsPlayer => false;
+        public bool AuthorEliminated => false;
+        public bool TargetEliminated => false;
+        public bool AuthorHasAuthority => true;
+        public bool TargetHasAuthority => true;
+        public string AuthorId { get; }
+        public string TargetId { get; }
+        public int MaxParticipants => 8;
+        public WorldDiplomacyDocument ResolveDocument(string id) => id == "root"
+            ? new WorldDiplomacyDocument { DocumentId = "root", IsReadyForPublication = true, Intent = "declare_war" } : null;
+        public bool IsRepresentativeFor(WorldDiplomacyDocument document) => false;
     }
     internal static void Run()
     {
@@ -51,6 +85,12 @@ internal static class ActionSelectionReplay
         Test.True(app.GetRoundPlanActionableParticipants("a", round).SequenceEqual(new[] { "b" }),
             "planning includes a candidate whose only legal role is replying to the author's proposal");
         round.ResultSettlementPending = true;
+        round.State = "active";
+        round.RootDocumentId = "root";
+        round.ResultSettlementCurrentSlotId = "slot";
+        round.RelayRouteKingdomIds = new List<string> { "a", "c" };
+        round.ResultSettlementSlots = new List<WorldDiplomacyResultSettlementSlot>
+            { new() { SlotId = "slot", KingdomId = "a", RelatedKingdomIds = new List<string> { "c" } } };
         Test.True(app.GetResultSettlementActionableTargets(round, "a").SequenceEqual(new[] { "c" }),
             "settlement target admission composes the current slot with authorized statement fallback");
     }

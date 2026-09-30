@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace AnimusForge;
 internal static class WorldDiplomacyThreatSettlementApplication
 {
 
-	internal static bool TryApplyUltimatumComplianceDomesticPenalty(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port,
+	internal static bool TryApplyUltimatumComplianceDomesticPenalty(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration,
 		WorldDiplomacyThreat threat,
 		string compliantKingdom,
 		out int affectedClanCount)
@@ -170,7 +170,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		return threat.DomesticPenaltyCompleted;
 	}
 
-	internal static bool TryApplyDiplomaticThreatPolicyConditionCancellation(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, WorldDiplomacyThreat threat)
+	internal static bool TryApplyDiplomaticThreatPolicyConditionCancellation(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration, WorldDiplomacyThreat threat)
 	{
 		WorldDiplomacyPolicyCancellationDispatch dispatch =
 			WorldDiplomacyRoundLifecycleRules.EvaluateThreatPolicyCancellationDispatch(threat);
@@ -186,7 +186,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		bool completed = _port.CancelPolicy(
 			threat.PolicyConditionPolicyId,
 			threat.PolicyConditionOwnerKingdomId,
-			"外交威慑退让：" + threat.ThreatId,
+			"澶栦氦濞佹厬閫€璁╋細" + threat.ThreatId,
 			out string policyName,
 			out string result);
 		if (!completed)
@@ -214,7 +214,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		return true;
 	}
 
-	internal static bool TryApplyDiplomaticThreatIssuerRelationReward(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port,
+	internal static bool TryApplyDiplomaticThreatIssuerRelationReward(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration,
 		WorldDiplomacyThreat threat,
 		string issuerKingdom,
 		out int affectedClanCount)
@@ -370,7 +370,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		return threat.IssuerRewardCompleted;
 	}
 
-	internal static bool ResolveDiplomaticThreatCompliance(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, WorldDiplomacyDocument document, string compliantKingdom, string issuer)
+	internal static bool ResolveDiplomaticThreatCompliance(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration, WorldDiplomacyDocument document, string compliantKingdom, string issuer)
 	{
 		if (document == null || compliantKingdom == null || issuer == null) return false;
 		WorldDiplomacyThreat threat = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(_storage?.DiplomaticThreats, issuer, compliantKingdom)
@@ -380,7 +380,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		if (WorldDiplomacyRoundLifecycleRules.IsThreatComplianceAlreadyRecorded(threat, document.DocumentId))
 		{
 			document.ChangedDiplomaticState = true;
-			document.MechanicalResult = "已明确服从" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage);
+			document.MechanicalResult = "已明确服从阶段=" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage);
 			return true;
 		}
 		if (!WorldDiplomacyRoundLifecycleRules.IsThreatComplianceStageMatch(
@@ -389,17 +389,17 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		WorldDiplomacyRoundLifecycleRules.ApplyThreatComplianceResolution(threat, document, _port.CurrentDay());
 		int prestigeChange = WorldDiplomacyRoundLifecycleRules.ResolveCompliancePrestigeDelta(
 			threat.Stage, _port.UltimatumCompliancePrestigeChange, _port.WarningCompliancePrestigeChange);
-		_port.ApplyNationalPrestigeDelta(issuer, prestigeChange, document,
+		_orchestration.ApplyNationalPrestigeDelta(issuer, prestigeChange, document,
 			"迫使" + _port.KingdomName(compliantKingdom) + "服从" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage));
-		_port.ApplyNationalPrestigeDelta(compliantKingdom, -prestigeChange, document,
+		_orchestration.ApplyNationalPrestigeDelta(compliantKingdom, -prestigeChange, document,
 			"在压力下服从" + _port.KingdomName(issuer) + "的" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStageDiplomaticLabel(threat.Stage));
-		bool domesticPenaltyCompleted = TryApplyUltimatumComplianceDomesticPenalty(_storage, _port, threat, compliantKingdom, out int affectedClanCount);
-		bool policyCancellationCompleted = TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, threat);
-		bool issuerRewardCompleted = TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, threat, issuer, out int rewardedClanCount);
+		bool domesticPenaltyCompleted = TryApplyUltimatumComplianceDomesticPenalty(_storage, _port, _orchestration, threat, compliantKingdom, out int affectedClanCount);
+		bool policyCancellationCompleted = TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat);
+		bool issuerRewardCompleted = TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer, out int rewardedClanCount);
 		document.ChangedDiplomaticState = true;
-		document.MechanicalResult = "已明确服从" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage)
+		document.MechanicalResult = "已明确服从阶段=" + WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(threat.Stage)
 			+ (WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled(threat.PolicyConditionCancellationStatus)
-				? "；附带政策《" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId) + "》已取消"
+			? "；附带政策《" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId) + "》已取消"
 				: "");
 		_port.Log("diplomatic threat complied threat=" + threat.ThreatId
 			+ " issuer=" + issuer + " target=" + compliantKingdom
@@ -412,7 +412,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		return true;
 	}
 
-	internal static void ApplyDiplomaticThreatReputationPenalty(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port,
+	internal static void ApplyDiplomaticThreatReputationPenalty(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration,
 		WorldDiplomacyThreat threat,
 		WorldDiplomacyDocument document)
 	{
@@ -420,11 +420,11 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		int penalty = WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachPrestigePenalty(
 			threat.Stage, _port.UltimatumFollowThroughPrestigePenalty, _port.WarningFollowThroughPrestigePenalty);
 		int before = WorldDiplomacyReputationRules.GetNationalPrestige(_storage?.NationalPrestigeByKingdom, threat.IssuerKingdomId);
-		int after = _port.ApplyNationalPrestigeDelta(threat.IssuerKingdomId, -penalty, document,
+		int after = _orchestration.ApplyNationalPrestigeDelta(threat.IssuerKingdomId, -penalty, document,
 			WorldDiplomacyRoundLifecycleRules.DescribeThreatBreachPrestigeReason(threat.Stage));
 		if (before == 0)
 		{
-			_port.ApplyZeroPrestigeBreachRelationPenalty(
+			_orchestration.ApplyZeroPrestigeBreachRelationPenalty(
 				threat.IssuerKingdomId,
 				WorldDiplomacyRoundLifecycleRules.ResolveThreatBreachRelationPenalty(
 					threat.Stage, _port.ZeroPrestigeUltimatumBreachRelationPenalty, _port.ZeroPrestigeWarningBreachRelationPenalty));
@@ -437,7 +437,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			+ " prestige=" + after.ToString(CultureInfo.InvariantCulture));
 	}
 
-	internal static void RetryDiplomaticThreatDomesticPenalties(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port)
+	internal static void RetryDiplomaticThreatDomesticPenalties(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
 	{
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsDomesticPenaltySettlementRetry, 8))
@@ -449,7 +449,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 				target?.IsEliminated == true, target?.HasRulingClan != true,
 				threat.DomesticPenaltySnapshotCaptured);
 			bool completed = compliantKingdom != null && !cannotCaptureEliminatedKingdomSnapshot
-				? TryApplyUltimatumComplianceDomesticPenalty(_storage, _port, threat, compliantKingdom, out int affectedClanCount)
+				? TryApplyUltimatumComplianceDomesticPenalty(_storage, _port, _orchestration, threat, compliantKingdom, out int affectedClanCount)
 				: WorldDiplomacyRoundLifecycleRules.CompleteUnresolvableDiplomaticThreatDomesticPenalty(
 				threat, out affectedClanCount, _port.CurrentDay(), _port.Log);
 			if (!completed) continue;
@@ -459,29 +459,29 @@ internal static class WorldDiplomacyThreatSettlementApplication
 				WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(threat, _port.ResolveDocument);
 				try
 				{
-					_port.AppendCanonicalDocumentEvents(document);
+					_orchestration.AppendCanonicalDocumentEvents(document);
 					WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(document,
-			_storage?.DiplomaticThreats, _port.TryAppendDiplomaticThreatHistoryResult,
-			_port.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
-			_port.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
+			_storage?.DiplomaticThreats, _orchestration.TryAppendDiplomaticThreatHistoryResult,
+			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
+			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
 				}
 				catch (Exception ex)
 				{
-					_port.ScheduleDeferredCanonicalHistoryRetry(document.DocumentId);
+					_orchestration.ScheduleDeferredCanonicalHistoryRetry(document.DocumentId);
 					_port.Log("compliance history append deferred threat=" + threat.ThreatId + " error=" + ex.Message);
 				}
 			}
-			_port.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
+			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
 		}
 	}
 
-	internal static void RetryDiplomaticThreatComplianceConsequences(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port)
+	internal static void RetryDiplomaticThreatComplianceConsequences(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
 	{
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsPolicyCancellationRetry, 8))
 		{
 			threat.UpdatedDay = _port.CurrentDay();
-			TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, threat);
+			TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat);
 			WorldDiplomacyRoundLifecycleRules.UpdateDiplomaticThreatComplianceDocumentResult(threat, _port.ResolveDocument);
 		}
 
@@ -495,20 +495,20 @@ internal static class WorldDiplomacyThreatSettlementApplication
 				issuerParty?.IsEliminated == true, issuerParty?.HasRulingClan != true,
 				threat.IssuerRewardSnapshotCaptured);
 			bool completed = issuer != null && !cannotCaptureEliminatedKingdomSnapshot
-				? TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, threat, issuer, out int affectedClanCount)
+				? TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer, out int affectedClanCount)
 				: WorldDiplomacyRoundLifecycleRules.CompleteUnresolvableDiplomaticThreatIssuerRelationReward(
 				threat, out affectedClanCount, _port.GetThreatComplianceIssuerRelationReward(), _port.CurrentDay(), _port.Log);
 			if (!completed) continue;
-			_port.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
+			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
 		}
 	}
 
-	internal static void RetryDiplomaticThreatHistoryResults(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port)
+	internal static void RetryDiplomaticThreatHistoryResults(WorldDiplomacyStorage _storage, IWorldDiplomacyThreatSettlementPort _port, IWorldDiplomacyOrchestration _orchestration)
 	{
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsNonComplianceHistoryRetry, 8))
 		{
-			WorldDiplomacyRoundLifecycleRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, _port.TryAppendDiplomaticThreatNonComplianceHistoryResult);
+			WorldDiplomacyRoundLifecycleRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, _orchestration.TryAppendDiplomaticThreatNonComplianceHistoryResult);
 		}
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsThreatResultHistoryRetry, 8))
@@ -516,18 +516,18 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			threat.UpdatedDay = _port.CurrentDay();
 			if (string.Equals(threat.Status, "breached", StringComparison.OrdinalIgnoreCase))
 			{
-				_port.TryAppendDiplomaticThreatHistoryResult(threat);
+				_orchestration.TryAppendDiplomaticThreatHistoryResult(threat);
 				continue;
 			}
 			WorldDiplomacyDocument source = _port.ResolveDocument(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(threat.ComplianceDocumentId, threat.ResolutionDocumentId));
 			if (source == null || !source.ChangedDiplomaticState) continue;
 			try
 			{
-				_port.AppendCanonicalDocumentEvents(source);
+				_orchestration.AppendCanonicalDocumentEvents(source);
 				WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(source,
-			_storage?.DiplomaticThreats, _port.TryAppendDiplomaticThreatHistoryResult,
-			_port.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
-			_port.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
+			_storage?.DiplomaticThreats, _orchestration.TryAppendDiplomaticThreatHistoryResult,
+			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
+			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
 			}
 			catch (Exception ex)
 			{
@@ -537,12 +537,12 @@ internal static class WorldDiplomacyThreatSettlementApplication
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsDomesticPenaltyHistoryRetry, 8))
 		{
-			_port.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
+			_orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
 		}
 		foreach (WorldDiplomacyThreat threat in WorldDiplomacyRoundLifecycleRules.SelectThreatHistoryRetryBatch(
 			_storage?.DiplomaticThreats, WorldDiplomacyRoundLifecycleRules.NeedsIssuerRewardHistoryRetry, 8))
 		{
-			_port.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
+			_orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
 		}
 	}
 }

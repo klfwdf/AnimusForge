@@ -6,6 +6,8 @@ using AnimusForge.Refactor.Domain;
 
 // Original daily method from 260ba51e; only world resolution/court effects are stubbed.
 // SHA256 of the original method (LF UTF-8): 256f812c0eacb08dad527d88ae73917dc687054b68d9305d491c9486a9a2d453
+// The current adapter lives in Application/WorldDiplomacyOrchestration.cs; the fixture
+// below mirrors it verbatim so the boundary check compares production text directly.
 internal static partial class PropagationApplicationReplay
 {
     private sealed partial class Harness
@@ -44,18 +46,47 @@ internal static partial class PropagationApplicationReplay
 		}
 	}
 
-	private void ProcessCurrentPropagationArrivals()
-	{
-		WorldDiplomacyPropagationApplication.ProcessDue(_storage, CurrentDay(), MaxPropagationArrivalsPerDay,
-			ResolveDocument,
-			(arrival, document, day) =>
-			{
-				Kingdom receiver = ResolveKingdom(arrival.KingdomId) ?? ResolveSettlementById(arrival.SettlementId)?.OwnerClan?.Kingdom;
-				if (receiver == null) return;
-				WorldDiplomacyPropagationApplication.ReceiveCourt(_storage, document, receiver.StringId, day,
-					() => IsPlayerAffiliatedKingdom(receiver), () => ProcessCourtArrival(receiver, document));
-			},
-			id => ResolveSettlementById(id)?.StringId);
-	}
+    public void ProcessCurrentPropagationArrivals()
+    {
+        WorldDiplomacyPropagationApplication.ProcessDue(Storage, _host.CurrentDay(), _host.MaxPropagationArrivalsPerDay(),
+            ResolveDocument,
+            (arrival, document, day) =>
+            {
+                string receiverId = _host.ResolvePropagationReceiverId(arrival.KingdomId, arrival.SettlementId);
+                if (receiverId == null) return;
+                WorldDiplomacyPropagationApplication.ReceiveCourt(Storage, document, receiverId, day,
+                    () => _host.IsPlayerAffiliatedParty(receiverId), () => ProcessCourtArrival(receiverId, document));
+            },
+            _host.ResolvePartyId);
+    }
+
+    public bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
+    {
+        return _host.HasCompleteLegacyPropagationCoverage(document);
+    }
+
+        private WorldDiplomacyStorage Storage => _storage;
+
+        private void ProcessCourtArrival(string receiverId, WorldDiplomacyDocument document)
+        {
+            Trace.Add("court:" + receiverId + ":" + document.DocumentId + ":pending=" + _storage.PropagationArrivals.Count);
+            Receipts++; ReceiptTitles.Add(document.Title);
+            if (receiverId == "player") document.HasReachedPlayerCourt = true;
+            OnReceipt?.Invoke(_storage);
+        }
+
+        private sealed class FixtureHost
+        {
+            private readonly Harness _h;
+            internal FixtureHost(Harness harness) { _h = harness; }
+            internal int CurrentDay() => _h.CurrentDay();
+            internal int MaxPropagationArrivalsPerDay() => Harness.MaxPropagationArrivalsPerDay;
+            internal string ResolvePropagationReceiverId(string kingdomId, string settlementId)
+                => _h.ResolveKingdom(kingdomId)?.StringId ?? _h.ResolveSettlementById(settlementId)?.OwnerClan?.Kingdom?.StringId;
+            internal bool IsPlayerAffiliatedParty(string kingdomId)
+                => _h.IsPlayerAffiliatedKingdom(new Kingdom { StringId = kingdomId });
+            internal string ResolvePartyId(string settlementId) => _h.ResolveSettlementById(settlementId)?.StringId;
+            internal bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document) => true;
+        }
     }
 }

@@ -126,7 +126,7 @@ internal static class PropagationLifecycleReplay
         while (root != null && !File.Exists(Path.Combine(root.FullName, "AnimusForge.csproj"))) root = root.Parent;
         Test.True(root != null, "repository located for propagation lifecycle boundary");
         string host = File.ReadAllText(Path.Combine(root.FullName,
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         Test.True(host.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyPropagationApplication.ReceivePlayerRelay(", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyPropagationApplication.RecoverPlayerCourtReceipts(", StringComparison.Ordinal)

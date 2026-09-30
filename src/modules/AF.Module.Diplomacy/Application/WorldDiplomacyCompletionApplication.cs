@@ -7,16 +7,7 @@ namespace AnimusForge;
 internal interface IWorldDiplomacyCompletionEffects
 {
     bool HasStaleThreatPresentation(WorldDiplomacyJob job);
-    bool RefreshThreatPresentation(WorldDiplomacyJob job);
     bool HasStaleActionPresentation(WorldDiplomacyJob job);
-    bool RefreshActionPresentation(WorldDiplomacyJob job);
-    void HandleTruncatedDraft(WorldDiplomacyJob job, string content);
-    void CommitGeneratedDocument(WorldDiplomacyJob job, string content);
-    void CommitAnalysis(WorldDiplomacyJob job, string content);
-    void CommitCompression(WorldDiplomacyJob job, string content);
-    void CommitRoundPlan(WorldDiplomacyJob job, string content);
-    void CommitRoundCompression(WorldDiplomacyJob job, string content);
-    void CommitFailedJob(WorldDiplomacyJob job, string content);
     void RemoveJob(string jobId);
     void Log(string message);
 }
@@ -37,8 +28,8 @@ internal interface IWorldDiplomacyCompletionSource : IWorldDiplomacyCompletionEf
 // prompt rebuilding remain separate workflows behind the effects port.
 internal static class WorldDiplomacyCompletionApplication
 {
-    internal static void Run<TSource>(ref TSource source)
-        where TSource : struct, IWorldDiplomacyCompletionSource
+    internal static void Run<TSource>(ref TSource source, IWorldDiplomacyOrchestration orchestration)
+        where TSource : IWorldDiplomacyCompletionSource
     {
         while (source.TryDequeue(out LlmJobResult result))
         {
@@ -57,7 +48,7 @@ internal static class WorldDiplomacyCompletionApplication
             source.LogUsage(job, result);
             Complete(job, result.Content, result.Success, result.IsServiceFailure,
                 result.IsOutputTruncated, result.Error, source.Storage,
-                source.CurrentHour, source.FailedServiceCooldownHours, ref source);
+                source.CurrentHour, source.FailedServiceCooldownHours, ref source, orchestration);
         }
     }
 
@@ -65,8 +56,8 @@ internal static class WorldDiplomacyCompletionApplication
         WorldDiplomacyJob job, string resultContent, bool resultSuccess,
         bool resultIsServiceFailure, bool resultIsOutputTruncated, string resultError,
         WorldDiplomacyStorage storage, int currentHour, int failedServiceCooldownHours,
-        ref TEffects effects)
-        where TEffects : struct, IWorldDiplomacyCompletionEffects
+        ref TEffects effects, IWorldDiplomacyOrchestration orchestration)
+        where TEffects : IWorldDiplomacyCompletionEffects
 
     {
         if (job == null) return;
@@ -77,9 +68,9 @@ internal static class WorldDiplomacyCompletionApplication
             && IsCompletionKind("generate")
             && effects.HasStaleThreatPresentation(job) == true)
         {
-            if (effects.RefreshThreatPresentation(job) != true)
+            if (orchestration.RefreshDiplomaticThreatPresentationAndPrompt(job) != true)
             {
-                effects.CommitFailedJob(job, "completed generation used a stale diplomatic threat stage and could not be rebuilt");
+                orchestration.CommitFailedJob(job, "completed generation used a stale diplomatic threat stage and could not be rebuilt");
             }
             else
             {
@@ -92,9 +83,9 @@ internal static class WorldDiplomacyCompletionApplication
             && IsCompletionKind("generate")
             && effects.HasStaleActionPresentation(job) == true)
         {
-            if (effects.RefreshActionPresentation(job) != true)
+            if (orchestration.RefreshDiplomaticActionPresentationAndPrompt(job) != true)
             {
-                effects.CommitFailedJob(job, "completed generation used a stale diplomatic action list and could not be rebuilt");
+                orchestration.CommitFailedJob(job, "completed generation used a stale diplomatic action list and could not be rebuilt");
             }
             else
             {
@@ -112,12 +103,13 @@ internal static class WorldDiplomacyCompletionApplication
                 if (storage != null) storage.ConsecutiveServiceFailures = 0;
                 try
                 {
-                    effects.HandleTruncatedDraft(job, resultContent);
+                    orchestration.RejectGeneratedDraftBeforePublication(
+                        job, resultContent, job.AuthorKingdomId, job.TargetKingdomId, "output_truncated", null);
                     effects.RemoveJob(job.JobId);
                 }
                 catch (Exception ex)
                 {
-                    effects.CommitFailedJob(job, "truncated generated draft handling failed: " + ex.Message);
+                    orchestration.CommitFailedJob(job, "truncated generated draft handling failed: " + ex.Message);
                 }
                 return;
             }
@@ -130,7 +122,7 @@ internal static class WorldDiplomacyCompletionApplication
                     storage.ConsecutiveServiceFailures = 0;
                 }
             }
-            effects.CommitFailedJob(job, resultError);
+            orchestration.CommitFailedJob(job, resultError);
             return;
         }
         if (storage != null) storage.ConsecutiveServiceFailures = 0;
@@ -138,34 +130,34 @@ internal static class WorldDiplomacyCompletionApplication
         {
             if (IsCompletionKind("generate"))
             {
-                effects.CommitGeneratedDocument(job, resultContent);
+                orchestration.CommitGeneratedDocument(job, resultContent);
             }
             else if (IsCompletionKind("analyze"))
             {
-                effects.CommitAnalysis(job, resultContent);
+                orchestration.CommitAnalysis(job, resultContent);
             }
             else if (IsCompletionKind("compress"))
             {
-                effects.CommitCompression(job, resultContent);
+                orchestration.CommitCompression(job, resultContent);
             }
             else if (IsCompletionKind("round_plan"))
             {
-                effects.CommitRoundPlan(job, resultContent);
+                orchestration.CommitRoundPlan(job, resultContent);
             }
             else if (IsCompletionKind("round_compress"))
             {
-                effects.CommitRoundCompression(job, resultContent);
+                orchestration.CommitRoundCompression(job, resultContent);
             }
             else
             {
-                effects.CommitFailedJob(job, "unknown job kind");
+                orchestration.CommitFailedJob(job, "unknown job kind");
                 return;
             }
             effects.RemoveJob(job.JobId);
         }
         catch (Exception ex)
         {
-            effects.CommitFailedJob(job, ex.Message);
+            orchestration.CommitFailedJob(job, ex.Message);
         }
     }
 }

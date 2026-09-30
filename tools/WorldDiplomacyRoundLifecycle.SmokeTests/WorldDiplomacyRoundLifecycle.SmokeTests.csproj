@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs" Link="WorldDiplomacyOrchestration.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs" Link="WorldDiplomacyStorageNormalizationApplication.cs" />
+    <Compile Include="../../Refactor/Persistence/WorldDiplomacyStorageShapeNormalizer.cs" Link="WorldDiplomacyStorageShapeNormalizer.cs" />
+    <Compile Include="../../Refactor/Persistence/WorldDiplomacyNotificationStateMigration.cs" Link="WorldDiplomacyNotificationStateMigration.cs" />
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCanonicalHistoryMigrationApplication.cs" Link="WorldDiplomacyCanonicalHistoryMigrationApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPeaceAdmissionApplication.cs" Link="WorldDiplomacyPeaceAdmissionApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyAnalysisApplication.cs" Link="WorldDiplomacyAnalysisApplication.cs" />
     <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs" Link="WorldDiplomacyJobPreparationApplication.cs" />

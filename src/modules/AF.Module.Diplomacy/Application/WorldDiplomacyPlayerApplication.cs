@@ -11,28 +11,24 @@ internal interface IWorldDiplomacyPlayerWorld
     bool KingdomExists(string id);
     WorldDiplomacyDocument ResolveDocument(string id);
     WorldDiplomacyRound ResolveRound(string id);
-    WorldDiplomacyRound EnsureActiveRound(string author, string target, bool isPlayerInsertion);
-    WorldDiplomacyDocument CreateDocument(string author, string target, string title, string body, string origin,
-        bool isPlayerAuthored, bool isResponse, string exchangeId);
-    void AddDocument(WorldDiplomacyDocument document);
     int CurrentDay();
-    void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document);
-    void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority);
 }
 
 internal static class WorldDiplomacyPlayerApplication
 {
-    internal static string Execute(IWorldDiplomacyPlayerWorld world, WorldDiplomacyPlayerDocumentCommand command)
+    internal static string Execute(IWorldDiplomacyPlayerWorld world, WorldDiplomacyPlayerDocumentCommand command,
+        IWorldDiplomacyOrchestration orchestration)
     {
-        if (command == null || command.Generation != world.Player.Generation) return "";
-        if (!command.IsReply) return SubmitPlayerDocument(world, command.Body);
+        if (command == null || orchestration == null || command.Generation != world.Player.Generation) return "";
+        if (!command.IsReply) return SubmitPlayerDocument(world, command.Body, orchestration);
         // Resolve the original identities at submission; never retain a record in a UI callback.
         WorldDiplomacyDocument source = world.ResolveDocument(command.SourceDocumentId);
         WorldDiplomacyRound round = world.ResolveRound(command.RoundId);
         if (source == null || round == null || !string.Equals(source.RoundId, round.RoundId, StringComparison.Ordinal)) return "";
-        return SubmitPlayerReply(world, command.Body, source, round);
+        return SubmitPlayerReply(world, command.Body, source, round, orchestration);
     }
-    internal static string SubmitPlayerDocument(IWorldDiplomacyPlayerWorld world, string body)
+    internal static string SubmitPlayerDocument(IWorldDiplomacyPlayerWorld world, string body,
+        IWorldDiplomacyOrchestration orchestration)
     {
         string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
         if (string.IsNullOrWhiteSpace(cleanBody))
@@ -49,8 +45,8 @@ internal static class WorldDiplomacyPlayerApplication
         {
             return "我国的外交事务由" + player.RepresentativeName + "掌管，外交宣言没有发布。";
         }
-        WorldDiplomacyRound round = world.EnsureActiveRound(playerKingdom, null, isPlayerInsertion: true);
-        WorldDiplomacyDocument document = world.CreateDocument(
+        WorldDiplomacyRound round = orchestration.EnsureActiveRound(playerKingdom, null, isPlayerInsertion: true);
+        WorldDiplomacyDocument document = orchestration.CreateDocument(
             playerKingdom,
             null,
             "外交宣言",
@@ -68,19 +64,20 @@ internal static class WorldDiplomacyPlayerApplication
         {
             document.ResultSettlementSlotId = playerSettlementSlot.SlotId ?? "";
         }
-        world.AddDocument(document);
+        orchestration.AddDocument(document);
         if (round != null)
         {
             round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RootDocumentId, document.DocumentId);
             round.LastActivityDay = world.CurrentDay();
             WorldDiplomacyStructureRules.EnsureRoundParticipant(round, playerKingdom, "active", mandatoryReply: false);
         }
-        world.PublishPlayerAuthoredDocumentImmediately(document);
-        world.EnqueueAnalysisJob(document, priority: 100);
+        orchestration.PublishPlayerAuthoredDocumentImmediately(document);
+        orchestration.EnqueueAnalysisJob(document, priority: 100);
         return "外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。";
     }
     internal static string SubmitPlayerReply(IWorldDiplomacyPlayerWorld world, string body,
-        WorldDiplomacyDocument sourceDocument, WorldDiplomacyRound round)
+        WorldDiplomacyDocument sourceDocument, WorldDiplomacyRound round,
+        IWorldDiplomacyOrchestration orchestration)
     {
         WorldDiplomacyPlayerContext context = world.Player;
         string player = context.KingdomId;
@@ -93,7 +90,7 @@ internal static class WorldDiplomacyPlayerApplication
             }
             return "";
         }
-        WorldDiplomacyDocument response = world.CreateDocument(
+        WorldDiplomacyDocument response = orchestration.CreateDocument(
             player,
             target,
             "外交回应",
@@ -105,13 +102,13 @@ internal static class WorldDiplomacyPlayerApplication
         response.RoundId = round.RoundId;
         response.SourceDocumentId = sourceDocument.DocumentId;
         response.AutomaticReplyDepth = Math.Max(1, sourceDocument.AutomaticReplyDepth + 1);
-        world.AddDocument(response);
+        orchestration.AddDocument(response);
         WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, player, "active", mandatoryReply: false);
         participant.MandatoryReplyPending = false;
         participant.LastTriggeredDocumentId = sourceDocument.DocumentId;
         round.LastActivityDay = world.CurrentDay();
-        world.PublishPlayerAuthoredDocumentImmediately(response);
-        world.EnqueueAnalysisJob(response, priority: 100);
+        orchestration.PublishPlayerAuthoredDocumentImmediately(response);
+        orchestration.EnqueueAnalysisJob(response, priority: 100);
         return "外交回应已经公开发布；系统正在后台解析其诉求与外交动作。";
     }
 }

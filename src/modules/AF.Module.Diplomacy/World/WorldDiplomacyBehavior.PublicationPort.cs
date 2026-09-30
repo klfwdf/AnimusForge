@@ -20,15 +20,11 @@ public sealed partial class WorldDiplomacyBehavior
         public bool IsPlayerKingdom(string id) => WorldDiplomacyBehavior.IsPlayerKingdom(ResolveKingdom(id));
         public bool RepresentsAddressedVassal(string id, WorldDiplomacyDocument document) => _owner.IsDiplomaticRepresentativeForAddressedVassal(ResolveKingdom(id), document);
         public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);
-        public WorldDiplomacyRound EnsureRound(string author, string target, bool player) => _owner.EnsureActiveRound(ResolveKingdom(author), ResolveKingdom(target), player);
         public string ResolveOriginSettlementId(string author) => _owner.ResolveCourtSettlement(ResolveKingdom(author))?.StringId;
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
         public int ParticipantLimit => GetRoundParticipantLimit();
         public int CivilianSpreadDays => GetCivilianSpreadDays();
         public int CourtDeliveryDays => GetCourtMaxDeliveryDays();
-        public void RecordWeeklyMaterial(WorldDiplomacyDocument document) => _owner.RecordDiplomacyWeeklyMaterial(document);
-        public void Reject(WorldDiplomacyDocument document, string reason) => _owner.SuppressInvalidDocumentBeforePropagation(document, reason);
-        public void ScheduleMandatoryResponse(WorldDiplomacyRound round, WorldDiplomacyRoundParticipant participant, string receiver, WorldDiplomacyDocument document) => _owner.TryScheduleMandatoryCourtResponse(round, participant, ResolveKingdom(receiver), document);
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
         public WorldDiplomacyPublicationSnapshot CaptureDestinations(string authorId, string originId)
         {

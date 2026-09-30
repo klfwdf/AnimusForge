@@ -388,7 +388,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (option.PartyEntry != null)
 			{
 				hint = option.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops
-					? $"可用数量: {option.AvailableAmount} | 日薪: {option.PartyEntry.WageDenarsPerDay}第纳尔/天 | 雇佣价: {option.PartyEntry.HirePriceDenarsPerUnit}第纳尔/人"
+					? $"可用数量: {option.AvailableAmount} | 日薪: {option.PartyEntry.WageDenarsPerDay}第纳尔/ | 雇佣价: {option.PartyEntry.HirePriceDenarsPerUnit}第纳尔/"
 					: $"可用数量: {option.AvailableAmount} | 购买价: {option.PartyEntry.BuyPriceDenarsPerUnit}第纳尔/人";
 				string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(option.PartyEntry);
 				if (!string.IsNullOrWhiteSpace(sourceLabel))

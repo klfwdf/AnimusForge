@@ -92,10 +92,11 @@ internal static class Program
     {
         string behavior = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"), Encoding.UTF8);
         behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        behavior += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string normalizeStorage = ExtractMethod(
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"), Encoding.UTF8),
-            "internal static void Normalize<TSource, TMigration>(");
-        Test.True(behavior.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source, ref migration)", StringComparison.Ordinal),
+            "internal static void Normalize(ref WorldDiplomacyStorage storage,");
+        Test.True(behavior.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref storage, allowWorldValidation,", StringComparison.Ordinal),
             "behavior normalization must call the real storage-normalization Application owner");
         string newGame = ExtractMethod(behavior, "private void OnNewGameCreated(");
         string migration = File.ReadAllText(

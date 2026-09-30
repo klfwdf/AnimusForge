@@ -62,7 +62,7 @@ public sealed partial class WorldDiplomacyBehavior
                 return kingdom == null ? null : KingdomName(kingdom);
             });
         public string Standing(string kingdomId) => WorldDiplomacyPresentationQueries.Standing(_owner._storage, kingdomId);
-        public string Submit(WorldDiplomacyPlayerDocumentCommand command) => WorldDiplomacyPlayerApplication.Execute(this, command);
+        public string Submit(WorldDiplomacyPlayerDocumentCommand command) => WorldDiplomacyPlayerApplication.Execute(this, command, _owner._orchestration);
         public bool MarkRead(string id) => WorldDiplomacyPresentationQueries.MarkRead(_owner.ResolveDocument(id));
         public bool CanOpenReply(string documentId, string roundId, long generation)
         {
@@ -82,14 +82,6 @@ public sealed partial class WorldDiplomacyBehavior
         public bool KingdomExists(string id) => ResolveKingdom(id) != null;
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
         public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);
-        public WorldDiplomacyRound EnsureActiveRound(string author, string target, bool isPlayerInsertion) =>
-            _owner.EnsureActiveRound(ResolveKingdom(author), ResolveKingdom(target), isPlayerInsertion);
-        public WorldDiplomacyDocument CreateDocument(string author, string target, string title, string body, string origin,
-            bool isPlayerAuthored, bool isResponse, string exchangeId) => _owner.CreateDocument(
-                ResolveKingdom(author), ResolveKingdom(target), title, body, origin, isPlayerAuthored, isResponse, exchangeId);
-        public void AddDocument(WorldDiplomacyDocument document) => _owner.AddDocument(document);
         public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();
-        public void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document) => _owner.PublishPlayerAuthoredDocumentImmediately(document);
-        public void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority) => _owner.EnqueueAnalysisJob(document, priority);
     }
 }

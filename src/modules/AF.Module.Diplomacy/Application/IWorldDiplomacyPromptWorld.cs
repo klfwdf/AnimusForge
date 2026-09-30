@@ -26,15 +26,9 @@ internal interface IWorldDiplomacyPromptWorld
     string BuildWorldDiplomacyVassalageSnapshot();
     string BuildPolicySnapshot(string id);
     string BuildGatheringSnapshot(IEnumerable<string> ids, int count);
-    string BuildCompactRoundPlanCandidateLine(string author, string target, WorldDiplomacyRound round);
+    string BuildCompactRoundPlanCandidateLine(string author, string target, WorldDiplomacyRound round, IReadOnlyList<string> legalActions);
     string BuildWarDecisionContext(string author, string target, bool includePeaceNegotiationTerms);
-    void PruneInvalidOffers(WorldDiplomacyRound round);
-    List<string> GetResultSettlementActionableTargets(WorldDiplomacyRound round, string author);
-    List<string> BuildLegalDiplomaticActionIntents(WorldDiplomacyRound round, string author, string target);
-    List<string> BuildLegalDiplomaticDeclarationIntents(WorldDiplomacyRound round, string author, string target, bool isRelayTurn, bool isExternalResponseOnly, WorldDiplomacyDocument responseSource);
-    Dictionary<string, List<string>> BuildLegalDiplomaticDeclarationIntentMap(WorldDiplomacyRound round, string author, List<string> ids, bool isRelayTurn, string resultSettlementSlotId, bool isExternalResponseOnly, WorldDiplomacyDocument responseSource);
     WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string resultSettlementSlotId, bool isExternalResponseOnly, string sourceDocumentId, bool requireAnyOpenPeaceOffer);
-    bool HasCessionBoundMultiplePeaceAcceptanceOptions(WorldDiplomacyRound round, string author, Dictionary<string, List<string>> actions);
     void AppendDiplomaticAuthorDecisionContext(StringBuilder sb, string author, string roundId);
     void AppendDiplomaticTargetDecisionContext(StringBuilder sb, WorldDiplomacyRound round, string author, string target, bool includePeaceNegotiationTerms, IReadOnlyCollection<string> legalActions);
     void AppendRulerCaptivityDecisionContext(StringBuilder sb, string author, string target);

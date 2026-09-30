@@ -8,7 +8,8 @@ namespace AnimusForge;
 // Publication ordering and retry policy, shared by compatibility and production callers.
 internal static class WorldDiplomacyDocumentPublicationApplication
 {
-    internal static void PublishPlayerImmediately(WorldDiplomacyDocument document, IWorldDiplomacyPublicationPort port)
+    internal static void PublishPlayerImmediately(WorldDiplomacyDocument document, IWorldDiplomacyPublicationPort port,
+        IWorldDiplomacyOrchestration orchestration)
     {
         if (document?.IsPlayerAuthored != true) return;
         document.IsReadyForPublication = true;
@@ -17,7 +18,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         if (author == null) return;
         try
         {
-            WorldDiplomacyPublicationRoutingApplication.Start(port, document, author);
+            WorldDiplomacyPublicationRoutingApplication.Start(port, orchestration, document, author);
         }
         catch (Exception ex)
         {

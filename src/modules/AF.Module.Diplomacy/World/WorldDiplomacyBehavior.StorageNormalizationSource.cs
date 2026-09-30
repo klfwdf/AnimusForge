@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 namespace AnimusForge;
 
 public sealed partial class WorldDiplomacyBehavior
@@ -14,26 +15,16 @@ public sealed partial class WorldDiplomacyBehavior
         public long HistoryCompressionTriggerTokens => GetHistoryCompressionTriggerTokens();
         public int TargetHistoryMemorySchemaVersion => HistoryMemorySchemaVersion;
         public int RelaySchemaVersion => WorldDiplomacyBehavior.RelaySchemaVersion;
-        public void EnsureInitialized() => _owner.EnsureCanonicalHistoryInitialized();
         public string PublishedPolicyLedgerId() => DiplomacyModuleServices.Policy.GetPublishedPolicyHistoryLedgerId();
-        public void RebuildPolicySignaturesThrough(long throughSequence) => _owner.RebuildPublishedPolicySignaturesThrough(throughSequence);
         public void AcknowledgePolicyArtifactsThrough(long throughSequence) => DiplomacyModuleServices.Policy.TryAcknowledgePublishedPolicyHistoryThrough(throughSequence);
-        public void ClearSourceKeys() => _owner._canonicalHistorySourceKeys.Clear();
+        public void ClearSourceKeys() => _owner._runtime.CanonicalHistorySourceKeys.Clear();
         public IEnumerable<WorldDiplomacyWeeklyArtifact> WeeklyArtifacts() => new HistoryCapturePort(_owner).WeeklyArtifacts();
         public IEnumerable<PublishedPolicyArtifactLedgerEntry> PolicyArtifacts() => ReadAllPublishedPolicyArtifactsForMigration();
-        public void AppendDocumentEvents(WorldDiplomacyDocument document) => _owner.AppendCanonicalDocumentEvents(document);
-        public void AppendWeekly(WorldDiplomacyWeeklyArtifact artifact) => new HistoryCapturePort(_owner).AppendWeekly(artifact);
-        public void AppendPolicyArtifact(PublishedPolicyArtifactLedgerEntry artifact) => _owner.AppendPublishedPolicyArtifact(artifact);
-        public void BackfillResponseLinks() => _owner.BackfillCanonicalResponseLinksV2();
-        public void SetObservedWeeklyRevision(long revision) => _owner._lastObservedWorldWeeklyHistoryRevision = revision;
+        public void SetObservedWeeklyRevision(long revision) => _owner._runtime.LastObservedWorldWeeklyHistoryRevision = revision;
         public long WeeklyRevision() => MyBehavior.GetPublishedWorldWeeklyReportHistoryRevisionForExternal();
-        public bool RebuildPendingJob(WorldDiplomacyJob job) => _owner.TryRebuildPendingWorldDiplomacyJob(job);
-        public void CompleteExchange(string exchangeId, string reason) => _owner.CompleteExchange(exchangeId, reason);
         public WorldDiplomacyDocument ResolveDocument(string documentId) => _owner.ResolveDocument(documentId);
-        public void CloseActiveRound(string reason) => _owner.CloseActiveRound(reason);
-        public void InvalidateRenderCache() => _owner.InvalidateCanonicalHistoryRenderCache();
         public int EstimateTokens(string text) => Logger.EstimateTokens(text);
-        public void Log(string message) => _owner.Log(message);
+        public void Log(string message) => WorldDiplomacyBehavior.Log(message);
     }
 
     private readonly struct StorageNormalizationSource : IWorldDiplomacyStorageNormalizationSource
@@ -62,8 +53,6 @@ public sealed partial class WorldDiplomacyBehavior
         public string ResolveKingdomNameOrEmpty(string kingdomId) => WorldDiplomacyBehavior.ResolveKingdomNameOrEmpty(kingdomId);
         public List<string> NormalizeKingdomIdList(IEnumerable<string> values, string excludedId) => WorldDiplomacyBehavior.NormalizeKingdomIdList(values, excludedId);
         public bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document) => _owner.HasCompleteLegacyPropagationCoverage(document);
-        public void PruneInvalidOffers(WorldDiplomacyRound round) => _owner.PruneInvalidOffers(round);
-        public void NormalizeOfferCooldownStorage() => _owner.NormalizeOfferCooldownStorage();
         public bool HasCampaignWorld => Campaign.Current != null && Kingdom.All.Any();
         public int DiplomacyPromptContractVersion => WorldDiplomacyBehavior.DiplomacyPromptContractVersion;
         public int ResultSettlementStateSchemaVersion => WorldDiplomacyBehavior.ResultSettlementStateSchemaVersion;
@@ -75,18 +64,12 @@ public sealed partial class WorldDiplomacyBehavior
         public WorldDiplomacyDocument ResolveDocument(string documentId) => _owner.ResolveDocument(documentId);
         public string ResolveEligibleKingdomId(string kingdomId) => _owner.ResolveEligibleDiplomacyKingdomId(kingdomId);
         public bool IsAtWarByKingdomIds(string firstKingdomId, string secondKingdomId) => _owner.IsAtWarByKingdomIds(firstKingdomId, secondKingdomId);
-        public void CloseActiveRound(string reason) => _owner.CloseActiveRound(reason);
-        public bool RebuildPendingJob(WorldDiplomacyJob job) => _owner.TryRebuildPendingWorldDiplomacyJob(job);
-        public void CompleteExchange(string exchangeId, string reason) => _owner.CompleteExchange(exchangeId, reason);
-        public void ClearLlmCacheAffinityKey() => _owner._lastLlmCacheAffinityKey = "";
-        public void BeginOrExtendResultSettlement(WorldDiplomacyRound round, WorldDiplomacyDocument document, string closeReason, string roundStatus) =>
-            _owner.BeginOrExtendRoundResultSettlement(round, document, closeReason, roundStatus);
+        public void ClearLlmCacheAffinityKey() => _owner._runtime.LastLlmCacheAffinityKey = "";
         public WorldDiplomacyRound ResolveRound(string roundId) => _owner.ResolveRound(roundId);
         public void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents) => _owner.CommitLocalRoundSummary(round, documents);
         public void UpgradeRoundSummaryToStructuredArchive(WorldDiplomacyRoundSummary summary) => _owner.UpgradeRoundSummaryToStructuredArchive(summary);
-        public void EnsureCanonicalHistoryInitialized() => _owner.EnsureCanonicalHistoryInitialized();
         public void TrimNativeSignals() => _owner.TrimNativeSignals();
         public void TrimRecentBattleFacts() => _owner.TrimRecentBattleFacts();
-        public void Log(string message) => _owner.Log(message);
+        public void Log(string message) => WorldDiplomacyBehavior.Log(message);
     }
 }

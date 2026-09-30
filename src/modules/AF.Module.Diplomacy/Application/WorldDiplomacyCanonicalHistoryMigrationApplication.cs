@@ -13,24 +13,14 @@ internal interface IWorldDiplomacyCanonicalHistoryMigrationSource
     long HistoryCompressionTriggerTokens { get; }
     int TargetHistoryMemorySchemaVersion { get; }
     int RelaySchemaVersion { get; }
-    void EnsureInitialized();
     string PublishedPolicyLedgerId();
-    void RebuildPolicySignaturesThrough(long throughSequence);
     void AcknowledgePolicyArtifactsThrough(long throughSequence);
     void ClearSourceKeys();
     IEnumerable<WorldDiplomacyWeeklyArtifact> WeeklyArtifacts();
     IEnumerable<PublishedPolicyArtifactLedgerEntry> PolicyArtifacts();
-    void AppendDocumentEvents(WorldDiplomacyDocument document);
-    void AppendWeekly(WorldDiplomacyWeeklyArtifact artifact);
-    void AppendPolicyArtifact(PublishedPolicyArtifactLedgerEntry artifact);
-    void BackfillResponseLinks();
     long WeeklyRevision();
     void SetObservedWeeklyRevision(long revision);
-    bool RebuildPendingJob(WorldDiplomacyJob job);
-    void CompleteExchange(string exchangeId, string reason);
     WorldDiplomacyDocument ResolveDocument(string documentId);
-    void CloseActiveRound(string reason);
-    void InvalidateRenderCache();
     int EstimateTokens(string text);
     void Log(string message);
 }
@@ -47,12 +37,12 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
         internal PublishedPolicyArtifactLedgerEntry Policy;
     }
 
-    internal static void MigrateIfNeeded<TSource>(WorldDiplomacyStorage storage, ref TSource source)
-        where TSource : struct, IWorldDiplomacyCanonicalHistoryMigrationSource
+    internal static void MigrateIfNeeded(WorldDiplomacyStorage storage, IWorldDiplomacyCanonicalHistoryMigrationSource source,
+        IWorldDiplomacyOrchestration orchestration)
     {
         if (storage == null || storage.HistoryMemorySchemaVersion >= source.TargetHistoryMemorySchemaVersion) return;
         if (!source.HasCampaignWorld) return;
-        source.EnsureInitialized();
+        orchestration.EnsureCanonicalHistoryInitialized();
         WorldDiplomacyCanonicalHistoryState history = storage.CanonicalHistory;
         if (storage.HistoryMemorySchemaVersion == 3)
         {
@@ -85,11 +75,11 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
             }
             else if (history.LastPolicyArtifactSequence > 0L)
             {
-                source.RebuildPolicySignaturesThrough(history.LastPolicyArtifactSequence);
+                orchestration.RebuildPublishedPolicySignaturesThrough(history.LastPolicyArtifactSequence);
             }
             WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(storage, source.HistoryCompressionTriggerTokens);
             storage.HistoryMemorySchemaVersion = source.TargetHistoryMemorySchemaVersion;
-            source.InvalidateRenderCache();
+            orchestration.InvalidateCanonicalHistoryRenderCache();
             source.Log("canonical diplomacy history schema upgraded version="
                 + source.TargetHistoryMemorySchemaVersion.ToString(CultureInfo.InvariantCulture)
                 + " entries=" + history.DeltaEntries.Count.ToString(CultureInfo.InvariantCulture)
@@ -190,11 +180,11 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
             .ThenBy(x => x.CreatedUtcTicks)
             .ThenBy(x => x.StableKey, StringComparer.OrdinalIgnoreCase))
         {
-            if (item.Document != null) source.AppendDocumentEvents(item.Document);
-            else if (item.WeeklyArtifact != null) source.AppendWeekly(item.WeeklyArtifact);
-            else if (item.Policy != null) source.AppendPolicyArtifact(item.Policy);
+            if (item.Document != null) orchestration.AppendCanonicalDocumentEvents(item.Document);
+            else if (item.WeeklyArtifact != null) orchestration.AppendCanonicalHistoryWeeklyArtifact(item.WeeklyArtifact);
+            else if (item.Policy != null) orchestration.AppendPublishedPolicyArtifact(item.Policy);
         }
-        source.BackfillResponseLinks();
+        orchestration.BackfillCanonicalResponseLinksV2();
         if (policyArtifacts.Count > 0)
         {
             history.LastPolicyArtifactSequence = Math.Max(history.LastPolicyArtifactSequence, policyArtifacts.Max(x => x.Sequence));
@@ -222,7 +212,7 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
                 invalidJobs.Add(job);
                 continue;
             }
-            if (!source.RebuildPendingJob(job)) invalidJobs.Add(job);
+            if (!orchestration.TryRebuildPendingJob(job)) invalidJobs.Add(job);
         }
         if (invalidJobs.Count > 0)
         {
@@ -230,7 +220,7 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
             storage.Jobs.RemoveAll(x => WorldDiplomacyRoundLifecycleRules.HasJobIdInSet(x, invalidIds));
             foreach (WorldDiplomacyJob invalidJob in invalidJobs)
             {
-                if (WorldDiplomacyRoundLifecycleRules.ResolveExchange(storage?.ActiveExchange, storage?.SuspendedExchanges, invalidJob.ExchangeId) != null) source.CompleteExchange(invalidJob.ExchangeId, "canonical_history_migration_retired_invalid_job");
+                if (WorldDiplomacyRoundLifecycleRules.ResolveExchange(storage?.ActiveExchange, storage?.SuspendedExchanges, invalidJob.ExchangeId) != null) orchestration.CompleteExchange(invalidJob.ExchangeId, "canonical_history_migration_retired_invalid_job");
             }
             WorldDiplomacyRound activeRound = storage.ActiveRound;
             if (activeRound != null)
@@ -238,12 +228,12 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
                 activeRound.RelayWaiting = false;
                 bool hasRoundJob = storage.Jobs.Any(x => x != null && WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, activeRound.RoundId));
                 bool hasPublishedRoot = source.ResolveDocument(activeRound.RootDocumentId)?.IsReadyForPublication == true;
-                if (!hasRoundJob && !hasPublishedRoot) source.CloseActiveRound("canonical_history_migration_missing_root");
+                if (!hasRoundJob && !hasPublishedRoot) orchestration.CloseActiveRound("canonical_history_migration_missing_root");
             }
         }
         WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(storage, source.HistoryCompressionTriggerTokens);
         storage.HistoryMemorySchemaVersion = source.TargetHistoryMemorySchemaVersion;
-        source.InvalidateRenderCache();
+        orchestration.InvalidateCanonicalHistoryRenderCache();
         source.Log("canonical diplomacy history migration completed entries=" + history.DeltaEntries.Count.ToString(CultureInfo.InvariantCulture)
             + " snapshot_tokens=" + history.Snapshot.EstimatedTokens.ToString(CultureInfo.InvariantCulture)
             + " retired_jobs=" + invalidJobs.Count.ToString(CultureInfo.InvariantCulture));

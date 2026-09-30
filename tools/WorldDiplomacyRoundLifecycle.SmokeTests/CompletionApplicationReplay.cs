@@ -1,7 +1,8 @@
 using AnimusForge;
 
 // Exercises the real queue -> admission -> dispatch -> state transition owner.
-// The effects are fakes; document execution and live-game acceptance are separate gates.
+// The effects and orchestration boundary are fakes; document execution and
+// live-game acceptance are separate gates.
 internal static class CompletionApplicationReplay
 {
     private sealed class State
@@ -30,24 +31,33 @@ internal static class CompletionApplicationReplay
         public void LogUsage(WorldDiplomacyJob job, LlmJobResult result)
         { Test.True(!job.IsRunning, "running flag clears before usage and effects"); s.Events.Add("usage"); }
         public bool HasStaleThreatPresentation(WorldDiplomacyJob job) { s.Events.Add("threat?"); return s.Threat; }
-        public bool RefreshThreatPresentation(WorldDiplomacyJob job) { s.Events.Add("threat-refresh"); return s.Refresh; }
         public bool HasStaleActionPresentation(WorldDiplomacyJob job) { s.Events.Add("action?"); return s.Action; }
-        public bool RefreshActionPresentation(WorldDiplomacyJob job) { s.Events.Add("action-refresh"); return s.Refresh; }
-        public void HandleTruncatedDraft(WorldDiplomacyJob job, string content)
-        { s.Events.Add("truncated"); if (s.ThrowTruncated) throw new InvalidOperationException("draft"); }
+        public void RemoveJob(string id)
+        {
+            s.Events.Add("remove");
+            if (s.ThrowRemove) throw new InvalidOperationException("remove");
+            s.Storage.Jobs.RemoveAll(j => j.JobId == id);
+        }
+        public void Log(string message) => s.Events.Add("log:" + message);
+    }
+
+    private sealed class Orch : FakeOrchestration
+    {
+        private readonly State s;
+        internal Orch(State state) => s = state;
         private void Commit(string kind, string content)
         { s.Events.Add(kind + ":" + content); if (s.ThrowCommit) throw new InvalidOperationException("effect"); }
-        public void CommitGeneratedDocument(WorldDiplomacyJob job, string content) => Commit("generate", content);
-        public void CommitAnalysis(WorldDiplomacyJob job, string content) => Commit("analyze", content);
-        public void CommitCompression(WorldDiplomacyJob job, string content) => Commit("compress", content);
-        public void CommitRoundPlan(WorldDiplomacyJob job, string content) => Commit("round_plan", content);
-        public void CommitRoundCompression(WorldDiplomacyJob job, string content)
+        public override void CommitGeneratedDocument(WorldDiplomacyJob job, string content) => Commit("generate", content);
+        public override void CommitAnalysis(WorldDiplomacyJob job, string content) => Commit("analyze", content);
+        public override void CommitCompression(WorldDiplomacyJob job, string content) => Commit("compress", content);
+        public override void CommitRoundPlan(WorldDiplomacyJob job, string content) => Commit("round_plan", content);
+        public override void CommitRoundCompression(WorldDiplomacyJob job, string content)
         {
             Commit("round_compress", content);
             if (s.RealRoundCompression)
                 WorldDiplomacyRoundCompressionApplication.Commit(s.Storage, job, content, 30, day => "day " + day);
         }
-        public void CommitFailedJob(WorldDiplomacyJob job, string error)
+        public override void CommitFailedJob(WorldDiplomacyJob job, string error)
         {
             s.Events.Add("failed:" + error);
             if (s.RealFailure)
@@ -58,16 +68,15 @@ internal static class CompletionApplicationReplay
                     j => "{}", (j, raw) => state.Events.Add("analysis-fallback"),
                     j => state.Events.Add("threat-fallback"), (j, raw) => state.Events.Add("plan-fallback"),
                     j => "{}", (j, raw) => state.Events.Add("archive-fallback"),
-                    RemoveJob, Log);
+                    id => { state.Events.Add("remove"); state.Storage.Jobs.RemoveAll(j => j.JobId == id); },
+                    msg => state.Events.Add("log:" + msg));
             }
         }
-        public void RemoveJob(string id)
-        {
-            s.Events.Add("remove");
-            if (s.ThrowRemove) throw new InvalidOperationException("remove");
-            s.Storage.Jobs.RemoveAll(j => j.JobId == id);
-        }
-        public void Log(string message) => s.Events.Add("log:" + message);
+        public override bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job) { s.Events.Add("threat-refresh"); return s.Refresh; }
+        public override bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job) { s.Events.Add("action-refresh"); return s.Refresh; }
+        public override void RejectGeneratedDraftBeforePublication(WorldDiplomacyJob job, string rejectedRaw,
+            string authorId, string targetId, string reason, Newtonsoft.Json.Linq.JObject parsedJson)
+        { s.Events.Add("truncated"); if (s.ThrowTruncated) throw new InvalidOperationException("draft"); }
     }
 
     private static WorldDiplomacyJob Enqueue(State s, string kind = "analyze", bool success = true,
@@ -79,7 +88,7 @@ internal static class CompletionApplicationReplay
             Success = success, Content = content, Error = "failure", IsServiceFailure = service, IsOutputTruncated = truncated });
         return job;
     }
-    private static void Run(State s) { var source = new Source(s); WorldDiplomacyCompletionApplication.Run(ref source); }
+    private static void Run(State s) { var source = new Source(s); var orch = new Orch(s); WorldDiplomacyCompletionApplication.Run(ref source, orch); }
 
     internal static void Run()
     {

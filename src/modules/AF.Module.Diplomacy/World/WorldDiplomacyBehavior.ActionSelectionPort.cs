@@ -32,7 +32,6 @@ public sealed partial class WorldDiplomacyBehavior
                 yield return kingdom.StringId;
             }
         }
-        internal List<Kingdom> ResolveSelected(List<string> ids) => ids.Select(Party).ToList();
         public bool HasAuthority(string id) => HasIndependentWorldDiplomacyAuthority(Party(id));
         public bool IsEliminated(string id) => Party(id)?.IsEliminated == true;
         public WorldDiplomacyPairFacts CapturePair(string firstId, string secondId)
@@ -46,15 +45,13 @@ public sealed partial class WorldDiplomacyBehavior
                 trade != null && BannerlordApiCompat.HasTradeAgreement(trade, first, second));
         }
         public IReadOnlyList<WorldDiplomacyThreat> Threats => _owner._storage?.DiplomaticThreats;
-        public bool CanIssueWarThreat(string first, string second) => _owner.CanIssueWarThreat(Party(first), Party(second), out _);
-        public bool CanDeclareWar(string first, string second, bool enforcing) => _owner.CanDeclareWar(Party(first), Party(second), out _, enforcing);
         public int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key) => _owner.GetOfferCooldownLastFailedRoundDay(key);
         public int CooldownDays() => GetTradeAllianceFailedProposalCooldownDays();
         public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
-        public bool IsNonRootAiRelayNoActionAllowed(WorldDiplomacyRound round, string slot, string author, string target, bool relay, bool external, WorldDiplomacyDocument source)
-            => WorldDiplomacyNoActionApplication.IsAllowed(round, slot, new NoActionPort(_owner, Party(author), Party(target)), relay, external, source);
-        public bool CanUseResultSettlementTarget(WorldDiplomacyRound round, string author, string target)
-            => WorldDiplomacyNoActionApplication.CanUseSettlementTarget(round, new NoActionPort(_owner, Party(author), Party(target)));
+        public IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second)
+            => new WarAdmissionPort(_owner, Party(first), Party(second));
+        public IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target)
+            => new NoActionPort(_owner, Party(author), Party(target));
     }
 }

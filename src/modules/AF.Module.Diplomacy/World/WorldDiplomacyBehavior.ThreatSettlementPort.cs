@@ -63,14 +63,6 @@ public sealed partial class WorldDiplomacyBehavior
             ChangeRelationAction.ApplyRelationChangeBetweenHeroes(_clans[first].Leader, _clans[second].Leader, amount, showQuickNotification: false);
         public bool CancelPolicy(string policyId, string ownerId, string reason, out string policyName, out string result) =>
             CustomPolicyBehavior.TryCancelActiveKingdomPolicyForExternal(policyId, ownerId, reason, out policyName, out result);
-        public int ApplyNationalPrestigeDelta(string id, int delta, WorldDiplomacyDocument doc, string reason) => _owner.ApplyNationalPrestigeDelta(id, delta, doc, reason);
-        public void ApplyZeroPrestigeBreachRelationPenalty(string id, int amount) => _owner.ApplyZeroPrestigeBreachRelationPenalty(ResolveKingdomIncludingEliminated(id), amount);
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
-        public void AppendCanonicalDocumentEvents(WorldDiplomacyDocument document) => _owner.AppendCanonicalDocumentEvents(document);
-        public void ScheduleDeferredCanonicalHistoryRetry(string id) => _owner.ScheduleDeferredCanonicalHistoryRetry(id);
-        public void TryAppendDiplomaticThreatHistoryResult(WorldDiplomacyThreat threat) => _owner.TryAppendDiplomaticThreatHistoryResult(threat);
-        public void TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(WorldDiplomacyThreat threat) => _owner.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(threat);
-        public void TryAppendDiplomaticThreatIssuerRewardHistoryResult(WorldDiplomacyThreat threat) => _owner.TryAppendDiplomaticThreatIssuerRewardHistoryResult(threat);
-        public void TryAppendDiplomaticThreatNonComplianceHistoryResult(WorldDiplomacyThreat threat, WorldDiplomacyThreatNonComplianceEvent decision) => _owner.TryAppendDiplomaticThreatNonComplianceHistoryResult(threat, decision);
     }
 }

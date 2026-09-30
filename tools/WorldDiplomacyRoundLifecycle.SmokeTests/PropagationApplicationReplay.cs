@@ -149,9 +149,9 @@ internal static partial class PropagationApplicationReplay
         DirectoryInfo root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "AnimusForge.csproj"))) root = root.Parent;
         Test.True(root != null, "repository located for propagation boundary");
-        string host = File.ReadAllText(Path.Combine(root.FullName, "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
-        int start = host.IndexOf("private void ProcessPropagationArrivals()", StringComparison.Ordinal);
-        int end = host.IndexOf("private void RecalculatePendingPropagationIfNeeded()", start, StringComparison.Ordinal);
+        string host = File.ReadAllText(Path.Combine(root.FullName, "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
+        int start = host.IndexOf("public void ProcessPropagationArrivals()", StringComparison.Ordinal);
+        int end = host.IndexOf("public void RecalculatePendingPropagationIfNeeded()", start, StringComparison.Ordinal);
         string adapter = host.Substring(start, end - start).Trim().Replace("\r\n", "\n");
         string fixture = File.ReadAllText(Path.Combine(root.FullName, "tools/WorldDiplomacyRoundLifecycle.SmokeTests/PropagationHostControls.cs"));
         Test.True(fixture.Replace("ProcessCurrentPropagationArrivals", "ProcessPropagationArrivals").Replace("\r\n", "\n").Contains(adapter),
@@ -172,11 +172,13 @@ internal static partial class PropagationApplicationReplay
         internal int DocumentReads, Receipts;
         internal string Error;
         internal Action<WorldDiplomacyStorage> OnReceipt;
+        private readonly FixtureHost _host;
         private readonly Dictionary<string, Kingdom> kingdoms = new Dictionary<string, Kingdom>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Settlement> settlements = new Dictionary<string, Settlement>(StringComparer.OrdinalIgnoreCase);
         internal Harness(WorldDiplomacyStorage state)
         {
             _storage = state;
+            _host = new FixtureHost(this);
             kingdoms["npc"] = new Kingdom { StringId = "npc" };
             kingdoms["player"] = new Kingdom { StringId = "player" };
             settlements["village"] = new Settlement { StringId = "village" };

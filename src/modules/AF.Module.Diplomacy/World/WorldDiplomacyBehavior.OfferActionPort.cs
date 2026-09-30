@@ -17,14 +17,6 @@ public sealed partial class WorldDiplomacyBehavior
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
         public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
-        public void PruneInvalidOffers(WorldDiplomacyRound round) => _owner.PruneInvalidOffers(round);
-        public (bool Blocked, string Reason) ProposalViolation(string intent, WorldDiplomacyDocument document)
-        {
-            bool blocked = _owner.TryGetDiplomaticStateViolation(intent, ResolveKingdom(document.AuthorKingdomId), ResolveKingdom(document.TargetKingdomId), out string reason);
-            return (blocked, reason);
-        }
-        public bool ArePeaceTermsExecutable(WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source)
-            => AreOfferedPeaceTermsCurrentlyExecutable(offer, source, ResolveKingdom(offer.ProposerKingdomId), ResolveKingdom(offer.TargetKingdomId));
         public string ApplyCession(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms)
             => _owner.TryApplyValidatedCession(terms, ResolveKingdom(proposerId), ResolveKingdom(targetId));
 

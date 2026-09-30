@@ -17,14 +17,12 @@ internal interface IWorldDiplomacyActionSelectionPort
     bool IsEliminated(string id);
     WorldDiplomacyPairFacts CapturePair(string first, string second);
     IReadOnlyList<WorldDiplomacyThreat> Threats { get; }
-    bool CanIssueWarThreat(string first, string second);
-    bool CanDeclareWar(string first, string second, bool enforcing);
     int LastFailedRoundDay(WorldDiplomacyOfferCooldownKey key);
     int CooldownDays();
     int CurrentDay();
     WorldDiplomacyDocument ResolveDocument(string id);
-    bool IsNonRootAiRelayNoActionAllowed(WorldDiplomacyRound round, string slot, string author, string target, bool relay, bool external, WorldDiplomacyDocument source);
-    bool CanUseResultSettlementTarget(WorldDiplomacyRound round, string author, string target);
+    IWorldDiplomacyWarAdmissionPort CaptureWarAdmission(string first, string second);
+    IWorldDiplomacyNoActionPort CaptureNoActionPort(string author, string target);
 }
 internal sealed class WorldDiplomacyActionSelectionApplication
 {
@@ -47,7 +45,8 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 		WorldDiplomacyThreat incoming = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(_port.Threats, second, first);
 		if (WorldDiplomacyRoundLifecycleRules.IsThreatDecisionPending(incoming)) actions.Add("comply_ultimatum");
 		WorldDiplomacyThreat outbound = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatIssuedBy(_port.Threats, first);
-		bool canIssueWarThreat = _port.CanIssueWarThreat(first, second);
+        IWorldDiplomacyWarAdmissionPort warAdmission = _port.CaptureWarAdmission(first, second);
+		bool canIssueWarThreat = WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat(ref warAdmission, out _);
 		if (canIssueWarThreat && outbound == null)
 		{
 			actions.Add("warning");
@@ -59,7 +58,7 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 			actions.Add("ultimatum");
 		}
 		bool enforcingRejectedUltimatum = WorldDiplomacyRoundLifecycleRules.IsEnforcingRejectedUltimatum(_port.Threats, first, second);
-		bool canDeclareWar = _port.CanDeclareWar(first, second, enforcingRejectedUltimatum);
+		bool canDeclareWar = WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref warAdmission, out _, enforcingRejectedUltimatum);
 		if (canDeclareWar) actions.Add("declare_war");
 		if (facts.HasAlliance)
 		{
@@ -95,11 +94,10 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 	{
 		List<string> intents = BuildLegalDiplomaticActionIntents(round, author, target);
 		bool mustAnswerPeaceOffer = WorldDiplomacyOfferContractRules.IsExclusivePeaceOfferResponseSet(intents);
-		if (!mustAnswerPeaceOffer && _port.IsNonRootAiRelayNoActionAllowed(
+		if (!mustAnswerPeaceOffer && WorldDiplomacyNoActionApplication.IsAllowed(
 			round,
 			resultSettlementSlotId,
-			author,
-			target,
+			_port.CaptureNoActionPort(author, target),
 			isRelayTurn,
 			isExternalResponseOnly,
 			responseSource))
@@ -136,7 +134,7 @@ internal sealed class WorldDiplomacyActionSelectionApplication
 	{
 		if (round == null || author == null) return new List<string>();
 		return _port.KingdomIds()
-			.Where(x => _port.CanUseResultSettlementTarget(round, author, x))
+			.Where(x => WorldDiplomacyNoActionApplication.CanUseSettlementTarget(round, _port.CaptureNoActionPort(author, x)))
 			.Where(x => BuildLegalDiplomaticDeclarationIntents(
 				round, author, x, isRelayTurn: true,
 				resultSettlementSlotId: round.ResultSettlementCurrentSlotId).Count > 0)

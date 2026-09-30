@@ -6,31 +6,26 @@ internal interface IWorldDiplomacyTickSource
     bool IsEnabled { get; }
     bool DisabledStateApplied { get; }
     void ProcessComposePopup();
-    void ApplyDisabledState();
     void ClearDisabledState();
-    void ProcessCompletedJobs();
-    void TryScheduleTokenCompression();
-    void TryStartNextLlmJob();
-    void TryPublishPendingNotifications();
 }
 
 internal static class WorldDiplomacyTickApplication
 {
-    internal static void Run<TSource>(ref TSource source)
+    internal static void Run<TSource>(ref TSource source, IWorldDiplomacyOrchestration orchestration)
         where TSource : struct, IWorldDiplomacyTickSource
     {
-        if (!source.HasOwner) return;
+        if (!source.HasOwner || orchestration == null) return;
         source.ProcessComposePopup();
         if (!source.IsEnabled)
         {
-            if (!source.DisabledStateApplied) source.ApplyDisabledState();
-            source.ProcessCompletedJobs();
+            if (!source.DisabledStateApplied) orchestration.HandleDisabledState();
+            orchestration.ProcessCompletedJobs();
             return;
         }
         source.ClearDisabledState();
-        source.ProcessCompletedJobs();
-        source.TryScheduleTokenCompression();
-        source.TryStartNextLlmJob();
-        source.TryPublishPendingNotifications();
+        orchestration.ProcessCompletedJobs();
+        orchestration.TryScheduleTokenCompression();
+        orchestration.TryStartNextLlmJob();
+        orchestration.PollNotifications();
     }
 }

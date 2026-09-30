@@ -92,7 +92,7 @@ internal static class DocumentApplicationReplay
         string owner = File.ReadAllText(Path.Combine(root.FullName,
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentApplication.cs"));
         string host = File.ReadAllText(Path.Combine(root.FullName,
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         string executor = File.ReadAllText(Path.Combine(root.FullName,
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
         Test.True(!owner.Contains("TaleWorlds", StringComparison.Ordinal)
