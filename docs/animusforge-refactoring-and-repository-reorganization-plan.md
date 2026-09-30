@@ -1,5 +1,30 @@
 <a id="j17a-intent-20260928"></a>
 
+
+<a id="remote-merge-no-bulletin-20260930"></a>
+
+## 远端合并与撤销未完成 WorldBulletin（2026-09-30，OFFLINE_VERIFIED）
+
+- 用户在上一轮阻塞后明确要求删除未完成 WorldBulletin、合并其余远端提交并将本地提交更新到远端。本条取代[上轮 VERIFY_BLOCKED](#remote-merge-391ceb74-20260930)的当前状态；旧失败证据保留。目标仍为同名分支 `origin/codex/af-main-refactor-continuation-20260831`，非 `origin/main`；不 force-push、不重写历史、不部署。
+- 基线：本地产品 `e127507b`、检查点 `5a4ecd0d`、远端 `391ceb74`。按远端 diff 精确反向应用 15 个 WorldBulletin hunk，涉及 `DuelSettings.cs` 1、`MyBehavior.cs` 12、`MyBehavior.MemoryRecovery.cs` 1、`CivilWarCampaignBehavior.cs` 1。前后二者设置/MemoryRecovery 文件恢复本地原字节；MyBehavior 的旧周报开关、未读筛选、三栏布局恢复，不撤销内战 v2 的命名回调/存档改动；内战事件材料记录仍保留，仅去掉缺失的快报回调。没有删除目录或文件，没有补空桩。
+- 删除功能的运行面为事件注册/重置、主线程 Tick 调用、存档调用、周报准入和展示、内战事件回调；不新增扫描、缓存、轮询或运行时开销。`git grep` 确认已跟踪 C# 不再含 WorldBulletin / IsLegacyWeeklyAutoGenerationActive / retainedBulletinIds / isBulletin。其他远端源码原样保留；本地文档证据与远端 R391-E72–E76 同时保留。
+- 本轮重新校验原脚本定义的 1.3/1.4 reference line，分别为 `v1.3.15.110062` / `v1.4.7.117484`。隔离输出 `bin/remote-merge-391ceb74-no-bulletin/` 和 `obj/remote-merge-391ceb74-no-bulletin/`，五份构建日志在 `.tmp/remote-merge-391ceb74-no-bulletin/`。1.3、1.4 各 **0 errors / 338 warnings**；Bootstrap **0 errors / 0 warnings**。CivilWarRules、WeeklyReportSchedulePolicy 两个 smoke 均构建并运行 PASS；各有 3 条 net6.0 支持周期警告。游戏、旧存档、扩展模块运行未验，未执行 Stage/Deploy 或原构建脚本的目录清理。
+- 原 22 个未跟踪目录、1,527 文件聚合 hash 未变，未加入索引。待发的原本地 49 commits（含检查点）只涉及四个已跟踪文档；`.gitignore` 具名排除的本地 team handoff 在 `git log --all -- <path>` 无历史。旧 `ae8e6b89` 已在目标远端祖先链，不能把旧警示误判为本次新增私密文件；新出站差异常见密钥/私钥模式检查未命中（仅启发式检查，不是完整安全审计）。本次授权普通推送同名分支；不上传任何未跟踪数据、构建产物或本地专用交接。
+- 最终本地合并提交及远端确认以 Git 为准；本条仅签本次离线合并/撤销，不提升 J17-A/B、实机、旧档或发布状态。
+
+
+<a id="remote-merge-391ceb74-20260930"></a>
+
+## 同名远端安全合并（2026-09-30，历史 VERIFY_BLOCKED，已由上方结果取代）
+
+- 本次用户请求仅为安全合并远端。当前工作区 `E:/AnimusForge-refactor-continuation-20260831`，分支 `codex/af-main-refactor-continuation-20260831`；本地原 HEAD `e127507b`，合并前检查点 `5a4ecd0d`，目标远端 `391ceb74`。原分叉为本地 48 / 远端 6 个提交；未合入 `origin/main`，未 push/deploy/reset/rebase。
+- 普通 `merge --no-ff --no-commit` 只冲突本台账和代码范围图。保留全部本地原文及远端新增内容；远端原 E72–E76 命名为 **R391-E72–R391-E76**，保留其 `ecc4c76e` 源码基线，避免与本地 E72–E76 混淆。这些远端记录是历史证据，不替代本地 E119 等结论，也不声称旧行号已对当前合并源码重新验收。
+- 使用原构建脚本的只读 reference 校验函数确认 1.3 `v1.3.15.110062`、1.4 `v1.4.7.117484`；独立 `bin/remote-merge-391ceb74/`、`obj/remote-merge-391ceb74/` 输出进行编译，不执行脚本的目录清理/Stage/Deploy，不改构建脚本。日志：`.tmp/remote-merge-391ceb74/build-{1.3,1.4,bootstrap,civilwar}.log`。首次使用项目默认 F 盘路径时发现该盘不存在，随后经仓库路径解析器确认真实 D 盘游戏路径，只读依赖。
+- **1.3 与 1.4 均失败：各 9 errors / 338 warnings**。远端树没有 `MyBehavior.WorldBulletin.cs` / `WorldBulletinPolicy.cs`，远端台账亦记为外机未跟踪文件。远端新增的 `MyBehavior.cs:2508,2570,6365,6920,19580,46225,46312`、`MyBehavior.MemoryRecovery.cs:1412` 与 `src/modules/AF.Module.Kingdom/CivilWar/CivilWarCampaignBehavior.cs:121` 引用缺失的 `RegisterWorldBulletinEvents`、`ResetWorldBulletinForRuntime`、`IsWorldBulletinEnabled`、`ProcessWorldBulletinMainThreadActions`、`IsWorldBulletinEventId`、`SyncWorldBulletinData`、`CaptureWorldBulletinCivilWar`。错误为 `CS0103` / `CS1061`；合并产品源码与远端一致，不是文本冲突处理引入。
+- Bootstrap 构建通过（0 warnings / 0 errors）；新增 CivilWarRules.SmokeTests 构建通过（3 warnings，含 net6.0 支持周期警告），运行输出 `CivilWarRules smoke tests passed.`。不是完整游戏、旧档、扩展模块或运行时验收。
+- 原 22 个未跟踪目录的 1,527 文件内容 SHA-256 聚合仍为 `4a03ceb82e7727129941561c91de99d668c5be9cb10df91b428dc0eb9bb7466a`，未纳入提交。远端 `ShoutUtils.cs` 保留原有混合换行；默认 diff whitespace 检查报告 CR 行尾，不为清理而改写源文件。
+- **停在冲突已解决、merge 尚未提交的状态**。下一步需远端作者补交 WorldBulletin 实现，或用户明确决定排除该未完成改动后再验证；不生成空桩、不静默删调用、不把未通过双构建的候选报为安全交付。J17-A/B 状态不因本次合并提升。
+
 ## J17-A 当前基线刷新（2026-09-29，`A0_INVENTORY_READY / A_NOT_CLOSED / B_NOT_STARTED`）
 
 **A2/旧 null 非根级 26 文件/两版各 872 成员互斥对账（仍 7/20）**：[范围图 E119](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)把旧导航 `Refactor/` 23/767 精确归并为 Contracts 6/340、Adapters 11/149、Modules 4/107、Runtime 2/171（E48–E56/E118，无重复）；`src/` 3/105 为 E109 已签的 Actions 43+32 和 Scene 后处理 30。Scene 的 24 个状态/work item 成员、3 个同步入口、deferred queue、action commit、规则准备各自归 Conversation 渠道边界，游戏动作/Memory/AFEF 仍归原 owner。当前 J09 只读 **25 checks PASS**、Scene 提取 **8 tests OK**、Notoriety **14/14**、Bridge 元数据 validator `16/12/4 PASS`，不是双产品或游戏验收。具名 OPEN：**R05-ScenePostprocess-DeferredCompletion** 迟到/取消/讲话 callback，**R08-ScenePostprocess-RequestCost** 每回复 worker/deadline 与主线程 Agent/规则遍历，**R09-ScenePostprocess-RawLog** 完整 provider RAW/FINAL 与归一化回复/tags 写日志（未查真实日志）。旧导航根级 254/11,803 已有零散 E 证据，尚需按当前实际 Compile 去重并穷尽动态消费者；**不能把 26/872 对账当作全局 unknown=0 或总桶签收，另 13 桶待签，J17-A 未闭、B 未启动**。产品源码/脚本不改、不推送/部署，22 个既有未跟踪 `tools/` 目录不动。
@@ -210,6 +235,7 @@
 **A2/Harmony 属性类安装静态对账（仍 `A_NOT_CLOSED`）**：[范围图 E93](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)在当前双 API 的 1,123 Compile 路径上核对 `[HarmonyPatch]` 77 属性点/26 文件：69 个声明类型、8 个 TroopInspection 方法级目标属性。69 中 2 个为不单独安装的 MilitaryExercise 父标记，3 个仅见声明无仓内注册（两枚 Diplomacy 和 Vassalage 日志通知，沿 **R07-Harmony-OrphanCandidates**），余 64 个有 Startup 可达的静态安装链，其中会话两个手工 patch、其余 class processor；1.4 明确跳过 `MilitaryExerciseRenownInfluenceSkipPatch`，实际调用上限为 63。**这不是成功安装数**：静态有入口不证明原版 target/签名/失败恢复，未注册候选也不能据此断言运行时未受外部补丁影响。无属性的动态 `harmony.Patch`、完整反射/事件/存档消费者还须审；未跑产品双构建、Harmony 列表/游戏。兼容桶、20 桶及 J17-A 均未签，B 未启动。
 
 **A2-5/LordEncounter 宿主 384 成员首轮分区（仍 `A_NOT_CLOSED`）**：[范围图 E94](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)以当前两套实际 Compile 成员清单把 `LordEncounterBehavior.cs` 分七段 384 成员，同源无条件编译差异。目标、放行、未授权返回三个 same-DLL owner 与宿主原版 Encounter/Mission/Menu、Prompt/Actions、Diplomacy、投降 roster 的边界已区分，Campaign 注册、引擎帧快门、三会话补丁和 Shout/MyBehavior/SceneTaunt 主要消费者均追到。具名余项为 **R07-Encounter-ArmyMemberPendingResult**（已选军团附属成员可能被遭遇主队 leader 比较清待结算）、**R07-Encounter-EscalationPartialCommit**（先标外交效果一次性/忽略返回）、**R07-Encounter-NpcSurrenderRosterPartial**（先移 loot roster 再转俘及原版结算多步部分成功）、**R07-Encounter-CampaignStaticLifetime**（静态 pending 状态无整行为退役）、**R05-Encounter-MainPromptTagLeak**（主链运行规则包含 `[ACTION:...]`，不符合既定“仅后处理输出标签”合同）。均是源码风险/合同冲突，不冒充已复现实机损失；先保持生产语义，B 切片前用所列反例及三渠道回放决定修复。R08 自定义菜单期间逐 Tick 活对象/相机检查，spawn polygon fallback 为按请求 19×19×顶点；按频率与规模量测，不误称所有方法每帧全扫。仅静态证据，未做产品双构建、Harmony/Mission、旧档或真实回复；`conversation-encounter`、20 桶总出口仍未签，J17-A 未闭，B 未启动。
+**A2-5 混合宿主成员：Reward / Knowledge / Courier / WorldDiplomacy / Shout 五宿主（R07 仍 `REVIEW_REQUIRED`）**：[范围图 R391-E72–R391-E76](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)在 `ecc4c76e`（三宿主源码与 `ada9894a` 无 diff）把本地第三至五节的初分改写为当前坐标证据，并用新提取器补上旧版漏计的 4 空格缩进 partial（Reward 根级 627 方法/270 字段、模块 185/52；Knowledge 293/229；Courier 449/253）。三宿主的根级方法已全部落到具名簇，无匿名 other 包；其中 Reward **生成物注册表**（反射注册 `MBObjectManager`、`_rewardGeneratedItems_v1`、载入修复）登记为 Economy/game-adapter 保留边界候选。三处本地判断被更正：Courier 估价是 Economy 的消费者而非重复实现；Courier 规则 ID 合并/排除是渠道自有策略；Knowledge 模块编译依赖宿主嵌套 DTO `LoreRule`/`KnowledgeFile`，不是完全独立 owner。新具名项：DEAD 候选 `RewardSystemBehavior.ExportGeneratedInventoryItemsForExternal`、`TryCreateGeneratedInventoryItemForExternal`（public、仓内无调用，B0 前须排除外部反射）与 `CourierDeliveryBehavior.RemoveInjectedRuleBlock`（private、无调用）；R08 `CourierDeliveryBehavior.DeliveryLifetime.cs:295–315` 每货物条目重建 transfer 列表。此为名称/API 正则导航加人工读码，不是 Roslyn 语义签收；逐方法消费者、动态 Harmony 目标与 22 个 Courier 模块 partial 的剩余成员未闭。`WorldDiplomacyBehavior`（R391-E75，20,505 行，635 方法/227 字段/42 顶层类）：领域 owner 簇、主线程执行 mutator、Harmony→game-adapter、UI 弹窗/通知/sprite、专有 Prompt、MCM getter 已按行区间归属；新交叉点：其 `MyBehavior.BuildShoutPromptContextForExternal` 后缀与 PolicySystem 同名后缀并存，按方法名绑定，B6 须保持；R08 `NormalizeStorage`（524 行）每次存档/载入全量执行；未发现 DEAD 候选。`ShoutBehavior`（R391-E76，根级 37,203 行，1,141 方法/520 字段/42 嵌套；v3 提取器补上第 0 列成员，并据此把 Reward 模块 partial 更正为 185 方法）：后处理标签归一应回各领域 codec；Courier 后处理入口是三渠道共享实现；SceneShout opt-in 生产调用为 0，但被 ChannelCutoverBoundaryTests 合同保留，不是 DEAD；R06-M0 所列行号已漂移；R08：预计算持久历史 `Task.Run` 在线程池读 `Mission.Current.Agents`/`MyBehavior` 历史，语音队列 worker 100ms 空转轮询。余下宿主按规模：`MyBehavior`（E57/E58/E67 已覆盖部分；工作区有他人未提交改动，最后审）、`DuelSettings`、`SceneTauntBehavior`、`WorldMapPartyCommandBehavior`、`DuelBehavior`、`LordEncounterBehavior`、`VassalageBehavior`、`ProactiveNpcRequestBehavior`、`AIConfigHandler`（E64）、`SettlementEntryTroopSelectionBehavior`、`MeetingBattleLockMissionBehavior`、`TroopInspectionBehavior`、`NobleGatheringBehavior`。未改产品、未构建；**A 未闭，B 不启动**。
 
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
@@ -218,6 +244,238 @@
 ## J17-A 前置盘点意图检查点（2026-09-28，`J17A_ACTIVE`）
 
 用户要求绕过 J16（已推送交他人接手）先做 J17，且不影响 J16。本工作在独立 worktree `G:\AFMOD\AF-J17`、分支 `codex/af-j17a-inventory-20260928`（基于远端 `99ca85ae`）。范围只取[结项计划](#af2-closeout-plan-20260928)第 5 节 J17-A：先 R04 保存/JSON 边界，再 R02 摘要捕获→生成→接受，R01 周报回调与 R03 导入导出闭包，然后按 20 桶补全 R07 成员分区。**只读审查 + 文档**：不改产品 C#、测试、tools/tests 布局（J16 归他人）、配置、Skill、一键流程；不构建部署推送、不写游戏/玩家数据。证据写范围图 E09+，状态只在本台账登记表更新。
+
+<a id="j17a-local-slices-reconcile-20260930"></a>
+
+## 本地 J17-A 切片 1–6 与远端口径对账（2026-09-30，仅文档）
+
+下方 `j17a-slice1…6-20260929` 六节是本地会话在 `ada9894a` 上的正则级盘点，经 `35ccb70e` 检查点与远端 `bc7b389b` 一起合入 `ecc4c76e`。**它们不是与远端 E14–E71 并列的第二套结论**，以远端 E 证据与上方登记表为准；六节只作为[计划 §5a.2](plans/j17-responsibility-closeout-plan.md) A2-5（混合宿主成员）的导航输入，逐项与 E57/E58/E67 对账后才吸收。
+
+- **分母**：远端 E14 的 1,123 为 `944712f8` 已跟踪 Compile。当前 HEAD 已跟踪 Compile 为 **1,128 = 1,123 + 内战 v2 的 5 个新文件**（`DuelSettings.CivilWar.cs`、`CivilWar{Catalog,Effects,Rules,World}.cs`，`60e9c989` 入库）。本机求值另见 1,134，多出的 6 个未跟踪：他人在制的 `MyBehavior.WorldBulletin.cs`、`WorldBulletinPolicy.cs`，以及旧 `AnimusForge.Bootstrap/obj/` 的 4 个生成 AssemblyInfo（J16d 移到 `src/AF.Bootstrap/` 后主项目不再排除旧路径；2026-09-30 实际编译未由此报错，属磁盘残留）。第二节的“1128”与此数字相同纯属巧合，其含义是 `ada9894a` + 当时未跟踪的内战文件，不应引用。
+- **四功能桶**：用户 2026-09-29 决定四功能单独登记（第二节）仍有效；远端将其作为 E35 内置接缝审查，登记表尚无四行。签桶时以 E35 为证据、以四个独立桶为登记形式，二者不重复计数。
+- **已被远端更正**：第一节所称 Memory `Sanitize*` 为纯函数不成立，以 E15/E23 的原地改写/克隆语义为准；第一节的存档身份基线重绑记录保留，Profile fixture 177 键已由远端重绑。
+- **可供 A2-5 的内容**：第三节 `RewardSystemBehavior` 子簇（交易、RP 模板、hero-join→social、王国转移→worldmap、Harmony→game-adapter），第四节 `KnowledgeLibraryBehavior` 的 dev-ui/条件/导入导出分区及其自有分块键方案，第五节 Courier 家族的跨桶项（交易估价与 Economy 定价重复、前处理规则 ID 合并与三渠道重复）。这些是名称/正则初分，不是逐成员签收。**已于 2026-09-30 改写为范围图 R391-E72–R391-E74**，并更正第五节两条跨桶判断（估价是 Economy 消费者、规则 ID 是 Courier 自有排除策略）与第四节“Knowledge 模块完全独立”；第三至五节的方法/字段数以 R391-E72–R391-E74 为准。
+- **当前待办（不属于本片）**：内战 v2 改键为 `_af_kingdom_civil_war_v2`，Profile 契约校验现为 `literal key mismatch`（fixture 仍为 v1）；WorldBulletin 新键 `_af_worldBulletin_v1` 走 chunk helper。两者待 `MyBehavior.cs` 与 WorldBulletin 的在制修改入库后按实际行号一并重生成 fixture。
+
+<a id="j17a-slice1-20260929"></a>
+
+## J17-A 第一片：R04 / R01 / R02 / R03 成员分区（2026-09-29，只读盘点）
+
+**状态：`J17A_SLICE1_PARTITIONED / R07_BUCKETS_NOT_STARTED / PRODUCT_REFACTOR_NOT_COMPLETE`。** 源码基线 `ada9894a`；本片只读源码并写本节，不改产品、测试、配置或脚本。盘点时工作树另有 26 个他人未提交修改（ShoutBehavior、Coup、Illustrator、Vengeance 等），不属于本片，也未纳入下列坐标的复核；它们提交后需要按符号重新定位。行号是 `ada9894a` 工作树的一基行号，仅作导航。
+
+### R04 存档 / JSON 边界（REVIEW_REQUIRED → 分区完成；算法 OPEN，身份 RETAINED_BOUNDARY）
+
+| 成员 | 证据 | 结论 |
+| --- | --- | --- |
+| `MyBehaviorSaveableTypeDefiner`（base `711100`） | `MyBehavior.cs:57101–57112` | 只注册 `Dictionary<MobileParty, string>` 一个容器，唯一使用者是 `_af_wildernessNonHeroPartyMemoryIds_v1`（`:1927,17684,17962`）。**RETAINED_BOUNDARY**：base id、容器类型、键不变 |
+| 九个记忆 DTO：`DailyMemoryLine`、`DailyMemoryDraft`、`CompressedMemoryBlock`、`WeeklyMemoryMaterialTrigger`、`MemorySummaryJob`、`MemoryOverviewState`、`MemoryOverviewJob`、`MajorActionSummaryState`、`MajorActionSummaryJob` | `MyBehavior.cs:221–580` | **都没有 Saveable 注册**，只以 `JsonConvert` 默认设置序列化成字符串。生产代码没有设置 `JsonConvert.DefaultSettings`，也没有 `TypeNameHandling`，所以载荷里不含类型名/命名空间。存档契约是**公开字段名 + 缺省值 + 键归一**，不是嵌套类型身份。更正下方 J05 回执第 1933 行“它们是存档类型（MyBehaviorSaveableTypeDefiner）”的说法 |
+| 存档键 | 保存 `MyBehavior.cs:17724–17802`，读取 `:18011–18120`；`MyBehavior.MemoryRecovery.cs:20,1427`；`MyBehavior.WeeklyActionOutcomeReceipts.cs:16,517` | 按 owner 拆分的字典（经 `CampaignSaveChunkHelper.FlattenStringDictionary`）：`_af_dailyMemoryDrafts_v1`、`_af_compressedMemoryBlocks_v1`、`_af_memoryOverviewStates_v1`、`_af_npcMajorActionSummaries_v1`、`_af_interactionMemoryRecovery_v1`、`_af_weeklyActionOutcomeReceipts_v1`；分块字符串：`_af_memorySummaryQueue_v1`、`_af_memoryOverviewQueue_v1`、`_af_npcMajorActionSummaryQueue_v1`。**RETAINED_BOUNDARY**：键名、分块格式不变 |
+| 序列化编排 | 同上；`src/AF.Persistence/OwnerJsonStorageCodec.cs` 已承担草稿/历史两处 | 日草稿用 codec；压缩块读取、overview、major summary 仍是 MyBehavior 内手写循环。可统一到 codec，失败策略（单 owner 失败跳过）保持 |
+| 净化算法 | `SanitizeWeeklyMemoryMaterialTriggers :25587`、`SanitizeDailyMemoryDrafts :25696`（及 Line/Entry）、`SanitizeCompressedMemoryBlocks :25804`、`Sanitize/NormalizeMemorySummaryQueue :25857`、`SanitizeMemoryOverviewState :25891`、`SanitizeMemoryOverviewQueue :25905`、`SanitizeMajorActionSummaryState/Queue :26008,26023`；辅助 `NormalizeMemoryHeroId :24347`、`BuildCompressedMemoryBlockId :26173`、`StripMemoryTitleDateTime :31163`、`CloneMemorySummarySource`（`MyBehavior.MemorySummaryInput.cs:48`） | 除 `MBMath.ClampInt`（纯数学）和 `TWParallel.IsMainThread()` 分支外不读游戏对象。**OPEN**：可迁 `AF.Module.Memory`；必须保留“主线程原地改写 / 非主线程先 clone”的语义、去重键 `heroId|dayIndex`、排序和截断上限（Scenes 16、AfefLines 80、RetryCount 0–3） |
+| 源码提取型测试消费者 | 13 个 runner/证据文件按文本抽取这些嵌套类型：`tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/*`（7）、`MemorySummaryBudgetTests`、`MemoryFailureUiBoundaryTests`、`MemorySummaryRunOwnerTests`、`tests/modules/AF.Module.Conversation/NativeHistorySnapshotTests`、`tests/replay/ProductionOptInEntryReplayTests/{MemoryOwnerReadback,MemoryRecoveryProduction,WeeklyActionOutcomeProduction}Replay.cs` | 迁移 DTO 或算法时同一切片改它们的抽取锚点；不能靠删断言让它们通过 |
+
+**R04 审计实跑（本片）**：`tools/PersistenceIdentityAudit.py --baseline e58f3558…` 报 FAIL：sync 键 142→177、behavior 36→42。差异全部来自 `ada9894a` 四功能整合——新增 Coup（`_afCoup*`、`af_coup_detentions_v1`）、复仇处决（`_rex_v2..v5_*` 共 30 项）、`_af_kingdom_civil_war_v1`，以及 6 个新 CampaignBehavior；删除 `_af_xihai_legacy_equipment_cleanup_v1`（对应“西海衣服自动删除机制整体移除”）。**上表 9 个记忆存档键与 `_af_wildernessNonHeroPartyMemoryIds_v1` 均不在增删列表中**，R04 键清单与基线一致。用户 2026-09-29 确认这批增删是四功能整合的有意变化，存档身份基线重绑到 `ada9894a`：`PersistenceIdentityAudit.py --baseline ada9894a --json` PASS，sync 177/177、behavior 42/42，增删集合为空，模块 Id/Name 仍为 AnimusForge，仍只加载 Bootstrap。脚本本身没改，基线只是命令参数；此后引用该审计时用 `ada9894a`，旧的 `e58f3558` 只适用于 J14/J15 候选。`PersistenceProfileConfigContractTests` 的 fixture 仍停在 142 键（同样 FAIL：缺 `_af_xihai_legacy_equipment_cleanup_v1`、多 `_af_kingdom_civil_war_v1`），重生成见下一步。`verify_code_map.py` 同时报 `src/AF.GameAdapter.Bannerlord/Composition/TeamModuleServices.cs` 内容过期：该文件工作树无改动，漂移来自 `9cf4b8ca`，早于本片，未处理。
+
+**R04 退出门余项**：功能 owner 确认上述键增删后重绑审计基线；`PersistenceProfileConfig` 未跑；做一个旧 JSON 载荷在类型移出 MyBehavior 后仍能反序列化的往返 fixture；真实旧档另验。
+
+### R01 周报材料回调（OPEN，建议作为 J17-B 第一个关闭单元）
+
+- Weekly 模块对 MyBehavior 的依赖共 10 个符号：嵌套 DTO `WeeklyEventMaterialPreviewGroup`（15 处）、`EventMaterialReference`（14）、`WeeklyReportOutputMode`（6）、`WeeklyReportBatchRequest`（6）；静态规则 `OrderWeeklyPreviewMaterials :44875`、`ResolveWeeklyPromptAggregateCategory :38330`、`IsWeeklyPromptAggregatableMaterial :38302`、`GetWeeklyPromptAggregateCategoryOrder :38312`、`CloneEventMaterialReference :38259`、`BuildWeeklyPromptAggregateEventKey :38381`。
+- 旧宿主仍持有的领域转换：`BuildWeeklyPromptResolvedVillageRaidMaterial :36906`；经 `renderCategory` 回调注入的实例方法 `BuildWeeklyPromptAggregateCategoryMaterial :38505` 及其 9 个下属构造函数（到约 `:38765`）。对这些范围按游戏对象模式（Hero/Settlement/Campaign/MobileParty/Kingdom/Clan/TextObject）搜索无命中。其中 `BuildWeeklyPromptAggregateCategoryMaterial` 和 `BuildWeeklyPromptAggregateEventLine` 是实例方法，是否读宿主实例状态还没逐行确认。
+- 调用点：`MyBehavior.cs:6322`（自动）、`:36901`（同步）、`:38107`（聚合）、`:42096`（村庄掠夺）。
+- 待确认：`EventMaterialReference` 是否同时是 `_eventSourceMaterials_v1` 的 JSON 载荷。如果是，迁移时按 R04 的字段名契约处理。
+
+### R02 记忆摘要链（OPEN）
+
+- 规则：`BuildMemorySummarySystemPrompt(DailyMemoryDraft) :5577` 是只依赖草稿的静态方法；`BuildMemorySummaryUserPrompt(Hero, DailyMemoryDraft) :5606` 读取 `RewardSystemBehavior.Instance.GetEffectiveTrust(hero)`，这是游戏状态捕获。
+- 捕获点：`MyBehavior.MemorySummaryInput.cs:278–279`（主线程），owner 有效性守卫 `:133,355`（`Campaign.Current.GetCampaignBehavior<MyBehavior>()` 引用相等）。
+- 分区：Hero/信任度等捕获和 owner/generation 守卫留在宿主窄边界；拿到捕获值后的 Prompt 渲染可迁 `AF.Module.Memory/Summary`。dispatcher（`src/modules/AF.Module.Memory/Summary/MemorySummaryDispatcher.cs`）的队列/预算职责不变。
+- 依赖 R04：渲染函数参数是 `DailyMemoryDraft`，类型要先能被模块引用。
+
+### R03 压缩记忆导出/应用（OPEN，依赖 R04）
+
+- `BuildCompressedMemoryExportBundle :53353` 和 `ApplyCompressedMemoryExportBundle :53378` 直接读写五个宿主字段 `_dailyMemoryDrafts`、`_compressedMemoryBlocks`、`_memorySummaryQueue`、`_memoryOverviewStates`、`_memoryOverviewQueue`（字段声明 `:1904–1946`），没有游戏对象引用。
+- 消费者：`:53341,53826,53832,53918,54096,54145,54374,55694,55706`；导出包类型 `CompressedMemoryExportBundle :590` 是 PlayerExports JSON 契约（字段名 `DailyDrafts/Blocks/SummaryQueue/Overview/OverviewQueue`）。
+- 分区：快照过滤和覆盖/合并规则归 Memory；文件读写仍经 `PlayerExportsStore`。能否迁出取决于 R04 决定这五个状态容器由谁持有；在那之前不移动字典。
+
+### 下一步
+
+1. R04 余项：跑两个持久化审计确认键清单，建旧 JSON 往返 fixture。
+2. 按 3.3 节 20 个责任桶继续 R07 盘点（本片未开始）。
+3. 盘点期间不迁移代码；R01 是否先行进入 J17-B 由用户决定。
+
+<a id="j17a-slice2-20260929"></a>
+
+### J17-A 第二片：R07 文件级覆盖网（2026-09-29，只读）
+
+**状态：`R07_FILE_LEVEL_PARTITIONED / MEMBER_LEVEL_NOT_STARTED`。** 这是“每个编译文件有一个责任桶”的第一层，不是逐成员分区；R07 仍为 `REVIEW_REQUIRED`。
+
+- **分母**：对 `AnimusForge.csproj` 用 `dotnet msbuild -getItem:Compile`（只求值，不构建）分别取 `BannerlordApi=1.3` 与 `1.4`，各 **1128** 个编译文件，两集合完全相同，没有 API 独有的文件。这取代 E08 中“未运行 MSBuild 求值”的缺口。分母只含主项目；Bootstrap 项目、测试与工具项目不在内。
+- **归类方法**：先用 `docs/phase8/full-domain-readiness-catalog.json` 的 entryPaths 作种子（198 个文件；MyBehavior/ShoutBehavior/SubModule 三个混合宿主不用种子），再按有序路径规则归类其余 930 个。脚本与结果在被忽略的 `artifacts/j17a/`（`classify_buckets.py`、`compile-files.json`、`bucket-partition.json`），不入库。**UNASSIGNED = 0**（仅文件级）。
+- **四个新桶（2026-09-29 用户决定：单独登记）**：`ada9894a` 并入的四功能不在 2026-09 的 20 桶目录中，按用户决定作为独立责任桶登记，不并入现有桶：`vengeance-execution` 77、`illustrator` 52、`dialogue-ui` 25、`coup` 12。覆盖网因此为 **24 桶**。本台账是登记处；`docs/phase8/full-domain-readiness-catalog.json` 的 20 域是 Phase8 历史门禁输入，暂不改（改它会影响 readiness 工具与 entry inventory，另行处理）。四桶的 owner/入口/存档键/退出门在其成员级盘点时补齐，当前均为 `REVIEW_REQUIRED`；其文件含另一会话未提交修改，成员级盘点待提交后进行。
+
+| 桶 | 文件数 | 桶 | 文件数 |
+| --- | --- | --- | --- |
+| settlement-siege-gccz-sets | 242（其中 184 为 GCCZ 仓内源，内部玩法按第 2 节排除） | memory-afef | 27 |
+| scene-mission-combat | 102（含 Xihai 74） | knowledge-persona-profile | 24 |
+| policy-political | 84（PolicySystem 内部按第 2 节排除） | runtime-diagnostics | 21 |
+| conversation-encounter | 78 | host-composition | 18 |
+| gateway-prompt-protocol | 70 | action-commit | 13 |
+| world-simulation-worldmap | 52 | persistence-config | 11 |
+| ui-tts-external-integration | 49 | duel | 11 |
+| courier-proactive-issue | 46 | bootstrap-build | 1（主项目内仅 AssemblyInfo；Bootstrap 本体在独立项目） |
+| social-progression-reports | 43 | economy-reward-debt | 29 |
+| game-adapter-compatibility | 41 | 四个 NEW 桶 | 166 |
+
+**文件级分区的已知局限（成员级盘点必须处理）**：
+
+1. 混合大类按文件整体归一个桶，掩盖了跨域成员：`MyBehavior.cs`（57112 行、约 2003 个方法）归 conversation-encounter，但它同时承载 Memory、Weekly、Persona、Kingdom 稳定度、内战等；`ShoutBehavior.cs`（37200 行、约 1140）、`RewardSystemBehavior.cs`（18230、约 547）、`SiegeAiInterventionBehavior.cs`（17242、约 551）、`KnowledgeLibraryBehavior.cs`（12189、约 296）、`DuelSettings.cs`（7002、约 288）、`DuelBehavior.cs`（8551、约 233）同理。这 7 个文件就是 R07 成员级盘点的主要工作量；方法数是正则粗估。
+2. `Refactor/` 30 个文件已按用途分到各桶（结构去向归 R06），不代表已迁。
+3. 路径规则是人工判定，按文件名而非方法体；成员级盘点时发现错归直接更正本表。
+
+**成员级盘点的工作树依赖**：以下桶含另一会话的未提交修改，成员级坐标会漂移，待其提交后再做：conversation-encounter（MyBehavior/ShoutBehavior/ShoutUtils）、duel（DuelSettings）、scene-mission-combat（SceneTaunt）、settlement-siege-gccz-sets（SettlementEntryTroopSelection）、world-simulation-worldmap（KingdomCivilWarState）及四个 NEW 桶。其余 11 个桶的文件不在未提交列表中，可以先做成员级：bootstrap-build、host-composition、runtime-diagnostics、game-adapter-compatibility、persistence-config、gateway-prompt-protocol、action-commit、economy-reward-debt、policy-political、courier-proactive-issue、ui-tts-external-integration；memory-afef、social-progression-reports、knowledge-persona-profile 的独立 partial 可做，但它们在 MyBehavior.cs 里的成员要等提交。
+
+<a id="j17a-slice3-20260929"></a>
+
+### J17-A 第三片：economy-reward-debt 成员级——RewardSystemBehavior 根三文件（2026-09-29，只读）
+
+**状态：`R07_ECONOMY_HOST_MEMBERS_CLUSTERED / CLUSTERS_REVIEW_REQUIRED`。** 源码 `ada9894a`，三文件均不在未提交列表。范围只含根目录 `RewardSystemBehavior.cs`（18230 行）、`.PlayerRpCrafting.cs`（3664）、`.RpItemIntroduction.cs`（712）；`src/modules/AF.Module.Economy/` 下 11 个同类型 partial 与同为 `partial class RewardSystemBehavior` 的 `AF.Module.Social/Recruitment/RecruitmentOwner.cs`（共 12 个模块内 partial）另片盘点。脚本/结果：被忽略的 `artifacts/j17a/members_reward.py`、`members-reward.json`。
+
+**先要说清的结构事实**：Economy 模块里的 11 个文件（Debt/Trust/Execution/Projection/Authorization）和 Social/Recruitment 的 1 个文件仍是 `partial class RewardSystemBehavior`，与根文件共享全部实例字段。它们是“按职责组织的 partial”，不是独立 owner；第 4 节已规定 partial 不能单凭语法判失败，但也不能据此算迁完。economy 桶的真正迁移单元是下面这些簇。
+
+**成员总量**：方法约 **619**、字段 **181**（其中集合字段 44）、嵌套类型 **31**。方法按名称规则分簇，“pure”指方法体内按游戏类型模式（Hero/ItemObject/Settlement/MobileParty/Clan/Campaign/Agent 等）搜索无命中——**只是迁移候选信号，未逐方法确认**。
+
+| 子簇 | 方法 | 行数 | 无游戏引用方法 / 行 | 判断与目标 |
+| --- | --- | --- | --- | --- |
+| 交易/赠予/资产（trade/barter/give） | 189 | 6364 | 31 / 576 | 以 ItemObject（89 处）、Hero（67）、ItemRoster 为主，多数是游戏 mutator，留主线程适配；定价/数量/标签编解码类纯函数可迁 Economy |
+| RP 物品模板解析（rp-template） | 109 | 4674 | 47 / 1074 | 模板候选索引、后缀规则、相似度排序是纯算法（候选最大），`ItemObject` 查找与 `MBObjectManager` 注册留适配；带静态缓存字段，迁移须保留一次构建语义 |
+| 英雄/非英雄入队、随从晋升（hero-join/companion） | 85 | 2058 | 6 / 97 | **跨域**：不是经济业务。Hero/CharacterObject/MobileParty/Clan 密集，和 `AF.Module.Social/Recruitment` 重叠；建议从 economy 桶改登记到 social-progression-reports（招募），本片不改归属，只标记 |
+| 奖励/请求（reward/request） | 43 | 1501 | 16 / 278 | 奖励物品解析/候选评分与游戏发放分开 |
+| 存档/同步（save/sync） | 20 | 1309 | 13 / 888 | 净化/序列化大多纯（888 行），可迁；键见下 |
+| 定居点商人事实（merchant-fact） | 51 | 1009 | 14 / 198 | 商人分类标签/事实键生成是纯文本规则；Notable/Settlement 读取留捕获 |
+| RP 打造（rp-crafting） | 24 | 745 | 14 / 438 | 大半纯 |
+| Harmony 补丁（harmony/patch） | 21 | 697 | 3 / 52 | Caravan/Villager 卖货前后缀、MBObjectManager postfix 等：**game-adapter-compatibility**，RETAINED_BOUNDARY 候选 |
+| 统治家族交接（clan-kingdom-transition） | 15 | 639 | 0 / 0 | **跨域**：王国/家族继承，属 world-simulation-worldmap（Kingdom）；全是游戏操作 |
+| 日历/工具、提示文本、战斗装备恢复、生命周期、标签、UI、信任、债务等 | 其余 62 | 约 1200 | — | 债务 5 个全纯（主体已在 Economy/Debt partial）；信任主体已在 Trust partial |
+
+剩余未分簇 6 个：`BuildArtisanTitleOutputCategorySet`、`BuildHiddenArtisanOutputCategorySet`（归 rp-crafting）、`BuildDuelStakeOptionsForAI`（**duel** 桶）、`BuildNpcBehaviorSupplementForAI`（gateway-prompt-protocol 候选）、`IsHeroInParty`、`IsHeroPlayerClanLordInMainParty`（hero-join）。
+
+**存档键（11 个，RETAINED_BOUNDARY）**：`_rewardDebts_v2`、`_rewardNpcTrust_v1`、`_rewardPublicTrust_v1`、`_rewardTradeTrustCarry_v1`、`_rewardDirectTrustProgressCarry_v1`、`_rewardPublicTrustProgressCarry_v2`、`_rewardSettlementTrustCentiCarry_v2`、`_rewardSettlementTrustSharedPublicCarry_v1`、`_rewardMerchantFacts_v1`、`_rewardHeroJoinOriginalClans_v1`、`_rewardGeneratedItems_v1`。与 R04 同理，需逐个核对是 JSON 字符串还是 Saveable 类型再决定哪些 DTO 可移出；本片未核对。
+
+**跨桶错归（文件级分区需修正）**：hero-join/companion 85 个方法与 clan-kingdom-transition 15 个方法不属于 economy。它们实际分别属于 social-progression-reports、world-simulation-worldmap，Harmony 21 个属于 game-adapter-compatibility。economy 桶真实规模约 **500 方法**，不是整份 22606 行。
+
+**下一步（本桶）**：逐方法确认 rp-template 与 save/sync 的“纯”候选（约 1960 行，最有价值）；核对 11 个存档键的载荷形态；盘点模块内 12 个 partial（Economy 11 + Social/Recruitment 1）的成员与根文件的共享字段依赖；hero-join 簇与 RecruitmentOwner 一并核对归属。
+
+<a id="j17a-slice4-20260929"></a>
+
+### J17-A 第四片：knowledge-persona-profile 成员级——KnowledgeLibraryBehavior（2026-09-29，只读）
+
+**状态：`R07_KNOWLEDGE_HOST_MEMBERS_CLUSTERED / CLUSTERS_REVIEW_REQUIRED`。** 源码 `ada9894a`；`KnowledgeLibraryBehavior.cs`（12189 行）不在未提交列表，也没有其他 partial。脚本/结果：被忽略的 `artifacts/j17a/members_generic.py`、`rules-knowledge.json`、`members-knowledge.json`。
+
+**成员总量**：方法约 **290**（方法体合计 11118 行）、字段 **179**、嵌套类型 **10**（`LoreContextCacheItem`、`RuleIndexItem`、`KnowledgeFile`、`LoreRule`、`LoreVariant`、`LoreWhen`、`LoreTextMapping`、`TextMappingKindOption`、`RoleDetailOption`、`IndexPorts`）。“无游戏引用”口径同第三片，只是候选信号。
+
+**已迁出部分**：`src/modules/AF.Module.Knowledge/`（Entities 3、Import 1、Index 1、Lore 1，共 2764 行）是**独立类型**，不是 partial。宿主调用 `LoreCandidateRetriever` 44 处、`KnowledgeRuleIndex` 10 处，并实现 `IKnowledgeIndexPorts`（嵌套 `IndexPorts :486`）。这和 Reward 家族“全是 partial”不同，Knowledge 已有真实 owner，剩余工作是把宿主里的余下算法接到这些 owner 上。
+
+| 子簇 | 方法 | 行数 | 无游戏引用方法 / 行 | 判断与目标 |
+| --- | --- | --- | --- | --- |
+| 开发者编辑 UI（dev-ui/editor） | 65 | 4208 | 25 / 667 | 占宿主 38%。`MultiSelectionInquiryData`/`TextInquiryData`/`InformationManager` 密集，是规则编辑器界面。界面适配留宿主或归 UI 适配层；其中选项构造、预览截断等纯函数可迁。**不是** Knowledge 领域算法 |
+| 文本映射（text-mapping） | 27 | 1090 | 16 / 485 | 映射规则纯；Hero/CharacterObject 解析留捕获 |
+| 检索/RAG（retrieval/rag） | 17 | 982 | 13 / 658 | 调 `OnnxEmbeddingEngine`（4 处）、`OnnxCrossEncoderReranker`（3 处）。候选打分/合并纯，可接 `LoreCandidateRetriever`；模型调用本身保持现有引擎 |
+| 玩家人设保护（player-persona-guard） | 27 | 875 | 16 / 347 | 观察者可见性、原名标记剥离等。跨三渠道共用的隐私规则，迁移时须按三渠道对齐案例验证 |
+| Prompt 渲染 | 21 | 786 | 10 / 536 | 纯渲染可迁；Settlement/Kingdom 名称读取留捕获 |
+| 索引/缓存 | 15 | 508 | 13 / 392 | 与 `KnowledgeRuleIndex` 重叠，先核对是否已有一份权威实现，避免双索引 |
+| 规则增删改（rule-crud） | 19 | 418 | 15 / 343 | 大多纯，可迁 |
+| 游戏查询（game-query） | 34 | 409 | 3 / 53 | `Find*ById`、`Get*Name` 等：游戏读取，**RETAINED_BOUNDARY** 候选 |
+| 状态评估（status-evaluation） | 11 | 361 | 7 / 124 | `EvaluateHero/Clan/Kingdom/SettlementStatus`：读游戏状态后判定，拆“捕获→判定” |
+| When 条件 | 9 | 285 | 9 / 285 | **全纯**，可直接迁 |
+| 导入/导出 | 8 | 284 | 8 / 284 | **全纯**；与 `KnowledgeImportSupport` 合并时先核对重复 |
+| 其余（context/capture、save/sync、role-identity、util、lifecycle、`GetAutomaticTargetIdForKind`） | 37 | 912 | — | 见下 |
+
+**存档键（RETAINED_BOUNDARY）**：`_knowledge_rules_v1_json`（整串旧格式）、`_knowledge_rules_v1_json_chunk_count`、`_knowledge_rules_v1_json_chunk_<i>`（符号键，对应 Profile 契约的 `knowledge-chunk-storage` 符号族）。宿主自带一套分块逻辑（`SplitUtf8Chunks :759`、`TryLoadChunkedStorageJson :832`、常量 12000 / 262144），数值与 `CampaignSaveChunkHelper` 相同，**但键名方案不同**（后者用 `__af_chunk_` 前缀），所以不能直接替换成通用 helper；只能在保持键格式的前提下共享 UTF-8 切分代码。
+
+**源码提取型测试消费者**：`tests/modules/AF.Module.Knowledge/LoreTextDifferential/Program.cs`、`PublishedSnapshot/Program.cs` 引用宿主类型文本，迁移时同切片更新。
+
+**宿主外部消费者**（12 个文件引用 `KnowledgeLibraryBehavior`）：`AIConfigHandler`、`AnimusForgeTerminalBehavior`、`ModOnboardingBehavior`、`MyBehavior`、`ShoutNetwork`、`PolicySystem/Npc/NpcRulerPolicyBehavior.Generation`、`CampaignComposition`、`WorldDiplomacyBehavior` 及 Knowledge 模块 3 个文件。公开成员的去留要按这些调用点定。
+
+**跨桶**：dev-ui/editor 的界面部分属 ui-tts-external-integration 的适配职责；player-persona-guard 与 conversation 三渠道共享。本片不改文件级归属，只标记。
+
+**下一步（本桶）**：先核对 index/cache 与 `KnowledgeRuleIndex`、import/export 与 `KnowledgeImportSupport` 是否重复实现；When 条件与导入导出（共 569 行全纯）是最低风险的首个迁移候选。
+
+<a id="j17a-slice5-20260929"></a>
+
+### J17-A 第五片：courier-proactive-issue 成员级——CourierDeliveryBehavior 家族（2026-09-29，只读）
+
+**状态：`R07_COURIER_HOST_MEMBERS_CLUSTERED / CLUSTERS_REVIEW_REQUIRED`。** 源码 `ada9894a`，23 个文件均不在未提交列表。脚本/结果：被忽略的 `artifacts/j17a/members_generic.py`、`rules-courier.json`、`members-courier.json`。
+
+**结构事实**：根 `CourierDeliveryBehavior.cs`（3497 行）加 `src/modules/AF.Module.Conversation/Channels/Courier/` 下 22 个 `partial class CourierDeliveryBehavior`（9739 行），合计 13236 行；该目录**没有**任何独立类型。与 Reward 相同，是按职责拆的 partial，共享全部实例字段，不是独立 owner。这与 R05 / E05 的判断一致：Courier 渠道编排仍在原类型内，本片为 R05 提供 Courier 侧的成员分区。根目录另有 9 个 Courier 卫星文件（输入/回信弹窗与 VM、Food/AI/PartyTransition 模型、可见文本净化），文件级已归本桶，本片未拆。
+
+**成员总量**：方法约 **396**（方法体合计 10626 行）、字段 **79**、嵌套类型 **18**。根文件 141 个方法 / 2930 行，是剩余最混杂的部分（59 个方法落在 other）。“pure”含义同第三片，仅为候选信号。
+
+| 子簇 | 方法 | 行数 | 无游戏引用方法 / 行 | 判断与目标 |
+| --- | --- | --- | --- | --- |
+| 回信/来信（reply/inbound） | 53 | 1717 | 27 / 647 | 渠道核心：回信生成请求、来信完成与提交时点；**到达时提交不可改为预生成提交**（J10 约束）。纯部分是请求构造/解析 |
+| 路线/运输（route/transport） | 64 | 1425 | 6 / 70 | MobileParty（44）、PartyBase、Settlement 密集，含海运临时船、卡住改道。游戏适配，留主线程；RETAINED_BOUNDARY 候选 |
+| 信件库存与界面（letter/inventory-ui） | 43 | 1389 | 20 / 303 | 库存记录是纯数据；弹窗/选择留 UI 适配 |
+| 会话注册（session-registry） | 28 | 1044 | 14 / 214 | 会话/运行索引、代际；渠道 owner 核心状态 |
+| 提示词（prompt/messages） | 19 | 722 | 7 / 223 | 即 E05 所指 `BuildCourierReplyMessages` 一带；角色/历史/规则组装须与 Native/Scene 共享语义，按**三渠道对齐案例**核对后再定归属 |
+| 提交/动作（commit/actions） | 19 | 526 | 9 / 233 | 域提交分派；与 action-commit 桶接缝 |
+| LLM 生成 | 12 | 511 | 8 / 146 | 生成生命周期；传输已归 AF.Module.Llm（E01） |
+| 生命周期/Tick、草稿准入、存档、工具 | 61 | 1397 | — | Tick 与准入是渠道调度；工具多为 Describe/Safe*/Log |
+| other（未分簇） | 97 | 1895 | 42 / 579 | 见下，需逐方法归属 |
+
+**other 中可辨认的跨桶成员**（文件级分区需修正）：
+
+- **game-adapter-compatibility**：`RegisterHarmonyPatches`、`MapTrackerProviderAddIfEligibleCourierPostfix`、`CourierMapEventUpdatePrefix/Finalizer`、`PrepareCourierMapEventForNativeUpdate`、`SetCourierMapEventFinishCalled`、`MarkCourierMapEvent*` 等 MapEvent/追踪补丁。
+- **economy-reward-debt**：`BuildCourierTradeOptions`、`EstimateCourierItemUnitValue`、`EstimateCourierSettlementTransferValue`、`EstimateCourierCargoEntryTotalValue`、`BuildCourierCargoValueSuffix`——信使交易估值应复用 Economy 的定价规则，现为渠道内独立实现，需核对是否与 Reward 定价重复。
+- **gateway-prompt-protocol**：`HasPreprocessRuleHit`、`MergeCourierSelectedRuleIds`、`ExcludeCourierSelectedRuleIds`、`RemoveInjectedRuleBlock`——前处理规则选择，三渠道应共享同一实现（三渠道对齐案例）。
+- **ui/地图表现**：`ApplyCourierMapBannerVisual`、`EnsureCourierVisualTracked`、`UntrackCourierMapVisual`、`CreateCourierBannerImageIdentifier`。
+- **refactor 接缝**：`CreateCourierDetachedPorts*`、`CreateCourierMemoryFacadeForExternal`、`RunCourierDetachedRefactorFallbackAsync`；根文件共 51 处 Refactor/Detached 引用，结构去向归 R06。
+
+**存档键（3 个，RETAINED_BOUNDARY）**：`_af_courier_sessions_v1`（经 `FlattenStringDictionary` 的字典，`:901–903`）、`_af_courier_npc_diplomacy_letters_v1`（JSON 字符串，`:945`）、`_af_courier_letter_inventory_v1`（字典，`:1003–1006`）。家族内没有 SaveableTypeDefiner / SaveableField，嵌套类型 `CourierSession`、`CourierLetterInventoryRecord`、`NpcDiplomacyLetterStorage` 等的存档契约与 R04 同理是 JSON 字段名而非类型身份；载荷字段逐个核对未做。
+
+**下一步（本桶）**：逐方法归属 other 97 个；核对信使估值与 Economy 定价、前处理规则选择与 Native/Scene 的重复实现（这两项若确认重复，就是三渠道不同步类缺陷的来源，需先报告再改）；盘点 9 个卫星文件和 `AF.Module.Issue`、Proactive 其余成员。
+
+<a id="j17a-slice6-20260929"></a>
+
+### J17-A 第六片：14 个可做桶的批量成员盘点（2026-09-29，只读）
+
+**状态：`R07_14_BUCKETS_MEMBER_SCANNED / CLUSTERS_REVIEW_REQUIRED`。** 源码 `ada9894a`；未提交文件 31 个（另一会话），命中的 `DuelSettings.cs`、`SettlementEntryTroopSelectionBehavior.cs` 已跳过。脚本/结果在被忽略的 `artifacts/j17a/batch_buckets.py`、`batch-buckets.json`。方法数与“无游戏引用行（pureL）”为正则粗估，只作迁移候选信号，未逐方法确认。GCCZ 内部 184 个、PolicySystem 内部 77 个文件按第 2 节排除，只计 AF 侧接缝。
+
+| 桶 | 实扫文件 | 方法 | 方法体行 / 无游戏引用行 | Harmony 类 | 存档键 | 主要发现 |
+| --- | --- | --- | --- | --- | --- | --- |
+| duel | 9（DuelSettings 未提交跳过） | 347 | 10477 / 3612 | 2 | `_duelCooldowns` | `DuelBehavior` 与 Outcomes、`AF.Module.Duel/DispatchOwner` 共 3 个 partial，同类共享字段；`Refactor/Runtime/DuelOutcomeReceipt.cs` 1515 行几乎全纯，归 R06 结构去向 |
+| settlement-siege-gccz-sets（AF 侧） | 57 | 1297 | 30832 / 4958 | 8 | 30 个 `_gccz*` | `SiegeAiInterventionBehavior` 根 + 5 个 adapter partial，17243 行里纯仅 1319；多数是游戏状态效果，30 个键属 GCCZ 业务，AF 只保留接缝。**另有 2 个 `DuelSettings` partial 被文件规则归进本桶**，需改登记 persistence-config |
+| economy-reward-debt | 26 | 322 | 7130 / 2875 | 2 | 键在根文件（见第三片） | 11 个模块文件全是 `RewardSystemBehavior` partial，确认第三片结论；`PlayerRpCraftItemComponentService`、`PlayerRpForgePopup` 是独立类型 |
+| courier-proactive-issue | 46 | 730 | 16498 / 5327 | 6 | 无独立键 | `ProactiveNpcRequestBehavior` 4305 行（186 方法）是本桶第二大宿主；`VanillaIssueOfferBridge` 有 6 个 partial；`CompanionProactiveChatBehavior` 1384 行 |
+| knowledge-persona-profile | 23 | 490 | 12456 / 7319 | 1 | 无独立键 | `WorldEntityRetrievalService` 3822 行、`OnnxCrossEncoderReranker` 纯 969/1102、`KnowledgeRuleIndex` 纯 1170/1312。**本桶含 3 个 `MyBehavior` partial（Persona*）和 1 个 `ShoutBehavior` partial**，它们与宿主共享字段，迁移与 MyBehavior/ShoutBehavior 盘点绑定 |
+| gateway-prompt-protocol | 70 | 331 | 6811 / 6697 | 6 | 无 | 近乎全纯（98%），已大多是独立类型；`ShoutNetwork.cs` 1306 行，纯 1148。剩余工作主要是 R06（`Refactor/Adapters` 的 gateway 去向）而非算法迁移 |
+| game-adapter-compatibility | 41 | 344 | 8355 / 2354 | 32 | 无 | 按设计是游戏适配，候选 `RETAINED_BOUNDARY`；需逐类确认没有夹带领域算法。`ConversationExceptionGuard` 纯 379/558、`CompatibilityAudit` 247/433 需复核 |
+| ui-tts-external-integration | 49 | 730 | 14528 / 8845 | 1 | `_AnimusForge_setup_done_v1`、`_af_terminal_last_hint_day_v1` | `ModOnboardingBehavior` 3947 行最大；`TtsEngine` 纯 1200/1446；`AnimusForgeTerminalUiModels` 1691 行。**含 1 个 `DuelSettings` partial（TerminalSave）**，存储归 persistence-config |
+| runtime-diagnostics | 21 | 293 | 5322 / 4466 | 5 | 无 | `Logger` 1504 行、`BannerlordExceptionSentinel`、`FreezeWatchdog`，已是独立 Foundation 类型；5 个 Harmony 诊断补丁 |
+| host-composition | 18 | 69 | 1607 / 884 | 1 | 无 | `StartupPatchComposition` 549 行单方法（补丁注册表）；`FeatureBridgeRuntime` 纯 356/422，归 R06 |
+| action-commit | 13 | 110 | 2980 / 2345 | 1 | 无 | 已基本独立；`LegacyNativeActionPlanExecutor` 纯仅 205/768，是向领域执行的分派 |
+| policy-political（AF 侧） | 7 | 229 | 4974 / 1404 | 2 | 4 个 `_vd*` | `VoteDealBehavior` 4773 行 + 3 个 partial（164 方法）是 AF 自有投票交易业务，**不在 PolicySystem 排除范围内**，需要按真实领域继续拆 |
+| bootstrap-build | 1 | 0 | — | 0 | 无 | 仅 `AssemblyInfo.cs`；Bootstrap 4 文件在独立项目 |
+| tools-content-package（非编译） | — | — | — | — | — | 见下 |
+
+**tools-content-package 非编译清单（git tracked）**：`tests/` 642、`tools/` 271、`content/` 116、`docs/` 403、`一键编译覆盖推送/` 12、`AnimusForge.Bootstrap/` 4、`.agents/` 6、`.claude/` 31。`content/` 按 owner 分布合理（PolicySystem 28、Xihai 14、Social/Economy 各 10 等）。问题：
+
+1. **J16a 退出门被四功能合并破坏**：`tools/` 下重新出现测试入口 `Coup.ContractTests`、`Coup.RuntimeProbe`、`ScenePresentationPolicyTests`、`illustrator/*Audit.cs`（`tools/illustrator` 45 文件），根 `tests/ExecutionSpeechLineParserTests` 也未按 owner 归位。需要随四个 NEW 桶一起归到 `tests/`。
+2. `tools/` 下未跟踪残留：`PhaseEightReadiness` 约 6.3 万个 fixture 文件（大多忽略），以及 11 个旧测试目录的 `.generated`。属于 J16b 清理项，需按 A1 授权处理。
+
+**跨桶错归汇总（前三片 + 本片）**：
+- → social-progression-reports：Reward 的 hero-join/companion 85 方法。
+- → world-simulation-worldmap：Reward 的统治家族交接 15 方法。
+- → game-adapter-compatibility：Reward 21、Courier 根文件地图事件/追踪补丁若干、各桶 Harmony 类共 67 个（本片计数）。
+- → persistence-config：3 个 `DuelSettings` partial（2 个被归 siege、1 个归 ui）。
+- → duel：Reward 的 `BuildDuelStakeOptionsForAI`。
+- knowledge-persona-profile 中 4 个 MyBehavior/ShoutBehavior partial：物理位置保留，职责盘点并入宿主盘点。
+
+**仍被阻挡**：conversation-encounter（MyBehavior 57k / ShoutBehavior 37k / ShoutUtils）、memory-afef 与 social 在 MyBehavior 内的成员、world-simulation 的内战两文件、scene-mission-combat 的 SceneTaunt、duel 的 DuelSettings、四个 NEW 桶。
+
+**下一步**：等另一会话提交后盘被阻挡部分；之后按本片错归表修正文件级分区，再逐簇把“无游戏引用”候选确认为 OPEN 迁移单元或 RETAINED_BOUNDARY。
+
+
 
 <a id="j15-remote-reconcile-20260928"></a>
 
@@ -4338,3 +4596,11 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - **生产与结构验证**：最终 Debug 1.4 SHA 候选直接运行完整 `PhaseEightParityReplayTests`（显式 DLL+SHA、当前源码 freshness），J13f 五个 owner 的 dwell/暂停/幂等、意外关闭、取消版本、限量 UI 回送与关闭退休均 PASS，`J13FUiHostLifecycleContractReplay` 另作原 Gauntlet/Native/Onboarding 消费者源码接线与 Base URL 取消消费保护检查，明示不是实机。`ModuleFrameworkApiTests/run.py` 使用当前 Debug/Release 产物，公开 V1 **119**、四 DLL PE metadata **1148**、快照边界 **36**、parallel capture/projection **128**、internal compiler 拒收及五个 mutation control PASS；未执行外部 DLL 在游戏中的加载。`PersistenceProfileConfigContractTests` 严格 runner：**142** literal key、**168** typed binding / **142** key / **9** type、**13** chunk / **44** flattened、legacy-first **10**、配置凭据排除/未知数据保留 PASS；新嵌套调用 parser 的两项 unit 先红后绿。`PersistenceChunkReplayTests` 的 inline/UTF-8/缺块/腐坏/字典/隔离通过；`PersistenceIdentityAudit.py --baseline 053ad485` 当前与受审基线均 **142** SyncData、**36** CampaignBehavior，added/removed 均空，模块 ID/Name 和仅 Bootstrap 装载身份未漂移；其默认更老 `d4cb1467` 基线把既有 WarStats 47 key/1 behavior 报为新增，不能误算产品回归。IdentityAuditContract **6** 通过。真实旧档 SaveSystem round-trip 未运行。
 - **关联门禁**：BridgeBinding **16**（12 wired/4 declared-only）、其单测 **23**，BridgeFixture **10**/6 invariants、BridgeRuntimeIsolation **12** 进程场景通过；PhaseEightReadiness 的入口 `--check` 与 **73** 单测通过，Social 补记 5 个已迁 Proactive 源、UI 补记 ModOnboarding 与 5 个模块 owner，但两个 domain 的 `entryCoverage=REPRESENTATIVE` 和原 `ASSIGNED` 状态未提升，不能称 LIVE/SAVE 或发布 READY。source inventory **7**，代码地图 **722** 锚点 recorded-revision/working-tree 两模式通过，仅源码定位。Native admission **44**、presentation **46**（stub 下游），Scene parity **71**、request lifetime **30**、speech queue **6**，Courier prompt **550** / 76 场景、postprocess **39**、delivery lifetime **6**、production host 接线、J12 lifecycle **68** 与 J12 source **3** 均通过；这些源提取/fixture 回归不代替游戏侧副作用验收。
 - **未验、风险与交接**：实际 1.3/1.4 Bannerlord 启动、Harmony/Gauntlet 点击与焦点、百科快捷键、Campaign/Scene/Courier/原生战斗、旧存档 round-trip、真实 provider/Key、音频及帧性能仍 **NOT-RUN**。Phase8 全量 release-readiness 需要独立的 LIVE/SAVE/审核证据，目录仍 `REPRESENTATIVE`，不由 J13 离线绿灯授予发布；J14 三渠道 public submit 仍不做。原 Onboarding 其他错误详情仍沿已有 `NonBlockingErrorReport.RedactConfiguredApiKeys`，不能因 VM 提示泛化就声称所有异常文本绝无敏感信息。未 push、Stage、部署、打包、写游戏/外仓、改自动化或清理 `.dotnet-cli-home/`；下一阶段仅交接 J14，由新授权另行启动。
+
+## 主体 MCM 内战派系 v2 继续收口（2026-09-30）
+
+状态：**`CIVIL_WAR_V2_OFFLINE_VERIFIED`**。本轮承接 Claude Code “MCM选项”会话的已确认方案，在 `20aca83b` 将旧 v1 `KingdomCivilWarOwner` 替换为 v2 状态机：不满按事件源字典累计并周衰减，C# catalog 选择诉求/目标/结局，随机度由 MCM 控制；阶段为不满、成派、最后通牒、内战、冷却。玩家王国开关、最后通牒答复标签、临时叛军王国请求及成功创建回调均保留在同一 DLL 内；`c3eb128c` 接通宿主 faction ID、v2 存档键 `_af_kingdom_civil_war_v2` 和空叛军王国清理外部入口。旧 v1 存档按已授权方案不迁移。
+
+- **接线与性能**：`CivilWarCampaignBehavior` 监听处决、战争/议和、劫掠、失地、家族消灭和王国决议，只在事件回调写入对应家族字典；周推进仅处理当前王国一次，派系成员/力量和战争结局按需计算，无每周历史全量扫描、热路径反射或空转轮询。`HasTrackedKingdom` 只在成派/最后通牒/内战阶段阻止原版同周稳定度叛乱，冷却和空记录不再阻止原版逻辑；关闭 MCM 时忠诚、面板、标签和战争门禁均返回中性值，保存数据保留。
+- **离线验证**：纯 C# `CivilWarRules.SmokeTests` 通过（net6.0 仅有 EOL 提示）；官方 `一键编译覆盖推送/build_single_module.ps1` 不带 `-Stage/-Deploy` 的 Debug 1.3、Debug 1.4、Bootstrap 均 **0 错误**，最终日志为 `F:/AnimusForge-main/.tmp/civilwar-v2-final-build.log`。真实 Campaign 事件时序、Gauntlet/MCM 点击、临时叛军战斗副作用、旧档 round-trip 和帧性能仍 **NOT-RUN**；未 push、部署或覆盖游戏。
+- **回滚/交接**：v2 owner 代码回滚点为 `20aca83b`，宿主接线为 `c3eb128c`；详细源码在 `src/modules/AF.Module.Kingdom/CivilWar/`，宿主桥接在 `MyBehavior.cs`、`src/AF.Contracts/Internal/TeamModules/ICivilWarModulePort.cs`。工作树仍有其他会话的既有脏文件，未回滚、未纳入上述提交。

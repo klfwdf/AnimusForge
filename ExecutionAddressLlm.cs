@@ -192,12 +192,36 @@ internal sealed class ExecutionAddressPlayback
     private readonly List<ExecutionSpeechLine> _during = new();
     private readonly List<ExecutionSpeechLine> _aftermath = new();
     private int _closed;
+    // The reply finished (or failed after a visible line). Later phases are
+    // still replayed from the buffers, so the session stays registered until
+    // the aftermath phase plays or the ceremony cancels it.
+    private bool _streamDone;
+    private readonly CancellationTokenSource _requestCancellation;
+    private int _requestDisposed;
 
-    internal ExecutionAddressPlayback(ExecutionSpeechDirector director, ExecutionRequest request)
+    internal ExecutionAddressPlayback(
+        ExecutionSpeechDirector director,
+        ExecutionRequest request,
+        CancellationTokenSource requestCancellation)
     {
         _director = director;
         _request = request;
         _sessionId = request.SessionId;
+        _requestCancellation = requestCancellation;
+    }
+
+    internal CancellationToken RequestToken => _requestCancellation.Token;
+
+    internal void CancelRequest()
+    {
+        if (Volatile.Read(ref _requestDisposed) != 0) return;
+        try { _requestCancellation.Cancel(); }
+        catch (ObjectDisposedException) { }
+    }
+
+    internal void DisposeRequest()
+    {
+        if (Interlocked.Exchange(ref _requestDisposed, 1) == 0) _requestCancellation.Dispose();
     }
 
     internal void Accept(IReadOnlyList<ExecutionSpeechLine> lines)
@@ -212,13 +236,18 @@ internal sealed class ExecutionAddressPlayback
         if (string.IsNullOrWhiteSpace(reason)) return;
         _mainThread.Enqueue(() =>
         {
-            if (_shown > 0 || !StillCurrent())
+            if (!StillCurrent())
             {
                 ExecutionAddressLlm.Release(_sessionId);
                 return;
             }
-            RexLog.Warning($"Execution address request failed before any line; restoring the local address ({reason}).");
-            RestoreLocal();
+            if (_shown == 0 && _playing == ExecutionSpeechPhase.Opening)
+            {
+                RexLog.Warning($"Execution address request failed before any line; restoring the local address ({reason}).");
+                RestoreLocal();
+                return;
+            }
+            FinishStream();
         });
     }
 
@@ -231,13 +260,18 @@ internal sealed class ExecutionAddressPlayback
                 ExecutionAddressLlm.Release(_sessionId);
                 return;
             }
-            if (_shown == 0) RestoreLocal();
-            else
-            {
-                _director.CompleteIncremental();
-                ExecutionAddressLlm.Release(_sessionId);
-            }
+            if (_shown == 0 && _playing == ExecutionSpeechPhase.Opening) RestoreLocal();
+            else FinishStream();
         });
+    }
+
+    // No more lines will arrive: let the current phase drain its last bubble.
+    private void FinishStream()
+    {
+        if (_streamDone) return;
+        _streamDone = true;
+        _director.CompleteIncremental();
+        if (_playing == ExecutionSpeechPhase.Aftermath) ExecutionAddressLlm.Release(_sessionId);
     }
 
     internal void Tick()
@@ -258,6 +292,7 @@ internal sealed class ExecutionAddressPlayback
     {
         while (_mainThread.TryDequeue(out _)) { }
         Close();
+        CancelRequest();
         ExecutionAddressLlm.Release(_sessionId);
     }
 
@@ -271,6 +306,10 @@ internal sealed class ExecutionAddressPlayback
             _director.FinishCurrentPhase();
             var lines = phase == ExecutionSpeechPhase.During ? _during : _aftermath;
             Apply(lines.ToArray(), countTowardOpening: false);
+            if (!_streamDone) return;
+            // The reply already ended, so this phase receives nothing more.
+            _director.CompleteIncremental();
+            if (phase == ExecutionSpeechPhase.Aftermath) ExecutionAddressLlm.Release(_sessionId);
         });
     }
 
@@ -371,8 +410,11 @@ internal static class ExecutionAddressLlm
         if (ExecutionAddressLlmBridge.OnPlay == Play) ExecutionAddressLlmBridge.OnPlay = null;
         if (ExecutionSpeechBubbleBridge.Show == ShowOnHostBubble) ExecutionSpeechBubbleBridge.Show = null;
         if (ExecutionSpeechBubbleBridge.ClearShown == ClearHostBubbles) ExecutionSpeechBubbleBridge.ClearShown = null;
+        foreach (var playback in Active.Values) playback.CancelRequest();
         Active.Clear();
         Cancelled.Clear();
+        ShownSpeakers.Clear();
+        _shownMission = null;
     }
 
     internal static bool TryStart(
@@ -406,7 +448,8 @@ internal static class ExecutionAddressLlm
             return false;
         }
 
-        var playback = new ExecutionAddressPlayback(director, request);
+        var requestCancellation = new CancellationTokenSource(RequestTimeout);
+        var playback = new ExecutionAddressPlayback(director, request, requestCancellation);
         Active[request.SessionId] = playback;
         _ = RunAsync(facts, playback);
         return true;
@@ -418,11 +461,22 @@ internal static class ExecutionAddressLlm
     }
 
     private static readonly HashSet<Agent> ShownSpeakers = new();
+    // Speakers belong to one mission; a new mission never touches old agents.
+    private static Mission _shownMission;
+
+    private static void ForgetSpeakersFromOtherMission(Mission mission)
+    {
+        if (ReferenceEquals(_shownMission, mission)) return;
+        ShownSpeakers.Clear();
+        _shownMission = mission;
+    }
 
     private static bool ShowOnHostBubble(Agent speaker, string text, float durationSeconds)
     {
-        var view = Mission.Current?.GetMissionBehavior<FloatingTextMissionView>();
+        var mission = Mission.Current;
+        var view = mission?.GetMissionBehavior<FloatingTextMissionView>();
         if (view == null || speaker == null || string.IsNullOrWhiteSpace(text)) return false;
+        ForgetSpeakersFromOtherMission(mission);
         view.AddOrUpdateText(speaker, text, isAppend: false, Math.Max(0.5f, durationSeconds));
         ShownSpeakers.Add(speaker);
         return true;
@@ -430,7 +484,9 @@ internal static class ExecutionAddressLlm
 
     private static void ClearHostBubbles()
     {
-        var view = Mission.Current?.GetMissionBehavior<FloatingTextMissionView>();
+        var mission = Mission.Current;
+        ForgetSpeakersFromOtherMission(mission);
+        var view = mission?.GetMissionBehavior<FloatingTextMissionView>();
         foreach (var speaker in ShownSpeakers)
         {
             if (speaker != null) view?.AddOrUpdateText(speaker, string.Empty);
@@ -447,6 +503,9 @@ internal static class ExecutionAddressLlm
     {
         Cancelled[sessionId] = 1;
         if (Active.TryRemove(sessionId, out var playback)) playback.Cancel();
+        // A session released earlier (aftermath played) has nothing to stop;
+        // do not leave its mark behind for every later teardown.
+        else Cancelled.TryRemove(sessionId, out _);
     }
 
     internal static bool IsCancelled(Guid sessionId) => Cancelled.ContainsKey(sessionId);
@@ -462,7 +521,9 @@ internal static class ExecutionAddressLlm
 
     private static async Task RunAsync(ExecutionAddressFacts facts, ExecutionAddressPlayback playback)
     {
-        using var timeout = new CancellationTokenSource(RequestTimeout);
+        // Timeout and ceremony cancellation share one token, so a finished
+        // scene stops the request instead of holding the single slot.
+        var token = playback.RequestToken;
         var parser = new ExecutionSpeechLineParser();
         try
         {
@@ -477,7 +538,7 @@ internal static class ExecutionAddressLlm
                 chunk => playback.Accept(parser.Append(chunk)),
                 _ => playback.Accept(parser.Flush()),
                 error => playback.Fail(error),
-                timeout.Token,
+                token,
                 promptRetryOnError: false).ConfigureAwait(false);
             playback.Complete();
         }
@@ -491,6 +552,7 @@ internal static class ExecutionAddressLlm
         }
         finally
         {
+            playback.DisposeRequest();
             Interlocked.Exchange(ref _active, 0);
         }
     }

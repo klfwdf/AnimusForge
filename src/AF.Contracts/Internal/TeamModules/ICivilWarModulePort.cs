@@ -30,6 +30,8 @@ internal interface ICivilWarModulePort
 	void Load(string json);
 	string Save();
 	void AdvanceWeek(Kingdom kingdom, int weekIndex, int stability, Action<Kingdom, int> adjustStability, IReadOnlyList<string> recentEvents);
+	void RecordGrievance(Kingdom kingdom, string sourceId, IEnumerable<Clan> clans, float points, int week, string text);
+	void RecordPolicyImposed(Kingdom kingdom, string policyId, int week, string text);
 	bool HasTrackedKingdom(Kingdom kingdom);
 	int GetSettlementLoyaltyDelta(Settlement settlement);
 	bool BlocksNewOffensiveWar(Kingdom kingdom);
@@ -37,4 +39,5 @@ internal interface ICivilWarModulePort
 	IReadOnlyList<CivilWarPanelKingdom> GetPanelKingdoms(int pageIndex, int pageSize, out int pageCount);
 	List<PostprocessRuleEntry> BuildPostprocessRules();
 	bool TryApplyTag(Hero speaker, string tag, out string message);
+	void NotifyRebelKingdomCreated(string factionId, Kingdom rebelKingdom, int week);
 }
