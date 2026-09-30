@@ -2,6 +2,45 @@
 
 ## J17 本轮执行意图与现场（2026-09-30）
 
+### 当前结论：J17-A已闭，20/20责任桶；B/C未执行，D NOT-RUN
+
+**本段取代下方各接续检查点的7/20、pending及“A未闭”当前状态，保留它们作为审查过程记录。** 产品源码仍`8ae0f831`；仅仓内证据/正式文档变更。A的完成是范围内逐声明责任、真实消费者、动态接缝和具名余项闭合，不是业务正确、产品迁移或离线验收完成。
+
+最终两API实际Compile各1128（另Bootstrap独立3），Roslyn声明49854/49853、parse error0；聚合以`Api+(File,Namespace,ParentType,Kind,Signature)`为唯一身份，一基坐标另验。所有声明恰有一项权威责任/明确授权排除：缺主张0、双主张0、非法键0、单包重复0；最终未读/待消费者状态0、空owner0、空证据0。以上机器检查**配合E120–E132完整责任组body/消费者审查及有效旧E复用**才支持unknown=0，单独counts不能支持。1,128源码原始hash与Compile快照一致，产品未改变；795代码地图recorded/working-tree均PASS，属于定位而非行为测试。
+
+#### E133 / 20桶最终语义签收（SOURCE_RESPONSIBILITY_CLOSED）
+
+| 责任桶 | 有效证据、真实权威与保留边界 |
+| --- | --- |
+| bootstrap-build | E37及当前独立3源/两实现1128输入复核；单模块/Bootstrap唯一选择原样，构建脚本/引擎加载留适配，非已构建/部署。 |
+| host-composition | E38/E95/E124；引擎入口、typed内部目录/生命周期留Host，各domain tick/状态不归第二Host，Courier旁路注册具名保留。 |
+| runtime-diagnostics | E102–108/E124；唯一代际/队列/日志owner与Game/MCM/OS适配分开，checkpoint触发原版AI跳过非纯日志，清理/隐私/帧成本未验。 |
+| game-adapter-compatibility | E39/E59–61/E92–93/E110及E121/E123/E126/E128–130/E132；手工Harmony、反射、XML/VM、模块初始化和版本分支已逐责任指向注册/消费者，孤儿候选保留，不等于实际安装或外部未知反射不存在。 |
+| persistence-config | E47/E96–97/E112/E114/E121–124/E131；chunk/codec/path唯一通用I/O，MCM/AIConfig混合字段分域；保存键/CLR合同/原地净化/坏项策略不变，CivilWar v1/v2失败仍OPEN。 |
+| conversation-encounter | E48–54/E94/E118–119/E122/E126；三渠道请求/主线程捕获/实际接受/会话释放，军团选人和原版meeting适配分开，默认Native未切opt-in。 |
+| gateway-prompt-protocol | E49–52/E65/E97/E112/E121–122/E126–127/E131–132；transport单attempt、领域重试、Prompt规则/活事实捕获明确分属，未产生第二缩水LLM链，原文日志/取消语义仍OPEN。 |
+| action-commit | E43/E109及E126/E128/E130/E132生产消费者；Action计划/terminal不冒充真实效果或Memory持久exactly-once，各领域mutator与AFEF仍唯一writer。 |
+| memory-afef | E23/E42/E44–45/E111/E115/E118/E122/E124/E131；MyBehavior主状态、H恢复见证、lease/dispatcher、导入/编辑/三摘要职责已全部分界，B1–B4尚需真实迁移。 |
+| economy-reward-debt | E70及E131完整Reward/partial/MyBehavior97；债务/信任/生成物品身份、RP交易和真实资产writer分开，原版对象/roster边界保留，部分提交不是成功。 |
+| policy-political | E117及E126–128/E131–132所有AF调用接缝；77 Policy内部5542成员明确排除，不作已审/已迁，AF无状态adapter/internal port及跨域调用有真实owner。 |
+| world-simulation-worldmap | E85–91/E116、Domains原world-map与E124/E128/E132；Vassalage/Kingdom/CivilWar/WarStats/WorldMap/Direct+World Diplomacy权威分属，玩法/存档改动不借审查授权。 |
+| settlement-siege-gccz-sets | E68/E128–130；SETS491按身份闭合、Siege六文件911、Castle/Village及AF memory/原版效果桥完整归责；GCCZ内部排除，不把AF宿主一起排除。 |
+| scene-mission-combat | E71/E78/E80–83/E123/E126/E129–131；Taunt/Inspection/Meeting/Exercise/Noble mission状态、damage allowlist及清理各有owner，真实Agent/Team留适配，实机场景矩阵未验。 |
+| duel | E55/E96/E98/E113及E126/Scene消费者；请求/Outcome/Receipt/结算与Fourberie/Meeting适配分界有效，不扩大独立战斗规则。 |
+| courier-proactive-issue | E54/E76/E126–127；Courier session/save/运输/入站收据、Social need、Companion、Issue原版quest各守权威，所有原pending责任体补齐，三渠道/迟到效果验证仍B/C。 |
+| social-progression-reports | E56/E72–84/E127/E131及Domains Social；Notoriety/Romance/招募/NpcAction/Patience/Weekly真实状态与event/live事实捕获分开，B1b/B5/B6和Week0等出口未关闭。 |
+| knowledge-persona-profile | E99–100/E116/E131；Knowledge/实体/Persona/ONNX各自owner，live捕获与detached计算区分，模型安装不重开，跨代/缓存/源规模风险有界登记。 |
+| ui-tts-external-integration | E62–63/E69/E123/E131；UI选择/呈现/反射/XML与业务写者分离，TTS音频/job生命周期非HTTP transport，worker live-read及迟到UI有具名B6出口。 |
+| tools-content-package | E101及当前tracked输入；工具/内容/历史产物责任和运行边界保持，测试发现不授予执行迁移器/生成器/固定目录清理，未动一键部署或真实资料。 |
+
+四个集成overlay仍按既有独立登记和E35/E69/E71处理：DialogueUI/Illustrator/Vengeance内部与Coup内部由其owner持有，AF私有/公开/typed/反射/保存接缝已由上述桶覆盖；不另造第二分母、不把排除算迁移成果。公开V1 API与same-DLL内部port保持分离。
+
+**已执行验证**：最终成员/源hash/范围/消费者证据聚合；新增续审表逐行独立核验；地图795双模式；当前文档引用/锚点与`git diff --check`。本接续未运行产品构建、业务runner、真实provider、游戏或旧档；历史PASS没有改成本次PASS。详细可复查工件在`artifacts/j17a/session-20260930`，正式责任/有限余项以本台账和范围图为准。
+
+**B的精确下一包**：B1a九个记录95公有字段与唯一Sanitize/clone规则；B1b NpcActionEntry27字段、B4 ExportBundle5字段分开。原冻结九个记忆兼容键是B1a七键加H recovery/Weekly outcome receipt两键，B1b两action键及counter另外保留，不因都叫“九键”混淆。所有现存反射/source-derived测试须改接真owner且不删断言；先留迁移前结果、再产品切片、双API验证和本地提交。该准备为只读，不宣称已开始或完成迁移。
+
+**执行安全仍待确认**：先前两项精确请求尚无用户回复——仓外合成根`E:/tmp/af-j17-20260930`（只新建内容的清理）及总runner/编辑器/固定current测试入口最小隔离修正。未执行这些入口、未绕过DataPaths仓内拒绝合同、未写真实玩家资料或游戏目录。B/C不能以无基线/缺必要门禁的代码移动冒充完成；相关验证完成前保持未验。未经批准不改变新发现的战争/刑罚/赔付/重试/存档迁移政策，不推送或部署。
+
 ### 正确模型接续检查点（2026-09-30；进入点 `15e14268`）
 
 - 本接续取代上一轮代理停点作为当前执行指令；总控 `gpt-6-astra / medium`，六个执行者显式 `gpt-6-sol / medium`，使用非全历史 fork。本地原分支和目录不变，22 个未跟踪 tools 目录保留；产品仍为 `8ae0f831`，本次尚未修改产品。
