@@ -41,6 +41,13 @@ Memory supplement **24文件/466成员每API**由原245待消费者+221未审提
 本次保持源码/方法职责与运行验收分层；新具名OPEN并不自动扩成修复原版玩法的授权。Conversation的弱投影、Domains/外交/主动等剩余仍由原执行者连续补审，不按helper开常驻复审轮。A全局unknown仍未证0，正式签桶暂不提升，B/C未启动。
 
 
+### E125 地图与执行安全增量
+
+地图四文件实际diff已审，795锚点重定位至产品`8ae0f831`，recorded与working-tree本轮均PASS；只修坐标/hash，不修改symbol或历史验证状态，不声称业务验收。此前working-tree stale记录由此定位结果取代，CivilWar保存合同失败不受影响。
+
+测试安全静态检查发现 `tests/run_all.py` 将 NEEDS_INPUT 仍作为待执行：两份研究文档生成器、资料迁移器及默认读取PlayerExports的编辑器smoke会进入调度；六runner默认可递归重建固定current产物。仓外TEMP由DataPaths拒仓内根合同解释，但不是授权。已向用户询问精确合成根 `E:/tmp/af-j17-20260930` 与最小测试入口隔离修正，**尚未获批或执行**；此事只限制相关B/C验证，不阻止独立A补审。
+
+
 <a id="j17a-intent-20260928"></a>
 
 <a id="optional-agent-plan-20260930"></a>
