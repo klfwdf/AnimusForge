@@ -9211,6 +9211,26 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(docStorage.CanonicalHistory.DeltaEntries.Count == 2,
             "document events must be idempotent once history flags are recorded");
 
+        // A partial oral effect must retain its qualification all the way into
+        // canonical history, whose external-fact path skips the declaration.
+        var oralStorage = new WorldDiplomacyStorage();
+        var oralKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        const string partialPeace = "双方已停战，贡金条款未完整确认";
+        WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(
+            "accept_peace", "a", "b", partialPeace, true, oralStorage, 12,
+            _ => true, _ => { },
+            (title, body, origin, player) => new WorldDiplomacyDocument
+            { DocumentId = "partial-oral", Body = body, IsReadyForPublication = true },
+            _ => partialPeace, _ => null, _ => false, (_, _) => false, p => p,
+            _ => { }, _ => { },
+            doc => WorldDiplomacyHistoryPublicationApplication.AppendCanonicalDocumentEvents(
+                oralStorage, oralKeys, 1000, () => { }, p => p + "_oral", d => "d" + d, estimate, () => { }, doc),
+            _ => { }, _ => { }, _ => { });
+        Test.True(oralStorage.CanonicalHistory.DeltaEntries.Count == 1
+            && oralStorage.CanonicalHistory.DeltaEntries[0].Kind == "diplomatic_result"
+            && oralStorage.CanonicalHistory.DeltaEntries[0].Text.Contains(partialPeace, StringComparison.Ordinal),
+            "external publication and actual history append preserve partial peace qualification");
+
         // DPL-060CB: weekly artifact projection must dedupe by content hash and
         // bump the source revision only when the payload actually changes.
         var weeklyStorage = new WorldDiplomacyStorage
@@ -15530,7 +15550,8 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyOfferContractRules.IsExclusivePeaceOfferResponseSet(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyOfferContractRules.GeneratedActionsContainRequiredPeaceOfferResponse(", StringComparison.Ordinal)
             && analysisSource.Contains("WorldDiplomacyOfferContractRules.CommitmentMatchesIntent(", StringComparison.Ordinal)
-            && offerApplicationSource.Contains("WorldDiplomacyOfferContractRules.ProposalSuccessResult(", StringComparison.Ordinal)
+            && offerApplicationSource.Contains("WorldDiplomacyOfferOutcome.Partial", StringComparison.Ordinal)
+            && !offerApplicationSource.Contains("IndexOf(\"交割失败\"", StringComparison.Ordinal)
             && factSource.Contains("WorldDiplomacyOfferContractRules.IsRequiredPeaceOfferResponse(", StringComparison.Ordinal),
             "host and document fact rules must delegate offer and commitment contract checks to the domain rules");
         Test.True(validationSource.Contains("WorldDiplomacyTextRules.ContainsWholeNumber(", StringComparison.Ordinal)

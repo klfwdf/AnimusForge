@@ -95,27 +95,17 @@ public sealed class BannerlordWorldDiplomacyBreakAllianceGameActionPort
                 "diplomacy.break_alliance.validation_exception");
         }
 
-        try
-        {
-            MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(
-                "diplomacy_break_alliance",
-                () => PermanentAllianceGuard.RunAuthorizedBreak(
+        DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
+            () => MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_break_alliance", () => PermanentAllianceGuard.RunAuthorizedBreak(
                     "diplomacy_break_alliance",
                     playerKingdom,
                     npcKingdom,
-                    () => alliance.EndAlliance(playerKingdom, npcKingdom)));
-            if (alliance.IsAllyWithKingdom(playerKingdom, npcKingdom))
-            {
-                return Receipt(WorldDiplomacyBreakAllianceExecutionStatus.ActionNotApplied, command,
-                    "diplomacy.break_alliance.action_not_applied");
-            }
-            return Receipt(WorldDiplomacyBreakAllianceExecutionStatus.Applied, command, "");
-        }
-        catch
-        {
-            return Receipt(WorldDiplomacyBreakAllianceExecutionStatus.UnknownAfterStart, command,
-                "diplomacy.break_alliance.action_exception");
-        }
+                    () => alliance.EndAlliance(playerKingdom, npcKingdom))),
+            () => !alliance.IsAllyWithKingdom(playerKingdom, npcKingdom));
+        return Receipt(!result.IsKnown ? WorldDiplomacyBreakAllianceExecutionStatus.UnknownAfterStart
+            : result.Applied ? WorldDiplomacyBreakAllianceExecutionStatus.Applied
+            : WorldDiplomacyBreakAllianceExecutionStatus.ActionNotApplied, command,
+            result.Applied ? "" : "diplomacy.break_alliance." + (result.IsKnown ? "action_not_applied" : "readback_unknown"));
     }
 
     private static void ResolveKingdoms(

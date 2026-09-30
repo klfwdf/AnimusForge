@@ -2130,7 +2130,7 @@ public static class WorldDiplomacyRoundLifecycleRules
             .Where(x => x != null && !string.IsNullOrWhiteSpace(x.KingdomId)
                 && !string.IsNullOrWhiteSpace(x.RulerHeroId) && !string.IsNullOrWhiteSpace(x.VassalLeaderHeroId))
             .GroupBy(x => x.KingdomId.Trim() + "|" + x.RulerHeroId.Trim() + "|" + x.VassalLeaderHeroId.Trim(), StringComparer.OrdinalIgnoreCase)
-            .Select(x => x.Last())
+            .Select(x => x.LastOrDefault(m => m.PendingEffect != null) ?? x.Last())
             .ToList();
     }
 

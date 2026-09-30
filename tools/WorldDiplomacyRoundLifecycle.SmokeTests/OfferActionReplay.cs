@@ -9,7 +9,8 @@ internal static class OfferActionReplay
         internal readonly WorldDiplomacyRound Round = new() { RoundId = "r" };
         internal readonly WorldDiplomacyDocument Source = new() { DocumentId = "source", PeaceTerms = new() { DailyTribute = 50 } };
         internal bool TermsValid = true, Applied = true, Throw, EffectAfterThrow, MissingParty;
-        internal string Cession = "";
+        internal WorldDiplomacyCessionReceipt Cession = new(false, false, true, "");
+        internal bool TermsComplete = true;
         public WorldDiplomacyStorage Storage { get; } = new();
         public int CurrentDay => 42;
         public WorldDiplomacyRound ResolveRound(string id) => Round;
@@ -21,8 +22,8 @@ internal static class OfferActionReplay
             return Effect("peace");
         }
         private WorldDiplomacyOfferActionReceipt Effect(string kind)
-        { Events.Add(kind); if (Throw) throw new InvalidOperationException("effect failed"); return new(Applied, Applied ? "ok" : "failed"); }
-        public string ApplyCession(string a, string b, WorldDiplomacyPeaceTerms terms)
+        { Events.Add(kind); if (Throw) throw new InvalidOperationException("effect failed"); return new(Applied, Applied ? "ok" : "failed", TermsComplete); }
+        public WorldDiplomacyCessionReceipt ApplyCession(string a, string b, WorldDiplomacyPeaceTerms terms)
         {
             Test.True(Storage.LastPeaceDayByPair[WorldDiplomacyRoundLifecycleRules.PairKey(a, b)] == 42,
                 "peace bookkeeping precedes cession just as in the predecessor");
@@ -30,6 +31,8 @@ internal static class OfferActionReplay
         }
         public WorldDiplomacyOfferActionReceipt ExecuteAlliance(string a, string b) => Effect("alliance");
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string a, string b) => Effect("trade");
+        public WorldDiplomacyOfferActionReceipt ReadPeace(string a, string b, WorldDiplomacyPeaceTerms terms)
+        { Events.Add("readback"); return new(EffectAfterThrow, EffectAfterThrow ? "ok" : "failed", TermsComplete); }
         public bool HasTakenEffect(string intent, string a, string b) { Events.Add("readback"); return EffectAfterThrow; }
         public void Log(string m) => Events.Add("log");
     }
@@ -54,11 +57,14 @@ internal static class OfferActionReplay
             var response = new WorldDiplomacyDocument { RoundId = "r", DocumentId = "response", Intent = (outcome == "rejected" ? "reject_" : "accept_") + kind,
                 AuthorKingdomId = "two", TargetKingdomId = "one", RespondingToOfferDocumentId = "source", RespondingToOfferActionId = outcome == "late" ? "old" : "a" };
             WorldDiplomacyOfferApplication.Settle(response, p, orch);
-            string expected = outcome switch { "success" or "post-effect-throw" => "accepted", "missing-party" => "invalidated", "late" => "open", "rejected" => "rejected", _ => "execution_failed" };
+            string expected = outcome switch { "success" => "accepted", "post-effect-throw" => kind == "peace" ? "accepted" : "partially_executed", "missing-party" => "invalidated", "late" => "open", "rejected" => "rejected", _ => "execution_failed" };
             Test.True(offer.Status == expected, kind + " " + outcome + " preserves offer disposition");
             if (outcome is "failure" or "throw" or "missing-party" or "late" or "rejected")
                 Test.True(!response.ChangedDiplomaticState && !p.Events.Contains("cession"), "unsuccessful action cannot publish a successful receipt or cede land");
             if (outcome == "failure") Test.True(response.MechanicalResult == "failed", "effect failure is not overwritten as peace-term invalidation");
+            if (outcome == "post-effect-throw" && kind == "peace")
+                Test.True(p.Events.Contains("cession") && p.Storage.LastPeaceDayByPair.Count == 1,
+                    "confirmed peace after exception must still finish bookkeeping and cession");
             if (outcome == "success")
             {
                 var expectedEvents = kind == "peace" ? new[] { "prune", "source", "parties", "terms", "peace", "cession" } : new[] { "prune", "source", "parties", kind };
@@ -70,7 +76,7 @@ internal static class OfferActionReplay
         }
         foreach (bool termsValid in new[] { false, true })
         {
-            var p = new Port { TermsValid = termsValid, Cession = "；领地交割失败" };
+            var p = new Port { TermsValid = termsValid, Cession = new(true, false, true, "transfer failed without magic Chinese substring") };
             var orch = new Orch(p);
             var offer = new WorldDiplomacyRoundOffer { Intent = "propose_peace", SourceDocumentId = "source", ProposerKingdomId = "one", TargetKingdomId = "two", Status = "open" };
             p.Round.PendingOffers.Add(offer);

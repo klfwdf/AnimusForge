@@ -180,7 +180,7 @@ internal static class Program
                   && Count(adapter, "PermanentAllianceGuard.RunAuthorizedBreak(") == 1,
             "adapter must invoke the guarded alliance break exactly once");
         int action = adapter.IndexOf("alliance.EndAlliance(playerKingdom, npcKingdom)", StringComparison.Ordinal);
-        int confirmation = adapter.IndexOf("if (alliance.IsAllyWithKingdom(playerKingdom, npcKingdom))", action,
+        int confirmation = adapter.IndexOf("() => !alliance.IsAllyWithKingdom(playerKingdom, npcKingdom)", action,
             StringComparison.Ordinal);
         Test.True(action >= 0 && confirmation > action,
             "adapter must confirm the alliance ended after the action");

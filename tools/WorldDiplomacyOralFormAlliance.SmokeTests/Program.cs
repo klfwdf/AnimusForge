@@ -186,7 +186,7 @@ internal static class Program
         Test.True(Count(adapter, "alliance.StartAlliance(playerKingdom, npcKingdom)") == 1,
             "adapter must invoke the alliance action once");
         int action = adapter.IndexOf("alliance.StartAlliance(playerKingdom, npcKingdom)", StringComparison.Ordinal);
-        int confirmation = adapter.IndexOf("if (!alliance.IsAllyWithKingdom(playerKingdom, npcKingdom))", action,
+        int confirmation = adapter.IndexOf("() => alliance.IsAllyWithKingdom(playerKingdom, npcKingdom)", action,
             StringComparison.Ordinal);
         Test.True(action >= 0 && confirmation > action,
             "adapter must confirm the alliance after the action");

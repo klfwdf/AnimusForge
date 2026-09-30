@@ -4,35 +4,11 @@ using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
 
-internal readonly struct WorldDiplomacyOfferActionReceipt
-{
-    internal readonly bool Applied;
-    internal readonly string Message;
-    internal WorldDiplomacyOfferActionReceipt(bool applied, string message)
-    {
-        Applied = applied;
-        Message = message ?? "";
-    }
-}
-
-internal interface IWorldDiplomacyOfferActionPort
-{
-    WorldDiplomacyStorage Storage { get; }
-    int CurrentDay { get; }
-    WorldDiplomacyRound ResolveRound(string id);
-    WorldDiplomacyDocument ResolveDocument(string id);
-    bool ResolveParties(WorldDiplomacyRoundOffer offer);
-    WorldDiplomacyOfferActionReceipt ExecutePeace(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms);
-    string ApplyCession(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms);
-    WorldDiplomacyOfferActionReceipt ExecuteAlliance(string proposerId, string targetId);
-    WorldDiplomacyOfferActionReceipt ExecuteTrade(string proposerId, string targetId);
-    bool HasTakenEffect(string intent, string proposerId, string targetId);
-    void Log(string message);
-}
+internal enum WorldDiplomacyOfferOutcome { Invalidated, Failed, Partial, Applied, Unknown }
 
 internal static class WorldDiplomacyOfferActionApplication
 {
-    internal static bool Execute(string intent, WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source,
+    internal static WorldDiplomacyOfferOutcome Execute(string intent, WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source,
         WorldDiplomacyDocument response, IWorldDiplomacyOfferActionPort port, IWorldDiplomacyOrchestration orchestration)
     {
         string proposerId = offer.ProposerKingdomId;
@@ -40,26 +16,33 @@ internal static class WorldDiplomacyOfferActionApplication
         WorldDiplomacyOfferActionReceipt receipt;
         if (intent == "propose_peace")
         {
-            if (!orchestration.AreOfferedPeaceTermsCurrentlyExecutable(offer, source)) return false;
+            if (!orchestration.AreOfferedPeaceTermsCurrentlyExecutable(offer, source)) return WorldDiplomacyOfferOutcome.Invalidated;
             response.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(
                 WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId));
-            receipt = port.ExecutePeace(proposerId, targetId, response.PeaceTerms);
+            try { receipt = port.ExecutePeace(proposerId, targetId, response.PeaceTerms); }
+            catch (Exception ex)
+            {
+                receipt = port.ReadPeace(proposerId, targetId, response.PeaceTerms);
+                port.Log("peace effect exception; confirmed receipt retained: " + ex.Message);
+            }
             if (receipt.Applied)
             {
                 port.Storage.LastPeaceDayByPair[WorldDiplomacyRoundLifecycleRules.PairKey(proposerId, targetId)] = port.CurrentDay;
                 WorldDiplomacyWarPressureRules.ClearWarPressure(port.Storage?.WarPressure, proposerId, targetId, port.CurrentDay);
                 WorldDiplomacyWarPressureRules.ClearWarPressure(port.Storage?.WarPressure, targetId, proposerId, port.CurrentDay);
-                string cession = port.ApplyCession(proposerId, targetId, response.PeaceTerms);
-                receipt = new WorldDiplomacyOfferActionReceipt(true, receipt.Message + cession);
+                WorldDiplomacyCessionReceipt cession = port.ApplyCession(proposerId, targetId, response.PeaceTerms);
+                receipt = new WorldDiplomacyOfferActionReceipt(true, receipt.Message + cession.Message,
+                    receipt.Complete && cession.Complete);
             }
         }
         else if (intent == "propose_alliance") receipt = port.ExecuteAlliance(proposerId, targetId);
         else if (intent == "propose_trade") receipt = port.ExecuteTrade(proposerId, targetId);
-        else return true;
+        else return WorldDiplomacyOfferOutcome.Failed;
         response.MechanicalResult = receipt.Message;
         if (receipt.Applied) response.ChangedDiplomaticState = true;
-        // False means drifted peace terms, not an attempted but failed effect.
-        return true;
+        return !receipt.Known ? WorldDiplomacyOfferOutcome.Unknown
+            : !receipt.Applied ? WorldDiplomacyOfferOutcome.Failed
+            : receipt.Complete ? WorldDiplomacyOfferOutcome.Applied : WorldDiplomacyOfferOutcome.Partial;
     }
 }
 
@@ -90,7 +73,7 @@ internal static class WorldDiplomacyOfferApplication
         Func<string, WorldDiplomacyDocument, (bool Blocked, string Reason)> proposalViolation,
         Func<string, WorldDiplomacyDocument> resolveDocument,
         Func<WorldDiplomacyRoundOffer, bool> resolveParties,
-        Func<string, WorldDiplomacyRoundOffer, WorldDiplomacyDocument, WorldDiplomacyDocument, bool> executeAcceptance,
+        Func<string, WorldDiplomacyRoundOffer, WorldDiplomacyDocument, WorldDiplomacyDocument, WorldDiplomacyOfferOutcome> executeAcceptance,
         Func<string, WorldDiplomacyRoundOffer, bool> hasProposalTakenEffect,
         Action<string> log)
     {
@@ -143,9 +126,11 @@ internal static class WorldDiplomacyOfferApplication
             document.MechanicalResult = "接受未执行：原提议或当事国已失效";
             return;
         }
+        WorldDiplomacyOfferOutcome outcome;
         try
         {
-            if (!executeAcceptance(proposalIntent, resolvedOffer, source, document))
+            outcome = executeAcceptance(proposalIntent, resolvedOffer, source, document);
+            if (outcome == WorldDiplomacyOfferOutcome.Invalidated)
             {
                 resolvedOffer.Status = "invalidated";
                 document.MechanicalResult = "接受未执行：和平原案条款已无法原样履行";
@@ -157,8 +142,8 @@ internal static class WorldDiplomacyOfferApplication
             if (hasProposalTakenEffect(proposalIntent, resolvedOffer))
             {
                 document.ChangedDiplomaticState = true;
-                document.MechanicalResult = WorldDiplomacyOfferContractRules.ProposalSuccessResult(proposalIntent);
-                resolvedOffer.Status = "accepted";
+                document.MechanicalResult = "部分外交变化已确认；其余执行结果无法确认";
+                resolvedOffer.Status = "partially_executed";
             }
             else
             {
@@ -169,9 +154,7 @@ internal static class WorldDiplomacyOfferApplication
                 + " offer=" + resolvedOffer.SourceDocumentId + " error=" + ex.Message);
             return;
         }
-        resolvedOffer.Status = document.ChangedDiplomaticState
-            ? ((document.MechanicalResult ?? "").IndexOf("交割失败", StringComparison.OrdinalIgnoreCase) >= 0
-                ? "partially_executed" : "accepted")
-            : "execution_failed";
+        resolvedOffer.Status = outcome == WorldDiplomacyOfferOutcome.Applied ? "accepted"
+            : outcome == WorldDiplomacyOfferOutcome.Partial ? "partially_executed" : "execution_failed";
     }
 }

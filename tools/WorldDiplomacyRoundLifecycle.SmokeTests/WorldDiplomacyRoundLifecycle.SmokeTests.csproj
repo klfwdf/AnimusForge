@@ -114,4 +114,13 @@
     <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Rules\WorldDiplomacyOfferCooldownRules.cs" Link="WorldDiplomacyOfferCooldownRules.cs" />
     <Compile Include="..\..\Refactor\Domain\WorldDiplomacyWarPressureRules.cs" Link="WorldDiplomacyWarPressureRules.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyRelationEffectReceipt.cs" Link="WorldDiplomacyRelationEffectReceipt.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyCessionReceipt.cs" Link="WorldDiplomacyCessionReceipt.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferActionPort.cs" Link="WorldDiplomacyOfferActionPort.cs" />
+  </ItemGroup>
 </Project>

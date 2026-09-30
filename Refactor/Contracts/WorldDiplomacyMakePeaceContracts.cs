@@ -59,7 +59,8 @@ public enum WorldDiplomacyMakePeaceExecutionStatus : byte
     InvalidTerms = 11,
     RejectedBeforeStart = 12,
     UnknownAfterStart = 13,
-    ActionNotApplied = 14
+    ActionNotApplied = 14,
+    PartiallyApplied = 15
 }
 
 public readonly struct WorldDiplomacyMakePeaceExecutionReceipt
@@ -87,6 +88,7 @@ public readonly struct WorldDiplomacyMakePeaceExecutionReceipt
     public int AppliedDurationDays { get; }
     public string ErrorCode { get; }
     public bool IsApplied => Status == WorldDiplomacyMakePeaceExecutionStatus.Applied;
+    public bool PeaceApplied => IsApplied || Status == WorldDiplomacyMakePeaceExecutionStatus.PartiallyApplied;
 }
 
 public interface IWorldDiplomacyMakePeaceGameActionPort

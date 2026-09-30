@@ -87,7 +87,7 @@ public sealed class BannerlordWorldDiplomacyMakeTradeGameActionPort
                 return Receipt(WorldDiplomacyMakeTradeExecutionStatus.TradeBehaviorUnavailable, command, 0,
                     "diplomacy.make_trade.behavior_unavailable");
             }
-            if (BannerlordApiCompat.HasTradeAgreement(trade, playerKingdom, npcKingdom))
+            if (ReadTradeState(trade, playerKingdom, npcKingdom))
             {
                 return Receipt(WorldDiplomacyMakeTradeExecutionStatus.AlreadyTrading, command, 0,
                     "diplomacy.make_trade.already_trading");
@@ -122,23 +122,20 @@ public sealed class BannerlordWorldDiplomacyMakeTradeGameActionPort
         }
 
         int durationDays = (int)duration.ToDays;
-        try
-        {
-            MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(
-                "diplomacy_make_trade",
-                () => trade.MakeTradeAgreement(playerKingdom, npcKingdom, duration));
-            if (!BannerlordApiCompat.HasTradeAgreement(trade, playerKingdom, npcKingdom))
-            {
-                return Receipt(WorldDiplomacyMakeTradeExecutionStatus.ActionNotApplied, command, durationDays,
-                    "diplomacy.make_trade.action_not_applied");
-            }
-            return Receipt(WorldDiplomacyMakeTradeExecutionStatus.Applied, command, durationDays, "");
-        }
-        catch
-        {
-            return Receipt(WorldDiplomacyMakeTradeExecutionStatus.UnknownAfterStart, command, durationDays,
-                "diplomacy.make_trade.action_exception");
-        }
+        DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
+            () => MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_make_trade", () => trade.MakeTradeAgreement(playerKingdom, npcKingdom, duration)),
+            () => ReadTradeState(trade, playerKingdom, npcKingdom));
+        return Receipt(!result.IsKnown ? WorldDiplomacyMakeTradeExecutionStatus.UnknownAfterStart
+            : result.Applied ? WorldDiplomacyMakeTradeExecutionStatus.Applied
+            : WorldDiplomacyMakeTradeExecutionStatus.ActionNotApplied, command, durationDays,
+            result.Applied ? "" : "diplomacy.make_trade." + (result.IsKnown ? "action_not_applied" : "readback_unknown"));
+    }
+
+    private static bool ReadTradeState(ITradeAgreementsCampaignBehavior trade, Kingdom first, Kingdom second)
+    {
+        if (!BannerlordApiCompat.TryGetTradeAgreementState(trade, first, second, out bool active))
+            throw new InvalidOperationException("Trade agreement state unavailable");
+        return active;
     }
 
     private static void ResolveKingdoms(

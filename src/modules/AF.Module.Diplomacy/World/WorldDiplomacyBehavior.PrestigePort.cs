@@ -1,4 +1,6 @@
 using System;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Adapters;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -50,22 +52,19 @@ public sealed partial class WorldDiplomacyBehavior
             _heroes[id] = hero;
             return true;
         }
-        public int ChangeRelationAndMeasure(string first, string second, int difference)
+        public bool TryReadRelation(string first, string second, out int value)
         {
-            try
-            {
-                Hero vassal = _heroes[first], ruler = _heroes[second];
-                int before = CharacterRelationManager.GetHeroRelation(vassal, ruler);
-                ChangeRelationAction.ApplyRelationChangeBetweenHeroes(vassal, ruler, difference, showQuickNotification: false);
-                int after = CharacterRelationManager.GetHeroRelation(vassal, ruler);
-                return after - before;
-            }
-            catch { return 0; }
+            value = 0;
+            try { value = CharacterRelationManager.GetHeroRelation(_heroes[first], _heroes[second]); return true; }
+            catch { return false; }
         }
-        public void ChangeRelation(string first, string second, int difference)
+        public WorldDiplomacyRelationEffectReceipt ChangeRelationAndMeasure(string first, string second, int difference)
         {
-            try { ChangeRelationAction.ApplyRelationChangeBetweenHeroes(_heroes[first], _heroes[second], difference, showQuickNotification: false); }
-            catch { }
+            if (!_heroes.TryGetValue(first, out Hero vassal) || !_heroes.TryGetValue(second, out Hero ruler))
+                return new(true, 0, "hero unavailable");
+            return DiplomacyRelationEffect.Apply(
+                () => CharacterRelationManager.GetHeroRelation(vassal, ruler),
+                () => ChangeRelationAction.ApplyRelationChangeBetweenHeroes(vassal, ruler, difference, showQuickNotification: false));
         }
         public string KingdomName(string id) => WorldDiplomacyBehavior.KingdomName(ResolveKingdomIncludingEliminated(id));
         public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();

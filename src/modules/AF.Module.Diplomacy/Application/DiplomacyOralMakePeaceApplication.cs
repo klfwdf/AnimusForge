@@ -9,7 +9,7 @@ internal interface IDiplomacyOralMakePeaceSource
     WorldDiplomacyMakePeaceExecutionReceipt Execute(WorldDiplomacyMakePeaceCommand command);
     bool TryResolveAppliedEndpoints(string payerId, string receiverId,
         out string resolvedPayerId, out string resolvedReceiverId);
-    void NotifyResolved();
+    void NotifyResolved(WorldDiplomacyMakePeaceExecutionReceipt receipt);
     void Log(string message);
 }
 
@@ -30,7 +30,7 @@ internal static class DiplomacyOralMakePeaceApplication
             return "";
         }
         WorldDiplomacyMakePeaceExecutionReceipt receipt = source.Execute(resolution.Command);
-        if (!receipt.IsApplied)
+        if (!receipt.PeaceApplied)
         {
             source.Log($"[MakePeace] Rejected status={receipt.Status} code={receipt.ErrorCode}");
             return "";
@@ -42,7 +42,7 @@ internal static class DiplomacyOralMakePeaceApplication
             return "";
         }
         source.Log($"[MakePeace] {payerId}->{receiverId} tribute={receipt.AppliedDailyTribute} days={receipt.AppliedDurationDays}");
-        source.NotifyResolved();
+        source.NotifyResolved(receipt);
         return "";
     }
 }

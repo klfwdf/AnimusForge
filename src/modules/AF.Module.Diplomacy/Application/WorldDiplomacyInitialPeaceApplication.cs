@@ -37,7 +37,9 @@ internal static class WorldDiplomacyInitialPeaceApplication
                 if (!port.IsAtWar(first, second)) continue;
                 try
                 {
-                    port.MakePeace(first, second);
+                    try { port.MakePeace(first, second); }
+                    catch (Exception ex) { port.Log("initial peace action exception pair=" + first + "|" + second + " error=" + ex.Message); }
+                    if (port.IsAtWar(first, second)) continue;
                     storage.LastPeaceDayByPair[WorldDiplomacyRoundLifecycleRules.PairKey(first, second)] = day;
                     WorldDiplomacyWarPressureRules.ClearWarPressure(storage.WarPressure, first, second, port.CurrentDay());
                     WorldDiplomacyWarPressureRules.ClearWarPressure(storage.WarPressure, second, first, port.CurrentDay());

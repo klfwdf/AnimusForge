@@ -113,49 +113,15 @@ public sealed class BannerlordWorldDiplomacyMakePeaceGameActionPort
                 "diplomacy.make_peace.validation_exception");
         }
 
-        try
-        {
-            if (!DiplomacyPeaceTermsService.TryApplyPeace(
-                    payer,
-                    receiver,
-                    requestedTribute,
-                    requestedDuration,
-                    "diplomacy_make_peace",
-                    out int appliedTribute,
-                    out int appliedDuration,
-                    out _))
-            {
-                return new WorldDiplomacyMakePeaceExecutionReceipt(
-                    WorldDiplomacyMakePeaceExecutionStatus.ActionNotApplied,
-                    command.PayerKingdomId,
-                    command.ReceiverKingdomId,
-                    appliedTribute,
-                    appliedDuration,
-                    "diplomacy.make_peace.action_not_applied");
-            }
-            if (FactionManager.IsAtWarAgainstFaction(payer, receiver))
-            {
-                return new WorldDiplomacyMakePeaceExecutionReceipt(
-                    WorldDiplomacyMakePeaceExecutionStatus.ActionNotApplied,
-                    command.PayerKingdomId,
-                    command.ReceiverKingdomId,
-                    appliedTribute,
-                    appliedDuration,
-                    "diplomacy.make_peace.action_not_applied");
-            }
-            return new WorldDiplomacyMakePeaceExecutionReceipt(
-                WorldDiplomacyMakePeaceExecutionStatus.Applied,
-                command.PayerKingdomId,
-                command.ReceiverKingdomId,
-                appliedTribute,
-                appliedDuration,
-                "");
-        }
-        catch
-        {
-            return Receipt(WorldDiplomacyMakePeaceExecutionStatus.UnknownAfterStart, command,
-                "diplomacy.make_peace.action_exception");
-        }
+        DiplomacyPeaceEffectReceipt result = DiplomacyPeaceTermsService.ApplyPeace(
+            payer, receiver, requestedTribute, requestedDuration, "diplomacy_make_peace");
+        return new WorldDiplomacyMakePeaceExecutionReceipt(
+            result.Complete ? WorldDiplomacyMakePeaceExecutionStatus.Applied
+                : result.PeaceApplied ? WorldDiplomacyMakePeaceExecutionStatus.PartiallyApplied
+                : result.PeaceKnown ? WorldDiplomacyMakePeaceExecutionStatus.ActionNotApplied
+                : WorldDiplomacyMakePeaceExecutionStatus.UnknownAfterStart,
+            command.PayerKingdomId, command.ReceiverKingdomId,
+            result.ActualDailyTribute, result.ActualDurationDays, result.Diagnostic);
     }
 
     private static Kingdom ResolveKingdom(string kingdomId)
