@@ -40,4 +40,9 @@ internal interface ICivilWarModulePort
 	List<PostprocessRuleEntry> BuildPostprocessRules();
 	bool TryApplyTag(Hero speaker, string tag, out string message);
 	void NotifyRebelKingdomCreated(string factionId, Kingdom rebelKingdom, int week);
+	void RecordPeace(Kingdom kingdom, IFaction other, int week);
+	bool IsCivilWarPair(Kingdom a, Kingdom b);
+	bool HasPendingPlayerUltimatumPrompt { get; }
+	bool TryTakePlayerUltimatumPrompt(out string kingdomId, out string text);
+	bool AnswerPlayerUltimatum(string kingdomId, bool accept, out string message);
 }
