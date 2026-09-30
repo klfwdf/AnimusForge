@@ -1,5 +1,7 @@
 # 当前交接：远端合并移除未完成 WorldBulletin，双版本离线通过（2026-09-30）
 
+- **J17 正确模型接续**：总控 gpt-6-astra / medium，六执行者 gpt-6-sol / medium；进入点 `15e14268`，产品 `8ae0f831`，原 22 个未跟踪 tools 目录保留。正在聚合旧证据并互斥补 A，正式仍 7/20，B/C 未启动，D NOT-RUN。[唯一详细状态](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。本条取代前轮代理停点，不授予推送/部署/仓外写入。
+
 - **J17 本轮已启动（2026-09-30）**：现场基线 `8ae0f831`；用户明确选择五个互斥责任包并行补 A，总控独占提交。双 API 当前 Compile **1,128/1,128**，语法声明 **49,854/49,853**，不是语义完成。原文档改动纳入本地检查点，22 个 tools 未跟踪目录保持。[本轮唯一状态入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。先 A 后 B/C，未推送/部署。
 
 - **最新文档交付（2026-09-30）**：新增[独立、可选的智能体执行计划](docs/plans/multi-agent-execution-plan.md)，总控分包、执行者连续完成、一次集成验收，不设常驻复审；J17 不强制多智能体。J17 仅修正证据重复审查、历史起点及每片全量测试成本，必要出口保留。[详细变更](docs/animusforge-refactoring-and-repository-reorganization-plan.md#optional-agent-plan-20260930)。未启动代理/产品实施，J17-A/B 状态不变。
