@@ -75,10 +75,22 @@ NEWTONSOFT = SDK8_DIR / "sdk" / "8.0.425" / "Newtonsoft.Json.dll"
 STAGE_BIN = env_path("AF_REPLAY_STAGE_BIN", ROOT / "bin" / "Debug" / "single_module_stage" / "AnimusForge" / "bin" / "Win64_Shipping_Client")
 DLL14 = env_path("AF_REPLAY_CANDIDATE_DLL", ROOT / "bin" / "Debug" / "single_module_artifacts" / "versions" / "1.4" / "AnimusForge.dll")
 
+
+def replay_module(name: str, installed_name: str, workshop_id: str) -> Path:
+    installed = GAME / "Modules" / installed_name
+    return env_path(name, installed if installed.is_dir() else WORKSHOP / workshop_id)
+
+
+HARMONY_MODULE = replay_module("AF_REPLAY_HARMONY_MODULE_PATH", "Bannerlord.Harmony", "2859188632")
+MCM_MODULE = replay_module("AF_REPLAY_MCM_MODULE_PATH", "Bannerlord.MBOptionScreen", "2859238197")
+UIEXTENDER_MODULE = replay_module("AF_REPLAY_UIEXTENDER_MODULE_PATH", "Bannerlord.UIExtenderEx", "2859222409")
+
 TOKENS = {
     "{DOTNET8}": str(DOTNET8), "{NEWTONSOFT}": str(NEWTONSOFT), "{GAME}": str(GAME),
     "{WORKSHOP}": str(WORKSHOP), "{REFS14}": str(REFS14), "{STAGE_BIN}": str(STAGE_BIN),
     "{DLL14}": str(DLL14), "{ROOT}": str(ROOT),
+    "{HARMONY_MODULE}": str(HARMONY_MODULE), "{MCM_MODULE}": str(MCM_MODULE),
+    "{UIEXTENDER_MODULE}": str(UIEXTENDER_MODULE),
 }
 
 
@@ -116,7 +128,7 @@ def discover() -> list[str]:
     return sorted(set(found))
 
 
-def command(path: str, spec: dict, run_name: str) -> list[str]:
+def command(path: str, spec: dict, run_name: str, build_root: Path | None = None) -> list[str]:
     p = ROOT / path
     extra = expand(spec.get("args", []), run_name)
     if p.suffix == ".py":
@@ -128,11 +140,15 @@ def command(path: str, spec: dict, run_name: str) -> list[str]:
     text = p.read_text(encoding="utf-8", errors="replace")
     sdk = DOTNET10 if "net10.0" in text else DOTNET8
     cmd = [str(sdk), "run", "--project", str(p), "-c", "Release"]
+    if build_root is not None:
+        # SDK-native per-project bin/obj layout also isolates ProjectReference builds.
+        cmd += ["-p:UseArtifactsOutput=true", "-p:UseAppHost=false", f"-p:ArtifactsPath={build_root}",
+                f"-p:ReplayOutputRoot={build_root}"]
     if "BannerlordReplayDependencies.targets" in text:
         cmd += [f"-p:GameRoot={GAME}", f"-p:Bannerlord14ReferencePath={REFS14}",
-                rf"-p:ReplayHarmonyModulePath={WORKSHOP}\2859188632",
-                rf"-p:ReplayMcmModulePath={WORKSHOP}\2859238197",
-                rf"-p:ReplayUiExtenderModulePath={WORKSHOP}\2859222409",
+                f"-p:ReplayHarmonyModulePath={HARMONY_MODULE}",
+                f"-p:ReplayMcmModulePath={MCM_MODULE}",
+                f"-p:ReplayUiExtenderModulePath={UIEXTENDER_MODULE}",
                 f"-p:ReplayPrivateRuntimePath={STAGE_BIN}"]
     cmd += expand(spec.get("msbuild", []), run_name)
     if spec.get("candidateDll") and DLL14.exists():
@@ -225,6 +241,8 @@ def main(argv: list[str]) -> int:
         "DOTNET_CLI_HOME": str(out / "dotnet-home"), "DOTNET_NOLOGO": "1", "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
         "NUGET_PACKAGES": str(out / "nuget-packages"), "NUGET_HTTP_CACHE_PATH": str(out / "nuget-http-cache"),
         "NUGET_PLUGINS_CACHE_PATH": str(out / "nuget-plugin-cache"),
+        "AF_REPLAY_REPO_ROOT": str(ROOT),
+        "DefaultItemExcludes": "**/bin/**;**/obj/**;**/artifacts/**;**/local/**",
         "PATH": str(SDK8_DIR) + os.pathsep + os.environ.get("PATH", ""),
     })
 
@@ -240,11 +258,14 @@ def main(argv: list[str]) -> int:
         entry_temp = entry_root / "temp"
         entry_temp.mkdir(parents=True, exist_ok=False)
         entry_env = {**env, "TEMP": str(entry_temp), "TMP": str(entry_temp)}
-        cmd = command(entry, spec, run_name)
+        build_root = out / "entry-builds" / hashlib.sha256(entry.encode("utf-8")).hexdigest()[:20]
+        cmd = command(entry, spec, run_name, build_root)
         if spec.get("execution") == "isolated-player-exports":
             entry_env["ANIMUSFORGE_DATA_ROOT"] = str(entry_root / "data")
             cmd += ["--", "--isolated-full", str(entry_root)]
         reason = blocked(cmd)
+        if spec.get("candidateDll") and not DLL14.is_file():
+            reason = f"missing replay candidate {DLL14}"
         start = time.time()
         if reason:
             code, text = None, reason

@@ -32,7 +32,7 @@ MUTATIONS = {
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dotnet", default=r"G:\AFMOD\.dotnet-sdk\dotnet.exe")
+    parser.add_argument("--dotnet", default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     args = parser.parse_args()
     source = SOURCE.read_text(encoding="utf-8-sig")
     failed = 0

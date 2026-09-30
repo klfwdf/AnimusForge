@@ -81,7 +81,7 @@ EXPECTED_FAILURES = {
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dotnet', default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    parser.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     parser.add_argument('--newtonsoft', default=str(ROOT / '.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'))
     parser.add_argument('--output-name', default='current')
     parser.add_argument('--mutation', choices=sorted(MUTATIONS))

@@ -1,6 +1,7 @@
 """Require deliberately broken candidates to fail behavioral comparison, not compilation."""
 import argparse
 from pathlib import Path
+import os
 import subprocess
 import sys
 
@@ -9,7 +10,7 @@ HERE = Path(__file__).resolve().parent
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    parser.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     parser.add_argument('--output-prefix',default='',help='Prefix generated negative-control artifact directories.')
     args=parser.parse_args()
     for mutation in ['drop-reward','relay-as-direct','drop-rule-hits','skip-normalize','allow-recompletion']:

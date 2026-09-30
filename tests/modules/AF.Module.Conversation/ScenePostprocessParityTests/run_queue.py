@@ -3,6 +3,9 @@ import argparse
 import hashlib
 import os
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import new_run_root
 import re
 import subprocess
 import run
@@ -12,10 +15,11 @@ HERE=Path(__file__).resolve().parent
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    parser.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     parser.add_argument('--source-ref')
     parser.add_argument('--mutate', choices=['ignore-generation','skip-dispatch-guard','lose-execution-context','unguarded-speech','off-thread-game-read','recapture-generation','recapture-session','submit-directive-before-guard'])
     parser.add_argument('--output-name',default='queue-current')
+    parser.add_argument("--run-root", type=Path)
     args=parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): parser.error('Invalid output name')
     scene_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
@@ -58,7 +62,7 @@ def main():
     template=(HERE/'QueueHarness.cs.txt').read_text(encoding='utf-8-sig')
     for key,value in snippets.items(): template=template.replace('@@'+key+'@@',value)
     if '@@' in template: raise ValueError('Unexpanded queue placeholder')
-    output=HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
+    output=new_run_root(Path(__file__).resolve().parents[4], "ScenePostprocessParityTests", args.run_root) if args.run_root else HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
     (output/'Program.cs').write_text(template,encoding='utf-8')
     (output/'Queue.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup>'+run.team_module_project_items()+'</Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

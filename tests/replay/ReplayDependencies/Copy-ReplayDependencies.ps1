@@ -9,7 +9,9 @@ param(
     [Parameter(Mandatory = $true)][string]$PrivateRuntimePath,
     [Parameter(Mandatory = $true)][string]$ImplementationPath,
     [Parameter(Mandatory = $true)][string]$ProjectDirectory,
-    [Parameter(Mandatory = $true)][string]$OutputDirectory
+    [Parameter(Mandatory = $true)][string]$OutputDirectory,
+    [string]$OutputRoot = '',
+    [switch]$ValidateOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -56,6 +58,21 @@ try {
     $project = Get-Directory $ProjectDirectory 'ProjectDirectory'
     $output = [IO.Path]::GetFullPath($OutputDirectory).TrimEnd('\', '/')
     $bin = (Join-Path $project 'bin') + '\'
+    if (-not [string]::IsNullOrWhiteSpace($OutputRoot)) {
+        if (-not [IO.Path]::IsPathRooted($OutputRoot) -or $OutputRoot.StartsWith('\\')) {
+            throw 'REPLAY_OUTPUT_BOUNDARY: OutputRoot must be an absolute local directory.'
+        }
+        $isolatedRoot = [IO.Path]::GetFullPath($OutputRoot).TrimEnd('\', '/')
+        $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\..')).TrimEnd('\', '/')
+        $artifacts = (Join-Path $repository 'artifacts') + '\'
+        if (-not $isolatedRoot.StartsWith($artifacts, [StringComparison]::OrdinalIgnoreCase)) {
+            throw 'REPLAY_OUTPUT_BOUNDARY: OutputRoot must stay below repository artifacts.'
+        }
+        $bin = (Join-Path $isolatedRoot 'bin') + '\'
+        if ($ValidateOnly -and (Test-Path -LiteralPath $output)) {
+            throw 'REPLAY_OUTPUT_BOUNDARY: Isolated replay output must be new; existing output is not reused.'
+        }
+    }
     if (-not $output.StartsWith($bin, [StringComparison]::OrdinalIgnoreCase)) {
         throw "REPLAY_OUTPUT_BOUNDARY: Output must stay in this runner's bin directory: $output"
     }
@@ -64,7 +81,7 @@ try {
             throw "REPLAY_OUTPUT_BOUNDARY: Output overlaps an input directory: $root"
         }
     }
-    for ($parent = $output; $parent.Length -ge $project.Length; $parent = [IO.Path]::GetDirectoryName($parent)) {
+    for ($parent = $output; -not [string]::IsNullOrEmpty($parent); $parent = [IO.Path]::GetDirectoryName($parent)) {
         if (Test-Path -LiteralPath $parent) {
             if ((Get-Item -LiteralPath $parent -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) {
                 throw "REPLAY_OUTPUT_BOUNDARY: Reparse-point output paths are not supported: $parent"
@@ -73,6 +90,10 @@ try {
     }
     if (-not [IO.Path]::IsPathRooted($ImplementationPath) -or -not (Test-Path -LiteralPath $ImplementationPath -PathType Leaf)) {
         throw "REPLAY_IMPLEMENTATION_MISSING: Build the project-local 1.4 Stage separately: $ImplementationPath"
+    }
+    if ($ValidateOnly) {
+        Write-Output 'REPLAY_OUTPUT_BOUNDARY_PASS: isolated output is new and local.'
+        exit 0
     }
 
     # Each filename has one source authority. Never scan Modules/** or Workshop/**.

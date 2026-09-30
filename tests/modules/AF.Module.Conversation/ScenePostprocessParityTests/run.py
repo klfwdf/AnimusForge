@@ -115,7 +115,7 @@ def extract_candidate(ref):
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source-ref')
-    ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     ap.add_argument('--output-name',default='current')
     ap.add_argument('--mutate', choices=['drop-reward','relay-as-direct','drop-rule-hits','skip-normalize','allow-recompletion'])
     args=ap.parse_args()

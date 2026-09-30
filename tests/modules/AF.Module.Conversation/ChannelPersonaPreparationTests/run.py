@@ -1,7 +1,8 @@
 from pathlib import Path
+import os
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--dotnet', default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--dotnet', default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--original',action='store_true');p.add_argument('--mutate',choices=['native_skip_admission','native_accept_failure','courier_drop_session','courier_reject_fallback','scene_generate_partial','scene_skip_scope','scene_accept_replaced','invalid_target_cleanup','waiter_ignore_deadline','waiter_ignore_scope']);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 spec=importlib.util.spec_from_file_location('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 def read(p):return (ROOT/p).read_text(encoding='utf-8-sig')
