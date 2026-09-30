@@ -3565,7 +3565,11 @@ internal static class Program
 		string threatExecution = ExtractMethod(lifecycleRules, "public static void ProcessDiplomaticThreatDocument(");
 		Test.True(threatExecution.Contains("ResolutionActionId = document.ProcessingActionId", StringComparison.Ordinal),
 			"war enforcement must settle the exact declare-war action rather than only its containing document");
-		string threatFollowThrough = ExtractMethod(lifecycleRules, "public static void SettleDiplomaticThreatFollowThroughAfterDeclaration(");
+		string threatFollowThrough = ExtractMethod(lifecycleRules, "public static WorldDiplomacyThreat SelectBreachedThreatFollowThrough(");
+		Test.True(!threatFollowThrough.Contains("Action<", StringComparison.Ordinal)
+			&& !lifecycleRules.Contains("SettleDiplomaticThreatFollowThroughAfterDeclaration(", StringComparison.Ordinal)
+			&& threatApplication.Contains("if (breached != null) applyReputationPenalty?.Invoke(breached, document);", StringComparison.Ordinal),
+			"Domain selects a breach; only Application invokes its reputation effect");
 		Test.True(threatFollowThrough.Contains("WorldDiplomacyRoundLifecycleRules.SelectThreatDecisionAction", StringComparison.Ordinal)
 			&& threatFollowThrough.Contains("threat.TargetKingdomId", StringComparison.Ordinal)
 			&& threatFollowThrough.Contains("matchingAction?.Intent", StringComparison.Ordinal)

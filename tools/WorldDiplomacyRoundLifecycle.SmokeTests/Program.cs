@@ -7240,7 +7240,11 @@ RunRepairCorrectionAndJobDecisionTests();
                 && !WorldDiplomacyDocumentFactRules.IsDiplomaticRepresentativeForAddressedVassal(vassalDoc, null),
             "null document and null probe must fail safe");
 
-        // ApplyDocumentPressure (WarPressureRules)
+        // Application publishes deltas computed by pure Domain rules.
+        Test.True(WorldDiplomacyWarPressureRules.CalculateDocumentPressureDelta("warning", "", "warning", 2) == 6,
+            "repetition attenuation is a deterministic domain calculation");
+        Test.True(WorldDiplomacyWarPressureRules.CalculateDocumentPressureDelta("concession", "", "concession", 8) == -12,
+            "negative pressure is not attenuated by repetition");
         List<WarPressureEntry> pressures = new List<WarPressureEntry>();
         List<string> applied = new List<string>();
         WorldDiplomacyDocument pressureDoc = new WorldDiplomacyDocument
@@ -7248,7 +7252,7 @@ RunRepairCorrectionAndJobDecisionTests();
             AuthorKingdomId = "author", Intent = "ultimatum", Title = "Demand",
             AddressedKingdomIds = new List<string> { "t1" }, TargetKingdomId = "t2"
         };
-        WorldDiplomacyWarPressureRules.ApplyDocumentPressure(
+        WorldDiplomacyThreatApplication.ApplyDocumentPressure(
             pressureDoc,
             (s, tt) => pressures.FirstOrDefault(x => x.SourceKingdomId == s && x.TargetKingdomId == tt),
             (values, excluded) => (values ?? Enumerable.Empty<string>()).Where(x => x != excluded).Distinct().ToList(),
@@ -7257,7 +7261,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "an ultimatum must apply the +18 delta to addressed and target kingdoms");
         pressures.Add(new WarPressureEntry { SourceKingdomId = "author", TargetKingdomId = "t1", LastIntent = "ultimatum", ConsecutiveSimilarCount = 2 });
         applied.Clear();
-        WorldDiplomacyWarPressureRules.ApplyDocumentPressure(
+        WorldDiplomacyThreatApplication.ApplyDocumentPressure(
             pressureDoc,
             (s, tt) => pressures.FirstOrDefault(x => x.SourceKingdomId == s && x.TargetKingdomId == tt),
             (values, excluded) => (values ?? Enumerable.Empty<string>()).Where(x => x != excluded).Distinct().ToList(),
@@ -7265,13 +7269,13 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(applied.Contains("author>t1=11") && applied.Contains("author>t2=18"),
             "repeated identical pressure must be dampened only for the pair with an existing entry");
         applied.Clear();
-        WorldDiplomacyWarPressureRules.ApplyDocumentPressure(
+        WorldDiplomacyThreatApplication.ApplyDocumentPressure(
             new WorldDiplomacyDocument { AuthorKingdomId = "author", Intent = "declare_war", TargetKingdomId = "t1" },
             (s, tt) => null,
             (values, excluded) => (values ?? Enumerable.Empty<string>()).Where(x => x != excluded).Distinct().ToList(),
             (s, tt, d, r, i) => applied.Add(s));
         Test.True(applied.Count == 0, "declare_war has a zero delta and must not emit a pressure write");
-        WorldDiplomacyWarPressureRules.ApplyDocumentPressure(null, null, null, null);
+        WorldDiplomacyThreatApplication.ApplyDocumentPressure(null, null, null, null);
         Test.True(true, "null inputs must fail safe");
     }
 
@@ -7611,7 +7615,7 @@ RunRepairCorrectionAndJobDecisionTests();
 			Intent = "declare_war", TargetKingdomId = "t1",
 			PresentedThreatFollowThroughDocumentIds = new List<string> { "sd1" }
 		};
-		WorldDiplomacyRoundLifecycleRules.SettleDiplomaticThreatFollowThroughAfterDeclaration(
+		WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
 			followDoc, new List<WorldDiplomacyThreat> { follow }, "issuer",
 			(x, d) => penaltyCalls++);
 		Test.True(penaltyCalls == 1,
@@ -7621,12 +7625,12 @@ RunRepairCorrectionAndJobDecisionTests();
 			Intent = "ultimatum", TargetKingdomId = "t1",
 			PresentedThreatFollowThroughDocumentIds = new List<string> { "sd1" }
 		};
-		WorldDiplomacyRoundLifecycleRules.SettleDiplomaticThreatFollowThroughAfterDeclaration(
+		WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
 			satisfiedDoc, new List<WorldDiplomacyThreat> { follow }, "issuer",
 			(x, d) => penaltyCalls++);
 		Test.True(penaltyCalls == 1,
 			"a satisfied follow-through must not apply the penalty port");
-		WorldDiplomacyRoundLifecycleRules.SettleDiplomaticThreatFollowThroughAfterDeclaration(
+		WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
 			followDoc, new List<WorldDiplomacyThreat> { follow }, "other", (x, d) => penaltyCalls++);
 		Test.True(penaltyCalls == 1,
 			"follow-through settlement must fail safe without an open threat issued by the author");
@@ -15981,7 +15985,7 @@ RunRepairCorrectionAndJobDecisionTests();
         foreach (string movedThreatResolutionRule in new[]
         {
             "public static void ResolveDiplomaticThreatsAfterWarStarted(",
-            "public static void SettleDiplomaticThreatFollowThroughAfterDeclaration(",
+            "public static WorldDiplomacyThreat SelectBreachedThreatFollowThrough(",
             "public static bool CompleteUnresolvableDiplomaticThreatDomesticPenalty(",
             "public static bool CompleteUnresolvableDiplomaticThreatIssuerRelationReward(",
             "public static void InvalidateOtherThreatsBoundToSettledPolicy("

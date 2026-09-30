@@ -4220,15 +4220,14 @@ public static class WorldDiplomacyRoundLifecycleRules
 		}
 	}
 
-	public static void SettleDiplomaticThreatFollowThroughAfterDeclaration(
+	public static WorldDiplomacyThreat SelectBreachedThreatFollowThrough(
 		WorldDiplomacyDocument document,
-		IReadOnlyList<WorldDiplomacyThreat> threats, string authorKingdomId,
-		Action<WorldDiplomacyThreat, WorldDiplomacyDocument> applyReputationPenalty)
+		IReadOnlyList<WorldDiplomacyThreat> threats, string authorKingdomId)
 	{
-		if (document == null || string.IsNullOrWhiteSpace(authorKingdomId)) return;
+		if (document == null || string.IsNullOrWhiteSpace(authorKingdomId)) return null;
 		WorldDiplomacyThreat threat = WorldDiplomacyRoundLifecycleRules.SelectOpenThreatIssuedBy(threats, authorKingdomId);
 		if (!WorldDiplomacyRoundLifecycleRules.IsThreatFollowThroughObligationPending(
-			threat, document.PresentedThreatFollowThroughDocumentIds)) return;
+			threat, document.PresentedThreatFollowThroughDocumentIds)) return null;
 		WorldDiplomacyDocumentAction matchingAction = WorldDiplomacyRoundLifecycleRules.SelectThreatDecisionAction(
 			document.Actions, threat.TargetKingdomId);
 		bool targetsThreatTarget = WorldDiplomacyRoundLifecycleRules.ThreatDeclarationTargetsThreatTarget(
@@ -4241,10 +4240,7 @@ public static class WorldDiplomacyRoundLifecycleRules
 			WorldDiplomacyIntentVocabulary.NormalizeIntent(matchingAction?.Intent ?? document.Intent),
 			targetsThreatTarget,
 			matchingAction?.ChangedDiplomaticState ?? document.ChangedDiplomaticState);
-		if (result == WorldDiplomacyThreatStateRuleResult.MarkFollowThroughBreached)
-		{
-			applyReputationPenalty?.Invoke(threat, document);
-		}
+		return result == WorldDiplomacyThreatStateRuleResult.MarkFollowThroughBreached ? threat : null;
 	}
 
 	public static bool CompleteUnresolvableDiplomaticThreatDomesticPenalty(
