@@ -1,5 +1,7 @@
 # 当前交接：远端合并移除未完成 WorldBulletin，双版本离线通过（2026-09-30）
 
+- **合并后未测清单（2026-09-30）**：用户已推送 `8ae0f831`；MCM 合并未做，周报第二种模式（`TitleShortTagsOnly` 短报，无 MCM 开关、按距离取最近 3 国出全文）、内战叛乱派系（`_af_kingdom_civil_war_v2`，MCM“12b. 内战派系”）、宣权篡位政变均**未测**。定位与逐项验证要点见 [交接](docs/handoffs/2026-09-30-j17-remote-sync-handoff.md)。
+
 - **当前交付：远端合并与移除未完成 WorldBulletin（2026-09-30）**：按用户要求保留本地提交与远端 `391ceb74` 的其他变更，只撤销快报开关/接线并恢复旧周报行为。双 API、Bootstrap 构建通过，CivilWarRules / WeeklyReportSchedulePolicy smoke PASS；原 22 个未跟踪目录不动，未部署，游戏/旧档未验。普通推送同名分支获本轮授权，提交与远端状态以 Git 为准；[主台账新结果](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-merge-no-bulletin-20260930)取代上一轮编译阻塞，J17-A/B 总状态不提升。
 
 - **J17-A 最新接续（2026-09-30）**：[范围图 E119](docs/architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)与[主台账 §3.3](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-closeout-plan-20260928)将旧 null 导航全部**非根级 26 文件/两 API 各 872 同坐标成员**去重：`Refactor/` 23/767 = Contracts 340 + Adapters 149 + Modules 107 + Runtime 171，`src/` 3/105 = E109 Actions 75 + Scene 后处理 30。Scene 的状态/一次完成门、同步请求、deferred queue、Action commit、规则准备各自有界，实际效果/记忆不转移 owner。当前 J09 **25 checks**、Scene 提取 **8 tests**、Notoriety **14/14**、Bridge 元数据 validator **16/12/4** 通过；非双产品/网络/旧档/游戏。R05 迟到完成、R08 每回复线程/Agent/规则成本、R09 完整 RAW/FINAL/归一化回复日志隐私仍 OPEN；旧导航根级 254/11,803 须与已有 E 证据去重，动态消费者和另 13 桶待签，**仍 7/20、current unknown 未证为 0，J17-A 未闭、B 未启动**。产品/测试/构建脚本未改，22 个既有未跟踪 `tools/` 目录未动，未推送/部署。
