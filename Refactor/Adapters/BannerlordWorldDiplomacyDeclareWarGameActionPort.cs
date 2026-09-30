@@ -107,6 +107,20 @@ public sealed class BannerlordWorldDiplomacyDeclareWarGameActionPort
         }
         catch
         {
+            // The engine changes the stance before notifying OnWarDeclared observers.
+            // A failing observer must not turn a confirmed effect into a lost receipt.
+            try
+            {
+                return FactionManager.IsAtWarAgainstFaction(declarer, target)
+                    ? Receipt(WorldDiplomacyDeclareWarExecutionStatus.Applied, command,
+                        "diplomacy.declare_war.applied_after_observer_exception")
+                    : Receipt(WorldDiplomacyDeclareWarExecutionStatus.ActionNotApplied, command,
+                        "diplomacy.declare_war.action_exception_not_applied");
+            }
+            catch
+            {
+                // Keep uncertainty explicit when the engine cannot confirm its state.
+            }
             return Receipt(WorldDiplomacyDeclareWarExecutionStatus.UnknownAfterStart, command,
                 "diplomacy.declare_war.action_exception");
         }

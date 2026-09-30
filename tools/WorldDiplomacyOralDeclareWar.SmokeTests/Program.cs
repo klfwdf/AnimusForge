@@ -29,6 +29,7 @@ internal static class Program
         VerifyNpcDeclaration();
         VerifyCommandFacade();
         VerifyApplicationReplay();
+        EngineReceiptReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy oral declare-war smoke tests passed: {Test.Assertions} assertions.");
         return 0;
