@@ -458,12 +458,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		_orchestration.ReconcileActiveDiplomacyAfterLoad();
 	}
 
-
-
-
-
-
-
 	private void OnCampaignTick(float dt)
 	{
 		DiplomacyModuleServices.World.OnCampaignTick();
@@ -472,14 +466,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		DiplomacyModuleServices.World.OnDailyTick();
 	}
-
-
-
-
-
-
-
-
 
 	private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
 	{
@@ -609,41 +595,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return "野外战斗";
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private void ResetTransientRuntime(string reason)
 	{
 		_runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
@@ -681,215 +632,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private (int, int) GetDeclarationCharacterRange()
 	{
 		GetDiplomaticDeclarationCharacterRange(out int minimum, out int maximum);
 		return (minimum, maximum);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private static void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt)
 	{
@@ -916,32 +663,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		prompt = sb.ToString();
 		return true;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private void LogPromptCacheShape(WorldDiplomacyJob job)
 	{
@@ -1024,130 +745,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " relay_hit_rate=" + (relay <= 0 ? "n/a" : (100d * _relayCacheHitTokensThisSession / relay).ToString("F1", CultureInfo.InvariantCulture) + "%"));
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private (string kingdomId, string name) ResolveKingdomValidationIdentity(string kingdomId)
 	{
 		Kingdom kingdom = ResolveKingdom(kingdomId);
@@ -1157,258 +754,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		return ResolveSettlementById(settlementId) is Settlement settlement ? settlement.Name?.ToString() ?? "" : null;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private static bool IsThreatConsequenceClanEligible(Clan clan, Kingdom kingdom, Clan rulingClan)
 	{
@@ -1421,60 +766,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& !string.IsNullOrWhiteSpace(clan.StringId);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private void LogDiplomaticThreatFallbackAnalysisPublished(WorldDiplomacyJob job)
 	{
 		if (job == null) return;
@@ -1485,207 +776,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ " document=" + (job.DocumentId ?? ""));
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private void RetryDeferredCanonicalHistoryEntries(int maxAttempts = 16)
 	{
 		_orchestration.RetryDeferredCanonicalHistoryEntries(maxAttempts);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private float CourtDistance(Kingdom first, Kingdom second)
 	{
@@ -1822,88 +916,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return profile;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private bool TryConsumeDiplomacyLlmRequestBudget(bool consume = true)
 	{
 		return _llmBudget.TryConsume(CurrentDay(), MaxDiplomacyLlmRequestsPerDay, consume, Log);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
 	{
@@ -1931,10 +947,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return true;
 	}
 
-
-
-
-
 	private Settlement ResolveCourtSettlement(Kingdom kingdom)
 	{
 		if (kingdom == null)
@@ -1961,159 +973,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return settlement?.Town?.Prosperity ?? 0f;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private WorldDiplomacyRound ResolveRound(string roundId)
 	{
 		return WorldDiplomacyRoundLifecycleRules.ResolveRound(_storage?.ActiveRound, _storage?.CompletedRounds, roundId);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private string TryApplyValidatedCession(WorldDiplomacyPeaceTerms terms, Kingdom first, Kingdom second)
 	{
@@ -2161,45 +1024,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return WorldDiplomacyWarAdmissionApplication.CanDeclareWar(ref port, out reason, enforceRejectedUltimatum);
 	}
 
-
-
-
-
 		private void NotifyExternalDiplomacyResolvedInternal(string action, Kingdom initiator, Kingdom target, string reason)
 	{
 		_orchestration.NotifyExternalDiplomacyResolved(action, initiator?.StringId, target?.StringId, reason);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private static bool Patch_Kingdom_AddDecision_Prefix(Kingdom __instance, KingdomDecision kingdomDecision, bool ignoreInfluenceCost)
 	{
@@ -2472,24 +1300,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return sb.ToString().TrimEnd();
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private bool TryEnsureMapNotificationRegistered()
 	{
 		try
@@ -2542,384 +1352,29 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			job.PresentedThreatFollowThroughDocumentIds, currentFollowThrough);
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	private void AppendDiplomaticThreatDynamicContext(StringBuilder sb, Kingdom author, string roundId)
-	{
-		if (sb == null || author == null) return;
-		List<WorldDiplomacyThreat> threats = _storage?.DiplomaticThreats ?? new List<WorldDiplomacyThreat>();
-		int prestige = WorldDiplomacyReputationRules.GetNationalPrestige(_storage?.NationalPrestigeByKingdom, author.StringId);
-		int reputation = WorldDiplomacyReputationRules.GetInternationalReputation(_storage?.InternationalReputationByKingdom, author.StringId);
-		sb.AppendLine("【本国国家威望、国际声誉趋势与未结威慑；内部动态事实，不得在公文中公开数值】");
-		sb.AppendLine("本国当前国家威望=" + prestige.ToString(CultureInfo.InvariantCulture)
-			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(prestige) + "）");
-		sb.AppendLine("国家威望衡量本国威慑与承诺是否兑现：威望低会削弱威胁可信度，并按档位动态降低正式封臣家族领袖对国王的关系；恢复威望会撤回这部分动态关系惩罚。");
-		sb.AppendLine("本国当前国际声誉=" + reputation.ToString(CultureInfo.InvariantCulture)
-			+ "/100（外国公开评价档位=" + WorldDiplomacyReputationRules.DescribeInternationalReputation(reputation)
-			+ "）；当前自然趋势=" + WorldDiplomacyReputationRules.DescribeInternationalReputationNaturalTrend(reputation)
-			+ "。精确值、档位与趋势用于规划如何维护、修复或为核心利益消耗这项战略资本；现实局势允许时可主动发表有实际内容的宣言维护声誉，但不得为了声誉而沉默、回避合法立场、机械改选动作或发布空话。");
-		List<string> recentReputationReasons = WorldDiplomacyTextRules.GetRecentOwnInternationalReputationReasons(
-				_storage?.Documents, author.StringId, CurrentDay(), RecentNegativeReputationFactRetentionDays, FormatCampaignDate);
-		if (recentReputationReasons.Count == 0)
-		{
-			sb.AppendLine("本国近期没有可供复盘的已结算国际声誉事件；不得编造得失原因。");
-		}
-		else
-		{
-			foreach (string recentReason in recentReputationReasons)
-			{
-				sb.AppendLine("本国近期国际声誉事实=" + recentReason + "。");
-			}
-		}
-		List<WorldDiplomacyStandingChange> recentChanges = WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency((_storage?.Documents ?? new List<WorldDiplomacyDocument>())
-				.Where(x => x?.DiplomaticStandingChanges != null && x.IsReadyForPublication))
-			.SelectMany(x => x.DiplomaticStandingChanges.AsEnumerable().Reverse())
-			.Where(x => x != null
-				&& string.Equals(x.KingdomId, author.StringId, StringComparison.OrdinalIgnoreCase)
-				&& string.Equals(x.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase))
-			.Take(4)
-			.ToList();
-		foreach (WorldDiplomacyStandingChange change in recentChanges)
-		{
-			sb.AppendLine("近期国家威望结算=" + WorldDiplomacyReputationRules.FormatSignedDelta(change.Delta) + "；原因=" + change.Reason + "。");
-		}
-
-		WorldDiplomacyThreat outbound = threats.FirstOrDefault(x => WorldDiplomacyRoundLifecycleRules.IsOpenDiplomaticThreatStatus(x?.Status)
-			&& string.Equals(x.IssuerKingdomId, author.StringId, StringComparison.OrdinalIgnoreCase));
-		if (WorldDiplomacyRoundLifecycleRules.IsThreatDecisionNoncomplied(outbound))
-		{
-			Kingdom target = ResolveKingdom(outbound.TargetKingdomId);
-			WorldDiplomacyDocument source = ResolveDocument(outbound.StageDocumentId);
-			if (WorldDiplomacyRoundLifecycleRules.IsThreatAtStage(outbound, "warning"))
-			{
-				sb.AppendLine("强制后果提示：" + KingdomName(target) + "（ID=" + outbound.TargetKingdomId
-					+ "）已对本国谴责作出不退让决定。本篇就是本国谴责后的下一份宣言，最好对该国升级为战争最后通牒（intent=ultimatum），否则本篇发布后立即扣除20点国家威望。最后通牒必须延续同一军事争端与核心要求，不得更换事项。原谴责标题="
-					+ WorldDiplomacyTextRules.Limit(source?.Title, 80) + "；原谴责要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 260) + "。");
-			}
-			else
-			{
-				sb.AppendLine("强制后果提示：" + KingdomName(target) + "（ID=" + outbound.TargetKingdomId
-					+ "）已对本国最后通牒作出不退让决定。本篇就是本国通牒后的下一份宣言，最好对该国宣战（intent=declare_war），否则本篇发布后立即扣除15点国家威望，但也要考虑战争的后果。");
-			}
-		}
-		else if (outbound != null)
-		{
-			sb.AppendLine("本国已有等待对象国一次性决定的"
-				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStageFormal(outbound.Stage)
-				+ "：对象=" + outbound.TargetKingdomId + "=" + KingdomName(ResolveKingdom(outbound.TargetKingdomId))
-				+ "，来源=" + outbound.StageDocumentId + "。对象国尚未发布决定；在其决定前不得重复或提前升级该威慑。");
-		}
-
-		foreach (WorldDiplomacyThreat incoming in WorldDiplomacyRoundLifecycleRules.SelectPendingIncomingThreats(
-			threats, author.StringId))
-		{
-			WorldDiplomacyDocument source = ResolveDocument(incoming.StageDocumentId);
-			sb.AppendLine("本国收到的未决威慑："
-				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(
-					WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(incoming.Stage))
-				+ "：发出国=" + incoming.IssuerKingdomId + "=" + KingdomName(ResolveKingdom(incoming.IssuerKingdomId))
-				+ "；来源=" + incoming.StageDocumentId
-				+ "；标题=" + WorldDiplomacyTextRules.Limit(source?.Title, 80)
-				+ "；要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 260)
-				+ "。选择intent=comply_ultimatum即为无条件退让；任何其他intent即不退让，后续不能反悔。退让会降低本国国家威望，并使本国每个正式封臣家族与当前王族关系下降20点，最后可能导致内战发生，请根据形势、战事、国家性格与长期战略权衡利弊。");
-			if (!string.IsNullOrWhiteSpace(incoming.PolicyConditionPolicyId))
-			{
-				sb.AppendLine("附带政策条件：若本国选择comply_ultimatum，"
-					+ WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(incoming.PolicyConditionPolicyName, incoming.PolicyConditionPolicyId)
-					+ "》将由机制取消。");
-			}
-		}
-
-		foreach (WorldDiplomacyThreat notice in WorldDiplomacyRoundLifecycleRules.SelectIssuerResolutionNotices(
-			threats, author.StringId, null, 4))
-		{
-			sb.AppendLine("已确认：" + KingdomName(ResolveKingdom(notice.TargetKingdomId)) + "已明确服从本国此前的"
-				+ WorldDiplomacyRoundLifecycleRules.DescribeThreatStage(
-					WorldDiplomacyRoundLifecycleRules.NormalizeThreatEventStage(notice.Stage))
-				+ "，后续宣言无需为该威慑宣战或继续升级，也不会因此扣除国家威望。"
-				+ (WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled(notice.PolicyConditionCancellationStatus)
-					? "附带政策《" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(notice.PolicyConditionPolicyName, notice.PolicyConditionPolicyId) + "》已经取消。"
-					: ""));
-		}
-	}
-	private void AppendDiplomaticThreatAnalysisContext(StringBuilder sb, Kingdom author)
-	{
-		if (sb == null || author == null) return;
-		List<WorldDiplomacyThreat> incoming = WorldDiplomacyRoundLifecycleRules.SelectPendingIncomingThreats(
-			_storage?.DiplomaticThreats, author.StringId);
-		if (incoming.Count == 0) return;
-		sb.AppendLine("当前可供语义裁定绑定的未决威慑：");
-		foreach (WorldDiplomacyThreat threat in incoming)
-		{
-			WorldDiplomacyDocument source = ResolveDocument(threat.StageDocumentId);
-			sb.AppendLine("- 来源=" + threat.StageDocumentId + "|类型=" + threat.Stage
-				+ "|发出国=" + threat.IssuerKingdomId + "=" + KingdomName(ResolveKingdom(threat.IssuerKingdomId))
-				+ "|标题=" + WorldDiplomacyTextRules.Limit(source?.Title, 80) + "|要点=" + WorldDiplomacyTextRules.Limit(source?.Body, 260));
-		}
-		sb.AppendLine("只有玩家正文以本国为主语，明确、完整、无条件服从其中一项威慑时才裁定comply_ultimatum并绑定该来源；这是一次性决定，部分接受、原则接受、附带要求、反条件、沉默、第三国叙述或任何其他意图都立即算不退让。");
-	}
-	private void AppendDiplomaticAuthorDecisionContext(
-		StringBuilder sb,
-		Kingdom author,
-		string roundId)
-	{
-		if (sb == null || author == null) return;
-		string authorId = author.StringId;
-		sb.AppendLine("【发文者稳定档案】");
-		sb.AppendLine("发文国：" + KingdomName(author) + "（ID=" + authorId + "），统治者：" + RulerName(author));
-		string vassalageSnapshot = BuildWorldDiplomacyVassalageSnapshot();
-		if (!string.IsNullOrWhiteSpace(vassalageSnapshot)) sb.AppendLine(vassalageSnapshot);
-		List<string> currentWars = Kingdom.All
-			.Where(x => x != null && x != author && !x.IsEliminated
-				&& FactionManager.IsAtWarAgainstFaction(author, x))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.Select(x => x.StringId + "=" + KingdomName(x))
-			.ToList();
-		sb.AppendLine("本国当前交战=" + (currentWars.Count == 0 ? "[]" : "[" + string.Join(",", currentWars) + "]") + "。此项只陈述战争状态，不授予名单外外交动作。");
-		AppendRulerCaptivityDecisionContext(sb, author, null);
-		AppendDiplomaticThreatDynamicContext(sb, author, roundId);
-		sb.AppendLine("【发文者人格与声音】");
-		sb.AppendLine(BuildRulerVoiceContext(author));
-		sb.AppendLine("按这位统治者的真实取舍起草国家公文；人格体现于利益、信任、代价与行动分寸，国家立场仍以王国、王庭、贵族和臣民表达。");
-		sb.AppendLine("【发文国制度、合法性与礼制声音】");
-		sb.AppendLine(BuildRealmInstitutionalVoiceContext(author));
-		sb.AppendLine("当前游戏身份与政体硬事实高于检索背景；背景只能补充语气，不得改写统治者头衔、政体或发明机构。");
-		sb.AppendLine("【权威人物与亲属关系】");
-		sb.AppendLine(BuildAuthorRulerFamilyContext(author));
-		sb.AppendLine("只有本段列出的直接亲属关系才是事实；仅在本次外交确实涉及王朝、联姻、人质或王室安全时使用。");
-		string policySnapshot = DiplomacyModuleServices.Policy.BuildSnapshot(authorId);
-		if (!string.IsNullOrWhiteSpace(policySnapshot))
-		{
-			sb.AppendLine("【发文国政策快照】");
-			sb.AppendLine(policySnapshot);
-			sb.AppendLine("政策只用于判断当前目标、利益与压力，不证明未明确提供的外交或军事结果。");
-		}
-	}
-	private void AppendDiplomaticTargetDecisionContext(
-		StringBuilder sb,
-		WorldDiplomacyRound round,
-		Kingdom author,
-		Kingdom target,
-		bool includePeaceNegotiationTerms,
-		IReadOnlyCollection<string> legalActions)
-	{
-		if (sb == null || author == null || target == null || author == target) return;
-		string authorId = author.StringId;
-		string targetId = target.StringId;
-		WorldDiplomacyRealmRelationProfile relationProfile = GetRealmRelationProfile(author, target);
-		WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(author, target);
-		WarSituationSnapshot situation = GetWarSituation(author, target);
-		string bilateralFamily = BuildBilateralRulerFamilyContext(author, target);
-		string recentBattles = WorldDiplomacyTextRules.BuildRecentBilateralBattleContext(
-				_storage?.RecentBattles, author?.StringId, target?.StringId, CurrentDay(), RecentBattleRetentionDays,
-				id => KingdomName(ResolveKingdom(id)), FormatCampaignDate);
-		string nativeReasons = WorldDiplomacyDocumentFactRules.BuildRecentNativeSignalContext(_storage.NativeSignals, authorId, targetId);
-		string targetPolicy = DiplomacyModuleServices.Policy.BuildSnapshot(targetId);
-		int relation = GetRulerRelation(author, target);
-		int culturalFiefs = CountCulturalClaims(author, target);
-		int pressure = WorldDiplomacyWarPressureRules.GetWarPressure(_storage?.WarPressure, authorId, targetId);
-		bool peaceTermsVisible = includePeaceNegotiationTerms
-			&& !WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, round?.ResultSettlementCurrentSlotId,
-				author?.StringId, target?.StringId, ResolveDocument);
-
-		sb.AppendLine("【对象决策硬事实】" + targetId + "】");
-		sb.AppendLine("对象国=" + KingdomName(target) + "（ID=" + targetId + "），统治者=" + RulerName(target));
-		int targetPrestige = WorldDiplomacyReputationRules.GetNationalPrestige(_storage?.NationalPrestigeByKingdom, targetId);
-		int targetReputation = WorldDiplomacyReputationRules.GetInternationalReputation(_storage?.InternationalReputationByKingdom, targetId);
-		sb.AppendLine("对象国国家威望=" + targetPrestige.ToString(CultureInfo.InvariantCulture)
-			+ "/100：" + WorldDiplomacyReputationRules.DescribeNationalPrestige(targetPrestige) + "）；外国对该国的公开国际声誉档位="
-			+ WorldDiplomacyReputationRules.DescribeInternationalReputation(targetReputation)
-			+ "。国家威望低意味着其威胁较不可信，但也可能迫使其为避免进一步失威而采取更冒险的兑现行动；国际声誉只用于判断其承诺可信度、合作条件与外交风险，不代表友好、和平倾向或不可宣战。");
-		string reputationConflictOpportunity = target == null ? "" : WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
-				WorldDiplomacyReputationRules.GetInternationalReputation(_storage?.InternationalReputationByKingdom, target.StringId), legalActions, _storage?.Documents, target.StringId,
-				CurrentDay(), RecentNegativeReputationFactRetentionDays, FormatCampaignDate);
-		if (!string.IsNullOrWhiteSpace(reputationConflictOpportunity))
-		{
-			sb.AppendLine(reputationConflictOpportunity);
-		}
-		if (!string.IsNullOrWhiteSpace(bilateralFamily)) sb.AppendLine(bilateralFamily);
-		sb.AppendLine("当前关系=" + BuildBilateralState(author, target)
-			+ "；两国贵族整体关系=" + WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile)
-			+ "；统治者私人关系=" + WorldDiplomacyTextRules.DescribeRulerRelation(relation)
-			+ "；地理关系=" + (border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : "不接壤")
-			+ "；总体军力=" + WorldDiplomacyTextRules.DescribeStrengthBalance(situation.AuthorStrength, situation.TargetStrength) + "。");
-		sb.AppendLine("对象国占有的发文国文化城镇城堡数量=" + culturalFiefs.ToString(CultureInfo.InvariantCulture)
-			+ "；边境与政治压力=" + WorldDiplomacyTextRules.DescribeWarPressure(pressure) + "。这些只供王庭判断，不得写成分数或门槛。");
-		if (!string.IsNullOrWhiteSpace(targetPolicy))
-		{
-			sb.AppendLine("对象国政策=" + WorldDiplomacyTextRules.Limit(targetPolicy, 700));
-		}
-		if (!string.IsNullOrWhiteSpace(nativeReasons))
-		{
-			sb.AppendLine("近期原版外交动机素材】");
-			sb.AppendLine(WorldDiplomacyTextRules.Limit(nativeReasons, 800));
-		}
-		sb.AppendLine("近期双边战斗事实。");
-		sb.AppendLine(WorldDiplomacyTextRules.Limit(recentBattles, 1500));
-		sb.AppendLine("具体战斗只可引用上列硬事实；未列出的战役、战果、兵力、伤亡或俘虏不得补写。");
-		if (situation?.IsAtWar == true)
-		{
-			sb.AppendLine("战争硬性状态：双方已经交战，不得再次宣战。");
-			sb.AppendLine(BuildWarDecisionContext(author, target, peaceTermsVisible));
-		}
-		else
-		{
-			sb.AppendLine("战争硬性状态：双方当前没有战争；历史敌意、统一诉求或边境摩擦不等于已经交战。");
-		}
-	}
-	private void AppendRelayResponseSourceContext(
-		StringBuilder sb,
-		WorldDiplomacyRound round,
-		Kingdom author,
-		WorldDiplomacyDocument responseSource,
-		string requiredSourceDocumentId)
-	{
-		if (author == null) return;
-		WorldDiplomacyRoundLifecycleRules.AppendRelayResponseSourceContext(
-			sb, round, author.StringId, responseSource, requiredSourceDocumentId,
-			_storage?.Documents);
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	private string BuildCompactRoundPlanCandidateLine(
-		Kingdom initiator,
-		Kingdom candidate,
-		WorldDiplomacyRound round,
-		IReadOnlyList<string> legalActions)
-	{
-		List<string> actions = legalActions as List<string> ?? legalActions?.ToList() ?? new List<string>();
-		string line = BuildCompactDiplomaticRelationshipLine(initiator, candidate)
-			+ "；可选动作=" + WorldDiplomacyPromptContractRules.DescribePotentialDiplomaticActions(actions);
-		string captivityHint = BuildRulerCaptivityTargetHint(initiator, candidate);
-		if (!string.IsNullOrWhiteSpace(captivityHint)) line += "\n  " + captivityHint;
-		string reputationConflictOpportunity = candidate == null ? "" : WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(
-				WorldDiplomacyReputationRules.GetInternationalReputation(_storage?.InternationalReputationByKingdom, candidate.StringId), actions, _storage?.Documents, candidate.StringId,
-				CurrentDay(), RecentNegativeReputationFactRetentionDays, FormatCampaignDate);
-		return string.IsNullOrWhiteSpace(reputationConflictOpportunity)
-			? line
-			: line + "\n  " + reputationConflictOpportunity;
-	}
-
-	private void AppendOtherKingdomRelationshipContext(
-		StringBuilder sb,
-		Kingdom author,
-		IEnumerable<string> detailedTargetIds)
-	{
-		if (sb == null || author == null) return;
-		HashSet<string> excludedIds = new HashSet<string>(
-			(detailedTargetIds ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)),
-			StringComparer.OrdinalIgnoreCase)
-		{
-			author.StringId
-		};
-		List<Kingdom> otherKingdoms = Kingdom.All
-			.Where(x => x != null
-				&& !x.IsEliminated
-				&& HasIndependentWorldDiplomacyAuthority(x)
-				&& !excludedIds.Contains(x.StringId))
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-		if (otherKingdoms.Count == 0) return;
-
-		sb.AppendLine("【本国与其他王国的关系快照】");
-		sb.AppendLine("下列信息只供全局判断，不授予额外动作；动作对象仍以本篇当前可选对象为准。");
-		foreach (Kingdom other in otherKingdoms)
-		{
-			sb.AppendLine(BuildCompactDiplomaticRelationshipLine(author, other));
-			if (FactionManager.IsAtWarAgainstFaction(author, other))
-			{
-				sb.AppendLine("  战争态势=" + WorldDiplomacyTextRules.CompactPromptFact(BuildWarDecisionContext(author, other, false), 650));
-			}
-		}
-	}
-	private string BuildCompactDiplomaticRelationshipLine(Kingdom initiator, Kingdom candidate)
-	{
-		if (initiator == null || candidate == null) return "";
-		string policy = WorldDiplomacyTextRules.CompactPromptFact(DiplomacyModuleServices.Policy.BuildSnapshot(candidate.StringId), 180);
-		StringBuilder sb = new StringBuilder();
-		WorldDiplomacyRealmRelationProfile relationProfile = GetRealmRelationProfile(initiator, candidate);
-		WorldDiplomacyBorderRelation border = GetKingdomBorderRelation(initiator, candidate);
-		WarSituationSnapshot strengthSituation = GetWarSituation(initiator, candidate);
-		int candidateReputation = WorldDiplomacyReputationRules.GetInternationalReputation(_storage?.InternationalReputationByKingdom, candidate.StringId);
-		sb.Append("- ").Append(candidate.StringId).Append('=').Append(KingdomName(candidate))
-			.Append("；与本国=").Append(BuildBilateralState(initiator, candidate))
-			.Append("；两国贵族整体关系=").Append(WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile))
-			.Append("；统治者私人关系=").Append(WorldDiplomacyTextRules.DescribeRulerRelation(GetRulerRelation(initiator, candidate)))
-			.Append("；地理关系=").Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : "不接壤")
-			.Append("；总体军力=").Append(WorldDiplomacyTextRules.DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength))
-			.Append("；国家威望=").Append(WorldDiplomacyReputationRules.GetNationalPrestige(_storage?.NationalPrestigeByKingdom, candidate.StringId).ToString(CultureInfo.InvariantCulture))
-			.Append("；外国对其公开国际声誉档位=").Append(WorldDiplomacyReputationRules.DescribeInternationalReputation(candidateReputation));
-		if (!string.IsNullOrWhiteSpace(policy)) sb.Append("；政策倾向=").Append(policy);
-		return sb.ToString();
-	}
-	private string BuildWarDecisionContext(
-		Kingdom author,
-		Kingdom target,
-		bool includePeaceNegotiationTerms)
-	{
-		WarSituationSnapshot snapshot = GetWarSituation(author, target);
-		if (snapshot?.IsAtWar != true) return "";
-		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【仅供统治者判断的战争态势】战争已" + WorldDiplomacyTextRules.DescribeWarDuration(snapshot.WarDays, DaysPerYear) + "。");
-		sb.AppendLine("双方总体军力=" + WorldDiplomacyTextRules.DescribeStrengthBalance(snapshot.AuthorStrength, snapshot.TargetStrength)
-			+ "；近期战局=" + WorldDiplomacyTextRules.DescribeWarProgress(snapshot.AuthorProgress, snapshot.TargetProgress)
-			+ "；发文国=" + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.AuthorOtherWars)
-			+ "；对象国=" + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.TargetOtherWars) + "。这些是综合判断，只能转写成世界内措辞，不得公开任何评分、分差、开放度或战力数值。");
-		if (includePeaceNegotiationTerms)
-		{
-			List<Settlement> targetCanCede = BuildCessionCandidates(target, author, snapshot.TargetCessionScore);
-			List<Settlement> authorCanCede = BuildCessionCandidates(author, target, snapshot.AuthorCessionScore);
-			sb.AppendLine("【仅在本篇可选和平动作时使用的议和条件】发文国所受议和压力=" + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.AuthorPeacePressure)
-				+ "；对象国所受议和压力=" + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.TargetPeacePressure) + "。");
-		sb.AppendLine("贡金可与割地并存。参考每日贡金：若发文国付款约" + snapshot.AuthorSuggestedTribute + "，若对象国付款约" + snapshot.TargetSuggestedTribute + "；可以谈判但不得超出任务给出的合法上限。");
-		sb.AppendLine("对象国当前可合法提出割让给发文国的领地=" + WorldDiplomacyTextRules.FormatCessionCandidates(ProjectCessionCandidates(targetCanCede)) + "；发文国当前可合法提出割让给对象国的领地=" + WorldDiplomacyTextRules.FormatCessionCandidates(ProjectCessionCandidates(authorCanCede)) + "。清单为空时不得提出或同意割地，也不得编造城名；优先考虑战争中尚未收复的失地。城镇只有在战局严重不利时才会进入清单。");
-		}
-		return sb.ToString().TrimEnd();
-	}
-
 	private static IEnumerable<string> ProjectCessionCandidates(IEnumerable<Settlement> settlements)
 	{
 		return (settlements ?? Enumerable.Empty<Settlement>())
 			.Where(x => x != null)
 			.Select(x => (x.StringId ?? "") + "=" + (x.Name?.ToString() ?? "未知"));
+	}
+
+	private static WorldDiplomacyRulerCaptivity ResolveAuthorRulerCaptivity(Kingdom author)
+	{
+		WorldDiplomacyRulerCaptivity captivity = new WorldDiplomacyRulerCaptivity();
+		Hero ruler = author?.RulingClan?.Leader ?? author?.Leader;
+		if (ruler == null || !ruler.IsPrisoner) return captivity;
+		captivity.IsPrisoner = true;
+		TaleWorlds.CampaignSystem.Party.PartyBase holder = null;
+		try { holder = ruler.PartyBelongedToAsPrisoner; } catch { }
+		Kingdom holderKingdom = null;
+		try { holderKingdom = holder?.MapFaction as Kingdom; } catch { }
+		if (holderKingdom != null && !holderKingdom.IsEliminated)
+		{
+			captivity.HolderKingdomId = holderKingdom.StringId ?? "";
+			captivity.HolderKingdomName = KingdomName(holderKingdom);
+		}
+		return captivity;
 	}
 
 	private static string BuildRulerVoiceContext(Kingdom kingdom)
@@ -3134,15 +1589,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return shareFather || shareMother ? "siblings" : "none_listed";
 	}
 
-
-
-
-
-
-
-
-
-
 	private static string BuildExternalFactBody(string action, Kingdom initiator, Kingdom target, string reason)
 	{
 		string result = action switch
@@ -3302,9 +1748,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			+ "\n臣属国在涉及宗主国时必须承认现存宗主关系并保持臣属礼制上的恭敬；这不等于每篇公文都要谄媚或放弃条约仍保留的利益表达。";
 	}
 
-
-
-
 	private List<string> BuildLegalDiplomaticActionIntents(
 		WorldDiplomacyRound round,
 		Kingdom author,
@@ -3324,115 +1767,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			round, author?.StringId, resultSettlementSlotId, isExternalResponseOnly,
 			sourceDocumentId, requireAnyOpenPeaceOffer);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private List<Kingdom> GetEligibleAiKingdoms()
 	{
@@ -3478,10 +1812,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		});
 	}
 
-
-
-
-
 	private void AdvanceWorldMessageTimelineRevision()
 	{
 		// Overflow is practically unreachable, but preserving a nonzero revision keeps the comparison valid in long-running sessions.
@@ -3489,156 +1819,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			? 1L
 			: _worldMessageTimelineRevision + 1L;
 	}
-
-
-
-
-
-
-	private static string BuildRulerCaptivityTargetHint(Kingdom author, Kingdom target)
-	{
-		Hero ruler = author?.RulingClan?.Leader ?? author?.Leader;
-		if (ruler == null || !ruler.IsPrisoner) return "";
-		TaleWorlds.CampaignSystem.Party.PartyBase holder = null;
-		try { holder = ruler.PartyBelongedToAsPrisoner; } catch { }
-		Kingdom holderKingdom = null;
-		try { holderKingdom = holder?.MapFaction as Kingdom; } catch { }
-		if (holderKingdom != null && !holderKingdom.IsEliminated && holderKingdom == target)
-			return "君主被当前对象国关押或控制：本国应更重视停战、和平和可执行的让步，但仍不得绕过当前合法动作。";
-		if (holderKingdom != null && !holderKingdom.IsEliminated)
-			return "君主被其他王国关押或控制：本国整体处境恶化，应更重视稳定与谈判，不得把当前对象误认作关押方。";
-		return "君主被俘但关押或控制方未知：本国处境恶化，应更重视稳定与谈判，不得猜测关押方。";
-	}
-
-	private static void AppendRulerCaptivityDecisionContext(StringBuilder sb, Kingdom author, Kingdom currentTarget)
-	{
-		if (sb == null || author == null) return;
-		Hero ruler = author.RulingClan?.Leader ?? author.Leader;
-		if (ruler == null || !ruler.IsPrisoner) return;
-		TaleWorlds.CampaignSystem.Party.PartyBase holder = null;
-		try { holder = ruler.PartyBelongedToAsPrisoner; } catch { }
-		Kingdom holderKingdom = null;
-		try { holderKingdom = holder?.MapFaction as Kingdom; } catch { }
-		bool holderKnown = holderKingdom != null && !holderKingdom.IsEliminated;
-		bool currentTargetIsHolder = holderKnown && currentTarget != null && holderKingdom == currentTarget;
-		string pressure = currentTarget == null
-			? "需结合具体外交对象判断"
-			: currentTargetIsHolder ? "是" : holderKnown ? "否" : "未知";
-		sb.AppendLine("【本国君主当前处境】");
-		sb.AppendLine("本国统治者被俘：是；当前关押/控制方="
-			+ (holderKnown ? KingdomName(holderKingdom) + "（ID=" + holderKingdom.StringId + "）" : "未知")
-			+ "；针对本篇外交对象的被俘压力=" + pressure + "。");
-		if (currentTarget == null)
-		{
-			sb.AppendLine("君主被俘会提高本国对稳定、停战与谈判的重视程度；若本篇对象正是当前关押或控制方，则进一步提高对让步和妥协的重视。不得猜测未知关押方，也不得绕过当前合法动作。");
-		}
-		else if (currentTargetIsHolder)
-		{
-			sb.AppendLine("君主被当前外交对象关押或控制。本国处于明显不利处境，应更重视停战、和平、让步和避免战争扩大；可以接受比平时更不利但仍可执行的条件。不得因此无条件接受不存在的提议、非法条款或绕过当前合法动作。");
-		}
-		else if (holderKnown)
-		{
-			sb.AppendLine("本国君主被其他王国关押或控制。本国整体处境恶化，应减少无意义的外交升级，更重视稳定与谈判；不得因此自动接受当前对象的条件，也不得把当前对象自动认定为关押方。");
-		}
-		else
-		{
-			sb.AppendLine("本国君主被俘但当前关押/控制方无法可靠确认。本国处境恶化，应更重视稳定与谈判；不得猜测关押方，也不得把当前对象自动认定为关押方。");
-		}
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private static List<PublishedPolicyArtifactLedgerEntry> ReadAllPublishedPolicyArtifactsForMigration()
 	{
@@ -3660,18 +1840,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		return result;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 	private string ResolveEligibleDiplomacyKingdomId(string kingdomId)
 	{
@@ -3708,32 +1876,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return null;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private static Hero ResolveHeroById(string heroId)
 	{
 		string normalized = (heroId ?? "").Trim();
@@ -3750,50 +1892,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& string.Equals(x.StringId, normalized, StringComparison.OrdinalIgnoreCase));
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	private WorldDiplomacyDocument ResolveDocument(string documentId)
 	{
 		return WorldDiplomacyRoundLifecycleRules.ResolveDocument(_storage?.Documents, documentId);
 	}
-
-
-
-
-
-
-
-
-
 
 	private void InvalidateWarSituation(Kingdom first, Kingdom second)
 	{
@@ -4138,13 +2240,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			return DaysPerYear * 2;
 		}
 	}
-
-
-
-
-
-
-
 
 	private static int GetThreatComplianceIssuerRelationReward()
 	{

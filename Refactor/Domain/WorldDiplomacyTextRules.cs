@@ -557,7 +557,7 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 		return string.Join("\n", battles.Select(x => FormatBattleFactForPrompt(x, kingdomName, formatDayFallback)));
 	}
 
-	public static List<string> GetRecentOwnInternationalReputationReasons(List<WorldDiplomacyDocument> documents,
+	public static List<string> GetRecentOwnInternationalReputationReasons(IReadOnlyList<WorldDiplomacyDocument> documents,
 		string kingdomId, int currentDay, int retentionDays, Func<int, string> formatDayFallback)
 	{
 		List<string> reasons = new List<string>(MaxPromptRecentOwnReputationReasons);
@@ -591,7 +591,7 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 		return reasons;
 	}
 
-	public static List<string> GetRecentPublicNegativeReputationFacts(List<WorldDiplomacyDocument> documents,
+	public static List<string> GetRecentPublicNegativeReputationFacts(IReadOnlyList<WorldDiplomacyDocument> documents,
 		string kingdomId, int currentDay, int retentionDays, Func<int, string> formatDayFallback)
 	{
 		List<string> facts = new List<string>(MaxPromptRecentNegativeReputationFacts);
@@ -627,7 +627,7 @@ public static string BuildRoundCompressionPrompt(IEnumerable<WorldDiplomacyDocum
 	}
 
 	public static string BuildLowReputationConflictOpportunityContext(int reputation,
-		IEnumerable<string> legalActions, List<WorldDiplomacyDocument> documents, string targetId,
+		IEnumerable<string> legalActions, IReadOnlyList<WorldDiplomacyDocument> documents, string targetId,
 		int currentDay, int retentionDays, Func<int, string> formatDayFallback)
 	{
 		if (reputation >= LowInternationalReputationThreshold) return "";

@@ -14393,6 +14393,7 @@ RunRepairCorrectionAndJobDecisionTests();
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.HistoryCapturePort.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"));
+        behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PromptContext.cs"));
         // Inspect the active host-to-application path after DPL-080 ownership transfer.
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
@@ -15723,6 +15724,54 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("private string BuildLowReputationConflictOpportunityContext(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private const int MaxPromptRecentBattles", StringComparison.Ordinal),
             "host must not retain the extracted bilateral/reputation context bodies");
+
+        string promptContextPort = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PromptContext.cs"));
+        foreach (string hiddenSectionOwner in new[]
+        {
+            "AppendDiplomaticThreatDynamicContext",
+            "AppendDiplomaticThreatAnalysisContext",
+            "AppendDiplomaticAuthorDecisionContext",
+            "AppendDiplomaticTargetDecisionContext",
+            "AppendRelayResponseSourceContext",
+            "AppendRulerCaptivityDecisionContext",
+            "AppendOtherKingdomRelationshipContext",
+            "BuildCompactRoundPlanCandidateLine",
+            "BuildCompactDiplomaticRelationshipLine",
+            "BuildWarDecisionContext",
+            "BuildRulerCaptivityTargetHint",
+            "SelectPendingIncomingThreats(",
+            "SelectIssuerResolutionNotices(",
+            "BuildLowReputationConflictOpportunityContext(",
+            "EnsureRoundParticipant",
+            "IsPlayerAsync",
+        })
+        {
+            Test.True(!promptContextPort.Contains(hiddenSectionOwner, StringComparison.Ordinal),
+                "the prompt world port must not hide section policy, candidate ordering, or round-state writes: " + hiddenSectionOwner);
+        }
+        string promptComposerSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
+        foreach (string composerOwnedSection in new[]
+        {
+            "private static void AppendDiplomaticThreatDynamicContext(",
+            "private static void AppendDiplomaticThreatAnalysisContext(",
+            "private static void AppendDiplomaticAuthorDecisionContext(",
+            "private static void AppendDiplomaticTargetDecisionContext(",
+            "private static void AppendRelayResponseSourceContext(",
+            "private static void AppendRulerCaptivityDecisionContext(",
+            "private static void AppendOtherKingdomRelationshipContext(",
+            "private static string BuildCompactRoundPlanCandidateLine(",
+            "private static string BuildCompactDiplomaticRelationshipLine(",
+            "private static string BuildWarDecisionContext(",
+            "private static string BuildRulerCaptivityTargetHint(",
+        })
+        {
+            Test.True(promptComposerSource.Contains(composerOwnedSection, StringComparison.Ordinal),
+                "prompt section policy must be owned by the application composer: " + composerOwnedSection);
+        }
+        Test.True(promptContextPort.Contains("IReadOnlyList<string> IWorldDiplomacyPromptWorld.IndependentKingdomIds()", StringComparison.Ordinal)
+            && promptContextPort.Contains("_kingdoms", StringComparison.Ordinal)
+            && promptContextPort.Contains("_kingdomIndexInitialized", StringComparison.Ordinal),
+            "kingdom enumeration must resolve through the lazily indexed port, not a per-fact full scan");
 
         foreach (string removed in new[]
         {

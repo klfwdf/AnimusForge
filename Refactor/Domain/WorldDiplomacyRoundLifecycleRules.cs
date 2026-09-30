@@ -5299,7 +5299,7 @@ public static class WorldDiplomacyRoundLifecycleRules
         string authorKingdomId,
         WorldDiplomacyDocument responseSource,
         string requiredSourceDocumentId,
-        List<WorldDiplomacyDocument> documents)
+        IReadOnlyList<WorldDiplomacyDocument> documents)
     {
         if (sb == null || round == null || string.IsNullOrWhiteSpace(authorKingdomId)) return;
         HashSet<string> sourceIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
