@@ -1,6 +1,6 @@
-"""Check actual MSBuild members, deletion parity and executable diplomacy dependency boundaries."""
+"""Check orchestration ownership, deletion parity and executable diplomacy dependency boundaries."""
 from pathlib import Path
-import argparse,importlib.util,json,subprocess,os
+import argparse,importlib.util,json,subprocess,os,re
 ROOT=Path(__file__).resolve().parents[2]
 HERE=Path(__file__).resolve().parent
 BASELINE='19e9bb22'
@@ -9,162 +9,195 @@ def old(p):return subprocess.check_output(['git','show',BASELINE+':'+p],cwd=ROOT
 def load(name,p):
  s=importlib.util.spec_from_file_location(name,ROOT/p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 
+ORCH='src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs'
+APPDIR='src/modules/AF.Module.Diplomacy/Application/'
+
+def method_of(source,name,vis=r'(?:public|internal)'):
+ m=re.search(r'(?m)^(\s*)'+vis+r'\s+[\w<>,\.\[\]\? ]+\s+'+re.escape(name)+r'(?:<[\w, ]+>)?\s*\(',source)
+ if not m:return None
+ i=m.start();j=source.index('{',source.index('(',m.start()));depth=0
+ for k in range(j,len(source)):
+  if source[k]=='{':depth+=1
+  elif source[k]=='}':
+   depth-=1
+   if depth==0:return source[i:k+1]
+ return None
+
+def any_method_of(source,name):
+ return method_of(source,name,r'(?:public|internal|private|protected)')
+
+# orchestration member -> expected Application owner call inside its body.
+ORCH_OWNERS={
+ 'ProcessCompletedJobs':'WorldDiplomacyCompletionApplication.',
+ 'TryStartNextLlmJob':'WorldDiplomacyLlmDispatchApplication.',
+ 'ProcessCourtArrival':'WorldDiplomacyCourtResponseApplication.',
+ 'TryScheduleMandatoryCourtResponse':'WorldDiplomacyCourtResponseApplication.',
+ 'TryScheduleNormalRound':'WorldDiplomacyRoundApplication.',
+ 'TrySchedulePolicyTriggeredRound':'WorldDiplomacyPolicyRoundApplication.',
+ 'ProcessRelayArrivals':'WorldDiplomacyRoundProgressApplication.',
+ 'AdvanceRelay':'WorldDiplomacyRoundApplication.',
+ 'CompleteExchange':'WorldDiplomacyRoundApplication.',
+ 'HandleRoundDocumentProcessed':'WorldDiplomacyRoundProgressApplication.',
+ 'ScheduleNextResultSettlementTurn':'WorldDiplomacyTurnSchedulingApplication.',
+ 'BeginOrExtendRoundResultSettlement':'WorldDiplomacyRoundApplication.',
+ 'ProcessRoundLifecycle':'WorldDiplomacyRoundApplication.',
+ 'HandleDisabledState':'WorldDiplomacyRoundApplication.',
+ 'CommitEmbeddedRoundPlan':'WorldDiplomacyRoundApplication.',
+ 'CommitRoundPlan':'WorldDiplomacyRoundPlanApplication.',
+ 'CommitRoundCompression':'WorldDiplomacyRoundCompressionApplication.',
+ 'ReconcileActiveDiplomacyAfterLoad':'WorldDiplomacyRoundApplication.',
+ 'NormalizeStorage':'WorldDiplomacyStorageNormalizationApplication.',
+ 'EnqueueAnalysisJob':'WorldDiplomacyJobPreparationApplication.',
+ 'EnqueueRoundPlanJob':'WorldDiplomacyJobPreparationApplication.',
+ 'AbandonRejectedGeneration':'WorldDiplomacyGenerationTaskApplication.',
+ 'CommitFailedJob':'WorldDiplomacyFailureApplication.',
+ 'CommitGeneratedDocument':'WorldDiplomacyGeneratedCompletionApplication.',
+ 'ProcessAnalyzedDocument':'WorldDiplomacyDocumentExecutionApplication.',
+ 'FinalizePublishedDocumentAfterAnalysis':'WorldDiplomacyDocumentPublicationApplication.',
+ 'TryIncludeResultSettlementTarget':'WorldDiplomacyDocumentExecutionApplication.',
+ 'RefreshResultSettlementActionSlots':'WorldDiplomacyDocumentExecutionApplication.',
+ 'StartDocumentPropagation':'WorldDiplomacyPublicationRoutingApplication.',
+ 'TrySettleRelayOffer':'WorldDiplomacyOfferApplication.',
+ 'PublishPlayerAuthoredDocumentImmediately':'WorldDiplomacyDocumentPublicationApplication.',
+ 'RefreshPolicyDiplomacySignals':'WorldDiplomacyPolicyRoundApplication.',
+ 'NotifyExternalDiplomacyResolved':'WorldDiplomacyDocumentPublicationApplication.',
+ 'TryApplyInitialNewGamePeace':'WorldDiplomacyInitialPeaceApplication.',
+ 'ExecuteImmediateIntent':'WorldDiplomacyImmediateActionApplication.',
+ 'IsNonRootAiRelayNoActionAllowed':'WorldDiplomacyNoActionApplication.',
+ 'CanUseResultSettlementTarget':'WorldDiplomacyNoActionApplication.',
+ 'TryResolvePolicyConditionForThreat':'WorldDiplomacyThreatBindingApplication.',
+ 'RegisterOrAdvanceDiplomaticThreat':'WorldDiplomacyThreatBindingApplication.',
+ 'ProcessDiplomaticThreatDocument':'WorldDiplomacyThreatBindingApplication.',
+ 'TryApplyUltimatumComplianceDomesticPenalty':'WorldDiplomacyThreatSettlementApplication.',
+ 'TryApplyDiplomaticThreatPolicyConditionCancellation':'WorldDiplomacyThreatSettlementApplication.',
+ 'TryApplyDiplomaticThreatIssuerRelationReward':'WorldDiplomacyThreatSettlementApplication.',
+ 'ResolveDiplomaticThreatCompliance':'WorldDiplomacyThreatSettlementApplication.',
+ 'ApplyDiplomaticThreatReputationPenalty':'WorldDiplomacyThreatSettlementApplication.',
+ 'RetryDiplomaticThreatDomesticPenalties':'WorldDiplomacyThreatSettlementApplication.',
+ 'RetryDiplomaticThreatComplianceConsequences':'WorldDiplomacyThreatSettlementApplication.',
+ 'RetryDiplomaticThreatHistoryResults':'WorldDiplomacyThreatSettlementApplication.',
+ 'ApplyNationalPrestigeDelta':'WorldDiplomacyPrestigeApplication.',
+ 'SettleInternationalReputationForDocument':'WorldDiplomacyPrestigeApplication.',
+ 'RecoverUnsettledAiInternationalReputation':'WorldDiplomacyPrestigeApplication.',
+ 'ReconcileAllNationalPrestigeVassalRelations':'WorldDiplomacyPrestigeApplication.',
+ 'ReconcileNationalPrestigeVassalRelations':'WorldDiplomacyPrestigeApplication.',
+ 'ApplyZeroPrestigeBreachRelationPenalty':'WorldDiplomacyPrestigeApplication.',
+ 'AnchorInternationalReputationNaturalChangeDays':'WorldDiplomacyPrestigeApplication.',
+ 'ProcessInternationalReputationNaturalChange':'WorldDiplomacyPrestigeApplication.',
+ 'SyncCanonicalHistorySources':'WorldDiplomacyHistoryCaptureApplication.',
+ 'CaptureCanonicalHistoryForJob':'WorldDiplomacyHistoryCaptureApplication.',
+ 'RecordDiplomacyWeeklyMaterial':'WorldDiplomacyHistoryCaptureApplication.',
+ 'EnsureGenerationJobHasKingdomStrategicProfile':'WorldDiplomacyJobPreparationApplication.',
+ 'RefreshDiplomaticActionPresentationAndPrompt':'WorldDiplomacyJobPreparationApplication.',
+ 'RefreshDiplomaticThreatPresentationAndPrompt':'WorldDiplomacyJobPreparationApplication.',
+ 'CommitAnalysis':'WorldDiplomacyAnalysisApplication.',
+ 'SuppressInvalidDocumentBeforePropagation':'WorldDiplomacyAnalysisApplication.',
+ 'ParseAndValidatePeaceTerms':'WorldDiplomacyPeaceAdmissionApplication.',
+ 'AreOfferedPeaceTermsCurrentlyExecutable':'OfferedPeaceTermsCurrentlyExecutable(',
+}
+
+# Application file -> member that must live there (was a Behavior private before).
+APP_OWNERS={
+ 'WorldDiplomacyDocumentExecutionApplication.cs':['ProcessAnalyzedMultiActionDocument','TryIncludeResultSettlementTarget','RefreshResultSettlementActionSlots','FinalizePublishedDocumentAfterAnalysis'],
+ 'WorldDiplomacyPublicationRoutingApplication.cs':['Start','ReconcileReachedCourts'],
+ 'WorldDiplomacyActionSelectionApplication.cs':['GetActionableDiplomaticTargets','GetRoundPlanActionableParticipants','GetResultSettlementActionableTargets','BuildLegalDiplomaticDeclarationIntents'],
+ 'WorldDiplomacyAnalysisApplication.cs':['PreservePublishedPlayerDocumentAfterRejectedMechanic','CommitAnalysis','SuppressInvalidDocumentBeforePropagation'],
+ 'WorldDiplomacyPeaceAdmissionApplication.cs':['IsCessionCurrentlyAllowed','ParseAndValidatePeaceTerms','AreOfferedPeaceTermsCurrentlyExecutable'],
+ 'WorldDiplomacyJobPreparationApplication.cs':['RebuildPendingJob','EnsureGenerationJobHasKingdomStrategicProfile'],
+ 'WorldDiplomacyNoActionApplication.cs':['IsAllowed','CanUseSettlementTarget'],
+ 'WorldDiplomacyTickApplication.cs':['Run'],
+ 'WorldDiplomacyGenerationTaskApplication.cs':['PrepareGenerationJob','AbandonRejectedGeneration'],
+}
+
+# Behavior private methods that must be thin lifecycle/compat forwarders only.
+FORWARDERS={
+ 'OnDailyTick':'DiplomacyModuleServices.World.OnDailyTick',
+ 'OnCampaignTick':'DiplomacyModuleServices.World.OnCampaignTick',
+ 'CanIssueWarThreat':'WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat',
+ 'CanDeclareWar':'WorldDiplomacyWarAdmissionApplication.CanDeclareWar',
+ 'RetryDeferredCanonicalHistoryEntries':'_orchestration.RetryDeferredCanonicalHistoryEntries',
+ 'NotifyExternalDiplomacyResolvedInternal':'_orchestration.NotifyExternalDiplomacyResolved',
+ 'BuildLegalDiplomaticActionIntents':'WorldDiplomacyActionSelectionApplication',
+ 'BuildCessionCandidates':'WorldDiplomacyPeaceAdmissionApplication',
+}
+
+# Names that must not exist as methods anywhere in the Behavior file.
+ABSENT={'EnqueueMandatoryCourtReplyJob','CloseRound','EnqueueGenerationJob',
+ 'PreservePublishedPlayerDocumentAfterRejectedMechanic','TryRebuildPendingWorldDiplomacyJob',
+ 'ProcessAnalyzedMultiActionDocument','IsCessionCurrentlyAllowed',
+ 'GetActionableDiplomaticTargets','GetRoundPlanActionableParticipants','GetResultSettlementActionableTargets',
+ 'ReconcileAnalyzedPlayerDeclarationWithReachedCourts','StartDocumentPropagation',
+ 'TryIncludeResultSettlementTarget','RefreshResultSettlementActionSlots',
+ 'FinalizePublishedDocumentAfterAnalysis'}
+
+# Whitelisted WorldDiplomacy*Application references inside World/ adapter files.
+BEHAVIOR_APP_WHITELIST={
+ 'WorldDiplomacyBehavior.cs':{'WorldDiplomacyTickApplication','WorldDiplomacyWarAdmissionApplication',
+  'WorldDiplomacyDocumentApplication','WorldDiplomacyPeaceAdmissionApplication','WorldDiplomacyActionSelectionApplication',
+  'WorldDiplomacyNotificationApplication'},
+ 'WorldDiplomacyBehavior.JobRuntime.cs':{'WorldDiplomacyLlmDispatchApplication','WorldDiplomacyCompletionApplication'},
+ 'WorldDiplomacyBehavior.LlmDispatchSource.cs':{'WorldDiplomacyLlmApplication'},
+ 'WorldDiplomacyBehavior.Presentation.cs':{'WorldDiplomacyPlayerApplication'},
+ 'WorldDiplomacyBehavior.OrchestrationHost.cs':{'WorldDiplomacyPolicyRoundApplication','WorldDiplomacyPropagationApplication',
+  'WorldDiplomacyDocumentExecutionApplication','WorldDiplomacyPublicationRoutingApplication',
+  'WorldDiplomacyTurnSchedulingApplication','WorldDiplomacyRoundProgressApplication',
+  'WorldDiplomacyRoundApplication','WorldDiplomacyActionSelectionApplication'},
+ 'WorldDiplomacyBehavior.PublicationPort.cs':{'WorldDiplomacyPropagationApplication'},
+}
+
 def main():
  p=argparse.ArgumentParser();p.add_argument('--dotnet',default='dotnet');p.add_argument('--baseline-dll');p.add_argument('--candidate-dll');a=p.parse_args()
  retired=load('retired','tools/DiplomacyArchitectureTests/retired.py')
- declaration=load('decl','tools/ChannelCutoverBoundaryTests/run.py').declaration
- prior=old(retired.HOST)
+ prior_raw=old(retired.HOST)
  current=read(retired.HOST)
- prior_tick=declaration(prior,'public void OnEngineTick(')
- current_tick=declaration(current,'public void OnEngineTick(')
- assert 'WorldDiplomacyTickApplication.Run(ref source)' in current_tick and 'ProcessCompletedJobs()' not in current_tick, 'Tick predecessor still owns ordering'
- prior=prior.replace(prior_tick,current_tick)
- # These production bodies have moved to a compiled, replayed Application owner.
- # The Roslyn gate below requires each predecessor to be a single forwarder.
- for signature in ('private void ProcessAnalyzedDocument(', 'private void ProcessAnalyzedMultiActionDocument(',
-                   'private void FinalizePublishedDocumentAfterAnalysis(', 'private bool TryIncludeResultSettlementTarget('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyDocumentExecutionApplication.' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void StartDocumentPropagation(', 'private void ReconcileAnalyzedPlayerDeclarationWithReachedCourts('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyPublicationRoutingApplication.' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void TryScheduleMandatoryCourtResponse(',):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyCourtResponseApplication.TryScheduleMandatory(' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void TrySettleRelayOffer(',):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyOfferApplication.Settle(document, new OfferActionPort(this))' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void NotifyExternalDiplomacyResolvedInternal(',):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert before.replace('HasProposalTakenEffect(intent, initiator, target)', 'new OfferActionPort(this).HasTakenEffect(intent, initiator?.StringId, target?.StringId)').replace('WorldDiplomacyRoundLifecycleRules.NotifyExternalDiplomacyResolved(', 'WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(') == after, signature
-  prior=prior.replace(before,after)
- for signature in ('private bool CanIssueWarThreat(', 'private bool CanDeclareWar('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyWarAdmissionApplication.' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void ExecuteImmediateIntent(',):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyImmediateActionApplication.Execute(' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void HandleDisabledState(', 'private void CommitEmbeddedRoundPlan('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyRoundApplication.' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private bool TryApplyUltimatumComplianceDomesticPenalty(', 'private bool TryApplyDiplomaticThreatPolicyConditionCancellation(', 'private bool TryApplyDiplomaticThreatIssuerRelationReward(', 'private bool ResolveDiplomaticThreatCompliance(', 'private void ApplyDiplomaticThreatReputationPenalty(', 'private void RetryDiplomaticThreatDomesticPenalties(', 'private void RetryDiplomaticThreatComplianceConsequences(', 'private void RetryDiplomaticThreatHistoryResults('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert "WorldDiplomacyThreatSettlementApplication." in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private int ApplyNationalPrestigeDelta(', 'private void SettleInternationalReputationForDocument(', 'private void RecoverUnsettledAiInternationalReputation(', 'private void ReconcileAllNationalPrestigeVassalRelations(', 'private void ReconcileNationalPrestigeVassalRelations(', 'private void ApplyZeroPrestigeBreachRelationPenalty(', 'private void AnchorInternationalReputationNaturalChangeDays(', 'private void ProcessInternationalReputationNaturalChange('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert "WorldDiplomacyPrestigeApplication." in after, signature
-  prior=prior.replace(before,after)
- for signature,owner in (('private void OnCampaignTick(', 'DiplomacyModuleServices.World.OnCampaignTick'), ('private void OnDailyTick(', 'DiplomacyModuleServices.World.OnDailyTick'), ('private void TryApplyInitialNewGamePeace(', 'WorldDiplomacyInitialPeaceApplication.Apply')):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert owner in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void EnsureCanonicalHistoryInitialized(', 'private void SyncCanonicalHistorySources(', 'private void CaptureCanonicalHistoryForJob(', 'private void RestoreSuspendedExchangeIfAny(', 'private void CompleteExchange('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert "WorldDiplomacyHistoryCaptureApplication." in after or "WorldDiplomacyRoundApplication." in after, signature
-  prior=prior.replace(before,after)
- for signature,owner in (('private bool IsNonRootAiRelayNoActionAllowed(', 'WorldDiplomacyNoActionApplication.'), ('private bool CanUseResultSettlementTarget(', 'WorldDiplomacyNoActionApplication.'), ('private bool TryResolvePolicyConditionForThreat(', 'WorldDiplomacyThreatBindingApplication.'), ('private bool RegisterOrAdvanceDiplomaticThreat(', 'WorldDiplomacyThreatBindingApplication.'), ('private void ProcessDiplomaticThreatDocument(', 'WorldDiplomacyThreatBindingApplication.')):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert owner in after, signature
-  prior=prior.replace(before,after)
- for signature,owner in (('private void PublishPlayerAuthoredDocumentImmediately(', 'WorldDiplomacyDocumentPublicationApplication.PublishPlayerImmediately'), ('private void RefreshPolicyDiplomacySignals(', 'WorldDiplomacyPolicyRoundApplication.RefreshSignals')):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert owner in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private List<string> BuildPotentialDiplomaticActionIntents(', 'private List<string> BuildLegalDiplomaticActionIntents(', 'private List<string> BuildLegalDiplomaticDeclarationIntents(', 'private List<Kingdom> GetActionableDiplomaticTargets(', 'private List<Kingdom> GetRoundPlanActionableParticipants(', 'private List<Kingdom> GetResultSettlementActionableTargets(', 'private void RefreshResultSettlementActionSlots('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyActionSelectionApplication' in after or 'WorldDiplomacyDocumentExecutionApplication.RefreshResultSettlementActionSlots' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private bool EnsureGenerationJobHasKingdomStrategicProfile(', 'private bool RefreshDiplomaticActionPresentationAndPrompt(', 'private bool RefreshDiplomaticThreatPresentationAndPrompt(', 'private bool TryRebuildPendingWorldDiplomacyJob('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyJobPreparationApplication.' in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private void CommitAnalysis(', 'private void SuppressInvalidDocumentBeforePropagation(', 'private void PreservePublishedPlayerDocumentAfterRejectedMechanic('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyAnalysisApplication.' in after, signature
-  prior=prior.replace(before,after)
- for signature,owner in (('private void ReconcileActiveDiplomacyAfterLoad(', 'WorldDiplomacyRoundApplication.'),
-                   ('private void EnqueueGenerationJob(', 'WorldDiplomacyGenerationTaskApplication.'),
-                   ('private void EnqueueAnalysisJob(', 'WorldDiplomacyJobPreparationApplication.'),
-                   ('private void CommitFailedJob(', 'WorldDiplomacyFailureApplication.'),
-                   ('private void CommitGeneratedDocument(', 'WorldDiplomacyGeneratedCompletionApplication.'),
-                   ('private void AbandonRejectedGeneration(', 'WorldDiplomacyGenerationTaskApplication.'),
-                   ('private void BeginOrExtendRoundResultSettlement(', 'WorldDiplomacyRoundApplication.'),
-                   ('private void ScheduleNextResultSettlementTurn(', 'WorldDiplomacyTurnSchedulingApplication.'),
-                   ('private void HandleRoundDocumentProcessed(', 'WorldDiplomacyRoundProgressApplication.'),
-                   ('private void EnqueueRoundPlanJob(', 'WorldDiplomacyJobPreparationApplication.'),
-                   ('private void RetryDeferredCanonicalHistoryEntries(', 'WorldDiplomacyHistoryCaptureApplication.'),
-                   ('private void CommitRoundPlan(', 'WorldDiplomacyRoundPlanApplication.'),
-                   ('private void ScheduleNextRelayHop(', 'WorldDiplomacyTurnSchedulingApplication.'),
-                   ('private void ProcessRelayArrivals(', 'WorldDiplomacyRoundProgressApplication.'),
-                   ('private void RecordDiplomacyWeeklyMaterial(', 'WorldDiplomacyHistoryCaptureApplication.'),
-                   ('private void ProcessRoundLifecycle(', 'WorldDiplomacyRoundApplication.'),
-                   ('private void CommitRoundCompression(', 'WorldDiplomacyRoundCompressionApplication.'),
-                   ('private void NormalizeStorage(', 'WorldDiplomacyStorageNormalizationApplication.')):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert owner in after, signature
-  prior=prior.replace(before,after)
- for signature in ('private WorldDiplomacyPeaceTerms ParseAndValidatePeaceTerms(', 'private static bool AreOfferedPeaceTermsCurrentlyExecutable(', 'private bool IsCessionCurrentlyAllowed(', 'private List<Settlement> BuildCessionCandidates('):
-  before=declaration(prior,signature);after=declaration(current,signature)
-  assert 'WorldDiplomacyPeaceAdmissionApplication.' in after, signature
-  prior=prior.replace(before,after)
- query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
- snapshot='internal static bool TryGetTimelineRevisionSnapshot('
- timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
- timeline_state='internal static bool TryGetTimelineState('
- mark_read='internal static bool TryMarkDocumentReadForCommand('
- discussion='private bool CanDiscussWorldDiplomacy('
- discussion_wrapper='public static bool CanDiscussWorldDiplomacyForExternal('
- discussion_snapshot='internal static bool TryCaptureDiscussionCandidate('
- proactive='private bool TryBuildProactiveDiscussion('
- proactive_wrapper='public static bool TryBuildProactiveDiscussionForExternal('
- proactive_speaker='internal static bool TryCaptureProactiveSpeaker('
- proactive_documents='internal static bool TryCaptureProactiveDocuments('
- prior=prior.replace('\t'+declaration(prior,query)+'\n\n','')
- prior=prior.replace('    '+declaration(prior,timeline_query)+'\n\n','')
- prior=prior.replace('\t'+declaration(prior,mark_read)+'\n','')
- prior=prior.replace('\t'+declaration(prior,discussion)+'\n','')
- prior=prior.replace('\t'+declaration(prior,discussion_wrapper)+'\n\n','')
- prior=prior.replace('\t'+declaration(prior,proactive)+'\n','')
- prior=prior.replace('\t'+declaration(prior,proactive_wrapper)+'\n\n','')
- current=current.replace('\t'+declaration(current,snapshot)+'\n\n','')
- current=current.replace('    '+declaration(current,timeline_state)+'\n\n','')
- current=current.replace('\tpublic static bool CanDiscussWorldDiplomacyForExternal(Hero hero) =>\n\t\tDiplomacyModuleServices.World.CanDiscuss(hero?.StringId);\n\n','')
- current=current.replace('\t'+declaration(current,discussion_snapshot)+'\n\n','')
- current=current.replace('\tinternal static bool HasKnownDocumentForDiscussion(Hero hero, string kingdomId) =>\n\t\tResolveInstance()?.GetKnownDocumentIdsForHero(hero, kingdomId).Count > 0;\n\n','')
- current=current.replace('\t'+declaration(current,proactive_wrapper)+'\n\n','')
- current=current.replace('\t'+declaration(current,proactive_speaker)+'\n\n','')
- current=current.replace('\t'+declaration(current,proactive_documents)+'\n\n','')
- current=current.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
- # Leaf marshal helpers introduced by callback-narrowing slices: identity resolution and
- # single-leaf adapters only. Each is removed from the current side after asserting it is thin.
- for signature in ('private string EnqueueMandatoryCourtReplyJob(',
-                   'private string GetAuthorDiplomacyBlockReason(',
-                   'private bool HasIndependentWorldDiplomacyAuthorityById(',
-                   'private string ResolveKingdomIdOrNull(',
-                   'private bool IsEliminatedKingdomId(',
-                   'private List<string> LegalDiplomaticDeclarationIntents(',
-                   'private List<string> GetResultSettlementActionableTargetIds(',
-                   'private bool HasAnyLegalDiplomaticActionIntent(',
-                   'private List<string> GetActionableDiplomaticTargetIds(',
-                   'private (int, int) GetDeclarationCharacterRange(',
-                   'private string BuildRelayTurnGenerationPrompt(',
-                   'private string BuildGenerationPromptForJob(',
-                   'private void CaptureCanonicalHistoryForQueuedJob(',
-                   'private void AbandonRejectedGenerationForIds('):
-  leaf=declaration(current,signature)
-  assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf and 'Application.' not in leaf,'leaf helper regrew orchestration or app chaining: '+signature
-  current=current.replace('\t'+leaf+'\n','',1)
- assert retired.remove_retired(prior,declaration)==current,'Active behavior body changed beyond retired private declarations and verified R1 revision route'
- print('PASS '+str(len(retired.RETIRED))+' private method deletions; tick is an Application forwarder; offer actions use an effect port; other surviving host text unchanged')
+ orch=read(ORCH)
+
+ # 1. Orchestration members absent from the Behavior private surface and
+ #    forwarding to the expected Application owner.
+ for name,owner in ORCH_OWNERS.items():
+  assert method_of(current,name,r'private') is None,'predecessor still owns private '+name
+  body=method_of(orch,name)
+  assert body is not None,'missing orchestration member '+name
+  assert owner in body,name+' does not call its Application owner '+owner
+
+ # 2. Application-owned internals absent from the Behavior private surface.
+ for fname,members in APP_OWNERS.items():
+  text=read(APPDIR+fname)
+  for name in members:
+   assert method_of(current,name,r'private') is None,'predecessor still owns private '+name
+   assert method_of(text,name) is not None,fname+' lost member '+name
+
+ # 3. Thin forwarders: private Behavior methods whose entire body forwards.
+ for name,call in FORWARDERS.items():
+  body=method_of(current,name,r'private')
+  assert body is not None,'missing thin forwarder '+name
+  assert call in body,name+' no longer forwards to '+call
+  assert len([s for s in re.findall(r';',body)])<=2,name+' regrew orchestration'
+
+ # 4. Absent-everywhere names in the Behavior file.
+ for name in ABSENT:
+  assert any_method_of(current,name) is None,'predecessor method still in host: '+name
+
+ # External static entries may remain but only forward (no second algorithm).
+ for entry in re.finditer(r'(?m)^\s*public static void (NotifyExternalDiplomacyResolved)\s*\([^)]*\)\s*\{',current):
+  body=method_of(current,entry.group(1))
+  assert body is not None and '_orchestration.' in body or 'NotifyExternalDiplomacyResolvedInternal' in body
+
+ # 5. Orchestration must not reference the concrete Behavior type (host interface only).
+ assert 'WorldDiplomacyBehavior' not in orch,'orchestration leaked the concrete host type'
+
+ # 6. Behavior adapter files reference *Application types only via the whitelist.
+ for path in sorted((ROOT/'src/modules/AF.Module.Diplomacy/World').glob('*.cs')):
+  rel='src/modules/AF.Module.Diplomacy/World/'+path.name
+  text=path.read_text(encoding='utf-8-sig')
+  allowed=BEHAVIOR_APP_WHITELIST.get(path.name,set())
+  for m in re.finditer(r'WorldDiplomacy\w+Application',text):
+   app=m.group(0)
+   assert app in allowed,rel+' references '+app+' outside the adapter whitelist'
+
+ # 7. Baseline retained text required by Program.cs: raw baseline host snapshot.
  out=HERE/'.generated';out.mkdir(exist_ok=True)
+ (out/'prior-host.cs.txt').write_text(prior_raw,encoding='utf-8')
  # Evaluation only: no game startup, restore, Stage or deployment.
  result=subprocess.run([a.dotnet,'msbuild',str(ROOT/'AnimusForge.csproj'),'-getItem:Compile'],cwd=ROOT,capture_output=True,encoding='utf-8',check=True)
  items=json.loads(result.stdout)['Items']['Compile']
@@ -172,8 +205,6 @@ def main():
  payload={'root':str(ROOT),'paths':[str(path) for path in paths], 'retired':[s[s.rfind(' ')+1:].rstrip('(') for s in retired.RETIRED]}
  payload.update(baseline=a.baseline_dll or '',candidate=a.candidate_dll or '')
  manifest=out/'sources.json';manifest.write_text(json.dumps(payload),encoding='utf-8')
- # The baseline host is for a reference-use audit, never compiled into production.
- (out/'prior-host.cs.txt').write_text(prior,encoding='utf-8')
  code=subprocess.call([a.dotnet,'run','--project',str(HERE/'DiplomacyArchitectureTests.csproj'),'-c','Release','--',str(manifest)],cwd=ROOT)
  raise SystemExit(code)
 if __name__=='__main__':main()
