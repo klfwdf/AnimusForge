@@ -91,6 +91,7 @@ TOKENS = {
     "{DLL14}": str(DLL14), "{ROOT}": str(ROOT),
     "{HARMONY_MODULE}": str(HARMONY_MODULE), "{MCM_MODULE}": str(MCM_MODULE),
     "{UIEXTENDER_MODULE}": str(UIEXTENDER_MODULE),
+    "{CANDIDATE_ARTIFACT_ROOT}": str(DLL14.parents[2]),
 }
 
 

@@ -6,6 +6,8 @@ import importlib.util
 import json
 import subprocess
 import sys
+import uuid
+import main_assembly_projection
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
@@ -34,8 +36,10 @@ root = (ROOT / "CourierDeliveryBehavior.cs").read_text(encoding="utf-8-sig")
 shout = (ROOT / "ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 reply = extract.declaration(prompt, "private CourierReplyGenerationRequest BuildReplyRequestFromPreparedPrompt(")
 inbound = extract.declaration(prompt, "private InboundLetterGenerationRequest BuildInboundRequestFromPreparedPrompt(")
-reply_messages = extract.declaration(messages, "private static List<object> BuildCourierReplyMessages(")
-inbound_messages = extract.declaration(messages, "private static List<object> BuildInboundNpcLetterMessages(")
+main_assembly_projection.projected_messages()
+owner = (ROOT / "src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs").read_text(encoding="utf-8-sig")
+reply_messages = extract.declaration(owner, "internal static List<object> BuildCourierReplyMessages(")
+inbound_messages = extract.declaration(owner, "internal static List<object> BuildInboundNpcLetterMessages(")
 if args.mutate:
     inbound_messages = inbound_messages.replace("AppendCourierPersistentMemoryRoleMessages(", "SkipCourierPersistentMemoryRoleMessages(", 1)
 for consumer, builder in ((reply, "BuildCourierReplyMessages("), (inbound, "BuildInboundNpcLetterMessages(")):
@@ -53,7 +57,7 @@ assert "PendingInboundDeliveredMemoryIntents = CapturePendingInboundDeliveredMem
 assert "RestorePendingInboundDeliveredMemoryIntents(npcStorage?.PendingInboundDeliveredMemoryIntents);" in root, "approved J17 load seam missing"
 
 result = subprocess.run(
-    [sys.executable, "-B", str(HERE / "run.py"), "--output-name", "j17-reviewed-delta"],
+    [sys.executable, "-B", str(HERE / "run.py"), "--output-name", "j17-reviewed-delta-" + uuid.uuid4().hex],
     cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=150)
 if result.returncode != 0:
     print(result.stdout + result.stderr, end="")

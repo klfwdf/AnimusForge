@@ -390,6 +390,7 @@ public sealed partial class CourierDeliveryBehavior
 			DestroyCourierTemporaryShips(session, destroyedParty, "destroyed");
 			session.Stage = CourierStage.Destroyed.ToString();
 			EndCourierReplyWaitPause(session, "destroyed");
+			RetireCourierRequestLifetime(session);
 			lock (_sessionLock)
 			{
 				_sessions.Remove(session.Id);
@@ -447,6 +448,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		bool cleanupConfirmed = false;
 		session.Stage = CourierStage.Completed.ToString();
+		RetireCourierRequestLifetime(session);
 		lock (_sessionLock)
 		{
 			_sessions.Remove(session.Id);
@@ -494,6 +496,7 @@ public sealed partial class CourierDeliveryBehavior
 		session.TemporaryShipCreated = false;
 		session.TemporaryShipHullId = "";
 		EndCourierReplyWaitPause(session, "missing");
+		RetireCourierRequestLifetime(session);
 		lock (_sessionLock)
 		{
 			_sessions.Remove(session.Id);
@@ -513,6 +516,7 @@ public sealed partial class CourierDeliveryBehavior
 			DestroyCourierTemporaryShips(session, destroyedParty, "destroyed_inbound");
 			session.Stage = CourierStage.Destroyed.ToString();
 			EndCourierReplyWaitPause(session, "destroyed_inbound");
+			RetireCourierRequestLifetime(session);
 			lock (_sessionLock)
 			{
 				_sessions.Remove(session.Id);
@@ -539,6 +543,7 @@ public sealed partial class CourierDeliveryBehavior
 		session.TemporaryShipCreated = false;
 		session.TemporaryShipHullId = "";
 		EndCourierReplyWaitPause(session, "missing_inbound");
+		RetireCourierRequestLifetime(session);
 		lock (_sessionLock)
 		{
 			_sessions.Remove(session.Id);

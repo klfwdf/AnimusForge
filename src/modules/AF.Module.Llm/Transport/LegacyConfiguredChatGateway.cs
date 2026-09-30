@@ -162,6 +162,8 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         Action<string> onDelta,
         CancellationToken cancellationToken)
     {
+        using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
+        if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
         if (request == null)
         {
             throw new ArgumentNullException(nameof(request));
@@ -359,6 +361,8 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         JObject payload,
         CancellationToken cancellationToken)
     {
+        using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
+        if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
         if (provider == null)
         {
             throw new ArgumentNullException(nameof(provider));
@@ -423,6 +427,8 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
         string preparedJson,
         CancellationToken cancellationToken)
     {
+        using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
+        if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
         if (provider == null)
         {
             throw new ArgumentNullException(nameof(provider));

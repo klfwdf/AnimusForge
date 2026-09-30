@@ -664,6 +664,9 @@ public static class ShoutNetwork
 
 	public static async Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats = true, int? overrideMaxTokens = null, bool forceDisableThinking = false, bool promptRetryOnError = false, CancellationToken cancellationToken = default(CancellationToken), float? overrideTemperature = null)
 	{
+		using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
+		if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
+		cancellationToken.ThrowIfCancellationRequested();
 		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
@@ -885,6 +888,9 @@ public static class ShoutNetwork
 
 	public static async Task CallApiWithMessagesStream(List<object> messages, int maxTokens, Action<string> onChunk, Action<string> onComplete, Action<string> onError, CancellationToken cancellationToken = default(CancellationToken), bool promptRetryOnError = true)
 	{
+		using CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken);
+		if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
+		cancellationToken.ThrowIfCancellationRequested();
 		LlmRetryPrompt.CaptureMainThreadContext();
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		messages = ApplyPlayerDisplayNameToOutgoingMessages(messages);
@@ -1131,7 +1137,8 @@ public static class ShoutNetwork
 					}
 					return;
 				}
-				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false, promptRetryOnError: false);
+				cancellationToken.ThrowIfCancellationRequested();
+				string fallback = await CallApiWithMessages(messages, maxTokens, recordTokenStats: false, promptRetryOnError: false, cancellationToken: cancellationToken);
 				if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback"))
 				{
 					return;
@@ -1191,7 +1198,8 @@ public static class ShoutNetwork
 				if (!PrimaryChatMessagePolicy.HasEmptyResponseRetryMarker(messages))
 				{
 					Logger.Log("ShoutNetwork", "[PrimaryChat] empty stream final; retrying once with explicit non-empty instruction and thinking disabled.");
-					string retry = await CallApiWithMessages(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, forceDisableThinking: true, promptRetryOnError: false);
+					cancellationToken.ThrowIfCancellationRequested();
+					string retry = await CallApiWithMessages(PrimaryChatMessagePolicy.BuildEmptyResponseRetryMessages(messages), maxTokens, recordTokenStats: false, forceDisableThinking: true, promptRetryOnError: false, cancellationToken: cancellationToken);
 					if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry"))
 					{
 						return;

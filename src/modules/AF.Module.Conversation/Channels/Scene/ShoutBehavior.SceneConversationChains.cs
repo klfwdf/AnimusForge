@@ -161,7 +161,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(hero, speakerNpc.AgentIndex);
 			uncompressedSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_uncompressed_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
-			List<object> messages = BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, new string[9] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, persistentHistoryMessages: persistentMemoryRoleMessages);
+			List<object> messages = BuildStrictSceneMessagesForNpc(speakerNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupFallback, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, local.ToString().Trim(), currentAfefFactBlock, trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
 			string text = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
@@ -322,7 +322,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				string persistedWithoutRecentWindow = "";
 				SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
 				List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(data.AgentIndex, resolvedHeroes);
-				List<object> messages = BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, new string[8] { privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), trustBlock, miscExtrasSection, scenePatienceInstruction, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+				List<object> messages = BuildStrictSceneMessagesForNpc(data.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.Passive, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, sysPrompt.ToString().Trim(), "", trustBlock, miscExtrasSection, scenePatienceInstruction, knowledgeExtrasSection, systemRuleBlock), new string[1] { string.IsNullOrWhiteSpace(inputActionText) ? "" : ("【当前触发】\n" + inputActionText.Trim()) }, currentInputAlreadyRecorded: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 				Stopwatch swApi = Stopwatch.StartNew();
 				string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
 				output = LlmVisibleReplyNormalizer.NormalizeComplete(output);
@@ -359,6 +359,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 
 	private async Task HandleGroupResponse(string playerText, List<NpcDataPacket> allNpcData, string sceneDesc, NpcDataPacket primaryNpc, string extraFact, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, Dictionary<int, Hero> resolvedHeroes, int conversationEpoch, SceneShoutConversationScope conversationScope, List<NpcDataPacket> framedNpcData, SceneGroupReceipt receipt = null)
 	{
+		CancellationToken requestCancellationToken = LlmNonStreamingTransport.CurrentOwnerCancellation;
 		try
 		{
 			ApplySceneLocalDisambiguatedNames(allNpcData);
@@ -605,7 +606,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				ftm.OnPartialLineUpdated = null;
 				ftm.OnNewLineReady = delegate(NpcDataPacket npcDataPacket, string content)
 				{
-					if (npcDataPacket != null && !string.IsNullOrWhiteSpace(content))
+					if (!requestCancellationToken.IsCancellationRequested && npcDataPacket != null && !string.IsNullOrWhiteSpace(content))
 					{
 						hasAnyQueuedLine = true;
 						EnqueueSpeechLine(npcDataPacket, content.Trim(), capturedAllNpcData, skipHistory: false, suppressStare: false, capturedSceneSummonTargets, capturedSceneGuideTargets);
@@ -621,6 +622,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				LlmVisibleReplyNormalizer.StreamFilter visibleReplyFilter = new LlmVisibleReplyNormalizer.StreamFilter();
 				await LegacyShoutNetworkGateway.SendLegacyMessagesStreamAsync(messages, 5000, delegate(string delta)
 				{
+					if (requestCancellationToken.IsCancellationRequested) return;
 					if (!firstChunkSeen)
 					{
 						firstChunkSeen = true;
@@ -645,6 +647,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					}
 				}, delegate(string full)
 				{
+					if (requestCancellationToken.IsCancellationRequested) return;
 					string finalDelta = visibleReplyFilter.Complete(full ?? "");
 					if (!string.IsNullOrEmpty(finalDelta))
 					{
@@ -666,7 +669,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 						InformationManager.DisplayMessage(new InformationMessage("[场景喊话] " + streamError, new Color(1f, 0.3f, 0.3f)));
 					});
 				}
-				ftm.EndStream();
+				if (!requestCancellationToken.IsCancellationRequested) ftm.EndStream();
 				ftm.OnPartialLineUpdated = null;
 				ftm.OnNewLineReady = null;
 				if (streamCompleted)
@@ -1118,7 +1121,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 					List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(speakingHero, currentSpeaker.AgentIndex);
 					uncompressedSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_uncompressed_done agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + ((persistentMemoryRoleMessages == null) ? 0 : persistentMemoryRoleMessages.Count) + " ms=" + Math.Round(uncompressedSw.Elapsed.TotalMilliseconds, 2));
-					List<object> messages = BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, BuildSceneCompositeUserBlock("", knowledgeExtrasSection, systemRuleBlock) }, persistentHistoryMessages: persistentMemoryRoleMessages);
+					List<object> messages = BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.GroupTurn, privateRecentWindowSection, persistedWithoutRecentWindow, sceneDynamicUserBlock, "", "", "", "", "", knowledgeExtrasSection, systemRuleBlock), persistentHistoryMessages: persistentMemoryRoleMessages);
 					promptSw.Stop();
 					Logger.Log("Logic", "[MemoryPerf] group_turn_prompt_ready agent=" + currentSpeaker.AgentIndex + " hero=" + (speakingHero?.StringId ?? turnHeroId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length) + " sceneHistoryChars=" + ((scenePublicHistorySection ?? "").Length) + " dynamicChars=" + ((sceneDynamicUserBlock ?? "").Length) + " ruleChars=" + ((systemRuleBlock ?? "").Length) + " promptBuildMs=" + Math.Round(promptSw.Elapsed.TotalMilliseconds, 2));
 					Stopwatch apiSw = Stopwatch.StartNew();
@@ -1845,8 +1848,6 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		string systemRuleBlock = gcczImmediatePromptExtras ? BuildSceneSystemRuleBlock(ruleExtrasSection, null) : "";
 		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock, miscExtrasSection);
-		text = BuildSceneCompositeUserBlock("", text, factText);
 		string persistedHeroHistory = BuildPersistedHeroHistoryContext(targetNpc.AgentIndex, "", resolvedHeroes);
 		string privateRecentWindowSection = "";
 		string persistedWithoutRecentWindow = "";
@@ -1854,9 +1855,9 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
-		layeredPrompt = BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock), layeredPrompt);
+		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[3] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, knowledgeExtrasSection, text) }, new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.ImmediateReaction, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), factText, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { "请只根据你当前可见的场景消息、你自己的身份、处境和性格，回复一段发言，" + BuildSimpleDialogueReplyLengthInstruction(minTokens, maxTokens) + "，只输出你嘴里说出的话，不要描述你的行为和思考。" }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		request = new ImmediateSceneReactionRequest
 		{
 			RequestId = requestId,
@@ -1887,6 +1888,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		}
 		try
 		{
+			var requestLifetime = _sceneRequestLifetime;
 			_ = Task.Run(delegate
 			{
 				bool requestSucceeded = false;
@@ -1894,6 +1896,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				string error = "";
 				try
 				{
+					using IDisposable requestWorker = requestLifetime.Enter();
+					using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(requestLifetime.Token);
 					requestSucceeded = AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, maxTokens, temperature, out response, out error);
 					if (!requestSucceeded)
 					{
@@ -1909,6 +1913,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				{
 					_mainThreadActions.Enqueue(delegate
 					{
+						if (requestLifetime.Token.IsCancellationRequested) return;
 						CompleteImmediateSceneReactionOnMainThread(requestId, requestSucceeded, response, error);
 					});
 				}

@@ -8,9 +8,16 @@ using System.Threading.Tasks;
 
 namespace AnimusForge
 {
+ // Real source-linked lifetime scopes; the HTTP sender remains a fixture.
+ internal static class LlmNonStreamingTransport {
+ @@TRANSPORT_LIFETIME@@
+ }
+
     internal sealed class ConversationMessage
     {
         internal string Role, Content;
+        internal string GameDate, Scene;
+        internal int GameDayIndex, GameHour;
         internal long EventSequence;
         internal string SpeakerName;
         internal string SpeakerHeroId, TargetHeroId, TargetName;
@@ -77,6 +84,18 @@ namespace AnimusForge
         private static ConversationMessage StampConversationMessageWithCurrentMemoryContext(ConversationMessage message) => message;
         private static string GetStrictScenePlayerDisplayName() => "Player";
         private static float GetPlayerDistanceToAgentForScenePrompt(int agent) => 1f;
+#if CURRENT
+        private static void VerifyRoleAndFactContract(List<object> messages)
+        {
+            using var document = JsonDocument.Parse(JsonSerializer.Serialize(messages));
+            var lines = document.RootElement.EnumerateArray().ToArray();
+            bool Has(string role, string text) => lines.Any(line => line.GetProperty("role").GetString()==role && line.GetProperty("content").GetString().Contains(text));
+            if (!Has("assistant", "Alda previous answer") || Has("assistant", "Borin overheard answer")
+                || !Has("user", "Borin overheard answer") || !Has("user", "Player earlier question")
+                || !Has("user", "[AFEF玩家行为补充] confirmed transfer"))
+                throw new Exception("three-channel history role/fact contract changed");
+        }
+#endif
         internal async Task<object> Replay(string extras)
         {
             string baseExtras = StripScenePersonaBlocks((extras ?? "").Trim());
@@ -84,11 +103,24 @@ namespace AnimusForge
             SplitSceneExtraSections(withoutTrust, out var misc, out var rules, out var knowledge);
             string systemRules = BuildSceneSystemRuleBlock(rules, null);
             string[] prefix = { "【近期私有记录】固定", "【持久记录】固定", BuildSceneCompositeUserBlock("", "【角色运行时】Alda", trustBlock, misc), BuildSceneCompositeUserBlock("", knowledge, systemRules) };
-            var persistent = new List<ConversationMessage> { new ConversationMessage { Role = "assistant", Content = "Alda previous answer", SpeakerName = "Alda", SpeakerAgentIndex = 7, EventSequence = 1 } };
-            var injected = new List<ConversationMessage> { new ConversationMessage { Role = "user", Content = "Player earlier question", TargetAgentIndex = 7, EventSequence = 2 } };
+            var persistent = new List<ConversationMessage> { new ConversationMessage { Role = "assistant", Content = "Alda previous answer", SpeakerName = "Alda", SpeakerAgentIndex = 7, EventSequence = 1 }, new ConversationMessage { Role = "assistant", Content = "Borin overheard answer", SpeakerName = "Borin", SpeakerAgentIndex = 8, EventSequence = 2 }, new ConversationMessage { Role = "system", Content = "[AFEF玩家行为补充] confirmed transfer", SpeakerName = "AFEF", EventSequence = 3 } };
+            var injected = new List<ConversationMessage> { new ConversationMessage { Role = "user", Content = "Player earlier question", TargetAgentIndex = 7, EventSequence = 4 } };
             var messages = BuildStrictSceneMessagesForNpc(7, "【系统任务】回答玩家", prefix, new[] { "【本轮输入】" + (Environment.GetEnvironmentVariable("AF_J06_COMMON_INPUT") ?? "Tell me about Praven, Alda the King; can we barter this item?") },
                 currentInputAlreadyRecorded: true, injectedHistoryMessages: injected, includeSceneHistory: false,
                 persistentHistoryMessages: persistent, pendingCurrentAfefFactMessages: new[] { new ConversationMessage { Role = "system", Content = "AFEF fact" } }, useSceneDistanceSpeechLabels: false);
+#if CURRENT
+            // Native and Scene invoke the same production strict composer, but retain explicit
+            // channel distance labels. Courier consumes the same authoritative detached history.
+            var sceneMessages = BuildStrictSceneMessagesForNpc(7, "system", prefix,
+                new[] { "current input" }, currentInputAlreadyRecorded: true,
+                injectedHistoryMessages: injected, includeSceneHistory: true,
+                persistentHistoryMessages: persistent, useSceneDistanceSpeechLabels: true);
+            var courierMessages = MainPromptMessageAssemblyOwner.BuildCourierReplyMessages("Alda", "Player", "current letter", "rules", "delivery fact", "history",
+                persistent.Concat(injected), "persona", "exclude", "recent", "identity", "relationship", "location", "date", "custom");
+            VerifyRoleAndFactContract(messages);
+            VerifyRoleAndFactContract(sceneMessages);
+            VerifyRoleAndFactContract(courierMessages);
+#endif
             string result = await CallNativeConversationApiAsync(messages, null);
             if (result != "ok" || LegacyShoutNetworkGateway.LastRequest == null) throw new Exception("native pre-send gateway capture failed");
             return LegacyShoutNetworkGateway.LastRequest;

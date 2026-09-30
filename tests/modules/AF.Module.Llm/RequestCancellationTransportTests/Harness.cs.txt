@@ -1,0 +1,123 @@
+using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+namespace AnimusForge;
+
+sealed class PendingStream : Stream
+{
+    internal readonly TaskCompletionSource<bool> Started = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal readonly TaskCompletionSource<int> ReadResult = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal bool Disposed;
+    public override bool CanRead => true;
+    public override bool CanSeek => false;
+    public override bool CanWrite => false;
+    public override long Length => throw new NotSupportedException();
+    public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+    public override int Read(byte[] b, int o, int c) => throw new NotSupportedException();
+    public override Task<int> ReadAsync(byte[] b, int o, int c, CancellationToken token)
+    { Started.TrySetResult(true); return ReadResult.Task; }
+    protected override void Dispose(bool disposing)
+    { Disposed = true; ReadResult.TrySetException(new IOException("fixture disposed pending read")); base.Dispose(disposing); }
+    public override void Flush() { }
+    public override long Seek(long o, SeekOrigin s) => throw new NotSupportedException();
+    public override void SetLength(long l) => throw new NotSupportedException();
+    public override void Write(byte[] b, int o, int c) => throw new NotSupportedException();
+}
+
+sealed class PendingContent : HttpContent
+{
+    internal readonly TaskCompletionSource<bool> Started = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal readonly TaskCompletionSource<bool> Body = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    internal bool Disposed;
+    protected override bool TryComputeLength(out long length) { length = -1; return false; }
+    protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+    { Started.TrySetResult(true); return Body.Task; }
+    protected override void Dispose(bool disposing)
+    { Disposed = true; Body.TrySetException(new IOException("fixture disposed body")); base.Dispose(disposing); }
+}
+
+static class Program
+{
+    static int checks;
+    static void Check(bool condition, string name) { checks++; if (!condition) throw new Exception("ASSERT " + name); }
+    static async Task Cancelled(Task work, string name, Action unblock = null)
+    {
+        Task winner = await Task.WhenAny(work, Task.Delay(1500));
+        if (winner != work) { unblock?.Invoke(); throw new Exception("ASSERT " + name + " pending request was not aborted"); }
+        try { await work; throw new Exception("ASSERT " + name + " accepted canceled result"); }
+        catch (OperationCanceledException) { checks++; }
+    }
+    static async Task Main()
+    {
+        using var caller = new CancellationTokenSource();
+        PendingStream stream = new();
+        int deltas = 0;
+        Task<LlmStreamingResponse> pending = LlmStreamingTransport.SendAsync("https://fixture.invalid", "fixture", "{}",
+            (_, token) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(stream) }),
+            caller.Token, onDelta: _ => deltas++);
+        await stream.Started.Task;
+        caller.Cancel();
+        await Cancelled(pending, "headers-pending-SSE-cancel", () => stream.ReadResult.TrySetResult(0));
+        Check(stream.Disposed && deltas == 0, "pending-stream-disposed-no-publication");
+
+        using var bodyCaller = new CancellationTokenSource();
+        PendingContent content = new();
+        Task body = LlmNonStreamingTransport.SendAsync("https://fixture.invalid", "fixture", "{}",
+            (_, token) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = content }), bodyCaller.Token);
+        await content.Started.Task;
+        bodyCaller.Cancel();
+        await Cancelled(body, "headers-pending-body-cancel", () => content.Body.TrySetResult(true));
+        Check(content.Disposed, "pending-body-disposed");
+
+        using var owner = new CancellationTokenSource();
+        CancellationToken observed = default;
+        var sendStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Task ownerSend;
+        using (LlmNonStreamingTransport.PushOwnerCancellation(owner.Token))
+            ownerSend = LlmNonStreamingTransport.SendAsync("https://fixture.invalid", "fixture", "{}", async (_, token) =>
+            { observed = token; sendStarted.SetResult(true); await Task.Delay(Timeout.Infinite, token); return null; }, default);
+        await sendStarted.Task;
+        owner.Cancel();
+        await Cancelled(ownerSend, "owner-token-reaches-real-sender");
+        Check(observed.IsCancellationRequested, "sender-token-is-canceled");
+        Check(!LlmNonStreamingTransport.CurrentOwnerCancellation.CanBeCanceled, "scope-restores-previous");
+
+        using var outer = new CancellationTokenSource();
+        using var explicitCaller = new CancellationTokenSource();
+        CancellationToken combined;
+        using (LlmNonStreamingTransport.PushOwnerCancellation(outer.Token))
+        using (var linked = LlmNonStreamingTransport.LinkOwnerCancellation(explicitCaller.Token))
+        { combined = linked.Token; explicitCaller.Cancel(); Check(combined.IsCancellationRequested, "explicit-caller-not-replaced-by-owner"); }
+        Check(!outer.IsCancellationRequested, "linked-dispose-does-not-cancel-owner");
+
+        using var late = new CancellationTokenSource();
+        bool accepted = false;
+        var releaseLate = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var lateStarted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        PendingContent lateContent = new();
+        Task lateSend = LlmNonStreamingTransport.SendAsync("https://fixture.invalid", "fixture", "{}", async (_, token) =>
+        { lateStarted.SetResult(true); await releaseLate.Task; return new HttpResponseMessage(HttpStatusCode.OK) { Content = lateContent }; },
+            late.Token, acceptResponse: _ => { accepted = true; return true; });
+        await lateStarted.Task; late.Cancel(); releaseLate.SetResult(true);
+        await Cancelled(lateSend, "late-response-rejected", () => lateContent.Body.TrySetResult(true));
+        Check(!accepted && lateContent.Disposed, "late-response-no-body-or-acceptance");
+
+        var lifetime = new ConversationRequestLifetime();
+        using (lifetime.Enter())
+        {
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
+            lifetime.Retire();
+            Check(linked.IsCancellationRequested, "retirement-cancels-active-worker");
+            using var callback = lifetime.Token.Register(() => { });
+            bool rejected = false; try { lifetime.Enter(); } catch (OperationCanceledException) { rejected = true; }
+            Check(rejected, "retired-lifetime-refuses-new-work");
+        }
+        lifetime.Retire();
+        Check(lifetime.Token.IsCancellationRequested, "lifetime-retire-idempotent");
+        Console.WriteLine("PASS RequestCancellationTransport checks=" + checks + " actualOwner=true network=DETERMINISTIC provider=NOT-RUN game=NOT-RUN");
+    }
+}

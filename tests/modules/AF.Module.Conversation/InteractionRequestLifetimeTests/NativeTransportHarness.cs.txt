@@ -1,0 +1,53 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+namespace AnimusForge;
+static class FreezeWatchdog { internal static void Mark(string a, string b, bool immediate = false) { } }
+static class Logger { internal static void Log(string a, string b) { } }
+static class LegacyShoutNetworkGateway {
+    internal static async Task<string> SendLegacyMessagesAsync(List<object> messages,int maxTokens,bool promptRetryOnError=false,CancellationToken cancellationToken=default)
+    {
+        var response=await LlmNonStreamingTransport.SendAsync("https://fixture.invalid","fixture","{}",Program.Send,cancellationToken);
+        return response.Body;
+    }
+    internal static async Task SendLegacyMessagesStreamAsync(List<object> messages,int maxTokens,Action<string> onChunk,Action<string> onComplete,Action<string> onError,CancellationToken token,bool promptRetryOnError=false)
+    {
+        if(Program.LateChunk!=null) { await Program.LateChunk.Task;onChunk("late fixture");return; }
+        try { var response=await LlmStreamingTransport.SendAsync("https://fixture.invalid","fixture","{}",Program.Send,token,onDelta:d=>onChunk(d.Content));onComplete(response.Content); }
+        catch(OperationCanceledException)when(token.IsCancellationRequested) { }
+    }
+}
+static class Program {
+    // Only the deadline duration is reduced in this fixture; the entire real consumer is unchanged.
+    private const int NativeConversationMainReplyTimeoutMs=60;
+    static string BuildNativeConversationStreamingVisibleText(string text)=>text;
+    @@NATIVE@@
+    internal static Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>> Send;
+    internal static TaskCompletionSource<bool> LateChunk;
+    static int checks;
+    static void Check(bool value,string name){checks++;if(!value)throw new Exception("ASSERT "+name);}
+    static async Task Main() {
+        CancellationToken observed=default;
+        Send=async(_,token)=>{observed=token;await Task.Delay(Timeout.Infinite,token);return null;};
+        Task<string> timeout=CallNativeConversationApiAsync(new(),null);
+        Task winner=await Task.WhenAny(timeout,Task.Delay(1500));
+        Check(winner==timeout&&observed.IsCancellationRequested,"native-timeout-aborts-actual-send");
+        Check((await timeout).Contains("生成超时"),"native-owner-timeout-preserves-error");
+        using var caller=new CancellationTokenSource();var entered=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        Send=async(_,token)=>{observed=token;entered.TrySetResult(true);await Task.Delay(Timeout.Infinite,token);return null;};
+        Task<string> cancelled=CallNativeConversationApiAsync(new(),_=>{},caller.Token);await entered.Task;caller.Cancel();
+        Check(observed.IsCancellationRequested,"native-stream-caller-reaches-send-before-deadline");
+        bool propagated=false;try{await cancelled.WaitAsync(TimeSpan.FromSeconds(2));}catch(OperationCanceledException){propagated=true;}
+        Check(propagated,"native-caller-cancel-is-not-timeout");
+        using var lateCaller=new CancellationTokenSource();LateChunk=new(TaskCreationOptions.RunContinuationsAsynchronously);int publications=0;
+        Task<string> late=CallNativeConversationApiAsync(new(),_=>publications++,lateCaller.Token);
+        lateCaller.Cancel();LateChunk.SetResult(true);try{await late;}catch(OperationCanceledException){}
+        Check(publications==0,"native-late-stream-callback-not-published");
+        Console.WriteLine("PASS NativeTransportLifetime checks="+checks+" actualApiConsumer=true actualTransport=true deadlineDuration=FIXTURE visibleUi=STUB provider=NOT-RUN game=NOT-RUN");
+    }
+}

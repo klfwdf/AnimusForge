@@ -43,6 +43,8 @@ public partial class ShoutBehavior
 		long queuedRuntimeGeneration = expectedRuntimeGeneration > 0L ? expectedRuntimeGeneration : SaveRuntimeGuard.CaptureGeneration();
 		int queuedSceneSessionId = expectedSceneSessionId >= 0 ? expectedSceneSessionId : Volatile.Read(ref _sceneHistorySessionId);
 		int capturedConversationEpoch = conversationEpoch > 0 ? conversationEpoch : Volatile.Read(ref _sceneConversationEpoch);
+		var requestLifetime = _sceneRequestLifetime;
+		CancellationTokenSource networkCancellation = CancellationTokenSource.CreateLinkedTokenSource(requestLifetime.Token);
 		ExecutionContext requestExecutionContext = ExecutionContext.Capture();
 		object runtimeScopeLock = new object();
 		int requestRetired = 0;
@@ -80,7 +82,7 @@ public partial class ShoutBehavior
 
 		bool IsRequestCurrent()
 		{
-			return Volatile.Read(ref requestRetired) == 0
+			return !networkCancellation.IsCancellationRequested && Volatile.Read(ref requestRetired) == 0
 				&& SaveRuntimeGuard.IsCurrentGeneration(queuedRuntimeGeneration)
 				&& queuedSceneSessionId == Volatile.Read(ref _sceneHistorySessionId)
 				&& capturedConversationEpoch == Volatile.Read(ref _sceneConversationEpoch);
@@ -168,6 +170,7 @@ public partial class ShoutBehavior
 			{
 				await Task.Delay(ScenePostprocessGateWaitTimeoutMilliseconds, cancellationToken).ConfigureAwait(false);
 				Interlocked.Exchange(ref requestRetired, 1);
+				networkCancellation.Cancel();
 				if (Complete(ScenePostprocessStatus.TimedOut))
 				{
 					Logger.Log("ShoutBehavior", "[DeferredPostprocess] request deadline exceeded npc=" + targetLog + " timeoutMs=" + ScenePostprocessGateWaitTimeoutMilliseconds);
@@ -182,11 +185,13 @@ public partial class ShoutBehavior
 		Task<ScenePostprocessOutcome> task = postprocessCompletion.Task;
 		RegisterScenePostprocessGateTask(task);
 		CancellationTokenSource deadlineCancellation = new CancellationTokenSource();
-		_ = EnforceRequestDeadlineAsync(deadlineCancellation.Token);
+		Task deadlineTask = EnforceRequestDeadlineAsync(deadlineCancellation.Token);
 		_ = Task.Run(async delegate
 		{
 			try
 			{
+				using IDisposable requestWorker = requestLifetime.Enter();
+				using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(networkCancellation.Token);
 				if (!IsRequestCurrent())
 				{
 					Complete(ScenePostprocessStatus.Stale);
@@ -410,6 +415,10 @@ public partial class ShoutBehavior
 					}
 				}
 			}
+			catch (OperationCanceledException) when (networkCancellation.IsCancellationRequested)
+			{
+				Complete(requestLifetime.Token.IsCancellationRequested ? ScenePostprocessStatus.Stale : ScenePostprocessStatus.TimedOut);
+			}
 			catch (Exception ex)
 			{
 				Logger.Log("ShoutBehavior", "[ERROR] QueueDeferredScenePostprocessActions: " + ex.Message);
@@ -420,7 +429,9 @@ public partial class ShoutBehavior
 				Interlocked.Exchange(ref requestRetired, 1);
 				Complete(ScenePostprocessStatus.Failed);
 				deadlineCancellation.Cancel();
+				await deadlineTask.ConfigureAwait(false);
 				deadlineCancellation.Dispose();
+				networkCancellation.Dispose();
 				lock (runtimeScopeLock)
 				{
 					requestExecutionContext?.Dispose();

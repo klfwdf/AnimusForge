@@ -16,6 +16,7 @@ public partial class ShoutBehavior
 
     internal sealed class NativeConversationAdmission
     {
+        internal AnimusForge.Refactor.Runtime.ConversationRequestLifetime Lifetime;
         internal CoreDialogueOperation ModuleOperation;
         internal long Generation;
         internal long ConversationEpoch;
@@ -56,6 +57,7 @@ public partial class ShoutBehavior
         if (owner != null)
         {
             // 同 token 重开也属于另一轮；尚未进入主线程的旧请求同样必须失效。
+            owner._nativeAdmissionOwner.Current?.Lifetime?.Retire();
             owner._nativeAdmissionOwner.EndConversation();
         }
     }
@@ -81,6 +83,8 @@ public partial class ShoutBehavior
             presentationScope?.Bind(admission);
             return await Task.Run(async delegate
             {
+                using IDisposable requestWorker = admission.Lifetime.Enter();
+                using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(admission.Lifetime.Token);
                 SynchronizationContext.SetSynchronizationContext(null);
                 return await SubmitNativeConversationTextInternalAsync(admission, playerText, onStreamText,
                     currentDialogTextOverride, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening).ConfigureAwait(false);
@@ -89,6 +93,7 @@ public partial class ShoutBehavior
         finally
         {
             // 旧请求晚完成只能释放自己的票据，不能清除换会话后新请求的 busy。
+            admission.Lifetime.Retire();
             _nativeAdmissionOwner.Release(admission);
         }
     }
@@ -133,6 +138,8 @@ public partial class ShoutBehavior
         NativeConversationAdmission admission = CaptureNativeConversationContext(generation, conversationEpoch);
         if (admission == null)
             return null;
+        _nativeAdmissionOwner.Current?.Lifetime?.Retire();
+        admission.Lifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
         _nativeAdmissionOwner.ReserveCaptured(admission);
         try
         {
@@ -140,6 +147,7 @@ public partial class ShoutBehavior
             if (npcInitiatedOpening && !NpcInitiatedOpeningRouter.TryConsumePendingNativeOpening(admission.Hero,
                 out admission.OpeningExtraFact, out admission.OpeningPrompt, out admission.OpeningSource))
             {
+                admission.Lifetime.Retire();
                 _nativeAdmissionOwner.Release(admission);
                 return null;
             }
@@ -148,6 +156,7 @@ public partial class ShoutBehavior
         }
         catch
         {
+            admission.Lifetime.Retire();
             _nativeAdmissionOwner.Release(admission);
             throw;
         }
@@ -182,7 +191,8 @@ public partial class ShoutBehavior
     private bool IsNativeConversationAdmissionCurrent(NativeConversationAdmission admission, out string reason)
     {
         reason = "native.admission_stale";
-        return _nativeAdmissionOwner.Owns(admission)
+        return admission != null && admission.Lifetime?.Token.IsCancellationRequested != true
+            && _nativeAdmissionOwner.Owns(admission)
             && IsNativeConversationContextCurrent(admission, out reason);
     }
 

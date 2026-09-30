@@ -10156,24 +10156,8 @@ private static string PruneEmptyHistoryDateBlocks(List<string> lines)
 
 private static string BuildSceneCompositeUserBlock(string sceneHistoryUserBlock, params string[] extraSections)
 {
-	List<string> list = new List<string>();
-	if (!string.IsNullOrWhiteSpace(sceneHistoryUserBlock))
-	{
-		list.Add(sceneHistoryUserBlock.Trim());
+		return MainPromptMessageAssemblyOwner.BuildSceneCompositeUserBlock(sceneHistoryUserBlock, extraSections);
 	}
-	if (extraSections != null)
-	{
-		for (int i = 0; i < extraSections.Length; i++)
-		{
-			string text = (extraSections[i] ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				list.Add(text);
-			}
-		}
-	}
-	return string.Join("\n\n", list.Where((string x) => !string.IsNullOrWhiteSpace(x))).Trim();
-}
 
 private static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool hasMultiplePresentNpcs, int minTokens, int maxTokens, string playerNameForLength)
 {
@@ -20051,21 +20035,25 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private const int NativeConversationMainReplyTimeoutMs = 180000;
 
-	private static async Task<string> CallNativeConversationApiAsync(List<object> messages, Action<string> onStreamText)
+	private static async Task<string> CallNativeConversationApiAsync(List<object> messages, Action<string> onStreamText, CancellationToken cancellationToken = default(CancellationToken))
 	{
 		Stopwatch nativeApiWatchSw = Stopwatch.StartNew();
+		using CancellationTokenSource requestTimeout = LlmNonStreamingTransport.CreateTimeout(NativeConversationMainReplyTimeoutMs, cancellationToken);
 		if (onStreamText == null)
 		{
 			FreezeWatchdog.Mark("NativeConversation.api_non_stream_start", "messages=" + (messages?.Count ?? 0) + " timeoutMs=" + NativeConversationMainReplyTimeoutMs, immediate: true);
-			Task<string> requestTask = LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: false);
-			Task completedTask = await Task.WhenAny(requestTask, Task.Delay(NativeConversationMainReplyTimeoutMs)).ConfigureAwait(false);
-			if (!ReferenceEquals(completedTask, requestTask))
+			string result;
+			try
 			{
-				Logger.Log("NativeConversation", "[WARN] main reply timed out before non-stream completion. timeoutMs=" + NativeConversationMainReplyTimeoutMs);
-				FreezeWatchdog.Mark("NativeConversation.api_non_stream_timeout", "elapsedMs=" + Math.Round(nativeApiWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+				result = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: false, cancellationToken: requestTimeout.Token).ConfigureAwait(false);
+			}
+			catch (OperationCanceledException) when (requestTimeout.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+			{
 				return "（API请求失败: 原生对话正文生成超时 " + NativeConversationMainReplyTimeoutMs + "ms）";
 			}
-			string result = await requestTask.ConfigureAwait(false);
+			cancellationToken.ThrowIfCancellationRequested();
+			if (requestTimeout.IsCancellationRequested)
+				return "（API请求失败: 原生对话正文生成超时 " + NativeConversationMainReplyTimeoutMs + "ms）";
 			FreezeWatchdog.Mark("NativeConversation.api_non_stream_done", "resultLen=" + ((result ?? "").Length) + " elapsedMs=" + Math.Round(nativeApiWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			return result;
 		}
@@ -20074,10 +20062,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		LlmVisibleReplyNormalizer.StreamFilter visibleReplyFilter = new LlmVisibleReplyNormalizer.StreamFilter();
 		string completed = "";
 		string error = "";
-		using CancellationTokenSource timeoutCts = new CancellationTokenSource(NativeConversationMainReplyTimeoutMs);
+		CancellationTokenSource timeoutCts = requestTimeout;
 		await LegacyShoutNetworkGateway.SendLegacyMessagesStreamAsync(messages, 5000, delegate(string delta)
 		{
-			if (string.IsNullOrEmpty(delta))
+			if (timeoutCts.IsCancellationRequested || string.IsNullOrEmpty(delta))
 			{
 				return;
 			}
@@ -20094,6 +20082,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			}
 		}, delegate(string full)
 		{
+			if (timeoutCts.IsCancellationRequested) return;
 			string finalDelta = visibleReplyFilter.Complete(full ?? "");
 			if (!string.IsNullOrEmpty(finalDelta))
 			{
@@ -20108,6 +20097,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		{
 			error = (err ?? "").Trim();
 		}, timeoutCts.Token, promptRetryOnError: false).ConfigureAwait(false);
+		cancellationToken.ThrowIfCancellationRequested();
 		if (timeoutCts.IsCancellationRequested && string.IsNullOrWhiteSpace(completed) && streamed.Length == 0 && string.IsNullOrWhiteSpace(error))
 		{
 			Logger.Log("NativeConversation", "[WARN] main reply timed out before first stream chunk. timeoutMs=" + NativeConversationMainReplyTimeoutMs);
@@ -26487,10 +26477,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 		ResumeGame();
 
+		var requestLifetime = _sceneRequestLifetime;
 		async Task RunGroupAsync()
 		{
 			try
 			{
+				using IDisposable requestWorker = requestLifetime.Enter();
+				using IDisposable cancellationScope = LlmNonStreamingTransport.PushOwnerCancellation(requestLifetime.Token);
 				Dictionary<int, PrecomputedShoutRagContext> precomputedContexts = new Dictionary<int, PrecomputedShoutRagContext>();
 				await HandleGroupResponse(shoutText, capturedNpcData, sceneDesc, primaryDataPacket, sharedExtraFact, precomputedContexts, capturedResolvedHeroes, conversationEpoch, conversationScope, framedNpcData, receipt);
 			}
@@ -28910,7 +28903,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string systemRuleBlock = gcczImmediatePromptExtras ? BuildSceneSystemRuleBlock(ruleExtrasSection, null) : "";
 		string gcczIdentityOverrideBlock = BuildGcczImmediateIdentityOverrideBlock(contextHero, npcCharacter, targetNpc.AgentIndex, baseExtras);
 		bool partyTransferTopicSelected = HasPartyTransferRuleContext(baseExtras);
-		string text = BuildSceneCompositeUserBlock("", stringBuilder.ToString().Trim(), trustBlock, miscExtrasSection);
 		List<string> historyLines = null;
 		lock (_historyLock)
 		{
@@ -28926,10 +28918,10 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		string roleTopIntro = BuildSceneSystemTopPromptIntroForSingle(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string roleRuntimeContext = BuildCompactSceneUserRuntimeContextForShortReply(targetNpc, contextHero, new List<NpcDataPacket> { targetNpc }, partyTransferTopicSelected: partyTransferTopicSelected);
 		string layeredPrompt = AppendPlayerCustomPromptRuleToSystemPrompt(roleTopIntro);
-		layeredPrompt = BuildSceneCompositeUserBlock("", BuildSceneCompositeUserBlock("", gcczIdentityOverrideBlock, systemRuleBlock), layeredPrompt);
+		layeredPrompt = MainPromptMessageAssemblyOwner.BuildSceneReactionSystemPrompt(gcczIdentityOverrideBlock, systemRuleBlock, layeredPrompt);
 		string extraFactUserBlock = BuildCurrentAfefFactPromptBlock(extraFactLine);
 		List<ConversationMessage> persistentMemoryRoleMessages = BuildUncompressedMemoryRoleMessagesForPrompt(contextHero, npcCharacter, targetNpc, targetNpc.AgentIndex);
-		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, new string[4] { privateRecentWindowSection, persistedWithoutRecentWindow, BuildSceneCompositeUserBlock("", roleRuntimeContext, knowledgeExtrasSection), BuildSceneCompositeUserBlock("", text, extraFactUserBlock) }, new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
+		List<object> messages = BuildStrictSceneMessagesForNpc(targetNpc.AgentIndex, layeredPrompt, MainPromptMessageAssemblyOwner.BuildSceneSingleSpeakerPrefixSections(MainPromptMessageAssemblyOwner.SceneSingleSpeakerLayout.CompactArrival, privateRecentWindowSection, persistedWithoutRecentWindow, roleRuntimeContext, stringBuilder.ToString().Trim(), extraFactUserBlock, trustBlock, miscExtrasSection, "", knowledgeExtrasSection, ""), new string[1] { singleReplyUserContent }, suppressReplyFormatInstruction: true, persistentHistoryMessages: persistentMemoryRoleMessages);
 		if (!AIConfigHandler.TryCallAuxiliarySimpleDialogue(messages, 80, 0.35f, out var text2, out var error))
 		{
 			Logger.Log("ShoutBehavior", "[CompactSceneReaction] auxiliary_simple_dialogue failed: " + error);
@@ -32683,11 +32675,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static object CreateChatMessage(string role, string content)
 	{
-		return new
-		{
-			role = role ?? "",
-			content = content ?? ""
-		};
+		return MainPromptMessageAssemblyOwner.CreateCourierChatMessage(role, content);
 	}
 
 	private static string BuildStrictSceneMessagesSystemPrompt(string systemPrompt, bool suppressReplyFormatInstruction = false)
@@ -32858,18 +32846,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private static void AppendStrictSceneUserSections(List<object> messages, IEnumerable<string> sections)
 	{
-		if (messages == null || sections == null)
-		{
-			return;
-		}
-		foreach (string section in sections)
-		{
-			string text = (section ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				messages.Add(CreateChatMessage("user", text));
-			}
-		}
+		MainPromptMessageAssemblyOwner.AppendStrictSceneUserSections(messages, sections);
 	}
 
 	private static string GetStrictScenePlayerDisplayName()
@@ -34124,6 +34101,8 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 
 	private int BeginNewPlayerDrivenSceneConversationEpoch()
 	{
+		_sceneRequestLifetime.Retire();
+		_sceneRequestLifetime = new AnimusForge.Refactor.Runtime.ConversationRequestLifetime();
 		int num = Interlocked.Increment(ref _sceneConversationEpoch);
 		RetireModuleSceneGroup("scene.stale_context");
 		DeactivateMultiSceneMovementSuppression();
