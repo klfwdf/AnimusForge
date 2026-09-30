@@ -95,6 +95,10 @@
 
 **A2/R07 `MyBehavior` 战斗事件入口小段（20 桶仍未签收）**：[范围图 E67](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)仅补审双 API 各 3 个方法 `MyBehavior.cs:2617–2721`，覆盖两个 Campaign 结束事件到玩家击败领主事实的共用去重入口，并定位 History/AFEF 与 NPC 行动记录的实际转交。去重键先加入、旧 `void` History 门面后写且不回报接受，故拒收时另一个事件可能不再补写；这是待合成回放的静态风险，不是实机故障结论。该小段按事件败方 party 遍历；四个下游分派、其余 `MyBehavior` 方法和动态消费者未闭，导航候选仍 `PENDING`。本片只读、不改产品；**J17-A 未闭，B 不启动**。
 
+**A2-5/MB-MapEvent 下游行动责任已审（仍 `A_NOT_CLOSED`）**：[范围图 E72](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)续接 E67，核对 `OnMapEventEnded` 的玩家战败、双方 NPC 行动、常规匪帮胜利、藏身处清剿四个下游及 12 个相关方法在双 API 清单中的相同坐标。GameAdapter 保留 Campaign/活战斗事实捕获；NPC 行动叙事、键和权威容器属于 Memory/NpcAction 待抽责任，玩家行动交 Social/Notoriety，History/AFEF 仍属 Memory。败方领主的专用去重键会使通用行动分派跳过该人，但旧 History/NPC action 入口无统一接受回执；将“拒收/异常后事实是否缺失、如何恢复且不重复提交”登记为 **R07-MB-MapEvent** 的 B6 前置失败语义/回放余项，不能在 A 盘点中改行为。R08 同项按 MapEvent 结束频率量测每英雄重复扫描 party/roster 的规模，不当作逐帧问题。其余 `MyBehavior` 事件与 15 个宿主、动态消费者仍未审完。A2-2 的 162 文件分区已由 E71 取代下表 R07 旧句“A2-2 未完成”，但场景宿主成员仍归 A2-5；**20 桶、J17-A 总出口尚未签收，J17-B 未启动**。
+
+**A2-5 计数口径待对账**：§5a 所引本地 16 宿主 `10,826 = 3,380 + 7,446` 没有对应的当前逐成员签收产物；现存忽略材料 `artifacts/j17a/current-host-member-counts.json` 在源码 `944712f8`、API 1.3 下记录 16 宿主 **10,268 个 direct members**，而 `current-member-inventory.json` 包含嵌套类型成员，口径不同。两数不能相减认作已审/未审数量，也不能拿导航 `semanticReview=PENDING` 当实际结论；最终 A2-5 必须以当前双 API Compile/语法成员和逐责任范围双向对账到未知为零。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
