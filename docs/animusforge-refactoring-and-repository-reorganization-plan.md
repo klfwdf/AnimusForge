@@ -1,12 +1,24 @@
 <a id="j17-b6-c-resume-20261001"></a>
 
-### J17 剩余 B6 / C 本轮恢复（2026-10-01，进行中）
+### J17 剩余 B6 / C 本轮恢复（2026-10-01，用户要求暂停，明日继续）
 
 本轮用户授权恢复剩余 B6/C；现场 `E:/AnimusForge-refactor-continuation-20260831`、`codex/af-main-refactor-continuation-20260831`，基线 `e35d7826` tracked clean，空意图 checkpoint `d9d266c7`。保留 `4e4aad06` CivilWar 合并以及已验的 A20/20、`8c7b0fb0` Memory/Weekly、`aa3539ca` Conversation/B7，不重做未变有效证据。
 
 P1 持 Prompt/history composition；P2 持传输/渠道 request lifetime；P3 持 Courier delivered-memory/inbound recovery；P4 持验证依赖定位 helper；P5 持其余测试消费者/清单。P6 唯一持共享根宿主接线、Git 索引/精确切片提交、总 runner、同候选双配置双 API+Bootstrap、正式台账/交接/地图。各包可独立推进，共享宿主 patch 由 P6 接线，不设常驻复审。
 
 原全量 C `artifacts/j17b/session-20260930/p6-integration/full-run-aedcba06ed7844b0b90fa0c57b621a1a/results.json` 的 273 项（148 PASS/78 FAIL/34 PREEXISTING_FAIL/5 NEEDS_INPUT/4 SUPERSEDED_BY_RUNNER/1 ENV_STATE/3 BLOCKED_ENV）是历史候选结果，不能将 78 FAIL 当作 78 产品 bug，也不能刷 hash/expected 消除失败。本轮最终门禁绑定新的同一候选，产物只写 `artifacts/j17b/session-20261001/p6-integration/` 唯一新目录；保留旧产物及 22 个原未跟踪 tools 和 NuGet 目录。B6/C 尚未完成，最终分类待实际运行。D 实机/真实旧档/真实网络/帧耗时 NOT-RUN；无推送、Stage、部署、安装、默认入口或真实资料操作授权；已暴露旧凭据轮换仍未确认。
+
+#### 2026-10-01 夜间停点（覆盖本节“进行中”，不覆盖历史验证事实）
+
+用户要求先收尾睡觉、明天继续。P1–P5 已停止写入/新增验证；P6 不启动最终构建、全量 C 或新修复轮。交接前产品/测试已提交 HEAD 为 `928c36cd`，本次仅另提交这两份交接文档；未提交产品/测试差异完整保留，不以未验 checkpoint 冒充通过。
+
+- 已提交：`d9d266c7` 意图 checkpoint、`9a853937` 恢复台账、`c50e6641` 环境/总入口隔离、`7fa93f14` Courier 历史日期/恢复证据、`928c36cd` 当前候选消费者/清单。P3/P4/P5 已交付；P4 的 InteractionRequestLifetimeTests/run.py SDK 行与 P2 修改共同留在工作树。
+- 未提交：P1 主 Prompt/history owner、Courier 装配与五种 Scene layout 的共享接线/测试；P2 request lifetime/真实传输取消、Native/Scene/Courier 接线（shared-lifetime 1–4）、所属测试；P6 总入口 `{CANDIDATE_ARTIFACT_ROOT}` token。原 tools/NuGet/旧产物均保留。P1 精确范围 `artifacts/j17b/session-20261001/p1-prompt/owned-files.json` 与 `receipt.md`；P2 四份 patch/baselines 及逐包日志在 `artifacts/j17b/session-20261001/p2-lifetime/`；P3/P4 receipt 与 P5 `p5-owned-files.json`/`delivery-evidence.json` 在相应同日期包目录。
+- 已验但不冒最终门禁：P1 五个真实 callsite 回放 38、SceneGroupReceipt 27，以及 Native/Scene/Courier role+AFEF 回读与完整 Native 请求差分（两 DLL exit 0，`artifacts/tests/p1-native-cross-channel/run-ae10aea0ecf9452ea5f4492e4dc00083/result.json`）。P2 transport 14 + 3 有效行为负控、NonStreaming 240、Streaming 17、Courier 取消 7 + 3 负控、Scene core 8 + 9 负控、Scene deferred 2 正控；均为包级定向证据，不代表当前完整集成候选绿。
+- P6 首切片 Debug 双 API+Bootstrap exit 0：`artifacts/j17b/session-20261001/p6-integration/build-74908c4342e74a7fa6373272b47929b3/results.json`，发生于 P1 h/layout 和 P2 patch4 timeout 修复之前，不能替代最终候选。总入口安全 mock 15 项与真实 SDK 隔离 smoke 通过；首次失败工件保留。实际构建/全 C 调用 helper 在 `artifacts/j17b/session-20261001/p6-integration/setup-3666edc245034817b2b25f50d07662a2/`；原一键构建脚本未改。
+- 明确未验：P2 Native fixture 最近去除 15ms 时序、改立即取消断言后未重跑；transport runner 改输出隔离 helper 后未重跑；Scene deferred 三变异未跑；GenerationLifecycle 最近退休行 indentation 后未重跑；fallback retry 继承取消/no-commit 专门负控尚缺。最新共享产品 patch4/h 后的完整构建、Release、同候选全量 C 全部未运行。代码地图仍是合并基线，尚未重绑定本轮未提交产品。
+- B6 不标全闭：P1 a/h 的有限 Prompt 装配出口已交，n 的离线回读需结合 P2/P5/P6 同候选证据；b/d/m 结合既有 Memory/Action 权威与 Courier 回放，不能推定实机闭合；f 旧标签/渠道呈现边界保留不假称全部 parser 迁移；g 请求/会话历史投影保留，需逐符号归界；i 未获准扩大 dead-branch 删除，保持 OPEN。C 仍未通过，历史 273 项结果仅历史，不拼接成当前绿；D 实机/真实旧档/真实网络/性能 NOT-RUN。旧凭据轮换未确认。
+- 明天在同工作区/分支先读本节和 Git 状态，复跑上述最近变动的必要定向检查，完成 fallback retry 证据，核对 P1/P2 精确清单后提交集成切片；再更新代码地图/有限状态并冻结同候选，集中 Debug/Release × API 1.3/1.4 + Bootstrap 和全量 C，按实际失败根因分类。不要重验未变有效证据，不刷 hash/expected，不改默认入口、不推送/部署/Stage、不清理旧目录。
 
 <a id="j17-remote-merge-20261001"></a>
 
