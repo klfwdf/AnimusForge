@@ -299,5 +299,63 @@ foreach (MemberInfo member in typeof(CourierInboundCompletionReceipt)
         "receipt retained forbidden payload member: " + signature);
 }
 
+// Courier delivery resumes only memory work. Both fact and assistant projections
+// must retain their original provenance across the real ledger wire boundary.
+var deliveryLedger = new InteractionMemoryRecoveryLedger();
+var deliverySeed = new InteractionMemoryRecoverySeed
+{
+    CommitId = "courier-inbound-delivered:frozen-session",
+    Channel = 2,
+    SessionId = "frozen-session",
+    SubjectId = "sender-1",
+    NpcName = "Sender",
+    OriginGameDay = 84,
+    OriginGameHour = 7,
+    OriginGameDate = "synthetic frozen date",
+    OriginScene = "synthetic delivery scene",
+    DailyStorageDay = 84,
+    DailyStorageDate = "synthetic frozen date",
+    Components = new[]
+    {
+        new InteractionMemoryRecoveryComponentSeed
+        {
+            Part = "fact", DailySpeaker = "Sender", IsAfef = true,
+            DailyText = "[AFEF NPC行为补充] synthetic confirmed delivery",
+            RecentText = "[AFEF NPC行为补充] synthetic confirmed delivery"
+        },
+        new InteractionMemoryRecoveryComponentSeed
+        {
+            Part = "assistant", DailySpeaker = "Sender", IsLlmDialogue = true,
+            DailyText = "frozen visible letter history", RecentText = "frozen visible letter history"
+        }
+    }
+};
+Require(deliveryLedger.Begin(deliverySeed, out string deliveryId, out _)
+    == InteractionMemoryRecoveryBeginStatus.Began, "delivery memory journal admission");
+var deliveryLoaded = new InteractionMemoryRecoveryLedger();
+deliveryLoaded.Import(deliveryLedger.Export());
+var deliveryProjection = new Dictionary<string, string>();
+while (deliveryLoaded.TryGetNextWorkFor(deliveryId, out InteractionMemoryRecoveryWorkItem deliveryWork))
+{
+    Require(deliveryWork.OriginGameDay == 84 && deliveryWork.OriginGameHour == 7
+        && deliveryWork.OriginGameDate == "synthetic frozen date"
+        && deliveryWork.OriginScene == "synthetic delivery scene",
+        "Courier recovered memory changed origin provenance");
+    deliveryProjection[deliveryWork.Part + ":" + deliveryWork.Target] = deliveryWork.Target
+        == InteractionMemoryRecoveryTarget.Daily ? deliveryWork.DailyText : deliveryWork.RecentText;
+    Require(deliveryLoaded.MarkApplied(deliveryWork), "Courier recovery work marker rejected");
+}
+Require(deliveryProjection.Count == 4 && deliveryLoaded.IsCompleted(deliveryId),
+    "Courier recovery must complete fact and assistant Daily/Recent projections exactly once");
+Require(deliveryProjection.Values.Count(value => value == "frozen visible letter history") == 2
+    && deliveryProjection.Values.Count(value => value == "[AFEF NPC行为补充] synthetic confirmed delivery") == 2,
+    "Courier fact/history journal readback changed frozen payload");
+var deliveryCompletedLoaded = new InteractionMemoryRecoveryLedger();
+deliveryCompletedLoaded.Import(deliveryLoaded.Export());
+Require(deliveryCompletedLoaded.Begin(deliverySeed, out _, out _)
+    == InteractionMemoryRecoveryBeginStatus.DuplicateCompleted
+    && !deliveryCompletedLoaded.TryGetNextWorkFor(deliveryId, out _),
+    "completed Courier memory reloaded as replayable work");
+
 Console.WriteLine(
-    "PASS courierInboundCompletionContract pending=1 ready=1 applied=1 quarantine=1 checksum=1 payloadConflict=2 armBeforeMemory=1 innerThrow=1 ownerOutcomes=5 unicode32k=1 oversizeRejected=1 opaqueRecovery=1 ownerStatus=8 actionFree=1");
+    "PASS courierInboundCompletionContract pending=1 ready=1 applied=1 quarantine=1 checksum=1 payloadConflict=2 armBeforeMemory=1 innerThrow=1 ownerOutcomes=5 unicode32k=1 oversizeRejected=1 opaqueRecovery=1 ownerStatus=8 actionFree=1 deliveryFactHistoryReadback=4 deliveryOriginPreserved=1 deliveryNoReplay=1");

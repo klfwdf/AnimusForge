@@ -19,7 +19,7 @@ spec.loader.exec_module(extract)
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--dotnet", default=str(ROOT / "local/dotnet/8.0.425/dotnet.exe"))
 parser.add_argument("--run-root", type=Path)
-parser.add_argument("--mutate", choices=["skip-history"])
+parser.add_argument("--mutate", choices=["skip-history", "current-date"])
 args = parser.parse_args()
 delivery = extract.declaration(SOURCE.read_text(encoding="utf-8-sig"),
                                "private void DeliverInboundLetterToPlayer(")
@@ -34,7 +34,7 @@ assert delivery.count(memory_call) == 1
 assert delivery.index("TryReserveInboundDeliveredMemoryIntent(") < delivery.index("session.DeliveryApplied = true;")
 assert delivery.index("session.DeliveryApplied = true;") < delivery.index(memory_call)
 assert delivery.index(memory_call) < delivery.index("AddCourierLetterToPlayerInventory(")
-if args.mutate:
+if args.mutate == "skip-history":
     delivery = delivery.replace(memory_call, "// mutation: memory-only commit removed", 1)
 
 out = (args.run_root or (ROOT / "artifacts/j17b/session-20260930/p5-channels" /
@@ -43,6 +43,17 @@ if not out.is_relative_to((ROOT / "artifacts").resolve()):
     parser.error("--run-root must be under workspace artifacts")
 out.mkdir(parents=True, exist_ok=True)
 program = (HERE / "DeliveredMemoryHarness.cs.txt").read_text(encoding="utf-8-sig")
+memory_source = (ROOT / "MyBehavior.MemoryRecovery.cs").read_text(encoding="utf-8-sig")
+seed_builder = extract.declaration(memory_source, "private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(")
+assert "string originDate = ResolveInteractionMemoryOriginGameDate(originDay, currentDay);" in seed_builder
+memory_date = extract.declaration(memory_source, "private static string ResolveInteractionMemoryOriginGameDate(")
+if args.mutate == "current-date":
+    assert memory_date.count("CampaignTime.Days(Math.Max(0, originDay))") == 1
+    memory_date = memory_date.replace("CampaignTime.Days(Math.Max(0, originDay))", "CampaignTime.Days(Math.Max(0, currentDay))", 1)
+# The host calendar is synthetic; the helper itself is the actual production code.
+memory_date = memory_date.replace("CampaignTime.", "TaleWorlds.CampaignSystem.CampaignTime.")
+assert program.count("@@MEMORYDATE@@") == 1
+program = program.replace("@@MEMORYDATE@@", memory_date)
 assert program.count("@@DELIVERY@@") == 1
 assert program.count("@@STORAGE@@") == 1
 (out / "Program.cs").write_text(program.replace("@@DELIVERY@@", delivery).replace("@@STORAGE@@", storage), encoding="utf-8")

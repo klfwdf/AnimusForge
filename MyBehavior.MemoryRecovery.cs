@@ -270,6 +270,20 @@ public partial class MyBehavior
         return true;
     }
 
+    private static string ResolveInteractionMemoryOriginGameDate(int originDay, int currentDay)
+    {
+        if (originDay == currentDay) return GetCurrentGameDateTextSafe();
+        try
+        {
+            // CampaignTime.Days is an absolute campaign date in both supported APIs.
+            // Do not relabel delayed delivery with the current date or invent a calendar.
+            string date = CampaignTime.Days(Math.Max(0, originDay)).ToString();
+            if (!string.IsNullOrWhiteSpace(date)) return date.Trim();
+        }
+        catch { }
+        return "第 " + Math.Max(0, originDay).ToString(CultureInfo.InvariantCulture) + " 日";
+    }
+
     private InteractionMemoryRecoverySeed BuildInteractionMemoryRecoverySeed(
         InteractionMemoryCommit commit,
         string normalizedMemoryId,
@@ -303,9 +317,7 @@ public partial class MyBehavior
         int originHour = hasDetachedProvenance
             ? Math.Max(0, Math.Min(23, commit.GameHour))
             : GetCurrentHourOfDaySafeForPrompt();
-        string originDate = originDay == currentDay
-            ? GetCurrentGameDateTextSafe()
-            : "day:" + originDay.ToString(CultureInfo.InvariantCulture);
+        string originDate = ResolveInteractionMemoryOriginGameDate(originDay, currentDay);
         string originScene = !string.IsNullOrWhiteSpace(commit.LocationId)
             ? commit.LocationId.Trim()
             : ResolveCurrentMemorySceneLabel();
