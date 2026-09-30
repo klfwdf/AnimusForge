@@ -41,7 +41,7 @@ public sealed partial class WorldDiplomacyBehavior
         public int MaxRelayParticipants() => WorldDiplomacyBehavior.MaxRelayParticipants;
         public int RoundParticipantLimit() => WorldDiplomacyBehavior.GetRoundParticipantLimit();
         public int RoundIntervalDays() => WorldDiplomacyBehavior.GetRoundIntervalDays();
-        public int RoundTargetDurationDays() => WorldDiplomacyBehavior.RelayTargetDurationDays;
+        public int RoundTargetDurationDays() => WorldDiplomacyBehavior.GetRoundLengthDays();
         public int RoundHardDurationDays(int targetDurationDays) => WorldDiplomacyBehavior.GetRoundHardDurationDays(targetDurationDays);
         public int CourtMaxDeliveryDays() => WorldDiplomacyBehavior.GetCourtMaxDeliveryDays();
         public int CivilianSpreadDays() => WorldDiplomacyBehavior.GetCivilianSpreadDays();
@@ -103,7 +103,7 @@ public sealed partial class WorldDiplomacyBehavior
         {
             Settlement a = _owner.ResolveCourtSettlement(WorldDiplomacyBehavior.ResolveKingdom(firstId));
             Settlement b = _owner.ResolveCourtSettlement(WorldDiplomacyBehavior.ResolveKingdom(secondId));
-            return a == null || b == null ? 0f : a.GatePosition.Distance(b.GatePosition);
+            return a == null || b == null ? float.MaxValue : a.GatePosition.Distance(b.GatePosition);
         }
         public bool IsRepresentativeForAddressedVassal(string receiverId, WorldDiplomacyDocument document)
             => _owner.IsDiplomaticRepresentativeForAddressedVassal(WorldDiplomacyBehavior.ResolveKingdom(receiverId), document);
