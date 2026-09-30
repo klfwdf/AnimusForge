@@ -95,6 +95,8 @@
 
 **A2/R07 `MyBehavior` 战斗事件入口小段（20 桶仍未签收）**：[范围图 E67](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)仅补审双 API 各 3 个方法 `MyBehavior.cs:2617–2721`，覆盖两个 Campaign 结束事件到玩家击败领主事实的共用去重入口，并定位 History/AFEF 与 NPC 行动记录的实际转交。去重键先加入、旧 `void` History 门面后写且不回报接受，故拒收时另一个事件可能不再补写；这是待合成回放的静态风险，不是实机故障结论。该小段按事件败方 party 遍历；四个下游分派、其余 `MyBehavior` 方法和动态消费者未闭，导航候选仍 `PENDING`。本片只读、不改产品；**J17-A 未闭，B 不启动**。
 
+**A2-5 混合宿主成员：Reward / Knowledge / Courier / WorldDiplomacy / Shout 五宿主（R07 仍 `REVIEW_REQUIRED`）**：[范围图 E72–E76](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)在 `ecc4c76e`（三宿主源码与 `ada9894a` 无 diff）把本地第三至五节的初分改写为当前坐标证据，并用新提取器补上旧版漏计的 4 空格缩进 partial（Reward 根级 627 方法/270 字段、模块 185/52；Knowledge 293/229；Courier 449/253）。三宿主的根级方法已全部落到具名簇，无匿名 other 包；其中 Reward **生成物注册表**（反射注册 `MBObjectManager`、`_rewardGeneratedItems_v1`、载入修复）登记为 Economy/game-adapter 保留边界候选。三处本地判断被更正：Courier 估价是 Economy 的消费者而非重复实现；Courier 规则 ID 合并/排除是渠道自有策略；Knowledge 模块编译依赖宿主嵌套 DTO `LoreRule`/`KnowledgeFile`，不是完全独立 owner。新具名项：DEAD 候选 `RewardSystemBehavior.ExportGeneratedInventoryItemsForExternal`、`TryCreateGeneratedInventoryItemForExternal`（public、仓内无调用，B0 前须排除外部反射）与 `CourierDeliveryBehavior.RemoveInjectedRuleBlock`（private、无调用）；R08 `CourierDeliveryBehavior.DeliveryLifetime.cs:295–315` 每货物条目重建 transfer 列表。此为名称/API 正则导航加人工读码，不是 Roslyn 语义签收；逐方法消费者、动态 Harmony 目标与 22 个 Courier 模块 partial 的剩余成员未闭。`WorldDiplomacyBehavior`（E75，20,505 行，635 方法/227 字段/42 顶层类）：领域 owner 簇、主线程执行 mutator、Harmony→game-adapter、UI 弹窗/通知/sprite、专有 Prompt、MCM getter 已按行区间归属；新交叉点：其 `MyBehavior.BuildShoutPromptContextForExternal` 后缀与 PolicySystem 同名后缀并存，按方法名绑定，B6 须保持；R08 `NormalizeStorage`（524 行）每次存档/载入全量执行；未发现 DEAD 候选。`ShoutBehavior`（E76，根级 37,203 行，1,141 方法/520 字段/42 嵌套；v3 提取器补上第 0 列成员，并据此把 Reward 模块 partial 更正为 185 方法）：后处理标签归一应回各领域 codec；Courier 后处理入口是三渠道共享实现；SceneShout opt-in 生产调用为 0，但被 ChannelCutoverBoundaryTests 合同保留，不是 DEAD；R06-M0 所列行号已漂移；R08：预计算持久历史 `Task.Run` 在线程池读 `Mission.Current.Agents`/`MyBehavior` 历史，语音队列 worker 100ms 空转轮询。余下宿主按规模：`MyBehavior`（E57/E58/E67 已覆盖部分；工作区有他人未提交改动，最后审）、`DuelSettings`、`SceneTauntBehavior`、`WorldMapPartyCommandBehavior`、`DuelBehavior`、`LordEncounterBehavior`、`VassalageBehavior`、`ProactiveNpcRequestBehavior`、`AIConfigHandler`（E64）、`SettlementEntryTroopSelectionBehavior`、`MeetingBattleLockMissionBehavior`、`TroopInspectionBehavior`、`NobleGatheringBehavior`。未改产品、未构建；**A 未闭，B 不启动**。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
@@ -102,6 +104,18 @@
 ## J17-A 前置盘点意图检查点（2026-09-28，`J17A_ACTIVE`）
 
 用户要求绕过 J16（已推送交他人接手）先做 J17，且不影响 J16。本工作在独立 worktree `G:\AFMOD\AF-J17`、分支 `codex/af-j17a-inventory-20260928`（基于远端 `99ca85ae`）。范围只取[结项计划](#af2-closeout-plan-20260928)第 5 节 J17-A：先 R04 保存/JSON 边界，再 R02 摘要捕获→生成→接受，R01 周报回调与 R03 导入导出闭包，然后按 20 桶补全 R07 成员分区。**只读审查 + 文档**：不改产品 C#、测试、tools/tests 布局（J16 归他人）、配置、Skill、一键流程；不构建部署推送、不写游戏/玩家数据。证据写范围图 E09+，状态只在本台账登记表更新。
+
+<a id="j17a-local-slices-reconcile-20260930"></a>
+
+## 本地 J17-A 切片 1–6 与远端口径对账（2026-09-30，仅文档）
+
+下方 `j17a-slice1…6-20260929` 六节是本地会话在 `ada9894a` 上的正则级盘点，经 `35ccb70e` 检查点与远端 `bc7b389b` 一起合入 `ecc4c76e`。**它们不是与远端 E14–E71 并列的第二套结论**，以远端 E 证据与上方登记表为准；六节只作为[计划 §5a.2](plans/j17-responsibility-closeout-plan.md) A2-5（混合宿主成员）的导航输入，逐项与 E57/E58/E67 对账后才吸收。
+
+- **分母**：远端 E14 的 1,123 为 `944712f8` 已跟踪 Compile。当前 HEAD 已跟踪 Compile 为 **1,128 = 1,123 + 内战 v2 的 5 个新文件**（`DuelSettings.CivilWar.cs`、`CivilWar{Catalog,Effects,Rules,World}.cs`，`60e9c989` 入库）。本机求值另见 1,134，多出的 6 个未跟踪：他人在制的 `MyBehavior.WorldBulletin.cs`、`WorldBulletinPolicy.cs`，以及旧 `AnimusForge.Bootstrap/obj/` 的 4 个生成 AssemblyInfo（J16d 移到 `src/AF.Bootstrap/` 后主项目不再排除旧路径；2026-09-30 实际编译未由此报错，属磁盘残留）。第二节的“1128”与此数字相同纯属巧合，其含义是 `ada9894a` + 当时未跟踪的内战文件，不应引用。
+- **四功能桶**：用户 2026-09-29 决定四功能单独登记（第二节）仍有效；远端将其作为 E35 内置接缝审查，登记表尚无四行。签桶时以 E35 为证据、以四个独立桶为登记形式，二者不重复计数。
+- **已被远端更正**：第一节所称 Memory `Sanitize*` 为纯函数不成立，以 E15/E23 的原地改写/克隆语义为准；第一节的存档身份基线重绑记录保留，Profile fixture 177 键已由远端重绑。
+- **可供 A2-5 的内容**：第三节 `RewardSystemBehavior` 子簇（交易、RP 模板、hero-join→social、王国转移→worldmap、Harmony→game-adapter），第四节 `KnowledgeLibraryBehavior` 的 dev-ui/条件/导入导出分区及其自有分块键方案，第五节 Courier 家族的跨桶项（交易估价与 Economy 定价重复、前处理规则 ID 合并与三渠道重复）。这些是名称/正则初分，不是逐成员签收。**已于 2026-09-30 改写为范围图 E72–E74**，并更正第五节两条跨桶判断（估价是 Economy 消费者、规则 ID 是 Courier 自有排除策略）与第四节“Knowledge 模块完全独立”；第三至五节的方法/字段数以 E72–E74 为准。
+- **当前待办（不属于本片）**：内战 v2 改键为 `_af_kingdom_civil_war_v2`，Profile 契约校验现为 `literal key mismatch`（fixture 仍为 v1）；WorldBulletin 新键 `_af_worldBulletin_v1` 走 chunk helper。两者待 `MyBehavior.cs` 与 WorldBulletin 的在制修改入库后按实际行号一并重生成 fixture。
 
 <a id="j17a-slice1-20260929"></a>
 
