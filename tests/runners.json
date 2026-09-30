@@ -229,15 +229,19 @@
    "expect": "PREEXISTING_FAIL"
   },
   "tools/PlayerExportsEditor/tests/PlayerExportsEditor.SmokeTests/PlayerExportsEditor.SmokeTests.csproj": {
+   "execution": "isolated-player-exports",
    "expect": "NEEDS_INPUT"
   },
   "tools/af2_migrate.py": {
+   "execution": "manual",
    "expect": "NEEDS_INPUT"
   },
   "tools/generate_bannerlord_history_culture_study.py": {
+   "execution": "manual",
    "expect": "NEEDS_INPUT"
   },
   "tools/generate_bannerlord_research_grade_study.py": {
+   "execution": "manual",
    "expect": "NEEDS_INPUT"
   }
  }

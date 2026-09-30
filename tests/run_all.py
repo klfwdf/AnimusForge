@@ -4,7 +4,8 @@ Discovery (same rules as the J16 G0 baseline): tracked *.py whose name starts wi
 run/validate_/verify/source_/test_ or that contains __main__, and tracked *.csproj under
 tests/ (or named *Tests/*SmokeTests). Per-entry extra arguments and expected non-PASS
 states come from tests/runners.json; every entry runs in its own process with its own
-exit code. Failures do not short-circuit; the total exit code is non-zero if any entry
+exit code, except explicit manual business tools, which remain NEEDS_INPUT without launch.
+Failures do not short-circuit; the total exit code is non-zero if any entry
 ends FAIL (PASS where runners.json expects PASS, i.e. the default).
 
 Toolchain (override by environment; missing tools make the affected entries BLOCKED_ENV):
@@ -13,7 +14,7 @@ Toolchain (override by environment; missing tools make the affected entries BLOC
   AF_PWSH      PowerShell 7             default G:/AFMOD/.pwsh7/pwsh.exe
   AF_BANNERLORD_ROOT / AF_WORKSHOP_DIR  game + workshop roots for replay/policy entries
   AF_REPLAY_14_REFS                     1.4 reference dir (default <repo>/.tmp/build_check/1.4)
-  AF_TEST_TEMP_ROOT                     TEMP parent, outside the repo (default <repo>/../tmp/af-run-all)
+  AF_TEST_TEMP_ROOT                     explicitly approved TEMP parent, outside the repo (required)
 
 Usage: py -3 tests/run_all.py [--only PREFIX] [--ids FILE] [--jobs N] [--out DIR] [--list]
 Writes logs and results.json under artifacts/tests/run_all/<run>/ (ignored). Read-only
@@ -27,9 +28,11 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -37,6 +40,21 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "tests" / "runners.json"
 ENTRY_NAME = re.compile(r"^(run|validate_|verify|source_|test_)[^/]*\.py$")
 STATES = {"PASS", "PREEXISTING_FAIL", "NEEDS_INPUT", "SUPERSEDED_BY_RUNNER", "ENV_STATE"}
+EXECUTIONS = {"auto", "manual", "isolated-player-exports"}
+
+
+def checked_path(path: Path) -> Path:
+    """Reject redirected ancestors before creating any output (including junctions)."""
+    if not path.is_absolute() or str(path).startswith(("\\\\", "//")) or ".." in path.parts:
+        raise ValueError("output paths must be absolute local paths without parent traversal")
+    for ancestor in (path, *path.parents):
+        try:
+            info = ancestor.lstat()
+        except FileNotFoundError:
+            continue
+        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+            raise ValueError("output paths must not contain links or reparse points")
+    return path.resolve()
 
 
 def env_path(name: str, default: Path) -> Path:
@@ -145,6 +163,14 @@ def main(argv: list[str]) -> int:
     if bad_state:
         print("runners.json: unknown expect state", bad_state)
         return 2
+    invalid_execution = [k for k, v in specs.items()
+                         if v.get("execution", "auto") not in EXECUTIONS
+                         or (v.get("execution") == "manual" and v.get("expect") != "NEEDS_INPUT")
+                         or (v.get("execution") == "isolated-player-exports" and
+                             (v.get("args") or v.get("candidateDll") or not k.endswith(".csproj")))]
+    if invalid_execution:
+        print("runners.json: invalid execution mode", invalid_execution)
+        return 2
     entries = discover()
     stale = sorted(set(specs) - set(entries))
     if stale:
@@ -160,12 +186,27 @@ def main(argv: list[str]) -> int:
             print(specs.get(e, {}).get("expect", "PASS"), e)
         return 0
 
-    run_name = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    run_name = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:12]
     out = Path(args.out) if args.out else ROOT / "artifacts" / "tests" / "run_all" / run_name
-    out.mkdir(parents=True, exist_ok=False)
     # TEMP must live outside the repository: data-root guards (AnimusForgeDataPaths) correctly
     # reject any root below a directory containing AnimusForge.csproj.
-    tmp = env_path("AF_TEST_TEMP_ROOT", ROOT.parent / "tmp" / "af-run-all") / (ROOT.name + "-" + run_name)
+    try:
+        out = checked_path(out)
+        if not out.is_relative_to(ROOT.resolve()) or out.exists():
+            raise ValueError("--out must be a new directory inside the workspace")
+        approved = os.environ.get("AF_TEST_TEMP_ROOT")
+        if not approved:
+            raise ValueError("AF_TEST_TEMP_ROOT must name an explicitly approved synthetic TEMP parent")
+        parent = checked_path(Path(approved))
+        if parent == Path(parent.anchor) or parent.is_relative_to(ROOT.resolve()) or ROOT.resolve().is_relative_to(parent):
+            raise ValueError("AF_TEST_TEMP_ROOT must be outside, and not contain, the workspace")
+        tmp = checked_path(parent / (ROOT.name + "-" + run_name))
+        if tmp.exists():
+            raise ValueError("synthetic TEMP run directory already exists")
+    except (ValueError, OSError) as ex:
+        print("unsafe output configuration:", ex)
+        return 2
+    out.mkdir(parents=True, exist_ok=False)
     tmp.mkdir(parents=True, exist_ok=False)
     env = os.environ.copy()
     env.update({
@@ -173,20 +214,34 @@ def main(argv: list[str]) -> int:
         "AF_DOTNET": str(DOTNET8), "DOTNET_EXE": str(DOTNET8), "AF_J15_DOTNET8": str(DOTNET8),
         "AF_J15_PWSH": str(PWSH), "AF_NEWTONSOFT": str(NEWTONSOFT), "NEWTONSOFT_JSON_PATH": str(NEWTONSOFT),
         "DOTNET_CLI_HOME": str(out / "dotnet-home"), "DOTNET_NOLOGO": "1", "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+        "NUGET_PACKAGES": str(out / "nuget-packages"), "NUGET_HTTP_CACHE_PATH": str(out / "nuget-http-cache"),
+        "NUGET_PLUGINS_CACHE_PATH": str(out / "nuget-plugin-cache"),
         "PATH": str(SDK8_DIR) + os.pathsep + os.environ.get("PATH", ""),
     })
 
     def run(entry: str) -> dict:
         spec = specs.get(entry, {})
         expect = spec.get("expect", "PASS")
+        if spec.get("execution") == "manual":
+            message = "Not launched: business tool requires explicit inputs and separate authorization."
+            (out / (re.sub(r"[^A-Za-z0-9._-]", "_", entry) + ".log")).write_text(message, encoding="utf-8")
+            return {"id": entry, "exit": None, "status": "NEEDS_INPUT", "expect": expect,
+                    "seconds": 0, "last": message}
+        entry_root = tmp / hashlib.sha256(entry.encode("utf-8")).hexdigest()[:20]
+        entry_temp = entry_root / "temp"
+        entry_temp.mkdir(parents=True, exist_ok=False)
+        entry_env = {**env, "TEMP": str(entry_temp), "TMP": str(entry_temp)}
         cmd = command(entry, spec, run_name)
+        if spec.get("execution") == "isolated-player-exports":
+            entry_env["ANIMUSFORGE_DATA_ROOT"] = str(entry_root / "data")
+            cmd += ["--", "--isolated-full", str(entry_root)]
         reason = blocked(cmd)
         start = time.time()
         if reason:
             code, text = None, reason
         else:
             try:
-                done = subprocess.run(cmd, cwd=ROOT, env=env, capture_output=True, text=True,
+                done = subprocess.run(cmd, cwd=ROOT, env=entry_env, capture_output=True, text=True,
                                       encoding="utf-8", errors="replace", timeout=spec.get("timeout", 1200))
                 code, text = done.returncode, done.stdout + "\n--- stderr ---\n" + done.stderr
             except subprocess.TimeoutExpired as ex:

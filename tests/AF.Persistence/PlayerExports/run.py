@@ -14,6 +14,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["name-mismatch-passes","latest-oldest"], help="apply a source mutation that must fail")
@@ -30,13 +32,7 @@ def resolve_dotnet() -> Path:
 
 
 dotnet = resolve_dotnet()
-output = args.run_root.resolve() if args.run_root else ROOT / "artifacts/tests/persistence-player-exports" / (args.mutate or "current")
-if args.run_root:
-    if output.exists() or not output.is_relative_to(ROOT):
-        raise SystemExit("--run-root must be a new directory inside the repository")
-elif output.exists():
-    shutil.rmtree(output)
-output.mkdir(parents=True)
+output = new_run_root(ROOT, "persistence-player-exports", args.run_root)
 for name in ("Program.cs", "PlayerExportsTests.csproj"):
     shutil.copy(HERE / name, output / name)
 project = (output / "PlayerExportsTests.csproj").read_text(encoding="utf-8").replace("../../../", (str(ROOT) + "/").replace("\\", "/"))
