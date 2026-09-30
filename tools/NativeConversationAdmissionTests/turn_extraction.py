@@ -28,6 +28,10 @@ def projected_source(source):
     legacy_name = 'ApplyNativeConversationGameActionsLegacyCore'
     assert source.count(legacy_name) == 2, 'Unreviewed J09 Native action owner drift'
     source = source.replace(legacy_name, 'ApplyNativeConversationGameActionsCore')
+    # R1 routes every external diplomacy call through the typed module bridge; the
+    # turn algorithm itself is unchanged, so project the reviewed rename back.
+    source = source.replace('DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal', 'DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal')
+    source = source.replace('DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal', 'DiplomacyBehavior.CanUseIndependentClanPeaceForExternal')
     for file,digest in REVIEW['addedFiles'].items():
         assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==digest, 'Unreviewed J07b source drift: turn dependency '+file
     old = ex.declaration(original, OLD_SIGNATURE)
@@ -71,6 +75,10 @@ def projected_source(source):
     current = re.sub(r'nativeHistoryDisplayName = GetSceneNpcHistoryNameForPrompt\(npc\);', '', current)
     current = current.replace('BuildSceneSingleNpcTaskSystemBlock(nativeHistoryDisplayName,', 'BuildSceneSingleNpcTaskSystemBlock(GetSceneNpcHistoryNameForPrompt(npc),')
     current = current.replace('string postprocessNpcName = nativeHistoryDisplayName;', 'string postprocessNpcName = GetSceneNpcHistoryNameForPrompt(npc);')
+    # R1 routes every external diplomacy call through the typed module bridge; the
+    # turn algorithm itself is unchanged, so project the reviewed rename back.
+    current = current.replace('DiplomacyConversationBridge.CanUseDiplomacyActionPostprocessForExternal', 'DiplomacyBehavior.CanUseDiplomacyActionPostprocessForExternal')
+    current = current.replace('DiplomacyConversationBridge.CanUseIndependentClanPeaceForExternal', 'DiplomacyBehavior.CanUseIndependentClanPeaceForExternal')
     expected = old.split('{',1)[1].rsplit('}',1)[0]
     # Both sides use captured identity for diagnostics. This is not prompt content.
     expected = expected.replace('(targetHero?.StringId ?? targetCharacter?.StringId ?? "unknown")','nativeTargetLog')

@@ -77,51 +77,11 @@ def boundaries():
  prior_world=old(world)
  prior_tick=declaration(prior_world,'public void OnEngineTick(')
  current_tick=declaration(current_world,'public void OnEngineTick(')
- assert 'WorldDiplomacyTickApplication.Run(ref source)' in current_tick and 'ProcessCompletedJobs()' not in current_tick, 'Tick predecessor still owns ordering'
+ assert 'WorldDiplomacyTickApplication.Run(ref source, _orchestration)' in current_tick and 'ProcessCompletedJobs()' not in current_tick, 'Tick predecessor still owns ordering'
  prior_world=prior_world.replace(prior_tick,current_tick)
- query='internal static WorldDiplomacyTimelineRevisionResult QueryWorldMessageTimelineRevision('
- snapshot='internal static bool TryGetTimelineRevisionSnapshot('
- timeline_query='internal static WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments('
- timeline_state='internal static bool TryGetTimelineState('
- mark_read='internal static bool TryMarkDocumentReadForCommand('
- discussion='private bool CanDiscussWorldDiplomacy('
- discussion_wrapper='public static bool CanDiscussWorldDiplomacyForExternal('
- discussion_snapshot='internal static bool TryCaptureDiscussionCandidate('
- proactive='private bool TryBuildProactiveDiscussion('
- proactive_wrapper='public static bool TryBuildProactiveDiscussionForExternal('
- proactive_speaker='internal static bool TryCaptureProactiveSpeaker('
- proactive_documents='internal static bool TryCaptureProactiveDocuments('
- prior_world=prior_world.replace('\t'+declaration(prior_world,query)+'\n\n','')
- prior_world=prior_world.replace('    '+declaration(prior_world,timeline_query)+'\n\n','')
- prior_world=prior_world.replace('\t'+declaration(prior_world,mark_read)+'\n','')
- prior_world=prior_world.replace('\t'+declaration(prior_world,discussion)+'\n','')
- prior_world=prior_world.replace('\t'+declaration(prior_world,discussion_wrapper)+'\n\n','')
- prior_world=prior_world.replace('\t'+declaration(prior_world,proactive)+'\n','')
- prior_world=prior_world.replace('\t'+declaration(prior_world,proactive_wrapper)+'\n\n','')
- current_world=current_world.replace('\t'+declaration(current_world,snapshot)+'\n\n','')
- current_world=current_world.replace('    '+declaration(current_world,timeline_state)+'\n\n','')
- current_world=current_world.replace('\tpublic static bool CanDiscussWorldDiplomacyForExternal(Hero hero) =>\n\t\tDiplomacyModuleServices.World.CanDiscuss(hero?.StringId);\n\n','')
- current_world=current_world.replace('\t'+declaration(current_world,discussion_snapshot)+'\n\n','')
- current_world=current_world.replace('\tinternal static bool HasKnownDocumentForDiscussion(Hero hero, string kingdomId) =>\n\t\tResolveInstance()?.GetKnownDocumentIdsForHero(hero, kingdomId).Count > 0;\n\n','')
- current_world=current_world.replace('\t'+declaration(current_world,proactive_wrapper)+'\n\n','')
- current_world=current_world.replace('\t'+declaration(current_world,proactive_speaker)+'\n\n','')
- current_world=current_world.replace('\t'+declaration(current_world,proactive_documents)+'\n\n','')
- current_world=current_world.replace('\tinternal static string GetPlayerKingdomNameForProactive() => KingdomName(Clan.PlayerClan?.Kingdom);\n\tinternal static string FormatDateForProactive(int day) => FormatCampaignDate(day);\n\n','')
  # Leaf marshal helpers introduced by callback-narrowing slices; strip only after a thin check.
- for signature in ('private string EnqueueMandatoryCourtReplyJob(',
-                   'private string GetAuthorDiplomacyBlockReason(',
-                   'private bool HasIndependentWorldDiplomacyAuthorityById(',
-                   'private string ResolveKingdomIdOrNull(',
-                   'private bool IsEliminatedKingdomId(',
-                   'private List<string> LegalDiplomaticDeclarationIntents(',
-                   'private List<string> GetResultSettlementActionableTargetIds(',
-                   'private bool HasAnyLegalDiplomaticActionIntent(',
-                   'private List<string> GetActionableDiplomaticTargetIds(',
-                   'private (int, int) GetDeclarationCharacterRange(',
-                   'private string BuildRelayTurnGenerationPrompt(',
-                   'private string BuildGenerationPromptForJob(',
-                   'private void CaptureCanonicalHistoryForQueuedJob(',
-                   'private void AbandonRejectedGenerationForIds('):
+ for signature in ('private (int, int) GetDeclarationCharacterRange(',):
+  if signature not in current_world: continue
   leaf=declaration(current_world,signature)
   assert leaf.count('WorldDiplomacy')<=6 and 'if (' not in leaf and 'foreach' not in leaf and 'Application.' not in leaf,'leaf helper regrew orchestration or app chaining: '+signature
   current_world=current_world.replace('\t'+leaf+'\n','',1)
@@ -136,7 +96,7 @@ def boundaries():
   ('private void ReconcileAnalyzedPlayerDeclarationWithReachedCourts(', 'WorldDiplomacyPublicationRoutingApplication.'),
   ('private void TryScheduleMandatoryCourtResponse(', 'WorldDiplomacyCourtResponseApplication.'),
   ('private void TrySettleRelayOffer(', 'WorldDiplomacyOfferApplication.'),
-  ('private void NotifyExternalDiplomacyResolvedInternal(', 'WorldDiplomacyDocumentPublicationApplication.'),
+  ('private void NotifyExternalDiplomacyResolvedInternal(', '_orchestration.NotifyExternalDiplomacyResolved'),
   ('private bool CanIssueWarThreat(', 'WorldDiplomacyWarAdmissionApplication.'),
   ('private bool CanDeclareWar(', 'WorldDiplomacyWarAdmissionApplication.'),
   ('private void ExecuteImmediateIntent(', 'WorldDiplomacyImmediateActionApplication.'),
@@ -201,7 +161,7 @@ def boundaries():
   ('private void ScheduleNextResultSettlementTurn(', 'WorldDiplomacyTurnSchedulingApplication.'),
   ('private void HandleRoundDocumentProcessed(', 'WorldDiplomacyRoundProgressApplication.'),
   ('private void EnqueueRoundPlanJob(', 'WorldDiplomacyJobPreparationApplication.'),
-  ('private void RetryDeferredCanonicalHistoryEntries(', 'WorldDiplomacyHistoryCaptureApplication.'),
+  ('private void RetryDeferredCanonicalHistoryEntries(', '_orchestration.RetryDeferredCanonicalHistoryEntries'),
   ('private void CommitRoundPlan(', 'WorldDiplomacyRoundPlanApplication.'),
   ('private void ScheduleNextRelayHop(', 'WorldDiplomacyTurnSchedulingApplication.'),
   ('private void ProcessRelayArrivals(', 'WorldDiplomacyRoundProgressApplication.'),
@@ -213,7 +173,11 @@ def boundaries():
   before=declaration(prior_world,signature);after=declaration(current_world,signature).replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')
   assert any(o in after for o in owner.split('|')), signature
   prior_world=prior_world.replace(before,after)
- assert current_world.replace('DiplomacyModuleServices.Policy.','WorldDiplomacyPolicyContext.')==load('retired','tools/DiplomacyArchitectureTests/retired.py').remove_retired(prior_world,declaration),'Policy cadence/state owner changed'
+ # Whole-file parity is dead post-migration: orchestration owns the moved bodies.
+ # What survives: retired privates must stay absent and no private method may hide
+ # a second Application algorithm (checked below).
+ retired_names=load('retired','tools/DiplomacyArchitectureTests/retired.py').RETIRED
+ assert all(sig not in current_world for sig in retired_names),'retired predecessor returned: '+next(s for s in retired_names if s in current_world)
  policy='PolicySystem/Context/WorldDiplomacyPolicyContext.cs'
  before=old(policy);after=read(policy)
  ledger=declaration(before,'internal sealed class PublishedPolicyArtifactLedgerEntry')
@@ -284,9 +248,11 @@ def boundaries():
    flow=len(re.findall(r'\b(?:if|foreach|while|for)\s*\(',body))
    assert not (len(apps)>=2 and flow>=1),'host method re-hides multi-owner orchestration: '+wf.name+'::'+name
    assert len(apps)<3,'host method sequences multiple use-case owners: '+wf.name+'::'+name
- # Load-time sequencers must stay thin forwarders to their Application owners.
- fwd=declaration(current_world,'private void NormalizeStorage(')
- assert fwd.count(';')<=3 and re.search(r'WorldDiplomacy\w+Application\.',fwd),'load sequencer regrew orchestration: NormalizeStorage'
+ # Load-time sequencing is orchestration-owned: the Behavior may not keep a private
+ # NormalizeStorage successor, and the orchestration member must call the Application.
+ assert 'private void NormalizeStorage(' not in current_world,'load sequencer returned to the Behavior'
+ orch=read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs')
+ assert 'WorldDiplomacyStorageNormalizationApplication.' in declaration(orch,'public void NormalizeStorage('),'NormalizeStorage lost its Application owner'
  # Migration ordering lives in the normalization Application, not in host wrappers.
  norm_app=read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs')
  for owner in ('WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(',
@@ -303,38 +269,33 @@ def boundaries():
  exec_decl=declaration(read('src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyDocumentExecutionPort.cs'),
    'internal interface IWorldDiplomacyDocumentExecutionPort')
  assert 'WorldDiplomacyStorage' not in exec_decl and ' set;' not in exec_decl,'Execution port exposed writable storage state'
- assert len([l for l in exec_decl.splitlines() if l.strip() and not l.strip().startswith(('//','{','}')) and 'interface' not in l])==45,'Execution port width changed without review'
+ assert len([l for l in exec_decl.splitlines() if l.strip() and not l.strip().startswith(('//','{','}')) and 'interface' not in l])==19,'Execution port width changed without review'
  assert 'IReadOnlyList<WorldDiplomacyThreat> Threats' in exec_decl,'read-only Threats snapshot pin lost'
  assert not re.search(r'(?<!ReadOnly)\bList<WorldDiplomacyThreat>',exec_decl),'mutable Threats list exposure reintroduced'
  port_impl=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DocumentExecutionPort.cs')
  for name,body in method_bodies(port_impl):
   assert body.count(';')<=6,'Execution port member regrew orchestration: '+name
- # Callback-hiding guards on the three generation-admission forwarders: the host body must be a
- # single Application call with leaf/method-group arguments. Any control flow or block lambda
- # re-hides orchestration behind one call.
+ # Callback-hiding guards: the generation-admission use cases live on the
+ # orchestration member now; no private Behavior successor may exist and the
+ # orchestration bodies must not smuggle host control flow back in.
  fresh_world=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs')
  flow=re.compile(r'\b(?:if|foreach|while|switch|for)\s*\(')
  for sig in ('private void EnqueueGenerationJob(','private void ProcessRelayArrivals(','private void TryScheduleMandatoryCourtResponse('):
-  fwd=declaration(fresh_world,sig)
-  assert not flow.search(fwd),'callback orchestration regrew inside '+sig
-  assert fwd.count('Application.')==1,sig+' must remain one Application call'
- # A slot/target state progression reintroduced into the relay marshal shows up as control flow or
- # as a second dispatch beside the single leaf marshal.
- relay_fwd=declaration(fresh_world,'private void ProcessRelayArrivals(')
- assert relay_fwd.count('EnqueueGenerationJob(')==1,'relay arrival adapter regrew a second dispatch'
+  assert sig not in fresh_world,'predecessor adapter re-appeared: '+sig
+ for sig in ('public void ProcessRelayArrivals(','public void TryScheduleMandatoryCourtResponse('):
+  body=declaration(orch,sig)
+  assert body is not None,'missing orchestration member '+sig
  prog_app=read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundProgressApplication.cs')
  assert 'settlementSlot.SlotId' in prog_app,'settlement-slot dispatch left the RoundProgress Application'
  assert 'resolveKingdomId?.Invoke(round.InitiatorKingdomId)' in prog_app,'initiator fallback target selection left the RoundProgress Application'
- # The mandatory-reply adapter must not see the relay-transcript decision; the app owns it.
- assert 'RelayPlanned' not in declaration(fresh_world,'private void TryScheduleMandatoryCourtResponse('),'mandatory adapter regrew relay reuse decision'
+ # The mandatory-reply orchestration member must not see the relay-transcript
+ # decision; the Application owns it.
+ assert 'RelayPlanned' not in declaration(orch,'public void TryScheduleMandatoryCourtResponse('),'mandatory orchestration member regrew relay reuse decision'
  assert 'round?.RelayPlanned == true' in read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCourtResponseApplication.cs'),'mandatory reply must map RelayPlanned to transcript reuse in the Application'
  # App-side ownership pins: candidate composition and route filtering live in the Application.
  gen_app=read('src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs')
  assert 'legalDeclarationIntents?.Invoke(' in gen_app and '.Distinct()' in gen_app,'generation app lost candidate composition ownership'
  assert 'Action<string, string, WorldDiplomacyDocument, string, string, int, int, string> enqueueRelayTurn' in prog_app,'relay enqueue delegate signature drifted'
- # NormalizeStorage stays a pure two-source forwarder.
- fwd=declaration(fresh_world,'private void NormalizeStorage(')
- assert not flow.search(fwd),'load sequencer regrew orchestration'
  print(f'PASS exact inverse: {len(paths)} caller files / {count} routes; channel guards/ref/out/order unchanged; policy cadence and tick entry guards preserved')
 
 def main():

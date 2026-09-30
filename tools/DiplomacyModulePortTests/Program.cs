@@ -148,16 +148,16 @@ static class Program
         Check(GC.GetAllocatedBytesForCurrentThread()==bytes,"10000 tick forwards allocate zero bytes");
         WorldDiplomacyBehavior.Instance=null;DiplomacyModuleServices.World.OnEngineTick();Check(next.Ticks==10101,"null owner tick no-op");
         var enabledTick=new TickReplaySource { Owner=true, Enabled=true, Steps=new() };
-        WorldDiplomacyTickApplication.Run(ref enabledTick);
+        WorldDiplomacyTickApplication.Run(ref enabledTick, new RecordingOrchestration(enabledTick.Steps));
         Check(enabledTick.Steps.SequenceEqual(new[]{"popup","clear","completed","compress","start","publish"}),"enabled tick order");
         var disabledTick=new TickReplaySource { Owner=true, Enabled=false, Steps=new() };
-        WorldDiplomacyTickApplication.Run(ref disabledTick);
+        WorldDiplomacyTickApplication.Run(ref disabledTick, new RecordingOrchestration(disabledTick.Steps));
         Check(disabledTick.Steps.SequenceEqual(new[]{"popup","disable","completed"}),"disabled tick drains completion after one cleanup");
         var disabledAgain=new TickReplaySource { Owner=true, Enabled=false, Disabled=true, Steps=new() };
-        WorldDiplomacyTickApplication.Run(ref disabledAgain);
+        WorldDiplomacyTickApplication.Run(ref disabledAgain, new RecordingOrchestration(disabledAgain.Steps));
         Check(disabledAgain.Steps.SequenceEqual(new[]{"popup","completed"}),"disabled tick does not repeat cleanup");
         var noOwner=new TickReplaySource { Steps=new() };
-        WorldDiplomacyTickApplication.Run(ref noOwner);
+        WorldDiplomacyTickApplication.Run(ref noOwner, null);
         Check(noOwner.Steps.Count==0,"missing tick owner has no effects");
         var documents=new WorldDiplomacyTimelineDocumentQueryAdapter();Check(documents.Query(-7).IsAvailable,"document availability");Call("documents",-7);
         var presentation=new Presentation();WorldDiplomacyBehavior.Port=presentation;Check(ReferenceEquals(DiplomacyModuleServices.World.Presentation,presentation),"current presentation owner");
@@ -199,12 +199,37 @@ internal struct TickReplaySource : IWorldDiplomacyTickSource
     public bool IsEnabled => Enabled;
     public bool DisabledStateApplied => Disabled;
     public void ProcessComposePopup() => Steps.Add("popup");
-    public void ApplyDisabledState() => Steps.Add("disable");
     public void ClearDisabledState() => Steps.Add("clear");
-    public void ProcessCompletedJobs() => Steps.Add("completed");
-    public void TryScheduleTokenCompression() => Steps.Add("compress");
-    public void TryStartNextLlmJob() => Steps.Add("start");
-    public void TryPublishPendingNotifications() => Steps.Add("publish");
+}
+
+internal sealed class RecordingOrchestration : IWorldDiplomacyOrchestration
+{
+    private readonly List<string> steps;
+    internal RecordingOrchestration(List<string> steps) { this.steps = steps; }
+    public void HandleDisabledState() => steps.Add("disable");
+    public void ProcessCompletedJobs() => steps.Add("completed");
+    public void TryScheduleTokenCompression() => steps.Add("compress");
+    public void TryStartNextLlmJob() => steps.Add("start");
+    public void PollNotifications() => steps.Add("publish");
+    public void TryApplyInitialNewGamePeace() { }
+    public void NormalizeStorage(bool allowWorldValidation) { }
+    public void ReconcileAllNationalPrestigeVassalRelations() { }
+    public void RetryDeferredCanonicalHistoryEntries() { }
+    public void RetryDiplomaticThreatDomesticPenalties() { }
+    public void RetryDiplomaticThreatComplianceConsequences() { }
+    public void RetryDiplomaticThreatHistoryResults() { }
+    public void RefreshRoundIntervalScheduleIfNeeded() { }
+    public void RecalculatePendingPropagationIfNeeded() { }
+    public void AnchorInternationalReputationNaturalChangeDays() { }
+    public void ProcessInternationalReputationNaturalChange() { }
+    public void RefreshPolicyDiplomacySignals() { }
+    public void RetryDeferredDocumentPropagation() { }
+    public void ProcessPropagationArrivals() { }
+    public void ProcessRelayArrivals() { }
+    public void RetryDeferredRoundProgress() { }
+    public void ProcessRoundLifecycle() { }
+    public void TrySchedulePolicyTriggeredRound() { }
+    public void TryScheduleNormalRound() { }
 }
 
 internal struct ContextReplaySource : IDiplomacyPostprocessContextSource

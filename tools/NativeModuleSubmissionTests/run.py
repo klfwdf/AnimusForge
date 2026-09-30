@@ -12,7 +12,7 @@ spec=importlib.util.spec_from_file_location('extract',ROOT/'tools/ChannelCutover
 out=HERE/'.generated'/('reordered' if a.reorder_core_enums else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 sigs=['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(', 'private sealed class NativeConversationGameActionResult','private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(']
-host=(HERE/'Host.cs.txt').read_text().replace('@@REAL_DECLARATIONS@@','\n'.join(ex.declaration(s,sig) for sig in sigs))
+host=(HERE/'Host.cs.txt').read_text(encoding='utf-8-sig').replace('@@REAL_DECLARATIONS@@','\n'.join(ex.declaration(s,sig) for sig in sigs))
 scene=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs').read_text(encoding='utf-8-sig')
 post=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs').read_text(encoding='utf-8-sig')
 scene_sigs=['private void RegisterModuleSceneGroup(', 'private void RetireModuleSceneGroup(',
