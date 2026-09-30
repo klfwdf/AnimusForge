@@ -56,7 +56,6 @@ internal static class WorldDiplomacyPolicyRoundApplication
         Func<bool> consumeBudget,
         Func<int> currentDay,
         Func<string, WorldDiplomacyRound> openRound,
-        Action<WorldDiplomacyRound, WorldDiplomacyPolicySignal> attach,
         Action<WorldDiplomacyPolicySignal, string> complete,
         Action<int> scheduleNext,
         Action<string, WorldDiplomacyRound> enqueue)
@@ -84,7 +83,7 @@ internal static class WorldDiplomacyPolicyRoundApplication
         {
             if (WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.IssuerId) || WorldDiplomacyStructureRules.RoundContainsKingdom(activeRound, parties.AffectedId))
             {
-                attach(activeRound, signal);
+                AttachSignalToRound(activeRound, signal, parties);
                 complete(signal, "attached_to_active_round");
             }
             return;
@@ -102,20 +101,50 @@ internal static class WorldDiplomacyPolicyRoundApplication
         }
 
         WorldDiplomacyRound round = openRound(author);
-        attach(round, signal);
+        AttachSignalToRound(round, signal, parties);
         scheduleNext(currentDay());
         enqueue(author, round);
         complete(signal, "opened_round");
     }
+
+    private static void AttachSignalToRound(WorldDiplomacyRound round, WorldDiplomacyPolicySignal signal, Parties parties)
+    {
+        if (round == null || signal == null)
+        {
+            return;
+        }
+        WorldDiplomacyRoundLifecycleRules.AttachPolicySignalToRound(round, signal);
+        HashSet<string> attached = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach ((string kingdomId, bool isPlayer) in new[]
+        {
+            (parties.IssuerId, parties.IssuerIsPlayer),
+            (parties.AffectedId, parties.AffectedIsPlayer)
+        })
+        {
+            if (string.IsNullOrWhiteSpace(kingdomId) || !attached.Add(kingdomId))
+            {
+                continue;
+            }
+            WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(
+                round, kingdomId, "observer", mandatoryReply: false);
+            if (participant != null)
+            {
+                participant.IsPlayerAsync = isPlayer;
+            }
+        }
+    }
+
     internal sealed class Parties
     {
         internal bool ValidParties { get; }
         internal string IssuerId { get; }
+        internal bool IssuerIsPlayer { get; }
         internal string AffectedId { get; }
         internal bool AffectedIsPlayer { get; }
-        internal Parties(bool validParties, string issuerId, string affectedId, bool affectedIsPlayer)
+        internal Parties(bool validParties, string issuerId, string affectedId, bool affectedIsPlayer,
+            bool issuerIsPlayer = false)
         {
-            ValidParties = validParties; IssuerId = issuerId;
+            ValidParties = validParties; IssuerId = issuerId; IssuerIsPlayer = issuerIsPlayer;
             AffectedId = affectedId; AffectedIsPlayer = affectedIsPlayer;
         }
     }

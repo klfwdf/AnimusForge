@@ -18,7 +18,6 @@ public sealed partial class WorldDiplomacyBehavior
         private readonly WorldDiplomacyBehavior _owner;
         internal OrchestrationHost(WorldDiplomacyBehavior owner) => _owner = owner;
 
-        public WorldDiplomacyStorage Storage => _owner._storage;
         public int CurrentDay() => WorldDiplomacyBehavior.CurrentDay();
         public int CurrentHour() => WorldDiplomacyBehavior.CurrentHour();
         public string NewId(string prefix) => WorldDiplomacyBehavior.NewId(prefix);
@@ -137,12 +136,9 @@ public sealed partial class WorldDiplomacyBehavior
             Kingdom affectedRepresentative = valid ? WorldDiplomacyBehavior.ResolveWorldDiplomacyRepresentative(affected) : null;
             return new WorldDiplomacyPolicyRoundApplication.Parties(valid, issuerRepresentative?.StringId,
                 affectedRepresentative?.StringId,
-                affectedRepresentative != null && WorldDiplomacyBehavior.IsPlayerKingdom(affectedRepresentative));
+                affectedRepresentative != null && WorldDiplomacyBehavior.IsPlayerKingdom(affectedRepresentative),
+                issuerRepresentative != null && WorldDiplomacyBehavior.IsPlayerKingdom(issuerRepresentative));
         }
-        public void AttachPolicySignalToRound(WorldDiplomacyRound round, WorldDiplomacyPolicySignal signal) =>
-            _owner.AttachPolicySignalToRound(round, signal,
-                WorldDiplomacyBehavior.ResolveKingdom(signal?.IssuerKingdomId),
-                WorldDiplomacyBehavior.ResolveKingdom(signal?.TargetKingdomId));
         public string ResolvePropagationReceiverId(string kingdomId, string settlementId) =>
             (WorldDiplomacyBehavior.ResolveKingdom(kingdomId)
                 ?? WorldDiplomacyBehavior.ResolveSettlementById(settlementId)?.OwnerClan?.Kingdom)?.StringId;
@@ -202,16 +198,39 @@ public sealed partial class WorldDiplomacyBehavior
             };
         }
 
-        // Presentation / effect leafs.
+        // Presentation / effect leafs and world snapshots.
         public void ShowPlayerCourtDelivery(string receiverName) =>
             TaleWorlds.Library.InformationManager.DisplayMessage(
                 new TaleWorlds.Library.InformationMessage("你的宣言已传播至" + (receiverName ?? "") + "。"));
         public void RemoveQueuedNativeDiplomacyDecisions() => _owner.RemoveQueuedNativeDiplomacyDecisions();
-        public void EnsureActiveWarLedgersAndRemoveEndedWars() => _owner.EnsureActiveWarLedgersAndRemoveEndedWars();
-        public void TrimRecentBattleFacts() => _owner.TrimRecentBattleFacts();
-        public void TrimNativeSignals() => _owner.TrimNativeSignals();
-        public void DecayWarPressure() => WorldDiplomacyWarPressureRules.DecayWarPressure(_owner._storage?.WarPressure, CurrentDay());
-        public IReadOnlyList<WorldDiplomacyThreat> Threats() => Storage?.DiplomaticThreats;
+        public List<(string firstId, string secondId)> ActiveWarKingdomPairs()
+        {
+            List<Kingdom> kingdoms = Kingdom.All
+                .Where(x => x != null && !x.IsEliminated)
+                .OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            var pairs = new List<(string firstId, string secondId)>();
+            for (int i = 0; i < kingdoms.Count; i++)
+            {
+                for (int j = i + 1; j < kingdoms.Count; j++)
+                {
+                    if (FactionManager.IsAtWarAgainstFaction(kingdoms[i], kingdoms[j]))
+                    {
+                        pairs.Add((kingdoms[i].StringId, kingdoms[j].StringId));
+                    }
+                }
+            }
+            return pairs;
+        }
+        public void InvalidateWarSituationCache(string firstId, string secondId) =>
+            _owner.InvalidateWarSituation(WorldDiplomacyBehavior.ResolveKingdom(firstId),
+                WorldDiplomacyBehavior.ResolveKingdom(secondId));
+        public bool InternalActionDepthActive() => WorldDiplomacyBehavior._internalDiplomaticActionDepth > 0;
+        public int DaysPerYear() => WorldDiplomacyBehavior.DaysPerYear;
+        public int RecentBattleRetentionDays() => WorldDiplomacyBehavior.RecentBattleRetentionDays;
+        public int NativeSignalBaseValue(string action) =>
+            action == "declare_war" ? WorldDiplomacyBehavior.NativeWarSignalBase : WorldDiplomacyBehavior.NativeOtherSignalBase;
+        public IReadOnlyList<WorldDiplomacyThreat> Threats() => _owner._stateStore.Current?.DiplomaticThreats;
 
         // Module/service leafs.
         public IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> ForeignPolicySignals() => DiplomacyModuleServices.Policy.GetForeignPolicySignals();
@@ -232,7 +251,6 @@ public sealed partial class WorldDiplomacyBehavior
             WorldDiplomacyBehavior.TryBuildKingdomStrategicProfilePrompt(WorldDiplomacyBehavior.ResolveKingdom(kingdomId), marker, out prompt);
         public void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt) =>
             WorldDiplomacyBehavior.LogKingdomStrategicProfileInjection(job, profilePrompt);
-        public void ClearLlmCacheAffinityKey() => _owner._runtime.LastLlmCacheAffinityKey = "";
 
         // Leaf port factories - bounded snapshots, no Application calls behind them.
         public IWorldDiplomacyActionSelectionPort ActionSelection() => new ActionSelectionPort(_owner, null);
@@ -258,8 +276,7 @@ public sealed partial class WorldDiplomacyBehavior
         public IWorldDiplomacyCanonicalHistoryMigrationSource CanonicalHistoryMigrationSource() => new CanonicalHistoryMigrationSource(_owner);
         public IWorldDiplomacyLlmDispatchSource LlmDispatchSource() => new LlmDispatchSource(_owner);
         public IWorldDiplomacyCompletionSource CompletionSource() => new CompletionSource(_owner);
-        public void PollNotifications() => _owner._notifications.Poll(_owner._storage, DateTime.UtcNow, _owner.NotificationSink);
-        public void ReplaceStorage(WorldDiplomacyStorage storage) => _owner._storage = storage;
+        public void PollNotifications() => _owner._notifications.Poll(_owner._stateStore.Current, DateTime.UtcNow, _owner.NotificationSink);
         public string ResolveSettlementPartyId(string settlementId) => WorldDiplomacyBehavior.ResolveSettlementById(settlementId)?.OwnerClan?.Kingdom?.StringId;
         public string PartyNameIncludingEliminated(string id) => WorldDiplomacyBehavior.KingdomName(WorldDiplomacyBehavior.ResolveKingdomIncludingEliminated(id));
         public string PlayerKingdomId() => Clan.PlayerClan?.Kingdom?.StringId;
@@ -280,9 +297,5 @@ public sealed partial class WorldDiplomacyBehavior
         public string CanAiAuthorDocumentBlockReason(string id) =>
             WorldDiplomacyBehavior.CanAiAuthorDiplomaticDocument(WorldDiplomacyBehavior.ResolveKingdom(id), out string reason) ? null : reason;
         public void LogDiplomaticThreatFallbackAnalysisPublished(WorldDiplomacyJob job) => _owner.LogDiplomaticThreatFallbackAnalysisPublished(job);
-        public void RemoveJob(string jobId) => _owner.RemoveJob(jobId);
-        public void AddWarPressure(string sourceId, string targetId, int delta, string reason, string intent) =>
-            _owner.AddWarPressure(sourceId, targetId, delta, reason, intent);
-        public WarPressureEntry FindWarPressure(string sourceId, string targetId) => _owner.FindWarPressure(sourceId, targetId);
     }
 }

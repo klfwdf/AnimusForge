@@ -204,6 +204,9 @@ namespace AnimusForge
         void ProcessRoundLifecycle();
         void TrySchedulePolicyTriggeredRound();
         void TryScheduleNormalRound();
+        void EnsureActiveWarLedgers();
+        void TrimRecentBattleFacts();
+        void DecayWarPressure();
     }
     internal sealed class NoopOrchestration : IWorldDiplomacyOrchestration
     {
@@ -231,6 +234,9 @@ namespace AnimusForge
         public void ProcessRoundLifecycle() { }
         public void TrySchedulePolicyTriggeredRound() { }
         public void TryScheduleNormalRound() { }
+        public void EnsureActiveWarLedgers() { }
+        public void TrimRecentBattleFacts() { }
+        public void DecayWarPressure() { }
     }
     internal sealed class WorldDiplomacyBehavior
     {
@@ -280,11 +286,8 @@ namespace AnimusForge
             public bool NativeQueueSanitized { get; set; }
             public int LastSchedulerDay { get; set; }
             public void RemoveQueuedNativeDiplomacyDecisions() { }
-            public void EnsureActiveWarLedgersAndRemoveEndedWars() { }
-            public void TrimRecentBattleFacts() { }
             public void ClearDailyCaches() { }
             public void ResetDailyGenerationBudget() { }
-            public void DecayWarPressure() { }
         }
     }
     internal static class WorldDiplomacyPolicyContext

@@ -35,8 +35,8 @@ public sealed partial class WorldDiplomacyBehavior
         public bool IsAtWar(string author, string target) => TaleWorlds.CampaignSystem.FactionManager.IsAtWarAgainstFaction(ResolveParty(author), ResolveParty(target));
         public bool IsPlayerKingdom(string id) => WorldDiplomacyBehavior.IsPlayerKingdom(ResolveParty(id));
         public string NewId(string prefix) => WorldDiplomacyBehavior.NewId(prefix);
-        public WarPressureEntry FindWarPressure(string source, string target) => _owner.FindWarPressure(source, target);
-        public void AddWarPressure(string source, string target, int delta, string reason, string intent) => _owner.AddWarPressure(source, target, delta, reason, intent);
+        public WarPressureEntry FindWarPressure(string source, string target) => _owner._orchestration.FindWarPressure(source, target);
+        public void AddWarPressure(string source, string target, int delta, string reason, string intent) => _owner._orchestration.AddWarPressure(source, target, delta, reason, intent);
         public List<string> NormalizeKingdomIdList(IEnumerable<string> values, string excludedId) => WorldDiplomacyBehavior.NormalizeKingdomIdList(values, excludedId);
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
         public void Notify(string message) => TaleWorlds.Library.InformationManager.DisplayMessage(new TaleWorlds.Library.InformationMessage(message));

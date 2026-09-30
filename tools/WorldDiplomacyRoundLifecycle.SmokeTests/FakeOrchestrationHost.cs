@@ -10,7 +10,6 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
 {
     internal readonly List<string> Calls = new();
     public int CurrentDayValue = 12;
-    public virtual WorldDiplomacyStorage Storage { get; set; } = new WorldDiplomacyStorage();
     public virtual int CurrentDay() { Calls.Add("CurrentDay"); return CurrentDayValue; }
     public virtual int CurrentHour()
     {
@@ -421,10 +420,6 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("ResolvePolicyParties");
         return null;
     }
-    public virtual void AttachPolicySignalToRound(WorldDiplomacyRound round, WorldDiplomacyPolicySignal signal)
-    {
-        Calls.Add("AttachPolicySignalToRound");
-    }
     public virtual string ResolvePropagationReceiverId(string kingdomId, string settlementId)
     {
         Calls.Add("ResolvePropagationReceiverId");
@@ -468,21 +463,34 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     {
         Calls.Add("RemoveQueuedNativeDiplomacyDecisions");
     }
-    public virtual void EnsureActiveWarLedgersAndRemoveEndedWars()
+    public virtual List<(string firstId, string secondId)> ActiveWarKingdomPairs()
     {
-        Calls.Add("EnsureActiveWarLedgersAndRemoveEndedWars");
+        Calls.Add("ActiveWarKingdomPairs");
+        return new List<(string firstId, string secondId)>();
     }
-    public virtual void TrimRecentBattleFacts()
+    public virtual void InvalidateWarSituationCache(string firstId, string secondId)
     {
-        Calls.Add("TrimRecentBattleFacts");
+        Calls.Add("InvalidateWarSituationCache");
     }
-    public virtual void TrimNativeSignals()
+    public virtual bool InternalActionDepthActive()
     {
-        Calls.Add("TrimNativeSignals");
+        Calls.Add("InternalActionDepthActive");
+        return false;
     }
-    public virtual void DecayWarPressure()
+    public virtual int DaysPerYear()
     {
-        Calls.Add("DecayWarPressure");
+        Calls.Add("DaysPerYear");
+        return 84;
+    }
+    public virtual int RecentBattleRetentionDays()
+    {
+        Calls.Add("RecentBattleRetentionDays");
+        return 14;
+    }
+    public virtual int NativeSignalBaseValue(string action)
+    {
+        Calls.Add("NativeSignalBaseValue");
+        return action == "declare_war" ? 24 : 42;
     }
     public virtual IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> ForeignPolicySignals()
     {
@@ -537,10 +545,6 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     public virtual void LogKingdomStrategicProfileInjection(WorldDiplomacyJob job, string profilePrompt)
     {
         Calls.Add("LogKingdomStrategicProfileInjection");
-    }
-    public virtual void ClearLlmCacheAffinityKey()
-    {
-        Calls.Add("ClearLlmCacheAffinityKey");
     }
     public virtual IWorldDiplomacyActionSelectionPort ActionSelection()
     {
@@ -651,10 +655,6 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     {
         Calls.Add("PollNotifications");
     }
-    public virtual void ReplaceStorage(WorldDiplomacyStorage storage)
-    {
-        Calls.Add("ReplaceStorage");
-    }
     public virtual string ResolveSettlementPartyId(string settlementId)
     {
         Calls.Add("ResolveSettlementPartyId");
@@ -708,19 +708,6 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     public virtual void LogDiplomaticThreatFallbackAnalysisPublished(WorldDiplomacyJob job)
     {
         Calls.Add("LogDiplomaticThreatFallbackAnalysisPublished");
-    }
-    public virtual void RemoveJob(string jobId)
-    {
-        Calls.Add("RemoveJob");
-    }
-    public virtual void AddWarPressure(string sourceId, string targetId, int delta, string reason, string intent)
-    {
-        Calls.Add("AddWarPressure");
-    }
-    public virtual WarPressureEntry FindWarPressure(string sourceId, string targetId)
-    {
-        Calls.Add("FindWarPressure");
-        return null;
     }
     public virtual void Notify(string message)
     {

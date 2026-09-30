@@ -177,17 +177,22 @@ internal static class RoundApplicationReplay
         var signal = new WorldDiplomacyPolicySignal { SignalKey = "policy" };
         storage.PendingPolicySignals.Add(signal);
         var events = new List<string>();
-        var parties = new WorldDiplomacyPolicyRoundApplication.Parties(true, "a", "b", true);
+        var parties = new WorldDiplomacyPolicyRoundApplication.Parties(true, "a", "b", true, issuerIsPlayer: false);
         void Schedule(bool running = false, bool budget = true, bool actionable = true) =>
             WorldDiplomacyPolicyRoundApplication.TrySchedule(storage, _ => parties, _ => actionable, () => running, () => budget, () => 10,
                 id => { events.Add("open:" + id); return Open(storage); },
-                (_, _) => events.Add("attach"), (_, why) => events.Add(why), _ => events.Add("next"), (_, _) => events.Add("enqueue"));
+                (_, why) => events.Add(why), _ => events.Add("next"), (_, _) => events.Add("enqueue"));
         Schedule(running: true); Schedule(budget: false);
         Test.True(events.Count == 0, "policy waits for the shared request slot and budget");
         Schedule();
-        Test.True(string.Join(",", events) == "open:a,attach,next,enqueue,opened_round", "policy chooses AI representative when affected kingdom is player and preserves effect order");
+        Test.True(string.Join(",", events) == "open:a,next,enqueue,opened_round", "policy chooses AI representative when affected kingdom is player and preserves effect order");
+        WorldDiplomacyRound opened = storage.ActiveRound;
+        Test.True(opened != null
+            && opened.Participants.Any(p => p.KingdomId == "a" && !p.IsPlayerAsync)
+            && opened.Participants.Any(p => p.KingdomId == "b" && p.IsPlayerAsync),
+            "policy attach installs observer participants with application-owned player-async flags");
         events.Clear(); Schedule();
-        Test.True(string.Join(",", events) == "attach,attached_to_active_round", "matching policy attaches without a second round or generation");
+        Test.True(string.Join(",", events) == "attached_to_active_round", "matching policy attaches without a second round or generation");
         events.Clear(); parties = new WorldDiplomacyPolicyRoundApplication.Parties(true, "x", "y", false); Schedule();
         Test.True(events.Count == 0, "unrelated active round leaves the policy pending");
         storage.ActiveRound = null; Schedule(actionable: false);

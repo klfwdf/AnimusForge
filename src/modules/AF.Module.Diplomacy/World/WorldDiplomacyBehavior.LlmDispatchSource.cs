@@ -30,7 +30,7 @@ public sealed partial class WorldDiplomacyBehavior
         public long InputTokenLimit => GetHistoryCompressionTriggerTokens();
         public int HistoryCompressionTargetTokens => GetHistoryCompressionTargetTokens();
         public int EstimateTokens(string text) => Logger.EstimateTokens(text);
-        public void RemoveJob(string jobId) => _owner.RemoveJob(jobId);
+        public void RemoveJob(string jobId) => _owner._orchestration.RemoveJob(jobId);
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
         public bool TryClaim(string jobId, long generation, int maxTokens, int timeoutMilliseconds, out WorldDiplomacyRequestSnapshot request) => _owner._llmRequestLease.TryClaim(jobId, generation, maxTokens, timeoutMilliseconds, out request);
         public void MarkRunning(WorldDiplomacyJob job, string cacheAffinityKey) { job.IsRunning = true; job.CacheAffinityKey = cacheAffinityKey; }

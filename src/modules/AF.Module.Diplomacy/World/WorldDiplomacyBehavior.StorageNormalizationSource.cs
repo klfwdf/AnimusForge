@@ -66,10 +66,10 @@ public sealed partial class WorldDiplomacyBehavior
         public bool IsAtWarByKingdomIds(string firstKingdomId, string secondKingdomId) => _owner.IsAtWarByKingdomIds(firstKingdomId, secondKingdomId);
         public void ClearLlmCacheAffinityKey() => _owner._runtime.LastLlmCacheAffinityKey = "";
         public WorldDiplomacyRound ResolveRound(string roundId) => _owner.ResolveRound(roundId);
-        public void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents) => _owner.CommitLocalRoundSummary(round, documents);
-        public void UpgradeRoundSummaryToStructuredArchive(WorldDiplomacyRoundSummary summary) => _owner.UpgradeRoundSummaryToStructuredArchive(summary);
-        public void TrimNativeSignals() => _owner.TrimNativeSignals();
-        public void TrimRecentBattleFacts() => _owner.TrimRecentBattleFacts();
+        public void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents) => _owner._orchestration.CommitLocalRoundSummary(round, documents);
+        public void UpgradeRoundSummaryToStructuredArchive(WorldDiplomacyRoundSummary summary) => _owner._orchestration.UpgradeRoundSummaryToStructuredArchive(summary);
+        public void TrimNativeSignals() => _owner._orchestration.TrimNativeSignals();
+        public void TrimRecentBattleFacts() => _owner._orchestration.TrimRecentBattleFacts();
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
     }
 }

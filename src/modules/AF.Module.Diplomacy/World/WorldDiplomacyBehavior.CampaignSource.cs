@@ -13,8 +13,6 @@ public sealed partial class WorldDiplomacyBehavior
         public bool NativeQueueSanitized { get => _owner._runtime.NativeQueueSanitized; set => _owner._runtime.NativeQueueSanitized = value; }
         public int LastSchedulerDay { get => _owner._runtime.LastSchedulerDay; set => _owner._runtime.LastSchedulerDay = value; }
         public void RemoveQueuedNativeDiplomacyDecisions() => _owner.RemoveQueuedNativeDiplomacyDecisions();
-        public void EnsureActiveWarLedgersAndRemoveEndedWars() => _owner.EnsureActiveWarLedgersAndRemoveEndedWars();
-        public void TrimRecentBattleFacts() => _owner.TrimRecentBattleFacts();
         public void ClearDailyCaches()
         {
             _owner._warSituationCache.Clear();
@@ -25,6 +23,5 @@ public sealed partial class WorldDiplomacyBehavior
         }
         public void ResetDailyGenerationBudget() => WorldDiplomacyRoundLifecycleRules.ResetDailyGenerationBudget(
             ref _owner._runtime.AiDocumentsStartedDay, ref _owner._runtime.AiDocumentsStartedToday, CurrentDay);
-        public void DecayWarPressure() => WorldDiplomacyWarPressureRules.DecayWarPressure(_owner._storage?.WarPressure, CurrentDay);
     }
 }

@@ -125,8 +125,8 @@ internal static class Program
             FindRepositoryFile("Refactor", "Adapters", "BannerlordWorldDiplomacyPersistenceAdapter.cs"),
             Encoding.UTF8);
 
-        Test.True(syncData.Contains("PersistenceAdapter.Save(dataStore, _storage)", StringComparison.Ordinal)
-                  && syncData.Contains("PersistenceAdapter.Load(dataStore, out string loadError)",
+        Test.True(syncData.Contains("PersistenceAdapter.Save(dataStore, _stateStore.Current)", StringComparison.Ordinal)
+                  && syncData.Contains("_stateStore.Replace(PersistenceAdapter.Load(dataStore, out string loadError))",
                       StringComparison.Ordinal),
             "SyncData must delegate save and load persistence operations");
         Test.True(!syncData.Contains("JsonConvert", StringComparison.Ordinal)
@@ -137,7 +137,7 @@ internal static class Program
             "the canonical diplomacy save key must have one persistence owner");
 
         int normalizeBeforeSave = syncData.IndexOf("_orchestration.NormalizeStorage(allowWorldValidation: false);", StringComparison.Ordinal);
-        int save = syncData.IndexOf("PersistenceAdapter.Save(dataStore, _storage)", StringComparison.Ordinal);
+        int save = syncData.IndexOf("PersistenceAdapter.Save(dataStore, _stateStore.Current)", StringComparison.Ordinal);
         int load = syncData.IndexOf("PersistenceAdapter.Load(dataStore, out string loadError)",
             StringComparison.Ordinal);
         int resetAfterLoad = syncData.IndexOf("ResetTransientRuntime(\"load\")", StringComparison.Ordinal);

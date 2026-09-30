@@ -16113,12 +16113,16 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("public static List<WorldDiplomacyRoundOffer> SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),
             "round offer and signal bookkeeping must live in the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CompletePolicySignal(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.AttachPolicySignalToRound(", StringComparison.Ordinal)
+            && policyRoundApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.AttachPolicySignalToRound(", StringComparison.Ordinal)
+            && policyRoundApplicationSource.Contains("WorldDiplomacyStructureRules.EnsureRoundParticipant(", StringComparison.Ordinal)
+            && policyRoundApplicationSource.Contains("participant.IsPlayerAsync = isPlayer", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyOfferApplication.Settle(", StringComparison.Ordinal)
             && offerApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(", StringComparison.Ordinal)
             && offerApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),
             "the offer application must route canonical bookkeeping through the lifecycle rules");
+        Test.True(!behaviorSource.Contains("AttachPolicySignalToRound(round, signal,", StringComparison.Ordinal),
+            "observer participant writes must not be hidden in a host callback");
         Test.True(!behaviorSource.Contains("countered.Status = \"countered\"", StringComparison.Ordinal)
             && !behaviorSource.Contains("_storage.PendingPolicySignals.RemoveAll(item => item != null && string.Equals(item.SignalKey", StringComparison.Ordinal)
             && !behaviorSource.Contains("decision.Action == WorldDiplomacyOfferCooldownAction.ClearCooldown", StringComparison.Ordinal),

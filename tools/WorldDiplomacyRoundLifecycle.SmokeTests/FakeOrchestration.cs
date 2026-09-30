@@ -283,6 +283,76 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("NormalizeStorage");
     }
+    public virtual void ReplaceStorage(WorldDiplomacyStorage storage)
+    {
+        Calls.Add("ReplaceStorage");
+    }
+    public virtual void ResetStorageForNewGame(bool initialPeacePending)
+    {
+        Calls.Add("ResetStorageForNewGame");
+    }
+    public virtual void EnsureScheduleInitialized()
+    {
+        Calls.Add("EnsureScheduleInitialized");
+    }
+    public virtual void ResetRuntimeState()
+    {
+        Calls.Add("ResetRuntimeState");
+    }
+    public virtual void HandleWarDeclared(string firstId, string secondId)
+    {
+        Calls.Add("HandleWarDeclared");
+    }
+    public virtual void HandlePeaceMade(string firstId, string secondId)
+    {
+        Calls.Add("HandlePeaceMade");
+    }
+    public virtual void HandleSettlementOwnerChanged(string settlementId, string settlementName, string oldKingdomId, string newKingdomId)
+    {
+        Calls.Add("HandleSettlementOwnerChanged");
+    }
+    public virtual void RecordBattleFact(WorldDiplomacyBattleFact fact)
+    {
+        Calls.Add("RecordBattleFact");
+    }
+    public virtual bool RecordNativeSignal(string sourceId, string targetId, string action, string reason)
+    {
+        Calls.Add("RecordNativeSignal");
+        return false;
+    }
+    public virtual void EnsureActiveWarLedgers()
+    {
+        Calls.Add("EnsureActiveWarLedgers");
+    }
+    public virtual void TrimRecentBattleFacts()
+    {
+        Calls.Add("TrimRecentBattleFacts");
+    }
+    public virtual void TrimNativeSignals()
+    {
+        Calls.Add("TrimNativeSignals");
+    }
+    public virtual void DecayWarPressure()
+    {
+        Calls.Add("DecayWarPressure");
+    }
+    public virtual void RemoveJob(string jobId)
+    {
+        Calls.Add("RemoveJob");
+    }
+    public virtual void AddWarPressure(string sourceId, string targetId, int delta, string reason, string intent)
+    {
+        Calls.Add("AddWarPressure");
+    }
+    public virtual WarPressureEntry FindWarPressure(string sourceId, string targetId)
+    {
+        Calls.Add("FindWarPressure");
+        return null;
+    }
+    public virtual void ClearLlmCacheAffinityKey()
+    {
+        Calls.Add("ClearLlmCacheAffinityKey");
+    }
     public virtual void StartDocumentPropagation(WorldDiplomacyDocument document, string authorId)
     {
         Calls.Add("StartDocumentPropagation");
