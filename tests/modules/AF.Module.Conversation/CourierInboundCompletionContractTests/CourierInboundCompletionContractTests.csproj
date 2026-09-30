@@ -7,10 +7,10 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
-    <Compile Include="..\..\..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
-    <Compile Include="..\..\..\..\Refactor\Runtime\CourierInboundCompletionCommitCoordinator.cs" Link="Runtime\CourierInboundCompletionCommitCoordinator.cs" />
-    <Compile Include="..\..\..\..\Refactor\Runtime\CourierInboundCompletionReceipt.cs" Link="Runtime\CourierInboundCompletionReceipt.cs" />
+    <Compile Include="..\..\..\..\src\AF.Contracts\Internal\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
+    <Compile Include="..\..\..\..\src\AF.Contracts\Internal\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Channels\Courier\CourierInboundCompletionCommitCoordinator.cs" Link="Runtime\CourierInboundCompletionCommitCoordinator.cs" />
+    <Compile Include="..\..\..\..\src\modules\AF.Module.Conversation\Channels\Courier\CourierInboundCompletionReceipt.cs" Link="Runtime\CourierInboundCompletionReceipt.cs" />
     <Compile Include="..\..\..\..\src\modules\AF.Module.Memory\Recovery\InteractionMemoryRecoveryLedger.cs" Link="Runtime\InteractionMemoryRecoveryLedger.cs" />
   </ItemGroup>
 </Project>

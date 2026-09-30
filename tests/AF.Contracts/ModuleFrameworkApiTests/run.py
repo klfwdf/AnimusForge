@@ -19,12 +19,12 @@ API_SOURCES = {
     "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs",
 }
 SOURCES = ["src/modules/AF.Module.PublicApi/V1/AfApi.cs", "src/AF.Contracts/PublicApi/V1/AfApiContracts.cs",
-    "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs", "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs", "Refactor/Modules/CoreDialogueContracts.cs",
-    "Refactor/Modules/CoreDialogueOperation.cs", "Refactor/Modules/CoreDialogueClient.cs",
-    "Refactor/Modules/CoreDialogueServices.cs", "tests/AF.Contracts/ModuleFrameworkApiTests/NativeOwnerStub.cs",
+    "src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs", "src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs",
+    "src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs",
+    "src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs", "tests/AF.Contracts/ModuleFrameworkApiTests/NativeOwnerStub.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs", "src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs",
-    "Refactor/Contracts/FeatureBridgeContracts.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",
+    "src/AF.Contracts/Internal/FeatureBridgeContracts.cs", "src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs",
     "src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs", "src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs"]
 assert API_SOURCES <= set(SOURCES)
 

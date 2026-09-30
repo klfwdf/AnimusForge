@@ -7,6 +7,8 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root
 MUTATIONS = ['ignore-parse-source','ignore-final-source','omit-daily-save','omit-line-add','omit-pending-consume','drop-afef','reuse-recovery-source','drop-recovery-marker','drop-recent-marker','omit-recent-save','weekly-false-success','weekly-drop-provenance','swallow-completion-failure','omit-major-entry','omit-block-publish']
 ADMISSION_MUTATIONS = ['old-predicate','skip-title-pass','trim-seen-id','seen-after-content','require-same-owner']
 
@@ -14,7 +16,7 @@ def module(name,path):
     spec=importlib.util.spec_from_file_location(name,path); value=importlib.util.module_from_spec(spec);spec.loader.exec_module(value);return value
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--source-baseline',choices=['e77602f9']);ap.add_argument('--admission-only',action='store_true');ap.add_argument('--admission-mutate',choices=ADMISSION_MUTATIONS);ap.add_argument("--run-scope-cases",action="store_true");ap.add_argument("--run-mutate",choices=["release-replacement","ignore-run-authority"]);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--source-baseline',choices=['e77602f9']);ap.add_argument('--admission-only',action='store_true');ap.add_argument('--admission-mutate',choices=ADMISSION_MUTATIONS);ap.add_argument("--run-scope-cases",action="store_true");ap.add_argument("--run-mutate",choices=["release-replacement","ignore-run-authority"]);ap.add_argument('--run-root',type=Path);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
     if a.run_mutate and (not a.run_scope_cases or a.mutate or a.source_baseline):raise ValueError('Run mutations require isolated run-scope-cases mode')
     if a.admission_mutate and not a.admission_only:raise ValueError('Admission mutations require --admission-only')
     if a.admission_only and (a.mutate or a.source_baseline):raise ValueError('Admission observation is independent of source-check mutations and baselines')
@@ -68,8 +70,9 @@ def main():
         if name=='AttachPendingWeeklyMemoryMaterialTriggers' and a.mutate=='omit-pending-consume':
             anchor='_pendingWeeklyMemoryMaterialTriggers.RemoveAll((WeeklyMemoryMaterialTrigger x) => x == null || matchedKeys.Contains((x.StableKey ?? "").Trim()));';body=replace(body,anchor,'/* fault: pending trigger never consumed */')
         snippets.append(body)
-    for name in capture.MODELS:add('private sealed class '+name)
-    add('private class NpcActionEntry');add('private class DialogueDay');add('private sealed class NpcActionFacts')
+    for name in capture.MODELS:
+        if name not in capture.B1A_MODELS:add('private sealed class '+name)
+    add('private class DialogueDay');add('private sealed class NpcActionFacts')
     for name in names:
         match=re.search(r'^\s*private [^\n]*?\b'+name+r'\(',source,re.M)
         if not match:raise ValueError('Missing '+name)
@@ -81,7 +84,7 @@ def main():
         snippets.append(replace(oracle,'HasMemoryOverviewPendingBlocks(','HasMemoryOverviewPendingBlocksOracle('))
     recovery=read('MyBehavior.MemoryRecovery.cs')
     for name in ['IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest','BuildMemoryCommitMarkerKey']:
-        match=re.search(r'private static (?:bool|string) '+name+r'\([^;]+;',recovery)
+        match=re.search(r'(?:private|internal) static (?:bool|string) '+name+r'\([^;]+;',recovery)
         if not match or '=>' not in match.group():raise ValueError('Missing recovery guard '+name)
         snippets.append(match.group());manifest.append(dict(file='MyBehavior.MemoryRecovery.cs',signature=name,line=recovery[:match.start()].count('\n')+1,sha256=hashlib.sha256(match.group().encode()).hexdigest()))
     for signature in ['private bool PublishDailyInteractionMemoryComponent(', 'private bool TryApplyInteractionMemoryRecoveryWork(', 'private void RegisterInteractionMemoryRecoveryRetryOrQuarantine(', 'private bool HasDailyInteractionMemoryMarker(', 'private static T CloneForMemoryRecovery<T>(', 'private InteractionMemoryRecoveryLedger EnsureInteractionMemoryRecoveryLedger(', 'private sealed class InteractionMemoryRecoveryPermanentException', 'private bool PublishRecentInteractionMemoryComponent(', 'private bool HasRecentInteractionMemoryMarker(', 'private static List<DialogueDay> TrimDialogueHistoryForMemoryRecovery(', 'private static void CopyMemoryCommitMarkers(', 'private static Dictionary<string, string> SanitizeMemoryCommitMarkers(', 'private static bool TryParseMemoryCommitMarkerKey(']:
@@ -122,7 +125,9 @@ def main():
         if a.mutate:raise ValueError('Select either a mutation or the historical source-check implementation')
         old=subprocess.run(['git','show',a.source_baseline+':MyBehavior.MemorySummaryInput.cs'],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',check=True).stdout
         manifest.append(dict(file='MyBehavior.MemorySummaryInput.cs',source_revision=a.source_baseline,sha256=hashlib.sha256(old.encode()).hexdigest(),historical_input_only=True));input_code=old
-    input_code=replace(input_code,'await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)','await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
+    old_delay='await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)'
+    if old_delay in input_code:input_code=replace(input_code,old_delay,'await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
+    else:input_code=replace(input_code,'milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
     if a.mutate=='ignore-parse-source':input_code=replace(input_code,'if (!IsMemorySummaryInputCurrent(input)) return false;','/* fault: old provider payload may parse */')
     fixture=read('tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/CapturedHarness.cs.txt');fixture=fixture[:fixture.index('  static void ThreeKinds() {')]+'\n}}'
     fixture=replace(fixture,'public sealed class Hero {','public sealed class Hero { public static Hero MainHero; public object CharacterObject=new(); public TaleWorlds.CampaignSystem.Settlements.Settlement CurrentSettlement;')
@@ -133,14 +138,18 @@ def main():
     fixture=replace(fixture,'public static class PlayerNotorietyBehavior {','public static partial class PlayerNotorietyBehavior {')
     # The shared helper uses its own isolated reset. Keep terminal instrumentation separate.
     files={'Product.cs':product,'Input.cs':input_code,'Boundary.cs':read('MyBehavior.MemorySummaryMainThread.cs'),'Guard.cs':read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),'Fixture.cs':fixture,'Terminal.cs':read('tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt')}
+    files['MemorySummaryRules.cs']=read('src/modules/AF.Module.Memory/Summary/MemorySummaryRules.cs')
+    files['MemorySummaryAttemptRunner.cs']=read('src/modules/AF.Module.Memory/Summary/MemorySummaryAttemptRunner.cs')
     if a.admission_only:
         files['Terminal.cs']=replace(files['Terminal.cs'],'  void TryEnqueueMemoryOverviewForMemoryId(string id,string name,List<CompressedMemoryBlock> blocks)=>TerminalEvent("overview-after:"+id);\n','')
     # These line rules moved out of MyBehavior; link the actual ledger, not removed wrapper names.
     files['DialogueHistoryLedger.cs']=read('src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs')
     files['NpcActionLedger.cs']=read('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
+    files['NpcActionEntry.cs']=read('src/modules/AF.Module.Memory/Records/NpcActionEntry.cs')
+    files['MemoryPersistenceModels.cs']=read('src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs')
     files['WeeklyReportMaterialRevisionOwner.cs']=read('src/modules/AF.Module.Weekly/Generation/WeeklyReportMaterialRevisionOwner.cs')
     files['RecoveryLedger.cs']=read('src/modules/AF.Module.Memory/Recovery/InteractionMemoryRecoveryLedger.cs')
-    for name in ['src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs','src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs']:
+    for name in ['src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs','src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs','src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs']:
         files[Path(name).name]=read(name)
     for extra in ['MyBehavior.MemorySummaryData.cs','MyBehavior.MemorySummaryFingerprint.cs','MyBehavior.MemorySummaryPlanning.cs']:
         if (ROOT/extra).exists():files[Path(extra).name]=read(extra)
@@ -170,7 +179,7 @@ def main():
     files['Proof.csproj']=files['Proof.csproj'].replace('<OutputType>','<EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>',1).replace('</Project>','<ItemGroup>'+''.join('<Compile Include="'+name+'" />' for name in files if name.endswith('.cs'))+'</ItemGroup></Project>')
     files['NuGet.Config']='<configuration><packageSources><clear/></packageSources></configuration>'
     variant=('admission-'+(a.admission_mutate or 'current')) if a.admission_only else (('source-baseline-'+a.source_baseline) if a.source_baseline else ('run-'+a.run_mutate if a.run_mutate else 'scope-cases' if a.run_scope_cases else a.mutate or 'current'))
-    out=HERE/'.generated/terminal'/variant;out.mkdir(parents=True,exist_ok=True)
+    out=new_run_root(ROOT,'memory-b1a-terminal',a.run_root)
     for name,data in files.items():(out/name).write_bytes(data.encode())
     metadata=dict(run_mutation=a.run_mutate,mutation=a.mutate,source_baseline=a.source_baseline,extraction=manifest,generated_sha256={n:hashlib.sha256(v.encode()).hexdigest() for n,v in files.items()},seams=['existing captured game/settings/rendering and provider TCS fixtures; its maintenance budget is not a performance acceptance claim','overview admission/whole-owner candidate scans are explicit non-executing seams; real QueueDirty only enqueues candidate IDs, never fake overview jobs','Task.Delay replaced by controlled clock','actual Save entry has explicit pre-save fault hook (normally no-op)','method-entry witness and completed-result witness only; no business branch replacement except named mutants','downstream weekly publication/overview planning and native-history/Notoriety effects are witness-only; the error notice publish seam is a thread-safe queue, not actual UI display','Major writer uses supplied detached NPC facts, real Record/Create/dedupe/order/storage, with external hero eligibility and unused player/recent branches guarded as fixtures','Recovery uses actual Daily/Recent writer/marker/ledger; retention cleanup/scheduling effects are isolated witnesses','Weekly outcome uses actual wrapper/owner guard/publish/readback/ledger; feature enablement and already-confirmed Economy candidate payload are fixtures'],limits=['Daily legacy, Recovery Daily/Recent, and Weekly outcome terminal execute; not complete external action execution or whole recovery load/retention lifecycle','No real provider/game/save validation; ordinary DialogueHistoryCommit/editor/import caller thread ownership remains outside this suite','Actual source validation, Append, Save, pending trigger attach, publication readback, Process, all Apply/Mark, parsers and sanitizers execute'])
     if a.admission_only:
@@ -179,8 +188,10 @@ def main():
         metadata['seams']=['Actual TryEnqueueMemoryOverviewForMemoryId, HasMemoryOverviewPendingBlocks, sanitizers/getter/settings/queue publication; controlled game identity. Only method-entry and per-source iteration/copy counters added.']
         metadata['limits']=['Admission-only functional and operation-count observation; no Process/Apply/provider execution or live frame-time acceptance in this mode. Ordinary terminal mode retains its explicitly separate overview-admission seam.']
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode())
-    dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT.parent/'.dotnet-sdk/dotnet.exe')))
-    env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+    dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
+    (out/'home').mkdir();(out/'appdata').mkdir()
+    env={key:os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ}
+    env.update(PATH=str(dotnet.parent),DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(out/'home'),USERPROFILE=str(out/'home'),HOME=str(out/'home'),LOCALAPPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(out/'appdata'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930',DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
     (out/'build.log').write_bytes((build.stdout+build.stderr).encode())
     if build.returncode:print(build.stdout+build.stderr);return 2

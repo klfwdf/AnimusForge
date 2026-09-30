@@ -1,7 +1,8 @@
 from pathlib import Path
-import argparse, importlib.util, os
+import argparse, importlib.util, os, re
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--old',action='store_true');p.add_argument('--mutate',choices=['drop-failure','ignore-run','old-fallback','keep-stale-tags']);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--old',action='store_true');p.add_argument('--mutate',choices=['drop-failure','ignore-run','old-fallback','keep-stale-tags']);p.add_argument('--output-name');a=p.parse_args()
+if a.output_name is not None and not re.fullmatch(r'[A-Za-z0-9_-]+',a.output_name):p.error('Invalid output name')
 def load(n,p):
  sp=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
 ex=load('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');util=load('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
@@ -13,7 +14,7 @@ base=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').split('internal sta
 message_markers=['private static List<object> BuildCourierReplyMessages(','private static List<object> BuildInboundNpcLetterMessages(',
  'private static object CreateCourierChatMessage(','private static void AppendCourierRawUserSection(',
  'private static void AppendCourierUserSection(','private static void AppendCourierPersistentMemoryRoleMessages(',
- 'private static bool TryConvertCourierMemoryMessageToChatMessage(','private static bool IsCourierMemorySpeakerRecipient(',
+ 'private static bool TryConvertCourierMemoryMessageToChatMessage(',
  'private static string BuildCourierMemoryMetadataPrefix(','private static string StripCourierPromptScopeLabel(',
  'private static string StripCourierSpeakerPrefix(']
 message_source=ex.courier_source(None)
@@ -49,11 +50,11 @@ if a.mutate=='old-fallback':partial=partial.replace('input.Session.InboundFallba
 commit=ex.declaration(courier,'private void CommitGeneratedReplyActionsAtRecipientCore(' if a.old else 'private bool CommitGeneratedReplyActionsAtRecipientCore(');commit=commit[:commit.index('\n\t\tif (recipient == null')]+'\n\t\tif (text.Contains("[ACTION:")) Liveness.StaleTagEffects++;\n'+('' if a.old else '\t\treturn true;\n')+'\t}\n'
 commit+='\n\tprivate void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient, bool persistHistory = true) => CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);\n'
 hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@REPLY_TICK@@',replytick).replace('@@INBOUND_PREFIX@@',inboundprefix).replace('@@COMMIT_GUARD@@',commit)
-out=HERE/'.generated'/('liveness-old' if a.old else 'liveness-'+(a.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
+out=HERE/'.generated'/(a.output_name or ('liveness-old' if a.old else 'liveness-'+(a.mutate or 'current')));out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 (out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
 (out/'Program.cs').write_text((HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
-files=[out/'Prompt.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs']
+files=[out/'Prompt.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs']
 if not a.old:files.append(out/'Schedule.cs')
 project=util.project(out,'CourierPromptLiveness',files,executable=True)
 dotnet=os.environ.get('AF_DOTNET') or str(ROOT/'local/dotnet/8.0.425/dotnet.exe')

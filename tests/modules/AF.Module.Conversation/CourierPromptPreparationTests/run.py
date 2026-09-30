@@ -1,12 +1,13 @@
 from pathlib import Path
-import argparse, importlib.util, os, subprocess
+import argparse, importlib.util, os, re, subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 
 def load(name,path):
  spec=importlib.util.spec_from_file_location(name,path);result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result);return result
 ex=load('decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 util=load('util',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py')
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text','drop-entity-text','drop-rule-text','preflight-implies-delivery']);p.add_argument('--old-worker',action='store_true');args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['worker_assembly','main_preprocess','skip_accept','wrong_direction','skip_source','skip_knowledge_final_guard','drop-knowledge-text','drop-entity-text','drop-rule-text','preflight-implies-delivery']);p.add_argument('--old-worker',action='store_true');p.add_argument('--output-name');args=p.parse_args()
+if args.output_name is not None and not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): p.error('Invalid output name')
 source=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs').read_text(encoding='utf-8-sig')
 if args.mutate=='drop-knowledge-text':
  needle='string extras = (ctx?.Extras ?? "").Trim();'
@@ -58,7 +59,6 @@ message_markers=[
  'private static void AppendCourierUserSection(',
  'private static void AppendCourierPersistentMemoryRoleMessages(',
  'private static bool TryConvertCourierMemoryMessageToChatMessage(',
- 'private static bool IsCourierMemorySpeakerRecipient(',
  'private static string BuildCourierMemoryMetadataPrefix(',
  'private static string StripCourierPromptScopeLabel(',
  'private static string StripCourierSpeakerPrefix(',
@@ -66,7 +66,11 @@ message_markers=[
 current_host=ex.courier_source(None).replace('\r\n','\n')
 old_messages=[ex.declaration(old_host,marker) for marker in message_markers]
 new_messages=[ex.declaration(current_host,marker) for marker in message_markers]
-assert old_messages==new_messages, 'Courier final message builders changed since 77a3d234; extract both independently before comparing'
+seam='ConversationRoleClassificationOwner.IsViewerAssistant(message, npcName, null, -1, useStableIdentity: false)'
+legacy='role.Equals("assistant", StringComparison.OrdinalIgnoreCase) && IsCourierMemorySpeakerRecipient(speaker, npcName)'
+assert sum(method.count(seam) for method in new_messages)==1, 'Courier role owner seam changed'
+canonical_new=[method.replace(seam,legacy) for method in new_messages]
+assert old_messages==canonical_new, 'Courier final message builders changed beyond the reviewed role-owner seam'
 message_builders='\n'.join(new_messages)
 for method in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
  message_builders=message_builders.replace('private static List<object> '+method+'(', 'private static List<object> '+method+'Production(',1)
@@ -84,11 +88,11 @@ owner=ex.declaration(history,'private bool IsCourierHistoryOwnerCurrent(')
 historytype=ex.declaration(history,'private sealed class CourierPreparedHistory')
 harness=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@OWNER_PHASE@@',phase).replace('@@BASELINE@@',methods).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historytype+'\n'+owner).replace('@@MESSAGE_BUILDERS@@',message_builders).replace('@@FINALIZE_REPLY@@',finalize)
 if args.old_worker:harness='#define OLD_WORKER\n'+harness
-out=HERE/'.generated'/('old-worker' if args.old_worker else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=HERE/'.generated'/(args.output_name or ('old-worker' if args.old_worker else args.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 (out/'Prompt.cs').write_text(source,encoding='utf-8');(out/'Program.cs').write_text(harness,encoding='utf-8')
 (out/'Schedule.cs').write_text(schedule,encoding='utf-8')
-project=util.project(out,'CourierPromptChecks',[out/'Prompt.cs',out/'Schedule.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs'],executable=True)
+project=util.project(out,'CourierPromptChecks',[out/'Prompt.cs',out/'Schedule.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs'],executable=True)
 dotnet=os.environ.get('AF_DOTNET') or str(ROOT/'local/dotnet/8.0.425/dotnet.exe')
 code,log=util.run_dotnet(dotnet,['run','--project',str(project),'-c','Release'],out)
 (out/'run.log').write_text(log,encoding='utf-8');print(log,end='');raise SystemExit(code)

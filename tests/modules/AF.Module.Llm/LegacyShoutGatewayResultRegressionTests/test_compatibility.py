@@ -1,6 +1,6 @@
 from pathlib import Path
 import importlib.util,unittest
-ROOT=Path(__file__).resolve().parents[4];GATEWAY='Refactor/Contracts/LegacyShoutNetworkGateway.cs'
+ROOT=Path(__file__).resolve().parents[4];GATEWAY='src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs'
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 class Compatibility(unittest.TestCase):
  def test_legacy_transports_and_stream_generation_are_unchanged(self):

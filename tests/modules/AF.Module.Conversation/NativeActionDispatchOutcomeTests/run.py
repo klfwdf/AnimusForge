@@ -30,7 +30,7 @@ if args.mutate=='skip-dispatch-timeout':code=code.replace('PendingOperationRegis
 if args.mutate=='leave-expired-callback-live':code=code.replace('winner != tcs.Task && dispatchClaim.TryExpireBeforeStart()','winner != tcs.Task && new NativeConversationDispatchClaim().TryExpireBeforeStart()',1)
 if args.mutate=='expire-started-dispatch':code=code.replace('winner != tcs.Task && dispatchClaim.TryExpireBeforeStart()','winner != tcs.Task && true',1)
 out=HERE/'.generated'/('original' if args.original else 'timeout-baseline' if args.timeout_baseline else 'retirement-baseline' if args.retirement_baseline else args.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
-(out/'Program.cs').write_text(code,encoding='utf-8');enum=ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState');(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+enum,encoding='utf-8')
+(out/'Program.cs').write_text(code,encoding='utf-8');enum=ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState');(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+enum,encoding='utf-8')
 if not args.original:
  boundary=subprocess.check_output(['git','show',baseline+':ShoutBehavior.NativeActionDispatch.cs'],cwd=ROOT).decode('utf-8-sig') if args.timeout_baseline else (ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig')
  if args.mutate=='lose-start-boundary':boundary=boundary.replace('ownerStarted = true;','ownerStarted = false;',1)

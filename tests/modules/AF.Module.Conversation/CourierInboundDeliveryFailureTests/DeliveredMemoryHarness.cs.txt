@@ -1,0 +1,199 @@
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Runtime;
+
+namespace TaleWorlds.CampaignSystem {
+    public sealed class Campaign { }
+    public sealed class CampaignTime {
+        public static CampaignTime Now=new();
+        public double ToDays=100, ToHours=2400;
+    }
+}
+namespace TaleWorlds.Library { public static class TWParallel { public static bool IsMainThread() => true; } }
+namespace AnimusForge.Refactor.Runtime {
+    internal enum InteractionMemoryRecoveryLookupStatus { Unavailable, Missing, Pending, Completed, Quarantined, Disabled, SubjectMismatch, PayloadMismatch, Invalid }
+}
+namespace AnimusForge.Refactor.Contracts {
+    public enum InteractionChannel { Courier }
+    public enum MemoryCommitStatus { Applied, Duplicate, Rejected, Failed }
+    public sealed class MemoryCommitResult {
+        public MemoryCommitResult(MemoryCommitStatus status) { Status = status; }
+        public MemoryCommitStatus Status { get; }
+        public bool HistoryWritten => Status == MemoryCommitStatus.Applied || Status == MemoryCommitStatus.Duplicate;
+    }
+    public sealed class FactRecord {
+        public FactRecord(string type, string subject, string text) { Text = text; }
+        public string Text { get; }
+    }
+    public sealed class InteractionMemoryCommit {
+        public InteractionMemoryCommit(string commitId, InteractionChannel channel, string sessionId, string subjectId,
+            string userText, string assistantText, IEnumerable<FactRecord> facts,
+            long runtimeGeneration, long saveGeneration, string traceId,
+            int gameDay, int gameHour, string locationId, int sceneSessionId,
+            int targetAgentIndex, string targetName) {
+            CommitId=commitId; SessionId=sessionId; SubjectId=subjectId; AssistantText=assistantText;
+            GameDay=gameDay; GameHour=gameHour; LocationId=locationId;
+        }
+        public string CommitId, SessionId, SubjectId, AssistantText, LocationId;
+        public int GameDay, GameHour;
+    }
+}
+namespace AnimusForge {
+    public sealed class Hero { public string Id="npc"; public string Name="NPC"; public object CharacterObject=new(); }
+    public sealed class MobileParty { }
+    public enum CourierStage { GeneratingReply }
+    public static class CourierVisibleLetterSanitizer { public static string Clean(string value) => value; }
+    public static class ShoutBehavior { public static void RecordNativeConversationNpcLineForExternal(Hero hero, object character, string name, string line) { } }
+    public static class ProactiveNpcRequestBehavior { public static void RecordLetterNeedDeliveredForExternal(string need) { } }
+    public static class MainThreadActions { public static void Enqueue(Action action) => action(); }
+    public sealed class MemoryProbe { public bool Ready=true, Accept, Completed, Missing, RejectPermanent; public int Attempts, LastDay=-1; public string LastLocation; }
+    public static class MyBehavior {
+        public static MemoryProbe Owner;
+        public static string ResolveCurrentMemorySceneLabelForExternal() => "delivery-scene";
+        public static bool TryPrepareExternalDialogueHistoryRecoveryIdentity(InteractionMemoryCommit commit, bool isNonHero,
+            string npcName, out string recoveryId, out string payloadHash, out string error) {
+            recoveryId=""; payloadHash=""; error="";
+            if (Owner == null) { error="memory_owner_missing"; return false; }
+            if (!Owner.Ready) { error="memory_recovery_not_activated"; return false; }
+            if (Owner.RejectPermanent) { error="memory_target_ineligible"; return false; }
+            recoveryId=commit.SessionId.PadRight(64, 'A').Substring(0,64);
+            payloadHash=commit.SubjectId.PadRight(64, 'E').Substring(0,64);
+            return true;
+        }
+        public static MemoryCommitResult CommitExternalDialogueHistoryRecoverable(InteractionMemoryCommit commit,
+            bool isNonHero, string npcName) {
+            Owner.Attempts++;
+            Owner.LastDay=commit.GameDay;
+            Owner.LastLocation=commit.LocationId;
+            if (Owner.Accept) { Owner.Completed=true; return new MemoryCommitResult(MemoryCommitStatus.Applied); }
+            return new MemoryCommitResult(MemoryCommitStatus.Failed);
+        }
+        internal static InteractionMemoryRecoveryLookupStatus GetExternalDialogueHistoryRecoveryStatus(
+            string recoveryId, string subjectId, string payloadHash) {
+            if (Owner == null || !Owner.Ready) return InteractionMemoryRecoveryLookupStatus.Unavailable;
+            if (Owner.Missing) return InteractionMemoryRecoveryLookupStatus.Missing;
+            return Owner.Completed ? InteractionMemoryRecoveryLookupStatus.Completed : InteractionMemoryRecoveryLookupStatus.Pending;
+        }
+    }
+    public sealed partial class CourierDeliveryBehavior {
+        @@STORAGE@@
+        public sealed class CourierSession {
+            public Hero Sender=new(); public string Id="inbound-1", SenderHeroId="npc", SenderName="NPC", LetterText="visible letter", DeliveryFactText;
+            public string InboundNeedType, InboundEventKey, Stage;
+            public bool ReplyGenerated=true, ReplyGenerationStarted, ReplyWaitPopupShown, DeliveryApplied, IsNpcInitiated;
+        }
+        public static CourierDeliveryBehavior Instance;
+        private readonly object _sessionLock=new();
+        private bool _courierReplyWaitTimeLocked=false;
+        private readonly Dictionary<string,string> _npcLetterLastDeliveredEventKeyBySender=new();
+        public int LettersAdded, Completed, Notices, Held;
+        public CourierDeliveryBehavior() { Instance=this; }
+        public int PendingCount => _pendingInboundDeliveredMemoryIntents.Count;
+        public int QuarantinedCount { get { int n=0; foreach (var x in _pendingInboundDeliveredMemoryIntents.Values) if (x.Quarantined) n++; return n; } }
+        public object Snapshot() => CapturePendingInboundDeliveredMemoryIntents();
+        public string SnapshotJson() => JsonConvert.SerializeObject(new NpcDiplomacyLetterStorage {
+            PendingInboundDeliveredMemoryIntents = CapturePendingInboundDeliveredMemoryIntents() });
+        public void LoadJson(string json) => RestorePendingInboundDeliveredMemoryIntents(
+            JsonConvert.DeserializeObject<NpcDiplomacyLetterStorage>(json)?.PendingInboundDeliveredMemoryIntents);
+        public int SnapshotCount() => CapturePendingInboundDeliveredMemoryIntents().Count;
+        public void Load(object snapshot) => RestorePendingInboundDeliveredMemoryIntents(
+            (Dictionary<string,CourierInboundDeliveredMemoryIntent>)snapshot);
+        public void LoadLegacy() => RestorePendingInboundDeliveredMemoryIntents(null);
+        public void LoadCorrupt() => RestorePendingInboundDeliveredMemoryIntents(new Dictionary<string,CourierInboundDeliveredMemoryIntent> {
+            ["bad"] = new CourierInboundDeliveredMemoryIntent { SessionId="different", SenderHeroId="npc", HistoryLine="line", DeliveryFactText="fact" }
+        });
+        public void LoadOverflow() {
+            var entries=new Dictionary<string,CourierInboundDeliveredMemoryIntent>();
+            for (int i=0; i<129; i++) {
+                string id="overflow-"+i;
+                entries[id]=new CourierInboundDeliveredMemoryIntent { SessionId=id, SenderHeroId="npc", HistoryLine="line", DeliveryFactText="fact" };
+            }
+            RestorePendingInboundDeliveredMemoryIntents(entries);
+        }
+        public void Tick() => ProcessOnePendingInboundDeliveredMemoryIntent();
+        public void Deliver(CourierSession session) => DeliverInboundLetterToPlayer(session, new MobileParty());
+        private static Hero ResolveSender(CourierSession session) => session.Sender;
+        private static bool IsCourierInboundCompletionReadyForDelivery(CourierSession session) => true;
+        private static string GetInboundLetterKindDisplayText(CourierSession session) => "letter";
+        private static string StripCourierActionTags(string text) => text;
+        private static string BuildInboundDeliveryFactText(CourierSession session, bool delivered, Hero sender) => "[AFEF NPC行为补充] delivered";
+        private static string SafeHeroId(Hero hero) => hero?.Id ?? "";
+        private static void Log(string value) { }
+        private void HoldInboundCourierAtPlayer(CourierSession session, MobileParty party) => Held++;
+        private void ShowCourierReplyWaitPopupAndPause(CourierSession session, Hero sender) { }
+        private void StartInboundLetterGeneration(CourierSession session, string reason) { }
+        private void EndCourierReplyWaitPause(CourierSession session, string reason) { }
+        private bool AddCourierLetterToPlayerInventory(CourierSession session, Hero sender, string name, string text, bool isReply) { LettersAdded++; return true; }
+        private void ShowInboundCourierLetterNotice(string senderId, string name, string letter, string kind) => Notices++;
+        private void CompleteAndDestroyCourier(CourierSession session, MobileParty party) => Completed++;
+@@DELIVERY@@
+    }
+    public static class Program {
+        private static void Require(bool yes, string why) { if (!yes) throw new Exception("FAIL " + why); }
+        private static CourierDeliveryBehavior.CourierSession Session(string id) => new() { Id=id };
+        public static void Main() {
+            MyBehavior.Owner=new MemoryProbe { Accept=true };
+            var accepted=new CourierDeliveryBehavior(); var a=Session("accepted"); accepted.Deliver(a);
+            Require(a.DeliveryApplied && accepted.LettersAdded==1 && accepted.Notices==1 && accepted.Completed==1, "accepted visible delivery");
+            Require(MyBehavior.Owner.Attempts==1 && accepted.PendingCount==0, "accepted immediate memory once");
+            accepted.Tick(); Require(MyBehavior.Owner.Attempts==1 && accepted.LettersAdded==1, "accepted duplicate tick");
+
+            MyBehavior.Owner=new MemoryProbe { Accept=false };
+            var pending=new CourierDeliveryBehavior(); var p=Session("pending"); pending.Deliver(p);
+            Require(p.DeliveryApplied && pending.LettersAdded==1 && pending.Notices==1 && pending.Completed==1, "pending visible delivery once");
+            Require(MyBehavior.Owner.Attempts==1 && pending.PendingCount==1, "memory failure retains intent");
+            pending.Tick(); Require(MyBehavior.Owner.Attempts==1 && pending.PendingCount==1, "pending does not replay commit");
+            var pendingLoaded=new CourierDeliveryBehavior(); pendingLoaded.LoadJson(pending.SnapshotJson());
+            pendingLoaded.Tick(); Require(MyBehavior.Owner.Attempts==1 && pendingLoaded.PendingCount==1, "loaded pending does not replay commit");
+            MyBehavior.Owner.Completed=true; pendingLoaded.Tick();
+            Require(pendingLoaded.PendingCount==0 && pendingLoaded.LettersAdded==0, "loaded pending observes completion only");
+            Require(pending.LettersAdded==1 && pending.Completed==1, "memory completion cannot replay physical delivery");
+
+            MyBehavior.Owner=new MemoryProbe { Accept=false };
+            var ambiguous=new CourierDeliveryBehavior(); ambiguous.Deliver(Session("ambiguous"));
+            Require(ambiguous.PendingCount==1 && MyBehavior.Owner.Attempts==1, "ambiguous setup");
+            MyBehavior.Owner.Missing=true; ambiguous.Tick();
+            Require(ambiguous.QuarantinedCount==1 && MyBehavior.Owner.Attempts==1, "missing after attempt quarantined without replay");
+
+            MyBehavior.Owner=new MemoryProbe { RejectPermanent=true };
+            var ineligible=new CourierDeliveryBehavior(); ineligible.Deliver(Session("ineligible"));
+            Require(ineligible.QuarantinedCount==1 && ineligible.LettersAdded==1, "permanent rejection preserves visible delivery and quarantines");
+
+            MyBehavior.Owner=null;
+            var missing=new CourierDeliveryBehavior(); var m=Session("missing-owner"); missing.Deliver(m);
+            Require(m.DeliveryApplied && missing.PendingCount==1 && missing.LettersAdded==1, "missing owner preserves intent and delivery");
+            string saved=missing.SnapshotJson();
+            var loaded=new CourierDeliveryBehavior(); loaded.LoadJson(saved);
+            TaleWorlds.CampaignSystem.CampaignTime.Now.ToDays=101;
+            TaleWorlds.CampaignSystem.CampaignTime.Now.ToHours=2424;
+            MyBehavior.Owner=new MemoryProbe { Accept=true };
+            missing.Tick(); Require(MyBehavior.Owner.Attempts==0, "retired instance cannot write");
+            loaded.Tick(); Require(MyBehavior.Owner.Attempts==1 && loaded.PendingCount==0 && MyBehavior.Owner.LastDay==100
+                && MyBehavior.Owner.LastLocation=="delivery-scene",
+                "loaded intent writes memory once at original delivery day and scene");
+            Require(loaded.LettersAdded==0 && loaded.Completed==0 && loaded.Notices==0, "loaded intent is memory-only");
+            loaded.Tick(); Require(MyBehavior.Owner.Attempts==1, "loaded completed tick duplicate");
+
+            var legacy=new CourierDeliveryBehavior(); legacy.LoadJson("{\"SenderCooldownUntilDays\":{}}"); legacy.Tick();
+            Require(legacy.PendingCount==0, "old save missing field");
+            var corrupt=new CourierDeliveryBehavior(); corrupt.LoadCorrupt(); corrupt.Tick();
+            Require(corrupt.PendingCount==1 && corrupt.QuarantinedCount==1, "corrupt identity quarantined");
+
+            var overflow=new CourierDeliveryBehavior(); overflow.LoadOverflow();
+            int beforeOverflowAttempts=MyBehavior.Owner.Attempts;
+            overflow.Tick(); overflow.Deliver(Session("overflow-new"));
+            Require(overflow.PendingCount==129 && overflow.SnapshotCount()==129,
+                "oversize save data preserved");
+            Require(MyBehavior.Owner.Attempts==beforeOverflowAttempts && overflow.Held==1 && overflow.LettersAdded==0,
+                "oversize queue fail closed without scanning or delivery");
+
+            MyBehavior.Owner=null;
+            var capped=new CourierDeliveryBehavior();
+            for (int i=0; i<129; i++) capped.Deliver(Session("cap-"+i));
+            Require(capped.PendingCount==128 && capped.LettersAdded==128 && capped.Held==1, "bounded pending backpressure before physical delivery");
+            Console.WriteLine("PASS Courier delivered memory accepted/pending/load/missing/retired/old-save/corrupt/bounded/no-redelivery");
+        }
+    }
+}

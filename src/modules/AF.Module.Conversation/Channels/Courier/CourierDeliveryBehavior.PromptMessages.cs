@@ -360,7 +360,7 @@ public sealed partial class CourierDeliveryBehavior
 		string role = (message.Role ?? "").Trim();
 		string speaker = (message.SpeakerName ?? "").Trim();
 		string metadata = BuildCourierMemoryMetadataPrefix(message, string.IsNullOrWhiteSpace(speaker) ? "记录" : speaker);
-		if (role.Equals("assistant", StringComparison.OrdinalIgnoreCase) && IsCourierMemorySpeakerRecipient(speaker, npcName))
+		if (ConversationRoleClassificationOwner.IsViewerAssistant(message, npcName, null, -1, useStableIdentity: false))
 		{
 			chatMessage = CreateCourierChatMessage("assistant", metadata + StripCourierSpeakerPrefix(content, npcName));
 			return true;
@@ -379,13 +379,6 @@ public sealed partial class CourierDeliveryBehavior
 		string player = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
 		chatMessage = CreateCourierChatMessage("user", metadata + StripCourierSpeakerPrefix(content, player));
 		return true;
-	}
-
-	private static bool IsCourierMemorySpeakerRecipient(string speaker, string npcName)
-	{
-		string left = (speaker ?? "").Trim();
-		string right = (npcName ?? "").Trim();
-		return !string.IsNullOrWhiteSpace(left) && !string.IsNullOrWhiteSpace(right) && string.Equals(left, right, StringComparison.OrdinalIgnoreCase);
 	}
 
 	private static string BuildCourierMemoryMetadataPrefix(ConversationMessage message, string fallbackSpeaker)

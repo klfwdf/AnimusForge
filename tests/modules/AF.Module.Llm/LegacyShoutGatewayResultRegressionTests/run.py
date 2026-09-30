@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,hashlib,importlib.util,os,re,subprocess,sys
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
-GATEWAY='Refactor/Contracts/LegacyShoutNetworkGateway.cs'
+GATEWAY='src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs'
 def main():
  p=argparse.ArgumentParser();p.add_argument('--source-ref');p.add_argument('--output-name',default='current');p.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');a=p.parse_args()
  if not re.fullmatch(r'[A-Za-z0-9_-]+',a.output_name):p.error('invalid output name')
@@ -10,7 +10,7 @@ def main():
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  gateway=ex.source(GATEWAY,a.source_ref)
  (out/'Gateway.cs').write_text(gateway,encoding='utf-8')
- for name in ['Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Adapters/LegacyPromptPackageAdapter.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']:
+ for name in ['src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']:
   (out/Path(name).name).write_text((ROOT/name).read_text(encoding='utf-8-sig'),encoding='utf-8')
  retry=(ROOT/'LlmRetryPrompt.cs').read_text(encoding='utf-8-sig')
  detail='\n'.join(ex.declaration(retry,sig) for sig in ['public static string BuildFailureDetail(','private static string NormalizeFullText('])

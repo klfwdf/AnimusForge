@@ -85,7 +85,7 @@ internal static class WeeklyActionOutcomeProductionReplay
             owner,
             "TryBuildWeeklyActionOutcomePayload");
 
-        Type trigger = owner.GetNestedType("WeeklyMemoryMaterialTrigger", BindingFlags.NonPublic);
+        Type trigger = assembly.GetType("AnimusForge.WeeklyMemoryMaterialTrigger", false);
         Require(trigger != null, "weekly material trigger type missing");
         foreach (string fieldName in new[]
         {
@@ -338,10 +338,10 @@ internal static class WeeklyActionOutcomeProductionReplay
             "PlayerNotorietyBehavior.cs",
             "PlayerNotorietyBehavior.ConversationOutcomes.cs",
             "MyBehavior.WeeklyActionOutcomeReceipts.cs",
-            "Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs",
+            "src/AF.GameAdapter.Bannerlord/Composition/LegacyInteractionSnapshotAdapters.cs",
             "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
             "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
-            "Refactor/Runtime/NotorietyConversationOutcomeReceipt.cs",
+            "src/modules/AF.Module.Social/Notoriety/NotorietyConversationOutcomeReceipt.cs",
             "src/modules/AF.Module.Weekly/Receipts/WeeklyMemoryMaterialOutcomeReceipt.cs"
             , "src/modules/AF.Module.Weekly/Publication/WeeklyActionOutcomePublicationOwner.cs"
         };

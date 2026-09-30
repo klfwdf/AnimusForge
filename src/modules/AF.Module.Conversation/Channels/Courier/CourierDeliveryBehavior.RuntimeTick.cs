@@ -87,6 +87,9 @@ public sealed partial class CourierDeliveryBehavior
 			_npcInitiatedLetterScan = null;
 			_lastCampaignTickUtcTicks = 0L;
 			_courierInboundCompletionScanCursor = string.Empty;
+			_pendingInboundDeliveredMemoryCursor = string.Empty;
+			_pendingInboundDeliveredMemoryOverflow = false;
+			lock (_sessionLock) _pendingInboundDeliveredMemoryIntents.Clear();
 			_courierReplyWaitTimeLocked = false;
 			_courierReplyWaitPreviousMode = CampaignTimeControlMode.Stop;
 			_courierReplyWaitPreviousLock = false;
@@ -151,6 +154,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			ProcessCourierLetterInventoryRestoreRetry();
 			ProcessOneCourierInboundCompletionReceipt();
+			ProcessOnePendingInboundDeliveredMemoryIntent();
 			List<CourierSession> snapshot;
 			using (PerfProbe.Scope("CourierDelivery.OnCampaignTick.BuildSnapshot"))
 			{

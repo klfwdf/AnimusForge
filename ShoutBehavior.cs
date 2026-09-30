@@ -22125,6 +22125,11 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return ruleIds.Any((string x) => string.Equals((x ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 	}
 
+	internal static bool HasPreprocessRuleHitForExternal(IEnumerable<string> ruleIds, string ruleId)
+	{
+		return HasPreprocessRuleHit(ruleIds, ruleId);
+	}
+
 	private static string ResolveCourierRuntimeTargetKingdomId(Hero targetHero, CharacterObject targetCharacter)
 	{
 		try
@@ -33106,7 +33111,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 			{
 				return false;
 			}
-			if (msg.SpeakerAgentIndex == npcAgentIndex || IsSameSceneHeroId(msg.SpeakerHeroId, npcHeroId))
+			if (ConversationRoleClassificationOwner.IsViewerAssistant(msg, null, npcHeroId, npcAgentIndex, useStableIdentity: true))
 			{
 				chatMessage = CreateChatMessage("assistant", PrefixConversationMessageForPrompt(msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "NPC" : msg.SpeakerName.Trim(), text3));
 				return true;

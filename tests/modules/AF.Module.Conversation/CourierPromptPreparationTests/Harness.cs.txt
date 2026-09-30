@@ -28,7 +28,7 @@ namespace TaleWorlds.CampaignSystem {
 namespace AnimusForge {
  internal static class SaveRuntimeGuard { internal static long Generation=1; internal static bool IsCurrentGeneration(long gen)=>gen==Generation; internal static bool IsStale(long gen,string source)=>!IsCurrentGeneration(gen); }
  internal sealed class PreprocessFormatException : Exception { }
- public sealed class ConversationMessage { public string Role="assistant",Content="memory",SpeakerName="NPC",GameDate="",Scene=""; public int GameDayIndex,GameHour; }
+ public sealed class ConversationMessage { public string Role="assistant",Content="memory",SpeakerName="NPC",SpeakerHeroId="",GameDate="",Scene=""; public int GameDayIndex,GameHour,SpeakerAgentIndex=-1; }
  internal static class Probe {
   internal static int WrongThread, Routing, Contexts, Assemblies, Reads, KnowledgeApplies;internal static bool SyncAllowed, ThrowRouting, ThrowAssembly, NullContext, NullHits, Command, EmptyExtras, EmptyHistory, BlockKnowledge;
   internal static string Input, Culture, Facts, PreviousFacts, KnowledgeVariant;
@@ -118,6 +118,8 @@ namespace AnimusForge {
  internal sealed class DuelSettingsValue { internal int NpcInitiatedLetterTargetChars=220; }
  public partial class ShoutBehavior {
   internal static bool HasInjectedRuleBlockForExternal(string extras,string rule)=>false;
+  internal static bool HasPreprocessRuleHitForExternal(IEnumerable<string> hits,string rule)
+   => hits != null && !string.IsNullOrWhiteSpace(rule) && hits.Any(hit => string.Equals((hit??"").Trim(),rule.Trim(),StringComparison.OrdinalIgnoreCase));
   internal static string BuildHeroStableRoleContextForExternal(Hero hero){Probe.MainOnly();return "role:"+hero.Id;}
  }
  internal static class WorldMapPartyCommandBehavior {

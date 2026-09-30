@@ -1,11 +1,12 @@
-# Default inbound Courier delivery failure reproduction
+# Default inbound Courier delivered-memory recovery
 
 `run.py` extracts the current production `DeliverInboundLetterToPlayer` and
-`MyBehavior.AppendExternalDialogueHistory` bodies, compiles them with synthetic
-Campaign, memory-owner, inventory, and UI stubs, and runs accepted, rejected,
-throwing, and missing-owner cases. It confirms that default inbound delivery
-continues when the legacy void memory facade cannot confirm History/AFEF.
+compiles the actual `CourierDeliveryBehavior.DeliveredMemory.cs` owner and the
+root storage type with Newtonsoft JSON roundtrips, plus synthetic Memory,
+inventory, and UI dependencies. It checks immediate success,
+pending/loaded completion, missing owner, stale instance, old-save missing field,
+malformed identity quarantine, bounded backpressure, and no physical redelivery.
+`--mutate skip-history` compiles but fails the named immediate-memory assertion.
 
-The test does **not** prove a real game/save loses a fact. It does not cover
-the separate `AFCI1:` detached opt-in receipt path. `--mutate skip-history`
-must fail the named history-attempt assertion.
+This source-derived test does not execute Bannerlord SaveSystem or prove actual
+disk persistence, and it does not cover the separate `AFCI1:` generation receipt.

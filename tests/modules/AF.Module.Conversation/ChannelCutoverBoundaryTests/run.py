@@ -124,7 +124,7 @@ def extract(ref: str | None) -> dict[str, str]:
     # The same await also appears inside the fallback lambda; select the last.
     last_await = "await GenerateNpcReplyAsync(request).ConfigureAwait(false);"
     end_c = method.rindex(last_await) + len(last_await)
-    contracts = source("Refactor/Contracts/InteractionContracts.cs", ref)
+    contracts = source("src/AF.Contracts/Internal/InteractionContracts.cs", ref)
     tail_begin = scene.index("relayPostprocessSelected = !suppressBattleSpeechFollowups", end)
     tail_end = scene.index(";", scene.index("bool flag11 =", tail_begin)) + 1
     tail_decisions = scene[tail_begin:tail_end]
@@ -148,23 +148,23 @@ def extract(ref: str | None) -> dict[str, str]:
         "SCENE_BLOCK": scene[begin:end],
         "COURIER_BLOCK": method[begin_c:end_c],
         "COURIER_REQUEST_GUARDS": "",
-        "COURIER_OBSERVATION_TYPES": declaration(source("Refactor/Modules/CoreDialogueContracts.cs", None), "internal enum CoreCourierAcceptedSteps"),
+        "COURIER_OBSERVATION_TYPES": declaration(source("src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs", None), "internal enum CoreCourierAcceptedSteps"),
         "COURIER_CLEAN": "\n\n".join(declaration(courier, signature) for signature in (
             "private static string CleanNpcReply(", "private static string PrepareNpcReplyForActionPostprocess(", "private static bool LooksLikeApiError(")),
         "COURIER_VISIBLE_SANITIZER": declaration(source("CourierVisibleLetterSanitizer.cs", None), "internal static class CourierVisibleLetterSanitizer"),
         "FAIL_METHOD": declaration(courier, "private void FailCourierReplyGenerationOnMainThread("),
         "FINALIZE_METHOD": declaration(courier, "private void FinalizeCourierReplyGenerationOnMainThread("),
         "DETACHED_FAIL_METHOD": declaration(courier, "private void FailDetachedCourierReplyOnMainThread(", optional=True),
-        "STATUS_ENUM": declaration(source("Refactor/Contracts/InteractionContracts.cs", ref), "public enum InteractionStatus"),
+        "STATUS_ENUM": declaration(source("src/AF.Contracts/Internal/InteractionContracts.cs", ref), "public enum InteractionStatus"),
         "RESULT_TYPE": declaration(source("src/modules/AF.Module.Conversation/Internal/DetachedInteractionHost.cs", ref), "public sealed class DetachedInteractionHostResult"),
         "PROMPT_CONTRACTS": "\n\n".join(declaration(contracts, item) for item in prompt_contracts),
-        "POSTPROCESS_INTERFACE": declaration(source("Refactor/Contracts/LlmContracts.cs", ref), "public interface IPostprocessPromptComposer"),
-        "PORTS_TYPE": declaration(source("Refactor/Adapters/LegacyInteractionPipelineComposition.cs", ref), "public sealed class LegacyInteractionPipelinePorts"),
-        "MAIN_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPromptComposer.cs", ref), "public sealed class LegacyDetachedPromptComposer"),
-        "POSTPROCESS_COMPOSER": declaration(source("Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs", ref), "public sealed class LegacyDetachedPostprocessPromptComposer"),
-        "LEGACY_PROMPT_ADAPTER": declaration(source("Refactor/Adapters/LegacyPromptPackageAdapter.cs", ref), "public static class LegacyPromptPackageAdapter"),
+        "POSTPROCESS_INTERFACE": declaration(source("src/AF.Contracts/Internal/LlmContracts.cs", ref), "public interface IPostprocessPromptComposer"),
+        "PORTS_TYPE": declaration(source("src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs", ref), "public sealed class LegacyInteractionPipelinePorts"),
+        "MAIN_COMPOSER": declaration(source("src/modules/AF.Module.Prompt/Composition/LegacyDetachedPromptComposer.cs", ref), "public sealed class LegacyDetachedPromptComposer"),
+        "POSTPROCESS_COMPOSER": declaration(source("src/modules/AF.Module.Prompt/Composition/LegacyDetachedPostprocessPromptComposer.cs", ref), "public sealed class LegacyDetachedPostprocessPromptComposer"),
+        "LEGACY_PROMPT_ADAPTER": declaration(source("src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs", ref), "public static class LegacyPromptPackageAdapter"),
         "ACTION_PARSER": declaration(source("src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs", ref), "public sealed class LegacyActionTagParser"),
-        "BUILD_PROMPT": declaration(source("Refactor/Adapters/LegacyConfiguredChatGateway.cs", ref), "internal static PromptPackage BuildPromptPackage("),
+        "BUILD_PROMPT": declaration(source("src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs", ref), "internal static PromptPackage BuildPromptPackage("),
         "CREATE_MESSAGE": declaration(scene, "private static object CreateChatMessage("),
         "PUBLIC_SCENE_FACTORY": declaration(scene, "public static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPortsForExternal("),
         "PRIVATE_SCENE_FACTORY": declaration(scene, "private static LegacyInteractionPipelinePorts CreateSceneShoutDetachedPorts(", optional=True),
@@ -204,6 +204,7 @@ def main() -> int:
     parser.add_argument("--source-ref", help="Read immutable Git source instead of the working tree.")
     parser.add_argument("--dotnet", help="Path to dotnet; otherwise use DOTNET_ROOT or PATH.")
     parser.add_argument("--output-name", default="current", help="A single name under .tmp/channel-cutover-boundary.")
+    parser.add_argument("--run-root", type=Path, help="An isolated output directory under workspace artifacts.")
     parser.add_argument("--newtonsoft", type=Path, default=ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll",
                         help="Existing Newtonsoft.Json assembly for the production anonymous-message adapter; no package download.")
     args = parser.parse_args()
@@ -224,7 +225,9 @@ def main() -> int:
         if template.count(placeholder) != 1:
             raise ValueError(f"Expected exactly one {placeholder}")
         template = template.replace(placeholder, block)
-    output = ROOT / ".tmp" / "channel-cutover-boundary" / args.output_name
+    output = (args.run_root.resolve() if args.run_root else ROOT / ".tmp" / "channel-cutover-boundary" / args.output_name)
+    if args.run_root and not output.is_relative_to((ROOT / "artifacts").resolve()):
+        parser.error("--run-root must be under workspace artifacts")
     output.mkdir(parents=True, exist_ok=True)
     (output / "Program.cs").write_text(template, encoding="utf-8")
     shutil.copyfile(args.newtonsoft, output / "Newtonsoft.Json.dll")

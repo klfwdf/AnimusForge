@@ -11,8 +11,8 @@ out = HERE / '.generated' / (args.mutate or 'current')
 out.mkdir(parents=True, exist_ok=True)
 
 sources = {
-    'InteractionContracts.cs': ROOT / 'Refactor/Contracts/InteractionContracts.cs',
-    'LlmContracts.cs': ROOT / 'Refactor/Contracts/LlmContracts.cs',
+    'InteractionContracts.cs': ROOT / 'src/AF.Contracts/Internal/InteractionContracts.cs',
+    'LlmContracts.cs': ROOT / 'src/AF.Contracts/Internal/LlmContracts.cs',
     'LegacyActionTagCatalog.cs': ROOT / 'src/modules/AF.Module.Actions/Tags/LegacyActionTagCatalog.cs',
     'LegacyActionTagParser.cs': ROOT / 'src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs',
     'ActionPlanIntegrityPolicy.cs': ROOT / 'src/modules/AF.Module.Actions/Plan/ActionPlanIntegrityPolicy.cs',

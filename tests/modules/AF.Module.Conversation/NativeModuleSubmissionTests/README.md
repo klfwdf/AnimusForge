@@ -69,9 +69,9 @@ J14 曾因新的渠道/上下文指纹使此历史依赖门禁失配。现已由
 | `src/modules/AF.Module.PublicApi/V1/AfApi.cs:55` | `public static AfDialogueClient CreateDialogueClient()` | 公共V1创建入口；旧查询/身份不变 |
 | `src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs:53` | `public sealed class AfDialogueClient` | 独立子MOD namespace/submit/取消/结果DTO |
 | `src/modules/AF.Module.PublicApi/Internal/AfV1DialogueProjection.cs:7` | `internal static class AfV1DialogueProjection` | 显式外部协议投影，不绑定内部enum数值 |
-| `Refactor/Modules/CoreDialogueClient.cs:10` | `internal sealed class CoreDialogueClient` | 每client有界128去重、不同payload拒绝、不静默淘汰 |
-| `Refactor/Modules/CoreDialogueOperation.cs:10` | `internal sealed class CoreDialogueOperation` | 单次claim、开始前取消、回执优先 |
-| `Refactor/Modules/CoreDialogueServices.cs:7` | `internal static class CoreDialogueServices` | 同DLL内部服务复用真实Native owner |
+| `src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs:10` | `internal sealed class CoreDialogueClient` | 每client有界128去重、不同payload拒绝、不静默淘汰 |
+| `src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs:10` | `internal sealed class CoreDialogueOperation` | 单次claim、开始前取消、回执优先 |
+| `src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs:7` | `internal static class CoreDialogueServices` | 同DLL内部服务复用真实Native owner |
 | `ShoutBehavior.ModuleNativeSubmission.cs:10` | `internal static void SubmitModuleNativeDialogue` | owner/generation/epoch/revision绑定，原队列/准入接线 |
 | `ShoutBehavior.NativeAdmission.cs:65` | `private async Task<string> SubmitNativeConversationAdmittedAsync` | optional内部operation记录准入，原UI调用不变 |
 | `ShoutBehavior.NativeCompletion.cs:75` | `private string CompleteNativeConversationReplyOnMainThread` | 唯一动作/必要记忆完成尾部记录receipt |

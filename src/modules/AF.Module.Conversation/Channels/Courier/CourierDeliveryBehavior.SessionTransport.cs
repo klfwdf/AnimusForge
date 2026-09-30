@@ -229,10 +229,17 @@ public sealed partial class CourierDeliveryBehavior
 		string visibleLetter = CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(letter));
 		if (!session.DeliveryApplied)
 		{
-			session.DeliveryApplied = true;
-			session.DeliveryFactText = BuildInboundDeliveryFactText(session, delivered: true, sender);
+			string deliveryFact = BuildInboundDeliveryFactText(session, delivered: true, sender);
 			string historyLine = "【" + GetInboundLetterKindDisplayText(session) + "】" + senderName + "通过信使写道：" + visibleLetter;
-			MyBehavior.AppendExternalDialogueHistory(sender, null, historyLine, session.DeliveryFactText);
+			if (!TryReserveInboundDeliveredMemoryIntent(session, sender, historyLine, deliveryFact))
+			{
+				// No memory-only intent means delivery could be lost after the party is destroyed.
+				HoldInboundCourierAtPlayer(session, courier);
+				return;
+			}
+			session.DeliveryApplied = true;
+			session.DeliveryFactText = deliveryFact;
+			ProcessPendingInboundDeliveredMemoryIntent(session.Id);
 			ShoutBehavior.RecordNativeConversationNpcLineForExternal(sender, sender?.CharacterObject, senderName, historyLine);
 			AddCourierLetterToPlayerInventory(session, sender, senderName, visibleLetter, isReply: false);
 			if (session.IsNpcInitiated && !string.IsNullOrWhiteSpace(session.InboundNeedType))

@@ -18,7 +18,7 @@ else:
 code=code.replace('@@EXTRAS@@','' if a.original else read('tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/Extras.cs.txt'))
 code=code.replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')
 out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True);(out/'Program.cs').write_text(code,encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-files=[out/'Program.cs',ROOT/'Refactor/Contracts/NpcPersonaReadinessSnapshot.cs',ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs']
+files=[out/'Program.cs',ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaReadinessSnapshot.cs',ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs']
 if not a.original:
  for path in ['MyBehavior.PersonaReadiness.cs','ShoutBehavior.PersonaPreparation.cs','src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PreparationAdmission.cs','src/modules/AF.Module.Conversation/Internal/PersonaGenerationWaiter.cs']:
   text=read(path).replace('Task.Delay(500)','Task.Delay(1)').replace('const int waitTimeoutMs = 180000','const int waitTimeoutMs = 40')

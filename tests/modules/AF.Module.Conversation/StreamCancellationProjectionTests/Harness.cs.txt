@@ -1,0 +1,35 @@
+using System;
+using System.Threading;
+
+static class SaveRuntimeGuard { internal static bool Stale; internal static bool IsStale(long generation,string source)=>Stale; }
+
+static class Program
+{
+    private static void Require(bool yes,string why) { if(!yes) throw new Exception("FAIL "+why); }
+    private static int Project(int branch,CancellationToken cancellationToken)
+    {
+        long runtimeGeneration=1;
+        int committed=0;
+        Action<string> onComplete=reply=>{ if(reply.Length>0) committed++; };
+        switch(branch) { @@BLOCKS@@ }
+        return committed;
+    }
+    public static void Main()
+    {
+        string[] channels={"Native","Scene","Vengeance"};
+        foreach(string channel in channels)
+        {
+            for(int branch=0;branch<6;branch++)
+            {
+                using var cts=new CancellationTokenSource();
+                SaveRuntimeGuard.Stale=false;
+                Require(Project(branch,cts.Token)==1,channel+" active reply published "+branch);
+                cts.Cancel();
+                Require(Project(branch,cts.Token)==0,channel+" canceled partial did not commit "+branch);
+                SaveRuntimeGuard.Stale=true;
+                Require(Project(branch,CancellationToken.None)==0,channel+" late generation did not commit "+branch);
+            }
+        }
+        Console.WriteLine("PASS six source-derived stream guards x Native/Scene/Vengeance active/canceled/late; consumers synthetic, HTTP not run");
+    }
+}

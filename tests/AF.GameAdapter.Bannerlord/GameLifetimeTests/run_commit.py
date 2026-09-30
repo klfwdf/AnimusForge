@@ -14,7 +14,7 @@ if a.mutate=='expire_claimed':source=source.replace('Interlocked.CompareExchange
 if a.mutate=='skip_retirement':source=source.replace('() => Retire("courier_owner_retired")','() => { }',1)
 source=source.replace('Task.Delay(30000','Task.Delay(120')
 (out/'Dispatch.cs').write_text(source,encoding='utf-8');(out/'Program.cs').write_text((HERE/'CourierCommit.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
-contracts=(ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig')
+contracts=(ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig')
 (out/'Enums.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+'\n'.join(ex.declaration(contracts,s) for s in ['public enum InteractionStatus','public enum ActionExecutionEffectState']),encoding='utf-8')
 (out/'Receipt.cs').write_text('using AnimusForge.Refactor.Contracts;\nnamespace AnimusForge.Refactor.Runtime;\n'+ex.declaration((ROOT/'src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs').read_text(encoding='utf-8-sig'),'public sealed class InteractionCommitResult'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

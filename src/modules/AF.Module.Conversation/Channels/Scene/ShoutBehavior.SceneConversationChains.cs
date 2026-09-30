@@ -82,7 +82,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		public bool UsesCompactTownOrdinaryChain;
 	}
 
-	private async Task<string> GenerateGroupConversationTurnLineAsync(NpcDataPacket speakerNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, string playerText, string extraFact, string commonCandidatesPrompt, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string sceneMechanismPromptSectionBase, List<string> patienceStatusLines, bool multiNpcScene, int minTokens, int maxTokens)
+	private async Task<string> GenerateGroupConversationTurnLineAsync(NpcDataPacket speakerNpc, List<NpcDataPacket> allNpcData, Dictionary<int, Hero> resolvedHeroes, Dictionary<int, PrecomputedShoutRagContext> precomputedContexts, string playerText, string extraFact, string commonCandidatesPrompt, List<SceneSummonPromptTarget> sceneSummonTargets, List<SceneGuidePromptTarget> sceneGuideTargets, string sceneMechanismPromptSectionBase, List<string> patienceStatusLines, bool multiNpcScene, int minTokens, int maxTokens, Func<bool> isCurrent)
 	{
 		try
 		{
@@ -94,6 +94,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_start agent=" + speakerNpc.AgentIndex + " npc=" + (GetSceneNpcHistoryNameForPrompt(speakerNpc) ?? "") + " multi=" + multiNpcScene + " candidates=" + allNpcData.Count);
 			ApplySceneLocalDisambiguatedNames(allNpcData);
 			await EnsurePersonaForCandidatesAsync(new List<NpcDataPacket> { speakerNpc }, resolvedHeroes ?? new Dictionary<int, Hero>());
+			if (isCurrent != null && !isCurrent()) return "";
 			Agent agent = Mission.Current?.Agents?.FirstOrDefault((Agent a) => a != null && a.Index == speakerNpc.AgentIndex);
 			if (!CanAgentParticipateInSceneSpeech(agent))
 			{
@@ -134,6 +135,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				sceneMechanismPromptSection = string.IsNullOrWhiteSpace(sceneMechanismPromptSection) ? sceneMechanismPromptSectionBase.Trim() : (sceneMechanismPromptSectionBase.Trim() + "\n" + sceneMechanismPromptSection);
 			}
 			string persistedHeroHistory = await AwaitPrecomputedPersistedHistoryContextAsync(speakerNpc.AgentIndex, playerText, resolvedHeroes, precomputedContexts, persistedHeroHistoryTask, "group_turn_fallback");
+			if (isCurrent != null && !isCurrent()) return "";
 			string privateRecentWindowSection = "";
 			string persistedWithoutRecentWindow = "";
 			SplitPersistedHeroHistorySections(persistedHeroHistory, out privateRecentWindowSection, out persistedWithoutRecentWindow);
@@ -163,6 +165,7 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_prompt_ready agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " messages=" + messages.Count + " persistedChars=" + ((persistedHeroHistory ?? "").Length) + " privateChars=" + ((privateRecentWindowSection ?? "").Length) + " oldCompressedChars=" + ((persistedWithoutRecentWindow ?? "").Length));
 			Stopwatch apiSw = Stopwatch.StartNew();
 			string text = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(messages, 5000, promptRetryOnError: true);
+			if (isCurrent != null && !isCurrent()) return "";
 			text = LlmVisibleReplyNormalizer.NormalizeComplete(text);
 			apiSw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] group_turn_fallback_api_done agent=" + speakerNpc.AgentIndex + " hero=" + (hero?.StringId ?? "") + " outputLen=" + ((text ?? "").Length) + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " elapsedMs=" + Math.Round(turnSw.Elapsed.TotalMilliseconds, 2));
@@ -1220,7 +1223,10 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 				}
 				else
 				{
-					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes), sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens);
+					historyFullText = await GenerateGroupConversationTurnLineAsync(currentSpeaker, speakableCandidates, resolvedHeroes, precomputedContexts, playerText, extraFact, BuildScenePresentNpcListBlockForPrompt(speakableCandidates, currentSpeaker, resolvedHeroes), sceneSummonTargets, sceneGuideTargets, sceneMechanismPromptSectionBase, patienceStatusLines, multiNpcScene, minTokens, maxTokens, () => SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)
+						&& sceneReplySessionId == Volatile.Read(ref _sceneHistorySessionId)
+						&& IsSceneConversationEpochCurrent(conversationEpoch)
+						&& IsCurrentModuleGroup());
 					if (!IsCurrentModuleGroup()) return;
 					cleaned = historyFullText;
 					if (!IsSceneConversationEpochCurrent(conversationEpoch))

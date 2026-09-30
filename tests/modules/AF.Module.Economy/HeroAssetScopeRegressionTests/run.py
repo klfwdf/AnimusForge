@@ -36,7 +36,7 @@ def extract(ref=None):
         'public static bool IsValidGeneratedRpAssetNameForExternal(']]
     blocks['METHODS'] = '\n\n'.join(methods)
     contracts = extractor.source('src/AF.Contracts/Compatibility/Economy/EconomyRewardDebtContracts.cs', ref)
-    interaction = extractor.source('Refactor/Contracts/InteractionContracts.cs', ref)
+    interaction = extractor.source('src/AF.Contracts/Internal/InteractionContracts.cs', ref)
     declarations = [extractor.declaration(contracts, marker) for marker in [
         'public static class EconomyRewardDebtCapabilityIds', 'public enum EconomyRewardDebtActionKind',
         'public sealed class EconomyRewardDebtAction', 'public sealed class EconomyRewardDebtReplayPlan',

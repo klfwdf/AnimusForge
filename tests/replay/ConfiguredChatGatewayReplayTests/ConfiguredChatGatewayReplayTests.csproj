@@ -7,11 +7,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <Compile Include="..\..\..\Refactor\Contracts\FeatureBridgeContracts.cs" Link="Contracts\FeatureBridgeContracts.cs" />
-    <Compile Include="..\..\..\Refactor\Contracts\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
-    <Compile Include="..\..\..\Refactor\Contracts\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
-    <Compile Include="..\..\..\Refactor\Runtime\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
-    <Compile Include="..\..\..\Refactor\Adapters\LegacyConfiguredChatGateway.cs" Link="Adapters\LegacyConfiguredChatGateway.cs" />
+    <Compile Include="..\..\..\src\AF.Contracts\Internal\FeatureBridgeContracts.cs" Link="Contracts\FeatureBridgeContracts.cs" />
+    <Compile Include="..\..\..\src\AF.Contracts\Internal\InteractionContracts.cs" Link="Contracts\InteractionContracts.cs" />
+    <Compile Include="..\..\..\src\AF.Contracts\Internal\LlmContracts.cs" Link="Contracts\LlmContracts.cs" />
+    <Compile Include="..\..\..\src\AF.Foundation.Runtime\ModuleDirectory\FeatureBridgeRuntime.cs" Link="Runtime\FeatureBridgeRuntime.cs" />
+    <Compile Include="..\..\..\src\modules\AF.Module.Llm\Transport\LegacyConfiguredChatGateway.cs" Link="Adapters\LegacyConfiguredChatGateway.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\src\modules\AF.Module.Llm\Transport\LlmNonStreamingTransport.cs" Link="Transport\LlmNonStreamingTransport.cs" />

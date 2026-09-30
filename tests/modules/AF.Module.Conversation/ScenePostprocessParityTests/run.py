@@ -86,6 +86,7 @@ def stub_helpers(old_source, method):
 
 def extract_candidate(ref):
     scene=extractor.source('ShoutBehavior.cs',ref)
+    shared_path='src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs'
     try:
         if ref:
             scene_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
@@ -93,16 +94,20 @@ def extract_candidate(ref):
             if proc.returncode != 0:
                 proc=subprocess.run(['git','show',f'{ref}:ShoutBehavior.ScenePostprocess.cs'],cwd=ROOT,capture_output=True)
             phase=proc.stdout.decode('utf-8-sig').replace('\r\n','\n') if proc.returncode==0 else ''
+            shared_proc=subprocess.run(['git','show',f'{ref}:{shared_path}'],cwd=ROOT,capture_output=True)
+            shared=shared_proc.stdout.decode('utf-8-sig').replace('\r\n','\n') if shared_proc.returncode==0 else phase
         else: phase=extractor.source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs',ref)
+        if not ref:
+            shared=extractor.source(shared_path,None) if (ROOT/shared_path).is_file() else phase
     except (FileNotFoundError, subprocess.CalledProcessError): phase=''
-    wrapper=extractor.declaration(scene,SIGNATURE,optional=True) or extractor.declaration(phase,SIGNATURE)
-    if not phase: return wrapper, False
+    wrapper=extractor.declaration(scene,SIGNATURE,optional=True) or extractor.declaration(shared,SIGNATURE)
+    if not phase and not shared: return wrapper, False
     blocks=[wrapper]
     for signature in ['private sealed class SceneActionPostprocessWorkItem',
                       'private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(',
                       'private static bool TryRequestSceneUnifiedActionPostprocess(',
                       'private static string CompleteSceneUnifiedActionPostprocess(']:
-        blocks.append(extractor.declaration(phase,signature))
+        blocks.append(extractor.declaration(shared,signature))
     return '\n'.join(blocks), True
 
 

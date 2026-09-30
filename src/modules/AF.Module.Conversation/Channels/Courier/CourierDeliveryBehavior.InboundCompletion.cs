@@ -109,32 +109,31 @@ public sealed partial class CourierDeliveryBehavior
 
 	private void ProcessOneCourierInboundCompletionReceipt()
 	{
-		List<CourierSession> candidates;
+		CourierSession session = null;
+		CourierSession first = null;
 		lock (_sessionLock)
 		{
-			candidates = _sessions.Values
-				.Where(candidate => candidate != null
-					&& IsInboundToPlayer(candidate)
-					&& !IsTerminalStage(candidate)
-					&& !string.IsNullOrWhiteSpace(candidate.InboundCompletionReceipt)
-					&& (!candidate.ReplyGenerated || candidate.ReplyGenerationStarted))
-				.OrderBy(candidate => candidate.Id, StringComparer.Ordinal)
-				.ToList();
+			foreach (CourierSession candidate in _sessions.Values)
+			{
+				if (candidate == null
+					|| !IsInboundToPlayer(candidate)
+					|| IsTerminalStage(candidate)
+					|| string.IsNullOrWhiteSpace(candidate.InboundCompletionReceipt)
+					|| (candidate.ReplyGenerated && !candidate.ReplyGenerationStarted))
+					continue;
+				if (first == null || string.Compare(candidate.Id, first.Id, StringComparison.Ordinal) < 0)
+					first = candidate;
+				if (string.Compare(candidate.Id, _courierInboundCompletionScanCursor, StringComparison.Ordinal) > 0
+					&& (session == null || string.Compare(candidate.Id, session.Id, StringComparison.Ordinal) < 0))
+					session = candidate;
+			}
 		}
-		if (candidates.Count == 0)
+		if (first == null)
 		{
 			_courierInboundCompletionScanCursor = string.Empty;
 			return;
 		}
-		int startIndex = candidates.FindIndex(candidate => string.Compare(
-			candidate.Id,
-			_courierInboundCompletionScanCursor,
-			StringComparison.Ordinal) > 0);
-		if (startIndex < 0)
-		{
-			startIndex = 0;
-		}
-		CourierSession session = candidates[startIndex];
+		session ??= first;
 		_courierInboundCompletionScanCursor = session.Id;
 		if (!CourierInboundCompletionReceipt.TryDeserialize(
 			session.InboundCompletionReceipt,
