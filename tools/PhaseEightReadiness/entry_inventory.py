@@ -17,7 +17,7 @@ RULES = {
     "courier-proactive-issue": (
         "CourierDeliveryBehavior*.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior*.cs",
-        "Refactor/Runtime/CourierInboundCompletion*.cs",
+        "src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletion*.cs",
     ),
     "social-progression-reports": (
         "PlayerNotorietyBehavior*.cs", "src/modules/AF.Module.Social/**/*.cs", "MyBehavior.WeeklyActionOutcomeReceipts.cs",

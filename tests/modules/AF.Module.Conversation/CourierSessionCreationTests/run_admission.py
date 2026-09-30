@@ -112,7 +112,7 @@ def main():
     harness = (HERE / 'AdmissionHarness.cs.txt').read_text(encoding='utf-8')
     (output / 'Program.cs').write_text(harness.replace('@@DECLARATIONS@@', '\n'.join(declarations)) + ((HERE / 'LifecycleHarness.cs.txt').read_text(encoding='utf-8') if args.lifecycle else ''), encoding='utf-8')
     defines = '' if args.ref else '<DefineConstants>COURIER_DRAFT_TICKETS' + (';COURIER_LIFECYCLE' if args.lifecycle else '') + '</DefineConstants>'
-    sources = ['Refactor/Modules/CoreDialogueContracts.cs', 'Refactor/Modules/CoreDialogueOperation.cs', 'Refactor/Modules/CoreDialogueClient.cs',
+    sources = ['src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs', 'src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs', 'src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs',
                'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs']
     from xml.sax.saxutils import escape
     includes = ''
@@ -157,7 +157,7 @@ def run_public_consumer(args, output, extract, defines):
     sources = [output / 'Program.cs', output / 'DirectoryStubs.cs', HERE / 'PublicControl.cs.txt']
     for path in paths:
         target = ROOT / path
-        if args.reorder_core_enums and path == 'Refactor/Modules/CoreDialogueContracts.cs':
+        if args.reorder_core_enums and path == 'src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs':
             text = target.read_text(encoding='utf-8-sig')
             changes = {
                 'Queued, Running, Completed, Rejected, Cancelled, Failed': 'Queued=41, Running=12, Completed=8, Rejected=3, Cancelled=79, Failed=20',

@@ -19,17 +19,22 @@ def main():
     args=parser.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): parser.error('Invalid output name')
     scene_path='src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
+    shared_path='src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs'
     if args.source_ref:
         try: source=run.extractor.source(scene_path,args.source_ref)
         except (FileNotFoundError,subprocess.CalledProcessError): source=run.extractor.source('ShoutBehavior.ScenePostprocess.cs',args.source_ref)
+        try: shared=run.extractor.source(shared_path,args.source_ref)
+        except (FileNotFoundError,subprocess.CalledProcessError): shared=source
     else: source=run.extractor.source(scene_path,None)
+    if not args.source_ref:
+        shared=run.extractor.source(shared_path,None) if (run.ROOT/shared_path).is_file() else source
     snippets={
       'QUEUE':run.extractor.declaration(source,'private Task<ScenePostprocessOutcome> QueueDeferredScenePostprocessActions('),
       'OUTCOME':'\n'.join(run.extractor.declaration(source, signature) for signature in
           ['private enum ScenePostprocessStatus', 'private sealed class ScenePostprocessOutcome']),
-      'WORK':run.extractor.declaration(source,'private sealed class SceneActionPostprocessWorkItem'),
-      'COMPLETE':run.extractor.declaration(source,'private static string CompleteSceneUnifiedActionPostprocess('),
-      'REQUEST':run.extractor.declaration(source,'private static bool TryRequestSceneUnifiedActionPostprocess('),
+      'WORK':run.extractor.declaration(shared,'private sealed class SceneActionPostprocessWorkItem'),
+      'COMPLETE':run.extractor.declaration(shared,'private static string CompleteSceneUnifiedActionPostprocess('),
+      'REQUEST':run.extractor.declaration(shared,'private static bool TryRequestSceneUnifiedActionPostprocess('),
     }
     if args.mutate:
         changes={
@@ -45,7 +50,7 @@ def main():
         key,a,b=changes[args.mutate]
         if a not in snippets[key]: raise ValueError('Queue mutation anchor missing: '+a)
         snippets[key]=snippets[key].replace(a,b,1)
-    signature=re.search(r'private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess\(([^\n]+)\)',source).group()
+    signature=re.search(r'private static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess\(([^\n]+)\)',shared).group()
     parameters=signature[signature.index('(')+1:-1]
     names=[re.sub(r'\s*=.*','',p).strip().split()[-1] for p in re.split(r', (?![^<]*>)',parameters)]
     observed=', '.join('["'+n+'"] = '+n for n in names)

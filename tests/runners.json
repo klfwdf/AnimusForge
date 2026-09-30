@@ -118,7 +118,8 @@
    "expect": "PREEXISTING_FAIL"
   },
   "tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/source_review.py": {
-   "expect": "PREEXISTING_FAIL"
+   "expect": "SUPERSEDED_BY_RUNNER",
+   "note": "Historical whole-root inverse remains pinned; J17 current consumers are checked by run_j17_reviewed_delta.py."
   },
   "tests/modules/AF.Module.Conversation/CourierRouteTransportTests/run.py": {
    "expect": "PASS"

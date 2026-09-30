@@ -19,6 +19,7 @@ public partial class ShoutBehavior
     internal void RetireCampaignRuntime(string reason)
     {
         _pendingMainThreadFunctions.Seal();
+        NativeConversationTurnHost.ClearCeremonyExecutionOrder(this);
         // This captured owner can be retired even after Campaign.Current has been cleared.
         ResetInstanceTransientRuntimeForLoadedSave(reason);
         CloseNativeConversationInput(clearSessionHistory: true);

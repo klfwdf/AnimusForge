@@ -18,22 +18,38 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dotnet', required=True)
     parser.add_argument('--run-root', type=Path)
+    parser.add_argument('--source-only', action='store_true')
+    parser.add_argument('--mutate', choices=['drop-primary'])
     args = parser.parse_args()
     scene = extract.source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs', None)
     post = extract.source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs', None)
     host = extract.source('ShoutBehavior.cs', None)
     chains = extract.source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneConversationChains.cs', None)
     passive = extract.declaration(chains, 'private async Task<string> GetPassiveNpcResponse(')
+    fallback = extract.declaration(chains, 'private async Task<string> GenerateGroupConversationTurnLineAsync(')
     group = extract.declaration(chains, 'private async Task HandleGroupResponsePerHeroIndependent(')
     assert passive.count('currentInputAlreadyRecorded: true') == 1, 'passive input ownership changed'
     assert group.count('BuildStrictSceneMessagesForNpc(currentSpeaker.AgentIndex, layeredPrompt') == 1, 'group prompt call changed'
     assert 'BuildGroupSpeakingCandidates(allNpcData, primaryNpc)' in group, 'group candidate owner changed'
     assert 'await RecordSceneReplyHistoryOnMainThreadAsync(' in group, 'group history owner changed'
+    assert group.count('GenerateGroupConversationTurnLineAsync(') == 1, 'group fallback call changed'
+    assert 'SaveRuntimeGuard.IsCurrentGeneration(sceneReplyGeneration)' in group.split('GenerateGroupConversationTurnLineAsync(', 1)[1].split(');', 1)[0], 'fallback generation guard missing'
+    assert 'sceneReplySessionId == Volatile.Read(ref _sceneHistorySessionId)' in group.split('GenerateGroupConversationTurnLineAsync(', 1)[1].split(');', 1)[0], 'fallback session guard missing'
+    assert 'IsSceneConversationEpochCurrent(conversationEpoch)' in group.split('GenerateGroupConversationTurnLineAsync(', 1)[1].split(');', 1)[0], 'fallback epoch guard missing'
+    for await_marker in ('await EnsurePersonaForCandidatesAsync(', 'await AwaitPrecomputedPersistedHistoryContextAsync(', 'await LegacyShoutNetworkGateway.SendLegacyMessagesAsync('):
+        assert fallback.find('if (isCurrent != null && !isCurrent()) return "";', fallback.index(await_marker)) > fallback.index(await_marker), 'fallback stale guard missing after ' + await_marker
+    if args.source_only:
+        print('PASS Scene fallback generation/session/epoch and post-await stale guards')
+        return 0
+    candidate = extract.declaration(host, 'private static List<NpcDataPacket> BuildGroupSpeakingCandidates(')
+    if args.mutate:
+        assert candidate.count('speakingCandidates.Add(primaryNpc);') == 1
+        candidate = candidate.replace('speakingCandidates.Add(primaryNpc);', '// mutation: primary speaker lost', 1)
     declarations = '\n'.join([
         extract.declaration(post, 'private enum ScenePostprocessStatus'),
         extract.declaration(post, 'private sealed class ScenePostprocessOutcome'),
         extract.declaration(scene, 'private sealed class SceneGroupReceipt'),
-        extract.declaration(host, 'private static List<NpcDataPacket> BuildGroupSpeakingCandidates('),
+        candidate,
         extract.declaration(host, 'private List<object> BuildStrictSceneMessagesForNpc('),
         extract.declaration(host, 'private Task<bool> RecordSceneReplyHistoryOnMainThreadAsync('),
     ])
@@ -41,8 +57,8 @@ def main():
     program = (HERE / 'Harness.cs.txt').read_text(encoding='utf-8').replace('@@DECLARATIONS@@', declarations)
     assert '@@DECLARATIONS@@' not in program
     (output / 'Program.cs').write_text(program, encoding='utf-8')
-    contracts = ROOT / 'Refactor/Modules/CoreDialogueContracts.cs'
-    operation = ROOT / 'Refactor/Modules/CoreDialogueOperation.cs'
+    contracts = ROOT / 'src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs'
+    operation = ROOT / 'src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs'
     (output / 'Tests.csproj').write_text(
         '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework>'
         '<OutputType>Exe</OutputType><Nullable>disable</Nullable><ImplicitUsings>enable</ImplicitUsings>'

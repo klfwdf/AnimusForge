@@ -45,7 +45,7 @@ assert '@@' not in code
 out=HERE/'.generated'/('original' if a.original else 'memory-baseline' if a.memory_baseline else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
 (out/'AnimusForgeDialogueHistoryEntry.cs').write_text(read('AnimusForgeDialogueHistoryEntry.cs'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Dispatch.cs').write_text(read('ShoutBehavior.NativeActionDispatch.cs'),encoding='utf-8')
-contracts=(ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig');types='\n'.join(ex.declaration(contracts,x) for x in ['public enum ActionExecutionEffectState','public enum MemoryCommitStatus','public sealed class MemoryCommitResult']);(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+types,encoding='utf-8')
+contracts=(ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig');types='\n'.join(ex.declaration(contracts,x) for x in ['public enum ActionExecutionEffectState','public enum MemoryCommitStatus','public sealed class MemoryCommitResult']);(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+types,encoding='utf-8')
 if not baseline:
  memory_owner=read('MyBehavior.DialogueHistoryCommit.cs')
  wrapper=ex.declaration(memory_owner,'internal static MemoryCommitResult CommitDialogueHistoryWithScene(string memoryId, bool isNonHero, string npcName, string playerText, string aiText, string extraFact, int sceneSessionId)')

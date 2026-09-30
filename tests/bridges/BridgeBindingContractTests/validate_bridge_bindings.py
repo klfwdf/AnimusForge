@@ -25,14 +25,14 @@ EXPECTED_CONFIG_PATH = "content/foundation/AF.Foundation.Runtime/ModuleData/Feat
 EXPECTED_CONTRACT_VERSION = 1
 EXPECTED_BRIDGE_COUNT = 16
 EXPECTED_WIRED = {
-    "conversation-gateway": ("Refactor/Adapters/LegacyConfiguredChatGateway.cs", "GenerateExchangeAsync"),
+    "conversation-gateway": ("src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs", "GenerateExchangeAsync"),
     "conversation-action": ("src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs", "Commit"),
     "action-memory": ("src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs", "Commit"),
     "action-economy": ("src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs", "ValidateAndExecuteCore"),
     "conversation-siege": ("AfGcczShoutBridge.cs", "IsActive"),
     "conversation-courier": ("CourierDeliveryBehavior.cs", "IsCourierBridgeEnabled"),
     "memory-social-reports": ("PlayerNotorietyBehavior.ConversationOutcomes.cs", "IsSocialReportsBridgeEnabled"),
-    "gateway-knowledge-profile": ("Refactor/Adapters/LegacyKnowledgeRagGateway.cs", "GenerateAsync"),
+    "gateway-knowledge-profile": ("src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs", "GenerateAsync"),
     "policy-world-diplomacy": ("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs", "NotifyExternalDiplomacyResolved"),
     "ui-runtime-integration": ("SceneActionsIntegrationBoundary.cs", "InitializeRuntime"),
     "host-runtime": ("CampaignTickDiagnosticsPatch.cs", "EnsurePatched"),

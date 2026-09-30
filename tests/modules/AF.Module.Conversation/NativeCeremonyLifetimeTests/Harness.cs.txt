@@ -1,0 +1,71 @@
+using System;
+
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class ConversationManager
+    {
+        public event Action ConversationEndOneShot;
+        public void End() => ConversationEndOneShot?.Invoke();
+        public int Subscribers => ConversationEndOneShot?.GetInvocationList().Length ?? 0;
+    }
+}
+
+namespace AnimusForge
+{
+    public sealed class PendingOperationRegistry { public void Seal() { } }
+
+    public partial class ShoutBehavior
+    {
+        private sealed partial class NativeConversationTurnHost
+        {
+            internal static TaleWorlds.CampaignSystem.ConversationManager _ceremonyOrderManager;
+            internal static Action _ceremonyOrderHandler;
+            internal static ShoutBehavior _ceremonyOrderOwner;
+            @@CLEAR@@
+            @@CLEAR_OWNER@@
+        }
+        private readonly PendingOperationRegistry _pendingMainThreadFunctions = new();
+        private void ResetInstanceTransientRuntimeForLoadedSave(string reason) { }
+        private void CloseNativeConversationInput(bool clearSessionHistory) { }
+        @@RETIRE@@
+
+        private static void Require(bool value, string name)
+        {
+            if (!value) throw new Exception("FAIL " + name);
+        }
+
+        public static void Main()
+        {
+            var oldManager = new TaleWorlds.CampaignSystem.ConversationManager();
+            var newManager = new TaleWorlds.CampaignSystem.ConversationManager();
+            int oldEffects = 0, newEffects = 0;
+            Action oldHandler = () => oldEffects++;
+            var oldOwner = new ShoutBehavior();
+            NativeConversationTurnHost._ceremonyOrderManager = oldManager;
+            NativeConversationTurnHost._ceremonyOrderHandler = oldHandler;
+            NativeConversationTurnHost._ceremonyOrderOwner = oldOwner;
+            oldManager.ConversationEndOneShot += oldHandler;
+            Require(oldManager.Subscribers == 1, "armed old campaign");
+            oldOwner.RetireCampaignRuntime("campaign_end");
+            Require(oldManager.Subscribers == 0 && NativeConversationTurnHost._ceremonyOrderHandler == null
+                && NativeConversationTurnHost._ceremonyOrderManager == null
+                && NativeConversationTurnHost._ceremonyOrderOwner == null, "retirement unsubscribes old manager");
+            oldManager.End();
+            Require(oldEffects == 0, "old campaign callback cannot enter new campaign");
+            Action newHandler = () => newEffects++;
+            var newOwner = new ShoutBehavior();
+            NativeConversationTurnHost._ceremonyOrderManager = newManager;
+            NativeConversationTurnHost._ceremonyOrderHandler = newHandler;
+            NativeConversationTurnHost._ceremonyOrderOwner = newOwner;
+            newManager.ConversationEndOneShot += newHandler;
+            oldOwner.RetireCampaignRuntime("late_old_retirement");
+            Require(newManager.Subscribers == 1 && ReferenceEquals(NativeConversationTurnHost._ceremonyOrderOwner,newOwner),
+                "late old retirement cannot clear new campaign handler");
+            newManager.End();
+            Require(newEffects == 1 && oldEffects == 0, "new campaign retains its own handler");
+            newOwner.RetireCampaignRuntime("campaign_end");
+            Require(newManager.Subscribers == 0, "new manager cleanup");
+            Console.WriteLine("PASS Native ceremony armed-retire-new campaign and late-old owner guard");
+        }
+    }
+}

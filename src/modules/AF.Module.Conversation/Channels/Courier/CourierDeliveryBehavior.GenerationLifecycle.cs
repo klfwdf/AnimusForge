@@ -403,13 +403,13 @@ public sealed partial class CourierDeliveryBehavior
 			bool partyTransferInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer");
 			bool voteDealInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_agenda");
 			bool diplomacyInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy");
-			bool diplomacySelected = HasPreprocessRuleHit(selectedRuleHits, "diplomacy");
+			bool diplomacySelected = ShoutBehavior.HasPreprocessRuleHitForExternal(selectedRuleHits, "diplomacy");
 			diplomacyInjected = diplomacyInjected || diplomacySelected;
 			bool worldMapPartyCommandInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command");
 			bool kingdomServiceInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service");
 			bool heroJoinPartyInjected = kingdomServiceInjected;
 			bool kingdomVassalageRuleBlockInjected = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage");
-			bool kingdomVassalageSelected = HasPreprocessRuleHit(selectedRuleHits, "kingdom_vassalage");
+			bool kingdomVassalageSelected = ShoutBehavior.HasPreprocessRuleHitForExternal(selectedRuleHits, "kingdom_vassalage");
 			bool kingdomVassalageInjected = kingdomVassalageRuleBlockInjected || kingdomVassalageSelected;
 			bool kingdomAnnexationInjected = false;
 			Log("postprocess setup chain=courier session=" + session.Id

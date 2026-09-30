@@ -29,6 +29,7 @@ public partial class ShoutBehavior
         // lets a repeated order replace (not stack) the subscription. Game thread only.
         private static ConversationManager _ceremonyOrderManager;
         private static Action _ceremonyOrderHandler;
+        private static ShoutBehavior _ceremonyOrderOwner;
 
         public async Task<NativeConversationTurnStep> ReceiveAndPresentAsync()
         {
@@ -124,7 +125,7 @@ public partial class ShoutBehavior
         // The ceremony cannot move its actors while this conversation still owns them.
         // An explicit order is therefore kept until the conversation closes, then it
         // uses the same executioner-start path as the scripted "Proceed" line.
-        private static void TryQueueCeremonyExecutionOrder(int agentIndex)
+        private void TryQueueCeremonyExecutionOrder(int agentIndex)
         {
             if (agentIndex < 0) return;
             Mission mission = Mission.Current;
@@ -159,15 +160,23 @@ public partial class ShoutBehavior
             };
             _ceremonyOrderManager = manager;
             _ceremonyOrderHandler = handler;
+            _ceremonyOrderOwner = _owner;
             manager.ConversationEndOneShot += handler;
         }
 
-        private static void ClearCeremonyExecutionOrder()
+        internal static void ClearCeremonyExecutionOrder(ShoutBehavior owner)
+        {
+            if (!ReferenceEquals(_ceremonyOrderOwner, owner)) return;
+            ClearCeremonyExecutionOrder();
+        }
+
+        internal static void ClearCeremonyExecutionOrder()
         {
             if (_ceremonyOrderManager != null && _ceremonyOrderHandler != null)
                 _ceremonyOrderManager.ConversationEndOneShot -= _ceremonyOrderHandler;
             _ceremonyOrderManager = null;
             _ceremonyOrderHandler = null;
+            _ceremonyOrderOwner = null;
         }
 
         private static bool IsExplicitExecutionOrder(string text)

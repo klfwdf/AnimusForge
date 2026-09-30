@@ -165,6 +165,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		public Dictionary<string, string> LastDeliveredEventKeyBySender { get; set; }
 		public float GlobalCooldownUntilDays { get; set; }
 		public float NextScanHour { get; set; }
+		public Dictionary<string, CourierInboundDeliveredMemoryIntent> PendingInboundDeliveredMemoryIntents { get; set; }
 	}
 
 	private sealed class NpcInitiatedLetterCandidate
@@ -820,18 +821,18 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		}
 		string extras = request.Extras ?? string.Empty;
 		List<string> selected = request.SelectedRuleHits ?? new List<string>();
-		bool duel = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel") || HasPreprocessRuleHit(selected, "duel");
-		bool reward = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "reward") || HasPreprocessRuleHit(selected, "reward");
-		bool loan = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "loan") || HasPreprocessRuleHit(selected, "loan");
-		bool kingdomService = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service") || HasPreprocessRuleHit(selected, "kingdom_service");
-		bool lordsHall = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "lords_hall_access") || HasPreprocessRuleHit(selected, "lords_hall_access");
-		bool meetingRelease = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "encounter_release_player") || HasPreprocessRuleHit(selected, "encounter_release_player");
-		bool vanillaIssue = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vanilla_issue") || HasPreprocessRuleHit(selected, "vanilla_issue");
-		bool partyTransfer = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer") || HasPreprocessRuleHit(selected, "party_transfer");
-		bool voteDeal = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_agenda") || HasPreprocessRuleHit(selected, "kingdom_agenda");
-		bool diplomacy = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy") || HasPreprocessRuleHit(selected, "diplomacy");
-		bool worldMap = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command") || HasPreprocessRuleHit(selected, "worldmap_party_command");
-		bool vassalage = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage") || HasPreprocessRuleHit(selected, "kingdom_vassalage");
+		bool duel = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "duel") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "duel");
+		bool reward = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "reward") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "reward");
+		bool loan = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "loan") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "loan");
+		bool kingdomService = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_service") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "kingdom_service");
+		bool lordsHall = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "lords_hall_access") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "lords_hall_access");
+		bool meetingRelease = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "encounter_release_player") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "encounter_release_player");
+		bool vanillaIssue = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "vanilla_issue") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "vanilla_issue");
+		bool partyTransfer = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "party_transfer") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "party_transfer");
+		bool voteDeal = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_agenda") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "kingdom_agenda");
+		bool diplomacy = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "diplomacy") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "diplomacy");
+		bool worldMap = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "worldmap_party_command") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "worldmap_party_command");
+		bool vassalage = ShoutBehavior.HasInjectedRuleBlockForExternal(extras, "kingdom_vassalage") || ShoutBehavior.HasPreprocessRuleHitForExternal(selected, "kingdom_vassalage");
 		if (!ShoutBehavior.TryPrepareCourierActionPostprocessForExternal(
 			recipient,
 			recipient.CharacterObject,
@@ -939,7 +940,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				LastDeliveredEventKeyBySender = _npcLetterLastDeliveredEventKeyBySender,
 				GlobalCooldownUntilDays = _npcDiplomacyLetterGlobalCooldownUntilDays,
 				// The in-progress roster scan is runtime-only; a loaded save retries it cleanly.
-				NextScanHour = _npcInitiatedLetterScan == null ? _nextNpcDiplomacyLetterScanHour : 0f
+				NextScanHour = _npcInitiatedLetterScan == null ? _nextNpcDiplomacyLetterScanHour : 0f,
+				PendingInboundDeliveredMemoryIntents = CapturePendingInboundDeliveredMemoryIntents()
 			});
 		}
 		dataStore.SyncData(NpcDiplomacyLetterStorageKey, ref npcLetterStorageJson);
@@ -953,6 +955,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				_npcLetterLastDeliveredEventKeyBySender = NormalizeStringDictionary(npcStorage?.LastDeliveredEventKeyBySender);
 				_npcDiplomacyLetterGlobalCooldownUntilDays = npcStorage?.GlobalCooldownUntilDays ?? 0f;
 				_nextNpcDiplomacyLetterScanHour = npcStorage?.NextScanHour ?? 0f;
+				RestorePendingInboundDeliveredMemoryIntents(npcStorage?.PendingInboundDeliveredMemoryIntents);
 			}
 			catch (Exception ex)
 			{
@@ -962,6 +965,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				_npcLetterLastDeliveredEventKeyBySender = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 				_npcDiplomacyLetterGlobalCooldownUntilDays = 0f;
 				_nextNpcDiplomacyLetterScanHour = 0f;
+				RestorePendingInboundDeliveredMemoryIntents(null);
 			}
 		}
 
@@ -2424,16 +2428,6 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string value = (text ?? "").Trim();
 		return value.StartsWith("（错误", StringComparison.Ordinal) || value.StartsWith("（程序错误", StringComparison.Ordinal) || value.StartsWith("（API请求失败", StringComparison.Ordinal) || value.StartsWith("（API响应格式错误", StringComparison.Ordinal);
-	}
-
-	private static bool HasPreprocessRuleHit(List<string> hits, string ruleId)
-	{
-		string value = (ruleId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(value) || hits == null || hits.Count == 0)
-		{
-			return false;
-		}
-		return hits.Any(x => string.Equals((x ?? "").Trim(), value, StringComparison.OrdinalIgnoreCase));
 	}
 
 	private static void LogCourierContextAlignment(string chain, string sessionId, Hero hero, string npcRoleContext, string extras, string entityPostprocessContext, string historyText, IEnumerable<ConversationMessage> persistentMemoryRoleMessages)

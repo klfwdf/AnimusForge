@@ -21,7 +21,7 @@ for name,body in [('Before',baseline_method),('After',current)]:
  if a.mutate=='thinking-still-enabled' and name=='After':body=body.replace('DuelSettings.RemoveThinkingControls(payload2);',';',1)
  classes.append('static class '+name+' { private const int DefaultPrimaryMaxTokens=DuelSettings.DefaultGeneralApiMaxTokens;'+helpers+body+' private static string ApplyPlayerDynamicNameToMainText(string s)=>s.Replace("PLAYER_PLACEHOLDER","FixturePlayer"); private static void LogNormalizedMessageTail(string a,string b,IEnumerable<object> c) {} private static void LogPrimaryRawResponse(string phase,string body) {} }')
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig').replace('@@PRIMARY@@','\n'.join(classes));out=HERE/'.generated'/(a.mutate or 'current');out.mkdir(parents=True,exist_ok=True);(out/'Program.cs').write_text(code,encoding='utf-8')
-files=['src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs','src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs','src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs','src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs','Refactor/Adapters/LegacyConfiguredChatGateway.cs','Refactor/Contracts/FeatureBridgeContracts.cs','Refactor/Contracts/InteractionContracts.cs','Refactor/Contracts/LlmContracts.cs','Refactor/Runtime/FeatureBridgeRuntime.cs']
+files=['src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs','src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs','src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs','src/modules/AF.Module.Llm/Protocol/PrimaryChatMessagePolicy.cs','src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs','src/AF.Contracts/Internal/FeatureBridgeContracts.cs','src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/AF.Foundation.Runtime/ModuleDirectory/FeatureBridgeRuntime.cs']
 for f in files:
  text=read(f)
  if f.endswith('LlmNonStreamingTransport.cs'):
@@ -30,7 +30,7 @@ for f in files:
   if a.mutate=='drop-caller-token':text=text.replace('CreateLinkedTokenSource(callerToken)','CreateLinkedTokenSource(CancellationToken.None)',1)
   if a.mutate=='lose-retry-after':text=text.replace('return Math.Max(0, (int)Math.Ceiling(response.Headers.RetryAfter.Delta.Value.TotalSeconds));','return 0;',1)
  (out/Path(f).name).write_text(text,encoding='utf-8')
-baseline_gateway=subprocess.check_output(['git','show',review['baseline']+':Refactor/Adapters/LegacyConfiguredChatGateway.cs'],cwd=ROOT).decode('utf-8-sig')
+baseline_gateway=subprocess.check_output(['git','show',review['baseline']+':src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs'],cwd=ROOT).decode('utf-8-sig')
 old_gateway=ex.declaration(baseline_gateway,'public sealed class LegacyConfiguredChatGateway :')
 old_gateway=old_gateway.replace('LegacyConfiguredChatGateway','OriginalConfiguredChatGateway')
 header=baseline_gateway.split('namespace AnimusForge.Refactor.Adapters;',1)[0]

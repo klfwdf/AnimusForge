@@ -23,7 +23,6 @@ SIGNATURES = [
     'private static bool LooksLikeApiError(',
     'private static string CleanNpcReply(',
     'private static string StripCourierActionTags(',
-    'private static bool HasPreprocessRuleHit(',
     'private sealed class CourierReplyGenerationRequest',
     'private static InteractionCommitResult CreateUnconfirmedCourierCommit(',
     'private sealed class CourierPromptRun',
@@ -31,16 +30,16 @@ SIGNATURES = [
     'private bool IsCourierPromptRunCurrent(',
 ]
 LINKS = [
-    'Refactor/Modules/CoreDialogueContracts.cs',
-    'Refactor/Runtime/DuelOutcomeReceipt.cs',
+    'src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs',
+    'src/modules/AF.Module.Duel/DuelOutcomeReceipt.cs',
     'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',
     'CourierVisibleLetterSanitizer.cs', 'src/modules/AF.Module.Llm/Protocol/LlmVisibleReplyNormalizer.cs',
-    'Refactor/Contracts/InteractionContracts.cs', 'Refactor/Contracts/LlmContracts.cs',
-    'Refactor/Contracts/ProfileConfigContracts.cs', 'src/modules/AF.Module.Conversation/Internal/Pipeline/InteractionPipeline.cs',
+    'src/AF.Contracts/Internal/InteractionContracts.cs', 'src/AF.Contracts/Internal/LlmContracts.cs',
+    'src/AF.Contracts/Internal/ProfileConfigContracts.cs', 'src/modules/AF.Module.Conversation/Internal/Pipeline/InteractionPipeline.cs',
     'src/modules/AF.Module.Conversation/Internal/Pipeline/FullInteractionPipeline.cs', 'src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs',
     'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs',
-    'Refactor/Adapters/LegacyInteractionPipelineComposition.cs', 'src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs',
-    'Refactor/Adapters/LegacyDetachedPromptComposer.cs', 'Refactor/Adapters/LegacyPromptPackageAdapter.cs',
+    'src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs', 'src/modules/AF.Module.Actions/Tags/LegacyActionTagParser.cs',
+    'src/modules/AF.Module.Prompt/Composition/LegacyDetachedPromptComposer.cs', 'src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs',
     'src/modules/AF.Module.Prompt/Composition/PromptRuntimeTargetBinding.cs',
 ]
 

@@ -116,6 +116,9 @@ namespace AnimusForge
         public static bool PrepareNull, CompleteThrows;
         public static Action DuringComplete;
         public static bool HasInjectedRuleBlockForExternal(string extras, string rule) => (extras ?? "").Contains("rule:" + rule + ";", StringComparison.Ordinal);
+        internal static bool HasPreprocessRuleHitForExternal(IEnumerable<string> hits, string rule)
+            => hits != null && !string.IsNullOrWhiteSpace(rule) && hits.Any(hit =>
+                string.Equals((hit ?? "").Trim(), rule.Trim(), StringComparison.OrdinalIgnoreCase));
         internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHero, CharacterObject targetCharacter, string npcName,
             string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected,
             bool kingdomServiceRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected,

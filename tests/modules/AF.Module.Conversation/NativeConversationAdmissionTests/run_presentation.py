@@ -40,7 +40,7 @@ code=code.replace('internal static void Mark(string stage, string text, bool imm
 out=HERE/'.generated'/('presentation-'+(args.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
 for name,text in [('Program.cs',code),('Admission.cs',partial),('Presentation.cs',ui)]: (out/name).write_text(text,encoding='utf-8')
 (out/'ActionDispatch.cs').write_text((ROOT/'ShoutBehavior.NativeActionDispatch.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
-(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'Refactor/Contracts/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
+(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+ex.declaration((ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig'),'public enum ActionExecutionEffectState'),encoding='utf-8')
 (out/'CompletionStubs.cs').write_text((ROOT/'tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/NoCompletionStubs.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
 spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out);core_fixture.include_admission_owner(out)
 code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')

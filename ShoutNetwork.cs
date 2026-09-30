@@ -1010,7 +1010,7 @@ public static class ShoutNetwork
                                     fullText.Append(visibleDelta);
                                     try
                                     {
-                                        if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_chunk"))
+                                        if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_chunk"))
                                         {
                                             FreezeWatchdog.Mark("PrimaryChat.stream.chunk_callback_begin", "read=" + delta.ReadSequence + " chunk=" + chunkCount + " deltaLen=" + visibleDelta.Length + " thread=" + Thread.CurrentThread.ManagedThreadId);
                                             onChunk?.Invoke(visibleDelta);
@@ -1077,7 +1077,7 @@ public static class ShoutNetwork
 						fullText.Append(text3);
 						try
 						{
-							if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_flush"))
+							if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_flush"))
 							{
 								onChunk?.Invoke(text3);
 							}
@@ -1125,7 +1125,7 @@ public static class ShoutNetwork
 					string outputContent3 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
 					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent3), messages, outputContent3, "stream_partial", requestBodyForTokenStats);
 					FreezeWatchdog.Mark("PrimaryChat.stream.partial_complete", "resultLen=" + fullText.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_partial_complete"))
+					if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_partial_complete"))
 					{
 						onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 					}
@@ -1152,7 +1152,7 @@ public static class ShoutNetwork
 					Logger.Metric("network.stream", ok: true, sw.Elapsed.TotalMilliseconds);
 					Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(fallback), messages, BuildTokenStatsOutputContent(fallback), "stream_fallback", requestBodyForTokenStats);
 					FreezeWatchdog.Mark("PrimaryChat.stream.fallback_complete", "resultLen=" + fallback.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-					if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))
+					if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_fallback_complete"))
 					{
 						onComplete?.Invoke(fallback.Trim());
 					}
@@ -1198,7 +1198,7 @@ public static class ShoutNetwork
 					}
 					if (!string.IsNullOrWhiteSpace(retry) && !retry.StartsWith("（错误") && !LlmRetryPrompt.IsRetryableLlmError(retry))
 					{
-						if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry_complete"))
+						if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry_complete"))
 						{
 							onComplete?.Invoke(retry.Trim());
 						}
@@ -1235,7 +1235,7 @@ public static class ShoutNetwork
 			string outputContent2 = BuildTokenStatsOutputContent(finalText, fullReasoning.ToString());
 			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent2), messages, outputContent2, "stream", requestBodyForTokenStats);
 			FreezeWatchdog.Mark("PrimaryChat.stream.complete", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			if (!SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_complete"))
+			if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_complete"))
 			{
 				FreezeWatchdog.Mark("PrimaryChat.stream.complete_callback_begin", "resultLen=" + finalText.Length + " chunks=" + chunkCount + " thread=" + Thread.CurrentThread.ManagedThreadId);
 				onComplete?.Invoke(finalText);
@@ -1255,7 +1255,8 @@ public static class ShoutNetwork
 			string outputContent4 = BuildTokenStatsOutputContent(fullText.ToString(), fullReasoning.ToString());
 			Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent4), messages, outputContent4, "stream_cancelled", requestBodyForTokenStats);
 			FreezeWatchdog.Mark("PrimaryChat.stream.cancelled", "partialLen=" + fullText.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
+			if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_cancelled_complete"))
+				onComplete?.Invoke(ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim());
 		}
 		catch (Exception ex3)
 		{
@@ -1277,7 +1278,8 @@ public static class ShoutNetwork
 				string outputContent5 = BuildTokenStatsOutputContent(partial, fullReasoning.ToString());
 				Logger.RecordTokenStats(inputTokens, Logger.EstimateTokens(outputContent5), messages, outputContent5, "stream_exception_partial", requestBodyForTokenStats);
 				FreezeWatchdog.Mark("PrimaryChat.stream.exception_partial", ex3.GetType().Name + ": " + ex3.Message + " partialLen=" + partial.Length + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				onComplete?.Invoke(partial);
+				if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_exception_partial_complete"))
+					onComplete?.Invoke(partial);
 			}
 			else
 			{

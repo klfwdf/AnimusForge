@@ -38,8 +38,8 @@ using (JsonDocument marker = JsonDocument.Parse(File.ReadAllText(markerPath)))
         && build.GetProperty("BuildFlavor").GetString() == "ANIMUSFORGE_BANNERLORD_API_1_4", "Courier build identity mismatch");
     DateTime created = build.GetProperty("CreatedUtc").GetDateTime().ToUniversalTime();
     foreach (string source in Directory.GetFiles(Path.Combine(projectRoot, "src/modules/AF.Module.Conversation/Channels/Courier"), "*.cs")
-        .Concat(new[] { "CourierDeliveryBehavior.cs", "Refactor/Modules/CoreDialogueContracts.cs", "Refactor/Modules/CoreDialogueOperation.cs",
-            "Refactor/Modules/CoreDialogueClient.cs", "Refactor/Modules/CoreDialogueServices.cs" }.Select(path => Path.Combine(projectRoot, path))))
+        .Concat(new[] { "CourierDeliveryBehavior.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs",
+            "src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs", "src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs" }.Select(path => Path.Combine(projectRoot, path))))
         AssertTrue(created >= File.GetLastWriteTimeUtc(source), "Courier candidate predates " + source);
 }
 using (JsonDocument manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "af-replay-dependencies.json"))))

@@ -1,0 +1,82 @@
+using System;
+using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
+
+namespace TaleWorlds.CampaignSystem
+{
+    public sealed class CampaignTime { public static CampaignTime Now=new(); public override string ToString()=>"current"; }
+}
+
+namespace AnimusForge
+{
+    public static class MyBehavior { public static string ResolveCurrentMemorySceneLabelForExternal()=>"current-scene"; }
+    public sealed partial class CourierDeliveryBehavior
+    {
+        @@COURIER@@
+        public static object Project(ConversationMessage message) {
+            return TryConvertCourierMemoryMessageToChatMessage(message,"Ada","Player",out object result) ? result : null;
+        }
+    }
+    public partial class ShoutBehavior
+    {
+        @@SCENE@@
+        private static string NormalizeSceneHistoryPromptLineContent(string value)=>(value??"").Trim();
+        private static bool IsLeakedPromptLineForShout(string value)=>false;
+        private static string ResolveSceneHeroIdFromAgentIndex(int index)=>index==7?"ada":"";
+        private static bool TryNormalizeAfefFactLineForPrompt(string value,out string fact) {
+            fact=value.StartsWith("[AFEF",StringComparison.Ordinal)?value:"";
+            return fact.Length>0;
+        }
+        private static string BuildConversationMessageDedupeKey(ConversationMessage message)=>message.Content??"";
+        private static string NormalizeStrictSceneAssistantContent(string content,string speaker) {
+            string value=(content??"").Trim(); string prefix=(speaker??"")+": ";
+            return value.StartsWith(prefix,StringComparison.Ordinal)?value.Substring(prefix.Length):value;
+        }
+        private static bool IsSameSceneHeroId(string left,string right)
+            => !string.IsNullOrWhiteSpace(left) && string.Equals(left,right,StringComparison.OrdinalIgnoreCase);
+        private static object CreateChatMessage(string role,string content)=>new {role,content};
+        private static string GetStrictScenePlayerDisplayName()=>"Player";
+        private static string FormatScenePlayerDirectSpeechLabel(string player,float distance)=>player+"发言";
+        private static string BuildScopedAfefFactLineForPrompt(string fact,bool current)
+            =>(current?"【当下行为】":"【过往行为】")+fact;
+        private static int ClampMemoryPromptHour(int hour)=>Math.Max(0,Math.Min(23,hour));
+        public static object Project(ConversationMessage message) {
+            return TryConvertSceneMessageToStrictChatMessage(message,7,out object result,null,false) ? result : null;
+        }
+    }
+    public static class Program
+    {
+        private static string Field(object value,string name)
+            => (string)value.GetType().GetProperty(name).GetValue(value);
+        private static void Check(bool yes,string why) { if(!yes) throw new Exception("FAIL "+why); }
+        private static ConversationMessage Message(string role,string speaker,string text)
+            => new() { Role=role, SpeakerName=speaker, Content=text, GameDate="Autumn 11", GameDayIndex=100,
+                GameHour=9, Scene="town square", SpeakerAgentIndex=speaker=="Ada"?7:8,
+                SpeakerHeroId=speaker=="Ada"?"ada":"other", TargetAgentIndex=7 };
+        private static void Case(string name,ConversationMessage input,string courierRole,string sceneRole,string token)
+        {
+            object courier=CourierDeliveryBehavior.Project(input),scene=ShoutBehavior.Project(input);
+            Check(courier!=null && scene!=null,name+" both projected");
+            Check(Field(courier,"role")==courierRole && Field(scene,"role")==sceneRole,name+" role");
+            Check(Field(courier,"content").Contains(token) && Field(scene,"content").Contains(token),name+" fact preserved");
+            Check(Field(courier,"content").Contains("Autumn 11") && Field(scene,"content").Contains("Autumn 11"),name+" date");
+            Check(Field(courier,"content").Contains("town square") && Field(scene,"content").Contains("town square"),name+" scene");
+            Console.WriteLine("PASS "+name);
+        }
+        public static void Main()
+        {
+            Case("assistant-self",Message("assistant","Ada","Ada: hello"),"assistant","assistant","hello");
+            Case("user-player",Message("user","Player","Player: question"),"user","user","question");
+            Case("assistant-other-observer",Message("assistant","Borin","Borin: heard"),"user","user","heard");
+            Case("system-afef",Message("system","AFEF","[AFEF NPC行为补充] delivered"),"user","user","[AFEF NPC行为补充]");
+            Case("system-other",Message("system","System","road blocked"),"user","user","road blocked");
+            var repeated=Message("system","AFEF","[AFEF NPC行为补充] delivered");
+            Check(Field(CourierDeliveryBehavior.Project(repeated),"content")==Field(CourierDeliveryBehavior.Project(repeated),"content"),"Courier duplicate stable projection");
+            Check(Field(ShoutBehavior.Project(repeated),"content")==Field(ShoutBehavior.Project(repeated),"content"),"Scene duplicate stable projection");
+            Console.WriteLine("PASS duplicate stable projection (builder dedupe not asserted)");
+            var alias=Message("assistant","Alias","Alias: hello"); alias.SpeakerHeroId="ada";
+            Case("known-alias-divergence",alias,"user","assistant","hello");
+            Console.WriteLine("PASS cross-channel roles; alias divergence documented; full builders/live not run");
+        }
+    }
+}

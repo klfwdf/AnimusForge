@@ -41,7 +41,7 @@ class ExtractionTests(unittest.TestCase):
         self.assertEqual(2, blocks["COURIER_BLOCK"].count("await GenerateNpcReplyAsync(request).ConfigureAwait(false);"))
         self.assertIn(blocks["FAIL_METHOD"], courier)
         self.assertIn(blocks["FINALIZE_METHOD"], courier)
-        self.assertIn(blocks["STATUS_ENUM"], source("Refactor/Contracts/InteractionContracts.cs", None))
+        self.assertIn(blocks["STATUS_ENUM"], source("src/AF.Contracts/Internal/InteractionContracts.cs", None))
 
     def test_prompt_factory_and_anonymous_message_adapter_are_production_declarations(self):
         blocks = extract(None)
@@ -49,10 +49,10 @@ class ExtractionTests(unittest.TestCase):
         for key in ("PUBLIC_SCENE_FACTORY", "MAIN_REPLY_FACTORY", "MAIN_REPLY_METHOD", "CREATE_MESSAGE"):
             self.assertTrue(blocks[key], key)
             self.assertIn(blocks[key], scene)
-        self.assertIn(blocks["BUILD_PROMPT"], source("Refactor/Adapters/LegacyConfiguredChatGateway.cs", None))
-        self.assertIn(blocks["PORTS_TYPE"], source("Refactor/Adapters/LegacyInteractionPipelineComposition.cs", None))
-        self.assertIn(blocks["MAIN_COMPOSER"], source("Refactor/Adapters/LegacyDetachedPromptComposer.cs", None))
-        self.assertIn(blocks["POSTPROCESS_COMPOSER"], source("Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs", None))
+        self.assertIn(blocks["BUILD_PROMPT"], source("src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs", None))
+        self.assertIn(blocks["PORTS_TYPE"], source("src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs", None))
+        self.assertIn(blocks["MAIN_COMPOSER"], source("src/modules/AF.Module.Prompt/Composition/LegacyDetachedPromptComposer.cs", None))
+        self.assertIn(blocks["POSTPROCESS_COMPOSER"], source("src/modules/AF.Module.Prompt/Composition/LegacyDetachedPostprocessPromptComposer.cs", None))
 
     def test_scene_main_reply_is_generation_only_and_keeps_public_optin(self):
         blocks = extract(None)

@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace AnimusForge
+{
+    public partial class ShoutBehavior
+    {
+        @@PREDICATE@@
+        @@SEAM@@
+
+        private static void Require(bool value, string name)
+        {
+            if (!value) throw new Exception("FAIL " + name);
+        }
+
+        public static void Main()
+        {
+            Require(HasPreprocessRuleHitForExternal(new[] { "  DuEl  " }, "duel"), "trim/case parity");
+            Require(HasPreprocessRuleHitForExternal(new[] { null, "reward" }, "REWARD"), "null entry/case parity");
+            Require(!HasPreprocessRuleHitForExternal(null, "duel"), "null set rejected");
+            Require(!HasPreprocessRuleHitForExternal(new[] { "duelist" }, "duel"), "substring rejected");
+            Require(!HasPreprocessRuleHitForExternal(new[] { "duel" }, " "), "blank rule rejected");
+            Console.WriteLine("PASS shared Courier/Scene rule-hit predicate");
+        }
+    }
+}

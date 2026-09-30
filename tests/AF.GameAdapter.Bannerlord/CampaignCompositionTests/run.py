@@ -17,7 +17,7 @@ INIT = 'protected override void InitializeGameStarter('
 SOURCES = ['src/AF.GameAdapter.Bannerlord/Composition/CampaignComposition.cs', 'src/AF.GameAdapter.Bannerlord/Composition/CampaignModelComposition.cs',
             'src/AF.GameAdapter.Bannerlord/Composition/ModuleFrameworkRuntime.cs', 'src/AF.GameAdapter.Bannerlord/Composition/TeamModuleRegistration.cs',
             'src/AF.Foundation.Runtime/ModuleDirectory/ModuleDirectoryLifecycleOwner.cs',
-            'src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs', 'Refactor/Contracts/FeatureBridgeContracts.cs',
+            'src/AF.Foundation.Runtime/ModuleDirectory/InternalModuleDirectory.cs', 'src/AF.Contracts/Internal/FeatureBridgeContracts.cs',
             'src/modules/AF.Module.PublicApi/V1/AfApi.cs', 'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
             'src/AF.Foundation.Runtime/ModuleDirectory/ModuleFrameworkSnapshot.cs', 'src/modules/AF.Module.PublicApi/Internal/AfV1SnapshotProjection.cs']
 
