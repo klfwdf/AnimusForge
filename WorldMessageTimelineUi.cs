@@ -117,7 +117,7 @@ public static class WorldMessageTimelineUi
 		{
 			PolicySequence = CustomPolicyBehavior.GetPublishedPolicyArtifactCurrentSequenceForExternal(),
 			WeeklyRevision = MyBehavior.GetWorldMessageWeeklyTimelineRevisionForExternal(),
-			DiplomacyRevision = WorldDiplomacyTimelineQueryHost.GetRevisionOrZero()
+			DiplomacyRevision = DiplomacyPresentationBridge.GetRevisionOrZero()
 		};
 	}
 
@@ -248,7 +248,7 @@ public static class WorldMessageTimelineUi
 		try
 		{
 			IReadOnlyList<WorldDiplomacyTimelineDocument> documents =
-				WorldDiplomacyTimelineQueryHost.GetRecentDocumentsOrEmpty(MaxDiplomacySourceEntries);
+				DiplomacyPresentationBridge.GetRecentDocumentsOrEmpty(MaxDiplomacySourceEntries);
 			foreach (WorldDiplomacyTimelineDocument document in documents)
 			{
 				string authorName = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, "未知国家");
@@ -1386,7 +1386,7 @@ public sealed class WorldMessageTimelinePopupVM : ViewModel
 		WorldMessageTimelineRecordItemVM selected = RecordItems[index];
 		if (selected.IsUnread && selected.CanMarkRead && string.Equals(selected.ReadKind, WorldMessageTimelineUi.DiplomacyCategoryId, StringComparison.OrdinalIgnoreCase))
 		{
-			if (WorldDiplomacyTimelineQueryHost.MarkDocumentRead(selected.ReadSourceId))
+			if (DiplomacyPresentationBridge.MarkDocumentRead(selected.ReadSourceId))
 			{
 				selected.MarkRead();
 			}

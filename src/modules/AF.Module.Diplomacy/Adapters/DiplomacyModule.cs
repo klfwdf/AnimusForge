@@ -12,6 +12,7 @@ internal sealed class DiplomacyModule
         Policy = policy;
     }
 
+    internal IDiplomacyRecentPeacePort RecentPeace { get; } = new DiplomacyRecentPeaceApplication();
     internal IDiplomacyConversationPort Conversation { get; } = new DiplomacyConversationModuleAdapter();
     internal IWorldDiplomacyModulePort World { get; } = new WorldDiplomacyModuleAdapter();
     internal IDiplomacyPolicyObservationPort Policy { get; }

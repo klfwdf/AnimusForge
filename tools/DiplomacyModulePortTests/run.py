@@ -11,8 +11,9 @@ def load(name,p):
 util=load('port_util','tools/ModuleFrameworkApiTests/run.py')
 declaration=load('port_decl','tools/ChannelCutoverBoundaryTests/run.py').declaration
 SOURCES=['Refactor/Contracts/'+n+'.cs' for n in ['DiplomacyModulePorts','AfTributePowerContext','WorldDiplomacyPolicySignalSnapshot','WorldDiplomacyPresentationPort','WorldDiplomacyPresentationContracts','WorldDiplomacyTimelineQueryContracts','WorldDiplomacyTimelineDocumentQueryContracts','WorldDiplomacyDocumentReadCommandContracts']]
-SOURCES += ['src/bridges/Diplomacy/'+n+'.cs' for n in ['DiplomacyConversationBridge','DiplomacyPolicyObservationBridge','DiplomacyModuleServices']]
+SOURCES += ['src/bridges/Diplomacy/'+n+'.cs' for n in ['DiplomacyConversationBridge','DiplomacyPolicyObservationBridge','DiplomacyModuleServices','DiplomacyPresentationBridge']]
 SOURCES += ['src/modules/AF.Module.Diplomacy/Adapters/'+n+'.cs' for n in ['DiplomacyModule','DiplomacyConversationModuleAdapter','WorldDiplomacyModuleAdapter','DiplomacyIdentityResolver']]
+SOURCES += ['Refactor/Domain/DiplomacyRecentPeaceRules.cs','src/modules/AF.Module.Diplomacy/Application/DiplomacyRecentPeaceApplication.cs','src/modules/AF.Module.Diplomacy/Application/DiplomacyPoliticalRewardApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineRevisionApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTimelineApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDiscussionApplication.cs','WorldDiplomacyDiscussionEligibilityRules.cs']
@@ -218,13 +219,13 @@ def boundaries():
  # Module port covers commands, queries, lifecycle, presentation and receipts; dropping an entry fails.
  port_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IWorldDiplomacyModulePort')
  assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',port_decl))=={'BuildMemory','CanDiscuss','TryBuildProactiveDiscussion','QueryTimelineRevision',
-   'QueryTimelineDocuments','TryMarkDocumentRead','OnLifecycle','OnEngineTick','OnCampaignTick','OnDailyTick'},'ModulePort surface drift'
- assert set(re.findall(r'(\w+)\s*\{\s*get;',port_decl))=={'Presentation'},'ModulePort read-model surface drift'
+   'QueryTimelineDocuments','TryMarkDocumentRead','MarkTimelineRead','OpenComposeFromTerminal','ShowRoyalAnnouncementArchive','Standing','OnLifecycle','OnEngineTick','OnCampaignTick','OnDailyTick'},'ModulePort surface drift'
+ assert set(re.findall(r'(\w+)\s*\{\s*get;',port_decl))=={'Presentation','ComposePopupOpen'},'ModulePort read-model surface drift'
  conv_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IDiplomacyConversationPort')
  assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',conv_decl))=={'BuildPrompt','CanInjectDiplomacyRule','CanUseDiplomacyActionPostprocess',
    'CanUseFullDiplomacyActionPostprocess','CanUseNpcSovereignDeclareWarPostprocess','CanUseIndependentClanPeace',
    'IsIndependentClanPeacePostprocessTag','BuildDiplomacyPostprocessContext','ProcessDiplomacyTags',
-   'TryBuildTributePowerContext'},'Conversation port surface drift'
+   'TryBuildTributePowerContext','ApplyVassalageRewardTags','ApplyKingdomAnnexationRewardTags'},'Conversation port surface drift'
  # Module adapter may bind only narrow snapshot/leaves, never a whole use-case Behavior method.
  allowed_wdb={'TryCaptureMemory','Instance','TickSource','CampaignSource','LifecycleSource','TryGetTimelineRevisionSnapshot','TryGetTimelineState',
    'TryCaptureDiscussionCandidate','HasKnownDocumentForDiscussion','TryCaptureProactiveSpeaker','TryCaptureProactiveDocuments',
@@ -314,7 +315,7 @@ def main():
  # Compile the existing immutable ledger DTO verbatim, never a hand-maintained mirror.
  entry=declaration(read('Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs'),'internal sealed class PublishedPolicyArtifactLedgerEntry')
  (out/'LedgerEntry.cs').write_text('namespace AnimusForge;\n'+entry,encoding='utf-8')
- common=[HERE/'HostStubs.cs',HERE/'Program.cs',out/'LedgerEntry.cs']
+ common=[HERE/'HostStubs.cs',HERE/'Program.cs',HERE/'PoliticalBoundaryReplay.cs',out/'LedgerEntry.cs']
  variants=[
   ('current',None),
   ('wrong_target',('src/bridges/Diplomacy/DiplomacyConversationBridge.cs','(hero ?? character?.HeroObject)?.StringId','character?.HeroObject?.StringId')),

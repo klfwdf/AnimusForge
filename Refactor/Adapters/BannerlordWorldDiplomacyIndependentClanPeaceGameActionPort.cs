@@ -128,7 +128,7 @@ public sealed class BannerlordWorldDiplomacyIndependentClanPeaceGameActionPort
             () => !FactionManager.IsAtWarAgainstFaction(playerClan, targetKingdom));
         if (result.Applied)
         {
-            try { DiplomacyRecentPeaceGuard.RegisterPeace(playerClan, targetKingdom, ActionSource); }
+            try { DiplomacyRecentPeaceBridge.RegisterPeace(playerClan, targetKingdom, ActionSource); }
             catch { /* Peace was confirmed independently of guard registration. */ }
         }
         return Receipt(!result.IsKnown ? WorldDiplomacyIndependentClanPeaceExecutionStatus.UnknownAfterStart

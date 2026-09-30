@@ -44,7 +44,7 @@ namespace AnimusForge
     { internal static void RunAuthorizedBreak(string source, Kingdom first, Kingdom second, Action action) => action(); }
     internal static class MeetingBattleRuntime
     { internal static void RunWithDiplomaticSideEffectsUnlocked(string source, Action action) => action(); }
-    internal static class DiplomacyRecentPeaceGuard
+    internal static class DiplomacyRecentPeaceBridge
     { internal static void RegisterPeace(object first, object second, string source) => Engine.Registrations++; }
     internal static class BannerlordApiCompat
     {

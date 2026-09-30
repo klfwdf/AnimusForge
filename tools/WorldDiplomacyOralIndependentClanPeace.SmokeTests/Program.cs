@@ -156,7 +156,7 @@ internal static class Program
                   && oralSource.Contains("CommandFacade.Execute(command)", StringComparison.Ordinal),
             "behavior must forward independent peace command and receipt ordering to Application");
         Test.True(!method.Contains("MakePeaceAction.Apply", StringComparison.Ordinal)
-                  && !method.Contains("DiplomacyRecentPeaceGuard.RegisterPeace", StringComparison.Ordinal)
+                  && !method.Contains("DiplomacyRecentPeaceBridge.RegisterPeace", StringComparison.Ordinal)
                   && !method.Contains("RunWithDiplomaticSideEffectsUnlocked", StringComparison.Ordinal),
             "behavior must no longer own the independent-clan peace action");
         Test.True(adapter.Contains("TWParallel.IsMainThread()", StringComparison.Ordinal)
@@ -183,7 +183,7 @@ internal static class Program
             action,
             StringComparison.Ordinal);
         int register = adapter.IndexOf(
-            "DiplomacyRecentPeaceGuard.RegisterPeace(playerClan, targetKingdom, ActionSource)",
+            "DiplomacyRecentPeaceBridge.RegisterPeace(playerClan, targetKingdom, ActionSource)",
             StringComparison.Ordinal);
         Test.True(action >= 0 && confirmation > action && register > confirmation,
             "recent peace may be registered only after the action is confirmed");

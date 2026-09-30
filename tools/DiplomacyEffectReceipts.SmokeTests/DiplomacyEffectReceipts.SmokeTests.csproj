@@ -27,4 +27,4 @@
   <ItemGroup>
     <Compile Include="../../src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OfferActionPort.cs" Link="WorldDiplomacyBehavior.OfferActionPort.cs" />
   </ItemGroup>
-</Project>
+<ItemGroup><Compile Include="../../src/modules/AF.Module.Diplomacy/Application/DiplomacyPoliticalRewardApplication.cs" /><Compile Include="../../src/modules/AF.Module.Diplomacy/Adapters/DiplomacyPoliticalRewardPort.cs" /></ItemGroup></Project>

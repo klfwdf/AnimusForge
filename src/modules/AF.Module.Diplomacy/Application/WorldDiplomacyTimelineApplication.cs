@@ -15,9 +15,28 @@ internal static class WorldDiplomacyTimelineApplication
     internal static WorldDiplomacyTimelineDocumentsResult QueryDocuments(
         IWorldDiplomacyTimelineStateSource source, int maxCount)
     {
-        return source.TryGetState(out WorldDiplomacyStorage storage)
-            ? WorldDiplomacyPresentationQueries.Timeline(storage, maxCount)
-            : WorldDiplomacyTimelineDocumentsResult.Unavailable();
+        try
+        {
+            return source.TryGetState(out WorldDiplomacyStorage storage)
+                ? WorldDiplomacyPresentationQueries.Timeline(storage, maxCount)
+                : WorldDiplomacyTimelineDocumentsResult.Unavailable();
+        }
+        catch { return WorldDiplomacyTimelineDocumentsResult.Failed(); }
+    }
+
+    internal static WorldDiplomacyDocumentReadResult MarkTimelineRead(IWorldDiplomacyTimelineStateSource source, string documentId)
+    {
+        try
+        {
+            string cleanId = (documentId ?? string.Empty).Trim();
+            const string prefix = "diplomacy:";
+            if (cleanId.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase)) cleanId = cleanId.Substring(prefix.Length);
+            if (cleanId.Length == 0) return WorldDiplomacyDocumentReadResult.InvalidDocumentId();
+            bool applied = MarkRead(source, cleanId, out bool available);
+            if (!available) return WorldDiplomacyDocumentReadResult.Unavailable();
+            return applied ? WorldDiplomacyDocumentReadResult.Applied() : WorldDiplomacyDocumentReadResult.NotFound();
+        }
+        catch { return WorldDiplomacyDocumentReadResult.Failed(); }
     }
 
     internal static bool MarkRead(

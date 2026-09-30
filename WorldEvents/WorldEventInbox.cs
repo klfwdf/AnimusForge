@@ -437,7 +437,7 @@ public sealed class AnimusForgeWorldEventInboxPopupVM : ViewModel
 		{
 			if (!AnimusForgeWorldEventBehavior.MarkEventReadForExternal(selected.EventId))
 			{
-				WorldDiplomacyTimelineQueryHost.MarkDocumentRead(selected.EventId);
+				DiplomacyPresentationBridge.MarkDocumentRead(selected.EventId);
 			}
 			selected.MarkRead();
 			CountryItems?.FirstOrDefault(x => x != null && x.IsSelected)?.RefreshUnreadCountFromRecords();

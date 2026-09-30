@@ -50,7 +50,7 @@ public static class EncyclopediaKingdomStabilityPatch
 			}
 			Kingdom kingdom = ResolveKingdom(__instance);
 			string stabilityText = MyBehavior.BuildKingdomStabilityEncyclopediaTextForExternal(kingdom);
-			string standingText = WorldDiplomacyPresentationHost.Standing(kingdom?.StringId);
+			string standingText = DiplomacyPresentationBridge.Standing(kingdom?.StringId);
 			string combinedText = string.Join("\n\n", new[] { stabilityText, standingText }
 				.Where(x => !string.IsNullOrWhiteSpace(x)));
 			if (string.IsNullOrWhiteSpace(combinedText))

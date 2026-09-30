@@ -695,7 +695,7 @@ internal static class Program
 			&& popupPrefab.Contains("Text=\"@ImpactText\"", StringComparison.Ordinal),
 			"the formal letter popup must bind the standing changes and reasons into its right-side impact area");
 		string encyclopedia = File.ReadAllText(FindRepositoryFile("EncyclopediaKingdomStabilityPatch.cs"), Encoding.UTF8);
-		Test.True(encyclopedia.Contains("WorldDiplomacyPresentationHost.Standing(kingdom?.StringId)", StringComparison.Ordinal),
+		Test.True(encyclopedia.Contains("DiplomacyPresentationBridge.Standing(kingdom?.StringId)", StringComparison.Ordinal),
 			"kingdom encyclopedia refresh must append prestige and international reputation beside stability");
 		string encyclopediaStanding = ExtractMethod(source, "internal static string Standing(");
 		Test.True(encyclopediaStanding.Contains("该国的外交信用与威慑", StringComparison.Ordinal)
