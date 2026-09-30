@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\Refactor\Adapters\BannerlordWorldDiplomacyDeclareWarGameActionPort.cs" Link="BannerlordWorldDiplomacyDeclareWarGameActionPort.cs" />
+    <Compile Include="..\..\src\modules\AF.Module.Diplomacy\Direct\DirectDiplomacyWarGuard.cs" Link="DirectDiplomacyWarGuard.cs" />
     <Compile Include="..\..\Refactor\Contracts\WorldDiplomacyDeclareWarContracts.cs" Link="WorldDiplomacyDeclareWarContracts.cs" />
     <Compile Include="..\..\Refactor\Domain\WorldDiplomacyOralDeclareWarRules.cs" Link="WorldDiplomacyOralDeclareWarRules.cs" />
     <Compile Include="..\..\Refactor\Modules\WorldDiplomacyDeclareWarCommandFacade.cs" Link="WorldDiplomacyDeclareWarCommandFacade.cs" />
