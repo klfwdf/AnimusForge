@@ -30,6 +30,24 @@ namespace TaleWorlds.CampaignSystem
 }
 namespace AnimusForge
 {
+    internal static class WorldDiplomacyPresentation
+    {
+        internal static bool OpenComposeFromTerminal(Action onClose) { Recording.Call("compose",onClose); return Recording.Result; }
+        internal static bool ShowRoyalAnnouncementArchive(Action onClose) { Recording.Call("archive",onClose); return Recording.Result; }
+    }
+    internal static class WorldDiplomacyComposePopup { internal static bool IsOpen => Recording.Result; }
+    internal sealed class DiplomacyPoliticalRewardPort : IDiplomacyPoliticalRewardPort
+    {
+        private readonly string giver,receiver;
+        internal DiplomacyPoliticalRewardPort(string a,string b) { giver=a;receiver=b; }
+        public bool GiverIsPlayer => giver=="player";
+        public bool ReceiverIsPlayer => receiver=="player";
+        public DiplomacyPoliticalRewardReceipt Apply(DiplomacyPoliticalRewardKind kind,string type,string target)
+        { Recording.Call("political",giver,receiver,kind,type,target); return new(true,Recording.Result,"confirmed"); }
+        public void Record(DiplomacyPoliticalRewardKind kind,string stage,string tag,string type,string target,bool applied,string status) { }
+        public void Show(DiplomacyPoliticalRewardKind kind,bool applied,string status) { }
+        public void Unsupported(DiplomacyPoliticalRewardKind kind,string tag) { }
+    }
     internal sealed class WorldDiplomacyDocument { public string DocumentId; public bool IsRead; }
     internal sealed class WorldDiplomacyStorage { public List<WorldDiplomacyDocument> Documents = new(); }
     internal static class WorldDiplomacyPresentationQueries

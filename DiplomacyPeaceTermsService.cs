@@ -78,7 +78,7 @@ internal static class DiplomacyPeaceTermsService
         catch (Exception ex) { return new(false, false, false, 0, 0, false, diagnostic + " | peace readback: " + ex.Message); }
         if (!peace) return new(true, false, false, 0, 0, false, diagnostic + " 和平动作未生效");
         // Registration is an ancillary guard; its failure cannot erase confirmed peace.
-        try { DiplomacyRecentPeaceGuard.RegisterPeace(payer, receiver, source ?? "diplomacy_make_peace"); }
+        try { DiplomacyRecentPeaceBridge.RegisterPeace(payer, receiver, source ?? "diplomacy_make_peace"); }
         catch (Exception ex) { diagnostic += " | peace guard: " + ex.Message; }
         try
         {

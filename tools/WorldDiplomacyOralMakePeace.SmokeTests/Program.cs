@@ -236,7 +236,7 @@ internal static class Program
         Test.True(peaceService.IndexOf("FactionManager.IsAtWarAgainstFaction(payer, receiver)",
                       peaceService.IndexOf("MakePeaceAction.ApplyByKingdomDecision", StringComparison.Ordinal),
                       StringComparison.Ordinal) >= 0
-                  && peaceService.IndexOf("DiplomacyRecentPeaceGuard.RegisterPeace", StringComparison.Ordinal)
+                  && peaceService.IndexOf("DiplomacyRecentPeaceBridge.RegisterPeace", StringComparison.Ordinal)
                       > peaceService.IndexOf("MakePeaceAction.ApplyByKingdomDecision", StringComparison.Ordinal),
             "peace service must confirm the action before registering recent peace");
         int execution = application.IndexOf("source.Execute(resolution.Command)", StringComparison.Ordinal);

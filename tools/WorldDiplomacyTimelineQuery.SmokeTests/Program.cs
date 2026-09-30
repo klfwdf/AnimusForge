@@ -378,29 +378,29 @@ internal static class Program
         Test.True(host.Contains("new WorldDiplomacyTimelineDocumentQueryAdapter()", StringComparison.Ordinal)
                   && host.Contains("DocumentFacade.Query(maxCount).Documents", StringComparison.Ordinal),
             "query host must compose the document adapter behind the facade once");
-        Test.True(readAdapter.Contains("cleanId = (documentId ?? string.Empty).Trim()", StringComparison.Ordinal)
-                  && readAdapter.Contains("cleanId.StartsWith(TimelinePrefix, StringComparison.OrdinalIgnoreCase)", StringComparison.Ordinal)
-                  && readAdapter.Contains("cleanId = cleanId.Substring(TimelinePrefix.Length)", StringComparison.Ordinal),
+        Test.True(timelineApplication.Contains("cleanId = (documentId ?? string.Empty).Trim()", StringComparison.Ordinal)
+                  && timelineApplication.Contains("cleanId.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase)", StringComparison.Ordinal)
+                  && timelineApplication.Contains("cleanId = cleanId.Substring(prefix.Length)", StringComparison.Ordinal),
             "document-read adapter must preserve exact trim and diplomacy-prefix normalization");
-        Test.True(readAdapter.Contains("DiplomacyModuleServices.World.TryMarkDocumentRead", StringComparison.Ordinal)
-                  && readAdapter.Contains("WorldDiplomacyDocumentReadResult.Unavailable()", StringComparison.Ordinal)
-                  && readAdapter.Contains("WorldDiplomacyDocumentReadResult.NotFound()", StringComparison.Ordinal),
+        Test.True(readAdapter.Contains("DiplomacyModuleServices.World.MarkTimelineRead", StringComparison.Ordinal)
+                  && timelineApplication.Contains("WorldDiplomacyDocumentReadResult.Unavailable()", StringComparison.Ordinal)
+                  && timelineApplication.Contains("WorldDiplomacyDocumentReadResult.NotFound()", StringComparison.Ordinal),
             "document-read adapter must preserve owner availability and lookup failure boundaries");
         Test.True(host.Contains("new WorldDiplomacyDocumentReadCommandAdapter()", StringComparison.Ordinal)
                   && host.Contains("DocumentReadFacade.MarkReadOrFalse(documentId)", StringComparison.Ordinal),
             "query host must compose the document-read adapter behind the facade once");
-        Test.True(ui.Contains("DiplomacyRevision = WorldDiplomacyTimelineQueryHost.GetRevisionOrZero()", StringComparison.Ordinal),
+        Test.True(ui.Contains("DiplomacyRevision = DiplomacyPresentationBridge.GetRevisionOrZero()", StringComparison.Ordinal),
             "timeline UI must use the query host");
         Test.True(!ui.Contains("DiplomacyRevision = WorldDiplomacyBehavior.GetWorldMessageTimelineRevisionForExternal()", StringComparison.Ordinal),
             "timeline UI must not call the legacy behavior directly");
-        Test.True(ui.Contains("WorldDiplomacyTimelineQueryHost.GetRecentDocumentsOrEmpty(MaxDiplomacySourceEntries)", StringComparison.Ordinal),
+        Test.True(ui.Contains("DiplomacyPresentationBridge.GetRecentDocumentsOrEmpty(MaxDiplomacySourceEntries)", StringComparison.Ordinal),
             "timeline UI must use the bounded document query host");
         Test.True(!ui.Contains("IEnumerable<WorldDiplomacyDocument> documents", StringComparison.Ordinal),
             "timeline UI must not consume persisted diplomacy documents");
-        Test.True(ui.Contains("WorldDiplomacyTimelineQueryHost.MarkDocumentRead(selected.ReadSourceId)", StringComparison.Ordinal)
+        Test.True(ui.Contains("DiplomacyPresentationBridge.MarkDocumentRead(selected.ReadSourceId)", StringComparison.Ordinal)
                   && !ui.Contains("WorldDiplomacyBehavior.MarkDocumentReadForExternal(selected.ReadSourceId)", StringComparison.Ordinal),
             "timeline UI must use the document-read command host");
-        Test.True(inbox.Contains("WorldDiplomacyTimelineQueryHost.MarkDocumentRead(selected.EventId)", StringComparison.Ordinal)
+        Test.True(inbox.Contains("DiplomacyPresentationBridge.MarkDocumentRead(selected.EventId)", StringComparison.Ordinal)
                   && !inbox.Contains("WorldDiplomacyBehavior.MarkDocumentReadForExternal(selected.EventId)", StringComparison.Ordinal),
             "world-event inbox must use the document-read command host");
         Test.True(behavior.Contains("public static long GetWorldMessageTimelineRevisionForExternal()", StringComparison.Ordinal)

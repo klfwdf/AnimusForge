@@ -5,6 +5,14 @@ namespace AnimusForge;
 
 internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
 {
+    public bool OpenComposeFromTerminal(System.Action onClose = null) => WorldDiplomacyPresentation.OpenComposeFromTerminal(onClose);
+    public bool ShowRoyalAnnouncementArchive(System.Action onClose = null) => WorldDiplomacyPresentation.ShowRoyalAnnouncementArchive(onClose);
+    public bool ComposePopupOpen => WorldDiplomacyComposePopup.IsOpen;
+    public string Standing(string kingdomId)
+    {
+        try { return Presentation?.Standing(kingdomId) ?? ""; }
+        catch { return ""; }
+    }
     private sealed class MemorySource : IWorldDiplomacyMemorySource
     {
         public bool TryCapture(string heroId, string kingdomOverride, out WorldDiplomacyMemorySnapshot snapshot)
@@ -56,6 +64,7 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
     public WorldDiplomacyTimelineRevisionResult QueryTimelineRevision() => WorldDiplomacyTimelineRevisionApplication.Query(TimelineRevisionSource);
     public WorldDiplomacyTimelineDocumentsResult QueryTimelineDocuments(int maxCount) => WorldDiplomacyTimelineApplication.QueryDocuments(TimelineSource, maxCount);
     public bool TryMarkDocumentRead(string documentId, out bool ownerAvailable) => WorldDiplomacyTimelineApplication.MarkRead(TimelineSource, documentId, out ownerAvailable);
+    public WorldDiplomacyDocumentReadResult MarkTimelineRead(string documentId) => WorldDiplomacyTimelineApplication.MarkTimelineRead(TimelineSource, documentId);
     public IWorldDiplomacyPresentationPort Presentation => WorldDiplomacyBehavior.ResolvePresentationPort();
     public void OnLifecycle(WorldDiplomacyLifecycleEvent lifecycle)
     {

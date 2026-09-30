@@ -270,8 +270,8 @@ internal static class Dpl090PresentationReplay
             && !presentation.Contains("WorldDiplomacyRound round") && !presentation.Contains(".IsRead ="), "UI only consumes read models and commands");
         Test.True(presentation.Contains("WorldDiplomacyPresentationHost.Submit(new WorldDiplomacyPlayerDocumentCommand"), "compose/reply route through typed command");
         Test.True(presentation.Contains("WorldDiplomacyPresentationHost.Archive()"), "archive consumes query projection");
-        Test.True(Read("AnimusForgeTerminalBehavior.cs").Contains("WorldDiplomacyPresentation.OpenComposeFromTerminal()"), "terminal routes to presenter");
-        Test.True(Read("EncyclopediaKingdomStabilityPatch.cs").Contains("WorldDiplomacyPresentationHost.Standing(kingdom?.StringId)"), "encyclopedia sends only stable id");
+        Test.True(Read("AnimusForgeTerminalBehavior.cs").Contains("DiplomacyPresentationBridge.OpenComposeFromTerminal()"), "terminal routes to presenter");
+        Test.True(Read("EncyclopediaKingdomStabilityPatch.cs").Contains("DiplomacyPresentationBridge.Standing(kingdom?.StringId)"), "encyclopedia sends only stable id");
         foreach (string file in new[] { "WorldDiplomacyPresentationQueries", "WorldDiplomacyPlayerApplication", "WorldDiplomacyNotificationApplication" })
         {
             string source = Read("src/modules/AF.Module.Diplomacy/Application/" + file + ".cs");

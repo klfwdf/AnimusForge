@@ -6,6 +6,10 @@ namespace AnimusForge;
 // No eligibility, tag grammar, game action, scan, cache or fallback belongs here.
 internal static class DiplomacyConversationBridge
 {
+    internal static bool ApplyVassalageRewardTags(Hero giver, Hero receiver, ref string text, System.Collections.Generic.List<string> giverFacts, System.Collections.Generic.List<string> receiverFacts) =>
+        DiplomacyModuleServices.Conversation.ApplyVassalageRewardTags(giver?.StringId, receiver?.StringId, ref text, giverFacts, receiverFacts);
+    internal static bool ApplyKingdomAnnexationRewardTags(Hero giver, Hero receiver, ref string text, System.Collections.Generic.List<string> giverFacts, System.Collections.Generic.List<string> receiverFacts) =>
+        DiplomacyModuleServices.Conversation.ApplyKingdomAnnexationRewardTags(giver?.StringId, receiver?.StringId, ref text, giverFacts, receiverFacts);
     internal static string BuildDiplomacyMemory(Hero hero, string kingdomOverride, string input,
         System.Collections.Generic.IReadOnlyList<string> ruleIds, bool proactive) =>
         DiplomacyModuleServices.World.BuildMemory(hero?.StringId, kingdomOverride, input, ruleIds, proactive);

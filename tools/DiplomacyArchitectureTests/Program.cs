@@ -6,12 +6,16 @@ using Newtonsoft.Json.Linq;
 static class Program
 {
     static int checks;
+    static HashSet<string> ConcreteOwners = new(StringComparer.Ordinal);
+    static bool IsImplementation(string path) => path.StartsWith("src/modules/AF.Module.Diplomacy/")
+        || (path.StartsWith("Refactor/") && !path.StartsWith("Refactor/Contracts/") && Path.GetFileName(path).Contains("Diplomacy"))
+        || path == "DiplomacyPeaceTermsService.cs" || path == "DiplomacyRecentPeaceGuard.cs";
     static void Check(bool condition, string message)
     { if (!condition) throw new InvalidOperationException("FAIL " + message); checks++; }
     static bool IsPure(string p) =>
         (p.StartsWith("Refactor/Domain/") || p.StartsWith("Refactor/Persistence/") || p.StartsWith("Refactor/Contracts/")) && Path.GetFileName(p).StartsWith("WorldDiplomacy")
         || p.StartsWith("src/modules/AF.Module.Diplomacy/Application/") || p.StartsWith("src/modules/AF.Module.Diplomacy/Rules/")
-        || new[] { "WorldDiplomacyDiscussionEligibilityRules.cs", "WorldDiplomacyProactiveSpeakerEligibilityRules.cs", "WorldDiplomacyProactiveDocumentSelectionRules.cs", "Refactor/Contracts/DiplomacyModulePorts.cs", "Refactor/Contracts/AfTributePowerContext.cs", "Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs",
+        || new[] { "WorldDiplomacyDiscussionEligibilityRules.cs", "WorldDiplomacyProactiveSpeakerEligibilityRules.cs", "WorldDiplomacyProactiveDocumentSelectionRules.cs", "Refactor/Contracts/DiplomacyModulePorts.cs", "Refactor/Contracts/AfTributePowerContext.cs", "Refactor/Contracts/DiplomacyPeaceEffectReceipt.cs", "Refactor/Domain/DiplomacyRecentPeaceRules.cs", "Refactor/Contracts/PublishedPolicyArtifactLedgerEntry.cs",
             "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyJobRuntimeCoordinator.cs", "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyRequestLeaseCoordinator.cs" }.Contains(p);
     static readonly HashSet<string> Forbidden = new(StringComparer.Ordinal) {
         "TaleWorlds", "HarmonyLib", "SandBox", "GauntletUI", "MCM", "Hero", "Kingdom", "Clan", "Settlement", "MobileParty", "Agent", "Mission", "Campaign",
@@ -216,6 +220,12 @@ static class Program
                     errors.Add("bridge owns implementation: " + name);
         }
         // Legacy concrete owners are accessible only inside their module. Ignore diagnostics/comments/strings.
+        if (!IsImplementation(path))
+            foreach (var name in root.DescendantNodes().OfType<IdentifierNameSyntax>())
+                if (ConcreteOwners.Contains(name.Identifier.ValueText)
+                    && !(path == "src/bridges/Diplomacy/DiplomacyModuleServices.cs" && name.Identifier.ValueText == "DiplomacyModule")
+                    && !(path == "src/bridges/Diplomacy/DiplomacyRecentPeaceBridge.cs" && name.Identifier.ValueText == "DiplomacyFactionSnapshot"))
+                    errors.Add("external module implementation dependency: " + name);
         if (!path.StartsWith("src/modules/AF.Module.Diplomacy/"))
             foreach (var name in root.DescendantNodes().OfType<IdentifierNameSyntax>())
                 if (name.Identifier.ValueText is "WorldDiplomacyBehavior" or "DiplomacyBehavior")
@@ -239,6 +249,10 @@ static class Program
         foreach (bool api14 in new[] { false, true })
         {
             var options = new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: api14 ? new[] { "BANNERLORD_1_4_OR_GREATER" } : Array.Empty<string>());
+            ConcreteOwners = texts.Where(pair => pair.Key.StartsWith("src/modules/AF.Module.Diplomacy/"))
+                .SelectMany(pair => CSharpSyntaxTree.ParseText(pair.Value, options).GetRoot().DescendantNodes().OfType<BaseTypeDeclarationSyntax>())
+                .Where(type => !type.Ancestors().OfType<BaseTypeDeclarationSyntax>().Any())
+                .Select(type => type.Identifier.ValueText).ToHashSet(StringComparer.Ordinal);
             foreach (var (path, text) in texts)
             {
                 var tree = CSharpSyntaxTree.ParseText(text, options, path);
@@ -302,6 +316,9 @@ static class Program
             ("AIConfigHandler.cs", "class X { object F() => AnimusForge.WorldDiplomacyBehavior.Instance; }") };
         foreach (var (path, text) in mutations)
             Check(Violations(path, CSharpSyntaxTree.ParseText(text).GetRoot()).Count > 0, "dependency mutation must be rejected " + path);
+        foreach (string owner in new[] { "DiplomacyCrossDomainActionOwner", "WorldDiplomacyPresentation", "WorldDiplomacyComposePopup", "WorldDiplomacyOrchestration", "DiplomacyPoliticalRewardApplication" })
+            Check(Violations("RewardSystemBehavior.cs", CSharpSyntaxTree.ParseText("using Alias = AnimusForge." + owner + "; class X { object F() => typeof(Alias); }").GetRoot()).Count > 0,
+                "all concrete module owners reject external alias/typeof bypass: " + owner);
         foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TrySettleRelayOffer", "CanDeclareWar", "CanIssueWarThreat", "HandleDisabledState", "CommitEmbeddedRoundPlan", "TryApplyUltimatumComplianceDomesticPenalty", "TryApplyDiplomaticThreatPolicyConditionCancellation", "TryApplyDiplomaticThreatIssuerRelationReward", "ResolveDiplomaticThreatCompliance", "ApplyDiplomaticThreatReputationPenalty", "RetryDiplomaticThreatDomesticPenalties", "RetryDiplomaticThreatComplianceConsequences", "RetryDiplomaticThreatHistoryResults", "ApplyNationalPrestigeDelta", "SettleInternationalReputationForDocument", "RecoverUnsettledAiInternationalReputation", "ReconcileAllNationalPrestigeVassalRelations", "ReconcileNationalPrestigeVassalRelations", "ApplyZeroPrestigeBreachRelationPenalty", "AnchorInternationalReputationNaturalChangeDays", "ProcessInternationalReputationNaturalChange", "OnDailyTick", "OnCampaignTick", "TryApplyInitialNewGamePeace", "EnsureCanonicalHistoryInitialized", "SyncCanonicalHistorySources", "CaptureCanonicalHistoryForJob", "RestoreSuspendedExchangeIfAny", "CompleteExchange", "IsNonRootAiRelayNoActionAllowed", "CanUseResultSettlementTarget", "TryResolvePolicyConditionForThreat", "RegisterOrAdvanceDiplomaticThreat", "ProcessDiplomaticThreatDocument", "PublishPlayerAuthoredDocumentImmediately", "RefreshPolicyDiplomacySignals", "BuildPotentialDiplomaticActionIntents", "BuildLegalDiplomaticActionIntents", "BuildLegalDiplomaticDeclarationIntents", "GetActionableDiplomaticTargets", "GetRoundPlanActionableParticipants", "GetResultSettlementActionableTargets", "RefreshResultSettlementActionSlots", "EnsureGenerationJobHasKingdomStrategicProfile", "RefreshDiplomaticActionPresentationAndPrompt", "RefreshDiplomaticThreatPresentationAndPrompt", "TryRebuildPendingWorldDiplomacyJob", "CommitAnalysis", "SuppressInvalidDocumentBeforePropagation", "PreservePublishedPlayerDocumentAfterRejectedMechanic", "ParseAndValidatePeaceTerms", "AreOfferedPeaceTermsCurrentlyExecutable", "IsCessionCurrentlyAllowed", "BuildCessionCandidates" })
         {
             string injected = "class X { void " + name + "(object d) { if (d != null) LegacyExecute(d); } }";

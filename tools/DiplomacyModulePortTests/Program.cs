@@ -186,6 +186,7 @@ static class Program
         Check(ReferenceEquals(policy.GetPublishedPolicyHistoryArtifacts(100,8),WorldDiplomacyPolicyContext.Artifacts),"artifact list preserved");Call("artifacts",100L,8);
         Check(policy.TryAcknowledgePublishedPolicyHistoryThrough(91),"ack result");Call("ack",91L);policy.Clear();Call("clear");
         Recording.Failure=failure;try { policy.BuildSnapshot("k");Check(false,"policy failure swallowed"); }catch(InvalidOperationException ex) {Check(ReferenceEquals(ex,failure),"policy failure keeps existing boundary");}Recording.Failure=null;
+        PoliticalBoundaryReplay.Run(Check);
         Console.WriteLine($"PASS {checks} source-linked diplomacy port assertions; current owner lookup, return/ref/out, unavailable lifecycle, immutable policy values and zero-allocation tick routing.");
         Console.WriteLine("NOT TESTED: game engine implementation, actual thread scheduling, LIVE/SAVE acceptance.");
     }

@@ -14,6 +14,10 @@ internal sealed class DiplomacyConversationModuleAdapter : IDiplomacyConversatio
     private static readonly IDiplomacyConversationEligibilitySource Eligibility = new EligibilitySource();
     private static Hero ResolveHero(string id) => DiplomacyIdentityResolver.Hero(id);
     private static Kingdom ResolveKingdom(string id) => DiplomacyIdentityResolver.Kingdom(id);
+    public bool ApplyVassalageRewardTags(string giverId, string receiverId, ref string text, System.Collections.Generic.List<string> giverFacts, System.Collections.Generic.List<string> receiverFacts) =>
+        DiplomacyPoliticalRewardApplication.Apply(new DiplomacyPoliticalRewardPort(giverId, receiverId), DiplomacyPoliticalRewardKind.Vassalage, ref text, giverFacts, receiverFacts);
+    public bool ApplyKingdomAnnexationRewardTags(string giverId, string receiverId, ref string text, System.Collections.Generic.List<string> giverFacts, System.Collections.Generic.List<string> receiverFacts) =>
+        DiplomacyPoliticalRewardApplication.Apply(new DiplomacyPoliticalRewardPort(giverId, receiverId), DiplomacyPoliticalRewardKind.Annexation, ref text, giverFacts, receiverFacts);
     public string BuildPrompt(string heroId, string extras) => DiplomacyPromptApplication.Build(new DiplomacyPromptSource(ResolveHero(heroId)), extras);
     public bool CanInjectDiplomacyRule(string heroId) => DiplomacyConversationEligibilityApplication.CanInject(Eligibility, heroId);
     public bool CanUseDiplomacyActionPostprocess(string heroId) => DiplomacyConversationEligibilityApplication.CanUseAction(Eligibility, heroId);
