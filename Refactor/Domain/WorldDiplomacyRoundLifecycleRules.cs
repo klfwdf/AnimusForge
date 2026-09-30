@@ -983,7 +983,7 @@ public static class WorldDiplomacyRoundLifecycleRules
         WorldDiplomacyRoundLifecycleRules.EnqueueDeferredCanonicalHistoryRetry(documentIdSet, documentIds, normalizedId);
     }
 
-    
+
 
     public static int GetRoundParticipantLimit(int activityLevel, int maxRelayParticipants)
     {
@@ -4008,9 +4008,9 @@ public static class WorldDiplomacyRoundLifecycleRules
 		return Math.Max(0f, Math.Min(100f, progress + strength + territory + casualties + multiWar));
 	}
 
-	
 
-	
+
+
 
 	public static void ClearRoundScopedQueuesAndExpireOpportunities(WorldDiplomacyStorage storage, WorldDiplomacyRound round)
 	{
@@ -4401,7 +4401,7 @@ public static class WorldDiplomacyRoundLifecycleRules
 		return -1;
 	}
 
-	
+
 
 	public static void SkipResultSettlementSlot(WorldDiplomacyRound round, string slotId, string kingdomId, string reason, List<WorldDiplomacyThreat> threats, int currentDay, Action<string> log)
 	{
@@ -4519,7 +4519,7 @@ public static class WorldDiplomacyRoundLifecycleRules
             }
         }
 
-        
+
 
         public static void RemoveOfferCooldown(
             List<WorldDiplomacyOfferCooldown> cooldowns,
@@ -4967,7 +4967,7 @@ public static class WorldDiplomacyRoundLifecycleRules
             }
         }
 
-        
+
 
         public static void RegisterRelayProposalOffer(
             WorldDiplomacyRound round,

@@ -504,9 +504,9 @@ public static List<WorldDiplomacyLlmMessage> CloneLlmMessages(IEnumerable<WorldD
 			.ToList();
 	}
 
-	
 
-	
+
+
 
 	public static void AppendOpenOfferAnswerRequirement(StringBuilder sb, WorldDiplomacyRound round, string authorKingdomId)
 	{

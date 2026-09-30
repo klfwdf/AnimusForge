@@ -294,7 +294,7 @@ public static class WorldDiplomacyReputationRules
 				resolveKingdomName);
 		return updated;
 	}
-	
+
 
 	public static void SettleInternationalReputationForDocument(
 		Dictionary<string, int> reputationByKingdom,
