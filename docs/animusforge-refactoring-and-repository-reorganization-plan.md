@@ -4,6 +4,8 @@
 
 ### 当前结论：J17-A已闭，20/20责任桶；B1a已启动，C未执行，D NOT-RUN
 
+**B6 渠道前置测试已验收（产品未迁）**：四个测试文件的独立切片修复旧 fixture 漂移并补具名现状回归。`SceneGroupReceiptTests` 原样提取 `BuildGroupSpeakingCandidates`、`BuildStrictSceneMessagesForNpc`、`RecordSceneReplyHistoryOnMainThreadAsync`，结合 SceneConversationChains 真实调用点约束，共 **27 checks PASS**：primary-first/同 Agent 去重/其余 NPC 原顺序，群聊与旁听已记录输入不二次追加，失效 generation/session/epoch/目标不追加两类历史写入。另复用本轮独立输出的 Lifetime **34/34**、后处理 queue **40**、gate **6组**、extraction **8/8**。首次 Lifetime `CS0103 RichExecutions` 与旧 `void`/audience marker 提取失败已保留；仅补明确排除 Vengeance 实效的 stub、改接真实 `Task`/marker，未降低后续断言。Group runner 复用已审 `new_run_root`，不覆盖旧 `.generated/current`。证据：`artifacts/j17b/session-20260930/b6-preflight/report.md` 及 `group-002/run.log`，输入 SHA 固定。此包只验证真实 helper/回执与替身依赖边界，不是完整群聊/旁听运行、Memory 持久 exactly-once、真实 HTTP 取消或三渠道切换；这些留后续具名 B6/C/D，**不标 B6 产品迁移完成**。
+
 **2026-09-30 B/C 多智能体接续意图（现场 HEAD `84c4c0ff`）**：用户授权直接继续 B/C；采用当前对话内三个 `gpt-6-sol / medium` 执行者，总控集中集成。实际工作区 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831` 已核对；22 个既有未跟踪 tools 目录保留。A 的责任审查结论复用，不重新全仓 A；旧只读 readiness 的未授权/旧 runner 风险结论由最新授权与 `84c4c0ff` 的已审入口隔离结果按覆盖范围取代，未审 runner 仍须先查副作用。
 
 - **B1a 产品唯一写者 `memory_impl`**：`MyBehavior.cs`、`MyBehavior.DialogueHistoryDelete.cs`、`MyBehavior.HistoryPromptSnapshot.cs`、`MyBehavior.MemoryRecovery.cs`、`MyBehavior.MemorySealing.cs`、`MyBehavior.MemorySourceFingerprint.cs`、`MyBehavior.MemorySummaryInput.cs`、`MyBehavior.MemorySummaryPlanning.cs`、`MyBehavior.WeeklyActionOutcomeReceipts.cs` 与 `src/modules/AF.Module.Memory/Records/` 必要代码。一次性迁九类/95 字段及唯一 Sanitize/clone 规则并接消费者；NpcAction 留 B1b、export bundle 留 B4。先等迁前基线与窄接口冻结，不保留第二套算法/状态。

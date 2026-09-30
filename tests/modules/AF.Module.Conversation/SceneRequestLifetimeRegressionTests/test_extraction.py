@@ -39,8 +39,8 @@ class ExtractionTests(unittest.TestCase):
                 self.assertIn(run.ex.declaration(self.compat, signature), self.generated)
 
     def test_mutation_splice_is_after_real_target_acceptance(self):
-        method = run.ex.declaration(self.scene, "private void ProcessCurrentScenePlayerShout(")
-        marker = "\t\tif (!TryBuildSceneShoutConversationScope("
+        method = run.ex.declaration(self.scene, "private Task ProcessCurrentScenePlayerShout(")
+        marker = "\t\tbool audienceBuilt = TryBuildSceneShoutConversationScope("
         self.assertEqual(1, method.count(marker))
         self.assertIn(method.split(marker)[0], self.generated)
         self.assertIn("int conversationEpoch = BeginNewPlayerDrivenSceneConversationEpoch();", method.split(marker)[0])

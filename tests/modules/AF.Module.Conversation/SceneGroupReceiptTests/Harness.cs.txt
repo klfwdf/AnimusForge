@@ -13,6 +13,38 @@ public partial class ShoutBehavior
     private void RegisterModuleSceneGroup(SceneGroupReceipt receipt) { }
     private void ReleaseModuleSceneGroup(SceneGroupReceipt receipt) { }
 
+    private readonly List<ConversationMessage> _history = new();
+    private int _sceneHistorySessionId = 4;
+    private int _epoch = 12;
+    private bool _targetAvailable = true;
+    private int _sceneFactWrites, _npcMemoryWrites;
+    private int ResolveDailyConversationHistoryLineLimit(int requested) => requested > 0 ? requested : 20;
+    private static object CreateChatMessage(string role, string content) => new ChatMessage(role, content);
+    private static string BuildStrictSceneMessagesSystemPrompt(string prompt, bool suppress) => prompt;
+    private static void AppendStrictSceneUserSections(List<object> messages, IEnumerable<string> sections) { }
+    private static List<ConversationMessage> ConsumePendingCurrentAfefFactMessagesForPrompt(int index) => new();
+    private static string BuildConversationMessageDedupeKey(ConversationMessage message) => message.Role + ":" + message.Content;
+    private List<ConversationMessage> GetNpcConversationHistorySnapshot(int index) => new(_history);
+    private static void AppendConversationMessages(List<ConversationMessage> target, IEnumerable<ConversationMessage> source)
+    { if (source != null) target.AddRange(source.Where(message => message != null)); }
+    private static List<ConversationMessage> SortConversationMessagesByEventSequence(List<ConversationMessage> messages) => messages;
+    private static List<ConversationMessage> KeepAfefFactsAndRecentConversationMessages(List<ConversationMessage> messages, int limit) => messages;
+    private static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage message, int index, out object converted,
+        HashSet<string> pendingKeys, bool labels)
+    { converted = new ChatMessage(message.Role, message.Content); return true; }
+    private static ConversationMessage StampConversationMessageWithCurrentMemoryContext(ConversationMessage message) => message;
+    private static string GetStrictScenePlayerDisplayName() => "Player";
+    private static float GetPlayerDistanceToAgentForScenePrompt(int index) => 1f;
+    private bool IsSceneConversationEpochCurrent(int epoch) => epoch == _epoch;
+    private bool IsNativeConversationResponseTargetAvailableForActionDispatch(int index, Hero hero, CharacterObject character, out string reason)
+    { reason = null; return _targetAvailable; }
+    private Task<T> RunNativeConversationMainThreadFuncAsync<T>(string name, string speaker, int index, Func<T> action, T fallback)
+        => Task.FromResult(action());
+    private bool RecordResponseForAllNearbySafe(List<NpcDataPacket> audience, int index, string name, string text, bool requireReceipt)
+    { _sceneFactWrites++; return true; }
+    private bool PersistNpcSpeechToNamedHeroes(int index, string name, string text, List<NpcDataPacket> audience, bool requireReceipt)
+    { _npcMemoryWrites++; return true; }
+
     private static int _checks;
     private static int _requestSequence;
     private static SceneGroupReceipt New() => new(new ShoutBehavior(),
@@ -24,8 +56,52 @@ public partial class ShoutBehavior
     }
     private static TaskCompletionSource<T> Pending<T>() => new(TaskCreationOptions.RunContinuationsAsynchronously);
 
+    private static void CheckChainBoundaries()
+    {
+        var primary = new NpcDataPacket(7, "Alice");
+        var bob = new NpcDataPacket(8, "Bob");
+        var cora = new NpcDataPacket(9, "Cora");
+        var candidates = BuildGroupSpeakingCandidates(new List<NpcDataPacket> { bob, primary, cora, bob }, primary);
+        Check(candidates.Select(x => x.AgentIndex).SequenceEqual(new[] { 7, 8, 9 }), "actual group candidate order and one speaker per agent");
+
+        var host = new ShoutBehavior();
+        host._history.Add(new ConversationMessage { Role = "user", Content = "one player input" });
+        var passiveMessages = host.BuildStrictSceneMessagesForNpc(7, "system", Array.Empty<string>(),
+            new[] { "current trigger" }, currentInputAlreadyRecorded: true, currentPlayerInput: "one player input");
+        Check(passiveMessages.OfType<ChatMessage>().Count(x => x.Role == "user" && x.Content == "one player input") == 1,
+            "passive prompt duplicated recorded player input");
+        var groupMessages = host.BuildStrictSceneMessagesForNpc(8, "system", Array.Empty<string>(),
+            currentPlayerInput: "one player input");
+        Check(groupMessages.OfType<ChatMessage>().Count(x => x.Role == "user" && x.Content == "one player input") == 1,
+            "multi-NPC prompt duplicated recorded player input");
+        var newInputMessages = host.BuildStrictSceneMessagesForNpc(8, "system", Array.Empty<string>(),
+            currentInputAlreadyRecorded: false, currentPlayerInput: "new player input");
+        Check(newInputMessages.OfType<ChatMessage>().Count(x => x.Role == "user") == 2,
+            "control case did not append unrecorded input");
+
+        var audience = new List<NpcDataPacket> { primary, bob };
+        Check(host.RecordSceneReplyHistoryOnMainThreadAsync(primary, audience, null, null, "visible", 1, 4, 12, true)
+            .GetAwaiter().GetResult() && host._sceneFactWrites == 1 && host._npcMemoryWrites == 1,
+            "current reply did not reach both history owners");
+        SaveRuntimeGuard.Generation = 2;
+        Check(!host.RecordSceneReplyHistoryOnMainThreadAsync(primary, audience, null, null, "late", 1, 4, 12, true)
+            .GetAwaiter().GetResult() && host._sceneFactWrites == 1 && host._npcMemoryWrites == 1,
+            "late generation appended facts");
+        Check(!host.RecordSceneReplyHistoryOnMainThreadAsync(primary, audience, null, null, "retired", 2, 3, 12, true)
+            .GetAwaiter().GetResult() && host._sceneFactWrites == 1 && host._npcMemoryWrites == 1,
+            "retired session appended facts");
+        Check(!host.RecordSceneReplyHistoryOnMainThreadAsync(primary, audience, null, null, "old epoch", 2, 4, 11, true)
+            .GetAwaiter().GetResult() && host._sceneFactWrites == 1 && host._npcMemoryWrites == 1,
+            "old group epoch appended facts");
+        host._targetAvailable = false;
+        Check(!host.RecordSceneReplyHistoryOnMainThreadAsync(primary, audience, null, null, "lost target", 2, 4, 12, true)
+            .GetAwaiter().GetResult() && host._sceneFactWrites == 1 && host._npcMemoryWrites == 1,
+            "unavailable target appended facts");
+    }
+
     public static async Task Main()
     {
+        CheckChainBoundaries();
         var complete = New();
         complete.Bind(12);
         var firstSpeech = Pending<bool>();
@@ -98,4 +174,29 @@ public partial class ShoutBehavior
             "retirement released an already waiting receipt");
         Console.WriteLine("PASS SceneGroupReceipt checks=" + _checks + " production source; detached owner tasks; LIVE=NOT_RUN");
     }
+}
+
+public sealed class NpcDataPacket
+{
+    public int AgentIndex;
+    public string Name;
+    public NpcDataPacket(int index, string name) { AgentIndex = index; Name = name; }
+}
+public sealed class ConversationMessage
+{
+    public string Role, Content, SpeakerName;
+    public int SpeakerAgentIndex, TargetAgentIndex;
+    public float PlayerDistanceMeters;
+}
+public sealed record ChatMessage(string Role, string Content);
+public sealed class Hero { }
+public sealed class CharacterObject { }
+public static class SaveRuntimeGuard
+{
+    public static long Generation = 1;
+    public static bool IsStale(long generation, string operation) => generation != Generation;
+}
+public static class Logger
+{
+    public static void LogVerbose(string category, string key, Func<string> message, double interval) { }
 }

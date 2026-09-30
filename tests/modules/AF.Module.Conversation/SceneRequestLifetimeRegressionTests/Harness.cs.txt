@@ -90,6 +90,8 @@ public static class Logger{public static void Log(string c,string t){}}
 public static class SceneActionsLog{public static void Error(string c,string t,Exception e){throw e;}}
 public struct Vec3{public float X,Y,Z;public Vec3(float x,float y,float z){X=x;Y=y;Z=z;}public float Distance(Vec3 o)=>MathF.Sqrt((X-o.X)*(X-o.X)+(Y-o.Y)*(Y-o.Y)+(Z-o.Z)*(Z-o.Z));public static Vec3 operator -(Vec3 a,Vec3 b)=>new(a.X-b.X,a.Y-b.Y,a.Z-b.Z);public void Normalize(){float m=Distance(default);if(m>0){X/=m;Y/=m;Z/=m;}}public static float DotProduct(Vec3 a,Vec3 b)=>a.X*b.X+a.Y*b.Y+a.Z*b.Z;}
 public class Agent{public static Agent Main;public int Index;public bool IsHuman=true;public bool IsActive()=>true;public Vec3 Position,LookDirection=new Vec3(1,0,0);}
+// Vengeance integration is outside this request-lifetime fixture; excluded victims are not exercised here.
+namespace RichExecutions.Core { public static class VengeanceIntegration { public static bool IsExecutedVictim(global::Agent agent) => false; } }
 public class Scene{public float TimeSpeed;}
 public class Mission{public double CurrentTime;public static Mission Current;public Scene Scene=new();public List<Agent> Agents=new();}
 public static class ShoutUtils{public static bool HasShoutLineOfSightToMainAgent(Agent a)=>true;
