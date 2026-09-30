@@ -106,7 +106,7 @@
 | `RewardSystemBehavior` | 1,016 | 1,288 | 未逐成员全量 |
 | `SiegeAiInterventionBehavior` | 817 | 911 | 未逐成员全量 |
 | `DuelSettings` | 964 | 1,002 | 未逐成员全量 |
-| `VassalageBehavior` | 347 | 367 | 未逐成员全量 |
+| `VassalageBehavior` | 347 | 367 | E85 仅同文件 peer 214 已审；宿主未逐成员全量 |
 | `KnowledgeLibraryBehavior` | 484 | 531 | 未逐成员全量 |
 | `SceneTauntBehavior` | 131 | 132 | E80 完整首轮责任分区；同文件 Mission peer/动态/实机未闭 |
 | `ProactiveNpcRequestBehavior` | 412 | 930 | 未逐成员全量 |
@@ -142,6 +142,8 @@
 **A2-2/MilitaryExercise 同文件 Mission/Harmony peer 首轮分区（仍 `A_NOT_CLOSED`）**：[范围图 E83](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)补 E82 明确排除的 12 个顶层 peer：双 API 72 个成员，六段相加无漏/重，与宿主 238 合为本文件 310；`DuelSettings` 的七个 MCM partial 成员已计入 16 宿主的 `DuelSettings` 家族，不能叠加分母。Mission 胜负/队长/撤退与死亡、XP-only/奖励排除规则归 Exercise，活 Agent/Formation/Mission 与 Harmony 签名留 GameAdapter；1.3 与 1.4 奖励 Prefix 各有不同参数，1.3 才安装声望补丁。**R07-MilitaryExercise-DefeatedSideSettlement** 具名 B6 前置：每帧调用的败方检查只统计双方活 Agent，当前无判零后启动临时结算，`RequestTemporarySettlement` 仅定义未被调用；`MissionEnded` 总返回 false，须用双方耗尽/离场/异常回放核实自动结束行为，不能凭静态路径直接断言实机卡死。**R07-MilitaryExercise-PatchInstall**：单 patch 失败被吞而全局标记已安装，须以安装失败反例确认重新安装/告警策略。R08 每 Mission Tick 在部署后两次枚举所有 Agent 检测败方，队长分配成功前另有列表/字典分配与 Agent 遍历；须按帧率与单位数量量测，不牺牲胜负/死亡/撤退功能。既有 J13E5 source contract 校验部分接线，不覆盖败方方法调用缺口或实机行为；本片未运行依赖当前 DLL 的完整回放、双 API 构建或真实 Mission。**`scene-mission-combat` 和 J17-A 总出口未签，B 未启动**。
 
 **A2-5/PlayerNotoriety 全 partial 成员首轮分区（仍 `A_NOT_CLOSED`）**：[范围图 E84](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)对当前双 API 的主文件 323、`ConversationOutcomes` 27、嵌套 `NotorietyObservationOwner` 13 个成员逐文件对账，合计 282 direct + 78 嵌套 + 3 根 partial = 363；主文件八段、另两文件整段均无漏/重。现有 ObservationOwner 拥唯一持久 state/active 图，但摘要、Prompt/可见性、事件文案、JSON 归一化与 UI 仍在宿主，不把私有嵌套 owner 当完整业务迁出。Social/Notoriety 应拥有身份知晓、公开材料、重大履历摘要和 `AFNR1` exact 收据；GameAdapter 留活 Hero/Agent/Party/Settlement、游戏时钟/RNG、Campaign/IDataStore/旧 JSON 键，UI 留展示/编辑接入，Memory H 仅提供历史行见证，MyBehavior Auxiliary gateway 负责网络。直接消费者横跨 Memory/Weekly、Shout/Courier、Proactive/Knowledge、百科/角色 UI、越狱/王国改名/SceneTaunt/Policy/Coup，不能只按“社交”名称改接。**R07-Notoriety-SummaryAcceptance**：fire-and-forget 摘要在 `await` 后未重验当前 owner/Campaign、素材或开发者编辑版本；迟到成功可覆盖现值且加名望，需用异步延迟、同代新增素材、编辑、load/新 Campaign、失败重试和连续批次回放冻结接受语义。**R07-Notoriety-NormalizeLoad**：旧 JSON 中归一化后碰撞的字典键可能令 `ToDictionary` 抛错并触发 `SyncData` 整体重建，须用旧档/碰撞夹具确认；`GetHashCode` 回退键也需跨进程/极端值反例，不直接改 wire。R08：多个请求期 getter 每次调用 `NormalizeState` 全重建/排序知识字典与近期/素材，`FindHeroById` 最坏全扫活英雄并二次查找；常态 96/180 上限不能代替载入旧态或每 NPC/每轮实际工作量测量；`AFNR1` 每行 Clone/Export 沿 E56。纯 receipt 合同 `14/14` 通过，**不覆盖宿主**；无当前候选产品 DLL、双 API 构建、真实三渠道/旧档/UI 验收。`social-progression-reports`、20 桶和 J17-A 总出口仍未签，B 未启动。
+
+**A2-5/Vassalage 同文件 peer 首轮分区（仍 `A_NOT_CLOSED`）**：[范围图 E85](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)将 `VassalageBehavior.cs` 的 214 个非宿主成员按七段双 API 对账，和具名宿主 367 合为本文件 581；不能将 peer 审查误报为宿主签收。条约枚举数值、JSON/旧 `_afVassalage*` 保存身份、贡金/通知记录与 Policy 外部提交契约是 Diplomacy/Vassalage 的 AF 侧业务边界；Policy 内部排除，终端/地图通知及运行 PNG/brush 属 UI/GameAdapter，战争/议和/日志通知 patch 属原版 Harmony 适配。五张图存在于分域内容并经 `content-map.json` 投射统一模块路径。**R07-Vassalage-LogPatchRegistration**：日志通知 patch 有类和委托目标，但当前仓库未见安装入口或 `PatchAll`，须以运行时 Harmony 列表/日志场景核验，不能认定生效。**R07-Vassalage-UiPatchRetry**：UI 刷新 patch 安装尝试前 `_patched=true`，失败不重试；通知 VM 构造时仍有安装兜底，须按加载顺序/失败反例核验。R08 仅固定五图在启动/资源刷新/通知构造时加载，非每帧；native texture 缓存及重载寿命待实机量测。`VassalageBehavior.cs:800–8532` 367 宿主成员、动态消费者、Policy 接缝失败回放、产品双构建、旧档/游戏均未签；**20 桶与 J17-A 出口未达，B 未启动**。
 
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
