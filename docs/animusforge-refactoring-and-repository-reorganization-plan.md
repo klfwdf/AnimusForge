@@ -1,3 +1,13 @@
+<a id="j17-b6-c-resume-20261001"></a>
+
+### J17 剩余 B6 / C 本轮恢复（2026-10-01，进行中）
+
+本轮用户授权恢复剩余 B6/C；现场 `E:/AnimusForge-refactor-continuation-20260831`、`codex/af-main-refactor-continuation-20260831`，基线 `e35d7826` tracked clean，空意图 checkpoint `d9d266c7`。保留 `4e4aad06` CivilWar 合并以及已验的 A20/20、`8c7b0fb0` Memory/Weekly、`aa3539ca` Conversation/B7，不重做未变有效证据。
+
+P1 持 Prompt/history composition；P2 持传输/渠道 request lifetime；P3 持 Courier delivered-memory/inbound recovery；P4 持验证依赖定位 helper；P5 持其余测试消费者/清单。P6 唯一持共享根宿主接线、Git 索引/精确切片提交、总 runner、同候选双配置双 API+Bootstrap、正式台账/交接/地图。各包可独立推进，共享宿主 patch 由 P6 接线，不设常驻复审。
+
+原全量 C `artifacts/j17b/session-20260930/p6-integration/full-run-aedcba06ed7844b0b90fa0c57b621a1a/results.json` 的 273 项（148 PASS/78 FAIL/34 PREEXISTING_FAIL/5 NEEDS_INPUT/4 SUPERSEDED_BY_RUNNER/1 ENV_STATE/3 BLOCKED_ENV）是历史候选结果，不能将 78 FAIL 当作 78 产品 bug，也不能刷 hash/expected 消除失败。本轮最终门禁绑定新的同一候选，产物只写 `artifacts/j17b/session-20261001/p6-integration/` 唯一新目录；保留旧产物及 22 个原未跟踪 tools 和 NuGet 目录。B6/C 尚未完成，最终分类待实际运行。D 实机/真实旧档/真实网络/帧耗时 NOT-RUN；无推送、Stage、部署、安装、默认入口或真实资料操作授权；已暴露旧凭据轮换仍未确认。
+
 <a id="j17-remote-merge-20261001"></a>
 
 ### 2026-10-01 推送前安全合并（不恢复 B/C 扩展）

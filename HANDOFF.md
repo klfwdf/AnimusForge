@@ -1,5 +1,7 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
+- **本轮最新：剩余 B6/C 恢复进行中**：从 `e35d7826` 创建空意图 checkpoint `d9d266c7`，保留 CivilWar 与已闭 A/Memory/Weekly/Conversation/B7。P1–P5 分包，P6 独占共享宿主/提交/最终同候选门禁；B6/C 不预报通过，D NOT-RUN，原 tools/NuGet/旧产物保留，不推送/Stage/部署。[唯一现态与本轮证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)。
+
 - **2026-10-01 远端合并收尾**：按用户授权，将本地 `7154f658` 与远端 `d7970096` 无冲突合并为 `4e4aad06`，保留双方历史与 CivilWar 修复。合并候选 Debug/Release × 1.3/1.4 + Bootstrap、CivilWar smoke 通过；验证隔离旧产物引用，未改一键流程或部署。B6 未闭、C 原未通过和 D NOT-RUN 不变；未恢复扩展施工。[合并证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-remote-merge-20261001)。
 
 - **最新现态，取代下方 2026-09-30 停止/串行指令**：用户已恢复 J17 B/C；P1–P4 Memory/Weekly 切片 `8c7b0fb0`、P5 Conversation/B7 产品候选 `aa3539ca` 已本地提交。该候选隔离 Debug/Release 双 API+Bootstrap 均 exit 0，代码地图 795 锚点通过；全量 C runner 273 项中 PASS 148、FAIL 78，另有预期/环境状态，**C 未通过**，B6 仍有具名未闭子项。D 实机/旧档 NOT-RUN。原 22 个未跟踪 `tools/` 与本轮 `NuGet/` 目录保留，不推送/部署/产品 Stage。[主台账最新实证与残余](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)及[B7 精确许可](docs/plans/j17-responsibility-closeout-plan.md#j17-b7-exact-move-permission-proposal-20260930)。
