@@ -19,6 +19,8 @@ internal sealed class KingdomCivilWarOwner
 	private const string FactionPrefix = "civilwar-faction-";
 	private readonly KingdomCivilWarStorage _storage = new KingdomCivilWarStorage();
 	private readonly Dictionary<string, int> _oppositionLoyaltyBySettlement = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+	// Settlement -> civil-war kingdom that marked it; owners change during the war, so clearing cannot use the current owner.
+	private readonly Dictionary<string, string> _oppositionMarkKingdom = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 	private readonly HashSet<string> _openWarKingdoms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 	internal KingdomCivilWarStorage Storage { get { return _storage; } }
@@ -27,13 +29,16 @@ internal sealed class KingdomCivilWarOwner
 	{
 		_storage.Kingdoms.Clear();
 		_oppositionLoyaltyBySettlement.Clear();
+		_oppositionMarkKingdom.Clear();
 		_openWarKingdoms.Clear();
+		HasUnpromptedPlayerUltimatum = false;
 		if (loaded == null || loaded.Kingdoms == null) return;
 		foreach (KeyValuePair<string, KingdomCivilWarKingdomState> pair in loaded.Kingdoms)
 		{
 			KingdomCivilWarKingdomState state = Sanitize(pair.Value);
 			if (state == null) continue;
 			_storage.Kingdoms[state.KingdomId] = state;
+			if (state.Faction != null && state.Faction.PlayerAnswerPending && !state.Faction.PlayerPrompted) HasUnpromptedPlayerUltimatum = true;
 			if (state.Stage == KingdomCivilWarStage.OpenWar)
 			{
 				_openWarKingdoms.Add(state.KingdomId);
@@ -47,6 +52,20 @@ internal sealed class KingdomCivilWarOwner
 		KingdomCivilWarKingdomState state;
 		return kingdom != null && _storage.Kingdoms.TryGetValue(kingdom.StringId ?? "", out state) && state != null && state.Faction != null
 			&& (state.Stage == KingdomCivilWarStage.FactionFormed || state.Stage == KingdomCivilWarStage.Ultimatum || state.Stage == KingdomCivilWarStage.OpenWar);
+	}
+
+	// War/peace between a kingdom and its own civil-war rebel kingdom is part of the civil war, not a crown decision.
+	internal bool IsCivilWarPair(Kingdom a, Kingdom b)
+	{
+		if (a == null || b == null || _openWarKingdoms.Count == 0) return false;
+		return IsRebelOf(a, b) || IsRebelOf(b, a);
+	}
+
+	private bool IsRebelOf(Kingdom crown, Kingdom rebel)
+	{
+		KingdomCivilWarKingdomState state;
+		return _openWarKingdoms.Contains(crown.StringId ?? "") && _storage.Kingdoms.TryGetValue(crown.StringId ?? "", out state)
+			&& state.Faction != null && string.Equals(state.Faction.RebelKingdomId, rebel.StringId, StringComparison.OrdinalIgnoreCase);
 	}
 
 	internal bool IsInOpenCivilWar(string kingdomId)
@@ -77,6 +96,50 @@ internal sealed class KingdomCivilWarOwner
 			record.Grievance[source.Id] = CivilWarRules.Clamp(current + points, 0f, MaxClanGrievance);
 		}
 		if (!string.IsNullOrWhiteSpace(text)) AddHistory(state, week, text);
+	}
+
+	// continue_war pledge: peace with the pledged target before the deadline breaks it once.
+	internal void RecordPeace(Kingdom kingdom, IFaction other, int week)
+	{
+		KingdomCivilWarKingdomState state;
+		if (kingdom == null || other == null || !_storage.Kingdoms.TryGetValue(kingdom.StringId ?? "", out state) || string.IsNullOrWhiteSpace(state.NoPeaceTargetId)) return;
+		if (week > state.NoPeaceUntilWeek) { ClearPledge(state); return; }
+		if (!string.Equals(state.NoPeaceTargetId, other.StringId, StringComparison.OrdinalIgnoreCase)) return;
+		List<Clan> clans = (state.NoPeaceClanIds ?? new List<string>()).Select(CivilWarWorld.FindClan).Where(x => x != null).ToList();
+		ClearPledge(state);
+		AddGrievance(kingdom, "broken_pledge", clans, 25f, week, "国王违背承诺，与" + (other.Name?.ToString() ?? "敌国") + "议和");
+	}
+
+	private static void ClearPledge(KingdomCivilWarKingdomState state)
+	{
+		state.NoPeaceTargetId = "";
+		state.NoPeaceUntilWeek = 0;
+		state.NoPeaceClanIds = new List<string>();
+	}
+
+	// Player-king ultimatum prompt: set by the weekly slice, drained by a cheap map-state check.
+	internal bool HasUnpromptedPlayerUltimatum { get; private set; }
+
+	internal KingdomCivilWarKingdomState TakeUnpromptedPlayerUltimatum()
+	{
+		HasUnpromptedPlayerUltimatum = false;
+		foreach (KingdomCivilWarKingdomState state in _storage.Kingdoms.Values)
+		{
+			KingdomCivilWarFactionState faction = state?.Faction;
+			if (faction == null || !faction.PlayerAnswerPending || faction.PlayerPrompted || !CivilWarWorld.IsPlayerRuled(CivilWarWorld.FindKingdom(state.KingdomId))) continue;
+			faction.PlayerPrompted = true;
+			return state;
+		}
+		return null;
+	}
+
+	internal static string DescribeUltimatum(KingdomCivilWarKingdomState state)
+	{
+		KingdomCivilWarFactionState faction = state?.Faction;
+		if (faction == null) return "";
+		CivilWarDemandDef demand = CivilWarCatalog.FindDemand(faction.DemandId);
+		return CivilWarWorld.ClanName(CivilWarWorld.FindClan(faction.LeaderClanId)) + "领导的反对派递交最后通牒：" + FormatDemand(demand, faction.TargetName)
+			+ "\n\n已被拒绝 " + faction.Refusals + " 次。若不答复，将在第 " + faction.PlayerAnswerDeadlineWeek + " 周自动判定。拒绝可能导致内战。";
 	}
 
 	internal void RecordPolicyImposed(Kingdom kingdom, string policyId, int week, string text)
@@ -168,6 +231,7 @@ internal sealed class KingdomCivilWarOwner
 			faction.PlayerAnswerPending = true;
 			faction.PlayerPrompted = false;
 			faction.PlayerAnswerDeadlineWeek = week + tuning.PlayerAnswerWeeks;
+			HasUnpromptedPlayerUltimatum = true;
 			AddHistory(state, week, "最后通牒已送达玩家国王，等待明确答复");
 			return;
 		}
@@ -251,9 +315,11 @@ internal sealed class KingdomCivilWarOwner
 		faction.LastFactionPower = crownPower <= 0f ? 0f : CivilWarRules.Clamp(rebelPower / Math.Max(1f, crownPower + rebelPower), 0f, 1f);
 		faction.LastWarScore = rebelPower <= 0f && crownPower <= 0f ? 0f : CivilWarRules.Clamp((rebelPower - crownPower) / Math.Max(1f, rebelPower + crownPower), -1f, 1f);
 		int elapsed = Math.Max(0, week - faction.WarStartWeek);
-		if (!CivilWarWorld.IsAlive(rebel) && faction.WarRequestWeek > 0 && week <= faction.WarRequestWeek + tuning.WarRequestTimeoutWeeks)
+		if (string.IsNullOrWhiteSpace(faction.RebelKingdomId))
 		{
-			AddHistory(state, week, "叛军王国尚未完成建立，等待宿主回调");
+			// WarStartWeek is only set by the creation callback; without it there is no war to resolve.
+			if (week <= faction.WarRequestWeek + tuning.WarRequestTimeoutWeeks) { AddHistory(state, week, "叛军王国尚未完成建立，等待宿主回调"); return; }
+			Dissolve(kingdom, state, week, tuning, "叛军王国未能建立，内战请求作废");
 			return;
 		}
 		if (elapsed < tuning.MinWarWeeks) return;
@@ -542,13 +608,22 @@ internal sealed class KingdomCivilWarOwner
 		{
 			Clan clan = CivilWarWorld.FindClan(clanState.ClanId);
 			if (clan == null || clan.Settlements == null) continue;
-			foreach (Settlement settlement in clan.Settlements.Where(x => x != null && (x.IsTown || x.IsCastle))) _oppositionLoyaltyBySettlement[settlement.StringId] = -1;
+			foreach (Settlement settlement in clan.Settlements.Where(x => x != null && (x.IsTown || x.IsCastle)))
+			{
+				_oppositionLoyaltyBySettlement[settlement.StringId] = -1;
+				_oppositionMarkKingdom[settlement.StringId] = state.KingdomId;
+			}
 		}
 	}
 
 	private void ClearWarMarks(string kingdomId)
 	{
-		foreach (string id in _oppositionLoyaltyBySettlement.Keys.ToList()) if (CivilWarWorld.FindClanOwnerKingdom(id) == kingdomId) _oppositionLoyaltyBySettlement.Remove(id);
+		foreach (KeyValuePair<string, string> mark in _oppositionMarkKingdom.ToList())
+		{
+			if (!string.Equals(mark.Value, kingdomId, StringComparison.OrdinalIgnoreCase)) continue;
+			_oppositionMarkKingdom.Remove(mark.Key);
+			_oppositionLoyaltyBySettlement.Remove(mark.Key);
+		}
 	}
 
 	private static bool IsPoliticalClan(Clan clan) { return clan != null && !clan.IsEliminated && !clan.IsBanditFaction && !clan.IsMinorFaction && !clan.IsUnderMercenaryService && !clan.IsClanTypeMercenary; }

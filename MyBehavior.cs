@@ -2038,6 +2038,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private void OnNewGameCreated(CampaignGameStarter starter)
 	{
 		ResetRuntimeForLoadedSave("new_game_created");
+		// The civil-war owner is process-wide; only save loading replaces it, so a new campaign must clear it.
+		_civilWarJsonStorage = "";
+		TeamModuleServices.CivilWar.Load("");
 	}
 
 	private void OnGameLoaded(CampaignGameStarter starter)
