@@ -110,7 +110,7 @@
 | `KnowledgeLibraryBehavior` | 484 | 531 | 未逐成员全量 |
 | `SceneTauntBehavior` | 131 | 132 | E80 完整首轮责任分区；同文件 Mission peer/动态/实机未闭 |
 | `ProactiveNpcRequestBehavior` | 412 | 930 | 未逐成员全量 |
-| `TroopInspectionBehavior` | 143 | 188 | 未逐成员全量 |
+| `TroopInspectionBehavior` | 143 | 188 | E81 完整首轮责任分区；同文件 Mission/patch 与实机未闭 |
 | `CourierDeliveryBehavior` | 562 | 802 | 局部接缝/回放；未全量 |
 | `MilitaryExerciseBehavior` | 172 | 238 | 未逐成员全量 |
 | `PlayerNotorietyBehavior` | 282 | 363 | 未逐成员全量 |
@@ -134,6 +134,8 @@
 **A2-5/Romance 宿主全成员首轮分区（仍 `A_NOT_CLOSED`）**：[范围图 E78](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)以当前双 API 清单双向对账 `RomanceSystemBehavior.cs` 各 134 个直接、含两嵌套记录字段各 162 个语法成员；九段互斥范围合计 162，源文件已逐段阅读。现有 `RomanceRelationshipOwner` 已持唯一私人关系表与一次性话题上下文；`_romancePrivateLove_v1`、`_romanceMarriageRecords_v1`、七字段记录 wire 保持宿主保存身份。婚姻资格/关系/多配偶与三类标签语义归 Social/Romance，活 Hero/Clan/Mission/MarriageModel 捕获和婚姻/Clan/Party/金币 mutator 是 GameAdapter/Economy 边界，后处理注入属 Conversation/Prompt，已发生事实由 Memory/AFEF 唯一写入。Native/Scene/Courier 对 `ApplyMarriageTags` 都显式关闭补做后处理；旧默认入口保留。**R07-Romance-Commit** 登记跨原版婚姻、彩礼/退款、婚姻记录和 AFEF 无原子回执的失败/重复回放，尤其离婚先退款再清配偶；**R07-Romance-TagBinding** 登记后处理仅按标签种类放行、执行未绑定当前 speaker 家族的目标 ID，需以恶意/错误 ID 反例核实三渠道门控后再定 B6 行为，不凭静态路径宣称实机越权。R08：请求期婚姻记录全扫/查 Hero、Clan 成员反射与双方候选笛卡儿积，按记录数/家族规模/标签数测量；事件/请求频率，非每帧。`RomanceOwnerReplay` 仅纯 owner 合同且本轮未运行需新候选 DLL 的完整 replay；旧档、真实婚姻、三渠道与全部动态消费者未验，**`social-progression-reports` 和 J17-A 总出口仍未签，B 未启动**。
 
 **A2-5/SceneTaunt Campaign 宿主全成员首轮分区（仍 `A_NOT_CLOSED`）**：[范围图 E80](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)对当前双 API `SceneTauntBehavior.cs:31–2055` 各 131 direct + 1 根类型、合计 132 成员做六段无重叠责任分区；本文件 `SceneTauntMissionBehavior` 等八个其它顶层 peer type 不属于该宿主分母，不能把本次签为整个场景机制。Taunt 警告键、延迟犯罪/信任 ledger 与 armed carryover 唯一状态归 Taunt；Campaign/Mission 活对象、`IDataStore` 旧键、原版犯罪/外交/死亡/菜单效果留 GameAdapter，Prompt/标签由 Conversation 接入，公共信任实际数值留 Reward。现有和平场景资格用 LocationEncounter、Campaign location、战斗排除与 allowlist；Native 延迟标签再次校验当前 Agent，**未因此证明真实 Mission 回调或三渠道标签无误**。**R07-SceneTaunt-DeferredEffects** 具名保留：玩家死亡/强制处决在原版动作前清待办、俘虏获释的临时和平即使抛错也清、延迟外交 `Applied=false` 仍清、信任先记余额再调用 Reward；须用异常/重入/旧档反例确定部分效果与恢复语义，不宣称已发生实机故障。R08 具名热点为地图可提交且原版犯罪封顶时，`OnCampaignTick` 每次复制全待办 faction、解析并打印封顶日志；需测 Tick 频率/待办规模并约束重试。旧 reserve 保存壳与无可见静态调用的补充方法不能凭检索删除。当前纯 owner 定向回放 22/22、16/16、14/14 通过；真实 Bannerlord 原版动作、Mission/Harmony、双 API 产品 DLL 和旧档未验，**`scene-mission-combat` 成员级及 J17-A 总出口未签，B 未启动**。
+
+**A2-5/TroopInspection 宿主全成员首轮分区（仍 `A_NOT_CLOSED`）**：[范围图 E81](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)对当前双 API `TroopInspectionBehavior.cs:29–2966` 各 143 direct、44 嵌套、1 根类型合计 188 成员做七段无重叠责任分区；同文件另七个顶层 Mission/patch/兼容类型不在本分母内。现有 `TroopInspectionSessionOwner` 只管选择、排队、清理瞬态；主线程 PartyScreen、Roster、Hero 角色/血量、临时队伍、原版 MapEvent/PlayerEncounter/Mission 和保存类型身份留 GameAdapter；本地选择/检阅会话归 Settlement/Inspection；屠俘文案/规则仍归 GCCZ profile，AF 只做资格/执行薄桥，城堡也仅经 AF 接缝承接。**R07-TroopInspection-RosterReturn** 具名保留：逐项返还兵员/囚犯时异常只累计错误，随后持有队伍仍被销毁，须用部分失败/重入/旧档和城堡外部接缝验证不丢兵、不重复；**R07-TroopInspection-EncounterCleanup** 保留 `_cleanupDone` 加空 MapEvent 识别是否会清非检阅遭遇的反例验证。均为源码可见风险，非实机故障结论。R08 只在检阅排队/开始/清理时按队伍、roster 数量量测多次全扫；runtime 在场时 Terminal 每帧空转门控也需量测，不误报为每帧 roster 全扫。现有 SessionOwner 回放需当前候选 DLL，本轮未跑；Mission、Harmony、双 API 产品 DLL、实际 roster/旧档均未验，**`scene-mission-combat` 成员级与 J17-A 总出口未签，B 未启动**。
 
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
