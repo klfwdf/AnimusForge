@@ -8,4 +8,8 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\ReplayDependencies\ReplayCandidateInput.cs" Link="ReplayCandidateInput.cs" />
+  </ItemGroup>
+  <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
 </Project>

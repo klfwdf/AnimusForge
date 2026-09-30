@@ -5,4 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../replay/ReplayDependencies/ReplayCandidateInput.cs" Link="ReplayCandidateInput.cs" />
+  </ItemGroup>
+  <Import Project="../../../replay/ReplayDependencies/BannerlordReplayDependencies.targets" />
 </Project>

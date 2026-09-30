@@ -3,17 +3,19 @@ from pathlib import Path
 import argparse, importlib.util, os, shutil, subprocess, sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, minimal_test_environment
 sys.stdout.reconfigure(encoding='utf-8')
-p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--legacy-abi',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision','skip-channel','skip-context']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--reorder-core-enums',action='store_true');p.add_argument('--legacy-abi',action='store_true');p.add_argument('--mutate',choices=['ignore-cancel','text-success','drop-receipt','replace-confirmed','replay-id','skip-generation','skip-conversation','skip-revision','skip-channel','skip-context']);p.add_argument('--dotnet',default=os.environ.get('DOTNET_EXE','dotnet'));p.add_argument('--run-root',type=Path);a=p.parse_args()
 if a.legacy_abi and (a.reorder_core_enums or a.mutate):p.error('Legacy ABI runs against the unmodified current candidate only')
 dotnet=Path(a.dotnet) if Path(a.dotnet).is_absolute() else Path(shutil.which(a.dotnet) or '')
 if not dotnet.is_file():p.error('dotnet executable not found: '+a.dotnet)
 dotnet=dotnet.resolve()
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
-out=HERE/'.generated'/('legacy-abi' if a.legacy_abi else 'reordered' if a.reorder_core_enums else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'native-module-submission',a.run_root)
 s=(ROOT/'ShoutBehavior.cs').read_text(encoding='utf-8-sig')
 sigs=['private Task<T> RunNativeConversationMainThreadFuncAsync<T>(', 'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>(', 'private sealed class NativeConversationGameActionResult','private Task<NativeConversationGameActionResult> ApplyNativeConversationGameActionsOnMainThreadAsync(']
-host=(HERE/'Host.cs.txt').read_text().replace('@@REAL_DECLARATIONS@@','\n'.join(ex.declaration(s,sig) for sig in sigs))
+host=(HERE/'Host.cs.txt').read_text(encoding='utf-8').replace('@@REAL_DECLARATIONS@@','\n'.join(ex.declaration(s,sig) for sig in sigs))
 scene=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ModuleSceneSubmission.cs').read_text(encoding='utf-8-sig')
 post=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs').read_text(encoding='utf-8-sig')
 scene_sigs=['private void RegisterModuleSceneGroup(', 'private void RetireModuleSceneGroup(',
@@ -38,7 +40,8 @@ mutations={
  'skip-generation':('ShoutBehavior.ModuleNativeSubmission.cs','|| !SaveRuntimeGuard.IsCurrentGeneration(generation)','|| false'),
  'skip-conversation':('ShoutBehavior.ModuleNativeSubmission.cs','|| !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)','|| false'),
  'skip-revision':('ShoutBehavior.ModuleNativeSubmission.cs','|| !_nativeAdmissionOwner.IsPresentationCurrent(presentationRevision)','|| false')}
-sources=[out/'Host.cs',out/'Contracts.cs',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs']
+spec_lifetime=importlib.util.spec_from_file_location('native_lifetime_fixture',HERE/'fixture_support.py');lifetime_fixture=importlib.util.module_from_spec(spec_lifetime);spec_lifetime.loader.exec_module(lifetime_fixture);lifetime_fixture.include_request_lifetime(out)
+sources=[out/'ConversationRequestLifetime.cs',out/'InteractionRequestLease.cs',out/'CancellationScope.cs',out/'Host.cs',out/'Contracts.cs',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/HostStubs.cs']
 for path in paths:
  text=(ROOT/path).read_text(encoding='utf-8-sig')
  if a.reorder_core_enums and path=='src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs':
@@ -49,9 +52,9 @@ for path in paths:
 def project(name,srcs,refs=(),exe=False):
  file=out/(name+'.csproj');file.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><ImplicitUsings>enable</ImplicitUsings><EnableDefaultCompileItems>false</EnableDefaultCompileItems><OutputType>'+('Exe' if exe else 'Library')+'</OutputType></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+escape(str(x.resolve()))+'" />' for x in srcs)+''.join('<ProjectReference Include="'+escape(str(x.resolve()))+'" />' for x in refs)+'</ItemGroup></Project>',encoding='utf-8');return file
 library=project('NativeModuleUnderTest',sources)
-(out/'Client.cs').write_text((HERE/'Client.cs.txt').read_text(),encoding='utf-8');client=project('NativeModuleClient',[out/'Client.cs'],[library],True)
+(out/'Client.cs').write_text((HERE/'Client.cs.txt').read_text(encoding='utf-8'),encoding='utf-8');client=project('NativeModuleClient',[out/'Client.cs'],[library],True)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
-env=os.environ.copy();env.update(DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1')
+env=minimal_test_environment(dotnet,out)
 result=subprocess.run([str(dotnet),'run','--project',str(client),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log=result.stdout+result.stderr
 if result.returncode==0:

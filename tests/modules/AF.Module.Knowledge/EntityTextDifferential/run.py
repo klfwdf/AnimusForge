@@ -5,16 +5,21 @@ import base64
 import argparse
 import importlib.util
 import os
+import sys
 import json
 import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["drop-hero-main", "drop-hero-post", "drop-capture-fallback", "skip-worker-raw", "drop-settlement", "drop-clan", "drop-kingdom", "drop-resident-post", "drop-captured-visible", "drop-explicit-kingdom"])
 parser.add_argument("--emit-json", action="store_true")
+parser.add_argument("--run-root",type=Path)
 args = parser.parse_args()
+output = new_run_root(ROOT,"j06-entity-text-differential",args.run_root)
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
@@ -151,12 +156,13 @@ markers += (
     'private static string FormatFloat(',
     'private static string FormatInt(',
 )
-dotnet = Path(os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_NOLOGO="1", DOTNET_CLI_TELEMETRY_OPTOUT="1")
+dotnet = resolve_dotnet(ROOT)
+env = minimal_test_environment(dotnet,output)
+env.update({k:v for k,v in os.environ.items() if k.startswith("AF_J06_")})
 outputs = {}
 for name in ("old", "current"):
     source = subprocess.check_output(["git", "show", "77a3d234:WorldEntityRetrievalService.cs"], cwd=ROOT).decode("utf-8-sig") if name == "old" else (ROOT / "WorldEntityRetrievalService.cs").read_text(encoding="utf-8-sig")
-    out = ROOT / "artifacts/tests/j06-entity-text-differential" / (args.mutate or "normal") / str(os.getpid()) / name
+    out = output / name
     out.mkdir(parents=True, exist_ok=True)
     entity = extract.declaration(source, "private sealed class EntityMatch<T>" if name == "old" else "internal sealed class EntityMatch<T>")
     visible = extract.declaration(source, "private sealed class VisiblePartyCandidate" if name == "old" else "internal sealed class VisiblePartyCandidate")

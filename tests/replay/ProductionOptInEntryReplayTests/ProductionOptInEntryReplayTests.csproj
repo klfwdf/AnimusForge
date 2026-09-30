@@ -7,4 +7,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <Import Project="..\ReplayDependencies\BannerlordReplayDependencies.targets" />
+  <ItemGroup>
+    <Compile Include="..\ReplayDependencies\ReplayCandidateInput.cs" Link="ReplayCandidateInput.cs" />
+  </ItemGroup>
 </Project>

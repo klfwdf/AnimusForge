@@ -19,11 +19,8 @@ static void Set(object value, string name, object fieldValue)
 }
 static object Call(object value, string name, params object[] args) => value.GetType().GetMethod(name, Members).Invoke(value, args);
 
-string repo = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", ".."));
-if (args.Length != 2) throw new InvalidOperationException("Pass the current candidate DLL path and its expected SHA256 after --.");
-string dll = Path.GetFullPath(args[0]);
-string expectedDll = Path.GetFullPath(Path.Combine(repo, "bin/Debug/single_module_artifacts/versions/1.4/AnimusForge.dll"));
-Check(string.Equals(dll, expectedDll, StringComparison.OrdinalIgnoreCase), "PhaseEight candidate must be the current project-local Debug 1.4 artifact");
+string repo = ReplayCandidateInput.RepositoryRoot();
+string dll = ReplayCandidateInput.Read(args);
 string marker = Path.ChangeExtension(dll, ".build.json");
 Check(File.Exists(dll) && File.Exists(marker), "current candidate DLL/marker missing");
 using (JsonDocument build = JsonDocument.Parse(File.ReadAllText(marker)))

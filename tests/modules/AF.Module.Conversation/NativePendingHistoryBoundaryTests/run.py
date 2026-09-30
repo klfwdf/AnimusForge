@@ -1,7 +1,10 @@
 import argparse,importlib.util,subprocess,os
 from pathlib import Path
+import sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');a=p.parse_args()
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
+p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(name):return subprocess.check_output(['git','show','5847a195:'+name],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/name).read_text(encoding='utf-8-sig')
 s=read('ShoutBehavior.cs');ad=read('ShoutBehavior.NativeAdmission.cs');
@@ -57,7 +60,7 @@ if not a.original:
  # Use the exact expression-bodied production rollback port without unused provider members.
  code=code.replace('public partial class ShoutBehavior{','public partial class ShoutBehavior{\n'+prefix+rollback+'\n}\n',1)
 assert '@@' not in code
-out=HERE/'.generated'/('original' if a.original else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'NativePendingHistoryBoundaryTests',a.run_root)
 if not a.original: (out/'MainReplyContracts.cs').write_text(read('src/modules/AF.Module.Conversation/Channels/Native/NativeConversationMainReplyContracts.cs'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8')
 for name in ['AnimusForgeDialogueHistoryEntry.cs','ConversationMessage.cs']:(out/name).write_text(read(name),encoding='utf-8')
@@ -75,6 +78,6 @@ if not a.original:
  core_fixture.include_admission_owner(out);code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-env=os.environ.copy();env.update(DOTNET_ROOT=r'G:\AFMOD\.dotnet-sdk',DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
-r=subprocess.run([r'G:\AFMOD\.dotnet-sdk\dotnet.exe','run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
+dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
+r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

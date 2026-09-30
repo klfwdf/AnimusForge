@@ -13,4 +13,7 @@
   <Target Name="RequireCourierCandidate" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(ReplayCandidateDll)' == ''" Text="Courier replay requires explicit -p:ReplayCandidateDll from the current single_module_artifacts build." />
   </Target>
+  <ItemGroup>
+    <Compile Include="..\ReplayDependencies\ReplayCandidateInput.cs" Link="ReplayCandidateInput.cs" />
+  </ItemGroup>
 </Project>

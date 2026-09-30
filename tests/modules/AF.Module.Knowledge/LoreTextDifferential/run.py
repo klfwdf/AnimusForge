@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib.util
 import base64
 import os
+import sys
 import json
 import argparse
 import subprocess
@@ -11,10 +12,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 parser = argparse.ArgumentParser()
 parser.add_argument("--emit-json", action="store_true")
 parser.add_argument("--mutate", choices=["ignore-stale-version", "drop-lore-output"])
+parser.add_argument("--run-root",type=Path)
 args = parser.parse_args()
+output = new_run_root(ROOT,"j06-lore-text-differential",args.run_root)
 spec = importlib.util.spec_from_file_location("extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
@@ -33,8 +38,9 @@ markers = (
     "private static bool IsMatch(",
 )
 
-dotnet = Path(os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
-env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"), DOTNET_NOLOGO="1", DOTNET_CLI_TELEMETRY_OPTOUT="1")
+dotnet = resolve_dotnet(ROOT)
+env = minimal_test_environment(dotnet,output)
+env.update({k:v for k,v in os.environ.items() if k.startswith("AF_J06_")})
 outputs = {}
 for name in ("old", "current"):
     if name == "old":
@@ -47,7 +53,7 @@ for name in ("old", "current"):
         ai_source = (ROOT / "AIConfigHandler.cs").read_text(encoding="utf-8-sig")
         index = (ROOT / "src/modules/AF.Module.Knowledge/Index/KnowledgeRuleIndex.cs").read_text(encoding="utf-8-sig")
         retriever = (ROOT / "src/modules/AF.Module.Knowledge/Lore/LoreCandidateRetriever.cs").read_text(encoding="utf-8-sig")
-    out = ROOT / "artifacts/tests/j06-lore-text-differential" / (args.mutate or "normal") / str(os.getpid()) / name
+    out = output / name
     out.mkdir(parents=True, exist_ok=True)
     selected_markers = markers + (("internal string BuildLoreContextWithCandidates(",) if name == "current" else ())
     methods = "\n".join(extract.declaration(source, marker) for marker in selected_markers)

@@ -33,9 +33,9 @@ internal static class Program
         suite.Run("source.exactDispatchProvenance", () => VerifyExactDispatchSourceGuard(options.ProjectRoot));
 
         List<VariantEvidence> evidence = new();
-        string artifactRoot = options.UseBuildArtifacts
+        string artifactRoot = options.ArtifactRoot ?? (options.UseBuildArtifacts
             ? Path.Combine(options.ProjectRoot, "bin", options.Configuration, "single_module_artifacts")
-            : Path.Combine(options.ProjectRoot, "bin", options.Configuration, "single_module_stage", "AnimusForge", "bin", "Win64_Shipping_Client");
+            : Path.Combine(options.ProjectRoot, "bin", options.Configuration, "single_module_stage", "AnimusForge", "bin", "Win64_Shipping_Client"));
         string artifactLabel = options.UseBuildArtifacts ? "build" : "stage";
         foreach (string api in new[] { "1.3", "1.4" })
         {
@@ -2019,16 +2019,18 @@ internal static class Program
 
     private sealed class ReplayOptions
     {
-        private ReplayOptions(string projectRoot, string configuration, bool useBuildArtifacts)
+        private ReplayOptions(string projectRoot, string configuration, bool useBuildArtifacts, string artifactRoot)
         {
             ProjectRoot = projectRoot;
             Configuration = configuration;
             UseBuildArtifacts = useBuildArtifacts;
+            ArtifactRoot = artifactRoot;
         }
 
         internal string ProjectRoot { get; }
         internal string Configuration { get; }
         internal bool UseBuildArtifacts { get; }
+        internal string ArtifactRoot { get; }
 
         internal static ReplayOptions Parse(string[] args)
         {
@@ -2036,6 +2038,7 @@ internal static class Program
                 AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", ".."));
             string configuration = "Debug";
             bool useBuildArtifacts = false;
+            string artifactRoot = null;
             for (int index = 0; index < args.Length; index++)
             {
                 switch (args[index])
@@ -2045,6 +2048,11 @@ internal static class Program
                         break;
                     case "--configuration":
                         configuration = RequireOptionValue(args, ref index);
+                        break;
+                    case "--artifact-root":
+                        artifactRoot = Path.GetFullPath(RequireOptionValue(args, ref index));
+                        Require(Directory.Exists(artifactRoot), "Explicit artifact root does not exist: " + artifactRoot);
+                        useBuildArtifacts = true;
                         break;
                     case "--use-build-artifacts":
                         useBuildArtifacts = true;
@@ -2059,7 +2067,7 @@ internal static class Program
             }
             Require(File.Exists(Path.Combine(projectRoot, "AnimusForge.csproj")),
                 "Project root does not contain AnimusForge.csproj: " + projectRoot);
-            return new ReplayOptions(projectRoot, configuration, useBuildArtifacts);
+            return new ReplayOptions(projectRoot, configuration, useBuildArtifacts, artifactRoot);
         }
 
         private static string RequireOptionValue(string[] args, ref int index)

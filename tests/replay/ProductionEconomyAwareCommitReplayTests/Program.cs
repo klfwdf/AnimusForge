@@ -10,14 +10,12 @@ static void AssertTrue(bool condition, string message)
     if (!condition) throw new InvalidOperationException(message);
 }
 
-string projectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", ".."));
-string implementationPath = Path.Combine(projectRoot, "bin", "Debug", "single_module_stage", "AnimusForge", "bin", "Win64_Shipping_Client", "versions", "1.4", "AnimusForge.dll");
-AssertTrue(File.Exists(implementationPath), "project-local 1.4 implementation is missing");
+string implementationPath = ReplayCandidateInput.Read(args);
 
 AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 {
     string name = new AssemblyName(arguments.Name).Name;
-    foreach (string root in new[] { Path.GetDirectoryName(implementationPath), Path.Combine(projectRoot, ".tmp", "build_check", "1.4") })
+    foreach (string root in new[] { AppContext.BaseDirectory })
     {
         if (!Directory.Exists(root)) continue;
         foreach (string candidate in Directory.GetFiles(root, name + ".dll", SearchOption.AllDirectories))

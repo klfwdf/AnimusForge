@@ -18,6 +18,29 @@ def tokens(text):
     # Preserve literals and token order; ignore only whitespace/comments after movement.
     return re.findall(r'@?"(?:\\.|[^"\\])*"|\w+|[^\s]', re.sub(r'//[^\n]*', '', text))
 
+def restore_ceremony_owner(file, text):
+    """Reverse only J17's owner-aware subscription retirement, not its behavior tests."""
+    if file != 'ShoutBehavior.NativeTurnPresentation.cs': return text
+    edits = [
+        ('        private static ShoutBehavior _ceremonyOrderOwner;\n', ''),
+        ('private void TryQueueCeremonyExecutionOrder(int agentIndex)', 'private static void TryQueueCeremonyExecutionOrder(int agentIndex)'),
+        ('            _ceremonyOrderOwner = _owner;\n', ''),
+        ('        internal static void ClearCeremonyExecutionOrder(ShoutBehavior owner)\n'
+         '        {\n'
+         '            if (!ReferenceEquals(_ceremonyOrderOwner, owner)) return;\n'
+         '            ClearCeremonyExecutionOrder();\n'
+         '        }\n\n', ''),
+        ('internal static void ClearCeremonyExecutionOrder()', 'private static void ClearCeremonyExecutionOrder()'),
+        ('            _ceremonyOrderOwner = null;\n', ''),
+    ]
+    for after, before in edits:
+        assert text.count(after) == 1, 'Unreviewed J17 ceremony owner delta: ' + after
+        text = text.replace(after, before, 1)
+    return text
+
+def reviewed_turn_source(file):
+    return restore_ceremony_owner(file, (ROOT/file).read_text(encoding='utf-8-sig'))
+
 def projected_source(source):
     original = subprocess.check_output(['git','show',REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
     if source == original: return source
@@ -29,7 +52,7 @@ def projected_source(source):
     assert source.count(legacy_name) == 2, 'Unreviewed J09 Native action owner drift'
     source = source.replace(legacy_name, 'ApplyNativeConversationGameActionsCore')
     for file,digest in REVIEW['addedFiles'].items():
-        assert hashlib.sha256((ROOT/file).read_text(encoding='utf-8-sig').encode()).hexdigest()==digest, 'Unreviewed J07b source drift: turn dependency '+file
+        assert hashlib.sha256(reviewed_turn_source(file).encode()).hexdigest()==digest, 'Unreviewed J07b source drift: turn dependency '+file
     old = ex.declaration(original, OLD_SIGNATURE)
     entry = old.split('\n')[0].replace('private async Task<string>','private Task<string>')+'\n\t{\n\t\treturn NativeConversationTurnCoordinator.RunAsync(new NativeConversationTurnHost(this, admission,\n\t\t\tplayerText, onStreamText, onPostprocessStarted, onMainReplyReady, npcInitiatedOpening));\n\t}'
     # J10 legitimately relocates unrelated Scene declarations out of the large

@@ -3,8 +3,9 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4]
 def include_operation_sources(out):
     include_dispatch_claim(out)
+    include_request_lifetime(out)
     for name in ['CoreDialogueContracts.cs','CoreDialogueOperation.cs']:
-        (out/name).write_text((ROOT/'Refactor/Modules'/name).read_text(encoding='utf-8-sig'),encoding='utf-8')
+        (out/name).write_text((ROOT/'src/modules/AF.Module.Conversation/Internal'/name).read_text(encoding='utf-8-sig'),encoding='utf-8')
     (out/'CoreDialogueUsing.cs').write_text('global using AnimusForge.Refactor.Modules;\n',encoding='utf-8')
 
 ADMISSION_OWNER = 'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationAdmissionOwner.cs'
@@ -35,3 +36,16 @@ def migrate_admission_fixture(code):
 DISPATCH_CLAIM = 'src/modules/AF.Module.Conversation/Channels/Native/NativeConversationDispatchClaim.cs'
 def include_dispatch_claim(out):
     (out/'NativeConversationDispatchClaim.cs').write_text((ROOT/DISPATCH_CLAIM).read_text(encoding='utf-8-sig'),encoding='utf-8')
+
+
+def include_request_lifetime(out):
+    """Execute real token/lease/scope plumbing; HTTP remains this suite's explicit provider port."""
+    import importlib.util
+    spec=importlib.util.spec_from_file_location('lifetime_decl',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+    extractor=importlib.util.module_from_spec(spec);spec.loader.exec_module(extractor)
+    for name in ['ConversationRequestLifetime','InteractionRequestLease']:
+        (out/(name+'.cs')).write_text((ROOT/('src/modules/AF.Module.Conversation/Internal/'+name+'.cs')).read_text(encoding='utf-8-sig'),encoding='utf-8')
+    text=(ROOT/'src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs').read_text(encoding='utf-8-sig')
+    field=text[text.index('    private static readonly AsyncLocal<CancellationToken> OwnerCancellation'):text.index('    internal static IDisposable PushOwnerCancellation(')]
+    methods='\n'.join(extractor.declaration(text,signature) for signature in ['internal static IDisposable PushOwnerCancellation(', 'private sealed class OwnerCancellationScope'])
+    (out/'CancellationScope.cs').write_text('using System; using System.Threading; namespace AnimusForge { internal static class LlmNonStreamingTransport {\n'+field+methods+'\n}}',encoding='utf-8')

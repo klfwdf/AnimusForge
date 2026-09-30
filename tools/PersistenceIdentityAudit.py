@@ -169,10 +169,23 @@ def module_identity(relative: str) -> tuple[str, str, list[str]]:
     return name, module_id, assemblies
 
 
+def reviewed_civilwar_v2(current: set[tuple[str, str]], baseline: set[tuple[str, str]]) -> bool:
+    """Only the approved v1 -> v2 string-key replacement; raw differences stay visible.
+
+    This is NOT old-save compatibility: the remote v2 owner deliberately loads v2.
+    Every other key/type delta still fails this comparison.
+    """
+    old = ('_af_kingdom_civil_war_v1', 'string')
+    new = ('_af_kingdom_civil_war_v2', 'string')
+    return old in baseline and new not in baseline and old not in current \
+        and current == (baseline - {old}) | {new}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--baseline", default=DEFAULT_BASELINE)
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--review-civilwar-v2", action="store_true", help="Accept only the approved v1 to v2 string-key delta; not old-save acceptance")
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args()
     try:
@@ -203,7 +216,12 @@ def main() -> int:
             "moduleId": module_id,
             "moduleAssemblies": assemblies,
         }
-        if current != baseline or current_beh != baseline_beh or name != "AnimusForge" or module_id != "AnimusForge" or assemblies != ["AnimusForge.Bootstrap.dll"]:
+        sync_equal = current == baseline
+        if args.review_civilwar_v2:
+            result['reviewedCivilWarV2'] = reviewed_civilwar_v2(current, baseline)
+            result['oldSaveCompatibility'] = 'NOT_RUN'
+            sync_equal = result['reviewedCivilWarV2']
+        if not sync_equal or current_beh != baseline_beh or name != "AnimusForge" or module_id != "AnimusForge" or assemblies != ["AnimusForge.Bootstrap.dll"]:
             result["status"] = "FAIL"
     except Exception as exc:
         result = {"status": "FAIL", "error": str(exc)[:240]}

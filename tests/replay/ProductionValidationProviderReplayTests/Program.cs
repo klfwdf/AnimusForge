@@ -10,21 +10,12 @@ static void AssertTrue(bool value, string message)
     if (!value) throw new InvalidOperationException(message);
 }
 
-string stageDirectory = Path.GetFullPath(Path.Combine(
-    AppContext.BaseDirectory,
-    "..", "..", "..", "..", "..", "..",
-    "bin", "Debug", "single_module_stage", "AnimusForge",
-    "bin", "Win64_Shipping_Client"));
-string projectRoot = Path.GetFullPath(Path.Combine(
-    AppContext.BaseDirectory, "..", "..", "..", "..", "..", ".."));
-string referenceDirectory = Path.Combine(projectRoot, ".tmp", "build_check", "1.4");
-string implementationPath = Path.Combine(stageDirectory, "versions", "1.4", "AnimusForge.dll");
-AssertTrue(File.Exists(implementationPath), "project-local 1.4 stage implementation is missing; run unified Debug stage first");
+string implementationPath = ReplayCandidateInput.Read(args);
 
 AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 {
     string name = new AssemblyName(arguments.Name).Name;
-    foreach (string directory in new[] { AppContext.BaseDirectory, stageDirectory, referenceDirectory })
+    foreach (string directory in new[] { AppContext.BaseDirectory })
     {
         if (!Directory.Exists(directory)) continue;
         foreach (string candidate in Directory.GetFiles(directory, name + ".dll", SearchOption.AllDirectories))

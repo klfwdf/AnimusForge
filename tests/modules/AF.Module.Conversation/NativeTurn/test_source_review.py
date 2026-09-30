@@ -22,10 +22,23 @@ class TurnSourceTests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError,'algorithm/argument/order drift'):
                 turn.projected_source(original(ROOT/'ShoutBehavior.cs',encoding='utf-8-sig'))
 
+    def test_ceremony_delta_cannot_hide_lost_cleanup(self):
+        target='ShoutBehavior.NativeTurnPresentation.cs'
+        content=(ROOT/target).read_text(encoding='utf-8-sig')
+        restored=turn.restore_ceremony_owner(target,content)
+        self.assertEqual(hashlib.sha256(restored.encode()).hexdigest(),turn.REVIEW['addedFiles'][target])
+        for before in ['            _ceremonyOrderOwner = null;\n',
+                       '            if (!ReferenceEquals(_ceremonyOrderOwner, owner)) return;\n']:
+            with self.assertRaisesRegex(AssertionError,'ceremony owner delta'):
+                turn.restore_ceremony_owner(target,content.replace(before,'',1))
+        # A change outside the exact delta survives inverse and fails the old digest.
+        changed=content.replace('manager.ConversationEndOneShot += handler;', 'manager.ConversationEndOneShot -= handler;',1)
+        self.assertNotEqual(hashlib.sha256(turn.restore_ceremony_owner(target,changed).encode()).hexdigest(),turn.REVIEW['addedFiles'][target])
+
     def test_entry_and_monolith_bytes(self):
         raw=(ROOT/'ShoutBehavior.cs').read_bytes()
         self.assertFalse(raw.startswith(b'\xef\xbb\xbf'))
-        self.assertEqual(raw.count(b'\n'),raw.count(b'\r\n'))
+        self.assertNotIn(b'\r\r\n',raw)
         source=raw.decode()
         self.assertEqual(source.count('return NativeConversationTurnCoordinator.RunAsync('),1)
         self.assertNotIn(turn.OLD_SIGNATURE,source)

@@ -17,17 +17,12 @@ static void AssertTrue(bool condition, string message)
     }
 }
 
-string stageDirectory = Path.GetFullPath(Path.Combine(
-    AppContext.BaseDirectory,
-    "..", "..", "..", "..", "..", "..",
-    "bin", "Debug", "single_module_stage", "AnimusForge",
-    "bin", "Win64_Shipping_Client"));
-string implementationPath = Path.Combine(stageDirectory, "versions", "1.4", "AnimusForge.dll");
-AssertTrue(File.Exists(implementationPath), "project-local 1.4 AnimusForge.dll is missing");
+string implementationPath = ReplayCandidateInput.Read(args);
+
 AppDomain.CurrentDomain.AssemblyResolve += (_, arguments) =>
 {
     string name = new AssemblyName(arguments.Name).Name;
-    foreach (string root in new[] { AppContext.BaseDirectory, stageDirectory })
+    foreach (string root in new[] { AppContext.BaseDirectory })
     {
         if (!Directory.Exists(root)) continue;
         foreach (string candidate in Directory.GetFiles(root, name + ".dll", SearchOption.AllDirectories))

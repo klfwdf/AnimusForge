@@ -1,7 +1,10 @@
 import argparse, importlib.util, subprocess, os
 from pathlib import Path
+import sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--memory-baseline',action='store_true');p.add_argument('--mutate');a=p.parse_args()
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root,resolve_dotnet,minimal_test_environment
+p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--memory-baseline',action='store_true');p.add_argument('--mutate');p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 baseline='d9288faa' if a.original else '29ca75c9' if a.memory_baseline else None
 def read(name):return subprocess.check_output(['git','show',baseline+':'+name],cwd=ROOT).decode('utf-8-sig') if baseline else (ROOT/name).read_text(encoding='utf-8-sig')
@@ -42,7 +45,7 @@ if not baseline:
 code=(HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig')
 for k,v in values.items():code=code.replace('@@'+k+'@@',v)
 assert '@@' not in code
-out=HERE/'.generated'/('original' if a.original else 'memory-baseline' if a.memory_baseline else a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'NativeCompletionBoundaryTests',a.run_root)
 (out/'AnimusForgeDialogueHistoryEntry.cs').write_text(read('AnimusForgeDialogueHistoryEntry.cs'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Dispatch.cs').write_text(read('ShoutBehavior.NativeActionDispatch.cs'),encoding='utf-8')
 contracts=(ROOT/'src/AF.Contracts/Internal/InteractionContracts.cs').read_text(encoding='utf-8-sig');types='\n'.join(ex.declaration(contracts,x) for x in ['public enum ActionExecutionEffectState','public enum MemoryCommitStatus','public sealed class MemoryCommitResult']);(out/'Effect.cs').write_text('namespace AnimusForge.Refactor.Contracts;\n'+types,encoding='utf-8')
@@ -84,10 +87,12 @@ if not a.original:
 spec_core=importlib.util.spec_from_file_location('native_core_fixture',ROOT/'tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/fixture_support.py');core_fixture=importlib.util.module_from_spec(spec_core);spec_core.loader.exec_module(core_fixture);core_fixture.include_operation_sources(out)
 if not baseline:
  core_fixture.include_admission_owner(out);code=core_fixture.migrate_admission_fixture(code);(out/'Program.cs').write_text(code,encoding='utf-8')
+if not baseline:
+ memory_rules=(ROOT/'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs').read_text(encoding='utf-8-sig')
+ (out/'MemoryRecordRules.cs').write_text('namespace AnimusForge { internal static class MemoryRecordRules { '+ex.declaration(memory_rules,'internal static string NormalizeMemoryHeroId(')+' }}',encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '<DefineConstants>MEMORY_BASELINE</DefineConstants>' if a.memory_baseline else '')+'</PropertyGroup></Project>',encoding='utf-8')
 (out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-dotnet=Path(os.environ.get('AF_DOTNET') or ROOT/'local/dotnet/8.0.425/dotnet.exe')
-env=os.environ.copy();env.update(DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+dotnet=resolve_dotnet(ROOT);env=minimal_test_environment(dotnet,out)
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=150)
 log=r.stdout+r.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(r.returncode)

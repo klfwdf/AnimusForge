@@ -45,7 +45,15 @@ EXPANDED_ENTRIES = {
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionRegistry.cs",
         "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.SessionTransport.cs",
     ),
-    "world-simulation-worldmap": ("WarStats/AfWarStatsBehavior.cs",),
+    "world-simulation-worldmap": (
+        "WarStats/AfWarStatsBehavior.cs",
+        # Remote CivilWar v2 includes four real content/math/effect/lookup owners.
+        # Catalog presence does not promote representative coverage to COMPLETE.
+        "src/modules/AF.Module.Kingdom/CivilWar/CivilWarCatalog.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/CivilWarEffects.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/CivilWarRules.cs",
+        "src/modules/AF.Module.Kingdom/CivilWar/CivilWarWorld.cs",
+    ),
     "social-progression-reports": (
         "AnimusForgeWeeklyReportMapNotification.cs",
         "MyBehavior.WeeklyActionOutcomeReceipts.cs",

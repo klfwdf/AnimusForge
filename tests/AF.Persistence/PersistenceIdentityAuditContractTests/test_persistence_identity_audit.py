@@ -15,6 +15,15 @@ import PersistenceIdentityAudit as audit  # noqa: E402
 
 
 class PersistenceIdentityAuditTests(unittest.TestCase):
+    def test_civilwar_review_accepts_only_exact_authorized_key_delta(self) -> None:
+        old={('unchanged','int'),('_af_kingdom_civil_war_v1','string')}
+        new={('unchanged','int'),('_af_kingdom_civil_war_v2','string')}
+        self.assertTrue(audit.reviewed_civilwar_v2(new,old))
+        for candidate in [old,new|{('extra','string')},new-{('unchanged','int')},
+                          {('unchanged','int'),('_af_kingdom_civil_war_v2','int')},
+                          new|{('_af_kingdom_civil_war_v1','string')}]:
+            self.assertFalse(audit.reviewed_civilwar_v2(candidate,old))
+
     def test_local_sync_alias_preserves_type_and_detects_drift(self) -> None:
         field = 'private Dictionary<string, int> _love = null;\ndata.SyncData("love", ref _love);'
         local = 'Dictionary<string, int> forSync = _owner.Values;\ndata.SyncData("love", ref forSync);'

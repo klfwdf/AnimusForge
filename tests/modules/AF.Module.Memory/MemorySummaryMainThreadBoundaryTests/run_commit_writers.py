@@ -8,11 +8,17 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4]
 HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 MUTATIONS=['ignore-main-thread','fake-commit-success','ignore-daily-readback','ignore-recent-readback','swap-daily-order','omit-recent-save','ignore-editor-lifetime','ignore-editor-reference','ignore-editor-fingerprint','bypass-import-scope']
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
-    base=HERE/'.generated/terminal/current'
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();sys.stdout.reconfigure(encoding='utf-8')
+    out=new_run_root(ROOT,'memory-commit-writers',a.run_root)
+    dotnet=resolve_dotnet(ROOT)
+    env=minimal_test_environment(dotnet,out)
+    env['DOTNET_EXE']=str(dotnet)
+    base=out/'terminal-input'
     def sha(text):return hashlib.sha256(text.encode('utf-8')).hexdigest()
     def current_base():
         try:
@@ -28,7 +34,7 @@ def main():
         except (OSError,KeyError,ValueError):return None
     manifest=current_base()
     if manifest is None:
-        refresh=subprocess.run([sys.executable,'-X','utf8','-B',str(HERE/'run_terminal.py')],cwd=ROOT,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)
+        refresh=subprocess.run([sys.executable,'-X','utf8','-B',str(HERE/'run_terminal.py'),'--run-root',str(base)],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)
         print('BASE_TERMINAL_REFRESH exit='+str(refresh.returncode))
         if refresh.returncode:print(refresh.stdout+refresh.stderr);return 2
         manifest=current_base()
@@ -60,11 +66,13 @@ def main():
             if a.mutate=='swap-daily-order':
                 first=body.index('if (!string.IsNullOrWhiteSpace(playerText))');second=body.index('if (!string.IsNullOrWhiteSpace(extraFact))',first);third=body.index('if (!string.IsNullOrWhiteSpace(aiText))',second);body=body[:first]+body[second:third]+body[first:second]+body[third:]
         snippets.append(body)
-    for signature in ['private sealed class CompressedMemoryExportBundle']:
+    for signature in ['private MemoryImportExportState CaptureMemoryImportExportState(']:
         body=ex.declaration(source,signature);inventory.append(dict(file='MyBehavior.cs',signature=signature,line=source[:source.index(body)].count('\n')+1,sha256=sha(body)))
         snippets.append(body)
     # Filename parsing and JSON reads moved to persistence owners. Keep the actual
     # parser/decoder; only the existing virtual filesystem and folder lookup are fixtures.
+    files['MemoryDeveloperEditOwner.cs']=read('src/modules/AF.Module.Memory/ImportExport/MemoryDeveloperEditOwner.cs')
+    files['MemoryImportExportOwner.cs']=read('src/modules/AF.Module.Memory/ImportExport/MemoryImportExportOwner.cs')
     files['NpcDataFileName.cs']=read('src/AF.Persistence/NpcDataFileName.cs')
     exports=read('src/AF.Persistence/PlayerExportsStore.cs')
     reader=ex.declaration(exports,'internal static T ReadJson<T>(')
@@ -115,11 +123,10 @@ def main():
     deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll'
     files['Proof.csproj']='<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn><EnableDefaultCompileItems>false</EnableDefaultCompileItems><StartupObject>AnimusForge.CommitWritersProgram</StartupObject></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+escape(name)+'" />' for name in files if name.endswith('.cs'))+'<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>'
     files['NuGet.Config']='<configuration><packageSources><clear/></packageSources></configuration>'
-    out=HERE/'.generated/commit_writers'/(a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
     for name,data in files.items():(out/name).write_bytes(data.encode('utf-8'))
     metadata=dict(mutation=a.mutate,editor_guard_windows=editor_windows,import_guard_windows=import_windows,base_terminal_manifest_sha256=hashlib.sha256((base/'manifest.json').read_bytes()).hexdigest(),base_extraction=manifest['extraction'],added_extraction=inventory,generated_sha256={n:sha(v) for n,v in files.items()},seams=['Reuse current-hash-verified terminal actual Daily/Recent storage/sanitizers and source/Process chain','Actual Commit, AppendDialogueHistory, ById order and exact publication readback execute','Game Hero registry/time/rendering and Notoriety downstream effects are fixtures','Daily/Recent Save entry can explicitly throw; Recent Save can drop publication only when fault flag is set','Notoriety external side-effect can remove hero eligibility to exercise partial Daily acceptance','Full import/duplicate choice/Apply and JSON decoding execute; virtual Directory/File and popup delivery are fixtures, with no actual filesystem import'],limits=['No game/provider/disk save validation','Ordinary commit is nontransactional and does not itself promise idempotency','One actual text-editor save closure and Daily/Recent edit delta are executed; popup delivery is a fixture and Native short-history display projection is stubbed','Other editor and aggregate import entrypoints, Single-NPC directory matching and game delivery of late callbacks remain outside this suite'])
     (out/'manifest.json').write_bytes(json.dumps(metadata,ensure_ascii=False,indent=2).encode('utf-8'))
-    dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT.parent/'.dotnet-sdk/dotnet.exe')));env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+
     build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);(out/'build.log').write_bytes((build.stdout+build.stderr).encode())
     if build.returncode:print(build.stdout+build.stderr);return 2
     run=subprocess.run([str(dotnet),str(out/'bin/Release/net8.0/Proof.dll')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);(out/'run.log').write_bytes((run.stdout+run.stderr).encode());print('EDITOR_GUARD_STRUCTURE windows=8 (source only; runtime cases cover text save/cancel)');print('IMPORT_GUARD_STRUCTURE windows=4 (runtime: single explicit file and memory batch; aggregate imports source only)');print('BUILD_PASS commit_writers='+str(a.mutate or 'current'));print(run.stdout+run.stderr,end='');return run.returncode if 'COMMIT_WRITERS_RESULT' in run.stdout else 2
