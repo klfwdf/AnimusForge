@@ -3,6 +3,9 @@ import argparse
 import hashlib
 import os
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import new_run_root
 import re
 import subprocess
 import run
@@ -14,9 +17,10 @@ SIGNATURES=['private void RegisterScenePostprocessGateTask(', 'private Task GetS
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source-ref')
-    ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     ap.add_argument('--output-name',default='gate-current')
     ap.add_argument('--case',default='all',choices=['all','late-task','late-waiter','late-timeout','same-gate','fault-cancel','queued-messages'])
+    ap.add_argument("--run-root", type=Path)
     args=ap.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name):ap.error('Invalid output name')
     source=run.extractor.source('ShoutBehavior.cs',args.source_ref)
@@ -27,7 +31,7 @@ def main():
         if not declaration:raise ValueError('No source field: '+name)
         fields.append(declaration.group().strip())
     template=(HERE/'GateHarness.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@FIELDS@@','\n'.join(fields))
-    output=HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
+    output=new_run_root(Path(__file__).resolve().parents[4], "ScenePostprocessParityTests", args.run_root) if args.run_root else HERE/'.generated'/args.output_name;output.mkdir(parents=True,exist_ok=True)
     (output/'Program.cs').write_text(template,encoding='utf-8')
     (output/'Gate.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>')
     (output/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

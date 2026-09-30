@@ -1,7 +1,8 @@
 <Project>
   <PropertyGroup>
     <ReplayPowerShell Condition="'$(ReplayPowerShell)' == ''">$(SystemRoot)\System32\WindowsPowerShell\v1.0\powershell.exe</ReplayPowerShell>
-    <_ReplayImplementationPath>$(MSBuildThisFileDirectory)..\..\..\bin\Debug\single_module_stage\AnimusForge\bin\Win64_Shipping_Client\versions\1.4\AnimusForge.dll</_ReplayImplementationPath>
+    <_ReplayImplementationPath Condition="'$(ReplayCandidateDll)' != ''">$(ReplayCandidateDll)</_ReplayImplementationPath>
+    <_ReplayImplementationPath Condition="'$(ReplayCandidateDll)' == ''">$(MSBuildThisFileDirectory)..\..\..\bin\Debug\single_module_stage\AnimusForge\bin\Win64_Shipping_Client\versions\1.4\AnimusForge.dll</_ReplayImplementationPath>
   </PropertyGroup>
   <Target Name="ValidateBannerlordReplayInputs" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -13,9 +14,10 @@
     <Error Condition="'$(ReplayHarmonyModulePath)' == '' Or '$(ReplayMcmModulePath)' == '' Or '$(ReplayUiExtenderModulePath)' == ''" Text="Specify ReplayHarmonyModulePath, ReplayMcmModulePath and ReplayUiExtenderModulePath (exact module roots, not a Modules/Workshop scan root)." />
     <Error Condition="'$(ReplayPrivateRuntimePath)' == ''" Text="Replay dependencies require explicit -p:ReplayPrivateRuntimePath." />
     <Error Condition="!Exists('$(ReplayPowerShell)')" Text="Windows PowerShell 5.1 was not found: $(ReplayPowerShell)." />
-    <Error Condition="'$(_ReplayActualOutputPath)' != '$(_ReplayExpectedOutputPath)'" Text="Replay Program.cs uses the standard bin/Configuration/TargetFramework layout; custom output/runtime-identifier layouts are not supported." />
+    <Error Condition="'$(ReplayOutputRoot)' == '' And '$(_ReplayActualOutputPath)' != '$(_ReplayExpectedOutputPath)'" Text="Custom replay output requires an explicit fresh ReplayOutputRoot under repository artifacts." />
+    <Exec Condition="'$(ReplayOutputRoot)' != ''" Command="&quot;$(ReplayPowerShell)&quot; -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Copy-ReplayDependencies.ps1&quot; -GameRoot &quot;$(GameRoot)\.&quot; -ReferencePath &quot;$(Bannerlord14ReferencePath)\.&quot; -HarmonyModulePath &quot;$(ReplayHarmonyModulePath)\.&quot; -McmModulePath &quot;$(ReplayMcmModulePath)\.&quot; -UiExtenderModulePath &quot;$(ReplayUiExtenderModulePath)\.&quot; -PrivateRuntimePath &quot;$(ReplayPrivateRuntimePath)\.&quot; -ImplementationPath &quot;$(_ReplayImplementationPath)&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)\.&quot; -OutputDirectory &quot;$(TargetDir).&quot; -OutputRoot &quot;$(ReplayOutputRoot)\.&quot; -ValidateOnly" />
   </Target>
   <Target Name="CopyBannerlordRuntimeForReplay" AfterTargets="Build" DependsOnTargets="ValidateBannerlordReplayInputs">
-    <Exec Command="&quot;$(ReplayPowerShell)&quot; -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Copy-ReplayDependencies.ps1&quot; -GameRoot &quot;$(GameRoot)\.&quot; -ReferencePath &quot;$(Bannerlord14ReferencePath)\.&quot; -HarmonyModulePath &quot;$(ReplayHarmonyModulePath)\.&quot; -McmModulePath &quot;$(ReplayMcmModulePath)\.&quot; -UiExtenderModulePath &quot;$(ReplayUiExtenderModulePath)\.&quot; -PrivateRuntimePath &quot;$(ReplayPrivateRuntimePath)\.&quot; -ImplementationPath &quot;$(_ReplayImplementationPath)&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)\.&quot; -OutputDirectory &quot;$(TargetDir).&quot;" />
+    <Exec Command="&quot;$(ReplayPowerShell)&quot; -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Copy-ReplayDependencies.ps1&quot; -GameRoot &quot;$(GameRoot)\.&quot; -ReferencePath &quot;$(Bannerlord14ReferencePath)\.&quot; -HarmonyModulePath &quot;$(ReplayHarmonyModulePath)\.&quot; -McmModulePath &quot;$(ReplayMcmModulePath)\.&quot; -UiExtenderModulePath &quot;$(ReplayUiExtenderModulePath)\.&quot; -PrivateRuntimePath &quot;$(ReplayPrivateRuntimePath)\.&quot; -ImplementationPath &quot;$(_ReplayImplementationPath)&quot; -ProjectDirectory &quot;$(MSBuildProjectDirectory)\.&quot; -OutputDirectory &quot;$(TargetDir).&quot; -OutputRoot &quot;$(ReplayOutputRoot)&quot;" />
   </Target>
 </Project>

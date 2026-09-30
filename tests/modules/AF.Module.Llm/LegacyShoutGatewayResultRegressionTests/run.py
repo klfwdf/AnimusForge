@@ -1,12 +1,15 @@
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tests"))
+from output_isolation import new_run_root
 import argparse,hashlib,importlib.util,os,re,subprocess,sys
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
 GATEWAY='src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs'
 def main():
- p=argparse.ArgumentParser();p.add_argument('--source-ref');p.add_argument('--output-name',default='current');p.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--source-ref');p.add_argument('--output-name',default='current');p.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));p.add_argument('--run-root',type=Path);a=p.parse_args()
  if not re.fullmatch(r'[A-Za-z0-9_-]+',a.output_name):p.error('invalid output name')
- out=HERE/'.generated'/a.output_name;out.mkdir(parents=True,exist_ok=True)
+ out=new_run_root(Path(__file__).resolve().parents[4], "LegacyShoutGatewayResultRegressionTests", a.run_root) if a.run_root else HERE/'.generated'/a.output_name;out.mkdir(parents=True,exist_ok=True)
  spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
  gateway=ex.source(GATEWAY,a.source_ref)
  (out/'Gateway.cs').write_text(gateway,encoding='utf-8')

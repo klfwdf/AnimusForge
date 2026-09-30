@@ -83,6 +83,24 @@ class RunAllSafetyTests(unittest.TestCase):
         self.assertFalse(self.temp.exists())
         self.assertFalse((self.repo / "artifacts").exists())
 
+    def test_csproj_builds_use_sdk_per_project_isolated_outputs(self):
+        project = self.repo / "ExampleTests.csproj"
+        project.write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>')
+        build_root = self.repo / "artifacts" / "entry-builds" / "unique"
+        with patch.object(runner, "ROOT", self.repo):
+            cmd = runner.command(project.name, {}, "synthetic", build_root)
+        self.assertIn("-p:UseArtifactsOutput=true", cmd)
+        self.assertIn(f"-p:ArtifactsPath={build_root}", cmd)
+        self.assertIn(f"-p:ReplayOutputRoot={build_root}", cmd)
+        self.assertFalse(build_root.exists())
+
+    def test_missing_required_candidate_blocks_without_launch(self):
+        with patch.object(runner, "DLL14", self.repo / "missing-candidate.dll"):
+            _, launch = self.invoke({"replay.csproj": {"candidateDll": True}})
+        launch.assert_not_called()
+        results = json.loads(next(self.repo.glob("artifacts/tests/run_all/*/results.json")).read_text())
+        self.assertEqual(results[0]["status"], "BLOCKED_ENV")
+
     def test_output_outside_workspace_is_rejected_without_launch(self):
         code, launch = self.invoke({"one.py": {}}, ["--out", str(self.root / "outside")])
         self.assertEqual(code, 2)

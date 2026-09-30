@@ -12,7 +12,7 @@ SPEC.loader.exec_module(EXTRACTOR)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dotnet", type=Path, default=ROOT.parent / ".dotnet-sdk/dotnet.exe")
+    parser.add_argument("--dotnet", type=Path, default=os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or ROOT / "local/dotnet/8.0.425/dotnet.exe")
     args = parser.parse_args()
     dotnet = args.dotnet.resolve()
     if not dotnet.is_file():

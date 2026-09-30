@@ -60,7 +60,7 @@ def main():
     ap.add_argument('--source-ref')
     ap.add_argument('--mutate',choices=['force-all','drop-modifier','drop-observation','drop-market-route','continue-unknown'])
     ap.add_argument('--output-name',default='current')
-    ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     args=ap.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name): ap.error('Invalid output name')
     blocks=extract(args.source_ref)

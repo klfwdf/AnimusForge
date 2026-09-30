@@ -60,7 +60,7 @@ MUTATIONS = {
 }
 
 def main():
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-ref');ap.add_argument('--mutation',choices=sorted(MUTATIONS));ap.add_argument('--core',action='store_true');ap.add_argument('--j14-completion','--j14-red',dest='j14_completion',action='store_true');ap.add_argument('--output-name',default='current');ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe');args=ap.parse_args()
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-ref');ap.add_argument('--mutation',choices=sorted(MUTATIONS));ap.add_argument('--core',action='store_true');ap.add_argument('--j14-completion','--j14-red',dest='j14_completion',action='store_true');ap.add_argument('--output-name',default='current');ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));args=ap.parse_args()
  if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name):ap.error('Invalid output name')
  out=HERE/'.generated'/args.output_name;out.mkdir(parents=True,exist_ok=True);pre=generate(args.source_ref)
  if args.mutation:

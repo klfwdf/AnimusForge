@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import importlib.util,subprocess,shutil,hashlib
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
@@ -16,11 +17,11 @@ original=HERE/'.generated/main/bin/Release/net8.0/InteractionRequestLifetimeChec
 replacement=HERE/'.generated/current/bin/Release/net8.0/InteractionRequestLifetimeChecks.dll'
 project=out/'LegacyClient.csproj'
 project.write_text(f'''<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><NuGetAudit>false</NuGetAudit></PropertyGroup><ItemGroup><Compile Include="{escape(str(HERE/'LegacyClient.cs'))}"/><Reference Include="InteractionRequestLifetimeChecks"><HintPath>{escape(str(original))}</HintPath></Reference></ItemGroup></Project>''',encoding='utf-8')
-code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['build',str(project),'-c','Release'],out)
+code,log=util.run_dotnet((os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")),['build',str(project),'-c','Release'],out)
 assert code==0,log
 client=out/'bin/Release/net8.0/LegacyClient.dll';before=hashlib.sha256(client.read_bytes()).hexdigest()
 # Only the generated reference copy changes; main/current source artifacts remain separate.
 shutil.copy2(replacement,client.parent/original.name)
-code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',[str(client)],out)
+code,log=util.run_dotnet((os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")),[str(client)],out)
 assert hashlib.sha256(client.read_bytes()).hexdigest()==before,'Client was recompiled after replacement'
 print(log,end='');(out/'run.log').write_text('clientSha256='+before+'\n'+log,encoding='utf-8');assert code==0,log

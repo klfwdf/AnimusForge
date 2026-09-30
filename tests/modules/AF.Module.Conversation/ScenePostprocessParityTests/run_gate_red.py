@@ -1,6 +1,7 @@
 """Require three original gate ownership races to reproduce against immutable d40808b3."""
 import argparse
 from pathlib import Path
+import os
 import subprocess
 import sys
 
@@ -9,7 +10,7 @@ HERE=Path(__file__).resolve().parent
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--dotnet',default=r'G:\AFMOD\.dotnet-sdk\dotnet.exe')
+    ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")))
     args=ap.parse_args()
     expected={
       'late-task':'retired A completion decremented/completed newer B gate',
