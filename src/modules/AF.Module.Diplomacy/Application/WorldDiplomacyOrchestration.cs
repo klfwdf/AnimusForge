@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -566,7 +566,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 
     public void AppendCanonicalDocumentEvents(WorldDiplomacyDocument document)
     {
-        WorldDiplomacyCanonicalHistoryRules.AppendCanonicalDocumentEvents(
+        WorldDiplomacyHistoryPublicationApplication.AppendCanonicalDocumentEvents(
             Storage, _runtime.CanonicalHistorySourceKeys, _host.HistoryCompressionTriggerTokens(),
             EnsureCanonicalHistoryInitialized, _host.NewId, _host.FormatCampaignDate, _host.EstimateTokens,
             InvalidateCanonicalHistoryRenderCache, document);
@@ -575,7 +575,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
     public bool AppendCanonicalHistoryWeeklyArtifact(WorldDiplomacyWeeklyArtifact artifact)
     {
         if (artifact == null) return false;
-        WorldDiplomacyCanonicalHistoryRules.AppendPublishedWorldWeeklyArtifact(Storage,
+        WorldDiplomacyHistoryPublicationApplication.AppendPublishedWorldWeeklyArtifact(Storage,
             _runtime.CanonicalHistorySourceKeys, _host.HistoryCompressionTriggerTokens(),
             EnsureCanonicalHistoryInitialized, _host.NewId, _host.FormatCampaignDate, _host.EstimateTokens,
             InvalidateCanonicalHistoryRenderCache, artifact.SourceId, artifact.Title, artifact.Text,
@@ -586,7 +586,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
     public void SyncPublishedPolicyArtifacts(int maxBatches)
     {
         EnsureCanonicalHistoryInitialized();
-        WorldDiplomacyCanonicalHistoryRules.SyncPublishedPolicyArtifacts(
+        WorldDiplomacyHistoryPublicationApplication.SyncPublishedPolicyArtifacts(
             Storage, _runtime.CanonicalHistorySourceKeys, _host.HistoryCompressionTriggerTokens(),
             EnsureCanonicalHistoryInitialized, _host.NewId, _host.FormatCampaignDate, _host.EstimateTokens,
             InvalidateCanonicalHistoryRenderCache, _host.CurrentDay, _host.Log,
@@ -600,13 +600,13 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 
     public void RebuildPublishedPolicySignaturesThrough(long throughSequence)
     {
-        WorldDiplomacyCanonicalHistoryRules.RebuildPublishedPolicySignaturesThrough(
+        WorldDiplomacyHistoryPublicationApplication.RebuildPublishedPolicySignaturesThrough(
             Storage?.CanonicalHistory, throughSequence, _host.PublishedPolicyHistoryArtifacts);
     }
 
     public bool AppendPublishedPolicyArtifact(PublishedPolicyArtifactLedgerEntry policy)
     {
-        return WorldDiplomacyCanonicalHistoryRules.AppendPublishedPolicyArtifact(
+        return WorldDiplomacyHistoryPublicationApplication.AppendPublishedPolicyArtifact(
             Storage, _runtime.CanonicalHistorySourceKeys, _host.HistoryCompressionTriggerTokens(),
             EnsureCanonicalHistoryInitialized, _host.NewId, _host.FormatCampaignDate, _host.EstimateTokens,
             InvalidateCanonicalHistoryRenderCache, _host.CurrentDay, policy);
@@ -648,7 +648,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 
     public void TryScheduleTokenCompression()
     {
-        WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(Storage,
+        WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(Storage,
             _host.WorldDiplomacyEnabled, EnsureCanonicalHistoryInitialized,
             () => SyncCanonicalHistorySources(), _host.CurrentHour,
             _host.HistoryCompressionTriggerTokens(), _host.HistoryCompressionTargetTokens(),
@@ -657,7 +657,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 
     public void EnqueueCompressionJob(long throughSequence, long tokenCount, int targetTokens)
     {
-        WorldDiplomacyCanonicalHistoryRules.EnqueueCompressionJob(Storage,
+        WorldDiplomacyHistoryCompressionApplication.EnqueueCompressionJob(Storage,
             throughSequence, tokenCount, targetTokens,
             EnsureCanonicalHistoryInitialized,
             _host.DeclarationCharacterRange, _host.CommonDiplomacySystemPrefix, _host.EstimateTokens,
@@ -672,7 +672,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 
     public void CommitCompression(WorldDiplomacyJob job, string raw)
     {
-        WorldDiplomacyCanonicalHistoryRules.CommitCompression(Storage, job, raw,
+        WorldDiplomacyHistoryCompressionApplication.CommitCompression(Storage, job, raw,
             EnsureCanonicalHistoryInitialized, _host.EstimateTokens, _host.CurrentDay,
             _host.HistoryCompressionTargetTokens(), _host.HistoryCompressionTriggerTokens(),
             InvalidateCanonicalHistoryRenderCache, _host.Log);
@@ -692,21 +692,21 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 
     public void TryAppendDiplomaticThreatHistoryResult(WorldDiplomacyThreat threat)
     {
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatHistoryResult(
             Storage, _runtime.CanonicalHistorySourceKeys, AppendCanonicalHistoryEntry, ResolveDocument,
             _host.FormatCampaignDate, _host.PartyNameOrEmpty, _host.Log, threat);
     }
 
     public void TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(WorldDiplomacyThreat threat)
     {
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
             Storage, _runtime.CanonicalHistorySourceKeys, AppendCanonicalHistoryEntry, ResolveDocument,
             _host.FormatCampaignDate, _host.PartyNameIncludingEliminated, _host.Log, threat);
     }
 
     public void TryAppendDiplomaticThreatIssuerRewardHistoryResult(WorldDiplomacyThreat threat)
     {
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
             Storage, _runtime.CanonicalHistorySourceKeys, AppendCanonicalHistoryEntry, ResolveDocument,
             _host.FormatCampaignDate, _host.PartyNameOrEmpty, _host.Log, threat);
     }
@@ -714,7 +714,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
     public void TryAppendDiplomaticThreatNonComplianceHistoryResult(WorldDiplomacyThreat threat,
         WorldDiplomacyThreatNonComplianceEvent nonCompliance)
     {
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(
             Storage, _runtime.CanonicalHistorySourceKeys, AppendCanonicalHistoryEntry, ResolveDocument,
             _host.FormatCampaignDate, _host.PartyNameOrEmpty, _host.Log, threat, nonCompliance);
     }
@@ -735,7 +735,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
         string respondingToThreatDocumentId = null,
         IEnumerable<string> actionFacts = null)
     {
-        return WorldDiplomacyCanonicalHistoryRules.AppendCanonicalHistoryEntry(
+        return WorldDiplomacyHistoryPublicationApplication.AppendCanonicalHistoryEntry(
             Storage, _runtime.CanonicalHistorySourceKeys, _host.HistoryCompressionTriggerTokens(),
             EnsureCanonicalHistoryInitialized, _host.NewId, _host.FormatCampaignDate, _host.EstimateTokens,
             InvalidateCanonicalHistoryRenderCache,

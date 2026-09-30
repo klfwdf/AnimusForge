@@ -110,9 +110,9 @@ internal static class WorldDiplomacyHistoryCaptureApplication
             try
             {
                 appendDocumentEvents?.Invoke(document);
-                WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(document, threats,
+                WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(document, threats,
                     appendThreatHistoryResult, appendThreatDomesticPenaltyResult, appendThreatIssuerRewardResult);
-                WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
+                WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
                     threats, appendNonComplianceResult);
             }
             catch (Exception ex)

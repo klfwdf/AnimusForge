@@ -443,11 +443,11 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 		try
 		{
 			orchestration.AppendCanonicalDocumentEvents(document);
-			WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(document,
+			WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(document,
 			orchestration.Threats(), orchestration.TryAppendDiplomaticThreatHistoryResult,
 			orchestration.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult,
 			orchestration.TryAppendDiplomaticThreatIssuerRewardHistoryResult);
-			WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
+			WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(document,
 			orchestration.Threats(), orchestration.TryAppendDiplomaticThreatNonComplianceHistoryResult);
 		}
 		catch (Exception ex)

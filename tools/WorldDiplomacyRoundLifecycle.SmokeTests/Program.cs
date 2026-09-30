@@ -7492,7 +7492,7 @@ RunRepairCorrectionAndJobDecisionTests();
 			DocumentId = "doc-1",
 			HistoryDeclarationRecorded = true
 		};
-		WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(
+		WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(
 			breachDoc, new List<WorldDiplomacyThreat> { breached },
 			x => breachCalls++, x => penaltyCalls++, x => rewardCalls++);
 		Test.True(breachCalls == 1 && penaltyCalls == 1 && rewardCalls == 1,
@@ -7507,12 +7507,12 @@ RunRepairCorrectionAndJobDecisionTests();
 			DocumentId = "doc-2",
 			HistoryResultRecorded = true
 		};
-		WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(
+		WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(
 			resolvedDoc, new List<WorldDiplomacyThreat> { resolvedThreat },
 			x => breachCalls++, x => penaltyCalls++, x => rewardCalls++);
 		Test.True(breachCalls == 1 && resolvedThreat.HistoryResultRecorded,
 			"a resolved linked threat must mark history recorded without appending another breach");
-		WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatHistoryAfterDocument(
+		WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatHistoryAfterDocument(
 			breachDoc, null, null, null, null);
 		Test.True(breachCalls == 1,
 			"threat finalization must fail safe on null threat lists and ports");
@@ -7532,11 +7532,11 @@ RunRepairCorrectionAndJobDecisionTests();
 			DocumentId = "doc-nc",
 			HistoryDeclarationRecorded = true
 		};
-		WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(
+		WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(
 			ncDoc, new List<WorldDiplomacyThreat> { nonComplied }, (x, e) => { ncCalls++; e.HistoryRecorded = true; });
 		Test.True(ncCalls == 1 && nonComplied.NonComplianceHistoryRecorded,
 			"a linked noncompliance decision must be appended once and mark the threat recorded");
-		WorldDiplomacyRoundLifecycleRules.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(
+		WorldDiplomacyThreatHistoryApplication.FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(
 			ncDoc, new List<WorldDiplomacyThreat> { nonComplied }, (x, e) => { ncCalls++; e.HistoryRecorded = true; });
 		Test.True(ncCalls == 1,
 			"a recorded noncompliance history must not append a second time");
@@ -7550,11 +7550,11 @@ RunRepairCorrectionAndJobDecisionTests();
 			StageDocumentId = "doc-s"
 		};
 		int directCalls = 0;
-		WorldDiplomacyRoundLifecycleRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(
+		WorldDiplomacyThreatHistoryApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(
 			direct, (x, e) => { directCalls++; e.HistoryRecorded = true; });
 		Test.True(directCalls == 1 && direct.NonComplianceHistoryRecorded,
 			"the unrecorded current noncompliance event must be appended through the port");
-		WorldDiplomacyRoundLifecycleRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(null, (x, e) => { directCalls++; e.HistoryRecorded = true; });
+		WorldDiplomacyThreatHistoryApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(null, (x, e) => { directCalls++; e.HistoryRecorded = true; });
 		Test.True(directCalls == 1, "noncompliance append must fail safe on a null threat");
 	}
 
@@ -9121,7 +9121,7 @@ RunRepairCorrectionAndJobDecisionTests();
         int ensured = 0;
         int invalidations = 0;
         Func<string, int> estimate = t => t?.Length ?? 0;
-        bool appended = WorldDiplomacyCanonicalHistoryRules.AppendCanonicalHistoryEntry(
+        bool appended = WorldDiplomacyHistoryPublicationApplication.AppendCanonicalHistoryEntry(
             storage, sourceKeys, 1000,
             () => ensured++,
             prefix => prefix + "_1",
@@ -9144,19 +9144,19 @@ RunRepairCorrectionAndJobDecisionTests();
             "canonical append must account tokens and revision below the trigger");
         Test.True(ensured == 1 && invalidations == 1 && sourceKeys.Contains("key:a"),
             "canonical append must ensure initialization, invalidate the render cache, and track the source key");
-        bool duplicate = WorldDiplomacyCanonicalHistoryRules.AppendCanonicalHistoryEntry(
+        bool duplicate = WorldDiplomacyHistoryPublicationApplication.AppendCanonicalHistoryEntry(
             storage, sourceKeys, 1000, () => ensured++, p => p + "_x", d => "d" + d, estimate,
             () => invalidations++, "diplomatic_result", " KEY:A ", "doc_b", 8, "", "k1",
             null, "", "", "other", true);
         Test.True(!duplicate && storage.CanonicalHistory.DeltaEntries.Count == 1
             && ensured == 2 && invalidations == 1,
             "canonical append must reject a duplicate source key after ensuring initialization");
-        bool rejected = WorldDiplomacyCanonicalHistoryRules.AppendCanonicalHistoryEntry(
+        bool rejected = WorldDiplomacyHistoryPublicationApplication.AppendCanonicalHistoryEntry(
             storage, sourceKeys, 1000, () => ensured++, p => p + "_x", d => "d" + d, estimate,
             () => invalidations++, "", "key:c", "doc_c", 8, "", "k1",
             null, "", "", "other", true);
         Test.True(!rejected, "canonical append must reject a blank kind");
-        appended = WorldDiplomacyCanonicalHistoryRules.AppendCanonicalHistoryEntry(
+        appended = WorldDiplomacyHistoryPublicationApplication.AppendCanonicalHistoryEntry(
             storage, sourceKeys, 1, () => ensured++, p => p + "_x", d => "d" + d, estimate,
             () => invalidations++, "diplomatic_result", "key:d", "doc_d", 9, "", "k1",
             null, "", "", "more", true);
@@ -9189,7 +9189,7 @@ RunRepairCorrectionAndJobDecisionTests();
                 }
             }
         };
-        WorldDiplomacyCanonicalHistoryRules.AppendCanonicalDocumentEvents(
+        WorldDiplomacyHistoryPublicationApplication.AppendCanonicalDocumentEvents(
             docStorage, docKeys, 1000, () => { }, p => p + "_n", d => "d" + d, estimate,
             () => { }, document);
         Test.True(docKeys.Contains("document:doc1:declaration")
@@ -9197,7 +9197,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && document.HistoryDeclarationRecorded && document.HistoryResultRecorded
             && docStorage.CanonicalHistory.DeltaEntries.Count == 2,
             "document events must record the declaration and each confirmed action result once");
-        WorldDiplomacyCanonicalHistoryRules.AppendCanonicalDocumentEvents(
+        WorldDiplomacyHistoryPublicationApplication.AppendCanonicalDocumentEvents(
             docStorage, docKeys, 1000, () => { }, p => p + "_n", d => "d" + d, estimate,
             () => { }, document);
         Test.True(docStorage.CanonicalHistory.DeltaEntries.Count == 2,
@@ -9210,19 +9210,19 @@ RunRepairCorrectionAndJobDecisionTests();
             CanonicalHistory = new WorldDiplomacyCanonicalHistoryState { NextSequence = 1 }
         };
         var weeklyKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        WorldDiplomacyCanonicalHistoryRules.AppendPublishedWorldWeeklyArtifact(
+        WorldDiplomacyHistoryPublicationApplication.AppendPublishedWorldWeeklyArtifact(
             weeklyStorage, weeklyKeys, 1000, () => { }, p => p + "_w", d => "d" + d, estimate,
             () => { }, "wk1", "标题", "周报正文", 5, "d5");
         Test.True(weeklyKeys.Contains("weekly:wk1:r1")
             && weeklyStorage.CanonicalHistory.WorldWeeklySourceRevisions["wk1"] == 1,
             "weekly artifact append must record revision r1 for a new source");
-        WorldDiplomacyCanonicalHistoryRules.AppendPublishedWorldWeeklyArtifact(
+        WorldDiplomacyHistoryPublicationApplication.AppendPublishedWorldWeeklyArtifact(
             weeklyStorage, weeklyKeys, 1000, () => { }, p => p + "_w", d => "d" + d, estimate,
             () => { }, "wk1", "标题", "周报正文", 5, "d5");
         Test.True(weeklyStorage.CanonicalHistory.DeltaEntries.Count == 1
             && weeklyStorage.CanonicalHistory.WorldWeeklySourceRevisions["wk1"] == 1,
             "weekly artifact append must skip unchanged payloads by content hash");
-        WorldDiplomacyCanonicalHistoryRules.AppendPublishedWorldWeeklyArtifact(
+        WorldDiplomacyHistoryPublicationApplication.AppendPublishedWorldWeeklyArtifact(
             weeklyStorage, weeklyKeys, 1000, () => { }, p => p + "_w", d => "d" + d, estimate,
             () => { }, "wk1", "标题", "周报正文更新", 6, "d6");
         Test.True(weeklyKeys.Contains("weekly:wk1:r2")
@@ -9258,7 +9258,7 @@ RunRepairCorrectionAndJobDecisionTests();
         var fetches = new List<long>();
         var acks = new List<long>();
         var logs = new List<string>();
-        WorldDiplomacyCanonicalHistoryRules.SyncPublishedPolicyArtifacts(
+        WorldDiplomacyHistoryPublicationApplication.SyncPublishedPolicyArtifacts(
             storage, keys, 1000,
             () => { }, p => "id", d => "d" + d, t => t?.Length ?? 0, () => { }, () => 20,
             logs.Add,
@@ -9290,7 +9290,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // A blank ledger id must be an early no-op before any ledger reads.
         fetches.Clear(); acks.Clear();
-        WorldDiplomacyCanonicalHistoryRules.SyncPublishedPolicyArtifacts(
+        WorldDiplomacyHistoryPublicationApplication.SyncPublishedPolicyArtifacts(
             storage, keys, 1000,
             () => { }, p => "id", d => "d" + d, t => t?.Length ?? 0, () => { }, () => 20,
             logs.Add,
@@ -9307,7 +9307,7 @@ RunRepairCorrectionAndJobDecisionTests();
         logs.Clear(); fetches.Clear(); acks.Clear();
         history.LastPolicyArtifactLedgerId = "old_ledger";
         history.LastPolicyArtifactSequence = 9;
-        WorldDiplomacyCanonicalHistoryRules.SyncPublishedPolicyArtifacts(
+        WorldDiplomacyHistoryPublicationApplication.SyncPublishedPolicyArtifacts(
             storage, keys, 1000,
             () => { }, p => "id", d => "d" + d, t => t?.Length ?? 0, () => { }, () => 20,
             logs.Add,
@@ -9328,7 +9328,7 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // Signature rebuild must fill fingerprints only below the schema gate.
         var rebuildHistory = new WorldDiplomacyCanonicalHistoryState { PolicyHistorySchemaVersion = 0 };
-        WorldDiplomacyCanonicalHistoryRules.RebuildPublishedPolicySignaturesThrough(
+        WorldDiplomacyHistoryPublicationApplication.RebuildPublishedPolicySignaturesThrough(
             rebuildHistory, 3,
             (cursor, size) => ledgerEntries.Where(x => x.Sequence > cursor).Take(size).ToList());
         Test.True(rebuildHistory.PolicyRevisionSignatures.TryGetValue("pol_a", out string rebuilt)
@@ -9336,7 +9336,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "signature rebuild must record the latest fingerprint through the cutoff");
         rebuildHistory.PolicyRevisionSignatures.Clear();
         rebuildHistory.PolicyHistorySchemaVersion = 1;
-        WorldDiplomacyCanonicalHistoryRules.RebuildPublishedPolicySignaturesThrough(
+        WorldDiplomacyHistoryPublicationApplication.RebuildPublishedPolicySignaturesThrough(
             rebuildHistory, 3,
             (cursor, size) => ledgerEntries.Where(x => x.Sequence > cursor).Take(size).ToList());
         Test.True(rebuildHistory.PolicyRevisionSignatures.Count == 0,
@@ -9375,17 +9375,17 @@ RunRepairCorrectionAndJobDecisionTests();
             DomesticPenaltyAppliedClanIds = new List<string> { "c1", "c2" },
             DomesticPenaltySkippedClanIds = new List<string> { "c3" }
         };
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, nameX, log, domestic);
         Test.True(appended.Count == 0 && !domestic.DomesticPenaltyHistoryRecorded,
             "domestic penalty must defer when the compliance document is unresolved");
         documents["doc_c1"] = new WorldDiplomacyDocument { DocumentId = "doc_c1" };
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, nameX, log, domestic);
         Test.True(appended.Count == 0,
             "domestic penalty must defer until the compliance declaration is recorded");
         documents["doc_c1"].HistoryDeclarationRecorded = true;
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, nameX, log, domestic);
         Test.True(appended.Count == 1
             && appended[0].sourceKey == "threat:t1:domestic_penalty"
@@ -9397,7 +9397,7 @@ RunRepairCorrectionAndJobDecisionTests();
         domestic.DomesticPenaltyHistoryRecorded = false;
         appendResult = false;
         sourceKeys.Add("threat:t1:domestic_penalty");
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, nameX, log, domestic);
         Test.True(domestic.DomesticPenaltyHistoryRecorded,
             "domestic penalty must mark the flag when the delta already carries the source key");
@@ -9411,7 +9411,7 @@ RunRepairCorrectionAndJobDecisionTests();
                 new WorldDiplomacyCanonicalProtectedFact { SourceKey = "threat:t1:domestic_penalty" }
             }
         };
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, nameX, log, domestic);
         Test.True(domestic.DomesticPenaltyHistoryRecorded,
             "domestic penalty must mark the flag when a protected fact already carries the source key");
@@ -9435,7 +9435,7 @@ RunRepairCorrectionAndJobDecisionTests();
             Intent = "War", Commitment = "HARD"
         };
         appended.Clear();
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, name, log, threatNc, decision);
         Test.True(appended.Count == 1
             && appended[0].sourceKey == "threat:t2:target_noncompliance:sd_cur"
@@ -9448,7 +9448,7 @@ RunRepairCorrectionAndJobDecisionTests();
             Stage = "warning"
         };
         appended.Clear();
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, name, log, threatNc, other);
         Test.True(other.HistoryRecorded && appended.Count == 1,
             "non-compliance must still record a stale-stage decision");
@@ -9463,7 +9463,7 @@ RunRepairCorrectionAndJobDecisionTests();
             author, targets, intent, commitment, content, verified, offerId, threatDocId, facts) =>
             throw new InvalidOperationException("boom");
         int logsBefore = logs.Count;
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(
             storage, sourceKeys, throwing, resolveDocument, fmt, name, log, threatNc, decisionFail);
         Test.True(!decisionFail.HistoryRecorded && logs.Count == logsBefore + 1,
             "non-compliance must defer and log when the canonical append throws");
@@ -9480,7 +9480,7 @@ RunRepairCorrectionAndJobDecisionTests();
             DocumentId = "doc_r3", HistoryDeclarationRecorded = true
         };
         appended.Clear();
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, name, log, breached);
         Test.True(appended.Count == 1
             && appended[0].sourceKey == "threat:t3:reputation_penalty"
@@ -9489,7 +9489,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "reputation penalty must append with stage intent, binding commitment, and stage doc id");
         var openThreat = new WorldDiplomacyThreat { ThreatId = "t4", Status = "open" };
         appended.Clear();
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, name, log, openThreat);
         Test.True(appended.Count == 0 && !openThreat.HistoryResultRecorded,
             "reputation penalty must skip threats that are not breached");
@@ -9513,12 +9513,12 @@ RunRepairCorrectionAndJobDecisionTests();
             ComplianceDocumentId = "doc_c5", IssuerRewardAmount = 0
         };
         appended.Clear();
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, nameX, log, emptyReward);
         Test.True(appended.Count == 0 && emptyReward.IssuerRewardHistoryRecorded,
             "issuer reward must record the flag without appending when the reward is empty");
         appended.Clear();
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
             storage, sourceKeys, appender, resolveDocument, fmt, nameX, log, reward);
         Test.True(appended.Count == 1
             && appended[0].sourceKey == "threat:t5:issuer_relation_reward"
@@ -9532,7 +9532,7 @@ RunRepairCorrectionAndJobDecisionTests();
             IssuerRewardAppliedClanIds = new List<string> { "c1" }
         };
         logsBefore = logs.Count;
-        WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
+        WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatIssuerRewardHistoryResult(
             storage, sourceKeys, throwing, resolveDocument, fmt, nameX, log, rewardThrow);
         Test.True(!rewardThrow.IssuerRewardHistoryRecorded && logs.Count == logsBefore + 1,
             "issuer reward must defer and log when the canonical append throws");
@@ -9646,7 +9646,7 @@ RunRepairCorrectionAndJobDecisionTests();
             CompressionBatchId = "batch_9"
         };
         Action<WorldDiplomacyStorage, WorldDiplomacyJob, string> commit = (s, j, raw) =>
-            WorldDiplomacyCanonicalHistoryRules.CommitCompression(
+            WorldDiplomacyHistoryCompressionApplication.CommitCompression(
                 s, j, raw, () => { }, estimate, () => 30, 4000, 10000,
                 () => invalidations++, commitLogs.Add);
 
@@ -9779,7 +9779,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // Disabled gate: nothing runs, not even initialization or source sync.
         var disabled = new WorldDiplomacyStorage();
         disabled.CanonicalHistory.EstimatedTokens = 99999;
-        WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(
+        WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(
             disabled, () => false, () => ensureCalls++, () => syncCalls++, () => 12,
             1000, 4000, (t, c, g) => scheduled.Add((t, c, g)));
         Test.True(scheduled.Count == 0 && ensureCalls == 0 && syncCalls == 0
@@ -9789,7 +9789,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // Below the trigger with no waiting jobs: pending stays false, no enqueue.
         var quiet = new WorldDiplomacyStorage();
         quiet.CanonicalHistory.EstimatedTokens = 10;
-        WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(
+        WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(
             quiet, () => true, () => ensureCalls++, () => syncCalls++, () => 12,
             1000, 4000, (t, c, g) => scheduled.Add((t, c, g)));
         Test.True(scheduled.Count == 0 && !quiet.DiplomacyCompressionPending
@@ -9799,7 +9799,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // Retry-hour gate: pending is recorded but no enqueue before the retry hour.
         var cooling = new WorldDiplomacyStorage { CompressionRetryAfterHour = 20 };
         cooling.CanonicalHistory.EstimatedTokens = 5000;
-        WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(
+        WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(
             cooling, () => true, () => { }, () => { }, () => 12,
             1000, 4000, (t, c, g) => scheduled.Add((t, c, g)));
         Test.True(cooling.DiplomacyCompressionPending && scheduled.Count == 0,
@@ -9809,7 +9809,7 @@ RunRepairCorrectionAndJobDecisionTests();
         var guarded = new WorldDiplomacyStorage();
         guarded.CanonicalHistory.EstimatedTokens = 5000;
         guarded.Jobs.Add(new WorldDiplomacyJob { JobId = "jc", Kind = "compress" });
-        WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(
+        WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(
             guarded, () => true, () => { }, () => { }, () => 30,
             1000, 4000, (t, c, g) => scheduled.Add((t, c, g)));
         Test.True(scheduled.Count == 0,
@@ -9824,7 +9824,7 @@ RunRepairCorrectionAndJobDecisionTests();
         pressured.Jobs.Add(new WorldDiplomacyJob { JobId = "w1", AwaitingHistoryCompression = true, InputBudgetHistoryTargetTokens = 6000 });
         pressured.Jobs.Add(new WorldDiplomacyJob { JobId = "w2", AwaitingHistoryCompression = true, InputBudgetHistoryTargetTokens = 3000 });
         pressured.Jobs.Add(new WorldDiplomacyJob { JobId = "w3", AwaitingHistoryCompression = true, InputBudgetHistoryTargetTokens = 0 });
-        WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(
+        WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(
             pressured, () => true, () => { }, () => { }, () => 30,
             1000, 4000, (t, c, g) => scheduled.Add((t, c, g)));
         Test.True(pressured.DiplomacyCompressionPending && scheduled.Count == 1
@@ -9836,7 +9836,7 @@ RunRepairCorrectionAndJobDecisionTests();
         var capped = new WorldDiplomacyStorage();
         capped.CanonicalHistory.EstimatedTokens = 5000;
         capped.Jobs.Add(new WorldDiplomacyJob { JobId = "w4", AwaitingHistoryCompression = true, InputBudgetHistoryTargetTokens = 9000 });
-        WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(
+        WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(
             capped, () => true, () => { }, () => { }, () => 30,
             1000, 4000, (t, c, g) => scheduled.Add((t, c, g)));
         Test.True(scheduled.Count == 2 && scheduled[1].Target == 4000,
@@ -9852,7 +9852,7 @@ RunRepairCorrectionAndJobDecisionTests();
         int capturedSeq = -1; WorldDiplomacyJob capturedJob = null;
         int jobsAtCapture = -1;
         var enqueueLogs = new List<string>();
-        WorldDiplomacyCanonicalHistoryRules.EnqueueCompressionJob(
+        WorldDiplomacyHistoryCompressionApplication.EnqueueCompressionJob(
             store, 3, 300, 200,
             () => { }, () => (100, 500), () => "sys", t => t?.Length ?? 0,
             100000, 7, 600, 48, 10, () => 30, () => 12, () => 12000,
@@ -9888,7 +9888,7 @@ RunRepairCorrectionAndJobDecisionTests();
         stalled.CanonicalHistory.Snapshot.Content = "archive";
         stalled.CanonicalHistory.DeltaEntries.Add(new WorldDiplomacyCanonicalHistoryEntry { Sequence = 6, EstimatedTokens = 200000 });
         var stallLogs = new List<string>();
-        WorldDiplomacyCanonicalHistoryRules.EnqueueCompressionJob(
+        WorldDiplomacyHistoryCompressionApplication.EnqueueCompressionJob(
             stalled, 5, 100, 500,
             () => { }, () => (100, 500), () => "sys", t => t?.Length ?? 0,
             100000, 7, 600, 48, 10, () => 30, () => 12, () => 12000,
@@ -14506,6 +14506,14 @@ RunRepairCorrectionAndJobDecisionTests();
             "Refactor", "Persistence", "WorldDiplomacyStorageMigration.cs"));
         string canonicalHistoryRulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
+        string historyPublicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryPublicationApplication.cs"));
+        string historyCompressionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCompressionApplication.cs"));
+        string threatHistorySource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyThreatHistoryApplication.cs"));
+        Test.True(!canonicalHistoryRulesSource.Contains("Action ensureInitialized")
+            && !canonicalHistoryRulesSource.Contains("enqueueCompressionJob(")
+            && !canonicalHistoryRulesSource.Contains("invalidateRenderCache()")
+            && !rulesSource.Contains("appendBreachResult?.Invoke"),
+            "Domain must not own history publication, compression scheduling or dependency callback orchestration");
         string normalizationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"));
         Test.True(!storageMigrationSource.Contains("TaleWorlds", StringComparison.Ordinal)
             && !storageMigrationSource.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal),
@@ -14884,17 +14892,17 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route history retry batching through the lifecycle rules");
         Test.True(rulesSource.Contains("CanCaptureNonComplianceEvent", StringComparison.Ordinal),
             "noncompliance capture gating must live in the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendNonComplianceEventHistory", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendNonComplianceEventHistory", StringComparison.Ordinal),
             "the canonical history rules must route noncompliance append gating through the lifecycle rules");
         Test.True(rulesSource.Contains("SelectUnrecordedNonComplianceEvents(", StringComparison.Ordinal),
             "unrecorded event ordering must live in the lifecycle rules");
         Test.True(rulesSource.Contains("SelectCurrentNonComplianceEvent(", StringComparison.Ordinal),
             "current-event lookup must live in the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendDomesticPenaltyHistory", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendDomesticPenaltyHistory", StringComparison.Ordinal),
             "the canonical history rules must route domestic penalty append gating through the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendIssuerRewardHistory", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendIssuerRewardHistory", StringComparison.Ordinal),
             "the canonical history rules must route issuer reward append gating through the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendThreatResultHistory", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CanAppendThreatResultHistory", StringComparison.Ordinal),
             "the canonical history rules must route breach result append gating through the lifecycle rules");
         Test.True(rulesSource.Contains("public static bool IsThreatLinkedToRound(", StringComparison.Ordinal),
             "round-threat linking must be owned by the lifecycle rules");
@@ -14902,13 +14910,13 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route event stage normalization through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatStageFormal", StringComparison.Ordinal),
             "the host must route formal stage labels through the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatExpectedFollowThrough", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.DescribeThreatExpectedFollowThrough", StringComparison.Ordinal),
             "the canonical history rules must route follow-through labels through the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatCommitmentLevel", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.ResolveThreatCommitmentLevel", StringComparison.Ordinal),
             "the canonical history rules must route threat commitment levels through the lifecycle rules");
         Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatCancellationStatusCancelled", StringComparison.Ordinal),
             "the host must route cancellation status checks through the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.IsIssuerRewardHistoryEmpty", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.IsIssuerRewardHistoryEmpty", StringComparison.Ordinal),
             "the canonical history rules must route issuer reward emptiness through the lifecycle rules");
         Test.True(threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.NeedsDomesticPenaltySettlementRetry", StringComparison.Ordinal),
             "the host must route domestic penalty settlement retry through the lifecycle rules");
@@ -15502,7 +15510,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && presentationSource.Contains("WorldDiplomacyTextRules.ParseDayForArchive(", StringComparison.Ordinal)
             && validationSource.Contains("WorldDiplomacyTextRules.TryGetImmersionViolation(", StringComparison.Ordinal)
             && propagationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CalculatePropagationDays(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.ParseCompressionSequence(", StringComparison.Ordinal),
+            && historyCompressionSource.Contains("WorldDiplomacyRoundLifecycleRules.ParseCompressionSequence(", StringComparison.Ordinal),
             "host must delegate text parsing, immersion checks, and propagation math to the domain rules");
         Test.True(!behaviorSource.Contains("private static bool IsExclusivePeaceOfferResponseSet(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static bool IsRequiredPeaceOfferResponse(", StringComparison.Ordinal)
@@ -15549,14 +15557,14 @@ RunRepairCorrectionAndJobDecisionTests();
             && dispatchSource.Contains("IsValidSemanticRepairMessageChain(", StringComparison.Ordinal)
             && dispatchSource.Contains("WorldDiplomacyPromptContractRules.HasCurrentCanonicalPromptContract(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.TryExtractCommonContractFromJob(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(", StringComparison.Ordinal)
             && generationTaskSource.Contains("BuildGenerationSystemPrompt(", StringComparison.Ordinal)
             && generationTaskSource.Contains("BuildRelayGenerationSystemPrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(", StringComparison.Ordinal)
             && jobPreparationSource.Contains("BuildAnalysisSystemPrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildAnalysisModeContract(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("WorldDiplomacyPromptContractRules.BuildTokenCompressionPrompt(", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("WorldDiplomacyPromptContractRules.BuildTokenCompressionPrompt(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildCurrentLegalDiplomaticOptions(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyPromptContractRules.DescribePotentialDiplomaticActions(", StringComparison.Ordinal),
@@ -15658,7 +15666,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "canonical render rules must own entry/protected/snapshot rendering with a token-estimate port"
             + " and route newest-first protected-fact ordering through the lifecycle rules");
         Test.True(migrationApplicationSource.Contains("WorldDiplomacyCanonicalRenderRules.RenderCanonicalProtectedFacts(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("WorldDiplomacyCanonicalRenderRules.SelectCanonicalProtectedFactsWithinTokenBudget(", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("WorldDiplomacyCanonicalRenderRules.SelectCanonicalProtectedFactsWithinTokenBudget(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string RenderCanonicalHistoryEntry(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string RenderCanonicalProtectedFacts(", StringComparison.Ordinal),
             "host must delegate canonical rendering through the domain rules");
@@ -15946,9 +15954,7 @@ RunRepairCorrectionAndJobDecisionTests();
         {
             "public static void SettleDiplomaticThreatObligationsForClosedRound(",
             "public static void RemoveSettledPolicySignalContextFromActiveRound(",
-            "public static void FinalizeDiplomaticThreatHistoryAfterDocument(",
-            "public static void FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument(",
-            "public static void TryAppendDiplomaticThreatNonComplianceHistoryResult("
+
         })
         {
             Test.True(rulesSource.Contains(movedFinalizationRule, StringComparison.Ordinal),
@@ -15959,6 +15965,10 @@ RunRepairCorrectionAndJobDecisionTests();
                   && !behaviorSource.Contains("private void FinalizeDiplomaticThreatHistoryAfterDocument(")
                   && !behaviorSource.Contains("private void FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument("),
             "threat finalization must not remain in the host");
+
+        foreach (string method in new[] { "FinalizeDiplomaticThreatHistoryAfterDocument", "FinalizeDiplomaticThreatNonComplianceHistoryAfterDocument", "TryAppendDiplomaticThreatNonComplianceHistoryResult" })
+            Test.True(threatHistorySource.Contains("public static void " + method + "(")
+                && !rulesSource.Contains("public static void " + method + "("), "threat history workflow has one Application owner: " + method);
 
         // DPL-060BO: war-started resolution, follow-through settlement, and consequence finalization
         foreach (string movedThreatResolutionRule in new[]
@@ -16020,7 +16030,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route deferred retry scheduling through the lifecycle rules");
         Test.True(behaviorSource.Contains("WorldDiplomacyHistoryCaptureApplication.RetryDeferredCanonicalHistoryEntries(", StringComparison.Ordinal),
             "the host must route deferred retry processing through the lifecycle rules");
-        Test.True(canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.CanonicalDeltaContainsSourceKey(sourceKeys, ", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CanonicalDeltaContainsSourceKey(sourceKeys, ", StringComparison.Ordinal),
             "the canonical history rules must route delta source-key lookup through the lifecycle rules");
         Test.True(migrationApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(", StringComparison.Ordinal),
             "the host must route history token estimation through the lifecycle rules");
@@ -16097,7 +16107,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(rulesSource.Contains("public static List<WorldDiplomacyCanonicalProtectedFact> BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal),
             "protected-fact projection must live in the lifecycle rules");
         Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs")).Contains("WorldDiplomacyStorageMigration.NormalizeCanonicalHistoryState(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal)
             && behaviorSource.Contains("_runtime.CanonicalHistoryInitializedThisSession", StringComparison.Ordinal),
             "the host must keep the session guard and delegate normalization/projection through extracted ports");
         Test.True(!behaviorSource.Contains("threat-response:", StringComparison.Ordinal)
@@ -16107,13 +16117,13 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // DPL-060CB: the canonical-history append path (entry append, document
         // events, weekly artifact) lives in the canonical-history domain rules.
-        Test.True(canonicalHistoryRulesSource.Contains("public static bool AppendCanonicalHistoryEntry(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("public static void AppendCanonicalDocumentEvents(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("public static void AppendPublishedWorldWeeklyArtifact(", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("public static bool AppendCanonicalHistoryEntry(", StringComparison.Ordinal)
+            && historyPublicationSource.Contains("public static void AppendCanonicalDocumentEvents(", StringComparison.Ordinal)
+            && historyPublicationSource.Contains("public static void AppendPublishedWorldWeeklyArtifact(", StringComparison.Ordinal),
             "the canonical-history append path must live in the domain rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.AppendCanonicalHistoryEntry(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.AppendCanonicalDocumentEvents(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.AppendPublishedWorldWeeklyArtifact(", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.AppendCanonicalHistoryEntry(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.AppendCanonicalDocumentEvents(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.AppendPublishedWorldWeeklyArtifact(", StringComparison.Ordinal),
             "the host must route canonical-history appends through the domain rules");
         Test.True(!canonicalHistoryRulesSource.Contains("TaleWorlds", StringComparison.Ordinal)
             && !canonicalHistoryRulesSource.Contains("Campaign.Current", StringComparison.Ordinal)
@@ -16122,15 +16132,15 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // DPL-060CC: policy artifact ledger sync (epoch/cursor management,
         // signature rebuild, artifact append) lives in the same domain rules.
-        Test.True(canonicalHistoryRulesSource.Contains("internal static void SyncPublishedPolicyArtifacts(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("internal static void RebuildPublishedPolicySignaturesThrough(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("internal static bool AppendPublishedPolicyArtifact(", StringComparison.Ordinal),
+        Test.True(historyPublicationSource.Contains("internal static void SyncPublishedPolicyArtifacts(", StringComparison.Ordinal)
+            && historyPublicationSource.Contains("internal static void RebuildPublishedPolicySignaturesThrough(", StringComparison.Ordinal)
+            && historyPublicationSource.Contains("internal static bool AppendPublishedPolicyArtifact(", StringComparison.Ordinal),
             "policy artifact sync must live in the canonical-history domain rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.SyncPublishedPolicyArtifacts(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.RebuildPublishedPolicySignaturesThrough(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.AppendPublishedPolicyArtifact(", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.SyncPublishedPolicyArtifacts(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.RebuildPublishedPolicySignaturesThrough(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.AppendPublishedPolicyArtifact(", StringComparison.Ordinal),
             "the host must route policy artifact sync through the domain rules");
-        Test.True(!canonicalHistoryRulesSource.Contains("WorldDiplomacyPolicyContext", StringComparison.Ordinal),
+        Test.True(!historyPublicationSource.Contains("WorldDiplomacyPolicyContext", StringComparison.Ordinal),
             "policy artifact sync must reach the ledger only through injected ports");
 
         // DPL-060CD: threat history result appenders live in the canonical-history
@@ -16143,27 +16153,27 @@ RunRepairCorrectionAndJobDecisionTests();
             "public static void TryAppendDiplomaticThreatIssuerRewardHistoryResult("
         })
         {
-            Test.True(canonicalHistoryRulesSource.Contains(movedAppender, StringComparison.Ordinal),
+            Test.True(historyPublicationSource.Contains(movedAppender, StringComparison.Ordinal),
                 "threat history appenders must live in the canonical-history rules: " + movedAppender);
         }
         Test.True(canonicalHistoryRulesSource.Contains("public delegate bool CanonicalHistoryAppender(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatNonComplianceHistoryResult(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatHistoryResult(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.TryAppendDiplomaticThreatIssuerRewardHistoryResult(", StringComparison.Ordinal),
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatNonComplianceHistoryResult(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatHistoryResult(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryPublicationApplication.TryAppendDiplomaticThreatIssuerRewardHistoryResult(", StringComparison.Ordinal),
             "the host must route threat history appenders through the canonical-history rules");
-        Test.True(!canonicalHistoryRulesSource.Contains("AppendCanonicalHistoryEntry(", StringComparison.Ordinal)
-                || canonicalHistoryRulesSource.Contains("appendEntry(", StringComparison.Ordinal),
+        Test.True(!historyPublicationSource.Contains("AppendCanonicalHistoryEntry(", StringComparison.Ordinal)
+                || historyPublicationSource.Contains("appendEntry(", StringComparison.Ordinal),
             "threat history appenders must write through the injected canonical appender port");
 
         // DPL-R1: round archive replacement belongs to Application; bounded
         // queue insertion and canonical history compression retain their owners.
-        Test.True(canonicalHistoryRulesSource.Contains("public static void CommitCompression(", StringComparison.Ordinal)
+        Test.True(historyCompressionSource.Contains("public static void CommitCompression(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void EnqueueJob(", StringComparison.Ordinal)
             && roundCompressionSource.Contains("internal static void Commit(", StringComparison.Ordinal)
             && !rulesSource.Contains("public static void CommitRoundCompression(", StringComparison.Ordinal),
             "round archive completion must have one Application owner");
-        Test.True(behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.CommitCompression(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyHistoryCompressionApplication.CommitCompression(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.EnqueueJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundCompressionApplication.Commit(", StringComparison.Ordinal)
             && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitRoundCompression(", StringComparison.Ordinal),
@@ -16187,15 +16197,15 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // DPL-060CG: compression scheduling and enqueue budget math live in the
         // canonical-history rules; the host keeps only thin port-binding adapters.
-        Test.True(canonicalHistoryRulesSource.Contains("public static void TryScheduleTokenCompression(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("public static void EnqueueCompressionJob(", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("storage.DiplomacyCompressionPending", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("storage.CompressionRetryAfterHour", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("CompressionOverallTargetTokens = overallTargetTokens", StringComparison.Ordinal)
-            && canonicalHistoryRulesSource.Contains("resolveOutputTokenLimit()", StringComparison.Ordinal),
+        Test.True(historyCompressionSource.Contains("public static void TryScheduleTokenCompression(", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("public static void EnqueueCompressionJob(", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("storage.DiplomacyCompressionPending", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("storage.CompressionRetryAfterHour", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("CompressionOverallTargetTokens = overallTargetTokens", StringComparison.Ordinal)
+            && historyCompressionSource.Contains("resolveOutputTokenLimit()", StringComparison.Ordinal),
             "compression scheduling and enqueue math must live in the canonical-history rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.TryScheduleTokenCompression(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCanonicalHistoryRules.EnqueueCompressionJob(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyHistoryCompressionApplication.TryScheduleTokenCompression(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyHistoryCompressionApplication.EnqueueCompressionJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyLlmClient.GetConfiguredOutputTokenLimit", StringComparison.Ordinal)
             && behaviorSource.Contains("CaptureCanonicalHistoryForJob", StringComparison.Ordinal),
             "the host must bind scheduling and enqueue ports through thin adapters");
