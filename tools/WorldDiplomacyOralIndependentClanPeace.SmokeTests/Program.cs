@@ -179,7 +179,7 @@ internal static class Program
             "MakePeaceAction.Apply(playerClan, targetKingdom)",
             StringComparison.Ordinal);
         int confirmation = adapter.IndexOf(
-            "if (FactionManager.IsAtWarAgainstFaction(playerClan, targetKingdom))",
+            "() => !FactionManager.IsAtWarAgainstFaction(playerClan, targetKingdom)",
             action,
             StringComparison.Ordinal);
         int register = adapter.IndexOf(

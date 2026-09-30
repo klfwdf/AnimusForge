@@ -942,25 +942,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return WorldDiplomacyRoundLifecycleRules.ResolveRound(_storage?.ActiveRound, _storage?.CompletedRounds, roundId);
 	}
 
-	private string TryApplyValidatedCession(WorldDiplomacyPeaceTerms terms, Kingdom first, Kingdom second)
-	{
-		Kingdom from = ResolveKingdom(terms?.CessionFromKingdomId);
-		Kingdom to = ResolveKingdom(terms?.CessionToKingdomId);
-		Settlement settlement = ResolveSettlementById(terms?.CessionSettlementId);
-		if (from == null || to == null || settlement == null || settlement.OwnerClan?.Kingdom != from) return "";
-		Hero recipient = to.RulingClan?.Leader;
-		if (recipient == null) return "";
-		try
-		{
-			ChangeOwnerOfSettlementAction.ApplyByBarter(recipient, settlement);
-			return "已将" + from.Name + "割让" + settlement.Name + "给" + to.Name;
-		}
-		catch (Exception ex)
-		{
-			Log("peace cession failed settlement=" + settlement.StringId + " error=" + ex.Message);
-			return "；领地交割失败";
-		}
-	}
+	private WorldDiplomacyCessionReceipt TryApplyValidatedCession(WorldDiplomacyPeaceTerms terms, Kingdom first, Kingdom second)
+        => AnimusForge.Refactor.Adapters.BannerlordWorldDiplomacyCessionGameActionPort.Apply(terms,
+            first, second, ResolveKingdom(terms?.CessionFromKingdomId), ResolveKingdom(terms?.CessionToKingdomId),
+            ResolveSettlementById(terms?.CessionSettlementId), Log);
+
 	private static void RunDiplomaticAction(string source, Action action)
 	{
 		if (action == null)

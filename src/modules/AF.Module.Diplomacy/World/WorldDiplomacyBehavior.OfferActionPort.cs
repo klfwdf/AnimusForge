@@ -3,6 +3,8 @@ using System.Globalization;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using AnimusForge.Refactor.Domain;
+using AnimusForge.Refactor.Contracts;
+using AnimusForge.Refactor.Adapters;
 
 namespace AnimusForge;
 
@@ -17,7 +19,7 @@ public sealed partial class WorldDiplomacyBehavior
         public int CurrentDay => WorldDiplomacyBehavior.CurrentDay();
         public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
-        public string ApplyCession(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms)
+        public WorldDiplomacyCessionReceipt ApplyCession(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms)
             => _owner.TryApplyValidatedCession(terms, ResolveKingdom(proposerId), ResolveKingdom(targetId));
 
         public bool ResolveParties(WorldDiplomacyRoundOffer offer)
@@ -34,14 +36,31 @@ public sealed partial class WorldDiplomacyBehavior
             Kingdom receiver = WorldDiplomacyBehavior.ResolveKingdom(terms?.TributeReceiverKingdomId) ?? target;
             if (payer == receiver || (payer != proposer && payer != target) || (receiver != proposer && receiver != target))
             { payer = proposer; receiver = target; }
-            if (!DiplomacyPeaceTermsService.TryApplyPeace(payer, receiver, Math.Max(0, terms?.DailyTribute ?? 0), Math.Max(0, terms?.DurationDays ?? 0),
-                "world_diplomacy_make_peace", out int appliedTribute, out int appliedDays, out string failureReason))
-                return new(false, "议和未执行：" + failureReason);
-            if (FactionManager.IsAtWarAgainstFaction(proposer, target))
-                return new(false, "议和未执行：游戏状态未发生变化");
-            return new(true, "双方已达成和平"
-                + (appliedTribute > 0 ? "；" + WorldDiplomacyBehavior.KingdomName(payer) + "每日向" + WorldDiplomacyBehavior.KingdomName(receiver) + "支付" + appliedTribute.ToString(CultureInfo.InvariantCulture) + "第纳尔，共" + appliedDays.ToString(CultureInfo.InvariantCulture) + "天" : "")
-                );
+            return PeaceReceipt(DiplomacyPeaceTermsService.ApplyPeace(payer, receiver,
+                Math.Max(0, terms?.DailyTribute ?? 0), Math.Max(0, terms?.DurationDays ?? 0),
+                "world_diplomacy_make_peace"), payer, receiver);
+        }
+
+        public WorldDiplomacyOfferActionReceipt ReadPeace(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms)
+        {
+            Kingdom payer = ResolveKingdom(terms?.TributePayerKingdomId) ?? ResolveKingdom(proposerId);
+            Kingdom receiver = ResolveKingdom(terms?.TributeReceiverKingdomId) ?? ResolveKingdom(targetId);
+            return PeaceReceipt(DiplomacyPeaceTermsService.ConfirmPeace(payer, receiver,
+                Math.Max(0, terms?.DailyTribute ?? 0), Math.Max(0, terms?.DurationDays ?? 0),
+                "world_diplomacy_make_peace"), payer, receiver);
+        }
+
+        private static WorldDiplomacyOfferActionReceipt PeaceReceipt(DiplomacyPeaceEffectReceipt receipt, Kingdom payer, Kingdom receiver)
+        {
+            if (!receipt.PeaceApplied) return new(false, receipt.PeaceKnown ? "议和未执行：和平动作未生效" : "议和结果无法确认", known: receipt.PeaceKnown);
+            string message = "双方已达成和平";
+            if (receipt.Complete && receipt.ActualDailyTribute > 0)
+                message += "；" + KingdomName(payer) + "每日向" + KingdomName(receiver) + "支付"
+                    + receipt.ActualDailyTribute.ToString(CultureInfo.InvariantCulture) + "第纳尔，共"
+                    + receipt.ActualDurationDays.ToString(CultureInfo.InvariantCulture) + "天";
+            if (!receipt.Complete) message += "；贡金条款未完整履行或无法确认";
+            if (!string.IsNullOrEmpty(receipt.Diagnostic)) WorldDiplomacyBehavior.Log("peace receipt: " + receipt.Diagnostic);
+            return new(true, message, receipt.Complete);
         }
 
         public WorldDiplomacyOfferActionReceipt ExecuteAlliance(string proposerId, string targetId)
@@ -52,10 +71,12 @@ public sealed partial class WorldDiplomacyBehavior
             IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
             if (alliance == null) return new(false, "结盟未执行：同盟系统不可用");
             if (alliance.IsAllyWithKingdom(proposer, target)) return new(false, "结盟未执行：双方已经结盟");
-            WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_alliance", () => alliance.StartAlliance(proposer, target));
-            return alliance.IsAllyWithKingdom(proposer, target)
+            DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
+                () => WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_alliance", () => alliance.StartAlliance(proposer, target)),
+                () => alliance.IsAllyWithKingdom(proposer, target));
+            return result.Applied
                 ? new(true, "双方已缔结同盟")
-                : new(false, "结盟未执行：游戏状态未发生变化");
+                : new(false, result.IsKnown ? "结盟未执行：游戏状态未发生变化" : "结盟结果无法确认", known: result.IsKnown);
         }
 
         public WorldDiplomacyOfferActionReceipt ExecuteTrade(string proposerId, string targetId)
@@ -65,12 +86,17 @@ public sealed partial class WorldDiplomacyBehavior
             if (FactionManager.IsAtWarAgainstFaction(proposer, target)) return new(false, "贸易协定未执行：双方仍处于战争状态");
             ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
             if (trade == null) return new(false, "贸易协定未执行：贸易系统不可用");
-            if (BannerlordApiCompat.HasTradeAgreement(trade, proposer, target)) return new(false, "贸易协定未执行：双方已经有贸易协定");
+            if (!BannerlordApiCompat.TryGetTradeAgreementState(trade, proposer, target, out bool trading))
+                return new(false, "贸易协定未执行：当前状态无法确认", known: false);
+            if (trading) return new(false, "贸易协定未执行：双方已经有贸易协定");
             CampaignTime duration = Campaign.Current.Models.TradeAgreementModel.GetTradeAgreementDurationInYears(proposer, target);
-            WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_trade", () => trade.MakeTradeAgreement(proposer, target, duration));
-            return BannerlordApiCompat.HasTradeAgreement(trade, proposer, target)
+            DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
+                () => WorldDiplomacyBehavior.RunDiplomaticAction("world_diplomacy_trade", () => trade.MakeTradeAgreement(proposer, target, duration)),
+                () => BannerlordApiCompat.TryGetTradeAgreementState(trade, proposer, target, out bool active)
+                    ? active : throw new InvalidOperationException("trade readback unavailable"));
+            return result.Applied
                 ? new(true, "双方已缔结贸易协定")
-                : new(false, "贸易协定未执行：游戏状态未发生变化");
+                : new(false, result.IsKnown ? "贸易协定未执行：游戏状态未发生变化" : "贸易协定结果无法确认", known: result.IsKnown);
         }
 
         public bool HasTakenEffect(string intent, string proposerId, string targetId)

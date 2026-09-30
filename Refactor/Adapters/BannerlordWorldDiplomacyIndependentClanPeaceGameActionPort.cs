@@ -123,24 +123,18 @@ public sealed class BannerlordWorldDiplomacyIndependentClanPeaceGameActionPort
                 "diplomacy.independent_clan_peace.validation_exception");
         }
 
-        try
+        DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
+            () => MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(ActionSource, () => MakePeaceAction.Apply(playerClan, targetKingdom)),
+            () => !FactionManager.IsAtWarAgainstFaction(playerClan, targetKingdom));
+        if (result.Applied)
         {
-            MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(
-                ActionSource,
-                () => MakePeaceAction.Apply(playerClan, targetKingdom));
-            if (FactionManager.IsAtWarAgainstFaction(playerClan, targetKingdom))
-            {
-                return Receipt(WorldDiplomacyIndependentClanPeaceExecutionStatus.ActionNotApplied, command,
-                    "diplomacy.independent_clan_peace.action_not_applied");
-            }
-            DiplomacyRecentPeaceGuard.RegisterPeace(playerClan, targetKingdom, ActionSource);
-            return Receipt(WorldDiplomacyIndependentClanPeaceExecutionStatus.Applied, command, "");
+            try { DiplomacyRecentPeaceGuard.RegisterPeace(playerClan, targetKingdom, ActionSource); }
+            catch { /* Peace was confirmed independently of guard registration. */ }
         }
-        catch
-        {
-            return Receipt(WorldDiplomacyIndependentClanPeaceExecutionStatus.UnknownAfterStart, command,
-                "diplomacy.independent_clan_peace.action_exception");
-        }
+        return Receipt(!result.IsKnown ? WorldDiplomacyIndependentClanPeaceExecutionStatus.UnknownAfterStart
+            : result.Applied ? WorldDiplomacyIndependentClanPeaceExecutionStatus.Applied
+            : WorldDiplomacyIndependentClanPeaceExecutionStatus.ActionNotApplied, command,
+            result.Applied ? "" : "diplomacy.independent_clan_peace." + (result.IsKnown ? "action_not_applied" : "readback_unknown"));
     }
 
     private static WorldDiplomacyIndependentClanPeaceExecutionReceipt Receipt(

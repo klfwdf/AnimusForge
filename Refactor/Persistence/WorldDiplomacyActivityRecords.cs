@@ -78,6 +78,15 @@ public sealed class WorldDiplomacyPrestigeRelationModifier
 	[JsonProperty("rulerHeroId")] public string RulerHeroId { get; set; } = "";
 	[JsonProperty("vassalLeaderHeroId")] public string VassalLeaderHeroId { get; set; } = "";
 	[JsonProperty("appliedAmount")] public int AppliedAmount { get; set; }
+	[JsonProperty("pendingEffect", NullValueHandling = NullValueHandling.Ignore)]
+	public WorldDiplomacyPendingRelationEffect PendingEffect { get; set; }
+}
+
+// Optional recovery evidence. Absent in old saves and omitted after confirmation.
+public sealed class WorldDiplomacyPendingRelationEffect
+{
+	[JsonProperty("before")] public int Before { get; set; }
+	[JsonProperty("expectedAfter")] public int ExpectedAfter { get; set; }
 }
 
 public sealed class NativeDiplomacySignal

@@ -1,4 +1,5 @@
 using System;
+using AnimusForge.Refactor.Contracts;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
@@ -22,8 +23,8 @@ internal interface IWorldDiplomacyPrestigePort
     IEnumerable<string> KingdomIds(bool activeOnly);
     WorldDiplomacyPrestigeCourt CaptureCourt(string kingdomId);
     bool HasHero(string heroId);
-    int ChangeRelationAndMeasure(string firstHeroId, string secondHeroId, int difference);
-    void ChangeRelation(string firstHeroId, string secondHeroId, int difference);
+    bool TryReadRelation(string firstHeroId, string secondHeroId, out int value);
+    WorldDiplomacyRelationEffectReceipt ChangeRelationAndMeasure(string firstHeroId, string secondHeroId, int difference);
     string KingdomName(string kingdomId);
     int CurrentDay();
     void Log(string message);
@@ -134,7 +135,8 @@ internal static class WorldDiplomacyPrestigeApplication
             bool hasRuler = port.HasHero(stale.RulerHeroId);
             bool hasVassal = port.HasHero(stale.VassalLeaderHeroId);
             if (hasRuler && hasVassal) ApplyDifference(stale, port, stale.VassalLeaderHeroId, stale.RulerHeroId, 0);
-            if (stale.AppliedAmount == 0 || !hasRuler || !hasVassal) storage.NationalPrestigeRelationModifiers.Remove(stale);
+            if (stale.PendingEffect == null && (stale.AppliedAmount == 0 || !hasRuler || !hasVassal))
+                storage.NationalPrestigeRelationModifiers.Remove(stale);
         }
     }
 
@@ -142,9 +144,33 @@ internal static class WorldDiplomacyPrestigeApplication
         string vassal, string ruler, int desired)
     {
         if (modifier == null || vassal == null || ruler == null) return;
+        if (modifier.PendingEffect != null)
+        {
+            if (!port.TryReadRelation(vassal, ruler, out int current)) return;
+            WorldDiplomacyPendingRelationEffect pending = modifier.PendingEffect;
+            if (current == pending.ExpectedAfter)
+                modifier.AppliedAmount += pending.ExpectedAfter - pending.Before;
+            else if (current != pending.Before)
+            {
+                // An unrelated later relation change makes attribution ambiguous.
+                // Retain the receipt and do not replay an unconfirmed effect.
+                port.Log("prestige relation pending outcome remains ambiguous: " + vassal + "|" + ruler);
+                return;
+            }
+            modifier.PendingEffect = null;
+        }
         int difference = desired - modifier.AppliedAmount;
         if (difference == 0) return;
-        modifier.AppliedAmount += port.ChangeRelationAndMeasure(vassal, ruler, difference);
+        if (!port.TryReadRelation(vassal, ruler, out int before)) return;
+        modifier.PendingEffect = new WorldDiplomacyPendingRelationEffect
+        { Before = before, ExpectedAfter = Math.Max(-100, Math.Min(100, before + difference)) };
+        WorldDiplomacyRelationEffectReceipt receipt = port.ChangeRelationAndMeasure(vassal, ruler, difference);
+        if (receipt.IsKnown)
+        {
+            modifier.AppliedAmount += receipt.AppliedDelta;
+            modifier.PendingEffect = null;
+        }
+        if (!string.IsNullOrEmpty(receipt.Diagnostic)) port.Log("prestige relation receipt known=" + receipt.IsKnown + " delta=" + receipt.AppliedDelta + " " + receipt.Diagnostic);
     }
 
     internal static void ApplyZeroPrestigePenalty(IWorldDiplomacyPrestigePort port, string kingdomId, int amount)
@@ -152,6 +178,14 @@ internal static class WorldDiplomacyPrestigeApplication
         if (amount >= 0) return;
         WorldDiplomacyPrestigeCourt court = port.CaptureCourt(kingdomId);
         if (court?.RulerId == null) return;
-        foreach (string vassal in court.VassalLeaderIds) port.ChangeRelation(vassal, court.RulerId, amount);
+        int confirmed = 0, unknown = 0;
+        foreach (string vassal in court.VassalLeaderIds)
+        {
+            WorldDiplomacyRelationEffectReceipt receipt = port.ChangeRelationAndMeasure(vassal, court.RulerId, amount);
+            if (!receipt.IsKnown) unknown++;
+            else if (receipt.AppliedDelta != 0) confirmed++;
+            if (!string.IsNullOrEmpty(receipt.Diagnostic)) port.Log("zero-prestige relation receipt: " + receipt.Diagnostic);
+        }
+        port.Log("zero-prestige penalty confirmed=" + confirmed + " unknown=" + unknown + " attempted=" + court.VassalLeaderIds.Count);
     }
 }

@@ -177,7 +177,7 @@ internal static class Program
         public bool TryResolveAppliedEndpoints(string payerId,string receiverId,
             out string resolvedPayerId,out string resolvedReceiverId)
         { EndpointLookups++;resolvedPayerId=payerId;resolvedReceiverId=receiverId;return EndpointsAvailable; }
-        public void NotifyResolved() { Notifications++; }
+        public void NotifyResolved(WorldDiplomacyMakePeaceExecutionReceipt receipt) { Notifications++; }
         public void Log(string message) { LastLog=message; }
     }
 
@@ -228,10 +228,10 @@ internal static class Program
             "game adapter must perform final ruler and war-state validation");
         Test.True(adapter.Contains("DiplomacyPeaceTermsService.ResolveTributeAmount", StringComparison.Ordinal)
                   && adapter.Contains("DiplomacyPeaceTermsService.ResolveDurationDays", StringComparison.Ordinal)
-                  && adapter.Contains("DiplomacyPeaceTermsService.TryApplyPeace(", StringComparison.Ordinal),
+                  && adapter.Contains("DiplomacyPeaceTermsService.ApplyPeace(", StringComparison.Ordinal),
             "game adapter must resolve and execute the established peace terms once");
-        Test.True(!method.Contains("DiplomacyPeaceTermsService.TryApplyPeace(", StringComparison.Ordinal)
-                  && application.Contains("if (!receipt.IsApplied)", StringComparison.Ordinal),
+        Test.True(!method.Contains("DiplomacyPeaceTermsService.ApplyPeace(", StringComparison.Ordinal)
+                  && application.Contains("if (!receipt.PeaceApplied)", StringComparison.Ordinal),
             "Application must consume the execution receipt instead of applying peace directly");
         Test.True(peaceService.IndexOf("FactionManager.IsAtWarAgainstFaction(payer, receiver)",
                       peaceService.IndexOf("MakePeaceAction.ApplyByKingdomDecision", StringComparison.Ordinal),
@@ -240,7 +240,7 @@ internal static class Program
                       > peaceService.IndexOf("MakePeaceAction.ApplyByKingdomDecision", StringComparison.Ordinal),
             "peace service must confirm the action before registering recent peace");
         int execution = application.IndexOf("source.Execute(resolution.Command)", StringComparison.Ordinal);
-        int notification = application.IndexOf("source.NotifyResolved()", StringComparison.Ordinal);
+        int notification = application.IndexOf("source.NotifyResolved(receipt)", StringComparison.Ordinal);
         Test.True(execution >= 0 && notification > execution
                   && oralSource.Contains("WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved", StringComparison.Ordinal),
             "confirmed-fact notification must remain after successful peace execution");

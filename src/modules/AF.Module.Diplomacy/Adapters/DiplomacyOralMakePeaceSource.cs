@@ -39,8 +39,8 @@ internal struct DiplomacyOralMakePeaceSource : IDiplomacyOralMakePeaceSource
         return _payer != null && _receiver != null;
     }
 
-    public void NotifyResolved() => WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved(
-        "accept_peace", _payer, _receiver, "面对面口头外交达成");
+    public void NotifyResolved(WorldDiplomacyMakePeaceExecutionReceipt receipt) => WorldDiplomacyBehavior.NotifyExternalDiplomacyResolved(
+        "accept_peace", _payer, _receiver, receipt.IsApplied ? "面对面口头外交达成" : "双方已停战，贡金条款未完整确认");
 
     public void Log(string message) => Logger.Log("DiplomacyBehavior", message);
 }

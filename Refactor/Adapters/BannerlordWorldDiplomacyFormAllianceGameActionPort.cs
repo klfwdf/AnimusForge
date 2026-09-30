@@ -122,23 +122,13 @@ public sealed class BannerlordWorldDiplomacyFormAllianceGameActionPort
                 "diplomacy.form_alliance.validation_exception");
         }
 
-        try
-        {
-            MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked(
-                "diplomacy_form_alliance",
-                () => alliance.StartAlliance(playerKingdom, npcKingdom));
-            if (!alliance.IsAllyWithKingdom(playerKingdom, npcKingdom))
-            {
-                return Receipt(WorldDiplomacyFormAllianceExecutionStatus.ActionNotApplied, command,
-                    "diplomacy.form_alliance.action_not_applied");
-            }
-            return Receipt(WorldDiplomacyFormAllianceExecutionStatus.Applied, command, "");
-        }
-        catch
-        {
-            return Receipt(WorldDiplomacyFormAllianceExecutionStatus.UnknownAfterStart, command,
-                "diplomacy.form_alliance.action_exception");
-        }
+        DiplomacyEffectReadback result = DiplomacyEffectReadback.Execute(
+            () => MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("diplomacy_form_alliance", () => alliance.StartAlliance(playerKingdom, npcKingdom)),
+            () => alliance.IsAllyWithKingdom(playerKingdom, npcKingdom));
+        return Receipt(!result.IsKnown ? WorldDiplomacyFormAllianceExecutionStatus.UnknownAfterStart
+            : result.Applied ? WorldDiplomacyFormAllianceExecutionStatus.Applied
+            : WorldDiplomacyFormAllianceExecutionStatus.ActionNotApplied, command,
+            result.Applied ? "" : "diplomacy.form_alliance." + (result.IsKnown ? "action_not_applied" : "readback_unknown"));
     }
 
     private static Kingdom ResolveKingdom(string kingdomId)

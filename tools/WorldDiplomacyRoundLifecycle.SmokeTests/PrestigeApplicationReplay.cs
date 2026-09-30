@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AnimusForge;
+using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
 using Newtonsoft.Json;
 
@@ -13,24 +14,25 @@ internal static class PrestigeApplicationReplay
         internal readonly Dictionary<string, int> Relations = new() { ["v|r"] = 0 };
         internal readonly HashSet<string> Heroes = new() { "r", "v", "new-r" };
         internal int Calls, Scans, Day = 12;
-        internal bool Fail;
+        internal bool Fail, UnknownAfterEffect, ReadUnavailable;
         internal Action BeforeEffect;
         public bool CampaignAvailable => true;
         public IEnumerable<string> KingdomIds(bool activeOnly) { Scans++; yield return "k"; }
         public WorldDiplomacyPrestigeCourt CaptureCourt(string id) => id == "k" ? Court : null!;
         public bool HasHero(string id) => Heroes.Contains(id);
-        public int ChangeRelationAndMeasure(string first, string second, int delta)
+        public bool TryReadRelation(string first, string second, out int value)
+        { value = Relations.GetValueOrDefault(first + "|" + second); return !ReadUnavailable; }
+        public WorldDiplomacyRelationEffectReceipt ChangeRelationAndMeasure(string first, string second, int delta)
         {
             BeforeEffect?.Invoke();
             Calls++;
-            if (Fail) return 0;
+            if (Fail) return new(true, 0);
             string key = first + "|" + second;
             int before = Relations.GetValueOrDefault(key);
             int after = Math.Clamp(before + delta, -100, 100);
             Relations[key] = after;
-            return after - before;
+            return new(!UnknownAfterEffect, after - before);
         }
-        public void ChangeRelation(string first, string second, int delta) => ChangeRelationAndMeasure(first, second, delta);
         public string KingdomName(string id) => id;
         public int CurrentDay() => Day;
         public void Log(string message) { }
@@ -102,5 +104,38 @@ internal static class PrestigeApplicationReplay
         WorldDiplomacyPrestigeApplication.RecoverDocuments(ref restored, port);
         Test.True(restored.InternationalReputationByKingdom["k"] == 90,
             "repeating recovery must not reapply document deltas");
+
+        var recovery = new WorldDiplomacyStorage();
+        var recoveryPort = new Port { UnknownAfterEffect = true };
+        WorldDiplomacyPrestigeApplication.Apply(ref recovery, recoveryPort, "k", -50, null, "test");
+        int observed = recoveryPort.Relations["v|r"];
+        Test.True(observed != 0 && recovery.NationalPrestigeRelationModifiers[0].PendingEffect != null
+            && recovery.NationalPrestigeRelationModifiers[0].AppliedAmount == 0,
+            "unknown effect retains evidence without pretending it was applied");
+        var afterLoad = JsonConvert.DeserializeObject<WorldDiplomacyStorage>(JsonConvert.SerializeObject(recovery))!;
+        afterLoad.NationalPrestigeRelationModifiers = WorldDiplomacyRoundLifecycleRules.SelectRetainedPrestigeRelationModifiers(afterLoad.NationalPrestigeRelationModifiers);
+        recoveryPort.ReadUnavailable = true;
+        WorldDiplomacyPrestigeApplication.Reconcile(afterLoad, recoveryPort, "k");
+        Test.True(recoveryPort.Calls == 1, "unreadable pending effect cannot be reissued after save/load");
+        recoveryPort.ReadUnavailable = false;
+        WorldDiplomacyPrestigeApplication.Reconcile(afterLoad, recoveryPort, "k");
+        Test.True(recoveryPort.Calls == 1 && recoveryPort.Relations["v|r"] == observed
+            && afterLoad.NationalPrestigeRelationModifiers[0].AppliedAmount == observed
+            && afterLoad.NationalPrestigeRelationModifiers[0].PendingEffect == null,
+            "confirmed pending poststate updates the ledger without repeating its effect");
+        Test.True(!JsonConvert.SerializeObject(afterLoad.NationalPrestigeRelationModifiers[0]).Contains("pendingEffect", StringComparison.Ordinal),
+            "ordinary confirmed records keep the old serialized field set");
+        Test.True(JsonConvert.DeserializeObject<WorldDiplomacyPrestigeRelationModifier>("{\"kingdomId\":\"k\",\"appliedAmount\":0}")!.PendingEffect == null,
+            "old records default to no pending effect");
+        var pending = recovery.NationalPrestigeRelationModifiers[0];
+        recovery.NationalPrestigeRelationModifiers.Add(new() { KingdomId = "k", RulerHeroId = "r", VassalLeaderHeroId = "v" });
+        recovery.NationalPrestigeRelationModifiers = WorldDiplomacyRoundLifecycleRules.SelectRetainedPrestigeRelationModifiers(recovery.NationalPrestigeRelationModifiers);
+        Test.True(ReferenceEquals(recovery.NationalPrestigeRelationModifiers.Single(), pending),
+            "duplicate normalizer cannot discard unknown effect evidence");
+        recoveryPort.Court = new("k", false, null!, Array.Empty<string>());
+        recoveryPort.Heroes.Remove("r");
+        WorldDiplomacyPrestigeApplication.Reconcile(recovery, recoveryPort, "k");
+        Test.True(recovery.NationalPrestigeRelationModifiers.Count == 1 && pending.PendingEffect != null,
+            "stale zero-booked unknown effect survives missing ruler");
     }
 }

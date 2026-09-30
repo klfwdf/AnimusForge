@@ -194,7 +194,7 @@ internal static class Program
             "trade.EndTradeAgreement(playerKingdom, npcKingdom)",
             StringComparison.Ordinal);
         int confirmation = adapter.IndexOf(
-            "if (BannerlordApiCompat.HasTradeAgreement(trade, playerKingdom, npcKingdom))",
+            "() => !ReadTradeState(trade, playerKingdom, npcKingdom)",
             action,
             StringComparison.Ordinal);
         Test.True(action >= 0 && confirmation > action,

@@ -96,7 +96,7 @@ internal static class OfferApplicationReplay
         effectedThenThrew.ThrowOnExecute = true;
         effectedThenThrew.EffectAfterException = true;
         effectedThenThrew.Run();
-        Test.True(effectedThenThrew.Round.PendingOffers[0].Status == "accepted"
+        Test.True(effectedThenThrew.Round.PendingOffers[0].Status == "partially_executed"
                 && effectedThenThrew.Response.ChangedDiplomaticState
                 && effectedThenThrew.Trace.Contains("effect-probe"),
             "post-effect exception checks the real game outcome before recording success");
@@ -155,10 +155,10 @@ internal static class OfferApplicationReplay
                 {
                     Trace.Add("execute");
                     if (ThrowOnExecute) throw new InvalidOperationException("game effect failed");
-                    if (!TermsExecutable) return false;
+                    if (!TermsExecutable) return WorldDiplomacyOfferOutcome.Invalidated;
                     document.ChangedDiplomaticState = true;
                     document.MechanicalResult = PartialExecution ? "交割失败" : "执行成功";
-                    return true;
+                    return PartialExecution ? WorldDiplomacyOfferOutcome.Partial : WorldDiplomacyOfferOutcome.Applied;
                 },
                 (_, __) => { Trace.Add("effect-probe"); return EffectAfterException; },
                 message => Trace.Add("log:" + message));

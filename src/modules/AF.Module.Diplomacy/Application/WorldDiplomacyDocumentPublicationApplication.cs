@@ -175,7 +175,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         fact.Intent = normalizedAction;
         fact.Commitment = "binding";
         fact.AnalysisStatus = "external_fact";
-        fact.MechanicalResult = "已由口头外交执行";
+        fact.MechanicalResult = string.IsNullOrWhiteSpace(fact.Body) ? "已由口头外交执行" : fact.Body;
         fact.ChangedDiplomaticState = true;
         fact.HistoryDeclarationRecorded = true;
         WorldDiplomacyRound activeRound = storage?.ActiveRound;

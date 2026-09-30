@@ -45,6 +45,22 @@ internal static class BannerlordApiCompat
 		new[] { typeof(bool) },
 		null);
 
+	internal static bool TryGetTradeAgreementState(ITradeAgreementsCampaignBehavior trade, Kingdom first, Kingdom second, out bool hasAgreement)
+    {
+        hasAgreement = false;
+        if (trade == null || first == null || second == null) return false;
+        try
+        {
+#if BANNERLORD_1_4_OR_GREATER
+            hasAgreement = trade.HasTradeAgreement(first, second, out _);
+#else
+            hasAgreement = trade.HasTradeAgreement(first, second);
+#endif
+            return true;
+        }
+        catch { return false; }
+    }
+
 	internal static bool HasTradeAgreement(ITradeAgreementsCampaignBehavior tradeBehavior, Kingdom kingdom, Kingdom other)
 	{
 		if (tradeBehavior == null || kingdom == null || other == null)
