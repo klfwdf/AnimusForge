@@ -463,12 +463,16 @@ internal static class Program
             "post-issuance threat consequences must remain in the targeted dynamic context");
         Test.True(!source.Contains("下一份已发布公文必须", StringComparison.Ordinal),
             "canonical history must not turn a past noncompliance result into a global forward-looking instruction");
-        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"))
-                      .Contains("_owner.HasStaleDiplomaticThreatPresentation(job)", StringComparison.Ordinal)
-                  && File.ReadAllText(
-                          FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"),
-                          Encoding.UTF8)
-                      .Contains("discarded completed generation from stale diplomatic threat stage", StringComparison.Ordinal),
+        string completionApplicationFile = File.ReadAllText(
+            FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"),
+            Encoding.UTF8);
+        Test.True(completionApplicationFile.Contains(
+                      "WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, storage?.DiplomaticThreats)", StringComparison.Ordinal)
+                  && completionApplicationFile.Contains(
+                      "discarded completed generation from stale diplomatic threat stage", StringComparison.Ordinal)
+                  && !File.ReadAllText(
+                          FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"))
+                      .Contains("HasStale", StringComparison.Ordinal),
             "queued and in-flight generated declarations must be rebuilt when the threat stage changes");
         Test.True(File.ReadAllText(
                       FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyJobPreparationApplication.cs")),
@@ -936,7 +940,7 @@ internal static class Program
             "private static void AppendDiplomaticTargetDecisionContext(");
         foreach (string requiredTargetFactBuilder in new[]
         {
-            "world.BuildBilateralState",
+            "BilateralStateLabel(world",
             "world.BilateralRulerFamilyContext",
             "world.RecentBilateralBattleContext",
             "world.BorderRelation",
@@ -1164,7 +1168,7 @@ internal static class Program
 
         foreach (string relationshipFact in new[]
         {
-            "world.BuildBilateralState",
+            "BilateralStateLabel(world",
             "world.RelationProfile",
             "world.RulerRelation",
             "world.BorderRelation",
@@ -2139,7 +2143,7 @@ internal static class Program
         string beforeSend = ExtractMethod(
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs")),
             "internal static WorldDiplomacyJob SelectAndPrepareLlmJob(");
-        int beforeSendStaleCheck = beforeSend.IndexOf("hasStaleActionPresentation?.Invoke(job)", StringComparison.Ordinal);
+        int beforeSendStaleCheck = beforeSend.IndexOf("HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal);
         int beforeSendRefresh = beforeSend.IndexOf("refreshActionPresentation?.Invoke(job)", StringComparison.Ordinal);
         int requestMaterialization = beforeSend.IndexOf("buildMessageArray?.Invoke(job)", StringComparison.Ordinal);
         Test.True(beforeSendStaleCheck >= 0
@@ -2150,7 +2154,7 @@ internal static class Program
         string completedJobs = ExtractMethod(
             File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs")),
             "internal static void Complete<TEffects>(");
-        int completedStaleCheck = completedJobs.IndexOf("effects.HasStaleActionPresentation(job)", StringComparison.Ordinal);
+        int completedStaleCheck = completedJobs.IndexOf("HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal);
         int completedRefresh = completedJobs.IndexOf(
             "orchestration.RefreshDiplomaticActionPresentationAndPrompt(job)",
             completedStaleCheck,
@@ -2637,8 +2641,8 @@ internal static class Program
 				  && repairJobBuild.Contains(
 					  ": new List<string>(source.CandidateKingdomIds",
 					  StringComparison.Ordinal)
-                  && generationRepair.Contains("BuildBilateralState(author, repairTarget)", StringComparison.Ordinal)
-                  && !generationRepair.Contains("BuildBilateralState(author, target)", StringComparison.Ordinal),
+                  && generationRepair.Contains("BilateralStateLabel(world, author, repairTarget)", StringComparison.Ordinal)
+                  && !generationRepair.Contains("BilateralStateLabel(world, author, target)", StringComparison.Ordinal),
             "repair prompting and the repair job must preserve original authorization rather than narrowing to an illegal model target");
     }
 
@@ -4516,7 +4520,7 @@ internal static class Program
         if (endMarker == "private void MigrateDiplomaticThreatsToNextDeclarationRules(") endMarker = "private string ValidateOpenThreatWorldEligibility(";
         if (endMarker == "private void MigrateDiplomaticThreatComplianceConsequencesV3(") endMarker = "private string ValidateOpenThreatWorldEligibility(";
         if (endMarker == "private int ApplyInternationalReputationDelta(") endMarker = "private void SettleInternationalReputationForDocument(";
-        if (endMarker == "private static Settlement ResolveMentionedSettlement(") endMarker = "private static string BuildBilateralState(";
+        if (endMarker == "private static Settlement ResolveMentionedSettlement(") endMarker = "private static int GetRulerRelation(";
         if (endMarker == "private void CompleteActiveExchange(") endMarker = "private void CompleteExchange(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
         Test.True(start >= 0, "missing start marker: " + startMarker);

@@ -375,7 +375,8 @@ public static class WorldDiplomacyStorageMigration
         Func<string, string> resolveKingdomNameOrEmpty,
         Func<IEnumerable<string>, string, List<string>> normalizeKingdomIdList,
         Func<int, string> formatCampaignDate,
-        Func<WorldDiplomacyDocument, bool> hasCompleteLegacyPropagationCoverage)
+        IReadOnlyCollection<string> nonHideoutSettlementIds,
+        IReadOnlyCollection<string> nonEliminatedKingdomIds)
 {
     if (document.RoundProgressHandled) document.RoundAccountingHandled = true;
     document.NegotiationMove = WorldDiplomacyIntentVocabulary.NormalizeNegotiationMove(document.NegotiationMove);
@@ -477,7 +478,10 @@ public static class WorldDiplomacyStorageMigration
         }
         else
         {
-            document.PropagationCompleted = !stillRelevant || hasCompleteLegacyPropagationCoverage(document);
+            document.PropagationCompleted = !stillRelevant
+                || WorldDiplomacyRoundLifecycleRules.HasCompleteLegacyPropagationCoverage(
+                    document, storage.PropagationArrivals, storage.SettlementKnowledge,
+                    storage.KingdomKnowledge, nonHideoutSettlementIds, nonEliminatedKingdomIds);
         }
     }
     if (document.IsReadyForPublication && !document.PropagationStarted && string.IsNullOrWhiteSpace(document.OriginSettlementId))

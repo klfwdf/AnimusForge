@@ -108,7 +108,10 @@ public sealed partial class WorldDiplomacyBehavior
         public bool IsRepresentativeForAddressedVassal(string receiverId, WorldDiplomacyDocument document)
             => _owner.IsDiplomaticRepresentativeForAddressedVassal(WorldDiplomacyBehavior.ResolveKingdom(receiverId), document);
         public bool CampaignHasKingdoms() => Campaign.Current != null && Kingdom.All.Any();
-        public List<string> EligibleAiPartyIds() => _owner.GetEligibleAiKingdoms().Select(x => x?.StringId).Where(x => x != null).ToList();
+        public IReadOnlyList<string> AllKingdomIds() => Kingdom.All
+            .Where(x => x != null && !string.IsNullOrWhiteSpace(x.StringId))
+            .Select(x => x.StringId)
+            .ToList();
         public string ResolveEligibleDiplomacyKingdomId(string kingdomId) => _owner.ResolveEligibleDiplomacyKingdomId(kingdomId);
         public bool PartiesAllied(string firstId, string secondId) =>
             Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>()
@@ -126,7 +129,6 @@ public sealed partial class WorldDiplomacyBehavior
         public string ValidateOpenThreatWorldEligibility(WorldDiplomacyThreat threat) =>
             _owner.ValidateOpenThreatWorldEligibility(threat,
                 Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>());
-        public bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document) => _owner.HasCompleteLegacyPropagationCoverage(document);
         public WorldDiplomacyPolicyRoundApplication.Parties ResolvePolicyParties(WorldDiplomacyPolicySignal signal)
         {
             Kingdom issuer = WorldDiplomacyBehavior.ResolveKingdom(signal?.IssuerKingdomId);
@@ -230,7 +232,7 @@ public sealed partial class WorldDiplomacyBehavior
         public int RecentBattleRetentionDays() => WorldDiplomacyBehavior.RecentBattleRetentionDays;
         public int NativeSignalBaseValue(string action) =>
             action == "declare_war" ? WorldDiplomacyBehavior.NativeWarSignalBase : WorldDiplomacyBehavior.NativeOtherSignalBase;
-        public IReadOnlyList<WorldDiplomacyThreat> Threats() => _owner._stateStore.Current?.DiplomaticThreats;
+        public IReadOnlyList<WorldDiplomacyThreat> Threats() => _owner._storage?.DiplomaticThreats;
 
         // Module/service leafs.
         public IReadOnlyList<WorldDiplomacyPolicySignalSnapshot> ForeignPolicySignals() => DiplomacyModuleServices.Policy.GetForeignPolicySignals();
@@ -276,7 +278,7 @@ public sealed partial class WorldDiplomacyBehavior
         public IWorldDiplomacyCanonicalHistoryMigrationSource CanonicalHistoryMigrationSource() => new CanonicalHistoryMigrationSource(_owner);
         public IWorldDiplomacyLlmDispatchSource LlmDispatchSource() => new LlmDispatchSource(_owner);
         public IWorldDiplomacyCompletionSource CompletionSource() => new CompletionSource(_owner);
-        public void PollNotifications() => _owner._notifications.Poll(_owner._stateStore.Current, DateTime.UtcNow, _owner.NotificationSink);
+        public void PollNotifications() => _owner._notifications.Poll(_owner._storage, DateTime.UtcNow, _owner.NotificationSink);
         public string ResolveSettlementPartyId(string settlementId) => WorldDiplomacyBehavior.ResolveSettlementById(settlementId)?.OwnerClan?.Kingdom?.StringId;
         public string PartyNameIncludingEliminated(string id) => WorldDiplomacyBehavior.KingdomName(WorldDiplomacyBehavior.ResolveKingdomIncludingEliminated(id));
         public string PlayerKingdomId() => Clan.PlayerClan?.Kingdom?.StringId;

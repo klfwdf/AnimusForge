@@ -125,11 +125,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private float _kingdomBorderDistanceThreshold = MinimumBorderDistance;
 	private long _realmInstitutionalVoiceRuleVersion = -1L;
 
-	private readonly WorldDiplomacyStateStore _stateStore = new WorldDiplomacyStateStore();
-	// Canonical state is owned by the application-side store; this alias only
-	// projects the current snapshot for leaf reads. No site may assign fields
-	// on it or replace it outside SyncData/orchestration persistence lanes.
-	private WorldDiplomacyStorage _storage => _stateStore.Current;
+	// Canonical state is owned by the application-side store inside the
+	// orchestration; this alias only projects the current snapshot for leaf
+	// reads. No site may assign fields on it or replace it outside the
+	// orchestration persistence lanes.
+	private WorldDiplomacyStorage _storage => _orchestration.CurrentStorage;
 	private MapNotificationView _registeredMapNotificationView;
 	private long _runtimeGeneration;
 	// Runtime-only revision lets the world-message timeline detect a published document without cloning the archive every tick.
@@ -149,7 +149,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	public WorldDiplomacyBehavior()
 	{
 		Instance = this;
-		_orchestration = new WorldDiplomacyOrchestration(new OrchestrationHost(this), _runtime, _stateStore);
+		_orchestration = new WorldDiplomacyOrchestration(new OrchestrationHost(this), _runtime);
 	}
 
 	public override void RegisterEvents()
@@ -173,23 +173,13 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		if (dataStore.IsSaving)
-		{
-			_orchestration.NormalizeStorage(allowWorldValidation: false);
-			PersistenceAdapter.Save(dataStore, _stateStore.Current);
-			return;
-		}
-		if (!dataStore.IsLoading)
-		{
-			return;
-		}
-		_stateStore.Replace(PersistenceAdapter.Load(dataStore, out string loadError));
-		if (!string.IsNullOrWhiteSpace(loadError))
-		{
-			Log("load failed: " + loadError);
-		}
-		ResetTransientRuntime("load");
-		_orchestration.NormalizeStorage(allowWorldValidation: false);
+		string loadError = null;
+		_orchestration.SyncData(dataStore.IsSaving, dataStore.IsLoading,
+			() => PersistenceAdapter.Load(dataStore, out loadError),
+			() => loadError,
+			storage => PersistenceAdapter.Save(dataStore, storage),
+			Log,
+			() => ResetTransientRuntime("load"));
 	}
 
 	public void OnEngineTick()
@@ -921,32 +911,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return _llmBudget.TryConsume(CurrentDay(), MaxDiplomacyLlmRequestsPerDay, consume, Log);
 	}
 
-	private bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
-	{
-		if (document == null || !document.PropagationStarted) return false;
-		HashSet<string> pendingSettlements = new HashSet<string>((_storage.PropagationArrivals ?? new List<WorldDiplomacyPropagationArrival>())
-			.Where(x => x != null && !WorldDiplomacyStructureRules.IsCourtArrival(x)
-				&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.DocumentId, document.DocumentId))
-			.Select(x => x.SettlementId).Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
-		HashSet<string> pendingKingdoms = new HashSet<string>((_storage.PropagationArrivals ?? new List<WorldDiplomacyPropagationArrival>())
-			.Where(x => x != null && WorldDiplomacyStructureRules.IsCourtArrival(x)
-				&& WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(x.DocumentId, document.DocumentId))
-			.Select(x => x.KingdomId).Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
-		HashSet<string> knownSettlementIds = WorldDiplomacyDocumentFactRules.GetKnownSettlementIdsForDocument(_storage.SettlementKnowledge, document.DocumentId);
-		HashSet<string> knownKingdomIds = WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(_storage.KingdomKnowledge, document.DocumentId);
-		foreach (Settlement settlement in Settlement.All.Where(x => x != null && !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId)))
-		{
-			if (string.Equals(settlement.StringId, document.OriginSettlementId, StringComparison.OrdinalIgnoreCase)) continue;
-			if (!pendingSettlements.Contains(settlement.StringId) && !knownSettlementIds.Contains(settlement.StringId)) return false;
-		}
-		foreach (Kingdom kingdom in Kingdom.All.Where(x => x != null && !x.IsEliminated
-			&& !string.Equals(x.StringId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)))
-		{
-			if (!pendingKingdoms.Contains(kingdom.StringId) && !knownKingdomIds.Contains(kingdom.StringId)) return false;
-		}
-		return true;
-	}
-
 	private Settlement ResolveCourtSettlement(Kingdom kingdom)
 	{
 		if (kingdom == null)
@@ -1342,16 +1306,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		source = "current-config";
 		return BuildCommonDiplomacySystemPrefix();
 	}
-	private bool HasStaleDiplomaticThreatPresentation(WorldDiplomacyJob job)
-	{
-		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
-		List<string> currentPresented = WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(_storage?.DiplomaticThreats, job.AuthorKingdomId);
-		List<string> currentFollowThrough = WorldDiplomacyRoundLifecycleRules.SelectNoncompliedThreatStageDocumentIds(_storage?.DiplomaticThreats, job.AuthorKingdomId);
-		return WorldDiplomacyRoundLifecycleRules.HasThreatPresentationDrift(
-			job.PresentedThreatDocumentIds, currentPresented,
-			job.PresentedThreatFollowThroughDocumentIds, currentFollowThrough);
-	}
-
 	private static IEnumerable<string> ProjectCessionCandidates(IEnumerable<Settlement> settlements)
 	{
 		return (settlements ?? Enumerable.Empty<Settlement>())
@@ -1768,18 +1722,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			sourceDocumentId, requireAnyOpenPeaceOffer);
 	}
 
-	private List<Kingdom> GetEligibleAiKingdoms()
-	{
-		return Kingdom.All
-			.Where(x => x != null
-				&& !x.IsEliminated
-				&& HasIndependentWorldDiplomacyAuthority(x)
-				&& CanAiAuthorDiplomaticDocument(x, out _)
-				&& x.RulingClan?.Leader != null
-				&& x.RulingClan.Leader.IsAlive)
-			.OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)
-			.ToList();
-	}
 	private WorldDiplomacyDocument CreateDocument(
 		Kingdom author,
 		Kingdom target,
@@ -1858,22 +1800,12 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		Kingdom issuer = ResolveKingdom(threat.IssuerKingdomId);
 		Kingdom target = ResolveKingdom(threat.TargetKingdomId);
-		if (issuer == null || target == null || issuer == target
-			|| issuer.IsEliminated || target.IsEliminated
-			|| !HasIndependentWorldDiplomacyAuthority(issuer)
-			|| !HasIndependentWorldDiplomacyAuthority(target))
-		{
-			return "threat_party_no_longer_eligible";
-		}
-		if (FactionManager.IsAtWarAgainstFaction(issuer, target))
-		{
-			return "war_already_started_outside_pending_declaration";
-		}
-		if (alliance?.IsAllyWithKingdom(issuer, target) == true)
-		{
-			return "threat_parties_became_allies";
-		}
-		return null;
+		return WorldDiplomacyRoundLifecycleRules.ValidateOpenThreatEligibility(
+			issuer != null, issuer?.IsEliminated == true, issuer != null && HasIndependentWorldDiplomacyAuthority(issuer),
+			target != null, target?.IsEliminated == true, target != null && HasIndependentWorldDiplomacyAuthority(target),
+			issuer != null && issuer == target,
+			issuer != null && target != null && FactionManager.IsAtWarAgainstFaction(issuer, target),
+			issuer != null && target != null && alliance?.IsAllyWithKingdom(issuer, target) == true);
 	}
 
 	private static Hero ResolveHeroById(string heroId)
@@ -2032,28 +1964,6 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		return Settlement.All.FirstOrDefault(x => x != null
 			&& string.Equals(x.StringId, settlementId, StringComparison.OrdinalIgnoreCase));
-	}
-	private static string BuildBilateralState(Kingdom author, Kingdom target)
-	{
-		if (author == null || target == null)
-		{
-			return "未知";
-		}
-		if (FactionManager.IsAtWarAgainstFaction(author, target))
-		{
-			return "双方正在交战";
-		}
-		IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
-		if (alliance != null && alliance.IsAllyWithKingdom(author, target))
-		{
-			return "双方处于同盟关系";
-		}
-		ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
-		if (trade != null && BannerlordApiCompat.HasTradeAgreement(trade, author, target))
-		{
-			return "双方和平并有贸易协定";
-		}
-		return "双方处于和平状态。";
 	}
 	private static int GetRulerRelation(Kingdom source, Kingdom target)
 	{

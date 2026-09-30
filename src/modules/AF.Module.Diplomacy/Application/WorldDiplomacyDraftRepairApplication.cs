@@ -89,7 +89,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 			world.KingdomName(author),
 			repairTarget,
 			repairTarget == null ? "" : world.KingdomName(repairTarget),
-			repairTarget == null ? "" : world.BuildBilateralState(author, repairTarget),
+			repairTarget == null ? "" : WorldDiplomacyPromptComposer.BilateralStateLabel(world, author, repairTarget),
 			requiredPeaceOffer,
 			() => world.BuildGovernmentHardFact(author));
 		correctionBuilder.AppendLine(orchestration.BuildCurrentLegalDiplomaticOptions(

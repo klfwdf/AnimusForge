@@ -257,6 +257,8 @@ static class Program
         var hostRoot = trees[host].GetRoot();
         Check(hostRoot.DescendantNodes().OfType<FieldDeclarationSyntax>().All(f => f.Declaration.Type.ToString() != "WorldDiplomacyStorage"),
             "the host must not own a canonical storage field");
+        Check(hostRoot.DescendantNodes().OfType<FieldDeclarationSyntax>().All(f => f.Declaration.Type.ToString() != "WorldDiplomacyStateStore"),
+            "the host must not own the canonical state store itself");
         Check(trees.ContainsKey("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStateStore.cs")
             && trees["src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStateStore.cs"].GetRoot()
                 .DescendantNodes().OfType<FieldDeclarationSyntax>()

@@ -365,9 +365,9 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
         Calls.Add("CampaignHasKingdoms");
         return false;
     }
-    public virtual List<string> EligibleAiPartyIds()
+    public virtual IReadOnlyList<string> AllKingdomIds()
     {
-        Calls.Add("EligibleAiPartyIds");
+        Calls.Add("AllKingdomIds");
         return new List<string>();
     }
     public virtual string ResolveEligibleDiplomacyKingdomId(string kingdomId)
@@ -409,11 +409,6 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     {
         Calls.Add("ValidateOpenThreatWorldEligibility");
         return "";
-    }
-    public virtual bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
-    {
-        Calls.Add("HasCompleteLegacyPropagationCoverage");
-        return false;
     }
     public virtual WorldDiplomacyPolicyRoundApplication.Parties ResolvePolicyParties(WorldDiplomacyPolicySignal signal)
     {

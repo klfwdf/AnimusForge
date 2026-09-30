@@ -13,6 +13,7 @@ internal static class CompletionApplicationReplay
         internal readonly List<string> Events = new();
         internal long Generation = 7;
         internal bool Stale, Threat, Action, Refresh = true, ThrowCommit, ThrowRemove, ThrowTruncated, RealRoundCompression, RealFailure;
+        internal string Signature = "";
         internal int Reads;
     }
 
@@ -30,8 +31,6 @@ internal static class CompletionApplicationReplay
         public int FailedServiceCooldownHours => 12;
         public void LogUsage(WorldDiplomacyJob job, LlmJobResult result)
         { Test.True(!job.IsRunning, "running flag clears before usage and effects"); s.Events.Add("usage"); }
-        public bool HasStaleThreatPresentation(WorldDiplomacyJob job) { s.Events.Add("threat?"); return s.Threat; }
-        public bool HasStaleActionPresentation(WorldDiplomacyJob job) { s.Events.Add("action?"); return s.Action; }
         public void RemoveJob(string id)
         {
             s.Events.Add("remove");
@@ -74,6 +73,7 @@ internal static class CompletionApplicationReplay
         }
         public override bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job) { s.Events.Add("threat-refresh"); return s.Refresh; }
         public override bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job) { s.Events.Add("action-refresh"); return s.Refresh; }
+        public override string BuildGenerationLegalActionSignature(WorldDiplomacyJob job) => s.Signature;
         public override void RejectGeneratedDraftBeforePublication(WorldDiplomacyJob job, string rejectedRaw,
             string authorId, string targetId, string reason, Newtonsoft.Json.Linq.JObject parsedJson)
         { s.Events.Add("truncated"); if (s.ThrowTruncated) throw new InvalidOperationException("draft"); }
@@ -101,7 +101,6 @@ internal static class CompletionApplicationReplay
             var job = Enqueue(s, "  " + kind.ToUpperInvariant() + "  ");
             s.Lease.TryClaim("j", 7, 256, 100, out _); Run(s);
             var expected = new List<string> { "release", "guard", "usage" };
-            if (kind == "generate") expected.AddRange(new[] { "threat?", "action?" });
             expected.AddRange(new[] { kind + ":raw", "remove" });
             Test.True(s.Events.SequenceEqual(expected) && !s.Lease.IsRunning && s.Storage.Jobs.Count == 0
                 && s.Storage.ConsecutiveServiceFailures == 0 && job.Kind == "  " + kind.ToUpperInvariant() + "  ",
@@ -165,10 +164,21 @@ internal static class CompletionApplicationReplay
         foreach (bool threat in new[] { true, false })
         foreach (bool refresh in new[] { true, false })
         {
-            var s = new State { Threat = threat, Action = true, Refresh = refresh };
-            s.Storage.ConsecutiveServiceFailures = 1; Enqueue(s, "generate"); Run(s);
+            var s = new State { Refresh = refresh, Signature = "sig" };
+            s.Storage.ConsecutiveServiceFailures = 1;
+            var job = Enqueue(s, "generate");
+            job.AuthorKingdomId = "a";
+            job.PresentedLegalActionSignature = "";
+            if (threat)
+            {
+                s.Storage.DiplomaticThreats.Add(new WorldDiplomacyThreat
+                {
+                    ThreatId = "t", Status = "open", IssuerKingdomId = "a", StageDocumentId = "doc-t"
+                });
+            }
+            Run(s);
             Test.True(s.Events.Contains(threat ? "threat-refresh" : "action-refresh")
-                && (!threat || !s.Events.Contains("action?")) && !s.Events.Contains("generate:raw")
+                && (!threat || !s.Events.Contains("action-refresh")) && !s.Events.Contains("generate:raw")
                 && !s.Events.Contains("remove") && s.Storage.ConsecutiveServiceFailures == 1
                 && s.Events.Any(e => e.StartsWith(refresh ? "log:" : "failed:")),
                 "stale refresh has threat precedence, preserves job/counter, and logs or fails");

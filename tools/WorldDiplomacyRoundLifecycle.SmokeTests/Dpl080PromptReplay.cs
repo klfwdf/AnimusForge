@@ -144,7 +144,8 @@ internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
     public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round,string author,string resultSettlementSlotId,bool isExternalResponseOnly,string sourceDocumentId,bool requireAnyOpenPeaceOffer)=>Offer;
     public bool HasCessionBoundMultiplePeaceAcceptanceOptions(WorldDiplomacyRound round,string author,Dictionary<string,List<string>> actions)=>true;
     public List<string> GetAuthorizedGenerationTargetIds(WorldDiplomacyJob source,WorldDiplomacyRound round,string author)=>Authorized;
-    public string BuildBilateralState(string author,string target)=>"at-war";
+    public bool IsAlly(string author,string target)=>false;
+    public bool HasTradeAgreement(string author,string target)=>false;
     public string BuildGovernmentHardFact(string author)=>"government";
     public string BuildCurrentLegalDiplomaticOptions(WorldDiplomacyRound round,string author,List<string> ids,bool isRelayTurn,string resultSettlementSlotId,bool isExternalResponseOnly,WorldDiplomacyDocument source)=>"legal-options";
     public string BuildCanonicalHistoryBlock(long throughSequence)=>"current archive";
