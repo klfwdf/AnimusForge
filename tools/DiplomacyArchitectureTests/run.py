@@ -98,7 +98,7 @@ ORCH_OWNERS={
 
 # Application file -> member that must live there (was a Behavior private before).
 APP_OWNERS={
- 'WorldDiplomacyDocumentExecutionApplication.cs':['ProcessAnalyzedMultiActionDocument','TryIncludeResultSettlementTarget','RefreshResultSettlementActionSlots','FinalizePublishedDocumentAfterAnalysis'],
+ 'WorldDiplomacyDocumentExecutionApplication.cs':['ProcessAnalyzedDocument','TryIncludeResultSettlementTarget','RefreshResultSettlementActionSlots','FinalizePublishedDocumentAfterAnalysis'],
  'WorldDiplomacyPublicationRoutingApplication.cs':['Start','ReconcileReachedCourts'],
  'WorldDiplomacyActionSelectionApplication.cs':['GetActionableDiplomaticTargets','GetRoundPlanActionableParticipants','GetResultSettlementActionableTargets','BuildLegalDiplomaticDeclarationIntents'],
  'WorldDiplomacyAnalysisApplication.cs':['PreservePublishedPlayerDocumentAfterRejectedMechanic','CommitAnalysis','SuppressInvalidDocumentBeforePropagation'],

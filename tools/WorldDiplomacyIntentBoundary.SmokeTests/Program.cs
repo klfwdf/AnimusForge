@@ -184,7 +184,7 @@ internal static class Program
             source,
             "private void ProcessAnalyzedDocument(",
             "private bool TryGetPlayerWorldStateIntentViolation(");
-        Test.True(analyzedPublication.Contains("allowedPlayerPublicIntent", StringComparison.Ordinal)
+        Test.True(analyzedPublication.Contains("publicStatement", StringComparison.Ordinal)
                   && analyzedPublication.Contains("FinalizePublishedDocumentAfterAnalysis", StringComparison.Ordinal)
                   && analyzedPublication.Contains("ApplyDiplomaticPressureEffect", StringComparison.Ordinal),
             "player statements, condemnations, apologies, and concessions must remain published and retain their semantic effects");
@@ -2224,16 +2224,16 @@ internal static class Program
             source,
             "private void ProcessAnalyzedDocument(",
             "private bool TryGetPlayerWorldStateIntentViolation(");
-        int liveGuardStart = publication.IndexOf("string liveStateBlockReason = \"\";", StringComparison.Ordinal);
+        int liveGuardStart = publication.IndexOf("if (action == null || target == null", StringComparison.Ordinal);
         int liveStateValidation = publication.IndexOf(
-            "TryGetDiplomaticStateViolation(normalizedIntent, author, target, out liveStateBlockReason)",
+            "TryGetDiplomaticStateViolation(intent, author, target, out string liveStateReason)",
             StringComparison.Ordinal);
         int liveGuardSuppression = publication.IndexOf(
-            "SuppressInvalidDocumentBeforePropagation(document, \"final_live_state_guard:\" + liveStateBlockReason);",
+            "SuppressInvalidDocumentBeforePropagation(document, \"final_live_state_guard:\" + liveStateReason);",
             StringComparison.Ordinal);
         int playerSpecificGuard = publication.IndexOf(
-            "if (document.IsPlayerAuthored",
-            liveGuardStart,
+            "if (legacy && document.IsPlayerAuthored",
+            liveGuardSuppression,
             StringComparison.Ordinal);
         int publishReady = publication.IndexOf(
             "document.IsReadyForPublication = true;",
@@ -2246,7 +2246,7 @@ internal static class Program
                   && publishReady > liveGuardSuppression,
             "the executable-action path must apply the live-state guard before player-only mechanic checks; the player document itself may already be public");
         Test.True(publication.Contains(
-                "bool invalidLiveTarget = target == null || target == author || port.IsEliminated(target)",
+                "action == null || target == null || target == author || port.IsEliminated(target)",
                 StringComparison.Ordinal)
                   && publication.Contains("diplomatic_action_has_no_live_target", StringComparison.Ordinal),
             "the final live-state guard must also reject a missing, self, eliminated, or controlled target");
@@ -3233,7 +3233,7 @@ internal static class Program
 				"war-response statement must bypass this mechanism while remaining publishable: " + forbiddenMechanism);
 		}
 		int targetDecision = analyzedPublication.IndexOf(
-			"RecordDiplomaticThreatTargetDecisions(document, author, target, normalizedIntent)",
+			"RecordDiplomaticThreatTargetDecisions(document, author, target, action.Intent)",
 			noActionMechanicsGuard,
 			StringComparison.Ordinal);
 		Test.True(targetDecision > noActionMechanicsGuard && targetDecision < historyPublication,
@@ -3454,7 +3454,7 @@ internal static class Program
 			"private bool TryGetPlayerWorldStateIntentViolation(");
 		string documentApplication = File.ReadAllText(FindRepositoryFile(Path.Combine(
 			"src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyDocumentApplication.cs")), Encoding.UTF8);
-		Test.True(analyzedPublication.Contains("document?.Actions", StringComparison.Ordinal)
+		Test.True(analyzedPublication.Contains("document.Actions", StringComparison.Ordinal)
             && ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(").Contains("WorldDiplomacyDocumentApplication.CaptureActionResult(document, action)", StringComparison.Ordinal)
 			&& documentApplication.Contains("action.ChangedDiplomaticState = document.ChangedDiplomaticState", StringComparison.Ordinal)
 			&& documentApplication.Contains("action.MechanicalResult = document.MechanicalResult", StringComparison.Ordinal)
@@ -4420,11 +4420,14 @@ internal static class Program
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
             if (name == "ProcessAnalyzedDocument")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_host.DocumentExecution(), this,", StringComparison.Ordinal)
-                    || text.Contains("ProcessAnalyzedMultiActionDocument(port, orchestration, document)", StringComparison.Ordinal),
+                    || text.Contains("ExecuteItems(port, orchestration, document, actions, legacy)", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             else if (name == "TryIncludeResultSettlementTarget")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget(_host.DocumentExecution(),", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
+            if (name == "ProcessAnalyzedDocument" || name == "ProcessAnalyzedMultiActionDocument")
+                return ExtractMethod(text, "internal static void ProcessAnalyzedDocument(")
+                    + ExtractMethod(text, "private static void ExecuteItems(");
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
         }
         if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")

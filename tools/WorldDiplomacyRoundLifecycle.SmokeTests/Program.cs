@@ -217,6 +217,11 @@ RunRepairCorrectionAndJobDecisionTests();
         CourtResponseReplay.Run();
         DocumentApplicationReplay.Run();
         DocumentExecutionReplay.Run();
+        string executionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
+        Test.True(!executionSource.Contains("ProcessAnalyzedMultiActionDocument(")
+            && executionSource.Split(new[] { "orchestration.ExecuteImmediateIntent(" }, StringSplitOptions.None).Length == 2,
+            "single and multi documents share one effect loop with no predecessor algorithm");
+
         PublicationRoutingReplay.Run();
         ImmediateActionReplay.Run();
         PropagationLifecycleReplay.Run();

@@ -128,6 +128,23 @@ internal static class DocumentExecutionReplay
         (p, orch) = Fixture(); doc = Document("b"); doc.Actions.Clear(); Run(p, orch, doc);
         Test.True(p.Effects == 1 && p.Events.IndexOf("propagation") < p.Events.IndexOf("history") && p.Events.Contains("round"),
             "legacy single action keeps its existing propagation-before-history ordering");
+        Test.True(doc.Actions.Count == 0 && doc.ProcessingActionId == "", "flat save representation is not converted to stored actions");
+        (p, orch) = Fixture(); doc = Document("missing"); doc.Actions = null; doc.IsPlayerAuthored = true; doc.Intent = "statement";
+        Run(p, orch, doc);
+        Test.True(doc.IsReadyForPublication && p.Effects == 0 && doc.Actions == null, "legacy public declaration needs no live foreign target and keeps null actions");
+        (p, orch) = Fixture(x => x.NoAction = true); doc = Document("b"); doc.Actions = null;
+        doc.Intent = "statement"; doc.IsRoundResponseNoActionDeclaration = true; Run(p, orch, doc);
+        Test.True(doc.IsReadyForPublication && p.Effects == 0 && p.Events.Contains("RecordDiplomaticThreatTargetDecisions"), "legacy relay no-action declaration remains mechanically inert");
+        (p, orch) = Fixture(); doc = Document("b"); doc.Actions = null; doc.Intent = "statement";
+        doc.IsRoundResponseNoActionDeclaration = true; Run(p, orch, doc);
+        Test.True(!doc.IsReadyForPublication && p.Events.Contains("reject:stale_round_response_no_action_declaration"), "stale no-action declaration cannot publish");
+        foreach (bool flat in new[] { false, true })
+        {
+            (p, orch) = Fixture(x => x.InvalidTarget = "b"); doc = Document("b");
+            if (flat) doc.Actions = null;
+            Run(p, orch, doc);
+            Test.True(p.Effects == 0 && !p.Events.Contains("history") && p.Events.Contains("reject:final_live_state_guard:changed"), "one executor rejects changed live state in both representations");
+        }
         (p, orch) = Fixture(x => x.AuthorAllowed = false); doc = Document("b"); Run(p, orch, doc);
         Test.True(p.Effects == 0 && p.Events.Contains("reject:player_controlled_realm_requires_player_authorization"), "AI author authority checked before target work");
         (p, orch) = Fixture(); doc = Document("b"); doc.Actions.Clear(); doc.IsPlayerAuthored = true; doc.Intent = "statement"; Run(p, orch, doc);
