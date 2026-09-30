@@ -99,6 +99,8 @@
 
 **A2-5 计数口径待对账**：§5a 所引本地 16 宿主 `10,826 = 3,380 + 7,446` 没有对应的当前逐成员签收产物；现存忽略材料 `artifacts/j17a/current-host-member-counts.json` 在源码 `944712f8`、API 1.3 下记录 16 宿主 **10,268 个 direct members**，而 `current-member-inventory.json` 包含嵌套类型成员，口径不同。两数不能相减认作已审/未审数量，也不能拿导航 `semanticReview=PENDING` 当实际结论；最终 A2-5 必须以当前双 API Compile/语法成员和逐责任范围双向对账到未知为零。
 
+**A2-5/MB-CampaignActions 事件责任续审（仍 `A_NOT_CLOSED`）**：[范围图 E73](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)补 E72 未覆盖的任务、同伴新增/移除与总督变更四个 Campaign 回调及六个资格/地点/结局 helper。事件注册和活对象捕获留 GameAdapter，NPC 行动/旧 `_npcMajorActions_v1`、`_npcRecentActions_v1` 等保存身份仍由当前 MyBehavior 负责，目标 Memory/NpcAction；玩家行动经 Social/Notoriety 唯一入口，不复制状态。`DebtPromiseQuest` 明确排除二次记账，总督仅玩家 Clan 相关时记录；事件分别写两条或至多四条，非 Tick 路径。`ResolveCurrentActionSettlement` 的前序 `PlayerEncounter.EncounterSettlement` 抛错会使后续 Hero 地点回退也失效，登记为 **R07-MB-CampaignActions** 的 B6 兼容可用性/失败回放余项，非已证实实机故障；记录的 void/吞异常边界须在迁移前定义部分成功/重入语义。`MyBehavior.cs:2723–2795` 的公开跨域桥、`:3475–4516` 其余事件和动态消费者仍待审；**不能以这四个回调签收 MyBehavior 或 20 桶**。
+
 ## J17 执行规格补齐（2026-09-29，仅文档）
 
 按用户要求新增[独立 J17 执行计划](plans/j17-responsibility-closeout-plan.md)，承接编制基线 `944712f8`。细化恢复检查、当前 Compile/成员与动态消费者盘点、R04a→R02→R03→R01→具名余项迁移、同候选离线与实机/旧档分层门禁。责任状态仍由本台账维护；没有执行 A 的剩余盘点、B 产品迁移或新构建，不提升 J17 完成状态。下一步先刷新 `99ca85ae` 的 E09–E13 并补齐 A，不能将旧数字直接当当前覆盖分母。
