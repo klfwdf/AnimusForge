@@ -55,6 +55,12 @@ Memory supplement **24文件/466成员每API**由原245待消费者+221未审提
 
 当前正式仍7/20、A未闭、B/C未启动、D NOT-RUN；上一表停点数字不作为当前已审总数。后续按最终证据求差集完成20桶语义对账，不重复未变的有效审查。新风险与迁移分轴：B须解决范围内真实owner/接线余项；原版效果、刑罚、外交/ArmyJoin渠道规则、重试/部分成功政策不能未经批准暗改。任何与C范围直接相关的OPEN仍阻断对应出口，不靠改名/排除凑零。
 
+### E130–E131 宿主补读与主体主包落点
+
+[范围图E130](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)正式取代Siege初报：主文件完整正文按9310声明起点切开，前包633新审+7旧E、尾包271新审，合成六文件911/API；前包转交行不作主张。独立键/范围/hash核验通过，未改产品。发现native PartyAgentOrigin getter存在全mission覆盖、native效果/loot/death/mercy部分提交、command UI共享对象原地修改和热路径成本，分别保留具名有限出口，不借审查修改原版规则。
+
+E131将旧主包仅存ignored报告的Memory/Prompt、Weekly、Economy/Scene、UI/Knowledge责任坐标、实际writer/消费者与B出口补入正式范围图；已有有效E和当前source hash复用，不重审未变范围。总表此刻机器pending仅在WorldDiplomacy方法/消费者包，尚不能宣称所有20桶语义复核完成；仍维持A未闭。B1只读准备已定位九个记录95公有字段、原地/clone语义和实际测试消费者，不代表开始产品迁移。
+
 
 <a id="j17a-intent-20260928"></a>
 
