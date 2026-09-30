@@ -1,3 +1,13 @@
+<a id="j17-remote-merge-20261001"></a>
+
+### 2026-10-01 推送前安全合并（不恢复 B/C 扩展）
+
+用户要求推送并允许安全合并、有冲突先询问。fresh fetch 后本地7154f658/远端d7970096各独有16/4提交，共同祖先8ae0f831；merge-tree与实际merge均无冲突，合并提交4e4aad06保留双方历史。远端CivilWar四实现、internal port和MyBehavior新战役三行重置及工程交接文档合入，本地J17实现保留。
+
+验证：合并候选Debug/Release各API1.3/1.4及Bootstrap exit0；CivilWarRules smoke build/run exit0（3个net6 EOL警告）。日志在artifacts/merge-20261001/34081d5e19214cd79e2dfaea79e2437d。首轮既有artifacts测试包的net6 System.Core.dll被CandidateAssemblyFiles误选（CS0731），只在验证环境排除artifacts后使用正确net472引用，Compile输入1139/1139完全一致；Smoke首次隔离输出遇旧obj生成特性重复，增加仅测试进程的bin/obj排除后通过。未修改原构建脚本，不清理产物；单次内存调用只替换新输出并关闭prune、已有目录直接拒绝。B6和全量C原未闭状态不提升，未重跑全量/实机/真实旧档。代码地图重定位至合并提交，仅为导航证据。
+
+待推送本地182个新增blob有界筛查未命中受保护交接/私密路径或所检查凭据模式，不作全面安全证明；旧tools/NuGet未跟踪项不提交。允许普通推送当前同名分支，不强推/部署，远端最终状态以实际push及ref核对为准。
+
 <a id="j17-multiagent-execution-20260930"></a>
 
 ### J17 六执行者恢复实施现态（2026-10-01；覆盖下方 2026-09-30 停止与 B1→B7 串行指令）
