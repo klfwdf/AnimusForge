@@ -2,6 +2,15 @@
 
 ## J17 本轮执行意图与现场（2026-09-30）
 
+### 正确模型接续检查点（2026-09-30；进入点 `15e14268`）
+
+- 本接续取代上一轮代理停点作为当前执行指令；总控 `gpt-6-astra / medium`，六个执行者显式 `gpt-6-sol / medium`，使用非全历史 fork。本地原分支和目录不变，22 个未跟踪 tools 目录保留；产品仍为 `8ae0f831`，本次尚未修改产品。
+- 总控独占 Git、正式台账、HANDOFF 与范围图。互斥 A 补审：Conversation（不含主动/同伴/环境对话）、Domains（不含外交/主动）、Diplomacy、Memory/Prompt、Proactive/Companion/TownAmbient、Scene/UI；总控聚合现有五元成员证据、处理 Infrastructure/Config 缺口。沿用现有包，不重复全仓审查，不启动 B，直到 A 20 桶及 unknown=0 均有语义证据。
+- 上轮 ignored 包尚未正式聚合；`members-v2.json` 是唯一成员分母。依赖投影、授权排除、正文已读待闭包、真实未审分别登记；跨包重叠不相加，弱证据不得提升为已闭。当前正式签桶仍 **7/20**，A 未闭，B/C 未启动，D NOT-RUN。
+- 已知但未在本接续重跑的门禁：PersistenceProfile literal key mismatch（CivilWar v1/v2 结构不同，不能只换键/fixture）；代码地图 recorded PASS/working-tree stale；source inventory unknown=0 仅平面分类。旧构建/测试不作为本轮 C 通过。
+- 只在仓内有限读写，不推送、部署、清理、写真实玩家数据或改默认入口。全 runner 默认仓外 TEMP、现有构建脚本递归清理仍须先核副作用与精确授权，不绕过路径合同。
+
+
 - 用户本轮明确选择当前会话内多智能体执行；仅本轮协作策略，非 J17 或仓库永久前置要求。总控独占 Git/正式记录，五个只读 A 包分别补 Memory/Prompt、Conversation/Courier、World/Siege/Social、UI/Knowledge、Scene/Economy；总控承担 Compile/成员清单、Infrastructure/Config/Compatibility 和整合。
 - 现场 `8ae0f831007bf73870a993705f3e1a263cb0dd0d`，分支 `codex/af-main-refactor-continuation-20260831`。保留接续时三个已改文档及未跟踪独立计划，作为本地检查点；22 个原有未跟踪 tools 目录不动、不提交。
 - 当前 MSBuild 实际求值两 API 各 **1,128 Compile**，比旧 `944712f8` 清单新增 CivilWar 五文件；不是旧 1,123 分母。Roslyn 按求值 DefineConstants 提取 **49,854 / 49,853** 个语法声明，零 parse error；成员 ID 含路径/命名空间/泛型父类型/种类/完整签名，唯一性检查两版零重复。此为定位清单，不是语义签收，unknown 尚未证明为 0。
