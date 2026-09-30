@@ -12,6 +12,8 @@
 
 #### E126–E129 / Conversation、主动交流与 Settlement 接续
 
+<!-- 此节与下方E130/E131均为当前接续证据；序号不代表产品迁移顺序。 -->
+
 以下按 API 加五元成员键覆盖旧条目，不将补审数累加到旧已审总数。均为源码责任/静态消费者证据，非构建、游戏、旧档或全分支验证；产品基线仍 `8ae0f831`。
 
 | ID / 互斥范围 | 已核责任、真实消费者及保留出口 |
@@ -32,6 +34,41 @@
 - E129 / PeaceSceneDamageMatrix、CivilianGatherPartialAssignment、PostMissionPartialEffects、MassacreFightOwnership：:1298–1344/3281–3444/3608–3651的mission gate、:2987–3052部分Team/Formation、:1874–2173 pending清除/重试差异、:4201–4441原版fight交错需场景/故障出口。R08-NavigationAndFollowerFrameCost/SpawnAndOrderScaling：:4782–5211逐敌×全Agent和逐帧rescue查index、:6645–6706每帧ToList、:6261–6408重复计数、:1017–1028反射及UI快照；D按规模量测，不删功能换性能。
 
 总控独立检查Domains1962、SETS658、Proactive2680行的五元键、一基起止与原始SHA均匹配；Conversation806+6644行已在前一增量核过。详细成员留各continuation ignored目录；以上正式记录保留责任/边界/出口。外交/Siege宿主尚未全部闭合，不能提升A总出口。
+
+#### E130 / Siege AF宿主完整源码责任闭包（取代此前信号扫描误报）
+
+`SiegeAiInterventionBehavior.cs`826/API及五partial85/API共911。前包633新读（主文件声明起点<9310为548、partial85）+7旧E，尾包start>=9310原pending271完整读至17241；633+7+271=911，前包转交271不再作权威主张。此前904“已读”的错误说法已撤回，后来真实连续body阅读与消费者核对才支持本条。总控独立核1822+542行键/范围/原始SHA，聚合无双主张；不是运行时效果证明。
+
+| 当前源码范围/入口 | 责任、真实消费者与有限出口 |
+| --- | --- |
+| 主文件:1–698，RegisterEvents:430–447、SyncData:448–567；五partial含`TownColonizationLoadRecovery.cs:18–159` | CampaignComposition注册、IDataStore/CampaignEvents消费。保存repopulation/civic/rally、colonization快照、recruitment slowdown v3并有v2/v1读取；TownRuleMemory/Castle/Culture仍各自唯一writer。load recovery在prepare/finalize前清快照，SH-OPEN-01需逐阶段异常/加载重放，不等于可重试。 |
+| :699–2569，菜单、入场、Mission生命周期及direct aftermath；`DirectAftermathAdapter.cs:18–466` | SETS:1979–1986、TroopInspection、ApplicationTickComposition:67/109与两原版菜单patch消费，menu ID亦为动态入口。tick inactive快退，town控制0.35秒、plunder1秒；Mission结束与native loot/Encounter后置故意不同寿命。SH-OPEN-04保留菜单flag前置和部分转换，需屏幕失败/异步关闭/重入回放。 |
+| :2570–5405 Prompt/tag与Castle处置；:5406–9309 Agent/Team、救济、城镇后果；`TownSettlementEffectAdapter.cs:1–846`、Economy:1–58、Completion:1–75 | AfGcczShoutBridge:323–584/Shout:6164与CastleExecution:473/555消费；GCCZ持profile/eligibility，AF持live effects/session。`FinalizePendingCastleRegularDisposition:4798–4890`先置finalized后native roster/effect，组失败continue且无整批重试（SH-OPEN-08）。黄金/物品fallback不能假设原调用无部分效果，救济counter与实际转移非事务（SH-OPEN-03）；不改经济/刑罚规则。 |
+| :9310–14999 gather/command/massacre/loot | MissionTick:2014–2091、TroopInspection:3589–3645、CastleRuntime:649/1198/1806及native OrderVM消费。每0.35秒全Agent快照/排序，gather逐messenger找最近，hunter逐victim排序；rout采样有profile上限但整体成本随规模。OrderVM getter在2秒priming节流前可全Agent/反射，`FilterInterventionNativeVisualOrdersForExternal:11173–11222`原地改传入VisualOrderSet；R07-Siege-CommandHotPathAndSharedVisualMutation/GatherMassacreScale保留规模/共享对象复用反例。 |
+| :15000–16188 outcome/Encounter/重置 | `FinalizePendingAftermath:15169–15398`依次native aftermath/产权文化/关系/loot/death/Weekly/summary，最后才清pending；mercy/market guard却先置，mission-end失败可转mercy并清active。`:15426–15458`notable death逐项尝试后清整set，knockout不等于campaign death。R07-Siege-FinalizePartialCommitAndMercyFallback/LootClaimAndLedgerMismatch/NotableDeathClearOnFailure需各变异点异常、重复和save/reload，不能宣称原子提交。 |
+| :16189–17241嵌套Harmony与:11721–11787/:12598–12622伤害队伍接缝 | RegisterEvents安装command-origin与SceneTaunt suppression，后者含MovementOrder/SpawnPlayer/Crime/flee/view/OrderVM/damage动态target。`SafePartyAgentOriginUnderPlayerCommandPrefix:16231–16259`**不检查intervention，替换所有mission的getter**，R07-Siege-OriginGetterGlobalOverride需原版field/siege/arena/town双版对照，不擅缩scope。多数其它门按active/SETS/noble场景，但active settlement不证明完整和平allowlist；tail未见原队伍/关系恢复receipt，保留SceneDamageTeamRestoration。helper失败仍可置patched，PartialHarmonyInstall需D实装探针。 |
+
+上述SH-OPEN与R07-Siege名是同一真实风险的头尾定位，不重复算迁移成果。主文件无Task.Run，caller主线程并不自动证明每个native回调安全；双API编译属C，游戏/Harmony/旧档/实测帧成本属D。本包GCCZ内部仍按E68排除，AF大宿主不能因此排除。责任已明、产品未改，业务OPEN未关闭。
+
+#### E131 / 上轮主包的正式责任落点（同产品，复用有效E，不重审全仓）
+
+此表补足E120包数量表未保存的主体责任边界；详细五元表仍在原session各包，不能仅靠这些ignored文件接续。MyBehavior各行段按声明起点互斥，完整方法体归起点owner；嵌套字段亦单列，不把外类全范围重复计数。
+
+| 包/当前源码职责范围 | 唯一状态、消费者、迁移/保留与有限风险门 |
+| --- | --- |
+| Memory/Prompt主表115文件5465/API，其中4459权威、1006依赖；MyBehavior除E124/Weekly/Domain/Economy/UI分段及Persona三partial外由本包归责 | E23/E42的11嵌套类127公有字段保持当前JSON形状，Saveable:57148–57158仍只有711100的Dictionary<MobileParty,string>。B1不可把NpcActionEntry/ExportBundle一并归Memory纯记录；9记忆键/chunk和反射消费者不变。三摘要的真实字典/queue/state在MyBehavior，RunOwner只lease、Dispatcher只调度，B2/B3需迁规则和接受且主线程冻结事实，不能新建第二状态。 |
+| MyBehavior:24394–27688身份、迁移/清理、净化、append/read；:30433–32672历史/召回；MemorySummaryInput/Planning/Run/MainThread与MemoryRecovery partial | Merge:24903–24931会重定向所有相关queue/H/记录后删源；:26821–26900依次Daily/Recent并非事务。Get/Load可净化改回状态，非worker只读。HistoryPromptSnapshot为主线程copy，Recall可全block embedding/排序，Take候选不界输入。E111/H恢复不重放Action，legacy void/部分写仍R07-Memory-LegacyPartialCommit；daily维护catch后退出job、party去重先于清理等保留失败反例。 |
+| MyBehavior:27689–30432 Prompt/领域接缝，:32673–33394 Gateway，:33395–35024耐心；ShoutUtils:1–3566 | Prompt分Capture→worker routing→主线程候选→worker检索→主线程live拼装，Complete依赖渠道重验；Capture:30310消费Duel结果/:30414改Romance，非幂等只读。42 Prompt文件管配置/registry/retrieval/composition，不持游戏效果；sticky借读/跨Campaign缓存保留。辅助Gateway:33098–33172在每attempt读MCM，重试worker配置读取是R02-ProviderSnapshot-WorkerConfig。耐心锁内唯一写者为MyBehavior，关系/Romance/Reward/Town.Loyalty各守原owner。ShoutUtils匿名profile由MyBehavior保存，旧SaveConfig为空；worker迟到写与Import清inflight缺口保留。 |
+| MyBehavior:35025–36850、46823–51938开发编辑，Build/Apply bundle:53400–53536；UI包声明起点51939–53339、53538–57144各80 | B4净化快照可能改活记录；覆盖先清五域、合并不并queue；编辑改Daily/Recent/Native/overview/job，不可让UI持第二Memory权威。Onboarding:3880–3900五字符串反射导入必须保持/改接。R04/B4逐字段/alias/坏JSON/迟到回调/清空后恢复journal、全资料跨域部分成功须有限回放。ShoutUtils:3214–3300先删除顶层JSON再写且吞错是明确破坏性导出风险，本轮未执行。 |
+| Weekly/events独占MyBehavior:6068–10099、13306–17534、42149–46822，共529/API；Memory包Weekly规则:36851–42148与16模块文件 | RegisterEvents事件→NpcAction/材料权威→游标/aggregate/Prompt→generation→report/notice。游标/lease/receipt不持第二report保存。B5需主线程冻结所有Hero/Clan/Kingdom/Settlement名称、全文/短报/raid/死亡关系，再迁真实规则；材料回调仍反向宿主，不能只迁类型。:15097–15454 action ledger含玩家转Notoriety，:13493–13922为Policy/Gathering/Diplomacy入站AF seam；内部排除不排此接口。 |
+| Weekly关键生命周期与副作用 | Week0:6550–7036等待后live构Prompt、应用:6798–6833仅EventId/source核验，缺current owner/generation；正常:45272–46055有revision/target守卫，两者不能等同。:43864–44090 parser只在响应自称kingdom时验kingdom，:44194–44243先写record再stability/通知；:46317–46488三技能顺序效果可能部分重放。B5保留Week0、ParserExpectedIdentity、RecordStabilityPartial、ReadingXpPartial、unread每帧全表与callback内部预算具名门，不暗改失败语义。 |
+| Scene/Economy196文件9795/API，3357当前责任+675旧E+5763授权排除内部/AF接缝组合 | Reward root882成员按状态/保存(1–2466)、债务信任(2468–3403)、招募/产权适配(3405–6430)、装备与生成物品(6430–13387)、投影/标签/真实资源写者(13389–18229)归责；partial是同一实例，不是新owner。Startup:501及RegisterEvents:824动态物品/roster/市场/库存UI等patch覆盖；无操作的manifest接口不算第二磁盘保存。Social recruitment、Kingdom/World效果仍域owner。 |
+| Economy真实效果与场景责任 | MyBehavior:21852–24393的97/API含部队/志愿兵/俘虏实转移，Shout三渠道入口/Courier DomainCommit:120消费；源扣/目标加异常不能false解释零效果。RP craft有exact-ID rollback但可不完整，intro队列32/并发2/tick4与generation有效约束复用。DebtPromiseLifecycle:72–91先清队列再建quest有丢重试风险。R07-RosterPartial/PartyTransfer-UnknownAfterStart/Craft-RollbackIncomplete及R08批次内部成本留有限故障门。 |
+| SceneTaunt Mission:2057–10401余507、Inspection:2970–6060余234、MeetingBattleLock:22–6910共290+runtime22、Noble系列 | E80–83已审Campaign复用，Taunt严格allowlist与三protected-victim delta已核；Duel/inspection/Meeting/escort各自状态与live Agent/Team/weapon恢复不合并成通用host。Taunt金币/once前置、Inspection casualty先置removed、Meeting consequence先置状态、Noble原版kill后事实失败是具名部分提交；关闭须返回原版处理，不归零伤害。每帧币/agent/formations及escort扫描保留D规模验。Vengeance/Xihai内部排除，AF桥由E123/E124及本包覆盖。 |
+| UI/Knowledge163文件6315/6313，Knowledge19/1163；UI144/5152或5150 | E99/E100/E116有效分区与消费者未变：Knowledge主线程准备→detached匹配→主线程live Lore；世界entity保live map不等于worker-safe。ONNX两engine负责词典/tensor/cache，ModelStore仅资产路径，未重开安装；全字符串分词后截512不是输入工作上限，缓存float[]别名与singleton释放仍OPEN。Persona三partial沿真实Hero lease/profile，不另建状态。 |
+| TTS、UI、Onboarding、Public API及扩展接缝 | TtsEngine:20–1444持音频/job lifetime，HTTP归Llm，Shout:11591–11629订阅request事件；WorkerLoop:581→ProcessJob:742/783间接读Mission.Agents是R05-TTS-WorkerLiveRead，非已修。VoiceMapper只运行池、MyBehavior保存；UI overlay/百科Gauntlet/XML/Terminal/Weekly/WarStats均只呈现/调用真owner，延迟确认/队列/帧成本有门。Onboarding:28–3945四目标配置验证与五反射导入、模型请求倒序/关闭竞态保留。AfApi V1七能力表、Core client投影无Hero/Agent外传，Action/Memory/Extension仍NotSupported，不扩API。DialogueUI/Illustrator77内部排除，私有字段/方法反射和Movie替换等AF消费合同按E35/E69复用，9个Illustrator delta未改AF接缝。 |
+
+主包报告的旧停点只限制当时pending supplement；E122、E124、E126–E130已分别填补这些缺口，并非忽略停点直接升级。以上没有重跑旧合同测试，唯一旧包当轮TTS readonly wiring 8项不提升为本接续新执行，更不替代B/C。记录/Prompt/业务迁移、存档/部分成功/隐私风险仍分别保留；机器分母不代表内部排除业务已审。
 
 **E120 / 首次五元并集**：总控按当前 `members-v2.json` 的 `(File, Namespace, ParentType, Kind, Signature)` 加 API，聚合十份既有成员表；未重复载入 conversation/member-coverage、已并入 domains 的 world-map/外交包。两 API 分母 **49,854 / 49,853**；输入五元键不在分母 **0**、单表重复 **0**。扣除 Memory 的 DEPENDENCY 后，每版仍有 **38 文件 / 938 成员无主张**，另 **6 文件 / 109 成员有重复主张**；前者是证据包缺口，不等于全部从未读过，后者不能累加。全 **1,128** 编译源码原始 SHA256 与当轮 compile.json 一致。本检查是清单对账，不签 20 桶，不证明 semantic unknown=0。
 
