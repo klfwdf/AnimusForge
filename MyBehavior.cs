@@ -76,12 +76,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		RetryProgress
 	}
 
-	internal enum WeeklyReportOutputMode
-	{
-		FullReport,
-		TitleShortTagsOnly
-	}
-
 	private enum SaveAndExitStage
 	{
 		None,
@@ -218,182 +212,9 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public Dictionary<string, string> MemoryCommitMarkers = new Dictionary<string, string>(StringComparer.Ordinal);
 	}
 
-	private sealed class DailyMemoryLine
-	{
-		public int GameDayIndex;
 
-		public string GameDate = "";
 
-		public int GameHour;
 
-		public string Scene = "";
-
-		public string Speaker = "";
-
-		public string Text = "";
-
-		public int SceneSessionId = -1;
-
-		public int DialogueSessionId = -1;
-
-		public int TargetAgentIndex = -1;
-
-		public string TargetName = "";
-
-		public string MemorySessionKey = "";
-
-		public bool IsAfef;
-
-		public bool IsLlmDialogue;
-
-		public string MemoryCommitId = "";
-
-		public string MemoryCommitPart = "";
-
-		public string MemoryCommitHash = "";
-
-		public int MemoryCommitOriginGameDay = -1;
-
-		public string MemoryCommitOriginGameDate = "";
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal DailyMemoryLine CopyForSummary()
-		{
-			var copy = (DailyMemoryLine)MemberwiseClone();
-			return copy;
-		}
-	}
-
-	private sealed class DailyMemoryDraft
-	{
-		public string HeroId = "";
-
-		public string HeroName = "";
-
-		public int GameDayIndex;
-
-		public string GameDate = "";
-
-		public bool HasLlmDialogue;
-
-		public bool QueuedForSummary;
-
-		public int SummaryRetryCount;
-
-		public string LastSummaryError = "";
-
-		public List<DailyMemoryLine> Lines = new List<DailyMemoryLine>();
-
-		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal DailyMemoryDraft CopyForSummary()
-		{
-			var copy = (DailyMemoryDraft)MemberwiseClone();
-			copy.Lines = Lines?.Select(x => x?.CopyForSummary()).ToList();
-			copy.WeeklyMaterialTriggers = WeeklyMaterialTriggers?.Select(x => x?.CopyForSummary()).ToList();
-			return copy;
-		}
-	}
-
-	private sealed class CompressedMemoryBlock
-	{
-		public string Id = "";
-
-		public string HeroId = "";
-
-		public string HeroName = "";
-
-		public int GameDayIndex;
-
-		public string GameDate = "";
-
-		public int StartHour;
-
-		public int EndHour;
-
-		public List<string> Scenes = new List<string>();
-
-		public string RichTitle = "";
-
-		public string Summary = "";
-
-		public List<string> AfefLines = new List<string>();
-
-		public string PlayerPublicity = "";
-
-		public string PlayerHistoryMaterial = "";
-
-		public string PlayerPublicityReason = "";
-
-		public long CreatedUtcTicks;
-
-		public List<WeeklyMemoryMaterialTrigger> WeeklyMaterialTriggers = new List<WeeklyMemoryMaterialTrigger>();
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal CompressedMemoryBlock CopyForSummary()
-		{
-			var copy = (CompressedMemoryBlock)MemberwiseClone();
-			copy.Scenes = Scenes?.ToList();
-			copy.AfefLines = AfefLines?.ToList();
-			copy.WeeklyMaterialTriggers = WeeklyMaterialTriggers?.Select(x => x?.CopyForSummary()).ToList();
-			return copy;
-		}
-	}
-
-	private sealed class WeeklyMemoryMaterialTrigger
-	{
-		public string MemoryId = "";
-
-		public string NpcName = "";
-
-		public int GameDayIndex;
-
-		public string GameDate = "";
-
-		public int SceneSessionId = -1;
-
-		public int DialogueSessionId = -1;
-
-		public int TargetAgentIndex = -1;
-
-		public string FootholdKingdomId = "";
-
-		public string FootholdSettlementId = "";
-
-		public string NormalizedTagText = "";
-
-		public List<string> Tags = new List<string>();
-
-		public long EstimatedValueDenars;
-
-		public string TriggerReason = "";
-
-		public string StableKey = "";
-
-		// LOCAL-7-K additive provenance for outcome-confirmed detached material.
-		// Legacy triggers leave these empty. They are data-only digests and must
-		// never be used to reconstruct or replay an ActionPlan.
-		public string OutcomeReceiptId = "";
-
-		public string OutcomeCandidateHash = "";
-
-		public string OutcomePayloadHash = "";
-
-		public string OutcomeActionFingerprint = "";
-
-		public string OutcomeTurnFingerprint = "";
-
-		public long CreatedUtcTicks;
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal WeeklyMemoryMaterialTrigger CopyForSummary()
-		{
-			var copy = (WeeklyMemoryMaterialTrigger)MemberwiseClone();
-			copy.Tags = Tags?.ToList();
-			return copy;
-		}
-	}
 
 	private sealed class WeeklyMemoryMaterialEvaluation
 	{
@@ -408,27 +229,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public bool Eligible => HasMajorTag || EstimatedValueDenars > WeeklyMemoryMaterialValueThresholdDenars;
 	}
 
-	private sealed class MemorySummaryJob
-	{
-		public string HeroId = "";
-
-		public string HeroName = "";
-
-		public int GameDayIndex;
-
-		public string GameDate = "";
-
-		public int RetryCount;
-
-		public string LastError = "";
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal MemorySummaryJob CopyForSummary()
-		{
-			var copy = (MemorySummaryJob)MemberwiseClone();
-			return copy;
-		}
-	}
 
 	private sealed class MemoryRecallCandidate
 	{
@@ -455,50 +255,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public bool Success => Block != null;
 	}
 
-	private sealed class MemoryOverviewState
-	{
-		public string HeroId = "";
 
-		public string HeroName = "";
-
-		public string Summary = "";
-
-		public List<string> IncludedBlockIds = new List<string>();
-
-		public long UpdatedUtcTicks;
-
-		public string LastError = "";
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal MemoryOverviewState CopyForSummary()
-		{
-			var copy = (MemoryOverviewState)MemberwiseClone();
-			copy.IncludedBlockIds = IncludedBlockIds?.ToList();
-			return copy;
-		}
-	}
-
-	private sealed class MemoryOverviewJob
-	{
-		public string HeroId = "";
-
-		public string HeroName = "";
-
-		public int TriggerGameDayIndex;
-
-		public string TriggerGameDate = "";
-
-		public int RetryCount;
-
-		public string LastError = "";
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal MemoryOverviewJob CopyForSummary()
-		{
-			var copy = (MemoryOverviewJob)MemberwiseClone();
-			return copy;
-		}
-	}
 
 	private sealed class MemoryOverviewExecutionResult
 	{
@@ -516,51 +273,7 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public bool Success => State != null && !string.IsNullOrWhiteSpace(State.Summary);
 	}
 
-	private sealed class MajorActionSummaryState
-	{
-		public string HeroId = "";
 
-		public string HeroName = "";
-
-		public string Summary = "";
-
-		public int LastSummarizedDay;
-
-		public int LastSummarizedSequence;
-
-		public long UpdatedUtcTicks;
-
-		public string LastError = "";
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal MajorActionSummaryState CopyForSummary()
-		{
-			var copy = (MajorActionSummaryState)MemberwiseClone();
-			return copy;
-		}
-	}
-
-	private sealed class MajorActionSummaryJob
-	{
-		public string HeroId = "";
-
-		public string HeroName = "";
-
-		public int TriggerGameDayIndex;
-
-		public string TriggerGameDate = "";
-
-		public int RetryCount;
-
-		public string LastError = "";
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal MajorActionSummaryJob CopyForSummary()
-		{
-			var copy = (MajorActionSummaryJob)MemberwiseClone();
-			return copy;
-		}
-	}
 
 	private sealed class MajorActionSummaryExecutionResult
 	{
@@ -585,86 +298,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public MajorActionSummaryExecutionResult MajorActionResult;
 
 		public MemoryOverviewExecutionResult MemoryOverviewResult;
-	}
-
-	private sealed class CompressedMemoryExportBundle
-	{
-		public List<DailyMemoryDraft> DailyDrafts = new List<DailyMemoryDraft>();
-
-		public List<CompressedMemoryBlock> Blocks = new List<CompressedMemoryBlock>();
-
-		public List<MemorySummaryJob> SummaryQueue = new List<MemorySummaryJob>();
-
-		public MemoryOverviewState Overview = new MemoryOverviewState();
-
-		public List<MemoryOverviewJob> OverviewQueue = new List<MemoryOverviewJob>();
-	}
-
-	private class NpcActionEntry
-	{
-		public int Day;
-
-		public int Order;
-
-		public int Sequence;
-
-		public string GameDate;
-
-		public string Text;
-
-		public string StableKey;
-
-		public string ActionKind;
-
-		public string ActorHeroId;
-
-		public string ActorClanId;
-
-		public string ActorKingdomId;
-
-		public string TargetHeroId;
-
-		public string TargetClanId;
-
-		public string TargetKingdomId;
-
-		public string SettlementId;
-
-		public string SettlementName;
-
-		public string SettlementOwnerHeroId;
-
-		public string SettlementOwnerClanId;
-
-		public string SettlementOwnerKingdomId;
-
-		public string PreviousSettlementOwnerHeroId;
-
-		public string PreviousSettlementOwnerClanId;
-
-		public string PreviousSettlementOwnerKingdomId;
-
-		public string LocationText;
-
-		public bool? Won;
-
-		public bool IsMajor;
-
-		public List<string> RelatedHeroIds = new List<string>();
-
-		public List<string> RelatedClanIds = new List<string>();
-
-		public List<string> RelatedKingdomIds = new List<string>();
-
-		// Copy all scalar/immutable fields; detach every mutable collection without JSON.
-		internal NpcActionEntry CopyForSummary()
-		{
-			var copy = (NpcActionEntry)MemberwiseClone();
-			copy.RelatedHeroIds = RelatedHeroIds?.ToList();
-			copy.RelatedClanIds = RelatedClanIds?.ToList();
-			copy.RelatedKingdomIds = RelatedKingdomIds?.ToList();
-			return copy;
-		}
 	}
 
 	private sealed class NpcActionFacts
@@ -730,73 +363,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string KingdomId;
 
 		public string DisplayName;
-	}
-
-	internal sealed class EventMaterialReference
-	{
-		public string MaterialType;
-
-		public string Label;
-
-		public string SnapshotText;
-
-		public string HeroId;
-
-		public string KingdomId;
-
-		public string SettlementId;
-
-		public bool RecentOnly;
-
-		public string ActionKind;
-
-		public string ActorHeroId;
-
-		public string ActorClanId;
-
-		public string ActorKingdomId;
-
-		public string TargetHeroId;
-
-		public string TargetClanId;
-
-		public string TargetKingdomId;
-
-		public string SettlementOwnerHeroId;
-
-		public string SettlementOwnerClanId;
-
-		public string SettlementOwnerKingdomId;
-
-		public string PreviousSettlementOwnerHeroId;
-
-		public string PreviousSettlementOwnerClanId;
-
-		public string PreviousSettlementOwnerKingdomId;
-
-		public string LocationText;
-
-		public bool? Won;
-
-		public List<string> RelatedHeroIds = new List<string>();
-
-		public List<string> RelatedClanIds = new List<string>();
-
-		public List<string> RelatedKingdomIds = new List<string>();
-
-		public List<string> SourceStableKeys = new List<string>();
-
-		public List<string> SourceActionKinds = new List<string>();
-
-		public int SourceMaterialCount;
-
-		public string ActionStableKey;
-
-		public int? ActionDay;
-
-		public int? ActionOrder;
-
-		public int? ActionSequence;
 	}
 
 	private sealed class EventRecordEntry
@@ -1211,25 +777,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string KingdomProfilesJson = "";
 	}
 
-	internal sealed class WeeklyEventMaterialPreviewGroup
-	{
-		public string GroupKind;
-
-		public string KingdomId;
-
-		public string Title;
-
-		public string Summary;
-
-		public List<EventMaterialReference> Materials = new List<EventMaterialReference>();
-
-		public List<EventMaterialReference> PromptMaterials = new List<EventMaterialReference>();
-
-		public WeeklyReportOutputMode OutputMode = WeeklyReportOutputMode.FullReport;
-
-		public bool IncludePreviousReportInPrompt = true;
-	}
-
 	private sealed class WeeklyReportPromptProfile
 	{
 		public int Preset;
@@ -1266,27 +813,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public bool IsQuotaLimit;
 
 		public int? RetryAfterSeconds;
-	}
-
-	internal sealed class WeeklyReportBatchRequest
-	{
-		public int WeekIndex;
-
-		public int StartDay;
-
-		public int EndDay;
-
-		public WeeklyReportOutputMode OutputMode = WeeklyReportOutputMode.FullReport;
-
-		public List<WeeklyEventMaterialPreviewGroup> Groups = new List<WeeklyEventMaterialPreviewGroup>();
-
-		public string SystemPrompt = "";
-
-		public string UserPrompt = "";
-
-		public string PromptPreview = "";
-
-		public string DisplayLabel = "";
 	}
 
 	private sealed class WeeklyReportBatchBlockResult
@@ -4987,13 +4513,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 				{
-					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
-					if (result.Success) { if (ApplyMemorySummarySuccess(result.Job, result.Block)) appliedDaily++; }
-					else
-					{
-						MarkMemorySummaryFailure(result.Job, result.Error);
-						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
-					}
+					if (MemorySummaryAttemptRunner.Accept(result?.Job != null, result?.IsObsolete ?? true,
+						() => IsMemorySummaryInputCurrent(result.Source), result?.Success ?? false,
+						() => ApplyMemorySummarySuccess(result.Job, result.Block), () =>
+						{
+							MarkMemorySummaryFailure(result.Job, result.Error);
+							failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 第" + result.Job.GameDayIndex + "日：" + (result.Error ?? "未知错误"));
+						})) appliedDaily++;
 					return true;
 				});
 				if (!accepted) return;
@@ -5002,13 +4528,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 				{
-					if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
-					if (result.Success) { if (ApplyMajorActionSummarySuccess(result.Job, result.State)) appliedMajor++; }
-					else
-					{
-						MarkMajorActionSummaryFailure(result.Job, result.Error);
-						failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 重大履历：" + (result.Error ?? "未知错误"));
-					}
+					if (MemorySummaryAttemptRunner.Accept(result?.Job != null, result?.IsObsolete ?? true,
+						() => IsMemorySummaryInputCurrent(result.Source), result?.Success ?? false,
+						() => ApplyMajorActionSummarySuccess(result.Job, result.State), () =>
+						{
+							MarkMajorActionSummaryFailure(result.Job, result.Error);
+							failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 重大履历：" + (result.Error ?? "未知错误"));
+						})) appliedMajor++;
 					return true;
 				});
 				if (!accepted) return;
@@ -5020,13 +4546,13 @@ public partial class MyBehavior : CampaignBehaviorBase
 				{
 					accepted = await RunMemorySummaryRunPhaseAsync(run, runtimeGeneration, delegate
 					{
-						if (result == null || result.Job == null || result.IsObsolete || !IsMemorySummaryInputCurrent(result.Source)) return true;
-						if (result.Success) { if (ApplyMemoryOverviewSuccess(result.Job, result.State)) appliedOverview++; }
-						else
-						{
-							MarkMemoryOverviewFailure(result.Job, result.Error);
-							failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 记忆总览：" + (result.Error ?? "未知错误"));
-						}
+						if (MemorySummaryAttemptRunner.Accept(result?.Job != null, result?.IsObsolete ?? true,
+							() => IsMemorySummaryInputCurrent(result.Source), result?.Success ?? false,
+							() => ApplyMemoryOverviewSuccess(result.Job, result.State), () =>
+							{
+								MarkMemoryOverviewFailure(result.Job, result.Error);
+								failures.Add((result.Job.HeroName ?? result.Job.HeroId) + " 记忆总览：" + (result.Error ?? "未知错误"));
+							})) appliedOverview++;
 						return true;
 					});
 					if (!accepted) return;
@@ -5220,52 +4746,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildMemoryOverviewSummarySystemPrompt(int targetChars)
 	{
-		int clampedTarget = MBMath.ClampInt(targetChars, 100, 1000);
-		string writingRequirements = DuelSettings.GetSettings()?.MemoryOverviewCompressionWritingRequirements;
-		return "你是 AnimusForge 的 NPC 过往记忆总览压缩器。"
-			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
-			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n过往记忆总览\n[/SUMMARY]\n"
-			+ "SUMMARY 块目标长度约 " + clampedTarget + " 个中文字符，允许少量浮动，但必须保持紧凑。"
-			+ "你要把已有总览与新增压缩记忆块融合成一个新的长期总览，而不是只罗列新增内容。"
-			+ "必须保留关键日期、时间段、地点/场景、关系变化、承诺、冲突、任务、交易和反复出现的态度。"
-			+ "涉及玩家自称姓名、身份、头衔、阵营或来历时，必须继续写成“玩家公开称呼 + 自称/声称/宣称 X”，不得当成客观身份事实。"
-			+ "不得编造；不要输出标签块以外的任何文字。";
+		string requirements = DuelSettings.GetSettings()?.MemoryOverviewCompressionWritingRequirements;
+		return MemorySummaryRules.OverviewSystemPrompt(targetChars, requirements);
 	}
 
 	private string BuildMemoryOverviewSummaryUserPrompt(Hero hero, MemoryOverviewState existingState, List<CompressedMemoryBlock> sourceBlocks, int targetChars)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
 		string heroName = (hero?.Name?.ToString() ?? existingState?.HeroName ?? "NPC").Trim();
-		if (string.IsNullOrWhiteSpace(heroName))
-		{
-			heroName = "NPC";
-		}
-		stringBuilder.AppendLine("NPC：" + heroName);
-		stringBuilder.AppendLine("目标字数：" + MBMath.ClampInt(targetChars, 100, 1000) + " 个中文字符");
-		stringBuilder.AppendLine("说明：这是该 NPC 对玩家过往交流的长期总览，每轮会注入主链路；请节省 token，但保留后续对话需要的事实锚点。");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("已有过往记忆总览：");
-		if (existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary))
-		{
-			stringBuilder.AppendLine(existingState.Summary.Trim());
-		}
-		else
-		{
-			stringBuilder.AppendLine("无。这是第一版过往记忆总览，请根据下面所有压缩记忆块生成。");
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("待纳入压缩记忆块：");
+		if (string.IsNullOrWhiteSpace(heroName)) heroName = "NPC";
+		bool hasExisting = existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary);
+		string existing = hasExisting ? existingState.Summary.Trim() : null;
+		var blockTexts = new List<string>();
 		foreach (CompressedMemoryBlock block in sourceBlocks ?? new List<CompressedMemoryBlock>())
-		{
-			string text = BuildMemoryOverviewBlockSourceText(block);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				stringBuilder.AppendLine(text);
-				stringBuilder.AppendLine();
-			}
-		}
-		stringBuilder.AppendLine("请按 [SUMMARY]...[/SUMMARY] 输出融合后的新总览，必须含日期信息；可按时间线或主题组织，但不要丢失日期、地点和关键互动结果。");
-		return stringBuilder.ToString().Trim();
+			blockTexts.Add(BuildMemoryOverviewBlockSourceText(block));
+		return MemorySummaryRules.OverviewUserPrompt(heroName, hasExisting, existing, blockTexts, targetChars);
 	}
 
 	private static string BuildMemoryOverviewBlockSourceText(CompressedMemoryBlock block)
@@ -5310,10 +4804,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string summary = GetJsonStringIgnoreCase(jObject, "summary_content", "summaryContent", "summary", "content").Trim();
-			if (string.IsNullOrWhiteSpace(summary))
+			if (!MemorySummaryRules.TryReadSummary(jObject, out string summary, out error))
 			{
-				error = "SUMMARY 为空。";
 				return false;
 			}
 			string heroId = NormalizeMemoryHeroId(job?.HeroId ?? hero?.StringId);
@@ -5424,50 +4916,20 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 	private static string BuildMajorActionSummarySystemPrompt(int targetChars)
 	{
-		int clampedTarget = MBMath.ClampInt(targetChars, 180, 700);
-		string writingRequirements = DuelSettings.GetSettings()?.MajorActionCompressionWritingRequirements;
-		return "你是 AnimusForge 的 NPC 重大履历压缩器。"
-			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
-			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[SUMMARY]\n重大履历滚动摘要\n[/SUMMARY]\n"
-			+ "你要把已有摘要与新增重大履历融合成一段新的时间线摘要，而不是只总结新增内容。"
-			+ "SUMMARY 块目标长度约 " + clampedTarget + " 个中文字符，最少 180 字，最多 700 字。"
-			+ "保留关键日期。"
-			+ "不得编造、不得改写胜负、地点、人物关系或势力归属；信息不足时就按原文有限事实表达。";
+		string requirements = DuelSettings.GetSettings()?.MajorActionCompressionWritingRequirements;
+		return MemorySummaryRules.MajorSystemPrompt(targetChars, requirements);
 	}
 
 	private string BuildMajorActionSummaryUserPrompt(Hero hero, MajorActionSummaryState existingState, List<NpcActionEntry> sourceActions, int targetChars)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
 		string heroName = (hero?.Name?.ToString() ?? existingState?.HeroName ?? "NPC").Trim();
-		if (string.IsNullOrWhiteSpace(heroName))
-		{
-			heroName = "NPC";
-		}
-		stringBuilder.AppendLine("NPC：" + heroName);
-		stringBuilder.AppendLine("目标字数：" + MBMath.ClampInt(targetChars, 180, 700) + " 个中文字符");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("已有重大履历摘要：");
-		if (existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary))
-		{
-			stringBuilder.AppendLine(StripBattlePlayerMarker(existingState.Summary.Trim()));
-		}
-		else
-		{
-			stringBuilder.AppendLine("无。这是第一版重大履历摘要，请根据下面所有重大履历生成。");
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("新增重大履历原文：");
+		if (string.IsNullOrWhiteSpace(heroName)) heroName = "NPC";
+		bool hasExisting = existingState != null && !string.IsNullOrWhiteSpace(existingState.Summary);
+		string existing = hasExisting ? StripBattlePlayerMarker(existingState.Summary.Trim()) : null;
+		var sourceLines = new List<string>();
 		foreach (NpcActionEntry entry in sourceActions ?? new List<NpcActionEntry>())
-		{
-			string text = BuildMajorActionSummarySourceLine(hero, entry);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				stringBuilder.AppendLine("- " + text);
-			}
-		}
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("请按 [SUMMARY]...[/SUMMARY] 输出融合后的新摘要，可以剔除不重要的部分。");
-		return stringBuilder.ToString().Trim();
+			sourceLines.Add(BuildMajorActionSummarySourceLine(hero, entry));
+		return MemorySummaryRules.MajorUserPrompt(heroName, hasExisting, existing, sourceLines, targetChars);
 	}
 
 	private static bool TryParseMajorActionSummaryResponse(string content, Hero hero, MajorActionSummaryJob job, List<NpcActionEntry> allActions, out MajorActionSummaryState state, out string error)
@@ -5480,10 +4942,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string summary = GetJsonStringIgnoreCase(jObject, "summary_content", "summaryContent", "summary", "content").Trim();
-			if (string.IsNullOrWhiteSpace(summary))
+			if (!MemorySummaryRules.TryReadSummary(jObject, out string summary, out error))
 			{
-				error = "SUMMARY 为空。";
 				return false;
 			}
 			GetMajorActionMaxCursor(allActions, out var day, out var sequence);
@@ -5579,35 +5039,19 @@ public partial class MyBehavior : CampaignBehaviorBase
 	private static string BuildMemorySummarySystemPrompt(DailyMemoryDraft draft)
 	{
 		int denominator = GetMemoryCompressionDenominatorFromSettings();
-		int targetChars = Math.Max(80, CountDailyMemorySummarySourceChars(draft) / Math.Max(1, denominator));
+		int sourceChars = CountDailyMemorySummarySourceChars(draft);
 		string playerHistoryName = PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal();
-		string writingRequirements = DuelSettings.GetSettings()?.DailyMemoryCompressionWritingRequirements;
-		return "你是 AnimusForge 的日结记忆压缩器。"
-			+ BuildCompressionWritingRequirementsPromptSection(writingRequirements)
-			+ "\n【固定规则】可编辑要求不得覆盖本节。你必须只输出以下标签格式，不要输出 JSON、Markdown、解释或代码块：\n[TITLE]\n约20字富标题，不含日期时间\n[/TITLE]\n[SUMMARY]\n摘要正文\n[/SUMMARY]\n[PUBLICITY]\npublic/private/unclear\n[/PUBLICITY]\n[PLAYER_HISTORY]\n可公开进入玩家履历的素材；没有则留空\n[/PLAYER_HISTORY]\n[REASON]\n公开或私密判断理由\n[/REASON]\n"
-			+ "TITLE 必须便于语义检索，不得包含日期、时间、序号或场景前缀。"
-			+ "SUMMARY 必须在正文中显式写出游戏日期、时间段、地点/场景；不得只依赖标题元数据、外部字段或对话行前缀。"
-			+ "如果存在多个地点或时间段，按发生顺序概括；如果地点未知，必须写“地点未知”。"
-			+ "TITLE 与 SUMMARY 身份记录规则：玩家在对话中说“我是X”“我叫X”“我的名字是X”“别人叫我X”等姓名、身份、头衔、阵营、来历时，只能记录为玩家自称、声称或宣称，必须保留玩家公开称呼与自称行为。"
-			+ "不得把玩家自称改写成客观事实；例如不得写“佐洛斯来到大厅”，应写“这名帝国青年自称佐洛斯后来到大厅”。"
-			+ "TITLE 如涉及这类姓名或身份，也必须写“自称X/声称X/宣称X”，不能只写 X。"
-			+ "PUBLICITY 只允许写 public、private 或 unclear，用于判断玩家与NPC这段对话是否会作为公开传闻进入玩家个人履历：public=公开场合、主动宣扬、政治军事公开事件或NPC可能向外传播；private=明确私密、秘密、低声、密谋、个人情感，闲聊，或不应外传；unclear=无法判断。"
-			+ "如果对话是私密内容，且输入中提示NPC对玩家信任很低或敌意很强，可以判为 public 并在 REASON 写明“低信任泄露”；否则私密内容必须判为 private。"
-			+ "PLAYER_HISTORY 只能写公开素材，必须从玩家言行中抽取，不要写NPC自己的长期记忆；若 PUBLICITY 不是 public，则必须留空，不要写“无”。"
-			+ "PLAYER_HISTORY：主体只写实际姓名“" + playerHistoryName + "”；禁用“玩家”、“你”和文化加年龄。仅此字段例外，TITLE、SUMMARY仍按公开称呼。"
-			+ "SUMMARY 目标长度约 " + targetChars + " 个中文字符，最少 80 字。"
-			+ "AFEF 行只作为事实参考，不要改写进 AFEF 区；调用方会原样保存。";
+		string requirements = DuelSettings.GetSettings()?.DailyMemoryCompressionWritingRequirements;
+		return MemorySummaryRules.DailySystemPrompt(sourceChars, denominator, playerHistoryName, requirements);
 	}
 
 	private static string BuildCompressionWritingRequirementsPromptSection(string requirements)
 	{
-		string text = (requirements ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
-		return string.IsNullOrWhiteSpace(text) ? "" : "\n【可编辑写作要求】\n" + text + "\n";
+		return MemorySummaryRules.WritingRequirements(requirements);
 	}
 
 	private static string BuildMemorySummaryUserPrompt(Hero hero, DailyMemoryDraft draft)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
 		string text = string.IsNullOrWhiteSpace(draft.GameDate) ? ("第" + draft.GameDayIndex + "日") : draft.GameDate.Trim();
 		List<DailyMemoryLine> normalLines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && !x.IsAfef).ToList();
 		List<DailyMemoryLine> afefLines = (draft.Lines ?? new List<DailyMemoryLine>()).Where((DailyMemoryLine x) => x != null && x.IsAfef).ToList();
@@ -5617,52 +5061,21 @@ public partial class MyBehavior : CampaignBehaviorBase
 		if (scenes.Count == 0)
 		{
 			string fallbackScene = ResolveCurrentMemorySceneLabel();
-			if (!IsUnknownMemorySceneLabel(fallbackScene))
-			{
-				scenes.Add(fallbackScene.Trim());
-			}
+			if (!IsUnknownMemorySceneLabel(fallbackScene)) scenes.Add(fallbackScene.Trim());
 		}
-		stringBuilder.AppendLine("标题元数据（由游戏决定，不要改写进 TITLE）：");
-		stringBuilder.AppendLine("日期：" + text);
-		stringBuilder.AppendLine("时间：" + FormatMemoryHourRange(startHour, endHour));
-		stringBuilder.AppendLine("NPC：" + (hero?.Name?.ToString() ?? draft.HeroName ?? "NPC"));
-		int effectiveTrust = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
-		stringBuilder.AppendLine("NPC对玩家综合信任：" + effectiveTrust + "（高信任更倾向保密；低于 -20 的敌意或低信任可能泄露私密内容）");
-		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("内容：");
-		stringBuilder.AppendLine("当前场景：" + (scenes.Count > 0 ? string.Join(" / ", scenes) : "未知场景"));
-		stringBuilder.AppendLine("当前日期与时间：" + text + " " + FormatMemoryHourRange(startHour, endHour));
-		stringBuilder.AppendLine("SUMMARY 硬性要求：摘要正文必须自己写出“日期：" + text + "；时间：" + FormatMemoryHourRange(startHour, endHour) + "；地点：" + (scenes.Count > 0 ? string.Join(" / ", scenes) : "地点未知") + "”，可用自然句表达，但不得省略日期、时间或地点。TITLE 仍不得包含日期、时间或地点。");
+		string hours = FormatMemoryHourRange(startHour, endHour);
+		string heroName = hero?.Name?.ToString() ?? draft.HeroName ?? "NPC";
+		int trust = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
 		string playerDisplayName = BuildPlayerPublicDisplayNameForPrompt(hero);
-		if (string.IsNullOrWhiteSpace(playerDisplayName))
-		{
-			playerDisplayName = "玩家";
-		}
-		stringBuilder.AppendLine("TITLE 与 SUMMARY 身份记录说明：本请求中的玩家公开称呼是“" + playerDisplayName + "”，这是游戏系统给 NPC 可见的称呼；如果对话中玩家自称某人，那么一定要把“" + playerDisplayName + "”，自称某人的整个行为记录下来，例如“帝国青年自称恩佐斯”");
-		stringBuilder.AppendLine("PLAYER_HISTORY主体=实际姓名“" + PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal() + "”；禁用“玩家”、“你”和文化加年龄。");
-		stringBuilder.AppendLine("今日所有对话历史：");
-		foreach (DailyMemoryLine line in normalLines)
-		{
-			string text2 = BuildDailyMemoryLineForPrompt(line);
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				stringBuilder.AppendLine(text2);
-			}
-		}
+		if (string.IsNullOrWhiteSpace(playerDisplayName)) playerDisplayName = "玩家";
+		string playerHistoryName = PlayerNotorietyBehavior.BuildPlayerHistoryNameForExternal();
+		var normalTexts = new List<string>();
+		foreach (DailyMemoryLine line in normalLines) normalTexts.Add(BuildDailyMemoryLineForPrompt(line));
+		var afefTexts = new List<string>();
 		if (afefLines.Count > 0)
-		{
-			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("AFEF事实行（只作理解，不要压缩或改写）：");
-			foreach (DailyMemoryLine line2 in afefLines)
-			{
-				string text3 = BuildDailyMemoryLineForPrompt(line2);
-				if (!string.IsNullOrWhiteSpace(text3))
-				{
-					stringBuilder.AppendLine(text3);
-				}
-			}
-		}
-		return stringBuilder.ToString().Trim();
+			foreach (DailyMemoryLine line in afefLines) afefTexts.Add(BuildDailyMemoryLineForPrompt(line));
+		return MemorySummaryRules.DailyUserPrompt(text, hours, heroName, trust, scenes,
+			playerDisplayName, playerHistoryName, normalTexts, afefTexts, afefLines.Count > 0);
 	}
 
 	private static bool TryParseMemorySummaryResponse(string content, Hero hero, DailyMemoryDraft draft, out CompressedMemoryBlock block, out string error)
@@ -5675,27 +5088,10 @@ public partial class MyBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string title = StripMemoryTitleDateTime(GetJsonStringIgnoreCase(jObject, "rich_title", "richTitle", "title"));
-			string summary = GetJsonStringIgnoreCase(jObject, "summary_content", "summaryContent", "summary", "content").Trim();
-			int effectiveTrust = RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0;
-			string playerPublicity = PlayerNotorietyBehavior.NormalizeMemoryPublicity(GetJsonStringIgnoreCase(jObject, "player_publicity", "playerPublicity", "publicity"), effectiveTrust);
-			string playerHistoryMaterial = GetJsonStringIgnoreCase(jObject, "player_history_material", "playerHistoryMaterial", "history_material", "historyMaterial").Trim();
-			string playerPublicityReason = GetJsonStringIgnoreCase(jObject, "publicity_reason", "publicityReason", "reason").Trim();
-			if (!string.Equals(playerPublicity, "public", StringComparison.OrdinalIgnoreCase) && !string.Equals(playerPublicity, "leaked_public", StringComparison.OrdinalIgnoreCase))
+			if (!MemorySummaryRules.TryReadDaily(jObject, StripMemoryTitleDateTime,
+				raw => PlayerNotorietyBehavior.NormalizeMemoryPublicity(raw, RewardSystemBehavior.Instance?.GetEffectiveTrust(hero) ?? 0),
+				PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal, out var fields, out error))
 			{
-				playerHistoryMaterial = "";
-			}
-			if (IsEmptySummaryMarker(playerHistoryMaterial))
-			{
-				playerHistoryMaterial = "";
-			}
-			if (!string.IsNullOrWhiteSpace(playerHistoryMaterial))
-			{
-				playerHistoryMaterial = PlayerNotorietyBehavior.RenderPlayerHistoryMaterialForExternal(playerHistoryMaterial);
-			}
-			if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(summary))
-			{
-				error = "TITLE 或 SUMMARY 为空。";
 				return false;
 			}
 			List<DailyMemoryLine> allLines = draft.Lines ?? new List<DailyMemoryLine>();
@@ -5715,12 +5111,12 @@ public partial class MyBehavior : CampaignBehaviorBase
 				StartHour = startHour,
 				EndHour = endHour,
 				Scenes = scenes,
-				RichTitle = title,
-				Summary = summary,
+				RichTitle = fields.Title,
+				Summary = fields.Summary,
 				AfefLines = afefLines,
-				PlayerPublicity = playerPublicity,
-				PlayerHistoryMaterial = playerHistoryMaterial,
-				PlayerPublicityReason = playerPublicityReason,
+				PlayerPublicity = fields.Publicity,
+				PlayerHistoryMaterial = fields.History,
+				PlayerPublicityReason = fields.Reason,
 				WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers),
 				CreatedUtcTicks = DateTime.UtcNow.Ticks
 			};
@@ -14746,40 +14142,16 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 
 	private static string NormalizeWeeklyMemoryMaterialTagText(string text)
 	{
-		List<string> tags = ExtractWeeklyMemoryMaterialTags(text);
-		return string.Join("\n", tags);
+		return MemoryRecordRules.NormalizeWeeklyMemoryMaterialTagText(text);
 	}
-
 	private static List<string> ExtractWeeklyMemoryMaterialTags(string text)
 	{
-		List<string> list = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (Match match in Regex.Matches(text ?? "", "\\[(?:ACTION:[^\\]\\r\\n]*|AD:[^\\]\\r\\n]*|ADP:[^\\]\\r\\n]*|ATT:[^\\]\\r\\n]*|ATP:[^\\]\\r\\n]*)\\]", RegexOptions.IgnoreCase))
-		{
-			string tag = (match?.Value ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(tag) && !tag.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && seen.Add(tag))
-			{
-				list.Add(tag);
-			}
-		}
-		return list;
+		return MemoryRecordRules.ExtractWeeklyMemoryMaterialTags(text);
 	}
-
 	private static List<string> NormalizeWeeklyMemoryMaterialTags(IEnumerable<string> tags)
 	{
-		List<string> list = new List<string>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (string item in tags ?? Enumerable.Empty<string>())
-		{
-			string tag = (item ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(tag) && !tag.StartsWith("[ACTION:MOOD:", StringComparison.OrdinalIgnoreCase) && seen.Add(tag))
-			{
-				list.Add(tag);
-			}
-		}
-		return list;
+		return MemoryRecordRules.NormalizeWeeklyMemoryMaterialTags(tags);
 	}
-
 	private static bool TryParsePositiveLong(string value, out long result)
 	{
 		if (long.TryParse((value ?? "").Trim(), out result) && result > 0L)
@@ -14805,24 +14177,12 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 
 	private static string BuildWeeklyMemoryMaterialTriggerStableKey(string memoryId, int day, int sceneSessionId, int dialogueSessionId, string kingdomId, string tagText)
 	{
-		string source = (memoryId ?? "").Trim() + "|" + day + "|" + sceneSessionId + "|" + dialogueSessionId + "|" + ((kingdomId ?? "").Trim()) + "|" + ((tagText ?? "").Trim());
-		return "weekly_memory_trigger:" + ComputeWeeklyMemoryMaterialHash(source);
+		return MemoryRecordRules.BuildWeeklyMemoryMaterialTriggerStableKey(memoryId, day, sceneSessionId, dialogueSessionId, kingdomId, tagText);
 	}
-
 	private static string ComputeWeeklyMemoryMaterialHash(string sourceText)
 	{
-		try
-		{
-			byte[] bytes = Encoding.UTF8.GetBytes(sourceText ?? "");
-			byte[] array = SHA1.Create().ComputeHash(bytes);
-			return string.Concat(array.Select((byte b) => b.ToString("x2")));
-		}
-		catch
-		{
-			return Math.Abs((sourceText ?? "").GetHashCode()).ToString("x");
-		}
+		return MemoryRecordRules.ComputeWeeklyMemoryMaterialHash(sourceText);
 	}
-
 	private void TrackTownWeeklyMaterialChanges(Town town)
 	{
 		if (town?.Settlement == null || !town.Settlement.IsFortification)
@@ -15135,152 +14495,14 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 		return npcActionEntry;
 	}
 
-	private static string RepairLegacyVillageRaidDefenseActionText(NpcActionEntry entry, string sourceText)
-	{
-		string text = (sourceText ?? "").Trim();
-		if (!IsLegacyVillageRaidDefenseAction(entry, text, out bool isAftermath))
-		{
-			return text;
-		}
-		string place = (entry?.LocationText ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(place))
-		{
-			place = (entry?.SettlementName ?? "").Trim();
-		}
-		if (string.IsNullOrWhiteSpace(place))
-		{
-			place = "当地村庄";
-		}
-		bool? won = entry?.Won;
-		string corrected = isAftermath
-			? (won == true
-				? (place + "的袭掠已经结束，你协助守军击退了袭掠者，正在整顿部队。")
-				: (won == false
-					? (place + "的袭掠已经结束，袭掠者已经得手；你正在收拢部队并处理残局。")
-					: (place + "的袭掠已经结束，你正在协助守军整顿部队。")))
-			: (won == true
-				? ("你在" + place + "参与村庄保卫战，击退了袭掠者。")
-				: (won == false
-					? ("你在" + place + "参与村庄保卫战时失利，未能阻止袭掠者。")
-					: ("你在" + place + "参与了村庄保卫战。")));
-		int sentenceEnd = text.IndexOf('。');
-		if (sentenceEnd < 0 || sentenceEnd >= text.Length - 1)
-		{
-			return corrected;
-		}
-		string detail = text.Substring(sentenceEnd + 1).Trim();
-		return string.IsNullOrWhiteSpace(detail) ? corrected : (corrected + " " + detail);
-	}
-
-	private static bool IsLegacyVillageRaidDefenseAction(NpcActionEntry entry, string text, out bool isAftermath)
-	{
-		isAftermath = false;
-		string stableKey = (entry?.StableKey ?? "").Trim();
-		if (stableKey.IndexOf(":side:defender:hero:", StringComparison.OrdinalIgnoreCase) < 0)
-		{
-			return false;
-		}
-		string actionKind = (entry?.ActionKind ?? "").Trim();
-		isAftermath = string.Equals(actionKind, "map_event_aftermath", StringComparison.OrdinalIgnoreCase)
-			|| stableKey.StartsWith("mapevent_aftermath:", StringComparison.OrdinalIgnoreCase);
-		bool isMapEvent = string.Equals(actionKind, "map_event", StringComparison.OrdinalIgnoreCase)
-			|| stableKey.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase);
-		if (!isMapEvent && !isAftermath)
-		{
-			return false;
-		}
-		if (isAftermath)
-		{
-			return text.IndexOf("的袭掠已经结束", StringComparison.OrdinalIgnoreCase) >= 0
-				&& (text.IndexOf("清点缴获", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("收拢部队并处理残局", StringComparison.OrdinalIgnoreCase) >= 0);
-		}
-		return text.IndexOf("发动的袭掠中", StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
 	private static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> source, bool keepOnlyRecentWindow)
 	{
-		List<NpcActionEntry> list = new List<NpcActionEntry>();
-		if (source == null || source.Count <= 0)
-		{
-			return list;
-		}
-		int num = GetCurrentGameDayIndexSafe();
-		int num2 = num - RecentNpcActionWindowDays + 1;
-		int num3 = 0;
-		int num4 = 0;
-		foreach (NpcActionEntry item in source)
-		{
-			if (item == null)
-			{
-				continue;
-			}
-			string text = RepairLegacyVillageRaidDefenseActionText(item, (item.Text ?? "").Trim());
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			if (keepOnlyRecentWindow && item.Day < num2)
-			{
-				continue;
-			}
-			if (!keepOnlyRecentWindow && ShouldSuppressNpcMajorAction(item.ActionKind, item.StableKey, text))
-			{
-				continue;
-			}
-			list.Add(new NpcActionEntry
-			{
-				Day = Math.Max(0, item.Day),
-				Order = ((item.Order > 0) ? item.Order : (++num3)),
-				Sequence = ((item.Sequence > 0) ? item.Sequence : (++num4)),
-				GameDate = (item.GameDate ?? "").Trim(),
-				Text = text,
-				StableKey = NpcActionLedger.NormalizeStableKey(item.StableKey, text),
-				ActionKind = (item.ActionKind ?? "").Trim(),
-				ActorHeroId = (item.ActorHeroId ?? "").Trim(),
-				ActorClanId = (item.ActorClanId ?? "").Trim(),
-				ActorKingdomId = (item.ActorKingdomId ?? "").Trim(),
-				TargetHeroId = (item.TargetHeroId ?? "").Trim(),
-				TargetClanId = (item.TargetClanId ?? "").Trim(),
-				TargetKingdomId = (item.TargetKingdomId ?? "").Trim(),
-				SettlementId = (item.SettlementId ?? "").Trim(),
-				SettlementName = (item.SettlementName ?? "").Trim(),
-				SettlementOwnerHeroId = (item.SettlementOwnerHeroId ?? "").Trim(),
-				SettlementOwnerClanId = (item.SettlementOwnerClanId ?? "").Trim(),
-				SettlementOwnerKingdomId = (item.SettlementOwnerKingdomId ?? "").Trim(),
-				PreviousSettlementOwnerHeroId = (item.PreviousSettlementOwnerHeroId ?? "").Trim(),
-				PreviousSettlementOwnerClanId = (item.PreviousSettlementOwnerClanId ?? "").Trim(),
-				PreviousSettlementOwnerKingdomId = (item.PreviousSettlementOwnerKingdomId ?? "").Trim(),
-				LocationText = (item.LocationText ?? "").Trim(),
-				Won = item.Won,
-				IsMajor = item.IsMajor
-			});
-			CopyFactIds(item.RelatedHeroIds, list[list.Count - 1].RelatedHeroIds);
-			CopyFactIds(item.RelatedClanIds, list[list.Count - 1].RelatedClanIds);
-			CopyFactIds(item.RelatedKingdomIds, list[list.Count - 1].RelatedKingdomIds);
-		}
-		return list.OrderBy((NpcActionEntry x) => x.Day).ThenBy((NpcActionEntry x) => (x.Sequence > 0) ? x.Sequence : int.MaxValue).ThenBy((NpcActionEntry x) => x.Order).ThenBy((NpcActionEntry x) => x.GameDate ?? "", StringComparer.Ordinal).ToList();
+		return NpcActionLedger.SanitizeNpcActionEntries(source, keepOnlyRecentWindow, GetCurrentGameDayIndexSafe());
 	}
 
 	private static bool ShouldSuppressNpcMajorAction(string actionKind, string stableKey, string text)
 	{
-		string text2 = (actionKind ?? "").Trim().ToLowerInvariant();
-		switch (text2)
-		{
-		case "prisoner_taken_captor":
-		case "prisoner_taken_prisoner":
-		case "prisoner_released_captor":
-		case "prisoner_released_prisoner":
-		case "army_create":
-		case "army_join":
-			return true;
-		}
-		string text3 = (stableKey ?? "").Trim().ToLowerInvariant();
-		if (text3.StartsWith("prisoner_taken:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("prisoner_released:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("army_create:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("army_join:", StringComparison.OrdinalIgnoreCase))
-		{
-			return true;
-		}
-		string text4 = (text ?? "").Trim();
-		return (text4.IndexOf("俘虏了", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("被", StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf("俘虏", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("获释", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("成功逃脱", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("不再是你的囚犯", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("组建并统领了", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("加入了", StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf("军团", StringComparison.OrdinalIgnoreCase) >= 0);
+		return NpcActionLedger.ShouldSuppressNpcMajorAction(actionKind, stableKey, text);
 	}
 
 	private void RecordNpcMajorAction(Hero hero, string text, string stableKey, NpcActionFacts facts = null, bool allowNonLordHero = false)
@@ -17109,85 +16331,7 @@ TeamModuleServices.CivilWar.AdvanceWeek(devEditableKingdom, weekIndex, GetKingdo
 
 	private static string TranslateNpcActionKindForPrompt(string actionKind)
 	{
-		switch ((actionKind ?? "").Trim().ToLowerInvariant())
-		{
-		case "army_create":
-			return "组建军团的行动";
-		case "army_gather":
-			return "军团集结行动";
-		case "army_disperse":
-			return "军团解散行动";
-		case "army_join":
-			return "加入军团的行动";
-		case "army_leave":
-			return "离开军团的行动";
-		case "siege_start_attack":
-			return "参与围攻的行动";
-		case "siege_start_defend":
-			return "参与守城的行动";
-		case "siege_end_attack":
-			return "围城结束后的攻方行动";
-		case "siege_end_defend":
-			return "围城结束后的守方行动";
-		case "siege_join":
-			return "加入围城的行动";
-		case "siege_leave":
-			return "离开围城的行动";
-		case "siege_complete":
-			return "围城结果事件";
-		case "daily_behavior":
-			return "近期行军动向";
-		case "map_event":
-			return "战场交锋";
-		case "map_event_aftermath":
-			return "战后余波";
-		case "tournament_finished":
-			return "竞技大会胜出事件";
-		case "duel_result":
-			return "正式决斗结果";
-		case "marriage":
-			return "联姻事件";
-		case "clan_changed_kingdom":
-			return "家族更换效忠对象的事件";
-		case "clan_defected":
-			return "家族叛逃事件";
-		case "clan_rebellion":
-			return "家族叛乱事件";
-		case "kingdom_decision_concluded":
-			return "王国决议事件";
-		case "bilateral_diplomacy_pending":
-			return "双边外交复议进展";
-		case "bilateral_diplomacy_outcome":
-			return "双边外交最终结果";
-		case "ruling_clan_changed":
-			return "执政家族变更事件";
-		case "settlement_owner_changed_gain":
-			return "定居点归属增加事件";
-		case "settlement_owner_changed_loss":
-			return "定居点归属失去事件";
-		case "settlement_owner_changed_capture":
-			return "定居点易主事件";
-		case "hero_killed":
-			return "英雄死亡事件";
-		case "hero_executed_victim":
-			return "被处决事件";
-		case "clan_member_killed":
-			return "家族成员死亡事件";
-		case "prisoner_taken_captor":
-			return "俘获领主事件";
-		case "prisoner_taken_prisoner":
-			return "被俘事件";
-		case "prisoner_released_captor":
-			return "囚犯获释事件";
-		case "prisoner_released_prisoner":
-			return "结束囚禁事件";
-		case "birth":
-			return "家族新生事件";
-		case "clan_leader_changed":
-			return "家族族长更替事件";
-		default:
-			return "";
-		}
+		return WeeklyAggregateEventLineOwner.TranslateNpcActionKindForPrompt(actionKind);
 	}
 
 	private static string ResolveDisplayNameBySettlementEntry(NpcActionEntry entry)
@@ -24393,9 +23537,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string NormalizeMemoryHeroId(string heroId)
 	{
-		return (heroId ?? "").Trim().ToLowerInvariant();
+		return MemoryRecordRules.NormalizeMemoryHeroId(heroId);
 	}
-
 	private static string GetMemoryHeroId(Hero hero)
 	{
 		return NormalizeMemoryHeroId(hero?.StringId);
@@ -25633,351 +24776,44 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static List<WeeklyMemoryMaterialTrigger> SanitizeWeeklyMemoryMaterialTriggers(IEnumerable<WeeklyMemoryMaterialTrigger> triggers)
 	{
-		List<WeeklyMemoryMaterialTrigger> list = new List<WeeklyMemoryMaterialTrigger>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (WeeklyMemoryMaterialTrigger sourceEntry in triggers ?? Enumerable.Empty<WeeklyMemoryMaterialTrigger>())
-		{
-			WeeklyMemoryMaterialTrigger trigger = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
-			if (trigger == null)
-			{
-				continue;
-			}
-			string memoryId = NormalizeMemoryHeroId(trigger.MemoryId);
-			string kingdomId = (trigger.FootholdKingdomId ?? "").Trim();
-			string tagText = NormalizeWeeklyMemoryMaterialTagText(trigger.NormalizedTagText);
-			List<string> tags = NormalizeWeeklyMemoryMaterialTags(trigger.Tags);
-			if (tags.Count == 0)
-			{
-				tags = ExtractWeeklyMemoryMaterialTags(tagText);
-			}
-			if (string.IsNullOrWhiteSpace(tagText))
-			{
-				tagText = string.Join("\n", tags);
-			}
-			if (string.IsNullOrWhiteSpace(memoryId) || string.IsNullOrWhiteSpace(kingdomId) || tags.Count == 0)
-			{
-				continue;
-			}
-			string stableKey = (trigger.StableKey ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(stableKey))
-			{
-				stableKey = BuildWeeklyMemoryMaterialTriggerStableKey(memoryId, trigger.GameDayIndex, trigger.SceneSessionId, trigger.DialogueSessionId, kingdomId, tagText);
-			}
-			if (!seen.Add(stableKey))
-			{
-				continue;
-			}
-			trigger.MemoryId = memoryId;
-			trigger.NpcName = (trigger.NpcName ?? "").Trim();
-			trigger.GameDayIndex = Math.Max(0, trigger.GameDayIndex);
-			trigger.GameDate = (trigger.GameDate ?? "").Trim();
-			if (trigger.SceneSessionId < -1)
-			{
-				trigger.SceneSessionId = -1;
-			}
-			if (trigger.DialogueSessionId < -1)
-			{
-				trigger.DialogueSessionId = -1;
-			}
-			if (trigger.TargetAgentIndex < -1)
-			{
-				trigger.TargetAgentIndex = -1;
-			}
-			trigger.FootholdKingdomId = kingdomId;
-			trigger.FootholdSettlementId = (trigger.FootholdSettlementId ?? "").Trim();
-			trigger.NormalizedTagText = tagText;
-			trigger.Tags = tags;
-			trigger.EstimatedValueDenars = Math.Max(0L, trigger.EstimatedValueDenars);
-			trigger.TriggerReason = (trigger.TriggerReason ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-			trigger.StableKey = stableKey;
-			trigger.OutcomeReceiptId = (trigger.OutcomeReceiptId ?? "").Trim();
-			trigger.OutcomeCandidateHash = (trigger.OutcomeCandidateHash ?? "").Trim();
-			trigger.OutcomePayloadHash = (trigger.OutcomePayloadHash ?? "").Trim();
-			trigger.OutcomeActionFingerprint = (trigger.OutcomeActionFingerprint ?? "").Trim();
-			trigger.OutcomeTurnFingerprint = (trigger.OutcomeTurnFingerprint ?? "").Trim();
-			bool hasOutcomeProvenance = !string.IsNullOrWhiteSpace(trigger.OutcomeReceiptId)
-				|| !string.IsNullOrWhiteSpace(trigger.OutcomeCandidateHash)
-				|| !string.IsNullOrWhiteSpace(trigger.OutcomePayloadHash)
-				|| !string.IsNullOrWhiteSpace(trigger.OutcomeActionFingerprint)
-				|| !string.IsNullOrWhiteSpace(trigger.OutcomeTurnFingerprint);
-			bool hasOutcomeSemanticTag = trigger.Tags.Any(tag =>
-				(tag ?? "").StartsWith("[WEEKLY:ECONOMY_", StringComparison.OrdinalIgnoreCase));
-			bool hasOutcomeStableKey = stableKey.StartsWith(
-				"weekly_outcome:", StringComparison.Ordinal);
-			bool validOutcomeProvenance = hasOutcomeProvenance
-				&& IsMemoryRecoveryHexDigest(trigger.OutcomeReceiptId)
-				&& IsMemoryRecoveryHexDigest(trigger.OutcomeCandidateHash)
-				&& IsMemoryRecoveryHexDigest(trigger.OutcomePayloadHash)
-				&& IsMemoryRecoveryHexDigest(trigger.OutcomeActionFingerprint)
-				&& IsMemoryRecoveryHexDigest(trigger.OutcomeTurnFingerprint)
-				&& string.Equals(
-					stableKey,
-					"weekly_outcome:" + trigger.OutcomeReceiptId + ":" + trigger.OutcomePayloadHash,
-					StringComparison.Ordinal);
-			if ((hasOutcomeSemanticTag || hasOutcomeStableKey)
-				&& (!hasOutcomeSemanticTag || !validOutcomeProvenance))
-			{
-				// Outcome-only semantic material has no legitimate legacy form.
-				// Never downgrade a malformed exact receipt into a broad trigger.
-				continue;
-			}
-			if (hasOutcomeProvenance && !validOutcomeProvenance)
-			{
-				// Legacy action-tag material may survive, but malformed additive
-				// provenance cannot authorize exact readback.
-				trigger.OutcomeReceiptId = "";
-				trigger.OutcomeCandidateHash = "";
-				trigger.OutcomePayloadHash = "";
-				trigger.OutcomeActionFingerprint = "";
-				trigger.OutcomeTurnFingerprint = "";
-			}
-			if (trigger.CreatedUtcTicks <= 0L)
-			{
-				trigger.CreatedUtcTicks = DateTime.UtcNow.Ticks;
-			}
-			list.Add(trigger);
-		}
-		return list.OrderBy((WeeklyMemoryMaterialTrigger x) => x.GameDayIndex).ThenBy((WeeklyMemoryMaterialTrigger x) => x.CreatedUtcTicks).ToList();
+		return MemoryRecordRules.SanitizeWeeklyMemoryMaterialTriggers(triggers);
 	}
-
 	private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(IEnumerable<DailyMemoryDraft> drafts)
 	{
-		List<DailyMemoryDraft> list = new List<DailyMemoryDraft>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (DailyMemoryDraft sourceEntry in drafts ?? Enumerable.Empty<DailyMemoryDraft>())
-		{
-			DailyMemoryDraft draft = SanitizeDailyMemoryDraftEntry(sourceEntry, seen);
-			if (draft != null) list.Add(draft);
-		}
-		return list.OrderBy((DailyMemoryDraft x) => x.GameDayIndex).ToList();
+		return MemoryRecordRules.SanitizeDailyMemoryDrafts(drafts);
 	}
-
 	private static void BindDailyMemoryDraftWeeklyTrigger(WeeklyMemoryMaterialTrigger trigger, string memoryId, int gameDayIndex, string gameDate)
 	{
-		if (trigger == null)
-		{
-			return;
-		}
-		trigger.MemoryId = memoryId;
-		trigger.GameDayIndex = gameDayIndex;
-		trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? gameDate : trigger.GameDate;
+		MemoryRecordRules.BindDailyMemoryDraftWeeklyTrigger(trigger, memoryId, gameDayIndex, gameDate);
 	}
-
 	private static DailyMemoryLine SanitizeDailyMemoryDraftLine(DailyMemoryLine x, DailyMemoryDraft draft)
 	{
-		if (x == null || string.IsNullOrWhiteSpace((x.Text ?? "").Trim()))
-		{
-			return null;
-		}
-		x.GameDayIndex = draft.GameDayIndex;
-		x.GameDate = string.IsNullOrWhiteSpace(x.GameDate) ? draft.GameDate : x.GameDate.Trim();
-		x.GameHour = MBMath.ClampInt(x.GameHour, 0, 23);
-		x.Scene = (x.Scene ?? "").Trim();
-		x.Speaker = (x.Speaker ?? "").Trim();
-		x.Text = (x.Text ?? "").Trim();
-		x.TargetAgentIndex = Math.Max(-1, x.TargetAgentIndex);
-		x.TargetName = (x.TargetName ?? "").Trim();
-		x.MemorySessionKey = (x.MemorySessionKey ?? "").Trim();
-		x.MemoryCommitId = (x.MemoryCommitId ?? "").Trim();
-		x.MemoryCommitPart = (x.MemoryCommitPart ?? "").Trim();
-		x.MemoryCommitHash = (x.MemoryCommitHash ?? "").Trim();
-		x.MemoryCommitOriginGameDay = Math.Max(-1, x.MemoryCommitOriginGameDay);
-		x.MemoryCommitOriginGameDate = (x.MemoryCommitOriginGameDate ?? "").Trim();
-		if (!IsValidMemoryCommitMarker(x.MemoryCommitId, x.MemoryCommitPart, x.MemoryCommitHash))
-		{
-			x.MemoryCommitId = "";
-			x.MemoryCommitPart = "";
-			x.MemoryCommitHash = "";
-			x.MemoryCommitOriginGameDay = -1;
-			x.MemoryCommitOriginGameDate = "";
-		}
-		if (x.SceneSessionId < -1)
-		{
-			x.SceneSessionId = -1;
-		}
-		if (x.DialogueSessionId < -1)
-		{
-			x.DialogueSessionId = -1;
-		}
-		return x;
+		return MemoryRecordRules.SanitizeDailyMemoryDraftLine(x, draft);
 	}
-
 	private static DailyMemoryDraft SanitizeDailyMemoryDraftEntry(DailyMemoryDraft sourceEntry, HashSet<string> seen)
 	{
-		DailyMemoryDraft draft = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
-		if (draft == null)
-		{
-			return null;
-		}
-		string text = NormalizeMemoryHeroId(draft.HeroId);
-		if (string.IsNullOrWhiteSpace(text) || draft.GameDayIndex < 0)
-		{
-			return null;
-		}
-		string key = text + "|" + draft.GameDayIndex;
-		if (!seen.Add(key))
-		{
-			return null;
-		}
-		draft.HeroId = text;
-		draft.HeroName = (draft.HeroName ?? "").Trim();
-		draft.GameDate = (draft.GameDate ?? "").Trim();
-		draft.LastSummaryError = (draft.LastSummaryError ?? "").Trim();
-		if (draft.WeeklyMaterialTriggers != null)
-		{
-			foreach (WeeklyMemoryMaterialTrigger trigger in draft.WeeklyMaterialTriggers)
-			{
-				BindDailyMemoryDraftWeeklyTrigger(trigger, text, draft.GameDayIndex, draft.GameDate);
-			}
-		}
-		draft.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(draft.WeeklyMaterialTriggers);
-		List<DailyMemoryLine> lines = new List<DailyMemoryLine>();
-		bool hasLlmDialogue = draft.HasLlmDialogue;
-		foreach (DailyMemoryLine sourceLine in draft.Lines ?? new List<DailyMemoryLine>())
-		{
-			DailyMemoryLine line = SanitizeDailyMemoryDraftLine(sourceLine, draft);
-			if (line == null)
-			{
-				continue;
-			}
-			lines.Add(line);
-			hasLlmDialogue = hasLlmDialogue || (line.IsLlmDialogue && !line.IsAfef);
-		}
-		draft.Lines = lines;
-		draft.HasLlmDialogue = hasLlmDialogue;
-		return draft.Lines.Count > 0 ? draft : null;
+		return MemoryRecordRules.SanitizeDailyMemoryDraftEntry(sourceEntry, seen);
 	}
-
 	private static List<CompressedMemoryBlock> SanitizeCompressedMemoryBlocks(IEnumerable<CompressedMemoryBlock> blocks)
 	{
-		List<CompressedMemoryBlock> list = new List<CompressedMemoryBlock>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (CompressedMemoryBlock sourceEntry in blocks ?? Enumerable.Empty<CompressedMemoryBlock>())
-		{
-			CompressedMemoryBlock block = TWParallel.IsMainThread() ? sourceEntry : CloneMemorySummarySource(sourceEntry);
-			if (block == null)
-			{
-				continue;
-			}
-			block.HeroId = NormalizeMemoryHeroId(block.HeroId);
-			if (string.IsNullOrWhiteSpace(block.HeroId) || block.GameDayIndex < 0)
-			{
-				continue;
-			}
-			if (string.IsNullOrWhiteSpace(block.Id))
-			{
-				block.Id = BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex);
-			}
-			if (!seen.Add(block.Id))
-			{
-				continue;
-			}
-			block.HeroName = (block.HeroName ?? "").Trim();
-			block.GameDate = (block.GameDate ?? "").Trim();
-			block.StartHour = MBMath.ClampInt(block.StartHour, 0, 23);
-			block.EndHour = MBMath.ClampInt(block.EndHour, 0, 23);
-			block.Scenes = (block.Scenes ?? new List<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(16).ToList();
-			block.RichTitle = StripMemoryTitleDateTime((block.RichTitle ?? "").Trim());
-			block.Summary = (block.Summary ?? "").Trim();
-			block.AfefLines = (block.AfefLines ?? new List<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.Ordinal).Take(80).ToList();
-			if (block.WeeklyMaterialTriggers != null)
-			{
-				foreach (WeeklyMemoryMaterialTrigger trigger in block.WeeklyMaterialTriggers)
-				{
-					if (trigger != null)
-					{
-						trigger.MemoryId = block.HeroId;
-						trigger.GameDayIndex = block.GameDayIndex;
-						trigger.GameDate = string.IsNullOrWhiteSpace(trigger.GameDate) ? block.GameDate : trigger.GameDate;
-					}
-				}
-			}
-			block.WeeklyMaterialTriggers = SanitizeWeeklyMemoryMaterialTriggers(block.WeeklyMaterialTriggers);
-			if (!string.IsNullOrWhiteSpace(block.RichTitle) || !string.IsNullOrWhiteSpace(block.Summary) || block.AfefLines.Count > 0)
-			{
-				list.Add(block);
-			}
-		}
-		return list.OrderBy((CompressedMemoryBlock x) => x.GameDayIndex).ThenBy((CompressedMemoryBlock x) => x.StartHour).ToList();
+		return MemoryRecordRules.SanitizeCompressedMemoryBlocks(blocks);
 	}
-
 	private static List<MemorySummaryJob> SanitizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)
 	{
-		return NormalizeMemorySummaryQueue(jobs).OrderBy((MemorySummaryJob x) => x.GameDayIndex).ThenBy((MemorySummaryJob x) => x.HeroName).ToList();
+		return MemoryRecordRules.SanitizeMemorySummaryQueue(jobs);
 	}
-
 	private static List<MemorySummaryJob> NormalizeMemorySummaryQueue(IEnumerable<MemorySummaryJob> jobs)
 	{
-		List<MemorySummaryJob> list = new List<MemorySummaryJob>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (MemorySummaryJob job in jobs ?? Enumerable.Empty<MemorySummaryJob>())
-		{
-			if (job == null)
-			{
-				continue;
-			}
-			job.HeroId = NormalizeMemoryHeroId(job.HeroId);
-			if (string.IsNullOrWhiteSpace(job.HeroId) || job.GameDayIndex < 0)
-			{
-				continue;
-			}
-			string key = job.HeroId + "|" + job.GameDayIndex;
-			if (!seen.Add(key))
-			{
-				continue;
-			}
-			job.HeroName = (job.HeroName ?? "").Trim();
-			job.GameDate = (job.GameDate ?? "").Trim();
-			job.LastError = (job.LastError ?? "").Trim();
-			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
-			list.Add(job);
-		}
-		return list;
+		return MemoryRecordRules.NormalizeMemorySummaryQueue(jobs);
 	}
-
 	private static MemoryOverviewState SanitizeMemoryOverviewState(MemoryOverviewState state)
 	{
-		if (state == null)
-		{
-			return null;
-		}
-		state.HeroId = NormalizeMemoryHeroId(state.HeroId);
-		state.HeroName = (state.HeroName ?? "").Trim();
-		state.Summary = (state.Summary ?? "").Replace("\r", "").Trim();
-		state.LastError = (state.LastError ?? "").Trim();
-		state.IncludedBlockIds = (state.IncludedBlockIds ?? new List<string>()).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		return state;
+		return MemoryRecordRules.SanitizeMemoryOverviewState(state);
 	}
-
 	private static List<MemoryOverviewJob> SanitizeMemoryOverviewQueue(IEnumerable<MemoryOverviewJob> jobs)
 	{
-		List<MemoryOverviewJob> list = new List<MemoryOverviewJob>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (MemoryOverviewJob job in jobs ?? Enumerable.Empty<MemoryOverviewJob>())
-		{
-			if (job == null)
-			{
-				continue;
-			}
-			job.HeroId = NormalizeMemoryHeroId(job.HeroId);
-			if (string.IsNullOrWhiteSpace(job.HeroId))
-			{
-				continue;
-			}
-			if (!seen.Add(job.HeroId))
-			{
-				continue;
-			}
-			job.HeroName = (job.HeroName ?? "").Trim();
-			job.TriggerGameDate = (job.TriggerGameDate ?? "").Trim();
-			job.TriggerGameDayIndex = Math.Max(0, job.TriggerGameDayIndex);
-			job.LastError = (job.LastError ?? "").Trim();
-			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
-			list.Add(job);
-		}
-		return list.OrderBy((MemoryOverviewJob x) => x.TriggerGameDayIndex).ThenBy((MemoryOverviewJob x) => x.HeroName).ToList();
+		return MemoryRecordRules.SanitizeMemoryOverviewQueue(jobs);
 	}
-
 	private MemoryOverviewState GetMemoryOverviewState(string heroId)
 	{
 		heroId = NormalizeMemoryHeroId(heroId);
@@ -26054,53 +24890,16 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static MajorActionSummaryState SanitizeMajorActionSummaryState(MajorActionSummaryState state)
 	{
-		if (state == null)
-		{
-			return null;
-		}
-		state.HeroId = NormalizeMemoryHeroId(state.HeroId);
-		state.HeroName = (state.HeroName ?? "").Trim();
-		state.Summary = (state.Summary ?? "").Replace("\r", "").Trim();
-		state.LastError = (state.LastError ?? "").Trim();
-		state.LastSummarizedDay = Math.Max(0, state.LastSummarizedDay);
-		state.LastSummarizedSequence = Math.Max(0, state.LastSummarizedSequence);
-		return state;
+		return MemoryRecordRules.SanitizeMajorActionSummaryState(state);
 	}
-
 	private static List<MajorActionSummaryJob> SanitizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)
 	{
-		return NormalizeMajorActionSummaryQueue(jobs).OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex).ThenBy((MajorActionSummaryJob x) => x.HeroName).ToList();
+		return MemoryRecordRules.SanitizeMajorActionSummaryQueue(jobs);
 	}
-
 	private static List<MajorActionSummaryJob> NormalizeMajorActionSummaryQueue(IEnumerable<MajorActionSummaryJob> jobs)
 	{
-		List<MajorActionSummaryJob> list = new List<MajorActionSummaryJob>();
-		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (MajorActionSummaryJob job in jobs ?? Enumerable.Empty<MajorActionSummaryJob>())
-		{
-			if (job == null)
-			{
-				continue;
-			}
-			job.HeroId = NormalizeMemoryHeroId(job.HeroId);
-			if (string.IsNullOrWhiteSpace(job.HeroId))
-			{
-				continue;
-			}
-			if (!seen.Add(job.HeroId))
-			{
-				continue;
-			}
-			job.HeroName = (job.HeroName ?? "").Trim();
-			job.TriggerGameDate = (job.TriggerGameDate ?? "").Trim();
-			job.TriggerGameDayIndex = Math.Max(0, job.TriggerGameDayIndex);
-			job.LastError = (job.LastError ?? "").Trim();
-			job.RetryCount = MBMath.ClampInt(job.RetryCount, 0, 3);
-			list.Add(job);
-		}
-		return list;
+		return MemoryRecordRules.NormalizeMajorActionSummaryQueue(jobs);
 	}
-
 	private MajorActionSummaryState GetMajorActionSummaryState(string heroId)
 	{
 		heroId = NormalizeMemoryHeroId(heroId);
@@ -26219,9 +25018,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string BuildCompressedMemoryBlockId(string heroId, int dayIndex)
 	{
-		return NormalizeMemoryHeroId(heroId) + ":" + dayIndex.ToString();
+		return MemoryRecordRules.BuildCompressedMemoryBlockId(heroId, dayIndex);
 	}
-
 	private List<DailyMemoryDraft> LoadDailyMemoryDrafts(Hero hero)
 	{
 		return LoadDailyMemoryDraftsById(GetMemoryHeroId(hero));
@@ -31209,20 +30007,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string StripMemoryTitleDateTime(string title)
 	{
-		string text = (title ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		text = Regex.Replace(text, "^\\s*[\\[【(（]?[\\d\\-/:：年月日\\s时点春夏秋冬第]+[\\]】)）]?\\s*", "", RegexOptions.CultureInvariant).Trim();
-		text = Regex.Replace(text, "\\s+", " ").Trim();
-		if (text.Length > 36)
-		{
-			text = text.Substring(0, 36).Trim();
-		}
-		return text;
+		return MemoryRecordRules.StripMemoryTitleDateTime(title);
 	}
-
 	private static string StripJsonCodeFence(string content)
 	{
 		string text = StripJsonResponseEnvelope(content);
@@ -36952,152 +35738,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	internal static EventMaterialReference BuildWeeklyPromptResolvedVillageRaidMaterial(List<EventMaterialReference> source)
 	{
-		List<EventMaterialReference> list = OrderWeeklyPreviewMaterials(source).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return null;
-		}
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
-		string text = ResolveWeeklyPromptVillageRaidKey(eventMaterialReference);
-		string text2 = ResolveSettlementDisplay(eventMaterialReference.SettlementId);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = string.IsNullOrWhiteSpace(text) ? "某村庄" : text;
-		}
-		List<EventMaterialReference> list2 = list.Where(IsWeeklyPromptVillageRaidCompletionMaterial).ToList();
-		List<string> list3 = new List<string>();
-		foreach (EventMaterialReference item in list2)
-		{
-			list3.Add(text2 + "：" + GetWeeklyPromptVillageRaidOutcomeMaterialText(ResolveWeeklyPromptVillageRaidOutcome(item)));
-		}
-		bool flag = IsWeeklyPromptVillageRaidStartedMaterial(list[list.Count - 1]);
-		if (list2.Count == 0)
-		{
-			list3.Add(text2 + "：正在遭到掠夺，截止本期没有结算结果，不能写为掠夺成功。");
-		}
-		else if (flag)
-		{
-			list3.Add(text2 + "：随后又遭到掠夺，截止本期没有结算结果，不能写为掠夺成功。");
-		}
-		eventMaterialReference.MaterialType = "prompt_resolved_village_raid";
-		eventMaterialReference.Label = "村庄掠夺结算 - " + text2;
-		eventMaterialReference.SnapshotText = "[村庄掠夺结算]\n- " + string.Join("\n- ", list3);
-		eventMaterialReference.ActionKind = "prompt_resolved:village_raid";
-		eventMaterialReference.ActionStableKey = "prompt_resolved_village_raid:" + text;
-		eventMaterialReference.SourceMaterialCount = list.Count;
-		eventMaterialReference.ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue);
-		eventMaterialReference.ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue);
-		foreach (EventMaterialReference item2 in list.Skip(1))
-		{
-			AppendMaterialReferenceIds(item2, eventMaterialReference);
-		}
-		return eventMaterialReference;
-	}
-
-	private static bool IsWeeklyPromptVillageRaidStartedMaterial(EventMaterialReference material)
-	{
-		string text = (material?.ActionStableKey ?? "").Trim();
-		return text.StartsWith("village_raid_started:", StringComparison.OrdinalIgnoreCase) || (material?.Label ?? "").Trim().StartsWith("掠夺开始", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsWeeklyPromptVillageRaidCompletionMaterial(EventMaterialReference material)
-	{
-		string text = (material?.ActionStableKey ?? "").Trim();
-		return text.StartsWith("raid_completed:", StringComparison.OrdinalIgnoreCase) || (material?.Label ?? "").Trim().StartsWith("掠夺结果", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static string GetWeeklyPromptVillageRaidOutcomeMaterialText(string outcome)
-	{
-		switch ((outcome ?? "").Trim())
-		{
-		case "success":
-			return "掠夺成功，村庄确已被成功掠夺。";
-		case "defended":
-			return "掠夺被击退，入侵者未能成功掠夺村庄。";
-		case "aborted":
-			return "掠夺中止，入侵者未能成功掠夺村庄。";
-		default:
-			return "掠夺已结束但结果未确认，不能写为掠夺成功。";
-		}
-	}
-
-	internal static bool IsWeeklyPromptTournamentMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		string text2 = (material.ActionStableKey ?? "").Trim();
-		string text3 = (material.Label ?? "").Trim();
-		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("tournament_finished:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("竞技大会结算", StringComparison.OrdinalIgnoreCase));
-	}
-
-	internal static bool IsWeeklyPromptOpeningSummaryMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		return string.Equals(text, "world_opening_summary", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "kingdom_opening_summary", StringComparison.OrdinalIgnoreCase);
-	}
-
-	internal static EventMaterialReference BuildWeeklyPromptShortMaterial(EventMaterialReference item, WeeklyEventMaterialPreviewGroup group)
-	{
-		if (IsWeeklyPromptMovementAggregateMaterial(item))
-		{
-			return BuildWeeklyPromptShortMovementMaterial(item);
-		}
-		if (IsWeeklyPromptCaptivityAggregateMaterial(item))
-		{
-			return BuildWeeklyPromptShortCaptivityMaterial(item, group);
-		}
-		if (IsWeeklyPromptReleaseAggregateMaterial(item))
-		{
-			return BuildWeeklyPromptShortReleaseMaterial(item, group);
-		}
-		if (IsWeeklyPromptClanChangeAggregateMaterial(item))
-		{
-			return BuildWeeklyPromptShortClanChangeMaterial(item);
-		}
-		if (IsWeeklyPromptArmyAggregateMaterial(item))
-		{
-			return BuildWeeklyPromptShortArmyMaterial(item);
-		}
-		if (IsWeeklyPromptSiegeAggregateMaterial(item))
-		{
-			return BuildWeeklyPromptShortSiegeMaterial(item);
-		}
-		if (IsWeeklyPromptBattleAggregateMaterial(item))
-		{
-			return BuildWeeklyPromptShortBattleMaterial(item, group);
-		}
-		return CloneEventMaterialReference(item);
-	}
-
-	internal static bool IsWeeklyPromptSettlementStatsMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		string text2 = (material.ActionStableKey ?? "").Trim();
-		string text3 = (material.Label ?? "").Trim();
-		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("settlement_stats:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("定居点状态变化", StringComparison.OrdinalIgnoreCase));
-	}
-
-	internal static bool IsWeeklyPromptVillageRaidMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		string text2 = (material.ActionStableKey ?? "").Trim();
-		string text3 = (material.Label ?? "").Trim();
-		return string.Equals(text, "raw_text", StringComparison.OrdinalIgnoreCase) && (text2.StartsWith("village_raid_started:", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("raid_completed:", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("掠夺开始", StringComparison.OrdinalIgnoreCase) || text3.StartsWith("掠夺结果", StringComparison.OrdinalIgnoreCase));
+		return WeeklyPromptMaterialOwner.BuildResolvedVillageRaidMaterial(source, ResolveSettlementDisplay);
 	}
 
 	private static bool DoesEventSourceMaterialRelateToKingdom(EventSourceMaterialEntry item, Kingdom kingdom)
@@ -37152,1001 +35793,10 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return string.Equals(text, "prompt_agg_strategic_shift", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:strategic_shift", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "家族与王国归属", StringComparison.OrdinalIgnoreCase);
 	}
 
-	private static bool IsWeeklyPromptCaptivityAggregateMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		string text2 = (material.ActionKind ?? "").Trim();
-		return string.Equals(text, "prompt_agg_captivity", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:captivity", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "人物被俘", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsWeeklyPromptReleaseAggregateMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		string text2 = (material.ActionKind ?? "").Trim();
-		return string.Equals(text, "prompt_agg_release", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:release", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "人物获释", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static bool IsWeeklyPromptBattleAggregateMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		string text2 = (material.ActionKind ?? "").Trim();
-		return string.Equals(text, "prompt_agg_battle", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:battle", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "战场交锋", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptShortCaptivityMaterial(EventMaterialReference source, WeeklyEventMaterialPreviewGroup group)
-	{
-		if (source == null)
-		{
-			return null;
-		}
-		string text = (group?.KingdomId ?? "").Trim();
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (string item in source.SourceStableKeys ?? new List<string>())
-		{
-			string captorHeroId;
-			string prisonerHeroId;
-			if (!TryParseWeeklyPromptPrisonerPair(item, out captorHeroId, out prisonerHeroId))
-			{
-				continue;
-			}
-			string text2 = (captorHeroId ?? "").Trim() + "->" + (prisonerHeroId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2) || !hashSet.Add(text2))
-			{
-				continue;
-			}
-			num++;
-			string text3 = ResolveHeroKingdomIdForPrompt(captorHeroId);
-			string text4 = ResolveHeroKingdomIdForPrompt(prisonerHeroId);
-			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text3, text, StringComparison.OrdinalIgnoreCase))
-			{
-				num2++;
-			}
-			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text4, text, StringComparison.OrdinalIgnoreCase))
-			{
-				num3++;
-			}
-		}
-		if (num <= 0)
-		{
-			num = Math.Max(0, source.SourceMaterialCount);
-		}
-		if (num <= 0)
-		{
-			num = Regex.Matches(source.SnapshotText ?? "", "被.+?俘虏", RegexOptions.IgnoreCase).Count;
-		}
-		if (num <= 0)
-		{
-			num = 1;
-		}
-		string text5 = "[人物被俘]\n- 人物被俘事件共：" + num + "条";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text5 += "；俘虏敌人：" + num2 + "人；己方被俘：" + num3 + "人";
-		}
-		text5 += "。";
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
-		eventMaterialReference.MaterialType = "prompt_short_captivity";
-		eventMaterialReference.Label = "人物被俘";
-		eventMaterialReference.SnapshotText = text5;
-		eventMaterialReference.ActionKind = "prompt_short:captivity";
-		return eventMaterialReference;
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptShortReleaseMaterial(EventMaterialReference source, WeeklyEventMaterialPreviewGroup group)
-	{
-		if (source == null)
-		{
-			return null;
-		}
-		string text = (group?.KingdomId ?? "").Trim();
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (string item in source.SourceStableKeys ?? new List<string>())
-		{
-			string captorHeroId;
-			string prisonerHeroId;
-			if (!TryParseWeeklyPromptPrisonerPair(item, out captorHeroId, out prisonerHeroId))
-			{
-				continue;
-			}
-			string text2 = (captorHeroId ?? "").Trim() + "->" + (prisonerHeroId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2) || !hashSet.Add(text2))
-			{
-				continue;
-			}
-			num++;
-			string text3 = ResolveHeroKingdomIdForPrompt(captorHeroId);
-			string text4 = ResolveHeroKingdomIdForPrompt(prisonerHeroId);
-			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text3, text, StringComparison.OrdinalIgnoreCase) && !string.Equals(text4, text, StringComparison.OrdinalIgnoreCase))
-			{
-				num2++;
-			}
-			if (!string.IsNullOrWhiteSpace(text) && string.Equals(text4, text, StringComparison.OrdinalIgnoreCase))
-			{
-				num3++;
-			}
-		}
-		if (num <= 0)
-		{
-			num = Math.Max(0, source.SourceMaterialCount);
-		}
-		if (num <= 0)
-		{
-			num = Regex.Matches(source.SnapshotText ?? "", "释放|获释|结束囚禁", RegexOptions.IgnoreCase).Count;
-		}
-		if (num <= 0)
-		{
-			num = 1;
-		}
-		string text5 = "[人物获释]\n- 人物获释事件共：" + num + "条";
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			text5 += "；释放敌方领主：" + num2 + "人；己方领主获释：" + num3 + "人";
-		}
-		text5 += "。";
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
-		eventMaterialReference.MaterialType = "prompt_short_release";
-		eventMaterialReference.Label = "人物获释";
-		eventMaterialReference.SnapshotText = text5;
-		eventMaterialReference.ActionKind = "prompt_short:release";
-		return eventMaterialReference;
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptShortClanChangeMaterial(EventMaterialReference source)
-	{
-		if (source == null)
-		{
-			return null;
-		}
-		List<string> list = new List<string>();
-		foreach (string item in source.SourceStableKeys ?? new List<string>())
-		{
-			WeeklyPromptClanChangeParseResult weeklyPromptClanChangeParseResult = ParseWeeklyPromptClanChangeDetail(item);
-			if (weeklyPromptClanChangeParseResult == null)
-			{
-				continue;
-			}
-			string[] array = (item ?? "").Trim().Split(new char[1] { ':' }, StringSplitOptions.None);
-			if (array.Length < 4)
-			{
-				continue;
-			}
-			string text = ResolveClanDisplay((array[1] ?? "").Trim());
-			string text2 = ResolveKingdomDisplay(weeklyPromptClanChangeParseResult.oldKingdomId);
-			string text3 = ResolveKingdomDisplay(weeklyPromptClanChangeParseResult.newKingdomId);
-			string text4 = weeklyPromptClanChangeParseResult.detailLabel ?? "";
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			if (string.Equals(text4, "脱离并叛乱", StringComparison.OrdinalIgnoreCase))
-			{
-				AddUniqueId(list, string.IsNullOrWhiteSpace(text2) ? (text + "发动叛乱") : (text + "脱离" + text2 + "并发动叛乱"));
-			}
-			else if (string.Equals(text4, "叛逃改投", StringComparison.OrdinalIgnoreCase))
-			{
-				if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
-				{
-					AddUniqueId(list, text + "背离" + text2 + "并改投" + text3);
-				}
-				else if (!string.IsNullOrWhiteSpace(text3))
-				{
-					AddUniqueId(list, text + "改投" + text3);
-				}
-			}
-			else if (string.Equals(text4, "建立新王国", StringComparison.OrdinalIgnoreCase))
-			{
-				AddUniqueId(list, string.IsNullOrWhiteSpace(text3) ? (text + "建立新王国") : (text + "建立" + text3));
-			}
-			else if (!string.IsNullOrWhiteSpace(text3))
-			{
-				AddUniqueId(list, text + "加入" + text3);
-			}
-			else if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text4))
-			{
-				AddUniqueId(list, text + text4 + "：" + text2);
-			}
-		}
-		string text5;
-		if (list.Count > 0)
-		{
-			bool flag = list.Any((string x) => (x ?? "").IndexOf("发动叛乱", StringComparison.OrdinalIgnoreCase) >= 0);
-			text5 = "[家族与王国归属]\n- " + (flag ? "家族叛乱" : "家族归属变更") + "：" + string.Join("；", list.Take(6)) + "。";
-		}
-		else
-		{
-			int num = Math.Max(1, Math.Max(0, source.SourceMaterialCount));
-			text5 = "[家族与王国归属]\n- 家族归属变更事件共：" + num + "条。";
-		}
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
-		eventMaterialReference.MaterialType = "prompt_short_strategic_shift";
-		eventMaterialReference.Label = "家族与王国归属";
-		eventMaterialReference.SnapshotText = text5;
-		eventMaterialReference.ActionKind = "prompt_short:strategic_shift";
-		return eventMaterialReference;
-	}
-
-	internal static EventMaterialReference BuildWeeklyPromptShortSettlementStatsMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
-	{
-		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return null;
-		}
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, HashSet<string>> dictionary = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, HashSet<string>> reasonTagsBySettlement = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item in list)
-		{
-			string text = ResolveWeeklyPromptSettlementStatsKey(item);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "settlement_stats_" + hashSet.Count;
-			}
-			hashSet.Add(text);
-			foreach (Match item2 in Regex.Matches(item.SnapshotText ?? "", "(繁荣|忠诚度|忠诚|治安|粮食|民兵|驻军)(?:小幅|明显)?(扩张|回落|改善|走低|恶化|恢复|吃紧|增加|减少|上升|下降)", RegexOptions.IgnoreCase))
-			{
-				string text2 = NormalizeWeeklyPromptSettlementStatsLabel(item2.Groups[1]?.Value);
-				string text3 = (item2.Groups[2]?.Value ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
-				{
-					continue;
-				}
-				string text4 = NormalizeWeeklyPromptSettlementStatsTrend(text2, text3);
-				if (string.IsNullOrWhiteSpace(text4))
-				{
-					continue;
-				}
-				if (!dictionary.TryGetValue(text4, out var value))
-				{
-					value = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-					dictionary[text4] = value;
-				}
-				value.Add(text);
-			}
-			foreach (string item3 in ExtractWeeklyPromptSettlementStatsReasonTags(item.SnapshotText ?? ""))
-			{
-				if (!reasonTagsBySettlement.TryGetValue(item3, out var value2))
-				{
-					value2 = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-					reasonTagsBySettlement[item3] = value2;
-				}
-				value2.Add(text);
-			}
-		}
-		List<string> list2 = new List<string>();
-		list2.Add(Math.Max(hashSet.Count, list.Count) > 2 ? "多处据点出现治理波动" : "个别据点出现治理波动");
-		List<string> trends = GetWeeklyPromptSettlementStatsOrder().Where((string orderKey) => dictionary.TryGetValue(orderKey, out var value3) && value3.Count > 0).Take(6).ToList();
-		if (trends.Count > 0)
-		{
-			list2.Add("主要表现为" + string.Join("、", trends));
-		}
-		List<string> list3 = reasonTagsBySettlement.OrderByDescending((KeyValuePair<string, HashSet<string>> x) => x.Value.Count).ThenBy((KeyValuePair<string, HashSet<string>> x) => x.Key, StringComparer.OrdinalIgnoreCase).Select((KeyValuePair<string, HashSet<string>> x) => x.Key).Take(5).ToList();
-		if (list3.Count > 0)
-		{
-			list2.Add("常见变化原因：" + string.Join("、", list3));
-		}
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
-		eventMaterialReference.MaterialType = "prompt_short_settlement_stats";
-		eventMaterialReference.Label = "定居点状态";
-		eventMaterialReference.SnapshotText = "[定居点状态]\n- " + string.Join("；", list2) + "。";
-		eventMaterialReference.KingdomId = (group?.KingdomId ?? eventMaterialReference.KingdomId ?? "").Trim();
-		eventMaterialReference.ActionKind = "prompt_short:settlement_stats";
-		eventMaterialReference.SourceMaterialCount = list.Count;
-		eventMaterialReference.ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue);
-		eventMaterialReference.ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue);
-		foreach (EventMaterialReference additionalSource in list.Skip(1))
-		{
-			AppendMaterialReferenceIds(additionalSource, eventMaterialReference);
-		}
-		return eventMaterialReference;
-	}
-
-	private static List<string> ExtractWeeklyPromptSettlementStatsReasonTags(string snapshotText)
-	{
-		string text = NormalizePoliticalReasonText(snapshotText);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return new List<string>();
-		}
-		Match match = Regex.Match(text, "变化原因：(?<reason>.*?)(?:。|$)", RegexOptions.IgnoreCase);
-		if (!match.Success)
-		{
-			return new List<string>();
-		}
-		string reasonText = match.Groups["reason"]?.Value ?? "";
-		List<string> tags = new List<string>();
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "粮食供需", "粮食", "Food", "食物", "饥", "Starv", "Surplus", "Food Stores", "Food Shortage");
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "驻军与军费", "驻军", "Garrison", "军费", "工资", "wage", "Morale", "Payment", "Unpaid");
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "村庄状态", "村庄", "Village", "Raided", "Looted", "劫掠", "袭扰", "Hearth");
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "围城压力", "围城", "Siege", "Under Siege");
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "治安与匪患", "治安", "Security", "Hideout", "藏身处", "Bandit", "Patrol", "Guard", "Corruption", "腐败");
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "忠诚与文化", "忠诚", "Loyalty", "文化", "Culture", "Governor", "总督", "王国稳定度");
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "政策与建设", "政策", "Policy", "Rights", "建筑", "Building", "Project", "工程", "Aqueduct", "Fairground", "Irrigation");
-		AddWeeklyPromptSettlementReasonTag(tags, reasonText, "市场与繁荣", "市场", "Market", "Goods", "繁荣", "Prosperity", "Housing");
-		return tags;
-	}
-
-	private static void AddWeeklyPromptSettlementReasonTag(List<string> tags, string text, string tag, params string[] keywords)
-	{
-		if (tags == null || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(tag) || tags.Any((string x) => string.Equals(x, tag, StringComparison.OrdinalIgnoreCase)))
-		{
-			return;
-		}
-		foreach (string keyword in keywords ?? Array.Empty<string>())
-		{
-			if (!string.IsNullOrWhiteSpace(keyword) && text.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				tags.Add(tag);
-				return;
-			}
-		}
-	}
-
-	internal static EventMaterialReference BuildWeeklyPromptShortVillageRaidMaterial(List<EventMaterialReference> source, WeeklyEventMaterialPreviewGroup group)
-	{
-		List<EventMaterialReference> list = (source ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return null;
-		}
-		string text = (group?.KingdomId ?? "").Trim();
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
-		int num4 = 0;
-		HashSet<string> hashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item in list)
-		{
-			string text2 = (item.ActionStableKey ?? "").Trim();
-			if (!text2.StartsWith("raid_completed:", StringComparison.OrdinalIgnoreCase))
-			{
-				continue;
-			}
-			string text3 = ResolveWeeklyPromptVillageRaidKey(item);
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				text3 = text2;
-			}
-			string text4 = ResolveWeeklyPromptVillageRaidOutcome(item);
-			if (string.IsNullOrWhiteSpace(text4))
-			{
-				continue;
-			}
-			bool flag = !string.IsNullOrWhiteSpace(text) && string.Equals((item.KingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
-			bool flag2 = !string.IsNullOrWhiteSpace(text) && string.Equals((item.ActorKingdomId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase);
-			if (flag && string.Equals(text4, "success", StringComparison.OrdinalIgnoreCase) && hashSet.Add("victim_success:" + text3))
-			{
-				num++;
-			}
-			if (flag2 && hashSet.Add("attacker_" + text4 + ":" + text3))
-			{
-				switch (text4)
-				{
-				case "success":
-					num2++;
-					break;
-				case "defended":
-					num3++;
-					break;
-				case "aborted":
-					num4++;
-					break;
-				}
-			}
-		}
-		if (num == 0 && num2 == 0 && num3 == 0 && num4 == 0)
-		{
-			return null;
-		}
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(list[0]);
-		eventMaterialReference.MaterialType = "prompt_short_village_raid";
-		eventMaterialReference.Label = "村庄掠夺";
-		eventMaterialReference.SnapshotText = "[村庄掠夺]\n- 我方被掠夺成功：" + num + "处；我方掠夺成功：" + num2 + "处；我方掠夺被击退：" + num3 + "处；我方掠夺中止：" + num4 + "处。";
-		eventMaterialReference.KingdomId = text;
-		eventMaterialReference.ActionKind = "prompt_short:village_raid";
-		eventMaterialReference.SourceMaterialCount = list.Count;
-		eventMaterialReference.ActionDay = list.Min((EventMaterialReference x) => x?.ActionDay ?? int.MaxValue);
-		eventMaterialReference.ActionSequence = list.Min((EventMaterialReference x) => x?.ActionSequence ?? int.MaxValue);
-		foreach (EventMaterialReference item2 in list.Skip(1))
-		{
-			AppendMaterialReferenceIds(item2, eventMaterialReference);
-		}
-		return eventMaterialReference;
-	}
-
-	internal static string ResolveWeeklyPromptVillageRaidKey(EventMaterialReference material)
-	{
-		string text = (material?.SettlementId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = (material?.ActionStableKey ?? "").Trim();
-		string[] array = text2.Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length >= 2)
-		{
-			return (array[1] ?? "").Trim();
-		}
-		return text2;
-	}
-
-	private static string ResolveWeeklyPromptVillageRaidOutcome(EventMaterialReference material)
-	{
-		string text = (material?.ActionStableKey ?? "").Trim();
-		if (text.EndsWith(":Attacker", StringComparison.OrdinalIgnoreCase))
-		{
-			return "success";
-		}
-		if (text.EndsWith(":Defender", StringComparison.OrdinalIgnoreCase))
-		{
-			return "defended";
-		}
-		if (text.EndsWith(":None", StringComparison.OrdinalIgnoreCase))
-		{
-			return "aborted";
-		}
-		string text2 = (material?.SnapshotText ?? "").Trim();
-		if (text2.IndexOf("掠夺成功", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "success";
-		}
-		if (text2.IndexOf("掠夺被击退", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "defended";
-		}
-		if (text2.IndexOf("掠夺中止", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "aborted";
-		}
-		return "";
-	}
-
-	private static string ResolveWeeklyPromptSettlementStatsKey(EventMaterialReference material)
-	{
-		string text = (material?.SettlementId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = (material?.ActionStableKey ?? "").Trim();
-		if (text2.StartsWith("settlement_stats:", StringComparison.OrdinalIgnoreCase))
-		{
-			string[] array = text2.Split(new char[1] { ':' }, StringSplitOptions.None);
-			if (array.Length >= 2)
-			{
-				return (array[1] ?? "").Trim();
-			}
-		}
-		string text3 = (material?.SnapshotText ?? "").Trim();
-		int num = text3.IndexOf("本周治理状态发生波动", StringComparison.OrdinalIgnoreCase);
-		if (num <= 0)
-		{
-			num = text3.IndexOf("本周出现定居点状态波动", StringComparison.OrdinalIgnoreCase);
-		}
-		if (num > 0)
-		{
-			return text3.Substring(0, num).Trim();
-		}
-		return "";
-	}
-
-	private static string NormalizeWeeklyPromptSettlementStatsLabel(string label)
-	{
-		switch ((label ?? "").Trim())
-		{
-		case "忠诚度":
-			return "忠诚";
-		default:
-			return (label ?? "").Trim();
-		}
-	}
-
-	private static string NormalizeWeeklyPromptSettlementStatsTrend(string label, string direction)
-	{
-		string text = NormalizeWeeklyPromptSettlementStatsLabel(label);
-		string text2 = (direction ?? "").Trim();
-		bool rise = text2 == "上升" || text2 == "扩张" || text2 == "改善" || text2 == "恢复" || text2 == "增加";
-		bool fall = text2 == "下降" || text2 == "回落" || text2 == "走低" || text2 == "恶化" || text2 == "吃紧" || text2 == "减少";
-		if (!rise && !fall)
-		{
-			return "";
-		}
-		switch (text)
-		{
-		case "繁荣":
-			return rise ? "繁荣扩张" : "繁荣回落";
-		case "粮食":
-			return rise ? "粮食恢复" : "粮食吃紧";
-		case "忠诚":
-			return rise ? "忠诚改善" : "忠诚走低";
-		case "治安":
-			return rise ? "治安改善" : "治安恶化";
-		case "民兵":
-			return rise ? "民兵增加" : "民兵减少";
-		case "驻军":
-			return rise ? "驻军增加" : "驻军减少";
-		default:
-			return text + (rise ? "改善" : "走低");
-		}
-	}
-
-	private static List<string> GetWeeklyPromptSettlementStatsOrder()
-	{
-		return new List<string>
-		{
-			"繁荣扩张",
-			"繁荣回落",
-			"粮食恢复",
-			"粮食吃紧",
-			"忠诚改善",
-			"忠诚走低",
-			"治安改善",
-			"治安恶化",
-			"民兵增加",
-			"民兵减少",
-			"驻军增加",
-			"驻军减少"
-		};
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptShortSiegeMaterial(EventMaterialReference source)
-	{
-		if (source == null)
-		{
-			return null;
-		}
-		List<string> list = new List<string>();
-		List<string> list2 = new List<string>();
-		foreach (string item in SplitWeeklyPromptShortArmyLines(source.SnapshotText))
-		{
-			string text = (item ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			if (text.IndexOf("加入围城的行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("离开围城的行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("围城结束后的攻方行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("围城结束后的守方行动", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				continue;
-			}
-			if (text.IndexOf("参与围攻的行动", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				string text2 = ExtractWeeklyPromptShortSiegeTarget(text, "对", "发起了围攻");
-				if (!string.IsNullOrWhiteSpace(text2))
-				{
-					AddUniqueId(list, "围攻" + text2);
-				}
-				continue;
-			}
-			if (text.IndexOf("参与守城的行动", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				string text3 = ExtractWeeklyPromptShortSiegeTarget(text, "加入了", "的守城");
-				if (!string.IsNullOrWhiteSpace(text3))
-				{
-					AddUniqueId(list, "守城" + text3);
-				}
-				continue;
-			}
-			if (text.IndexOf("围城结果事件", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				string text4 = ExtractWeeklyPromptShortSiegeTarget(text, "围绕", "进行了围城行动");
-				string text5 = ExtractWeeklyPromptShortSiegeResult(text);
-				if (!string.IsNullOrWhiteSpace(text4) || !string.IsNullOrWhiteSpace(text5))
-				{
-					AddUniqueId(list2, (string.IsNullOrWhiteSpace(text4) ? "目标据点" : text4) + (string.IsNullOrWhiteSpace(text5) ? "" : ("：" + text5)));
-				}
-			}
-		}
-		if (list.Count == 0 && list2.Count == 0)
-		{
-			return null;
-		}
-		List<string> list3 = new List<string>();
-		if (list.Count > 0)
-		{
-			list3.Add("开始：" + string.Join("、", list.Take(6)));
-		}
-		if (list2.Count > 0)
-		{
-			list3.Add("结果：" + string.Join("；", list2.Take(6)));
-		}
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
-		eventMaterialReference.MaterialType = "prompt_short_siege";
-		eventMaterialReference.Label = "围城与守城";
-		eventMaterialReference.SnapshotText = "[围城与守城]\n- " + string.Join("；", list3) + "。";
-		eventMaterialReference.ActionKind = "prompt_short:siege";
-		return eventMaterialReference;
-	}
-
-	private static string ExtractWeeklyPromptShortSiegeTarget(string line, string beforeMarker, string afterMarker)
-	{
-		if (string.IsNullOrWhiteSpace(line) || string.IsNullOrWhiteSpace(beforeMarker) || string.IsNullOrWhiteSpace(afterMarker))
-		{
-			return "";
-		}
-		string text = ExtractWeeklyPromptShortLineBody(line);
-		int num2 = text.IndexOf(afterMarker, StringComparison.OrdinalIgnoreCase);
-		if (num2 < 0)
-		{
-			return "";
-		}
-		string text2 = text.Substring(0, num2);
-		int num3 = text2.LastIndexOf(beforeMarker, StringComparison.OrdinalIgnoreCase);
-		if (num3 >= 0)
-		{
-			text2 = text2.Substring(num3 + beforeMarker.Length);
-		}
-		return text2.Trim(' ', '。', '，', ',', ';', '；');
-	}
-
-	private static string ExtractWeeklyPromptShortSiegeResult(string line)
-	{
-		string text = ExtractWeeklyPromptShortLineBody(line);
-		int num = text.IndexOf("结果为", StringComparison.OrdinalIgnoreCase);
-		if (num < 0)
-		{
-			return "";
-		}
-		return text.Substring(num + "结果为".Length).Trim(' ', '。', '，', ',', ';', '；');
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptShortBattleMaterial(EventMaterialReference source, WeeklyEventMaterialPreviewGroup group)
-	{
-		if (source == null)
-		{
-			return null;
-		}
-		string kingdomName = ResolveKingdomDisplay(group?.KingdomId);
-		int winCount = 0;
-		int lossCount = 0;
-		int ownDied = 0;
-		int ownWounded = 0;
-		int enemyDied = 0;
-		int enemyWounded = 0;
-		foreach (string line in SplitWeeklyPromptShortArmyLines(source.SnapshotText))
-		{
-			string text = (line ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text) || text.IndexOf("事件=战场交锋", StringComparison.OrdinalIgnoreCase) < 0)
-			{
-				continue;
-			}
-			bool flag = WeeklyPromptBattleLineSideContainsKingdom(text, "胜方", kingdomName);
-			bool flag2 = WeeklyPromptBattleLineSideContainsKingdom(text, "败方", kingdomName);
-			if (!flag && !flag2)
-			{
-				continue;
-			}
-			if (flag)
-			{
-				winCount++;
-			}
-			if (flag2)
-			{
-				lossCount++;
-			}
-			if (TryParseWeeklyPromptShortBattleCasualty(text, flag ? "胜方" : "败方", out var ownKilled, out var ownInjured))
-			{
-				ownDied += ownKilled;
-				ownWounded += ownInjured;
-			}
-			if (TryParseWeeklyPromptShortBattleCasualty(text, flag ? "败方" : "胜方", out var enemyKilled, out var enemyInjured))
-			{
-				enemyDied += enemyKilled;
-				enemyWounded += enemyInjured;
-			}
-		}
-		if (winCount == 0 && lossCount == 0)
-		{
-			return null;
-		}
-		string text2 = "[战场交锋]\n- 本周战场交锋：胜利" + winCount + "场，失败" + lossCount + "场；己方伤亡" + (ownDied + ownWounded) + "人（阵亡" + ownDied + "、负伤" + ownWounded + "）；造成敌方杀伤" + (enemyDied + enemyWounded) + "人（阵亡" + enemyDied + "、负伤" + enemyWounded + "）。";
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
-		eventMaterialReference.MaterialType = "prompt_short_battle";
-		eventMaterialReference.Label = "战场交锋";
-		eventMaterialReference.SnapshotText = text2;
-		eventMaterialReference.ActionKind = "prompt_short:battle";
-		eventMaterialReference.KingdomId = (group?.KingdomId ?? eventMaterialReference.KingdomId ?? "").Trim();
-		return eventMaterialReference;
-	}
-
-	private static bool WeeklyPromptBattleLineSideContainsKingdom(string line, string sideLabel, string kingdomName)
-	{
-		string text = (kingdomName ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(line) || string.IsNullOrWhiteSpace(sideLabel) || string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		string text2 = ExtractWeeklyPromptBattlePipeField(line, sideLabel);
-		return text2.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
-	private static bool TryParseWeeklyPromptShortBattleCasualty(string line, string sideLabel, out int died, out int wounded)
-	{
-		died = 0;
-		wounded = 0;
-		string text = ExtractWeeklyPromptBattlePipeField(line, "伤亡");
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		string text2 = (sideLabel ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return false;
-		}
-		Match match = Regex.Match(text, Regex.Escape(text2) + "(?<value>[^；|]*)", RegexOptions.IgnoreCase);
-		if (!match.Success)
-		{
-			return false;
-		}
-		string value = match.Groups["value"]?.Value ?? "";
-		Match match2 = Regex.Match(value, "阵亡(?<died>\\d+)、负伤(?<wounded>\\d+)", RegexOptions.IgnoreCase);
-		if (!match2.Success)
-		{
-			return false;
-		}
-		int.TryParse(match2.Groups["died"]?.Value ?? "0", out died);
-		int.TryParse(match2.Groups["wounded"]?.Value ?? "0", out wounded);
-		return true;
-	}
-
-	private static string ExtractWeeklyPromptBattlePipeField(string line, string fieldName)
-	{
-		string text = (line ?? "").Trim();
-		string text2 = (fieldName ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		foreach (string item in text.Split(new char[1] { '|' }, StringSplitOptions.RemoveEmptyEntries))
-		{
-			string text3 = item.Trim().TrimStart('-', ' ');
-			if (text3.StartsWith(text2 + "=", StringComparison.OrdinalIgnoreCase))
-			{
-				return text3.Substring(text2.Length + 1).Trim();
-			}
-			if (text3.StartsWith(text2 + "：", StringComparison.OrdinalIgnoreCase))
-			{
-				return text3.Substring(text2.Length + 1).Trim();
-			}
-			if (text3.StartsWith(text2 + ":", StringComparison.OrdinalIgnoreCase))
-			{
-				return text3.Substring(text2.Length + 1).Trim();
-			}
-		}
-		return "";
-	}
-
-	private static string ExtractWeeklyPromptShortLineBody(string line)
-	{
-		string text = (line ?? "").Trim();
-		if (text.StartsWith("- ", StringComparison.OrdinalIgnoreCase))
-		{
-			text = text.Substring(2).Trim();
-		}
-		int num = text.IndexOf('：');
-		if (num >= 0 && num + 1 < text.Length)
-		{
-			text = text.Substring(num + 1).Trim();
-		}
-		return text;
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptShortArmyMaterial(EventMaterialReference source)
-	{
-		if (source == null)
-		{
-			return null;
-		}
-		List<string> list = new List<string>();
-		List<string> list2 = new List<string>();
-		foreach (string item in SplitWeeklyPromptShortArmyLines(source.SnapshotText))
-		{
-			string text = (item ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			string actor = ExtractWeeklyPromptShortArmyActor(text, "组建了新的军团");
-			if (string.IsNullOrWhiteSpace(actor))
-			{
-				actor = ExtractWeeklyPromptShortArmyActor(text, "开始集结军团");
-			}
-			if (!string.IsNullOrWhiteSpace(actor))
-			{
-				AddUniqueId(list, actor);
-				continue;
-			}
-			actor = ExtractWeeklyPromptShortArmyActor(text, "解散了军团");
-			if (string.IsNullOrWhiteSpace(actor))
-			{
-				actor = ExtractWeeklyPromptShortArmyActor(text, "解散了他的军团");
-			}
-			if (!string.IsNullOrWhiteSpace(actor))
-			{
-				AddUniqueId(list2, actor);
-			}
-		}
-		string text2;
-		if (list.Count > 0 || list2.Count > 0)
-		{
-			List<string> list3 = new List<string>();
-			if (list.Count > 0)
-			{
-				list3.Add("集结/组建：" + string.Join("、", list.Take(8)));
-			}
-			if (list2.Count > 0)
-			{
-				list3.Add("解散：" + string.Join("、", list2.Take(8)));
-			}
-			text2 = "[军团行动]\n- " + string.Join("；", list3) + "。";
-		}
-		else
-		{
-			int num = Math.Max(1, Math.Max(0, source.SourceMaterialCount));
-			text2 = "[军团行动]\n- 军团行动事件共：" + num + "条；加入/离开已略。";
-		}
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
-		eventMaterialReference.MaterialType = "prompt_short_army";
-		eventMaterialReference.Label = "军团行动";
-		eventMaterialReference.SnapshotText = text2;
-		eventMaterialReference.ActionKind = "prompt_short:army";
-		return eventMaterialReference;
-	}
-
-	private static IEnumerable<string> SplitWeeklyPromptShortArmyLines(string text)
-	{
-		foreach (string item in (text ?? "").Split(new char[2] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
-		{
-			yield return item;
-		}
-	}
-
-	private static string ExtractWeeklyPromptShortArmyActor(string line, string marker)
-	{
-		if (string.IsNullOrWhiteSpace(line) || string.IsNullOrWhiteSpace(marker))
-		{
-			return "";
-		}
-		string text = (line ?? "").Trim();
-		if (text.StartsWith("- ", StringComparison.OrdinalIgnoreCase))
-		{
-			text = text.Substring(2).Trim();
-		}
-		int num = text.IndexOf('：');
-		if (num >= 0 && num + 1 < text.Length)
-		{
-			text = text.Substring(num + 1).Trim();
-		}
-		int num2 = text.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
-		if (num2 < 0)
-		{
-			return "";
-		}
-		text = text.Substring(0, num2).Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		int num3 = text.LastIndexOf("家族的", StringComparison.OrdinalIgnoreCase);
-		if (num3 >= 0)
-		{
-			text = text.Substring(num3 + "家族的".Length).Trim();
-		}
-		int num4 = text.LastIndexOf("所属的", StringComparison.OrdinalIgnoreCase);
-		if (num4 >= 0)
-		{
-			text = text.Substring(num4 + "所属的".Length).Trim();
-		}
-		int num5 = text.IndexOf('(');
-		if (num5 > 0)
-		{
-			text = text.Substring(0, num5).Trim();
-		}
-		return text.Trim(' ', '。', '，', ',', ';', '；');
-	}
-
-	private static string ResolveHeroKingdomIdForPrompt(string heroId)
+	internal static string ResolveHeroKingdomIdForPrompt(string heroId)
 	{
 		Hero heroById = FindHeroById(heroId);
 		return (heroById?.MapFaction?.StringId ?? heroById?.Clan?.Kingdom?.StringId ?? "").Trim();
-	}
-
-	private static bool IsWeeklyPromptMovementAggregateMaterial(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		string text2 = (material.ActionKind ?? "").Trim();
-		return string.Equals(text, "prompt_agg_movement", StringComparison.OrdinalIgnoreCase) || string.Equals(text2, "prompt_aggregate:movement", StringComparison.OrdinalIgnoreCase) || string.Equals((material.Label ?? "").Trim(), "行军与袭扰", StringComparison.OrdinalIgnoreCase);
-	}
-
-	private static EventMaterialReference BuildWeeklyPromptShortMovementMaterial(EventMaterialReference source)
-	{
-		if (source == null)
-		{
-			return null;
-		}
-		string text = (source.SnapshotText ?? source.Label ?? "").Trim();
-		int num = Math.Max(0, source.SourceMaterialCount);
-		if (num <= 0)
-		{
-			num = Regex.Matches(text, "事件=近期行军动向", RegexOptions.IgnoreCase).Count;
-		}
-		if (num <= 0)
-		{
-			num = 1;
-		}
-		List<string> list = ExtractWeeklyPromptShortMovementLocations(text).Take(5).ToList();
-		List<string> list2 = new List<string>();
-		AddWeeklyPromptShortMovementAction(list2, text, "守备", "守备");
-		AddWeeklyPromptShortMovementAction(list2, text, "保卫", "守备");
-		AddWeeklyPromptShortMovementAction(list2, text, "袭扰", "袭扰");
-		AddWeeklyPromptShortMovementAction(list2, text, "劫掠", "袭扰");
-		AddWeeklyPromptShortMovementAction(list2, text, "掠夺", "袭扰");
-		AddWeeklyPromptShortMovementAction(list2, text, "围攻", "围攻");
-		AddWeeklyPromptShortMovementAction(list2, text, "强攻", "围攻");
-		if (text.IndexOf("一带行动", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("前往", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("行军", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			AddUniqueId(list2, "普通行军");
-		}
-		if (list2.Count == 0)
-		{
-			list2.Add("普通行军");
-		}
-		string text2 = (list.Count > 0) ? string.Join("、", list) : "未列明";
-		string text3 = "[行军与袭扰]\n- 近期行军动向事件共：" + num + "条；地点：" + text2 + "；主要行动：" + string.Join("、", list2) + "。";
-		EventMaterialReference eventMaterialReference = CloneEventMaterialReference(source);
-		eventMaterialReference.MaterialType = "prompt_short_movement";
-		eventMaterialReference.Label = "行军与袭扰";
-		eventMaterialReference.SnapshotText = text3;
-		eventMaterialReference.ActionKind = "prompt_short:movement";
-		return eventMaterialReference;
-	}
-
-	private static void AddWeeklyPromptShortMovementAction(List<string> actions, string text, string needle, string label)
-	{
-		if (actions == null || string.IsNullOrWhiteSpace(label) || string.IsNullOrWhiteSpace(needle))
-		{
-			return;
-		}
-		if ((text ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			AddUniqueId(actions, label);
-		}
-	}
-
-	private static List<string> ExtractWeeklyPromptShortMovementLocations(string text)
-	{
-		List<string> list = new List<string>();
-		foreach (Match item in Regex.Matches(text ?? "", "涉及地点=(?<value>[^|\\r\\n]+)", RegexOptions.IgnoreCase))
-		{
-			string value = item.Groups["value"]?.Value ?? "";
-			foreach (string item2 in value.Split(new char[4] { '、', '，', ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				AddUniqueId(list, item2.Trim());
-			}
-		}
-		return list;
 	}
 
 	private void ApplyWeeklyPromptMaterialAggregation(WeeklyEventMaterialPreviewGroup group)
@@ -38348,2532 +35998,105 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	internal static bool IsWeeklyPromptAggregatableMaterial(EventMaterialReference material)
 	{
-		if (material == null)
-		{
-			return false;
-		}
-		string text = (material.MaterialType ?? "").Trim();
-		return string.Equals(text, "npc_recent_action", StringComparison.OrdinalIgnoreCase) || string.Equals(text, "npc_major_action", StringComparison.OrdinalIgnoreCase);
+		return WeeklyMaterialAggregationOwner.IsWeeklyPromptAggregatableMaterial(material);
 	}
 
 	internal static List<string> GetWeeklyPromptAggregateCategoryOrder()
 	{
-		return new List<string>
-		{
-			"strategic_shift",
-			"decision",
-			"siege",
-			"settlement_change",
-			"death",
-			"captivity",
-			"release",
-			"army",
-			"battle",
-			"movement",
-			"other"
-		};
+		return WeeklyMaterialAggregationOwner.GetWeeklyPromptAggregateCategoryOrder();
 	}
 
 	internal static string ResolveWeeklyPromptAggregateCategory(EventMaterialReference material)
 	{
-		string text = (material?.ActionKind ?? "").Trim().ToLowerInvariant();
-		switch (text)
-		{
-		case "clan_changed_kingdom":
-		case "clan_defected":
-		case "clan_rebellion":
-			return "strategic_shift";
-		case "kingdom_decision_concluded":
-		case "bilateral_diplomacy_pending":
-		case "bilateral_diplomacy_outcome":
-			return "decision";
-		case "siege_start_attack":
-		case "siege_start_defend":
-		case "siege_join":
-		case "siege_leave":
-		case "siege_end_attack":
-		case "siege_end_defend":
-		case "siege_complete":
-			return "siege";
-		case "settlement_owner_changed_gain":
-		case "settlement_owner_changed_loss":
-		case "settlement_owner_changed_capture":
-			return "settlement_change";
-		case "hero_killed":
-		case "hero_executed_victim":
-		case "clan_member_killed":
-			return "death";
-		case "prisoner_taken_captor":
-		case "prisoner_taken_prisoner":
-			return "captivity";
-		case "prisoner_released_captor":
-		case "prisoner_released_prisoner":
-			return "release";
-		case "army_create":
-		case "army_gather":
-		case "army_disperse":
-		case "army_join":
-		case "army_leave":
-			return "army";
-		case "map_event":
-		case "map_event_aftermath":
-			return "battle";
-		case "daily_behavior":
-			return "movement";
-		default:
-			return "other";
-		}
+		return WeeklyMaterialAggregationOwner.ResolveWeeklyPromptAggregateCategory(material);
 	}
 
 	internal static string BuildWeeklyPromptAggregateEventKey(EventMaterialReference material)
 	{
-		string text3 = BuildWeeklyPromptBattleEventKey(material);
-		if (!string.IsNullOrWhiteSpace(text3))
-		{
-			return text3;
-		}
-		string text = NormalizeWeeklyPromptAggregateStableKey(material?.ActionStableKey);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		text = ((material?.ActionKind ?? "").Trim().ToLowerInvariant()) + "|" + ((material?.SettlementId ?? "").Trim().ToLowerInvariant()) + "|" + ((material?.KingdomId ?? "").Trim().ToLowerInvariant()) + "|" + ((material?.HeroId ?? "").Trim().ToLowerInvariant());
-		return text.Trim();
-	}
-
-	private static string BuildWeeklyPromptBattleEventKey(EventMaterialReference material)
-	{
-		if (material == null)
-		{
-			return "";
-		}
-		string text = (material.ActionKind ?? "").Trim();
-		if (!string.Equals(text, "map_event", StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "map_event_aftermath", StringComparison.OrdinalIgnoreCase))
-		{
-			return "";
-		}
-		string text2 = (material.ActionStableKey ?? "").Trim();
-		if (text2.IndexOf(":side:", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			text2 = NormalizeWeeklyPromptAggregateStableKey(text2);
-			if (!string.IsNullOrWhiteSpace(text2) && text2.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase) && text2.Length > "mapevent:".Length)
-			{
-				return text2;
-			}
-		}
-		List<string> list = new List<string>();
-		AddUniqueId(list, (material.ActorKingdomId ?? "").Trim());
-		AddUniqueId(list, (material.TargetKingdomId ?? "").Trim());
-		list.Sort(StringComparer.OrdinalIgnoreCase);
-		List<string> list2 = new List<string>
-		{
-			ExtractWeeklyPromptBattleTroopText(material.SnapshotText, ownSide: true),
-			ExtractWeeklyPromptBattleTroopText(material.SnapshotText, ownSide: false)
-		};
-		list2 = list2.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select(NormalizeWeeklyPromptKeyPart).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
-		List<string> list3 = new List<string>
-		{
-			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, "我方死伤"),
-			ExtractWeeklyPromptBattleMarkedText(material.SnapshotText, "敌方死伤")
-		};
-		list3 = list3.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select(NormalizeWeeklyPromptKeyPart).OrderBy((string x) => x, StringComparer.OrdinalIgnoreCase).ToList();
-		string text3 = string.Join("~", new string[5]
-		{
-			(material.ActionDay ?? -1).ToString(),
-			NormalizeWeeklyPromptKeyPart(material.LocationText),
-			NormalizeWeeklyPromptKeyPart(string.Join("_", list)),
-			string.Join("_", list2),
-			string.Join("_", list3)
-		});
-		text3 = text3.Trim('~', '_');
-		return string.IsNullOrWhiteSpace(text3) ? "" : ("battle:" + text3);
+		return WeeklyMaterialAggregationOwner.BuildWeeklyPromptAggregateEventKey(material);
 	}
 
 	private static string NormalizeWeeklyPromptAggregateStableKey(string stableKey)
 	{
-		string text = (stableKey ?? "").Trim().ToLowerInvariant();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		string text2 = NormalizeWeeklyPromptMapEventStableKey(text);
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2;
-		}
-		string[] array = new string[9] { ":captor", ":prisoner", ":gain", ":loss", ":capture", ":chooser", ":killer", ":victim", ":clan" };
-		foreach (string value in array)
-		{
-			if (text.EndsWith(value, StringComparison.OrdinalIgnoreCase))
-			{
-				return text.Substring(0, text.Length - value.Length);
-			}
-		}
-		if (text.EndsWith(":proposer", StringComparison.OrdinalIgnoreCase))
-		{
-			return text.Substring(0, text.Length - ":proposer".Length);
-		}
-		return text;
-	}
-
-	private static string NormalizeWeeklyPromptMapEventStableKey(string stableKey)
-	{
-		string text = (stableKey ?? "").Trim().ToLowerInvariant();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		string text2 = "";
-		if (text.StartsWith("mapevent_aftermath:", StringComparison.OrdinalIgnoreCase))
-		{
-			text2 = text.Substring("mapevent_aftermath:".Length);
-		}
-		else if (text.StartsWith("mapevent:", StringComparison.OrdinalIgnoreCase))
-		{
-			text2 = text.Substring("mapevent:".Length);
-		}
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		int num = text2.IndexOf(":side:", StringComparison.OrdinalIgnoreCase);
-		if (num > 0)
-		{
-			return "mapevent:" + text2.Substring(0, num).Trim();
-		}
-		string[] array = text2.Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length <= 0 || string.IsNullOrWhiteSpace(array[0]))
-		{
-			return "";
-		}
-		return "mapevent:" + array[0].Trim();
+		return WeeklyMaterialAggregationOwner.NormalizeWeeklyPromptAggregateStableKey(stableKey);
 	}
 
 	private EventMaterialReference BuildWeeklyPromptAggregateCategoryMaterial(WeeklyEventMaterialPreviewGroup group, string category, Dictionary<string, List<EventMaterialReference>> eventBuckets)
 	{
-		if (eventBuckets == null || eventBuckets.Count == 0)
-		{
-			return null;
-		}
-		List<List<EventMaterialReference>> list = eventBuckets.Values.Where((List<EventMaterialReference> x) => x != null && x.Count > 0).OrderBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionDay ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionSequence ?? int.MaxValue)).ThenBy((List<EventMaterialReference> x) => x.FirstOrDefault((EventMaterialReference y) => y != null)?.Label ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-		if (list.Count == 0)
-		{
-			return null;
-		}
-		string text = GetWeeklyPromptAggregateCategoryLabel(category);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("[" + text + "]");
-		foreach (List<EventMaterialReference> item in list)
-		{
-			string weeklyPromptAggregateEventLine = BuildWeeklyPromptAggregateEventLine(item);
-			if (!string.IsNullOrWhiteSpace(weeklyPromptAggregateEventLine))
-			{
-				stringBuilder.AppendLine("- " + weeklyPromptAggregateEventLine.Trim());
-			}
-		}
-		string text2 = stringBuilder.ToString().TrimEnd();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return null;
-		}
-		EventMaterialReference eventMaterialReference = new EventMaterialReference
-		{
-			MaterialType = "prompt_agg_" + (category ?? "").Trim().ToLowerInvariant(),
-			Label = text,
-			SnapshotText = text2,
-			KingdomId = group?.KingdomId ?? "",
-			ActionKind = "prompt_aggregate:" + category,
-			SourceMaterialCount = list.Sum((List<EventMaterialReference> x) => x.Count),
-			ActionDay = list.Min((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionDay ?? int.MaxValue)),
-			ActionSequence = list.Min((List<EventMaterialReference> x) => x.Min((EventMaterialReference y) => y?.ActionSequence ?? int.MaxValue))
-		};
-		foreach (List<EventMaterialReference> item2 in list)
-		{
-			foreach (EventMaterialReference item3 in item2)
-			{
-				AppendMaterialReferenceIds(item3, eventMaterialReference);
-			}
-		}
-		return eventMaterialReference;
+		return WeeklyMaterialAggregationOwner.BuildCategoryMaterial(group, category, eventBuckets, GetWeeklyPromptAggregateCategoryLabel(category), BuildWeeklyPromptAggregateEventLine);
 	}
 
 	private static void AppendMaterialReferenceIds(EventMaterialReference source, EventMaterialReference destination)
 	{
-		if (source == null || destination == null)
-		{
-			return;
-		}
-		AddUniqueId(destination.RelatedHeroIds, source.ActorHeroId);
-		AddUniqueId(destination.RelatedHeroIds, source.TargetHeroId);
-		AddUniqueId(destination.RelatedHeroIds, source.HeroId);
-		AddUniqueId(destination.RelatedHeroIds, source.SettlementOwnerHeroId);
-		AddUniqueId(destination.RelatedHeroIds, source.PreviousSettlementOwnerHeroId);
-		CopyFactIds(source.RelatedHeroIds, destination.RelatedHeroIds);
-		AddUniqueId(destination.RelatedClanIds, source.ActorClanId);
-		AddUniqueId(destination.RelatedClanIds, source.TargetClanId);
-		AddUniqueId(destination.RelatedClanIds, source.SettlementOwnerClanId);
-		AddUniqueId(destination.RelatedClanIds, source.PreviousSettlementOwnerClanId);
-		CopyFactIds(source.RelatedClanIds, destination.RelatedClanIds);
-		AddUniqueId(destination.RelatedKingdomIds, source.ActorKingdomId);
-		AddUniqueId(destination.RelatedKingdomIds, source.TargetKingdomId);
-		AddUniqueId(destination.RelatedKingdomIds, source.KingdomId);
-		AddUniqueId(destination.RelatedKingdomIds, source.SettlementOwnerKingdomId);
-		AddUniqueId(destination.RelatedKingdomIds, source.PreviousSettlementOwnerKingdomId);
-		CopyFactIds(source.RelatedKingdomIds, destination.RelatedKingdomIds);
-		CopyFactIds(source.SourceStableKeys, destination.SourceStableKeys);
-		CopyFactIds(source.SourceActionKinds, destination.SourceActionKinds);
-		AddUniqueId(destination.SourceStableKeys, source.ActionStableKey);
-		AddUniqueId(destination.SourceActionKinds, source.ActionKind);
+		WeeklyMaterialAggregationOwner.AppendMaterialReferenceIds(source, destination);
 	}
+
+	private static readonly WeeklyAggregateEventLineOwner WeeklyAggregateEventLine =
+		new WeeklyAggregateEventLineOwner(new WeeklyAggregateGameFacts(
+			ResolveHeroDisplay, ResolveClanDisplay, ResolveKingdomDisplay, ResolveSettlementDisplay,
+			CaptureWeeklySettlementName, CaptureWeeklySettlementNameWithType, CaptureWeeklyHeroFact));
 
 	private string BuildWeeklyPromptAggregateEventLine(List<EventMaterialReference> materials)
 	{
-		if (materials == null || materials.Count == 0)
-		{
-			return "";
-		}
-		string text = ResolveWeeklyPromptAggregateCategory(materials[0]);
-		switch (text)
-		{
-		case "strategic_shift":
-			return BuildWeeklyPromptAggregateClanChangeLine(materials);
-		case "settlement_change":
-			return BuildWeeklyPromptAggregateSettlementOwnerChangeLine(materials);
-		case "death":
-			return BuildWeeklyPromptAggregateDeathLine(materials);
-		case "captivity":
-			return BuildWeeklyPromptAggregatePrisonerLine(materials, released: false);
-		case "release":
-			return BuildWeeklyPromptAggregatePrisonerLine(materials, released: true);
-		case "decision":
-			return BuildWeeklyPromptAggregateDecisionLine(materials);
-		case "army":
-			return BuildWeeklyPromptAggregateArmyLine(materials);
-		case "siege":
-			return BuildWeeklyPromptAggregateSiegeLine(materials);
-		case "battle":
-			return BuildWeeklyPromptAggregateBattleLine(materials);
-		case "movement":
-			return BuildWeeklyPromptAggregateMovementLine(materials);
-		default:
-			return BuildWeeklyPromptAggregateGenericLine(materials);
-		}
+		return WeeklyAggregateEventLine.Render(materials);
 	}
 
-	private static string BuildWeeklyPromptAggregateBattleLine(List<EventMaterialReference> materials)
+	// The renderer is called only during synchronous main-thread material preparation.
+	private static WeeklyHeroFact CaptureWeeklyHeroFact(string heroId)
 	{
-		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
+		Hero hero = FindHeroById(heroId);
+		if (hero == null) return null;
+		return new WeeklyHeroFact
 		{
-			return "";
-		}
-		List<EventMaterialReference> list2 = list.Where((EventMaterialReference x) => string.Equals((x.ActionKind ?? "").Trim(), "map_event", StringComparison.OrdinalIgnoreCase)).ToList();
-		if (list2.Count == 0)
-		{
-			list2 = list;
-		}
-		EventMaterialReference eventMaterialReference = list2.FirstOrDefault((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == true) ?? list2.FirstOrDefault() ?? list[0];
-		string text2 = BuildWeeklyPromptAggregateBattleLocationText(eventMaterialReference);
-		List<EventMaterialReference> winners = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == true).ToList();
-		List<EventMaterialReference> losers = list2.Where((EventMaterialReference x) => GetWeeklyPromptBattleMaterialWon(x) == false).ToList();
-		List<string> fields = new List<string>();
-		fields.Add("事件=战场交锋");
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			fields.Add("地点=" + text2);
-		}
-		if (winners.Count > 0 || losers.Count > 0)
-		{
-			fields.Add("结果=" + BuildWeeklyPromptBattleOutcomeField(winners, losers));
-		}
-		string text3 = BuildWeeklyPromptBattleSideField("胜方", winners, losers);
-		if (!string.IsNullOrWhiteSpace(text3))
-		{
-			fields.Add(text3);
-		}
-		string text4 = BuildWeeklyPromptBattleSideField("败方", losers, winners);
-		if (!string.IsNullOrWhiteSpace(text4))
-		{
-			fields.Add(text4);
-		}
-		string text5 = BuildWeeklyPromptBattleTroopField(winners, losers);
-		if (!string.IsNullOrWhiteSpace(text5))
-		{
-			fields.Add(text5);
-		}
-		string text6 = BuildWeeklyPromptBattleCasualtyField(winners, losers);
-		if (!string.IsNullOrWhiteSpace(text6))
-		{
-			fields.Add(text6);
-		}
-		string text7 = BuildWeeklyPromptBattleStandoutField(winners, losers);
-		if (!string.IsNullOrWhiteSpace(text7))
-		{
-			fields.Add(text7);
-		}
-		return string.Join("|", fields);
+			Id = hero.StringId ?? "",
+			ClanId = hero.Clan?.StringId ?? "",
+			KingdomId = hero.MapFaction?.StringId ?? hero.Clan?.Kingdom?.StringId ?? "",
+			SpouseId = hero.Spouse?.StringId ?? "",
+			FatherId = hero.Father?.StringId ?? "",
+			MotherId = hero.Mother?.StringId ?? "",
+			IsFemale = hero.IsFemale
+		};
 	}
 
-	private static bool? GetWeeklyPromptBattleMaterialWon(EventMaterialReference material)
+	private static string CaptureWeeklySettlementName(string settlementId)
 	{
-		if (material == null)
-		{
-			return null;
-		}
-		string text = (material.SnapshotText ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			if (text.IndexOf("败给了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("失利", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("遭遇了失利", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				return false;
-			}
-			if (text.IndexOf("击败了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("获胜", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("击退了", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("得手", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				return true;
-			}
-		}
-		return material.Won;
-	}
-
-	private static string BuildWeeklyPromptBattleOutcomeField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
-	{
-		string text = BuildWeeklyPromptBattleSideShortName(winners, losers);
-		string text2 = BuildWeeklyPromptBattleSideShortName(losers, winners);
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
-		{
-			return text + "击败" + text2;
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text + "取得胜利";
-		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2 + "遭遇失利";
-		}
-		return "胜负已分";
-	}
-
-	private static string BuildWeeklyPromptBattleSideShortName(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		List<string> list = BuildWeeklyPromptBattleSideKingdomNames(ownMaterials, oppositeMaterials);
-		if (list.Count > 0)
-		{
-			return string.Join("、", list.Take(2));
-		}
-		List<string> list2 = BuildWeeklyPromptBattleSideClanNames(ownMaterials, oppositeMaterials);
-		if (list2.Count > 0)
-		{
-			return string.Join("、", list2.Take(2));
-		}
-		List<string> list3 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
-		if (list3.Count > 0)
-		{
-			return string.Join("、", list3.Take(2));
-		}
-		List<string> list4 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
-		return (list4.Count > 0) ? string.Join("、", list4.Take(2)) : "";
-	}
-
-	private static string BuildWeeklyPromptBattleSideField(string label, List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		List<string> list = new List<string>();
-		List<string> list2 = BuildWeeklyPromptBattleSideKingdomNames(ownMaterials, oppositeMaterials);
-		if (list2.Count > 0)
-		{
-			list.Add("王国=" + string.Join("、", list2));
-		}
-		List<string> list3 = BuildWeeklyPromptBattleSideClanNames(ownMaterials, oppositeMaterials);
-		if (list3.Count > 0)
-		{
-			list.Add("家族=" + string.Join("、", list3));
-		}
-		List<string> list4 = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
-		if (list4.Count > 0)
-		{
-			list.Add("人物=" + string.Join("、", list4.Take(8)));
-		}
-		List<string> list5 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
-		if (list5.Count > 0)
-		{
-			list.Add("非领主部队=" + string.Join("、", list5.Take(8)));
-		}
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		return label + "：" + string.Join("；", list);
-	}
-
-	private static string BuildWeeklyPromptBattleStandoutField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
-	{
-		List<string> list = new List<string>();
-		AppendWeeklyPromptBattleStandouts(list, "胜方", winners);
-		AppendWeeklyPromptBattleStandouts(list, "败方", losers);
-		if (list.Count == 0)
-		{
-			string text = BuildWeeklyPromptBattleFallbackStandoutText("胜方", winners, losers);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				AddUniqueId(list, "胜方：" + text);
-			}
-			text = BuildWeeklyPromptBattleFallbackStandoutText("败方", losers, winners);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				AddUniqueId(list, "败方：" + text);
-			}
-		}
-		return (list.Count > 0) ? ("亮眼表现=" + string.Join("；", list)) : "";
-	}
-
-	private static void AppendWeeklyPromptBattleStandouts(List<string> output, string sideLabel, List<EventMaterialReference> materials)
-	{
-		if (output == null)
-		{
-			return;
-		}
-		foreach (string item in ExtractWeeklyPromptBattleStandoutTexts(materials, sideLabel))
-		{
-			AddUniqueId(output, sideLabel + "：" + item);
-		}
-	}
-
-	private static IEnumerable<string> ExtractWeeklyPromptBattleStandoutTexts(List<EventMaterialReference> materials, string sideLabel)
-	{
-		List<string> list = new List<string>();
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			string text = ExtractWeeklyPromptBattleStandoutText(item?.SnapshotText, sideLabel);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				AddUniqueId(list, text);
-			}
-		}
-		return list;
-	}
-
-	private static string ExtractWeeklyPromptBattleStandoutText(string text, string sideLabel)
-	{
-		string text2 = (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		int num = text2.IndexOf(" ：", StringComparison.Ordinal);
-		int markerLength = 2;
-		if (num < 0)
-		{
-			num = text2.IndexOf(" :", StringComparison.Ordinal);
-		}
-		if (num < 0)
-		{
-			return "";
-		}
-		num += markerLength;
-		while (num < text2.Length && text2[num] == ' ')
-		{
-			num++;
-		}
-		int num2 = text2.IndexOf('；', num);
-		if (num2 < 0)
-		{
-			num2 = text2.IndexOf(';', num);
-		}
-		if (num2 < 0)
-		{
-			num2 = text2.Length;
-		}
-		if (num2 <= num)
-		{
-			return "";
-		}
-		string text3 = text2.Substring(num, num2 - num).Trim(' ', '。', '；', ';');
-		if (string.IsNullOrWhiteSpace(text3))
-		{
-			return "";
-		}
-		text3 = Regex.Replace(text3, "\\s+", " ").Trim();
-		if (!string.IsNullOrWhiteSpace(sideLabel))
-		{
-			text3 = text3.Replace("我方", sideLabel.Trim());
-		}
-		return text3;
-	}
-
-	private static string BuildWeeklyPromptBattleFallbackStandoutText(string sideLabel, List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		List<EventMaterialReference> list = (ownMaterials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		string text = BuildWeeklyPromptBattleStandoutActorText(list, oppositeMaterials, sideLabel);
-		string text2 = BuildWeeklyPromptBattleSideTroopText(list, oppositeMaterials);
-		string text3 = BuildWeeklyPromptBattleOppositeTroopText(list, oppositeMaterials);
-		string text4 = BuildWeeklyPromptBattleSideCasualtyText(list, oppositeMaterials);
-		string text5 = BuildWeeklyPromptBattleOppositeCasualtyText(list, oppositeMaterials);
-		bool flag = TryParseWeeklyPromptBattleCasualtyTotal(text4, out var ownCasualtyTotal);
-		bool flag2 = TryParseWeeklyPromptBattleCasualtyTotal(text5, out var oppositeCasualtyTotal);
-		bool flag3 = TryParseWeeklyPromptBattleTroopTotal(text2, out var ownTroops);
-		bool flag4 = TryParseWeeklyPromptBattleTroopTotal(text3, out var oppositeTroops);
-		List<string> list2 = new List<string>();
-		if (flag3 && flag4 && ownTroops > 0 && oppositeTroops > 0)
-		{
-			list2.Add("投入兵力" + ownTroops + "人对" + oppositeTroops + "人");
-		}
-		else if (flag3 && ownTroops > 0)
-		{
-			list2.Add("投入兵力" + ownTroops + "人");
-		}
-		if (flag && flag2)
-		{
-			if (string.Equals((sideLabel ?? "").Trim(), "胜方", StringComparison.OrdinalIgnoreCase))
-			{
-				if (ownCasualtyTotal <= 0 && oppositeCasualtyTotal > 0)
-				{
-					list2.Add("未承受可确认伤亡，造成败方" + oppositeCasualtyTotal + "人伤亡");
-				}
-				else
-				{
-					list2.Add("以" + ownCasualtyTotal + "人损失造成败方" + oppositeCasualtyTotal + "人伤亡");
-				}
-			}
-			else if (oppositeCasualtyTotal > 0)
-			{
-				list2.Add("虽遭失利，仍造成胜方" + oppositeCasualtyTotal + "人伤亡");
-			}
-		}
-		if (list2.Count == 0)
-		{
-			return "";
-		}
-		return text + string.Join("，", list2);
-	}
-
-	private static string BuildWeeklyPromptBattleStandoutActorText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials, string fallbackLabel)
-	{
-		List<string> list = BuildWeeklyPromptBattleSideHeroNames(ownMaterials, oppositeMaterials);
-		string text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && x.IndexOf("（统帅）", StringComparison.OrdinalIgnoreCase) >= 0);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = list.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text.Trim() + "部队";
-		}
-		List<string> list2 = BuildWeeklyPromptBattleSidePartyNames(ownMaterials, oppositeMaterials);
-		text = list2.FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text.Trim();
-		}
-		text = BuildWeeklyPromptBattleSideShortName(ownMaterials, oppositeMaterials);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text.Trim() + "部队";
-		}
-		return string.IsNullOrWhiteSpace(fallbackLabel) ? "该方部队" : (fallbackLabel.Trim() + "部队");
-	}
-
-	private static string BuildWeeklyPromptBattleSideTroopText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		string text = ExtractWeeklyPromptBattleTroopText(ownMaterials, ownSide: true);
-		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleTroopText(oppositeMaterials, ownSide: false) : text;
-	}
-
-	private static string BuildWeeklyPromptBattleOppositeTroopText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		string text = ExtractWeeklyPromptBattleTroopText(oppositeMaterials, ownSide: true);
-		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleTroopText(ownMaterials, ownSide: false) : text;
-	}
-
-	private static string BuildWeeklyPromptBattleSideCasualtyText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		string text = ExtractWeeklyPromptBattleCasualtyText(ownMaterials, ownSide: true);
-		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleCasualtyText(oppositeMaterials, ownSide: false) : text;
-	}
-
-	private static string BuildWeeklyPromptBattleOppositeCasualtyText(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		string text = ExtractWeeklyPromptBattleCasualtyText(oppositeMaterials, ownSide: true);
-		return string.IsNullOrWhiteSpace(text) ? ExtractWeeklyPromptBattleCasualtyText(ownMaterials, ownSide: false) : text;
-	}
-
-	private static bool TryParseWeeklyPromptBattleTroopTotal(string text, out int total)
-	{
-		total = 0;
-		Match match = Regex.Match(text ?? "", "(?<value>\\d+)\\s*人", RegexOptions.IgnoreCase);
-		return match.Success && int.TryParse(match.Groups["value"]?.Value ?? "", out total);
-	}
-
-	private static bool TryParseWeeklyPromptBattleCasualtyTotal(string text, out int total)
-	{
-		total = 0;
-		Match match = Regex.Match(text ?? "", "阵亡\\s*(?<dead>\\d+)\\s*[、,，]\\s*负伤\\s*(?<wounded>\\d+)", RegexOptions.IgnoreCase);
-		if (!match.Success || !int.TryParse(match.Groups["dead"]?.Value ?? "", out var dead) || !int.TryParse(match.Groups["wounded"]?.Value ?? "", out var wounded))
-		{
-			return false;
-		}
-		total = Math.Max(0, dead) + Math.Max(0, wounded);
-		return true;
-	}
-
-	private static List<string> BuildWeeklyPromptBattleSideKingdomNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		List<string> list = ResolveKingdomNames(CollectMaterialIds(ownMaterials, (EventMaterialReference x) => new string[1] { x.ActorKingdomId }, null));
-		if (list.Count > 0)
-		{
-			return list;
-		}
-		return ResolveKingdomNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetKingdomId }, null));
-	}
-
-	private static List<string> BuildWeeklyPromptBattleSideClanNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		List<string> list = ResolveClanNames(CollectMaterialIds(ownMaterials, (EventMaterialReference x) => new string[1] { x.ActorClanId }, null));
-		if (list.Count > 0)
-		{
-			return list;
-		}
-		return ResolveClanNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetClanId }, null));
-	}
-
-	private static List<string> BuildWeeklyPromptBattleSideHeroNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		List<string> list = new List<string>();
-		foreach (string item in ResolveHeroNames(CollectMaterialIds(ownMaterials, (EventMaterialReference x) => new string[1] { x.ActorHeroId }, null)))
-		{
-			AddUniqueId(list, item);
-		}
-		foreach (string item2 in ExtractWeeklyPromptBattleHeroNames(ownMaterials, "我方领主"))
-		{
-			AddUniqueId(list, item2);
-		}
-		if (list.Count > 0)
-		{
-			return list;
-		}
-		foreach (string item3 in ResolveHeroNames(CollectMaterialIds(oppositeMaterials, (EventMaterialReference x) => new string[1] { x.TargetHeroId }, null)).Concat(ExtractWeeklyPromptBattleHeroNames(oppositeMaterials, "敌方领主")))
-		{
-			AddUniqueId(list, item3);
-		}
-		return list;
-	}
-
-	private static List<string> BuildWeeklyPromptBattleSidePartyNames(List<EventMaterialReference> ownMaterials, List<EventMaterialReference> oppositeMaterials)
-	{
-		List<string> list = new List<string>();
-		foreach (string item in ExtractWeeklyPromptBattlePartyNames(ownMaterials, "我方非领主部队"))
-		{
-			AddUniqueId(list, item);
-		}
-		if (list.Count > 0)
-		{
-			return list;
-		}
-		foreach (string item2 in ExtractWeeklyPromptBattlePartyNames(oppositeMaterials, "敌方非领主部队"))
-		{
-			AddUniqueId(list, item2);
-		}
-		return list;
-	}
-
-	private static IEnumerable<string> ExtractWeeklyPromptBattlePartyNames(List<EventMaterialReference> materials, string marker)
-	{
-		List<string> list = new List<string>();
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			string text = ExtractWeeklyPromptBattleMarkedText(item?.SnapshotText, marker);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			foreach (string item2 in text.Split(new char[5] { '、', ',', '，', ';', '；' }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				string text2 = item2.Trim();
-				if (!string.IsNullOrWhiteSpace(text2))
-				{
-					AddUniqueId(list, text2);
-				}
-			}
-		}
-		return list;
-	}
-
-	private static IEnumerable<string> ExtractWeeklyPromptBattleHeroNames(List<EventMaterialReference> materials, string marker)
-	{
-		List<string> list = new List<string>();
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			string text = ExtractWeeklyPromptBattleMarkedText(item?.SnapshotText, marker);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			foreach (string item2 in text.Split(new char[5] { '、', ',', '，', ';', '；' }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				string text2 = item2.Trim();
-				if (!string.IsNullOrWhiteSpace(text2))
-				{
-					AddUniqueId(list, text2);
-				}
-			}
-		}
-		return list;
-	}
-
-	private static string BuildWeeklyPromptBattleTroopField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
-	{
-		string text = ExtractWeeklyPromptBattleTroopText(winners, ownSide: true);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = ExtractWeeklyPromptBattleTroopText(losers, ownSide: false);
-		}
-		string text2 = ExtractWeeklyPromptBattleTroopText(losers, ownSide: true);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = ExtractWeeklyPromptBattleTroopText(winners, ownSide: false);
-		}
-		if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		return "战前投入兵力=胜方" + (string.IsNullOrWhiteSpace(text) ? "不详" : text) + "；败方" + (string.IsNullOrWhiteSpace(text2) ? "不详" : text2);
-	}
-
-	private static string BuildWeeklyPromptBattleCasualtyField(List<EventMaterialReference> winners, List<EventMaterialReference> losers)
-	{
-		string text = ExtractWeeklyPromptBattleCasualtyText(winners, ownSide: true);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = ExtractWeeklyPromptBattleCasualtyText(losers, ownSide: false);
-		}
-		string text2 = ExtractWeeklyPromptBattleCasualtyText(losers, ownSide: true);
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			text2 = ExtractWeeklyPromptBattleCasualtyText(winners, ownSide: false);
-		}
-		if (string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		return "伤亡=胜方" + (string.IsNullOrWhiteSpace(text) ? "不详" : text) + "；败方" + (string.IsNullOrWhiteSpace(text2) ? "不详" : text2);
-	}
-
-	private static string ExtractWeeklyPromptBattleTroopText(List<EventMaterialReference> materials, bool ownSide)
-	{
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			string text = ExtractWeeklyPromptBattleTroopText(item?.SnapshotText, ownSide);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				return text.Trim();
-			}
-		}
-		return "";
-	}
-
-	private static string ExtractWeeklyPromptBattleTroopText(string text, bool ownSide)
-	{
-		string text2 = (text ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2))
-		{
-			return "";
-		}
-		Match match = Regex.Match(text2, "战前投入兵力：我方(?<own>[^；。]+)；敌方(?<enemy>[^。；]+)", RegexOptions.IgnoreCase);
-		if (!match.Success)
-		{
-			return "";
-		}
-		string value = ownSide ? (match.Groups["own"]?.Value ?? "") : (match.Groups["enemy"]?.Value ?? "");
-		return (value ?? "").Trim();
-	}
-
-	private static string ExtractWeeklyPromptBattleCasualtyText(List<EventMaterialReference> materials, bool ownSide)
-	{
-		string marker = ownSide ? "我方死伤" : "敌方死伤";
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			string text = ExtractWeeklyPromptBattleMarkedText(item?.SnapshotText, marker);
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				return text.Trim();
-			}
-		}
-		return "";
-	}
-
-	private static string ExtractWeeklyPromptBattleMarkedText(string text, string marker)
-	{
-		string text2 = (text ?? "").Trim();
-		string text3 = (marker ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2) || string.IsNullOrWhiteSpace(text3))
-		{
-			return "";
-		}
-		int num = text2.IndexOf(text3, StringComparison.OrdinalIgnoreCase);
-		if (num < 0)
-		{
-			return "";
-		}
-		num += text3.Length;
-		while (num < text2.Length && (text2[num] == '：' || text2[num] == ':' || text2[num] == ' '))
-		{
-			num++;
-		}
-		int num2 = text2.Length;
-		foreach (char value in new char[4] { '。', '；', ';', '\n' })
-		{
-			int num3 = text2.IndexOf(value, num);
-			if (num3 >= num && num3 < num2)
-			{
-				num2 = num3;
-			}
-		}
-		if (num2 <= num)
-		{
-			return "";
-		}
-		return text2.Substring(num, num2 - num).Trim();
-	}
-
-	private string BuildWeeklyPromptAggregateGenericLine(List<EventMaterialReference> materials)
-	{
-		EventMaterialReference eventMaterialReference = materials.FirstOrDefault((EventMaterialReference x) => x != null);
-		if (eventMaterialReference == null)
-		{
-			return "";
-		}
-		List<string> list = new List<string>();
-		AppendWeeklyPromptAggregateField(list, "人物归属", BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
-		list.Add("事件=" + BuildWeeklyPromptAggregateActionLabel(materials));
-		AppendWeeklyPromptAggregateField(list, "人物", ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorHeroId, x.TargetHeroId, x.HeroId }, delegate(EventMaterialReference x)
-		{
-			return x.RelatedHeroIds;
-		})));
-		AppendWeeklyPromptAggregateField(list, "家族", ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId, x.PreviousSettlementOwnerClanId }, delegate(EventMaterialReference x)
-		{
-			return x.RelatedClanIds;
-		})));
-		AppendWeeklyPromptAggregateField(list, "王国", ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[5] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId, x.PreviousSettlementOwnerKingdomId }, delegate(EventMaterialReference x)
-		{
-			return x.RelatedKingdomIds;
-		})));
-		AppendWeeklyPromptAggregateField(list, "地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
-		return string.Join("|", list);
-	}
-
-	private string BuildWeeklyPromptAggregateDeathLine(List<EventMaterialReference> materials)
-	{
-		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		Dictionary<string, List<EventMaterialReference>> dictionary = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item in list)
-		{
-			string text = ResolveWeeklyPromptAggregateDeathVictimHeroId(item);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = BuildWeeklyPromptAggregateEventKey(item);
-			}
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new List<EventMaterialReference>();
-				dictionary[text] = value;
-			}
-			value.Add(item);
-		}
-		List<string> list2 = new List<string>();
-		foreach (KeyValuePair<string, List<EventMaterialReference>> item2 in dictionary)
-		{
-			List<EventMaterialReference> value2 = item2.Value;
-			EventMaterialReference eventMaterialReference = value2.FirstOrDefault((EventMaterialReference x) => x != null);
-			if (eventMaterialReference == null)
-			{
-				continue;
-			}
-			string text2 = ResolveWeeklyPromptAggregateDeathVictimHeroId(eventMaterialReference);
-			if (string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(item2.Key) && item2.Key.IndexOf('|') < 0)
-			{
-				text2 = item2.Key;
-			}
-			string text3 = (value2.Select((EventMaterialReference x) => (x.TargetClanId ?? "").Trim()).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "").Trim();
-			string text4 = (value2.Select((EventMaterialReference x) => (x.TargetKingdomId ?? "").Trim()).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text2))
-			{
-				Hero heroById = FindHeroById(text2);
-				if (string.IsNullOrWhiteSpace(text3))
-				{
-					text3 = (heroById?.Clan?.StringId ?? "").Trim();
-				}
-				if (string.IsNullOrWhiteSpace(text4))
-				{
-					text4 = (heroById?.MapFaction?.StringId ?? heroById?.Clan?.Kingdom?.StringId ?? "").Trim();
-				}
-			}
-			string text5 = BuildWeeklyPromptAggregateDeathSubjectText(text2, text3, text4);
-			if (string.IsNullOrWhiteSpace(text5))
-			{
-				text5 = "某家族成员";
-			}
-			string text6 = BuildWeeklyPromptAggregateDeathRelationText(text2, ResolveWeeklyPromptAggregateDeathRelationHeroId(value2, text2));
-			string text7 = value2.Select((EventMaterialReference x) => ParseWeeklyPromptHeroDeathReason(x?.ActionStableKey)).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
-			if (string.IsNullOrWhiteSpace(text7))
-			{
-				text7 = "不明原因";
-			}
-			string text8 = string.IsNullOrWhiteSpace(text6) ? (text5 + "，因为" + text7 + "去世了。") : (text5 + "，" + text6 + "，因为" + text7 + "去世了。");
-			if (!list2.Contains(text8))
-			{
-				list2.Add(text8);
-			}
-		}
-		if (list2.Count == 0)
-		{
-			return BuildWeeklyPromptAggregateGenericLine(materials);
-		}
-		return "事件=人物死亡：" + string.Join("；", list2);
-	}
-
-	private string BuildWeeklyPromptAggregateArmyLine(List<EventMaterialReference> materials)
-	{
-		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		string text = BuildWeeklyPromptAggregateActionLabel(list);
-		List<string> list2 = list.Select((EventMaterialReference x) => ((x.ActionKind ?? "").Trim().ToLowerInvariant())).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		string text2 = (list2.Count == 1) ? list2[0] : "";
-		string text3 = BuildWeeklyPromptAggregateSiegeParticipantsText(list);
-		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
-		{
-			List<string> list3 = ResolveHeroNames(list.Select((EventMaterialReference x) => x.TargetHeroId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
-			string text4 = "";
-			switch (text2)
-			{
-			case "army_disperse":
-				text4 = text3 + "解散了军团";
-				break;
-			case "army_create":
-				text4 = text3 + "组建了新的军团";
-				break;
-			case "army_gather":
-				text4 = text3 + "开始集结军团";
-				break;
-			case "army_join":
-				text4 = ((list3.Count == 1) ? (text3 + "加入了" + list3[0] + "的军团") : (text3 + "加入了军团"));
-				break;
-			case "army_leave":
-				text4 = ((list3.Count == 1) ? (text3 + "离开了" + list3[0] + "的军团") : (text3 + "离开了军团"));
-				break;
-			}
-			if (!string.IsNullOrWhiteSpace(text4))
-			{
-				return "事件=" + text + "：" + text4;
-			}
-		}
-		List<string> list5 = new List<string>();
-		foreach (EventMaterialReference item in list)
-		{
-			string text5 = ((item.ActionKind ?? "").Trim().ToLowerInvariant());
-			string text6 = BuildWeeklyPromptAggregateActorAffiliationText(item);
-			string text7 = ResolveHeroDisplay(item.TargetHeroId);
-			if (string.IsNullOrWhiteSpace(text6))
-			{
-				text6 = "某领主";
-			}
-			string text8 = "";
-			switch (text5)
-			{
-			case "army_disperse":
-				text8 = text6 + "解散了他的军团";
-				break;
-			case "army_create":
-				text8 = text6 + "组建了新的军团";
-				break;
-			case "army_gather":
-				text8 = text6 + "开始集结军团";
-				break;
-			case "army_join":
-				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + "加入了军团") : (text6 + "加入了" + text7 + "的军团");
-				break;
-			case "army_leave":
-				text8 = string.IsNullOrWhiteSpace(text7) ? (text6 + "离开了军团") : (text6 + "离开了" + text7 + "的军团");
-				break;
-			}
-			if (string.IsNullOrWhiteSpace(text8))
-			{
-				string text9 = (item.SnapshotText ?? item.Label ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text9))
-				{
-					text8 = text6 + "：" + text9;
-				}
-			}
-			if (!string.IsNullOrWhiteSpace(text8) && !list5.Contains(text8))
-			{
-				list5.Add(text8);
-			}
-		}
-		if (list5.Count == 0)
-		{
-			return BuildWeeklyPromptAggregateGenericLine(materials);
-		}
-		return "事件=" + text + "：" + string.Join("；", list5);
-	}
-
-	private static string ResolveWeeklyPromptAggregateDeathVictimHeroId(EventMaterialReference item)
-	{
-		if (string.Equals((item?.ActionKind ?? "").Trim(), "hero_executed_victim", StringComparison.OrdinalIgnoreCase))
-		{
-			string actorHeroId = (item?.ActorHeroId ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(actorHeroId))
-			{
-				return actorHeroId;
-			}
-		}
-		string text = (item?.TargetHeroId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = (item?.ActionStableKey ?? "").Trim();
-		string[] array = text2.Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length >= 3 && string.Equals((array[0] ?? "").Trim(), "hero_killed", StringComparison.OrdinalIgnoreCase))
-		{
-			string text3 = (array[1] ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text3))
-			{
-				return text3;
-			}
-		}
-		return (item?.ActorHeroId ?? "").Trim();
-	}
-
-	private static string BuildWeeklyPromptAggregateDeathSubjectText(string heroId, string clanId, string kingdomId)
-	{
-		string text = ResolveHeroDisplay(heroId);
-		string text2 = ResolveClanDisplay(clanId);
-		string text3 = ResolveKingdomDisplay(kingdomId);
-		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text))
-		{
-			return text3 + "的" + text2 + "家族的" + text;
-		}
-		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text))
-		{
-			return text2 + "家族的" + text;
-		}
-		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text))
-		{
-			return text3 + "的" + text;
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		if (!string.IsNullOrWhiteSpace(text3) && !string.IsNullOrWhiteSpace(text2))
-		{
-			return text3 + "的" + text2 + "家族成员";
-		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2 + "家族成员";
-		}
-		if (!string.IsNullOrWhiteSpace(text3))
-		{
-			return text3 + "的成员";
-		}
-		return "";
-	}
-
-	private static string BuildWeeklyPromptAggregateDeathRelationText(string victimHeroId, string fallbackRelationHeroId)
-	{
-		Hero heroById = FindHeroById(victimHeroId);
-		Hero heroById2 = FindHeroById(fallbackRelationHeroId);
-		if (heroById == null || heroById2 == null || heroById == heroById2)
-		{
-			return "";
-		}
-		string text = ResolveHeroDisplay(heroById2.StringId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		if (heroById.Spouse == heroById2 || heroById2.Spouse == heroById)
-		{
-			return text + "的" + (heroById.IsFemale ? "妻子" : "丈夫");
-		}
-		if (heroById.Father == heroById2 || heroById.Mother == heroById2)
-		{
-			return text + "的" + (heroById.IsFemale ? "女儿" : "儿子");
-		}
-		if (heroById2.Father == heroById || heroById2.Mother == heroById)
-		{
-			return text + "的" + (heroById.IsFemale ? "母亲" : "父亲");
-		}
-		bool flag = heroById.Father != null && heroById2.Father != null && heroById.Father == heroById2.Father;
-		bool flag2 = heroById.Mother != null && heroById2.Mother != null && heroById.Mother == heroById2.Mother;
-		if (flag || flag2)
-		{
-			return text + "的" + (heroById.IsFemale ? "姐妹" : "兄弟");
-		}
-		if (heroById.Clan != null && heroById2.Clan != null && heroById.Clan == heroById2.Clan)
-		{
-			return text + "的家族成员";
-		}
-		return "";
-	}
-
-	private static string ResolveWeeklyPromptAggregateDeathRelationHeroId(List<EventMaterialReference> materials, string victimHeroId)
-	{
-		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		string text = list.Where((EventMaterialReference x) => string.Equals((x.ActionKind ?? "").Trim(), "clan_member_killed", StringComparison.OrdinalIgnoreCase)).Select((EventMaterialReference x) => (x.ActorHeroId ?? "").Trim()).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, (victimHeroId ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		return list.Select((EventMaterialReference x) => (x.ActorHeroId ?? "").Trim()).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, (victimHeroId ?? "").Trim(), StringComparison.OrdinalIgnoreCase)) ?? "";
-	}
-
-	private static string ParseWeeklyPromptHeroDeathReason(string stableKey)
-	{
-		string[] array = (stableKey ?? "").Trim().Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length < 3)
-		{
-			return "";
-		}
-		if (!string.Equals((array[0] ?? "").Trim(), "hero_killed", StringComparison.OrdinalIgnoreCase))
-		{
-			return "";
-		}
-		return TranslateWeeklyPromptHeroDeathDetail((array[2] ?? "").Trim());
-	}
-
-	private static string TranslateWeeklyPromptHeroDeathDetail(string detail)
-	{
-		switch ((detail ?? "").Trim())
-		{
-		case "Murdered":
-			return "遭遇谋杀";
-		case "DiedInLabor":
-			return "分娩事故";
-		case "DiedOfOldAge":
-			return "寿终正寝";
-		case "DiedInBattle":
-			return "战死沙场";
-		case "WoundedInBattle":
-			return "重伤不治";
-		case "Executed":
-		case "ExecutionAfterMapEvent":
-			return "被处决";
-		default:
-			return string.IsNullOrWhiteSpace(detail) ? "" : detail;
-		}
-	}
-
-	private string BuildWeeklyPromptAggregateMovementLine(List<EventMaterialReference> materials)
-	{
-		List<string> list = new List<string>();
-		list.Add("事件=近期行军动向");
-		AppendWeeklyPromptAggregateField(list, "动向明细", BuildWeeklyPromptAggregateMovementDetailValues(materials));
-		AppendWeeklyPromptAggregateField(list, "涉及地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
-		return string.Join("|", list);
-	}
-
-	private string BuildWeeklyPromptAggregateDecisionLine(List<EventMaterialReference> materials)
-	{
-		List<string> list = new List<string>();
-		list.Add("事件=王国决议");
-		AppendWeeklyPromptAggregateField(list, "议题明细", BuildWeeklyPromptAggregateDetailValues(materials));
-		AppendWeeklyPromptAggregateField(list, "相关人物归属", BuildWeeklyPromptAggregateHeroAffiliationValues(materials));
-		AppendWeeklyPromptAggregateField(list, "相关家族", ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[3] { x.ActorClanId, x.TargetClanId, x.SettlementOwnerClanId }, delegate(EventMaterialReference x)
-		{
-			return x.RelatedClanIds;
-		})));
-		AppendWeeklyPromptAggregateField(list, "相关王国", ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[4] { x.ActorKingdomId, x.TargetKingdomId, x.KingdomId, x.SettlementOwnerKingdomId }, delegate(EventMaterialReference x)
-		{
-			return x.RelatedKingdomIds;
-		})));
-		AppendWeeklyPromptAggregateField(list, "涉及地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
-		return string.Join("|", list);
-	}
-
-	private string BuildWeeklyPromptAggregateSiegeLine(List<EventMaterialReference> materials)
-	{
-		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		string text = BuildWeeklyPromptAggregateActionLabel(list);
-		string text2 = ((list[0].ActionKind ?? "").Trim().ToLowerInvariant());
-		string text3 = BuildWeeklyPromptAggregateSiegeParticipantsText(list);
-		string text4 = BuildWeeklyPromptAggregateSiegeTargetKingdomText(list);
-		string text5 = BuildWeeklyPromptAggregateSiegeSettlementText(list);
-		string text6 = string.IsNullOrWhiteSpace(text3) ? "相关部队" : text3;
-		string text7 = string.IsNullOrWhiteSpace(text5) ? "目标定居点" : text5;
-		string text8 = string.IsNullOrWhiteSpace(text4) ? text7 : (text4 + "的" + text7);
-		string text9;
-		switch (text2)
-		{
-		case "siege_join":
-			text9 = text6 + "加入了对" + text8 + "的围攻";
-			break;
-		case "siege_leave":
-			text9 = text6 + "结束了对" + text8 + "的围攻";
-			break;
-		case "siege_start_attack":
-			text9 = text6 + "对" + text8 + "发起了围攻";
-			break;
-		case "siege_start_defend":
-			text9 = text6 + "加入了" + text7 + "的守城";
-			break;
-		case "siege_end_attack":
-			text9 = text6 + "结束了对" + text8 + "的围攻";
-			break;
-		case "siege_end_defend":
-			text9 = text6 + "结束了在" + text7 + "的守城";
-			break;
-		default:
-		{
-			List<string> list2 = list.Where((EventMaterialReference x) => x != null && x.ActionKind == "siege_complete").Select(delegate(EventMaterialReference x)
-			{
-				if (!string.IsNullOrWhiteSpace(x.SnapshotText))
-				{
-					if (x.SnapshotText.IndexOf("获胜", StringComparison.OrdinalIgnoreCase) >= 0)
-					{
-						return "获胜";
-					}
-					if (x.SnapshotText.IndexOf("失利", StringComparison.OrdinalIgnoreCase) >= 0)
-					{
-						return "失利";
-					}
-				}
-				return "";
-			}).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			text9 = text6 + "围绕" + text7 + "进行了围城行动";
-			if (list2.Count > 0)
-			{
-				text9 += "，结果为" + string.Join("、", list2);
-			}
-			break;
-		}
-		}
-		return "事件=" + text + "：" + text9;
-	}
-
-	private static string BuildWeeklyPromptAggregateSiegeParticipantsText(List<EventMaterialReference> materials)
-	{
-		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		List<string> list2 = new List<string>();
-		Dictionary<string, List<string>> dictionary = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, List<string>> dictionary2 = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item in list)
-		{
-			string text = (item.ActorKingdomId ?? "").Trim();
-			string text2 = (item.ActorClanId ?? "").Trim();
-			string text3 = ResolveHeroDisplay(!string.IsNullOrWhiteSpace(item.ActorHeroId) ? item.ActorHeroId : item.HeroId);
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				continue;
-			}
-			AddUniqueId(list2, text);
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new List<string>();
-				dictionary[text] = value;
-			}
-			AddUniqueId(value, text2);
-			string key = text + "|" + text2;
-			if (!dictionary2.TryGetValue(key, out var value2))
-			{
-				value2 = new List<string>();
-				dictionary2[key] = value2;
-			}
-			AddUniqueId(value2, text3);
-		}
-		List<string> list3 = new List<string>();
-		foreach (string item2 in list2)
-		{
-			List<string> list4 = dictionary.ContainsKey(item2) ? dictionary[item2] : new List<string>();
-			List<string> list5 = new List<string>();
-			foreach (string item3 in list4)
-			{
-				string key2 = item2 + "|" + item3;
-				List<string> list6 = dictionary2.ContainsKey(key2) ? dictionary2[key2] : new List<string>();
-				if (list6.Count == 0)
-				{
-					continue;
-				}
-				string text4 = ResolveClanDisplay(item3);
-				if (!string.IsNullOrWhiteSpace(text4))
-				{
-					list5.Add(text4 + "家族的" + string.Join("、", list6));
-				}
-				else
-				{
-					list5.Add(string.Join("、", list6));
-				}
-			}
-			if (list5.Count == 0)
-			{
-				continue;
-			}
-			string text5 = ResolveKingdomDisplay(item2);
-			if (!string.IsNullOrWhiteSpace(text5))
-			{
-				list3.Add(text5 + "所属的" + JoinWithYiJi(list5));
-			}
-			else
-			{
-				list3.Add(JoinWithYiJi(list5));
-			}
-		}
-		return JoinWithYiJi(list3);
-	}
-
-	private static string BuildWeeklyPromptAggregateSiegeTargetKingdomText(List<EventMaterialReference> materials)
-	{
-		List<string> list = ResolveKingdomNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[2] { x.TargetKingdomId, x.SettlementOwnerKingdomId }, null));
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		return string.Join("、", list);
-	}
-
-	private static string BuildWeeklyPromptAggregateSiegeSettlementText(List<EventMaterialReference> materials)
-	{
-		string text = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).Select((EventMaterialReference x) => (x.SettlementId ?? "").Trim()).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x));
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
+		string id = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id)) return "";
 		try
 		{
-			Settlement settlement = Settlement.Find(text);
+			Settlement settlement = Settlement.Find(id);
+			if (settlement != null) return GetSettlementDisplayName(settlement);
+		}
+		catch
+		{
+		}
+		return ResolveSettlementDisplay(id);
+	}
+
+	private static string CaptureWeeklySettlementNameWithType(string settlementId)
+	{
+		string id = (settlementId ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(id)) return "";
+		try
+		{
+			Settlement settlement = Settlement.Find(id);
 			if (settlement != null)
 			{
-				return GetSettlementDisplayName(settlement);
+				string name = GetSettlementDisplayName(settlement);
+				string type = GetSettlementTypeLabel(settlement);
+				if (!string.IsNullOrWhiteSpace(name))
+					return string.IsNullOrWhiteSpace(type) ? name : type + name;
 			}
 		}
 		catch
 		{
 		}
-		return ResolveSettlementDisplay(text);
-	}
-
-	private static string JoinWithYiJi(List<string> parts)
-	{
-		List<string> list = (parts ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		if (list.Count == 1)
-		{
-			return list[0];
-		}
-		if (list.Count == 2)
-		{
-			return list[0] + "和" + list[1];
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(string.Join("、", list.Take(list.Count - 1)));
-		stringBuilder.Append("，还有");
-		stringBuilder.Append(list[list.Count - 1]);
-		return stringBuilder.ToString();
-	}
-
-#if false
-	private string BuildWeeklyPromptAggregatePrisonerLine(List<EventMaterialReference> materials, bool released)
-	{
-		List<string> list = new List<string>();
-		list.Add("事件=" + (released ? "囚犯获释" : "人物被俘"));
-		List<string> list2 = new List<string>();
-		List<string> list3 = new List<string>();
-		List<string> list4 = new List<string>();
-		List<string> list5 = new List<string>();
-		List<string> list6 = new List<string>();
-		List<string> list7 = new List<string>();
-		foreach (EventMaterialReference item in materials.Where((EventMaterialReference x) => x != null))
-		{
-			string text = (item.ActionKind ?? "").Trim().ToLowerInvariant();
-			if (!released)
-			{
-				if (text == "prisoner_taken_captor")
-				{
-					AddUniqueId(list2, item.ActorHeroId);
-					AddUniqueId(list3, item.TargetHeroId);
-					AddUniqueId(list4, item.ActorKingdomId);
-					AddUniqueId(list5, item.TargetKingdomId);
-					AddUniqueId(list6, item.ActorClanId);
-					AddUniqueId(list7, item.TargetClanId);
-				}
-				else if (text == "prisoner_taken_prisoner")
-				{
-					AddUniqueId(list2, item.TargetHeroId);
-					AddUniqueId(list3, item.ActorHeroId);
-					AddUniqueId(list4, item.TargetKingdomId);
-					AddUniqueId(list5, item.ActorKingdomId);
-					AddUniqueId(list6, item.TargetClanId);
-					AddUniqueId(list7, item.ActorClanId);
-				}
-			}
-			else if (text == "prisoner_released_captor")
-			{
-				AddUniqueId(list2, item.TargetHeroId);
-				AddUniqueId(list3, item.ActorHeroId);
-				AddUniqueId(list4, item.TargetKingdomId);
-				AddUniqueId(list5, item.ActorKingdomId);
-				AddUniqueId(list6, item.TargetClanId);
-				AddUniqueId(list7, item.ActorClanId);
-			}
-			else if (text == "prisoner_released_prisoner")
-			{
-				AddUniqueId(list2, item.TargetHeroId);
-				AddUniqueId(list3, item.ActorHeroId);
-				AddUniqueId(list4, item.TargetKingdomId);
-				AddUniqueId(list5, item.ActorKingdomId);
-				AddUniqueId(list6, item.TargetClanId);
-				AddUniqueId(list7, item.ActorClanId);
-			}
-		}
-		AppendWeeklyPromptAggregateField(list, released ? "原囚禁方" : "俘获者", ResolveHeroNames(list2));
-		AppendWeeklyPromptAggregateField(list, released ? "获释者" : "被俘者", ResolveHeroNames(list3));
-		AppendWeeklyPromptAggregateField(list, released ? "原囚禁方王国" : "俘获者王国", ResolveKingdomNames(list4));
-		AppendWeeklyPromptAggregateField(list, released ? "获释者王国" : "被俘者王国", ResolveKingdomNames(list5));
-		AppendWeeklyPromptAggregateField(list, "地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
-		if (released)
-		{
-			List<string> list6 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptReleaseDetail(x?.ActionStableKey)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			AppendWeeklyPromptAggregateField(list, "方式", list6);
-		}
-		return string.Join("|", list);
-	}
-
-#endif
-
-	private string BuildWeeklyPromptAggregatePrisonerLine(List<EventMaterialReference> materials, bool released)
-	{
-		List<string> list = new List<string>();
-		list.Add("事件=" + (released ? "人物获释" : "人物被俘"));
-		List<string> pairOrder = new List<string>();
-		Dictionary<string, string> captorHeroByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> prisonerHeroByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> captorClanByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> prisonerClanByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> captorKingdomByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, string> prisonerKingdomByPair = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, List<string>> settlementIdsByPair = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, List<string>> releaseDetailsByPair = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-
-		void setIfEmpty(Dictionary<string, string> map, string key, string value)
-		{
-			if (!map.ContainsKey(key) || string.IsNullOrWhiteSpace(map[key]))
-			{
-				map[key] = (value ?? "").Trim();
-			}
-		}
-
-		void ensurePair(string pairKey)
-		{
-			if (!pairOrder.Contains(pairKey))
-			{
-				pairOrder.Add(pairKey);
-			}
-			if (!settlementIdsByPair.ContainsKey(pairKey))
-			{
-				settlementIdsByPair[pairKey] = new List<string>();
-			}
-			if (!releaseDetailsByPair.ContainsKey(pairKey))
-			{
-				releaseDetailsByPair[pairKey] = new List<string>();
-			}
-		}
-
-		void mergePair(EventMaterialReference item, string captorHeroId, string prisonerHeroId, string captorClanId, string prisonerClanId, string captorKingdomId, string prisonerKingdomId)
-		{
-			string text2 = (captorHeroId ?? "").Trim();
-			string text3 = (prisonerHeroId ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text2) && string.IsNullOrWhiteSpace(text3))
-			{
-				return;
-			}
-			string pairKey = text2 + "->" + text3;
-			ensurePair(pairKey);
-			setIfEmpty(captorHeroByPair, pairKey, text2);
-			setIfEmpty(prisonerHeroByPair, pairKey, text3);
-			setIfEmpty(captorClanByPair, pairKey, captorClanId);
-			setIfEmpty(prisonerClanByPair, pairKey, prisonerClanId);
-			setIfEmpty(captorKingdomByPair, pairKey, captorKingdomId);
-			setIfEmpty(prisonerKingdomByPair, pairKey, prisonerKingdomId);
-			if (item != null)
-			{
-				AddUniqueId(settlementIdsByPair[pairKey], item.SettlementId);
-				if (released)
-				{
-					AddUniqueId(releaseDetailsByPair[pairKey], ParseWeeklyPromptReleaseDetail(item.ActionStableKey));
-				}
-			}
-		}
-
-		foreach (EventMaterialReference item in materials.Where((EventMaterialReference x) => x != null))
-		{
-			string text = (item.ActionKind ?? "").Trim().ToLowerInvariant();
-			if (!released)
-			{
-				string text2;
-				string text3;
-				if (TryParseWeeklyPromptPrisonerPair(item.ActionStableKey, out text2, out text3) && text.StartsWith("prisoner_taken_", StringComparison.OrdinalIgnoreCase))
-				{
-					if (text == "prisoner_taken_captor")
-					{
-						mergePair(item, text2, text3, item.ActorClanId, item.TargetClanId, item.ActorKingdomId, item.TargetKingdomId);
-						continue;
-					}
-					if (text == "prisoner_taken_prisoner")
-					{
-						mergePair(item, text2, text3, item.TargetClanId, item.ActorClanId, item.TargetKingdomId, item.ActorKingdomId);
-						continue;
-					}
-				}
-			}
-			else
-			{
-				string text4;
-				string text5;
-				if (TryParseWeeklyPromptPrisonerPair(item.ActionStableKey, out text4, out text5) && text.StartsWith("prisoner_released_", StringComparison.OrdinalIgnoreCase))
-				{
-					if (text == "prisoner_released_captor")
-					{
-						mergePair(item, text4, text5, item.TargetClanId, item.ActorClanId, item.TargetKingdomId, item.ActorKingdomId);
-						continue;
-					}
-					if (text == "prisoner_released_prisoner")
-					{
-						mergePair(item, text4, text5, item.TargetClanId, item.ActorClanId, item.TargetKingdomId, item.ActorKingdomId);
-						continue;
-					}
-				}
-			}
-
-			if (!released)
-			{
-				if (text == "prisoner_taken_captor")
-				{
-					mergePair(item, item.ActorHeroId, item.TargetHeroId, item.ActorClanId, item.TargetClanId, item.ActorKingdomId, item.TargetKingdomId);
-				}
-				else if (text == "prisoner_taken_prisoner")
-				{
-					mergePair(item, item.TargetHeroId, item.ActorHeroId, item.TargetClanId, item.ActorClanId, item.TargetKingdomId, item.ActorKingdomId);
-				}
-			}
-			else if (text == "prisoner_released_captor" || text == "prisoner_released_prisoner")
-			{
-				mergePair(item, item.TargetHeroId, item.ActorHeroId, item.TargetClanId, item.ActorClanId, item.TargetKingdomId, item.ActorKingdomId);
-			}
-		}
-
-		List<string> list2 = new List<string>();
-		foreach (string item2 in pairOrder)
-		{
-			string text6 = captorHeroByPair.ContainsKey(item2) ? captorHeroByPair[item2] : "";
-			string text7 = prisonerHeroByPair.ContainsKey(item2) ? prisonerHeroByPair[item2] : "";
-			string text8 = BuildWeeklyPromptAggregateHumanAffiliationText(text6, captorClanByPair.ContainsKey(item2) ? captorClanByPair[item2] : "", captorKingdomByPair.ContainsKey(item2) ? captorKingdomByPair[item2] : "");
-			string text9 = BuildWeeklyPromptAggregateHumanAffiliationText(text7, prisonerClanByPair.ContainsKey(item2) ? prisonerClanByPair[item2] : "", prisonerKingdomByPair.ContainsKey(item2) ? prisonerKingdomByPair[item2] : "");
-			string text10 = string.IsNullOrWhiteSpace(text8) ? "未知势力" : text8;
-			string text11 = string.IsNullOrWhiteSpace(text9) ? "目标人物" : text9;
-			List<string> list3 = ResolveSettlementNames(settlementIdsByPair.ContainsKey(item2) ? settlementIdsByPair[item2] : new List<string>());
-			List<string> list4 = released ? releaseDetailsByPair[item2].Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>();
-			List<string> list5 = new List<string>();
-			if (list3.Count > 0)
-			{
-				list5.Add("地点：" + string.Join("、", list3));
-			}
-			if (released && list4.Count > 0)
-			{
-				list5.Add("方式：" + string.Join("、", list4));
-			}
-			string text12 = (!released) ? (text11 + "被" + text10 + "俘虏") : (text11 + "被" + text10 + "从俘虏状态中释放");
-			if (list5.Count > 0)
-			{
-				text12 += "（" + string.Join("；", list5) + "）";
-			}
-			list2.Add(text12);
-		}
-		if (list2.Count > 0)
-		{
-			return "事件=" + (released ? "人物获释" : "人物被俘") + "：" + string.Join("；", list2);
-		}
-		else
-		{
-			AppendWeeklyPromptAggregateField(list, "地点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
-		}
-		return string.Join("|", list);
+		return ResolveSettlementDisplay(id);
 	}
 
 	private static bool TryParseWeeklyPromptPrisonerPair(string stableKey, out string captorHeroId, out string prisonerHeroId)
 	{
-		captorHeroId = "";
-		prisonerHeroId = "";
-		string[] array = (stableKey ?? "").Trim().Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length < 3)
-		{
-			return false;
-		}
-		if (!string.Equals((array[0] ?? "").Trim(), "prisoner_released", StringComparison.OrdinalIgnoreCase) && !string.Equals((array[0] ?? "").Trim(), "prisoner_taken", StringComparison.OrdinalIgnoreCase))
-		{
-			return false;
-		}
-		captorHeroId = (array[1] ?? "").Trim();
-		prisonerHeroId = (array[2] ?? "").Trim();
-		return !string.IsNullOrWhiteSpace(captorHeroId) || !string.IsNullOrWhiteSpace(prisonerHeroId);
-	}
-
-	private static string BuildWeeklyPromptAggregateHumanAffiliationText(string heroId, string clanId, string kingdomId)
-	{
-		string text = ResolveHeroDisplay(heroId);
-		string text2 = ResolveClanDisplay(clanId);
-		string text3 = ResolveKingdomDisplay(kingdomId);
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
-		{
-			return text3 + "所属的" + text2 + "家族的" + text;
-		}
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
-		{
-			return text2 + "家族的" + text;
-		}
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text3))
-		{
-			return text3 + "所属的" + text;
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
-		{
-			return text3 + "所属的" + text2 + "家族";
-		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2 + "家族";
-		}
-		if (!string.IsNullOrWhiteSpace(text3))
-		{
-			return text3;
-		}
-		return "";
-	}
-
-	private string BuildWeeklyPromptAggregateSettlementOwnerChangeLine(List<EventMaterialReference> materials)
-	{
-		List<string> list = new List<string>();
-		list.Add("事件=定居点易主");
-		AppendWeeklyPromptAggregateField(list, "定居点", ResolveSettlementNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.SettlementId }, null)));
-		List<string> list2 = new List<string>();
-		List<string> list3 = new List<string>();
-		List<string> list4 = new List<string>();
-		List<string> list5 = new List<string>();
-		List<string> list6 = new List<string>();
-		foreach (EventMaterialReference item in materials.Where((EventMaterialReference x) => x != null))
-		{
-			string text = (item.ActionKind ?? "").Trim().ToLowerInvariant();
-			if (text == "settlement_owner_changed_gain")
-			{
-				AddUniqueId(list2, item.ActorHeroId);
-				AddUniqueId(list3, item.TargetHeroId);
-				AddUniqueId(list5, item.ActorKingdomId);
-				AddUniqueId(list6, item.TargetKingdomId);
-			}
-			else if (text == "settlement_owner_changed_loss")
-			{
-				AddUniqueId(list2, item.TargetHeroId);
-				AddUniqueId(list3, item.ActorHeroId);
-				AddUniqueId(list5, item.TargetKingdomId);
-				AddUniqueId(list6, item.ActorKingdomId);
-			}
-			else if (text == "settlement_owner_changed_capture")
-			{
-				AddUniqueId(list4, item.ActorHeroId);
-			}
-		}
-		AppendWeeklyPromptAggregateField(list, "新所有者", ResolveHeroNames(list2));
-		AppendWeeklyPromptAggregateField(list, "失去者", ResolveHeroNames(list3));
-		AppendWeeklyPromptAggregateField(list, "促成者", ResolveHeroNames(list4));
-		AppendWeeklyPromptAggregateField(list, "新所有者王国", ResolveKingdomNames(list5));
-		AppendWeeklyPromptAggregateField(list, "失去者王国", ResolveKingdomNames(list6));
-		List<string> list7 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptSettlementChangeDetail(x?.ActionStableKey)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		AppendWeeklyPromptAggregateField(list, "方式", list7);
-		List<string> list8 = BuildWeeklyPromptSettlementOwnerChangeNatureLabels(list7);
-		AppendWeeklyPromptAggregateField(list, "事实约束", list8);
-		return string.Join("|", list);
-	}
-
-	private static List<string> BuildWeeklyPromptSettlementOwnerChangeNatureLabels(List<string> detailLabels)
-	{
-		List<string> list = new List<string>();
-		foreach (string item in detailLabels ?? new List<string>())
-		{
-			string text = (item ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			if (text.IndexOf("交易", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("买卖", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("易物", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("非攻城", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				AddUniqueId(list, "这是交易/买卖导致的和平移交，不是攻城夺取");
-				continue;
-			}
-			if (text.IndexOf("围城", StringComparison.OrdinalIgnoreCase) >= 0)
-			{
-				AddUniqueId(list, "这是围城或攻城导致的军事易主");
-			}
-		}
-		return list;
-	}
-
-	private string BuildWeeklyPromptAggregateClanChangeLine(List<EventMaterialReference> materials)
-	{
-		List<string> list = new List<string>();
-		bool flag = (materials ?? new List<EventMaterialReference>()).Any((EventMaterialReference x) => string.Equals((x?.ActionKind ?? "").Trim(), "clan_rebellion", StringComparison.OrdinalIgnoreCase) || (x?.SourceActionKinds ?? new List<string>()).Any((string y) => string.Equals((y ?? "").Trim(), "clan_rebellion", StringComparison.OrdinalIgnoreCase)));
-		list.Add(flag ? "事件=家族叛乱" : "事件=家族归属变更");
-		AppendWeeklyPromptAggregateField(list, "家族", ResolveClanNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[1] { x.ActorClanId }, delegate(EventMaterialReference x)
-		{
-			return x.RelatedClanIds;
-		})));
-		AppendWeeklyPromptAggregateField(list, "成员", ResolveHeroNames(CollectMaterialIds(materials, (EventMaterialReference x) => new string[2] { x.ActorHeroId, x.HeroId }, delegate(EventMaterialReference x)
-		{
-			return x.RelatedHeroIds;
-		})));
-		List<string> list2 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.oldKingdomId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		List<string> list3 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.newKingdomId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		List<string> list4 = materials.Select((EventMaterialReference x) => ParseWeeklyPromptClanChangeDetail(x?.ActionStableKey)?.detailLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		AppendWeeklyPromptAggregateField(list, "原王国", ResolveKingdomNames(list2));
-		AppendWeeklyPromptAggregateField(list, "新王国", ResolveKingdomNames(list3));
-		AppendWeeklyPromptAggregateField(list, "方式", list4);
-		if (flag)
-		{
-			AppendWeeklyPromptAggregateField(list, "事实约束", new List<string> { "这是NPC家族主动脱离旧王国并发动叛乱，不是普通换阵营" });
-		}
-		return string.Join("|", list);
-	}
-
-	private static string BuildWeeklyPromptAggregateActionLabel(List<EventMaterialReference> materials)
-	{
-		List<string> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).Select((EventMaterialReference x) => TranslateNpcActionKindForPrompt(x.ActionKind)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		if (list.Count > 0)
-		{
-			return string.Join("、", list);
-		}
-		string text = (materials?.FirstOrDefault()?.ActionKind ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "未分类行动" : text;
-	}
-
-	private static void AppendWeeklyPromptAggregateField(List<string> fields, string name, List<string> values)
-	{
-		if (fields == null || values == null)
-		{
-			return;
-		}
-		List<string> list = values.Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		if (list.Count == 0)
-		{
-			return;
-		}
-		fields.Add(name + "=" + string.Join("、", list));
-	}
-
-	private static List<string> BuildWeeklyPromptAggregateHeroAffiliationValues(List<EventMaterialReference> materials)
-	{
-		List<Tuple<string, string, string>> list = new List<Tuple<string, string, string>>();
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			if (item == null)
-			{
-				continue;
-			}
-			AddWeeklyPromptAggregateAffiliationEntry(list, item.ActorHeroId, item.ActorClanId, item.ActorKingdomId);
-			AddWeeklyPromptAggregateAffiliationEntry(list, item.TargetHeroId, item.TargetClanId, item.TargetKingdomId);
-			AddWeeklyPromptAggregateAffiliationEntry(list, item.HeroId, "", item.KingdomId);
-			foreach (string relatedHeroId in item.RelatedHeroIds ?? new List<string>())
-			{
-				AddWeeklyPromptAggregateAffiliationEntry(list, relatedHeroId, "", "");
-			}
-		}
-		return BuildWeeklyPromptAggregateAffiliationValues(list);
-	}
-
-	private static List<string> BuildWeeklyPromptAggregateAffiliationValues(IEnumerable<Tuple<string, string, string>> entries)
-	{
-		List<string> list = new List<string>();
-		Dictionary<string, List<string>> dictionary = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-		Dictionary<string, List<string>> dictionary2 = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-		foreach (Tuple<string, string, string> item in entries ?? Enumerable.Empty<Tuple<string, string, string>>())
-		{
-			string text = (item?.Item1 ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			AddUniqueId(list, text);
-			Hero heroById = FindHeroById(text);
-			string item2 = !string.IsNullOrWhiteSpace(item?.Item2) ? item.Item2 : (heroById?.Clan?.StringId ?? "");
-			string item3 = !string.IsNullOrWhiteSpace(item?.Item3) ? item.Item3 : (heroById?.MapFaction?.StringId ?? heroById?.Clan?.Kingdom?.StringId ?? "");
-			if (!dictionary.TryGetValue(text, out var value))
-			{
-				value = new List<string>();
-				dictionary[text] = value;
-			}
-			if (!dictionary2.TryGetValue(text, out var value2))
-			{
-				value2 = new List<string>();
-				dictionary2[text] = value2;
-			}
-			AddUniqueId(value, item2);
-			AddUniqueId(value2, item3);
-		}
-		return list.Select(delegate(string heroId)
-		{
-			string text = ResolveHeroDisplay(heroId);
-			List<string> list2 = dictionary.ContainsKey(heroId) ? ResolveClanNames(dictionary[heroId]) : new List<string>();
-			List<string> list3 = dictionary2.ContainsKey(heroId) ? ResolveKingdomNames(dictionary2[heroId]) : new List<string>();
-			List<string> list4 = new List<string>();
-			if (list2.Count > 0)
-			{
-				list4.Add("家族=" + string.Join("、", list2));
-			}
-			if (list3.Count > 0)
-			{
-				list4.Add("王国=" + string.Join("、", list3));
-			}
-			return (list4.Count == 0) ? text : (text + "(" + string.Join(";", list4) + ")");
-		}).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-	}
-
-	private static void AddWeeklyPromptAggregateAffiliationEntry(List<Tuple<string, string, string>> entries, string heroId, string clanId, string kingdomId)
-	{
-		string item = (heroId ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(item))
-		{
-			entries?.Add(Tuple.Create(item, (clanId ?? "").Trim(), (kingdomId ?? "").Trim()));
-		}
-	}
-
-	private static List<string> BuildWeeklyPromptAggregateMovementDetailValues(List<EventMaterialReference> materials)
-	{
-		List<string> list = new List<string>();
-		List<EventMaterialReference> list2 = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		Dictionary<string, List<EventMaterialReference>> dictionary = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item in list2)
-		{
-			if (IsMovementDefendMaterial(item) && !string.IsNullOrWhiteSpace(item.SettlementId))
-			{
-				string key = ((item.SettlementId ?? "").Trim()) + "|" + ((item.SettlementOwnerClanId ?? "").Trim()) + "|" + ((item.SettlementOwnerKingdomId ?? "").Trim());
-				if (!dictionary.TryGetValue(key, out var value))
-				{
-					value = new List<EventMaterialReference>();
-					dictionary[key] = value;
-				}
-				value.Add(item);
-			}
-		}
-		foreach (List<EventMaterialReference> item2 in dictionary.Values)
-		{
-			EventMaterialReference eventMaterialReference = item2.FirstOrDefault((EventMaterialReference x) => x != null);
-			if (eventMaterialReference == null)
-			{
-				continue;
-			}
-			string text = BuildWeeklyPromptAggregateSiegeParticipantsText(item2);
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				text = "守军";
-			}
-			string text2 = BuildWeeklyPromptAggregateSettlementOwnerFactionText(eventMaterialReference);
-			string text3 = BuildWeeklyPromptAggregateSettlementNameWithType(eventMaterialReference.SettlementId);
-			string text4 = "";
-			if (!string.IsNullOrWhiteSpace(text2) && !string.IsNullOrWhiteSpace(text3))
-			{
-				text4 = text + "正在守备" + text2 + "的" + text3 + "。";
-			}
-			else if (!string.IsNullOrWhiteSpace(text3))
-			{
-				text4 = text + "正在守备" + text3 + "。";
-			}
-			else
-			{
-				text4 = text + "正在守备当地要地。";
-			}
-			if (!list.Contains(text4))
-			{
-				list.Add(text4);
-			}
-		}
-		HashSet<EventMaterialReference> hashSet = new HashSet<EventMaterialReference>();
-		Dictionary<string, List<EventMaterialReference>> dictionary2 = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item3 in list2)
-		{
-			if (IsMovementArmySiegeMaterial(item3))
-			{
-				string text5 = BuildWeeklyPromptAggregateMovementArmySiegeGroupKey(item3);
-				if (!dictionary2.TryGetValue(text5, out var value2))
-				{
-					value2 = new List<EventMaterialReference>();
-					dictionary2[text5] = value2;
-				}
-				value2.Add(item3);
-			}
-		}
-		foreach (List<EventMaterialReference> item4 in dictionary2.Values)
-		{
-			string text6 = BuildWeeklyPromptAggregateMovementArmySiegeLine(item4);
-			if (!string.IsNullOrWhiteSpace(text6) && !list.Contains(text6))
-			{
-				list.Add(text6);
-				foreach (EventMaterialReference item5 in item4)
-				{
-					hashSet.Add(item5);
-				}
-			}
-		}
-		Dictionary<string, List<EventMaterialReference>> dictionary3 = new Dictionary<string, List<EventMaterialReference>>(StringComparer.OrdinalIgnoreCase);
-		foreach (EventMaterialReference item6 in list2)
-		{
-			if (item6 != null && !hashSet.Contains(item6) && IsMovementRaidMaterial(item6))
-			{
-				string text7 = BuildWeeklyPromptAggregateMovementRaidGroupKey(item6);
-				if (!dictionary3.TryGetValue(text7, out var value3))
-				{
-					value3 = new List<EventMaterialReference>();
-					dictionary3[text7] = value3;
-				}
-				value3.Add(item6);
-			}
-		}
-		foreach (List<EventMaterialReference> item7 in dictionary3.Values)
-		{
-			EventMaterialReference eventMaterialReference2 = item7.FirstOrDefault((EventMaterialReference x) => x != null);
-			if (eventMaterialReference2 == null)
-			{
-				continue;
-			}
-			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(item7).Replace("所属的", "的");
-			if (string.IsNullOrWhiteSpace(text8))
-			{
-				text8 = BuildWeeklyPromptAggregateActorAffiliationText(eventMaterialReference2);
-			}
-			if (string.IsNullOrWhiteSpace(text8))
-			{
-				text8 = "某势力";
-			}
-			string text9 = BuildWeeklyPromptAggregateRaidTargetText(eventMaterialReference2);
-			string text10 = text8 + "最近在袭扰" + (string.IsNullOrWhiteSpace(text9) ? "某地" : text9) + "。";
-			if (!list.Contains(text10))
-			{
-				list.Add(text10);
-			}
-			foreach (EventMaterialReference item8 in item7)
-			{
-				hashSet.Add(item8);
-			}
-		}
-		foreach (EventMaterialReference item9 in list2)
-		{
-			if (item9 == null)
-			{
-				continue;
-			}
-			if (hashSet.Contains(item9))
-			{
-				continue;
-			}
-			if (IsMovementDefendMaterial(item9) && !string.IsNullOrWhiteSpace(item9.SettlementId))
-			{
-				continue;
-			}
-			string text11 = (item9.SnapshotText ?? item9.Label ?? "").Trim();
-			if (IsMovementRaidMaterial(item9))
-			{
-				string text12 = BuildWeeklyPromptAggregateActorAffiliationText(item9);
-				string text13 = BuildWeeklyPromptAggregateRaidTargetText(item9);
-				string text14 = string.IsNullOrWhiteSpace(text12) ? "某势力" : text12;
-				string text15 = text14 + "最近在袭扰" + (string.IsNullOrWhiteSpace(text13) ? "某地" : text13) + "。";
-				if (!list.Contains(text15))
-				{
-					list.Add(text15);
-				}
-				continue;
-			}
-			string text16 = BuildWeeklyPromptAggregateActorAffiliationText(item9);
-			string text17 = BuildWeeklyPromptAggregateMovementActionText(item9, text11);
-			if (string.IsNullOrWhiteSpace(text17))
-			{
-				continue;
-			}
-			if (IsMovementArmyLeaderMaterial(item9))
-			{
-				string text18 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16.Replace("所属的", "的") + text17);
-				if (!list.Contains(text18))
-				{
-					list.Add(text18);
-				}
-				continue;
-			}
-			string text19 = string.IsNullOrWhiteSpace(text16) ? text17 : (text16 + "：" + text17);
-			if (!list.Contains(text19))
-			{
-				list.Add(text19);
-			}
-		}
-		return list;
-	}
-
-	private static bool IsMovementDefendMaterial(EventMaterialReference item)
-	{
-		string text = (item?.ActionStableKey ?? "").Trim();
-		if (text.IndexOf("DefendSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return true;
-		}
-		string text2 = (item?.SnapshotText ?? item?.Label ?? "").Trim();
-		return text2.IndexOf("守备", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("保卫", StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
-	private static bool IsMovementRaidMaterial(EventMaterialReference item)
-	{
-		if (item == null || string.IsNullOrWhiteSpace(item.SettlementId))
-		{
-			return false;
-		}
-		string text = (item.ActionStableKey ?? "").Trim();
-		if (text.IndexOf("RaidSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return true;
-		}
-		if (!((item.ActionKind ?? "").Trim().Equals("daily_behavior", StringComparison.OrdinalIgnoreCase)))
-		{
-			return false;
-		}
-		string text2 = (item.SnapshotText ?? item.Label ?? "").Trim();
-		return text2.IndexOf("袭扰", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("劫掠", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("掠夺", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("掠", StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
-	private static string BuildWeeklyPromptAggregateMovementRaidGroupKey(EventMaterialReference item)
-	{
-		string text = BuildWeeklyPromptAggregateRaidTargetText(item);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = (item?.SettlementId ?? "").Trim().ToLowerInvariant();
-		}
-		return ((item?.ActorKingdomId ?? "").Trim().ToLowerInvariant()) + "|" + ((item?.ActorClanId ?? "").Trim().ToLowerInvariant()) + "|" + text;
-	}
-
-	private static bool IsMovementArmySiegeMaterial(EventMaterialReference item)
-	{
-		if (item == null)
-		{
-			return false;
-		}
-		string text = ((item.ActionKind ?? "").Trim().ToLowerInvariant());
-		if (text != "daily_behavior")
-		{
-			return false;
-		}
-		string text2 = (item.ActionStableKey ?? "").Trim();
-		string text3 = (item.SnapshotText ?? item.Label ?? "").Trim();
-		bool flag = text2.IndexOf("daily_behavior:army:", StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf("军团", StringComparison.OrdinalIgnoreCase) >= 0;
-		if (!flag)
-		{
-			return false;
-		}
-		if (text2.IndexOf("BesiegeSettlement", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("AssaultSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return true;
-		}
-		return text3.IndexOf("围攻", StringComparison.OrdinalIgnoreCase) >= 0 || text3.IndexOf("强攻", StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
-	private static string BuildWeeklyPromptAggregateMovementArmySiegeGroupKey(EventMaterialReference item)
-	{
-		string text = NormalizeWeeklyPromptAggregateStableKey(item?.ActionStableKey);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = ResolveMovementArmySiegeActionVerb(item, (item?.SnapshotText ?? item?.Label ?? "").Trim());
-		return ((item?.SettlementId ?? "").Trim().ToLowerInvariant()) + "|" + ((item?.SettlementOwnerClanId ?? "").Trim().ToLowerInvariant()) + "|" + ((item?.SettlementOwnerKingdomId ?? "").Trim().ToLowerInvariant()) + "|" + (text2 ?? "").Trim().ToLowerInvariant();
-	}
-
-	private static string BuildWeeklyPromptAggregateMovementArmySiegeLine(List<EventMaterialReference> materials)
-	{
-		List<EventMaterialReference> list = (materials ?? new List<EventMaterialReference>()).Where((EventMaterialReference x) => x != null).ToList();
-		if (list.Count == 0)
-		{
-			return "";
-		}
-		EventMaterialReference eventMaterialReference = list.FirstOrDefault(IsMovementArmyLeaderMaterial);
-		bool flag = eventMaterialReference != null;
-		if (eventMaterialReference == null)
-		{
-			eventMaterialReference = list[0];
-		}
-		string text = (eventMaterialReference.SnapshotText ?? eventMaterialReference.Label ?? "").Trim();
-		string text2 = BuildWeeklyPromptAggregateMovementActionText(eventMaterialReference, text);
-		string text3 = ResolveMovementArmySiegeActionVerb(eventMaterialReference, text2);
-		if (string.IsNullOrWhiteSpace(text3))
-		{
-			return "";
-		}
-		string text4 = ExtractMovementArmyNameFromActionText(text2);
-		if (string.IsNullOrWhiteSpace(text4))
-		{
-			text4 = "军团";
-		}
-		string text5 = BuildWeeklyPromptAggregateMovementArmyTargetText(eventMaterialReference);
-		if (string.IsNullOrWhiteSpace(text5))
-		{
-			text5 = "目标据点";
-		}
-		if (flag)
-		{
-			string text6 = BuildWeeklyPromptAggregateActorAffiliationText(eventMaterialReference);
-			if (string.IsNullOrWhiteSpace(text6))
-			{
-				text6 = "某领主";
-			}
-			string text7 = text6 + "最近正率领" + text4 + text3 + text5 + "。";
-			List<EventMaterialReference> list2 = list.Where((EventMaterialReference x) => x != eventMaterialReference).ToList();
-			string text8 = BuildWeeklyPromptAggregateSiegeParticipantsText(list2);
-			if (!string.IsNullOrWhiteSpace(text8))
-			{
-				text7 = TrimTrailingSentencePunctuation(text7) + "，军团的成员有" + text8 + "。";
-			}
-			return text7;
-		}
-		string text9 = BuildWeeklyPromptAggregateSiegeParticipantsText(list);
-		if (string.IsNullOrWhiteSpace(text9))
-		{
-			text9 = "相关部队";
-		}
-		return text9 + "最近正随" + text4 + text3 + text5 + "。";
-	}
-
-	private static bool IsMovementArmyLeaderMaterial(EventMaterialReference item)
-	{
-		string text = BuildWeeklyPromptAggregateMovementActionText(item, (item?.SnapshotText ?? item?.Label ?? "").Trim());
-		return text.IndexOf("率领", StringComparison.OrdinalIgnoreCase) >= 0;
-	}
-
-	private static string ResolveMovementArmySiegeActionVerb(EventMaterialReference item, string actionText)
-	{
-		string text = (item?.ActionStableKey ?? "").Trim();
-		if (text.IndexOf("BesiegeSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "围攻";
-		}
-		if (text.IndexOf("AssaultSettlement", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "强攻";
-		}
-		string text2 = (actionText ?? "").Trim();
-		if (text2.IndexOf("围攻", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "围攻";
-		}
-		if (text2.IndexOf("强攻", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "强攻";
-		}
-		return "";
-	}
-
-	private static string ExtractMovementArmyNameFromActionText(string actionText)
-	{
-		string text = (actionText ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		int num = text.IndexOf("率领", StringComparison.OrdinalIgnoreCase);
-		int num2 = 2;
-		if (num < 0)
-		{
-			num = text.IndexOf("随", StringComparison.OrdinalIgnoreCase);
-			num2 = 1;
-		}
-		if (num < 0)
-		{
-			return "";
-		}
-		int num3 = num + num2;
-		if (num3 >= text.Length)
-		{
-			return "";
-		}
-		int num4 = int.MaxValue;
-		foreach (string item in new string[5] { "围攻", "强攻", "守备", "前往", "在" })
-		{
-			int num5 = text.IndexOf(item, num3, StringComparison.OrdinalIgnoreCase);
-			if (num5 > num3 && num5 < num4)
-			{
-				num4 = num5;
-			}
-		}
-		if (num4 == int.MaxValue || num4 <= num3)
-		{
-			return "";
-		}
-		return text.Substring(num3, num4 - num3).Trim().Trim('，', '。', '、', ',', ' ');
-	}
-
-	private static string BuildWeeklyPromptAggregateMovementArmyTargetText(EventMaterialReference item)
-	{
-		string text = BuildWeeklyPromptAggregateSettlementOwnerFactionText(item).Replace("所属的", "的");
-		string text2 = ResolveSettlementDisplay(item?.SettlementId);
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
-		{
-			return text + "的" + text2;
-		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2;
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text + "的据点";
-		}
-		return "";
-	}
-
-	private static string TrimTrailingSentencePunctuation(string text)
-	{
-		string text2 = (text ?? "").Trim();
-		while (text2.EndsWith("。", StringComparison.Ordinal) || text2.EndsWith("！", StringComparison.Ordinal) || text2.EndsWith("？", StringComparison.Ordinal))
-		{
-			text2 = text2.Substring(0, text2.Length - 1).TrimEnd();
-		}
-		return text2;
-	}
-
-	private static string BuildWeeklyPromptAggregateActorAffiliationText(EventMaterialReference item)
-	{
-		string text = BuildWeeklyPromptAggregateSingleAffiliationValue(item?.ActorHeroId, item?.ActorClanId, item?.ActorKingdomId);
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = ResolveHeroDisplay(!string.IsNullOrWhiteSpace(item?.ActorHeroId) ? item.ActorHeroId : (!string.IsNullOrWhiteSpace(item?.HeroId) ? item.HeroId : item?.TargetHeroId));
-		return (text2 ?? "").Trim();
-	}
-
-	private static string BuildWeeklyPromptAggregateMovementActionText(EventMaterialReference item, string rawText)
-	{
-		string text = (rawText ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		int num = text.IndexOf("；其所属家族是", StringComparison.OrdinalIgnoreCase);
-		if (num >= 0)
-		{
-			text = text.Substring(0, num).Trim();
-		}
-		string text2 = ResolveHeroDisplay(!string.IsNullOrWhiteSpace(item?.ActorHeroId) ? item.ActorHeroId : (!string.IsNullOrWhiteSpace(item?.HeroId) ? item.HeroId : item?.TargetHeroId));
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			if (text.StartsWith(text2 + "：", StringComparison.OrdinalIgnoreCase))
-			{
-				text = text.Substring((text2 + "：").Length).Trim();
-			}
-			else if (text.StartsWith(text2, StringComparison.OrdinalIgnoreCase))
-			{
-				text = text.Substring(text2.Length).TrimStart('：', ':', '，', ',', ' ');
-			}
-		}
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			string text3 = ResolveSettlementDisplay(item?.SettlementId);
-			text = (!string.IsNullOrWhiteSpace(text3)) ? ("在" + text3 + "一带行动。") : "在前线行动。";
-		}
-		if (!(text.EndsWith("。") || text.EndsWith("！") || text.EndsWith("？")))
-		{
-			text += "。";
-		}
-		return text;
-	}
-
-	private static string BuildWeeklyPromptAggregateSettlementOwnerText(EventMaterialReference item)
-	{
-		string text = ResolveHeroDisplay(item?.SettlementOwnerHeroId);
-		string text2 = ResolveClanDisplay(item?.SettlementOwnerClanId);
-		string text3 = ResolveKingdomDisplay(item?.SettlementOwnerKingdomId);
-		List<string> list = new List<string>();
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			list.Add("家族=" + text2);
-		}
-		if (!string.IsNullOrWhiteSpace(text3))
-		{
-			list.Add("王国=" + text3);
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return (list.Count == 0) ? text : (text + "(" + string.Join(";", list) + ")");
-		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return string.IsNullOrWhiteSpace(text3) ? text2 : (text2 + "(王国=" + text3 + ")");
-		}
-		return "";
-	}
-
-	private static string BuildWeeklyPromptAggregateRaidTargetText(EventMaterialReference item)
-	{
-		string text = BuildWeeklyPromptAggregateHumanAffiliationText(item?.SettlementOwnerHeroId, item?.SettlementOwnerClanId, item?.SettlementOwnerKingdomId);
-		string text2 = BuildWeeklyPromptAggregateSettlementNameWithType(item?.SettlementId);
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
-		{
-			return text + "的" + text2;
-		}
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2;
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text + "的领地";
-		}
-		return "";
-	}
-
-	private static string BuildWeeklyPromptAggregateSettlementOwnerFactionText(EventMaterialReference item)
-	{
-		string text = ResolveClanDisplay(item?.SettlementOwnerClanId);
-		string text2 = ResolveKingdomDisplay(item?.SettlementOwnerKingdomId);
-		if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(text2))
-		{
-			return text2 + "所属的" + text + "家族";
-		}
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text + "家族";
-		}
-		return text2;
-	}
-
-	private static string BuildWeeklyPromptAggregateSettlementNameWithType(string settlementId)
-	{
-		string text = (settlementId ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		try
-		{
-			Settlement settlement = Settlement.Find(text);
-			if (settlement != null)
-			{
-				string settlementDisplayName = GetSettlementDisplayName(settlement);
-				string settlementTypeLabel = GetSettlementTypeLabel(settlement);
-				if (!string.IsNullOrWhiteSpace(settlementDisplayName))
-				{
-					return string.IsNullOrWhiteSpace(settlementTypeLabel) ? settlementDisplayName : (settlementTypeLabel + settlementDisplayName);
-				}
-			}
-		}
-		catch
-		{
-		}
-		return ResolveSettlementDisplay(text);
-	}
-
-	private static string BuildWeeklyPromptAggregateBattleLocationText(EventMaterialReference item)
-	{
-		string text = (item?.LocationText ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			return text;
-		}
-		string text2 = BuildWeeklyPromptAggregateSettlementNameWithType(item?.SettlementId);
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			return text2;
-		}
-		return "";
-	}
-
-	private static string BuildWeeklyPromptAggregateBattleOutcomeText(EventMaterialReference item)
-	{
-		if (item?.Won.HasValue == true)
-		{
-			return item.Won.Value ? "取得了胜利" : "遭遇了失利";
-		}
-		string text = (item?.SnapshotText ?? item?.Label ?? "").Trim();
-		if (text.IndexOf("获胜", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("击败", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("战胜", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "取得了胜利";
-		}
-		if (text.IndexOf("失利", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("战败", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("败给", StringComparison.OrdinalIgnoreCase) >= 0)
-		{
-			return "遭遇了失利";
-		}
-		return "";
-	}
-
-	private static string BuildWeeklyPromptAggregateSingleAffiliationValue(string heroId, string clanId, string kingdomId)
-	{
-		return BuildWeeklyPromptAggregateAffiliationValues(new List<Tuple<string, string, string>> { Tuple.Create((heroId ?? "").Trim(), (clanId ?? "").Trim(), (kingdomId ?? "").Trim()) }).FirstOrDefault() ?? "";
-	}
-
-	private static List<string> BuildWeeklyPromptAggregateDetailValues(List<EventMaterialReference> materials)
-	{
-		List<string> list = new List<string>();
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			string text = (item?.SnapshotText ?? item?.Label ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text) && !list.Contains(text))
-			{
-				list.Add(text);
-			}
-		}
-		return list;
-	}
-
-	private static List<string> CollectMaterialIds(List<EventMaterialReference> materials, Func<EventMaterialReference, IEnumerable<string>> singleSelector, Func<EventMaterialReference, IEnumerable<string>> listSelector)
-	{
-		List<string> list = new List<string>();
-		foreach (EventMaterialReference item in materials ?? new List<EventMaterialReference>())
-		{
-			if (item == null)
-			{
-				continue;
-			}
-			if (singleSelector != null)
-			{
-				foreach (string item2 in singleSelector(item) ?? Enumerable.Empty<string>())
-				{
-					AddUniqueId(list, item2);
-				}
-			}
-			if (listSelector == null)
-			{
-				continue;
-			}
-			foreach (string item3 in listSelector(item) ?? Enumerable.Empty<string>())
-			{
-				AddUniqueId(list, item3);
-			}
-		}
-		return list;
+		return WeeklyAggregateEventLineOwner.TryParseWeeklyPromptPrisonerPair(stableKey, out captorHeroId, out prisonerHeroId);
 	}
 
 	private static List<string> ResolveHeroNames(IEnumerable<string> heroIds)
@@ -40891,157 +36114,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return (kingdomIds ?? Enumerable.Empty<string>()).Select(ResolveKingdomDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 	}
 
-	private static List<string> ResolveSettlementNames(IEnumerable<string> settlementIds)
-	{
-		return (settlementIds ?? Enumerable.Empty<string>()).Select(ResolveSettlementDisplay).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-	}
-
 	private static string GetWeeklyPromptAggregateCategoryLabel(string category)
 	{
-		switch ((category ?? "").Trim().ToLowerInvariant())
-		{
-		case "strategic_shift":
-			return "家族与王国归属";
-		case "decision":
-			return "王国决议";
-		case "siege":
-			return "围城与守城";
-		case "settlement_change":
-			return "定居点易主";
-		case "captivity":
-			return "人物被俘";
-		case "release":
-			return "人物获释";
-		case "army":
-			return "军团行动";
-		case "battle":
-			return "战场交锋";
-		case "movement":
-			return "行军与袭扰";
-		default:
-			return "其他事件";
-		}
-	}
-
-	private static string ParseWeeklyPromptSettlementChangeDetail(string stableKey)
-	{
-		string[] array = (stableKey ?? "").Trim().Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length < 5)
-		{
-			return "";
-		}
-		switch ((array[array.Length - 1] ?? "").Trim())
-		{
-		case "BySiege":
-			return "围城";
-		case "ByBarter":
-			return "交易/买卖移交（非攻城）";
-		case "ByLeaveFaction":
-			return "脱离王国";
-		case "ByKingDecision":
-			return "王国决议";
-		case "ByGift":
-			return "赠与";
-		case "ByRebellion":
-			return "叛乱";
-		case "ByClanDestruction":
-			return "家族覆灭";
-		default:
-			return (array[array.Length - 1] ?? "").Trim();
-		}
-	}
-
-	private static string ParseWeeklyPromptReleaseDetail(string stableKey)
-	{
-		string[] array = (stableKey ?? "").Trim().Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length < 4)
-		{
-			return "";
-		}
-		int num = array.Length - 1;
-		while (num >= 0)
-		{
-			string text = (array[num] ?? "").Trim();
-			if (!string.Equals(text, "prisoner", StringComparison.OrdinalIgnoreCase) && !string.Equals(text, "captor", StringComparison.OrdinalIgnoreCase))
-			{
-				break;
-			}
-			num--;
-		}
-		if (num < 3)
-		{
-			return "";
-		}
-		switch ((array[num] ?? "").Trim())
-		{
-		case "Ransom":
-			return "通过赎金获释";
-		case "ReleasedByChoice":
-			return "被主动释放";
-		case "ReleasedAfterPeace":
-			return "因议和获释";
-		case "ReleasedAfterEscape":
-			return "成功逃脱";
-		case "ReleasedAfterBattle":
-			return "战后获释";
-		case "ReleasedByCompensation":
-			return "补偿后获释";
-		case "Death":
-			return "囚禁中死亡";
-		default:
-			return (array[num] ?? "").Trim();
-		}
-	}
-
-	private sealed class WeeklyPromptClanChangeParseResult
-	{
-		public string oldKingdomId;
-
-		public string newKingdomId;
-
-		public string detailLabel;
-	}
-
-	private static WeeklyPromptClanChangeParseResult ParseWeeklyPromptClanChangeDetail(string stableKey)
-	{
-		string[] array = (stableKey ?? "").Trim().Split(new char[1] { ':' }, StringSplitOptions.None);
-		if (array.Length < 5)
-		{
-			return null;
-		}
-		return new WeeklyPromptClanChangeParseResult
-		{
-			oldKingdomId = (array[2] ?? "").Trim(),
-			newKingdomId = (array[3] ?? "").Trim(),
-			detailLabel = TranslateWeeklyPromptClanChangeDetail((array[4] ?? "").Trim())
-		};
-	}
-
-	private static string TranslateWeeklyPromptClanChangeDetail(string detail)
-	{
-		switch ((detail ?? "").Trim())
-		{
-		case "JoinAsMercenary":
-			return "佣兵加入";
-		case "JoinKingdom":
-			return "正式加入";
-		case "JoinKingdomByDefection":
-			return "叛逃改投";
-		case "LeaveKingdom":
-			return "脱离王国";
-		case "LeaveWithRebellion":
-			return "脱离并叛乱";
-		case "LeaveAsMercenary":
-			return "结束佣兵服务";
-		case "CreateKingdom":
-			return "建立新王国";
-		case "LeaveByKingdomDestruction":
-			return "原王国覆灭";
-		case "LeaveByClanDestruction":
-			return "家族覆灭";
-		default:
-			return (detail ?? "").Trim();
-		}
+		return WeeklyMaterialAggregationOwner.GetWeeklyPromptAggregateCategoryLabel(category);
 	}
 
 	private static WeeklyReportPromptProfile GetWeeklyReportPromptProfile()
@@ -48119,7 +43194,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return (heroId ?? "").Trim();
 	}
 
-	private static string ResolveClanDisplay(string clanId)
+	internal static string ResolveClanDisplay(string clanId)
 	{
 		string text = ResolveClanName(clanId);
 		if (!string.IsNullOrWhiteSpace(text))
@@ -48129,7 +43204,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return (clanId ?? "").Trim();
 	}
 
-	private static string ResolveKingdomDisplay(string kingdomId)
+	internal static string ResolveKingdomDisplay(string kingdomId)
 	{
 		string text = ResolveKingdomName(kingdomId);
 		if (!string.IsNullOrWhiteSpace(text))
@@ -48520,6 +43595,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		_devEditingHero = npc;
 		List<DailyMemoryDraft> drafts = LoadDailyMemoryDrafts(npc);
 		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(npc);
@@ -48550,8 +43627,13 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			new InquiryElement("process", "手动触发总结队列", null),
 			new InquiryElement("back", "返回", null)
 		};
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData("压缩记忆管理 - " + name, body.ToString().TrimEnd(), list, isExitShown: true, 0, 1, "执行", "返回", OnDevCompressedMemoryMenuSelected, delegate
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData("压缩记忆管理 - " + name, body.ToString().TrimEnd(), list, isExitShown: true, 0, 1, "执行", "返回", delegate(List<InquiryElement> selected)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
+			OnDevCompressedMemoryMenuSelected(selected);
+		}, delegate
+		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 			ShowDevEditInquiry(npc);
 		});
 		MBInformationManager.ShowMultiSelectionInquiry(data);
@@ -48611,9 +43693,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private void ShowDevCompressedMemoryText(Hero npc, string title, string text)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		string name = npc?.Name?.ToString() ?? "NPC";
 		ShowDevLargeTextOrInquiry("压缩记忆管理 - " + title + " - " + name, "", string.IsNullOrWhiteSpace(text) ? "（无数据）" : text.Trim(), delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 			OpenDevCompressedMemoryMenu(npc);
 		});
 	}
@@ -48624,6 +43709,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		_devEditingHero = npc;
 		page = Math.Max(0, page);
 		string q = (query ?? "").Trim();
@@ -48678,6 +43765,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 		ShowDevLargeSelectionOrInquiry("编辑未压缩记忆 - " + name, "未压缩原始历史天数列表", descriptionText, options, delegate(string selectedId)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryDraftList(npc, page, q);
@@ -48688,9 +43776,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			case "__search__":
 				InformationManager.ShowTextInquiry(new TextInquiryData("搜索未压缩记忆", "输入关键词，可匹配日期、场景、说话人、正文或 AFEF。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
 				{
+					if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 					OpenDevDailyMemoryDraftList(npc, 0, input);
 				}, delegate
 				{
+					if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 					OpenDevDailyMemoryDraftList(npc, page, q);
 				}, shouldInputBeObfuscated: false, null, q));
 				break;
@@ -48716,6 +43806,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 			OpenDevCompressedMemoryMenu(npc);
 		});
 	}
@@ -48726,6 +43817,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		_devEditingHero = npc;
 		DailyMemoryDraft draft = FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex);
 		if (draft == null)
@@ -48734,6 +43827,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(draft);
 		string name = npc.Name?.ToString() ?? "NPC";
 		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
@@ -48745,6 +43839,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		};
 		ShowDevLargeSelectionOrInquiry("未压缩记忆 - " + name, BuildDevDailyMemoryDraftSubtitle(draft), BuildDevDailyMemoryDraftEditorDescription(draft), options, delegate(string selectedId)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevDailyMemoryDraftEditor(npc, dayIndex, returnPage, returnQuery);
@@ -48773,6 +43870,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)
+				|| !ReferenceEquals(draft, FindDevDailyMemoryDraft(LoadDailyMemoryDrafts(npc), dayIndex))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(draft), StringComparison.Ordinal)) return;
 			OpenDevDailyMemoryDraftList(npc, returnPage, returnQuery);
 		});
 	}
@@ -49799,15 +44899,22 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			OpenDevCompressedMemoryMenu(npc);
 			return;
 		}
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		MemoryOverviewState state = GetMemoryOverviewState(heroId);
 		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(npc);
+		string editorFingerprint = ComputeMemorySummaryFingerprint(new { Overview = state, Blocks = blocks });
 		string name = npc.Name?.ToString() ?? "NPC";
 		string subtitle = "当前压缩记忆块：" + (blocks?.Count ?? 0) + " 块；已纳入：" + (state?.IncludedBlockIds?.Count ?? 0) + " 块。\n保存非空内容后，会把当前所有压缩记忆块标记为已纳入，避免被待更新队列立即覆盖。";
 		DevTextEditorHelper.ShowLongTextEditor("编辑记忆大总结 - " + name, subtitle, "请输入新的过往记忆总览；留空=清空并等待重新生成。", state?.Summary ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !string.Equals(heroId, GetMemoryHeroId(npc), StringComparison.OrdinalIgnoreCase)
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(new { Overview = GetMemoryOverviewState(heroId), Blocks = LoadCompressedMemoryBlocks(npc) }), StringComparison.Ordinal)) return;
 			ApplyDevMemoryOverviewInput(npc, input);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			OpenDevCompressedMemoryMenu(npc);
 		}, "保存", "返回");
 	}
@@ -49820,36 +44927,22 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			OpenDevCompressedMemoryMenu(npc);
 			return;
 		}
-		if (_memoryOverviewStates == null)
-		{
-			_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_memoryOverviewQueue == null)
-		{
-			_memoryOverviewQueue = new List<MemoryOverviewJob>();
-		}
 		string summary = NormalizeDevCompressedMemoryMultilineInput(input);
-		if (string.IsNullOrWhiteSpace(summary))
+		List<CompressedMemoryBlock> blocks = string.IsNullOrWhiteSpace(summary) ? null : LoadCompressedMemoryBlocks(npc);
+		MemoryImportExportState state = CaptureMemoryImportExportState();
+		bool saved = MemoryDeveloperEditOwner.SaveOverview(heroId, npc.Name?.ToString(), summary, blocks, DateTime.UtcNow.Ticks, state);
+		_memoryOverviewStates = state.Overviews;
+		_memoryOverviewQueue = state.OverviewQueue;
+		if (!saved)
 		{
-			_memoryOverviewStates.Remove(heroId);
-			_memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
 			TryEnqueueMemoryOverviewForHero(npc, LoadCompressedMemoryBlocks(npc));
 			Logger.Log("MemoryOverview", "manual_overview_clear hero=" + heroId);
 			InformationManager.DisplayMessage(new InformationMessage("已清空记忆大总结，并重新检查待整理队列。"));
 			OpenDevCompressedMemoryMenu(npc);
 			return;
 		}
-		List<string> includedBlockIds = SanitizeCompressedMemoryBlocks(LoadCompressedMemoryBlocks(npc)).Select(GetDevCompressedMemoryBlockId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		MemoryOverviewState state = GetMemoryOverviewState(heroId) ?? new MemoryOverviewState();
-		state.HeroId = heroId;
-		state.HeroName = npc.Name?.ToString() ?? state.HeroName ?? "NPC";
-		state.Summary = summary;
-		state.IncludedBlockIds = includedBlockIds;
-		state.UpdatedUtcTicks = DateTime.UtcNow.Ticks;
-		state.LastError = "";
-		_memoryOverviewStates[heroId] = SanitizeMemoryOverviewState(state);
-		_memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
-		Logger.Log("MemoryOverview", "manual_overview_save hero=" + heroId + " blocks=" + includedBlockIds.Count);
+		int includedCount = state.Overviews[heroId].IncludedBlockIds?.Count ?? 0;
+		Logger.Log("MemoryOverview", "manual_overview_save hero=" + heroId + " blocks=" + includedCount);
 		InformationManager.DisplayMessage(new InformationMessage("记忆大总结已更新。"));
 		OpenDevCompressedMemoryMenu(npc);
 	}
@@ -49860,6 +44953,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		_devEditingHero = npc;
 		page = Math.Max(0, page);
 		string q = (query ?? "").Trim();
@@ -49923,6 +45018,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 		ShowDevLargeSelectionOrInquiry("编辑压缩记忆块 - " + name, "压缩记忆块列表", descriptionText, options, delegate(string selectedId)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevCompressedMemoryBlockList(npc, page, q);
@@ -49933,9 +45029,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			case "__search__":
 				InformationManager.ShowTextInquiry(new TextInquiryData("搜索压缩记忆块", "输入关键词，可匹配标题、正文、场景、AFEF、日期或记忆块ID。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "搜索", "返回", delegate(string input)
 				{
+					if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 					OpenDevCompressedMemoryBlockList(npc, 0, input);
 				}, delegate
 				{
+					if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 					OpenDevCompressedMemoryBlockList(npc, page, q);
 				}, shouldInputBeObfuscated: false, null, q));
 				break;
@@ -49954,6 +45052,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)) return;
 			OpenDevCompressedMemoryMenu(npc);
 		}, "进入", "返回");
 	}
@@ -49964,6 +45063,8 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		_devEditingHero = npc;
 		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(npc);
 		CompressedMemoryBlock block = FindDevCompressedMemoryBlock(blocks, blockId);
@@ -49973,6 +45074,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(block);
 		string name = npc.Name?.ToString() ?? "NPC";
 		List<DevLargeSelectionPopup.Option> options = new List<DevLargeSelectionPopup.Option>
 		{
@@ -49985,6 +45087,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		};
 		ShowDevLargeSelectionOrInquiry("记忆块 - " + name, BuildDevCompressedMemoryBlockSubtitle(block), BuildDevCompressedMemoryBlockEditorBody(block), options, delegate(string selectedId)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)
+				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
 			if (string.IsNullOrWhiteSpace(selectedId))
 			{
 				OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
@@ -50016,111 +45121,149 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			}
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration) || !ReferenceEquals(_devEditingHero, npc)
+				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 		}, "进入", "返回");
 	}
 
 	private void OpenDevCompressedMemoryBlockTitleEditor(Hero npc, string blockId, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		CompressedMemoryBlock block = FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId);
 		if (block == null)
 		{
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(block);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑记忆块标题 - " + name, BuildDevCompressedMemoryBlockSubtitle(block), "请输入新的富标题；留空=清空标题。", block.RichTitle ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
 			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.RichTitle = (input ?? "").Trim();
 			}, "记忆块标题已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevCompressedMemoryBlockSummaryEditor(Hero npc, string blockId, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		CompressedMemoryBlock block = FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId);
 		if (block == null)
 		{
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(block);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		DevTextEditorHelper.ShowLongTextEditor("编辑记忆块正文 - " + name, BuildDevCompressedMemoryBlockSubtitle(block), "请输入新的记忆正文；留空=清空正文。", block.Summary ?? "", delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
 			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.Summary = NormalizeDevCompressedMemoryMultilineInput(input);
 			}, "记忆块正文已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevCompressedMemoryBlockScenesEditor(Hero npc, string blockId, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		CompressedMemoryBlock block = FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId);
 		if (block == null)
 		{
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(block);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		string initial = string.Join("\n", block.Scenes ?? new List<string>());
 		DevTextEditorHelper.ShowLongTextEditor("编辑记忆块场景 - " + name, BuildDevCompressedMemoryBlockSubtitle(block), "每行一个场景；留空=清空场景列表；最多保留16项。", initial, delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
 			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.Scenes = ParseDevCompressedMemoryLineList(input, 16, ignoreCase: true);
 			}, "记忆块场景列表已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void OpenDevCompressedMemoryBlockAfefEditor(Hero npc, string blockId, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		CompressedMemoryBlock block = FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId);
 		if (block == null)
 		{
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(block);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		string initial = string.Join("\n", block.AfefLines ?? new List<string>());
 		DevTextEditorHelper.ShowLongTextEditor("编辑记忆块AFEF - " + name, BuildDevCompressedMemoryBlockSubtitle(block), "每行一条 AFEF；留空=清空；最多保留80项。", initial, delegate(string input)
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
 			ApplyDevCompressedMemoryBlockMutation(npc, blockId, returnPage, returnQuery, delegate(CompressedMemoryBlock target)
 			{
 				target.AfefLines = ParseDevCompressedMemoryLineList(input, 80, ignoreCase: false);
 			}, "记忆块 AFEF 行已更新。");
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
 		}, "保存", "返回");
 	}
 
 	private void ConfirmDevDeleteCompressedMemoryBlock(Hero npc, string blockId, int returnPage, string returnQuery)
 	{
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		CompressedMemoryBlock block = FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId);
 		if (block == null)
 		{
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 			return;
 		}
+		string editorFingerprint = ComputeMemorySummaryFingerprint(block);
 		string name = npc?.Name?.ToString() ?? "NPC";
 		string message = BuildDevCompressedMemoryBlockSubtitle(block) + "\n\n将从 " + name + " 的压缩记忆中删除该块，并使记忆大总结重新整理。\n此操作不可撤销，是否继续？";
 		InformationManager.ShowInquiry(new InquiryData("确认删除压缩记忆块", message, isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认删除", "取消", delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)
+				|| !ReferenceEquals(block, FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId))
+				|| !string.Equals(editorFingerprint, ComputeMemorySummaryFingerprint(block), StringComparison.Ordinal)) return;
 			DeleteDevCompressedMemoryBlock(npc, blockId, returnPage, returnQuery);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			OpenDevCompressedMemoryBlockEditor(npc, blockId, returnPage, returnQuery);
 		}), pauseGameActiveState: true);
 	}
@@ -50131,11 +45274,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
-		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(npc);
-		int removed = blocks.RemoveAll((CompressedMemoryBlock x) => string.Equals(GetDevCompressedMemoryBlockId(x), (blockId ?? "").Trim(), StringComparison.OrdinalIgnoreCase));
-		if (removed > 0)
+		LoadCompressedMemoryBlocks(npc);
+		MemoryImportExportState state = CaptureMemoryImportExportState();
+		bool removed = MemoryDeveloperEditOwner.DeleteBlock(GetMemoryHeroId(npc), blockId, state, MarkMemoryOverviewDirty);
+		_compressedMemoryBlocks = state.Blocks;
+		if (removed)
 		{
-			SaveCompressedMemoryBlocks(npc, blocks);
 			InvalidateMemoryOverviewAfterManualMemoryEdit(npc, "delete_block");
 			InformationManager.DisplayMessage(new InformationMessage("已删除压缩记忆块。"));
 		}
@@ -50152,22 +45296,16 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
-		List<CompressedMemoryBlock> blocks = LoadCompressedMemoryBlocks(npc);
-		CompressedMemoryBlock block = FindDevCompressedMemoryBlock(blocks, blockId);
-		if (block == null)
+		LoadCompressedMemoryBlocks(npc);
+		MemoryImportExportState state = CaptureMemoryImportExportState();
+		bool updated = MemoryDeveloperEditOwner.EditBlock(GetMemoryHeroId(npc), npc.Name?.ToString(), blockId, mutate, state, MarkMemoryOverviewDirty);
+		_compressedMemoryBlocks = state.Blocks;
+		if (!updated)
 		{
 			InformationManager.DisplayMessage(new InformationMessage("找不到要编辑的压缩记忆块。"));
 			OpenDevCompressedMemoryBlockList(npc, returnPage, returnQuery);
 			return;
 		}
-		mutate?.Invoke(block);
-		string heroId = GetMemoryHeroId(npc);
-		if (!string.IsNullOrWhiteSpace(heroId))
-		{
-			block.HeroId = heroId;
-		}
-		block.HeroName = npc.Name?.ToString() ?? block.HeroName ?? "";
-		SaveCompressedMemoryBlocks(npc, blocks);
 		InvalidateMemoryOverviewAfterManualMemoryEdit(npc, "edit_block");
 		InformationManager.DisplayMessage(new InformationMessage(successMessage ?? "压缩记忆块已更新。"));
 		if (FindDevCompressedMemoryBlock(LoadCompressedMemoryBlocks(npc), blockId) == null)
@@ -50187,16 +45325,9 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
-		if (_memoryOverviewStates == null)
-		{
-			_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-		}
-		_memoryOverviewStates.Remove(heroId);
-		if (_memoryOverviewQueue == null)
-		{
-			_memoryOverviewQueue = new List<MemoryOverviewJob>();
-		}
-		_memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
+		_memoryOverviewStates ??= new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
+		_memoryOverviewQueue ??= new List<MemoryOverviewJob>();
+		MemoryDeveloperEditOwner.InvalidateOverview(heroId, CaptureMemoryImportExportState());
 		TryEnqueueMemoryOverviewForHero(npc, LoadCompressedMemoryBlocks(npc));
 		Logger.Log("MemoryOverview", "manual_edit_invalidate hero=" + heroId + " reason=" + (reason ?? ""));
 	}
@@ -50318,31 +45449,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 
 	private static string NormalizeDevCompressedMemoryMultilineInput(string input)
 	{
-		return (input ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
+		return MemoryDeveloperEditOwner.NormalizeMultiline(input);
 	}
 
 	private static List<string> ParseDevCompressedMemoryLineList(string input, int maxCount, bool ignoreCase)
 	{
-		List<string> list = new List<string>();
-		HashSet<string> seen = new HashSet<string>(ignoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
-		string text = NormalizeDevCompressedMemoryMultilineInput(input);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return list;
-		}
-		foreach (string raw in text.Split('\n'))
-		{
-			string line = (raw ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(line) && seen.Add(line))
-			{
-				list.Add(line);
-				if (list.Count >= maxCount)
-				{
-					break;
-				}
-			}
-		}
-		return list;
+		return MemoryDeveloperEditOwner.ParseLineList(input, maxCount, ignoreCase);
 	}
 
 	private string BuildDevCompressedMemoryRawText(Hero npc)
@@ -50507,24 +45619,24 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		{
 			return;
 		}
+		long editorGeneration = SaveRuntimeGuard.CaptureGeneration();
+		if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 		string name = npc.Name?.ToString() ?? "NPC";
 		InformationManager.ShowInquiry(new InquiryData("确认清空压缩记忆", "将删除 " + name + " 的今日历史、待总结队列、压缩记忆块和记忆大总结。\n此操作不可撤销，是否继续？", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认清空", "取消", delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			string heroId = GetMemoryHeroId(npc);
 			List<DailyMemoryDraft> oldDrafts = SanitizeDailyMemoryDrafts(LoadDailyMemoryDrafts(npc));
 			foreach (DailyMemoryDraft oldDraft in oldDrafts)
 			{
 				SyncDialogueHistoryForDailyMemoryDraftEdit(npc, oldDraft.GameDayIndex, CloneDevDailyMemoryLines(oldDraft.Lines), new List<DailyMemoryLine>(), "clear_compressed_memory");
 			}
-			_dailyMemoryDrafts?.Remove(heroId);
-			_compressedMemoryBlocks?.Remove(heroId);
-			_memorySummaryQueue?.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
-			_memoryOverviewStates?.Remove(heroId);
-			_memoryOverviewQueue?.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), heroId, StringComparison.OrdinalIgnoreCase));
+			MemoryDeveloperEditOwner.Clear(heroId, CaptureMemoryImportExportState());
 			InformationManager.DisplayMessage(new InformationMessage("已清空该NPC的新压缩记忆数据。"));
 			OpenDevCompressedMemoryMenu(npc);
 		}, delegate
 		{
+			if (!IsMemorySourceEditorCurrent(editorGeneration)) return;
 			OpenDevCompressedMemoryMenu(npc);
 		}), pauseGameActiveState: true);
 	}
@@ -53397,142 +48509,38 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
+	private MemoryImportExportState CaptureMemoryImportExportState()
+	{
+		return new MemoryImportExportState
+		{
+			DailyDrafts = _dailyMemoryDrafts,
+			Blocks = _compressedMemoryBlocks,
+			SummaryQueue = _memorySummaryQueue,
+			Overviews = _memoryOverviewStates,
+			OverviewQueue = _memoryOverviewQueue
+		};
+	}
+
 	private CompressedMemoryExportBundle BuildCompressedMemoryExportBundle(string heroId)
 	{
-		string text = NormalizeMemoryHeroId(heroId);
-		CompressedMemoryExportBundle compressedMemoryExportBundle = new CompressedMemoryExportBundle();
-		if (!string.IsNullOrWhiteSpace(text))
-		{
-			if (_dailyMemoryDrafts != null && _dailyMemoryDrafts.TryGetValue(text, out var drafts) && drafts != null)
-			{
-				compressedMemoryExportBundle.DailyDrafts = SanitizeDailyMemoryDrafts(drafts);
-			}
-			if (_compressedMemoryBlocks != null && _compressedMemoryBlocks.TryGetValue(text, out var blocks) && blocks != null)
-			{
-				compressedMemoryExportBundle.Blocks = SanitizeCompressedMemoryBlocks(blocks);
-			}
-			compressedMemoryExportBundle.SummaryQueue = SanitizeMemorySummaryQueue((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Where((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)));
-			MemoryOverviewState overviewState = GetMemoryOverviewState(text);
-			if (overviewState != null)
-			{
-				compressedMemoryExportBundle.Overview = SanitizeMemoryOverviewState(overviewState);
-			}
-			compressedMemoryExportBundle.OverviewQueue = SanitizeMemoryOverviewQueue((_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Where((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)));
-		}
-		return compressedMemoryExportBundle;
+		return MemoryImportExportOwner.Build(heroId, CaptureMemoryImportExportState());
 	}
 
 	private bool ApplyCompressedMemoryExportBundle(string heroId, CompressedMemoryExportBundle bundle, bool overwriteExisting)
 	{
-		string text = NormalizeMemoryHeroId(heroId);
-		if (string.IsNullOrWhiteSpace(text) || bundle == null)
-		{
-			return false;
-		}
-		if (_dailyMemoryDrafts == null)
-		{
-			_dailyMemoryDrafts = new Dictionary<string, List<DailyMemoryDraft>>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_compressedMemoryBlocks == null)
-		{
-			_compressedMemoryBlocks = new Dictionary<string, List<CompressedMemoryBlock>>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_memorySummaryQueue == null)
-		{
-			_memorySummaryQueue = new List<MemorySummaryJob>();
-		}
-		if (_memoryOverviewStates == null)
-		{
-			_memoryOverviewStates = new Dictionary<string, MemoryOverviewState>(StringComparer.OrdinalIgnoreCase);
-		}
-		if (_memoryOverviewQueue == null)
-		{
-			_memoryOverviewQueue = new List<MemoryOverviewJob>();
-		}
-		List<DailyMemoryDraft> drafts = SanitizeDailyMemoryDrafts(bundle.DailyDrafts);
-		List<CompressedMemoryBlock> blocks = SanitizeCompressedMemoryBlocks(bundle.Blocks);
-		List<MemorySummaryJob> queue = SanitizeMemorySummaryQueue(bundle.SummaryQueue);
-		MemoryOverviewState overview = SanitizeMemoryOverviewState(bundle.Overview);
-		List<MemoryOverviewJob> overviewQueue = SanitizeMemoryOverviewQueue(bundle.OverviewQueue);
-		if (overwriteExisting)
-		{
-			_dailyMemoryDrafts.Remove(text);
-			_compressedMemoryBlocks.Remove(text);
-			_memorySummaryQueue.RemoveAll((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-			_memoryOverviewStates.Remove(text);
-			_memoryOverviewQueue.RemoveAll((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
-		}
-		if (drafts.Count > 0 && (overwriteExisting || !_dailyMemoryDrafts.ContainsKey(text)))
-		{
-			foreach (DailyMemoryDraft draft in drafts)
-			{
-				draft.HeroId = text;
-			}
-			_dailyMemoryDrafts[text] = drafts;
-		}
-		if (blocks.Count > 0 && (overwriteExisting || !_compressedMemoryBlocks.ContainsKey(text)))
-		{
-			foreach (CompressedMemoryBlock block in blocks)
-			{
-				block.HeroId = text;
-				if (string.IsNullOrWhiteSpace(block.Id))
-				{
-					block.Id = BuildCompressedMemoryBlockId(text, block.GameDayIndex);
-				}
-			}
-			_compressedMemoryBlocks[text] = blocks;
-			MarkMemoryOverviewDirty(text);
-		}
-		if (queue.Count > 0 && overwriteExisting)
-		{
-			foreach (MemorySummaryJob job in queue)
-			{
-				job.HeroId = text;
-				_memorySummaryQueue.Add(job);
-			}
-			_memorySummaryQueue = SanitizeMemorySummaryQueue(_memorySummaryQueue);
-		}
-		if (overview != null && (!string.IsNullOrWhiteSpace(overview.Summary) || !string.IsNullOrWhiteSpace(overview.LastError)) && (overwriteExisting || !_memoryOverviewStates.ContainsKey(text)))
-		{
-			overview.HeroId = text;
-			_memoryOverviewStates[text] = SanitizeMemoryOverviewState(overview);
-		}
-		if (overviewQueue.Count > 0 && overwriteExisting)
-		{
-			foreach (MemoryOverviewJob job in overviewQueue)
-			{
-				job.HeroId = text;
-				_memoryOverviewQueue.Add(job);
-			}
-			_memoryOverviewQueue = SanitizeMemoryOverviewQueue(_memoryOverviewQueue);
-		}
-		return true;
+		MemoryImportExportState state = CaptureMemoryImportExportState();
+		bool applied = MemoryImportExportOwner.Apply(heroId, bundle, overwriteExisting, state, MarkMemoryOverviewDirty);
+		_dailyMemoryDrafts = state.DailyDrafts;
+		_compressedMemoryBlocks = state.Blocks;
+		_memorySummaryQueue = state.SummaryQueue;
+		_memoryOverviewStates = state.Overviews;
+		_memoryOverviewQueue = state.OverviewQueue;
+		return applied;
 	}
 
 	private bool HasCompressedMemoryDataForHero(string heroId)
 	{
-		string text = NormalizeMemoryHeroId(heroId);
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return false;
-		}
-		if (_dailyMemoryDrafts != null && _dailyMemoryDrafts.ContainsKey(text))
-		{
-			return true;
-		}
-		if (_compressedMemoryBlocks != null && _compressedMemoryBlocks.ContainsKey(text))
-		{
-			return true;
-		}
-		if ((_memorySummaryQueue ?? new List<MemorySummaryJob>()).Any((MemorySummaryJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase)))
-		{
-			return true;
-		}
-		if (_memoryOverviewStates != null && _memoryOverviewStates.ContainsKey(text))
-		{
-			return true;
-		}
-		return (_memoryOverviewQueue ?? new List<MemoryOverviewJob>()).Any((MemoryOverviewJob x) => x != null && string.Equals(NormalizeMemoryHeroId(x.HeroId), text, StringComparison.OrdinalIgnoreCase));
+		return MemoryImportExportOwner.HasData(heroId, CaptureMemoryImportExportState());
 	}
 
 	private void ExportSingleNpcDebtData(string folderName, string heroId)
@@ -53856,7 +48864,12 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				return;
 			}
 			CompressedMemoryExportBundle bundle = PlayerExportsStore.ReadJson<CompressedMemoryExportBundle>(text3);
-			bool flag = bundle != null;
+			if (bundle == null)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆文件无效。"));
+				return;
+			}
+			bool flag = true;
 			bool flag2 = false;
 			try
 			{
@@ -53870,14 +48883,26 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			Action action = delegate
 			{
 				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
-				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: true);
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				if (ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: true))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				}
+				else
+				{
+					InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆数据无效。"));
+				}
 			};
 			Action onSkipDuplicates = delegate
 			{
 				if (!IsMemorySourceEditorCurrent(importGeneration)) return;
-				ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: false);
-				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + heroId));
+				if (ApplyCompressedMemoryExportBundle(heroId, bundle, overwriteExisting: false))
+				{
+					InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + heroId));
+				}
+				else
+				{
+					InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆数据无效。"));
+				}
 			};
 			if (flag && flag2)
 			{
@@ -54015,6 +49040,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 			int num4 = 0;
 			int num5 = 0;
 			int num6 = 0;
+			int invalidMemoryFiles = 0;
 			string path = Path.Combine(importDir, "personality_background");
 			if (Directory.Exists(path))
 			{
@@ -54065,6 +49091,14 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 						{
 							dhNew[NormalizeMemoryHeroId(text4)] = bundle;
 						}
+						else
+						{
+							invalidMemoryFiles++;
+						}
+					}
+					else
+					{
+						invalidMemoryFiles++;
 					}
 				}
 				num4 = dhNew.Count;
@@ -54157,7 +49191,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 						}
 						rs.ImportDebtEntries(dictionary);
 					}
-					InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件）：" + importDir : "导入完成：" + importDir));
 				}
 			};
 			Action onSkipDuplicates = delegate
@@ -54205,7 +49239,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 						}
 						rs.ImportDebtEntries(dictionary);
 					}
-					InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
+					InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件，已跳过重复）：" + importDir : "导入完成（已跳过重复）：" + importDir));
 				}
 			};
 			if (flag)
@@ -55700,6 +50734,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				return;
 			}
 			string[] files = Directory.GetFiles(path, "*.json");
+			int invalidMemoryFiles = 0;
 			Dictionary<string, CompressedMemoryExportBundle> dict = new Dictionary<string, CompressedMemoryExportBundle>(StringComparer.OrdinalIgnoreCase);
 			string[] array = files;
 			foreach (string text in array)
@@ -55712,7 +50747,20 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 					{
 						dict[NormalizeMemoryHeroId(text2)] = bundle;
 					}
+					else
+					{
+						invalidMemoryFiles++;
+					}
 				}
+				else
+				{
+					invalidMemoryFiles++;
+				}
+			}
+			if (files.Length > 0 && dict.Count == 0)
+			{
+				InformationManager.DisplayMessage(new InformationMessage("导入失败：压缩记忆文件全部无效（跳过 " + invalidMemoryFiles + " 个）。"));
+				return;
 			}
 			int num = 0;
 			int count = dict.Count;
@@ -55741,7 +50789,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 						ApplyCompressedMemoryExportBundle(item.Key, item.Value, overwriteExisting: true);
 					}
 				}
-				InformationManager.DisplayMessage(new InformationMessage("导入完成：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件）：" + importDir : "导入完成：" + importDir));
 			};
 			Action onSkipDuplicates = delegate
 			{
@@ -55753,7 +50801,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 						ApplyCompressedMemoryExportBundle(item2.Key, item2.Value, overwriteExisting: false);
 					}
 				}
-				InformationManager.DisplayMessage(new InformationMessage("导入完成（已跳过重复）：" + importDir));
+				InformationManager.DisplayMessage(new InformationMessage(invalidMemoryFiles > 0 ? "部分导入完成（跳过 " + invalidMemoryFiles + " 个无效压缩记忆文件，已跳过重复）：" + importDir : "导入完成（已跳过重复）：" + importDir));
 			};
 			if (num > 0)
 			{

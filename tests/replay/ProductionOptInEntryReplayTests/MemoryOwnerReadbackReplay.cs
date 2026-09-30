@@ -109,7 +109,9 @@ internal static class MemoryOwnerReadbackReplay
         => assembly.GetType(name, throwOnError: false) ?? throw new InvalidOperationException("missing type " + name);
 
     private static Type RequireNestedType(Type owner, string name)
-        => owner.GetNestedType(name, BindingFlags.NonPublic) ?? throw new InvalidOperationException("missing nested type " + name);
+        => owner.GetNestedType(name, BindingFlags.NonPublic)
+            ?? owner.Assembly.GetType("AnimusForge." + name, false)
+            ?? throw new InvalidOperationException("missing memory type " + name);
 
     private static MethodInfo RequireMethod(Type owner, string name)
         => owner.GetMethod(name, InstancePrivate) ?? throw new InvalidOperationException("missing method " + name);

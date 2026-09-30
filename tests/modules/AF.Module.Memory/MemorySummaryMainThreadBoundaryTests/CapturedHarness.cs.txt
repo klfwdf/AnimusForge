@@ -364,7 +364,7 @@ namespace AnimusForge {
    if(type.IsGenericType&&type.GetGenericTypeDefinition()==typeof(List<>)) {
     var list=(IList)Activator.CreateInstance(type);list.Add(Filled(type.GetGenericArguments()[0],path+"[0]"));list.Add(null);return list;
    }
-   Check(type.DeclaringType==typeof(MyBehavior),"unsupported copy field type "+type.FullName);
+   Check(type.DeclaringType==typeof(MyBehavior)||new[]{typeof(DailyMemoryLine),typeof(DailyMemoryDraft),typeof(CompressedMemoryBlock),typeof(WeeklyMemoryMaterialTrigger),typeof(MemorySummaryJob),typeof(MemoryOverviewState),typeof(MemoryOverviewJob),typeof(MajorActionSummaryState),typeof(MajorActionSummaryJob),typeof(NpcActionEntry)}.Contains(type),"unsupported copy field type "+type.FullName);
    var value=Activator.CreateInstance(type,true);
    foreach(var field in DataFields(type))field.SetValue(value,Filled(field.FieldType,path+"."+field.Name));
    return value;

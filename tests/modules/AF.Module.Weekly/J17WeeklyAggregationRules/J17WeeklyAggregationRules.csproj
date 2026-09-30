@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs" Link="WeeklyLegacyDtos.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs" Link="WeeklyMaterialAggregationOwner.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs" Link="WeeklyPromptMaterialOwner.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs" Link="WeeklyAggregateEventLineOwner.cs" />
+  </ItemGroup>
+</Project>

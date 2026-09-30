@@ -18,6 +18,9 @@ from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / 'tests'))
+from output_isolation import new_run_root
+B1A_MODELS = {'DailyMemoryLine','DailyMemoryDraft','CompressedMemoryBlock','WeeklyMemoryMaterialTrigger','MemorySummaryJob','MemoryOverviewState','MemoryOverviewJob','MajorActionSummaryState','MajorActionSummaryJob'}
 BASELINE = "e40c92d7"
 MODELS = ["DailyMemoryLine", "DailyMemoryDraft", "CompressedMemoryBlock",
           "WeeklyMemoryMaterialTrigger", "MemorySummaryJob", "MemorySummaryExecutionResult",
@@ -75,7 +78,7 @@ def build_sources(original, mutation, run_owner_baseline=False):
     extractor = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(extractor)
     source = extractor.source("MyBehavior.cs", "155f1b7a" if run_owner_baseline else BASELINE if original else None)
-    signatures = [f"private sealed class {name}" for name in MODELS] + ["private class NpcActionEntry"] + METHODS
+    signatures = [f"private sealed class {name}" for name in MODELS if original or run_owner_baseline or name not in B1A_MODELS] + (["private class NpcActionEntry"] if original or run_owner_baseline else []) + METHODS
     constant = re.search(r'private const string NonHeroMemoryIdPrefix = [^;]+;', source)
     if constant is None:
         raise ValueError("Missing nonhero identity constant")
@@ -181,6 +184,12 @@ def build_sources(original, mutation, run_owner_baseline=False):
         allowance = re.search(r"private const int DailyMaintenanceMaxJobsPerTick = [^;]+;", source)
         if allowance is None: raise ValueError("Missing planner allowance")
         declarations.append(allowance.group())
+        if not run_owner_baseline:
+            recovery = extractor.source('MyBehavior.MemoryRecovery.cs', None)
+            for name in ('IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest'):
+                match = re.search(r'internal static bool ' + name + r'\([^;]+;', recovery)
+                if match is None: raise ValueError('Missing current memory marker helper ' + name)
+                declarations.append(match.group())
     boundary = extractor.source("MyBehavior.MemorySummaryMainThread.cs", None)
     if mutation == "swallow-completion-error" and "MemorySummaryDispatcher" not in boundary:
         boundary = replace_exact(boundary, "if (failure != null) ExceptionDispatchInfo.Capture(failure).Throw();", "/* fault: swallowed partial execution error */")
@@ -210,11 +219,11 @@ def main():
     group.add_argument("--mutate", choices=MUTATIONS)
     parser.add_argument("--run-scope-cases", action="store_true")
     parser.add_argument("--run-owner-baseline", action="store_true")
+    parser.add_argument("--run-root", type=Path)
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     product, boundary, manifest = build_sources(args.original, args.mutate, args.run_owner_baseline)
-    out = HERE / ".generated/business" / ("run-owner-baseline" if args.run_owner_baseline else "scope-cases" if args.run_scope_cases else "original" if args.original else args.mutate or "current")
-    out.mkdir(parents=True, exist_ok=True)
+    out = new_run_root(ROOT, 'memory-b1a-business', args.run_root)
     dependency = ROOT / ".tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll"
     if not dependency.is_file():
         raise ValueError("Existing Newtonsoft DLL missing; no dependency download attempted")
@@ -224,6 +233,11 @@ def main():
              "SaveRuntimeGuard.cs": (ROOT / "src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs").read_text(encoding="utf-8-sig"),
              "Proof.csproj": '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>' + escape(str(dependency)) + '</HintPath></Reference></ItemGroup></Project>',
              "NuGet.Config": '<configuration><packageSources><clear/></packageSources></configuration>'}
+    files['MemorySummaryRules.cs']=(ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryRules.cs').read_text(encoding='utf-8-sig')
+    files['MemorySummaryAttemptRunner.cs']=(ROOT/'src/modules/AF.Module.Memory/Summary/MemorySummaryAttemptRunner.cs').read_text(encoding='utf-8-sig')
+    if not args.original and not args.run_owner_baseline:
+        files['MemoryPersistenceModels.cs']=(ROOT/'src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs').read_text(encoding='utf-8-sig')
+        files['NpcActionEntry.cs']=(ROOT/'src/modules/AF.Module.Memory/Records/NpcActionEntry.cs').read_text(encoding='utf-8-sig')
     if not args.original:
         planning = subprocess.check_output(["git","show","155f1b7a:MyBehavior.MemorySummaryPlanning.cs"],cwd=ROOT).decode("utf-8-sig").replace("\r\n","\n") if args.run_owner_baseline else (ROOT / "MyBehavior.MemorySummaryPlanning.cs").read_text(encoding="utf-8-sig")
         manifest["planning_sha256"] = hashlib.sha256(planning.encode()).hexdigest()
@@ -259,9 +273,12 @@ def main():
     for name, data in files.items():
         (out / name).write_bytes(data.encode("utf-8"))
     (out / "manifest.json").write_bytes(json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"))
-    dotnet = Path(os.environ.get("DOTNET_EXE", r"C:/Program Files/dotnet/dotnet.exe"))
-    env = dict(os.environ, DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(ROOT / ".tmp/dotnet-cli"),
-               NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), APPDATA=str(ROOT / ".tmp/appdata"),
+    dotnet = Path(os.environ.get("DOTNET_EXE", str(ROOT/'local/dotnet/8.0.425/dotnet.exe')))
+    (out/'home').mkdir();(out/'appdata').mkdir()
+    env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR", "ProgramData", "HOMEDRIVE", "HOMEPATH", "OS", "USERNAME", "USERDOMAIN", "ProgramFiles", "ProgramFiles(x86)", "CommonProgramFiles", "CommonProgramFiles(x86)", "PROCESSOR_ARCHITECTURE") if key in os.environ}
+    env.update(PATH=str(dotnet.parent), DOTNET_ROOT=str(dotnet.parent), DOTNET_CLI_HOME=str(out/'home'),
+               USERPROFILE=str(out/'home'), HOME=str(out/'home'), LOCALAPPDATA=str(out/'appdata'),
+               NUGET_PACKAGES=str(ROOT / ".tmp/nuget-packages"), APPDATA=str(out/'appdata'), TEMP='E:/tmp/af-j17-20260930', TMP='E:/tmp/af-j17-20260930',
                DOTNET_CLI_TELEMETRY_OPTOUT="1", DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1",
                DOTNET_GENERATE_ASPNET_CERTIFICATE="false", DOTNET_CLI_UI_LANGUAGE="en")
     # Separate build from execution: compiler/extractor failure is NOT an expected red test.

@@ -1,12 +1,20 @@
 import argparse,importlib.util,subprocess,os
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--native',action='store_true');a=p.parse_args()
+import sys
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root
+p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--native',action='store_true');p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(n):return subprocess.check_output(['git','show','659bb998:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (ROOT/n).read_text(encoding='utf-8-sig')
-s=read('MyBehavior.cs');models=['private sealed class DailyMemoryLine','private sealed class DailyMemoryDraft','private sealed class CompressedMemoryBlock','private sealed class WeeklyMemoryMaterialTrigger','private sealed class MemoryRecallCandidate']
+s=read('MyBehavior.cs');models=(['private sealed class DailyMemoryLine','private sealed class DailyMemoryDraft','private sealed class CompressedMemoryBlock','private sealed class WeeklyMemoryMaterialTrigger'] if a.original else [])+['private sealed class MemoryRecallCandidate']
 methods=['private static string NormalizeMemoryHeroId(','private static string GetMemoryHeroId(','private static bool IsNonHeroMemoryId(','private static string FormatMemoryHourRange(','private static string FormatCompressedMemoryAgeSuffix(','private static string FormatPastAfefLineForPrompt(','private static string StripMemoryTitleDateTime(','private static string BuildMemoryRecallQueryText(','private static void AssignMemoryCandidateDisplayIds(','private bool TryBuildMemoryRecallCandidates(','private bool TrySelectMemoryIdsWithPreprocess(','private string BuildCompressedMemoryContextById(','private string BuildHistoryContextById(']
-code=(HERE/'MemoryHarness.cs.txt').read_text(encoding='utf-8-sig').replace('@@MODELS@@','\n'.join(ex.declaration(s,x) for x in models)).replace('@@METHODS@@','private const string NonHeroMemoryIdPrefix="af_nonhero:";\n'+'\n'.join(ex.declaration(s,x) for x in methods))
+recovery=(ROOT/'MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig') if not a.original else ''
+marker_helpers=[]
+for signature in (['internal static bool IsValidMemoryCommitMarker(', 'internal static bool IsMemoryRecoveryHexDigest('] if not a.original else []):
+ helper=ex.declaration(recovery,signature)
+ marker_helpers.append(helper[:helper.index(';')+1])
+code=(HERE/'MemoryHarness.cs.txt').read_text(encoding='utf-8-sig').replace('@@MODELS@@','\n'.join(ex.declaration(s,x) for x in models)).replace('@@METHODS@@','private const string NonHeroMemoryIdPrefix="af_nonhero:";\n'+'\n'.join(ex.declaration(s,x) for x in methods)+ '\n'+'\n'.join(marker_helpers))
 prior=subprocess.check_output(['git','show','659bb998:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig')
 baseline_names=['FormatCompressedMemoryAgeSuffix','BuildMemoryRecallQueryText','TryBuildMemoryRecallCandidates','TrySelectMemoryIdsWithPreprocess','BuildCompressedMemoryContextById','BuildHistoryContextById']
 baseline='\n'.join(ex.declaration(prior,next(x for x in methods if name+'(' in x)) for name in baseline_names)
@@ -28,7 +36,7 @@ if a.native:
  capture_sig='private static string BuildNativeConversationPersistedHistoryContextForPrompt(' if a.original else 'private static Func<string> CaptureNativeConversationPersistedHistoryWork('
  fragment=fragment.replace('@@CAPTURE@@',ex.declaration(shout,capture_sig)).replace('@@RUN@@',ex.declaration(shout,'private Task<T> RunNativeConversationMainThreadFuncAsync<T>(')).replace('@@WAIT@@',ex.declaration(shout,'private static async Task<T> AwaitNativeConversationMainThreadFuncAsync<T>('))
  code=code[:code.index('    public static class Program')]+fragment
-out=HERE/'.generated'/((('native-' if a.native else '')+('original' if a.original else a.mutate or 'current')));out.mkdir(parents=True,exist_ok=True)
+out=new_run_root(ROOT,'native-history-snapshot',a.run_root)
 if not a.original:
  snap=read('MyBehavior.HistoryPromptSnapshot.cs')
  mutations={
@@ -52,10 +60,15 @@ if not a.original:
   old='() => IsNativeConversationAdmissionCurrent(admission, out _), false)';assert old in code;code=code.replace(old,'() => true, false)',1)
  (out/'Snapshot.cs').write_text(snap,encoding='utf-8')
 if a.native:(out/'PendingOperationRegistry.cs').write_text((ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
-(out/'Program.cs').write_text(code,encoding='utf-8');(out/'Guard.cs').write_text(read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8');(out/'Error.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
+if not a.original:
+ (out/'Models.cs').write_text(read('src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs'),encoding='utf-8')
+ (out/'NpcActionEntry.cs').write_text(read('src/modules/AF.Module.Memory/Records/NpcActionEntry.cs'),encoding='utf-8')
+(out/'Program.cs').write_text(code,encoding='utf-8');(out/'Guard.cs').write_text(read('SaveRuntimeGuard.cs' if a.original else 'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8');(out/'Error.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-dotnet=os.environ.get('DOTNET_EXE',r'C:\Program Files\dotnet\dotnet.exe')
-env=os.environ.copy();env.update(DOTNET_ROOT=str(Path(dotnet).parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1',DOTNET_CLI_UI_LANGUAGE='en',APPDATA=str(ROOT/'.tmp/appdata'))
+dotnet=os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe'))
+(out/'cli').mkdir();(out/'appdata').mkdir()
+env={key:os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ}
+env.update(PATH=str(Path(dotnet).parent),DOTNET_ROOT=str(Path(dotnet).parent),DOTNET_CLI_HOME=str(out/'cli'),USERPROFILE=str(out/'cli'),HOME=str(out/'cli'),LOCALAPPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),DOTNET_GENERATE_ASPNET_CERTIFICATE='false',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1',DOTNET_CLI_UI_LANGUAGE='en',APPDATA=str(out/'appdata'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930')
 build=subprocess.run([dotnet,'build',str(out/'Proof.csproj'),'-c','Release','-p:UseAppHost=false','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)
 run=subprocess.run([dotnet,str(out/'bin/Release/net8.0/Proof.dll')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180) if build.returncode==0 else None
 log=build.stdout+build.stderr+((run.stdout+run.stderr) if run else '');(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(build.returncode or (run.returncode if run else 0))

@@ -10,6 +10,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Memory/Records/NpcActionLedger.cs" Link="NpcActionLedger.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Memory/Records/NpcActionEntry.cs" Link="NpcActionEntry.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs" Link="DialogueHistoryLedger.cs" />
   </ItemGroup>
 </Project>

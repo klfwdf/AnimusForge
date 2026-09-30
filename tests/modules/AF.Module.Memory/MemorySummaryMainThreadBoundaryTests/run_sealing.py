@@ -5,6 +5,8 @@ from pathlib import Path
 import argparse,hashlib,importlib.util,json,os,re,subprocess,sys
 from xml.sax.saxutils import escape
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root
 BASELINE='62abfdb3'
 MUTATIONS=[
  'abandon-incomplete-same-day','ignore-empty-probe','ignore-stale-queued-job','ignore-owner-binding',
@@ -71,7 +73,7 @@ def apply_seal_mutation(seal, mutation):
   return exact(seal,'if (IsExceeded) return false;' if 'if (IsExceeded) return false;' in seal else 'if (IsDailyMaintenanceBudgetExceeded(Start, Milliseconds)) return false;','')
  return seal
 def main():
- ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67','4d6994bc']);g.add_argument('--mutate',choices=MUTATIONS);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
+ ap=argparse.ArgumentParser(description=__doc__);g=ap.add_mutually_exclusive_group();g.add_argument('--original',action='store_true');g.add_argument('--source-baseline',choices=['73a6977c','9158132c','40b92e67','4d6994bc','8ae0f831']);g.add_argument('--mutate',choices=MUTATIONS);ap.add_argument('--run-root',type=Path);a=ap.parse_args();baseline=a.source_baseline or (BASELINE if a.original else None);sys.stdout.reconfigure(encoding='utf-8')
  ex=module('seal_ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');cap=module('seal_capture',HERE/'run_captured.py')
  def read(path):return subprocess.check_output(['git','show',baseline+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n') if baseline and not path.startswith('tools/') else (ROOT/path).read_text(encoding='utf-8-sig')
  source=read('MyBehavior.cs');manifest=[];snippets=[];sealing_path=ROOT/'MyBehavior.MemorySealing.cs';new_sealing=not a.original and sealing_path.exists()
@@ -93,20 +95,23 @@ def main():
    body=exact(body,'_npcMajorActionSummaryQueue.Where(HasMajorActionSummaryJobStillPending)','SealProbe.Visit(_npcMajorActionSummaryQueue,"major-final-filter").Where(HasMajorActionSummaryJobStillPending)')
   if name=='TryRunCampaignMemoryMaintenance':
    body=exact(body,'if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs, requirePendingProbe: true)) return;','if (!TrySealPastDailyMemoryDrafts(startTimestamp, budgetMs, requirePendingProbe: true)) return; SealProbe.Hit("campaign-seal-return");') if 'requirePendingProbe: true' in body else body
-  if name in ('SanitizeMemorySummaryQueue','SanitizeMajorActionSummaryQueue'):
+  if baseline and name in ('SanitizeMemorySummaryQueue','SanitizeMajorActionSummaryQueue'):
    body=body.replace('OrderBy((MemorySummaryJob x) => x.GameDayIndex)', 'OrderBy((MemorySummaryJob x) => x.GameDayIndex, SealProbe.SortComparer<int>())').replace('OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex)', 'OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex, SealProbe.SortComparer<int>())')
    body=body.replace('ThenBy((MemorySummaryJob x) => x.HeroName)', 'ThenBy((MemorySummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())').replace('ThenBy((MajorActionSummaryJob x) => x.HeroName)', 'ThenBy((MajorActionSummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())')
-  if name=='SanitizeDailyMemoryDraftEntry':
+  if baseline and name=='SanitizeDailyMemoryDraftEntry':
    body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
-  if name=='SanitizeDailyMemoryDrafts' and 'DailyMemoryDraft draft = TWParallel.IsMainThread()' in body:
+  if baseline and name=='SanitizeDailyMemoryDrafts' and 'DailyMemoryDraft draft = TWParallel.IsMainThread()' in body:
    body=exact(body,'DailyMemoryDraft draft = TWParallel.IsMainThread()', 'if (sourceEntry != null) SealProbe.Hit("owner-normalized-record");\n DailyMemoryDraft draft = TWParallel.IsMainThread()')
-  if name=='BindDailyMemoryDraftWeeklyTrigger':
+  if baseline and name=='BindDailyMemoryDraftWeeklyTrigger':
    body=exact(body,'trigger.MemoryId = memoryId;','SealProbe.Hit("owner-bound-trigger"); trigger.MemoryId = memoryId;')
-  if name=='SanitizeDailyMemoryDraftLine' and 'x.GameDayIndex = draft.GameDayIndex;' in body:
+  if baseline and name=='SanitizeDailyMemoryDraftLine' and 'x.GameDayIndex = draft.GameDayIndex;' in body:
    body=exact(body,'x.GameDayIndex = draft.GameDayIndex;','SealProbe.Hit("owner-normalized-line"); x.GameDayIndex = draft.GameDayIndex;')
   snippets.append(body)
- for name in cap.MODELS:add('private sealed class '+name)
- add('private class NpcActionEntry');add('private enum DailyMaintenanceTaskKind');add('private sealed class DailyMaintenanceJob')
+ for name in cap.MODELS:
+  if not baseline and name in cap.B1A_MODELS:continue
+  add('private sealed class '+name)
+ if baseline:add('private class NpcActionEntry')
+ add('private enum DailyMaintenanceTaskKind');add('private sealed class DailyMaintenanceJob')
  for helper in ['NormalizeMemorySummaryQueue','NormalizeMajorActionSummaryQueue']:
   if re.search(r'private static List<[^>]+> '+helper+r'\(',source):names.append(helper)
  for name in names:
@@ -134,20 +139,38 @@ def main():
  for sig in ['private sealed class MemorySummaryPlanEntry','private MemorySummaryPlanEntry DescribeMemorySummaryJob(']:add(sig,'MyBehavior.MemorySummaryPlanning.cs',planning)
  recovery=read('MyBehavior.MemoryRecovery.cs')
  for name in ['IsValidMemoryCommitMarker','IsMemoryRecoveryHexDigest']:
-  match=re.search(r'private static bool '+name+r'\([^;]+;',recovery);assert match and '=>' in match.group();snippets.append(match.group())
+  match=re.search(r'(?:private|internal) static bool '+name+r'\([^;]+;',recovery);assert match and '=>' in match.group();snippets.append(match.group())
  oracle=subprocess.check_output(['git','show','40b92e67:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
  oracle_body=ex.declaration(oracle,'private static List<DailyMemoryDraft> SanitizeDailyMemoryDrafts(')
  snippets.append(oracle_body.replace('SanitizeDailyMemoryDrafts(', 'SanitizeDailyMemoryDraftsOracle(',1))
  manifest.append(dict(file='MyBehavior.cs',signature='SanitizeDailyMemoryDrafts oracle',source_revision='40b92e67',sha256=hashlib.sha256(oracle_body.encode()).hexdigest()))
- product='using System; using System.Diagnostics; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading.Tasks; using Newtonsoft.Json.Linq; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior { private const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
+ product='using System; using System.Diagnostics; using System.Linq; using System.Text; using System.Text.RegularExpressions; using System.Collections.Generic; using System.Threading.Tasks; using Newtonsoft.Json.Linq; using AnimusForge.Refactor.Runtime; using System.Security.Cryptography; using TaleWorlds.CampaignSystem; using TaleWorlds.CampaignSystem.Settlements; using TaleWorlds.Library; namespace AnimusForge { public partial class MyBehavior { private const string NonHeroMemoryIdPrefix="af_nonhero:"; private const int RecentNpcActionWindowDays=30;\n'+'\n\n'.join(snippets)+'\n}}'
  fixture=(HERE/'CapturedHarness.cs.txt').read_text(encoding='utf-8-sig');fixture=fixture[:fixture.index('  static void ThreeKinds() {')]+'\n}}'
  fixture=exact(fixture,'private static double GetDailyMaintenanceFrameBudgetMs() => 1000.0;','private static double GetDailyMaintenanceFrameBudgetMs() { SealProbe.Hit("budget-settings"); return SealProbe.Budget; }')
  fixture,count=re.subn(r'^  bool HasCompressedMemoryBlock\([^\n]+\n','',fixture,flags=re.M);assert count==1
- input_code=read('MyBehavior.MemorySummaryInput.cs');input_code=exact(input_code,'await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)','await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
- variant=('original-'+baseline if baseline else (a.mutate or 'current'));out=HERE/'.generated/sealing'/variant;out.mkdir(parents=True,exist_ok=True)
+ input_code=read('MyBehavior.MemorySummaryInput.cs')
+ old_delay='await Task.Delay(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)'
+ if old_delay in input_code:input_code=exact(input_code,old_delay,'await FixtureDelayAsync(api.RetryAfterSeconds.HasValue ? Math.Max(1000, api.RetryAfterSeconds.Value * 1000) : 1500)')
+ else:input_code=exact(input_code,'milliseconds => Task.Delay(milliseconds)','milliseconds => FixtureDelayAsync(milliseconds)')
+ variant=('original-'+baseline if baseline else (a.mutate or 'current'));out=new_run_root(ROOT,'memory-b1a-sealing',a.run_root)
  deps=ROOT/'.tmp/nuget-packages/newtonsoft.json/13.0.3/lib/net6.0/Newtonsoft.Json.dll';assert deps.exists()
  product=apply_product_mutation(product, a.mutate)
  files={'Product.cs':product,'Input.cs':input_code,'Boundary.cs':read('MyBehavior.MemorySummaryMainThread.cs'),'Guard.cs':read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),'Fixture.cs':fixture,'Sealing.cs':(HERE/'SealingHarness.cs.txt').read_text(encoding='utf-8-sig'),'Proof.csproj':'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(deps))+'</HintPath></Reference></ItemGroup></Project>','NuGet.Config':'<configuration><packageSources><clear/></packageSources></configuration>'}
+ files['MemorySummaryRules.cs']=read('src/modules/AF.Module.Memory/Summary/MemorySummaryRules.cs')
+ files['MemorySummaryAttemptRunner.cs']=read('src/modules/AF.Module.Memory/Summary/MemorySummaryAttemptRunner.cs')
+ if not baseline:
+  owner=read('src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs')
+  owner=exact(owner,'DailyMemoryDraft draft = SanitizeDailyMemoryDraftEntry(sourceEntry, seen);','if (sourceEntry != null) SealProbe.Hit("owner-normalized-record"); DailyMemoryDraft draft = SanitizeDailyMemoryDraftEntry(sourceEntry, seen);')
+  assert owner.count('trigger.MemoryId = memoryId;')==2
+  owner=owner.replace('trigger.MemoryId = memoryId;','SealProbe.Hit("owner-bound-trigger"); trigger.MemoryId = memoryId;',1)
+  owner=exact(owner,'x.GameDayIndex = draft.GameDayIndex;','SealProbe.Hit("owner-normalized-line"); x.GameDayIndex = draft.GameDayIndex;')
+  owner=owner.replace('OrderBy((MemorySummaryJob x) => x.GameDayIndex)', 'OrderBy((MemorySummaryJob x) => x.GameDayIndex, SealProbe.SortComparer<int>())').replace('OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex)', 'OrderBy((MajorActionSummaryJob x) => x.TriggerGameDayIndex, SealProbe.SortComparer<int>())')
+  owner=owner.replace('ThenBy((MemorySummaryJob x) => x.HeroName)', 'ThenBy((MemorySummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())').replace('ThenBy((MajorActionSummaryJob x) => x.HeroName)', 'ThenBy((MajorActionSummaryJob x) => x.HeroName, SealProbe.SortComparer<string>())')
+  files['MemoryPersistenceModels.cs']=owner
+  files['NpcActionEntry.cs']=read('src/modules/AF.Module.Memory/Records/NpcActionEntry.cs')
+ if not baseline or baseline=='8ae0f831':
+  files['NpcActionLedger.cs']=read('src/modules/AF.Module.Memory/Records/NpcActionLedger.cs')
+  files['AutomaticKingdomRebellions.cs']='namespace AnimusForge { internal static class AutomaticKingdomRebellions { internal static bool FlowActive => false; } }'
  if new_sealing:
   seal=read('MyBehavior.MemorySealing.cs');manifest.append(dict(file='MyBehavior.MemorySealing.cs',sha256=hashlib.sha256(seal.encode()).hexdigest(),whole_partial=True))
   seal=exact(seal,'T job = current[index.Cursor++];','T job = current[index.Cursor++]; SealProbe.Hit(typeof(T)==typeof(MemorySummaryJob)?"daily-index":"major-index");')
@@ -189,7 +212,7 @@ def main():
  for path,text in files.items():(out/path).write_bytes(text.encode())
  meta=dict(source_revision=baseline or 'worktree',mutation=a.mutate,source_sha256=hashlib.sha256(source.encode()).hexdigest(),declarations=manifest,generated_sha256={p:hashlib.sha256(t.encode()).hexdigest() for p,t in files.items()},seams=['Actual Seal/Reset/HasPast/TryRun/sanitizers/pending/major enqueue/cancel execute; game owner identity and summary-start are fixtures','Entry/iteration counters only; controlled entry delay exercises actual Stopwatch budget'],limits=['Owner sanitizer is per-draft; lines/trigger binds use metadata grants, trigger list sanitize stays atomic','No real game/save/provider or overall frame-time acceptance'])
  (out/'manifest.json').write_bytes(json.dumps(meta,ensure_ascii=False,indent=2).encode())
- dotnet=Path(os.environ.get('DOTNET_EXE', r'C:/Program Files/dotnet/dotnet.exe'));env=dict(os.environ,DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(ROOT/'.tmp/appdata'),DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
+ dotnet=Path(os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe')));(out/'home').mkdir();(out/'appdata').mkdir();env={key: os.environ[key] for key in ('SystemRoot','WINDIR','ProgramData','HOMEDRIVE','HOMEPATH','OS','USERNAME','USERDOMAIN','ProgramFiles','ProgramFiles(x86)','CommonProgramFiles','CommonProgramFiles(x86)','PROCESSOR_ARCHITECTURE') if key in os.environ};env.update(PATH=str(dotnet.parent),DOTNET_ROOT=str(dotnet.parent),DOTNET_CLI_HOME=str(out/'home'),USERPROFILE=str(out/'home'),HOME=str(out/'home'),LOCALAPPDATA=str(out/'appdata'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'),APPDATA=str(out/'appdata'),TEMP='E:/tmp/af-j17-20260930',TMP='E:/tmp/af-j17-20260930',DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1',DOTNET_CLI_TELEMETRY_OPTOUT='1')
  build=subprocess.run([str(dotnet),'build',str(out/'Proof.csproj'),'-c','Release','--nologo','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);(out/'build.log').write_bytes((build.stdout+build.stderr).encode())
  if build.returncode:print(build.stdout+build.stderr);return 2
  run=subprocess.run([str(dotnet),str(out/'bin/Release/net8.0/Proof.dll')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120);log=run.stdout+run.stderr;(out/'run.log').write_bytes(log.encode());print('BUILD_PASS sealing='+variant);print(log,end='');return run.returncode if 'SEALING_RESULT' in log else 2
