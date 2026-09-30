@@ -73,6 +73,12 @@ internal static class RoundApplicationReplay
             _ => { visits++; return true; }, () => false,
             _ => throw new Exception(), (_, _) => throw new Exception(), _ => { }, _ => { });
         Test.True(visits == 1, "selection stops at the first eligible candidate even in a large backlog");
+        var eligible = WorldDiplomacyRoundLifecycleRules.SelectEligibleAiPartyIds(
+            new[] { "kZ", "", "kA", "kM" },
+            id => id != "kM",
+            id => id != "kZ");
+        Test.True(eligible.SequenceEqual(new[] { "kA" }),
+            "eligible AI party selection is a domain rule over leaf predicates and keeps stable ordering");
         storage.ActiveRound = new WorldDiplomacyRound { State = "closed" };
         Test.True(Open(storage, "player", true).IsPlayerInsertion, "player can open a new round after a closed record");
     }

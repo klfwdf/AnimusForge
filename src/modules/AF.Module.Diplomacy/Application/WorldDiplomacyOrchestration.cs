@@ -115,7 +115,7 @@ internal interface IWorldDiplomacyOrchestrationHost
     float CourtDistance(string firstId, string secondId);
     bool IsRepresentativeForAddressedVassal(string receiverId, WorldDiplomacyDocument document);
     bool CampaignHasKingdoms();
-    List<string> EligibleAiPartyIds();
+    IReadOnlyList<string> AllKingdomIds();
     string ResolveEligibleDiplomacyKingdomId(string kingdomId);
     bool PartiesAllied(string firstId, string secondId);
     bool TradeAgreementExists(string firstId, string secondId);
@@ -124,7 +124,6 @@ internal interface IWorldDiplomacyOrchestrationHost
     bool IsAtWarByKingdomIds(string firstId, string secondId);
     string ResolveKingdomNameOrEmpty(string kingdomId);
     string ValidateOpenThreatWorldEligibility(WorldDiplomacyThreat threat);
-    bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document);
     WorldDiplomacyPolicyRoundApplication.Parties ResolvePolicyParties(WorldDiplomacyPolicySignal signal);
     string ResolvePropagationReceiverId(string kingdomId, string settlementId);
     int OfferCooldownLastFailedRoundDay(WorldDiplomacyOfferCooldownKey key);
@@ -276,6 +275,9 @@ internal interface IWorldDiplomacyOrchestration
     void CompletePolicySignal(WorldDiplomacyPolicySignal signal, string reason);
     void TryApplyInitialNewGamePeace();
     void NormalizeStorage(bool allowWorldValidation);
+    void SyncData(bool isSaving, bool isLoading,
+        Func<WorldDiplomacyStorage> loadStorage, Func<string> loadError,
+        Action<WorldDiplomacyStorage> saveStorage, Action<string> log, Action resetTransientRuntime);
     void ReplaceStorage(WorldDiplomacyStorage storage);
     void ResetStorageForNewGame(bool initialPeacePending);
     void EnsureScheduleInitialized();
@@ -298,7 +300,6 @@ internal interface IWorldDiplomacyOrchestration
     void RetryDeferredDocumentPropagation();
     void ProcessPropagationArrivals();
     void RecalculatePendingPropagationIfNeeded();
-    bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document);
     void RecordDiplomacyWeeklyMaterial(WorldDiplomacyDocument document);
     void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document);
     void NotifyExternalDiplomacyResolved(string action, string initiatorId, string targetId, string reason);
@@ -418,18 +419,18 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 {
     private readonly IWorldDiplomacyOrchestrationHost _host;
     private readonly WorldDiplomacyRuntimeState _runtime;
-    private readonly WorldDiplomacyStateStore _stateStore;
+    private readonly WorldDiplomacyStateStore _stateStore = new WorldDiplomacyStateStore();
 
-    internal WorldDiplomacyOrchestration(IWorldDiplomacyOrchestrationHost host, WorldDiplomacyRuntimeState runtime,
-        WorldDiplomacyStateStore stateStore)
+    internal WorldDiplomacyOrchestration(IWorldDiplomacyOrchestrationHost host, WorldDiplomacyRuntimeState runtime)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
         _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
-        _stateStore = stateStore ?? throw new ArgumentNullException(nameof(stateStore));
     }
 
     internal WorldDiplomacyRuntimeState Runtime => _runtime;
     private WorldDiplomacyStorage Storage => _stateStore.Current;
+    // Read projection for host adapters; canonical writes stay inside the store.
+    internal WorldDiplomacyStorage CurrentStorage => _stateStore.Current;
     public void ReplaceStorage(WorldDiplomacyStorage storage) => _stateStore.Replace(storage);
 
     // ---------- leaf helpers shared by orchestration methods ----------
@@ -1621,7 +1622,9 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
     public void TryScheduleNormalRound()
     {
         WorldDiplomacyRoundApplication.TryScheduleNormal(Storage, _host.LlmRequestRunning(), _host.CurrentDay,
-            _host.EligibleAiPartyIds,
+            () => WorldDiplomacyRoundLifecycleRules.SelectEligibleAiPartyIds(
+                _host.AllKingdomIds(), _host.HasIndependentAuthority,
+                id => _host.CanAiAuthorParty(id, out _)),
             id => _host.PartyResolved(id) && GetActionableDiplomaticTargetIds(id, null).Count > 0,
             ConsumeDailyAiDocumentBudget,
             id => EnsureActiveRound(id, null, isPlayerInsertion: false),
@@ -1636,6 +1639,27 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
         WorldDiplomacyStorageNormalizationApplication.Normalize(ref storage, allowWorldValidation,
             _host.StorageNormalizationSource(), _host.CanonicalHistoryMigrationSource(), this);
         if (!ReferenceEquals(storage, Storage)) _stateStore.Replace(storage);
+    }
+
+    // Single persistence entry: the application owner sequences save/load,
+    // state replacement, transient reset and post-load normalization. The host
+    // supplies only the leaf store-read/store-write/error/log/reset adapters.
+    public void SyncData(bool isSaving, bool isLoading,
+        Func<WorldDiplomacyStorage> loadStorage, Func<string> loadError,
+        Action<WorldDiplomacyStorage> saveStorage, Action<string> log, Action resetTransientRuntime)
+    {
+        if (isSaving)
+        {
+            NormalizeStorage(allowWorldValidation: false);
+            saveStorage?.Invoke(_stateStore.Current);
+            return;
+        }
+        if (!isLoading) return;
+        _stateStore.Replace(loadStorage?.Invoke());
+        string error = loadError?.Invoke();
+        if (!string.IsNullOrWhiteSpace(error)) log?.Invoke("load failed: " + error);
+        resetTransientRuntime?.Invoke();
+        NormalizeStorage(allowWorldValidation: false);
     }
 
     // ---------- canonical state owner lane (storage + runtime writes) ----------
@@ -1889,11 +1913,6 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
                     () => _host.IsPlayerAffiliatedParty(receiverId), () => ProcessCourtArrival(receiverId, document));
             },
             _host.ResolvePartyId);
-    }
-
-    public bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
-    {
-        return _host.HasCompleteLegacyPropagationCoverage(document);
     }
 
     public void RecalculatePendingPropagationIfNeeded()

@@ -14,8 +14,6 @@ internal interface IWorldDiplomacyLlmDispatchSource
     int CurrentHour { get; }
     string LastCacheAffinityKey { get; }
     void SetLastCacheAffinityKey(string value);
-    bool HasStaleThreatPresentation(WorldDiplomacyJob job);
-    bool HasStaleActionPresentation(WorldDiplomacyJob job);
     string GetAuthorBlockReason(WorldDiplomacyJob job);
     string GetLlmConfigError();
     bool TryConsumeRequestBudget(bool consume);
@@ -46,9 +44,8 @@ internal static class WorldDiplomacyLlmDispatchApplication
             source.Storage,
             source.CurrentHour,
             source.LastCacheAffinityKey,
-            source.HasStaleThreatPresentation,
+            orchestration.BuildGenerationLegalActionSignature,
             orchestration.RefreshDiplomaticThreatPresentationAndPrompt,
-            source.HasStaleActionPresentation,
             orchestration.RefreshDiplomaticActionPresentationAndPrompt,
             orchestration.TryRebuildPendingJob,
             source.GetAuthorBlockReason,
@@ -119,9 +116,8 @@ internal static class WorldDiplomacyLlmDispatchApplication
         WorldDiplomacyStorage storage,
         int currentHour,
         string lastCacheAffinityKey,
-        Func<WorldDiplomacyJob, bool> hasStaleThreatPresentation,
+        Func<WorldDiplomacyJob, string> buildLegalActionSignature,
         Func<WorldDiplomacyJob, bool> refreshThreatPresentation,
-        Func<WorldDiplomacyJob, bool> hasStaleActionPresentation,
         Func<WorldDiplomacyJob, bool> refreshActionPresentation,
         Func<WorldDiplomacyJob, bool> rebuildPendingJob,
         Func<WorldDiplomacyJob, string> authorBlockReason,
@@ -158,8 +154,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
             .ThenBy(x => x.JobId, StringComparer.OrdinalIgnoreCase)
             .FirstOrDefault();
         if (job == null) return null;
-        if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")
-            && hasStaleThreatPresentation?.Invoke(job) == true)
+        if (WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, storage?.DiplomaticThreats))
         {
             if (refreshThreatPresentation?.Invoke(job) != true)
             {
@@ -170,7 +165,8 @@ internal static class WorldDiplomacyLlmDispatchApplication
                 + " author=" + job.AuthorKingdomId);
         }
         if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")
-            && hasStaleActionPresentation?.Invoke(job) == true)
+            && WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+                job, buildLegalActionSignature))
         {
             if (refreshActionPresentation?.Invoke(job) != true)
             {

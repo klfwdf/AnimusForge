@@ -60,11 +60,6 @@ internal static partial class PropagationApplicationReplay
             _host.ResolvePartyId);
     }
 
-    public bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
-    {
-        return _host.HasCompleteLegacyPropagationCoverage(document);
-    }
-
         private WorldDiplomacyStorage Storage => _storage;
 
         private void ProcessCourtArrival(string receiverId, WorldDiplomacyDocument document)
@@ -86,7 +81,6 @@ internal static partial class PropagationApplicationReplay
             internal bool IsPlayerAffiliatedParty(string kingdomId)
                 => _h.IsPlayerAffiliatedKingdom(new Kingdom { StringId = kingdomId });
             internal string ResolvePartyId(string settlementId) => _h.ResolveSettlementById(settlementId)?.StringId;
-            internal bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document) => true;
         }
     }
 }

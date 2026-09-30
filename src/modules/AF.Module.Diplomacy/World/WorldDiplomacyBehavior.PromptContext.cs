@@ -87,6 +87,20 @@ public sealed partial class WorldDiplomacyBehavior
                 .ToList();
         }
         bool IWorldDiplomacyPromptWorld.IsAtWar(string author, string target) => FactionManager.IsAtWarAgainstFaction(Resolve(author), Resolve(target));
+        bool IWorldDiplomacyPromptWorld.IsAlly(string author, string target)
+        {
+            Kingdom a = Resolve(author);
+            Kingdom b = Resolve(target);
+            IAllianceCampaignBehavior alliance = Campaign.Current?.GetCampaignBehavior<IAllianceCampaignBehavior>();
+            return a != null && b != null && alliance != null && alliance.IsAllyWithKingdom(a, b);
+        }
+        bool IWorldDiplomacyPromptWorld.HasTradeAgreement(string author, string target)
+        {
+            Kingdom a = Resolve(author);
+            Kingdom b = Resolve(target);
+            ITradeAgreementsCampaignBehavior trade = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+            return a != null && b != null && trade != null && BannerlordApiCompat.HasTradeAgreement(trade, a, b);
+        }
         WorldDiplomacyRound IWorldDiplomacyPromptWorld.ResolveRound(string id) => _owner.ResolveRound(id);
         WorldDiplomacyDocument IWorldDiplomacyPromptWorld.ResolveDocument(string id) => _owner.ResolveDocument(id);
         IReadOnlyList<WorldDiplomacyDocument> IWorldDiplomacyPromptWorld.Documents() => _owner._storage?.Documents;
@@ -126,7 +140,6 @@ public sealed partial class WorldDiplomacyBehavior
             id => WorldDiplomacyBehavior.KingdomName(Resolve(id) ?? ResolveAny(id)),
             WorldDiplomacyBehavior.FormatCampaignDate);
         WorldDiplomacyRulerCaptivity IWorldDiplomacyPromptWorld.AuthorRulerCaptivity(string authorId) => WorldDiplomacyBehavior.ResolveAuthorRulerCaptivity(Resolve(authorId));
-        string IWorldDiplomacyPromptWorld.BuildBilateralState(string author, string target) => WorldDiplomacyBehavior.BuildBilateralState(Resolve(author), Resolve(target));
         string IWorldDiplomacyDraftRepairWorld.BuildGovernmentHardFact(string author) => WorldDiplomacyBehavior.BuildCanonicalRealmGovernmentHardFact(Resolve(author), WorldDiplomacyBehavior.ResolveRealmRulerTitle(Resolve(author), Resolve(author)?.Leader ?? Resolve(author)?.RulingClan?.Leader));
         string IWorldDiplomacyDraftRepairWorld.NewId(string prefix) => WorldDiplomacyBehavior.NewId(prefix);
         void IWorldDiplomacyDraftRepairWorld.Log(string text) => WorldDiplomacyBehavior.Log(text);

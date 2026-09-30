@@ -2816,6 +2816,79 @@ public static class WorldDiplomacyRoundLifecycleRules
                 currentFollowThroughIds ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
     }
 
+    public static bool HasStaleThreatPresentation(
+        WorldDiplomacyJob job, IEnumerable<WorldDiplomacyThreat> threats)
+    {
+        if (job == null || !IsJobOfKind(job, "generate")) return false;
+        List<string> currentPresented = SelectPresentedThreatStageDocumentIds(threats, job.AuthorKingdomId);
+        List<string> currentFollowThrough = SelectNoncompliedThreatStageDocumentIds(threats, job.AuthorKingdomId);
+        return HasThreatPresentationDrift(
+            job.PresentedThreatDocumentIds, currentPresented,
+            job.PresentedThreatFollowThroughDocumentIds, currentFollowThrough);
+    }
+
+    public static string ValidateOpenThreatEligibility(
+        bool issuerResolved, bool issuerEliminated, bool issuerIndependent,
+        bool targetResolved, bool targetEliminated, bool targetIndependent,
+        bool sameParty, bool atWar, bool allied)
+    {
+        if (!issuerResolved || !targetResolved || sameParty || issuerEliminated || targetEliminated
+            || !issuerIndependent || !targetIndependent)
+        {
+            return "threat_party_no_longer_eligible";
+        }
+        if (atWar) return "war_already_started_outside_pending_declaration";
+        if (allied) return "threat_parties_became_allies";
+        return null;
+    }
+
+    public static List<string> SelectEligibleAiPartyIds(
+        IEnumerable<string> kingdomIds,
+        Func<string, bool> hasIndependentAuthority,
+        Func<string, bool> canAuthor)
+    {
+        return (kingdomIds ?? Enumerable.Empty<string>())
+            .Where(id => !string.IsNullOrWhiteSpace(id)
+                && hasIndependentAuthority(id)
+                && canAuthor(id))
+            .OrderBy(id => id, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    public static bool HasCompleteLegacyPropagationCoverage(
+        WorldDiplomacyDocument document,
+        IEnumerable<WorldDiplomacyPropagationArrival> arrivals,
+        IEnumerable<WorldDiplomacySettlementKnowledge> settlementKnowledge,
+        IEnumerable<WorldDiplomacyKingdomKnowledge> kingdomKnowledge,
+        IReadOnlyCollection<string> nonHideoutSettlementIds,
+        IReadOnlyCollection<string> nonEliminatedKingdomIds)
+    {
+        if (document == null || !document.PropagationStarted) return false;
+        List<WorldDiplomacyPropagationArrival> arrivalList =
+            arrivals as List<WorldDiplomacyPropagationArrival> ?? new List<WorldDiplomacyPropagationArrival>(arrivals ?? Enumerable.Empty<WorldDiplomacyPropagationArrival>());
+        HashSet<string> pendingSettlements = new HashSet<string>(arrivalList
+            .Where(x => x != null && !WorldDiplomacyStructureRules.IsCourtArrival(x)
+                && MatchesDocumentId(x.DocumentId, document.DocumentId))
+            .Select(x => x.SettlementId).Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+        HashSet<string> pendingKingdoms = new HashSet<string>(arrivalList
+            .Where(x => x != null && WorldDiplomacyStructureRules.IsCourtArrival(x)
+                && MatchesDocumentId(x.DocumentId, document.DocumentId))
+            .Select(x => x.KingdomId).Where(x => !string.IsNullOrWhiteSpace(x)), StringComparer.OrdinalIgnoreCase);
+        HashSet<string> knownSettlementIds = WorldDiplomacyDocumentFactRules.GetKnownSettlementIdsForDocument(settlementKnowledge, document.DocumentId);
+        HashSet<string> knownKingdomIds = WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(kingdomKnowledge, document.DocumentId);
+        foreach (string settlementId in nonHideoutSettlementIds ?? (IReadOnlyCollection<string>)new List<string>())
+        {
+            if (string.Equals(settlementId, document.OriginSettlementId, StringComparison.OrdinalIgnoreCase)) continue;
+            if (!pendingSettlements.Contains(settlementId) && !knownSettlementIds.Contains(settlementId)) return false;
+        }
+        foreach (string kingdomId in nonEliminatedKingdomIds ?? (IReadOnlyCollection<string>)new List<string>())
+        {
+            if (string.Equals(kingdomId, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase)) continue;
+            if (!pendingKingdoms.Contains(kingdomId) && !knownKingdomIds.Contains(kingdomId)) return false;
+        }
+        return true;
+    }
+
     public static bool IsCourtPropagationArrival(WorldDiplomacyPropagationArrival arrival)
     {
         return string.Equals(arrival?.Scope, "court", StringComparison.OrdinalIgnoreCase);

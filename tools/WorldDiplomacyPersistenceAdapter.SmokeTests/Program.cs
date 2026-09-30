@@ -125,27 +125,36 @@ internal static class Program
             FindRepositoryFile("Refactor", "Adapters", "BannerlordWorldDiplomacyPersistenceAdapter.cs"),
             Encoding.UTF8);
 
-        Test.True(syncData.Contains("PersistenceAdapter.Save(dataStore, _stateStore.Current)", StringComparison.Ordinal)
-                  && syncData.Contains("_stateStore.Replace(PersistenceAdapter.Load(dataStore, out string loadError))",
-                      StringComparison.Ordinal),
-            "SyncData must delegate save and load persistence operations");
+        Test.True(syncData.Contains("_orchestration.SyncData(dataStore.IsSaving, dataStore.IsLoading", StringComparison.Ordinal)
+                  && syncData.Contains("PersistenceAdapter.Load(dataStore, out loadError)", StringComparison.Ordinal)
+                  && syncData.Contains("PersistenceAdapter.Save(dataStore, storage)", StringComparison.Ordinal)
+                  && syncData.Contains("() => ResetTransientRuntime(\"load\")", StringComparison.Ordinal),
+            "SyncData must delegate sequencing to the application persistence owner through leaf adapters");
         Test.True(!syncData.Contains("JsonConvert", StringComparison.Ordinal)
                   && !syncData.Contains("CampaignSaveChunkHelper", StringComparison.Ordinal)
-                  && !syncData.Contains("_af_world_diplomacy_v1", StringComparison.Ordinal),
-            "SyncData must no longer own JSON, chunking, or persistence identity");
+                  && !syncData.Contains("_af_world_diplomacy_v1", StringComparison.Ordinal)
+                  && !syncData.Contains("_stateStore", StringComparison.Ordinal)
+                  && !syncData.Contains("NormalizeStorage", StringComparison.Ordinal),
+            "SyncData must no longer own JSON, chunking, persistence identity, the store, or normalize ordering");
         Test.True(Count(adapter, "_af_world_diplomacy_v1") == 1,
             "the canonical diplomacy save key must have one persistence owner");
+        Test.True(!behavior.Contains("WorldDiplomacyStateStore _stateStore", StringComparison.Ordinal)
+                  && behavior.Contains("_orchestration.CurrentStorage", StringComparison.Ordinal),
+            "the host must project canonical state from the application-owned store");
 
-        int normalizeBeforeSave = syncData.IndexOf("_orchestration.NormalizeStorage(allowWorldValidation: false);", StringComparison.Ordinal);
-        int save = syncData.IndexOf("PersistenceAdapter.Save(dataStore, _stateStore.Current)", StringComparison.Ordinal);
-        int load = syncData.IndexOf("PersistenceAdapter.Load(dataStore, out string loadError)",
-            StringComparison.Ordinal);
-        int resetAfterLoad = syncData.IndexOf("ResetTransientRuntime(\"load\")", StringComparison.Ordinal);
-        int normalizeAfterLoad = syncData.LastIndexOf("_orchestration.NormalizeStorage(allowWorldValidation: false);", StringComparison.Ordinal);
+        string orchSync = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"), Encoding.UTF8),
+            "public void SyncData(");
+        int normalizeBeforeSave = orchSync.IndexOf("NormalizeStorage(allowWorldValidation: false);", StringComparison.Ordinal);
+        int save = orchSync.IndexOf("saveStorage?.Invoke(_stateStore.Current)", StringComparison.Ordinal);
+        int load = orchSync.IndexOf("_stateStore.Replace(loadStorage?.Invoke())", StringComparison.Ordinal);
+        int error = orchSync.IndexOf("loadError?.Invoke()", StringComparison.Ordinal);
+        int resetAfterLoad = orchSync.IndexOf("resetTransientRuntime?.Invoke()", StringComparison.Ordinal);
+        int normalizeAfterLoad = orchSync.LastIndexOf("NormalizeStorage(allowWorldValidation: false);", StringComparison.Ordinal);
         Test.True(normalizeBeforeSave >= 0 && normalizeBeforeSave < save,
             "storage normalization must still precede saving");
-        Test.True(load >= 0 && resetAfterLoad > load && normalizeAfterLoad > resetAfterLoad,
-            "load must still reset transient runtime and normalize storage in the existing order");
+        Test.True(load >= 0 && error > load && resetAfterLoad > error && normalizeAfterLoad > resetAfterLoad,
+            "load must replace state, surface the error, reset transient runtime, and normalize in that order");
     }
 
     private static string ExtractMethod(string source, string signature)

@@ -20,8 +20,6 @@ public sealed partial class WorldDiplomacyBehavior
         public int CurrentHour => WorldDiplomacyBehavior.CurrentHour();
         public string LastCacheAffinityKey => _owner._runtime.LastLlmCacheAffinityKey;
         public void SetLastCacheAffinityKey(string value) => _owner._runtime.LastLlmCacheAffinityKey = value;
-        public bool HasStaleThreatPresentation(WorldDiplomacyJob job) => _owner.HasStaleDiplomaticThreatPresentation(job);
-        public bool HasStaleActionPresentation(WorldDiplomacyJob job) => WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(job, _owner._orchestration.BuildGenerationLegalActionSignature);
         public string GetAuthorBlockReason(WorldDiplomacyJob job)
         { string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(job.AuthorKingdomId), out reason) ? null : reason; }
         public string GetLlmConfigError() { string error; return WorldDiplomacyLlmClient.IsConfigured(out error) ? null : error; }

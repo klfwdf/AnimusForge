@@ -52,7 +52,12 @@ public sealed partial class WorldDiplomacyBehavior
         public string FormatCampaignDate(int day) => WorldDiplomacyBehavior.FormatCampaignDate(day);
         public string ResolveKingdomNameOrEmpty(string kingdomId) => WorldDiplomacyBehavior.ResolveKingdomNameOrEmpty(kingdomId);
         public List<string> NormalizeKingdomIdList(IEnumerable<string> values, string excludedId) => WorldDiplomacyBehavior.NormalizeKingdomIdList(values, excludedId);
-        public bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document) => _owner.HasCompleteLegacyPropagationCoverage(document);
+        public IReadOnlyCollection<string> CaptureNonHideoutSettlementIds() =>
+            Settlement.All.Where(x => x != null && !x.IsHideout && !string.IsNullOrWhiteSpace(x.StringId))
+                .Select(x => x.StringId).ToList();
+        public IReadOnlyCollection<string> CaptureNonEliminatedKingdomIds() =>
+            Kingdom.All.Where(x => x != null && !x.IsEliminated)
+                .Select(x => x.StringId).ToList();
         public bool HasCampaignWorld => Campaign.Current != null && Kingdom.All.Any();
         public int DiplomacyPromptContractVersion => WorldDiplomacyBehavior.DiplomacyPromptContractVersion;
         public int ResultSettlementStateSchemaVersion => WorldDiplomacyBehavior.ResultSettlementStateSchemaVersion;

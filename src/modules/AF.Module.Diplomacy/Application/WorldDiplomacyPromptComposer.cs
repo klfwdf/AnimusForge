@@ -13,6 +13,15 @@ namespace AnimusForge;
 // this port; nothing here retains a Campaign object or dispatches background work.
 internal static class WorldDiplomacyPromptComposer
 {
+    internal static string BilateralStateLabel(IWorldDiplomacyPromptWorld world, string authorId, string targetId)
+    {
+        if (world.ResolveKingdom(authorId) == null || world.ResolveKingdom(targetId) == null) return "未知";
+        return WorldDiplomacyTextRules.BuildBilateralStateLabel(
+            world.IsAtWar(authorId, targetId),
+            world.IsAlly(authorId, targetId),
+            world.HasTradeAgreement(authorId, targetId));
+    }
+
 	internal static string BuildRoundPlanSystemPrompt(IWorldDiplomacyPromptWorld world, WorldDiplomacyRound round)
 	{
 		StringBuilder sb = WorldDiplomacyPromptContractRules.CreateSystemPromptBuilder(world.GetCommonDiplomacyContract(round));
@@ -673,7 +682,7 @@ internal static class WorldDiplomacyPromptComposer
 			sb.AppendLine(reputationConflictOpportunity);
 		}
 		if (!string.IsNullOrWhiteSpace(bilateralFamily)) sb.AppendLine(bilateralFamily);
-		sb.AppendLine("当前关系=" + world.BuildBilateralState(authorId, targetId)
+		sb.AppendLine("当前关系=" + BilateralStateLabel(world, authorId, targetId)
 			+ "；两国贵族整体关系=" + WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile)
 			+ "；统治者私人关系=" + WorldDiplomacyTextRules.DescribeRulerRelation(relation)
 			+ "；地理关系=" + (border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : "不接壤")
@@ -774,7 +783,7 @@ internal static class WorldDiplomacyPromptComposer
 		WarSituationSnapshot strengthSituation = world.WarSituation(authorId, candidateId);
 		int candidateReputation = world.InternationalReputation(candidateId);
 		sb.Append("- ").Append(candidateId).Append('=').Append(world.KingdomName(candidateId))
-			.Append("；与本国=").Append(world.BuildBilateralState(authorId, candidateId))
+			.Append("；与本国=").Append(BilateralStateLabel(world, authorId, candidateId))
 			.Append("；两国贵族整体关系=").Append(WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile))
 			.Append("；统治者私人关系=").Append(WorldDiplomacyTextRules.DescribeRulerRelation(world.RulerRelation(authorId, candidateId)))
 			.Append("；地理关系=").Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : "不接壤")

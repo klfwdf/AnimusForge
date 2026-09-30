@@ -104,6 +104,14 @@ public static class WorldDiplomacyTextRules
 		return values.Count == 0 ? "[]" : "[" + string.Join("；", values) + "]";
 	}
 
+	public static string BuildBilateralStateLabel(bool atWar, bool allied, bool hasTradeAgreement)
+	{
+		if (atWar) return "双方正在交战";
+		if (allied) return "双方处于同盟关系";
+		if (hasTradeAgreement) return "双方和平并有贸易协定";
+		return "双方处于和平状态。";
+	}
+
 		public static string CompactPromptFact(string value, int maxChars)
 	{
 		string compact = string.Join(" ", (value ?? "")

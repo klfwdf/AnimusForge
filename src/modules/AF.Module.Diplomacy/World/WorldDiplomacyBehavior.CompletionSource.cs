@@ -17,8 +17,6 @@ public sealed partial class WorldDiplomacyBehavior
         public int CurrentHour => WorldDiplomacyBehavior.CurrentHour();
         public int FailedServiceCooldownHours => WorldDiplomacyBehavior.FailedServiceCooldownHours;
         public void LogUsage(WorldDiplomacyJob job, LlmJobResult result) => _owner.LogPromptCacheUsage(job, result);
-        public bool HasStaleThreatPresentation(WorldDiplomacyJob job) => _owner.HasStaleDiplomaticThreatPresentation(job);
-        public bool HasStaleActionPresentation(WorldDiplomacyJob job) => WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(job, _owner._orchestration.BuildGenerationLegalActionSignature);
         public void RemoveJob(string jobId) => _owner._orchestration.RemoveJob(jobId);
         public void Log(string message) => WorldDiplomacyBehavior.Log(message);
     }

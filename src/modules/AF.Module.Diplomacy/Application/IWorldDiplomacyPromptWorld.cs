@@ -16,6 +16,8 @@ internal interface IWorldDiplomacyPromptWorld
     IReadOnlyList<string> CurrentWarKingdomIds(string authorId);
     IReadOnlyList<string> IndependentKingdomIds();
     bool IsAtWar(string author, string target);
+    bool IsAlly(string author, string target);
+    bool HasTradeAgreement(string author, string target);
     WorldDiplomacyRound ResolveRound(string id);
     WorldDiplomacyDocument ResolveDocument(string id);
     IReadOnlyList<WorldDiplomacyDocument> Documents();
@@ -43,7 +45,8 @@ internal interface IWorldDiplomacyPromptWorld
     int NationalPrestige(string kingdomId);
     int InternationalReputation(string kingdomId);
     int WarPressure(string authorId, string targetId);
-    string BuildBilateralState(string authorId, string targetId);
+    // Bilateral state label precedence (at-war > ally > trade > peace) is decided
+    // by WorldDiplomacyTextRules.BuildBilateralStateLabel over the leaf facts above.
     string RulerVoiceContext(string kingdomId);
     string RealmInstitutionalVoiceContext(string kingdomId);
     string AuthorRulerFamilyContext(string kingdomId);

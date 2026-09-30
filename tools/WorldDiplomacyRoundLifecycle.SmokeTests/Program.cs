@@ -228,6 +228,7 @@ RunRepairCorrectionAndJobDecisionTests();
         JobPreparationReplay.Run();
         AnalysisApplicationReplay.Run();
         PeaceAdmissionReplay.Run();
+        PersistenceSyncReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");
         return 0;
@@ -10127,7 +10128,7 @@ RunRepairCorrectionAndJobDecisionTests();
                 .Where(x => x.Length > 0 && !string.Equals(x, excluded, StringComparison.OrdinalIgnoreCase))
                 .Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
             formatCampaignDate: d => "day_" + d,
-            hasCompleteLegacyPropagationCoverage: _ => true);
+            nonHideoutSettlementIds: new List<string>(), nonEliminatedKingdomIds: new List<string>());
         Test.True(doc.RoundAccountingHandled && doc.RoundId == "ex1" && doc.GameDate == "day_12"
             && doc.TargetKingdomName == "Beta" && doc.IsReadyForPublication,
             "document normalization must mirror accounting, round backfill, date, and publication flags");
@@ -10136,7 +10137,8 @@ RunRepairCorrectionAndJobDecisionTests();
             nameless, docStorage, migrateLegacyPropagationState: false,
             legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
             resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
-            formatCampaignDate: d => "day_" + d, hasCompleteLegacyPropagationCoverage: _ => false);
+            formatCampaignDate: d => "day_" + d,
+            nonHideoutSettlementIds: new List<string>(), nonEliminatedKingdomIds: new List<string>());
         Test.True(nameless.TargetKingdomName == "",
             "the placeholder kingdom name must still be cleared when no action mirrors a name");
         Test.True(doc.Actions.Count == 3
@@ -10169,7 +10171,8 @@ RunRepairCorrectionAndJobDecisionTests();
             legacy, docStorage, migrateLegacyPropagationState: true,
             legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
             resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
-            formatCampaignDate: d => "day_" + d, hasCompleteLegacyPropagationCoverage: _ => false);
+            formatCampaignDate: d => "day_" + d,
+            nonHideoutSettlementIds: new List<string>(), nonEliminatedKingdomIds: new List<string>());
         Test.True(legacy.PropagationCompleted && legacy.HasReachedPlayerCourt,
             "pre-propagation documents must complete and reach the player court immediately");
         var uncovered = new WorldDiplomacyDocument
@@ -10181,9 +10184,76 @@ RunRepairCorrectionAndJobDecisionTests();
             uncovered, docStorage, migrateLegacyPropagationState: true,
             legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
             resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
-            formatCampaignDate: d => "day_" + d, hasCompleteLegacyPropagationCoverage: _ => false);
+            formatCampaignDate: d => "day_" + d,
+            nonHideoutSettlementIds: new List<string> { "town_2" }, nonEliminatedKingdomIds: new List<string> { "kB" });
         Test.True(!uncovered.PropagationCompleted,
             "a relevant document with incomplete coverage must stay pending propagation");
+
+        // Coverage halves: settlements covered but kingdoms missing stays incomplete, and vice versa.
+        docStorage.SettlementKnowledge.Add(new WorldDiplomacySettlementKnowledge
+        {
+            SettlementId = "town_2", DocumentIds = new List<string> { "d5" }, LastUpdatedDay = 29
+        });
+        var partialA = new WorldDiplomacyDocument
+        {
+            DocumentId = "d5", AuthorKingdomId = "kA", Day = 28,
+            IsReadyForPublication = true, PropagationStarted = true, OriginSettlementId = "town_1"
+        };
+        WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(
+            partialA, docStorage, migrateLegacyPropagationState: true,
+            legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
+            resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
+            formatCampaignDate: d => "day_" + d,
+            nonHideoutSettlementIds: new List<string> { "town_2" }, nonEliminatedKingdomIds: new List<string> { "kB" });
+        Test.True(!partialA.PropagationCompleted,
+            "settlement coverage alone cannot complete propagation while a kingdom is uncovered");
+        var partialB = new WorldDiplomacyDocument
+        {
+            DocumentId = "d6", AuthorKingdomId = "kA", Day = 28,
+            IsReadyForPublication = true, PropagationStarted = true, OriginSettlementId = "town_1"
+        };
+        WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(
+            partialB, docStorage, migrateLegacyPropagationState: true,
+            legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
+            resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
+            formatCampaignDate: d => "day_" + d,
+            nonHideoutSettlementIds: new List<string>(), nonEliminatedKingdomIds: new List<string> { "kB" });
+        Test.True(!partialB.PropagationCompleted,
+            "kingdom coverage alone cannot complete propagation while a settlement is uncovered");
+
+        // Full coverage: pending settlement + pending court arrivals complete the document.
+        docStorage.PropagationArrivals.Add(new WorldDiplomacyPropagationArrival
+        {
+            DocumentId = "d7", Scope = "civilian", SettlementId = "town_2", DueDay = 31
+        });
+        docStorage.PropagationArrivals.Add(new WorldDiplomacyPropagationArrival
+        {
+            DocumentId = "d7", Scope = "court", KingdomId = "kB", DueDay = 31
+        });
+        var covered = new WorldDiplomacyDocument
+        {
+            DocumentId = "d7", AuthorKingdomId = "kA", Day = 28,
+            IsReadyForPublication = true, PropagationStarted = true, OriginSettlementId = "town_1"
+        };
+        WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(
+            covered, docStorage, migrateLegacyPropagationState: true,
+            legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
+            resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
+            formatCampaignDate: d => "day_" + d,
+            nonHideoutSettlementIds: new List<string> { "town_2" }, nonEliminatedKingdomIds: new List<string> { "kB" });
+        Test.True(covered.PropagationCompleted,
+            "full settlement and kingdom coverage must complete legacy propagation");
+
+        // Reload idempotency: a second normalization must not re-evaluate or regress the completed flag.
+        covered.PropagationCompleted = true;
+        WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(
+            covered, docStorage, migrateLegacyPropagationState: true,
+            legacyPropagationRecoveryWindow: 20, currentDay: 30, maxActionsPerDocument: 4,
+            resolveKingdomNameOrEmpty: _ => "", normalizeKingdomIdList: (ids, ex) => new List<string>(),
+            formatCampaignDate: d => "day_" + d,
+            nonHideoutSettlementIds: new List<string> { "town_2" }, nonEliminatedKingdomIds: new List<string> { "kB" });
+        Test.True(covered.PropagationCompleted,
+            "repeated normalization must not regress a completed propagation marker");
 
         // DPL-060CJ: per-round normalization must clamp counters, backfill, and honor gates.
         var logs = new List<string>();
@@ -13313,6 +13383,19 @@ RunRepairCorrectionAndJobDecisionTests();
             "an AI receiver must schedule the settlement relay arrival for the current day");
     }
 
+    private sealed class TestCompletionEffects : IWorldDiplomacyCompletionEffects
+    {
+        private readonly Action<string> _remove;
+        private readonly Action<string> _log;
+        internal TestCompletionEffects(Action<string> remove, Action<string> log)
+        {
+            _remove = remove;
+            _log = log;
+        }
+        public void RemoveJob(string jobId) => _remove?.Invoke(jobId);
+        public void Log(string message) => _log?.Invoke(message);
+    }
+
     static void RunLlmJobRoutingDecisionTests()
     {
         WorldDiplomacyJob Job(string id, string kind = "analyze", int priority = 1) => new WorldDiplomacyJob
@@ -13337,9 +13420,8 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         WorldDiplomacyJob Select(
             WorldDiplomacyStorage storage,
-            Func<WorldDiplomacyJob, bool> staleThreat = null,
+            Func<WorldDiplomacyJob, string> signature = null,
             Func<WorldDiplomacyJob, bool> refreshThreat = null,
-            Func<WorldDiplomacyJob, bool> staleAction = null,
             Func<WorldDiplomacyJob, bool> refreshAction = null,
             Func<WorldDiplomacyJob, bool> rebuild = null,
             Func<WorldDiplomacyJob, string> authorBlock = null,
@@ -13363,8 +13445,8 @@ RunRepairCorrectionAndJobDecisionTests();
             }
             return WorldDiplomacyLlmDispatchApplication.SelectAndPrepareLlmJob(
                 storage, 100, affinity,
-                staleThreat ?? (j => false), refreshThreat ?? (j => true),
-                staleAction ?? (j => false), refreshAction ?? (j => true),
+                signature ?? (j => ""), refreshThreat ?? (j => true),
+                refreshAction ?? (j => true),
                 rebuild ?? (j => true),
                 authorBlock ?? (j => null),
                 (j, reason) => abandons?.Add(reason),
@@ -13446,18 +13528,22 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(Select(Store()) == null, "J12: empty queue has no selection");
 
         // Stale presentation refresh failures route to the failed commit.
-        WorldDiplomacyStorage staleThreat = Store();
-        staleThreat.Jobs.Add(Job("j1", kind: "generate"));
+        WorldDiplomacyStorage staleThreatStore = Store();
+        staleThreatStore.Jobs.Add(Job("j1", kind: "generate"));
+        staleThreatStore.DiplomaticThreats.Add(new WorldDiplomacyThreat
+        {
+            ThreatId = "t1", Status = "open", IssuerKingdomId = "kA", StageDocumentId = "d1"
+        });
         List<string> failures = new List<string>();
-        Test.True(Select(staleThreat, staleThreat: j => true, refreshThreat: j => false,
+        Test.True(Select(staleThreatStore, refreshThreat: j => false,
                 failures: failures) == null
             && failures.SequenceEqual(new[] { "stale diplomatic threat presentation could not be rebuilt" }),
             "an unrecoverable stale threat presentation must fail the job");
 
-        WorldDiplomacyStorage staleAction = Store();
-        staleAction.Jobs.Add(Job("j1", kind: "generate"));
+        WorldDiplomacyStorage staleActionStore = Store();
+        staleActionStore.Jobs.Add(Job("j1", kind: "generate"));
         failures = new List<string>();
-        Test.True(Select(staleAction, staleAction: j => true, refreshAction: j => false,
+        Test.True(Select(staleActionStore, signature: j => "sig", refreshAction: j => false,
                 failures: failures) == null
             && failures.SequenceEqual(new[] { "stale diplomatic action list could not be rebuilt" }),
             "an unrecoverable stale action presentation must fail the job");
@@ -13465,8 +13551,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyStorage refreshOk = Store();
         refreshOk.Jobs.Add(Job("j1", kind: "analyze"));
         List<string> logs = new List<string>();
-        WorldDiplomacyJob refreshed = Select(refreshOk,
-            staleThreat: j => false, logs: logs);
+        WorldDiplomacyJob refreshed = Select(refreshOk, logs: logs);
         Test.True(refreshed != null && refreshed.IsRunning,
             "a refreshed presentation must still reach dispatch");
 
@@ -13580,9 +13665,8 @@ RunRepairCorrectionAndJobDecisionTests();
             bool truncated = false,
             string content = "raw",
             string error = "",
-            Func<WorldDiplomacyJob, bool> staleThreat = null,
+            Func<WorldDiplomacyJob, string> signature = null,
             Func<WorldDiplomacyJob, bool> refreshThreat = null,
-            Func<WorldDiplomacyJob, bool> staleAction = null,
             Func<WorldDiplomacyJob, bool> refreshAction = null,
             Action<WorldDiplomacyJob, string> truncatedHandler = null,
             List<string> commits = null,
@@ -13590,22 +13674,14 @@ RunRepairCorrectionAndJobDecisionTests();
             List<string> removed2 = null,
             List<string> logs2 = null)
         {
-            var effects = new WorldDiplomacyCompletionCallbacks(
-                staleThreat ?? (j => false), refreshThreat ?? (j => true),
-                staleAction ?? (j => false), refreshAction ?? (j => true),
-                truncatedHandler ?? ((j, c) => { }),
-                (j, c) => commits?.Add("generate"),
-                (j, c) => commits?.Add("analyze"),
-                (j, c) => commits?.Add("compress"),
-                (j, c) => commits?.Add("round_plan"),
-                (j, c) => commits?.Add("round_compress"),
-                (j, e) => failures2?.Add(e),
+            var effects = new TestCompletionEffects(
                 id => removed2?.Add(id),
                 line => logs2?.Add(line));
             var orch = new FakeOrchestration()
             {
                 OnRefreshThreatPresentation = j => refreshThreat?.Invoke(j) ?? true,
                 OnRefreshActionPresentation = j => refreshAction?.Invoke(j) ?? true,
+                OnBuildGenerationLegalActionSignature = signature ?? (j => ""),
                 OnRejectGeneratedDraftBeforePublication = (j, raw, a, t, reason, json) => truncatedHandler?.Invoke(j, raw),
                 OnCommitGeneratedDocument = (j, c) => commits?.Add("generate"),
                 OnCommitAnalysis = (j, c) => commits?.Add("analyze"),
@@ -13648,15 +13724,21 @@ RunRepairCorrectionAndJobDecisionTests();
             "an unknown completed job kind must fail explicitly");
 
         // A stale completed generation is discarded and rebuilt or failed.
+        done.DiplomaticThreats.Add(new WorldDiplomacyThreat
+        {
+            ThreatId = "t9", Status = "open", IssuerKingdomId = "kA", StageDocumentId = "d9"
+        });
         failures2 = new List<string>();
         CommitResult(Job("j7", kind: "generate"), done,
-            staleThreat: j => true, refreshThreat: j => false, failures2: failures2);
+            refreshThreat: j => false, failures2: failures2);
         Test.True(failures2.SequenceEqual(new[] { "completed generation used a stale diplomatic threat stage and could not be rebuilt" }),
             "a stale completed generation that cannot be rebuilt must fail");
         List<string> logs2 = new List<string>();
         commits = new List<string>();
-        CommitResult(Job("j8", kind: "generate"), done,
-            staleAction: j => true, refreshAction: j => true, commits: commits, logs2: logs2);
+        WorldDiplomacyJob actionOnlyJob = Job("j8", kind: "generate");
+        actionOnlyJob.AuthorKingdomId = "other";
+        CommitResult(actionOnlyJob, done,
+            signature: j => "sig", refreshAction: j => true, commits: commits, logs2: logs2);
         Test.True(commits.Count == 0 && logs2.Any(x => x.Contains("discarded completed generation")),
             "a rebuilt stale completed generation must be discarded without committing");
 
@@ -14524,6 +14606,7 @@ RunRepairCorrectionAndJobDecisionTests();
         string generationTaskSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGenerationTaskApplication.cs"));
         string jobPreparationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs"));
         string dispatchSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmDispatchApplication.cs"));
+        string completionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
         string migrationApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCanonicalHistoryMigrationApplication.cs"));
         string roundCompressionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRoundCompressionApplication.cs"));
         Test.True(exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny", StringComparison.Ordinal),
@@ -14976,10 +15059,18 @@ RunRepairCorrectionAndJobDecisionTests();
             "host must delegate rejected-ultimatum enforcement to the domain");
         Test.True(actionSelectionSource.Contains("WorldDiplomacyRoundLifecycleRules.IsEscalatableWarningThreat", StringComparison.Ordinal),
             "host must delegate warning escalation matching to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectNoncompliedThreatStageDocumentIds", StringComparison.Ordinal),
-            "host must delegate noncomplied stage document selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds", StringComparison.Ordinal),
-            "host must delegate presented stage document selection to the domain");
+        Test.True(rulesSource.Contains("public static bool HasStaleThreatPresentation(", StringComparison.Ordinal)
+            && rulesSource.Contains("SelectNoncompliedThreatStageDocumentIds(", StringComparison.Ordinal)
+            && rulesSource.Contains("SelectPresentedThreatStageDocumentIds(", StringComparison.Ordinal),
+            "the domain must own the stale threat presentation decision");
+        Test.True(dispatchSource.Contains("HasStaleThreatPresentation(job, storage?.DiplomaticThreats)", StringComparison.Ordinal)
+            && completionSource.Contains("HasStaleThreatPresentation(job, storage?.DiplomaticThreats)", StringComparison.Ordinal),
+            "dispatch/completion must evaluate threat staleness inside the application layer");
+        Test.True(!behaviorSource.Contains("SelectNoncompliedThreatStageDocumentIds(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("SelectPresentedThreatStageDocumentIds(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("HasStaleDiplomaticThreatPresentation(", StringComparison.Ordinal)
+            && !behaviorSource.Contains("HasStaleThreatPresentation(", StringComparison.Ordinal),
+            "the host must not retain the stale presentation decision in a callback");
         Test.True(noActionSource.Contains("WorldDiplomacyRoundLifecycleRules.IsSettlementSlotRelatedTo", StringComparison.Ordinal),
             "host must delegate related-kingdom slot matching to the domain");
         Test.True(rulesSource.Contains("IsWarResponseSourceDocument(", StringComparison.Ordinal),
@@ -15016,8 +15107,9 @@ RunRepairCorrectionAndJobDecisionTests();
             "host must delegate the breach settlement record write to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectIssuerResolutionNotices", StringComparison.Ordinal),
             "host must delegate issuer notice selection to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasThreatPresentationDrift", StringComparison.Ordinal),
-            "host must delegate presentation drift checks to the domain");
+        Test.True(rulesSource.Contains("public static bool HasThreatPresentationDrift(", StringComparison.Ordinal)
+            && rulesSource.Contains("public static bool HasStaleThreatPresentation(", StringComparison.Ordinal),
+            "presentation drift checks must be owned by the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsThreatAtStage", StringComparison.Ordinal),
             "host must delegate threat stage checks to the domain");
         Test.True(threatMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectThreatStageDocumentId", StringComparison.Ordinal),
@@ -15630,7 +15722,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("WorldDiplomacyTextRules.Limit(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyEnvelopeJsonRules.ReadString(", StringComparison.Ordinal)
             && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(", StringComparison.Ordinal)
+            && dispatchSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(", StringComparison.Ordinal)
             && threatSettlementSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectOpenThreatBetween(", StringComparison.Ordinal)
             && presentationQueriesSource.Contains("WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(", StringComparison.Ordinal),
             "host call sites must qualify the owning domain rule directly");
@@ -15939,9 +16031,12 @@ RunRepairCorrectionAndJobDecisionTests();
             "the lifecycle rules must own the participant limit decision");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.GetRoundParticipantLimit(GetActivityLevel(), MaxRelayParticipants)", StringComparison.Ordinal),
             "the host must route the participant limit through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(job, _owner._orchestration.BuildGenerationLegalActionSignature)", StringComparison.Ordinal),
-            "the host must route stale presentation checks through the lifecycle rules");
-        Test.True(!behaviorSource.Contains("private bool HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
+        Test.True(dispatchSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
+            && completionSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
+            && completionSource.Contains("orchestration.BuildGenerationLegalActionSignature", StringComparison.Ordinal)
+            && dispatchSource.Contains("orchestration.BuildGenerationLegalActionSignature", StringComparison.Ordinal),
+            "stale presentation checks must be evaluated by the application through the lifecycle rules");
+        Test.True(!behaviorSource.Contains("HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildWarNegotiationContext(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool IsTradeAllianceProposalCoolingDown(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static string FormatCessionCandidates(", StringComparison.Ordinal),
@@ -16140,12 +16235,18 @@ RunRepairCorrectionAndJobDecisionTests();
         // DPL-060CJ: stored per-record normalization lives in the storage migration
         // rules behind kingdom-name, id-list, date, coverage, duration, and prune ports.
         Test.True(storageMigrationSource.Contains("public static void NormalizeStoredDocumentRecord(", StringComparison.Ordinal)
-            && storageMigrationSource.Contains("Func<WorldDiplomacyDocument, bool> hasCompleteLegacyPropagationCoverage", StringComparison.Ordinal)
+            && storageMigrationSource.Contains("IReadOnlyCollection<string> nonHideoutSettlementIds", StringComparison.Ordinal)
+            && storageMigrationSource.Contains("IReadOnlyCollection<string> nonEliminatedKingdomIds", StringComparison.Ordinal)
+            && storageMigrationSource.Contains("WorldDiplomacyRoundLifecycleRules.HasCompleteLegacyPropagationCoverage(", StringComparison.Ordinal)
             && storageMigrationSource.Contains("public static void NormalizeStoredRoundRecord(", StringComparison.Ordinal)
             && storageMigrationSource.Contains("pruneInvalidOffers?.Invoke(round)", StringComparison.Ordinal),
-            "stored record normalization must live in the storage migration rules behind ports");
+            "stored record normalization must live in the storage migration rules behind bounded snapshot ports");
+        Test.True(!storageMigrationSource.Contains("Func<WorldDiplomacyDocument, bool> hasCompleteLegacyPropagationCoverage", StringComparison.Ordinal),
+            "the propagation coverage callback must be replaced by bounded id snapshots");
         Test.True(normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(", StringComparison.Ordinal)
             && normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("source.CaptureNonHideoutSettlementIds()", StringComparison.Ordinal)
+            && normalizationApplicationSource.Contains("source.CaptureNonEliminatedKingdomIds()", StringComparison.Ordinal)
             && normalizationApplicationSource.Contains("source.ResolveKingdomNameOrEmpty", StringComparison.Ordinal)
             && normalizationApplicationSource.Contains("source.RoundHardDurationDays, orchestration.PruneInvalidOffers, source.Log", StringComparison.Ordinal),
             "the normalization owner must bind storage normalization ports through thin adapters");
@@ -16535,7 +16636,6 @@ RunRepairCorrectionAndJobDecisionTests();
             "relay and settlement scheduling internals must not remain in the host");
 
         // R1: completion admission/dispatch now has one Application owner.
-        string completionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
         Test.True(dispatchSource.Contains("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyCompletionApplication.Run(ref source, this)", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source, this)", StringComparison.Ordinal)

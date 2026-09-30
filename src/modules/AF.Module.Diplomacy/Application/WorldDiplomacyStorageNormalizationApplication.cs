@@ -26,7 +26,8 @@ internal interface IWorldDiplomacyStorageNormalizationSource
     string FormatCampaignDate(int day);
     string ResolveKingdomNameOrEmpty(string kingdomId);
     List<string> NormalizeKingdomIdList(IEnumerable<string> values, string excludedId);
-    bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document);
+    IReadOnlyCollection<string> CaptureNonHideoutSettlementIds();
+    IReadOnlyCollection<string> CaptureNonEliminatedKingdomIds();
     bool HasCampaignWorld { get; }
     int DiplomacyPromptContractVersion { get; }
     int ResultSettlementStateSchemaVersion { get; }
@@ -98,12 +99,18 @@ internal static class WorldDiplomacyStorageNormalizationApplication
         }
         bool migrateLegacyPropagationState = allowWorldValidation && storage.PropagationReliabilityVersion < 1;
         int legacyPropagationRecoveryWindow = Math.Max(source.CivilianSpreadDays, source.CourtMaxDeliveryDays) + 7;
+        // One bounded world snapshot per normalize run, not a per-document live scan.
+        IReadOnlyCollection<string> nonHideoutSettlementIds = migrateLegacyPropagationState
+            ? source.CaptureNonHideoutSettlementIds() : null;
+        IReadOnlyCollection<string> nonEliminatedKingdomIds = migrateLegacyPropagationState
+            ? source.CaptureNonEliminatedKingdomIds() : null;
         foreach (WorldDiplomacyDocument document in storage.Documents)
         {
             WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(
                 document, storage, migrateLegacyPropagationState, legacyPropagationRecoveryWindow,
                 source.CurrentDay, source.MaxDiplomaticActionsPerDocument, source.ResolveKingdomNameOrEmpty,
-                source.NormalizeKingdomIdList, source.FormatCampaignDate, source.HasCompleteLegacyPropagationCoverage);
+                source.NormalizeKingdomIdList, source.FormatCampaignDate,
+                nonHideoutSettlementIds, nonEliminatedKingdomIds);
         }
         if (allowWorldValidation)
         {

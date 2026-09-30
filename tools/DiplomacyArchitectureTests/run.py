@@ -134,7 +134,21 @@ ABSENT={'EnqueueMandatoryCourtReplyJob','CloseRound','EnqueueGenerationJob',
  'AppendDiplomaticAuthorDecisionContext','AppendDiplomaticTargetDecisionContext',
  'AppendRelayResponseSourceContext','AppendRulerCaptivityDecisionContext',
  'AppendOtherKingdomRelationshipContext','BuildCompactRoundPlanCandidateLine',
- 'BuildCompactDiplomaticRelationshipLine','BuildWarDecisionContext','BuildRulerCaptivityTargetHint'}
+ 'BuildCompactDiplomaticRelationshipLine','BuildWarDecisionContext','BuildRulerCaptivityTargetHint',
+ # stale presentation/job-refresh decisions are application/domain owned
+ 'HasStaleDiplomaticThreatPresentation','HasStaleThreatPresentation','HasStaleActionPresentation',
+ # legacy propagation coverage is an application/domain decision over snapshots
+ 'HasCompleteLegacyPropagationCoverage',
+ # bilateral state precedence label is a domain rule over leaf facts
+ 'BuildBilateralState',
+ # AI-party selection is a domain rule over host leaf predicates
+ 'GetEligibleAiKingdoms','EligibleAiPartyIds'}
+
+# Predicates that must not reappear in any World/ adapter file.
+WORLD_FORBIDDEN={'SelectPresentedThreatStageDocumentIds','SelectNoncompliedThreatStageDocumentIds',
+ 'HasThreatPresentationDrift','HasStaleThreatPresentation','HasStaleActionPresentation',
+ 'HasStaleDiplomaticActionPresentation','HasCompleteLegacyPropagationCoverage',
+ 'BuildBilateralState','EligibleAiPartyIds','EnsureRoundParticipant','IsPlayerAsync'}
 
 # Whitelisted WorldDiplomacy*Application references inside World/ adapter files.
 BEHAVIOR_APP_WHITELIST={
@@ -183,6 +197,13 @@ def main():
  # 4. Absent-everywhere names in the Behavior file.
  for name in ABSENT:
   assert any_method_of(current,name) is None,'predecessor method still in host: '+name
+
+ # 4b. Presentation/job staleness and round-state writes must not hide in any
+ #     World adapter partial (callback ports, prompt worlds, event adapters).
+ for path in sorted((ROOT/'src/modules/AF.Module.Diplomacy/World').glob('*.cs')):
+  text=path.read_text(encoding='utf-8-sig')
+  for bad in WORLD_FORBIDDEN:
+   assert bad not in text,'forbidden predicate '+bad+' reappeared in '+path.name
 
  # External static entries may remain but only forward (no second algorithm).
  for entry in re.finditer(r'(?m)^\s*public static void (NotifyExternalDiplomacyResolved)\s*\([^)]*\)\s*\{',current):

@@ -6,8 +6,6 @@ namespace AnimusForge;
 
 internal interface IWorldDiplomacyCompletionEffects
 {
-    bool HasStaleThreatPresentation(WorldDiplomacyJob job);
-    bool HasStaleActionPresentation(WorldDiplomacyJob job);
     void RemoveJob(string jobId);
     void Log(string message);
 }
@@ -66,7 +64,7 @@ internal static class WorldDiplomacyCompletionApplication
         bool IsCompletionKind(string kind) => string.Equals(completionKind, kind, StringComparison.OrdinalIgnoreCase);
         if (resultSuccess
             && IsCompletionKind("generate")
-            && effects.HasStaleThreatPresentation(job) == true)
+            && WorldDiplomacyRoundLifecycleRules.HasStaleThreatPresentation(job, storage?.DiplomaticThreats))
         {
             if (orchestration.RefreshDiplomaticThreatPresentationAndPrompt(job) != true)
             {
@@ -81,7 +79,8 @@ internal static class WorldDiplomacyCompletionApplication
         }
         if (resultSuccess
             && IsCompletionKind("generate")
-            && effects.HasStaleActionPresentation(job) == true)
+            && WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+                job, orchestration.BuildGenerationLegalActionSignature))
         {
             if (orchestration.RefreshDiplomaticActionPresentationAndPrompt(job) != true)
             {

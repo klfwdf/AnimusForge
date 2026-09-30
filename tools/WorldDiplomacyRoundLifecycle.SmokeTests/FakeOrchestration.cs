@@ -279,6 +279,12 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     {
         Calls.Add("TryApplyInitialNewGamePeace");
     }
+    public virtual void SyncData(bool isSaving, bool isLoading,
+        Func<WorldDiplomacyStorage> loadStorage, Func<string> loadError,
+        Action<WorldDiplomacyStorage> saveStorage, Action<string> log, Action resetTransientRuntime)
+    {
+        Calls.Add("SyncData");
+    }
     public virtual void NormalizeStorage(bool allowWorldValidation)
     {
         Calls.Add("NormalizeStorage");
@@ -368,11 +374,6 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
     public virtual void RecalculatePendingPropagationIfNeeded()
     {
         Calls.Add("RecalculatePendingPropagationIfNeeded");
-    }
-    public virtual bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document)
-    {
-        Calls.Add("HasCompleteLegacyPropagationCoverage");
-        return false;
     }
     public virtual void RecordDiplomacyWeeklyMaterial(WorldDiplomacyDocument document)
     {
@@ -490,8 +491,10 @@ internal class FakeOrchestration : IWorldDiplomacyOrchestration
         Calls.Add("OfferedPeaceTermsCurrentlyExecutable");
         return false;
     }
+    internal Func<WorldDiplomacyJob, string> OnBuildGenerationLegalActionSignature;
     public virtual string BuildGenerationLegalActionSignature(WorldDiplomacyJob job)
     {
+        if (OnBuildGenerationLegalActionSignature != null) return OnBuildGenerationLegalActionSignature(job);
         Calls.Add("BuildGenerationLegalActionSignature");
         return "";
     }

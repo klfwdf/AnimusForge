@@ -24,8 +24,6 @@ internal static class LlmDispatchApplicationReplay
         public int CurrentHour => 100;
         public string LastCacheAffinityKey => s.Affinity;
         public void SetLastCacheAffinityKey(string value) { s.Affinity = value; s.Events.Add("affinity"); }
-        public bool HasStaleThreatPresentation(WorldDiplomacyJob job) => false;
-        public bool HasStaleActionPresentation(WorldDiplomacyJob job) => false;
         public string GetAuthorBlockReason(WorldDiplomacyJob job) => null;
         public string GetLlmConfigError() => s.ConfigError;
         public bool TryConsumeRequestBudget(bool consume) { s.Events.Add(consume ? "consume" : "budget?"); return s.Budget; }
