@@ -6297,7 +6297,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Func<long, string> block = seq => { blockCalls++; blockArg = seq; return "HIST"; };
 
         WorldDiplomacyJob part = new WorldDiplomacyJob { Kind = "participate", SystemPrompt = "SYS", UserPrompt = "USR" };
-        List<WorldDiplomacyLlmMessage> msgs = WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(part, block);
+        List<WorldDiplomacyLlmMessage> msgs = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(part, block);
         Test.True(msgs.Count == 2 && msgs[0].Role == "system" && msgs[0].Content == "SYS"
             && msgs[1].Role == "user" && msgs[1].Content == "USR" && blockCalls == 0,
             "non-canonical jobs build system+user without the history block");
@@ -6306,12 +6306,12 @@ RunRepairCorrectionAndJobDecisionTests();
         {
             Kind = "generate", SystemPrompt = "SYS", UserPrompt = "USR", HistoryThroughSequence = 42
         };
-        msgs = WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(gen, block);
+        msgs = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(gen, block);
         Test.True(msgs.Count == 3 && msgs[1].Role == "system" && msgs[1].Content == "HIST"
             && blockCalls == 1 && blockArg == 42,
             "canonical jobs insert the history block through the port");
 
-        msgs = WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(null!, block);
+        msgs = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(null!, block);
         Test.True(msgs.Count == 2 && msgs[0].Content == "" && msgs[1].Content == "",
             "a null job still produces an empty system+user chain");
 
@@ -6329,11 +6329,11 @@ RunRepairCorrectionAndJobDecisionTests();
             new WorldDiplomacyLlmMessage { Role = "assistant", Content = "bad" },
             new WorldDiplomacyLlmMessage { Role = "user", Content = "\u3010MODE=DECLARE\u3011 fix" }
         };
-        msgs = WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(repair, block);
+        msgs = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(repair, block);
         Test.True(ReferenceEquals(msgs, repair.LlmMessages),
             "a valid semantic-repair chain is reused verbatim");
 
-        JArray arr = WorldDiplomacyPromptContractRules.BuildLlmMessageArray(gen, block);
+        JArray arr = WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(gen, block);
         Test.True(arr.Count == 3
             && arr[0]?["role"]?.ToString() == "system"
             && arr[1]?["content"]?.ToString() == "HIST"
@@ -7160,7 +7160,7 @@ RunRepairCorrectionAndJobDecisionTests();
         WorldDiplomacyRound slotRound = new WorldDiplomacyRound();
         Func<WorldDiplomacyRound, string, bool> admitAll = (r, id) => true;
         Func<string, string> newId = prefix => prefix + ":" + (++idSeq);
-        WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(
+        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
             slotRound, "k1", "route", "doc1", "k2", prioritize: false, admitAll, newId);
         Test.True(slotRound.ResultSettlementSlots?.Count == 1
                 && slotRound.ResultSettlementSlots[0].KingdomId == "k1"
@@ -7168,21 +7168,21 @@ RunRepairCorrectionAndJobDecisionTests();
                 && slotRound.ResultSettlementSlots[0].SourceDocumentIds.Contains("doc1")
                 && slotRound.ResultSettlementSlots[0].RelatedKingdomIds.Contains("k2"),
             "the first merge must create a pending slot carrying the source document and related kingdom");
-        WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(
+        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
             slotRound, "k1", "offer_response", "doc2", "k3", prioritize: true, admitAll, newId);
         Test.True(slotRound.ResultSettlementSlots.Count == 1
                 && slotRound.ResultSettlementSlots[0].SourceDocumentIds.Contains("doc2")
                 && slotRound.ResultSettlementSlots[0].RelatedKingdomIds.Contains("k3")
                 && WorldDiplomacyRoundLifecycleRules.SettlementSlotKindContains(slotRound.ResultSettlementSlots[0].Kind, "offer_response"),
             "a second merge for the same kingdom must merge kinds, append ids, and reprioritize to the front");
-        WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(
+        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
             slotRound, "k1", "route", "doc1", "k2", prioritize: false, admitAll, newId);
         Test.True(slotRound.ResultSettlementSlots[0].SourceDocumentIds.Count == 2
                 && slotRound.ResultSettlementSlots[0].RelatedKingdomIds.Count == 2,
             "duplicate document and kingdom ids must not be re-appended");
-        WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(
+        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
             slotRound, "", "route", "doc3", "", prioritize: false, admitAll, newId);
-        WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(
+        WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(
             slotRound, "k9", "route", "doc3", "", prioritize: false, (r, id) => false, newId);
         Test.True(slotRound.ResultSettlementSlots.Count == 1,
             "blank ids and rejected admission must not add slots");
@@ -7199,13 +7199,13 @@ RunRepairCorrectionAndJobDecisionTests();
                 new WorldDiplomacyDocumentAction { ActionId = "a2", Intent = "propose_trade", ChangedDiplomaticState = false, TargetKingdomId = "other" }
             }
         };
-        WorldDiplomacyRoundLifecycleRules.AddWarResponseResultSettlementSlot(warRound, warDoc, admitAll, newId);
+        WorldDiplomacyResultSlotApplication.AddWarResponseResultSettlementSlot(warRound, warDoc, admitAll, newId);
         Test.True(warRound.ResultSettlementWarDocumentIds?.Count == 1
                 && warRound.ResultSettlementSlots?.Count == 1
                 && warRound.ResultSettlementSlots[0].KingdomId == "victim"
                 && WorldDiplomacyRoundLifecycleRules.SettlementSlotKindContains(warRound.ResultSettlementSlots[0].Kind, "war_response"),
             "a war-response document must add exactly one prioritized war_response slot for the declare_war action");
-        WorldDiplomacyRoundLifecycleRules.AddWarResponseResultSettlementSlot(warRound, warDoc, admitAll, newId);
+        WorldDiplomacyResultSlotApplication.AddWarResponseResultSettlementSlot(warRound, warDoc, admitAll, newId);
         Test.True(warRound.ResultSettlementWarDocumentIds.Count == 1 && warRound.ResultSettlementSlots.Count == 1,
             "replaying the same document must deduplicate on the composed action key");
         WorldDiplomacyDocument legacyDoc = new WorldDiplomacyDocument
@@ -7213,7 +7213,7 @@ RunRepairCorrectionAndJobDecisionTests();
             DocumentId = "dwar2", AuthorKingdomId = "attacker", Intent = "declare_war",
             ChangedDiplomaticState = true, TargetKingdomId = "victim2"
         };
-        WorldDiplomacyRoundLifecycleRules.AddWarResponseResultSettlementSlot(warRound, legacyDoc, admitAll, newId);
+        WorldDiplomacyResultSlotApplication.AddWarResponseResultSettlementSlot(warRound, legacyDoc, admitAll, newId);
         Test.True(warRound.ResultSettlementWarDocumentIds.Contains("dwar2")
                 && warRound.ResultSettlementSlots.Any(x => x.KingdomId == "victim2"),
             "the legacy single-action mirror must deduplicate on the document id");
@@ -7927,7 +7927,7 @@ RunRepairCorrectionAndJobDecisionTests();
 			RelayRouteKingdomIds = new List<string> { "a", "b", "c", "d" }
 		};
 		List<string> created = new List<string>();
-		WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots(routeRound, spokeDocs,
+		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(routeRound, spokeDocs,
 			(r, k) => true, prefix => { created.Add(prefix); return "id-" + created.Count; });
 		Test.True(routeRound.ResultSettlementRouteInitialized
 			&& routeRound.ResultSettlementSlots != null && routeRound.ResultSettlementSlots.Count == 3
@@ -7938,12 +7938,12 @@ RunRepairCorrectionAndJobDecisionTests();
 			&& routeRound.ResultSettlementSlots.Any(x => x.KingdomId == "c")
 			&& routeRound.ResultSettlementSlots.Any(x => x.KingdomId == "d"),
 			"only kingdoms with a published in-round document count as spoken");
-		WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots(routeRound, spokeDocs,
+		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(routeRound, spokeDocs,
 			(r, k) => true, prefix => "x");
 		Test.True(routeRound.ResultSettlementSlots.Count == 3,
 			"an already-initialized route must not add slots twice");
 		WorldDiplomacyRound unplanned = new WorldDiplomacyRound { RoundId = "r5", RelayRouteKingdomIds = new List<string> { "a" } };
-		WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots(unplanned, spokeDocs, (r, k) => true, prefix => "x");
+		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(unplanned, spokeDocs, (r, k) => true, prefix => "x");
 		Test.True(!unplanned.ResultSettlementRouteInitialized && (unplanned.ResultSettlementSlots == null || unplanned.ResultSettlementSlots.Count == 0),
 			"an unplanned relay must not initialize settlement route slots");
 
@@ -8117,17 +8117,17 @@ RunRepairCorrectionAndJobDecisionTests();
             "participant limit must fall back to 3 for unknown activity levels");
 
         WorldDiplomacyJob generateJob = new WorldDiplomacyJob { Kind = "generate", PresentedLegalActionSignature = "sig-old" };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+        Test.True(!WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(
             generateJob, job => "sig-old"),
             "a generate job with a matching signature must not be stale");
-        Test.True(WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+        Test.True(WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(
             generateJob, job => "sig-new"),
             "a generate job with a changed signature must be stale");
         WorldDiplomacyJob otherJob = new WorldDiplomacyJob { Kind = "repair", PresentedLegalActionSignature = "sig-old" };
-        Test.True(!WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+        Test.True(!WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(
             otherJob, job => "sig-new"),
             "a non-generate job must never report a stale presentation");
-        Test.True(!WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+        Test.True(!WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(
             null, job => "sig-new"),
             "a null job must not report a stale presentation");
 
@@ -8276,14 +8276,12 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(WorldDiplomacyReputationRules.ApplyInternationalReputationDelta(
             repMap, " ", 5, doc, "x", id => id) == 50, "blank id returns reputation default");
 
-        // ApplyNationalPrestigeDelta: unbounded delta within clamp, reconcile port fires.
+        // Domain changes canonical prestige; Application owns relation reconciliation.
         var prestige2 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase) { ["k1"] = 90 };
-        string reconciledId = null;
         var doc2 = new WorldDiplomacyDocument { DocumentId = "d2" };
         int afterP = WorldDiplomacyReputationRules.ApplyNationalPrestigeDelta(
-            prestige2, " k1 ", 50, doc2, "feat", id => "N:" + id, id => reconciledId = id);
+            prestige2, " k1 ", 50, doc2, "feat", id => "N:" + id);
         Test.True(afterP == 100 && prestige2["k1"] == 100, "prestige clamps at 100 after +50");
-        Test.True(reconciledId == "k1", "reconcile port invoked with normalized id");
         Test.True(doc2.DiplomaticStandingChanges[0].Kind == "national_prestige",
             "national prestige standing change recorded");
 
@@ -8298,13 +8296,13 @@ RunRepairCorrectionAndJobDecisionTests();
         };
         var settled = new List<string>();
         var logs = new List<string>();
-        WorldDiplomacyReputationRules.RecoverUnsettledAiInternationalReputation(
+        WorldDiplomacyPrestigeApplication.RecoverUnsettledAiInternationalReputation(
             docs, d => settled.Add(d.DocumentId), logs.Add);
         Test.True(settled.Count == 1 && settled[0] == "s1",
             "recovery settles only eligible AI docs");
         Test.True(logs.Count == 1 && logs[0].Contains("recovered documents=1"),
             "recovery logs recovered count");
-        WorldDiplomacyReputationRules.RecoverUnsettledAiInternationalReputation(null, d => { }, logs.Add);
+        WorldDiplomacyPrestigeApplication.RecoverUnsettledAiInternationalReputation(null, d => { }, logs.Add);
         Test.True(logs.Count == 1, "null document list is a no-op");
     }
 
@@ -8395,19 +8393,19 @@ RunRepairCorrectionAndJobDecisionTests();
         var cds = new List<WorldDiplomacyOfferCooldown>();
         var key = new WorldDiplomacyOfferCooldownKey("a", "b", WorldDiplomacyOfferDomain.Trade);
         int normalized = 0;
-        WorldDiplomacyRoundLifecycleRules.UpsertOfferCooldown(cds, byKey2, key, 12, "r1", () => normalized++);
+        WorldDiplomacyOfferCooldownApplication.UpsertOfferCooldown(cds, byKey2, key, 12, "r1", () => normalized++);
         Test.True(cds.Count == 1 && byKey2.Count == 1
             && cds[0].ProposerKingdomId == "a" && cds[0].TargetKingdomId == "b"
             && cds[0].Domain == "trade" && cds[0].LastFailedRoundDay == 12
             && cds[0].SourceRoundId == "r1",
             "upsert creates a normalized cooldown record and indexes it");
-        WorldDiplomacyRoundLifecycleRules.UpsertOfferCooldown(cds, byKey2, key, 15, "r2", () => normalized++);
+        WorldDiplomacyOfferCooldownApplication.UpsertOfferCooldown(cds, byKey2, key, 15, "r2", () => normalized++);
         Test.True(cds.Count == 1 && cds[0].LastFailedRoundDay == 15 && cds[0].SourceRoundId == "r2",
             "upsert updates the existing record in place");
         Test.True(normalized == 0, "no normalization below the storage cap");
         var badKey = new WorldDiplomacyOfferCooldownKey("", "b", WorldDiplomacyOfferDomain.Trade);
-        WorldDiplomacyRoundLifecycleRules.UpsertOfferCooldown(cds, byKey2, badKey, 1, "x", () => normalized++);
-        WorldDiplomacyRoundLifecycleRules.UpsertOfferCooldown(cds, byKey2, key, -1, "x", () => normalized++);
+        WorldDiplomacyOfferCooldownApplication.UpsertOfferCooldown(cds, byKey2, badKey, 1, "x", () => normalized++);
+        WorldDiplomacyOfferCooldownApplication.UpsertOfferCooldown(cds, byKey2, key, -1, "x", () => normalized++);
         Test.True(cds.Count == 1, "invalid key and negative day are rejected");
 
         // RemoveOfferCooldown / ClearBilateralOfferCooldowns: list+index stay in sync.
@@ -10411,7 +10409,26 @@ RunRepairCorrectionAndJobDecisionTests();
         byKey[existingKey] = existing;
         int normalizations = 0;
         var cdLogs = new List<string>();
-        WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(
+        var fullStore = new WorldDiplomacyStorage();
+        for (int i = 0; i < 2048; i++) fullStore.OfferCooldowns.Add(new WorldDiplomacyOfferCooldown
+            { ProposerKingdomId = "old" + i, TargetKingdomId = "target", Domain = "trade", LastFailedRoundDay = 1 });
+        var fullIndex = new Dictionary<WorldDiplomacyOfferCooldownKey, WorldDiplomacyOfferCooldown>();
+        WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(fullStore.OfferCooldowns, fullIndex);
+        var overflowRound = new WorldDiplomacyRound { RoundId = "overflow", CompletedDay = 40, CloseReason = "result_settled" };
+        foreach (string id in new[] { "new1", "new2" }) overflowRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
+            { ProposerKingdomId = id, TargetKingdomId = "target", Intent = "propose_trade", Status = "rejected" });
+        int overflowNormalizations = 0;
+        WorldDiplomacyOfferCooldownApplication.SettleTradeAllianceOfferCooldownsForClosedRound(
+            overflowRound, fullStore.OfferCooldowns, fullIndex, () => {
+                overflowNormalizations++;
+                AnimusForge.Refactor.Persistence.WorldDiplomacyOfferCooldownStorageNormalizer.Normalize(fullStore);
+                WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(fullStore.OfferCooldowns, fullIndex);
+            }, _ => { });
+        Test.True(overflowNormalizations == 1 && fullStore.OfferCooldowns.Count == 2048
+            && fullStore.OfferCooldowns.Any(x => x.ProposerKingdomId == "new1")
+            && fullStore.OfferCooldowns.Any(x => x.ProposerKingdomId == "new2"),
+            "batch normalization must retain both new cooldowns when it replaces a full canonical list");
+        WorldDiplomacyOfferCooldownApplication.SettleTradeAllianceOfferCooldownsForClosedRound(
             cdRound, cds, byKey, () => normalizations++, cdLogs.Add);
         var newKey = new WorldDiplomacyOfferCooldownKey("kC", "kD", WorldDiplomacyOfferDomain.Alliance);
         Test.True(cds.Count == 1 && !byKey.ContainsKey(existingKey)
@@ -10423,11 +10440,11 @@ RunRepairCorrectionAndJobDecisionTests();
         skipRound.PendingOffers.Add(new WorldDiplomacyRoundOffer
         { ProposerKingdomId = "kE", TargetKingdomId = "kF", Intent = "propose_trade", Status = "rejected" });
         int cdLogCount = cdLogs.Count;
-        WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(
+        WorldDiplomacyOfferCooldownApplication.SettleTradeAllianceOfferCooldownsForClosedRound(
             skipRound, cds, byKey, () => normalizations++, cdLogs.Add);
         Test.True(cds.Count == 1 && cdLogs.Count == cdLogCount,
             "skip-close reasons must not record new failures or log");
-        WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(
+        WorldDiplomacyOfferCooldownApplication.SettleTradeAllianceOfferCooldownsForClosedRound(
             null, cds, byKey, () => normalizations++, cdLogs.Add);
         Test.True(cdLogs.Count == cdLogCount,
             "null rounds must be a no-op");
@@ -14779,15 +14796,15 @@ RunRepairCorrectionAndJobDecisionTests();
             "raw escalation-violation reasons must not remain in the host");
         Test.True(!behaviorSource.Contains(".GroupBy(x => (x.SourceDocumentId ?? \"\")", StringComparison.Ordinal),
             "raw offer dedup scans must not remain in the host");
-        Test.True(documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot", StringComparison.Ordinal)
-            && rulesSource.Contains("AddWarResponseResultSettlementSlot(", StringComparison.Ordinal),
+        Test.True(documentExecutor.Contains("WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs")).Contains("AddWarResponseResultSettlementSlot(", StringComparison.Ordinal),
             "the host must route settlement-slot composition through the lifecycle rules");
         Test.True(rulesSource.Contains("MergeSettlementSlotKind(", StringComparison.Ordinal)
             && rulesSource.Contains("DefaultSettlementSlotKind(", StringComparison.Ordinal)
             && !behaviorSource.Contains("MergeSettlementSlotKind(", StringComparison.Ordinal)
             && !behaviorSource.Contains("DefaultSettlementSlotKind(", StringComparison.Ordinal),
             "slot-kind merge and default algorithms must live only in the lifecycle rules");
-        Test.True(documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots", StringComparison.Ordinal)
+        Test.True(documentExecutor.Contains("WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots", StringComparison.Ordinal)
             && rulesSource.Contains("CollectSpokenAuthorIds(", StringComparison.Ordinal),
             "the host must route spoken-author collection through the lifecycle rules");
         Test.True(documentExecutor.Contains("WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot", StringComparison.Ordinal),
@@ -15720,12 +15737,15 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("private bool DocumentHasUnsafeMultiplePeaceAcceptances(", StringComparison.Ordinal),
             "host must delegate unsafe peace-acceptance checks to the domain document fact rules");
 
-        Test.True(promptContractSource.Contains("public static List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(", StringComparison.Ordinal)
-            && promptContractSource.Contains("public static JArray BuildLlmMessageArray(", StringComparison.Ordinal)
-            && promptContractSource.Contains("Func<long, string> buildCanonicalHistoryBlock", StringComparison.Ordinal),
-            "LLM message assembly must live in the prompt contract rules behind a canonical-history port");
+        string messageApplication = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs"));
+        Test.True(messageApplication.Contains("public static List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(", StringComparison.Ordinal)
+            && messageApplication.Contains("public static JArray BuildLlmMessageArray(", StringComparison.Ordinal)
+            && !promptContractSource.Contains("buildCanonicalHistoryBlock", StringComparison.Ordinal),
+            "only Application may resolve history while building a request");
+        foreach (string retired in new[] { "AddOrMergeResultSettlementSlot(", "AddWarResponseResultSettlementSlot(", "InitializeResultSettlementRouteSlots(", "UpsertOfferCooldown(", "SettleTradeAllianceOfferCooldownsForClosedRound(", "HasStaleDiplomaticActionPresentation(" })
+            Test.True(!rulesSource.Contains(retired, StringComparison.Ordinal), "Domain cannot invoke workflow callbacks: " + retired);
         Test.True(dispatchSource.Contains("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyPromptContractRules.BuildLlmMessageArray(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private JArray BuildLlmMessageArray(", StringComparison.Ordinal),
             "LLM dispatch Application delegates message assembly to the prompt contract rules");
@@ -16050,14 +16070,14 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("private void EnqueueDeferredCanonicalHistoryRetry(", StringComparison.Ordinal),
             "canonical history maintenance helpers must not remain in the host");
 
-        Test.True(rulesSource.Contains("public static bool HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal),
+        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs")).Contains("public static bool HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal),
             "the lifecycle rules must own stale presentation detection");
         Test.True(rulesSource.Contains("public static int GetRoundParticipantLimit(int activityLevel, int maxRelayParticipants)", StringComparison.Ordinal),
             "the lifecycle rules must own the participant limit decision");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.GetRoundParticipantLimit(GetActivityLevel(), MaxRelayParticipants)", StringComparison.Ordinal),
             "the host must route the participant limit through the lifecycle rules");
-        Test.True(dispatchSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
-            && completionSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
+        Test.True(dispatchSource.Contains("WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
+            && completionSource.Contains("WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
             && completionSource.Contains("orchestration.BuildGenerationLegalActionSignature", StringComparison.Ordinal)
             && dispatchSource.Contains("orchestration.BuildGenerationLegalActionSignature", StringComparison.Ordinal),
             "stale presentation checks must be evaluated by the application through the lifecycle rules");
@@ -16073,7 +16093,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("public static bool SuspendActiveExchangeForPlayerInsertion(", StringComparison.Ordinal)
             && rulesSource.Contains("public static WorldDiplomacyExchange RestoreSuspendedExchangeIfAny(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void RebuildOfferCooldownIndex(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void UpsertOfferCooldown(", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferCooldownApplication.cs")).Contains("public static void UpsertOfferCooldown(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void RemoveOfferCooldown(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void ClearBilateralOfferCooldowns(", StringComparison.Ordinal),
             "exchange lifecycle and cooldown index rules must live in the lifecycle rules");
@@ -16081,8 +16101,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.CompleteExchange(", StringComparison.Ordinal)
             && exchangeApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RestoreSuspendedExchangeIfAny(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.RebuildOfferCooldownIndex(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.UpsertOfferCooldown(", StringComparison.Ordinal)
-            && rulesSource.Contains("WorldDiplomacyRoundLifecycleRules.RemoveOfferCooldown(", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferCooldownApplication.cs")).Contains("WorldDiplomacyOfferCooldownApplication.UpsertOfferCooldown(", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferCooldownApplication.cs")).Contains("WorldDiplomacyRoundLifecycleRules.RemoveOfferCooldown(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ClearBilateralOfferCooldowns(", StringComparison.Ordinal),
             "the host must route exchange lifecycle and cooldown index work through the lifecycle rules");
         Test.True(!behaviorSource.Contains("private void SuspendActiveExchangeForPlayerInsertion(", StringComparison.Ordinal)
@@ -16283,7 +16303,7 @@ RunRepairCorrectionAndJobDecisionTests();
         // rules; the host keeps only thin adapters that supply storage and probes.
         Test.True(rulesSource.Contains("public static void CompletePolicySignal(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void AttachPolicySignalToRound(", StringComparison.Ordinal)
-            && rulesSource.Contains("public static void SettleTradeAllianceOfferCooldownsForClosedRound(", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOfferCooldownApplication.cs")).Contains("public static void SettleTradeAllianceOfferCooldownsForClosedRound(", StringComparison.Ordinal)
             && rulesSource.Contains("public static void RegisterRelayProposalOffer(", StringComparison.Ordinal)
             && rulesSource.Contains("public static List<WorldDiplomacyRoundOffer> SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),
             "round offer and signal bookkeeping must live in the lifecycle rules");
@@ -16291,7 +16311,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && policyRoundApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.AttachPolicySignalToRound(", StringComparison.Ordinal)
             && policyRoundApplicationSource.Contains("WorldDiplomacyStructureRules.EnsureRoundParticipant(", StringComparison.Ordinal)
             && policyRoundApplicationSource.Contains("participant.IsPlayerAsync = isPlayer", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyOfferCooldownApplication.SettleTradeAllianceOfferCooldownsForClosedRound(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyOfferApplication.Settle(", StringComparison.Ordinal)
             && offerApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(", StringComparison.Ordinal)
             && offerApplicationSource.Contains("WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(", StringComparison.Ordinal),

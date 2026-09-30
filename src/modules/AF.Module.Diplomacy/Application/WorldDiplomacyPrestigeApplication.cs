@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 using AnimusForge.Refactor.Domain;
 
 namespace AnimusForge;
@@ -38,9 +39,10 @@ internal static class WorldDiplomacyPrestigeApplication
         if (normalizedId.Length == 0) return WorldDiplomacyReputationRules.DefaultNationalPrestige;
         storage ??= new WorldDiplomacyStorage();
         storage.NationalPrestigeByKingdom ??= new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        WorldDiplomacyStorage canonical = storage;
-        return WorldDiplomacyReputationRules.ApplyNationalPrestigeDelta(storage.NationalPrestigeByKingdom,
-            normalizedId, delta, document, reason, port.KingdomName, id => Reconcile(canonical, port, id));
+        int updated = WorldDiplomacyReputationRules.ApplyNationalPrestigeDelta(storage.NationalPrestigeByKingdom,
+            normalizedId, delta, document, reason, port.KingdomName);
+        Reconcile(storage, port, normalizedId);
+        return updated;
     }
 
     internal static void SettleDocument(ref WorldDiplomacyStorage storage, IWorldDiplomacyPrestigePort port,
@@ -55,10 +57,30 @@ internal static class WorldDiplomacyPrestigeApplication
     internal static void RecoverDocuments(ref WorldDiplomacyStorage storage, IWorldDiplomacyPrestigePort port)
     {
         WorldDiplomacyStorage canonical = storage;
-        WorldDiplomacyReputationRules.RecoverUnsettledAiInternationalReputation(storage?.Documents,
+        RecoverUnsettledAiInternationalReputation(storage?.Documents,
             document => SettleDocument(ref canonical, port, document), port.Log);
         storage = canonical;
     }
+
+    public static void RecoverUnsettledAiInternationalReputation(List<WorldDiplomacyDocument> documents, Action<WorldDiplomacyDocument> settleReputation, Action<string> log)
+{
+		if (documents == null || settleReputation == null) return;
+		int recovered = 0;
+		foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(documents
+				.Where(x => x != null && !x.IsPlayerAuthored && x.IsReadyForPublication
+					&& !x.InternationalReputationSettled
+					&& (x.InternationalReputationEvaluationDelta != 0
+						|| !string.IsNullOrWhiteSpace(x.InternationalReputationEvaluationReason)))))
+		{
+			settleReputation(document);
+			recovered++;
+		}
+		if (recovered > 0)
+		{
+			log?.Invoke("international-reputation.recovered documents="
+				+ recovered.ToString(CultureInfo.InvariantCulture));
+		}
+	}
 
     internal static void NaturalChange(WorldDiplomacyStorage storage, IWorldDiplomacyPrestigePort port, bool anchorOnly)
     {

@@ -46,7 +46,7 @@ internal static class Dpl080PromptReplay
         Test.True(!analysis.Contains("- dead =") && !analysis.Contains("- a ="), "080 analysis excludes eliminated and author");
         Test.True(analysis.Contains("原样接受或明确拒绝") && analysis.Contains("来源=source"), "080 analysis original peace terms");
         var source = new WorldDiplomacyJob { JobId="job", Kind="generate", RoundId="r", SourceDocumentId="source", AuthorKingdomId="a", TargetKingdomId="b", SystemPrompt="stable-system", UserPrompt="original-user", MaxTokens=900, HistorySnapshotHash="hash", HistorySnapshotThroughSequence=7, HistoryThroughSequence=7, HistoryRevision=2, IsRelayTurn=true };
-        var before = WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(source, world.BuildCanonicalHistoryBlock);
+        var before = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(source, world.BuildCanonicalHistoryBlock);
         WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(world, orch, source, "rejected draft", "a", "b", "invalid_target", new JObject());
         Test.True(world.Enqueued.Count == 1 && world.Abandoned.Count == 0, "080 semantic repair once before abandonment");
         var repair = world.Enqueued[0];

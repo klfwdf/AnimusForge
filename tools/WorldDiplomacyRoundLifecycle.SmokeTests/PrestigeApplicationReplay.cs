@@ -14,12 +14,14 @@ internal static class PrestigeApplicationReplay
         internal readonly HashSet<string> Heroes = new() { "r", "v", "new-r" };
         internal int Calls, Scans, Day = 12;
         internal bool Fail;
+        internal Action BeforeEffect;
         public bool CampaignAvailable => true;
         public IEnumerable<string> KingdomIds(bool activeOnly) { Scans++; yield return "k"; }
         public WorldDiplomacyPrestigeCourt CaptureCourt(string id) => id == "k" ? Court : null!;
         public bool HasHero(string id) => Heroes.Contains(id);
         public int ChangeRelationAndMeasure(string first, string second, int delta)
         {
+            BeforeEffect?.Invoke();
             Calls++;
             if (Fail) return 0;
             string key = first + "|" + second;
@@ -38,7 +40,11 @@ internal static class PrestigeApplicationReplay
         WorldDiplomacyStorage storage = new();
         var port = new Port();
         var doc = new WorldDiplomacyDocument { DocumentId = "d" };
+        port.BeforeEffect = () => Test.True(storage.NationalPrestigeByKingdom["k"] == 50
+            && doc.DiplomaticStandingChanges.Count == 1,
+            "Application commits the prestige decision before invoking relation effects");
         WorldDiplomacyPrestigeApplication.Apply(ref storage, port, " k ", -50, doc, "reason");
+        port.BeforeEffect = null;
         int desired = WorldDiplomacyReputationRules.GetNationalPrestigeRelationTarget(storage.NationalPrestigeByKingdom["k"]);
         Test.True(storage.NationalPrestigeRelationModifiers.Count == 1 && port.Relations["v|r"] == desired
             && storage.NationalPrestigeRelationModifiers[0].AppliedAmount == desired,
@@ -82,5 +88,19 @@ internal static class PrestigeApplicationReplay
         Test.True(port.Calls == calls, "nonnegative breach penalty causes no relation effect");
         WorldDiplomacyPrestigeApplication.ApplyZeroPrestigePenalty(port, "k", -5);
         Test.True(port.Calls == calls + 1 && port.Relations["v|r"] == -5, "zero prestige applies one negative effect per eligible vassal");
+
+        restored.InternationalReputationByKingdom["k"] = 95;
+        var older = new WorldDiplomacyDocument { DocumentId = "old", AuthorKingdomId = "k", Day = 1,
+            IsReadyForPublication = true, InternationalReputationEvaluationDelta = 10 };
+        var newer = new WorldDiplomacyDocument { DocumentId = "new", AuthorKingdomId = "k", Day = 2,
+            IsReadyForPublication = true, InternationalReputationEvaluationDelta = -10 };
+        restored.Documents = new List<WorldDiplomacyDocument> { newer, older };
+        WorldDiplomacyPrestigeApplication.RecoverDocuments(ref restored, port);
+        Test.True(restored.InternationalReputationByKingdom["k"] == 90
+            && older.InternationalReputationSettled && newer.InternationalReputationSettled,
+            "real Application recovery settles chronological input order even when storage is reversed");
+        WorldDiplomacyPrestigeApplication.RecoverDocuments(ref restored, port);
+        Test.True(restored.InternationalReputationByKingdom["k"] == 90,
+            "repeating recovery must not reapply document deltas");
     }
 }

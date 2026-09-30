@@ -154,9 +154,9 @@ WORLD_FORBIDDEN={'SelectPresentedThreatStageDocumentIds','SelectNoncompliedThrea
 BEHAVIOR_APP_WHITELIST={
  'WorldDiplomacyBehavior.cs':{'WorldDiplomacyTickApplication','WorldDiplomacyWarAdmissionApplication',
   'WorldDiplomacyDocumentApplication','WorldDiplomacyPeaceAdmissionApplication','WorldDiplomacyActionSelectionApplication',
-  'WorldDiplomacyNotificationApplication'},
+  'WorldDiplomacyNotificationApplication','WorldDiplomacyLlmMessageApplication'},
  'WorldDiplomacyBehavior.JobRuntime.cs':{'WorldDiplomacyLlmDispatchApplication','WorldDiplomacyCompletionApplication'},
- 'WorldDiplomacyBehavior.LlmDispatchSource.cs':{'WorldDiplomacyLlmApplication'},
+ 'WorldDiplomacyBehavior.LlmDispatchSource.cs':{'WorldDiplomacyLlmApplication','WorldDiplomacyLlmMessageApplication'},
  'WorldDiplomacyBehavior.Presentation.cs':{'WorldDiplomacyPlayerApplication'},
  'WorldDiplomacyBehavior.OrchestrationHost.cs':{'WorldDiplomacyPolicyRoundApplication','WorldDiplomacyPropagationApplication',
   'WorldDiplomacyDocumentExecutionApplication','WorldDiplomacyPublicationRoutingApplication',
@@ -236,6 +236,16 @@ def main():
  history=read('Refactor/Domain/WorldDiplomacyCanonicalHistoryRules.cs')
  for forbidden in ['TryScheduleTokenCompression(', 'CommitCompression(', 'EnqueueCompressionJob(', 'AppendCanonicalDocumentEvents(', 'SyncPublishedPolicyArtifacts(']:
   assert forbidden not in history,'Domain still owns workflow: '+forbidden
+
+ # Domain providers must not invoke migrated effect/recovery workflows.
+ lifecycle=read('Refactor/Domain/WorldDiplomacyRoundLifecycleRules.cs')
+ for name in ['AddOrMergeResultSettlementSlot','AddWarResponseResultSettlementSlot','InitializeResultSettlementRouteSlots','UpsertOfferCooldown','SettleTradeAllianceOfferCooldownsForClosedRound','HasStaleDiplomaticActionPresentation']:
+  assert any_method_of(lifecycle,name) is None,'Domain retains workflow '+name
+ reputation=read('Refactor/Domain/WorldDiplomacyReputationRules.cs')
+ assert 'reconcileVassalRelations' not in reputation
+ assert any_method_of(reputation,'RecoverUnsettledAiInternationalReputation') is None
+ prompt=read('Refactor/Domain/WorldDiplomacyPromptContractRules.cs')
+ assert 'buildCanonicalHistoryBlock' not in prompt
 
  # 7. Baseline retained text required by Program.cs: raw baseline host snapshot.
  out=HERE/'.generated';out.mkdir(exist_ok=True)

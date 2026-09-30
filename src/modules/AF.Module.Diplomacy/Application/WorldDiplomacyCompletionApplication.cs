@@ -79,7 +79,7 @@ internal static class WorldDiplomacyCompletionApplication
         }
         if (resultSuccess
             && IsCompletionKind("generate")
-            && WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+            && WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(
                 job, orchestration.BuildGenerationLegalActionSignature))
         {
             if (orchestration.RefreshDiplomaticActionPresentationAndPrompt(job) != true)

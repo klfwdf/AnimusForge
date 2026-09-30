@@ -24,7 +24,7 @@ public sealed partial class WorldDiplomacyBehavior
         { string reason; return CanAiAuthorDiplomaticDocument(ResolveKingdom(job.AuthorKingdomId), out reason) ? null : reason; }
         public string GetLlmConfigError() { string error; return WorldDiplomacyLlmClient.IsConfigured(out error) ? null : error; }
         public bool TryConsumeRequestBudget(bool consume) => _owner.TryConsumeDiplomacyLlmRequestBudget(consume);
-        public JArray BuildMessageArray(WorldDiplomacyJob job) => WorldDiplomacyPromptContractRules.BuildLlmMessageArray(job, _owner._orchestration.BuildCanonicalHistoryBlock);
+        public JArray BuildMessageArray(WorldDiplomacyJob job) => WorldDiplomacyLlmMessageApplication.BuildLlmMessageArray(job, _owner._orchestration.BuildCanonicalHistoryBlock);
         public long InputTokenLimit => GetHistoryCompressionTriggerTokens();
         public int HistoryCompressionTargetTokens => GetHistoryCompressionTargetTokens();
         public int EstimateTokens(string text) => Logger.EstimateTokens(text);

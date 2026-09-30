@@ -65,7 +65,7 @@ internal static class ThreatSettlementReplay
         {
             _p.Events.Add("prestige:" + id);
             return WorldDiplomacyReputationRules.ApplyNationalPrestigeDelta(_p.Storage.NationalPrestigeByKingdom,
-                id, delta, doc, reason, _p.KingdomName, _ => { });
+                id, delta, doc, reason, _p.KingdomName);
         }
         public override void ApplyZeroPrestigeBreachRelationPenalty(string id, int amount) => _p.Events.Add("zero:" + amount);
         public override void AppendCanonicalDocumentEvents(WorldDiplomacyDocument doc)

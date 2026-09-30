@@ -201,7 +201,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "result_settlement_target_capacity_reached");
 				return;
 			}
-			WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(round, targetId, "route", document.DocumentId, author, prioritize: false, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
+			WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, targetId, "route", document.DocumentId, author, prioritize: false, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
 		}
 
         }
@@ -312,7 +312,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 		participant.SelectedForRelay = true;
 		participant.IsPlayerAsync = port.IsPlayerKingdom(kingdom);
 		port.Log("round result settlement participant appended round=" + round.RoundId + " kingdom=" + kingdomId);
-		WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(round, kingdomId, "route",
+		WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, kingdomId, "route",
 			round.ResultSettlementTriggerDocumentId, "", prioritize: false, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
 		return true;
 	}
@@ -360,7 +360,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
     internal static void RefreshResultSettlementActionSlots(IWorldDiplomacyDocumentExecutionPort port, WorldDiplomacyStorage storage, WorldDiplomacyRound round, Action<WorldDiplomacyRound> pruneInvalidOffers)
 	{
 		if (round == null || !round.ResultSettlementPending || !round.RelayPlanned) return;
-		WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots(round, storage?.Documents, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
+		WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(round, storage?.Documents, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
 		pruneInvalidOffers?.Invoke(round);
 		foreach (WorldDiplomacyRoundOffer offer in (round.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
 			.Where(x => WorldDiplomacyRoundLifecycleRules.IsOfferOfStatus(x, "open")))
@@ -372,7 +372,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				offer.Status = "invalidated";
 				continue;
 			}
-			WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(round, target, "offer_response",
+			WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, target, "offer_response",
 				offer.SourceDocumentId, offer.ProposerKingdomId, prioritize: true, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
 		}
 		foreach (WorldDiplomacyThreat threat in (storage.DiplomaticThreats ?? new List<WorldDiplomacyThreat>())
@@ -381,7 +381,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			WorldDiplomacyThreatSettlementSlotDecision threatSlot =
 				WorldDiplomacyRoundLifecycleRules.EvaluateThreatSettlementSlot(threat);
 			if (!threatSlot.Applies) continue;
-			WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(round, threatSlot.KingdomId, threatSlot.Kind,
+			WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, threatSlot.KingdomId, threatSlot.Kind,
 				threatSlot.SourceDocumentId, threatSlot.RelatedKingdomId, prioritize: true, (r, id) => TryIncludeResultSettlementTarget(port, r, id), port.NewId);
 		}
 	}

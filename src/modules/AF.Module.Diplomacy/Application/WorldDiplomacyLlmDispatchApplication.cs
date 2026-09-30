@@ -165,7 +165,7 @@ internal static class WorldDiplomacyLlmDispatchApplication
                 + " author=" + job.AuthorKingdomId);
         }
         if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")
-            && WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(
+            && WorldDiplomacyJobPreparationApplication.HasStaleDiplomaticActionPresentation(
                 job, buildLegalActionSignature))
         {
             if (refreshActionPresentation?.Invoke(job) != true)
