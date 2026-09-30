@@ -25,6 +25,8 @@ namespace AnimusForge
             @@CLEAR_OWNER@@
         }
         private readonly PendingOperationRegistry _pendingMainThreadFunctions = new();
+        // Ceremony-only fixture: request cancellation is exercised by P2 transport/channel tests.
+        private void RetireChannelRequestLifetimes() { }
         private void ResetInstanceTransientRuntimeForLoadedSave(string reason) { }
         private void CloseNativeConversationInput(bool clearSessionHistory) { }
         @@RETIRE@@

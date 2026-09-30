@@ -188,12 +188,14 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		try
 		{
+			using IDisposable requestWorker = promptRun.Lifetime.Enter();
+			using IDisposable requestCancellation = LlmNonStreamingTransport.PushOwnerCancellation(promptRun.Token);
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_reply_prepare_background_start"))
 			{
 				return;
 			}
 			CourierPreparationAdmission admission = await RunCourierOwnerPhaseAsync(runtimeGeneration,
-				"courier_reply_admission", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);
+				"courier_reply_admission", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, false, runtimeGeneration) : null, promptRun.Token).ConfigureAwait(false);
 			if (admission == null) { QueueCourierPreparationFailure(promptRun); return; }
 			CourierSession session = admission.Session;
 			Hero recipient = admission.Participant;
@@ -227,7 +229,7 @@ public sealed partial class CourierDeliveryBehavior
 								throw new OperationCanceledException("Courier prepared request expired.");
 							configuration = CaptureCourierReplyRefactorConfigurationForExternal();
 							return CapturePreparedCourierReplyEnvelope(request, currentRecipient, preparedMainPrompt);
-						}, CancellationToken.None).ConfigureAwait(false);
+						}, promptRun.Token).ConfigureAwait(false);
 					LegacyInteractionPipelinePorts ports = CreateCourierDetachedPorts(LegacyActionTagCatalog.DefaultAllowedTagFamilies, true, 64, preparedMainPrompt);
 					ILlmGateway gateway = new LegacyShoutNetworkGateway();
 					using (LegacyChannelInteractionFacade facade = LegacyInteractionSnapshotAdapters.CreateCourierInteractionFacade(ports, gateway, _ => preparedEnvelope))
@@ -250,7 +252,7 @@ public sealed partial class CourierDeliveryBehavior
 									await GenerateNpcReplyAsync(request).ConfigureAwait(false);
 									return string.Empty;
 								},
-								CancellationToken.None).ConfigureAwait(false);
+								promptRun.Token).ConfigureAwait(false);
 							if (hostResult?.Status == InteractionStatus.CancelledAsStale)
 							{
 								EnqueueMainThreadActionForGeneration(runtimeGeneration, () => FailCourierReplyRequest(request, "reply_detached_cancelled"), "reply_detached_cancelled");
@@ -294,6 +296,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			await GenerateNpcReplyAsync(request).ConfigureAwait(false);
 		}
+		catch (OperationCanceledException) when (promptRun.Token.IsCancellationRequested) { return; }
 		catch (PreprocessFormatException ex)
 		{
 			Log("background prepare reply preprocess failed session=" + sessionId + " error=" + ex.Message);
@@ -326,11 +329,15 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return;
 			}
+			using IDisposable requestWorker = request.SourceRun.Lifetime.Enter();
+			using IDisposable requestCancellation = LlmNonStreamingTransport.PushOwnerCancellation(request.SourceRun.Token);
 			if (!await RunCourierOwnerPhaseAsync(request.RuntimeGeneration, "reply_network_admission",
-				() => IsCourierReplyRequestCurrent(request), CancellationToken.None).ConfigureAwait(false)) return;
-			string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(request.Messages, MainReplyMaxTokens);
+				() => IsCourierReplyRequestCurrent(request), request.SourceRun.Token).ConfigureAwait(false)) return;
+			string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(request.Messages, MainReplyMaxTokens, cancellationToken: request.SourceRun.Token);
+			request.SourceRun.Token.ThrowIfCancellationRequested();
 			EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => CompleteCourierReplyGenerationOnMainThread(request, output), "reply_generated");
 		}
+		catch (OperationCanceledException) when (request?.SourceRun?.Token.IsCancellationRequested == true) { return; }
 		catch (Exception ex)
 		{
 			Log("generate reply failed session=" + request?.SessionId + " error=" + ex);
@@ -364,6 +371,7 @@ public sealed partial class CourierDeliveryBehavior
 				FailModuleCourierSession(session, "courier.recipient_unavailable");
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
+				RetireCourierRequestLifetime(session);
 				ProcessSessionById(request.SessionId, "reply_generated_recipient_invalid");
 				return;
 			}
@@ -383,6 +391,7 @@ public sealed partial class CourierDeliveryBehavior
 				session.ReplyPostprocessedText = "";
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
+				RetireCourierRequestLifetime(session);
 				FailModuleCourierSession(session, "courier.reply_empty");
 				Log("npc no reply session=" + session.Id);
 				ProcessSessionById(request.SessionId, "reply_generated_empty");
@@ -461,8 +470,11 @@ public sealed partial class CourierDeliveryBehavior
 		string error = "";
 		try
 		{
+			using IDisposable requestWorker = request.SourceRun.Lifetime.Enter();
+			using IDisposable requestCancellation = LlmNonStreamingTransport.PushOwnerCancellation(request.SourceRun.Token);
 			success = AIConfigHandler.TryCallAuxiliaryActionPostprocess(workItem.SystemPrompt, workItem.UserPrompt, 5000, 0f, out content, out error);
 		}
+		catch (OperationCanceledException) when (request?.SourceRun?.Token.IsCancellationRequested == true) { return; }
 		catch (Exception ex)
 		{
 			error = ex.ToString();
@@ -492,6 +504,7 @@ public sealed partial class CourierDeliveryBehavior
 				FailModuleCourierSession(session, "courier.recipient_unavailable");
 				session.ReplyGenerated = true;
 				session.ReplyGenerationStarted = false;
+				RetireCourierRequestLifetime(session);
 				ProcessSessionById(request.SessionId, "reply_generated_recipient_invalid");
 				return;
 			}
@@ -533,6 +546,7 @@ public sealed partial class CourierDeliveryBehavior
 		session.ReplyPostprocessedText = string.IsNullOrWhiteSpace(postprocessed) ? replyText : postprocessed;
 		session.ReplyGenerated = true;
 		session.ReplyGenerationStarted = false;
+		RetireCourierRequestLifetime(session);
 		Log("llm main done session=" + session.Id + " replyLen=" + replyText.Length + " postLen=" + (session.ReplyPostprocessedText ?? "").Length + (completionLogDetails ?? ""));
 		ProcessSessionById(request.SessionId, "reply_generated");
 	}
@@ -626,6 +640,7 @@ public sealed partial class CourierDeliveryBehavior
 			FailModuleCourierSession(session, "courier.generation_failed");
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
+			RetireCourierRequestLifetime(session);
 			ProcessSessionById(sessionId, string.IsNullOrWhiteSpace(reason) ? "reply_generation_failed" : reason);
 		}
 		catch (Exception ex)
@@ -657,12 +672,14 @@ public sealed partial class CourierDeliveryBehavior
 		string fallbackLetter = null;
 		try
 		{
+			using IDisposable requestWorker = promptRun.Lifetime.Enter();
+			using IDisposable requestCancellation = LlmNonStreamingTransport.PushOwnerCancellation(promptRun.Token);
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "courier_inbound_prepare_background_start"))
 			{
 				return;
 			}
 			CourierPreparationAdmission admission = await RunCourierOwnerPhaseAsync(runtimeGeneration,
-				"courier_inbound_admission", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration) : null, CancellationToken.None).ConfigureAwait(false);
+				"courier_inbound_admission", () => IsCourierPromptRunCurrent(promptRun) ? CaptureCourierPreparationAdmission(sessionId, true, runtimeGeneration) : null, promptRun.Token).ConfigureAwait(false);
 			if (admission == null) return;
 			CourierSession session = admission.Session;
 			Hero sender = admission.Participant;
@@ -677,8 +694,10 @@ public sealed partial class CourierDeliveryBehavior
 			InboundLetterGenerationRequest request = await PrepareCourierPromptRequestAsync(sessionId, session, sender, true, fallbackLetter, runtimeGeneration, preparedHistory, promptRun, BuildInboundRequestFromPreparedPrompt).ConfigureAwait(false);
 			if (request == null) return;
 			ShoutNetwork.RecordPrimaryRequestBodyForTokenStats(request.Messages, MainReplyMaxTokens, "courier_inbound_letter_preflight");
+			request.SourceRun = promptRun;
 			await GenerateInboundNpcLetterAsync(request).ConfigureAwait(false);
 		}
+		catch (OperationCanceledException) when (promptRun.Token.IsCancellationRequested) { return; }
 		catch (PreprocessFormatException ex)
 		{
 			Log("background prepare inbound letter preprocess failed session=" + sessionId + " error=" + ex.Message);
@@ -711,15 +730,21 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return;
 			}
-			string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(request.Messages, MainReplyMaxTokens);
+			using IDisposable requestWorker = request.SourceRun.Lifetime.Enter();
+			using IDisposable requestCancellation = LlmNonStreamingTransport.PushOwnerCancellation(request.SourceRun.Token);
+			if (!await RunCourierOwnerPhaseAsync(request.RuntimeGeneration, "inbound_network_admission",
+				() => IsCourierInboundRequestCurrent(request), request.SourceRun.Token).ConfigureAwait(false)) return;
+			string output = await LegacyShoutNetworkGateway.SendLegacyMessagesAsync(request.Messages, MainReplyMaxTokens, cancellationToken: request.SourceRun.Token);
+			request.SourceRun.Token.ThrowIfCancellationRequested();
 			EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => CompleteInboundLetterGenerationOnMainThread(request, output), "inbound_letter_generated");
 		}
+		catch (OperationCanceledException) when (request?.SourceRun?.Token.IsCancellationRequested == true) { return; }
 		catch (Exception ex)
 		{
 			Log("generate inbound letter failed session=" + request?.SessionId + " error=" + ex);
 			if (request != null)
 			{
-				EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => FailInboundLetterGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, request.FallbackLetter, "inbound_letter_generation_failed"), "inbound_letter_generation_failed");
+				EnqueueMainThreadActionForGeneration(request.RuntimeGeneration, () => { if (IsCourierInboundRequestCurrent(request)) FailInboundLetterGenerationOnMainThread(request.SessionId, request.RuntimeGeneration, request.FallbackLetter, "inbound_letter_generation_failed"); }, "inbound_letter_generation_failed");
 			}
 		}
 	}
@@ -736,7 +761,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return;
 			}
-			CourierSession session = GetSessionById(request.SessionId);
+			CourierSession session = IsCourierInboundRequestCurrent(request) ? request.SourceRun.Session : null;
 			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session))
 			{
 				return;
@@ -760,6 +785,7 @@ public sealed partial class CourierDeliveryBehavior
 			session.LetterText = letter;
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
+			RetireCourierRequestLifetime(session);
 			Log("inbound letter llm done session=" + session.Id + " letterLen=" + letter.Length + " preprocessHits=" + ((request.SelectedRuleHits == null || request.SelectedRuleHits.Count == 0) ? "(none)" : string.Join(",", request.SelectedRuleHits)));
 			ProcessSessionById(request.SessionId, "inbound_letter_generated");
 		}
@@ -778,7 +804,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		try
 		{
-			CourierSession session = GetSessionById(request.SessionId);
+			CourierSession session = IsCourierInboundRequestCurrent(request) ? request.SourceRun.Session : null;
 			if (session == null || IsTerminalStage(session) || !IsInboundToPlayer(session))
 			{
 				return false;
@@ -794,7 +820,7 @@ public sealed partial class CourierDeliveryBehavior
 				"放弃",
 				delegate
 				{
-					CourierSession retrySession = GetSessionById(request.SessionId);
+					CourierSession retrySession = IsCourierInboundRequestCurrent(request) ? request.SourceRun.Session : null;
 					if (retrySession == null || IsTerminalStage(retrySession) || !IsInboundToPlayer(retrySession))
 					{
 						return;
@@ -836,6 +862,7 @@ public sealed partial class CourierDeliveryBehavior
 			session.LetterText = NormalizeInboundLetterText(string.IsNullOrWhiteSpace(fallbackLetter) ? session.LetterText : fallbackLetter, session, sender);
 			session.ReplyGenerated = true;
 			session.ReplyGenerationStarted = false;
+			RetireCourierRequestLifetime(session);
 			ProcessSessionById(sessionId, string.IsNullOrWhiteSpace(reason) ? "inbound_letter_generation_failed" : reason);
 		}
 		catch (Exception ex)

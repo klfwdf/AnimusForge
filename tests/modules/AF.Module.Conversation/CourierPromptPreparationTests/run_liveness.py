@@ -1,7 +1,10 @@
 from pathlib import Path
 import argparse, importlib.util, os, re
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
-p=argparse.ArgumentParser();p.add_argument('--old',action='store_true');p.add_argument('--mutate',choices=['drop-failure','ignore-run','old-fallback','keep-stale-tags']);p.add_argument('--output-name');a=p.parse_args()
+import sys
+sys.path.insert(0,str(ROOT/'tests'))
+from output_isolation import new_run_root
+p=argparse.ArgumentParser();p.add_argument('--old',action='store_true');p.add_argument('--mutate',choices=['drop-failure','ignore-run','old-fallback','keep-stale-tags']);p.add_argument('--output-name');p.add_argument('--run-root',type=Path);a=p.parse_args()
 if a.output_name is not None and not re.fullmatch(r'[A-Za-z0-9_-]+',a.output_name):p.error('Invalid output name')
 def load(n,p):
  sp=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(sp);sp.loader.exec_module(m);return m
@@ -18,7 +21,9 @@ message_markers=['private static List<object> BuildCourierReplyMessages(','priva
  'private static string BuildCourierMemoryMetadataPrefix(','private static string StripCourierPromptScopeLabel(',
  'private static string StripCourierSpeakerPrefix(']
 message_source=ex.courier_source(None)
-message_builders='\n'.join(ex.declaration(message_source,marker) for marker in message_markers)
+import main_assembly_projection as main_projection
+main_projection.projected_messages()
+message_builders=main_projection.production_builders()
 for name in ('BuildCourierReplyMessages','BuildInboundNpcLetterMessages'):
  message_builders=message_builders.replace('private static List<object> '+name+'(', 'private static List<object> '+name+'Production(',1)
 base=base.replace('@@MESSAGE_BUILDERS@@',message_builders).replace('@@FINALIZE_REPLY@@','')
@@ -31,8 +36,11 @@ base=base.replace('static ManualResetEventSlim Entered=new(),Release=new(true);'
 base=base.replace('Probe.Entered.Set();\n   if(!Probe.Release.Wait(5000))','var release=Probe.Release;Probe.Entered.Set();\n   if(!release.Wait(5000))')
 base=base.replace('if(Probe.ThrowRouting)throw new PreprocessFormatException();','if(Probe.ThrowRouting)throw new PreprocessFormatException();')
 reqs='\n'.join(ex.declaration(courier,'private sealed class '+name) for name in ['CourierReplyGenerationRequest','InboundLetterGenerationRequest'])
+campaign=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.CampaignLifetime.cs').read_text(encoding='utf-8-sig')
+lifetime_field=campaign[campaign.index('    private readonly Dictionary<CourierSession, ConversationRequestLifetime>'):campaign.index('    private ConversationRequestLifetime BeginCourierRequestLifetime(')]
+lifetime_methods=lifetime_field+'\n'+'\n'.join(ex.declaration(campaign,sig) for sig in ['private ConversationRequestLifetime BeginCourierRequestLifetime(', 'private void RetireCourierRequestLifetime(', 'private void RetireCourierRequestLifetimes('])
 history=(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.HistoryPreparation.cs').read_text(encoding='utf-8-sig');historyDecl='\n'.join(ex.declaration(history,sig) for sig in ['private sealed class CourierPreparedHistory','private bool IsCourierHistoryOwnerCurrent('])
-base=base.replace('@@OWNER_PHASE@@',phase).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historyDecl).replace('@@BASELINE@@','')
+base=base.replace('@@LIFETIME@@',lifetime_methods).replace('@@OWNER_PHASE@@',phase).replace('@@REQUESTS@@',reqs).replace('@@HISTORY@@',historyDecl).replace('@@BASELINE@@','')
 # Sync baseline comparison belongs to run.py; the liveness suite uses actual Start -> caller instead.
 base=base.replace(ex.declaration(base,'internal string Sync('),'')
 methods='\n'.join(ex.declaration(courier,sig) for sig in ['private void StartCourierReplyGeneration(','private void StartInboundLetterGeneration(','private void BeginCourierReplyGenerationOnMainThread(','private void BeginInboundLetterGenerationOnMainThread(','private async Task PrepareAndGenerateCourierReplyOffMainThreadAsync(','private async Task PrepareAndGenerateInboundLetterOffMainThreadAsync(','private void FailCourierReplyGenerationOnMainThread(','private void FailInboundLetterGenerationOnMainThread(','private void ProcessInboundToPlayerSession('])
@@ -49,12 +57,16 @@ if a.mutate=='keep-stale-tags':
 if a.mutate=='old-fallback':partial=partial.replace('input.Session.InboundFallbackLetter, "inbound_prompt_source_changed"','input.FallbackLetter, "inbound_prompt_source_changed"')
 commit=ex.declaration(courier,'private void CommitGeneratedReplyActionsAtRecipientCore(' if a.old else 'private bool CommitGeneratedReplyActionsAtRecipientCore(');commit=commit[:commit.index('\n\t\tif (recipient == null')]+'\n\t\tif (text.Contains("[ACTION:")) Liveness.StaleTagEffects++;\n'+('' if a.old else '\t\treturn true;\n')+'\t}\n'
 commit+='\n\tprivate void CommitGeneratedReplyAtRecipient(CourierSession session, Hero recipient, bool persistHistory = true) => CommitGeneratedReplyActionsAtRecipientCore(session, recipient, persistHistory);\n'
-hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@REPLY_TICK@@',replytick).replace('@@INBOUND_PREFIX@@',inboundprefix).replace('@@COMMIT_GUARD@@',commit)
-out=HERE/'.generated'/(a.output_name or ('liveness-old' if a.old else 'liveness-'+(a.mutate or 'current')));out.mkdir(parents=True,exist_ok=True)
+transport=(ROOT/'src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs').read_text(encoding='utf-8-sig')
+field=transport[transport.index('    private static readonly AsyncLocal<CancellationToken> OwnerCancellation'):];field=field[:field.index(';')+1]
+transport_lifetime=field+'\n'+'\n'.join(ex.declaration(transport,sig) for sig in ['internal static IDisposable PushOwnerCancellation(', 'private sealed class OwnerCancellationScope', 'internal static CancellationTokenSource CreateTimeout('])
+hooks=(HERE/'LivenessHooks.cs.txt').read_text(encoding='utf-8-sig').replace('@@METHODS@@',methods).replace('@@REPLY_TICK@@',replytick).replace('@@INBOUND_PREFIX@@',inboundprefix).replace('@@COMMIT_GUARD@@',commit).replace('@@TRANSPORT_LIFETIME@@',transport_lifetime)
+if a.output_name and a.run_root:p.error('Use either --output-name or --run-root')
+out=new_run_root(ROOT,'courier-prompt-liveness',a.run_root or (HERE/'.generated'/a.output_name if a.output_name else None))
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 (out/'Prompt.cs').write_text(partial,encoding='utf-8');(out/'Schedule.cs').write_text((ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptSchedule.cs').read_text(encoding='utf-8-sig'),encoding='utf-8');(out/'Host.cs').write_text('#define LIVENESS\n'+base,encoding='utf-8');(out/'Hooks.cs').write_text(hooks,encoding='utf-8')
 (out/'Program.cs').write_text((HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
-files=[out/'Prompt.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs']
+files=[out/'Prompt.cs',out/'Host.cs',out/'Hooks.cs',out/'Program.cs',ROOT/'src/AF.Foundation.Runtime/Scheduling/PendingOperationRegistry.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/PromptExtrasComposer.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs',ROOT/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs',ROOT/'src/modules/AF.Module.Conversation/Internal/ConversationRequestLifetime.cs',ROOT/'src/modules/AF.Module.Conversation/Internal/InteractionRequestLease.cs']
 if not a.old:files.append(out/'Schedule.cs')
 project=util.project(out,'CourierPromptLiveness',files,executable=True)
 dotnet=os.environ.get('AF_DOTNET') or str(ROOT/'local/dotnet/8.0.425/dotnet.exe')

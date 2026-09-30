@@ -1,12 +1,13 @@
 from pathlib import Path
+import os
 import argparse,importlib.util,subprocess
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).parent
 spec=importlib.util.spec_from_file_location('build',ROOT/'tests/AF.Contracts/ModuleFrameworkApiTests/run.py');util=importlib.util.module_from_spec(spec);spec.loader.exec_module(util)
 SOURCES=['src/AF.Contracts/Internal/InteractionContracts.cs','src/AF.Contracts/Internal/LlmContracts.cs','src/AF.Contracts/Internal/ProfileConfigContracts.cs','src/modules/AF.Module.Conversation/Internal/InteractionRequestCoordinator.cs']
 MAIN='437925b856fae76b4e9ee207e96ba048f35d5a67'
-p=argparse.ArgumentParser();p.add_argument('--main',action='store_true');p.add_argument('--case',default='all',choices=['all','common','supersede','dispose','token','race','precancel','reentrant','surface']);p.add_argument('--mutate',choices=['dispose_early','propagate_callback','ignore_active_cancel']);args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--main',action='store_true');p.add_argument('--case',default='all',choices=['all','common','supersede','dispose','token','race','precancel','reentrant','surface']);p.add_argument('--mutate',choices=['dispose_early','propagate_callback','ignore_active_cancel']);p.add_argument("--run-root",type=Path);args=p.parse_args()
 if args.main and args.mutate:p.error("--main and --mutate are mutually exclusive")
-out=HERE/'.generated'/('main' if args.main else (args.mutate or 'current'));out.mkdir(parents=True,exist_ok=True)
+out=util.new_run_root(ROOT,'interaction-request-lifetime',args.run_root)
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear /></packageSources></configuration>')
 sources=[]
 for path in SOURCES:
@@ -24,6 +25,6 @@ if not args.main and lease.exists():
   file=out/lease.name;file.write_text(text.replace(before,after),encoding='utf-8');sources.append(file)
  else:sources.append(lease)
 project=util.project(out,'InteractionRequestLifetimeChecks',sources+[HERE/'Program.cs'],executable=True)
-code,log=util.run_dotnet(r'G:\AFMOD\.dotnet-sdk\dotnet.exe',['run','--project',str(project),'-c','Release','--',args.case],out)
+code,log=util.run_dotnet((os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")),['run','--project',str(project),'-c','Release','--',args.case],out)
 print(log,end='');(out/(args.case+'.log')).write_text(log,encoding='utf-8')
 raise SystemExit(code)

@@ -27,7 +27,7 @@ public partial class ShoutBehavior
         }
 
         public Task<string> GenerateAsync(List<object> messages, Action<string> onStreamText)
-            => CallNativeConversationApiAsync(messages, onStreamText);
+            => CallNativeConversationApiAsync(messages, onStreamText, _admission.Lifetime.Token);
         public bool IsGenerationStale()
             => SaveRuntimeGuard.IsStale(_admission.Generation, "native_conversation_reply");
         public string BuildStaleErrorText() => SaveRuntimeGuard.BuildStaleRequestErrorText();

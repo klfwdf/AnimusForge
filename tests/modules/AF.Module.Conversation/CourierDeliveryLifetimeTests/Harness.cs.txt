@@ -1,0 +1,89 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge.Refactor.Runtime;
+using TaleWorlds.Library;
+namespace TaleWorlds.Library { static class TWParallel { internal static bool IsMainThread() => true; } }
+namespace AnimusForge {
+static class SaveRuntimeGuard { internal static long Generation = 1; internal static bool IsCurrentGeneration(long value) => value == Generation; internal static bool IsStale(long value, string phase) => !IsCurrentGeneration(value); }
+static class LlmApiCompat { internal static void ApplyAuthenticationHeaders(HttpRequestMessage request, string endpoint, string key) { } }
+static class ShoutNetwork {
+    internal static Task<string> CallApiWithMessages(List<object> messages, int maxTokens, bool recordTokenStats,
+        int? overrideMaxTokens, bool forceDisableThinking, bool promptRetryOnError, CancellationToken cancellationToken, float? overrideTemperature)
+        => Send(cancellationToken);
+    static async Task<string> Send(CancellationToken token) {
+        var response = await LlmNonStreamingTransport.SendAsync("https://fixture.invalid", "fixture", "{}", Program.Send, token);
+        return response.Body;
+    }
+}
+static class LegacyShoutNetworkGateway { @@FACADE@@ }
+public partial class CourierDeliveryBehavior {
+    internal sealed class CourierSession { internal string Id; internal bool ReplyGenerationStarted = true; internal bool ReplyGenerated; }
+    private sealed class CourierReplyGenerationRequest { internal CourierPromptRun SourceRun; internal string SessionId; internal long RuntimeGeneration; internal List<object> Messages = new(); }
+    private sealed class InboundLetterGenerationRequest { internal CourierPromptRun SourceRun; internal string SessionId; internal long RuntimeGeneration; internal string FallbackLetter; internal List<object> Messages = new(); }
+    internal static CourierDeliveryBehavior Instance;
+    private static readonly ConcurrentQueue<Action> MainThreadActions = new();
+    private readonly ConditionalWeakTable<CourierSession, CourierPromptRun> _courierPromptRuns = new();
+    private readonly Dictionary<string, CourierSession> _sessions = new();
+    private const int MainReplyMaxTokens = 5000;
+    internal int Writes, Failures;
+    static void Log(string message) { }
+    void ResetTransientRuntimeForLoadedSave(string reason) { }
+    CourierSession GetSessionById(string id) => _sessions.TryGetValue(id, out var session) ? session : null;
+    static bool IsTerminalStage(CourierSession session) => false;
+    static bool IsInboundToPlayer(CourierSession session) => true;
+    Task<T> RunCourierOwnerPhaseAsync<T>(long generation, string phase, Func<T> work, CancellationToken token) { token.ThrowIfCancellationRequested(); return Task.FromResult(work()); }
+    void EnqueueMainThreadActionForGeneration(long generation, Action callback, string phase) { if (SaveRuntimeGuard.IsCurrentGeneration(generation)) MainThreadActions.Enqueue(callback); }
+    void FailCourierReplyGenerationOnMainThread(string id, long generation, string reason) { Failures++; }
+    void FailInboundLetterGenerationOnMainThread(string id, long generation, string fallback, string reason) { Failures++; }
+    @@METHODS@@
+    @@WORKERS@@
+    @@GUARDS@@
+    internal object Reserve(CourierSession session) { _sessions[session.Id] = session; return BeginCourierPromptRun(session, 1); }
+    internal Task SendOutbound(object run) { var value = (CourierPromptRun)run; return GenerateNpcReplyAsync(new CourierReplyGenerationRequest { SourceRun = value, SessionId = value.Session.Id, RuntimeGeneration = 1 }); }
+    internal Task SendInbound(object run) { var value = (CourierPromptRun)run; return GenerateInboundNpcLetterAsync(new InboundLetterGenerationRequest { SourceRun = value, SessionId = value.Session.Id, RuntimeGeneration = 1 }); }
+    internal void Retire(CourierSession session) => RetireCourierRequestLifetime(session);
+    internal static void Drain() { while (MainThreadActions.TryDequeue(out var action)) action(); }
+}
+static class Program {
+    internal static Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> Send;
+    static int checks;
+    static void Check(bool value, string name) { checks++; if (!value) throw new Exception("ASSERT " + name); }
+    static async Task Main() {
+        foreach (bool inbound in new[] { false, true }) {
+            var owner = new CourierDeliveryBehavior(); CourierDeliveryBehavior.Instance = owner;
+            var session = new CourierDeliveryBehavior.CourierSession { Id = "same" }; var run = owner.Reserve(session);
+            var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            CancellationToken actual = default; int sends = 0;
+            Send = async (_, token) => { sends++; actual = token; entered.TrySetResult(true); await Task.Delay(Timeout.Infinite, token); return null; };
+            Task task = inbound ? owner.SendInbound(run) : owner.SendOutbound(run); await entered.Task;
+            owner.Retire(session);
+            Check(actual.IsCancellationRequested, "courier-retire-reaches-real-sender-" + inbound);
+            await task.WaitAsync(TimeSpan.FromSeconds(2)); CourierDeliveryBehavior.Drain();
+            Check(sends == 1 && owner.Writes == 0 && owner.Failures == 0, "retired-no-retry-write-fallback-" + inbound);
+        }
+        foreach (bool inbound in new[] { false, true }) {
+            var owner = new CourierDeliveryBehavior(); CourierDeliveryBehavior.Instance = owner;
+            var original = new CourierDeliveryBehavior.CourierSession { Id = "same-id" }; var originalRun = owner.Reserve(original);
+            Send = (_, token) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("fixture reply") });
+            await (inbound ? owner.SendInbound(originalRun) : owner.SendOutbound(originalRun));
+            owner.Reserve(new CourierDeliveryBehavior.CourierSession { Id = "same-id" });
+            CourierDeliveryBehavior.Drain();
+            Check(owner.Writes == 0, "same-id-source-replacement-rejects-late-commit-" + inbound);
+            owner.RetireCampaignRuntime("fixture");
+        }
+        var campaignOwner = new CourierDeliveryBehavior(); CourierDeliveryBehavior.Instance = campaignOwner;
+        var campaignSession = new CourierDeliveryBehavior.CourierSession { Id = "campaign" };var campaignRun = campaignOwner.Reserve(campaignSession);
+        var pending = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);CancellationToken campaignToken=default;
+        Send=async (_,token)=>{campaignToken=token;pending.SetResult(true);await Task.Delay(Timeout.Infinite,token);return null;};
+        var campaignTask=campaignOwner.SendInbound(campaignRun);await pending.Task;campaignOwner.RetireCampaignRuntime("fixture");await campaignTask.WaitAsync(TimeSpan.FromSeconds(2));
+        Check(campaignToken.IsCancellationRequested && CourierDeliveryBehavior.Instance==null,"campaign-retirement-cancels-and-releases-owner");
+        Console.WriteLine("PASS CourierDeliveryLifetime checks="+checks+" actualWorkers=true actualLifetimeRegistry=true acceptancePrefix=true downstreamGameAdapters=STUB game=NOT-RUN");
+    }
+}
+}

@@ -287,6 +287,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 
 	private sealed class InboundLetterGenerationRequest
 	{
+		public CourierPromptRun SourceRun;
 		public string SessionId;
 		public long RuntimeGeneration;
 		public string SenderHeroId;

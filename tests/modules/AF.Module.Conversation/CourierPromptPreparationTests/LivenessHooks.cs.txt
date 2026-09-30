@@ -5,6 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 namespace AnimusForge {
+ // Real source-linked lifetime scopes; the HTTP sender remains a fixture.
+ internal static class LlmNonStreamingTransport {
+ @@TRANSPORT_LIFETIME@@
+ }
  internal static class Liveness {
   internal static Task Background;internal static int BodyRequests,Failures,Unpauses,Deliveries,PersonaCalls,StaleTagEffects;
   internal static bool HoldNextPersona;internal static string LastReason;

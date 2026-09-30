@@ -1,7 +1,9 @@
 """Real Scene input / frozen replay / gate methods, extracted from source; game objects stubbed."""
 from pathlib import Path
-import importlib.util,hashlib,subprocess,os,re,argparse
+import importlib.util,hashlib,subprocess,os,re,argparse,sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT/"tests"))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def generate(source_ref=None):
  s=ex.source('ShoutBehavior.cs',source_ref);a=ex.source('extensions/AnimusForge.XihaiAction/src/Runtime/AfCompatV130.cs',source_ref);u=ex.source('ShoutUtils.cs',source_ref)
@@ -13,6 +15,7 @@ def generate(source_ref=None):
  names=set(re.findall(r'\b(_[A-Za-z]\w*)\b',gm))
  current='private sealed class ScenePlayerShoutRequest' in s or 'internal sealed class ScenePlayerShoutRequest' in o
  if o:fields.append('private readonly ScenePlayerShoutRequestOwner _scenePlayerShoutRequestOwner=new();')
+ if '_sceneRequestLifetime' in s:fields.append('private AnimusForge.Refactor.Runtime.ConversationRequestLifetime _sceneRequestLifetime=new();')
  elif current:names.add('_scenePlayerInputSequence')
  for name in sorted(names):
   m=re.search(r'^\s*private (?:readonly |volatile )?[^\n;{}]+\b'+name+r'\b[^\n;{}]*;',s,re.M)
@@ -60,15 +63,17 @@ MUTATIONS = {
 }
 
 def main():
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-ref');ap.add_argument('--mutation',choices=sorted(MUTATIONS));ap.add_argument('--core',action='store_true');ap.add_argument('--j14-completion','--j14-red',dest='j14_completion',action='store_true');ap.add_argument('--output-name',default='current');ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));args=ap.parse_args()
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--source-ref');ap.add_argument('--mutation',choices=sorted(MUTATIONS));ap.add_argument('--core',action='store_true');ap.add_argument('--j14-completion','--j14-red',dest='j14_completion',action='store_true');ap.add_argument('--output-name',default='current');ap.add_argument('--dotnet',default=(os.environ.get("DOTNET_EXE") or os.environ.get("AF_DOTNET") or str(Path(__file__).resolve().parents[4] / "local/dotnet/8.0.425/dotnet.exe")));ap.add_argument("--run-root",type=Path);args=ap.parse_args();args.dotnet=str(resolve_dotnet(ROOT,args.dotnet))
  if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name):ap.error('Invalid output name')
- out=HERE/'.generated'/args.output_name;out.mkdir(parents=True,exist_ok=True);pre=generate(args.source_ref)
+ out=new_run_root(ROOT,'scene-request-lifetime',args.run_root);pre=generate(args.source_ref)
+ for file in ['ConversationRequestLifetime.cs','InteractionRequestLease.cs']:
+  (out/file).write_text((ROOT/'src/modules/AF.Module.Conversation/Internal'/file).read_text(encoding='utf-8-sig'),encoding='utf-8')
  if args.mutation:
   old,new,_=MUTATIONS[args.mutation]
   if old not in pre:raise ValueError('Mutation anchor absent: '+args.mutation)
   pre=pre.replace(old,new)
  (out/'Program.cs').write_text(pre,encoding='utf-8');(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>disable</Nullable></PropertyGroup></Project>');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
- env=os.environ.copy();env['DOTNET_ROOT']=str(Path(args.dotnet).parent);env['DOTNET_CLI_HOME']=str(out/'cli');env['DOTNET_CLI_TELEMETRY_OPTOUT']='1';env['DOTNET_NOLOGO']='1';env['DOTNET_CLI_UI_LANGUAGE']='en'
+ env=minimal_test_environment(Path(args.dotnet),out)
  r=subprocess.run([args.dotnet,'run','--project',str(out/'Tests.csproj'),'-c','Release','--']+(['core'] if args.core else [])+(['j14-completion'] if args.j14_completion else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
  log='source='+(args.source_ref or 'working-tree')+' mutation='+(args.mutation or 'none')+'\nHarness SHA256='+hashlib.sha256(pre.encode()).hexdigest()+'\n'+r.stdout+r.stderr
  (out/'run.log').write_text(log,encoding='utf-8');print(log);return r.returncode

@@ -54,6 +54,9 @@ internal static class LlmStreamingTransport
         int rawSampleMaxChars = 12000,
         bool includeDataPrefix = true)
     {
+        using (CancellationTokenSource ownerCancellation = LlmNonStreamingTransport.LinkOwnerCancellation(cancellationToken))
+        {
+            if (ownerCancellation != null) cancellationToken = ownerCancellation.Token;
         StringBuilder raw = new StringBuilder();
         StringBuilder content = new StringBuilder();
         StringBuilder reasoning = new StringBuilder();
@@ -67,12 +70,15 @@ internal static class LlmStreamingTransport
             try
             {
                 using (HttpResponseMessage response = await sender(request, cancellationToken).ConfigureAwait(false))
+                using (CancellationTokenRegistration cancellation = LlmNonStreamingTransport.RegisterResponseCancellation(response, cancellationToken))
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (acceptResponse != null && !acceptResponse(response.StatusCode))
                         return new LlmStreamingResponse { StatusCode = response.StatusCode, Discarded = true };
                     if (!response.IsSuccessStatusCode)
                     {
                         string errorBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        cancellationToken.ThrowIfCancellationRequested();
                         if (acceptErrorBody != null && !acceptErrorBody())
                             return new LlmStreamingResponse { StatusCode = response.StatusCode, Discarded = true };
                         return new LlmStreamingResponse
@@ -93,6 +99,7 @@ internal static class LlmStreamingTransport
                             readSequence++;
                             onReadStarted?.Invoke(readSequence);
                             string line = await reader.ReadLineAsync().ConfigureAwait(false);
+                            cancellationToken.ThrowIfCancellationRequested();
                             if (acceptLine != null && !acceptLine(readSequence, line))
                                 return Snapshot(response.StatusCode, raw, content, reasoning, parseFailure, discarded: true);
                             if (line == null || (!throwOnCancellationBeforeRead && cancellationToken.IsCancellationRequested)) break;
@@ -115,6 +122,7 @@ internal static class LlmStreamingTransport
                                 }
                                 try
                                 {
+                                    cancellationToken.ThrowIfCancellationRequested();
                                     onDelta?.Invoke(new LlmStreamingDelta
                                     {
                                         ReadSequence = readSequence,
@@ -142,9 +150,13 @@ internal static class LlmStreamingTransport
             }
             catch (Exception error)
             {
-                if (raw.Length > 0) error.Data[PartialRawDataKey] = raw.ToString();
+                Exception failure = cancellationToken.IsCancellationRequested
+                    ? new OperationCanceledException(cancellationToken) : error;
+                if (raw.Length > 0) failure.Data[PartialRawDataKey] = raw.ToString();
+                if (!ReferenceEquals(failure, error)) throw failure;
                 throw;
             }
+        }
         }
     }
 

@@ -14,7 +14,7 @@ python -B -m unittest discover -s tests/modules/AF.Module.Conversation/SceneRequ
 python -B tests/modules/AF.Module.Conversation/ScenePostprocessParityTests/run_gate.py --output-name gate-scene-request
 ```
 
-The red baseline command intentionally exits 1. Output stays in this tool's ignored `.generated/` directory; no source checkout or game deployment is performed. `--dotnet` overrides the local SDK executable.
+The red baseline command intentionally exits 1. Output uses a fresh repository-local `artifacts/tests/scene-request-lifetime/` directory; `--run-root` selects a new explicit directory; no source checkout or game deployment is performed. `--dotnet` overrides the local SDK executable.
 
 ## Evidence and scope
 

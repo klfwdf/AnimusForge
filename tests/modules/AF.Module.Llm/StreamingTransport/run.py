@@ -1,7 +1,9 @@
 from pathlib import Path
-import argparse,os,subprocess
+import argparse,os,subprocess,sys
 ROOT=Path(__file__).resolve().parents[4];HERE=Path(__file__).resolve().parent
-p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['leak-response','skip-line-accept','duplicate-content','ignore-cancel','unbounded-raw']);a=p.parse_args();out=HERE/'.generated'/(a.mutate or 'current');out.mkdir(parents=True,exist_ok=True)
+sys.path.insert(0,str(ROOT/"tests"))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
+p=argparse.ArgumentParser();p.add_argument('--mutate',choices=['leak-response','skip-line-accept','duplicate-content','ignore-cancel','unbounded-raw']);p.add_argument("--run-root",type=Path);a=p.parse_args();out=new_run_root(ROOT,'llm-streamingtransport',a.run_root)
 files=['src/modules/AF.Module.Llm/Streaming/LlmStreamingTransport.cs','src/modules/AF.Module.Llm/Transport/LlmNonStreamingTransport.cs','src/modules/AF.Module.Llm/Protocol/LlmApiCompat.cs']
 for f in files:
  s=(ROOT/f).read_text(encoding='utf-8-sig')
@@ -12,4 +14,4 @@ for f in files:
   if a.mutate=='ignore-cancel':s=s.replace('cancellationToken.ThrowIfCancellationRequested();',';',1)
   if a.mutate=='unbounded-raw':s=s.replace('int remaining = maxChars - raw.Length;','maxChars = int.MaxValue; int remaining = maxChars - raw.Length;',1)
  (out/Path(f).name).write_text(s,encoding='utf-8')
-(out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8');newton=os.environ.get('AF_NEWTONSOFT','G:/AFMOD/.dotnet-sdk/sdk/8.0.422/Newtonsoft.Json.dll');(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+newton+'</HintPath></Reference></ItemGroup></Project>');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>');dotnet=os.environ.get('AF_DOTNET','G:/AFMOD/.dotnet-sdk/dotnet.exe');env=os.environ.copy();env.update(DOTNET_ROOT=str(Path(dotnet).parent),DOTNET_CLI_HOME=str(ROOT/'.tmp/dotnet-cli'),NUGET_PACKAGES=str(ROOT/'.tmp/nuget-packages'));q=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90);log=q.stdout+q.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(q.returncode)
+(out/'Program.cs').write_text((HERE/'Harness.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8');dotnet=str(resolve_dotnet(ROOT));newton=str(Path(dotnet).parent/'sdk/8.0.425/Newtonsoft.Json.dll');(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+newton+'</HintPath></Reference></ItemGroup></Project>');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>');env=minimal_test_environment(Path(dotnet),out);q=subprocess.run([dotnet,'run','--project',str(out/'Proof.csproj'),'-c','Release'],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90);log=q.stdout+q.stderr;(out/'run.log').write_text(log,encoding='utf-8');print(log);raise SystemExit(q.returncode)

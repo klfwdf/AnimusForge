@@ -4,9 +4,12 @@ import argparse
 import importlib.util
 import os
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT / "tests"))
+from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
 spec = importlib.util.spec_from_file_location(
     "extract", ROOT / "tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py")
 extract = importlib.util.module_from_spec(spec)
@@ -27,16 +30,16 @@ assert "ReferenceEquals(_ceremonyOrderOwner, owner)" in clear_owner
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--mutate", choices=["skip-clear", "drop-owner-guard"])
+parser.add_argument("--run-root", type=Path)
 args = parser.parse_args()
 if args.mutate == "skip-clear":
     retire = retire.replace(call, "// mutation: skip clear", 1)
 elif args.mutate == "drop-owner-guard":
     clear_owner = clear_owner.replace("if (!ReferenceEquals(_ceremonyOrderOwner, owner)) return;", "// mutation: drop owner guard", 1)
 
-dotnet = ROOT / "local/dotnet/8.0.425/dotnet.exe"
-out = ROOT / "artifacts/j17b/session-20260930/p5-channels" / (
-    "native-ceremony-lifetime-002" if not args.mutate else "native-ceremony-lifetime-" + args.mutate + "-002")
-out.mkdir(parents=True, exist_ok=True)
+dotnet = resolve_dotnet(ROOT)
+out = new_run_root(ROOT, "native-ceremony-lifetime", args.run_root)
+
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
 (out / "Program.cs").write_text(template.replace("@@CLEAR@@", clear)
                            .replace("@@CLEAR_OWNER@@", clear_owner)
@@ -47,20 +50,7 @@ template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
     '<ImplicitUsings>enable</ImplicitUsings></PropertyGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text(
     "<configuration><packageSources><clear/></packageSources></configuration>", encoding="utf-8")
-env = {
-    "DOTNET_ROOT": str(dotnet.parent), "DOTNET_CLI_HOME": str(out / "cli"),
-    "DOTNET_CLI_TELEMETRY_OPTOUT": "1", "DOTNET_NOLOGO": "1",
-    "TEMP": str(out), "TMP": str(out), "APPDATA": str(out),
-    "LOCALAPPDATA": str(out), "USERPROFILE": str(out), "HOME": str(out),
-    "HOMEDRIVE": out.drive, "HOMEPATH": str(out)[len(out.drive):],
-    "NUGET_PACKAGES": str(out / "packages"),
-    "SystemRoot": os.environ.get("SystemRoot", r"C:\Windows"),
-    "ProgramData": os.environ.get("ProgramData", r"C:\ProgramData"),
-    "ALLUSERSPROFILE": os.environ.get("ALLUSERSPROFILE", r"C:\ProgramData"),
-    "ProgramFiles": os.environ.get("ProgramFiles", r"C:\Program Files"),
-    "ProgramFiles(x86)": os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
-    "windir": os.environ.get("windir", r"C:\Windows"),
-}
+env = minimal_test_environment(dotnet, out)
 result = subprocess.run([str(dotnet), "run", "--project", str(out / "Tests.csproj"), "-c", "Release"],
                         cwd=out, env=env, capture_output=True, text=True,
                         encoding="utf-8", errors="replace", timeout=90)

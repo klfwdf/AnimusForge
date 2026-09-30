@@ -8,6 +8,32 @@ P1 持 Prompt/history composition；P2 持传输/渠道 request lifetime；P3 �
 
 原全量 C `artifacts/j17b/session-20260930/p6-integration/full-run-aedcba06ed7844b0b90fa0c57b621a1a/results.json` 的 273 项（148 PASS/78 FAIL/34 PREEXISTING_FAIL/5 NEEDS_INPUT/4 SUPERSEDED_BY_RUNNER/1 ENV_STATE/3 BLOCKED_ENV）是历史候选结果，不能将 78 FAIL 当作 78 产品 bug，也不能刷 hash/expected 消除失败。本轮最终门禁绑定新的同一候选，产物只写 `artifacts/j17b/session-20261001/p6-integration/` 唯一新目录；保留旧产物及 22 个原未跟踪 tools 和 NuGet 目录。B6/C 尚未完成，最终分类待实际运行。D 实机/真实旧档/真实网络/帧耗时 NOT-RUN；无推送、Stage、部署、安装、默认入口或真实资料操作授权；已暴露旧凭据轮换仍未确认。
 
+#### 2026-10-01 远端 WIP 接续交付（最新指令，取代“未提交”与等待本地续跑的停点）
+
+用户随后明确要求“全部上传，配上 handoff 说明进度”，即上传本轮 P1/P2 全部必要源码、新 owner、测试与共享接线，不上传无关旧目录或敏感原始工件。本次以 `7d7f4988` 为提交前基线，作 **WIP 交接，未完成最终验证**；本节连同 Git 当前 HEAD 是接手入口，不将下面历史停点当当前指令。A20/20 已完成；P3/P4/P5 分别已在 `7fa93f14`、`c50e6641`、`928c36cd` 提交。P1/P2 本次一并提交，停止产品施工；B6/C 不因此标闭。
+
+远端可读的[精确源码/测试文件清单](handoffs/2026-10-01-j17-wip-files.json)包含必要新文件而非仅 tracked diff。两新 owner `MainPromptMessageAssemblyOwner`、`ConversationRequestLifetime` 已由 Courier/Scene/Native 生产调用点引用。P1 h 五种 Scene layout 与 P2 shared-lifetime 1–4 已接入源码，不需要接手者取得本地 patch。`SessionTransport` 若仅行尾差异不代表新增逻辑。未上传本地 artifacts 原始证据；上文其日志路径仅原执行机器可访问，不声称远端可访问。下面检查数是当时回报/记录，旧成功不覆盖最新 h、timeout 修复或最近 fixture 修改。
+
+远端接手最小顺序（先核对工作区/分支和本清单，全部离线，不部署）：
+
+```powershell
+python -B tests/modules/AF.Module.Conversation/SceneRequestLifetimeRegressionTests/run_deferred_cancellation.py
+python -B tests/modules/AF.Module.Conversation/InteractionRequestLifetimeTests/run_native_transport.py
+python -B tests/modules/AF.Module.Llm/RequestCancellationTransportTests/run.py
+python -B tests/modules/AF.Module.Prompt/Composition/run_message_assembly.py
+python -B docs/handoffs/j17-offline-build-gate.py --configuration Debug
+python -B docs/handoffs/j17-offline-build-gate.py --configuration Release
+python -B docs/handoffs/j17-offline-c-gate.py --candidate '<NEW_DEBUG_BUILD_ROOT>/artifacts/versions/1.4/AnimusForge.dll'
+```
+
+[离线隔离构建 helper](handoffs/j17-offline-build-gate.py)和[同候选 C helper](handoffs/j17-offline-c-gate.py)是本轮已使用/准备的方法副本，仅修正它们入库后的仓根定位；构建 helper 的旧版已实际 Debug 双 API+Bootstrap exit 0，入库副本只做语法检查，C helper 尚未实际全量运行。它们不改仓库一键入口、无 Stage/Deploy，拒绝已有输出而非删除，关闭 prune，使用新 artifacts 输出和最小环境。SDK8 现机为 `local/dotnet/8.0.425/dotnet.exe`，SDK10 `C:/Program Files/dotnet/dotnet.exe`（10.0.400），pwsh `C:/Program Files/PowerShell/7-preview/pwsh.exe`；API1.3 references `_deps_auto`，API1.4 `local/bannerlord-refs/1.4.7.117484`。游戏只读依赖 `D:/steam/steamapps/common/Mount & Blade II Bannerlord`，Harmony/MCM/UIExtender 位于其 `Modules/Bannerlord.Harmony`、`Bannerlord.MBOptionScreen`、`Bannerlord.UIExtenderEx`；C 的 `AF_REPLAY_STAGE_BIN` 仅取私有 managed runtime 依赖，实现 DLL 强制使用新 candidate/hash/marker，不能拿旧 Stage 实现代替。不同机器必须先核实这些路径/版本再窄修改 helper，禁止安装/部署或凭空 fallback。
+
+C helper 当前明确使用本轮获准合成测试根 `E:/tmp/af-j17-20260930`；不同接手环境不得据此擅自获得仓外写权限，应先获得该精确范围许可或改为经边界校验的仓内合成根。不得传承真实用户环境/凭据/玩家资料。SDK/ref/runtime 未纳入提交，必须本机已有合法依赖。所有 Python runner 的参数由源码 argparse 为准。
+
+P2 接续缺项：Scene deferred 三业务变异尚未跑；Native fixture 最近改立即 caller-token 断言后 current/三个变异未重跑；transport runner 隔离 helper 适配后未重跑；GenerationLifecycle 退休行 indentation 后未重跑；fallback retry 继承取消/no-commit 专门行为负控尚缺。变异必须成功编译后因具名行为断言拒绝，编译红不能算有效负控。随后精确提交有效修复/检查，再冻结同一源码候选，集中 Debug/Release × API1.3/1.4 + Bootstrap、实际当前 DLL runtime consumers 及全量 C；不得拼旧候选成绩、刷 hash/expected 或把 78 个历史 FAIL 当 78 产品 bug。最后更新地图：它仍是合并基线，未覆盖当前 owner/接线。R05-f/g retained boundary、i OPEN 及其他有限出口仍按本节夜间说明，不擅自扩大删除。
+
+最终同候选 C **NOT-RUN/未通过**；D 实机/真实旧档/真实网络/性能 **NOT-RUN**。旧凭据轮换未确认；本次不上传日志/二进制/缓存/真实资料，不推部署、不开默认入口、不清理旧 tools/NuGet。
+
 #### 2026-10-01 夜间停点（覆盖本节“进行中”，不覆盖历史验证事实）
 
 用户要求先收尾睡觉、明天继续。P1–P5 已停止写入/新增验证；P6 不启动最终构建、全量 C 或新修复轮。交接前产品/测试已提交 HEAD 为 `928c36cd`，本次仅另提交这两份交接文档；未提交产品/测试差异完整保留，不以未验 checkpoint 冒充通过。

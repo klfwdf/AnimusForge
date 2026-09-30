@@ -17,8 +17,10 @@ public partial class CourierDeliveryBehavior
 
     private sealed class CourierPromptRun
     {
-        internal CourierPromptRun(CourierSession session, long generation)
-        { Session = session; Generation = generation; }
+        internal CourierPromptRun(CourierSession session, long generation, AnimusForge.Refactor.Runtime.ConversationRequestLifetime lifetime)
+        { Session = session; Generation = generation; Lifetime = lifetime; }
+        internal AnimusForge.Refactor.Runtime.ConversationRequestLifetime Lifetime { get; }
+        internal CancellationToken Token => Lifetime.Token;
         internal CourierSession Session { get; }
         internal long Generation { get; }
     }
@@ -26,7 +28,7 @@ public partial class CourierDeliveryBehavior
     private CourierPromptRun BeginCourierPromptRun(CourierSession session, long generation)
     {
         if (!TWParallel.IsMainThread()) throw new InvalidOperationException("Courier run reservation requires the game thread.");
-        var run = new CourierPromptRun(session, generation);
+        var run = new CourierPromptRun(session, generation, BeginCourierRequestLifetime(session));
         // All replacements and checks use the original game-thread owner, not a worker lock.
         _courierPromptRuns.Remove(session);
         _courierPromptRuns.Add(session, run);
@@ -36,12 +38,17 @@ public partial class CourierDeliveryBehavior
     private bool IsCourierPromptRunCurrent(CourierPromptRun run)
     {
         if (!TWParallel.IsMainThread()) throw new InvalidOperationException("Courier run validation requires the game thread.");
-        return run != null && ReferenceEquals(Instance, this) && _pendingOwnerPhases.Accepting
+        return run != null && !run.Token.IsCancellationRequested && ReferenceEquals(Instance, this) && _pendingOwnerPhases.Accepting
             && SaveRuntimeGuard.IsCurrentGeneration(run.Generation)
             && ReferenceEquals(GetSessionById(run.Session.Id), run.Session)
             && _courierPromptRuns.TryGetValue(run.Session, out CourierPromptRun current) && ReferenceEquals(current, run)
             && run.Session.ReplyGenerationStarted && !run.Session.ReplyGenerated;
     }
+
+    private bool IsCourierInboundRequestCurrent(InboundLetterGenerationRequest request)
+        => request != null && IsCourierPromptRunCurrent(request.SourceRun)
+            && request.RuntimeGeneration == request.SourceRun.Generation
+            && string.Equals(request.SessionId, request.SourceRun.Session.Id, StringComparison.Ordinal);
 
     private bool IsCourierReplyRequestCurrent(CourierReplyGenerationRequest request)
     {
@@ -70,6 +77,7 @@ public partial class CourierDeliveryBehavior
             || !IsCourierHistoryOwnerCurrent(input.SessionId, input.Session, input.Participant, input.Inbound)
             || input.Participant.IsDead) return;
         _courierPromptRuns.Remove(input.Session);
+        RetireCourierRequestLifetime(input.Session);
         // No actions were submitted. Use the original failure owner to finish generation and advance
         // the actual transport/wait state machine; never leave Started=true or invent an LLM success.
         if (input.Inbound)

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
+using AnimusForge.Refactor.Runtime;
 namespace TaleWorlds.Library {
  internal static class TWParallel { internal static int MainThread; internal static bool IsMainThread()=>Environment.CurrentManagedThreadId==MainThread; }
 }
@@ -141,6 +142,7 @@ namespace AnimusForge {
   private static Hero ResolveRecipient(CourierSession s){Probe.MainOnly();return s.Participant;}
   private static string SafeHeroId(Hero hero){Probe.MainOnly();return hero.Id;}
   private static void Log(string text){}
+  @@LIFETIME@@
   private void FailModuleCourierSession(CourierSession session,string reason){} // Operation receipts are exercised by CourierSessionCreationTests.
 #if !LIVENESS
   private enum CoreCourierAcceptedSteps { ReplyPrepared }

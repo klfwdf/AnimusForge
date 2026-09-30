@@ -1,6 +1,6 @@
 # 当前交接：J17 收尾与远端 CivilWar 合并（2026-10-01）
 
-- **本轮最新：用户要求夜间暂停，明天继续（2026-10-01）**：P1–P5 已停写/新增验证，P6 只补停点，不启动最终门禁。交接前 HEAD `928c36cd`；已提交环境、Courier 日期/恢复、测试消费者，P1/P2 与共享接线/最近未验测试及总入口一个 token 留在工作树。首 Debug 双 API+Bootstrap 不覆盖最后 h/timeout 修复；最终同候选构建/C 尚未运行，B6/C 未闭，D NOT-RUN，地图未重绑定。原 tools/NuGet/旧产物保留，无推送/Stage/部署。明日精确下一步、范围清单及已验/未验见[唯一现态停点](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)。
+- **本轮最新：远端 WIP 接续交付（2026-10-01）**：用户要求本轮全部上传并说明进度；P1/P2 全部必要产品、新 owner、测试及共享接线纳入本次 WIP 提交（以实际 Git HEAD 为准），不是验收 PASS。A 已完成，P3/P4/P5 已提交；最新源码最终双配置双 API+Bootstrap/C 未跑，P2 最近 fixture/三变异与 fallback retry 证据待补，地图未更新，D NOT-RUN。下方“未提交/明天本地继续”是历史停点，不是当前状态。远端可用精确清单、离线构建/C helper、已核实依赖与接手顺序见[唯一现态与接续说明](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-b6-c-resume-20261001)；本地 artifacts 未上传，不能当远端证据。旧 tools/NuGet/原日志与二进制不上传、不清理，无部署/Stage。
 
 - **2026-10-01 远端合并收尾**：按用户授权，将本地 `7154f658` 与远端 `d7970096` 无冲突合并为 `4e4aad06`，保留双方历史与 CivilWar 修复。合并候选 Debug/Release × 1.3/1.4 + Bootstrap、CivilWar smoke 通过；验证隔离旧产物引用，未改一键流程或部署。B6 未闭、C 原未通过和 D NOT-RUN 不变；未恢复扩展施工。[合并证据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-remote-merge-20261001)。
 
