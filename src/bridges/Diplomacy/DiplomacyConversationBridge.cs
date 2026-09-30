@@ -6,6 +6,10 @@ namespace AnimusForge;
 // No eligibility, tag grammar, game action, scan, cache or fallback belongs here.
 internal static class DiplomacyConversationBridge
 {
+    internal static string BuildDiplomacyMemory(Hero hero, string kingdomOverride, string input,
+        System.Collections.Generic.IReadOnlyList<string> ruleIds, bool proactive) =>
+        DiplomacyModuleServices.World.BuildMemory(hero?.StringId, kingdomOverride, input, ruleIds, proactive);
+    internal static string BuildDiplomacyPrompt(Hero hero, string extras) => DiplomacyModuleServices.Conversation.BuildPrompt(hero?.StringId, extras);
     internal static bool CanInjectDiplomacyRuleForExternal(Hero hero, CharacterObject character = null) =>
         DiplomacyModuleServices.Conversation.CanInjectDiplomacyRule((hero ?? character?.HeroObject)?.StringId);
     internal static bool CanUseDiplomacyActionPostprocessForExternal(Hero hero, CharacterObject character = null) =>

@@ -6,6 +6,7 @@ namespace AnimusForge;
 // Same-DLL ports; synchronous and game-object-free. No second action or state owner.
 internal interface IDiplomacyConversationPort
 {
+    string BuildPrompt(string heroId, string extras);
     bool CanInjectDiplomacyRule(string heroId);
     bool CanUseDiplomacyActionPostprocess(string heroId);
     bool CanUseFullDiplomacyActionPostprocess(string heroId);
@@ -19,6 +20,7 @@ internal interface IDiplomacyConversationPort
 
 internal interface IWorldDiplomacyModulePort
 {
+    string BuildMemory(string heroId, string kingdomOverride, string input, IReadOnlyList<string> ruleIds, bool proactive);
     bool CanDiscuss(string heroId);
     bool TryBuildProactiveDiscussion(string heroId, out string key, out string fact, out float urgency);
     WorldDiplomacyTimelineRevisionResult QueryTimelineRevision();

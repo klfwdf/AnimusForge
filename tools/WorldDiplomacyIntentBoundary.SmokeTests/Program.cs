@@ -798,8 +798,8 @@ internal static class Program
 		Test.True(!knownDocuments.Contains("Settlement.CurrentSettlement", StringComparison.Ordinal),
 			"a remote NPC must not inherit the player's current-settlement diplomatic knowledge");
 		string sharedMemoryPatch = ExtractMethod(source, "private static void Patch_BuildSharedDiplomacyMemory_Postfix(");
-		Test.True(sharedMemoryPatch.Contains("ShouldInjectDiplomacyMemoryForInput", StringComparison.Ordinal)
-			&& sharedMemoryPatch.Contains("BuildDiplomacyMemoryContext(hero, kingdomIdOverride, input)", StringComparison.Ordinal),
+		Test.True(sharedMemoryPatch.Contains("DiplomacyConversationBridge.BuildDiplomacyMemory", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")).Contains("ShouldInjectDiplomacyMemoryForInput(snapshot, input)"),
 			"explicit player questions about known diplomacy must inject query-aware shared memory");
 		string detailedMemory = ExtractMethod(
 			File.ReadAllText(

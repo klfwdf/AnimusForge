@@ -14,6 +14,7 @@ internal sealed class DiplomacyConversationModuleAdapter : IDiplomacyConversatio
     private static readonly IDiplomacyConversationEligibilitySource Eligibility = new EligibilitySource();
     private static Hero ResolveHero(string id) => DiplomacyIdentityResolver.Hero(id);
     private static Kingdom ResolveKingdom(string id) => DiplomacyIdentityResolver.Kingdom(id);
+    public string BuildPrompt(string heroId, string extras) => DiplomacyPromptApplication.Build(new DiplomacyPromptSource(ResolveHero(heroId)), extras);
     public bool CanInjectDiplomacyRule(string heroId) => DiplomacyConversationEligibilityApplication.CanInject(Eligibility, heroId);
     public bool CanUseDiplomacyActionPostprocess(string heroId) => DiplomacyConversationEligibilityApplication.CanUseAction(Eligibility, heroId);
     public bool CanUseFullDiplomacyActionPostprocess(string heroId) => DiplomacyConversationEligibilityApplication.CanUseFull(Eligibility, heroId);

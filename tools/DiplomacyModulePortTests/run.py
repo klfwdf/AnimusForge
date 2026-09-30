@@ -20,6 +20,7 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyConversationEl
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyIndependentPeaceApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyTributePowerApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPostprocessContextApplication.cs']
+SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPromptApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTickApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCampaignApplication.cs']
@@ -208,16 +209,16 @@ def boundaries():
                   'WorldDiplomacyBehavior.RegisterHarmonyPatches'},'Composition gained non-lifecycle wiring: '+str(invoked)
  # Module port covers commands, queries, lifecycle, presentation and receipts; dropping an entry fails.
  port_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IWorldDiplomacyModulePort')
- assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',port_decl))=={'CanDiscuss','TryBuildProactiveDiscussion','QueryTimelineRevision',
+ assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',port_decl))=={'BuildMemory','CanDiscuss','TryBuildProactiveDiscussion','QueryTimelineRevision',
    'QueryTimelineDocuments','TryMarkDocumentRead','OnEngineTick','OnCampaignTick','OnDailyTick'},'ModulePort surface drift'
  assert set(re.findall(r'(\w+)\s*\{\s*get;',port_decl))=={'Presentation'},'ModulePort read-model surface drift'
  conv_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IDiplomacyConversationPort')
- assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',conv_decl))=={'CanInjectDiplomacyRule','CanUseDiplomacyActionPostprocess',
+ assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',conv_decl))=={'BuildPrompt','CanInjectDiplomacyRule','CanUseDiplomacyActionPostprocess',
    'CanUseFullDiplomacyActionPostprocess','CanUseNpcSovereignDeclareWarPostprocess','CanUseIndependentClanPeace',
    'IsIndependentClanPeacePostprocessTag','BuildDiplomacyPostprocessContext','ProcessDiplomacyTags',
    'TryBuildTributePowerContext'},'Conversation port surface drift'
  # Module adapter may bind only narrow snapshot/leaves, never a whole use-case Behavior method.
- allowed_wdb={'Instance','TickSource','CampaignSource','TryGetTimelineRevisionSnapshot','TryGetTimelineState',
+ allowed_wdb={'TryCaptureMemory','Instance','TickSource','CampaignSource','TryGetTimelineRevisionSnapshot','TryGetTimelineState',
    'TryCaptureDiscussionCandidate','HasKnownDocumentForDiscussion','TryCaptureProactiveSpeaker','TryCaptureProactiveDocuments',
    'GetPlayerKingdomNameForProactive','FormatDateForProactive','ResolvePresentationPort'}
  for call in set(re.findall(r'WorldDiplomacyBehavior\.(\w+)',world_adapter)):
@@ -269,7 +270,7 @@ def boundaries():
  exec_decl=declaration(read('src/modules/AF.Module.Diplomacy/Application/IWorldDiplomacyDocumentExecutionPort.cs'),
    'internal interface IWorldDiplomacyDocumentExecutionPort')
  assert 'WorldDiplomacyStorage' not in exec_decl and ' set;' not in exec_decl,'Execution port exposed writable storage state'
- assert len([l for l in exec_decl.splitlines() if l.strip() and not l.strip().startswith(('//','{','}')) and 'interface' not in l])==19,'Execution port width changed without review'
+ assert len([l for l in exec_decl.splitlines() if l.strip() and not l.strip().startswith(('//','{','}')) and 'interface' not in l])==18,'Execution port width changed without review'
  assert 'IReadOnlyList<WorldDiplomacyThreat> Threats' in exec_decl,'read-only Threats snapshot pin lost'
  assert not re.search(r'(?<!ReadOnly)\bList<WorldDiplomacyThreat>',exec_decl),'mutable Threats list exposure reintroduced'
  port_impl=read('src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DocumentExecutionPort.cs')

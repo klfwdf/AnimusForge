@@ -128,27 +128,6 @@ namespace AnimusForge
 			return DiplomacyConversationEligibilityApplication.IsIndependentClanPeaceTag(tag);
 		}
 
-		private static bool IsPlayerIndependentSettlementClan()
-		{
-			try
-			{
-				Clan playerClan = Clan.PlayerClan ?? Hero.MainHero?.Clan;
-				if (playerClan == null || Hero.MainHero == null || playerClan.Kingdom != null || playerClan.IsUnderMercenaryService)
-				{
-					return false;
-				}
-				if (playerClan.Leader != null && playerClan.Leader != Hero.MainHero)
-				{
-					return false;
-				}
-				return (playerClan.Settlements ?? Enumerable.Empty<Settlement>()).Any((Settlement x) => x != null && (x.IsTown || x.IsCastle));
-			}
-			catch
-			{
-				return false;
-			}
-		}
-
 		internal static bool IsNpcKing(Hero npc, Kingdom npcKingdom)
 		{
 			return npc != null && npcKingdom != null && npc == npcKingdom.RulingClan?.Leader;

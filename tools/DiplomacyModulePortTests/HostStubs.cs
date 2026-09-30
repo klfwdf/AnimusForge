@@ -240,6 +240,9 @@ namespace AnimusForge
     }
     internal sealed class WorldDiplomacyBehavior
     {
+        internal static bool TryCaptureMemory(string heroId, string kingdom, out WorldDiplomacyMemorySnapshot snapshot)
+        { snapshot = default; Recording.Call("memory", heroId, kingdom); return true; }
+
         public static WorldDiplomacyBehavior Instance;
         public int Ticks;
         public long Revision;
@@ -328,5 +331,33 @@ namespace AnimusForge.Refactor.Domain
                 ? new AnimusForge.WorldDiplomacyDocument { DocumentId = documentId }
                 : null;
         }
+    }
+}
+
+namespace AnimusForge
+{
+    // Wiring boundary only; actual memory selection is exercised by PromptMemoryReplay.
+    internal readonly struct WorldDiplomacyMemorySnapshot { }
+    internal interface IWorldDiplomacyMemorySource
+    {
+        bool TryCapture(string heroId, string kingdom, out WorldDiplomacyMemorySnapshot snapshot);
+        string FormatDate(int day);
+    }
+    internal static class WorldDiplomacyMemoryApplication
+    {
+        internal static string Build(IWorldDiplomacyMemorySource source, string hero, string kingdom, string input, IReadOnlyList<string> ids, bool proactive)
+        { source.TryCapture(hero, kingdom, out _); return "memory"; }
+    }
+    internal sealed class DiplomacyPromptSource : IDiplomacyPromptSource
+    {
+        private readonly Hero _hero;
+        internal DiplomacyPromptSource(Hero hero) => _hero = hero;
+        public DiplomacyConversationEligibilitySnapshot CaptureEligibility() => DiplomacyBehavior.CaptureEligibilitySnapshot(_hero);
+        public DiplomacyPromptSnapshot Capture() => default;
+        public IReadOnlyList<DiplomacyPromptWar> CaptureWars() => Array.Empty<DiplomacyPromptWar>();
+        public bool TryCaptureIndependentPeace(out DiplomacyIndependentPeaceContextSnapshot snapshot) { snapshot = default; return false; }
+        public string Template(string key, Dictionary<string, string> tokens) => key;
+        public string AnnexationInstruction() => "";
+        public void Log(string message) { }
     }
 }
