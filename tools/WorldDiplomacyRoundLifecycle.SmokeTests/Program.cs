@@ -206,6 +206,7 @@ RunRepairCorrectionAndJobDecisionTests();
     RunRelayArrivalAndExternalFactDecisionTests();
     RunJobCompositionDecisionTests();
     RunGenerationJobCompositionDecisionTests();
+        PromptMemoryReplay.Run();
         AuthorityReplay.Run();
         RoundApplicationReplay.Run();
         string orchestrationHost = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"));
@@ -14509,6 +14510,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "Refactor", "Persistence", "WorldDiplomacyThreatStorageMigration.cs"));
         string storageMigrationSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Persistence", "WorldDiplomacyStorageMigration.cs"));
+        string memoryApplicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs"));
         string canonicalHistoryRulesSource = File.ReadAllText(FindRepositoryFile(
             "Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs"));
         string historyPublicationSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryPublicationApplication.cs"));
@@ -15305,7 +15307,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "host must delegate chronological document ordering to the domain");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsByRecency(", StringComparison.Ordinal),
             "host must delegate recency document ordering to the domain");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.ThenOrderDocumentsByRecency(", StringComparison.Ordinal),
+        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")).Contains("WorldDiplomacyRoundLifecycleRules.ThenOrderDocumentsByRecency(", StringComparison.Ordinal),
             "host must delegate recency ordering suffixes to the domain");
         string documentFactRules = File.ReadAllText(
             FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyDocumentFactRules.cs")), Encoding.UTF8);
@@ -15681,7 +15683,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(", StringComparison.Ordinal)
             && documentExecutor.Contains("WorldDiplomacyDocumentFactRules.MirrorPrimaryActionToDocument(", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyDocumentFactRules.CloneDocument)", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt)", StringComparison.Ordinal)
+            && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyMemoryApplication.cs")).Contains("WorldDiplomacyDocumentFactRules.FormatRoundFactForPrompt)", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static WorldDiplomacyDocument CloneDocument(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private static bool IsMajorDiplomaticDocument(", StringComparison.Ordinal)
             && factSource.Contains("public static WorldDiplomacyDocument CloneDocument(", StringComparison.Ordinal)
@@ -15695,8 +15697,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && textRulesSource.Contains("public static string BuildLocalRoundSummaryText(", StringComparison.Ordinal)
             && textRulesSource.Contains("Func<int, string> formatDayFallback", StringComparison.Ordinal),
             "document memory-line rendering must live in the text rules behind a day-formatter port");
-        Test.True(behaviorSource.Contains("WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyTextRules.BuildDetailedDocumentMemoryLine(", StringComparison.Ordinal)
+        Test.True(memoryApplicationSource.Contains("WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(", StringComparison.Ordinal)
+            && memoryApplicationSource.Contains("WorldDiplomacyTextRules.BuildDetailedDocumentMemoryLine(", StringComparison.Ordinal)
             && proactiveSource.Contains("WorldDiplomacyTextRules.AppendProactiveDiscussionDocument(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool TryBuildProactiveDiscussion(Hero hero", StringComparison.Ordinal)
             && rulesSource.Contains("WorldDiplomacyTextRules.BuildLocalRoundSummaryText(", StringComparison.Ordinal)

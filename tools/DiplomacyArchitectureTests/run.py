@@ -222,6 +222,21 @@ def main():
    app=m.group(0)
    assert app in allowed,rel+' references '+app+' outside the adapter whitelist'
 
+ # R1/R3/R5/R8 closure: hooks route through the bridge; no old prompt, memory or execution algorithm.
+ direct=read('src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs')
+ for name in ['BuildDiplomacyInstructionContext','BuildDiplomacyRuntimeInstruction','AppendWarStatsBlock','BuildPlayerIndependentSettlementClanContext']:
+  assert any_method_of(direct,name) is None,'oral prompt policy retained: '+name
+ for name in ['ShouldInjectDiplomacyMemoryForInput','BuildDiplomacyMemoryContext']:
+  assert any_method_of(current,name) is None,'memory policy retained: '+name
+ assert 'DiplomacyConversationBridge.BuildDiplomacyPrompt' in direct
+ assert 'DiplomacyConversationBridge.BuildDiplomacyMemory' in current
+ executor=read(APPDIR+'WorldDiplomacyDocumentExecutionApplication.cs')
+ assert 'ProcessAnalyzedMultiActionDocument(' not in executor
+ assert executor.count('orchestration.ExecuteImmediateIntent(')==1
+ history=read('Refactor/Domain/WorldDiplomacyCanonicalHistoryRules.cs')
+ for forbidden in ['TryScheduleTokenCompression(', 'CommitCompression(', 'EnqueueCompressionJob(', 'AppendCanonicalDocumentEvents(', 'SyncPublishedPolicyArtifacts(']:
+  assert forbidden not in history,'Domain still owns workflow: '+forbidden
+
  # 7. Baseline retained text required by Program.cs: raw baseline host snapshot.
  out=HERE/'.generated';out.mkdir(exist_ok=True)
  (out/'prior-host.cs.txt').write_text(prior_raw,encoding='utf-8')

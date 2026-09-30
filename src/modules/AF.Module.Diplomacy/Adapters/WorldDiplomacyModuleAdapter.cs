@@ -5,6 +5,15 @@ namespace AnimusForge;
 
 internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
 {
+    private sealed class MemorySource : IWorldDiplomacyMemorySource
+    {
+        public bool TryCapture(string heroId, string kingdomOverride, out WorldDiplomacyMemorySnapshot snapshot)
+            => WorldDiplomacyBehavior.TryCaptureMemory(heroId, kingdomOverride, out snapshot);
+        public string FormatDate(int day) => WorldDiplomacyBehavior.FormatDateForProactive(day);
+    }
+    private static readonly IWorldDiplomacyMemorySource Memory = new MemorySource();
+    public string BuildMemory(string heroId, string kingdomOverride, string input, System.Collections.Generic.IReadOnlyList<string> ruleIds, bool proactive)
+        => WorldDiplomacyMemoryApplication.Build(Memory, heroId, kingdomOverride, input, ruleIds, proactive);
     private sealed class RevisionSource : IWorldDiplomacyTimelineRevisionSource
     {
         public bool TryRead(out long revision) => WorldDiplomacyBehavior.TryGetTimelineRevisionSnapshot(out revision);
