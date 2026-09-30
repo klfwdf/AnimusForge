@@ -39,7 +39,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			WorldDiplomacyConsequenceSnapshot snapshot = _port.CaptureConsequenceSnapshot(compliantKingdom);
 			if (snapshot == null || string.IsNullOrWhiteSpace(snapshot.RulingClanId)) return false;
 			WorldDiplomacyRoundLifecycleRules.CaptureThreatDomesticPenaltySnapshot(
-				threat, snapshot.RulingClanId, snapshot.EligibleClanIds);
+				threat, snapshot.RulingClanId, WorldDiplomacyWorldProfileRules.SelectThreatClans(snapshot.Clans));
 		}
 
 		string rulingClanId = (threat.DomesticPenaltyRulingClanId ?? "").Trim();
@@ -249,7 +249,7 @@ internal static class WorldDiplomacyThreatSettlementApplication
 			WorldDiplomacyConsequenceSnapshot snapshot = _port.CaptureConsequenceSnapshot(issuerKingdom);
 			if (snapshot == null || string.IsNullOrWhiteSpace(snapshot.RulingClanId)) return false;
 			WorldDiplomacyRoundLifecycleRules.CaptureThreatIssuerRewardSnapshot(
-				threat, snapshot.RulingClanId, snapshot.EligibleClanIds);
+				threat, snapshot.RulingClanId, WorldDiplomacyWorldProfileRules.SelectThreatClans(snapshot.Clans));
 		}
 
 		string rulingClanId = (threat.IssuerRewardRulingClanId ?? "").Trim();

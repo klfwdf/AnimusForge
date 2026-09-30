@@ -16,6 +16,16 @@ static class Program
     }
     static void Run()
     {
+        var lifecycleSteps = new List<string>();
+        WorldDiplomacyBehavior.Instance = new WorldDiplomacyBehavior { Orchestration = new RecordingOrchestration(lifecycleSteps) };
+        DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.NewGame);
+        Check(lifecycleSteps.SequenceEqual(new[] { "ResetStorageForNewGame", "EnsureScheduleInitialized" }), "module enters new-game Application");
+        Call("lifecycle-reset", "new-game");
+        lifecycleSteps.Clear();
+        DiplomacyModuleServices.World.OnLifecycle(WorldDiplomacyLifecycleEvent.Loaded);
+        Check(lifecycleSteps.SequenceEqual(new[] { "RecoverUnsettledAiInternationalReputation", "RecoverPlayerCourtReceiptsFromKnowledge", "EnsureScheduleInitialized", "ReconcileActiveDiplomacyAfterLoad" }), "module enters loaded Application recovery");
+        Call("lifecycle-reset", "game-loaded");
+        WorldDiplomacyBehavior.Instance = null;
         var h=new Hero{StringId="h"};var other=new Hero{StringId="other"};var ch=new CharacterObject{HeroObject=other};
         Campaign.Current=new Campaign();var index=Campaign.Current.CampaignObjectManager;
         index.Objects["h"]=h;index.Objects["other"]=other;
@@ -206,6 +216,11 @@ internal sealed class RecordingOrchestration : IWorldDiplomacyOrchestration
 {
     private readonly List<string> steps;
     internal RecordingOrchestration(List<string> steps) { this.steps = steps; }
+    public void ResetStorageForNewGame(bool initialPeacePending) => steps.Add("ResetStorageForNewGame");
+    public void EnsureScheduleInitialized() => steps.Add("EnsureScheduleInitialized");
+    public void RecoverUnsettledAiInternationalReputation() => steps.Add("RecoverUnsettledAiInternationalReputation");
+    public void RecoverPlayerCourtReceiptsFromKnowledge() => steps.Add("RecoverPlayerCourtReceiptsFromKnowledge");
+    public void ReconcileActiveDiplomacyAfterLoad() => steps.Add("ReconcileActiveDiplomacyAfterLoad");
     public void HandleDisabledState() => steps.Add("disable");
     public void ProcessCompletedJobs() => steps.Add("completed");
     public void TryScheduleTokenCompression() => steps.Add("compress");

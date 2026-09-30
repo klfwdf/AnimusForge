@@ -41,7 +41,7 @@ internal static class ThreatSettlementReplay
         }
         public WorldDiplomacyConsequenceParty ReadParty(string id) => new(id, false, true);
         public WorldDiplomacyConsequenceSnapshot CaptureConsequenceSnapshot(string id)
-        { Captures++; return new(id + "-r", new[] { id + "-v" }); }
+        { Captures++; return new(id + "-r", new[] { WorldProfileReplay.Clan(id + "-v", leader: id + "-vh") }); }
         public void PrepareClans(HashSet<string> ids) { Scans++; }
         public WorldDiplomacyConsequenceClan ReadClan(string id) => Clans.GetValueOrDefault(id)!;
         public int ReadRelation(string first, string second) => Relations[Clans[first].LeaderId];

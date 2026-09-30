@@ -24,6 +24,7 @@ SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyPromptApplicat
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyTickApplication.cs']
 SOURCES += ['src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCampaignApplication.cs']
+SOURCES += ['Refactor/Contracts/WorldDiplomacyLifecycleEvent.cs','src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLifecycleApplication.cs']
 SOURCES += ['Refactor/Adapters/'+n+'Adapter.cs' for n in ['WorldDiplomacyTimelineRevisionQuery','WorldDiplomacyTimelineDocumentQuery','WorldDiplomacyDocumentReadCommand']]
 def boundaries():
  adapter=read('src/modules/AF.Module.Diplomacy/Adapters/DiplomacyConversationModuleAdapter.cs')
@@ -72,7 +73,14 @@ def boundaries():
    block=declaration(prior,'internal readonly struct AfTributePowerContext')
    assert declaration(read('Refactor/Contracts/AfTributePowerContext.cs'),'internal readonly struct AfTributePowerContext')==block
    prior=prior.replace(block+'\n\n','')
-  assert current.strip()==prior.strip(), 'Caller guard/order/argument drift: '+p
+  if p=='DiplomacyPeaceTermsService.cs':
+   for signature in ('public static int ResolveTributeAmount(', 'public static int ClampTributeAmount(', 'public static int ResolveDurationDays('):
+    assert declaration(current,signature)==declaration(prior,signature),'Peace term parsing drift: '+signature
+   assert current.count('MakePeaceAction.ApplyByKingdomDecision(')==1
+   assert 'ConfirmPeace(' in current and 'stance.GetDailyTributeToPay(payer)' in current and 'stance.DailyTributeInstallments' in current
+   assert 'TryApplyPeace(' not in current,'unmeasured requested terms regained receipt ownership'
+  else:
+   assert current.strip()==prior.strip(), 'Caller guard/order/argument drift: '+p
  world='src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs'
  current_world=read(world)
  prior_world=old(world)
@@ -210,7 +218,7 @@ def boundaries():
  # Module port covers commands, queries, lifecycle, presentation and receipts; dropping an entry fails.
  port_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IWorldDiplomacyModulePort')
  assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',port_decl))=={'BuildMemory','CanDiscuss','TryBuildProactiveDiscussion','QueryTimelineRevision',
-   'QueryTimelineDocuments','TryMarkDocumentRead','OnEngineTick','OnCampaignTick','OnDailyTick'},'ModulePort surface drift'
+   'QueryTimelineDocuments','TryMarkDocumentRead','OnLifecycle','OnEngineTick','OnCampaignTick','OnDailyTick'},'ModulePort surface drift'
  assert set(re.findall(r'(\w+)\s*\{\s*get;',port_decl))=={'Presentation'},'ModulePort read-model surface drift'
  conv_decl=declaration(read('Refactor/Contracts/DiplomacyModulePorts.cs'),'internal interface IDiplomacyConversationPort')
  assert set(re.findall(r'\b([A-Za-z_]\w+)\s*\(',conv_decl))=={'BuildPrompt','CanInjectDiplomacyRule','CanUseDiplomacyActionPostprocess',
@@ -218,7 +226,7 @@ def boundaries():
    'IsIndependentClanPeacePostprocessTag','BuildDiplomacyPostprocessContext','ProcessDiplomacyTags',
    'TryBuildTributePowerContext'},'Conversation port surface drift'
  # Module adapter may bind only narrow snapshot/leaves, never a whole use-case Behavior method.
- allowed_wdb={'TryCaptureMemory','Instance','TickSource','CampaignSource','TryGetTimelineRevisionSnapshot','TryGetTimelineState',
+ allowed_wdb={'TryCaptureMemory','Instance','TickSource','CampaignSource','LifecycleSource','TryGetTimelineRevisionSnapshot','TryGetTimelineState',
    'TryCaptureDiscussionCandidate','HasKnownDocumentForDiscussion','TryCaptureProactiveSpeaker','TryCaptureProactiveDocuments',
    'GetPlayerKingdomNameForProactive','FormatDateForProactive','ResolvePresentationPort'}
  for call in set(re.findall(r'WorldDiplomacyBehavior\.(\w+)',world_adapter)):

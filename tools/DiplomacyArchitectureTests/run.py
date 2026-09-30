@@ -111,6 +111,9 @@ APP_OWNERS={
 
 # Behavior private methods that must be thin lifecycle/compat forwarders only.
 FORWARDERS={
+ 'OnNewGameCreated':'DiplomacyModuleServices.World.OnLifecycle',
+ 'OnGameLoaded':'DiplomacyModuleServices.World.OnLifecycle',
+ 'OnSessionLaunched':'DiplomacyModuleServices.World.OnLifecycle',
  'OnDailyTick':'DiplomacyModuleServices.World.OnDailyTick',
  'OnCampaignTick':'DiplomacyModuleServices.World.OnCampaignTick',
  'CanIssueWarThreat':'WorldDiplomacyWarAdmissionApplication.CanIssueWarThreat',

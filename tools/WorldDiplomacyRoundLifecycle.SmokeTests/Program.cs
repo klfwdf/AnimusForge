@@ -229,6 +229,7 @@ RunRepairCorrectionAndJobDecisionTests();
         ThreatApplicationReplay.Run();
         ThreatSettlementReplay.Run();
         PrestigeApplicationReplay.Run();
+        WorldProfileReplay.Run();
         CampaignApplicationReplay.Run();
         InitialPeaceReplay.Run();
         HistoryCaptureReplay.Run();
@@ -15097,7 +15098,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "the host must route unresolved reward finalization through the lifecycle rules");
         Test.True(threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(compliantKingdom)", StringComparison.Ordinal)
                   && threatSettlementSource.Contains("_port.CaptureConsequenceSnapshot(issuerKingdom)", StringComparison.Ordinal)
-                  && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs")).Contains("IsThreatConsequenceClanEligible(clan, kingdom, ruler)", StringComparison.Ordinal),
+                  && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ThreatSettlementPort.cs")).Contains("CaptureClanSnapshot(clan, kingdom, ruler)", StringComparison.Ordinal)
+                  && threatSettlementSource.Contains("WorldDiplomacyWorldProfileRules.SelectThreatClans(snapshot.Clans)", StringComparison.Ordinal),
             "penalty and reward snapshots must share one clan-eligibility adapter");
         Test.True(!behaviorSource.Contains("relationBefore > -100", StringComparison.Ordinal),
             "raw penalty apply gates must not remain in the host");
