@@ -1,4 +1,23 @@
+<a id="j17-multiagent-execution-20260930"></a>
+
+## J17 本轮执行意图与现场（2026-09-30）
+
+- 用户本轮明确选择当前会话内多智能体执行；仅本轮协作策略，非 J17 或仓库永久前置要求。总控独占 Git/正式记录，五个只读 A 包分别补 Memory/Prompt、Conversation/Courier、World/Siege/Social、UI/Knowledge、Scene/Economy；总控承担 Compile/成员清单、Infrastructure/Config/Compatibility 和整合。
+- 现场 `8ae0f831007bf73870a993705f3e1a263cb0dd0d`，分支 `codex/af-main-refactor-continuation-20260831`。保留接续时三个已改文档及未跟踪独立计划，作为本地检查点；22 个原有未跟踪 tools 目录不动、不提交。
+- 当前 MSBuild 实际求值两 API 各 **1,128 Compile**，比旧 `944712f8` 清单新增 CivilWar 五文件；不是旧 1,123 分母。Roslyn 按求值 DefineConstants 提取 **49,854 / 49,853** 个语法声明，零 parse error；成员 ID 含路径/命名空间/泛型父类型/种类/完整签名，唯一性检查两版零重复。此为定位清单，不是语义签收，unknown 尚未证明为 0。
+- 原始求值/源码 SHA256/完整成员清单保留 `artifacts/j17a/session-20260930/`；旧 artifacts 不覆盖。A 按真实源/消费者增量复用 E 证据；各包完整责任覆盖后一次验收，不设常驻复审。A 出口满足后依授权连续 B/C；在 A 未闭时不启动产品迁移。
+- 不推送/部署/写仓外/真实玩家数据/批量删除/修改一键脚本；构建固定输出串行。业务 OPEN 与未审范围分别列出，不能把未审更名为 OPEN 冒充覆盖。D 实机/旧档保持 NOT-RUN。
+
 <a id="j17a-intent-20260928"></a>
+
+<a id="optional-agent-plan-20260930"></a>
+
+## 可选智能体计划与 J17 执行效率修订（2026-09-30，文档交付）
+
+- 用户要求独立智能体计划，不将多智能体强制混入 J17，并授权修正 J17 计划问题。新增[可选执行计划](plans/multi-agent-execution-plan.md)：总控一次分包、执行者包内连续完成、一次集成验收，无常驻复审角色；仅在用户选择执行时启用，不是 Skill、自动化或第二份业务台账。
+- [J17 规格](plans/j17-responsibility-closeout-plan.md)修正三处执行成本：增量复用有效证据、旧 A2-1 起点改为历史、切片定向回归与双 API 构建加风险触发/最终全量，取代每片机械全量。先 A 后 B、语义覆盖、保存/ABI 与 C/D 验收边界不变；不指定模型或强制协作方式。
+- 基线 `8ae0f831`；仅计划和交接文档变更，无产品/测试/构建脚本改动，不启动代理或产品施工。J17-A/B 状态不提升，既有 22 个未跟踪 `tools/` 目录保持不动；未推送、部署或写入仓外。
+- 验证：文档链接、代码围栏、独立性及保留门禁检查 **12 PASS**，`git diff --check` 通过；Git 提示 LF/CRLF 自动转换警告，无空白错误。未运行产品构建或业务测试，本次文档检查不作为 J17 产品验收。
 
 
 <a id="remote-merge-no-bulletin-20260930"></a>
