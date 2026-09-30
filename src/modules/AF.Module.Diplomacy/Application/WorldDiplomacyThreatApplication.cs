@@ -10,6 +10,36 @@ namespace AnimusForge;
 // Only the host's synchronous world probe and effect port touch Bannerlord.
 internal static class WorldDiplomacyThreatApplication
 {
+    internal static void SettleDiplomaticThreatFollowThroughAfterDeclaration(
+        WorldDiplomacyDocument document,
+        IReadOnlyList<WorldDiplomacyThreat> threats, string authorKingdomId,
+        Action<WorldDiplomacyThreat, WorldDiplomacyDocument> applyReputationPenalty)
+    {
+        WorldDiplomacyThreat breached = WorldDiplomacyRoundLifecycleRules.SelectBreachedThreatFollowThrough(
+            document, threats, authorKingdomId);
+        if (breached != null) applyReputationPenalty?.Invoke(breached, document);
+    }
+
+    internal static void ApplyDocumentPressure(
+		WorldDiplomacyDocument document,
+		Func<string, string, WarPressureEntry> findPressure,
+		Func<IEnumerable<string>, string, List<string>> normalizeKingdomIds,
+		Action<string, string, int, string, string> applyPressure)
+	{
+		if (document == null || string.IsNullOrWhiteSpace(document.AuthorKingdomId)
+			|| findPressure == null || normalizeKingdomIds == null || applyPressure == null)
+		{
+			return;
+		}
+		foreach (string targetId in normalizeKingdomIds((document.AddressedKingdomIds ?? new List<string>()).Concat(new[] { document.TargetKingdomId }), document.AuthorKingdomId))
+		{
+			WarPressureEntry existing = findPressure(document.AuthorKingdomId, targetId);
+            int scaledDelta = WorldDiplomacyWarPressureRules.CalculateDocumentPressureDelta(
+                document.Intent, document.Tone, existing?.LastIntent, existing?.ConsecutiveSimilarCount ?? 0);
+			if (scaledDelta != 0) applyPressure(document.AuthorKingdomId, targetId, scaledDelta, "外交宣言：" + document.Title, document.Intent);
+		}
+	}
+
     internal static void ApplyPressure(
         WorldDiplomacyDocument document,
         Func<(bool Valid, string AuthorId, string TargetId)> resolveParties,

@@ -224,7 +224,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 				}
 				else if (!noAction || legacyPublic)
 				{
-					WorldDiplomacyWarPressureRules.ApplyDocumentPressure(document, port.FindWarPressure, port.NormalizeKingdomIdList, port.AddWarPressure);
+					WorldDiplomacyThreatApplication.ApplyDocumentPressure(document, port.FindWarPressure, port.NormalizeKingdomIdList, port.AddWarPressure);
                     if (!legacyPublic)
                     {
 					if (WorldDiplomacyIntentVocabulary.IsImmediateIntent(action.Intent)) orchestration.ExecuteImmediateIntent(author, target, WorldDiplomacyIntentVocabulary.NormalizeIntent(action.Intent), document);
@@ -261,7 +261,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			author,
 			targets[0],
 			actions[0].Intent);
-		if (!requiredThreatActionDeferred) WorldDiplomacyRoundLifecycleRules.SettleDiplomaticThreatFollowThroughAfterDeclaration(
+		if (!requiredThreatActionDeferred) WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
 			document, orchestration.Threats(), author,
 			(threat, doc) => orchestration.ApplyDiplomaticThreatReputationPenalty(threat, doc));
 

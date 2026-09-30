@@ -18,18 +18,9 @@ public static class WorldDiplomacyWarPressureRules
         return Math.Max(0f, Math.Min(300f, duration + setback + strength + casualtyBurden + casualtyImbalance + multiWar + territory));
     }
 
-	public static void ApplyDocumentPressure(
-		WorldDiplomacyDocument document,
-		Func<string, string, WarPressureEntry> findPressure,
-		Func<IEnumerable<string>, string, List<string>> normalizeKingdomIds,
-		Action<string, string, int, string, string> applyPressure)
-	{
-		if (document == null || string.IsNullOrWhiteSpace(document.AuthorKingdomId)
-			|| findPressure == null || normalizeKingdomIds == null || applyPressure == null)
-		{
-			return;
-		}
-		int delta = document.Intent switch
+	public static int CalculateDocumentPressureDelta(string intent, string tone, string lastIntent, int consecutiveSimilarCount)
+    {
+		int delta = intent switch
 		{
 			"condemn" => 6,
 			"warning" => 10,
@@ -42,17 +33,12 @@ public static class WorldDiplomacyWarPressureRules
 			"apology" => -8,
 			"concession" => -12,
 			"accept_peace" => -20,
-			_ => string.Equals(document.Tone, "hostile", StringComparison.OrdinalIgnoreCase) ? 3 : 0
+			_ => string.Equals(tone, "hostile", StringComparison.OrdinalIgnoreCase) ? 3 : 0
 		};
-		foreach (string targetId in normalizeKingdomIds((document.AddressedKingdomIds ?? new List<string>()).Concat(new[] { document.TargetKingdomId }), document.AuthorKingdomId))
-		{
-			WarPressureEntry existing = findPressure(document.AuthorKingdomId, targetId);
-			int repetition = existing != null && string.Equals(existing.LastIntent, document.Intent, StringComparison.OrdinalIgnoreCase) ? existing.ConsecutiveSimilarCount : 0;
-			float repetitionFactor = delta > 0 ? 1f / (1f + repetition * 0.35f) : 1f;
-			int scaledDelta = (int)Math.Round(delta * repetitionFactor);
-			if (scaledDelta != 0) applyPressure(document.AuthorKingdomId, targetId, scaledDelta, "外交宣言：" + document.Title, document.Intent);
-		}
-	}
+        int repetition = string.Equals(lastIntent, intent, StringComparison.OrdinalIgnoreCase) ? consecutiveSimilarCount : 0;
+        float repetitionFactor = delta > 0 ? 1f / (1f + repetition * 0.35f) : 1f;
+        return (int)Math.Round(delta * repetitionFactor);
+    }
 	public static int GetWarPressure(List<WarPressureEntry> warPressure, string sourceId, string targetId)
 {
 		return warPressure?.FirstOrDefault(x => x != null

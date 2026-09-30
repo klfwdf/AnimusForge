@@ -61,7 +61,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
         bool requiredThreatActionDeferred = deferUnresolvedThreatAction?.Invoke(document, authorKingdomId, targetKingdomId, normalizedIntent) == true;
         if (!requiredThreatActionDeferred)
         {
-            SettleDiplomaticThreatFollowThroughAfterDeclaration(
+            WorldDiplomacyThreatApplication.SettleDiplomaticThreatFollowThroughAfterDeclaration(
             document, threats, authorKingdomId, applyThreatReputationPenalty);
         }
         settleReputation?.Invoke(document);
