@@ -34,6 +34,13 @@
 实际仅重新执行清单/源hash/文档空白检查，未重跑上轮测试、产品构建或真实玩家流程；正式仍7/20，A未闭，B/C未启动。后续须将续审增量合并后重算，不沿用本表停点数作为最终数。
 
 
+### E122–E124 接续增量验收
+
+Memory supplement **24文件/466成员每API**由原245待消费者+221未审提升为“已读正文与静态消费者闭包”，不是行为验收；`LegacyNativePromptParity`唯一归Memory/Prompt。Scene/UI补漏 **24文件/494成员每API**完成责任/动态接缝分区，非原版效果安全证明。总控32/API漏项与上述两表的五元ID、坐标、源SHA独立复核通过（64+932+988行）。Infrastructure的124/API宿主分段与诊断/路径/扩展接缝已补正式摘要，详见[范围图E122–E124](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)。
+
+本次保持源码/方法职责与运行验收分层；新具名OPEN并不自动扩成修复原版玩法的授权。Conversation的弱投影、Domains/外交/主动等剩余仍由原执行者连续补审，不按helper开常驻复审轮。A全局unknown仍未证0，正式签桶暂不提升，B/C未启动。
+
+
 <a id="j17a-intent-20260928"></a>
 
 <a id="optional-agent-plan-20260930"></a>
