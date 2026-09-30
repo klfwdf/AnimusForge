@@ -190,7 +190,7 @@ internal static class WorldDiplomacyDocumentPublicationApplication
             && tryIncludeSettlementTarget?.Invoke(round, targetId) != true) round = null;
         else if (appendedExternalSettlementTarget)
         {
-            AddOrMergeResultSettlementSlot(round, targetId, "route",
+            WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(round, targetId, "route",
                 fact.DocumentId, initiatorId, prioritize: false, tryIncludeSettlementTarget, createId);
         }
         fact.RoundId = round?.RoundId ?? "";

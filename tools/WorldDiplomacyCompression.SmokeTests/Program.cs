@@ -442,7 +442,7 @@ internal static class Program
             "compression and declaration jobs must share canonical-history cache affinity");
 
         string messageRenderer = ExtractSection(
-            promptRules,
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmMessageApplication.cs")),
             "public static List<WorldDiplomacyLlmMessage> BuildLlmMessagesForJob(WorldDiplomacyJob job,",
             "public static JArray BuildLlmMessageArray(WorldDiplomacyJob job,");
         int firstSystemIndex = messageRenderer.IndexOf(

@@ -283,8 +283,7 @@ public static class WorldDiplomacyReputationRules
 		int delta,
 		WorldDiplomacyDocument sourceDocument,
 		string reason,
-		Func<string, string> resolveKingdomName,
-		Action<string> reconcileVassalRelations)
+		Func<string, string> resolveKingdomName)
 {
 		string normalizedId = (kingdomId ?? "").Trim();
 		if (normalizedId.Length == 0) return DefaultNationalPrestige;
@@ -293,28 +292,9 @@ public static class WorldDiplomacyReputationRules
 		prestigeByKingdom[normalizedId] = updated;
 		WorldDiplomacyDocumentFactRules.RecordDiplomaticStandingChange(sourceDocument, "national_prestige", normalizedId, before, updated, reason,
 				resolveKingdomName);
-		reconcileVassalRelations?.Invoke(normalizedId);
 		return updated;
 	}
-	public static void RecoverUnsettledAiInternationalReputation(List<WorldDiplomacyDocument> documents, Action<WorldDiplomacyDocument> settleReputation, Action<string> log)
-{
-		if (documents == null || settleReputation == null) return;
-		int recovered = 0;
-		foreach (WorldDiplomacyDocument document in WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(documents
-				.Where(x => x != null && !x.IsPlayerAuthored && x.IsReadyForPublication
-					&& !x.InternationalReputationSettled
-					&& (x.InternationalReputationEvaluationDelta != 0
-						|| !string.IsNullOrWhiteSpace(x.InternationalReputationEvaluationReason)))))
-		{
-			settleReputation(document);
-			recovered++;
-		}
-		if (recovered > 0)
-		{
-			log?.Invoke("international-reputation.recovered documents="
-				+ recovered.ToString(CultureInfo.InvariantCulture));
-		}
-	}
+	
 
 	public static void SettleInternationalReputationForDocument(
 		Dictionary<string, int> reputationByKingdom,

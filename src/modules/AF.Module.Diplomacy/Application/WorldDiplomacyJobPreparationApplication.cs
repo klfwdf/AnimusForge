@@ -19,6 +19,16 @@ internal interface IWorldDiplomacyJobPreparationPort
 }
 internal static class WorldDiplomacyJobPreparationApplication
 {
+public static bool HasStaleDiplomaticActionPresentation(
+        WorldDiplomacyJob job, Func<WorldDiplomacyJob, string> buildLegalActionSignature)
+    {
+        if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
+        return !string.Equals(
+            job.PresentedLegalActionSignature ?? "",
+            buildLegalActionSignature?.Invoke(job),
+            StringComparison.Ordinal);
+    }
+
     internal static bool Rebuild(IWorldDiplomacyJobPreparationPort port, IWorldDiplomacyOrchestration orchestration,
         WorldDiplomacyJob job)
         => RebuildPendingJob(job, port.Storage, port.GenerationMaxTokens, port.AnalysisMaxTokens,

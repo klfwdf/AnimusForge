@@ -578,7 +578,7 @@ internal static class Program
             "a valid published settlement document must consume its current slot before opening follow-up obligations");
 
         string routeInitialization = ExtractMethod(
-            lifecycleRules,
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs")),
             "public static void InitializeResultSettlementRouteSlots(");
         Test.True(routeInitialization.Contains("CollectSpokenAuthorIds(", StringComparison.Ordinal)
                   && routeInitialization.Contains("if (!spoken.Contains(kingdomId))", StringComparison.Ordinal)
@@ -620,7 +620,7 @@ internal static class Program
             "a new settlement target must monotonically join route, participants, and slots while extending the bounded hard end");
 
         string slotMutation = ExtractMethod(
-            lifecycleRules,
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs")),
             "public static void AddOrMergeResultSettlementSlot(");
         Test.True(slotMutation.Contains("!includeResultSettlementTarget(round, kingdomId)", StringComparison.Ordinal)
                   && slotMutation.Contains("FirstOrDefault(x => x != null", StringComparison.Ordinal)
@@ -628,7 +628,7 @@ internal static class Program
                   && slotMutation.Contains("if (prioritize)", StringComparison.Ordinal)
                   && slotMutation.Contains("Insert(0, slot)", StringComparison.Ordinal),
             "settlement obligations must deduplicate by kingdom and allow urgent obligations to be promoted");
-        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs")).Contains("WorldDiplomacyRoundLifecycleRules.AddOrMergeResultSettlementSlot(", StringComparison.Ordinal)
+        Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs")).Contains("WorldDiplomacyResultSlotApplication.AddOrMergeResultSettlementSlot(", StringComparison.Ordinal)
                   && !source.Contains("private void AddOrMergeResultSettlementSlot(", StringComparison.Ordinal)
                   && !source.Contains("private void AddWarResponseResultSettlementSlot(", StringComparison.Ordinal),
             "settlement-slot composition must be delegated to the lifecycle rules");
@@ -660,7 +660,7 @@ internal static class Program
             "settlement generation must consider all currently executable independent targets, not only the original relay route");
 
         string warResponse = ExtractMethod(
-            lifecycleRules,
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs")),
             "public static void AddWarResponseResultSettlementSlot(");
 		Test.True(warResponse.Contains("document.Actions", StringComparison.Ordinal)
 				  && warResponse.Contains("x.ChangedDiplomaticState", StringComparison.Ordinal)
@@ -940,7 +940,7 @@ internal static class Program
 			"all offers and directed mechanics in the document must be registered before round settlement refreshes once");
 
 		string warResponse = ExtractMethod(
-			File.ReadAllText(FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")), Encoding.UTF8),
+			File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs")),
 			"public static void AddWarResponseResultSettlementSlot(");
 		Test.True(warResponse.Contains("document.Actions", StringComparison.Ordinal)
 			&& warResponse.Contains("x.ChangedDiplomaticState", StringComparison.Ordinal)
@@ -1111,7 +1111,7 @@ internal static class Program
 			"legacy primary war fields may be used only when the source document has no persisted actions");
 
 		string warRegistration = ExtractMethod(
-			File.ReadAllText(FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyRoundLifecycleRules.cs")), Encoding.UTF8),
+			File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyResultSlotApplication.cs")),
 			"public static void AddWarResponseResultSettlementSlot(");
 		int actionKey = warRegistration.IndexOf(
 			"WorldDiplomacyRoundLifecycleRules.ComposeWarResponseActionKey(",

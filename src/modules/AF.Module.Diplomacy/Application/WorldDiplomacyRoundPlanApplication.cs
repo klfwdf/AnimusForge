@@ -121,7 +121,7 @@ internal static class WorldDiplomacyRoundPlanApplication
                 + " targetDays=" + Math.Max(1, round.SoftEndDay - round.StartedDay).ToString(CultureInfo.InvariantCulture));
             if (round.ResultSettlementPending)
             {
-                WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots(round, storage?.Documents, tryIncludeResultSettlementTarget, createId);
+                WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(round, storage?.Documents, tryIncludeResultSettlementTarget, createId);
                 refreshResultSettlementActionSlots?.Invoke(round);
                 scheduleResultSettlement?.Invoke(round);
             }

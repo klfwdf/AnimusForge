@@ -600,7 +600,11 @@ internal static class Program
 			&& !declarationContract.Contains("也可以为0", StringComparison.Ordinal)
 			&& !analysisContract.Contains("也可以为0", StringComparison.Ordinal),
 			"both AI generation and player-declaration analysis contracts must require a retrospective nonzero evaluation");
-		string reputationRecovery = ExtractMethod(repRules, "public static void RecoverUnsettledAiInternationalReputation(");
+		string prestigeApp = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPrestigeApplication.cs"));
+        string reputationRecovery = ExtractMethod(prestigeApp, "public static void RecoverUnsettledAiInternationalReputation(");
+        Test.True(!repRules.Contains("reconcileVassalRelations", StringComparison.Ordinal)
+            && !repRules.Contains("RecoverUnsettledAiInternationalReputation(", StringComparison.Ordinal),
+            "Domain must not own relation effects or recovery orchestration");
 		Test.True(reputationRecovery.Contains("!x.IsPlayerAuthored", StringComparison.Ordinal)
 			&& reputationRecovery.Contains("!x.InternationalReputationSettled", StringComparison.Ordinal)
 			&& reputationRecovery.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(", StringComparison.Ordinal)
@@ -2123,7 +2127,7 @@ internal static class Program
             "the presented-action signature must hash settlement-wide actionable targets, but keep ordinary relays route-only, with deterministic current actions");
 
         string staleActionCheck = ExtractMethod(
-            lifecycleRulesSource,
+            File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyJobPreparationApplication.cs")),
             "public static bool HasStaleDiplomaticActionPresentation(");
         Test.True(staleActionCheck.Contains("job.PresentedLegalActionSignature ?? \"\"", StringComparison.Ordinal)
                   && staleActionCheck.Contains("buildLegalActionSignature?.Invoke(job)", StringComparison.Ordinal)

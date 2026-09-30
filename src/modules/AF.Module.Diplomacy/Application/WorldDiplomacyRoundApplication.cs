@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -523,8 +523,8 @@ internal static class WorldDiplomacyRoundApplication
         {
             round.ResultSettlementRoundStatus = "resolved";
         }
-        WorldDiplomacyRoundLifecycleRules.InitializeResultSettlementRouteSlots(round, storage?.Documents, includeResultSettlementTarget, createId);
-        WorldDiplomacyRoundLifecycleRules.AddWarResponseResultSettlementSlot(round, document, includeResultSettlementTarget, createId);
+        WorldDiplomacyResultSlotApplication.InitializeResultSettlementRouteSlots(round, storage?.Documents, includeResultSettlementTarget, createId);
+        WorldDiplomacyResultSlotApplication.AddWarResponseResultSettlementSlot(round, document, includeResultSettlementTarget, createId);
         refreshActionSlots?.Invoke(round);
     }
 }

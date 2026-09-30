@@ -464,7 +464,7 @@ internal sealed class WorldDiplomacyOrchestration : IWorldDiplomacyOrchestration
 
     public void SettleTradeAllianceOfferCooldownsForClosedRound(WorldDiplomacyRound round)
     {
-        WorldDiplomacyRoundLifecycleRules.SettleTradeAllianceOfferCooldownsForClosedRound(
+        WorldDiplomacyOfferCooldownApplication.SettleTradeAllianceOfferCooldownsForClosedRound(
             round, Storage?.OfferCooldowns, _runtime.OfferCooldownByKey, NormalizeOfferCooldownStorage, _host.Log);
     }
 

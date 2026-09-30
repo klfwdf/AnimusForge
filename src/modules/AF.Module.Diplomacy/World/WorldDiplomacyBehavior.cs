@@ -656,7 +656,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 
 	private void LogPromptCacheShape(WorldDiplomacyJob job)
 	{
-		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(job, _orchestration.BuildCanonicalHistoryBlock);
+		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(job, _orchestration.BuildCanonicalHistoryBlock);
 		string system = messages.FirstOrDefault(x => x != null && string.Equals(x.Role, "system", StringComparison.OrdinalIgnoreCase))?.Content ?? "";
 		string user = messages.LastOrDefault(x => x != null && string.Equals(x.Role, "user", StringComparison.OrdinalIgnoreCase))?.Content ?? "";
 		string frozenContract = ResolveCommonContractForCacheDiagnostics(job, out string contractSource);

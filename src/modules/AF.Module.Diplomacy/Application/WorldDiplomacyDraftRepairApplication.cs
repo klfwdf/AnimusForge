@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -101,7 +101,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 			source.IsExternalResponseOnly,
 			world.ResolveDocument(source.SourceDocumentId)));
 		string correction = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(correctionBuilder.ToString());
-		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyPromptContractRules.CloneLlmMessages(WorldDiplomacyPromptContractRules.BuildLlmMessagesForJob(source, orchestration.BuildCanonicalHistoryBlock));
+		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyPromptContractRules.CloneLlmMessages(WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(source, orchestration.BuildCanonicalHistoryBlock));
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "assistant", Content = rejectedRaw ?? "" });
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = correction });
 		WorldDiplomacyJob repair = WorldDiplomacyRoundLifecycleRules.BuildGeneratedDeclarationRepairJob(
