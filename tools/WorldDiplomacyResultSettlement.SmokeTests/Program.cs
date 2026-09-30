@@ -300,6 +300,7 @@ internal static class Program
         string source = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"), Encoding.UTF8);
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
         string storageRecord = File.ReadAllText(
             FindRepositoryFile(Path.Combine("Refactor", "Persistence", "WorldDiplomacyStorageRecord.cs")),
             Encoding.UTF8);
@@ -1190,9 +1191,9 @@ internal static class Program
 
 		string targetFacts = ExtractMethod(
 			source,
-			"private void AppendDiplomaticTargetDecisionContext(");
+			"private static void AppendDiplomaticTargetDecisionContext(");
 		int buildWarFacts = targetFacts.IndexOf(
-			"BuildWarDecisionContext(author, target, peaceTermsVisible)",
+			"BuildWarDecisionContext(world, authorId, targetId, peaceTermsVisible)",
 			StringComparison.Ordinal);
 		Test.True(targetFacts.Contains("situation?.IsAtWar == true", StringComparison.Ordinal)
 			&& targetFacts.Contains("战争硬性状态：双方已经交战", StringComparison.Ordinal)
@@ -1201,7 +1202,7 @@ internal static class Program
 			&& buildWarFacts >= 0,
 			"the shared target snapshot must always expose war facts while independently suppressing fresh-response negotiation terms");
 
-		string warDecision = ExtractMethod(source, "private string BuildWarDecisionContext(");
+		string warDecision = ExtractMethod(source, "private static string BuildWarDecisionContext(");
 		int durableWarFacts = warDecision.IndexOf("双方总体军力=", StringComparison.Ordinal);
 		int termsGate = warDecision.IndexOf("if (includePeaceNegotiationTerms)", StringComparison.Ordinal);
 		int negotiationTerms = warDecision.IndexOf("仅在本篇可选和平动作时使用的议和条件", termsGate, StringComparison.Ordinal);

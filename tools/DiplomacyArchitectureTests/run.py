@@ -128,7 +128,13 @@ ABSENT={'EnqueueMandatoryCourtReplyJob','CloseRound','EnqueueGenerationJob',
  'GetActionableDiplomaticTargets','GetRoundPlanActionableParticipants','GetResultSettlementActionableTargets',
  'ReconcileAnalyzedPlayerDeclarationWithReachedCourts','StartDocumentPropagation',
  'TryIncludeResultSettlementTarget','RefreshResultSettlementActionSlots',
- 'FinalizePublishedDocumentAfterAnalysis'}
+ 'FinalizePublishedDocumentAfterAnalysis',
+ # prompt-section policy lives in WorldDiplomacyPromptComposer; the host keeps leaf facts only
+ 'AppendDiplomaticThreatDynamicContext','AppendDiplomaticThreatAnalysisContext',
+ 'AppendDiplomaticAuthorDecisionContext','AppendDiplomaticTargetDecisionContext',
+ 'AppendRelayResponseSourceContext','AppendRulerCaptivityDecisionContext',
+ 'AppendOtherKingdomRelationshipContext','BuildCompactRoundPlanCandidateLine',
+ 'BuildCompactDiplomaticRelationshipLine','BuildWarDecisionContext','BuildRulerCaptivityTargetHint'}
 
 # Whitelisted WorldDiplomacy*Application references inside World/ adapter files.
 BEHAVIOR_APP_WHITELIST={

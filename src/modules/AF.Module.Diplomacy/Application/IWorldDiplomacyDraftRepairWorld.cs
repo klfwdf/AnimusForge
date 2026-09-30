@@ -10,7 +10,6 @@ namespace AnimusForge;
 
 internal interface IWorldDiplomacyDraftRepairWorld : IWorldDiplomacyPromptWorld
 {
-    string BuildBilateralState(string author, string target);
     string BuildGovernmentHardFact(string author);
     string NewId(string prefix);
     void Log(string text);

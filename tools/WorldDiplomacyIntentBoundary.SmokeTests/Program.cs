@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using AnimusForge;
 
@@ -28,6 +28,7 @@ internal static class Program
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string source = File.ReadAllText(sourcePath, Encoding.UTF8) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PromptContext.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs"));
@@ -442,8 +443,8 @@ internal static class Program
             "statement-style archive entries must remain renderable without treating them as executable mechanics");
         string threatDynamicContext = ExtractSection(
             source,
-            "private void AppendDiplomaticThreatDynamicContext(",
-            "private void AppendDiplomaticThreatAnalysisContext(");
+            "private static void AppendDiplomaticThreatDynamicContext(",
+            "private static void AppendDiplomaticThreatAnalysisContext(");
         Test.True(!fixedDeclarationContract.Contains("warning会建立信誉义务", StringComparison.Ordinal)
                   && !fixedDeclarationContract.Contains("外交声誉大幅下降", StringComparison.Ordinal)
                   && !fixedDeclarationContract.Contains("发出前必须权衡后果", StringComparison.Ordinal)
@@ -840,12 +841,12 @@ internal static class Program
 
 		string ownStandingContext = ExtractMethod(
 			source,
-			"private void AppendDiplomaticThreatDynamicContext(");
-		Test.True(ownStandingContext.Contains("WorldDiplomacyReputationRules.GetInternationalReputation(_storage?.InternationalReputationByKingdom, author.StringId)", StringComparison.Ordinal)
+			"private static void AppendDiplomaticThreatDynamicContext(");
+		Test.True(ownStandingContext.Contains("world.InternationalReputation(authorId)", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("DescribeInternationalReputation(reputation)", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("DescribeInternationalReputationNaturalTrend(reputation)", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("WorldDiplomacyTextRules.GetRecentOwnInternationalReputationReasons(", StringComparison.Ordinal)
-			&& ownStandingContext.Contains("author.StringId, CurrentDay()", StringComparison.Ordinal)
+			&& ownStandingContext.Contains("authorId, world.CurrentDay()", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("reputation.ToString(CultureInfo.InvariantCulture)", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("现实局势允许时可主动发表有实际内容的宣言维护声誉", StringComparison.Ordinal)
 			&& ownStandingContext.Contains("string.Equals(x.Kind, \"national_prestige\"", StringComparison.Ordinal),
@@ -862,14 +863,14 @@ internal static class Program
 
 		string foreignStandingContext = ExtractMethod(
 			source,
-			"private void AppendDiplomaticTargetDecisionContext(");
+			"private static void AppendDiplomaticTargetDecisionContext(");
 		string compactForeignStandingContext = ExtractMethod(
 			source,
-			"private string BuildCompactDiplomaticRelationshipLine(");
+			"private static string BuildCompactDiplomaticRelationshipLine(");
 		Test.True(foreignStandingContext.Contains("DescribeInternationalReputation(targetReputation)", StringComparison.Ordinal)
-			&& !foreignStandingContext.Contains("GetInternationalReputation(targetId).ToString", StringComparison.Ordinal)
+			&& !foreignStandingContext.Contains("world.InternationalReputation(targetId).ToString", StringComparison.Ordinal)
 			&& compactForeignStandingContext.Contains("DescribeInternationalReputation(candidateReputation)", StringComparison.Ordinal)
-			&& !compactForeignStandingContext.Contains("Append(GetInternationalReputation", StringComparison.Ordinal),
+			&& !compactForeignStandingContext.Contains("Append(world.InternationalReputation", StringComparison.Ordinal),
 			"foreign kingdoms may receive a public reputation tier, but exact foreign reputation scores must stay out of declaration prompts");
 
 		string reputationConflictOpportunity = ExtractMethod(
@@ -880,7 +881,7 @@ internal static class Program
 			"public static List<string> GetRecentPublicNegativeReputationFacts(");
 		string compactCandidateContext = ExtractMethod(
 			source,
-			"private string BuildCompactRoundPlanCandidateLine(");
+			"private static string BuildCompactRoundPlanCandidateLine(");
 		Test.True(File.ReadAllText(FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyTextRules.cs"))).Contains("LowInternationalReputationThreshold = 40", StringComparison.Ordinal)
 			&& File.ReadAllText(FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyTextRules.cs"))).Contains("SevereInternationalReputationThreshold = 20", StringComparison.Ordinal)
 			&& reputationConflictOpportunity.Contains("x is \"warning\" or \"ultimatum\"", StringComparison.Ordinal)
@@ -894,8 +895,8 @@ internal static class Program
 			&& reputationConflictFacts.Contains("retentionDays", StringComparison.Ordinal)
 			&& reputationConflictFacts.Contains("MaxPromptRecentNegativeReputationFacts", StringComparison.Ordinal),
 			"low-reputation guidance must cite at most two recent, published, settled, actually negative reputation facts");
-		Test.True(foreignStandingContext.Contains("InternationalReputationByKingdom, target.StringId), legalActions", StringComparison.Ordinal)
-			&& compactCandidateContext.Contains("InternationalReputationByKingdom, candidate.StringId), actions", StringComparison.Ordinal),
+		Test.True(foreignStandingContext.Contains("targetReputation, legalActions, world.Documents(), targetId", StringComparison.Ordinal)
+			&& compactCandidateContext.Contains("world.InternationalReputation(candidateId), actions", StringComparison.Ordinal),
 			"both detailed targets and autonomous candidate cards must receive the same legal-action-gated low-reputation guidance");
 
 		string declarationContract = ExtractMethod(
@@ -913,17 +914,17 @@ internal static class Program
 
         string authorContext = ExtractMethod(
             source,
-            "private void AppendDiplomaticAuthorDecisionContext(");
+            "private static void AppendDiplomaticAuthorDecisionContext(");
         foreach (string requiredAuthorFactBuilder in new[]
         {
-            "KingdomName(author)",
-            "RulerName(author)",
-            "BuildWorldDiplomacyVassalageSnapshot",
+            "world.KingdomName(authorId)",
+            "world.RulerName(authorId)",
+            "world.BuildWorldDiplomacyVassalageSnapshot",
             "AppendDiplomaticThreatDynamicContext",
-            "BuildRulerVoiceContext",
-            "BuildRealmInstitutionalVoiceContext",
-            "BuildAuthorRulerFamilyContext",
-            "DiplomacyModuleServices.Policy.BuildSnapshot"
+            "world.RulerVoiceContext",
+            "world.RealmInstitutionalVoiceContext",
+            "world.AuthorRulerFamilyContext",
+            "world.BuildPolicySnapshot"
         })
         {
             Test.True(authorContext.Contains(requiredAuthorFactBuilder, StringComparison.Ordinal),
@@ -932,19 +933,19 @@ internal static class Program
 
         string targetContext = ExtractMethod(
             source,
-            "private void AppendDiplomaticTargetDecisionContext(");
+            "private static void AppendDiplomaticTargetDecisionContext(");
         foreach (string requiredTargetFactBuilder in new[]
         {
-            "BuildBilateralState",
-            "BuildBilateralRulerFamilyContext",
-            "BuildRecentBilateralBattleContext",
-            "GetKingdomBorderRelation",
-            "GetRealmRelationProfile",
-            "GetRulerRelation",
-            "CountCulturalClaims",
-            "GetWarPressure",
-            "BuildRecentNativeSignalContext",
-            "DiplomacyModuleServices.Policy.BuildSnapshot",
+            "world.BuildBilateralState",
+            "world.BilateralRulerFamilyContext",
+            "world.RecentBilateralBattleContext",
+            "world.BorderRelation",
+            "world.RelationProfile",
+            "world.RulerRelation",
+            "world.CulturalClaimCount",
+            "world.WarPressure",
+            "world.RecentNativeSignalContext",
+            "world.BuildPolicySnapshot",
             "BuildWarDecisionContext"
         })
         {
@@ -955,10 +956,10 @@ internal static class Program
             "the shared target context must preserve the necessary immediate-war-response peace-term difference");
         foreach (string singleTargetFactBuilder in new[]
         {
-            "BuildRecentBilateralBattleContext",
-            "GetKingdomBorderRelation",
-            "GetRealmRelationProfile",
-            "DiplomacyModuleServices.Policy.BuildSnapshot",
+            "world.RecentBilateralBattleContext",
+            "world.BorderRelation",
+            "world.RelationProfile",
+            "world.BuildPolicySnapshot",
             "BuildWarDecisionContext"
         })
         {
@@ -969,7 +970,7 @@ internal static class Program
 
         string warDecisionContext = ExtractMethod(
             source,
-            "private string BuildWarDecisionContext(");
+            "private static string BuildWarDecisionContext(");
         foreach (string requiredWarFactBuilder in new[]
         {
             "DescribeWarDuration",
@@ -984,7 +985,7 @@ internal static class Program
         foreach (string peaceOnlyFactBuilder in new[]
         {
             "DescribePeacePressure",
-            "BuildCessionCandidates",
+            "world.CessionCandidates",
             "SuggestedTribute"
         })
         {
@@ -998,7 +999,7 @@ internal static class Program
             "if (!includePeaceNegotiationTerms)",
             StringComparison.Ordinal);
         int peacePressure = warDecisionContext.IndexOf("DescribePeacePressure", StringComparison.Ordinal);
-        int cessionCandidates = warDecisionContext.IndexOf("BuildCessionCandidates", StringComparison.Ordinal);
+        int cessionCandidates = warDecisionContext.IndexOf("CessionCandidates(", StringComparison.Ordinal);
         int negativeGateReturn = negativePeaceTermsGate < 0
             ? -1
             : warDecisionContext.IndexOf("return", negativePeaceTermsGate, StringComparison.Ordinal);
@@ -1010,20 +1011,20 @@ internal static class Program
         Test.True(peaceTermsAreGated,
             "peace pressure, tribute, and cession terms must be gated without hiding the underlying war state");
 
-        Test.True(source.Contains("BuildWarDecisionContext(author, candidate, true)", StringComparison.Ordinal),
+        Test.True(source.Contains("BuildWarDecisionContext(world, author, candidate, true)", StringComparison.Ordinal),
             "the war negotiation prompt must inline the full-terms variant of the shared war decision context");
         Test.True(!source.Contains("private string BuildWarNegotiationContext(", StringComparison.Ordinal),
             "the war negotiation wrapper must not remain as a duplicate shim");
 
         string autonomousPrompt = ExtractMethod(
             source,
-            "private string BuildAutonomousOpeningPrompt(");
+            "internal static string BuildAutonomousOpeningPrompt(");
         string targetedPrompt = ExtractMethod(
             source,
-            "private string BuildGenerationPrompt(");
+            "internal static string BuildGenerationPrompt(");
         string relayPrompt = ExtractMethod(
             source,
-            "private string BuildRelayConversationTurnPrompt(");
+            "internal static string BuildRelayConversationTurnPrompt(");
         foreach ((string Name, string Prompt) requestPath in new[]
         {
             ("autonomous opening", autonomousPrompt),
@@ -1055,10 +1056,10 @@ internal static class Program
 
         foreach (string duplicatedAuthorFactBuilder in new[]
         {
-            "BuildWorldDiplomacyVassalageSnapshot",
-            "BuildRulerVoiceContext(author)",
-            "BuildRealmInstitutionalVoiceContext(author)",
-            "BuildAuthorRulerFamilyContext(author)"
+            "world.BuildWorldDiplomacyVassalageSnapshot",
+            "world.RulerVoiceContext(authorId)",
+            "world.RealmInstitutionalVoiceContext(authorId)",
+            "world.AuthorRulerFamilyContext(authorId)"
         })
         {
             Test.True(!autonomousPrompt.Contains(duplicatedAuthorFactBuilder, StringComparison.Ordinal)
@@ -1069,7 +1070,7 @@ internal static class Program
         }
         foreach (string duplicatedTargetFactBuilder in new[]
         {
-            "BuildRecentBilateralBattleContext(author, target)",
+            "world.RecentBilateralBattleContext(authorId, targetId)",
             "BuildWarNegotiationContext(author, target)"
         })
         {
@@ -1093,22 +1094,25 @@ internal static class Program
     {
         string relayPrompt = ExtractMethod(
             source,
-            "private string BuildRelayConversationTurnPrompt(");
+            "internal static string BuildRelayConversationTurnPrompt(");
         string targetedPrompt = ExtractMethod(
             source,
-            "private string BuildGenerationPrompt(");
+            "internal static string BuildGenerationPrompt(");
         string otherKingdomContext = ExtractMethod(
             source,
-            "private void AppendOtherKingdomRelationshipContext(");
+            "private static void AppendOtherKingdomRelationshipContext(");
         string compactRelationship = ExtractMethod(
             source,
-            "private string BuildCompactDiplomaticRelationshipLine(");
+            "private static string BuildCompactDiplomaticRelationshipLine(");
         string compactCandidate = ExtractMethod(
             source,
-            "private string BuildCompactRoundPlanCandidateLine(");
+            "private static string BuildCompactRoundPlanCandidateLine(");
+        string independentIdsImpl = ExtractMethod(
+            source,
+            "IReadOnlyList<string> IWorldDiplomacyPromptWorld.IndependentKingdomIds(");
 
         Test.True(relayPrompt.Contains(
-                      "AppendOtherKingdomRelationshipContext(sb, author, legalTargetIds)",
+                      "AppendOtherKingdomRelationshipContext(sb, world, author, legalTargetIds)",
                       StringComparison.Ordinal),
             "relay responses must append relationship knowledge for kingdoms outside their live action targets");
         Test.True(relayPrompt.Contains(
@@ -1128,11 +1132,11 @@ internal static class Program
                       "if (isResponse || isExternalResponseOnly || sourceDocument != null)",
                       StringComparison.Ordinal)
                   && targetedPrompt.Contains(
-                      "AppendOtherKingdomRelationshipContext(sb, author, new[] { targetId })",
+                      "AppendOtherKingdomRelationshipContext(sb, world, author, new[] { targetId })",
                       StringComparison.Ordinal),
             "targeted response requests must receive the same all-kingdom relationship knowledge as relay responses");
 
-        Test.True(CountOccurrences(otherKingdomContext, "Kingdom.All") == 1,
+        Test.True(CountOccurrences(otherKingdomContext, "world.IndependentKingdomIds()") == 1,
             "relationship knowledge must enumerate Kingdom.All once per prompt build");
         foreach (string sovereignFilter in new[]
         {
@@ -1140,19 +1144,19 @@ internal static class Program
             "HasIndependentWorldDiplomacyAuthority(x)"
         })
         {
-            Test.True(otherKingdomContext.Contains(sovereignFilter, StringComparison.Ordinal),
+            Test.True(independentIdsImpl.Contains(sovereignFilter, StringComparison.Ordinal),
                 "relationship knowledge must include the sovereign-world filter: " + sovereignFilter);
         }
         Test.True(otherKingdomContext.Contains(
-                      ".OrderBy(x => x.StringId, StringComparer.OrdinalIgnoreCase)",
+                      ".OrderBy(x => x, StringComparer.OrdinalIgnoreCase)",
                       StringComparison.Ordinal),
             "other-kingdom relationship rows must render in deterministic kingdom-id order");
         Test.True(otherKingdomContext.Contains("detailedTargetIds", StringComparison.Ordinal)
-                  && otherKingdomContext.Contains("author.StringId", StringComparison.Ordinal)
-                  && otherKingdomContext.Contains("!excludedIds.Contains(x.StringId)", StringComparison.Ordinal),
+                  && otherKingdomContext.Contains("authorId", StringComparison.Ordinal)
+                  && otherKingdomContext.Contains("!excludedIds.Contains(x)", StringComparison.Ordinal),
             "fully detailed live action targets must be excluded from the compact relationship rows");
         Test.True(otherKingdomContext.Contains(
-                      "BuildCompactDiplomaticRelationshipLine(author, other)",
+                      "BuildCompactDiplomaticRelationshipLine(world, authorId, otherId)",
                       StringComparison.Ordinal),
             "non-action kingdoms must use the shared compact relationship renderer");
         Test.True(otherKingdomContext.Contains("不授予额外动作", StringComparison.Ordinal),
@@ -1160,13 +1164,13 @@ internal static class Program
 
         foreach (string relationshipFact in new[]
         {
-            "BuildBilateralState",
-            "GetRealmRelationProfile",
-            "GetRulerRelation",
-            "GetKingdomBorderRelation",
-            "GetWarSituation",
+            "world.BuildBilateralState",
+            "world.RelationProfile",
+            "world.RulerRelation",
+            "world.BorderRelation",
+            "world.WarSituation",
             "DescribeStrengthBalance",
-            "DiplomacyModuleServices.Policy.BuildSnapshot"
+            "world.BuildPolicySnapshot"
         })
         {
             Test.True(compactRelationship.Contains(relationshipFact, StringComparison.Ordinal),
@@ -1176,7 +1180,7 @@ internal static class Program
                   && !compactRelationship.Contains("可选动作", StringComparison.Ordinal),
             "relationship-only rows must never calculate or imply legal diplomatic actions");
         Test.True(compactCandidate.Contains(
-                      "BuildCompactDiplomaticRelationshipLine(initiator, candidate)",
+                      "BuildCompactDiplomaticRelationshipLine(world, authorId, candidateId)",
                       StringComparison.Ordinal)
                   && source.Contains(
                       "orchestration.BuildLegalDiplomaticActionIntents(round, author, candidate)",
@@ -1184,10 +1188,10 @@ internal static class Program
             "opening candidate rows must reuse the same relationship facts and append their own live action grant");
 
         Test.True(otherKingdomContext.Contains(
-                      "FactionManager.IsAtWarAgainstFaction(author, other)",
+                      "world.IsAtWar(authorId, otherId)",
                       StringComparison.Ordinal)
                   && otherKingdomContext.Contains(
-                      "BuildWarDecisionContext(author, other, false)",
+                      "BuildWarDecisionContext(world, authorId, otherId, false)",
                       StringComparison.Ordinal),
             "relationship-only wartime rows must include hard war posture without peace-negotiation terms");
         foreach (string forbiddenActionBuilder in new[]
@@ -1798,24 +1802,24 @@ internal static class Program
         {
             ExtractSection(
                 source,
-                "private string BuildRelayConversationTurnPrompt(",
-                "private void ScheduleNextRelayHop("),
+                "internal static string BuildRelayConversationTurnPrompt(",
+                "internal static string BuildAutonomousOpeningPrompt("),
             ExtractSection(
                 promptRules,
                 "public static string BuildDiplomaticDeclarationModeContract()",
                 "public static string BuildCanonicalHistoryCompressionModeContract()"),
             ExtractSection(
                 source,
-                "private void AppendDiplomaticThreatDynamicContext(",
-                "private void AppendDiplomaticThreatAnalysisContext("),
+                "private static void AppendDiplomaticThreatDynamicContext(",
+                "private static void AppendDiplomaticThreatAnalysisContext("),
             ExtractSection(
                 source,
-                "private void AppendDiplomaticThreatAnalysisContext(",
-                "private string BuildAutonomousOpeningPrompt("),
+                "private static void AppendDiplomaticThreatAnalysisContext(",
+                "private static void AppendDiplomaticAuthorDecisionContext("),
             ExtractSection(
                 source,
-                "private string BuildAutonomousOpeningPrompt(",
-                "private string BuildCompactRoundPlanCandidateLine("),
+                "internal static string BuildAutonomousOpeningPrompt(",
+                "internal static string BuildGenerationPrompt("),
             ExtractSection(
                 promptRules,
                 "public static string BuildAnalysisModeContract()",
@@ -1922,8 +1926,8 @@ internal static class Program
 
         string relayPrompt = ExtractSection(
             source,
-            "private string BuildRelayConversationTurnPrompt(",
-            "private void ScheduleNextRelayHop(");
+            "internal static string BuildRelayConversationTurnPrompt(",
+            "internal static string BuildAutonomousOpeningPrompt(");
         Test.True(relayPrompt.Contains(
                       "List<string> legalTargetIds = round?.ResultSettlementPending == true",
                       StringComparison.Ordinal)
@@ -1941,14 +1945,14 @@ internal static class Program
             "a settlement relay may render current actionable independent kingdoms, while an ordinary relay remains route-only");
         string autonomousPrompt = ExtractSection(
             source,
-            "private string BuildAutonomousOpeningPrompt(",
-            "private string BuildGenerationPrompt(");
+            "internal static string BuildAutonomousOpeningPrompt(",
+            "internal static string BuildGenerationPrompt(");
         string compactCandidateRenderer = ExtractSection(
             source,
-            "private string BuildCompactRoundPlanCandidateLine(",
-            "private string BuildCompactDiplomaticRelationshipLine(");
+            "private static string BuildCompactRoundPlanCandidateLine(",
+            "private static void AppendOtherKingdomRelationshipContext(");
         Test.True(autonomousPrompt.Contains(
-					  "BuildCompactRoundPlanCandidateLine(author, candidate, round,",
+					  "BuildCompactRoundPlanCandidateLine(world, author, candidate, round,",
                       StringComparison.Ordinal)
                   && source.Contains(
                       "orchestration.BuildLegalDiplomaticActionIntents(activeRound, author, candidate)",
@@ -1956,8 +1960,8 @@ internal static class Program
             "autonomous candidate rows must carry their own live legal actions instead of a duplicated final block");
         string targetedPrompt = ExtractSection(
             source,
-            "private string BuildGenerationPrompt(",
-            "private string BuildCompactRoundPlanCandidateLine(");
+            "internal static string BuildGenerationPrompt(",
+            "private static string BuildCompactRoundPlanCandidateLine(");
         Test.True(targetedPrompt.Contains(
                       "List<string> legalActions = orchestration.BuildLegalDiplomaticDeclarationIntents(",
                       StringComparison.Ordinal)
@@ -2832,7 +2836,7 @@ internal static class Program
 			"internal static void ScheduleNextRelayHop(");
 		string relaySchedulingAdapter = ExtractMethod(
 			source,
-			"private void ScheduleNextRelayHop(");
+			"public void ScheduleNextRelayHop(");
 		Test.True(relayScheduling.Contains("ScheduleImmediately = scheduleImmediately", StringComparison.Ordinal)
 			&& relayScheduling.Contains("CurrentDay = currentDay", StringComparison.Ordinal)
 			&& relaySchedulingAdapter.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(", StringComparison.Ordinal)
@@ -3018,8 +3022,8 @@ internal static class Program
 			"repair options and authorized targets must retain the same external source-bound statement gate");
 		string externalRelayPrompt = ExtractSection(
 			source,
-			"private string BuildRelayConversationTurnPrompt(",
-			"private void ScheduleNextRelayHop(");
+			"internal static string BuildRelayConversationTurnPrompt(",
+			"internal static string BuildAutonomousOpeningPrompt(");
 		Test.True(externalRelayPrompt.Contains("isExternalResponseOnly: priorityResponseOnly", StringComparison.Ordinal)
 			&& externalRelayPrompt.Contains("responseSource: prioritySource", StringComparison.Ordinal),
 			"relay prompt options must use the same external source-bound statement gate");
@@ -3047,8 +3051,8 @@ internal static class Program
 			"the shared declaration contract must explicitly keep every root action-only");
 		string relayPrompt = ExtractSection(
 			source,
-			"private string BuildRelayConversationTurnPrompt(",
-			"private void ScheduleNextRelayHop(");
+			"internal static string BuildRelayConversationTurnPrompt(",
+			"internal static string BuildAutonomousOpeningPrompt(");
 		Test.True(relayPrompt.Contains("statement", StringComparison.Ordinal)
 			&& relayPrompt.Contains("结构化谈判动作", StringComparison.Ordinal)
 			&& relayPrompt.Contains("negotiation_move", StringComparison.Ordinal)
@@ -4034,7 +4038,7 @@ internal static class Program
             promptRules,
             "public static string BuildDiplomaticDeclarationModeContract()");
         string policyOpeningContext = ExtractMethod(promptRules, "public static string BuildPolicySignalContext(");
-        string threatDynamicContext = ExtractMethod(source, "private void AppendDiplomaticThreatDynamicContext(");
+        string threatDynamicContext = ExtractMethod(source, "private static void AppendDiplomaticThreatDynamicContext(");
         Test.True(!fixedDeclarationContract.Contains("将由机制取消", StringComparison.Ordinal)
                   && !policyOpeningContext.Contains("将由机制取消", StringComparison.Ordinal)
                   && !policyOpeningContext.Contains("comply_ultimatum", StringComparison.Ordinal),
@@ -4500,11 +4504,11 @@ internal static class Program
         if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
         if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
         if (endMarker == "private void ReconcilePlayerDeclarationWithOpenOffer(") endMarker = "private void ProcessAnalyzedDocument(";
-        if (endMarker == "private string BuildCurrentGeographicRelations(") endMarker = "private WorldDiplomacyRealmRelationProfile GetRealmRelationProfile(";
+        if (endMarker == "private string BuildCurrentGeographicRelations(") endMarker = "private static WorldDiplomacyRealmRelationProfile GetRealmRelationProfile(";
         if (endMarker == "private void SynchronizeCourtKnowledge(") endMarker = "private void ProcessCourtArrival(";
         if (endMarker == "private void ProcessPlayerMandatoryResponseTimeout(") endMarker = "private void CloseActiveRound(";
         if (endMarker == "private void ProcessPlayerResponseTimeouts(") endMarker = "private void NotifyExternalDiplomacyResolvedInternal(";
-        if (endMarker == "private string BuildAutonomousOpeningPrompt(") endMarker = "private void AppendDiplomaticAuthorDecisionContext(";
+        if (endMarker == "internal static string BuildAutonomousOpeningPrompt(") endMarker = "private static void AppendDiplomaticAuthorDecisionContext(";
         if (endMarker == "private string BuildFallbackAnnualSummary(") endMarker = "private static string BuildExternalFactBody(";
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         if (endMarker == "private void MigratePolicyCountdownHistory(") endMarker = "private bool AppendCanonicalHistoryEntry(";
