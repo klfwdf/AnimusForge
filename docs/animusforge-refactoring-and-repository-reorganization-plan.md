@@ -97,7 +97,29 @@
 
 **A2-5/MB-MapEvent 下游行动责任已审（仍 `A_NOT_CLOSED`）**：[范围图 E72](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)续接 E67，核对 `OnMapEventEnded` 的玩家战败、双方 NPC 行动、常规匪帮胜利、藏身处清剿四个下游及 12 个相关方法在双 API 清单中的相同坐标。GameAdapter 保留 Campaign/活战斗事实捕获；NPC 行动叙事、键和权威容器属于 Memory/NpcAction 待抽责任，玩家行动交 Social/Notoriety，History/AFEF 仍属 Memory。败方领主的专用去重键会使通用行动分派跳过该人，但旧 History/NPC action 入口无统一接受回执；将“拒收/异常后事实是否缺失、如何恢复且不重复提交”登记为 **R07-MB-MapEvent** 的 B6 前置失败语义/回放余项，不能在 A 盘点中改行为。R08 同项按 MapEvent 结束频率量测每英雄重复扫描 party/roster 的规模，不当作逐帧问题。其余 `MyBehavior` 事件与 15 个宿主、动态消费者仍未审完。A2-2 的 162 文件分区已由 E71 取代下表 R07 旧句“A2-2 未完成”，但场景宿主成员仍归 A2-5；**20 桶、J17-A 总出口尚未签收，J17-B 未启动**。
 
-**A2-5 计数口径待对账**：§5a 所引本地 16 宿主 `10,826 = 3,380 + 7,446` 没有对应的当前逐成员签收产物；现存忽略材料 `artifacts/j17a/current-host-member-counts.json` 在源码 `944712f8`、API 1.3 下记录 16 宿主 **10,268 个 direct members**，而 `current-member-inventory.json` 包含嵌套类型成员，口径不同。两数不能相减认作已审/未审数量，也不能拿导航 `semanticReview=PENDING` 当实际结论；最终 A2-5 必须以当前双 API Compile/语法成员和逐责任范围双向对账到未知为零。
+**A2-5 当前宿主分母已对账，语义仍未签收**：[范围图 E79](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)按 `944712f8` 的双 API 实际 Compile 清单，以父类型链而不是整文件归属核对 16 个具名宿主：两版均为 **10,268 个 direct members + 2,998 个嵌套成员 + 114 个根 partial 类型声明 = 13,380 个语法成员**，宿主间重复 0。§5a 的历史 `10,826 = 3,380 + 7,446` 无当前逐成员签收产物，不能与本分母相减得出已审量。下表“含嵌套与根类型”只覆盖这 16 个具名类型家族，不含同文件其它顶层 peer type，更不是 1,123 个 Compile 文件的 49,509/49,508 成员总账；`semanticReview=PENDING` 也不是语义结论。
+
+| A2-5 宿主类型家族 | direct | 含嵌套与根类型 | 当前语义审查状态 |
+| --- | ---: | ---: | --- |
+| `MyBehavior` | 2,497 | 3,430 | E57/E58/E67/E72–E77 具名片段；未全量 |
+| `ShoutBehavior` | 1,643 | 2,215 | E34 等局部文件/接缝；主宿主未全量 |
+| `RewardSystemBehavior` | 1,016 | 1,288 | 未逐成员全量 |
+| `SiegeAiInterventionBehavior` | 817 | 911 | 未逐成员全量 |
+| `DuelSettings` | 964 | 1,002 | 未逐成员全量 |
+| `VassalageBehavior` | 347 | 367 | 未逐成员全量 |
+| `KnowledgeLibraryBehavior` | 484 | 531 | 未逐成员全量 |
+| `SceneTauntBehavior` | 131 | 132 | 未逐成员全量 |
+| `ProactiveNpcRequestBehavior` | 412 | 930 | 未逐成员全量 |
+| `TroopInspectionBehavior` | 143 | 188 | 未逐成员全量 |
+| `CourierDeliveryBehavior` | 562 | 802 | 局部接缝/回放；未全量 |
+| `MilitaryExerciseBehavior` | 172 | 238 | 未逐成员全量 |
+| `PlayerNotorietyBehavior` | 282 | 363 | 未逐成员全量 |
+| `DuelBehavior` | 296 | 437 | 未逐成员全量 |
+| `LordEncounterBehavior` | 368 | 384 | 未逐成员全量 |
+| `RomanceSystemBehavior` | 134 | 162 | E78 完整首轮责任分区；动态/实机未闭 |
+| **16 宿主合计** | **10,268** | **13,380** | **非 20 桶签收；J17-A 未闭** |
+
+最终 A2-5 仍须把当前双 API 全 Compile/语法成员与责任范围双向对账到未知 0，并逐桶核对语义、动态消费者和具名余项；本分母表只防止把不同口径误报为进度。
 
 **A2-5/MB-CampaignActions 事件责任续审（仍 `A_NOT_CLOSED`）**：[范围图 E73](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)补 E72 未覆盖的任务、同伴新增/移除与总督变更四个 Campaign 回调及六个资格/地点/结局 helper。事件注册和活对象捕获留 GameAdapter，NPC 行动/旧 `_npcMajorActions_v1`、`_npcRecentActions_v1` 等保存身份仍由当前 MyBehavior 负责，目标 Memory/NpcAction；玩家行动经 Social/Notoriety 唯一入口，不复制状态。`DebtPromiseQuest` 明确排除二次记账，总督仅玩家 Clan 相关时记录；事件分别写两条或至多四条，非 Tick 路径。`ResolveCurrentActionSettlement` 的前序 `PlayerEncounter.EncounterSettlement` 抛错会使后续 Hero 地点回退也失效，登记为 **R07-MB-CampaignActions** 的 B6 兼容可用性/失败回放余项，非已证实实机故障；记录的 void/吞异常边界须在迁移前定义部分成功/重入语义。`MyBehavior.cs:2723–2795` 的公开跨域桥、`:3475–4516` 其余事件和动态消费者仍待审；**不能以这四个回调签收 MyBehavior 或 20 桶**。
 
