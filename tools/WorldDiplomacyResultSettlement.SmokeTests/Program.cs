@@ -962,7 +962,7 @@ internal static class Program
 			"a no-action war response must audit the exact successful war action, not the legacy primary action mirror");
 
 		string canonicalHistoryRules = File.ReadAllText(
-			FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyCanonicalHistoryRules.cs")),
+			FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyHistoryPublicationApplication.cs")),
 			Encoding.UTF8);
 		string canonicalEvents = ExtractMethod(canonicalHistoryRules, "public static void AppendCanonicalDocumentEvents(");
 		Test.True(canonicalEvents.Contains("document.Actions", StringComparison.Ordinal)
@@ -1250,10 +1250,10 @@ internal static class Program
 			source,
 			"private void ProcessAnalyzedDocument(");
 		int singleFinalGuard = singlePublication.IndexOf(
-			"WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(owningRound, document.ResultSettlementSlotId",
+			"WorldDiplomacyRoundLifecycleRules.IsImmediateWarResponsePeaceSuppressed(round, document.ResultSettlementSlotId",
 			StringComparison.Ordinal);
 		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", singleFinalGuard, StringComparison.Ordinal);
-		Test.True(singlePublication.Contains("normalizedIntent == \"propose_peace\"", StringComparison.Ordinal)
+		Test.True(singlePublication.Contains("intent == \"propose_peace\"", StringComparison.Ordinal)
 			&& singlePublication.Contains("immediate_war_response_peace_suppressed", StringComparison.Ordinal)
 			&& singleFinalGuard >= 0 && singlePublish > singleFinalGuard,
 			"legacy single-action publication must recheck the exact live slot before any peace proposal can publish or execute");
@@ -1511,7 +1511,7 @@ internal static class Program
 		int singlePublish = singlePublication.IndexOf("document.IsReadyForPublication = true", singleFinalLegalSet, StringComparison.Ordinal);
 		Test.True(singleFinalLegalSet >= 0 && singlePublish > singleFinalLegalSet
 			&& singlePublication.Contains("document.ResultSettlementSlotId", StringComparison.Ordinal)
-			&& singlePublication.Contains("normalizedIntent", StringComparison.Ordinal),
+			&& singlePublication.Contains("intent", StringComparison.Ordinal),
 			"single-action publication must recheck the shared live legal set before publishing an obsolete counter-proposal");
 
 		string multiPublication = ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument(");
@@ -1751,7 +1751,7 @@ internal static class Program
 
 		foreach ((string method, string pruneCall, string name) in new[]
 		{
-			(ExtractMethod(source, "private void ProcessAnalyzedDocument("), "PruneInvalidOffers(owningRound)", "single-action"),
+			(ExtractMethod(source, "private void ProcessAnalyzedDocument("), "PruneInvalidOffers(round)", "single-action"),
 			(ExtractMethod(source, "private void ProcessAnalyzedMultiActionDocument("), "PruneInvalidOffers(round)", "multi-action")
 		})
 		{
@@ -1968,18 +1968,10 @@ internal static class Program
 			"the persisted cession-bearing multi-accept guard must abort before the document becomes publishable");
 
 		string singlePublication = ExtractMethod(source, "private void ProcessAnalyzedDocument(");
-		int multiActionDispatch = singlePublication.IndexOf("document?.Actions?.Count > 0", StringComparison.Ordinal);
-		int callMultiPublication = singlePublication.IndexOf(
-			"ProcessAnalyzedMultiActionDocument(port, orchestration, document)",
-			multiActionDispatch,
-			StringComparison.Ordinal);
-		int returnAfterDispatch = singlePublication.IndexOf("return;", callMultiPublication, StringComparison.Ordinal);
-		int singleReady = singlePublication.IndexOf("document.IsReadyForPublication = true", returnAfterDispatch, StringComparison.Ordinal);
-		Test.True(multiActionDispatch >= 0
-			&& callMultiPublication > multiActionDispatch
-			&& returnAfterDispatch > callMultiPublication
-			&& singleReady > returnAfterDispatch,
-			"every persisted multi-action document must enter the guarded multi-action publication path instead of its legacy primary mirror");
+        Test.True(singlePublication.Contains("document.Actions == null || document.Actions.Count == 0")
+            && singlePublication.Contains("ExecuteItems(port, orchestration, document, actions, legacy)")
+            && singlePublication.Contains("multiple_peace_acceptances_have_cross_terms"),
+            "both persisted representations enter one guarded executor; flat records remain transient execution items");
 	}
 
 	private static void WarResponseNoActionSettlementContract(string source)
@@ -2194,12 +2186,15 @@ internal static class Program
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
             if (name == "ProcessAnalyzedDocument")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_host.DocumentExecution(), this,", StringComparison.Ordinal)
-                    || text.Contains("ProcessAnalyzedMultiActionDocument(port, orchestration, document)", StringComparison.Ordinal),
+                    || text.Contains("ExecuteItems(port, orchestration, document, actions, legacy)", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
             else if (name == "TryIncludeResultSettlementTarget")
                 Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget(", StringComparison.Ordinal)
                     && source.Contains("_host.DocumentExecution(),", StringComparison.Ordinal),
                     "legacy entry must call the real document Application owner: " + name);
+            if (name == "ProcessAnalyzedDocument" || name == "ProcessAnalyzedMultiActionDocument")
+                return ExtractMethod(text, "internal static void ProcessAnalyzedDocument(")
+                    + ExtractMethod(text, "private static void ExecuteItems(");
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
         }
         if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
