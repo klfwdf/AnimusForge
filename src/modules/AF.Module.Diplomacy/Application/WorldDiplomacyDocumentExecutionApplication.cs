@@ -29,14 +29,14 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 		{
 			return;
 		}
-		if (!document.IsPlayerAuthored && !port.HasIndependentWorldDiplomacyAuthority(author))
+		if (!document.IsPlayerAuthored && !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(author)))
 		{
 			port.Log("controlled vassal document blocked before propagation document=" + document.DocumentId
 				+ " author=" + author);
 			orchestration.SuppressInvalidDocumentBeforePropagation(document, "controlled_vassal_has_no_diplomatic_authority");
 			return;
 		}
-		if (!document.IsPlayerAuthored && !port.CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		if (!document.IsPlayerAuthored && !WorldDiplomacyAuthorityRules.CanAiAuthor(port.CaptureAuthority(author), out string authorBlockReason))
 		{
 			port.Log("AI document blocked before propagation document=" + document.DocumentId + " author=" + author
 				+ " reason=" + authorBlockReason);
@@ -109,7 +109,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 		}
 		string liveStateBlockReason = "";
 		bool invalidLiveTarget = target == null || target == author || port.IsEliminated(target)
-			|| !port.HasIndependentWorldDiplomacyAuthority(target);
+			|| !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target));
 		if (invalidLiveTarget
 			|| orchestration.TryGetDiplomaticStateViolation(normalizedIntent, author, target, out liveStateBlockReason))
 		{
@@ -247,12 +247,12 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 		string author = port.ResolveKingdomId(document?.AuthorKingdomId);
 		if (document == null || actions == null || actions.Count < 1
 			|| actions.Count > port.MaxDiplomaticActionsPerDocument || author == null) return;
-		if (!document.IsPlayerAuthored && !port.HasIndependentWorldDiplomacyAuthority(author))
+		if (!document.IsPlayerAuthored && !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(author)))
 		{
 			orchestration.SuppressInvalidDocumentBeforePropagation(document, "controlled_vassal_has_no_diplomatic_authority");
 			return;
 		}
-		if (!document.IsPlayerAuthored && !port.CanAiAuthorDiplomaticDocument(author, out string authorBlockReason))
+		if (!document.IsPlayerAuthored && !WorldDiplomacyAuthorityRules.CanAiAuthor(port.CaptureAuthority(author), out string authorBlockReason))
 		{
 			orchestration.SuppressInvalidDocumentBeforePropagation(document, authorBlockReason);
 			return;
@@ -270,7 +270,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			string target = port.ResolveKingdomId(action?.TargetKingdomId);
 			string intent = WorldDiplomacyIntentVocabulary.NormalizeIntent(action?.Intent);
 			if (action == null || target == null || target == author || port.IsEliminated(target)
-				|| !port.HasIndependentWorldDiplomacyAuthority(target) || !uniqueTargets.Add(target))
+				|| !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)) || !uniqueTargets.Add(target))
 			{
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "multi_action_has_invalid_or_duplicate_target");
 				return;
@@ -470,7 +470,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			round.ResultSettlementPending,
 			!string.IsNullOrWhiteSpace(kingdomId),
 			alreadyOnRoute,
-			kingdom != null && !port.IsEliminated(kingdom) && port.HasIndependentWorldDiplomacyAuthority(kingdom),
+			kingdom != null && !port.IsEliminated(kingdom) && WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(kingdom)),
 			round.RelayRouteKingdomIds.Count,
 			port.MaxRelayParticipants))
 		{
@@ -494,7 +494,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
     {
         if (round == null || author == null) return false;
         return WorldDiplomacyRoundLifecycleRules.IsSettlementTargetUsable(round.ResultSettlementPending, target != null, target == author,
-            target != null && port.IsEliminated(target), target != null && port.HasIndependentWorldDiplomacyAuthority(target),
+            target != null && port.IsEliminated(target), target != null && WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target)),
             WorldDiplomacyStructureRules.RoundRouteContainsKingdom(round, target), round.RelayRouteKingdomIds?.Count ?? 0, port.MaxRelayParticipants);
     }
 
@@ -539,7 +539,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
 			.Where(x => WorldDiplomacyRoundLifecycleRules.IsOfferOfStatus(x, "open")))
 		{
 			string target = port.ResolveKingdomId(offer.TargetKingdomId);
-			if (target == null || !port.HasIndependentWorldDiplomacyAuthority(target)
+			if (target == null || !WorldDiplomacyAuthorityRules.HasIndependentAuthority(port.CaptureAuthority(target))
 				|| !TryIncludeResultSettlementTarget(port, round, target))
 			{
 				offer.Status = "invalidated";

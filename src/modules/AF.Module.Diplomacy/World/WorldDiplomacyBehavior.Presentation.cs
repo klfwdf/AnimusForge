@@ -74,10 +74,7 @@ public sealed partial class WorldDiplomacyBehavior
             WorldDiplomacyDocument document = _owner.ResolveDocument(id);
             if (document == null) return null;
             WorldDiplomacyRound round = _owner.ResolveRound(document.RoundId);
-            WorldDiplomacyRoundParticipant participant = round?.Participants?.FirstOrDefault(x => x != null && IsPlayerKingdom(ResolveKingdom(x.KingdomId)));
-            bool canReply = round != null && participant?.MandatoryReplyPending == true
-                && HasIndependentWorldDiplomacyAuthority(Clan.PlayerClan?.Kingdom);
-            return WorldDiplomacyPresentationQueries.Detail(document, _owner._runtimeGeneration, canReply, FormatCampaignDate);
+            return WorldDiplomacyPresentationQueries.Detail(document, round, Player, FormatCampaignDate);
         }
         public bool KingdomExists(string id) => ResolveKingdom(id) != null;
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);

@@ -206,6 +206,7 @@ RunRepairCorrectionAndJobDecisionTests();
     RunRelayArrivalAndExternalFactDecisionTests();
     RunJobCompositionDecisionTests();
     RunGenerationJobCompositionDecisionTests();
+        AuthorityReplay.Run();
         RoundApplicationReplay.Run();
         string orchestrationHost = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"));
         Test.True(orchestrationHost.Contains("RoundTargetDurationDays() => WorldDiplomacyBehavior.GetRoundLengthDays()"), "round opening must read configured duration rather than a relay default");

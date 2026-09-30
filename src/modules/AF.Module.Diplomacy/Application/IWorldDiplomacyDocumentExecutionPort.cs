@@ -9,8 +9,7 @@ internal interface IWorldDiplomacyDocumentExecutionPort
 {
     string ResolveKingdomId(string id);
     bool IsEliminated(string id);
-    bool HasIndependentWorldDiplomacyAuthority(string id);
-    bool CanAiAuthorDiplomaticDocument(string id, out string reason);
+    WorldDiplomacyAuthoritySnapshot CaptureAuthority(string id);
     WorldDiplomacyRound ResolveRound(string id);
     WorldDiplomacyDocument ResolveDocument(string id);
     WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer);

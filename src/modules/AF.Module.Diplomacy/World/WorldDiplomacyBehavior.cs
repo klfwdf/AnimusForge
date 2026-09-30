@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1641,20 +1641,22 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		type = NormalizeWorldDiplomacyVassalageType(agreement.Type);
 		return true;
 	}
-	private static bool HasIndependentWorldDiplomacyAuthority(Kingdom kingdom)
-	{
-		return kingdom != null
-			&& !kingdom.IsEliminated
-			&& (!TryGetWorldDiplomacyVassalage(kingdom, out _, out _, out AfVassalageType type)
-				|| type != AfVassalageType.Vassal);
-	}
+	private static WorldDiplomacyAuthoritySnapshot CaptureDiplomacyAuthority(Kingdom kingdom)
+    {
+        bool agreement = TryGetWorldDiplomacyVassalage(kingdom, out _, out Kingdom suzerain, out AfVassalageType type);
+        return new WorldDiplomacyAuthoritySnapshot(kingdom?.StringId, kingdom != null, kingdom?.IsEliminated == true,
+            agreement && type == AfVassalageType.Vassal, suzerain?.StringId,
+            IsPlayerKingdom(kingdom), kingdom?.RulingClan?.Leader?.IsAlive == true);
+    }
+    private static bool HasIndependentWorldDiplomacyAuthority(Kingdom kingdom)
+        => WorldDiplomacyAuthorityRules.HasIndependentAuthority(CaptureDiplomacyAuthority(kingdom));
 	private static Kingdom ResolveWorldDiplomacyRepresentative(Kingdom kingdom)
-	{
-		return TryGetWorldDiplomacyVassalage(kingdom, out _, out Kingdom suzerain, out AfVassalageType type)
-			&& type == AfVassalageType.Vassal
-			? suzerain
-			: kingdom;
-	}
+    {
+        WorldDiplomacyAuthoritySnapshot snapshot = CaptureDiplomacyAuthority(kingdom);
+        string representative = WorldDiplomacyAuthorityRules.Representative(snapshot);
+        return string.Equals(representative, kingdom?.StringId, StringComparison.OrdinalIgnoreCase)
+            ? kingdom : ResolveKingdom(representative);
+    }
 	private static string GetWorldDiplomacyVassalageTypeName(AfVassalageType type)
 	{
 		return NormalizeWorldDiplomacyVassalageType(type) switch
@@ -1914,26 +1916,17 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			&& FactionManager.IsAtWarAgainstFaction(kingdom, x));
 	}
 	private float CalculatePeacePressure(WarSituationSnapshot snapshot, Kingdom author, Kingdom target, bool authorPerspective)
-	{
-		float ownProgress = authorPerspective ? snapshot.AuthorProgress : snapshot.TargetProgress;
-		float enemyProgress = authorPerspective ? snapshot.TargetProgress : snapshot.AuthorProgress;
-		float ownStrength = authorPerspective ? snapshot.AuthorStrength : snapshot.TargetStrength;
-		float enemyStrength = authorPerspective ? snapshot.TargetStrength : snapshot.AuthorStrength;
-		int suffered = authorPerspective ? snapshot.AuthorSufferedCasualties : snapshot.AuthorInflictedCasualties;
-		int inflicted = authorPerspective ? snapshot.AuthorInflictedCasualties : snapshot.AuthorSufferedCasualties;
-		int otherWars = authorPerspective ? snapshot.AuthorOtherWars : snapshot.TargetOtherWars;
-		Kingdom ownKingdom = authorPerspective ? author : target;
-		Kingdom enemyKingdom = authorPerspective ? target : author;
-		int lostFiefs = GetUnrecoveredLostSettlements(ownKingdom, enemyKingdom).Count;
-		float duration = WorldDiplomacyRoundLifecycleRules.Clamp01((snapshot.WarDays - 7f) / 112f) * 70f;
-		float setback = WorldDiplomacyRoundLifecycleRules.Clamp01((enemyProgress - ownProgress) / 500f) * 70f;
-		float strength = WorldDiplomacyRoundLifecycleRules.Clamp01((enemyStrength / Math.Max(1f, ownStrength) - 1f) / 1.5f) * 40f;
-		float casualtyBurden = WorldDiplomacyRoundLifecycleRules.Clamp01(suffered / Math.Max(500f, ownStrength * 1.5f)) * 40f;
-		float casualtyImbalance = WorldDiplomacyRoundLifecycleRules.Clamp01((suffered - inflicted) / Math.Max(500f, ownStrength)) * 20f;
-		float multiWar = WorldDiplomacyRoundLifecycleRules.Clamp01(otherWars / 2f) * 30f;
-		float territory = WorldDiplomacyRoundLifecycleRules.Clamp01(lostFiefs / 2f) * 30f;
-		return Math.Max(0f, Math.Min(300f, duration + setback + strength + casualtyBurden + casualtyImbalance + multiWar + territory));
-	}
+    {
+        return WorldDiplomacyWarPressureRules.CalculatePeacePressure(snapshot.WarDays,
+            authorPerspective ? snapshot.AuthorProgress : snapshot.TargetProgress,
+            authorPerspective ? snapshot.TargetProgress : snapshot.AuthorProgress,
+            authorPerspective ? snapshot.AuthorStrength : snapshot.TargetStrength,
+            authorPerspective ? snapshot.TargetStrength : snapshot.AuthorStrength,
+            authorPerspective ? snapshot.AuthorSufferedCasualties : snapshot.AuthorInflictedCasualties,
+            authorPerspective ? snapshot.AuthorInflictedCasualties : snapshot.AuthorSufferedCasualties,
+            authorPerspective ? snapshot.AuthorOtherWars : snapshot.TargetOtherWars,
+            GetUnrecoveredLostSettlements(authorPerspective ? author : target, authorPerspective ? target : author).Count);
+    }
 
 	private List<Settlement> GetUnrecoveredLostSettlements(Kingdom originalOwner, Kingdom currentOwner)
 	{
@@ -2229,26 +2222,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		return kingdom != null && kingdom == Clan.PlayerClan?.Kingdom;
 	}
 	private static bool CanAiAuthorDiplomaticDocument(Kingdom kingdom, out string reason)
-	{
-		reason = "";
-		if (kingdom == null || kingdom.IsEliminated)
-		{
-			reason = "author_kingdom_missing";
-			return false;
-		}
-		if (IsPlayerKingdom(kingdom))
-		{
-			reason = "player_controlled_realm_requires_player_authorization";
-			return false;
-		}
-		Hero ruler = kingdom.RulingClan?.Leader;
-		if (ruler == null || !ruler.IsAlive)
-		{
-			reason = "ruler_unavailable";
-			return false;
-		}
-		return true;
-	}
+        => WorldDiplomacyAuthorityRules.CanAiAuthor(CaptureDiplomacyAuthority(kingdom), out reason);
 	private static int CurrentDay()
 	{
 		if (Campaign.Current == null || !Campaign.Current.GameStarted)

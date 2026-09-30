@@ -27,8 +27,7 @@ public sealed partial class WorldDiplomacyBehavior
         internal DocumentExecutionPort(WorldDiplomacyBehavior owner) => _owner = owner;
         public string ResolveKingdomId(string id) => ResolveParty(id)?.StringId;
         public bool IsEliminated(string id) => ResolveParty(id)?.IsEliminated == true;
-        public bool HasIndependentWorldDiplomacyAuthority(string id) => WorldDiplomacyBehavior.HasIndependentWorldDiplomacyAuthority(ResolveParty(id));
-        public bool CanAiAuthorDiplomaticDocument(string id, out string reason) => WorldDiplomacyBehavior.CanAiAuthorDiplomaticDocument(ResolveParty(id), out reason);
+        public WorldDiplomacyAuthoritySnapshot CaptureAuthority(string id) => CaptureDiplomacyAuthority(ResolveParty(id));
         public WorldDiplomacyRound ResolveRound(string id) => _owner.ResolveRound(id);
         public WorldDiplomacyDocument ResolveDocument(string id) => _owner.ResolveDocument(id);
         public WorldDiplomacyRoundOffer FindRequiredPeaceOfferResponse(WorldDiplomacyRound round, string author, string slot, bool external, string sourceId, bool requireAnyOpenPeaceOffer) => WorldDiplomacyBehavior.FindRequiredPeaceOfferResponse(round, ResolveParty(author), slot, external, sourceId, requireAnyOpenPeaceOffer);

@@ -85,6 +85,17 @@ internal static class WorldDiplomacyPresentationQueries
         return sb.ToString().TrimEnd();
     }
 
+    internal static WorldDiplomacyDocumentDetail Detail(WorldDiplomacyDocument document, WorldDiplomacyRound round,
+        WorldDiplomacyPlayerContext player, Func<int, string> formatDate)
+    {
+        if (document == null) return null;
+        WorldDiplomacyRoundParticipant participant = player.IsRuler
+            ? round?.Participants?.FirstOrDefault(x => x != null && string.Equals(x.KingdomId, player.KingdomId, StringComparison.OrdinalIgnoreCase))
+            : null;
+        bool canReply = round != null && participant?.MandatoryReplyPending == true && player.Independent;
+        return Detail(document, player.Generation, canReply, formatDate);
+    }
+
     internal static WorldDiplomacyDocumentDetail Detail(WorldDiplomacyDocument document, long generation,
         bool canReply, Func<int, string> formatDate)
     {

@@ -5,6 +5,19 @@ namespace AnimusForge.Refactor.Domain;
 
 public static class WorldDiplomacyWarPressureRules
 {
+    public static float CalculatePeacePressure(float warDays, float ownProgress, float enemyProgress,
+        float ownStrength, float enemyStrength, int suffered, int inflicted, int otherWars, int lostFiefs)
+    {
+        float duration = WorldDiplomacyRoundLifecycleRules.Clamp01((warDays - 7f) / 112f) * 70f;
+        float setback = WorldDiplomacyRoundLifecycleRules.Clamp01((enemyProgress - ownProgress) / 500f) * 70f;
+        float strength = WorldDiplomacyRoundLifecycleRules.Clamp01((enemyStrength / Math.Max(1f, ownStrength) - 1f) / 1.5f) * 40f;
+        float casualtyBurden = WorldDiplomacyRoundLifecycleRules.Clamp01(suffered / Math.Max(500f, ownStrength * 1.5f)) * 40f;
+        float casualtyImbalance = WorldDiplomacyRoundLifecycleRules.Clamp01((suffered - inflicted) / Math.Max(500f, ownStrength)) * 20f;
+        float multiWar = WorldDiplomacyRoundLifecycleRules.Clamp01(otherWars / 2f) * 30f;
+        float territory = WorldDiplomacyRoundLifecycleRules.Clamp01(lostFiefs / 2f) * 30f;
+        return Math.Max(0f, Math.Min(300f, duration + setback + strength + casualtyBurden + casualtyImbalance + multiWar + territory));
+    }
+
 	public static void ApplyDocumentPressure(
 		WorldDiplomacyDocument document,
 		Func<string, string, WarPressureEntry> findPressure,
