@@ -4,6 +4,14 @@
 
 ### 当前结论：J17-A已闭，20/20责任桶；B/C未执行，D NOT-RUN
 
+**2026-09-30 测试入口隔离切片（检查点 `7a47ed9b` 后）**：用户两项批准已落实。总入口要求显式 `AF_TEST_TEMP_ROOT`，先拒绝仓内/包含仓库/卷根/UNC/父级跳转/reparse 根，结果目录必须为仓内新目录；每入口独立 TEMP，NuGet 缓存留本轮仓内输出。三个业务工具以 `execution=manual` 保留 NEEDS_INPUT、不创建子进程；编辑器明确执行已有 `--isolated-full`，没有改其九步断言或产品代码。六 Python runner 改为 UUID 新输出，`--run-root` 拒绝复用/越界/重解析，不再递归删除既有 current；原 mutation、Program、csproj 和 expect 基线均保留。`tests/output_isolation.py` 仅为共用路径分配，名称避免被当作 runner 自动发现。
+
+- 验证：总入口回归先复现 6 项失败，再修正；最终 13 项通过（mock 子进程，包括实际 manifest、状态分类、独立 TEMP、只列举、复用/越界/重解析拒绝）。六真实 C# 入口通过：OwnerJson 8、PlayerExports 25、Entities 32、Index 70、Memory Records 34、Prompt Composition 200，共369检查。首批 `artifacts/tests/run_all/20260930-211337-463eacf84c94/results.json` 为 PASS6 / NEEDS_INPUT3 / BLOCKED_ENV1，三个业务工具 exit=null；编辑器默认 G 盘 SDK 缺失，并非业务失败。只读发现本机 `C:/Program Files/dotnet/dotnet.exe` 的 SDK10.0.400 后，用单次 `AF_DOTNET10` 覆盖执行，`20260930-211423-7a43a6a2f5c3` 九步全 PASS、`real_root_unchanged=1`。后者保留原真实目录路径/mtime只读前后快照，不读取真实 JSON 内容；所有业务写入在批准合成根，未做真实资料迁移。外部写入仅批准 `E:/tmp/af-j17-20260930`；无全局设置/安装或清理旧产物。
+- 最终集成复验：helper 改名及测试导入修正后，`artifacts/tests/run_all/20260930-211649-d0c765470f3d/results.json` 为 **PASS7 / NEEDS_INPUT3**；三个业务工具未启动，六 C# 加编辑器隔离九步均真实通过。六入口路径回归4项中3通过、1因Windows符号链接权限跳过；另有模拟junction/reparse拒绝回归通过，不把模拟检查等同真实junction验收。未改任何原C#断言或期望失败分类。
+
+- 安全事件：首次 RED 的 mock 断言意外把继承环境输出到工具日志，含 API 凭据；已立即通知用户轮换，测试改用 `patch.dict(..., clear=True)` 的最小环境。此处不保存/复述凭据，代码修正不能撤销先前日志披露，也不代表凭据已轮换。
+- 本切片仅解决已发现的测试入口副作用，不宣称所有被发现 runner 的传递副作用均已审查，不将退出码0误称全门禁绿灯；CivilWar v1/v2 原失败基线未改。B1产品记录/规则迁移、C同候选最终矩阵及D实机仍未执行；产品源码仍 `8ae0f831`，795代码锚点无需因本测试改动重定位。
+
 **2026-09-30 验证入口安全修正意图（用户已回复“允许”）**：已批准仅在`E:/tmp/af-j17-20260930`创建/使用合成测试树，清理仅限本轮新建内容；已批准最小修正总runner、编辑器smoke和固定current输出的测试入口，避免真实资料/既有产物副作用，不降低断言或掩盖失败。先验证精确路径/引用，再补回归并改入口；不执行研究文档生成器或资料迁移器的默认业务流程。该许可不含游戏/原版DLL、真实资料、其他仓外路径、部署/推送、全局配置或广域清理。A证据复用；此检查点不称B1产品已迁。测试隔离就绪后沿既定B1记录/规则闭包继续，相关门禁必须记录实际结果。
 
 **本段取代下方各接续检查点的7/20、pending及“A未闭”当前状态，保留它们作为审查过程记录。** 产品源码仍`8ae0f831`；仅仓内证据/正式文档变更。A的完成是范围内逐声明责任、真实消费者、动态接缝和具名余项闭合，不是业务正确、产品迁移或离线验收完成。

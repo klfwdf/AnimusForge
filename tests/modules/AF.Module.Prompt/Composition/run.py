@@ -14,9 +14,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["sticky-limit", "router-excluded", "drop-lore-text", "drop-entity-text", "drop-rule-text"], help="apply a source mutation that must fail")
+parser.add_argument("--run-root", type=Path, help="new repository-local output directory")
 args = parser.parse_args()
 
 
@@ -29,10 +32,7 @@ def resolve_dotnet() -> Path:
 
 
 dotnet = resolve_dotnet()
-output = ROOT / "artifacts/tests/prompt-j04-composition" / (args.mutate or "current")
-if output.exists():
-    shutil.rmtree(output)
-output.mkdir(parents=True)
+output = new_run_root(ROOT, "prompt-j04-composition", args.run_root)
 for name in ("Program.cs", "Stubs.cs", "PromptCompositionTests.csproj"):
     shutil.copy(HERE / name, output / name)
 project = (output / "PromptCompositionTests.csproj").read_text(encoding="utf-8").replace("../../../../", (str(ROOT) + "/").replace("\\", "/"))

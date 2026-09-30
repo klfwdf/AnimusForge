@@ -14,9 +14,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import new_run_root
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mutate", choices=["scope-boost-off", "secondary-unbounded"], help="apply a source mutation that must fail")
+parser.add_argument("--run-root", type=Path, help="new repository-local output directory")
 args = parser.parse_args()
 
 
@@ -29,10 +32,7 @@ def resolve_dotnet() -> Path:
 
 
 dotnet = resolve_dotnet()
-output = ROOT / "artifacts/tests/knowledge-j06-entities" / (args.mutate or "current")
-if output.exists():
-    shutil.rmtree(output)
-output.mkdir(parents=True)
+output = new_run_root(ROOT, "knowledge-j06-entities", args.run_root)
 for name in ("Program.cs", "KnowledgeEntitiesTests.csproj"):
     shutil.copy(HERE / name, output / name)
 project = (output / "KnowledgeEntitiesTests.csproj").read_text(encoding="utf-8").replace("../../../../", (str(ROOT) + "/").replace("\\", "/"))
