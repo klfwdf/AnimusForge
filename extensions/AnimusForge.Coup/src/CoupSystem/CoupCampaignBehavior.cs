@@ -23,6 +23,9 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     internal static CoupSession CurrentSession => Instance?._session;
     private CoupSession _session;
     private Mission _mission;
+    // Kept after OnMissionEnded so native end-of-mission callbacks stay guarded; O(1) checks only.
+    private Mission _endingMission;
+    private bool _requeuePending;
     private bool _selectionOpen;
     private bool _processing;
     private bool _dispositionOpen;
@@ -42,6 +45,18 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, OnMissionEnded);
         CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, OnNewGame);
         CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, OnGameLoaded);
+        CampaignEvents.OnSettlementLeftEvent.AddNonSerializedListener(this, OnSettlementLeft);
+    }
+
+    // Leaving the town after the assault was registered is a retreat, not a pause.
+    private void OnSettlementLeft(MobileParty party, Settlement settlement)
+    {
+        if (party != MobileParty.MainParty || _session == null || settlement?.StringId != _session.SettlementId) return;
+        if (_session.IsCombatPhase || _session.Phase == CoupPhase.HallSelection)
+        {
+            SettlementEntryTroopSelectionBehavior.ClearArmedCoup();
+            SetFailure("政变进行中离开了城镇。");
+        }
     }
 
     public override void SyncData(IDataStore store)
@@ -68,12 +83,9 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         if (!_saveValid) { Show("政变存档状态异常，已保留原记录并停用新政变，请查看日志。"); return; }
         if (_session == null) return;
         if (_session.Phase == CoupPhase.Preparing) { _session = null; return; }
-        if (_session.IsCombatPhase || _session.Phase == CoupPhase.HallSelection)
-        {
-            _session.Phase = CoupPhase.Suspended;
-            _session.FailureReason = "读档时已无对应战斗场景；保留已记录伤亡，未授予政变胜利。";
-            Show(_session.FailureReason);
-        }
+        // Saves are only possible on the map, between scenes. Keep the committed assault and
+        // re-register the pending scene; the host clears its armed entry on load.
+        if (_session.IsCombatPhase) _requeuePending = true;
     }
 
     private void ResetRuntime()
@@ -81,7 +93,8 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         Instance = this;
         _runtimeToken++;
         _campaign = Campaign.Current;
-        _mission = null;
+        _mission = _endingMission = null;
+        _requeuePending = false;
         _selectionOpen = _processing = _dispositionOpen = _retryBlocked = false;
         _nextCheck = 0f;
     }
@@ -92,12 +105,13 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         starter.AddGameMenuOption("town", "af_coup_resume", "重试政变结算", args =>
         {
             args.optionLeaveType = GameMenuOption.LeaveType.Continue;
-            return _session?.Phase == CoupPhase.Suspended && (_session.HasPoliticalCommit || !_session.CasualtiesCommitted);
+            return _session?.Phase == CoupPhase.Suspended && (_session.IsResumable || !_session.CasualtiesCommitted);
         }, _ =>
         {
             if (_session?.Phase != CoupPhase.Suspended) return;
             _retryBlocked = false;
-            if (_session.HasPoliticalCommit) _session.Phase = _session.ResumePhase;
+            // A won or lost coup resumes its own settlement; only mid-fight technical stops end neutral.
+            if (_session.IsResumable) _session.Phase = _session.ResumePhase;
         }, false, -1);
     }
 
@@ -124,7 +138,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         else if (!_saveValid) reason = "政变存档记录异常，请先处理日志中的错误。";
         else if (!CoupGuards.MissionProtectionAvailable) reason = "政变场景兼容保护未能注册，请检查日志与游戏版本。";
         else if (!SettlementEntryTroopSelectionBehavior.IsAvailable || !CoupRebellionBridge.IsAvailable) reason = "当前 AF 版本的政变接缝不可用，请检查日志。";
-        else if (_session != null && !IsSettled(_session)) reason = "还有一场政变尚未结算。";
+        else if (_session != null && !_session.IsSettled) reason = "还有一场政变尚未结算。";
         else if (clan == null || kingdom == null || clan.Leader != Hero.MainHero || clan.IsUnderMercenaryService || clan.IsClanTypeMercenary || kingdom.RulingClan == clan)
             reason = "仅本国正式封臣的家族族长能够发动政变。";
         else if (town?.IsTown != true || town.MapFaction != kingdom) reason = "必须位于本国城镇。";
@@ -186,7 +200,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
             BuildDefenders(Settlement.Find(_session.SettlementId));
             _session.Phase = CoupPhase.Street;
             _session.Started = true;
-            SettlementEntryTroopSelectionBehavior.QueueArmedCoup(_session.SettlementId, selected);
+            QueueCurrentScene();
             Show("突击队已登记。从城镇菜单进入城镇中心，SETS 会带他们进场。");
         }, () => { if (IsCurrentUi(id, token, CoupPhase.Preparing)) { _selectionOpen = false; _session = null; } });
     }
@@ -219,8 +233,9 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         Add(king?.PartyBelongedTo);
         Add(town.Town.GarrisonParty);
         Add(town.MilitiaPartyComponent?.MobileParty);
+        // Lord parties only: caravans and villagers are not the town's armed defence.
         foreach (MobileParty party in town.Parties)
-            if (party.MapFaction == town.MapFaction && party.CurrentSettlement == town) Add(party);
+            if (party.IsLordParty && party.IsActive && party.MapFaction == town.MapFaction && party.CurrentSettlement == town) Add(party);
         int hall = 0, gate = 0;
         foreach (MobileParty party in sources)
         {
@@ -244,13 +259,31 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         _session.Troops.Add(new CoupTroopRecord { Id = _session.Troops.Count.ToString(), CharacterId = character.StringId, SourcePartyId = source.StringId, Role = role });
     }
 
+    // The single place that arms the host SETS entry: exact location, own allies, own defender records.
+    private void QueueCurrentScene()
+    {
+        bool hall = _session.Phase == CoupPhase.Hall;
+        var allies = TroopRoster.CreateDummyTroopRoster();
+        foreach (CoupTroopRecord troop in _session.Troops)
+        {
+            if (troop.Role != CoupTroopRole.Ally || troop.Removed || (hall && !troop.HallSelected)) continue;
+            CharacterObject character = CharacterObject.Find(troop.CharacterId);
+            if (character != null) allies.AddToCounts(character, 1);
+        }
+        if (allies.TotalManCount < 1) { SetFailure("突击队已无可参战士兵，撤出政变。"); return; }
+        SettlementEntryTroopSelectionBehavior.QueueArmedCoup(_session.SettlementId, _session.SceneLocationId, allies, _session.PendingDefenders(hall));
+    }
+
     private void OnMissionStarted(IMission mission)
     {
-        if (mission is not Mission concrete || _mission != null || (_session?.Phase != CoupPhase.Street && _session?.Phase != CoupPhase.Hall)) return;
+        if (mission is not Mission concrete || _mission != null || _session?.IsCombatPhase != true) return;
         Settlement town = Settlement.Find(_session.SettlementId);
         if ((Settlement.CurrentSettlement ?? PlayerEncounter.LocationEncounter?.Settlement) != town) return;
-        if (!SettlementEntryTroopSelectionBehavior.HasSetsLogic(concrete)) return;
+        // Only the host logic armed for this phase's exact location joins; any other visit is ordinary.
+        if (!SettlementEntryTroopSelectionBehavior.HasArmedSetsLogic(concrete)) return;
         _mission = concrete;
+        _endingMission = null;
+        _session.SceneEntered = true;
         concrete.AddMissionBehavior(new CoupMissionBehavior(_session, town));
         Log("mission_started");
     }
@@ -258,6 +291,7 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     private void OnMissionEnded(IMission mission)
     {
         if (!ReferenceEquals(_mission, mission)) return;
+        _endingMission = _mission;
         _mission = null;
         SettlementEntryTroopSelectionBehavior.ClearArmedCoup();
         if (_session?.IsCombatPhase == true) SetFailure("主动撤退或战斗被中断。");
@@ -265,15 +299,21 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     internal static void NotifyFollowerCasualty(CharacterObject character, bool killed, string role)
     {
-        CoupTroopRecord record = Instance?._session?.Troops.FirstOrDefault(troop => troop.Role == CoupTroopRole.Ally && !troop.Removed && troop.CharacterId == character?.StringId);
+        CoupSession session = Instance?._session;
+        if (session == null) return;
+        bool hall = session.Phase == CoupPhase.Hall;
+        CoupTroopRecord record = session.Troops.FirstOrDefault(troop => troop.Role == CoupTroopRole.Ally && !troop.Removed
+            && (!hall || troop.HallSelected) && troop.CharacterId == character?.StringId);
         record?.TryRecordCasualty(killed);
     }
 
-    internal static void NotifyDefenderCasualty(CharacterObject character, bool killed, string role)
+    // recordId is the coup record the host spawned; source party and role come from that record only.
+    internal static void NotifyDefenderCasualty(CharacterObject character, bool killed, string recordId)
     {
-        if (!Enum.TryParse(role, out CoupTroopRole parsed)) return;
-        CoupTroopRecord record = Instance?._session?.Troops.FirstOrDefault(troop => troop.Role == parsed && !troop.Removed && troop.CharacterId == character?.StringId);
-        record?.TryRecordCasualty(killed);
+        if (string.IsNullOrEmpty(recordId)) return;
+        CoupTroopRecord record = Instance?._session?.Troops.FirstOrDefault(troop => troop.Role != CoupTroopRole.Ally && troop.Id == recordId);
+        if (record == null || record.CharacterId != character?.StringId) return;
+        record.TryRecordCasualty(killed);
     }
 
     internal static bool IsHallObjectiveComplete()
@@ -285,9 +325,10 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
 
     internal static bool IsMissionActive(Mission mission)
     {
-        if (mission == null || Instance == null || CurrentSession == null) return false;
-        return ReferenceEquals(Instance._mission, mission)
-            || mission.GetMissionBehavior<CoupMissionBehavior>()?.SessionId == CurrentSession.Id;
+        // Called from per-frame native patches in every mission: reference checks only, no behavior scans.
+        CoupCampaignBehavior instance = Instance;
+        if (mission == null || instance == null || instance._session == null) return false;
+        return ReferenceEquals(instance._mission, mission) || ReferenceEquals(instance._endingMission, mission);
     }
     internal static void NotifyStreetComplete(Mission mission)
     {
@@ -328,24 +369,36 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
     // application tick, using real time and an O(1) idle gate rather than Campaign.Tick.
     internal void OnEngineTick(float dt)
     {
-        if (Campaign.Current != _campaign || _session == null || IsSettled(_session) || _processing || _selectionOpen || _dispositionOpen || _retryBlocked
-            || (_session.Phase == CoupPhase.Suspended && _session.CasualtiesCommitted)) return;
+        if (Campaign.Current != _campaign || _session == null || _session.IsSettled || _processing || _selectionOpen || _dispositionOpen || _retryBlocked
+            || (_session.Phase == CoupPhase.Suspended && _session.CasualtiesCommitted && !_session.IsResumable)) return;
         _nextCheck -= dt;
         if (_nextCheck > 0f) return;
         _nextCheck = 0.25f;
         if (Mission.Current != null || !(Game.Current?.GameStateManager?.ActiveState is MapState)) return;
-        if (_session.Phase != CoupPhase.Suspended && !IsSettled(_session)) Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
+        _endingMission = null;
+        // Walking to the next scene needs no time control; leaving town is handled as retreat.
+        if (_session.IsCombatPhase)
+        {
+            if (_requeuePending) { _requeuePending = false; QueueCurrentScene(); }
+            return;
+        }
         _processing = true;
         try
         {
+            // A neutral technical stop only writes the casualties already recorded; resumable ones wait for the menu retry.
+            if (_session.Phase == CoupPhase.Suspended)
+            {
+                if (!_session.IsResumable && !_session.CasualtiesCommitted) CommitCasualties();
+                return;
+            }
+            Campaign.Current.TimeControlMode = CampaignTimeControlMode.Stop;
             if (_session.Phase == CoupPhase.HallSelection) { OpenHallSelection(); return; }
             if (_session.Phase == CoupPhase.AwaitingResolution)
             {
                 if (_session.Disposition == CoupKingDisposition.Undecided) { OpenDisposition(); return; }
                 CommitVictory();
             }
-            else if (_session.Phase == CoupPhase.Failed && !IsSettled(_session)) CommitFailure();
-            else if (_session.Phase == CoupPhase.Suspended && !_session.CasualtiesCommitted) CommitCasualties();
+            else if (_session.Phase == CoupPhase.Failed && !_session.IsSettled) CommitFailure();
         }
         catch (Exception ex) { NotifyTechnicalFailure(null, ex.Message); _retryBlocked = true; Logger.Log("Coup", ex.ToString()); }
         finally { _processing = false; }
@@ -372,12 +425,10 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
                 foreach (var troop in matching) troop.HallSelected = true;
             }
             if (!survivors.Any(t => t.HallSelected)) { SetFailure("放弃攻入大厅。"); return; }
-            foreach (var troop in survivors.Where(t => !t.HallSelected)) troop.Removed = true;
-            var hallRoster = TroopRoster.CreateDummyTroopRoster();
-            foreach (var troop in survivors.Where(t => t.HallSelected)) hallRoster.AddToCounts(CharacterObject.Find(troop.CharacterId), 1);
+            // Unselected survivors stay outside the hall; they are not casualties and keep Removed=false.
             _session.Phase = CoupPhase.Hall;
-            SettlementEntryTroopSelectionBehavior.QueueArmedCoup(_session.SettlementId, hallRoster);
-            Show("已选定突入大厅的士兵。从城镇菜单进入领主大厅。");
+            QueueCurrentScene();
+            if (_session.Phase == CoupPhase.Hall) Show("已选定突入大厅的士兵。从城镇菜单进入领主大厅。");
         }, () =>
         {
             if (!IsCurrentUi(id, token, CoupPhase.HallSelection)) return;
@@ -504,12 +555,16 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         {
             if (troop.CasualtyCommitted || (!troop.Killed && !troop.Wounded)) continue;
             CharacterObject character = CharacterObject.Find(troop.CharacterId);
-            if (!parties.TryGetValue(troop.SourcePartyId, out MobileParty source) || character == null)
-                throw new InvalidOperationException("兵损来源已失效：" + troop.SourcePartyId + "/" + troop.CharacterId);
-            TroopRoster roster = source.MemberRoster;
-            int healthy = HealthyCount(roster, character);
-            if (healthy < 1) throw new InvalidOperationException("兵损结算与现有名册不一致。");
-            roster.AddToCounts(character, troop.Killed ? -1 : 0, false, troop.Killed ? 0 : 1);
+            // A disbanded party or an already-depleted stack has nothing left to deduct; retrying
+            // would only wedge the session forever, so record the skip and move on.
+            if (!parties.TryGetValue(troop.SourcePartyId, out MobileParty source) || character == null
+                || HealthyCount(source.MemberRoster, character) < 1)
+            {
+                Log("casualty_skipped source=" + troop.SourcePartyId + " troop=" + troop.CharacterId);
+                troop.CasualtyCommitted = true;
+                continue;
+            }
+            source.MemberRoster.AddToCounts(character, troop.Killed ? -1 : 0, false, troop.Killed ? 0 : 1);
             troop.CasualtyCommitted = true;
         }
         if (Hero.MainHero?.IsAlive == true) Hero.MainHero.HitPoints = Math.Max(1, Math.Min(Hero.MainHero.HitPoints, (int)_session.PlayerHealth));
@@ -525,9 +580,6 @@ internal sealed class CoupCampaignBehavior : CampaignBehaviorBase
         return index < 0 ? 0 : Math.Max(0, roster.GetElementNumber(index) - roster.GetElementWoundedNumber(index));
     }
     private static int HealthyRegulars(TroopRoster roster) => roster?.GetTroopRoster().Where(e => !e.Character.IsHero).Sum(e => Math.Max(0, e.Number - e.WoundedNumber)) ?? 0;
-    private static bool IsSettled(CoupSession session) => session.Phase == CoupPhase.Completed
-        || (session.Phase == CoupPhase.Failed && session.DefectionCommitted && session.FactsCommitted && session.WithdrawalCommitted)
-        || (session.Phase == CoupPhase.Suspended && session.CasualtiesCommitted && !session.HasPoliticalCommit);
     private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage("【宣权篡位】" + message)); }
     private void Log(string message) => Logger.Log("Coup", "event=" + _session?.Id + " phase=" + _session?.Phase + " town=" + _session?.SettlementId + " " + message);
 }

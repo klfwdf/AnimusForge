@@ -65,9 +65,24 @@ internal sealed class CoupSession
     public string FailureReason;
     public List<CoupTroopRecord> Troops = new List<CoupTroopRecord>();
 
+    public bool SceneEntered;
+
     public bool IsTerminal => Phase == CoupPhase.Completed || Phase == CoupPhase.Failed || Phase == CoupPhase.Suspended;
     public bool HasPoliticalCommit => PoliticalCommitStarted || RulingClanCommitted || TownCommitted || CustodyCommitted || DefectionCommitted;
     public bool IsCombatPhase => Phase == CoupPhase.Street || Phase == CoupPhase.Hall;
+    // A suspended victory or failure must be retried to completion; it never settles by itself.
+    public bool IsResumable => Phase == CoupPhase.Suspended
+        && (HasPoliticalCommit || ResumePhase == CoupPhase.AwaitingResolution || ResumePhase == CoupPhase.Failed);
+    public bool IsSettled => Phase == CoupPhase.Completed
+        || (Phase == CoupPhase.Failed && DefectionCommitted && FactsCommitted && WithdrawalCommitted)
+        || (Phase == CoupPhase.Suspended && CasualtiesCommitted && !IsResumable);
+    // Street holds gate guards before the door; the hall holds only its own guard cap.
+    public bool IsGateCleared => !Troops.Any(t => t.Role == CoupTroopRole.GateGuard && !t.Removed);
+    public string SceneLocationId => Phase == CoupPhase.Hall ? "lordshall" : "center";
+
+    // The single authority on which defenders a scene spawns; the host SETS copies this list.
+    internal List<CoupTroopRecord> PendingDefenders(bool hall) => Troops.Where(t => !t.Removed
+        && (hall ? t.Role == CoupTroopRole.HallGuard : t.Role == CoupTroopRole.GateGuard || t.Role == CoupTroopRole.StreetDefender)).ToList();
 
     internal bool TryAdvance(CoupPhase expected, CoupPhase next)
     {

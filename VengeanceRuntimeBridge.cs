@@ -70,14 +70,35 @@ internal static class VengeanceRuntimeBridge
             return;
         }
 
-        RichExecutionApi.InitializeDefaults();
-        ExecutionSitePresetStore.EnsureBuiltInPresetsForAllMethods();
-        starter.AddModel(new ScopedExecutionRelationModel());
-        starter.AddBehavior(new RichExecutions.Campaign.RichExecutionCampaignBehavior(
-            RichExecutionApi.Service,
-            RichExecutionApi.Methods,
-            RichExecutionApi.Charges));
-        RexLog.Info("Registered embedded Vengeance campaign behavior.");
+        // A Vengeance failure must not abort the host's campaign registration.
+        // Preset files are prepared first; nothing is added to the starter
+        // until every fallible step has succeeded.
+        try
+        {
+            RichExecutionApi.InitializeDefaults();
+            ExecutionSitePresetStore.EnsureBuiltInPresetsForAllMethods();
+        }
+        catch (Exception exception)
+        {
+            RexLog.Error("Embedded Vengeance setup failed; the feature stays off for this campaign.", exception);
+            Logger.Log("Vengeance", "Embedded Vengeance setup failed; campaign continues without it: " + exception);
+            return;
+        }
+
+        try
+        {
+            starter.AddModel(new ScopedExecutionRelationModel());
+            starter.AddBehavior(new RichExecutions.Campaign.RichExecutionCampaignBehavior(
+                RichExecutionApi.Service,
+                RichExecutionApi.Methods,
+                RichExecutionApi.Charges));
+            RexLog.Info("Registered embedded Vengeance campaign behavior.");
+        }
+        catch (Exception exception)
+        {
+            RexLog.Error("Embedded Vengeance campaign registration failed.", exception);
+            Logger.Log("Vengeance", "Embedded Vengeance campaign registration failed: " + exception);
+        }
     }
 
     internal static void Shutdown()

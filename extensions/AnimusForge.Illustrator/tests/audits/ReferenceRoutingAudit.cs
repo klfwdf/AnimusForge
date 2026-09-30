@@ -24,6 +24,10 @@ public static class ReferenceRoutingAudit
     private static void Check(bool value, string name)
     { if (!value) throw new Exception("FAIL " + name); checks++; Console.WriteLine("PASS " + name); }
     private static string Text(object value, string name) { return (string)value.GetType().GetProperty(name).GetValue(value); }
+    private static bool IsIdle(object value) { return (bool)value.GetType().GetProperty("IsIdleStanceFullBody", All).GetValue(value); }
+    // Mirrors the production image-side order: stable, idle-stance full-body renders last.
+    private static List<object> IdleLastOrder(IList refs)
+    { var items = refs.Cast<object>().ToList(); return items.Where(x => !IsIdle(x)).Concat(items.Where(IsIdle)).ToList(); }
     private static object Call(Type type, string name, params object[] args) { return type.GetMethod(name, All).Invoke(null, args); }
     private static IList Refs() { return (IList)Activator.CreateInstance(list); }
     private static object Ref(string data, string label, string role)
@@ -312,8 +316,12 @@ public static class ReferenceRoutingAudit
                     else
                     {
                         Check(handler.Images.Count == 7, "Edits uploads two perspectives among seven routed image parts");
-                        Check(handler.Images.Select(Convert.ToBase64String).SequenceEqual(imageRefs.Cast<object>().Select(x => Text(x, "Base64Image"))),
-                            "Edits uploads exactly the routed bytes in reference-label order");
+                        Check(handler.Images.Select(Convert.ToBase64String).SequenceEqual(IdleLastOrder(imageRefs).Select(x => Text(x, "Base64Image"))),
+                            "Edits uploads exactly the routed bytes with idle-stance full-body renders last");
+                        Check(Convert.ToBase64String(handler.Images[0]) == perspectiveData &&
+                            Convert.ToBase64String(handler.Images[handler.Images.Count - 1]) == Png(8) &&
+                            Convert.ToBase64String(handler.Images[handler.Images.Count - 2]) == Png(6),
+                            "Edits first image is never an idle-stance full-body render");
                         Check(handler.Prompt.Contains("同一个人") && handler.Prompt.Contains("普通透视") && !handler.Prompt.Contains("ENVIRONMENT_VIEW_5"),
                             "Edits keeps identity pairing and filters excess scene inputs");
                         Check(!handler.Prompt.Contains("环境全景参考") && handler.Prompt.Contains("环境主视角") && handler.Prompt.Contains("环境辅助视角") &&
