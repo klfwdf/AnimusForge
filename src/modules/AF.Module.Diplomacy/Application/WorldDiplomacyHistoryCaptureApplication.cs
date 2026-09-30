@@ -21,15 +21,9 @@ internal sealed class WorldDiplomacyWeeklyArtifact
 
 internal interface IWorldDiplomacyHistoryCapturePort
 {
-    void EnsureInitialized();
     int CurrentHour();
     long WeeklyRevision();
     IEnumerable<WorldDiplomacyWeeklyArtifact> WeeklyArtifacts();
-    void AppendWeekly(WorldDiplomacyWeeklyArtifact artifact);
-    void SyncPolicyArtifacts(int maxBatches);
-    void RetryDeferredEntries();
-    void SyncSources(bool force);
-    string Render(long throughSequence);
 }
 
 internal static class WorldDiplomacyHistoryCaptureApplication
@@ -42,35 +36,39 @@ internal static class WorldDiplomacyHistoryCaptureApplication
         initialized = true;
     }
 
-    internal static void SyncSources<TPort>(ref TPort port, bool force, ref int lastSyncHour, ref long observedWeeklyRevision,
-        int forcePolicyBatches) where TPort : IWorldDiplomacyHistoryCapturePort
+    internal static void SyncSources(IWorldDiplomacyHistoryCapturePort port, IWorldDiplomacyOrchestration orchestration,
+        bool force, ref int lastSyncHour, ref long observedWeeklyRevision, int forcePolicyBatches)
     {
-        port.EnsureInitialized();
+        orchestration.EnsureCanonicalHistoryInitialized();
         int hour = port.CurrentHour();
         if (!force && lastSyncHour == hour) return;
         long revision = port.WeeklyRevision();
         if (observedWeeklyRevision != revision)
         {
-            foreach (WorldDiplomacyWeeklyArtifact artifact in port.WeeklyArtifacts()) port.AppendWeekly(artifact);
+            foreach (WorldDiplomacyWeeklyArtifact artifact in port.WeeklyArtifacts())
+            {
+                orchestration.AppendCanonicalHistoryWeeklyArtifact(artifact);
+            }
             observedWeeklyRevision = revision;
         }
-        port.SyncPolicyArtifacts(force ? forcePolicyBatches : 1);
+        orchestration.SyncPublishedPolicyArtifacts(force ? forcePolicyBatches : 1);
         lastSyncHour = hour;
     }
 
-    internal static void Capture<TPort>(WorldDiplomacyStorage storage, WorldDiplomacyJob job, bool syncSources,
-        long throughSequence, ref TPort port) where TPort : IWorldDiplomacyHistoryCapturePort
+    internal static void Capture(WorldDiplomacyStorage storage, WorldDiplomacyJob job, bool syncSources,
+        long throughSequence, IWorldDiplomacyHistoryCapturePort port, IWorldDiplomacyOrchestration orchestration)
     {
         if (job == null) return;
         if (syncSources)
         {
-            port.RetryDeferredEntries();
-            port.SyncSources(true);
+            orchestration.RetryDeferredCanonicalHistoryEntries();
+            orchestration.SyncCanonicalHistorySources(true);
         }
-        port.EnsureInitialized();
+        orchestration.EnsureCanonicalHistoryInitialized();
         WorldDiplomacyCanonicalHistoryState history = storage.CanonicalHistory;
         job.HistoryThroughSequence = WorldDiplomacyCanonicalHistoryRules.ClampCanonicalHistoryThroughSequence(history, throughSequence);
-        WorldDiplomacyCanonicalHistoryRules.StampCanonicalHistoryOnJob(job, history, port.Render(job.HistoryThroughSequence));
+        WorldDiplomacyCanonicalHistoryRules.StampCanonicalHistoryOnJob(job, history,
+            orchestration.BuildCanonicalHistoryBlock(job.HistoryThroughSequence));
     }
 
     internal static void RetryDeferredCanonicalHistoryEntries(

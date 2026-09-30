@@ -21,10 +21,7 @@ internal interface IWorldDiplomacyOfferActionPort
     int CurrentDay { get; }
     WorldDiplomacyRound ResolveRound(string id);
     WorldDiplomacyDocument ResolveDocument(string id);
-    void PruneInvalidOffers(WorldDiplomacyRound round);
-    (bool Blocked, string Reason) ProposalViolation(string intent, WorldDiplomacyDocument document);
     bool ResolveParties(WorldDiplomacyRoundOffer offer);
-    bool ArePeaceTermsExecutable(WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source);
     WorldDiplomacyOfferActionReceipt ExecutePeace(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms);
     string ApplyCession(string proposerId, string targetId, WorldDiplomacyPeaceTerms terms);
     WorldDiplomacyOfferActionReceipt ExecuteAlliance(string proposerId, string targetId);
@@ -36,14 +33,14 @@ internal interface IWorldDiplomacyOfferActionPort
 internal static class WorldDiplomacyOfferActionApplication
 {
     internal static bool Execute(string intent, WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source,
-        WorldDiplomacyDocument response, IWorldDiplomacyOfferActionPort port)
+        WorldDiplomacyDocument response, IWorldDiplomacyOfferActionPort port, IWorldDiplomacyOrchestration orchestration)
     {
         string proposerId = offer.ProposerKingdomId;
         string targetId = offer.TargetKingdomId;
         WorldDiplomacyOfferActionReceipt receipt;
         if (intent == "propose_peace")
         {
-            if (!port.ArePeaceTermsExecutable(offer, source)) return false;
+            if (!orchestration.AreOfferedPeaceTermsCurrentlyExecutable(offer, source)) return false;
             response.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(
                 WorldDiplomacyDocumentFactRules.ResolveOfferedPeaceTerms(source, offer.SourceActionId));
             receipt = port.ExecutePeace(proposerId, targetId, response.PeaceTerms);
@@ -70,11 +67,19 @@ internal static class WorldDiplomacyOfferActionApplication
 // and revalidate game objects on the campaign thread before any mechanical effect.
 internal static class WorldDiplomacyOfferApplication
 {
-    internal static void Settle(WorldDiplomacyDocument document, IWorldDiplomacyOfferActionPort port)
+    internal static void Settle(WorldDiplomacyDocument document, IWorldDiplomacyOfferActionPort port,
+        IWorldDiplomacyOrchestration orchestration)
     {
-        Settle(port.ResolveRound(document?.RoundId), document, port.PruneInvalidOffers,
-            port.ProposalViolation, port.ResolveDocument, port.ResolveParties,
-            (intent, offer, source, response) => WorldDiplomacyOfferActionApplication.Execute(intent, offer, source, response, port),
+        Settle(port.ResolveRound(document?.RoundId), document, orchestration.PruneInvalidOffers,
+            (intent, doc) =>
+            {
+                bool blocked = orchestration.TryGetDiplomaticStateViolation(
+                    intent, doc?.AuthorKingdomId, doc?.TargetKingdomId, out string reason);
+                return (blocked, reason);
+            },
+            port.ResolveDocument, port.ResolveParties,
+            (intent, offer, source, response) => WorldDiplomacyOfferActionApplication.Execute(
+                intent, offer, source, response, port, orchestration),
             (intent, offer) => port.HasTakenEffect(intent, offer.ProposerKingdomId, offer.TargetKingdomId), port.Log);
     }
 

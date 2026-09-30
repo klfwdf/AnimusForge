@@ -27,6 +27,7 @@ internal static class Program
         string sourcePath = FindRepositoryFile(Path.Combine(
             "src", "modules", "AF.Module.Diplomacy", "World", "WorldDiplomacyBehavior.cs"));
         string source = File.ReadAllText(sourcePath, Encoding.UTF8) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
+        source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmApplication.cs")) + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyLlmResult.cs"));
         source += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPlayerApplication.cs"));
@@ -397,7 +398,7 @@ internal static class Program
         Test.True(!potentialActions.Contains("allowNewWarThreats", StringComparison.Ordinal)
                   && !currentLegalOptions.Contains("TopicCategory", StringComparison.Ordinal),
             "war warnings and ultimatums must not disappear because of relay topic classification");
-        Test.True(potentialActions.Contains("CanIssueWarThreat(first, second", StringComparison.Ordinal)
+        Test.True(potentialActions.Contains("CanIssueWarThreat(ref warAdmission", StringComparison.Ordinal)
                   && potentialActions.Contains("actions.Add(\"warning\")", StringComparison.Ordinal)
                   && potentialActions.Contains("actions.Add(\"ultimatum\")", StringComparison.Ordinal),
             "a legally eligible peaceful pair must expose warning and ultimatum actions");
@@ -426,7 +427,7 @@ internal static class Program
         Test.True(roundPlanParticipants.Contains("BuildLegalDiplomaticActionIntents(round, x, author)", StringComparison.Ordinal)
                   && roundPlanParticipants.Contains("ResponseIntentToProposalIntent(intent)", StringComparison.Ordinal),
             "round planning must retain a kingdom that can answer the root author's open proposal");
-        Test.True(source.Contains("GetRoundPlanActionableParticipants(ResolveKingdom(authorId), r)", StringComparison.Ordinal),
+        Test.True(source.Contains("GetRoundPlanActionableParticipants(authorId, round)", StringComparison.Ordinal),
             "embedded and fallback round planning must use response-aware candidates");
         string canonicalEntryRenderer = ExtractMethod(
             File.ReadAllText(
@@ -561,7 +562,7 @@ internal static class Program
 			"old diplomatic-reputation saves must migrate in place to prestige while international reputation persists separately");
 		Test.True(repRules.Contains("MaximumInternationalReputationChangePerDocument = 10", StringComparison.Ordinal)
             && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"))
-                .Contains("port.SettleInternationalReputationForDocument(document)", StringComparison.Ordinal)
+                .Contains("orchestration.SettleInternationalReputationForDocument(document)", StringComparison.Ordinal)
 			&& source.Contains("international_reputation_reason", StringComparison.Ordinal),
 			"every new declaration must carry one bounded retrospective international-reputation evaluation into publication settlement");
 		string generatedEnvelope = ExtractMethod(
@@ -599,7 +600,7 @@ internal static class Program
 			&& reputationRecovery.Contains("!x.InternationalReputationSettled", StringComparison.Ordinal)
 			&& reputationRecovery.Contains("WorldDiplomacyRoundLifecycleRules.OrderDocumentsChronologically(", StringComparison.Ordinal)
 			&& reputationRecovery.Contains("settleReputation(document)", StringComparison.Ordinal)
-			&& CountOccurrences(source, "RecoverUnsettledAiInternationalReputation();") == 2,
+			&& CountOccurrences(source, "_orchestration.RecoverUnsettledAiInternationalReputation();") == 2,
 			"load/session migration must replay each persisted missed AI evaluation once in chronological order");
 		Test.True(source.Contains("WarningCompliancePrestigeChange = 5", StringComparison.Ordinal)
 			&& source.Contains("UltimatumCompliancePrestigeChange = 10", StringComparison.Ordinal)
@@ -699,13 +700,20 @@ internal static class Program
 			&& authorGate.Contains("player_controlled_realm_requires_player_authorization", StringComparison.Ordinal),
 			"AI diplomatic authorship must allow captive rulers while still rejecting player-ruled realms");
         string executionOwner = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
-        Test.True(CountOccurrences(source, "CanAiAuthorDiplomaticDocument(") + CountOccurrences(executionOwner, "CanAiAuthorDiplomaticDocument(")
-            + CountOccurrences(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PublicationPort.cs")), "CanAiAuthorDiplomaticDocument(") >= 8,
+        string authorityProbeComposite = source + executionOwner
+            + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PublicationPort.cs"))
+            + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"))
+            + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DocumentExecutionPort.cs"))
+            + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs"))
+            + File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.ImmediateActionPort.cs"));
+        Test.True(CountOccurrences(authorityProbeComposite, "CanAiAuthorDiplomaticDocument(")
+            + CountOccurrences(authorityProbeComposite, "CanAiAuthorParty(")
+            + CountOccurrences(authorityProbeComposite, "canAiAuthor(") >= 8,
 			"AI author authority must be checked at scheduling, request, commit, propagation, and execution boundaries");
 		string mandatoryResponse = ExtractMethod(source, "private void TryScheduleMandatoryCourtResponse(");
 		string courtResponseApplication = File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs")), Encoding.UTF8);
 		string mandatoryResponseOwner = ExtractMethod(courtResponseApplication, "internal static void TryScheduleMandatory(");
-		Test.True(mandatoryResponse.Contains("CanAiAuthorDiplomaticDocument(receiver", StringComparison.Ordinal)
+		Test.True(mandatoryResponse.Contains("CanAiAuthorParty(receiverId", StringComparison.Ordinal)
 			&& !mandatoryResponse.Contains("ruler_is_prisoner", StringComparison.Ordinal)
 			&& !mandatoryResponse.Contains("王庭暂时无法正式回应你的宣言", StringComparison.Ordinal),
 			"a player declaration delivered to a captive ruler must continue into the normal response path");
@@ -718,9 +726,9 @@ internal static class Program
 		Test.True(captivityContext.Contains("currentTargetIsHolder", StringComparison.Ordinal)
 			&& captivityContext.Contains("holderKnown", StringComparison.Ordinal)
 			&& captivityContext.Contains("string pressure", StringComparison.Ordinal)
-			&& captivityContext.Contains("\"高\"", StringComparison.Ordinal)
-			&& captivityContext.Contains("\"中\"", StringComparison.Ordinal)
-			&& captivityContext.Contains("\"低\"", StringComparison.Ordinal),
+			&& captivityContext.Contains("\"是\"", StringComparison.Ordinal)
+			&& captivityContext.Contains("\"否\"", StringComparison.Ordinal)
+			&& captivityContext.Contains("\"未知\"", StringComparison.Ordinal),
 			"captive-ruler prompt context must expose the agreed three pressure levels");
 		Test.True(captivityContext.Contains("不得因此无条件接受", StringComparison.Ordinal)
 			&& captivityContext.Contains("不得绕过当前合法动作", StringComparison.Ordinal)
@@ -731,7 +739,7 @@ internal static class Program
 			"captive-ruler pressure must use the reliable captor-party kingdom when available");
 
 		string courtArrival = ExtractMethod(source, "private void ProcessCourtArrival(");
-		Test.True(courtArrival.Contains("IsPlayerAffiliatedKingdom(receiver)", StringComparison.Ordinal),
+		Test.True(courtArrival.Contains("_host.IsPlayerAffiliatedParty(receiverId)", StringComparison.Ordinal),
 			"formal court arrival must work for player rulers and player vassals");
         string propagation = ExtractMethod(source, "private void StartDocumentPropagation(");
         Test.True(propagation.Contains("WorldDiplomacyPublicationRoutingApplication.Start(", StringComparison.Ordinal), "propagation enters Application admission");
@@ -748,7 +756,7 @@ internal static class Program
 		string propagationArrivals = ExtractMethod(source, "private void ProcessPropagationArrivals(");
         Test.True(propagationArrivals.Contains("WorldDiplomacyPropagationApplication.ProcessDue(", StringComparison.Ordinal)
                   && propagationArrivals.Contains("WorldDiplomacyPropagationApplication.ReceiveCourt(", StringComparison.Ordinal)
-                  && propagationArrivals.Contains("() => IsPlayerAffiliatedKingdom(receiver), () => ProcessCourtArrival(receiver, document)", StringComparison.Ordinal),
+                  && propagationArrivals.Contains("() => _host.IsPlayerAffiliatedParty(receiverId), () => ProcessCourtArrival(receiverId, document)", StringComparison.Ordinal),
             "the live propagation host must bind court resolution and formal receipts to the application owner");
         Test.True(propagationOwner.Contains("newlyKnown || (isPlayerAffiliated() && !document.HasReachedPlayerCourt)", StringComparison.Ordinal),
             "an already-known declaration must still complete its formal player-court receipt");
@@ -1164,8 +1172,8 @@ internal static class Program
         Test.True(compactCandidate.Contains(
                       "BuildCompactDiplomaticRelationshipLine(initiator, candidate)",
                       StringComparison.Ordinal)
-                  && compactCandidate.Contains(
-                      "BuildLegalDiplomaticActionIntents(round, initiator, candidate)",
+                  && source.Contains(
+                      "orchestration.BuildLegalDiplomaticActionIntents(round, author, candidate)",
                       StringComparison.Ordinal),
             "opening candidate rows must reuse the same relationship facts and append their own live action grant");
 
@@ -1690,7 +1698,7 @@ internal static class Program
                       StringComparison.Ordinal),
             "offer cooldown persistence must own its independent schema version and retention bound");
         Test.True(source.Contains(
-                "private readonly Dictionary<WorldDiplomacyOfferCooldownKey, WorldDiplomacyOfferCooldown> _offerCooldownByKey",
+                "Dictionary<WorldDiplomacyOfferCooldownKey, WorldDiplomacyOfferCooldown> OfferCooldownByKey",
                 StringComparison.Ordinal),
             "offer cooldown checks must use the directed-key runtime index");
 
@@ -1752,9 +1760,9 @@ internal static class Program
             "private void NormalizeOfferCooldownStorage()",
             "private void ClearBilateralOfferCooldowns(");
         Test.True(normalizeCooldowns.Contains(
-                      "WorldDiplomacyOfferCooldownStorageNormalizer.Normalize(_storage);",
+                      "WorldDiplomacyOfferCooldownStorageNormalizer.Normalize(Storage);",
                       StringComparison.Ordinal)
-                  && normalizeCooldowns.Contains("RebuildOfferCooldownIndex(_storage?.OfferCooldowns, _offerCooldownByKey)", StringComparison.Ordinal),
+                  && normalizeCooldowns.Contains("RebuildOfferCooldownIndex(Storage?.OfferCooldowns, _runtime.OfferCooldownByKey)", StringComparison.Ordinal),
             "behavior cooldown normalization must delegate persistence cleanup and rebuild the runtime index");
         Test.True(cooldownPersistence.Contains(
                       "storage.OfferCooldowns ??= new List<WorldDiplomacyOfferCooldown>();",
@@ -1914,7 +1922,7 @@ internal static class Program
                       "List<string> legalTargetIds = round?.ResultSettlementPending == true",
                       StringComparison.Ordinal)
                   && relayPrompt.Contains(
-                      "GetResultSettlementActionableTargets(round, author)",
+                      "GetResultSettlementActionableTargetIds(round, author)",
                       StringComparison.Ordinal)
                   && relayPrompt.Contains(
                       ": (round?.RelayRouteKingdomIds ?? new List<string>())",
@@ -1934,10 +1942,10 @@ internal static class Program
             "private string BuildCompactRoundPlanCandidateLine(",
             "private string BuildCompactDiplomaticRelationshipLine(");
         Test.True(autonomousPrompt.Contains(
-					  "BuildCompactRoundPlanCandidateLine(author, candidate, round)",
+					  "BuildCompactRoundPlanCandidateLine(author, candidate, round,",
                       StringComparison.Ordinal)
-                  && compactCandidateRenderer.Contains(
-                      "BuildLegalDiplomaticActionIntents(round, initiator, candidate)",
+                  && source.Contains(
+                      "orchestration.BuildLegalDiplomaticActionIntents(activeRound, author, candidate)",
                       StringComparison.Ordinal),
             "autonomous candidate rows must carry their own live legal actions instead of a duplicated final block");
         string targetedPrompt = ExtractSection(
@@ -1945,7 +1953,7 @@ internal static class Program
             "private string BuildGenerationPrompt(",
             "private string BuildCompactRoundPlanCandidateLine(");
         Test.True(targetedPrompt.Contains(
-                      "List<string> legalActions = world.BuildLegalDiplomaticDeclarationIntents(",
+                      "List<string> legalActions = orchestration.BuildLegalDiplomaticDeclarationIntents(",
                       StringComparison.Ordinal)
                   && targetedPrompt.Contains(
                       "isExternalResponseOnly: isExternalResponseOnly",
@@ -2083,7 +2091,7 @@ internal static class Program
             "else if (!string.IsNullOrWhiteSpace(job.TargetKingdomId))",
             StringComparison.Ordinal);
         Test.True(signatureBuilder.Contains("PruneInvalidOffers(round);", StringComparison.Ordinal)
-                  && signatureBuilder.Contains("GetResultSettlementActionableTargets(round, author)", StringComparison.Ordinal)
+                  && signatureBuilder.Contains("GetResultSettlementActionableTargetIds(round, authorId)", StringComparison.Ordinal)
                   && signatureBuilder.Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal)
                   && signatureBuilder.Contains("job.IsRelayTurn", StringComparison.Ordinal)
                   && signatureBuilder.Contains("job.ResultSettlementSlotId", StringComparison.Ordinal)
@@ -2107,15 +2115,15 @@ internal static class Program
                   && staleActionCheck.Contains("StringComparison.Ordinal", StringComparison.Ordinal),
             "a generation must be stale whenever its live legal-action signature changes");
 
-        string refreshActionPrompt = ExtractSection(
-            source,
-            "private bool RefreshDiplomaticActionPresentationAndPrompt(",
-            "private bool RefreshDiplomaticThreatPresentationAndPrompt(");
+        string refreshActionPrompt = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile(Path.Combine(
+                "src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyJobPreparationApplication.cs"))),
+            "internal static bool RefreshDiplomaticActionPresentationAndPrompt(");
         Test.True(refreshActionPrompt.Contains("job.LlmMessages?.Clear();", StringComparison.Ordinal)
                   && refreshActionPrompt.Contains("job.SemanticRepairAttempts = 0;", StringComparison.Ordinal)
                   && refreshActionPrompt.Contains("job.HistoryPrefixHash = \"\";", StringComparison.Ordinal)
                   && refreshActionPrompt.Contains("job.IsRunning = false;", StringComparison.Ordinal)
-                  && refreshActionPrompt.Contains("return Rebuild(port, job);", StringComparison.Ordinal),
+                  && refreshActionPrompt.Contains("return Rebuild(port, orchestration, job);", StringComparison.Ordinal),
             "a stale action presentation must discard its request/repair chain and rebuild the prompt");
 
         string beforeSend = ExtractMethod(
@@ -2134,10 +2142,10 @@ internal static class Program
             "internal static void Complete<TEffects>(");
         int completedStaleCheck = completedJobs.IndexOf("effects.HasStaleActionPresentation(job)", StringComparison.Ordinal);
         int completedRefresh = completedJobs.IndexOf(
-            "effects.RefreshActionPresentation(job)",
+            "orchestration.RefreshDiplomaticActionPresentationAndPrompt(job)",
             completedStaleCheck,
             StringComparison.Ordinal);
-        int commitGenerated = completedJobs.IndexOf("effects.CommitGeneratedDocument(job, resultContent)", StringComparison.Ordinal);
+        int commitGenerated = completedJobs.IndexOf("orchestration.CommitGeneratedDocument(job, resultContent)", StringComparison.Ordinal);
         Test.True(completedStaleCheck >= 0
                   && completedRefresh > completedStaleCheck
                   && commitGenerated > completedRefresh,
@@ -2168,9 +2176,9 @@ internal static class Program
 
         int repairLegalActions = generationRepair.IndexOf("BuildCurrentLegalDiplomaticOptions(", StringComparison.Ordinal);
         int repairSignature = generationRepair.IndexOf(
-            "repair.PresentedLegalActionSignature = world.BuildGenerationLegalActionSignature(repair);",
+            "repair.PresentedLegalActionSignature = orchestration.BuildGenerationLegalActionSignature(repair);",
             StringComparison.Ordinal);
-        int repairEnqueue = generationRepair.IndexOf("EnqueueJob(repair);", StringComparison.Ordinal);
+        int repairEnqueue = generationRepair.IndexOf("orchestration.EnqueueJob(repair);", StringComparison.Ordinal);
         Test.True(repairLegalActions >= 0
                   && repairSignature > repairLegalActions
                   && repairEnqueue > repairSignature,
@@ -2506,7 +2514,7 @@ internal static class Program
                   && abandonSecondFailure > stopFirstFailure,
             "a first invalid draft may return only after a viable repair was enqueued; failed or non-viable repair must abandon");
         Test.True(rejectionGate.Contains(
-                "&& EnqueueGeneratedDeclarationRepair(world, job, rejectedRaw, author, target, normalizedReason, parsedJson)",
+                "&& EnqueueGeneratedDeclarationRepair(world, orchestration, job, rejectedRaw, author, target, normalizedReason, parsedJson)",
                 StringComparison.Ordinal),
             "the retry gate must pass the rejected parsed envelope and must not suppress abandonment when no legal repair action remains");
         Test.True(CountOccurrences(rejectionGate, "EnqueueGeneratedDeclarationRepair(") == 1
@@ -2579,10 +2587,10 @@ internal static class Program
                   && authorizedTargets.Contains("round?.RelayRouteKingdomIds", StringComparison.Ordinal),
             "repair target authorization must refresh settlement-wide candidates only for a slot-owned settlement job and keep ordinary relays route-only");
         Test.True(authorizedTargetsAdapter.Contains(
-                      "GetResultSettlementActionableTargets(round, author)",
+                      "GetResultSettlementActionableTargetIds(round, authorId)",
                       StringComparison.Ordinal)
-                  && authorizedTargetsAdapter.Contains("!candidate.IsEliminated", StringComparison.Ordinal)
-                  && authorizedTargetsAdapter.Contains("HasIndependentWorldDiplomacyAuthority(candidate)", StringComparison.Ordinal),
+                  && authorizedTargetsAdapter.Contains("!_host.IsEliminatedParty(id)", StringComparison.Ordinal)
+                  && authorizedTargetsAdapter.Contains("_host.HasIndependentAuthority(id)", StringComparison.Ordinal),
             "the host adapter must bind settlement-target and live-candidate probes");
         Test.True(!authorizedTargets.Contains("generatedTarget", StringComparison.Ordinal)
                   && !authorizedTargets.Contains("Kingdom target", StringComparison.Ordinal),
@@ -2598,7 +2606,7 @@ internal static class Program
             "authorized repair targets must remain live, independent, actionable, and deterministic");
 
         Test.True(generationRepair.Contains(
-                "List<string> authorizedTargetIds = world.GetAuthorizedGenerationTargetIds(source, repairRound, author);",
+                "List<string> authorizedTargetIds = orchestration.GetAuthorizedGenerationTargetIds(source, repairRound, author);",
                 StringComparison.Ordinal)
                   && generationRepair.Contains(
                       "target != null && authorizedTargetIds.Contains(target, StringComparer.OrdinalIgnoreCase)",
@@ -2685,7 +2693,7 @@ internal static class Program
             "internal static void Complete<TEffects>(");
         int failedResultStart = completedJobs.IndexOf("if (!resultSuccess)", StringComparison.Ordinal);
         int ordinaryFailureCommit = completedJobs.IndexOf(
-            "effects.CommitFailedJob(job, resultError)",
+            "orchestration.CommitFailedJob(job, resultError)",
             failedResultStart,
             StringComparison.Ordinal);
         int ordinaryFailureContinue = completedJobs.IndexOf(
@@ -2707,7 +2715,7 @@ internal static class Program
             "!string.IsNullOrWhiteSpace(resultContent)",
             StringComparison.Ordinal);
         int unifiedRejection = failedResultBranch.IndexOf(
-            "effects.HandleTruncatedDraft(",
+            "orchestration.RejectGeneratedDraftBeforePublication(",
             StringComparison.Ordinal);
         int removeOldJob = failedResultBranch.IndexOf("effects.RemoveJob(job.JobId)", StringComparison.Ordinal);
         int truncationFailureReset = failedResultBranch.IndexOf(
@@ -2717,7 +2725,7 @@ internal static class Program
         int truncationTry = failedResultBranch.IndexOf("try", truncationFailureReset, StringComparison.Ordinal);
         int truncationCatch = failedResultBranch.IndexOf("catch (Exception ex)", removeOldJob, StringComparison.Ordinal);
         int truncationHandlingFailure = failedResultBranch.IndexOf(
-            "effects.CommitFailedJob(job, \"truncated generated draft handling failed: \" + ex.Message)",
+            "orchestration.CommitFailedJob(job, \"truncated generated draft handling failed: \" + ex.Message)",
             truncationCatch,
             StringComparison.Ordinal);
         int stopFailureFallthrough = failedResultBranch.IndexOf("return;", removeOldJob, StringComparison.Ordinal);
@@ -2734,19 +2742,20 @@ internal static class Program
             "a partial truncated generation must enter unified draft rejection, remove its old job, and not fall through to API failure handling");
         Test.True(truncationHandlingFailure < stopFailureFallthrough,
             "an exception while handling a truncated draft must use CommitFailedJob so the old job cannot be resent");
-        Test.True(CountOccurrences(failedResultBranch, "effects.HandleTruncatedDraft(") == 1
+        Test.True(CountOccurrences(failedResultBranch, "orchestration.RejectGeneratedDraftBeforePublication(") == 1
                   && failedResultBranch.Contains("if (resultIsServiceFailure", StringComparison.Ordinal)
                   && failedResultBranch.IndexOf("if (resultIsServiceFailure", StringComparison.Ordinal) > stopFailureFallthrough
-                  && failedResultBranch.Contains("effects.CommitFailedJob(job, resultError)", StringComparison.Ordinal),
+                  && failedResultBranch.Contains("orchestration.CommitFailedJob(job, resultError)", StringComparison.Ordinal),
             "content filtering, empty output, and API/service failures must continue through ordinary failure handling");
         string completedJobsAdapter = ExtractMethod(
             source,
             "private void ProcessCompletedJobs()");
-        string completionPort = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"));
-        Test.True(completedJobsAdapter.Contains("WorldDiplomacyCompletionApplication.Run(ref source)", StringComparison.Ordinal)
-                  && completionPort.Contains("RejectGeneratedDraftBeforePublication(", StringComparison.Ordinal)
+        string completionPort = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
+        Test.True(completedJobsAdapter.Contains("WorldDiplomacyCompletionApplication.Run(ref source", StringComparison.Ordinal)
+                  && completionPort.Contains("orchestration.RejectGeneratedDraftBeforePublication(", StringComparison.Ordinal)
                   && completionPort.Contains("\"output_truncated\", null)", StringComparison.Ordinal)
-                  && completionPort.Contains("IWorldDiplomacyCompletionSource", StringComparison.Ordinal),
+                  && File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.CompletionSource.cs"))
+                      .Contains("IWorldDiplomacyCompletionSource", StringComparison.Ordinal),
             "the host must bind the truncated-draft rejection port with the unified reason");
 
         string rejectionGate = ExtractSection(
@@ -2916,7 +2925,7 @@ internal static class Program
 				Encoding.UTF8),
 			"internal static void PrepareGenerationJob(");
 		Test.True(enqueueGeneration.Contains("LegalDiplomaticDeclarationIntents,", StringComparison.Ordinal)
-			&& enqueueGeneration.Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal)
+			&& enqueueGeneration.Contains("BuildLegalDiplomaticDeclarationIntents,", StringComparison.Ordinal)
 			&& preparePriority.Contains("resolvePartyId?.Invoke(sourceDocument?.AuthorKingdomId)", StringComparison.Ordinal)
 			&& preparePriority.Contains("isRelayTurn, resultSettlementSlotId, true, sourceDocument)", StringComparison.Ordinal),
 			"player-priority preflight must use the same source-bound statement gate as validation and publication");
@@ -2924,16 +2933,17 @@ internal static class Program
 		string generatedValidation = ExtractSection(
 			source,
 			"private bool TryGetGeneratedIntentLegalityViolation(",
-			"private bool TryGetPublicPeaceTermsDisclosureViolation(");
+			"private bool TryGetPublicPeaceTermsDisclosureViolation(")
+			+ ExtractMethod(source, "public bool TryGetGeneratedSingleActionLegalityViolation(");
 		string singleActionLegality = ExtractMethod(
 			File.ReadAllText(
 				FindRepositoryFile(Path.Combine("Refactor", "Domain", "WorldDiplomacyGenerationValidationRules.cs")),
 				Encoding.UTF8),
 			"public static bool TryGetGeneratedSingleActionLegalityViolation(");
 		Test.True(generatedValidation.Contains("IsNonRootAiRelayNoActionAllowed(", StringComparison.Ordinal)
-			&& generatedValidation.Contains("job.ResultSettlementSlotId", StringComparison.Ordinal)
+			&& generatedValidation.Contains("job?.ResultSettlementSlotId", StringComparison.Ordinal)
 			&& generatedValidation.Contains("generatedTarget", StringComparison.Ordinal)
-			&& generatedValidation.Contains("job.IsRelayTurn", StringComparison.Ordinal)
+			&& generatedValidation.Contains("job != null && job.IsRelayTurn", StringComparison.Ordinal)
 			&& singleActionLegality.Contains("string.Equals(intent, \"statement\"", StringComparison.Ordinal)
 			&& singleActionLegality.Contains("non_actionable_diplomatic_intent", StringComparison.Ordinal),
 			"generated statement must pass the live non-root AI relay authorization");
@@ -2982,7 +2992,7 @@ internal static class Program
 		string declarationIntents = ExtractMethod(
 			source,
 			"private List<string> BuildLegalDiplomaticDeclarationIntents(");
-		Test.True(declarationIntents.Contains("IsNonRootAiRelayNoActionAllowed", StringComparison.Ordinal)
+		Test.True(declarationIntents.Contains("WorldDiplomacyNoActionApplication.IsAllowed", StringComparison.Ordinal)
 			&& declarationIntents.Contains("intents.Add(\"statement\")", StringComparison.Ordinal),
 			"statement must be layered onto the generation-only action list instead of polluting root action discovery");
 		Test.True(dynamicOptions.Contains("BuildLegalDiplomaticDeclarationIntents", StringComparison.Ordinal),
@@ -3010,7 +3020,8 @@ internal static class Program
 		string mandatoryResponse = ExtractSection(
 			source,
 			"private void TryScheduleMandatoryCourtResponse(",
-			"private void ProcessRoundLifecycle(");
+			"private void ProcessRoundLifecycle(")
+			+ ExtractMethod(source, "public string EnqueueMandatoryReplyJob(");
 		string mandatoryOwner = ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyCourtResponseApplication.cs"))), "internal static void TryScheduleMandatory(");
 		string admission = ExtractMethod(File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyRoundApplication.cs"))), "internal static bool AdmitMandatoryReply(");
         Test.True(admission.IndexOf("participant.LastTriggeredDocumentId = trigger.DocumentId", StringComparison.Ordinal) >= 0
@@ -3018,7 +3029,7 @@ internal static class Program
             "mandatory admission binds the source before granting enqueue permission");
 		int bindRequiredSource = mandatoryOwner.IndexOf("WorldDiplomacyRoundApplication.AdmitMandatoryReply(", StringComparison.Ordinal);
 		int enqueueRequiredResponse = mandatoryOwner.IndexOf("enqueueResponse?.Invoke(", StringComparison.Ordinal);
-		Test.True(mandatoryResponse.Contains("EnqueueMandatoryCourtReplyJob,", StringComparison.Ordinal)
+		Test.True(mandatoryResponse.Contains("EnqueueMandatoryReplyJob,", StringComparison.Ordinal)
 			&& mandatoryResponse.Contains("priority: 95", StringComparison.Ordinal)
 			&& bindRequiredSource >= 0 && enqueueRequiredResponse > bindRequiredSource,
 			"mandatory source identity must be bound before shared preflight evaluates external statement eligibility");
@@ -3052,8 +3063,8 @@ internal static class Program
 		Test.True(analyzedPublication.Contains("document.IsExternalResponseOnly", StringComparison.Ordinal)
 			&& analyzedPublication.Contains("ResolveDocument(document.SourceDocumentId)", StringComparison.Ordinal),
 			"final publication must revalidate the same external source-bound statement authorization");
-		int mechanicsGuard = analyzedPublication.IndexOf("if (!allowedNoAction)", StringComparison.Ordinal);
-        int historyPublication = analyzedPublication.LastIndexOf("FinalizePublishedDocumentAfterAnalysis(port, document", StringComparison.Ordinal);
+		int mechanicsGuard = analyzedPublication.IndexOf("&& !allowedNoAction)", StringComparison.Ordinal);
+        int historyPublication = analyzedPublication.LastIndexOf("FinalizePublishedDocumentAfterAnalysis(port, orchestration, document", StringComparison.Ordinal);
 		Test.True(mechanicsGuard >= 0 && historyPublication > mechanicsGuard,
 			"a valid statement must bypass action mechanics while remaining publishable");
 
@@ -3189,8 +3200,8 @@ internal static class Program
 		Test.True(analyzedPublication.Contains("document.IsRoundResponseNoActionDeclaration", StringComparison.Ordinal)
 			&& !analyzedPublication.Contains("document.IsAutonomousNoActionDeclaration", StringComparison.Ordinal),
 			"publication authorization must use the general non-root relay stamp rather than the war audit flag");
-		int noActionMechanicsGuard = analyzedPublication.IndexOf("if (!allowedNoAction)", StringComparison.Ordinal);
-        int historyPublication = analyzedPublication.LastIndexOf("FinalizePublishedDocumentAfterAnalysis(port, document", StringComparison.Ordinal);
+		int noActionMechanicsGuard = analyzedPublication.IndexOf("&& !allowedNoAction)", StringComparison.Ordinal);
+        int historyPublication = analyzedPublication.LastIndexOf("FinalizePublishedDocumentAfterAnalysis(port, orchestration, document", StringComparison.Ordinal);
 		Test.True(noActionMechanicsGuard >= 0 && historyPublication > noActionMechanicsGuard,
 			"no-action declarations need one explicit mechanics guard before ordinary history publication");
 		foreach (string forbiddenMechanism in new[]
@@ -3212,7 +3223,7 @@ internal static class Program
 			StringComparison.Ordinal);
 		Test.True(targetDecision > noActionMechanicsGuard && targetDecision < historyPublication,
 			"a statement remains the target kingdom's next published declaration, so absent comply_ultimatum must still record noncompliance");
-        Test.True(analyzedPublication.Contains("FinalizePublishedDocumentAfterAnalysis(port, document", StringComparison.Ordinal)
+        Test.True(analyzedPublication.Contains("FinalizePublishedDocumentAfterAnalysis(port, orchestration, document", StringComparison.Ordinal)
 			&& ExtractMethod(publicationApplication, "internal static void FinalizePublishedDocumentAfterAnalysis(")
 				.Contains("deferUnresolvedThreatAction?.Invoke(document", StringComparison.Ordinal)
 			&& ExtractMethod(publicationApplication, "internal static void FinalizePublishedDocumentAfterAnalysis(")
@@ -3935,9 +3946,11 @@ internal static class Program
                   && !threatRegistration.Contains("existing.PolicyCondition", StringComparison.Ordinal),
             "warning-to-ultimatum escalation must preserve the original threat's policy condition instead of replacing it");
 
-        string compliance = ExtractMethod(source, "private bool ResolveDiplomaticThreatCompliance(");
-        Test.True(compliance.Contains("TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, threat)", StringComparison.Ordinal)
-                  && compliance.Contains("TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, threat, issuer", StringComparison.Ordinal),
+        string compliance = ExtractMethod(
+            File.ReadAllText(FindRepositoryFile(Path.Combine("src", "modules", "AF.Module.Diplomacy", "Application", "WorldDiplomacyThreatSettlementApplication.cs"))),
+            "internal static bool ResolveDiplomaticThreatCompliance(");
+        Test.True(compliance.Contains("TryApplyDiplomaticThreatPolicyConditionCancellation(_storage, _port, _orchestration, threat)", StringComparison.Ordinal)
+                  && compliance.Contains("TryApplyDiplomaticThreatIssuerRelationReward(_storage, _port, _orchestration, threat, issuer", StringComparison.Ordinal),
             "an exact comply_ultimatum settlement must execute both the bound-policy cancellation and issuer reward");
 
         string policyCancellation = ExtractMethod(
@@ -4389,9 +4402,14 @@ internal static class Program
         foreach (string name in new[] { "ProcessAnalyzedDocument", "ProcessAnalyzedMultiActionDocument", "TryIncludeResultSettlementTarget" })
         {
             if (!marker.StartsWith("private ", StringComparison.Ordinal) || !marker.EndsWith(" " + name + "(", StringComparison.Ordinal)) continue;
-            Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication." + name + "(new DocumentExecutionPort(this),", StringComparison.Ordinal),
-                "legacy entry must call the real document Application owner: " + name);
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDocumentExecutionApplication.cs"));
+            if (name == "ProcessAnalyzedDocument")
+                Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(_host.DocumentExecution(), this,", StringComparison.Ordinal)
+                    || text.Contains("ProcessAnalyzedMultiActionDocument(port, orchestration, document)", StringComparison.Ordinal),
+                    "legacy entry must call the real document Application owner: " + name);
+            else if (name == "TryIncludeResultSettlementTarget")
+                Test.True(source.Contains("WorldDiplomacyDocumentExecutionApplication.TryIncludeResultSettlementTarget(_host.DocumentExecution(),", StringComparison.Ordinal),
+                    "legacy entry must call the real document Application owner: " + name);
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
         }
         if (marker == "public static void FinalizePublishedDocumentAfterAnalysis(")
@@ -4420,14 +4438,39 @@ internal static class Program
             string owner = promptMethods.Contains(name) ? "WorldDiplomacyPromptComposer" : "WorldDiplomacyDraftRepairApplication";
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/" + owner + ".cs"));
             if (name == "BuildAutonomousOpeningPrompt")
-                Test.True(source.Contains("WorldDiplomacyPromptComposer.BuildGenerationPrompt(new PromptWorld(this),", StringComparison.Ordinal)
-                    && text.Contains("return BuildAutonomousOpeningPrompt(world, author, roundId, roundPlanCandidateIds);", StringComparison.Ordinal), "generation composer calls autonomous opening");
+                Test.True(source.Contains("WorldDiplomacyPromptComposer.BuildGenerationPrompt(", StringComparison.Ordinal)
+                    && source.Contains("_host.PromptWorld(), this,", StringComparison.Ordinal)
+                    && text.Contains("return BuildAutonomousOpeningPrompt(world, orchestration, author, roundId, roundPlanCandidateIds);", StringComparison.Ordinal), "generation composer calls autonomous opening");
             else if (name == "EnqueueGeneratedDeclarationRepair")
-                Test.True(source.Contains("WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(new PromptWorld(this),", StringComparison.Ordinal)
-                    && text.Contains("&& EnqueueGeneratedDeclarationRepair(world, job, rejectedRaw, author, target, normalizedReason, parsedJson)", StringComparison.Ordinal), "draft rejection calls repair owner");
+                Test.True(source.Contains("WorldDiplomacyDraftRepairApplication.RejectGeneratedDraftBeforePublication(", StringComparison.Ordinal)
+                    && text.Contains("&& EnqueueGeneratedDeclarationRepair(world, orchestration, job, rejectedRaw, author, target, normalizedReason, parsedJson)", StringComparison.Ordinal), "draft rejection calls repair owner");
+            else if (name == "BuildRoundPlanSystemPrompt")
+                Test.True(source.Contains(owner + "." + name + "(", StringComparison.Ordinal)
+                    && source.Contains("_host.PromptWorld(), round)", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
             else
-                Test.True(source.Contains(owner + "." + name + "(new PromptWorld(this),", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
+                Test.True(source.Contains(owner + "." + name + "(", StringComparison.Ordinal)
+                    && source.Contains("_host.PromptWorld(), this,", StringComparison.Ordinal), "host must call actual DPL-080 owner: " + name);
             return ExtractMethod(text, marker.Replace("private ", "internal static "));
+        }
+        return null;
+    }
+
+    private static string? ReadOrchestrationOwner(string source, string marker)
+    {
+        string? moved = MovedOrchestrationMarker(source, marker);
+        return moved == null ? null : ExtractMethod(source, moved);
+    }
+
+    private static string? MovedOrchestrationMarker(string source, string marker)
+    {
+        if (!marker.StartsWith("private ", StringComparison.Ordinal)) return null;
+        string suffix = marker.Substring("private ".Length);
+        if (suffix.Contains("Internal(", StringComparison.Ordinal)) suffix = suffix.Replace("Internal(", "(");
+        if (suffix.Contains("EnqueueGenerationJob(", StringComparison.Ordinal)) suffix = suffix.Replace("GenerationJob(", "Generation(");
+        foreach (string prefix in new[] { "public ", "internal static ", "public static " })
+        {
+            string moved = prefix + suffix;
+            if (source.IndexOf(moved, StringComparison.Ordinal) >= 0) return moved;
         }
         return null;
     }
@@ -4436,17 +4479,17 @@ internal static class Program
     {
         if (marker.StartsWith("private void NormalizeStorage(", StringComparison.Ordinal))
         {
-            Test.True(source.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref _storage, allowWorldValidation, ref source, ref migration)", StringComparison.Ordinal),
+            Test.True(source.Contains("WorldDiplomacyStorageNormalizationApplication.Normalize(ref storage, allowWorldValidation,", StringComparison.Ordinal),
                 "storage normalization must call the real storage-normalization Application owner");
             string text = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyStorageNormalizationApplication.cs"));
-            return ExtractMethod(text, "internal static void Normalize<TSource, TMigration>(");
+            return ExtractMethod(text, "internal static void Normalize(ref WorldDiplomacyStorage storage,");
         }
         return null;
     }
 
     private static string ExtractSection(string source, string startMarker, string endMarker)
     {
-        string? moved = ReadPeaceAdmissionOwner(source, startMarker) ?? ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker) ?? ReadStorageOwner(source, startMarker);
+        string? moved = ReadPeaceAdmissionOwner(source, startMarker) ?? ReadAnalysisOwner(source, startMarker) ?? ReadJobPreparationOwner(source, startMarker) ?? ReadActionSelectionOwner(source, startMarker) ?? ReadAdmissionOwner(source, startMarker) ?? ReadThreatOwner(source, startMarker) ?? ReadDpl080Owner(source, startMarker) ?? ReadStorageOwner(source, startMarker) ?? ReadOrchestrationOwner(source, startMarker);
         if (moved != null) return moved;
         if (endMarker == "private bool EnsureCurrentCanonicalPromptContractBeforeSend(") endMarker = "private void CommitFailedJob(";
         if (endMarker == "private bool EnqueueGeneratedDeclarationRepair(") endMarker = "private List<string> GetAuthorizedGenerationTargetIds(";
@@ -4455,7 +4498,7 @@ internal static class Program
         if (endMarker == "private void SynchronizeCourtKnowledge(") endMarker = "private void ProcessCourtArrival(";
         if (endMarker == "private void ProcessPlayerMandatoryResponseTimeout(") endMarker = "private void CloseActiveRound(";
         if (endMarker == "private void ProcessPlayerResponseTimeouts(") endMarker = "private void NotifyExternalDiplomacyResolvedInternal(";
-        if (endMarker == "private string BuildAutonomousOpeningPrompt(") endMarker = "private string BuildGenerationPrompt(";
+        if (endMarker == "private string BuildAutonomousOpeningPrompt(") endMarker = "private void AppendDiplomaticAuthorDecisionContext(";
         if (endMarker == "private string BuildFallbackAnnualSummary(") endMarker = "private static string BuildExternalFactBody(";
         if (endMarker == "private static void AppendOpenOfferResponseIntents(") endMarker = "private List<string> BuildLegalDiplomaticActionIntents(";
         if (endMarker == "private void MigratePolicyCountdownHistory(") endMarker = "private bool AppendCanonicalHistoryEntry(";
@@ -4467,14 +4510,15 @@ internal static class Program
         if (endMarker == "private void CompleteActiveExchange(") endMarker = "private void CompleteExchange(";
         int start = source.IndexOf(startMarker, StringComparison.Ordinal);
         Test.True(start >= 0, "missing start marker: " + startMarker);
-        int end = source.IndexOf(endMarker, start + startMarker.Length, StringComparison.Ordinal);
+        string? movedEnd = MovedOrchestrationMarker(source, endMarker);
+        int end = source.IndexOf(movedEnd ?? endMarker, start + startMarker.Length, StringComparison.Ordinal);
         Test.True(end > start, "missing end marker: " + endMarker);
         return source.Substring(start, end - start);
     }
 
 	private static string ExtractMethod(string source, string marker)
 	{
-		string? moved = ReadPeaceAdmissionOwner(source, marker) ?? ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker) ?? ReadStorageOwner(source, marker);
+		string? moved = ReadPeaceAdmissionOwner(source, marker) ?? ReadAnalysisOwner(source, marker) ?? ReadJobPreparationOwner(source, marker) ?? ReadActionSelectionOwner(source, marker) ?? ReadAdmissionOwner(source, marker) ?? ReadThreatOwner(source, marker) ?? ReadDpl080Owner(source, marker) ?? ReadStorageOwner(source, marker) ?? ReadOrchestrationOwner(source, marker);
 		if (moved != null) return moved;
 		int start = source.IndexOf(marker, StringComparison.Ordinal);
 		Test.True(start >= 0, "missing method marker: " + marker);

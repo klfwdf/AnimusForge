@@ -246,7 +246,7 @@ public sealed partial class CourierDeliveryBehavior
 			Settlement landNearest = FindNearestSettlementForCourierPrompt(party);
 			string landNearestName = FormatCourierSettlementNameWithType(landNearest);
 			return string.IsNullOrWhiteSpace(landNearestName)
-				? "你当前位于" + terrainLabel + "。"
+			? "你当前位于" + terrainLabel + "。"
 				: "你当前位于" + landNearestName + "附近的" + terrainLabel + "。";
 		}
 		catch
@@ -545,7 +545,7 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		string letterKind = GetInboundLetterKindDisplayText(session);
 		string fact = delivered
-			? "[AFEF NPC行为补充] " + senderName + "通过信使给" + playerName + "送来一封" + letterKind + "。"
+		? "[AFEF NPC行为补充] " + senderName + "通过信使给" + playerName + "送来一封" + letterKind + "。"
 			: "[AFEF NPC行为补充] " + senderName + "已经派出信使，准备把一封" + letterKind + "送给" + playerName + "。";
 		if (!string.IsNullOrWhiteSpace(session.InboundIntentFact))
 		{

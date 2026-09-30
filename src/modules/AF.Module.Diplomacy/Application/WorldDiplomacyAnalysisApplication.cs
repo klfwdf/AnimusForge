@@ -10,29 +10,31 @@ internal interface IWorldDiplomacyAnalysisPort
     WorldDiplomacyStorage Storage { get; }
     IWorldDiplomacyDocumentExecutionPort Execution { get; }
     int MaxAutomaticReplyDepth { get; }
-    WorldDiplomacyPeaceTerms ParsePeaceTerms(JObject json, string author, string target);
     string KingdomName(string id);
-    void ScheduleSettlement(WorldDiplomacyRound round);
-    void AdvanceRelay(WorldDiplomacyRound round);
-    void CompleteExchange(string id, string reason);
-    void CloseRound(string reason);
 }
 internal static class WorldDiplomacyAnalysisApplication
 {
-    internal static void Commit(IWorldDiplomacyAnalysisPort port, WorldDiplomacyJob job, string raw)
+    internal static void Commit(IWorldDiplomacyAnalysisPort port, IWorldDiplomacyOrchestration orchestration,
+        WorldDiplomacyJob job, string raw)
     {
         var execution = port.Execution;
         CommitAnalysis(job, raw, port.MaxAutomaticReplyDepth, port.Storage?.DiplomaticThreats,
             execution.ResolveDocument, execution.ResolveRound, execution.ResolveKingdomId, port.KingdomName,
-            port.ParsePeaceTerms, execution.NormalizeKingdomIdList, (doc, reason) => Suppress(port, doc, reason),
-            (doc, intent, commitment, response, tone, confidence) => WorldDiplomacyDocumentExecutionApplication.ProcessAnalyzedDocument(execution, doc, intent, commitment, response, tone, confidence), execution.Log);
+            orchestration.ParseAndValidatePeaceTerms, orchestration.NormalizeKingdomIdList,
+            (doc, reason) => Suppress(port, orchestration, doc, reason),
+            (doc, intent, commitment, response, tone, confidence) => WorldDiplomacyDocumentExecutionApplication
+                .ProcessAnalyzedDocument(execution, orchestration, doc, intent, commitment, response, tone, confidence),
+            execution.Log);
     }
-    internal static void Suppress(IWorldDiplomacyAnalysisPort port, WorldDiplomacyDocument document, string reason)
+    internal static void Suppress(IWorldDiplomacyAnalysisPort port, IWorldDiplomacyOrchestration orchestration,
+        WorldDiplomacyDocument document, string reason)
     {
         var execution = port.Execution;
         SuppressInvalidDocumentBeforePropagation(document, reason, port.Storage, execution.ResolveRound, execution.ResolveDocument,
-            execution.ResolveKingdomId, () => execution.CurrentDay, (doc, why) => PreservePublishedPlayerDocumentAfterRejectedMechanic(execution, doc, why),
-            port.ScheduleSettlement, port.AdvanceRelay, port.CompleteExchange, port.CloseRound, execution.Log);
+            execution.ResolveKingdomId, () => execution.CurrentDay,
+            (doc, why) => PreservePublishedPlayerDocumentAfterRejectedMechanic(execution, orchestration, doc, why),
+            orchestration.ScheduleNextResultSettlementTurn, round => orchestration.AdvanceRelay(round),
+            orchestration.CompleteExchange, orchestration.CloseActiveRound, execution.Log);
     }
 
     public static void CommitAnalysis(
@@ -257,6 +259,7 @@ internal static class WorldDiplomacyAnalysisApplication
     }
 
     internal static void PreservePublishedPlayerDocumentAfterRejectedMechanic(IWorldDiplomacyDocumentExecutionPort port,
+        IWorldDiplomacyOrchestration orchestration,
 		WorldDiplomacyDocument document,
 		string reason)
 	{
@@ -280,7 +283,7 @@ internal static class WorldDiplomacyAnalysisApplication
 			+ " intent=" + normalizedIntent + " reason=" + (reason ?? ""));
 		port.Notify(
 			"外交宣言已经发布，但其中解析出的外交动作因当前局势不成立而未执行。");
-		WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(port,
+		WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(port, orchestration,
 			document,
 			port.ResolveKingdomId(document.AuthorKingdomId),
 			port.ResolveKingdomId(document.TargetKingdomId),

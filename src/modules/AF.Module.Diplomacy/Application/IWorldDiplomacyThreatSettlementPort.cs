@@ -50,13 +50,5 @@ internal interface IWorldDiplomacyThreatSettlementPort
     int ReadRelation(string firstClanId, string secondClanId);
     void ChangeRelation(string firstClanId, string secondClanId, int amount);
     bool CancelPolicy(string policyId, string ownerId, string reason, out string policyName, out string result);
-    int ApplyNationalPrestigeDelta(string kingdomId, int delta, WorldDiplomacyDocument document, string reason);
-    void ApplyZeroPrestigeBreachRelationPenalty(string kingdomId, int amount);
     WorldDiplomacyDocument ResolveDocument(string id);
-    void AppendCanonicalDocumentEvents(WorldDiplomacyDocument document);
-    void ScheduleDeferredCanonicalHistoryRetry(string documentId);
-    void TryAppendDiplomaticThreatHistoryResult(WorldDiplomacyThreat threat);
-    void TryAppendDiplomaticThreatDomesticPenaltyHistoryResult(WorldDiplomacyThreat threat);
-    void TryAppendDiplomaticThreatIssuerRewardHistoryResult(WorldDiplomacyThreat threat);
-    void TryAppendDiplomaticThreatNonComplianceHistoryResult(WorldDiplomacyThreat threat, WorldDiplomacyThreatNonComplianceEvent decision);
 }

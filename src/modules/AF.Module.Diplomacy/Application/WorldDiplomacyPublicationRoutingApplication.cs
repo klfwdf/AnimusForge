@@ -8,20 +8,21 @@ namespace AnimusForge;
 
 internal static class WorldDiplomacyPublicationRoutingApplication
 {
-    internal static void Start(IWorldDiplomacyPublicationPort port, WorldDiplomacyDocument document, string authorId)
+    internal static void Start(IWorldDiplomacyPublicationPort port, IWorldDiplomacyOrchestration orchestration,
+        WorldDiplomacyDocument document, string authorId)
     {
         if (document == null || document.PropagationCompleted || authorId == null) return;
         if (!document.IsPlayerAuthored && !port.CanAiAuthor(authorId, out string reason))
         {
-            port.Reject(document, reason);
+            orchestration.SuppressInvalidDocumentBeforePropagation(document, reason);
             return;
         }
         string originId = null;
         WorldDiplomacyPropagationApplication.BeginPublication(port.Storage, document, authorId, port.ResolveRound,
-            () => port.EnsureRound(authorId, document.TargetKingdomId, document.IsPlayerAuthored),
+            () => orchestration.EnsureActiveRound(authorId, document.TargetKingdomId, document.IsPlayerAuthored),
             () => originId = port.ResolveOriginSettlementId(authorId),
             () => port.IsPlayerAffiliated(authorId), () => port.IsPlayerKingdom(authorId),
-            () => port.CurrentDay, () => port.ParticipantLimit, port.RecordWeeklyMaterial);
+            () => port.CurrentDay, () => port.ParticipantLimit, orchestration.RecordDiplomacyWeeklyMaterial);
         // Capture geography once at publication (including retries), never per frame.
         WorldDiplomacyPublicationSnapshot snapshot = port.CaptureDestinations(authorId, originId);
         int civilianDays = port.CivilianSpreadDays;
@@ -39,7 +40,8 @@ internal static class WorldDiplomacyPublicationRoutingApplication
             + " addressed=" + string.Join(",", document.AddressedKingdomIds ?? new List<string>()));
     }
 
-    internal static void ReconcileReachedCourts(IWorldDiplomacyPublicationPort port, WorldDiplomacyDocument document)
+    internal static void ReconcileReachedCourts(IWorldDiplomacyPublicationPort port, IWorldDiplomacyOrchestration orchestration,
+        WorldDiplomacyDocument document)
     {
         if (document?.IsPlayerAuthored != true) return;
         WorldDiplomacyRound round = port.ResolveRound(document.RoundId);
@@ -56,7 +58,7 @@ internal static class WorldDiplomacyPublicationRoutingApplication
             bool isPrimaryTarget = string.Equals(document.TargetKingdomId, receiverId, StringComparison.OrdinalIgnoreCase);
             if (!directlyAddressed || (!isPrimaryTarget && !WorldDiplomacyStructureRules.DocumentRequiresResponseFrom(document, receiverId))) continue;
             WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, receiverId, "active", mandatoryReply: true);
-            port.ScheduleMandatoryResponse(round, participant, receiverId, document);
+            orchestration.TryScheduleMandatoryCourtResponse(round, participant, receiverId, document);
         }
     }
 }

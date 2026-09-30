@@ -11,27 +11,27 @@ internal interface IWorldDiplomacyJobPreparationPort
     int AnalysisMaxTokens { get; }
     (int minimum, int maximum) CharacterRange();
     bool KingdomExists(string id);
-    List<string> SettlementTargets(WorldDiplomacyRound round, string author);
     WorldDiplomacyRound ResolveRound(string id);
     string CommonContract(WorldDiplomacyRound round);
     WorldDiplomacyDocument ResolveDocument(string id);
-    string RelayPrompt(WorldDiplomacyRound round, WorldDiplomacyJob job, WorldDiplomacyDocument source);
-    string GenerationPrompt(WorldDiplomacyJob job, WorldDiplomacyExchange exchange, WorldDiplomacyDocument source, List<string> candidates);
-    string LegalSignature(WorldDiplomacyJob job);
-    void CaptureHistory(WorldDiplomacyJob job);
-    string AnalysisPrompt(WorldDiplomacyDocument document);
-    string RoundPlanSystemPrompt(WorldDiplomacyRound round);
-    string RoundPlanPrompt(WorldDiplomacyDocument document, List<string> candidates);
     bool TryBuildProfile(string authorId, string marker, out string prompt);
     void LogProfile(WorldDiplomacyJob job, string prompt);
 }
 internal static class WorldDiplomacyJobPreparationApplication
 {
-    internal static bool Rebuild(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job)
+    internal static bool Rebuild(IWorldDiplomacyJobPreparationPort port, IWorldDiplomacyOrchestration orchestration,
+        WorldDiplomacyJob job)
         => RebuildPendingJob(job, port.Storage, port.GenerationMaxTokens, port.AnalysisMaxTokens,
-            port.CharacterRange, port.KingdomExists, port.SettlementTargets, port.ResolveRound, port.CommonContract,
-            port.ResolveDocument, port.RelayPrompt, port.GenerationPrompt, port.LegalSignature, port.CaptureHistory,
-            port.AnalysisPrompt, port.RoundPlanSystemPrompt, port.RoundPlanPrompt);
+            port.CharacterRange, port.KingdomExists, orchestration.GetResultSettlementActionableTargetIds,
+            port.ResolveRound, port.CommonContract, port.ResolveDocument,
+            (round, source, sourceDocument) => orchestration.BuildRelayTurnGenerationPrompt(round, source.AuthorKingdomId,
+                source.TargetKingdomId, sourceDocument, source.IsExternalResponseOnly),
+            (source, exchange, sourceDocument, candidates) => orchestration.BuildGenerationPromptForJob(source.AuthorKingdomId,
+                source.TargetKingdomId, exchange, source.IsResponse, sourceDocument, source.IsReminder, source.RoundId,
+                source.AllowUntargeted, candidates, source.IsExternalResponseOnly),
+            orchestration.BuildGenerationLegalActionSignature,
+            source => orchestration.CaptureCanonicalHistoryForJob(source, syncSources: false),
+            orchestration.BuildAnalysisPrompt, orchestration.BuildRoundPlanSystemPrompt, orchestration.BuildRoundPlanPrompt);
 
     internal static bool EnsureGenerationJobHasKingdomStrategicProfile(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job)
 	{
@@ -73,17 +73,19 @@ internal static class WorldDiplomacyJobPreparationApplication
 		return true;
 	}
 
-    internal static bool RefreshDiplomaticActionPresentationAndPrompt(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job)
+    internal static bool RefreshDiplomaticActionPresentationAndPrompt(IWorldDiplomacyJobPreparationPort port,
+        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyJob job)
 	{
 		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
 		job.LlmMessages?.Clear();
 		job.SemanticRepairAttempts = 0;
 		job.HistoryPrefixHash = "";
 		job.IsRunning = false;
-		return Rebuild(port, job);
+		return Rebuild(port, orchestration, job);
 	}
 
-    internal static bool RefreshDiplomaticThreatPresentationAndPrompt(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job)
+    internal static bool RefreshDiplomaticThreatPresentationAndPrompt(IWorldDiplomacyJobPreparationPort port,
+        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyJob job)
 	{
 		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return false;
 		job.PresentedThreatDocumentIds = WorldDiplomacyRoundLifecycleRules.SelectPresentedThreatStageDocumentIds(port.Storage?.DiplomaticThreats, job.AuthorKingdomId);
@@ -92,7 +94,7 @@ internal static class WorldDiplomacyJobPreparationApplication
 		job.SemanticRepairAttempts = 0;
 		job.HistoryPrefixHash = "";
 		job.IsRunning = false;
-		return Rebuild(port, job);
+		return Rebuild(port, orchestration, job);
 	}
 
     public static bool RebuildPendingJob(

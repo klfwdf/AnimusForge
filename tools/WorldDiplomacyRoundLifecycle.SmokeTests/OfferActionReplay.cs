@@ -14,10 +14,7 @@ internal static class OfferActionReplay
         public int CurrentDay => 42;
         public WorldDiplomacyRound ResolveRound(string id) => Round;
         public WorldDiplomacyDocument ResolveDocument(string id) { Events.Add("source"); return Source; }
-        public void PruneInvalidOffers(WorldDiplomacyRound r) => Events.Add("prune");
-        public (bool Blocked, string Reason) ProposalViolation(string intent, WorldDiplomacyDocument d) => (false, "");
         public bool ResolveParties(WorldDiplomacyRoundOffer o) { Events.Add("parties"); return !MissingParty; }
-        public bool ArePeaceTermsExecutable(WorldDiplomacyRoundOffer o, WorldDiplomacyDocument s) { Events.Add("terms"); return TermsValid; }
         public WorldDiplomacyOfferActionReceipt ExecutePeace(string a, string b, WorldDiplomacyPeaceTerms terms)
         {
             Test.True(!ReferenceEquals(terms, Source.PeaceTerms) && terms.DailyTribute == 50, "peace executes an exact copied source contract");
@@ -36,6 +33,14 @@ internal static class OfferActionReplay
         public bool HasTakenEffect(string intent, string a, string b) { Events.Add("readback"); return EffectAfterThrow; }
         public void Log(string m) => Events.Add("log");
     }
+    private sealed class Orch : FakeOrchestration
+    {
+        private readonly Port _p;
+        internal Orch(Port port) { _p = port; }
+        public override void PruneInvalidOffers(WorldDiplomacyRound round) => _p.Events.Add("prune");
+        public override bool TryGetDiplomaticStateViolation(string intent, string author, string target, out string reason) { reason = ""; return false; }
+        public override bool AreOfferedPeaceTermsCurrentlyExecutable(WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source) { _p.Events.Add("terms"); return _p.TermsValid; }
+    }
 
     internal static void Run()
     {
@@ -43,11 +48,12 @@ internal static class OfferActionReplay
         foreach (string outcome in new[] { "success", "failure", "throw", "post-effect-throw", "missing-party", "late", "rejected" })
         {
             var p = new Port { Applied = outcome != "failure", Throw = outcome.Contains("throw"), EffectAfterThrow = outcome == "post-effect-throw", MissingParty = outcome == "missing-party" };
+            var orch = new Orch(p);
             var offer = new WorldDiplomacyRoundOffer { Intent = "propose_" + kind, SourceDocumentId = "source", SourceActionId = "a", ProposerKingdomId = "one", TargetKingdomId = "two", Status = "open" };
             p.Round.PendingOffers.Add(offer);
             var response = new WorldDiplomacyDocument { RoundId = "r", DocumentId = "response", Intent = (outcome == "rejected" ? "reject_" : "accept_") + kind,
                 AuthorKingdomId = "two", TargetKingdomId = "one", RespondingToOfferDocumentId = "source", RespondingToOfferActionId = outcome == "late" ? "old" : "a" };
-            WorldDiplomacyOfferApplication.Settle(response, p);
+            WorldDiplomacyOfferApplication.Settle(response, p, orch);
             string expected = outcome switch { "success" or "post-effect-throw" => "accepted", "missing-party" => "invalidated", "late" => "open", "rejected" => "rejected", _ => "execution_failed" };
             Test.True(offer.Status == expected, kind + " " + outcome + " preserves offer disposition");
             if (outcome is "failure" or "throw" or "missing-party" or "late" or "rejected")
@@ -58,17 +64,18 @@ internal static class OfferActionReplay
                 var expectedEvents = kind == "peace" ? new[] { "prune", "source", "parties", "terms", "peace", "cession" } : new[] { "prune", "source", "parties", kind };
                 Test.True(p.Events.SequenceEqual(expectedEvents), "acceptance owns effect and bookkeeping order");
                 int count = p.Events.Count(x => x == kind);
-                WorldDiplomacyOfferApplication.Settle(response, p);
+                WorldDiplomacyOfferApplication.Settle(response, p, orch);
                 Test.True(p.Events.Count(x => x == kind) == count, "duplicate response cannot repeat a closed offer effect");
             }
         }
         foreach (bool termsValid in new[] { false, true })
         {
             var p = new Port { TermsValid = termsValid, Cession = "；领地交割失败" };
+            var orch = new Orch(p);
             var offer = new WorldDiplomacyRoundOffer { Intent = "propose_peace", SourceDocumentId = "source", ProposerKingdomId = "one", TargetKingdomId = "two", Status = "open" };
             p.Round.PendingOffers.Add(offer);
             var response = new WorldDiplomacyDocument { Intent = "accept_peace", AuthorKingdomId = "two", TargetKingdomId = "one", RespondingToOfferDocumentId = "source" };
-            WorldDiplomacyOfferApplication.Settle(response, p);
+            WorldDiplomacyOfferApplication.Settle(response, p, orch);
             Test.True(offer.Status == (termsValid ? "partially_executed" : "invalidated"), "drifted terms and partial cession are distinct outcomes");
             Test.True(termsValid || !p.Events.Contains("peace"), "drifted exact terms prevent peace effect");
         }

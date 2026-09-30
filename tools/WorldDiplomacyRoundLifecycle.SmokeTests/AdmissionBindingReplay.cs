@@ -36,9 +36,16 @@ internal static class AdmissionBindingReplay
         public string NewId(string kind) => "threat";
         public int EscalationPrestigeReward => 3;
         public int WarPrestigeReward => 4;
-        public void ApplyPrestige(string id, int delta, WorldDiplomacyDocument doc, string reason) { Reads.Prestige++; }
-        public void ResolveCompliance(WorldDiplomacyDocument doc, string target, string issuer) => throw new Exception("unexpected compliance");
         public void Log(string message) { }
+    }
+    private sealed class Orch : FakeOrchestration
+    {
+        private readonly BindingPort _binding;
+        internal Orch(BindingPort binding) { _binding = binding; }
+        public override int ApplyNationalPrestigeDelta(string kingdomId, int delta, WorldDiplomacyDocument sourceDocument, string reason)
+        { _binding.Reads.Prestige++; return delta; }
+        public override bool ResolveDiplomaticThreatCompliance(WorldDiplomacyDocument document, string compliantKingdomId, string issuerId)
+            => throw new Exception("unexpected compliance");
     }
     internal static void Run()
     {
@@ -73,6 +80,7 @@ internal static class AdmissionBindingReplay
         Test.True(!WorldDiplomacyNoActionApplication.IsAllowed(round, "", port, false, true, response), "older response cannot discharge the new obligation");
 
         var binding = new BindingPort();
+        var orch = new Orch(binding);
         var document = new WorldDiplomacyDocument { DocumentId = "d", RoundId = "r", Intent = "warning",
             AuthorKingdomId = "a", TargetKingdomId = "b", ProcessingActionId = "act" };
         Test.True(!WorldDiplomacyThreatBindingApplication.TryResolvePolicyConditionForThreat(document, "a", "b", binding, out _), "no signal means no policy binding");
@@ -87,25 +95,25 @@ internal static class AdmissionBindingReplay
         Test.True(!WorldDiplomacyThreatBindingApplication.TryResolvePolicyConditionForThreat(document, "a", "b", binding, out _), "ambiguous active policies cannot select an arbitrary condition");
         binding.Round.AttachedPolicySignals.RemoveAt(1);
         var storage = new WorldDiplomacyStorage();
-        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding);
+        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding, orch);
         Test.True(storage.DiplomaticThreats.Count == 1 && storage.DiplomaticThreats[0].PolicyConditionPolicyId == "p"
             && storage.DiplomaticThreats[0].StageActionId == "act", "Application dispatch registers exact action and policy");
         int policyReads = binding.Reads.Policies;
-        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding);
+        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding, orch);
         Test.True(storage.DiplomaticThreats.Count == 1 && binding.Reads.Policies == policyReads, "duplicate stage avoids policy resolution and new records");
         storage.DiplomaticThreats[0].TargetDecision = "noncomplied";
         document.DocumentId = "ult"; document.Intent = "ultimatum"; document.ProcessingActionId = "ult-action";
-        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding);
+        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding, orch);
         Test.True(storage.DiplomaticThreats.Count == 1 && storage.DiplomaticThreats[0].Stage == "ultimatum"
             && storage.DiplomaticThreats[0].PolicyConditionPolicyId == "p" && binding.Reads.Prestige == 1, "escalation retains bound policy and rewards once");
-        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding);
+        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding, orch);
         Test.True(binding.Reads.Prestige == 1, "duplicate ultimatum cannot repeat prestige");
         storage.DiplomaticThreats[0].TargetDecision = "noncomplied";
         document.DocumentId = "war"; document.Intent = "declare_war"; document.ChangedDiplomaticState = true;
-        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding);
+        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding, orch);
         Test.True(storage.DiplomaticThreats[0].Status == "enforced" && storage.DiplomaticThreats[0].ResolutionDocumentId == "war" && binding.Reads.Prestige == 2,
             "confirmed war settles enforcement after its prestige effect");
-        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding);
+        WorldDiplomacyThreatBindingApplication.Process(storage, document, "a", "b", false, binding, orch);
         Test.True(binding.Reads.Prestige == 2, "duplicate war completion cannot reward enforced threat twice");
     }
 }

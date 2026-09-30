@@ -7,43 +7,24 @@ internal interface IWorldDiplomacyCampaignSource
     bool DisabledStateApplied { get; set; }
     bool NativeQueueSanitized { get; set; }
     int LastSchedulerDay { get; set; }
-    void TryApplyInitialNewGamePeace();
-    void HandleDisabledState();
     void RemoveQueuedNativeDiplomacyDecisions();
-    void RefreshPolicyDiplomacySignals();
-    void ProcessRelayArrivals();
-    void ProcessRoundLifecycle();
-    void TrySchedulePolicyTriggeredRound();
-    void TryScheduleNormalRound();
-    void ReconcileAllNationalPrestigeVassalRelations();
-    void RetryDeferredCanonicalHistoryEntries();
-    void RetryDiplomaticThreatDomesticPenalties();
-    void RetryDiplomaticThreatComplianceConsequences();
-    void RetryDiplomaticThreatHistoryResults();
-    void RefreshRoundIntervalScheduleIfNeeded();
-    void RecalculatePendingPropagationIfNeeded();
     void EnsureActiveWarLedgersAndRemoveEndedWars();
     void TrimRecentBattleFacts();
-    void AnchorInternationalReputationNaturalChangeDays();
-    void ProcessInternationalReputationNaturalChange();
-    void RetryDeferredDocumentPropagation();
-    void ProcessPropagationArrivals();
-    void TryScheduleTokenCompression();
-    void NormalizeStorage();
     void ClearDailyCaches();
     void ResetDailyGenerationBudget();
     void DecayWarPressure();
-    void RetryDeferredRoundProgress();
 }
 
 internal static class WorldDiplomacyCampaignApplication
 {
-    internal static void CampaignTick<TSource>(ref TSource source) where TSource : struct, IWorldDiplomacyCampaignSource
+    internal static void CampaignTick<TSource>(ref TSource source, IWorldDiplomacyOrchestration orchestration)
+        where TSource : struct, IWorldDiplomacyCampaignSource
 	{
-		source.TryApplyInitialNewGamePeace();
+		if (orchestration == null) return;
+		orchestration.TryApplyInitialNewGamePeace();
 		if (!source.IsEnabled)
 		{
-			if (!source.DisabledStateApplied) source.HandleDisabledState();
+			if (!source.DisabledStateApplied) orchestration.HandleDisabledState();
 			return;
 		}
 		source.DisabledStateApplied = false;
@@ -56,48 +37,50 @@ internal static class WorldDiplomacyCampaignApplication
 		if (source.LastSchedulerDay != day)
 		{
 			source.LastSchedulerDay = day;
-			source.RefreshPolicyDiplomacySignals();
-			source.ProcessRelayArrivals();
-			source.ProcessRoundLifecycle();
-			source.TrySchedulePolicyTriggeredRound();
-			source.TryScheduleNormalRound();
+			orchestration.RefreshPolicyDiplomacySignals();
+			orchestration.ProcessRelayArrivals();
+			orchestration.ProcessRoundLifecycle();
+			orchestration.TrySchedulePolicyTriggeredRound();
+			orchestration.TryScheduleNormalRound();
 		}
 	}
 
-    internal static void DailyTick<TSource>(ref TSource source) where TSource : struct, IWorldDiplomacyCampaignSource
+    internal static void DailyTick<TSource>(ref TSource source, IWorldDiplomacyOrchestration orchestration)
+        where TSource : struct, IWorldDiplomacyCampaignSource
 	{
-		source.NormalizeStorage();
-		source.ReconcileAllNationalPrestigeVassalRelations();
-		source.RetryDeferredCanonicalHistoryEntries();
-		source.RetryDiplomaticThreatDomesticPenalties();
-		source.RetryDiplomaticThreatComplianceConsequences();
-		source.RetryDiplomaticThreatHistoryResults();
-		source.RefreshRoundIntervalScheduleIfNeeded();
+		if (orchestration == null) return;
+		orchestration.NormalizeStorage(allowWorldValidation: true);
+		orchestration.ReconcileAllNationalPrestigeVassalRelations();
+		orchestration.RetryDeferredCanonicalHistoryEntries();
+		orchestration.RetryDiplomaticThreatDomesticPenalties();
+		orchestration.RetryDiplomaticThreatComplianceConsequences();
+		orchestration.RetryDiplomaticThreatHistoryResults();
+		orchestration.RefreshRoundIntervalScheduleIfNeeded();
 		source.ClearDailyCaches();
 		source.ResetDailyGenerationBudget();
-		source.RecalculatePendingPropagationIfNeeded();
+		orchestration.RecalculatePendingPropagationIfNeeded();
 		source.LastSchedulerDay = source.CurrentDay;
 		source.EnsureActiveWarLedgersAndRemoveEndedWars();
 		source.TrimRecentBattleFacts();
 		if (!source.IsEnabled)
 		{
-			source.AnchorInternationalReputationNaturalChangeDays();
-			if (!source.DisabledStateApplied) source.HandleDisabledState();
+			orchestration.AnchorInternationalReputationNaturalChangeDays();
+			if (!source.DisabledStateApplied) orchestration.HandleDisabledState();
 			return;
 		}
 		source.DisabledStateApplied = false;
 		source.RemoveQueuedNativeDiplomacyDecisions();
 		source.NativeQueueSanitized = true;
-		source.ProcessInternationalReputationNaturalChange();
+		orchestration.ProcessInternationalReputationNaturalChange();
 		source.DecayWarPressure();
-		source.RefreshPolicyDiplomacySignals();
-		source.RetryDeferredDocumentPropagation();
-		source.ProcessPropagationArrivals();
-		source.ProcessRelayArrivals();
-		source.RetryDeferredRoundProgress();
-		source.ProcessRoundLifecycle();
-		source.TryScheduleTokenCompression();
-		source.TrySchedulePolicyTriggeredRound();
-		source.TryScheduleNormalRound();
+		orchestration.RefreshPolicyDiplomacySignals();
+		orchestration.RetryDeferredDocumentPropagation();
+		orchestration.ProcessPropagationArrivals();
+		orchestration.ProcessRelayArrivals();
+		orchestration.RetryDeferredRoundProgress();
+		orchestration.ProcessRoundLifecycle();
+		orchestration.TryScheduleTokenCompression();
+		orchestration.TrySchedulePolicyTriggeredRound();
+		orchestration.TryScheduleNormalRound();
 	}
 }

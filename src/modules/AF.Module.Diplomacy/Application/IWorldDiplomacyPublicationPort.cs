@@ -12,16 +12,12 @@ internal interface IWorldDiplomacyPublicationPort
     bool IsPlayerKingdom(string kingdomId);
     bool RepresentsAddressedVassal(string kingdomId, WorldDiplomacyDocument document);
     WorldDiplomacyRound ResolveRound(string id);
-    WorldDiplomacyRound EnsureRound(string authorId, string targetId, bool isPlayerInsertion);
     string ResolveOriginSettlementId(string authorId);
     WorldDiplomacyPublicationSnapshot CaptureDestinations(string authorId, string originId);
     int CurrentDay { get; }
     int ParticipantLimit { get; }
     int CivilianSpreadDays { get; }
     int CourtDeliveryDays { get; }
-    void RecordWeeklyMaterial(WorldDiplomacyDocument document);
-    void Reject(WorldDiplomacyDocument document, string reason);
-    void ScheduleMandatoryResponse(WorldDiplomacyRound round, WorldDiplomacyRoundParticipant participant, string receiverId, WorldDiplomacyDocument document);
     void Log(string message);
 }
 

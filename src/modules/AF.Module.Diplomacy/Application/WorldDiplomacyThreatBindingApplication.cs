@@ -16,8 +16,6 @@ internal interface IWorldDiplomacyThreatBindingPort
     string NewId(string kind);
     int EscalationPrestigeReward { get; }
     int WarPrestigeReward { get; }
-    void ApplyPrestige(string kingdomId, int delta, WorldDiplomacyDocument document, string reason);
-    void ResolveCompliance(WorldDiplomacyDocument document, string targetId, string issuerId);
     void Log(string message);
 }
 
@@ -43,8 +41,9 @@ internal static class WorldDiplomacyThreatBindingApplication
         return selected != null;
     }
 
-    internal static bool Register(WorldDiplomacyStorage storage, WorldDiplomacyDocument document, string issuerId, string targetId,
-        string stage, IWorldDiplomacyThreatBindingPort port)
+    internal static bool Register(WorldDiplomacyStorage storage, WorldDiplomacyDocument document, string issuerId,
+        string targetId, string stage, IWorldDiplomacyThreatBindingPort port,
+        IWorldDiplomacyOrchestration orchestration)
     {
         if (document == null || issuerId == null || targetId == null || issuerId == targetId) return false;
         return RegisterOrAdvanceDiplomaticThreat(document, issuerId, targetId, stage,
@@ -53,16 +52,17 @@ internal static class WorldDiplomacyThreatBindingApplication
             {
                 TryResolvePolicyConditionForThreat(document, issuerId, targetId, port, out WorldDiplomacyPolicySignal selected);
                 return selected;
-            }, port.ApplyPrestige, port.Log);
+            }, (id, delta, doc, r) => orchestration.ApplyNationalPrestigeDelta(id, delta, doc, r), port.Log);
     }
 
     internal static void Process(WorldDiplomacyStorage storage, WorldDiplomacyDocument document, string authorId, string targetId,
-        bool recordTargetDecisions, IWorldDiplomacyThreatBindingPort port)
+        bool recordTargetDecisions, IWorldDiplomacyThreatBindingPort port, IWorldDiplomacyOrchestration orchestration)
     {
         ProcessDiplomaticThreatDocument(document, authorId, targetId, recordTargetDecisions,
             storage?.DiplomaticThreats, port.CurrentDay(), port.WarPrestigeReward,
             (d, a, t, intent) => WorldDiplomacyThreatApplication.RecordTargetDecision(storage, d, a, t, intent, port.CurrentDay, port.Log),
-            (d, a, t, intent) => Register(storage, d, a, t, intent, port), port.ResolveCompliance, port.ApplyPrestige);
+            (d, a, t, intent) => Register(storage, d, a, t, intent, port, orchestration),
+            (d, a, t) => orchestration.ResolveDiplomaticThreatCompliance(d, a, t), (id, delta, doc, r) => orchestration.ApplyNationalPrestigeDelta(id, delta, doc, r));
     }
 
     public static bool RegisterOrAdvanceDiplomaticThreat(

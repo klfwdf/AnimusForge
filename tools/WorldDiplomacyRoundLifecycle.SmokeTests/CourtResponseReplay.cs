@@ -98,7 +98,7 @@ internal static class CourtResponseReplay
         string owner = File.ReadAllText(Path.Combine(root.FullName,
             "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCourtResponseApplication.cs"));
         string host = File.ReadAllText(Path.Combine(root.FullName,
-            "src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs"));
+            "src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         Test.True(!owner.Contains("TaleWorlds", StringComparison.Ordinal)
                 && !owner.Contains("WorldDiplomacyBehavior", StringComparison.Ordinal)
                 && host.Contains("WorldDiplomacyCourtResponseApplication.Receive(", StringComparison.Ordinal)

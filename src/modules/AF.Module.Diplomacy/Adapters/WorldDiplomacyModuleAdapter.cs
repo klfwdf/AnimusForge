@@ -51,17 +51,17 @@ internal sealed class WorldDiplomacyModuleAdapter : IWorldDiplomacyModulePort
     public void OnEngineTick()
     {
         var source = new WorldDiplomacyBehavior.TickSource(WorldDiplomacyBehavior.Instance);
-        WorldDiplomacyTickApplication.Run(ref source);
+        WorldDiplomacyTickApplication.Run(ref source, WorldDiplomacyBehavior.Instance?.Orchestration);
     }
     public void OnCampaignTick()
     {
         var source = new WorldDiplomacyBehavior.CampaignSource(WorldDiplomacyBehavior.Instance);
-        WorldDiplomacyCampaignApplication.CampaignTick(ref source);
+        WorldDiplomacyCampaignApplication.CampaignTick(ref source, WorldDiplomacyBehavior.Instance?.Orchestration);
     }
     public void OnDailyTick()
     {
         var source = new WorldDiplomacyBehavior.CampaignSource(WorldDiplomacyBehavior.Instance);
-        WorldDiplomacyCampaignApplication.DailyTick(ref source);
+        WorldDiplomacyCampaignApplication.DailyTick(ref source, WorldDiplomacyBehavior.Instance?.Orchestration);
     }
 
 }

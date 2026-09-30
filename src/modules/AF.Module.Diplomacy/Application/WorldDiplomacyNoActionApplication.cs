@@ -26,7 +26,7 @@ internal static class WorldDiplomacyNoActionApplication
 {
     internal static bool IsAllowed<TPort>(WorldDiplomacyRound round, string resultSettlementSlotId, TPort port,
         bool isRelayTurn, bool isExternalResponseOnly = false, WorldDiplomacyDocument responseSource = null)
-        where TPort : struct, IWorldDiplomacyNoActionPort
+        where TPort : IWorldDiplomacyNoActionPort
 
 	{
 		if (round == null || !port.AuthorResolved || !port.TargetResolved) return false;
@@ -177,7 +177,7 @@ internal static class WorldDiplomacyNoActionApplication
 			});
 	}
     internal static bool CanUseSettlementTarget<TPort>(WorldDiplomacyRound round, TPort port)
-        where TPort : struct, IWorldDiplomacyNoActionPort
+        where TPort : IWorldDiplomacyNoActionPort
     {
         if (round == null || !port.AuthorResolved) return false;
         return WorldDiplomacyRoundLifecycleRules.IsSettlementTargetUsable(round.ResultSettlementPending,

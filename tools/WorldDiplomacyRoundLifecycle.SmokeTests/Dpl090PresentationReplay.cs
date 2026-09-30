@@ -202,26 +202,33 @@ internal static class Dpl090PresentationReplay
         public bool KingdomExists(string id) => TargetExists;
         public WorldDiplomacyDocument ResolveDocument(string id) => Source?.DocumentId == id ? Source : null!;
         public WorldDiplomacyRound ResolveRound(string id) => id == Round.RoundId ? Round : null!;
-        public WorldDiplomacyRound EnsureActiveRound(string author, string target, bool isPlayerInsertion)
-        { Test.True(isPlayerInsertion, "player insertion preserved"); return Round; }
-        public WorldDiplomacyDocument CreateDocument(string author, string target, string title, string body, string origin,
+        public int CurrentDay() => 8;
+    }
+
+    private sealed class PlayerOrch : FakeOrchestration
+    {
+        private readonly PlayerWorld _world;
+        internal PlayerOrch(PlayerWorld world) { _world = world; }
+        public override WorldDiplomacyRound EnsureActiveRound(string initiatorId, string targetId, bool isPlayerInsertion)
+        { Test.True(isPlayerInsertion, "player insertion preserved"); return _world.Round; }
+        public override WorldDiplomacyDocument CreateDocument(string authorId, string targetId, string title, string body, string origin,
             bool isPlayerAuthored, bool isResponse, string exchangeId) => new()
             {
-                DocumentId = "new" + Added.Count, AuthorKingdomId = author, TargetKingdomId = target,
+                DocumentId = "new" + _world.Added.Count, AuthorKingdomId = authorId, TargetKingdomId = targetId,
                 Title = title, Body = body, Origin = origin, IsPlayerAuthored = isPlayerAuthored,
                 IsResponse = isResponse, ExchangeId = exchangeId
             };
-        public void AddDocument(WorldDiplomacyDocument document) { Added.Add(document); Effects.Add("add"); }
-        public int CurrentDay() => 8;
-        public void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document) { document.IsReadyForPublication = true; Effects.Add("publish"); }
-        public void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority)
-        { Equal(100, priority, "player analysis priority"); Effects.Add("analysis"); }
+        public override void AddDocument(WorldDiplomacyDocument document) { _world.Added.Add(document); _world.Effects.Add("add"); }
+        public override void PublishPlayerAuthoredDocumentImmediately(WorldDiplomacyDocument document) { document.IsReadyForPublication = true; _world.Effects.Add("publish"); }
+        public override void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority)
+        { Equal(100, priority, "player analysis priority"); _world.Effects.Add("analysis"); }
     }
 
     private static void Commands()
     {
         var world = new PlayerWorld();
-        string Execute(string text, long generation = 42) => WorldDiplomacyPlayerApplication.Execute(world, new(text, generation));
+        var orch = new PlayerOrch(world);
+        string Execute(string text, long generation = 42) => WorldDiplomacyPlayerApplication.Execute(world, new(text, generation), orch);
         Equal("", Execute("正文", 41), "old generation ignored");
         Equal("外交宣言正文不能为空。", Execute("  "), "blank declaration rejected before effects");
         world.Player = new(42, "player", false, true, "宗主国");
@@ -237,7 +244,7 @@ internal static class Dpl090PresentationReplay
         Equal(8, world.Round.LastActivityDay, "player activity time preserved");
         world.Effects.Clear();
         var reply = new WorldDiplomacyPlayerDocumentCommand("回应", 42, "source", "round");
-        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply).StartsWith("外交回应已经公开发布"), "reply accepted");
+        Test.True(WorldDiplomacyPlayerApplication.Execute(world, reply, orch).StartsWith("外交回应已经公开发布"), "reply accepted");
         var response = world.Added.Last();
         Equal("source", response.SourceDocumentId, "reply bound to exact source");
         Equal("round", response.RoundId, "reply bound to original round");
@@ -247,9 +254,9 @@ internal static class Dpl090PresentationReplay
         Test.True(!world.Round.Participants.Single(p => p.KingdomId == "player").MandatoryReplyPending, "player reply obligation cleared");
         int count = world.Added.Count;
         world.Source!.RoundId = "new-round";
-        Equal("", WorldDiplomacyPlayerApplication.Execute(world, reply), "rebound source cannot settle original round");
+        Equal("", WorldDiplomacyPlayerApplication.Execute(world, reply, orch), "rebound source cannot settle original round");
         world.Source = null;
-        Equal("", WorldDiplomacyPlayerApplication.Execute(world, reply), "removed source ignored");
+        Equal("", WorldDiplomacyPlayerApplication.Execute(world, reply, orch), "removed source ignored");
         Equal(count, world.Added.Count, "stale reply produces no side effects");
     }
 

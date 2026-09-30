@@ -13602,9 +13602,21 @@ RunRepairCorrectionAndJobDecisionTests();
                 (j, e) => failures2?.Add(e),
                 id => removed2?.Add(id),
                 line => logs2?.Add(line));
+            var orch = new FakeOrchestration()
+            {
+                OnRefreshThreatPresentation = j => refreshThreat?.Invoke(j) ?? true,
+                OnRefreshActionPresentation = j => refreshAction?.Invoke(j) ?? true,
+                OnRejectGeneratedDraftBeforePublication = (j, raw, a, t, reason, json) => truncatedHandler?.Invoke(j, raw),
+                OnCommitGeneratedDocument = (j, c) => commits?.Add("generate"),
+                OnCommitAnalysis = (j, c) => commits?.Add("analyze"),
+                OnCommitCompression = (j, c) => commits?.Add("compress"),
+                OnCommitRoundPlan = (j, c) => commits?.Add("round_plan"),
+                OnCommitRoundCompression = (j, c) => commits?.Add("round_compress"),
+                OnCommitFailedJob = (j, e) => failures2?.Add(e)
+            };
             WorldDiplomacyCompletionApplication.Complete(
                 job, content, success, serviceFailure, truncated, error,
-                storage, 100, 12, ref effects);
+                storage, 100, 12, ref effects, orch);
         }
 
         WorldDiplomacyStorage done = Store();
@@ -14380,7 +14392,9 @@ RunRepairCorrectionAndJobDecisionTests();
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.JobRuntime.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.LlmDispatchSource.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.HistoryCapturePort.cs"));
+        behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.OrchestrationHost.cs"));
         // Inspect the active host-to-application path after DPL-080 ownership transfer.
+        behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyPromptComposer.cs"));
         behaviorSource += File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyDraftRepairApplication.cs"));
         foreach (string transition in new[] { "EnsureOpen", "TryScheduleNormal", "Close", "AdvanceRelay", "IntegratePlayerDeclaration" })
@@ -15632,7 +15646,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "storage knowledge/document queries must live in the document fact rules");
         Test.True(courtResponseApplicationSource.Contains("WorldDiplomacyDocumentFactRules.HasKingdomRespondedToDocument(", StringComparison.Ordinal)
             && propagationApplicationSource.Contains("WorldDiplomacyDocumentFactRules.GetKnownKingdomIdsForDocument(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.BuildFallbackRoundCompressionJson(_storage.Documents", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyDocumentFactRules.BuildFallbackRoundCompressionJson(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool HasKingdomRespondedToDocument(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool HasUndeliveredCourtArrivals(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private bool HasKingdomKnowledge(", StringComparison.Ordinal)
@@ -15821,7 +15835,7 @@ RunRepairCorrectionAndJobDecisionTests();
                   && !behaviorSource.Contains("private void InvalidateOtherThreatsBoundToSettledPolicy("),
             "threat resolution must not remain in the host");
 
-        Test.True(campaignSource.Contains("WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.RetryDeferredRoundProgress(", StringComparison.Ordinal),
             "the host must route deferred round-progress retries through the round-progress Application");
         Test.True(generationTaskSource.Contains("TripAutomaticRoundCircuitBreaker(storage, owningRound, \"automatic_document_limit\", log)", StringComparison.Ordinal),
             "the generation task application must route circuit-breaker trips through the lifecycle rules");
@@ -15829,8 +15843,8 @@ RunRepairCorrectionAndJobDecisionTests();
             "relay pass accounting must live in the lifecycle rules");
         Test.True(rulesSource.Contains("RecordPlayerOpportunity(", StringComparison.Ordinal),
             "player-opportunity recording must be composed inside the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.TryConsumeAiDocumentBudget(ref _aiDocumentsStartedDay", StringComparison.Ordinal)
-            && campaignSource.Contains("ref _owner._aiDocumentsStartedDay", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.TryConsumeAiDocumentBudget(ref _runtime.AiDocumentsStartedDay", StringComparison.Ordinal)
+            && campaignSource.Contains("ref _owner._runtime.AiDocumentsStartedDay", StringComparison.Ordinal),
             "the host must route the daily AI document budget through the lifecycle rules");
         Test.True(rulesSource.Contains("public static int FindPriorityThreatRelayIndex(", StringComparison.Ordinal)
             && rulesSource.Contains("public static bool TryConsumeAiDocumentBudget(", StringComparison.Ordinal)
@@ -15876,8 +15890,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the lifecycle rules must own the participant limit decision");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.GetRoundParticipantLimit(GetActivityLevel(), MaxRelayParticipants)", StringComparison.Ordinal),
             "the host must route the participant limit through the lifecycle rules");
-        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(job, _owner.BuildGenerationLegalActionSignature)", StringComparison.Ordinal)
-            || behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(j, BuildGenerationLegalActionSignature)", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.HasStaleDiplomaticActionPresentation(job, _owner._orchestration.BuildGenerationLegalActionSignature)", StringComparison.Ordinal),
             "the host must route stale presentation checks through the lifecycle rules");
         Test.True(!behaviorSource.Contains("private bool HasStaleDiplomaticActionPresentation(", StringComparison.Ordinal)
             && !behaviorSource.Contains("private string BuildWarNegotiationContext(", StringComparison.Ordinal)
@@ -15937,7 +15950,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "protected-fact projection must live in the lifecycle rules");
         Test.True(File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyHistoryCaptureApplication.cs")).Contains("WorldDiplomacyStorageMigration.NormalizeCanonicalHistoryState(", StringComparison.Ordinal)
             && canonicalHistoryRulesSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildCanonicalProtectedFactsThrough(", StringComparison.Ordinal)
-            && behaviorSource.Contains("_canonicalHistoryInitializedThisSession", StringComparison.Ordinal),
+            && behaviorSource.Contains("_runtime.CanonicalHistoryInitializedThisSession", StringComparison.Ordinal),
             "the host must keep the session guard and delegate normalization/projection through extracted ports");
         Test.True(!behaviorSource.Contains("threat-response:", StringComparison.Ordinal)
             && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.IsDeltaEntryRetired(", StringComparison.Ordinal)
@@ -16020,8 +16033,8 @@ RunRepairCorrectionAndJobDecisionTests();
             && historyCaptureSource.Contains("WorldDiplomacyCanonicalHistoryRules.ClampCanonicalHistoryThroughSequence(", StringComparison.Ordinal)
             && historyCaptureSource.Contains("WorldDiplomacyCanonicalHistoryRules.StampCanonicalHistoryOnJob(", StringComparison.Ordinal),
             "the host must route block rendering and job stamping through the domain rules");
-        Test.True(behaviorSource.Contains("_canonicalHistoryRenderCacheKey = cacheKey", StringComparison.Ordinal)
-            && behaviorSource.Contains("return _canonicalHistoryRenderCache", StringComparison.Ordinal),
+        Test.True(behaviorSource.Contains("_runtime.CanonicalHistoryRenderCacheKey = cacheKey", StringComparison.Ordinal)
+            && behaviorSource.Contains("return _runtime.CanonicalHistoryRenderCache", StringComparison.Ordinal),
             "the render cache must stay on the host adapter");
 
         // DPL-060CG: compression scheduling and enqueue budget math live in the
@@ -16069,7 +16082,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("superseded.Status = \"superseded\"", StringComparison.Ordinal),
             "offer pruning orchestration must live in the lifecycle rules behind probe ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.PruneInvalidOffers(", StringComparison.Ordinal)
-            && behaviorSource.Contains("BuildDocumentIndex(_storage.Documents)", StringComparison.Ordinal),
+            && behaviorSource.Contains("BuildDocumentIndex(Storage?.Documents)", StringComparison.Ordinal),
             "the host must bind pruning probes and keep the lazy document index in the adapter");
         Test.True(!behaviorSource.Contains("IsOpenLifecycleStatus(x.Status))\n\t\t\t.GroupBy", StringComparison.Ordinal)
             && !behaviorSource.Contains("stale diplomacy offers invalidated", StringComparison.Ordinal),
@@ -16085,7 +16098,7 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredDocumentRecord(", StringComparison.Ordinal)
             && normalizationApplicationSource.Contains("WorldDiplomacyStorageMigration.NormalizeStoredRoundRecord(", StringComparison.Ordinal)
             && normalizationApplicationSource.Contains("source.ResolveKingdomNameOrEmpty", StringComparison.Ordinal)
-            && normalizationApplicationSource.Contains("source.RoundHardDurationDays, source.PruneInvalidOffers, source.Log", StringComparison.Ordinal),
+            && normalizationApplicationSource.Contains("source.RoundHardDurationDays, orchestration.PruneInvalidOffers, source.Log", StringComparison.Ordinal),
             "the normalization owner must bind storage normalization ports through thin adapters");
         Test.True(!behaviorSource.Contains("normalizedOfferSourceBindings", StringComparison.Ordinal)
             && !behaviorSource.Contains("Kingdom actionTarget = ResolveKingdom(action.TargetKingdomId)", StringComparison.Ordinal),
@@ -16150,7 +16163,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && rulesSource.Contains("Func<string, List<string>> buildDeclarationIntents", StringComparison.Ordinal),
             "the legal-action signature composition must live in the lifecycle rules behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.BuildGenerationLegalActionSignature(", StringComparison.Ordinal)
-            && behaviorSource.Contains("GetResultSettlementActionableTargets(round, author)", StringComparison.Ordinal)
+            && behaviorSource.Contains("GetResultSettlementActionableTargetIds(round, authorId)", StringComparison.Ordinal)
             && behaviorSource.Contains("BuildLegalDiplomaticDeclarationIntents(", StringComparison.Ordinal),
             "the host must bind signature ports through a thin adapter");
         Test.True(!behaviorSource.Contains("StringBuilder state = new StringBuilder()", StringComparison.Ordinal)
@@ -16181,7 +16194,7 @@ RunRepairCorrectionAndJobDecisionTests();
             "the player world-state violation chain must live in the validation rules behind probe ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyGenerationValidationRules.TryGetPlayerWorldStateIntentViolation(", StringComparison.Ordinal)
             && behaviorSource.Contains("bool partiesEligible = document != null", StringComparison.Ordinal)
-            && behaviorSource.Contains("HasIndependentWorldDiplomacyAuthority(author)", StringComparison.Ordinal),
+            && behaviorSource.Contains("_host.HasIndependentAuthority(authorId)", StringComparison.Ordinal),
             "the host must collapse live-party eligibility and bind violation probes");
         Test.True(!behaviorSource.Contains("player_action_has_no_eligible_parties", StringComparison.Ordinal)
             && !behaviorSource.Contains("player_compliance_missing_source_threat", StringComparison.Ordinal)
@@ -16224,7 +16237,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && validationSource.Contains("out string generatedTargetId", StringComparison.Ordinal),
             "the single-action legality chain must live in the validation rules behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyGenerationValidationRules.TryGetGeneratedSingleActionLegalityViolation(", StringComparison.Ordinal)
-            && behaviorSource.Contains("id => ResolveKingdom(id)?.StringId", StringComparison.Ordinal)
+            && behaviorSource.Contains("id => _host.ResolveKingdomIdOrNull(id)", StringComparison.Ordinal)
             && behaviorSource.Contains("CanUseResultSettlementTarget(round, author", StringComparison.Ordinal),
             "the host must bind kingdom resolution and live-state probes through thin closures");
         Test.True(!behaviorSource.Contains("reason = \"kingdom_not_in_relay_route\"", StringComparison.Ordinal)
@@ -16312,7 +16325,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && progressSource.Contains("Action<string> closeActiveRound", StringComparison.Ordinal),
             "the document-processed routing table must live in Application behind ports");
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.HandleRoundDocumentProcessed(", StringComparison.Ordinal)
-            && behaviorSource.Contains("round => AdvanceRelay(round)", StringComparison.Ordinal),
+            && behaviorSource.Contains("round => AdvanceRelay(round, scheduleImmediately: false)", StringComparison.Ordinal),
             "the host must bind round processing through a thin adapter");
         Test.True(!rulesSource.Contains("public static void HandleRoundDocumentProcessed(", StringComparison.Ordinal),
             "the former Domain owner must not retain round progress orchestration");
@@ -16400,7 +16413,7 @@ RunRepairCorrectionAndJobDecisionTests();
             && generatedCompletionSource.Contains("\"analyzing_response\"", StringComparison.Ordinal)
             && generatedCompletionSource.Contains("IsAutonomousNoActionDeclaration = false", StringComparison.Ordinal),
             "generated-document rejection, exchange bookkeeping, and round metadata must live inside Application");
-        Test.True(behaviorSource.Contains("(j, a, t, reason) => AbandonRejectedGeneration(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("AbandonRejectedGeneration,", StringComparison.Ordinal)
             && behaviorSource.Contains("ScheduleNextResultSettlementTurn,", StringComparison.Ordinal)
             && behaviorSource.Contains("AddDocument,", StringComparison.Ordinal)
             && behaviorSource.Contains("ProcessAnalyzedDocument,", StringComparison.Ordinal),
@@ -16408,12 +16421,12 @@ RunRepairCorrectionAndJobDecisionTests();
 
         // DPL-060DF/R1: post-decision routing; generation abandonment is owned by
         // WorldDiplomacyGenerationTaskApplication and finalization by the publication Application.
-        Test.True(behaviorSource.Contains("WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
-            && bindingSource.Contains("ProcessDiplomaticThreatDocument(", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("WorldDiplomacyDocumentPublicationApplication.FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
+            && bindingSource.Contains("internal static void Process(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyGenerationTaskApplication.AbandonRejectedGeneration(", StringComparison.Ordinal)
             && documentPublication.Contains("internal static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
             && !rulesSource.Contains("public static void FinalizePublishedDocumentAfterAnalysis(", StringComparison.Ordinal)
-            && bindingSource.Contains("public static void ProcessDiplomaticThreatDocument(", StringComparison.Ordinal)
+            && bindingSource.Contains("internal static void Process(", StringComparison.Ordinal)
             && generationTaskSource.Contains("internal static void AbandonRejectedGeneration(", StringComparison.Ordinal),
             "the host must route post-decision finalization, threat dispatch, and abandonment through the owning services");
         Test.True(!behaviorSource.Contains("generated declaration abandoned without publication", StringComparison.Ordinal)
@@ -16427,10 +16440,10 @@ RunRepairCorrectionAndJobDecisionTests();
             && !behaviorSource.Contains("analyzed player declaration routing refresh deferred", StringComparison.Ordinal)
             && documentPublication.Contains("analyzed player declaration routing refresh deferred", StringComparison.Ordinal),
             "abandonment, enforcement, and finalization bookkeeping must live inside the owning services");
-        Test.True(documentExecutor.Contains("port.ApplyDiplomaticThreatReputationPenalty,", StringComparison.Ordinal)
-            && documentExecutor.Contains("port.SettleInternationalReputationForDocument,", StringComparison.Ordinal)
-            && bindingSource.Contains("port.ResolveCompliance, port.ApplyPrestige", StringComparison.Ordinal)
-            && documentExecutor.Contains("port.StartDocumentPropagation,", StringComparison.Ordinal),
+        Test.True(documentExecutor.Contains("orchestration.ApplyDiplomaticThreatReputationPenalty,", StringComparison.Ordinal)
+            && documentExecutor.Contains("orchestration.SettleInternationalReputationForDocument,", StringComparison.Ordinal)
+            && bindingSource.Contains("orchestration.ResolveDiplomaticThreatCompliance(d, a, t), (id, delta, doc, r) => orchestration.ApplyNationalPrestigeDelta", StringComparison.Ordinal)
+            && documentExecutor.Contains("orchestration.StartDocumentPropagation,", StringComparison.Ordinal),
             "the host must keep binding post-decision live-state adapters");
 
         // Application schedules the next turn; the host binds kingdom resolution,
@@ -16440,9 +16453,9 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextRelayHop(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyTurnSchedulingApplication.ScheduleNextResultSettlementTurn(", StringComparison.Ordinal),
             "the host must route relay and settlement scheduling through Application");
-        Test.True(behaviorSource.Contains("id => HasIndependentWorldDiplomacyAuthority(ResolveKingdom(id))", StringComparison.Ordinal)
-            && behaviorSource.Contains("id => ResolveKingdom(id)?.StringId", StringComparison.Ordinal)
-            && behaviorSource.Contains("(r, id) => GetResultSettlementActionableTargets(r, ResolveKingdom(id)).Count", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("id => _host.PartyResolved(id) && _host.HasIndependentAuthority(id)", StringComparison.Ordinal)
+            && behaviorSource.Contains("id => _host.PartyResolved(id) && _host.IsPlayerParty(id)", StringComparison.Ordinal)
+            && behaviorSource.Contains("(r, id) => GetResultSettlementActionableTargetIds(r, id).Count", StringComparison.Ordinal)
             && behaviorSource.Contains("RefreshResultSettlementActionSlots,", StringComparison.Ordinal)
             && behaviorSource.Contains("ScheduleNextResultSettlementTurn,", StringComparison.Ordinal),
             "the host must keep binding scheduling live-state adapters");
@@ -16471,8 +16484,8 @@ RunRepairCorrectionAndJobDecisionTests();
         // R1: completion admission/dispatch now has one Application owner.
         string completionSource = File.ReadAllText(FindRepositoryFile("src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyCompletionApplication.cs"));
         Test.True(dispatchSource.Contains("WorldDiplomacyJob job = SelectAndPrepareLlmJob(", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyCompletionApplication.Run(ref source)", StringComparison.Ordinal)
-            && behaviorSource.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source)", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyCompletionApplication.Run(ref source, this)", StringComparison.Ordinal)
+            && behaviorSource.Contains("WorldDiplomacyLlmDispatchApplication.Run(ref source, this)", StringComparison.Ordinal)
             && !behaviorSource.Contains("WorldDiplomacyRoundLifecycleRules.CommitCompletedLlmJobResult(", StringComparison.Ordinal),
             "host retains launch but forwards completion admission and dispatch to Application");
         Test.True(behaviorSource.Contains("WorldDiplomacyLlmApplication.PrepareRequest(", StringComparison.Ordinal)
@@ -16505,12 +16518,12 @@ RunRepairCorrectionAndJobDecisionTests();
         Test.True(behaviorSource.Contains("WorldDiplomacyRoundProgressApplication.ProcessDueRelayArrivals(", StringComparison.Ordinal)
             && behaviorSource.Contains("WorldDiplomacyDocumentPublicationApplication.NotifyExternalDiplomacyResolved(", StringComparison.Ordinal),
             "the host must route relay arrivals through the round-progress Application and external facts through the publication Application");
-        Test.True(behaviorSource.Contains("id => ResolveKingdom(id)?.StringId", StringComparison.Ordinal)
-            && behaviorSource.Contains("MarkPlayerCourtReachedByRelay(ResolveKingdom(id), document)", StringComparison.Ordinal)
+        Test.True(behaviorSource.Contains("_host.ResolvePartyId,", StringComparison.Ordinal)
+            && behaviorSource.Contains("MarkPlayerCourtReachedByRelay,", StringComparison.Ordinal)
             && behaviorSource.Contains("resultSettlementSlotId: settlementSlotId", StringComparison.Ordinal)
-            && behaviorSource.Contains("CreateDocument(initiator, target, title, factBody, origin, playerAuthored, false, \"\")", StringComparison.Ordinal)
-            && behaviorSource.Contains("EnsureActiveRound(initiator, target, playerInsertion)", StringComparison.Ordinal)
-            && behaviorSource.Contains("CanExternalDiplomacyFactJoinRound(candidate, initiator, target)", StringComparison.Ordinal),
+            && behaviorSource.Contains("(title, factBody, origin, playerAuthored) => CreateDocument(initiatorId, targetId, title, factBody, origin, playerAuthored, false, \"\")", StringComparison.Ordinal)
+            && behaviorSource.Contains("playerInsertion => EnsureActiveRound(initiatorId, targetId, playerInsertion)", StringComparison.Ordinal)
+            && behaviorSource.Contains("candidate => CanExternalDiplomacyFactJoinRound(candidate, initiatorId, targetId)", StringComparison.Ordinal),
             "the host must keep Kingdom resolution, enqueue, and fact construction as adapter ports");
         Test.True(progressSource.Contains("Take(8)", StringComparison.Ordinal)
             && progressSource.Contains("storage.RelayArrivals.Remove(arrival)", StringComparison.Ordinal)

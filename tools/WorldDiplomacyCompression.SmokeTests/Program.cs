@@ -130,7 +130,7 @@ internal static class Program
         Test.True(writingContract.Contains("minimumCharacters", StringComparison.Ordinal)
                 && writingContract.Contains("maximumCharacters", StringComparison.Ordinal)
                 && behavior.Contains(
-                    "GetDiplomaticDeclarationCharacterRange(out int min, out int max); return (min, max);",
+                    "GetDiplomaticDeclarationCharacterRange(out int minimum, out int maximum);",
                     StringComparison.Ordinal)
                 && generationTask.Contains(
                     "WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(commonContract, minimumCharacters, maximumCharacters)",

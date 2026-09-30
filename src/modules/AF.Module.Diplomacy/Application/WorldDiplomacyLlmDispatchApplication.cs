@@ -15,23 +15,14 @@ internal interface IWorldDiplomacyLlmDispatchSource
     string LastCacheAffinityKey { get; }
     void SetLastCacheAffinityKey(string value);
     bool HasStaleThreatPresentation(WorldDiplomacyJob job);
-    bool RefreshThreatPresentation(WorldDiplomacyJob job);
     bool HasStaleActionPresentation(WorldDiplomacyJob job);
-    bool RefreshActionPresentation(WorldDiplomacyJob job);
-    bool RebuildPendingJob(WorldDiplomacyJob job);
     string GetAuthorBlockReason(WorldDiplomacyJob job);
-    void AbandonGeneration(WorldDiplomacyJob job, string reason);
-    bool EnsureStrategicProfile(WorldDiplomacyJob job);
     string GetLlmConfigError();
     bool TryConsumeRequestBudget(bool consume);
-    void CaptureCanonicalHistory(WorldDiplomacyJob job);
     JArray BuildMessageArray(WorldDiplomacyJob job);
     long InputTokenLimit { get; }
     int HistoryCompressionTargetTokens { get; }
     int EstimateTokens(string text);
-    string BuildHistoryBlock(long throughSequence);
-    void ScheduleTokenCompression();
-    void CommitFailedJob(WorldDiplomacyJob job, string error);
     void RemoveJob(string jobId);
     void Log(string message);
     bool TryClaim(string jobId, long generation, int maxTokens, int timeoutMilliseconds, out WorldDiplomacyRequestSnapshot request);
@@ -47,8 +38,8 @@ internal interface IWorldDiplomacyLlmDispatchSource
 // request claiming. The Behavior remains an identity/main-thread/transport adapter.
 internal static class WorldDiplomacyLlmDispatchApplication
 {
-    internal static void Run<TSource>(ref TSource source)
-        where TSource : struct, IWorldDiplomacyLlmDispatchSource
+    internal static void Run<TSource>(ref TSource source, IWorldDiplomacyOrchestration orchestration)
+        where TSource : IWorldDiplomacyLlmDispatchSource
     {
         if (!source.IsEnabled || source.IsRequestRunning || source.Storage?.Jobs?.Count == 0) return;
         WorldDiplomacyJob job = SelectAndPrepareLlmJob(
@@ -56,24 +47,24 @@ internal static class WorldDiplomacyLlmDispatchApplication
             source.CurrentHour,
             source.LastCacheAffinityKey,
             source.HasStaleThreatPresentation,
-            source.RefreshThreatPresentation,
+            orchestration.RefreshDiplomaticThreatPresentationAndPrompt,
             source.HasStaleActionPresentation,
-            source.RefreshActionPresentation,
-            source.RebuildPendingJob,
+            orchestration.RefreshDiplomaticActionPresentationAndPrompt,
+            orchestration.TryRebuildPendingJob,
             source.GetAuthorBlockReason,
-            source.AbandonGeneration,
-            source.EnsureStrategicProfile,
+            (j, reason) => orchestration.AbandonRejectedGeneration(j, j?.AuthorKingdomId, j?.TargetKingdomId, reason),
+            orchestration.EnsureGenerationJobHasKingdomStrategicProfile,
             source.GetLlmConfigError,
             source.TryConsumeRequestBudget,
-            source.CaptureCanonicalHistory,
+            j => orchestration.CaptureCanonicalHistoryForJob(j, syncSources: true),
             source.BuildMessageArray,
             out JArray requestMessages,
             source.InputTokenLimit,
             source.HistoryCompressionTargetTokens,
             source.EstimateTokens,
-            source.BuildHistoryBlock,
-            source.ScheduleTokenCompression,
-            source.CommitFailedJob,
+            orchestration.BuildCanonicalHistoryBlock,
+            orchestration.TryScheduleTokenCompression,
+            orchestration.CommitFailedJob,
             source.RemoveJob,
             source.Log);
         if (job == null) return;

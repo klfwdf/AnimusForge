@@ -27,8 +27,6 @@ internal interface IWorldDiplomacyStorageNormalizationSource
     string ResolveKingdomNameOrEmpty(string kingdomId);
     List<string> NormalizeKingdomIdList(IEnumerable<string> values, string excludedId);
     bool HasCompleteLegacyPropagationCoverage(WorldDiplomacyDocument document);
-    void PruneInvalidOffers(WorldDiplomacyRound round);
-    void NormalizeOfferCooldownStorage();
     bool HasCampaignWorld { get; }
     int DiplomacyPromptContractVersion { get; }
     int ResultSettlementStateSchemaVersion { get; }
@@ -38,15 +36,10 @@ internal interface IWorldDiplomacyStorageNormalizationSource
     WorldDiplomacyDocument ResolveDocument(string documentId);
     string ResolveEligibleKingdomId(string kingdomId);
     bool IsAtWarByKingdomIds(string firstKingdomId, string secondKingdomId);
-    void CloseActiveRound(string reason);
-    bool RebuildPendingJob(WorldDiplomacyJob job);
-    void CompleteExchange(string exchangeId, string reason);
     void ClearLlmCacheAffinityKey();
-    void BeginOrExtendResultSettlement(WorldDiplomacyRound round, WorldDiplomacyDocument document, string closeReason, string roundStatus);
     WorldDiplomacyRound ResolveRound(string roundId);
     void CommitLocalRoundSummary(WorldDiplomacyRound round, List<WorldDiplomacyDocument> documents);
     void UpgradeRoundSummaryToStructuredArchive(WorldDiplomacyRoundSummary summary);
-    void EnsureCanonicalHistoryInitialized();
     void TrimNativeSignals();
     void TrimRecentBattleFacts();
     void Log(string message);
@@ -54,14 +47,13 @@ internal interface IWorldDiplomacyStorageNormalizationSource
 
 internal static class WorldDiplomacyStorageNormalizationApplication
 {
-    internal static void Normalize<TSource, TMigration>(ref WorldDiplomacyStorage storage, bool allowWorldValidation,
-        ref TSource source, ref TMigration migration)
-        where TSource : struct, IWorldDiplomacyStorageNormalizationSource
-        where TMigration : struct, IWorldDiplomacyCanonicalHistoryMigrationSource
+    internal static void Normalize(ref WorldDiplomacyStorage storage, bool allowWorldValidation,
+        IWorldDiplomacyStorageNormalizationSource source, IWorldDiplomacyCanonicalHistoryMigrationSource migration,
+        IWorldDiplomacyOrchestration orchestration)
     {
         storage = WorldDiplomacyStorageShapeNormalizer.EnsureInitialized(storage);
         WorldDiplomacyNotificationStateMigration.Migrate(storage);
-        source.NormalizeOfferCooldownStorage();
+        orchestration.NormalizeOfferCooldownStorage();
         storage.CompressionRetryAfterHour = Math.Max(0, storage.CompressionRetryAfterHour);
         storage.CompressionRetryAttempts = Math.Max(0, Math.Min(31, storage.CompressionRetryAttempts));
         WorldDiplomacyThreatStorageMigration.NormalizeDiplomaticThreats(
@@ -78,7 +70,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
                 WorldDiplomacyStorageMigration.MigrateAutonomousDecisionArchitectureIfNeeded(
                     storage, source.DecisionArchitectureVersion, source.RelaySchemaVersion, source.CurrentDay,
                     source.HasCampaignWorld, source.ResolveDocument, source.ResolveEligibleKingdomId,
-                    source.IsAtWarByKingdomIds, source.CloseActiveRound, source.Log);
+                    source.IsAtWarByKingdomIds, orchestration.CloseActiveRound, source.Log);
             }
             catch (Exception ex)
             {
@@ -117,7 +109,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
         {
             try
             {
-                WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(storage, ref migration);
+                WorldDiplomacyCanonicalHistoryMigrationApplication.MigrateIfNeeded(storage, migration, orchestration);
             }
             catch (Exception ex)
             {
@@ -145,7 +137,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
                 source.DecisionArchitectureVersion, source.RelaySchemaVersion, source.RelayTargetDurationDays,
                 source.CourtMaxDeliveryDays, source.MaxPendingPolicySignals,
                 source.MaxConsecutiveTechnicalGenerationFailuresPerRound,
-                source.RoundHardDurationDays, source.PruneInvalidOffers, source.Log);
+                source.RoundHardDurationDays, orchestration.PruneInvalidOffers, source.Log);
         }
         if (allowWorldValidation)
         {
@@ -153,7 +145,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
             {
                 WorldDiplomacyStorageMigration.MigrateResultSettlementStateIfNeeded(
                     storage, source.ResultSettlementStateSchemaVersion,
-                    source.BeginOrExtendResultSettlement, source.Log);
+                    orchestration.BeginOrExtendRoundResultSettlement, source.Log);
             }
             catch (Exception ex)
             {
@@ -163,7 +155,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
             {
                 WorldDiplomacyStorageMigration.MigrateDiplomacyPromptContractIfNeeded(
                     storage, source.DiplomacyPromptContractVersion, source.HasCampaignWorld,
-                    source.RebuildPendingJob, source.CompleteExchange,
+                    orchestration.TryRebuildPendingJob, orchestration.CompleteExchange,
                     source.ClearLlmCacheAffinityKey, source.Log);
             }
             catch (Exception ex)
@@ -206,7 +198,7 @@ internal static class WorldDiplomacyStorageNormalizationApplication
             storage.AnnualSummaries, source.MaxStoredAnnualSummaries);
         storage.CompressionSummaries = WorldDiplomacyRoundLifecycleRules.SelectRetainedCompressionSummaries(
             storage.CompressionSummaries, source.MaxStoredCompressionSummaries);
-        source.EnsureCanonicalHistoryInitialized();
+        orchestration.EnsureCanonicalHistoryInitialized();
         WorldDiplomacyRoundLifecycleRules.RecalculateCanonicalHistoryTokens(storage, source.HistoryCompressionTriggerTokens);
         source.TrimNativeSignals();
         source.TrimRecentBattleFacts();
