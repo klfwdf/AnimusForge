@@ -65,17 +65,19 @@ internal sealed class CoupMissionBehavior : MissionLogic
                 InitializeObjective();
                 return;
             }
-            if (Mission.CurrentTime < _nextObjectiveCheck) return;
-            _nextObjectiveCheck = Mission.CurrentTime + 1f;
-            CheckObjectives();
-            if (!_hall && _doorReady && _player.IsActive() && _player.Position.DistanceSquared(_gateFrame.origin) <= 36f
-                && Input.IsKeyPressed(InputKey.F))
+            // Key presses last one frame: poll input every tick, throttle only the objective scan.
+            if (!_hall && _doorReady && _player.IsActive() && Input.IsKeyPressed(InputKey.F)
+                && _player.Position.DistanceSquared(_gateFrame.origin) <= 36f)
             {
                 SaveHealth();
                 _exiting = true;
                 CoupCampaignBehavior.NotifyStreetComplete(Mission);
                 EndScene();
+                return;
             }
+            if (Mission.CurrentTime < _nextObjectiveCheck) return;
+            _nextObjectiveCheck = Mission.CurrentTime + 1f;
+            CheckObjectives();
         }
         catch (Exception ex)
         {
@@ -164,7 +166,9 @@ internal sealed class CoupMissionBehavior : MissionLogic
             }
             return;
         }
-        _doorReady = SettlementEntryTroopSelectionBehavior.CountCoupRole(Mission, "GateGuard") == 0;
+        // The door opens only when every gate-guard record has actually fallen, not merely when
+        // none is spawned yet; the live count covers agents whose removal is still in flight.
+        _doorReady = _session.IsGateCleared && SettlementEntryTroopSelectionBehavior.CountCoupRole(Mission, "GateGuard") == 0;
         if (_doorReady && _player.Position.DistanceSquared(_gateFrame.origin) <= 36f && Mission.CurrentTime >= _nextDoorPrompt)
         {
             _nextDoorPrompt = Mission.CurrentTime + 5f;

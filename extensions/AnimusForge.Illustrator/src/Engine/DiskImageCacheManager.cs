@@ -64,9 +64,10 @@ namespace AnimusForge.Illustrator.Engine
         {
             try
             {
-                string docsDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                if (string.IsNullOrWhiteSpace(docsDir)) throw new IOException("Documents directory is unavailable.");
-                string path = Path.Combine(docsDir, "Mount and Blade II Bannerlord", "AnimusForge", "IllustratorCache");
+                // Image generation is a host feature: cache and diagnostics live under the AF module.
+                string moduleRoot = AnimusForge.AnimusForgeModulePaths.GetCurrentModuleRoot();
+                if (string.IsNullOrWhiteSpace(moduleRoot)) throw new IOException("AnimusForge module root is unavailable.");
+                string path = Path.Combine(moduleRoot, "logs", "image save");
                 Directory.CreateDirectory(path);
                 CacheBaseDir = path;
             }

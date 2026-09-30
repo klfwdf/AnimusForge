@@ -379,7 +379,9 @@ namespace AnimusForge.Illustrator.Context
             string mountPosture = DescribeMountState(mainName, playerAgent != null, playerIsMounted) + "；" +
                 DescribeMountState(partnerName, partnerAgent != null, partnerIsMounted);
 
-            string basePose = "现场动作未能精确识别，可采用符合对话情绪的自然姿态";
+            // Empty when no distinctive engine action is recognised: a generic "standing and
+            // talking" default only anchors the director to a static composition.
+            string basePose = string.Empty;
             try
             {
                 if (partnerAgent != null)
@@ -399,8 +401,10 @@ namespace AnimusForge.Illustrator.Context
             }
 
             string siegeFacts = isUnderSiege
-                ? $"当前处于围城情境，玩家一方为{(playerIsDefender ? "守方" : "攻方")}；具体地形与双方高低关系以现场记录和实景参考图为准"
+                ? $"当前处于围城情境，玩家一方为{(playerIsDefender ? "守方" : "攻方")}；具体地形以现场记录和实景参考图为准"
                 : string.Empty;
+            string siegeForces = isUnderSiege ? DescribeSiegeForces(settlement, playerIsDefender) : string.Empty;
+            string elevationFacts = DescribeConversationElevation(playerAgent, partnerAgent, mainName, partnerName);
             string guardFacts = bodyguardCount > 0 ? $"现场对方随行队列中另有 {bodyguardCount} 名角色" : "未确认额外随行角色";
 
             context.SceneFacts =
@@ -408,13 +412,101 @@ namespace AnimusForge.Illustrator.Context
                 $"参与会话者：【{mainName}】与【{partnerName}】。\n" +
                 $"现场状态：{mountPosture}；{guardFacts}。\n" +
                 (string.IsNullOrWhiteSpace(siegeFacts) ? string.Empty : siegeFacts + "。\n") +
+                (string.IsNullOrWhiteSpace(elevationFacts) ? string.Empty : elevationFacts + "\n") +
+                (string.IsNullOrWhiteSpace(siegeForces) ? string.Empty : siegeForces + "\n") +
                 $"地点为【{locName}】。";
             context.SceneDirective =
                 "优先采用最近2条对话中已发生或正在进行的动作，导演据此设计镜头；对话未涉及的骑乘状态与环境空间关系保留已知记录。" +
-                "若实景或现场记录显示双方分处城墙上下，须保留高低差，不能改成平地会面。\n" +
-                $"【引擎待机线索（仅在对话没有动作描述时参考，不覆盖对话动作）】{basePose}。";
+                "有【双方实测高差】时按实测米数画出落差：用城墙墙面、垛口与人物身高作比例参照，下方人物按距离明显缩小，选择能同时容纳上下双方与其间墙面的机位，不用会挤掉墙面的过肩中景。" +
+                (string.IsNullOrWhiteSpace(siegeForces) ? string.Empty :
+                    "有【围城兵力】时，城墙上的守军队列与城外的军阵、营帐、营火按兵力实数组织为有纵深的远景群体，采用能看到对话双方、城防与远处军势的中远景或高位广角。") +
+                (string.IsNullOrWhiteSpace(basePose) ? string.Empty :
+                    $"\n【引擎待机线索（仅在对话没有动作描述时参考，不覆盖对话动作）】{basePose}。");
 
             return context;
+        }
+
+        // Once per generation request: two Agent position reads, no scan.
+        // Positions are Agent ground points (a rider's point is its mount's footing).
+        internal static string DescribeConversationElevation(TaleWorlds.MountAndBlade.Agent player, TaleWorlds.MountAndBlade.Agent partner, string playerName, string partnerName)
+        {
+            try
+            {
+                if (player == null || partner == null) return string.Empty;
+                var a = player.Position;
+                var b = partner.Position;
+                float dz = b.z - a.z;
+                float dx = b.x - a.x, dy = b.y - a.y;
+                double horizontal = Math.Sqrt(dx * dx + dy * dy);
+                if (float.IsNaN(dz) || float.IsInfinity(dz) || double.IsNaN(horizontal) || double.IsInfinity(horizontal)) return string.Empty;
+                return FormatElevationFact(dz, horizontal, playerName, partnerName);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        internal static string FormatElevationFact(float partnerMinusPlayer, double horizontal, string playerName, string partnerName)
+        {
+            float drop = Math.Abs(partnerMinusPlayer);
+            string distance = $"水平距离约{horizontal:0.#}米";
+            if (drop < 1.5f)
+                return $"【双方实测高差】{playerName}与{partnerName}脚底高度基本相同（高差{drop:0.#}米，引擎实测），{distance}。";
+            string upper = partnerMinusPlayer > 0 ? partnerName : playerName;
+            string lower = partnerMinusPlayer > 0 ? playerName : partnerName;
+            // 1.8 m reference body height; stated so the image model gets a readable scale.
+            double bodies = drop / 1.8;
+            return $"【双方实测高差】{upper}的脚底比{lower}高约{drop:0.#}米（约{bodies:0.#}个成人身高，引擎实测值，不是估计），{distance}；" +
+                $"画面中两人之间的墙面或台地落差须达到这个比例，{lower}仰视、{upper}俯视，不能压缩成台阶或矮墙。";
+        }
+
+        // Once per generation request while under siege: one pass over each side's involved parties.
+        internal static string DescribeSiegeForces(Settlement settlement, bool playerIsDefender)
+        {
+            try
+            {
+                var siege = settlement?.SiegeEvent ?? TaleWorlds.CampaignSystem.Siege.PlayerSiege.PlayerSiegeEvent;
+                if (siege == null) return string.Empty;
+                int attackerParties = 0, attackers = 0, defenderParties = 0, defenders = 0;
+                var camp = siege.BesiegerCamp;
+                if (camp != null)
+                    foreach (var party in camp.GetInvolvedPartiesForEventType())
+                    {
+                        if (party == null) continue;
+                        attackerParties++;
+                        attackers += party.NumberOfHealthyMembers;
+                    }
+                var besieged = siege.BesiegedSettlement ?? settlement;
+                if (besieged != null)
+                    foreach (var party in besieged.GetInvolvedPartiesForEventType())
+                    {
+                        if (party == null) continue;
+                        defenderParties++;
+                        defenders += party.NumberOfHealthyMembers;
+                    }
+                if (attackers <= 0 && defenders <= 0) return string.Empty;
+                string armyName = camp?.LeaderParty?.Army?.Name?.ToString();
+                string attackerFaction = camp?.MapFaction?.Name?.ToString();
+                string defenderFaction = besieged?.MapFaction?.Name?.ToString();
+                return FormatSiegeForces(attackers, attackerParties, attackerFaction, armyName, defenders, defenderParties, defenderFaction, playerIsDefender);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        internal static string FormatSiegeForces(int attackers, int attackerParties, string attackerFaction, string armyName,
+            int defenders, int defenderParties, string defenderFaction, bool playerIsDefender)
+        {
+            string attackerLabel = (string.IsNullOrWhiteSpace(attackerFaction) ? "攻方" : "攻方" + attackerFaction) +
+                (string.IsNullOrWhiteSpace(armyName) ? string.Empty : "（" + armyName + "）");
+            string defenderLabel = string.IsNullOrWhiteSpace(defenderFaction) ? "守方" : "守方" + defenderFaction;
+            return $"【围城兵力（战役地图实数）】{attackerLabel}可战兵员约{attackers}人、{attackerParties}支部队，驻营于城外；" +
+                $"{defenderLabel}可战兵员约{defenders}人、{defenderParties}支部队，驻守城内与城防。玩家属{(playerIsDefender ? "守方" : "攻方")}。" +
+                "这是画面外与远景的匿名大军证据：城墙巡道上成列的守军、城下与远方的军阵、营帐、营火与攻城器械可按此规模组织为远景群体轮廓，" +
+                "不计入【附近人群活动依据】的近处可辨认人数上限，也不据此新增具名人物。";
         }
 
         /// <summary>
@@ -514,7 +606,7 @@ namespace AnimusForge.Illustrator.Context
 
         private static string MapActionToPoseDirective(string actionName)
         {
-            if (string.IsNullOrWhiteSpace(actionName)) return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
+            if (string.IsNullOrWhiteSpace(actionName)) return string.Empty;
             if (actionName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || actionName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return "【现场互动身姿】对方双臂交叠环抱于胸前，神态严谨审视，身姿沉静内敛";
@@ -539,12 +631,12 @@ namespace AnimusForge.Illustrator.Context
             {
                 return "【现场互动身姿】身形略显风霜疲惫，体态松弛深沉";
             }
-            return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
+            return string.Empty;
         }
 
         private static string MapIdleToPoseDirective(string idleName)
         {
-            if (string.IsNullOrWhiteSpace(idleName)) return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
+            if (string.IsNullOrWhiteSpace(idleName)) return string.Empty;
             if (idleName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || idleName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return "【现场互动身姿】对方双臂交叠环抱于胸前，神态严谨审视，身姿沉静内敛";
@@ -569,7 +661,7 @@ namespace AnimusForge.Illustrator.Context
             {
                 return "【现场互动身姿】身形略显风霜疲惫，体态松弛深沉";
             }
-            return "【现场互动身姿】二人自然微侧对角交谈，视线对视交互";
+            return string.Empty;
         }
 
         private static string CleanText(string text)
