@@ -47,6 +47,14 @@ Memory supplement **24文件/466成员每API**由原245待消费者+221未审提
 
 测试安全静态检查发现 `tests/run_all.py` 将 NEEDS_INPUT 仍作为待执行：两份研究文档生成器、资料迁移器及默认读取PlayerExports的编辑器smoke会进入调度；六runner默认可递归重建固定current产物。仓外TEMP由DataPaths拒仓内根合同解释，但不是授权。已向用户询问精确合成根 `E:/tmp/af-j17-20260930` 与最小测试入口隔离修正，**尚未获批或执行**；此事只限制相关B/C验证，不阻止独立A补审。
 
+### E126–E129 完整责任组接续
+
+[范围图E126–E129](architecture/af-framework-code-scope.md#af2-responsibility-evidence-20260928)已保存Conversation、Proactive/Companion/TownAmbient、Domains与SETS补审的真实owner、消费者、坐标和具名OPEN。Conversation独占补充403/API并核旧3161/API的消费者，旧Shout38/Courier88方法体引用缺口已实际补读，独占未读责任体/未分类消费者0；TownAmbient等委派不冒充本包完成。主动12文件1340/API覆盖全部need责任组；Domains37文件981/API与SETS剩余329/API按身份键去重。原有生产行为保持，未修改产品。
+
+总控独立验证后三包共5300行成员身份、原始SHA与一基范围通过；Conversation两表7450行在前一增量核过。此时聚合两API各无遗漏主张/无重复权威/无非法键/无单表重复；**这只是机器覆盖，不是语义unknown=0**。外交剩余方法/消费者仍在连续补审。Siege六文件初报904/API补审经追问撤回：五partial85/API确已读，主文件819/API只是枚举/关键信号，须保留pending并继续实际补读，旧7条E证据仅复用。其最终包未验收，不能凭body signals或OPEN标签签桶。
+
+当前正式仍7/20、A未闭、B/C未启动、D NOT-RUN；上一表停点数字不作为当前已审总数。后续按最终证据求差集完成20桶语义对账，不重复未变的有效审查。新风险与迁移分轴：B须解决范围内真实owner/接线余项；原版效果、刑罚、外交/ArmyJoin渠道规则、重试/部分成功政策不能未经批准暗改。任何与C范围直接相关的OPEN仍阻断对应出口，不靠改名/排除凑零。
+
 
 <a id="j17a-intent-20260928"></a>
 
