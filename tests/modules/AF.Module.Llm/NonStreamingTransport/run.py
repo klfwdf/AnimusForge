@@ -30,7 +30,7 @@ for f in files:
   if a.mutate=='drop-caller-token':text=text.replace('CreateLinkedTokenSource(callerToken)','CreateLinkedTokenSource(CancellationToken.None)',1)
   if a.mutate=='lose-retry-after':text=text.replace('return Math.Max(0, (int)Math.Ceiling(response.Headers.RetryAfter.Delta.Value.TotalSeconds));','return 0;',1)
  (out/Path(f).name).write_text(text,encoding='utf-8')
-baseline_gateway=subprocess.check_output(['git','show',review['baseline']+':src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs'],cwd=ROOT).decode('utf-8-sig')
+baseline_gateway=subprocess.check_output(['git','show',review['baseline']+':Refactor/Adapters/LegacyConfiguredChatGateway.cs'],cwd=ROOT).decode('utf-8-sig')
 old_gateway=ex.declaration(baseline_gateway,'public sealed class LegacyConfiguredChatGateway :')
 old_gateway=old_gateway.replace('LegacyConfiguredChatGateway','OriginalConfiguredChatGateway')
 header=baseline_gateway.split('namespace AnimusForge.Refactor.Adapters;',1)[0]

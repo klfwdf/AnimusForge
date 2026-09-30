@@ -174,7 +174,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
 
     def test_gate_in_other_method_is_rejected(self) -> None:
         def mutate(document: dict) -> None:
-            source_path = ROOT / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs"
+            source_path = ROOT / "src" / "modules" / "AF.Module.Knowledge" / "LegacyKnowledgeRagGateway.cs"
             original = source_path.read_text(encoding="utf-8")
             altered = original.replace(
                 "if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile))",
@@ -187,7 +187,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
             )
             with tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
-                target = root / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs"
+                target = root / "src" / "modules" / "AF.Module.Knowledge" / "LegacyKnowledgeRagGateway.cs"
                 target.parent.mkdir(parents=True)
                 target.write_text(altered, encoding="utf-8")
                 # Copy the minimum project files needed by the validator and
@@ -206,7 +206,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
                     )
 
     def test_gate_after_side_effect_is_rejected(self) -> None:
-        source = (ROOT / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs").read_text(encoding="utf-8")
+        source = (ROOT / "src" / "modules" / "AF.Module.Knowledge" / "LegacyKnowledgeRagGateway.cs").read_text(encoding="utf-8")
         altered = source.replace(
             "if (!FeatureBridgeRuntime.IsEnabled(FeatureBridgeIds.GatewayKnowledgeProfile))",
             "if (false)",
@@ -223,7 +223,7 @@ class BridgeBindingManifestTests(unittest.TestCase):
             )
 
     def test_wrong_bridge_id_is_rejected(self) -> None:
-        source = (ROOT / "Refactor" / "Adapters" / "LegacyKnowledgeRagGateway.cs").read_text(encoding="utf-8")
+        source = (ROOT / "src" / "modules" / "AF.Module.Knowledge" / "LegacyKnowledgeRagGateway.cs").read_text(encoding="utf-8")
         altered = source.replace(
             "FeatureBridgeIds.GatewayKnowledgeProfile",
             "FeatureBridgeIds.ConversationGateway",

@@ -1,7 +1,7 @@
 {
   "baseline": "39cf9d4724cc372a33503da270fd0c0e9dc6e6af",
   "files": {
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs": {
+    "Refactor/Modules/CoreDialogueContracts.cs": {
       "beforeSha256": "fe79f283606dc0365e6bf9e23bd7d4d411fef870f034ac375f3532df225773e7",
       "afterSha256": "61fc4a9160941ede3ebb339f8cd62dff7b9d0fd8b1990330f2e664f110765668",
       "hunks": [
@@ -43,7 +43,7 @@
         }
       ]
     },
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs": {
+    "Refactor/Modules/CoreDialogueOperation.cs": {
       "beforeSha256": "c739f52424732873729ad250be16f704d21864233f3d31d976c59b986b1d4a2a",
       "afterSha256": "5f1fcd17960a8389cbfa744701174200b425c6bf13cd9cc3d50869f4ec6bc013",
       "hunks": [
@@ -97,7 +97,7 @@
         }
       ]
     },
-    "src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs": {
+    "Refactor/Modules/CoreDialogueClient.cs": {
       "beforeSha256": "e692c6c0f09a116996122b20cd01f727d911651cb285acca3f94f91341d5e2f3",
       "afterSha256": "b453faa9557fb92d5d9969401a0f933e73b62f5334b9d946c88cdc7d73b453a1",
       "hunks": [

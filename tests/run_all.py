@@ -14,6 +14,8 @@ Toolchain (override by environment; missing tools make the affected entries BLOC
   AF_PWSH      PowerShell 7             default G:/AFMOD/.pwsh7/pwsh.exe
   AF_BANNERLORD_ROOT / AF_WORKSHOP_DIR  game + workshop roots for replay/policy entries
   AF_REPLAY_14_REFS                     1.4 reference dir (default <repo>/.tmp/build_check/1.4)
+  AF_REPLAY_CANDIDATE_DLL               isolated 1.4 implementation DLL for same-candidate replay
+  AF_REPLAY_STAGE_BIN                   isolated/private dependency bin for replay
   AF_TEST_TEMP_ROOT                     explicitly approved TEMP parent, outside the repo (required)
 
 Usage: py -3 tests/run_all.py [--only PREFIX] [--ids FILE] [--jobs N] [--out DIR] [--list]
@@ -70,8 +72,8 @@ WORKSHOP = env_path("AF_WORKSHOP_DIR", Path(r"E:\Steam\steamapps\workshop\conten
 REFS14 = env_path("AF_REPLAY_14_REFS", ROOT / ".tmp" / "build_check" / "1.4")
 SDK8_DIR = DOTNET8.parent
 NEWTONSOFT = SDK8_DIR / "sdk" / "8.0.425" / "Newtonsoft.Json.dll"
-STAGE_BIN = ROOT / "bin" / "Debug" / "single_module_stage" / "AnimusForge" / "bin" / "Win64_Shipping_Client"
-DLL14 = ROOT / "bin" / "Debug" / "single_module_artifacts" / "versions" / "1.4" / "AnimusForge.dll"
+STAGE_BIN = env_path("AF_REPLAY_STAGE_BIN", ROOT / "bin" / "Debug" / "single_module_stage" / "AnimusForge" / "bin" / "Win64_Shipping_Client")
+DLL14 = env_path("AF_REPLAY_CANDIDATE_DLL", ROOT / "bin" / "Debug" / "single_module_artifacts" / "versions" / "1.4" / "AnimusForge.dll")
 
 TOKENS = {
     "{DOTNET8}": str(DOTNET8), "{NEWTONSOFT}": str(NEWTONSOFT), "{GAME}": str(GAME),
@@ -146,6 +148,13 @@ def blocked(cmd: list[str]) -> str | None:
     if exe.is_absolute() and not exe.exists():
         return f"missing toolchain {exe}"
     return None
+
+
+def entry_log_path(out: Path, entry: str) -> Path:
+    name = re.sub(r"[^A-Za-z0-9._-]", "_", entry)
+    if len(str(out / (name + ".log"))) >= 240:
+        name = name[:80] + "-" + hashlib.sha256(entry.encode("utf-8")).hexdigest()[:12]
+    return out / (name + ".log")
 
 
 def main(argv: list[str]) -> int:
@@ -224,7 +233,7 @@ def main(argv: list[str]) -> int:
         expect = spec.get("expect", "PASS")
         if spec.get("execution") == "manual":
             message = "Not launched: business tool requires explicit inputs and separate authorization."
-            (out / (re.sub(r"[^A-Za-z0-9._-]", "_", entry) + ".log")).write_text(message, encoding="utf-8")
+            entry_log_path(out, entry).write_text(message, encoding="utf-8")
             return {"id": entry, "exit": None, "status": "NEEDS_INPUT", "expect": expect,
                     "seconds": 0, "last": message}
         entry_root = tmp / hashlib.sha256(entry.encode("utf-8")).hexdigest()[:20]
@@ -246,7 +255,7 @@ def main(argv: list[str]) -> int:
                 code, text = done.returncode, done.stdout + "\n--- stderr ---\n" + done.stderr
             except subprocess.TimeoutExpired as ex:
                 code, text = "TIMEOUT", str(ex)
-        (out / (re.sub(r"[^A-Za-z0-9._-]", "_", entry) + ".log")).write_text(text, encoding="utf-8")
+        entry_log_path(out, entry).write_text(text, encoding="utf-8")
         if reason:
             status = "BLOCKED_ENV"
         elif code == 0:

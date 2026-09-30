@@ -237,13 +237,13 @@
       "topology": "PAIR",
       "owner": "Conversation.Gateway",
       "entryPaths": [
-        "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
         "ShoutBehavior.cs",
         "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
       "symbols": [
         {
-          "path": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+          "path": "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
           "symbol": "LegacyConfiguredChatGateway",
           "kind": "type"
         },
@@ -272,7 +272,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "entryPath": "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
         "symbol": "GenerateExchangeAsync",
         "frequency": "event",
         "notes": "Configured generation requests pass one immutable allow-list gate before credentials, payload construction, or network I/O; validation-only sends remain owner-controlled."
@@ -287,12 +287,12 @@
       "topology": "PAIR",
       "owner": "Conversation.ActionCommit",
       "entryPaths": [
-        "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+        "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs",
         "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
       "symbols": [
         {
-          "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+          "path": "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs",
           "symbol": "LegacyChannelInteractionFacade",
           "kind": "type"
         },
@@ -582,7 +582,7 @@
       "owner": "Conversation.Courier",
       "entryPaths": [
         "CourierDeliveryBehavior.cs",
-        "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
+        "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs"
       ],
       "symbols": [
         {
@@ -591,7 +591,7 @@
           "kind": "type"
         },
         {
-          "path": "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+          "path": "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs",
           "symbol": "LegacyChannelInteractionFacade",
           "kind": "type"
         }
@@ -677,12 +677,12 @@
       "topology": "PAIR",
       "owner": "Gateway.KnowledgeProfile",
       "entryPaths": [
-        "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+        "src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs",
         "KnowledgeLibraryBehavior.cs"
       ],
       "symbols": [
         {
-          "path": "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+          "path": "src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs",
           "symbol": "LegacyKnowledgeRagGateway",
           "kind": "type"
         },
@@ -710,7 +710,7 @@
       ],
       "runtimeBinding": {
         "state": "wired",
-        "entryPath": "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+        "entryPath": "src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs",
         "symbol": "GenerateAsync",
         "frequency": "event",
         "notes": "Knowledge/RAG generation is gated before delegation to the configured transport; prompt, index, profile and deterministic fallback authority remain with existing owners."

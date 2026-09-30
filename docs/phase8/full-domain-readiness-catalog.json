@@ -55,7 +55,7 @@
       ],
       "entryPaths": [
         "SubModule.cs",
-        "Refactor/Adapters/LegacyInteractionPipelineComposition.cs"
+        "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs"
       ],
       "promptAction": {
         "prompt": "MIXED",
@@ -239,7 +239,7 @@
         "ShoutBehavior.cs",
         "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs",
         "LordEncounterBehavior.cs",
-        "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
+        "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs"
       ],
       "promptAction": {
         "prompt": "APPLICABLE",
@@ -291,8 +291,8 @@
         "prompt-owner"
       ],
       "entryPaths": [
-        "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
-        "Refactor/Contracts/LegacyShoutNetworkGateway.cs",
+        "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
+        "src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs",
         "AnimusForge/ModuleData/RuleBehaviorPrompts.json"
       ],
       "promptAction": {
@@ -763,7 +763,7 @@
         "DuelBehavior.cs",
         "DuelSettings.cs",
         "FourberieDuelCompatibility.cs",
-        "Refactor/Runtime/DuelOutcomeReceipt.cs",
+        "src/modules/AF.Module.Duel/DuelOutcomeReceipt.cs",
         "ShoutBehavior.cs",
         "src/modules/AF.Module.Actions/Execute/LegacyNativeActionPlanExecutor.cs",
         "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs",
@@ -1291,7 +1291,7 @@
       "owner": "Conversation.Gateway",
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
-        "Refactor/Adapters/LegacyConfiguredChatGateway.cs",
+        "src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs",
         "ShoutBehavior.cs",
         "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs"
       ],
@@ -1320,7 +1320,7 @@
       "owner": "Conversation.ActionCommit",
       "implementationState": "OPT_IN",
       "entryPaths": [
-        "Refactor/Adapters/LegacyChannelInteractionFacade.cs",
+        "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs",
         "src/modules/AF.Module.Actions/Receipts/InteractionResultCommitter.cs"
       ],
       "requiredCases": [
@@ -1486,7 +1486,7 @@
       "implementationState": "OPT_IN",
       "entryPaths": [
         "CourierDeliveryBehavior.cs",
-        "Refactor/Adapters/LegacyChannelInteractionFacade.cs"
+        "src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs"
       ],
       "requiredCases": [
         "A_ONLY",
@@ -1539,7 +1539,7 @@
       "owner": "Gateway.KnowledgeProfile",
       "implementationState": "ACTIVE_BOUNDARY",
       "entryPaths": [
-        "Refactor/Adapters/LegacyKnowledgeRagGateway.cs",
+        "src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs",
         "KnowledgeLibraryBehavior.cs"
       ],
       "requiredCases": [

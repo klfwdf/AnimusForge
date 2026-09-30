@@ -197,3 +197,109 @@ R08 性能随每个切片验，不压到最后：区分请求/事件/每帧/批�
 ### 编制时可复制请求（历史模板，以上方当前执行顺序为准）
 
 > 请按 `docs/plans/j17-responsibility-closeout-plan.md` 接续 J17，先核实当前 Git 与 HANDOFF。先执行 G0 和 J17-A 的只读审查及文档更新：刷新 99ca85ae 旧证据到当前源码，补全 20 桶成员/动态消费者责任分区，在主台账登记具名余项与有限退出门。保护已有改动，不清理生成物，不改产品/测试/构建脚本，不写仓外、游戏或玩家数据，不部署/推送。A 完成后汇报真实余项、依赖和 B1 的精确实施范围，待授权再进入产品迁移；不以旧 940/3,332 数字或名称分类冒充当前全量审查完成。
+
+<a id="j17-b7-exact-move-permission-proposal-20260930"></a>
+
+## B7 精确目录归位许可清单（2026-09-30 已获授权并实施，验收进行中）
+
+当前核对：`Refactor/` 的 30 个 tracked 活动 `.cs` 均由产品默认 Compile 纳入；下列目标目录均已存在、无同名冲突。用户已批准本表的仓内移动与路径引用更新；30 个源文件已按表 `git mv` 并随产品候选 `aa3539ca` 本地提交，归一换行后正文与 `948cc03c` 相同。**保留原 namespace、类型全名、程序集/存档/JSON/资源身份和运行语义**；`LegacyInteractionSnapshotAdapters` 是混合主线程适配，原样移到 GameAdapter 不代表 Memory/Weekly 业务归属已迁。不改一键构建/Stage/游戏目录；Debug/Release 双 API 与 Bootstrap 已通过，C 全 runner 未通过，见主台账。
+
+| 源路径 | 拟议目标路径 |
+| --- | --- |
+| `Refactor/Adapters/LegacyChannelInteractionFacade.cs` | `src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyChannelInteractionFacade.cs` |
+| `Refactor/Adapters/LegacyConfiguredChatGateway.cs` | `src/modules/AF.Module.Llm/Transport/LegacyConfiguredChatGateway.cs` |
+| `Refactor/Adapters/LegacyDetachedPostprocessPromptComposer.cs` | `src/modules/AF.Module.Prompt/Composition/LegacyDetachedPostprocessPromptComposer.cs` |
+| `Refactor/Adapters/LegacyDetachedPromptComposer.cs` | `src/modules/AF.Module.Prompt/Composition/LegacyDetachedPromptComposer.cs` |
+| `Refactor/Adapters/LegacyDetachedRuleSelector.cs` | `src/modules/AF.Module.Prompt/Configuration/LegacyDetachedRuleSelector.cs` |
+| `Refactor/Adapters/LegacyInteractionPipelineComposition.cs` | `src/modules/AF.Module.Conversation/Internal/Pipeline/LegacyInteractionPipelineComposition.cs` |
+| `Refactor/Adapters/LegacyInteractionSnapshotAdapters.cs` | `src/AF.GameAdapter.Bannerlord/Composition/LegacyInteractionSnapshotAdapters.cs` |
+| `Refactor/Adapters/LegacyKnowledgeRagGateway.cs` | `src/modules/AF.Module.Knowledge/LegacyKnowledgeRagGateway.cs` |
+| `Refactor/Adapters/LegacyNativeConversationFacade.cs` | `src/modules/AF.Module.Conversation/Channels/Native/LegacyNativeConversationFacade.cs` |
+| `Refactor/Adapters/LegacyNativeConversationOptInRunner.cs` | `src/modules/AF.Module.Conversation/Channels/Native/LegacyNativeConversationOptInRunner.cs` |
+| `Refactor/Adapters/LegacyNativePromptParity.cs` | `src/modules/AF.Module.Prompt/Composition/LegacyNativePromptParity.cs` |
+| `Refactor/Adapters/LegacyPolicyLlmGateway.cs` | `src/bridges/Policy/LegacyPolicyLlmGateway.cs` |
+| `Refactor/Adapters/LegacyPromptPackageAdapter.cs` | `src/modules/AF.Module.Prompt/Composition/LegacyPromptPackageAdapter.cs` |
+| `Refactor/Adapters/LegacyWorldDiplomacyLlmGateway.cs` | `src/modules/AF.Module.Diplomacy/World/LegacyWorldDiplomacyLlmGateway.cs` |
+| `Refactor/Contracts/FeatureBridgeContracts.cs` | `src/AF.Contracts/Internal/FeatureBridgeContracts.cs` |
+| `Refactor/Contracts/InteractionContracts.cs` | `src/AF.Contracts/Internal/InteractionContracts.cs` |
+| `Refactor/Contracts/LegacyShoutNetworkGateway.cs` | `src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs` |
+| `Refactor/Contracts/LlmContracts.cs` | `src/AF.Contracts/Internal/LlmContracts.cs` |
+| `Refactor/Contracts/NpcPersonaReadinessSnapshot.cs` | `src/modules/AF.Module.Persona/Generation/NpcPersonaReadinessSnapshot.cs` |
+| `Refactor/Contracts/ProfileConfigContracts.cs` | `src/AF.Contracts/Internal/ProfileConfigContracts.cs` |
+| `Refactor/Contracts/TtsContracts.cs` | `src/AF.Contracts/Internal/TtsContracts.cs` |
+| `Refactor/Modules/CoreDialogueClient.cs` | `src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs` |
+| `Refactor/Modules/CoreDialogueContracts.cs` | `src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs` |
+| `Refactor/Modules/CoreDialogueOperation.cs` | `src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs` |
+| `Refactor/Modules/CoreDialogueServices.cs` | `src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs` |
+| `Refactor/Runtime/CourierInboundCompletionCommitCoordinator.cs` | `src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionCommitCoordinator.cs` |
+| `Refactor/Runtime/CourierInboundCompletionReceipt.cs` | `src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionReceipt.cs` |
+| `Refactor/Runtime/DuelOutcomeReceipt.cs` | `src/modules/AF.Module.Duel/DuelOutcomeReceipt.cs` |
+| `Refactor/Runtime/FeatureBridgeRuntime.cs` | `src/AF.Foundation.Runtime/ModuleDirectory/FeatureBridgeRuntime.cs` |
+| `Refactor/Runtime/NotorietyConversationOutcomeReceipt.cs` | `src/modules/AF.Module.Social/Notoriety/NotorietyConversationOutcomeReceipt.cs` |
+
+**引用更新的最大文件范围（当前 tracked 精确扫描）**：以下 60 个 `tests/`/`tools/` 文件含 `Refactor/Adapters|Contracts|Modules|Runtime` 路径字面量；逐个仅改受本次移动影响的源路径、Compile Include、源提取和反射夹具。历史 `git show <revision>:Refactor/...` 必须保留历史定位，不能机械替换。另更新主台账、代码范围图、HANDOFF 和本计划的现态链接；若新发现其它真实消费者，先重新请示扩围。
+
+```text
+tests/AF.Contracts/ModuleFrameworkApiTests/run.py
+tests/AF.Contracts/ModuleFrameworkApiTests/source_boundary.py
+tests/AF.GameAdapter.Bannerlord/CampaignCompositionTests/run.py
+tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/run_commit.py
+tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source-review.json
+tests/AF.GameAdapter.Bannerlord/GameLifetimeTests/source_parity.py
+tests/AF.GameAdapter.Bannerlord/HostCompositionTests/source_inverse.py
+tests/bridges/BridgeBindingContractTests/validate_bridge_bindings.py
+tests/bridges/BridgeRuntimeIsolationTests/BridgeRuntimeIsolationTests.csproj
+tests/modules/AF.Module.Actions/ActionProtocol/run.py
+tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py
+tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/test_extraction.py
+tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/run.py
+tests/modules/AF.Module.Conversation/ChannelPersonaPreparationTests/source-review.json
+tests/modules/AF.Module.Conversation/CourierCommitOutcomeTests/run.py
+tests/modules/AF.Module.Conversation/CourierHistoryPreparationTests/source_parity.py
+tests/modules/AF.Module.Conversation/CourierInboundCompletionContractTests/CourierInboundCompletionContractTests.csproj
+tests/modules/AF.Module.Conversation/CourierOwnerPhaseTests/source_parity.py
+tests/modules/AF.Module.Conversation/CourierPostprocessOwnerRegressionTests/run.py
+tests/modules/AF.Module.Conversation/CourierPromptPreparationTests/source_review.py
+tests/modules/AF.Module.Conversation/CourierSessionCreationTests/run_admission.py
+tests/modules/AF.Module.Conversation/InteractionPipelineContractTests/InteractionPipelineContractTests.csproj
+tests/modules/AF.Module.Conversation/InteractionPipelineContractTests/README.md
+tests/modules/AF.Module.Conversation/InteractionRequestLifetimeTests/run.py
+tests/modules/AF.Module.Conversation/NativeActionDispatchOutcomeTests/run.py
+tests/modules/AF.Module.Conversation/NativeCompletionBoundaryTests/run.py
+tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/run.py
+tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/run_presentation.py
+tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/README.md
+tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/courier-additive-review.json
+tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/fixture_support.py
+tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/run.py
+tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/scene-additive-review.json
+tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/source-review.json
+tests/modules/AF.Module.Conversation/NativeModuleSubmissionTests/verification.json
+tests/modules/AF.Module.Conversation/SceneGroupReceiptTests/run.py
+tests/modules/AF.Module.Duel/DuelDispatchContractTests/DuelDispatchContractTests.csproj
+tests/modules/AF.Module.Duel/DuelOutcomeContractTests/DuelOutcomeContractTests.csproj
+tests/modules/AF.Module.Economy/EconomyAwareActionPlanExecutorContractTests/EconomyAwareActionPlanExecutorContractTests.csproj
+tests/modules/AF.Module.Economy/EconomyRewardDebtPortContractTests/EconomyRewardDebtPortContractTests.csproj
+tests/modules/AF.Module.Economy/HeroAssetScopeRegressionTests/run.py
+tests/modules/AF.Module.Llm/LegacyShoutGatewayResultRegressionTests/run.py
+tests/modules/AF.Module.Llm/LegacyShoutGatewayResultRegressionTests/test_compatibility.py
+tests/modules/AF.Module.Llm/NonStreamingTransport/run.py
+tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/README.md
+tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/run.py
+tests/modules/AF.Module.Memory/MemorySummaryBudgetTests/verify.py
+tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/README.md
+tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/run_terminal.py
+tests/modules/AF.Module.Social/NotorietyConversationOutcomeContractTests/NotorietyConversationOutcomeContractTests.csproj
+tests/modules/AF.Module.Social/NotorietyConversationOutcomeContractTests/README.md
+tests/modules/AF.Module.Weekly/WeeklyMemoryMaterialOutcomeContractTests/WeeklyMemoryMaterialOutcomeContractTests.csproj
+tests/replay/ConfiguredChatGatewayReplayTests/ConfiguredChatGatewayReplayTests.csproj
+tests/replay/ConfiguredChatValidationReplayTests/ConfiguredChatValidationReplayTests.csproj
+tests/replay/KnowledgeRagGatewayReplayTests/KnowledgeRagGatewayReplayTests.csproj
+tests/replay/ProductionCourierHostReplayTests/Program.cs
+tests/replay/ProductionOptInEntryReplayTests/WeeklyActionOutcomeProductionReplay.cs
+tests/tools/RepositorySourceInventory/test_repository_source_inventory.py
+tools/PhaseEightReadiness/entry_inventory.py
+tools/PhaseEightReadiness/test_entry_inventory.py
+```
+
+两 API 已用实际 MSBuild `-getItem:Compile` 求值（各 1138 项）：30 条旧路径均 0、30 条新路径各恰好 1，无漏编/双编。最终候选仍须跑受影响路径/反射测试与双 API/Bootstrap 编译；中途 Debug 双 API+Bootstrap `run-7f90f815ad68443687d3d7593b5d851e` 为 0，不能代替最终 C。用户另批准仅 `docs/phase8/full-domain-readiness-catalog.json` 的本次 B7/新 owner entryPaths 更新；该目录检查仍报告 4 个既有 CivilWar 文件缺条目，未越界改状态或 expected。

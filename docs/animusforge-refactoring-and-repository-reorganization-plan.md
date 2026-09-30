@@ -1,8 +1,33 @@
 <a id="j17-multiagent-execution-20260930"></a>
 
+### J17 六执行者恢复实施现态（2026-10-01；覆盖下方 2026-09-30 停止与 B1→B7 串行指令）
+
+用户已恢复 B/C 工作，旧 `j17_delivery` 已确认 idle；本轮从 `c5edeca4` 建本地意图检查点 `948cc03c`，不重做 A 20/20 或迁前基线。P1–P4 的 Memory Records/Summary/ImportExport/Weekly 唯一 owner 与共享宿主接线按独立回归切片提交 `8c7b0fb0`；P5 Conversation/B7 产品候选提交 `aa3539ca`，P6 独占共享接线、Git、B7、集中 C。此为**进行中状态，不是 B/C 最终 PASS**。
+
+- P1 published-trigger 同引用变更根因已修，sealing 88/0；B1b 27 字段 `NpcActionEntry` 形状保持，Records42、captured116、business36、planning24、terminal85、budget65808、NativeHistory852/27 均本轮隔离 PASS。P2 三类 Prompt/解析与重试/接受 owner 独立25 PASS。P3 五域 ImportExport/开发者编辑、坏 JSON 反馈、代际/同代指纹守门，owner29、host contract55 PASS。P4 Weekly 纯规则/短报/事件文本 owner 与四嵌套 CLR 身份兼容壳，fixture46、源码主线程合同42 PASS。均非真实游戏、旧档验收。
+- P5 已接 Courier 持久 memory-only pending（用户额外授权，旧字段缺省、128 背压、0.75 秒单条）、Scene 迟到回执门、Courier 热路径轮转、共享后处理移位/资格谓词及角色分类、Native 仪式 owner-aware 退役与 stream 发布门；相应离线回放/负控见 `artifacts/j17b/session-20260930/p5-channels/`。R05-a/b/d/f/g/h/i/k/m/n 仍有具名未闭责任，尤其三渠道主 Prompt/历史装配、真实 HTTP 取消及实机回读；不能把子点绿当 B6 全绿。新 pending 在保存 JSON 中含冻结信件历史/事实文本，须按敏感存档内容保护；跨日恢复的日期显示退化为 `day:<originDay>` 是具名残差。
+- B7 用户已批准[精确 30 源路径与最多 60 个测试/工具引用文件](docs/plans/j17-responsibility-closeout-plan.md#j17-b7-exact-move-permission-proposal-20260930)，并逐次批准 Phase8 catalog、bridge-binding manifest 及同一 30 个移动源的其它纯路径引用修正。30 个源文本与旧版逐一等价，前次双 API 实际 Compile 各 1138 项，旧路径 0、新路径各 1；桥 manifest 校验 16 bindings/33 source，负控 24 PASS；NonStreamingTransport 240、ChannelCutover extraction 14、NativeTurn 112、Memory terminal 85/0 定向 PASS。历史 `git show` 保留旧路径。`entry_inventory --check` 尚报 4 个既有 CivilWar 条目缺失，未越权改其状态/期望。
+- 同一产品候选 `aa3539ca` 的隔离 Debug `BannerlordApi=1.3/1.4` + Bootstrap `artifacts/j17b/session-20260930/p6-integration/build-fc1837d9be9e4ae788ca726c431aad74/build.log`、Release 对应 `build-4c969c84332245b392066c962a7b6126/build.log` 均 exit 0。全量 runner `full-run-aedcba06ed7844b0b90fa0c57b621a1a/results.json` 实际 273 项：PASS 148、FAIL 78、PREEXISTING_FAIL 34、NEEDS_INPUT 5、SUPERSEDED_BY_RUNNER 4、ENV_STATE 1、BLOCKED_ENV 3；**C 未通过**。其中硬编码缺失 SDK/Workshop/Stage、历史路径和旧全文件审查锁混合，须按信号逐项区分，不刷 hash/expected。代码地图记录 `aa3539ca`，795 锚点的 recorded/working-tree 两模式已通过。D 实机/真实旧档/网络/帧耗时 NOT-RUN；不推送、部署、产品 Stage 或清理 22 个旧未跟踪 `tools/` 目录，也不清本轮 runner 产生的 `NuGet/` 目录。旧凭据轮换尚未确认。
+
 ## J17 本轮执行意图与现场（2026-09-30）
 
-### 当前结论：J17-A已闭，20/20责任桶；B1a已启动，C未执行，D NOT-RUN
+### 历史停点（已被上段恢复实施状态取代）：J17-A已闭，B1a当时待验收，B1b/C当时未执行
+
+<a id="j17-resume-stop-20260930"></a>
+
+**2026-09-30 新会话恢复后再次立即停止（最新状态，取代下方旧协作分工）**：本轮已核实工作区 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`，交接记录时 HEAD 仍为 `c5edeca4a2ebb2674df8dbdf14ad1b2c2593f7b3`。按用户要求派发一个 `gpt-6-sol / medium` 执行者 `j17_delivery`，整包负责 B1a 实现/验收/文档/精确本地提交，总控不重复验证。随后用户先要求收尾停止，再要求“立马停下”；已中断该执行者，不再收尾或进入下一包。本次补记只读现场并编辑交接文档，不恢复测试、构建或产品实现。
+
+- **执行到哪**：已进入 B1a 剩余 sealing 源码回放诊断。执行者最后回报 **84 PASS / 4 FAIL**，失败集中于 trigger 列表结构变化后的旧 oracle 对照，信号 `actual day=10, expected day=21`；尚在判别旧 fixture 基线漂移还是产品回归，**没有根因结论或修复验收**。这是执行者回报，总控未重跑，不作为 B1a 通过证据。停点工件仍在 `artifacts/j17b/session-20260930/b1a-tests/`；交接时只读枚举所见最新日志为 `sealing-old-02/run.log`、`build.log`，未据此推断它们与回报数字一一对应。
+- **保留的工作树**：`MyBehavior.cs`、`MyBehavior.MemoryRecovery.cs`、`MyBehavior.MemorySummaryInput.cs`；新增 `src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs`；MemorySummaryMainThreadBoundary 的 harness/runner 与四个新增 B1a 辅助文件、MemorySummaryBudget runner/verify、NativeHistorySnapshot runner、三个 ProductionOptInEntry Memory 回放；主台账与 HANDOFF 仍有未提交改动。具体差异以实际 `git diff` 为准，未将这些全部归为本轮新增。原 22 个未跟踪 `tools/` 目录不清理、不提交。
+- **已完成与未完成**：A 20/20、E120–E133 和已交付 B6 前置测试继续复用；下方双 API/Bootstrap、DTO/别名等证据是上轮结果，不冒充本轮重跑。B1a sealing/terminal 等剩余消费者、整体验收、本地产品提交和代码地图更新仍未闭；地图仍绑定旧产品 `8ae0f831`。本轮无新提交。B1b 未实施，B2–B7/C 未开始，D 实机/旧档/发布 NOT-RUN。
+- **获准恢复后的第一步**：先确认无旧写者/测试进程，读当前 diff 与现有 sealing 日志，定位上述四个失败，保留原断言和负控；不能刷 `test_source_parity.py` hash 消除既有 PREEXISTING_FAIL。仅重验受影响输入，完成 B1a 有限出口和地图/台账/提交后，才按依赖进入 B1b→B2→B3→B4→B5→具名 B6→B7→C。当前没有继续执行授权；无需重做 A 或已交付 B6 前置包。
+- **安全与交接限制**：不推送、Stage、部署、改一键流程、操作真实玩家资料或清理旧产物。仓外合成测试仅沿用已明确批准的 `E:/tmp/af-j17-20260930`，不扩大路径；mock 使用 `clear=True` 最小环境，先前凭据泄露的轮换仍未确认。本次未进行残留进程清理，不将代理中断等同于操作系统进程全部退出；恢复前核查。
+
+**2026-09-30 用户要求“尽快收尾，停下”——已停止执行**：两名运行中的 Memory 子代理已中断，渠道测试子代理已完成；不启动下一包或新验证。最后提交 `c5edeca4`（B6 前置测试）与意图检查点 `6f871414`。B1a 产品及测试改动保留在工作树，**未提交为已验收切片**；22 个原有未跟踪 tools 目录未动，无推送/部署/Stage。
+
+- 已有有效证据：九类/95字段迁至 `MemoryPersistenceModels.cs`、唯一 `MemoryRecordRules` 与宿主薄接线；隔离 Debug 双 API 各338警告/0错误、Bootstrap0/0，实际引用1.3.15.110062/1.4.7.117484，构建位置 `artifacts/tests/j17-unified-build/run-4a18cd48e9854ea89244f7c2b9f1001f/`。两API Compile各1129，仅新增此owner源，无移除/重复。保存键/注册源码未变。
+- 执行者已报告：旧/新DTO各219断言及JSON形状一致（Newtonsoft离线fixture，依赖版本限制见其日志）；真实1.4 DLL反射 OwnerReadback11、Recovery3554、Weekly及新增Sanitize15通过；captured116、business36、planning24通过，worker alias/main detach负控各3个具名失败。Budget65808、Native history852、Native capture/accept27及四个编译成功后的行为变异已验；Budget显式新输出校验通过。详细日志分别在 `artifacts/j17b/session-20260930/b1a-tests/` 与 `b1a-secondary-tests/`，不把通过数相加冒充全量验收。
+- **停点**：sealing/terminal等剩余源码提取消费者尚未完成包级交付；刚中断的测试改动需接续者先看实际diff及日志，不假定完成或回滚。旧整文件 `test_source_parity.py` 已有PREEXISTING_FAIL锁保持，不刷hash或固定旧输入制造当前绿灯。B1a整体验收、产品提交与代码地图更新尚未完成；地图仍绑定旧产品 `8ae0f831`，不能称working-tree地图已通过。B1b只有只读准备，B2–B7/C最终矩阵未开始；D实机/旧档/发布保持NOT-RUN。只有用户重新授权继续后恢复。
 
 **B6 渠道前置测试已验收（产品未迁）**：四个测试文件的独立切片修复旧 fixture 漂移并补具名现状回归。`SceneGroupReceiptTests` 原样提取 `BuildGroupSpeakingCandidates`、`BuildStrictSceneMessagesForNpc`、`RecordSceneReplyHistoryOnMainThreadAsync`，结合 SceneConversationChains 真实调用点约束，共 **27 checks PASS**：primary-first/同 Agent 去重/其余 NPC 原顺序，群聊与旁听已记录输入不二次追加，失效 generation/session/epoch/目标不追加两类历史写入。另复用本轮独立输出的 Lifetime **34/34**、后处理 queue **40**、gate **6组**、extraction **8/8**。首次 Lifetime `CS0103 RichExecutions` 与旧 `void`/audience marker 提取失败已保留；仅补明确排除 Vengeance 实效的 stub、改接真实 `Task`/marker，未降低后续断言。Group runner 复用已审 `new_run_root`，不覆盖旧 `.generated/current`。证据：`artifacts/j17b/session-20260930/b6-preflight/report.md` 及 `group-002/run.log`，输入 SHA 固定。此包只验证真实 helper/回执与替身依赖边界，不是完整群聊/旁听运行、Memory 持久 exactly-once、真实 HTTP 取消或三渠道切换；这些留后续具名 B6/C/D，**不标 B6 产品迁移完成**。
 

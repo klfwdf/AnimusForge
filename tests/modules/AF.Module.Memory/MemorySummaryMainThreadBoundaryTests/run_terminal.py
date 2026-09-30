@@ -140,6 +140,10 @@ def main():
     files={'Product.cs':product,'Input.cs':input_code,'Boundary.cs':read('MyBehavior.MemorySummaryMainThread.cs'),'Guard.cs':read('src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),'Fixture.cs':fixture,'Terminal.cs':read('tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests/TerminalHarness.cs.txt')}
     files['MemorySummaryRules.cs']=read('src/modules/AF.Module.Memory/Summary/MemorySummaryRules.cs')
     files['MemorySummaryAttemptRunner.cs']=read('src/modules/AF.Module.Memory/Summary/MemorySummaryAttemptRunner.cs')
+    weekly_event_source=read('src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs')
+    weekly_kind=ex.declaration(weekly_event_source,'internal static string TranslateNpcActionKindForPrompt(')
+    manifest.append(dict(file='src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs',signature='TranslateNpcActionKindForPrompt',line=weekly_event_source[:weekly_event_source.index(weekly_kind)].count('\n')+1,sha256=hashlib.sha256(weekly_kind.encode()).hexdigest()))
+    files['WeeklyAggregateEventLineOwner.cs']='namespace AnimusForge { internal sealed class WeeklyAggregateEventLineOwner {\n'+weekly_kind+'\n}}'
     if a.admission_only:
         files['Terminal.cs']=replace(files['Terminal.cs'],'  void TryEnqueueMemoryOverviewForMemoryId(string id,string name,List<CompressedMemoryBlock> blocks)=>TerminalEvent("overview-after:"+id);\n','')
     # These line rules moved out of MyBehavior; link the actual ledger, not removed wrapper names.

@@ -6,6 +6,10 @@ REVIEW=json.loads((Path(__file__).parent/'source-review.json').read_text(encodin
 SCENE_REVIEW=json.loads((Path(__file__).parent/'scene-additive-review.json').read_text(encoding='utf-8'))
 COURIER_REVIEW=json.loads((Path(__file__).parent/'courier-additive-review.json').read_text(encoding='utf-8'))
 CURRENT_PATHS={
+    'Refactor/Modules/CoreDialogueContracts.cs':'src/modules/AF.Module.Conversation/Internal/CoreDialogueContracts.cs',
+    'Refactor/Modules/CoreDialogueOperation.cs':'src/modules/AF.Module.Conversation/Internal/CoreDialogueOperation.cs',
+    'Refactor/Modules/CoreDialogueClient.cs':'src/modules/AF.Module.Conversation/Internal/CoreDialogueClient.cs',
+    'Refactor/Modules/CoreDialogueServices.cs':'src/modules/AF.Module.Conversation/Internal/CoreDialogueServices.cs',
     'Api/V1/AfApiContracts.cs':'src/AF.Contracts/PublicApi/V1/AfApiContracts.cs',
     'Api/V1/AfApi.cs':'src/modules/AF.Module.PublicApi/V1/AfApi.cs',
     'Api/V1/AfDialogueClient.cs':'src/modules/AF.Module.PublicApi/V1/AfDialogueClient.cs',
@@ -16,7 +20,7 @@ def current_path(old_path):
     return CURRENT_PATHS.get(old_path,old_path)
 
 def restore_scene_additions(path,current):
-    path=current_path(path)
+    path=str(path).replace('\\','/')
     courier=COURIER_REVIEW['files'].get(path)
     if courier is not None:
         old=subprocess.check_output(['git','show',COURIER_REVIEW['baseline']+':'+path],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
@@ -69,6 +73,6 @@ def restore(path,current,verify_dependencies=True,live_current=None):
     assert current in (old,expected), 'Unexpected Native API proof input: '+path
     return old
 if __name__=='__main__':
-    for path in COURIER_REVIEW['files']:restore_scene_additions(path,(ROOT/path).read_text(encoding='utf-8-sig'))
+    for path in COURIER_REVIEW['files']:restore_scene_additions(path,(ROOT/current_path(path)).read_text(encoding='utf-8-sig'))
     for path in REVIEW['files']:restore(path,(ROOT/current_path(path)).read_text(encoding='utf-8-sig'))
     print('PASS exact Native API inverse: '+str(len(REVIEW['files']))+' original files; '+str(len(COURIER_REVIEW['files']))+' reviewed Courier additive files; original dependency hashes retained')

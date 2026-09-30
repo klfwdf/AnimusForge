@@ -8,6 +8,17 @@
 
 ## 当前核实证据（一基行号；后续按符号与修订重定位）
 
+### E134 / J17-B 当前候选责任接线（产品 `aa3539ca`；2026-10-01）
+
+| 责任 / 实码入口与消费者 | 保留边界与未覆盖 |
+| --- | --- |
+| Records/Summary | `src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs:309` 的 `MemoryRecordRules` 与 `NpcActionLedger.cs:12` 承接记录/净化；`MyBehavior.cs:14500–14505` 真委派。`Summary/MemorySummaryRules.cs:10` 和 `MemorySummaryAttemptRunner.cs:9,13` 承接三类文本/字段及重试接受；`MyBehavior.MemorySummaryInput.cs:370–411`、`MyBehavior.cs:4516–4558,4750–5091` 为真实入口。九类保存记录、27 字段 `NpcActionEntry` 和主线程权威队列身份保持。实机存读、真实 provider 未验。 |
+| ImportExport/Weekly | `MemoryImportExportOwner.cs:27` 与 `MemoryDeveloperEditOwner.cs:9` 被 `MyBehavior.cs:44933,45279–45634,48526–48543` 调用，五域 view/回写及开发者弹窗 generation/指纹仍由宿主适配。`WeeklyPromptMaterialOwner.cs:11`、`WeeklyMaterialAggregationOwner.cs:10`、`WeeklyAggregateEventLineOwner.cs:47` 被 `MyBehavior.cs:35734–36119` 消费；四原嵌套纯类型移入 `WeeklyLegacyDtos.cs` 的同一 `partial MyBehavior` 保 CLR 身份。七个游戏事实回调仅在同步主线程准备阶段，旧档/实际 UI/帧耗时未验。 |
+| Conversation 与 R05 可闭子点 | `CourierDeliveryBehavior.DeliveredMemory.cs:10,87,146` 有界 pending 意图，根 `CourierDeliveryBehavior.cs:168,944–968` 可选 JSON 保存/恢复；`ConversationRoleClassificationOwner.cs:7` 被 Courier `PromptMessages.cs:363` 与 Scene `ShoutBehavior.cs:33114` 以各渠道旧身份策略消费。共享后处理 WorkItem/Prepare 在 `Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs:27–641`，Scene 原文件保留 queue/commit。`ShoutBehavior.CampaignLifetime.cs:22` 按 owner 清行刑订阅；`ShoutNetwork.cs:886–1302` 发布 token/代际门。Courier 原日期跨日显示退化、主 Prompt/历史格式全统一、真 HTTP 取消/SaveSystem/实机仍未闭，不把子点当 R05 整包完成。 |
+| B7 位置而非新核心 | 用户批准的 30 条 `Refactor/{Adapters,Contracts,Modules,Runtime}/*.cs` 原样 `R100` 移至各自现有责任目录；namespace/CLR/保存/资源身份不变。两 API `Compile` 每个旧路径 0、新路径 1；完整清单在[计划许可段](../plans/j17-responsibility-closeout-plan.md#j17-b7-exact-move-permission-proposal-20260930)。这些移动不是新 owner 算法的证据；45 个实际命中测试/工具引用与获准 Phase8 `entryPaths` 已改。 |
+
+本表为源码导航，不重算 E01–E133 的历史成员分母；详细包回放、同候选构建/最终 C 及 OPEN 出口只见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。795 锚点地图绑定 `aa3539ca` 并已在 recorded/working-tree 两模式验证；它不证明玩法。
+
 ### J17 当前包合并证据（2026-09-30，产品 `8ae0f831`）
 
 #### E126–E129 / Conversation、主动交流与 Settlement 接续

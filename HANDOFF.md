@@ -1,4 +1,10 @@
-# 当前交接：远端合并移除未完成 WorldBulletin，双版本离线通过（2026-09-30）
+# 当前交接：J17 B/C 六执行者恢复实施中（2026-10-01）
+
+- **最新现态，取代下方 2026-09-30 停止/串行指令**：用户已恢复 J17 B/C；P1–P4 Memory/Weekly 切片 `8c7b0fb0`、P5 Conversation/B7 产品候选 `aa3539ca` 已本地提交。该候选隔离 Debug/Release 双 API+Bootstrap 均 exit 0，代码地图 795 锚点通过；全量 C runner 273 项中 PASS 148、FAIL 78，另有预期/环境状态，**C 未通过**，B6 仍有具名未闭子项。D 实机/旧档 NOT-RUN。原 22 个未跟踪 `tools/` 与本轮 `NuGet/` 目录保留，不推送/部署/产品 Stage。[主台账最新实证与残余](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)及[B7 精确许可](docs/plans/j17-responsibility-closeout-plan.md#j17-b7-exact-move-permission-proposal-20260930)。
+
+- **最新停点：新会话恢复后再次立即停止（2026-09-30）**：唯一执行者 `j17_delivery` 已被中断；HEAD 仍为 `c5edeca4`，B1a 未提交、未验收。执行者最后报告 sealing 回放 **84 PASS / 4 FAIL**（`actual day=10, expected day=21`），正在区分旧 oracle/fixture 漂移与产品回归，原因未定。现有产品/测试改动及 22 个 tools 目录全部保留。本次仅补交接，不恢复执行。[详细停点与恢复入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-resume-stop-20260930)。
+
+- **用户已要求停止（2026-09-30）**：运行中子代理已中断，不再推进。最后提交 `c5edeca4`；B1a产品与测试留在工作树，双API/Bootstrap和部分定向回归通过，但sealing/terminal等收尾与包级验收未闭，未提交为完成；代码地图仍是旧产品基线。22个原未跟踪目录保留，无推送/部署。[停点、已验与未验](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。等用户要求再继续。
 
 - **J17-B/C 接续已启动**：现场 `84c4c0ff`，三个内置 `gpt-6-sol / medium` 执行者分别负责 B1a 产品、迁前兼容基线/迁后回归、B6 渠道前置测试；先冻结基线再改产品，总控独占提交与双构建。A20/20复用，C/D尚未执行，22个既有未跟踪目录保留。[唯一详细状态与所有权](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。无推送/部署/Stage授权。
 
