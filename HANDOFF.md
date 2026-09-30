@@ -1,6 +1,6 @@
 # 当前交接：远端合并移除未完成 WorldBulletin，双版本离线通过（2026-09-30）
 
-- **J17 正确模型接续**：总控 gpt-6-astra / medium，六执行者 gpt-6-sol / medium；进入点 `15e14268`，产品 `8ae0f831`，原22个未跟踪tools目录保留。正式证据已到E129，Conversation/主动交流/Settlement补审已入账；外交与Siege主文件仍待完整正文闭包，机器零遗漏不等于A完成。795锚点recorded/working-tree均PASS；仍7/20，B/C未启动，D NOT-RUN。[唯一详细状态](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。不授予推送/部署/仓外写入。
+- **J17-A已完成（20/20）**：产品仍`8ae0f831`，正式责任证据E120–E133；两API 49854/49853声明无匿名未审、无遗漏/重复权威，源码hash/795地图双模式已核。仅源码责任审查完成，业务OPEN不等于修复；B/C未执行、D NOT-RUN。B1记录/净化与实际测试清单已只读准备，合成TEMP及runner安全隔离两项确认待回复。原22个未跟踪tools目录未动；未推送/部署。[唯一详细状态](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。
 
 - **J17 本轮已启动（2026-09-30）**：现场基线 `8ae0f831`；用户明确选择五个互斥责任包并行补 A，总控独占提交。双 API 当前 Compile **1,128/1,128**，语法声明 **49,854/49,853**，不是语义完成。原文档改动纳入本地检查点，22 个 tools 未跟踪目录保持。[本轮唯一状态入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#j17-multiagent-execution-20260930)。先 A 后 B/C，未推送/部署。
 

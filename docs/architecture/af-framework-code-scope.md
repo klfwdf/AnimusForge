@@ -35,6 +35,22 @@
 
 总控独立检查Domains1962、SETS658、Proactive2680行的五元键、一基起止与原始SHA均匹配；Conversation806+6644行已在前一增量核过。详细成员留各continuation ignored目录；以上正式记录保留责任/边界/出口。外交/Siege宿主尚未全部闭合，不能提升A总出口。
 
+#### E132 / Diplomacy 20文件全体责任与静态消费者闭包
+
+产品仍`8ae0f831`；原19文件2238/API加遗漏`WorldDiplomacyLlmClient.cs`57=2295/API，其中2279当前静态归责、16有效E复用，未读责任体/未分类源码消费者均0。完整body按责任组实读，非call-signal投影；不重复Domains中的World JobRuntime/Coordinator或KingdomStrategicProfile，不重复Weekly529。总控独立核4590行正式五元、起止坐标及20文件SHA匹配。Harmony实装/旧档/网络未运行，具名业务风险不因A闭包关闭。
+
+| 源码/动态入口 | 真实owner、成本与有限余项 |
+| --- | --- |
+| `DiplomacyPeaceTermsService.cs:9–88`、RecentPeaceGuard:9–128、PermanentAllianceGuard:13–362；两个Diplomacy属性patch | Direct/World Actions、VoteDeal及Meeting hostility消费条款/45秒pair护栏；和平native调用无异常不证明生效，PeaceActionReceipt需动作后状态反例。RecentPeace每查全表prune、静态字典无Campaign reset，RecentPeaceLifecycle需跨档/时钟/规模验。Permanent由Startup:104注册，ThreadStatic授权scope允许显式解盟，注册flag前置/部分安装不重试。两个属性patch未见PatchAll/class processor生产安装，只作OrphanCandidates保留，不当有效防护或删除依据。 |
+| WorldLlmClient:11–641；`src/modules/AF.Module.Diplomacy/Rules/`四文件；Direct四文件 | Gateway:27–45与JobRuntime:181–206消费Client，一次attempt用共享transport，领域保留重试/route；thinking fallback可使HTTP次数多于外层轮数，caller None故stale丢弃非网络取消。TokenDiagnostics可能含正文，裁切非脱敏。ResultSettlement/Threat规则被World:6532–6574/:5540,5682,5710消费，但宿主有重复route/slot转换，SettlementRuleDrift/ThreatStateReceipt保留；Cooldown在:15709–15820消费，HistoryRules在:1972–2007/13576–13605/13908–13935消费。Direct由Shout三入口/Courier DomainCommit:80触发；每Prompt扫描Kingdom.All，native结果/World通知非同一receipt，PatchAndReceipt及CrossDomainRewardReceipt不假设原子成功。 |
+| VoteDeal root:1–4772共338，Agenda:1–582共58、Propose:1–232共6、MapNotification:1–324共37 | root分动态注册、save/hourly、双边效果、Prompt履约、Gauntlet/XML/VM，不整文件归纯业务。RegisterEvents:420–430、SyncData:433–593持四原键`_vdSerializedDeals/_vdBilateralDiplomacy/_vdDialogueProposalKeys/_vdShownRequiredAgendaVoteKeys`；外catch清四状态仍SaveAndReceipt风险。Agenda经MyBehavior:30406/三渠道规则+tag消费；十分钟Hero快照无Campaign身份，Proposal AddDecision之前/之后的外部效果有PartialEffects门。UIExtender prefab/VM是动态消费者；map有待工作每秒发布，root:3392–3411却每UI帧扫全部unresolved，FrameScan/UiLifetime与PartialPatch保留。 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:45–7110`及DTO:18285–20160 | :212–225 Campaign注册、:227–258 SyncData、:260–646 tick/load与JobRuntime完成队列接唯一World保存/运行状态；ApplicationTickComposition:77/119择一，不宣称双tick。生成/分析/offer/threat/confirmed结果各阶段归World，Coordinator/JobRuntime只真实委派同一状态。613持久DTO逐JsonProperty/默认值核读，运行缓存/UI DTO另外分类。反序列化失败重置storage与Normalize全旧集合裁剪前扫描，WorldSaveSchema需旧/坏/重复项fixture，不是旧档已验。 |
+| World:7110–10380回合/传播/真实外交 | CommitRoundPlan:7528–7621对mandatory仍截可用位，RoundPlan-MandatoryCap保持原规则待决；daily round progress8/history retry16/relay8/propagation1200只是外层项数。传播:8400–8530按全Settlement/王庭排队；RoundAccountingHandled先于路由完成，RoundAccountingPartial需阶段异常。ExecuteMakePeace:9649–9685先和平后割地，PeaceCessionPartial不可假设回滚和平；RunDiplomaticAction深度scope、native AddDecision prefix及SharedPrompt postfix属真实反射入口，不据方法存在断言已安装。 |
+| World:10382–18284历史/声誉/保存/战况/UI | 已知document按人物/定居点/王庭投影；每次Prompt多次扫Documents并读live王国事实，不能放worker。CanonicalHistory按SourceKey/sequence/hash/revision，旧schema:14234–14435重建并retire/rebuild job，HistoryMigration需压缩中新delta/加载反例。Prestige以AppliedAmount施加差值，standing flag与原版效果非事务（StandingRetry）。WarSituation日+方向pair cache有事件失效；通知一秒最多3，normalize仍可能全旧集合，边境O(F²)/传播文档×王庭/对话排序为WorldScale门。UI prefab/VM只呈现/提交领域command。 |
+| `KingdomAnnexationDiagnosticLog.cs:1–420`53成员 | Annexation与CrossDomainActionOwner:114–141消费；事件期完整Clan/Settlement/Kingdom快照可能在过滤前构建，保留DiagnosticCostPrivacy的规模、开关/正文/留存出口，不读取真实日志。 |
+
+本条所有余项均已定位owner、消费者与有限反例；既有玩法、保存失败策略、投票/战争/割地后果未经批准不改变。与B迁移直接相关的owner/重复规则/捕获/唯一提交必须在对应切片验；D动态安装/实机/旧档风险不能用离线清单关闭。
+
 #### E130 / Siege AF宿主完整源码责任闭包（取代此前信号扫描误报）
 
 `SiegeAiInterventionBehavior.cs`826/API及五partial85/API共911。前包633新读（主文件声明起点<9310为548、partial85）+7旧E，尾包start>=9310原pending271完整读至17241；633+7+271=911，前包转交271不再作权威主张。此前904“已读”的错误说法已撤回，后来真实连续body阅读与消费者核对才支持本条。总控独立核1822+542行键/范围/原始SHA，聚合无双主张；不是运行时效果证明。
