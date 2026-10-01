@@ -25,16 +25,18 @@ def restore_runtime_move(file, source):
         expected = {name: name for name in CAPABILITIES}
         for name in ['BuildSceneFollowControlPromptInstruction', 'BuildSceneSummonClosurePromptInstruction']:
             expected[name] = '_sceneMovement.' + name
+        expected['ApplyNativeConversationGameActionsOnMainThreadAsync'] = '_nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync'
         expected.update({'Dispatch' + suffix: 'RunNativeConversationMainThreadFuncAsync'
                          for suffix in ['Validation', 'Preparation', 'HistoryWork', 'WeeklySnapshot']})
         assert bound == expected, 'native capability binding drift'
-        assert factory.count('new NativeConversationMainReplyHost(this, admission, target, key, sequence)') == 1
+        assert 'CreateMainReplyHost' not in factory, 'legacy host completion factory survived'
         source = source.replace('private readonly NativeConversationTurnPorts _ports;', 'private readonly ShoutBehavior _owner;')
         source = source.replace('internal NativeConversationTurnRuntime(NativeConversationTurnPorts ports,',
                                 'internal NativeConversationTurnHost(ShoutBehavior owner,')
         source = source.replace('_ports = ports ?? throw new ArgumentNullException(nameof(ports));', '_owner = owner;')
-    source = source.replace('_ports.CreateMainReplyHost(admission, nativeTargetLog,',
+    source = source.replace('new NativeConversationMainReplyRuntime(_ports, admission, nativeTargetLog,',
                             'new NativeConversationMainReplyHost(_owner, admission, nativeTargetLog,')
+    source = source.replace('NativeConversationGameEffectsRuntime.ObserveNativeActionDispatch(', 'ObserveNativeActionDispatch(')
     source = source.replace('_ports.', '_owner.')
     source = source.replace('using static AnimusForge.ShoutBehavior;\n\nnamespace AnimusForge;', 'namespace AnimusForge;')
     source = source.replace('    internal sealed partial class NativeConversationTurnRuntime : INativeConversationTurnHost',

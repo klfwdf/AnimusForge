@@ -161,7 +161,7 @@ namespace AnimusForge;
                 return NativeConversationTurnStep.Stop("");
             }
             nativeTurnSw.Stop();
-            ObserveNativeActionDispatch("completion_returned", nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw);
+            NativeConversationGameEffectsRuntime.ObserveNativeActionDispatch("completion_returned", nativeTargetLog, nativeTargetAgentIndex, nativeTurnSw);
             return NativeConversationTurnStep.Stop(nativeActionResult?.FinalVisible ?? "");
         }
 

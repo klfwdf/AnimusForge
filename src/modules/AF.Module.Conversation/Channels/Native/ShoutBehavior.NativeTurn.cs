@@ -182,7 +182,7 @@ public partial class ShoutBehavior
 {
     private NativeConversationTurnPorts CreateNativeConversationTurnPorts() => new NativeConversationTurnPorts
     {
-        ApplyNativeConversationGameActionsOnMainThreadAsync = ApplyNativeConversationGameActionsOnMainThreadAsync,
+        ApplyNativeConversationGameActionsOnMainThreadAsync = _nativeGameEffects.ApplyNativeConversationGameActionsOnMainThreadAsync,
         BuildNativePromptContextScheduledAsync = BuildNativePromptContextScheduledAsync,
         BuildRuntimeSceneMechanismPostprocessRulesForScene = BuildRuntimeSceneMechanismPostprocessRulesForScene,
         BuildSceneFollowControlPromptInstruction = _sceneMovement.BuildSceneFollowControlPromptInstruction,
@@ -199,6 +199,5 @@ public partial class ShoutBehavior
         DispatchPreparation = RunNativeConversationMainThreadFuncAsync,
         DispatchHistoryWork = RunNativeConversationMainThreadFuncAsync,
         DispatchWeeklySnapshot = RunNativeConversationMainThreadFuncAsync,
-        CreateMainReplyHost = (admission, target, key, sequence) => new NativeConversationMainReplyHost(this, admission, target, key, sequence)
     };
 }

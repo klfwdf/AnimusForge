@@ -2,30 +2,14 @@
 using System.Diagnostics;
 using AnimusForge.Refactor.Contracts;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
+internal sealed partial class NativeConversationGameEffectsRuntime
 {
     // This outcome covers this dispatch boundary, not earlier raw/taunt/natural actions in the turn.
-    internal sealed class NativeConversationActionDispatchException : InvalidOperationException
-    {
-        internal NativeConversationActionDispatchException(bool ownerStarted, Exception cause, bool queueTimedOut = false)
-            : base(ownerStarted
-                ? cause is NativeConversationHistoryCommitException
-                    ? "本轮记忆记录未确认，动作或部分记录可能已经发生。请检查实际游戏结果，不要自动重试整轮。"
-                    : "对话动作或收尾处理异常，部分操作可能已经执行。请检查实际游戏结果，不要自动重试整轮。"
-                : queueTimedOut
-                    ? "主线程未及时开始本次后处理动作派发，已停止等待；此队列动作不会随后补做。请检查此前已发生的游戏结果，不要自动重试整轮。"
-                    : "本次后处理动作派发未开始，当前回复未完成处理。请检查游戏状态后再继续。", cause)
-        {
-            EffectState = ownerStarted ? ActionExecutionEffectState.UnknownAfterStart : ActionExecutionEffectState.NoConfirmedEffect;
-            ErrorCode = ownerStarted ? (cause is NativeConversationHistoryCommitException ? "native.memory.commit_unconfirmed" : "native.actions.outcome_unknown")
-                : queueTimedOut ? "native.actions.dispatch_timeout" : "native.actions.dispatch_not_started";
-        }
-        internal ActionExecutionEffectState EffectState { get; }
-        internal string ErrorCode { get; }
-        internal bool CanRetryAutomatically => false;
-    }
+
 
     private NativeConversationGameActionResult ExecuteNativeConversationActionDispatch(
         NativeConversationAdmission admission, Func<NativeConversationGameActionResult> execute,
@@ -36,7 +20,7 @@ public partial class ShoutBehavior
         try
         {
             ObserveNativeActionDispatch("mainthread_start", targetLog, targetAgentIndex, watch);
-            if (!IsNativeConversationAdmissionCurrent(admission, out _))
+            if (!_ports.IsNativeConversationAdmissionCurrent(admission, out _))
             {
                 onDiscard?.Invoke();
                 return new NativeConversationGameActionResult { Content = "", ResponseDiscarded = true };
@@ -74,5 +58,28 @@ public partial class ShoutBehavior
             // Observability must never change whether actions run or how their Task completes.
             return;
         }
+    }
+}
+
+public partial class ShoutBehavior
+{
+internal sealed class NativeConversationActionDispatchException : InvalidOperationException
+    {
+        internal NativeConversationActionDispatchException(bool ownerStarted, Exception cause, bool queueTimedOut = false)
+            : base(ownerStarted
+                ? cause is NativeConversationGameEffectsRuntime.NativeConversationHistoryCommitException
+                    ? "本轮记忆记录未确认，动作或部分记录可能已经发生。请检查实际游戏结果，不要自动重试整轮。"
+                    : "对话动作或收尾处理异常，部分操作可能已经执行。请检查实际游戏结果，不要自动重试整轮。"
+                : queueTimedOut
+                    ? "主线程未及时开始本次后处理动作派发，已停止等待；此队列动作不会随后补做。请检查此前已发生的游戏结果，不要自动重试整轮。"
+                    : "本次后处理动作派发未开始，当前回复未完成处理。请检查游戏状态后再继续。", cause)
+        {
+            EffectState = ownerStarted ? ActionExecutionEffectState.UnknownAfterStart : ActionExecutionEffectState.NoConfirmedEffect;
+            ErrorCode = ownerStarted ? (cause is NativeConversationGameEffectsRuntime.NativeConversationHistoryCommitException ? "native.memory.commit_unconfirmed" : "native.actions.outcome_unknown")
+                : queueTimedOut ? "native.actions.dispatch_timeout" : "native.actions.dispatch_not_started";
+        }
+        internal ActionExecutionEffectState EffectState { get; }
+        internal string ErrorCode { get; }
+        internal bool CanRetryAutomatically => false;
     }
 }

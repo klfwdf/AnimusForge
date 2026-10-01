@@ -69,5 +69,4 @@ internal sealed class NativeConversationTurnPorts
     internal Func<string, string, int, Func<MyBehavior.WeeklyPromptSnapshot>, MyBehavior.WeeklyPromptSnapshot, Task<MyBehavior.WeeklyPromptSnapshot>> DispatchWeeklySnapshot;
     internal Task<MyBehavior.WeeklyPromptSnapshot> RunNativeConversationMainThreadFuncAsync(string phase, string target, int agentIndex, Func<MyBehavior.WeeklyPromptSnapshot> capture, MyBehavior.WeeklyPromptSnapshot fallback) => DispatchWeeklySnapshot(phase, target, agentIndex, capture, fallback);
 
-    internal Func<NativeConversationAdmission, string, string, long, INativeConversationMainReplyHost> CreateMainReplyHost;
 }

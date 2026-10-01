@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Threading;
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
 
+using static AnimusForge.ShoutBehavior;
+
 namespace AnimusForge;
 
-public partial class ShoutBehavior
+internal sealed partial class NativeConversationGameEffectsRuntime
 {
-    private sealed class NativeConversationHistoryCommitException : InvalidOperationException
+    internal sealed class NativeConversationHistoryCommitException : InvalidOperationException
     {
         internal NativeConversationHistoryCommitException(MemoryCommitResult result)
             : base("native.memory_commit_unconfirmed: " + (result?.ErrorCode ?? "result_missing"))
@@ -17,17 +20,7 @@ public partial class ShoutBehavior
     }
 
     // Prepared text only. No public API and no new persistence schema.
-    internal sealed class NativeConversationCompletionRequest
-    {
-        internal string PlayerText;
-        internal string OpeningFact;
-        internal bool TtsAlreadyDispatched;
-        internal long PendingPlayerHistorySequence;
-        internal string PendingPlayerHistoryKey;
-        // Game-thread side effects that must only follow an accepted (not stale, not
-        // discarded) reply: scene-action directive submit and ceremony execution order.
-        internal Action AcceptedReplySideEffects;
-    }
+
 
     // Captured after admission validation and before actions can change the scene/party.
     private sealed class NativeConversationCompletionScope
@@ -41,6 +34,7 @@ public partial class ShoutBehavior
         internal string NonHeroMemoryId;
         internal string NonHeroMemoryName;
         internal bool HasNonHeroMemory;
+        internal int ExitClaimed;
     }
 
     private NativeConversationCompletionScope CaptureNativeConversationCompletionOnMainThread(
@@ -70,8 +64,8 @@ public partial class ShoutBehavior
     // Unlike backend busy, this remains valid after Task completion, but not after a newer request.
     private bool IsNativeConversationCompletionContextCurrent(NativeConversationCompletionScope scope)
     {
-        return scope != null && _nativeAdmissionOwner.IsPresentationCurrent(scope.Admission.PresentationRevision)
-            && IsNativeConversationContextCurrent(scope.Admission, out _);
+        return scope != null && _ports.IsPresentationCurrent(scope.Admission.PresentationRevision)
+            && _ports.IsNativeConversationContextCurrent(scope.Admission, out _);
     }
 
     private string CompleteNativeConversationReplyOnMainThread(
@@ -115,7 +109,7 @@ public partial class ShoutBehavior
                     scope.AgentIndex, scope.Npc);
         }
         if (!suppressHistoryWrite && !scope.Request.TtsAlreadyDispatched && IsNativeConversationCompletionContextCurrent(scope))
-            TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible);
+            _ports.TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible);
 
         QueueNativeConversationCompletionExit(scope, result);
         string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
@@ -147,12 +141,29 @@ public partial class ShoutBehavior
         {
             // The backend slot can be released before this callback runs. Validate the captured
             // context/revision, not that slot, so an old close cannot shut a new conversation.
-            _mainThreadActions.Enqueue(() =>
+            _ports.PostMainThread(() =>
             {
+                if (Interlocked.Exchange(ref scope.ExitClaimed, 1) != 0)
+                    return;
                 if (IsNativeConversationCompletionContextCurrent(scope))
                     CloseNativeConversationForSceneMechanism("worldmap_implicit_party_creation");
             });
         }
     }
 
+}
+
+public partial class ShoutBehavior
+{
+internal sealed class NativeConversationCompletionRequest
+    {
+        internal string PlayerText;
+        internal string OpeningFact;
+        internal bool TtsAlreadyDispatched;
+        internal long PendingPlayerHistorySequence;
+        internal string PendingPlayerHistoryKey;
+        // Game-thread side effects that must only follow an accepted (not stale, not
+        // discarded) reply: scene-action directive submit and ceremony execution order.
+        internal Action AcceptedReplySideEffects;
+    }
 }
