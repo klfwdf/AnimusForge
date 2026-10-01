@@ -210,6 +210,19 @@ public partial class MyBehavior
 		return true;
 	}
 
+	// Final Coup facts arrive only after political/casualty settlement. True means handled,
+	// including an explicit settings-off skip; disabling news must not block gameplay settlement.
+	internal bool TryRecordCoupOutcomeForBulletin(string coupId, bool success, string sentence, string detail, string kingdomId, string actorKingdomId)
+	{
+		if (string.IsNullOrWhiteSpace(coupId) || string.IsNullOrWhiteSpace(sentence)) return false;
+		if (!IsWorldBulletinEnabled()) return true;
+		string key = "coup:" + coupId.Trim() + ":bulletin";
+		// Cold outcome/retry path; inspect the bounded retained set, not only the 64-event tail.
+		if (EnsureWorldBulletinState().Events.Any(e => e != null && string.Equals(e.Key, key, StringComparison.Ordinal))) return true;
+		return CaptureWorldBulletinEvent(success ? "coup_success" : "coup_failure", key, success ? 95 : 80,
+			sentence, true, "coup:" + coupId.Trim(), detail, kingdomId, actorKingdomId);
+	}
+
 	// Bulletin stability replaces the legacy weekly STAB tags, so it runs only when bulletins actually publish;
 	// with auto weekly reports off, stability stays as untouched as it was before.
 	private void ApplyWorldBulletinStability(string kingdomId, int delta)

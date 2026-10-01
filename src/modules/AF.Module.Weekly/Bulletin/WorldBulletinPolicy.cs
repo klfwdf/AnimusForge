@@ -711,6 +711,10 @@ internal static class WorldBulletinPolicy
 			return "叛旗高举";
 		case "civil_war":
 			return "内战爆发";
+		case "coup_success":
+			return "政变夺位";
+		case "coup_failure":
+			return "政变失败";
 		case "raid":
 			return "村庄遭劫";
 		default:

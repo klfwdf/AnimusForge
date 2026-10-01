@@ -66,6 +66,9 @@ internal sealed class CoupSession
     public List<CoupTroopRecord> Troops = new List<CoupTroopRecord>();
 
     public bool SceneEntered;
+    // Optional JSON fields: old sessions retain only the progress their existing facts prove.
+    public bool GateBreached;
+    public bool HallEntered;
 
     public bool IsTerminal => Phase == CoupPhase.Completed || Phase == CoupPhase.Failed || Phase == CoupPhase.Suspended;
     public bool HasPoliticalCommit => PoliticalCommitStarted || RulingClanCommitted || TownCommitted || CustodyCommitted || DefectionCommitted;
