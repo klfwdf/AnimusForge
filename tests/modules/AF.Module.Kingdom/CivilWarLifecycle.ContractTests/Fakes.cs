@@ -136,15 +136,17 @@ namespace AnimusForge
     internal static class DuelSettings
     {
         internal static bool Enabled = true;
+        internal static int DiscontentThreshold = 35;
         internal static bool IsCivilWarFactionsEnabled() => Enabled;
         internal static bool IsCivilWarPlayerKingdomFactionsAllowed() => true;
-        internal static CivilWarTuning BuildCivilWarTuning() => new();
+        internal static CivilWarTuning BuildCivilWarTuning() => new() { DiscontentThreshold = DiscontentThreshold };
     }
     internal static class PlayerKingdomRebellionImmunity { internal static bool ShouldProtectKingdom(Kingdom k) => false; }
     internal static class WorldDiplomacyBehavior { internal static void ApplyExternalPrestigeDelta(string id, int delta, string reason) { } }
     internal partial class CivilWarCampaignBehavior
     {
-        internal static void RecordMaterial(Kingdom k, int week, string text) { }
+        internal static int MaterialWrites;
+        internal static void RecordMaterial(Kingdom k, int week, string text) { MaterialWrites++; }
         private static int Week() => 100;
         private static void RecordFiefDenied(Kingdom k, TaleWorlds.CampaignSystem.Election.SettlementClaimantDecision d, TaleWorlds.CampaignSystem.Election.SettlementClaimantDecision.ClanAsDecisionOutcome o) { }
     }

@@ -151,9 +151,31 @@ internal sealed class KingdomCivilWarOwner
 		if (source == null || points <= 0f) return;
 		KingdomCivilWarKingdomState state = GetOrCreate(kingdom, week);
 		DecayGrievanceToDay(kingdom, state, CivilWarWorld.CurrentDay());
+		int withdrawalThreshold = -1;
+		List<string> withdrawnClans = null;
 		foreach (Clan clan in (clans ?? Enumerable.Empty<Clan>()).Where(x => x != null && x.Kingdom == kingdom && IsPoliticalClan(x)))
-			AddPoints(GetOrCreateClan(state, clan, week), source.Id, points);
+		{
+			KingdomCivilWarClanState record = GetOrCreateClan(state, clan, week);
+			AddPoints(record, source.Id, points);
+			// Support is conditional on events, not permanent immunity from political discontent.
+			// Reuse the existing discontent threshold; the player still chooses their own allegiance.
+			if (record.Side != KingdomCivilWarSide.Crown || clan == kingdom.RulingClan || clan == Clan.PlayerClan) continue;
+			if (withdrawalThreshold < 0) withdrawalThreshold = DuelSettings.BuildCivilWarTuning().DiscontentThreshold;
+			if (TotalGrievance(record) < withdrawalThreshold) continue;
+			record.Side = KingdomCivilWarSide.Middle;
+			record.FactionId = "";
+			record.SideSinceWeek = week;
+			if (withdrawnClans == null) withdrawnClans = new List<string>();
+			withdrawnClans.Add(CivilWarWorld.ClanName(clan));
+		}
 		if (!string.IsNullOrWhiteSpace(text)) AddHistory(state, week, text);
+		if (withdrawnClans != null)
+		{
+			string withdrawal = string.Join("、", withdrawnClans) + "因" + source.Name + "等事件积累不满，撤回对王室的支持，转为中立";
+			AddHistory(state, week, withdrawal);
+			WriteMaterial(kingdom, week, withdrawal);
+			Logger.Log("KingdomCivilWar", "crown support withdrawn kingdom=" + kingdom.StringId + " source=" + source.Id + " clans=" + withdrawnClans.Count);
+		}
 	}
 
 	// continue_war pledge: peace with the pledged target before the deadline breaks it once.
