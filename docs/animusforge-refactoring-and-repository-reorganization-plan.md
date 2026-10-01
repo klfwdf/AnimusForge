@@ -1,3 +1,15 @@
+<a id="illustrator-deploy-20261001"></a>
+
+### 本会话快报/插画/画廊改动已部署（2026-10-01，DEPLOYED / LIVE_NOT_RUN）
+
+用户明确要求“部署”。基于干净源码 `454a63b3` 重新隔离构建Release双API与Bootstrap，三个构建exit0、0错误；两实际DLL重验快报关闭不取消后台任务、DialogueUI回调保留/重复注入移除、RP介绍JSON往返及共享NPC物品描述读取通过。构建期间及部署前后tracked clean、HEAD一致，未运行游戏/启动器。构建实证 `artifacts/illustrator-deploy-20261001/build-77f7887ba5db4a9d8ee2913a9fbf702a/`。
+
+核实仓内绝对路径及无reparse后，将旧正式产物和Stage整体移入本任务备份（精确映射`artifacts/illustrator-deploy-20261001/workspace-backups.json`），把新构建的9个DLL/PDB/marker逐项哈希校验后提升到正式Release artifacts。未修改官方脚本。执行原 `scripts/build/deploy_module.ps1 -Configuration Release` 部署单模块 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，报告更新 **9文件**。
+
+部署后Stage **238文件全部SHA256一致**，SubModule.xml仅声明`AnimusForge.Bootstrap.dll`，Recovery有complete标记。部署日志 `artifacts/illustrator-deploy-20261001/deployment.log`，验收JSON `artifacts/illustrator-deploy-20261001/verification.json`。游戏目录未列入Stage的文件保留，无推送或启动游戏。本会话前述“未部署”是当时状态，现在已包含于本次安装；实机视觉、NPC展示、生图接口、后台GPU/耗时及真实旧档仍NOT-RUN，不提升J17/C/D。
+
+安装回滚点：`C:/Users/29310/AppData/Local/AnimusForge/Recovery/deploy/deploy-3d1a0f26dc3d4933868b6bd7f5351a99`（原文件与manifest/complete）。仅按该清单恢复本次替换项，不对整个模块目录镜像删除；源码回滚按各功能记录的定向提交处理。
+
 <a id="bulletin-prefetch-20261001"></a>
 
 ### 快报本期配图提前生成（2026-10-01，OFFLINE_VERIFIED）
