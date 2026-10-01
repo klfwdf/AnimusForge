@@ -31,7 +31,7 @@ def main():
     # Negative controls change only in-memory source reads, never product files.
     original_read = Path.read_text
     parity_mutants = {
-        "drop_scene_eligibility": ("src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs", "TeamModuleServices.Policy.IsEligibleTargetForExternal", "RemovedPolicyEligibility"),
+        "drop_scene_eligibility": ("src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs", "TeamModuleServices.Policy.IsEligibleTargetForExternal", "RemovedPolicyEligibility"),
         "duplicate_courier_commit": ("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs", 'TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);', 'TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure); TeamModuleServices.Policy.TryProcessAcceptedAgendaTag(recipient, "courier", session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure);'),
         "swap_courier_text": ("src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs", 'session.LetterText, session.ReplyText ?? text, ref text, out string proposalFailure', 'session.ReplyText ?? text, session.LetterText, ref text, out string proposalFailure'),
     }

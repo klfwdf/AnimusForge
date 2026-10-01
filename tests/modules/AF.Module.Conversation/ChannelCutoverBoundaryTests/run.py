@@ -215,7 +215,8 @@ def extract(ref: str | None) -> dict[str, str]:
         "SCENE_SPEECH_SANITIZATION_BLOCK": scene[speech_begin:speech_end],
         "SCENE_SPEECH_STRIPPERS": "\n\n".join(declaration(scene, signature) for signature in (
             "private static bool ContainsAutoGroupEndSignal(", "private static string StripAutoGroupStopSignal(",
-            "private static string StripAutoGroupRelaySignal(", "private static string StripActionTagsForSceneSpeech(")),
+            ("internal static string StripAutoGroupRelaySignal(" if "internal static string StripAutoGroupRelaySignal(" in scene else "private static string StripAutoGroupRelaySignal("), "private static string StripActionTagsForSceneSpeech("))
+            + ("\nprivate static class ConversationSpeechTextRules { " + "\n".join(declaration(source("src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs", ref), signature) for signature in ("internal static string StripAutoGroupStopSignal(", "internal static string StripAutoGroupRelaySignal(")) + " }\nprivate static class ConversationActionPostprocessOwner { " + "\n".join(declaration(source("src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs", ref), signature) for signature in ("internal static string StripActionTagsForSceneSpeech(", "internal static bool HasPreprocessRuleHit(")) + " }" if "ConversationSpeechTextRules.StripAutoGroupStopSignal" in scene else ""),
         "GIVE_ASSET_CODEC": "\n\n".join(declaration(source("GiveAssetTagCodec.cs", ref), signature) for signature in (
             "internal readonly struct GiveAssetTag", "internal static class GiveAssetTagCodec")),
     }

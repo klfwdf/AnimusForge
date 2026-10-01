@@ -104,8 +104,14 @@ class ExtractionTests(unittest.TestCase):
             self.assertTrue(blocks[name], name)
             self.assertIn(blocks[name], scene)
         for signature in ("private static bool ContainsAutoGroupEndSignal(", "private static string StripAutoGroupStopSignal(",
-                          "private static string StripAutoGroupRelaySignal(", "private static string StripActionTagsForSceneSpeech("):
+                          "internal static string StripAutoGroupRelaySignal(", "private static string StripActionTagsForSceneSpeech("):
             self.assertIn(declaration(scene, signature), blocks["SCENE_SPEECH_STRIPPERS"])
+        for path, signatures in (
+            ("src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs", ("internal static string StripAutoGroupStopSignal(", "internal static string StripAutoGroupRelaySignal(")),
+            ("src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs", ("internal static string StripActionTagsForSceneSpeech(", "internal static bool HasPreprocessRuleHit("))):
+            actual = source(path, None)
+            for signature in signatures:
+                self.assertIn(declaration(actual, signature), blocks["SCENE_SPEECH_STRIPPERS"])
         codec = source("GiveAssetTagCodec.cs", None)
         self.assertIn(declaration(codec, "internal readonly struct GiveAssetTag"), blocks["GIVE_ASSET_CODEC"])
         self.assertIn(declaration(codec, "internal static class GiveAssetTagCodec"), blocks["GIVE_ASSET_CODEC"])
