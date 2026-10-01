@@ -1,3 +1,43 @@
+<a id="af2-seven-residual-fail-closeout-20261002"></a>
+## AF 2.0 七个残留测试/工具 FAIL：独立离线闭环（2026-10-02）
+
+**状态**：`SEVEN_RESIDUAL_ENTRIES_OFFLINE_VERIFIED`。用户明确授权新代理直接修复上一轮残留 7 FAIL；本条仅替代下方“7 残留”停点，不改写首轮 303 结果、旧失败/分类或 F0–F6/F7 的证明边界。实际根 `E:/AnimusForge-refactor-continuation-20260831`、分支 `codex/af-main-refactor-continuation-20260831`，起始 `80192ff7`、意图 `9488c9be`，已验证测试/工具切片 `9cff3ee891fdcbbb57b8e5910b09c99c50206e18`（15 文件）；无产品、默认入口、一键构建/部署、公开 API 或保存身份修改。
+
+### 独立证据与实际命令
+
+统一证据根：`artifacts/af2-seven-fail-closeout-ec9c844af31a/`；最终汇总 `final-receipt.json`、修前完整 7 入口 `run-before-f41f16df/all/results.json`、最终已提交切片的完整 7 + 2 新回归入口 `run-delivered-543a16fd/all/results.json`。独立 driver `verify.py delivered` 实际启动 `python -X utf8 -B tests/run_all.py --jobs 1 --out <全新仓内根>/all --ids <本次9项精确清单>`，总 exit **0 / 9 PASS / 0 FAIL**；下表原 7 入口全部 exit0。原首轮303和 `artifacts/af2-final-closeout/integration/final-classification.json` 原样保留；本次不是第二次303或当前305全量执行，不能称全仓 PASS。
+
+| 原失败入口 / 实际入口命令（仓库根运行） | 本次证明与范围 |
+| --- | --- |
+| `python -X utf8 -B tests/content/J15ContentContractTests/run.py` | 222 映射、68 J15b、31 J15c、8 invalid、4 GCCZ fallback/6 checks、14 overlay aliases；完整 ContentLayout/PlayerExports/ManagedDeploy 合成合同。新的 GCCZ build/bin/obj 均在独占 run-root，不覆盖共享旧输出。 |
+| `python -X utf8 -B tests/modules/AF.Module.Prompt/CaptureEligibility/run.py` | **21 checks**；真实 `PublicExecutionOrderRuntime`/policy/枚举编译依赖接入，真实 `IsEligible` 与生产 capture 方法执行；仅游戏/生命周期端口 fake，不伪造 eligibility；独立失败、上下文恢复、当前/错 Agent、无 mission/request、非等待状态、非 executioner、失败关闭与 worker DTO 读取。 |
+| `python -X utf8 -B tests/modules/AF.Module.Prompt/ProductionEntry/run.py` | **10 checks**；生产 registry/rule-hit 方法、真实 `ExecutionPromptConfiguration`、真实逻辑名 `AnimusForge.Defaults.ExecutionRulePrompts.json` 接入；实际资源 fallback/系统 prompt、revision 固定、排除/上限、异常释放保持。 |
+| `dotnet run --project tests/replay/PrimaryLlmGatewayReplayTests/PrimaryLlmGatewayReplayTests.csproj -c Release ... -- <Debug候选绝对路径> <SHA256>` | 此处 Release 是测试宿主配置，**产品候选要求 Debug**：`tests/runners.json` `candidateConfiguration=Debug`；`AF_REPLAY_DEBUG_CANDIDATE_DLL` 选择同源 `debug-6436f9f20a40/.../versions/1.4/AnimusForge.dll`，hash `84A1C99CD1C196388B2C8CE4FC186211AC1AC0604053D6D08529D6A63606AB13`。runner 实际 build→求值 TargetPath→隔离 DLL 运行；非流/流、thinking fallback2、Unicode、partial不重放、credential边界、cancel2完整 PASS；其他入口保留原候选选择。 |
+| `python -X utf8 -B tools/PhaseEightReadiness/entry_inventory.py` | 真实 canonical 扫描；另 `--check` PASS。仅明确物理迁移表解析 reviewed patterns/catalog；不做任意 basename fallback，不跨路径片段，保部署/生成排除。 |
+| `python -X utf8 -B tools/PhaseEightReadiness/test_entry_inventory.py` | **12 tests PASS**；原存在/缺失/资格与负控保留并适配实际路径；新候选41均有逐项缺失拒绝负控，旧57 errors根因消除。 |
+| `python -X utf8 -B tools/package_policy_system_source_overlay.py --out-dir <全新仓内根>` | 原完整 ZIP 路径执行，不以 `--validate-only` 替代。**307 source members**，38 host /14 runtime alias /79 PolicySystem /7 contract /160 lab /4 baseline /4 docs /1 packaging；秘密模式0，ONNX/binary/生成排除保持；仅本地合成验证，不发布/部署。 |
+
+新增 runner-candidate 回归 **4 tests**、源码 overlay 回归 **3 tests**；受 catalog 变更影响的完整 `tools/PhaseEightReadiness/test_readiness.py` **62 tests / exit0**（`consumer-42dd1b73`）。ZIP 逐成员/完整白名单/分类/size/hash/FILES.sha256/源码字节一致通过。`focused-71c7361e/results.json` 记录 4 个 Prompt 变异（shared-catch/open-exclusion/unpin/resource）均**先编译成功，再运行断言失败**（各 exit3762504530），不是用编译缺依赖当负控。`run-release-negative-dbfe5bc5` 误把 Release 给 Debug槽后明确 runtime FAIL，**在 settings 初始化/请求前拒绝**；`run-missing-negative-58a4cf2f` 缺 Debug 明确 `BLOCKED_ENV`、不 fallback/no PASS（总runner原有BLOCKED_ENV exit0语义未扩改）。两次初始隔离包装导入位置失败及一次修后 Primary 局部变量编译失败日志保留；随后完整复验，不删除失败记录。
+
+### 清单与打包合同保护
+
+- `protection-and-selection.json` / `inventory-additions.json` 给出逐项实际增量：Persona1、Economy6、Siege1、Social/Weekly10、World23，合计 **41**（初步截断估数39由此纠正）。旧 candidate entries/ownerAssignment 全保留；按原 `update_catalog` 规则，新增候选的领域保持/降为 **REPRESENTATIVE**，绝不因被扫描到就标 COMPLETE 或变成新产品重构。
+- 打包旧 host 源身份精确解析到 canonical 当前坐标，14 runtime delivery aliases 不变。修前路径-only诊断集合308→修后307，唯一剔除为原未跟踪 `tests/bridges/Policy/PolicyEffectModule.ContractTests/NuGet/Migrations/1`；仅识别 `NuGet/Migrations` 相邻目录，不误排合法 `NuGet.Config`、必要 packages/源码，已有排除/秘密规则不弱化。307其余源路径/分类逐项一致。默认打包行为保留，新 `--out-dir` 是拒绝既有根/仓外/reparse 的隔离选项，`--validate-only` 是另行显式校验模式。
+- 只影响离线工具启动/扫描和 fixture 编译频率，无游戏热路径修改；不新增 Tick/反射缓存/全量扫描到产品。Prompt两fixture用唯一新root及最小环境，编译进程不继承凭据；总runner使用干净driver环境。外部TEMP仅获准 `E:/AF2-SyntheticTemp-20261001-7dd0991fd822` 下本次唯一子树，父链/resolved/reparse 检查通过，不清根。
+
+### 代码坐标与产品冻结
+
+| 已核实坐标（测试/工具修订 `9cff3ee8`） | 符号与未覆盖责任 |
+| --- | --- |
+| `tests/content/J15ContentContractTests/run.py:1003–1045,1053–1095`；`tools/package_policy_system_source_overlay.py:37–39,42–184,373–392` | `verify_inventory_and_overlay/main/build_file_set/is_nuget_migration_cache`；真实资源/源码选择/独占输出/完整隔离ZIP。不是接收方源码集成、安装或发布验收。 |
+| `tests/modules/AF.Module.Prompt/CaptureEligibility/run.py:36–55`、`ProductionEntry/run.py:35–60` | 实际依赖/资源接线。产品冻结 `2287069b` 下 `AIConfigHandler.cs` `CapturePromptRuleEligibility:5799`、`BuildRulePromptRegistry:1847`、`GetGuardrailSemanticRuleHits:5075`，`PublicExecutionOrderRuntime.cs:IsEligible:32–40`、`ExecutionPromptConfiguration.cs:10–21`；full runtime 源编译，执行证明限 capture/eligibility 和 registry/hits，不覆盖真实 mission/controller、Consume 行刑副作用或游戏。 |
+| `tests/run_all.py:82–83,139–170,219–358`；`tests/replay/PrimaryLlmGatewayReplayTests/Program.cs:47–56,262` | `candidate_dll/command/main`、Debug seam资格、结果命令/候选hash。只选候选，不向Release增加后门；真实 provider网络未验。 |
+| `tools/PhaseEightReadiness/entry_inventory.py:16–17,80–92,119–137`；`test_entry_inventory.py:211–225` | `canonical_path/_matches/check_catalog`、逐项移除负控；候选登记不代替领域 owner 业务/实机审查。 |
+
+同原六构建 `source-manifest.json` **1212 项逐字节hash再次核验无变**；原 SessionTransport raw SHA256 `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e` 与初始保护文件一致，保持 raw dirty、不暂存。原 tools/NuGet、其他作者新计划/所有旧产物不清理不吸收。本次无产品改动，复用同源 Debug/Release 双API+Bootstrap 六构建/真实 DLL 证据，不重跑六构建；838代码图 recorded/working-tree 两模式 PASS。[既有产品责任图](architecture/af-framework-code-scope.md#af2-final-responsibility-closeout-20261001)不改写为本次已验游戏。
+
+**未验/保留**：F7 LIVE/SAVE、真实网络/音频/帧性能、旧凭据轮换与TPAC许可HOLD仍未闭；历史12非PASS分类不被本次7修复抹去。没有push、Stage、游戏部署、自动化、下载安装、G镜像或仓外泛化写入；回滚用精确逆向提交 `9cff3ee8`，不reset/重写历史。
+
 <a id="af2-final-responsibility-closeout-20261001"></a>
 ## AF 2.0 主体最终职责收官：有限责任包交付，完整门禁已分类（不等于全 PASS）（2026-10-01）
 

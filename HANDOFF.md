@@ -1,3 +1,9 @@
+# 当前交接：7 个残留测试/工具 FAIL 离线闭环（2026-10-02）
+
+- 新授权仅替代下方“7残留”停点：意图 `9488c9be`、已验证切片 `9cff3ee8`；产品仍冻结 `2287069b`，1212同源hash/原SessionTransport保护一致，原dirty/tools/NuGet及他人计划不纳入提交、不清理。
+- 原7完整入口 **7 PASS/0 FAIL**，加2新回归入口实际 **9 PASS/0 FAIL**；Prompt21/10、inventory12、candidate4、overlay3检查与4运行时变异负控通过。Primary明确Debug候选，Release负控仍拒绝，无skip/真实网络fallback；完整307成员隔离ZIP合同已验、未发布。41真实新候选登记保持REPRESENTATIVE，不冒充游戏完成。
+- 首轮303/旧失败/分类保留，不是第二次303/当前305全量或实机验收；六构建复用同源证据。命令、源码坐标、收据和盲区只见[唯一主台账本次条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#af2-seven-residual-fail-closeout-20261002)，产品范围沿用[已验证责任图](docs/architecture/af-framework-code-scope.md#af2-final-responsibility-closeout-20261001)。F7/历史非PASS/许可/凭据轮换未闭，无push/Stage/部署/一键语义变化。
+
 # 当前交接：AF 2.0 最终职责收官实施（2026-10-01）
 
 - 本轮授权实施F0–F6/S1–S6；五组完整职责差集冻结并进入实施，不继承历史push/Stage/部署/仓外写入许可。用户已明确批准F5d Persona Prompt/fallback/解析规则收口，五组+F5d最终范围冻结；实际技能效果/保存不改，完整门禁未完成不能宣称全闭。
