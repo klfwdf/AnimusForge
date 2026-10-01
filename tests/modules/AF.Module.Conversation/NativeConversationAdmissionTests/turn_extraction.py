@@ -44,6 +44,11 @@ def reviewed_turn_source(file):
 def projected_source(source):
     original = subprocess.check_output(['git','show',REVIEW['baseline']+':ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
     if source == original: return source
+    # The reconstruction must not discard mutations to the supplied host. Bind
+    # the J17 relocated host before projecting its CURRENT phase declarations;
+    # the old algorithm digest alone cannot validate this input.
+    relocated_host=subprocess.check_output(['git','show','ec74d44d:ShoutBehavior.cs'],cwd=ROOT).decode('utf-8-sig').replace('\r\n','\n')
+    assert source==relocated_host, 'Unreviewed J07b source drift: relocated host input'
     # J09 keeps the default call name stable for the J07 projection, but moves
     # the old live-object implementation behind an action-only commit wrapper.
     # Project only those two reviewed symbol references back before checking
