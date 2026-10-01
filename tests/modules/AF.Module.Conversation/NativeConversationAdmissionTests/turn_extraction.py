@@ -46,7 +46,12 @@ def restore_ceremony_owner(file, text):
     return text
 
 def reviewed_turn_source(file):
-    return restore_ceremony_owner(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
+    try:
+        return restore_ceremony_owner(file, (current_source_path(ROOT, file)).read_text(encoding='utf-8-sig'))
+    except AssertionError as error:
+        if not str(error).startswith('unreviewed remote feature drift: '):
+            raise
+        raise AssertionError('Unreviewed J07b source drift: turn dependency ' + file) from error
 
 def projected_source(source):
     source = restore_remote_feature_delta("ShoutBehavior.cs", source)
