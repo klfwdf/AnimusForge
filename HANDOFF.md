@@ -1,3 +1,11 @@
+# 当前交接：远端功能合并、9归位与普通推送（2026-10-01）
+
+- 普通merge `9ee686ee`保留远端`982a5861`功能与本地目录；9新增按精确批准canonical归位，root tracked C#仍0，总定位336，future新外交未覆盖。
+- 两API1172 Compile/8资源、purecore186实际增量核通过；六隔离构建/marker、实际DLL各45、最终严格非外交C43 43PASS/0FAIL/0BLOCKED_ENV、813地图两模式通过。受影响Execution/Weekly/CivilWar/Coup/GCCZ/Policy/Illustrator/WorldMap专项有限通过，不称LIVE或全仓PASS。
+- 原历史hash/负控保留，approved feature exact投影与当前功能分层验；首次C43 42PASS/1FAIL因拒绝错误前缀漂移，具体边界包装修`e3d65455`后复验；完整Memory历史层等继续延期。保存inventory178/205/46与内容5named deltas有实证，不盲刷旧hash。
+- 意图4d1d4ad7、merge9ee686ee、测试5691a9c7、负控包装e3d65455；正式材料提交以Git日志为准。用户授权普通push，执行前fresh fetch/祖先核，执行后ls-remote核SHA；实际结果以远端ref与本地receipt为准，文档不代替成功证据。
+- [唯一主台账当前条目](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-feature-merge-20261001)集中证据、失败/未验与push范围；[目录说明](docs/architecture/af-source-directory-guide.md)/[范围图](docs/architecture/af-framework-code-scope.md#remote-feature-merge-20261001)为当前导航。原SessionTransport raw dirty及1528旧tools/NuGet保留，不纳入提交。无Stage/部署/清理/外仓或G镜像/下载安装/一键变化；实机旧档网络音频性能、完整历史业务、TPAC及凭据轮换未验。下方旧不push是当时历史，不撤销本轮新授权。
+
 # 当前交接：第三轮最后38源码归位有限交付（2026-10-01）
 
 - 批准38项原样归位（外交18、GCCZ实质游戏宿主19、Gathering1）；根级tracked C#38→0，三轮累计327归位，不表示root资源/产物清空。业务/namespace/类型/保存身份/API/程序集和默认入口不改。

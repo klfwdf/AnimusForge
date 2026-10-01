@@ -1,3 +1,50 @@
+<a id="remote-feature-merge-20261001"></a>
+## 远端功能合并、9新增归位及普通推送（2026-10-01）
+
+本轮用户授权远端合并、必要验证及普通推送；发现分叉后已确认远端范围，9新增源码另获精确清单批准。不是部署、Stage、清理、历史改写或future新外交替换。
+
+### Git/实施范围
+
+- fresh fetch基线remote `982a58612bfaf780a5f08645eb5d82d7b88033ea`，local `4bde450b`，共同祖先`8f3903e2`；local16/remote78独有，remote155文件（101M54A）及26feat/fix。merge-tree确认仅HANDOFF/主台账冲突，两个冲突区逐字保留双方正文，不ours/theirs整树覆盖。
+- 意图`4d1d4ad7`，普通双父merge `9ee686ee`（parents4d1d4ad7/982a5861），测试与当前保存清单`5691a9c7`；后续负控前缀/正式收尾提交以Git日志为准。remote23个原root修改在当前canonical normalized正文逐项等于remote；旧327路径保留、新9获准文件归位，root tracked C#仍0，累计336定位，不声称root资源/产物清空。
+- 精确新9清单SHA256 `4698850ce55339bc4b651023f5dddb75884e47e76ed825d7ba840e24aa7db420`：现场执行Context/Policy/Runtime归Vengeance桥；Execution配置归Prompt、实录Store归Memory、两个MyBehavior新增partial归Composition、KingdomActions同UI家族、SiegeEvents同Siege家族。checkoutCRLF raw前后保持，normalize/git blob等于remote；不算法/namespace/程序集/类型/保存身份迁移，不创建双编译副本。
+- remote确属Execution/Weekly/CivilWar/Coup/GCCZ/Policy/Illustrator/WorldMap功能增量，不是future外交替换。`src/modules/AF.Module.Diplomacy`仍是以后单独审批新外交覆盖canonical；本轮未覆盖/删除其实现。
+
+### 当前功能与历史锁区分
+
+remote执行命令统一permit/generation/postprocess入口，旧ceremony owner逻辑已退役；当前Execution98/NativeTurn112及Reset/unsubscribe/rearm另有真实行为负控。原旧owner历史proof明确4bde450b，旧所有断言/变异不删；不把历史恢复片段写回生产。旧源review由8个精确approved base→remote hunks投影（带唯一before/after与严格幂等），保持原hash/keys，未吞片段外漂移；当前功能在独立真实harness证明，不用oldhash假称新功能通过。
+
+remote新增`_af_executionTranscripts_v1`真实保存key，完整inventory178literal keys/205typedbindings/46flattened；保留旧key/type/ref全部，按真实源码重定位行。flatten另+1是已有GCCZ symbolic key新增存储调用，不更名。内容review仅remote155∩既有库存真实5项（2JSON+3XML），旧digest/历史parents与断言保留，current exactremote blob及结构delta单列，15个内容变异拒绝。
+
+### 实际门禁
+
+| 范围 | 实际结果 | 仓内证据（未作为产物上传） |
+| --- | --- | --- |
+| 双API Compile/资源/purecore | 两API1172唯一=1150旧映射完整+22remote新增，8LogicalNames含Execution；purecore186=184+2新增纯core | `artifacts/remote-merge-20261001/compile-gate-51bfc1fda848429da9c807718c18941b/result.json` |
+| 双API+Bootstrap Debug/Release六构建 | 两轮exit0，六真实DLL marker SHA保持；无Stage | `builds/build-056aeaff12f0475c82eda832ba6f839e/results.json`；`builds/build-44958897a965408492705354cfd80ae2/results.json`；`six-build-marker-audit.json`（以上均在`artifacts/remote-merge-20261001`） |
+| 同Release1.4严格非外交C43 | **43PASS/0FAIL/0BLOCKED_ENV，exit0**；最终冻结`e3d65455`，same actual Release1.4候选，首42/1失败保留，具体final `regression/c-817f86717ffe` | `artifacts/remote-merge-20261001/regression` |
+| 两API实际message/history DLL | 各45，build/run exit0 | `messages-dcc6a010d5024498a96b5850be539c8c/{1.3,1.4}/result.json` |
+| P1 当前/历史有限证明 | Execution98、NativeTurn112、NativeCeremony历史/当前positive+四编译成功行为负控；NativeTurn5/Persona6/CourierHistory4/NativeSubmission3+7/GameLifetime5/Memory finite15/HeroPersona scoped PASS | `artifacts/remote-merge/p1-close-dfa621bd7490480faccb9e7c1144951b/p1-frozen-report.json`；后续前缀复验单列 |
+| P2 remote专项 | CivilWar205/Coup128/TownRuleMemory真实core+host60/BulletinPreload29/GalleryRP19/WeeklyParticipant10；双API实际Policy personality各1475、effectRepair各29、planNormalizer各118；Coup实际双API各228+Harmony45targets | `artifacts/tests/remote-merge-p2-report/run-27eef38371304113a6d712978c203d09/report.json` |
+| P3 remote消费者 | Channel138、WorldMap24+3负控、Weekly16、4真实aux预算/legacy、Configured原Program含boundedMemory400一次请求、profile178/205/46、J15map/resource8与5内容15负控 PASS | `artifacts/remote-feature-integration/p3-completion.json` |
+| 代码图 | 813两模式PASS；19文件hash绑定approved actual source diff，114符号坐标重定位 | `artifacts/remote-merge-20261001/map-feature-evidence/result.json` |
+
+Debug/Release各记录实际HEAD/工作树diff及原构建脚本hash；测试提交之后未修改生产源码，最终9raw/23modified等价另核。所有runner用已审最小环境、新UUID仓内output/现有SDK和Newtonsoft引用，无下载。C gate沿此前精确合成TEMP授权不扩大，1.3 SaveSystem读取旧已审hash依赖；没有默认旧bin/obj/cleanup runner副作用。
+
+### 失败、未验及保护
+
+首次C43为42PASS/1FAIL：NativeObservation负控仍正确拒绝，但新增remote投影的错误前缀先触发，与原具名错误断言不符；修的是historical review边界错误包装，原断言与负控不删，初log `regression/c-5a87e8f1e941`保留。另Weekly最初net472Newtonsoft/net8宿主不兼容，改验证runner使用已有SDK serializer；P1最小PATH漏git、当前保存catalog初期漏GCCZ已有key新Flatten、旧内容hash差均具名诊断/复验，负面日志保留。旧Memory whole-host J17整体inverse漂移继续历史延期，本轮finite当前层不冒充整体旧层PASS。
+
+完整历史外交/Campaign/TeamServices、Policy默认全量带清理旧runner、实机/旧档/真实provider网络/音频/性能、远端PDB SourceLink仍未验；TPAC许可HOLD与旧凭据轮换未证实。不称全仓PASS，源码推送不包含本地私有依赖/产物/玩家数据。新功能数量及离线测试不等于LIVE验收。
+
+原唯一SessionTransport tracked dirty raw SHA `a393a98b42c1f2d37150578d5d5ede170540be8eb4874751fbc2821eb9cfe23e`仓内可逆byte备份，未stash/纳入任何提交；原1528个未跟踪tools/NuGet文件raw hash保持。没有仓外写/G镜像/部署/Stage/安装下载/清理/一键变化。待推独有历史仅本轮源码迁移/计划/合法正式材料，已排除local-only和未跟踪材料；没有用删除来隐藏待推历史。
+
+### 普通推送
+
+用户已授权普通推送至`origin/refs/heads/codex/af-main-refactor-continuation-20260831`。正式材料提交后fresh fetch；只在最新远端仍为候选祖先时执行`git push origin HEAD:refs/heads/codex/af-main-refactor-continuation-20260831`，新分叉停止，不force/rebase/reset。实际push退出及`ls-remote`核SHA以本地最终receipt/远端ref为准；本地提交或本条文档本身不冒充推送成功。
+
+[目录说明](architecture/af-source-directory-guide.md)、[范围说明](architecture/af-framework-code-scope.md#remote-feature-merge-20261001)与[813地图](architecture/af-framework-code-map.json)提供当前导航。完整现场/最终push receipt在`artifacts/remote-merge-20261001/final-delivery.json`；这些忽略产物是本地实证，不声称已上传远端。
+
 <a id="source-relocation-round3-20261001"></a>
 ## 第三轮最后38源码归位有限交付（2026-10-01）
 
