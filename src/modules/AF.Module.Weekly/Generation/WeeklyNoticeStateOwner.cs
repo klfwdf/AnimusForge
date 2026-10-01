@@ -1,6 +1,25 @@
 using System;using System.Collections.Generic;using System.Linq;using static AnimusForge.MyBehavior;
 namespace AnimusForge;
 internal sealed class WeeklyNoticeStateOwner {
+ internal List<string> ReadingXpClaimedEventIds = new List<string>();
+ internal int ReadingXpPendingCount;
+ internal int ReadingXpPendingCharm;
+ internal int ReadingXpPendingLeadership;
+ internal int ReadingXpPendingSteward;
+ internal void NormalizeReadingXpPendingBatch()
+ {
+		ReadingXpPendingCount = Math.Max(0, ReadingXpPendingCount);
+		ReadingXpPendingCharm = Math.Max(0, ReadingXpPendingCharm);
+		ReadingXpPendingLeadership = Math.Max(0, ReadingXpPendingLeadership);
+		ReadingXpPendingSteward = Math.Max(0, ReadingXpPendingSteward);
+		if (ReadingXpPendingCount == 0)
+		{
+			ReadingXpPendingCharm = 0;
+			ReadingXpPendingLeadership = 0;
+			ReadingXpPendingSteward = 0;
+		}
+ }
+
  private List<string> _unread=new();private readonly HashSet<string> _unreadIds=new(StringComparer.OrdinalIgnoreCase);
  private readonly Queue<string> _pending=new();
  internal readonly HashSet<string> Shown=new(StringComparer.OrdinalIgnoreCase);
