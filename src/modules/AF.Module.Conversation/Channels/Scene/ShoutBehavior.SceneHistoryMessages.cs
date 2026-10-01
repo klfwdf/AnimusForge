@@ -52,8 +52,9 @@ public partial class ShoutBehavior
     {
         lock (_historyLock)
         {
-            if (_publicConversationHistory.Count == 0) return null;
-            return BuildVisibleSceneHistoryLines(_publicConversationHistory, viewerAgentIndex, viewerName, useDistanceLabels);
+            if (SceneHistoryOwner.PublicCount == 0) return null;
+            return SceneHistoryOwner.CaptureVisiblePublicLines(viewerAgentIndex, ResolveSceneHeroIdFromAgentIndex(viewerAgentIndex),
+                viewerName, useDistanceLabels, GetPlayerDisplayNameForShout(), DuelSettings.GetDailyConversationHistoryLineLimitForExternal());
         }
     }
 	private static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lines, int maxConversationLines)

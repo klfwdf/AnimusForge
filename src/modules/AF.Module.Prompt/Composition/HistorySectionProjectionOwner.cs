@@ -1,0 +1,495 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Text;
+namespace AnimusForge;
+// Complete pure history rendering/filtering and count-based Native/persisted deduplication.
+internal static class HistorySectionProjectionOwner {
+internal static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<string> allowedSpeakers, out string rendered, int viewerAgentIndex = -1, string fallbackTargetNpcName = "", bool useNpcNameAddress = false, bool useSceneDistanceSpeechLabels = true, string playerName = "玩家")
+	{
+		rendered = "";
+		if (msg == null)
+		{
+			return false;
+		}
+		string text = (msg.Role ?? "").Trim().ToLowerInvariant();
+		string text2 = SceneHistoryMessageAssemblyOwner.NormalizeSceneHistoryPromptLineContent(msg.Content);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return false;
+		}
+		if (ConversationSpeechTextRules.IsLeakedPromptLineForShout(text2))
+		{
+			return false;
+		}
+		switch (text)
+		{
+		case "assistant":
+		{
+			string text3 = (msg.SpeakerName ?? "").Trim();
+			if (!string.IsNullOrWhiteSpace(text3) && allowedSpeakers != null && allowedSpeakers.Count > 0 && !allowedSpeakers.Contains(text3))
+			{
+				return false;
+			}
+			if (string.IsNullOrWhiteSpace(text3))
+			{
+				text3 = "某NPC";
+			}
+			if (text2.StartsWith(text3 + ":", StringComparison.Ordinal) || text2.StartsWith(text3 + "：", StringComparison.Ordinal))
+			{
+				rendered = text2;
+			}
+			else
+			{
+				rendered = text3 + ": " + text2;
+			}
+			return true;
+		}
+		case "user":
+		{
+			string text4 = (msg.TargetName ?? "").Trim();
+			bool flag = false;
+			if (msg.TargetAgentIndex >= 0)
+			{
+				flag = msg.TargetAgentIndex != viewerAgentIndex;
+			}
+			else if (useNpcNameAddress && !string.IsNullOrWhiteSpace(fallbackTargetNpcName))
+			{
+				flag = true;
+				text4 = fallbackTargetNpcName;
+			}
+			float promptDistanceMeters = flag || !useSceneDistanceSpeechLabels ? -1f : msg.PlayerDistanceMeters;
+			rendered = NormalizeScenePlayerHistoryLine(text2, text4, flag, promptDistanceMeters, playerName);
+			return true;
+		}
+		case "system":
+			if (SceneHistoryMessageAssemblyOwner.TryNormalizeAfefFactLineForPrompt(text2, out var factLine))
+			{
+				rendered = SceneHistoryMessageAssemblyOwner.BuildScopedAfefFactLineForPrompt(factLine, isCurrent: false);
+			}
+			else
+			{
+				rendered = "[系统事实] " + text2;
+			}
+			return true;
+		default:
+			rendered = text2;
+			return true;
+		}
+	}
+internal static string FormatSceneHistorySection(string sectionText)
+{
+	List<string> lines = (sectionText ?? "").Replace("\r", "").Split('\n').Select((string x) => x?.TrimEnd() ?? "").ToList();
+	if (lines.Count == 0)
+	{
+		return "";
+	}
+	List<string> normalizedLines = new List<string>();
+	foreach (string line in lines)
+	{
+		string trimmedLine = (line ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(trimmedLine))
+		{
+			normalizedLines.Add(trimmedLine);
+		}
+	}
+	if (normalizedLines.Count == 0)
+	{
+		return "";
+	}
+	string header = normalizedLines[0];
+	List<string> bodyLines = normalizedLines.Skip(1).ToList();
+	bool IsDateHeader(string value)
+	{
+		string text = (value ?? "").Trim();
+		return !string.IsNullOrWhiteSpace(text) && text.StartsWith("—— ", StringComparison.Ordinal) && text.EndsWith(" ——", StringComparison.Ordinal);
+	}
+	List<(string DateHeader, List<(int Index, string Text)> Entries)> blocks = new List<(string DateHeader, List<(int Index, string Text)> Entries)>();
+	string currentDateHeader = "";
+	List<(int Index, string Text)> currentEntries = new List<(int Index, string Text)>();
+	int chronologicalIndex = 0;
+	void FlushBlock()
+	{
+		if (!string.IsNullOrWhiteSpace(currentDateHeader) || currentEntries.Count > 0)
+		{
+			blocks.Add((currentDateHeader, new List<(int Index, string Text)>(currentEntries)));
+		}
+		currentDateHeader = "";
+		currentEntries.Clear();
+	}
+	for (int i = 0; i < bodyLines.Count; i++)
+	{
+		string text = bodyLines[i];
+		if (IsDateHeader(text))
+		{
+			FlushBlock();
+			currentDateHeader = text;
+			continue;
+		}
+		if (string.Equals(text, "无", StringComparison.Ordinal))
+		{
+			chronologicalIndex++;
+			currentEntries.Add((chronologicalIndex, text));
+			continue;
+		}
+		chronologicalIndex++;
+		currentEntries.Add((chronologicalIndex, text));
+	}
+	FlushBlock();
+	List<string> output = new List<string> { header };
+	if (blocks.Count == 0)
+	{
+		return string.Join("\n", output).Trim();
+	}
+	for (int blockIndex = 0; blockIndex < blocks.Count; blockIndex++)
+	{
+		(string DateHeader, List<(int Index, string Text)> Entries) block = blocks[blockIndex];
+		if (output.Count > 0 && !string.IsNullOrWhiteSpace(output[output.Count - 1]))
+		{
+			output.Add("");
+		}
+		if (!string.IsNullOrWhiteSpace(block.DateHeader))
+		{
+			output.Add(block.DateHeader);
+			output.Add("");
+		}
+		for (int entryIndex = 0; entryIndex < block.Entries.Count; entryIndex++)
+		{
+			(int Index, string Text) entry = block.Entries[entryIndex];
+			output.Add("[" + entry.Index + "] " + entry.Text);
+			if (entryIndex < block.Entries.Count - 1)
+			{
+				output.Add("");
+			}
+		}
+	}
+	List<string> normalizedOutput = new List<string>();
+	bool previousBlank = false;
+	foreach (string line2 in output)
+	{
+		bool isBlank = string.IsNullOrWhiteSpace(line2);
+		if (isBlank)
+		{
+			if (!previousBlank)
+			{
+				normalizedOutput.Add("");
+			}
+		}
+		else
+		{
+			normalizedOutput.Add(line2);
+		}
+		previousBlank = isBlank;
+	}
+	while (normalizedOutput.Count > 0 && string.IsNullOrWhiteSpace(normalizedOutput[0]))
+	{
+		normalizedOutput.RemoveAt(0);
+	}
+	while (normalizedOutput.Count > 0 && string.IsNullOrWhiteSpace(normalizedOutput[normalizedOutput.Count - 1]))
+	{
+		normalizedOutput.RemoveAt(normalizedOutput.Count - 1);
+	}
+	return string.Join("\n", normalizedOutput).Trim();
+}
+internal static string FilterHistorySectionAgainstScenePublicHistory(string historySection, string scenePublicHistorySection, ConversationSpeechTextOptions options = default)
+{
+	string text = (historySection ?? "").Replace("\r", "").Trim();
+	if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(scenePublicHistorySection))
+	{
+		return text;
+	}
+	HashSet<string> sceneKeys = BuildHistoryLineSemanticKeySet(scenePublicHistorySection, options);
+	if (sceneKeys.Count == 0)
+	{
+		return text;
+	}
+	List<string> output = new List<string>();
+	string[] lines = text.Split('\n');
+	for (int i = 0; i < lines.Length; i++)
+	{
+		string raw = lines[i] ?? "";
+		string line = raw.Trim();
+		if (string.IsNullOrWhiteSpace(line))
+		{
+			continue;
+		}
+		if (IsHistorySectionHeaderLine(line) || IsHistorySectionDateHeaderLine(line))
+		{
+			output.Add(line);
+			continue;
+		}
+		string key = BuildHistoryLineSemanticKey(line, options);
+		if (string.IsNullOrWhiteSpace(key) || !sceneKeys.Contains(key))
+		{
+			output.Add(line);
+		}
+	}
+	return PruneEmptyHistoryDateBlocks(output);
+}
+internal static HashSet<string> BuildHistoryLineSemanticKeySet(string section, ConversationSpeechTextOptions options = default)
+{
+	HashSet<string> keys = new HashSet<string>(StringComparer.Ordinal);
+	string[] lines = (section ?? "").Replace("\r", "").Split('\n');
+	for (int i = 0; i < lines.Length; i++)
+	{
+		string key = BuildHistoryLineSemanticKey(lines[i], options);
+		if (!string.IsNullOrWhiteSpace(key))
+		{
+			keys.Add(key);
+		}
+	}
+	return keys;
+}
+internal static bool IsHistorySectionHeaderLine(string line)
+{
+	string text = (line ?? "").Trim();
+	return text.StartsWith("【", StringComparison.Ordinal) && text.EndsWith("】", StringComparison.Ordinal);
+}
+internal static bool IsHistorySectionDateHeaderLine(string line)
+{
+	string text = (line ?? "").Trim();
+	return text.StartsWith("—— ", StringComparison.Ordinal) && text.EndsWith(" ——", StringComparison.Ordinal);
+}
+internal static string BuildHistoryLineSemanticKey(string line, ConversationSpeechTextOptions options = default)
+{
+	string text = (line ?? "").Replace("\r", "").Trim();
+	if (string.IsNullOrWhiteSpace(text) || string.Equals(text, "无", StringComparison.Ordinal) || IsHistorySectionHeaderLine(text) || IsHistorySectionDateHeaderLine(text))
+	{
+		return "";
+	}
+	if (text.StartsWith("[", StringComparison.Ordinal))
+	{
+		int markerEnd = text.IndexOf(']');
+		if (markerEnd >= 0 && markerEnd + 1 < text.Length)
+		{
+			text = text.Substring(markerEnd + 1).Trim();
+		}
+	}
+	text = StripHistoryLineSpeakerPrefixForDedupe(text);
+	text = ConversationSpeechTextRules.NormalizeNativeConversationVisibleTextKey(text, options);
+	if (string.IsNullOrWhiteSpace(text))
+	{
+		return "";
+	}
+	return new string(text.Where((char c) => !char.IsWhiteSpace(c)).ToArray());
+}
+internal static string StripHistoryLineSpeakerPrefixForDedupe(string text)
+{
+	text = (text ?? "").Trim();
+	if (string.IsNullOrWhiteSpace(text))
+	{
+		return "";
+	}
+	string[] exactPrefixes = new string[8] { "玩家对NPC说", "玩家对你说", "玩家说", "你对NPC说", "你对你说", "你说", "NPC", "assistant" };
+	for (int i = 0; i < exactPrefixes.Length; i++)
+	{
+		string prefix = exactPrefixes[i];
+		if (text.StartsWith(prefix + ":", StringComparison.Ordinal) || text.StartsWith(prefix + "：", StringComparison.Ordinal))
+		{
+			return text.Substring(prefix.Length + 1).Trim();
+		}
+	}
+	int colon = text.IndexOfAny(new char[2] { ':', '：' });
+	if (colon > 0 && colon <= 24)
+	{
+		string prefixText = text.Substring(0, colon).Trim();
+		if (prefixText.EndsWith("对NPC说", StringComparison.Ordinal) || prefixText.EndsWith("对你说", StringComparison.Ordinal) || prefixText.EndsWith("说", StringComparison.Ordinal) || prefixText.Equals("玩家", StringComparison.Ordinal) || prefixText.Equals("你", StringComparison.Ordinal) || prefixText.Equals("NPC", StringComparison.Ordinal))
+		{
+			return text.Substring(colon + 1).Trim();
+		}
+	}
+	return text;
+}
+internal static string PruneEmptyHistoryDateBlocks(List<string> lines)
+{
+	if (lines == null || lines.Count == 0)
+	{
+		return "";
+	}
+	List<string> output = new List<string>();
+	for (int i = 0; i < lines.Count; i++)
+	{
+		string line = (lines[i] ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(line))
+		{
+			continue;
+		}
+		if (IsHistorySectionDateHeaderLine(line))
+		{
+			int j = i + 1;
+			bool hasEntry = false;
+			while (j < lines.Count && !IsHistorySectionDateHeaderLine((lines[j] ?? "").Trim()) && !IsHistorySectionHeaderLine((lines[j] ?? "").Trim()))
+			{
+				if (!string.IsNullOrWhiteSpace(lines[j]))
+				{
+					hasEntry = true;
+					break;
+				}
+				j++;
+			}
+			if (!hasEntry)
+			{
+				continue;
+			}
+		}
+		output.Add(line);
+	}
+	if (output.Count <= 1 && output.All(IsHistorySectionHeaderLine))
+	{
+		return "";
+	}
+	return string.Join("\n", output).Trim();
+}
+internal static string NormalizeScenePlayerHistoryLine(string text, string targetNpcName = "", bool useNpcNameAddress = false, float playerDistanceMeters = -1f, string playerName = "玩家")
+	{
+		string text2 = (text ?? "").Trim();
+		string text3 = useNpcNameAddress && !string.IsNullOrWhiteSpace(targetNpcName) ? (playerName + "对" + targetNpcName + "说") : SceneHistoryMessageAssemblyOwner.FormatScenePlayerDirectSpeechLabel(playerName, playerDistanceMeters);
+		if (string.IsNullOrWhiteSpace(text2))
+		{
+			return text3 + ":";
+		}
+		if (text2.StartsWith(text3 + ":", StringComparison.Ordinal) || text2.StartsWith(text3 + "：", StringComparison.Ordinal))
+		{
+			return text2;
+		}
+		if (text2.StartsWith("玩家:", StringComparison.Ordinal) || text2.StartsWith("玩家：", StringComparison.Ordinal) || text2.StartsWith("你:", StringComparison.Ordinal) || text2.StartsWith("你：", StringComparison.Ordinal))
+		{
+			int num = text2.IndexOfAny(new char[2] { ':', '：' });
+			string value = ((num >= 0 && num + 1 < text2.Length) ? text2.Substring(num + 1).Trim() : "");
+			return text3 + ": " + value;
+		}
+		return text3 + ": " + text2;
+	}
+internal static void SplitPersistedHeroHistorySections(string persistedHeroHistory, out string privateRecentWindowSection, out string persistedWithoutRecentWindow)
+	{
+		privateRecentWindowSection = "";
+		persistedWithoutRecentWindow = "";
+		if (string.IsNullOrWhiteSpace(persistedHeroHistory))
+		{
+			return;
+		}
+		string[] array = persistedHeroHistory.Replace("\r", "").Split('\n');
+		bool capturePrivate = false;
+		StringBuilder privateSb = new StringBuilder(persistedHeroHistory.Length);
+		StringBuilder othersSb = new StringBuilder(persistedHeroHistory.Length);
+		for (int i = 0; i < array.Length; i++)
+		{
+			string raw = array[i] ?? "";
+			string line = raw.Trim();
+			bool isHeader = line.StartsWith("【", StringComparison.Ordinal) && line.EndsWith("】", StringComparison.Ordinal);
+			if (IsPrivateRecentWindowHeader(line))
+			{
+				capturePrivate = true;
+				privateSb.AppendLine(line);
+				continue;
+			}
+			if (capturePrivate && isHeader)
+			{
+				capturePrivate = false;
+			}
+			if (capturePrivate)
+			{
+				if (!string.IsNullOrWhiteSpace(line))
+				{
+					privateSb.AppendLine(line);
+				}
+			}
+			else if (!string.IsNullOrWhiteSpace(line))
+			{
+				othersSb.AppendLine(raw);
+			}
+		}
+		privateRecentWindowSection = privateSb.ToString().Trim();
+		persistedWithoutRecentWindow = othersSb.ToString().Trim();
+	}
+internal static bool IsPrivateRecentWindowHeader(string line)
+	{
+		string text = (line ?? "").Trim();
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		if (text.StartsWith("【近期对话窗口】", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal))
+		{
+			return true;
+		}
+		if (text.StartsWith("【", StringComparison.Ordinal) && text.EndsWith("的近期对话】", StringComparison.Ordinal))
+		{
+			string text2 = text.Substring(1, text.Length - 2);
+			int num = text2.IndexOf('与');
+			if (num > 0 && num < text2.Length - "的近期对话".Length)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+internal static List<ConversationMessage> RemoveNativeMessagesAlreadyInPersistentMemory(List<ConversationMessage> nativeMessages, List<ConversationMessage> persistentMessages)
+	{
+		if (nativeMessages == null || nativeMessages.Count == 0 || persistentMessages == null || persistentMessages.Count == 0)
+		{
+			return nativeMessages ?? new List<ConversationMessage>();
+		}
+		Dictionary<string, int> persistentCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+		foreach (ConversationMessage message in persistentMessages)
+		{
+			string key = BuildConversationMemoryDedupKey(message);
+			if (!string.IsNullOrWhiteSpace(key))
+			{
+				persistentCounts.TryGetValue(key, out int count);
+				persistentCounts[key] = count + 1;
+			}
+		}
+		if (persistentCounts.Count == 0)
+		{
+			return nativeMessages;
+		}
+		List<ConversationMessage> result = new List<ConversationMessage>(nativeMessages.Count);
+		foreach (ConversationMessage message in nativeMessages)
+		{
+			string key = BuildConversationMemoryDedupKey(message);
+			if (!string.IsNullOrWhiteSpace(key) && persistentCounts.TryGetValue(key, out int count) && count > 0)
+			{
+				if (count == 1)
+				{
+					persistentCounts.Remove(key);
+				}
+				else
+				{
+					persistentCounts[key] = count - 1;
+				}
+				continue;
+			}
+			result.Add(message);
+		}
+		return result;
+	}
+internal static string BuildConversationMemoryDedupKey(ConversationMessage message)
+	{
+		if (message == null)
+		{
+			return "";
+		}
+		string role = (message.Role ?? "").Trim().ToLowerInvariant();
+		string content = (message.Content ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(role) || string.IsNullOrWhiteSpace(content))
+		{
+			return "";
+		}
+		if (string.Equals(role, "user", StringComparison.Ordinal))
+		{
+			int targetSeparator = content.IndexOf('对');
+			int speechSeparator = content.IndexOf("说:", StringComparison.Ordinal);
+			if (speechSeparator < 0)
+			{
+				speechSeparator = content.IndexOf("说：", StringComparison.Ordinal);
+			}
+			if (targetSeparator > 0 && speechSeparator > targetSeparator && speechSeparator <= 128)
+			{
+				content = content.Substring(speechSeparator + 2).Trim();
+			}
+		}
+		else if (string.Equals(role, "assistant", StringComparison.Ordinal))
+		{
+			content = ShoutUtils.StripNamePrefixedLineSafely(content, 80).Trim();
+		}
+		return role + "\u001f" + content;
+	}
+}

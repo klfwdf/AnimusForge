@@ -1,0 +1,100 @@
+using System;using System.Collections.Generic;using System.Linq;using System.Threading;
+namespace AnimusForge;
+// Exact production adapter/projection bodies; only the injected fact-normalizer has synthetic input.
+internal delegate bool ScenePresentationFactNormalizer(string content, out string fact);
+internal struct ScenePresentationHistoryRecord
+{
+ internal bool Exists;
+ internal long EventSequence;
+ internal string Role, Content, TargetName, SpeakerName;
+}
+public sealed class ScenePresentationHistoryLine
+{
+	public string Speaker { get; internal set; } = "";
+	public string Text { get; internal set; } = "";
+	public string Kind { get; internal set; } = "";
+}
+internal sealed class PresentationProjectionProbe { internal long _presentationStartSequence;internal const int PresentationContextLines=4;
+internal List<ScenePresentationHistoryLine> BuildHistory(int count, Func<int, ScenePresentationHistoryRecord> read, ScenePresentationFactNormalizer normalizeFact, int maxLines)
+	{
+		List<ScenePresentationHistoryLine> lines = new List<ScenePresentationHistoryLine>();
+		int context = 0;
+		{
+			for (int i = count - 1; i >= 0 && lines.Count < maxLines; i--)
+			{
+				ScenePresentationHistoryRecord message = read(i);
+				if (!message.Exists)
+				{
+					continue;
+				}
+				if (message.EventSequence < _presentationStartSequence && ++context > PresentationContextLines)
+				{
+					break;
+				}
+				ScenePresentationHistoryLine line = BuildHistoryLine(message, normalizeFact);
+				if (line != null)
+				{
+					lines.Add(line);
+				}
+			}
+		}
+		lines.Reverse();
+		return lines;
+	}
+private static ScenePresentationHistoryLine BuildHistoryLine(ScenePresentationHistoryRecord message, ScenePresentationFactNormalizer normalizeFact)
+	{
+		string role = (message.Role ?? "").Trim();
+		string content = (message.Content ?? "").Replace("\r", "").Trim();
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			return null;
+		}
+		if (role.Equals("user", StringComparison.OrdinalIgnoreCase))
+		{
+			string target = (message.TargetName ?? "").Trim();
+			return new ScenePresentationHistoryLine { Speaker = string.IsNullOrWhiteSpace(target) ? "你" : "你 → " + target, Text = content, Kind = "player" };
+		}
+		if (role.Equals("assistant", StringComparison.OrdinalIgnoreCase))
+		{
+			return new ScenePresentationHistoryLine { Speaker = (message.SpeakerName ?? "NPC").Trim(), Text = content, Kind = "npc" };
+		}
+		// Only confirmed AFEF facts are shown; scene descriptions and prompt scaffolding stay internal.
+		return normalizeFact(content, out var fact)
+			? new ScenePresentationHistoryLine { Speaker = "记录", Text = fact, Kind = "fact" }
+			: null;
+	}
+}
+internal sealed class PresentationAdapterProbe {
+ private readonly object _historyLock;private readonly SceneConversationHistoryOwner SceneHistoryOwner;
+ internal readonly PresentationProjectionProbe Presentation=new();
+ internal PresentationAdapterProbe(object gate,SceneConversationHistoryOwner owner){_historyLock=gate;SceneHistoryOwner=owner;}
+ private bool TryNormalizeAfefFactLineForPrompt(string content,out string fact){if(!Monitor.IsEntered(_historyLock))throw new Exception("outer gate lost");fact=content.StartsWith("AFEF:")?content.Substring(5):null;return fact!=null;}
+
+	internal long ComputePresentationHistoryFingerprint()
+		=> SceneHistoryOwner.PublicFingerprint();
+
+	internal List<ScenePresentationHistoryLine> BuildPresentationHistory(int maxLines)
+ {
+  lock (_historyLock)
+  {
+   return Presentation.BuildHistory(SceneHistoryOwner.PublicCount, index => {
+    SceneHistoryScalarRecord message=SceneHistoryOwner.ReadPublicScalar(index);
+    return !message.Exists ? default : new ScenePresentationHistoryRecord { Exists=true, EventSequence=message.EventSequence,
+     Role=message.Role, Content=message.Content, TargetName=message.TargetName, SpeakerName=message.SpeakerName };
+   }, TryNormalizeAfefFactLineForPrompt, maxLines);
+  }
+ }
+}
+internal static class PresentationHistoryContract {
+ internal static void Run(object gate,SceneConversationHistoryOwner owner){
+ int n=0;void Check(bool ok,string name){if(!ok)throw new Exception("presentation: "+name);n++;}
+ var p=new PresentationAdapterProbe(gate,owner);owner.Reset();Check(p.ComputePresentationHistoryFingerprint()==0,"empty fingerprint");
+ owner.AppendPublic(null);Check(p.ComputePresentationHistoryFingerprint()==1,"null last count");var msg=new ConversationMessage{EventSequence=99,Role="user",Content="old"};owner.AppendPublic(msg);
+ Check(p.ComputePresentationHistoryFingerprint()==((99L<<16)^2),"count/last fingerprint");var scalar=owner.ReadPublicScalar(1);msg.Content="changed";Check(scalar.Content=="old"&&scalar.Exists,"detached scalar");
+ owner.Reset();owner.AppendPublic(new(){EventSequence=1,Role="user",Content=" hello\r ",TargetName=" target "});owner.AppendPublic(null);owner.AppendPublic(new(){EventSequence=2,Role="assistant",Content=" answer ",SpeakerName=" NPC name "});owner.AppendPublic(new(){EventSequence=3,Role="system",Content="scaffold"});owner.AppendPublic(new(){EventSequence=4,Role="system",Content="AFEF:confirmed fact"});
+ var lines=p.BuildPresentationHistory(40);Check(lines.Count==3,"null/scaffolding omitted");Check(lines[0].Speaker=="你 → target"&&lines[0].Text=="hello"&&lines[0].Kind=="player","player mapping");Check(lines[1].Speaker=="NPC name"&&lines[1].Kind=="npc","NPC mapping");Check(lines[2].Text=="confirmed fact"&&lines[2].Kind=="fact","fact mapping and gate");
+ owner.Reset();for(int i=1;i<=10;i++)owner.AppendPublic(new(){EventSequence=i,Role="assistant",Content="item"+i});p.Presentation._presentationStartSequence=11;lines=p.BuildPresentationHistory(40);Check(lines.Count==4&&lines[0].Text=="item7"&&lines[3].Text=="item10","four pre-session contexts");
+ owner.Reset();p.Presentation._presentationStartSequence=0;for(int i=1;i<=53;i++)owner.AppendPublic(new(){EventSequence=i,Role="assistant",Content="item"+i});lines=p.BuildPresentationHistory(40);Check(lines.Count==40&&lines[0].Text=="item14"&&lines[39].Text=="item53","forty latest chronological");Check(p.BuildPresentationHistory(0).Count==0,"zero limit");owner.Reset();Check(p.ComputePresentationHistoryFingerprint()==0&&p.BuildPresentationHistory(40).Count==0,"owner reset");
+ Console.WriteLine($"PASS: {n} actual presentation adapter/projection + actual SceneHistoryOwner checks (synthetic fact-normalizer input).");
+ }
+}

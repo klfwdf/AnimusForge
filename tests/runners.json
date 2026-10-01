@@ -535,6 +535,14 @@
     "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/WeeklyRuntimeClosure"
    ],
    "note": "Actual generation/commit runtime, unique queues/cursors, composition and fixed original prompt oracle; explicit headless game leaves."
+  },
+  "tests/modules/AF.Module.Conversation/SceneHistoryOwnerTests/run.py": {
+   "expect": "PASS",
+   "args": [
+    "--run-root",
+    "{ROOT}/artifacts/af2-host-terminal-closeout/runner/{RUN}/SceneHistoryOwner"
+   ],
+   "note": "Actual private Scene history authority, Native identity/append capture, history text projection and typed Presentation reads; fixed original golden and main consumer proof."
   }
  }
 }

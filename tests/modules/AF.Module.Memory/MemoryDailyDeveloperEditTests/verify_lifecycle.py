@@ -49,6 +49,11 @@ scene=(R/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.SceneH
 capture=ex.declaration(scene,'internal List<string> CaptureVisibleSceneHistoryLinesForPrompt(')
 probe='''internal sealed class SceneProbe {
  internal object _historyLock=new(); internal List<string> _publicConversationHistory=new(); internal int Calls; internal bool Locked; internal int Viewer; internal string Name; internal bool Distance;
+ private SceneProbe SceneHistoryOwner=>this;internal int PublicCount=>_publicConversationHistory.Count;
+ private static string ResolveSceneHeroIdFromAgentIndex(int viewer)=>"hero";private static string GetPlayerDisplayNameForShout()=>"player";
+ private List<string> CaptureVisiblePublicLines(int viewer,string hero,string name,bool distance,string player,int limit)=>BuildVisibleSceneHistoryLines(_publicConversationHistory,viewer,name,distance);
+ private static class DuelSettings { internal static int GetDailyConversationHistoryLineLimitForExternal()=>10; }
+
  private List<string> BuildVisibleSceneHistoryLines(List<string> source,int viewer,string name,bool distance){Calls++;Locked=System.Threading.Monitor.IsEntered(_historyLock);Viewer=viewer;Name=name;Distance=distance;return source.ToList();}
 '''+capture+'}\n'
 program=program.replace('internal static class Program {',probe+'internal static class Program {').replace(' Console.WriteLine("PASS actual state lifecycle', ''' var scene=new SceneProbe();C(scene.CaptureVisibleSceneHistoryLinesForPrompt(7,"viewer",true)==null&&scene.Calls==0,"empty scene history preserves null");

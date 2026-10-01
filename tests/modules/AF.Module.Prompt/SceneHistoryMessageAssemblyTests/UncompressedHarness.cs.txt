@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;using System.Linq;using System.Threading.Tasks;
+using System;using System.Collections.Generic;using System.Linq;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;
 namespace TaleWorlds.Library { internal static class TWParallel { internal static bool IsMainThread()=>true; } internal static class MBMath { internal static int ClampInt(int x,int a,int b)=>Math.Max(a,Math.Min(b,x)); } }
 namespace TaleWorlds.CampaignSystem { public sealed class Hero {public object Name;public string StringId;} }
 namespace AnimusForge {
@@ -19,6 +19,7 @@ public class FixtureState {
 }
 public partial class MyBehavior : FixtureState {
  @@DAY@@
+ @@DAILY_CONSUMER@@
  internal List<ConversationMessage> Build(string id="hero",string name="NPC",int agent=7,bool include=false)=>CaptureAndBuildUncompressedMemoryRoleMessagesById(id,name,agent,include);
  internal static bool IsMemoryRecoveryHexDigest(string s)=>s!=null&&s.Length==64&&s.All(c=>"0123456789ABCDEF".Contains(c));
  internal static bool IsValidMemoryCommitMarker(string a,string b,string c)=>IsMemoryRecoveryHexDigest(a)&&IsMemoryRecoveryHexDigest(c)&&new[]{"user","assistant","fact"}.Contains(b);
@@ -58,6 +59,12 @@ internal static class Program {
  C(detached.Select(Message).SequenceEqual(UncompressedMemoryMessageAssemblyOwner.Assemble(snapshot,out _).Select(Message)),"retry same snapshot stable and no consume");
  DuelSettings.OnReadLimit=()=>SaveRuntimeGuard.AdvanceGeneration("yielded capture");C(p.Build().Count==0,"late generation after capture cannot publish");DuelSettings.OnReadLimit=null;
  var before=SaveRuntimeGuard.CaptureGeneration();await Task.Yield();SaveRuntimeGuard.AdvanceGeneration("clear");C(!SaveRuntimeGuard.IsCurrentGeneration(before),"yielded old request rejected");
+ var editRows=new[]{L("玩家","edit input"),L("NPC","edit reply"),L("AFEF","edit confirmed fact",fact:true)};
+ var editEntries=MyBehavior.BuildNativeConversationHistoryEntriesForDailyMemoryEdit(new(){Name="Ada"},editRows);
+ C(editEntries.Count==3&&editEntries.Select(x=>x.Kind).SequenceEqual(new[]{"player","npc","fact"}),"actual Daily edit consumer uses real message owner role/AFEF");
+ C(editEntries.All(x=>x.Scene==FixtureState.Scene&&x.GameHour==23),"actual Daily edit consumer current scene fallback and hour cap");
+ FixtureState.SceneFails=true;editEntries=MyBehavior.BuildNativeConversationHistoryEntriesForDailyMemoryEdit(null,editRows);FixtureState.SceneFails=false;
+ C(editEntries.Count==3&&editEntries.All(x=>x.Scene=="未知场景"),"actual Daily edit consumer failed live scene remains unknown");
  Console.WriteLine("PASS uncompressed prompt same-input checks="+count+" live=NOT_RUN");
  }
 }}
