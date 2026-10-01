@@ -1,4 +1,4 @@
-using AnimusForge.Refactor.Contracts;
+﻿using AnimusForge.Refactor.Contracts;
 using System;using System.Collections.Generic;using System.Linq;using System.Threading;using Newtonsoft.Json;using AnimusForge.Refactor.Runtime;using TaleWorlds.Library;
 namespace AnimusForge;
 internal sealed class MemoryRecoveryStateOwner {
@@ -827,6 +827,33 @@ internal void PruneEvictedInteractionMemoryRecoveryMarkers()
                 ClearRecentInteractionMemoryMarkers(subjectId, recoveryId);
             }
         }
+    }
+internal bool HasPublishedDailyInteractionMemoryComponent(
+        string subjectId,
+        string recoveryId,
+        string payloadHash,
+        string part)
+    {
+        string memoryId = MemoryRecordRules.NormalizeMemoryHeroId(subjectId);
+        string normalizedPart = (part ?? string.Empty).Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(memoryId)
+            || string.IsNullOrWhiteSpace(recoveryId)
+            || string.IsNullOrWhiteSpace(payloadHash)
+            || string.IsNullOrWhiteSpace(normalizedPart)
+            || _state.Drafts == null
+            || !_state.Drafts.TryGetValue(memoryId, out List<DailyMemoryDraft> drafts)
+            || drafts == null)
+        {
+            return false;
+        }
+
+        return drafts
+            .Where(draft => draft?.Lines != null)
+            .SelectMany(draft => draft.Lines)
+            .Any(line => line != null
+                && string.Equals((line.MemoryCommitId ?? string.Empty).Trim(), recoveryId, StringComparison.Ordinal)
+                && string.Equals((line.MemoryCommitHash ?? string.Empty).Trim(), payloadHash, StringComparison.Ordinal)
+                && string.Equals((line.MemoryCommitPart ?? string.Empty).Trim(), normalizedPart, StringComparison.Ordinal));
     }
 internal bool ClearDailyInteractionMemoryMarkers(string subjectId, string recoveryId)
     {

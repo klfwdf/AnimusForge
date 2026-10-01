@@ -2655,50 +2655,8 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		return ConversationSpeechTextRules.StripAfefPromptScopeLabel(text);
 	}
 
-	private static string NormalizeAfefFactLineForPrompt(string text, string fallbackPrefix = "[AFEF玩家行为补充]")
-	{
-		string value = StripAfefPromptScopeLabel((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
-		if (string.IsNullOrWhiteSpace(value))
-		{
-			return "";
-		}
-		if (value.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || value.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
-		{
-			return value;
-		}
-		if (value.StartsWith("【AFEF玩家行为补充】", StringComparison.Ordinal))
-		{
-			return "[AFEF玩家行为补充] " + value.Substring("【AFEF玩家行为补充】".Length).Trim();
-		}
-		if (value.StartsWith("【AFEF NPC行为补充】", StringComparison.Ordinal))
-		{
-			return "[AFEF NPC行为补充] " + value.Substring("【AFEF NPC行为补充】".Length).Trim();
-		}
-		string prefix = string.IsNullOrWhiteSpace(fallbackPrefix) ? "[AFEF玩家行为补充]" : fallbackPrefix.Trim();
-		return prefix + " " + value;
-	}
 
-	private static bool TryNormalizeAfefFactLineForPrompt(string text, out string factLine)
-	{
-		string value = StripAfefPromptScopeLabel((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
-		if (value.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || value.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal) || value.StartsWith("【AFEF玩家行为补充】", StringComparison.Ordinal) || value.StartsWith("【AFEF NPC行为补充】", StringComparison.Ordinal))
-		{
-			factLine = NormalizeAfefFactLineForPrompt(value);
-			return true;
-		}
-		factLine = "";
-		return false;
-	}
 
-	private static string BuildScopedAfefFactLineForPrompt(string text, bool isCurrent)
-	{
-		string factLine = NormalizeAfefFactLineForPrompt(text);
-		if (string.IsNullOrWhiteSpace(factLine))
-		{
-			return "";
-		}
-		return (isCurrent ? "【当下行为】" : "【过往行为】") + factLine;
-	}
 
 	private static string BuildScopedAfefFactLinesForPrompt(string text, bool isCurrent)
 	{
@@ -8578,31 +8536,6 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return false;
 	}
 
-	private static string NormalizeSceneHistoryPromptLineContent(string content)
-	{
-		string text = (content ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		string[] array = text.Split('\n');
-		StringBuilder stringBuilder = new StringBuilder(text.Length);
-		for (int i = 0; i < array.Length; i++)
-		{
-			string text2 = (array[i] ?? "").Trim();
-			text2 = ShoutUtils.StripConversationMetadataPrefix(text2);
-			if (string.IsNullOrWhiteSpace(text2) || IsLeakedPromptLineForShout(text2))
-			{
-				continue;
-			}
-			if (stringBuilder.Length > 0)
-			{
-				stringBuilder.Append(' ');
-			}
-			stringBuilder.Append(text2);
-		}
-		return Regex.Replace(stringBuilder.ToString(), "[ \\t]{2,}", " ").Trim();
-	}
 
 	private static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<string> allowedSpeakers, out string rendered, int viewerAgentIndex = -1, string fallbackTargetNpcName = "", bool useNpcNameAddress = false, bool useSceneDistanceSpeechLabels = true)
 	{
@@ -9006,39 +8939,6 @@ private static void SplitSceneNpcRoleIntroSections(string fullIntro, bool isHero
 		return (lines.Count == 0) ? "【当前场景公共对话与互动】\n无" : ("【当前场景公共对话与互动】\n" + string.Join("\n", lines));
 	}
 
-	private static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lines, int maxConversationLines)
-	{
-		if (lines == null || lines.Count == 0)
-		{
-			return lines ?? new List<string>();
-		}
-		int limit = Math.Max(DuelSettings.DailyConversationHistoryLineLimitMin, Math.Min(DuelSettings.DailyConversationHistoryLineLimitMax, maxConversationLines));
-		int conversationCount = 0;
-		for (int i = 0; i < lines.Count; i++)
-		{
-			if (!TryNormalizeAfefFactLineForPrompt(lines[i], out var _))
-			{
-				conversationCount++;
-			}
-		}
-		int removeCount = conversationCount - limit;
-		if (removeCount <= 0)
-		{
-			return lines;
-		}
-		List<string> result = new List<string>(lines.Count - removeCount);
-		for (int i = 0; i < lines.Count; i++)
-		{
-			string line = lines[i];
-			if (removeCount > 0 && !TryNormalizeAfefFactLineForPrompt(line, out var _))
-			{
-				removeCount--;
-				continue;
-			}
-			result.Add(line);
-		}
-		return result;
-	}
 
 private static bool IsSceneWeeklyFullReportHeader(string line)
 {
@@ -27876,38 +27776,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return BuildConversationMessageDedupeKey(msg);
 	}
 
-	private static string NormalizeStrictSceneAssistantContent(string content, string speakerName)
-	{
-		string text = (content ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		text = ShoutUtils.StripConversationMetadataPrefix(text);
-		int num = -1;
-		if (text.StartsWith("[", StringComparison.Ordinal))
-		{
-			num = text.IndexOf("]: ", StringComparison.Ordinal);
-			if (num > 0 && num + 3 < text.Length)
-			{
-				text = text.Substring(num + 3).Trim();
-			}
-		}
-		string text2 = (speakerName ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(text2))
-		{
-			string[] array = new string[4] { text2 + ": ", text2 + "：", "[" + text2 + "]: ", "[" + text2 + "]：" };
-			foreach (string value in array)
-			{
-				if (text.StartsWith(value, StringComparison.Ordinal))
-				{
-					text = text.Substring(value.Length).Trim();
-					break;
-				}
-			}
-		}
-		return ShoutUtils.StripConversationMetadataPrefix(text);
-	}
 
 	private static void AppendStrictSceneUserSections(List<object> messages, IEnumerable<string> sections)
 	{
@@ -27920,28 +27788,6 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
 	}
 
-	private static string FormatScenePlayerDirectSpeechLabel(string playerName, float playerDistanceMeters)
-	{
-		string text = (playerName ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			text = "玩家";
-		}
-		if (float.IsNaN(playerDistanceMeters) || float.IsInfinity(playerDistanceMeters) || playerDistanceMeters < 0f)
-		{
-			return text + "对你说";
-		}
-		int num = Math.Max(0, (int)Math.Ceiling(playerDistanceMeters));
-		if (playerDistanceMeters > 50f)
-		{
-			return text + "离你" + num + "米对你大声喊道";
-		}
-		if (playerDistanceMeters > 5f)
-		{
-			return text + "离你" + num + "米对你喊道";
-		}
-		return text + "对你说";
-	}
 
 	private static float GetPlayerDistanceToAgentForScenePrompt(int agentIndex)
 	{
@@ -28065,47 +27911,7 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return message;
 	}
 
-	private static string BuildConversationMessageMetadataPrefix(ConversationMessage msg, string fallbackSpeaker)
-	{
-		string date = (msg?.GameDate ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(date))
-		{
-			try
-			{
-				date = CampaignTime.Now.ToString();
-			}
-			catch
-			{
-				date = "当前日期";
-			}
-		}
-		int hour = ClampMemoryPromptHour(msg?.GameHour ?? -1);
-		string scene = (msg?.Scene ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
-		if (string.IsNullOrWhiteSpace(scene))
-		{
-			scene = MyBehavior.ResolveCurrentMemorySceneLabelForExternal();
-		}
-		string speaker = (fallbackSpeaker ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(speaker))
-		{
-			speaker = (msg?.SpeakerName ?? "").Trim();
-		}
-		if (string.IsNullOrWhiteSpace(speaker))
-		{
-			speaker = "记录";
-		}
-		return "[" + date + " " + hour + "时｜" + scene + "｜" + speaker + "] ";
-	}
 
-	private static string PrefixConversationMessageForPrompt(ConversationMessage msg, string fallbackSpeaker, string content)
-	{
-		string text = (content ?? "").Replace("\r", "").Trim();
-		if (string.IsNullOrWhiteSpace(text))
-		{
-			return "";
-		}
-		return BuildConversationMessageMetadataPrefix(msg, fallbackSpeaker) + text;
-	}
 
 	private static bool TryConvertAfefFactToStrictChatMessage(ConversationMessage msg, int npcAgentIndex, bool isCurrent, out object chatMessage)
 	{
@@ -28123,233 +27929,13 @@ private static string NormalizeScenePlayerHistoryLine(string text, string target
 		return true;
 	}
 
-	private static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage msg, int npcAgentIndex, out object chatMessage)
-	{
-		return TryConvertSceneMessageToStrictChatMessage(msg, npcAgentIndex, out chatMessage, null);
-	}
 
-	private static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage msg, int npcAgentIndex, out object chatMessage, HashSet<string> currentAfefFactKeys, bool useSceneDistanceSpeechLabels = true)
-	{
-		chatMessage = null;
-		if (msg == null)
-		{
-			return false;
-		}
-		string text = (msg.Role ?? "").Trim();
-		string text2 = NormalizeSceneHistoryPromptLineContent(msg.Content);
-		if (string.IsNullOrWhiteSpace(text2) || IsLeakedPromptLineForShout(text2))
-		{
-			return false;
-		}
-		string npcHeroId = ResolveSceneHeroIdFromAgentIndex(npcAgentIndex);
-		bool isAfefFact = TryNormalizeAfefFactLineForPrompt(text2, out var afefFactLine);
-		bool isAfefNpcFact = afefFactLine.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
-		bool isAfefPlayerFact = afefFactLine.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal);
-		bool isCurrentAfefFact = isAfefFact && currentAfefFactKeys != null && currentAfefFactKeys.Contains(BuildConversationMessageDedupeKey(msg));
-		if (text.Equals("assistant", StringComparison.OrdinalIgnoreCase))
-		{
-			string text3 = NormalizeStrictSceneAssistantContent(text2, msg.SpeakerName);
-			if (string.IsNullOrWhiteSpace(text3))
-			{
-				return false;
-			}
-			if (ConversationRoleClassificationOwner.IsViewerAssistant(msg, null, npcHeroId, npcAgentIndex, useStableIdentity: true))
-			{
-				chatMessage = CreateChatMessage("assistant", PrefixConversationMessageForPrompt(msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "NPC" : msg.SpeakerName.Trim(), text3));
-				return true;
-			}
-			string text4 = string.IsNullOrWhiteSpace(msg.SpeakerName) ? "某NPC" : msg.SpeakerName.Trim();
-			chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, text4, "【你听见】" + text4 + "说：" + text3));
-			return true;
-		}
-		if (text.Equals("user", StringComparison.OrdinalIgnoreCase))
-		{
-			string text5 = GetStrictScenePlayerDisplayName();
-			if (msg.TargetAgentIndex == npcAgentIndex || IsSameSceneHeroId(msg.TargetHeroId, npcHeroId))
-			{
-				float promptDistanceMeters = useSceneDistanceSpeechLabels ? msg.PlayerDistanceMeters : -1f;
-				chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, text5, "【" + FormatScenePlayerDirectSpeechLabel(text5, promptDistanceMeters) + "】" + text2));
-				return true;
-			}
-			if (msg.TargetAgentIndex >= 0)
-			{
-				string text6 = string.IsNullOrWhiteSpace(msg.TargetName) ? "别人" : msg.TargetName.Trim();
-				chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, text5, "【你听见】" + text5 + "对" + text6 + "说：" + text2));
-				return true;
-			}
-			chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, text5, "【你听见】" + text5 + "说：" + text2));
-			return true;
-		}
-		if (text.Equals("system", StringComparison.OrdinalIgnoreCase))
-		{
-			if (isAfefFact && isAfefNpcFact)
-			{
-				chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, "AFEF", BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact)));
-				return true;
-			}
-			string text6 = (isAfefFact && isAfefPlayerFact) ? BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact) : ("【场景事实】" + text2);
-			chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, isAfefPlayerFact ? "AFEF" : "系统", text6));
-			return true;
-		}
-		chatMessage = CreateChatMessage("user", PrefixConversationMessageForPrompt(msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "记录" : msg.SpeakerName.Trim(), text2));
-		return true;
-	}
 
-	private static string BuildConversationMessageDedupeKey(ConversationMessage msg)
-	{
-		if (msg == null)
-		{
-			return "";
-		}
-		string role = (msg.Role ?? "").Trim().ToLowerInvariant();
-		string rawContent = StripAfefPromptScopeLabel(NormalizeSceneHistoryPromptLineContent(msg.Content));
-		if (TryNormalizeAfefFactLineForPrompt(rawContent, out var afefFactLine))
-		{
-			return "afef|" + afefFactLine;
-		}
-		string content = StripAfefPromptScopeLabel(NormalizeNativeConversationVisibleTextKey(msg.Content));
-		if (role == "system")
-		{
-			return "fact|" + content;
-		}
-		string speaker = (msg.SpeakerName ?? "").Trim().ToLowerInvariant();
-		string target = (msg.TargetName ?? "").Trim().ToLowerInvariant();
-		return role + "|" + speaker + "|" + msg.SpeakerAgentIndex + "|" + msg.TargetAgentIndex + "|" + target + "|" + content;
-	}
 
-	private static void AppendConversationMessages(List<ConversationMessage> target, IEnumerable<ConversationMessage> source)
-	{
-		if (target == null || source == null)
-		{
-			return;
-		}
-		foreach (ConversationMessage msg in source)
-		{
-			if (msg != null)
-			{
-				target.Add(msg);
-			}
-		}
-	}
 
-	private static List<ConversationMessage> SortConversationMessagesByEventSequence(List<ConversationMessage> messages)
-	{
-		if (messages == null || messages.Count <= 1)
-		{
-			return messages ?? new List<ConversationMessage>();
-		}
-		return messages.Select((ConversationMessage message, int index) => new { Message = message, Index = index })
-			.Where(x => x.Message != null)
-			.OrderBy(x => x.Message.EventSequence > 0L ? 0 : 1)
-			.ThenBy(x => x.Message.EventSequence > 0L ? x.Message.EventSequence : x.Index)
-			.ThenBy(x => x.Index)
-			.Select(x => x.Message)
-			.ToList();
-	}
 
-	private static bool IsAfefConversationMessage(ConversationMessage msg)
-	{
-		if (msg == null)
-		{
-			return false;
-		}
-		return TryNormalizeAfefFactLineForPrompt(NormalizeSceneHistoryPromptLineContent(msg.Content), out var _);
-	}
 
-	private static List<ConversationMessage> KeepAfefFactsAndRecentConversationMessages(List<ConversationMessage> messages, int maxConversationMessages)
-	{
-		if (messages == null || messages.Count == 0 || maxConversationMessages <= 0)
-		{
-			return messages ?? new List<ConversationMessage>();
-		}
-		int conversationCount = 0;
-		HashSet<int> keepIndexes = new HashSet<int>();
-		for (int i = messages.Count - 1; i >= 0; i--)
-		{
-			ConversationMessage message = messages[i];
-			if (IsAfefConversationMessage(message))
-			{
-				keepIndexes.Add(i);
-				continue;
-			}
-			if (conversationCount < maxConversationMessages)
-			{
-				keepIndexes.Add(i);
-				conversationCount++;
-			}
-		}
-		List<ConversationMessage> result = new List<ConversationMessage>();
-		for (int i = 0; i < messages.Count; i++)
-		{
-			if (keepIndexes.Contains(i))
-			{
-				result.Add(messages[i]);
-			}
-		}
-		return result;
-	}
 
-	private List<object> BuildStrictSceneMessagesForNpc(int npcAgentIndex, string systemPrompt, IEnumerable<string> prefixUserSections, IEnumerable<string> suffixUserSections = null, bool currentInputAlreadyRecorded = true, string currentPlayerInput = null, int maxHistoryMessages = 0, bool suppressReplyFormatInstruction = false, IEnumerable<ConversationMessage> injectedHistoryMessages = null, bool includeSceneHistory = true, IEnumerable<ConversationMessage> persistentHistoryMessages = null, IEnumerable<ConversationMessage> pendingCurrentAfefFactMessages = null, bool useSceneDistanceSpeechLabels = true)
-	{
-		int historyLineLimit = ResolveDailyConversationHistoryLineLimit(maxHistoryMessages);
-		List<object> list = new List<object>
-		{
-			CreateChatMessage("system", BuildStrictSceneMessagesSystemPrompt(systemPrompt, suppressReplyFormatInstruction))
-		};
-		AppendStrictSceneUserSections(list, prefixUserSections);
-		List<ConversationMessage> pendingCurrentAfefFacts = new List<ConversationMessage>();
-		if (pendingCurrentAfefFactMessages != null)
-		{
-			pendingCurrentAfefFacts.AddRange(pendingCurrentAfefFactMessages.Where((ConversationMessage x) => x != null));
-		}
-		pendingCurrentAfefFacts.AddRange(ConsumePendingCurrentAfefFactMessagesForPrompt(npcAgentIndex));
-		HashSet<string> pendingCurrentAfefFactKeys = new HashSet<string>(pendingCurrentAfefFacts.Select(BuildConversationMessageDedupeKey).Where((string x) => !string.IsNullOrWhiteSpace(x)), StringComparer.Ordinal);
-		List<ConversationMessage> npcConversationHistorySnapshot = new List<ConversationMessage>();
-		if (includeSceneHistory)
-		{
-			AppendConversationMessages(npcConversationHistorySnapshot, GetNpcConversationHistorySnapshot(npcAgentIndex));
-		}
-		AppendConversationMessages(npcConversationHistorySnapshot, injectedHistoryMessages);
-		npcConversationHistorySnapshot = SortConversationMessagesByEventSequence(npcConversationHistorySnapshot);
-		List<ConversationMessage> persistentConversationHistorySnapshot = new List<ConversationMessage>();
-		AppendConversationMessages(persistentConversationHistorySnapshot, persistentHistoryMessages);
-		List<ConversationMessage> combinedHistorySnapshot = new List<ConversationMessage>(persistentConversationHistorySnapshot.Count + npcConversationHistorySnapshot.Count);
-		AppendConversationMessages(combinedHistorySnapshot, persistentConversationHistorySnapshot);
-		AppendConversationMessages(combinedHistorySnapshot, npcConversationHistorySnapshot);
-		combinedHistorySnapshot = KeepAfefFactsAndRecentConversationMessages(combinedHistorySnapshot, historyLineLimit);
-		List<object> historyChatMessages = new List<object>(combinedHistorySnapshot.Count);
-		for (int i = 0; i < combinedHistorySnapshot.Count; i++)
-		{
-			if (TryConvertSceneMessageToStrictChatMessage(combinedHistorySnapshot[i], npcAgentIndex, out var historyChatMessage, pendingCurrentAfefFactKeys, useSceneDistanceSpeechLabels))
-			{
-				historyChatMessages.Add(historyChatMessage);
-			}
-		}
-		list.AddRange(historyChatMessages);
-		AppendStrictSceneUserSections(list, suffixUserSections);
-		if (!currentInputAlreadyRecorded)
-		{
-			string text = (currentPlayerInput ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(text))
-			{
-				ConversationMessage currentInputMessage = StampConversationMessageWithCurrentMemoryContext(new ConversationMessage
-				{
-					Role = "user",
-					Content = text,
-					SpeakerName = GetStrictScenePlayerDisplayName(),
-					SpeakerAgentIndex = -1,
-					TargetAgentIndex = npcAgentIndex,
-					PlayerDistanceMeters = GetPlayerDistanceToAgentForScenePrompt(npcAgentIndex)
-				});
-				if (TryConvertSceneMessageToStrictChatMessage(currentInputMessage, npcAgentIndex, out var currentChatMessage, null, useSceneDistanceSpeechLabels))
-				{
-					list.Add(currentChatMessage);
-				}
-			}
-		}
-		Logger.LogVerbose("ShoutStrict", "strict_messages:" + npcAgentIndex, () => "npc=" + npcAgentIndex + " messages=" + list.Count + " historyMessages=" + historyChatMessages.Count + " persistentHistoryRaw=" + persistentConversationHistorySnapshot.Count + " sceneHistoryRaw=" + npcConversationHistorySnapshot.Count + " historyCap=" + historyLineLimit, 2.0);
-		return list;
-	}
 
 	public static List<string> GetAuxiliarySceneDialogueHistoryLinesForExternal(int targetAgentIndex, int maxLines = 6)
 	{

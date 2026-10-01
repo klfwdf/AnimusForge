@@ -4,9 +4,12 @@ import argparse
 import importlib.util
 import os
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT / "tests"))
+from output_isolation import minimal_test_environment
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--mutate", choices=["drop-self"])
 args = parser.parse_args()
@@ -16,34 +19,44 @@ extract = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(extract)
 # cb045840 moved these Courier projections unchanged (private -> internal) into the Prompt owner.
 courier = (ROOT / "src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs").read_text(encoding="utf-8-sig")
-scene = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
 courier_methods = "\n".join(extract.declaration(courier, signature) for signature in (
     "internal static object CreateCourierChatMessage(",
     "internal static bool TryConvertCourierMemoryMessageToChatMessage(",
     "internal static string BuildCourierMemoryMetadataPrefix(",
     "internal static string StripCourierPromptScopeLabel(",
     "internal static string StripCourierSpeakerPrefix("))
-scene_methods = "\n".join(extract.declaration(scene, signature) for signature in (
-    "private static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage msg, int npcAgentIndex, out object chatMessage, HashSet",
-    "private static string BuildConversationMessageMetadataPrefix(",
-    "private static string PrefixConversationMessageForPrompt("))
-assert "ConversationRoleClassificationOwner.IsViewerAssistant" in scene_methods
+scene_owner = (ROOT / "src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs").read_text(encoding="utf-8-sig")
+assert "ConversationRoleClassificationOwner.IsViewerAssistant" in scene_owner
+scene_methods = """private static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessage message, int agentIndex, out object result, HashSet<string> facts, bool distances)
+    => SceneHistoryMessageAssemblyOwner.TryConvertSceneMessageToStrictChatMessage(message,
+        new SceneHistoryMessageContext { ViewerAgentIndex = agentIndex, ViewerHeroId = "ada", PlayerName = "Player",
+            GameDate = "current", GameHour = 0, Scene = "current-scene", UseDistanceLabels = distances }, out result, facts);"""
 assert "ConversationRoleClassificationOwner.IsViewerAssistant" in courier_methods
 if args.mutate:
     courier_methods = courier_methods.replace(
         "ConversationRoleClassificationOwner.IsViewerAssistant(message, npcName, null, -1, useStableIdentity: false)", "false", 1)
-out = ROOT / "artifacts/j17b/session-20260930/p5-channels" / (
+out = ROOT / "artifacts/af2-host-terminal-closeout/line-b" / (
     "channel-history-roles-mutant-001" if args.mutate else "channel-history-roles-001")
 out.mkdir(parents=True, exist_ok=True)
 template = (HERE / "Harness.cs.txt").read_text(encoding="utf-8-sig")
-(out / "Program.cs").write_text(template.replace("@@COURIER@@", courier_methods).replace("@@SCENE@@", scene_methods), encoding="utf-8")
+support = """namespace AnimusForge {
+internal static class ShoutUtils { @@METADATA@@ public static string StripNamePrefixedLineSafely(string text, int max = 30) => text; }
+internal static class LlmVisibleReplyNormalizer { internal static string NormalizeComplete(string text) => text; }
+internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text) => text; }
+}"""
+metadata = extract.declaration((ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutUtils.cs").read_text(encoding="utf-8-sig"), "public static string StripConversationMetadataPrefix(")
+(out / "Program.cs").write_text(template.replace("@@COURIER@@", courier_methods).replace("@@SCENE@@", scene_methods) + support.replace("@@METADATA@@", metadata), encoding="utf-8")
 (out / "Tests.csproj").write_text(
     '<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType>'
     '<TargetFramework>net8.0</TargetFramework><Nullable>disable</Nullable>'
     '<ImplicitUsings>enable</ImplicitUsings></PropertyGroup><ItemGroup><Compile Include="'
     + str(ROOT / "src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs") + '" /><Compile Include="'
     + str(ROOT / "src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs")
-    + '" /></ItemGroup></Project>', encoding="utf-8")
+    + '" />' + ''.join('<Compile Include="' + str(ROOT / path) + '" />' for path in (
+        "src/modules/AF.Module.Prompt/Composition/SceneHistoryMessageAssemblyOwner.cs",
+        "src/modules/AF.Module.Conversation/Internal/History/SceneHistoryProjectionOwner.cs",
+        "src/modules/AF.Module.Conversation/Internal/History/ConversationSpeechTextRules.cs"))
+    + '</ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text(
     "<configuration><packageSources><clear/></packageSources></configuration>", encoding="utf-8")
 dotnet = ROOT / "local/dotnet/8.0.425/dotnet.exe"
@@ -61,6 +74,7 @@ env = {
     "ProgramFiles(x86)": os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
     "windir": os.environ.get("windir", r"C:\Windows"),
 }
+env = minimal_test_environment(dotnet, out)
 result = subprocess.run([str(dotnet), "run", "--project", str(out / "Tests.csproj"), "-c", "Release"],
                         cwd=out, env=env, capture_output=True, text=True,
                         encoding="utf-8", errors="replace", timeout=90)

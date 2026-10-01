@@ -28,6 +28,18 @@ internal enum PromptLoreSource
 /// </summary>
 internal static class PromptContextDecisions
 {
+    // Captured before consuming a Duel result. Trust must use the pre-duel reward flag,
+    // while triggered rules later use the promoted flag from ResolveFlags.
+    internal static PromptRelationshipCapturePlan PlanRelationshipCapture(PromptContextFlags flags,
+        bool rewardAvailable, bool hasHero, bool hasCharacter)
+        => new PromptRelationshipCapturePlan
+        {
+            CaptureLoan = rewardAvailable && hasHero && flags.IsLoanContext,
+            CaptureTrust = rewardAvailable && hasHero && !flags.IsLoanContext && !flags.UseRewardContext,
+            CaptureMerchantDebt = rewardAvailable && flags.UseRewardContext && !hasHero && hasCharacter
+        };
+
+    internal static bool ShouldCaptureMarriageContext(bool hasHero, bool marriageHit) => hasHero && marriageHit;
 	/// <summary>Reward/loan promotion: party transfer eligibility and a consumed duel result promote reward; loan follows party transfer.</summary>
 	internal static PromptContextFlags ResolveFlags(PromptRoutingResult routing, bool hasDuelRuntimeTarget, bool partyTransferEligible,
 		bool rewardEnabled, bool loanEnabled, bool persistentAdpDebt, bool hasDuelResult, bool playerWonLastDuel)
@@ -92,4 +104,9 @@ internal static class PromptContextDecisions
 	{
 		return $"[SemanticTrigger-Shout] DuelHit={r.Duel.Hit} [{r.Duel.Describe()}] RewardHit={r.Reward.Hit} [{r.Reward.Describe()}] LoanHit={r.Loan.Hit} [{r.Loan.Describe()}] PartyTransferHit={r.PartyTransfer.Hit} [{r.PartyTransfer.Describe()}] WorldMapHit={r.WorldMapPartyCommand.Hit} [{r.WorldMapPartyCommand.Describe()}] SurroundingsHit={r.Surroundings.Hit} [{r.Surroundings.Describe()}] KingdomServiceHit={r.KingdomService.Hit} [{r.KingdomService.Describe()}] MarriageHit={r.Marriage.Hit} [{r.Marriage.Describe()}] NpcRecall={(string.IsNullOrWhiteSpace(npcLastUtterance) ? "off" : "on")} Input='{input}' NPC='{npcName}'";
 	}
+}
+
+internal struct PromptRelationshipCapturePlan
+{
+    internal bool CaptureLoan, CaptureTrust, CaptureMerchantDebt;
 }

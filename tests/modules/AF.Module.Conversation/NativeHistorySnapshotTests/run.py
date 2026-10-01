@@ -10,7 +10,10 @@ from output_isolation import new_run_root, minimal_test_environment
 p=argparse.ArgumentParser();p.add_argument('--original',action='store_true');p.add_argument('--mutate');p.add_argument('--native',action='store_true');p.add_argument('--run-root',type=Path);a=p.parse_args()
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(n):return subprocess.check_output(['git','show','659bb998:'+n],cwd=ROOT).decode('utf-8-sig') if a.original else (current_source_path(ROOT, n)).read_text(encoding='utf-8-sig')
-s=read('MyBehavior.cs');models=(['private sealed class DailyMemoryLine','private sealed class DailyMemoryDraft','private sealed class CompressedMemoryBlock','private sealed class WeeklyMemoryMaterialTrigger'] if a.original else [])+['private sealed class MemoryRecallCandidate']
+s=read('MyBehavior.cs')
+if not a.original:
+ s += '\n' + read('src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecall.cs')
+models=(['private sealed class DailyMemoryLine','private sealed class DailyMemoryDraft','private sealed class CompressedMemoryBlock','private sealed class WeeklyMemoryMaterialTrigger','private sealed class MemoryRecallCandidate'] if a.original else [])
 methods=['private static string NormalizeMemoryHeroId(','private static string GetMemoryHeroId(','private static bool IsNonHeroMemoryId(','private static string FormatMemoryHourRange(','private static string FormatCompressedMemoryAgeSuffix(','private static string FormatPastAfefLineForPrompt(','private static string StripMemoryTitleDateTime(','private static string BuildMemoryRecallQueryText(','private static void AssignMemoryCandidateDisplayIds(','private bool TryBuildMemoryRecallCandidates(','private bool TrySelectMemoryIdsWithPreprocess(','private string BuildCompressedMemoryContextById(','private string BuildHistoryContextById(']
 recovery=(ROOT/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.MemoryRecovery.cs').read_text(encoding='utf-8-sig') if not a.original else ''
 marker_helpers=[]
@@ -18,6 +21,9 @@ for signature in (['internal static bool IsValidMemoryCommitMarker(', 'internal 
  helper=ex.declaration(recovery,signature)
  marker_helpers.append(helper[:helper.index(';')+1])
 code=(HERE/'MemoryHarness.cs.txt').read_text(encoding='utf-8-sig').replace('@@MODELS@@','\n'.join(ex.declaration(s,x) for x in models)).replace('@@METHODS@@','private const string NonHeroMemoryIdPrefix="af_nonhero:";\n'+'\n'.join(ex.declaration(s,x) for x in methods)+ '\n'+'\n'.join(marker_helpers))
+if not a.original:
+ extras = '\n'.join(ex.declaration(s,x) for x in ('private MemoryRecallRequest CaptureMemoryRecallRequest(', 'private void PublishMemoryRecallFailure('))
+ code = code.replace('@@BASELINE_METHODS@@', extras+'\n@@BASELINE_METHODS@@')
 prior=subprocess.check_output(['git','show','659bb998:MyBehavior.cs'],cwd=ROOT).decode('utf-8-sig')
 baseline_names=['FormatCompressedMemoryAgeSuffix','BuildMemoryRecallQueryText','TryBuildMemoryRecallCandidates','TrySelectMemoryIdsWithPreprocess','BuildCompressedMemoryContextById','BuildHistoryContextById']
 baseline='\n'.join(ex.declaration(prior,next(x for x in methods if name+'(' in x)) for name in baseline_names)
@@ -54,9 +60,9 @@ if not a.original:
  if a.mutate=='live-scene':
   old='snapshot?.Scene ?? ResolveCurrentMemorySceneLabel()';assert old in code;code=code.replace(old,'ResolveCurrentMemorySceneLabel()',1)
  if a.mutate=='live-date':
-  old='FormatCompressedMemoryAgeSuffix(block, snapshot?.GameDay)';assert old in code;code=code.replace(old,'FormatCompressedMemoryAgeSuffix(block)',1)
+  old='snapshot?.GameDay ?? GetCurrentGameDayIndexSafe()';assert old in code;code=code.replace(old,'GetCurrentGameDayIndexSafe()',1)
  if a.mutate=='live-query':
-  old='snapshot?.RecallQuery ?? BuildMemoryRecallQueryText';assert old in code;code=code.replace(old,'BuildMemoryRecallQueryText',1)
+  old='snapshot?.RecallQuery ?? (blocks.Count';assert old in code;code=code.replace(old,'(blocks.Count',1)
  if a.mutate=='drop-capture-guard':
   old='() => IsNativeConversationAdmissionCurrent(admission, out _)\n\t\t\t\t? CaptureNativeConversationPersistedHistoryWork';assert old in code;code=code.replace(old,'() => true\n\t\t\t\t? CaptureNativeConversationPersistedHistoryWork',1)
  if a.mutate=='drop-accept-guard':
@@ -74,8 +80,10 @@ if not a.original:
 if not a.original:
  (out/'Models.cs').write_text(read('src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs'),encoding='utf-8')
  (out/'NpcActionEntry.cs').write_text(read('src/modules/AF.Module.Memory/Records/NpcActionEntry.cs'),encoding='utf-8')
+ (out/'MemoryRecallOwner.cs').write_text(read('src/modules/AF.Module.Memory/Recall/MemoryRecallContextOwner.cs'),encoding='utf-8')
+ (out/'MemoryRecallCandidate.cs').write_text(read('src/modules/AF.Module.Memory/Records/MemoryRecallCandidate.cs'),encoding='utf-8')
 (out/'Program.cs').write_text(code,encoding='utf-8');(out/'Guard.cs').write_text(read('SaveRuntimeGuard.cs' if a.original else 'src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs'),encoding='utf-8');(out/'Error.cs').write_text(read('PreprocessFormatException.cs'),encoding='utf-8')
-(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
+(out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion>'+('<DefineConstants>ORIGINAL</DefineConstants>' if a.original else '')+'</PropertyGroup><ItemGroup><Reference Include="Newtonsoft.Json"><HintPath>'+str(ROOT/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll')+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8');(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 dotnet=os.environ.get('DOTNET_EXE',str(ROOT/'local/dotnet/8.0.425/dotnet.exe'))
 env=minimal_test_environment(Path(dotnet),out)
 build=subprocess.run([dotnet,'build',str(out/'Proof.csproj'),'-c','Release','-p:UseAppHost=false','-p:RestoreConfigFile='+str(out/'NuGet.Config')],cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=180)

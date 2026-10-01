@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -267,87 +267,28 @@ public partial class MyBehavior
 
     private bool PublishDailyInteractionMemoryComponent(InteractionMemoryRecoveryWorkItem work) => MemoryRecoveryState.PublishDailyInteractionMemoryComponent(work);
 
-    private void CompleteInitialInteractionMemoryNotorietyOutcome(
-        InteractionMemoryRecoverySeed seed,
-        string recoveryId,
-        string payloadHash)
+    private void CompleteInitialInteractionMemoryNotorietyOutcome(InteractionMemoryRecoverySeed seed, string recoveryId, string payloadHash)
     {
-        if (seed == null
-            || string.IsNullOrWhiteSpace(recoveryId)
-            || string.IsNullOrWhiteSpace(payloadHash))
-        {
-            return;
-        }
+        var receipt = InteractionMemoryAuxiliaryCompletionCoordinator.CompleteInitial(seed, recoveryId, payloadHash,
+            HasPublishedDailyInteractionMemoryComponent, NotifyInitialMemoryNotorietyComponent);
+        if (receipt.HasAttempt)
+            Logger.Log("MemoryRecovery", "auxiliary_outcome recovery=" + recoveryId
+                + " notoriety_line=confirmed count=" + receipt.Accepted + " duplicate=" + receipt.Duplicate
+                + " unavailable=" + receipt.Unavailable + " weekly=not_replayed_or_consumed");
+    }
 
-        int notorietyConfirmed = 0;
-        int notorietyDuplicate = 0;
-        int notorietyUnavailable = 0;
-        var attemptedParts = new HashSet<string>(StringComparer.Ordinal);
-        foreach (InteractionMemoryRecoveryComponentSeed component in
-            seed.Components ?? Array.Empty<InteractionMemoryRecoveryComponentSeed>())
-        {
-            string componentPart = (component?.Part ?? string.Empty).Trim().ToLowerInvariant();
-            if (!IsInitialInteractionMemoryNotorietyComponentEligible(component)
-                || !attemptedParts.Add(componentPart)
-                || !HasPublishedDailyInteractionMemoryComponent(
-                    seed.SubjectId,
-                    recoveryId,
-                    payloadHash,
-                    componentPart))
-            {
-                continue;
-            }
-
-            // The H marker proves only that the Daily line exists. L owns the
-            // separate roll/line receipt and returns an exact outcome; H never
-            // promotes its marker into Notoriety success on its own.
-            NotorietyConversationOutcomeOperationStatus status =
-                PlayerNotorietyBehavior.NoteConversationLineRecoverableForExternal(
-                    seed.SubjectId,
-                    seed.MemorySessionKey,
-                    seed.RuntimeGeneration,
-                    seed.SaveGeneration,
-                    seed.OriginGameDay,
-                    seed.OriginGameHour,
-                    recoveryId,
-                    payloadHash,
-                    componentPart);
-            if (status == NotorietyConversationOutcomeOperationStatus.Accepted)
-            {
-                notorietyConfirmed++;
-            }
-            else if (status == NotorietyConversationOutcomeOperationStatus.Duplicate)
-            {
-                notorietyDuplicate++;
-            }
-            else
-            {
-                notorietyUnavailable++;
-            }
-        }
-
-        if (notorietyConfirmed > 0 || notorietyDuplicate > 0 || notorietyUnavailable > 0)
-        {
-            Logger.Log(
-                "MemoryRecovery",
-                "auxiliary_outcome recovery=" + recoveryId
-                    + " notoriety_line=confirmed count=" + notorietyConfirmed
-                    + " duplicate=" + notorietyDuplicate
-                    + " unavailable=" + notorietyUnavailable
-                    + " weekly=not_replayed_or_consumed");
-        }
+    private static MemoryAuxiliaryReceiptOutcome NotifyInitialMemoryNotorietyComponent(InteractionMemoryRecoverySeed seed, string recoveryId, string payloadHash, string part)
+    {
+        var status = PlayerNotorietyBehavior.NoteConversationLineRecoverableForExternal(seed.SubjectId, seed.MemorySessionKey,
+            seed.RuntimeGeneration, seed.SaveGeneration, seed.OriginGameDay, seed.OriginGameHour, recoveryId, payloadHash, part);
+        return status == NotorietyConversationOutcomeOperationStatus.Accepted ? MemoryAuxiliaryReceiptOutcome.Accepted
+            : status == NotorietyConversationOutcomeOperationStatus.Duplicate ? MemoryAuxiliaryReceiptOutcome.Duplicate
+            : MemoryAuxiliaryReceiptOutcome.Unavailable;
     }
 
     private static bool IsInitialInteractionMemoryNotorietyComponentEligible(
         InteractionMemoryRecoveryComponentSeed component)
-    {
-        string part = (component?.Part ?? string.Empty).Trim().ToLowerInvariant();
-        return component != null
-            && component.IsLlmDialogue
-            && !component.IsAfef
-            && !string.IsNullOrWhiteSpace(component.DailyText)
-            && (part == "user" || part == "assistant");
-    }
+    { return InteractionMemoryAuxiliaryCompletionCoordinator.IsEligible(component); }
 
     private static bool ShouldCompleteInitialInteractionMemoryNotoriety(InteractionMemoryRecoveryBeginStatus beginStatus, bool recoveryCompleted, string recoveryId, string preparedRecoveryId)
         => MemoryRecoveryStateOwner.ShouldCompleteInitialInteractionMemoryNotoriety(beginStatus, recoveryCompleted, recoveryId, preparedRecoveryId);
@@ -357,28 +298,7 @@ public partial class MyBehavior
         string recoveryId,
         string payloadHash,
         string part)
-    {
-        string memoryId = NormalizeMemoryHeroId(subjectId);
-        string normalizedPart = (part ?? string.Empty).Trim().ToLowerInvariant();
-        if (string.IsNullOrWhiteSpace(memoryId)
-            || string.IsNullOrWhiteSpace(recoveryId)
-            || string.IsNullOrWhiteSpace(payloadHash)
-            || string.IsNullOrWhiteSpace(normalizedPart)
-            || _dailyMemoryDrafts == null
-            || !_dailyMemoryDrafts.TryGetValue(memoryId, out List<DailyMemoryDraft> drafts)
-            || drafts == null)
-        {
-            return false;
-        }
-
-        return drafts
-            .Where(draft => draft?.Lines != null)
-            .SelectMany(draft => draft.Lines)
-            .Any(line => line != null
-                && string.Equals((line.MemoryCommitId ?? string.Empty).Trim(), recoveryId, StringComparison.Ordinal)
-                && string.Equals((line.MemoryCommitHash ?? string.Empty).Trim(), payloadHash, StringComparison.Ordinal)
-                && string.Equals((line.MemoryCommitPart ?? string.Empty).Trim(), normalizedPart, StringComparison.Ordinal));
-    }
+    { return MemoryRecoveryState.HasPublishedDailyInteractionMemoryComponent(subjectId, recoveryId, payloadHash, part); }
 
     private bool PublishRecentInteractionMemoryComponent(InteractionMemoryRecoveryWorkItem work) => MemoryRecoveryState.PublishRecentInteractionMemoryComponent(work);
 

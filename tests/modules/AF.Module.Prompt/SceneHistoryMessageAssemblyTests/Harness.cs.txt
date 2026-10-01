@@ -1,0 +1,56 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+namespace AnimusForge;
+internal static class MainPromptMessageAssemblyOwner { @@CREATE@@ }
+internal static class ShoutUtils { @@METADATA@@ public static string StripNamePrefixedLineSafely(string text, int maximum = 30) => text; }
+// This fixture targets history assembly, not JSON reply or action-tag normalization.
+internal static class LlmVisibleReplyNormalizer { internal static string NormalizeComplete(string text) => text; }
+internal static class ConversationActionPostprocessOwner { internal static string StripActionTagsForSceneSpeech(string text) => text; }
+internal static class Program
+{
+    static void Check(bool pass, string name) { if (!pass) throw new Exception("FAIL " + name); Console.WriteLine("PASS " + name); }
+    static string Field(object value, string name) => (string)value.GetType().GetProperty(name).GetValue(value);
+    static ConversationMessage Message(long sequence, string role, string text, int speaker = 7) => new()
+    {
+        EventSequence = sequence, Role = role, Content = text, SpeakerAgentIndex = speaker,
+        SpeakerHeroId = speaker == 7 ? "ada" : "other", SpeakerName = speaker == 7 ? "Ada" : "Borin",
+        TargetAgentIndex = 7, GameDate = "Autumn 11", GameHour = 9, Scene = "square"
+    };
+    static void Main()
+    {
+        var context = new SceneHistoryMessageContext { ViewerAgentIndex = 7, ViewerHeroId = "ada", PlayerName = "Player", GameDate = "today", GameHour = 10, Scene = "town", UseDistanceLabels = false };
+        var fact = Message(1, "system", "[AFEF NPC行为补充] delivered");
+        var self = Message(3, "assistant", "Ada: hello");
+        var other = Message(2, "assistant", "Borin: heard", 8);
+        var input = new SceneHistoryMessageAssemblyInput { SystemPrompt = "system", Context = context,
+            PersistentHistory = new[] { fact }, SceneHistory = new[] { self, other }, PendingCurrentFacts = new[] { fact }, HistoryLineLimit = 1 };
+        var output = SceneHistoryMessageAssemblyOwner.Build(input);
+        Check(output.Count == 3, "history cap retains AFEF plus most recent dialogue");
+        Check(Field(output[1], "content").Contains("【当下行为】[AFEF NPC行为补充] delivered"), "pending AFEF current scope");
+        Check(Field(output[2], "role") == "assistant", "stable self role");
+        Check(Field(output[2], "content").Contains("Autumn 11") && Field(output[2], "content").Contains("square"), "complete detached metadata");
+        input.HistoryLineLimit = 5;
+        output = SceneHistoryMessageAssemblyOwner.Build(input);
+        Check(Field(output[2], "role") == "user" && Field(output[2], "content").Contains("【你听见】Borin说：heard"), "other speaker observer role");
+        input.PendingCurrentFacts = null;
+        output = SceneHistoryMessageAssemblyOwner.Build(input);
+        Check(Field(output[1], "content").Contains("【过往行为】"), "consumed facts no longer current");
+        input.CurrentInputMessage = Message(0, "user", "question", -1);
+        Check(SceneHistoryMessageAssemblyOwner.Build(input).Count == output.Count + 1, "unrecorded current input appended once");
+        input.CurrentInputMessage = null;
+        Check(SceneHistoryMessageAssemblyOwner.Build(input).Count == output.Count, "recorded current input not appended");
+        var tied = SceneHistoryMessageAssemblyOwner.SortConversationMessagesByEventSequence(new List<ConversationMessage> { self, Message(3,"user","tie"), other });
+        Check(tied[0] == other && tied[1] == self && tied[2].Content == "tie", "duplicate sequence stable order");
+        var lines = new List<string> { "old", "[AFEF NPC行为补充] delivered", "new" };
+        Check(SceneHistoryMessageAssemblyOwner.KeepAfefFactsAndRecentHistoryLines(lines, 1).SequenceEqual(lines.Skip(1)), "rendered lines retain AFEF");
+        input.SceneHistory = new[] { self }; input.PersistentHistory = null;
+        Check(SceneHistoryMessageAssemblyOwner.Build(input).Count == 2, "retry builder does not mutate history");
+        Check(self.Content == "Ada: hello" && fact.Content.StartsWith("[AFEF"), "source snapshots unchanged");
+        var detached = SceneHistoryProjectionOwner.CapturePromptMessages(new[] { self });
+        self.Content = "changed after capture";
+        Check(detached[0].Content == "Ada: hello" && !ReferenceEquals(detached[0], self)
+            && detached[0].VisibleAgentIndices == null && detached[0].VisibleHeroIds == null, "capture detaches scalars without retaining visibility containers");
+    }
+}

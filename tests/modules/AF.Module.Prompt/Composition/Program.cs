@@ -120,6 +120,16 @@ internal static class Program
         Check(!f.UseRewardContext && f.IncludeDuelStakeContext && f.PlayerWonLastDuel, "duel result without reward enabled keeps stake context but no reward promotion");
         f = PromptContextDecisions.ResolveFlags(routing, false, false, true, true, false, true, false);
         Check(f.UseRewardContext && f.IncludeDuelStakeContext && !f.PlayerWonLastDuel, "duel result with reward enabled promotes reward");
+        var beforeDuel = PromptContextDecisions.PlanRelationshipCapture(default(PromptContextFlags), true, true, true);
+        var afterDuel = PromptContextDecisions.PlanRelationshipCapture(f, true, true, true);
+        Check(beforeDuel.CaptureTrust && !afterDuel.CaptureTrust, "trust capture uses pre-duel flags, triggered rules use promoted reward");
+        var loanPlan = PromptContextDecisions.PlanRelationshipCapture(new PromptContextFlags { IsLoanContext = true }, true, true, true);
+        Check(loanPlan.CaptureLoan && !loanPlan.CaptureTrust && !loanPlan.CaptureMerchantDebt, "hero debt capture excludes trust and merchant debt");
+        var merchantPlan = PromptContextDecisions.PlanRelationshipCapture(new PromptContextFlags { UseRewardContext = true }, true, false, true);
+        Check(merchantPlan.CaptureMerchantDebt && !merchantPlan.CaptureLoan && !merchantPlan.CaptureTrust, "nonhero merchant reward capture");
+        Check(!PromptContextDecisions.PlanRelationshipCapture(default(PromptContextFlags), false, true, true).CaptureTrust
+            && PromptContextDecisions.ShouldCaptureMarriageContext(true, true)
+            && !PromptContextDecisions.ShouldCaptureMarriageContext(false, true), "unavailable reward and nonhero marriage stay disabled");
         Check(PromptContextDecisions.ShouldBuildClarificationHint(true, default(PromptContextFlags), false) && !PromptContextDecisions.ShouldBuildClarificationHint(false, default(PromptContextFlags), false), "clarification requires preprocess");
         Check(!PromptContextDecisions.ShouldBuildClarificationHint(true, new PromptContextFlags { IsLoanContext = true }, false) && !PromptContextDecisions.ShouldBuildClarificationHint(true, default(PromptContextFlags), true), "any strong context suppresses clarification");
 
