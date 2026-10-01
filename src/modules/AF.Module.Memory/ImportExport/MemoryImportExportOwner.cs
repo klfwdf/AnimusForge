@@ -26,6 +26,21 @@ internal sealed class MemoryImportExportState
 
 internal static class MemoryImportExportOwner
 {
+    // Legacy all-data import intentionally retains supplied list identity and key spelling.
+    // This is a user-request-frequency commit over the existing campaign store.
+    internal static void ApplyDialogueHistoryImports(MemoryBusinessStateOwner state,
+        Dictionary<string, List<MyBehavior.DialogueDay>> imported, bool overwriteExisting)
+    {
+        if (imported == null) return;
+        state.History ??= new Dictionary<string, List<MyBehavior.DialogueDay>>();
+        foreach (var item in imported)
+        {
+            if (string.IsNullOrEmpty(item.Key) || item.Value == null) continue;
+            if (!overwriteExisting && state.History.ContainsKey(item.Key)) continue;
+            if (overwriteExisting) state.History.Remove(item.Key);
+            state.History[item.Key] = item.Value;
+        }
+    }
     internal static CompressedMemoryExportBundle Build(string heroId, MemoryImportExportState state)
     {
         string id = MemoryRecordRules.NormalizeMemoryHeroId(heroId);

@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace AnimusForge;
 
-// The UI retains selection, identity/generation checks and Native history synchronization.
-// These operations mutate only the campaign's existing Memory containers on its thread.
-internal static class MemoryDeveloperEditOwner
+// The adapter retains identity/generation checks; UI retains only navigation and display.
+// These operations mutate the campaign's existing Memory containers on its thread.
+internal static partial class MemoryDeveloperEditOwner
 {
     internal static bool DeleteBlock(string heroId, string blockId, MemoryImportExportState state,
         Action<string> markOverviewDirty)
