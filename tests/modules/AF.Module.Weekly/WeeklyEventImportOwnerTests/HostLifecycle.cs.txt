@@ -1,0 +1,28 @@
+
+ private string _eventWorldOpeningSummary="old";
+ private Dictionary<string,string> _eventKingdomOpeningSummaries=new();
+ private List<EventRecordEntry> _eventRecordEntries=new();
+ private WeeklyReportMaterialRevisionOwner _weeklyReportMaterialRevisions=new();
+ private int _publishedWorldWeeklyHistoryRevision;
+ private readonly object _weekZeroShortSummaryQueueLock=new();
+ private sealed class WeekZeroShortSummaryRequest { internal string EventId; }
+ private List<WeekZeroShortSummaryRequest> _weekZeroShortSummaryPendingQueue=new();
+ private HashSet<string> _weekZeroShortSummaryGenerationAttempted=new();
+ private Dictionary<string,string> InFlight=new();
+ private List<string> Order=new();
+ private string BuildPublishedWorldWeeklyProductsFingerprint(){Order.Add("fingerprint:"+_weeklyReportMaterialRevisions.Capture(0,0).OpeningRevision);return string.Join("|",_eventRecordEntries.Select(x=>x.EventId+":"+x.Title));}
+ private void NotifyWorldMessageWeeklyTimelineChanged()=>Order.Add("timeline:"+_publishedWorldWeeklyHistoryRevision);
+ private void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter){Order.Add("ensure:"+sanitizeAfter+":"+_weekZeroShortSummaryPendingQueue.Count+":"+_weekZeroShortSummaryGenerationAttempted.Count+":"+_publishedWorldWeeklyHistoryRevision);}
+ private static bool IsDatabaseReloadOpeningEventId(string id)=>WeeklyEventDataImportOwner.IsCanonicalOpeningEventId(id);
+ private static string NeutralizeWeeklyReportScenarioName(string x)=>WeeklyGenerationRules.NeutralizeWeeklyReportScenarioName(x);
+ private static string BuildFallbackWeeklyReportShortSummary(string x)=>WeeklyGenerationRules.BuildFallbackWeeklyReportShortSummary(x);
+ private static string NormalizeWeeklyReportTagText(string x)=>WeeklyGenerationRules.NormalizeWeeklyReportTagText(x);
+ internal static void VerifyImportLifecycle(){
+  var h=new MyBehavior();h.ApplyImportedEventData(new(){HasWorldSummaryFile=true,WorldSummary="new",HasEventRecordsFile=true,EventRecords=new(){new(){EventId="e",Title="t"}}},true);
+  if(!h.Order.SequenceEqual(new[]{"fingerprint:1","fingerprint:1","timeline:1"}))throw new Exception("actual Apply opening/fingerprint/revision/timeline order");
+  h.Order.Clear();h._eventRecordEntries.Add(new(){EventId="weekly_report:world:0:id",WeekIndex=0,EventKind="world"});
+  h._weekZeroShortSummaryPendingQueue.Add(new(){EventId="weekly_report:world:0:id"});h._weekZeroShortSummaryPendingQueue.Add(new(){EventId="dynamic"});
+  h._weekZeroShortSummaryGenerationAttempted.Add("weekly_report:world:0:id");h._weekZeroShortSummaryGenerationAttempted.Add("dynamic");h.InFlight["weekly_report:world:0:id"]="old source hash";
+  h.ReplaceDatabaseOpeningKnowledge(new(){HasWorldSummaryFile=true,WorldSummary="",HasKingdomSummariesFile=true});
+  if(h.Order.Single()!="ensure:False:1:1:2"||h.InFlight.Count!=1||h.InFlight.Values.Single()!="old source hash")throw new Exception("actual replace pending clear/inflight keep/revision/unsanitized ensure order");
+ }

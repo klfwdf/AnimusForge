@@ -606,20 +606,6 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public string Summary;
 	}
 
-	private sealed class EventImportPayload
-	{
-		public bool HasWorldSummaryFile;
-
-		public string WorldSummary;
-
-		public bool HasKingdomSummariesFile;
-
-		public Dictionary<string, string> KingdomSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-		public bool HasEventRecordsFile;
-
-		public List<EventRecordEntry> EventRecords = new List<EventRecordEntry>();
-	}
 
 	// A fully preflighted, in-memory database replacement plan prevents the U-terminal flow from reading files after it starts changing the save.
 	private sealed class DatabaseReloadPlan
@@ -27708,94 +27694,6 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		}
 	}
 
-	private static List<EventRecordEntry> SanitizeEventRecordEntries(List<EventRecordEntry> source)
-	{
-		List<EventRecordEntry> list = new List<EventRecordEntry>();
-		if (source == null)
-		{
-			return list;
-		}
-		foreach (EventRecordEntry item in source)
-		{
-			if (item == null)
-			{
-				continue;
-			}
-			string text = (item.EventId ?? "").Trim();
-			string text2 = (item.Title ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(text2))
-			{
-				continue;
-			}
-			bool flag = text.StartsWith("weekly_report:", StringComparison.OrdinalIgnoreCase);
-			EventRecordEntry eventRecordEntry = new EventRecordEntry
-			{
-				EventId = text,
-				WeekIndex = Math.Max(0, item.WeekIndex),
-				EventKind = (item.EventKind ?? "").Trim(),
-				ScopeKingdomId = (item.ScopeKingdomId ?? "").Trim(),
-				Title = flag ? NeutralizeWeeklyReportScenarioName(text2) : text2,
-				ShortSummary = BuildFallbackWeeklyReportShortSummary(item.ShortSummary),
-				Summary = flag ? NeutralizeWeeklyReportScenarioName(item.Summary) : (item.Summary ?? "").Trim(),
-				TagText = NormalizeWeeklyReportTagText(item.TagText),
-				PromptText = flag ? NeutralizeWeeklyReportScenarioName(item.PromptText) : (item.PromptText ?? "").Trim(),
-				CreatedDay = Math.Max(0, item.CreatedDay),
-				CreatedDate = (item.CreatedDate ?? "").Trim(),
-				Materials = new List<EventMaterialReference>()
-			};
-			if (string.IsNullOrWhiteSpace(eventRecordEntry.ShortSummary))
-			{
-				eventRecordEntry.ShortSummary = BuildFallbackWeeklyReportShortSummary(eventRecordEntry.Summary);
-			}
-			if (item.Materials != null)
-			{
-				foreach (EventMaterialReference material in item.Materials)
-				{
-					if (material == null)
-					{
-						continue;
-					}
-					eventRecordEntry.Materials.Add(new EventMaterialReference
-					{
-						MaterialType = (material.MaterialType ?? "").Trim(),
-						Label = flag ? NeutralizeWeeklyReportScenarioName(material.Label) : (material.Label ?? "").Trim(),
-						SnapshotText = flag ? NeutralizeWeeklyReportScenarioName(material.SnapshotText) : (material.SnapshotText ?? "").Trim(),
-						HeroId = (material.HeroId ?? "").Trim(),
-						KingdomId = (material.KingdomId ?? "").Trim(),
-						SettlementId = (material.SettlementId ?? "").Trim(),
-						RecentOnly = material.RecentOnly,
-						ActionKind = (material.ActionKind ?? "").Trim(),
-						ActorHeroId = (material.ActorHeroId ?? "").Trim(),
-						ActorClanId = (material.ActorClanId ?? "").Trim(),
-						ActorKingdomId = (material.ActorKingdomId ?? "").Trim(),
-						TargetHeroId = (material.TargetHeroId ?? "").Trim(),
-						TargetClanId = (material.TargetClanId ?? "").Trim(),
-						TargetKingdomId = (material.TargetKingdomId ?? "").Trim(),
-						SettlementOwnerHeroId = (material.SettlementOwnerHeroId ?? "").Trim(),
-						SettlementOwnerClanId = (material.SettlementOwnerClanId ?? "").Trim(),
-						SettlementOwnerKingdomId = (material.SettlementOwnerKingdomId ?? "").Trim(),
-						PreviousSettlementOwnerHeroId = (material.PreviousSettlementOwnerHeroId ?? "").Trim(),
-						PreviousSettlementOwnerClanId = (material.PreviousSettlementOwnerClanId ?? "").Trim(),
-						PreviousSettlementOwnerKingdomId = (material.PreviousSettlementOwnerKingdomId ?? "").Trim(),
-						LocationText = (material.LocationText ?? "").Trim(),
-						Won = material.Won,
-						RelatedHeroIds = new List<string>((material.RelatedHeroIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-						RelatedClanIds = new List<string>((material.RelatedClanIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-						RelatedKingdomIds = new List<string>((material.RelatedKingdomIds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-						SourceStableKeys = new List<string>((material.SourceStableKeys ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-						SourceActionKinds = new List<string>((material.SourceActionKinds ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim())),
-						SourceMaterialCount = Math.Max(0, material.SourceMaterialCount),
-						ActionStableKey = (material.ActionStableKey ?? "").Trim(),
-						ActionDay = material.ActionDay,
-						ActionOrder = material.ActionOrder,
-						ActionSequence = material.ActionSequence
-					});
-				}
-			}
-			list.Add(eventRecordEntry);
-		}
-		return list.OrderByDescending((EventRecordEntry x) => x.WeekIndex).ThenByDescending((EventRecordEntry x) => x.CreatedDay).ThenBy((EventRecordEntry x) => x.Title ?? "", StringComparer.OrdinalIgnoreCase).ToList();
-	}
 
 	// SyncData already owns the event list. Normalize that list in place instead of
 	// cloning every material graph solely to serialize or deserialize it.
@@ -28447,150 +28345,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		return SanitizeEventRecordEntries(_eventRecordEntries).FirstOrDefault((EventRecordEntry x) => x != null && string.Equals((x.EventId ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 	}
 
-	private bool TryLoadEventDataFromImportDir(string importDir, out EventImportPayload payload, out string error)
-	{
-		payload = new EventImportPayload();
-		error = "";
-		try
-		{
-			string text = Path.Combine(importDir, "event_data");
-			string text2 = Directory.Exists(text) ? text : importDir;
-			string path = Path.Combine(text2, "WorldOpeningSummary.json");
-			if (File.Exists(path))
-			{
-				payload.HasWorldSummaryFile = true;
-				EventWorldOpeningSummaryJson eventWorldOpeningSummaryJson = PlayerExportsStore.ReadJson<EventWorldOpeningSummaryJson>(path);
-				payload.WorldSummary = (eventWorldOpeningSummaryJson?.Summary ?? "").Trim();
-			}
-			string path2 = Path.Combine(text2, "KingdomOpeningSummaries.json");
-			if (File.Exists(path2))
-			{
-				payload.HasKingdomSummariesFile = true;
-				Dictionary<string, string> dictionary = PlayerExportsStore.ReadJson<Dictionary<string, string>>(path2) ?? new Dictionary<string, string>();
-				foreach (KeyValuePair<string, string> item in dictionary)
-				{
-					string text3 = (item.Key ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3))
-					{
-						payload.KingdomSummaries[text3] = (item.Value ?? "").Trim();
-					}
-				}
-			}
-			string path3 = Path.Combine(text2, "EventRecords.json");
-			if (File.Exists(path3))
-			{
-				payload.HasEventRecordsFile = true;
-				List<EventRecordEntry> source = PlayerExportsStore.ReadJson<List<EventRecordEntry>>(path3) ?? new List<EventRecordEntry>();
-				payload.EventRecords = SanitizeEventRecordEntries(source);
-			}
-			if (!payload.HasWorldSummaryFile && !payload.HasKingdomSummariesFile && !payload.HasEventRecordsFile)
-			{
-				error = "找不到 event_data\\WorldOpeningSummary.json、event_data\\KingdomOpeningSummaries.json 或 event_data\\EventRecords.json。";
-				return false;
-			}
-			return true;
-		}
-		catch (Exception ex)
-		{
-			error = ex.Message;
-			return false;
-		}
-	}
 
-	private void ApplyImportedEventData(EventImportPayload payload, bool overwriteExisting)
-	{
-		if (payload == null)
-		{
-			return;
-		}
-		if (payload.HasWorldSummaryFile && (overwriteExisting || string.IsNullOrWhiteSpace(_eventWorldOpeningSummary)))
-		{
-			_eventWorldOpeningSummary = (payload.WorldSummary ?? "").Trim();
-		}
-		if (payload.HasKingdomSummariesFile)
-		{
-			if (_eventKingdomOpeningSummaries == null)
-			{
-				_eventKingdomOpeningSummaries = new Dictionary<string, string>();
-			}
-			foreach (KeyValuePair<string, string> item in payload.KingdomSummaries)
-			{
-				string text = (item.Key ?? "").Trim();
-				if (string.IsNullOrWhiteSpace(text))
-				{
-					continue;
-				}
-				string text2 = (item.Value ?? "").Trim();
-				if (overwriteExisting)
-				{
-					if (string.IsNullOrWhiteSpace(text2))
-					{
-						_eventKingdomOpeningSummaries.Remove(text);
-					}
-					else
-					{
-						_eventKingdomOpeningSummaries[text] = text2;
-					}
-				}
-				else if (!_eventKingdomOpeningSummaries.ContainsKey(text) && !string.IsNullOrWhiteSpace(text2))
-				{
-					_eventKingdomOpeningSummaries[text] = text2;
-				}
-			}
-		}
-		if (payload.HasWorldSummaryFile || payload.HasKingdomSummariesFile)
-		{
-			_weeklyReportMaterialRevisions.MarkOpening();
-		}
-		if (payload.HasEventRecordsFile)
-		{
-			string previousWorldWeeklyProductsFingerprint = BuildPublishedWorldWeeklyProductsFingerprint();
-			if (_eventRecordEntries == null)
-			{
-				_eventRecordEntries = new List<EventRecordEntry>();
-			}
-			if (overwriteExisting)
-			{
-				Dictionary<string, EventRecordEntry> dictionary = new Dictionary<string, EventRecordEntry>(StringComparer.OrdinalIgnoreCase);
-				foreach (EventRecordEntry eventRecordEntry in _eventRecordEntries)
-				{
-					string text3 = (eventRecordEntry?.EventId ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text3))
-					{
-						dictionary[text3] = eventRecordEntry;
-					}
-				}
-				foreach (EventRecordEntry eventRecordEntry2 in payload.EventRecords)
-				{
-					string text4 = (eventRecordEntry2?.EventId ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text4))
-					{
-						dictionary[text4] = eventRecordEntry2;
-					}
-				}
-				_eventRecordEntries = SanitizeEventRecordEntries(dictionary.Values.ToList());
-			}
-			else
-			{
-				HashSet<string> hashSet = new HashSet<string>(_eventRecordEntries.Where((EventRecordEntry x) => x != null && !string.IsNullOrWhiteSpace(x.EventId)).Select((EventRecordEntry x) => x.EventId.Trim()), StringComparer.OrdinalIgnoreCase);
-				foreach (EventRecordEntry eventRecordEntry3 in payload.EventRecords)
-				{
-					string text5 = (eventRecordEntry3?.EventId ?? "").Trim();
-					if (!string.IsNullOrWhiteSpace(text5) && hashSet.Add(text5))
-					{
-						_eventRecordEntries.Add(eventRecordEntry3);
-					}
-				}
-				_eventRecordEntries = SanitizeEventRecordEntries(_eventRecordEntries);
-			}
-			if (!string.Equals(previousWorldWeeklyProductsFingerprint, BuildPublishedWorldWeeklyProductsFingerprint(), StringComparison.Ordinal))
-			{
-				Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
-			}
-			// Imported report records may add timeline entries while the archive window is already open.
-			NotifyWorldMessageWeeklyTimelineChanged();
-		}
-	}
 
 	private NpcActionEntry ResolveEventMaterialNpcAction(EventMaterialReference material)
 	{
@@ -38008,58 +37763,11 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 	}
 
 	// Replace only static opening knowledge, then rebuild the derived week-zero entries while leaving all dynamic event records untouched.
-	private void ReplaceDatabaseOpeningKnowledge(EventImportPayload payload)
-	{
-		if (payload == null || !payload.HasWorldSummaryFile || !payload.HasKingdomSummariesFile)
-		{
-			throw new InvalidOperationException("开局知识重载计划不完整。");
-		}
-		_eventWorldOpeningSummary = (payload.WorldSummary ?? "").Trim();
-		_eventKingdomOpeningSummaries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-		foreach (KeyValuePair<string, string> sourceSummary in payload.KingdomSummaries ?? new Dictionary<string, string>())
-		{
-			string kingdomId = (sourceSummary.Key ?? "").Trim();
-			string summary = (sourceSummary.Value ?? "").Trim();
-			if (!string.IsNullOrWhiteSpace(kingdomId) && !string.IsNullOrWhiteSpace(summary))
-			{
-				_eventKingdomOpeningSummaries[kingdomId] = summary;
-			}
-		}
-		_weeklyReportMaterialRevisions.MarkOpening();
-		if (_eventRecordEntries == null)
-		{
-			_eventRecordEntries = new List<EventRecordEntry>();
-		}
-		bool removedWorldOpeningRecord = _eventRecordEntries.Any((EventRecordEntry x) => IsDatabaseReloadOpeningEvent(x) && string.Equals((x.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase));
-		int removedOpeningRecordCount = _eventRecordEntries.RemoveAll(IsDatabaseReloadOpeningEvent);
-		// Pending requests are tied to old derived entries.  Keep in-flight requests: their source-hash guard rejects stale results safely.
-		lock (_weekZeroShortSummaryQueueLock)
-		{
-			_weekZeroShortSummaryPendingQueue.RemoveAll((WeekZeroShortSummaryRequest x) => IsDatabaseReloadOpeningEventId(x?.EventId));
-			_weekZeroShortSummaryGenerationAttempted.RemoveWhere(IsDatabaseReloadOpeningEventId);
-		}
-		// A blank world summary removes the published week-zero world report, so it needs a revision signal even though no new report is upserted.
-		if (removedWorldOpeningRecord && string.IsNullOrWhiteSpace(_eventWorldOpeningSummary))
-		{
-			Interlocked.Increment(ref _publishedWorldWeeklyHistoryRevision);
-		}
-		// Reload owns only canonical week-zero entries.  Skipping the usual global sanitation keeps arbitrary dynamic history byte-for-byte untouched.
-		EnsureWeekZeroOpeningSummaryEvents(sanitizeAfter: false);
-		Logger.Log("DatabaseReload", "replaced static opening knowledge; removedDerivedWeekZeroRecords=" + removedOpeningRecordCount + " kingdomSummaries=" + _eventKingdomOpeningSummaries.Count);
-	}
 
 	// Only canonical week-zero world/kingdom IDs are derived from opening summaries; every other event record remains save-owned dynamic history.
-	private static bool IsDatabaseReloadOpeningEvent(EventRecordEntry entry)
-	{
-		return entry != null && entry.WeekIndex == 0 && IsDatabaseReloadOpeningEventId(entry.EventId);
-	}
+	private static bool IsDatabaseReloadOpeningEvent(EventRecordEntry entry) => WeeklyEventDataImportOwner.IsCanonicalOpeningEvent(entry);
 
-	private static bool IsDatabaseReloadOpeningEventId(string eventId)
-	{
-		string normalizedEventId = (eventId ?? "").Trim();
-		return normalizedEventId.StartsWith("weekly_report:world:0:", StringComparison.OrdinalIgnoreCase)
-			|| normalizedEventId.StartsWith("weekly_report:kingdom:0:", StringComparison.OrdinalIgnoreCase);
-	}
+	private static bool IsDatabaseReloadOpeningEventId(string eventId) => WeeklyEventDataImportOwner.IsCanonicalOpeningEventId(eventId);
 
 
 
