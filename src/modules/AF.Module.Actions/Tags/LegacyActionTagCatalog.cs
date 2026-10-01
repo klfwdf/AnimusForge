@@ -72,6 +72,7 @@ public static class LegacyActionTagCatalog
         "A:P_J_K_M",
         "A:P_J_K_V",
         "A:P_L_K",
+        "A:CIVIL_FACTION",
         "AD",
         "ADP",
         "ASS",
