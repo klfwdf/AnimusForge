@@ -20,7 +20,7 @@ internal static class Program
         Console.WriteLine("PASS " + name);
     }
 
-    private static async Task Main()
+    private static async Task MainChecks()
     {
         var owner = new NativeConversationAdmissionOwner<Ticket>();
         var first = new Ticket(7);
@@ -80,5 +80,10 @@ internal static class Program
         owner.Release(next);
         Check(owner.Current == null && owner.IsPresentationCurrent(nextRevision), "new_request_can_release_itself");
         Console.WriteLine($"NativeTicket PASS={_checks} FAIL=0 realOwner=true forcedYield=true gameObjects=NONE LIVE=NOT_RUN");
+    }
+    private static async Task<int> Main()
+    {
+        try { await MainChecks().ConfigureAwait(false); return 0; }
+        catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
 }

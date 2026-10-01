@@ -1,5 +1,11 @@
 """Execute scene postprocess gate ownership races with real task continuations."""
 import argparse
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import hashlib
 import os
 from pathlib import Path
@@ -23,7 +29,7 @@ def main():
     ap.add_argument("--run-root", type=Path)
     args=ap.parse_args()
     if not re.fullmatch(r'[A-Za-z0-9_-]+',args.output_name):ap.error('Invalid output name')
-    source=run.extractor.source('ShoutBehavior.cs',args.source_ref)
+    source=(run.extractor.source('ShoutBehavior.cs',args.source_ref) if args.source_ref else historical_source('ShoutBehavior.cs'))
     methods='\n'.join(run.extractor.declaration(source,s) for s in SIGNATURES)
     fields=[]
     for name in sorted(set(re.findall(r'\b(_[A-Za-z]\w*)\b',methods))):

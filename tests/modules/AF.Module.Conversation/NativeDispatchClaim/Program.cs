@@ -13,7 +13,7 @@ internal static class Program
         Console.WriteLine("PASS " + name);
     }
     private static TaskCompletionSource<bool> Gate() => new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-    private static async Task Main()
+    private static async Task MainChecks()
     {
         Check((int)NativeConversationDispatchState.Queued == 0 && (int)NativeConversationDispatchState.Started == 1
             && (int)NativeConversationDispatchState.ExpiredBeforeStart == 2, "original_numeric_states_preserved");
@@ -62,5 +62,10 @@ internal static class Program
         Check(starts + expiries == 1, "single_atomic_winner_across_callback_and_retirement");
         Check(!contested.TryStart() && !contested.TryExpireBeforeStart(), "terminal_claim_never_reopens");
         Console.WriteLine($"NativeDispatchClaim PASS={_checks} FAIL=0 actualStruct=true forcedYield=true noClockSleep=true LIVE=NOT_RUN");
+    }
+    private static async Task<int> Main()
+    {
+        try { await MainChecks().ConfigureAwait(false); return 0; }
+        catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
 }

@@ -1,5 +1,11 @@
 """Real deferred deadline/identity/cleanup and actual blocking request seam; game commit is a sentinel."""
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import argparse
 import hashlib
 import importlib.util
@@ -20,10 +26,10 @@ args = parser.parse_args()
 out = new_run_root(ROOT, 'scene-deferred-cancellation', args.run_root)
 source_path = 'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.ScenePostprocess.cs'
 request_path = 'src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs'
-source = (ROOT / source_path).read_text(encoding='utf-8-sig')
+source = historical_source(source_path)
 deadline = extract.declaration(source, 'async Task EnforceRequestDeadlineAsync(')
 current = extract.declaration(source, 'bool IsRequestCurrent()')
-request = extract.declaration((ROOT / request_path).read_text(encoding='utf-8-sig'),
+request = extract.declaration(historical_source(request_path),
                               'private static bool TryRequestSceneUnifiedActionPostprocess(')
 request_owner = extract.declaration((ROOT/'src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs').read_text(encoding='utf-8-sig'), 'internal static bool TryRequestSceneUnifiedActionPostprocess(')
 start = source.index('\t\t\tfinally\n\t\t\t{', source.index('Task deadlineTask'))

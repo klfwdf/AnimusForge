@@ -1,5 +1,11 @@
 from __future__ import annotations
 import argparse, hashlib, importlib.util, os, subprocess, sys
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[4]
 HERE=Path(__file__).resolve().parent
@@ -12,8 +18,8 @@ ap.add_argument('--output-name',default='current')
 args=ap.parse_args()
 if not args.output_name.replace('-','').replace('_','').isalnum(): ap.error('invalid output name')
 sys.stdout.reconfigure(encoding='utf-8')
-current=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8')
-schedule=ex.declaration(ex.source('ShoutBehavior.cs',args.schedule_source_ref),'private static void ScheduleNativeConversationTypewriterPlaybackFallback(')
+current=historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs')
+schedule=ex.declaration((ex.source('ShoutBehavior.cs',args.schedule_source_ref) if args.schedule_source_ref else historical_source('ShoutBehavior.cs')),'private static void ScheduleNativeConversationTypewriterPlaybackFallback(')
 if args.mutate:
     before,after={
         'drop-lifetime':('if (!owner.IsTtsPlaybackRequestCurrent(request)) { return; }','if (false) { return; }'),

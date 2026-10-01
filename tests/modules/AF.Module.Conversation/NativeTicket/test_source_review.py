@@ -7,6 +7,9 @@ sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
 spec=importlib.util.spec_from_file_location('inverse', ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py')
 inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class SourceReviewTests(unittest.TestCase):
     def test_four_live_files_restore_exact_before_source(self):
         for path in inverse.REVIEW['files']:

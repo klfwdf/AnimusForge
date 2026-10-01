@@ -1,5 +1,11 @@
 """Exact reviewed additive Native API changes; reject any unrelated change before restoring older proof."""
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import terminal_review
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import hashlib,json,subprocess,importlib.util
 ROOT=Path(__file__).resolve().parents[4]
 import sys
@@ -57,6 +63,7 @@ def restore_scene_additions(path,current):
     return old
 spec_owner=importlib.util.spec_from_file_location('j07b_admission_inverse',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py');owner_inverse=importlib.util.module_from_spec(spec_owner);spec_owner.loader.exec_module(owner_inverse)
 
+@terminal_review
 def restore(path,current,verify_dependencies=True,live_current=None):
     path=str(path).replace('\\','/')
     current=owner_inverse.restore(path,restore_scene_additions(path,current))

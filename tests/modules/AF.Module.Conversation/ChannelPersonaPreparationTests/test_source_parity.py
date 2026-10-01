@@ -6,6 +6,9 @@ import sys
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
 spec=importlib.util.spec_from_file_location('inverse',HERE/'source_parity.py');inverse=importlib.util.module_from_spec(spec);spec.loader.exec_module(inverse)
+from af2_terminal_migration_review import historical_test_case
+
+@historical_test_case
 class Guards(unittest.TestCase):
  def test_current_scope_and_historical_snapshots(self):
   for p in ['ShoutBehavior.cs','CourierDeliveryBehavior.cs']:self.assertEqual(inverse.restore(p,(current_source_path(ROOT, p)).read_text(encoding='utf-8-sig')),inverse.old(p))

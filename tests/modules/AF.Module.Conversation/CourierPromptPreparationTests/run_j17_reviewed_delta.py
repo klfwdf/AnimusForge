@@ -1,5 +1,11 @@
 """Supersede the historical whole-root inverse with a J17-scoped prompt consumer review."""
 from pathlib import Path
+import sys as _legacy_sys
+from pathlib import Path as _LegacyPath
+_legacy_sys.path.insert(0, str(_LegacyPath(__file__).resolve().parents[4] / "tests"))
+from af2_terminal_migration_review import historical_source
+# Explicit legacy oracle; current owner build/replay inputs are not projected.
+AF2_FIXTURE_METADATA = {'sourceClass': 'legacy-oracle-extraction', 'terminalBindingAndExactInverseRequired': True, 'currentOwnerReplayProjected': False}
 import argparse
 import hashlib
 import importlib.util
@@ -33,7 +39,7 @@ spec.loader.exec_module(extract)
 prompt = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs").read_text(encoding="utf-8-sig")
 messages = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptMessages.cs").read_text(encoding="utf-8-sig")
 root = (ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.cs").read_text(encoding="utf-8-sig")
-shout = (ROOT / "src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs").read_text(encoding="utf-8-sig")
+shout = historical_source('src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs')
 reply = extract.declaration(prompt, "private CourierReplyGenerationRequest BuildReplyRequestFromPreparedPrompt(")
 inbound = extract.declaration(prompt, "private InboundLetterGenerationRequest BuildInboundRequestFromPreparedPrompt(")
 main_assembly_projection.projected_messages()

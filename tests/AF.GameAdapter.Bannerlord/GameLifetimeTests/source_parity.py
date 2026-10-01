@@ -203,6 +203,9 @@ def check_dependencies():
 
 spec_owner=importlib.util.spec_from_file_location('j07b_admission_inverse',ROOT/'tests/modules/AF.Module.Conversation/NativeConversationAdmissionTests/owner_extraction.py');owner_inverse=importlib.util.module_from_spec(spec_owner);spec_owner.loader.exec_module(owner_inverse)
 
+from af2_terminal_migration_review import terminal_review
+
+@terminal_review
 def restore(path,source):
  # Shout's admission inverse already performs fixed F5 inverse -> remote inverse ->
  # original complete-turn proof. Do not apply either transform twice.

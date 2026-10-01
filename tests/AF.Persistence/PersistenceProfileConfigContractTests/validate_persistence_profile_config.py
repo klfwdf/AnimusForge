@@ -13,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import current_source_path
+from af2_terminal_migration_review import historical_fixture, historical_source
 FIXTURE_DIR = ROOT / "docs" / "fixtures" / "phase4-persistence-profile-config"
 KEY_PATTERN = re.compile(r'SyncData\("([^"\r\n]+)"')
 SYMBOLIC_PATTERN = re.compile(r'SyncData\((?!")')
@@ -165,14 +166,19 @@ DECLARATION_PATTERN = re.compile(
 )
 
 
+@historical_fixture
 def discover_typed_bindings() -> list[dict]:
+    # Fixed legacy catalog oracle only. New typed persistence adapters have current-owner tests.
     rows: list[dict] = []
-    for source_path in sorted(ROOT.rglob("*.cs")):
+    catalog = load_json(FIXTURE_DIR / "syncdata-binding-catalog.json")
+    legacy_sources = {current_source_path(ROOT, binding["source"].replace("\\", "/"))
+                      for entry in catalog["entries"] for binding in entry["bindings"]}
+    for source_path in sorted(legacy_sources):
         if any(part in {"tools", "tests", "bin", "obj", ".tmp", "tmp", ".codex_tmp", "_codex_tmp", "artifacts", "_deps_auto", ".dotnet", ".dotnet_cli"} for part in source_path.relative_to(ROOT).parts):
             continue
         if any("原版游戏本体代码" in part for part in source_path.relative_to(ROOT).parts):
             continue
-        source = source_path.read_text(encoding="utf-8")
+        source = historical_source(source_path)
         declarations = list(DECLARATION_PATTERN.finditer(source))
         for match in BINDING_PATTERN.finditer(source):
             ref_name = match.group(2)

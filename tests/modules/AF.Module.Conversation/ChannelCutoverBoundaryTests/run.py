@@ -39,6 +39,8 @@ COURIER_REPLY_WAIT_PATH = "src/modules/AF.Module.Conversation/Channels/Courier/C
 MAIN_PROMPT_MESSAGE_OWNER_PATH = "src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs"
 
 
+from af2_terminal_migration_review import historical_fixture
+
 def source(path: str, ref: str | None) -> str:
     if ref:
         # Historical cutover references predate the byte-identical J07a/J09a moves.
@@ -70,6 +72,7 @@ def source(path: str, ref: str | None) -> str:
     return current_source_path(ROOT, path).read_text(encoding="utf-8-sig")
 
 
+@historical_fixture
 def scene_source(ref: str | None) -> str:
     host = source("ShoutBehavior.cs", ref)
     if ref:
@@ -84,6 +87,7 @@ def scene_source(ref: str | None) -> str:
     return host + "\n" + source(SCENE_CHAINS_PATH, ref)
 
 
+@historical_fixture
 def courier_source(ref: str | None) -> str:
     """Read the mixed host plus the current Courier generation owner.
 
@@ -139,6 +143,7 @@ def declaration(text: str, signature: str, optional: bool = False) -> str:
     raise ValueError(f"Unterminated source declaration: {signature}")
 
 
+@historical_fixture
 def extract(ref: str | None) -> dict[str, str]:
     scene = scene_source(ref)
     anchor = scene.index('"[MemoryPerf] group_turn_prompt_ready')

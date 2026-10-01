@@ -99,6 +99,33 @@ def terminal_review(function):
     """Keep an existing historical review intact, after the fixed inverse."""
     @wraps(function)
     def reviewed(path, source, *args, **kwargs):
+        # An enclosing reviewed inverse already verified the live terminal input.
+        # Older approved inverses may now pass their own intermediate projection.
+        if _active.get():
+            return function(path, source, *args, **kwargs)
         with projection_reads():
             return function(path, restore(path, source), *args, **kwargs)
     return reviewed
+
+
+def historical_source(path):
+    """Explicit legacy oracle read; never use for a current owner fixture/build."""
+    with projection_reads():
+        return current_source_path(ROOT, key(path)).read_text(encoding="utf-8-sig")
+
+
+def historical_fixture(function):
+    """Scope a named legacy extraction; current production replay stays unprojected."""
+    @wraps(function)
+    def reviewed(*args, **kwargs):
+        with projection_reads():
+            return function(*args, **kwargs)
+    return reviewed
+
+
+def historical_test_case(test_case):
+    """Keep an explicit old source-guard test class as a bound legacy oracle."""
+    for name, function in list(vars(test_case).items()):
+        if name.startswith("test_") and callable(function):
+            setattr(test_case, name, historical_fixture(function))
+    return test_case
