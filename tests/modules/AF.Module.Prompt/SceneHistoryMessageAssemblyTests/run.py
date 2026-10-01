@@ -1,12 +1,13 @@
 from pathlib import Path
-import importlib.util, os, subprocess, sys
+import importlib.util, os, subprocess, sys, argparse
 ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tests"))
 from output_isolation import minimal_test_environment
 s=importlib.util.spec_from_file_location('extract', ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
 m=importlib.util.module_from_spec(s); s.loader.exec_module(m)
-out=ROOT/'artifacts/af2-host-terminal-closeout/line-b/scene-history-tests'
+parser=argparse.ArgumentParser();parser.add_argument('--run-root',type=Path);args=parser.parse_args()
+out=(args.run_root or ROOT/'artifacts/af2-host-terminal-closeout/line-b/scene-history-tests').resolve()
 out.mkdir(parents=True,exist_ok=True)
 create=m.declaration((ROOT/'src/modules/AF.Module.Prompt/Composition/MainPromptMessageAssemblyOwner.cs').read_text(encoding='utf-8-sig'),'internal static object CreateCourierChatMessage(')
 metadata=m.declaration((ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutUtils.cs').read_text(encoding='utf-8-sig'),'public static string StripConversationMetadataPrefix(')
